@@ -1,0 +1,49 @@
+Code:
+	: test
+		2 TRY (intStackItems -- )
+			POP IF
+				EXIT
+			THEN
+		CATCH ( -- intLine strError)
+			"Foo Error" ABORT
+		ENDCATCH ( -- )
+	;
+
+Tokens:
+			 Function: test
+			 2
+			 TRY->catch
+			 POP
+			 IF->then
+			 TRYPOP
+			 EXIT
+	then	 TRYPOP
+			 JMP->endcatch
+	catch	 CATCH
+			 "Foo Error"
+			 ABORT
+	endcatch EXIT
+
+
+TRY locks all but the top N stack items, so that any attempt to pop or change
+  them will throw an error.  Any errors thrown inside a TRY-CATCH block will
+  jump execution immediately to the CATCH.
+
+CATCH denotes the start of exception handling code.  If an error is thrown
+  in the TRY-CATCH block, then execution will jump immediately to this prim-
+  itive.  If no error was thrown in the TRY-CATCH block, then the code in the
+  CATCH-ENDCATCH block will not be executed.  This primitive will pop off all
+  stack items not locked by the TRY, and then unlocks the stack.  The string
+  error message that was thrown will be pushed onto the stack.
+
+ABORT throws a string error.
+
+ENDCATCH denotes the end of the CATCH block of code.
+
+Any instances of BREAK, CONTINUE, WHILE, or EXIT inside the TRY-CATCH will
+  need to call TRYPOP.
+
+TRY-CATCH-ENDCATCH structures can be nested arbitrarily deep.  The stack can be
+  locked multiple times concurrently, at the same or monotonically decreasing
+  depths.
+

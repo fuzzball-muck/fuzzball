@@ -1,0 +1,195 @@
+/* $Header: /cvsroot/fbmuck/fbmuck/src_docs/game.c.txt,v 1.5 2000/02/18 14:26:42 mcclure Exp $ */
+
+Function name:	do_dump	
+Arguments:	dbref		(player issuing command)
+		const char * 	(destination file)
+Returns:	void
+Called from:	process_command	(game.c)
+		back_it_up	(sanity.c)
+Calls:		Wizard, God, free, alloc_string, sprintf, notify, dump_db_now
+Does:		Does nothing if player is not a Wizard.  Updates dumpfile
+		location if applicable and calls dump_db_now.  If GOD_PRIV
+		is defined, only God can update the dumpfile.
+#ifdefs:	GOD_PRIV
+Notes:
+
+Function name:	do_delta
+Arguments:	dbref		(player issuing command)
+Returns:	void
+Called from:	process_command	(game.c)
+Calls:		Wizard, notify, delta_dump_now
+Does:		Calls delta_dump_now if player is a Wizard.
+#ifdefs:	none
+Notes:		If DELTADUMPS is not defined, this function is not compiled.
+
+Function name:	do_shutdown
+Arguments:	dbref		(player issuing command)
+Returns:	void
+Called from:	process_command (game.c)
+Calls:		Wizard, log_status, unparse_object, notify
+Does:		Sets the shutdown flag and resets the restart flag if 
+		player is a Wizard.
+#ifdefs:	none
+Notes:		none
+
+Function name:	do_restart
+Arguments:	dbref		(player issuing command)
+Returns:	void
+Called from:	process_command	(game.c)
+Calls:		Wizard, log_status, unparse_object, notify
+Does:		Sets the shutdown and restart flags to true if player is
+		a Wizard.
+#ifdefs:	none
+Notes:
+
+Function name:	dump_database_internal
+Arguments:	none
+Returns:	static void
+Called from:	dump_database	(game.c)
+		fork_and_dump	(game.c)		
+Calls:		wall_and_flush, sprintf, unlink, fopen, db_write, fclose,
+		rename, perror, free, string_dup, macrodump, sync
+Does:		Writes out the DB and macros, notifying at start and end if set.
+#ifdefs:	DISKBASE, FLUSHCHANGED, DELTADUMPS
+Notes:
+
+Function name:	panic
+Arguments:	const char *	(message to appear in panicfile)
+Returns:	void
+Called from:	MALLOC		(interface.c)
+		make_nonblocking(interface.c)
+		add_player	(player.c)
+Calls:		log_status, fprintf, emergency_shutdown, sprintf, fopen,
+		perror, sync, _exit, signal, abort, db_write, fclose,
+		unlink, macrodump
+Does:		Shuts down the interface, dumps the panicfile, and writes
+		out the current macros.
+#ifdefs:	NOCOREDUMP
+Notes:
+
+Function name:	dump_database
+Arguments:	none
+Returns:	void
+Called from:	main		(interface.c)
+Calls:		log_status, dump_database_internal
+Does:		Calls dump_database_internal, logging start and end.
+#ifdefs:	none
+Notes:	
+
+Function name:	fork_and_dump
+Arguments:	none
+Returns:	void
+Called from:	check_dump_time	(events.c)
+		dump_db_now	(events.c)
+		dump_deltas	(game.c)
+Calls:		time, log_status, dump_database_internal
+Does:		Sets the last monolithic time to the current time, logs
+		the checkpoint, and calls dump_database_internal.
+#ifdefs:	none
+Notes:		This function is extern'ed in interface.c but not used there.
+
+Function name:	time_for_monolithic
+Arguments:	none
+Returns:	int		(boolean)
+Called from:	dump_warning	(game.c)
+		dump_deltas	(game.c)
+Calls:		time, FLAGS, fseek, ftell
+Does:		Determines if it is time for a DB dump.
+#ifdefs:	none
+Notes:		If DELTADUMPS is not defined, this function is not compiled.
+
+Function name:	dump_warning
+Arguments:	none
+Returns:	void
+Called from:	check_dump_time	(events.c)
+Calls:		time_for_monolithic, wall_and_flush
+Does:		Walls and flushes the appropriate dump warning, if set.
+#ifdefs:	DELTADUMPS
+Notes:
+
+Function name:	dump_deltas
+Arguments:	none
+Returns:	void
+Called from:	check_dump_time (events.c)
+		delta_dump_now	(events.c)
+Calls:		time_for_monolithic, fork_and_dump, log_status, wall_and_flush,
+		db_write_deltas
+Does:		Walls and flushes the appropriate dump warning, if set, and
+		calls db_write_deltas.
+#ifdefs:	DISKBASE
+Notes:		If DELTADUMPS is not defined, this function is not compiled.
+
+Function name:	init_game
+Arguments:	const char *	(infile)
+		const char *	(outfile)
+Returns:	int		(boolean)
+Called from:	main		(interface.c)
+Calls:		fopen, log_status, macroload, fclose, string_dup, db_free,
+		init_primitives, mesg_init, SRANDOM, tune_load_parmsfile,
+		fprintf, db_read, free, alloc_string, add_property
+Does:		Loads macros, frees the DB, initializes MUF compiler and
+		MPI interpreter, seeds the random number generator, loads
+		@tune paramters, and initializes #0 _sys/ properties.
+#ifdefs:	DELTADUMPS, DISKBASE
+Notes:
+
+Function name:	do_restrict
+Arguments:	dbref		(player issuing command)
+		const char *	(argument)
+Returns:	void
+Called from:	process_command	(game.c)
+Calls:		Wizard, strcmp, notify
+Does:		Toggles wiz-only mode on and off if player is a Wizard.
+#ifdefs:	none
+Notes:
+
+Function name:	process_command
+Arguments:	int		(descriptor of player)
+		dbref		(player issuing command)
+		char *		(the command)
+Returns:	int		(boolean)
+Called from:	do_command	(interface.c)
+Calls:		abort, Typeof, log_status, Wizard, OWNER, FLAGS, log_command,
+		NAME, DBFETCH, interactive, isspace, sprintf, TrueWizard,
+		can_move, do_move, strcpy, do_action, do_armageddon, do_attach,
+		do_boot, do_chlock, do_chown, do_conlock, do_contents,
+		do_create, do_credits, do_serverdebug, do_describe, do_dig,
+		do_delta, do_doing, do_drop_message, do_dump, do_edit,
+		do_entrances, sane_dump_object, do_fail, do_find, do_flock,
+		do_force, do_idescribe, do_dequeue, do_link, match_and_list,
+		do_lock, do_mcpedit, do_memory, do_name, do_newpassword,
+		do_odrop, do_oecho, do_ofail, do_open, do_osuccess, do_owned,
+		do_password, do_pcreate, do_pecho, do_prog, do_propset,
+		list_events, do_recycle, do_restart, do_restrict, sanity,
+		sanchange, sanfix, do_set, do_shutdown, do_stats, do_success,
+		do_sweep, do_teleport, do_toad, do_trace, do_tune, do_unlink,
+		do_unlock, do_uncompile, do_usage, notify, do_wall, do_leave,
+		do_drop, do_examine, do_get, do_give, do_gripe, do_help,
+		do_inventory, do_info, do_kill, do_look_at, do_motd, do_mpihelp,
+		do_man, do_news, do_page, do_pose, do_rob, do_say, do_score,
+		do_whisper, string_prefix, strcmp, Matched, controls
+Does:		Parses command and calls appropriate function.
+#ifdefs:	DELTADUMPS, NO_USAGE_COMMAND
+Notes:		the #define Matched() is only used in this function.
+		several goto's - can we code it another way?
+
+
+/*
+* $Log: game.c.txt,v $
+* Revision 1.5  2000/02/18 14:26:42  mcclure
+* Terminology change for returned booleans.
+*
+* Revision 1.4  2000/02/18 13:30:00  mcclure
+*
+* Removed #define field from format.
+*
+* Revision 1.3  2000/02/18 02:23:13  mcclure
+* *** empty log message ***
+*
+* Revision 1.2  2000/02/18 00:22:22  winged
+* Fixed description of do_dump
+*
+* Revision 1.1  2000/02/18 00:15:38  winged
+* Initial revision, sent to winged by mcclure.y
+*
+*/

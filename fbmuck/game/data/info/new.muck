@@ -1,0 +1,459 @@
+This file contains the main stuff that I would like to see in a pair of
+docs files.  The first file would be an administrators file, of interest
+only to someone who would like to compile and run FB.  The second file
+would be one of interest to the players of the MUCK.
+
+This file is loosely organized in sections that are progressively older,
+outdated, and somewhat obsolete.  The first section is current, and
+sections earlier in the file supercede those later in the file for
+accurracy.  Sections are seperates by short ----- lines.
+
+
+=========================================================================
+
+Changed:
+
+  The interpreter has been split from the old huge case statement into a set
+    of functions pointed to by an array of function pointers.  This makes for
+    a slight increase in speed, and also for easier addition of primitives.
+
+  You can now connect to a player via dbref.  Just give the dbref where you
+    would normally put your name in the connection request.  For example:
+          connect #1234 craZypassWord
+
+  @boot now @boots the oldest connection of a player instead of the youngest.
+
+  Added the #define SECURE_TELEPORT in config.h for making exits on a player
+    require either that the player own the room they are in, or else the room
+    must be JUMP_OK to allow them to use the exit to leave the room.  If this
+    is not defined, then exits work like in standard MUCK2.2.
+
+  When a program crashes, now even the errors within interp_loop() will tell
+    what MUF program dbref and line number it occurred at.
+
+
+Added:
+
+  @uncompile command for uncompiling all the programs in memory.  This
+    frees them from memory, and lets them be recompiled when they are
+    next used.  This is a useful command to use when a macro is redefined.
+    (wizard only command)
+
+  Ability to load Mage DB Dump Format databases.  (FurryMUCK.)
+
+  RESTRICT_KILL #define in config.h that lets you compile the server with
+    Kill_OK bits for players.  Both the killing player and the victim must
+    have their KILL_OK flags set for the kill to work.
+
+  There is now a #define option for limited disk basing.  #define DISKBASE
+    in config.h to make the server not load up properties from the input
+    database file until they are needed.  If an object's properties are
+    not changed, and they haven't been accessed for longer than the database
+    DUMP_INTERVAL, then it will clear the properties back out of memory when
+    it comes time to dump the db again.  Properties for objects that have
+    had some properties added/removed/changed will remain in memory.  When
+    DISKBASE is defined, @stats will also tell how many objects are loaded
+    into memory for wizards.
+
+  Ability for a wizard to append a timestamped message to the MOTD file by
+    using the command  'motd <message>'.  The file can also be cleared by
+    a wizard simply by typing 'motd clear'.
+
+
+  
+-----
+
+Changes:
+  @find and @owned can now let you search AGAINST object types.  ie:
+    search for all dark non-exits with @find *=d!e
+
+  @entrances now lets you give a flagstring argument similar to what @find
+    and @owned let you specify.  You could list all players who are homed
+    to the room you are in with @entrances here=p
+
+  There is now a maximum of 256 processes allowed on the time queue.
+    Once the queue is full, no more processes can be added to it until
+    some processes die.
+  
+  Expanded the info that @ps tells you to also list how long a process
+    has been running, and how many instructions it's executed so far.
+    Also changed the way process ID's are handled so that a process
+    will keep the same unique ID as it runs.
+  
+  If, while doing a pronoun_sub, the source string contains a %X type
+    code, (ie: %n, %p, %a, etc.) it first checks on the player to see if
+    they have an overriding property set, then it checks down the environ-
+    ment tree to see if there is an overriding default set, and THEN it
+    tries the built in defaults.  This lets you do things like use %v as
+    a movement verb in @osucc messages, and have a default set for it.
+    Ie: '@set #0=%v:walks' so that the default could be something like
+    "Foxen walks north." But a player could set their own overrides like
+    '@set me=%v:pads' to get something like:  "Foxen pads north."
+  
+  When timestamps are updated on a room, it now updates timestamps in all
+    the rooms down the environment from it.
+  
+  
+Added:
+  @usage will give stats about current resource usage for the MUCK.
+
+  
+-------
+
+Changed:
+  Connections to the server, where they don't log into a character within
+    five minutes, get disconnected, to prevent tying up ports.
+  
+  When a player connects or disconnects, the ":has connected/disconnected."
+    message now appears *before* the connect/disconnect actions are triggered.
+  
+  An exit is now controlled by it's owner, the owner of it's source, and the
+    owner of the objects it is linked to.
+  
+  Commands like @desc, @lock, @succ, @osucc, etc. now will work at a distance
+    for the owner of the object, if the object is referred to by dbref.  This
+    facilitates builder programs.
+  
+  @dig, @action, @open, and @create can now take a third parameter in the form:
+      @dig <roomname>=<parent>=<registername>
+      @action <actionname>=<source>=<registername>
+      @open <exitname>=<destination>=<registername>
+      @create <objectname>=<cost>=<registername>
+    where <registername> is an optional parameter that is the name that you
+    want it to register the object as.  It registers the object in the
+    creating player's personal registration _reg/ propdir.  For example:
+    if Joe_blow types '@dig Bedroom=$myenv=mybedroom' then it will create
+    the room "Bedroom" and set it's parent to the room referred to by $myenv
+    then registers it on the player as $mybedroom by setting the _reg/mybedroom
+    property to the dbref of the room object created.  If the <registername>
+    parameter is excluded, then the object isn't registered.  If you want
+    to, for example, @create an object, but not set it's value, but you DO
+    want to register it, then you just exclude That parameter, but remember
+    to put in both = signs.  ie:  @create Smiley Face Sticker==smiles
+  
+  help, man, and news now can all have subtopics.  If you use one without
+    an argument, then it lists a default file for the command.  The default
+    files are 'data/man.txt', 'data/help.txt', and 'data/news.txt'.  If a
+    topic is given, it lists the file by that name in the appropriate
+    command's subdirectory, if it exists.  help uses the 'data/help' sub-
+    directory, man uses 'data/man', and news now uses 'data/news'.
+    As an example, if someone typed 'help building', it would list out the
+    'data/help/building' file out to them.
+  
+  Improved the matching in @kill.  Now you can @kill by a player's name, or
+    a program's registered name.
+  
+  
+Added:
+  '@entrances <object>' will list all the objects in the db that are linked
+    to the given object.  This means player and thing homes, room droptos,
+    and exit destinations.
+  
+  
+-----
+
+Changed:
+  @find now can take two arguments.  The first argument is an smatch expr-
+    ession, and the second argument is a flag string expression.  The syntax
+    is '@find <objectname>=<flags&type>'.  The object name argument is an
+    smatch expression, meaning you could pass it something like:
+      '{gen?*|cmd?*}*' And it it would match all items who's name starts with
+    "gen" or "cmd" and have at least one character after that.  (see the
+    description of the SMATCH primitive later in this document)  The flags
+    string argument is rather different.  It is a string that consists of
+    the letters you would see in the flags field after a dbref in an examine,
+    and negations.  ie: "FW!D" would match programs that are set Wizard and
+    NOT set Debug.  A wizard could find all the MUCKER players in the data-
+    base who were not wizards simply with a '@find =P!WM'.  The '!' means
+    that it will match an object if the next flag is *NOT* set. (so long
+    as all the other flags match, also, of course)
+    If programs have consistent naming schemes on your MUCK, you could do a
+    '@find {gen-*|cmd-*}*=FWL' to find all Link_OK Wizard Programs in the
+    database who's names start with "gen-" or "cmd-" as an example.
+    NOTE:  @find doesn't work the same as it used to.  You need to give it
+      wildcards on either side of the matching string in the new setup.
+      For example, the OLD '@find foo' would be the same as the NEW
+      '@find *foo*=!E'
+  
+  @owned now can take two arguments, similar to @find, but the first argument
+    hasn't been altered in its usage.  The second argument is a flag string
+    of the same type used in the new @find.  The syntax for the new @owned is
+    '@owned <player>=<flags&type>'.  Example: to list all the link_ok prog-
+    rams, not set debug, owned by player Foo, you would use: "@owned foo=FL!D"
+  
+  The matching routines no longer look for _progreg/xxxx, as I decided that
+    this is too useful a mod to keep for programs alone.  It now looks for
+    $registered names in _reg/ for a STRING that contains the dbref of the
+    program to reference.  The string can simply be a number like "1234" or
+    prepended by a # like "#1234".
+  
+  Moved @desc, @succ, @fail, @drop, @osucc, @ofail, and @odrop into properties
+    in preparation for disk basing mods.
+  
+  When a MUF program crashes, now, it will tell the player who to tell about
+    the crash. (The person who is the owner of the program)  If the owner of
+    the program is the one running it when the program crashes, then it
+    simply tells them that it crashed.  This is all in addition to the
+    earlier improvements that tell you what line and program it crashed at.
+    
+  
+------
+
+Changed:
+  @prog was renamed to @program.  @prog still works as it is an abbreviation.
+  
+-----
+
+Changed:
+  @queue was renamed to @ps.
+  @dequeue was renamed to @kill.
+  
+  "@set <obj>=:" will no longer delete properties and propdirs whose
+  root property is an @prop or an ~prop.  It will delete all of the
+  properties on an object That do not START with @ or ~.  (ie: it will
+  NOT delete "/@combat/weapons/crossbow" but it WILL delete the prop
+  "/combat/@weapons/crossbow")  This restriction applies only for non-
+  wizards.  A wizard using "@set <obj>=:" will remove *ALL* of the
+  properties from the object.
+  
+-----
+
+Changed:
+  Objects of type Thing can now contain either objects of type Program or
+  Thing.  This means you can either use @tel or a MUF program using 'moveto'
+  to put stuff in a container, or take it out.  You can @create a bag,
+  for example, and keep your programs and nicknacks in it.  When you
+  are checked against a lock either in MUF with 'locked?' or by
+  triggering an action, it will look for items recursively within any
+  containers you are carrying, and will check for properties in the
+  same way.  You cannot make a loop of containers (ie, a container
+  holding a container that holds the first) as it is prevented in both
+  @tel and 'moveto'
+  
+  Made minor internal changes to the timequeue execution routines that
+  fixed a bug that let a single running program get 10 timeslices before
+  giving one to the players.  This will make multitasking programs about
+  half as fast, but should make some stuff cleaner.
+  
+  
+  
+-----
+
+Added:
+  Objects are now timestamped with the times the objects were created,
+  the time they were last modified, the time they were last used, and
+  the number of times it has been used.  The lastused count and time are
+  updated on login and logout for players, on looking at an exit, room,
+  or thing, on running a program, on get'ting or drop'ping a thing,
+  or when reading a name/desc/succ/osucc/fail/ofail/drop/odrop, or a
+  property from a thing, room, or exit.
+  Modified is updated when the @name/desc/succ/osucc/fail/ofail/drop/odrop
+  or property are set to a new value on any object.
+  Created is the set only when an object is @created, @actioned, @dig'ged
+  @prog'ed or @pcreated, or if the similar functions are done in MUF.
+  
+  
+-----
+
+Changes:
+  The info command was cleaned up a bit, and should look better now.
+  
+Features added:
+  Program registration added:  If you refer to a program in @link, @open,
+    @prog, @edit, or @set, with the syntax "$progname" then it will look
+    for a property named "_progreg/progname" in #0 containing an integer
+    value (not a string) that represents the dbref of the program.  If it
+    exists, then the command will match the program.  Also, if you @desc,
+    @succ, @drop, or @fail an object to start with "@$progname" then it
+    will run that program, similar to an "@1234" @desc/@succ/etc.
+    Examples of using progregs outside of MUF:
+      @edit $puzzle-reset
+      @link do-reset = $puzzle-reset
+      @desc me = @$longdesc %list[mydesc]
+      @succ west = @$gen-exit-messages
+      @set $puzzle-reset = DEBUG
+  
+  
+  
+-----
+
+In the editor, you can do '<prognum> publics' to list all the public
+  functions of that program.  This has the same restrictions as 'view'
+  does in the editor.  The program must be either controlled by you, or
+  Link_OK.
+  
+Programs are now compiled when they are run or called instead of when
+  the databate is loaded.  They are compiled with the uid of the owner
+  of the program.
+  
+If a program has the HAVEN flag set on it (HARDUID) then it runs with
+  the uid and permissions of the owner of the trigger of the program.
+  If the program is a timequeue event (with trigger of #-1), then it
+  will run with the permissions and uid of the program owner as in SETUID.
+  
+Added _connect and _disconnect:
+  A room or player may have a "_connect" property set that contains the
+  dbref of a progran to run when a player connects.  The program must be
+  either link_ok or must be owned by the player connecting.  When the
+  program is run, the string on the stack will be "Connect", the "loc @"
+  will be the location of the connecting player, the "me @" will be the
+  connecting player, and the "trigger @" (and "trig") will be #-1.  All
+  programs referred to by _connect properties on the player, and on rooms
+  down the environment tree from the player, will be QUEUEd up to run.
+  When a player desconnects, programs referred to by _disconnect properties
+  will be run in a similar manner.
+  (connect and disconnect _actions_ are still implemented.)
+  
+  @dequeue will now let you remove all events run by a specific player
+  or of a specific program with the syntax:  @dequeue #xxx   Where xxx
+  is the dbref of the program or player.
+  
+  All the timequeue events of a program are now dequeued when the program
+  is recompiled or @recycled.  This prevents the bug which would otherwise
+  crash the MUCK server.
+  
+  Moving into a room, through a MUF moveto, or an exit, will @force a
+  'look' instead of doing an inserver standard look.  When you connect,
+  it also @forces a 'look'.  This means that you can make a look program
+  to have absolute say over what will be seen in the room.
+  
+  @props can only be seen in examine by a wizard.  Only a wiz may @set them.
+  ~props can be seen in examines as normal, but only a wizard may @set them.
+    These two are similar to _props and .props in that property names
+    that start with a @ or a ~ are special protected properties in the
+    way described above, and that if any property in a property name path
+    starts with one of them, the property you are trying to access will
+    have the same permissions as well.  ie:  /stats/~combat/sword/hit
+    would have the same restrictions as ~attack. Warning, @set me=:
+    will still remove all properties on you, including @props and ~props.
+    Both of these property types can be changed by programs without
+    restrictions.  If you need to make a property that cannot be changed
+    by the object owner, and that can only be read by a wizard program,
+    you could do something like name it:  /.stats/~combat/sword/hit
+  
+  '@set <object>=:abc' will no longer clear all the props on an object.
+  
+  
+  
+-----
+
+Added Listeners:
+  A room or object may have a "_listen" property set that contains the
+  dbref of a program to run whenever a notify_except is done in that
+  room or in the room that contains the object.  The program must
+  either be link_ok or must be owned by the owner of the object
+  containing the "_listen" property.  When the program is run, the
+  parameter string will be the notify_except message, "loc @" will be
+  the room where the notify_except was given, and "trigger @" or "trig"
+  will be the object with the "_listen" property.  A "_listen" program
+  may also be run by placing the "_listen" property in the environment
+  of a room or set of rooms.
+  
+  
+  
+-----
+
+Made the interpreter re-entrant.
+When a program crashed, it tells you in which program, and on what line the
+  crash happened.  Debug will tell you what line each instruction is on.
+The MOVETO primitive will now run programs in the @desc and @succ/@fail of a
+  room when moving a player.
+The WHO list will now prepends an asterisk ('*') in front of the names of
+  people who are in the editor or in interactive mode.
+You can now link objects to players, given that they are either you, or
+  link_OK, or that you are a wizard.  This means that you could do a 'home'
+  and keep all your objects, if they are homed to you.
+  
+  
+-----
+  
+Actions not on a room will only take you to the destination if, for both the
+  destination and the source, you either own them, or they are set JUMP_OK.
+You can use 'news <topic>' now to list the files named 'game/data/news.txt.*'
+You can also use 'info' to list the files in 'game/data/info/' and view then
+  with 'info <filename>'.  The topic is case sensitive.
+A wizard set QUELL is effectively a normal player with no wizardly powers.
+  Programs that test to see if a player is wizard will get a false response
+  from '"wizard" flag?' when the player is QUELLed.  Wiz-bitted programs
+  will still act wizbitted whether or not the owner is QUELLED.
+A player can set themselves "SILENT" and not see all the dbrefs and dark
+  objects that they own.  They won't see objects in a dark room either.
+  They still control the objects though.
+If no parent is given for a room when it is @dig'ed it will default to the
+  parent of the current room instead of #0.
+Properties are now stored in AVL trees, and organized into directories of
+  properties.  This speeds things up, and keeps you from being spammed on
+  examines.  To examine the properties on an object, use 'ex <obj>=<propdir>'.
+  where to examine the base properties in an object, <propdir> would be '/'.
+  You can see the value of a single property with 'ex <object>=<propname>'.
+      Propdirs are a method of storing and organizing properties to speed
+    access and to provide a sort of built-in organization.  The basic idea
+    is to make something similar to a 'filesystem' for properties.  In this
+    analogy, each person would be a filesystem, with a root directory and
+    (theoretically) an infinite number of properties beneath that.
+      A property has been expanded with the idea that each property may now
+    contain a new property list -- the 'propdir'.  properties can both have
+    a value (either integer or string as before) _and_ contain other
+    properties.
+      The actual directory entries may ALSO contain data.  Propdirs' only
+    real 'visible' changes are in the names of properties -- '/' is used as
+    the property directory separator, and so will not appear in the names
+    of the properties when listed through 'examine' or MUF programs.
+      Property protections have also been expanded -- the . and _ may appear
+    either at the beginning of the property name or immediately following a
+    '/', and that property will have the appropriate protections.  For
+    example, the property '/mail/.inbox/mesg/#' would have the same
+    protections as '.mesg#' would now.
+    There are two ways to remove a property list:
+      * First, and most straight forward, is to remove the property that
+        contains it.  so, in the previous example, removing the property
+        '/mail/.inbox' would (recursively) remove all properties under
+        .inbox before removing .inbox itself.
+      * The second way is to remove all properties within the property list
+        yourself.  When the last property is removed, the parent property
+        (the one that contained the property list) is examined to see if
+        contains data.  If it does, then the property list only is
+        removed.  If the property doesn't contain data then it is removed
+        also.
+      Because of the first method of removing propdirs, the ability to have a
+    property list and value in the same property should be used sparingly.
+      If you try to access a property ending in '/', in MUF, it will give a
+    programmer error, except in NEXTPROP, in which it will give the name of
+    the first property in that propdir.
+      The last visible, non-MUF change that propdirs bring is that 'examine'
+    will no longer show properties _directly_.  Instead, where the properties
+    would normally be shown, it will say:
+        "[ Use 'examine <object>=/' to list root properties. ]"
+      Examine now can take an argument which is the property or propdir to
+    view.  If the property name given ends with a '/', all properties in
+    property directory will be listed, otherwise the single property named
+    will be shown.
+      Internally, a few things changed.  property lists are now stored as AVL
+    trees instead of straight lists, so there is a speed increase even if
+    propdirs are not directly used.  This also means properties are kept in
+    sorted order and will be displayed that way.
+      'addprop' will no longer allow a ":" in the property name.
+      To clear a propdir's value without deleting the proptree below it,
+    from MUF do a '"" 0 addprop' to it.
+      A property can *not* have both a string and integer stored at the same
+    time anymore.  The old property.c was lax and allowed this, even though
+    the integer value would be lost on dbload.
+  
+When a player connects to the server, the server basically does an:
+  "@force <player>='connect'".  On player disconnection, it @forces a
+  'disconnect'.  It will only @force a connect when you log in your first
+  connection, and @force a disconnect when your last connection is
+  terminated.
+  
+@queue will list all the time queue events waiting to run.  @dequeue
+  will let you either delete a queue event by event number, delete all
+  events running a specific program or run by a specific player,  or
+  clear the entire queue with '@deq all'
+@dequeue will only let you remove events on programs you own, or any
+  event if you are a wizard.  @queue will only list events on programs
+  you own, or all events, if you are a wizard.
+If a program is running, it will delay execution of queue events until
+  after the program finishes, or executes a READ or SLEEP command.
+  
+Any wizard can do an @pcreate, even when GOD_PRIVS is defined.
+  

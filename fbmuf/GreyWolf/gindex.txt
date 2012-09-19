@@ -1,0 +1,557 @@
+@tel #99199=me
+@set #99199=_docs:@list #99199=1-5
+@edit #99199
+1 10000 del
+i
+( header, 5 lines -- Globals-Indexer.muf, programmed by Jordan Greywolf
+Last updated: 5 Jul 94
+This program is intended to serve for a "globals" command, originally
+tailored for FurryMUCK and AlephMUCK.
+)
+: padinstring ( s1 s2 -- 0|i : checks if s2 exists as a "word" in first string,
+                by padding both with spaces, then doing an instring.  Integer
+                returned, as long as non-zero, is meaningless. )
+  striplead striptail
+  " " strcat " " swap strcat swap
+  " " strcat " " swap strcat swap
+  instring
+;
+: column-chop ( s1 i -- s2 : "pads" string up to length "i" with spaces )
+  swap "                                                         " strcat
+  swap 1 - strcut pop " " strcat
+;
+: verify-authorized? ( -- 0|1 : checks if user is trigger owner or set W )
+  me @ "W" flag? me @ trigger @ owner dbcmp or
+;
+: capitalize ( s1 -- s2 : capitalizes first char of string )
+  dup 1 strcut pop "@" strcmp not if
+    2 strcut swap toupper swap strcat     ( to handle "@" commands )
+  else
+    1 strcut swap toupper swap strcat     ( for normal commands )
+  then
+;
+: first-name ( s1 -- s2 : get first alias from name string )
+  dup ";" instr dup if
+    1 - strcut pop
+  else
+    pop
+  then
+;
+: num-pages ( -- i : return number of pages )
+  trigger @ "_page#" getpropstr atoi
+;
+: pack-cat
+  1 begin
+    dup num-pages > if
+      break
+    then
+    trigger @ "_page#/" 3 pick intostr strcat getpropstr
+    not if
+      trigger @ "_page#/" 3 pick 1 + intostr strcat getpropstr
+      dup not if
+        pop 1 - trigger @ "_page#" 3 pick intostr 1 addprop
+        break
+      else
+        trigger @ "_page#/" 4 pick intostr strcat
+        rot 1 addprop
+        trigger @ "_page#/" 3 pick 1 + intostr strcat remove_prop
+      then
+    then
+    1 +
+  repeat
+  pop
+;
+: global-help
+  "Globals Listing Utility" .tell
+  "-----------------------" .tell
+  "This program lists global commands available on this MUCK." .tell
+  "> globals #help             -- shows this screen" .tell
+  verify-authorized? if
+    "> globals #commands         -- editing commands (Wizards only)" .tell
+  then
+  "> globals #list             -- complete alphabetized global listing" .tell
+  "> globals #page             -- lists pages available" .tell
+  "> globals #page {n}         -- lists indicated page" .tell
+  "> globals {name}            -- shows information for indicated global" .tell
+  "Pages available: 1 to " num-pages intostr strcat "." strcat .tell
+;
+: global-commands
+  "Global Listing Utility Editing Commands" .tell
+  "---------------------------------------" .tell
+  "> globals #add {global}     -- registers global, assigns to page 1" .tell
+  "> globals #del {global}     -- deletes global entry" .tell
+  "> globals #tag {global}     -- change a global's 'name tag'" .tell
+  "> globals #edit {global}    -- edits a quick description of global" .tell
+  "> globals #info {global}    -- edits short help info for global" .tell
+  "> globals #move {global}    -- reassigns global to a new page" .tell
+  "> globals #new {pagename}   -- adds a new page with given name" .tell
+  "> globals #remove {page}    -- removes given page" .tell
+  "> globals #write {page}     -- writes new name for page" .tell
+  "> globals #usage            -- additional help on using editor" .tell
+;
+: global-usage
+  "Global Listing Utility Usage" .tell
+  "----------------------------" .tell
+  "This program works by storing the dbref of various globals, and indexing"
+  .tell
+  "them according to the first alias in the action name.  To handle the" .tell
+  "possibility of multiple globals using a single action, or the case where"
+  .tell
+  "a global name may have an undesired 'alias' at the front of the @name,"
+  .tell
+  "a 'nametag' (normally equal to the @name of the action upon registration)"
+  .tell
+  "is stored, and may be altered with the #tag command.  Be careful to avoid"
+  .tell
+  "creating ambiguity when resetting a #tag by having aliases for an action"
+  .tell
+  "that duplicate those found in others in the listing.  The program may"
+  .tell
+  "have trouble finding entries for globals in such a case." .tell
+  "." .tell
+  "The introduction of 'pages' is purely for readability and for convenience"
+  .tell
+  "in categorizing globals.  The names assigned to them are purely arbitrary."
+  .tell
+  "Only Wizards and the owner of this action should be able to alter entries."
+  .tell
+;
+: find-page ( s -- 0|i : find matching page name )
+  1 begin
+    dup num-pages > if
+      pop 0 break
+    then
+    trigger @ "_page#/" 3 pick intostr strcat getpropstr
+    3 pick instring if
+      break
+    then
+    1 +
+  repeat
+  swap pop
+;
+: find-entry  ( s1 -- s2 : find entry that matches string )
+  ( note: a propname in the form of _global/[name] is returned )
+  trigger @ "_global/" nextprop
+  begin
+    dup not if
+      swap pop break                            
+    then
+    trigger @ over "/nametag" strcat getpropstr " " ";" subst 3 pick
+    padinstring if
+      swap pop break
+    then
+    trigger @ swap nextprop
+  repeat
+;
+: display-data ( s -- : display information for global )
+  trigger @ over getpropstr atoi dbref
+  dup exit? not if
+    "That global has been removed." .tell pop exit
+  then
+  trigger @ 3 pick "/nametag" strcat getpropstr 40 column-chop " Page: " strcat
+  trigger @ 4 pick "/page" strcat getpropstr dup swap
+  " ( " swap trigger @ "_page#/" rot strcat getpropstr
+  " )" strcat strcat strcat strcat .tell
+  owner name "Owner: " swap strcat .tell
+  trigger @ over "/desc" strcat getpropstr dup not if
+    pop "(none)"
+  then
+  "Description: " swap strcat .tell
+  trigger @ swap "/help" strcat getpropstr dup not if
+    pop "(none)"
+  then
+  "Help: " swap strcat .tell
+;
+: global-header
+  "Global     Description                                      Help Info" .tell
+  "---------------------------------------------------------------------------"
+  .tell
+  (Global = col. 1 ... Desc = col. 12 ... Help = col. 61 )
+;
+: display-brief ( s -- )
+  trigger @ over "/nametag" strcat getpropstr
+  first-name capitalize 11 column-chop
+  trigger @ 3 pick "/desc" strcat getpropstr  dup not if
+    pop "(none)"
+  then
+  strcat 60 column-chop
+  trigger @ 3 pick "/help" strcat getpropstr dup not if
+    pop "(none)"
+  then
+  strcat 80 column-chop
+  striptail .tell pop
+;
+: relocate-entries ( i -- )
+  trigger @ "_global/" nextprop
+  begin
+    dup not if
+      pop break
+    then
+    trigger @ over "/page" strcat getpropstr dup "1" strcmp not if
+      pop
+    else
+      atoi 3 pick over = if
+        pop trigger @ over "/page" strcat "1" 1 addprop
+      else
+        3 pick over < if
+          1 - trigger @ 3 pick "/page" strcat rot intostr 1 addprop
+        else
+          pop
+        then
+      then
+    then
+    trigger @ swap nextprop
+  repeat
+  pop
+;
+: list-pages
+  "Pages available, 1 - " num-pages intostr strcat " :" strcat .tell
+  1 begin
+    dup num-pages > if
+      pop break
+    then
+    trigger @ "_page#/" 3 pick intostr strcat getpropstr dup not if
+      pop 1 + continue
+    then
+    over intostr ") " strcat swap strcat .tell
+    1 +
+  repeat
+;
+: show-page  ( i -- : show all programs on page )
+  "Page " over intostr strcat " -- " strcat
+  trigger @ "_page#/" 4 pick intostr strcat getpropstr
+  strcat .tell
+  global-header
+  trigger @ "_global/" nextprop
+  begin
+    dup not if
+      pop pop break
+    then
+    trigger @ over "/page" strcat getpropstr atoi
+    (stack: page <i> prop <s> page2 <i> )
+    3 pick = if
+      dup display-brief
+    then
+    trigger @ swap nextprop
+  repeat
+;
+: page-cmd
+  dup not if
+    list-pages exit
+  then
+  dup atoi if
+    atoi show-page exit
+  then
+  find-page dup not if
+    "No such page found." .tell
+    list-pages pop exit
+  then
+  show-page
+;
+: list-cmd
+  "Complete Globals Listing" .tell
+  global-header
+  trigger @ "_global/" nextprop
+  begin
+    dup not if
+      pop break
+    then
+    dup display-brief
+    trigger @ swap nextprop
+  repeat
+;
+: add-cmd
+  dup find-entry dup if
+    "That global is already indexed as " trigger @ rot "/nametag" strcat
+    getpropstr "." strcat .tell
+    "If this is a single action serving as multiple 'globals', you will "
+    "need to reset the 'name tag' (#tag) of the previous global to remove any "
+    "ambiguity." strcat strcat .tell exit
+  else
+    pop
+  then           
+  #0 swap rmatch
+  dup #-2 dbcmp if
+    "It's not clear which one you mean." .tell pop exit
+  then
+  dup ok? not if
+    pop "No such global found in room #0." .tell exit
+  then
+  dup exit? not if
+    pop "That is not an action." .tell exit
+  then
+  dup name first-name capitalize "-" swap strcat ( add '-' to avoid errors with
+                                                   @ commands )
+  trigger @ "_global/" 3 pick strcat 4 pick intostr 1 addprop
+  trigger @ "_global/" 3 pick strcat "/nametag" strcat 4 pick name 1 addprop
+  "Global nametag registered as: '" 3 pick name strcat "'." strcat .tell
+  "Enter page to store global on.  Pages 1 - " num-pages intostr strcat
+  " available." strcat .tell
+  read
+  atoi dup 1 < over num-pages > or if
+    "Value not within range.  Default to page 1." .tell pop 1
+  then
+  trigger @ "_global/" 4 pick strcat "/page" strcat 3 pick intostr 1 addprop
+  "Global '" rot "' (#" strcat strcat rot intostr strcat
+  ") added to Page " strcat swap intostr strcat "." strcat .tell
+;
+: delete-cmd
+  dup find-entry not if
+    "That global entry was not found." .tell exit
+  then
+  find-entry dup display-data
+  "." .tell
+  "Do you wish to delete this global entry? (Y or N)" .tell
+  read
+  "y" stringcmp if
+    "Operation cancelled." .tell exit
+  then
+  trigger @ swap remove_prop
+  "Global entry removed." .tell
+;
+: edit-cmd
+  find-entry dup not if
+    "No such global entry found." .tell exit
+  then
+  trigger @ over "/nametag" strcat getpropstr .tell
+  "Current description:" .tell
+  trigger @ over "/desc" strcat getpropstr dup not if
+    pop "(none)"
+  then
+  .tell "Max length: 48 chars." .tell
+  "------------------------------------------------" .tell
+  "Enter new description, \".\" to erase, or \".Q\" to quit." .tell
+  read
+  dup "." strcmp not if
+    pop trigger @ over "/desc" strcat remove_prop
+    "Description erased." .tell pop exit
+  then
+  dup ".q" stringcmp not if
+    pop "Operation cancelled." .tell pop exit
+  then
+  48 strcut pop
+  "Set to: " over strcat .tell
+  trigger @ rot "/desc" strcat rot 1 addprop
+;
+: info-cmd
+  find-entry dup not if
+    "No such global entry found." .tell exit
+  then
+  trigger @ over "/nametag" strcat getpropstr .tell
+  "Current help information:" .tell
+  trigger @ over "/help" strcat getpropstr dup not if
+    pop "(none)"
+  then
+  .tell "Max length: 19 chars." .tell
+  "-------------------" .tell
+  "Enter new help information, \".\" to erase, or \".Q\" to quit." .tell
+  read
+  dup "." strcmp not if
+    pop trigger @ over "/help" strcat remove_prop
+    "Help information erased." .tell pop exit
+  then
+  dup ".q" stringcmp not if
+    pop "Operation cancelled." .tell pop exit
+  then
+  19 strcut pop
+  "Set to: " over strcat .tell
+  trigger @ rot "/help" strcat rot 1 addprop
+;
+: transfer-entry ( s1 s2 -- )
+  ( s1 = old propname, in "_global/-{name}" format )
+  ( s2 = new entryname in "xxx;xxx;xxx" format )
+  "_global/-" over capitalize first-name strcat  ( make new propname )
+  ( stack: oldpropname newentryname newpropname )
+  trigger @ over "/nametag" strcat 4 rotate 1 addprop ( set nametag )
+  ( stack: oldpropname newpropname )
+  trigger @ 3 pick getpropstr ( get dbref )
+  trigger @ 3 pick rot 1 addprop ( move to new )
+  trigger @ 3 pick "/help" strcat getpropstr ( help info )
+  trigger @ 3 pick "/help" strcat rot 1 addprop ( move to new )
+  trigger @ 3 pick "/desc" strcat getpropstr ( desc )
+  trigger @ 3 pick "/desc" strcat rot 1 addprop ( move to new )
+  trigger @ 3 pick "/page" strcat getpropstr ( page )
+  trigger @ 3 pick "/page" strcat rot 1 addprop ( move to new )
+  "Entry '" 3 pick 9 strcut swap pop "' removed." strcat strcat .tell
+  trigger @ rot remove_prop  ( delete old entry )
+  9 strcut swap pop
+  "New nametag '" swap strcat "' recorded." strcat .tell
+;
+: tag-cmd
+  find-entry dup not if
+    "No such global entry found." .tell exit
+  then
+  trigger @ over "/nametag" strcat getpropstr
+  "Current nametag setting: " swap strcat .tell
+  trigger @ over getpropstr atoi dbref name
+  "Actual action name: " swap strcat .tell
+  dup 8 strcut swap pop striplead
+  "Currently registered as: " swap strcat .tell
+  "-------------------" .tell
+  "First part of new nametag will be used to re-register (and alphabetize) "
+  "entry." strcat .tell
+  "Enter new name tag, or \".Q\" to quit." .tell
+  read
+  dup ".q" stringcmp not over "." strcmp not or if
+    pop "Operation cancelled." .tell pop exit
+  then
+  ( current stack: oldprop[string] newtag[string] )
+  ( compare first name in newtag to oldprop )
+  over 9 strcut swap pop ( remove _global/- )
+  over first-name stringcmp if
+    "Change in first name and registration." .tell
+    trigger @ "_global/-" 3 pick first-name strcat getpropstr if
+      "Unable to make new nametag.  First alias presents conflict with an "
+      "existing global: " strcat
+      trigger @ "_global/-" 4 rotate first-name strcat getpropstr atoi dbref
+      name strcat .tell exit
+    then
+    transfer-entry
+  else
+    "Set to: " over strcat .tell
+    trigger @ rot "/nametag" strcat rot 1 addprop
+  then
+;
+: move-cmd
+  find-entry dup not if
+    "No such entry found." .tell pop exit
+  then
+  dup display-data
+  "Pages 1 - " num-pages intostr " available." strcat strcat .tell
+  "Enter new page, or .Q to quit." .tell
+  read
+  dup ".q" stringcmp not if
+    pop pop "Operation cancelled." .tell exit
+  then
+  atoi dup 1 < over num-pages > or if
+    "That isn't a valid page number." .tell pop pop exit
+  then
+  intostr trigger @ rot "/page" strcat 3 pick 1 addprop
+  "Moved to page " swap "." strcat strcat .tell
+;
+: new-cmd
+  dup find-page if
+    "That page already exists." .tell exit
+  then
+  num-pages 1 + trigger @ "_page#" 3 pick intostr 1 addprop
+  trigger @ "_page#/" 3 pick intostr strcat 4 pick 1 addprop
+  "New page '" rot strcat "' created as #" strcat swap
+  intostr "." strcat strcat .tell
+;
+: locate-page
+  dup atoi if
+    atoi dup 1 < over num-pages > or if
+      "That value is out of range." .tell pop 0 exit
+    then
+  else
+    find-page dup not if
+      "No such page found." .tell pop 0 exit
+    then
+  then
+  dup show-page
+;
+: remove-cmd
+  locate-page dup not if
+    pop exit
+  then
+  "Do you wish to remove this page? (Y or N)" .tell
+  read
+  "y" stringcmp if
+    "Operation cancelled." .tell exit
+  then
+  trigger @ "_page#/" 3 pick intostr strcat remove_prop
+  "Page #" over intostr " removed." strcat strcat .tell
+  relocate-entries pack-cat
+;
+: write-cmd
+  locate-page
+  "Enter new name for page, or .Q to quit." .tell
+  read
+  dup "." strcmp not over ".q" stringcmp not or if
+    "Operation cancelled." .tell pop exit
+  then
+  trigger @ "_page#/" 4 pick intostr strcat 3 pick 1 addprop
+  "Page #" rot intostr strcat " name set to:" strcat swap strcat
+  "." strcat .tell
+;
+: extract-command ( s1 - s2 s3 : break up line into command [s3] and arg [s2])
+  1 strcut swap pop   ( chop off first char, assumed to be "#" )
+  dup " " instr dup if      ( if there is a space in string ... )
+    1 - strcut striplead swap     ( divide into command and arg )
+  else
+    pop "" swap                 ( ... otherwise, make blank arg )
+  then
+  ( check for alternate command names )
+  dup "desc" stringcmp not if
+   pop "edit"
+  then
+  1 strcut pop  ( abbreviate command to one char )
+;
+: not-available-error
+  "Sorry, that command is not available." .tell
+  "Type 'globals #help' for help." .tell
+;
+: handle-command
+  dup "h" stringcmp not if
+    pop global-help exit
+  then
+  dup "p" stringcmp not if
+    pop page-cmd exit
+  then
+  dup "l" stringcmp not if
+    pop list-cmd exit
+  then
+  verify-authorized? not if
+    not-available-error exit
+  then
+  dup "c" stringcmp not if
+    pop global-commands exit
+  then
+  dup "u" stringcmp not if
+    pop global-usage exit
+  then
+  dup "a" stringcmp not if
+    pop add-cmd exit
+  then
+  dup "d" stringcmp not if
+    pop delete-cmd exit
+  then
+  dup "e" stringcmp not if
+    pop edit-cmd exit
+  then
+  dup "i" stringcmp not if
+    pop info-cmd exit
+  then
+  dup "t" stringcmp not if
+    pop tag-cmd exit
+  then
+  dup "m" stringcmp not if
+    pop move-cmd exit
+  then
+  dup "n" stringcmp not if
+    pop new-cmd exit
+  then
+  dup "r" stringcmp not if
+    pop remove-cmd exit
+  then
+  dup "w" stringcmp not if
+    pop write-cmd exit
+  then
+  not-available-error
+;
+: main
+  dup not if
+    global-help exit      ( typing "globals" alone calls up #help )
+  then
+  dup 1 strcut pop "#" strcmp not if      ( # indicates command )
+    extract-command handle-command exit
+  then
+  find-entry dup not if                   ( otherwise, look for match )
+    "No global by that name found." .tell
+  else
+    display-data
+  then
+;
+.
+compile
+quit

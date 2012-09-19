@@ -1,0 +1,686 @@
+
+		    The MUF Tutorial, by Scotfox.
+		 Revision 2.2fb4 of 28 February 1993.
+
+      "Zen and the Art of Putting Things on Top of Other Things."
+	     (Or, the Basics of MUF in ten megs or less.)
+
+This is an introduction to MUF, a simple and easy programming language
+used to do really neat things with TinyMUCK 2.2.  MUF is based on Forth.
+
+This tutorial was designed to be read before any of the other MUF
+documentation.  I'll assume you already know how to play TinyMUD games
+pretty well (you know what an object number is, you know how to @set
+things, etc.)  and that you know how to program in at least one
+computer language (even BASIC will do).
+
+Before we go on, let me show you how a perfectly valid MUF program looks:
+
+    : hello-world           (the name of the program)
+        me @                (first argument to the function 'notify')
+        "Hello, world!"     (second argument)
+        notify              (a function which takes two arguments)
+    ;
+
+When you @link an action to this and use the action, it will print
+"Hello, world!" to your screen.  Easy as pie!  It'll look easier later.
+
+In order to try any of these examples on a real TinyMUCK, you must be
+allowed to program on it.  Most mucks implement "mucker bits", which
+means that until a wizard gives you one, you can't create programs.
+Talk to your friendly neighborhood wizards to get a mucker bit.
+Usually they'll have some sort of policy about what sorts of programs
+you are allowed to write.  Common restrictions are that you can't
+write a program to teleport yourself around the muck, spy on other
+characters, or do things that only wizards can do.
+
+Before we get to the good parts, let's give you an overview of what
+MUF is all about.  (Relax.  This is easy stuff.)
+
+
+                           WHAT IS A STACK?
+
+All MUF programs work by performing operations on a stack.
+
+A stack is just a place to store things.  You put things on top of a
+stack one at a time (we call that "push"), and take them off the top
+of the stack (that's called "pop").  The most recent thing you've
+pushed onto a stack is the only thing you can pop; it's like piling
+objects on top of each other, when the only thing you can remove from
+the pile is the thing on top.  For example, if you were to push the
+number 12, then push the number 34, and then pop a value off the
+stack, you would get 34.  If you were to pop another value off the
+stack after this, you would get 12.
+
+(If you were to try and pop another value after that, you would get an
+error, since the stack would now be empty. This is a "stack underflow.")
+
+There is only one stack.  Things that get put onto it get left there
+until they get taken away, or until your program ends.
+
+A typical stack could be represented by
+
+    ( "frotz"  123  #4567 )
+
+which means that the MUD object #4567 is on top of the stack, the
+integer 123 is below it, and the string "frotz" is on the bottom of
+the stack.  The only thing you can get to right now is #4567, but when
+you take that off you can get 123, and when you take that off, you can
+get "frotz".
+
+See?  Easy.  And you used to think MUF was only for the elite!
+
+
+                     WHAT CAN I DO WITH A STACK?
+
+A "procedure" or "function" in any other language is the same thing as
+a "word" in MUF.  A word is simply a sequence of instructions that can
+take some stuff off the stack, put some stuff onto the stack, and
+print text to players' screens, if you want it to.  In a MUF program,
+a word always starts with a colon followed by the word's name.  A
+semicolon marks the end of a word.  For example:
+
+    : detonate_explosives
+        (the program text goes here)
+    ;
+
+would define a word named "detonate_explosives".
+
+Always remember to put a space between a colon and the name of a word!
+Everybody (and I do mean EVERYBODY) forgets the space sometimes.  If
+the program above began with ":detonate_explosives", it wouldn't work
+at all.
+
+Parentheses are used to set aside comments.  Everything inside
+parentheses is ignored by the muck.  Thus the "detonate_explosives"
+word above is a perfectly valid program, but if run as shown it would
+do absolutely nothing, because all it contains is a comment -- it
+doesn't produce any output or modify the stack in any way.
+
+In MUF, there are three types of constant values (things you can put
+on the stack): integers, strings, and database references (object
+numbers).  To push a constant onto the stack, you only need to state
+its value.  The following is a completely legitimate word:
+
+    : a-visit-to-the-zoo
+        "Wolves"
+        "Lynxes"
+        "Bats"
+        "Foxes"
+    ;
+
+If you were to run this word by itself, you wouldn't see anything
+happening.  It would, however, create a stack which looks like this:
+
+    ( "Wolves" "Lynxes" "Bats" "Foxes" )
+
+In the above stack, "Wolves" is the value on the bottom.  "Foxes" is
+the value on top of the stack, and would be the next value retrieved
+by any stack operations.
+
+Indentation and line breaks in MUF programs are arbitrary and just
+make the program more readable to people.  You could put each MUF
+operator on a separate line, or the whole program on one line.  Your
+style is your choice.  Thus "a-visit-to-the-zoo" could be written as
+follows:
+
+    : a-visit-to-the-zoo "Foxes" "Bats" "Lynxes" "Wolfs" ;
+
+But endlessly pushing values onto the stack is boring.  Fortunately,
+there are 'operators' in MUF that can modify the stack: typically they
+take some values off the top of the stack, do some sort of calculation
+with these values, then put a new value on top of the stack.
+
+
+                        BUILT-IN MUF OPERATORS
+
+Functions in the standard MUF library take values from the top of the
+stack, do things with them, and usually leave something new back on
+top of the stack.  The words "+", "-", "swap", "pop", and "random"
+are good examples of this.
+
+The "+" operator takes the top two integers from the stack, adds them
+together, and leaves the result on top of the stack.  In order to
+easily describe what functions like this do, a certain stack notation
+is used: for +, this would be (i1 i2 -- i).  What's inside those
+parentheses is a sort of "Before and After" synopsis; the things to
+the left of the double-dash are the "before", and those to the right
+are the "after".  (i1 i2 -- i) says that the function in question uses
+two integers, and leaves one when it's done ("i" means "integer").
+
+Notice that math in MUF works in "reverse Polish notation", where
+you'd add two and two by saying "2 2 +".  (This is the same way a lot
+of expensive HP calculators do it.)
+
+The letters used here to tell what kind of data a stack object can be
+are: "i" for integer, "d" for database object, "s" for string, "v" for
+variable, and "x" or "y" to mean something that can be more than one
+type.
+
+Here are short descriptions of the procedures listed above so you can
+get the hang of how they work:
+
+-=-=-=-=-=-=-=-=-=-
++ (i1 i2 -- i)
+Adds i1 and i2 together.  The word
+
+    : add_some_stuff
+        2 3 +
+    ;
+
+will leave the integer 5 on the stack when it is finished.  The word
+
+    : add_some_more_stuff
+        2 3 4
+        5
+        + + +
+    ;
+
+will put 14 onto the stack. Right before "add_some_more_stuff" reaches
+the "+ + +" line, the stack looks like (2 3 4 5).  The first + changes
+the stack to look like (2 3 9).  The next makes it (2 12), and the
+final plus leaves (14).
+
+-=-=-=-=-=-=-=-=-=-
+- (i1 i2 -- i)
+Subtracts i2 from i1.
+
+    : subtract_arbitrary_things
+        10 7 -
+    ;
+
+will put the number 3 on top of the stack.
+
+-=-=-=-=-=-=-=-=-=-
+swap (x y -- y x)
+
+Switches the top two things on the stack.  This is very useful,
+because an operator can't just skip over the top value on the stack to
+get at something beneath; if you need to get at the second value from
+the top, you have to swap it to the top first.
+
+    : swap_stuff_around
+        1 5 2  (The stack is now 1 5 2)
+        swap   (Now the stack is 1 2 5)
+        3
+        "Three, sir!"  (Now it's 1 2 5 3 "Three, sir!")
+        swap
+        "Boom!"  (And now it's 1 2 5 "Three, sir!" 3 "Boom!")
+    ;
+
+(`rot' and `pick' let you get at items deeper in the stack.  Look them
+up in your MUF manual.)
+
+-=-=-=-=-=-=-=-=-=-
+pop (x --)
+
+Throws away the value on top of the stack.  As shown by (x --), it
+will take any value off the top of the stack without leaving anything
+in return.  (This is useful when you really no longer need whatever
+value is on the top of the stack, but you need to get at what's under
+it.)  The word:
+
+    : needless_popping_waste
+        "Immanuel Kant" "Heideggar" pop
+        "David Hume" "Schoppenhauer" "Hegel" pop pop
+    ;
+
+would leave the stack looking like ("Immanuel Kant"  "David Hume").
+
+-=-=-=-=-=-=-=-=-=-
+random (-- i)
+Doesn't even look at the stack, but leaves a really random integer
+(between 1 and 2.1 million) on top.  The word
+
+    : feel_lucky_punk?
+        random
+        random
+        random
+    ;
+
+would put three random numbers onto the stack.  Often you'll need a
+random number in a certain range; for instance, rolling dice will get
+you numbers from 1 to 6.  Here's how you can do that:
+
+    : roll-die
+        random  (fetch a random number)
+        6 %     (% is the 'modulo' operator; random mod 6 gets you
+                  a number between 0 and 5)
+        1 +    (add 1 to it to get a number between 1 and 6)
+    ;
+
+
+                      SO WHAT GOOD IS ALL THIS?
+
+Not much good, yet.  All the stack-manipulating we've done so far is
+trivial; nothing yet will produce any results you can see or feel.
+(We'll remedy that in the next section.)
+
+In MUCK, you create a "program" object with the "@program" command.
+For example, "@prog test.muf" will create an object named "test.muf"
+that will contain whatever MUF program you write, and you'll be put
+into the built-in editor so you can type your code.  (More details on
+this later.)  You'll usually put several words into a program, then
+link an action (also known as an "exit") to the program.  Using the
+action will run the very last word you defined in your program
+(sometimes people call it "main" for emphasis, but you don't have to).
+
+The other way that MUF programs are used is in the desc, succ, fail,
+and drop properties of a MUCK object.  If you write a program whose
+program object number is #6800, say, and you describe yourself as:
+
+        @desc me = @6800
+
+then whoever looks at you would run the program.  (Yes, that's an
+at-sign, not a pound-sign.)  Similarly, @failing an object = @6800
+would run the program whenever someone tried but failed to pick up the
+object, and so forth.  (This doesn't work in ofails, osuccs, or odrops.)
+
+Theoretically then you could get away with only having one word in
+your program, but you'll find it's handy to break whatever the program
+does into a few smaller subtasks, each of which you'll write a
+separate word to handle.
+
+You've seen how the "+" operator takes two integers and puts their sum
+on the stack.  Well, if you find yourself adding three integers a lot,
+you could write a word to handle it:
+
+    : add-three (i1 i2 i3 -- i)
+        + +
+    ;
+
+Pretty simple, but hey, it's an example.  Notice that your new word
+expects some values to be on the stack before it begins?  Well, if
+your 'main word' goes like this:
+
+    : frobnitz
+        ...
+        add-three
+        ...
+    ;
+
+when it comes to the "add-three" operator, it'll give the stack
+(remember, there's only one stack!) to the "add-three" word.
+"add-three" will modify it and give it back to "frobnitz", which picks
+up where it left off.  Thus before the call to "add-three", the stack
+might look like ("Hey, you!" 5 4 "What?" 3 2 1), and after it returns
+from the call to "add-three", the stack would be ("Hey, you!" 5 4
+"What?" 6).
+
+Thus you can see how "taking arguments" in MUF means "grabbing values
+from the top of the stack", and "returning a value" means "leaving
+things on top of the stack when you're through".
+
+The only other important thing to mention at this point is that you
+can have your programs take arguments.  If you create a program named
+"frotz.muf", then link the action "frotz" to it, typing "frotz the
+troll" will run the program as usual, except that the stack will start
+off containing the string "the troll" rather than being empty.  Think
+about this for a bit; it's how the popular custom 'page' program
+works, for example.  If a program is called from an action, it will
+always be given a string on top of the stack to begin with; even if
+here you just typed "frotz" alone, the string "" (an empty string)
+would be placed on top of the stack for "frotz.muf" to handle.
+
+If you use the program in a desc, succ, fail, or drop property, then
+whatever follows the program number will be put onto the stack:
+
+        @desc me = @6800 Your description here...
+
+would run the program #6800 with "Your description here..." on the
+stack to start out with every time someone looked at you.  This is how
+look-notify, multiline-description, morpher, and other programs are done.
+
+Now that we have the basics down, let's do something useful!
+
+
+                              VARIABLES
+
+Because of the way the stack works, variables aren't as necessary in
+MUF as they are in other languages, but they can be used to simplify
+stack-handling operations.  In fact, it's not even a good thing to use
+variables in MUF (doing things without them forces your code to be a
+lot cleaner), but they're there if you need them.
+
+There are two kinds of variables: global (defined with 'var <name>')
+and local (defined with 'lvar <name>').  For technical reasons, you
+should always use local variables instead of global ones.  Just put
+'lvar <name>' into your program before the first use of the variable,
+then any word in that specific program object can use it.
+
+Variables are of no specific type; that is, you can assign an integer
+to a variable at one point in your code, then assign a string to the
+same variable a few lines later.
+
+The following operators are important when dealing with variables:
+
+! (x v --)
+Pronounced "store", the ! sets variable v to hold value x.  The program:
+
+    var answer
+    : multiply-and-store
+        6 9 *
+        answer !
+    ;
+
+will put the value 42 into the variable "answer", which can then be
+used anywhere in the program (that is, in any word in the same program
+object).
+
+@ (v -- x)
+
+Pronounced "fetch", this word retrieves the value of a variable and
+puts it on the stack.  Just giving the name of the variable alone,
+without the @, does NOT give its value.
+
+(The difference between "x" and "x @" is like the difference between
+"x" and "^x" in Pascal, "x" and "*x" in C, and "x" and "(x)" in Lisp.)
+
+The program:
+
+    var ren
+    var stimpy
+    : more_silly_manipulation
+        1 ren !
+        2 stimpy !
+        ren @ stimpy @ +
+    ;
+
+will return the value 3 on top of the stack.  But if you make a
+mistake and enter the last line as:
+
+        ren stimpy +
+
+then that will be *wrong*, and will give you a completely wrong number.
+
+In MUF, there are a few variables which are predefined and available
+for use at all times (without requiring "var" declarations): You'll
+probably use two of them a lot: "me @" will return the object number
+of the player who is using this MUF program, while "loc @" will return
+the object number of the room he is in.
+
+(Object numbers, also known as database references or dbrefs, are the
+third kind of constant value after integers and strings.  The value
+#123 is a dbref.  You can convert integers to dbrefs with the "dbref
+(i -- d)" operator; saying "123 dbref" is the same thing as saying
+"#123".)
+
+Another useful word to know is:
+
+name (d -- s)
+Where d is a db reference and s is a string, "name" returns the name
+of item d.  Thus "me @ name" puts my name on top of the stack in case
+I forget it.  (On a Fuzzball MUCK (2.2fb), if you only have Mucker
+level 1 permission, you can only get the name of someone or something
+in the same room as you.  You may have been only given M1 access in
+order to learn MUF.)
+
+And now that you know all about "me @", another MUF function becomes
+useful.  Its synopsis is:
+
+notify (d s --)
+When d is the dbref of a player, "notify" shows him string d.  If I were
+a character named "Joe", then running
+
+    : whoami
+        me @  (my dbref)
+        "Your name is "
+        me @ name  (my name as a string)
+        strcat  (concatenate "Your name is" and my name into one string)
+        notify
+    ;
+
+would print "Your name is Joe" on a line by itself to my screen.
+(Again, on a Fuzzball MUCK, having only Mucker level 1 permission
+means that you can only 'notify' a person in the same room as you.)
+
+Hurrah!  Finally we did a program that begins to do something useful!
+
+
+                             CONDITIONALS
+
+Before you can really start writing neat stuff in Muck, there are two
+more things you should know about.  One is "=", and the other is the
+"if/then" conditional.
+
+= (i1 i2 -- i)
+Returns 1 if integer i1 is equal to integer i2.
+Otherwise, it returns 0.
+
+    : nonequals
+        2 3 =
+    ;
+
+returns 0.  (In MUF, any nonzero integer means "true", while zero
+means "false".)
+
+"If/then" isn't hard to figure out if you keep in mind that MUF does
+everything backwards compared to "normal" languages such as C or
+Pascal.  Remember that, in other languages, if/then looks like this:
+
+  if <test>
+    then <statement>
+  <program continues...>
+
+MUF does it like this:
+
+  <test> if
+    <statement> then
+  <program continues...>
+
+"if" takes the top item off the stack; if it is zero or the empty
+string "", then everything up to the word "then" is ignored.  Anything
+else makes it keep going.
+
+For example, the word:
+
+    : test-computer
+        2 3 = if
+            me @ "Your computer is broken!" notify then
+        me @ "Finished the test." notify
+    ;
+
+will first test if 2 = 3; if so, the = operator will leave a 1 on top
+of the stack.  "if" will grab this 1 and then print "Your computer is
+broken!" to you.  If, however, 2 is not equal to 3, the = will leave a
+0 on top of the stack to indicate falsehood, and the "if" will grab
+the 0 and skip the bit about broken computers.  In either case, the
+code will finish by printing "Finished the test" to you.
+
+If you feel like getting fancier, you could use "else" too.  Remember
+that procedural languages have it this way:
+
+  if <test>
+    then <statement>
+    else <other-statement>
+  <rest-of-program>
+
+MUF does it like this:
+
+  <test> if
+    <statement>
+    else <other-statement>
+  then
+  <rest-of-program>
+
+which may look a bit odd, but hey, it works (and it makes sense, if
+you think about it).  Now you can do:
+
+    : better-test
+        2 3 = if
+            me @ "Your computer is broken!" notify
+            else me @ "Your computer works just fine." notify
+        then
+        me @ "Finished the test." notify
+    ;
+
+And if you're really smooth, you might notice that MUF has nothing
+like the "case" or "switch" statement of other languages to decide
+between plenty of choices, so you can simulate it with lots of
+'if/else/then's.  Here's how it works, with two new MUF operators and
+a Ginsu knife tossed in for a limited time only:
+
+strcat (s1 s2 -- s)
+Concatenate strings s1 and s2, returning the result.  (Yes, I've slipped
+this into another program up there; now you get to have it for real.)
+
+dup (x -- x x)
+Duplicate the value on top of the stack.
+
+    : roll-die
+        me @
+        "You rolled a "
+        random 6 % 1 +  (Get a random number mod 6 and add 1)
+                        (to get a number in the range 1-6.)
+        dup 1 = if  (We have to duplicate the number, because = eats it.)
+            "one!"
+        else dup 2 = if
+            "two!"
+        else dup 3 = if
+            "three!"
+        else dup 4 = if
+            "four!"
+        else dup 5 = if
+            "five!"
+        else "six!"
+        then then then then then  (we always need a 'then' for every 'if')
+            (The stack now looks like:)
+            (#123 "You rolled a " 1 "one!")  (for example)
+        swap pop  (get rid of the integer in there)
+        strcat notify  (put "You rolled a " and "one!" together,)
+                       (then tell me what I rolled)
+    ;
+
+
+
+                           A SAMPLE PROGRAM
+
+Okay, so you've been reading this whole thing so far, and you really
+want to use this stuff to do something interesting.  The following
+program fits the bill.  It uses the new functions:
+
+location (d -- d')
+Takes db reference d and returns d', the db reference for its location.
+
+owner (d -- d')
+Returns the dbref of the character that owns object d.
+
+dbcmp (d1 d2 -- )
+Works just like =, except operates on db references instead of integers.
+
+"find" will tell you where an object of your choosing is (and who owns
+the room it's in) whenever you use the program.
+
+    : find
+        #123  (Substitute here the number of whatever object you want to find.)
+        dup   (Make a copy of the dbref; we're about to use the copy.)
+        name  (Fetch the object's name -- better than hardcoding it here!)
+        " is currently in: " strcat
+
+        (If #123 is "foo", we now have the stack:)
+        (#123 "foo is currently in: ")
+
+        swap      (Bring the dbref back to the top of the stack.)
+        location  (Where is it?)
+        dup name  (Make two copies of that room number,)
+                  (and turn one into the name of the room.)
+
+        (If it's in a bar, #456, we have:)
+        ("foo is currently in: " #456 "bar")
+
+        (Now to find out who owns the room.)
+        swap       (Bring the room number to the top of the stack.)
+        " (" swap  (Put an open-paren before the room number.)
+        owner      (Turn the room number into the number of its owner.)
+        name       (... and get the owner's name.)
+        "'s room)."
+
+        (If Baz owns the room, the stack is now:)
+        ("foo is currently in: "
+         "bar"
+         " ("
+         "Baz"
+         "'s room.")
+
+        strcat strcat strcat strcat  (Turn it all into one string.)
+
+        me @  (We're going to tell me where it is...)
+        swap  (... but "notify" wants my dbref to come before the string.)
+        notify  (And there it is!)
+    ;
+
+
+Note that this program uses no variables (except for the universally
+defined "me" variable.)
+
+Want to try it out?  Type "@prog find.muf", then type "i" to enter
+insert mode, and type in the program just as you see it here.  (You
+can leave out the comments!)  Type a period on a line by itself to
+exit insert mode.  Then make sure it's entered correctly.
+
+Commands you can use in the editor:
+
+<from> <to> list
+Display a range of lines in your program.  If you wanted to see line
+20, you could do "20 l".  If you wanted to view the whole thing, use a
+really high number as the ending line: "1 999 l".
+
+<from> <to> delete
+If you screwed up line 15, you can kill it with "15 15 d", then insert
+a new line 15 ("15 i").
+
+<line> insert
+To put in lines between line 9 and line 10, type "10 i" and type away,
+putting a period on a line by itself to finish.
+
+Then type "c" to compile your program, and fix any typos you might
+have made if it doesn't compile.  ("Compiling" means "turning your
+easy-to-read MUF code into an internal representation that the
+computer can deal with and run quickly".)
+
+When it compiles fine, type "q" to quit the editor.  (You can modify
+the program later with "@edit find.muf".)
+
+Create an action on yourself so you can always find whatever it is
+whose number you put into the program.  First create the action with
+"@action find = me", then "@link find = find.muf".  Now, whenever you
+want to know where that thing is, just type "find"!
+
+If you want to see your program actually going every step of the way,
+then "@set find.muf = D".  The D flag for programs means "DEBUG", and
+the top of the stack will be shown to you as each operator in the
+program is executed.  Just remember to set it !D when you're finished
+debugging!
+
+If you want to view your program without having to enter the editor,
+just @list it.  To let other people @list your program too, @set it =
+L (which stands for LIST_OK).  Also, your programs must be set L for
+other people to be able to use them.
+
+When someone uses a program, the program has all the privileges of
+that person -- in other words, it can modify that person's objects,
+but not the objects of someone else unless a wizard is the person
+using the program.  If your program needs to modify your own objects
+even when another person is using it, then you'll need to let other
+people run your program as you -- @set the program SETUID, which gets
+its name from the Unix `setuid' bit on executable files.
+
+
+
+                      WHERE CAN I GO FROM HERE?
+
+Oodles and oodles of other neat MUF documentation and library routines
+are available, including:
+
+MUF.manual      Explanations of all the MUF primitives and options
+forth.ref       A list of all the MUF primitives
+MUF-examples    Some useful programs to learn from
+
+These files come with the standard TinyMUCK distribution, and may also
+be available elsewhere.  The best way to find the best documentation
+currently available is to talk with the wizards and muckers on the
+mucks you hang out on.
+
+Good luck, and happy muffing!
+
+

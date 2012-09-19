@@ -1,0 +1,47 @@
+@prog actor-force
+1 999 d
+1 i
+( automaton command forcer )
+( By triggur of Furrymuck )
+var t1
+var t2
+var t3
+var t4
+var commands
+var opstring
+var cmdstring
+var propname
+: main ( s -- )
+  "{null:" opstring !
+  "{force:#" trigger @ int intostr strcat "," strcat cmdstring !
+  dup not if            (exit if no commands queued)
+    0 exit
+  then
+  me @ name "%n" subst me @ name "%N" subst me @ swap pronoun_sub
+    "\\," "," subst commands !
+  
+  begin
+    commands @ not if  (if no commands left, exit)
+      break
+    then
+    commands @ ";" instring dup not if (one left... use it)
+      opstring @ cmdstring @ strcat commands @ strcat "}" strcat opstring !
+      "" commands ! pop
+    else
+      1 - commands @ swap strcut 1 strcut strip commands ! pop strip
+      opstring @ cmdstring @ strcat swap strcat "}" strcat opstring !
+    then
+  repeat
+  opstring @ "}" strcat opstring !   (this little block uses MPI to force )
+  random intostr propname !          (the command{s} to the zombie)
+  trigger @ propname @ opstring @ 0 addprop
+  trigger @ propname @ "" 0 parseprop
+  trigger @ propname @ remove_prop
+  1
+exit
+;
+.
+c
+q
+@set actor-force=l
+

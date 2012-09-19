@@ -1,0 +1,3 @@
+The normal netmuck program will use this directory to create four
+log files: status, commands, muf-errors, and gripes.  commands is
+only used with the LOG_COMMANDS compiler option.

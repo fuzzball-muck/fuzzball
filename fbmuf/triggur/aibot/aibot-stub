@@ -1,0 +1,18 @@
+@prog aibot-stub
+1 999 d
+1 i
+: main
+  prog "guts" getpropstr atoi dbref "testing" getpropstr dup if
+    atoi dbref trigger @ dbcmp if
+      prog "guts" getpropstr atoi dbref call
+    else
+      pop exit
+    then
+  else
+    pop prog "guts" getpropstr atoi dbref call
+  then
+;
+.
+c
+q
+@set aibot-stub=l

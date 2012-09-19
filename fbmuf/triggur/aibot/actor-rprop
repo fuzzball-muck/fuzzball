@@ -1,0 +1,56 @@
+@prog actor-rprop
+1 9999 d
+1 i
+( automaton prop-checker {on room} )
+( By triggur of Furrymuck )
+var t1
+var t2
+var t3
+var t4
+var outtext
+var propname
+var propval
+var noprint
+: main ( s -- )
+  dup ":" instring dup 1 > not if  (badly formed)
+    exit
+  then
+  1 - strcut 1 strcut strip dup strip "NONE" stringcmp not noprint ! outtext !
+  pop strip propname !
+  outtext @ trigger @ name " " strcat swap strcat
+  me @ name "%n" subst me @ name "%N" subst me @ swap pronoun_sub outtext !
+  propname @ "=" instring dup 1 > not if (just a prop)
+    pop trigger @ location propname @ getpropstr if
+      noprint @ if
+        1 exit    (dont print anything)
+      then
+      random trigger @ "delay_range" getpropstr atoi % 
+             trigger @ "delay_min" getpropstr atoi + sleep
+      trigger @ location trigger @ outtext @ notify_except
+      1 exit
+    else
+      0 exit
+    then
+  then
+  dup 1 > not if (badly formed)
+    1 exit
+  then
+  propname @ swap 1 - strcut 1 strcut strip propval !
+  pop strip propname !
+  trigger @ location propname @ getpropstr strip propval @ smatch if
+    noprint @ if
+      exit    (dont print anything)
+    then
+    random trigger @ "delay_range" getpropstr atoi % 
+           trigger @ "delay_min" getpropstr atoi + sleep
+    trigger @ location trigger @ outtext @ notify_except
+    1 exit
+  else
+    0 exit
+  then
+exit
+;
+.
+c
+q
+@set actor-rprop=l

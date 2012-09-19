@@ -1,0 +1,41 @@
+@prog actor-unmug
+1 9999 d
+1 i
+( automaton unmugger )
+( By triggur of Furrymuck )
+var t1
+var t2
+var t3
+var t4
+var outtext
+var given
+var limit
+: main ( s -- )
+  trigger @ name " " strcat swap strcat
+  me @ name "%n" subst me @ name "%N" subst
+  "penny" sysparm "%ps" subst
+  "pennies" sysparm "%pp" subst
+  outtext !
+  prog "_banned" getpropstr if
+    loc @ trigger @ trigger @ name " apologizes, \"I'm sorry.  I'm not allowed to vend money anymore.  Try making withdrawals at the bank.\"" strcat  
+    notify_except 1 exit
+  then
+  "max_pennies" sysparm atoi limit !
+  me @ pennies limit @ < if
+    limit @ me @ pennies - given !
+  else
+    0 exit
+  then
+  me @ given @ addpennies
+  
+  random trigger @ "delay_range" getpropstr atoi % 
+         trigger @ "delay_min" getpropstr atoi + sleep
+  trigger @ location trigger @ outtext @ given @ intostr "%d" subst 
+    me @ swap pronoun_sub notify_except
+  1
+exit
+;
+.
+c
+q
+@set actor-unmug=l

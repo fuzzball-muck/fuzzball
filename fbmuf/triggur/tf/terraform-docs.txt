@@ -1,0 +1,501 @@
+ 
+                          THE ADMIN'S GUIDE TO TERRAFORM
+                 Copyright (c) 1995 by Triggur of Brazilian Dreams
+                                pferd@netcom.com
+ 
+I. WIZARD SETUP
+ 
+   A wizard needs to do the initial installation.  This is contained in
+the script file terraform-install.txt.  Using TinyFugue, you can 
+ 
+/quote -0 'terraform-install.txt
+ 
+...and it will be installed on your MUCK.  This must be done before
+ANY of the following information can be used.  You can find out if TerraForm
+has been installed on your MUCK by typing EX $TMOVE  ... if that comes up with
+anything other than  "I don't see that here", TerraForm has already been
+installed. 
+ 
+   If you want to restrict access to the @INITWORLD command, which initiates
+the creation of a whole planet, you should duplicate the exit installed on
+#0, moving this command (and any others you want to restrict) from one
+of the exits to the other, @LOCKing the restricted one however you like.
+ 
+II.  GENERAL NOTES
+ 
+  As a general rule, avoid changing any of the TerraForm-generated
+properties by hand!  The most crucial properties that make the world run
+are wizard-only props, but there are still some that the owner of the rooms
+can affect.  SCREWING THESE UP COULD FATALLY DAMAGE YOUR PLANET'S INTEGRITY!
+If you use the @commands provided for working with a TerraFormed world,
+everything should be just fine; they try to trap all possible errors.
+ 
+  Setting up a planet and then building on it is much easier than trying to
+integrate existing rooms into a TerraFormed planet.
+ 
+  With the old way of building, you would @dig a series of rooms, describe
+them, create a bunch of exits, @succosuccodrop those, link the rooms
+together, then move on to the next room, ultimately linking them with whatever
+existing structure the muck already had.
+ 
+  Using TerraForm, however, is a lot more like people build things in real
+life;  you explore the planet and look for what you think is the perfect
+place to put your town, city, temple, house, treehouse, cave, etc, and then
+start making changes to that location.  Instead of creating doorways like you
+used to do, you create walls;  this, too, is more like real life.
+ 
+  Ultimately, I think you'll come to feel that building worlds with TerraForm
+is much easier, faster, and more natural than the old way.
+ 
+ 
+III.  INSTALLING THE EXAMPLE PLANET 'EARTH'
+ 
+  TerraForm comes with an example planet that demonstrates many of its
+features.  This is in the file terraform-earth.txt.  To install this on
+your MUCK, create a new room (naming it 'Earth' is a good idea), go to
+that room, and
+ 
+/quote -0 'terraform-earth.txt
+ 
+...and after paging through several hundred lines of output from the commands
+it invokes, you should be able to @TPORT (teleport) to any location on or
+around the planet.  @TPORT #LIST will show you a few pre-programmed
+destinations that you can use by name, or for example, @TPORT 330 430
+will place you in a South American rainforest, @TPORT 500 750 will put you
+in the frozen Antarctic, and so on.  Examine the terraform-earth.txt script
+file to see what it is invoking to set up the planet.
+ 
+   This simulation of the Earth is 2400 rooms around, 800 rooms from the
+North pole to the South pole, has oceans 100 rooms deep, and a sky that is
+1000 rooms tall.  In order to dive and fly, you will need to
+ 
+@set me=_dive?:yes
+@set me=_flight?:yes
+ 
+   The total # of simulated rooms is somewhere near 2 billion.  See the
+command summary below for details on how to link your own building with the
+planet.
+ 
+ 
+IV.  CREATING A NEW PLANET
+ 
+1.  Create a room that is to become the primary map room for your new planet.
+Go to that room and run the @INITWORLD command.  That will ask you some
+questions about the size of the planet and such, and create exits to manage
+it.
+ 
+2.  Draw, in your favorite text editor, the map of the whole planet.  You may
+use whatever characters you wish to indicate types of terrain, with the
+exception of the '!' character; this universally means that the player cannot
+enter that region of the map.  The size you draw maps (ie, the number of rows
+and columns in them) is directly related to the amount of detail you want.
+The example Earth planet's world map is 84 characters wide and 24 characters
+tall.  It is generally a good idea to keep maps small enough that you can
+display them all in one screen.
+ 
+3.  Install that map with the @EDITMAP command (see details below).
+ 
+4.  Write up 'description prototypes' (see details below) for each of the
+different terrain types (each of the different characters) on your map and
+install each terrain with the @EDITTERRAIN command (see details below).  Any
+character found on the map that you do _NOT_ set up with @EDITTERRAIN is
+treated as 'transparent', or as a hole in your map.  This is important when
+it comes to map hierarchies.
+ 
+5.  If you want higher-detail areas, create another map room, setting its
+parent as the primary (or the one above it; if you want a map for Colorado,
+you might parent it to the map room for North America, which in turn is
+parented to the map room for Earth, if you wanted that much complexity).
+Once you have another map room set up, goto step 2, drawing the maps for
+the different regions.
+ 
+6.  To link in standard buildings and areas with TerraForm, you can use
+the @TLINK command (see details below).  NEVER @LINK EXITS TO ANY
+ROOM THAT IS CREATED BY TERRAFORM(*)!!!  You must _always_ use the @TLINK
+command to do this, since such exits have special properties that make
+them work.  It is recommended, however, that all building be done _WITH_
+TerraForm for consistency and for future upgrades and abilities.
+ 
+* As a rule, this is true.  The only exception is when the destination room
+is _permanently_ @FLUSH NO.  If it is guaranteed to exist, you can safely
+use its dbref# when creating exists and such.
+ 
+ 
+V.  FEATURES AND NOTES ABOUT TERRAFORM
+ 
+- You _can_ use @ACTION and @LINK to create exits _from_ a TerraForm-
+generated room to any room that is _not_ a TF room.  For instance the
+exit 'go cave' could be made in a TF room and linked to a cave system
+that was build by hand.  The preferred course would be to use @tlink
+though, since it ensures that there is an exit in the reverse direction,
+too.
+  
+- The owner of a map room is also made the owner of any rooms that are
+created from that map, and s/he also owns any exits that are created
+with the room.  This persion should, therefore, be set to have no
+building quota.
+ 
+- Because of the hierarchy of map rooms that have increasingly detailed
+maps the farther you get from the primary map room, and because each of
+these map room 'levels' can be owned by someone different, this
+naturally leads to the fact that anyone who owns a room in that chain
+of maps has access to the @COMMANDS used to manage the rooms.  Thus, if
+I owned the North America map and someone else owned the Colorado map,
+I would still have access to the admin commands when I'm in the
+Colorado map room or any rooms generated by it.  Also, wizards always
+have access to these commands.
+ 
+- Security is a big issue with TerraForm; most of the controlling props
+are stored in wizard-access-only form, and some are writable only by wizards
+but are readable by everyone.  Still others are readable and writeable only
+by wizards and the owner.  The reason for this is to keep rogue Muckers
+and the general public from digging into the workings of the TerraFormed
+world and illicitly learning its secrets.  Also, certain admin-level
+commands do different things depending on where you are; they have one
+function in a map room, and another in the primary map room (like
+@sanity)
+ 
+- At any command prompt asking for information, you can always still speak
+and pose;  "hello   will make you say hello to everyone in the room, and
+:waves will make you wave to everyone in the room, without leaving the program.
+ 
+- TerraForm automatically saves most of the attributes of any exits that have
+been created in a room before it recycles them, and reconstructs them as a
+player re-enters the room.
+ 
+- NEVER, EVER, EVER @recycle a TerraForm-generated room by hand!!!!!!!!!
+ALWAYS let TerraForm take care of it itself.  Never, no-how, no-way, forget it,
+adios, give it up, don't even THINK it.  And if you do, remember:  I TOLD you
+so.  [NOTE: In the V1.18 release, this is a bit more relaxed, since it
+now checks before entering a room to make sure the database entry is still
+valid.  Also, the @SANITY command helps clean this up.  Still, it should NOT
+be done.]
+ 
+ 
+VI.  HOW DESCRIPTION PROTOTYPES WORK
+ 
+  Since it would be _very_ boring to give every room in a given terrain the
+same name and description, TerraForm lets you use 'description prototypes'
+for them, which gives you a means of 'randomly' varying the descriptions,
+and it ensures that every time you visit a room, it always has the _same_
+description.  Both the room name and the room description (both set with the
+@EDITTERRAIN command) can be written with the names of maproom proplists in
+them.  For example, you might have a description that reads,
+ 
+You see %bigsizes% rocks.
+ 
+...and a proplist in that maproom named ./bigsizes .  The ./ is prepended for
+security reasons and _is_ necessary when you issue the command:
+ 
+lsedit here=./bigsizes
+large
+huge
+enormous
+.end
+ 
+  When TerraForm creates a room with that description, it will see %bigsizes%
+and replace that with a random selection from the ./bigsizes proplist.  Each
+line in the proplists can have _more_ %proplist% names in it.  With a little
+bit of calculation, you can see that even a reasonably simple set of
+sentences containing these substitutions will result in a _HUGE_ number of
+possible descriptions.
+ 
+  Any name between the % characters that is _not_ a valid proplist name will
+be substituted with nothing (removed, along with the %% characters).
+ 
+  TerraForm will look only in the same maproom for these proplists.
+ 
+  You may find that you can save yourself time and energy when you are
+creating terrains by always creating proplists for a new maproom that list
+common adjectives, adverbs, superlatives, articles, etc, and using these
+in many terrains.
+ 
+  For a complete example of how this works, see the example planet file,
+terraform-earth.txt .
+  
+   
+VII.  COMMAND REFERENCE
+ 
+PUBLIC COMMANDS:
+ 
+@LOC
+ 
+   This is a public command that tells you your current x,y,z location in
+a world.  Admins can, at any level of the map hierarchy, specify the prop
+_loc_ok?: yes or no and every room beneath that map room will be set to
+either allow or disallow public use of this command unless locally overridden.
+The default is yes.  Wizards and admins can use the command
+@LOC <PLAYERNAME> to get the current location of any player in the world.  This
+command is only really useable from a TerraFormed room or maproom.
+ 
+ADMIN COMMANDS:
+ 
+@INITWORLD
+ 
+   This command should be used only ONCE per planet.  Changing by hand any
+of the properties it sets up after a world has already been created may have
+disasterous results and could severly damage the whole planet.
+ 
+   It will ask you the # of rooms around the world and the # of rooms from pole
+to pole (for a round planet, the second number will be roughly half the first).
+It will then ask you how many rooms 'tall' the atmosphere and surrounding space
+is.  If you only want to model the terrain of the planet and not the atmosphere,
+enter 0 here.  If you chose to have an atmosphere, it will then ask you what
+property on the player (if any) is to be checked to allow flight, and it will
+automatically create 3 levels of atmosphere/space for you.  This can be changed
+later by hand (see details below).
+ 
+  It will then create on the room a set of all the directions you can go on
+a TerraFormed planet and set them up for you.
+ 
+@KILLWORLD
+ 
+   This command, when called from the primary map room, will scan through
+the database of terraform rooms and destroy ALL known rooms generated for
+this particular world.  Any hand-made map rooms will be left intact, however.
+ 
+   This is a VERY powerful command, and should be used only when a world
+is no longer wanted, or when you are uploading scripts that create your world
+and you just want to make sure that all the rooms and props generated for the
+old revision are removed first.  It doesn't touch the description prototype
+lists or the terrain info, but it does destroy most of the rest of the props.
+ 
+@SANITY
+ 
+   The @SANITY command will do 3 different things;
+     1) Upgrade your TerraForm revision and make changes to your world as
+        necessary.
+     2) Fix any inconsistencies in the TerraForm database of rooms and
+        occupants and such.  This is done only from the primary map room.
+     3) Show you the list of characters that are not defined in your map.
+        Some of the characters it finds you may NOT want defined (if you
+        want holes that pass through to the background maps for instance),
+        but usually this is useful for finding errors in your terrains.
+        This is done only in a map room.
+ 
+   If things are acting strange, @SANITY _may_ help.  Note that this command
+takes a lot of processing time for large worlds, so use it as sparingly as
+possible.
+  
+@SKYLINK
+ 
+   This command lets the controller(s) of the world set up the "map of the
+sky" that specifies what areas of the sky lead to what other planets, stars,
+or moons (with a full menu-driven interface).  This means that when somebody
+in any of the rectangular regions listed as links goes 'up' from the highest
+point in the sky, they will be moved into whatever world is associated with
+that region.  Furthermore, @skylink uses the same hierarchy of rectangles so
+that you can have the whole sky lead to some distant nebula, for example,
+with smaller regions scattered about that lead to moons or other planets.
+Links higher in the list have higher priority than links lower in the list.
+The algorithm used to determine where in the sky you end up in the destination
+world is a little complex.  It reverses the X (east-west) axis because you
+are looking at the destination planet as a mirror image (they are all imagined
+to be spinning on the same vertical axis).  Depending on where you are in the
+rectangular region that leads to the planet, you will be dropped off in a
+different part of the sky.  In _REALITY_ only half of a planet faces you at
+a time, but since planets in TerraForm don't _really_ spin, it can drop you
+off anywhere on the destination planet's surface/sky.
+ 
+@EDITMAP
+ 
+   This command is to be used while in a specific map room.  It will put
+you in the lseditor where you can enter (or more likely, upload) the
+map of the area.  Make sure if you're uploading that you always delete the
+lines that are already there so your map doesn't just keep getting taller!
+ 
+   Once you get out of the editor, it will ask you the coordinates (in
+terms of the whole planet) of the upper left corner of the map, and the
+lower right corner too.  Your map will be automatically 'stretched' to fit
+that region.  The highest resolution you can have is 1 character on the map
+= 1 room.  The last question it asks (new feature!) is the dbref of a room
+where it should look for terrain definitions.  This lets you standardize on
+a set of map tokens, and it saves memory when everybody uses the same ones.
+  
+@EDITTERRAIN <map character>
+ 
+   This command is used to set up and edit the different attributes for each
+of the characters found in a map (for the same maproom only).  It will first
+ask you for a name prototype, then for a description prototype.  Both are
+a single (possibly long) line of text.  Then it will ask you for the verbs
+that will be used for when players move within that terrain.  For instance
+for water, the verb might be 'swim' and 'swims' (first person and second
+person respectively), while for mountains the verbs might be 'climb' and
+'climbs'.
+ 
+   Next it asks you for the depth, in rooms, of this terrain.  Usually the
+answer will be 0, meaning that the ground is hard and pretty much impenetrable.
+For water bodies and such, this is how you denote the depth of the water.  If
+you answered something other than 0 for this, you will next be prompted to 
+enter the name and description for rooms _under_ this terrain type (ie,
+underwater), the verbs, and then the name of a prop to check on the player
+to allow them to move below the terrain (_dive?, for instance).
+ 
+   Any characters in the room's map that are not set up with @EDITTERRAIN
+will be considered to be transparent, and the map _beneath_ this one will
+next be checked to see what the player's terrain is.  If no terrain is found,
+an error is generated (this is bad :).
+ 
+   The '!' character cannot be overridden, and always denotes a part of the
+map that the player _cannot_ go.
+ 
+   Map terrain characters can be either upper or lower case-- it doesn't
+matter.
+ 
+@ADMIN
+@ADMIN <player>
+@ADMIN !<player>
+ 
+   This command lets the owner of a world or maproom give the name of a player
+that is to be either added to the list or taken from the list of
+co-administrators of that region.  Someone listed as an admin in the primary
+map room will be able to manipulate the whole planet just like the owner of
+the map room.  Someone listed as an admin only in a specific map room will have
+control only over that region.  The @ADMIN command with no parameters lists
+the names of everyone defined as an admin for that area (it does not go up
+the map room path to list admins at higher levels).  As noted of map room
+owners before, admins have the potential to own MANY rooms, and should
+therefore have a very high quota (or no quota at all).
+ 
+@OWN
+ 
+   This command, used in a TerraForm-generated room by anyone that can control
+that region (admins included), will change ownership of the room to that
+person so that they can edit it.  Used with @ADMIN, this is how multiple
+builders can work on a single area.
+ 
+@TPORT <x> <y> [z]
+@TPORT <placename>
+@TPORT #ADD <placename>
+@TPORT #LIST
+ 
+   This command lets wizzes and admins move around in the TerraFormed world
+without having to manually move, room by room.  You can supply X and Y (and
+optionally Z) coordinates to move to, or the name of a named location.
+@TPORT #LIST lists all valid named locations, and @TPORT #ADD <placename>
+lets you add a named location.  Note that because planets can be linked
+together now, if you specify (accidentally or otherwise) too large of a Z
+value at a location that leads to a planet, you will find yourself either
+in another planet's air space or on the surface of that planet.  Plenty
+surprising if you didnt expect that. :)
+   
+@TLINK
+ 
+   This command needs to be invoked when standing in a TerraForm-generated
+room.  The first thing it asks for is the dbref# of the destination room to
+link to.  Then it asks for the name of the exit from THIS room to THAT room,
+then for the name of the exit from THAT room to THIS room.  It correctly
+handles both TerraFormed destinations and standard ones.
+ 
+   Unlike the normal @ACTION/@LINK approach, this one command does everything
+for you.  You can @succ/@odrop/etc the exits yourself later.  As a note, any
+exit that goes INTO a TerraFormed room doesn't use the standard
+succ/osucc/odrop; instead it uses props named the same way.  For instance,
+@set exitname=osucc:has joined you.    There _is_ a good reason for this :).
+ 
+@INSIDE YES
+@INSIDE NO
+@INSIDE
+ 
+   This command marks the given room as both 'inside:yes' and 'flush:no'.  It
+makes it a special case, not subject to limitations in the vertical direction.
+That means that if you are currently on the surface of a solid terrain (can't
+go under it) and you can't fly, @INSIDE YES will suddenly allow you to move
+both up and down from that room.  Going down would NORMALLY put you in solid
+rock, so if you don't want the player to move that direction, @BLOCK it.  If
+you do want them to, you can now go down and @FLUSH NO and @DESC that room as
+you like.  Note that for underground rooms and rooms "in the air", if you want
+to keep building in a given direction, that room, too, will have to be marked
+'inside:yes'.  When no parameters are given, it will tell you the current
+status of the room.
+  
+@BLOCK <list of directions>
+ 
+   This command helps you erect walls (and floors and ceilings) in your
+buildings.  Used by itself with no directions, @BLOCK will list the directions
+in which players are currently not allowed to go.  If you build a wall that
+prevents players from going north in a given room, it will therefore, also,
+be impossible for players to move _south_ from the room that lies to the
+north.  The list of directions given should all be in the same abbreviation
+format that the ordinal directions always use in TerraForm: n,s,e,w,se,sw,ne,
+nw,u,d, and should be separated by semicolons.  You can use other names
+too, though, but only those mean anything to TerraForm.  Giving a direction
+name with an exclamation mark before it means _UNBLOCK_ that direction.
+Example:  @block s,e,!n,d   blocks south, east, down, and unblocks north.
+ 
+@FLUSH YES
+@FLUSH NO
+@FLUSH CLEAR
+@FLUSH
+ 
+   This command, when used in a TerraForm-generated room, specifies whether
+or not it will be recycled when everybody has left.  If 'YES', the room will
+be recycled.  If 'NO', it and all changes to it will be preserved.  If
+'CLEAR', the room will be set flushable, _and_ all @TLINK exits out of it that
+lead to other TerraFormed rooms will be destroyed.  When no parameters are
+given, it will tell you the current status of the room.
+ 
+ 
+VIII.  SOME ERROR MESSAGES AND WHAT THEY MEAN
+ 
+ERROR: COULD NOT CALCULATE TERRAIN TYPE
+   Means that you don't have adequate map coverage for a coordinate
+that the player was trying to move to.
+ 
+ERROR: COULD NOT CREATE EXIT
+   Means that the exit creation failed.  This probably means something
+serious is happening to the server at the moment.
+ 
+ERROR: COULD NOT CREATE ROOM
+   Means that the room creation failed.  This probably means something
+serious is happening to the server at the moment.
+ 
+ERROR: EXIT #xxxx DOES NOT HAVE 'ENV' PROP SET TO ENV ROOM
+   Means that the player tried to use a TerraForm exit that was mal-formed.
+ 
+PERMISSION DENIED
+   For one of any number of reasons, the player isn't allowed to do what
+they were trying to do.  This is usually associated with an admin command.
+ 
+ 
+IX.  REALLY ADVANCED STUFF
+ 
+- If you are not happy with the 3 levels of sky that are automatically set
+up by @INITWORLD, you can hand edit the primary map room's ./sky* props
+accordingly.  The skyname and skydesc variables follow the same description
+prototype standards the rest of the terrain types follow.
+ 
+- I'm not yet sure what use the planet-wide _listen parameter is good for.
+Maybe someone can find a good reason :)
+ 
+- It is possible to link a planetary simulation with other such simulations
+by hand-editting the primary maproom's ./spacemap proplist, setting the
+regions of space that map to which other simulations' primary env rooms
+when the player reaches the current planet's 'highest point in space'.
+This is done with the @skylink command.
+ 
+- Special exits can be hand-made which skip the player an arbitrary number
+of rooms in a given direction.  This is like 'running' or possibly even
+like having a fast vehicle.
+ 
+- It is possible to @TLINK pairs of exits not only between different parts
+of the same planet, but also between different planets.
+ 
+- There is no reason to assume that the terraformed world is the SURFACE
+of a planet... it might also be thought of as the INSIDE of a Dyson
+sphere. :)
+ 
+- There has been some confusion with how the n/s/e/w edges of the planet
+work.  East-West is simple; it just wraps around.  North-South is more
+complex;  If the world is 1000 rooms around, and you are currently at room
+100,1 (next to the north pole), 'n' will take you to 600,1, which is to say
+that you are now on the other side of the pole, and have crossed over to the
+other side of the world, exactly as you would do if you REALLY stepped across
+the north pole.  'n' again will take you BACK to 100,1.  (TerraForm won't
+actually let you be AT a pole).  It has been the source of some
+complaint that you can't just keep going around the globe by going north,
+but then you can't do it in real life, so why here? :)  If you want to
+do that you'll have to go north until you pass the north pole, then start
+heading south until you cross the south pole, then start moving north again.
+ 
+END OF DOCS 

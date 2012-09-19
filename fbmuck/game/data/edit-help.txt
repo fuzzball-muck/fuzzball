@@ -1,0 +1,42 @@
+Online help for the MUF editor:
+  
+Commands can be abbreviated to their first letter, and are entered
+(with one exception) in reverse polish notation (like MUF), like this:
+<arguments> command
+  
+Program commands:
+    compile                   compile program
+    <lines> delete            delete lines
+    <lines> insert            insert program lines
+    <lines> list              list program lines
+    uncompile                 disassemble program (not usually useful)
+                                (This disassembles macros in the program)
+  
+You can use most of these with a 'lines' argument, which can either
+be one line or a group of lines (i.e., '1' to perform the action on
+line number 1, or '1 23' [space, not anything else] to perform the
+action on all lines from 1 to 23).
+  
+Macro library commands:
+    abridged                  show list of library functions, names only
+    kill                      kill a macro/library reference (wizard only)
+    show                      show list of library functions, full display
+    def                       Define a macro (see macros.txt in the docs dir)
+  
+Most of these take either one or more word arguments.  For example,
+'foo abridged' would list all the macros on the MUCK whose names began
+with 'foo', while 'bar foo abridged' would give you a listing of all the
+macros, alphabetically, starting with those that begin with 'bar' and
+ending with those that begin with 'foo', inclusive.
+  
+Note that 'def' is the only command that does NOT use reverse notation.
+For example, to define a macro to be accessed like '.list' in the program,
+use the command 'def list <muf commands>'.
+  
+Only a wizard can kill a defined macro, with the command '<name> kill.'
+  
+Miscellaneous commands:
+    help                      show this file
+    <dbref of prog> view      view program header
+    quit                      quit the program editor
+  

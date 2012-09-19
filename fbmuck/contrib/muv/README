@@ -1,0 +1,69 @@
+MUV 1.0.0 alpha -- README
+
+MANIFEST: README, parse_rules.y, Makefile, muv.sh
+
+NOTE: MUV compliation requires a minimum of cc, yacc, and lex.
+
+Okay, here's all you're getting.
+
+The syntax should be obvious.  ( x y -- f ) is converted to a function
+g(x,y) that returns f.
+
+There is one special variable "top" that "returns" the top of the stack;
+ie, it is compiled to a null string. :)  Likewise, push(x) pushes x,
+or is compiled to just "x".
+
+Everything else, I leave it to you to divine from the below. PLEASE, feel
+free to help me document this thing, too.
+
+muv.sh, by the way, is a muv "wrapper" that ChupChup likes.  Use it if you
+like it.
+
+Nightfall
+russ@valkyrie.ecn.uoknor.edu  <-- bug reports and praise go here
+
+----
+
+func first_word(thing) {
+	var thing,count;
+
+	explode(thing," ");
+	count = top - 1;
+	while (count > 0) {
+		pop(swap(top));
+		count = count - 1;
+	}
+	return(top);
+}
+
+func submit(arg) {
+	var arg,new,word;
+
+        if (!strcmp(arg,"")) {
+                notify(me,"Enter your submission here:");
+                arg = read();
+        }
+        new = copyobj(#1981);
+        word = first_word(arg);
+        setname(new,strcat(name(me),strcat("'s submission (",
+                strcat(word,")"))));
+        setdesc(new,arg);
+        moveto(new,#1976);
+        notify(me,"Thank you for the submission.");
+}
+
+----
+
+var thing
+var count
+: loop0 count @ 0 > not if exit then swap pop count @ 1 - count ! loop0 ;
+: first_word thing ! thing @ " " explode 1 - count ! loop0 exit ;
+
+var arg
+var new
+var word
+: submit arg ! arg @ "" strcmp not if me @ "Enter your submission here:"
+notify read arg ! then #1981 copyobj new ! arg @ first_word word ! new
+@ me @ name "'s submission (" word @ ")" strcat strcat strcat setname
+new @ arg @ setdesc new @ #1976 moveto me @ "Thank you for the submission."
+notify ;

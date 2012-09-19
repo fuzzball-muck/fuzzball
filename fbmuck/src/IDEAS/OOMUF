@@ -1,0 +1,68 @@
+
+class A {
+	class A &next;
+
+	constructor() { next = null; }
+	void setnext(class A &x) { next = x; }
+};
+
+void main(string s)
+{
+	class A a = new A();
+	class A b = new a();
+	a.setnext(b)
+	b.setnext(a)
+}
+
+////////////////////////////////////////
+
+lvar __class_instances
+
+: __newA[ -- A ]
+	"A" new var! this
+	0 this@ set_class_val->"next"
+	this@
+;
+
+: __A__setnext__A[ this x -- ]
+	x@ this@ set_class_val->"next"
+;
+
+: main
+    __newA var! a
+	__newA var! b
+	a@ b@ __A__setnext__A
+	b@ a@ __A__setnext__A
+;
+
+////////////////////////////////////////
+
+$language muv
+
+void main(string line)
+{
+	int num, dscr;
+
+	preempt();
+	line = name(me) + " shouts, \"" + line + "\"";
+	foreach(num, dscr; descriptor_array(#-1)) {
+		connotify(descrcon(dscr), line);
+		descrflush(dscr);
+	}
+	notify(me, intostr(num) + " players heard your shout.");
+}
+
+
+: main[ line -- ]
+	var num var dscr
+
+    preempt
+	me @ name " shouts, \"" strcat line@ strcat "\"" strcat line!
+	#-1 descriptor_array foreach dscr! num!
+	    dscr@ descrcon line@ connotify
+		dscr@ descrflush
+	repeat
+	me @ num@ intostr " players heard your shout." strcat notify
+;
+
+

@@ -1,0 +1,314 @@
+Changes of interest to players going from server 2.2 standard to Fuzzball.
+
+
+One of the biggest changes in the Fuzzball server has to deal with properties
+    and the way they are stored.
+
+  Properties are now stored in AVL trees, and organized into directories of
+    properties.  This speeds things up, and keeps you from being spammed on
+    examines.  To examine the properties on an object, use:
+          ex <obj>=<propdir>
+    where to examine the base properties in an object, <propdir> would be '/'.
+    You can see the value of a single property with:
+          ex <object>=<propname>
+
+  Propdirs are a method of storing and organizing properties to speed
+    access and to provide a sort of built-in organization.  The basic idea
+    is to make something similar to a 'filesystem' for properties.  In this
+    analogy, each person would be a filesystem, with a root directory and
+    (theoretically) an infinite number of properties beneath that.
+      A property has been expanded with the idea that each property may now
+    contain a new property list -- the 'propdir'.  Properties can both have
+    a value (either integer or string as before) _and_ contain other
+    properties.
+      The actual directory entries may ALSO contain data.  Propdirs' only
+    real 'visible' changes are in the names of properties -- '/' is used as
+    the property directory separator, and so will not appear in the names
+    of the properties when listed through 'examine' or MUF programs.
+
+      Property protections have also been expanded -- the . and _ may appear
+    either at the beginning of the property name or immediately following a
+    '/', and that property will have the appropriate protections.  For
+    example, the property '/mail/.inbox/mesg/#' would have the same
+    protections as '.mesg#' would now.
+      Two new protected property prefixes have also been added --
+    @props can only be seen in examine by a wizard.  Only a wiz may @set them.
+    ~props can be seen in examines as normal, but only a wizard may @set them.
+      These two are similar to _props and .props in that property names
+    that start with a @ or a ~ are special protected properties in the
+    way described above, and that if any property in a property name path
+    starts with one of them, the property you are trying to access will
+    have the same permissions as well.  ie:  /stats/~combat/sword/hit
+    would have the same restrictions as ~attack.
+
+  "@set <obj>=:" will no longer delete properties and propdirs whose
+    root property is an @prop or an ~prop.  It will delete all of the
+    properties on an object That do not START with @ or ~.  (ie: it will
+    NOT delete "/@combat/weapons/crossbow" but it WILL delete the prop
+    "/combat/@weapons/crossbow")  This restriction applies only for non-
+    wizards.  A wizard using "@set <obj>=:" will remove *ALL* of the
+    properties from the object.
+
+    There are two ways to remove a property list:
+      * First, and most straight forward, is to remove the property that
+        contains it.  so, in the previous example, removing the property
+        '/mail/.inbox' would (recursively) remove all properties under
+        .inbox before removing .inbox itself.
+      * The second way is to remove all properties within the property list
+        yourself.  When the last property is removed, the parent property
+        (the one that contained the property list) is examined to see if
+        contains data.  If it does, then the property list only is
+        removed.  If the property doesn't contain data then it is removed
+        also.
+      Because of the first method of removing propdirs, the ability to have a
+    property list and value in the same property should be used sparingly.
+
+      The last visible change that propdirs bring is that 'examine'
+    will no longer show properties _directly_.  Instead, where the properties
+    would normally be shown, it will say:
+        "[ Use 'examine <object>=/' to list root properties. ]"
+      Examine now can take an argument which is the property or propdir to
+    view.  If the property name given ends with a '/', all properties in
+    property directory will be listed, otherwise the single property named
+    will be shown.
+
+
+Another big change, the addition of Registration. In a nut shell, this allows
+    you to forget about having to remember the #Dbref number of objects, exits
+    or actions you create. You may now give them a registered name that can be
+    used in places you needed to use their #Dbref. You may now use the
+    registered names in commands that can act on things at a distance from you.
+
+  @dig, @action, @open, and @create can now take a third parameter in the form:
+      @dig <roomname>=<parent>=<registername>
+      @action <actionname>=<source>=<registername>
+      @open <exitname>=<destination>=<registername>
+      @create <objectname>=<cost>=<registername>
+    where <registername> is an optional parameter that is the name that you
+    want it to register the object as.  It registers the object in the
+    creating player's personal registration _reg/ propdir.  For example:
+    if player Riss types '@dig Bedroom=$myenv=mybedroom' then it will create
+    the room "Bedroom" and set it's parent to the room referred to by $myenv
+    then registers it on the player as $mybedroom by setting the _reg/mybedroom
+    property to the dbref of the room object created.  If the <registername>
+    parameter is excluded, then the object isn't registered.  If you want
+    to, for example, @create an object, but not set it's value, but you DO
+    want to register it, then you just exclude That parameter, but remember
+    to put in both = signs.  ie:  @create Smiley Face Sticker==smiles
+
+  Ok, perhaps the above example of @digging the bedroom jumps the gun a little.
+    It uses a registered name reference ($myenv) in its own example of making a
+    registered name. Lets step through the process the old way -- Assume I have
+    an environment room set up that has a #dbref of #57983, and I want to @dig
+    my bedroom and use that environment for it. I would:
+          @dig Bedroom=#57983     (Bedroom created with #dbref #72921)
+    Then I would need the exit in to the room:
+          @open bedroom;in=#72921
+    Then go in to the bedroom and to get an exit out into the hall whose #dbref
+    was #69455 I would:
+          @open out;exit=#69455
+  Now assuming you had all those #dbrefs listed somewhere, it's still a pain to
+    use them. So now see how having registration helps -- Assume I have created
+    an environment room and registered it as $myenv, and the hall as
+    $mymainhall. I need only now do:
+          @dig Bedroom=$myenv=mybedroom  (creates the bedroom and registers its
+                                          #dbref for you as $mybedroom)
+    Then the exit in:
+          @open bedroom;in=$mybedroom
+    And once in the bedroom:
+          @open out;exit=$mymainhall
+    No need to remember the #dbrefs at all!
+
+  Note that I did not register the last 2 @open exits, but I just as well could
+    have. One of the reasons for registering exits is now the fact that you can
+    link and unlink or lock and unlock exits from a distant location. You do not
+    have to be standing in a room with the exit to link or unlink it, you need
+    simply to know the registered name (or #dbref) of the exit and the location
+    to link it to. Of course you still need all the correct permissions to link
+    to places. I did not need to enter the bedroom at all to create and link its
+    exit out. I could have:
+          @action out;exit=$mybedroom=mybedexit
+    To create that exit in the bedroom, then linked it to the hall with:
+          @link $mybedexit=$mymainhall
+
+  Commands like @desc, @lock, @succ, @osucc, etc. now will work at a distance
+    for the owner of the object, if the object is referred to by dbref or its
+    $registered name.  This facilitates builder programs.
+
+  Program registration added:  If you refer to a program in @link, @open,
+    @prog, @edit, or @set, with the syntax "$progname" then it will look
+    for a property named "_reg/progname" up the environment tree containing
+    a string value that represents the dbref of the program.  If it
+    exists, then the command will match the program.  Also, if you @desc,
+    @succ, @drop, or @fail an object to start with "@$progname" then it
+    will run that program, similar to an "@1234" @desc/@succ/etc.
+    Examples of using progregs outside of MUF:
+      @edit $puzzle-reset
+      @link do-reset = $puzzle-reset
+      @desc me = @$longdesc %list[mydesc]
+      @succ west = @$gen-exit-messages
+      @set $puzzle-reset = DEBUG
+
+  You can now connect to a player via dbref.  Just give the dbref where you
+    would normally put your name in the connection request.  For example:
+          connect #1234 craZypassWord
+
+  If, while doing a pronoun_sub, the source string contains a %X type
+    code, (ie: %n, %p, %a, etc.) it first checks on the player to see if
+    they have an overriding property set, then it checks down the environ-
+    ment tree to see if there is an overriding default set, and THEN it
+    tries the built in defaults.  This lets you do things like use %v as
+    a movement verb in @osucc messages, and have a default set for it.
+    Ie: '@set #0=%v:walks' so that the default could be something like
+    "Foxen walks north." But a player could set their own overrides like
+    '@set me=%v:pads' to get something like:  "Foxen pads north."
+
+  When timestamps are updated on a room, it now updates timestamps in all
+    the rooms down the environment from it.
+
+  Connections to the server, where they don't log into a character within
+    five minutes, get disconnected, to prevent tying up ports.
+
+  When a player connects or disconnects, the ":has connected/disconnected."
+    message now appears *before* the connect/disconnect actions are triggered.
+
+  An exit is now controlled by it's owner, the owner of it's source, and the
+    owner of the objects it is linked to.
+
+  @find now can take two arguments.  The first argument is an smatch expr-
+    ession, and the second argument is a flag string expression.  The syntax
+    is '@find <objectname>=<flags&type>'.  The object name argument is an
+    smatch expression, meaning you could pass it something like:
+      '{gen?*|cmd?*}*' And it it would match all items who's name starts with
+    "gen" or "cmd" and have at least one character after that.  (see the
+    description of the SMATCH primitive later in this document)  The flags
+    string argument is rather different.  It is a string that consists of
+    the letters you would see in the flags field after a dbref in an examine,
+    and negations.  ie: "FW!D" would match programs that are set Wizard and
+    NOT set Debug.  A wizard could find all the MUCKER players in the data-
+    base who were not wizards simply with a '@find =P!WM'.  The '!' means
+    that it will match an object if the next flag is *NOT* set. (so long
+    as all the other flags match, also, of course)
+    If programs have consistent naming schemes on your MUCK, you could do a
+    '@find {gen-*|cmd-*}*=FWL' to find all Link_OK Wizard Programs in the
+    database who's names start with "gen-" or "cmd-" as an example.
+    NOTE:  @find doesn't work the same as it used to.  You need to give it
+      wildcards on either side of the matching string in the new setup.
+      For example, the OLD '@find foo' would be the same as the NEW
+      '@find *foo*=!E'
+
+  @owned now can take two arguments, similar to @find, but the first argument
+    hasn't been altered in its usage.  The second argument is a flag string
+    of the same type used in the new @find.  The syntax for the new @owned is
+    '@owned <player>=<flags&type>'.  Example: to list all the link_ok prog-
+    rams, not set debug, owned by player Foo, you would use: "@owned foo=FL!D"
+
+  @find and @owned will let you search AGAINST object types.  ie:
+    search for all dark non-exits with @find *=d!e
+
+  SMATCH  (Muf primitive, included here for reference above.)  In the pattern
+    string, a '?' matches any single character, '*' matches any number of
+    characters. Word matching can be done with '{word1|word2|etc}'.  If multiple
+    characters are in [], it will match a single character that is in that set
+    of characters. '[aeiou]' will match a single character if it is a vowel, for
+    example.  To search for one of these special chars, put a \ in front of it
+    to escape it. It is not case sensitive.  Example pattern:
+    "{Foxen|Lynx|Fiera} *t[iy]ckle*\?"  Will match any string starting with
+    'Foxen', 'Lynx', or 'Fiera',that contains either 'tickle' or 'tyckle' and
+    ends with a '?'.
+
+  @entrances <object> will list all the objects in the db that are linked
+    to the given object.  This means player and thing homes, room droptos,
+    and exit destinations. You can give a flagstring argument similar to what
+    @find and @owned let you specify.  You could list all players who are homed
+    to the room you are in with @entrances here=p
+
+  Moved @desc, @succ, @fail, @drop, @osucc, @ofail, and @odrop into properties
+    in preparation for disk basing mods. They are in a Propdir called "_/" and
+    can even be @set if need be.
+
+  When a MUF program crashes, now, it will tell the player who to tell about
+    the crash. (The person who is the owner of the program)  If the owner of
+    the program is the one running it when the program crashes, then it
+    simply tells them that it crashed.  This is all in addition to the
+    earlier improvements that tell you what line and program it crashed at.
+
+  @prog was renamed to @program.  @prog still works as it is an abbreviation.
+
+  Objects of type Thing can now contain either objects of type Program or
+    Thing.  This means you can either use @tel or a MUF program using 'moveto'
+    to put stuff in a container, or take it out.  You can @create a bag,
+    for example, and keep your programs and nicknacks in it.  When you
+    are checked against a lock either in MUF with 'locked?' or by
+    triggering an action, it will look for items recursively within any
+    containers you are carrying, and will check for properties in the
+    same way.  You cannot make a loop of containers (ie, a container
+    holding a container that holds the first) as it is prevented in both
+    @tel and 'moveto'
+
+  Added _connect and _disconnect:
+    A room or player may have a "_connect" property set that contains the
+    dbref or registered name of a program to run when a player connects.
+    The program must be either link_ok or must be owned by the player
+    connecting.  When the program is run, the string on the stack will be
+    "Connect", the "loc @" will be the location of the connecting player, the
+    "me @" will be the connecting player, and the "trigger @" (and "trig")
+    will be the object that the _connect or _disconnect property was on.  All
+    programs referred to by _connect properties on the player, and on rooms
+    down the environment tree from the player, will be QUEUEd up to run.
+    When a player disconnects, programs referred to by _disconnect properties
+    will be run in a similar manner.
+    (connect and disconnect _actions_ are still implemented.)
+
+  When a player connects to the server, the server basically does an:
+    "@force <player>='connect'".  On player disconnection, it @forces a
+    'disconnect'.  It will only @force a connect when you log in your first
+    connection, and @force a disconnect when your last connection is
+    terminated.  This lets you trigger actions and exits when you connect
+    or disconnect.
+
+  Moving into a room, through a MUF moveto, or an exit, will @force a
+    'look' instead of doing an inserver standard look.  When you connect,
+    it also @forces a 'look'.  This means that you can make a look program
+    to have absolute say over what will be seen in the room.
+
+  There are now _arrive and _depart program triggering properties set up
+   so that when you leave a room, it QUEUEs up the programs referred to
+   by the _depart properties in all the rooms down the environment from
+   the room left, and when you enter a room, it QUEUEs up all the programs
+   referred to by all the _arrive properties down the environment from the
+   room entered.  These properties can refer to either dbrefs of programs,
+   or registered objects, similarly to _connect and _disconnect.  The
+   loc @ for a _depart run program is the dbref of the room left, and will
+   not match the value of 'me @ location' which will be the room they went
+   to.
+
+  A room or object may have a "_listen" property set that contains the
+    dbref of a program to run whenever a notify_except is done in that
+    room or in the room that contains the object.  The program must
+    either be link_ok or must be owned by the owner of the object
+    containing the "_listen" property.  When the program is run, the
+    parameter string will be the notify_except message, "loc @" will be
+    the room where the notify_except was given, and "trigger @" or "trig"
+    will be the object with the "_listen" property.  A "_listen" program
+    may also be run by placing the "_listen" property in the environment
+    of a room or set of rooms.
+
+  The WHO list now appends an asterisk ('*') after the idle times of people
+    who are in the editor or in interactive mode.
+
+  You can now link objects to players, given that they are either you, or
+    link_OK, or that you are a wizard.  This means that you could do a 'home'
+    and keep all your objects, if they are homed to you.
+
+  Actions not on a room will only take you to the destination if, for both the
+    destination and the source, you either own them, or they are set JUMP_OK.
+
+  A player can "@set me=STICKY" (SILENT), and not see all the dbrefs and dark
+    objects that they own.  They won't see objects in a dark room either.
+    They still control the objects though.
+
+  If no parent is given for a room when it is @dig'ed it will default to the
+    parent of the current room instead of #0.
+
+

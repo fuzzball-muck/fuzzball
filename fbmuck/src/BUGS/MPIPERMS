@@ -1,0 +1,7 @@
+Slipstream (Sat Sep  5 1:16:02AM) -- You may wanna consider changing the
+ security of the MPI word {muf:}.  ITs being used in some rather new
+ loopholes.
+Slipstream (Sat Sep  5 1:17:43AM) -- Folks are calling MUF
+ programs by embedding it in @descs, and other @messages, which calls the
+ MUF program by the looker/triggere.  This can be done w/o the notice of
+ the looker/triggerer (in the case of cmd-pose, for example).

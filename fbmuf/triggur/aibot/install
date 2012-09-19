@@ -1,0 +1,44 @@
+Here it is, aibots install-in-a-box.
+
+Simply quote the actor-*, run-actor, and aibots-stub programs into your
+muck, taking not of the dbrefs.  They contain all necessary compile
+instructions and flags.  Aibots-prop _can_ take a Wizbit (and you
+automatically set it, if you are a wizard).  This allows Wizard-owned bots
+to check wizard properties.  The program checks for a Wiz-bit on the
+program, then the wizbit of the owner of the bot.
+
+Next, you must set on the aibots-stub program the property guts with the
+number (dbref without the # sign) of run-actor.  This should look like
+
+	@set aibots-stub=guts:nnnn    
+
+where nnnn is the number of the program (this will be fetched as a string,
+converted to an integer, then a dbref).  Then, on run-actor, you must set
+(in the same manner) progam:nnnn.  For example 
+	
+	@set run-actor=prop:nnnn
+	@set run-actor=mpi:nnnn
+
+Do that for _each_ program.  Three steps remain.  Either you or a wizard
+should register the aibot-stub as a useful regname.  Something like
+
+	@reg aibots-stub=ai
+
+should do the job.  Now, if you want players to be _able_ to use it, then
+you should have the actor.txt put someplace such as a news file.  A local
+wizard with server-side access should be able to do this for you, if you
+ask nice enough :)  Finally, you need to inform the players they _can_ use
+the program.  The file actor.announce should do this quite nicely (please
+don't put any price tags on the programs ;^)
+
+Now, after all this work, you get to make your own bot.  Please read
+actor.txt, and good luck :)
+
+	This installation was done by jon @ mordor
+(jonsmith@fourier.physics.purdue.edu).  Suggestions or improvements on the
+installation files should go to him.  He modified the actor-prop for use
+with (or prevention of crashing from unauthorized access of) wiz props.
+If you feel you desperately need wiz-prop access on props on the bot or
+the room the bot is in, let him now, he should be able to do that for you.
+This is a great program written by Triggur, and hopefully now he won't be
+bothered by people like jon trying to port it :)

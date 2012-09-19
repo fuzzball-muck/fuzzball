@@ -1,0 +1,1 @@
+-kr -bad -bap -ts4 -psl -cli0 -ci8 -l95 -lc75 -npcs -nsob -ss -nbbo

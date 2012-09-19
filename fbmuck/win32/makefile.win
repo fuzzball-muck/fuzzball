@@ -1,0 +1,160 @@
+
+!IF "$(OS)" == "Windows_NT"
+NULL=
+!ELSE 
+NULL=nul
+!ENDIF 
+
+NMSRCDIR=.\winsrc
+RSSRCDIR=.\win32
+OUTDIR=.\game
+INTDIR=.\compile
+INCDIR=.\winsrc
+OPENSSLDIR=e:\cyg\openssl
+
+CPP=cl.exe
+CPP_OPS=/nologo /MT /W3 /EHsc /O2 /c /D "_X86_" /D "_WIN32_" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "FD_SETSIZE=4096" /D "HAVE_CONFIG_H" /D "_USE_32BIT_TIME_T" /D "_CRT_SECURE_NO_WARNINGS" /D "_CRT_NONSTDC_NO_WARNINGS" /D "_CRT_SECURE_NO_DEPRECATE" /D "POSIX" /I"$(INCDIR)" /I"$(OPENSSLDIR)\include" /Fd"$(INTDIR)\\" /c
+LINK32=link.exe
+LINK32_OPS=/NODEFAULTLIB:libc /LIBPATH:".\win32" /LIBPATH:"$(OPENSSLDIR)\lib\vc" pcre.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ws2_32.lib libeay32MD.lib ssleay32MD.lib winmm.lib /nologo /subsystem:console /incremental:no /machine:I386
+
+# Enable These for debugging
+#CPP_OPS=/Od /D "_DEBUG" /Zi /EHsc /nologo /MTd /W3 /D "_X86_" /D "_WIN32_" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "FD_SETSIZE=4096" /D "HAVE_CONFIG_H" /D "_USE_32BIT_TIME_T" /D "_CRT_SECURE_NO_WARNINGS" /D "_CRT_NONSTDC_NO_WARNINGS" /D "_CRT_SECURE_NO_DEPRECATE" /D "POSIX" /I"$(INCDIR)" /I"$(OPENSSLDIR)\include" /Fd"$(INTDIR)\\" /c
+#LINK32_OPS=/DEBUG /NODEFAULTLIB:libc /LIBPATH:".\win32" /LIBPATH:"$(OPENSSLDIR)\lib\vc" pcre.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ws2_32.lib libeay32MD.lib ssleay32MD.lib winmm.lib /nologo /subsystem:console /incremental:no /machine:I386
+
+
+ALL : "$(OUTDIR)\fbmuck.exe" "$(OUTDIR)\fb-olddecompress.exe" "$(OUTDIR)\fb-topwords.exe" "$(OUTDIR)\restart.exe" 
+
+CLEAN :
+	-@erase "$(INTDIR)\*.obj"
+	-@erase "$(INTDIR)\*.idb"
+	-@erase "$(INTDIR)\*.exe"
+
+"$(OUTDIR)" :
+    if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
+
+"$(INTDIR)" :
+    if not exist "$(INTDIR)/$(NULL)" mkdir "$(INTDIR)"
+
+
+{$(NMSRCDIR)}.cpp{$(INTDIR)}.obj::
+   $(CPP) @<<
+   $(CPP_OPS) /Fo"$(INTDIR)\\" $<
+<<
+
+$(INTDIR)\restart.obj : $(RSSRCDIR)\restart.cpp
+   $(CPP) $(CPP_OPS) /Fo$(INTDIR)\restart.obj $(RSSRCDIR)\restart.cpp
+
+	
+ROBJ="$(INTDIR)\restart.obj"
+
+MALLOBJ="$(INTDIR)\crt_malloc.obj"
+
+COBJ="$(INTDIR)\array.obj" \
+	"$(INTDIR)\boolexp.obj" \
+	"$(INTDIR)\compile.obj" \
+	"$(INTDIR)\create.obj" \
+	"$(INTDIR)\db_header.obj" \
+	"$(INTDIR)\db.obj" \
+	"$(INTDIR)\debugger.obj" \
+	"$(INTDIR)\disassem.obj" \
+	"$(INTDIR)\diskprop.obj" \
+	"$(INTDIR)\edit.obj" \
+	"$(INTDIR)\events.obj" \
+	"$(INTDIR)\game.obj" \
+	"$(INTDIR)\hashtab.obj" \
+	"$(INTDIR)\help.obj" \
+	"$(INTDIR)\inst.obj" \
+	"$(INTDIR)\interp.obj" \
+	"$(INTDIR)\log.obj" \
+	"$(INTDIR)\look.obj" \
+	"$(INTDIR)\match.obj" \
+	"$(INTDIR)\mcp.obj" \
+	"$(INTDIR)\mcpgui.obj" \
+	"$(INTDIR)\mcppkgs.obj" \
+	"$(INTDIR)\mfuns2.obj" \
+	"$(INTDIR)\mfuns.obj" \
+	"$(INTDIR)\move.obj" \
+	"$(INTDIR)\msgparse.obj" \
+	"$(INTDIR)\mufevent.obj" \
+	"$(INTDIR)\oldcompress.obj" \
+	"$(INTDIR)\p_array.obj" \
+	"$(INTDIR)\p_connects.obj" \
+	"$(INTDIR)\p_db.obj" \
+	"$(INTDIR)\p_error.obj" \
+	"$(INTDIR)\p_float.obj" \
+	"$(INTDIR)\player.obj" \
+	"$(INTDIR)\p_math.obj" \
+	"$(INTDIR)\p_mcp.obj" \
+	"$(INTDIR)\p_misc.obj" \
+	"$(INTDIR)\p_props.obj" \
+	"$(INTDIR)\p_regex.obj" \
+	"$(INTDIR)\predicates.obj" \
+	"$(INTDIR)\propdirs.obj" \
+	"$(INTDIR)\property.obj" \
+	"$(INTDIR)\props.obj" \
+	"$(INTDIR)\p_stack.obj" \
+	"$(INTDIR)\p_strings.obj" \
+	"$(INTDIR)\random.obj" \
+	"$(INTDIR)\rob.obj" \
+	"$(INTDIR)\sanity.obj" \
+	"$(INTDIR)\set.obj" \
+	"$(INTDIR)\signal.obj" \
+	"$(INTDIR)\smatch.obj" \
+	"$(INTDIR)\snprintf.obj" \
+	"$(INTDIR)\speech.obj" \
+	"$(INTDIR)\strftime.obj" \
+	"$(INTDIR)\stringutil.obj" \
+	"$(INTDIR)\timequeue.obj" \
+	"$(INTDIR)\timestamp.obj" \
+	"$(INTDIR)\tune.obj" \
+	"$(INTDIR)\unparse.obj" \
+	"$(INTDIR)\utils.obj" \
+	"$(INTDIR)\wiz.obj" \
+	"$(INTDIR)\win32.obj"
+
+LOBJ="$(INTDIR)\copyright.obj"
+
+MOBJ="$(INTDIR)\copyright.obj" \
+	"$(INTDIR)\olddecomp.obj"\
+	"$(INTDIR)\reconst.obj"\
+	"$(INTDIR)\interface.obj"\
+	"$(INTDIR)\resolver.obj"\
+	"$(INTDIR)\topwords.obj"\
+
+"$(OUTDIR)\fbmuck.exe" : "$(OUTDIR)" "$(INTDIR)" $(COBJ) $(MALLOBJ) "$(INTDIR)\interface.obj" "$(INTDIR)\version.obj" $(LOBJ)
+    $(LINK32) @<<
+  $(LINK32_OPS) /out:"$(OUTDIR)\fbmuck.exe" $(COBJ) $(MALLOBJ) "$(INTDIR)\interface.obj" "$(INTDIR)\version.obj" $(LOBJ)
+<<
+
+"$(OUTDIR)\fb-resolver.exe" : "$(OUTDIR)" "$(INTDIR)" $(LOBJ) $(MALLOBJ) "$(INTDIR)\resolver.obj"
+    $(LINK32) @<<
+  $(LINK32_OPS) /out:"$(OUTDIR)\fb-resolver.exe" $(COBJ) $(MALLOBJ) "$(INTDIR)\resolver.obj" $(LOBJ)
+<<
+
+"$(OUTDIR)\fb-topwords.exe" : "$(OUTDIR)" "$(INTDIR)" $(LOBJ) $(MALLOBJ) "$(INTDIR)\topwords.obj" "$(INTDIR)\hashtab.obj"
+    $(LINK32) @<<
+  $(LINK32_OPS) /out:"$(OUTDIR)\fb-topwords.exe" "$(INTDIR)\topwords.obj" "$(INTDIR)\hashtab.obj" $(MALLOBJ) $(LOBJ)
+<<
+
+"$(OUTDIR)\fb-olddecompress.exe" : "$(OUTDIR)" "$(INTDIR)" $(LOBJ) $(MALLOBJ) "$(INTDIR)\olddecomp.obj" "$(INTDIR)\oldcompress.obj" "$(INTDIR)\compress.obj" "$(INTDIR)\db_header.obj"
+    $(LINK32) @<<
+  $(LINK32_OPS) /out:"$(OUTDIR)\fb-olddecompress.exe" "$(INTDIR)\olddecomp.obj" "$(INTDIR)\oldcompress.obj" "$(INTDIR)\compress.obj" "$(INTDIR)\db_header.obj" $(MALLOBJ) $(LOBJ)
+<<
+
+"$(OUTDIR)\fb-announce.exe" : "$(OUTDIR)" "$(INTDIR)" $(LOBJ) $(MALLOBJ) "$(INTDIR)\announce.obj"
+    $(LINK32) @<<
+  $(LINK32_OPS) /out:"$(OUTDIR)\fb-announce.exe" $(COBJ) $(MALLOBJ) "$(INTDIR)\announce.obj" $(LOBJ)
+<<
+
+$(INTDIR)\fbhelp.obj : $(NMSRCDIR)\help.cpp
+   $(CPP) $(CPP_OPS) /Fo$(INTDIR)\fbhelp.obj /D "STANDALONE_HELP" /D "HELPFILE_DIR=\"data/help\"" $(NMSRCDIR)\help.cpp
+
+"$(OUTDIR)\fbhelp.exe" : "$(OUTDIR)" "$(INTDIR)" $(LOBJ) $(MALLOBJ) "$(INTDIR)\fbhelp.obj"
+    $(LINK32) @<<
+  $(LINK32_OPS) /out:"$(OUTDIR)\fb-help.exe" $(COBJ) $(MALLOBJ) "$(INTDIR)\fbhelp.obj" $(LOBJ)
+<<
+
+"$(OUTDIR)\restart.exe" : "$(OUTDIR)" "$(INTDIR)" $(ROBJ)
+    $(LINK32) @<<
+  $(LINK32_OPS)  /out:"$(OUTDIR)\restart.exe" $(ROBJ)
+<<

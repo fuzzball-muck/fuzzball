@@ -1,0 +1,314 @@
+          Common MUF Interface - MUF Installation/Upgrade Component
+                          Designed 3/98 by Triggur
+
+                  V1.0 : {04/04/98} Inception - Triggur
+
+
+NOTE: SEE BOTTOM FOR INSTALLATION INSTRUCTIONS
+
+I. @INSTALL
+
+For a long time, the complexity of installing a MUF program or library
+has been relatively high; global commands need to be created, registry
+entries added, _defs props added to libraries, and in some upgrades, 
+complex data structure changes need to be performed.
+
+Since it's so easy to miss a detail and screw up the installation/upgrade,
+it seems natural that there should be an EASY way to allow all MUF programs
+to install _themselves_.  This is a more object oriented approach to solving
+the problem, and places the install/upgrade burden on the person most likely
+to understand all the nuances and get them all down.
+
+To this end, lib-install is designed to ease the difficulty of doing common
+things like registering _defs, creating global commands, adding registry
+entries, and maintaining installed program version info.  It is designed to
+ease the installation of globals and libraries.
+
+NOTE: BECAUSE THE DO-INSTALL FUNCTION CAN RUN AS WIZ, IT IS IMPORTANT THAT
+*****ONLY***** TRUSTED SOURCES OF MUF PROGRAMS BE @INSTALLED!  MANY OF THE
+FUNCTIONS DEALING WITH REGISTRIES AND GLOBALS WILL NEED THE PROGRAM TO HAVE
+A WIZBIT SET.
+
+The key to it is that every installable program must provide a PUBLIC 
+function, "do-install ( s -- s )".  When an admin is installing a new MUF
+program or a new version of a MUF program, he simply uploads the program
+as usual, and then calls the @install command, passing as a parameter the
+dbref of the program to be installed:
+
+      @install #12345
+
+The @install command knows what the _currently_ installed version number is,
+and passes it to the do-install function as a string.  The format and 
+content of this version string is entirely up to the program being installed;
+so long as the do-install function can make intelligent upgrade decisions, if
+necessary.  The @install command calls the program's do-install function,
+passing it the current version installed on the system (or "" if none known),
+the do-install function performs ALL setup and configurations it needs to,
+and then it returns the NEW version, which @install stores away.  In some
+cases, even a wizbitted MUF program can't set all the flags and such that
+need to be set.  In this instance, the do-install command prints instructions
+to the admin wizard what they have to type to perform the task and it
+returns "", signalling the @install command that not all processing was
+completed.  The admin then types the commands it asked him to, and then he
+runs @install on the same dbref again.  On the second pass through, the
+do-install function should notice that the setting has been fixed and move
+on, eventually signalling installation success by returning its current
+version number.
+
+The net effect is that the installation/upgrade process becomes a simple,
+routine 2 step process: upload and @install.  The program itself is then
+responsible for ALL flags, props, configurations, etc. necessary to make
+itself run.  In the long term, this is good for the programmers too because
+they no longer have to answer the same questions to 1000 people installing
+their code on different MUCKs.
+
+Lib-install doesn't just provide a simple entry-point into an installation
+function, it also provides a number of convenience functions to help
+the do-install routine perform its setup.  Beyond the functions listed below,
+it may be the duty of the do-install function to make changes all over the
+MUCK to data structures used by the program, if they have been changed or
+upgraded.  The function would then "wall" out a message to the whole MUCK
+that it is pausing the game for an upgrade, PREEMPT, and then sweep through
+the datastructures to make whatever changes it needs to.
+
+--------------------------------------------------------
+
+MACRO: INSTALL-WIZ-CHECK ( -- X )
+  This macro is provided because the do-install function on the global
+is a PUBLIC function, and is therefore callable by any MUF program that knows
+the program's Dbref.  To make CERTAIN only a wizbitted program run by a wizard
+calls the do-install function, the first thing the function should do after
+recording the inbound VERSION string on the stack is to call this macro:
+
+   : do-install
+      myoldver !
+      INSTALL-WIZ-CHECK
+    ...
+      MYVERSION
+    ;
+
+The INSTALL-WIZ-CHECK macro will make sure the call to this function is
+legal.  If it is not, the empty string "" is put on the stack and the
+macro triggers an immediate return to @install.  If it IS a legal call
+of the function, processing continues past the macro.  EVERY DO-INSTALL
+FUNCTION _MUST_ CALL THIS MACRO!!!
+
+--------------------------------------------------------
+
+FUNCTION: add-global-command ( d s -- )
+
+  Passed the dbref of the program to link to and the command string to
+install as a global, this function creates (or updates) the global exit:
+
+    prog "page;pag;pa;p" add-global-command
+
+It looks for existing commands with the name of the first command in the
+list-- in this case "page"-- and updates the command with the new command
+string (in case aliases were added or removed since the last version).
+
+--------------------------------------------------------
+
+FUNCTION: add-global-library ( d s -- )
+
+  Passed the dbref of the library and the library name (for instance, 
+"install" -- NOT "lib-install"), this registers the library in the 
+global registry.  THIS MUST BE DONE BEFORE ANY OF THE export-* FUNCTIONS
+ARE USED ON THAT LIBRARY!
+
+--------------------------------------------------------
+
+: add-global-registry ( d s -- )
+  Passed the dbref of the program and the global registry name to assign
+it, this function creates the registry entry.  This is useful for MUFs that
+are to be called directly by the public in _listen props and such.  Example:
+
+     prog "ai" add-global-registry
+
+--------------------------------------------------------
+
+FUNCTION: export-function ( d s -- )
+
+  Passed the dbref of the library from which to export the function and the
+name of the function to export, export-function creates the _defs/ entry on
+the program itself that makes it callable like other library functions. NOTE:
+THE FUNCTION MUST STILL BE DECLARED AS "PUBLIC" IN THE MUF PROGRAM ITSELF.
+
+--------------------------------------------------------
+
+FUNCTION: export-macro ( d s s -- )
+
+  Passed the dbref of the library from which to export the macro, the name
+the macro is to be given, and the MUF text of that macro, export-macro sets
+up the _defs/ entry on the program itself to make the macro available to
+calling programs.
+
+--------------------------------------------------------
+
+FUNCTION: set-library-version ( d s -- )
+
+  Given the dbref of a library and the version string to set for it, this
+function sets the appropriate prop on the MUF program so that the "@reg lib"
+command displays the appropriate version number for it.
+
+--------------------------------------------------------
+
+FUNCTION: get-library-version ( d -- s )
+
+  Returns the library version string associated with the library at the given
+dbref.
+
+--------------------------------------------------------
+--------------------------------------------------------
+
+II. @UNINSTALL
+
+Just as @INSTALL provides a simple means of installing new MUF programs
+and libraries, @UNINSTALL provides a simple means of removing them.  Note
+that it should NEVER be necessary to @UNINSTALL a program in order to @INSTALL
+an upgrade-- the do-install function should handle upgrades AND fresh
+installations with grace.  
+
+@UNINSTALL is passed the program's dbref as a parameter.  It then calls that
+program's "do-uninstall ( s -- s )" function, which MUST be listed in the
+MUF as PUBLIC.  Example:
+
+     @UNINSTALL #12345
+
+The function is passed the current known revision and is expected to remove
+any global exits to itself, its registry entries, library entries, data 
+structures, any objects it manages (like food objects for a food vendor 
+program), and then exit after passing back the current version number.  If
+it exits with the blank string "", this signals @UNINSTALL that something
+needs to be done by the operating admin that the program itself couldn't
+do (this does not include @recing itself, which no program can do).  When
+do-uninstall makes this decision, it should print a message to the admin
+as to what they should type in order to perform the required operation,
+and then the admin types the @uninstall command again to continue processing,
+until do-uninstall returns the version number, signifying it is done.
+
+--------------------------------------------------------
+
+MACRO: UNINSTALL-WIZ-CHECK ( -- X )
+  This macro is provided because the do-uninstall function on the global
+is a PUBLIC function, and is therefore callable by any MUF program that knows
+the program's Dbref.  To make CERTAIN only a wizbitted program run by a wizard
+calls the do-uninstall function, the first thing the function should do after
+recording the inbound VERSION string on the stack is to call this macro:
+
+   : do-uninstall
+      myoldver !
+      UNINSTALL-WIZ-CHECK
+    ...
+    ;
+
+The UNINSTALL-WIZ-CHECK macro will make sure the call to this function is
+legal.  If it is not, the empty string "" is put on the stack and the
+macro triggers an immediate return to @uninstall.  If it IS a legal call
+of the function, processing continues past the macro.  EVERY DO-UNINSTALL
+FUNCTION _MUST_ CALL THIS MACRO!!!
+
+--------------------------------------------------------
+
+FUNCTION: remove-global-command ( s -- )
+
+  Passed an instance of a global command, this function recycles the exit.
+
+--------------------------------------------------------
+
+FUNCTION: remove-global-library ( s -- )
+  Passed the registered name of the library (ie "install", not "lib/install"
+or "lib-install"), this un-registers it from the global registry.
+
+--------------------------------------------------------
+
+FUNCTION: remove-global-registry ( s -- )
+  Passed the registered name of the program (ie "ai"), this un-registers it
+from the global registry.
+
+--------------------------------------------------------
+--------------------------------------------------------
+
+III. EXAMPLE USAGES
+
+Following are the do-install and do-uninstall functions as they might look
+for lib-install itself:
+
+--------------------------------------------------------
+
+$define VERSION "1.0" $enddef
+
+$define INSTALLCMD "@install;@uninstall" $enddef
+
+$define INSTALLLIB "install" $enddef
+
+$define INSTALLREG "install" $enddef
+ 
+( ------------------------------------------------------------------- )
+( PUBLIC: Perform installation of this command                        )
+( ------------------------------------------------------------------- )
+: do-install ( s -- s )
+  pop ( since we know this is rev 1, we dont really care what the old ver is )
+
+  INSTALL-WIZ-CHECK
+
+  prog "L" set  ( make it publically linkable )    
+
+  prog INSTALLCMD add-global-command
+  prog INSTALLLIB add-global-library 
+  prog INSTALLREG add-global-registry 
+
+  prog "add-global-command" export-function
+  prog "set-global-command-priority" export-function
+  prog "add-global-library" export-function
+  prog "add-global-registry" export-function
+  prog "export-function" export-function
+  prog "export-macro" export-function
+  prog "set-library-version" export-function
+  prog "get-library-version" export-function
+  prog "remove-global-command" export-function
+  prog "remove-global-library" export-function
+  prog "remove-global-registry" export-function
+
+  prog "INSTALL-WIZ-CHECK" "me @ \"W\" flag? not caller \"W\" flag? not or if me @ \"ERROR: Only a wizard can use this function.\" notify \"\" exit then"
+      export-macro
+
+  prog "UNINSTALL-WIZ-CHECK" "me @ \"W\" flag? not caller \"W\" flag? not or if me @ \"ERROR: Only a wizard can use this function.\" notify \"\" exit then"
+      export-macro
+
+  prog VERSION set-library-version
+
+  VERSION 
+; 
+
+( ------------------------------------------------------------------- )
+( PUBLIC: Perform uninstallation of this command                      )
+( ------------------------------------------------------------------- )
+: do-uninstall ( s -- s )
+  pop  ( we havent installed anything version specific so far, so no matter )
+
+  UNINSTALL-WIZ-CHECK
+  
+  prog INSTALLCMD remove-global-command
+  prog INSTALLLIB remove-global-library 
+  prog INSTALLREG remove-global-registry 
+
+  me @ "The program can now be removed entirely by typing @rec #" prog intostr
+      strcat notify
+
+  VERSION 
+; 
+
+PUBLIC do-install
+PUBLIC do-uninstall
+--------------------------------------------------------
+
+
+========================================================================================
+@INSTALL INSTALLATION INSTRUCTIONS
+
+	1) Upload the source to a program called lib-install
+	2) Link the global command "@install" to the program
+	3) @lock the command to #1 Wizard (or the set of trusted mages)
+	4) Run "@install install" to have the program install itself
+	5) Code dependent on @install should now be @install-able.
+

@@ -1,0 +1,97 @@
+dumps (bool) dbdump_warning       = no
+dumps (bool) deltadump_warning    = no
+dumps (str)  dumpwarn_mesg        = ## Game will pause to save the database in a few minutes. ##
+dumps (str)  deltawarn_mesg       = ## Game will pause to save changed objects in a few minutes. ##
+dumps (str)  dumpdeltas_mesg      = ## Saving changed objects ##
+dumps (str)  dumping_mesg         = ## Pausing to save database. This may take a while. ##
+dumps (str)  dumpdone_mesg        = ## Save complete. ##
+dumps (time) dump_interval        =   0d  4:00:00
+dumps (time) dump_warntime        =   0d  0:02:00
+dumps (time) monolithic_interval  =   1d  0:00:00
+
+money (str)  penny                = penny
+money (str)  pennies              = pennies
+money (str)  cpenny               = Penny
+money (str)  cpennies             = Pennies
+money (int)  max_pennies          = 10000
+money (int)  start_pennies        = 50
+money (int)  penny_rate           = 8
+money (int)  max_object_endowment = 100
+
+rwho  (bool) support_rwho         = no
+rwho  (str)  rwho_passwd          = potrzebie
+rwho  (str)  rwho_server          = riemann.math.okstate.edu
+rwho  (time) rwho_interval        =   0d  0:04:00
+
+costs (int)  object_cost          = 10
+costs (int)  exit_cost            = 1
+costs (int)  link_cost            = 1
+costs (int)  room_cost            = 10
+costs (int)  lookup_cost          = 0
+costs (int)  kill_base_cost       = 100
+costs (int)  kill_min_cost        = 10
+costs (int)  kill_bonus           = 50
+
+cnctn (bool) idleboot             = yes
+cnctn (time) maxidle              =   0d  2:00:00
+cnctn (str)  idle_boot_mesg       = Auto-disconnecting for inactivity.
+cnctn (bool) playermax            = no
+cnctn (int)  playermax_limit      = 56
+cnctn (str)  playermax_warnmesg   = You likely won't be able to connect right now, since too many players are online.
+cnctn (str)  playermax_bootmesg   = Sorry, but there are too many players online.  Please try reconnecting in a few minutes.
+
+limit (int)  command_burst_size   = 500
+limit (int)  commands_per_time    = 20
+limit (int)  command_time_msec    = 1000
+limit (int)  max_delta_objs       = 20
+limit (int)  max_loaded_objs      = 5
+limit (int)  pause_min            = 100
+limit (int)  free_frames_pool     = 8
+limit (int)  mpi_max_commands     = 2048
+limit (time) clean_interval       =   0d  0:15:00
+
+muf   (int)  max_process_limit    = 400
+muf   (int)  max_plyr_processes   = 32
+muf   (int)  max_instr_count      = 20000
+muf   (int)  instr_slice          = 2000
+muf   (int)  listen_mlev          = 3
+muf   (bool) force_mlev1_name_notify = yes
+muf   (bool) allow_listeners      = yes
+muf   (bool) allow_listeners_obj  = yes
+muf   (bool) allow_listeners_env  = yes
+muf   (bool) look_propqueues      = no
+muf   (bool) periodic_program_purge = yes
+
+secur (bool) realms_control       = no
+secur (bool) use_hostnames        = yes
+secur (bool) log_commands         = yes
+secur (bool) log_reads            = no
+secur (bool) log_failed_commands  = no
+secur (bool) log_programs         = yes
+secur (bool) secure_who           = no
+
+muck  (str)  muckname             = TygryssMUCK2
+muck  (str)  huh_mesg             = Huh?  (Type "help" for help.)
+muck  (str)  leave_mesg           = See ya later, alligator!
+muck  (ref)  player_start         = Cave of Awakening(#64RD)
+muck  (bool) registration         = no
+muck  (str)  register_mesg        = Sorry, but you need to mail to foxen@netcom.com to get a character on this test muck.
+muck  (time) aging_time           =  90d  0:00:00
+muck  (str)  autolook_cmd         = look
+
+misc  (bool) who_doing            = yes
+misc  (bool) allow_zombies        = yes
+misc  (bool) wiz_vehicles         = no
+misc  (bool) restrict_kill        = yes
+misc  (bool) teleport_to_player   = yes
+misc  (bool) secure_teleport      = no
+misc  (bool) exit_darking         = yes
+misc  (bool) thing_darking        = yes
+misc  (bool) dark_sleepers        = no
+misc  (bool) who_hides_dark       = yes
+misc  (bool) enable_home          = yes
+misc  (bool) enable_prefix        = no
+misc  (bool) compatible_priorities = yes
+misc  (bool) do_mpi_parsing       = yes
+misc  (bool) lock_envcheck        = no
+

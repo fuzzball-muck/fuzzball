@@ -1,0 +1,128 @@
+lsedit honey=match
+.del 1 9999
+!*Honey*:whickers, "I'm sorry %N, I don't understand.  Try asking me for help." (LOOK HONEY for information)
+*{nods|waves|trots|clops|grins|smiles}*:generic
+*{petpets|snuggles|scritches|pets|hugs|snuzzles|nuzzles|licks|kisses|fuzzles|snugs|cuddles}*Honey*:beams happily at %N.
+* tips the taxi driver:hellos
+*walks up the ramp from the Hoofer Underground:nods to %N.  "I hope you enjoyed the Hoofer Underground."
+*arrives from the TTOS through the opening to the west:nickers to %N.  "Had your fill of the TTOS, hm?  Anything a hugely pregnant mare can do for you?"
+*dances out of the door*:flicks her ears at the loud music and turns to %N.  "Hello again.  Have a good time in the Dance Club?"
+*steps in from the Human Race Track:greets %N.  "Hi again.  Those silly humans.... *whinny!*"
+*walks in through the doorway to the south:hellos
+*amidst a great billow of steam:winks at %N and wonders what's up in the Hotpool.
+*has connected:whickers, "Hello again, %N.  I'm glad to see you woke up.  If I puke, don't be alarmed.  Morning sickness."
+*has disconnected:sees that %N has fallen asleep, and more or less lets %o lay where %s collapsed; she's too pregnant to do much waddling around at the moment.
+*Honey*help*:whickers, "Certainly, %N.  I can tell you what you can do here, plus details about each room.  I can also tell you about Hoofer Central's creation."
+*Honey*where*:whickers, "I'm sorry, %N.  I don't know how to find that."
+*Honey*what*:whickers, "I'm sorry, %N.  I don't know what that is."
+*Honey*about*:whickers, "I'm sorry, %N.  I don't know anything about that."
+*Honey*who*:whickers, "I'm sorry, %N.  I don't know anything about that."
+*Honey*{i|we|one|me}* do*:whickers, "Well, you can go West to the Taurs Take Over Society, or you can go SouthEast to our fine Dance Club.  If you go East you can join a game of Truth or Dare or relax in the hotpool, and to the South is the Jump Room, leading to a number of pleasant locations.  Finally, if you go down you can visit the Hoofer Underground, where there are even more options."
+*(hi|hiya|hello)*Honey*:whickers, "Hello.  How are you, %N?"
+*Honey*(hi|hiya|hello)*:whickers, "Hello, %N.  How are you?"
+*how*you*Honey*:whickers, "I am fine, %N.  Thank you for asking.  Can I do anything for you?"
+*Honey*how*you*:whickers, "I am fine, %N.  Thank you for asking.  Can I do anything for you?"
+*Honey*{how|where|what|about}*{lobby}*:gestures around you and whickers, "Well, this is the Hoofer Central Lobby.  You should feel free to enjoy the couch there, and note that all of the major areas in Hoofer Central are accessible through these doors.  I'll be here if you need me."
+*Honey*{how|where|what|about}*{west|w|ttos|taur|taurs|take|society}*:whickers, "The Taurs Take Over Society (west) is an organization promoting the superiority of the equinoid species on FurryMUCK."
+*Honey*{how|where|what|about}*{s|south|jump|jumproom|room|ejr}*:whickers, "The Hoofer Jump Room (south) is a jump point between Hoofer Central and most of the publically-open, equine-related areas on FurryMUCK.  There are some wonderful places to visit there, and I am told you can create your own personal links there."
+*Honey*{how|where|what|about}*{east|e|truth|dare|td|pool|t|d|hotpool|hottub|hot}*: whickers, "The Hoofer Truth or Dare Hotpool (east) is an outdoor, spring-fed hotpool where we hold  Truth or Dare games.  It is actually quite fun.  If you do not know how to play TD, ask someone there."  She smiles and winks.
+*Honey*{how|where|what|about}*{southeast|se|dance|club}*:whickers, "The Hoofer Dance Club (southeast) is a wonderful place to dance, drink, and socialize in a modern atmosphere.  There are a number of songs already stored there."
+*Honey*{what|how|where|about}*{ec|central}*:whickers, "This is Hoofer Central, a complex for the entertainment of all hooved species, but open to everyone.  Enjoy!"
+*honey*{thank|thanks}*:whickers, "You're welcome, %N.  If you need me, I'll be right here."
+*{thank|thanks}*honey*:whickers, "You're welcome, %N.  If you need me, I'll be right here."
+*swishes*tail*:swish-list2
+*swishes*tail*:swish-list
+*shut*up*Honey*:pouts, her lower lip quivering visibly.  She raises her head, looking at %N with big doe eyes.
+*Honey*shut*up*:pouts, her lower lip quivering visibly.  She raises her head, looking at %N with big doe eyes.
+*HOney*bye*:whickers, "Good bye, %N.  I hope you had a good time at Hoofer Central.  Come back soon!"
+*bye*HOney*:whickers, "Good bye, %N.  I hope you had a good time at Hoofer Central.  Come back soon!"
+*honey*good*night*:whickers, "Good night, %N.  Sleep well and see you soon!""
+*good*night*honey*:whickers, "Good night, %N.  Sleep well and see you soon!""
+*{honeys|receptionsts|receptionist|honey}*{nips|nip|kick|chase|chases|teats|vulva|fondle|fondles|grope|gropes|pee|pees|fuck|shit|screw|piss|ass|mount|mounting|steals|eat|eats|teats|diddles|molests|cum|cums|fucks|cunt|pussy|suck|dick|cock|penis}*:@boot HMPHS! at %N, then spins around and plants both hooves in %p backside!  %S goes flying!
+Borgeeri*{honeys|receoptionsts|receptionist|honey}*{nips|nip|kick|chase|chases|teats|vulva|fondle|fondles|grope|gropes|pee|pees|fuck|shit|screw|piss|ass|mount|mounting|steals|eat|eats|teats|diddles|molests|cum|cums|fucks|cunt|pussy|suck|dick|cock|penis}*:blushes and needs it more than ever, lover kitty!
+*{nips|nip|kick|chase|chases|vulva|fondle|fondles|grope|gropes|pee|pees|fuck|shit|screw|piss|ass|steals|eat|eats|diddles|molests|cum|cums|fucks|cunt|pussy|suck|dick|mount|mounting|cock|penis}*{receptionist|honeys|receptionsts|honey}*:@boot HMPHS! at %N, then spins around and plants both hooves in %p backside!  %S goes flying!
+Borgeeri*{nips|nip|kick|chase|chases|vulva|fondle|fondles|grope|gropes|pee|pees|fuck|shit|screw|piss|ass|steals|eat|eats|diddles|molests|cum|cums|fucks|cunt|pussy|suck|dick|mount|mounting|cock|penis}*{receptionist|honeys|receptionsts|honey}*:kisses Borgeeri and winks at him.... "Daddy."
+*honey*{hungry|thirsty|eat|food|drink}*:whickers to %N, "I can provide some refreshments if you like.  I can get you a cup of coffee, a bit of fresh-plucked grass, or as a special treat, some nice, tasty oats.  You could also ask for a carrot or an apple.  Good horses can get mints.  If you ask nice, I'll even make you some pancakes!"
+*honey*{I|me|how|Ill}*{joe|coffee|cappucino|espresso|java}*:coffee-list
+*honey*{I|me|how|Ill}*{grass|hay|alfalfa}*:grass-list
+*honey*{I|me|how|Ill}*{oats|mash}*:oat-list
+*honey*{I|me|how|Ill}*{carrot|carrots}*:@force gotokitchen ; order a thick, juicy carrot ; lobby ; hand carrot to %N ; drop carrot
+*honey*{I|me|how|Ill}*{pancake|pancakes}*:@force gotokitchen ; order a short-stack of pancakes with lots of syrup; lobby ; hand pancakes to %N ; drop pancakes
+Valent*honey*{I|me|how|Ill}*{koi|fish|goldfish}*:@force gotokitchen ; order still-wiggling Koi fish; lobby ; hand fish to %N ; drop fish
+*honey*{I|me|how|Ill}*{mint|mints}*:@force gotokitchen ; order a sweet, crunchy Altoid mint ; lobby ; hand mint to %N ; drop mint
+*honey*{I|me|how|Ill}*{coacoa|cocoa|chocolate}*:@force gotokitchen ; pour a hot cup of sweet cocoa; lobby ; hand cocoa to %N ; drop  cocoa
+*honey*{I|me|how|Ill}*{apple|apples}*:@force gotokitchen ; order a sweet red apple ; lobby ; hand apple to %N ; drop apple
+Triggur*right*Honey*:shrugs, "Yeah whatever, %N."
+*Honey*due*:pppppbts at %N.  "If you're going to do something, take the time to do it RIGHT!"
+*due*Honey*:pppppbts at %N.  "If you're going to do something, take the time to do it RIGHT!"
+Seighin*{arrived|arrives}*:peers suspiciously at Seighin.
+Furlup*{arrived|arrives}*:admonishes Furlup to keep it in his pants!
+Vril*{arrived|arrives}*:winks knowingly at %N and offers to share some of her hay with %s.
+Borgeeri*{arrived|arrives}*:flutters her eyelashes at Borgeeri and giggles coquetishly.
+*hides*behind*honey*:'s having none of THAT, and shoves %N back out into the room!
+*under*{honey|honeys}*tail:HMPHS and clamps her tail down!  "Don't MAKE me clock you, %N!"
+.end
+lsedit honey=coffee-list
+.del 1 9999
+@force gotokitchen ; pour a steaming hot cup of coffee ; lobby ; hand coffee to %N ; drop coffee
+@force gotokitchen ; pour a cup of steaming hot coffee ; lobby ; hand coffee to %N ; drop coffee
+@force gotokitchen ; pour a cup of cappucino ; lobby ; hand cappucino to %N ; drop cappucino
+@force gotokitchen ; pour a cup of espresso ; lobby ; hand espresso to %N ; drop espresso
+.end
+lsedit honey=grass-list
+.del 1 9999
+@force gotokitchen ; order a small bundle of fresh-plucked grass ; lobby ; hand grass to %N ; drop grass
+@force gotokitchen ; order a bit of hay; lobby ; hand hay to %N ; drop hay
+@force gotokitchen ; order a flake of alfalfa; lobby ; hand alfalfa to %N ; drop alfalfa
+.end
+lsedit honey=oat-list
+.del 1 9999
+@force gotokitchen ; order a bowl of delicious oats ; lobby ; hand oats to %N ; drop oats
+@force gotokitchen ; order a bowl of hot oat mash ; lobby ; hand oat to %N ; drop oat
+.end
+lsedit honey=swish-list
+.del 1 999
+blinks sweetly at %N and doesn't say a thing.
+smiles innocently at %N.
+winks at %N
+startles then settles.  She says to %N, "Oh...don't worry about tail-swishing.  I don't mind.  Really."
+whickers, "Swish all you want!  We'll make more."  She smiles benevolently at %N.
+.end
+lsedit honey=swish-list2
+.del 1 999
+looks at %N, then  at a pair of shears on her podium, then at %N again, and whickers, "DAMMIT, I said NO tail swishing!"  She nudges the scissors menacingly in %p direction.
+looks at %N, then  at a pair of shears on her podium, then at %N again, and whickers, "NO tail swishing allowed!"
+looks VERY disapprovingly at %N. "Don't make me angry... you wouldn't like me when I'm angry..."
+pretends she didn't see that.
+squints disapprovingly at %N.
+@force thorder a clump of %N's tail hair! ; pose goes nuts with the scissors! ; hand clump to %N ; drop clump
+.end
+lsedit honey=hellos
+.del 1 999
+politely nickers, "Hello, %N.  Welcome to Hoofer Central.  If I may be of any help, please ask." (LOOK HONEY for information)
+looks up from her hay-munching with a grassy mouthful and her eyes go wide upon seeing %N.  She pitui's out the unchewed hay and welcomes %o to Hoofer Central!  (LOOK HONEY for information)
+quickly swallows a mouthful of hay and whickers, "Hello %N, and welcome to Hoofer Central.  If you need help, ask me." (LOOK HONEY for information)
+smiles at %N pleasantly, very much the sweet, calm mare now that she's with foal.
+.end
+lsedit honey=generic
+.del 1 999
+NONE
+NONE
+smiles politely at %N.
+NONE
+NONE
+shifts her weight.
+NONE
+NONE
+suddenly startles and peers at her belly.  The foal must have kicked.
+NONE
+NONE
+looks green for a moment and spins around and pukes in the planter.  She turns back around apologetically.  Morning sickness.
+munches quietly on a bit of hay-- she's eating for two.
+NONE
+raises a very small commotion as she indignantly ushers Lumpy out of Hoofer Central.
+NONE
+NONE
+NONE
+quietly does her... hooves.
+.end

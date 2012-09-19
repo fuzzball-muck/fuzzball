@@ -1,0 +1,69 @@
+This is a version of base.db remade with Fuzzball 6 programs. I have included
+many programs that were not in the original base.db.
+
+* The database contains two players, One and Keeper. You should change One's
+  password immediately:
+
+    connect #1 potrzebie
+    @password potrzebie=<some new password>
+
+  Only One can perform some functions like setting and removing players'
+  Wizard flags. Keep its password safe!
+
+  Keeper is for owning general MUCK property such as MUF programs and public
+  areas. Programs that need a "force wizard" can use Keeper. Feel free to
+  rename Keeper with your MUCK's name or initials.
+
+* There are three environment rooms for public building:
+
+    $env/null    Null Environment Room
+    $env/in      Indoor Environment Room
+    $env/out     Outdoor Environment Room
+
+  By default new rooms are placed in the Null Environment Room.
+
+* Several MUF program locks are included:
+
+    $lock/nothing      Always fails (also "$nothing").
+    $lock/player       Only players (not zombies) pass.
+    $lock/wizard       Only un-Quelled Wizard players pass.
+    $lock/truewizard   Wizards pass whether Quelled or not.
+
+* Some commands in this database to which you may not be accustomed are:
+
+    alias        Set an alias, like a page #alias, to be used in page,
+                 whisper, laston, meetme, etc.
+    ansi         Shows an ANSI test pattern; "ansi #on" enables color.
+    away         Set an "away" flag that's shown in page, ws, and WHO.
+    banish       Allows a room owner to ban players from a room or area.
+    feel;taste   Sense verbs like "smell".
+    ignore       Operates Fuzzball 6's inserver "ignore" function.
+    @muf         Runs short MUF programs, like @mpi.
+    programs     Searches for MUF programs set Viewable.
+    spam         "spam #no" sets your _nospam?:yes property.
+    userlist     Lists players on the MUCK.
+
+  Use "<command> #help" to get documentation on any of them. To use alias and
+  away in your own MUF programs, "@view $lib/alias" and "@view $lib/away".
+  "@view $lib/table" for another unusual library, for tabular output, as in
+  ws, wd, laston, and wizards.
+
+* MUF compatibility libraries for tilde style ("~&110") and GlowMuck style
+  ("^red^") ANSI color are provided:
+
+    $include $lib/ansi (for tilde style)
+    $include $lib/glowansi (for GlowMuck style)
+
+  Tilde color programs that depend on the tilde color codes being intact after
+  performing ANSI operations will not work; however, there are vanishingly few
+  such programs. No library is necessary for Fuzzball 6 style raw escape codes
+  or the "textattr" primitive.
+
+* Some programs you may find missing are:
+
+    "hug" socials
+    Guests
+
+
+Hope that helps, and enjoy!  --Natasha
+

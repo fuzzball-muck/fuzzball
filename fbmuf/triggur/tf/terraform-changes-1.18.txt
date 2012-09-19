@@ -1,0 +1,54 @@
+ 
+CHANGES MADE BETWEEN RELEASE 1.04 AND RELEASE 1.18 OF TERRAFORM
+ 
+- Diddled the order of looking for player's location so it is more solid and
+  people can safely teleport around and use teleport objects.
+ 
+- The '!' terrain type now can use local/global fail/ofail set with
+  @editterrain (The default is still "You can't go that way." and "").
+ 
+- Added support for 'inside' rooms and building in the vertical direction
+  (this used to be a problem).
+ 
+- Added support for terrain library rooms so that a number of map rooms
+  can share terrain types (good for standardization, saves memory).
+ 
+- Made the room destroyer sleep for 1 second before starting so that
+  Riss's RIDE and other programs can finish what they need to do
+  before the room goes *poof*. 
+ 
+- Modified: now only player positions are tracked with @/occupants; this used
+  to be a problem if a zombie entered the world and was @rec'd.
+ 
+- Added on-the-fly sanity checking to make sure that the dbref
+  stored in the @/rooms propdir is valid.  It might NOT be valid,
+  for instance, if someone has @rec'd the room in question.  Note
+  that if it has since become ANOTHER spot on the planet, this will
+  NOT be detected... hence weirdness could still result.  But at least it
+  doesn't crash.
+ 
+- Added version control for automatic upgrades
+ 
+- Added sanity checker @sanity to help perform installation of
+  upgrades, expose possible deficiencies in terrain coverage, and
+  correct problems in the @/rooms/ and @/occupants/ propdirs.
+ 
+- Added @killworld for single-command @rec'ing of ALL the generated rooms in
+  a world.
+ 
+- Added the @inside command that frees up the vertical axis, regardless of
+  fly/diver permission props, for the current room.  Directions can then
+  be @block'ed and the builder can therefore freely build up and down now,
+  too.
+  
+- Removed @recycle command as a potential cause of trouble since it now does
+  on-the-fly sanity checking.
+  
+- Added the @admin command which allows the owner of a world or region or map
+  to list any number of other characters as co-admins of that area.
+ 
+- Added the @own command which allows an admin to claim ownership of a
+  generated room so that s/he can edit it.
+  
+END OF CHANGES
+-------------- 

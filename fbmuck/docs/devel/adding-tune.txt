@@ -1,0 +1,45 @@
+To add tunable parameters to fbmuck:
+
+1) Define what you want the tunable parameter to do, and how best to accomplish
+it.  (If it's a yes/no behavior, a bool would be your best bet, for example.)
+
+2) In include/defaults.h, add an all-caps define that's named something related
+to your tunable parameter.  The rule of thumb is, unless it's a security fix,
+MAKE THE DEFAULT BE BACKWARD-COMPATIBLE.
+
+3) In include/tune.h, add an entry for the variable name you're going to use.
+The standard is 'tp_', followed by the name of the tunable parameter.  There
+are some exceptions in the current codebase, but that's the standard for new
+tunables.  This file uses 'extern <type> tp_<name>;' as its syntax, as it's
+included in every file.
+
+4) In src/tune.c, add a definition for 'const <type> tp_<name> =
+<DEFAULTDEFINE>;'.  This initializes the variable so that people loading
+previous-versioned parameter files will still get The Right Behavior.
+
+5) Also in src/tune.c, look at the definitions for tune_*_entry and
+tune_*_list.
+
+"group" is a string related to the type of parameter it's tuning.  "name" is
+the name of the parameter, as displayed to the wizard typing @tune.  The next
+parameter is dependent on the type: str, tim, val, [typ/dbref], bool.  It's the
+address of the variable to store this parameter in.  "security" is the minimum
+mlev for a program to see it -- only wizards can change it, in any case.
+"label" is the descriptive text for the parameter.
+
+Add your tunable parameter in the tune_*_list that is appropriate for its type,
+and don't forget to do the &tp_<name> syntax for the variable (to give it its
+pointer, not its value).
+
+6) In whatever area you're modifying, do an if(tp_<name>){} around the block of
+changed behavior, if it's a bool... or a snprintf(string,"%s",tp_<name>) if
+it's a string, or whatever you need to in order to make use of the new @tune.
+
+7) Test that your modifications don't change the prior behavior when the tune
+is disabled, and test that your modifications do what you want them to when the
+tune is enabled (in the event of a bool @tune).
+
+And that's it!  Happy @tuning!
+
+-winged
+28Aug2003

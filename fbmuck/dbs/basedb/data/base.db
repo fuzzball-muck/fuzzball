@@ -1,0 +1,1402 @@
+***Foxen8 TinyMUCK DUMP Format***
+69
+1
+115
+autolook_cmd=look
+penny=penny
+pennies=pennies
+cpenny=Penny
+cpennies=Pennies
+dumpwarn_mesg=## Game will pause to save the database in a few minutes. ##
+deltawarn_mesg=## Game will pause to save changed objects in a few minutes. ##
+dumping_mesg=## Pausing to save database. This may take a while. ##
+dumpdeltas_mesg=## Saving changed objects ##
+dumpdone_mesg=## Save complete. ##
+idle_boot_mesg=Autodisconnecting for inactivity.
+playermax_warnmesg=You likely won't be able to connect right now, since too many players are online.
+playermax_bootmesg=Sorry, but there are too many players online.  Please try reconnecting in a few minutes.
+proplist_counter_fmt=P#
+proplist_entry_fmt=P#/N
+register_mesg=Sorry, but you need to mail to foxen@netcom.com to get a character on this test muck.
+rwho_passwd=potrzebie
+rwho_server=riemann.math.okstate.edu
+muckname=TygryssMUCK2
+leave_mesg=See ya later, alligator!
+huh_mesg=Huh?  (Type "help" for help.)
+ssl_keyfile_passwd=
+pcreate_flags=B
+reserved_names=
+reserved_player_names=
+aging_time= 90d  0:00:00
+dump_interval=  0d  4:00:00
+dump_warntime=  0d  0:02:00
+monolithic_interval=  1d  0:00:00
+maxidle=  0d  2:00:00
+rwho_interval=  0d  0:04:00
+clean_interval=  0d  0:15:00
+max_object_endowment=100
+object_cost=10
+exit_cost=1
+link_cost=1
+room_cost=10
+lookup_cost=0
+max_pennies=10000
+penny_rate=8
+start_pennies=50
+kill_base_cost=100
+kill_min_cost=10
+kill_bonus=50
+listen_mlev=3
+cmd_log_threshold_msec=1000
+max_process_limit=400
+max_plyr_processes=32
+max_instr_count=20000
+max_ml4_preempt_count=0
+instr_slice=2000
+process_timer_limit=4
+mcp_muf_mlev=3
+userlog_mlev=3
+movepennies_muf_mlev=2
+addpennies_muf_mlev=2
+pennies_muf_mlev=1
+mpi_max_commands=2048
+playermax_limit=56
+command_burst_size=500
+commands_per_time=20
+command_time_msec=1000
+max_output=131071
+pause_min=100
+free_frames_pool=8
+max_delta_objs=20
+max_loaded_objs=5
+default_room_parent=#0
+player_start=#0
+enable_home=yes
+enable_prefix=no
+verbose_clone=no
+exit_darking=yes
+thing_darking=yes
+dark_sleepers=no
+who_hides_dark=yes
+realms_control=no
+compatible_priorities=yes
+diskbase_propvals=no
+dbdump_warning=yes
+deltadump_warning=yes
+dumpdone_warning=yes
+idleboot=yes
+restrict_kill=yes
+allow_listeners=yes
+allow_listeners_obj=yes
+allow_listeners_env=yes
+log_commands=yes
+log_failed_commands=no
+log_interactive=yes
+log_programs=yes
+teleport_to_player=yes
+secure_teleport=no
+secure_thing_movement=no
+do_mpi_parsing=yes
+lazy_mpi_istype_perm=no
+optimize_muf=yes
+expanded_debug_trace=yes
+force_mlev1_name_notify=yes
+muf_comments_strict=yes
+playermax=no
+look_propqueues=no
+lock_envcheck=no
+proplist_int_counter=yes
+registration=no
+support_rwho=no
+periodic_program_purge=yes
+use_hostnames=yes
+secure_who=no
+who_doing=yes
+allow_zombies=yes
+wiz_vehicles=no
+ignore_support=yes
+ignore_bidirectional=yes
+starttls_allow=no
+#68
+The HeartStone
+65
+-1
+59
+1
+792906953
+792906971
+1
+792906957
+*Props*
+@/value:3:1
+_/de:10:The HeartStone is a single large ruby orb, flawless and pure, sitting upon a dark obsidian pedestal.  Perhaps its deep red color is what gives rise to its name.  Or perhaps it's the faint pulsing glow deep within it...  Or are you merely imagining that?  The legends of it say that it embodies the spiritual heart of the land.  Perhaps there are many reasons why it is so christened.  Undeniably, though, it carries the weight of countless years within it.
+_/fl:10:The HeartStone appears to be fused into the obsidian of the pedestal, immovable.
+_/lok:4:#1
+*End*
+65
+-1
+1
+#67
+south;cave;in;entrance;enter;s
+65
+-1
+-1
+2
+792906014
+792906874
+3
+792906318
+*Props*
+_/de:10:You see the entrance of a dark cave to the south.  It's a familiar place, as it is where you first awoke in this world.
+_/odr:10:blocks the light for a moment as %s enters the cave.
+_/osc:10:adventurously enters the dark mysterious cave of awakenings.
+_/sc:10:You intrepidly enter the cave...
+*End*
+1
+64
+1
+#66
+out;light;exit;ahead;northwest;west;nw;w;north;n
+64
+-1
+-1
+2
+792904474
+792906939
+5
+792906454
+*Props*
+_/de:10:You look towards the light and see that it is reflecting off the rocks around a turn in the cavern.  There's probably an exit that way.
+_/odr:10:stumbles out of the cave, blinking at the light.
+_/osc:10:stumbles towards the cave entrance, briefly eclipsing the light.
+_/sc:10:You walk carefully towards the light, stumbling over some rocks and stalagmites.  As you round the corner in the corridor, you see the exit, and quickly make your way outside, blinking at the brighter light.
+*End*
+1
+65
+1
+#65
+A small clearing in the Wilderness
+61
+68
+-1
+0
+792904336
+792974786
+19
+792974265
+*Props*
+_/de:10:Pine and spruce trees thickly populate the forest around a small natural clearing, with birds chirping and twittering among them.  To the south lies the entrance to the cave of awakenings.  In the center of the clearing is a large obsidian column, jutting from the ground, with a brilliant translucent red stone capping it.  To one side, contrary to the pristine wilderness about, is a redwood bulletin board, looking for all the world like a relic from a national park.  Oddly, though, you see no trails leading from the clearing.  Who is this place for?
+*End*
+-1
+67
+1
+#64
+Cave of Awakening
+62
+1
+-1
+64
+792904082
+1117876927
+10
+792904284
+*Props*
+_/de:10:It's very dark in here, but you can faintly see a light ahead.  Maybe that's the way out.
+*End*
+-1
+66
+1
+#63
+Null Environment Room
+0
+-1
+62
+131072
+792903437
+792903437
+0
+792903440
+*Props*
+*End*
+-1
+-1
+1
+#62
+Indoors Environment Room
+0
+64
+61
+131072
+792903323
+1117876927
+10
+792903375
+*Props*
+*End*
+-1
+-1
+1
+#61
+Outdoors Environment Room
+0
+65
+-1
+131072
+792903236
+792974786
+22
+792903340
+*Props*
+*End*
+-1
+-1
+1
+#60
+editmesg;editmsg
+59
+-1
+5
+2
+792902975
+792902975
+0
+792902975
+*Props*
+*End*
+1
+58
+1
+#59
+Bulletin Board
+65
+-1
+-1
+1
+792902883
+792906563
+2
+792903115
+*Props*
+@/value:3:1
+_/de:10:@$mesgboard recent
+msgs#/i:10:0
+*End*
+0
+60
+1
+#58
+gen-mesgboard
+31
+-1
+56
+18087988
+792492979
+792903114
+1
+792492982
+*Props*
+_/de:10:A scroll containing a spell called gen-mesgboard
+_version:10:2.6
+*End*
+1
+#57
+3who;3w
+0
+-1
+54
+2
+792492946
+792493078
+1
+792492946
+*Props*
+*End*
+1
+56
+1
+#56
+cmd-3who
+31
+-1
+55
+1310740
+792492946
+792493078
+1
+792492946
+*Props*
+_/de:10:A scroll containing a spell called cmd-3who
+*End*
+1
+#55
+con-recordhost
+31
+-1
+53
+18087988
+792492904
+1117876927
+13
+792492904
+*Props*
+_/de:10:A scroll containing a spell called con-recordhost
+*End*
+1
+#54
+watchfor;wf
+0
+-1
+52
+2
+792492758
+792492758
+0
+792492758
+*Props*
+*End*
+1
+53
+1
+#53
+con-announce
+31
+-1
+51
+18087988
+792492733
+1117876927
+42
+792492736
+*Props*
+_/de:10:A scroll containing a spell called con-announce
+_docs:10:@list $con/announce=1-42
+*End*
+1
+#52
+uptime
+0
+-1
+50
+2
+792492679
+792492867
+1
+792492679
+*Props*
+*End*
+1
+51
+1
+#51
+cmd-uptime
+31
+-1
+49
+1441796
+792492679
+1117876774
+13
+792492679
+*Props*
+_/de:10:A scroll containing a spell called cmd-uptime
+_norestart:10:yes
+*End*
+1
+#50
+sweep
+0
+-1
+48
+2
+792492641
+792492641
+0
+792492641
+*Props*
+*End*
+1
+49
+1
+#49
+cmd-sweep
+31
+-1
+47
+1310724
+792492639
+792492639
+0
+792492639
+*Props*
+_/de:10:A scroll containing a spell called cmd-sweep
+*End*
+1
+#48
+cp;mv;propcp;propmv
+0
+-1
+46
+2
+792492628
+792905085
+3
+792492628
+*Props*
+*End*
+1
+47
+1
+#47
+cmd-mv-cp
+31
+-1
+44
+18087988
+792492627
+792905106
+15
+792492628
+*Props*
+_/de:10:A scroll containing a spell called cmd-mv-cp
+_defs/copy-prop:10:"$global/mv-cp" match "cp-prop" call
+_defs/move-prop:10:"$global/mv-cp" match "mv-prop" call
+*End*
+1
+#46
+edit
+0
+-1
+45
+2
+792492519
+792907281
+2
+792492519
+*Props*
+*End*
+1
+44
+1
+#45
+change
+0
+-1
+42
+2
+792492497
+792492497
+0
+792492497
+*Props*
+*End*
+1
+43
+1
+#44
+cmd-edit
+31
+-1
+43
+1310740
+792492416
+792907714
+4
+792492417
+*Props*
+_/de:10:A scroll containing a spell called cmd-edit
+*End*
+1
+#43
+cmd-change
+31
+-1
+41
+1310740
+792492408
+792492408
+0
+792492410
+*Props*
+_/de:10:A scroll containing a spell called cmd-change
+*End*
+1
+#42
+@when;@whe;@wh
+0
+-1
+40
+2
+792492385
+792906370
+2
+792492385
+*Props*
+*End*
+1
+41
+1
+#41
+cmd-@when
+31
+-1
+39
+17039396
+792492384
+792906370
+2
+792492385
+*Props*
+_/de:10:A scroll containing a spell called cmd-@when
+*End*
+1
+#40
+@check
+0
+-1
+38
+2
+792492358
+792492546
+1
+792492358
+*Props*
+*End*
+1
+39
+1
+#39
+cmd-@check
+31
+-1
+37
+1310740
+792492356
+792492546
+1
+792492358
+*Props*
+_/de:10:A scroll containing a spell called cmd-@check
+*End*
+1
+#38
+@archive;@archiv;@archi;@arch;@arc
+0
+-1
+36
+2
+792492304
+792975037
+4
+792492304
+*Props*
+*End*
+1
+37
+1
+#37
+cmd-@archive
+31
+-1
+27
+1310740
+792492259
+792975037
+3
+792492262
+*Props*
+_/de:10:A scroll containing a spell called cmd-@archive
+*End*
+1
+#36
+lsedit;lsedi;lsed;lse
+0
+-1
+35
+2
+792492075
+792492075
+0
+792492075
+*Props*
+*End*
+1
+27
+1
+#35
+put;replace;stuff
+0
+-1
+33
+2
+792491870
+792493072
+14
+792491870
+*Props*
+*End*
+1
+34
+1
+#34
+cmd-put
+31
+-1
+32
+1310740
+792491870
+792493072
+14
+792491870
+*Props*
+_/de:10:A scroll containing a spell called cmd-put
+*End*
+1
+#33
+fetch;retrieve;grab
+0
+-1
+30
+2
+792491841
+792491841
+0
+792491841
+*Props*
+*End*
+1
+32
+1
+#32
+cmd-fetch
+31
+-1
+28
+1310740
+792491841
+792491841
+0
+792491841
+*Props*
+_/de:10:A scroll containing a spell called cmd-fetch
+*End*
+1
+#31
+Belt Pouch
+1
+58
+-1
+1
+792491787
+792902686
+2
+792491816
+*Props*
+@/value:3:1
+_/clk:4:#1
+_/lok:4:#1
+*End*
+0
+-1
+1
+#30
+pose;pos;po
+0
+-1
+26
+2
+792491484
+792491512
+3
+792491484
+*Props*
+*End*
+1
+28
+1
+#29
+con-mailwarn
+31
+-1
+21
+18087972
+792491169
+1117876927
+15
+792491169
+*Props*
+_/de:10:A scroll containing a spell called con-mailwarn
+_version:10:1.2
+*End*
+1
+#28
+cmd-pose
+31
+-1
+29
+1310724
+792491103
+792491512
+3
+792491103
+*Props*
+_/de:10:A scroll containing a spell called cmd-pose
+*End*
+1
+#27
+cmd-lsedit
+31
+-1
+3
+18087972
+792491085
+792491085
+0
+792491086
+*Props*
+_/de:10:A scroll containing a spell called cmd-lsedit
+_version:10:1.4
+*End*
+1
+#26
+whisper;whispe;whisp;whis;whi;wh;w
+0
+-1
+24
+2
+792490976
+792905908
+2
+792490976
+*Props*
+*End*
+1
+25
+1
+#25
+cmd-whisper
+31
+-1
+23
+1310740
+792490974
+792905908
+2
+792490976
+*Props*
+_/de:10:A scroll containing a spell called cmd-whisper
+*End*
+1
+#24
+page;pag;pa;p
+0
+-1
+6
+2
+792490807
+792860300
+5
+792490807
+*Props*
+_page/formats/opage:10:%n pages, "%m" to %t.
+_page/formats/opose:10:In a page-pose to %t, %n %m
+_page/formats/page:10:You page, "%m" to %n.
+_page/formats/pose:10:You page-pose, "%i %m" to %n
+*End*
+1
+23
+1
+#23
+cmd-page
+31
+-1
+34
+1310740
+792490785
+792860307
+5
+792860307
+*Props*
+_/de:10:A scroll containing a spell called cmd-page
+day:3:9176
+*End*
+1
+#22
+tiq-idleboot
+31
+-1
+25
+1441812
+792490188
+1117876774
+698
+792490188
+*Props*
+_/de:10:A scroll containing a spell called tiq-idleboot
+*End*
+1
+#21
+lib-cases
+31
+-1
+20
+1310724
+792490165
+792490165
+0
+792490165
+*Props*
+_/de:10:A scroll containing a spell called lib-cases
+_defs/case:10:begin dup
+_defs/default:10:pop 1 if
+_defs/end:10:break then dup
+_defs/endcase:10:pop pop 1 until
+_defs/when:10:if pop
+*End*
+1
+#20
+lib-look
+31
+-1
+19
+17105188
+792490093
+792490093
+0
+792490096
+*Props*
+_/de:10:A scroll containing a spell called lib-look.muf
+_defs/.cmd-look:10:"$lib/look" match "cmd-look" call
+_defs/.contents-filter:10:"$lib/look" match "contents-filter" call
+_defs/.db-desc:10:"$lib/look" match "db-desc" call
+_defs/.dbstr-desc:10:"$lib/look" match "dbstr-desc" call
+_defs/.get-contents:10:"$lib/look" match "get-contents" call
+_defs/.list-contents:10:"$lib/look" match "list-contents" call
+_defs/.long-display:10:"$lib/look" match "long-display" call
+_defs/.safecall:10:"$lib/look" match "safecall" call
+_defs/.short-display:10:"$lib/look" match "short-display" call
+_defs/.short-list:10:"$lib/look" match "short-list" call
+_defs/.str-desc:10:"$lib/look" match "str-desc" call
+_defs/.unparse:10:"$lib/look" match "unparse" call
+_docs:10:@list $lib/look=1-58
+_lib-version:10:1.31
+*End*
+1
+#19
+lib-index
+31
+-1
+18
+18087972
+792490019
+792490019
+0
+792490025
+*Props*
+_/de:10:A scroll containing a spell called lib-index
+_defs/.index-add:10:"$lib/index" match "index-add" call
+_defs/.index-add-sort:10:"$lib/index" match "index-add-sort" call
+_defs/.index-delete:10:"$lib/index" match "index-delete" call
+_defs/.index-envmatch:10:"$lib/index" match "index-envmatch" call
+_defs/.index-first:10:"$lib/index" match "index-first" call
+_defs/.index-last:10:"$lib/index" match "index-last" call
+_defs/.index-match:10:"$lib/index" match "index-match" call
+_defs/.index-matchrange:10:"$lib/index" match "index-matchrange" call
+_defs/.index-next:10:"$lib/index" match "index-next" call
+_defs/.index-prev:10:"$lib/index" match "index-prev" call
+_defs/.index-remove:10:"$lib/index" match "index-remove" call
+_defs/.index-set:10:"$lib/index" match "index-set" call
+_defs/.index-value:10:"$lib/index" match "index-value" call
+_defs/.index-write:10:"$lib/index" match "index-write" call
+_defs/.std-index-add:10:"$lib/index" match "std-index-add" call
+_defs/.std-index-add-sort:10:"$lib/index" match "std-index-add-sort" call
+_defs/.std-index-delete:10:"$lib/index" match "std-index-delete" call
+_defs/.std-index-envmatch:10:"$lib/index" match "std-index-envmatch" call
+_defs/.std-index-first:10:"$lib/index" match "std-index-first" call
+_defs/.std-index-last:10:"$lib/index" match "std-index-last" call
+_defs/.std-index-match:10:"$lib/index" match "std-index-match" call
+_defs/.std-index-next:10:"$lib/index" match "std-index-next" call
+_defs/.std-index-prev:10:"$lib/index" match "std-index-prev" call
+_defs/.std-index-remove:10:"$lib/index" match "std-index-remove" call
+_defs/.std-index-set:10:"$lib/index" match "std-index-set" call
+_defs/.std-index-value:10:"$lib/index" match "std-index-value" call
+_defs/.std-index-write:10:"$lib/index" match "std-index-write" call
+_docs:10:@list $lib/index=1-109
+_lib-version:10:1.2
+*End*
+1
+#18
+lib-reflist
+31
+-1
+17
+17105700
+792490011
+792490011
+0
+792490013
+*Props*
+_/de:10:A scroll containing a spell called lib-reflist
+_defs/REF-add:10:"$lib/reflist" match "REF-add" call
+_defs/REF-allrefs:10:"$lib/reflist" match "REF-allrefs" call
+_defs/REF-delete:10:"$lib/reflist" match "REF-delete" call
+_defs/REF-editlist:10:"$lib/reflist" match "REF-editlist" call
+_defs/REF-filter:10:"$lib/reflist" match "REF-filter" call
+_defs/REF-first:10:"$lib/reflist" match "REF-first" call
+_defs/REF-inlist?:10:"$lib/reflist" match "REF-inlist?" call
+_defs/REF-list:10:"$lib/reflist" match "REF-list" call
+_defs/REF-next:10:"$lib/reflist" match "REF-next" call
+_docs:10:@list $lib/reflist=1-46
+*End*
+1
+#17
+lib-mesgbox
+31
+-1
+16
+18087972
+792489977
+792903115
+3
+792489979
+*Props*
+_/de:10:A scroll containing a spell called lib-mesgbox
+_defs/MBOX-append:10:"$lib/mesgbox" match "MBOX-append" call
+_defs/MBOX-badref?:10:"$lib/mesgbox" match "MBOX-badref?" call
+_defs/MBOX-count:10:"$lib/mesgbox" match "MBOX-count" call
+_defs/MBOX-create:10:"$lib/mesgbox" match "MBOX-create" call
+_defs/MBOX-delmesg:10:"$lib/mesgbox" match "MBOX-delmesg" call
+_defs/MBOX-destroy:10:"$lib/mesgbox" match "MBOX-destroy" call
+_defs/MBOX-insmesg:10:"$lib/mesgbox" match "MBOX-insmesg" call
+_defs/MBOX-message:10:"$lib/mesgbox" match "MBOX-message" call
+_defs/MBOX-msginfo:10:"$lib/mesgbox" match "MBOX-msginfo" call
+_defs/MBOX-num2ref:10:"$lib/mesgbox" match "MBOX-num2ref" call
+_defs/MBOX-ref2num:10:"$lib/mesgbox" match "MBOX-ref2num" call
+_defs/MBOX-ref2prop:10:"$lib/mesgbox" match "MBOX-ref2prop" call
+_defs/MBOX-setinfo:10:"$lib/mesgbox" match "MBOX-setinfo" call
+_defs/MBOX-setmesg:10:"$lib/mesgbox" match "MBOX-setmesg" call
+_docs:10:@list $lib/mesgbox=1-58
+_version:10:1.2
+*End*
+1
+#16
+lib-mesg
+31
+-1
+15
+18087972
+792489923
+792903115
+5
+792489925
+*Props*
+_/de:10:A scroll containing a spell called lib-mesg
+_defs/MSG-append:10:"$lib/mesg" match "MSG-append" call
+_defs/MSG-count:10:"$lib/mesg" match "MSG-count" call
+_defs/MSG-create:10:"$lib/mesg" match "MSG-create" call
+_defs/MSG-delitem:10:"$lib/mesg" match "MSG-delitem" call
+_defs/MSG-destroy:10:"$lib/mesg" match "MSG-destroy" call
+_defs/MSG-info:10:"$lib/mesg" match "MSG-info" call
+_defs/MSG-insitem:10:"$lib/mesg" match "MSG-insitem" call
+_defs/MSG-item:10:"$lib/mesg" match "MSG-item" call
+_defs/MSG-message:10:"$lib/mesg" match "MSG-message" call
+_defs/MSG-setinfo:10:"$lib/mesg" match "MSG-setinfo" call
+_defs/MSG-setitem:10:"$lib/mesg" match "MSG-setitem" call
+_docs:10:@list $lib/mesg=1-50
+*End*
+1
+#15
+lib-match
+31
+-1
+14
+18087972
+792489902
+1117876927
+64
+792489904
+*Props*
+_/de:10:A scroll containing a spell called lib-match
+_defs/.controls:10:"$lib/match" match "controls" call
+_defs/.match_controlled:10:"$lib/match" match "match_controlled" call
+_defs/.multi_rmatch:10:"$lib/match" match "multi_rmatch" call
+_defs/.noisy_match:10:"$lib/match" match "noisy_match" call
+_defs/.noisy_pmatch:10:"$lib/match" match "noisy_pmatch" call
+_defs/.std_table_match:10:"$lib/match" match "std_table_match" call
+_defs/.table_match:10:"$lib/match" match "table_match" call
+_docs:10:@list $lib/match=1-60
+*End*
+1
+#14
+lib-editor
+31
+-1
+13
+18087972
+792489696
+792489696
+0
+792489726
+*Props*
+_/de:10:A scroll containing a spell called lib-editor
+_defs/editor:10:"$lib/editor" match "editor" call
+_defs/editorheader:10:"$lib/editor" match "editorheader" call
+_defs/editorloop:10:"$lib/editor" match "editorloop" call
+_defs/editorparse:10:"$lib/editor" match "editorparse" call
+_docs:10:@list $lib/editor=1-50
+*End*
+1
+#13
+lib-edit
+31
+-1
+12
+18087972
+792489683
+792975037
+1
+792489686
+*Props*
+_/de:10:A scroll containing a spell called lib-edit
+_defs/EDITcenter:10:"$lib/edit" match "EDITcenter" call
+_defs/EDITcopy:10:"$lib/edit" match "EDITcopy" call
+_defs/EDITdisplay:10:"$lib/edit" match "EDITdisplay" call
+_defs/EDITfmt_rng:10:"$lib/edit" match "EDITfmt_rng" call
+_defs/EDITformat:10:"$lib/edit" match "EDITformat" call
+_defs/EDITindent:10:"$lib/edit" match "EDITindent" call
+_defs/EDITjoin:10:"$lib/edit" match "EDITjoin" call
+_defs/EDITjoin_rng:10:"$lib/edit" match "EDITjoin_rng" call
+_defs/EDITleft:10:"$lib/edit" match "EDITleft" call
+_defs/EDITlist:10:"$lib/edit" match "EDITlist" call
+_defs/EDITmove:10:"$lib/edit" match "EDITmove" call
+_defs/EDITreplace:10:"$lib/edit" match "EDITreplace" call
+_defs/EDITright:10:"$lib/edit" match "EDITright" call
+_defs/EDITsearch:10:"$lib/edit" match "EDITsearch" call
+_defs/EDITshuffle:10:"$lib/edit" match "EDITshuffle" call
+_defs/EDITsort:10:"$lib/edit" match "EDITsort" call
+_defs/EDITsplit:10:"$lib/edit" match "EDITsplit" call
+_docs:10:@list $lib/edit=1-80
+*End*
+1
+#12
+lib-lmgr
+31
+-1
+11
+18154276
+792489469
+792903115
+6
+792489483
+*Props*
+_/de:10:A scroll containing a spell called lib-lmgr
+_defs/.lmgr-clearelem:10:"$lib/lmgr" match "lmgr-clearelem" call
+_defs/.lmgr-clearrange:10:"$lib/lmgr" match "lmgr-clearrange" call
+_defs/.lmgr-deletelist:10:"$lib/lmgr" match "lmgr-deletelist" call
+_defs/.lmgr-deleterange:10:"$lib/lmgr" match "lmgr-deleterange" call
+_defs/.lmgr-extractrange:10:"$lib/lmgr" match "lmgr-extractrange" call
+_defs/.lmgr-fullrange:10:"$lib/lmgr" match "lmgr-fullrange" call
+_defs/.lmgr-getbrange:10:"$lib/lmgr" match "lmgr-getbrange" call
+_defs/.lmgr-getcount:10:"$lib/lmgr" match "lmgr-getcount" call
+_defs/.lmgr-getelem:10:"$lib/lmgr" match "lmgr-getelem" call
+_defs/.lmgr-getlist:10:"$lib/lmgr" match "lmgr-getlist" call
+_defs/.lmgr-getrange:10:"$lib/lmgr" match "lmgr-getrange" call
+_defs/.lmgr-insertrange:10:"$lib/lmgr" match "lmgr-insertrange" call
+_defs/.lmgr-moverange:10:"$lib/lmgr" match "lmgr-moverange" call
+_defs/.lmgr-putbrange:10:"$lib/lmgr" match "lmgr-putbrange" call
+_defs/.lmgr-putelem:10:"$lib/lmgr" match "lmgr-putelem" call
+_defs/.lmgr-putrange:10:"$lib/lmgr" match "lmgr-putrange" call
+_defs/.lmgr-setcount:10:"$lib/lmgr" match "lmgr-setcount" call
+_defs/lmgr-clearelem:10:"$lib/lmgr" match "lmgr-clearelem" call
+_defs/lmgr-clearrange:10:"$lib/lmgr" match "lmgr-clearrange" call
+_defs/lmgr-deletelist:10:"$lib/lmgr" match "lmgr-deletelist" call
+_defs/lmgr-deleterange:10:"$lib/lmgr" match "lmgr-deleterange" call
+_defs/lmgr-extractrange:10:"$lib/lmgr" match "lmgr-extractrange" call
+_defs/lmgr-fullrange:10:"$lib/lmgr" match "lmgr-fullrange" call
+_defs/lmgr-getbrange:10:"$lib/lmgr" match "lmgr-getbrange" call
+_defs/lmgr-getcount:10:"$lib/lmgr" match "lmgr-getcount" call
+_defs/lmgr-getelem:10:"$lib/lmgr" match "lmgr-getelem" call
+_defs/lmgr-getlist:10:"$lib/lmgr" match "lmgr-getlist" call
+_defs/lmgr-getrange:10:"$lib/lmgr" match "lmgr-getrange" call
+_defs/lmgr-insertrange:10:"$lib/lmgr" match "lmgr-insertrange" call
+_defs/lmgr-moverange:10:"$lib/lmgr" match "lmgr-moverange" call
+_defs/lmgr-putbrange:10:"$lib/lmgr" match "lmgr-putbrange" call
+_defs/lmgr-putelem:10:"$lib/lmgr" match "lmgr-putelem" call
+_defs/lmgr-putrange:10:"$lib/lmgr" match "lmgr-putrange" call
+_defs/lmgr-setcount:10:"$lib/lmgr" match "lmgr-setcount" call
+_docs:10:@list $lib/lmgr=1-50
+_lib-version:10:1.2
+*End*
+1
+#11
+lib-props
+31
+-1
+10
+17105700
+792489458
+1117876927
+16
+792489459
+*Props*
+_/de:10:A scroll containing a spell called lib-props
+_defs/.envprop:10:"$lib/props" match "envprop" call
+_defs/.envsearch:10:"$lib/props" match "envsearch" call
+_defs/.locate-prop:10:"$lib/props" match "locate-prop" call
+_defs/.setpropstr:10:"$lib/props" match "setpropstr" call
+_defs/envprop:10:"$lib/props" match "envprop" call
+_defs/envsearch:10:"$lib/props" match "envsearch" call
+_defs/locate-prop:10:"$lib/props" match "locate-prop" call
+_defs/setpropstr:10:"$lib/props" match "setpropstr" call
+_docs:10:@list $lib/props=1-20
+*End*
+1
+#10
+lib-stackrng
+31
+-1
+9
+18087972
+792489414
+792489414
+0
+792489415
+*Props*
+_/de:10:A scroll containing a spell called lib-stackrng
+_defs/popn:10:"$lib/stackrng" match "popoffn" call
+_defs/sr-catrng:10:"$lib/stackrng" match "catranges" call
+_defs/sr-copyrng:10:"$lib/stackrng" match "copyrange" call
+_defs/sr-deleterng:10:"$lib/stackrng" match "deleterange" call
+_defs/sr-extractrng:10:"$lib/stackrng" match "extractrange" call
+_defs/sr-filterrng:10:"$lib/stackrng" match "filterrange" call
+_defs/sr-insertrng:10:"$lib/stackrng" match "insertrange" call
+_defs/sr-poprng:10:"$lib/stackrng" match "popoffn" call
+_defs/sr-swaprng:10:"$lib/stackrng" match "swapranges" call
+*End*
+1
+#9
+lib-strings
+31
+-1
+-1
+18087972
+792489396
+792975037
+29
+792489397
+*Props*
+_/de:10:A scroll containing a spell called stringslib
+_defs/.asc:10:"$lib/strings" match "STRasc" call
+_defs/.blank?:10:striplead not
+_defs/.center:10:"$lib/strings" match "center" call
+_defs/.chr:10:"$lib/strings" match "STRchr" call
+_defs/.command_parse:10:"$lib/strings" match "STRparse" call
+_defs/.fillfield:10:"$lib/strings" match "fillfield" call
+_defs/.left:10:"$lib/strings" match "left" call
+_defs/.right:10:"$lib/strings" match "right" call
+_defs/.rsplit:10:"$lib/strings" match "rsplit" call
+_defs/.singlespace:10:"$lib/strings" match "sms" call
+_defs/.sls:10:striplead
+_defs/.sms:10:"$lib/strings" match "sms" call
+_defs/.split:10:"$lib/strings" match "split" call
+_defs/.strip:10:strip
+_defs/.stripspaces:10:strip
+_defs/.sts:10:striptail
+_defs/STRasc:10:"$lib/strings" match "STRasc" call
+_defs/STRblank?:10:striplead not
+_defs/STRcenter:10:"$lib/strings" match "center" call
+_defs/STRchr:10:"$lib/strings" match "STRchr" call
+_defs/STRfillfield:10:"$lib/strings" match "fillfield" call
+_defs/STRleft:10:"$lib/strings" match "left" call
+_defs/STRparse:10:"$lib/strings" match "STRparse" call
+_defs/STRright:10:"$lib/strings" match "right" call
+_defs/STRrsplit:10:"$lib/strings" match "rsplit" call
+_defs/STRsinglespace:10:"$lib/strings" match "sms" call
+_defs/STRsls:10:striplead
+_defs/STRsms:10:"$lib/strings" match "sms" call
+_defs/STRsplit:10:"$lib/strings" match "split" call
+_defs/STRstrip:10:strip
+_defs/STRsts:10:striptail
+_docs:10:@list $lib/strings=1-29
+*End*
+1
+#8
+write
+59
+-1
+-1
+2
+792902898
+792902898
+0
+792902898
+*Props*
+*End*
+1
+58
+1
+#7
+protect
+59
+-1
+2
+2
+792902928
+792902928
+0
+792902928
+*Props*
+*End*
+1
+58
+1
+#6
+@register;@registe;@regist;@regis;@regi;@reg
+0
+-1
+-1
+2
+792488646
+792903613
+60
+792488646
+*Props*
+*End*
+1
+3
+1
+#5
+erase
+59
+-1
+7
+2
+792902963
+792902963
+0
+792902963
+*Props*
+*End*
+1
+58
+1
+#4
+def-pmatch
+31
+-1
+22
+18087988
+792488729
+792491119
+1
+792488729
+*Props*
+_/de:10:A scroll containing a spell called def-pmatch
+*End*
+1
+#3
+cmd-@register
+31
+-1
+4
+1310740
+792488645
+792903613
+60
+792488646
+*Props*
+_/de:10:A scroll containing a spell called cmd-@register
+*End*
+1
+#2
+read
+59
+-1
+8
+2
+792902912
+792902912
+0
+792902912
+*Props*
+*End*
+1
+58
+1
+#1
+One
+64
+31
+-1
+19
+792318601
+1117876933
+19
+1117876927
+*Props*
+@/AnnLITime:3:1117876927
+@/host:10:127.0.0.1
+@/lasthost:10:warpcore.ossi.com(garthm)
+@/value:3:2
+_page/lastpaged:10:*u[GU)j_PY2
+_page/lastversion:10:MUFpage v2.40 by Foxen
+_page/mail#:10:0
+_prefs/container:10:belt pouch
+_reg/tmp/exit1:5:57
+_reg/tmp/prog1:5:59
+_reg/tmp/thing1:5:68
+_whisp/lastwhispered:10:Wizardess Wizardess
+_whisp/lastwhisperer:10:Wizardess
+*End*
+0
+-1
+CuG4ZtGvyRbfJubgNISTcg==
+#0
+Room Zero
+-1
+63
+-1
+0
+792318601
+1117876927
+71
+792903606
+*Props*
+_/de:10:You are in Room Zero.  It's very dark here.
+_/osc:10:is briefly visible through the mist.
+_connect/announce:5:53
+_connect/lasthost:5:55
+_connect/mailwarn:5:29
+_disconnect/announce:5:53
+_reg/con/announce:5:53
+_reg/con/multiguest:5:59
+_reg/env/indoors:5:62
+_reg/env/null:5:63
+_reg/env/outdoors:5:61
+_reg/global/lsedit:5:27
+_reg/global/mv-cp:5:47
+_reg/lib/case:5:21
+_reg/lib/edit:5:13
+_reg/lib/editor:5:14
+_reg/lib/index:5:19
+_reg/lib/lmgr:5:12
+_reg/lib/look:5:20
+_reg/lib/match:5:15
+_reg/lib/mesg:5:16
+_reg/lib/mesgbox:5:17
+_reg/lib/props:5:11
+_reg/lib/reflist:5:18
+_reg/lib/stackrng:5:10
+_reg/lib/strings:5:9
+_reg/mesgboard:5:58
+_sys/dumpinterval:3:14400
+_sys/lastdumptime:3:1117876933
+_sys/max_connects:3:1
+_sys/maxpennies:3:10000
+_sys/shutdowntime:3:792585790
+_sys/startuptime:3:1117876774
+day:3:9176
+*End*
+-1
+57
+1
+***END OF DUMP***

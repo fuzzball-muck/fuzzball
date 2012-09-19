@@ -1,0 +1,216 @@
+An introduction to TinyMUCK
+
+I assume that you are familiar with TinyMUD, and know how to create
+things, link rooms, descibe and lock things.  If you do not know
+these, you should read the other piece of documentation, the USER's
+guide to TinyMUD.
+
+The purpose of this document is to describe TinyMUCK features,
+excluding those involving programming.
+
+ACTIONS
+
+@action <name>=<place>
+
+Sets up an action and attaches it to an object, room, or player.
+Actions are similar to exits, in the sense that you can @link them to
+exits and they can take you places and such.  Hence, actions can be
+thought of as movable exits, as they move with the object/player
+carrying them.
+
+@action alone will create an action, and you can then use @attach to
+attach actions to things.
+
+Actions will always work in the owner's rooms, but outside of those,
+they will only work if a location is set JUMP_OK.
+
+Object actions work whenever an object is in the room.  Player actions
+can only work for the player who owns them.
+
+LINKS
+
+Links in TinyMUCK can not only be applied to Rooms, they can also be
+applied to objects, players, and even other exits.
+
+The LINK_OK flags when applied to objects and players have the same
+effect, allowing other players to link to the particular object or
+you.
+
+Linking an action/exit to an object means that a succesful activation
+of the exit will bring the object to you.  If that object is with
+another player, then it disappears from his inventory and is brought
+to you
+
+Linking an action/exit to a player means that a succesful activation
+of the exit will bring you to the player, provided that the player is
+JUMP_OK.
+
+Linking an action/exit to a room takes you to that room when
+successful.
+
+Linking an action/exit to other actions/exits is what is termed a meta
+link.  When a meta-link is triggered, all the exits that it was linked
+to will be triggered at that time.  As a result, all those exits will
+occur, moving objects around or any other things.  (It will not move
+players to rooms or destinations, however.)
+
+The syntax for the creation of a meta-link is:
+
+	@link a = b; c; d; e
+
+Where b c d e are all actions.
+
+Let's say 1234 brings an object to room a, and 4567 moves another
+object to room b.
+
+@link hey=1234; 4567
+
+hey
+
+Will do both of them at once.
+
+CHOWN_OK
+
+The CHOWN_OK flag may be set by players on objects they own.  When
+that is done and another player picks it up, (It MUST be picked up),
+the other play can type @chown <objectname>, and the object will
+become his.  Actions are not inherited, however, so a true @destroy
+function will have to be implemented later.
+
+@odrop
+
+Objects, Rooms, and players now have a drop and an odrop field that is
+settable by:
+
+@drop <object>=<message>
+@odrop <object>=<message>
+
+These work exactly like @succ and @osucc, though they apply to various
+objects differently.
+
+When applied to things, it gives the message when a person drops
+something.  When applied to links, the @drop tells the player
+entering, and the @odrop tells others that he has entered.  When
+applied to people, the @odrop tells others how you died, and the @drop
+tells the person who killed you how you died.
+
+For instance.  A thing called "desk"
+
+@drop desk=You drop the desk with a sigh.
+@odrop desk=drops the desk with a sigh.
+
+drop desk
+
+(you see)
+You drop the desk with a sigh.
+(others see)
+Whoever drops the desk with a sigh.
+
+A link/exit.
+@drop out=You slide down the chute and end up in a dark place.
+@odrop out=slides down the shute and enters from above, looking
+surprised.
+
+When you enter the room, you see..
+You slide down the chute and end up in a dark place.
+(others see)
+Whoever slides down the shute and enters from above, looking
+surprised.
+
+For people.
+
+@drop me=Whoever drops over, flops, and dies.
+@odrop me=Whoever drops over, flops, and dies, with blood sprouting
+from all over.
+
+Wizard types, kill Whoever=100
+
+(He sees:)
+Whoever drops over, flops, and dies.
+(Everone else except you)
+Wizard killed Whoever!  Whoever drops over, flops, and dies, with
+blood sprouting from all over.
+
+(You yourself will see the usual messages..)
+
+PROPERTY LISTS
+
+Property lists (p-lists) are an extension to objects, players and
+rooms for TinyMUCK.  Each object will now have a p-list that can be
+checked against in locks and the like.  p-lists are basically string
+pairs, and can be anything.
+
+The GENDER flag will now be a part of p-lists instead of being part of
+the flags.
+
+Syntax for setting properties:
+
+	@set <thing>=property:type
+
+For instance,
+	@set me=sex:male
+	@set me=hair:red
+
+Locks use the same syntax
+
+	@lock out=me | sex:male
+
+Locks check the person's properties and the properties of everything
+she's carrying at the moment.
+
+To unset properties, simply use:
+	@set <thing>=property:
+
+To remove all properties, type:
+	@set <thing>=:
+
+Properties stay on until removed, and an object can have as many
+properties as it likes.
+
+Locks against properties are paricularly useful in situations where
+you want any number of things to allow a player in, but don't want to
+fix the number.  Just lock it to the property, and give the player a
+thing that has the property.
+
+PAGE
+
+Page can now include a message.  To include a message with page, just
+type:
+
+	page <person>=message.
+
+The ABODE and HAVEN flags are optional and may change from game to
+game depending on the player.
+
+Abode is independent from link, so you can set home to here even
+though it's not link_ok.
+
+EXAMINE
+
+Examine now shows you the owner of a place if you don't control it.
+
+PRONOUN SUBSTITUTION
+
+Revison:
+	%n -- name
+	%s -- subjective
+	%o -- objective
+	%p -- possessive
+
+From now on, all these may be substituted by the players themselves.
+By doing,
+
+	@set me=%o:its
+
+for instance, all @osucc, @ofail will have the substitution template
+replaced with `its.'  Defaults will remain the same as before, so if
+you are male/female and not some exotic sex, all those will still
+work.
+
+An interesting side effect is that from now on, %a, %b and so on will
+all be settable by players.  What it means is up to all of you
+concerned.
+
+@PROG
+
+See MUF programmer's manual.

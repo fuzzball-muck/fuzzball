@@ -1,0 +1,25 @@
+ 
+TO UPGRADE TO THE LATEST RELEAST OF TERRAFORM:
+ 
+   1) Be a wizard and go to the place where the terraform programs are kept.
+   2) Using tinyfugue,
+          /quote -0 'terraform-upgrade.txt
+   3) Find ALL exits to the command program
+          @find @initworld
+      and for each exit,
+          @name <exit>=@sanity
+   4) BE SURE TO VISIT EACH AND EVERY WORLD AND MAP ROOM CURRENTLY ON YOUR
+      SYSTEM AND TYPE @SANITY !!!! THIS IS _VERY_ IMPORTANT!!!
+ 
+      Failure to perform steps 3-4 will result in MANY serious problems!
+ 
+   5) If you have scripts that upload worlds, be aware that @EDITMAP now asks
+      an additional question (terrain library dbref).  Add a line with just
+      a 0 in it at the end of this command in your upload script or it WILL
+      get out of sync and screw up. 
+  
+ 
+TO INSTALL TERRAFORM FRESH ON A NEW SITE:
+  
+   1) Read the file terraform-docs.txt
+ 

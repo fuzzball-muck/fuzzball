@@ -1,0 +1,197 @@
+#! /bin/bash
+
+# /etc/rc.d/init.d/fbmuck
+#
+# fbmuck    This shell script takes care of starting and stopping
+#           FuzzBall Muck servers on this machine.
+#
+# chkconfig: 345 82 23
+#
+# description: fbmuck is an online interactive multiplayer chat/role-play
+#              MUD server with a persistent database.
+#
+# processname: fbmuck
+# config: /etc/fbmucks
+# 
+
+
+# Site init script for fbmuck.
+#
+# This script references the file /etc/fbmucks.  The /etc/fbmucks file should
+# contain a list of mucks to start/stop.  The format of /etc/fbmucks is:
+#
+# MUCKNAME  USERNAME  MUCK_ROOT_PATH                 SCRIPTNAME  PORTS
+# tygmuck3  tygryss   /home/revar/tygmuck            restart     8888,8899s
+# feepmuck  foxen     /home/foxen/muck               restart     8800
+#
+# Port numbers are separate by commas.  An 's' at the end of a port number
+# means that that port is designated as a secure SSL port.
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+[ -f /usr/local/bin/fbmuck ] || exit 0
+[ -f /etc/fbmucks ] || exit 0
+
+RETVAL=0
+pidfile=netmuck.pid
+who=`whoami`
+cmd=$1
+shift
+mucknames=$@
+
+# See how we were called.
+case "$cmd" in
+  start)
+    # Start mucks.
+    cat /etc/fbmucks | \
+    grep -v '^[ 	]*#' |\
+    grep -v '^[ 	]*$' |\
+    while read name user path script ports; do
+        if [ "x$mucknames" != "x" ]; then
+            found=0
+            for muckname in $mucknames; do
+                if [ "x$muckname" = "x$name" ]; then
+                    found=1
+                fi
+            done
+            if [ $found -eq 0 ]; then
+                continue
+            fi
+        fi
+        if [ "x$who" = "xroot" -o "x$who" = "x$user" ]; then
+            ports=`echo $ports | sed 's/,/ /g' | sed 's/\([0-9]*\)s/-sport \1/g'`
+            rm -f $path/$pidfile
+            echo -n "Starting $name fbmuck: "
+	    failed=0
+            if [ "x$who" = "x$user" ]; then
+                $path/$script $ports
+		if [ $? == 0 ]; then
+                    success "start $name fbmuck"
+		else
+		    failed=1
+                    failure "start $name fbmuck"
+		fi
+            else
+                rcode=`su $user -c "$path/$script $ports; echo \\\$?"`
+		if [ "$rcode" == 0 ]; then
+                    success "start $name fbmuck"
+		else
+		    failed=1
+                    failure "start $name fbmuck"
+		fi
+            fi
+	    if [ $failed == 0 ]; then
+		while [ ! -f $path/$pidfile ]; do
+		    sleep 1
+		done
+	    fi
+            echo ""
+        fi
+    done
+    touch /var/lock/subsys/fbmuck
+    ;;
+  stop)
+    # Stop mucks.
+    cat /etc/fbmucks | \
+    grep -v '^[ 	]*#' |\
+    grep -v '^[ 	]*$' |\
+    while read name user path script ports; do
+        if [ "x$mucknames" != "x" ]; then
+            found=0
+            for muckname in $mucknames; do
+                if [ "x$muckname" = "x$name" ]; then
+                    found=1
+                fi
+            done
+            if [ $found = 0 ]; then
+                continue
+            fi
+        fi
+        if [ "x$who" = "xroot" -o "x$who" = "x$user" ]; then
+            didfail=1
+            echo -n "Shutting down $name fbmuck: "
+            if [ -f $path/$pidfile ]; then
+                pid=`cat $path/$pidfile`
+                if [ -d /proc/$pid ]; then
+                    if kill $pid; then
+                        didfail=0
+                    else
+                        didfail=1
+                    fi
+                    # Wait for server to complete a clean shutdown.
+                    # If the process doesn't change status for a period
+                    # longer than sixty seconds, assume it is hung, and exit.
+                    laststat="S"
+                    limitcnt=60
+                    while [ -d /proc/$pid ]; do
+                        newstat=`grep 'State:' /proc/$pid/status|awk '{print $2}'`
+                        if [ "x$newstat" != "xR" -a "x$laststat" = "x$newstat" ]; then
+                            limitcnt=`expr $limitcnt - 1`
+                            if [ $limitcnt -eq 0 ]; then
+                                didfail=1
+                                break
+                            fi
+                        else
+                            limitcnt=60
+                            laststat=$newstat
+                        fi
+                        sleep 1
+                    done
+                fi
+                rm -f $path/$pidfile
+            fi
+            [ $didfail = 0 ] \
+                && success "stop $name fbmuck" \
+                || failure "stop $name fbmuck"
+            echo ""
+        fi
+    done
+    rm -f /var/lock/subsys/fbmuck
+    ;;
+  reload)
+    $0 stop
+    $0 start
+    ;;
+  restart)
+    $0 stop
+    $0 start
+    ;;
+  status)
+    cat /etc/fbmucks | \
+    grep -v '^[ 	]*#' |\
+    grep -v '^[ 	]*$' |\
+    while read name user path script ports; do
+        if [ "x$mucknames" != "x" ]; then
+            found=0
+            for muckname in $mucknames; do
+                if [ "x$muckname" = "x$name" ]; then
+                    found=1
+                fi
+            done
+            if [ $found -eq 0 ]; then
+                continue
+            fi
+        fi
+        if [ "x$who" = "xroot" -o "x$who" = "x$user" ]; then
+            echo -n "fbmuck for $name "
+            if [ -f $path/$pidfile ]; then
+                pid=`cat $path/$pidfile`
+                if [ -d /proc/$pid ]; then
+                    echo "is running. ($pid)"
+                else
+                    echo "is not running."
+                fi
+            else
+                echo "is not running."
+            fi
+        fi
+    done
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|restart|status}"
+    exit 1
+esac
+
+exit 0
+

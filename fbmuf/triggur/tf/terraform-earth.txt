@@ -1,0 +1,634 @@
+"Now setting up this room to host a planet.
+@killworld
+yes
+@initworld
+2400
+800
+1000
+0
+0
+"Now installing the map of the Earth.
+@editmap
+.del 1 9999
+,aaaaaa,,,,,,,,,,aa,aaaaa,,,,,,aaaaaaa,,,,,,,,,,,,,,,,,,aaaa,,,,,,,,,,,,,,,,,,,,,,,,
+tatatatata,,,at,,,ta,tata,,,,,,atatat,,,,,,,,,,,,,,,ata,,,,,,atata,,,,,,,,,,,,,,,ata
+ttttttttctttttttttttttttttttt,,,tttt,,,,,,,,,tttttttttttttttttttttttttttt,ttttttt,,,
+,,,cctmmcctttttttttttdtdttttt,t,,,,,,,,tt,,,,t,atmtmtttttititititititittttttttt,,,,,
+,,,,ccccmccpppphlllhddd,,,pp,,,,,,,,,,hh,,fff,,cmmmccccciiiifiiiliiiiiiii,,,ii,,,,,,
+,,,,,,chmcmcpppphhdddd,,,,,,,,m,,,,,,hh,,fffffccccmmmclffiiififiiifffffffff,,,,,t,,,
+,,,,,,,dddcmdppphhhsss,,,,,,,,,,,,,,,,,,,fff,d,,,,ccmcllffiiiiiiiiiiiifffffff,,ii,,,
+,,,,,,,d,,dmmddphhs,,ss,,,,,,,,,,,,,,,,f,,,,,,,dd,,,dddfffrfrfrfrfffrfrfrfff,,ff,,,,
+,,,,,,,dr,,rdmdr,,,,,,s,,,,,,,,,,,,,,,ggggggdddddd,ddd,d,,,rrrrrr,,rrrrr,,,,fff,,,,,
+,,,,,,,,r,,,rrmrr,,,,,,,rr,,,,,,,,,,,ffgddigggddddd,dd,,,,,,,rrrr,,,rrr,r,r,,,,,,,,,
+,,,,,,,,,,,,,,rmr,,,,,,,,,,,,,,,,,,,,rrdgdddgggdddd,,d,,,,,,,,,,,,,,,,,r,,,r,,,,,,,,
+,,,,,,,,,,,,,,,rmrrrrrr,,,,,,,,,,,,,,,rrrgddgggid,,,,,,,,,,,,,,r,,,,,r,,rr,r,,,,,,,,
+,,,,,,,,,,,,,,,,mmmrrrfffffdd,,,,,,,,,rrrrgrgrgd,,d,,,,,,,,,,,,,,,,,,rr,,r,r,,,,,,,,
+,,,,,,,,,,,,,,,,rmmrrrfffpppdd,,,,,,,,,,rrrrr,r,,gi,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,mmrrrffpddd,,,,,,,,,,,,rrrrrr,rf,,,,,,,,,,,,,,,,,,,r,,,,rf,,,,,,,,
+,,,,,,,,,,,,,,,,,,rmmrrfpdd,,,,,,,,,,,,,,rrrrr,,,,,,,,,,,,,,,,,,,,rrrfpddddpf,,,,,,,
+,,,,,,,,,,,,,,,,,,,,mmfppdd,,,,,,,,,,,,,,,rr,,,,,,,,,,,,,,,,,,,,,ffppddddddpff,,,,,,
+,,,,,,,,,,,,,,,,,,,,,mrfd,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,fffpfppddpfff,,d,,,
+,,,,,,,,,,,,,,,,,,,,,mfd,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,f,,,fffff,,,r,,,,
+,,,,,,,,,,,,,,,,,,,,,mf,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,ff,,,,
+,,,,,,,,,,,,,,,,,,,,,,f,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,a,,aaa,,,a,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,aaaaaaaaaa,,,,,,,aaa,,,,,,,,,aaaaaaa,,,,,,,,,aaaaa,,,,,,,,aaa,,,aaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+.end
+1
+2400
+1
+800
+Map of the whole planet Earth
+0
+"Now editting the OCEAN terrain type.
+@editterrain ,
+A %oceanadj% %ocean%.
+You are swimming in a %oceanadj% %ocean%.  The %wavecolor% waves %waveaction% all around you.
+swim
+swims
+100
+%seaunder% the %ocean%.
+%underaction% here.
+swim
+swims
+0
+lsedit here=./underaction
+.del 1 9999
+You sense movement
+Dark shapes move about
+Plankton drifts by you
+A school of fish rallies nearby
+You feel a slight current
+You feel a strong current
+The %ocean% currents carry you slowly
+Weak light from far above barely penetrates
+Bubbles rise past you
+.end
+lsedit here=./seaunder
+.del 1 9999
+Deep under
+Far below
+Far under
+Deep below
+Under
+.end
+lsedit here=./wavecolor
+.del 1 9999
+deep blue
+bluish-green
+dark grey
+dark blue
+huge, whitecapped
+cold
+.end
+lsedit here=./waveaction
+.del 1 9999
+roll
+pitch
+swell
+roll and swell
+pitch and swell
+rise and fall
+.end
+lsedit here=./ocean
+.del 1 9999
+ocean
+sea
+.end
+lsedit here=./oceanadj
+.del 1 9999
+vast
+rolling
+vast, rolling
+huge
+immense
+great
+.end
+"Now editting the RAINFOREST terrain type.
+@editterrain r
+In a rainforest
+You are %rflocal%.  All around you are %rfthings%.  %rffx%
+hike
+hikes
+0
+lsedit here=./rffx
+.del 1 9999
+In the distance you hear a monkey howling.
+Brightly coloured birds flit from branch to branch.
+The whole forest is alive with the sounds of birds.
+High above, you see a pair of big, golden eyes watching you.
+Small streams of water fork and merge along the forest floor.
+You feel the steady drip of water from the canopy leaves.
+Insects buzz through the air.
+The forest seems oddly quiet here.
+.end
+lsedit here=./bigsize
+ big
+ immense
+ huge
+ monolithic
+ tremendous
+ medium-sized
+ 
+.end
+lsedit here=./rfthings
+.del 1 9999
+vines hanging between%bigsize% trees
+creepers enveloping the trees from the bottom up
+%bigsize% trees%treefx%
+signs of recent animal presence
+patches of sunlight reaching the forest floor
+puddles of recent rainfall
+.end
+lsedit here=./treefx
+.del 1 9999
+, gnarled with age
+, damp from recent rains
+, dotted with tropical insects
+, dappled in shadow and light
+, supporting myriad vines
+, laden with dark green moss
+ 
+.end
+lsedit here=./rflocal
+.del 1 9999
+in a small clearing
+in a dense overgrowth of forest
+in a thickly-vined ravine
+at the top of a small hill
+near the top of a small hill
+near a small pond of water
+by a small stream of water that flows in and out of the dense undergrowth
+at the base of a small rock outcrop, %treefx%
+at the base of a small cliff, %treefx%
+near a tall rock outcrop.  Halfway up the face you see the entrance to a small cave
+next to a small stream's waterfall, gurgling into some rocks and disappearing
+.end
+"Now editting the CONIFEROUS FOREST terrain type.
+@editterrain c
+In a pine forest.
+You are standing %cfwhere%.  The ground here %cfground%, and %cffx%.
+walk
+walks
+0
+lsedit here=./cffx
+.del 1 9999
+all around you, you hear the sounds of birds chirping and calling
+a small stream gurgles, surging and resurging between the rocks
+a dark green moss hangs in abundance from the trees
+you hear the quiet whisper of the wind blowing through the treetops
+pine needles crunch softly beneath your feet
+in the distance you hear a wolf's cry
+the air carries the scent of pine
+you see footprints on the ground
+.end
+lsedit here=./cfground
+.del 1 9999
+is covered in a thick carpet of pine needles
+is dotted with pine cones
+is strewn with half-buried boulders
+is eroding from a small birm
+is littered with large, fallen tree trunks
+pitches %slopes% to the %directions%
+banks %slopes% to the %directions%
+is damp and grassy
+is dry and barren
+.end
+lsedit here=./directions
+.del 1 9999
+north
+south
+east
+west
+northwest
+southwest
+northeast
+southeast
+.end
+lsedit here=./slopes
+.del 1 9999
+slighty
+just a bit
+a little
+a bit
+steeply
+sharply
+gently
+gradually
+.end
+lsedit here=./allsizes
+.del 1 9999
+%bigsize%
+%bigsize%
+%bigsize%
+%bigsize%
+ small
+ tall, thin
+ 
+.end
+lsedit here=./cfwhere
+.del 1 9999
+in a dense stand of%allsizes% %cftreekinds%s
+in a small meadow surrounded by%allsizes% %cftreekinds%s
+next to a%allsizes% %cftreekinds%
+in a shallow ravine dotted with%allsizes% %cftreekinds%s
+near the top of a slowly rising hill peppered with%allsizes% %cftreekinds%s
+.end
+lsedit here=./cftreekinds
+.del 1 9999
+Douglas fir
+pine tree
+coniferous tree
+conifer
+evergreen
+.end
+"Now editting the DECIDUOUS FOREST terrain type.
+@editterrain f
+In a forest.
+You %dfwhere1% a%bigsize% %dfwhere2%.  %dfwhere3%.  %dffx%
+walk
+walks
+0
+lsedit here=./dfwhere3
+.del 1 9999
+Shrubs and grass grow up between the small boulders littering the ground
+The forest floor is hidden by a thick carpet of shrubs and brambles
+The forest floor angles %slopes% to the %directions%
+Large, rotting tree trunks criss-cross the ground
+The ground here banks %slopes% to the %directions%
+Dirt and gravel erode from a small hill here
+A small, muddy stream trickles from between some rocks and runs past you
+.end
+lsedit here=./dffx
+.del 1 9999
+ 
+All around you hear birdsong.
+The wind rustles in the leaves overhead.
+Small birds flit from limb to limb.
+The forest seems quiet and peaceful here.
+Patches of light dance across the forest floor.
+The canopy overhead is thick and the forest is dark.
+The air smells pleasantly of wood and water.
+.end
+lsedit here=./dfwhere1
+.del 1 9999
+are in the midst of
+find yourself standing in
+are standing in
+are walking through
+are deep in
+find yourself in
+.end
+lsedit here=./dfwhere2
+.del 1 9999
+forest, dense with%allsizes% %dftreetypes%s%treefx%
+forest clearing
+meadow, surrounded by%allsizes% %dftreetypes%s%treefx%
+.end
+lsedit here=./dftreetypes
+.del 1 9999
+oak
+elm
+walnut
+ash
+hickory
+willow
+weeping willow
+aspen
+maple
+poplar
+chestnut
+mesquite
+tamarind
+eldar
+scrub oak
+.end
+"Now editting the HILL terrain type.
+@editterrain h
+Hilly grasslands
+%hgdesctype%
+walk
+walks
+0
+lsedit here=./hgdesctype
+.del 1 9999
+Sprawling around you for as far as the eye can see are hills, covered with thick, tall grass.
+You find yourself next to a lone %dftreetypes% tree in a%bigsize% hilly grassland.
+Here at a low point in the grasslands, water gathers in a small, marsh-like pond.
+You are on the %directions% side of a hill on the %oceanadj% grasslands.
+You see a small stand of %dftreetypes% trees.
+.end
+"Now editting the SAVANNAH terrain type.
+@editterrain g
+The Savannah
+You are in a%bigsize% savannah, %savwhere%.  %savthings%, and %savfx%.
+trek
+treks
+0
+lsedit  here=./savwhere
+.del 1 9999
+the flat terrain stretching to the horizons
+the dry grasses waving in a very slight breeze
+the tall grass standing waist high for as far as you can see
+.end
+lsedit here=./savthings
+.del 1 9999
+A tall, brown termite mound towers next to you
+A%bigsize% Baobab tree gives you pleasant shade
+Here you see a small stand of Acacia trees
+Spotty patches of dried grass cluster on the barren ground
+The ground here in the remains of a watering hole is cracked and dried
+Here you see a small, muddy watering hole, rich with animal tracks and signs of life
+.end
+lsedit here=./savfx
+.del 1 9999
+the distance wavers with mirages in the heat
+carrion birds circle in the sky above
+a small gust of hot wind passes you
+you occasionally hear the rasping of an insect
+.end
+"Now editting the DESERT terrain type.
+@editterrain d
+The desert
+%desdescs% %desground% %desfx%
+wander
+wanders
+0
+lsedit here=./desground
+.del 1 9999
+ Hot desert sands surround your feet.
+ Scalloped sand dunes stretch into the distance.
+ The ground is covered with yucca and small cactus.
+ The rocky, barren soil is riddled with the dens and burrows of nocturnal creatures.
+ The ground is a patchwork of gravel and solid rock.
+ Sagebrush dots the terrain randomly.
+ A dry riverbed meanders through the region.
+ The ground is dotted with Creosote bushes. 
+.end
+lsedit here=./desfx
+.del 1 9999
+ The intense heat surrounds you.
+ The horizon shimmers, lost in silvery mirages.
+ Tumbleweeds rustle in a hot breeze.
+ An oppressive heat saps your strength.
+ You feel hot and thirsty.
+ High above, vultures circle.
+ Unseen desert insects click and buzz.
+ 
+ A small dust devil spirals nearby.
+.end
+lsedit here=./desrocks
+.del 1 9999
+spires
+bluffs
+outcrops
+cliffs
+buttes
+crags
+arches
+.end
+lsedit here=./rockdescs
+.del 1 9999
+, painted in hues of red
+, painted in shades of orange
+, painted in yellows
+, crumbling with age and erosion
+, banded by time and some ancient ocean
+.end
+lsedit here=./desdescs
+.del 1 9999
+Stark sandstone %desrocks% rise from the desert floor%rockdescs%.
+The rolling desert land stretches into the distance, sloping %slopes% to the %directions%.
+.end
+"Now editting the SWAMP terrain type.
+@editterrain s
+A swamp
+%swampground%
+trudge
+trudges
+0
+lsedit here=./swampwater
+.del 1 9999
+murky
+brackish
+cold, dark
+algae-covered
+dank
+.end
+lsedit here=./swampground
+.del 1 9999
+The %swampwater% waters here are deep and still. %swampthings% %swampfx%
+Dark, fertile soil, soft and muddy, springs with life and grasses.
+Tall, twisted trees%treefx%, rise from the %swampwater% waters.
+.end
+lsedit here=./swampthings
+.del 1 9999
+ 
+ The branches overhead%treefx%, filter the light to a pale gray.
+ A soft sandbar rises from the water nearby.
+ Cattails and water grasses surround you.
+ Gnarled trees tangle as they reach toward the dark canopy above.
+ Dark green moss hangs in long bundles from the trees.
+ The rotted stumps of long dead trees rise from the %swampwater% waters.
+.end
+lsedit here=./swampfx
+.del 1 9999
+ 
+ A dense fog wafts by.
+ Echoing bird calls can be heard in the distance. 
+ Small, quiet waves lap at the trees nearby.
+ The croaking and cricketing of myriad frogs echos through the swamp.
+ Somewhere in the distance you hear a splash.
+ Mosquitos sing as they hover and dart near you.
+ A cool, humid breeze brushes your face.
+.end
+"Now editting the PLAINS terrain type.
+@editterrain p
+The plains
+You are on a %oceanadj% expanse of grasslands. %pthings% %pfx%
+walk
+walks
+0
+lsedit here=./pthings
+.del 1 9999
+Waist-high grasses surround you for as far as your eye can see.
+Here you see a small, blue lake, dotted with birds.
+You are on the edge of a small slough, thick with cattails.
+Gently rolling hills stretch to the horizon.
+A small belt of%allsizes% %dftreetypes% stands nearby.
+ 
+.end
+lsedit here=./pfx
+The waist-high grasses sway gently in the breeze.
+Meadowlarks call as they flit about.
+Birds flap lazily through the skies above.
+ 
+.del 1 9999 
+.end
+"Now editting TUNDRA terrain type.
+@editterrain t
+The tundra
+%tundesc% %tunfx%
+hike
+hikes
+0
+lsedit here=./tundesc
+.del 1 9999
+The ground here is barren save for lichens and short grasses.
+The ground seems to slope gently to the %directions%.
+The cold, hard ground is scattered with small stones.
+You are standing on a%bigsize% tundra, nothing around you for miles but frigid wasteland.
+.end
+lsedit here=./tunfx
+.del 1 9999
+.end
+"Now editting the LAKE terrain type.
+@editterrain l
+In a lake
+You are swimming in a %oceanadj% lake.  The %wavecolor% waves %lakeaction% all around you.
+swim
+swims
+100
+%seaunder% the lake.
+%underaction% here.
+swim
+swims
+_dive?
+lsedit here=./underlake
+.del 1 9999
+You sense movement
+Dark shapes move about
+A school of fish rallies nearby
+Weak light filter from far above barely penetrates
+Bubbles rise past you.
+.end
+lsedit here=./lakeaction
+.del 1 9999
+roll
+lap
+rise and fall
+wash
+.end
+"Now editting the ARCTIC terrain type
+@editterrain a
+The frozen arctic
+%arcdesc% %arcthings% %arcfx%
+trudge
+trudges
+0
+lsedit here=./arcdesc
+.del 1 9999
+You are in the%coldadj% arctic waste.
+You stand on a large, flat, open expanse of snow and ice.
+You are deep in the%coldadj% arctic.
+You are standing on a%bigsize% chunk of ice in an ice flow.
+.end
+lsedit here=./coldadj
+.del 1 9999
+ 
+ frozen
+ freezing
+ frigid
+ cold
+.end
+lsedit here=./arcthings
+.del 1 9999
+ 
+ You see hard snow drifts, sculpted by the wind.
+ Beneath your feet is a thick sheet of ice.
+ Small chasms yawn beneath your feet, breaks in the glacial ice.
+ Something seems to be frozen into the ice beneath your feet.
+ In the distance you can see the spires of icebergs.
+.end
+lsedit here=./arcfx
+.del 1 9999
+ Wind-blown snow crystals slide along at your feet.
+ A dense ice crystal fog has set in.
+ The snow crunches and squeaks beneath your feet.
+ The whipping wind chills you to the bone.
+ The slippery ice gives you no solid footing.
+ A light snow, crystalizing from the air, blows by you.
+ The gray, dim light chills you.
+.end
+"Now editting the MOUNTAIN terrain type.
+@editterrain m
+In the mountains
+%mtndesc% %mtnthings% %mtnfx%
+climb
+climbs
+0
+lsedit here=./mtndesc
+.del 1 9999
+You are in a%canyonadj% canyon, %canyonwhere% and %canyondir%.
+You stand on the %directions% face of a%mountaindesc% mountainside.
+.end
+lsedit here=./canyonwhere
+.del 1 9999
+nestled between two%mountaindesc% peaks
+surrounded by%mountaindesc% peaks
+.end
+lsedit here=./canyondir
+.del 1 9999
+trending north to south
+trending east to west
+arcing from the north to the east
+arcing from the north to the west
+bending from the south to the west
+bending from the south to the east
+.end
+lsedit here=./mountaindesc
+.del 1 9999
+ 
+ ice-covered
+ snow-covered
+ forested
+ rocky
+ towering
+ great
+ enormous
+ stark
+ steep
+.end
+lsedit here=./canyonadj
+.del 1 9999
+ 
+ deep
+ narrow
+ steep
+ shallow
+.end
+lsedit here=./mtnthings
+.del 1 9999
+ 
+ All around you see%bigsize% %cftreekinds%.
+ You see some sharp granite rocks.
+ Large, fallen trees litter the ground.
+ The rock here is solid and hard.
+ The rock here is crumbling and soft, weathered by wind and the ages.
+.end
+lsedit here=./mtnfx
+.del 1 9999
+ 
+ Low clouds drift whispily by the face of the cliffs.
+ Birds circle lazily in the sky.
+ The wind filters through the trees with a whisper.
+.end
+@act tftempreturn=me
+@link tftempreturn=here
+@tport 1371 131
+@flush no
+@desc here=You are standing next to the face of a glacier.  After a double-take, you notice large letters frozen deep in the ice.  They read... S... L... A R T I... B A R T... F A S T.  Oh dear...
+@tport 500 750
+@tport #add Antarctica
+@tport 430 330
+@tport #add RainForest
+@tport 1200 400
+@tport #add Savannah
+@tport 500 400 900
+@tport #add DeepSpace
+@tport 1000 398 -80
+@tport #add DeepSea
+tftempreturn
+@rec tftempreturn
+"Editting complete.  Earth map installed.

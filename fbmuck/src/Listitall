@@ -1,0 +1,22 @@
+#!/bin/csh
+
+set oldterm=$term
+set term=none
+
+set tempfile=listemp$$
+
+foreach file ( *.c ../include/* )
+	echo "/*****************  FILE: $file  *****************/" >! $tempfile
+	cat $file | indent -st | fold >> $tempfile
+	set fllen=`cat $tempfile | wc -l`
+	@ fmlen=((66 - ($fllen % 66)) % 66)
+	while ($fmlen > 0)
+		echo "" >> $tempfile
+		@ fmlen-=1
+	end
+	cat $tempfile
+	rm $tempfile
+end
+
+set term=$oldterm
+

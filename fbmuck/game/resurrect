@@ -1,0 +1,22 @@
+#!/bin/sh
+# This shell script is designed to try to save a database file that is
+#  damaged or partial, such as might happen when a PANIC dump fails to
+#  complete.
+
+if [ $# != 2 ]
+then
+  echo "Usage: $0 infile outfile"
+  exit 1
+fi
+
+if [ "`tail -1 $1`" != "***END OF DUMP***" ]
+then
+  echo "The dumpfile is incomplete.  Truncating to last valid object"
+  lastline=`grep -n "^#[0-9]*\$" $1 | tail -1 | cut -d: -f1`
+  echo "The first" `grep "^#[0-9]*\$" $1 | tail -1 | tail +2c` "objects will be restored."
+  (head -$lastline $1; echo "***END OF DUMP***") > tempdb.$$
+  ./sanity tempdb.$$
+else
+  ./sanity $1
+fi
+

@@ -1,0 +1,5 @@
+@action ansitest=#0=tmp/exit1
+@link $tmp/exit1=#0
+@propset $tmp/exit1=str:/_/fl:{null:{with:border,bg_white,{tell:`B=Bold, U=Underline, F=Flash, D=Dim, R=Reverse`{nl}{attr:{&border},{left:,8}}{parse:bg,{mklist:,black,red,yellow,green,cyan,blue,magenta,white},{attr:{&border},{&bg},{left:{midstr:{default:{&bg},normal},1,5},6}},{nl},}}{foreach:fg,{mklist:,black,red,yellow,green,cyan,blue,magenta,white},{tell:{attr:{&border},{&fg},{left:{default:{&fg},normal},8}}{parse:bg,{mklist:,bg_black,bg_red,bg_yellow,bg_green,bg_cyan,bg_blue,bg_magenta,bg_white},{parse:styl,{mklist:,bold,underline,flash,dim,reverse},{attr:{&styl},{&fg},{&bg},{midstr:{toupper:{&styl}},1}},{nl},} ,{nl},}}}}}
+@propset $tmp/exit1=lock:/_/lok:me&!me
+

@@ -1,0 +1,43 @@
+MCP Messages:
+	mcp-cord-open   _id, _type
+	mcp-cord        _id, _message, [args...]
+	mcp-cord-closed _id,
+
+MUF Prims:
+	CORD_RESERVE [ str:type -- ]
+		Reserve a cord type so only this prog can use it.
+	CORD_LISTEN  [ str:type -- ]
+		Listen for new cords of the given type.
+	CORD_OPEN    [ str:type -- str:cordID ]
+		Open a new cord of the given type.
+	CORD_SEND    [ str:cordID str:mesg dict:args -- ]
+		Send a message in the given cord.
+	CORD_CLOSE   [ str:cordID -- ]
+		Close the given cord.
+
+MUF Events:
+    CORD.OPENED.cordid
+		"descr"    descriptor the cord is for.
+	    "cordid"   id of the cord
+		"type"     type of the cord
+    CORD.DATA.cordid
+		"descr"    descriptor the cord is for.
+	    "cordid"   id of the cord
+		"type"     type of the cord
+		"message"  name of the specific message
+		"args"     dictionary of arguments
+    CORD.CLOSED.cordid
+		"descr"    descriptor the cord is for.
+	    "cordid"   id of the cord
+		"type"     type of the cord
+
+MUF Macros:
+    CORD_READ [ str:cordID -- str:mesg dict:args ]
+		{ "CORD.*." rot strcat }list event_waitfor dup
+		"CORD.{OPENED|CLOSED}." stringpfx if
+		    swap pop abort
+		else
+			pop dup "message" []
+			swap "args" []
+		then
+

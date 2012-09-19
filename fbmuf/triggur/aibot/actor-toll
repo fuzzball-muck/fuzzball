@@ -1,0 +1,32 @@
+@prog actor-toll
+1 9999 d
+1 i
+( automaton toll-taker )
+( By triggur of Furrymuck )
+var t1
+var t2
+var t3
+var t4
+var outtext
+: main ( s -- )
+  trigger @ name " " strcat swap strcat
+  me @ name "%n" subst me @ name "%N" subst me @ swap pronoun_sub outtext !
+  trigger @ location owner trigger @ owner dbcmp not if (must own room)
+    exit
+  then
+  me @ pennies 0 > if
+    me @ -1 addpennies
+  then
+  trigger @ "tolls" getpropstr atoi 1 + trigger @ swap "tolls" swap
+    intostr 0 addprop
+ 
+  random trigger @ "delay_range" getpropstr atoi % 
+         trigger @ "delay_min" getpropstr atoi + sleep
+  trigger @ location trigger @ outtext @ notify_except
+  1
+exit
+;
+.
+c
+q
+@set actor-toll=l

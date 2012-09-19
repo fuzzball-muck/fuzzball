@@ -1,0 +1,5 @@
+Points (Today at 3:57:55PM) -- Ah hell.  Got this from an fb6a14:
+    Attempt to re-CLEAR() instruction from interp.c:391
+    previously CLEAR()ed in interp.c:389
+Look familiar?  I don't have any context for it unfortunately.
+

@@ -1,0 +1,72 @@
+	abort           ( s -- )           abort the muf prog w/ given mesg.
+        begin           ( -- )             mark start of loop.
+        while           ( i -- )           break out of loop if value is false
+        break           ( -- )             break out of loop.
+        continue        ( -- )             jump to beginning of loop.
+        until           ( i -- )           Marks end of loop. Exits on false.
+        repeat          ( -- )             Marks end of loop. Jumps to begin.
+        jmp             ( a -- )           jump to the given address.
+        sleep           ( i -- )           pause the program for i seconds
+        fork            ( -- i )           forks off BG muf process.  Returns
+                                            pid to parent and 0 to child.
+        queue           ( i d s -- i )     queue event to run prog d after i
+                                            seconds with s on the stack.
+                                            Returns pid of queued process.
+        kill            ( i -- )           kills process of given pid.
+	ispid?          ( i -- i )         ProcessID -- process_exists?
+
+        systime         ( -- i )           system time in secs since
+                                            00:00 1/1/70 GMT
+        timesplit       ( i -- 8 ints)     sec, m, hr, dy, mnth, yr, wkdy, yrdy
+        timefmt         ( s i -- s )       format, systime -- timestring
+        setlink         ( d d -- )         object, dest
+        setown          ( d d -- )         object, newowner
+        newobject       ( d s -- )         location, name
+        newroom         ( d s -- )         parent, name
+        newexit         ( d s -- )         attached-to, name
+        stats           ( d -- 7 ints)     owner -- totalowned, #rooms, #exits,
+                                                  #things, #programs, #players,
+                                                  #garbage.
+
+        int?            ( ? -- i )         is top stack item is an integer?
+        string?         ( ? -- i )         is top stack item is an string?
+        dbref?          ( ? -- i )         is top stack item is an dbref?
+        nextprop        ( d s -- s )       object, propname -- next propname
+        propdir?        ( d s -- i )       object, propname -- is it a propdir?
+        envpropstr      ( d s -- d s )     obj, propname -- foundoneobj, strval
+        awake?          ( d -- i )         player -- number of connections
+        online          ( -- dN ... d1 N ) all connected players w/ count
+        concount        ( -- i )           number of connections to the server
+        condbref        ( i -- d )         connection number -- player
+        conidle         ( i -- i )         conn. number -- idle time in secs
+        contime         ( i -- i )         conn. number -- online time in secs
+        conhost         ( i -- s )         conn. number -- hostname
+        conboot         ( i -- )           connection number
+        connotify       ( i s -- )         connection number, string
+	condescr        ( i -- i )         connection# -- descriptor#
+	descrcon        ( i -- i )         descriptor# -- connection#
+	descriptors     ( d -- ix..i1 i)   plyr -- descriptors... count
+        notify_exclude  (s dn..d1 i dr-- ) Send s to all players in room dr
+                                            except for the i players listed in
+                                            d1 through dn.
+        bitor           ( i i -- i )       int, int -- bitwise or result
+        bitxor          ( i i -- i )       int, int -- bitwise exclusive-or
+        bitand          ( i i -- i )       int, int -- bitwise and result
+        bitshift        ( i i -- i )       int, #bits -- bitwise shift
+        version         ( -- s )           Version String
+        depth           ( -- i )           stack depth
+        dbtop           ( -- d )           top of database + 1 item.
+        prog            ( -- d )           this program's dbref
+        trig            ( -- d )           a secure form of trigger @
+        caller          ( -- d )           the program that called this one.
+        force           ( d s -- )         player, force string
+        recycle         ( d -- )           item to recycle
+        localvar        ( i -- l )         local var num -- localvar
+        locked?         ( d d -- i )       player, object -- is object locked?
+        smatch          ( s s -- i )       string, matchstr -- matched?
+        instring        ( s s -- i )       case insensitive version of instr
+        rinstring       ( s s -- i )       case insensitive version of rinstr
+        striplead       ( s -- s )         Strip leading spaces from string.
+        striptail       ( s -- s )         Strip tail spaces from string.
+        strip           ( s -- s )         Basically 'striplead striptail'
+

@@ -1,0 +1,20 @@
+To use a macro from inside a program, just state its name with a "." tacked
+onto the beginning, as in
+
+me @ .foo notify
+
+To define a macro (the syntax isn't advertised anywhere):
+
+say
+
+def <macro-name> <macro-definition>
+
+macro-name is one word, no spaces.  Everything after the space after macro-name
+will be taken to be the macro-definition.
+
+Macros cannot be renamed/redeffed, but can be killed. Only a wiz can kill
+them.
+
+They are stored in a binary tree which is dumped into the file muf/macros at
+dump time, and which is rebalanced at db load time.
+

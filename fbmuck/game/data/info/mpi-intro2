@@ -1,0 +1,431 @@
+  
+  
+          Foxen's Intermediate Guide to MPI Programming
+  
+                      Written October, 1993
+  
+              MPI the language, and this document are
+        CopyLefted 1993 by Fuzzball Software and Graphic Arts
+  
+    This document is written for those of you who have already read
+   through the mpi-intro file, or who already know the basics of MPI.
+  
+  
+  
+===========================================================================
+  
+  SECTION I: "Okay, I know the basic stuff in MPI.  What else can I do?"
+  
+  
+MPI can do a lot more than just substitute in lists or properties into a
+description.  It can be conditional in what it substitutes, based on all
+sorts of criteria.  It can process information, and do math.  It can set
+the values of properties, and force puppets around.  In fact, MPI can do
+a LOT of things.  In the next few sections, we'll cover several of the
+main command types that MPI has, including conditionals, variable handling,
+stringlist handling, and loops.
+  
+  
+  
+===========================================================================
+  
+  SECTION II: "And what, pray tell, is a conditional command?"
+  
+  
+A conditional command is a command that evaluates an expression, and,
+depending on the result, decides whether to run one set of commands, or
+another.  In MPI, the main conditional command is {if}.
+  
+The {if} command has the syntax of {if:expression,truebranch,falsebranch}.
+It evaluates the 'expression', running any MPI commands embedded within it,
+and if the expression evaluates out to being a null (empty) string, or a
+zero (0), then {if} will evaluate the 'falsebranch', executing any MPI
+commands inside of it, and returns the result.  If any other string was
+returned by the 'expression', then the 'truebranch' is evaluated in a
+similar way, and the result is returned.  Only one of the 'truebranch'
+or 'falsebranch' options is evaluated, and {if} will return the result of
+that option's evaluation.  If no 'falsebranch' is given and the 'expression'
+evaluates false (as a null string, or "0"), then {if} will return a null
+(empty) string.  Here, let me give you a few examples:
+  
+    {if:1,Yes,No}            This will return "Yes".
+    {if:0,Yes,No}            This will return "No".
+    {if:1,Yes}               This returns "Yes".
+    {if:0,Yes}               This returns a null (empty) string.
+    
+    {if:{prop:test},Yes,No}
+  
+       This returns "No", if the property "test" has the value "0", or if
+       it does not exist.  Otherwise, this returns "Yes".
+    
+  
+    {if:{prop:_clothes},{prop:_clothes},{prop:_nude}}
+  
+       If the property "_clothes" is set, and is not "0", then this command
+       set will return its value.  Otherwise, this will return the value of
+       the "_nude" property.
+  
+"Aha!", you say, "I see what {if} is good for, now!  Choosing default values
+if a property doesn't exist!"  Well, that's just one thing that {if} is good
+for.  But to be really useful, you need to have some operators to put in that 
+test expression.  Here are a few of them now:
+  
+{eq:expression1,expression2}
+will evaluate both expressions, and test to see if they return the same
+result string.  If the expressions both result in numbers, then the numbers
+are compared by value.  That means that {eq:1,01} with return true ("1").
+You can test strings against numbers, and it will check them as strings, and
+not numbers.  Also, null (empty) strings are not considered to be numbers.
+{eq} will return true ("1") if the result of both expressions is the same
+string, or number value.  Otherwise, it will return false ("0").  When it is
+comparing strings, it is case insensitive, so an "A" will compare the same
+as an "a".  There is currently no way to do case sensitive compares.  {eq}
+is good for testing the values of things like properties.
+  
+Example:
+  
+    {if:{eq:{prop:_clothed?},yes},{prop:_clothes},{prop:_nude}}
+  
+       This will check if the value of the "_clothed?" property is "yes",
+       and, if it is, it returns the value of the "_clothes" property.
+       Otherwise, it returns the value of the "_nude" property.
+  
+{neq:expression1,expression2} is almost exactly like {eq}, except that it
+returns FALSE ("0") if the results of the two expressions are the same, and
+TRUE ("1"), if the results DON'T match.
+  
+Okay, so now you know how to test the value of something, but what if you
+want to check the value of more than one property?  Well, I've provided a
+few operators to help there, too:
+  
+{and:expression1,expression2} will evaluate the first expression, and check
+if it's false.  If it is, then {and} immediately returns FALSE ("0"), with-
+out even bothering to evaluate the second expression.  Otherwise, it tests
+the second expression, and if that is false, then {and} returns FALSE ("0").
+Only if BOTH the expressions evaluate as true, does {and} return true ("1").
+  
+Example:
+    {if:{and:{eq:{prop:_clothed?},yes},{eq:{prop:sex},male}},{prop:_ballcap}}
+      This will check if the "_clothed?" property is set to "yes", and the
+      "sex" property is set to "male", and if both tests are true, then it
+      returns the value of the "_ballcap" property.  Otherwise, it returns a
+      null (empty) string.
+  
+As you can see in the above example, expressions can get hard to read, when
+there are a lot of levels of braces {}.  From now on, I'll format complex
+examples for readability.  When using them in practice, however, you'll be
+putting them on one line.  The above example, formatted nicely, looks like:
+    {if:
+        {and:
+            {eq:{prop:_clothed?},yes},
+            {eq:{prop:sex},male}
+        },
+        {prop:_ballcap}
+    }
+  
+Another useful operator is {or:expression1,expression2}.  This operator is a
+lot like {and}, except it returns true ("1") if EITHER expression evaluates
+as true.  Also, if the first expression evaluates as true, then it doesn't
+even bother to evaluate the second expression.  If BOTH expressions evaluate
+as being false, then {or} returns FALSE ("0");
+  
+{xor:expression1,expression2} will always evaluate both expressions, and if
+one, but not both of them evaluates as true, then {xor} returns TRUE ("1").
+If both expressions return true, or neither expression returns true, then
+{xor} will return FALSE ("0").
+  
+{not:expression} will evaluate an expression, and if the result is true,
+then {not} returns FALSE ("0").  If the expression's result is false, then
+{not} will return TRUE ("1").  Basically, this just reverses the true/false
+value of the expression.
+  
+  
+Now, all these operators have only limited uses, when all they can check is
+what properties exist, and what values they have.  There are a lot of MPI
+operators, though, to check for a lot of other circumstances..
+  
+{holds:what,who} checks to see if object 'what' is located in 'who's
+inventory.  If the given player 'who' is holding the given object 'what',
+for example, then this command returns true, otherwise, it returns false.
+If no 'who' argument is given, then it assumes that 'who' is the player
+running the MPI code.  You can check if a player or object is in a room,
+by testing if the room is holding them.
+  
+Here's an example of how this is useful:
+    @create Sunglasses=10=shades
+    @desc me=You see a young man{if:{holds:$shades,this}, wearing shades}.
+  
+In the above example, I first @create a thing object called Sunglasses, and
+personally register it with the name $shades, so I can refer to it later by
+that name, whether or not I happen to be carrying it at the moment. The
+object "this" always means the trigger object; the object that the MPI code
+is executed from.  In this case, {holds} checks to see if I'm holding my
+sunglasses when you look at me.  If I am, then my @desc reflects that fact.
+      
+{contains:what,who} is almost exactly like {holds}, except that it checks
+to see if 'what' is either held by 'who', or is inside of something that
+'who' is holding, or is inside something that is inside of something that
+'who' is holding, and so on and so forth.  If 'what' is somewhere inside of
+something that 'who' is holding, then {contains} returns true, otherwise it
+returns false.  An unexpected side effect of this command, is that you can
+see if a player is inside of a room environment by checking if the environ-
+ment {contains} them.
+  
+{awake:player} will test if a player is awake.  If the given player happens
+to be a puppet with the Zombie flag set on it, then this will test if the
+owner of the puppet is awake.  This will return true if the player or puppet
+owner is awake.  Otherwise, this will return false.
+  
+Example:
+    @desc me={if:{awake:this},{prop:_awakedesc},{prop:_sleepdesc}}
+If I'm awake when you look at me, then you will see the value of my
+_awakedesc property.  Otherwise, you'll see the value of my _sleepdesc
+property.
+      
+There are a lot more operators in MPI, but I'll not list them here.  For a
+full list of operators and MPI commands, see the mpidocs and mpidocs2 files.
+  
+  
+  
+=============================================================================
+  
+  SECTION III: "And what's that variable handling stuff you mentioned?"
+  
+  
+Sometimes you'll want to evaluate something, and use the results it gives
+you more than once, without having to recalculate it each time.  Well, a
+variable is very useful for that.  A variable is a holder for a string.
+You store a string in it, and you can use that string over and over, until
+you are done with the variable, or you store something new in it.  Variables
+are referenced by name, meaning that you have to declare the name of it
+before you first use it.  Here's how you declare a variable:
+  
+    {with:varname,value,commands}
+The {with} command says to the game, "Hey!  I'm making a new variable, and
+I'm going to name it 'varname'.  I want it to start out with 'value' stored
+in it, and I want you to run all these 'commands' with it defined."  The
+{with} command will return the results of the commands it executes.  It is
+important to note is that the declared variable only exists while running
+the 'commands', and it is thrown away afterwards.  This may seem silly, but
+it's actually a way of saying that only those given commands need to use the
+variable, and the game can free up the memory the variable uses after they
+are done executing.  If you tried to use that variable outside of the {with}
+block, the game will complain that the variable is not defined.
+  
+Now, being able to declare and store a value in a string is all fine and
+good, but what use is it, if you can't get the data back from the variable?
+Well, the way you get the value of a variable is with {x:varname}.  This
+will return the value that is stored in the variable 'varname'.  A shorthand
+way of doing this is {&varname}.  {&varname} and {x:varname} are effectively
+identical, except that {&varname} is a little faster, and you can use {x:}
+if you need to calculate the variable name.  (Why you would want to do that
+is beyond me, though.  If you want to do that sort of thing, it's easier to
+just use properties.)
+  
+But what if you want to change the value of a variable after it has already
+been defined?  To do that, you use the {set:varname,value} command.  That
+will store the given evaluated value in the previously declared variable.
+  
+Here's an example of how to use this stuff:
+    @desc me=You see a young
+        {with:sexmale,{eq:{prop:sex},male},
+            {if:{&sexmale},man,woman}
+            who is wearing
+            {if:{&sexmale},
+                a pair of faded denim jeans.,
+                a short green skirt, and blue blouse.
+            }
+        }
+  
+In the above example, the variable is used to remember the result of a test
+that checks if the "sex" property on the player was set to "male".  Then the
+variable is checked in two separate places in the text to choose appropriate
+text to match the player's current sex.
+  
+There are some variables that are standard, that have special meanings.
+The {&how} variable is a short string telling what ran the MPI commands.
+It can have the values "(@desc)", "(@succ)", "(@osucc)", etc. for when it
+is run from an @desc, an @succ, an @osucc, or whatever.  It can also have
+the value "(@lock)" for when it is run from a lock test.
+  
+The standard {&cmd} variable contains the command name the user used, that
+caused the MPI to run.  This is generally the exit name that the player
+triggered.  For example, if the player typed 'east', and triggered the exit
+named 'east;e;out', which ran some MPI commands, the {&cmd} variable would
+have a value of "east".
+  
+The standard {&arg} variable contains the command line arguments the user
+entered.  This is so that you can have stuff like MPI in the fail of an
+exit, and when the user triggers the exit, and has some extra text on the
+line they entered, other than the exitname, the MPI can take that extra
+stuff as arguments for use.  I'll talk about this more, in the advanced
+MPI guide.
+  
+  
+  
+===========================================================================
+  
+  SECTION IV: "What in blue blazes is a stringlist?"
+  
+  
+Think of a catalog of fine yarnballs of the world.  That's not what a string
+list is.  =)  A string list is also NOT the same as the property lists we
+discussed back in the Introductory Guide to MPI.  However, I'll repeat some
+of our discussion from there.  I mentioned that the {list} command reads in
+the values of all the properties in a property list, and returns them as a
+single string, with each item seperated from the next by a carriage-return
+character.  THAT is a string list.
+  
+To put it in the general form, a stringlist is a string containing one or
+more substrings, seperated by delimiter characters.  In the default case,
+the delimiter character is the carriage-return character.
+  
+So what are they good for, you ask?  Well, a bunch of MPI commands return
+stringlists, with lists of strings, or objects, or other things.  As an
+example, the {contents:object} command returns a stringlist of references
+to the contents of the given 'object'.  This is actually a very useful
+thing, and I'll explain the uses of this more in the next section.
+  
+You can do a fair bit with stringlists.  There are commands to sort them,
+remove duplicate items from them, get the union of two lists, get the
+remove the items of one list from another, and a lot more.
+  
+{luniq:stringlist} will return a copy of the given stringlist, with all
+duplicate items removed.  In all cases, only the first of two duplicate
+items is kept, and all other duplicates of it are removed.
+  
+{lsort:stringlist} will return a sorted copy of a stringlist, sorted in
+ascending alphabetical order.
+  
+{lcommon:stringlist1,stringlist2} will return a stringlist that contains
+all of the list items that were found in BOTH of the stringlists.
+  
+{lremove:stringlist1,stringlist2} returns a copy of the first stringlist,
+with any and all items that were found in both of the lists, removed.
+  
+The {count:stringlist} command will tell you how many items are in the
+given string list.  A count of zero ("0") will mean that the list was
+completely empty.
+  
+  
+  
+============================================================================
+  
+  SECTION V: "What are loops, and what do they have to do with stringlists?"
+  
+  
+Since stringlists contain several items, wouldn't it be nice if there were
+some way to do something with each item in the list, no matter how many
+there are?  Sure it would be.  That's the main thing that loops are for.
+Here, let me give you an example:
+  
+The {filter} command will take each item in a list, and decides whether or
+not to keep it, based on a test you give it.  It returns a list of those
+items that the test decided it should keep.  It has the following syntax:
+  
+    {filter:varname,stringlist,testexpression}
+    
+Remember variables?  Well, the {filter} command, and many other of the loop
+type commands, use variables to pass the list item under scrutiny to the
+test expression.  But you don't have to define the variable yourself; the
+{filter} command does that for you.  All you have to do is give it the name
+of the variable you want it to define.  For every item in the stringlist,
+the {filter} command evaluates the test expression, with the current list
+item in the variable you had it define.  If the test expression evaluates
+with a true result, then that list item is put in the output stringlist.
+Otherwise, the game just discards that item.
+  
+Example:
+    {filter:what,{contents:here},{awake:{&what}}}
+  
+The above example uses the {contents} command that I described earlier,
+to get a list of the objects in the room where the user is.  The {filter}
+command defines a variable named 'what', and stores the reference to the
+first object from {contents} in it.  The test expression is then evaluated.
+The object is tested to see if it is an awake player, or a zombie whose
+owner is awake.  If it is, then the object reference is remembered.
+Otherwise, the object is forgotten about.  This test process is repeated
+for each and every object reference returned from {contents}.  When all
+of the tests have been done, then {filter} will return a list of all the
+items that passed the test.  So, what the above example does is return a
+stringlist of references to all the connected players in the room, and to
+all the zombies in the room, whose owners are awake.
+  
+Another example:
+  
+    {filter:line,{list:mylist},{neq:{&line},  }}
+  
+The above example will take the contents of the 'mylist' property list, and
+return them as a stringlist, with all the items that are "  " (2 spaces)
+removed.
+  
+  
+Okay, lets try another looping command:
+{parse} has the syntax {parse:varname,stringlist,expression}.  The varname
+argument is just so you can supply a variable name for it to define, like
+back in the {filter} command.  The stringlist is the list of items that you
+want it to work on.  The difference from {filter}, here, is that instead
+of using the expression to decide whether or not to keep the item, the
+{parse} command keeps every item, but REPLACES it with the output of the
+expression.  Umm, to put that clearer, the expression is run on every item
+in the stringlist, and the result of the expression is put into the string
+list that the {parse} command will return.  So the output list will have
+the same number of items as the input list, but every item in the input
+list will have been processed by the expression before being put in the
+output list.  Oh hell, let me just give you an example.
+  
+    {parse:item,{contents:here},{name:{&item}}}
+This will take the stringlist of references to the contents of the room,
+that the {contents} command gives, and gets the name of them (since the
+reference is usually a dbref) to put in the returned list.  You can simulate
+the 'Contents:' listing of a room look with just the following:
+  
+    {with:cont,{contents:here},
+        {if:{count:{&cont}},
+            Contents:{nl}{parse:item,{&cont},{name:{&item}}}
+        }
+    }
+  
+Since each list item is seperated from the next by a carriage return, each
+item's name will be shown to the user on a separate line.
+  
+  
+Another really useful looping command is the {commas} command.  This is one
+of the more complex commands in MPI.  But what it does is actually fairly
+simple, once you understand it.  It takes a list and puts commas between
+each item, and an "and" or an "or" between the last pair.  This lets you
+take a list with the items "Tom", "Dick" and "Harry", and get back a string
+like "Tom, Dick and Harry".
+  
+The syntax is {commas:list,andtext} or {commas:list,andtext,var,expression}.
+The first syntax simply takes a stringlist, and puts it in the comma format.
+The second syntax lets you do a bit of processing on each list item before
+it is put in the comma formatted string.  The 'andtext' argument in both
+cases is the "and" or "or" text that you want in the comma seperated list.
+For example, it lets you make strings like "Tom, Dick and Harry", or else
+"Tom, Dick or Harry".
+  
+The second syntax is the looping one.  Basically, it does what the {parse}
+looping command does, in that it replaces the input list item with the result
+of the given expression, before putting it in the comma string.
+  
+Example:
+    In this room, you see {commas:{contents:here}, and ,item,{name:{&item}}}
+  
+The above will take the stringlist of references to the room's contents,
+from the {contents} command, and will get the name of each item, before
+adding it to the comma formatted string.  The above might produce:
+    "In this room, you see Tom, Dick, Harry and Bulletin Board."
+  
+It should be noted that the spaces around the 'and' in the arguments list,
+are important, since without them, it would have said:
+    "In this room, you see Tom, Dick, HarryandBulletin Board."
+  
+  
+You can get fancy with this stuff, if you really want to.  Imagine, if you
+will, making a room that when you look at it, will list who all is awake in
+the room, what puppets are in the room who's owners are awake, Who's sitting
+where, and what the obvious exits are.  All done automatically.
+  
+  
+  

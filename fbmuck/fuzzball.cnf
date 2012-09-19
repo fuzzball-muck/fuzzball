@@ -1,0 +1,33 @@
+[ req ]
+default_bits		= 2048
+distinguished_name	= req_distinguished_name
+#attributes		= req_attributes
+#x509_extensions	= # The extentions to add to the self signed cert
+string_mask = nombstr
+
+[ v3_ca ]
+subjectKeyIdentifier=hash
+authorityKeyIdentifier=keyid:always,issuer:always
+basicConstraints = CA:true
+
+[ req_distinguished_name ]
+0.organizationName              = Muck name
+0.organizationName_default      = MyMuck
+
+emailAddress                    = Email Address (the muck administrator)
+emailAddress_max                = 64
+
+commonName                      = DNS name (your muck IP must reverse-lookup to this)
+commonName_max                  = 64
+
+countryName                     = Country Name (2 letter code)
+countryName_default             = US
+countryName_min                 = 2
+countryName_max                 = 2
+
+stateOrProvinceName             = State or Province Name (full name)
+stateOrProvinceName_max         = 64
+
+localityName                    = City or Location
+localityName_max                = 64
+

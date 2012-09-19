@@ -1,0 +1,50 @@
+Core 1:
+	Aborted on trying to free an already freed frame.
+	Last prog_clean() called from free_timenode(), timequeue.c:131
+	  From dequeue_prog (program=3015, sleeponly=1) at timequeue.c:600
+	  From do_compile (player_in=480, program_in=3015) at compile.c:407
+	  From interp_loop (player=15534, program=3015, fr=0x50e000, rettyp=0)
+	      at interp.c:364
+          From next_timequeue_event () at timequeue.c:478	  
+          From next_muckevent () at events.c:223
+          From shovechars (port=8888) at interface.c:796
+          From main (argc=4, argv=0xbffffbe4) at interface.c:411
+
+Core 2:
+#9  0x18850 in prog_clean (fr=0x229000) at interp.c:224
+#10 0x59c6c in free_timenode (ptr=0x1ace80) at timequeue.c:131
+#11 0x5ac65 in dequeue_prog (program=3015, sleeponly=1) at timequeue.c:600
+#12 0x33e7 in do_compile (player_in=480, program_in=3015) at compile.c:407
+#13 0x1903b in interp_loop (player=9293, program=3015, fr=0x229000, rettyp=0)
+    at interp.c:364
+#14 0x5a68d in next_timequeue_event () at timequeue.c:478
+#15 0x13238 in next_muckevent () at events.c:223
+#16 0x614d8 in shovechars (port=8888) at interface.c:796
+#17 0x609ac in main (argc=4, argv=0xbffffbe4) at interface.c:411
+
+
+Core 3:
+#9  0x18850 in prog_clean (fr=0x697000) at interp.c:224
+#10 0x59c6c in free_timenode (ptr=0x45ce40) at timequeue.c:131
+#11 0x5ac65 in dequeue_prog (program=3222, sleeponly=1) at timequeue.c:600
+#12 0x33e7 in do_compile (player_in=1, program_in=3222) at compile.c:407
+#13 0x1903b in interp_loop (player=14100, program=3222, fr=0x697000, rettyp=0)
+    at interp.c:364
+#14 0x5a68d in next_timequeue_event () at timequeue.c:478
+#15 0x13238 in next_muckevent () at events.c:223
+#16 0x614d8 in shovechars (port=8888) at interface.c:796
+#17 0x609ac in main (argc=4, argv=0xbffffbe4) at interface.c:411
+
+
+Core 4:
+#9  0x18850 in prog_clean (fr=0x39f000) at interp.c:224
+#10 0x59c6c in free_timenode (ptr=0x3e4840) at timequeue.c:131
+#11 0x5ac65 in dequeue_prog (program=3222, sleeponly=1) at timequeue.c:600
+#12 0x33e7 in do_compile (player_in=1, program_in=3222) at compile.c:407
+#13 0x1903b in interp_loop (player=7331, program=3222, fr=0x39f000, rettyp=0)
+    at interp.c:364
+#14 0x5a68d in next_timequeue_event () at timequeue.c:478
+#15 0x13238 in next_muckevent () at events.c:223
+#16 0x614d8 in shovechars (port=8888) at interface.c:796
+#17 0x609ac in main (argc=4, argv=0xbffffbe4) at interface.c:411
+

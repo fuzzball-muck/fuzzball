@@ -1,0 +1,67 @@
+@prog actor-prop
+1 999 d
+1 i
+( automaton prop-checker )
+( By triggur of Furrymuck )
+( modified by jon @ mordor 6-17-97 for allowing )
+(    wiz-owned bots check for wizard properties.)
+(    set this program W to define, else wiz     )
+(    props fail without crashing the program  :^)
+var t1
+var t2
+var t3
+var t4
+var outtext
+var propname
+var propval
+var noprint
+: main ( s -- )
+  dup ":" instring dup 1 > not if  (badly formed)
+    exit
+  then
+  1 - strcut 1 strcut strip dup strip "NONE" stringcmp not noprint ! outtext !
+  pop strip propname !
+  outtext @ trigger @ name " " strcat swap strcat
+  me @ name "%n" subst me @ name "%N" subst me @ swap pronoun_sub outtext !
+  propname @ "=" instring dup 1 > 
+  if (a prop with a value)
+    propname @ swap 1 - strcut 1 strcut strip propval !
+    pop strip propname !
+  else  
+    pop
+    propname @ propname ! "*" propval !
+  then   
+  propname @ dup dup dup dup (4 copies of the string)
+   "@" 1 strncmp not 4 rotate (if it's the 1st char, i=1 else i=0)
+   "~" 1 strncmp not 4 rotate (if it's the 1st char, i=1 else i=0)
+   "/@" instring     4 rotate (is it in there?)
+   "/~" instring     (is it in there?)
+   or or or          ( In engilish -- IS IT WIZ?)
+  if 
+    trigger @ owner 
+    prog "Wizard" flag?
+    swap "Wizard" flag?
+    and not
+    if 0 exit then
+  then
+  me @ propname @ getpropstr dup not 
+    if 0 exit then
+  strip propval @ smatch not
+    if 0 exit then
+ 
+ 
+   noprint @ if
+     1 exit    (dont print anything)
+   then
+   random trigger @ "delay_range" getpropstr atoi % 
+          trigger @ "delay_min" getpropstr atoi + sleep
+   trigger @ location trigger @ outtext @ notify_except
+   1 exit
+ 
+;
+.
+c
+q
+@set #731=l
+@set #731=W
+"If that got a permission denied, no worries.  The program will not crash.

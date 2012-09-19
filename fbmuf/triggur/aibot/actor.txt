@@ -1,0 +1,311 @@
+         How to use the automated response system with your zombie
+         ---------------------------------------------------------
+             Software written and (C) by Triggur of FurryMUCK
+                  Software version 1.5, Doc version 1.04
+ 
+I. WHAT DOES IT DO?
+ 
+     With run-actor.muf, your objects gain the ability to 'intelligently'
+respond to things said and posed around them.  Do NOT abuse this
+priviledge, and do not create responses that annoy people.  Use of
+this program can be taken away on an individual basis.
+ 
+II. REQUIREMENTS & CONDITIONS
+ 
+     The object needs to have a name that does NOT start with the name
+of a player in the current room, or it will not run (a security measure).
+Be careful with names beginning with 'The', etc.  If you do an EX <name>
+command, where <name> is the first word of your object's name and it
+says that it's ambiguous, this will not work.
+ 
+     The object will NOT respond to itself or any other object, or for
+that matter to any line which does NOT begin with the name of a player
+that is currently in the room.
+ 
+     As a rule, do NOT make the object respond to everything (or even
+_many_ things) said... this gets _highly_ annoying and will have people
+(myself included, if people complain) asking you to shut the AI off!
+In fact, unless it is a static object that always stays in your own
+rooms(s), make it respond only when spoken to.
+ 
+III. SETUP
+ 
+     Type:
+ 
+@set <objectname>=_listen:$ai
+ 
+     This sets your object up so that it can listen to things.
+ 
+     You now need to make a prioritized list of things that the object
+will respond to.  Case is ignored, and MOST punctuation is removed.  To
+create this list,
+ 
+lsedit <objectname>=match
+ 
+     This will enter the editor and let you edit the response 'match' list.
+Note that you will probably need to do this a lot, so if you use TinyFugue
+or somesuch, make a file locally that you can simply upload.
+ 
+     Each line of this propdir contains one 'match rule' a colon, and then
+the text that is to follow the object's name as a response.  An example:
+ 
+*hello*:waves hello!
+ 
+     NEVER try to match against anything other than letters and numbers,
+since, as noted above, punctuation is removed (S'A'Alis becomes SAAlis).
+Any rule with punctuation in it will never generate a match.
+ 
+     Note the *'s: sentences can be matched with the same wildcard expressions
+used by the MUCK software (type MAN SMATCH for details on what is and is not
+acceptable).  With this example rule, every time the object sees a line of
+text with the word 'hello' in it, it poses back, assuming its name is Foobar,
+ "Foobar waves hello!".  You might also use:
+ 
+*{hello|hi}*foobar*:waves hello!
+ 
+     ...which would respond with a wave to anyone that said the word 'hello'
+(OR the word 'hi'!) and then the word foobar.  This is actually a better
+response, since it is more specific and will spam people less often.
+ 
+     The order of the lines in the list matters, too.  The rules close to
+the top of the file have the lowest precedence, and the rule at the bottom
+of the list has the highest precendence (meaning that if there is more than
+one possible match for a line that it hears, it will use the one fartest
+down the list; it scans upward).  As soon as a match is found, the search
+stops and it attempts to print the response.  Example:
+ 
+*hello*:waves half-heartedly.
+Triggur*hello*:waves excitedly to the inventor of its brain!
+ 
+    In normal conversation:
+ 
+Centaur says, "Hello!"
+Foobar waves half-heartedly.
+Triggur trots up and nickers Hello.
+Foobar waves excitedly to the the inventor of its brain!
+Riss says hello to everyone.
+Foobar waves half-heartedly.
+ 
+    You'll note that the _specific_ case(s) need to be lower in the list,
+and the more general responses need to be higher.  If those two rules had
+been reversed, Foobar would always wave half-heartedly, no matter what.
+ 
+    It is also possible to use the word 'NONE' as a response, which will
+cause no output.  This may not seem useful, but the following:
+ 
+*jeeves*:snoofs aloofly at %N.
+*hugs*jeeves*:NONE
+ 
+...will deliver the response, "Jeeves snoofs aloofly at <name>." any time
+his name is mentioned EXCEPT when someone hugs him.
+ 
+ 
+IV. RANDOMIZING RESPONSES
+ 
+     It is possible to get your object to respond 'randomly' to a match.
+To do this, instead of...
+ 
+*hello*:waves hello!
+ 
+     ...you might instead have...
+ 
+*hello*:hello-list
+ 
+     ...assuming that 'hello-list' is the name of a propdir on the object
+that contains, one per line, a list of possible responses
+(lsedit <objectname>=hello-list).  If the program finds a propdir named the
+same as the response in the match rule above, it will randomly select one
+of the lines and use it as a response.
+ 
+     To further vary the response, you may use the word NONE on a line
+by itself in such a list as a way of indicating that no response is to 
+be made.  When such a line is randomly selected from the propdir, the
+object will not respond that time around.
+ 
+V. PRONOUN SUBSTITUTIONS
+  
+     All of the standard pronoun substitutions will be made by the
+program (type MAN PRONOUN for information on what can be used).  In
+addition, the speaker's sex and species can be inserted with %x and
+%e, respectively.  Example:
+ 
+*hello*:waves to %N and beeps %p nose, then sits on the %x %e's shoulders!
+ 
+     In normal conversation:
+ 
+Triggur whickers, "Hello!"
+Foobar waves to Triggur and beeps his nose, then sits on the Male Bipedal
+   Nightstallion's shoulders!
+
+      Also, %l is replaced with the name of the current room.
+ 
+VI. RESPONSE DELAYS
+ 
+     It doesn't seem 'natural' when a long response is _immediately_
+given to a line of text.  Therefore, it is possible to set a minimum
+number and range of seconds for the response to follow.  Example:
+ 
+@set foobar=delay_min:3
+@set foobar=delay_range:5
+ 
+     The object 'foobar' will then make its responses a minimum of 3
+seconds afterwards, and a maximum of 8 (it's random).
+ 
+VII. EVEN *SMARTER*?
+ 
+     There is another facility available, one not very well explored
+yet.  It is possible to call more advanced response programs as a
+result of making a match.  For instance:
+ 
+*foobar*unmug*me*:@unmug presses the %ps button and suddenly %N has %d more %pp!
+ 
+     Note that the format of the response has changed.  The '@' symbol
+tells the software that the next word names a response program, and the
+remaining text is passed into that program as a response string (the %d
+olny mean something to that specific program, and in this case is
+the number of pennies given... %ps and %pp are replaced with the singular
+and plural names of the currency du jour, respectively).
+ 
+     For security reasons and safety reasons, response programs must
+be registered with the AI program by hand; not just any program is
+callable.  Talk to Triggur if you have ideas or program submissions.
+ 
+VIII. CURRENTLY AVAILABLE RESPONSE PROGRAMS:
+ 
+   @unmug <text>
+         This gives to the speaker the number of pennies needed to total
+      the 20,000 penny limit.  The text may contain %d, which will be
+      replaced with the number of pennies given, and it may contain %ps
+      and %pp, which will be replace with the singular and the plural
+      names of the currency du jour, respectively.  If the speaker already
+      has MAX_PENNIES pennies, @unmug fails and the search for the
+      next matching rule continues up the list.  In this way, you can
+      print a different message when the operation fails.  Example:
+ 
+*foobar*unmug*me*:scowls at %N and notes that 20,000 pennies is the limit!
+*foobar*unmug*me*:@unmug blinks and suddenly %N has %d more pennies!
+ 
+      This will give the user some money if possible, and scold them if
+      not possible.
+ 
+   @toll <text>
+         This program subtracts 1 penny from the speaker's inventory, and
+      is to be used ONLY for taking tolls in your own rooms.  A property
+      named 'tolls' is maintained on the object and reflects the number
+      of times it has charged.  This program will work ONLY when
+      the object is in a room that YOU own.  If the player doesn't have
+      any pennies, this program fails and rule-checking continues.
+ 
+   @prop <prop>[=<value>]:<text>
+          This program prints the given text only when the speaker has
+      a prop of the given name, optionally set to the value given.  This
+      can be used to make a set of special behaviors available only to
+      people with some 'secret' property set.  If the property does not
+      exist or is not equal to the value (if specified), nothing is printed
+      and rule-checking continues.  If you use NONE as the text to be
+      printed, no output will be generated.
+
+   @bprop <prop>[=<value>]:<text>
+          Just like @prop, except that it checks the _BOT_ for the given
+      property.
+
+   @rprop <prop>[=<value>]:<text>
+          Just like @prop, except that it checks the ROOM for the given
+      property.
+ 
+   @boot <text>
+          This program should be very seldom used.  It prints the given
+      text and then kicks the player out of the room, sending them to
+      the current room's _sweep_to location or to their home if no _sweep_to
+      is specified on this room.  This program will ONLY work when the
+      object is in a room that YOU own.  It also will not work on
+      Wizards!  If the room's _sweep_to is specified and you do not own
+      the destination room or it is not really a room, the program will
+      fail.
+ 
+   @force command [; command [;command ... ]]
+          This command is very, very powerful.  Suppose you would like a 
+ 'butler' zombie.  It allows you to have the object peform some
+set of actions in response to what is said.  Example:
+ 
+*Jeeves*get*phone*:@force gohome ; get phone ; tomaster ; hand phone to %n
+ 
+      In normal conversation:
+ 
+Triggur whickers, "Jeeves, get me the phone."
+Jeeves is enveloped in a space/time rift and disappears.
+Jeeves steps out of a space/time rift.
+Jeeves hands phone to Triggur.
+ 
+      This assumes that the object Jeeves has an action 'tomaster' on itself
+which is linked to you.
+ 
+      In order to make this work, you'll need to set the object up so that
+actions can be forced to it, if you haven't done so already:
+ 
+@set <objectname>=x
+@flock <objectname>=me
+ 
+      Note also that in the example above, it will seem to mysteriously
+fail unless the object is set hand #ok.  The best way to set that (and
+other things) up is to 
+ 
+@set <objectname>=z
+ 
+      ...which will print to you everything that object sees, including
+error messages and stuff, and then follow the instructions in NEWS ZOMBIES
+on how to set the object up to accept commands from you.
+
+   @mpi {commands...}
+
+   This facility, currently available only to Wizbots (see below), lets
+the AIBot execute a line of MPI in response to something it sees.  The
+commands can be any of the standard MPI commands in standard MPI format.
+These commands will be executed as if by the person responsible for
+generating the line of text that the Bot is responding to.
+
+   When (if) I can be convinced that it is safe for ANYONE to execute
+MPI commands in response to typed strings, I will consider removing the
+current "Wizbot only" policy.  Note that this convincing pretty much
+has to come from the likes of Revaryiffygothicscarymeanbatbat. :)
+
+IX. WIZBOTS
+
+   Setting the W bit on an AIBot makes it a "Wizbot".  Wizbots have some
+extra features that normal bots do not.
+
+First, as noted above, they can use the @mpi command.
+
+Second, they can hear and respond to ANY string... it need not begin
+with the speaker's name.  THIS MEANS THAT THEY CAN HEAR SPOOFS AND
+(!) OTHER AIBOTS!!!  Be VERY careful with this!  Poor design would
+allow you to create a wizbot that responds to itself or another infinitely.
+
+FORTUNATELY, there is one saving limitation; In order to work, a Wizbot
+MUST have a 'delay_min' prop set to at LEAST 1 second. This prevents
+fast-flying responses and gives you a chance to shut the thing down,
+either by picking it up or @set botname=_listen: which will disable
+listening.
+
+Third, A Wizard-owned AIBot can do ANYTHING the Wizard can, permission-wise.
+This is both dangerous and useful at the same time; just be very careful
+what you allow your Wiz-owned bot to @force.  Note that Wiz-owned
+is not necessarily the same thing as Wiz-bitted!
+
+     WIZARDS: YOU SHOULD ONLY SET 'W' BITS ON AIBOTS OWNED BY _VERY_ TRUSTED
+INDIVIDUALS...*PREFERRABLY* ON YOUR OWN BOTS ONLY!!!
+
+
+X.  I HATE THIS!  HOW DO I SHUT THE STUPID THINGS UP???
+ 
+     Fortunately, you don't HAVE to listen to robot responses.  If you
+have the _nospam property set on yourself, you will never, ever see
+anything said/posed by this program (this does not necessarily
+apply to output generated by response programs).   Example:
+ 
+@set me=_nospam:yes
+ 
+     But you wouldn't wanna do that, now would you? :)
+ 
+Triggur!
+ 

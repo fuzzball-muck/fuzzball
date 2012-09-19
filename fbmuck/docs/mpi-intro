@@ -1,0 +1,439 @@
+  
+  
+            An Introduction to MPI in the fb5.xx Muck Game.
+  
+                         Written by Foxen,
+                         October 12, 1993
+  
+  
+  
+              MPI the language, and this document are
+        CopyLeft 1993, by Fuzzball Software and Graphic Arts.
+  
+  
+  
+=========================================================================
+  
+          SECTION I: "What is MPI, and why should I use it?"
+  
+  
+So, you've heard about this thing called MPI and you've been told that it
+can do all sorts of neat things, but you still wonder what it is?  Well,
+I'll tell you..
+  
+MPI is My Personal Insanity.  That's my unofficial name for it.  I must
+have been crazy for having written 3500 lines of C code to implement it.
+The official name for it, is Message Parsing Interpreter.  That sounds a
+lot more ostentatious, and looks better on a resume'.  =)
+  
+MPI is a script language that lets you embed commands within plain text,
+to do things like substitute in the text value of a property.  It's used
+in messages like @descs, @succs, @fails, @drops, @osuccs, @ofails, @odrops,
+and your 'sex' property.  Those of you who use the $desc, $wf-desc,or @6800
+programs are likely familiar with this sort of idea.  MPI works like those
+programs, only much faster, and with many more possibilities.
+  
+So, what's in it for you to use MPI?  Well, you can make descriptions
+longer than the 512 character input limit, by splitting them up into
+sections that are in different properties, and substituting them into
+your main @desc.  This also makes it easier to update only one part of
+the description, such as what you are wearing, by changing only the
+property that has your clothes described.  You can also make multiple
+line descriptions, by making a list with lsedit, or another list editor,
+and using the MPI command to display a list in your @desc.  For those of
+you who want to get fancy, you can make your description depend on what
+you are carrying.  For example, you can make your description mention
+that you are wearing sunglasses only if you are actually carrying them.
+The possibilities are endless.
+  
+Because the commands are read and interpreted by the game itself, they
+run quickly, producing less lag for the game than the MUF description
+programs like @6800.  Also, you can port your descriptions for objects
+between fb5.0 MUCKs, without having to worry if the other muck has the
+right MUF programs, or uses the same list styles.  You can also get much
+fancier with MPI than you can with @6800, since there are many more
+commands available to you.
+  
+Okay, okay, that's enough evangelizing..  Lets get onto the next section.
+  
+  
+  
+=========================================================================
+              
+              SECTION II: "So what does MPI look like?"
+  
+  
+MPI has a fairly simple structure, mostly.  It goes like this:
+  
+    {command:arg1,arg2,arg3...}
+  
+The open-brace { says that the text until the matching close-brace } is
+going to be an MPI command that the game should interpret.  The first
+word inside the braces, before the colon, is the name of the MPI command
+that you want it to run.  The rest, after the colon, are the arguments,
+seperated by commas.  MPI commands often take two or three arguments,
+though some take many more, one, or none at all.  In fact, a lot of MPI
+commands can each take multiple different numbers of arguments, using
+default values for any arguments that aren't given.  If an MPI command
+takes no arguments, you can omit the colon.  Here's some examples of
+MPI commands:
+  
+    {prop:_clothes,me}
+  
+This example runs the MPI command "prop" with the two arguments "_clothes",
+and "me".
+  
+    {nl}
+  
+This runs the MPI command named "nl" with no arguments.
+  
+If you want to pass a comma as part of an argument, you have to mark it
+to say that you really mean for the comma to get passed to the function,
+and that it isn't there to seperate arguments.  To mark it this way, you
+put a backslash \ in front of it.  The backslash means that the next
+character following it has no special meaning, and that it is to be copied
+literally.  This makes a comma look like part of an argument, instead of
+like an argument seperator.  This is called 'escaping' a character.  You
+can also escape an open-brace { to keep it from trying to interpret the
+text after it as an MPI command.  Also, you can escape backslashes.  In
+fact, to include a backslash in text, you HAVE to escape it.  Almost any
+character after a backslash will be copied literally.
+  
+The only exception is \r which is replaced by a carriage return character.
+A carriage return character tells the game to split the text into two lines
+at that place, when the text is displayed to the player.
+  
+Example:
+  
+    {store:\{Here\\now\}\, she thought.,_when}
+  
+This will run "store" with the two arguments "{Here\now}, she thought.",
+and "_when".  The first backslash \ escapes the open-brace {, copying it
+into the argument literally.  The next backslash escapes the backslash
+that follows it, making the backslash copy into the argument literally.
+The close-brace has to be escaped, also, or else the game would think
+that you are trying to run the "store" command with only the argument
+"{Here\now".  The comma is escaped to say that it is part of the argument,
+and not an argument seperator.  The NEXT comma, however, is not escaped.
+The game sees this and goes, "Aha!  A second argument follows!"  Then it
+gets to the last close brace }, and sees that it has gotten all the
+arguments.  At this point, it calls "store" with the two arguments that
+you passed.
+  
+Note that several backslashes in a row will escape each other, alternating
+between escaping and escaped characters.  What this means is that the game
+will take a look at "\\\{" and see an escaped backslash and an escaped
+open-brace.  Literally: "\{".  However, it will see "\\\\{" as two escaped
+backslashes and a NON-escaped open-brace.  It would try parsing anything
+after the non-escaped open-brace as an MPI command.
+  
+As an alternative to lots of ugly \ escaping of characters, when you want
+to make a lot of text not parse for {s, }s, or commas, you can put `
+backwardsquotes around it.  Notice that that is a backwards quote, NOT a
+singlequote '.  Anything between two `s is read literally, and is not
+parsed for MPI commands.  This lets you do the above example as:
+  
+    {store:`{Here\\now}, she thought.`,_when}
+  
+Notice that the {s and }s and commas no longer need escaping by backslashes.
+However, the \ still needs to be escaped like \\.  This is because backslashes
+still escape the character after them.  This lets you get a ` in your text
+by escaping it as \`.  For example:
+  
+    This `is an {MPI} \` backquote.`
+  
+will be parsed as
+  
+    This is an {MPI} ` backquote.
+  
+Where the {MPI} is literal text, and is NOT parsed as a command.
+  
+  
+MPI commands can have MPI commands nested within them, so they can take
+the output of other commands and use them as inputs.  Example:
+  
+    {count:{contents:here}}
+  
+This would first run the MPI command "contents" with the argument "here".
+Then the "count" command would be run with the string returned from the
+"contents" command as its single argument.  Commas and other characters
+inside strings returned from nested commands will all act like they have
+been escaped.  If they didn't, they would cause unexpected problems, as
+your commands would find more arguments than they expect!  Luckily, you
+won't have to worry about that problem.
+  
+  
+  
+========================================================================
+ 
+  SECTION III: "Now that I know what MPI looks like, how do I use it?"
+ 
+ 
+MPI commands are run from within messages like your @description, your
+@success, or your @ofail, to name just three.  You just set the message
+like you always used to, but you also include some commands within the
+text of the message.  When the message is displayed by the game, it sees
+the commands in the text, and runs them.  It takes whatever text they
+may return, and puts that in the text to be displayed, in the place
+where the command was.  Example:
+  
+    @desc me=You see a pretty young girl with {prop:_haircolor) hair.
+  
+When someone looks at you, with that description set, the game will
+run the "prop" command with the argument "_haircolor".  The "prop"
+command will then look for a property named "_haircolor" on the object
+the command is on. It then replaces the call to itself, in the output
+text, with the string value of the property.  If the "_haircolor"
+property was set to "golden", then the looking player will see
+"You see a pretty young girl with golden hair."
+  
+Unlike the various MUF description programs such as @6800 and $wf-desc,
+MPI commands can be inside of omessages, such as @ofail, @osucc, and
+@odrop.  This lets you do things like make an @osuccess message properly
+reflect a varying @succ message.
+  
+  
+  
+========================================================================
+  
+           SECTION IV: "Right, so what are the commands?"
+  
+  
+There are a lot of MPI commands that you can use.  Over a hundred of them,
+in fact, so I'm not going to list them all right now.  I'll just give you
+a run-through of a few of the most useful and popular ones.
+  
+  
+    {prop:propname,object}
+  
+This command looks for a property with the name 'propname' on the given
+object.  If it doesn't find it there, it looks down the environment from
+the given object.  If no property by than name exists on that object, or
+in its environment, then this returns an empty string.  Otherwise, it
+returns the string value of the property.  If no 'object' argument is
+give, then it assumes that the given object is the trigger object.  The
+trigger object is the object that has the MPI commands in a message on it.
+An example of the use of {prop} is:
+    @desc me=You see a young woman who is wearing {prop:_clothes}.
+    @set me=_clothes:a blue blouse and a short green skirt
+  
+  
+    {exec:propname,object}
+  
+This command is almost exactly like {prop}, except that any MPI commands
+within the string value of the property are executed, and for their running,
+the trigger object will be the object that the property is on.  This lets
+you have MPI commands embedded within the properties that store various
+parts of your @desc, if your @desc is split up into multiple properties.
+An example of the use of {exec} is:
+    @desc me=You see a young woman who is wearing {exec:_clothes}.
+    @set me=_clothes:{prop:_clothes/top} and {prop:_clothes/bottom}
+    @set me=_clothes/top:a blue blouse
+    @set me=_clothes/bottom:a short green skirt
+  
+  
+    {list:listname,object}
+  
+This will load in a property list with the given listname, from the
+given object.  It loads the list as a single string, with each list
+item seperated from the next by a carriage return character.  These
+carriage return chars will each start a new line, seperating the text
+into multple lines, when they are displayed to the user.  A property
+list is a set of numbered properties with string values.  For example,
+a set of properties named "list1", "list2", "list3", etc is a list named
+"list".  The {list} command understands several styles of lists, so
+"list#/1", "list#/2", etc, and "list/1", "list/2", etc, are both also
+recognized by the listname "list".  This means that almost every known
+MUF list editor should be able to make a list that {list} can read.
+If no object argument is given, this command will assume that the given
+object is the trigger object.  The environmental searching for the list
+is the same as for {prop}.
+  
+  
+    {concat:listname,object}
+  
+This is almost exactly like {list}, except that instead of seperating
+list items with carriage returns, it seperates them with spaces.  The
+number of spaces depends on how the previous line ends.  If it ends in
+a period, question mark, or exclamation mark, it seperates the lines
+with two spaces, otherwise, it uses only one.
+  
+  
+    {rand:listname,object}
+  
+This is sort of like {list}, except that it will randomly pick a line
+from the given named property list and return it, instead of returning
+the whole property list.
+  
+  
+    {timesub:period,offset,listname,object}
+  
+This is sort of like {list}, except that it will only return one line
+of the given named property list.  The line it chooses depends on the
+time.  The period is the length of time, in seconds, that it takes for
+{timesub} to cycle through the entire list.  The offset is the number of
+seconds to offset into the time period, if you actually need to synchronize
+the {timesub} with something.  The offset usually is just left at zero.
+What this all means, is that if you have, for example, a period of 3600
+(one hour), an offset of zero, and a property list that has six items in
+it, then {timesub} will return the first line of the property list during
+the first ten minutes of the hour, the second line during the next ten
+minutes, and so on, until it returns the last line during the last ten
+minutes of the hour.  Then it returns the first line for the beginning
+of the next hour.  Here's an example:
+    {timesub:86400,0,_sunmoon}
+This example will show different property list lines, depending on the
+time of day.  The period is 86400 seconds, which is one day.  If the
+property list has 24 items in it, then a different line will be returned
+for each hour of the day.
+  
+  
+  
+========================================================================
+  
+            SECTION V: "And just how do I refer to objects?"
+  
+  
+Okay, you can reference objects in basically the same ways that you can
+in user typed commands such as @desc, or @lock.  You can refer to obj-
+ects by name, if they are in the same room as you, or in your inventory.
+You can refer to objects by dbref or registered name, if you need to be
+able to refer to the object if it is not in your vicinity.  And you can
+refer to players by name, with a * in front, no matter where they are.
+  
+The following are examples of the accepted ways to refer to objects.
+    object               Referencing by name.
+    #1234                Referencing by dbref.
+    $regname             Referencing by registered name.
+    *playername          Referencing by player name.
+  
+When an MPI command returns a reference to an object, (we'll discuss
+some of these commands in the intermediate guide) it will refer to
+nonplayers by dbref, and to players by starred name.  ("*playername")
+  
+  
+  
+  
+========================================================================
+  
+        SECTION VI: "Cool.  So how what stuff can I run mpi from?"
+  
+  
+  
+There's lots of things that'll parse MPI commands.  To start with, the
+@desc, @succ, @osucc, @fail, @ofail, @drop, and @odrop messages will all
+parse whatever MPI code you put in them.  Also, when a player connects
+to the muck, or disconnects, you can run MPI.  Also, when a player moves
+from room to room.  You can even have MPI code that hears whatever is
+going on in the room.
+  
+To run MPI commands when a player logs in, you need to make a special
+property on the player, or on the room where the player resides.  To do
+this, just simply do:
+  
+    @set <object>=_connect/XXX:&<mpi goes here>
+  
+The XXX can be anything.  The properties will be evaluated in alphabetical
+order.  The result of the mpi code is displayed to the connecting user.
+The ampersand (&) that starts the property value tells the server that it
+has MPI commands in that property that it should evaluate.  As an example:
+  
+    @set here=_connect/room_motd:&{list:_room_motd,here}
+    
+This example will show the room's message of the day, that is stored in
+the _room_motd property list on the room, to the player logging in.  There
+is a different set of properties, with names starting with "_oconnect/",
+that also runs when a player connects, but the results of the MPI code
+will be shown to the other people in the room, and not the player.  For
+example:
+  
+    @set here=_oconnect/herald:&Hear ye, hear ye!  {name:me} has connected!
+  
+Will tell everyone in the room that someone just connected in the room,
+in a somewhat heraldic fashion.  =)
+  
+When a player logs off from the muck, the properties under the _disconnect
+and _odisconnect propdirs are evaluated in a similar fashion.  When a
+player leaves a room, the properties under the _depart and _odepart
+propdirs are evaluated.  When a player enters a room, the properties
+under the _arrive and _oarrive propdirs are evaluated.
+  
+Here's some examples:
+  
+    @set here=_odisconnect/elvis:&{name:me} has left the muck!
+    @set here=_arrive/enter-details:&{list:_entry_details,here}
+    @set here=_odepart/cabbie:&The cabbie watches {name:me} storm out.
+  
+When something is heard in the room, properties in the ~listen and
+~olisten propdirs are run, from all things in the room.  The {&arg}
+variable holds the message that was heard.  For example:
+  
+    @set here=~listen/echo:&You hear an echo: {&arg}
+  
+That will echo whatever it hears in that room, to the player who made
+the noise.  You can also make listeners be restricted to only hearing
+certain patterns of words.  To do this, you need to put in a matching
+pattern at the beginning of the property value.  The syntax is:
+@set <obj>=~listen/XXX:<pattern>=&<mpicode>
+  
+For example:
+@set here=~listen/aod:*Klaatu barada nicto*=&The sky rumbles at You!
+@set here=~olisten/aod:*Klaatu barada nicto*=&The sky rumbles at {name:me}!
+  
+This example would have the skies rumbling at any player who said or posed
+the words "Klaatu barada nicto" in the room.
+  
+You can use MPI in locks, too, but only indirectly.  The way you do it,
+is you lock to a property and the result you want, then you make that
+property contain the MPI code.  For example, to have a room display its
+fail message when there are more than ten people in the room, do this:
+  
+@fail here=The room's rather crowded at the moment.
+@succ here=The room's not so crowded at the moment.
+@lock here=_crowdedroom?:no
+@set here=_crowdedroom?:{if:{gt:{count:{contents:here}},10},yes,no}
+  
+In this example, the MPI code in the _crowdedroom? property will return
+"yes" if there are  more than ten items in the room.  Otherwise, it will
+return "no".  The lock on the room evaluates that MPI code, and checks
+to see if it returned "no".  If it did, then the success is shown to the
+player looking at the room.  Otherwise, the @fail is shown to the looker.
+  
+  
+  
+========================================================================
+            
+              GLOSSARY:  "What does that mean, again?"
+  
+  
+@6800: A popular MUF program written by Lynx, for making long or somewhat
+  elaborate descriptions. It gets its name from its dbref, #6800, and its
+  invocation via the string "@6800" at the beginning of an @desc.  This is
+  the same program as $desc, but is not related to $wf-desc, except in 
+  concept and function.
+  
+$desc: See @6800.
+  
+$wf-desc: Another popular muf description program, conceptually based on
+  the $desc program, but written from scratch and reverse engineered by
+  Whitefire.  It has some minor functionality differences, and a more
+  efficient design.
+  
+Message:  Any one of the various standard strings on objects, including
+  the @desc, @succ, @fail, @drop, @osucc, @ofail, and @odrop.
+  
+Omessage:  Any one of the standard object strings that are to be shown
+  to other players, including @osucc, @ofail, and @odrop.
+  
+Trigger:  The trigger is the object that was used that caused the MPI
+  commands to be evaluated.  If you use an exit, and it runs some MPI
+  commands that are in its @desc, then for those commands, the trigger
+  object is that exit.  The {exec:} command will evaluate the MPI code
+  in a property on another object, and it will tell that code that the
+  trigger object is the object that that property is on.
+  
+User:  This is the player who is running the MPI commands.  If the MPI
+  commands are in the @description of an object, then the player looking
+  at the object is the user.
+  
+  

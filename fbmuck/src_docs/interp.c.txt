@@ -1,0 +1,32 @@
+watchpid_process(struct frame *fr)
+Calls: timequeue_pid_frame, muf_event_add
+Called by: prog_clean
+When a process exits, it may be watching for another process's termination,
+or another process may be watching for its termination.  This processes
+all of that for the event system.
+fr->watchees: Array of processes that we're watching for the termination
+			  of.  We need to go through each of them, and clear the
+			  entries in their watchers list.
+fr->watchers: Array of processes that are watching for our termination.
+			  We need to go through each of them, and send each of them
+			  a PROC.EXIT event.  Once those events are sent, we clear
+			  and free the structures in the relevant watchers and
+			  watchees lists.
+
+prog_clean(struct frame *fr)
+Calls: watchpid_process, CLEAR, localvar_freeall, scopedvar_freeall,
+		delete_seed, muf_dlog_purge, dequeue_timers, muf_event_purge
+Called by: 
+mufevent.c:	static muf_event_process_free, muf_event_dequeue,
+			muf_event_process
+timequeue.c:static free_timenode, add_event, handle_read_event(4),
+			dequeue_prog_real
+interp.c:	do_abort_loop, interp_loop(4)
+This walks the frame and frees everything related to it -- all programs
+that have been started in it, all fors, trys, var, lvars, scopedvars of
+all of them, instructions, and everything.
+FIXME: This explanation of how the frame works should go somewhere else.
+The frame is set up as soon as a program is called.  Frames are
+passed around by pointer, and always referred to as 'fr' wherever they
+are.
+fr-> 

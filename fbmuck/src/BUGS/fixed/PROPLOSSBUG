@@ -1,0 +1,26 @@
+Fre'ta (Today at 4:44:20AM) -- Missing propdirsI was just looking over
+the FuzzBall code, and I think I may have foundthe problem with losing
+propdirs...  I'm not posative about this, but it'sa good guess based on
+what I was reading and what I've seen..  Unless I'mreading the code
+wrong, fetch_propvals will not properly load subpropdirswhen it should
+to have properly fetched all the values as it appears to betrying to
+do..  If it doesn't load the propdir, then PropDir() will turnup NULL,
+and it will get skipped later.  The reason it works even part ofthe
+time, I THINK is there appears to also be a bug in the prop loading
+code(I haven't tried tracking this down, but when I displayed a prop
+tree,it showed it had loaded propdirs it shouldn't have needed to) that
+causesit to load propdirs it doesn't need to..  So this prevents more
+propdirsfrom being lost.Admittedly, alot of this is just speculation on
+my part based on my limitedunderstanding of the code dealing with
+loading properties.
+
+Fre'ta (Today at 2:02:28AM) --
+One thing I think might help w/ 6.00 is to add a flag thats stored in
+the DB for if it's a propdir.  Also, the more I read it the more it
+looks like there is mistakes with things that didn't get updated w/ the
+new prop code.  But I can't tell cause the prop code is so messed up
+already.*Done*
+
+propfetch() and fetchprops() might be inconsistent on loading propdirs.
+DB dumping may not load unloaded propdirs due to using propfetch().
+

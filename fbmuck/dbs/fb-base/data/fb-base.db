@@ -1,0 +1,719 @@
+***Foxen8 TinyMUCK DUMP Format***
+27
+1
+115
+autolook_cmd=look
+penny=penny
+pennies=pennies
+cpenny=Penny
+cpennies=Pennies
+dumpwarn_mesg=## Game will pause to save the database in a few minutes. ##
+deltawarn_mesg=## Game will pause to save changed objects in a few minutes. ##
+dumping_mesg=## Pausing to save database. This may take a while. ##
+dumpdeltas_mesg=## Saving changed objects ##
+dumpdone_mesg=## Save complete. ##
+idle_boot_mesg=Autodisconnecting for inactivity.
+playermax_warnmesg=You likely won't be able to connect right now, since too many players are online.
+playermax_bootmesg=Sorry, but there are too many players online.  Please try reconnecting in a few minutes.
+proplist_counter_fmt=P#
+proplist_entry_fmt=P#/N
+register_mesg=Sorry, you can get a character by e-mailing XXXX@machine.net.address with a charname and password.
+rwho_passwd=potrzebie
+rwho_server=riemann.math.okstate.edu
+muckname=TygryssMUCK
+leave_mesg=Come back later!
+huh_mesg=Huh?  (Type "help" for help.)
+ssl_keyfile_passwd=
+pcreate_flags=B
+reserved_names=
+reserved_player_names=
+aging_time= 90d  0:00:00
+dump_interval=  0d  4:00:00
+dump_warntime=  0d  0:02:00
+monolithic_interval=  1d  0:00:00
+maxidle=  0d  2:00:00
+rwho_interval=  0d  0:04:00
+clean_interval=  0d  0:15:00
+max_object_endowment=100
+object_cost=10
+exit_cost=1
+link_cost=1
+room_cost=10
+lookup_cost=0
+max_pennies=10000
+penny_rate=8
+start_pennies=50
+kill_base_cost=100
+kill_min_cost=10
+kill_bonus=50
+listen_mlev=3
+cmd_log_threshold_msec=1000
+max_process_limit=400
+max_plyr_processes=32
+max_instr_count=20000
+max_ml4_preempt_count=0
+instr_slice=2000
+process_timer_limit=4
+mcp_muf_mlev=3
+userlog_mlev=3
+movepennies_muf_mlev=2
+addpennies_muf_mlev=2
+pennies_muf_mlev=1
+mpi_max_commands=2048
+playermax_limit=56
+command_burst_size=500
+commands_per_time=2
+command_time_msec=1000
+max_output=131071
+pause_min=0
+free_frames_pool=8
+max_delta_objs=20
+max_loaded_objs=5
+default_room_parent=#0
+player_start=#0
+enable_home=yes
+enable_prefix=no
+verbose_clone=no
+exit_darking=yes
+thing_darking=yes
+dark_sleepers=no
+who_hides_dark=yes
+realms_control=no
+compatible_priorities=yes
+diskbase_propvals=yes
+dbdump_warning=yes
+deltadump_warning=yes
+dumpdone_warning=yes
+idleboot=yes
+restrict_kill=yes
+allow_listeners=yes
+allow_listeners_obj=yes
+allow_listeners_env=yes
+log_commands=yes
+log_failed_commands=no
+log_interactive=yes
+log_programs=yes
+teleport_to_player=yes
+secure_teleport=no
+secure_thing_movement=no
+do_mpi_parsing=yes
+lazy_mpi_istype_perm=no
+optimize_muf=yes
+expanded_debug_trace=yes
+force_mlev1_name_notify=yes
+muf_comments_strict=yes
+playermax=no
+look_propqueues=no
+lock_envcheck=no
+proplist_int_counter=yes
+registration=yes
+support_rwho=no
+periodic_program_purge=yes
+use_hostnames=no
+secure_who=no
+who_doing=yes
+allow_zombies=yes
+wiz_vehicles=no
+ignore_support=yes
+ignore_bidirectional=yes
+starttls_allow=no
+#26
+s
+24
+-1
+-1
+2
+752632272
+752632300
+1
+752632272
+*Props*
+*End*
+1
+0
+1
+#25
+n
+0
+-1
+23
+2
+752632260
+752632263
+1
+752632260
+*Props*
+*End*
+1
+24
+1
+#24
+Another room
+0
+-1
+-1
+0
+752632249
+752632263
+1
+752632249
+*Props*
+*End*
+-1
+26
+1
+#23
+pose
+0
+-1
+21
+2
+752629866
+752629960
+10
+752629866
+*Props*
+*End*
+1
+22
+1
+#22
+cmd-pose
+1
+-1
+20
+1310724
+752629848
+752629960
+10
+752629848
+*Props*
+_/de:10:A scroll containing a spell called cmd-pose
+*End*
+1
+#21
+uptime
+0
+-1
+19
+2
+752629818
+752632346
+2
+752629818
+*Props*
+*End*
+1
+20
+1
+#20
+cmd-uptime
+1
+-1
+18
+1310724
+752629642
+752632346
+3
+752629841
+*Props*
+_/de:10:A scroll containing a spell called cmd-uptime
+_norestart:10:yes
+*End*
+1
+#19
+@when;@whe;@wh
+0
+-1
+17
+2
+752629324
+752629434
+3
+752629413
+*Props*
+*End*
+1
+18
+1
+#18
+cmd-@when
+1
+-1
+16
+17039396
+752629313
+752629434
+1
+752629587
+*Props*
+_/de:10:A scroll containing a spell called cmd-@when
+*End*
+1
+#17
+page;pag;pa;p
+0
+-1
+4
+2
+752629220
+752632102
+3
+752629221
+*Props*
+_page/formats/opage:10:%n pages, "%m" to %t.
+_page/formats/opose:10:In a page-pose to %t, %n %m
+_page/formats/page:10:You page, "%m" to %n.
+_page/formats/pose:10:You page-pose, "%i %m" to %n
+*End*
+1
+16
+1
+#16
+cmd-page
+1
+-1
+15
+1310740
+752629047
+752632122
+4
+752632122
+*Props*
+_/de:10:A scroll containing a spell called cmd-page
+day:3:8710
+*End*
+1
+#15
+lib-mesgbox
+1
+-1
+14
+17039396
+752629011
+752629377
+2
+752629324
+*Props*
+_/de:10:A scroll containing a spell called lib-mesgbox
+_defs/MBOX-append:10:"$lib/mesgbox" match "MBOX-append" call
+_defs/MBOX-badref?:10:"$lib/mesgbox" match "MBOX-badref?" call
+_defs/MBOX-count:10:"$lib/mesgbox" match "MBOX-count" call
+_defs/MBOX-create:10:"$lib/mesgbox" match "MBOX-create" call
+_defs/MBOX-delmesg:10:"$lib/mesgbox" match "MBOX-delmesg" call
+_defs/MBOX-destroy:10:"$lib/mesgbox" match "MBOX-destroy" call
+_defs/MBOX-insmesg:10:"$lib/mesgbox" match "MBOX-insmesg" call
+_defs/MBOX-message:10:"$lib/mesgbox" match "MBOX-message" call
+_defs/MBOX-msginfo:10:"$lib/mesgbox" match "MBOX-msginfo" call
+_defs/MBOX-ref2prop:10:"$lib/mesgbox" match "MBOX-ref2prop" call
+_defs/MBOX-setinfo:10:"$lib/mesgbox" match "MBOX-setinfo" call
+_defs/MBOX-setmesg:10:"$lib/mesgbox" match "MBOX-setmesg" call
+_docs:10:@list $lib/mesgbox=1-45
+*End*
+1
+#14
+lib-mesg
+1
+-1
+13
+18087972
+752628998
+752629377
+2
+752629000
+*Props*
+_/de:10:A scroll containing a spell called lib-mesg
+_defs/MSG-append:10:"$lib/mesg" match "MSG-append" call
+_defs/MSG-count:10:"$lib/mesg" match "MSG-count" call
+_defs/MSG-create:10:"$lib/mesg" match "MSG-create" call
+_defs/MSG-delitem:10:"$lib/mesg" match "MSG-delitem" call
+_defs/MSG-destroy:10:"$lib/mesg" match "MSG-destroy" call
+_defs/MSG-info:10:"$lib/mesg" match "MSG-info" call
+_defs/MSG-insitem:10:"$lib/mesg" match "MSG-insitem" call
+_defs/MSG-item:10:"$lib/mesg" match "MSG-item" call
+_defs/MSG-message:10:"$lib/mesg" match "MSG-message" call
+_defs/MSG-setinfo:10:"$lib/mesg" match "MSG-setinfo" call
+_defs/MSG-setitem:10:"$lib/mesg" match "MSG-setitem" call
+_docs:10:@list $lib/mesg=1-50
+*End*
+1
+#13
+def-pmatch
+1
+-1
+12
+18087988
+752628777
+752629243
+1
+752628777
+*Props*
+_/de:10:A scroll containing a spell called def-pmatch
+*End*
+1
+#12
+lib-editor
+1
+-1
+11
+18087972
+752628713
+752628713
+0
+752628746
+*Props*
+_/de:10:A scroll containing a spell called lib-editor
+_defs/editor:10:"$lib/editor" match "editor" call
+_defs/editorheader:10:"$lib/editor" match "editorheader" call
+_defs/editorloop:10:"$lib/editor" match "editorloop" call
+_defs/editorparse:10:"$lib/editor" match "editorparse" call
+_docs:10:@list $lib/editor=1-50
+*End*
+1
+#11
+lib-index
+1
+-1
+10
+18087972
+752628661
+752628661
+0
+752628705
+*Props*
+_/de:10:A scroll containing a spell called lib-index
+_defs/.index-add:10:"$lib/index" match "index-add" call
+_defs/.index-add-sort:10:"$lib/index" match "index-add-sort" call
+_defs/.index-delete:10:"$lib/index" match "index-delete" call
+_defs/.index-envmatch:10:"$lib/index" match "index-envmatch" call
+_defs/.index-first:10:"$lib/index" match "index-first" call
+_defs/.index-last:10:"$lib/index" match "index-last" call
+_defs/.index-match:10:"$lib/index" match "index-match" call
+_defs/.index-matchrange:10:"$lib/index" match "index-matchrange" call
+_defs/.index-next:10:"$lib/index" match "index-next" call
+_defs/.index-prev:10:"$lib/index" match "index-prev" call
+_defs/.index-remove:10:"$lib/index" match "index-remove" call
+_defs/.index-set:10:"$lib/index" match "index-set" call
+_defs/.index-value:10:"$lib/index" match "index-value" call
+_defs/.index-write:10:"$lib/index" match "index-write" call
+_defs/.std-index-add:10:"$lib/index" match "std-index-add" call
+_defs/.std-index-add-sort:10:"$lib/index" match "std-index-add-sort" call
+_defs/.std-index-delete:10:"$lib/index" match "std-index-delete" call
+_defs/.std-index-envmatch:10:"$lib/index" match "std-index-envmatch" call
+_defs/.std-index-first:10:"$lib/index" match "std-index-first" call
+_defs/.std-index-last:10:"$lib/index" match "std-index-last" call
+_defs/.std-index-match:10:"$lib/index" match "std-index-match" call
+_defs/.std-index-next:10:"$lib/index" match "std-index-next" call
+_defs/.std-index-prev:10:"$lib/index" match "std-index-prev" call
+_defs/.std-index-remove:10:"$lib/index" match "std-index-remove" call
+_defs/.std-index-set:10:"$lib/index" match "std-index-set" call
+_defs/.std-index-value:10:"$lib/index" match "std-index-value" call
+_defs/.std-index-write:10:"$lib/index" match "std-index-write" call
+_docs:10:@list $lib/index=1-109
+_lib-version:10:1.2
+*End*
+1
+#10
+lib-stackrng
+1
+-1
+9
+18087972
+752628618
+752628618
+0
+752628629
+*Props*
+_/de:10:A scroll containing a spell called lib-stackrng
+_defs/popn:10:"$lib/stackrng" match "popoffn" call
+_defs/sr-catrng:10:"$lib/stackrng" match "catranges" call
+_defs/sr-copyrng:10:"$lib/stackrng" match "copyrange" call
+_defs/sr-deleterng:10:"$lib/stackrng" match "deleterange" call
+_defs/sr-extractrng:10:"$lib/stackrng" match "extractrange" call
+_defs/sr-filterrng:10:"$lib/stackrng" match "filterrange" call
+_defs/sr-insertrng:10:"$lib/stackrng" match "insertrange" call
+_defs/sr-poprng:10:"$lib/stackrng" match "popoffn" call
+_defs/sr-swaprng:10:"$lib/stackrng" match "swapranges" call
+*End*
+1
+#9
+lib-edit
+1
+-1
+8
+18087972
+752628586
+752628586
+0
+752628614
+*Props*
+_/de:10:A scroll containing a spell called lib-edit
+_defs/EDITcenter:10:"$lib/edit" match "EDITcenter" call
+_defs/EDITcopy:10:"$lib/edit" match "EDITcopy" call
+_defs/EDITdisplay:10:"$lib/edit" match "EDITdisplay" call
+_defs/EDITfmt_rng:10:"$lib/edit" match "EDITfmt_rng" call
+_defs/EDITformat:10:"$lib/edit" match "EDITformat" call
+_defs/EDITindent:10:"$lib/edit" match "EDITindent" call
+_defs/EDITjoin:10:"$lib/edit" match "EDITjoin" call
+_defs/EDITjoin_rng:10:"$lib/edit" match "EDITjoin_rng" call
+_defs/EDITleft:10:"$lib/edit" match "EDITleft" call
+_defs/EDITlist:10:"$lib/edit" match "EDITlist" call
+_defs/EDITmove:10:"$lib/edit" match "EDITmove" call
+_defs/EDITreplace:10:"$lib/edit" match "EDITreplace" call
+_defs/EDITright:10:"$lib/edit" match "EDITright" call
+_defs/EDITsearch:10:"$lib/edit" match "EDITsearch" call
+_defs/EDITshuffle:10:"$lib/edit" match "EDITshuffle" call
+_defs/EDITsort:10:"$lib/edit" match "EDITsort" call
+_defs/EDITsplit:10:"$lib/edit" match "EDITsplit" call
+_docs:10:@list $lib/edit=1-80
+*End*
+1
+#8
+lib-match
+1
+-1
+7
+18087972
+752628554
+752628554
+0
+752628566
+*Props*
+_/de:10:A scroll containing a spell called lib-match
+_defs/.controls:10:"$lib/match" match "controls" call
+_defs/.match_controlled:10:"$lib/match" match "match_controlled" call
+_defs/.multi_rmatch:10:"$lib/match" match "multi_rmatch" call
+_defs/.noisy_match:10:"$lib/match" match "noisy_match" call
+_defs/.noisy_pmatch:10:"$lib/match" match "noisy_pmatch" call
+_defs/.std_table_match:10:"$lib/match" match "std_table_match" call
+_defs/.table_match:10:"$lib/match" match "table_match" call
+_docs:10:@list $lib/match=1-60
+*End*
+1
+#7
+lib-lmgr
+1
+-1
+6
+18154276
+752628531
+752629377
+2
+752628536
+*Props*
+_/de:10:A scroll containing a spell called lib-lmgr
+_defs/.lmgr-clearelem:10:"$lib/lmgr" match "lmgr-clearelem" call
+_defs/.lmgr-clearrange:10:"$lib/lmgr" match "lmgr-clearrange" call
+_defs/.lmgr-deletelist:10:"$lib/lmgr" match "lmgr-deletelist" call
+_defs/.lmgr-deleterange:10:"$lib/lmgr" match "lmgr-deleterange" call
+_defs/.lmgr-extractrange:10:"$lib/lmgr" match "lmgr-extractrange" call
+_defs/.lmgr-fullrange:10:"$lib/lmgr" match "lmgr-fullrange" call
+_defs/.lmgr-getbrange:10:"$lib/lmgr" match "lmgr-getbrange" call
+_defs/.lmgr-getcount:10:"$lib/lmgr" match "lmgr-getcount" call
+_defs/.lmgr-getelem:10:"$lib/lmgr" match "lmgr-getelem" call
+_defs/.lmgr-getlist:10:"$lib/lmgr" match "lmgr-getlist" call
+_defs/.lmgr-getrange:10:"$lib/lmgr" match "lmgr-getrange" call
+_defs/.lmgr-insertrange:10:"$lib/lmgr" match "lmgr-insertrange" call
+_defs/.lmgr-moverange:10:"$lib/lmgr" match "lmgr-moverange" call
+_defs/.lmgr-putbrange:10:"$lib/lmgr" match "lmgr-putbrange" call
+_defs/.lmgr-putelem:10:"$lib/lmgr" match "lmgr-putelem" call
+_defs/.lmgr-putrange:10:"$lib/lmgr" match "lmgr-putrange" call
+_defs/.lmgr-setcount:10:"$lib/lmgr" match "lmgr-setcount" call
+_defs/lmgr-clearelem:10:"$lib/lmgr" match "lmgr-clearelem" call
+_defs/lmgr-clearrange:10:"$lib/lmgr" match "lmgr-clearrange" call
+_defs/lmgr-deletelist:10:"$lib/lmgr" match "lmgr-deletelist" call
+_defs/lmgr-deleterange:10:"$lib/lmgr" match "lmgr-deleterange" call
+_defs/lmgr-extractrange:10:"$lib/lmgr" match "lmgr-extractrange" call
+_defs/lmgr-fullrange:10:"$lib/lmgr" match "lmgr-fullrange" call
+_defs/lmgr-getbrange:10:"$lib/lmgr" match "lmgr-getbrange" call
+_defs/lmgr-getcount:10:"$lib/lmgr" match "lmgr-getcount" call
+_defs/lmgr-getelem:10:"$lib/lmgr" match "lmgr-getelem" call
+_defs/lmgr-getlist:10:"$lib/lmgr" match "lmgr-getlist" call
+_defs/lmgr-getrange:10:"$lib/lmgr" match "lmgr-getrange" call
+_defs/lmgr-insertrange:10:"$lib/lmgr" match "lmgr-insertrange" call
+_defs/lmgr-moverange:10:"$lib/lmgr" match "lmgr-moverange" call
+_defs/lmgr-putbrange:10:"$lib/lmgr" match "lmgr-putbrange" call
+_defs/lmgr-putelem:10:"$lib/lmgr" match "lmgr-putelem" call
+_defs/lmgr-putrange:10:"$lib/lmgr" match "lmgr-putrange" call
+_defs/lmgr-setcount:10:"$lib/lmgr" match "lmgr-setcount" call
+_docs:10:@list $lib/lmgr=1-50
+_lib-version:10:1.2
+*End*
+1
+#6
+lib-cases
+1
+-1
+5
+1310724
+752628503
+752628503
+0
+752628503
+*Props*
+_/de:10:A scroll containing a spell called lib-cases
+_defs/case:10:begin dup
+_defs/default:10:pop 1 if
+_defs/end:10:break then dup
+_defs/endcase:10:pop pop 1 until
+_defs/when:10:if pop
+*End*
+1
+#5
+lib-props
+1
+-1
+3
+17105700
+752628457
+752628457
+0
+752628458
+*Props*
+_/de:10:A scroll containing a spell called lib-props
+_defs/.envprop:10:"$lib/props" match "envprop" call
+_defs/.envsearch:10:"$lib/props" match "envsearch" call
+_defs/.locate-prop:10:"$lib/props" match "locate-prop" call
+_defs/.setpropstr:10:"$lib/props" match "setpropstr" call
+_defs/envprop:10:"$lib/props" match "envprop" call
+_defs/envsearch:10:"$lib/props" match "envsearch" call
+_defs/locate-prop:10:"$lib/props" match "locate-prop" call
+_defs/setpropstr:10:"$lib/props" match "setpropstr" call
+_docs:10:@list $lib/props=1-20
+*End*
+1
+#4
+@register;@registe;@regist;@regis;@regi;@reg
+0
+-1
+-1
+2
+752628352
+752629848
+26
+752628352
+*Props*
+*End*
+1
+2
+1
+#3
+lib-strings
+1
+-1
+2
+18087972
+752627931
+752627931
+0
+752628449
+*Props*
+_/de:10:A scroll containing a spell called stringslib
+_defs/.asc:10:"$lib/strings" match "STRasc" call
+_defs/.blank?:10:striplead not
+_defs/.center:10:"$lib/strings" match "center" call
+_defs/.chr:10:"$lib/strings" match "STRchr" call
+_defs/.command_parse:10:"$lib/strings" match "STRparse" call
+_defs/.fillfield:10:"$lib/strings" match "fillfield" call
+_defs/.left:10:"$lib/strings" match "left" call
+_defs/.right:10:"$lib/strings" match "right" call
+_defs/.rsplit:10:"$lib/strings" match "rsplit" call
+_defs/.singlespace:10:"$lib/strings" match "sms" call
+_defs/.sls:10:striplead
+_defs/.sms:10:"$lib/strings" match "sms" call
+_defs/.split:10:"$lib/strings" match "split" call
+_defs/.strip:10:strip
+_defs/.stripspaces:10:strip
+_defs/.sts:10:striptail
+_defs/STRasc:10:"$lib/strings" match "STRasc" call
+_defs/STRblank?:10:striplead not
+_defs/STRcenter:10:"$lib/strings" match "center" call
+_defs/STRchr:10:"$lib/strings" match "STRchr" call
+_defs/STRfillfield:10:"$lib/strings" match "fillfield" call
+_defs/STRleft:10:"$lib/strings" match "left" call
+_defs/STRparse:10:"$lib/strings" match "STRparse" call
+_defs/STRright:10:"$lib/strings" match "right" call
+_defs/STRrsplit:10:"$lib/strings" match "rsplit" call
+_defs/STRsinglespace:10:"$lib/strings" match "sms" call
+_defs/STRsls:10:striplead
+_defs/STRsms:10:"$lib/strings" match "sms" call
+_defs/STRsplit:10:"$lib/strings" match "split" call
+_defs/STRstrip:10:strip
+_defs/STRsts:10:striptail
+_docs:10:@list $lib/strings=1-29
+*End*
+1
+#2
+cmd-@register
+1
+-1
+-1
+1310740
+752627872
+752629848
+26
+752628352
+*Props*
+_/de:10:A scroll containing a spell called cmd-@register
+*End*
+1
+#1
+One
+0
+22
+24
+19
+752627794
+752632353
+2
+752629848
+*Props*
+@/value:3:2
+_/de:10:You see Number One.
+_page/curr_format:10:page
+_page/lastpaged:10:*}.)5
+_page/lastpagedgroup:10:*
+_page/lastpager:10:*}.)5
+_page/lastpagers:10:*}.)5
+_page/lastversion:10:MUFpage v2.40 by Foxen
+_reg/tmp/exit1:5:23
+_reg/tmp/prog1:10:22
+*End*
+0
+-1
+CuG4ZtGvyRbfJubgNISTcg==
+#0
+Room Zero
+-1
+1
+-1
+0
+752627794
+752632300
+10
+752632122
+*Props*
+_/de:10:You are in Room Zero.  It's very dark here.
+_/osc:10:is briefly visible through the mist.
+_reg/lib/case:10:6
+_reg/lib/edit:10:9
+_reg/lib/editor:10:12
+_reg/lib/index:10:11
+_reg/lib/lmgr:10:7
+_reg/lib/match:10:8
+_reg/lib/mesg:10:14
+_reg/lib/mesgbox:10:15
+_reg/lib/props:10:5
+_reg/lib/stackrng:10:10
+_reg/lib/strings:10:3
+_sys/dumpinterval:3:14400
+_sys/lastdumptime:3:752632353
+_sys/maxpennies:3:10000
+_sys/shutdowntime:3:752632353
+_sys/startuptime:3:752631941
+day:3:8710
+*End*
+-1
+25
+1
+***END OF DUMP***

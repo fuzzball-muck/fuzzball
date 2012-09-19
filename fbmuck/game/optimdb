@@ -1,0 +1,43 @@
+#!/bin/csh
+#
+
+set tmpfile=uncomp.db.$$
+set tmpfile2=wordlist.$$
+
+if ( $# != 2 ) then
+    echo "Usage: $0 infile outfile"
+    exit
+endif
+
+if ( "$1" == "$2" ) then
+    echo "$0: infile and outfile cannot be the same."
+    exit
+endif
+
+echo "Database re-optimizer: This may take a while, if your database is huge."
+echo "FurryMUCK's 60 meg db took less than an hour to re-optimize, but most of"
+echo "that time was spent in converting the database formats and compression."
+echo "The program to find the optimized words took less than 15 minutes."
+echo ""
+
+echo "Uncompressing the input db..."
+./netmuck -convert -decompress $1 $tmpfile
+
+echo "Calculating the optimized wordlist..."
+( \
+    cat data/wordlist.txt | sed 's/^/::/' ; \
+    cat $tmpfile \
+) | ./topwords | sort > $tmpfile2
+
+mv data/wordlist.txt data/wordlist.bak
+mv $tmpfile2 data/wordlist.txt
+
+echo "Recompressing the database with the new optimized wordlist..."
+./netmuck -convert $tmpfile $2
+
+rm -f $tmpfile $tmpfile2
+
+
+echo "Done.  The file $2 will now contain the optimized database."
+
+

@@ -1,0 +1,51 @@
+@prog actor-boot
+1 999 d
+1 i
+( automaton booter )
+( By triggur of Furrymuck )
+var t1
+var t2
+var t3
+var t4
+var outtext
+var sendto
+: main ( s -- )
+  trigger @ location owner trigger @ owner dbcmp not if (dont own room)
+    0 exit
+  then
+  me @ "w" flag? if (wont work on a wizard)
+    me @ "WARNING:  Robot " trigger @ name strcat " tried to sweep you.  Wizard pre-empt engaged." strcat notify
+    0 exit
+  then
+  me @ name "Triggur" stringcmp not if
+    me @ "WARNING: Robot " trigger @ name strcat " tried to sweep you.  Author pre-empt engaged." strcat notify
+    0 exit
+  then
+  trigger @ name " " strcat swap strcat
+  me @ name "%n" subst me @ name "%N" subst outtext !
+  trigger @ location "_sweep_to" getpropstr dup if 
+    dup atoi dbref dup room? if
+      dup owner trigger @ location owner dbcmp not if (not owner)
+        pop 0 exit
+      else
+        trigger @ location trigger @ outtext @ me @ swap pronoun_sub
+          notify_except
+        me @ swap moveto  (boot em!)
+      then
+    else   (not a room)
+      pop 0 exit
+    then
+  else
+    me @ getlink dup #-1 dbcmp if ( no home )
+      pop me @ owner getlink
+    then
+    trigger @ location trigger @ outtext @ me @ swap pronoun_sub notify_except
+    me @ swap moveto  (boot em!)
+  then 
+  1
+exit
+;
+.
+c
+q
+@set actor-boot=l

@@ -1,0 +1,598 @@
+@program cmd-attributes
+1 100000 del
+i
+( header, 17 lines -- Attr-Edit.cmd, programmed by Jordan Greywolf
+version 1.0, last updated 30 Jul 94
+The purpose of this program is to provide a framework for an "Attributes"
+global which would consist of a standardized listing of various "attribute"
+props [which players are free to set on themselves] to define their physical
+abilities.  This would include whatever props might be used, for instance,
+to determine your character's gender, species, whether or not your character
+can fly, breathe underwater, etc.  Each of these "attributes" is stored
+as a propname, an alias [so the user can set it through the program], a short
+description, and a larger explanation.  Attributes can be added/removed from
+this listing by any Wizard or the trigger owner.
+:
+The program sets up a convenient reference for some commonly-set properties
+that may appear on players and objects, along with accompanying documentation.
+:
+Uses FB5.31 and supports MPI.  This version also uses the "lmgr" [list
+manager] libraries.
+:
+Action should be called 'Attributes;attribute;attr;aset'
+)
+
+$include $lib/lmgr
+$include $lib/editor
+$include $lib/strings
+$def LMGRgetcount lmgr-getcount
+$def LMGRgetrange lmgr-getrange
+$def LMGRputrange lmgr-putrange
+$def LMGRdeleterange lmgr-deleterange
+
+: tell  ( s -- : displays text to user )
+  me @ swap notify
+;
+
+: LMGRdeletelist
+  over over LMGRgetcount
+  1 4 rotate 4 rotate LMGRdeleterange
+;
+
+: LMGRgetlist
+  over over LMGRgetcount
+  rot rot 1 rot rot
+  LMGRgetrange
+;
+
+: lsedit-loop  ( listname dbref {rng} mask currline cmdstr -- )
+    EDITORloop
+    dup "save" stringcmp not if
+        pop pop pop pop
+        3 pick 3 + -1 * rotate
+        over 3 + -1 * rotate
+        dup 5 + pick over 5 + pick
+        over over LMGRdeletelist
+        1 rot rot LMGRputrange
+        4 pick 4 pick LMGRgetlist
+        dup 3 + rotate over 3 + rotate
+        "< List saved. >" tell
+        "" lsedit-loop exit
+    then
+    dup "abort" stringcmp not if
+        "< list not saved. >" tell
+        pop pop pop pop pop pop pop pop pop exit
+    then
+    dup "end" stringcmp not if
+        pop pop pop pop pop pop
+        dup 3 + rotate over 3 + rotate
+        over over LMGRdeletelist
+        1 rot rot LMGRputrange
+        "< list saved. >" tell exit
+    then
+;
+
+: lsedit-rtn ( s -- : edits proplist for entry )
+  trigger @ ( put trigger dbref under propname on stack )
+"<    Welcome to the list editor.  You can get help by entering '.h'     >"
+tell
+"< '.end' will exit and save the list.  '.abort' will abort any changes. >"
+tell
+"<    To save changes to the list, and continue editing, use '.save'     >"
+tell
+    over over LMGRgetlist
+    "save" 1 ".i $" lsedit-loop
+;
+
+: display-list-rtn ( s -- : shows proplist )
+  dup "#" strcat trigger @ swap getpropstr atoi
+  ( get number of lines in list )
+  1 ( counter on stack )
+  ( stack: propname[s] numlines[i] counter[i] )
+  begin
+    over over < if ( exit if counter exceeds maximum number )
+      pop pop pop break
+    then
+    trigger @ 4 pick "#/" strcat 3 pick intostr strcat
+    "Attr-Edit.cmd" 1 parseprop
+    tell
+    1 + ( increment counter )
+  repeat
+;
+
+: firstchar ( s1 -- s2 : returns first character in string )
+  1 strcut pop
+;
+
+: capitalize ( s1 -- s2 : capitalizes first character of string )
+  dup 1 strcut pop "abcdefghijklmnopqrstuvwxyz" swap instring not if
+    ( check for non-alphabetical character in first part )
+    2 strcut swap toupper swap strcat
+  else
+    1 strcut swap toupper swap strcat
+  then
+;
+
+: me-authorized? ( -- 0|1 : checks to see if you can edit entries )
+  me @ "w" flag?   ( if you are a wiz ... )
+  me @ trigger @ owner dbcmp or if ( ... or if you own the action )
+    1
+  else
+    0
+  then
+;
+
+: split-space ( s1 -- s2 s3 : break at space )
+  striplead striptail
+  dup " " instr dup not if ( if no space in string ... )
+    pop dup "=" instr dup not if ( if no equal-sign either ... )
+      pop ""   ( return first string + empty string )
+    else
+      1 - strcut 1 strcut swap pop ( split and remove equal-sign )
+    then
+  else
+    1 - strcut 1 strcut swap pop ( split and remove space )
+  then
+  striplead striptail swap striplead striptail swap
+;
+
+: parse-command ( s1 -- s2 s3 : break into command and parameters )
+  1 strcut swap pop ( remove # )
+  split-space
+;
+
+: get-count-rtn
+  "Current number of attributes registered: " trigger @ "_attr/count"
+  getpropstr strcat tell
+  "Current number of pages available: " trigger @ "_attr/count" getpropstr
+  atoi 10 / dup 1 < if
+    pop 1
+  then
+  intostr strcat tell
+;
+
+: help-rtn
+  "Attributes Global Help" tell
+  "----------------------" tell
+  "The Attributes (or 'Attr') global is meant to provide a handy means" tell
+  "for setting various standardized 'attributes' for your character for" tell
+  "roleplaying and gaming purposes.  These attributes may be used by" tell
+  "builders and programmers for their environments, particularly for" tell
+  "areas where only creatures with certain attributes (such as the" tell
+  "ability to fly, or to breathe underwater) may be able to enter, or" tell
+  "certain actions (such as using psionics) which only certain creatures" tell
+  "would be able to use." tell
+  ":" tell
+  "Attr                  -- shows complete attribute listing and your settings"
+  tell
+  "Attr [#page] {#}      -- shows a page (10 attributes) from the listing" tell
+  "Attr #help            -- shows this screen" tell
+  "Attr {attr}           -- shows complete explanation of attribute" tell
+  "Aset {attr}           -- shows current setting of indicated attribute" tell
+  "Aset {attr}={setting} -- sets the value of a particular attribute" tell
+  "Aset {attr}=          -- clears this attribute" tell
+  me-authorized? if
+    ":" tell
+    "Attr #commands        -- shows special editor commands" tell
+  then
+  get-count-rtn
+;
+
+: commands-rtn
+  "Attributes Global Editor Commands" tell
+  "---------------------------------" tell
+  "You, as the action owner or a Wizard, may add, delete or edit entries"
+  tell
+  "for various standardized 'attributes'." tell
+  "Attr #add {alias} {propname}   -- registers propsetting with given alias"
+  tell
+  "Attr #prop {alias} {newprop}   -- changes propname to new value" tell
+  "Attr #alias {alias} {newalias} -- changes alias for attribute" tell
+  "Attr #desc {alias} {text}      -- sets brief description" tell
+  "Attr #explain {alias}          -- sets expanded description with lsedit"
+  tell
+  "Attr #delete {alias}           -- removes attribute entry" tell
+;
+
+: entry-prop ( s1 -- s2 )
+  trigger @ "_attr/entry/-" rot strcat getpropstr
+;
+
+: valid-name?
+  dup "/" instr not swap " " instr not and
+;
+
+: information-retrieve-rtn
+  dup entry-prop dup not if
+    pop pop "That is not a recognized attribute." tell exit
+  then
+  "Attribute:   " 3 pick capitalize strcat tell
+  "Property:    " over capitalize strcat tell
+  "Your current setting: " me @ rot getpropstr strcat tell
+  "Description: " trigger @ "_attr/entry/-" 4 pick strcat "/desc" strcat
+  getpropstr dup not if
+    pop "{not set}"
+  then
+  strcat tell
+  "Explanation:" tell
+  "_attr/entry/-" over strcat "/exp" strcat display-list-rtn
+;
+
+: show-explanation-rtn ( s -- : shows explanation for attribute )
+  "/exp" strcat display-list-rtn
+;
+
+: update-count-rtn
+  0 ( start count at zero ... )
+  trigger @ "_attr/entry/" nextprop
+  begin
+    dup not if
+      pop break
+    then
+    swap 1 + swap ( increment counter )
+    trigger @ swap nextprop
+  repeat
+  trigger @ "_attr/count" rot intostr 1 addprop
+;
+
+: add-entry-rtn
+  split-space over not over not or if
+    "You must specify an attribute name (alias) and the propname." tell
+    "Format:  Attr #add {alias} {propname}" tell
+    "Operation cancelled." tell pop pop exit
+    exit
+  then
+  over valid-name? not if
+    "That is not a valid alias name.  No slashes or spaces may be in" tell
+    "the alias for the registered attribute." tell
+    "Operation cancelled." tell pop pop exit
+  then
+  over entry-prop if
+    "An attribute with that name is already registered." tell
+    "Operation cancelled." tell pop pop exit
+  then
+  trigger @ "_attr/entry/-" 4 pick strcat 3 pick 1 addprop
+  "Attribute '" rot "' registered for property '" strcat strcat swap strcat
+  "'." strcat tell
+  update-count-rtn
+;
+
+: delete-entry-rtn
+  dup not if
+    "You must specify the name (alias) for the attribute you wish to" tell
+    "delete from the listing." tell
+    "Format:  Attr #del {alias}" tell
+    "Operation cancelled." tell pop exit
+  then
+  dup entry-prop if
+    "Attribute: " over strcat tell
+    dup show-explanation-rtn
+    "Do you wish to remove this attribute from the listing? (Y/N)" tell
+    read
+    "y" stringcmp if
+      "Operation cancelled." tell exit
+    then
+    "_attr/entry/-" over strcat
+    trigger @ over remove_prop
+    trigger @ over "/desc" strcat remove_prop
+    trigger @ swap "/exp#" strcat remove_prop
+    "All information for '" swap "' deleted from listing." strcat strcat tell
+  else
+    "No entry for '" swap "' found." strcat strcat tell
+    "Operation cancelled." tell
+  then
+  update-count-rtn
+;
+
+: desc-entry-rtn
+  split-space over not over not or if
+    "You must specify the attribute name (alias), and the description" tell
+    "for it, up to 75 characters long.  Setting '.' for the" tell
+    "{text} field will erase the current description." tell
+    "Format:  Attr #desc {alias} {text}" tell
+    "Operation cancelled." tell
+    pop pop exit
+  then
+  over entry-prop if
+     dup "." strcmp not if ( check for "." for "null" )
+       pop "" "Description erased." tell
+     else
+       75 strcut pop ( trim to 75 characters )
+     then
+     trigger @ "_attr/entry/-" 4 pick strcat "/desc" strcat 3 pick 1 addprop
+     "New description for '" rot strcat "' set to:" strcat tell
+     tell
+  else
+     "No attribute with that alias is currently registered." tell
+     "Operation cancelled." tell
+     pop pop exit
+  then
+;
+
+: explain-entry-rtn
+  dup not if
+    pop "You must specify the name (alias) of the attribute to edit." tell
+    "Format:  Attr #edit {alias}" tell
+    "Operation cancelled." tell exit
+  then
+  dup entry-prop if
+    "_attr/entry/-" swap strcat "/exp" strcat dup display-list-rtn lsedit-rtn
+  else
+    pop "No entry for '" swap strcat "' found." strcat strcat tell
+    "Operation cancelled." tell
+  then
+;
+
+: propname-entry-rtn
+  split-space over not over not or if
+    "You must specify the name (alias) and the new propname to assign" tell
+    "to it." tell
+    "Format:  Attr #prop {alias} {newpropname}" tell
+    "Operation cancelled." tell pop pop exit
+  then
+  over entry-prop if
+    trigger @ "_attr/entry/-" 4 pick strcat 3 pick 1 addprop
+    "Propname for '" rot strcat "' set to '" strcat swap strcat "'." strcat
+    tell
+  else
+    "No entry for '" rot "' found." strcat strcat tell pop
+    "Operation cancelled." tell
+  then
+;
+
+: copyto-rtn ( s1 s2 s3 -- )
+  trigger @ 4 rotate ( < oldprop) 3 pick ( < extension ) strcat getpropstr
+  trigger @ 4 rotate ( < newprop) 4 rotate ( < extension ) strcat
+  rot dup not if ( if empty )
+    pop remove_prop
+  else
+    1 addprop
+  then
+;
+
+: copy-exp-rtn
+  swap "/exp#" strcat swap "/exp#" strcat
+  over over copyto-rtn ( copy the number of lines )
+  trigger @ 3 pick getpropstr atoi ( numlines )
+  1 ( counter )
+  begin
+    ( stack: oldpropname[s] newpropname[s] numlines[i] counter[i] )
+    over over < if
+      pop pop pop pop break
+    then
+    trigger @ 5 pick "/" strcat 3 pick intostr strcat getpropstr
+    trigger @ 5 pick "/" strcat 4 pick intostr strcat 1 addprop
+    1 +
+  repeat
+;
+
+: alias-entry-rtn
+  split-space over not over not or if
+    "You must specify the old name (alias) and the new name to change" tell
+    "it to for the attribute entry." tell
+    "Format:  Attr #alias {oldalias} {newalias}" tell
+    "Operation cancelled." tell pop pop exit
+  then
+  over entry-prop not if
+    "No entry currently exists for '" rot "'." strcat strcat tell pop
+    "Operation cancelled." tell exit
+  then
+  dup entry-prop if
+    "An entry already exists for '" swap "'." strcat strcat tell pop
+    "Operation cancelled." tell exit
+  then
+  over valid-name? not if
+    "That is not a valid alias name.  No slashes or spaces may be in" tell
+    "the alias for the registered attribute." tell
+    "Operation cancelled." tell pop pop exit
+  then
+  over over
+  "_attr/entry/-" rot strcat "_attr/entry/-" rot strcat
+  over over "" copyto-rtn
+  over over "/desc" copyto-rtn
+  over over copy-exp-rtn
+  pop trigger @ swap remove_prop
+  "Information for '" rot "' copied to '" strcat strcat swap "'." strcat strcat
+  tell
+;
+
+: show-setting-rtn
+  pop dup entry-prop dup not if
+    pop pop "That is not a recognized attribute." tell exit
+  then
+  me @ swap getpropstr
+  "Attribute '" rot "' is set to: " strcat strcat swap
+  dup not if
+    pop "{no setting}"
+  then
+  strcat tell
+;
+
+: set-attribute-rtn
+  dup 2 strcut pop "#h" stringcmp not if
+    help-rtn exit
+  then
+  dup "=" instr dup not if
+    pop pop "You must specify the attribute name and desired setting." tell
+    "Format:  Aset {attr}={setting}" tell
+    "Operation cancelled." tell exit
+  then
+  1 - strcut 1 strcut swap pop ( split and remove = )
+  striplead striptail swap striplead striptail swap
+  over not if
+    show-setting-rtn exit
+  then
+  over entry-prop dup not if
+    pop pop "That is not a recognized attribute." tell
+  else
+    ( stack: attr[s] setting[s] propname[s] )
+    dup not if ( check for empty parameter ... )
+      me @ swap remove_prop pop ( clear setting )
+      "Your attribute of '" swap "' is now cleared." strcat strcat tell
+    else
+      me @ swap 3 pick 1 addprop ( make setting )
+      "Your attribute of '" rot "' is now set to '" strcat strcat swap
+      "'." strcat strcat tell
+    then
+  then
+;
+
+: column-chop ( s1 i -- s2 )
+  swap "                                                    " strcat
+  swap 1 - strcut pop " " strcat
+;
+
+: show-listing-rtn
+  "Recognized Attributes: Complete Listing" tell
+  "---------------------------------------" tell
+  "Attribute           Current Setting" tell
+  "---------           ---------------" tell
+  trigger @ "_attr/entry/" nextprop ( get first propname )
+  begin
+    dup not if  ( if end of list )
+      pop break
+    then
+    dup 13 strcut swap pop ( chop off _attr/entry/- )
+    capitalize
+    20 column-chop
+    trigger @ 3 pick getpropstr
+    me @ swap getpropstr
+    strcat tell
+    trigger @ over "/desc" strcat getpropstr dup not if
+      pop
+    else
+      "---> " swap 75 strcut pop strcat tell
+    then
+    trigger @ swap nextprop
+  repeat
+  "---------------------------------------" tell
+;
+
+: valid-page?
+  trigger @ "_attr/count" getpropstr atoi 10 /
+  dup 1 < if
+    pop 1
+  then
+  swap atoi
+  dup 1 < if
+    pop pop 0 exit
+  then
+  < if
+    0 exit
+  then
+  1
+;
+
+: show-page-rtn
+  dup not if
+    pop get-count-rtn exit
+  then
+  dup valid-page? not if
+    pop "That is not a valid page number." tell
+    get-count-rtn exit
+  then
+  "Recognized Attributes: Page " over strcat tell
+  "---------------------------------------"
+  over strlen 23 + strcut pop tell
+  atoi 10 * ( calculate maximum count )
+  "Attribute           Current Setting" tell
+  "---------           ---------------" tell
+  0 ( set counter )
+  trigger @ "_attr/entry/" nextprop ( get first propname )
+  begin
+    swap 1 + swap ( increment counter )
+    dup not if  ( if end of list )
+      pop break
+    then
+    3 pick 3 pick < if ( if past maximum )
+      pop break
+    then
+    3 pick 9 - 3 pick > if ( if before minimum )
+      trigger @ swap nextprop continue
+    then
+    dup 13 strcut swap pop ( chop off _attr/entry/- )
+    capitalize
+    20 column-chop
+    trigger @ 3 pick getpropstr
+    me @ swap getpropstr
+    strcat tell
+    trigger @ over "/desc" strcat getpropstr dup not if
+      pop
+    else
+      "---> " swap 75 strcut pop strcat tell
+    then
+    trigger @ swap nextprop
+  repeat
+  pop
+  "------------------------------------------"
+  over intostr strlen 23 + strcut pop tell
+;
+
+: handle-command-rtn
+  parse-command
+  swap 3 strcut pop ( trim command to 3 characters )
+  dup firstchar "h" stringcmp not if
+    pop help-rtn exit
+  then
+  dup "set" stringcmp not if
+    pop set-attribute-rtn exit
+  then
+  dup "pag" stringcmp not if
+    pop show-page-rtn exit
+  then
+  me-authorized? not if
+    "That command is not available." tell exit
+  then
+  dup "com" stringcmp not if
+    pop commands-rtn exit
+  then
+  dup "add" stringcmp not if
+    pop add-entry-rtn exit
+  then
+  dup "del" stringcmp not if
+    pop delete-entry-rtn exit
+  then
+  dup "ali" stringcmp not if
+    pop alias-entry-rtn exit
+  then
+  dup "pro" stringcmp not if
+    pop propname-entry-rtn exit
+  then
+  dup "des" stringcmp not if
+    pop desc-entry-rtn exit
+  then
+  dup "exp" stringcmp not if
+    pop explain-entry-rtn exit
+  then
+  "That command is not available." tell
+;
+
+: aset-command?
+  command @ "aset" stringcmp not
+;
+
+: numeric?
+  dup atoi intostr strcmp not
+;
+
+: main
+  aset-command? if
+    set-attribute-rtn exit
+  then
+  dup not if ( if no parameter passed ... )
+    show-listing-rtn exit
+  then
+  dup numeric? if
+    show-page-rtn exit
+  then
+  dup firstchar "#" strcmp not if
+    handle-command-rtn exit
+  then
+  information-retrieve-rtn
+;
+.
+compile
+quit
+@set cmd-attributes=_docs:@list cmd-attributes=1-20
+@action attributes;attribute;attr;aset=#0=tmp/exit1
+@link $tmp/exit1=cmd-attributes

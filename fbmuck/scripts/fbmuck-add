@@ -1,0 +1,128 @@
+#!/bin/sh
+#
+
+show_usage() {
+    (cat <<EOF
+addmuck MUCKNAME [OPTIONS]
+OPTIONS include:
+    -n DBNAME            or
+    --new=DBNAME         Creates a new Muck based on the named starter DB.
+
+    -l                   or
+    --list-dbs           Lists names of available starter DBs and exits.
+
+    -d MUCKPATH          or
+    --dir=MUCKPATH       Sets path to base muck dir. [default: current dir]
+
+    -u USERNAME          or
+    --user=USERNAME      User to run muck as. [default: restart script owner]
+
+    -s SCRIPT            or
+    --script=SCRIPT      Name of restart script. [default: "restart"]
+
+    -p PORTSLIST         or
+    --ports=PORTSLIST    Comma separated ports list. [default: 8888,8899s]
+                        Portnums ending with 's' are SSL ports.
+EOF
+) 1>&2
+    exit -1
+}
+
+
+show_db_list() {
+# TODO: make muckdb listing real.
+    echo "There are no available starter databases yet."
+    exit 0
+}
+
+
+muckpath=`pwd`
+muckscript="restart"
+muckports="8888,8899s"
+muckuser=""
+muckdb=""
+
+if [ $# -lt 1 ]; then
+    show_usage
+fi
+
+muckname="$1"
+shift
+
+while [ $# -gt 0 ]; do
+    case $1 in
+        -n)         muckdb="$2";               shift 2;;
+        --new=*)    muckdb=${1#--new=};        shift;;
+
+        -l)         show_db_list;;
+        --list-dbs) show_db_list;;
+
+        -d)         muckpath="$2";             shift 2;;
+        --dir=*)    muckpath=${1#--dir=};      shift;;
+
+        -u)         muckuser="$2";             shift 2;;
+        --user=*)   muckuser=${1#--user=};     shift;;
+
+        -s)         muckscript="$2";           shift 2;;
+        --script=*) muckscript=${1#--script=}; shift;;
+
+        -p)         muckports="$2";            shift 2;;
+        --ports=*)  muckports=${1#--ports=};   shift;;
+
+        *) show_usage;;
+    esac
+done
+
+if [ -e "/etc/fbmucks" ]; then
+    preventry=`grep "^$muckname"'[  ]' /etc/fbmucks`
+    if [ ! -z "$preventry" ]; then
+        echo "A muck named $muckname already exists in /etc/fbmucks." 1>&2
+        exit -2
+    fi
+    prevdir=`grep '[ 	]'"$muckpath"'[ 	]' /etc/fbmucks | awk '{print $3}'`
+    if [ ! -z "$prevdir" ]; then
+        echo "A muck in $muckpath already exists in /etc/fbmucks." 1>&2
+        exit -2
+    fi
+fi
+
+if [ -z "$muckdb" ]; then
+    if [ ! -d "$muckpath" ]; then
+        echo "$muckpath is not a valid directory." 1>&2
+        exit -2
+    fi
+
+    if [ ! -e "$muckpath/$muckscript" ]; then
+        echo "$muckpath/$muckscript does not exist." 1>&2
+        exit -2
+    fi
+
+    if [ ! -x "$muckpath/$muckscript" ]; then
+        echo "$muckpath/$muckscript is not a valid executable script." 1>&2
+        exit -2
+    fi
+
+    if [ -z "$muckuser" ]; then
+        muckuser=`/bin/ls -l $muckpath/$muckscript | awk '{print $3}'`
+    fi
+
+    echo "$muckname	$muckuser	$muckpath	$muckscript	$muckports" >> /etc/fbmucks
+else
+    if [ -e "$muckpath/$muckscript" ]; then
+        echo "$muckpath/$muckscript already exists!  Aborting." 1>&2
+        exit -2
+    fi
+
+    if [ -z "$muckuser" ]; then
+        echo "You MUST specify a target user when using --new." 1>&2
+        exit -2
+    fi
+
+    if [ ! -d "$muckpath" ]; then
+        mkdir -p $muckpath
+    fi
+
+# TODO: add db installation code.
+    echo "$muckname	$muckuser	$muckpath	$muckscript	$muckports" >> /etc/fbmucks
+fi
+

@@ -1,0 +1,16 @@
+NOTICE
+
+The fbmuck development team would like to thank Triggur for allowing his
+libraries and programs to be included in the MUF archive.
+
+The files in this directory and its subdirectories are NOT SUPPORTED by
+Triggur.  Please address all questions about these MUF programs to the
+fbmuck development team; however, please be advised that bugs will take
+a low priority.  If you wish to request a change, or find a bug, PLEASE
+try to fix it and include a patch with your bug report, else you might
+be waiting a long while for resolution.
+
+-Winged, 03Jun2004
+
+(source for this directory is http://www.triggur.org/furry/muf/, minus the
+index.html file in that directory on that webserver.)

@@ -1,0 +1,297 @@
+#!/bin/make -f
+# @configure_input@
+
+# #######################################################################
+#                  Makefile for TinyMUCK 2.2fb5.x
+# #######################################################################
+
+# #######################################################################
+#			User tunable options
+# #######################################################################
+
+#
+# Prepend line.  used for compiling with things like nice.
+#
+# PRE= nice -10
+
+#
+# Optimizations
+# -O                General optimizations, reccomended.
+# -O2               Heavier optimizations, use at own risk.
+# -g                Generate debugging information, suggested, you can
+#                     always "strip netmuck" if you want the space.
+# -pg               Generate profiling debug code.  Use with gprof.
+# -Wall -pedantic	Good way to get spammed with warnings from GCC.
+# -ftest-coverage -fprofile-arcs  Generate test coverage debug code for gcov.
+#
+OPTIM= -g
+
+#
+# Paths
+#
+
+# Right below the src/include directories
+ROOT= ..
+
+# Where the include files are
+INCLUDE= ${ROOT}/include
+
+# The root of the directory tree to install to.
+prefix=@prefix@
+datarootdir=@datarootdir@
+exec_prefix=@exec_prefix@
+# Destinations for binaries
+INSTALL_BINDIR=@bindir@
+INSTALL_SBINDIR=@sbindir@
+# Destination for helpfiles
+INSTALL_HELPDIR=@datadir@/fbmuck
+# Destination for starter databases
+INSTALL_DBSDIR=@datadir@/fbmuck/starter_dbs
+
+# ${DESTDIR} is used by the Debian packaging system to build the .debs
+# and is defined by the debian/rules file.
+
+# The game binaries should go into /usr/lib/fbmuck as they are meant
+# to be called by the startup scripts and generally not manually.
+
+###INSTALL_BINDIR= ${DESTDIR}/usr/lib/fbmuck/fb60/bin
+
+# The default 2-object and 68-object game dbs should be considered
+# 'example documentation' and go into /usr/share/doc/fbmuck/examples
+# and be stored as compressed tarfiles.
+
+
+# #######################################################################
+# 		Variables set by the configure script.
+# #######################################################################
+INSTALL=@INSTALL@
+INSTALL_PROGRAM=@INSTALL_PROGRAM@
+INSTALL_SCRIPT=@INSTALL_SCRIPT@
+INSTALL_DATA=@INSTALL_DATA@
+
+CC=@CC@
+CPP=@CPP@
+DEFS=@DEFS@
+LIBR=@LIBS@
+INCL=-I${INCLUDE} @INC@
+
+# #######################################################################
+#  	   Usualy don't need to change anything past here.
+# #######################################################################
+
+#
+# Include path, Cflags...
+#
+CFLAGS= ${OPTIM}
+
+#
+# for saving old copies.
+#
+MV= mv -f
+CP= cp -f
+RM= rm -f
+CHMOD= chmod
+
+#
+# Misc stuff for odd targets.
+#
+SRC_PREFIX=
+MKDEPEND= makedepend
+MAKE= make
+LINT= @LINT@
+MKTAGS= ctags --c-types=-m
+# for RCS only
+GET= co
+CLEAN= rcsclean
+LINTFLAGS= ${INCL}
+
+##########################################################################
+#            You should not have to change anything below here           #
+##########################################################################
+
+MALLSRC= crt_malloc.c
+MALLOBJ= crt_malloc.o
+
+ANNSRC= announce.c
+ANNOBJ= announce.o
+
+MISCSRC= Makefile.in ChangeLog COPYING mkversion.sh
+
+CSRC= array.c boolexp.c compile.c create.c db.c db_header.c debugger.c \
+	disassem.c diskprop.c edit.c events.c game.c hashtab.c help.c inst.c \
+	interp.c log.c look.c match.c mcp.c mcpgui.c mcppkgs.c mfuns2.c \
+	mfuns.c move.c msgparse.c mufevent.c oldcompress.c p_array.c \
+	p_connects.c p_db.c p_error.c p_float.c player.c p_math.c p_mcp.c \
+	p_misc.c p_props.c p_regex.c predicates.c propdirs.c property.c \
+	props.c p_stack.c p_strings.c random.c rob.c sanity.c set.c \
+	signal.c smatch.c snprintf.c speech.c strftime.c stringutil.c \
+	timequeue.c timestamp.c tune.c unparse.c utils.c wiz.c
+
+LSRC= copyright.c
+MSRC= compress.c olddecomp.c reconst.c interface.c resolver.c topwords.c
+
+
+COBJ= array.o boolexp.o compile.o create.o db_header.o db.o debugger.o \
+	disassem.o diskprop.o edit.o events.o game.o hashtab.o help.o inst.o \
+	interp.o log.o look.o match.o mcp.o mcpgui.o mcppkgs.o mfuns2.o \
+	mfuns.o move.o msgparse.o mufevent.o oldcompress.o p_array.o \
+	p_connects.o p_db.o p_error.o p_float.o player.o p_math.o p_mcp.o \
+	p_misc.o p_props.o p_regex.o predicates.o propdirs.o property.o \
+	props.o p_stack.o p_strings.o random.o rob.o sanity.o set.o \
+	signal.o smatch.o snprintf.o speech.o strftime.o stringutil.o \
+	timequeue.o timestamp.o tune.o unparse.o utils.o wiz.o
+
+LOBJ= copyright.o
+MOBJ= olddecomp.o reconst.o interface.o resolver.o topwords.o
+
+
+SRC= ${MISCSRC} ${CSRC} ${LSRC} ${MSRC}
+OBJ= ${COBJ} ${ROBJ} ${LOBJ} ${MOBJ}
+
+
+
+
+TARGETS= fbmuck fbhelp fb-resolver fb-olddecompress fb-topwords fb-announce
+OLDTARGETS = fbmuck~ fbhelp~ fb-resolver~ fb-olddecompress~ fb-topwords~ fb-announce~
+HELPFILES= man.txt help.txt mpihelp.txt
+
+.c.o:
+	${PRE} ${CC} ${CFLAGS} ${INCL} ${DEFS} -c $*.c
+
+.c.cpp:
+	${PRE} ${CPP} ${CFLAGS} ${INCL} ${DEFS} -c $*.c -o $*.cpp
+
+all: $(INCLUDE)/defines.h ${TARGETS} 
+
+$(INCLUDE)/defines.h:
+	@echo Creating $(INCLUDE)/defines.h...
+	@echo '/* This file is automatically generated by make. */' > $(INCLUDE)/defines.h
+	@echo "#define BINDIR \"$(INSTALL_BINDIR)\"" >> $(INCLUDE)/defines.h
+	@echo "#define INSTALL_HELPDIR \"$(INSTALL_HELPDIR)\"" >> $(INCLUDE)/defines.h
+
+fbmuck: $(INCLUDE)/defines.h ${P} ${COBJ} ${MALLOBJ} interface.o ${LOBJ} mkversion.sh Makefile
+	sh mkversion.sh
+	${PRE} ${CC} ${CFLAGS} ${INCL} ${DEFS} -c version.c
+	if [ -f fbmuck ]; then ${MV} fbmuck fbmuck~ ; fi
+	${PRE} ${CC} ${CFLAGS} ${INCL} ${DEFS} -o fbmuck ${COBJ} ${MALLOBJ} interface.o version.o \
+	  ${LIBR} ${LOBJ}
+
+fb-resolver: resolver.o ${LOBJ} ${MALLOBJ} Makefile
+	${PRE} ${CC} ${CFLAGS} ${INCL} ${DEFS} -o fb-resolver resolver.o ${MALLOBJ} ${LIBR} ${LOBJ} -lpthread
+
+fb-topwords: topwords.o hashtab.o ${MALLOBJ} Makefile
+	${CC} ${CFLAGS} ${INCL} ${DEFS} -o fb-topwords topwords.o hashtab.o ${MALLOBJ} ${LIBR}
+
+fb-olddecompress: olddecomp.o oldcompress.o compress.o db_header.o ${LOBJ} ${MALLOBJ} Makefile
+	${CC} ${CFLAGS} ${INCL} ${DEFS} -o fb-olddecompress olddecomp.o oldcompress.o \
+		compress.o db_header.o ${LIBR} ${MALLOBJ} ${LOBJ}
+
+fb-announce: ${ANNOBJ} ${LOBJ} ${MALLOBJ} Makefile
+	${CC} ${CFLAGS} ${ANNOBJ} -o fb-announce ${MALLOBJ} ${LIBR} ${LOBJ}
+
+fbhelp.o: help.c
+	${CC} ${CFLAGS} ${INCL} ${DEFS} -c help.c -o fbhelp.o -DSTANDALONE_HELP -DHELPFILE_DIR='"${INSTALL_HELPDIR}"'
+
+fbhelp: fbhelp.o ${MALLOBJ} Makefile
+	${CC} ${CFLAGS} ${INCL} ${DEFS} fbhelp.o -o fbhelp ${MALLOBJ}
+
+
+#############################################################
+# Funky stuff for debugging and coding work.
+#
+
+saber_src:
+	#load ${CFLAGS} ${INCL} ${DEFS} ${CSRC}
+
+saber_obj: ${CSRC} interface.o
+	#load ${OBJ} interface.o
+
+tags: ${CSRC} ${MSRC} ${MALLSRC}
+	${MKTAGS} ${CSRC} ${MALLSRC} interface.c ../include/*.h
+
+lint: ${CSRC} ${MSRC} ${MALLSRC} ${INCLUDE}/defines.h
+	-${RM} netmuck.lint
+	-${LINT} ${LINTFLAGS} ${CSRC} ${MSRC} ${MALLSRC} > netmuck.lint
+
+${SRC}:
+	${GET} $@
+
+${MALLSRC}:
+	${GET} $@
+
+sources: ${MALLSRC} ${SRC}
+
+names:
+	@for i in ${SRC} ${MALLSRC}; do echo ${SRC_PREFIX}$$i; done
+
+depend:
+	${MKDEPEND} -- ${CFLAGS} ${INCL} ${DEFS} -- ${CSRC} ${MALLSRC} ${MSRC} ${LSRC}
+	echo chmod -w Makefile
+	chmod -w Makefile
+
+Makefile: Makefile.in
+	cd .. && ./configure
+	@echo " "
+	@echo Please re-run Make, as the Makefile was re-generated.
+	@echo " "
+	false
+
+########################################################
+# Cleanup stuff.
+#
+
+clean:
+	-${RM} ${OBJ} core version.o ${LOBJ} ${SOBJ} ${MALLOBJ} ${ANNOBJ} resolver.o ${TARGETS} ${OLDTARGETS} fbhelp.o
+
+cleaner: clean
+	-${RM} Makefile config.status config.cache config.log ${INCLUDE}/autoconf.h ${TARGETS} version.c prochelp ${INCLUDE}/defines.h
+
+distclean: cleaner
+
+clobber: cleaner
+	-${RM} tags *~ *.bak *.orig
+
+nuke: distclean
+	-${RM} ${OBJ} core version.o
+	-${RM} ${TARGETS} tags *~ *.bak *.orig
+	-${RM} Makefile config.status ${INCLUDE}/autoconf.h
+	-${CLEAN} *
+
+install: all
+	${INSTALL} -d ${INSTALL_BINDIR}
+	${INSTALL_PROGRAM} ${TARGETS} ${INSTALL_BINDIR}
+	${INSTALL} -d ${INSTALL_HELPDIR}
+	cd ../game/data && ${INSTALL_DATA} ${HELPFILES} ${INSTALL_HELPDIR}
+	${INSTALL_SCRIPT} ../game/restart ${INSTALL_HELPDIR}/restart-script
+	@echo " "
+	@echo "You may run 'make install-sysv-inits' to install SysV style init scripts."
+	@echo " "
+
+# FIXME: Implement fb-addmuck
+# FIXME: Check base and minimal dbs into CVS as unpacked file trees under dbs/
+# FIXME: Create man pages for fbmuck, fbhelp, fb-addmuck, fb-announce, topwords
+
+install-sysv-inits: all
+	-[ -f /etc/fbmucks ] || echo "#MUCKNAME   USERNAME    MUCK_ROOT_PATH           SCRIPTNAME  PORTS" > /etc/fbmucks
+	-[ -f /etc/redhat-release ] && ${INSTALL_SCRIPT} ../scripts/fbmuck-redhat-init /etc/rc.d/init.d/fbmuck
+	-[ ! -f /etc/redhat-release ] && ${INSTALL_SCRIPT} ../scripts/fbmuck-sysvinit /etc/rc.d/init.d/fbmuck
+	-chkconfig --add fbmuck || ( \
+		for d in 0 1 2 3 4 5 6; do rm -f /etc/rc.d/rc$$d.d/S??fbmuck; done ; \
+		for d in 0 1 2 3 4 5 6; do rm -f /etc/rc.d/rc$$d.d/K??fbmuck; done ; \
+		for d in 0 1         6; do ln -s ../init.d/fbmuck /etc/rc.d/rc$$d.d/K23fbmuck; done ; \
+		for d in     2 3 4 5  ; do ln -s ../init.d/fbmuck /etc/rc.d/rc$$d.d/S82fbmuck; done ; \
+	)
+
+#	${INSTALL} -d ${INSTALL_SBINDIR}
+#	${INSTALL_SCRIPT} ../scripts/fb-addmuck ${INSTALL_SBINDIR}
+#
+#	${INSTALL} -d ${INSTALL_DBSDIR}
+#	for d in minimal base; do \
+#		cd dbs/${d} && tar cf ${INSTALL_DBSDIR}/${d}db.tar *; \
+#		gzip ${INSTALL_DBSDIR}/${d}db.tar; \
+#	done
+
+# #######################################################################
+# #######################################################################
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.

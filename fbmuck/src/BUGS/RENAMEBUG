@@ -1,0 +1,35 @@
+LearFox pages, "5.56, conboot corrupts the DB basically." to you.
+
+LearFox pages, "symptoms are: when a player logs on, no programs
+runned via _connect props can use the match primitive to find them." to
+you.
+
+LearFox pages, "when a player has their name changed via force
+(the MUF primitive) *and* they immediately disconnect, for some reason
+it currupts something in their data record so that when they log on, the
+symptoms occure.  There is a way to fix it.   Yes non _connect runned
+programs can match them." to you.
+
+LearFox pages, "have the player log on and type QUIT, that seems
+to fix the problem... however this is a problem for guest programs that
+run via connect prop since they use conboot instead of having the player
+type QUIT to disconnect." to you.
+
+LearFox pages, "LearFox used her own con-guest.muf.  I think
+reciting the procedures leading up to the problem would help.  Basically
+when a player logs on Guest, the con-guest program is triggered, then
+checks if the player name matches the Guest name, since it does it uses
+"name me=Guest1 guest" force.   during that moment, IF the player
+manually disconnects using QUIT, the problem is seeded." to you.
+
+LearFox pages, "once that happens, the next player loggin on as
+Guest, con-guest is triggered, it tries to find the next available guest
+player, Guest1, but "*Guest1" match returns #-1 and con-guest thinks
+there are no more guest characters available and uses conboot to
+disconnect Guest." to you.
+
+LearFox pages, "anyways, the problem is fixed when the guest
+program is removed from the _connect propdir and the Guest allowed to
+connect normally, then manuall QUIT, then restore the _connect call to
+con-guest and things start working normally again." to you.
+

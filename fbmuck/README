@@ -1,0 +1,187 @@
+This is TinyMUCK 2.2fb6.00 (FuzzBall 6.00), a programmable, player
+expandable, multi-user adventure game.  Please see the CHANGES file
+for a list of changes from the previous version.
+
+TinyMUCK was derived from TinyMUD v1.5.2, with extensive modifications.
+There were two new commands: @action and @attach, and two new flags:
+CHOWN_OK and JUMP_OK.  It also has options for users of FireFoot's patches.
+
+Note:   This version of TinyMUCK WILL NO LONGER READ OLDER DATABASES
+        WITHOUT TRANSLATION.  A translator program, "fb-olddecompress",
+        is provided for all TinyMUD, TinyMUCK, and older Fuzzball TinyMUCK
+        databases.  It writes out databases in its own unique format.
+
+Documentation exists in several files, read Documentation to find out
+what's what.
+
+I recommend that non-MUF programmers read MUD.doc and MUCK.doc, and
+MUF programers read MUF-tutorial, MUF.Manual and forth.ref.
+technical.doc should be read by system administrators and people who
+wish to hack TinyMUCK.
+
+Note: FuzzBall TinyMUCK is now maintained as a project on SourceForge.
+You can submit bugs directly to the developers (as well as put in new
+feature requests, and get CVS updates of the source tree) by going to
+http://www.sourceforge.net/.  The name of the project 'FuzzBall MUCK 6',
+and you can search for it by using the keyword 'fbmuck'.  The
+documentation is also maintained on SourceForge under a separate
+project, keyword 'fbdoc'.
+
+=====================================================================
+As far as copyright, I don't particularly care what you do with this
+program.  Use at your own risk, please don't try to make money from
+it.  Consider this code protected under the GNU General Public 
+License v2 (or at your option later versions), with specific
+exceptions:
+
+1) Linking against OpenSSL is explicitly allowed.
+2) compress.c (Dr. Cat's compression code) is NOT protected under the
+   GPL, and is only provided for compatibility with the compression
+   scheme used in older versions of Fuzzball TinyMUCK.  Linking
+   with this library is explicitly allowed for backward
+   compatibility, in accordance with the license spelled therein.
+=====================================================================
+
+COMPILING TINYMUCK:
+
+The code is written in ANSI C, and is known to compile and run under
+ULTRIX/BSD 4.3/SunOS 4.1 on a VAX 8600, VAX 6400, DEC 3100s/5000s, a
+MicroVAX, a Sun SparcStation/1, and a Sun 3/50.  TinyMUCK is also
+known to have run on a HP9k260, as well as a NeXT.  Lots of people
+run FB under the Debian and RedHat distributions of Linux.  Some developers
+also compile and run it on Apple systems (Darwin: ppc and x86_64).
+
+As far as other platforms, you're on your own.
+
+SunOS realloc() is braindead.  On every SunOS system I have seen, TinyMUCK
+runs about 6 megs in memory with a very small database if the option
+DB_DOUBLING is not defined.  If you are running on a Sun3 or Sun4,
+you should definitely compile with this option turned on.  Let me
+know if there are other systems that need this.  This may not be as
+much of a problem with current versions of the server, as databases now
+store a count of their objects, and the entire database generally gets
+allocated in one chunk.
+
+To compile fbmuck:
+  ./configure --with-ssl    # if you want SSL support.  Otherwise...
+  ./configure               # if you don't/can't.
+  make                      # to compile fbmuck.
+  make install              # to install binaries in /usr/local/bin
+  make install-inits        # to install SysV style init scripts.
+
+
+=========================================================================
+
+PROGRAMS CONTAINED IN THE DISTRIBUTION:
+
+fbmuck
+
+ This is the actual server program; it is invoked as 
+    fbmuck [options] starting-dbfile dump-dbfile [portnumber]
+
+ Where the [options] can be:
+            -convert       load db, save in current format, and quit.
+            -decompress    when saving db, save in uncompressed format.
+            -nosanity      don't do db sanity checks at startup time.
+            -insanity      load db, then enter interactive sanity editor.
+            -wizonly       only allow wizards to login.
+            -help          display usage message.
+
+ If port is not specified it defaults to 4201.  The initial database
+ will be read in from starting-dbfile, which must contain at least the two
+ objects in minimal.db to work well.  The file basedb.db, which contains
+ the core of the original TinyMUD universe, may be a better place to
+ start a new universe from.  You can fetch basedb.tar.gz from the same
+ site you fetched this server code from.  The -decompress option will
+ cause the dump-file to be saved in an uncompressed format.  The netmuck
+ process will write a checkpoint out to dump-dbfile every few hours,
+ depending on the @tuned interval parameter.  The -convert option will
+ cause the server to load an old style database, save it back out
+ immediately in the most current database format, and then shutdown,
+ instead of allowing connections.
+
+
+restart
+
+ This is a C shell script which starts the netmuck program.
+ It is invoked as:
+
+    restart port
+ eg.,
+    restart 5823
+
+ This will restart the netmuck process to run at port 5823.
+ See the shell script for more info.  Make sure you edit the
+ restart script to match your directories and db file names.
+
+
+fb-olddecompress
+
+ Usage: fb-olddecompress < compressed-db-file > uncompressed-db-file
+ or: fb-olddecompress compressed-db-file > uncompressed-db-file
+
+ Removes old style bigraph compression from a database file that has been
+ generated by an older version of netmuck using the -DCOMPRESS compile-time
+ option.
+
+
+sanity
+
+ This program no longer exists in the current distribution.  It's function has
+ been merged into the netmuck program itself.  To invoke the database sanity
+ checker, run netmuck with the -insanity option.  This enters the INteractive
+ SANITY verification and repair program.  This can be a very dangerous function
+ unless you understand how the internal database works.
+
+
+topwords
+
+ Usage: topwords < db-file | sort > words.txt
+
+ WARNING: DO NOT RUN TOPWORDS MANUALLY UNLESS YOU KNOW WHAT YOU ARE DOING.
+ This program will find the 4096 (max) words which will give you the best
+ compression with the new style dictionary based compression.  This is
+ used by the optimdb script to re-optimize the compression of a database.
+ If the database you provide has fewer than 4096 words, this will _not_
+ return 4096 words and can cause severe problems.  The optimdb script
+ takes this into account by using 4096 seed words.  You should use the
+ optimdb script instead of running this manually.
+
+ For the sake of all that is holy and sacred, don't use this program
+ anymore.  The "new style dictionary based compression" is Dr. Cat's
+ compression system implemented in compress.c -- it is known to be
+ braindead and was the primary reason why fbmuck was not 8-bit clean
+ until March of 2007.
+
+optimdb
+
+ Usage: optimdb infile outfile
+
+ This script reads a database, and saves it out to the outfile with the
+ compression optimized.  For databases under a half meg, this db will likely
+ be a few K larger than the same database compressed with the old bigraph
+ method.  For half a meg and over, though, it's a win.
+
+ Again, don't run this program; see the notes for 'topwords' above to
+ understand why.
+
+I hope that you enjoy using TinyMUCK FB.  Please send all bug reports, etc.
+to the fbmuck project at sourceforge.net.
+
+PLEASE, send me any patches that you've made so that I can put them
+into the next release.  I most definitely do not want tens of thousands
+of "patches" out there for TinyMUCK --- it makes it hard for me to make
+the database format backward-compatible for your benefit.
+
+When you send me changes, please send diffs from the version of the FB
+distribution that you changed.  Use 'diff -cr orig-dir modified-dir'
+where orig-dir is the directory with the unmodified stock FB source code,
+and modified-dir is the directory with the source code you changed.
+
+If you can't do this for some reason, check out the latest fbmuck source
+code from sourceforge.net and diff against that.
+
+
+		- Revar, January 10, 2000
+		- Winged, March 7, 2007
+

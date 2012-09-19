@@ -1,0 +1,45 @@
+abs
+( int -- int' }  Returns the absolute value of the given integer. )  dup 0 < if -1 * then
+1
+alltell
+( str -- }  Notify everyone in the room {including the user} of the given string. ) loc @ 0 rot notify_exclude
+1
+confirm
+( s -- i ) ( displays query string and waits for user input-- returns 1 if user said "y" ) me @ swap notify read 1 strcut pop "y" stringcmp not
+1
+envprop
+envpropstr swap pop
+1
+no?
+"{0|n*}" smatch
+1
+notify_except_nospam
+( dbRoom dbPlayer strMessage -- }  Notify everyone in the given room, except the given player and anyone who's _nospam?:yes, of the given string. ) 1 swap .notify_exclude_nospam
+1
+notify_exclude_nospam
+( dbRoom dbP1..dbPn intN strMessage -- }  Notify everyone in the given room, except the given players and anyone who's _nospam?:yes, of the given string. ) -2 3 pick - rotate array_make 3 pick contents_array .prop_nospam "{1|y*}" array_filter_prop array_union array_vals dup 2 + rotate
+1
+otell
+( str -- }  Notify everyone in the room except the current user of the given string. ) loc @ me @ rot notify_except
+1
+pmatch
+pmatch
+1
+popall
+depth popn
+1
+popn
+popn
+1
+prop_nospam
+"_nospam?"
+1
+showhelp
+prog "_help" array_get_proplist me @ 1 array_make array_notify
+1
+tell
+( str -- }  Notify the user of the given string. ) me @ swap notify
+1
+yes?
+"{1|y*}" smatch
+1

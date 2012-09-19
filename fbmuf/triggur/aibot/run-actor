@@ -1,0 +1,205 @@
+@prog run-actor
+1 999 d
+1 i
+( automaton  listen-interpretter )
+( By triggur of Furrymuck        )
+ 
+( !!!!!!!!!!! NOTICE !!!!!!!!!!! )
+( THE AIBOT SYSTEM IS COPYRIGHT {C}
+  1994 BY TRIGGUR OF FURRYMUCK,
+  AKA KEVIN KELM.  DO *NOT* PORT OR
+  CHANGE THIS CODE IN ANY WAY, AS
+  THIS COULD EASILY INTRODUCE SECURITY
+  HOLES INTO THE SYSTEM.  IF YOU WANT
+  NEW FEATURES, OR WANT THIS CODE PORTED
+  TO ANOTHER MUCK, _ASK_ ME.  I CAN
+  BE REACHED AT PFERD@NETCOM.COM
+  OR VIA PAGE #MAIL ON FURRYMUCK. )
+ 
+( V1.5 - 10/21/94 - added Wizbot support )
+var input
+var matchprops
+var listname
+: dump-propdir (string -- )
+ listname !
+ trigger @ listname @ getpropstr atoi matchprops ! 
+ 1 input !
+ begin
+   input @ matchprops @ > if
+       break
+   then
+   me @ input @ intostr ":" strcat 
+      trigger @ listname @ "/" strcat input @ intostr strcat getpropstr
+     strcat notify
+   input @ 1 + input !
+ repeat
+ me @ matchprops @ intostr " props listed." strcat notify 
+ exit
+;
+: send-it (string -- i )
+me @ "~sex" getpropstr "%x" subst me @ "~trade" getpropstr "%e" subst
+ me @ location name "%l" subst
+ strip
+ dup "NONE" stringcmp not if
+   pop 1 exit
+ then
+ dup "@" instring 1 = if   (try to call a program )
+   1 strcut swap pop
+   dup " " instring dup 0 > if
+     strcut strip swap strip prog swap getpropstr atoi dbref dup program?
+if
+       call 
+     else
+       pop prog swap getpropstr atoi dbref dup program? if
+         call
+       else
+         1
+       then
+     then
+   else
+     pop 1
+   then
+ else
+   me @ name "%n" subst me @ name "%N" subst me @ swap pronoun_sub
+   random trigger @ "delay_range" getpropstr atoi % 
+          trigger @ "delay_min" getpropstr atoi + sleep
+   trigger @ name " " strcat swap strcat input !
+   trigger @ location contents   (only send to those who care)
+   begin
+     dup #-1 dbcmp if
+       break
+     then
+     dup player? if
+       dup "_nospam" getpropstr not if
+         dup input @ notify
+       then
+     else dup "Z" flag? if
+       dup trigger @ dbcmp not if
+         dup "_nospam" getpropstr not if
+           dup input @ notify
+         then 
+        then
+     then then
+     next
+   repeat
+   1
+ then 
+exit
+;
+: main ( s -- )
+trigger @ "match#" getpropstr atoi matchprops !
+trigger @ name dup " " instr dup if
+  strcut 
+then
+pop strip dup not if
+  exit
+then
+match #-2 dbcmp if  (ambiguity...bad.)
+  exit
+then
+trigger @ "w" flag? if  ( wizbots can listen to ANYTHING )
+  trigger @ "delay_min" getpropstr atoi 1 < if (but must have SOME delay
+)
+    exit
+  then
+else
+  me @ player? not if  (speaker must not be a zombie)
+    exit
+  then
+  ( Make sure that line begins with the me @ name of the speaker )
+  dup dup " " instr dup 0 > if
+      strcut pop strip me @ name stringcmp if
+      exit 
+    then
+    exit
+  then
+then
+ 
+prog trigger @ owner int intostr getpropstr if  (banned from player?)
+  exit
+then
+prog "log" getpropstr if
+  prog "/users/" trigger @ int intostr strcat
+   trigger @ owner int intostr ": " strcat trigger @ owner name
+   strcat "'s " strcat trigger @ name strcat " in " strcat
+   trigger @ location name strcat 0 addprop
+then
+input !
+prog  "debug" getpropstr if
+input @ "triggur*feep*feep*feep*" smatch if
+   trigger @ location trigger @ trigger @ name " credits:" strcat
+notify_except
+   trigger @ location trigger @ " ******************************************************" notify_except
+   trigger @ location trigger @ " Artificial intelligence software written and copyright" notify_except
+   trigger @ location trigger @ " (C) 1994 by Triggur of FurryMUCK, 138.74.0.10 8888." notify_except
+   trigger @ location trigger @ " ******************************************************" notify_except
+   exit
+then
+input @ "triggur*" trigger @ name strip strcat "*dump*" strcat smatch if
+  input @ " " rinstring dup if
+    input @ swap strcut swap pop strip dump-propdir
+  else
+    pop
+  then
+  exit 
+then
+input @ "triggur*" trigger @ name strip strcat "*delay*" strcat smatch if
+  me @ "Delay_min = " trigger @ "delay_min" getpropstr strcat notify
+  me @ "Delay_range = " trigger @ "delay_range" getpropstr strcat notify
+  exit
+then
+then
+(filter all the punctuation out of the string)
+input @
+dup not
+if exit then
+" " "." subst
+" " "," subst
+" " "!" subst
+"" "'" subst
+" " "&" subst
+" " "-" subst
+" " "_" subst
+"" "\"" subst
+" " "?" subst
+strip
+input !
+begin
+  matchprops @ not if break then
+  trigger @ "match#/" matchprops @ intostr strcat getpropstr dup
+    ":" instring dup 0 = not if  (":" found)
+       1 - strcut swap input @ swap smatch 0 = not if  (matched!)
+         dup trigger @ swap "#" strcat 1 strcut swap pop dup listname !
+         dup "@" instring 1 = if
+           random trigger @ "delay_range" getpropstr atoi %
+                    trigger @ "delay_min" getpropstr atoi + sleep
+             pop pop 1 strcut swap pop send-it if
+               exit
+             then
+         else getpropstr atoi dup 0 = if (simple)
+           pop 1 strcut swap pop send-it if
+             exit
+           then
+         else
+           random swap % 1 + trigger @ swap listname @ "/" strcat swap
+           intostr strcat
+           getpropstr send-it if
+             exit
+           then
+          then
+         then
+       else
+         pop
+       then
+    else
+      pop
+    then 
+  matchprops @ 1 - matchprops !
+repeat
+( do nothing... no matches )
+exit
+;
+.
+c
+q
+@set run-actor=l

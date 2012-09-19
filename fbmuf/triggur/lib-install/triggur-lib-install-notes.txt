@@ -1,0 +1,106 @@
+CURRENT SETUP for lib-install:
+
+Interfaces required in (lib-install):
+
+INSTALL-WIZ-CHECK ( -- X )
+in:
+out:
+  X: irrelevant (undefined)
+
+UNINSTALL-WIZ-CHECK ( -- X )
+in:
+out:
+  X: irrelevant (undefined)
+
+add-global-command ( d s -- )
+in:
+  d: dbref of program to link (s) to
+  s: name of global exit to create or update
+out:
+
+remove-global-command ( s -- )
+in:
+  s: The name of a global command to recycle
+out:
+
+add-global-library ( d s -- )
+(same as add-global-registry, but prepends "lib/" to input (s))
+in:
+  d: dbref of program implementing library to be registered under $lib
+  s: name of the library (without 'lib-' prefix)
+out:
+: add-global-library
+  "lib/" swap strcat add-global-registry
+;
+
+remove-global-library ( s -- )
+in:
+  s: name of the library (without "lib/" or "lib-" prefixes) to unregister
+     $lib/install -- "install"
+out:
+
+add-global-registry ( d s -- )
+in:
+  d: dbref of program to be registered
+  s: name of program as it is to be registered ($ai would be "ai")
+
+remove-global-registry ( s -- )
+in:
+  s: name of the program as registered to be removed ($ai would be "ai")
+
+export-function ( d s -- )
+in:
+  d: dbref of library from which to export function
+  s: name of function to export.
+out:
+
+export-macro ( d s1 s2 -- )
+in:
+  d: dbref of library from which to export macro
+  s1:name of macro to be exported
+  s2:MUF text of macro
+out:
+
+set-library-version ( d s -- )
+in:
+  d: dbref of library program file
+  s: string representing library version number
+out:
+
+get-library-version ( d -- s )
+in:
+  d: dbref of library to get version from
+out:
+  s: string representing library version number
+
+
+
+
+Interfaces required in (program to be acted upon):
+
+do-install ( s -- s )
+in:
+  s: string of current version number
+out:
+  s: string of new version number
+
+do-uninstall ( s -- s )
+in:
+  s: string of current version number (as reported by system)
+out:
+  s: string of version number uninstalled (as reported by program)
+
+
+
+NEW SETUP PROPOSALS:
+
+interfaces required in (to-be-installed):
+program-info ( -- s4 s3 s2 s1 )
+in:
+out:
+  s1: name of program to look for installation with
+  s2: this program's version number
+  s3: name of library this program implements
+  s4: this program's libver
+
+

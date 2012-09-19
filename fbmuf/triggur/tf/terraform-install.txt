@@ -1,0 +1,2584 @@
+"Now installing the TerraForm planet manager system.
+@name mover=terraform-mover
+@program terraform-mover
+1 19999 d
+i
+( TerraForm - planet generation system  )
+( Terrain generator... room maintenence )
+( By Triggur of Brazilian Dreams        )
+( {C} 1994 by Kevin Kelm, pferd@netcom.com )
+( All rights reserved. )
+( DO MODIFY WITHOUT EXPLICIT PERMISSION! )
+ 
+( V1.00 - Original )
+( V1.01 - Added code to pull terrain types from map hierarchies )
+( V1.02 - Added code to autosave/restore exits )
+( V1.03 - Fixed wrap at north and south of world )
+( V1.04 - Converted 2D -> 3D, oceans, skies, space )
+( ---- RELEASED ---- )
+( V1.06 - Diddled the order of looking for player's location )
+( V1.08 - '!' terrain type now can use local/global fail/ofail set with
+          @editterrain )
+( V1.09 - added support for 'inside' rooms and building )
+( V1.10 - added support for terrain library rooms )
+( V1.11 - made the room destroyer sleep for 1 second before starting so that
+          Riss's RIDE and other programs can finish what they need to do
+          before the room goes poof ) 
+( V1.12 - modified: now only player positions are tracked with @/occupants ) 
+( V1.15 - added on-the-spot sanity checking to make sure that the dbref
+          stored in the @/rooms propdir is valid.  It might NOT be valid,
+          for instance, if someone has @rec'd the room in question.  Note
+          that if it has since become ANOTHER spot on the planet, this will
+          NOT be detected... hence weirdness could result.  But at least it
+          doesn't crash. )
+( V1.16 - added skylinks )
+( ------ RELEASE V1.18 ------ )
+( V1.19 - reduced the time delay in the destructor to 0 )
+( V1.20 - Juggled code around to handle destruction of rooms in light of the
+          fact that forced objects not set Z can use exits, but don't trigger
+          _depart.  Added code to end of program to ensure destruction when
+          a terraform exit is used to get out of a world and/or when the
+          _depart is called.  It's STILL possible for rooms to be left when
+          an X,!Z object teleports out of the world using non-TF exits tho.
+          This is not currently a solvable problem. )
+( V1.21 - {10/26/98} - fixed problem with ! terrain types. )
+
+$define PARSELIMIT 50 $enddef  ( max # of substitutions in text generator ) 
+ 
+$define DEBUGON prog "d" set $enddef 
+$define DEBUGOFF prog "!d" set $enddef 
+ 
+lvar env
+lvar cx
+lvar cy
+lvar cz
+lvar lx
+lvar ly
+lvar lz
+lvar lastroom
+lvar nextroom
+lvar terrain
+lvar altitude
+ 
+lvar val1
+lvar val2
+lvar val3
+lvar val4
+lvar val5
+ 
+lvar temp
+lvar cttstop
+lvar x1
+lvar y1
+lvar x2
+lvar y2
+lvar mapdbref
+lvar mapwide
+lvar maptall
+lvar terrains 
+ 
+: calculate_sky_link ( -- bool ) 
+( skylink entries are in the format:  x1 y1 x2 y2 dbref )
+( where x1,y1 = upper left corner, x2,y2=lower right corner, )
+( dbref = dbref of the primary map room of the destination world.)
+( NOTE: You MUST store the lower-resolution )
+( maps at the bottom of the list and the higher resolution maps at )
+( the top! The dbref MUST be a room and this room MUST be )
+( a world's primary environment room! )
+  env @ "./skymaps#" getpropstr atoi cttstop !
+  1 temp !
+  begin
+    temp @ cttstop @ > if ( out of maps )
+      break
+    then
+    env @ "./skymaps#/" temp @ intostr strcat getpropstr
+    dup ":" instr dup if 1 - strcut pop else pop then
+    strip " " explode pop
+    atoi x1 !
+    atoi y1 !
+    atoi x2 !
+    atoi y2 !
+    atoi dbref mapdbref !
+ 
+    cx @ x1 @ < not cx @ x2 @ > not and   ( is current x value in range? )
+    cy @ y1 @ < not cy @ y2 @ > not and   ( is current y value in range? )
+    and if  ( match! )
+( get fractions into this rectangle and translate to fractions across other
+  world, flipped horizontally. )
+      mapdbref @ "./maxx" getpropstr atoi mapwide !
+      mapdbref @ "./maxy" getpropstr atoi maptall !
+      mapdbref @ "./maxz" getpropstr atoi
+       cz @ env @ "./maxz" getpropstr atoi - 1 - - cz ! ( move into other sky )
+      cz @ 0 < if
+        0 cz !
+      then 
+      x1 @ x2 @ = if   ( map into destination planet width {flipped} )
+        0 cx !
+      else
+        mapwide @ cx @ x1 @ - mapwide @ * x2 @ x1 @ - 1 + / - cx !
+      then
+      y1 @ y2 @ = if   ( map into destination planet 'height' )
+        0 cy !
+      else
+        cy @ y1 @ - 1 + maptall @ * y2 @ y1 @ - 1 + / cy !
+      then
+      1 exit
+    then
+   
+    temp @ 1 + temp !
+  repeat
+DEBUGOFF
+  0 exit   ( no error message if we can't find one... just fail. )
+;
+ 
+: calculate_terrain_type ( -- bool ) 
+( map entries are in the format:  x1 y1 x2 y2 dbref )
+( where x1,y1 = upper left corner, x2,y2=lower right corner, )
+( dbref = dbref that contains mapping data.  It is broken up )
+( like this so that Revar's caching system can still do its  )
+( job & save memory.  NOTE: You MUST store the lower-resolution )
+( maps at the bottom of the list and the higher resolution maps at )
+( the top! The dbref MUST be a room and this room MUST have )
+( the world's primary environment room as a parent or ancestor! )
+ 
+  env @ "./maps#" getpropstr atoi cttstop !
+  1 temp !
+  begin
+    temp @ cttstop @ > if ( out of maps )
+      break
+    then
+    env @ "./maps#/" temp @ intostr strcat getpropstr
+    dup ":" instr dup if 1 - strcut pop else pop then
+    strip " " explode pop
+    atoi x1 !
+    atoi y1 !
+    atoi x2 !
+    atoi y2 !
+    atoi dbref mapdbref !
+    mapdbref @ "./terrains" getpropstr dup if
+      atoi dbref terrains !
+    else
+      pop mapdbref @ terrains !
+    then
+ 
+    cx @ x1 @ < not cx @ x2 @ > not and   ( is current x value in range? )
+    cy @ y1 @ < not cy @ y2 @ > not and   ( is current y value in range? )
+    and if  ( possible match! )
+      mapdbref @ "./map#" getpropstr atoi 1 + maptall ! ( get map dimensions )
+      mapdbref @ "./map#/1" getpropstr strlen 1 + mapwide !
+      cy @ y1 @ - maptall @ 1 - * y2 @ y1 @ - 1 + / 1 + ( get map line )
+      mapdbref @ swap "./map#/" swap intostr strcat getpropstr
+      cx @ x1 @ - mapwide @ 1 - * x2 @ x1 @ - 1 + /  ( get map column )
+      strcut swap pop 1 strcut pop      ( get the map character! )
+      dup terrains @ swap "./" swap strcat "/name" strcat getpropstr if
+        terrain ! 1 exit                ( terrain type known ... done! )
+      then
+    then
+   
+    temp @ 1 + temp !
+  repeat
+( TODO: ENHANCE THIS ERROR TO PRINT LOCATION )
+  me @ "ERROR: Could not calculate terrain type.  Notify " env @ owner name
+  strcat " immediately!" strcat notify
+  0 exit
+;
+ 
+: gettoken ( s -- s1 s2 token )
+  dup "%" instring dup not if  ( none left... return )
+    pop "" exit
+  then
+ 
+  1 - strcut 1 strcut swap pop  ( snip off prefix, % )
+  dup "%" instring 1 - strcut 1 strcut ( snip off suffix, % )
+  swap pop swap ( reverse )
+  val1 @ 137 + temp !  ( rotate to next string number )
+  val2 @ val1 !
+  val3 @ val2 !
+  val4 @ val3 !
+  val5 @ val4 !
+  temp @ val5 !
+  dup not if  ( null token )
+    pop strcat gettoken  ( put prefix, suffix back together and try again )
+  then
+  exit
+;
+  
+lvar propnum
+lvar propname
+lvar limit
+ 
+: parsetext ( s -- s )
+( description parsing tokens are stored on the maproom in a wizpropsubdir )
+( with the same letter as the terrain type for that location.  Example: )
+( for the terrain type 'j' and the token 'roomnames', the propdir name )
+( should be  @/j/roomnames )
+ 
+  PARSELIMIT limit !
+  begin
+    limit @ not if  (exceeded max count)
+      exit
+    then
+    gettoken dup not if ( no more tokens... return )
+      pop break
+    then
+    "./" swap strcat propname !
+    mapdbref @ propname @ "#" strcat getpropstr atoi val1 @ swap % 1 + propnum !
+    mapdbref @ propname @ "#/" propnum @ intostr strcat strcat
+    getpropstr ( get the line )
+    swap strcat strcat ( join with suffix and prefix )
+ 
+    limit @ 1 - limit !
+  repeat
+  exit
+; 
+ 
+lvar count
+: itemcount ( -- i )
+  0 count !
+  lastroom @ contents
+  begin
+    dup #-1 dbcmp if
+      pop break
+    then
+    count @ 1 + count !
+    next
+  repeat
+  count @
+  exit
+;
+ 
+lvar numexits
+lvar exitdir
+lvar exitnum
+ 
+: addexits ( d -- )
+  "@/exits/" cx @ intostr strcat "/" strcat cy @ intostr strcat "/" strcat
+   cz @ intostr strcat "#" strcat
+   exitdir !
+   env @ exitdir @ getpropstr atoi dup numexits !
+   exitdir @ "/" strcat exitdir !
+   begin
+     numexits @ not if ( no more exits to add )
+       break 
+     then
+ 
+     env @ exitdir @ numexits @ intostr strcat getpropstr ( get the raw data )
+( string format: names:link:succ:osucc:fail:ofail:drop:odrop:lock:desc ) 
+     dup ":" instr 1 - strcut 1 strcut swap pop  ( fetch names )
+     dup ":" instr 1 - strcut 1 strcut swap pop swap atoi dbref swap ( link )
+     dup ":" instr 1 - strcut 1 strcut swap pop  ( fetch succ )
+     dup ":" instr 1 - strcut 1 strcut swap pop  ( fetch osucc )
+     dup ":" instr 1 - strcut 1 strcut swap pop  ( fetch fail )
+     dup ":" instr 1 - strcut 1 strcut swap pop  ( fetch ofail )
+     dup ":" instr 1 - strcut 1 strcut swap pop  ( fetch drop )
+     dup ":" instr 1 - strcut 1 strcut swap pop  ( fetch odrop )
+     dup ":" instr 1 - strcut 1 strcut swap pop  ( fetch lock )
+( desc is left )
+     10 rotate nextroom @ swap newexit exitnum ! ( create exit )
+     exitnum @ int 1 < if
+       me @ "ERROR: COULD NOT CREATE EXIT.  PLEASE NOTIFY " env @ owner name
+       strcat "!!!" strcat notify
+     then
+     exitnum @ mapdbref @ owner setown ( chown to owner of region )
+     exitnum @ swap setdesc
+     exitnum @ swap setlockstr pop
+     exitnum @ swap setodrop
+     exitnum @ swap setdrop
+     exitnum @ swap setofail
+     exitnum @ swap setfail
+     exitnum @ swap setosucc
+     exitnum @ swap setsucc
+     exitnum @ swap setlink
+ 
+     numexits @ 1 - numexits !
+  repeat
+  exit
+;
+ 
+lvar exprop
+lvar exnum
+lvar exstr
+ 
+: save_exits ( -- )
+  "@/exits/" cx @ intostr strcat "/" strcat cy @ intostr strcat
+  "/" strcat cz @ intostr strcat
+  "#" strcat exprop !
+ 
+  env @ exprop @ remove_prop
+  1 exnum !
+  lastroom @ exits
+  begin
+    dup #-1 dbcmp if
+      break
+    then
+    dup name ":" strcat exstr ! 
+    dup getlink exstr @ swap int intostr strcat ":" strcat exstr !
+    dup succ exstr @ swap strcat ":" strcat exstr !
+    dup osucc exstr @ swap strcat ":" strcat exstr !
+    dup fail exstr @ swap strcat ":" strcat exstr !
+    dup ofail exstr @ swap strcat ":" strcat exstr !
+    dup drop exstr @ swap strcat ":" strcat exstr !
+    dup odrop exstr @ swap strcat ":" strcat exstr !
+    dup getlockstr dup "*UNLOCKED*" stringcmp not if
+      pop ""
+    then
+    exstr @ swap strcat ":" strcat exstr !
+    dup desc exstr @ swap strcat exstr !
+    env @ exprop @ "/" strcat exnum @ intostr strcat exstr @ 0 addprop
+ 
+    exnum @ 1 + exnum !
+    next
+  repeat
+  exnum @ 1 = not if
+    env @ exprop @ exnum @ 1 - intostr 0 addprop
+  then
+  exit
+;
+  
+lvar tx
+lvar ty
+lvar tz
+ 
+: main ( s -- )
+  "Depart" stringcmp not if   ( clean up behind player )
+ 
+( WARNING: THE FOLLOWING LINE _MAY_ POSE SOME PROBLEMS IN FILLING UP THE
+  TIME QUEUE.  IF THIS HAPPENS, COMMENT IT OUT, BUT BE AWARE THAT IT WILL
+  BREAK RISS' RIDE PROGRAM AND ANY OTHER PROGRAM THAT JUST _EXPECTS_ THE
+  ROOM THAT WAS JUST LEFT TO STILL EXIST :)
+    0 sleep 
+    preempt  ( we do NOT want to be interrupted in here )
+    loc @ ok? not if  ( doublecall, V1.0 leftover )
+      exit
+    then
+    loc @ lastroom !
+    lastroom @ "~x" getpropstr not if  ( not really a generated room )
+      exit
+    then
+    lastroom @ "@/env" getpropstr atoi dbref env !
+    lastroom @ location me @ location location dbcmp not if ( exited world )
+      env @ "@/occupants/" me @ int intostr strcat remove_prop
+    then
+    itemcount not lastroom @ ".noflush" getpropstr not and if  ( zap it )
+      lastroom @ "~x" getpropstr atoi cx !
+      lastroom @ "~y" getpropstr atoi cy !
+      lastroom @ "~z" getpropstr atoi cz !
+      save_exits
+      env @ "@/rooms/" cx @ intostr strcat "/" strcat
+      cy @ intostr strcat "/" strcat cz @ intostr strcat remove_prop
+      lastroom @ recycle
+    then
+    exit
+  then
+ 
+  preempt  ( we do NOT want to be interrupted in here )
+( get this player's current location, if any )
+  trigger @ "@/env" getpropstr atoi dbref env !
+  env @ #0 dbcmp if
+    me @ "ERROR: EXIT #" trigger @ int intostr strcat
+    " DOES NOT HAVE 'ENV' PROP SET TO ENV ROOM!!!" strcat notify
+    exit
+  then
+ 
+  0 cx ! 0 cy ! 0 cz !
+ 
+( load location from location if possible, else bump )
+   me @ location  "~x" getpropstr atoi cx !
+   me @ location  "~y" getpropstr atoi cy !
+   me @ location  "~z" getpropstr atoi cz !
+ 
+  cx @ 0 = cy @ 0 = cz @ 0 = and and if  ( probably teleported in.  naughty. )
+    env @ "@/occupants/" me @ int intostr strcat getpropstr
+    dup if "," explode pop else pop "" "" "" then atoi cx ! atoi cy ! atoi cz !
+  then  
+  
+( get the dbref of the [existing] room at that location )
+  env @ "@/rooms/" cx @ intostr strcat "/" strcat cy @ intostr strcat
+  "/" strcat cz @ intostr strcat getpropstr atoi dbref lastroom !
+ 
+  cx @ lx !
+  cy @ ly !
+  cz @ lz !
+ 
+  cx @ 0 = cy @ 0 = cz @ 0 = and and if  ( entering the world fresh )
+    trigger @ "@/x" getpropstr atoi cx !
+    trigger @ "@/y" getpropstr atoi cy !
+    trigger @ "@/z" getpropstr atoi cz !
+  else
+    trigger @ "@/dx" getpropstr atoi cx @ + cx !
+    trigger @ "@/dy" getpropstr atoi cy @ + cy !
+    trigger @ "@/dz" getpropstr atoi cz @ + cz !
+  then
+ 
+  cx @ lx @ = cy @ ly @ = cz @ lz @ = and and if ( get absolute )
+    trigger @ "@/x" getpropstr atoi cx !
+    trigger @ "@/y" getpropstr atoi cy !
+    trigger @ "@/z" getpropstr atoi cz !
+  then
+ 
+  cx @ 1 < if  ( wrap around the world )
+    cx @ env @ "./maxx" getpropstr atoi + cx !
+  then
+  cx @ env @ "./maxx" getpropstr atoi > if
+    cx @ env @ "./maxx" getpropstr atoi - cx !
+  then
+  cy @ 1 < if  ( wrap north... complex )
+    1 cy @ - cy ! ( move back )
+    cx @ env @ "./maxx" getpropstr atoi 2 / +
+    env @ "./maxx" getpropstr atoi % 
+    dup not if pop env @ "./maxx" getpropstr atoi then cx !
+  then
+  cy @ env @ "./maxy" getpropstr atoi > if  ( wrap south... complex )
+    env @ "./maxy" getpropstr atoi 2 * cy @ - cy ! ( move back )
+    cx @ env @ "./maxx" getpropstr atoi 2 / +
+    env @ "./maxx" getpropstr atoi %
+    dup not if pop env @ "./maxx" getpropstr atoi then cx !
+  then
+ 
+( calculate description string numbers )
+  cx @ cy @ + dup 0 < if 0 swap - then val1 !
+  cy @ cx @ - dup 0 < if 0 swap - then val2 !
+  cx @ cy @ * cz @ + dup 0 < if 0 swap - then val3 !
+  cx @ 7 * cy @ cz @ + + dup 0 < if 0 swap - then val4 !
+  cx @ cy @ 3 * cz @ - + dup 0 < if 0 swap - then val5 !
+ 
+( get the dbref of the new room )
+  env @ "@/rooms/" cx @ intostr strcat "/" strcat cy @ intostr strcat
+  "/" strcat cz @ intostr strcat getpropstr atoi dbref nextroom !
+ 
+( sanity check: Is the stored dbref valid? ) 
+  nextroom @ dup #0 dbcmp not if
+     dup room? not if        ( the old room reference is bad )
+      pop #0 nextroom !
+    else dup "@/env" getpropstr atoi dbref env @ dbcmp not if ( ref is bad )
+      pop #0 nextroom !
+    else   ( ref is ok, use it )
+      pop
+    then then 
+  then   
+ 
+( if it doesnt exist yet, create it, else get maproom/terrain/etc )
+  nextroom @ #0 dbcmp not if    ( hunt down the mapdbref/terrains )
+    nextroom @ location mapdbref !
+    mapdbref @ "./terrains" getpropstr dup if
+      atoi dbref terrains !
+    else
+      pop mapdbref @ terrains !
+    then
+  else
+    calculate_terrain_type not if  ( failed )
+      exit
+    then
+ 
+ loc @ ".inside" getpropstr not loc @ owner me @ dbcmp not or if
+( if @inside and this player owns this room, can go any dir, else check )
+( see if they can move in that direction )
+    terrain @ "!" stringcmp not if  ( boundary character... fail )
+      me @ terrains @ "./!/fail" getpropstr dup not if
+        env @ fail dup not if
+          pop "You can't go that way."
+(        else
+          pop )
+        then
+(      else
+        pop )
+      then
+      notify   ( deliver fail )
+      loc @ me @ me @ name " " strcat
+      terrains @ "./!/ofail" getpropstr dup not if
+        env @ ofail dup not if
+          exit
+        then
+      else
+        pop
+      then
+      notify_except
+      exit
+    then
+ 
+( see if they're trying to go too high )
+    env @ "./maxz" getpropstr atoi cz @ < if  ( yup )
+      calculate_sky_link not if
+        me @ env @ fail notify
+        exit
+      then
+      me @ "You cross over into the gravitational well of " mapdbref @ name
+      strcat "." strcat notify
+( we're about to warp over to another planet... start the engines! :)
+      trigger @ "@/env" getpropstr temp !  (save old props if any )
+      trigger @ "@/x" getpropstr lx !
+      trigger @ "@/y" getpropstr ly !
+      trigger @ "@/z" getpropstr lz !
+      trigger @ "@/dx" getpropstr tx !
+      trigger @ "@/dy" getpropstr ty !
+      trigger @ "@/dz" getpropstr tz !
+    
+      trigger @ "@/env" mapdbref @ intostr 0 addprop (set new props)
+      trigger @ "@/x" cx @ intostr 0 addprop
+      trigger @ "@/y" cy @ intostr 0 addprop
+      trigger @ "@/z" cz @ intostr 0 addprop
+      trigger @ "@/dx" remove_prop
+      trigger @ "@/dy" remove_prop
+      trigger @ "@/dz" remove_prop
+      prog "" swap call        ( call ourselves for new world )
+      temp @ if                 ( restore old props if any )
+        trigger @ "@/env" temp @ 0 addprop
+      else
+        trigger @ "@/env" remove_prop
+      then
+      tx @ if
+        trigger @ "@/dx" tx @ 0 addprop
+      then
+      ty @ if
+        trigger @ "@/dy" ty @ 0 addprop
+      then
+      tz @ if
+        trigger @ "@/dz" tz @ 0 addprop
+      then
+      lx @ if
+        trigger @ "@/x" lx @ 0 addprop
+      else
+        trigger @ "@/x" remove_prop
+      then
+      ly @ if
+        trigger @ "@/y" ly @ 0 addprop
+      else
+        trigger @ "@/y" remove_prop
+      then
+      lz @ if
+        trigger @ "@/z" lz @ 0 addprop
+      else
+        trigger @ "@/z" remove_prop
+      then
+      me @ location loc @ dbcmp not if  ( remove player from this tfbd )
+        env @ "@/occupants/" me @ intostr strcat remove_prop
+      then
+DEBUGOFF
+      exit   ( halt processing in THIS world... player's gone. )
+    then
+    cz @ 0 > if
+      env @ "./flyprop" getpropstr dup if
+        me @ swap getpropstr not if  ( player doesnt have prop! )
+          me @ env @ fail notify
+          exit
+        then
+    else pop then
+    then
+ 
+( see if they're trying to go too low )
+    mapdbref @ "./" terrain @ strcat "/minz" strcat getpropstr atoi cz @ > if
+      me @ env @ fail notify
+      exit
+    then
+    cz @ 0 < if
+      mapdbref @ "./" terrain @ strcat "/underprop" strcat getpropstr dup if
+        me @ swap getpropstr not if  ( player doesnt have prop! )
+          me @ env @ fail notify
+          exit
+        then
+      else pop then
+    then
+  then
+ 
+( the new room's name and desc prototypes come from the maproom itself )
+( UNLESS there is a redirection prop. )
+    terrains @
+    cz @ not if  ( get name ) 
+      terrains @ "./" terrain @ strcat "/name" strcat getpropstr
+    else cz @ 0 > if  ( get a sky name )
+      env @ "./skymap#" getpropstr atoi temp !
+      begin
+        temp @ not if break then
+        env @ "./skymap#/" temp @ intostr strcat getpropstr " " explode pop
+        atoi cz @ > not swap atoi cz @ < not and if  ( in range! )
+          temp @ altitude !
+          env @ "./skyname/" temp @ intostr strcat getpropstr
+          break
+        then
+        temp @ 1 - temp !
+      repeat
+    else  ( get 'under' name )
+      terrains @ "./" terrain @ strcat "/undername" strcat getpropstr
+    then then
+ 
+    parsetext dup not if pop "a room" then newroom nextroom !
+    nextroom @ int 1 < if  ( failed )
+      me @ "ERROR: Could not create room!  Please notify " env @ owner name
+      strcat "." strcat notify
+      exit
+    then 
+ 
+    loc @ ".inside" getpropstr cz @ 0 = not and if
+      nextroom @ ".inside" "y" 0 addprop
+      nextroom @ ".noflush" "y" 0 addprop
+    then
+    nextroom @ mapdbref @ owner setown  ( chown the room to owner of the map )
+    nextroom @
+    cz @ not if  ( get desc ) 
+      terrains @ "./" terrain @ strcat "/desc" strcat getpropstr
+    else cz @ 0 > if  ( get a sky desc )
+      env @ "./skydesc/" altitude @ intostr strcat getpropstr
+    else  ( get 'under' desc )
+      terrains @ "./" terrain @ strcat "/underdesc" strcat getpropstr
+    then then
+    parsetext setdesc ( describe the room )
+    nextroom @ "~x" cx @ intostr 0 addprop ( tell the room its location )
+    nextroom @ "~y" cy @ intostr 0 addprop
+    nextroom @ "~z" cz @ intostr 0 addprop
+    nextroom @ "~listen" env @ "./_listen" getpropstr 0 addprop
+    env @ "@/rooms/" cx @ intostr strcat "/" strcat cy @ intostr strcat
+    "/" strcat cz @ intostr strcat 
+    nextroom @ env @ succ setsucc
+    nextroom @ "~terrain" terrain @ 0 addprop (tell room its terrain )
+    nextroom @ "@/env" env @ int intostr 0 addprop  (tell room its env)
+    nextroom @ int intostr 0 addprop ( tell envroom about the new room )
+ 
+    nextroom @ addexits
+  then
+ 
+ ( move the player to the next room, update envroom props )
+  cz @ not lz @ not and loc @ ".inside" getpropstr or if ( use terrestrial verb )
+    me @ trigger @ "succ" getpropstr ( print succ )
+    terrains @ "./" loc @ "~terrain" getpropstr strcat "/verb" strcat
+    getpropstr "%v" subst me @ swap pronoun_sub notify
+ 
+     loc @ me @ trigger @ "osucc" getpropstr ( print osucc )
+    terrains @ "./" loc @ "~terrain" getpropstr strcat "/overb" strcat
+    getpropstr "%v" subst me @ name " " strcat swap strcat
+    me @ swap pronoun_sub notify_except
+ 
+    nextroom @ me @ trigger @ "odrop" getpropstr ( print odrop ) 
+    terrains @ "./" loc @ "~terrain" getpropstr strcat "/overb" strcat
+    getpropstr "%v" subst me @ name " " strcat swap strcat
+    me @ swap pronoun_sub notify_except
+  else cz @ 0 < lz @ 0 < or if ( use under verb )
+    me @ trigger @ "succ" getpropstr ( print succ )
+    terrains @ "./" loc @ "~terrain" getpropstr strcat "/underverb" strcat
+    getpropstr "%v" subst me @ swap pronoun_sub notify
+ 
+    loc @ me @ trigger @ "osucc" getpropstr ( print osucc )
+    terrains @ "./" loc @ "~terrain" getpropstr strcat "/underoverb" strcat
+    getpropstr "%v" subst me @ name " " strcat swap strcat
+    me @ swap pronoun_sub notify_except
+ 
+    nextroom @ me @ trigger @ "odrop" getpropstr ( print odrop ) 
+    terrains @ "./" loc @ "~terrain" getpropstr strcat "/underoverb"
+    strcat getpropstr "%v" subst me @ name " " strcat swap strcat
+    me @ swap pronoun_sub notify_except
+  else  ( use "fly/flies" verb )
+    me @ trigger @ "succ" getpropstr ( print succ )
+    "fly" "%v" subst me @ swap pronoun_sub notify
+ 
+    loc @ me @ trigger @ "osucc" getpropstr ( print osucc )
+    "flies" "%v" subst me @ name " " strcat swap strcat    
+    me @ swap pronoun_sub notify_except
+ 
+    nextroom @ me @ trigger @ "odrop" getpropstr ( print odrop )
+    "flies" "%v" subst me @ name " " strcat swap strcat    
+    me @ swap pronoun_sub notify_except
+  then then
+ 
+  me @ nextroom @ moveto
+ 
+  me @ player? if 
+    env @ "@/occupants/" me @ int intostr strcat cx @ intostr "," strcat
+    cy @ intostr strcat "," strcat cz @ intostr strcat 0 addprop
+  then
+ 
+( how ugly.  since objects set X and !Z can use exits but dont trigger _depart,
+  we have to call the destructor code here explicitly. :P )
+  "Depart" main 
+  exit
+;
+.
+c
+q
+@reg terraform-mover=tmove
+@program terraform-commands
+1 19999 d
+i
+( TerraForm - planet generation system  )
+( user interface commands               )
+( By Triggur of Brazilian Dreams        )
+( {C} 1995 by Kevin Kelm, pferd@netcom.com )
+( All rights reserved. )
+( DO NOT MODIFY WITHOUT EXPLICIT PERMISSION! )
+ 
+( V1.00 - Original )
+( ... )
+( V1.11 - added 'version' string maintenence )
+( V1.12 - added sanity checker to help clear up problems with installation of
+          upgrages, expose possible deficiencies in terrain coverage, and
+          correct problems in the @/rooms/ and @/occupants/ propdirs. )
+( V1.13 - added @killworld )
+( V1.14 - removed @recycle command as a potential cause of trouble )
+( V1.15 - fixed a permissions bug in @editmap {Cara/BD} )
+( V1.16 - added @skylink )
+( fiddled @loc to return the planet's name, too )
+( V1.17 - added @admin )
+( V1.18 - added @own )
+( ------ RELEASE V1.18 ------ )
+  
+$include $lib/editor
+ 
+$define LOC_OK_DEFAULT 1 $enddef
+ 
+$define DEBUGON prog "d" set $enddef 
+$define DEBUGOFF prog "!d" set $enddef 
+ 
+$define VERSION "1.18" $enddef
+$define GET-DATA get-text not if exit then $enddef
+$define PERMISSION-CHECK has-permission not if exit then $enddef
+ 
+lvar tmove
+lvar tmp
+ 
+lvar gttmp
+lvar gtout
+      
+: get-text ( s -- s i )
+  gttmp !
+  begin
+    " " .tell gttmp @ .tell
+    "(Type .quit to abort, or \"say or :pose)" .tell
+    read striplead striptail gtout !
+    gtout @ 1 strcut pop dup ":" stringcmp not if
+      loc @ #-1 me @ name " " strcat gtout @ 1 strcut swap pop strcat
+      notify_except
+    else "\"" stringcmp not if
+      loc @ #-1 me @ name " " strcat
+      me @ "_say/def/osay" getpropstr dup not if pop "says," then strcat
+      " " strcat gtout @ "\"" strcat strcat 
+      notify_except
+    else gtout @ ".quit" stringcmp not if
+      "Aborted." .tell gtout @ 0 exit 
+    else
+      gtout @ 1 exit
+    then then then
+  repeat
+exit
+;
+ 
+: has-permission ( -- i )
+( is the trigger a wizard-owned one, or a hack? )
+  trig owner "w" flag? not if
+    "Permission denied." .tell 0 exit
+  then
+ 
+( is this a terraform room? )
+  loc @ "@/env" getpropstr not loc @ "./map#" getpropstr not and if
+    "Permission denied." .tell 0 exit
+  then
+ 
+  me @ "w" flag? if 1 exit then   ( wizards can always do it )
+ 
+  loc @ owner me @ dbcmp if 1 exit then ( player owns THIS room )
+ 
+  loc @ "./map#" getpropstr not if
+    loc @ location tmp !
+  else 
+    loc @ tmp !
+  then
+  begin
+    tmp @ "./map#" getpropstr not if (out of rooms to check)
+      "Permission denied." .tell
+      0 exit
+    then
+    me @ tmp @ owner dbcmp if  (player owns map room)
+      1 exit
+    then
+    tmp @ "@/admins" getpropstr "|" me @ intostr strcat "|" strcat instr if
+      1 exit    ( player listed as an admin )
+    then
+    tmp @ location tmp !
+  repeat
+ 
+  0
+exit
+; 
+ 
+lvar locroom
+ 
+: is-loc_ok? ( d -- i )
+  locroom !
+  locroom @ "~x" getpropstr dup not if
+    0 exit
+  then
+ 
+  locroom @ "./loc_ok?" getpropstr dup "yes" stringcmp not if
+    pop 1 exit
+  else "no" stringcmp not if
+    pop 0 exit
+  then then
+  locroom @ location locroom !
+    
+  begin
+    locroom @ int 0 < if break then
+    locroom @ "@/env" getpropstr not locroom @ "./map" getpropstr not and if
+      LOC_OK_DEFAULT exit  ( no more rooms to check )
+    then
+    locroom @ "./loc_ok?" getpropstr dup "yes" stringcmp not if
+      pop 1 exit
+    else "no" stringcmp not if
+      pop 0 exit
+    then then
+    locroom @ location locroom !
+  repeat
+  LOC_OK_DEFAULT exit
+exit
+;
+   
+lvar pnum
+lvar primary
+ 
+: do-loc            ( s -- )   ( @loc )
+  dup if
+    PERMISSION-CHECK
+    .pmatch pnum ! pnum @ int 0 > not if
+       "I don't know who that is." .tell
+       exit
+    then
+    loc @ "@/env" getpropstr dup if
+      atoi dbref primary !
+    else
+      pop loc @ primary !
+    then
+    primary @ "@/occupants/" pnum @ intostr strcat getpropstr dup not if
+      pnum @ name " is currently in " strcat pnum @ location name strcat "."
+      strcat .tell exit
+    then
+    pnum @ name " is currently" pnum @ location "@/env" getpropstr dup if
+      atoi dbref name " on " swap strcat strcat
+    else
+      pop
+    then
+    " at " strcat pnum @ location "~x" getpropstr
+    strcat ", " strcat pnum @ location "~y" getpropstr strcat pnum @
+    location "~z" getpropstr dup if
+      ", " swap strcat strcat
+    else
+      pop
+    then
+    "." strcat .tell exit
+  then
+ 
+  loc @ is-loc_ok? not if
+    pop "You are currently in " loc @ name strcat "." strcat .tell
+  else
+    "You are currently on " loc @ "@/env" getpropstr atoi dbref name
+    strcat " at " strcat swap strcat ", " strcat loc @ "~y" getpropstr
+    strcat loc @ "~z" getpropstr dup if
+      ", " swap strcat strcat
+    else
+      pop
+    then
+    "." strcat .tell
+  then
+exit
+;
+ 
+lvar tpx
+lvar tpy
+lvar tpz
+ 
+: do-tport          ( s -- )
+  PERMISSION-CHECK
+ 
+  " " "," subst 
+  loc @ "@/env" getpropstr dup if
+    atoi dbref primary ! 
+  else pop loc @ "./map#" getpropstr if
+    loc @ primary !
+  else
+    "Permission denied." .tell exit
+  then then
+ 
+  trigger @ "@/env" primary @ intostr 0 addprop 
+  0 0 0 tpx ! tpy ! tpz !
+ 
+  dup not if
+    "USAGE:" .tell "@TPORT <x> <y> [z]" .tell
+    "@TPORT <placename>" .tell "@TPORT #ADD <placename>" .tell
+    "@TPORT #LIST" .tell exit
+  then
+ 
+  dup "#list" stringcmp not if
+    primary @ "./tportdests/" nextprop tpx !
+    0 tpy !
+    "Placename           Coordinates" .tell
+    "-------------------------------" .tell
+    begin
+      tpx @ not if break then
+      tpx @ dup "/" rinstr strcut swap pop dup strlen 20 swap -
+      "                    " swap strcut pop strcat
+      primary @ tpx @ getpropstr strcat .tell
+      primary @ tpx @ nextprop tpx !
+      tpy @ 1 + tpy !
+    repeat
+    tpy @ intostr " teleport destinations listed." strcat .tell
+    exit
+  then
+ 
+  dup dup strip " " instr strcut swap striptail "#add" stringcmp not if
+    loc @ "~x" getpropstr not if
+      "ERROR: You must be in a TerraForm-generated room to add a room to the list."
+      .tell exit
+    then
+    dup not if
+      "ERROR: You must specify the one-word name of this place." .tell exit
+    then
+    dup "./tportdests/" swap strip strcat primary @ swap getpropstr if
+      "ERROR: A destination already exists with that name." .tell exit
+    then
+    primary @ swap "./tportdests/" swap strcat loc @ "~x" getpropstr
+    " " strcat loc @ "~y" getpropstr strcat " " strcat loc @ "~z" getpropstr
+    strcat 0 addprop "Done." .tell exit
+  else
+    pop
+  then
+ 
+  dup primary @ swap "./tportdests/" swap strcat getpropstr dup if
+    swap pop
+  else
+    pop dup 2 strcut pop strip number? not if
+      "ERROR: Unknown placename.  @TPORT #LIST to list valid ones." .tell exit
+    then
+  then
+ 
+  dup " " instr strcut swap atoi tpx !
+  striplead dup " " instr dup not if
+    pop atoi tpy !
+  else
+    strcut swap atoi tpy !
+    strip atoi tpz !
+  then
+  
+( this is sort of a whacky hook into the normal entrance management code.
+  I teleported home one night with Ron and Sid and Peg.
+  Ron stole Peggy's heart away and I got Sidney's leg! )
+ 
+  preempt   ( we do NOT want to get interrupted here in coincident teleports :)
+  trigger @ "@/x" tpx @ intostr 0 addprop
+  trigger @ "@/y" tpy @ intostr 0 addprop
+  trigger @ "@/z" tpz @ intostr 0 addprop
+  loc @ "_reg/tmove" envpropstr dup not if
+    "Permission denied; TerraForm has not been installed on this system." .tell
+    pop exit
+  then
+  "" "#" subst atoi dbref "" swap call
+  trigger @ "@/x" remove_prop
+  trigger @ "@/y" remove_prop
+  trigger @ "@/z" remove_prop
+ 
+exit
+;
+ 
+lvar blocked
+lvar bexit
+lvar bcount
+lvar bnew
+ 
+: coord-correct ( x y z -- x' y' z' )
+ tpz ! tpy ! tpx !
+ 
+ tpz @ primary @ "./maxz" getpropstr atoi > if   (not a valid room)
+   -1 -1 -1 exit
+ then
+ tpz @ loc @ location "./" loc @ "~terrain" getpropstr strcat "/minz" strcat
+ getpropstr atoi < if ( not a valid room )
+   -1 -1 -1 exit
+ then
+ tpx @ 1 < if  ( wrap around the world )
+   tpx @ primary @ "./maxx" getpropstr atoi + tpx !
+ then
+ tpx @ primary @ "./maxx" getpropstr atoi > if
+   tpx @ primary @ "./maxx" getpropstr atoi - tpx !
+ then
+ tpy @ 1 < if  ( wrap north... complex )
+   1 tpy @ - tpy ! ( move back )
+   tpx @ primary @ "./maxx" getpropstr atoi 2 / +
+   primary @ "./maxx" getpropstr atoi % 
+   dup not if pop primary @ "./maxx" getpropstr atoi then tpx !
+ then
+ tpy @ primary @ "./maxy" getpropstr atoi > if  ( wrap south... complex )
+   primary @ "./maxy" getpropstr atoi 2 * tpy @ - tpy ! ( move back )
+   tpx @ primary @ "./maxx" getpropstr atoi 2 / +
+   primary @ "./maxx" getpropstr atoi %
+   dup not if pop primary @ "./maxx" getpropstr atoi then tpx !
+ then
+ tpx @ tpy @ tpz @ exit
+;
+ 
+: reflex-direction ( x y z s -- x' y' z' s' )
+( calculate the room coords and reflex direction to a given exit name )
+ swap tpz ! swap tpy ! swap tpx !
+ dup "n" stringcmp not if pop tpx @ tpy @ 1 - tpz @ coord-correct "s" exit then
+ dup "s" stringcmp not if pop tpx @ tpy @ 1 + tpz @ coord-correct "n" exit then
+ dup "w" stringcmp not if pop tpx @ 1 - tpy @ tpz @ coord-correct "e" exit then
+ dup "e" stringcmp not if pop tpx @ 1 + tpy @ tpz @ coord-correct "w" exit then
+ dup "ne" stringcmp not if pop tpx @ 1 + tpy @ 1 - tpz @ coord-correct "sw" exit then
+ dup "nw" stringcmp not if pop tpx @ 1 - tpy @ 1 - tpz @ coord-correct "se" exit then
+ dup "sw" stringcmp not if pop tpx @ 1 - tpy @ 1 + tpz @ coord-correct "ne" exit then
+ dup "se" stringcmp not if pop tpx @ 1 + tpy @ 1 + tpz @ coord-correct "nw" exit then
+ dup "u" stringcmp not if pop tpx @ tpy @ tpz @ 1 + coord-correct "d" exit then
+ "d" stringcmp not if tpx @ tpy @ tpz @ 1 - coord-correct "u" exit then
+ 
+ tpx @ tpy @ tpz @ "" exit
+;
+  
+: add-block-direction ( x y z s -- )
+  dup not if pop pop pop pop exit then ( invalid exit...skip )
+  swap dup -1 = if pop pop pop pop exit else swap then  ( invalid room... skip )
+  ";" strcat ";" swap strcat tmp ! tpz ! tpy ! tpx ! 
+  primary @ "@/rooms/" tpx @ intostr strcat "/" strcat tpy @ intostr strcat
+  "/" strcat tpz @ intostr strcat getpropstr dup if ( room exists, fiddle it )
+    atoi dbref dup tpx !
+    tpx @ "@tf" rmatch dup #-1 dbcmp not if     ( set name on existing exit )
+      dup name ";" tmp @ subst tmp @ swap strcat setname
+    else			 ( create new exit )
+      pop tpx @ "@tf" tmp @ strcat newexit dup #-1 dbcmp if
+        "ERROR CREATING BLOCK EXIT!  Notify a wizard immediately." .tell
+      else
+        dup "me&!me" setlockstr
+      then
+    then
+  else             ( room doesn't exist, fiddle props )
+    primary @ "@/exits/" tpx @ intostr strcat "/" strcat tpy @ intostr strcat
+    "/" strcat tpz @ intostr strcat "#" strcat dup gtout ! getpropstr atoi
+    gttmp !
+    begin  ( search through exits in list looking for blocks )
+      gttmp @ 0 = if break then
+      primary @ gtout @ "/" strcat gttmp @ intostr strcat getpropstr
+      dup "@tf;" instr dup if  ( found it! replace old. )
+        pop ";" tmp @ subst dup "@tf;" instr     ( cut old if any )
+        3 + strcut tmp @ swap strcat strcat ";" ";;" subst
+        primary @ swap gtout @ "/" strcat gttmp @ intostr strcat swap
+        0 addprop exit
+      else pop
+      then
+      gttmp @ 1 - gttmp ! 
+    repeat
+( not found... add new )
+    primary @ gtout @ getpropstr atoi 1 + gttmp !
+    primary @ gtout @ gttmp @ intostr 0 addprop   ( bump count )
+    primary @ gtout @ "/" strcat gttmp @ intostr strcat "@tf" tmp @ strcat
+    ":-1:::::::#1&!#1:" strcat 0 addprop
+  then
+exit
+;
+ 
+: kill-block-direction ( x y z s -- )
+  dup not if pop pop pop pop exit then ( invalid exit...skip )
+  swap dup -1 = if pop pop pop pop exit else swap then  ( invalid room... skip )
+  ";" strcat ";" swap strcat tmp ! tpz ! tpy ! tpx ! 
+  primary @ "@/rooms/" tpx @ intostr strcat "/" strcat tpy @ intostr strcat
+  "/" strcat tpz @ intostr strcat getpropstr dup if ( room exists, fiddle it )
+    atoi dbref dup tpx !
+    tpx @ "@tf" rmatch dup #-1 dbcmp not if     ( set name on existing exit )
+      dup name ";" tmp @ subst dup "@tf;" stringcmp not if
+        pop recycle (get rid of the exit...nothing left)
+      else
+        setname
+      then
+    then
+  else             ( room doesn't exist, fiddle props )
+    primary @ "@/exits/" tpx @ intostr strcat "/" strcat tpy @ intostr strcat
+    "/" strcat tpz @ intostr strcat "#" strcat dup gtout ! getpropstr atoi
+    dup tpz ! gttmp !
+    begin  ( search through exits in list looking for blocks )
+      gttmp @ 0 = if break then
+      primary @ gtout @ "/" strcat gttmp @ intostr strcat getpropstr
+      dup "@tf;" instr dup if  ( found it! replace old. )
+        pop ";" tmp @ subst    ( cut old if any )
+        dup tpy !
+        dup "@tf;:" instr if  ( no exits left... kill this and compress list )
+          pop
+          tpz @ 1 = if   ( get rid of the whole list )
+            primary @ gtout @ remove_prop exit
+          then
+          begin
+            gttmp @ tpz @ = if break then
+            primary @ gtout @ "/" strcat gttmp @ intostr strcat
+            primary @ gtout @ "/" strcat gttmp @ 1 + intostr strcat getpropstr
+            0 addprop
+            gttmp @ 1 + gttmp !
+          repeat
+          primary @ gtout @ tpz @ 1 - intostr 0 addprop
+          exit
+        else
+          primary @ gtout @ "/" strcat gttmp @ intostr strcat tpy @ 0 addprop
+        then
+      else pop
+      then
+      gttmp @ 1 - gttmp ! 
+    repeat
+( not found... do nothing )
+  then
+exit
+;
+ 
+: do-block          ( s -- )
+  PERMISSION-CHECK
+  loc @ "~x" getpropstr not if
+    "Permission denied; You need to be in a TerraForm-generated room." .tell
+    exit 
+  then
+ 
+  loc @ "@/env" getpropstr dup if
+    atoi dbref primary ! 
+  else pop loc @ "./map#" getpropstr if
+    loc @ primary !
+  else
+    "Permission denied." .tell exit
+  then then
+ 
+  loc @ "@tf" rmatch dup #-1 dbcmp not if
+     dup bexit ! name ";" "@tf;" subst blocked !
+  else
+     pop #-1 bexit ! "" blocked !
+  then
+  0 bcount !
+ 
+  strip dup "" stringcmp not if   ( list existing blocked exits )
+    "Directions blocked from this location:" .tell
+    " "
+    blocked @ 1 strcut blocked ! pop
+    begin
+      blocked @ not if break then
+      bcount @ if ", " strcat then
+      blocked @ dup ";" instr dup 0 = not if
+        1 - strcut 1 strcut blocked ! pop
+      else
+        "" blocked ! pop
+      then
+      strcat
+      bcount @ 1 + bcount !
+    repeat
+    .tell bcount @ intostr " directions listed." strcat .tell
+    exit
+  then
+ 
+  "" " " subst bnew !
+  begin
+    bnew @ not if break then
+    bnew @ dup "," instr dup 0 = not if
+      1 - strcut 1 strcut bnew ! pop
+    else
+      "" bnew ! pop
+    then
+    loc @ "~x" getpropstr atoi tpx !
+    loc @ "~y" getpropstr atoi tpy !
+    loc @ "~z" getpropstr atoi tpz !
+    dup 1 strcut swap "!" stringcmp not if   ( remove if present ) 
+      dup if
+        dup blocked @ swap ";" swap ";" strcat ";" swap strcat subst blocked !
+        tpx @ swap tpy @ swap tpz @ swap reflex-direction kill-block-direction
+      else pop then
+    else        ( overwrite if there )
+      pop dup blocked @ swap ";" swap ";" strcat ";" swap strcat subst blocked !
+      dup ";" strcat blocked @ swap strcat blocked !  ( add in )
+      tpx @ swap tpy @ swap tpz @ swap reflex-direction add-block-direction
+    then  
+  repeat
+ 
+  "@tf;" blocked @ strcat ";" ";;" subst blocked !
+  bexit @ #-1 dbcmp not if     ( set name on existing exit )
+    "@tf;" blocked @ stringcmp not if ( none left... delete. )
+      bexit @ recycle "Done." .tell exit
+    then
+    bexit @ blocked @ setname
+  else			 ( create new exit )
+    loc @ blocked @ newexit dup #-1 dbcmp if
+      "ERROR CREATING BLOCK EXIT!  Notify a wizard immediately." .tell
+    else
+      "me&!me" setlockstr
+    then
+  then 
+  "Done." .tell
+exit
+;
+ 
+ 
+lvar toroom
+lvar exitout
+lvar exitin
+ 
+: do-tlink          ( s -- )
+  PERMISSION-CHECK
+  loc @ "_reg/tmove" envpropstr dup not if
+    "Permission denied; TerraForm has not been installed on this system." .tell
+    pop exit
+  then
+  "" "#" subst atoi dbref tmove ! pop
+ 
+  loc @ "~x" getpropstr not if
+    "Permission denied; You need to be in a TerraForm-generated room." .tell
+    exit 
+  then
+ 
+  "Enter the dbref of the destination room:" GET-DATA strip
+  "" "#" subst atoi dbref toroom !
+  toroom @ room? not if
+    "Permission denied; the destination is not a room." .tell exit
+  then
+  toroom @ "l" flag? not me @ "w" flag? not and me @ toroom @ owner dbcmp not
+  and if
+    "Permission denied; that room is not set linkable." .tell exit
+  then
+ 
+  "Enter the name(s) of the exit from here to " toroom @ name strcat ":" strcat
+  GET-DATA loc @ swap newexit dup int 0 > not if
+    "Aborted; exit creation failed." .tell exit
+  then
+  exitout !
+( determine how to link the exit... special case if terraform room )
+  toroom @ "@/env" getpropstr dup not if ( just a normal room )
+    pop exitout @ toroom @ setlink
+  else      ( destination is a terraform room )
+    exitout @ "@/env" toroom @ "@/env" getpropstr 0 addprop
+    exitout @ "@/x" toroom @ "~x" getpropstr 0 addprop
+    exitout @ "@/y" toroom @ "~y" getpropstr 0 addprop
+    exitout @ "@/z" toroom @ "~z" getpropstr 0 addprop
+    exitout @ tmove @ setlink
+    exitout @ location "~x" getpropstr if
+      exitout @ location ".noflush" "p" 0 addprop
+      "This room is automatically being set @FLUSH NO so the TerraForm exit will not be destroyed." .tell
+    then
+  then
+ 
+  "Enter the name(s) of the exit from " toroom @ name strcat " to here:" strcat
+  GET-DATA toroom @ swap newexit dup int 0 > not if
+    exitout @ recycle
+    "Aborted; exit creation failed." .tell exit
+  then
+  exitin !
+( determine how to link the exit... special case if terraform room )
+  loc @ "@/env" getpropstr dup not if ( just a normal room )
+    pop exitin @ loc @ setlink
+  else      ( source is a terraform room ) (this path is always taken)
+    exitin @ "@/env" loc @ "@/env" getpropstr 0 addprop
+    exitin @ "@/x" loc @ "~x" getpropstr 0 addprop
+    exitin @ "@/y" loc @ "~y" getpropstr 0 addprop
+    exitin @ "@/z" loc @ "~z" getpropstr 0 addprop
+    exitin @ tmove @ setlink
+    exitin @ location "~x" getpropstr if
+      exitin @ location ".noflush" "p" 0 addprop
+      "The destination room is automatically being set @FLUSH NO so the TerraForm exit will not be destroyed." .tell
+    then
+  then
+ 
+  " " .tell "Done." .tell
+exit
+;
+ 
+lvar inside
+ 
+: do-inside          ( s -- )   (@inside [yes|no])
+  PERMISSION-CHECK
+  loc @ "_reg/tmove" envpropstr dup not if
+    "Permission denied; TerraForm has not been installed on this system." .tell
+    pop exit
+  then
+  "" "#" subst atoi dbref tmove !
+ 
+  loc @ "~x" getpropstr not if
+    "Permission denied; You need to be in a TerraForm-generated room." .tell
+    exit 
+  then
+ 
+  loc @ ".inside" getpropstr inside !
+  pop dup not if   ( just checking )
+    "This room is currently " inside @ not if "NOT " strcat then
+    "marked as 'inside'." strcat .tell
+    exit
+  then
+ 
+  dup "no" stringcmp not if
+    loc @ ".inside" remove_prop
+    loc @ ".noflush" getpropstr "y" stringcmp if
+      "This room is NOT marked as 'inside' but is still 'no flush'." .tell
+    else
+      "This room is NOT marked as 'inside' and will be flushed when empty."
+      .tell
+    then
+    exit
+  then
+ 
+  dup "yes" stringcmp not if
+    loc @ ".inside" "y" 0 addprop
+    loc @ ".noflush" getpropstr not if
+      loc @ ".noflush" "y" 0 addprop
+    then
+    "This room is marked as 'inside' as well as 'no flush'." .tell
+    exit
+  then
+ 
+  "Unknown @inside command \"" swap strcat "\"." strcat .tell 
+;
+ 
+: do-own          ( s -- )     (@own)
+  PERMISSION-CHECK
+  loc @ "~x" getpropstr not if
+    "Permission denied; this is only for TerraForm-generated rooms." .tell
+    exit
+  then
+ 
+  loc @ me @ setown
+  "You now own this room." .tell
+;
+  
+: do-flush          ( s -- )   (@flush [yes|no])
+  PERMISSION-CHECK
+ 
+  loc @ "~x" getpropstr not if
+    "Permission denied; this is not a TerraForm-generated room." .tell exit
+  then
+ 
+  loc @ ".noflush" getpropstr "p" stringcmp not if
+    loc @ ".noflush" "y" 0 addprop (remove protected status temporarily)
+  then 
+  loc @ exits                   ( update protected status )
+  begin
+    dup #-1 dbcmp if break then
+    dup "@/env" getpropstr if
+      loc @ ".noflush" "p" 0 addprop
+    then
+    next
+  repeat pop
+ 
+  dup not if
+    pop "This room will " loc @ ".noflush" getpropstr not if
+      "be flushed from the system when empty." strcat .tell
+    else
+      "NOT be be flushed from the system when empty." strcat .tell
+      loc @ ".noflush" getpropstr "p" stringcmp not if
+        "(It is locked as @FLUSH NO because of special TerraForm exits.)" .tell
+      then
+    then
+    exit
+  then
+ 
+  dup "clear" stringcmp not if
+    "WARNING: This operation will destroy any existing TerraForm exits here and clear 'inside' status if present.  Proceed? (NO/yes)" GET-DATA "yes" stringcmp if
+      "Aborted." .tell exit
+    then
+    loc @ exits                          ( destroy any terraform exits )
+    begin
+      dup #-1 dbcmp if break then
+      dup "@/env" getpropstr if
+        dup "Exit '" swap name strcat "' has been destroyed." strcat .tell
+        recycle loc @ exits
+      else
+        next
+      then
+    repeat
+    loc @ ".inside" remove_prop
+    pop loc @ ".noflush" remove_prop
+    "This room will be flushed when empty." .tell
+    exit
+  then
+    
+  dup "yes" stringcmp not if
+    loc @ ".noflush" getpropstr "p" stringcmp not if
+      "Permission denied;  This room's @FLUSH NO status is locked because of the presence of TerraForm exits.  @FLUSH CLEAR to override." .tell
+      exit
+    then
+    pop loc @ ".noflush" remove_prop
+    "This room will be flushed when empty." .tell
+    exit
+  then
+    
+  dup "no" stringcmp not if
+    pop loc @ ".noflush" "1" 0 addprop
+    "This room will NOT be flushed when empty." .tell
+    exit
+  then
+exit
+;
+ 
+lvar etchar
+ 
+: do-editterrain    ( s -- )
+  PERMISSION-CHECK
+ 
+  loc @ "./map#" getpropstr dup primary ! not if
+    pop
+    "Permission denied; this room is not a TerraForm map room.  Use @EDITMAP."
+    .tell exit
+  then
+  
+  loc @ "./terrains" getpropstr dup if
+    "Permission denied; this room is using terrain library #" swap strcat
+    ". (@editmap to change that)" strcat .tell
+    exit
+  else
+    pop
+  then
+ 
+  dup not if    ( list stats of all terrains here? )
+    "USAGE:  @EDITTERRAIN <map token letter>" .tell exit
+  then
+ 
+  dup "!" stringcmp not if ( special case... set fail and ofail for blocked )
+    loc @ "./!/fail" getpropstr tmp !
+    "Enter the FAIL message for when the player runs into blocked terrain :"
+    tmp @ if "(currently " tmp @ ", . = no change)" strcat strcat strcat then
+    GET-DATA striplead striptail dup "." stringcmp if
+      dup not if "Aborted." .tell exit then
+      loc @ swap "./!/fail" swap 0 addprop
+    else pop then
+    
+    loc @ "./!/ofail" getpropstr tmp !
+    "Enter the OFAIL message for when the player runs into blocked terrain :"
+    tmp @ if "(currently " tmp @ ", . = no change)" strcat strcat strcat then
+    GET-DATA striplead striptail dup "." stringcmp if
+      dup not if "Aborted." .tell exit then
+      loc @ swap "./!/ofail" swap 0 addprop
+    else pop then
+    "Done." .tell 
+    exit
+  then
+ 
+  tolower etchar !
+  etchar @ strlen 1 = not if
+    "ERROR:  The map token must be one character and refers to one on the map."
+    .tell exit
+  then
+ 
+  "./" etchar @ strcat "/" strcat etchar !
+  loc @ etchar @ "name" strcat getpropstr tmp !
+  "Enter the name prototype for this terrain :"
+  tmp @ if "(currently " tmp @ ", . = no change)" strcat strcat strcat then
+  GET-DATA striplead striptail dup "." stringcmp if
+    dup not if "Aborted." .tell exit then
+    loc @ swap etchar @ "name" strcat swap 0 addprop
+  else pop then
+ 
+  loc @ etchar @ "desc" strcat getpropstr tmp !
+  "Enter the description prototype for this terrain :"
+  tmp @ if "(currently " tmp @ ", . = no change)" strcat strcat strcat then
+  GET-DATA striplead striptail dup "." stringcmp if
+    dup not if "Aborted." .tell exit then
+    loc @ swap etchar @ "desc" strcat swap 0 addprop
+  else pop then
+ 
+  loc @ etchar @ "verb" strcat getpropstr tmp !
+  "Enter the verb the player sees when moving in this terrain :"
+  tmp @ if "(currently " tmp @ ", . = no change)" strcat strcat strcat then
+  GET-DATA striplead striptail dup "." stringcmp if
+    dup not if "Aborted." .tell exit then
+    loc @ swap etchar @ "verb" strcat swap 0 addprop
+  else pop then
+ 
+  loc @ etchar @ "overb" strcat getpropstr tmp !
+  "Enter the verb OTHERS see when someone moves in this terrain :"
+  tmp @ if "(currently " tmp @ ", . = no change)" strcat strcat strcat then
+  GET-DATA striplead striptail dup "." stringcmp if
+    dup not if "Aborted." .tell exit then
+    loc @ swap etchar @ "overb" strcat swap 0 addprop
+  else pop then
+ 
+  loc @ etchar @ "minz" strcat getpropstr atoi dup 0 < if 0 swap - then 
+  intostr tmp !
+  "Enter the depth of this terrain (0 = solid ground):"
+  tmp @ if "(currently " tmp @ ", . = no change)" strcat strcat strcat then
+  GET-DATA striplead striptail dup "." stringcmp if
+    dup not if "Aborted." .tell exit then
+    atoi dup not if
+      loc @ etchar @ "minz" strcat remove_prop "Done." .tell exit 
+    then
+    dup 0 > if 0 swap - then intostr
+    loc @ swap etchar @ "minz" strcat swap 0 addprop
+  else pop then
+ 
+  loc @ etchar @ "minz" strcat getpropstr atoi if
+    loc @ etchar @ "undername" strcat getpropstr tmp !
+    "Enter the name prototype for rooms UNDER this terrain :"
+    tmp @ if "(currently " tmp @ ", . = no change)" strcat strcat strcat then
+    GET-DATA striplead striptail dup "." stringcmp if
+      dup not if "Aborted." .tell exit then
+      loc @ swap etchar @ "undername" strcat swap 0 addprop
+    else pop then
+ 
+    loc @ etchar @ "underdesc" strcat getpropstr tmp !
+    "Enter the description prototype for rooms UNDER this terrain :"
+    tmp @ if "(currently " tmp @ ", . = no change)" strcat strcat strcat then
+    GET-DATA striplead striptail dup "." stringcmp if
+      dup not if "Aborted." .tell exit then
+      loc @ swap etchar @ "underdesc" strcat swap 0 addprop
+    else pop then
+ 
+    loc @ etchar @ "underverb" strcat getpropstr tmp !
+    "Enter the verb the player sees when moving UNDER this terrain :"
+    tmp @ if "(currently " tmp @ ", . = no change)" strcat strcat strcat then
+    GET-DATA striplead striptail dup "." stringcmp if
+      dup not if "Aborted." .tell exit then
+      loc @ swap etchar @ "underverb" strcat swap 0 addprop
+    else pop then
+ 
+    loc @ etchar @ "underoverb" strcat getpropstr tmp !
+    "Enter the verb OTHERS see when someone moves UNDER this terrain :"
+    tmp @ if "(currently " tmp @ ", . = no change)" strcat strcat strcat then
+    GET-DATA striplead striptail dup "." stringcmp if
+      dup not if "Aborted." .tell exit then
+      loc @ swap etchar @ "underoverb" strcat swap 0 addprop
+    else pop then
+ 
+    loc @ etchar @ "underprop" strcat getpropstr tmp !
+    "What player prop shall I check to allow movement under? (0 = none) "
+    tmp @ if "(currently " tmp @ ", . = no change)" strcat strcat strcat then
+    GET-DATA striplead striptail dup "." stringcmp if
+      dup not if "Aborted." .tell exit then
+      dup "0" stringcmp not if
+        "Anybody can go under in this terrain." .tell
+        loc @ etchar @ "underprop" strcat remove_prop
+      else
+        loc @ swap etchar @ "underprop" strcat swap 0 addprop
+      then
+    then
+  then
+  " " .tell "Done." .tell
+exit
+;
+ 
+lvar emcount
+lvar emcount2
+lvar insertit
+lvar temp
+lvar x1
+lvar y1
+lvar x2
+lvar y2
+lvar comment
+ 
+: do-admin          ( s -- )    (@ADMIN [<name>|!<name>])
+  PERMISSION-CHECK
+  loc @ owner me @ dbcmp not if
+    "Permission denied; you must own the map room to execute this command."
+    .tell exit
+  then
+  loc @ "./map#" getpropstr not if
+    "Permission denied; the room must be a map room." .tell exit
+  then
+  dup not if (no parameters... just checking)
+    "Local admins:"
+    loc @ "@/admins" getpropstr dup not if
+      pop "{None}"
+    else
+      " " "|" subst strip
+      " " explode "" temp !
+      begin
+        dup not if break then
+        swap atoi dbref dup player? if
+          name temp @ "  " strcat swap strcat temp !
+        else
+          pop
+        then
+        1 -
+      repeat 
+      pop temp @
+    then
+    strcat .tell
+    exit
+  then
+  comment !
+  comment @ 1 strcut swap "!" stringcmp not if   ( delete )
+    dup temp !
+    .pmatch dup comment ! int 0 > not if
+      "Permission denied; " temp @ strcat " is not a known player." 
+      strcat .tell exit
+    then
+    comment @ intostr comment !
+    loc @ "@/admins" getpropstr "|" "|" comment @ strcat "|" strcat subst
+    loc @ swap "@/admins" swap dup "|" stringcmp not if
+      pop remove_prop
+    else
+      0 addprop
+    then
+    "Removed " comment @ atoi dbref name strcat " from the local admin list."
+    strcat .tell
+    exit
+  else
+    pop
+  then
+  comment @ temp !
+  comment @ .pmatch dup comment ! int 0 > not if
+    "Permission denied; " temp @ strcat " is not a known player." 
+    strcat .tell exit
+  then
+  comment @ intostr comment !
+  loc @ "@/admins" getpropstr "|" "|" comment @ strcat "|" strcat subst
+  dup not if
+    "|" comment @ strcat "|" strcat
+  else
+    comment @ strcat "|" strcat
+  then
+  loc @ swap "@/admins" swap 0 addprop
+  "Added " comment @ atoi dbref name strcat " to the local admin list."
+  strcat .tell
+  exit
+;
+ 
+: do-skylink        ( s -- )
+  PERMISSION-CHECK
+  loc @ "@/env" getpropstr if   ( we must have the primary map room )
+    "Permission denied.  You must be in the primary map room." .tell
+    exit
+  then
+ 
+  0 comment !
+  begin
+    comment @ if break then  ( done )
+( present list of skylinks and options to add or remove )
+    " " .tell
+    "TerraForm skylink editor" .tell " " .tell
+    "#    Sky region (x,y->x,y)     Destination world" .tell
+    "------------------------------------------------" .tell
+    1 emcount !
+    begin
+      emcount @ loc @ "./skymaps#" getpropstr atoi > if break then
+      loc @ "./skymaps#/" emcount @ intostr strcat getpropstr
+      dup " " rinstr 1 - strcut 1 strcut swap pop atoi dbref primary !
+      emcount @ intostr ".   " strcat temp !
+      "," " " subst dup strlen dup 25 < if
+        "                          " swap strcut swap pop strcat temp @ swap 
+        strcat temp !
+      else
+        pop temp @ swap strcat temp !
+      then
+      temp @ primary @ name strcat "(#" strcat primary @ intostr strcat
+      ")" strcat .tell
+        
+      emcount @ 1 + emcount !
+    repeat 
+    "Enter # of link to edit or A to add one, D to delete one, or Q to quit."
+    GET-DATA
+ 
+    dup 1 strcut pop "Q" stringcmp not if  ( quit )
+      "Done." .tell exit
+    then
+    dup 1 strcut pop "D" stringcmp not if  ( delete )
+      loc @ "./skymaps#" getpropstr atoi not if
+        "There are no sky links to delete." .tell continue
+      then
+      pop "Enter the link number to delete." GET-DATA
+      atoi dup 1 < if 
+        "Error: link number must be greater than 0." .tell continue
+      then
+      dup emcount @ > if 
+        "Error: link number must be less than " emcount @ 1 + intostr strcat
+        "." strcat .tell continue
+      then
+      emcount2 !
+      begin
+        emcount2 @ emcount @ < not if break then
+        loc @ "./skymaps#/" emcount2 @ intostr strcat
+        loc @ "./skymaps#/" emcount2 @ 1 + intostr strcat getpropstr
+        0 addprop
+        emcount2 @ 1 + emcount2 !
+      repeat
+      loc @ "./skymaps#/" emcount @ 1 - intostr strcat remove_prop
+      loc @ "./skymaps#"
+      loc @ "./skymaps#" getpropstr atoi 1 - dup if
+        intostr 0 addprop
+      else
+        pop remove_prop
+      then
+      continue
+    then
+    dup 1 strcut pop "A" stringcmp not if  ( add )
+      pop "Enter the link number to add a link AFTER (0 to be the first)."
+      GET-DATA
+      atoi dup 0 < if
+        "Error: link number must be greater than or equal to 0." .tell continue
+      then
+      dup loc @ "./skymaps#" getpropstr atoi > if 
+        "Error: link number must be less than " emcount @ intostr strcat
+        "." strcat .tell continue
+      then
+      1 insertit !
+      1 + emcount2 !
+      0 0 0 0 0 x1 ! y1 ! x2 ! y2 ! primary !
+ 
+    else dup number? if                 ( edit existing entry )
+      loc @ "./skymaps#" getpropstr atoi not if
+        "There are no sky links to edit." .tell continue
+      then
+      atoi dup 1 < if
+        "Error: link number must be greater than 0." .tell continue
+      then
+      dup emcount @ < not if 
+        "Error: link number must be less than " emcount @ intostr strcat
+        "." strcat .tell continue
+      then
+      0 insertit !
+      emcount2 !
+      loc @ "./skymaps#/" emcount2 @ intostr strcat getpropstr strip
+      " " explode pop atoi x1 ! atoi y1 ! atoi x2 ! atoi y2 ! atoi primary !
+ 
+    else
+      pop "Error: Not a valid option." .tell continue
+    then then
+  
+    "What is the X value of the WEST edge of this link? (1-"
+    loc @ "./maxx" getpropstr strcat
+    x1 @ if ", currently " strcat x1 @ intostr strcat then ")" strcat GET-DATA
+    atoi x1 ! x1 @ 1 < x1 @ loc @ "./maxx" getpropstr atoi > or if
+      "ERROR: Bad value.  Aborting." .tell exit
+    then
+ 
+    "What is the X value of the EAST edge of this link? (" x1 @ intostr
+    strcat "-" strcat loc @ "./maxx" getpropstr strcat
+    x2 @ if ", currently " strcat x2 @ intostr strcat then ")" strcat GET-DATA
+    atoi x2 ! x2 @ x1 @ < x2 @ loc @ "./maxx" getpropstr atoi > or if
+      "ERROR: Bad value.  Aborting." .tell exit
+    then
+ 
+    "What is the Y value of the NORTH edge of this link? (1-"
+    loc @ "./maxy" getpropstr strcat
+    y1 @ if ", currently " strcat y1 @ intostr strcat then ")" strcat GET-DATA
+    atoi y1 ! y1 @ 1 < y1 @ loc @ "./maxy" getpropstr atoi > or if
+      "ERROR: Bad value.  Aborting." .tell exit
+    then
+ 
+    "What is the Y value of the SOUTH edge of this link? (" y1 @ intostr strcat
+    "-" strcat loc @ "./maxy" getpropstr strcat
+    y2 @ if ", currently " strcat y2 @ intostr strcat then ")" strcat GET-DATA
+    atoi y2 ! y2 @ y1 @ < y2 @ loc @ "./maxy" getpropstr atoi > or if
+      "ERROR: Bad value.  Aborting." .tell exit
+    then
+ 
+    "Enter the dbref of the primary map room of the destination world. "
+    primary @ dup if
+      "(currently #" swap intostr strcat ")" strcat strcat
+    else
+      pop
+    then
+    GET-DATA "" "#" subst
+    atoi dbref dup room? not if
+      "Error: Not a valid room.  Aborting." .tell exit
+    then
+    dup "./maps#" getpropstr not if 
+      "Error: Not a valid TerraForm primary map room.  Aborting." .tell exit
+    then
+    primary !
+ 
+    preempt
+ 
+    insertit @ if    ( ripple existing entries down )
+      emcount @ 1 + temp !
+      begin
+        temp @ emcount2 @ > not if break then
+        loc @ "./skymaps#/" temp @ intostr strcat
+        loc @ "./skymaps#/" temp @ 1 - intostr strcat getpropstr
+        0 addprop
+        temp @ 1 - temp !
+      repeat
+      loc @ "./skymaps#" loc @ "./skymaps#" getpropstr atoi 1 + intostr
+      0 addprop
+    then
+ 
+    loc @ "./skymaps#/" emcount2 @ intostr strcat ( compose link, add ) 
+    x1 @ intostr " " strcat y1 @ intostr strcat " " strcat 
+    x2 @ intostr strcat " " strcat y2 @ intostr strcat " " strcat 
+    primary @ intostr strcat 
+    0 addprop
+    "Link added." .tell
+  repeat
+  " " .tell "Done." .tell 
+  exit
+;
+ 
+: do-editmap        ( s -- )
+  loc @ "@/env" getpropstr not if   (if this is a new map room, help a little)
+    loc @ location "@/env" getpropstr dup if
+      loc @ swap "@/env" swap 0 addprop
+    else
+      pop
+    then
+  then
+  PERMISSION-CHECK
+ 
+  loc @ "@/env" getpropstr dup not if
+    pop loc @ location "@/env" getpropstr dup if
+      atoi dbref primary !
+    else pop loc @ location "./maxx" getpropstr if
+      loc @ location primary !
+    else loc @ "./maxx" getpropstr if
+      loc @ primary !
+    else
+      "Permission denied; this room or its parent are not TerraForm map rooms."
+      .tell "Use @INITWORLD to create a new planet." .tell exit
+    then then then
+    loc @ "./maxx" getpropstr not if
+      loc @ "@/env" primary @ intostr 0 addprop
+    then
+  else
+    atoi dbref primary ! 
+  then
+  
+  loc @ "./map#" getpropstr atoi tmp !
+  tmp @ not if
+    "Creating a new map." .tell 0
+  else
+    1 emcount !
+    begin
+      emcount @ tmp @ > if break then
+      loc @ "./map#/" emcount @ intostr strcat getpropstr
+      emcount @ 1 + emcount !
+    repeat
+    tmp @
+  then
+  EDITOR "end" stringcmp if   (abort of user opted out )
+    "Aborted." .tell exit
+  then
+ 
+  tmp @ emcount !    ( erase old map )
+  begin
+    emcount @ not if break then
+    loc @ "./map#/" emcount @ intostr strcat remove_prop
+    emcount @ 1 - emcount !
+  repeat
+  dup tmp ! emcount !   ( load new map )
+  begin
+    tmp @ 0 = if break then
+    loc @ swap "./map#/" tmp @ intostr strcat swap 0 addprop
+    tmp @ 1 - tmp !
+  repeat 
+  loc @ "./map#" emcount @ intostr 0 addprop (store line count)
+ 
+  " " .tell
+  loc @ "./map#/" emcount @ intostr strcat getpropstr strlen tmp !
+  emcount @ 1 - emcount !     ( perform a validity check on strlens )
+  begin
+    emcount @ not if break then
+    loc @ "./map#/" emcount @ intostr strcat getpropstr strlen tmp @ = not if
+     "WARNING: Not all lines of the map are the same length; I hope this is OK."
+      .tell break
+    then
+    emcount @ 1 - emcount !
+  repeat
+ 
+  primary @ "./maps#" getpropstr atoi emcount !    (add to map list of maps)
+  0 tmp !  (set flag: not found in list)
+  0 0 0 0 x1 ! y1 ! x2 ! y2 ! ": " loc @ name strcat comment !
+  begin
+    emcount @ not if break then
+    primary @ "./maps#/" emcount @ intostr strcat getpropstr
+    dup ":" instr 1 - strcut comment ! striptail dup " " rinstr strcut
+    atoi loc @ int = if  (found it!) 
+      emcount @ tmp !
+      striptail dup " " rinstr strcut atoi y2 !
+      striptail dup " " rinstr strcut atoi x2 !
+      striptail dup " " rinstr strcut atoi y1 !
+      atoi x1 ! break
+    then
+    emcount @ 1 - emcount !
+  repeat
+ 
+  "What is the X value of the WEST edge of this map? (1-"
+  primary @ "./maxx" getpropstr strcat
+  x1 @ if ", currently " strcat x1 @ intostr strcat then ")" strcat GET-DATA
+  atoi x1 ! x1 @ 1 < x1 @ primary @ "./maxx" getpropstr atoi > or if
+    "ERROR: Bad value.  Aborting." .tell exit
+  then
+ 
+  "What is the X value of the EAST edge of this map? (" x1 @ intostr strcat "-"
+  strcat primary @ "./maxx" getpropstr strcat
+  x2 @ if ", currently " strcat x2 @ intostr strcat then ")" strcat GET-DATA
+  atoi x2 ! x2 @ x1 @ < x2 @ primary @ "./maxx" getpropstr atoi > or if
+    "ERROR: Bad value.  Aborting." .tell exit
+  then
+ 
+  "What is the Y value of the NORTH edge of this map? (1-"
+  primary @ "./maxy" getpropstr strcat
+  y1 @ if ", currently " strcat y1 @ intostr strcat then ")" strcat GET-DATA
+  atoi y1 ! y1 @ 1 < y1 @ primary @ "./maxy" getpropstr atoi > or if
+    "ERROR: Bad value.  Aborting." .tell exit
+  then
+ 
+  "What is the Y value of the SOUTH edge of this map? (" y1 @ intostr strcat
+  "-" strcat primary @ "./maxy" getpropstr strcat
+  y2 @ if ", currently " strcat y2 @ intostr strcat then ")" strcat GET-DATA
+  atoi y2 ! y2 @ y1 @ < y2 @ primary @ "./maxy" getpropstr atoi > or if
+    "ERROR: Bad value.  Aborting." .tell exit
+  then
+ 
+  comment @ comment @ ":" instr strcut striplead striptail comment !
+  "Enter comment for this map's list entry, currently : " comment @ not if
+    "(none)"
+  else
+    comment @
+  then
+  strcat GET-DATA "" ":" subst
+  striplead striptail dup not if pop loc @ name then comment !
+  x1 @ intostr " " strcat y1 @ intostr strcat " " strcat
+  x2 @ intostr strcat " " strcat y2 @ intostr strcat " " strcat loc @ intostr
+  strcat " : " strcat comment @ strcat comment !
+  tmp @ not if   ( add new map line )
+    primary @ "./maps#" getpropstr atoi 1 + emcount !
+    primary @ "./maps#" emcount @ intostr 0 addprop
+    primary @ "./maps#/" emcount @ intostr strcat comment @ 0 addprop 
+  else    (modify old)
+    primary @ "./maps#/" tmp @ intostr strcat comment @ 0 addprop 
+  then
+  
+  "Enter the dbref of the terrain library to use or 0 to have local definitions. "
+  loc @ "./terrains" getpropstr dup if
+    "(currently #" swap strcat ")" strcat strcat
+  then
+  GET-DATA "" "#" subst
+  dup atoi 1 < if
+    loc @ "./terrains" remove_prop
+  else
+    loc @ swap "./terrains" swap atoi intostr 0 addprop
+  then
+ 
+  " " .tell "Done." .tell 
+exit
+;
+ 
+lvar charsfound
+lvar charsnotfound
+lvar lines
+lvar columns
+lvar terrains
+lvar xprop
+lvar yprop
+lvar zprop
+ 
+$define SANITY-ADD-BAD-ROOM
+   loc @ "@/tftmp#" loc @ "@/tftmp#" getpropstr atoi 1 + intostr 0 addprop
+   loc @ "@/tftmp#/" loc @ "@/tftmp#" getpropstr strcat 
+   zprop @ 8 strcut swap pop 0 addprop
+$enddef
+$define SANITY-ADD-BAD-OCCUPANT
+   loc @ "@/tftmp#" loc @ "@/tftmp#" getpropstr atoi 1 + intostr 0 addprop
+   loc @ "@/tftmp#/" loc @ "@/tftmp#" getpropstr strcat 
+   xprop @ 12 strcut swap pop 0 addprop
+$enddef
+ 
+: do-sanity           ( s -- )
+  PERMISSION-CHECK
+ 
+  loc @ "~x" getpropstr if
+    "Permission denied; you must be in a map room to run this." .tell
+    exit
+  then
+ 
+  preempt   ( we do NOT want to be interrupted in here! )
+ 
+  loc @ "./maps#" getpropstr if
+    "Last version installed: " loc @ "@/tfversion" getpropstr dup not if
+      pop "1.04"
+    then
+    strcat .tell
+    "Current version       : " VERSION strcat .tell " " .tell
+ 
+    loc @ "@/tfversion" getpropstr VERSION stringcmp if  ( do updates )
+      "Updating command set..." .tell
+      trigger @ "@loc;@tport;@tlink;@inside;@block;@flush;@own;@editterrain;@editmap;@admin;@skylink;@initworld;@sanity;@killworld" setname
+ 
+      "Setting primary map room to use _depart..." .tell
+      loc @ "_depart" "$tmove" 0 addprop
+ 
+      loc @ "@/tfversion" VERSION 0 addprop ( update version number ) 
+      " " .tell
+    then
+  then
+ 
+  loc @ "./terrains" getpropstr dup if
+    atoi dbref terrains !
+  else
+    pop loc @ terrains !
+  then
+ 
+  loc @ "./map#" getpropstr atoi tmp !
+  tmp @ if ( scan through the whole map and see what characters there are )
+    "Now scanning the map..." .tell
+    "" charsfound ! 1 lines ! 
+    begin
+      lines @ tmp @ > if break then   (no lines left)
+      loc @ "./map#/" lines @ intostr strcat getpropstr
+      begin
+        dup not if break then  (nothing left in the line) 
+        1 strcut swap
+        dup charsfound @ swap instr 0 > not if
+          charsfound @ strcat charsfound !
+        else
+          pop
+        then 
+      repeat
+      lines @ 1 + lines !
+    repeat
+    charsfound @ strlen tmp !
+ 
+    "" charsnotfound !
+    charsfound @
+    begin
+      dup not if break then (nothing left in list)
+      1 strcut swap
+      dup terrains @ swap "./" swap strcat "/name" strcat getpropstr not if
+        charsnotfound @ strcat charsnotfound !
+      else
+        pop
+      then
+    repeat
+ 
+    charsnotfound @ if
+      "Of the " tmp @ intostr strcat " different characters in the map, "
+      strcat charsnotfound @ strlen intostr strcat
+      " were not found as defined terrains." strcat .tell
+      "MISSING TERRAINS FOR THESE CHARACTERS: \"" charsnotfound @ strcat 
+      "\"" strcat .tell
+      terrains @ loc @ dbcmp not if
+        "(This map uses terrains from #" terrains @ intostr strcat ")." strcat
+        .tell
+      then
+    else
+      "All map characters have terrain definitions." .tell
+    then 
+    " " .tell
+  then
+ 
+  loc @ "./maxx" getpropstr not if  ( if not primary room, exit here. )
+    exit
+  then
+ 
+( scan rooms propdir and make sure all rooms are valid, have no _depart prop )
+  "Scanning rooms to verify existence and clear _depart props..." .tell
+  0 tmp !
+ 
+  loc @ "@/rooms/" nextprop xprop !
+  begin
+    xprop @ not if break then
+    loc @ xprop @ "/" strcat nextprop yprop !
+    begin
+      yprop @ not if break then
+      loc @ yprop @ "/" strcat nextprop zprop !
+      begin
+        zprop @ not if break then
+        loc @ zprop @ getpropstr atoi dbref dup
+        ok? not if
+          pop SANITY-ADD-BAD-ROOM
+        else dup room? not if
+          pop SANITY-ADD-BAD-ROOM
+        else dup "~x" getpropstr not if 
+          pop SANITY-ADD-BAD-ROOM
+        else 
+          dup "_depart" getpropstr "$tmove" stringcmp not if
+            "_depart" remove_prop
+          else
+            pop
+          then
+        then then then
+        loc @ zprop @ nextprop zprop !
+        tmp @ 1 + tmp !
+      repeat
+      loc @ yprop @ nextprop yprop !
+    repeat
+    loc @ xprop @ nextprop xprop !
+  repeat
+  loc @ "@/tftmp#" getpropstr atoi dup if
+    dup tmp @ intostr " rooms scanned.  " strcat swap intostr
+    " mis-marked room references were found.  Correcting..." strcat strcat
+    .tell tmp !
+    begin
+      tmp @ not if break then
+      loc @ "@/rooms/" loc @ "@/tftmp#/" tmp @ intostr strcat getpropstr
+      strcat remove_prop
+      tmp @ 1 - tmp !
+    repeat
+    loc @ "@/tftmp#" remove_prop
+  else
+    "All " tmp @ intostr strcat " room references checked out ok." strcat .tell
+  then
+  " " .tell
+ 
+( scan occupants propdir and make sure everybody's where it thinks they are )
+  "Scanning occupants to verify locations..." .tell
+  0 tmp ! 0 lines !
+ 
+  loc @ "@/occupants/" nextprop xprop !
+  begin
+    xprop @ not if break then
+    xprop @ 12 strcut atoi dbref columns ! pop
+    loc @ xprop @ getpropstr "/" "," subst "@/rooms/" swap strcat loc @
+    swap getpropstr dup not if  ( that room doesn't really exist now )
+      SANITY-ADD-BAD-OCCUPANT
+    else atoi dbref columns @ location dbcmp not if ( move )
+      SANITY-ADD-BAD-OCCUPANT
+    then then
+    tmp @ 1 + tmp !
+    loc @ xprop @ nextprop xprop !
+  repeat
+  loc @ "@/tftmp#" getpropstr atoi dup if
+    dup tmp @ intostr " occupants scanned.  " strcat swap intostr
+    " mis-marked occupants were found.  Correcting..." strcat strcat
+    .tell tmp ! 0 lines !
+    begin
+      tmp @ not if break then
+      loc @ "@/occupants/" loc @ "@/tftmp#/" tmp @ intostr strcat getpropstr
+      strcat remove_prop
+      loc @ "@/tftmp#/" tmp @ intostr strcat getpropstr atoi dbref columns !
+      columns @ player? if  ( see if player's in another place in this world )
+        columns @ location "@/env" getpropstr atoi dbref loc @ dbcmp
+        if ( in this world )
+          loc @ "@/occupants/" columns @ intostr strcat
+          columns @ location "~x" getpropstr "," strcat
+          columns @ location "~y" getpropstr strcat "," strcat
+          columns @ location "~z" getpropstr strcat
+          0 addprop
+          lines @ 1 + lines !
+        then
+      then
+      tmp @ 1 - tmp !
+    repeat
+    "Of the " loc @ "@/tftmp#" getpropstr strcat " bad occupants, " strcat
+    lines @ intostr strcat " were moved, and " strcat loc @ "@/tftmp#"
+    getpropstr atoi lines @ - intostr strcat " were removed from this world."
+    strcat .tell
+    loc @ "@/tftmp#" remove_prop
+  else
+    "All " tmp @ intostr strcat " occupant references checked out ok." strcat
+    .tell
+  then
+  " " .tell
+  
+  "Done." .tell
+  exit
+;
+ 
+: do-killworld        ( s -- )
+  HAS-PERMISSION
+ 
+  loc @ "./maps#" getpropstr not if
+    "Permission denied; you must be in the primary map room for this command."
+    .tell exit
+  then
+ 
+  "WARNING!!!" .tell
+  "THIS OPERATION WILL DESTROY THE _ENTIRE_ WORLD AND ALL ROOMS WITHIN IT."
+  .tell "PROCEED WITH @KILLWORLD? (NO/yes)" GET-DATA
+  1 strcut pop "y" stringcmp if
+    "Aborted." .tell exit
+  then
+  
+  0 tmp !
+ 
+  loc @ "@/rooms/" nextprop xprop !
+  begin
+    xprop @ not if break then
+    loc @ xprop @ "/" strcat nextprop yprop !
+    begin
+      yprop @ not if break then
+      loc @ yprop @ "/" strcat nextprop zprop !
+      begin
+        zprop @ not if break then
+        loc @ zprop @ getpropstr atoi dbref dup
+        ok? not if   ( not a valid object )
+          pop
+        else dup room? not if  ( not a valid room )
+          pop
+        else dup "~x" getpropstr not if  ( not a valid TERRAFORM room )
+          pop
+        else   ( a valid terraform room.  Nuke it. )
+          recycle
+          tmp @ 1 + tmp !
+        then then then
+        loc @ zprop @ nextprop zprop !
+      repeat
+      loc @ yprop @ nextprop yprop !
+    repeat
+    loc @ xprop @ nextprop xprop !
+  repeat
+  tmp @ intostr " rooms destroyed (submaprooms will not be destroyed)." strcat
+  .tell
+  loc @ "./maps#" remove_prop
+  loc @ "./map#" remove_prop
+  loc @ "./skymap#" remove_prop
+  loc @ "./skyname" remove_prop
+  loc @ "./skydesc" remove_prop
+  loc @ "./maxx" remove_prop
+  loc @ "./maxy" remove_prop
+  loc @ "./maxz" remove_prop
+  loc @ "@/rooms" remove_prop
+  loc @ "@/exits" remove_prop
+  loc @ "@/occupants" remove_prop
+  loc @ "@/tfversion" remove_prop
+  loc @ "./tportdests" remove_prop
+  loc @ "_depart" remove_prop
+  loc @ "~WARNING" remove_prop
+  "Relevant map properties destroyed." .tell
+ 
+  " " .tell "Done.  This room can safely be @recycled now if necessary." .tell
+  exit
+;
+ 
+: do-initworld        ( s -- )
+  me @ "w" flag? not me @ loc @ owner dbcmp not and if ( special perm check)
+    "Permission denied." .tell exit
+  then
+  loc @ location "./map#" getpropstr if  (not the primary map room)
+    "Permission denied.  This is not the primary map room." .tell exit
+  then
+  loc @ "./map#" getpropstr loc @ "@/env" getpropstr or if (already set up)
+    "Permission denied.  This world has already been initialized." .tell exit
+  then
+  "TerraForm (C) 1994,5 by Triggur of Brazilian Dreams, pferd@netcom.com"
+  .tell " " .tell
+ 
+  "Enter the maximum X value (distance in rooms around the world):" GET-DATA
+  atoi tmp !
+  tmp @ 1 < if "Not a valid value.  Initialization aborted." .tell exit then
+  loc @ "./maxx" tmp @ intostr 0 addprop
+ 
+  "Enter the maximum Y value (distance in rooms from pole to pole):" GET-DATA
+  atoi tmp !
+  tmp @ 1 < if "Not a valid value.  Initialization aborted." .tell exit then
+  loc @ "./maxy" tmp @ intostr 0 addprop
+ 
+  "Enter the maximum Z value (height of atmosphere+space (0 = don't model this)):"
+  GET-DATA atoi tmp !
+  tmp @ 0 < if "Not a valid value.  Initialization aborted." .tell exit then
+  tmp @ not if
+    "Atmosphere will not be modelled." .tell
+    loc @ "./maxz" remove_prop
+  else
+    loc @ "./maxz" tmp @ intostr 0 addprop
+    "What player prop shall I check to allow flight? (0 = none)" GET-DATA
+    tmp ! tmp @ "0" stringcmp not if
+      "Everybody will be allowed to fly." .tell
+      loc @ "./flyprop" remove_prop
+    else
+      loc @ "./flyprop" tmp @ 0 addprop
+    then
+    "I am now setting up 3 default levels of atmosphere (air, thin air, space)." .tell
+    "You can change these or add to them later (./sky* props)" .tell
+ 
+    loc @ "./maxz" getpropstr atoi tmp !
+    loc @ "./skymap#" "3" 0 addprop
+    loc @ "./skymap#/1" "1 " tmp @ 4 / intostr strcat 0 addprop
+    loc @ "./skymap#/2" tmp @ 4 / 1 + intostr " " strcat tmp @ 2 / intostr  
+     strcat 0 addprop
+    loc @ "./skymap#/3" tmp @ 2 / 1 + intostr " " strcat tmp @ intostr strcat
+     0 addprop
+ 
+    loc @ "./skyname/1" "In the air" 0 addprop
+    loc @ "./skyname/2" "High in the air" 0 addprop
+    loc @ "./skyname/3" "In space" 0 addprop
+ 
+    loc @ "./skydesc/1" "You are flying over the planet." 0 addprop
+    loc @ "./skydesc/2" "You are flying very high over the planet through thin air." 0 addprop
+    loc @ "./skydesc/3" "You are floating in space above the planet." 0 addprop
+  then 
+ 
+  "What is the number (no # sign) of the program to call for _listen (0 = none)?" GET-DATA
+  dup atoi if loc @ swap "./_listen" swap 0 addprop then
+  loc @ "~WARNING" "DO _NOT_ MODIFY _ANY_ TERRAFORM VALUES BY HAND UNLESS YOU ARE _SURE_ YOU KNOW WHAT YOU'RE DOING!  ASK TRIGGUR IF YOU HAVE ANY DOUBTS!" 
+  0 addprop
+ 
+  " " .tell
+  "I am now creating exits to manage the 8 ordinal directions" .tell
+  "(n/s/e/w/nw/ne/sw/se) plus up and down." .tell
+ 
+  tmove @ "" "#" subst atoi dbref tmove !
+ 
+  loc @ exits
+  begin
+    dup #-1 dbcmp if break then
+    dup name "n" stringcmp not if recycle loc @ exits continue then
+    dup name "s" stringcmp not if recycle loc @ exits continue then
+    dup name "e" stringcmp not if recycle loc @ exits continue then
+    dup name "w" stringcmp not if recycle loc @ exits continue then
+    dup name "nw" stringcmp not if recycle loc @ exits continue then
+    dup name "ne" stringcmp not if recycle loc @ exits continue then
+    dup name "sw" stringcmp not if recycle loc @ exits continue then
+    dup name "se" stringcmp not if recycle loc @ exits continue then
+    dup name "u" stringcmp not if recycle loc @ exits continue then
+    dup name "d" stringcmp not if recycle loc @ exits continue then
+    next
+  repeat
+ 
+(create north exit)
+  loc @ "n" newexit tmp !
+  tmp @ loc @ owner setown
+  tmp @ tmove @ setlink
+  tmp @ "@/env" loc @ intostr 0 addprop
+  tmp @ "@/dy" "-1" 0 addprop
+  tmp @ "succ" "You %v north." 0 addprop
+  tmp @ "osucc" "%v north." 0 addprop
+  tmp @ "odrop" "%v from the south." 0 addprop
+(create south exit)
+  loc @ "s" newexit tmp !
+  tmp @ loc @ owner setown
+  tmp @ tmove @ setlink
+  tmp @ "@/env" loc @ intostr 0 addprop
+  tmp @ "@/dy" "1" 0 addprop
+  tmp @ "succ" "You %v south." 0 addprop
+  tmp @ "osucc" "%v south." 0 addprop
+  tmp @ "odrop" "%v from the north." 0 addprop
+(create east exit)
+  loc @ "e" newexit tmp !
+  tmp @ loc @ owner setown
+  tmp @ tmove @ setlink
+  tmp @ "@/env" loc @ intostr 0 addprop
+  tmp @ "@/dx" "1" 0 addprop
+  tmp @ "succ" "You %v east." 0 addprop
+  tmp @ "osucc" "%v east." 0 addprop
+  tmp @ "odrop" "%v from the west." 0 addprop
+(create west exit)
+  loc @ "w" newexit tmp !
+  tmp @ loc @ owner setown
+  tmp @ tmove @ setlink
+  tmp @ "@/env" loc @ intostr 0 addprop
+  tmp @ "@/dx" "-1" 0 addprop
+  tmp @ "succ" "You %v west." 0 addprop
+  tmp @ "osucc" "%v west." 0 addprop
+  tmp @ "odrop" "%v from the east." 0 addprop
+(create northwest exit)
+  loc @ "nw" newexit tmp !
+  tmp @ loc @ owner setown
+  tmp @ tmove @ setlink
+  tmp @ "@/env" loc @ intostr 0 addprop
+  tmp @ "@/dy" "-1" 0 addprop
+  tmp @ "@/dx" "-1" 0 addprop
+  tmp @ "succ" "You %v northwest." 0 addprop
+  tmp @ "osucc" "%v northwest." 0 addprop
+  tmp @ "odrop" "%v from the southeast." 0 addprop
+(create northeast exit)
+  loc @ "ne" newexit tmp !
+  tmp @ loc @ owner setown
+  tmp @ tmove @ setlink
+  tmp @ "@/env" loc @ intostr 0 addprop
+  tmp @ "@/dy" "-1" 0 addprop
+  tmp @ "@/dx" "1" 0 addprop
+  tmp @ "succ" "You %v northeast." 0 addprop
+  tmp @ "osucc" "%v northeast." 0 addprop
+  tmp @ "odrop" "%v from the southwest." 0 addprop
+(create southwest exit)
+  loc @ "sw" newexit tmp !
+  tmp @ loc @ owner setown
+  tmp @ tmove @ setlink
+  tmp @ "@/env" loc @ intostr 0 addprop
+  tmp @ "@/dy" "1" 0 addprop
+  tmp @ "@/dx" "-1" 0 addprop
+  tmp @ "succ" "You %v southwest." 0 addprop
+  tmp @ "osucc" "%v southwest." 0 addprop
+  tmp @ "odrop" "%v from the northeast." 0 addprop
+(create southeast exit)
+  loc @ "se" newexit tmp !
+  tmp @ loc @ owner setown
+  tmp @ tmove @ setlink
+  tmp @ "@/env" loc @ intostr 0 addprop
+  tmp @ "@/dy" "1" 0 addprop
+  tmp @ "@/dx" "1" 0 addprop
+  tmp @ "succ" "You %v southeast." 0 addprop
+  tmp @ "osucc" "%v southeast." 0 addprop
+  tmp @ "odrop" "%v from the northwest." 0 addprop
+(create up exit)
+  loc @ "u" newexit tmp !
+  tmp @ loc @ owner setown
+  tmp @ tmove @ setlink
+  tmp @ "@/env" loc @ intostr 0 addprop
+  tmp @ "@/dz" "1" 0 addprop
+  tmp @ "succ" "You %v up." 0 addprop
+  tmp @ "osucc" "%v up." 0 addprop
+  tmp @ "odrop" "%v up from below." 0 addprop
+(create down exit)
+  loc @ "d" newexit tmp !
+  tmp @ loc @ owner setown
+  tmp @ tmove @ setlink
+  tmp @ "@/env" loc @ intostr 0 addprop
+  tmp @ "@/dz" "-1" 0 addprop
+  tmp @ "succ" "You %v down." 0 addprop
+  tmp @ "osucc" "%v down." 0 addprop
+  tmp @ "odrop" "%v down from above." 0 addprop
+ 
+  loc @ "You can't go that way." setfail
+  loc @ "./map#" "0" 0 addprop
+  loc @ "_depart" "$tmove" 0 addprop
+  loc @ "@/tfversion" VERSION 0 addprop
+  loc @ "./!/name" "place-holder" 0 addprop
+
+  " " .tell 
+  "Initialization complete.  Now install the primary map." .tell
+exit
+;
+ 
+lvar rectmp
+( Mama mia this is one nasty function if misused! )
+: recycle-map ( MapRoomDBRef -- )
+  rectmp !
+  begin
+    rectmp @ contents          ( get the room's contents )
+    dup #-1 if break then
+    dup ( AAACK.  NOT FINISHED YET.  DO NOT CALL!!! )
+  repeat
+  pop
+dup "type something to recycle " swap dup intostr strcat " " strcat name strcat .tell READ
+  recycle
+exit
+;
+ 
+: do-recycle ( s -- )
+  strip tmp ! #-1 tpx !
+  tmp @ "here" stringcmp not if  ( this location )
+    loc @ tpx !
+  else me @ tmp @ rmatch dup int -1 > if   ( match by name in inventory )
+    tpx !
+  else loc @ tmp @ rmatch dup int -1 > if ( match by name in room )
+    tpx !
+  else
+    tmp @ 1 strcut swap "#" stringcmp not if
+      atoi dbref tpx !
+    then
+  then then then
+ 
+  tpx @ #-1 dbcmp if  ( invalid )
+    "I don't see that here." .tell exit
+  then
+ 
+  tpx @ room? not if
+    tpx @ location loc @ dbcmp not tpx @ location me @ dbcmp not and if
+      "I don't see that here." .tell exit
+    then
+  then
+ 
+  tpx @ "@/env" getpropstr tpx @ "./map#" getpropstr or if ( terraform thing )
+    me @ "w" flag? not if
+      "You cannot recycle TerraForm-related things." .tell exit
+    then
+ 
+    tpx @ "~x" getpropstr if  ( trying to recycle generated room )
+      tpx @ ".noflush" remove_prop
+      tpx @ exits
+      begin     ( loop through and destroy all exits )
+        dup #-1 dbcmp if break then
+        recycle tpx @ exits
+      repeat
+      "All walls and exits have been removed, and this room will be flushed when empty."
+      .tell 
+    then
+ 
+    tpx @ "./maps#" getpropstr if ( trying to recycle whole PLANET )
+      "WARNING! THIS OPERATION WILL RECYCLE THE ENTIRE PLANET! ARE YOU SURE? (NO/YES)"
+      GET-DATA "yes" stringcmp if "Aborted." .tell exit then
+"UNDER CONSTRUCTION:  This operation has not yet been written.  If you want to recycle a lot of rooms, best make a script." .tell exit
+      loc @ 1 recycle-map "The whole planet has been destroyed." .tell exit
+    then
+      
+    tpx @ "./map" getpropstr if  ( trying to recycle a map room )
+      "WARNING! This operation will destroy this map room and all rooms that its owner owns that are descended from it.  Any map rooms that it contains and all rooms with other owners will be re-parented to this room's parent.  ARE YOU SURE? (NO/YES)"
+      GET-DATA "yes" stringcmp if "Aborted." .tell exit then
+ 
+      loc @ "@/env" getpropstr atoi dbref primary ! ( remove from maps list )
+      primary @ "./maps#" getpropstr atoi dup tpx ! tpz !
+      begin
+        tpx @ 0 = if break then
+        primary @ "./maps#/" tpx @ intostr strcat getpropstr
+        dup ":" rinstr 1 - strcut pop strip
+        dup " " rinstr strcut swap pop
+        atoi loc @ int = if                   ( found the entry )
+          tpx @ tpy !    ( compress list )
+          begin
+            tpy @ tpz @ = if break then
+            primary @ "./maps#/" tpy @ intostr strcat
+            primary @ "./maps#/" tpy @ 1 + intostr strcat getpropstr
+            0 addprop
+            tpy @ 1 + tpy !
+          repeat 
+          primary @ "./maps#/" tpz @ intostr strcat remove_prop
+          primary @ "./maps#" tpz @ 1 - intostr 0 addprop
+          break
+        then
+        tpx @ 1 - tpx !
+      repeat
+      tpx @ 0 = if
+        "WARNING:  For some reason, this map was not listed in the primary map room." .tell
+      then
+"UNDER CONSTRUCTION:  This operation has not yet been written.  If you want to recycle a lot of rooms, best make a script." .tell exit
+      loc @ 0 recycle-map "The map room has been destroyed." .tell exit
+    then
+ 
+  else   ( just an ordinary every day object )
+    tpx @ recycle
+  then
+ 
+  "Done." .tell 
+exit
+; 
+ 
+: main ( s -- )
+  #0 "_reg/tmove" getpropstr dup not if
+    "Permission denied; TerraForm has not been installed on this system." .tell
+    pop exit
+  then
+  tmove !
+ 
+  command @ "@loc" stringcmp not if
+    do-loc exit
+  then
+  command @ "@tport" stringcmp not if
+    do-tport exit
+  then
+  command @ "@block" stringcmp not if
+    do-block exit
+  then
+  command @ "@tlink" stringcmp not if
+    do-tlink exit
+  then
+  command @ "@inside" stringcmp not if
+    do-inside exit
+  then
+  command @ "@flush" stringcmp not if
+    do-flush exit
+  then
+  command @ "@own" stringcmp not if
+    do-own exit
+  then
+  command @ "@editterrain" stringcmp not if
+    do-editterrain exit
+  then
+  command @ "@editmap" stringcmp not if
+    do-editmap exit
+  then
+  command @ "@admin" stringcmp not if
+    do-admin exit
+  then
+  command @ "@skylink" stringcmp not if
+    do-skylink exit
+  then
+  command @ "@initworld" stringcmp not if
+    do-initworld exit
+  then
+  command @ "@sanity" stringcmp not if
+    do-sanity exit
+  then
+  command @ "@killworld" stringcmp not if
+    do-killworld exit
+  then
+  command @ tolower "@r" 2 strncmp not if
+    do-recycle exit
+  then
+ 
+  "INSTALLATION ERROR: " command @ " does not match a known TerraForm command." 
+  strcat strcat .tell
+  exit
+;
+.
+c
+q
+@act @loc;@tport;@tlink;@inside;@block;@flush;@editterrain;@editmap;@skylink;@initworld;@sanity;@killworld=here
+@attach @loc=#0
+@link @loc=terraform-commands
+@set @loc=succ:You teleport away.
+@set @loc=osucc:teleports away.
+@set @loc=odrop:teleports in.
+@set terraform-mover=l
+@set terraform-mover=w
+@set terraform-mover=h
+@set terraform-commands=l
+@set terraform-commands=w
+@set terraform-commands=h
+"Done.  TerraForm has now been installed on this MUCK.

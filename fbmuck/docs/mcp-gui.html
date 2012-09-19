@@ -1,0 +1,1590 @@
+<!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+  <meta http-equiv="Content-Type"
+        content="text/html; charset=iso-8859-1">
+  <meta name="Author"
+        content="Revar Desmera">
+  <meta name="Description"
+        content="A definition of the MCP messages used by the Fuzzball MCP GUI package.">
+
+  <title>Mud Client Protocol - Fuzzball GUI Package</title>
+
+  <style type="text/css"><!--
+
+H1.doctitle {
+    text-align: center;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 24pt;
+}
+
+H2.descrline {
+    text-align: center;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 12pt;
+    font-style: italic;
+    margin-bottom: 0px;
+}
+
+H2.byline {
+    text-align: center;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 12pt;
+    font-weight: bold;
+    font-style: italic;
+    margin-bottom: 0px;
+}
+
+H2.dateline {
+    text-align: center;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 12pt;
+    font-style: italic;
+    margin-bottom: 0px;
+}
+
+.section {
+    margin-bottom: 2em;
+}
+
+H3.secthead {
+    text-align: left;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 14pt;
+    font-weight: bold;
+    margin-bottom: 0.5em;
+}
+
+.sectbody {
+    margin-left: 0.5in;
+}
+
+.mcphead {
+}
+
+.mcpbody {
+    margin-left: 0.5in;
+    margin-bottom: 1em;
+}
+
+.mcpdir {
+    font-family: Times, serif;
+    font-size: 10pt;
+    text-transform: uppercase;
+}
+
+.mcpcmd {
+    font-family: Courier, monospace;
+    font-size: 10pt;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.mcpargdeflist {
+    margin-top: 0.5em;
+    margin-bottom: 0px;
+}
+
+.mcpvaldeflist {
+    margin-top: 0.5em;
+    margin-bottom: 0px;
+    margin-left: 0.25in;
+}
+
+.mcparg {
+    font-family: Courier, monospace;
+    font-size: 10pt;
+    font-style: italic;
+    text-transform: uppercase;
+}
+
+.mcpoptarg {
+    font-family: Courier, monospace;
+    font-size: 10pt;
+    font-style: italic;
+    text-transform: uppercase;
+}
+
+.mcpargdef {
+    margin-bottom: 0.5em;
+}
+
+.mcpval {
+    font-family: Courier, monospace;
+    font-size: 10pt;
+}
+
+.mcpwidget {
+    font-family: Courier, monospace;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.mcpevent {
+    font-family: Courier, monospace;
+    font-size: 10pt;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.metasyn {
+    font-family: "Times New Roman", Times, serif;
+    font-style: italic;
+    font-weight: bold;
+}
+
+  --></style>
+</head>
+
+
+<body>
+<div class="titlepage">
+  <h1 class="doctitle">Mud Client Protocol - GUI Package (MCP-GUI)</h1>
+  <h2 class="descrline">A package to provide GUI dialogs for server-side MU* programs.</h2>
+  <h2 class="byline">by Revar Desmera &lt;revar@belfry.com&gt;</h2>
+  <h2 class="dateline">June 8, 2005: v1.0</h2>
+</div>
+
+<div class="section">
+<h3 class="secthead">1. Why?</h3>
+<div class="sectbody">
+It's become increasingly apparent that having a smooth graphical
+user interface for MUD-based interactions is the next step for online worlds.
+This proposal aims to solve the problem by creating a secure, open protocol,
+allowing server-side programmers to request a user's client to create a
+GUI interface.
+</div>
+</div>
+
+<div class="section">
+<h3 class="secthead">2. Security Concerns</h3>
+<div class="sectbody">
+  <ul>
+    <li>A sever-side program may not send anything that will be destructive to the client machine.</li>
+    <li>Unauthorized programs may not trick the user into entering private information, including their password.</li>
+    <li>The client may not invoke any unauthorized or destructive commands on the server.</li>
+  </ul>
+  The protocol presented here answers these concerns by creating a
+  high-level GUI protocol on top of the <a href="http://www.belfry.com/fuzzball/trebuchet/mcp.html">MCP transport protocol</a>.
+  Since no executable <em>code</em> is sent, we can guarentee the following:
+  <ul>
+    <li>We ensure that unsafe scripts cannot be uploaded to the client</li>
+    <li>We don't force the server-side programmers to master TCL/Tk or some other GUI extension language</li>
+    <li>The protocol can specify the same functional GUI, regardless of the implementation of the client.</li>
+  </ul>
+</div>
+</div>
+
+
+<div class="section">
+<h3 class="secthead">3. What options are available to the Server-side coder wanting a GUI interface?</h3>
+<div class="sectbody">
+  All interface dialogs are non-modal, meaning that the user is free
+  to interact with the text window without having to dismiss the dialog.
+</div>
+</div>
+
+
+<div class="section">
+<h3 class="secthead">3.1 How do I specify the look of my interface?</h3>
+<div class="sectbody">
+  <p>Glad you asked. You provide a list of commands to be sent
+  to the client. These commands specify the layout of your dialog.</p>
+  <p>But first, some notation notes:</p>
+    <ul>
+      <li><span class="mcpdir">S&rarr;C</span> Means the message is sent from Server to Client.</li>
+      <li><span class="mcpdir">C&rarr;S</span> Means the message is sent from Client to Server.</li>
+      <li><span class="mcpdir">C&harr;S</span> Means either Client or Server can send it.</li>
+    </ul>
+  <p>Also, a value is considered true if it's value is
+  "<span class="mcpval">1</span>" or "<span class="mcpval">true</span>".
+  A value of "" or "<span class="mcpval">0</span>" or
+  "<span class="mcpval">false</span>" is considered false.
+  Matching is case insensitive.</p>
+  <p>Now, on to the messages:</p>
+
+</div>
+</div>
+
+
+<div class="section">
+<h3 class="secthead">3.1.1 Dialog Management Commands</h3>
+<div class="sectbody">
+  <div class="mcphead">
+      <span class="mcpdir">S&rarr;C</span>
+      <span class="mcpcmd">ORG-FUZZBALL-GUI-DLOG-CREATE</span> (
+	  <span class="mcparg">DLOGID</span>,
+	  <span class="mcparg">TITLE</span>,
+	  [<span class="mcpoptarg">TYPE</span>],
+	  [<span class="mcpoptarg">PANES*</span>],
+	  [<span class="mcpoptarg">NAMES*</span>],
+	  [<span class="mcpoptarg">RESIZABLE</span>],
+	  [<span class="mcpoptarg">WIDTH</span>],
+	  [<span class="mcpoptarg">HEIGHT</span>],
+	  [<span class="mcpoptarg">MINWIDTH</span>],
+	  [<span class="mcpoptarg">MINHEIGHT</span>],
+	  [<span class="mcpoptarg">MAXWIDTH</span>],
+	  [<span class="mcpoptarg">MAXHEIGHT</span>]
+      )
+  </div>
+  <div class="mcpbody">
+    <dl class="mcpargdeflist">
+      <dt class="mcparg">DLOGID</dt>
+      <dd class="mcpargdef">The dialog identifier, later used to specify what
+        dialog you are working with. A <span class="mcparg">DLOGID</span> is
+        composed of a string of one or more letters, numbers, or underscore
+        characters.</dd>
+
+      <dt class="mcparg">TITLE</dt>
+      <dd class="mcpargdef">The window title of this dialog.  Shown in the
+        titlebar.</dd>
+
+      <dt class="mcparg">TYPE</dt>
+      <dd class="mcpargdef">The type of the dialog. Can be any of:
+	  "<span class="mcpval">SIMPLE</span>",
+	  "<span class="mcpval">HELPER</span>" or
+	  "<span class="mcpval">TABBED</span>".
+	  Defaults to "<span class="mcpval">SIMPLE</span>".</dd>
+
+      <dt class="mcparg">PANES</dt>
+      <dd class="mcpargdef">The reference ids of the tabs (tabbed dlog), or
+        screens (helper dlog).  This argument is only sent if the dialog type
+        is Helper or Tabbed.  Items are newline separated.</dd>
+
+      <dt class="mcparg">NAMES</dt>
+      <dd class="mcpargdef">The tab captions (tabbed dlog) or screen titles
+        (helper dlog). This argument is only sent if the dialog type is
+        Helper or Tabbed.  Items are newline separated.</dd>
+
+      <dt class="mcparg">RESIZABLE</dt>
+      <dd class="mcpargdef">Specifies whether the dialog can be resized by
+        the user in the "<span class="mcpval">x</span>",
+        "<span class="mcpval">y</span>", or
+        "<span class="mcpval">both</span>" dimensions. Use the value
+        "<span class="mcpval">none</span>" or don't supply this value, to
+        make the dialog not be resizable.</dd>
+
+      <dt class="mcparg">WIDTH</dt>
+      <dd class="mcpargdef">The requested width of the dialog, in pixels.</dd>
+
+      <dt class="mcparg">HEIGHT</dt>
+      <dd class="mcpargdef">The requested height of the dialog, in pixels.</dd>
+
+      <dt class="mcparg">MINWIDTH</dt>
+      <dd class="mcpargdef">Specifies the minimum width of the dialog in
+        pixels.  The dialog can't be resized to be smaller than this.</dd>
+
+      <dt class="mcparg">MINHEIGHT</dt>
+      <dd class="mcpargdef">Specifies the minimum height of the dialog in
+        pixels.  The dialog can't be resized to be smaller than this.</dd>
+
+      <dt class="mcparg">MAXWIDTH</dt>
+      <dd class="mcpargdef">Specifies the maximum width of the dialog in
+        pixels.  The dialog can't be resized to be larger than this.</dd>
+
+      <dt class="mcparg">MAXHEIGHT</dt>
+      <dd class="mcpargdef">Specifies the maximum height of the dialog in
+        pixels.  The dialog can't be resized to be larger than this.</dd>
+    </dl>
+
+    <p>This command is always the first command you send. It creates a
+      dialog within which you can add controls.  The
+      <span class="mcparg">TYPE</span> argument lets you specify whether
+      the dialog is to be a simple dialog, a Tabbed dialog, or a Helper
+      dialog.</p>
+    <p>A Simple dialog is just a simple empty window which you can add
+      controls to.</p>
+    <p>A Tabbed dialog is like a Windows95 Property Sheet, or a window with
+      a tabbed notebook control. You are provided with multiple panes within
+      which you can add controls, each pane being a tab on the notebook. The
+      user will be able to randomly access any page they wish. By default, a
+      Tabbed dialog comes with three buttons that can send buttonpress events
+      to the server. Their IDs are "<span class="mcpval">_ok</span>",
+      "<span class="mcpval">_apply</span>", and
+      "<span class="mcpval">_cancel</span>".  The Apply button won't dismiss
+      the dialog, but any changed values must be sent to the server before
+      the buttonpress notification. The Okay button must send changes,
+      similar to the Apply button, but it also dismisses the dialog.</p>
+    <p>A Helper dialog is similar to Windows95 Wizard dialogs, in that
+      it provides a linear path through a series of controls. You may
+      specify multiple panes in which you can create controls. Each pane
+      will be a single Helper screen.  The user will be led through the
+      screens one by one until they have reached the last one. A Helper
+      dialog has two buttons by default that can send buttonpress messages
+      to the server. Their <span class="mcparg">ID</span>s are
+      "<span class="mcpval">_finish</span>" and
+      "<span class="mcpval">_cancel</span>".</p>
+  </div>
+
+
+  <div class="mcphead">
+      <span class="mcpdir">S&rarr;C</span>
+      <span class="mcpcmd">ORG-FUZZBALL-GUI-DLOG-SHOW</span> (
+	  <span class="mcparg">DLOGID</span>
+      )
+  </div>
+  <div class="mcpbody">
+    <dl class="mcpargdeflist">
+      <dt class="mcparg">DLOGID</dt>
+      <dd class="mcpargdef">The dialog identifier, used to specify what dialog you are causing to be shown.</dd>
+    </dl>
+    Causes the given dialog to be displayed. This <em>must</em>
+    be sent after the dialog is created or the dialog will not be displayed
+    to the user. This exists mainly to keep the user from having to see
+    dialogs get constructed while the GUI messages keep streaming in.
+  </div>
+
+
+  <div class="mcphead">
+      <span class="mcpdir">S&rarr;C</span>
+      <span class="mcpcmd">ORG-FUZZBALL-GUI-DLOG-CLOSE</span> (
+	  <span class="mcparg">DLOGID</span>
+      )
+  </div>
+  <div class="mcpbody">
+    <dl class="mcpargdeflist">
+      <dt class="mcparg">DLOGID</dt>
+      <dd class="mcpargdef">The dialog identifier, used to specify what dialog you are closing.</dd>
+    </dl>
+    This is used to dismiss the given dialog, from the server-side. This is
+    useful for persistent or automatically dismissed dialogs. (Progress
+    meters, for example.)
+  </div>
+
+
+  <div class="mcphead">
+      <span class="mcpdir">C&harr;S</span>
+      <span class="mcpcmd">ORG-FUZZBALL-GUI-CTRL-VALUE</span> (
+	  <span class="mcparg">DLOGID</span>,
+	  <span class="mcparg">ID</span>,
+	  <span class="mcparg">VALUE</span>
+      )
+  </div>
+  <div class="mcpbody">
+    <dl class="mcpargdeflist">
+      <dt class="mcparg">DLOGID</dt>
+      <dd class="mcpargdef">The dialog identifier, used to specify what dialog this control value is for.</dd>
+      <dt class="mcparg">ID</dt>
+      <dd class="mcpargdef">The control identifier, used to specify which control in the dialog this value is for.</dd>
+      <dt class="mcparg">VALUE</dt>
+      <dd class="mcpargdef">The value of the control.</dd>
+    </dl>
+    <p>When sent by the server to the client, this message lets the server
+      change the value shown in a control in the dialog managed by the
+      client.</p>
+    <p>When sent by the client, this updates the server's knowledge of what
+      values have changed in the given dialog. These messages should be sent
+      before any event messages, for all changed values. These messages
+      should also be sent immediately on any value change, for controls that
+      have a <span class="mcparg">REPORT</span> argument that is set true.
+      Note that since only changed values are sent, that the server needs to
+      maintain state information for the dialog. If the user disconnects,
+      this state information should be discarded. If an event message is
+      received by the server and the <span class="mcparg">DISMISSED</span>
+      argument is true, the state info should be discarded after being
+      returned to the calling program, since the client closed the dialog.</p>
+  </div>
+
+
+  <div class="mcphead">
+      <span class="mcpdir">C&rarr;S</span>
+      <span class="mcpcmd">ORG-FUZZBALL-GUI-CTRL-EVENT</span> (
+	  <span class="mcparg">DLOGID</span>,
+	  <span class="mcparg">ID</span>,
+	  <span class="mcparg">EVENT</span>,
+	  [<span class="mcparg">DISMISSED</span>]
+	  [<span class="mcparg">DATA</span>]
+      )
+  </div>
+  <div class="mcpbody">
+    <dl class="mcpargdeflist">
+      <dt class="mcparg">DLOGID</dt>
+      <dd class="mcpargdef">The dialog identifier, used to specify what dialog this message refers to.</dd>
+      <dt class="mcparg">ID</dt>
+      <dd class="mcpargdef">The identifier of the control that initiated the event.</dd>
+      <dt class="mcparg">EVENT</dt>
+      <dd class="mcpargdef">The specific event type that occurred. Currently
+        either "<span class="mcpval">BUTTONPRESS</span>" or
+        "<span class="mcpval">VALCHANGED</span>".</dd>
+      <dt class="mcparg">DISMISSED</dt>
+      <dd class="mcpargdef">A true value if the client closed the dialog due
+        to this event.</dd>
+      <dt class="mcparg">DATA</dt>
+      <dd class="mcpargdef">Extra event-specific data that may need to be sent
+        back.</dd>
+    </dl>
+    <p>This message is used to notify the server that an event occurred that
+      the server should know about or handle. Before an event is sent, the
+      server <em>must</em> be updated with all changed control values via
+      <span class="mcpcmd">ORG-FUZZBALL-GUI-CTRL-VALUE</span> messages.
+      Currently, the supported event types are:
+      <dl class="mcpvaldeflist">
+        <dt class="mcpevent">BUTTONPRESS</dt>
+        <dd>A button was pressed, or an image or highlight was clicked on.
+          The <span class="mcparg">ID</span> argument is that of the control
+          that was clicked on.  If the user clicked on the close button
+          in the window's titlebar, then a buttonpress event is sent with
+          an <span class="mcparg">ID</span> of
+          "<span class="mcpval">_closed</span>".  If the user clicked on
+          highlighted text in a <span class="mcpwidget">MULTIEDIT</span> or
+          <span class="mcpwidget">EDIT</span> widget, that was set to
+          <span class="mcparg">REPORT</span>, then the
+          <span class="mcparg">DATA</span> argument will contain a list,
+          where the first line is the name of the highlight tag, and the
+          second line will be the character position within the control,
+          where the user clicked.</dd>
+        <dt class="mcpevent">VALCHANGED</dt>
+        <dd>A value changed in a control that was configured to
+          "<span class="mcparg">REPORT</span>" when the user changed its
+          value. The new value is not included in this message, as the
+          value should mave been reported in a previous
+          <span class="mcpcmd">ORG-FUZZBALL-GUI-CTRL-VALUE</span> message.</dd>
+    </dl>
+  </div>
+
+
+  <div class="mcphead">
+      <span class="mcpdir">S&rarr;C</span>
+      <span class="mcpcmd">ORG-FUZZBALL-GUI-CTRL-COMMAND</span> (
+	  <span class="mcparg">DLOGID</span>,
+	  <span class="mcparg">ID</span>,
+	  <span class="mcparg">COMMAND</span>, ...
+      )
+  </div>
+  <div class="mcpbody">
+    <dl class="mcpargdeflist">
+      <dt class="mcparg">DLOGID</dt>
+      <dd class="mcpargdef">The dialog identifier, used to specify what dialog this message refers to.</dd>
+      <dt class="mcparg">ID</dt>
+      <dd class="mcpargdef">The control identifier, used to specify which control in the dialog this message refers to.</dd>
+      <dt class="mcparg">COMMAND</dt>
+      <dd class="mcpargdef">The command that you want to issue to the specified control.  Command matching is case insensitive.</dd>
+      <dt>...</dt>
+      <dd class="mcpargdef">Each command may take 0 or more extra arguments.
+        These may be named anything except the three above given arg names,
+        and their name should not start with an underscore ('_') character.</dd>
+    </dl>
+
+    This is used to send a command to the given control. The currently
+    supported control commands, and their additional arguments are:
+    <dl class="mcpvaldeflist">
+      <dt><a href="#ctrlcmd-insert" class="mcpcmd">INSERT</a> ( <span class="mcparg">VALUES</span>, [<span class="mcpoptarg">BEFORE</span>] )</dt>
+      <dt><a href="#ctrlcmd-delete" class="mcpcmd">DELETE</a> ( <span class="mcparg">ITEMS</span> | <span class="mcparg">FIRST</span>, <span class="mcparg">LAST</span> )</dt>
+      <dt><a href="#ctrlcmd-select" class="mcpcmd">SELECT</a> ( <span class="mcparg">ITEMS</span> | <span class="mcparg">FIRST</span>, <span class="mcparg">LAST</span> )</dt>
+      <dt><a href="#ctrlcmd-show" class="mcpcmd">SHOW</a> ( <span class="mcparg">POSITION</span> )</dt>
+      <dt><a href="#ctrlcmd-cursor" class="mcpcmd">CURSOR</a> ( <span class="mcparg">POSITION</span> )</dt>
+      <dt><span class="mcpcmd">HILITE-SET</span> ( <span class="mcparg">TAGNAME</span>, <span class="mcparg">START</span>, <span class="mcparg">END</span>, ... too many optional args to list here. )</dt>
+      <dt><span class="mcpcmd">HILITE-CLEAR</span> ( <span class="mcparg">TAGNAME</span>, <span class="mcparg">START</span>, <span class="mcparg">END</span> )</dt>
+      <dt><span class="mcpcmd">HILITE-DELETE</span> ( <span class="mcparg">TAGNAME</span> )</dt>
+      <dt><span class="mcpcmd">ENABLE</span> ( no args )</dt>
+      <dt><span class="mcpcmd">DISABLE</span> ( no args )</dt>
+    </dl>
+  </div>
+
+
+  <div class="mcphead">
+      <span class="mcpdir">C&harr;S</span>
+      <span class="mcpcmd">ORG-FUZZBALL-GUI-ERROR</span> (
+	  <span class="mcparg">DLOGID</span>,
+	  <span class="mcparg">ERRTEXT</span>,
+	  <span class="mcparg">ERRCODE</span>
+      )
+  </div>
+  <div class="mcpbody">
+    <dl class="mcpargdeflist">
+      <dt class="mcparg">DLOGID</dt>
+      <dd class="mcpargdef">The the dialog identifier, used to specify what dialog you are working with.</dd>
+      <dt class="mcparg">ERRTEXT</dt>
+      <dd class="mcpargdef">The human readable error message.</dd>
+      <dt class="mcparg">ERRCODE</dt>
+      <dd class="mcpargdef">The computer readable error code.</dd>
+    </dl>
+  </div>
+</div>
+
+
+
+<div class="section">
+  <h3 class="secthead">3.1.2 Dialog Layout</h3>
+  <div class="sectbody">
+    The client arranges controls in a manner similar to how HTML
+    tables are laid out, but with only one control per cell. By default, when
+    a control is added, it is placed in the first unused cell in the row below
+    the previously added control. When any control is created, you can modify
+    its placement with a variety of optional arguments.
+    <dl class="mcpargdeflist">
+      <dt class="mcparg">NEWLINE</dt>
+      <dd class="mcpargdef">If "true" or "1", specifies that this control
+        is to be placed relative to the first unused cell of the next row.
+        If "false" or "0", specifies that this control is to be placed
+        relative to the next unused cell in the current row. Defaults to
+        "true".</dd>
+      <dt class="mcparg">COLSKIP</dt>
+      <dd class="mcpargdef">Specifies how many unused horizontal cells to
+        skip past to get to the cell you want to place the control in.
+        Defaults to 0.</dd>
+      <dt class="mcparg">COLSPAN</dt>
+      <dd class="mcpargdef">Specifies how many horizontal cells to span
+        this control across. These cells are all considered used, for
+        purposes of future layout commands. If you have a wide dialog
+        due to wide controls in different rows, using this argument may
+        help solve the problem. Defaults to 1.</dd>
+      <dt class="mcparg">ROWSPAN</dt>
+      <dd class="mcpargdef">Specifies how many vertical cells to span
+        this control across.  These cells are all considered used, for
+        purposes of future layout commands. If you have a tall dialog due
+        to tall controls in different rows, using this argument may help
+        solve the problem. Defaults to 1.</dd>
+      <dt class="mcparg">STICKY</dt>
+      <dd class="mcpargdef">Specifies the side(s) of the cell to stick
+        against. This contains any or all of the letters N, S, E, or W
+        for north, south, east, or west, respectively.  If you specify
+        both N and S, then the control will stretch out vertically to
+        stick to both north and south sides. If you specify both E and W,
+        the control will stretch horizontally to stick to both east and
+        west sides.  If the value is "" (null) then the control will be
+        centered in the cell both horizontally and vertically. Defaults
+        to "<span class="mcpval">W</span>" to stick to the west side.</dd>
+      <dt class="mcparg">MINWIDTH</dt>
+      <dd class="mcpargdef">Specifies the minimum width in pixels that
+        the control will occupy.</dd>
+      <dt class="mcparg">MINHEIGHT</dt>
+      <dd class="mcpargdef">Specifies the minimum height in pixels that
+        the control will occupy.</dd>
+      <dt class="mcparg">HWEIGHT</dt>
+      <dd class="mcpargdef">How much the starting column of this control
+        should expand. When filling unused space, if there are two
+        columns, one with hweight 2 and the other with hweight 1,
+        then the column with hweight 2 will be expanded twice as
+        much as the other column. The default hweight is 0. Note
+        that the last control in the given column sets the hweight
+        for the column. If no hweights are given in a pane, then
+        if the pane is forced to be wider than the contained controls,
+        the empty space will be placed in the right side of the
+        pane.</dd>
+      <dt class="mcparg">VWEIGHT</dt>
+      <dd class="mcpargdef">How much the starting row of this control
+        should expand. When filling unused space, if there are multiple
+        rows, one with vweight 2 and the other with vweight 1, then
+        the row with vweight 2 will be expanded twice as much as the
+        row with vweight 1. The default hweight is 0. Note that the
+        last control in the given row sets the vweight for the row. If
+        no vweights are given in a pane, then if the pane is forced
+        to be taller than the contained controls, the empty space
+        will be placed in the bottom of the pane.</dd>
+      <dt class="mcparg">LEFTPAD</dt>
+      <dd class="mcpargdef">The number of pixels of spacing that should be
+        to the left of this control.</dd>
+      <dt class="mcparg">TOPPAD</dt>
+      <dd class="mcpargdef">The number of pixels of spacing that should be
+        above this control.</dd>
+      <dt class="mcparg">ROW</dt>
+      <dd class="mcpargdef">The specific row that this control should start
+        in. You should only need to specify this in rare circumstances, if
+        you properly use the other layout options.</dd>
+      <dt class="mcparg">COLUMN</dt>
+      <dd class="mcpargdef">The specific column that this control should
+        start in.  You should only need to specify this in rare circumstances,
+        if you properly use the other layout options.</dd>
+      <dt class="mcparg">PANE</dt>
+      <dd class="mcpargdef">Specifies the screen or frame that this control
+        will be created within.  Defaults to the dialog window.</dd>
+    </dl>
+  </div>
+</div>
+
+
+
+<div class="section">
+  <h3 class="secthead">3.1.3 Control Creation/Configuration Commands</h3>
+  <div class="sectbody">
+    <p>These commands are all Server to Client messages. To create a new
+    control, use one of these messages with a new ID. If you send one
+    of these messages with an existing ID, you will just modify the
+    existing control already bound to that ID. An ID is composed of a
+    string of one or more letters, numbers, or underscore characters.</p>
+
+    <div class="mcphead">
+        <span class="mcpdir">S&rarr;C</span>
+        <span class="mcpcmd">ORG-FUZZBALL-GUI-CTRL-DATUM</span> (
+            <span class="mcparg">DLOGID</span>,
+            <span class="mcparg">ID</span>,
+            <span class="mcparg">VALUE</span>
+        )
+    </div>
+    <div class="mcpbody">
+      <dl class="mcpargdeflist">
+        <dt class="mcparg">DLOGID</dt>
+        <dd class="mcpargdef">The dialog identifier, used to specify what dialog this message refers to.</dd>
+        <dt class="mcparg">ID</dt>
+        <dd class="mcpargdef">The control identifier, used to specify the name of the control to create/modify.</dd>
+        <dt class="mcparg">VALUE</dt>
+        <dd class="mcpargdef">The initial value of the control.</dd>
+      </dl>
+      <p>Creates a hidden named data item, useful for storing various insecure
+      state information.  This doesn't have a user-visible control associated
+      with it. It just holds data that the user never has to see. Since the
+      user could have hacked their client, you should not consider this
+      value to be secure.</p>
+    </div>
+
+
+    <div class="mcphead">
+        <span class="mcpdir">S&rarr;C</span>
+        <span class="mcpcmd">ORG-FUZZBALL-GUI-CTRL-HRULE</span> (
+            <span class="mcparg">DLOGID</span>,
+            <span class="mcparg">ID</span>,
+            <span class="mcparg">HEIGHT</span>
+        )
+    </div>
+    <div class="mcpbody">
+      <dl class="mcpargdeflist">
+        <dt class="mcparg">DLOGID</dt>
+        <dd class="mcpargdef">The dialog identifier, used to specify what dialog this message refers to.</dd>
+        <dt class="mcparg">ID</dt>
+        <dd class="mcpargdef">The control identifier, used to specify the name of the control to create/modify.</dd>
+        <dt class="mcparg">HEIGHT</dt>
+        <dd class="mcpargdef">The thickness of the horizontal rule/line, in pixels.</dd>
+      </dl>
+      <p>This message draws a horizontal rule (line) across the cell as a
+      separator.  If the <span class="mcparg">PANE</span> given for this
+      control is a <span class="mcpwidget">MENU</span> control, then this
+      will instead add a separator line to the given menu. In the menu
+      case, the <span class="mcparg">HEIGHT</span> argument is completely
+      ignored.</p>
+    </div>
+
+
+    <div class="mcphead">
+        <span class="mcpdir">S&rarr;C</span>
+        <span class="mcpcmd">ORG-FUZZBALL-GUI-CTRL-VRULE</span> (
+            <span class="mcparg">DLOGID</span>,
+            <span class="mcparg">ID</span>,
+            <span class="mcparg">WIDTH</span>
+        )
+    </div>
+    <div class="mcpbody">
+      <dl class="mcpargdeflist">
+        <dt class="mcparg">DLOGID</dt>
+        <dd class="mcpargdef">The dialog identifier, used to specify what dialog this message refers to.</dd>
+        <dt class="mcparg">ID</dt>
+        <dd class="mcpargdef">The control identifier, used to specify the name of the control to create/modify.</dd>
+        <dt class="mcparg">WIDTH</dt>
+        <dd class="mcpargdef">The thickness of the vertical rule/line, in pixels.</dd>
+      </dl>
+      <p>This message draws a vertical rule (line) across the cell as a
+      separator. This control cannot be used in a menu.</p>
+    </div>
+
+
+    <div class="mcphead">
+        <span class="mcpdir">S&rarr;C</span>
+        <span class="mcpcmd">ORG-FUZZBALL-GUI-CTRL-BUTTON</span> (
+            <span class="mcparg">DLOGID</span>,
+            <span class="mcparg">ID</span>,
+            <span class="mcparg">TEXT</span>,
+            [<span class="mcpoptarg">WIDTH</span>],
+            [<span class="mcpoptarg">DISMISS</span>],
+            [<span class="mcpoptarg">DEFAULT</span>],
+            [<span class="mcpoptarg">BINDKEY</span>]
+        )
+    </div>
+    <div class="mcpbody">
+      <dl class="mcpargdeflist">
+        <dt class="mcparg">DLOGID</dt>
+        <dd class="mcpargdef">The dialog identifier, used to specify what dialog this message refers to.</dd>
+        <dt class="mcparg">ID</dt>
+        <dd class="mcpargdef">The control identifier, used to specify the name of the control to create/modify.</dd>
+        <dt class="mcparg">TEXT</dt>
+        <dd class="mcpargdef">The text label to be displayed on the button.</dd>
+        <dt class="mcparg">WIDTH</dt>
+        <dd class="mcpargdef">The thickness of the vertical rule/line, in pixels.</dd>
+        <dt class="mcparg">DISMISS</dt>
+        <dd class="mcpargdef">If true, when this button is pressed, automatically close the dialog.</dd>
+        <dt class="mcparg">DEFAULT</dt>
+        <dd class="mcpargdef">If true, show this button as a Default style button.</dd>
+        <dt class="mcparg">BINDKEY</dt>
+        <dd class="mcpargdef">Specifies a key binding that should also invoke this button.
+          Format is that used by TCL/Tk. ie: of the form:
+          <span class="mcpval">&lt;</span><span
+          class="metasyn">Modifiers</span><span
+          class="mcpval">-Key-</span><span
+          class="metasyn">Keyname</span><span
+          class="mcpval">&gt;</span>
+          where modifiers are "<span class="mcpval">Alt-</span>",
+          "<span class="mcpval">Control-</span>", and
+          "<span class="mcpval">Shift-</span>". For example:
+          "<span class="mcpval">&lt;Alt-Control-Key-u&gt;</span>" or
+          "<span class="mcpval">&lt;Shift-Key-numbersign&gt;</span>".</dd>
+        </dd>
+      </dl>
+      <p>A <span class="mcpwidget">BUTTON</span> is simply a pushbutton.
+      Pressing it results in an <em>immediate</em>
+      <span class="mcpevent">BUTTONPRESS</span> event response back to the
+      server, containing the <span class="mcparg">VALUE</span>s
+      for all controls in the dialog. Though by default this dismisses the
+      dialog, the programmer can specify that it does not, by setting the
+      <span class="mcparg">DISMISS</span> argument to "0". The
+      <span class="mcparg">DISMISS</span> argument defaults to "1".<p>
+      <p>If the <span class="mcparg">PANE</span> given for this control
+      is a <span class="mcpwidget">MENU</span> control, then this will
+      instead add a menu item to the given menu. In this case, the
+      <span class="mcparg">DEFAULT</span> and
+      <span class="mcparg">WIDTH</span> arguments are completely ignored.
+      The menu item, when selected, will send a
+      <span class="mcpevent">BUTTONPRESS</span> event, just as if it were
+      a button.</p>
+    </div>
+
+
+    <div class="mcphead">
+        <span class="mcpdir">S&rarr;C</span>
+        <span class="mcpcmd">ORG-FUZZBALL-GUI-CTRL-TEXT</span> (
+            <span class="mcparg">DLOGID</span>,
+            [<span class="mcpoptarg">ID</span>],
+            <span class="mcparg">VALUE</span>,
+            [<span class="mcpoptarg">MAXWIDTH</span>],
+            [<span class="mcpoptarg">JUSTIFY</span>]
+        )
+    </div>
+    <div class="mcpbody">
+      <dl class="mcpargdeflist">
+        <dt class="mcparg">DLOGID</dt>
+        <dd class="mcpargdef">The dialog identifier, used to specify what dialog this message refers to.</dd>
+        <dt class="mcparg">ID</dt>
+        <dd class="mcpargdef">The control identifier, used to specify the name of the control to create/modify.  If none is given, the server waives rights to refer to this widget in the future.</dd>
+        <dt class="mcparg">VALUE</dt>
+        <dd class="mcpargdef">The text label string to be displayed.</dd>
+        <dt class="mcparg">MAXWIDTH</dt>
+        <dd class="mcpargdef">If this is specified, the text will wrap if longer than this given number of pixels.  Defaults to 80% of screen width.</dd>
+        <dt class="mcparg">JUSTIFY</dt>
+        <dd class="mcpargdef">If the text wraps, then this determines how the text will be aligned.  Can be "<span class="mcpval">left</span>", "<span class="mcpval">right</span>", or "<span class="mcpval">center</span>".</dd>
+      </dl>
+      <p>This message draws a simple text label in the dialog. The <span class="mcparg">ID</span> tag specifies the ID of a control, for use in changing control options in persistent dialogs.  If no <span class="mcparg">ID</span> tag is given, then the server doesn't wish to refer to this widget in the future.  The <span class="mcparg">MAXWIDTH</span> argument specifies the maximum width of the label, in pixels.  Text that is wider than <span class="mcparg">MAXWIDTH</span> is line-wrapped. Note that the actual number of characters you may fit into this width may vary according to the font.</p>
+      <p>If the <span class="mcparg">PANE</span> given for this control is a <span class="mcpwidget">MENU</span> control, then this will only add a non-selectable comment to the given menu.  In this case, the <span class="mcparg">JUSTIFY</span> and <span class="mcparg">MAXWIDTH</span> arguments are completely ignored.</p>
+    </div>
+
+
+    <div class="mcphead">
+        <span class="mcpdir">S&rarr;C</span>
+        <span class="mcpcmd">ORG-FUZZBALL-GUI-CTRL-IMAGE</span> (
+            <span class="mcparg">DLOGID</span>,
+            [<span class="mcpoptarg">ID</span>],
+            <span class="mcparg">VALUE</span>,
+            <span class="mcparg">WIDTH</span>,
+            <span class="mcparg">HEIGHT</span>,
+            [<span class="mcpoptarg">REPORT</span>]
+        )
+    </div>
+    <div class="mcpbody">
+      <dl class="mcpargdeflist">
+        <dt class="mcparg">DLOGID</dt>
+        <dd class="mcpargdef">The dialog identifier, used to specify what dialog this message refers to.</dd>
+        <dt class="mcparg">ID</dt>
+        <dd class="mcpargdef">The control identifier, used to specify the name of the control to create/modify.  If none is given, the server waives rights to refer to this widget in the future.</dd>
+        <dt class="mcparg">VALUE</dt>
+        <dd class="mcpargdef">The URL of the image to be displayed. This image should be either a GIF, JPEG, or PNG file. GIFs and PNGs should support transparency if possible.</dd>
+        <dt class="mcparg">WIDTH</dt>
+        <dd class="mcpargdef">The width of the image to be displayed, in pixels. (required)</dd>
+        <dt class="mcparg">HEIGHT</dt>
+        <dd class="mcpargdef">The height of the image to be displayed, in pixels. (required)</dd>
+        <dt class="mcparg">REPORT</dt>
+        <dd class="mcpargdef">If true, this image will send a <span class="mcpevent">BUTTONPRESS</span> event when it is clicked on. Defaults to false.</dd>
+      </dl>
+      <p>An image control lets the program display graphical images. It can be
+      clicked like a button, if <span class="mcparg">REPORT</span> is set to
+      a true value. If the <span class="mcparg">VALUE</span> of the image is
+      changed, the new image should be fetched and displayed. Image sizes up to
+      512x512 must be supported. The client may wish to impose restrictions
+      on what sites images are allowed to be displayed from. URLs referring
+      to the same IP address or domain as the server should almost certainly
+      be allowed.</p>
+    </div>
+
+
+
+
+
+
+
+    <hr><hr><hr><hr>
+    
+    
+    <tt>ORG-FUZZBALL-GUI-CTRL-EDIT(DLOGID, ID, VALUE, [MAXLENGTH], [VALIDCHARS], [WIDTH])</tt><br>
+    
+      <dl class="mcpoptdeflist">
+        <dt class="mcparg">DLOGID</dt>
+        <dd>The dialog identifier, used to
+  specify what dialog
+  you are creating the control in.</dd>
+        <dt class="mcparg">ID</dt>
+        <dd>The control identifier, used to
+  reference the control
+  in later commands.</dd>
+        <dt class="mcparg">TEXT</dt>
+        <dd>If given, a Text label control is inserted into the current
+  row and column,
+  then the edit control will be put in the column to the right of the
+  label.
+  This may have unintended layout effects if you don't take this into
+  account.</dd>
+        <dt class="mcparg">VALUE</dt>
+        <dd>The initial text contents of the control.</dd>
+        <dt class="mcparg">WIDTH</dt>
+        <dd>The width of the control, in character units.</dd>
+        <dt class="mcparg">MAXLENGTH</dt>
+        <dd>The maximum number of characters to be entered.</dd>
+        <dt class="mcparg">VALIDCHARS</dt>
+        <dd>The characters that can be entered into this control.</dd>
+        <dt class="mcparg">REPORT</dt>
+        <dd>If
+  set to "1", then changes to the text
+  content of this
+  widget should be reported to the server periodically. This
+  shouldn't
+  be done more often than once every couple seconds, to prevent excessive
+  bandwidth usage.<br>
+        </dd>
+      </dl>
+    
+    An <tt>EDIT</tt> box lets the user enter a single line
+  of text,
+  containing no newlines. This text can optionally be filtered for
+  content.
+  If the <tt>VALIDCHARS</tt> tag is specified, only characters matching
+  the
+  given Regular Expression pattern are allowed. If the <tt>MAXLENGTH</tt>
+  tag
+  is given, no more than the given number of characters may be entered.
+    <tt>ORG-FUZZBALL-GUI-CTRL-PASSWORD(DLOGID, ID, VALUE, [MAXLENGTH], [WIDTH])</tt>
+    
+      <dl class="mcpoptdeflist">
+        <dt class="mcparg">DLOGID</dt>
+        <dd>The dialog identifier, used to
+  specify what dialog
+  you are creating the control in.</dd>
+        <dt class="mcparg">ID</dt>
+        <dd>The control identifier, used to
+  reference the control
+  in later commands.</dd>
+        <dt class="mcparg">TEXT</dt>
+        <dd>If given, a Text label control is inserted into the current
+  row and column,
+  then the edit control will be put in the column to the right of the
+  label.
+  This may have unintended layout effects if you don't take this into
+  account.</dd>
+        <dt class="mcparg">VALUE</dt>
+        <dd>The initial text contents of the control.</dd>
+        <dt class="mcparg">WIDTH</dt>
+        <dd>The width of the control, in character units.</dd>
+        <dt class="mcparg">MAXLENGTH</dt>
+        <dd>The maximum number of characters to be entered.</dd>
+      </dl>
+    
+    A <tt>PASSWORD</tt> box lets the user enter a single
+  line
+  of text, like the <tt>EDIT</tt> control, but the characters will not
+  be shown visibly, so folks can't peek at your password over your
+  shoulder. If the <tt>MAXLENGTH</tt>
+  tag
+  is given, no more than the given number of characters may be entered.
+    <tt>ORG-FUZZBALL-GUI-CTRL-MULTIEDIT(DLOGID, ID, VALUE*, [WIDTH], [HEIGHT])</tt>
+    
+      <dl class="mcpoptdeflist">
+        <dt class="mcparg">DLOGID</dt>
+        <dd>The dialog identifier, used to
+  specify what dialog
+  you are creating the control in.</dd>
+        <dt class="mcparg">ID</dt>
+        <dd>The control identifier, used to
+  reference the control
+  in later commands.</dd>
+        <dt class="mcparg">VALUE</dt>
+        <dd>The initial contents of the edit control. This may be a
+  multi-line value.</dd>
+        <dt class="mcparg">WIDTH</dt>
+        <dd>Width of the multiedit control, in Character units. Defaults
+  to 40.</dd>
+        <dt class="mcparg">HEIGHT</dt>
+        <dd>Height of the multiedit control, in Line units. Defaults to
+  10.</dd>
+        <dt class="mcparg">FONT</dt>
+        <dd>Specifies whether the font in the control should be "<span class="mcpval">variable</span>"
+  width for a proportional font, "<span class="mcpval">serif</span>"
+  for a proportional serif font, or "<span class="mcpval">fixed</span>" width.
+  Defaults to "<span class="mcpval">fixed</span>". In general, "variable" should be
+  Helvetica or Arial, "fixed" should be Courier or Monaco, and "serif"
+  should be Times or Times New Roman. <br>
+        </dd>
+        <dt class="mcparg">MULTICOLOR</dt>
+        <dd>Advises that the control is expected to be able to support
+  color hilites, via the <tt>HILITE-SET</tt> control-command.<br>
+        </dd>
+        <dt class="mcparg">MULTISTYLE</dt>
+        <dd>Advises that the control is expected to be able to support
+  styles (bold, italics, underline, font, etc), set via the <tt>HILITE-SET</tt>
+  control-command.<br>
+        </dd>
+      </dl>
+    
+    A <span class="mcpwidget">MULTIEDIT</span> control is a multi-line version of
+  the
+  edit control. However, it doesn't support length limits or content
+  restrictions. To prevent excessive bandwidth usage, this control should
+  not support <span class="mcparg">REPORT</span>-ing
+  content changes, except when another event is about to be sent.<br>
+    
+    <tt>ORG-FUZZBALL-GUI-CTRL-CHECKBOX(DLOGID, ID, TEXT, VALUE, [VALNAME], [ONVAL], [OFFVAL], [REPORT])</tt>
+    
+      <dl class="mcpoptdeflist">
+        <dt class="mcparg">DLOGID</dt>
+        <dd>The dialog identifier, used to
+  specify what dialog
+  you are creating the control in.</dd>
+        <dt class="mcparg">ID</dt>
+        <dd>The control identifier, used to reference the control in later commands.</dd>
+        <dt class="mcparg">TEXT</dt>
+        <dd>The text to display to the right of the checkbox.</dd>
+        <dt class="mcparg">VALUE</dt>
+        <dd>The initial state of the Checkbox. Should match<tt> ONVAL </tt>or<tt> OFFVAL</tt>'s values.</dd>
+        <dt class="mcparg">VALNAME</dt>
+        <dd>Specifies the <tt>ID</tt> of the <span class="mcparg">VALUE</span> that will be selt back to the server. Defaults to the <tt>ID</tt> of the control itself.</dd>
+        <dt class="mcparg">REPORT</dt>
+        <dd>If this is set to "1", then when this checkbutton is clicked on, a <span class="mcpevent">BUTTONPRESS</span> event will be sent to the server for this control.</dd>
+        <dt class="mcparg">ONVAL</dt>
+        <dd>The value of the control when checked. Defaults to 1.</dd>
+        <dt class="mcparg">OFFVAL</dt>
+        <dd>The value of the control when unchecked. Defaults to 0.</dd>
+      </dl>
+    
+    A <span class="mcpwidget">CHECKBOX</span> is used to represent a boolean value.  When it is
+    checked, it will return the given <span class="mcparg">ONVAL</span>.
+  When
+  not checked, it will return the given <span class="mcparg">OFFVAL</span>. If <span class="mcparg">ONVAL</span>
+  and <span class="mcparg">OFFVAL</span> are not specified, they default to 1 and 0,
+  respectively. <br>
+  If the <tt>PANE</tt> given for this control is a <span class="mcpwidget">MENU</span>, then
+  this will create a <span class="mcpwidget">CHECKBOX</span> item in the given menu.
+    <tt>ORG-FUZZBALL-GUI-CTRL-RADIO(DLOGID, ID, VALNAME, [VALUE], SELVALUE, TEXT, [REPORT])</tt>
+    
+      <dl class="mcpoptdeflist">
+        <dt class="mcparg">DLOGID</dt>
+        <dd>The dialog identifier, used to
+  specify what dialog
+  you are creating the control in.</dd>
+        <dt class="mcparg">ID</dt>
+        <dd>The control identifier, used to
+  reference the radio
+  button group when returning values.</dd>
+        <dt class="mcparg">VALNAME</dt>
+        <dd>Specifies the <tt>ID</tt> of the <span class="mcparg">VALUE</span> that will
+  be returned to
+  the server. All radio buttons in the same group share the same
+  valname.</dd>
+        <dt class="mcparg">TEXT</dt>
+        <dd>The text to display to the right of the radio button.</dd>
+        <dt class="mcparg">VALUE</dt>
+        <dd>The initial state of the radio button group. Must match one
+  of the SELVALUEs.
+  If this argument is provided for multiple radio buttons in this group,
+  the last one created will set the initial value. If this argument is
+  never
+  sent, the first radio button created will be selected.</dd>
+        <dt class="mcparg">SELVALUE</dt>
+        <dd>What the value of the radio button group will be, when this
+  button is selected.</dd>
+        <dt class="mcparg">REPORT</dt>
+        <dd>If this is set to "1", then when this radio button is clicked
+  on, a <span class="mcpevent">BUTTONPRESS</span>
+  event will be sent to the server for this control.</dd>
+      </dl>
+  A <span class="mcpwidget">RADIO</span> button lets the user select one of a set of discrete
+  values.
+  By creating multiple radio buttons with the same <tt>VALNAME</tt>,
+  they
+  are identified as being part of the same group. Each radio button
+  within
+  a group should have a unique <tt>SELVALUE</tt>. When the dialog
+  results
+  are sent back, the <span class="mcparg">VALUE</span> associated with the radio button
+  group <tt>VALNAME</tt>
+  is the <tt>SELVALUE</tt> of the selected radio button in that group. <br>
+  If the <tt>PANE</tt> given for this control is a <span class="mcpwidget">MENU</span>
+  control,
+  then this will instead add a radio button menu item to the given menu.
+  If <span class="mcparg">REPORT</span> is "1", then the radio button menu item, when
+  selected,
+  will send a <span class="mcpevent">BUTTONPRESS</span> event, just as if it were a regular
+  radiobutton.
+    <tt>ORG-FUZZBALL-GUI-CTRL-SPINNER(DLOGID, ID, [VALUE], [MINVAL], [MAXVAL], [WIDTH])</tt>
+    
+      <dl class="mcpoptdeflist">
+        <dt class="mcparg">DLOGID</dt>
+        <dd>The dialog identifier, used to
+  specify what dialog
+  you are creating the control in.</dd>
+        <dt class="mcparg">ID</dt>
+        <dd>The control identifier, used to
+  reference the control
+  in later commands.</dd>
+        <dt class="mcparg">VALUE</dt>
+        <dd>The initial value of the spinner control.<tt>
+  Defaults to 0.</tt></dd>
+        <dt class="mcparg">MINVAL</dt>
+        <dd>The minimum allowed value of the spinner control. Defaults to
+  0.</dd>
+        <dt class="mcparg">MAXVAL</dt>
+        <dd>The maximum allowed value of the spinner control. Defaults to
+  100.</dd>
+        <dt class="mcparg">WIDTH</dt>
+        <dd>The number of digits the spinner control can contain.
+  Defaults to 12.<br>
+        </dd>
+        <dt class="mcparg"><span class="mcparg">TEXT</span></dt>
+        <dd>If given, a Text label control is inserted into the current
+  row and column, then the spinner control will be put in the column to
+  the right of the label. This may have unintended layout effects
+  if you don't take this into account.<br>
+        </dd>
+      </dl>
+  A spinner is an integer-only control with an edit field and up/down
+  buttons.
+  It's used to let a user specify an integer number in a dialog.
+    <tt>ORG-FUZZBALL-GUI-CTRL-COMBOBOX(DLOGID, ID, VALUE, OPTIONS, [WIDTH], [EDITABLE], [REPORT], [SORTED])</tt>
+    
+      <dl class="mcpoptdeflist">
+        <dt class="mcparg">DLOGID</dt>
+        <dd>The dialog identifier, used to
+  specify what dialog
+  you are creating the control in.</dd>
+        <dt class="mcparg">ID</dt>
+        <dd>The control identifier, used to
+  reference the control
+  in later commands.</dd>
+        <dt class="mcparg">VALUE</dt>
+        <dd>The initial value of the combobox control.</dd>
+        <dt class="mcparg">OPTIONS</dt>
+        <dd>The list of options selectable from the combobox.</dd>
+        <dt class="mcparg">EDITABLE</dt>
+        <dd>If set to "false" or "0", then the user cannot enter
+  arbitrary values.</dd>
+        <dt class="mcparg">WIDTH</dt>
+        <dd>The width of the control in Character units<tt>.</tt></dd>
+        <dt class="mcparg">REPORT</dt>
+        <dd>If set to "true" or "1", then this control informs the server
+  of value
+  changes<tt>.</tt></dd>
+        <dt class="mcparg">REQUIRED</dt>
+        <dd>If "true" or "1", the dialog can't be dismissed if it the
+  value wasn't
+  changed. This only applies to Helper or Tabbed dialogs, or to buttons
+  that
+  also have the <tt>REQUIRED</tt>
+  flag set.</dd>
+        <dt class="mcparg">SORTED</dt>
+        <dd>If set to "true" or "1", then the contents of the combobox
+  list will be
+  automatically sorted in dictionary order.<br>
+        </dd>
+        <dt class="mcparg">TEXT</dt>
+        <dd>If given, a Text label control is inserted into the current
+  row and column, then the combobox control will be put in the column to
+  the right of the label. This may have unintended layout effects
+  if you don't take this into account.<br>
+        </dd>
+      </dl>
+  A combobox lets the user select one of a list of options. The resulting
+  value of the control will be the actual text selected, not the index.
+  If
+  the <span class="mcparg">REPORT</span> argument is true, and <tt>EDITABLE</tt> is false,
+  then selecting an item causes the dialog to immediately report
+  the
+  selected item. <span class="mcparg">REPORT</span> is not required to be supported
+  if <tt>EDITABLE</tt> is true.<br>
+    
+    <tt>ORG-FUZZBALL-GUI-CTRL-LISTBOX(DLOGID, ID, VALUE, OPTIONS, [WIDTH], [HEIGHT], [REPORT], [REQUIRED])</tt>
+    
+      <dl class="mcpoptdeflist">
+        <dt class="mcparg">DLOGID</dt>
+        <dd>The dialog identifier, used to
+  specify what dialog
+  you are creating the control in.</dd>
+        <dt class="mcparg">ID</dt>
+        <dd>The control identifier, used to
+  reference the control
+  in later commands.</dd>
+        <dt class="mcparg">VALUE</dt>
+        <dd>The initially selected option. This should match one of OPTIONS<tt>.</tt></dd>
+        <dt class="mcparg">OPTIONS</dt>
+        <dd>The list of options selectable from the listbox.</dd>
+        <dt class="mcparg">FONT</dt>
+        <dd>Specifies whether the text in the listbox should be "<span class="mcpval">variable</span>"
+  or "<span class="mcpval">fixed</span>" width, or if it should be a "<span class="mcpval">serif</span>"
+  proportional font. Defaults to "<span class="mcpval">variable</span>" width.</dd>
+        <dt class="mcparg">WIDTH</dt>
+        <dd>The width of the control in Character units<tt>.</tt></dd>
+        <dt class="mcparg">HEIGHT</dt>
+        <dd>The height of the control in Line units<tt>.</tt></dd>
+        <dt class="mcparg">REPORT</dt>
+        <dd>If set to "true" or "1", then the this control informs the
+  server of value
+  changes.</dd>
+        <dt class="mcparg">SELECTMODE</dt>
+        <dd>Used to control the way list items can be selected. When set
+  to "single"
+  only a single list item can be selected at any one time. When set to
+  "multiple",
+  you can select more than one list item by clicking on each item to
+  select
+  or deselect it. When set to "extended", you can select more than one
+  list
+  item by control-clicking on the item, or by shift-clicking to extend
+  the
+  range. Clicking without a modifier key will deselect all other items,
+  and
+  select the item clicked.</dd>
+      </dl>
+  A listbox lets the user select one of a list of items, but it takes up
+  more than just a single line, unlike the <tt>COMBOBOX</tt>. If the <span class="mcparg">REPORT</span>
+  tag is true, the server will be sent a <span class="mcpevent">VALCHANGED</span> event
+  whenever
+  the user changes the selection.
+    <tt>ORG-FUZZBALL-GUI-CTRL-FRAME(DLOGID, ID, [TEXT], [VISIBLE], [RELIEF])</tt>
+    
+      <dl class="mcpoptdeflist">
+        <dt class="mcparg">DLOGID</dt>
+        <dd>The dialog identifier, used to
+  specify what dialog
+  you are creating the control in.</dd>
+        <dt class="mcparg">ID</dt>
+        <dd>The control identifier, used to
+  reference the control
+  in later commands.</dd>
+        <dt class="mcparg">TEXT</dt>
+        <dd>The text label to display in the upper left border of the
+  frame.</dd>
+        <dt class="mcparg">VISIBLE</dt>
+        <dd>If "true" or "1", specifies that the frame has a border.</dd>
+        <dt class="mcparg">RELIEF</dt>
+        <dd>Specifies the nature of the border, if it's visible.
+  Must be one
+  of "<span class="mcpval">raised</span>", "<span class="mcpval">sunken</span>", "<span class="mcpval">groove</span>", "<span class="mcpval">ridge</span>",
+  "<span class="mcpval">flat</span>", or "<span class="mcpval">solid</span>". Defaults to "<span class="mcpval">groove</span>".<br>
+        </dd>
+        <dt class="mcparg">WIDTH</dt>
+        <dd>Optionally specifies the width of the frame, in pixels.<br>
+        </dd>
+        <dt class="mcparg">HEIGHT</dt>
+        <dd>Optionally specifies the height of the frame, in pixels.<br>
+        </dd>
+      </dl>
+  A frame lets the user specify control groupings for formatting
+  purposes.
+  The frame can be <tt>VISIBLE</tt> or invisible (default). Specifying <tt>TEXT</tt>
+  implies <tt>VISIBLE</tt>. However, <tt>VISIBLE</tt> can be used
+  without <tt>TEXT</tt>
+  so as to provide an unbroken box around the controls. Frames can be
+  nested
+  arbitrarily deep. You place controls inside frames by using the <tt>PANE</tt>
+  layout argument.
+    <tt>ORG-FUZZBALL-GUI-CTRL-NOTEBOOK(DLOGID, ID, ...)<br></tt>
+    <div style="margin-left: 40px;">
+    <dl class="mcpoptdeflist">
+      <dt class="mcparg">DLOGID</dt>
+      <dt class="mcparg">ID</dt>
+      <dt class="mcparg">PANES</tt> {}</dt>
+      <dt class="mcparg">NAMES</tt> {}</dt>
+      <dt class="mcparg">HEIGHT</tt> 200</dt>
+      <dt class="mcparg">WIDTH</tt> 300</dt>
+    </dl>
+    </div>
+    <tt>ORG-FUZZBALL-GUI-CTRL-TREE(DLOGID, ID, ...)<br></tt>
+    <div style="margin-left: 40px;">
+    <dl class="mcpoptdeflist">
+      <dt class="mcparg">DLOGID</tt> </dt>
+      <dt class="mcparg">ID</tt><br>
+      </dt>
+      <dt class="mcparg">VALUE</tt> {}</dt>
+      <dt class="mcparg">OPTIONS</tt> {}</dt>
+      <dt class="mcparg">ICONS</tt> {}</dt>
+      <dt class="mcparg">HEIGHT</tt> 200 </dt>
+      <dt class="mcparg">WIDTH</tt> 200 </dt>
+      <dt class="mcparg">REPORT</tt> 0 </dt>
+    </dl>
+    </div>
+    <tt>ORG-FUZZBALL-GUI-CTRL-MENU(DLOGID, ID, [TEXT])<br></tt>
+    <div style="margin-left: 40px;">
+    <dl class="mcpoptdeflist">
+      <dt class="mcparg">DLOGID</dt>
+      <dt class="mcparg">ID</dt>
+      <dt class="mcparg">TEXT</dt>
+    </dl>
+    </div>
+    <tt>ORG-FUZZBALL-GUI-CTRL-SCALE(DLOGID, ID, ...)<br></tt>
+    <dl style="margin-left: 40px;">
+      <dt class="mcparg">dlogid</dt>
+      <dt class="mcparg">id</dt>
+      <dt class="mcparg">text {}</dt>
+      <dt class="mcparg">resolution 1.0</dt>
+      <dt class="mcparg">digits 0</dt>
+      <dt class="mcparg">length 100</dt>
+      <dt class="mcparg">report 0</dt>
+      <dt class="mcparg">width 15</dt>
+      <dt class="mcparg">value 0.0</dt>
+      <dt class="mcparg">valname</dt>
+      <dt class="mcparg">minval 0.0</dt>
+      <dt class="mcparg">maxval 100.0</dt>
+      <dt class="mcparg">orient horiz</dt>
+      <dt class="mcparg">interval 10.0</dt>
+      <dt class="mcparg">bigincrement 10%</dt>
+    </dl>
+  </div>
+</div>
+
+
+<div class="section">
+  <h3 class="secthead">3.1.4 Control-Commands</h3>
+  <div class="sectbody">
+    These are the control-commands that can be sent via the <tt>ORG-FUZZBALL-GUI-CTRL-COMMAND</tt>
+    message. These are all Server to Client messages. The
+    hilighted
+    command name is the value sent in the <tt>COMMAND</tt> argument.
+      <a name="ctrlcmd-insert"></a><tt>INSERT(DLOGID, ID, VALUES*, [BEFORE])</tt>
+      
+        <dl class="mcpoptdeflist">
+          <dt class="mcparg">DLOGID</dt>
+          <dd>The dialog identifier, used to
+    specify what dialog
+    you are editing a control in.</dd>
+          <dt class="mcparg">ID</dt>
+          <dd>The control identifier of the control
+    to add list
+    items/characters to.</dd>
+          <dt class="mcparg">VALUES</dt>
+          <dd>The list of new items to add to the listbox, combobox, and
+    tree.</dd>
+          <dt class="mcparg">BEFORE</dt>
+          <dd>The zero-based integer index of the
+    list item which
+    the new values will be inserted after. Defaults to "<span class="mcpval">end</span>". This
+    will be ignored if the combobox is auto-sorted.<br>
+          </dd>
+          <dt class="mcparg">ICONS</dt>
+          <dd>When inserting an item into the tree widget, this specifies
+    the icons that should be shown next to each value. The first item
+    of the icons argument list corresponds to the first item of the values
+    argument.<br>
+          </dd>
+          <dt class="mcparg">NAME</dt>
+          <dd>The name of the pane to create when inserting a notebook tab.<br>
+          </dd>
+          <dt class="mcparg">PANE</dt>
+          <dd>The pane name to give the pane created when inserting a
+    notebook tab.<br>
+          </dd>
+        </dl>
+    This command lets the programmer insert one or more items or characters
+    into the contents of the control. For listboxes, edit, and combobox
+    controls,
+    the <tt>BEFORE</tt> argument is a zero-based index. If it is set to "<span class="mcpval">end</span>"
+    then the new items will be added at the end. For <span class="mcpwidget">MULTIEDIT</span>
+    controls, the index is of the format 'line.character'
+    where
+    the line is a one-based line number, and the character
+    is
+    a zero-based index of the character in the line. (1.0 is the
+    first
+    char of the first line.) For <tt>TREE</tt> controls, the <tt>BEFORE</tt>
+    argument isn't given or used. The <tt>ICONS</tt> argument will specify
+    what icons to show next to each <span class="mcparg">VALUE</span> inserted into the tree.
+    For <span class="mcpwidget">NOTEBOOK</span> widgets, the <span class="mcparg">NAME</span> and <tt>PANE</tt>
+    arguments are used, to specify the tab text and pane name of the tab to
+    add, respectively.<br>
+      
+      <a name="ctrlcmd-delete"></a><tt>DELETE(DLOGID, ID, [ITEMS], [FIRST], [LAST])</tt>
+      
+        <dl class="mcpoptdeflist">
+          <dt class="mcparg">DLOGID</dt>
+          <dd>The dialog identifier, used to
+    specify what dialog
+    you are editing a control in.</dd>
+          <dt class="mcparg">ID</dt>
+          <dd>The control identifier of the control
+    to delete characters/items
+    from.</dd>
+          <dt class="mcparg">ITEMS</dt>
+          <dd>The list of zero-based integer
+    indexes of the list
+    items to delete. This is used in tree controls, or as an
+    alternative to/in addition to <tt>FIRST</tt>/<tt>LAST</tt> for
+    listboxes.</dd>
+          <dt class="mcparg">FIRST</dt>
+          <dd>The first position to delete from. For <span class="mcpwidget">MULTIEDIT</span>
+    controls,
+    the index is of the format 'line.character' where the line
+    is a one-based line number, and the character is a zero-based
+    index
+    of the character in the line. (1.0 is the first char of the first
+    line.) For other controls, this is the zero-based index of the first
+    character/item
+    to delete.</dd>
+          <dt class="mcparg">LAST</dt>
+          <dd>The last position to delete to. For <span class="mcpwidget">MULTIEDIT</span>
+    controls,
+    the index is of the format 'line.character' where the line
+    is a one-based line number, and the character is a zero-based
+    index
+    of the character in the line. (1.0 is the first char of the first
+    line.) For other controls, <tt>LAST</tt> is the zero-based index of
+    the
+    last character/item to delete to.</dd>
+        </dl>
+    This command lets the programmer remove items or characters from the
+    contents
+    of a control. For listboxes, the <tt>ITEMS</tt> argument is a list of
+    zero-based
+    indexes into the list. For all other controls, the <tt>FIRST</tt> and <tt>LAST</tt>
+    arguments are used to specify the start and ending positions of a range
+    of text or items to delete. If <tt>LAST</tt> is not given, then
+    only
+    the <tt>FIRST</tt> item/character is deleted. If either <tt>FIRST</tt>
+    or <tt>LAST</tt> are set to "<span class="mcpval">end</span>" then they are assumed to be
+    the last character/item in the control.
+      <a name="ctrlcmd-select"></a><tt>SELECT(DLOGID, ID, [ITEMS], [FIRST], [LAST])</tt>
+      
+        <dl class="mcpoptdeflist">
+          <dt class="mcparg">DLOGID</dt>
+          <dd>The dialog identifier, used to specify what dialog you are
+    editing a control
+    in.</dd>
+          <dt class="mcparg">ID</dt>
+          <dd>The control identifier of the lcontrol to select
+    characters/items in.</dd>
+          <dt class="mcparg">ITEMS</dt>
+          <dd>The list of zero-based integer indexes of the list items to
+    select.
+    This is used with listboxes.</dd>
+          <dt class="mcparg">FIRST</dt>
+          <dd>The first position to select. For <span class="mcpwidget">MULTIEDIT</span>
+    controls,
+    the index is
+    of the format 'line.character' where the line is a one-based
+    line
+    number, and the character is a zero-based index of the
+    character
+    in the line. (1.0 is the first char of the first line.) For other
+    controls, this is the zero-based index of the first character/item to
+    select.</dd>
+          <dt class="mcparg">LAST</dt>
+          <dd>The last position to select to. For <span class="mcpwidget">MULTIEDIT</span>
+    controls,
+    the index
+    is of the format 'line.character' where the line is a one-based line
+    number,
+    and the character is a zero-based index of the character in the
+    line.
+    (1.0 is the first char of the first line.) For other controls, <tt>LAST</tt>
+    is
+    the zero-based index of the last character/item to select to.</dd>
+        </dl>
+    This command lets the programmer selected items or characters in the
+    contents
+    of a control. For listboxes, the <tt>ITEMS</tt> argument is a list of
+    zero-based
+    indexes into the list. For all other controls, the <tt>FIRST</tt> and <tt>LAST</tt>
+    arguments are used to specify the start and ending positions of a range
+    of text or items to select. If <tt>LAST</tt> is not given, then
+    only
+    the <tt>FIRST</tt> item/character is selected. If either <tt>FIRST</tt>
+    or <tt>LAST</tt> are set to "<span class="mcpval">end</span>" then they are assumed to be
+    the last character/item in the control.
+      <a name="ctrlcmd-show"></a><tt>SHOW(DLOGID, ID, VALUES*, [BEFORE])</tt>
+      
+        <dl class="mcpoptdeflist">
+          <dt class="mcparg">DLOGID</dt>
+          <dd>The dialog identifier, used to
+    specify what dialog
+    you are editing a control in.</dd>
+          <dt class="mcparg">ID</dt>
+          <dd>The control identifier of the control
+    to send this
+    command to.</dd>
+          <dt class="mcparg">POSITION</dt>
+          <dd>The zero-based integer index of the
+    list item or character
+    which should be scrolled into view if it is not there already.</dd>
+        </dl>
+      
+      This command lets the programmer insure that the given
+    list
+    item or character is scrolled into view. For listboxes, edit, and
+    combobox
+    controls, the <tt>POSITION</tt> argument is a zero-based index. If it
+    is
+    set to "<span class="mcpval">end</span>" then the last item/character will be shown.
+    For <span class="mcpwidget">MULTIEDIT</span> controls, the index is of the format 'line.character'
+    where the line is a one-based line number, and the character
+    is a zero-based index of the character in the line. (1.0 is the
+    first
+    char of the first line.) For <span class="mcpwidget">NOTEBOOK</span> controls, this raises
+    the given pane/tab.<br>
+      
+      <a name="ctrlcmd-cursor"></a><tt>CURSOR(DLOGID, ID, VALUES*, [BEFORE])</tt>
+      <dl class="mcpoptdeflist">
+        <dt class="mcparg">DLOGID</dt>
+        <dd>The dialog identifier, used to
+  specify what dialog
+  you are editing a control in.</dd>
+        <dt class="mcparg">ID</dt>
+        <dd>The control identifier of the control
+  to send this
+  command to.</dd>
+        <dt class="mcparg">POSITION</dt>
+        <dd>The zero-based integer index of the
+  list item or character
+  which the cursor should be placed before.</dd>
+      </dl>
+
+
+      This command lets the programmer move the
+    selection/insertion
+    cursor, also known as the caret. For listboxes, edit, and combobox
+    controls,
+    the <tt>POSITION</tt> argument is a zero-based index. If it is set to "<span class="mcpval">end</span>"
+    then the cursor will be placed at the last item, or after the last
+    character.
+    For <span class="mcpwidget">MULTIEDIT</span> controls, the index is of the format 'line.character'
+    where the line is a one-based line number, and the character
+    is a zero-based index of the character in the line. (1.0 is the
+    first
+    char of the first line.)
+  </div>
+</div>
+
+
+
+<div class="section">
+  <h3 class="secthead">3.2 The Simple Dialog</h3>
+  <div class="sectbody">
+    The first and simplest form of interaction is with the
+    simple
+    dialog; everything in the dialog is specified by the server; no
+    client-side
+    controls are added as with the Helper Dialog (see section 3.3). The
+    programmer
+    is responsible for adding at least one button which can be used to
+    dismiss
+    the dialog. If the dialog is dismissed by the user by clicking on the
+    titlebar's
+    close button, the button ID "<span class="mcpval">_closed</span>" is returned in the
+    buttonpress
+    message.
+  </div>
+</div>
+
+
+<div class="section">
+  <h3 class="secthead"> 3.3 The Helper Dialog</h3>
+  <div class="sectbody">
+    Sometimes the options for a program are best presented in a
+    linear sequence. The "Helper" dialog, modeled after the Microsoft
+    "Wizard"
+    configuration interface, is the mechanism to do so. It is just like the
+    simple dialog interface, except that it allows the programmer to string
+    together multiple screens in a series. These screens are each
+    represented
+    by unique panes, into which the programmer can add controls. The client
+    automatically adds "<span class="mcpval">&lt;&lt;Back</span>", "<span class="mcpval">Next&gt;&gt;</span>", "<span class="mcpval">Cancel</span>",
+    and "<span class="mcpval">Finish</span>" buttons to the bottom as necessary. Only the
+    Cancel
+    and Finish buttons send a message to the server, and they report button
+    IDs "<span class="mcpval">_cancel</span>" and "<span class="mcpval">_finish</span>" respectively. The values
+    of all changed controls are reported before any event message. If the
+    dialog
+    is dismissed by the user clicking on the titlebar's close button, the
+    button
+    ID "<span class="mcpval">_closed</span>" is returned in the buttonpress event message.
+  </div>
+</div>
+
+
+<div class="section">
+  <h3 class="secthead">3.4 The Tabbed Dialog</h3>
+  <div class="sectbody">
+    Sometimes there are more items to present to the user than a single
+    dialog can present. The Tabbed dialog, modeled after the Microsoft
+    Property Sheet interface, is the mechanism to do so. It presents the
+    user with a dialog that contains several different pages of controls that
+    they can randomly select from. The client program automatically adds
+    "<span class="mcpval">Cancel</span>", "<span class="mcpval">Apply</span>",
+    and "<span class="mcpval">Okay</span>" buttons to the bottom of the dialog.
+    When the "Okay" button is pressed, the dialog is dismissed, the changed
+    values are sent to the server as a series of ctrl-value messages, and a
+    buttonpress event message is sent to the server with a button ID of
+    "<span class="mcpval">_ok</span>".  When the "Apply" button is pressed,
+    the results are sent to the server without the dialog being dismissed,
+    and a buttonpress event message is send with an ID of
+    "<span class="mcpval">_apply</span>". When the Cancel button is pressed,
+    the dialog is dismissed, changed values are sent to the server, and a
+    buttonpress event message is sent to the server with an ID of
+    "<span class="mcpval">_cancel</span>".  If the dialog is dismissed by
+    the user clicking on the titlebar's close button, the button ID
+    "<span class="mcpval">_closed</span>" is returned in the buttonpress
+    event message.
+  </div>
+</div>
+
+
+<div class="section">
+  <h3 class="secthead">CHANGES TO THIS DOCUMENT</h3>
+  <div class="sectbody">
+    v0.902 - May 5, 1998
+    <ul>
+      <li>Various formatting changes</li>
+      <li>Added Changes section to end of document.</li>
+      <li>Noted that <span class="mcparg">REPORT</span> works only in <tt>PERSISTENT</tt> dialogs for various controls.</li>
+      <li>Added <span class="mcparg">ONVAL</span> and <span class="mcparg">OFFVAL</span> tags to <span class="mcpwidget">CHECKBOX</span>.</li>
+      <li>Added <span class="mcparg">VALUE</span> tag to <span class="mcpwidget">RADIO</span> control, to allow specifying the value returned by that radio button group, if that particular radio button is selected.</li>
+      <li>Added explanations for the <tt>EDIT</tt> control's <tt>LENGTH</tt> and <tt>ALLOW</tt> tags.</li>
+      <li>Changed the names of several muf functions from all uppercase to all lowercase.</li>
+      <li>Changed several references to integer <tt>&lt;serid&gt;</tt>'s to strings.</li>
+    </ul>
+    v0.903 - May 12, 1998
+    <ul>
+      <li>Changed name of VALUE tag in RADIO button to be RETURN.</li>
+      <li>Swapped TEXT and HRULE control explanations.</li>
+      <li>Added ID tags for all controls.</li>
+    </ul>
+    v0.904 - March 21, 1999
+    <ul>
+      <li>Stripped out any reference to MUF.</li>
+      <li>Removed any reference to the transport protocol. That's handled by MCP now.</li>
+      <li>Rewrote the higher-level GUI protocol as an MCP package.</li>
+    </ul>
+    v0.905 - June 25, 1999
+    <ul>
+      <li>Removed the PERSISTENT dialog type.</li>
+      <li>Added the TABBED dialog type.</li>
+      <li>Removed the list CLEAR command.</li>
+      <li>Added the 'all' option to the list DELETE command.</li>
+      <li>Fleshed out a lot of various message usages and argument descriptions.</li>
+    </ul>
+    v0.906 - July 5, 1999
+    <ul>
+      <li>Clarifications of Tabbed and Helper dialogs.</li>
+      <li>Clarifications of REQUIRED tags.</li>
+      <li>Removed SORTED from listbox.</li>
+      <li>Added HEIGHT tag to HRULE</li>
+      <li>Added WIDTH tag to VRULE</li>
+      <li>various other small changes.</li>
+    </ul>
+    v0.990 - April 8, 2001
+    <ul>
+      <li>Rewrote to reflect the way the MCP GUI protocol was actually implemented in <a href="http://www.belfry.com/fuzzball/trebuchet/faq.html">Trebuchet</a>, as that is the reference implementation.</li>
+      <li>Removed REQUIRED tags.</li>
+    </ul>
+  </div>
+</div>
+</body>
+</html>

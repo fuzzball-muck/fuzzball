@@ -1,0 +1,62 @@
+This first program checks the contents in a room and assembles a string
+which is an english description of the contents.  For example, for
+  
+Contents:
+a bell
+a book        it would print:         a bell, a book, and a candle.
+a candle
+  
+Contents:
+Huey          it would print:         Huey and Dewey
+Dewey
+  
+Contents:     it would print:         an apple     
+an apple
+  
+If there is nothing in the room, it will print "nothing."
+  
+( refs2namestr         dbreflist -- string                              )
+( takes a list of dbrefs on the stack, wih the count of them on top     )
+( returns a single string containing the names of all the items given   )
+  
+: refs2namestr (list -- s)
+  dup not if pop "nothing" exit then     (If no items, return "nothing")
+  dup 1 = if pop name exit then          (If one item, return it's name.)
+  1 - rot name                           (get name of first item if > 1)
+  begin                                    (start the loop)
+    over 1 = if ", and " else ", " then    (If last item, seperate with "and")
+    strcat rot name strcat                 (tack the item name onto the string)
+    swap 1 - swap                          (decrement the item count.)
+  over not until                         (if more items left, repeat loop)
+  swap pop                               (pop the item count off the stack)
+;
+  
+  
+( contents-list                                                        )
+( takes the dbref of the item to list the contents of.                 )
+( returns a list of dbrefs on the stack with the count of them on top. )
+
+: contents-list (dbref -- dbreflist)
+  contents                            (get the first item dbref)
+  0 begin                             (init counter and begin loop)
+    over while                          (if no more items, exit loop)
+    over next                           (get next item and push onto stack)
+    swap 1 +                            (increment count)
+  repeat                              (jump to beginning of loop)
+  swap pop                            (pop off excess #-1 terminator dbref)
+;
+  
+
+( room-cont-show                                                      )
+( takes nothing.                                                      )
+( returns nothing.                                                    )
+( displays the contents of the players room to the player on a single )
+(   line, seperated by commas.                                        )
+
+: room-cont-show ( -- )
+  me @ location                       (we want contents of players room)
+  contents-list                       (push contents onto stack)
+  refs2namestr                        (get names of contents in one string)
+  me @ swap notify                    (show the names string to the player)
+;
+

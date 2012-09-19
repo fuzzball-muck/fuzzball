@@ -1,0 +1,170 @@
+The BNF of the new MUV.  5/19/2000
+
+whitespace_char := ' ' | '\t' | '\r' ;
+whitespace := whitespace_char | whitespace_char whitespace ;
+ows := whitespace | [:nothing:] ;
+
+ident_char := [:letter:] | [:number:] | '-' | '_' ;
+ident_word := ident_char | ident_char ident_word ;
+identifier := ows ident_word ows;
+identifier_list := identifier | identifier ',' identifier_list ;
+
+unsigned_integer := digit | digit unsigned_integer ;
+integer := ows '+' unsigned_integer ows
+         | ows '-' unsigned_integer ows ;
+
+decimal := integer '.' unsigned_integer ;
+float_part := decimal | integer ;
+mantissa := 'E' | 'e' ;
+float := ows decimal ows
+       | ows float_part mantissa integer ows ;
+
+print_char = [:printable char:] ;
+escaped_char := '\' print_char ;
+string_char := print_char | escaped_char ;
+string_inside := string_char | string_char string_inside ;
+string := ows '"' string_inside '"' ows ;
+
+dbref := ows '#' integer ows ;
+
+address := ows "'" function_ident ;
+
+var_ident := identifier;
+variable := identifier;
+
+array_decl_expr := '{' expression_list '}' ;
+
+keyval_pair := expression ':' expression ;
+keyval_list := ows | keyval_pair | keyval_pair ',' keyval_list ;
+dict_decl_expr := '{' keyval_list '}' ;
+
+datum := integer
+       | float
+	   | dbref
+	   | string
+	   | address
+	   | lock
+	   | dict_decl_expr
+	   | array_decl_expr
+	   | variable array_deref
+	   | variable;
+
+array_setref := variable '[' expression ']' ;
+array_deref := variable '[' expression ']' ;
+
+function_ident := identifier ;
+function_call := function_ident '(' expression_list ')' ;
+
+lvalue := variable | array_setref ;
+assignment := lvalue '=' expression
+			| lvalue "+=" expression
+			| lvalue "-=" expression
+			| lvalue "*=" expression
+			| lvalue "/=" expression
+			| lvalue "%=" expression
+			| lvalue "&=" expression
+			| lvalue "^=" expression
+			| lvalue "|=" expression
+			| lvalue "<<=" expression
+			| lvalue ">>=" expression
+            ;
+
+bitshift_expr := expression "<<" expression
+               | expression ">>" expression ;
+
+bitwise_and_expr := expression '&' expression ;
+bitwise_xor_expr := expression '^' expression ;
+bitwise_or_expr  := expression '|' expression ;
+
+pre_incr := "++" variable ;
+post_incr := variable "++" ;
+pre_decr := "--" variable ;
+post_decr := variable "--" ;
+incdec_expr := pre_incr | post_incr | pre_decr | post_decr ;
+
+logical_not_or_incdec_expr := '!' expression  | incdec_expr ;
+
+logical_and_expr := expression "&&" expression ;
+logical_or_expr  := expression "||" expression ;
+
+eq_not_eq_expr := expression "==" expression
+                | expression "!=" expression ;
+
+lessgreat_expr := expression '<' expression
+                | expression "<=" expression
+                | expression '>' expression
+                | expression ">=" expression ;
+
+multdivmod_expr := expression '*' expression
+                 | expression '/' expression
+                 | expression '%' expression ;
+addsub_expr := expression '+' expression | expression '-' expression ;
+
+expression := ows expression ows
+            | '(' expression ')'
+            | datum
+			| function_call
+			| logical_not_or_incdec_expr
+			| multdivmod_expr
+			| addsub_expr
+			| bitshift_expr
+			| lessgreat_expr
+			| eq_not_eq_expr
+			| bitwise_and_expr
+			| bitwise_xor_expr
+			| bitwise_or_expr
+			| logical_and_expr
+			| logical_or_expr
+			| assignment
+			;
+
+expression_list := ows | expression | expression ',' expression_list ;
+
+optional_array_marker := [:null:] | "[]"
+var_type := "var" | "int" | "dbref" | "float" | "string" | "address" | "lock";
+
+var_decl := ows var_type whitespace var_ident optional_array_marker;
+var_decl_assign := var_decl ows '=' expression ;
+
+conditional := ows '(' expression ')' ows ;
+
+else_clause := ows | "else" statement ;
+if_stmt := "if" conditional statement else_clause ;
+for_stmt := "for" ows '(' expression ';' expression ';' expression ')' statement ;
+foreach_stmt := "foreach" ows '(' variable ',' variable ';' expression ')' statement ;
+while_stmt := "while" conditional statement ;
+dowhile_stmt := "do" ows statement ows "while" conditional ';' ;
+dountil_stmt := "do" ows statement ows "until" conditional ';' ;
+
+statement := ows statement 
+           | ';'
+		   | statement_block
+           | var_decl_assign ';'
+           | var_decl ';'
+           | expression ';'
+           | "break" ows ';'
+           | "continue" ows ';'
+           | "return" ows ';'
+           | "return" expression ';'
+		   | if_stmt
+		   | for_stmt
+		   | foreach_stmt
+		   | while_stmt
+		   | dowhile_stmt
+		   | dountil_stmt
+		   ;
+
+statements := statement | statement statements ;
+statement_block := '{' statements '}' ;
+
+func_decl_arg := var_decl ;
+func_decl_args := ows | func_decl_arg | func_decl_arg ',' func_decl_args ;
+func_decl_arglist := func_decl_args | func_decl_args ows "..." ;
+func_return_type := "void" | var_type | 
+func_access := ows | "public" | "wizcall" ;
+function_decl := func_access var_type optional_array_marker whitespace function_ident '(' func_decl_arglist ')' ows statement_block ;
+
+program := ows
+		 | function_decl program
+		 | var_decl program ;
+
