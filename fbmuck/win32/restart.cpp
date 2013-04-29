@@ -606,19 +606,20 @@ int main (int argc, char **argv) {
       char **args = (char **) malloc(sizeof(char *) * argcount);
       int marg = 0;
       args[marg++] = strdup(p->server);
-      args[marg++] = strdup(p->dbinfile);
-      args[marg++] = strdup(p->dboutfile);
+
       if (p->wizonly) args[marg++] = strdup("-wizonly");
-      if (p->hideconsole) args[marg++] = strdup("-hideconsole");
-      for (int i = 0; i < p->portcount; i++) {
-         char buf[15];
-         _snprintf(buf, 14, "%d", p->ports[i]);
-         args[marg++] = strdup(buf);
-      }
+      if (p->hideconsole) args[marg++] = strdup("-freeconsole");
       for (int i = 0; i < p->sslportcount; i++) {
          args[marg++] = strdup("-sport");
          char buf[15];
          _snprintf(buf, 14, "%d", p->sslports[i]);
+         args[marg++] = strdup(buf);
+      }
+      args[marg++] = strdup(p->dbinfile);
+      args[marg++] = strdup(p->dboutfile);
+      for (int i = 0; i < p->portcount; i++) {
+         char buf[15];
+         _snprintf(buf, 14, "%d", p->ports[i]);
          args[marg++] = strdup(buf);
       }
       args[marg++] = '\0';

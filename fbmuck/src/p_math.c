@@ -22,8 +22,12 @@ static int tmp, result;
 static double tl;
 static double fresult, tf1, tf2;
 
+#ifndef MAXINT
 #define MAXINT ~(1<<((sizeof(int)*8)-1))
+#endif
+#ifndef MININT
 #define MININT (1<<((sizeof(int)*8)-1))
+#endif
 
 int
 arith_good(double test)

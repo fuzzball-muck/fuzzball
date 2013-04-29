@@ -24,9 +24,8 @@
 /* Defining INF as infinite.  This is HUGE_VAL on IEEE754 systems. */
 #ifdef WIN32
 #include <limits>
-using namespace std;
-# define INF (numeric_limits<double>::infinity())
-# define NINF (-1 * numeric_limits<double>::infinity())
+# define INF (std::numeric_limits<double>::infinity())
+# define NINF (-1 * std::numeric_limits<double>::infinity())
 #elif defined(HUGE_VAL)
 # define INF (HUGE_VAL)
 # define NINF (-HUGE_VAL)

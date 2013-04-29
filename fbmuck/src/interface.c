@@ -217,6 +217,7 @@ void set_userstring(char **userstring, const char *command);
 int do_command(struct descriptor_data *d, char *command);
 int is_interface_command(const char* cmd);
 int queue_string(struct descriptor_data *, const char *);
+int send_keepalive(struct descriptor_data *d);
 int queue_write(struct descriptor_data *, const char *, int);
 int process_output(struct descriptor_data *d);
 int process_input(struct descriptor_data *d);
@@ -2243,7 +2244,7 @@ int
 send_keepalive(struct descriptor_data *d)
 {
 	int cnt;
-	char telnet_nop[] = {
+	unsigned char telnet_nop[] = {
 		TELNET_IAC, TELNET_NOP, '\0'
 	};
 
@@ -2254,7 +2255,7 @@ send_keepalive(struct descriptor_data *d)
 	}
 
 	if (d->telnet_enabled) {
-		cnt = socket_write(d, telnet_nop, strlen(telnet_nop));
+		cnt = socket_write(d, telnet_nop, 2);
 	} else {
 		cnt = socket_write(d, "", 0);
 	}
