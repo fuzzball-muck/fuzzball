@@ -400,6 +400,7 @@ prim_envprop(PRIM_PROTOTYPE)
 				break;
 			case PROP_FLTTYP:
 				fresult = PropDataFVal(ptr);
+				PushFloat(fresult);
 				break;
 			case PROP_REFTYP:
 				ref = PropDataRef(ptr);
