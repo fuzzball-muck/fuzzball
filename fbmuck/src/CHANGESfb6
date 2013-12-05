@@ -3,6 +3,7 @@ Fixed IPv6 support to allow concurrent IPv4 connections.
 Multi-threaded the resolver.
 Fixed bug in MUF ENVPROP primitive regarding Floats.
 Removed unfinished/broken GDBM_DATABASE define.
+Code cleanup: -Wall -pedantic -Werror success!
 
 
 
