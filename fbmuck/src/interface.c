@@ -34,7 +34,7 @@
 
 #ifndef WIN32
 # define NEED_SOCKLEN_T
-//"do not include netinet6/in6.h directly, include netinet/in.h.  see RFC2553"
+/* "do not include netinet6/in6.h directly, include netinet/in.h.  see RFC2553" */
 # include <sys/socket.h>
 # include <netinet/in.h>
 # include <netinet/tcp.h>
@@ -162,8 +162,8 @@ struct descriptor_data *descriptor_list = NULL;
 
 #define MAX_LISTEN_SOCKS 16
 
-// Yes, both of these should start defaulted to disabled.
-// If both are still disabled after arg parsing, we'll enable one or both.
+/* Yes, both of these should start defaulted to disabled. */
+/* If both are still disabled after arg parsing, we'll enable one or both. */
 static int ipv4_enabled = 0;
 static int ipv6_enabled = 0;
 
@@ -507,12 +507,12 @@ main(int argc, char **argv)
 
 #ifdef USE_IPV6
 	if (!ipv4_enabled && !ipv6_enabled) {
-	    // No -ipv4 or -ipv6 flags given.  Default to enabling both.
+	    /* No -ipv4 or -ipv6 flags given.  Default to enabling both. */
 	    ipv4_enabled = 1;
 	    ipv6_enabled = 1;
 	}
 #else
-	// If IPv6 isn't available always enable IPv4.
+	/* If IPv6 isn't available always enable IPv4. */
 	ipv4_enabled = 1;
 	ipv6_enabled = 0;
 #endif
@@ -1650,10 +1650,9 @@ void
 kill_resolver(void)
 {
 	int i;
-	pid_t p;
 
 	write(resolver_sock[1], "QUIT\n", 5);
-	p = wait(&i);
+	wait(&i);
 }
 
 
@@ -1844,7 +1843,8 @@ addrout(int lport, long a, unsigned short prt)
 	static char buf[128];
 	struct in_addr addr;
 
-	addr.s_addr = a;
+	bzero(&addr, sizeof(addr));
+	memcpy(&addr.s_addr, &a, sizeof(a));
 
 	prt = ntohs(prt);
 
@@ -1982,8 +1982,6 @@ initializesock(int s, const char *hostname, int is_ssl)
 {
 	struct descriptor_data *d;
 	char buf[128], *ptr;
-	int optval = 1;
-	socklen_t optvallen = sizeof(optval);
 
 	MALLOC(d, struct descriptor_data, 1);
 
@@ -2092,7 +2090,7 @@ make_socket_v6(int port)
 	*/
 
 	memset((char*)&server, 0, sizeof(server));
-	//server.sin6_len = sizeof(server);
+	/* server.sin6_len = sizeof(server); */
 	server.sin6_family = AF_INET6;
 	server.sin6_addr = in6addr_any;
 	server.sin6_port = htons(port);

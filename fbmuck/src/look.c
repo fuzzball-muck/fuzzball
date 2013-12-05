@@ -1505,7 +1505,7 @@ void
 do_sweep(int descr, dbref player, const char *name)
 {
 	dbref thing, ref, loc;
-	int flag, tellflag, dummy;
+	int flag, tellflag;
 	struct match_data md;
 	char buf[BUFFER_LEN];
 
@@ -1574,9 +1574,9 @@ do_sweep(int descr, dbref player, const char *name)
 			}
 			exit_match_exists(player, ref, "page", 0);
 			exit_match_exists(player, ref, "whisper", 0);
-			dummy = exit_match_exists(player, ref, "pose", 1) ||
-				exit_match_exists(player, ref, "pos", 1) ||
-				exit_match_exists(player, ref, "po", 1);
+			if (!exit_match_exists(player, ref, "pose", 1))
+				if (!exit_match_exists(player, ref, "pos", 1))
+					exit_match_exists(player, ref, "po", 1);
 			exit_match_exists(player, ref, "say", 0);
 			break;
 		}
@@ -1598,9 +1598,9 @@ do_sweep(int descr, dbref player, const char *name)
 
 		exit_match_exists(player, loc, "page", 0);
 		exit_match_exists(player, loc, "whisper", 0);
-		dummy = exit_match_exists(player, loc, "pose", 1) ||
-			exit_match_exists(player, loc, "pos", 1) ||
-			exit_match_exists(player, loc, "po", 1);
+		if (!exit_match_exists(player, loc, "pose", 1))
+			if (!exit_match_exists(player, loc, "pos", 1))
+				exit_match_exists(player, loc, "po", 1);
 		exit_match_exists(player, loc, "say", 0);
 
 		loc = getparent(loc);

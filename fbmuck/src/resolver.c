@@ -711,19 +711,19 @@ do_resolve(void)
 			doagain = 0;
 			*buf = '\0';
 
-			// lock input here.
+			/* lock input here. */
 			if (pthread_mutex_lock(&input_mutex)) {
 				return 0;
 			}
 			if (shutdown_was_requested) {
-				// unlock input here.
+				/* unlock input here. */
 				pthread_mutex_unlock(&input_mutex);
 				return 0;
 			}
 
 			result = fgets(buf, sizeof(buf), stdin);
 
-			// unlock input here.
+			/* unlock input here. */
 			pthread_mutex_unlock(&input_mutex);
 
 			if (shutdown_was_requested) {
@@ -754,7 +754,7 @@ do_resolve(void)
 	#ifdef USE_IPV6
 		bufptr = strchr(buf, ':');
 		if (bufptr) {
-			// Is an IPv6 addr.
+			/* Is an IPv6 addr. */
 			bufptr = strchr(buf, '(');
 			if (!bufptr) {
 				continue;
@@ -772,7 +772,7 @@ do_resolve(void)
 		}
 	#endif
 		if (!bufptr) {
-			// Is an IPv4 addr.
+			/* Is an IPv4 addr. */
 			sscanf(buf, "%d.%d.%d.%d(%d)%d", &ip1, &ip2, &ip3, &ip4, &prt, &myprt);
 			if (ip1 < 0 || ip2 < 0 || ip3 < 0 || ip4 < 0 || prt < 0) {
 				continue;
@@ -791,7 +791,7 @@ do_resolve(void)
 			snprintf(outbuf, sizeof(outbuf), "%d.%d.%d.%d(%d)|%s", ip1, ip2, ip3, ip4, prt, ptr);
 		}
 
-		// lock output here.
+		/* lock output here. */
 		if (pthread_mutex_lock(&output_mutex)) {
 			return 0;
 		}
@@ -799,7 +799,7 @@ do_resolve(void)
 		fprintf(stdout, "%s\n", outbuf);
 		fflush(stdout);
 
-		// unlock output here.
+		/* unlock output here. */
 		pthread_mutex_unlock(&output_mutex);
 	}
 

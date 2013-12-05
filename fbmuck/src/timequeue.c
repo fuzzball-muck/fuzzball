@@ -176,11 +176,9 @@ purge_timenode_free_pool(void)
 int
 control_process(dbref player, int pid)
 {
-	timequeue tmp, ptr = tqhead;
+	timequeue ptr = tqhead;
 
-	tmp = ptr;
 	while ((ptr) && (pid != ptr->eventnum)) {
-		tmp = ptr;
 		ptr = ptr->next;
 	}
 
@@ -536,7 +534,6 @@ void
 next_timequeue_event(void)
 {
 	struct frame *tmpfr;
-	dbref tmpcp;
 	int tmpbl, tmpfg;
 	timequeue lastevent, event;
 	int maxruns = 0;
@@ -602,7 +599,8 @@ next_timequeue_event(void)
 		} else if (event->typ == TQ_MUF_TYP) {
 			if (Typeof(event->called_prog) == TYPE_PROGRAM) {
 				if (event->subtyp == TQ_MUF_DELAY) {
-					tmpcp = PLAYER_CURR_PROG(event->uid);
+					/* Uncomment when DBFETCH "does" something */
+					/* FIXME: DBFETCH(event->uid); */
 					tmpbl = PLAYER_BLOCK(event->uid);
 					tmpfg = (event->fr->multitask != BACKGROUND);
 					interp_loop(event->uid, event->called_prog, event->fr, 0);
@@ -992,7 +990,7 @@ get_pidinfo(int pid)
 int
 dequeue_prog_real(dbref program, int killmode, const char *file, const int line)
 {
-	int count = 0;
+	int count = 0, ocount;
 	timequeue tmp, ptr;
 
 #ifdef DEBUG
@@ -1049,8 +1047,10 @@ dequeue_prog_real(dbref program, int killmode, const char *file, const int line)
 		}
 	}
 	DEBUGPRINT("dequeue_prog(3): about to muf_event_dequeue(#%d, %d)\n",program, killmode);
-	if (count < (count += muf_event_dequeue(program, killmode)))
-			prog_clean(tqhead->fr);
+	ocount = count;
+	count += muf_event_dequeue(program, killmode);
+	if (ocount < count)
+		prog_clean(tqhead->fr);
 	for (ptr = tqhead; ptr; ptr = ptr->next) {
 		if (ptr->typ == TQ_MUF_TYP && (ptr->subtyp == TQ_MUF_READ ||
 									   ptr->subtyp == TQ_MUF_TREAD)) {

@@ -538,9 +538,9 @@ interp(int descr, dbref player, dbref location, dbref program,
 	fr->brkpt.prog[0] = program;
 
 	fr->proftime.tv_sec = 0;
-    fr->proftime.tv_usec = 0;
-    fr->totaltime.tv_sec = 0;
-    fr->totaltime.tv_usec = 0;
+	fr->proftime.tv_usec = 0;
+	fr->totaltime.tv_sec = 0;
+	fr->totaltime.tv_usec = 0;
 
 	fr->variables[0].type = PROG_OBJECT;
 	fr->variables[0].data.objref = player;
@@ -555,7 +555,7 @@ interp(int descr, dbref player, dbref location, dbref program,
 		PROGRAM_INC_PROF_USES(program);
 	}
 	PROGRAM_INC_INSTANCES(program);
-	push(fr->argument.st, &(fr->argument.top), PROG_STRING, match_args ?
+	push(fr->argument.st, &(fr->argument.top), PROG_STRING, *match_args ?
 		 MIPSCAST alloc_prog_string(match_args) : 0);
 	return fr;
 }

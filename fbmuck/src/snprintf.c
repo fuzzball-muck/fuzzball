@@ -1188,7 +1188,6 @@ main (void)
 
 #endif /* !HAVE_SNPRINTF */
 
-static void empty_function(void) {empty_function();}
 static const char *snprintf_c_version = "$RCSfile: snprintf.c,v $ $Revision: 1.4 $";
 const char *get_snprintf_c_version(void) { return snprintf_c_version; }
 

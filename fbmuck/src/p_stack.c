@@ -796,8 +796,6 @@ struct forvars *pop_for(struct forvars *);
 void
 prim_for(PRIM_PROTOTYPE)
 {
-	int fortop;
-
 	CHECKOP(3);
 	oper3 = POP();				/* step */
 	oper2 = POP();				/* end */
@@ -812,7 +810,7 @@ prim_for(PRIM_PROTOTYPE)
 	if (fr->fors.top >= STACK_SIZE)
 		abort_interp("Too many nested FOR loops.");
 
-	fortop = fr->fors.top++;
+	fr->fors.top++;
 	fr->fors.st = push_for(fr->fors.st);
 	copyinst(oper1, &fr->fors.st->cur);
 	copyinst(oper2, &fr->fors.st->end);
@@ -831,8 +829,6 @@ prim_for(PRIM_PROTOTYPE)
 void
 prim_foreach(PRIM_PROTOTYPE)
 {
-	int fortop;
-
 	CHECKOP(1);
 	oper1 = POP();
 
@@ -841,7 +837,7 @@ prim_foreach(PRIM_PROTOTYPE)
 	if (fr->fors.top >= STACK_SIZE)
 		abort_interp("Too many nested FOR loops.");
 
-	fortop = fr->fors.top++;
+	fr->fors.top++;
 	fr->fors.st = push_for(fr->fors.st);
 
 	fr->fors.st->cur.type = PROG_INTEGER;

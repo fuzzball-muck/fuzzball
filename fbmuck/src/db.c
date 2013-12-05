@@ -1371,7 +1371,6 @@ void
 autostart_progs(void)
 {
 	dbref i;
-	struct object *o;
 	struct line *tmp;
 
 	if (db_conversion_flag) {
@@ -1383,7 +1382,8 @@ autostart_progs(void)
 			if ((FLAGS(i) & ABODE) && TrueWizard(OWNER(i))) {
 				/* pre-compile AUTOSTART programs. */
 				/* They queue up when they finish compiling. */
-				o = DBFETCH(i);
+				/* Uncomment when DBFETCH "does" something. */
+				/* FIXME: DBFETCH(i); */
 				tmp = PROGRAM_FIRST(i);
 				PROGRAM_SET_FIRST(i, (struct line *) read_program(i));
 				do_compile(-1, OWNER(i), i, 0);

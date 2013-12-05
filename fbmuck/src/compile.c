@@ -1914,7 +1914,7 @@ do_directive(COMPSTATE * cstat, char *direct)
 			snprintf(defstr, sizeof(defstr), "#%i \"%s\" call", cstat->program, tmpname);
 
 			if (doitset) {
-				if (defstr && *defstr) {
+				if (*defstr) {
 					add_property(cstat->program, propname, defstr, 0);
 				} else {
 					remove_property(cstat->program, propname);

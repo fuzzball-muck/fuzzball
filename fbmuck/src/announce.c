@@ -27,7 +27,7 @@
 #include <string.h>
 #include <unistd.h>
 
-//"do not include netinet6/in6.h directly, include netinet/in.h.  see RFC2553"
+/* "do not include netinet6/in6.h directly, include netinet/in.h.  see RFC2553" */
 
 extern char **environ;
 #ifdef HAVE_ERRNO_H
