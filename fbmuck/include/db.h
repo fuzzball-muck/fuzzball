@@ -70,19 +70,14 @@ typedef int dbref;				/* offset into db */
 #define DB_WRITELOCK(x)
 #define DB_RELEASE(x)
 
-#ifdef GDBM_DATABASE
-#  define DBFETCH(x)  dbfetch(x)
-#  define DBDIRTY(x)  dbdirty(x)
-#else							/* !GDBM_DATABASE */
-#  define DBFETCH(x)  (db + (x))
-#  ifdef DEBUGDBDIRTY
-#    define DBDIRTY(x)  {if (!(db[x].flags & OBJECT_CHANGED))  \
+#define DBFETCH(x)  (db + (x))
+#ifdef DEBUGDBDIRTY
+#  define DBDIRTY(x)  {if (!(db[x].flags & OBJECT_CHANGED))  \
 			   log2file("dirty.out", "#%d: %s %d\n", (int)x, \
 			   __FILE__, __LINE__); \
 		       db[x].flags |= OBJECT_CHANGED;}
-#  else
-#    define DBDIRTY(x)  {db[x].flags |= OBJECT_CHANGED;}
-#  endif
+#else
+#  define DBDIRTY(x)  {db[x].flags |= OBJECT_CHANGED;}
 #endif
 
 #define DBSTORE(x, y, z)    {DBFETCH(x)->y = z; DBDIRTY(x);}
