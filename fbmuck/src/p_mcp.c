@@ -31,7 +31,7 @@ struct mcp_muf_context {
    requirement from an M3. This is not .top because .top will usually 
    be $lib/gui. This could be expanded to check the entire MUF chain. */
 #define CHECKMCPPERM() \
-  if ((mlev < tp_mcp_muf_mlev) && !controls(player,fr->caller.st[1])) \
+  if ((mlev < tp_mcp_muf_mlev) && !(player == OWNER(fr->caller.st[1]))) \
 	  abort_interp("Permission denied!!!");
 
 
