@@ -27,6 +27,13 @@ struct mcp_muf_context {
 	dbref prog;
 };
 
+/* This allows using GUI if the player owns the MUF, which drops the
+   requirement from an M3. This is not .top because .top will usually 
+   be $lib/gui. This could be expanded to check the entire MUF chain. */
+#define CHECKMCPPERM() \
+  if ((mlev < tp_mcp_muf_mlev) && !controls(player,fr->caller.st[1])) \
+	  abort_interp("Permission denied!!!");
+
 
 void
 muf_mcp_context_cleanup(void *context)
@@ -293,8 +300,7 @@ prim_mcp_register(PRIM_PROTOTYPE)
 	/* oper1  oper2   oper3  */
 	/* pkgstr minver  maxver */
 
-	if (mlev < tp_mcp_muf_mlev)
-		abort_interp("Permission denied.");
+        CHECKMCPPERM();
 	if (oper1->type != PROG_STRING)
 		abort_interp("Package name string expected. (1)");
 	if (oper2->type != PROG_FLOAT)
@@ -338,8 +344,7 @@ prim_mcp_register_event(PRIM_PROTOTYPE)
 	/* oper1  oper2   oper3  */
 	/* pkgstr minver  maxver */
 
-	if (mlev < tp_mcp_muf_mlev)
-		abort_interp("Permission denied.");
+        CHECKMCPPERM();
 	if (oper1->type != PROG_STRING)
 		abort_interp("Package name string expected. (1)");
 	if (oper2->type != PROG_FLOAT)
@@ -422,8 +427,7 @@ prim_mcp_bind(PRIM_PROTOTYPE)
 	/* oper1  oper2  oper3 */
 	/* pkgstr msgstr address */
 
-	if (mlev < tp_mcp_muf_mlev)
-		abort_interp("Permission denied.");
+        CHECKMCPPERM();
 	if (oper1->type != PROG_STRING)
 		abort_interp("Package name string expected. (1)");
 	if (oper2->type != PROG_STRING)
@@ -485,8 +489,7 @@ prim_mcp_send(PRIM_PROTOTYPE)
 	/* oper4 oper1  oper2  oper3 */
 	/* descr pkgstr msgstr argsarray */
 
-	if (mlev < tp_mcp_muf_mlev)
-		abort_interp("Permission denied.");
+        CHECKMCPPERM();
 	if (oper4->type != PROG_INTEGER)
 		abort_interp("Integer descriptor number expected. (1)");
 	if (oper1->type != PROG_STRING)
@@ -699,8 +702,7 @@ prim_gui_dlog_create(PRIM_PROTOTYPE)
 	oper2 = POP();				/* str  type */
 	oper1 = POP();				/* int  descr */
 
-	if (mlev < tp_mcp_muf_mlev)
-		abort_interp("Permission denied.");
+        CHECKMCPPERM();
 	if (oper1->type != PROG_INTEGER)
 		abort_interp("Integer descriptor number expected. (1)");
 	if (!GuiSupported(oper1->data.number))
@@ -769,8 +771,7 @@ prim_gui_dlog_show(PRIM_PROTOTYPE)
 	CHECKOP(1);
 	oper1 = POP();				/* str  dlogid */
 
-	if (mlev < tp_mcp_muf_mlev)
-		abort_interp("Permission denied.");
+        CHECKMCPPERM();
 	if (oper1->type != PROG_STRING)
 		abort_interp("String dialog ID expected.");
 	if (!oper1->data.string || !oper1->data.string->data[0])
@@ -792,8 +793,7 @@ prim_gui_dlog_close(PRIM_PROTOTYPE)
 	CHECKOP(1);
 	oper1 = POP();				/* str  dlogid */
 
-	if (mlev < tp_mcp_muf_mlev)
-		abort_interp("Permission denied.");
+        CHECKMCPPERM();
 	if (oper1->type != PROG_STRING)
 		abort_interp("String dialog ID expected.");
 	if (!oper1->data.string || !oper1->data.string->data[0])
@@ -834,8 +834,7 @@ prim_gui_ctrl_create(PRIM_PROTOTYPE)
 	oper2 = POP();				/* str  type */
 	oper1 = POP();				/* str  dlogid */
 
-	if (mlev < tp_mcp_muf_mlev)
-		abort_interp("Permission denied.");
+        CHECKMCPPERM();
 	if (oper1->type != PROG_STRING)
 		abort_interp("Dialog ID string expected. (1)");
 	if (!oper1->data.string || !oper1->data.string->data[0])
@@ -934,8 +933,6 @@ prim_gui_ctrl_command(PRIM_PROTOTYPE)
 	oper3 = POP();				/* str  ctrlid */
 	oper1 = POP();				/* str  dlogid */
 
-	if (mlev < tp_mcp_muf_mlev)
-		abort_interp("Permission denied.");
 	if (oper1->type != PROG_STRING)
 		abort_interp("Dialog ID string expected. (1)");
 	if (!oper1->data.string || !*oper1->data.string->data)
@@ -1026,8 +1023,7 @@ prim_gui_value_set(PRIM_PROTOTYPE)
 	oper2 = POP();				/* str ctrlid */
 	oper1 = POP();				/* str dlogid */
 
-	if (mlev < tp_mcp_muf_mlev)
-		abort_interp("Permission denied.");
+        CHECKMCPPERM();
 	if (oper3->type != PROG_STRING && oper3->type != PROG_ARRAY)
 		abort_interp("String or string list control value expected. (3)");
 
@@ -1114,8 +1110,7 @@ prim_gui_values_get(PRIM_PROTOTYPE)
 	CHECKOP(1);
 	oper1 = POP();				/* str  dlogid */
 
-	if (mlev < tp_mcp_muf_mlev)
-		abort_interp("Permission denied.");
+        CHECKMCPPERM();
 	if (oper1->type != PROG_STRING)
 		abort_interp("String dialog ID expected.");
 	if (!oper1->data.string || !oper1->data.string->data[0])
@@ -1175,8 +1170,7 @@ prim_gui_value_get(PRIM_PROTOTYPE)
 	oper2 = POP();				/* str  ctrlid */
 	oper1 = POP();				/* str  dlogid */
 
-	if (mlev < tp_mcp_muf_mlev)
-		abort_interp("Permission denied.");
+        CHECKMCPPERM();
 	if (oper1->type != PROG_STRING)
 		abort_interp("String dialog ID expected. (1)");
 	if (!oper1->data.string || !*oper1->data.string->data)

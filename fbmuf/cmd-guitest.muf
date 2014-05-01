@@ -2,7 +2,7 @@
 1 99999 d
 1 i
 $include $lib/gui
-$def tell descrcon swap connotify
+$def tell .tell
 $def }join } array_make "" array_join
  
 $def URL1 "http://www.belfry.com/pics/revhead.gif"
@@ -14,12 +14,12 @@ $def URL4 "http://www.belfry.com/pics/belfry.jpg"
     dlogid @ GUI_VALUES_GET var! vals
     context @ "descr" [] var! dscr
     
-    { ctrlid @ " sent " event @ " event!" }join dscr @ tell 
+    { ctrlid @ " sent " event @ " event!" }join tell 
   
     vals @ foreach
         swap " = " strcat swap "\r" array_join strcat
         "\r    "  "\r" subst
-        dscr @ tell
+        tell
     repeat
     0
 ;
@@ -382,10 +382,10 @@ $def URL4 "http://www.belfry.com/pics/belfry.jpg"
         background
         gui_event_process
         pop pop
-        DESCR "Done." descrnotify
+        "Done." tell
     else
         ( Put in old-style config system here. )
-        DESCR descrcon "Gui not supported!" connotify
+		"Gui not supported!" tell
     then
 ;
 .
@@ -394,7 +394,7 @@ q
 @register #me cmd-guitest=tmp/prog1
 @set $tmp/prog1=W
 @set $tmp/prog1=L
-@set $tmp/prog1=3
+@set $tmp/prog1=2
 @propset $tmp/prog1=int:/.debug/errcount:61
 @propset $tmp/prog1=int:/.debug/lastcrash:987454465
 @propset $tmp/prog1=str:/.debug/lasterr:lib-gui(#4), line 631; GUI_DLOG_CLOSE: Internal error: GUI not available.
