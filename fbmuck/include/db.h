@@ -165,9 +165,6 @@ typedef int dbref;				/* offset into db */
 #define SETVALUE(x,y)	add_property(x, MESGPROP_VALUE, NULL, y)
 #define LOADVALUE(x,y)	add_prop_nofetch(x, MESGPROP_VALUE, NULL, y)
 
-#define ISGUEST(x)	(get_property(x, MESGPROP_GUEST) != NULL)
-#define NOGUEST(_cmd,x) if(ISGUEST(x)) { char tmpstr[BUFFER_LEN]; log_status("Guest %s(#%d) failed attempt to %s.\n",NAME(x),x,_cmd); snprintf(tmpstr, sizeof(tmpstr), "Guests are not allowed to %s.\r", _cmd); notify_nolisten(x,tmpstr,1); return; }
-
 #define DB_PARMSINFO     0x0001
 #define DB_COMPRESSED    0x0002
 
@@ -255,6 +252,28 @@ typedef long object_flag_type;
    or thing is, well, truely a wizard. Ie it ignores QUELL. */
 #define TrueWizard(x) ((FLAGS(x) & WIZARD) != 0)
 #define Dark(x) ((FLAGS(x) & DARK) != 0)
+
+/* ISGUEST determines whether a particular player is a guest, based on the existence
+   of the property MESGPROP_GUEST.  If GOD_PRIV is defined, then only God can bypass
+   the ISGUEST() check.  Otherwise, any TrueWizard can bypass it.  (This is because
+   @set is blocked from guests, and thus any Wizard who had both MESGPROP_GUEST and
+   QUELL set would be prevented from unsetting their own QUELL flag to be able to
+   clear MESGPROP_GUEST.) */
+#ifdef GOD_PRIV
+#define ISGUEST(x)	(get_property(x, MESGPROP_GUEST) != NULL && !God(x))
+#else /* !defined(GOD_PRIV)*/
+#define ISGUEST(x)	(get_property(x, MESGPROP_GUEST) != NULL && ((FLAGS(x) & TYPE_PLAYER) && !TrueWizard(x)))
+#endif /* GOD_PRIV */
+#define NOGUEST(_cmd,x) \
+if(ISGUEST(x)) \
+{   \
+    char tmpstr[BUFFER_LEN]; \
+    log_status("Guest %s(#%d) failed attempt to %s.\n",NAME(x),x,_cmd); \
+    snprintf(tmpstr, sizeof(tmpstr), "Guests are not allowed to %s.\r", _cmd); \
+    notify_nolisten(x,tmpstr,1); \
+    return; \
+}
+
 
 #define MLevRaw(x) (((FLAGS(x) & MUCKER)? 2:0) + ((FLAGS(x) & SMUCKER)? 1:0))
 
