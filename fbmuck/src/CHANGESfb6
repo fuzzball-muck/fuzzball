@@ -1,3 +1,6 @@
+2.2fb6.13
+Fixed a catastrophic privilege de-escalation scenario.  (no bug number)
+
 2.2fb6.12
 Allow mcp primitives below m3 if player owns the program.
 Fixed IPv6 support to allow concurrent IPv4 connections.
