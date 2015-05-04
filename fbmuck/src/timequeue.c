@@ -414,6 +414,10 @@ handle_read_event(int descr, dbref player, const char *command)
 	if (ptr) {
 		/* remember our program, and our execution frame. */
 		fr = ptr->fr;
+		if (fr == NULL) {
+			fprintf(stderr, "handle_read_event(): NULL frame !  Ignored.\n");
+			return;
+		}
 		if (!fr->brkpt.debugging || fr->brkpt.isread) {
 			if (!fr->wantsblanks && command && !*command) {
 				FLAGS(player) = oldflags;
@@ -1045,16 +1049,17 @@ dequeue_prog_real(dbref program, int killmode, const char *file, const int line)
 			count++;
 			ptr = tmp;
 		}
-	}
-	DEBUGPRINT("dequeue_prog(3): about to muf_event_dequeue(#%d, %d)\n",program, killmode);
-	ocount = count;
-	count += muf_event_dequeue(program, killmode);
-	if (ocount < count)
-		prog_clean(tqhead->fr);
-	for (ptr = tqhead; ptr; ptr = ptr->next) {
-		if (ptr->typ == TQ_MUF_TYP && (ptr->subtyp == TQ_MUF_READ ||
-									   ptr->subtyp == TQ_MUF_TREAD)) {
-			FLAGS(ptr->uid) |= (INTERACTIVE | READMODE);
+
+		DEBUGPRINT("dequeue_prog(3): about to muf_event_dequeue(#%d, %d)\n",program, killmode);
+		ocount = count;
+		count += muf_event_dequeue(program, killmode);
+		if (ocount < count && tqhead->fr)
+			prog_clean(tqhead->fr);
+		for (ptr = tqhead; ptr; ptr = ptr->next) {
+			if (ptr->typ == TQ_MUF_TYP && (ptr->subtyp == TQ_MUF_READ ||
+										   ptr->subtyp == TQ_MUF_TREAD)) {
+				FLAGS(ptr->uid) |= (INTERACTIVE | READMODE);
+			}
 		}
 	}
 	/* and just to make sure we got them all... otherwise, we need
