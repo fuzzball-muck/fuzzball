@@ -256,10 +256,12 @@ muf_event_dequeue(dbref prog, int killmode)
 				continue;
 			}
 		}
-		if (!proc->fr->been_background)
-			PLAYER_SET_BLOCK(proc->player, 0);
-		muf_event_purge(proc->fr);
-		prog_clean(proc->fr);
+		if (proc->fr) {
+			if (!proc->fr->been_background)
+				PLAYER_SET_BLOCK(proc->player, 0);
+			muf_event_purge(proc->fr);
+			prog_clean(proc->fr);
+		}
 		proc->deleted = 1;
 		count++;
 	}
@@ -780,7 +782,7 @@ muf_event_process(void)
 				/* Make sure it's not waiting for a READ event, if it's
 				 * backgrounded */
 
-				if(proc->fr && proc->fr->been_background) {
+				if (proc->fr->been_background) {
 					int cnt = 0;
 					for(cnt = 0; cnt < proc->filtercount; cnt++) {
 						if(0==strcasecmp(proc->filters[cnt],"READ")) {

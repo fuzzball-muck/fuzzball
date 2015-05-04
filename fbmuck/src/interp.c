@@ -766,6 +766,11 @@ prog_clean(struct frame *fr)
 	int i;
 	struct frame *ptr;
 
+	if (fr == NULL) {
+		fprintf(stderr, "prog_clean(): Tried to free a NULL frame !  Ignored.\n");
+		return;
+	}
+
 	for (ptr = free_frames_list; ptr; ptr = ptr->next) {
 		if (ptr == fr) {
 			time_t lt;
