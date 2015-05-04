@@ -318,7 +318,7 @@ RCLEAR(struct inst *oper, char *file, int line)
 		format_time(buf, 32, "%c", uw32localtime(&lt));
 #endif
 		fprintf(stderr, "%.32s: ", buf);
-		fprintf(stderr, "Attempt to re-CLEAR() instruction from %s:%hd "
+		fprintf(stderr, "Attempt to re-CLEAR() instruction from %s:%d "
 				"previously CLEAR()ed at %s:%d\n", file, line, (char *) oper->data.addr,
 				oper->line);
 		assert(0); /* If debugging, we want to figure out just what

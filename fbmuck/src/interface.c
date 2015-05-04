@@ -1610,8 +1610,7 @@ new_connection_v6(int port, int sock, int is_ssl)
 		fcntl(newsock, F_SETFD, 1);
 # endif
 		strcpyn(hostname, sizeof(hostname), addrout_v6(port, &(addr.sin6_addr), addr.sin6_port));
-		log_status("ACCEPT: %s(%d) on descriptor %d", hostname,
-				   ntohs(addr.sin6_port), newsock);
+		log_status("ACCEPT: %s on descriptor %d", hostname, newsock);
 		log_status("CONCOUNT: There are now %d open connections.", ++ndescriptors);
 		return initializesock(newsock, hostname, is_ssl);
 	}
@@ -1636,8 +1635,7 @@ new_connection(int port, int sock, int is_ssl)
 		fcntl(newsock, F_SETFD, 1);
 #endif
 		strcpyn(hostname, sizeof(hostname), addrout(port, addr.sin_addr.s_addr, addr.sin_port));
-		log_status("ACCEPT: %s(%d) on descriptor %d", hostname,
-				   ntohs(addr.sin_port), newsock);
+		log_status("ACCEPT: %s on descriptor %d", hostname, newsock);
 		log_status("CONCOUNT: There are now %d open connections.", ++ndescriptors);
 		return initializesock(newsock, hostname, is_ssl);
 	}
@@ -1844,7 +1842,7 @@ addrout(int lport, long a, unsigned short prt)
 	struct in_addr addr;
 
 	bzero(&addr, sizeof(addr));
-	memcpy(&addr.s_addr, &a, sizeof(a));
+	memcpy(&addr.s_addr, &a, sizeof(struct in_addr));
 
 	prt = ntohs(prt);
 

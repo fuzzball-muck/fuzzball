@@ -42,7 +42,10 @@ void set_signals(void);
 RETSIGTYPE bailout(int);
 RETSIGTYPE sig_dump_status(int i);
 RETSIGTYPE sig_shutdown(int i);
+
+#ifdef SPAWN_HOST_RESOLVER
 RETSIGTYPE sig_reap(int i);
+#endif
 
 #ifdef _POSIX_VERSION
 void our_signal(int signo, void (*sighandler) (int));
@@ -141,9 +144,10 @@ set_sigs_intern(int bail)
 	/* didn't manage to lose that control tty, did we? Ignore it anyway. */
 	our_signal(SIGHUP, SET_IGN);
 
+#ifdef SPAWN_HOST_RESOLVER
 	/* resolver's exited. Better clean up the mess our child leaves */
 	our_signal(SIGCHLD, bail ? SIG_DFL : sig_reap);
-
+#endif
 	/* standard termination signals */
 	our_signal(SIGINT, SET_BAIL);
 	our_signal(SIGTERM, SET_BAIL);
@@ -237,6 +241,7 @@ RETSIGTYPE sig_shutdown(int i)
 #endif
 }
 
+#ifdef SPAWN_HOST_RESOLVER
 /*
  * Clean out Zombie Resolver Process.
  */
@@ -314,8 +319,7 @@ RETSIGTYPE sig_reap(int i)
 	}
 	return RETSIGVAL;
 }
-
-
+#endif
 
 #else /* WIN32 */
 
@@ -326,8 +330,10 @@ RETSIGTYPE sig_reap(int i)
 #define CONTROL_KEY (RIGHT_CTRL_PRESSED | LEFT_CTRL_PRESSED) 
 
 
-
+#ifdef SPAWN_HOST_RESOLVER
 void sig_reap(int i) {}
+#endif
+
 void sig_shutdown(int i) {}
 void sig_dumpstatus(int i) {}
 void set_sigs_intern(int bail) {}

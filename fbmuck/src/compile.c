@@ -3911,7 +3911,7 @@ size_prog(dbref prog)
 		} else if (c[i].type == PROG_STRING && c[i].data.string) {
 			byts += strlen(c[i].data.string->data) + 1;
 			byts += sizeof(struct shared_string);
-		} else if ((c[i].type == PROG_ADD))
+		} else if (c[i].type == PROG_ADD)
 			byts += sizeof(struct prog_addr);
 	}
 	byts += size_pubs(PROGRAM_PUBS(prog));
