@@ -908,8 +908,8 @@ void
 prim_ext_name_okp(PRIM_PROTOTYPE)
 {
 	/* These are function pointers */
-	int(*ok1) (const char*);
-	int(*ok2) (const char*);
+	int(*ok1) (const char*) = NULL;
+	int(*ok2) (const char*) = NULL;
 	
 	CHECKOP(2);
 	oper1 = POP();
@@ -937,7 +937,6 @@ prim_ext_name_okp(PRIM_PROTOTYPE)
 			ok2 = ok_name;
 		} else if ( !strcmp(buf,"p") || !strcmp(buf,"player") ) {
 			ok1 = ok_player_name;
-			ok2 = NULL;
 		} else if ( !strcmp(buf,"f") || !strcmp(buf,"muf") \
 				|| !strcmp(buf,"program") ) {
 			ok1 = ok_ascii_other;
@@ -961,7 +960,6 @@ prim_ext_name_okp(PRIM_PROTOTYPE)
 			break;
 		case TYPE_PLAYER:
 			ok1 = ok_player_name;
-			ok2 = NULL;
 			break;
 		}
 

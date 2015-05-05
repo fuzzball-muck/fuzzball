@@ -36,6 +36,7 @@ char *in_filename = NULL;
 extern void do_showextver(dbref player);
 void fork_and_dump(void);
 void dump_database(void);
+void do_showextver(dbref player);
 
 void
 do_dump(dbref player, const char *newfile)

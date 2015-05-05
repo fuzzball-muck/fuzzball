@@ -128,6 +128,11 @@ alloc_timenode(int typ, int subtyp, time_t mytime, int descr, dbref player,
 static void
 free_timenode(timequeue ptr)
 {
+	if (!ptr) {
+		log_status("WARNING: free_timenode(): NULL ptr passed !  Ignored.");
+		return;
+	}
+
 	if (ptr->command)
 		free(ptr->command);
 	if (ptr->called_data)
@@ -213,10 +218,12 @@ add_event(int event_typ, int subtyp, int dtime, int descr, dbref player, dbref l
 	time_t rtime = time((time_t *) NULL) + (time_t) dtime;
 	int mypids = 0;
 
-	for (ptr = tqhead, mypids = 0; ptr; ptr = ptr->next) {
-		if (ptr->uid == player)
-			mypids++;
-		lastevent = ptr;
+	if (tqhead) {
+		for (ptr = tqhead, mypids = 0; ptr; ptr = ptr->next) {
+			if (ptr->uid == player)
+				mypids++;
+			lastevent = ptr;
+		}
 	}
 
 	if (event_typ == TQ_MUF_TYP && subtyp == TQ_MUF_READ) {
@@ -260,9 +267,9 @@ add_event(int event_typ, int subtyp, int dtime, int descr, dbref player, dbref l
 	}
 
 	ptr = tqhead;
-	while ((ptr->next) && (rtime >= ptr->next->when) &&
-		   !(ptr->next->typ == TQ_MUF_TYP && ptr->next->subtyp == TQ_MUF_READ)
-			) {
+	while (ptr && ptr->next && rtime >= ptr->next->when &&
+		   !(ptr->next->typ == TQ_MUF_TYP &&
+			 ptr->next->subtyp == TQ_MUF_READ)) {
 		ptr = ptr->next;
 	}
 
@@ -317,6 +324,10 @@ add_muf_delayq_event(int delay, int descr, dbref player, dbref loc, dbref trig,
 int
 add_muf_read_event(int descr, dbref player, dbref prog, struct frame *fr)
 {
+	if (!fr) {
+		panic("add_muf_read_event(): NULL frame passed !");
+	}
+
 	FLAGS(player) |= (INTERACTIVE | READMODE);
 	return add_event(TQ_MUF_TYP, TQ_MUF_READ, -1, descr, player, -1, fr->trig,
 					 prog, fr, "READ", NULL, NULL);
@@ -325,6 +336,10 @@ add_muf_read_event(int descr, dbref player, dbref prog, struct frame *fr)
 int
 add_muf_tread_event(int descr, dbref player, dbref prog, struct frame *fr, int delay)
 {
+	if (!fr) {
+		panic("add_muf_tread_event(): NULL frame passed !");
+	}
+
 	FLAGS(player) |= (INTERACTIVE | READMODE);
 	return add_event(TQ_MUF_TYP, TQ_MUF_TREAD, delay, descr, player, -1, fr->trig,
 					 prog, fr, "READ", NULL, NULL);
@@ -333,6 +348,10 @@ add_muf_tread_event(int descr, dbref player, dbref prog, struct frame *fr, int d
 int
 add_muf_timer_event(int descr, dbref player, dbref prog, struct frame *fr, int delay, char *id)
 {
+	if (!fr) {
+		panic("add_muf_timer_event(): NULL frame passed !");
+	}
+
 	char buf[40];
 	snprintf(buf, sizeof(buf), "TIMER.%.32s", id);
 	fr->timercount++;
@@ -415,7 +434,7 @@ handle_read_event(int descr, dbref player, const char *command)
 		/* remember our program, and our execution frame. */
 		fr = ptr->fr;
 		if (fr == NULL) {
-			fprintf(stderr, "handle_read_event(): NULL frame !  Ignored.\n");
+			log_status("WARNING: handle_read_event(): NULL frame !  Ignored.");
 			return;
 		}
 		if (!fr->brkpt.debugging || fr->brkpt.isread) {
@@ -701,6 +720,11 @@ static int
 has_refs(dbref program, timequeue ptr)
 {
 	int loop;
+
+	if (!ptr) {
+		log_status("WARNING: has_refs(): NULL ptr passed !  Ignored.");
+		return 0;
+	}
 
 	if (ptr->typ != TQ_MUF_TYP || !(ptr->fr) ||
 		Typeof(program) != TYPE_PROGRAM || !(PROGRAM_INSTANCES(program)))

@@ -19,6 +19,7 @@ else
 fi
 
 generation=`expr $generation + 1`
+export LC_ALL=C 
 creation=`date | awk '{if (NF == 6) { print $1 " "  $2 " " $3 " "  $6 " at " $4 " " $5 } else { print $1 " "  $2 " " $3 " " $7 " at " $4 " " $5 " " $6 }}'`
 cat > version.c <<EOF
 /*

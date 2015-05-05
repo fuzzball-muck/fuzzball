@@ -13,6 +13,7 @@
 #include "tune.h"
 #include "props.h"
 #include "externs.h"
+#include "interface.h"
 
 
 #define Comparator(x,y) string_compare(x,y)
@@ -258,8 +259,9 @@ remove_propnode(char *key, PropPtr * root)
 			avl = AVL_LF(avl);
 		} else {
 			tmp = remove_propnode(PropName(getmax(AVL_LF(avl))), &AVL_LF(avl));
-			if (!tmp)
-				abort();		/* this shouldn't be possible. */
+			if (!tmp) {	/* this shouldn't be possible. */
+				panic("remove_propnode() returned NULL !");
+			}
 			AVL_LF(tmp) = AVL_LF(avl);
 			AVL_RT(tmp) = AVL_RT(avl);
 			avl = tmp;

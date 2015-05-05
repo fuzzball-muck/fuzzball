@@ -27,8 +27,9 @@
 /************************************************************************/
 
 #include "config.h"
+#include "externs.h"
 
-#define BUFFER_LEN 16384		/* nice big buffer */
+#define COMPRESS_BUFFER_LEN 16384	/* nice big buffer */
 
 #define TOKEN_BIT 0x80			/* if on, it's a token */
 #define TOKEN_MASK 0x7f			/* for stripping out token value */
@@ -161,7 +162,7 @@ init_compress_from_file(FILE * dicto)
 	table_initialized = 1;
 }
 
-static void
+void
 init_compress(void)
 {
 	FILE *dicto;
@@ -355,7 +356,7 @@ pawprint(void)
 const char *
 uncompress(const char *s)
 {
-	static unsigned char buf[BUFFER_LEN];
+	static unsigned char buf[COMPRESS_BUFFER_LEN];
 	unsigned int i, j, mode, c;
 	int limit = 4095;
 
@@ -420,7 +421,7 @@ uncompress(const char *s)
 const char *
 compress(const char *s)
 {
-	static unsigned char buf[BUFFER_LEN];
+	static unsigned char buf[COMPRESS_BUFFER_LEN];
 	int a = 0;
 	int b = 0;
 	int c = 0;
