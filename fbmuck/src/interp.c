@@ -75,6 +75,10 @@ void (*prim_func[]) (PRIM_PROTOTYPE) = {
 struct localvars*
 localvars_get(struct frame *fr, dbref prog)
 {
+	if (!fr) {
+		panic("localvars_get(): NULL frame passed !");
+	}
+
 	struct localvars *tmp = fr->lvars;
 
 	while (tmp && tmp->prog != prog) tmp = tmp->next;
@@ -108,11 +112,12 @@ localvars_get(struct frame *fr, dbref prog)
 void
 localvar_dupall(struct frame *fr, struct frame *oldfr)
 {
-	struct localvars *orig;
-	struct localvars **targ;
+	if (!fr || !oldfr) {
+		panic("localvar_dupall(): NULL frame passed !");
+	}
 
-	orig = oldfr->lvars;
-	targ = &fr->lvars;
+	struct localvars *orig = oldfr->lvars;
+	struct localvars **targ = &fr->lvars;
 
 	while (orig) {
 		int count = MAX_VAR;
@@ -130,10 +135,12 @@ localvar_dupall(struct frame *fr, struct frame *oldfr)
 void
 localvar_freeall(struct frame *fr)
 {
-	struct localvars *ptr;
-	struct localvars *nxt;
+	if (!fr) {
+		panic("localvar_freeall(): NULL frame passed !");
+	}
 
-	ptr = fr->lvars;
+	struct localvars *ptr = fr->lvars;
+	struct localvars *nxt;
 
 	while (ptr) {
 		int count = MAX_VAR;
@@ -152,6 +159,10 @@ localvar_freeall(struct frame *fr)
 void
 scopedvar_addlevel(struct frame *fr, struct inst *pc, int count)
 {
+	if (!fr) {
+		panic("scopedvar_addlevel(): NULL frame passed !");
+	}
+
 	struct scopedvar_t *tmp;
 	int siz;
 	siz = sizeof(struct scopedvar_t) + (sizeof(struct inst) * (count - 1));
@@ -170,6 +181,10 @@ scopedvar_addlevel(struct frame *fr, struct inst *pc, int count)
 void
 scopedvar_dupall(struct frame *fr, struct frame *oldfr)
 {
+	if (!fr || !oldfr) {
+		panic("scopedvar_dupall(): NULL frame passed !");
+	}
+
 	struct scopedvar_t *cur;
 	struct scopedvar_t *newsv;
 	struct scopedvar_t **prev;
@@ -202,13 +217,11 @@ scopedvar_freeall(struct frame *fr)
 int
 scopedvar_poplevel(struct frame *fr)
 {
-	struct scopedvar_t *tmp;
-
-	if (!fr->svars) {
+	if (!fr || !fr->svars) {
 		return 0;
 	}
 
-	tmp = fr->svars;
+	struct scopedvar_t *tmp = fr->svars;
 	fr->svars = fr->svars->next;
 	while (tmp->count-- > 0) {
 		CLEAR(&tmp->vars[tmp->count]);
@@ -220,7 +233,7 @@ scopedvar_poplevel(struct frame *fr)
 struct inst *
 scopedvar_get(struct frame *fr, int level, int varnum)
 {
-	struct scopedvar_t *svinfo = fr->svars;
+	struct scopedvar_t *svinfo = fr ? fr->svars : NULL;
 	while (svinfo && level-->0)
 		svinfo = svinfo->next;
 	if (!svinfo) {
@@ -235,9 +248,9 @@ scopedvar_get(struct frame *fr, int level, int varnum)
 const char*
 scopedvar_getname_byinst(struct inst *pc, int varnum)
 {
-	while (pc->type != PROG_FUNCTION)
+	while (pc && pc->type != PROG_FUNCTION)
 		pc--;
-	if (!pc->data.mufproc) {
+	if (!pc || !pc->data.mufproc) {
 		return NULL;
 	}
 	if (varnum < 0 || varnum >= pc->data.mufproc->vars) {
@@ -252,7 +265,7 @@ scopedvar_getname_byinst(struct inst *pc, int varnum)
 const char*
 scopedvar_getname(struct frame *fr, int level, int varnum)
 {
-	struct scopedvar_t *svinfo = fr->svars;
+	struct scopedvar_t *svinfo = fr ? fr->svars : NULL;
 
 	while (svinfo && level-->0)
 		svinfo = svinfo->next;
@@ -274,14 +287,14 @@ scopedvar_getnum(struct frame *fr, int level, const char* varname)
 	struct scopedvar_t *svinfo=NULL;
 	int varnum;
 
-	assert(fr != NULL);
 	assert(varname != NULL);
 	assert(*varname != '\0');
 
-	svinfo = fr->svars;
+	svinfo = fr ? fr->svars : NULL;
 
-	while (svinfo && level-->0)
+	while (svinfo && level-- > 0)
 		svinfo = svinfo->next;
+
 	if (!svinfo) {
 		return -1;
 	}
@@ -308,19 +321,8 @@ RCLEAR(struct inst *oper, char *file, int line)
 
 	switch (oper->type) {
 	case PROG_CLEARED: {
-		time_t lt;
-		char buf[40];
-
-		lt = time(NULL);
-#ifndef WIN32
-		format_time(buf, 32, "%c", localtime(&lt));
-#else
-		format_time(buf, 32, "%c", uw32localtime(&lt));
-#endif
-		fprintf(stderr, "%.32s: ", buf);
-		fprintf(stderr, "Attempt to re-CLEAR() instruction from %s:%d "
-				"previously CLEAR()ed at %s:%d\n", file, line, (char *) oper->data.addr,
-				oper->line);
+		log_status("WARNING: attempt to re-CLEAR() instruction from %s:%d  previously CLEAR()ed at %s:%d",
+				   file, line, (char*)oper->data.addr, oper->line);
 		assert(0); /* If debugging, we want to figure out just what
 					  is going on, and dump core at this point.  This
 					  will at least give us some idea of what's going on. */	
@@ -709,6 +711,11 @@ pop_try(struct tryvars *trystack)
 void
 watchpid_process(struct frame *fr)
 {
+	if (!fr) {
+		log_status("WARNING: watchpid_process(): NULL frame passed !  Ignored.");
+		return;
+	}
+
 	struct frame *frame;
 	struct mufwatchpidlist *cur;
 	struct mufwatchpidlist **curptr;
@@ -766,25 +773,15 @@ prog_clean(struct frame *fr)
 	int i;
 	struct frame *ptr;
 
-	if (fr == NULL) {
-		fprintf(stderr, "prog_clean(): Tried to free a NULL frame !  Ignored.\n");
+	if (!fr) {
+		log_status("WARNING: prog_clean(): Tried to free a NULL frame !  Ignored.");
 		return;
 	}
 
 	for (ptr = free_frames_list; ptr; ptr = ptr->next) {
 		if (ptr == fr) {
-			time_t lt;
-			char buf[40];
-
-			lt = time(NULL);
-#ifndef WIN32
-			format_time(buf, 32, "%c", localtime(&lt));
-#else
-			format_time(buf, 32, "%c", uw32localtime(&lt));
-#endif
-			fprintf(stderr, "%.32s: ", buf);
-			fprintf(stderr, "prog_clean(): Tried to free an already freed program frame!\n");
-			abort();
+			log_status("WARNING: prog_clean(): tried to free an already freed program frame !  Ignored.");
+			return;
 		}
 	}
 
@@ -866,6 +863,7 @@ prog_clean(struct frame *fr)
 void
 reload(struct frame *fr, int atop, int stop)
 {
+	assert(fr);
 	fr->argument.top = atop;
 	fr->system.top = stop;
 }
@@ -887,6 +885,7 @@ false_inst(struct inst *p)
 void
 copyinst(struct inst *from, struct inst *to)
 {
+	assert(from && to);
 	int j, varcnt;
 	*to = *from;
 	switch(from->type) {
@@ -926,10 +925,11 @@ copyinst(struct inst *from, struct inst *to)
 
 
 void
-copyvars(vars * from, vars * to)
+copyvars(vars *from, vars *to)
 {
-	int i;
+	assert(from && to);
 
+	int i;
 	for (i = 0; i < MAX_VAR; i++) {
 		copyinst(&(*from)[i], &(*to)[i]);
 	}
@@ -939,6 +939,8 @@ copyvars(vars * from, vars * to)
 void
 calc_profile_timing(dbref prog, struct frame *fr)
 {
+	assert(fr);
+
 	struct timeval tv;
 	struct timeval tv2;
 
@@ -974,12 +976,21 @@ do_abort_loop(dbref player, dbref program, const char *msg,
 			  struct frame *fr, struct inst *pc, int atop, int stop,
 			  struct inst *clinst1, struct inst *clinst2)
 {
+	if (!fr) {
+		panic("localvars_get(): NULL frame passed !");
+	}
+
 	char buffer[128];
 
 	if (fr->trys.top) {
 		fr->errorstr = string_dup(msg);
-		fr->errorinst = string_dup(insttotext(fr, 0, pc, buffer, sizeof(buffer), 30, program, 1));
-		fr->errorline = pc->line;
+		if (pc) {
+			fr->errorinst = string_dup(insttotext(fr, 0, pc, buffer, sizeof(buffer), 30, program, 1));
+			fr->errorline = pc->line;
+		} else {
+			fr->errorinst = NULL;
+			fr->errorline = -1;
+		}
 		fr->errorprog = program;
 		err++;
 	} else {
@@ -1711,14 +1722,15 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 			}					/* switch */
 			break;
 		case PROG_CLEARED:
-			fprintf(stderr, "Attempt to execute instruction cleared by %s:%hd in program %d\n",
-					(char *) pc->data.addr, pc->line, program);
+			log_status("WARNING: attempt to execute instruction cleared by %s:%hd in program %d",
+					   (char*)pc->data.addr, pc->line, program);
 			pc = NULL;
-			abort_loop_hard("Program internal error. Program erroneously freed from memory.", NULL,
-					   NULL);
+			abort_loop_hard("Program internal error. Program erroneously freed from memory.",
+							NULL, NULL);
 		default:
 			pc = NULL;
-			abort_loop_hard("Program internal error. Unknown instruction type.", NULL, NULL);
+			abort_loop_hard("Program internal error. Unknown instruction type.",
+							NULL, NULL);
 		}						/* switch */
 		if (err) {
 			if (err != ERROR_DIE_NOW && fr->trys.top) {
@@ -1800,7 +1812,8 @@ interp_err(dbref player, dbref program, struct inst *pc,
 	}
 	notify_nolisten(player, buf, 1);
 
-	snprintf(buf, sizeof(buf), "\033[1m%s(#%d), line %d; %s: %s\033[0m", NAME(program), program, pc->line, msg1, msg2);
+	snprintf(buf, sizeof(buf), "\033[1m%s(#%d), line %d; %s: %s\033[0m",
+			 NAME(program), program, pc ? pc->line : -1, msg1, msg2);
 	notify_nolisten(player, buf, 1);
 
 	lt = time(NULL);
@@ -1937,8 +1950,13 @@ do_abort_interp(dbref player, const char *msg, struct inst *pc,
 
 	if (fr->trys.top) {
 		fr->errorstr = string_dup(msg);
-		fr->errorinst = string_dup(insttotext(fr, 0, pc, buffer, sizeof(buffer), 30, program, 1));
-		fr->errorline = pc->line;
+		if (pc) {
+			fr->errorinst = string_dup(insttotext(fr, 0, pc, buffer, sizeof(buffer), 30, program, 1));
+			fr->errorline = pc->line;
+		} else {
+			fr->errorinst = NULL;
+			fr->errorline = -1;
+		}
 		fr->errorprog = program;
 		err++;
 	} else {

@@ -440,9 +440,9 @@ array_tree_remove_node(array_iter * key, array_tree ** root)
 			tmp = array_tree_remove_node(
 					AVL_KEY(array_tree_getmax(AVL_LF(avl))),
 					&AVL_LF(avl));
-			assert(tmp != NULL);
-			if (!tmp)
-				abort();		/* this shouldn't be possible. */
+			if (!tmp) { /* this shouldn't be possible. */
+				panic("array_tree_remove_node() returned NULL !");
+			}
 			AVL_LF(tmp) = AVL_LF(avl);
 			AVL_RT(tmp) = AVL_RT(avl);
 			avl = tmp;

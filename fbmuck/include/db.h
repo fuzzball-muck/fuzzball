@@ -39,8 +39,8 @@
 # define F_PI M_PI
 # define NF_PI -M_PI
 #else
-# define F_PI 3.141592653589793236
-# define NF_PI -3.141592653589793236
+# define F_PI 3.141592653589793239
+# define NF_PI -3.141592653589793239
 #endif
 
 #ifdef M_PI_2

@@ -91,8 +91,7 @@ copy_bool(struct boolexp *old)
 		}
 		break;
 	default:
-		log_status("PANIC: copy_boolexp: Error in boolexp!");
-		abort();
+		panic("copy_bool(): Error in boolexp !");
 	}
 	return o;
 }
@@ -150,7 +149,7 @@ eval_boolexp_rec(int descr, dbref player, struct boolexp *b, dbref thing)
 			}
 			return 0;
 		default:
-			abort();			/* bad type */
+			panic("eval_boolexp_rec(): bad type !");
 		}
 	}
 	return 0;
@@ -417,7 +416,7 @@ size_boolexp(struct boolexp *b)
 				result += strlen(PropDataStr(b->prop_check)) + 1;
 			break;
 		default:
-			abort();			/* bad type */
+			panic("size_boolexp(): bad type !");
 		}
 		return (result);
 	}
@@ -452,13 +451,13 @@ getboolexp1(FILE * f)
 
 	c = getc(f);
 	switch (c) {
+	case EOF:
+		panic("getboolexp1(): unexpected EOF in boolexp !");
+
 	case '\n':
 		ungetc(c, f);
 		return TRUE_BOOLEXP;
-		/* break; */
-	case EOF:
-		abort();				/* unexpected EOF in boolexp */
-		break;
+
 	case '(':
 		b = alloc_boolnode();
 		if ((c = getc(f)) == '!') {
@@ -486,16 +485,18 @@ getboolexp1(FILE * f)
 				goto error;
 			return b;
 		}
-		/* break; */
+
 	case '-':
 		/* obsolete NOTHING key */
 		/* eat it */
-		while ((c = getc(f)) != '\n')
-			if (c == EOF)
-				abort();		/* unexp EOF */
+		while ((c = getc(f)) != '\n') {
+			if (c == EOF) {
+				panic("getboolexp1(): unexpected EOF in boolexp !");
+			}
+		}
 		ungetc(c, f);
 		return TRUE_BOOLEXP;
-		/* break */
+
 	case '[':
 		/* property type */
 		b = alloc_boolnode();
@@ -530,6 +531,7 @@ getboolexp1(FILE * f)
 			SetPType(p, PROP_INTTYP);
 		}
 		return b;
+
 	default:
 		/* better be a dbref */
 		ungetc(c, f);
@@ -547,7 +549,7 @@ getboolexp1(FILE * f)
 	}
 
   error:
-	abort();					/* bomb out */
+	panic("getboolexp1(): error in boolexp !"); /* bomb out */
 	return NULL;
 }
 
@@ -558,7 +560,7 @@ getboolexp(FILE * f)
 
 	b = getboolexp1(f);
 	if (getc(f) != '\n')
-		abort();				/* parse error, we lose */
+		panic("getboolexp(): parse error !");
 	return b;
 }
 

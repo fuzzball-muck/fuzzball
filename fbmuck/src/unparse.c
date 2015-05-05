@@ -165,8 +165,7 @@ unparse_boolexp1(dbref player, struct boolexp *b, boolexp_type outer_type, int f
 			buftop += strlen(buftop);
 			break;
 		default:
-			abort();			/* bad type */
-			break;
+			panic("unparse_boolexp1(): bad type !");
 		}
 	}
 }

@@ -2246,8 +2246,7 @@ send_keepalive(struct descriptor_data *d)
 
 	/* drastic, but this may give us crash test data */
 	if (!d || !d->descriptor) {
-		fprintf(stderr, "process_output: bad descriptor or connect struct!\n");
-		abort();
+		panic("send_keepalive(): bad descriptor or connect struct !");
 	}
 
 	if (d->telnet_enabled) {
@@ -2285,8 +2284,7 @@ process_output(struct descriptor_data *d)
 
 	/* drastic, but this may give us crash test data */
 	if (!d || !d->descriptor) {
-		fprintf(stderr, "process_output: bad descriptor or connect struct!\n");
-		abort();
+		panic("process_output(): bad descriptor or connect struct !");
 	}
 
 	if (d->output.lines == 0) {
@@ -3428,7 +3426,7 @@ int sethash_descr(int d) {
    for (int i = 0; i < FD_SETSIZE; i++) {
       if (descr_hash_table[i] == -1) { descr_hash_table[i] = d; return i; }
    }
-   fprintf(stderr,"descr hash table full!", NULL); /* Should NEVER happen */
+   fprintf(stderr, "descr hash table full !"); /* Should NEVER happen */
    return -1;
 }
 
@@ -3436,7 +3434,7 @@ int gethash_descr(int d) {
    for (int i = 0; i < FD_SETSIZE; i++) {
       if (descr_hash_table[i] == d) return i;
    }
-   fprintf(stderr,"descr hash value missing!", NULL); /* Should NEVER happen */
+   fprintf(stderr, "descr hash value missing !"); /* Should NEVER happen */
    return -1;
  
 }
@@ -3448,7 +3446,7 @@ void unsethash_descr(int d) {
          return;
       }
    }
-   fprintf(stderr,"descr hash value missing!", NULL); /* Should NEVER happen */
+   fprintf(stderr, "descr hash value missing !"); /* Should NEVER happen */
 }
 #endif
 
@@ -4145,6 +4143,18 @@ dump_status(void)
 }
 
 #ifdef USE_SSL
+
+/* SSL_ERROR_WANT_ACCEPT is not defined in OpenSSL v0.9.6i and before. This
+   fix allows to compile fbmuck on systems with an 'old' OpenSSL library, and
+   yet have the server recognize the WANT_ACCEPT error when ran on systems with
+   a newer OpenSSL version installed... Of course, should the value of the
+   define change in ssl.h in the future (unlikely but not impossible), the
+   define below would have to be changed too...
+ */
+#ifndef SSL_ERROR_WANT_ACCEPT
+#define SSL_ERROR_WANT_ACCEPT 8
+#endif
+
 void
 log_ssl_error(const char* text, int descr, int errnum)
 {
