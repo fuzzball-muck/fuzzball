@@ -257,7 +257,7 @@ print_section_topics(FILE * f, FILE * hf, const char *whichsect)
 					escape_html(buf3, sizeof(buf3), ptr->topic);
 					fprintf(hf, HTML_SECTIDX_ENTRY, (100 / cols), buf3, buf3);
 					if (cnt == cols) {
-						snprintf(buf2, sizeof(buf2), "%-0.*s", width - 1, ptr->topic);
+						snprintf(buf2, sizeof(buf2), "%-.*s", width - 1, ptr->topic);
 					} else {
 						snprintf(buf2, sizeof(buf2), "%-*.*s", width, width - 1, ptr->topic);
 					}
@@ -362,12 +362,12 @@ print_topics(FILE * f, FILE * hf)
 	int longest;
 
 	fprintf(hf, HTML_INDEX_BEGIN);
-    fprintf(f, "~\n");
+	fprintf(f, "~\n");
 	fprintf(f, "~%s\n", HRULE_TEXT);
-    fprintf(f, "~\n");
-    fprintf(f, "ALPHA|ALPHABETICAL|COMMANDS\n");
-    fprintf(f, "                 Alphabetical List of Topics:\n");
-    fprintf(f, " \n");
+        fprintf(f, "~\n");
+	fprintf(f, "ALPHA|ALPHABETICAL|COMMANDS\n");
+        fprintf(f, "                 Alphabetical List of Topics:\n");
+        fprintf(f, " \n");
 	fprintf(f, "You can get more help on the following topics:\n");
 	for (alph = 'A' - 1; alph <= 'Z'; alph++) {
 		cnt = 0;
@@ -419,7 +419,7 @@ print_topics(FILE * f, FILE * hf)
 					escape_html(buf3, sizeof(buf3), ptr->topic);
 					fprintf(hf, HTML_IDXGROUP_ENTRY, /*(100 / cols),*/ buf3, buf3);
 					if (cnt == cols) {
-						snprintf(buf2, sizeof(buf2), "%-0.*s", width - 1, ptr->topic);
+						snprintf(buf2, sizeof(buf2), "%-.*s", width - 1, ptr->topic);
 					} else {
 						snprintf(buf2, sizeof(buf2), "%-*.*s", width, width - 1, ptr->topic);
 					}
@@ -437,7 +437,7 @@ print_topics(FILE * f, FILE * hf)
 			fprintf(hf, HTML_IDXGROUP_END);
 		}
 	}
-	fprintf(hf, HTML_INDEX_END);
+	fprintf(hf, "%s", HTML_INDEX_END);
 	fprintf(f, " \nUse '%s <topicname>' to get more information on a topic.\n", doccmd);
 }
 
@@ -533,8 +533,8 @@ process_lines(FILE * infile, FILE * outfile, FILE * htmlfile, int cols)
 	escape_html(buf2, sizeof(buf2), author);
 	fprintf(htmlfile, HTML_PAGE_HEAD, buf, buf, buf2);
 
-	fprintf(outfile, "%*s%s\n", (36-(strlen(title)/2)), "", title);
-	fprintf(outfile, "%*sby %s\n\n", (36-((strlen(author)+3)/2)), "", author);
+	fprintf(outfile, "%*s%s\n", (int)(36-(strlen(title)/2)), "", title);
+	fprintf(outfile, "%*sby %s\n\n", (int)(36-((strlen(author)+3)/2)), "", author);
 	fprintf(outfile, "You may get a listing of topics that you can get help on, either sorted\n");
 	fprintf(outfile, "Alphabetically or sorted by Category.  To get these lists, type:\n");
 	fprintf(outfile, "        %s alpha        or\n", doccmd);
@@ -554,8 +554,8 @@ process_lines(FILE * infile, FILE * outfile, FILE * htmlfile, int cols)
 						fprintf(stderr, "Error: can't write to %s", buf + 7);
 						exit(1);
 					}
-					fprintf(docsfile,  "%*s%s\n", (36-(strlen(title)/2)), "", title);
-					fprintf(docsfile,  "%*sby %s\n\n", (36-((strlen(author)+3)/2)), "", author);
+					fprintf(docsfile,  "%*s%s\n", (int)(36-(strlen(title)/2)), "", title);
+					fprintf(docsfile,  "%*sby %s\n\n", (int)(36-((strlen(author)+3)/2)), "", author);
 				} else if (!strncmp(buf, "~~section ", 10)) {
 					buf[strlen(buf) - 1] = '\0';
 					sectptr = index(buf + 10, '|');
@@ -564,7 +564,7 @@ process_lines(FILE * infile, FILE * outfile, FILE * htmlfile, int cols)
 					}
 					fprintf(outfile, "~\n~\n~%s\n", HRULE_TEXT);
 					fprintf(docsfile, "\n\n%s\n", HRULE_TEXT);
-					fprintf(docsfile, "%*s\n", (38 + strlen(buf + 10) / 2), (buf + 10));
+					fprintf(docsfile, "%*s\n", (int)(38 + strlen(buf + 10) / 2), (buf + 10));
 					print_section_topics(outfile, htmlfile, (buf + 10));
 					fprintf(outfile, "~%s\n~\n~\n", HRULE_TEXT);
 					fprintf(docsfile, "%s\n\n\n", HRULE_TEXT);
@@ -685,17 +685,17 @@ main(int argc, char **argv)
 	}
 
 	if (!strcmp(argv[1], argv[2])) {
-		fprintf(stderr, "%s: cannot use same file for input rawfile and output helpfile\n");
+		fprintf(stderr, "%s: cannot use same file for input rawfile and output helpfile\n", argv[0]);
 		return 1;
 	}
 
 	if (!strcmp(argv[1], argv[3])) {
-		fprintf(stderr, "%s: cannot use same file for input rawfile and output htmlfile\n");
+		fprintf(stderr, "%s: cannot use same file for input rawfile and output htmlfile\n", argv[0]);
 		return 1;
 	}
 
 	if (!strcmp(argv[3], argv[2])) {
-		fprintf(stderr, "%s: cannot use same file for htmlfile and helpfile\n");
+		fprintf(stderr, "%s: cannot use same file for htmlfile and helpfile\n", argv[0]);
 		return 1;
 	}
 
