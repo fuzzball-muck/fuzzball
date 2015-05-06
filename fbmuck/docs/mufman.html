@@ -380,20 +380,23 @@
 <h4>E's</h4><blockquote><table border=0>
   <tr>
     <td nowrap> &nbsp; <a href="#else">else</a> &nbsp; </td>
+    <td nowrap> &nbsp; <a href="#entrances_array">entrances_array</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#envprop">envprop</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#envpropstr">envpropstr</a> &nbsp; </td>
-    <td nowrap> &nbsp; <a href="#epsilon">epsilon</a> &nbsp; </td>
-    <td nowrap> &nbsp; <a href="#error?">error?</a> &nbsp; </td>
   </tr>
   <tr>
+    <td nowrap> &nbsp; <a href="#epsilon">epsilon</a> &nbsp; </td>
+    <td nowrap> &nbsp; <a href="#error?">error?</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#error_bit">error_bit</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#error_name">error_name</a> &nbsp; </td>
+  </tr>
+  <tr>
     <td nowrap> &nbsp; <a href="#error_num">error_num</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#error_str">error_str</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#event_count">event_count</a> &nbsp; </td>
+    <td nowrap> &nbsp; <a href="#event_exists">event_exists</a> &nbsp; </td>
   </tr>
   <tr>
-    <td nowrap> &nbsp; <a href="#event_exists">event_exists</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#event_send">event_send</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#event_wait">event_wait</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#event_waitfor">event_waitfor</a> &nbsp; </td>
@@ -404,9 +407,9 @@
     <td nowrap> &nbsp; <a href="#exit?">exit?</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#exits">exits</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#exits_array">exits_array</a> &nbsp; </td>
-    <td nowrap> &nbsp; <a href="#exp">exp</a> &nbsp; </td>
   </tr>
   <tr>
+    <td nowrap> &nbsp; <a href="#exp">exp</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#explode">explode</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#explode_array">explode_array</a> &nbsp; </td>
     <td nowrap> &nbsp; <a href="#ext-name-ok?">ext-name-ok?</a> &nbsp; </td>
@@ -2266,7 +2269,7 @@ that triggered the the program, without the command line arguments.  ie:
 if there was an exit named &quot;abracadabra;foo bar;frozzboz&quot; that was linked
 to the program, and the user typed in &quot;foo bar baz&quot;, then the program
 would run with &quot;baz&quot; on the stack, and &quot;foo bar&quot; in the global COMMAND
-variable.  The TRIGGER global variable is the same variable as '2 variable'
+variable.  The COMMAND global variable is the same variable as '3 variable'
 <p><h5>Also see:
     <a href="#trigger">TRIGGER</a>,
     <a href="#loc">LOC</a> and
@@ -6152,9 +6155,12 @@ property s in object d. If the property is cleared, 0 is returned.
 </a></h4>
   Takes a starting object dbref and a property name and searches down the
 environment tree from that object for a property with the given name.  If
-the property isn't found, it returns #-1 and a null string.  If the
-property is found, it will return the dbref of the object it was found on,
-and the value it contained.
+the property isn't found, it returns #-1 and 0.  If the property is found,
+it will return the dbref of the object it was found on, and the value it
+contained.
+<p><h5>Also see:
+    <a href="#envpropstr">ENVPROPSTR</a>
+</h5>
 <p>
 
 
@@ -6168,6 +6174,9 @@ environment tree from that object for a property with the given name.  If
 the property isn't found, it returns #-1 and a null string.  If the
 property is found, it will return the dbref of the object it was found on,
 and the string value it contained.
+<p><h5>Also see:
+    <a href="#envprop">ENVPROP</a>
+</h5>
 <p>
 
 
@@ -6471,114 +6480,115 @@ This primitives requires at least mucker level 3.
   <tr>
     <td width="33%"> &nbsp; <a href="#desc">desc</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#drop">drop</a> &nbsp; </td>
-    <td width="33%"> &nbsp; <a href="#exit?">exit?</a> &nbsp; </td>
+    <td width="33%"> &nbsp; <a href="#entrances_array">entrances_array</a> &nbsp; </td>
   </tr>
   <tr>
+    <td width="33%"> &nbsp; <a href="#exit?">exit?</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#exits">exits</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#exits_array">exits_array</a> &nbsp; </td>
-    <td width="33%"> &nbsp; <a href="#fail">fail</a> &nbsp; </td>
   </tr>
   <tr>
+    <td width="33%"> &nbsp; <a href="#fail">fail</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#findnext">findnext</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#flag?">flag?</a> &nbsp; </td>
-    <td width="33%"> &nbsp; <a href="#getlink">getlink</a> &nbsp; </td>
   </tr>
   <tr>
+    <td width="33%"> &nbsp; <a href="#getlink">getlink</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#getlinks">getlinks</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#getlinks_array">getlinks_array</a> &nbsp; </td>
-    <td width="33%"> &nbsp; <a href="#ignore_add">ignore_add</a> &nbsp; </td>
   </tr>
   <tr>
+    <td width="33%"> &nbsp; <a href="#ignore_add">ignore_add</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#ignore_del">ignore_del</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#ignoring?">ignoring?</a> &nbsp; </td>
-    <td width="33%"> &nbsp; <a href="#location">location</a> &nbsp; </td>
   </tr>
   <tr>
+    <td width="33%"> &nbsp; <a href="#location">location</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#match">match</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#mlevel">mlevel</a> &nbsp; </td>
-    <td width="33%"> &nbsp; <a href="#movepennies">movepennies</a> &nbsp; </td>
   </tr>
   <tr>
+    <td width="33%"> &nbsp; <a href="#movepennies">movepennies</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#moveto">moveto</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#name">name</a> &nbsp; </td>
-    <td width="33%"> &nbsp; <a href="#newexit">newexit</a> &nbsp; </td>
   </tr>
   <tr>
+    <td width="33%"> &nbsp; <a href="#newexit">newexit</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#newobject">newobject</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#newpassword">newpassword</a> &nbsp; </td>
-    <td width="33%"> &nbsp; <a href="#newplayer">newplayer</a> &nbsp; </td>
   </tr>
   <tr>
+    <td width="33%"> &nbsp; <a href="#newplayer">newplayer</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#newprogram">newprogram</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#newroom">newroom</a> &nbsp; </td>
-    <td width="33%"> &nbsp; <a href="#next">next</a> &nbsp; </td>
   </tr>
   <tr>
+    <td width="33%"> &nbsp; <a href="#next">next</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#nextentrance">nextentrance</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#nextowned">nextowned</a> &nbsp; </td>
-    <td width="33%"> &nbsp; <a href="#objmem">objmem</a> &nbsp; </td>
   </tr>
   <tr>
+    <td width="33%"> &nbsp; <a href="#objmem">objmem</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#odrop">odrop</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#ofail">ofail</a> &nbsp; </td>
-    <td width="33%"> &nbsp; <a href="#ok?">ok?</a> &nbsp; </td>
   </tr>
   <tr>
+    <td width="33%"> &nbsp; <a href="#ok?">ok?</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#osucc">osucc</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#owner">owner</a> &nbsp; </td>
-    <td width="33%"> &nbsp; <a href="#part_pmatch">part_pmatch</a> &nbsp; </td>
   </tr>
   <tr>
+    <td width="33%"> &nbsp; <a href="#part_pmatch">part_pmatch</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#pennies">pennies</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#player?">player?</a> &nbsp; </td>
-    <td width="33%"> &nbsp; <a href="#pmatch">pmatch</a> &nbsp; </td>
   </tr>
   <tr>
+    <td width="33%"> &nbsp; <a href="#pmatch">pmatch</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#prog">prog</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#program?">program?</a> &nbsp; </td>
-    <td width="33%"> &nbsp; <a href="#recycle">recycle</a> &nbsp; </td>
   </tr>
   <tr>
+    <td width="33%"> &nbsp; <a href="#recycle">recycle</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#rmatch">rmatch</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#room?">room?</a> &nbsp; </td>
-    <td width="33%"> &nbsp; <a href="#set">set</a> &nbsp; </td>
   </tr>
   <tr>
+    <td width="33%"> &nbsp; <a href="#set">set</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#setdesc">setdesc</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#setdrop">setdrop</a> &nbsp; </td>
-    <td width="33%"> &nbsp; <a href="#setfail">setfail</a> &nbsp; </td>
   </tr>
   <tr>
+    <td width="33%"> &nbsp; <a href="#setfail">setfail</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#setlink">setlink</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#setlinks_array">setlinks_array</a> &nbsp; </td>
-    <td width="33%"> &nbsp; <a href="#setname">setname</a> &nbsp; </td>
   </tr>
   <tr>
+    <td width="33%"> &nbsp; <a href="#setname">setname</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#setodrop">setodrop</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#setofail">setofail</a> &nbsp; </td>
-    <td width="33%"> &nbsp; <a href="#setosucc">setosucc</a> &nbsp; </td>
   </tr>
   <tr>
+    <td width="33%"> &nbsp; <a href="#setosucc">setosucc</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#setown">setown</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#setsucc">setsucc</a> &nbsp; </td>
-    <td width="33%"> &nbsp; <a href="#setsysparm">setsysparm</a> &nbsp; </td>
   </tr>
   <tr>
+    <td width="33%"> &nbsp; <a href="#setsysparm">setsysparm</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#stats">stats</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#succ">succ</a> &nbsp; </td>
-    <td width="33%"> &nbsp; <a href="#sysparm">sysparm</a> &nbsp; </td>
   </tr>
   <tr>
+    <td width="33%"> &nbsp; <a href="#sysparm">sysparm</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#sysparm_array">sysparm_array</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#thing?">thing?</a> &nbsp; </td>
-    <td width="33%"> &nbsp; <a href="#timestamps">timestamps</a> &nbsp; </td>
   </tr>
   <tr>
+    <td width="33%"> &nbsp; <a href="#timestamps">timestamps</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#toadplayer">toadplayer</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#trig">trig</a> &nbsp; </td>
-    <td width="33%"> &nbsp; <a href="#truename">truename</a> &nbsp; </td>
   </tr>
   <tr>
+    <td width="33%"> &nbsp; <a href="#truename">truename</a> &nbsp; </td>
     <td width="33%"> &nbsp; <a href="#unparseobj">unparseobj</a> &nbsp; </td>
   </tr>
 </table></blockquote>
@@ -7658,6 +7668,16 @@ or a room with no dropto, getlinks returns 0.  A count of
 </a></h4>
   Returns a list array that contains the dbref of every object that the
 given object is linked to.
+<p>
+
+
+<hr><h4><a name="entrances_array">ENTRANCES_ARRAY ( d -- a )
+<br>
+
+<br>
+</a></h4>
+  Returns a list array that contains the dbref of every object linked to the
+given object.
 <p>
 
 

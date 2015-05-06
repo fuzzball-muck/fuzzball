@@ -4127,6 +4127,13 @@ GETLINKS_ARRAY ( d -- a )
 given object is linked to.
 ~
 ~
+ENTRANCES_ARRAY
+ENTRANCES_ARRAY ( d -- a )
+
+  Returns a list array that contains the dbref of every object linked to the
+given object.
+~
+~
 SETLINK
 SETLINK     ( d1 d2 -- )
 
