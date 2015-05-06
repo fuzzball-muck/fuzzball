@@ -85,6 +85,16 @@
  */
 #define NICEVAL 1
 
+/*
+ * This allows to use the SIGUSR2 signal as a request for an immediate clean
+ * shutdown of the MUCK. Such a signal may be used, for instance, when the UPS
+ * is going to fail and shuts down the system. In this case, sending SIGUSR2
+ * to the MUCK server process prints a special message on the logged users'
+ * screen ("Emergency signal received ! (power failure ?) The database will be
+ * saved."), and saves cleanly the database before shutting down the MUCK.
+ */
+#define SIGEMERG
+
 /************************************************************************
    Game Options
 

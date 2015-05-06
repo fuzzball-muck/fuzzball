@@ -1559,7 +1559,7 @@ mfn_force(MFUNARGS)
 		ABORT_MPI("FORCE", "Permission denied: You can't force God.");
 #endif
 
-	if (force_level)
+	if (force_level > 1)
 		ABORT_MPI("FORCE", "Permission denied: You can't force recursively.");
 	strcpyn(buf, buflen, argv[1]);
 	ptr = buf;
