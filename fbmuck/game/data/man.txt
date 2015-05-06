@@ -116,11 +116,12 @@ D's
   dupn               
 
 E's
-  else           envprop        envpropstr     epsilon        error?
-  error_bit      error_name     error_num      error_str      event_count
-  event_exists   event_send     event_wait     event_waitfor  execute
-  exit           exit?          exits          exits_array    exp
-  explode        explode_array  ext-name-ok?   
+  else               entrances_array    envprop            envpropstr
+  epsilon            error?             error_bit          error_name
+  error_num          error_str          event_count        event_exists
+  event_send         event_wait         event_waitfor      execute
+  exit               exit?              exits              exits_array
+  exp                explode            explode_array      ext-name-ok?
 
 F's
   fabs         fail         fg_mode      findnext     firstdescr   flag?
@@ -3751,29 +3752,29 @@ addpennies                array_get_ignorelist      caller
 checkpassword             contents                  contents_array
 controls                  copyobj                   copyplayer
 dbcmp                     dbref                     dbtop
-desc                      drop                      exit?
-exits                     exits_array               fail
-findnext                  flag?                     getlink
-getlinks                  getlinks_array            ignore_add
-ignore_del                ignoring?                 location
-match                     mlevel                    movepennies
-moveto                    name                      newexit
-newobject                 newpassword               newplayer
-newprogram                newroom                   next
-nextentrance              nextowned                 objmem
-odrop                     ofail                     ok?
-osucc                     owner                     part_pmatch
-pennies                   player?                   pmatch
-prog                      program?                  recycle
-rmatch                    room?                     set
-setdesc                   setdrop                   setfail
-setlink                   setlinks_array            setname
-setodrop                  setofail                  setosucc
-setown                    setsucc                   setsysparm
-stats                     succ                      sysparm
-sysparm_array             thing?                    timestamps
-toadplayer                trig                      truename
-unparseobj                
+desc                      drop                      entrances_array
+exit?                     exits                     exits_array
+fail                      findnext                  flag?
+getlink                   getlinks                  getlinks_array
+ignore_add                ignore_del                ignoring?
+location                  match                     mlevel
+movepennies               moveto                    name
+newexit                   newobject                 newpassword
+newplayer                 newprogram                newroom
+next                      nextentrance              nextowned
+objmem                    odrop                     ofail
+ok?                       osucc                     owner
+part_pmatch               pennies                   player?
+pmatch                    prog                      program?
+recycle                   rmatch                    room?
+set                       setdesc                   setdrop
+setfail                   setlink                   setlinks_array
+setname                   setodrop                  setofail
+setosucc                  setown                    setsucc
+setsysparm                stats                     succ
+sysparm                   sysparm_array             thing?
+timestamps                toadplayer                trig
+truename                  unparseobj                
 
 ~----------------------------------------------------------------------------
 ~
@@ -4421,6 +4422,13 @@ GETLINKS_ARRAY ( d -- a )
 
   Returns a list array that contains the dbref of every object that the
 given object is linked to.
+~
+~
+ENTRANCES_ARRAY
+ENTRANCES_ARRAY ( d -- a )
+
+  Returns a list array that contains the dbref of every object linked to the
+given object.
 ~
 ~
 SETLINK

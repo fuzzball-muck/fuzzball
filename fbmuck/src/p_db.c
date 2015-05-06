@@ -2310,6 +2310,52 @@ prim_getlinks_array(PRIM_PROTOTYPE)
 }
 
 void
+prim_entrances_array(PRIM_PROTOTYPE)
+{
+    stk_array *nw;
+    int count = 0;
+    dbref i, j;
+
+    CHECKOP(1);
+    oper1 = POP();
+
+    if (!valid_object(oper1))
+        abort_interp("Invalid object dbref. (1)");
+
+    ref = oper1->data.objref;
+    nw = new_array_packed(0);
+
+    for (i = 0; i < db_top; i++) {
+        switch (Typeof(i)) {
+            case TYPE_EXIT:
+                for (j = DBFETCH(i)->sp.exit.ndest; j--;) {
+                    if (DBFETCH(i)->sp.exit.dest[j] == ref)
+			array_set_intkey_refval(&nw, count++, i);
+                }
+                break;
+            case TYPE_PLAYER:
+                if (PLAYER_HOME(i) == ref)
+		    array_set_intkey_refval(&nw, count++, i);
+                break;
+            case TYPE_THING:
+                if (THING_HOME(i) == ref)
+		    array_set_intkey_refval(&nw, count++, i);
+                break;
+            case TYPE_ROOM:
+                if (DBFETCH(i)->sp.room.dropto == ref)
+		    array_set_intkey_refval(&nw, count++, i);
+                break;
+            case TYPE_PROGRAM:
+            case TYPE_GARBAGE:
+                break;
+        }
+    }
+
+    CLEAR(oper1);
+    PushArrayRaw(nw);
+}
+
+void
 prim_program_getlines(PRIM_PROTOTYPE)
 {
 	stk_array* ary;
