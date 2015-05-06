@@ -42,6 +42,9 @@ void set_signals(void);
 RETSIGTYPE bailout(int);
 RETSIGTYPE sig_dump_status(int i);
 RETSIGTYPE sig_shutdown(int i);
+#ifdef SIGEMERG
+RETSIGTYPE sig_emerg(int i);
+#endif
 
 #ifdef SPAWN_HOST_RESOLVER
 RETSIGTYPE sig_reap(int i);
@@ -181,7 +184,12 @@ set_sigs_intern(int bail)
 #ifdef SIGVTALRM
 	our_signal(SIGVTALRM, SET_BAIL);
 #endif
+#ifdef SIGEMERG
+	/* Clean shutdown signal (may be used with UPS software when power goes down...) */
+	our_signal(SIGUSR2, sig_emerg);
+#else
 	our_signal(SIGUSR2, SET_BAIL);
+#endif
 
 	/* status dumper (predates "WHO" command) */
 	our_signal(SIGUSR1, bail ? SIG_DFL : sig_dump_status);
@@ -227,6 +235,19 @@ RETSIGTYPE sig_dump_status(int i)
 	return 0;
 #endif
 }
+
+#ifdef SIGEMERG
+RETSIGTYPE sig_emerg(int i)
+{
+	wall_and_flush("\nEmergency signal received ! (power failure ?)\nThe database will be saved.\n");
+	dump_database();
+	shutdown_flag = 1;
+	restart_flag = 0;
+#if !defined(SYSV) && !defined(_POSIX_VERSION) && !defined(ULTRIX)
+	return 0;
+#endif
+}
+#endif
 
 /*
  * Gracefully shut the server down.

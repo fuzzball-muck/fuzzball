@@ -347,8 +347,8 @@ do_force(int descr, dbref player, const char *what, char *command)
 	assert(command != NULL);
 	assert(player > 0);
 
-	if (force_level) {
-		notify(player, "Can't force from within a force.");
+	if (force_level > 1) {
+		notify(player, "Can't force recursively.");
 		return;
 	}
 
@@ -436,7 +436,6 @@ do_force(int descr, dbref player, const char *what, char *command)
 			   victim, NAME(player), player, command);
 	/* force victim to do command */
 	force_prog=NOTHING;
-	/* Technically, force_level must be 0 at this point, regardless. */
 	force_level++;
 	process_command(dbref_first_descr(victim), victim, command);
 	force_level--;
