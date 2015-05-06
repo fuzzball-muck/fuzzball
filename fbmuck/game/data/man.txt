@@ -1109,7 +1109,7 @@ that triggered the the program, without the command line arguments.  ie:
 if there was an exit named "abracadabra;foo bar;frozzboz" that was linked
 to the program, and the user typed in "foo bar baz", then the program
 would run with "baz" on the stack, and "foo bar" in the global COMMAND
-variable.  The TRIGGER global variable is the same variable as '2 variable'
+variable.  The COMMAND global variable is the same variable as '3 variable'
 Also see: TRIGGER, LOC and ME
 ~
 ~
@@ -3519,9 +3519,10 @@ ENVPROP ( d s -- d ? )
 
   Takes a starting object dbref and a property name and searches down the
 environment tree from that object for a property with the given name.  If
-the property isn't found, it returns #-1 and a null string.  If the
-property is found, it will return the dbref of the object it was found on,
-and the value it contained.
+the property isn't found, it returns #-1 and 0.  If the property is found,
+it will return the dbref of the object it was found on, and the value it
+contained.
+Also see: ENVPROPSTR
 ~
 ~
 ENVPROPSTR
@@ -3532,6 +3533,7 @@ environment tree from that object for a property with the given name.  If
 the property isn't found, it returns #-1 and a null string.  If the
 property is found, it will return the dbref of the object it was found on,
 and the string value it contained.
+Also see: ENVPROP
 ~
 ~
 ADDPROP
