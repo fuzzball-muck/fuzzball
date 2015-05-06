@@ -27,7 +27,6 @@
 #define WHO_COMMAND "WHO"
 #define PREFIX_COMMAND "OUTPUTPREFIX"
 #define SUFFIX_COMMAND "OUTPUTSUFFIX"
-#define NULL_COMMAND "@@"
 
 /* Turn this back on when you want MUD to set from root to some user_id */
 /* #define MUD_ID "MUCK" */
