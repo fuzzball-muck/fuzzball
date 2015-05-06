@@ -1751,17 +1751,3 @@ robots may use this command.
 ~~alsosee OUTPUTPREFIX
 ~
 ~
-@@
-@@
-
-The '@@' command is a NULL (do-nothing) built-in server command: it is not
-evaluated/matched and is simply ignored by the MUCK server. Yet, it does reset
-your idle timer, thus being a good candidate as a "ping" command to avoid being
-booted for inactivity. Sending regularly this command (every 10 minutes or so)
-is also a good means to avoid seeing the connection closed for inactivity by the
-routers on the path between your computer and the MUCK server. Many MUCK clients
-do allow to send an arbitrary command on a regular basis to the MUCKs: use '@@'
-for such an arbitrary command (it should also be noted that this command will
-also work for anti-idling purposes on MUSHes and MUXes).
-~
-~
