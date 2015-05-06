@@ -218,7 +218,8 @@ LTIMESTR
 {ltimestr:secs}
     Given a time period, in seconds, this will return a string, including a
 breakdown of all the time units of that period.  For example, given a number
-of seconds, it might return "1 week, 2 days, 10 mins, 52 secs".
+of seconds, it might return:
+        3 years, 10 months, 4 weeks, 1 day, 18 hours, 40 mins, 21 secs
 ~
 ~
 STIMESTR

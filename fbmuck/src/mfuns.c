@@ -1599,13 +1599,21 @@ const char *
 mfn_ltimestr(MFUNARGS)
 {
 	int tm = atol(argv[0]);
-	int wk, dy, hr, mn;
+	int yr, mm, wk, dy, hr, mn;
 	char buf2[BUFFER_LEN];
 
-	wk = dy = hr = mn = 0;
-	if (tm >= 86400 * 7) {
-		wk = (tm / 86400) / 7;	/* Weeks */
-		tm %= (86400 * 7);
+	yr = mm = wk = dy = hr = mn = 0;
+	if (tm >= 31556736) {
+		yr = tm / 31556736;	        /* Years */
+		tm %= 31556736;
+	}
+	if (tm >= 2621376) {
+		mm = tm / 2621376;	        /* Months */
+		tm %= 2621376;
+	}
+	if (tm >= 604800) {
+		wk = tm / 604800;	        /* Weeks */
+		tm %= 604800;
 	}
 	if (tm >= 86400) {
 		dy = tm / 86400;		/* Days */
@@ -1617,12 +1625,26 @@ mfn_ltimestr(MFUNARGS)
 	}
 	if (tm >= 60) {
 		mn = tm / 60;			/* Minutes */
-		tm %= 60;				/* Seconds */
+		tm %= 60;			/* Seconds */
 	}
 
 	*buf = '\0';
+	if (yr) {
+		snprintf(buf, BUFFER_LEN, "%d year%s", yr, (yr == 1) ? "" : "s");
+	}
+	if (mm) {
+		snprintf(buf2, BUFFER_LEN, "%d month%s", mm, (mm == 1) ? "" : "s");
+		if (*buf) {
+			strcatn(buf, BUFFER_LEN, ", ");
+		}
+		strcatn(buf, BUFFER_LEN, buf2);
+	}
 	if (wk) {
-		snprintf(buf, BUFFER_LEN, "%d week%s", wk, (wk == 1) ? "" : "s");
+		snprintf(buf2, BUFFER_LEN, "%d week%s", wk, (wk == 1) ? "" : "s");
+		if (*buf) {
+			strcatn(buf, BUFFER_LEN, ", ");
+		}
+		strcatn(buf, BUFFER_LEN, buf2);
 	}
 	if (dy) {
 		snprintf(buf2, BUFFER_LEN, "%d day%s", dy, (dy == 1) ? "" : "s");
