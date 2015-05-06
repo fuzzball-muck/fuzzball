@@ -105,7 +105,7 @@ extern void prim_toadplayer(PRIM_PROTOTYPE);
     "PROGRAM_GETLINES", "GETPIDINFO", "PROGRAM_SETLINES",  \
     "SETLINKS_ARRAY"
 
-#define PRIMS_DB_CNT1 60
+#define PRIMS_DB_CNT1 61
 
 
 #ifdef SCARY_MUF_PRIMS
