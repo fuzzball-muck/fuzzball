@@ -34,9 +34,12 @@
 /* Turn this on when you want MUCK to set to a specific group ID... */
 /* #define MUD_GID "MUCK" */
 
-/*
- * NICEVAL moved to config.h, where it belongs.
- */
+/* Mucker levels */
+#define MLEV_APPRENTICE	  1
+#define MLEV_JOURNEYMAN   2
+#define MLEV_MASTER	  3
+#define MLEV_WIZARD	  4
+#define MLEV_GOD	255
 
 /* Used for breaking out of muf READs or for stopping foreground programs. */
 #define BREAK_COMMAND "@Q"

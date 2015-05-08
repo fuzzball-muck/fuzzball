@@ -5,7 +5,7 @@
 #include "externs.h"
 #include "array.h"
 #include "interp.h"
-
+#include "tune.h"
 
 const char *tp_dumpwarn_mesg = DUMPWARN_MESG;
 const char *tp_deltawarn_mesg = DELTAWARN_MESG;
@@ -67,7 +67,7 @@ struct tune_str_entry tune_str_list[] = {
 	{"Misc",       "muckname", &tp_muckname, 0, 1, "Muck name"},
 	{"Misc",       "leave_mesg", &tp_leave_mesg, 0, 1, "Logoff message"},
 	{"Misc",       "huh_mesg", &tp_huh_mesg, 0, 1, "Command unrecognized warning"},
-	{"SSL",        "ssl_keyfile_passwd", &tp_ssl_keyfile_passwd, 4, 1, "Password for SSL keyfile"},
+	{"SSL",        "ssl_keyfile_passwd", &tp_ssl_keyfile_passwd, MLEV_GOD, 1, "Password for SSL keyfile"},
 	{"Database",   "pcreate_flags", &tp_pcreate_flags, 0, 1, "Initial Player Flags"},
 	{"Database",   "reserved_names", &tp_reserved_names, 0, 1, "Reserved names smatch"},
 	{"Database",   "reserved_player_names", &tp_reserved_player_names, 0, 1, "Reserved player names smatch"},
@@ -385,7 +385,7 @@ tune_count_parms(void)
 
 
 void
-tune_display_parms(dbref player, char *name)
+tune_display_parms(dbref player, char *name, int security)
 {
 	char buf[BUFFER_LEN + 50];
 	struct tune_str_entry *tstr = tune_str_list;
@@ -395,6 +395,7 @@ tune_display_parms(dbref player, char *name)
 	struct tune_bool_entry *tbool = tune_bool_list;
 
 	while (tstr->name) {
+		if (tstr->security > security) { tstr++; continue; }
 		strcpyn(buf, sizeof(buf), tstr->name);
 		if (!*name || equalstr(name, buf)) {
 			snprintf(buf, sizeof(buf), "(str)  %-20s = %.4096s", tstr->name, *tstr->str);
@@ -404,6 +405,7 @@ tune_display_parms(dbref player, char *name)
 	}
 
 	while (ttim->name) {
+		if (ttim->security > security) { ttim++; continue; }
 		strcpyn(buf, sizeof(buf), ttim->name);
 		if (!*name || equalstr(name, buf)) {
 			snprintf(buf, sizeof(buf), "(time) %-20s = %s", ttim->name, timestr_full(*ttim->tim));
@@ -413,6 +415,7 @@ tune_display_parms(dbref player, char *name)
 	}
 
 	while (tval->name) {
+		if (tval->security > security) { tval++; continue; }
 		strcpyn(buf, sizeof(buf), tval->name);
 		if (!*name || equalstr(name, buf)) {
 			snprintf(buf, sizeof(buf), "(int)  %-20s = %d", tval->name, *tval->val);
@@ -422,6 +425,7 @@ tune_display_parms(dbref player, char *name)
 	}
 
 	while (tref->name) {
+		if (tref->security > security) { tref++; continue; }
 		strcpyn(buf, sizeof(buf), tref->name);
 		if (!*name || equalstr(name, buf)) {
 			snprintf(buf, sizeof(buf), "(ref)  %-20s = %s", tref->name, unparse_object(player, *tref->ref));
@@ -431,6 +435,7 @@ tune_display_parms(dbref player, char *name)
 	}
 
 	while (tbool->name) {
+		if (tbool->security > security) {tbool++; continue; }
 		strcpyn(buf, sizeof(buf), tbool->name);
 		if (!*name || equalstr(name, buf)) {
 			snprintf(buf, sizeof(buf), "(bool) %-20s = %s", tbool->name, ((*tbool->boolval) ? "yes" : "no"));
@@ -710,20 +715,6 @@ tune_get_parmstring(const char *name, int mlev)
 	return (buf);
 }
 
-
-
-/* return values:
- *  0 for success.
- *  1 for unrecognized parameter name.
- *  2 for bad parameter value syntax.
- *  3 for bad parameter value.
- */
-
-#define TUNESET_SUCCESS 0
-#define TUNESET_UNKNOWN 1
-#define TUNESET_SYNTAX 2
-#define TUNESET_BADVAL 3
-
 void
 tune_freeparms()
 {
@@ -737,7 +728,7 @@ tune_freeparms()
 }
 
 int
-tune_setparm(const char *parmname, const char *val)
+tune_setparm(const char *parmname, const char *val, int security)
 {
 	struct tune_str_entry *tstr = tune_str_list;
 	struct tune_time_entry *ttim = tune_time_list;
@@ -752,6 +743,7 @@ tune_setparm(const char *parmname, const char *val)
 
 	while (tstr->name) {
 		if (!string_compare(parmname, tstr->name)) {
+			if (tstr->security > security) return TUNESET_DENIED;
 			if (!tstr->isdefault)
 				free((char *) *tstr->str);
 			if (*parmval == '-')
@@ -759,13 +751,14 @@ tune_setparm(const char *parmname, const char *val)
 			*tstr->str = string_dup(parmval);
 			tstr->isdefault = 0;
 
-			return 0;
+			return TUNESET_SUCCESS;
 		}
 		tstr++;
 	}
 
 	while (ttim->name) {
 		if (!string_compare(parmname, ttim->name)) {
+			if (ttim->security > security) return TUNESET_DENIED;
 			int days, hrs, mins, secs, result;
 			char *end;
 
@@ -776,86 +769,90 @@ tune_setparm(const char *parmname, const char *val)
 			case 'S':
 				*end = '\0';
 				if (!number(parmval))
-					return 2;
+					return TUNESET_SYNTAX;
 				secs = atoi(parmval);
 				break;
 			case 'm':
 			case 'M':
 				*end = '\0';
 				if (!number(parmval))
-					return 2;
+					return TUNESET_SYNTAX;
 				mins = atoi(parmval);
 				break;
 			case 'h':
 			case 'H':
 				*end = '\0';
 				if (!number(parmval))
-					return 2;
+					return TUNESET_SYNTAX;
 				hrs = atoi(parmval);
 				break;
 			case 'd':
 			case 'D':
 				*end = '\0';
 				if (!number(parmval))
-					return 2;
+					return TUNESET_SYNTAX;
 				days = atoi(parmval);
 				break;
 			default:
 				result = sscanf(parmval, "%dd %2d:%2d:%2d", &days, &hrs, &mins, &secs);
 				if (result != 4)
-					return 2;
+					return TUNESET_SYNTAX;
 				break;
 			}
 			*ttim->tim = (days * 86400) + (3600 * hrs) + (60 * mins) + secs;
-			return 0;
+			return TUNESET_SUCCESS;
 		}
 		ttim++;
 	}
 
 	while (tval->name) {
 		if (!string_compare(parmname, tval->name)) {
+			if (tval->security > security) return TUNESET_DENIED;
 			if (!number(parmval))
-				return 2;
+				return TUNESET_SYNTAX;
 			*tval->val = atoi(parmval);
-			return 0;
+			return TUNESET_SUCCESS;
 		}
 		tval++;
 	}
 
 	while (tref->name) {
 		if (!string_compare(parmname, tref->name)) {
+			if (tref->security > security) return TUNESET_DENIED;
+
 			dbref obj;
 
 			if (*parmval != NUMBER_TOKEN)
-				return 2;
+				return TUNESET_SYNTAX;
 			if (!number(parmval + 1))
-				return 2;
+				return TUNESET_SYNTAX;
 			obj = (dbref) atoi(parmval + 1);
 			if (obj < 0 || obj >= db_top)
-				return 2;
+				return TUNESET_SYNTAX;
 			if (tref->typ != NOTYPE && Typeof(obj) != tref->typ)
-				return 3;
+				return TUNESET_BADVAL;
 			*tref->ref = obj;
-			return 0;
+			return TUNESET_SUCCESS;
 		}
 		tref++;
 	}
 
 	while (tbool->name) {
 		if (!string_compare(parmname, tbool->name)) {
+			if (tbool->security > security) return TUNESET_DENIED;
 			if (*parmval == 'y' || *parmval == 'Y') {
 				*tbool->boolval = 1;
 			} else if (*parmval == 'n' || *parmval == 'N') {
 				*tbool->boolval = 0;
 			} else {
-				return 2;
+				return TUNESET_SYNTAX;
 			}
 			return 0;
 		}
 		tbool++;
 	}
 
-	return 1;
+	return TUNESET_UNKNOWN;
 }
 
 void
@@ -879,7 +876,7 @@ tune_load_parms_from_file(FILE * f, dbref player, int cnt)
 				*p = '\0';
 				for (p = buf; isspace(*p); p++) ;
 				if (*p) {
-					result = tune_setparm(p, c);
+					result = tune_setparm(p, c, MLEV_GOD);
 				}
 				switch (result) {
 				case TUNESET_SUCCESS:
@@ -893,6 +890,9 @@ tune_load_parms_from_file(FILE * f, dbref player, int cnt)
 					break;
 				case TUNESET_BADVAL:
 					strcatn(buf, sizeof(buf), ": Bad parameter value.");
+					break;
+				case TUNESET_DENIED:
+					strcatn(buf, sizeof(buf), ": Permission denied.");
 					break;
 				}
 				if (result && player != NOTHING)
@@ -922,7 +922,9 @@ tune_load_parmsfile(dbref player)
 void
 do_tune(dbref player, char *parmname, char *parmval)
 {
+	const char *oldvalue;
 	int result;
+	int security = God(player) ? MLEV_GOD : MLEV_WIZARD;
 
 	if (!Wizard(player)) {
 		notify(player, "You pull out a harmonica and play a short tune.");
@@ -930,13 +932,14 @@ do_tune(dbref player, char *parmname, char *parmval)
 	}
 
 	if (*parmname && *parmval) {
-		result = tune_setparm(parmname, parmval);
+ 		oldvalue = tune_get_parmstring(parmname, security);
+		result = tune_setparm(parmname, parmval, security);
 		switch (result) {
 		case TUNESET_SUCCESS:
-			log_status("TUNED: %s(%d) tuned %s to %s",
-					   NAME(player), player, parmname, parmval);
+			log_status("TUNED: %s(%d) tuned %s from '%s' to '%s'",
+					   NAME(player), player, parmname, oldvalue, parmval);
 			notify(player, "Parameter set.");
-			tune_display_parms(player, parmname);
+			tune_display_parms(player, parmname, security);
 			break;
 		case TUNESET_UNKNOWN:
 			notify(player, "Unknown parameter.");
@@ -946,6 +949,9 @@ do_tune(dbref player, char *parmname, char *parmval)
 			break;
 		case TUNESET_BADVAL:
 			notify(player, "Bad parameter value.");
+			break;
+		case TUNESET_DENIED:
+			notify(player, "Permission denied.");
 			break;
 		}
 		return;
@@ -957,11 +963,11 @@ do_tune(dbref player, char *parmname, char *parmval)
 			tune_load_parmsfile(player);
 			notify(player, "Restored parameters from configuration file.");
 		} else {
-			tune_display_parms(player, parmname);
+			tune_display_parms(player, parmname, security);
 		}
 		return;
 	} else if (!*parmval && !*parmname) {
-		tune_display_parms(player, parmname);
+		tune_display_parms(player, parmname, security);
 	} else {
 		notify(player, "But what do you want to tune?");
 		return;

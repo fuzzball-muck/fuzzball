@@ -99,7 +99,7 @@ char * time_format_2(long dt);
 void ts_lastuseobject(dbref thing);
 void ts_useobject(dbref thing);
 void tune_save_parmsfile(void);
-int tune_setparm(const char *parmname, const char *val);
+int tune_setparm(const char *parmname, const char *val, int security);
 void tune_freeparms(void);
 const char * unparse_flags(dbref thing);
 void untouchprops_incremental(int limit);
