@@ -504,6 +504,7 @@ prim_stats(PRIM_PROTOTYPE)
 			}
 		}
 		ref = rooms + exits + things + players + programs + garbage;
+		CHECKOFLOW(7);
 		PushInt(ref);
 		PushInt(rooms);
 		PushInt(exits);
@@ -639,13 +640,14 @@ prim_sysparm(PRIM_PROTOTYPE)
 {
 	const char *ptr;
 	const char *tune_get_parmstring(const char *name, int mlev);
+	int security = God(player) ? MLEV_GOD : MLEV_WIZARD;
 
 	CHECKOP(1);
 	oper1 = POP();				/* string: system parm name */
 	if (oper1->type != PROG_STRING)
 		abort_interp("Invalid argument.");
 	if (oper1->data.string) {
-		ptr = tune_get_parmstring(oper1->data.string->data, mlev);
+		ptr = tune_get_parmstring(oper1->data.string->data, security);
 	} else {
 		ptr = "";
 	}
@@ -707,6 +709,10 @@ prim_cancallp(PRIM_PROTOTYPE)
 void
 prim_setsysparm(PRIM_PROTOTYPE)
 {
+        const char *tune_get_parmstring(const char *name, int mlev);
+	const char *oldvalue;
+	int security = God(player) ? MLEV_GOD : MLEV_WIZARD;
+
 	CHECKOP(2);
 	oper1 = POP();				/* string: new parameter value */
 	oper2 = POP();				/* string: parameter to tune */
@@ -722,21 +728,26 @@ prim_setsysparm(PRIM_PROTOTYPE)
 	if (!oper1->data.string)
 		abort_interp("Null string argument. (2)");
 
-	result = tune_setparm(oper2->data.string->data, oper1->data.string->data);
+	oldvalue = tune_get_parmstring(oper1->data.string->data, security);
+
+	result = tune_setparm(oper2->data.string->data, oper1->data.string->data, security);
 
 	switch (result) {
-	case 0:					/* TUNESET_SUCCESS */
-		log_status("TUNED (MUF): %s(%d) tuned %s to %s",
-				   NAME(player), player, oper2->data.string->data, oper1->data.string->data);
+	case TUNESET_SUCCESS:
+		log_status("TUNED (MUF): %s(%d) tuned %s from '%s' to '%s'",
+				   NAME(player), player, oper2->data.string->data, oldvalue, oper1->data.string->data);
 		break;
-	case 1:					/* TUNESET_UNKNOWN */
+	case TUNESET_UNKNOWN:
 		abort_interp("Unknown parameter. (1)");
 		break;
-	case 2:					/* TUNESET_SYNTAX */
+	case TUNESET_SYNTAX:
 		abort_interp("Bad parameter syntax. (2)");
 		break;
-	case 3:					/* TUNESET_BADVAL */
+	case TUNESET_BADVAL:
 		abort_interp("Bad parameter value. (2)");
+		break;
+	case TUNESET_DENIED:
+		abort_interp("Permission denied. (1)");
 		break;
 	}
 	CLEAR(oper1);
@@ -749,13 +760,14 @@ void
 prim_sysparm_array(PRIM_PROTOTYPE)
 {
 	stk_array *nu;
+	int security = God(player) ? MLEV_GOD : MLEV_WIZARD;
 
 	CHECKOP(1);
 	oper1 = POP();				/* string: match pattern */
 
 	if (oper1->type != PROG_STRING)
 		abort_interp("Expected a string smatch pattern.");
-	nu = tune_parms_array(DoNullInd(oper1->data.string), mlev);
+	nu = tune_parms_array(DoNullInd(oper1->data.string), security);
 
 	CLEAR(oper1);
 	PushArrayRaw(nu);

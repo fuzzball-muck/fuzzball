@@ -4,6 +4,12 @@
 /* Ensure that 'dbref' type gets properly typedef'd */
 #include "db.h"
 
+#define TUNESET_SUCCESS 0 /* success			*/
+#define TUNESET_UNKNOWN 1 /* unrecognized sysparm	*/
+#define TUNESET_SYNTAX  2 /* bad value syntax		*/
+#define TUNESET_BADVAL  3 /* bad value			*/
+#define TUNESET_DENIED	4 /* mucker level too low    	*/
+
 /* strings */
 extern const char *tp_dumpwarn_mesg;
 extern const char *tp_deltawarn_mesg;
@@ -150,7 +156,7 @@ extern int tp_idle_ping_enable;
 extern int tune_count_parms(void);
 extern void tune_load_parms_from_file(FILE * f, dbref player, int cnt);
 extern void tune_save_parms_to_file(FILE * f);
-extern int tune_setparm(const char *parmname, const char *val);
+extern int tune_setparm(const char *parmname, const char *val, int security);
 extern stk_array *tune_parms_array(const char* pattern, int mlev);
 
 #endif /* _TUNE_H */

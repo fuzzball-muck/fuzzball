@@ -273,7 +273,7 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 				return;
 			}
 			content = mcp_mesg_arg_getline(msg, "content", 0);
-			tune_setparm(reference, content);
+			tune_setparm(reference, content, God(player) ? MLEV_GOD : MLEV_WIZARD);
 
 		} else if (!string_compare(category, "user")) {
 		} else {
