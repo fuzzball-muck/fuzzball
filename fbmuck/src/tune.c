@@ -277,6 +277,7 @@ int tp_m3_huh = M3_HUH;
 int tp_7bit_thing_names = ASCII_THING_NAMES;
 int tp_7bit_other_names = ASCII_OTHER_NAMES;
 int tp_idle_ping_enable = IDLE_PING_ENABLE;
+int tp_recognize_null_command = RECOGNIZE_NULL_COMMAND;
 
 struct tune_bool_entry {
 	const char *group;
@@ -291,6 +292,7 @@ struct tune_bool_entry tune_bool_list[] = {
 	{"Commands",   "enable_prefix", &tp_enable_prefix, 4, "Enable prefix actions"},
         {"Commands",   "enable_match_yield", &tp_enable_match_yield, 4, "Enable yield/overt flags on rooms and things"},
 	{"Commands",   "verbose_clone", &tp_verbose_clone, 4, "Verbose @clone command"},
+	{"Commands",   "recognize_null_command", &tp_recognize_null_command, 4, "Recognize null command"},
 	{"Dark",       "exit_darking", &tp_exit_darking, 0, "Allow setting exits dark"},
 	{"Dark",       "thing_darking", &tp_thing_darking, 0, "Allow setting things dark"},
 	{"Dark",       "dark_sleepers", &tp_dark_sleepers, 0, "Make sleeping players dark"},

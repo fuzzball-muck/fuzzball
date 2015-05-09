@@ -1158,7 +1158,6 @@ process_command(int descr, dbref player, char *command)
 				case 'u':
 				case 'U':
 					Matched("@tune");
-log_status(command);
 					do_tune(player, arg1, arg2, !!strchr(full_command, ARG_DELIMITER));
 					break;
 				default:

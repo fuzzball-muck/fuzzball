@@ -2695,6 +2695,8 @@ is_interface_command(const char* cmd)
 		return 1;
 	if (!strncmp(tmp, SUFFIX_COMMAND, strlen(SUFFIX_COMMAND)))
 		return 1;
+	if (tp_recognize_null_command && !string_compare(tmp, NULL_COMMAND))
+		return 1;
 	return 0;
 }
 
@@ -2733,6 +2735,8 @@ do_command(struct descriptor_data *d, char *command)
 		return 1;
 	} else if (!strcmp(command, QUIT_COMMAND)) {
 		return 0;
+	} else if (tp_recognize_null_command && !string_compare(command, NULL_COMMAND)) {
+		return 1;
 	} else if ((!strncmp(command, WHO_COMMAND, sizeof(WHO_COMMAND) - 1)) ||
                    (*command == OVERIDE_TOKEN &&
                     (!strncmp(command+1, WHO_COMMAND, sizeof(WHO_COMMAND) - 1))
