@@ -727,8 +727,7 @@ prim_setsysparm(PRIM_PROTOTYPE)
 		abort_interp("Null string argument. (1)");
 	if (oper1->type != PROG_STRING)
 		abort_interp("Invalid argument. (2)");
-	if (force_level)
-		abort_interp("Cannot be forced.");
+
 	oldvalue = tune_get_parmstring(oper2->data.string->data, security);
 	newvalue = oper1->data.string ? oper1->data.string->data : "";
 

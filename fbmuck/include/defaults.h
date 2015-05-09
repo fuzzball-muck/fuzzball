@@ -347,6 +347,9 @@
 /* Verbose @clone command. */
 #define VERBOSE_CLONE 0
 
+/* Recognize null command. */
+#define RECOGNIZE_NULL_COMMAND 0
+
 /* Force 7-bit names */
 #define ASCII_THING_NAMES 1
 #define ASCII_OTHER_NAMES 0
