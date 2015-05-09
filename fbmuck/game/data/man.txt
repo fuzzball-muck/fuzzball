@@ -4176,6 +4176,7 @@ Parameters available:
   (int)  command_time_msec    - Time slice length in milliseconds
   (int)  max_delta_objs       - Max percent of changed objects for a delta
   (int)  max_loaded_objs      - Max percent of the DB in memory at once
+  (int)  max_force_level      - Maximum number of forces within one command
   (int)  max_process_limit    - Total processes allowed
   (int)  max_plyr_processes   - Processes allowed for each player
   (int)  max_instr_count      - Max preempt mode instructions

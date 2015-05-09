@@ -710,7 +710,7 @@ void
 prim_setsysparm(PRIM_PROTOTYPE)
 {
         const char *tune_get_parmstring(const char *name, int mlev);
-	const char *oldvalue;
+	const char *oldvalue, *newvalue;
 	int security = God(player) ? MLEV_GOD : MLEV_WIZARD;
 
 	CHECKOP(2);
@@ -719,23 +719,25 @@ prim_setsysparm(PRIM_PROTOTYPE)
 
 	if (mlev < 4)
 		abort_interp("Wizbit only primitive.");
+	if (force_level)
+		abort_interp("Cannot be forced.");
 	if (oper2->type != PROG_STRING)
 		abort_interp("Invalid argument. (1)");
 	if (!oper2->data.string)
 		abort_interp("Null string argument. (1)");
 	if (oper1->type != PROG_STRING)
 		abort_interp("Invalid argument. (2)");
-	if (!oper1->data.string)
-		abort_interp("Null string argument. (2)");
+	if (force_level)
+		abort_interp("Cannot be forced.");
+	oldvalue = tune_get_parmstring(oper2->data.string->data, security);
+	newvalue = oper1->data.string ? oper1->data.string->data : "";
 
-	oldvalue = tune_get_parmstring(oper1->data.string->data, security);
-
-	result = tune_setparm(oper2->data.string->data, oper1->data.string->data, security);
+	result = tune_setparm(oper2->data.string->data, newvalue, security);
 
 	switch (result) {
 	case TUNESET_SUCCESS:
 		log_status("TUNED (MUF): %s(%d) tuned %s from '%s' to '%s'",
-				   NAME(player), player, oper2->data.string->data, oldvalue, oper1->data.string->data);
+				   NAME(player), player, oper2->data.string->data, oldvalue, newvalue);
 		break;
 	case TUNESET_UNKNOWN:
 		abort_interp("Unknown parameter. (1)");
