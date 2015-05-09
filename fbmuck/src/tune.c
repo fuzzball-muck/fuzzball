@@ -131,6 +131,7 @@ int tp_max_output = MAX_OUTPUT;
 
 int tp_max_delta_objs = MAX_DELTA_OBJS;
 int tp_max_loaded_objs = MAX_LOADED_OBJS;
+int tp_max_force_level = MAX_FORCE_LEVEL;
 int tp_max_process_limit = MAX_PROCESS_LIMIT;
 int tp_max_plyr_processes = MAX_PLYR_PROCESSES;
 int tp_max_instr_count = MAX_INSTR_COUNT;
@@ -174,6 +175,7 @@ struct tune_val_entry tune_val_list[] = {
 	{"Killing",     "kill_bonus", &tp_kill_bonus, 0, "Bonus to killed player"},
 	{"Listeners",   "listen_mlev", &tp_listen_mlev, 0, "Mucker Level required for Listener progs"},
 	{"Logging",     "cmd_log_threshold_msec", &tp_cmd_log_threshold_msec, 0, "Log commands that take longer than X millisecs"},
+	{"Misc",        "max_force_level", &tp_max_force_level, MLEV_GOD, "Maximum number of forces processed within a command"},
 	{"MUF",         "max_process_limit", &tp_max_process_limit, 0, "Max concurrent processes on system"},
 	{"MUF",         "max_plyr_processes", &tp_max_plyr_processes, 0, "Max concurrent processes per player"},
 	{"MUF",         "max_instr_count", &tp_max_instr_count, 0, "Max MUF instruction run length for ML1"},
@@ -735,9 +737,9 @@ tune_setparm(const char *parmname, const char *val, int security)
 	struct tune_val_entry *tval = tune_val_list;
 	struct tune_ref_entry *tref = tune_ref_list;
 	struct tune_bool_entry *tbool = tune_bool_list;
+
 	char buf[BUFFER_LEN];
 	char *parmval;
-
 	strcpyn(buf, sizeof(buf), val);
 	parmval = buf;
 
@@ -920,18 +922,22 @@ tune_load_parmsfile(dbref player)
 
 
 void
-do_tune(dbref player, char *parmname, char *parmval)
+do_tune(dbref player, char *parmname, char *parmval, int full_command_has_delimiter)
 {
 	const char *oldvalue;
 	int result;
 	int security = God(player) ? MLEV_GOD : MLEV_WIZARD;
-
 	if (!Wizard(player)) {
 		notify(player, "You pull out a harmonica and play a short tune.");
 		return;
 	}
 
-	if (*parmname && *parmval) {
+	if (*parmname && full_command_has_delimiter) {
+		if (force_level) {
+			notify(player, "You cannot force setting a @tune.");
+			return;
+		}
+
  		oldvalue = tune_get_parmstring(parmname, security);
 		result = tune_setparm(parmname, parmval, security);
 		switch (result) {

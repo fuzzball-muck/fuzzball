@@ -347,7 +347,7 @@ do_force(int descr, dbref player, const char *what, char *command)
 	assert(command != NULL);
 	assert(player > 0);
 
-	if (force_level > 1) {
+	if (force_level > (tp_max_force_level - 1)) {
 		notify(player, "Can't force recursively.");
 		return;
 	}

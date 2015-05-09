@@ -122,6 +122,9 @@
 /* This is only needed if you defined DISKBASED in config.h */
 #define MAX_LOADED_OBJS 5
 
+/* Maximum number of forces processed within a command. */
+#define MAX_FORCE_LEVEL 1
+
 /* Max # of timequeue events allowed. */
 #define MAX_PROCESS_LIMIT 400
 

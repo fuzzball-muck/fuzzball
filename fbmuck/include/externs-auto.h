@@ -30,7 +30,7 @@ void do_post_dlog(int descr, const char *text);
 void do_propset(int descr, dbref player, const char *name, const char *prop);
 void do_score(dbref player);
 void do_sweep(int descr, dbref player, const char *name);
-void do_tune(dbref player, char *parmname, char *parmval);
+void do_tune(dbref player, char *parmname, char *parmval, int full_command_has_delimiter);
 void do_whisper(int descr, dbref player, const char *arg1, const char *arg2);
 void dump_status(void);
 void envpropqueue(int descr, dbref player, dbref where, dbref trigger, dbref what, dbref xclude, const char *propname, const char *toparg, int mlev, int mt);
