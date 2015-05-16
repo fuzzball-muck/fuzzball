@@ -253,10 +253,13 @@ string_substitute(const char *str, const char *oldstr, const char *newstr,
 
 
 const char *
-get_list_item(dbref player, dbref what, dbref perms, const char *listname, int itemnum, int mesgtyp, int* blessed)
+get_list_item(dbref player, dbref what, dbref perms, char *listname, int itemnum, int mesgtyp, int* blessed)
 {
 	char buf[BUFFER_LEN];
 	const char *ptr;
+	int len = strlen(listname);
+
+	if (listname[len-1] == NUMBER_TOKEN) listname[len-1] = 0;
 
 	snprintf(buf, sizeof(buf), "%.512s#/%d", listname, itemnum);
 	ptr = safegetprop(player, what, perms, buf, mesgtyp, blessed);
@@ -274,11 +277,13 @@ get_list_item(dbref player, dbref what, dbref perms, const char *listname, int i
 
 
 int
-get_list_count(dbref player, dbref obj, dbref perms, const char *listname, int mesgtyp, int* blessed)
+get_list_count(dbref player, dbref obj, dbref perms, char *listname, int mesgtyp, int* blessed)
 {
 	char buf[BUFFER_LEN];
 	const char *ptr;
-	int i;
+	int i, len = strlen(listname);
+
+	if (listname[len-1] == NUMBER_TOKEN) listname[len-1] = 0;
 
 	snprintf(buf, sizeof(buf), "%.512s#", listname);
 	ptr = safegetprop(player, obj, perms, buf, mesgtyp, blessed);
@@ -305,15 +310,18 @@ get_list_count(dbref player, dbref obj, dbref perms, const char *listname, int m
 
 
 char *
-get_concat_list(dbref player, dbref what, dbref perms, dbref obj, const char *listname,
+get_concat_list(dbref player, dbref what, dbref perms, dbref obj, char *listname,
 				char *buf, int maxchars, int mode, int mesgtyp, int* blessed)
 {
 	int line_limit = MAX_MFUN_LIST_LEN;
-	int i;
+	int i, cnt, len = strlen(listname);;
 	const char *ptr;
 	char *pos = buf;
 	int tmpbless;
-	int cnt = get_list_count(what, obj, perms, listname, mesgtyp, &tmpbless);
+
+	if (listname[len-1] == NUMBER_TOKEN) listname[len-1] = 0;
+
+	cnt = get_list_count(what, obj, perms, listname, mesgtyp, &tmpbless);
 	*blessed = 1;
 
 	if (!tmpbless) {

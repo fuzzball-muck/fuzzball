@@ -1148,7 +1148,7 @@ reflist_add(dbref obj, const char* propname, dbref toadd)
 			list = temp = PropDataStr(ptr);
 			snprintf(buf, sizeof(buf), "%d", toadd);
 			while (*temp) {
-				if (*temp == '#') {
+				if (*temp == NUMBER_TOKEN) {
 					pat = buf;
 					count++;
 					charcount = temp - list;
@@ -1223,7 +1223,7 @@ reflist_del(dbref obj, const char* propname, dbref todel)
 			list = temp = PropDataStr(ptr);
 			snprintf(buf, sizeof(buf), "%d", todel);
 			while (*temp) {
-				if (*temp == '#') {
+				if (*temp == NUMBER_TOKEN) {
 					pat = buf;
 					count++;
 					charcount = temp - list;
@@ -1283,7 +1283,7 @@ reflist_find(dbref obj, const char* propname, dbref tofind)
 			temp = PropDataStr(ptr);
 			snprintf(buf, sizeof(buf), "%d", tofind);
 			while (*temp) {
-				if (*temp == '#') {
+				if (*temp == NUMBER_TOKEN) {
 					pat = buf;
 					count++;
 				} else if (pat) {

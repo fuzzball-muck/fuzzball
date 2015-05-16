@@ -4383,7 +4383,7 @@ int ignore_prime_cache(dbref Player)
 	{
 		Count++;
 
-		if (*Ptr == '#')
+		if (*Ptr == NUMBER_TOKEN)
 			Ptr++;
 
 		while(*Ptr && !isspace(*Ptr))
@@ -4398,7 +4398,7 @@ int ignore_prime_cache(dbref Player)
 
 	for(Ptr = Txt, i = 0; *Ptr; )
 	{
-		if (*Ptr == '#')
+		if (*Ptr == NUMBER_TOKEN)
 			Ptr++;
 
 		if (isdigit(*Ptr))
