@@ -1590,7 +1590,7 @@ prim_array_get_reflist(PRIM_PROTOTYPE)
 		while (isspace(*rawstr))
 			rawstr++;
 		while (*rawstr) {
-			if (*rawstr == '#')
+			if (*rawstr == NUMBER_TOKEN)
 				rawstr++;
 			if (!isdigit(*rawstr) && (*rawstr != '-'))
 				break;
@@ -2157,7 +2157,7 @@ prim_array_get_ignorelist(PRIM_PROTOTYPE)
 			while (isspace(*rawstr))
 				rawstr++;
 			while (*rawstr) {
-				if (*rawstr == '#')
+				if (*rawstr == NUMBER_TOKEN)
 					rawstr++;
 				if (!isdigit(*rawstr))
 					break;

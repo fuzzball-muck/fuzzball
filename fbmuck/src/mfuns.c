@@ -461,7 +461,7 @@ mfn_concat(MFUNARGS)
 		ABORT_MPI("CONCAT", "Permission denied.");
 	if (obj == UNKNOWN || obj == AMBIGUOUS || obj == NOTHING || obj == HOME)
 		ABORT_MPI("CONCAT", "Match failed.");
-	ptr = get_concat_list(player, what, perms, obj, pname, buf, BUFFER_LEN, 1, mesgtyp, &blessed);
+	ptr = get_concat_list(player, what, perms, obj, (char *)pname, buf, BUFFER_LEN, 1, mesgtyp, &blessed);
 	if (!ptr)
 		ABORT_MPI("CONCAT", "Failed list read.");
 	return ptr;
@@ -502,7 +502,7 @@ mfn_select(MFUNARGS)
 	limit = 18;
 	i = targval = atoi(argv[0]);
 	do {
-		ptr = get_list_item(player, obj, perms, pname, i--, mesgtyp, &blessed);
+		ptr = get_list_item(player, obj, perms, (char *)pname, i--, mesgtyp, &blessed);
 	} while (limit-->0 && i >= 0 && ptr && !*ptr);
 	if (ptr == NULL)
 		ABORT_MPI("SELECT", "Failed list read.");
@@ -532,7 +532,7 @@ mfn_select(MFUNARGS)
 		pname = next_prop_name(obj, propname, sizeof(propname), origprop);
 		while (pname && string_prefix(pname, origprop)) {
 			ptr = pname + baselen;
-			if (*ptr == '#') ptr++;
+			if (*ptr == NUMBER_TOKEN) ptr++;
 			if (!*ptr && is_propdir(obj, pname)) {
 				char propname2[BUFFER_LEN];
 				char *pname2;
@@ -596,7 +596,7 @@ mfn_list(MFUNARGS)
 		ABORT_MPI("LIST", "Permission denied.");
 	if (obj == UNKNOWN || obj == AMBIGUOUS || obj == NOTHING || obj == HOME)
 		ABORT_MPI("LIST", "Match failed.");
-	ptr = get_concat_list(player, what, perms, obj, pname, buf, BUFFER_LEN, 0, mesgtyp, &blessed);
+	ptr = get_concat_list(player, what, perms, obj, (char *)pname, buf, BUFFER_LEN, 0, mesgtyp, &blessed);
 	if (!ptr)
 		ptr = "";
 	return ptr;
@@ -621,7 +621,7 @@ mfn_lexec(MFUNARGS)
 		ABORT_MPI("LEXEC", "Match failed.");
 	while (*pname == PROPDIR_DELIMITER)
 		pname++;
-	ptr = get_concat_list(player, what, perms, obj, pname, buf, BUFFER_LEN, 2, mesgtyp, &blessed);
+	ptr = get_concat_list(player, what, perms, obj, (char *)pname, buf, BUFFER_LEN, 2, mesgtyp, &blessed);
 	if (!ptr)
 		ptr = "";
 	trg = what;
@@ -655,10 +655,10 @@ mfn_rand(MFUNARGS)
 		ABORT_MPI("RAND", "Permission denied.");
 	if (obj == UNKNOWN || obj == AMBIGUOUS || obj == NOTHING || obj == HOME)
 		ABORT_MPI("RAND", "Match failed.");
-	num = get_list_count(what, obj, perms, pname, mesgtyp, &blessed);
+	num = get_list_count(what, obj, perms, (char *)pname, mesgtyp, &blessed);
 	if (!num)
 		ABORT_MPI("RAND", "Failed list read.");
-	ptr = get_list_item(what, obj, perms, pname, (((RANDOM() / 256) % num) + 1), mesgtyp, &blessed);
+	ptr = get_list_item(what, obj, perms, (char *)pname, (((RANDOM() / 256) % num) + 1), mesgtyp, &blessed);
 	if (!ptr)
 		ABORT_MPI("RAND", "Failed list read.");
 	trg = what;
@@ -694,7 +694,7 @@ mfn_timesub(MFUNARGS)
 		ABORT_MPI("TIMESUB", "Permission denied.");
 	if (obj == UNKNOWN || obj == AMBIGUOUS || obj == NOTHING || obj == HOME)
 		ABORT_MPI("TIMESUB", "Match failed.");
-	num = get_list_count(what, obj, perms, pname, mesgtyp, &blessed);
+	num = get_list_count(what, obj, perms, (char *)pname, mesgtyp, &blessed);
 	if (!num)
 		ABORT_MPI("TIMESUB", "Failed list read.");
 	if (period < 1)
@@ -702,7 +702,7 @@ mfn_timesub(MFUNARGS)
 	offset = (int)((((long) time(NULL) + offset) % period) * num) / period;
 	if (offset < 0)
 		offset = -offset;
-	ptr = get_list_item(what, obj, perms, pname, offset + 1, mesgtyp, &blessed);
+	ptr = get_list_item(what, obj, perms, (char *)pname, offset + 1, mesgtyp, &blessed);
 	if (!ptr)
 		ABORT_MPI("TIMESUB", "Failed list read.");
 	trg = what;

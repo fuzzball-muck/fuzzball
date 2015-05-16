@@ -1139,7 +1139,7 @@ prim_stod(PRIM_PROTOTYPE)
 		const char *nptr = NULL;
 
 		while (isspace(*ptr)) ptr++;
-		if (*ptr == '#') ptr++;
+		if (*ptr == NUMBER_TOKEN) ptr++;
 		if (*ptr == '+') ptr++;
 		nptr = ptr;
 		if (*nptr == '-') nptr++;
