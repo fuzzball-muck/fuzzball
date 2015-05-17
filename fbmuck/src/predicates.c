@@ -424,7 +424,7 @@ controls(dbref who, dbref what)
 	/* Wizard controls everything */
 	if (Wizard(who)) {
 #ifdef GOD_PRIV
-		if(God(OWNER(what)) && !God(who))
+		if(tp_strict_god_priv && God(OWNER(what)) && !God(who))
 			/* Only God controls God's objects */
 			return 0;
 		else

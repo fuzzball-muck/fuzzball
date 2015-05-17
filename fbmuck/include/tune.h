@@ -153,6 +153,7 @@ extern int tp_7bit_thing_names;
 extern int tp_7bit_other_names;
 extern int tp_idle_ping_enable;
 extern int tp_recognize_null_command;
+extern int tp_strict_god_priv;
 
 extern int tune_count_parms(void);
 extern void tune_load_parms_from_file(FILE * f, dbref player, int cnt);
