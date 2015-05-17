@@ -35,6 +35,7 @@ extern const char *tp_autolook_cmd;
 extern const char *tp_proplist_counter_fmt;
 extern const char *tp_proplist_entry_fmt;
 extern const char *tp_ssl_keyfile_passwd;
+extern const char *tp_ssl_cipher_preference_list;
 
 extern const char *tp_pcreate_flags;
 extern const char *tp_reserved_names;

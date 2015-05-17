@@ -1147,6 +1147,7 @@ shovechars()
 
 #ifdef USE_SSL
 	int ssl_status_ok = 1;
+        EC_KEY *eckey = NULL;
 #endif
 
 	if (ipv4_enabled) {
@@ -1170,6 +1171,16 @@ shovechars()
 	SSL_load_error_strings ();
  	OpenSSL_add_ssl_algorithms (); 
 	ssl_ctx = SSL_CTX_new (SSLv23_server_method ());
+#if defined(SSL_CTX_set_ecdh_auto)
+        /* In OpenSSL >= 1.0.2, this exists; otherwise, fallback to the older
+           API where we have to name a curve. */
+        SSL_CTX_set_ecdh_auto(ssl_ctx, 1);
+#else
+        eckey = EC_KEY_new_by_curve_name(NID_X9_62_prime256v1);
+        SSL_CTX_set_tmp_ecdh(ssl_ctx, eckey);
+#endif
+        SSL_CTX_set_cipher_list(ssl_ctx, tp_ssl_cipher_preference_list);
+
  
 	if (!SSL_CTX_use_certificate_chain_file (ssl_ctx, SSL_CERT_FILE)) {
 		log_status("Could not load certificate file %s", SSL_CERT_FILE);
