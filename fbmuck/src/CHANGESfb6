@@ -2,6 +2,24 @@
 Added new @tune: strict_god_priv.  This is a #1-only parameter, which
   controls whether GOD_PRIV also prevents #1's items from being controlled
   by wizards.
+Fixed SF bug #268 - {list:} improperly appends from environment
+Added new @tune: recognize_null_command.  This parameter enables @@ to act
+  as a do-nothing command. Defaults to No.
+Added new @tune: max_force_level.  This parameter sets the maximum number of
+  times a force can occur in the same command. Defaults to 1.
+The @tune 'ssl_keyfile_passwd' is now #1-only.
+@tunes can now be set #1-only, allowing only #1 to read and set them.
+Blank values for @tunes are now allowed.
+Setting a @tune can no longer be forced.
+Added ENTRANCES_ARRAY primitive, mostly from ProtoMUCK. [SF RFE #67]
+The STATS primitive did not check for an overflow.
+Added years and months (approximate) to output of {ltimestr:}.
+Recognized SIGUSR2 as an emergency shutdown request. [SF patch #47]
+Defined SSL_WANT_ACCEPT for systems with older OpenSSL. [SF patch #45]
+Added log level WARNING to the status file. [SF patch #45]
+Addressed crasher bugs with NULL pointers and dequeuing events. [SF patch #44]
+Fixed compilation issue when SPAWN_HOST_RESOLVER is not defined.
+Modified status log of new connections to only display the port number once.
 
 2.2fb6.13
 Fixed a catastrophic privilege de-escalation scenario.  (no bug number)
