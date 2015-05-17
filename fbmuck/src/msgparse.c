@@ -314,14 +314,15 @@ get_concat_list(dbref player, dbref what, dbref perms, dbref obj, char *listname
 				char *buf, int maxchars, int mode, int mesgtyp, int* blessed)
 {
 	int line_limit = MAX_MFUN_LIST_LEN;
-	int i, cnt, len = strlen(listname);;
+	int i, cnt, len;
 	const char *ptr;
 	char *pos = buf;
 	int tmpbless;
 
+	len = strlen(listname);
 	if (listname[len-1] == NUMBER_TOKEN) listname[len-1] = 0;
-
 	cnt = get_list_count(what, obj, perms, listname, mesgtyp, &tmpbless);
+
 	*blessed = 1;
 
 	if (!tmpbless) {
