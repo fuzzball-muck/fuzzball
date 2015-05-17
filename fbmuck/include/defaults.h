@@ -350,6 +350,9 @@
 /* Recognize null command. */
 #define RECOGNIZE_NULL_COMMAND 0
 
+/* Strict GOD_PRIV */
+#define STRICT_GOD_PRIV 1
+
 /* Force 7-bit names */
 #define ASCII_THING_NAMES 1
 #define ASCII_OTHER_NAMES 0
