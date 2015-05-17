@@ -1,6 +1,6 @@
 2.2fb6.14
-Added new @tune: strict_god_mode.  This is a #1-only parameter, which
-  controls whether GOD_MODE also prevents #1's items from being controlled
+Added new @tune: strict_god_priv.  This is a #1-only parameter, which
+  controls whether GOD_PRIV also prevents #1's items from being controlled
   by wizards.
 
 2.2fb6.13
