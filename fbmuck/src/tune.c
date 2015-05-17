@@ -337,7 +337,7 @@ struct tune_bool_entry tune_bool_list[] = {
 	{"Misc",       "ignore_support", &tp_ignore_support, 3, "Enable support for @ignoring players"},
 	{"Misc",       "ignore_bidirectional", &tp_ignore_bidirectional, 3, "Enable bidirectional @ignore"},
 	{"Misc",	"m3_huh", &tp_m3_huh, 3, "Enable huh? to call an exit named \"huh?\" and set M3, with full command string"},
-	{"Misc",	"strict_god_priv", &tp_strict_god_priv, 4, "Only God can touch God's objects"},
+	{"Misc",	"strict_god_priv", &tp_strict_god_priv, MLEV_GOD, "Only God can touch God's objects"},
 	{"SSL",        "starttls_allow", &tp_starttls_allow, 3, "Enable TELNET STARTTLS encryption on plaintext port"},
 	{"Charset",	"7bit_thing_names", &tp_7bit_thing_names, 4, "Thing names may contain only 7-bit characters"},
 	{"Charset",	"7bit_other_names", &tp_7bit_other_names, 4, "Exit/room/muf names may contain only 7-bit characters"},
