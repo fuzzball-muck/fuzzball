@@ -34,6 +34,8 @@ const char *tp_proplist_counter_fmt = PROPLIST_COUNTER_FORMAT;
 const char *tp_proplist_entry_fmt = PROPLIST_ENTRY_FORMAT;
 
 const char *tp_ssl_keyfile_passwd = SSL_KEYFILE_PASSWD;
+const char *tp_ssl_cipher_preference_list = SSL_CIPHER_PREFERENCE_LIST;
+
 const char *tp_pcreate_flags = PCREATE_FLAGS;
 const char *tp_reserved_names = RESERVED_NAMES;
 const char *tp_reserved_player_names = RESERVED_PLAYER_NAMES;
@@ -68,6 +70,8 @@ struct tune_str_entry tune_str_list[] = {
 	{"Misc",       "leave_mesg", &tp_leave_mesg, 0, 1, "Logoff message"},
 	{"Misc",       "huh_mesg", &tp_huh_mesg, 0, 1, "Command unrecognized warning"},
 	{"SSL",        "ssl_keyfile_passwd", &tp_ssl_keyfile_passwd, MLEV_GOD, 1, "Password for SSL keyfile"},
+        {"SSL",        "ssl_cipher_preference_list", &tp_ssl_cipher_preference_list, MLEV_GOD, 1,
+                       "OpenSSL cipher list"},
 	{"Database",   "pcreate_flags", &tp_pcreate_flags, 0, 1, "Initial Player Flags"},
 	{"Database",   "reserved_names", &tp_reserved_names, 0, 1, "Reserved names smatch"},
 	{"Database",   "reserved_player_names", &tp_reserved_player_names, 0, 1, "Reserved player names smatch"},
