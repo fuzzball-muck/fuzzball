@@ -850,7 +850,7 @@ do_recycle(int descr, dbref player, const char *name)
 	match_absolute(&md);
 	if ((thing = noisy_match_result(&md)) != NOTHING) {
 #ifdef GOD_PRIV
-	if(!God(player) && God(OWNER(thing))) {
+	if(tp_strict_god_priv && !God(player) && God(OWNER(thing))) {
 		notify(player, "Only God may reclaim God's property.");
 		return;
 	}
