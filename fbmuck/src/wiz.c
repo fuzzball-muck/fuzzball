@@ -56,7 +56,7 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
 		to = arg2;
 	}
 #ifdef GOD_PRIV
-	if(!God(player) && God(OWNER(victim))) {
+	if(tp_strict_god_priv && !God(player) && God(OWNER(victim))) {
 		notify(player, "God has already set that where He wants it to be.");
 		return;
 	}
@@ -207,7 +207,7 @@ blessprops_wildcard(dbref player, dbref thing, const char *dir, const char *wild
 	int recurse = 0;
 
 #ifdef GOD_PRIV
-	if(!God(player) && God(OWNER(thing))) {
+	if(tp_strict_god_priv && !God(player) && God(OWNER(thing))) {
 		notify(player,"Only God may touch what is God's.");
 		return 0;
 	}
@@ -321,7 +321,7 @@ do_bless(int descr, dbref player, const char *what, const char *propname)
 	}
 
 #ifdef GOD_PRIV
-	if(!God(player) && God(OWNER(victim))) {
+	if(tp_strict_god_priv && !God(player) && God(OWNER(victim))) {
 		notify(player, "Only God may touch God's stuff.");
 		return;
 	}

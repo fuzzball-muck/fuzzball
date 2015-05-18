@@ -919,7 +919,7 @@ do_set(int descr, dbref player, const char *name, const char *flag)
 		return;
 #ifdef GOD_PRIV
 	/* Only God can set anything on any of his stuff */
-	if(!God(player) && God(OWNER(thing))) {
+	if(tp_strict_god_priv && !God(player) && God(OWNER(thing))) {
 		notify(player,"Only God may touch God's property.");
 		return;
 	}
