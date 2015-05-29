@@ -36,6 +36,3 @@ const char* copyright_notice[] = {
 "    the authors, Carnegie-Mellon University and Bell Communications Research",
 "    in each case."
 };
-
-static const char *copyright_c_version = "$RCSfile: copyright.c,v $ $Revision: 1.4 $";
-const char *get_copyright_c_version(void) { return copyright_c_version; }

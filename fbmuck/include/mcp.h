@@ -345,14 +345,3 @@ int mcp_version_compare(McpVer v1, McpVer v2);
 McpVer mcp_version_select(McpVer min1, McpVer max1, McpVer min2, McpVer max2);
 
 #endif							/* MCP_H */
-
-#ifdef DEFINE_HEADER_VERSIONS
-
-#ifndef mcph_version
-#define mcph_version
-const char *mcp_h_version = "$RCSfile: mcp.h,v $ $Revision: 1.11 $";
-#endif
-#else
-extern const char *mcp_h_version;
-#endif
-

@@ -727,7 +727,3 @@ prim_descr_bufsize(PRIM_PROTOTYPE)
 	CLEAR(oper1);
 	PushInt(result);
 }
-
-
-static const char *p_connects_c_version = "$RCSfile: p_connects.c,v $ $Revision: 1.20 $";
-const char *get_p_connects_c_version(void) { return p_connects_c_version; }

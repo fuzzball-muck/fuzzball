@@ -382,20 +382,4 @@
 # define SYS_TYPE "UNKNOWN"
 #endif
 
-/******************************************************************/
-/* Final line of defense for self configuration, systems we know  */
-/* need special treatment.                                        */
-/******************************************************************/
-
 #endif /* _CONFIG_H */
-
-#ifdef DEFINE_HEADER_VERSIONS
-
-#ifndef configh_version
-#define configh_version
-const char *config_h_version = "$RCSfile: config.h,v $ $Revision: 1.35 $";
-#endif
-#else
-extern const char *config_h_version;
-#endif
-

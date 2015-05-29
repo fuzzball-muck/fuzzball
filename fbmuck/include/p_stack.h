@@ -1,7 +1,6 @@
 #ifndef _P_STACK_H
 #define _P_STACK_H
 
-
 extern void prim_pop(PRIM_PROTOTYPE);	/*     ? --              */
 extern void prim_dup(PRIM_PROTOTYPE);	/*     ? -- ? ?          */
 extern void prim_at(PRIM_PROTOTYPE);	/*   V|v -- ?            */
@@ -74,14 +73,3 @@ extern void prim_trypop(PRIM_PROTOTYPE);	/* -- */
 #define PRIMS_INTERNAL_CNT 3
 
 #endif /* _P_STACK_H */
-
-#ifdef DEFINE_HEADER_VERSIONS
-
-#ifndef p_stackh_version
-#define p_stackh_version
-const char *p_stack_h_version = "$RCSfile: p_stack.h,v $ $Revision: 1.7 $";
-#endif
-#else
-extern const char *p_stack_h_version;
-#endif
-

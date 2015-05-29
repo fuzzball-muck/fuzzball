@@ -1,6 +1,3 @@
-/* $Header: /cvsroot/fbmuck/fbmuck/src/sanity.c,v 1.18 2009/10/09 23:54:24 winged Exp $ */
-
-
 #undef POINTERS
 
 #include "copyright.h"
@@ -1526,5 +1523,3 @@ san_main(void)
 
 	printf("Exiting sanity editor...\n\n");
 }
-static const char *sanity_c_version = "$RCSfile: sanity.c,v $ $Revision: 1.18 $";
-const char *get_sanity_c_version(void) { return sanity_c_version; }

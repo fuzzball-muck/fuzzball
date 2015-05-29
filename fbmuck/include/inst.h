@@ -28,15 +28,3 @@ extern char *insttotext(struct frame *, int, struct inst *, char *, int, int, db
 extern char *debug_inst(struct frame *, int, struct inst *, int, struct inst *, char *, int, int, dbref);
 
 #endif /* _INST_H */
-
-
-#ifdef DEFINE_HEADER_VERSIONS
-
-#ifndef insth_version
-#define insth_version
-const char *inst_h_version = "$RCSfile: inst.h,v $ $Revision: 1.13 $";
-#endif
-#else
-extern const char *inst_h_version;
-#endif
-

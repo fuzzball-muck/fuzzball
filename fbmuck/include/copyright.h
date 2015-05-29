@@ -36,16 +36,3 @@ Some parts of this code Copyright (c) 1989-1990 by David Applegate,
 	the authors, Carnegie-Mellon University and Bell Communications Research
 	in each case.
 */
-
-
-
-#ifdef DEFINE_HEADER_VERSIONS
-
-#ifndef copyrighth_version
-#define copyrighth_version
-const char *copyright_h_version = "$RCSfile: copyright.h,v $ $Revision: 1.6 $";
-#endif
-#else
-extern const char *copyright_h_version;
-#endif
-

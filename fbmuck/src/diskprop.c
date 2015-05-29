@@ -474,5 +474,3 @@ propfetch(dbref obj, PropPtr p)
 }
 
 #endif							/* DISKBASE */
-static const char *diskprop_c_version = "$RCSfile: diskprop.c,v $ $Revision: 1.7 $";
-const char *get_diskprop_c_version(void) { return diskprop_c_version; }

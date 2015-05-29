@@ -1360,6 +1360,3 @@ do_parse_prop(int descr, dbref player, dbref what, const char *propname, const c
 		mesgtyp |= MPI_ISBLESSED;
 	return do_parse_mesg(descr, player, what, propval, abuf, outbuf, outbuflen, mesgtyp);
 }
-
-static const char *msgparse_c_version = "$RCSfile: msgparse.c,v $ $Revision: 1.30 $";
-const char *get_msgparse_c_version(void) { return msgparse_c_version; }

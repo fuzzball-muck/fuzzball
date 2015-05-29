@@ -1,5 +1,3 @@
-/* $Header: /cvsroot/fbmuck/fbmuck/src/hashtab.c,v 1.4 2005/07/04 12:04:21 winged Exp $ */
-
 /*
  *
  * $Log: hashtab.c,v $
@@ -179,5 +177,3 @@ kill_hash(hash_tab * table, unsigned int size, int freeptrs)
 		table[i] = NULL;
 	}
 }
-static const char *hashtab_c_version = "$RCSfile: hashtab.c,v $ $Revision: 1.4 $";
-const char *get_hashtab_c_version(void) { return hashtab_c_version; }

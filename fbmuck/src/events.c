@@ -172,5 +172,3 @@ next_muckevent(void)
 	check_dump_time();
 	check_clean_time();
 }
-static const char *events_c_version = "$RCSfile: events.c,v $ $Revision: 1.9 $";
-const char *get_events_c_version(void) { return events_c_version; }

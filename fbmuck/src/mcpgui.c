@@ -1168,5 +1168,3 @@ do_post_dlog(int descr, const char *text)
 
 	GuiShow(dlg);
 }
-static const char *mcpgui_c_version = "$RCSfile: mcpgui.c,v $ $Revision: 1.28 $";
-const char *get_mcpgui_c_version(void) { return mcpgui_c_version; }

@@ -1,6 +1,3 @@
-/* $Header: /cvsroot/fbmuck/fbmuck/src/player.c,v 1.13 2006/04/19 02:58:54 premchai21 Exp $ */
-
-
 #include "copyright.h"
 #include "config.h"
 
@@ -231,5 +228,3 @@ delete_player(dbref who)
 
 	return;
 }
-static const char *player_c_version = "$RCSfile: player.c,v $ $Revision: 1.13 $";
-const char *get_player_c_version(void) { return player_c_version; }

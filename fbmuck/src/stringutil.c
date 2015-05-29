@@ -1,6 +1,3 @@
-/* $Header: /cvsroot/fbmuck/fbmuck/src/stringutil.c,v 1.29 2007/03/08 02:08:34 winged Exp $ */
-
-
 #include "copyright.h"
 #include "config.h"
 #include "db.h"
@@ -848,5 +845,3 @@ strcatn(char* buf, size_t bufsize, const char* src)
 	}
 	return buf;
 }
-static const char *stringutil_c_version = "$RCSfile: stringutil.c,v $ $Revision: 1.29 $";
-const char *get_stringutil_c_version(void) { return stringutil_c_version; }

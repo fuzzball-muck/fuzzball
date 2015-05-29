@@ -44,15 +44,3 @@ extern void prim_sign(PRIM_PROTOTYPE);
 #define PRIMS_MATH_CNT 27
 
 #endif /* _P_MATH_H */
-
-
-#ifdef DEFINE_HEADER_VERSIONS
-
-#ifndef p_mathh_version
-#define p_mathh_version
-const char *p_math_h_version = "$RCSfile: p_math.h,v $ $Revision: 1.9 $";
-#endif
-#else
-extern const char *p_math_h_version;
-#endif
-

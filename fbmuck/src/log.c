@@ -1,6 +1,3 @@
-
-/* $Header: /cvsroot/fbmuck/fbmuck/src/log.c,v 1.18 2009/10/09 23:54:24 winged Exp $ */
-
 /*
  * Handles logging of tinymuck
  *
@@ -143,5 +140,3 @@ notify_fmt(dbref player, char *format, ...)
 	notify(player, bufr);
 	va_end(args);
 }
-static const char *log_c_version = "$RCSfile: log.c,v $ $Revision: 1.18 $";
-const char *get_log_c_version(void) { return log_c_version; }

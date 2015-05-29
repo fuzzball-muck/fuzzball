@@ -1,7 +1,6 @@
 #ifndef _P_FLOAT_H
 #define _P_FLOAT_H
 
-
 extern void prim_ceil(PRIM_PROTOTYPE);
 extern void prim_floor(PRIM_PROTOTYPE);
 extern void prim_float(PRIM_PROTOTYPE);
@@ -51,14 +50,3 @@ extern void prim_diff3(PRIM_PROTOTYPE);
 #define PRIMS_FLOAT_CNT 31
 
 #endif /* _P_FLOAT_H */
-
-#ifdef DEFINE_HEADER_VERSIONS
-
-#ifndef p_floath_version
-#define p_floath_version
-const char *p_float_h_version = "$RCSfile: p_float.h,v $ $Revision: 1.10 $";
-#endif
-#else
-extern const char *p_float_h_version;
-#endif
-

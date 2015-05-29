@@ -1,6 +1,3 @@
-/* $Header: /cvsroot/fbmuck/fbmuck/src/rob.c,v 1.10 2005/07/04 12:04:24 winged Exp $ */
-
-
 #include "copyright.h"
 #include "config.h"
 
@@ -238,5 +235,3 @@ do_give(int descr, dbref player, const char *recipient, int amount)
 		DBDIRTY(who);
 	}
 }
-static const char *rob_c_version = "$RCSfile: rob.c,v $ $Revision: 1.10 $";
-const char *get_rob_c_version(void) { return rob_c_version; }

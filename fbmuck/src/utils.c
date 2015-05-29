@@ -1,5 +1,3 @@
-/* $Header: /cvsroot/fbmuck/fbmuck/src/utils.c,v 1.3 2005/07/04 12:04:24 winged Exp $ */
-
 /*
  * $Log: utils.c,v $
  * Revision 1.3  2005/07/04 12:04:24  winged
@@ -100,5 +98,3 @@ reverse(dbref list)
 	}
 	return newlist;
 }
-static const char *utils_c_version = "$RCSfile: utils.c,v $ $Revision: 1.3 $";
-const char *get_utils_c_version(void) { return utils_c_version; }

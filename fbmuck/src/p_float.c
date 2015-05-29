@@ -1,4 +1,3 @@
-
 /* Primitives Package */
 
 #include "copyright.h"
@@ -722,6 +721,3 @@ prim_ftostrc(PRIM_PROTOTYPE)
 	CLEAR(oper1);
 	PushString(buf);
 }
-
-static const char *p_float_c_version = "$RCSfile: p_float.c,v $ $Revision: 1.23 $";
-const char *get_p_float_c_version(void) { return p_float_c_version; }

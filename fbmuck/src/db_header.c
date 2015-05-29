@@ -1,5 +1,3 @@
-/* $Header: */
-
 /*
  * This file includes the logic needed to parse the start of a database file and
  * determine its format.

@@ -142,14 +142,3 @@ const char *mfn_with(MFUNARGS);
 const char *mfn_xor(MFUNARGS);
 
 #endif /* _MFUN_H */
-
-#ifdef DEFINE_HEADER_VERSIONS
-
-#ifndef mfunh_version
-#define mfunh_version
-const char *mfun_h_version = "$RCSfile: mfun.h,v $ $Revision: 1.10 $";
-#endif
-#else
-extern const char *mfun_h_version;
-#endif
-

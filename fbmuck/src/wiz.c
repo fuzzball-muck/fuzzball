@@ -1,5 +1,3 @@
-/* $Header: /cvsroot/fbmuck/fbmuck/src/wiz.c,v 1.38 2006/04/19 02:58:54 premchai21 Exp $ */
-
 #include "copyright.h"
 #include "config.h"
 
@@ -1353,5 +1351,3 @@ do_memory(dbref who)
 
 	notify(who, "Done.");
 }
-static const char *wiz_c_version = "$RCSfile: wiz.c,v $ $Revision: 1.38 $";
-const char *get_wiz_c_version(void) { return wiz_c_version; }

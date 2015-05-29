@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-/* #include <strings.h> */
 #include <ctype.h>
 
 
@@ -728,5 +727,3 @@ main(int argc, char **argv)
 	fclose(htmlfile);
 	return 0;
 }
-static const char *prochelp_c_version = "$RCSfile: prochelp.c,v $ $Revision: 1.13 $";
-const char *get_prochelp_c_version(void) { return prochelp_c_version; }

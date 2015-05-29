@@ -448,5 +448,3 @@ Prop_Check(const char *name, const char what)
 	}
 	return (0);
 }
-static const char *props_c_version = "$RCSfile: props.c,v $ $Revision: 1.8 $";
-const char *get_props_c_version(void) { return props_c_version; }
