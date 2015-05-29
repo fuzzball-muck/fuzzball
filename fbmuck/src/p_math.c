@@ -792,6 +792,3 @@ prim_sign(PRIM_PROTOTYPE)
 	CLEAR(oper1);
 	PushInt(result);
 }
-
-static const char *p_math_c_version = "$RCSfile: p_math.c,v $ $Revision: 1.12 $";
-const char *get_p_math_c_version(void) { return p_math_c_version; }

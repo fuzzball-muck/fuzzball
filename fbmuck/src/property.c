@@ -1,5 +1,3 @@
-/* $Header: /cvsroot/fbmuck/fbmuck/src/property.c,v 1.30 2007/03/08 02:08:34 winged Exp $ */
-
 #include "copyright.h"
 #include "config.h"
 #include "params.h"
@@ -1314,7 +1312,3 @@ reflist_find(dbref obj, const char* propname, dbref tofind)
 	}
 	return pos;
 }
-
-
-static const char *property_c_version = "$RCSfile: property.c,v $ $Revision: 1.30 $";
-const char *get_property_c_version(void) { return property_c_version; }

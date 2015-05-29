@@ -1,6 +1,3 @@
-/* $Header: /cvsroot/fbmuck/fbmuck/src/unparse.c,v 1.11 2009/10/11 05:19:18 points Exp $ */
-
-
 #include "copyright.h"
 #include "config.h"
 
@@ -179,5 +176,3 @@ unparse_boolexp(dbref player, struct boolexp *b, int fullname)
 
 	return boolexp_buf;
 }
-static const char *unparse_c_version = "$RCSfile: unparse.c,v $ $Revision: 1.11 $";
-const char *get_unparse_c_version(void) { return unparse_c_version; }

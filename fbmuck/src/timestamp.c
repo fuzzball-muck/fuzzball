@@ -3,7 +3,6 @@
 #include "db.h"
 #include "tune.h"
 
-
 void
 ts_newobject(struct object *thing)
 {
@@ -42,5 +41,3 @@ ts_modifyobject(dbref thing)
 {
 	DBSTORE(thing, ts.modified, time(NULL));
 }
-static const char *timestamp_c_version = "$RCSfile: timestamp.c,v $ $Revision: 1.3 $";
-const char *get_timestamp_c_version(void) { return timestamp_c_version; }

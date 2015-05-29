@@ -105,14 +105,3 @@ const char * unparse_flags(dbref thing);
 void untouchprops_incremental(int limit);
 
 #endif /* _EXTERNS_AUTO_H */
-
-#ifdef DEFINE_HEADER_VERSIONS
-
-#ifndef externs_autoh_version
-#define externs_autoh_version
-const char *externs_auto_h_version = "$RCSfile: externs-auto.h,v $ $Revision: 1.15 $";
-#endif
-#else
-extern const char *externs_auto_h_version;
-#endif
-

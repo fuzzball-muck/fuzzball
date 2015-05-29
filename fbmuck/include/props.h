@@ -1,7 +1,6 @@
 #ifndef _PROPS_H
 #define _PROPS_H
 
-
 union pdata_u {
 	char *str;
 	struct boolexp *lok;
@@ -206,14 +205,3 @@ extern void reflist_del(dbref obj, const char* propname, dbref todel);
 extern int reflist_find(dbref obj, const char* propname, dbref tofind);
 
 #endif /* _PROPS_H */
-
-#ifdef DEFINE_HEADER_VERSIONS
-
-#ifndef propsh_version
-#define propsh_version
-const char *props_h_version = "$RCSfile: props.h,v $ $Revision: 1.16 $";
-#endif
-#else
-extern const char *props_h_version;
-#endif
-

@@ -71,16 +71,4 @@ extern void prim_debug_line(PRIM_PROTOTYPE);
 
 #define PRIMS_MISC_CNT 43
 
-
 #endif /* _P_MISC_H */
-
-#ifdef DEFINE_HEADER_VERSIONS
-
-#ifndef p_misch_version
-#define p_misch_version
-const char *p_misc_h_version = "$RCSfile: p_misc.h,v $ $Revision: 1.20 $";
-#endif
-#else
-extern const char *p_misc_h_version;
-#endif
-

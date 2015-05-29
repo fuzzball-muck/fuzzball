@@ -393,5 +393,3 @@ prim_regsub(PRIM_PROTOTYPE)
 
 	PushString(buf);
 }
-static const char *p_regex_c_version = "$RCSfile: p_regex.c,v $ $Revision: 1.17 $";
-const char *get_p_regex_c_version(void) { return p_regex_c_version; }

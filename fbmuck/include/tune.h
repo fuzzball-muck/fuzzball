@@ -162,14 +162,3 @@ extern int tune_setparm(const char *parmname, const char *val, int security);
 extern stk_array *tune_parms_array(const char* pattern, int mlev);
 
 #endif /* _TUNE_H */
-
-#ifdef DEFINE_HEADER_VERSIONS
-
-#ifndef tuneh_version
-#define tuneh_version
-const char *tune_h_version = "$RCSfile: tune.h,v $ $Revision: 1.37 $";
-#endif
-#else
-extern const char *tune_h_version;
-#endif
-

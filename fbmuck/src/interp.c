@@ -1991,5 +1991,3 @@ do_abort_silent(void)
 {
 	err = ERROR_DIE_NOW;
 }
-static const char *interp_c_version = "$RCSfile: interp.c,v $ $Revision: 1.58 $";
-const char *get_interp_c_version(void) { return interp_c_version; }

@@ -983,5 +983,3 @@ do_tune(dbref player, char *parmname, char *parmval, int full_command_has_delimi
 		return;
 	}
 }
-static const char *tune_c_version = "$RCSfile: tune.c,v $ $Revision: 1.49 $";
-const char *get_tune_c_version(void) { return tune_c_version; }

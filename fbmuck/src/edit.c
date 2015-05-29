@@ -1,6 +1,3 @@
-/* $header: /belch_a/users/rearl/tm/src/RCS/edit.c,v 1.3 90/07/29 17:33:10 rearl Exp $ */
-
-
 #include "copyright.h"
 #include "config.h"
 
@@ -764,5 +761,3 @@ insert(dbref player, const char *line)
 	curr->next = new_line;
 	/* DBDIRTY(program); */
 }
-static const char *edit_c_version = "$RCSfile: edit.c,v $ $Revision: 1.11 $";
-const char *get_edit_c_version(void) { return edit_c_version; }

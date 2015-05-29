@@ -1,6 +1,3 @@
-/* $Header: /cvsroot/fbmuck/fbmuck/src/speech.c,v 1.13 2006/04/19 02:58:54 premchai21 Exp $ */
-
-
 #include "copyright.h"
 #include "config.h"
 
@@ -274,5 +271,3 @@ blank(const char *s)
 
 	return !(*s);
 }
-static const char *speech_c_version = "$RCSfile: speech.c,v $ $Revision: 1.13 $";
-const char *get_speech_c_version(void) { return speech_c_version; }

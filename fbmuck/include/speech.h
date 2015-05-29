@@ -49,14 +49,3 @@ blank(const char *s)
 ;
 
 #endif /* !defined _SPEECH_H_ */
-
-#ifdef DEFINE_HEADER_VERSIONS
-
-#ifndef speechh_version
-#define speechh_version
-const char *speech_h_version = "$RCSfile: speech.h,v $ $Revision: 1.4 $";
-#endif
-#else
-extern const char *speech_h_version;
-#endif
-

@@ -1,7 +1,3 @@
-
-/* $Header: /cvsroot/fbmuck/fbmuck/src/set.c,v 1.31 2009/10/11 05:19:18 points Exp $ */
-
-
 #include "copyright.h"
 #include "config.h"
 
@@ -1317,7 +1313,3 @@ set_flags_from_tunestr(dbref obj, const char* tunestr)
 	ts_modifyobject(obj);
 	DBDIRTY(obj);
 }
-
-
-static const char *set_c_version = "$RCSfile: set.c,v $ $Revision: 1.31 $";
-const char *get_set_c_version(void) { return set_c_version; }

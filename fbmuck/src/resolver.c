@@ -1,4 +1,3 @@
-
 #include "copyright.h"
 #include "config.h"
 
@@ -18,12 +17,7 @@
 #include <string.h>
 #include <pthread.h>
 
-
 #define NUM_THREADS     5
-
-static const char *resolver_c_version = "$RCSfile: resolver.c,v $ $Revision: 1.12 $";
-const char *get_resolver_c_version(void) { return resolver_c_version; }
-
 
 /*
  * SunOS can't include signal.h and sys/signal.h, stupid broken OS.
@@ -848,4 +842,3 @@ int main(int argc, char **argv)
 	exit(0);
 	return 0;
 }
-

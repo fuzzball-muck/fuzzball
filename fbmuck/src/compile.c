@@ -3955,6 +3955,3 @@ init_primitives(void)
 	IN_TRYPOP = get_primitive(" TRYPOP");
 	log_status("MUF: %d primitives exist.", BASE_MAX);
 }
-
-static const char *compile_c_version = "$RCSfile: compile.c,v $ $Revision: 1.88 $";
-const char *get_compile_c_version(void) { return compile_c_version; }

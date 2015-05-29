@@ -90,13 +90,3 @@ int array_set_arrval(stk_array ** harr, struct inst* key, stk_array* val);
 
 #endif							/* MUFARRAY_H */
 
-#ifdef DEFINE_HEADER_VERSIONS
-
-#ifndef arrayh_version
-#define arrayh_version
-const char *array_h_version = "$RCSfile: array.h,v $ $Revision: 1.16 $";
-#endif
-#else
-extern const char *array_h_version;
-#endif
-

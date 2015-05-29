@@ -14,17 +14,4 @@ extern void prim_regsub(PRIM_PROTOTYPE);
 
 #define PRIMS_REGEX_CNT 2
 
-
 #endif /* _P_REGEX_H */
-
-
-#ifdef DEFINE_HEADER_VERSIONS
-
-#ifndef p_regexh_version
-#define p_regexh_version
-const char *p_regex_h_version = "$RCSfile: p_regex.h,v $ $Revision: 1.6 $";
-#endif
-#else
-extern const char *p_regex_h_version;
-#endif
-

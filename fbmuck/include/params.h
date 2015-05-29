@@ -1,5 +1,3 @@
-/* $Header: /cvsroot/fbmuck/fbmuck/include/params.h,v 1.18 2005/07/04 20:25:42 winged Exp $ */
-
 #ifndef _PARAMS_H
 #define _PARAMS_H
 
@@ -144,14 +142,3 @@
 #undef STRINGMATH
  
 #endif /* _PARAMS_H */
-
-#ifdef DEFINE_HEADER_VERSIONS
-
-#ifndef paramsh_version
-#define paramsh_version
-const char *params_h_version = "$RCSfile: params.h,v $ $Revision: 1.18 $";
-#endif
-#else
-extern const char *params_h_version;
-#endif
-

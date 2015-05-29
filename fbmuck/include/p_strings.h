@@ -66,17 +66,4 @@ extern void prim_array_fmtstrings(PRIM_PROTOTYPE);
 
 #define PRIMS_STRINGS_CNT 40
 
-
 #endif /* _P_STRINGS_H */
-
-
-#ifdef DEFINE_HEADER_VERSIONS
-
-#ifndef p_stringsh_version
-#define p_stringsh_version
-const char *p_strings_h_version = "$RCSfile: p_strings.h,v $ $Revision: 1.10 $";
-#endif
-#else
-extern const char *p_strings_h_version;
-#endif
-

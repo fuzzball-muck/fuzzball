@@ -1,4 +1,3 @@
-
 /* Primitives package */
 
 #include "copyright.h"
@@ -1168,5 +1167,3 @@ prim_debug_line(PRIM_PROTOTYPE)
 		notify_nolisten(player, msg, 1);
 	}
 }
-static const char *p_misc_c_version = "$RCSfile: p_misc.c,v $ $Revision: 1.47 $";
-const char *get_p_misc_c_version(void) { return p_misc_c_version; }

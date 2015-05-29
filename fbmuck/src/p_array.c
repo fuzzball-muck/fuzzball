@@ -2418,6 +2418,3 @@ prim_array_filter_flags(PRIM_PROTOTYPE)
     CLEAR(oper2);
     PushArrayRaw(nw);
 }
-
-static const char *p_array_c_version = "$RCSfile: p_array.c,v $ $Revision: 1.55 $";
-const char *get_p_array_c_version(void) { return p_array_c_version; }
