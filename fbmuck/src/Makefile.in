@@ -60,7 +60,6 @@ INSTALL_DBSDIR=@datadir@/fbmuck/starter_dbs
 # 'example documentation' and go into /usr/share/doc/fbmuck/examples
 # and be stored as compressed tarfiles.
 
-
 # #######################################################################
 # 		Variables set by the configure script.
 # #######################################################################
@@ -115,7 +114,7 @@ MALLOBJ= crt_malloc.o
 ANNSRC= announce.c
 ANNOBJ= announce.o
 
-MISCSRC= Makefile.in ChangeLog COPYING mkversion.sh
+MISCSRC= Makefile.in mkversion.sh
 
 CSRC= array.c boolexp.c compile.c create.c db.c db_header.c debugger.c \
 	disassem.c diskprop.c edit.c events.c game.c hashtab.c help.c inst.c \
