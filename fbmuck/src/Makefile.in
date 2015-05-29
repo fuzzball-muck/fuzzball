@@ -111,9 +111,6 @@ LINTFLAGS= ${INCL}
 MALLSRC= crt_malloc.c
 MALLOBJ= crt_malloc.o
 
-ANNSRC= announce.c
-ANNOBJ= announce.o
-
 MISCSRC= Makefile.in mkversion.sh
 
 CSRC= array.c boolexp.c compile.c create.c db.c db_header.c debugger.c \
@@ -127,8 +124,7 @@ CSRC= array.c boolexp.c compile.c create.c db.c db_header.c debugger.c \
 	timequeue.c timestamp.c tune.c unparse.c utils.c wiz.c
 
 LSRC= copyright.c
-MSRC= compress.c olddecomp.c reconst.c interface.c resolver.c topwords.c
-
+MSRC= compress.c olddecomp.c reconst.c interface.c resolver.c
 
 COBJ= array.o boolexp.o compile.o create.o db_header.o db.o debugger.o \
 	disassem.o diskprop.o edit.o events.o game.o hashtab.o help.o inst.o \
@@ -141,8 +137,7 @@ COBJ= array.o boolexp.o compile.o create.o db_header.o db.o debugger.o \
 	timequeue.o timestamp.o tune.o unparse.o utils.o wiz.o
 
 LOBJ= copyright.o
-MOBJ= olddecomp.o reconst.o interface.o resolver.o topwords.o
-
+MOBJ= olddecomp.o reconst.o interface.o resolver.o
 
 SRC= ${MISCSRC} ${CSRC} ${LSRC} ${MSRC}
 OBJ= ${COBJ} ${ROBJ} ${LOBJ} ${MOBJ}
@@ -150,8 +145,8 @@ OBJ= ${COBJ} ${ROBJ} ${LOBJ} ${MOBJ}
 
 
 
-TARGETS= fbmuck fbhelp fb-resolver fb-olddecompress fb-topwords fb-announce
-OLDTARGETS = fbmuck~ fbhelp~ fb-resolver~ fb-olddecompress~ fb-topwords~ fb-announce~
+TARGETS= fbmuck fbhelp fb-resolver fb-olddecompress
+OLDTARGETS = fbmuck~ fbhelp~ fb-resolver~ fb-olddecompress~
 HELPFILES= man.txt help.txt mpihelp.txt
 
 .c.o:
@@ -178,22 +173,15 @@ fbmuck: $(INCLUDE)/defines.h ${P} ${COBJ} ${MALLOBJ} interface.o ${LOBJ} mkversi
 fb-resolver: resolver.o ${LOBJ} ${MALLOBJ} Makefile
 	${PRE} ${CC} ${CFLAGS} ${INCL} ${DEFS} -o fb-resolver resolver.o ${MALLOBJ} ${LIBR} ${LOBJ} -lpthread
 
-fb-topwords: topwords.o hashtab.o ${MALLOBJ} Makefile
-	${CC} ${CFLAGS} ${INCL} ${DEFS} -o fb-topwords topwords.o hashtab.o ${MALLOBJ} ${LIBR}
-
 fb-olddecompress: olddecomp.o oldcompress.o compress.o db_header.o ${LOBJ} ${MALLOBJ} Makefile
 	${CC} ${CFLAGS} ${INCL} ${DEFS} -o fb-olddecompress olddecomp.o oldcompress.o \
 		compress.o db_header.o ${LIBR} ${MALLOBJ} ${LOBJ}
-
-fb-announce: ${ANNOBJ} ${LOBJ} ${MALLOBJ} Makefile
-	${CC} ${CFLAGS} ${ANNOBJ} -o fb-announce ${MALLOBJ} ${LIBR} ${LOBJ}
 
 fbhelp.o: help.c
 	${CC} ${CFLAGS} ${INCL} ${DEFS} -c help.c -o fbhelp.o -DSTANDALONE_HELP -DHELPFILE_DIR='"${INSTALL_HELPDIR}"'
 
 fbhelp: fbhelp.o ${MALLOBJ} Makefile
 	${CC} ${CFLAGS} ${INCL} ${DEFS} fbhelp.o -o fbhelp ${MALLOBJ}
-
 
 #############################################################
 # Funky stuff for debugging and coding work.
@@ -240,7 +228,7 @@ Makefile: Makefile.in
 #
 
 clean:
-	-${RM} ${OBJ} core version.o ${LOBJ} ${SOBJ} ${MALLOBJ} ${ANNOBJ} resolver.o ${TARGETS} ${OLDTARGETS} fbhelp.o
+	-${RM} ${OBJ} core version.o ${LOBJ} ${SOBJ} ${MALLOBJ} resolver.o ${TARGETS} ${OLDTARGETS} fbhelp.o
 
 cleaner: clean
 	-${RM} Makefile config.status config.cache config.log ${INCLUDE}/autoconf.h ${TARGETS} version.c prochelp ${INCLUDE}/defines.h
@@ -268,7 +256,7 @@ install: all
 
 # FIXME: Implement fb-addmuck
 # FIXME: Check base and minimal dbs into CVS as unpacked file trees under dbs/
-# FIXME: Create man pages for fbmuck, fbhelp, fb-addmuck, fb-announce, topwords
+# FIXME: Create man pages for fbmuck, fbhelp, fb-addmuck
 
 install-sysv-inits: all
 	-[ -f /etc/fbmucks ] || echo "#MUCKNAME   USERNAME    MUCK_ROOT_PATH           SCRIPTNAME  PORTS" > /etc/fbmucks
