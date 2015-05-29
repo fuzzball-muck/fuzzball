@@ -385,8 +385,6 @@ main(int argc, char **argv)
 		if (!nomore_options && argv[i][0] == '-') {
 			if (!strcmp(argv[i], "-convert")) {
 				db_conversion_flag = 1;
-			} else if (!strcmp(argv[i], "-compress")) {
-				printf("** -compress no longer does anything\n");
 			} else if (!strcmp(argv[i], "-nosanity")) {
 				sanity_skip = 1;
 			} else if (!strcmp(argv[i], "-insanity")) {

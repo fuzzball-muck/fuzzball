@@ -2,10 +2,7 @@
 
 /*
  * This file includes the logic needed to parse the start of a database file and
- * determine whether it is old or new format, has old or new compression, etc.
- *
- * Needed because olddecomp.c suddenly gets a lot more complicated when we
- * have to handle all the modern formats.
+ * determine its format.
  *
  * It contains the minimum amount of smarts needed to read this without
  * having to link in everything else.
@@ -92,7 +89,6 @@ db_read_header( FILE *f, const char **version, int *load_format, dbref *grow, in
 	c = getc( f );
 	ungetc( c, f );
 	if ( c != '*' ) {
-		result |= DB_ID_OLDCOMPRESS; /* could be? */
 		return result;
 	}
 	
@@ -104,31 +100,7 @@ db_read_header( FILE *f, const char **version, int *load_format, dbref *grow, in
 	result |= DB_ID_VERSIONSTRING;
 	*version = special;
 
-	if (!strcmp(special, "***TinyMUCK DUMP Format***")) {
-		*load_format = 1;
-		result |= DB_ID_OLDCOMPRESS;
-	} else if (!strcmp(special, "***Lachesis TinyMUCK DUMP Format***") ||
-			   !strcmp(special, "***WhiteFire TinyMUCK DUMP Format***")) {
-		*load_format = 2;
-		result |= DB_ID_OLDCOMPRESS;
-	} else if (!strcmp(special, "***Mage TinyMUCK DUMP Format***")) {
-		*load_format = 3;
-		result |= DB_ID_OLDCOMPRESS;
-	} else if (!strcmp(special, "***Foxen TinyMUCK DUMP Format***")) {
-		*load_format = 4;
-		result |= DB_ID_OLDCOMPRESS;
-	} else if (!strcmp(special, "***Foxen2 TinyMUCK DUMP Format***")) {
-		*load_format = 5;
-		result |= DB_ID_OLDCOMPRESS;
-	} else if (!strcmp(special, "***Foxen3 TinyMUCK DUMP Format***")) {
-		*load_format = 6;
-		result |= DB_ID_OLDCOMPRESS;
-	} else if (!strcmp(special, "***Foxen4 TinyMUCK DUMP Format***")) {
-		*load_format = 6;
-		*grow = getref(f);
-		result |= DB_ID_GROW;
-		result |= DB_ID_OLDCOMPRESS;
-	} else if (!strcmp(special, "***Foxen5 TinyMUCK DUMP Format***")) {
+	if (!strcmp(special, "***Foxen5 TinyMUCK DUMP Format***")) {
 		*load_format = 7;
 		grow_and_dbflags = TRUE;
 	} else if (!strcmp(special, "***Foxen6 TinyMUCK DUMP Format***")) {
@@ -177,10 +149,6 @@ db_read_header( FILE *f, const char **version, int *load_format, dbref *grow, in
 		if (dbflags & DB_PARMSINFO) {
 			*parmcnt = getref(f);
 			result |= DB_ID_PARMSINFO;
-		}
-
-		if (dbflags & DB_COMPRESSED) {
-			result |= DB_ID_CATCOMPRESS;
 		}
 	}
 

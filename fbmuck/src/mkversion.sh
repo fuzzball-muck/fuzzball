@@ -26,9 +26,6 @@ cat > version.c <<EOF
  * Copyright (c) 1991-2009 by Fuzzball Software
  * under the GNU Public License
  *
- * Some parts of this code -- in particular the dictionary based compression
- * code is Copyright 1995 by Dragon's Eye Productions
- *
  * Some parts of this code Copyright (c) 1990 Chelsea Dyerman
  * University of California, Berkeley (XCF)
  */
@@ -165,7 +162,6 @@ do_showextver(dbref player) {
 	notify_nolisten(player, get_move_c_version(), 1);
 	notify_nolisten(player, get_msgparse_c_version(), 1);
 	notify_nolisten(player, get_mufevent_c_version(), 1);
-	notify_nolisten(player, get_oldcompress_c_version(), 1);
 	notify_nolisten(player, get_p_array_c_version(), 1);
 	notify_nolisten(player, get_p_connects_c_version(), 1);
 	notify_nolisten(player, get_p_db_c_version(), 1);

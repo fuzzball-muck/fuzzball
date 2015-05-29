@@ -151,7 +151,6 @@
 
 #define DELTAFILE_NAME "data/deltas-file"	/* The file for deltas */
 #define PARMFILE_NAME "data/parmfile.cfg"	/* The file for config parms */
-#define WORDLIST_FILE "data/wordlist.txt"	/* File for compression dict. */
 
 #define LOG_CMD_TIMES "logs/cmd-times"	/* Command times Log */
 #define LOG_GRIPE   "logs/gripes"	/* Gripes Log */

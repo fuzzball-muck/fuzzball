@@ -3,7 +3,6 @@ const char* copyright_notice[] = {
 "The majority of this code is Copyright (c) 1991-2001 by Fuzzball Software",
 "  Licensed under the GNU Public License.",
 " ",
-" ",
 "Some parts of this code Copyright (c) 1989-1990 by David Applegate,",
 "    James Aspnes, Timothy Freeman, Bennet Yee, and Na Choon Piaw (lachesis),",
 "    under the collowing terms:",
@@ -35,13 +34,7 @@ const char* copyright_notice[] = {
 "    University, nor of any adaptation thereof in any advertising,",
 "    promotional, or sales literature without prior written consent from",
 "    the authors, Carnegie-Mellon University and Bell Communications Research",
-"    in each case.",
-" ",
-" ",
-"Parts of this code, in particular the dictionary based compression code,",
-"  are copyright by Dr. Cat, 1995, and are NOT covered by the above copyright",
-"  statement.  Dr. Cat has given permission for the code to be used in the",
-"  FB distribution of the TinyMUCK server."
+"    in each case."
 };
 
 static const char *copyright_c_version = "$RCSfile: copyright.c,v $ $Revision: 1.4 $";

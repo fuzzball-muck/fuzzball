@@ -421,8 +421,6 @@ const char *get_mfuns2_c_version(void);
 const char *get_move_c_version(void);
 const char *get_msgparse_c_version(void);
 const char *get_mufevent_c_version(void);
-const char *get_oldcompress_c_version(void);
-const char *get_olddecomp_c_version(void);
 const char *get_p_array_c_version(void);
 const char *get_p_connects_c_version(void);
 const char *get_p_db_c_version(void);

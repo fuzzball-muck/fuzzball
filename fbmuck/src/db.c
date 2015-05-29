@@ -1410,13 +1410,6 @@ db_read(FILE * f)
 	/* Parse the header */
 	dbflags = db_read_header( f, &version, &db_load_format, &grow, &parmcnt );
 
-	/* Compression is no longer supported */
-	if( dbflags & DB_ID_CATCOMPRESS ) {
-		fprintf( stderr, "Compressed databases are no longer supported\n" );
-		fprintf( stderr, "Use fb-olddecompress to convert your DB first.\n" );
-		return -1;
-	}
-
 	/* load the @tune values */
 	if( dbflags & DB_ID_PARMSINFO ) {
 		tune_load_parms_from_file(f, NOTHING, parmcnt);

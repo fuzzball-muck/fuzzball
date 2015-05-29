@@ -22,7 +22,7 @@ LINK32_OPS=/NODEFAULTLIB:libc /LIBPATH:".\win32" /LIBPATH:"$(OPENSSLDIR)\lib\vc"
 #LINK32_OPS=/DEBUG /NODEFAULTLIB:libc /LIBPATH:".\win32" /LIBPATH:"$(OPENSSLDIR)\lib\vc" pcre.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ws2_32.lib libeay32MD.lib ssleay32MD.lib winmm.lib /nologo /subsystem:console /incremental:no /machine:I386
 
 
-ALL : "$(OUTDIR)\fbmuck.exe" "$(OUTDIR)\fb-olddecompress.exe" "$(OUTDIR)\restart.exe" 
+ALL : "$(OUTDIR)\fbmuck.exe" "$(OUTDIR)\restart.exe" 
 
 CLEAN :
 	-@erase "$(INTDIR)\*.obj"
@@ -76,7 +76,6 @@ COBJ="$(INTDIR)\array.obj" \
 	"$(INTDIR)\move.obj" \
 	"$(INTDIR)\msgparse.obj" \
 	"$(INTDIR)\mufevent.obj" \
-	"$(INTDIR)\oldcompress.obj" \
 	"$(INTDIR)\p_array.obj" \
 	"$(INTDIR)\p_connects.obj" \
 	"$(INTDIR)\p_db.obj" \
@@ -115,7 +114,6 @@ COBJ="$(INTDIR)\array.obj" \
 LOBJ="$(INTDIR)\copyright.obj"
 
 MOBJ="$(INTDIR)\copyright.obj" \
-	"$(INTDIR)\olddecomp.obj"\
 	"$(INTDIR)\reconst.obj"\
 	"$(INTDIR)\interface.obj"\
 	"$(INTDIR)\resolver.obj"\
@@ -128,11 +126,6 @@ MOBJ="$(INTDIR)\copyright.obj" \
 "$(OUTDIR)\fb-resolver.exe" : "$(OUTDIR)" "$(INTDIR)" $(LOBJ) $(MALLOBJ) "$(INTDIR)\resolver.obj"
     $(LINK32) @<<
   $(LINK32_OPS) /out:"$(OUTDIR)\fb-resolver.exe" $(COBJ) $(MALLOBJ) "$(INTDIR)\resolver.obj" $(LOBJ)
-<<
-
-"$(OUTDIR)\fb-olddecompress.exe" : "$(OUTDIR)" "$(INTDIR)" $(LOBJ) $(MALLOBJ) "$(INTDIR)\olddecomp.obj" "$(INTDIR)\oldcompress.obj" "$(INTDIR)\compress.obj" "$(INTDIR)\db_header.obj"
-    $(LINK32) @<<
-  $(LINK32_OPS) /out:"$(OUTDIR)\fb-olddecompress.exe" "$(INTDIR)\olddecomp.obj" "$(INTDIR)\oldcompress.obj" "$(INTDIR)\compress.obj" "$(INTDIR)\db_header.obj" $(MALLOBJ) $(LOBJ)
 <<
 
 $(INTDIR)\fbhelp.obj : $(NMSRCDIR)\help.cpp
