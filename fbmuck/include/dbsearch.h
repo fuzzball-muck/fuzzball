@@ -2,8 +2,8 @@
  * DB search helper routines for @find, @owned, etc type commands.
  */
 
-#ifndef DBSEARCH_H
-#define DBSEARCH_H
+#ifndef _DBSEARCH_H
+#define _DBSEARCH_H
 
 struct flgchkdat {
 	int fortype;				/* check FOR a type? */
@@ -35,4 +35,4 @@ int init_checkflags(dbref player, const char *flags, struct flgchkdat *check);
 int checkflags(dbref what, struct flgchkdat check);
 void display_objinfo(dbref player, dbref obj, int output_type);
 
-#endif
+#endif /* _DBSEARCH_H */

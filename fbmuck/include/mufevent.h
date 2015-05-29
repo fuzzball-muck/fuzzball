@@ -1,5 +1,5 @@
-#ifndef MUF_EVENT_H
-#define MUF_EVENT_H
+#ifndef _MUFEVENT_H
+#define _MUFEVENT_H
 
 struct mufevent {
 	struct mufevent *next;
@@ -28,4 +28,4 @@ void muf_event_process(void);
 stk_array *get_mufevent_pids(stk_array* nw, dbref ref);
 stk_array *get_mufevent_pidinfo(stk_array* nw, int pid);
 
-#endif /* MUF_EVENT_H */
+#endif /* _MUFEVENT_H */

@@ -1,5 +1,5 @@
-#ifndef _MESGPARSE_H
-#define _MESGPARSE_H
+#ifndef _MSGPARSE_H
+#define _MSGPARSE_H
 
 #define MAX_MFUN_NAME_LEN 16
 #define MAX_MFUN_LIST_LEN 512
@@ -70,4 +70,4 @@ typedef char **argv_typ;
 
 #define MesgParse(in,out,outlen) mesg_parse(descr, player, what, perms, (in), (out), (outlen), mesgtyp)
 
-#endif /* _MESGPARSE_H */
+#endif /* _MSGPARSE_H */

@@ -1,7 +1,7 @@
 #include "copyright.h"
 
-#ifndef __DB_H
-#define __DB_H
+#ifndef _DB_H
+#define _DB_H
 
 #include "config.h"
 #include "defines.h"
@@ -842,4 +842,5 @@ extern dbref parse_dbref(const char *);	/* parse a dbref */
   attempt to free any non-NULL string that exists in db when they are
   invoked.
 */
-#endif							/* __DB_H */
+
+#endif /* _DB_H */
