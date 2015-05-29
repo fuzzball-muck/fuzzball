@@ -1,5 +1,6 @@
 #ifndef _EXTERNS_H
 #define _EXTERNS_H
+
 #include "copyright.h"
 
 /* Definition of pid_t */

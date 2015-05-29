@@ -1,5 +1,5 @@
-#ifndef MCP_H
-#define MCP_H
+#ifndef _MCP_H
+#define _MCP_H
 
 /* the type used to specify the connection */
 typedef void *connection_t;
@@ -344,4 +344,4 @@ void mcp_mesg_arg_remove(McpMesg * msg, const char *argname);
 int mcp_version_compare(McpVer v1, McpVer v2);
 McpVer mcp_version_select(McpVer min1, McpVer max1, McpVer min2, McpVer max2);
 
-#endif							/* MCP_H */
+#endif /* _MCP_H */

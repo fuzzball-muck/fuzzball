@@ -1,7 +1,8 @@
+/* Stuff the interpreter needs. */
+
 #ifndef _INTERP_H
 #define _INTERP_H
 
-/* Stuff the interpreter needs. */
 /* Some icky machine/compiler #defines. --jim */
 #ifdef MIPS
 typedef char *voidptr;
