@@ -1,7 +1,7 @@
 /* Array/Dictionary Package */
 
-#ifndef MUFARRAY_H
-#define MUFARRAY_H
+#ifndef _ARRAY_H
+#define _ARRAY_H
 
 #define ARRAY_UNDEFINED		0
 #define ARRAY_PACKED		1
@@ -88,5 +88,4 @@ int array_set_refval(stk_array ** harr, struct inst* key, dbref val);
 int array_set_strval(stk_array ** harr, struct inst* key, const char *val);
 int array_set_arrval(stk_array ** harr, struct inst* key, stk_array* val);
 
-#endif							/* MUFARRAY_H */
-
+#endif /* _ARRAY_H */

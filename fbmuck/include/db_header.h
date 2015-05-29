@@ -1,7 +1,7 @@
 #include "copyright.h"
 
-#ifndef __DB_HEADER_H
-#define __DB_HEADER_H
+#ifndef _DB_HEADER_H
+#define _DB_HEADER_H
 
 #include <stdio.h>
 
@@ -27,4 +27,4 @@ extern dbref getref(FILE *);
 /* to hang around */
 extern const char* getstring_noalloc(FILE *f);
 
-#endif /* DB_HEADER_H */
+#endif /* _DB_HEADER_H */

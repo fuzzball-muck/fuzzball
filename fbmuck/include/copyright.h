@@ -1,3 +1,6 @@
+#ifndef _COPYRIGHT_H
+#define _COPYRIGHT_H
+
 /* -*-C-*-
 
 The majority of this code is Copyright (c) 1991-2001 by Fuzzball Software
@@ -36,3 +39,5 @@ Some parts of this code Copyright (c) 1989-1990 by David Applegate,
 	the authors, Carnegie-Mellon University and Bell Communications Research
 	in each case.
 */
+
+#endif /* _COPYRIGHT_H */

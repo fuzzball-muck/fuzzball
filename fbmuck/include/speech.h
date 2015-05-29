@@ -48,4 +48,4 @@ int
 blank(const char *s)
 ;
 
-#endif /* !defined _SPEECH_H_ */
+#endif /* _SPEECH_H */
