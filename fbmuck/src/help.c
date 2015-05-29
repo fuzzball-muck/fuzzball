@@ -622,6 +622,13 @@ do_info(dbref player, const char *topic, const char *seg)
 #endif							/* !DIR_AVALIBLE && !WIN32 */
 	}
 }
+
+void
+do_credits(dbref player)
+{
+	spit_file(player, CREDITS_FILE);
+}
+
 #else /* STANDALONE_HELP */
 
 int
