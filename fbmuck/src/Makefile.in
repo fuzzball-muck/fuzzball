@@ -116,7 +116,7 @@ MISCSRC= Makefile.in mkversion.sh
 CSRC= array.c boolexp.c compile.c create.c db.c db_header.c debugger.c \
 	disassem.c diskprop.c edit.c events.c game.c hashtab.c help.c inst.c \
 	interp.c log.c look.c match.c mcp.c mcpgui.c mcppkgs.c mfuns2.c \
-	mfuns.c move.c msgparse.c mufevent.c oldcompress.c p_array.c \
+	mfuns.c move.c msgparse.c mufevent.c p_array.c \
 	p_connects.c p_db.c p_error.c p_float.c player.c p_math.c p_mcp.c \
 	p_misc.c p_props.c p_regex.c predicates.c propdirs.c property.c \
 	props.c p_stack.c p_strings.c random.c rob.c sanity.c set.c \
@@ -124,12 +124,12 @@ CSRC= array.c boolexp.c compile.c create.c db.c db_header.c debugger.c \
 	timequeue.c timestamp.c tune.c unparse.c utils.c wiz.c
 
 LSRC= copyright.c
-MSRC= compress.c olddecomp.c reconst.c interface.c resolver.c
+MSRC= reconst.c interface.c resolver.c
 
 COBJ= array.o boolexp.o compile.o create.o db_header.o db.o debugger.o \
 	disassem.o diskprop.o edit.o events.o game.o hashtab.o help.o inst.o \
 	interp.o log.o look.o match.o mcp.o mcpgui.o mcppkgs.o mfuns2.o \
-	mfuns.o move.o msgparse.o mufevent.o oldcompress.o p_array.o \
+	mfuns.o move.o msgparse.o mufevent.o p_array.o \
 	p_connects.o p_db.o p_error.o p_float.o player.o p_math.o p_mcp.o \
 	p_misc.o p_props.o p_regex.o predicates.o propdirs.o property.o \
 	props.o p_stack.o p_strings.o random.o rob.o sanity.o set.o \
@@ -137,16 +137,13 @@ COBJ= array.o boolexp.o compile.o create.o db_header.o db.o debugger.o \
 	timequeue.o timestamp.o tune.o unparse.o utils.o wiz.o
 
 LOBJ= copyright.o
-MOBJ= olddecomp.o reconst.o interface.o resolver.o
+MOBJ= reconst.o interface.o resolver.o
 
 SRC= ${MISCSRC} ${CSRC} ${LSRC} ${MSRC}
 OBJ= ${COBJ} ${ROBJ} ${LOBJ} ${MOBJ}
 
-
-
-
-TARGETS= fbmuck fbhelp fb-resolver fb-olddecompress
-OLDTARGETS = fbmuck~ fbhelp~ fb-resolver~ fb-olddecompress~
+TARGETS= fbmuck fbhelp fb-resolver
+OLDTARGETS = fbmuck~ fbhelp~ fb-resolver~
 HELPFILES= man.txt help.txt mpihelp.txt
 
 .c.o:
@@ -172,10 +169,6 @@ fbmuck: $(INCLUDE)/defines.h ${P} ${COBJ} ${MALLOBJ} interface.o ${LOBJ} mkversi
 
 fb-resolver: resolver.o ${LOBJ} ${MALLOBJ} Makefile
 	${PRE} ${CC} ${CFLAGS} ${INCL} ${DEFS} -o fb-resolver resolver.o ${MALLOBJ} ${LIBR} ${LOBJ} -lpthread
-
-fb-olddecompress: olddecomp.o oldcompress.o compress.o db_header.o ${LOBJ} ${MALLOBJ} Makefile
-	${CC} ${CFLAGS} ${INCL} ${DEFS} -o fb-olddecompress olddecomp.o oldcompress.o \
-		compress.o db_header.o ${LIBR} ${MALLOBJ} ${LOBJ}
 
 fbhelp.o: help.c
 	${CC} ${CFLAGS} ${INCL} ${DEFS} -c help.c -o fbhelp.o -DSTANDALONE_HELP -DHELPFILE_DIR='"${INSTALL_HELPDIR}"'
