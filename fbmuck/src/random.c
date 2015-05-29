@@ -451,24 +451,3 @@ rnd(void *buffer)
 	MD5hash(digest, digest, sizeof(digest));
 	return (digest[0]);
 }
-
-/* Test code, ignore
-int main(int argc, char **argv) {
-  void *seed = NULL;
-  int loop;
-  char buff[2048];
-
-  gets(buff);
-  if (buff[0]=='\0'||buff[0]=='\n') {
-    seed = init_seed(NULL);
-  } else {
-    seed = init_seed(buff);
-  }
-  for (loop = 0; loop < 16; loop++)
-    printf("%2d:  %12lu\n",loop,rnd(seed));
-  delete_seed(seed);
-  exit(1);
-}
-*/
-static const char *random_c_version = "$RCSfile: random.c,v $ $Revision: 1.14 $";
-const char *get_random_c_version(void) { return random_c_version; }

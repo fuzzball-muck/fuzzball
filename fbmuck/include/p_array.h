@@ -1,7 +1,6 @@
 #ifndef _P_ARRAY_H
 #define _P_ARRAY_H
 
-
 extern void prim_array_make(PRIM_PROTOTYPE);
 extern void prim_array_make_dict(PRIM_PROTOTYPE);
 extern void prim_array_explode(PRIM_PROTOTYPE);
@@ -101,15 +100,3 @@ extern void prim_array_filter_flags(PRIM_PROTOTYPE);
 #define PRIMS_ARRAY_CNT 49
 
 #endif /* _P_ARRAY_H */
-
-
-#ifdef DEFINE_HEADER_VERSIONS
-
-#ifndef p_arrayh_version
-#define p_arrayh_version
-const char *p_array_h_version = "$RCSfile: p_array.h,v $ $Revision: 1.17 $";
-#endif
-#else
-extern const char *p_array_h_version;
-#endif
-

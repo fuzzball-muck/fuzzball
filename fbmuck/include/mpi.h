@@ -18,14 +18,3 @@ extern char *do_parse_mesg(int descr, dbref player, dbref what, const char *inbu
 extern char *do_parse_prop(int descr, dbref player, dbref what, const char *propname, const char *abuf, char *outbuf, int buflen, int mesgtyp);
 
 #endif /* _MPI_H */
-
-#ifdef DEFINE_HEADER_VERSIONS
-
-#ifndef mpih_version
-#define mpih_version
-const char *mpi_h_version = "$RCSfile: mpi.h,v $ $Revision: 1.9 $";
-#endif
-#else
-extern const char *mpi_h_version;
-#endif
-

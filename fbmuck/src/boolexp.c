@@ -1,5 +1,3 @@
-/* $Header: /cvsroot/fbmuck/fbmuck/src/boolexp.c,v 1.12 2006/04/19 02:58:54 premchai21 Exp $ */
-
 #include "copyright.h"
 #include "config.h"
 
@@ -589,5 +587,3 @@ free_boolexp(struct boolexp *b)
 		}
 	}
 }
-static const char *boolexp_c_version = "$RCSfile: boolexp.c,v $ $Revision: 1.12 $";
-const char *get_boolexp_c_version(void) { return boolexp_c_version; }

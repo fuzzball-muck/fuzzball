@@ -29,14 +29,3 @@ stk_array *get_mufevent_pids(stk_array* nw, dbref ref);
 stk_array *get_mufevent_pidinfo(stk_array* nw, int pid);
 
 #endif /* MUF_EVENT_H */
-
-#ifdef DEFINE_HEADER_VERSIONS
-
-#ifndef mufeventh_version
-#define mufeventh_version
-const char *mufevent_h_version = "$RCSfile: mufevent.h,v $ $Revision: 1.13 $";
-#endif
-#else
-extern const char *mufevent_h_version;
-#endif
-

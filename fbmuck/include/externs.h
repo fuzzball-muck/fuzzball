@@ -1,4 +1,3 @@
-/* $Header: /cvsroot/fbmuck/fbmuck/include/externs.h,v 1.48 2007/03/08 17:13:48 winged Exp $ */
 #ifndef _EXTERNS_H
 #define _EXTERNS_H
 #include "copyright.h"
@@ -390,82 +389,4 @@ stk_array *get_pidinfo(int pid);
 /* from mcpgui.c */
 int gui_dlog_closeall_descr(int descr);
 
-/* version-getting functions */
-
-const char *get_array_c_version(void);
-const char *get_boolexp_c_version(void);
-const char *get_compile_c_version(void);
-const char *get_copyright_c_version(void);
-const char *get_create_c_version(void);
-const char *get_crt_malloc_c_version(void);
-const char *get_db_c_version(void);
-const char *get_debugger_c_version(void);
-const char *get_disassem_c_version(void);
-const char *get_diskprop_c_version(void);
-const char *get_edit_c_version(void);
-const char *get_events_c_version(void);
-const char *get_game_c_version(void);
-const char *get_hashtab_c_version(void);
-const char *get_help_c_version(void);
-const char *get_inst_c_version(void);
-const char *get_interface_c_version(void);
-const char *get_interp_c_version(void);
-const char *get_log_c_version(void);
-const char *get_look_c_version(void);
-const char *get_match_c_version(void);
-const char *get_mcp_c_version(void);
-const char *get_mcpgui_c_version(void);
-const char *get_mcppkgs_c_version(void);
-const char *get_mfuns_c_version(void);
-const char *get_mfuns2_c_version(void);
-const char *get_move_c_version(void);
-const char *get_msgparse_c_version(void);
-const char *get_mufevent_c_version(void);
-const char *get_p_array_c_version(void);
-const char *get_p_connects_c_version(void);
-const char *get_p_db_c_version(void);
-const char *get_p_error_c_version(void);
-const char *get_p_float_c_version(void);
-const char *get_p_math_c_version(void);
-const char *get_p_mcp_c_version(void);
-const char *get_p_misc_c_version(void);
-const char *get_p_props_c_version(void);
-const char *get_p_regex_c_version(void);
-const char *get_p_stack_c_version(void);
-const char *get_p_strings_c_version(void);
-const char *get_player_c_version(void);
-const char *get_predicates_c_version(void);
-const char *get_prochelp_c_version(void);
-const char *get_propdirs_c_version(void);
-const char *get_property_c_version(void);
-const char *get_props_c_version(void);
-const char *get_random_c_version(void);
-const char *get_reconst_c_version(void);
-const char *get_resolver_c_version(void);
-const char *get_rob_c_version(void);
-const char *get_sanity_c_version(void);
-const char *get_set_c_version(void);
-const char *get_signal_c_version(void);
-const char *get_smatch_c_version(void);
-const char *get_snprintf_c_version(void);
-const char *get_speech_c_version(void);
-const char *get_strftime_c_version(void);
-const char *get_stringutil_c_version(void);
-const char *get_timequeue_c_version(void);
-const char *get_timestamp_c_version(void);
-const char *get_tune_c_version(void);
-const char *get_unparse_c_version(void);
-const char *get_utils_c_version(void);
-const char *get_wiz_c_version(void);
-
 #endif /* _EXTERNS_H */
-
-#ifdef DEFINE_HEADER_VERSIONS
-#ifndef externsh_version
-#define externsh_version
-const char *externs_h_version = "$RCSfile: externs.h,v $ $Revision: 1.48 $";
-#endif
-#else
-extern const char *externs_h_version;
-#endif
-

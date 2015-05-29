@@ -1,4 +1,3 @@
-
 #include "copyright.h"
 #include "config.h"
 #include "params.h"
@@ -274,5 +273,3 @@ propdir_unloaded(PropPtr root, const char *path)
 	}
 	return NULL;
 }
-static const char *propdirs_c_version = "$RCSfile: propdirs.c,v $ $Revision: 1.4 $";
-const char *get_propdirs_c_version(void) { return propdirs_c_version; }

@@ -1513,5 +1513,3 @@ listenqueue(int descr, dbref player, dbref where, dbref trigger, dbref what, dbr
 		}
 	}
 }
-static const char *timequeue_c_version = "$RCSfile: timequeue.c,v $ $Revision: 1.45 $";
-const char *get_timequeue_c_version(void) { return timequeue_c_version; }

@@ -1,6 +1,3 @@
-/* $Header: /cvsroot/fbmuck/fbmuck/src/help.c,v 1.15 2009/10/09 23:54:24 winged Exp $ */
-
-
 #include "config.h"
 
 /* commands for giving help */
@@ -673,6 +670,3 @@ main(int argc, char**argv)
 }
 
 #endif /* STANDALONE_HELP */
-
-static const char *help_c_version = "$RCSfile: help.c,v $ $Revision: 1.15 $";
-const char *get_help_c_version(void) { return help_c_version; }

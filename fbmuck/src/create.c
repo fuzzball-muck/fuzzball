@@ -1,6 +1,3 @@
-/* $Header: /cvsroot/fbmuck/fbmuck/src/create.c,v 1.28 2007/03/08 17:13:49 winged Exp $ */
-
-
 #include "copyright.h"
 #include "config.h"
 
@@ -1439,5 +1436,3 @@ do_attach(int descr, dbref player, const char *action_name, const char *source_n
 		notify(player, "Action priority Level reset to zero.");
 	}
 }
-static const char *create_c_version = "$RCSfile: create.c,v $ $Revision: 1.28 $";
-const char *get_create_c_version(void) { return create_c_version; }

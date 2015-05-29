@@ -1,4 +1,3 @@
-
 #include "copyright.h"
 #include "config.h"
 
@@ -395,5 +394,3 @@ debug_inst(struct frame *fr, int lev, struct inst *pc, int pid, struct inst *sta
 	/* and return the pointer to the beginning of our backwards grown string. */
 	return bend;
 }
-static const char *inst_c_version = "$RCSfile: inst.c,v $ $Revision: 1.31 $";
-const char *get_inst_c_version(void) { return inst_c_version; }

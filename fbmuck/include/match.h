@@ -1,5 +1,3 @@
-/* $Header: /cvsroot/fbmuck/fbmuck/include/match.h,v 1.7 2005/07/04 20:25:42 winged Exp $ */
-
 #ifndef _MATCH_H
 #define _MATCH_H
 
@@ -95,14 +93,3 @@ extern dbref noisy_match_result(struct match_data *md);
 				/* returns matched object or NOTHING */
 
 #endif /* _MATCH_H */
-
-#ifdef DEFINE_HEADER_VERSIONS
-
-#ifndef matchh_version
-#define matchh_version
-const char *match_h_version = "$RCSfile: match.h,v $ $Revision: 1.7 $";
-#endif
-#else
-extern const char *match_h_version;
-#endif
-

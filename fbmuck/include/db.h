@@ -1,5 +1,3 @@
-/* $Header: /cvsroot/fbmuck/fbmuck/include/db.h,v 1.49 2009/10/11 05:19:18 points Exp $ */
-
 #include "copyright.h"
 
 #ifndef __DB_H
@@ -845,14 +843,3 @@ extern dbref parse_dbref(const char *);	/* parse a dbref */
   invoked.
 */
 #endif							/* __DB_H */
-
-#ifdef DEFINE_HEADER_VERSIONS
-
-#ifndef dbh_version
-#define dbh_version
-const char *db_h_version = "$RCSfile: db.h,v $ $Revision: 1.49 $";
-#endif
-#else
-extern const char *db_h_version;
-#endif
-

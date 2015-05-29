@@ -1,5 +1,3 @@
-/* $Header: /cvsroot/fbmuck/fbmuck/src/predicates.c,v 1.20 2009/10/11 05:30:43 points Exp $ */
-
 /*
  * $Log: predicates.c,v $
  * Revision 1.20  2009/10/11 05:30:43  points
@@ -719,5 +717,3 @@ isancestor(dbref parent, dbref child)
 	}
 	return child == parent;
 }
-static const char *predicates_c_version = "$RCSfile: predicates.c,v $ $Revision: 1.20 $";
-const char *get_predicates_c_version(void) { return predicates_c_version; }

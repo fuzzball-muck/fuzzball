@@ -1,6 +1,3 @@
-
-/* $Header: /cvsroot/fbmuck/fbmuck/src/look.c,v 1.29 2010/05/27 10:45:06 revar Exp $ */
-
 #include "copyright.h"
 #include "config.h"
 #include "params.h"
@@ -1607,5 +1604,3 @@ do_sweep(int descr, dbref player, const char *name)
 	}
 	notify(player, "**End of list**");
 }
-static const char *look_c_version = "$RCSfile: look.c,v $ $Revision: 1.29 $";
-const char *get_look_c_version(void) { return look_c_version; }

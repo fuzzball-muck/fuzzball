@@ -1,5 +1,3 @@
-/* $Header: /cvsroot/fbmuck/fbmuck/src/disassem.c,v 1.17 2010/05/27 10:45:06 revar Exp $ */
-
 #include "copyright.h"
 #include "config.h"
 
@@ -114,5 +112,3 @@ disassemble(dbref player, dbref program)
 		notify(player, buf);
 	}
 }
-static const char *disassem_c_version = "$RCSfile: disassem.c,v $ $Revision: 1.17 $";
-const char *get_disassem_c_version(void) { return disassem_c_version; }

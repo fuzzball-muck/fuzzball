@@ -1,5 +1,3 @@
-/* $Header: /cvsroot/fbmuck/fbmuck/include/db_header.h,v 1.1 2007/03/09 15:53:56 winged Exp $ */
-
 #include "copyright.h"
 
 #ifndef __DB_HEADER_H

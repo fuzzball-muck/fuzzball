@@ -171,14 +171,3 @@ extern int nargs;				/* DO NOT TOUCH THIS VARIABLE */
 #include "p_regex.h"
 
 #endif /* _INTERP_H */
-
-#ifdef DEFINE_HEADER_VERSIONS
-
-#ifndef interph_version
-#define interph_version
-const char *interp_h_version = "$RCSfile: interp.h,v $ $Revision: 1.18 $";
-#endif
-#else
-extern const char *interp_h_version;
-#endif
-

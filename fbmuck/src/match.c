@@ -1,6 +1,3 @@
-/* $Header: /cvsroot/fbmuck/fbmuck/src/match.c,v 1.12 2009/10/11 05:19:18 points Exp $ */
-
-
 #include "copyright.h"
 #include "config.h"
 
@@ -610,5 +607,3 @@ match_rmatch(dbref arg1, struct match_data *md)
 		break;
 	}
 }
-static const char *match_c_version = "$RCSfile: match.c,v $ $Revision: 1.12 $";
-const char *get_match_c_version(void) { return match_c_version; }

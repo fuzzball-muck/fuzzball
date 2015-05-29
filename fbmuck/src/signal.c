@@ -396,7 +396,4 @@ void set_console() {
 	SetConsoleTitle(VERSION);
 }
 
-
 #endif /* WIN32 */
-static const char *signal_c_version = "$RCSfile: signal.c,v $ $Revision: 1.21 $";
-const char *get_signal_c_version(void) { return signal_c_version; }

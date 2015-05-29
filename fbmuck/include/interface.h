@@ -1,6 +1,3 @@
-
-/* $Header: /cvsroot/fbmuck/fbmuck/include/interface.h,v 1.12 2005/07/06 10:02:06 winged Exp $ */
-
 #ifndef _INTERFACE_H
 #define _INTERFACE_H
 
@@ -74,14 +71,3 @@ extern void dump_database(void);
 extern void panic(const char *);
 
 #endif /* _INTERFACE_H */
-
-#ifdef DEFINE_HEADER_VERSIONS
-
-#ifndef interfaceh_version
-#define interfaceh_version
-const char *interface_h_version = "$RCSfile: interface.h,v $ $Revision: 1.12 $";
-#endif
-#else
-extern const char *interface_h_version;
-#endif
-

@@ -1,5 +1,3 @@
-/* $Header: /cvsroot/fbmuck/fbmuck/src/move.c,v 1.38 2006/02/23 06:17:12 premchai21 Exp $ */
-
 #include "copyright.h"
 #include "config.h"
 
@@ -1136,5 +1134,3 @@ recycle(int descr, dbref player, dbref thing)
 	recyclable = thing;
 	DBDIRTY(thing);
 }
-static const char *move_c_version = "$RCSfile: move.c,v $ $Revision: 1.38 $";
-const char *get_move_c_version(void) { return move_c_version; }

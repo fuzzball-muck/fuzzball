@@ -1,4 +1,3 @@
-
 #include "config.h"
 #include <math.h>
 #include <ctype.h>
@@ -282,5 +281,3 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 		}
 	}
 }
-static const char *mcppkgs_c_version = "$RCSfile: mcppkgs.c,v $ $Revision: 1.11 $";
-const char *get_mcppkgs_c_version(void) { return mcppkgs_c_version; }

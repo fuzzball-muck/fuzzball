@@ -1,4 +1,3 @@
-
 #include "config.h"
 #include <math.h>
 #include <ctype.h>
@@ -2102,5 +2101,3 @@ mfn_usecount(MFUNARGS)
 
 	return buf;
 }
-static const char *mfuns_c_version = "$RCSfile: mfuns.c,v $ $Revision: 1.36 $";
-const char *get_mfuns_c_version(void) { return mfuns_c_version; }

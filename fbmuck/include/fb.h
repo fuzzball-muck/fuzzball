@@ -40,21 +40,9 @@
 #include "params.h"
 #include "patchlevel.h"
 #include "props.h"
-#include "smatch.h"
 #include "fbstrings.h"
 #include "speech.h"
 #include "tune.h"
 #include "version.h"
 
 #endif /* _FB_H */
-
-#ifdef DEFINE_HEADER_VERSIONS
-
-#ifndef fbh_version
-#define fbh_version
-const char *fb_h_version = "$RCSfile: fb.h,v $ $Revision: 1.8 $";
-#endif
-#else
-extern const char *fb_h_version;
-#endif
-

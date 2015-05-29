@@ -1,5 +1,3 @@
-/* $Header: /cvsroot/fbmuck/fbmuck/src/db.c,v 1.39 2009/10/09 23:54:24 winged Exp $ */
-
 #include "copyright.h"
 #include "config.h"
 
@@ -1542,5 +1540,3 @@ db_read(FILE * f)
 		c = getc(f);
 	}							/* for */
 }								/* db_read */
-static const char *db_c_version = "$RCSfile: db.c,v $ $Revision: 1.39 $";
-const char *get_db_c_version(void) { return db_c_version; }

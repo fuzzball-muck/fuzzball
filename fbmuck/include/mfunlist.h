@@ -167,14 +167,3 @@ extern MFNDAT mfun_list[];
 #endif /* defined DEFINE_MFUN_LIST */
 
 #endif /* _MFUNLIST_H */
-
-#ifdef DEFINE_HEADER_VERSIONS
-
-#ifndef mfunlisth_version
-#define mfunlisth_version
-const char *mfunlist_h_version = "$RCSfile: mfunlist.h,v $ $Revision: 1.11 $";
-#endif
-#else
-extern const char *mfunlist_h_version;
-#endif
-

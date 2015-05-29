@@ -36,15 +36,3 @@ int checkflags(dbref what, struct flgchkdat check);
 void display_objinfo(dbref player, dbref obj, int output_type);
 
 #endif
-
-
-#ifdef DEFINE_HEADER_VERSIONS
-
-#ifndef dbsearchh_version
-#define dbsearchh_version
-const char *dbsearch_h_version = "$RCSfile: dbsearch.h,v $ $Revision: 1.4 $";
-#endif
-#else
-extern const char *dbsearch_h_version;
-#endif
-
