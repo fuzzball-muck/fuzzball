@@ -58,10 +58,8 @@ fi
 %config(noreplace) /etc/rc.d/init.d/fbmuck
 /usr/bin/fbmuck
 /usr/bin/fb-resolver
-/usr/bin/fb-topwords
 /usr/bin/fb-olddecompress
 /usr/bin/fbhelp
-/usr/bin/fb-announce
 #/usr/sbin/fb-addmuck
 /usr/share/fbmuck/help.txt
 /usr/share/fbmuck/man.txt

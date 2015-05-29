@@ -22,7 +22,7 @@ LINK32_OPS=/NODEFAULTLIB:libc /LIBPATH:".\win32" /LIBPATH:"$(OPENSSLDIR)\lib\vc"
 #LINK32_OPS=/DEBUG /NODEFAULTLIB:libc /LIBPATH:".\win32" /LIBPATH:"$(OPENSSLDIR)\lib\vc" pcre.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ws2_32.lib libeay32MD.lib ssleay32MD.lib winmm.lib /nologo /subsystem:console /incremental:no /machine:I386
 
 
-ALL : "$(OUTDIR)\fbmuck.exe" "$(OUTDIR)\fb-olddecompress.exe" "$(OUTDIR)\fb-topwords.exe" "$(OUTDIR)\restart.exe" 
+ALL : "$(OUTDIR)\fbmuck.exe" "$(OUTDIR)\fb-olddecompress.exe" "$(OUTDIR)\restart.exe" 
 
 CLEAN :
 	-@erase "$(INTDIR)\*.obj"
@@ -119,7 +119,6 @@ MOBJ="$(INTDIR)\copyright.obj" \
 	"$(INTDIR)\reconst.obj"\
 	"$(INTDIR)\interface.obj"\
 	"$(INTDIR)\resolver.obj"\
-	"$(INTDIR)\topwords.obj"\
 
 "$(OUTDIR)\fbmuck.exe" : "$(OUTDIR)" "$(INTDIR)" $(COBJ) $(MALLOBJ) "$(INTDIR)\interface.obj" "$(INTDIR)\version.obj" $(LOBJ)
     $(LINK32) @<<
@@ -131,19 +130,9 @@ MOBJ="$(INTDIR)\copyright.obj" \
   $(LINK32_OPS) /out:"$(OUTDIR)\fb-resolver.exe" $(COBJ) $(MALLOBJ) "$(INTDIR)\resolver.obj" $(LOBJ)
 <<
 
-"$(OUTDIR)\fb-topwords.exe" : "$(OUTDIR)" "$(INTDIR)" $(LOBJ) $(MALLOBJ) "$(INTDIR)\topwords.obj" "$(INTDIR)\hashtab.obj"
-    $(LINK32) @<<
-  $(LINK32_OPS) /out:"$(OUTDIR)\fb-topwords.exe" "$(INTDIR)\topwords.obj" "$(INTDIR)\hashtab.obj" $(MALLOBJ) $(LOBJ)
-<<
-
 "$(OUTDIR)\fb-olddecompress.exe" : "$(OUTDIR)" "$(INTDIR)" $(LOBJ) $(MALLOBJ) "$(INTDIR)\olddecomp.obj" "$(INTDIR)\oldcompress.obj" "$(INTDIR)\compress.obj" "$(INTDIR)\db_header.obj"
     $(LINK32) @<<
   $(LINK32_OPS) /out:"$(OUTDIR)\fb-olddecompress.exe" "$(INTDIR)\olddecomp.obj" "$(INTDIR)\oldcompress.obj" "$(INTDIR)\compress.obj" "$(INTDIR)\db_header.obj" $(MALLOBJ) $(LOBJ)
-<<
-
-"$(OUTDIR)\fb-announce.exe" : "$(OUTDIR)" "$(INTDIR)" $(LOBJ) $(MALLOBJ) "$(INTDIR)\announce.obj"
-    $(LINK32) @<<
-  $(LINK32_OPS) /out:"$(OUTDIR)\fb-announce.exe" $(COBJ) $(MALLOBJ) "$(INTDIR)\announce.obj" $(LOBJ)
 <<
 
 $(INTDIR)\fbhelp.obj : $(NMSRCDIR)\help.cpp

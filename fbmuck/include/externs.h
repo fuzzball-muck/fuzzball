@@ -392,7 +392,6 @@ int gui_dlog_closeall_descr(int descr);
 
 /* version-getting functions */
 
-const char *get_announce_c_version(void);
 const char *get_array_c_version(void);
 const char *get_boolexp_c_version(void);
 const char *get_compile_c_version(void);
@@ -456,7 +455,6 @@ const char *get_strftime_c_version(void);
 const char *get_stringutil_c_version(void);
 const char *get_timequeue_c_version(void);
 const char *get_timestamp_c_version(void);
-const char *get_topwords_c_version(void);
 const char *get_tune_c_version(void);
 const char *get_unparse_c_version(void);
 const char *get_utils_c_version(void);
