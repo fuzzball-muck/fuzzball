@@ -2,7 +2,6 @@
  *  debugger.c   (sort of a dbx for MUF.)
  */
 
-#include "copyright.h"
 #include "config.h"
 
 #include "db.h"

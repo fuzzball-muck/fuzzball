@@ -1,8 +1,6 @@
 #ifndef _INTERFACE_H
 #define _INTERFACE_H
 
-#include "copyright.h"
-
 #include "db.h"
 #include "mcp.h"
 

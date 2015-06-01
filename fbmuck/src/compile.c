@@ -2,7 +2,6 @@
  *  Compile.c   (This is really a tokenizer, not a compiler)
  */
 
-#include "copyright.h"
 #include "config.h"
 
 #include "db.h"

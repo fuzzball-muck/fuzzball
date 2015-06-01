@@ -1,7 +1,5 @@
 /* Primitives Package */
 
-#include "copyright.h"
-
 #include <sys/types.h>
 #include <stdio.h>
 #include <time.h>

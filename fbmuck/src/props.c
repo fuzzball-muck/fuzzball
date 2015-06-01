@@ -6,7 +6,6 @@
 */
 
 #include <string.h>
-#include "copyright.h"
 #include "config.h"
 #include "params.h"
 #include "db.h"

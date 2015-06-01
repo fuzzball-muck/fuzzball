@@ -1,6 +1,5 @@
 /* Primitives package */
 
-#include "copyright.h"
 #include "config.h"
 
 #include <sys/types.h>
