@@ -157,7 +157,6 @@
  *
  */
 
-#include "copyright.h"
 #include "config.h"
 
 /* Predicates for testing various conditions */

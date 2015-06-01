@@ -1,7 +1,6 @@
 #ifndef _PARAMS_H
 #define _PARAMS_H
 
-#include "copyright.h"
 #include "version.h"
 
 /* penny related stuff */

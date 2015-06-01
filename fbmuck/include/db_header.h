@@ -1,5 +1,3 @@
-#include "copyright.h"
-
 #ifndef _DB_HEADER_H
 #define _DB_HEADER_H
 

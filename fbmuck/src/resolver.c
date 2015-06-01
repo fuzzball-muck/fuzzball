@@ -1,4 +1,3 @@
-#include "copyright.h"
 #include "config.h"
 
 #ifdef SOLARIS

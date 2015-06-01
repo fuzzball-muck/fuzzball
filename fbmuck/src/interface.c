@@ -3,7 +3,6 @@
  * permission to distribute when linked against openSSL. */
 
 #include "fb.h"
-#include "copyright.h"
 #include "config.h"
 #include "match.h"
 #include "mpi.h"

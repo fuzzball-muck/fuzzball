@@ -7,7 +7,6 @@
  *
 */
 
-#include "copyright.h"
 #include "config.h"
 
 #include "db_header.h"

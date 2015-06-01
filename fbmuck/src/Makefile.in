@@ -123,7 +123,6 @@ CSRC= array.c boolexp.c compile.c create.c db.c db_header.c debugger.c \
 	signal.c smatch.c snprintf.c speech.c strftime.c stringutil.c \
 	timequeue.c timestamp.c tune.c unparse.c utils.c wiz.c
 
-LSRC= copyright.c
 MSRC= reconst.c interface.c resolver.c
 
 COBJ= array.o boolexp.o compile.o create.o db_header.o db.o debugger.o \
@@ -136,11 +135,10 @@ COBJ= array.o boolexp.o compile.o create.o db_header.o db.o debugger.o \
 	signal.o smatch.o snprintf.o speech.o strftime.o stringutil.o \
 	timequeue.o timestamp.o tune.o unparse.o utils.o wiz.o
 
-LOBJ= copyright.o
 MOBJ= reconst.o interface.o resolver.o
 
-SRC= ${MISCSRC} ${CSRC} ${LSRC} ${MSRC}
-OBJ= ${COBJ} ${ROBJ} ${LOBJ} ${MOBJ}
+SRC= ${MISCSRC} ${CSRC} ${MSRC}
+OBJ= ${COBJ} ${ROBJ} ${MOBJ}
 
 TARGETS= fbmuck fbhelp fb-resolver
 OLDTARGETS = fbmuck~ fbhelp~ fb-resolver~
@@ -160,15 +158,15 @@ $(INCLUDE)/defines.h:
 	@echo "#define BINDIR \"$(INSTALL_BINDIR)\"" >> $(INCLUDE)/defines.h
 	@echo "#define INSTALL_HELPDIR \"$(INSTALL_HELPDIR)\"" >> $(INCLUDE)/defines.h
 
-fbmuck: $(INCLUDE)/defines.h ${P} ${COBJ} ${MALLOBJ} interface.o ${LOBJ} mkversion.sh Makefile
+fbmuck: $(INCLUDE)/defines.h ${P} ${COBJ} ${MALLOBJ} interface.o mkversion.sh Makefile
 	sh mkversion.sh
 	${PRE} ${CC} ${CFLAGS} ${INCL} ${DEFS} -c version.c
 	if [ -f fbmuck ]; then ${MV} fbmuck fbmuck~ ; fi
 	${PRE} ${CC} ${CFLAGS} ${INCL} ${DEFS} -o fbmuck ${COBJ} ${MALLOBJ} interface.o version.o \
-	  ${LIBR} ${LOBJ}
+	  ${LIBR}
 
-fb-resolver: resolver.o ${LOBJ} ${MALLOBJ} Makefile
-	${PRE} ${CC} ${CFLAGS} ${INCL} ${DEFS} -o fb-resolver resolver.o ${MALLOBJ} ${LIBR} ${LOBJ} -lpthread
+fb-resolver: resolver.o ${MALLOBJ} Makefile
+	${PRE} ${CC} ${CFLAGS} ${INCL} ${DEFS} -o fb-resolver resolver.o ${MALLOBJ} ${LIBR} -lpthread
 
 fbhelp.o: help.c
 	${CC} ${CFLAGS} ${INCL} ${DEFS} -c help.c -o fbhelp.o -DSTANDALONE_HELP -DHELPFILE_DIR='"${INSTALL_HELPDIR}"'
@@ -205,7 +203,7 @@ names:
 	@for i in ${SRC} ${MALLSRC}; do echo ${SRC_PREFIX}$$i; done
 
 depend:
-	${MKDEPEND} -- ${CFLAGS} ${INCL} ${DEFS} -- ${CSRC} ${MALLSRC} ${MSRC} ${LSRC}
+	${MKDEPEND} -- ${CFLAGS} ${INCL} ${DEFS} -- ${CSRC} ${MALLSRC} ${MSRC}
 	echo chmod -w Makefile
 	chmod -w Makefile
 
@@ -221,7 +219,7 @@ Makefile: Makefile.in
 #
 
 clean:
-	-${RM} ${OBJ} core version.o ${LOBJ} ${SOBJ} ${MALLOBJ} resolver.o ${TARGETS} ${OLDTARGETS} fbhelp.o
+	-${RM} ${OBJ} core version.o ${SOBJ} ${MALLOBJ} resolver.o ${TARGETS} ${OLDTARGETS} fbhelp.o
 
 cleaner: clean
 	-${RM} Makefile config.status config.cache config.log ${INCLUDE}/autoconf.h ${TARGETS} version.c prochelp ${INCLUDE}/defines.h
