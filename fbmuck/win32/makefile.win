@@ -111,29 +111,26 @@ COBJ="$(INTDIR)\array.obj" \
 	"$(INTDIR)\wiz.obj" \
 	"$(INTDIR)\win32.obj"
 
-LOBJ="$(INTDIR)\copyright.obj"
-
-MOBJ="$(INTDIR)\copyright.obj" \
-	"$(INTDIR)\reconst.obj"\
+MOBJ="$(INTDIR)\reconst.obj"\
 	"$(INTDIR)\interface.obj"\
 	"$(INTDIR)\resolver.obj"\
 
-"$(OUTDIR)\fbmuck.exe" : "$(OUTDIR)" "$(INTDIR)" $(COBJ) $(MALLOBJ) "$(INTDIR)\interface.obj" "$(INTDIR)\version.obj" $(LOBJ)
+"$(OUTDIR)\fbmuck.exe" : "$(OUTDIR)" "$(INTDIR)" $(COBJ) $(MALLOBJ) "$(INTDIR)\interface.obj" "$(INTDIR)\version.obj"
     $(LINK32) @<<
-  $(LINK32_OPS) /out:"$(OUTDIR)\fbmuck.exe" $(COBJ) $(MALLOBJ) "$(INTDIR)\interface.obj" "$(INTDIR)\version.obj" $(LOBJ)
+  $(LINK32_OPS) /out:"$(OUTDIR)\fbmuck.exe" $(COBJ) $(MALLOBJ) "$(INTDIR)\interface.obj" "$(INTDIR)\version.obj"
 <<
 
-"$(OUTDIR)\fb-resolver.exe" : "$(OUTDIR)" "$(INTDIR)" $(LOBJ) $(MALLOBJ) "$(INTDIR)\resolver.obj"
+"$(OUTDIR)\fb-resolver.exe" : "$(OUTDIR)" "$(INTDIR)" $(MALLOBJ) "$(INTDIR)\resolver.obj"
     $(LINK32) @<<
-  $(LINK32_OPS) /out:"$(OUTDIR)\fb-resolver.exe" $(COBJ) $(MALLOBJ) "$(INTDIR)\resolver.obj" $(LOBJ)
+  $(LINK32_OPS) /out:"$(OUTDIR)\fb-resolver.exe" $(COBJ) $(MALLOBJ) "$(INTDIR)\resolver.obj"
 <<
 
 $(INTDIR)\fbhelp.obj : $(NMSRCDIR)\help.cpp
    $(CPP) $(CPP_OPS) /Fo$(INTDIR)\fbhelp.obj /D "STANDALONE_HELP" /D "HELPFILE_DIR=\"data/help\"" $(NMSRCDIR)\help.cpp
 
-"$(OUTDIR)\fbhelp.exe" : "$(OUTDIR)" "$(INTDIR)" $(LOBJ) $(MALLOBJ) "$(INTDIR)\fbhelp.obj"
+"$(OUTDIR)\fbhelp.exe" : "$(OUTDIR)" "$(INTDIR)" $(MALLOBJ) "$(INTDIR)\fbhelp.obj"
     $(LINK32) @<<
-  $(LINK32_OPS) /out:"$(OUTDIR)\fb-help.exe" $(COBJ) $(MALLOBJ) "$(INTDIR)\fbhelp.obj" $(LOBJ)
+  $(LINK32_OPS) /out:"$(OUTDIR)\fb-help.exe" $(COBJ) $(MALLOBJ) "$(INTDIR)\fbhelp.obj"
 <<
 
 "$(OUTDIR)\restart.exe" : "$(OUTDIR)" "$(INTDIR)" $(ROBJ)

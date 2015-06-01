@@ -13,7 +13,6 @@
 #ifndef _CONFIG_H
 #define _CONFIG_H
 
-#include "copyright.h"
 #include "autoconf.h"
 
 /************************************************************************

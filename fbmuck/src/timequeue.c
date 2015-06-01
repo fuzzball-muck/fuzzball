@@ -2,7 +2,6 @@
   Timequeue event code by Foxen
 */
 
-#include "copyright.h"
 #include "config.h"
 #include "params.h"
 #include "match.h"
