@@ -39,3 +39,6 @@ fbhelp
 config.log
 config.status
 
+# Windows Build Files
+fbmuck/compile
+fbmuck/winsrc
