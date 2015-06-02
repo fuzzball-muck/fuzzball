@@ -9,6 +9,8 @@ copy /Y .\src\*.c .\winsrc\*.cpp > nul:
 copy /Y .\win32\*.cpp .\winsrc\*.cpp > nul:
 copy /Y .\include\*.h .\winsrc\*.h > nul:
 copy /Y .\win32\*.h .\winsrc\*.h > nul:
+copy /Y .\src\*.tpl .\winsrc\*.tpl > nul:
+copy /Y .\win32\*.tpl .\winsrc\*.tpl > nul:
 
 echo Copying makefile
 copy /Y .\win32\makefile.win .\makefile > nul:
