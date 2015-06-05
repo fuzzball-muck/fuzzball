@@ -11,7 +11,7 @@ AC_CONFIG_AUX_DIR(auto)
 AC_CONFIG_HEADER([include/autoconf.h])
 
 echo " "
-echo "TinyMUCK fb6.x auto-configure script."
+echo "TinyMUCK fb7.x auto-configure script."
 echo " "
 echo "This script will try and determine things about your system so"
 echo "that FB can compile correctly. This will create your Makefile"
