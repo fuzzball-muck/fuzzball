@@ -2,7 +2,7 @@
 # @configure_input@
 
 # #######################################################################
-#                  Makefile for TinyMUCK 2.2fb5.x
+#                  Makefile for TinyMUCK 2.2fb7.00a
 # #######################################################################
 
 # #######################################################################
@@ -101,7 +101,6 @@ LINT= @LINT@
 MKTAGS= ctags --c-types=-m
 # for RCS only
 GET= co
-CLEAN= rcsclean
 LINTFLAGS= ${INCL}
 
 ##########################################################################
@@ -233,7 +232,6 @@ nuke: distclean
 	-${RM} ${OBJ} core version.o
 	-${RM} ${TARGETS} tags *~ *.bak *.orig
 	-${RM} Makefile config.status ${INCLUDE}/autoconf.h
-	-${CLEAN} *
 
 install: all
 	${INSTALL} -d ${INSTALL_BINDIR}

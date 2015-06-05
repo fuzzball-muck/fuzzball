@@ -40,7 +40,6 @@ cat > version.c <<EOF
 
 #define generation "$generation"
 #define creation "$creation"
-const char *version = PATCHLEVEL;
 #ifdef DEBUG
 #define debug "Debug Version, assertions enabled"
 #else
