@@ -38,6 +38,7 @@ fbhelp
 # configure output
 config.log
 config.status
+autom4te.cache/
 
 # Windows Build Files
 fbmuck/compile
