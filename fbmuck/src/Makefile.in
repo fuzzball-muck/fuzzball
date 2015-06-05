@@ -208,7 +208,7 @@ depend:
 	chmod -w Makefile
 
 Makefile: Makefile.in
-	cd .. && ./configure
+	cd .. && ./config.status
 	@echo " "
 	@echo Please re-run Make, as the Makefile was re-generated.
 	@echo " "
