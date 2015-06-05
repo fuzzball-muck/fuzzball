@@ -1181,6 +1181,10 @@ shovechars()
 #endif
         SSL_CTX_set_cipher_list(ssl_ctx, tp_ssl_cipher_preference_list);
 
+        if (tp_cipher_server_preference) {
+            SSL_CTX_set_options(ssl_ctx, SSL_OP_CIPHER_SERVER_PREFERENCE);
+        }
+
  
 	if (!SSL_CTX_use_certificate_chain_file (ssl_ctx, SSL_CERT_FILE)) {
 		log_status("Could not load certificate file %s", SSL_CERT_FILE);
