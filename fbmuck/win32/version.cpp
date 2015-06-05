@@ -14,7 +14,6 @@
 
 #define generation "1"
 #define creation "Mon June 1 2015 at 16:41:17 EDT"
-const char *version = PATCHLEVEL;
 #ifdef DEBUG
 #define debug "Debug Version, assertions enabled"
 #else
