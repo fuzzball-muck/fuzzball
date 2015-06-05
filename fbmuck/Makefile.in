@@ -68,7 +68,7 @@ nuke:
 	${RM} Makefile config.status config.cache config.log game/restart
 
 Makefile: Makefile.in
-	./configure
+	./config.status Makefile
 	@echo Please re-run Make, because the Makefile was re-generated.
 	@false
 
