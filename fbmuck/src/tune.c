@@ -71,7 +71,7 @@ struct tune_str_entry tune_str_list[] = {
 	{"Misc",       "huh_mesg", &tp_huh_mesg, 0, 1, "Command unrecognized warning"},
 	{"SSL",        "ssl_keyfile_passwd", &tp_ssl_keyfile_passwd, MLEV_GOD, 1, "Password for SSL keyfile"},
         {"SSL",        "ssl_cipher_preference_list", &tp_ssl_cipher_preference_list, MLEV_GOD, 1,
-                       "OpenSSL cipher list"},
+                       "OpenSSL cipher list (changes requires restart)"},
 	{"Database",   "pcreate_flags", &tp_pcreate_flags, 0, 1, "Initial Player Flags"},
 	{"Database",   "reserved_names", &tp_reserved_names, 0, 1, "Reserved names smatch"},
 	{"Database",   "reserved_player_names", &tp_reserved_player_names, 0, 1, "Reserved player names smatch"},
@@ -344,7 +344,7 @@ struct tune_bool_entry tune_bool_list[] = {
 	{"Misc",	"m3_huh", &tp_m3_huh, 3, "Enable huh? to call an exit named \"huh?\" and set M3, with full command string"},
 	{"Misc",	"strict_god_priv", &tp_strict_god_priv, MLEV_GOD, "Only God can touch God's objects"},
 	{"SSL",        "starttls_allow", &tp_starttls_allow, 3, "Enable TELNET STARTTLS encryption on plaintext port"},
-        {"SSL",        "server_cipher_preference", &tp_cipher_server_preference, 4, "Honor server cipher preference order over client's"},
+        {"SSL",        "server_cipher_preference", &tp_cipher_server_preference, 4, "Honor server cipher preference order over client's (changes require restart)"},
 	{"Charset",	"7bit_thing_names", &tp_7bit_thing_names, 4, "Thing names may contain only 7-bit characters"},
 	{"Charset",	"7bit_other_names", &tp_7bit_other_names, 4, "Exit/room/muf names may contain only 7-bit characters"},
 
