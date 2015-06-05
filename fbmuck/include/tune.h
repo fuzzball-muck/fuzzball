@@ -150,6 +150,7 @@ extern int tp_verbose_clone;
 extern int tp_muf_comments_strict;
 extern int tp_m3_huh;
 extern int tp_starttls_allow;
+extern int tp_cipher_server_preference;
 extern int tp_7bit_thing_names;
 extern int tp_7bit_other_names;
 extern int tp_idle_ping_enable;

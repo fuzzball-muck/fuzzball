@@ -277,6 +277,7 @@ int tp_ignore_bidirectional = IGNORE_BIDIRECTIONAL;
 int tp_verbose_clone = VERBOSE_CLONE;
 int tp_muf_comments_strict = MUF_COMMENTS_STRICT;
 int tp_starttls_allow = STARTTLS_ALLOW;
+int tp_cipher_server_preference = SERVER_CIPHER_PREFERENCE;
 int tp_m3_huh = M3_HUH;
 int tp_7bit_thing_names = ASCII_THING_NAMES;
 int tp_7bit_other_names = ASCII_OTHER_NAMES;
@@ -343,6 +344,7 @@ struct tune_bool_entry tune_bool_list[] = {
 	{"Misc",	"m3_huh", &tp_m3_huh, 3, "Enable huh? to call an exit named \"huh?\" and set M3, with full command string"},
 	{"Misc",	"strict_god_priv", &tp_strict_god_priv, MLEV_GOD, "Only God can touch God's objects"},
 	{"SSL",        "starttls_allow", &tp_starttls_allow, 3, "Enable TELNET STARTTLS encryption on plaintext port"},
+        {"SSL",        "server_cipher_preference", &tp_cipher_server_preference, 4, "Honor server cipher preference order over client's"},
 	{"Charset",	"7bit_thing_names", &tp_7bit_thing_names, 4, "Thing names may contain only 7-bit characters"},
 	{"Charset",	"7bit_other_names", &tp_7bit_other_names, 4, "Exit/room/muf names may contain only 7-bit characters"},
 
