@@ -8,7 +8,6 @@
 
 #include "fb.h"
 #include "config.h"
-#include "patchlevel.h"
 #include "params.h"
 #include "externs.h"
 
