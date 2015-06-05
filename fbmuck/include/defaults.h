@@ -94,6 +94,7 @@
     "CAMELLIA:DES-CBC3-SHA:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!aECDH:" \
     "!EDH-DSS-DES-CBC3-SHA:!EDH-RSA-DES-CBC3-SHA:!KRB5-DES-CBC3-SHA"
 #define STARTTLS_ALLOW 0
+#define SERVER_CIPHER_PREFERENCE 1
 
 /* amount of object endowment, based on cost */
 #define MAX_OBJECT_ENDOWMENT 100
