@@ -37,7 +37,6 @@
 #include "p_strings.h"
 #include "p_regex.h"
 #include "params.h"
-#include "patchlevel.h"
 #include "props.h"
 #include "fbstrings.h"
 #include "speech.h"
