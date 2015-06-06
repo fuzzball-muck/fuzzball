@@ -1,132 +1,136 @@
 /*
 * Copyright (c) 2014 by Fuzzball Software
 * under the GNU Public License
+*
+* This program reads in version.tpl and creates a version.c(pp) file as output.
+* It scans for $generation and $creation tags in the source and replaces them
+* provided they are on DIFFERENT lines. The matcher below only does one match
+* per line as C has no native growing string functionality. It could be
+* rewritten to use malloc and unlimited line lengths, but it seems a bit
+* overkill for such a simple substituion.
 */
 
-#include <string>
-#include <iostream>
-#include <fstream>
-#include <ctime>
-using namespace std;
+#include <string.h>
+#include <stdio.h>
+#include <time.h>
+#include "config.h"
 
-// Define if you want the timezone to show UTC. Windows doesn't do
-// abbreviations for timezone, so this is the only way to get it shortened.
+/* Define if you want the timezone to show UTC. Windows doesn't do
+   abbreviations for timezone, so this is the only way to get it shortened. */
 #undef USE_UTC
+
+/* Maximum size of a line in the template and version files */
+#define LINE_SIZE 1024
+
+#define GENLINE "$generation"
+#define CRELINE "$creation"
+#define GENDEF  "#define generation"
 
 // Filenames
 #define TPL_FILE "version.tpl"
-#define VERSION_FILE "version.cpp"
+#ifdef WIN32
+#define VERSION_FILE "version.c"
+#else
+#define VERSION_FILE "version.c"
+#endif
 
 // Prototypes
 unsigned int getgeneration();
-string getnow();
-
+void getnow(char *timestr, size_t len);
 
 int main(int argc, char* argv[])
 {
 	unsigned int generation = 0;
-	string creation = "";
+	FILE *ver, *tpl;
+	char line[LINE_SIZE], creation[LINE_SIZE];
+	char *pos;
 
 	generation = getgeneration();
-	creation = getnow();
+	getnow(creation, LINE_SIZE);
 
-	ifstream tpl;
-	tpl.open(TPL_FILE, ifstream::in);
-
-	if (!tpl) {
-		cerr << "error: could not open " << TPL_FILE << "." << endl;
+	/* Read this like it were linux with rb */
+	if (!(tpl = fopen(TPL_FILE, "rb"))) {
+		fprintf(stderr, "error: could not open %s\n", TPL_FILE);
 		return -1;
 	}
 
-	ofstream ver;
-	ver.open(VERSION_FILE, ofstream::trunc | ofstream::out);
-
-	if (!ver) {
-		cerr << "error: could not open " << VERSION_FILE << "." << endl;
+	/* Specify wb so windows doesn't add \r */
+	if (!(ver = fopen(VERSION_FILE, "wb"))) {
+		fclose(tpl);
+		fprintf(stderr, "error: could not open %s\n", VERSION_FILE);
 		return -1;
 	}
 
-	const string genline = "$generation";
-	const string creline = "$creation";
+	while (!feof(tpl)) {
+		if (!fgets(line, LINE_SIZE, tpl))
+			break;
 
-	while (tpl.good() && !tpl.eof() && ver.good()) {
-		string line = "";
-		getline(tpl, line);
-
-		size_t pos = line.find(genline);
-		if (pos != string::npos) {
-			string left = line.substr(0, pos);
-			string right = line.substr(pos + genline.length());
-			line = left + to_string(generation) + right;
+		if (pos = strstr(line, GENLINE)) {
+			*pos = '\0';
+			fprintf(ver, "%s%d%s\n", line, generation, pos + strlen(GENLINE));
+		} else if (pos = strstr(line, CRELINE)) {
+			*pos = '\0';
+			fprintf(ver, "%s%s%s\n", line, creation, pos + strlen(CRELINE));
+		} else {
+			fprintf(ver, "%s\n", line);
 		}
-
-		pos = line.find(creline);
-		if (pos != string::npos) {
-			string left = line.substr(0, pos);
-			string right = line.substr(pos + creline.length());
-			line = left + creation + right;
-		}
-
-		ver << line << endl;
 	}
 
 	// TODO: Generate the do_showextver function instead of using TPL
-
-	ver.close();
-	tpl.close();
+	fclose(ver);
+	fclose(tpl);
 
 	return 0;
 }
 
 // Return a time in format of "Mon Apr 14 2008 at 12:01:17 EDT"
-string getnow() {
-	char buf[1024];
+void getnow(char *timestr, size_t len) {
 	time_t t = time(NULL);
 	struct tm info;
 
 #ifdef USE_UTC
 	gmtime_s(&info, &t);
-	strftime(buf, sizeof(buf), "%a %b %d %Y at %H:%M:%S UTC", &info);
+	strftime(timestr, len, "%a %b %d %Y at %H:%M:%S UTC", &info);
 #else
 	localtime_s(&info, &t);
-	strftime(buf, sizeof(buf), "%a %b %d %Y at %H:%M:%S %Z", &info);
+	strftime(timestr, len, "%a %b %d %Y at %H:%M:%S %Z", &info);
 #endif
-
-	return string(buf);
 }
 
 // Get the generation value from the existing cpp file.
 unsigned int getgeneration() {
-	unsigned int generation = 0;
-	const string GENDEF = "#define generation";
+	char line[LINE_SIZE];
+	char *pos, *number;
+	FILE *v;
 
-	ifstream v;
-	v.open(VERSION_FILE, ifstream::in);
-
-	if (!v)
+	if (!(v = fopen(VERSION_FILE, "rb")))
 		return 0;
 
-	while (v.good() && !v.eof()) {
-		string line = "";
-		getline(v, line);
+	while (!feof(v)) {
+		if (!fgets(line, LINE_SIZE, v))
+			break;
 
-		size_t pos = line.find(GENDEF);
-		if (pos == string::npos)
+		if (!(pos = strstr(line, GENDEF))) 
 			continue;
+		
+		/* Skip over the text */
+		pos += strlen(GENDEF);
 
-		string genstring = line.substr(pos + GENDEF.length());
-		size_t start = 0, end = 0;
-		for (start = 0; start < genstring.length(); start++)
-			if (isdigit(genstring[start])) break;
-		for (end = start; end < genstring.length(); end++)
-			if (!isdigit(genstring[end])) break;
+		/* Find the start of the digit */
+		while (*pos && !isdigit(*pos))
+			pos++;
 
-		if (start < genstring.length() && start < end) {
-			genstring = genstring.substr(start, end - start);
-			return stoi(genstring) + 1;
-		}		
+		/* Find the end of the digit */
+		number = pos;
+		while (*pos && isdigit(*pos))
+			pos++;
+		*pos = '\0';
+
+		fclose(v);
+		return atoi(number) + 1;
 	}
 
-	return generation;
+	fclose(v);
+	return 0;
 }
 
