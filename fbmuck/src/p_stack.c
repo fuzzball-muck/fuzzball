@@ -291,6 +291,15 @@ void
 prim_depth(PRIM_PROTOTYPE)
 {
 	CHECKOP(0);
+	result = fr->trys.top ? *top - fr->trys.st->depth : *top;
+	CHECKOFLOW(1);
+	PushInt(result);
+}
+
+void
+prim_fulldepth(PRIM_PROTOTYPE)
+{
+	CHECKOP(0);
 	result = *top;
 	CHECKOFLOW(1);
 	PushInt(result);
