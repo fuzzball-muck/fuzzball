@@ -18,11 +18,7 @@
 #define FILE_BUFSIZ ((BUFSIZ)*8)
 
 /* Defining INF as infinite.  This is HUGE_VAL on IEEE754 systems. */
-#ifdef WIN32
-#include <limits>
-# define INF (std::numeric_limits<double>::infinity())
-# define NINF (-1 * std::numeric_limits<double>::infinity())
-#elif defined(HUGE_VAL)
+#if defined(HUGE_VAL)
 # define INF (HUGE_VAL)
 # define NINF (-HUGE_VAL)
 #else

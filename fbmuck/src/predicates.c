@@ -451,7 +451,11 @@ word_start(const char *str, const char let)
 	return 0;
 }
 
+#ifdef WIN32
+static __inline int
+#else
 static inline int
+#endif
 ok_ascii_any(const char *name)
 {
 	const unsigned char *scan;

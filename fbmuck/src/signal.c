@@ -383,16 +383,16 @@ BOOL WINAPI HandleConsole(DWORD mesg) {
          break;
 
       default:
-         return false;
+         return FALSE;
    }
 
-   return true;
+   return TRUE;
 }
 
 void set_console() {
 	HANDLE InputHandle;
 
-      SetConsoleCtrlHandler(HandleConsole, true);
+    SetConsoleCtrlHandler(HandleConsole, TRUE);
 	SetConsoleTitle(VERSION);
 }
 
