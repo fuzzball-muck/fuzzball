@@ -43,3 +43,6 @@ autom4te.cache/
 # Windows Build Files
 fbmuck/compile
 fbmuck/winsrc
+
+#Ignore created version.c file
+fbmuck/src/version.c
