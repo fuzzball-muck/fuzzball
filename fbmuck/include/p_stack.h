@@ -15,6 +15,7 @@ extern void prim_rot(PRIM_PROTOTYPE);	/*       ?1 ?2 ?3 -- ?2 ?3 ?1     */
 extern void prim_rotate(PRIM_PROTOTYPE);	/* Rotates top N stack elements */
 extern void prim_dbtop(PRIM_PROTOTYPE);	/*       -- i            */
 extern void prim_depth(PRIM_PROTOTYPE);	/*       -- i            */
+extern void prim_fulldepth(PRIM_PROTOTYPE);	/*       -- i            */
 extern void prim_version(PRIM_PROTOTYPE);	/*       -- s            */
 extern void prim_prog(PRIM_PROTOTYPE);	/*       -- d            */
 extern void prim_trig(PRIM_PROTOTYPE);	/*       -- d            */
@@ -53,7 +54,7 @@ extern void prim_trypop(PRIM_PROTOTYPE);	/* -- */
     prim_lockp, prim_checkargs, prim_mode, prim_setmode, prim_interp,        \
     prim_for, prim_foreach, prim_floatp, prim_reverse, prim_popn, prim_dupn, \
     prim_ldup, prim_lreverse, prim_arrayp, prim_dictionaryp, prim_mark,      \
-    prim_findmark
+    prim_findmark, prim_fulldepth
 
 #define PRIMS_STACK_NAMES "POP", "DUP", "@", "!", "VARIABLE", \
     "LOCALVAR", "SWAP", "OVER", "PICK", "PUT", "ROT",         \
@@ -62,9 +63,9 @@ extern void prim_trypop(PRIM_PROTOTYPE);	/* -- */
     "LOCK?", "CHECKARGS", "MODE", "SETMODE", "INTERP",        \
     " FOR", " FOREACH", "FLOAT?", "REVERSE", "POPN", "DUPN",  \
     "LDUP", "LREVERSE", "ARRAY?", "DICTIONARY?", "{",         \
-    "}"
+    "}", "FULLDEPTH"
 
-#define PRIMS_STACK_CNT 39
+#define PRIMS_STACK_CNT 40
 
 #define PRIMS_INTERNAL_FUNCS prim_foriter, prim_forpop, prim_trypop
 
