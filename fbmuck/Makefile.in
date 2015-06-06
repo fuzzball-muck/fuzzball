@@ -64,7 +64,7 @@ nuke:
 	for d in ${subdirs}; do \
 		cd $${d} && ${MAKE} nuke; \
 	done
-	${RM} Makefile config.status config.cache config.log game/restart
+	${RM} Makefile configure config.status config.cache config.log game/restart
 
 Makefile: Makefile.in
 	./config.status Makefile
