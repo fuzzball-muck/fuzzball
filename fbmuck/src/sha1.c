@@ -2,7 +2,7 @@
  * placed in the public domain by Wei Dai and other contributors.
  */
 #include "config.h"
-#include <stdint.h>
+#include "sha1.h"
 
 /* Test for endian options -- Windows is LITTLE by default */
 #ifdef __BIG_ENDIAN__
@@ -21,25 +21,11 @@
 #endif
 
 
-/* Size of the hash and size of block */
-#define HASH_LENGTH 20
-#define BLOCK_LENGTH 64
-
-typedef struct sha1nfo {
-	uint32_t buffer[BLOCK_LENGTH / 4];
-	uint32_t state[HASH_LENGTH / 4];
-	uint32_t byteCount;
-	uint8_t bufferOffset;
-	uint8_t keyBuffer[BLOCK_LENGTH];
-	uint8_t innerHash[HASH_LENGTH];
-} sha1nfo;
-
-
 void sha1_init(sha1nfo *s);
 void sha1_writebyte(sha1nfo *s, uint8_t data);
 void sha1_write(sha1nfo *s, const char *data, size_t len);
 uint8_t* sha1_result(sha1nfo *s);
-char *hash2hex(uint8_t *hash);
+void hash2hex(uint8_t* hash, char *buffer, size_t buflen);
 
 
 /* K values for SHA1 */
@@ -171,16 +157,19 @@ uint8_t* sha1_result(sha1nfo *s) {
 }
 
 /* Turn a 20 byte hash into a 41 byte hex c-string */
-char *hash2hex(uint8_t* hash) {
-	char buffer[41];
+void hash2hex(uint8_t* hash, char *buffer, size_t buflen) {
 	int i;
 	uint8_t low, high;
+
+	buffer[0] = '\0';
 	for (i = 0; i < 20; i++) {
+		/* Make sure the buffer has two bytes + null */
+		if (i * 2 + 3 > buflen)
+			break;
 		high = (hash[i] & 0xF0) >> 4;
 		low = hash[i] & 0x0F;
 		buffer[i*2] = (high <= 9 ? high + 48 : high + 87);
 		buffer[i*2+1] = (low <= 9 ? low + 48 : low + 87);
+		buffer[i*2+2] = '\0';
 	}
-	buffer[40] = '\0';
-	return (char *)buffer;
 }
