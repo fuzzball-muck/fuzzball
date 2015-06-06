@@ -22,8 +22,9 @@ static void ftconvert(const FILETIME *ft, struct timeval *ts) {
 }
 
 struct tm *uw32localtime(const time_t *t) {
+	struct tm epoch2tm, *lt;
+	time_t epoch2, p;
 	if (*t < 0) {
-		struct tm epoch2tm;
 		epoch2tm.tm_hour = 0;
 		epoch2tm.tm_isdst = 0;
 		epoch2tm.tm_mday = 1;
@@ -34,10 +35,10 @@ struct tm *uw32localtime(const time_t *t) {
 		epoch2tm.tm_yday = 0;
 		epoch2tm.tm_year = 2026 - 1900;
 
-		time_t epoch2 = mktime(&epoch2tm) - _timezone;
+		epoch2 = mktime(&epoch2tm) - _timezone;
 
-		time_t p = *t + epoch2;
-		struct tm *lt = localtime(&p);
+		p = *t + epoch2;
+		lt = localtime(&p);
 		lt->tm_year -= 56;
 		return lt;
 	} else {

@@ -5,20 +5,20 @@ NULL=
 NULL=nul
 !ENDIF 
 
-NMSRCDIR=.\winsrc
-RSSRCDIR=.\win32
+WINDIR=.\win32
+SRCDIR=.\src
+INCDIR=.\include
 OUTDIR=.\game
 INTDIR=.\compile
-INCDIR=.\winsrc
 OPENSSLDIR=e:\cyg\openssl
 
 CPP=cl.exe
-CPP_OPS=/nologo /MT /W3 /EHsc /O2 /c /D "_X86_" /D "_WIN32_" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "FD_SETSIZE=4096" /D "HAVE_CONFIG_H" /D "_USE_32BIT_TIME_T" /D "_CRT_SECURE_NO_WARNINGS" /D "_CRT_NONSTDC_NO_WARNINGS" /D "_CRT_SECURE_NO_DEPRECATE" /D "POSIX" /I"$(INCDIR)" /I"$(OPENSSLDIR)\include" /Fd"$(INTDIR)\\" /c
+CPP_OPS=/nologo /EHsc /MT /W3 /O2 /c /D "_X86_" /D "_WIN32_" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "FD_SETSIZE=4096" /D "_WINSOCK_DEPRECATED_NO_WARNINGS" /D "_CRT_SECURE_NO_WARNINGS" /D "_CRT_NONSTDC_NO_WARNINGS" /D "_CRT_SECURE_NO_DEPRECATE" /D "POSIX" /I"$(WINDIR)" /I"$(INCDIR)" /I"$(OPENSSLDIR)\include" /Fd"$(INTDIR)\\"
 LINK32=link.exe
 LINK32_OPS=/NODEFAULTLIB:libc /LIBPATH:".\win32" /LIBPATH:"$(OPENSSLDIR)\lib\vc" pcre.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ws2_32.lib libeay32MD.lib ssleay32MD.lib winmm.lib /nologo /subsystem:console /incremental:no /machine:I386
 
 # Enable These for debugging
-#CPP_OPS=/Od /D "_DEBUG" /Zi /EHsc /nologo /MTd /W3 /D "_X86_" /D "_WIN32_" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "FD_SETSIZE=4096" /D "HAVE_CONFIG_H" /D "_USE_32BIT_TIME_T" /D "_CRT_SECURE_NO_WARNINGS" /D "_CRT_NONSTDC_NO_WARNINGS" /D "_CRT_SECURE_NO_DEPRECATE" /D "POSIX" /I"$(INCDIR)" /I"$(OPENSSLDIR)\include" /Fd"$(INTDIR)\\" /c
+#CPP_OPS=/Od /D "_DEBUG" /Zi /EHsc /nologo /MTd /W3 /D "_X86_" /D "_WIN32_" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "FD_SETSIZE=4096" /D "_CRT_SECURE_NO_WARNINGS" /D "_CRT_NONSTDC_NO_WARNINGS" /D "_CRT_SECURE_NO_DEPRECATE" /D "POSIX" /I"$(INCDIR)" /I"$(OPENSSLDIR)\include" /Fd"$(INTDIR)\\" /c
 #LINK32_OPS=/DEBUG /NODEFAULTLIB:libc /LIBPATH:".\win32" /LIBPATH:"$(OPENSSLDIR)\lib\vc" pcre.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ws2_32.lib libeay32MD.lib ssleay32MD.lib winmm.lib /nologo /subsystem:console /incremental:no /machine:I386
 
 
@@ -28,6 +28,7 @@ CLEAN :
 	-@erase "$(INTDIR)\*.obj"
 	-@erase "$(INTDIR)\*.idb"
 	-@erase "$(INTDIR)\*.exe"
+     -@erase "$(SRCDIR)\mkversion.exe"
 
 "$(OUTDIR)" :
     if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
@@ -36,15 +37,19 @@ CLEAN :
     if not exist "$(INTDIR)/$(NULL)" mkdir "$(INTDIR)"
 
 
-{$(NMSRCDIR)}.cpp{$(INTDIR)}.obj::
+{$(SRCDIR)}.c{$(INTDIR)}.obj::
    $(CPP) @<<
    $(CPP_OPS) /Fo"$(INTDIR)\\" $<
 <<
 
-$(INTDIR)\restart.obj : $(RSSRCDIR)\restart.cpp
-   $(CPP) $(CPP_OPS) /Fo$(INTDIR)\restart.obj $(RSSRCDIR)\restart.cpp
+$(INTDIR)\restart.obj : $(WINDIR)\restart.cpp
+   $(CPP) $(CPP_OPS) /Fo$(INTDIR)\restart.obj $(WINDIR)\restart.cpp
 
-	
+$(INTDIR)\win32.obj : $(WINDIR)\win32.c
+   $(CPP) $(CPP_OPS) /Fo$(INTDIR)\win32.obj $(WINDIR)\win32.c
+
+MKOBJ="$(INTDIR)\mkversion.obj"
+
 ROBJ="$(INTDIR)\restart.obj"
 
 MALLOBJ="$(INTDIR)\crt_malloc.obj"
@@ -111,26 +116,19 @@ COBJ="$(INTDIR)\array.obj" \
 	"$(INTDIR)\wiz.obj" \
 	"$(INTDIR)\win32.obj"
 
-MOBJ="$(INTDIR)\reconst.obj"\
-	"$(INTDIR)\interface.obj"\
-	"$(INTDIR)\resolver.obj"\
+"$(SRCDIR)\version.c" : "$(SRCDIR)\mkversion.exe" "$(SRCDIR)\version.tpl" $(COBJ) "$(INTDIR)\interface.obj"
+   cd $(SRCDIR)
+   mkversion
+   cd ..
 
-"$(OUTDIR)\fbmuck.exe" : "$(OUTDIR)" "$(INTDIR)" $(COBJ) $(MALLOBJ) "$(INTDIR)\interface.obj" "$(INTDIR)\version.obj"
-    $(LINK32) @<<
-  $(LINK32_OPS) /out:"$(OUTDIR)\fbmuck.exe" $(COBJ) $(MALLOBJ) "$(INTDIR)\interface.obj" "$(INTDIR)\version.obj"
+"$(SRCDIR)\mkversion.exe" : $(MKOBJ)
+  $(LINK32) @<<
+    $(LINK32_OPS) /out:"$(SRCDIR)\mkversion.exe" $(MKOBJ)
 <<
 
-"$(OUTDIR)\fb-resolver.exe" : "$(OUTDIR)" "$(INTDIR)" $(MALLOBJ) "$(INTDIR)\resolver.obj"
-    $(LINK32) @<<
-  $(LINK32_OPS) /out:"$(OUTDIR)\fb-resolver.exe" $(COBJ) $(MALLOBJ) "$(INTDIR)\resolver.obj"
-<<
-
-$(INTDIR)\fbhelp.obj : $(NMSRCDIR)\help.cpp
-   $(CPP) $(CPP_OPS) /Fo$(INTDIR)\fbhelp.obj /D "STANDALONE_HELP" /D "HELPFILE_DIR=\"data/help\"" $(NMSRCDIR)\help.cpp
-
-"$(OUTDIR)\fbhelp.exe" : "$(OUTDIR)" "$(INTDIR)" $(MALLOBJ) "$(INTDIR)\fbhelp.obj"
-    $(LINK32) @<<
-  $(LINK32_OPS) /out:"$(OUTDIR)\fb-help.exe" $(COBJ) $(MALLOBJ) "$(INTDIR)\fbhelp.obj"
+"$(OUTDIR)\fbmuck.exe" : "$(OUTDIR)" "$(INTDIR)" "$(INTDIR)\version.obj" $(COBJ) $(MALLOBJ) "$(INTDIR)\interface.obj"
+  $(LINK32) @<<
+    $(LINK32_OPS) /out:"$(OUTDIR)\fbmuck.exe" $(COBJ) $(MALLOBJ) "$(INTDIR)\interface.obj" "$(INTDIR)\version.obj"
 <<
 
 "$(OUTDIR)\restart.exe" : "$(OUTDIR)" "$(INTDIR)" $(ROBJ)
