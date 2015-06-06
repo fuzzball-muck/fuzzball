@@ -42,3 +42,6 @@ config.status
 # Windows Build Files
 fbmuck/compile
 fbmuck/winsrc
+
+#Ignore created version.c file
+fbmuck/src/version.c
