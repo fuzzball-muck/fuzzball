@@ -48,7 +48,8 @@ $(INTDIR)\restart.obj : $(WINDIR)\restart.cpp
 $(INTDIR)\win32.obj : $(WINDIR)\win32.c
    $(CPP) $(CPP_OPS) /Fo$(INTDIR)\win32.obj $(WINDIR)\win32.c
 
-MKOBJ="$(INTDIR)\mkversion.obj"
+MKOBJ="$(INTDIR)\mkversion.obj"\
+      "$(INTDIR)\sha1.obj"
 
 ROBJ="$(INTDIR)\restart.obj"
 
