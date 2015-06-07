@@ -13,6 +13,9 @@
 #include <string.h>
 #include <stdio.h>
 #include <time.h>
+#ifndef WIN32
+#include <dirent.h>
+#endif
 #include "config.h"
 #include "sha1.h"
 
@@ -23,21 +26,42 @@
 /* Maximum size of a line in the template and version files */
 #define LINE_SIZE 1024
 
+/* Strings to search for in tpl/version */
 #define GENLINE "$generation"
 #define CRELINE "$creation"
 #define GENDEF  "#define generation"
+#define HASHARRAY "$hasharray"
+#define HASH_ARRAY_TPL "\t{ \"%s\", \"%s\", \"%s\" },\n"
 
-// Filenames
+/* Filenames & paths */
 #define TPL_FILE "version.tpl"
+#define VERSION_FILE "version.c"
+#define DIR_SOURCE "."
+#define DIR_INCLUDE ".,/include"
+#define EXT_SRC_FILE ".c"
+#define EXT_INC_FILE ".h"
+
+/* Git commands */
+#define GIT_CHECK_CMD "git --version"
+#define GIT_BLOB_CMD "git hash-object %s"
+
+/* Win32 defines them with _ */
 #ifdef WIN32
-#define VERSION_FILE "version.c"
-#else
-#define VERSION_FILE "version.c"
+#define popen _popen
+#define pclose _pclose
+#define snprintf _snprintf
 #endif
 
 // Prototypes
 unsigned int getgeneration();
 void getnow(char *timestr, size_t len);
+int test_git();
+void print_hash_array(FILE *out);
+char *get_git_hash(const char *name, char *hash, size_t hash_len);
+char *get_sha1_hash(const char *name, char *hash, size_t hash_len);
+int endswith(const char *str, const char *suf);
+
+int git_available = 0;
 
 int main(int argc, char* argv[])
 {
@@ -48,6 +72,7 @@ int main(int argc, char* argv[])
 
 	generation = getgeneration();
 	getnow(creation, LINE_SIZE);
+	git_available = test_git();
 
 	/* Read this like it were linux with rb */
 	if (!(tpl = fopen(TPL_FILE, "rb"))) {
@@ -66,18 +91,30 @@ int main(int argc, char* argv[])
 		if (!fgets(line, LINE_SIZE, tpl))
 			break;
 
+		/* fgets gives us \n, and we don't want them */
+		pos = line;
+		while (*pos) {
+			if (*pos == '\r' || *pos == '\n')
+				*pos = '\0';
+			pos++;
+		}
+
 		if (pos = strstr(line, GENLINE)) {
 			*pos = '\0';
 			fprintf(ver, "%s%d%s\n", line, generation, pos + strlen(GENLINE));
-		} else if (pos = strstr(line, CRELINE)) {
+		}
+		else if (pos = strstr(line, CRELINE)) {
 			*pos = '\0';
 			fprintf(ver, "%s%s%s\n", line, creation, pos + strlen(CRELINE));
-		} else {
+		}
+		else if (pos = strstr(line, HASHARRAY)) {
+			print_hash_array(ver);
+		}
+		else {
 			fprintf(ver, "%s\n", line);
 		}
 	}
 
-	// TODO: Generate the do_showextver function instead of using TPL
 	fclose(ver);
 	fclose(tpl);
 
@@ -111,9 +148,9 @@ unsigned int getgeneration() {
 		if (!fgets(line, LINE_SIZE, v))
 			break;
 
-		if (!(pos = strstr(line, GENDEF))) 
+		if (!(pos = strstr(line, GENDEF)))
 			continue;
-		
+
 		/* Skip over the text */
 		pos += strlen(GENDEF);
 
@@ -135,3 +172,148 @@ unsigned int getgeneration() {
 	return 0;
 }
 
+int test_git() {
+	FILE *gitpipe;
+	char line[LINE_SIZE];
+
+	if (!(gitpipe = popen(GIT_CHECK_CMD, "rb"))) {
+		printf("Error opening git command");
+		return 0;
+	}
+
+	/* Read until eof */
+	while (fgets(line, LINE_SIZE, gitpipe));
+
+	if (pclose(gitpipe) == 0)
+		return 1;
+
+	return 0;
+}
+
+#ifdef WIN32
+void print_hash_array(FILE *out) {
+	HANDLE  hFind;
+	BOOL    bMore;
+	WIN32_FIND_DATA finddata;
+	char githash[LINE_SIZE];
+	char shahash[LINE_SIZE];
+
+	hFind = FindFirstFile(DIR_SOURCE "/*" EXT_SRC_FILE, &finddata);
+	bMore = (hFind != (HANDLE)-1);
+
+	while (bMore) {
+		if (!(finddata.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+			&& strcmp(finddata.cFileName, VERSION_FILE)) {
+			fprintf(
+				out,
+				HASH_ARRAY_TPL,
+				finddata.cFileName,
+				get_git_hash(finddata.cFileName, githash, LINE_SIZE),
+				get_sha1_hash(finddata.cFileName, shahash, LINE_SIZE)
+				);
+		}
+		bMore = FindNextFile(hFind, &finddata);
+	}
+}
+#else
+void print_hash_array(FILE *out) {
+	DIR *dir;
+	struct dirent *file;
+	char shahash[LINE_SIZE];
+	char githash[LINE_SIZE];
+
+	/* If we can't open the source directory, quit */
+	if (!(dir = opendir(DIR_SOURCE)))
+		return;
+
+	while (file = readdir(dir)) {
+		if (endswith(file->d_name, EXT_SRC_FILE) && strcmp(file->d_name, VERSION_FILE) {
+			fprintf(
+				out,
+				HASH_ARRAY_TPL,
+				file->d_name,
+				get_git_hash(file->d_name, githash, LINE_SIZE),
+				get_sha1_hash(file->d_name, shahash, LINE_SIZE)
+				);
+		}
+	}
+
+	closedir(dir);
+}
+#endif
+
+char *get_git_hash(const char *name, char *hash, size_t hash_len) {
+	FILE *gitpipe;
+	char line[LINE_SIZE];
+	char *ptr;
+
+	hash[0] = '\0';
+
+	if (!git_available)
+		return hash;
+
+	snprintf(line, LINE_SIZE, GIT_BLOB_CMD, name);
+	if (!(gitpipe = popen(line, "rb")))
+		return hash;
+
+	/* Get a line of output */
+	if (!fgets(line, LINE_SIZE, gitpipe)) {
+		pclose(gitpipe);
+		return hash;
+	}
+
+	/* Close the pipe and check return status */
+	if (pclose(gitpipe) != 0) {
+		return hash;
+	}
+
+	/* Success! Copy the hash and return */
+	strncpy(hash, line, hash_len - 1);
+	hash[hash_len - 1] = '\0';
+
+	/* Strip out the newlines and such */
+	ptr = hash;
+	while (*ptr) {
+		if (*ptr == '\r' || *ptr == '\n')
+			*ptr = '\0';
+		ptr++;
+	}
+
+	return hash;
+}
+
+char *get_sha1_hash(const char *name, char *hash, size_t hash_len) {
+	FILE *f;
+	int c;
+	hash[0] = '\0';
+
+	if (!(f = fopen(name, "rb")))
+		return hash;
+
+	sha1nfo info;
+	sha1_init(&info);
+	while ((c = fgetc(f)) != EOF) {
+		sha1_writebyte(&info, (uint8_t)c);
+	}
+	hash2hex(sha1_result(&info), hash, hash_len);
+	fclose(f);
+
+	return hash;
+}
+
+int endswith(const char *str, const char *suf) {
+	size_t str_len, suf_len;
+	const char *ptr;
+
+	if (!str || !suf)
+		return 0;
+
+	str_len = strlen(str);
+	suf_len = strlen(suf);
+
+	if (suf_len > str_len)
+		return 0;
+
+	ptr = str + str_len - suf_len;
+	return (0 == strcmp(ptr, suf) ? 1 : 0);
+}
