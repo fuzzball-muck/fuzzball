@@ -252,7 +252,7 @@ AC_CACHE_CHECK(for struct tm.tm_gmtoff, rb_cv_member_struct_tm_tm_gmtoff,
     [rb_cv_member_struct_tm_tm_gmtoff=yes],
     [rb_cv_member_struct_tm_tm_gmtoff=no])])
 if test "$rb_cv_member_struct_tm_tm_gmtoff" = yes; then
-  AC_DEFINE(HAVE_STRUCT_TM_TM_GMTOFF)
+  AC_DEFINE(HAVE_STRUCT_TM_TM_GMTOFF, [], [Define to 1 if 'tm_gmtoff' is a member of 'struct tm'.])
 fi
 
 
@@ -301,7 +301,7 @@ AC_DEFUN([AC_C_LONG_LONG],
        ac_cv_c_long_long=no)
  fi])
    if test $ac_cv_c_long_long = yes; then
-     AC_DEFINE(HAVE_LONG_LONG)
+     AC_DEFINE(HAVE_LONG_LONG, [], [Define to 1 if you have long long.])
    fi
 ])
 AC_C_LONG_LONG
