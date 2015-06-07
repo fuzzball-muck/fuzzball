@@ -5043,7 +5043,8 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $rb_cv_member_struct_tm_tm_gmtoff" >&5
 $as_echo "$rb_cv_member_struct_tm_tm_gmtoff" >&6; }
 if test "$rb_cv_member_struct_tm_tm_gmtoff" = yes; then
-  $as_echo "#define HAVE_STRUCT_TM_TM_GMTOFF 1" >>confdefs.h
+
+$as_echo "#define HAVE_STRUCT_TM_TM_GMTOFF /**/" >>confdefs.h
 
 fi
 
@@ -5347,7 +5348,8 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_c_long_long" >&5
 $as_echo "$ac_cv_c_long_long" >&6; }
    if test $ac_cv_c_long_long = yes; then
-     $as_echo "#define HAVE_LONG_LONG 1" >>confdefs.h
+
+$as_echo "#define HAVE_LONG_LONG /**/" >>confdefs.h
 
    fi
 
