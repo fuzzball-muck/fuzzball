@@ -42,7 +42,7 @@
 #define EXT_INC_FILE ".h"
 
 /* Git commands */
-#define GIT_CHECK_CMD "git --version"
+#define GIT_CHECK_CMD "git --version 2>&1"
 #define GIT_BLOB_CMD "git hash-object %s"
 
 /* Win32 defines them with _ */
@@ -123,6 +123,7 @@ int main(int argc, char* argv[])
 
 // Return a time in format of "Mon Apr 14 2008 at 12:01:17 EDT"
 void getnow(char *timestr, size_t len) {
+#ifdef WIN32
 	time_t t = time(NULL);
 	struct tm info;
 
@@ -132,6 +133,17 @@ void getnow(char *timestr, size_t len) {
 #else
 	localtime_s(&info, &t);
 	strftime(timestr, len, "%a %b %d %Y at %H:%M:%S %Z", &info);
+#endif
+#else /* !WIN32 */
+	time_t t = time(NULL);
+	struct tm *info;
+#ifdef USE_UTC
+	info = gmtime(&t);
+	strftime(timestr, len, "%a %b %d %Y at %H:%M:%S UTC", info);
+#else
+	info = localtime(&t);
+	strftime(timestr, len, "%a %b %d %Y at %H:%M:%S %Z", info);
+#endif
 #endif
 }
 
@@ -176,7 +188,7 @@ int test_git() {
 	FILE *gitpipe;
 	char line[LINE_SIZE];
 
-	if (!(gitpipe = popen(GIT_CHECK_CMD, "rb"))) {
+	if (!(gitpipe = popen(GIT_CHECK_CMD, "r"))) {
 		printf("Error opening git command");
 		return 0;
 	}
@@ -227,7 +239,7 @@ void print_hash_array(FILE *out) {
 		return;
 
 	while (file = readdir(dir)) {
-		if (endswith(file->d_name, EXT_SRC_FILE) && strcmp(file->d_name, VERSION_FILE) {
+		if (endswith(file->d_name, EXT_SRC_FILE) && strcmp(file->d_name, VERSION_FILE)) {
 			fprintf(
 				out,
 				HASH_ARRAY_TPL,
@@ -253,7 +265,7 @@ char *get_git_hash(const char *name, char *hash, size_t hash_len) {
 		return hash;
 
 	snprintf(line, LINE_SIZE, GIT_BLOB_CMD, name);
-	if (!(gitpipe = popen(line, "rb")))
+	if (!(gitpipe = popen(line, "r")))
 		return hash;
 
 	/* Get a line of output */
