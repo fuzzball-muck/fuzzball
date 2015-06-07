@@ -1,3 +1,6 @@
+#ifndef _WIN32_H_
+#define _WIN32_H_
+
 #include <winsock2.h>
 #include <process.h>
 #include <direct.h>
@@ -18,3 +21,4 @@ extern void set_console();
 #define vsnprintf _vsnprintf
 #define snprintf _snprintf
 
+#endif
