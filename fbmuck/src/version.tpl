@@ -26,14 +26,87 @@
 #define debug ""
 #endif
 
+typedef struct hash_file_entry {
+	const char *filename;
+	const char *githash;
+	const char *sha1;
+} hash_file_entry;
+
+hash_file_entry hash_file_array[] = {
+$hasharray
+	{ NULL, NULL, NULL }
+};
 
 void
-do_version(dbref player)
+do_version(dbref player, char *args)
 {
 	char s[BUFFER_LEN];
+	hash_file_entry *entry;
+	int b_all = 0, b_found = 0;
+	const char *hash;
+	char *hashlen, *file;
+	int len, len2;
 
-	snprintf(s,BUFFER_LEN,"Version: %s Compiled on: %s %s",VERSION,creation,debug);
+	/* Don't display the version info if they want showextver */
+	if (!args || !*args) {
+		snprintf(s,BUFFER_LEN,"Version: %s(%s) Compiled on: %s %s", VERSION, generation, creation, debug);
+		notify(player, s);
+		return;
+	}
+
+	/* Find hashlen if provided */
+	hashlen = file = args;
+
+	while (*hashlen && *hashlen != ' ')
+		hashlen++;
+
+	/* Split the command up */
+	if (*hashlen == ' ') {
+		*hashlen = '\0';
+		hashlen++;
+	}
+
+	/* How much of the hash is displayed? (0=all) */
+	len = (hashlen && *hashlen ? atoi(hashlen) : 6);
+	if (len < 0) 
+		len = 6;
+
+	snprintf(s, BUFFER_LEN, "File            Hash");
 	notify(player, s);
-	return;
+
+	/* Display one file, or all? */
+	b_all = stricmp(file, "all") ? 0 : 1;
+
+	entry = hash_file_array;
+	while (entry && entry->filename) {
+		/* Try to show git hash first, if available, otherwise sha1 */
+		hash = (entry->githash ? entry->githash : entry->sha1);
+
+		/* Only process if we actually have a hash */
+		if (hash && *hash) {
+			len2 = strlen(hash);
+
+			/* Limit the hash to last 'len' chars */
+			if (len != 0 && len < len2) {
+				hash = hash + len2 - len;
+			} 
+
+			/* Match only the provided files files */
+			if (b_all) {
+				snprintf(s, BUFFER_LEN, "%-15s %s", entry->filename, hash);
+				notify(player, s);
+			} else if (!stricmp(entry->filename, file)) {
+				b_found = 1;
+				snprintf(s, BUFFER_LEN, "%-15s %s", entry->filename, hash);
+				notify(player, s);
+			}
+		}
+
+		entry++;
+	}
+
+	/* Display a message if they type an invalid file */
+	if (!b_found && !b_all)
+		notify(player, "File not found");
 }
 
