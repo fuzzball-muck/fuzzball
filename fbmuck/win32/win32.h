@@ -20,5 +20,7 @@ extern void set_console();
 #define strcasecmp _stricmp
 #define vsnprintf _vsnprintf
 #define snprintf _snprintf
+#define popen _popen
+#define pclose _pclose
 
 #endif
