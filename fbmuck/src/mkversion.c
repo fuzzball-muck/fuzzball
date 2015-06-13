@@ -29,9 +29,12 @@
 /* Strings to search for in tpl/version */
 #define GENLINE "$generation"
 #define CRELINE "$creation"
+#define GITAVAIL "$gitavail"
 #define GENDEF  "#define generation"
 #define HASHARRAY "$hasharray"
 #define HASH_ARRAY_TPL "\t{ \"%s\", \"%s\", \"%s\" },\n"
+#define DEF_GITYES "#define GIT_AVAILABLE"
+#define DEF_GITNO  "#undef GIT_AVAILABLE"
 
 /* Filenames & paths */
 #define TPL_FILE "version.tpl"
@@ -95,15 +98,14 @@ int main(int argc, char* argv[])
 		if ((pos = strstr(line, GENLINE))) {
 			*pos = '\0';
 			fprintf(ver, "%s%d%s\n", line, generation, pos + strlen(GENLINE));
-		}
-		else if ((pos = strstr(line, CRELINE))) {
+		} else if ((pos = strstr(line, CRELINE))) {
 			*pos = '\0';
 			fprintf(ver, "%s%s%s\n", line, creation, pos + strlen(CRELINE));
-		}
-		else if ((pos = strstr(line, HASHARRAY))) {
+		} else if ((pos = strstr(line, HASHARRAY))) {
 			print_hash_array(ver);
-		}
-		else {
+		} else if ((pos = strstr(line, GITAVAIL))) {
+			fprintf(ver, "%s\n", (git_available ? DEF_GITYES : DEF_GITNO));
+		} else {
 			fprintf(ver, "%s\n", line);
 		}
 	}
