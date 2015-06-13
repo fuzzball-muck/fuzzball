@@ -873,6 +873,11 @@ process_command(int descr, dbref player, char *command)
 					goto bad;
 				}
 				break;
+			case 'h':
+			case 'H':
+				/* @hashes */
+				Matched("@hashes");
+				do_hashes(player, arg1);
 			case 'i':
 			case 'I':
 				/* @idescribe */
@@ -1195,7 +1200,7 @@ process_command(int descr, dbref player, char *command)
 			case 'V':
 				/* @version */
 				Matched("@version");
-				do_version(player, arg1);
+				do_version(player);
 				break;
 			case 'w':
 			case 'W':

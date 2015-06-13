@@ -331,7 +331,8 @@ extern int force_level;
 extern dbref force_prog;
 
 extern void do_credits(dbref player);
-extern void do_version(dbref player, char *args);
+extern void do_version(dbref player);
+extern void do_hashes(dbref player, char *args);
 
 extern void disassemble(dbref player, dbref program);
 
