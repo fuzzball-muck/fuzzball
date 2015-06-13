@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1991-2009 by Fuzzball Software
+ * Copyright (c) 1991-2015 by Fuzzball Software
  * under the GNU Public License
  *
  * Some parts of this code -- in particular the dictionary based compression
