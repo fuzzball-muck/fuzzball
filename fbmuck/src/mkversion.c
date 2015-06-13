@@ -40,13 +40,13 @@
 #define TPL_FILE "version.tpl"
 #define VERSION_FILE "version.c"
 #define DIR_SOURCE "."
-#define DIR_INCLUDE ".,/include"
+#define DIR_INCLUDE "../include"
 #define EXT_SRC_FILE ".c"
 #define EXT_INC_FILE ".h"
 
 /* Git commands */
 #define GIT_CHECK_CMD "git --version 2>&1"
-#define GIT_BLOB_CMD "git hash-object %s"
+#define GIT_BLOB_CMD "git hash-object %s 2>&1"
 
 // Prototypes
 unsigned int getgeneration();
@@ -56,8 +56,14 @@ void print_hash_array(FILE *out);
 char *get_git_hash(const char *name, char *hash, size_t hash_len);
 char *get_sha1_hash(const char *name, char *hash, size_t hash_len);
 int endswith(const char *str, const char *suf);
+int qcmp(const void *arg1, const void *arg2);
 
 int git_available = 0;
+
+typedef struct file_entry {
+	char *filepath;
+	char *filename;
+} file_entry;
 
 int main(int argc, char* argv[])
 {
@@ -197,33 +203,26 @@ int test_git() {
 	return 0;
 }
 
-#ifdef WIN32
 void print_hash_array(FILE *out) {
+	char *filename = NULL;
+	file_entry **files = NULL, **temp = NULL;
+	size_t filecount = 0, i;
+#ifdef WIN32
 	HANDLE  hFind;
 	BOOL    bMore;
 	WIN32_FIND_DATA finddata;
 	char githash[LINE_SIZE];
 	char shahash[LINE_SIZE];
 
+	/* C files in src dir */
 	hFind = FindFirstFile(DIR_SOURCE "/*" EXT_SRC_FILE, &finddata);
 	bMore = (hFind != (HANDLE)-1);
 
 	while (bMore) {
 		if (!(finddata.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
 			&& strcmp(finddata.cFileName, VERSION_FILE)) {
-			fprintf(
-				out,
-				HASH_ARRAY_TPL,
-				finddata.cFileName,
-				get_git_hash(finddata.cFileName, githash, LINE_SIZE),
-				get_sha1_hash(finddata.cFileName, shahash, LINE_SIZE)
-				);
-		}
-		bMore = FindNextFile(hFind, &finddata);
-	}
-}
+			filename = finddata.cFileName;
 #else
-void print_hash_array(FILE *out) {
 	DIR *dir;
 	struct dirent *file;
 	char shahash[LINE_SIZE];
@@ -235,19 +234,109 @@ void print_hash_array(FILE *out) {
 
 	while ((file = readdir(dir))) {
 		if (endswith(file->d_name, EXT_SRC_FILE) && strcmp(file->d_name, VERSION_FILE)) {
-			fprintf(
-				out,
-				HASH_ARRAY_TPL,
-				file->d_name,
-				get_git_hash(file->d_name, githash, LINE_SIZE),
-				get_sha1_hash(file->d_name, shahash, LINE_SIZE)
-				);
+			filename = file->d_name;
+#endif
+			filecount++;
+			/* Copy over the array, if it exists */
+			if (files) {
+				temp = (file_entry **) malloc(sizeof(file_entry *) * (filecount));
+				memcpy(temp, files, (filecount - 1) * sizeof(file_entry *));
+				free(files);
+				files = temp;
+			} else {
+				files = (file_entry **) malloc(sizeof(file_entry *) * (filecount));
+			}
+			
+			files[filecount - 1] = (file_entry *) malloc(sizeof(file_entry));
+			i = strlen(filename) + strlen(DIR_SOURCE) + strlen("/");
+			files[filecount - 1]->filepath = (char *) malloc(sizeof(char) * (i + 1));
+			snprintf(files[filecount - 1]->filepath, i + 1, "%s/%s", DIR_SOURCE, filename);
+			i = strlen(filename);
+			files[filecount - 1]->filename = (char *) malloc(sizeof(char) * (i + 1));
+			snprintf(files[filecount - 1]->filename, i + 1, "%s", filename);
+#ifdef WIN32
+		}
+		bMore = FindNextFile(hFind, &finddata);
+	}
+	FindClose(hFind);
+#else
 		}
 	}
-
 	closedir(dir);
-}
 #endif
+
+
+#ifdef WIN32
+	/* H files in include dir */
+	hFind = FindFirstFile(DIR_INCLUDE "/*" EXT_INC_FILE, &finddata);
+	bMore = (hFind != (HANDLE)-1);
+
+	while (bMore) {
+		if (!(finddata.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+			&& strcmp(finddata.cFileName, VERSION_FILE)) {
+			filename = finddata.cFileName;
+#else
+
+	/* If we can't open the source directory, quit */
+	if (!(dir = opendir(DIR_INCLUDE)))
+		return;
+
+	while ((file = readdir(dir))) {
+		if (endswith(file->d_name, EXT_INC_FILE) && strcmp(file->d_name, VERSION_FILE)) {
+			filename = file->d_name;
+#endif
+			filecount++;
+			/* Copy over the array, if it exists */
+			if (files) {
+				temp = (file_entry **) malloc(sizeof(file_entry *) * (filecount));
+				memcpy(temp, files, (filecount - 1) * sizeof(file_entry *));
+				free(files);
+				files = temp;
+			} else {
+				files = (file_entry **) malloc(sizeof(file_entry *) * (filecount));
+			}
+			
+			files[filecount - 1] = (file_entry *) malloc(sizeof(file_entry));
+			i = strlen(filename) + strlen(DIR_INCLUDE) + strlen("/");
+			files[filecount - 1]->filepath = (char *) malloc(sizeof(char) * (i + 1));
+			snprintf(files[filecount - 1]->filepath, i + 1, "%s/%s", DIR_INCLUDE, filename);
+			i = strlen(filename);
+			files[filecount - 1]->filename = (char *) malloc(sizeof(char) * (i + 1));
+			snprintf(files[filecount - 1]->filename, i + 1, "%s", filename);
+#ifdef WIN32
+		}
+		bMore = FindNextFile(hFind, &finddata);
+	}
+	FindClose(hFind);
+#else
+		}
+	}
+	closedir(dir);
+#endif
+
+	/* Sort the array */
+	qsort((void *)files, filecount, sizeof(file_entry *), qcmp);
+
+	/* Output the array to the file */
+	for (i = 0; i < filecount; i++) {
+		fprintf(
+			out,
+			HASH_ARRAY_TPL,
+			files[i]->filename,
+			get_git_hash(files[i]->filepath, githash, LINE_SIZE),
+			get_sha1_hash(files[i]->filepath, shahash, LINE_SIZE)
+		);
+		free(files[i]->filename);
+		free(files[i]->filepath);
+		free(files[i]);
+	}
+	free(files);
+}
+
+int qcmp( const void *arg1, const void *arg2 ) {
+   return strcasecmp( (*(file_entry**)arg1)->filename, (*(file_entry**)arg2)->filename );
+}
+
 
 char *get_git_hash(const char *name, char *hash, size_t hash_len) {
 	FILE *gitpipe;

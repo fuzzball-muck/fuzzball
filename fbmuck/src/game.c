@@ -878,6 +878,7 @@ process_command(int descr, dbref player, char *command)
 				/* @hashes */
 				Matched("@hashes");
 				do_hashes(player, arg1);
+				break;
 			case 'i':
 			case 'I':
 				/* @idescribe */
