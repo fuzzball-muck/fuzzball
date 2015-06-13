@@ -45,13 +45,6 @@
 #define GIT_CHECK_CMD "git --version 2>&1"
 #define GIT_BLOB_CMD "git hash-object %s"
 
-/* Win32 defines them with _ */
-#ifdef WIN32
-#define popen _popen
-#define pclose _pclose
-#define snprintf _snprintf
-#endif
-
 // Prototypes
 unsigned int getgeneration();
 void getnow(char *timestr, size_t len);
