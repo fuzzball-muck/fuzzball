@@ -313,8 +313,11 @@ dnl
 echo "checking value of uname -a"
 AC_DEFINE_UNQUOTED(UNAME_VALUE, "`uname -a`", [The value of the uname -a command.])
 
-
 dnl
+dnl Remove HAVE_CONFIG_H
+dnl
+AC_CONFIG_COMMANDS_PRE([DEFS=])
+
 dnl And in the end, there was no more.
 dnl
 AC_OUTPUT(

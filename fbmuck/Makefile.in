@@ -68,8 +68,7 @@ nuke:
 
 Makefile: Makefile.in
 	./config.status Makefile
-	@echo Please re-run Make, because the Makefile was re-generated.
-	@false
+	@echo Please re-run make, because the Makefile was re-generated.
 
 #############################################################
 # Packaging stuff.

@@ -161,7 +161,7 @@ RESOLVER_OBJ="$(INTDIR)\resolver.obj"
     $(LINK32_OPS) /out:"$(OUTDIR)\fbmuck.exe" $(BASE_OBJ) $(MALLOC_OBJ) $(INTERFACE_OBJ) $(VERSION_OBJ)
 <<
 
-# restart program
+# resolver program
 "$(OUTDIR)\fb-resolver.exe" : "$(OUTDIR)" "$(INTDIR)" $(RESOLVER_OBJ)
     $(LINK32) @<<
   $(LINK32_OPS)  /out:"$(OUTDIR)\fb-resolver.exe" $(RESOLVER_OBJ) $(MALLOC_OBJ)

@@ -5363,6 +5363,7 @@ _ACEOF
 
 
 
+
 ac_config_files="$ac_config_files Makefile src/Makefile game/restart"
 
 cat >confcache <<\_ACEOF
@@ -5474,6 +5475,7 @@ LIBOBJS=$ac_libobjs
 LTLIBOBJS=$ac_ltlibobjs
 
 
+DEFS=
 
 : "${CONFIG_STATUS=./config.status}"
 ac_write_fail=0
