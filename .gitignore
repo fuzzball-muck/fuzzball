@@ -31,6 +31,7 @@ bin/fbmuck
 fb-resolver
 prochelp
 fbhelp
+mkversion
 
 # Debug files
 *.dSYM/
@@ -44,5 +45,9 @@ autom4te.cache/
 fbmuck/compile
 fbmuck/winsrc
 
-#Ignore created version.c file
+# Generated files
+fbmuck/Makefile
+fbmuck/include/autoconf.h
+fbmuck/src/Makefile
 fbmuck/src/version.c
+
