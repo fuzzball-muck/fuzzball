@@ -22,40 +22,26 @@ LINK32_OPS=/NODEFAULTLIB:libc /LIBPATH:".\win32" /LIBPATH:"$(OPENSSLDIR)\lib\vc"
 #LINK32_OPS=/DEBUG /NODEFAULTLIB:libc /LIBPATH:".\win32" /LIBPATH:"$(OPENSSLDIR)\lib\vc" pcre.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ws2_32.lib libeay32MD.lib ssleay32MD.lib winmm.lib /nologo /subsystem:console /incremental:no /machine:I386
 
 
-ALL : "$(OUTDIR)\fbmuck.exe" "$(OUTDIR)\restart.exe" 
+ALL : "$(OUTDIR)\fbmuck.exe" "$(OUTDIR)\restart.exe" "$(OUTDIR)\fbhelp.exe"
 
 CLEAN :
 	-@erase "$(INTDIR)\*.obj"
 	-@erase "$(INTDIR)\*.idb"
 	-@erase "$(INTDIR)\*.exe"
      -@erase "$(SRCDIR)\mkversion.exe"
+     -@erase "$(OUTDIR)\restart.exe"
+     -@erase "$(OUTDIR)\fbhelp.exe"
+     -@erase "$(OUTDIR)\fbmuck.exe"
 
-"$(OUTDIR)" :
-    if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
-
-"$(INTDIR)" :
-    if not exist "$(INTDIR)/$(NULL)" mkdir "$(INTDIR)"
-
-
-{$(SRCDIR)}.c{$(INTDIR)}.obj::
-   $(CPP) @<<
-   $(CPP_OPS) /Fo"$(INTDIR)\\" $<
-<<
-
-$(INTDIR)\restart.obj : $(WINDIR)\restart.cpp
-   $(CPP) $(CPP_OPS) /Fo$(INTDIR)\restart.obj $(WINDIR)\restart.cpp
-
-$(INTDIR)\win32.obj : $(WINDIR)\win32.c
-   $(CPP) $(CPP_OPS) /Fo$(INTDIR)\win32.obj $(WINDIR)\win32.c
-
-MKOBJ="$(INTDIR)\mkversion.obj"\
+# Object files
+MKVERSION_OBJ="$(INTDIR)\mkversion.obj"\
       "$(INTDIR)\sha1.obj"
 
-ROBJ="$(INTDIR)\restart.obj"
+RESTART_OBJ="$(INTDIR)\restart.obj"
 
-MALLOBJ="$(INTDIR)\crt_malloc.obj"
+MALLOC_OBJ="$(INTDIR)\crt_malloc.obj"
 
-COBJ="$(INTDIR)\array.obj" \
+BASE_OBJ="$(INTDIR)\array.obj" \
 	"$(INTDIR)\boolexp.obj" \
 	"$(INTDIR)\compile.obj" \
 	"$(INTDIR)\create.obj" \
@@ -117,22 +103,72 @@ COBJ="$(INTDIR)\array.obj" \
 	"$(INTDIR)\wiz.obj" \
 	"$(INTDIR)\win32.obj"
 
-"$(SRCDIR)\version.c" : "$(SRCDIR)\mkversion.exe" "$(SRCDIR)\version.tpl" $(COBJ) "$(INTDIR)\interface.obj"
+INTERFACE_OBJ="$(INTDIR)\interface.obj"
+
+VERSION_OBJ="$(INTDIR)\version.obj"
+
+RESOLVER_OBJ="$(INTDIR)\resolver.obj"
+
+# Directories
+"$(OUTDIR)" :
+    if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
+
+"$(INTDIR)" :
+    if not exist "$(INTDIR)/$(NULL)" mkdir "$(INTDIR)"
+
+# Generic src/.c to compile/.obj
+{$(SRCDIR)}.c{$(INTDIR)}.obj::
+   $(CPP) @<<
+   $(CPP_OPS) /Fo"$(INTDIR)\\" $<
+<<
+
+# Generic win32/.cpp to compile/.obj
+{$(WINDIR)}.cpp{$(INTDIR)}.obj::
+   $(CPP) @<<
+   $(CPP_OPS) /Fo"$(INTDIR)\\" $<
+<<
+
+# Generic win32/.c to compile/.obj
+{$(WINDIR)}.c{$(INTDIR)}.obj::
+   $(CPP) @<<
+   $(CPP_OPS) /Fo"$(INTDIR)\\" $<
+<<
+
+# Standalone fbhelp
+"$(INTDIR)\fbhelp.obj" : "$(INTDIR)" "$(SRCDIR)\help.c"
+   $(CPP) $(CPP_OPS) /D "STANDALONE_HELP" /Fo$(INTDIR)\fbhelp.obj $(SRCDIR)\help.c
+
+"$(OUTDIR)\fbhelp.exe" : "$(OUTDIR)" "$(INTDIR)\fbhelp.obj" $(MALLOC_OBJ)
+    $(LINK32) @<<
+  $(LINK32_OPS)  /out:"$(OUTDIR)\fbhelp.exe" "$(INTDIR)\fbhelp.obj" $(MALLOC_OBJ)
+<<
+
+# how to build version.c
+"$(SRCDIR)\version.c" : "$(SRCDIR)\mkversion.exe" "$(SRCDIR)\version.tpl" $(BASE_OBJ) $(INTERFACE_OBJ) $(MALLOC_OBJ)
    cd $(SRCDIR)
    mkversion
    cd ..
 
-"$(SRCDIR)\mkversion.exe" : $(MKOBJ)
+# mkversion for building version.c
+"$(SRCDIR)\mkversion.exe" : "$(INTDIR)" $(MKVERSION_OBJ)
   $(LINK32) @<<
-    $(LINK32_OPS) /out:"$(SRCDIR)\mkversion.exe" $(MKOBJ)
+    $(LINK32_OPS) /out:"$(SRCDIR)\mkversion.exe" $(MKVERSION_OBJ)
 <<
 
-"$(OUTDIR)\fbmuck.exe" : "$(OUTDIR)" "$(INTDIR)" "$(INTDIR)\version.obj" $(COBJ) $(MALLOBJ) "$(INTDIR)\interface.obj"
+# fbmuck main executable
+"$(OUTDIR)\fbmuck.exe" : "$(OUTDIR)" "$(INTDIR)" $(VERSION_OBJ) $(BASE_OBJ) $(MALLOC_OBJ) $(INTERFACE_OBJ)
   $(LINK32) @<<
-    $(LINK32_OPS) /out:"$(OUTDIR)\fbmuck.exe" $(COBJ) $(MALLOBJ) "$(INTDIR)\interface.obj" "$(INTDIR)\version.obj"
+    $(LINK32_OPS) /out:"$(OUTDIR)\fbmuck.exe" $(BASE_OBJ) $(MALLOC_OBJ) $(INTERFACE_OBJ) $(VERSION_OBJ)
 <<
 
-"$(OUTDIR)\restart.exe" : "$(OUTDIR)" "$(INTDIR)" $(ROBJ)
+# restart program
+"$(OUTDIR)\fb-resolver.exe" : "$(OUTDIR)" "$(INTDIR)" $(RESOLVER_OBJ)
     $(LINK32) @<<
-  $(LINK32_OPS)  /out:"$(OUTDIR)\restart.exe" $(ROBJ)
+  $(LINK32_OPS)  /out:"$(OUTDIR)\fb-resolver.exe" $(RESOLVER_OBJ) $(MALLOC_OBJ)
+<<
+
+# restart program
+"$(OUTDIR)\restart.exe" : "$(OUTDIR)" "$(INTDIR)" $(RESTART_OBJ)
+    $(LINK32) @<<
+  $(LINK32_OPS)  /out:"$(OUTDIR)\restart.exe" $(RESTART_OBJ)
 <<
