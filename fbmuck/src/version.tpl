@@ -38,21 +38,22 @@ $hasharray
 };
 
 void
-do_version(dbref player, char *args)
+do_version(dbref player)
 {
+	char s[BUFFER_LEN];
+
+	snprintf(s,BUFFER_LEN,"Version: %s(%s) Compiled on: %s %s", VERSION, generation, creation, debug);
+	notify(player, s);
+}
+
+void
+do_hashes(dbref player, char *args) {
 	char s[BUFFER_LEN];
 	hash_file_entry *entry;
 	int b_all = 0, b_found = 0;
 	const char *hash;
 	char *hashlen, *file;
 	int len, len2;
-
-	/* Don't display the version info if they want showextver */
-	if (!args || !*args) {
-		snprintf(s,BUFFER_LEN,"Version: %s(%s) Compiled on: %s %s", VERSION, generation, creation, debug);
-		notify(player, s);
-		return;
-	}
 
 	/* Find hashlen if provided */
 	hashlen = file = args;
