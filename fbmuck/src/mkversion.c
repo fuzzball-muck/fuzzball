@@ -99,15 +99,15 @@ int main(int argc, char* argv[])
 			pos++;
 		}
 
-		if (pos = strstr(line, GENLINE)) {
+		if ((pos = strstr(line, GENLINE))) {
 			*pos = '\0';
 			fprintf(ver, "%s%d%s\n", line, generation, pos + strlen(GENLINE));
 		}
-		else if (pos = strstr(line, CRELINE)) {
+		else if ((pos = strstr(line, CRELINE))) {
 			*pos = '\0';
 			fprintf(ver, "%s%s%s\n", line, creation, pos + strlen(CRELINE));
 		}
-		else if (pos = strstr(line, HASHARRAY)) {
+		else if ((pos = strstr(line, HASHARRAY))) {
 			print_hash_array(ver);
 		}
 		else {
@@ -238,7 +238,7 @@ void print_hash_array(FILE *out) {
 	if (!(dir = opendir(DIR_SOURCE)))
 		return;
 
-	while (file = readdir(dir)) {
+	while ((file = readdir(dir))) {
 		if (endswith(file->d_name, EXT_SRC_FILE) && strcmp(file->d_name, VERSION_FILE)) {
 			fprintf(
 				out,
