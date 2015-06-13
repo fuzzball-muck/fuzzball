@@ -75,7 +75,7 @@ do_version(dbref player, char *args)
 	notify(player, s);
 
 	/* Display one file, or all? */
-	b_all = stricmp(file, "all") ? 0 : 1;
+	b_all = strcasecmp(file, "all") ? 0 : 1;
 
 	entry = hash_file_array;
 	while (entry && entry->filename) {
@@ -95,7 +95,7 @@ do_version(dbref player, char *args)
 			if (b_all) {
 				snprintf(s, BUFFER_LEN, "%-15s %s", entry->filename, hash);
 				notify(player, s);
-			} else if (!stricmp(entry->filename, file)) {
+			} else if (!strcasecmp(entry->filename, file)) {
 				b_found = 1;
 				snprintf(s, BUFFER_LEN, "%-15s %s", entry->filename, hash);
 				notify(player, s);
