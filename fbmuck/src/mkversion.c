@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2014 by Fuzzball Software
+* Copyright (c) 2015 by Fuzzball Software
 * under the GNU Public License
 *
 * This program reads in version.tpl and creates a version.c(pp) file as output.
