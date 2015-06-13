@@ -110,7 +110,7 @@ LINTFLAGS= ${INCL}
 MALLSRC= crt_malloc.c
 MALLOBJ= crt_malloc.o
 
-MISCSRC= Makefile.in mkversion.sh
+MISCSRC= Makefile.in
 
 CSRC= array.c boolexp.c compile.c create.c db.c db_header.c debugger.c \
 	disassem.c diskprop.c edit.c events.c game.c hashtab.c help.c inst.c \
@@ -157,8 +157,12 @@ $(INCLUDE)/defines.h:
 	@echo "#define BINDIR \"$(INSTALL_BINDIR)\"" >> $(INCLUDE)/defines.h
 	@echo "#define INSTALL_HELPDIR \"$(INSTALL_HELPDIR)\"" >> $(INCLUDE)/defines.h
 
-fbmuck: $(INCLUDE)/defines.h ${P} ${COBJ} ${MALLOBJ} interface.o mkversion.sh Makefile
-	sh mkversion.sh
+version.c:
+	mkversion version.tpl ${COBJ}
+
+fbmuck: $(INCLUDE)/defines.h ${P} ${COBJ} ${MALLOBJ} interface.o Makefile
+	${PRE} ${CC} ${CFLAGS} ${INCL} ${DEFS} -o mkversion mkversion.c sha1.c
+	./mkversion
 	${PRE} ${CC} ${CFLAGS} ${INCL} ${DEFS} -c version.c
 	if [ -f fbmuck ]; then ${MV} fbmuck fbmuck~ ; fi
 	${PRE} ${CC} ${CFLAGS} ${INCL} ${DEFS} -o fbmuck ${COBJ} ${MALLOBJ} interface.o version.o \
@@ -209,19 +213,17 @@ depend:
 Makefile: Makefile.in
 	cd .. && ./config.status
 	@echo " "
-	@echo Please re-run Make, as the Makefile was re-generated.
-	@echo " "
-	false
+	@echo Please re-run make, as the Makefile was re-generated.
 
 ########################################################
 # Cleanup stuff.
 #
 
 clean:
-	-${RM} ${OBJ} core version.o ${SOBJ} ${MALLOBJ} resolver.o ${TARGETS} ${OLDTARGETS} fbhelp.o
+	-${RM} ${OBJ} core version.o mkversion.o ${SOBJ} ${MALLOBJ} resolver.o ${TARGETS} ${OLDTARGETS} fbhelp.o
 
 cleaner: clean
-	-${RM} Makefile config.status config.cache config.log ${INCLUDE}/autoconf.h ${TARGETS} version.c prochelp ${INCLUDE}/defines.h
+	-${RM} Makefile config.status config.cache config.log ${INCLUDE}/autoconf.h ${TARGETS} version.c mkversion prochelp ${INCLUDE}/defines.h
 
 distclean: cleaner
 
@@ -229,7 +231,7 @@ clobber: cleaner
 	-${RM} tags *~ *.bak *.orig
 
 nuke: distclean
-	-${RM} ${OBJ} core version.o
+	-${RM} ${OBJ} core version.o mkversion.o
 	-${RM} ${TARGETS} tags *~ *.bak *.orig
 	-${RM} Makefile config.status ${INCLUDE}/autoconf.h
 
