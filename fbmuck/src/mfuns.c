@@ -1495,11 +1495,7 @@ mfn_time(MFUNARGS)
 		lt += (3600 * atoi(argv[0]));
 		lt += get_tz_offset();
 	}
-#ifndef WIN32
-	tm = localtime(&lt);
-#else
-	tm = uw32localtime(&lt);
-#endif
+	tm = MUCKTIME(lt);
 	format_time(buf, BUFFER_LEN - 1, "%T", tm);
 	return buf;
 }
@@ -1516,11 +1512,7 @@ mfn_date(MFUNARGS)
 		lt += (3600 * atoi(argv[0]));
 		lt += get_tz_offset();
 	}
-#ifndef WIN32
-	tm = localtime(&lt);
-#else
-	tm = uw32localtime(&lt);
-#endif
+	tm = MUCKTIME(lt);
 	format_time(buf, BUFFER_LEN - 1, "%D", tm);
 	return buf;
 }
@@ -1546,11 +1538,7 @@ mfn_ftime(MFUNARGS)
 		}
 		lt += get_tz_offset();
 	}
-#ifndef WIN32
-	tm = localtime(&lt);
-#else
-	tm = uw32localtime(&lt);
-#endif
+	tm = MUCKTIME(lt);
 	format_time(buf, BUFFER_LEN - 1, argv[0], tm);
 	return buf;
 }

@@ -1816,11 +1816,7 @@ interp_err(dbref player, dbref program, struct inst *pc,
 	notify_nolisten(player, buf, 1);
 
 	lt = time(NULL);
-#ifndef WIN32
-	format_time(tbuf, 32, "%c", localtime(&lt));
-#else
-	format_time(tbuf, 32, "%c", uw32localtime(&lt));
-#endif
+	format_time(tbuf, 32, "%c", MUCKTIME(lt));
 
 	strip_ansi(buf2, buf);
 	errcount = get_property_value(origprog, ".debug/errcount");
