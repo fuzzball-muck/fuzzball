@@ -594,12 +594,8 @@ do_stats(dbref player, const char *name)
 			struct tm *time_tm;
 			time_t lasttime = (time_t) get_property_value(0, "_sys/lastdumptime");
 
-#ifndef WIN32
-			time_tm = localtime(&lasttime);
-#else
-			time_tm = uw32localtime(&lasttime);
-#endif
-			(void) format_time(buf, 40, "%a %b %e %T %Z", time_tm);
+			time_tm = MUCKTIME(lasttime);
+			format_time(buf, 40, "%a %b %e %T %Z", time_tm);
 			notify_fmt(player, "%7d unsaved object%s     Last dump: %s",
 					   altered, (altered == 1) ? "" : "s", buf);
 		}
