@@ -465,11 +465,9 @@ CrT_timestr(time_t when)
 {
 	static char buf[20];
 	struct tm *da_time;
-#ifndef WIN32
-	da_time = localtime(&when);
-#else
-	da_time = uw32localtime(&when);
-#endif
+
+	da_time = MUCKTIME(when);
+
 	snprintf(buf, sizeof(buf), "%02d%02d%02d%02d",
 			da_time->tm_mday, da_time->tm_hour, da_time->tm_min, da_time->tm_sec);
 	return buf;
