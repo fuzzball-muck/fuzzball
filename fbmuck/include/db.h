@@ -232,7 +232,9 @@ typedef long object_flag_type;
 
 #define GOD ((dbref) 1)
 
+#ifdef GOD_PRIV
 #define God(x) ((x) == (GOD))
+#endif
 
 #define DoNull(s) ((s) ? (s) : "")
 #define Typeof(x) (x == HOME ? TYPE_ROOM : (FLAGS(x) & TYPE_MASK))
