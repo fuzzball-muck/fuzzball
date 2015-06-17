@@ -45,38 +45,39 @@ struct tune_str_entry {
 	const char *name;
 	const char **str;
 	int security;
-	int isdefault;
 	const char *label;
+	int isnullable;
+	int isdefault;
 };
 
 struct tune_str_entry tune_str_list[] = {
-	{"Commands",   "autolook_cmd", &tp_autolook_cmd, 0, 1, "Room entry look command"},
-	{"Currency",   "penny", &tp_penny, 0, 1, "Currency name"},
-	{"Currency",   "pennies", &tp_pennies, 0, 1, "Currency name, plural"},
-	{"Currency",   "cpenny", &tp_cpenny, 0, 1, "Currency name, capitalized"},
-	{"Currency",   "cpennies", &tp_cpennies, 0, 1, "Currency name, capitalized, plural"},
-	{"DB Dumps",   "dumpwarn_mesg", &tp_dumpwarn_mesg, 0, 1, "Full dump warning mesg"},
-	{"DB Dumps",   "deltawarn_mesg", &tp_deltawarn_mesg, 0, 1, "Delta dump warning mesg"},
-	{"DB Dumps",   "dumping_mesg", &tp_dumping_mesg, 0, 1, "Full dump start mesg"},
-	{"DB Dumps",   "dumpdeltas_mesg", &tp_dumpdeltas_mesg, 0, 1, "Delta dump start mesg"},
-	{"DB Dumps",   "dumpdone_mesg", &tp_dumpdone_mesg, 0, 1, "Dump completion message"},
-	{"Idle Boot",  "idle_boot_mesg", &tp_idle_mesg, 0, 1, "Boot message for idling out"},
-	{"Player Max", "playermax_warnmesg", &tp_playermax_warnmesg, 0, 1, "Max. players login warning"},
-	{"Player Max", "playermax_bootmesg", &tp_playermax_bootmesg, 0, 1, "Max. players boot message"},
-	{"Properties", "proplist_counter_fmt", &tp_proplist_counter_fmt, 0, 1, "Proplist counter name format"},
-	{"Properties", "proplist_entry_fmt", &tp_proplist_entry_fmt, 0, 1, "Proplist entry name format"},
-	{"Registration", "register_mesg", &tp_register_mesg, 0, 1, "Login registration mesg"},
-	{"Misc",       "muckname", &tp_muckname, 0, 1, "Muck name"},
-	{"Misc",       "leave_mesg", &tp_leave_mesg, 0, 1, "Logoff message"},
-	{"Misc",       "huh_mesg", &tp_huh_mesg, 0, 1, "Command unrecognized warning"},
-	{"SSL",        "ssl_keyfile_passwd", &tp_ssl_keyfile_passwd, MLEV_GOD, 1, "Password for SSL keyfile"},
-        {"SSL",        "ssl_cipher_preference_list", &tp_ssl_cipher_preference_list, MLEV_GOD, 1,
-                       "OpenSSL cipher list (changes requires restart)"},
-	{"Database",   "pcreate_flags", &tp_pcreate_flags, 0, 1, "Initial Player Flags"},
-	{"Database",   "reserved_names", &tp_reserved_names, 0, 1, "Reserved names smatch"},
-	{"Database",   "reserved_player_names", &tp_reserved_player_names, 0, 1, "Reserved player names smatch"},
+	{"Commands",   "autolook_cmd", &tp_autolook_cmd, 0, "Room entry look command", 0, 1},
+	{"Currency",   "penny", &tp_penny, 0, "Currency name", 0, 1},
+	{"Currency",   "pennies", &tp_pennies, 0, "Currency name, plural", 0, 1},
+	{"Currency",   "cpenny", &tp_cpenny, 0, "Currency name, capitalized", 0, 1},
+	{"Currency",   "cpennies", &tp_cpennies, 0, "Currency name, capitalized, plural", 0, 1},
+	{"DB Dumps",   "dumpwarn_mesg", &tp_dumpwarn_mesg, 0, "Full dump warning mesg", 1, 1},
+	{"DB Dumps",   "deltawarn_mesg", &tp_deltawarn_mesg, 0, "Delta dump warning mesg", 1, 1},
+	{"DB Dumps",   "dumping_mesg", &tp_dumping_mesg, 0, "Full dump start mesg", 1, 1},
+	{"DB Dumps",   "dumpdeltas_mesg", &tp_dumpdeltas_mesg, 0, "Delta dump start mesg", 1, 1},
+	{"DB Dumps",   "dumpdone_mesg", &tp_dumpdone_mesg, 0, "Dump completion message", 1, 1},
+	{"Idle Boot",  "idle_boot_mesg", &tp_idle_mesg, 0, "Boot message for idling out", 0, 1},
+	{"Player Max", "playermax_warnmesg", &tp_playermax_warnmesg, 0, "Max. players login warning", 0, 1},
+	{"Player Max", "playermax_bootmesg", &tp_playermax_bootmesg, 0, "Max. players boot message", 0, 1},
+	{"Properties", "proplist_counter_fmt", &tp_proplist_counter_fmt, 0, "Proplist counter name format", 0, 1},
+	{"Properties", "proplist_entry_fmt", &tp_proplist_entry_fmt, 0, "Proplist entry name format", 0, 1},
+	{"Registration", "register_mesg", &tp_register_mesg, 0, "Login registration mesg", 0, 1},
+	{"Misc",       "muckname", &tp_muckname, 0, "Muck name", 0, 1},
+	{"Misc",       "leave_mesg", &tp_leave_mesg, 0, "Logoff message", 0, 1},
+	{"Misc",       "huh_mesg", &tp_huh_mesg, 0, "Command unrecognized warning", 0, 1},
+	{"SSL",        "ssl_keyfile_passwd", &tp_ssl_keyfile_passwd, MLEV_GOD, "Password for SSL keyfile", 1, 1},
+        {"SSL",        "ssl_cipher_preference_list", &tp_ssl_cipher_preference_list, MLEV_GOD,
+                       "OpenSSL cipher list (changes requires restart)", 0, 1},
+	{"Database",   "pcreate_flags", &tp_pcreate_flags, 0, "Initial Player Flags", 1, 1},
+	{"Database",   "reserved_names", &tp_reserved_names, 0, "Reserved names smatch", 1, 1},
+	{"Database",   "reserved_player_names", &tp_reserved_player_names, 0, "Reserved player names smatch", 1, 1},
 
-	{NULL, NULL, NULL, 0, 0}
+	{NULL, NULL, NULL, 0, NULL, 0, 0}
 };
 
 
@@ -756,6 +757,7 @@ tune_setparm(const char *parmname, const char *val, int security)
 	while (tstr->name) {
 		if (!string_compare(parmname, tstr->name)) {
 			if (tstr->security > security) return TUNESET_DENIED;
+			if (!tstr->isnullable && !*parmval) return TUNESET_BADVAL;
 			if (!tstr->isdefault)
 				free((char *) *tstr->str);
 			if (*parmval == '-')
