@@ -37,7 +37,14 @@
 #define MLEV_JOURNEYMAN   2
 #define MLEV_MASTER	  3
 #define MLEV_WIZARD	  4
-#define MLEV_GOD	255
+
+#ifdef GOD_PRIV
+# define MLEV_GOD		255
+# define TUNE_MLEV(player)	(God(player) ? MLEV_GOD : MLEV_WIZARD)
+#else
+# define MLEV_GOD		MLEV_WIZARD
+# define TUNE_MLEV(player)	MLEV_WIZARD
+#endif
 
 /* Used for breaking out of muf READs or for stopping foreground programs. */
 #define BREAK_COMMAND "@Q"

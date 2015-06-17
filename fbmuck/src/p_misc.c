@@ -626,7 +626,7 @@ prim_sysparm(PRIM_PROTOTYPE)
 {
 	const char *ptr;
 	const char *tune_get_parmstring(const char *name, int mlev);
-	int security = God(player) ? MLEV_GOD : MLEV_WIZARD;
+	int security = TUNE_MLEV(player);
 
 	CHECKOP(1);
 	oper1 = POP();				/* string: system parm name */
@@ -697,7 +697,7 @@ prim_setsysparm(PRIM_PROTOTYPE)
 {
         const char *tune_get_parmstring(const char *name, int mlev);
 	const char *oldvalue, *newvalue;
-	int security = God(player) ? MLEV_GOD : MLEV_WIZARD;
+	int security = TUNE_MLEV(player);
 
 	CHECKOP(2);
 	oper1 = POP();				/* string: new parameter value */
@@ -747,7 +747,7 @@ void
 prim_sysparm_array(PRIM_PROTOTYPE)
 {
 	stk_array *nu;
-	int security = God(player) ? MLEV_GOD : MLEV_WIZARD;
+	int security = TUNE_MLEV(player);
 
 	CHECKOP(1);
 	oper1 = POP();				/* string: match pattern */

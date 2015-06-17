@@ -938,7 +938,7 @@ do_tune(dbref player, char *parmname, char *parmval, int full_command_has_delimi
 {
 	const char *oldvalue;
 	int result;
-	int security = God(player) ? MLEV_GOD : MLEV_WIZARD;
+	int security = TUNE_MLEV(player);
 	if (!Wizard(player)) {
 		notify(player, "You pull out a harmonica and play a short tune.");
 		return;
