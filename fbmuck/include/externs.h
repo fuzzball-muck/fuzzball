@@ -183,6 +183,7 @@ extern void do_rob(int descr, dbref player, const char *what);
 
 /* From set.c */
 extern void do_name(int descr, dbref player, const char *name, char *newname);
+extern void set_standard_property(int descr, dbref player, const char *objname, const char *propname, const char *proplabel, const char *propvalue);
 extern void do_describe(int descr, dbref player, const char *name, const char *description);
 extern void do_idescribe(int descr, dbref player, const char *name, const char *description);
 extern void do_fail(int descr, dbref player, const char *name, const char *message);

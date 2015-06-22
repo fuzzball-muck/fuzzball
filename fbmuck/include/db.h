@@ -112,16 +112,6 @@ typedef int dbref;				/* offset into db */
 
 #define SETMESG(x,y,z)    {add_property(x, y, z, 0);}
 #define SETDESC(x,y)	SETMESG(x, MESGPROP_DESC, y)
-#define SETIDESC(x,y)	SETMESG(x, MESGPROP_IDESC, y)
-#define SETSUCC(x,y)	SETMESG(x, MESGPROP_SUCC, y)
-#define SETFAIL(x,y)	SETMESG(x, MESGPROP_FAIL, y)
-#define SETDROP(x,y)	SETMESG(x, MESGPROP_DROP, y)
-#define SETOSUCC(x,y)	SETMESG(x, MESGPROP_OSUCC, y)
-#define SETOFAIL(x,y)	SETMESG(x, MESGPROP_OFAIL, y)
-#define SETODROP(x,y)	SETMESG(x, MESGPROP_ODROP, y)
-#define SETDOING(x,y)	SETMESG(x, MESGPROP_DOING, y)
-#define SETOECHO(x,y)	SETMESG(x, MESGPROP_OECHO, y)
-#define SETPECHO(x,y)	SETMESG(x, MESGPROP_PECHO, y)
 
 #define LOADMESG(x,y,z)    {add_prop_nofetch(x,y,z,0); DBDIRTY(x);}
 #define LOADDESC(x,y)	LOADMESG(x, MESGPROP_DESC, y)
