@@ -783,7 +783,8 @@ process_command(int descr, dbref player, char *command)
 						do_delta(player);
 					} else {
 						Matched("@describe");
-						do_describe(descr, player, arg1, arg2);
+						NOGUEST("@describe", player);
+						set_standard_property(descr, player, arg1, MESGPROP_DESC, "Object Description", arg2);
 					}
 					break;
 				case 'i':
@@ -801,12 +802,14 @@ process_command(int descr, dbref player, char *command)
 					Matched("@doing");
 					if (!tp_who_doing)
 						goto bad;
-					do_doing(descr, player, arg1, arg2);
+					NOGUEST("@doing", player);
+					set_standard_property(descr, player, arg1, MESGPROP_DOING, "Doing", arg2);
 					break;
 				case 'r':
 				case 'R':
 					Matched("@drop");
-					do_drop_message(descr, player, arg1, arg2);
+					NOGUEST("@drop", player);
+					set_standard_property(descr, player, arg1, MESGPROP_DROP, "Drop Message", arg2);
 					break;
 				case 'u':
 				case 'U':
@@ -847,7 +850,8 @@ process_command(int descr, dbref player, char *command)
 				case 'a':
 				case 'A':
 					Matched("@fail");
-					do_fail(descr, player, arg1, arg2);
+					NOGUEST("@fail", player);
+					set_standard_property(descr, player, arg1, MESGPROP_FAIL, "Fail Message", arg2);
 					break;
 				case 'i':
 				case 'I':
@@ -883,7 +887,8 @@ process_command(int descr, dbref player, char *command)
 			case 'I':
 				/* @idescribe */
 				Matched("@idescribe");
-				do_idescribe(descr, player, arg1, arg2);
+				NOGUEST("@idescribe", player);
+				set_standard_property(descr, player, arg1, MESGPROP_IDESC, "Inside Description", arg2);
 				break;
 			case 'k':
 			case 'K':
@@ -983,17 +988,20 @@ process_command(int descr, dbref player, char *command)
 				case 'd':
 				case 'D':
 					Matched("@odrop");
-					do_odrop(descr, player, arg1, arg2);
+					NOGUEST("@odrop", player);
+					set_standard_property(descr, player, arg1, MESGPROP_ODROP, "ODrop Message", arg2);
 					break;
 				case 'e':
 				case 'E':
 					Matched("@oecho");
-					do_oecho(descr, player, arg1, arg2);
+					NOGUEST("@oecho", player);
+					set_standard_property(descr, player, arg1, MESGPROP_OECHO, "Outside-echo Prefix", arg2);
 					break;
 				case 'f':
 				case 'F':
 					Matched("@ofail");
-					do_ofail(descr, player, arg1, arg2);
+					NOGUEST("@ofail", player);
+					set_standard_property(descr, player, arg1, MESGPROP_OFAIL, "OFail Message", arg2);
 					break;
 				case 'p':
 				case 'P':
@@ -1003,7 +1011,8 @@ process_command(int descr, dbref player, char *command)
 				case 's':
 				case 'S':
 					Matched("@osuccess");
-					do_osuccess(descr, player, arg1, arg2);
+					NOGUEST("@osuccess", player);
+					set_standard_property(descr, player, arg1, MESGPROP_OSUCC, "OSuccess Message", arg2);
 					break;
 				case 'w':
 				case 'W':
@@ -1032,7 +1041,8 @@ process_command(int descr, dbref player, char *command)
 				case 'e':
 				case 'E':
 					Matched("@pecho");
-					do_pecho(descr, player, arg1, arg2);
+					NOGUEST("@pecho", player);
+					set_standard_property(descr, player, arg1, MESGPROP_PECHO, "Puppet-echo Prefix", arg2);
 					break;
 				case 'r':
 				case 'R':
@@ -1118,7 +1128,8 @@ process_command(int descr, dbref player, char *command)
 				case 'u':
 				case 'U':
 					Matched("@success");
-					do_success(descr, player, arg1, arg2);
+					NOGUEST("@success", player);
+					set_standard_property(descr, player, arg1, MESGPROP_SUCC, "Success Message", arg2);
 					break;
 				case 'w':
 				case 'W':
