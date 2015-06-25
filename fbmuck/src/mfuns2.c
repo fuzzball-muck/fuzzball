@@ -1550,7 +1550,7 @@ mfn_force(MFUNARGS)
 		if (!(FLAGS(obj) & XFORCIBLE)) {
 			ABORT_MPI("FORCE", "Permission denied: forced object not @set Xforcible.");
 		}
-		if (!test_lock_false_default(descr, perms, obj, "@/flk")) {
+		if (!test_lock_false_default(descr, perms, obj, MESGPROP_FLOCK)) {
 			ABORT_MPI("FORCE", "Permission denied: Object not force-locked to trigger.");
 		}
 	}

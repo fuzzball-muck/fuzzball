@@ -1516,7 +1516,7 @@ shovechars()
 					}
 				}
 				if ( d->connected && tp_idle_ping_enable && (tp_idle_ping_time > 0) && ((now - d->last_pinged_at) > tp_idle_ping_time) ) {
-					const char *tmpptr = get_property_class( d->player, "_/sys/no_idle_ping" );
+					const char *tmpptr = get_property_class( d->player, NO_IDLE_PING_PROP);
 					if( !tmpptr && !send_keepalive(d)) {
 						d->booted = 1;
 					}
@@ -3290,7 +3290,7 @@ announce_connect(int descr, dbref player)
 		do_move(descr, player, "connect", 1);
 
 	if (online(player) == 1) {
-		announce_puppets(player, "wakes up.", "_/pcon");
+		announce_puppets(player, "wakes up.", MESGPROP_PCON);
 	}
 
 	/* queue up all _connect programs referred to by properties */
@@ -3328,7 +3328,7 @@ announce_disconnect(struct descriptor_data *d)
 		if (can_move(d->descriptor, player, "disconnect", 1)) {
 			do_move(d->descriptor, player, "disconnect", 1);
 		}
-		announce_puppets(player, "falls asleep.", "_/pdcon");
+		announce_puppets(player, "falls asleep.", MESGPROP_PDCON);
 	}
 	gui_dlog_closeall_descr(d->descriptor);
 
