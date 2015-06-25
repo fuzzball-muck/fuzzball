@@ -94,6 +94,8 @@ typedef int dbref;				/* offset into db */
 #define MESGPROP_FLOCK		"@/flk"
 #define MESGPROP_CONLOCK	"_/clk"
 #define MESGPROP_CHLOCK		"_/chlk"
+#define MESGPROP_PCON		"_/pcon"
+#define MESGPROP_PDCON		"_/pdcon"
 #define MESGPROP_VALUE		"@/value"
 #define MESGPROP_GUEST		"@/isguest"
 

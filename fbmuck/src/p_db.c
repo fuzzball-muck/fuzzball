@@ -1203,7 +1203,7 @@ prim_setown(PRIM_PROTOTYPE)
 	if ((mlev < 4) && oper1->data.objref != player)
 		abort_interp("Permission denied. (2)");
 	if ((mlev < 4) && (!(FLAGS(ref) & CHOWN_OK) ||
-					   !test_lock(fr->descr, player, ref, "_/chlk")))
+					   !test_lock(fr->descr, player, ref, MESGPROP_CHLOCK)))
 				abort_interp("Permission denied. (1)");
 	switch (Typeof(ref)) {
 	case TYPE_ROOM:
@@ -1845,7 +1845,7 @@ prim_toadplayer(PRIM_PROTOTYPE)
 		return;
 	}
 
-    if (get_property_class( victim, "@/precious" )) {
+    if (get_property_class( victim, NO_RECYCLE_PROP)) {
 		abort_interp("That player is precious.");
 		return;
     }

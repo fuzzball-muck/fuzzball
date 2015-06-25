@@ -181,7 +181,7 @@ do_conlock(int descr, dbref player, const char *name, const char *keyname)
 	if (!*keyname) {
 		mydat.flags = PROP_LOKTYP;
 		mydat.data.lok = TRUE_BOOLEXP;
-		set_property(thing, "_/clk", &mydat);
+		set_property(thing, MESGPROP_CONLOCK, &mydat);
 		ts_modifyobject(thing);
 		notify(player, "Container lock cleared.");
 	} else {
@@ -192,7 +192,7 @@ do_conlock(int descr, dbref player, const char *name, const char *keyname)
 			/* everything ok, do it */
 			mydat.flags = PROP_LOKTYP;
 			mydat.data.lok = key;
-			set_property(thing, "_/clk", &mydat);
+			set_property(thing, MESGPROP_CONLOCK, &mydat);
 			ts_modifyobject(thing);
 			notify(player, "Container lock set.");
 		}
@@ -236,7 +236,7 @@ do_flock(int descr, dbref player, const char *name, const char *keyname)
 	if (!*keyname) {
 		mydat.flags = PROP_LOKTYP;
 		mydat.data.lok = TRUE_BOOLEXP;
-		set_property(thing, "@/flk", &mydat);
+		set_property(thing, MESGPROP_FLOCK, &mydat);
 		ts_modifyobject(thing);
 		notify(player, "Force lock cleared.");
 	} else {
@@ -247,7 +247,7 @@ do_flock(int descr, dbref player, const char *name, const char *keyname)
 			/* everything ok, do it */
 			mydat.flags = PROP_LOKTYP;
 			mydat.data.lok = key;
-			set_property(thing, "@/flk", &mydat);
+			set_property(thing, MESGPROP_FLOCK, &mydat);
 			ts_modifyobject(thing);
 			notify(player, "Force lock set.");
 		}
@@ -286,7 +286,7 @@ do_chlock(int descr, dbref player, const char *name, const char *keyname)
 	if (!*keyname) {
 		mydat.flags = PROP_LOKTYP;
 		mydat.data.lok = TRUE_BOOLEXP;
-		set_property(thing, "_/chlk", &mydat);
+		set_property(thing, MESGPROP_CHLOCK, &mydat);
 		ts_modifyobject(thing);
 		notify(player, "Chown lock cleared.");
 	} else {
@@ -297,7 +297,7 @@ do_chlock(int descr, dbref player, const char *name, const char *keyname)
 			/* everything ok, do it */
 			mydat.flags = PROP_LOKTYP;
 			mydat.data.lok = key;
-			set_property(thing, "_/chlk", &mydat);
+			set_property(thing, MESGPROP_CHLOCK, &mydat);
 			ts_modifyobject(thing);
 			notify(player, "Chown lock set.");
 		}
@@ -649,7 +649,7 @@ do_chown(int descr, dbref player, const char *name, const char *newowner)
 		if (Typeof(thing) != TYPE_EXIT ||
 			(DBFETCH(thing)->sp.exit.ndest && !controls_link(player, thing))) {
 			if (!(FLAGS(thing) & CHOWN_OK) ||
-				Typeof(thing) == TYPE_PROGRAM || !test_lock(descr, player, thing, "_/chlk")) {
+				Typeof(thing) == TYPE_PROGRAM || !test_lock(descr, player, thing, MESGPROP_CHLOCK)) {
 				notify(player, "You can't take possession of that.");
 				return;
 			}

@@ -396,7 +396,7 @@ do_force(int descr, dbref player, const char *what, char *command)
 		notify(player, "Permission denied: forced object not @set Xforcible.");
 		return;
 	}
-	if (!Wizard(player) && !test_lock_false_default(descr, player, victim, "@/flk")) {
+	if (!Wizard(player) && !test_lock_false_default(descr, player, victim, MESGPROP_FLOCK)) {
 		notify(player, "Permission denied: Object not force-locked to you.");
 		return;
 	}
