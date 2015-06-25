@@ -582,11 +582,11 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
 	notify(player, buf);
 
 	snprintf(buf, sizeof(buf), "Chown_OK Key: %s",
-			unparse_boolexp(player, get_property_lock(thing, "_/chlk"), 1));
+			unparse_boolexp(player, get_property_lock(thing, MESGPROP_CHLOCK), 1));
 	notify(player, buf);
 
 	snprintf(buf, sizeof(buf), "Container Key: %s",
-			unparse_boolexp(player, get_property_lock(thing, "_/clk"), 1));
+			unparse_boolexp(player, get_property_lock(thing, MESGPROP_CONLOCK), 1));
 	notify(player, buf);
 
 	snprintf(buf, sizeof(buf), "Force Key: %s",

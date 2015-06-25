@@ -676,7 +676,7 @@ do_get(int descr, dbref player, const char *what, const char *obj)
 				notify(player, "You can't steal things from players.");
 				return;
 			}
-			if (!test_lock_false_default(descr, player, cont, "_/clk")) {
+			if (!test_lock_false_default(descr, player, cont, MESGPROP_CONLOCK)) {
 				notify(player, "You can't open that container.");
 				return;
 			}
@@ -770,7 +770,7 @@ do_drop(int descr, dbref player, const char *name, const char *obj)
 			break;
 		}
 		if (Typeof(cont) != TYPE_ROOM &&
-			!test_lock_false_default(descr, player, cont, "_/clk")) {
+			!test_lock_false_default(descr, player, cont, MESGPROP_CONLOCK)) {
 			notify(player, "You don't have permission to put something in that.");
 			break;
 		}
