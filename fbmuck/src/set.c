@@ -117,12 +117,47 @@ set_standard_property(int descr, dbref player, const char *objname,
 	dbref object;
 
 	if ((object = match_controlled(descr, player, objname)) != NOTHING) {
-		ts_modifyobject(object);
 		SETMESG(object, propname, propvalue);
+		ts_modifyobject(object);
 		snprintf(buf, sizeof(buf), "%s %s.", proplabel, propvalue && *propvalue ? "set" : "cleared");
 		notify(player, buf);
 	}
 }
+
+void
+set_standard_lock(int descr, dbref player, const char *objname,
+			const char *propname, const char *proplabel,
+			const char *keyvalue)
+{
+	char buf[BUFFER_LEN];
+	dbref object;
+	PData property;
+	struct boolexp *key;
+
+	if ((object = match_controlled(descr, player, objname)) != NOTHING) {
+		if (!*keyvalue) {
+			remove_property(object, propname);
+			ts_modifyobject(object);
+			snprintf(buf, sizeof(buf), "%s cleared.", proplabel);
+			notify(player, buf);
+			return;
+		}
+		
+		key = parse_boolexp(descr, player, keyvalue, 0);
+		if (key == TRUE_BOOLEXP) {
+			notify(player, "I don't understand that key.");
+			return;
+		}
+
+		property.flags = PROP_LOKTYP;
+		property.data.lok = key;
+		set_property(object, propname, &property);
+		ts_modifyobject(object);	
+		snprintf(buf, sizeof(buf), "%s set.", proplabel);
+		notify(player, buf);
+	}
+}
+
 
 /* sets a lock on an object to the lockstring passed to it.
    If the lockstring is null, then it unlocks the object.
@@ -146,218 +181,6 @@ setlockstr(int descr, dbref player, dbref thing, const char *keyname)
 		ts_modifyobject(thing);
 		CLEARLOCK(thing);
 		return 1;
-	}
-}
-
-void
-do_conlock(int descr, dbref player, const char *name, const char *keyname)
-{
-	dbref thing;
-	struct boolexp *key;
-	struct match_data md;
-	PData mydat;
-
-	NOGUEST("@conlock",player);
-
-	init_match(descr, player, name, NOTYPE, &md);
-	match_absolute(&md);
-	match_everything(&md);
-
-	switch (thing = match_result(&md)) {
-	case NOTHING:
-		notify(player, "I don't see what you want to set the container-lock on!");
-		return;
-	case AMBIGUOUS:
-		notify(player, "I don't know which one you want to set the container-lock on!");
-		return;
-	default:
-		if (!controls(player, thing)) {
-			notify(player, "You can't set the container-lock on that!");
-			return;
-		}
-		break;
-	}
-
-	if (!*keyname) {
-		mydat.flags = PROP_LOKTYP;
-		mydat.data.lok = TRUE_BOOLEXP;
-		set_property(thing, MESGPROP_CONLOCK, &mydat);
-		ts_modifyobject(thing);
-		notify(player, "Container lock cleared.");
-	} else {
-		key = parse_boolexp(descr, player, keyname, 0);
-		if (key == TRUE_BOOLEXP) {
-			notify(player, "I don't understand that key.");
-		} else {
-			/* everything ok, do it */
-			mydat.flags = PROP_LOKTYP;
-			mydat.data.lok = key;
-			set_property(thing, MESGPROP_CONLOCK, &mydat);
-			ts_modifyobject(thing);
-			notify(player, "Container lock set.");
-		}
-	}
-}
-
-void
-do_flock(int descr, dbref player, const char *name, const char *keyname)
-{
-	dbref thing;
-	struct boolexp *key;
-	struct match_data md;
-	PData mydat;
-
-	NOGUEST("@force_lock",player);
-
-	init_match(descr, player, name, NOTYPE, &md);
-	match_absolute(&md);
-	match_everything(&md);
-
-	switch (thing = match_result(&md)) {
-	case NOTHING:
-		notify(player, "I don't see what you want to set the force-lock on!");
-		return;
-	case AMBIGUOUS:
-		notify(player, "I don't know which one you want to set the force-lock on!");
-		return;
-	default:
-		if (!controls(player, thing)) {
-			notify(player, "You can't set the force-lock on that!");
-			return;
-		}
-		break;
-	}
-
-	if (force_level) {
-		notify(player, "You can't use @flock from an @force or {force}.");
-		return;
-	}
-
-	if (!*keyname) {
-		mydat.flags = PROP_LOKTYP;
-		mydat.data.lok = TRUE_BOOLEXP;
-		set_property(thing, MESGPROP_FLOCK, &mydat);
-		ts_modifyobject(thing);
-		notify(player, "Force lock cleared.");
-	} else {
-		key = parse_boolexp(descr, player, keyname, 0);
-		if (key == TRUE_BOOLEXP) {
-			notify(player, "I don't understand that key.");
-		} else {
-			/* everything ok, do it */
-			mydat.flags = PROP_LOKTYP;
-			mydat.data.lok = key;
-			set_property(thing, MESGPROP_FLOCK, &mydat);
-			ts_modifyobject(thing);
-			notify(player, "Force lock set.");
-		}
-	}
-}
-
-void
-do_chlock(int descr, dbref player, const char *name, const char *keyname)
-{
-	dbref thing;
-	struct boolexp *key;
-	struct match_data md;
-	PData mydat;
-
-	NOGUEST("@chown_lock",player);
-
-	init_match(descr, player, name, NOTYPE, &md);
-	match_absolute(&md);
-	match_everything(&md);
-
-	switch (thing = match_result(&md)) {
-	case NOTHING:
-		notify(player, "I don't see what you want to set the chown-lock on!");
-		return;
-	case AMBIGUOUS:
-		notify(player, "I don't know which one you want to set the chown-lock on!");
-		return;
-	default:
-		if (!controls(player, thing)) {
-			notify(player, "You can't set the chown-lock on that!");
-			return;
-		}
-		break;
-	}
-
-	if (!*keyname) {
-		mydat.flags = PROP_LOKTYP;
-		mydat.data.lok = TRUE_BOOLEXP;
-		set_property(thing, MESGPROP_CHLOCK, &mydat);
-		ts_modifyobject(thing);
-		notify(player, "Chown lock cleared.");
-	} else {
-		key = parse_boolexp(descr, player, keyname, 0);
-		if (key == TRUE_BOOLEXP) {
-			notify(player, "I don't understand that key.");
-		} else {
-			/* everything ok, do it */
-			mydat.flags = PROP_LOKTYP;
-			mydat.data.lok = key;
-			set_property(thing, MESGPROP_CHLOCK, &mydat);
-			ts_modifyobject(thing);
-			notify(player, "Chown lock set.");
-		}
-	}
-}
-
-void
-do_lock(int descr, dbref player, const char *name, const char *keyname)
-{
-	dbref thing;
-	struct boolexp *key;
-	struct match_data md;
-
-	NOGUEST("@lock",player);
-
-	init_match(descr, player, name, NOTYPE, &md);
-	match_absolute(&md);
-	match_everything(&md);
-
-	switch (thing = match_result(&md)) {
-	case NOTHING:
-		notify(player, "I don't see what you want to lock!");
-		return;
-	case AMBIGUOUS:
-		notify(player, "I don't know which one you want to lock!");
-		return;
-	default:
-		if (!controls(player, thing)) {
-			notify(player, "You can't lock that!");
-			return;
-		}
-		break;
-	}
-
-	if(keyname && *keyname) {
-		key = parse_boolexp(descr, player, keyname, 0);
-		if (key == TRUE_BOOLEXP) {
-			notify(player, "I don't understand that key.");
-		} else {
-			/* everything ok, do it */
-			SETLOCK(thing, key);
-			ts_modifyobject(thing);
-			notify(player, "Locked.");
-		}
-	} else
-		do_unlock(descr, player, name);
-
-}
-
-void
-do_unlock(int descr, dbref player, const char *name)
-{
-	dbref thing;
-
-	NOGUEST("@unlock",player);
-
-	if ((thing = match_controlled(descr, player, name)) != NOTHING) {
-		ts_modifyobject(thing);
-		CLEARLOCK(thing);
-		notify(player, "Unlocked.");
 	}
 }
 
