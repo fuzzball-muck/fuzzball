@@ -17,7 +17,6 @@ char * displayprop(dbref player, dbref obj, const char *name, char *buf, size_t 
 void do_abort_silent(void);
 void do_dequeue(int descr, dbref player, const char *arg1);
 void do_edit(int descr, dbref player, const char *name);
-void do_flock(int descr, dbref player, const char *name, const char *keyname);
 void do_leave(int descr, dbref player);
 void do_memory(dbref who);
 void do_move(int descr, dbref player, const char *direction, int lev);

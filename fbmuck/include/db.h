@@ -130,21 +130,6 @@ typedef int dbref;				/* offset into db */
 #define LOADLOCK(x,y) {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = y; set_property_nofetch(x, MESGPROP_LOCK, &mydat); DBDIRTY(x);}
 #define CLEARLOCK(x)  {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = TRUE_BOOLEXP; set_property(x, MESGPROP_LOCK, &mydat); DBDIRTY(x);}
 
-#define GETFLOCK(x)    (get_property_lock(x, MESGPROP_FLOCK))
-#define SETFLOCK(x,y)  {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = y; set_property(x, MESGPROP_FLOCK, &mydat);}
-#define LOADFLOCK(x,y) {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = y; set_property_nofetch(x, MESGPROP_FLOCK, &mydat); DBDIRTY(x);}
-#define CLEARFLOCK(x)  {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = TRUE_BOOLEXP; set_property(x, MESGPROP_FLOCK, &mydat); DBDIRTY(x);}
-
-#define GETCONLOCK(x)    (get_property_lock(x, MESGPROP_CONLOCK))
-#define SETCONLOCK(x,y)  {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = y; set_property(x, MESGPROP_CONLOCK, &mydat);}
-#define LOADCONLOCK(x,y) {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = y; set_property_nofetch(x, MESGPROP_CONLOCK, &mydat); DBDIRTY(x);}
-#define CLEARCONLOCK(x)  {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = TRUE_BOOLEXP; set_property(x, MESGPROP_CONLOCK, &mydat); DBDIRTY(x);}
-
-#define GETCHLOCK(x)    (get_property_lock(x, MESGPROP_CHLOCK))
-#define SETCHLOCK(x,y)  {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = y; set_property(x, MESGPROP_CHLOCK, &mydat);}
-#define LOADCHLOCK(x,y) {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = y; set_property_nofetch(x, MESGPROP_CHLOCK, &mydat); DBDIRTY(x);}
-#define CLEARCHLOCK(x)  {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = TRUE_BOOLEXP; set_property(x, MESGPROP_CHLOCK, &mydat); DBDIRTY(x);}
-
 #define GETVALUE(x)	get_property_value(x, MESGPROP_VALUE)
 #define SETVALUE(x,y)	add_property(x, MESGPROP_VALUE, NULL, y)
 #define LOADVALUE(x,y)	add_prop_nofetch(x, MESGPROP_VALUE, NULL, y)
@@ -254,6 +239,14 @@ if(ISGUEST(x)) \
     char tmpstr[BUFFER_LEN]; \
     log_status("Guest %s(#%d) failed attempt to %s.\n",NAME(x),x,_cmd); \
     snprintf(tmpstr, sizeof(tmpstr), "Guests are not allowed to %s.\r", _cmd); \
+    notify_nolisten(x,tmpstr,1); \
+    return; \
+}
+#define NOFORCE(_cmd,fl,x) \
+if(fl) \
+{   \
+    char tmpstr[BUFFER_LEN]; \
+    snprintf(tmpstr, sizeof(tmpstr), "You can't use %s from a @force or {force}.\r", _cmd); \
     notify_nolisten(x,tmpstr,1); \
     return; \
 }

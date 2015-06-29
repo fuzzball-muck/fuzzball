@@ -184,16 +184,13 @@ extern void do_rob(int descr, dbref player, const char *what);
 /* From set.c */
 extern void do_name(int descr, dbref player, const char *name, char *newname);
 extern void set_standard_property(int descr, dbref player, const char *objname, const char *propname, const char *proplabel, const char *propvalue);
+extern void set_standard_lock(int descr, dbref player, const char *objname, const char *propname, const char *proplabel, const char *keyvalue);
 extern int setlockstr(int descr, dbref player, dbref thing, const char *keyname);
-extern void do_lock(int descr, dbref player, const char *name, const char *keyname);
-extern void do_unlock(int descr, dbref player, const char *name);
 extern void do_relink(int descr, dbref player, const char *thing_name, const char *dest_name);
 extern void do_unlink(int descr, dbref player, const char *name);
 extern void do_unlink_quiet(int descr, dbref player, const char *name);
 extern void do_chown(int descr, dbref player, const char *name, const char *newobj);
 extern void do_set(int descr, dbref player, const char *name, const char *flag);
-extern void do_chlock(int descr, dbref player, const char *name, const char *keyname);
-extern void do_conlock(int descr, dbref player, const char *name, const char *keyname);
 extern void set_flags_from_tunestr(dbref obj, const char* flags);
 
 /* From speech.c */
