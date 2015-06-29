@@ -715,7 +715,8 @@ process_command(int descr, dbref player, char *command)
 					case 'l':
 					case 'L':
 						Matched("@chlock");
-						do_chlock(descr, player, arg1, arg2);
+						NOGUEST("@chlock", player);
+						set_standard_lock(descr, player, arg1, MESGPROP_CHLOCK, "Chown Lock", arg2);
 						break;
 					case 'o':
 					case 'O':
@@ -724,7 +725,8 @@ process_command(int descr, dbref player, char *command)
 							do_chown(descr, player, arg1, arg2);
 						} else {
 							Matched("@chown_lock");
-							do_chlock(descr, player, arg1, arg2);
+							NOGUEST("@chown_lock", player);
+							set_standard_lock(descr, player, arg1, MESGPROP_CHLOCK, "Chown Lock", arg2);
 						}
 						break;
 					default:
@@ -742,7 +744,8 @@ process_command(int descr, dbref player, char *command)
 					case 'l':
 					case 'L':
 						Matched("@conlock");
-						do_conlock(descr, player, arg1, arg2);
+						NOGUEST("@conlock", player);
+						set_standard_lock(descr, player, arg1, MESGPROP_CONLOCK, "Container Lock", arg2);
 						break;
 					case 't':
 					case 'T':
@@ -861,7 +864,9 @@ process_command(int descr, dbref player, char *command)
 				case 'l':
 				case 'L':
 					Matched("@flock");
-					do_flock(descr, player, arg1, arg2);
+					NOGUEST("@flock", player);
+					NOFORCE("@flock", force_level, player);
+					set_standard_lock(descr, player, arg1, MESGPROP_FLOCK, "Force Lock", arg2);
 					break;
 				case 'o':
 				case 'O':
@@ -870,7 +875,9 @@ process_command(int descr, dbref player, char *command)
 						do_force(descr, player, arg1, arg2);
 					} else {
 						Matched("@force_lock");
-						do_flock(descr, player, arg1, arg2);
+						NOGUEST("@force_lock", player);
+						NOFORCE("@force_lock", force_level, player);
+						set_standard_lock(descr, player, arg1, MESGPROP_FLOCK, "Force Lock", arg2);
 					}
 					break;
 				default:
@@ -920,7 +927,8 @@ process_command(int descr, dbref player, char *command)
 				case 'o':
 				case 'O':
 					Matched("@lock");
-					do_lock(descr, player, arg1, arg2);
+					NOGUEST("@lock", player);
+					set_standard_lock(descr, player, arg1, MESGPROP_LOCK, "Lock", arg2);
 					break;
 				default:
 					goto bad;
@@ -1188,7 +1196,8 @@ process_command(int descr, dbref player, char *command)
 						do_unlink(descr, player, arg1);
 					} else if (string_prefix(command, "@unlo")) {
 						Matched("@unlock");
-						do_unlock(descr, player, arg1);
+						NOGUEST("@unlock", player);
+						set_standard_lock(descr, player, arg1, MESGPROP_LOCK, "Lock", "");
 					} else if (string_prefix(command, "@uncom")) {
 						Matched("@uncompile");
 						do_uncompile(player);
