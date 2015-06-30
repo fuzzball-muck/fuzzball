@@ -10,8 +10,6 @@
 #include "fbstrings.h"
 #include <ctype.h>
 
-#define DOWNCASE(x) (tolower(x))
-
 void editor(int descr, dbref player, const char *command);
 void do_insert(dbref player, dbref program, int arg[], int argc);
 void do_delete(dbref player, dbref program, int arg[], int argc);
@@ -78,7 +76,7 @@ new_macro(const char *name, const char *definition, dbref player)
 	int i;
 
 	for (i = 0; name[i]; i++)
-		buf[i] = DOWNCASE(name[i]);
+		buf[i] = tolower(name[i]);
 	buf[i] = '\0';
 	newmacro->name = alloc_string(buf);
 	newmacro->definition = alloc_string(definition);
