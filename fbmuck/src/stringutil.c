@@ -12,8 +12,6 @@
 #include <ctype.h>
 #include "externs.h"
 
-#define DOWNCASE(x) (tolower(x))
-
 /*
  * routine to be used instead of strcasecmp() in a sorting routine
  * Sorts alphabetically or numerically as appropriate.
@@ -30,7 +28,7 @@ alphanum_compare(const char *t1, const char *s2)
 	const char *u1, *u2;
 	register const char *s1 = t1;
 
-	while (*s1 && DOWNCASE(*s1) == DOWNCASE(*s2))
+	while (*s1 && tolower(*s1) == tolower(*s2))
 		s1++, s2++;
 
 	/* if at a digit, compare number values instead of letters. */
@@ -69,17 +67,17 @@ alphanum_compare(const char *t1, const char *s2)
 		return (*u1 - *u2);
 	}
 	/* if characters not digits, and not the same, return difference */
-	return (DOWNCASE(*s1) - DOWNCASE(*s2));
+	return (tolower(*s1) - tolower(*s2));
 }
 
 int
 string_compare(register const char *s1, register const char *s2)
 {
 #if 0
-	while (*s1 && DOWNCASE(*s1) == DOWNCASE(*s2))
+	while (*s1 && tolower(*s1) == tolower(*s2))
 		s1++, s2++;
 
-	return (DOWNCASE(*s1) - DOWNCASE(*s2));
+	return (tolower(*s1) - tolower(*s2));
 #else
 	/* accepting patch #906013 */
 	unsigned char c1, c2;
@@ -102,7 +100,7 @@ exit_prefix(register const char *string, register const char *prefix)
 	while (*s) {
 		p = prefix;
 		string = s;
-		while (*s && *p && DOWNCASE(*s) == DOWNCASE(*p)) {
+		while (*s && *p && tolower(*s) == tolower(*p)) {
 			s++;
 			p++;
 		}
@@ -124,7 +122,7 @@ exit_prefix(register const char *string, register const char *prefix)
 int
 string_prefix(register const char *string, register const char *prefix)
 {
-	while (*string && *prefix && DOWNCASE(*string) == DOWNCASE(*prefix))
+	while (*string && *prefix && tolower(*string) == tolower(*prefix))
 		string++, prefix++;
 	return *prefix == '\0';
 }

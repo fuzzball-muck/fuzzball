@@ -14,9 +14,6 @@ typedef void *voidptr;
 #define MIPSCAST
 #endif
 
-#define UPCASE(x) (toupper(x))
-#define DOWNCASE(x) (tolower(x))
-
 void purge_try_pool(void);
 
 #define DoNullInd(x) ((x) ? (x) -> data : "")
@@ -113,7 +110,6 @@ extern void do_abort_interp(dbref player, const char *msg, struct inst *pc,
 							int line);
 
 
-#define Min(x,y) ((x < y) ? x : y)
 #define ProgMLevel(x) (find_mlev(x, fr, fr->caller.top))
 
 #define ProgUID find_uid(player, fr, fr->caller.top, program)

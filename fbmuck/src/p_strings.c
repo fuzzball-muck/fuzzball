@@ -1788,7 +1788,7 @@ prim_toupper(PRIM_PROTOTYPE)
 		buf[0] = '\0';
 	}
 	for (ref = 0; buf[ref]; ref++)
-		buf[ref] = UPCASE(buf[ref]);
+		buf[ref] = toupper(buf[ref]);
 	CLEAR(oper1);
 	PushString(buf);
 }
@@ -1806,7 +1806,7 @@ prim_tolower(PRIM_PROTOTYPE)
 		buf[0] = '\0';
 	}
 	for (ref = 0; buf[ref]; ref++)
-		buf[ref] = DOWNCASE(buf[ref]);
+		buf[ref] = tolower(buf[ref]);
 	CLEAR(oper1);
 	PushString(buf);
 }
