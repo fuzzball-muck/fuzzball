@@ -938,239 +938,8 @@ read_program(dbref i)
 	return first;
 }
 
-#define getstring_oldcomp_noalloc(foo) getstring_noalloc(foo)
-
 void
-db_read_object_old(FILE * f, struct object *o, dbref objno)
-{
-	dbref exits;
-	int pennies;
-	const char *password;
-
-	db_clear_object(objno);
-	FLAGS(objno) = 0;
-	NAME(objno) = getstring(f);
-	LOADDESC(objno, getstring_oldcomp_noalloc(f));
-	o->location = getref(f);
-	o->contents = getref(f);
-	exits = getref(f);
-	o->next = getref(f);
-	LOADLOCK(objno, getboolexp(f));
-	LOADFAIL(objno, getstring_oldcomp_noalloc(f));
-	LOADSUCC(objno, getstring_oldcomp_noalloc(f));
-	LOADOFAIL(objno, getstring_oldcomp_noalloc(f));
-	LOADOSUCC(objno, getstring_oldcomp_noalloc(f));
-	OWNER(objno) = getref(f);
-	pennies = getref(f);
-
-	/* timestamps mods */
-	o->ts.created = time(NULL);
-	o->ts.lastused = time(NULL);
-	o->ts.usecount = 0;
-	o->ts.modified = time(NULL);
-
-	FLAGS(objno) |= getref(f);
-	/*
-	 * flags have to be checked for conflict --- if they happen to coincide
-	 * with chown_ok flags and jump_ok flags, we bump them up to the
-	 * corresponding HAVEN and ABODE flags
-	 */
-	if (FLAGS(objno) & CHOWN_OK) {
-		FLAGS(objno) &= ~CHOWN_OK;
-		FLAGS(objno) |= HAVEN;
-	}
-	if (FLAGS(objno) & JUMP_OK) {
-		FLAGS(objno) &= ~JUMP_OK;
-		FLAGS(objno) |= ABODE;
-	}
-	password = getstring(f);
-	/* convert GENDER flag to property */
-	switch ((FLAGS(objno) & OBSOLETE_GENDER_MASK) >> OBSOLETE_GENDER_SHIFT) {
-	case OBSOLETE_GENDER_NEUTER:
-		add_property(objno, "sex", "neuter", 0);
-		break;
-	case OBSOLETE_GENDER_FEMALE:
-		add_property(objno, "sex", "female", 0);
-		break;
-	case OBSOLETE_GENDER_MALE:
-		add_property(objno, "sex", "male", 0);
-		break;
-	default:
-		break;
-	}
-	/* For downward compatibility with databases using the */
-	/* obsolete ANTILOCK flag. */
-	if (FLAGS(objno) & OBSOLETE_ANTILOCK) {
-		LOADLOCK(objno, negate_boolexp(copy_bool(GETLOCK(objno))))
-				FLAGS(objno) &= ~OBSOLETE_ANTILOCK;
-	}
-	switch (FLAGS(objno) & TYPE_MASK) {
-	case TYPE_THING:
-		ALLOC_THING_SP(objno);
-		THING_SET_HOME(objno, exits);
-		LOADVALUE(objno, pennies);
-		o->exits = NOTHING;
-		break;
-	case TYPE_ROOM:
-		o->sp.room.dropto = o->location;
-		o->location = NOTHING;
-		o->exits = exits;
-		break;
-	case TYPE_EXIT:
-		if (o->location == NOTHING) {
-			o->sp.exit.ndest = 0;
-			o->sp.exit.dest = NULL;
-		} else {
-			o->sp.exit.ndest = 1;
-			o->sp.exit.dest = (dbref *) malloc(sizeof(dbref));
-			(o->sp.exit.dest)[0] = o->location;
-		}
-		o->location = NOTHING;
-		break;
-	case TYPE_PLAYER:
-		ALLOC_PLAYER_SP(objno);
-		PLAYER_SET_HOME(objno, exits);
-		o->exits = NOTHING;
-		LOADVALUE(objno, pennies);
-		set_password_raw(objno, NULL);
-		set_password(objno, password);
-		if (password)
-			free((void*) password);
-		PLAYER_SET_CURR_PROG(objno, NOTHING);
-		PLAYER_SET_INSERT_MODE(objno, 0);
-		PLAYER_SET_DESCRS(objno, NULL);
-		PLAYER_SET_DESCRCOUNT(objno, 0);
-		PLAYER_SET_IGNORE_CACHE(objno, NULL);
-		PLAYER_SET_IGNORE_COUNT(objno, 0);
-		PLAYER_SET_IGNORE_LAST(objno, NOTHING);
-		break;
-	case TYPE_GARBAGE:
-		OWNER(objno) = NOTHING;
-		o->next = recyclable;
-		recyclable = objno;
-
-#ifdef DISKBASE
-		dirtyprops(objno);
-#endif
-
-		free((void *) NAME(objno));
-		NAME(objno) = "<garbage>";
-		SETDESC(objno, "<recyclable>");
-		break;
-	}
-}
-
-void
-db_read_object_new(FILE * f, struct object *o, dbref objno)
-{
-	int j;
-	const char *password;
-
-	db_clear_object(objno);
-	FLAGS(objno) = 0;
-	NAME(objno) = getstring(f);
-	LOADDESC(objno, getstring_noalloc(f));
-	o->location = getref(f);
-	o->contents = getref(f);
-	/* o->exits = getref(f); */
-	o->next = getref(f);
-	LOADLOCK(objno, getboolexp(f));
-	LOADFAIL(objno, getstring_oldcomp_noalloc(f));
-	LOADSUCC(objno, getstring_oldcomp_noalloc(f));
-	LOADOFAIL(objno, getstring_oldcomp_noalloc(f));
-	LOADOSUCC(objno, getstring_oldcomp_noalloc(f));
-
-	/* timestamps mods */
-	o->ts.created = time(NULL);
-	o->ts.lastused = time(NULL);
-	o->ts.usecount = 0;
-	o->ts.modified = time(NULL);
-
-	/* OWNER(objno) = getref(f); */
-	/* o->pennies = getref(f); */
-	FLAGS(objno) |= getref(f);
-
-	/*
-	 * flags have to be checked for conflict --- if they happen to coincide
-	 * with chown_ok flags and jump_ok flags, we bump them up to the
-	 * corresponding HAVEN and ABODE flags
-	 */
-	if (FLAGS(objno) & CHOWN_OK) {
-		FLAGS(objno) &= ~CHOWN_OK;
-		FLAGS(objno) |= HAVEN;
-	}
-	if (FLAGS(objno) & JUMP_OK) {
-		FLAGS(objno) &= ~JUMP_OK;
-		FLAGS(objno) |= ABODE;
-	}
-	/* convert GENDER flag to property */
-	switch ((FLAGS(objno) & OBSOLETE_GENDER_MASK) >> OBSOLETE_GENDER_SHIFT) {
-	case OBSOLETE_GENDER_NEUTER:
-		add_property(objno, "sex", "neuter", 0);
-		break;
-	case OBSOLETE_GENDER_FEMALE:
-		add_property(objno, "sex", "female", 0);
-		break;
-	case OBSOLETE_GENDER_MALE:
-		add_property(objno, "sex", "male", 0);
-		break;
-	default:
-		break;
-	}
-
-	/* o->password = getstring(f); */
-	/* For downward compatibility with databases using the */
-	/* obsolete ANTILOCK flag. */
-	if (FLAGS(objno) & OBSOLETE_ANTILOCK) {
-		LOADLOCK(objno, negate_boolexp(copy_bool(GETLOCK(objno))))
-				FLAGS(objno) &= ~OBSOLETE_ANTILOCK;
-	}
-	switch (FLAGS(objno) & TYPE_MASK) {
-	case TYPE_THING:
-		ALLOC_THING_SP(objno);
-		THING_SET_HOME(objno, getref(f));
-		o->exits = getref(f);
-		OWNER(objno) = getref(f);
-		LOADVALUE(objno, getref(f));
-		break;
-	case TYPE_ROOM:
-		o->sp.room.dropto = getref(f);
-		o->exits = getref(f);
-		OWNER(objno) = getref(f);
-		break;
-	case TYPE_EXIT:
-		o->sp.exit.ndest = getref(f);
-		o->sp.exit.dest = (dbref *) malloc(sizeof(dbref)
-										   * o->sp.exit.ndest);
-		for (j = 0; j < o->sp.exit.ndest; j++) {
-			(o->sp.exit.dest)[j] = getref(f);
-		}
-		OWNER(objno) = getref(f);
-		break;
-	case TYPE_PLAYER:
-		ALLOC_PLAYER_SP(objno);
-		PLAYER_SET_HOME(objno, getref(f));
-		o->exits = getref(f);
-		LOADVALUE(objno, getref(f));
-		password = getstring(f);
-		set_password_raw(objno, NULL);
-		set_password(objno, password);
-		if (password)
-			free((void*) password);
-		PLAYER_SET_CURR_PROG(objno, NOTHING);
-		PLAYER_SET_INSERT_MODE(objno, 0);
-		PLAYER_SET_DESCRS(objno, NULL);
-		PLAYER_SET_DESCRCOUNT(objno, 0);
-		PLAYER_SET_IGNORE_CACHE(objno, NULL);
-		PLAYER_SET_IGNORE_COUNT(objno, 0);
-		PLAYER_SET_IGNORE_LAST(objno, NOTHING);
-		break;
-	}
-}
-
-/* Reads in Foxen, Foxen[2-8], WhiteFire, Mage or Lachesis DB Formats */
-void
-db_read_object_foxen(FILE * f, struct object *o, dbref objno, int dtype, int read_before)
+db_read_object(FILE * f, struct object *o, dbref objno, int dtype, int read_before)
 {
 	int tmp, c, prop_flag = 0;
 	int j = 0;
@@ -1183,45 +952,21 @@ db_read_object_foxen(FILE * f, struct object *o, dbref objno, int dtype, int rea
 
 	FLAGS(objno) = 0;
 	NAME(objno) = getstring(f);
-	if (dtype <= 3) {
-		LOADDESC(objno, getstring_oldcomp_noalloc(f));
-	}
+
 	o->location = getref(f);
 	o->contents = getref(f);
 	o->next = getref(f);
-	if (dtype < 6) {
-		LOADLOCK(objno, getboolexp(f));
-	}
-	if (dtype == 3) {
-		/* Mage timestamps */
-		o->ts.created = getref(f);
-		o->ts.modified = getref(f);
-		o->ts.lastused = getref(f);
-		o->ts.usecount = 0;
-	}
-	if (dtype <= 3) {
-		/* Lachesis, WhiteFire, and Mage messages */
-		LOADFAIL(objno, getstring_oldcomp_noalloc(f));
-		LOADSUCC(objno, getstring_oldcomp_noalloc(f));
-		LOADDROP(objno, getstring_oldcomp_noalloc(f));
-		LOADOFAIL(objno, getstring_oldcomp_noalloc(f));
-		LOADOSUCC(objno, getstring_oldcomp_noalloc(f));
-		LOADODROP(objno, getstring_oldcomp_noalloc(f));
-	}
-	tmp = getref(f);			/* flags list */
-	if (dtype >= 4)
-		tmp &= ~DUMP_MASK;
-	FLAGS(objno) |= tmp;
 
+	tmp = getref(f);			/* flags list */
+	tmp &= ~DUMP_MASK;
+	FLAGS(objno) |= tmp;
 	FLAGS(objno) &= ~SAVED_DELTA;
 
-	if (dtype != 3) {
-		/* Foxen and WhiteFire timestamps */
-		o->ts.created = getref(f);
-		o->ts.lastused = getref(f);
-		o->ts.usecount = getref(f);
-		o->ts.modified = getref(f);
-	}
+	o->ts.created = getref(f);
+	o->ts.lastused = getref(f);
+	o->ts.usecount = getref(f);
+	o->ts.modified = getref(f);
+
 	c = getc(f);
 	if (c == '*') {
 
@@ -1355,8 +1100,6 @@ db_read_object_foxen(FILE * f, struct object *o, dbref objno, int dtype, int rea
 			/* set Viewable flag on Link_ok programs. */
 			FLAGS(objno) |= VEHICLE;
 		}
-		if (dtype < 5 && MLevel(objno) == 0)
-			SetMLevel(objno, 2);
 
 		break;
 	case TYPE_GARBAGE:
@@ -1446,26 +1189,15 @@ db_read(FILE * f)
 			/* read it in */
 			o = DBFETCH(thisref);
 			switch (db_load_format) {
-			case 0:
-				db_read_object_old(f, o, thisref);
-				break;
-			case 1:
-				db_read_object_new(f, o, thisref);
-				break;
-			case 2:
-			case 3:
-			case 4:
-			case 5:
-			case 6:
 			case 7:
 			case 8:
 			case 9:
 			case 10:
 			case 11:
-				db_read_object_foxen(f, o, thisref, db_load_format, doing_deltas);
+				db_read_object(f, o, thisref, db_load_format, doing_deltas);
 				break;
 			default:
-				log2file("debug.log","got to end of case for db_load_format");
+				log_status("ABORT: Unrecognized database format.");
 				abort();
 				break;
 			}

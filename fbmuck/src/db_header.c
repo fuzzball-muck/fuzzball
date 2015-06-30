@@ -112,15 +112,6 @@ db_read_header( FILE *f, const char **version, int *load_format, dbref *grow, in
 	} else if (!strcmp(special, "***Foxen9 TinyMUCK DUMP Format***")) {
 		*load_format = 11;
 		grow_and_dbflags = TRUE;
-	} else if (!strcmp(special, "****Foxen Deltas Dump Extention***")) {
-		*load_format = 4;
-		result |= DB_ID_DELTAS;
-	} else if (!strcmp(special, "****Foxen2 Deltas Dump Extention***")) {
-		*load_format = 5;
-		result |= DB_ID_DELTAS;
-	} else if (!strcmp(special, "****Foxen4 Deltas Dump Extention***")) {
-		*load_format = 6;
-		result |= DB_ID_DELTAS;
 	} else if (!strcmp(special, "****Foxen5 Deltas Dump Extention***")) {
 		*load_format = 7;
 		result |= DB_ID_DELTAS;
