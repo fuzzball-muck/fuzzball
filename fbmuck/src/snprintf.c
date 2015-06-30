@@ -173,12 +173,6 @@ enum dp_conv_flag_t {
     DP_C_LONG_LONG
 };
 
-
-#define char_to_int(p) (p - '0')
-#define MAX(p,q) ((p >= q) ? p : q)
-#define MIN(p,q) ((p <= q) ? p : q)
-
-
 static int
 dopr(char *buffer, size_t maxlen, const char *format, va_list args)
 {
@@ -246,7 +240,7 @@ dopr(char *buffer, size_t maxlen, const char *format, va_list args)
     case DP_S_MIN:
       if (isdigit(ch)) 
       {
-	min = 10*min + char_to_int (ch);
+	min = 10*min + ch - '0';
 	ch = *format++;
       } 
       else if (ch == '*') 
@@ -272,7 +266,7 @@ dopr(char *buffer, size_t maxlen, const char *format, va_list args)
       {
 	if (max < 0)
 	  max = 0;
-	max = 10*max + char_to_int (ch);
+	max = 10*max + ch - '0';
 	ch = *format++;
       } 
       else if (ch == '*') 

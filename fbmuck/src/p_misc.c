@@ -924,7 +924,7 @@ prim_ext_name_okp(PRIM_PROTOTYPE)
 			abort_interp("Cannot be an empty string (2).");
 		strcpyn(buf, sizeof(buf), oper2->data.string->data );
 		for (ref = 0; buf[ref]; ref++)
-			buf[ref] = DOWNCASE(buf[ref]);
+			buf[ref] = tolower(buf[ref]);
 		if ( !strcmp(buf,"e") || !strcmp(buf,"exit") ) {
 			ok1 = ok_ascii_other;
 			ok2 = ok_name;

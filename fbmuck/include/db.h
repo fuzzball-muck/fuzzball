@@ -51,6 +51,8 @@
 # define NQ_PI -0.7853981633974
 #endif
 
+#define MAX(p,q) ((p >= q) ? p : q)
+
 extern char match_args[BUFFER_LEN];
 extern char match_cmdname[BUFFER_LEN];
 

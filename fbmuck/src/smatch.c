@@ -7,7 +7,6 @@
  ***********************************/
 
 #include "config.h"
-/* #include <pwd.h> */
 
 static int cmatch(char *s1, char c1);
 static int wmatch(char *wlist, char **s2);
@@ -24,8 +23,6 @@ char *strstr(char *s1, char *s2);
 #endif
 int equalstr(char *s, char *t);
 
-#define DOWNCASE(x) (tolower(x))
-
 /* String handlers
  * Some of these are already present in most C libraries, but go by
  * different names or are not always there.  Since they're small, TF
@@ -35,8 +32,8 @@ int equalstr(char *s, char *t);
 char *
 cstrchr(char *s, char c)
 {
-	c = DOWNCASE(c);
-	while (*s && DOWNCASE(*s) != c)
+	c = tolower(c);
+	while (*s && tolower(*s) != c)
 		s++;
 	if (*s || !c)
 		return s;
@@ -82,24 +79,24 @@ strstr(char *s1, char *s2)
 int
 cstrcmp(char *s, char *t)
 {
-	while (*s && *t && DOWNCASE(*s) == DOWNCASE(*t)) {
+	while (*s && *t && tolower(*s) == tolower(*t)) {
 		s++;
 		t++;
 	}
-	return (DOWNCASE(*s) - DOWNCASE(*t));
+	return (tolower(*s) - tolower(*t));
 }
 
 int
 cstrncmp(char *s, char *t, int n)
 {
-	for (; n && *s && *t && DOWNCASE(*s) == DOWNCASE(*t); s++, t++, n--) ;
+	for (; n && *s && *t && tolower(*s) == tolower(*t); s++, t++, n--) ;
 	if (n <= 0)
 		return 0;
 	else
-		return (DOWNCASE(*s) - DOWNCASE(*t));
+		return (tolower(*s) - tolower(*t));
 }
 
-#define test(x) if (DOWNCASE(x) == c1) return truthval
+#define test(x) if (tolower(x) == c1) return truthval
 /* Watch if-else constructions */
 
 static int
@@ -107,7 +104,7 @@ cmatch(char *s1, char c1)
 {
 	int truthval = FALSE;
 
-	c1 = DOWNCASE(c1);
+	c1 = tolower(c1);
 	if (*s1 == '^') {
 		s1++;
 		truthval = TRUE;
@@ -181,7 +178,7 @@ smatch(char *s1, char *s2)
 				return 1;
 			} else {
 				s1++;
-				if (DOWNCASE(*s1++) != DOWNCASE(*s2++))
+				if (tolower(*s1++) != tolower(*s2++))
 					return 1;
 			}
 			break;
@@ -261,12 +258,12 @@ smatch(char *s1, char *s2)
 			}
 			break;
 		default:
-			if (DOWNCASE(*s1++) != DOWNCASE(*s2++))
+			if (tolower(*s1++) != tolower(*s2++))
 				return 1;
 			break;
 		}
 	}
-	return DOWNCASE(*s1) - DOWNCASE(*s2);
+	return tolower(*s1) - tolower(*s2);
 }
 
 int

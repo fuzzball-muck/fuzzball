@@ -777,10 +777,6 @@ displayprop(dbref player, dbref obj, const char *name, char *buf, size_t bufsiz)
 	return buf;
 }
 
-
-
-#define DOWNCASE(x) (tolower(x))
-
 extern short db_conversion_flag;
 
 int

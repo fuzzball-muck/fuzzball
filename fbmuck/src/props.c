@@ -14,16 +14,13 @@
 #include "externs.h"
 #include "interface.h"
 
-
-#define Comparator(x,y) string_compare(x,y)
-
 static PropPtr
 find(char *key, PropPtr avl)
 {
 	int cmpval;
 
 	while (avl) {
-		cmpval = Comparator(key, PropName(avl));
+		cmpval = string_compare(key, PropName(avl));
 		if (cmpval > 0) {
 			avl = AVL_RT(avl);
 		} else if (cmpval < 0) {
@@ -53,15 +50,11 @@ height_diff(PropPtr node)
 		return 0;
 }
 
-#ifndef WIN32
-# define max(a, b)       (a > b ? a : b)
-#endif
-
 static void
 fixup_height(PropPtr node)
 {
 	if (node)
-		node->height = 1 + max(height_of(AVL_LF(node)), height_of(AVL_RT(node)));
+		node->height = 1 + MAX(height_of(AVL_LF(node)), height_of(AVL_RT(node)));
 }
 
 static PropPtr
@@ -209,7 +202,7 @@ insert(char *key, PropPtr * avl)
 	static short balancep;
 
 	if (p) {
-		cmp = Comparator(key, PropName(p));
+		cmp = string_compare(key, PropName(p));
 		if (cmp > 0) {
 			ret = insert(key, &(AVL_RT(p)));
 		} else if (cmp < 0) {
@@ -247,7 +240,7 @@ remove_propnode(char *key, PropPtr * root)
 
 	save = avl;
 	if (avl) {
-		cmpval = Comparator(key, PropName(avl));
+		cmpval = string_compare(key, PropName(avl));
 		if (cmpval < 0) {
 			save = remove_propnode(key, &AVL_LF(avl));
 		} else if (cmpval > 0) {
@@ -340,7 +333,7 @@ next_node(PropPtr ptr, char *name)
 		return NULL;
 	if (!name || !*name)
 		return (PropPtr) NULL;
-	cmpval = Comparator(name, PropName(ptr));
+	cmpval = string_compare(name, PropName(ptr));
 	if (cmpval < 0) {
 		from = next_node(AVL_LF(ptr), name);
 		if (from)

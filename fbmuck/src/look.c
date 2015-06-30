@@ -13,11 +13,8 @@
 #include "dbsearch.h"
 #include "externs.h"
 
-
-
-
 #define EXEC_SIGNAL '@'			/* Symbol which tells us what we're looking at
-								   * is an execution order and not a message.    */
+					   is an execution order and not a message.    */
 
 /* prints owner of something */
 static void
@@ -812,8 +809,6 @@ do_inventory(dbref player)
 	do_score(player);
 }
 
-#define UPCASE(x) (toupper(x))
-
 int
 init_checkflags(dbref player, const char *flags, struct flgchkdat *check)
 {
@@ -873,7 +868,7 @@ init_checkflags(dbref player, const char *flags, struct flgchkdat *check)
 	check->size = 0;
 
 	while (*flags) {
-		switch (UPCASE(*flags)) {
+		switch (toupper(*flags)) {
 		case '!':
 			if (mode)
 				mode = 0;

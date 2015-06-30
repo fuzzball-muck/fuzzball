@@ -11,9 +11,6 @@
 #include "interface.h"
 #include "externs.h"
 
-
-#define DOWNCASE(x) (tolower(x))
-
 char match_cmdname[BUFFER_LEN];	/* triggering command */
 char match_args[BUFFER_LEN];	/* remaining text */
 
@@ -296,7 +293,7 @@ match_exits(dbref first, struct match_data *md)
 			int notnull = 0;
 			for (p = md->match_name;	/* check out 1 alias */
 				 *p &&
-				 DOWNCASE(*p) == DOWNCASE(*exitname) &&
+				 tolower(*p) == tolower(*exitname) &&
 				 *exitname != EXIT_DELIMITER;
 				 p++, exitname++)
 			{

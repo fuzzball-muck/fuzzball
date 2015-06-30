@@ -213,20 +213,12 @@ array_tree_height_diff(array_tree * node)
 		return 0;
 }
 
-/*\
-|*| Note to self: don't do : max (x++,y)
-|*| Kim
-\*/
-#ifndef WIN32
-#define max(a, b)       (a > b ? a : b)
-#endif
-
 static void
 array_tree_fixup_height(array_tree * node)
 {
 	if (node != NULL)
 		node->height = (short)(1 +
-			max(array_tree_height_of(AVL_LF(node)),
+			MAX(array_tree_height_of(AVL_LF(node)),
 			array_tree_height_of(AVL_RT(node))));
 }
 
