@@ -137,7 +137,6 @@ typedef int dbref;				/* offset into db */
 #define LOADVALUE(x,y)	add_prop_nofetch(x, MESGPROP_VALUE, NULL, y)
 
 #define DB_PARMSINFO     0x0001
-#define DB_COMPRESSED    0x0002
 
 #define TYPE_ROOM           0x0
 #define TYPE_THING          0x1
