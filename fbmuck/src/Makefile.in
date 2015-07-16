@@ -19,7 +19,7 @@
 # -O                General optimizations, reccomended.
 # -O2               Heavier optimizations, use at own risk.
 # -g                Generate debugging information, suggested, you can
-#                     always "strip netmuck" if you want the space.
+#                     always "strip fbmuck" if you want the space.
 # -pg               Generate profiling debug code.  Use with gprof.
 # -Wall -pedantic	Good way to get spammed with warnings from GCC.
 # -ftest-coverage -fprofile-arcs  Generate test coverage debug code for gcov.
@@ -191,8 +191,8 @@ tags: ${CSRC} ${MSRC} ${MALLSRC}
 	${MKTAGS} ${CSRC} ${MALLSRC} interface.c ../include/*.h
 
 lint: ${CSRC} ${MSRC} ${MALLSRC} ${INCLUDE}/defines.h
-	-${RM} netmuck.lint
-	-${LINT} ${LINTFLAGS} ${CSRC} ${MSRC} ${MALLSRC} > netmuck.lint
+	-${RM} fbmuck.lint
+	-${LINT} ${LINTFLAGS} ${CSRC} ${MSRC} ${MALLSRC} > fbmuck.lint
 
 ${SRC}:
 	${GET} $@
