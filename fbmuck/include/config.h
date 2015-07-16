@@ -24,7 +24,7 @@
 
 /* Detaches the process as a daemon so that it don't cause problems
  * keeping a terminal line open and such. Logs normal output to a file
- * and writes out a netmuck.pid file 
+ * and writes out a fbmuck.pid file 
  */
 #define DETACH
 
@@ -164,10 +164,10 @@
 #define MACRO_FILE  "muf/macros"
 
 /*
- * File to write the server pid to.  This is generally "netmuck.pid"
+ * File to write the server pid to.  This is generally "fbmuck.pid"
  * for historical reasons.
  */
-#define PID_FILE    "netmuck.pid"
+#define PID_FILE    "fbmuck.pid"
 
 #define RESOLVER_PID_FILE "hostfind.pid"	/* Write the resolver pid to ... */
 

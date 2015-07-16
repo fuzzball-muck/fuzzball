@@ -50,7 +50,7 @@ DELTAS="$GAMEDIR/data/deltas-file"
 
 
 #
-# This is the name of the netmuck program to run.  You probably don't want to
+# This is the name of the fbmuck program to run.  You probably don't want to
 # change this unless you renamed the server program to something other than
 # fbmuck.
 #
@@ -64,12 +64,12 @@ RESTARTS_LOGFILE="$GAMEDIR/logs/restarts"
 
 
 #
-# This is the name of the file that the netmuck program creates that contains
+# This is the name of the file that the fbmuck program creates that contains
 # the process ID of the server currently running in this game directory.
 # You probably don't want to change this unless you change the PID_FILE
 # #define in include/config.h
 #
-PIDFILE="$GAMEDIR/netmuck.pid"
+PIDFILE="$GAMEDIR/fbmuck.pid"
 
 
 #
