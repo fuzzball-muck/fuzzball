@@ -34,7 +34,7 @@
 [ -f /etc/fbmucks ] || exit 0
 
 RETVAL=0
-pidfile=netmuck.pid
+pidfile=fbmuck.pid
 who=`whoami`
 cmd=$1
 shift
