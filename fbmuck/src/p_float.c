@@ -673,13 +673,15 @@ prim_strtof(PRIM_PROTOTYPE)
 	oper1 = POP();
 	if (oper1->type != PROG_STRING)
 		abort_interp("Non-string argument. (1)");
-	fresult = 0.0;
-	if (!oper1->data.string || !ifloat(oper1->data.string->data)) {
+
+	if (!oper1->data.string || (!ifloat(oper1->data.string->data)
+				    && !number(oper1->data.string->data))) {
 		fresult = 0.0;
 		fr->error.error_flags.nan = 1;
 	} else {
 		sscanf(oper1->data.string->data, "%lg", &fresult);
 	}
+
 	CLEAR(oper1);
 	PushFloat(fresult);
 }
