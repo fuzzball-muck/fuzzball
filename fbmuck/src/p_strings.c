@@ -1503,27 +1503,10 @@ prim_intostr(PRIM_PROTOTYPE)
 		if (!strchr(buf, '.') && !strchr(buf, 'n') && !strchr(buf, 'e')) {
 			strcatn(buf, sizeof(buf), ".0");
 		}
-		ptr=buf;
 	} else {
-		val = oper1->data.number;
-		ptr = &buf[BUFFER_LEN];
-		negflag = (val < 0) ? 1 : 0;
-		val = abs(val);
-
-		*(--ptr) = '\0';
-		if (!val) {
-			*(--ptr) = '0';
-		} else {
-			while (val) {
-				*(--ptr) = '0' + (val % 10);
-				val /= 10;
-			}
-		}
-		if (negflag) {
-			*(--ptr) = '-';
-		}
-		/* snprintf(buf, sizeof(buf), "%d", oper1->data.number); */
+		snprintf(buf, sizeof(buf), "%d", oper1->data.number);
 	}
+	ptr=buf;
 	CLEAR(oper1);
 	PushString(ptr);
 }
