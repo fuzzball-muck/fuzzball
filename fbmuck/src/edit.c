@@ -162,7 +162,7 @@ void
 list_macros(const char *word[], int k, dbref player, int length)
 {
 	if (!k--) {
-		do_list_tree(macrotop, "a", "z", length, player);
+		do_list_tree(macrotop, "\001", "\377", length, player);
 	} else {
 		do_list_tree(macrotop, word[0], word[k], length, player);
 	}
