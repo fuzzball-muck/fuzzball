@@ -1496,7 +1496,7 @@ prim_intostr(PRIM_PROTOTYPE)
 
 	CHECKOP(1);
 	oper1 = POP();
-	if (oper1->type >= PROG_STRING) /* currently: int, flt, ref, var */
+	if (oper1->type >= PROG_STRING) /* accepts: int, flt, ref, var */
 		abort_interp("Invalid argument.");
 	if (oper1->type == PROG_FLOAT) {
 		snprintf(buf, sizeof(buf), "%.15g", oper1->data.fnumber);
