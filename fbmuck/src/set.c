@@ -839,7 +839,7 @@ do_propset(int descr, dbref player, const char *name, const char *prop)
 	}
 
 	if (Prop_System(pname) || (!Wizard(OWNER(player)) && (Prop_SeeOnly(pname) || Prop_Hidden(pname)))) {
-		notify(player, "Permission denied. (can't set a property that's restricted against you)");
+		notify(player, "Permission denied. (The property is hidden from you.)");
 		return;
 	}
 
