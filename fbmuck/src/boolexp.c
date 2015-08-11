@@ -228,6 +228,10 @@ parse_boolexp_F(int descr, const char **parsebuf, dbref player, int dbloadp)
 
 		/* check to see if this is a property expression */
 		if (index(buf, PROP_DELIMITER)) {
+	                if (Prop_System(buf) || (!Wizard(OWNER(player)) && Prop_Hidden(buf))) {
+        	                notify(player, "Permission denied. (You cannot use a hidden property in a lock.)");
+                        	return TRUE_BOOLEXP;
+                	}
 			return parse_boolprop(buf);
 		}
 		b = alloc_boolnode();
