@@ -833,7 +833,11 @@ do_serverdebug(int descr, dbref player, const char *arg1, const char *arg2)
 		return;
 	}
 	if (!*arg1) {
-		notify(player, "Usage: @dbginfo [cache|guitest|misc]");
+#ifdef DISKBASE
+		notify(player, "Usage: @dbginfo [cache|guitest]");
+#else
+		notify(player, "Usage: @dbginfo cache");
+#endif
 		return;
 	}
 #ifdef DISKBASE
