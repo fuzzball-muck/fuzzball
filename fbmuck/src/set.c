@@ -602,7 +602,7 @@ do_set(int descr, dbref player, const char *name, const char *flag)
 			ival = atoi(++pname);
 
 		if (Prop_System(type) || (!Wizard(OWNER(player)) && (Prop_SeeOnly(type) || Prop_Hidden(type)))) {
-			notify(player, "Permission denied. (The property is hidden from you.)");
+			notify(player, "Permission denied. (The property is restricted.)");
 			free((void *)x);
 			return;
 		}
@@ -839,7 +839,7 @@ do_propset(int descr, dbref player, const char *name, const char *prop)
 	}
 
 	if (Prop_System(pname) || (!Wizard(OWNER(player)) && (Prop_SeeOnly(pname) || Prop_Hidden(pname)))) {
-		notify(player, "Permission denied. (The property is hidden from you.)");
+		notify(player, "Permission denied. (The property is restricted.)");
 		return;
 	}
 
