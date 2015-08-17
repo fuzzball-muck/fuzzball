@@ -1,13 +1,13 @@
 @prog cmd-mv-cp
 1 99999 d
-1 i
+i
 ( cmd-mv-cp
     cp [origobj][=prop],[destobj][=destprop]
       Copies prop from origobj to destobj, renaming it to destprop.
-  
+
     mv [origobj][=prop],[destobj][=destprop]
       Moves prop from origobj to destobj, renaming it to destprop.
-  
+
       Arguments in []s are optional.
       if origobj is omitted, it assumes a property on the user.
       if destobj is omitten, it assumes destobj is the same as origobj.
@@ -15,15 +15,34 @@
       if prop is omitted, it prompts for it.
       if both prop and origobj are omitted, it prompts for both.
       if both destobj and destprop are omitted, it prompts for them.
+
+  CHANGES:
+    9/99 Added checkperms [ s --  ] to allow the program to safely be
+    set Wizard. cp and mv will copy or move ~ and @ props only if the
+    user is a !Quelled Wizard. -- Jessy
+    9/99 Added a line at the beginning of main to catch dbref spoofing.
+    -- Jessy
 )
-  
+
 $include $lib/strings
 $include $lib/edit
 $include $lib/match
-  
+
 lvar copy?
-  
+
+: checkperms ( s --  )
+  dup "@" stringpfx
+  over "/@" instr
+  3 pick "~" stringpfx
+  4 rotate "/~" instr or or or
+  me @ "W" flag? not and if
+    "Permission denied." .tell pid kill
+  then
+;
+
 : cp-mv-prop ( d s d s -- i )
+  dup checkperms
+  3 pick checkperms
   4 pick 4 pick getpropstr
   dup if
     3 pick 3 pick rot 0 addprop
@@ -57,17 +76,17 @@ lvar copy?
   copy? @ not if remove_prop else pop pop then
   1
 ;
-  
+
 : cp-prop ( d s d s -- i )
   1 copy? ! cp-mv-prop
 ;
 public cp-prop
-  
+
 : mv-prop ( d s d s -- i )
   0 copy? ! cp-mv-prop
 ;
 public mv-prop
-  
+
 : strip-slashes ( s -- s' )
   begin
     dup while
@@ -76,12 +95,13 @@ public mv-prop
     pop
   repeat
 ;
-  
+
 : parse-command ( s -- )
+  "me" match me !
   command @ tolower
   "command @ = \"" over strcat "\"" strcat .tell
   "c" instr copy? !
-  
+
   dup "#help" stringcmp not if
     pop
     copy? @ if
@@ -100,7 +120,7 @@ public mv-prop
     "  if both destobj and destprop are omitted, it asks the user for them."
     depth EDITdisplay exit
   then
-  
+
   "," .split .strip swap .strip
   "=" .split .strip swap .strip
   dup if
@@ -143,7 +163,7 @@ public mv-prop
   then
   swap
   dup not if pop over then
-  
+
   (origdbref origpropname destdbref destpropname)
   cp-mv-prop if
     copy? @ if "Property copied."
