@@ -2805,12 +2805,13 @@ interact_warn(dbref player)
 	if (FLAGS(player) & INTERACTIVE) {
 		char buf[BUFFER_LEN];
 
-		snprintf(buf, sizeof(buf), "***  %s  ***",
-				(FLAGS(player) & READMODE) ?
-				"You are currently using a program.  Use \"@Q\" to return to a more reasonable state of control."
-				: (PLAYER_INSERT_MODE(player) ?
-				   "You are currently inserting MUF program text.  Use \".\" to return to the editor, then \"quit\" if you wish to return to your regularly scheduled Muck universe."
-				   : "You are currently using the MUF program editor."));
+		if (FLAGS(player) & READMODE) {
+			snprintf(buf, sizeof(buf), "***  You are currently using a program.  Use \"%s\" to return to a more reasonable state of control.  ***", BREAK_COMMAND);
+		} else if (PLAYER_INSERT_MODE(player)) {
+			snprintf(buf, sizeof(buf), "***  You are currently inserting MUF program text.  Use \"%s\" to return to the editor, then \"%c\" if you wish to return to your regularly scheduled MUCK universe.  ***", EXIT_INSERT, QUIT_EDIT_COMMAND);
+		} else {
+			snprintf(buf, sizeof(buf), "***  You are currently using the MUF program editor.  ***");
+		}
 		notify(player, buf);
 	}
 }
