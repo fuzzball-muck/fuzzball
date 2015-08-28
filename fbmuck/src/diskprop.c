@@ -188,7 +188,7 @@ report_fetchstats(dbref player)
 			maxv = fetchstats[i];
 		i = ((i + FETCHSTATS_SLOTS - 1) % FETCHSTATS_SLOTS);
 	}
-	snprintf(buf, sizeof(buf), "Disk Fetches %2g minute min/ave/max: %.2f/%.2f/%.2f",
+	snprintf(buf, sizeof(buf), "Disk Fetches %2g minute min/avg/max: %.2f/%.2f/%.2f",
 			(FETCHSTATS_INTERVAL1 / 60.0),
 			(minv * 60.0 / FETCHSTATS_SLOT_TIME),
 			(sum * 60.0 / (FETCHSTATS_SLOT_TIME * count)),
@@ -206,7 +206,7 @@ report_fetchstats(dbref player)
 			maxv = fetchstats[i];
 		i = ((i + FETCHSTATS_SLOTS - 1) % FETCHSTATS_SLOTS);
 	}
-	snprintf(buf, sizeof(buf), "Disk Fetches %2g minute min/ave/max: %.2f/%.2f/%.2f",
+	snprintf(buf, sizeof(buf), "Disk Fetches %2g minute min/avg/max: %.2f/%.2f/%.2f",
 			(FETCHSTATS_INTERVAL2 / 60.0),
 			(minv * 60.0 / FETCHSTATS_SLOT_TIME),
 			(sum * 60.0 / (FETCHSTATS_SLOT_TIME * count)),
@@ -224,7 +224,7 @@ report_fetchstats(dbref player)
 			maxv = fetchstats[i];
 		i = ((i + FETCHSTATS_SLOTS - 1) % FETCHSTATS_SLOTS);
 	}
-	snprintf(buf, sizeof(buf), "Disk Fetches %2g minute min/ave/max: %.2f/%.2f/%.2f",
+	snprintf(buf, sizeof(buf), "Disk Fetches %2g minute min/avg/max: %.2f/%.2f/%.2f",
 			(FETCHSTATS_INTERVAL3 / 60.0),
 			(minv * 60.0 / FETCHSTATS_SLOT_TIME),
 			(sum * 60.0 / (FETCHSTATS_SLOT_TIME * count)),
