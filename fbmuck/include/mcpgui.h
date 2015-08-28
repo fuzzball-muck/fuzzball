@@ -218,10 +218,6 @@ int gui_dlog_get_descr(const char *dlogid);
 void* gui_dlog_get_context(const char *dlogid);
 
 
-/* Testing framework.  WORK: THIS SHOULD BE REMOVED BEFORE RELEASE */
-void do_post_dlog(int descr, const char *text);
-
-
 /* internal support for MUF */
 void muf_dlog_add(struct frame *fr, const char *dlogid);
 void muf_dlog_remove(struct frame *fr, const char *dlogid);

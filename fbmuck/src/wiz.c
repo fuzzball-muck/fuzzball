@@ -832,23 +832,13 @@ do_serverdebug(int descr, dbref player, const char *arg1, const char *arg2)
 		notify(player, "Permission denied. (@dbginfo is a wizard-only command)");
 		return;
 	}
-	if (!*arg1) {
+
 #ifdef DISKBASE
-		notify(player, "Usage: @dbginfo [cache|guitest]");
-#else
-		notify(player, "Usage: @dbginfo cache");
-#endif
-		return;
-	}
-#ifdef DISKBASE
-	if (string_prefix(arg1, "cache")) {
+	if (!*arg1 || string_prefix(arg1, "cache")) {
 		notify(player, "Cache info:");
 		diskbase_debug(player);
-	} else
-#endif
-	if (string_prefix(arg1, "guitest")) {
-		do_post_dlog(descr, arg2);
 	}
+#endif
 
 	notify(player, "Done.");
 }
