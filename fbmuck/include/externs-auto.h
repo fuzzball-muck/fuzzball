@@ -22,7 +22,6 @@ void do_memory(dbref who);
 void do_move(int descr, dbref player, const char *direction, int lev);
 void do_newpassword(dbref player, const char *name, const char *password);
 void do_pose(dbref player, const char *message);
-void do_post_dlog(int descr, const char *text);
 void do_propset(int descr, dbref player, const char *name, const char *prop);
 void do_score(dbref player);
 void do_sweep(int descr, dbref player, const char *name);
