@@ -779,9 +779,6 @@ extern struct shared_string *alloc_prog_string(const char *);
 
 extern dbref new_object(void);		/* return a new object */
 
-extern struct boolexp *getboolexp(FILE *);	/* get a boolexp */
-extern void putboolexp(FILE *, struct boolexp *);	/* put a boolexp */
-
 extern int db_write_object(FILE *, dbref);	/* write one object to file */
 
 extern dbref db_write(FILE * f);	/* write db to file, return # of objects */

@@ -255,7 +255,6 @@ extern unsigned long sel_prof_idle_use;
 extern int eval_boolexp(int descr, dbref player, struct boolexp *b, dbref thing);
 extern struct boolexp *parse_boolexp(int descr, dbref player, const char *string, int dbloadp);
 extern struct boolexp *copy_bool(struct boolexp *old);
-extern struct boolexp *getboolexp(FILE * f);
 extern struct boolexp *negate_boolexp(struct boolexp *b);
 extern void free_boolexp(struct boolexp *b);
 
