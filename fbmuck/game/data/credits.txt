@@ -2,7 +2,7 @@ Based on the original code written by these programmers:
   David Applegate    James Aspnes    Timothy Freeman    Bennet Yee
  
 Others who have done major coding work along the way:
-  Lachesis, ChupChup, FireFoot, Russ 'Random' Smith, and Dr. Cat
+  Lachesis, ChupChup, FireFoot, and Russ 'Random' Smith
  
 This is a user-extensible, user-programmable multi-user adventure game.
 TinyMUCK was derived from TinyMUD v1.5.2, with extensive modifications.
@@ -20,7 +20,6 @@ The following programmers currently maintain the code:
   Points:                            Bug Finder/Lead/Developer
  
 The following programmers have contributed greatly:
-  Our Sourceforge developers (http://sourceforge.net/projects/fbmuck/):
   Akari, Alynna, Arcticwolf (Schneelocke), Cerilus, Fentonator,
   Ferretbun, Foxbird, Jenora, Naiya, Natasha O'Brien, Sombre,
   Tiger (Fre'ta), Wog, and Wyld.
