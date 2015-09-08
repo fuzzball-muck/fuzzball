@@ -1,5 +1,0 @@
-#!/bin/sh
-CLASSPATH=`dirname $0`/resolver.jar
-export CLASSPATH
-java -ms3M -mx3M -jar `dirname $0`/resolver.jar
-
