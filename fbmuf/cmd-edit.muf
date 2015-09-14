@@ -8,8 +8,23 @@
 (                                                                    )
 ( Usage:  edit <object>=<prop>      or                               )
 (         edit <object>=@<mesg>                                      )
+(                                                                    )
+( CHANGES: Added a 'checkperms' routine to prevent non-wiz users     )
+(          from changing @wizard or ~restricted props -- Jessy 7/00  )
+(                                                                    )
   
 $include $lib/strings
+  
+: checkperms ( s --  )
+  dup "@" stringpfx
+  over "/@" instr
+  3 pick "~" stringpfx
+  4 rotate "/~" instr or or or
+  me @ "W" flag? not and if
+    "Permission denied." .tell pid kill
+  then
+;
+ 
 : replace-text ( str -- str )
     "Please enter the text it should be changed to." .tell
     "##edit> " swap strcat .tell read
@@ -28,6 +43,7 @@ $include $lib/strings
 ;
   
 : change-main
+		"me" match me !
     "=" .split .stripspaces
     dup not if error exit then
     swap .stripspaces
@@ -51,7 +67,9 @@ $include $lib/strings
             "Permission denied."
             .tell exit
         then
-        swap over over getpropstr
+        swap over over 
+				dup checkperms
+				getpropstr
         replace-text
         dup not if
             pop remove_prop
