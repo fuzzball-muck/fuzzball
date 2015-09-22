@@ -137,6 +137,7 @@
 #define WELC_FILE "data/welcome.txt"	/* For the opening screen      */
 #define MOTD_FILE "data/motd.txt"	/* For the message of the day  */
 #define CREDITS_FILE "data/credits.txt"	/* For acknowledgements        */
+#define CONHELP_FILE "data/connect-help.txt" /* For 'help' before login*/
 
 #define HELP_FILE "data/help.txt"	/* For the 'help' command      */
 #define HELP_DIR  "data/help"	/* For 'help' subtopic files   */
