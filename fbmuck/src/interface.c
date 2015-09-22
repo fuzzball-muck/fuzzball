@@ -192,6 +192,7 @@ struct descriptor_data *initializesock(int s, const char *hostname, int is_ssl);
 void make_nonblocking(int s);
 void freeqs(struct descriptor_data *d);
 void welcome_user(struct descriptor_data *d);
+void show_file(struct descriptor_data *d, const char *filename);
 void check_connect(struct descriptor_data *d, const char *msg);
 void close_sockets(const char *msg);
 int boot_off(dbref player);
@@ -2852,7 +2853,7 @@ check_connect(struct descriptor_data *d, const char *msg)
 				remember_player_descr(player, d->descriptor);
 				/* cks: someone has to initialize this somewhere. */
 				PLAYER_SET_BLOCK(d->player, 0);
-				spit_file(player, MOTD_FILE);
+				show_file(d, MOTD_FILE);
 				announce_connect(d->descriptor, player);
 				interact_warn(player);
 				if (sanity_violated && Wizard(player)) {
@@ -2901,10 +2902,30 @@ check_connect(struct descriptor_data *d, const char *msg)
 			queue_string(d, "\r\n");
 			log_status("FAILED CREATE %s on descriptor %d", user, d->descriptor);
 		}
+	} else if (!strncmp(command, "help", 4)) {
+		show_file(d, CONHELP_FILE);
 	} else if (!*command) {
 		/* do nothing */
 	} else {
 		welcome_user(d);
+	}
+}
+
+void
+show_file(struct descriptor_data *d, const char *filename)
+{
+	FILE *f;
+	char buf[BUFFER_LEN];
+
+	if ((f = fopen(filename, "r")) == NULL) {
+		queue_ansi(d, "This content is missing - management has been notified.\r\n");
+                fputs("show_file:", stderr);
+                perror(filename);
+	} else {
+		while(fgets(buf, sizeof(buf), f)) {
+			queue_ansi(d, buf);
+		}
+		fclose(f);
 	}
 }
 
