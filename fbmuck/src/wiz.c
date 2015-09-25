@@ -676,9 +676,14 @@ do_toad(int descr, dbref player, const char *name, const char *recip)
 		notify(player, "You cannot toad yourself.  Get someone else to do it for you.");
 		return;
 	}
+
+	if (victim == tp_toad_default_recipient) {
+		notify(player, "That player is part of the @toad process, and cannot be deleted.");
+		return;
+	}
+
 	if (!*recip) {
-		/* FIXME: Make me a tunable parameter! */
-		recipient = GOD;
+		recipient = tp_toad_default_recipient;
 	} else {
 		if ((recipient = lookup_player(recip)) == NOTHING || recipient == victim) {
 			notify(player, "That recipient does not exist.");
