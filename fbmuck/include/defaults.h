@@ -365,6 +365,9 @@
 /* Strict GOD_PRIV */
 #define STRICT_GOD_PRIV 1
 
+/* Default owner for @toaded player's things */
+#define TOAD_DEFAULT_RECIPIENT GOD
+
 /* Force 7-bit names */
 #define ASCII_THING_NAMES 1
 #define ASCII_OTHER_NAMES 0
