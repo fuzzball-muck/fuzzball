@@ -98,7 +98,7 @@ extern int tp_max_force_level;
 /* dbrefs */
 extern dbref tp_player_start;
 extern dbref tp_default_room_parent;
-
+extern dbref tp_toad_default_recipient;
 
 
 /* booleans */
