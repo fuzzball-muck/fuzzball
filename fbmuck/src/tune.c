@@ -213,6 +213,7 @@ struct tune_val_entry tune_val_list[] = {
 dbref tp_player_start = PLAYER_START;
 dbref tp_default_room_parent = GLOBAL_ENVIRONMENT;
 dbref tp_toad_default_recipient = TOAD_DEFAULT_RECIPIENT;
+dbref tp_lost_and_found = LOST_AND_FOUND;
 
 struct tune_ref_entry {
 	const char *group;
@@ -226,6 +227,7 @@ struct tune_ref_entry {
 struct tune_ref_entry tune_ref_list[] = {
 	{"Database", "default_room_parent", TYPE_ROOM, &tp_default_room_parent, 0, "Place to parent new rooms to"},
 	{"Database", "player_start", TYPE_ROOM, &tp_player_start, 0, "Place where new players start"},
+	{"Database", "lost_and_found", TYPE_ROOM, &tp_lost_and_found, 0, "Place for things without a home"},
 	{"Database", "toad_default_recipient", TYPE_PLAYER, &tp_toad_default_recipient, 0, "Default owner for @toaded player's things"},
 	{NULL, NULL, 0, NULL, 0}
 };

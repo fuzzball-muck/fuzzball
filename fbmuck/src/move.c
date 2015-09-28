@@ -868,6 +868,10 @@ do_recycle(int descr, dbref player, const char *name)
 					notify(player, "That is the player start room, and may not be recycled.");
 					return;
 				}
+				if (thing == tp_lost_and_found) {
+					notify(player, "That is the lost and found room, and may not be recycled.");
+					return;
+				}
 				if (thing == GLOBAL_ENVIRONMENT) {
 					notify(player, "If you want to do that, why don't you just delete the database instead?  Room #0 contains everything, and is needed for database sanity.");
 					return;

@@ -368,6 +368,8 @@
 /* Default owner for @toaded player's things */
 #define TOAD_DEFAULT_RECIPIENT GOD
 
+#define LOST_AND_FOUND PLAYER_START
+
 /* Force 7-bit names */
 #define ASCII_THING_NAMES 1
 #define ASCII_OTHER_NAMES 0
