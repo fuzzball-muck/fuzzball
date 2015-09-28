@@ -1106,6 +1106,11 @@ connected, or is not a player object at all, then this will return -1.
 This returns the idle time for the most recently connected connection,
 if there are multiple connects.
 ~
+~
+DESCR
+{descr}
+    Returns the descriptor number that invoked the MPI.
+~
 ~~section Variable Handling Functions|Variable|Variables|Vars|Var|VarFuncs
 V|&|VARIABLE
 {&VAR}

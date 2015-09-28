@@ -48,6 +48,7 @@ MFNDAT mfun_list[] = {
     {"DEFAULT",      mfn_default,     0, 0, 0, 2,  2}, 
     {"DELAY",        mfn_delay,       1, 0, 1, 2,  2}, 
     {"DELPROP",      mfn_delprop,     1, 0, 1, 1,  2}, 
+    {"DESCR",        mfn_descr,       1, 0, 1, 0,  0}, 
     {"DICE",         mfn_dice,        1, 0, 1, 1,  3}, 
     {"DIST",         mfn_dist,        1, 0, 1, 2,  6}, 
     {"DIV",          mfn_div,         1, 0, 1, 2,  9}, 

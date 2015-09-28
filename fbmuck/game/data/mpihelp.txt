@@ -52,7 +52,8 @@ C's
 
 D's
   date         dbeq         debug        debugif      dec          default
-  definitions  delay        delprop      dice         dist         div
+  definitions  delay        delprop      descr        dice         dist
+  div
 
 E's
   eq     eval   eval!  exec   exec!  exits  
@@ -1273,7 +1274,7 @@ this just sees if obj1 is within the locational environment of obj2.
 Connection Related Functions|Connection|ConnFuncs
 Connection Related Functions
 
-awake   idle    online  ontime  
+awake   descr   idle    online  ontime  
 
 ~----------------------------------------------------------------------------
 ~
@@ -1308,6 +1309,11 @@ IDLE
 connected, or is not a player object at all, then this will return -1.
 This returns the idle time for the most recently connected connection,
 if there are multiple connects.
+~
+~
+DESCR
+{descr}
+    Returns the descriptor number that invoked the MPI.
 ~
 ~
 ~
