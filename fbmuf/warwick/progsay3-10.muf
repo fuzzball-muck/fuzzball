@@ -398,9 +398,6 @@ q
 @register #me say3-10.MUF=tmp/prog1
 @set $tmp/prog1=L
 @set $tmp/prog1=3
-@propset $tmp/prog1=int:/.debug/errcount:50
-@propset $tmp/prog1=int:/.debug/lastcrash:945604226
-@propset $tmp/prog1=str:/.debug/lasterr:PigLatin.Filter.MUF(#76768), line 14; INSTR: Empty string argument (2)
 @propset $tmp/prog1=str:/_/de:A scroll containing a spell called say3-10.MUF
 @propset $tmp/prog1=str:/_message:Type 'sayhelp' for help on say. Local notify-routines now supported. Sayhelp 5
 @propset $tmp/prog1=str:/_version:Say version 3.11a (c)1993 by Warwick on FurryMUCK
