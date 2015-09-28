@@ -760,9 +760,6 @@ q
 @register #me sayfront3-11.MUF=tmp/prog1
 @set $tmp/prog1=L
 @set $tmp/prog1=3
-@propset $tmp/prog1=int:/.debug/errcount:70
-@propset $tmp/prog1=int:/.debug/lastcrash:941724141
-@propset $tmp/prog1=str:/.debug/lasterr:sayfront3-11.MUF(#64370), line 751; POP: Stack underflow.
 @propset $tmp/prog1=str:/_/de:A scroll containing a spell called sayset3-11.MUF
 @propset $tmp/prog1=str:/_help/1#:21
 @propset $tmp/prog1=str:/_help/1#/1:SayHelp screen 1: Basic information

@@ -395,8 +395,4 @@ q
 @set $tmp/prog1=W
 @set $tmp/prog1=L
 @set $tmp/prog1=2
-@propset $tmp/prog1=int:/.debug/errcount:61
-@propset $tmp/prog1=int:/.debug/lastcrash:987454465
-@propset $tmp/prog1=str:/.debug/lasterr:lib-gui(#4), line 631; GUI_DLOG_CLOSE: Internal error: GUI not available.
 @propset $tmp/prog1=str:/_/de:A scroll containing a spell called cmd-guitest
-
