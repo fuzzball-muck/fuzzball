@@ -28,6 +28,7 @@ const char *mfn_dec(MFUNARGS);
 const char *mfn_default(MFUNARGS);
 const char *mfn_delay(MFUNARGS);
 const char *mfn_delprop(MFUNARGS);
+const char *mfn_descr(MFUNARGS);
 const char *mfn_dice(MFUNARGS);
 const char *mfn_dist(MFUNARGS);
 const char *mfn_div(MFUNARGS);
