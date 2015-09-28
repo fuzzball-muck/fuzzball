@@ -722,8 +722,7 @@ do_toad(int descr, dbref player, const char *name, const char *recip)
 				}
 			}
 			if (Typeof(stuff) == TYPE_THING && THING_HOME(stuff) == victim) {
-				/* FIXME: Set a tunable "lost and found" area! */
-				THING_SET_HOME(stuff, tp_player_start);
+				THING_SET_HOME(stuff, tp_lost_and_found);
 			}
 		}
 		if (PLAYER_PASSWORD(victim)) {
