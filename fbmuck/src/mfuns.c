@@ -2089,3 +2089,10 @@ mfn_usecount(MFUNARGS)
 
 	return buf;
 }
+
+const char *
+mfn_descr(MFUNARGS)
+{
+	strcpy(buf, intostr(descr));
+	return buf;
+}
