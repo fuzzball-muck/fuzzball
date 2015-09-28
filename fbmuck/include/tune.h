@@ -99,6 +99,7 @@ extern int tp_max_force_level;
 extern dbref tp_player_start;
 extern dbref tp_default_room_parent;
 extern dbref tp_toad_default_recipient;
+extern dbref tp_lost_and_found;
 
 
 /* booleans */
