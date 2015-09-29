@@ -1911,7 +1911,7 @@ prim_toadplayer(PRIM_PROTOTYPE)
 	THING_SET_HOME(victim, PLAYER_HOME(recipient));
 
 	/* reset name */
-	FLAGS(victim) = (FLAGS(victim) & ~TYPE_MASK) | TYPE_THING;
+	FLAGS(victim) = TYPE_THING;
 	OWNER(victim) = recipient;
 	SETVALUE(victim, 1);
 
