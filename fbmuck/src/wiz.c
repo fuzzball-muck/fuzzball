@@ -757,7 +757,7 @@ do_toad(int descr, dbref player, const char *name, const char *recip)
 		ALLOC_THING_SP(victim);
 		THING_SET_HOME(victim, PLAYER_HOME(player));
 
-		FLAGS(victim) = (FLAGS(victim) & ~TYPE_MASK) | TYPE_THING;
+		FLAGS(victim) = TYPE_THING;
 		OWNER(victim) = player;	/* you get it */
 		SETVALUE(victim, 1);	/* don't let him keep his immense wealth */
 	}
