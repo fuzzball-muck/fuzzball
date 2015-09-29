@@ -1876,7 +1876,7 @@ prim_stringpfx(PRIM_PROTOTYPE)
 	if (oper1->type != PROG_STRING || oper2->type != PROG_STRING)
 		abort_interp("Non-string argument.");
 	if (oper1->data.string == oper2->data.string)
-		result = 0;
+		result = 1;
 	else {
 		result = string_prefix(DoNullInd(oper2->data.string), DoNullInd(oper1->data.string));
 	}
