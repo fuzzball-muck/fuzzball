@@ -119,7 +119,7 @@ $include $lib/optionsgui
 .
 c
 q
-@register #me cmd-obtguitest=tmp/prog1
+@register #me cmd-optguitest=tmp/prog1
 @set $tmp/prog1=W
 @set $tmp/prog1=L
 @set $tmp/prog1=3
