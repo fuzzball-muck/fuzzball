@@ -140,6 +140,7 @@ MFNDAT mfun_list[] = {
     {"STORE",        mfn_store,       1, 0, 1, 2,  3}, 
     {"STRIP",        mfn_strip,       1, 0, 0, 1, -1}, 
     {"STRLEN",       mfn_strlen,      1, 0, 0, 1,  1}, 
+    {"SYSPARM",      mfn_sysparm,     1, 0, 1, 1,  1},
     {"SUBLIST",      mfn_sublist,     1, 0, 0, 1,  4}, 
     {"SUBST",        mfn_subst,       1, 0, 0, 3,  3}, 
     {"SUBT",         mfn_subt,        1, 0, 1, 2,  9}, 

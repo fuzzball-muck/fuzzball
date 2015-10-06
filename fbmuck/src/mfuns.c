@@ -2096,3 +2096,17 @@ mfn_descr(MFUNARGS)
 	strcpy(buf, intostr(descr));
 	return buf;
 }
+
+const char *
+mfn_sysparm(MFUNARGS)
+{
+	const char *ptr;
+	const char *tune_get_parmstring(const char *name, int mlev);
+	int security;
+
+	ptr = tune_get_parmstring(argv[0], MLevel(player));
+	strcpy(buf, ptr);
+
+	return (buf);
+}
+
