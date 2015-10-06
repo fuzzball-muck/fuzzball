@@ -98,7 +98,7 @@ R's
 
 S's
   secs       select     set        sign       smatch     stimestr   store
-  strip      strlen     sublist    subst      subt       
+  strip      strlen     sublist    subst      subt       sysparm
 
 T's
   tell       testlock   time       timestr    timesub    tolower    toupper
@@ -1533,7 +1533,7 @@ Harry."
 Miscellaneous Functions|Miscellaneous|Misc|MiscFuncs
 Miscellaneous Functions
 
-debug      debugif    isdbref    isnum      muckname   muf        version
+debug     debugif   isdbref   isnum     muckname  muf       sysparm   version
 
 ~----------------------------------------------------------------------------
 ~
@@ -1590,6 +1590,11 @@ to only debug the running of the command {dostuff} when the argument will
 be the player who is running the MPI.
 
 Also see: debug and if
+~
+~
+SYSPARM
+{sysparm:<system parameter>}
+    Returns the value of the given system parameter for authorized players.
 ~
 ~
 ~

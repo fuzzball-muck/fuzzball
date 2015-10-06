@@ -1321,6 +1321,11 @@ ISDBREF
     Returns true if the string passed to it is a valid dbref.
 ~
 ~
+SYSPARM
+{sysparm:<system parameter>}
+    Returns the value of the given system parameter for authorized players.
+~
+~
 VERSION
 {version}
     Returns the version string for the server.
