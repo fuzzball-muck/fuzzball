@@ -121,6 +121,7 @@ const char *mfn_stimestr(MFUNARGS);
 const char *mfn_store(MFUNARGS);
 const char *mfn_strip(MFUNARGS);
 const char *mfn_strlen(MFUNARGS);
+const char *mfn_sysparm(MFUNARGS);
 const char *mfn_sublist(MFUNARGS);
 const char *mfn_subst(MFUNARGS);
 const char *mfn_subt(MFUNARGS);
