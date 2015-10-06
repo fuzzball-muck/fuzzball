@@ -220,14 +220,6 @@
 #endif
 
 /*
- * When compiling as the sanity program, don't do malloc profiling.
- */
-#ifdef SANITY
-#undef MALLOC_PROFILING
-#undef CRT_DEBUG_ALSO
-#endif
-
-/*
  * Very general defines 
  */
 #define TRUE  1
