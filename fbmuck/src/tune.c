@@ -44,40 +44,40 @@ struct tune_str_entry {
 	const char *group;
 	const char *name;
 	const char **str;
-	int security;
+	int readmlev;
+	int writemlev;
 	const char *label;
 	int isnullable;
 	int isdefault;
 };
 
 struct tune_str_entry tune_str_list[] = {
-	{"Commands",   "autolook_cmd", &tp_autolook_cmd, 0, "Room entry look command", 0, 1},
-	{"Currency",   "penny", &tp_penny, 0, "Currency name", 0, 1},
-	{"Currency",   "pennies", &tp_pennies, 0, "Currency name, plural", 0, 1},
-	{"Currency",   "cpenny", &tp_cpenny, 0, "Currency name, capitalized", 0, 1},
-	{"Currency",   "cpennies", &tp_cpennies, 0, "Currency name, capitalized, plural", 0, 1},
-	{"DB Dumps",   "dumpwarn_mesg", &tp_dumpwarn_mesg, 0, "Full dump warning mesg", 1, 1},
-	{"DB Dumps",   "deltawarn_mesg", &tp_deltawarn_mesg, 0, "Delta dump warning mesg", 1, 1},
-	{"DB Dumps",   "dumping_mesg", &tp_dumping_mesg, 0, "Full dump start mesg", 1, 1},
-	{"DB Dumps",   "dumpdeltas_mesg", &tp_dumpdeltas_mesg, 0, "Delta dump start mesg", 1, 1},
-	{"DB Dumps",   "dumpdone_mesg", &tp_dumpdone_mesg, 0, "Dump completion message", 1, 1},
-	{"Idle Boot",  "idle_boot_mesg", &tp_idle_mesg, 0, "Boot message for idling out", 0, 1},
-	{"Player Max", "playermax_warnmesg", &tp_playermax_warnmesg, 0, "Max. players login warning", 0, 1},
-	{"Player Max", "playermax_bootmesg", &tp_playermax_bootmesg, 0, "Max. players boot message", 0, 1},
-	{"Properties", "proplist_counter_fmt", &tp_proplist_counter_fmt, 0, "Proplist counter name format", 0, 1},
-	{"Properties", "proplist_entry_fmt", &tp_proplist_entry_fmt, 0, "Proplist entry name format", 0, 1},
-	{"Registration", "register_mesg", &tp_register_mesg, 0, "Login registration mesg", 0, 1},
-	{"Misc",       "muckname", &tp_muckname, 0, "Muck name", 0, 1},
-	{"Misc",       "leave_mesg", &tp_leave_mesg, 0, "Logoff message", 0, 1},
-	{"Misc",       "huh_mesg", &tp_huh_mesg, 0, "Command unrecognized warning", 0, 1},
-	{"SSL",        "ssl_keyfile_passwd", &tp_ssl_keyfile_passwd, MLEV_GOD, "Password for SSL keyfile", 1, 1},
-        {"SSL",        "ssl_cipher_preference_list", &tp_ssl_cipher_preference_list, MLEV_GOD,
-                       "OpenSSL cipher list (changes requires restart)", 0, 1},
-	{"Database",   "pcreate_flags", &tp_pcreate_flags, 0, "Initial Player Flags", 1, 1},
-	{"Database",   "reserved_names", &tp_reserved_names, 0, "Reserved names smatch", 1, 1},
-	{"Database",   "reserved_player_names", &tp_reserved_player_names, 0, "Reserved player names smatch", 1, 1},
-
-	{NULL, NULL, NULL, 0, NULL, 0, 0}
+	{"Commands",   "autolook_cmd", &tp_autolook_cmd, 0, 0, "Room entry look command", 0, 1},
+	{"Currency",   "penny", &tp_penny, 0, 0, "Currency name", 0, 1},
+	{"Currency",   "pennies", &tp_pennies, 0, 0, "Currency name, plural", 0, 1},
+	{"Currency",   "cpenny", &tp_cpenny, 0, 0, "Currency name, capitalized", 0, 1},
+	{"Currency",   "cpennies", &tp_cpennies, 0, 0, "Currency name, capitalized, plural", 0, 1},
+	{"DB Dumps",   "dumpwarn_mesg", &tp_dumpwarn_mesg, 0, 0, "Full dump warning mesg", 1, 1},
+	{"DB Dumps",   "deltawarn_mesg", &tp_deltawarn_mesg, 0, 0, "Delta dump warning mesg", 1, 1},
+	{"DB Dumps",   "dumping_mesg", &tp_dumping_mesg, 0, 0, "Full dump start mesg", 1, 1},
+	{"DB Dumps",   "dumpdeltas_mesg", &tp_dumpdeltas_mesg, 0, 0, "Delta dump start mesg", 1, 1},
+	{"DB Dumps",   "dumpdone_mesg", &tp_dumpdone_mesg, 0, 0, "Dump completion message", 1, 1},
+	{"Idle Boot",  "idle_boot_mesg", &tp_idle_mesg, 0, 0, "Boot message for idling out", 0, 1},
+	{"Player Max", "playermax_warnmesg", &tp_playermax_warnmesg, 0, 0, "Max. players login warning", 0, 1},
+	{"Player Max", "playermax_bootmesg", &tp_playermax_bootmesg, 0, 0, "Max. players boot message", 0, 1},
+	{"Properties", "proplist_counter_fmt", &tp_proplist_counter_fmt, 0, 0, "Proplist counter name format", 0, 1},
+	{"Properties", "proplist_entry_fmt", &tp_proplist_entry_fmt, 0, 0, "Proplist entry name format", 0, 1},
+	{"Registration", "register_mesg", &tp_register_mesg, 0, 0, "Login registration mesg", 0, 1},
+	{"Misc",       "muckname", &tp_muckname, 0, 0, "Muck name", 0, 1},
+	{"Misc",       "leave_mesg", &tp_leave_mesg, 0, 0, "Logoff message", 0, 1},
+	{"Misc",       "huh_mesg", &tp_huh_mesg, 0, 0, "Command unrecognized warning", 0, 1},
+	{"SSL",        "ssl_keyfile_passwd", &tp_ssl_keyfile_passwd, MLEV_GOD, MLEV_GOD, "Password for SSL keyfile", 1, 1},
+        {"SSL",        "ssl_cipher_preference_list", &tp_ssl_cipher_preference_list, MLEV_GOD, MLEV_GOD,
+                       "OpenSSL cipher list (changes require restart)", 0, 1},
+	{"Database",   "pcreate_flags", &tp_pcreate_flags, 0, 0, "Initial Player Flags", 1, 1},
+	{"Database",   "reserved_names", &tp_reserved_names, 0, 0, "Reserved names smatch", 1, 1},
+	{"Database",   "reserved_player_names", &tp_reserved_player_names, 0, 0, "Reserved player names smatch", 1, 1},
+	{NULL, NULL, NULL, 0, 0, NULL, 0, 0}
 };
 
 
@@ -96,20 +96,20 @@ struct tune_time_entry {
 	const char *group;
 	const char *name;
 	int *tim;
-	int security;
+        int readmlev;
+        int writemlev;
 	const char *label;
 };
 
 struct tune_time_entry tune_time_list[] = {
-	{"Database",  "aging_time", &tp_aging_time, 0, "When to considered an object old and unused"},
-	{"DB Dumps",  "dump_interval", &tp_dump_interval, 0, "Interval between delta dumps"},
-	{"DB Dumps",  "dump_warntime", &tp_dump_warntime, 0, "Interval between warning and dump"},
-	{"DB Dumps",  "monolithic_interval", &tp_monolithic_interval, 0, "Interval between full dumps"},
-	{"Idle Boot", "maxidle", &tp_maxidle, 0, "Maximum idle time before booting"},
-	{"Idle Boot", "idle_ping_time", &tp_idle_ping_time, 0, "Server side keepalive time in seconds"},
-	{"Tuning",    "clean_interval", &tp_clean_interval, 0, "Interval between memory cleanups."},
-
-	{NULL, NULL, NULL, 0}
+	{"Database",  "aging_time", &tp_aging_time, 0, 0, "When to considered an object old and unused"},
+	{"DB Dumps",  "dump_interval", &tp_dump_interval, 0, 0, "Interval between delta dumps"},
+	{"DB Dumps",  "dump_warntime", &tp_dump_warntime, 0, 0, "Interval between warning and dump"},
+	{"DB Dumps",  "monolithic_interval", &tp_monolithic_interval, 0, 0, "Interval between full dumps"},
+	{"Idle Boot", "maxidle", &tp_maxidle, 0, 0, "Maximum idle time before booting"},
+	{"Idle Boot", "idle_ping_time", &tp_idle_ping_time, 0, 0, "Server side keepalive time in seconds"},
+	{"Tuning",    "clean_interval", &tp_clean_interval, 0, 0, "Interval between memory cleanups."},
+	{NULL, NULL, NULL, 0, 0, NULL}
 };
 
 
@@ -161,49 +161,49 @@ struct tune_val_entry {
 	const char *group;
 	const char *name;
 	int *val;
-	int security;
+	int readmlev;
+	int writemlev;
 	const char *label;
 };
 
 struct tune_val_entry tune_val_list[] = {
-	{"Costs",       "max_object_endowment", &tp_max_object_endowment, 0, "Max value of object"},
-	{"Costs",       "object_cost", &tp_object_cost, 0, "Cost to create thing"},
-	{"Costs",       "exit_cost", &tp_exit_cost, 0, "Cost to create exit"},
-	{"Costs",       "link_cost", &tp_link_cost, 0, "Cost to link exit"},
-	{"Costs",       "room_cost", &tp_room_cost, 0, "Cost to create room"},
-	{"Costs",       "lookup_cost", &tp_lookup_cost, 0, "Cost to lookup playername"},
-	{"Currency",    "max_pennies", &tp_max_pennies, 0, "Player currency cap"},
-	{"Currency",    "penny_rate", &tp_penny_rate, 0, "Moves between finding currency, avg"},
-	{"Currency",    "start_pennies", &tp_start_pennies, 0, "Player starting currency count"},
-	{"Killing",     "kill_base_cost", &tp_kill_base_cost, 0, "Cost to guarentee kill"},
-	{"Killing",     "kill_min_cost", &tp_kill_min_cost, 0, "Min cost to kill"},
-	{"Killing",     "kill_bonus", &tp_kill_bonus, 0, "Bonus to killed player"},
-	{"Listeners",   "listen_mlev", &tp_listen_mlev, 0, "Mucker Level required for Listener progs"},
-	{"Logging",     "cmd_log_threshold_msec", &tp_cmd_log_threshold_msec, 0, "Log commands that take longer than X millisecs"},
-	{"Misc",        "max_force_level", &tp_max_force_level, MLEV_GOD, "Maximum number of forces processed within a command"},
-	{"MUF",         "max_process_limit", &tp_max_process_limit, 0, "Max concurrent processes on system"},
-	{"MUF",         "max_plyr_processes", &tp_max_plyr_processes, 0, "Max concurrent processes per player"},
-	{"MUF",         "max_instr_count", &tp_max_instr_count, 0, "Max MUF instruction run length for ML1"},
-	{"MUF",         "max_ml4_preempt_count", &tp_max_ml4_preempt_count, 0, "Max MUF preempt instruction run length for ML4, (0 = no limit)"},
-	{"MUF",         "instr_slice", &tp_instr_slice, 0, "Instructions run per timeslice"},
-	{"MUF",         "process_timer_limit", &tp_process_timer_limit, 0, "Max timers per process"},
-	{"MUF",         "mcp_muf_mlev", &tp_mcp_muf_mlev, 0, "Mucker Level required to use MCP"},
-	{"MUF",		"userlog_mlev", &tp_userlog_mlev, 0, "Mucker Level required to write to userlog"},
-	{"MUF",         "movepennies_muf_mlev", &tp_movepennies_muf_mlev, 0, "Mucker Level required to move pennies non-destructively"},
-	{"MUF",         "addpennies_muf_mlev", &tp_addpennies_muf_mlev, 0, "Mucker Level required to create/destroy pennies"},
-	{"MUF",         "pennies_muf_mlev", &tp_pennies_muf_mlev, 0, "Mucker Level required to read the value of pennies, settings above 1 disable {money}"},
-	{"MPI",         "mpi_max_commands", &tp_mpi_max_commands, 0, "Max MPI instruction run length"},
-	{"Player Max",  "playermax_limit", &tp_playermax_limit, 0, "Max player connections allowed"},
-	{"Spam Limits", "command_burst_size", &tp_command_burst_size, 0, "Commands before limiter engages"},
-	{"Spam Limits", "commands_per_time", &tp_commands_per_time, 0, "Commands allowed per time period"},
-	{"Spam Limits", "command_time_msec", &tp_command_time_msec, 0, "Millisecs per spam limiter time period"},
-	{"Spam Limits", "max_output", &tp_max_output, 0, "Max output buffer size"},
-	{"Tuning",      "pause_min", &tp_pause_min, 0, "Min ms to pause between MUF timeslices"},
-	{"Tuning",      "free_frames_pool", &tp_free_frames_pool, 0, "Size of MUF process frame pool"},
-	{"Tuning",      "max_delta_objs", &tp_max_delta_objs, 0, "Percentage changed objects to force full dump"},
-	{"Tuning",      "max_loaded_objs", &tp_max_loaded_objs, 0, "Max proploaded object percentage"},
-
-	{NULL, NULL, NULL, 0}
+	{"Costs",       "max_object_endowment", &tp_max_object_endowment, 0, 0, "Max value of object"},
+	{"Costs",       "object_cost", &tp_object_cost, 0, 0, "Cost to create thing"},
+	{"Costs",       "exit_cost", &tp_exit_cost, 0, 0, "Cost to create exit"},
+	{"Costs",       "link_cost", &tp_link_cost, 0, 0, "Cost to link exit"},
+	{"Costs",       "room_cost", &tp_room_cost, 0, 0, "Cost to create room"},
+	{"Costs",       "lookup_cost", &tp_lookup_cost, 0, 0, "Cost to lookup playername"},
+	{"Currency",    "max_pennies", &tp_max_pennies, 0, 0, "Player currency cap"},
+	{"Currency",    "penny_rate", &tp_penny_rate, 0, 0, "Moves between finding currency, avg"},
+	{"Currency",    "start_pennies", &tp_start_pennies, 0, 0, "Player starting currency count"},
+	{"Killing",     "kill_base_cost", &tp_kill_base_cost, 0, 0, "Cost to guarentee kill"},
+	{"Killing",     "kill_min_cost", &tp_kill_min_cost, 0, 0, "Min cost to kill"},
+	{"Killing",     "kill_bonus", &tp_kill_bonus, 0, 0, "Bonus to killed player"},
+	{"Listeners",   "listen_mlev", &tp_listen_mlev, 0, 0, "Mucker Level required for Listener progs"},
+	{"Logging",     "cmd_log_threshold_msec", &tp_cmd_log_threshold_msec, 0, 0, "Log commands that take longer than X millisecs"},
+	{"Misc",        "max_force_level", &tp_max_force_level, MLEV_GOD, MLEV_GOD, "Maximum number of forces processed within a command"},
+	{"MUF",         "max_process_limit", &tp_max_process_limit, 0, 0, "Max concurrent processes on system"},
+	{"MUF",         "max_plyr_processes", &tp_max_plyr_processes, 0, 0, "Max concurrent processes per player"},
+	{"MUF",         "max_instr_count", &tp_max_instr_count, 0, 0, "Max MUF instruction run length for ML1"},
+	{"MUF",         "max_ml4_preempt_count", &tp_max_ml4_preempt_count, 0, 0, "Max MUF preempt instruction run length for ML4, (0 = no limit)"},
+	{"MUF",         "instr_slice", &tp_instr_slice, 0, 0, "Instructions run per timeslice"},
+	{"MUF",         "process_timer_limit", &tp_process_timer_limit, 0, 0, "Max timers per process"},
+	{"MUF",         "mcp_muf_mlev", &tp_mcp_muf_mlev, 0, 0, "Mucker Level required to use MCP"},
+	{"MUF",		"userlog_mlev", &tp_userlog_mlev, 0, 0, "Mucker Level required to write to userlog"},
+	{"MUF",         "movepennies_muf_mlev", &tp_movepennies_muf_mlev, 0, 0, "Mucker Level required to move pennies non-destructively"},
+	{"MUF",         "addpennies_muf_mlev", &tp_addpennies_muf_mlev, 0, 0, "Mucker Level required to create/destroy pennies"},
+	{"MUF",         "pennies_muf_mlev", &tp_pennies_muf_mlev, 0, 0, "Mucker Level required to read the value of pennies, settings above 1 disable {money}"},
+	{"MPI",         "mpi_max_commands", &tp_mpi_max_commands, 0, 0, "Max MPI instruction run length"},
+	{"Player Max",  "playermax_limit", &tp_playermax_limit, 0, 0, "Max player connections allowed"},
+	{"Spam Limits", "command_burst_size", &tp_command_burst_size, 0, 0, "Commands before limiter engages"},
+	{"Spam Limits", "commands_per_time", &tp_commands_per_time, 0, 0, "Commands allowed per time period"},
+	{"Spam Limits", "command_time_msec", &tp_command_time_msec, 0, 0, "Millisecs per spam limiter time period"},
+	{"Spam Limits", "max_output", &tp_max_output, 0, 0, "Max output buffer size"},
+	{"Tuning",      "pause_min", &tp_pause_min, 0, 0, "Min ms to pause between MUF timeslices"},
+	{"Tuning",      "free_frames_pool", &tp_free_frames_pool, 0, 0, "Size of MUF process frame pool"},
+	{"Tuning",      "max_delta_objs", &tp_max_delta_objs, 0, 0, "Percentage changed objects to force full dump"},
+	{"Tuning",      "max_loaded_objs", &tp_max_loaded_objs, 0, 0, "Max proploaded object percentage"},
+	{NULL, NULL, NULL, 0, 0, NULL}
 };
 
 
@@ -220,16 +220,17 @@ struct tune_ref_entry {
 	const char *name;
 	int typ;
 	dbref *ref;
-	int security;
+	int readmlev;
+	int writemlev;
 	const char *label;
 };
 
 struct tune_ref_entry tune_ref_list[] = {
-	{"Database", "default_room_parent", TYPE_ROOM, &tp_default_room_parent, 0, "Place to parent new rooms to"},
-	{"Database", "player_start", TYPE_ROOM, &tp_player_start, 0, "Place where new players start"},
-	{"Database", "lost_and_found", TYPE_ROOM, &tp_lost_and_found, 0, "Place for things without a home"},
-	{"Database", "toad_default_recipient", TYPE_PLAYER, &tp_toad_default_recipient, 0, "Default owner for @toaded player's things"},
-	{NULL, NULL, 0, NULL, 0}
+	{"Database", "default_room_parent", TYPE_ROOM, &tp_default_room_parent, 0, 0, "Place to parent new rooms to"},
+	{"Database", "player_start", TYPE_ROOM, &tp_player_start, 0, 0, "Place where new players start"},
+	{"Database", "lost_and_found", TYPE_ROOM, &tp_lost_and_found, 0, 0, "Place for things without a home"},
+	{"Database", "toad_default_recipient", TYPE_PLAYER, &tp_toad_default_recipient, 0, 0, "Default owner for @toaded player's things"},
+	{NULL, NULL, 0, NULL, 0, 0, NULL}
 };
 
 
@@ -292,70 +293,71 @@ struct tune_bool_entry {
 	const char *group;
 	const char *name;
 	int *boolval;
-	int security;
+        int readmlev;
+        int writemlev;
 	const char *label;
 };
 
 struct tune_bool_entry tune_bool_list[] = {
-	{"Commands",   "enable_home", &tp_allow_home, 4, "Enable 'home' command"},
-	{"Commands",   "enable_prefix", &tp_enable_prefix, 4, "Enable prefix actions"},
-        {"Commands",   "enable_match_yield", &tp_enable_match_yield, 4, "Enable yield/overt flags on rooms and things"},
-	{"Commands",   "verbose_clone", &tp_verbose_clone, 4, "Verbose @clone command"},
-	{"Commands",   "recognize_null_command", &tp_recognize_null_command, 4, "Recognize null command"},
-	{"Dark",       "exit_darking", &tp_exit_darking, 0, "Allow setting exits dark"},
-	{"Dark",       "thing_darking", &tp_thing_darking, 0, "Allow setting things dark"},
-	{"Dark",       "dark_sleepers", &tp_dark_sleepers, 0, "Make sleeping players dark"},
-	{"Dark",       "who_hides_dark", &tp_who_hides_dark, 4, "Hide dark players from WHO list"},
-	{"Database",   "realms_control", &tp_realms_control, 0, "Enable Realms control"},
-	{"Database",   "compatible_priorities", &tp_compatible_priorities, 0, "Use legacy exit priority levels on things"},
-	{"DB Dumps",   "diskbase_propvals", &tp_diskbase_propvals, 0, "Enable property value diskbasing (req. restart)"},
-	{"DB Dumps",   "dbdump_warning", &tp_dbdump_warning, 0, "Enable warning messages for full DB dumps"},
-	{"DB Dumps",   "deltadump_warning", &tp_deltadump_warning, 0, "Enable warning messages for delta DB dumps"},
-	{"DB Dumps",   "dumpdone_warning", &tp_dumpdone_warning, 0, "Enable notification of DB dump completion"},
-	{"Idle Boot",  "idleboot", &tp_idleboot, 0, "Enable booting of idle players"},
-	{"Idle Boot",  "idle_ping_enable", &tp_idle_ping_enable, 0, "Enable server side keepalive"},
-	{"Killing",    "restrict_kill", &tp_restrict_kill, 0, "Restrict kill command to players set Kill_OK"},
-	{"Listeners",  "allow_listeners", &tp_listeners, 0, "Enable programs to listen to player output"},
-	{"Listeners",  "allow_listeners_obj", &tp_listeners_obj, 0, "Allow listeners on things"},
-	{"Listeners",  "allow_listeners_env", &tp_listeners_env, 0, "Allow listeners down environment"},
-	{"Logging",    "log_commands", &tp_log_commands, 4, "Enable logging of player commands"},
-	{"Logging",    "log_failed_commands", &tp_log_failed_commands, 4, "Enable logging of unrecognized commands"},
-	{"Logging",    "log_interactive", &tp_log_interactive, 4, "Enable logging of text sent to MUF"},
-	{"Logging",    "log_programs", &tp_log_programs, 4, "Log programs every time they are saved"},
-	{"Movement",   "teleport_to_player", &tp_teleport_to_player, 0, "Allow teleporting to a player"},
-	{"Movement",   "secure_teleport", &tp_secure_teleport, 0, "Restrict actions to Jump_OK or controlled rooms"},
-	{"Movement",   "secure_thing_movement", &tp_thing_movement, 4, "Moving things act like player"},
-	{"MPI",        "do_mpi_parsing", &tp_do_mpi_parsing, 0, "Enable parsing of mesgs for MPI"},
-	{"MPI",        "lazy_mpi_istype_perm", &tp_lazy_mpi_istype_perm, 0, "Enable looser legacy perms for MPI {istype}"},
-	{"MUF",        "optimize_muf", &tp_optimize_muf, 0, "Enable MUF bytecode optimizer"},
-	{"MUF",        "expanded_debug_trace", &tp_expanded_debug, 0, "MUF debug trace shows array contents"},
-	{"MUF",        "force_mlev1_name_notify", &tp_force_mlev1_name_notify, 0, "MUF notify prepends username at ML1"},
-	{"MUF",        "muf_comments_strict", &tp_muf_comments_strict, 0, "MUF comments are strict and not recursive"},
-	{"Player Max", "playermax", &tp_playermax, 0, "Limit number of concurrent players allowed"},
-	{"Properties", "look_propqueues", &tp_look_propqueues, 0, "When a player looks, trigger _look/ propqueues"},
-	{"Properties", "lock_envcheck", &tp_lock_envcheck, 0, "Locks check environment for properties"},
-	{"Properties", "proplist_int_counter", &tp_proplist_int_counter, 0, "Proplist counter uses an integer property"},
-	{"Registration", "registration", &tp_registration, 0, "Require new players to register manually"},
-	{"Tuning",     "periodic_program_purge", &tp_periodic_program_purge, 0, "Periodically free unused MUF programs"},
-	{"WHO",        "use_hostnames", &tp_hostnames, 0, "Resolve IP addresses into hostnames"},
-	{"WHO",        "secure_who", &tp_secure_who, 0, "Disallow WHO command from login screen and programs"},
-	{"WHO",        "who_doing", &tp_who_doing, 0, "Show '_/do' property value in WHO lists"},
-	{"Misc",       "allow_zombies", &tp_zombies, 0, "Enable Zombie things to relay what they hear"},
-	{"Misc",       "wiz_vehicles", &tp_wiz_vehicles, 0, "Only let Wizards set vehicle bits"},
-	{"Misc",       "ignore_support", &tp_ignore_support, 3, "Enable support for @ignoring players"},
-	{"Misc",       "ignore_bidirectional", &tp_ignore_bidirectional, 3, "Enable bidirectional @ignore"},
-	{"Misc",	"m3_huh", &tp_m3_huh, 3, "Enable huh? to call an exit named \"huh?\" and set M3, with full command string"},
-	{"Misc",	"strict_god_priv", &tp_strict_god_priv, MLEV_GOD, "Only God can touch God's objects"
+	{"Commands",   "enable_home", &tp_allow_home, MLEV_WIZARD, MLEV_WIZARD, "Enable 'home' command"},
+	{"Commands",   "enable_prefix", &tp_enable_prefix, MLEV_WIZARD, MLEV_WIZARD, "Enable prefix actions"},
+        {"Commands",   "enable_match_yield", &tp_enable_match_yield, MLEV_WIZARD, MLEV_WIZARD, "Enable yield/overt flags on rooms and things"},
+	{"Commands",   "verbose_clone", &tp_verbose_clone, MLEV_WIZARD, MLEV_WIZARD, "Verbose @clone command"},
+	{"Commands",   "recognize_null_command", &tp_recognize_null_command, MLEV_WIZARD, MLEV_WIZARD, "Recognize null command"},
+	{"Dark",       "exit_darking", &tp_exit_darking, 0, 0, "Allow setting exits dark"},
+	{"Dark",       "thing_darking", &tp_thing_darking, 0, 0, "Allow setting things dark"},
+	{"Dark",       "dark_sleepers", &tp_dark_sleepers, 0, 0, "Make sleeping players dark"},
+	{"Dark",       "who_hides_dark", &tp_who_hides_dark, MLEV_WIZARD, MLEV_WIZARD, "Hide dark players from WHO list"},
+	{"Database",   "realms_control", &tp_realms_control, 0, 0, "Enable Realms control"},
+	{"Database",   "compatible_priorities", &tp_compatible_priorities, 0, 0, "Use legacy exit priority levels on things"},
+	{"DB Dumps",   "diskbase_propvals", &tp_diskbase_propvals, 0, 0, "Enable property value diskbasing (req. restart)"},
+	{"DB Dumps",   "dbdump_warning", &tp_dbdump_warning, 0, 0, "Enable warning messages for full DB dumps"},
+	{"DB Dumps",   "deltadump_warning", &tp_deltadump_warning, 0, 0, "Enable warning messages for delta DB dumps"},
+	{"DB Dumps",   "dumpdone_warning", &tp_dumpdone_warning, 0, 0, "Enable notification of DB dump completion"},
+	{"Idle Boot",  "idleboot", &tp_idleboot, 0, 0, "Enable booting of idle players"},
+	{"Idle Boot",  "idle_ping_enable", &tp_idle_ping_enable, 0, 0, "Enable server side keepalive"},
+	{"Killing",    "restrict_kill", &tp_restrict_kill, 0, 0, "Restrict kill command to players set Kill_OK"},
+	{"Listeners",  "allow_listeners", &tp_listeners, 0, 0, "Enable programs to listen to player output"},
+	{"Listeners",  "allow_listeners_obj", &tp_listeners_obj, 0, 0, "Allow listeners on things"},
+	{"Listeners",  "allow_listeners_env", &tp_listeners_env, 0, 0, "Allow listeners down environment"},
+	{"Logging",    "log_commands", &tp_log_commands, MLEV_WIZARD, MLEV_WIZARD, "Enable logging of player commands"},
+	{"Logging",    "log_failed_commands", &tp_log_failed_commands, MLEV_WIZARD, MLEV_WIZARD, "Enable logging of unrecognized commands"},
+	{"Logging",    "log_interactive", &tp_log_interactive, MLEV_WIZARD, MLEV_WIZARD, "Enable logging of text sent to MUF"},
+	{"Logging",    "log_programs", &tp_log_programs, MLEV_WIZARD, MLEV_WIZARD, "Log programs every time they are saved"},
+	{"Movement",   "teleport_to_player", &tp_teleport_to_player, 0, 0, "Allow teleporting to a player"},
+	{"Movement",   "secure_teleport", &tp_secure_teleport, 0, 0, "Restrict actions to Jump_OK or controlled rooms"},
+	{"Movement",   "secure_thing_movement", &tp_thing_movement, MLEV_WIZARD, MLEV_WIZARD, "Moving things act like player"},
+	{"MPI",        "do_mpi_parsing", &tp_do_mpi_parsing, 0, 0, "Enable parsing of mesgs for MPI"},
+	{"MPI",        "lazy_mpi_istype_perm", &tp_lazy_mpi_istype_perm, 0, 0, "Enable looser legacy perms for MPI {istype}"},
+	{"MUF",        "optimize_muf", &tp_optimize_muf, 0, 0, "Enable MUF bytecode optimizer"},
+	{"MUF",        "expanded_debug_trace", &tp_expanded_debug, 0, 0, "MUF debug trace shows array contents"},
+	{"MUF",        "force_mlev1_name_notify", &tp_force_mlev1_name_notify, 0, 0, "MUF notify prepends username at ML1"},
+	{"MUF",        "muf_comments_strict", &tp_muf_comments_strict, 0, 0, "MUF comments are strict and not recursive"},
+	{"Player Max", "playermax", &tp_playermax, 0, 0, "Limit number of concurrent players allowed"},
+	{"Properties", "look_propqueues", &tp_look_propqueues, 0, 0, "When a player looks, trigger _look/ propqueues"},
+	{"Properties", "lock_envcheck", &tp_lock_envcheck, 0, 0, "Locks check environment for properties"},
+	{"Properties", "proplist_int_counter", &tp_proplist_int_counter, 0, 0, "Proplist counter uses an integer property"},
+	{"Registration", "registration", &tp_registration, 0, 0, "Require new players to register manually"},
+	{"Tuning",     "periodic_program_purge", &tp_periodic_program_purge, 0, 0, "Periodically free unused MUF programs"},
+	{"WHO",        "use_hostnames", &tp_hostnames, 0, 0, "Resolve IP addresses into hostnames"},
+	{"WHO",        "secure_who", &tp_secure_who, 0, 0, "Disallow WHO command from login screen and programs"},
+	{"WHO",        "who_doing", &tp_who_doing, 0, 0, "Show '_/do' property value in WHO lists"},
+	{"Misc",       "allow_zombies", &tp_zombies, 0, 0, "Enable Zombie things to relay what they hear"},
+	{"Misc",       "wiz_vehicles", &tp_wiz_vehicles, 0, 0, "Only let Wizards set vehicle bits"},
+	{"Misc",       "ignore_support", &tp_ignore_support, MLEV_MASTER, MLEV_MASTER, "Enable support for @ignoring players"},
+	{"Misc",       "ignore_bidirectional", &tp_ignore_bidirectional, MLEV_MASTER, MLEV_MASTER, "Enable bidirectional @ignore"},
+	{"Misc",	"m3_huh", &tp_m3_huh, MLEV_MASTER, MLEV_MASTER, "Enable huh? to call an exit named \"huh?\" and set M3, with full command string"},
+	{"Misc",	"strict_god_priv", &tp_strict_god_priv, MLEV_GOD, MLEV_GOD, "Only God can touch God's objects"
 #ifndef GOD_PRIV
                                                                           " (not active: GOD_PRIV is not #defined)"
 #endif
         },
-	{"SSL",        "starttls_allow", &tp_starttls_allow, 3, "Enable TELNET STARTTLS encryption on plaintext port"},
-        {"SSL",        "server_cipher_preference", &tp_cipher_server_preference, 4, "Honor server cipher preference order over client's (changes require restart)"},
-	{"Charset",	"7bit_thing_names", &tp_7bit_thing_names, 4, "Thing names may contain only 7-bit characters"},
-	{"Charset",	"7bit_other_names", &tp_7bit_other_names, 4, "Exit/room/muf names may contain only 7-bit characters"},
+	{"SSL",        "starttls_allow", &tp_starttls_allow, MLEV_MASTER, MLEV_MASTER, "Enable TELNET STARTTLS encryption on plaintext port"},
+        {"SSL",        "server_cipher_preference", &tp_cipher_server_preference, MLEV_WIZARD, MLEV_WIZARD, "Honor server cipher preference order over client's (changes require restart)"},
+	{"Charset",	"7bit_thing_names", &tp_7bit_thing_names, MLEV_WIZARD, MLEV_WIZARD, "Thing names may contain only 7-bit characters"},
+	{"Charset",	"7bit_other_names", &tp_7bit_other_names, MLEV_WIZARD, MLEV_WIZARD, "Exit/room/muf names may contain only 7-bit characters"},
 
-	{NULL, NULL, NULL, 0}
+	{NULL, NULL, NULL, 0, 0, NULL}
 };
 
 
@@ -404,7 +406,7 @@ tune_count_parms(void)
 
 
 void
-tune_display_parms(dbref player, char *name, int security)
+tune_display_parms(dbref player, char *name, int mlev)
 {
 	char buf[BUFFER_LEN + 50];
 	struct tune_str_entry *tstr = tune_str_list;
@@ -414,7 +416,7 @@ tune_display_parms(dbref player, char *name, int security)
 	struct tune_bool_entry *tbool = tune_bool_list;
 
 	while (tstr->name) {
-		if (tstr->security > security) { tstr++; continue; }
+		if (tstr->readmlev > mlev) { tstr++; continue; }
 		strcpyn(buf, sizeof(buf), tstr->name);
 		if (!*name || equalstr(name, buf)) {
 			snprintf(buf, sizeof(buf), "(str)  %-20s = %.4096s", tstr->name, *tstr->str);
@@ -424,7 +426,7 @@ tune_display_parms(dbref player, char *name, int security)
 	}
 
 	while (ttim->name) {
-		if (ttim->security > security) { ttim++; continue; }
+		if (ttim->readmlev > mlev) { ttim++; continue; }
 		strcpyn(buf, sizeof(buf), ttim->name);
 		if (!*name || equalstr(name, buf)) {
 			snprintf(buf, sizeof(buf), "(time) %-20s = %s", ttim->name, timestr_full(*ttim->tim));
@@ -434,7 +436,7 @@ tune_display_parms(dbref player, char *name, int security)
 	}
 
 	while (tval->name) {
-		if (tval->security > security) { tval++; continue; }
+		if (tval->readmlev > mlev) { tval++; continue; }
 		strcpyn(buf, sizeof(buf), tval->name);
 		if (!*name || equalstr(name, buf)) {
 			snprintf(buf, sizeof(buf), "(int)  %-20s = %d", tval->name, *tval->val);
@@ -444,7 +446,7 @@ tune_display_parms(dbref player, char *name, int security)
 	}
 
 	while (tref->name) {
-		if (tref->security > security) { tref++; continue; }
+		if (tref->readmlev > mlev) { tref++; continue; }
 		strcpyn(buf, sizeof(buf), tref->name);
 		if (!*name || equalstr(name, buf)) {
 			snprintf(buf, sizeof(buf), "(ref)  %-20s = %s", tref->name, unparse_object(player, *tref->ref));
@@ -454,7 +456,7 @@ tune_display_parms(dbref player, char *name, int security)
 	}
 
 	while (tbool->name) {
-		if (tbool->security > security) {tbool++; continue; }
+		if (tbool->readmlev > mlev) {tbool++; continue; }
 		strcpyn(buf, sizeof(buf), tbool->name);
 		if (!*name || equalstr(name, buf)) {
 			snprintf(buf, sizeof(buf), "(bool) %-20s = %s", tbool->name, ((*tbool->boolval) ? "yes" : "no"));
@@ -518,7 +520,7 @@ tune_parms_array(const char* pattern, int mlev)
 
 	strcpyn(pat, sizeof(pat), pattern);
 	while (tbool->name) {
-		if (tbool->security <= mlev) {
+		if (tbool->readmlev <= mlev) {
 			strcpyn(buf, sizeof(buf), tbool->name);
 			if (!*pattern || equalstr(pat, buf)) {
 				stk_array *item = new_array_dictionary();
@@ -526,7 +528,8 @@ tune_parms_array(const char* pattern, int mlev)
 				array_set_strkey_strval(&item, "group", tbool->group);
 				array_set_strkey_strval(&item, "name",  tbool->name);
 				array_set_strkey_intval(&item, "value", *tbool->boolval? 1 : 0);
-				array_set_strkey_intval(&item, "mlev",  tbool->security);
+				array_set_strkey_intval(&item, "readmlev",  tbool->readmlev);
+				array_set_strkey_intval(&item, "writemlev",  tbool->writemlev);
 				array_set_strkey_strval(&item, "label", tbool->label);
 
 				temp1.type = PROG_ARRAY;
@@ -539,7 +542,7 @@ tune_parms_array(const char* pattern, int mlev)
 	}
 
 	while (ttim->name) {
-		if (ttim->security <= mlev) {
+		if (ttim->readmlev <= mlev) {
 			strcpyn(buf, sizeof(buf), ttim->name);
 			if (!*pattern || equalstr(pat, buf)) {
 				stk_array *item = new_array_dictionary();
@@ -547,7 +550,8 @@ tune_parms_array(const char* pattern, int mlev)
 				array_set_strkey_strval(&item, "group", ttim->group);
 				array_set_strkey_strval(&item, "name",  ttim->name);
 				array_set_strkey_intval(&item, "value", *ttim->tim);
-				array_set_strkey_intval(&item, "mlev",  ttim->security);
+				array_set_strkey_intval(&item, "readmlev",  ttim->readmlev);
+				array_set_strkey_intval(&item, "writemlev",  ttim->writemlev);
 				array_set_strkey_strval(&item, "label", ttim->label);
 
 				temp1.type = PROG_ARRAY;
@@ -560,7 +564,7 @@ tune_parms_array(const char* pattern, int mlev)
 	}
 
 	while (tval->name) {
-		if (tval->security <= mlev) {
+		if (tval->readmlev <= mlev) {
 			strcpyn(buf, sizeof(buf), tval->name);
 			if (!*pattern || equalstr(pat, buf)) {
 				stk_array *item = new_array_dictionary();
@@ -568,7 +572,8 @@ tune_parms_array(const char* pattern, int mlev)
 				array_set_strkey_strval(&item, "group", tval->group);
 				array_set_strkey_strval(&item, "name",  tval->name);
 				array_set_strkey_intval(&item, "value", *tval->val);
-				array_set_strkey_intval(&item, "mlev",  tval->security);
+				array_set_strkey_intval(&item, "readmlev",  tval->readmlev);
+				array_set_strkey_intval(&item, "writemlev",  tval->writemlev);
 				array_set_strkey_strval(&item, "label", tval->label);
 
 				temp1.type = PROG_ARRAY;
@@ -581,7 +586,7 @@ tune_parms_array(const char* pattern, int mlev)
 	}
 
 	while (tref->name) {
-		if (tref->security <= mlev) {
+		if (tref->readmlev <= mlev) {
 			strcpyn(buf, sizeof(buf), tref->name);
 			if (!*pattern || equalstr(pat, buf)) {
 				stk_array *item = new_array_dictionary();
@@ -589,8 +594,10 @@ tune_parms_array(const char* pattern, int mlev)
 				array_set_strkey_strval(&item, "group", tref->group);
 				array_set_strkey_strval(&item, "name",  tref->name);
 				array_set_strkey_refval(&item, "value", *tref->ref);
-				array_set_strkey_intval(&item, "mlev",  tref->security);
+				array_set_strkey_intval(&item, "readmlev",  tref->readmlev);
+				array_set_strkey_intval(&item, "writemlev",  tref->writemlev);
 				array_set_strkey_strval(&item, "label", tref->label);
+
 				switch (tref->typ) {
 					case NOTYPE:
 						array_set_strkey_strval(&item, "objtype",  "any");
@@ -628,7 +635,7 @@ tune_parms_array(const char* pattern, int mlev)
 	}
 
 	while (tstr->name) {
-		if (tstr->security <= mlev) {
+		if (tstr->readmlev <= mlev) {
 			strcpyn(buf, sizeof(buf), tstr->name);
 			if (!*pattern || equalstr(pat, buf)) {
 				stk_array *item = new_array_dictionary();
@@ -636,7 +643,8 @@ tune_parms_array(const char* pattern, int mlev)
 				array_set_strkey_strval(&item, "group", tstr->group);
 				array_set_strkey_strval(&item, "name",  tstr->name);
 				array_set_strkey_strval(&item, "value", *tstr->str);
-				array_set_strkey_intval(&item, "mlev",  tstr->security);
+				array_set_strkey_intval(&item, "readmlev",  tstr->readmlev);
+				array_set_strkey_intval(&item, "writemlev",  tstr->writemlev);
 				array_set_strkey_strval(&item, "label", tstr->label);
 
 				temp1.type = PROG_ARRAY;
@@ -682,7 +690,7 @@ tune_get_parmstring(const char *name, int mlev)
 
 	while (tstr->name) {
 		if (!string_compare(name, tstr->name)) {
-			if (tstr->security > mlev)
+			if (tstr->readmlev > mlev)
 				return "";
 			return (*tstr->str);
 		}
@@ -691,7 +699,7 @@ tune_get_parmstring(const char *name, int mlev)
 
 	while (ttim->name) {
 		if (!string_compare(name, ttim->name)) {
-			if (ttim->security > mlev)
+			if (ttim->readmlev > mlev)
 				return "";
 			snprintf(buf, sizeof(buf), "%d", *ttim->tim);
 			return (buf);
@@ -701,7 +709,7 @@ tune_get_parmstring(const char *name, int mlev)
 
 	while (tval->name) {
 		if (!string_compare(name, tval->name)) {
-			if (tval->security > mlev)
+			if (tval->readmlev > mlev)
 				return "";
 			snprintf(buf, sizeof(buf), "%d", *tval->val);
 			return (buf);
@@ -711,7 +719,7 @@ tune_get_parmstring(const char *name, int mlev)
 
 	while (tref->name) {
 		if (!string_compare(name, tref->name)) {
-			if (tref->security > mlev)
+			if (tref->readmlev > mlev)
 				return "";
 			snprintf(buf, sizeof(buf), "#%d", *tref->ref);
 			return (buf);
@@ -721,7 +729,7 @@ tune_get_parmstring(const char *name, int mlev)
 
 	while (tbool->name) {
 		if (!string_compare(name, tbool->name)) {
-			if (tbool->security > mlev)
+			if (tbool->readmlev > mlev)
 				return "";
 			snprintf(buf, sizeof(buf), "%s", ((*tbool->boolval) ? "yes" : "no"));
 			return (buf);
@@ -747,7 +755,7 @@ tune_freeparms()
 }
 
 int
-tune_setparm(const char *parmname, const char *val, int security)
+tune_setparm(const char *parmname, const char *val, int mlev)
 {
 	struct tune_str_entry *tstr = tune_str_list;
 	struct tune_time_entry *ttim = tune_time_list;
@@ -762,7 +770,7 @@ tune_setparm(const char *parmname, const char *val, int security)
 
 	while (tstr->name) {
 		if (!string_compare(parmname, tstr->name)) {
-			if (tstr->security > security) return TUNESET_DENIED;
+			if (tstr->writemlev > mlev) return TUNESET_DENIED;
 			if (!tstr->isnullable && !*parmval) return TUNESET_BADVAL;
 			if (!tstr->isdefault)
 				free((char *) *tstr->str);
@@ -778,7 +786,7 @@ tune_setparm(const char *parmname, const char *val, int security)
 
 	while (ttim->name) {
 		if (!string_compare(parmname, ttim->name)) {
-			if (ttim->security > security) return TUNESET_DENIED;
+			if (ttim->writemlev > mlev) return TUNESET_DENIED;
 			int days, hrs, mins, secs, result;
 			char *end;
 
@@ -827,7 +835,7 @@ tune_setparm(const char *parmname, const char *val, int security)
 
 	while (tval->name) {
 		if (!string_compare(parmname, tval->name)) {
-			if (tval->security > security) return TUNESET_DENIED;
+			if (tval->writemlev > mlev) return TUNESET_DENIED;
 			if (!number(parmval))
 				return TUNESET_SYNTAX;
 			*tval->val = atoi(parmval);
@@ -838,7 +846,7 @@ tune_setparm(const char *parmname, const char *val, int security)
 
 	while (tref->name) {
 		if (!string_compare(parmname, tref->name)) {
-			if (tref->security > security) return TUNESET_DENIED;
+			if (tref->writemlev > mlev) return TUNESET_DENIED;
 
 			dbref obj;
 
@@ -859,7 +867,7 @@ tune_setparm(const char *parmname, const char *val, int security)
 
 	while (tbool->name) {
 		if (!string_compare(parmname, tbool->name)) {
-			if (tbool->security > security) return TUNESET_DENIED;
+			if (tbool->writemlev > mlev) return TUNESET_DENIED;
 			if (*parmval == 'y' || *parmval == 'Y') {
 				*tbool->boolval = 1;
 			} else if (*parmval == 'n' || *parmval == 'N') {
