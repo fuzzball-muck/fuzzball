@@ -163,5 +163,6 @@ extern void tune_load_parms_from_file(FILE * f, dbref player, int cnt);
 extern void tune_save_parms_to_file(FILE * f);
 extern int tune_setparm(const char *parmname, const char *val, int security);
 extern stk_array *tune_parms_array(const char* pattern, int mlev);
+const char *tune_get_parmstring(const char *name, int mlev);
 
 #endif /* _TUNE_H */
