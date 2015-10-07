@@ -2101,10 +2101,8 @@ const char *
 mfn_sysparm(MFUNARGS)
 {
 	const char *ptr;
-	const char *tune_get_parmstring(const char *name, int mlev);
-	int security;
 
-	ptr = tune_get_parmstring(argv[0], MLevel(player));
+	ptr = tune_get_parmstring(argv[0], TUNE_MLEV(player));
 	strcpy(buf, ptr);
 
 	return (buf);

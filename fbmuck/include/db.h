@@ -271,6 +271,20 @@ if(fl) \
                    (((FLAGS(x) & MUCKER)? 2:0) + ((FLAGS(x) & SMUCKER)? 1:0) + 1) : \
                     ((FLAGS(x) & ABODE)? 0 : 1))
 
+/* Mucker levels */
+#define MLEV_APPRENTICE   1
+#define MLEV_JOURNEYMAN   2
+#define MLEV_MASTER       3
+#define MLEV_WIZARD       4
+
+#ifdef GOD_PRIV
+# define MLEV_GOD               255
+# define TUNE_MLEV(player)      (God(player) ? MLEV_GOD : MLevel(player))
+#else
+# define MLEV_GOD               MLEV_WIZARD
+# define TUNE_MLEV(player)      MLevel(player)
+#endif
+
 #define PREEMPT 0
 #define FOREGROUND 1
 #define BACKGROUND 2

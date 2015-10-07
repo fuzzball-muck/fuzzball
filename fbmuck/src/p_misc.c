@@ -625,15 +625,13 @@ void
 prim_sysparm(PRIM_PROTOTYPE)
 {
 	const char *ptr;
-	const char *tune_get_parmstring(const char *name, int mlev);
-	int security = TUNE_MLEV(player);
 
 	CHECKOP(1);
 	oper1 = POP();				/* string: system parm name */
 	if (oper1->type != PROG_STRING)
 		abort_interp("Invalid argument.");
 	if (oper1->data.string) {
-		ptr = tune_get_parmstring(oper1->data.string->data, security);
+		ptr = tune_get_parmstring(oper1->data.string->data, TUNE_MLEV(player));
 	} else {
 		ptr = "";
 	}
@@ -695,7 +693,6 @@ prim_cancallp(PRIM_PROTOTYPE)
 void
 prim_setsysparm(PRIM_PROTOTYPE)
 {
-        const char *tune_get_parmstring(const char *name, int mlev);
 	const char *oldvalue, *newvalue;
 	int security = TUNE_MLEV(player);
 
