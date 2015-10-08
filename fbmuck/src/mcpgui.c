@@ -1146,25 +1146,3 @@ post_dlog_cb(GUI_EVENT_CB_ARGS)
 		GuiFree(dlogid);
 	}
 }
-
-
-void
-do_post_dlog(int descr, const char *text)
-{
-	const char *keywords[] = { "Misc.", "Wedding", "Party", "Toading", "New MUCK" };
-	const char *dlg = GuiSimple(descr, "A demonstration dialog", post_dlog_cb, NULL, NULL);
-
-	GuiEdit(dlg, NULL, "subj", "Subject", text, 60, GUI_EW);
-	GuiCombo(dlg, NULL, "keywd", "Keywords", "Misc.", 60, 1, GUI_EW | GUI_HEXP);
-	GuiListInsert(dlg, "keywd", GUI_LIST_END, 5, keywords);
-
-	GuiMulti(dlg, NULL, "body", NULL, 80, 12, 1, GUI_NSEW | GUI_VEXP | COLSPAN(2));
-	GuiHRule(dlg, NULL, NULL, 2, COLSPAN(2));
-	GuiFrame(dlg, NULL, "bfr", GUI_EW | COLSPAN(2) | TOPPAD(0));
-	GuiFrame(dlg, "bfr", NULL, GUI_EW | GUI_HEXP | GUI_NONL);
-	GuiVRule(dlg, NULL, NULL, 2, GUI_NONL);
-	GuiButton(dlg, NULL, "post", "Post", 8, 1, GUI_E | GUI_NONL);
-	GuiButton(dlg, NULL, "cancel", "Cancel", 8, 1, GUI_E | TOPPAD(0));
-
-	GuiShow(dlg);
-}
