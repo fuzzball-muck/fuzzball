@@ -9,7 +9,6 @@ extern int notify(dbref player, const char *msg);
 extern int notify_nolisten(dbref player, const char *msg, int ispriv);
 extern int notify_filtered(dbref from, dbref player, const char *msg, int ispriv);
 extern void wall_and_flush(const char *msg);
-extern void flush_user_output(dbref player);
 extern void wall_wizards(const char *msg);
 extern int shutdown_flag;		/* if non-zero, interface should shut down */
 extern int restart_flag;		/* if non-zero, should restart after shut down */

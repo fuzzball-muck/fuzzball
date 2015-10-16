@@ -847,9 +847,6 @@ do_serverdebug(int descr, dbref player, const char *arg1, const char *arg2)
 	notify(player, "Done.");
 }
 
-
-long max_open_files(void);		/* from interface.c */
-
 void
 do_usage(dbref player)
 {

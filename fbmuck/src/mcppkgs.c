@@ -14,9 +14,6 @@
 #include "interface.h"
 #include "msgparse.h"
 
-
-struct line *get_new_line(void);
-
 void
 show_mcp_error(McpFrame * mfr, char *topic, char *text)
 {

@@ -183,7 +183,6 @@ SSL_CTX *ssl_ctx;
 #endif
 
 static int ndescriptors = 0;
-extern void fork_and_dump(void);
 
 void process_commands(void);
 void shovechars();
@@ -195,8 +194,6 @@ void welcome_user(struct descriptor_data *d);
 void show_file(struct descriptor_data *d, const char *filename);
 void check_connect(struct descriptor_data *d, const char *msg);
 void close_sockets(const char *msg);
-int boot_off(dbref player);
-void boot_player_off(dbref player);
 
 #ifdef USE_IPV6
 const char *addrout_v6(int, struct in6_addr *, unsigned short);
@@ -220,13 +217,11 @@ int process_input(struct descriptor_data *d);
 void announce_connect(int, dbref);
 void announce_disconnect(struct descriptor_data *);
 char *time_format_1(long);
-char *time_format_2(long);
 void    init_descriptor_lookup();
 void    init_descr_count_lookup();
 void    remember_descriptor(struct descriptor_data *);
 void    remember_player_descr(dbref player, int);
 void    update_desc_count_table();
-int*    get_player_descrs(dbref player, int* count);
 void    forget_player_descr(dbref player, int);
 void    forget_descriptor(struct descriptor_data *);
 struct descriptor_data* descrdata_by_descr(int i);
@@ -234,7 +229,6 @@ struct descriptor_data* lookup_descriptor(int);
 int online(dbref player);
 int online_init(void);
 dbref online_next(int *ptr);
-long max_open_files(void);
 #ifdef MUD_ID
 void do_setuid(char *user);
 #endif /* MUD_ID */
