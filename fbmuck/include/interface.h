@@ -5,7 +5,6 @@
 #include "mcp.h"
 
 /* these symbols must be defined by the interface */
-extern int notify(dbref player, const char *msg);
 extern int notify_nolisten(dbref player, const char *msg, int ispriv);
 extern int notify_filtered(dbref from, dbref player, const char *msg, int ispriv);
 extern void wall_and_flush(const char *msg);

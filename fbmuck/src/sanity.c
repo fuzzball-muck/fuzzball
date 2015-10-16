@@ -333,14 +333,6 @@ check_player(dbref player, dbref obj)
 	}
 }
 
-
-void
-check_program(dbref player, dbref obj)
-{
-	return;
-}
-
-
 void
 check_garbage(dbref player, dbref obj)
 {
@@ -489,7 +481,6 @@ check_object(dbref player, dbref obj)
 		check_exit(player, obj);
 		break;
 	case TYPE_PROGRAM:
-		check_program(player, obj);
 		break;
 	case TYPE_GARBAGE:
 		check_garbage(player, obj);
@@ -822,18 +813,6 @@ fix_player(dbref obj)
 }
 
 void
-fix_program(dbref obj)
-{
-	return;
-}
-
-void
-fix_garbage(dbref obj)
-{
-	return;
-}
-
-void
 find_misplaced_objects(void)
 {
 	dbref loop, player = NOTHING, room;
@@ -948,10 +927,7 @@ find_misplaced_objects(void)
 			fix_exit(loop);
 			break;
 		case TYPE_PROGRAM:
-			fix_program(loop);
-			break;
 		case TYPE_GARBAGE:
-			fix_garbage(loop);
 			break;
 		}
 	}

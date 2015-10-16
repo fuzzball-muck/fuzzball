@@ -259,13 +259,3 @@ parse_omessage(int descr, dbref player, dbref dest, dbref exit, const char *msg,
 
 	notify_except(DBFETCH(dest)->contents, player, buf, player);
 }
-
-
-int
-blank(const char *s)
-{
-	while (*s && isspace(*s))
-		s++;
-
-	return !(*s);
-}
