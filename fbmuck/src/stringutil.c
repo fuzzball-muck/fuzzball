@@ -827,3 +827,71 @@ blank(const char *s)
 
         return !(*s);
 }
+
+/* returns true for numbers of form [ + | - ] <series of digits> */
+int
+number(const char *s)
+{
+	if (!s)
+		return 0;
+	while (isspace(*s))
+		s++;
+	if (*s == '+' || *s == '-')
+		s++;
+	if (!*s)
+		return 0;
+	for (; *s; s++)
+		if (*s < '0' || *s > '9')
+			return 0;
+	return 1;
+}
+
+/* returns true for floats of form  [+|-]<digits>.<digits>[E[+|-]<digits>] */
+int
+ifloat(const char *s)
+{
+	const char *hold;
+
+	if (!s)
+		return 0;
+	while (isspace(*s))
+		s++;
+	if (*s == '+' || *s == '-')
+		s++;
+	/* WORK: for when float parsing is improved.
+	 * if (!string_compare(s, "inf")) {
+	 * return 1;
+	 * }
+	 * if (!string_compare(s, "nan")) {
+	 * return 1;
+	 * }
+	 */
+	hold = s;
+	while ((*s) && (*s >= '0' && *s <= '9'))
+		s++;
+	if ((!*s) || (s == hold))
+		return 0;
+	if (*s != '.')
+		return 0;
+	s++;
+	hold = s;
+	while ((*s) && (*s >= '0' && *s <= '9'))
+		s++;
+	if (hold == s)
+		return 0;
+	if (!*s)
+		return 1;
+	if ((*s != 'e') && (*s != 'E'))
+		return 0;
+	s++;
+	if (*s == '+' || *s == '-')
+		s++;
+	hold = s;
+	while ((*s) && (*s >= '0' && *s <= '9'))
+		s++;
+	if (s == hold)
+		return 0;
+	if (*s)
+		return 0;
+	return 1;
+}

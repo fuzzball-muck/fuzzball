@@ -34,6 +34,96 @@ void fork_and_dump(void);
 void dump_database(void);
 
 void
+macrodump(struct macrotable *node, FILE * f)
+{
+	if (!node)
+		return;
+	macrodump(node->left, f);
+	putstring(f, node->name);
+	putstring(f, node->definition);
+	putref(f, node->implementor);
+	macrodump(node->right, f);
+}
+
+char *
+file_line(FILE * f)
+{
+	char buf[BUFFER_LEN];
+	int len;
+
+	if (!fgets(buf, BUFFER_LEN, f))
+		return NULL;
+	len = strlen(buf);
+	if (buf[len-1] == '\n') {
+		buf[--len] = '\0';
+	}
+	if (buf[len-1] == '\r') {
+		buf[--len] = '\0';
+	}
+	return alloc_string(buf);
+}
+
+void
+foldtree(struct macrotable *center)
+{
+	int count = 0;
+	struct macrotable *nextcent = center;
+
+	for (; nextcent; nextcent = nextcent->left)
+		count++;
+	if (count > 1) {
+		for (nextcent = center, count /= 2; count--; nextcent = nextcent->left) ;
+		if (center->left)
+			center->left->right = NULL;
+		center->left = nextcent;
+		foldtree(center->left);
+	}
+	for (count = 0, nextcent = center; nextcent; nextcent = nextcent->right)
+		count++;
+	if (count > 1) {
+		for (nextcent = center, count /= 2; count--; nextcent = nextcent->right) ;
+		if (center->right)
+			center->right->left = NULL;
+		foldtree(center->right);
+	}
+}
+
+int
+macrochain(struct macrotable *lastnode, FILE * f)
+{
+	char *line, *line2;
+	struct macrotable *newmacro;
+
+	if (!(line = file_line(f)))
+		return 0;
+	line2 = file_line(f);
+
+	newmacro = (struct macrotable *) new_macro(line, line2, getref(f));
+	free(line);
+	free(line2);
+
+	if (!macrotop)
+		macrotop = (struct macrotable *) newmacro;
+	else {
+		newmacro->left = lastnode;
+		lastnode->right = newmacro;
+	}
+	return (1 + macrochain(newmacro, f));
+}
+
+void
+macroload(FILE * f)
+{
+	int count = 0;
+
+	macrotop = NULL;
+	count = macrochain(macrotop, f);
+	for (count /= 2; count--; macrotop = macrotop->right) ;
+	foldtree(macrotop);
+	return;
+}
+
+void
 do_dump(dbref player, const char *newfile)
 {
 	char buf[BUFFER_LEN];
