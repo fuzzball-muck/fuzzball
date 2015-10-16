@@ -46,11 +46,9 @@ extern int control_process(dbref player, int procnum);
 extern void do_dequeue(int descr, dbref player, const char *arg1);
 extern void propqueue(int descr, dbref player, dbref where, dbref trigger, dbref what,
 					  dbref xclude, const char *propname, const char *toparg,
-
 					  int mlev, int mt);
 extern void envpropqueue(int descr, dbref player, dbref where, dbref trigger, dbref what,
 						 dbref xclude, const char *propname, const char *toparg,
-
 						 int mlev, int mt);
 extern int scan_instances(dbref program);
 extern int program_active(dbref program);
@@ -58,8 +56,6 @@ extern int program_active(dbref program);
 /* from db.c */
 extern int number(const char *s);
 extern int ifloat(const char *s);
-extern void putproperties(FILE * f, int obj);
-extern void getproperties(FILE * f, int obj, const char *pdir);
 extern void free_line(struct line *l);
 extern void db_free_object(dbref i);
 extern void db_clear_object(dbref i);
@@ -67,8 +63,6 @@ extern void macrodump(struct macrotable *node, FILE * f);
 extern void macroload(FILE * f);
 extern void free_prog_text(struct line *l);
 extern struct line *get_new_line(void);
-extern struct line *read_program(dbref i);
-extern void write_program(struct line *first, dbref i);
 extern char *show_line_prims(struct frame *fr, dbref program, struct inst *pc, int maxprims, int markpc);
 extern dbref db_write_deltas(FILE * f);
 
@@ -89,10 +83,11 @@ extern int link_exit_dry(int descr, dbref player, dbref exit, char *dest_name, d
 extern void do_action(int descr, dbref player, const char *action_name, const char *source_name);
 
 /* from edit.c */
-extern struct macrotable
-*new_macro(const char *name, const char *definition, dbref player);
+extern struct macrotable *new_macro(const char *name, const char *definition, dbref player);
 extern char *macro_expansion(struct macrotable *node, const char *match);
 extern void match_and_list(int descr, dbref player, const char *name, char *linespec);
+extern struct line *read_program(dbref i);
+extern void write_program(struct line *first, dbref i);
 extern void do_list(dbref player, dbref program, int *oarg, int argc);
 
 /* From game.c */
@@ -357,7 +352,6 @@ extern short global_dumpdone;
 #ifdef SPAWN_HOST_RESOLVER
 extern void spawn_resolver(void);
 #endif
-
 
 /* from events.c */
 extern void dump_db_now(void);
