@@ -22,8 +22,6 @@ static int tmp, result;
 static dbref ref;
 static char buf[BUFFER_LEN];
 
-extern struct line* get_new_line(void);
-
 void
 copyobj(dbref player, dbref old, dbref nu)
 {

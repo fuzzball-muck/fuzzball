@@ -66,6 +66,7 @@ extern void db_clear_object(dbref i);
 extern void macrodump(struct macrotable *node, FILE * f);
 extern void macroload(FILE * f);
 extern void free_prog_text(struct line *l);
+extern struct line *get_new_line(void);
 extern struct line *read_program(dbref i);
 extern void write_program(struct line *first, dbref i);
 extern char *show_line_prims(struct frame *fr, dbref program, struct inst *pc, int maxprims, int markpc);
@@ -123,7 +124,6 @@ extern long size_object(dbref i, int load);
 
 
 /* extern void look_room_simple(dbref player, dbref room); */
-extern void do_look_around(int descr, dbref player);
 extern void do_look_at(int descr, dbref player, const char *name, const char *detail);
 extern void do_examine(int descr, dbref player, const char *name, const char *dir);
 extern void do_inventory(dbref player);
@@ -198,6 +198,8 @@ extern void do_wall(dbref player, const char *message);
 extern void do_gripe(dbref player, const char *message);
 extern void do_say(dbref player, const char *message);
 extern void do_page(dbref player, const char *arg1, const char *arg2);
+extern void do_pose(dbref player, const char *message);
+extern void do_whisper(int descr, dbref player, const char *arg1, const char *arg2);
 extern void notify_listeners(dbref who, dbref xprog, dbref obj, dbref room, const char *msg, int isprivate);
 extern void notify_except(dbref first, dbref exception, const char *msg, dbref who);
 extern void parse_oprop(int descr, dbref player, dbref dest, dbref exit, const char *propname, const char *prefix, const char *whatcalled);
@@ -348,6 +350,7 @@ extern void dispose_all_oldprops(void);
 /* from interface.c */
 extern void do_armageddon(dbref player, const char *msg);
 extern int pdescrsecure(int c);
+extern long max_open_files(void);
 extern pid_t global_dumper_pid;
 extern pid_t global_resolver_pid;
 extern short global_dumpdone;
@@ -369,7 +372,6 @@ extern void tune_load_parmsfile(dbref player);
 
 void dump_status(void);
 void log_status(char *format, ...);
-void kill_resolver(void);
 
 int add_mpi_event(int delay, int descr, dbref player, dbref loc, dbref trig, const char *mpi, const char *cmdstr, const char *argstr, int listen_p, int omesg_p, int bless_p);
 stk_array *get_pids(dbref ref);

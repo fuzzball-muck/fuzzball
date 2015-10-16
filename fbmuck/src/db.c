@@ -42,12 +42,6 @@ extern char *alloc_string(const char *);
 
 extern short db_conversion_flag;
 
-int number(const char *s);
-int ifloat(const char *s);
-void putproperties(FILE * f, int obj);
-void getproperties(FILE * f, int obj, const char *pdir);
-
-
 dbref
 getparent_logic(dbref obj)
 {

@@ -39,7 +39,6 @@
 #include "params.h"
 #include "props.h"
 #include "fbstrings.h"
-#include "speech.h"
 #include "tune.h"
 #include "version.h"
 

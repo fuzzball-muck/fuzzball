@@ -361,10 +361,6 @@ RCLEAR(struct inst *oper, char *file, int line)
 	oper->type = PROG_CLEARED;
 }
 
-void push(struct inst *stack, int *top, int type, voidptr res);
-
-int valid_object(struct inst *oper);
-
 int top_pid = 1;
 int nargs = 0;
 
