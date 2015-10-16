@@ -27,6 +27,26 @@ void toggle_numbers(dbref player, int arg[], int argc);
 
 /* Editor routines --- Also contains routines to handle input */
 
+void
+free_line(struct line *l)
+{
+        if (l->this_line)
+                free((void *) l->this_line);
+        free((void *) l);
+}
+
+void
+free_prog_text(struct line *l)
+{
+        struct line *next;
+
+        while (l) {
+                next = l->next;
+                free_line(l);
+                l = next;
+        }
+}
+
 /* This routine determines if a player is editing or running an interactive
    command.  It does it by checking the frame pointer field of the player ---
    if the program counter is NULL, then the player is not running anything
@@ -442,8 +462,124 @@ do_delete(dbref player, dbref program, int arg[], int argc)
 	}
 }
 
+void
+log_program_text(struct line *first, dbref player, dbref i)
+{
+        FILE *f;
+        char fname[BUFFER_LEN];
+        time_t lt = time(NULL);
 
+        strcpyn(fname, sizeof(fname), PROGRAM_LOG);
+        f = fopen(fname, "ab");
+        if (!f) {
+                log_status("Couldn't open file %s!", fname);
+                return;
+        }
 
+        fputs("#######################################", f);
+        fputs("#######################################\n", f);
+        fprintf(f, "PROGRAM %s, SAVED AT %s BY %s(%d)\n",
+                        unparse_object(player, i), ctime(&lt), NAME(player), player);
+        fputs("#######################################", f);
+        fputs("#######################################\n\n", f);
+
+        while (first) {
+                if (!first->this_line)
+                        continue;
+                fputs(first->this_line, f);
+                fputc('\n', f);
+                first = first->next;
+        }
+        fputs("\n\n\n", f);
+        fclose(f);
+}
+
+struct line *
+get_new_line(void)
+{
+        struct line *nu;
+
+        nu = (struct line *) malloc(sizeof(struct line));
+
+        if (!nu) {
+                fprintf(stderr, "get_new_line(): Out of memory!\n");
+                abort();
+        }
+        nu->this_line = NULL;
+        nu->next = NULL;
+        nu->prev = NULL;
+        return nu;
+}
+
+struct line *
+read_program(dbref i)
+{
+        char buf[BUFFER_LEN];
+        struct line *first;
+        struct line *prev = NULL;
+        struct line *nu;
+        FILE *f;
+        int len;
+
+        first = NULL;
+        snprintf(buf, sizeof(buf), "muf/%d.m", (int) i);
+        f = fopen(buf, "rb");
+        if (!f)
+                return 0;
+
+        while (fgets(buf, BUFFER_LEN, f)) {
+                nu = get_new_line();
+                len = strlen(buf);
+                if (len > 0 && buf[len - 1] == '\n') {
+                        buf[len - 1] = '\0';
+                        len--;
+                }
+                if (len > 0 && buf[len - 1] == '\r') {
+                        buf[len - 1] = '\0';
+                        len--;
+                }
+                if (!*buf)
+                        strcpyn(buf, sizeof(buf), " ");
+                nu->this_line = alloc_string(buf);
+                if (!first) {
+                        prev = nu;
+                        first = nu;
+                } else {
+                        prev->next = nu;
+                        nu->prev = prev;
+                        prev = nu;
+                }
+        }
+
+        fclose(f);
+        return first;
+}
+
+void
+write_program(struct line *first, dbref i)
+{
+        FILE *f;
+        char fname[BUFFER_LEN];
+
+        snprintf(fname, sizeof(fname), "muf/%d.m", (int) i);
+        f = fopen(fname, "wb");
+        if (!f) {
+                log_status("Couldn't open file %s!", fname);
+                return;
+        }
+        while (first) {
+                if (!first->this_line)
+                        continue;
+                if (fputs(first->this_line, f) == EOF) {
+                        abort();
+                }
+                if (fputc('\n', f) == EOF) {
+                        abort();
+                }
+                first = first->next;
+        }
+        fclose(f);
+}
 
 /* quit from edit mode.  Put player back into the regular game mode */
 void
