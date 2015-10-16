@@ -122,22 +122,6 @@ set_property(dbref player, const char *name, PData * dat)
 	DBDIRTY(player);
 }
 
-void
-set_lock_property(dbref player, const char *pname, const char *lok)
-{
-	PData mydat;
-
-	mydat.flags = PROP_LOKTYP;
-	if (!lok || !*lok) {
-		mydat.data.lok = TRUE_BOOLEXP;
-	} else {
-		mydat.data.lok = parse_boolexp(-1, (dbref) 1, lok, 1);
-	}
-	set_property(player, pname, &mydat);
-}
-
-
-
 /* adds a new property to an object */
 void
 add_prop_nofetch(dbref player, const char *pname, const char *strval, int value)

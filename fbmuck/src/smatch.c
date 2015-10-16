@@ -14,8 +14,6 @@ static int smatch(char *s1, char *s2);
 
 char *cstrchr(char *s, char c);
 char *estrchr(char *s, char c, char e);
-int cstrcmp(char *s, char *t);
-int cstrncmp(char *s, char *t, int n);
 
 #ifdef STRSTR
 char *strstr(char *s1, char *s2);
@@ -75,26 +73,6 @@ strstr(char *s1, char *s2)
 }
 
 #endif
-
-int
-cstrcmp(char *s, char *t)
-{
-	while (*s && *t && tolower(*s) == tolower(*t)) {
-		s++;
-		t++;
-	}
-	return (tolower(*s) - tolower(*t));
-}
-
-int
-cstrncmp(char *s, char *t, int n)
-{
-	for (; n && *s && *t && tolower(*s) == tolower(*t); s++, t++, n--) ;
-	if (n <= 0)
-		return 0;
-	else
-		return (tolower(*s) - tolower(*t));
-}
 
 #define test(x) if (tolower(x) == c1) return truthval
 /* Watch if-else constructions */
