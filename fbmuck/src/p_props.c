@@ -760,8 +760,8 @@ prim_nextprop(PRIM_PROTOTYPE)
 		abort_interp("Invalid dbref. (1)");
 
 	ref = oper1->data.objref;
-	(void) strcpyn(buf, sizeof(buf), ((oper2->data.string) && (oper2->data.string->data)) ?
-				  oper2->data.string->data : "");
+	(void) strcpyn(buf, sizeof(buf), DoNullInd(oper2->data.string));
+
 	CLEAR(oper1);
 	CLEAR(oper2);
 
