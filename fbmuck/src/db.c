@@ -19,7 +19,6 @@ int db_load_format = 0;
 #define OBSOLETE_ANTILOCK            0x8	/* negates key (*OBSOLETE*) */
 #define OBSOLETE_GENDER_MASK      0x3000	/* 2 bits of gender */
 #define OBSOLETE_GENDER_SHIFT         12	/* 0x1000 is 12 bits over (for shifting) */
-#define OBSOLETE_GENDER_UNASSIGNED   0x0	/* unassigned - the default */
 #define OBSOLETE_GENDER_NEUTER       0x1	/* neuter */
 #define OBSOLETE_GENDER_FEMALE       0x2	/* for women */
 #define OBSOLETE_GENDER_MALE         0x3	/* for men */

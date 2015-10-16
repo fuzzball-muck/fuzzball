@@ -55,13 +55,6 @@ strcpyn(char* buf, size_t bufsize, const char* src)
 	return buf;
 }
 
-
-int
-notify(int player, const char* msg)
-{
-	return printf("%s\n", msg);
-}
-
 #ifdef USE_IPV6
 const char *addrout_v6(struct in6_addr *, unsigned short, unsigned short);
 #endif
