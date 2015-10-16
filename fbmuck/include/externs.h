@@ -215,8 +215,6 @@ extern char *intostr(int i);
 extern int prepend_string(char** before, char* start, const char* what);
 extern void prefix_message(char* Dest, const char* Src, const char* Prefix, int BufferLength, int SuppressIfPresent);
 extern int is_prop_prefix(const char* Property, const char* Prefix);
-extern int has_suffix(const char* text, const char* suffix);
-extern int has_suffix_char(const char* text, char suffix);
 extern char* strcatn(char* buf, size_t bufsize, const char* src);
 extern char* strcpyn(char* buf, size_t bufsize, const char* src);
 extern int blank(const char *s);

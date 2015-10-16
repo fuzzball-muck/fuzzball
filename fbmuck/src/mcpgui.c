@@ -1117,32 +1117,3 @@ muf_dlog_purge(struct frame *fr)
 		free(tmp);
 	}
 }
-
-
-
-/***************************************************************************
- ***************************************************************************
- ***************************************************************************/
-
-void
-post_dlog_cb(GUI_EVENT_CB_ARGS)
-{
-	if (!string_compare(id, "post")) {
-		char buf[BUFFER_LEN];
-		const char *subject = gui_value_get(dlogid, "subj", 0);
-		const char *keywords = gui_value_get(dlogid, "keywd", 0);
-		/* int bodycnt = gui_value_linecount(dlogid, "body"); */
-
-		snprintf(buf, sizeof(buf), "Subject: %s", subject);
-		pnotify(pdescrcon(descr), buf);
-		snprintf(buf, sizeof(buf), "Keywords: %s", keywords);
-		pnotify(pdescrcon(descr), buf);
-	} else if (!string_compare(id, "cancel")) {
-		pnotify(pdescrcon(descr), "Posting cancelled.");
-	} else {
-		pnotify(pdescrcon(descr), "Invalid event!");
-	}
-	if (did_dismiss) {
-		GuiFree(dlogid);
-	}
-}

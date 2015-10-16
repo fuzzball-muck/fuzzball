@@ -1,5 +1,3 @@
-#undef POINTERS
-
 #include "config.h"
 
 #include <stdio.h>

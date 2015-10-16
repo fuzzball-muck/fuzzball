@@ -356,7 +356,6 @@ void sig_reap(int i) {}
 #endif
 
 void sig_shutdown(int i) {}
-void sig_dumpstatus(int i) {}
 void set_sigs_intern(int bail) {}
 void set_signals() {}
 
