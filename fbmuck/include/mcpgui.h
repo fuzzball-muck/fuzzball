@@ -207,9 +207,6 @@ int GuiShow(const char *id);
  */
 int GuiClose(const char *id);
 int GuiFree(const char *id);
-int gui_dlog_closeall_descr(int descr);
-int gui_dlog_freeall_descr(int descr);
-
 
 /*
  * This might be useful for callbacks.
@@ -221,6 +218,5 @@ void* gui_dlog_get_context(const char *dlogid);
 /* internal support for MUF */
 void muf_dlog_add(struct frame *fr, const char *dlogid);
 void muf_dlog_remove(struct frame *fr, const char *dlogid);
-void muf_dlog_purge(struct frame *fr);
 
 #endif /* _MCPGUI_H */

@@ -14,15 +14,11 @@ typedef void *voidptr;
 #define MIPSCAST
 #endif
 
-void purge_try_pool(void);
-
 #define DoNullInd(x) ((x) ? (x) -> data : "")
 
 extern void RCLEAR(struct inst *oper, char *file, int line);
 
 #define CLEAR(oper) RCLEAR(oper, __FILE__, __LINE__)
-extern void push(struct inst *stack, int *top, int type, voidptr res);
-extern int valid_object(struct inst *oper);
 
 extern struct localvars *localvars_get(struct frame *fr, dbref prog);
 extern void localvar_dupall(struct frame *fr, struct frame *oldfr);

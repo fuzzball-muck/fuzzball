@@ -8,7 +8,6 @@
 #include "tune.h"
 #include "props.h"
 #include "externs.h"
-#include "speech.h"
 #include <ctype.h>
 
 /* Commands which involve speaking */
