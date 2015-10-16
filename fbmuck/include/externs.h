@@ -219,7 +219,7 @@ extern int has_suffix(const char* text, const char* suffix);
 extern int has_suffix_char(const char* text, char suffix);
 extern char* strcatn(char* buf, size_t bufsize, const char* src);
 extern char* strcpyn(char* buf, size_t bufsize, const char* src);
-
+extern int blank(const char *s);
 
 #if !defined(MALLOC_PROFILING)
 extern char *string_dup(const char *s);
@@ -348,6 +348,7 @@ extern void show_mcp_error(McpFrame * mfr, char *topic, char *text);
 extern void dispose_all_oldprops(void);
 
 /* from interface.c */
+extern int notify(dbref player, const char *msg);
 extern void do_armageddon(dbref player, const char *msg);
 extern int pdescrsecure(int c);
 extern long max_open_files(void);

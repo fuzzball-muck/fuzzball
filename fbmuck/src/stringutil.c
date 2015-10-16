@@ -842,3 +842,12 @@ strcatn(char* buf, size_t bufsize, const char* src)
 	}
 	return buf;
 }
+
+int
+blank(const char *s)
+{
+        while (*s && isspace(*s))
+                s++;
+
+        return !(*s);
+}
