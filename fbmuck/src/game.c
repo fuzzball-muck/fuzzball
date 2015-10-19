@@ -32,6 +32,8 @@ char *in_filename = NULL;
 
 void fork_and_dump(void);
 void dump_database(void);
+void macrodump(struct macrotable *node, FILE * f);
+void macroload(FILE * f);
 
 void
 macrodump(struct macrotable *node, FILE * f)

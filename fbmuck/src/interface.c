@@ -254,7 +254,6 @@ ssize_t socket_write(struct descriptor_data *d, const void *buf, size_t count);
 #endif
  
 
-void spawn_resolver(void);
 void resolve_hostnames(void);
 
 #define MALLOC(result, type, number) do {   \
