@@ -1,4 +1,3 @@
-
 #ifndef _EXTERNS_H
 #define _EXTERNS_H
 
@@ -81,6 +80,7 @@ extern void diskbase_debug(dbref player);
 extern void dispose_all_oldprops(void);
 
 /* edit.c */
+extern void chown_macros(dbref from, dbref to);
 extern void do_list(dbref player, dbref program, int *oarg, int argc);
 extern void interactive(int descr, dbref player, const char *command);
 extern char *macro_expansion(struct macrotable *node, const char *match);
