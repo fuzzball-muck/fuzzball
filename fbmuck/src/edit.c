@@ -268,6 +268,22 @@ free_old_macros(void)
 	purge_macro_tree(macrotop);
 }
 
+void chown_macros_rec(struct macrotable *node, dbref from, dbref to)
+{
+	if (!node) return;
+
+	chown_macros_rec(node->left, from, to);
+
+	if (node->implementor == from)
+		node->implementor = to;
+
+	chown_macros_rec(node->right, from, to);
+}
+
+void chown_macros(dbref from, dbref to) 
+{
+	chown_macros_rec(macrotop, from, to);
+}
 
 /* The editor itself --- this gets called each time every time to
  * parse a command.
