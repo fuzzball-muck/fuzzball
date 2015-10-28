@@ -1718,25 +1718,28 @@ do_comment(COMPSTATE * cstat, int depth)
 int
 is_preprocessor_conditional(const char* tmpptr)
 {
-	if (!string_compare(tmpptr, "$ifdef"))
+	if (*tmpptr != BEGINDIRECTIVE)
+		return 0;
+
+	if (!string_compare(tmpptr+1, "ifdef"))
 		return 1;
-	else if (!string_compare(tmpptr, "$ifndef"))
+	else if (!string_compare(tmpptr+1, "ifndef"))
 		return 1;
-	else if (!string_compare(tmpptr, "$iflib"))
+	else if (!string_compare(tmpptr+1, "iflib"))
 		return 1;
-	else if (!string_compare(tmpptr, "$ifnlib"))
+	else if (!string_compare(tmpptr+1, "ifnlib"))
 		return 1;
-	else if (!string_compare(tmpptr, "$ifver"))
+	else if (!string_compare(tmpptr+1, "ifver"))
 		return 1;
-	else if (!string_compare(tmpptr, "$iflibver"))
+	else if (!string_compare(tmpptr+1, "iflibver"))
 		return 1;
-	else if (!string_compare(tmpptr, "$ifnver"))
+	else if (!string_compare(tmpptr+1, "ifnver"))
 		return 1;
-	else if (!string_compare(tmpptr, "$ifnlibver"))
+	else if (!string_compare(tmpptr+1, "ifnlibver"))
 		return 1;
-	else if (!string_compare(tmpptr, "$ifcancall"))
+	else if (!string_compare(tmpptr+1, "ifcancall"))
 		return 1;
-	else if (!string_compare(tmpptr, "$ifncancall"))
+	else if (!string_compare(tmpptr+1, "ifncancall"))
 		return 1;
 
 	return 0;
@@ -1850,7 +1853,7 @@ do_directive(COMPSTATE * cstat, char *direct)
 					cstat->next_char++; /* eating leading spaces */
 				defstr = cstat->next_char;
 
-				if (*tmpname == '\\') {
+				if (*tmpname == BEGINESCAPE) {
 					char *temppropstr = NULL;
 
 					(void) *tmpname++;
@@ -1903,7 +1906,7 @@ do_directive(COMPSTATE * cstat, char *direct)
 			while(*cstat->next_char && isspace(*cstat->next_char))
 				cstat->next_char++; /* eating leading spaces */
 
-			if (*tmpname == '\\') {
+			if (*tmpname == BEGINESCAPE) {
 				char *temppropstr = NULL;
 
 				(void) *tmpname++;
@@ -2025,7 +2028,7 @@ do_directive(COMPSTATE * cstat, char *direct)
 		if (!tmpname) {
 			v_abort_compile(cstat, "Unexpected end of file looking for $ifdef condition.");
 		}
-		if (*tmpname == '"') {
+		if (*tmpname == BEGINSTRING) {
 			strcpyn(temp, sizeof(temp), tmpname+1);
 		} else {
 			strcpyn(temp, sizeof(temp), tmpname);
@@ -2350,7 +2353,7 @@ do_string(COMPSTATE * cstat)
 	cstat->next_char++;
 	i++;
 	while ((quoted || *cstat->next_char != ENDSTRING) && *cstat->next_char) {
-		if (*cstat->next_char == '\\' && !quoted) {
+		if (*cstat->next_char == BEGINESCAPE && !quoted) {
 			quoted++;
 			cstat->next_char++;
 		} else if (*cstat->next_char == 'r' && quoted) {
@@ -3507,7 +3510,7 @@ object(const char *token)
 int
 string(const char *token)
 {
-	return (token[0] == '"');
+	return (token[0] == BEGINSTRING);
 }
 
 int
