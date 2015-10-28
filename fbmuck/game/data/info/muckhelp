@@ -699,6 +699,19 @@ an object, or 'property:value'.
     @chlock here=me|((*Igor|*JohnDoe)&sex:male)&!_flight?:yes
 
 
+@FLOCK <object>=<lock expression>
+@FORCE_LOCK <object>=<lock expression>
+
+  @force-locks <object> such that it may only be @forced when the given
+<lock expression> is true, provided that the XForcible flag is set.
+
+
+@CONLOCK <object>=<lock expression>
+
+  @conlocks <object> such that only those for whom <lock expression> is true
+may place things in or remove things from <object>. 
+
+
 @TELEPORT <arg1> [=<destination>]
 
   Moves <arg1> to <destination>, if <destination> is not given, moves you
@@ -852,6 +865,18 @@ environment room is reached or the optional <depth> is specified.  This
 is generally useful for finding which rooms are parents in your heirarchy.
 If you cannot link to a particular location its name is replaced by stars
 (***).
+
+
+@OECHO <vehicle object> = <echo prepend string>
+
+Sets a string to prepend to messages relayed to the interior of a vehicle
+in the vehicle's _/oecho property. Without a value, "Outside>" is prepended.
+
+
+@PECHO <puppet object> = <echo prepend string>
+
+Sets a string to prepend to messages relayed from a puppet in the puppet's
+_/pecho property. By default, the puppet's name followed by ">" is prepended.
 
 
 
@@ -1542,6 +1567,11 @@ state.  With an argument of 'on', maintenance mode is turned on, and only
 wizards can log in.  With an argument of 'off', restricted login mode is turned
 off, and all players can log in.  NOTE: when the muck starts up in sanfix mode,
 with a corrupted database, it will be with @restricted logins.
+
+
+@UNCOMPILE
+
+  Uncompiles all programs, removing them from memory.
 
 
 
