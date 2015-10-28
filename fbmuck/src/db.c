@@ -424,8 +424,6 @@ db_write_deltas(FILE * f)
 	return (db_top);
 }
 
-#define getstring(x) alloc_string(getstring_noalloc(x))
-
 /*** CHANGED:
 was: PropPtr getproperties(FILE *f)
 now: void getproperties(FILE *f, dbref obj, const char *pdir)
