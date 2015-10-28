@@ -584,7 +584,7 @@ prim_copyobj(PRIM_PROTOTYPE)
 		abort_interp("Invalid object.");
 	CHECKREMOTE(oper1->data.objref);
 	if ((mlev < 3) && (fr->already_created))
-		abort_interp("Can't create any more objects.");
+		abort_interp("An object was already created this program run.");
 	ref = oper1->data.objref;
 	if (Typeof(ref) != TYPE_THING)
 		abort_interp("Invalid object type.");
@@ -1243,6 +1243,7 @@ prim_newobject(PRIM_PROTOTYPE)
 	CHECKREMOTE(ref);
 	if ((mlev < 3) && !permissions(ProgUID, ref))
 		abort_interp("Permission denied.");
+	fr->already_created++;
 	{
 		const char *b = DoNullInd(oper1->data.string);
 		dbref loc;
@@ -1295,6 +1296,7 @@ prim_newroom(PRIM_PROTOTYPE)
 		abort_interp("Invalid argument (2)");
 	if ((mlev < 3) && !permissions(ProgUID, ref))
 		abort_interp("Permission denied.");
+	fr->already_created++;
 	{
 		const char *b = DoNullInd(oper1->data.string);
 
