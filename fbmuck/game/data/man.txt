@@ -4507,7 +4507,7 @@ NEWROOM (d s -- d)
 
   Takes the dbref of the parent and the name of the room. It returns the
 dbref of the created room. Owner is the person running the program.
-(program must have a wizbit)
+Can only create one object per program run, if under Mucker Level 3.
 ~
 ~
 NEWOBJECT
@@ -4515,21 +4515,21 @@ NEWOBJECT (d s -- d)
 
   Takes location and name and returns new thing's dbref.
 Owner is the person running the program.
-(program must have a wizbit)
+Can only create one object per program run, if under Mucker Level 3.
 ~
 ~
 NEWEXIT
 NEWEXIT (d s -- d)
 
   Takes location and name and returns new exit's dbref.
-Owner is the person running the program.
-(program must have a wizbit)
+Owner is the person running the program. Mucker Level 3 and higher.
 ~
 ~
 NEWPROGRAM
 NEWPROGRAM ( s -- d )
 
   Creates a new program object with the given name, and returns its dbref.
+Requires wizbit.
 ~
 ~
 RECYCLE
