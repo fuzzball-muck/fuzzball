@@ -39,31 +39,30 @@ getref(FILE * f)
 	return (atol(buf));
 }
 
-static char xyzzybuf[BUFFER_LEN];
 const char *
-getstring_noalloc(FILE * f)
+getstring(FILE * f)
 {
+	static char buf[BUFFER_LEN];
 	char *p;
 	char c;
 
-	if (fgets(xyzzybuf, sizeof(xyzzybuf), f) == NULL) {
-		xyzzybuf[0] = '\0';
-		return xyzzybuf;
+	if (fgets(buf, sizeof(buf), f) == NULL) {
+		return alloc_string("");
 	}
 
-	if (strlen(xyzzybuf) == BUFFER_LEN - 1) {
+	if (strlen(buf) == BUFFER_LEN - 1) {
 		/* ignore whatever comes after */
-		if (xyzzybuf[BUFFER_LEN - 2] != '\n')
+		if (buf[BUFFER_LEN - 2] != '\n')
 			while ((c = fgetc(f)) != '\n') ;
 	}
-	for (p = xyzzybuf; *p; p++) {
+	for (p = buf; *p; p++) {
 		if (*p == '\n') {
 			*p = '\0';
 			break;
 		}
 	}
 
-	return xyzzybuf;
+	return alloc_string(buf);
 }
 
 
@@ -88,9 +87,9 @@ db_read_header( FILE *f, const char **version, int *load_format, dbref *grow, in
 	if ( c != '*' ) {
 		return result;
 	}
-	
+
 	/* read the first line to id it */
-	special = getstring_noalloc( f );
+	special = getstring(f);
 
 	/* save whatever the version string was */
 	/* NOTE: This only works because we only do getstring_noalloc once */
