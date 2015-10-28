@@ -4494,7 +4494,7 @@ KILL (i -- i)
 
   Attempts to kill the process referred to by the given process ID.
 Returns 1 if the process existed, and 0 if it didn't.
-(Requires Mucker Level 3)
+Must own the process if under Mucker Level 3.
 ~~alsosee QUEUE,FORK,KILL,ISPID?,GETPIDINFO
 ~
 ~
