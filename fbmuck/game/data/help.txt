@@ -33,15 +33,16 @@ You can get more help on the following topics:
 
 Symbols
   @action        @armageddon    @attach        @bless         @boot
-  @chown         @chown_lock    @contents      @create        @delta
-  @describe      @dig           @drop          @dump          @edit
-  @entrances     @fail          @find          @force         @idescribe
-  @kill          @link          @list          @lock          @mcpedit
-  @mcpprogram    @name          @newpassword   @odrop         @ofail
-  @open          @osuccess      @owned         @password      @pcreate
-  @program       @propset       @ps            @recycle       @restart
-  @restrict      @set           @shutdown      @stats         @success
-  @teleport      @toad          @trace         @unbless       @unlink
+  @chown         @chown_lock    @conlock       @contents      @create
+  @delta         @describe      @dig           @drop          @dump
+  @edit          @entrances     @fail          @find          @force
+  @force_lock    @idescribe     @kill          @link          @list
+  @lock          @mcpedit       @mcpprogram    @name          @newpassword
+  @odrop         @oecho         @ofail         @open          @osuccess
+  @owned         @password      @pcreate       @pecho         @program
+  @propset       @ps            @recycle       @restart       @restrict
+  @set           @shutdown      @stats         @success       @teleport
+  @toad          @trace         @unbless       @uncompile     @unlink
   @unlock        @usage         @wall          
 
 A's
@@ -441,11 +442,12 @@ Building Help|BuildHelp
 Building Help
 
 @action            @attach            @chown             @chown_lock
-@contents          @create            @describe          @dig
-@drop              @entrances         @fail              @find
-@idescribe         @link              @lock              @name
-@odrop             @ofail             @open              @osuccess
-@owned             @propset           @recycle           @set
+@conlock           @contents          @create            @describe
+@dig               @drop              @entrances         @fail
+@find              @force_lock        @idescribe         @link
+@lock              @name              @odrop             @oecho
+@ofail             @open              @osuccess          @owned
+@pecho             @propset           @recycle           @set
 @stats             @success           @teleport          @trace
 @unlink            @unlock            bogus              control
 drop-to            failure            homes              linking
@@ -926,6 +928,23 @@ an object, or 'property:value'.
 Also see: @LOCK, @CHOWN and CHOWN_OK
 ~
 ~
+@FORCE_LOCK|@FLOCK
+@FLOCK <object>=<lock expression>
+@FORCE_LOCK <object>=<lock expression>
+
+  @force-locks <object> such that it may only be @forced when the given
+<lock expression> is true, provided that the XForcible flag is set.
+Also see: @LOCK and @FORCE
+~
+~
+@CONLOCK
+@CONLOCK <object>=<lock expression>
+
+  @conlocks <object> such that only those for whom <lock expression> is true
+may place things in or remove things from <object>. 
+Also see: @LOCK, GET and PUT
+~
+~
 @TELEPORT
 @TELEPORT <arg1> [=<destination>]
 
@@ -1091,6 +1110,22 @@ environment room is reached or the optional <depth> is specified.  This
 is generally useful for finding which rooms are parents in your heirarchy.
 If you cannot link to a particular location its name is replaced by stars
 (***).
+~
+~
+@OECHO
+@OECHO <vehicle object> = <echo prepend string>
+
+Sets a string to prepend to messages relayed to the interior of a vehicle
+in the vehicle's _/oecho property. Without a value, "Outside>" is prepended.
+Also see: VEHICLE
+~
+~
+@PECHO
+@PECHO <puppet object> = <echo prepend string>
+
+Sets a string to prepend to messages relayed from a puppet in the puppet's
+_/pecho property. By default, the puppet's name followed by ">" is prepended.
+Also see: ZOMBIE
 ~
 ~
 ~
@@ -1690,7 +1725,8 @@ Wizardly Commands
 
 @armageddon    @bless         @boot          @delta         @dump
 @force         @newpassword   @pcreate       @restart       @restrict
-@shutdown      @toad          @unbless       @usage         @wall
+@shutdown      @toad          @unbless       @uncompile     @usage
+@wall          
 
 ~----------------------------------------------------------------------------
 ~
@@ -1865,6 +1901,12 @@ state.  With an argument of 'on', maintenance mode is turned on, and only
 wizards can log in.  With an argument of 'off', restricted login mode is turned
 off, and all players can log in.  NOTE: when the muck starts up in sanfix mode,
 with a corrupted database, it will be with @restricted logins.
+~
+~
+@UNCOMPILE
+@UNCOMPILE
+
+  Uncompiles all programs, removing them from memory.
 ~
 ~
 ~

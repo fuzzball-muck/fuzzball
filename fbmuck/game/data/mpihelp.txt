@@ -53,7 +53,7 @@ C's
 D's
   date         dbeq         debug        debugif      dec          default
   definitions  delay        delprop      descr        dice         dist
-  div
+  div          
 
 E's
   eq     eval   eval!  exec   exec!  exits  
@@ -98,7 +98,7 @@ R's
 
 S's
   secs       select     set        sign       smatch     stimestr   store
-  strip      strlen     sublist    subst      subt       sysparm
+  strip      strlen     sublist    subst      subt       sysparm    
 
 T's
   tell       testlock   time       timestr    timesub    tolower    toupper
@@ -1533,7 +1533,8 @@ Harry."
 Miscellaneous Functions|Miscellaneous|Misc|MiscFuncs
 Miscellaneous Functions
 
-debug     debugif   isdbref   isnum     muckname  muf       sysparm   version
+debug      debugif    isdbref    isnum      muckname   muf        sysparm
+version    
 
 ~----------------------------------------------------------------------------
 ~
@@ -1546,6 +1547,11 @@ ISNUM
 ISDBREF
 {isdbref:dbref}
     Returns true if the string passed to it is a valid dbref.
+~
+~
+SYSPARM
+{sysparm:<system parameter>}
+    Returns the value of the given system parameter for authorized players.
 ~
 ~
 VERSION
@@ -1590,11 +1596,6 @@ to only debug the running of the command {dostuff} when the argument will
 be the player who is running the MPI.
 
 Also see: debug and if
-~
-~
-SYSPARM
-{sysparm:<system parameter>}
-    Returns the value of the given system parameter for authorized players.
 ~
 ~
 ~
