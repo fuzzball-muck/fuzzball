@@ -20,9 +20,7 @@ extern int db_read_header( FILE *f, const char **version, int *load_format, int 
 /* Read a database reference from a file. */
 extern dbref getref(FILE *);
 
-/* read a string from file, don't require any allocation - however the result */
-/* will always point to the same static buffer, so make a copy if you need it */
-/* to hang around */
-extern const char* getstring_noalloc(FILE *f);
+/* read a string from a file */
+extern const char *getstring(FILE *f);
 
 #endif /* _DB_HEADER_H */
