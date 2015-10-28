@@ -63,14 +63,12 @@ extern dbref db_write_deltas(FILE * f);
 #ifdef DISKBASE
 extern int fetch_propvals(dbref obj, const char *dir);
 #endif
-extern void free_prog_text(struct line *l);
-extern struct line *get_new_line(void);
-extern char *show_line_prims(struct frame *fr, dbref program, struct inst *pc, int maxprims, int markpc);
 
 /* debugger.c */
 extern void muf_backtrace(dbref player, dbref program, int count, struct frame *fr);
 extern int muf_debugger(int descr, dbref player, dbref program, const char *text, struct frame *fr);
 extern void list_proglines(dbref player, dbref program, struct frame *fr, int start, int end);
+extern char *show_line_prims(struct frame *fr, dbref program, struct inst *pc, int maxprims, int markpc);
 
 /* disassem.c */
 extern void disassemble(dbref player, dbref program);
@@ -82,6 +80,8 @@ extern void dispose_all_oldprops(void);
 /* edit.c */
 extern void chown_macros(dbref from, dbref to);
 extern void do_list(dbref player, dbref program, int *oarg, int argc);
+extern void free_prog_text(struct line *l);
+extern struct line *get_new_line(void);
 extern void interactive(int descr, dbref player, const char *command);
 extern char *macro_expansion(struct macrotable *node, const char *match);
 extern void match_and_list(int descr, dbref player, const char *name, char *linespec);
