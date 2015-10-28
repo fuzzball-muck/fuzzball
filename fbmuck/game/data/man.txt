@@ -4522,7 +4522,7 @@ NEWEXIT
 NEWEXIT (d s -- d)
 
   Takes location and name and returns new exit's dbref.
-Owner is the person running the program. Mucker Level 3 and higher.
+Owner is the person running the program. Mucker level 3 and higher.
 ~
 ~
 NEWPROGRAM

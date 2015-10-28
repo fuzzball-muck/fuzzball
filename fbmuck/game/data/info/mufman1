@@ -756,7 +756,7 @@ that triggered the the program, without the command line arguments.  ie:
 if there was an exit named "abracadabra;foo bar;frozzboz" that was linked
 to the program, and the user typed in "foo bar baz", then the program
 would run with "baz" on the stack, and "foo bar" in the global COMMAND
-variable.  The TRIGGER global variable is the same variable as '2 variable'
+variable.  The COMMAND global variable is the same variable as '3 variable'
 
 
 VAR <name>
@@ -2751,9 +2751,9 @@ ENVPROP ( d s -- d ? )
 
   Takes a starting object dbref and a property name and searches down the
 environment tree from that object for a property with the given name.  If
-the property isn't found, it returns #-1 and a null string.  If the
-property is found, it will return the dbref of the object it was found on,
-and the value it contained.
+the property isn't found, it returns #-1 and 0.  If the property is found,
+it will return the dbref of the object it was found on, and the value it
+contained.
 
 
 ENVPROPSTR (d s -- d s )
@@ -3299,6 +3299,7 @@ Parameters available:
   (int)  command_time_msec    - Time slice length in milliseconds
   (int)  max_delta_objs       - Max percent of changed objects for a delta
   (int)  max_loaded_objs      - Max percent of the DB in memory at once
+  (int)  max_force_level      - Maximum number of forces within one command
   (int)  max_process_limit    - Total processes allowed
   (int)  max_plyr_processes   - Processes allowed for each player
   (int)  max_instr_count      - Max preempt mode instructions
@@ -3351,14 +3352,15 @@ about each sysparm.  This will only return items for which your program has
 permission to read the data.
 
 Each dictionary contains the following data, keyed with these strings:
-    "name"     The name of the @tune setting.
-    "group"    The logical group that this parameter belongs to.
-    "type"     One of "string", "integer", "timespam", "dbref", or "boolean".
-    "mlev"     The mucker level required to read the value of this sysparm.
-    "value"    The value of the sysparm.  May be an int, string, or dbref.
+    "name"      The name of the @tune setting.
+    "group"     The logical group that this parameter belongs to.
+    "type"      One of "string", "integer", "timespan", "dbref", or "boolean".
+    "readmlev"  The mucker level required to read the value of this sysparm.
+    "writemlev" The mucker level required to write the value of this sysparm.
+    "value"     The value of the sysparm.  May be an int, string, or dbref.
 
 If a given entry is of the "dbref" type, it will also have the extra field:
-    "objtype"  The type of object the dbref is restricted to.  Can be one of
+    "objtype"   The type of object the dbref is restricted to.  Can be one of
                 the strings "player", "thing", "room", "exit", "program",
                 "garbage", or "any".
 
@@ -3516,6 +3518,12 @@ GETLINKS_ARRAY ( d -- a )
 given object is linked to.
 
 
+ENTRANCES_ARRAY ( d -- a )
+
+  Returns a list array that contains the dbref of every object linked to the
+given object.
+
+
 SETLINK     ( d1 d2 -- )
 
   Takes an exit dbref d1, and sets its destination to d2.  You must have
@@ -3580,26 +3588,26 @@ NEWROOM (d s -- d)
 
   Takes the dbref of the parent and the name of the room. It returns the
 dbref of the created room. Owner is the person running the program.
-(program must have a wizbit)
+Can only create one object per program run, if under Mucker Level 3.
 
 
 NEWOBJECT (d s -- d)
 
   Takes location and name and returns new thing's dbref.
 Owner is the person running the program.
-(program must have a wizbit)
+Can only create one object per program run, if under Mucker Level 3.
 
 
 NEWEXIT (d s -- d)
 
   Takes location and name and returns new exit's dbref.
-Owner is the person running the program.
-(program must have a wizbit)
+Owner is the person running the program. Mucker level 3 and higher.
 
 
 NEWPROGRAM ( s -- d )
 
   Creates a new program object with the given name, and returns its dbref.
+Requires wizbit.
 
 
 RECYCLE (d -- )
@@ -3836,7 +3844,7 @@ KILL (i -- i)
 
   Attempts to kill the process referred to by the given process ID.
 Returns 1 if the process existed, and 0 if it didn't.
-(Requires Mucker Level 3)
+Must own the process if under Mucker Level 3.
 
 
 PID ( -- i)

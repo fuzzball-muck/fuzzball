@@ -282,6 +282,10 @@ This returns the idle time for the most recently connected connection,
 if there are multiple connects.
 
 
+{descr}
+    Returns the descriptor number that invoked the MPI.
+
+
 
 ----------------------------------------------------------------------------
                         Variable Handling Functions
@@ -474,6 +478,10 @@ Harry."
 
 {isdbref:dbref}
     Returns true if the string passed to it is a valid dbref.
+
+
+{sysparm:<system parameter>}
+    Returns the value of the given system parameter for authorized players.
 
 
 {version}
