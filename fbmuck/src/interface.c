@@ -2,7 +2,6 @@
 /* Consider this code protected under the GNU public license, with explicit
  * permission to distribute when linked against openSSL. */
 
-#include "fb.h"
 #include "config.h"
 #include "match.h"
 #include "mpi.h"

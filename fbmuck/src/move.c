@@ -7,7 +7,6 @@
 #include "interface.h"
 #include "match.h"
 #include "externs.h"
-#include "fb.h"
 
 void
 moveto(dbref what, dbref where)
