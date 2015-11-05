@@ -10,13 +10,14 @@
 * overkill for such a simple substituion.
 */
 
+#include <ctype.h>
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
 #ifndef WIN32
 #include <dirent.h>
 #endif
-#include "config.h"
 #include "sha1.h"
 
 /* Define if you want the timezone to show UTC. Windows doesn't do

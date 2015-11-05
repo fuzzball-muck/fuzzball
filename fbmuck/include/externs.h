@@ -55,6 +55,7 @@ extern int unset_source(dbref player, dbref loc, dbref action);
 
 /* crt_malloc.c */
 extern void CrT_summarize(dbref player);
+extern void CrT_summarize_to_file(const char *file, const char *comment);
 
 /* db.c */
 extern void db_clear_object(dbref i);
@@ -80,6 +81,7 @@ extern void dispose_all_oldprops(void);
 /* edit.c */
 extern void chown_macros(dbref from, dbref to);
 extern void do_list(dbref player, dbref program, int *oarg, int argc);
+extern void free_old_macros();
 extern void free_prog_text(struct line *l);
 extern struct line *get_new_line(void);
 extern void interactive(int descr, dbref player, const char *command);
@@ -97,6 +99,7 @@ extern void next_muckevent(void);
 extern long next_muckevent_time(void);
 
 /* game.c */
+void cleanup_game();
 extern void do_dump(dbref player, const char *newfile);
 extern void do_shutdown(dbref player);
 extern void dump_warning(void);
@@ -154,6 +157,7 @@ extern dbref find_mlev(dbref prog, struct frame * fr, int st);
 extern struct frame *interp(int descr, dbref player, dbref location, dbref program, dbref source, int nosleeping, int whichperms, int forced_pid);
 extern struct inst *interp_loop(dbref player, dbref program, struct frame *fr, int rettyp);
 extern void prog_clean(struct frame *fr);
+extern void purge_all_free_frames();
 extern void purge_for_pool(void);
 extern void purge_try_pool(void);
 extern int scopedvar_poplevel(struct frame *fr);
@@ -214,6 +218,7 @@ extern void recycle(int descr, dbref player, dbref thing);
 /* msgparse.c */
 extern void mesg_init(void);
 extern time_t mpi_prof_start_time;
+extern void purge_mfns();
 
 /* mufevent.c */
 extern void muf_event_add(struct frame *fr, char *event, struct inst *val, int exclusive);
