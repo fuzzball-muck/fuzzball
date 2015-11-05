@@ -506,7 +506,7 @@ summarize(void (*fn) (char *)
 		sum_totbyts += b->tot_bytes_alloc;
 
 		snprintf(buf, sizeof(buf),
-				"%13s%5d:%7d %8d %7d %8d %8s %7d %8d",
+				"%13s%5d:%7ld %8ld %7ld %8ld %8s %7ld %8ld",
 				b->file,
 				b->line,
 				b->live_blocks,
