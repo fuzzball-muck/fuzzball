@@ -120,7 +120,7 @@ CSRC= array.c boolexp.c compile.c create.c db.c db_header.c debugger.c \
 	p_misc.c p_props.c p_regex.c predicates.c propdirs.c property.c \
 	props.c p_stack.c p_strings.c random.c rob.c sanity.c set.c \
 	signal.c smatch.c snprintf.c speech.c strftime.c stringutil.c \
-	timequeue.c timestamp.c tune.c unparse.c utils.c wiz.c
+	time.c timequeue.c tune.c unparse.c utils.c wiz.c
 
 MSRC= reconst.c interface.c resolver.c
 
@@ -132,7 +132,7 @@ COBJ= array.o boolexp.o compile.o create.o db_header.o db.o debugger.o \
 	p_misc.o p_props.o p_regex.o predicates.o propdirs.o property.o \
 	props.o p_stack.o p_strings.o random.o rob.o sanity.o set.o \
 	signal.o smatch.o snprintf.o speech.o strftime.o stringutil.o \
-	timequeue.o timestamp.o tune.o unparse.o utils.o wiz.o
+	time.o timequeue.o tune.o unparse.o utils.o wiz.o
 
 MOBJ= reconst.o interface.o resolver.o
 
