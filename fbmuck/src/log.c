@@ -36,7 +36,7 @@ vlog2file(int prepend_time, char *filename, char *format, va_list args)
 		vfprintf(stderr, format, args);
 	} else {
 		if (prepend_time) {
-			format_time(buf, 32, "%c", MUCKTIME(lt));
+			format_time(buf, 32, "%c", mucktime(&lt));
 			fprintf(fp, "%.32s: ", buf);
 		}
 		
@@ -111,7 +111,7 @@ log_user(dbref player, dbref program, char *logmessage)
 	*logformat='\0';
 
 	lt=time(NULL);	
-	format_time(buf, 32, "%c", MUCKTIME(lt));
+	format_time(buf, 32, "%c", mucktime(&lt));
 
 	snprintf(logformat,BUFFER_LEN,"%s(#%d) [%s(#%d)] at %.32s: ", NAME(player), player, NAME(program), program, buf);
 	len = BUFFER_LEN - strlen(logformat)-1;

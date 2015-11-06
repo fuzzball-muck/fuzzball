@@ -466,7 +466,7 @@ CrT_timestr(time_t when)
 	static char buf[20];
 	struct tm *da_time;
 
-	da_time = MUCKTIME(when);
+	da_time = mucktime(&when);
 
 	snprintf(buf, sizeof(buf), "%02d%02d%02d%02d",
 			da_time->tm_mday, da_time->tm_hour, da_time->tm_min, da_time->tm_sec);
