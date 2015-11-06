@@ -1493,7 +1493,7 @@ mfn_time(MFUNARGS)
 	lt = time((time_t*) NULL);
 	if (argc == 1) {
 		lt += (3600 * atoi(argv[0]));
-		lt += get_tz_offset();
+		lt -= get_tz_offset();
 	}
 	tm = MUCKTIME(lt);
 	format_time(buf, BUFFER_LEN - 1, "%T", tm);
@@ -1507,10 +1507,10 @@ mfn_date(MFUNARGS)
 	time_t lt;
 	struct tm *tm;
 
-	lt = time((time_t*) NULL);
+	time(&lt);
 	if (argc == 1) {
 		lt += (3600 * atoi(argv[0]));
-		lt += get_tz_offset();
+		lt -= get_tz_offset();
 	}
 	tm = MUCKTIME(lt);
 	format_time(buf, BUFFER_LEN - 1, "%D", tm);
@@ -1534,9 +1534,9 @@ mfn_ftime(MFUNARGS)
 		if (offval < 25 && offval > -25) {
 			lt += 3600 * offval;
 		} else {
-			lt -= offval;
+			lt += offval;
 		}
-		lt += get_tz_offset();
+		lt -= get_tz_offset();
 	}
 	tm = MUCKTIME(lt);
 	format_time(buf, BUFFER_LEN - 1, argv[0], tm);
