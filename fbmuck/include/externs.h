@@ -349,7 +349,8 @@ extern int string_prefix(const char *string, const char *prefix);
 extern char * strip_ansi(char *buf, const char *input);
 extern char * strip_bad_ansi(char *buf, const char *input);
 
-/* timestamp.c */
+/* time.c */
+extern struct tm *mucktime(const time_t *t);
 extern void ts_lastuseobject(dbref thing);
 extern void ts_modifyobject(dbref thing);
 extern void ts_newobject(struct object *thing);

@@ -639,12 +639,6 @@ struct program_specific {
 #define PROGRAM_SET_PROFSTART(x,y)	(PROGRAM_SP(x)->profstart = y)
 #define PROGRAM_SET_PROF_USES(x,y)	(PROGRAM_SP(x)->profuses = y)
 
-#ifndef WIN32
-# define MUCKTIME(lt)			localtime(&lt)
-#else
-# define MUCKTIME(lt)			uw32localtime(&lt)
-#endif
-
 struct player_specific {
 	dbref home;
 	dbref curr_prog;			/* program I'm currently editing */
