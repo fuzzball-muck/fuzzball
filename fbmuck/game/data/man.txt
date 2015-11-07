@@ -127,7 +127,7 @@ F's
   fabs         fail         fg_mode      findnext     firstdescr   flag?
   flags        float        float?       floor        fmod         fmtstring
   for          force        force_level  foreach      foreground   fork
-  frand        ftostr       ftostrc      
+  frand        ftostr       ftostrc      fulldepth    
 
 G's
   gaussian           getlink            getlinks           getlinks_array
@@ -898,9 +898,9 @@ recursively.  It will call the actual addprop.
 Stack Manipulation Operators|StackOps
 Stack Manipulation Operators
 
-depth      dup        dupn       ldup       lreverse   over       pick
-pop        popn       put        reverse    rot        rotate     swap
-{          }          
+depth      dup        dupn       fulldepth  ldup       lreverse   over
+pick       pop        popn       put        reverse    rot        rotate
+swap       {          }          
 
 ~----------------------------------------------------------------------------
 ~
@@ -1025,7 +1025,14 @@ Also see: REVERSE
 DEPTH
 DEPTH ( -- i )
 
+  Returns the number of unlocked items currently on the stack.
+Also see: FULLDEPTH
+~
+~
+FULLDEPTH
+FULLDEPTH ( -- i)
   Returns the number of items currently on the stack.
+Also see: DEPTH
 ~
 ~
 {
