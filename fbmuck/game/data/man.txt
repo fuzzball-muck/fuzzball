@@ -1030,7 +1030,7 @@ Also see: FULLDEPTH
 ~
 ~
 FULLDEPTH
-FULLDEPTH ( -- i)
+FULLDEPTH ( -- i )
   Returns the number of items currently on the stack.
 Also see: DEPTH
 ~
