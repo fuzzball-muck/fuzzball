@@ -815,7 +815,14 @@ would return on the stack:
 DEPTH
 DEPTH ( -- i )
 
+  Returns the number of unlocked items currently on the stack.
+~~alsosee FULLDEPTH
+~
+~
+FULLDEPTH
+FULLDEPTH ( -- i)
   Returns the number of items currently on the stack.
+~~alsosee DEPTH
 ~
 ~
 {
