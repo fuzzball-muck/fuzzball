@@ -15,9 +15,12 @@
 #define DB_ID_PARMSINFO		0x00000020 /* parmcnt set, need to do a tune_load_parms_from_file */
 
 /* identify which format a database is (or try to) */
-extern int db_read_header( FILE *f, const char **version, int *load_format, int *grow, int *parmcnt );
+extern int db_read_header(FILE *f, int *load_format, int *grow);
 
-/* Read a database reference from a file. */
+/* output header information to a file. */
+extern void db_write_header(FILE *f);
+
+/* read a database reference from a file. */
 extern dbref getref(FILE *);
 
 /* read a string from a file */
