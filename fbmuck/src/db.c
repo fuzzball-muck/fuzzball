@@ -6,7 +6,6 @@
 #include "db_header.h"
 #include "props.h"
 #include "params.h"
-#include "tune.h"
 #include "interface.h"
 
 #include "externs.h"
@@ -15,13 +14,6 @@ struct object *db = 0;
 dbref db_top = 0;
 dbref recyclable = NOTHING;
 int db_load_format = 0;
-
-#define OBSOLETE_ANTILOCK            0x8	/* negates key (*OBSOLETE*) */
-#define OBSOLETE_GENDER_MASK      0x3000	/* 2 bits of gender */
-#define OBSOLETE_GENDER_SHIFT         12	/* 0x1000 is 12 bits over (for shifting) */
-#define OBSOLETE_GENDER_NEUTER       0x1	/* neuter */
-#define OBSOLETE_GENDER_FEMALE       0x2	/* for women */
-#define OBSOLETE_GENDER_MALE         0x3	/* for men */
 
 #ifndef DB_INITIAL_SIZE
 #define DB_INITIAL_SIZE 10000
@@ -392,12 +384,7 @@ db_write_list(FILE * f, int mode)
 dbref
 db_write(FILE * f)
 {
-	putstring(f, DB_VERSION_STRING );
-
-	putref(f, db_top);
-	putref(f, DB_PARMSINFO );
-	putref(f, tune_count_parms());
-	tune_save_parms_to_file(f);
+	db_write_header(f);
 
 	db_write_list(f, 1);
 
@@ -633,33 +620,6 @@ db_read_object(FILE * f, struct object *o, dbref objno, int dtype, int read_befo
 		j = atol(buf);
 		if (sign)
 			j = -j;
-
-		if (dtype < 10) {
-			/* set gender stuff */
-			/* convert GENDER flag to property */
-			switch ((FLAGS(objno) & OBSOLETE_GENDER_MASK) >> OBSOLETE_GENDER_SHIFT) {
-			case OBSOLETE_GENDER_NEUTER:
-				add_property(objno, "sex", "neuter", 0);
-				break;
-			case OBSOLETE_GENDER_FEMALE:
-				add_property(objno, "sex", "female", 0);
-				break;
-			case OBSOLETE_GENDER_MALE:
-				add_property(objno, "sex", "male", 0);
-				break;
-			default:
-				break;
-			}
-		}
-	}
-
-        if (dtype < 10) {
-		/* For downward compatibility with databases using the */
-		/* obsolete ANTILOCK flag. */
-		if (FLAGS(objno) & OBSOLETE_ANTILOCK) {
-			LOADLOCK(objno, negate_boolexp(copy_bool(GETLOCK(objno))))
-					FLAGS(objno) &= ~OBSOLETE_ANTILOCK;
-		}
 	}
 
 	switch (FLAGS(objno) & TYPE_MASK) {
@@ -671,8 +631,6 @@ db_read_object(FILE * f, struct object *o, dbref objno, int dtype, int read_befo
 			THING_SET_HOME(objno, home);
 			o->exits = getref(f);
 			OWNER(objno) = getref(f);
-			if (dtype < 10)
-				LOADVALUE(objno, getref(f));
 			break;
 		}
 	case TYPE_ROOM:
@@ -693,16 +651,8 @@ db_read_object(FILE * f, struct object *o, dbref objno, int dtype, int read_befo
 		ALLOC_PLAYER_SP(objno);
 		PLAYER_SET_HOME(objno, (prop_flag ? getref(f) : j));
 		o->exits = getref(f);
-		if (dtype < 10)
-			LOADVALUE(objno, getref(f));
 		password = getstring(f);
-		if (dtype <= 8 && password) {
-			set_password_raw(objno, NULL);
-			set_password(objno, password);
-			free((void*) password);
-		} else {
-			set_password_raw(objno, password);
-		}
+		set_password_raw(objno, password);
 		PLAYER_SET_CURR_PROG(objno, NOTHING);
 		PLAYER_SET_INSERT_MODE(objno, 0);
 		PLAYER_SET_DESCRS(objno, NULL);
@@ -726,12 +676,6 @@ db_read_object(FILE * f, struct object *o, dbref objno, int dtype, int read_befo
 		PROGRAM_SET_PROFSTART(objno, 0);
 		PROGRAM_SET_PROF_USES(objno, 0);
 		PROGRAM_SET_INSTANCES(objno, 0);
-
-		if (dtype < 8 && (FLAGS(objno) & LINK_OK)) {
-			/* set Viewable flag on Link_ok programs. */
-			FLAGS(objno) |= VEHICLE;
-		}
-
 		break;
 	case TYPE_GARBAGE:
 		break;
@@ -771,19 +715,15 @@ db_read(FILE * f)
 	int i;
 	dbref grow, thisref;
 	struct object *o;
-	const char *special, *version;
+	const char *special;
 	int doing_deltas;
-	int main_db_format = 0;
-	int parmcnt;
 	int dbflags;
 	char c;
 
 	/* Parse the header */
-	dbflags = db_read_header( f, &version, &db_load_format, &grow, &parmcnt );
-
-	/* load the @tune values */
-	if( dbflags & DB_ID_PARMSINFO ) {
-		tune_load_parms_from_file(f, NOTHING, parmcnt);
+	dbflags = db_read_header( f, &db_load_format, &grow);
+	if (db_load_format == 0) {
+		return -1;
 	}
 
 	/* grow the db up front */
@@ -797,15 +737,12 @@ db_read(FILE * f)
 			fprintf(stderr, "Can't read a deltas file without a dbfile.\n");
 			return -1;
 		}
-	} else {
-		main_db_format = db_load_format;
 	}
 
 	c = getc(f);			/* get next char */
 	for (i = 0;; i++) {
 		switch (c) {
 		case NUMBER_TOKEN:
-			/* another entry, yawn */
 			thisref = getref(f);
 
 			if (thisref < db_top) {
@@ -819,19 +756,9 @@ db_read(FILE * f)
 
 			/* read it in */
 			o = DBFETCH(thisref);
-			switch (db_load_format) {
-			case 7:
-			case 8:
-			case 9:
-			case 10:
-			case 11:
-				db_read_object(f, o, thisref, db_load_format, doing_deltas);
-				break;
-			default:
-				log_status("ABORT: Unrecognized database format.");
-				abort();
-				break;
-			}
+
+			db_read_object(f, o, thisref, db_load_format, doing_deltas);
+
 			if (Typeof(thisref) == TYPE_PLAYER) {
 				OWNER(thisref) = thisref;
 				add_player(thisref);
@@ -845,45 +772,14 @@ db_read(FILE * f)
 			} else {
 				free((void *) special);
 				special = getstring(f);
-				if (special && !strcmp(special, "***Foxen Deltas Dump Extention***")) {
-					free((void *) special);
-					db_load_format = 4;
-					doing_deltas = 1;
-				} else if (special && !strcmp(special, "***Foxen2 Deltas Dump Extention***")) {
-					free((void *) special);
-					db_load_format = 5;
-					doing_deltas = 1;
-				} else if (special && !strcmp(special, "***Foxen4 Deltas Dump Extention***")) {
-					free((void *) special);
-					db_load_format = 6;
-					doing_deltas = 1;
-				} else if (special && !strcmp(special, "***Foxen5 Deltas Dump Extention***")) {
-					free((void *) special);
-					db_load_format = 7;
-					doing_deltas = 1;
-				} else if (special && !strcmp(special, "***Foxen6 Deltas Dump Extention***")) {
-					free((void *) special);
-					db_load_format = 8;
-					doing_deltas = 1;
-				} else if (special && !strcmp(special, "***Foxen7 Deltas Dump Extention***")) {
-					free((void *) special);
-					db_load_format = 9;
-					doing_deltas = 1;
-				} else if (special && !strcmp(special, "***Foxen8 Deltas Dump Extention***")) {
+				if (special && !strcmp(special, "***Foxen8 Deltas Dump Extention***")) {
 					free((void *) special);
 					db_load_format = 10;
 					doing_deltas = 1;
 				} else {
 					if (special)
 						free((void *) special);
-					if (main_db_format >= 7 && (dbflags & DB_PARMSINFO)) {
-						rewind(f);
-						free((void *) getstring(f));
-						getref(f);
-						getref(f);
-						parmcnt = getref(f);
-						tune_load_parms_from_file(f, NOTHING, parmcnt);
-					}
+
 					for (i = 0; i < db_top; i++) {
 						if (Typeof(i) == TYPE_GARBAGE) {
 							DBFETCH(i)->next = recyclable;
