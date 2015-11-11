@@ -200,8 +200,6 @@ putproperties(FILE * f, dbref obj)
 
 
 extern FILE *input_file;
-extern FILE *delta_infile;
-extern FILE *delta_outfile;
 
 #ifdef DISKBASE
 
@@ -222,11 +220,7 @@ fetch_propvals(dbref obj, const char *dir)
 			strcatn(buf, sizeof(buf), "/");
 			if (PropFlags(p) & PROP_DIRUNLOADED) {
 				SetPFlags(p, (PropFlags(p) & ~PROP_DIRUNLOADED));
-				if (FLAGS(obj) & SAVED_DELTA) {
-					getproperties(delta_infile, obj, buf);
-				} else {
-					getproperties(input_file, obj, buf);
-				}
+				getproperties(input_file, obj, buf);
 			}
 			fetch_propvals(obj, buf);
 		}
@@ -257,11 +251,7 @@ putprops_copy(FILE * f, dbref obj)
 		putproperties(f, obj);
 		return;
 	}
-	if (FLAGS(obj) & SAVED_DELTA) {
-		g = delta_infile;
-	} else {
-		g = input_file;
-	}
+	g = input_file;
 	putstring(f, "*Props*");
 	if (DBFETCH(obj)->propsfpos) {
 		fseek(g, DBFETCH(obj)->propsfpos, 0);
@@ -348,65 +338,27 @@ db_write_object(FILE * f, dbref i)
 	return 0;
 }
 
-int deltas_count = 0;
-
 #ifndef CLUMP_LOAD_SIZE
 #define CLUMP_LOAD_SIZE 20
 #endif
 
-
-/* mode == 1 for dumping all objects.  mode == 0 for deltas only.  */
-
-void
-db_write_list(FILE * f, int mode)
-{
-	dbref i;
-
-	for (i = db_top; i-- > 0;) {
-		if (mode == 1 || (FLAGS(i) & OBJECT_CHANGED)) {
-			if (fprintf(f, "#%d\n", i) < 0)
-				abort();
-			db_write_object(f, i);
-#ifdef DISKBASE
-			if (mode == 1) {
-				FLAGS(i) &= ~SAVED_DELTA;	/* clear delta flag */
-			} else {
-				FLAGS(i) |= SAVED_DELTA;	/* set delta flag */
-				deltas_count++;
-			}
-#endif
-			FLAGS(i) &= ~OBJECT_CHANGED;	/* clear changed flag */
-		}
-	}
-}
-
-
 dbref
 db_write(FILE * f)
 {
+	dbref i;
+
 	db_write_header(f);
 
-	db_write_list(f, 1);
+	for (i = db_top; i-- > 0;) {
+		if (fprintf(f, "#%d\n", i) < 0)
+			abort();
+		db_write_object(f, i);
+		FLAGS(i) &= ~OBJECT_CHANGED;	/* clear changed flag */
+	}
 
 	fseek(f, 0L, 2);
 	putstring(f, "***END OF DUMP***");
 
-	fflush(f);
-	deltas_count = 0;
-	return (db_top);
-}
-
-
-
-dbref
-db_write_deltas(FILE * f)
-{
-	fseek(f, 0L, 2);			/* seek end of file */
-	putstring(f, "***Foxen8 Deltas Dump Extention***");
-	db_write_list(f, 0);
-
-	fseek(f, 0L, 2);
-	putstring(f, "***END OF DUMP***");
 	fflush(f);
 	return (db_top);
 }
@@ -578,7 +530,6 @@ db_read_object(FILE * f, struct object *o, dbref objno, int dtype, int read_befo
 	tmp = getref(f);			/* flags list */
 	tmp &= ~DUMP_MASK;
 	FLAGS(objno) |= tmp;
-	FLAGS(objno) &= ~SAVED_DELTA;
 
 	o->ts.created = getref(f);
 	o->ts.lastused = getref(f);
@@ -717,27 +668,15 @@ db_read(FILE * f)
 	struct object *o;
 	const char *special;
 	int doing_deltas;
-	int dbflags;
 	char c;
 
 	/* Parse the header */
-	dbflags = db_read_header( f, &db_load_format, &grow);
+	db_load_format = db_read_header(f, &grow);
 	if (db_load_format == 0) {
 		return -1;
 	}
 
-	/* grow the db up front */
-	if ( dbflags & DB_ID_GROW ) {
-		db_grow( grow );
-	}
-
-	doing_deltas = dbflags & DB_ID_DELTAS;
-	if( doing_deltas ) {
-		if( !db ) {
-			fprintf(stderr, "Can't read a deltas file without a dbfile.\n");
-			return -1;
-		}
-	}
+	db_grow(grow);
 
 	c = getc(f);			/* get next char */
 	for (i = 0;; i++) {
@@ -772,23 +711,17 @@ db_read(FILE * f)
 			} else {
 				free((void *) special);
 				special = getstring(f);
-				if (special && !strcmp(special, "***Foxen8 Deltas Dump Extention***")) {
+				if (special)
 					free((void *) special);
-					db_load_format = 10;
-					doing_deltas = 1;
-				} else {
-					if (special)
-						free((void *) special);
 
-					for (i = 0; i < db_top; i++) {
-						if (Typeof(i) == TYPE_GARBAGE) {
-							DBFETCH(i)->next = recyclable;
-							recyclable = i;
-						}
+				for (i = 0; i < db_top; i++) {
+					if (Typeof(i) == TYPE_GARBAGE) {
+						DBFETCH(i)->next = recyclable;
+						recyclable = i;
 					}
-					autostart_progs();
-					return db_top;
 				}
+				autostart_progs();
+				return db_top;
 			}
 			break;
 		default:

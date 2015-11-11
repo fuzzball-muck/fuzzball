@@ -2,8 +2,6 @@
 #define _DEFAULTS_H
 
 #define DUMPWARN_MESG   "## Game will pause to save the database in a few minutes. ##"
-#define DELTAWARN_MESG  "## Game will pause to save changed objects in a few minutes. ##"
-#define DUMPDELTAS_MESG "## Saving changed objects ##"
 #define DUMPING_MESG    "## Pausing to save database. This may take a while. ##"
 #define DUMPDONE_MESG   "## Save complete. ##"
 
@@ -74,7 +72,7 @@
 
 /* various times */
 #define AGING_TIME TIME_DAY(90)	/* Unused time before obj shows as old. */
-#define DUMP_INTERVAL TIME_HOUR(4)	/* time between dumps (or deltas) */
+#define DUMP_INTERVAL TIME_HOUR(4)	/* time between dumps */
 #define DUMP_WARNTIME TIME_MINUTE(2)	/* warning time before a dump */
 #define MONOLITHIC_INTERVAL TIME_DAY(1)	/* max time between full dumps */
 #define CLEAN_INTERVAL TIME_MINUTE(15)	/* time between unused obj purges */
@@ -120,9 +118,6 @@
 #define KILL_BASE_COST 100		/* prob = expenditure/KILL_BASE_COST    */
 #define KILL_MIN_COST 10		/* minimum amount needed to kill        */
 #define KILL_BONUS 50			/* amount of "insurance" paid to victim */
-
-
-#define MAX_DELTA_OBJS 20		/* max %age of objs changed before a full dump */
 
 /* player spam input limiters */
 #define COMMAND_BURST_SIZE 500	/* commands allowed per user in a burst */
@@ -204,10 +199,6 @@
 
 /* give a bit of warning before a database dump. */
 #define DBDUMP_WARNING 1
-
-/* give a bit of warning before a delta dump. */
-/* only warns if DBDUMP_WARNING is also 1 */
-#define DELTADUMP_WARNING 1
 
 /* When a database dump completes, announce it. */
 #define DUMPDONE_WARNING 1

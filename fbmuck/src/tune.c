@@ -8,8 +8,6 @@
 #include "tune.h"
 
 const char *tp_dumpwarn_mesg = DUMPWARN_MESG;
-const char *tp_deltawarn_mesg = DELTAWARN_MESG;
-const char *tp_dumpdeltas_mesg = DUMPDELTAS_MESG;
 const char *tp_dumping_mesg = DUMPING_MESG;
 const char *tp_dumpdone_mesg = DUMPDONE_MESG;
 
@@ -58,9 +56,7 @@ struct tune_str_entry tune_str_list[] = {
 	{"Currency",   "cpenny", &tp_cpenny, 0, MLEV_WIZARD, "Currency name, capitalized", 0, 1},
 	{"Currency",   "cpennies", &tp_cpennies, 0, MLEV_WIZARD, "Currency name, capitalized, plural", 0, 1},
 	{"DB Dumps",   "dumpwarn_mesg", &tp_dumpwarn_mesg, 0, MLEV_WIZARD, "Full dump warning mesg", 1, 1},
-	{"DB Dumps",   "deltawarn_mesg", &tp_deltawarn_mesg, 0, MLEV_WIZARD, "Delta dump warning mesg", 1, 1},
 	{"DB Dumps",   "dumping_mesg", &tp_dumping_mesg, 0, MLEV_WIZARD, "Full dump start mesg", 1, 1},
-	{"DB Dumps",   "dumpdeltas_mesg", &tp_dumpdeltas_mesg, 0, MLEV_WIZARD, "Delta dump start mesg", 1, 1},
 	{"DB Dumps",   "dumpdone_mesg", &tp_dumpdone_mesg, 0, MLEV_WIZARD, "Dump completion message", 1, 1},
 	{"Idle Boot",  "idle_boot_mesg", &tp_idle_mesg, 0, MLEV_WIZARD, "Boot message for idling out", 0, 1},
 	{"Player Max", "playermax_warnmesg", &tp_playermax_warnmesg, 0, MLEV_WIZARD, "Max. players login warning", 0, 1},
@@ -85,7 +81,6 @@ struct tune_str_entry tune_str_list[] = {
 /* times */
 int tp_dump_interval = DUMP_INTERVAL;
 int tp_dump_warntime = DUMP_WARNTIME;
-int tp_monolithic_interval = MONOLITHIC_INTERVAL;
 int tp_clean_interval = CLEAN_INTERVAL;
 int tp_aging_time = AGING_TIME;
 int tp_maxidle = MAXIDLE;
@@ -103,9 +98,8 @@ struct tune_time_entry {
 
 struct tune_time_entry tune_time_list[] = {
 	{"Database",  "aging_time", &tp_aging_time, 0, MLEV_WIZARD, "When to considered an object old and unused"},
-	{"DB Dumps",  "dump_interval", &tp_dump_interval, 0, MLEV_WIZARD, "Interval between delta dumps"},
+	{"DB Dumps",  "dump_interval", &tp_dump_interval, 0, MLEV_WIZARD, "Interval between dumps"},
 	{"DB Dumps",  "dump_warntime", &tp_dump_warntime, 0, MLEV_WIZARD, "Interval between warning and dump"},
-	{"DB Dumps",  "monolithic_interval", &tp_monolithic_interval, 0, MLEV_WIZARD, "Interval between full dumps"},
 	{"Idle Boot", "maxidle", &tp_maxidle, 0, MLEV_WIZARD, "Maximum idle time before booting"},
 	{"Idle Boot", "idle_ping_time", &tp_idle_ping_time, 0, MLEV_WIZARD, "Server side keepalive time in seconds"},
 	{"Tuning",    "clean_interval", &tp_clean_interval, 0, MLEV_WIZARD, "Interval between memory cleanups."},
@@ -134,7 +128,6 @@ int tp_commands_per_time = COMMANDS_PER_TIME;
 int tp_command_time_msec = COMMAND_TIME_MSEC;
 int tp_max_output = MAX_OUTPUT;
 
-int tp_max_delta_objs = MAX_DELTA_OBJS;
 int tp_max_loaded_objs = MAX_LOADED_OBJS;
 int tp_max_force_level = MAX_FORCE_LEVEL;
 int tp_max_process_limit = MAX_PROCESS_LIMIT;
@@ -201,7 +194,6 @@ struct tune_val_entry tune_val_list[] = {
 	{"Spam Limits", "max_output", &tp_max_output, 0, MLEV_WIZARD, "Max output buffer size"},
 	{"Tuning",      "pause_min", &tp_pause_min, 0, MLEV_WIZARD, "Min ms to pause between MUF timeslices"},
 	{"Tuning",      "free_frames_pool", &tp_free_frames_pool, 0, MLEV_WIZARD, "Size of MUF process frame pool"},
-	{"Tuning",      "max_delta_objs", &tp_max_delta_objs, 0, MLEV_WIZARD, "Percentage changed objects to force full dump"},
 	{"Tuning",      "max_loaded_objs", &tp_max_loaded_objs, 0, MLEV_WIZARD, "Max proploaded object percentage"},
 	{NULL, NULL, NULL, 0, 0, NULL}
 };
@@ -240,7 +232,6 @@ int tp_log_commands = LOG_COMMANDS;
 int tp_log_failed_commands = LOG_FAILED_COMMANDS;
 int tp_log_programs = LOG_PROGRAMS;
 int tp_dbdump_warning = DBDUMP_WARNING;
-int tp_deltadump_warning = DELTADUMP_WARNING;
 int tp_dumpdone_warning = DUMPDONE_WARNING;
 int tp_periodic_program_purge = PERIODIC_PROGRAM_PURGE;
 int tp_secure_who = SECURE_WHO;
@@ -312,7 +303,6 @@ struct tune_bool_entry tune_bool_list[] = {
 	{"Database",   "compatible_priorities", &tp_compatible_priorities, 0, MLEV_WIZARD, "Use legacy exit priority levels on things"},
 	{"DB Dumps",   "diskbase_propvals", &tp_diskbase_propvals, 0, MLEV_WIZARD, "Enable property value diskbasing (req. restart)"},
 	{"DB Dumps",   "dbdump_warning", &tp_dbdump_warning, 0, MLEV_WIZARD, "Enable warning messages for full DB dumps"},
-	{"DB Dumps",   "deltadump_warning", &tp_deltadump_warning, 0, MLEV_WIZARD, "Enable warning messages for delta DB dumps"},
 	{"DB Dumps",   "dumpdone_warning", &tp_dumpdone_warning, 0, MLEV_WIZARD, "Enable notification of DB dump completion"},
 	{"Idle Boot",  "idleboot", &tp_idleboot, 0, MLEV_WIZARD, "Enable booting of idle players"},
 	{"Idle Boot",  "idle_ping_enable", &tp_idle_ping_enable, 0, MLEV_WIZARD, "Enable server side keepalive"},

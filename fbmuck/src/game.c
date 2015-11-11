@@ -26,8 +26,6 @@ static int epoch = 0;
 time_t last_monolithic_time = 0;
 static int forked_dump_process_flag = 0;
 FILE *input_file;
-FILE *delta_infile;
-FILE *delta_outfile;
 char *in_filename = NULL;
 
 void fork_and_dump(void);
@@ -157,21 +155,6 @@ do_dump(dbref player, const char *newfile)
 }
 
 void
-do_delta(dbref player)
-{
-	if (Wizard(player)) {
-#ifdef DELTADUMPS
-		notify(player, "Dumping deltas...");
-		delta_dump_now();
-#else
-		notify(player, "Sorry, this server was compiled without DELTADUMPS.");
-#endif
-	} else {
-		notify(player, "Sorry, you are in a no dumping zone.");
-	}
-}
-
-void
 do_shutdown(dbref player)
 {
 	if (Wizard(player)) {
@@ -222,11 +205,6 @@ dump_database_internal(void)
 		fclose(input_file);
 #endif
 
-#ifdef DELTADUMPS
-		fclose(delta_outfile);
-		fclose(delta_infile);
-#endif
-
 #ifdef WIN32
 		(void) unlink(dumpfile); /* Delete old file before rename */
 #endif
@@ -240,15 +218,6 @@ dump_database_internal(void)
 		if ((input_file = fopen(in_filename, "rb")) == NULL)
 			perror(dumpfile);
 #endif
-
-#ifdef DELTADUMPS
-		if ((delta_outfile = fopen(DELTAFILE_NAME, "wb")) == NULL)
-			perror(DELTAFILE_NAME);
-
-		if ((delta_infile = fopen(DELTAFILE_NAME, "rb")) == NULL)
-			perror(DELTAFILE_NAME);
-#endif
-
 	} else {
 		perror(tmpfile);
 	}
@@ -320,7 +289,6 @@ panic(const char *message)
 		fclose(f);
 		log_status("DUMPING: %s (done)", panicfile);
 		fprintf(stderr, "DUMPING: %s (done)\n", panicfile);
-		(void) unlink(DELTAFILE_NAME);
 	}
 
 	/* Write out the macros */
@@ -427,86 +395,13 @@ fork_and_dump(void)
 #endif
 }
 
-#ifdef DELTADUMPS
-extern int deltas_count;
-
-int
-time_for_monolithic(void)
-{
-	dbref i;
-	int count = 0;
-	long a, b;
-
-	if (!last_monolithic_time)
-		last_monolithic_time = time(NULL);
-	if (time(NULL) - last_monolithic_time >= (tp_monolithic_interval - tp_dump_warntime)
-			) {
-		return 1;
-	}
-
-	for (i = 0; i < db_top; i++)
-		if (FLAGS(i) & (SAVED_DELTA | OBJECT_CHANGED))
-			count++;
-	if (((count * 100) / db_top) > tp_max_delta_objs) {
-		return 1;
-	}
-
-	fseek(delta_infile, 0L, 2);
-	a = ftell(delta_infile);
-	fseek(input_file, 0L, 2);
-	b = ftell(input_file);
-	if (a >= b) {
-		return 1;
-	}
-	return 0;
-}
-#endif
-
 void
 dump_warning(void)
 {
 	if (tp_dbdump_warning) {
-#ifdef DELTADUMPS
-		if (time_for_monolithic()) {
-			wall_and_flush(tp_dumpwarn_mesg);
-		} else {
-			if (tp_deltadump_warning) {
-				wall_and_flush(tp_deltawarn_mesg);
-			}
-		}
-#else
 		wall_and_flush(tp_dumpwarn_mesg);
-#endif
 	}
 }
-
-#ifdef DELTADUMPS
-void
-dump_deltas(void)
-{
-	if (time_for_monolithic()) {
-		fork_and_dump();
-		deltas_count = 0;
-		return;
-	}
-
-	epoch++;
-	log_status("DELTADUMP: %s.#%d#", dumpfile, epoch);
-
-	if (tp_deltadump_warning)
-		wall_and_flush(tp_dumpdeltas_mesg);
-
-	db_write_deltas(delta_outfile);
-
-	if (tp_deltadump_warning && tp_dumpdone_warning)
-		wall_and_flush(tp_dumpdone_mesg);
-
-#ifdef DISKBASE
-	propcache_hits = 0L;
-	propcache_misses = 1L;
-#endif
-}
-#endif
 
 extern short db_conversion_flag;
 
@@ -525,14 +420,6 @@ init_game(const char *infile, const char *outfile)
 	in_filename = (char *) string_dup(infile);
 	if ((input_file = fopen(infile, "rb")) == NULL)
 		return -1;
-
-#ifdef DELTADUMPS
-	if ((delta_outfile = fopen(DELTAFILE_NAME, "wb")) == NULL)
-		return -1;
-
-	if ((delta_infile = fopen(DELTAFILE_NAME, "rb")) == NULL)
-		return -1;
-#endif
 
 	db_free();
 	init_primitives();			/* init muf compiler */
@@ -863,8 +750,8 @@ process_command(int descr, dbref player, char *command)
 				break;
 			case 'd':
 			case 'D':
-				/* @dbginfo, @delta, @describe, @dig, @dlt,
-				   @doing, @drop, @dump */
+				/* @dbginfo, @describe, @dig, @doing,
+				   @drop, @dump */
 				switch (command[2]) {
 				case 'b':
 				case 'B':
@@ -873,24 +760,14 @@ process_command(int descr, dbref player, char *command)
 					break;
 				case 'e':
 				case 'E':
-					if(command[3] == 'l' || command[3] == 'L') {
-						Matched("@delta");
-						do_delta(player);
-					} else {
-						Matched("@describe");
-						NOGUEST("@describe", player);
-						set_standard_property(descr, player, arg1, MESGPROP_DESC, "Object Description", arg2);
-					}
+					Matched("@describe");
+					NOGUEST("@describe", player);
+					set_standard_property(descr, player, arg1, MESGPROP_DESC, "Object Description", arg2);
 					break;
 				case 'i':
 				case 'I':
 					Matched("@dig");
 					do_dig(descr, player, arg1, arg2);
-					break;
-				case 'l':
-				case 'L':
-					Matched("@dlt");
-					do_delta(player);
 					break;
 				case 'o':
 				case 'O':

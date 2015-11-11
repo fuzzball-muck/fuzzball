@@ -62,11 +62,7 @@ check_dump_time(void)
 		purge_for_pool();
 		purge_try_pool();
 
-#ifdef DELTADUMPS
-		dump_deltas();
-#else
 		fork_and_dump();
-#endif
 
 		dump_warned = 0;
 	}
@@ -83,22 +79,6 @@ dump_db_now(void)
 	last_dump_time = currtime;
 	dump_warned = 0;
 }
-
-#ifdef DELTADUMPS
-void
-delta_dump_now(void)
-{
-	long currtime = (long) time((time_t *) NULL);
-
-	add_property((dbref) 0, "_sys/lastdumptime", NULL, (int) currtime);
-	dump_deltas();
-	last_dump_time = currtime;
-	dump_warned = 0;
-}
-
-#endif
-
-
 
 /*********************
  * Periodic cleanups *

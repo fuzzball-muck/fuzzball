@@ -39,12 +39,6 @@
  */
 #undef DISKBASE
 
-/* To make the server save using fast delta dumps that only write out the
- * changed objects, except when @dump or @shutdown are used, or when too
- * many deltas have already been saved to disk, #define this. 
- */
-#define DELTADUMPS
-
 /*
  * Port where tinymuck lives -- Note: If you use a port lower than
  * 1024, then the program *must* run suid to root!
@@ -150,7 +144,6 @@
 #define INFO_DIR  "data/info/"
 #define EDITOR_HELP_FILE "data/edit-help.txt"	/* editor help file   */
 
-#define DELTAFILE_NAME "data/deltas-file"	/* The file for deltas */
 #define PARMFILE_NAME "data/parmfile.cfg"	/* The file for config parms */
 
 #define LOG_CMD_TIMES "logs/cmd-times"	/* Command times Log */
