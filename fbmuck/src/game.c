@@ -23,7 +23,6 @@
 /* declarations */
 static const char *dumpfile = 0;
 static int epoch = 0;
-time_t last_monolithic_time = 0;
 static int forked_dump_process_flag = 0;
 FILE *input_file;
 char *in_filename = NULL;
@@ -357,7 +356,6 @@ fork_and_dump(void)
 	}
 #endif
 
-	last_monolithic_time = time(NULL);
 	log_status("CHECKPOINTING: %s.#%d#", dumpfile, epoch);
 
 	if (tp_dbdump_warning)

@@ -74,7 +74,6 @@
 #define AGING_TIME TIME_DAY(90)	/* Unused time before obj shows as old. */
 #define DUMP_INTERVAL TIME_HOUR(4)	/* time between dumps */
 #define DUMP_WARNTIME TIME_MINUTE(2)	/* warning time before a dump */
-#define MONOLITHIC_INTERVAL TIME_DAY(1)	/* max time between full dumps */
 #define CLEAN_INTERVAL TIME_MINUTE(15)	/* time between unused obj purges */
 
 
