@@ -67,16 +67,16 @@ getstring(FILE * f)
 }
 
 int
-db_read_header( FILE *f, int *load_format, dbref *grow)
+db_read_header( FILE *f, int *grow)
 {
 	int result = 0;
-	int grow_and_dbflags = 0;
+	int dbflags;
 	int parmcnt = 0;
+	int load_format = 0;
 	const char *special;
 	char c;
 
-	/* null out the outputs */
-	*load_format = 0;
+	/* null out the output */
 	*grow = 0;
 
 	/* if the db doesn't start with a * it is incredibly ancient and has no header */
@@ -91,32 +91,18 @@ db_read_header( FILE *f, int *load_format, dbref *grow)
 	special = getstring(f);
 
 	if (!strcmp(special, "***Foxen8 TinyMUCK DUMP Format***")) {
-		*load_format = 10;
-		grow_and_dbflags = TRUE;
+		load_format = 10;
 	} else if (!strcmp(special, DB_VERSION_STRING)) {
-		*load_format = 11;
-		grow_and_dbflags = TRUE;
-	} else if (!strcmp(special, "****Foxen8 Deltas Dump Extention***")) {
-		*load_format = 10;
-		result |= DB_ID_DELTAS;
+		load_format = 11;
 	}
 
-	/* All recent versions could have these */
-	if ( grow_and_dbflags ) {
-		int dbflags;
+	*grow = getref(f);
+	dbflags = getref(f);
 
-		*grow = getref(f);
-		result |= DB_ID_GROW;
+	parmcnt = getref(f);
+	tune_load_parms_from_file(f, NOTHING, parmcnt);
 
-		dbflags = getref(f);
-
-	        /* load the @tune values */
-		parmcnt = getref(f);
-		tune_load_parms_from_file(f, NOTHING, parmcnt);
-		result |= DB_ID_PARMSINFO;
-	}
-
-	return result;
+	return load_format;
 }
 
 void

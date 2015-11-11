@@ -39,16 +39,6 @@ DBOUT="$GAMEDIR/data/std-db.new"
 #
 PORTS=4201
 
-
-#
-# It's doubtful you will want to change this, unless you compile a different
-# path and filename into the server.  This is the file that deltadumps are
-# saved to.  After a successful restart, these deltas will be appended to the
-# end of the DBIN file.
-#
-DELTAS="$GAMEDIR/data/deltas-file"
-
-
 #
 # This is the name of the fbmuck program to run.  You probably don't want to
 # change this unless you renamed the server program to something other than
@@ -116,7 +106,6 @@ if [ -r $PANICDB ]; then
     end=`tail -1 $PANICDB`
     if [ "x$end" = "x***END OF DUMP***" ]; then
 		mv $PANICDB $DBOUT
-		rm -f $DELTAS
     else
 		echo "Warning: PANIC dump failed on "`date` | mail `whoami`
     fi
@@ -141,28 +130,7 @@ if [ "x$end" != 'x***END OF DUMP***' ]; then
 	exit
 fi
 
-
 # nice -20 gzip -9 $DBOLD.$datestamp &
-
-if [ -r $DELTAS ]; then
-	echo "Restoring from delta."
-	end=`tail -1 $DELTAS`
-	if [ "x$end" = "x***END OF DUMP***" ]; then
-		cat $DELTAS >> $DBIN
-	else
-		echo "Last delta is incomplete.  Truncating to previous dump."
-		grep -n '^***END OF DUMP***' $DELTAS | tail -1 > .ftmp$$
-		llinum=`cut -d: -f1 < .ftmp$$`
-		llcnt=`wc -l < .ftmp$$`
-		if [ $llcnt -gt 0 ]; then
-			head -$llinum $DELTAS >> $DBIN
-		else
-			echo "Hmm.  No previous delta dump."
-		fi
-		rm .ftmp$$
-	fi
-	rm -f $DELTAS
-fi
 
 dbsiz=`ls -1s $DBIN | awk '{print $1}'`
 diskfree=`df -k . | tail -1 | awk '{print $4}'`

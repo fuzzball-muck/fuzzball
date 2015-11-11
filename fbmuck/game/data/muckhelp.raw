@@ -1674,17 +1674,6 @@ If a filename is given, it will save the db to that file, and save any
 subsequent dumps to it as well.
 ~
 ~
-@DELTA|@DLT
-@DLT
-@DELTA
-
-  Requests a short delta dump of the database to disk.  Only changed
-objects are written out in a delta dump.  The @delta command does NOT
-guarantee that only a delta dump will be performed, though.  If too many
-changed objects exist, a full dump of the database will be made instead.
-~~alsosee @DUMP
-~
-~
 @SHUTDOWN
 @SHUTDOWN
 
