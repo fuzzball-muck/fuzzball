@@ -11,6 +11,7 @@
 
 #include "db_header.h"
 #include "params.h"
+#include "tune.h"
 
 static int
 do_peek(FILE * f)
@@ -65,20 +66,18 @@ getstring(FILE * f)
 	return alloc_string(buf);
 }
 
-
 int
-db_read_header( FILE *f, const char **version, int *load_format, dbref *grow, int *parmcnt )
+db_read_header( FILE *f, int *load_format, dbref *grow)
 {
 	int result = 0;
 	int grow_and_dbflags = 0;
+	int parmcnt = 0;
 	const char *special;
 	char c;
 
-	/* null out the putputs */
-	*version = NULL;
+	/* null out the outputs */
 	*load_format = 0;
 	*grow = 0;
-	*parmcnt = 0;
 
 	/* if the db doesn't start with a * it is incredibly ancient and has no header */
 	/* this routine can deal with - just return */	
@@ -91,35 +90,12 @@ db_read_header( FILE *f, const char **version, int *load_format, dbref *grow, in
 	/* read the first line to id it */
 	special = getstring(f);
 
-	/* save whatever the version string was */
-	/* NOTE: This only works because we only do getstring_noalloc once */
-	result |= DB_ID_VERSIONSTRING;
-	*version = special;
-
-	if (!strcmp(special, "***Foxen5 TinyMUCK DUMP Format***")) {
-		*load_format = 7;
-		grow_and_dbflags = TRUE;
-	} else if (!strcmp(special, "***Foxen6 TinyMUCK DUMP Format***")) {
-		*load_format = 8;
-		grow_and_dbflags = TRUE;
-	} else if (!strcmp(special, "***Foxen7 TinyMUCK DUMP Format***")) {
-		*load_format = 9;
-		grow_and_dbflags = TRUE;
-	} else if (!strcmp(special, "***Foxen8 TinyMUCK DUMP Format***")) {
+	if (!strcmp(special, "***Foxen8 TinyMUCK DUMP Format***")) {
 		*load_format = 10;
 		grow_and_dbflags = TRUE;
-	} else if (!strcmp(special, "***Foxen9 TinyMUCK DUMP Format***")) {
+	} else if (!strcmp(special, DB_VERSION_STRING)) {
 		*load_format = 11;
 		grow_and_dbflags = TRUE;
-	} else if (!strcmp(special, "****Foxen5 Deltas Dump Extention***")) {
-		*load_format = 7;
-		result |= DB_ID_DELTAS;
-	} else if (!strcmp(special, "****Foxen6 Deltas Dump Extention***")) {
-		*load_format = 8;
-		result |= DB_ID_DELTAS;
-	} else if (!strcmp(special, "****Foxen7 Deltas Dump Extention***")) {
-		*load_format = 9;
-		result |= DB_ID_DELTAS;
 	} else if (!strcmp(special, "****Foxen8 Deltas Dump Extention***")) {
 		*load_format = 10;
 		result |= DB_ID_DELTAS;
@@ -133,11 +109,23 @@ db_read_header( FILE *f, const char **version, int *load_format, dbref *grow, in
 		result |= DB_ID_GROW;
 
 		dbflags = getref(f);
-		if (dbflags & DB_PARMSINFO) {
-			*parmcnt = getref(f);
-			result |= DB_ID_PARMSINFO;
-		}
+
+	        /* load the @tune values */
+		parmcnt = getref(f);
+		tune_load_parms_from_file(f, NOTHING, parmcnt);
+		result |= DB_ID_PARMSINFO;
 	}
 
 	return result;
+}
+
+void
+db_write_header(FILE *f)
+{
+        putstring(f, DB_VERSION_STRING );
+
+        putref(f, db_top);
+        putref(f, DB_PARMSINFO );
+        putref(f, tune_count_parms());
+        tune_save_parms_to_file(f);
 }
