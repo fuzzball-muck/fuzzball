@@ -344,15 +344,15 @@ struct tune_bool_entry tune_bool_list[] = {
 	{"WHO",        "who_doing", &tp_who_doing, 0, MLEV_WIZARD, "Show '_/do' property value in WHO lists"},
 	{"Misc",       "allow_zombies", &tp_zombies, 0, MLEV_WIZARD, "Enable Zombie things to relay what they hear"},
 	{"Misc",       "wiz_vehicles", &tp_wiz_vehicles, 0, MLEV_WIZARD, "Only let Wizards set vehicle bits"},
-	{"Misc",       "ignore_support", &tp_ignore_support, MLEV_MASTER, MLEV_MASTER, "Enable support for @ignoring players"},
-	{"Misc",       "ignore_bidirectional", &tp_ignore_bidirectional, MLEV_MASTER, MLEV_MASTER, "Enable bidirectional @ignore"},
-	{"Misc",	"m3_huh", &tp_m3_huh, MLEV_MASTER, MLEV_MASTER, "Enable huh? to call an exit named \"huh?\" and set M3, with full command string"},
+	{"Misc",       "ignore_support", &tp_ignore_support, MLEV_MASTER, MLEV_WIZARD, "Enable support for @ignoring players"},
+	{"Misc",       "ignore_bidirectional", &tp_ignore_bidirectional, MLEV_MASTER, MLEV_WIZARD, "Enable bidirectional @ignore"},
+	{"Misc",	"m3_huh", &tp_m3_huh, MLEV_MASTER, MLEV_WIZARD, "Enable huh? to call an exit named \"huh?\" and set M3, with full command string"},
 	{"Misc",	"strict_god_priv", &tp_strict_god_priv, MLEV_GOD, MLEV_GOD, "Only God can touch God's objects"
 #ifndef GOD_PRIV
                                                                           " (not active: GOD_PRIV is not #defined)"
 #endif
         },
-	{"SSL",        "starttls_allow", &tp_starttls_allow, MLEV_MASTER, MLEV_MASTER, "Enable TELNET STARTTLS encryption on plaintext port"},
+	{"SSL",        "starttls_allow", &tp_starttls_allow, MLEV_MASTER, MLEV_WIZARD, "Enable TELNET STARTTLS encryption on plaintext port"},
         {"SSL",        "server_cipher_preference", &tp_cipher_server_preference, MLEV_WIZARD, MLEV_WIZARD, "Honor server cipher preference order over client's (changes require restart)"},
 	{"Charset",	"7bit_thing_names", &tp_7bit_thing_names, MLEV_WIZARD, MLEV_WIZARD, "Thing names may contain only 7-bit characters"},
 	{"Charset",	"7bit_other_names", &tp_7bit_other_names, MLEV_WIZARD, MLEV_WIZARD, "Exit/room/muf names may contain only 7-bit characters"},
