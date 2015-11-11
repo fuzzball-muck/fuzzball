@@ -7,15 +7,10 @@
 
 #define DB_VERSION_STRING "***Foxen9 TinyMUCK DUMP Format***"
 
-/* return masks from db_identify */
-#define DB_ID_VERSIONSTRING	0x00000001 /* has a returned **version */
-#define DB_ID_DELTAS		0x00000002 /* doing a delta file */
+#define DB_ID_PARMSINFO		0x00000020 /* legacy database value */
 
-#define DB_ID_GROW 		0x00000010 /* grow parameter will be set */
-#define DB_ID_PARMSINFO		0x00000020 /* parmcnt set, need to do a tune_load_parms_from_file */
-
-/* identify which format a database is (or try to) */
-extern int db_read_header(FILE *f, int *load_format, int *grow);
+/* identify database format and system parmaters, if possible */
+extern int db_read_header(FILE *f, int *grow);
 
 /* output header information to a file. */
 extern void db_write_header(FILE *f);

@@ -34,16 +34,16 @@ You can get more help on the following topics:
 Symbols
   @action        @armageddon    @attach        @bless         @boot
   @chown         @chown_lock    @conlock       @contents      @create
-  @delta         @describe      @dig           @drop          @dump
-  @edit          @entrances     @fail          @find          @force
-  @force_lock    @idescribe     @kill          @link          @list
-  @lock          @mcpedit       @mcpprogram    @name          @newpassword
-  @odrop         @oecho         @ofail         @open          @osuccess
-  @owned         @password      @pcreate       @pecho         @program
-  @propset       @ps            @recycle       @restart       @restrict
-  @set           @shutdown      @stats         @success       @teleport
-  @toad          @trace         @unbless       @uncompile     @unlink
-  @unlock        @usage         @wall          
+  @describe      @dig           @drop          @dump          @edit
+  @entrances     @fail          @find          @force         @force_lock
+  @idescribe     @kill          @link          @list          @lock
+  @mcpedit       @mcpprogram    @name          @newpassword   @odrop
+  @oecho         @ofail         @open          @osuccess      @owned
+  @password      @pcreate       @pecho         @program       @propset
+  @ps            @recycle       @restart       @restrict      @set
+  @shutdown      @stats         @success       @teleport      @toad
+  @trace         @unbless       @uncompile     @unlink        @unlock
+  @usage         @wall          
 
 A's
   abode  
@@ -1723,10 +1723,9 @@ Also see: @EDIT, @PROGRAM and @MCPEDIT
 Wizardly Commands|WizCmds
 Wizardly Commands
 
-@armageddon    @bless         @boot          @delta         @dump
-@force         @newpassword   @pcreate       @restart       @restrict
-@shutdown      @toad          @unbless       @uncompile     @usage
-@wall          
+@armageddon    @bless         @boot          @dump          @force
+@newpassword   @pcreate       @restart       @restrict      @shutdown
+@toad          @unbless       @uncompile     @usage         @wall
 
 ~----------------------------------------------------------------------------
 ~
@@ -1854,17 +1853,6 @@ Automatically occurs every three hours, and when @shutdown is used. It does
 slow down the server, so only use if you fear a server crash is iminent.
 If a filename is given, it will save the db to that file, and save any
 subsequent dumps to it as well.
-~
-~
-@DELTA|@DLT
-@DLT
-@DELTA
-
-  Requests a short delta dump of the database to disk.  Only changed
-objects are written out in a delta dump.  The @delta command does NOT
-guarantee that only a delta dump will be performed, though.  If too many
-changed objects exist, a full dump of the database will be made instead.
-Also see: @DUMP
 ~
 ~
 @SHUTDOWN

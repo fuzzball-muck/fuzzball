@@ -188,7 +188,6 @@ typedef int dbref;				/* offset into db */
 								 * muf READ. */
 #define OBJECT_CHANGED 0x400000	/* internal: when an object is dbdirty()ed,
 								 * set this */
-#define SAVED_DELTA    0x800000	/* internal: object last saved to delta file */
 #define VEHICLE       0x1000000	/* Vehicle flag */
 #define VIEWABLE VEHICLE
 #define ZOMBIE        0x2000000	/* Zombie flag */
@@ -203,7 +202,7 @@ typedef int dbref;				/* offset into db */
 
 
 /* what flags to NOT dump to disk. */
-#define DUMP_MASK    (INTERACTIVE | SAVED_DELTA | OBJECT_CHANGED | LISTENER | READMODE | SANEBIT)
+#define DUMP_MASK    (INTERACTIVE | OBJECT_CHANGED | LISTENER | READMODE | SANEBIT)
 
 
 typedef long object_flag_type;

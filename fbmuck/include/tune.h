@@ -12,8 +12,6 @@
 
 /* strings */
 extern const char *tp_dumpwarn_mesg;
-extern const char *tp_deltawarn_mesg;
-extern const char *tp_dumpdeltas_mesg;
 extern const char *tp_dumping_mesg;
 extern const char *tp_dumpdone_mesg;
 
@@ -46,7 +44,6 @@ extern const char *tp_reserved_player_names;
 /* times */
 extern int tp_dump_interval;
 extern int tp_dump_warntime;
-extern int tp_monolithic_interval;
 extern int tp_clean_interval;
 extern int tp_aging_time;
 extern int tp_maxidle;
@@ -73,7 +70,6 @@ extern int tp_commands_per_time;
 extern int tp_command_time_msec;
 extern int tp_max_output;
 
-extern int tp_max_delta_objs;
 extern int tp_max_loaded_objs;
 extern int tp_max_process_limit;
 extern int tp_max_plyr_processes;
@@ -110,7 +106,6 @@ extern int tp_log_programs;
 extern int tp_log_interactive;
 extern int tp_dbdump_warning;
 extern int tp_dumpdone_warning;
-extern int tp_deltadump_warning;
 extern int tp_periodic_program_purge;
 extern int tp_secure_who;
 extern int tp_who_doing;

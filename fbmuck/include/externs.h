@@ -60,7 +60,6 @@ extern void CrT_summarize_to_file(const char *file, const char *comment);
 /* db.c */
 extern void db_clear_object(dbref i);
 extern void db_free_object(dbref i);
-extern dbref db_write_deltas(FILE * f);
 #ifdef DISKBASE
 extern int fetch_propvals(dbref obj, const char *dir);
 #endif
@@ -92,7 +91,6 @@ extern struct line *read_program(dbref i);
 extern void write_program(struct line *first, dbref i);
 
 /* events.c */
-extern void delta_dump_now(void);
 extern void dump_db_now(void);
 extern long next_event_time(void);
 extern void next_muckevent(void);
@@ -103,7 +101,6 @@ void cleanup_game();
 extern void do_dump(dbref player, const char *newfile);
 extern void do_shutdown(dbref player);
 extern void dump_warning(void);
-extern void dump_deltas(void);
 extern int force_level;
 extern dbref force_prog;
 extern void fork_and_dump(void);
