@@ -509,15 +509,12 @@ db_free(void)
 }
 
 void
-db_read_object(FILE * f, struct object *o, dbref objno, int dtype, int read_before)
+db_read_object(FILE * f, struct object *o, dbref objno, int dtype)
 {
 	int tmp, c, prop_flag = 0;
 	int j = 0;
 	const char *password;
 
-	if (read_before) {
-		db_free_object(objno);
-	}
 	db_clear_object(objno);
 
 	FLAGS(objno) = 0;
@@ -667,7 +664,6 @@ db_read(FILE * f)
 	dbref grow, thisref;
 	struct object *o;
 	const char *special;
-	int doing_deltas;
 	char c;
 
 	/* Parse the header */
@@ -684,19 +680,13 @@ db_read(FILE * f)
 		case NUMBER_TOKEN:
 			thisref = getref(f);
 
-			if (thisref < db_top) {
-				if (doing_deltas && Typeof(thisref) == TYPE_PLAYER) {
-					delete_player(thisref);
-				}
-			}
-
 			/* make space */
 			db_grow(thisref + 1);
 
 			/* read it in */
 			o = DBFETCH(thisref);
 
-			db_read_object(f, o, thisref, db_load_format, doing_deltas);
+			db_read_object(f, o, thisref, db_load_format);
 
 			if (Typeof(thisref) == TYPE_PLAYER) {
 				OWNER(thisref) = thisref;
