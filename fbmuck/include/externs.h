@@ -127,10 +127,10 @@ extern void do_armageddon(dbref player, const char *msg);
 extern void dump_status(void);
 extern void flush_user_output(dbref player);
 extern short global_dumpdone;
-extern pid_t global_dumper_pid;
 #ifndef DISKBASE
-extern pid_t global_resolver_pid;
+extern pid_t global_dumper_pid;
 #endif
+extern pid_t global_resolver_pid;
 extern long max_open_files(void); extern int mcpframe_to_descr(McpFrame * ptr);
 extern int mcpframe_to_user(McpFrame * ptr);
 extern int notify(dbref player, const char *msg);
