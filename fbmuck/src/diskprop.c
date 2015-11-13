@@ -10,8 +10,6 @@
 #ifdef DISKBASE
 
 extern FILE *input_file;
-extern FILE *delta_infile;
-extern FILE *delta_outfile;
 extern void getproperties(FILE * f, dbref obj, const char *pdir);
 
 
@@ -388,11 +386,7 @@ fetchprops_priority(dbref obj, int mode, const char *pdir)
 			hitflag++;
 			if (!mode)
 				update_fetchstats();
-			if (FLAGS(obj) & SAVED_DELTA) {
-				getproperties(delta_infile, obj, s);
-			} else {
-				getproperties(input_file, obj, s);
-			}
+			getproperties(input_file, obj, s);
 		}
 		if (hitflag) {
 			return 1;
@@ -406,12 +400,8 @@ fetchprops_priority(dbref obj, int mode, const char *pdir)
 
 	housecleanprops();
 
-	/* actually load in root properties from the appropriate file */
-	if (FLAGS(obj) & SAVED_DELTA) {
-		getproperties(delta_infile, obj, "/");
-	} else {
-		getproperties(input_file, obj, "/");
-	}
+	/* actually load in root properties */
+	getproperties(input_file, obj, "/");
 
 	/* update fetch statistics */
 	if (!mode)
@@ -465,8 +455,7 @@ propfetch(dbref obj, PropPtr p)
 		return 0;
 	SetPFlags(p, (PropFlags(p) | PROP_TOUCHED));
 	if (PropFlags(p) & PROP_ISUNLOADED) {
-		f = (FLAGS(obj) & SAVED_DELTA) ? delta_infile : input_file;
-		db_get_single_prop(f, obj, (long) PropDataVal(p), p, NULL);
+		db_get_single_prop(input_file, obj, (long) PropDataVal(p), p, NULL);
 		return 1;
 	}
 	return 0;
