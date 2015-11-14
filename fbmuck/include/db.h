@@ -543,7 +543,7 @@ struct frame {
 	short skip_declare;         /* tells interp to skip next scoped var decl */
 	short wantsblanks;          /* specifies program will accept blank READs */
 	dbref trig;					/* triggering object */
-	long started;				/* When this program started. */
+	time_t started;				/* When this program started. */
 	int instcnt;				/* How many instructions have run. */
 	int pid;					/* what is the process id? */
 	char* errorstr;             /* the error string thrown */
