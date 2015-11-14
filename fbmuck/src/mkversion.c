@@ -17,6 +17,8 @@
 #include <time.h>
 #ifndef WIN32
 #include <dirent.h>
+#else
+#include "win32.h"
 #endif
 #include "sha1.h"
 
