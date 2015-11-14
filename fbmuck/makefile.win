@@ -95,8 +95,8 @@ BASE_OBJ="$(INTDIR)\array.obj" \
 	"$(INTDIR)\speech.obj" \
 	"$(INTDIR)\strftime.obj" \
 	"$(INTDIR)\stringutil.obj" \
+	"$(INTDIR)\time.obj" \
 	"$(INTDIR)\timequeue.obj" \
-	"$(INTDIR)\timestamp.obj" \
 	"$(INTDIR)\tune.obj" \
 	"$(INTDIR)\unparse.obj" \
 	"$(INTDIR)\utils.obj" \

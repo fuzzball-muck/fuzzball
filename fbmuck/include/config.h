@@ -201,18 +201,6 @@
 /************************************************************************/
 
 /*
- * Windows compile environment.
- */
-#ifdef WIN32
-#undef SPAWN_HOST_RESOLVER
-#define NO_MEMORY_COMMAND
-#define NO_USAGE_COMMAND
-#define NOCOREDUMP
-#define SCARY_MUF_PRIMS /* Most Windows users don't have their own compiler */
-#include "win32.h"
-#endif
-
-/*
  * Very general defines 
  */
 #define TRUE  1
@@ -366,6 +354,18 @@
 
 #ifndef SYS_TYPE
 # define SYS_TYPE "UNKNOWN"
+#endif
+
+/*
+ * Windows compile environment.
+ */
+#ifdef WIN32
+#undef SPAWN_HOST_RESOLVER
+#define NO_MEMORY_COMMAND
+#define NO_USAGE_COMMAND
+#define NOCOREDUMP
+#define SCARY_MUF_PRIMS /* Most Windows users don't have their own compiler */
+#include "win32.h"
 #endif
 
 #endif /* _CONFIG_H */
