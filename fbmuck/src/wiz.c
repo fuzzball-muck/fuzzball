@@ -896,7 +896,7 @@ do_muf_topprofs(dbref player, char *arg1)
 		dbref  prog;
 		double proftime;
 		double pcnt;
-		long   comptime;
+		time_t   comptime;
 		long   usecount;
 	} *tops = NULL;
 
@@ -989,7 +989,7 @@ do_muf_topprofs(dbref player, char *arg1)
 		tops = tops->next;
 		free(curr);
 	}
-	snprintf(buf, sizeof(buf), "Profile Length (sec): %5ld  %%idle: %5.2f%%  Total Cycles: %5lu",
+	snprintf(buf, sizeof(buf), "Profile Length (sec): %5lld  %%idle: %5.2f%%  Total Cycles: %5lu",
 			(current_systime-sel_prof_start_time),
 			((double)(sel_prof_idle_sec+(sel_prof_idle_usec/1000000.0))*100.0)/
 			(double)((current_systime-sel_prof_start_time)+0.01),
@@ -1007,7 +1007,7 @@ do_mpi_topprofs(dbref player, char *arg1)
 		dbref  prog;
 		double proftime;
 		double pcnt;
-		long   comptime;
+		time_t   comptime;
 		long   usecount;
 	} *tops = NULL;
 
@@ -1099,7 +1099,7 @@ do_mpi_topprofs(dbref player, char *arg1)
 		tops = tops->next;
 		free(curr);
 	}
-	snprintf(buf, sizeof(buf), "Profile Length (sec): %5ld  %%idle: %5.2f%%  Total Cycles: %5lu",
+	snprintf(buf, sizeof(buf), "Profile Length (sec): %5lld  %%idle: %5.2f%%  Total Cycles: %5lu",
 			(current_systime-sel_prof_start_time),
 			(((double)sel_prof_idle_sec+(sel_prof_idle_usec/1000000.0))*100.0)/
 			(double)((current_systime-sel_prof_start_time)+0.01),
@@ -1117,7 +1117,7 @@ do_all_topprofs(dbref player, char *arg1)
 		dbref  prog;
 		double proftime;
 		double pcnt;
-		long   comptime;
+		time_t   comptime;
 		long   usecount;
 		short  type;
 	} *tops = NULL;
@@ -1271,7 +1271,7 @@ do_all_topprofs(dbref player, char *arg1)
 		tops = tops->next;
 		free(curr);
 	}
-	snprintf(buf, sizeof(buf), "Profile Length (sec): %5ld  %%idle: %5.2f%%  Total Cycles: %5lu",
+	snprintf(buf, sizeof(buf), "Profile Length (sec): %5lld  %%idle: %5.2f%%  Total Cycles: %5lu",
 			(current_systime-sel_prof_start_time),
 			((double)(sel_prof_idle_sec+(sel_prof_idle_usec/1000000.0))*100.0)/
 			(double)((current_systime-sel_prof_start_time)+0.01),

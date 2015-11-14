@@ -10,16 +10,16 @@
  * Dump the database every so often.
  ****************************************************************/
 
-static long last_dump_time = 0L;
+static time_t last_dump_time = 0L;
 static int dump_warned = 0;
 
-long
+time_t
 next_dump_time(void)
 {
-	long currtime = (long) time((time_t *) NULL);
+	time_t currtime = (time_t) time((time_t *) NULL);
 
 	if (!last_dump_time)
-		last_dump_time = (long) time((time_t *) NULL);
+		last_dump_time = (time_t) time((time_t *) NULL);
 
 	if (tp_dbdump_warning && !dump_warned) {
 		if (((last_dump_time + tp_dump_interval) - tp_dump_warntime)
@@ -40,10 +40,10 @@ next_dump_time(void)
 void
 check_dump_time(void)
 {
-	long currtime = (long) time((time_t *) NULL);
+	time_t currtime = (time_t) time((time_t *) NULL);
 
 	if (!last_dump_time)
-		last_dump_time = (long) time((time_t *) NULL);
+		last_dump_time = (time_t) time((time_t *) NULL);
 
 	if (!dump_warned) {
 		if (((last_dump_time + tp_dump_interval) - tp_dump_warntime)
@@ -72,7 +72,7 @@ check_dump_time(void)
 void
 dump_db_now(void)
 {
-	long currtime = (long) time((time_t *) NULL);
+	time_t currtime = (time_t) time((time_t *) NULL);
 
 	add_property((dbref) 0, "_sys/lastdumptime", NULL, (int) currtime);
 	fork_and_dump();
@@ -84,15 +84,15 @@ dump_db_now(void)
  * Periodic cleanups *
  *********************/
 
-static long last_clean_time = 0L;
+static time_t last_clean_time = 0L;
 
-long
+time_t
 next_clean_time(void)
 {
-	long currtime = (long) time((time_t *) NULL);
+	time_t currtime = (time_t) time((time_t *) NULL);
 
 	if (!last_clean_time)
-		last_clean_time = (long) time((time_t *) NULL);
+		last_clean_time = (time_t) time((time_t *) NULL);
 
 	if ((last_clean_time + tp_clean_interval) < currtime)
 		return (0L);
@@ -104,10 +104,10 @@ next_clean_time(void)
 void
 check_clean_time(void)
 {
-	long currtime = (long) time((time_t *) NULL);
+	time_t currtime = (time_t) time((time_t *) NULL);
 
 	if (!last_clean_time)
-		last_clean_time = (long) time((time_t *) NULL);
+		last_clean_time = (time_t) time((time_t *) NULL);
 
 	if ((last_clean_time + tp_clean_interval) < currtime) {
 		last_clean_time = currtime;
@@ -125,17 +125,17 @@ check_clean_time(void)
  *  general handling for timed events like dbdumps, timequeues, etc.
  **********************************************************************/
 
-long
-mintime(long a, long b)
+time_t
+mintime(time_t a, time_t b)
 {
 	return ((a > b) ? b : a);
 }
 
 
-long
+time_t
 next_muckevent_time(void)
 {
-	long nexttime = 1000L;
+	time_t nexttime = 1000L;
 
 	nexttime = mintime(next_event_time(), nexttime);
 	nexttime = mintime(next_dump_time(), nexttime);

@@ -696,7 +696,7 @@ timequeue_pid_frame(int pid)
 }
 
 
-long
+time_t
 next_event_time(void)
 {
 	time_t rtime = time((time_t *) NULL);
@@ -707,7 +707,7 @@ next_event_time(void)
 		} else if (rtime >= tqhead->when) {
 			return (0L);
 		} else {
-			return ((long) (tqhead->when - rtime));
+			return ((time_t) (tqhead->when - rtime));
 		}
 	}
 	return (-1L);
@@ -744,7 +744,7 @@ has_refs(dbref program, timequeue ptr)
 }
 
 
-extern char *time_format_2(long dt);
+extern char *time_format_2(time_t dt);
 
 void
 list_events(dbref player)
@@ -772,10 +772,10 @@ list_events(dbref player)
 		snprintf(pidstr, sizeof(pidstr), "%d", ptr->eventnum);
 		/* next due */
 		strcpyn(duestr, sizeof(duestr), ((ptr->when - rtime) > 0) ?
-				time_format_2((long) (ptr->when - rtime)) : "Due");
+				time_format_2((time_t) (ptr->when - rtime)) : "Due");
 		/* Run length */
 		strcpyn(runstr, sizeof(runstr), ptr->fr ?
-				time_format_2((long) (rtime - ptr->fr->started)): "0s");
+				time_format_2((time_t) (rtime - ptr->fr->started)): "0s");
 		/* Thousand Instructions executed */
 		snprintf(inststr, sizeof(inststr), "%d", ptr->fr? (ptr->fr->instcnt / 1000) : 0);
 
