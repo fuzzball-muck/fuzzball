@@ -16,11 +16,33 @@ extern void set_console();
 #define getpid _getpid
 #define pid_t int
 #define ssize_t long
+
+#ifndef tzname
+#define tzname _tzname
+#endif
+
+#ifndef strncasecmp
 #define strncasecmp _strnicmp
+#endif
+
+#ifndef strcasecmp
 #define strcasecmp _stricmp
+#endif
+
+#ifndef vsnprintf
 #define vsnprintf _vsnprintf
+#endif
+
+#ifndef snprintf
 #define snprintf _snprintf
+#endif
+
+#ifndef popen
 #define popen _popen
+#endif
+
+#ifndef pclose
 #define pclose _pclose
+#endif
 
 #endif

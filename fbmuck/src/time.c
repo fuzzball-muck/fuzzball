@@ -47,7 +47,7 @@ mucktime(const time_t* t) {
 #ifndef WIN32
 	return localtime(t);
 #else
-	return u32localtime(t);
+	return uw32localtime(t);
 #endif
 }
 
