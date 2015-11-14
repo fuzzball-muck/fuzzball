@@ -1576,7 +1576,7 @@ mfn_convtime(MFUNARGS)
 #ifdef SUNOS
 	snprintf(buf, BUFFER_LEN, "%ld", timelocal(&otm));
 #else
-	snprintf(buf, BUFFER_LEN, "%ld", mktime(&otm));
+	snprintf(buf, BUFFER_LEN, "%lld", mktime(&otm));
 #endif
 	return buf;
 }
@@ -1739,7 +1739,7 @@ mfn_secs(MFUNARGS)
 	time_t lt;
 
 	time(&lt);
-	snprintf(buf, BUFFER_LEN, "%ld", lt);
+	snprintf(buf, BUFFER_LEN, "%lld", lt);
 	return buf;
 }
 
@@ -2034,7 +2034,7 @@ mfn_created(MFUNARGS)
 	if (obj == PERMDENIED)
 		ABORT_MPI("CREATED", "Permission denied.");
 
-	snprintf(buf, BUFFER_LEN, "%ld", DBFETCH(obj)->ts.created);
+	snprintf(buf, BUFFER_LEN, "%lld", DBFETCH(obj)->ts.created);
 
 	return buf;
 }
@@ -2051,7 +2051,7 @@ mfn_lastused(MFUNARGS)
 	if (obj == PERMDENIED)
 		ABORT_MPI("LASTUSED", "Permission denied.");
 
-	snprintf(buf, BUFFER_LEN, "%ld", DBFETCH(obj)->ts.lastused);
+	snprintf(buf, BUFFER_LEN, "%lld", DBFETCH(obj)->ts.lastused);
 
 	return buf;
 }
@@ -2068,7 +2068,7 @@ mfn_modified(MFUNARGS)
 	if (obj == PERMDENIED)
 		ABORT_MPI("MODIFIED", "Permission denied.");
 
-	snprintf(buf, BUFFER_LEN, "%ld", DBFETCH(obj)->ts.modified);
+	snprintf(buf, BUFFER_LEN, "%lld", DBFETCH(obj)->ts.modified);
 
 	return buf;
 }

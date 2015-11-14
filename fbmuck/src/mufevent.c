@@ -350,7 +350,7 @@ muf_event_list(dbref player, const char *pat)
 				snprintf(prognamestr, sizeof(prognamestr), "%s", NAME(proc->prog));
 			}
 			snprintf(buf, sizeof(buf), pat, pidstr, "--",
-					time_format_2((long) (rtime - proc->fr->started)),
+					time_format_2((time_t) (rtime - proc->fr->started)),
 					inststr, cpustr, progstr, prognamestr, NAME(proc->player),
 					"EVENT_WAITFOR");
 			if (Wizard(OWNER(player)) || (OWNER(proc->prog) == OWNER(player))
