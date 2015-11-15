@@ -141,9 +141,9 @@ struct descriptor_data {
 	telnet_states_t telnet_state;
 	int telnet_sb_opt;
 	int short_reads;
-	long last_time;
-	long connected_at;
-	long last_pinged_at;
+	time_t last_time;
+	time_t connected_at;
+	time_t last_pinged_at;
 	const char *hostname;
 	const char *username;
 	int quota;
@@ -215,7 +215,7 @@ int process_output(struct descriptor_data *d);
 int process_input(struct descriptor_data *d);
 void announce_connect(int, dbref);
 void announce_disconnect(struct descriptor_data *);
-char *time_format_1(long);
+char *time_format_1(time_t);
 void    init_descriptor_lookup();
 void    init_descr_count_lookup();
 void    remember_descriptor(struct descriptor_data *);
@@ -1304,8 +1304,8 @@ shovechars()
 				 * If SSL isn't already in place, give TELNET STARTTLS
 				 * handshaking a couple seconds to respond, to start it.
 				 */
-				const long welcome_pause = 2; /* seconds */
-				long timeon = now - d->connected_at;
+				const time_t welcome_pause = 2; /* seconds */
+				time_t timeon = now - d->connected_at;
 
 				if (d->ssl_session || !tp_starttls_allow) {
 					FD_SET(d->descriptor, &output_set);
@@ -3197,7 +3197,7 @@ dump_users(struct descriptor_data *e, char *user)
 }
 
 char *
-time_format_1(long dt)
+time_format_1(time_t dt)
 {
 	register struct tm *delta;
 	static char buf[64];
@@ -3211,7 +3211,7 @@ time_format_1(long dt)
 }
 
 char *
-time_format_2(long dt)
+time_format_2(time_t dt)
 {
 	register struct tm *delta;
 	static char buf[64];
@@ -3788,7 +3788,7 @@ least_idle_player_descr(dbref who)
 	struct descriptor_data *best_d = NULL;
 	int dcount, di;
 	int* darr;
-	long best_time = 0;
+	time_t best_time = 0;
 
 	darr = get_player_descrs(who, &dcount);
 	for (di = 0; di < dcount; di++) {
@@ -3812,7 +3812,7 @@ most_idle_player_descr(dbref who)
 	struct descriptor_data *best_d = NULL;
 	int dcount, di;
 	int* darr;
-	long best_time = 0;
+	time_t best_time = 0;
 
 	darr = get_player_descrs(who, &dcount);
 	for (di = 0; di < dcount; di++) {
