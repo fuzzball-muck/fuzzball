@@ -73,7 +73,10 @@ do_hashes(dbref player, char *args) {
 	} else if (!strcasecmp(args, "sha1")) {
 		b_sha1 = 1;
 	} else {
-		b_git = b_sha1 = 1;
+		b_sha1 = 1;
+#ifdef GIT_AVAILABLE
+		b_git = 1;
+#endif
 	}
 
 	/* Header */
