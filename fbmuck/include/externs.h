@@ -92,9 +92,9 @@ extern void write_program(struct line *first, dbref i);
 
 /* events.c */
 extern void dump_db_now(void);
-extern long next_event_time(void);
+extern time_t next_event_time(void);
 extern void next_muckevent(void);
-extern long next_muckevent_time(void);
+extern time_t next_muckevent_time(void);
 
 /* game.c */
 void cleanup_game();
@@ -146,7 +146,7 @@ extern time_t sel_prof_start_time;
 #ifdef SPAWN_HOST_RESOLVER
 extern void spawn_resolver(void);
 #endif
-extern char * time_format_2(long dt);
+extern char * time_format_2(time_t dt);
 
 /* interp.c */
 extern void do_abort_silent(void);
