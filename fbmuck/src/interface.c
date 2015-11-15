@@ -1478,7 +1478,7 @@ shovechars()
 #endif
 			for (cnt = 0, d = descriptor_list; d; d = dnext) {
 				dnext = d->next;
-				if (FD_ISSET(d->descriptor, &input_set)) {
+				if (FD_ISSET(d->descriptor, &input_set) || (d->ssl_session && SSL_pending(d->ssl_session))) {
 					if (!process_input(d)) {
 						d->booted = 1;
 					}
