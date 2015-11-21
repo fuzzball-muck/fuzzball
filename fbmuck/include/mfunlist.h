@@ -5,8 +5,6 @@
  *  mfunlist.h   MPI functions list.    7/30/94
  *********************************************************************/
 
-//#include "msgparse.h"
-
 typedef struct mfun_dat MFNDAT;
 
 struct mfun_dat {
