@@ -8,7 +8,6 @@
 #include "tune.h"
 #include "mpi.h"
 #include "props.h"
-#include "interface.h"
 #include "match.h"
 #include "dbsearch.h"
 #include "externs.h"

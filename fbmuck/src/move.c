@@ -1,10 +1,8 @@
 #include "config.h"
 
 #include "db.h"
-#include "props.h"
 #include "params.h"
 #include "tune.h"
-#include "interface.h"
 #include "match.h"
 #include "externs.h"
 

@@ -6,7 +6,6 @@
 
 #include "db.h"
 #include "props.h"
-#include "interface.h"
 #include "inst.h"
 #include "externs.h"
 #include "params.h"

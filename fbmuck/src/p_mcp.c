@@ -7,13 +7,9 @@
 #include <time.h>
 #include "db.h"
 #include "mcp.h"
-#include "inst.h"
 #include "externs.h"
-#include "match.h"
 #include "interface.h"
-#include "params.h"
 #include "tune.h"
-#include "fbstrings.h"
 #include "interp.h"
 #include "mcpgui.h"
 #include "array.h"

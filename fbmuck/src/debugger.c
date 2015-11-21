@@ -5,13 +5,9 @@
 #include "config.h"
 
 #include "db.h"
-#include "props.h"
-#include "interface.h"
 #include "inst.h"
 #include "externs.h"
 #include "params.h"
-#include "tune.h"
-#include "match.h"
 #include "interp.h"
 #include <ctype.h>
 #include <time.h>

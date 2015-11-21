@@ -337,6 +337,8 @@ extern int prepend_string(char** before, char* start, const char* what);
 extern char *pronoun_substitute(int descr, dbref player, const char *str);
 extern char* strcatn(char* buf, size_t bufsize, const char* src);
 extern char* strcpyn(char* buf, size_t bufsize, const char* src);
+const char *strencrypt(const char *, const char *);
+const char *strdecrypt(const char *, const char *);
 extern int string_compare(const char *s1, const char *s2);
 #if !defined(MALLOC_PROFILING)
 extern char *string_dup(const char *s);

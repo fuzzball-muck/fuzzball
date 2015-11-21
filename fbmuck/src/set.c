@@ -3,14 +3,12 @@
 /* commands which set parameters */
 #include <stdio.h>
 #include <ctype.h>
-#include "fbstrings.h"
 
 #include "db.h"
 #include "params.h"
 #include "tune.h"
 #include "props.h"
 #include "match.h"
-#include "interface.h"
 #include "externs.h"
 
 

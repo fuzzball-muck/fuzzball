@@ -9,11 +9,8 @@
 #include "db.h"
 #include "tune.h"
 #include "props.h"
-#include "inst.h"
 #include "externs.h"
 #include "match.h"
-#include "interface.h"
-#include "fbstrings.h"
 #include "dbsearch.h"
 #include "interp.h"
 

@@ -17,7 +17,6 @@
 #include "config.h"
 #include "interface.h"
 #include "externs.h"
-#include "version.h"
 
 #ifndef WIN32
 #include <signal.h>

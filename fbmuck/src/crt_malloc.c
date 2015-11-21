@@ -107,7 +107,6 @@
 
 #include "config.h"
 #include "externs.h"
-#include "db.h"
 
 #ifdef MALLOC_PROFILING
 

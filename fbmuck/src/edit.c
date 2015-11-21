@@ -1,13 +1,10 @@
 #include "config.h"
 
 #include "db.h"
-#include "props.h"
-#include "interface.h"
 #include "externs.h"
 #include "params.h"
 #include "tune.h"
 #include "match.h"
-#include "fbstrings.h"
 #include <ctype.h>
 
 void editor(int descr, dbref player, const char *command);

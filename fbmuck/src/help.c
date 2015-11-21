@@ -3,10 +3,6 @@
 /* commands for giving help */
 
 #include "db.h"
-#include "props.h"
-#include "params.h"
-#include "tune.h"
-#include "interface.h"
 #include "externs.h"
 
 #include <sys/types.h>

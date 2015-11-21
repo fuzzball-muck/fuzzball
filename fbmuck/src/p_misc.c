@@ -8,13 +8,8 @@
 #include "db.h"
 #include "inst.h"
 #include "externs.h"
-#include "match.h"
-#include "interface.h"
-#include "params.h"
 #include "tune.h"
-#include "fbstrings.h"
 #include "interp.h"
-#include "inst.h"
 
 static struct inst *oper1, *oper2, *oper3, *oper4;
 static int result;
@@ -1000,7 +995,6 @@ prim_watchpid(PRIM_PROTOTYPE)
 	if (oper1->data.number == fr->pid) {
 		abort_interp("Narcissistic processes not allowed.");
 	}
-
 	frame = timequeue_pid_frame (oper1->data.number);
 	if (frame) {
 		struct mufwatchpidlist **cur;

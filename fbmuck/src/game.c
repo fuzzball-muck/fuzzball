@@ -16,9 +16,7 @@
 #include "params.h"
 #include "tune.h"
 #include "interface.h"
-#include "match.h"
 #include "externs.h"
-#include "fbstrings.h"
 
 /* declarations */
 static const char *dumpfile = 0;

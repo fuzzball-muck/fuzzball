@@ -1,6 +1,5 @@
 #include "config.h"
 #include "db.h"
-#include "props.h"
 #include "externs.h"
 
 /* hash:  compute hash value for a string

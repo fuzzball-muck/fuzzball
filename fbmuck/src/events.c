@@ -1,7 +1,6 @@
 #include "config.h"
 #include "db.h"
 #include "props.h"
-#include "params.h"
 #include "tune.h"
 #include "externs.h"
 

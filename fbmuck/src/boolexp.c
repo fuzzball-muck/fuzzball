@@ -3,13 +3,11 @@
 #include <ctype.h>
 #include <stdio.h>
 
-#include "fbstrings.h"
 #include "db.h"
 #include "props.h"
 #include "match.h"
 #include "externs.h"
 #include "params.h"
-#include "tune.h"
 #include "interface.h"
 
 /* Lachesis note on the routines in this package:

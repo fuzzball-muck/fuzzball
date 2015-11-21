@@ -61,7 +61,6 @@
 #include "props.h"
 #include "mcp.h"
 #include "externs.h"
-#include "interp.h"
 
 typedef enum {
 	TELNET_STATE_NORMAL,

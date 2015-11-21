@@ -8,11 +8,7 @@
 #include "db.h"
 #include "inst.h"
 #include "externs.h"
-#include "match.h"
-#include "interface.h"
-#include "params.h"
 #include "tune.h"
-#include "fbstrings.h"
 #include "interp.h"
 
 /* This package performs the interpretation of mud forth programs.

@@ -1,9 +1,7 @@
 #include "config.h"
 
 #include "db.h"
-#include "props.h"
 #include "externs.h"
-#include "interface.h"
 #include "interp.h"
 #include "inst.h"
 
