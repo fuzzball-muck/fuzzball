@@ -6,7 +6,6 @@
 
 #include "db.h"
 #include "props.h"
-#include "interface.h"
 #include "params.h"
 #include "tune.h"
 #include "externs.h"

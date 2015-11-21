@@ -13,9 +13,7 @@
 #include <stdarg.h>
 #include <time.h>
 
-#include "fbstrings.h"
 #include "externs.h"
-#include "interface.h"
 
 /* cks: these are varargs routines. We are assuming ANSI C. We could at least
    USE ANSI C varargs features, no? Sigh. */

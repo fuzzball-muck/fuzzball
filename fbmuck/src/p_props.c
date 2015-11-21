@@ -8,13 +8,8 @@
 #include "db.h"
 #include "mpi.h"
 #include "props.h"
-#include "inst.h"
 #include "externs.h"
-#include "match.h"
-#include "interface.h"
 #include "params.h"
-#include "tune.h"
-#include "fbstrings.h"
 #include "interp.h"
 #include "msgparse.h"
 

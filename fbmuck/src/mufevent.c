@@ -12,8 +12,6 @@
 #include "externs.h"
 #include "match.h"
 #include "interface.h"
-#include "params.h"
-#include "fbstrings.h"
 #include "interp.h"
 #include "array.h"
 

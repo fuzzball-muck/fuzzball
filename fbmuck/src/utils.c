@@ -1,7 +1,6 @@
 #include "config.h"
 
 #include "db.h"
-#include "tune.h"
 
 /* remove the first occurence of what in list headed by first */
 dbref

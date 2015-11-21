@@ -3,7 +3,6 @@
 #include "db.h"
 #include "params.h"
 #include "tune.h"
-#include "interface.h"
 #include "externs.h"
 
 static hash_tab player_list[PLAYER_HASH_SIZE];

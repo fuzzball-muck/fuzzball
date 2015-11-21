@@ -8,7 +8,6 @@
 #include "params.h"
 #include "tune.h"
 #include "match.h"
-#include "interface.h"
 #include "externs.h"
 
 char match_cmdname[BUFFER_LEN];	/* triggering command */

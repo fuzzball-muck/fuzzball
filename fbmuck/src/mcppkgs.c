@@ -5,14 +5,10 @@
 
 #include "db.h"
 #include "tune.h"
-#include "mpi.h"
 #include "mcp.h"
 #include "externs.h"
 #include "props.h"
-#include "match.h"
-#include "interp.h"
 #include "interface.h"
-#include "msgparse.h"
 
 void
 show_mcp_error(McpFrame * mfr, char *topic, char *text)

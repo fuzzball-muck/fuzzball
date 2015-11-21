@@ -2,11 +2,8 @@
 
 #include "db.h"
 #include "tune.h"
-#include "props.h"
 #include "inst.h"
 #include "externs.h"
-#include "interface.h"
-#include "fbstrings.h"
 #include "interp.h"
 
 #undef DEBUGARRAYS

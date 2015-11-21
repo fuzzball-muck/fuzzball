@@ -8,12 +8,8 @@
 #include <ctype.h>
 #include "db.h"
 #include "tune.h"
-#include "inst.h"
 #include "externs.h"
-#include "match.h"
-#include "interface.h"
 #include "params.h"
-#include "fbstrings.h"
 #include "interp.h"
 #include "props.h"
 #include "dbsearch.h"

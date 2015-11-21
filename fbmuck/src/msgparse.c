@@ -29,8 +29,6 @@
 #include "externs.h"
 #include "props.h"
 #include "match.h"
-#include "interp.h"
-#include "interface.h"
 #include "msgparse.h"
 #include "mfun.h"
 

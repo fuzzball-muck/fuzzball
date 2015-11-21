@@ -4,7 +4,6 @@
 #include "mpi.h"
 #include "interface.h"
 #include "match.h"
-#include "params.h"
 #include "tune.h"
 #include "props.h"
 #include "externs.h"
