@@ -12,6 +12,8 @@
 #  include <timebits.h>
 #endif
 
+#define DB_VERSION_STRING "***Foxen9 TinyMUCK DUMP Format***"
+
 /* max length of command argument to process_command */
 #define MAX_COMMAND_LEN 2048
 #define BUFFER_LEN ((MAX_COMMAND_LEN)*4)
@@ -136,7 +138,7 @@ typedef int dbref;				/* offset into db */
 #define SETVALUE(x,y)	add_property(x, MESGPROP_VALUE, NULL, y)
 #define LOADVALUE(x,y)	add_prop_nofetch(x, MESGPROP_VALUE, NULL, y)
 
-#define DB_PARMSINFO     0x0001
+#define DB_PARMSINFO     0x0001 /* legacy database value */
 
 #define TYPE_ROOM           0x0
 #define TYPE_THING          0x1
