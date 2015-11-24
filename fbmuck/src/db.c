@@ -184,16 +184,11 @@ putproperties_rec(FILE * f, const char *dir, dbref obj)
 	}
 }
 
-/*** CHANGED:
-was: void putproperties(FILE *f, PropPtr p)
- is: void putproperties(FILE *f, dbref obj)
-***/
 void
 putproperties(FILE * f, dbref obj)
 {
 	putstring(f, "*Props*");
 	db_dump_props(f, obj);
-	/* putproperties_rec(f, "/", obj); */
 	putstring(f, "*End*");
 }
 
@@ -243,7 +238,7 @@ putprops_copy(FILE * f, dbref obj)
 		putproperties(f, obj);
 		return;
 	}
-	if (db_load_format < 8 || db_conversion_flag) {
+	if (db_conversion_flag) {
 		if (fetchprops_priority(obj, 1, NULL) || fetch_propvals(obj, "/")) {
 			fseek(f, 0L, 2);
 		}
@@ -284,7 +279,7 @@ db_write_object(FILE * f, dbref i)
 	putref(f, o->location);
 	putref(f, o->contents);
 	putref(f, o->next);
-	putref(f, (FLAGS(i) & ~DUMP_MASK));	/* write non-internal flags */
+	putref(f, FLAGS(i) & ~DUMP_MASK);	/* write non-internal flags */
 
 	putref(f, o->ts.created);
 	putref(f, o->ts.lastused);
@@ -348,7 +343,7 @@ do_peek(FILE * f)
 
 	ungetc((peekch = getc(f)), f);
 
-	return (peekch);
+	return peekch;
 }
 
 dbref
@@ -365,7 +360,7 @@ getref(FILE * f)
 		return (0);
 	}
 	fgets(buf, sizeof(buf), f);
-	return (atol(buf));
+	return atol(buf);
 }
 
 const char *
@@ -395,27 +390,18 @@ getstring(FILE * f)
 }
 
 int
-db_read_header( FILE *f, int *grow)
+db_read_header(FILE *f, int *grow)
 {
 	int result = 0;
-	int dbflags;
-	int parmcnt = 0;
 	int load_format = 0;
 	const char *special;
-	char c;
 
-	/* null out the output */
 	*grow = 0;
 
-	/* if the db doesn't start with a * it is incredibly ancient and has no header */
-	/* this routine can deal with - just return */	
-	c = getc( f );
-	ungetc( c, f );
-	if ( c != '*' ) {
+	if (do_peek(f) != '*') {
 		return result;
 	}
 
-	/* read the first line to id it */
 	special = getstring(f);
 
 	if (!strcmp(special, "***Foxen8 TinyMUCK DUMP Format***")) {
@@ -425,10 +411,10 @@ db_read_header( FILE *f, int *grow)
 	}
 
 	*grow = getref(f);
-	dbflags = getref(f);
 
-	parmcnt = getref(f);
-	tune_load_parms_from_file(f, NOTHING, parmcnt);
+	getref(f); /* ignore dbflags value */
+
+	tune_load_parms_from_file(f, NOTHING, getref(f));
 
 	return load_format;
 }
@@ -436,10 +422,10 @@ db_read_header( FILE *f, int *grow)
 void
 db_write_header(FILE *f)
 {
-        putstring(f, DB_VERSION_STRING );
+        putstring(f, DB_VERSION_STRING);
 
         putref(f, db_top);
-        putref(f, DB_PARMSINFO );
+        putref(f, DB_PARMSINFO);
         putref(f, tune_count_parms());
         tune_save_parms_to_file(f);
 }
@@ -462,13 +448,9 @@ db_write(FILE * f)
 	putstring(f, "***END OF DUMP***");
 
 	fflush(f);
-	return (db_top);
+	return db_top;
 }
 
-/*** CHANGED:
-was: PropPtr getproperties(FILE *f)
-now: void getproperties(FILE *f, dbref obj, const char *pdir)
-***/
 void
 getproperties(FILE * f, dbref obj, const char *pdir)
 {
@@ -529,7 +511,7 @@ skipproperties(FILE * f, dbref obj)
 	fgets(buf, sizeof(buf), f);
 
 	fgets(buf, sizeof(buf), f);
-	while (strcmp(buf, "***Property list end ***\n") && strcmp(buf, "*End*\n")) {
+	while (strcmp(buf, "*End*\n")) {
 		if (!islisten) {
 			if (string_prefix(buf, "_listen"))
 				islisten = 1;
@@ -611,17 +593,19 @@ db_free(void)
 }
 
 void
-db_read_object(FILE * f, struct object *o, dbref objno, int dtype)
+db_read_object(FILE * f, dbref objno, int dtype)
 {
 	int tmp, c, prop_flag = 0;
 	int j = 0;
 	const char *password;
+	struct object *o;
 
 	db_clear_object(objno);
 
 	FLAGS(objno) = 0;
 	NAME(objno) = getstring(f);
 
+	o = DBFETCH(objno);
 	o->location = getref(f);
 	o->contents = getref(f);
 	o->next = getref(f);
@@ -673,16 +657,12 @@ db_read_object(FILE * f, struct object *o, dbref objno, int dtype)
 	}
 
 	switch (FLAGS(objno) & TYPE_MASK) {
-	case TYPE_THING:{
-			dbref home;
-
-			ALLOC_THING_SP(objno);
-			home = prop_flag ? getref(f) : j;
-			THING_SET_HOME(objno, home);
-			o->exits = getref(f);
-			OWNER(objno) = getref(f);
-			break;
-		}
+	case TYPE_THING:
+		ALLOC_THING_SP(objno);
+		THING_SET_HOME(objno, prop_flag ? getref(f) : j);
+		o->exits = getref(f);
+		OWNER(objno) = getref(f);
+		break;
 	case TYPE_ROOM:
 		o->sp.room.dropto = prop_flag ? getref(f) : j;
 		o->exits = getref(f);
@@ -699,7 +679,7 @@ db_read_object(FILE * f, struct object *o, dbref objno, int dtype)
 		break;
 	case TYPE_PLAYER:
 		ALLOC_PLAYER_SP(objno);
-		PLAYER_SET_HOME(objno, (prop_flag ? getref(f) : j));
+		PLAYER_SET_HOME(objno, prop_flag ? getref(f) : j);
 		o->exits = getref(f);
 		password = getstring(f);
 		set_password_raw(objno, password);
@@ -710,10 +690,12 @@ db_read_object(FILE * f, struct object *o, dbref objno, int dtype)
 		PLAYER_SET_IGNORE_CACHE(objno, NULL);
 		PLAYER_SET_IGNORE_COUNT(objno, 0);
 		PLAYER_SET_IGNORE_LAST(objno, NOTHING);
+		OWNER(objno) = objno;
+		add_player(objno);
 		break;
 	case TYPE_PROGRAM:
 		ALLOC_PROGRAM_SP(objno);
-		OWNER(objno) = (prop_flag ? getref(f) : j);
+		OWNER(objno) = prop_flag ? getref(f) : j;
 		FLAGS(objno) &= ~INTERNAL;
 		PROGRAM_SET_CURR_LINE(objno, 0);
 		PROGRAM_SET_FIRST(objno, 0);
@@ -763,7 +745,7 @@ dbref
 db_read(FILE * f)
 {
 	int i;
-	dbref grow, thisref;
+	dbref grow;
 	struct object *o;
 	const char *special;
 	char c;
@@ -780,20 +762,7 @@ db_read(FILE * f)
 	for (i = 0;; i++) {
 		switch (c) {
 		case NUMBER_TOKEN:
-			thisref = getref(f);
-
-			/* make space */
-			db_grow(thisref + 1);
-
-			/* read it in */
-			o = DBFETCH(thisref);
-
-			db_read_object(f, o, thisref, db_load_format);
-
-			if (Typeof(thisref) == TYPE_PLAYER) {
-				OWNER(thisref) = thisref;
-				add_player(thisref);
-			}
+			db_read_object(f, getref(f), db_load_format);
 			break;
 		case LOOKUP_TOKEN:
 			special = getstring(f);
