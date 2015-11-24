@@ -11,7 +11,6 @@
  */
 
 #include "config.h"
-#include "params.h"
 #include "externs.h"
 
 #define generation "$generation"

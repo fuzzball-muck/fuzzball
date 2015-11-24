@@ -1,8 +1,6 @@
 #ifndef _PARAMS_H
 #define _PARAMS_H
 
-#include "version.h"
-
 /* penny related stuff */
 /* amount of object endowment, based on cost */
 #define OBJECT_ENDOWMENT(cost) (((cost)-5)/5)
