@@ -112,7 +112,7 @@ MALLOBJ= crt_malloc.o
 
 MISCSRC= Makefile.in
 
-CSRC= array.c boolexp.c compile.c create.c db.c db_header.c debugger.c \
+CSRC= array.c boolexp.c compile.c create.c db.c debugger.c \
 	disassem.c diskprop.c edit.c events.c game.c hashtab.c help.c inst.c \
 	interp.c log.c look.c match.c mcp.c mcpgui.c mcppkgs.c mfuns2.c \
 	mfuns.c move.c msgparse.c mufevent.c p_array.c \
@@ -124,7 +124,7 @@ CSRC= array.c boolexp.c compile.c create.c db.c db_header.c debugger.c \
 
 MSRC= reconst.c interface.c resolver.c
 
-COBJ= array.o boolexp.o compile.o create.o db_header.o db.o debugger.o \
+COBJ= array.o boolexp.o compile.o create.o db.o debugger.o \
 	disassem.o diskprop.o edit.o events.o game.o hashtab.o help.o inst.o \
 	interp.o log.o look.o match.o mcp.o mcpgui.o mcppkgs.o mfuns2.o \
 	mfuns.o move.o msgparse.o mufevent.o p_array.o \
