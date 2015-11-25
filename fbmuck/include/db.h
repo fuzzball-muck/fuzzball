@@ -9,7 +9,7 @@
 #include <time.h>
 #ifdef HAVE_TIMEBITS_H
 #  define __need_timeval 1
-#  include <timebits.h>
+//#  include <timebits.h>
 #endif
 
 #define DB_VERSION_STRING "***Foxen9 TinyMUCK DUMP Format***"
@@ -639,6 +639,12 @@ struct program_specific {
 #define PROGRAM_SET_PROFTIME(x,y,z)	(PROGRAM_SP(x)->proftime.tv_usec = z, PROGRAM_SP(x)->proftime.tv_sec = y)
 #define PROGRAM_SET_PROFSTART(x,y)	(PROGRAM_SP(x)->profstart = y)
 #define PROGRAM_SET_PROF_USES(x,y)	(PROGRAM_SP(x)->profuses = y)
+
+#ifndef WIN32
+# define MUCK_LOCALTIME(t)		localtime(&t)
+#else
+# define MUCK_LOCALTIME(t)		uw32localtime(&t)
+#endif
 
 struct player_specific {
 	dbref home;

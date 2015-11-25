@@ -1485,15 +1485,14 @@ const char *
 mfn_time(MFUNARGS)
 {
 	time_t lt;
-	struct tm *tm;
 
 	lt = time((time_t*) NULL);
 	if (argc == 1) {
 		lt += (3600 * atoi(argv[0]));
 		lt -= get_tz_offset();
 	}
-	tm = mucktime(&lt);
-	format_time(buf, BUFFER_LEN - 1, "%T", tm);
+
+	format_time(buf, BUFFER_LEN - 1, "%T", MUCK_LOCALTIME(lt));
 	return buf;
 }
 
@@ -1502,15 +1501,14 @@ const char *
 mfn_date(MFUNARGS)
 {
 	time_t lt;
-	struct tm *tm;
 
 	time(&lt);
 	if (argc == 1) {
 		lt += (3600 * atoi(argv[0]));
 		lt -= get_tz_offset();
 	}
-	tm = mucktime(&lt);
-	format_time(buf, BUFFER_LEN - 1, "%D", tm);
+
+	format_time(buf, BUFFER_LEN - 1, "%D", MUCK_LOCALTIME(lt));
 	return buf;
 }
 
@@ -1519,7 +1517,6 @@ const char *
 mfn_ftime(MFUNARGS)
 {
 	time_t lt;
-	struct tm *tm;
 
 	if (argc == 3) {
 		lt = atol(argv[2]);
@@ -1535,8 +1532,8 @@ mfn_ftime(MFUNARGS)
 		}
 		lt -= get_tz_offset();
 	}
-	tm = mucktime(&lt);
-	format_time(buf, BUFFER_LEN - 1, argv[0], tm);
+
+	format_time(buf, BUFFER_LEN - 1, argv[0], MUCK_LOCALTIME(lt));
 	return buf;
 }
 

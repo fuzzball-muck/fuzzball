@@ -1808,7 +1808,7 @@ interp_err(dbref player, dbref program, struct inst *pc,
 	notify_nolisten(player, buf, 1);
 
 	lt = time(NULL);
-	format_time(tbuf, 32, "%c", mucktime(&lt));
+	format_time(tbuf, 32, "%c", MUCK_LOCALTIME(lt));
 
 	strip_ansi(buf2, buf);
 	errcount = get_property_value(origprog, ".debug/errcount");

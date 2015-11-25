@@ -13,8 +13,8 @@
 #include "props.h"
 
 /* array.c */
-extern int array_delitem(stk_array ** harr, array_iter * item);
-extern int array_delrange(stk_array ** harr, array_iter * start, array_iter * end);
+extern int array_delitem(stk_array **harr, array_iter *item);
+extern int array_delrange(stk_array **harr, array_iter *start, array_iter *end);
 
 /* boolexp.c */
 extern struct boolexp *copy_bool(struct boolexp *old);
@@ -41,10 +41,10 @@ extern void do_clone(int descr, dbref player, char *name);
 extern void do_create(dbref player, char *name, char *cost);
 extern void do_edit(int descr, dbref player, const char *name);
 extern void do_dig(int descr, dbref player, const char *name, const char *pname);
-extern void do_open(int descr, dbref player, const char *direction, const char *linkto);
 extern void do_link(int descr, dbref player, const char *name, const char *room_name);
 extern void do_mcpedit(int descr, dbref player, const char *name);
 extern void do_mcpprogram(int descr, dbref player, const char* name);
+extern void do_open(int descr, dbref player, const char *direction, const char *linkto);
 extern void do_prog(int descr, dbref player, const char *name);
 extern int exit_loop_check(dbref source, dbref dest);
 extern int link_exit(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_list);
@@ -54,8 +54,10 @@ extern void set_source(dbref player, dbref action, dbref source);
 extern int unset_source(dbref player, dbref loc, dbref action);
 
 /* crt_malloc.c */
+#ifdef MALLOC_PROFILING
 extern void CrT_summarize(dbref player);
 extern void CrT_summarize_to_file(const char *file, const char *comment);
+#endif
 
 /* db.c */
 extern void db_clear_object(dbref i);
@@ -65,9 +67,9 @@ extern int fetch_propvals(dbref obj, const char *dir);
 #endif
 
 /* debugger.c */
+extern void list_proglines(dbref player, dbref program, struct frame *fr, int start, int end);
 extern void muf_backtrace(dbref player, dbref program, int count, struct frame *fr);
 extern int muf_debugger(int descr, dbref player, dbref program, const char *text, struct frame *fr);
-extern void list_proglines(dbref player, dbref program, struct frame *fr, int start, int end);
 extern char *show_line_prims(struct frame *fr, dbref program, struct inst *pc, int maxprims, int markpc);
 
 /* disassem.c */
@@ -106,11 +108,11 @@ extern dbref force_prog;
 extern void fork_and_dump(void);
 
 /* hashtab.c */
-extern hash_entry *add_hash(const char *name, hash_data data, hash_tab * table, unsigned size);
-extern hash_data *find_hash(const char *s, hash_tab * table, unsigned size);
-extern int free_hash(const char *name, hash_tab * table, unsigned size);
+extern hash_entry *add_hash(const char *name, hash_data data, hash_tab *table, unsigned size);
+extern hash_data *find_hash(const char *s, hash_tab *table, unsigned size);
+extern int free_hash(const char *name, hash_tab *table, unsigned size);
 extern unsigned int hash(const char *s, unsigned int hash_size);
-extern void kill_hash(hash_tab * table, unsigned size, int freeptrs);
+extern void kill_hash(hash_tab *table, unsigned size, int freeptrs);
 
 /* help.c */
 extern void do_help(dbref player, char *topic, char *seg);
@@ -131,26 +133,27 @@ extern short global_dumpdone;
 extern pid_t global_dumper_pid;
 #endif
 extern pid_t global_resolver_pid;
-extern long max_open_files(void); extern int mcpframe_to_descr(McpFrame * ptr);
-extern int mcpframe_to_user(McpFrame * ptr);
+extern long max_open_files(void);
+extern int mcpframe_to_descr(McpFrame *ptr);
+extern int mcpframe_to_user(McpFrame *ptr);
 extern int notify(dbref player, const char *msg);
-extern int notify_nolisten(dbref player, const char *msg, int isprivate);
 extern int notify_from(dbref from, dbref player, const char *msg);
 extern int notify_from_echo(dbref from, dbref player, const char *msg, int isprivate);
+extern int notify_nolisten(dbref player, const char *msg, int isprivate);
 extern int pdescrsecure(int c);
 extern int pset_user(int c, dbref who);
-extern long sel_prof_idle_sec; 
+extern long sel_prof_idle_sec;
 extern unsigned long sel_prof_idle_use;
-extern long sel_prof_idle_usec; 
+extern long sel_prof_idle_usec;
 extern time_t sel_prof_start_time;
 #ifdef SPAWN_HOST_RESOLVER
 extern void spawn_resolver(void);
 #endif
-extern char * time_format_2(time_t dt);
+extern char *time_format_2(time_t dt);
 
 /* interp.c */
 extern void do_abort_silent(void);
-extern dbref find_mlev(dbref prog, struct frame * fr, int st);
+extern dbref find_mlev(dbref prog, struct frame *fr, int st);
 extern struct frame *interp(int descr, dbref player, dbref location, dbref program, dbref source, int nosleeping, int whichperms, int forced_pid);
 extern struct inst *interp_loop(dbref player, dbref program, struct frame *fr, int rettyp);
 extern void prog_clean(struct frame *fr);
@@ -219,7 +222,7 @@ extern void purge_mfns();
 
 /* mufevent.c */
 extern void muf_event_add(struct frame *fr, char *event, struct inst *val, int exclusive);
-extern int muf_event_count(struct frame* fr);
+extern int muf_event_count(struct frame *fr);
 extern int muf_event_exists(struct frame* fr, const char* eventid);
 
 /* p_props.c */
@@ -233,8 +236,8 @@ extern void clear_players(void);
 extern void delete_player(dbref who);
 extern void do_password(dbref player, const char *old, const char *newobj);
 extern dbref lookup_player(const char *name);
-extern void set_password(dbref player, const char*password);
-extern void set_password_raw(dbref player, const char*password);
+extern void set_password(dbref player, const char *password);
+extern void set_password_raw(dbref player, const char *password);
 
 /* predicates.c */
 extern int OkObj(dbref obj);
@@ -264,13 +267,13 @@ extern void untouchprops_incremental(int limit);
 
 /* props.c */
 extern void clear_propnode(PropPtr p);
-extern void copy_proplist(dbref obj, PropPtr * newer, PropPtr old);
+extern void copy_proplist(dbref obj, PropPtr *newer, PropPtr old);
 extern long size_proplist(PropPtr avl);
 
 /* random.c */
 extern void delete_seed(void *buffer);
 extern void *init_seed(char *seed);
-extern void MD5base64(char* dest, const void* orig, int len);
+extern void MD5base64(char *dest, const void *orig, int len);
 extern unsigned long rnd(void *buffer);
 
 /* rob.c */
@@ -327,16 +330,16 @@ extern long get_tz_offset(void);
 /* stringutil.c */
 extern int alphanum_compare(const char *s1, const char *s2);
 extern int blank(const char *s);
-extern const char * exit_prefix(register const char *string, register const char *prefix);
+extern const char *exit_prefix(register const char *string, register const char *prefix);
 extern char *intostr(int i);
 extern int ifloat(const char *s);
-extern int is_prop_prefix(const char* Property, const char* Prefix);
+extern int is_prop_prefix(const char *Property, const char *Prefix);
 extern int number(const char *s);
-extern void prefix_message(char* Dest, const char* Src, const char* Prefix, int BufferLength, int SuppressIfPresent);
-extern int prepend_string(char** before, char* start, const char* what);
+extern void prefix_message(char *Dest, const char *Src, const char *Prefix, int BufferLength, int SuppressIfPresent);
+extern int prepend_string(char **before, char *start, const char *what);
 extern char *pronoun_substitute(int descr, dbref player, const char *str);
-extern char* strcatn(char* buf, size_t bufsize, const char* src);
-extern char* strcpyn(char* buf, size_t bufsize, const char* src);
+extern char *strcatn(char *buf, size_t bufsize, const char *src);
+extern char *strcpyn(char *buf, size_t bufsize, const char *src);
 const char *strencrypt(const char *, const char *);
 const char *strdecrypt(const char *, const char *);
 extern int string_compare(const char *s1, const char *s2);
@@ -345,11 +348,10 @@ extern char *string_dup(const char *s);
 #endif
 extern const char *string_match(const char *src, const char *sub);
 extern int string_prefix(const char *string, const char *prefix);
-extern char * strip_ansi(char *buf, const char *input);
-extern char * strip_bad_ansi(char *buf, const char *input);
+extern char *strip_ansi(char *buf, const char *input);
+extern char *strip_bad_ansi(char *buf, const char *input);
 
 /* time.c */
-extern struct tm *mucktime(const time_t *t);
 extern void ts_lastuseobject(dbref thing);
 extern void ts_modifyobject(dbref thing);
 extern void ts_newobject(struct object *thing);
@@ -371,7 +373,7 @@ extern int dequeue_timers(int procnum, char* timerid);
 extern void do_dequeue(int descr, dbref player, const char *arg1);
 extern void envpropqueue(int descr, dbref player, dbref where, dbref trigger, dbref what, dbref xclude, const char *propname, const char *toparg, int mlev, int mt);
 extern stk_array *get_pidinfo(int pid);
-extern stk_array *get_pids(dbref ref); 
+extern stk_array *get_pids(dbref ref);
 extern void handle_read_event(int descr, dbref player, const char* command);
 extern void listenqueue(int descr, dbref player, dbref where, dbref trigger, dbref what, dbref xclude, const char *propname, const char *toparg, int mlev, int mt, int mpi_p);
 extern void list_events(dbref program);
@@ -381,7 +383,7 @@ extern void propqueue(int descr, dbref player, dbref where, dbref trigger, dbref
 extern void purge_timenode_free_pool(void);
 extern int read_event_notify(int descr, dbref player, const char* cmd);
 extern int scan_instances(dbref program);
-extern struct frame* timequeue_pid_frame(int pid);
+extern struct frame *timequeue_pid_frame(int pid);
 
 /* tune.c */
 extern void do_tune(dbref player, char *parmname, char *parmval, int full_command_has_delimiter);
