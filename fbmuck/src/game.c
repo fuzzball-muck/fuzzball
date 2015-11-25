@@ -644,6 +644,7 @@ process_command(int descr, dbref player, char *command)
 				case 'c':
 				case 'C':
 					Matched("@action");
+					NOGUEST("@action", player);
 					do_action(descr, player, arg1, arg2);
 					break;
 				case 'r':
@@ -655,6 +656,7 @@ process_command(int descr, dbref player, char *command)
 				case 't':
 				case 'T':
 					Matched("@attach");
+					NOGUEST("@attach", player);
 					do_attach(descr, player, arg1, arg2);
 					break;
 				default:
@@ -711,6 +713,7 @@ process_command(int descr, dbref player, char *command)
 				case 'l':
 				case 'L':
 					Matched("@clone");
+					NOGUEST("@clone", player);
 					do_clone(descr, player, arg1);
 					break;
 				case 'o':
@@ -735,6 +738,7 @@ process_command(int descr, dbref player, char *command)
 				case 'R':
 					if (string_compare(command, "@credits")) {
 						Matched("@create");
+						NOGUEST("@create", player);
 						do_create(player, arg1, arg2);
 					} else {
 						do_credits(player);
@@ -763,6 +767,7 @@ process_command(int descr, dbref player, char *command)
 				case 'i':
 				case 'I':
 					Matched("@dig");
+					NOGUEST("@dig", player);
 					do_dig(descr, player, arg1, arg2);
 					break;
 				case 'o':
@@ -795,6 +800,7 @@ process_command(int descr, dbref player, char *command)
 				case 'd':
 				case 'D':
 					Matched("@edit");
+					NOGUEST("@edit", player);
 					do_edit(descr, player, arg1);
 					break;
 				case 'n':
@@ -878,6 +884,7 @@ process_command(int descr, dbref player, char *command)
 					case 'n':
 					case 'N':
 						Matched("@link");
+						NOGUEST("@link", player);
 						do_link(descr, player, arg1, arg2);
 						break;
 					case 's':
@@ -908,10 +915,12 @@ process_command(int descr, dbref player, char *command)
 				case 'C':
 					if (string_prefix("@mcpedit", command)) {
 						Matched("@mcpedit");
+						NOGUEST("@mcpedit", player);
 						do_mcpedit(descr, player, arg1);
 						break;
 					} else {
 						Matched("@mcpprogram");
+						NOGUEST("@mcpprogram", player);
 						do_mcpprogram(descr, player, arg1);
 						break;
 					}
@@ -941,6 +950,7 @@ process_command(int descr, dbref player, char *command)
 				case 'a':
 				case 'A':
 					Matched("@name");
+					NOGUEST("@name", player);
 					do_name(descr, player, arg1, arg2);
 					break;
 				case 'e':
@@ -979,6 +989,7 @@ process_command(int descr, dbref player, char *command)
 				case 'p':
 				case 'P':
 					Matched("@open");
+					NOGUEST("@open", player);
 					do_open(descr, player, arg1, arg2);
 					break;
 				case 's':
@@ -1004,6 +1015,7 @@ process_command(int descr, dbref player, char *command)
 				case 'a':
 				case 'A':
 					Matched("@password");
+					NOGUEST("@password", player);
 					do_password(player, arg1, arg2);
 					break;
 				case 'c':
@@ -1020,11 +1032,13 @@ process_command(int descr, dbref player, char *command)
 				case 'r':
 				case 'R':
 					if (string_prefix("@program", command)) {
+						NOGUEST("@program", player);
 						Matched("@program");
 						do_prog(descr, player, arg1);
 						break;
 					} else {
 						Matched("@propset");
+						NOGUEST("@propset", player);
 						do_propset(descr, player, arg1, arg2);
 						break;
 					}
@@ -1044,11 +1058,13 @@ process_command(int descr, dbref player, char *command)
 				case 'c':
 				case 'C':
 					Matched("@recycle");
+					NOGUEST("@recycle", player);
 					do_recycle(descr, player, arg1);
 					break;
 				case 'l':
 				case 'L':
 					Matched("@relink");
+					NOGUEST("@relink", player);
 					do_relink(descr, player, arg1, arg2);
 					break;
 				case 's':
@@ -1085,6 +1101,7 @@ process_command(int descr, dbref player, char *command)
 				case 'e':
 				case 'E':
 					Matched("@set");
+					NOGUEST("@set", player);
 					do_set(descr, player, arg1, arg2);
 					break;
 				case 'h':
@@ -1157,6 +1174,7 @@ process_command(int descr, dbref player, char *command)
 						Matched("@unbless");
 						do_unbless(descr, player, arg1, arg2);
 					} else if (string_prefix(command, "@unli")) {
+						NOGUEST("@unlink", player);
 						Matched("@unlink");
 						do_unlink(descr, player, arg1);
 					} else if (string_prefix(command, "@unlo")) {
