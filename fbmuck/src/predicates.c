@@ -9,6 +9,7 @@
 #include "params.h"
 #include "tune.h"
 #include "externs.h"
+#include "interface.h"
 
 int
 OkObj(dbref obj)

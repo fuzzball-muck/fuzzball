@@ -746,7 +746,6 @@ db_read(FILE * f)
 {
 	int i;
 	dbref grow;
-	struct object *o;
 	const char *special;
 	char c;
 

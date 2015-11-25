@@ -20,6 +20,7 @@
 
 #include "db.h"
 #include "interp.h"
+#include "externs.h"
 
 #define MUF_RE_CACHE_ITEMS 64
 

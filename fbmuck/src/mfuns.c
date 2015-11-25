@@ -9,7 +9,7 @@
 #include "externs.h"
 #include "props.h"
 #include "msgparse.h"
-
+#include "interface.h"
 
 /***** Insert MFUNs here *****/
 

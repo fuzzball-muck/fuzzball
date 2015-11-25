@@ -4,6 +4,7 @@
 #include "params.h"
 #include "tune.h"
 #include "externs.h"
+#include "interface.h"
 
 static hash_tab player_list[PLAYER_HASH_SIZE];
 

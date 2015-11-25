@@ -11,6 +11,7 @@
 #include "match.h"
 #include "dbsearch.h"
 #include "externs.h"
+#include "interface.h"
 
 #define EXEC_SIGNAL '@'			/* Symbol which tells us what we're looking at
 					   is an execution order and not a message.    */

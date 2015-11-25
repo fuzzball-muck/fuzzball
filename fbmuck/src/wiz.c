@@ -446,7 +446,6 @@ do_stats(dbref player, const char *name)
 	int programs;
 	int garbage = 0;
 	int total;
-	int altered = 0;
 	int oldobjs = 0;
 #ifdef DISKBASE
 	int loaded = 0;
@@ -480,10 +479,6 @@ do_stats(dbref player, const char *name)
 				if ((OWNER(i) == owner) && DBFETCH(i)->propsmode == PROPS_CHANGED)
 					changed++;
 #endif
-
-				/* count objects marked as changed. */
-				if ((OWNER(i) == owner) && (FLAGS(i) & OBJECT_CHANGED))
-					altered++;
 
 				/* if unused for 90 days, inc oldobj count */
 				if ((OWNER(i) == owner) &&
@@ -526,10 +521,6 @@ do_stats(dbref player, const char *name)
 				if (DBFETCH(i)->propsmode == PROPS_CHANGED)
 					changed++;
 #endif
-
-				/* count objects marked as changed. */
-				if (FLAGS(i) & OBJECT_CHANGED)
-					altered++;
 
 				/* if unused for 90 days, inc oldobj count */
 				if ((currtime - DBFETCH(i)->ts.lastused) > tp_aging_time)
