@@ -1487,8 +1487,6 @@ void
 prim_intostr(PRIM_PROTOTYPE)
 {
 	char *ptr=NULL;
-	int val;
-	int negflag;
 
 	CHECKOP(1);
 	oper1 = POP();

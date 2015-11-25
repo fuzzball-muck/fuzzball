@@ -12,6 +12,7 @@
 #include "tune.h"
 #include "match.h"
 #include "interp.h"
+#include "interface.h"
 #include <ctype.h>
 #include <time.h>
 #include <stdarg.h>

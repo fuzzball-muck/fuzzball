@@ -10,6 +10,7 @@
 #include "externs.h"
 #include "tune.h"
 #include "interp.h"
+#include "interface.h"
 
 /* This package performs the interpretation of mud forth programs.
    It is a basically push pop kinda thing, but I'm making some stuff

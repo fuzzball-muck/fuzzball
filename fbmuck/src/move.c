@@ -5,6 +5,7 @@
 #include "tune.h"
 #include "match.h"
 #include "externs.h"
+#include "interface.h"
 
 void
 moveto(dbref what, dbref where)

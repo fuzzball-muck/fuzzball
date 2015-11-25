@@ -11,6 +11,7 @@
 #include "db.h"
 #include "props.h"
 #include "externs.h"
+#include "interface.h"
 
 static PropPtr
 find(char *key, PropPtr avl)

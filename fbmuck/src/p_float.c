@@ -10,6 +10,7 @@
 
 #include "db.h"
 #include "interp.h"
+#include "externs.h"
 
 static struct inst *oper1, *oper2, *oper3, *oper4;
 static double fresult;
