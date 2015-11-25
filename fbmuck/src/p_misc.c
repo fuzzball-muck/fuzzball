@@ -27,7 +27,7 @@ prim_time(PRIM_PROTOTYPE)
 		struct tm *tm;
 
 		lt = time(NULL);
-		tm = mucktime(&lt);
+		tm = MUCK_LOCALTIME(lt);
 
 		result = tm->tm_sec;
 		PushInt(result);
@@ -48,7 +48,7 @@ prim_date(PRIM_PROTOTYPE)
 		time_t lt;
 		struct tm *tm;
 		lt = time(NULL);
-		tm = mucktime(&lt);
+		tm = MUCK_LOCALTIME(lt);
 
 		result = tm->tm_mday;
 		PushInt(result);
@@ -103,7 +103,7 @@ prim_timesplit(PRIM_PROTOTYPE)
 		abort_interp("Invalid argument");
 	lt = (time_t) oper1->data.number;
 
-	time_tm = mucktime(&lt);
+	time_tm = MUCK_LOCALTIME(lt);
 
 	CHECKOFLOW(8);
 	CLEAR(oper1);
@@ -141,7 +141,7 @@ prim_timefmt(PRIM_PROTOTYPE)
 	if (oper2->type != PROG_INTEGER)
 		abort_interp("Invalid argument (2)");
 	lt = (time_t) oper2->data.number;
-	time_tm = mucktime(&lt);
+	time_tm = MUCK_LOCALTIME(lt);
 	if (!format_time(buf, BUFFER_LEN, oper1->data.string->data, time_tm))
 		abort_interp("Operation would result in overflow.");
 	CHECKOFLOW(1);
