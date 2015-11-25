@@ -833,8 +833,6 @@ do_recycle(int descr, dbref player, const char *name)
 	char buf[BUFFER_LEN];
 	struct match_data md;
 
-	NOGUEST("@recycle",player);
-
 	init_match(descr, player, name, TYPE_THING, &md);
 	match_all_exits(&md);
 	match_neighbor(&md);

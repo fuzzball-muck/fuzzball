@@ -37,8 +37,6 @@ do_name(int descr, dbref player, const char *name, char *newname)
 	dbref thing;
 	char *password;
 
-	NOGUEST("@name",player);
-
 	if ((thing = match_controlled(descr, player, name)) != NOTHING) {
 		/* check for bad name */
 		if (*newname == '\0') {
@@ -301,7 +299,6 @@ _do_unlink(int descr, dbref player, const char *name, int quiet)
 void
 do_unlink(int descr, dbref player, const char *name)
 {
-	NOGUEST("@unlink",player);
 	/* do a regular, non-quiet unlink. */
 	_do_unlink(descr, player, name, 0);
 }
@@ -328,8 +325,6 @@ do_relink(int descr, dbref player, const char *thing_name, const char *dest_name
 	dbref good_dest[MAX_LINKS];
 	struct match_data md;
 	int ndest;
-
-	NOGUEST("@relink",player);
 
 	init_match(descr, player, thing_name, TYPE_EXIT, &md);
 	match_all_exits(&md);
@@ -544,8 +539,6 @@ do_set(int descr, dbref player, const char *name, const char *flag)
 	dbref thing;
 	const char *p;
 	object_flag_type f;
-
-	NOGUEST("@set",player);
 
 	/* find thing */
 	if ((thing = match_controlled(descr, player, name)) == NOTHING)
@@ -793,8 +786,6 @@ do_propset(int descr, dbref player, const char *name, const char *prop)
 	struct match_data md;
 	struct boolexp *lok;
 	PData mydat;
-
-	NOGUEST("@propset",player);
 
 	/* find thing */
 	if ((thing = match_controlled(descr, player, name)) == NOTHING)
