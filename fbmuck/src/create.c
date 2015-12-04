@@ -99,10 +99,6 @@ do_open(int descr, dbref player, const char *direction, const char *linkto)
 	char *rname, *qname;
 	int i, ndest;
 
-	if (!Builder(player)) {
-		notify(player, "That command is restricted to authorized builders.");
-		return;
-	}
 	strcpyn(buf2, sizeof(buf2), linkto);
 	for (rname = buf2; (*rname && (*rname != '=')); rname++) ;
 	qname = rname;
@@ -471,10 +467,6 @@ do_dig(int descr, dbref player, const char *name, const char *pname)
 	char *qname;
 	struct match_data md;
 
-	if (!Builder(player)) {
-		notify(player, "That command is restricted to authorized builders.");
-		return;
-	}
 	if (*name == '\0') {
 		notify(player, "You must specify a name for the room.");
 		return;
@@ -571,14 +563,6 @@ do_prog(int descr, dbref player, const char *name)
 	char buf[BUFFER_LEN];
 	struct match_data md;
 
-	if (Typeof(player) != TYPE_PLAYER) {
-		notify(player, "Only players can edit programs.");
-		return;
-	}
-	if (!Mucker(player)) {
-		notify(player, "You're no programmer!");
-		return;
-	}
 	if (!*name) {
 		notify(player, "No program name given.");
 		return;
@@ -658,14 +642,6 @@ do_edit(int descr, dbref player, const char *name)
 	dbref i;
 	struct match_data md;
 
-	if (Typeof(player) != TYPE_PLAYER) {
-		notify(player, "Only players can edit programs.");
-		return;
-	}
-	if (!Mucker(player)) {
-		notify(player, "You're no programmer!");
-		return;
-	}
 	if (!*name) {
 		notify(player, "No program name given.");
 		return;
@@ -707,6 +683,11 @@ do_mcpedit(int descr, dbref player, const char *name)
 	McpFrame *mfr;
 	McpVer supp;
 
+	if (!*name) {
+		notify(player, "No program name given.");
+		return;
+	}
+
 	mfr = descr_mcpframe(descr);
 	if (!mfr) {
 		do_edit(descr, player, name);
@@ -720,10 +701,6 @@ do_mcpedit(int descr, dbref player, const char *name)
 		return;
 	}
 
-	if (!*name) {
-		notify(player, "No program name given.");
-		return;
-	}
 	init_match(descr, player, name, TYPE_PROGRAM, &md);
 
 	match_possession(&md);
@@ -755,14 +732,6 @@ do_mcpprogram(int descr, dbref player, const char* name)
 	struct match_data md;
 	int jj;
 
-	if (Typeof(player) != TYPE_PLAYER) {
-		notify(player, "Only players can edit programs.");
-		return;
-	}
-	if (!Mucker(player)) {
-		notify(player, "You're no programmer!");
-		return;
-	}
 	if (!*name) {
 		notify(player, "No program name given.");
 		return;
@@ -842,19 +811,6 @@ mcpedit_program(int descr, dbref player, dbref prog, const char* name)
 
 	if (supp.verminor == 0 && supp.vermajor == 0) {
 		do_edit(descr, player, name);
-		return;
-	}
-
-	if (Typeof(player) != TYPE_PLAYER) {
-		show_mcp_error(mfr, "@mcpedit", "Only players can edit programs.");
-		return;
-	}
-	if (!Mucker(player)) {
-		show_mcp_error(mfr, "@mcpedit", "You're no programmer!");
-		return;
-	}
-	if (!*name) {
-		show_mcp_error(mfr, "@mcpedit", "No program name given.");
 		return;
 	}
 
@@ -988,11 +944,6 @@ do_clone(int descr, dbref player, char *name)
 
 	/* Perform sanity checks */
 
-	if (!Builder(player)) {
-		notify(player, "That command is restricted to authorized builders.");
-		return;
-	}
-	
 	if (*name == '\0') {
 		notify(player, "Clone what?");
 		return;
@@ -1114,10 +1065,6 @@ do_create(dbref player, char *name, char *acost)
 	for (; *rname && isspace(*rname); rname++) ;
 
 	cost = atoi(qname);
-	if (!Builder(player)) {
-		notify(player, "That command is restricted to authorized builders.");
-		return;
-	}
 	if (*name == '\0') {
 		notify(player, "Create what?");
 		return;
@@ -1301,10 +1248,6 @@ do_action(int descr, dbref player, const char *action_name, const char *source_n
 	char buf2[BUFFER_LEN];
 	char *rname, *qname;
 
-	if (!Builder(player)) {
-		notify(player, "That command is restricted to authorized builders.");
-		return;
-	}
 	strcpyn(buf2, sizeof(buf2), source_name);
 	for (rname = buf2; (*rname && (*rname != '=')); rname++) ;
 	qname = rname;
@@ -1375,10 +1318,6 @@ do_attach(int descr, dbref player, const char *action_name, const char *source_n
 	if ((loc = DBFETCH(player)->location) == NOTHING)
 		return;
 
-	if (!Builder(player)) {
-		notify(player, "That command is restricted to authorized builders.");
-		return;
-	}
 	if (!*action_name || !*source_name) {
 		notify(player, "You must specify an action name and a source object.");
 		return;

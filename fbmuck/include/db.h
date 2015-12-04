@@ -298,6 +298,54 @@ if(fl) \
                      (((Typeof(x) == TYPE_ROOM || Typeof(x) == TYPE_THING) ? \
                       (FLAGS(x) & ABODE) : (FLAGS(x) & LINK_OK)) != 0))
 
+#define BUILDERONLY(_cmd,x) \
+if(!Builder(x)) \
+{   \
+    char tmpstr[BUFFER_LEN]; \
+    snprintf(tmpstr, sizeof(tmpstr), "Only builders are allowed to %s.\r", _cmd); \
+    notify_nolisten(x,tmpstr,1); \
+    return; \
+}
+
+#define MUCKERONLY(_cmd,x) \
+if(!Mucker(x)) \
+{   \
+    char tmpstr[BUFFER_LEN]; \
+    snprintf(tmpstr, sizeof(tmpstr), "Only programmers are allowed to %s.\r", _cmd); \
+    notify_nolisten(x,tmpstr,1); \
+    return; \
+}
+
+#define PLAYERONLY(_cmd,x) \
+if(Typeof(x) != TYPE_PLAYER) \
+{   \
+    char tmpstr[BUFFER_LEN]; \
+    snprintf(tmpstr, sizeof(tmpstr), "Only players are allowed to %s.\r", _cmd); \
+    notify_nolisten(x,tmpstr,1); \
+    return; \
+}
+
+#define WIZARDONLY(_cmd,x) \
+if(!Wizard(OWNER(x))) \
+{   \
+    char tmpstr[BUFFER_LEN]; \
+    snprintf(tmpstr, sizeof(tmpstr), "You are not allowed to %s.\r", _cmd); \
+    notify_nolisten(x,tmpstr,1); \
+    return; \
+}
+
+#ifndef GOD_PRIV
+ #define GODONLY(_cmd,x) PLAYERONLY(_cmd, x); WIZARDONLY(_cmd,x)
+#else
+ #define GODONLY(_cmd,x) \
+if(!God(x)) \
+{   \
+    char tmpstr[BUFFER_LEN]; \
+    snprintf(tmpstr, sizeof(tmpstr), "You are not allowed to %s.\r", _cmd); \
+    notify_nolisten(x,tmpstr,1); \
+    return; \
+}
+#endif
 
 /* Boolean expressions, for locks */
 typedef char boolexp_type;

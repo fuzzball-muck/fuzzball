@@ -3038,7 +3038,7 @@ do_armageddon(dbref player, const char *msg)
 {
 	char buf[BUFFER_LEN];
 
-	if (!Wizard(player)) {
+	if (!Wizard(player) || Typeof(player) != TYPE_PLAYER) {
 		notify(player, "Sorry, but you don't look like the god of War to me.");
 		log_status("ILLEGAL ARMAGEDDON: tried by %s", unparse_object(player, player));
 		return;
