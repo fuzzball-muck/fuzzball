@@ -278,6 +278,8 @@ diskbase_debug(dbref player)
 
 	ph = propcache_hits;
 	pm = propcache_misses;
+
+	notify(player, "Cache info:");
 	snprintf(buf, sizeof(buf),
 			"Propcache hit ratio: %.3f%% (%ld hits / %ld fetches)",
 			(100.0 * ph / (ph + pm)), propcache_hits, propcache_misses);
@@ -288,6 +290,7 @@ diskbase_debug(dbref player)
 	notify_fmt(player, "PropPriority count: %d", proppri_Q.count);
 	notify_fmt(player, "PropChanged count: %d", propchanged_Q.count);
 	report_cachestats(player);
+        notify(player, "Done.");
 }
 
 

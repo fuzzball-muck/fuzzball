@@ -757,46 +757,23 @@ do_pcreate(dbref player, const char *user, const char *password)
 	}
 }
 
-
-
-#ifdef DISKBASE
-extern long propcache_hits;
-extern long propcache_misses;
-#endif
-
-void
-do_serverdebug(int descr, dbref player, const char *arg1, const char *arg2)
-{
-#ifdef DISKBASE
-	if (!*arg1 || string_prefix(arg1, "cache")) {
-		notify(player, "Cache info:");
-		diskbase_debug(player);
-	}
-#endif
-
-	notify(player, "Done.");
-}
-
+#ifndef NO_USAGE_COMMAND
 void
 do_usage(dbref player)
 {
-	int pid, psize;
-
+	int psize;
 #ifdef HAVE_GETRUSAGE
 	struct rusage usage;
 #endif
 
-#ifndef NO_USAGE_COMMAND
-	pid = getpid();
+	notify_fmt(player, "Compiled on: %s", UNAME_VALUE);
+	notify_fmt(player, "Process ID: %d", getpid());
+	notify_fmt(player, "Max descriptors/process: %ld", max_open_files());
+
 #ifdef HAVE_GETRUSAGE
 	psize = getpagesize();
 	getrusage(RUSAGE_SELF, &usage);
-#endif
 
-	notify_fmt(player, "Compiled on: %s", UNAME_VALUE);
-	notify_fmt(player, "Process ID: %d", pid);
-	notify_fmt(player, "Max descriptors/process: %ld", max_open_files());
-#ifdef HAVE_GETRUSAGE
 	notify_fmt(player, "Performed %d input servicings.", usage.ru_inblock);
 	notify_fmt(player, "Performed %d output servicings.", usage.ru_oublock);
 	notify_fmt(player, "Sent %d messages over a socket.", usage.ru_msgsnd);
@@ -815,13 +792,8 @@ do_usage(dbref player)
 	notify_fmt(player, "Integral resident memory: %ldk",
 			   (long) (usage.ru_idrss * (psize / 1024)));
 #endif							/* HAVE_GETRUSAGE */
-
-#else							/* NO_USAGE_COMMAND */
-
-	notify(player, "Sorry, this server was compiled with NO_USAGE_COMMAND.");
-
-#endif							/* NO_USAGE_COMMAND */
 }
+#endif							/* NO_USAGE_COMMAND */
 
 
 
@@ -1205,12 +1177,11 @@ do_all_topprofs(dbref player, char *arg1)
 	notify(player, "*Done*");
 }
 
-
+#ifndef NO_MEMORY_COMMAND
 void
 do_memory(dbref who)
 {
-#ifndef NO_MEMORY_COMMAND
-# ifdef HAVE_MALLINFO
+#ifdef HAVE_MALLINFO
 	{
 		struct mallinfo mi;
 
@@ -1240,8 +1211,7 @@ do_memory(dbref who)
 		notify_fmt(who, "Mem chunks alloced:%6d", mi.allocated);
 #endif
 	}
-# endif							/* HAVE_MALLINFO */
-#endif							/* NO_MEMORY_COMMAND */
+#endif							/* HAVE_MALLINFO */
 
 #ifdef MALLOC_PROFILING
 	notify(who, "  ");
@@ -1251,3 +1221,4 @@ do_memory(dbref who)
 
 	notify(who, "Done.");
 }
+#endif							/* NO_MEMORY_COMMAND */

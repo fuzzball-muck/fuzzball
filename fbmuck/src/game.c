@@ -757,12 +757,14 @@ process_command(int descr, dbref player, char *command)
 				/* @dbginfo, @describe, @dig, @doing,
 				   @drop, @dump */
 				switch (command[2]) {
+#ifdef DISKBASE
 				case 'b':
 				case 'B':
 					Matched("@dbginfo");
 					WIZARDONLY("@dbginfo", player);
-					do_serverdebug(descr, player, arg1, arg2);
+					diskbase_debug(player);
 					break;
+#endif
 				case 'e':
 				case 'E':
 					Matched("@describe");
@@ -939,12 +941,14 @@ process_command(int descr, dbref player, char *command)
 						do_mcpprogram(descr, player, arg1);
 						break;
 					}
+#ifndef NO_MEMORY_COMMAND
 				case 'e':
 				case 'E':
 					Matched("@memory");
 					WIZARDONLY("@memory", player);
 					do_memory(player);
 					break;
+#endif
 				case 'p':
 			    case 'P':
 			        Matched("@mpitops");
@@ -1237,14 +1241,14 @@ process_command(int descr, dbref player, char *command)
 						goto bad;
 					}
 					break;
-
+#ifndef NO_USAGE_COMMAND
 				case 'S':
 				case 's':
 					Matched("@usage");
 					WIZARDONLY("@usage", player);
 					do_usage(player);
 					break;
-
+#endif
 				default:
 					goto bad;
 					break;
