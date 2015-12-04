@@ -125,36 +125,32 @@ do_dump(dbref player, const char *newfile)
 {
 	char buf[BUFFER_LEN];
 
-	if (Wizard(player)) {
 #ifndef DISKBASE
-		if (global_dumper_pid != 0) {
-			notify(player, "Sorry, there is already a dump currently in progress.");
-			return;
-		}
-#endif
-		if (*newfile
-#ifdef GOD_PRIV
-			&& God(player)
-#endif							/* GOD_PRIV */
-				) {
-			if (dumpfile)
-				free((void *) dumpfile);
-			dumpfile = alloc_string(newfile);
-			snprintf(buf, sizeof(buf), "Dumping to file %s...", dumpfile);
-		} else {
-			snprintf(buf, sizeof(buf), "Dumping...");
-		}
-		notify(player, buf);
-		dump_db_now();
-	} else {
-		notify(player, "Sorry, you are in a no dumping zone.");
+	if (global_dumper_pid != 0) {
+		notify(player, "Sorry, there is already a dump currently in progress.");
+		return;
 	}
+#endif
+	if (*newfile
+#ifdef GOD_PRIV
+		&& God(player)
+#endif							/* GOD_PRIV */
+			) {
+		if (dumpfile)
+			free((void *) dumpfile);
+		dumpfile = alloc_string(newfile);
+		snprintf(buf, sizeof(buf), "Dumping to file %s...", dumpfile);
+	} else {
+		snprintf(buf, sizeof(buf), "Dumping...");
+	}
+	notify(player, buf);
+	dump_db_now();
 }
 
 void
 do_shutdown(dbref player)
 {
-	if (Wizard(player)) {
+	if (Wizard(player) && Typeof(player) == TYPE_PLAYER) {
 		log_status("SHUTDOWN: by %s", unparse_object(player, player));
 		shutdown_flag = 1;
 		restart_flag = 0;
@@ -167,7 +163,7 @@ do_shutdown(dbref player)
 void
 do_restart(dbref player)
 {
-	if (Wizard(player)) {
+	if (Wizard(player) && Typeof(player) == TYPE_PLAYER) {
 		log_status("SHUTDOWN & RESTART: by %s", unparse_object(player, player));
 		shutdown_flag = 1;
 		restart_flag = 1;
@@ -461,11 +457,6 @@ extern short wizonly_mode;
 void
 do_restrict(dbref player, const char *arg)
 {
-	if (!Wizard(player)) {
-		notify(player, "Permission Denied.");
-		return;
-	}
-
 	if (!strcmp(arg, "on")) {
 		wizonly_mode = 1;
 		notify(player, "Login access is now restricted to wizards only.");
@@ -645,18 +636,24 @@ process_command(int descr, dbref player, char *command)
 				case 'C':
 					Matched("@action");
 					NOGUEST("@action", player);
+					BUILDERONLY("@action", player);
 					do_action(descr, player, arg1, arg2);
 					break;
 				case 'r':
 				case 'R':
 					if (strcmp(command, "@armageddon"))
 						goto bad;
+/*
+					WIZARDONLY("@armageddon", player);
+					PLAYERONLY("@armageddon", player);
+*/
 					do_armageddon(player, full_command);
 					break;
 				case 't':
 				case 'T':
 					Matched("@attach");
 					NOGUEST("@attach", player);
+					BUILDERONLY("@attach", player);
 					do_attach(descr, player, arg1, arg2);
 					break;
 				default:
@@ -670,11 +667,16 @@ process_command(int descr, dbref player, char *command)
 				case 'l':
 				case 'L':
 					Matched("@bless");
+					WIZARDONLY("@bless", player);
+					PLAYERONLY("@bless", player);
+					NOFORCE("@bless", force_level, player);
 					do_bless(descr, player, arg1, arg2);
 					break;
 				case 'o':
 				case 'O':
 					Matched("@boot");
+					WIZARDONLY("@boot", player);
+					PLAYERONLY("@boot", player);
 					do_boot(player, arg1);
 					break;
 				default:
@@ -714,6 +716,7 @@ process_command(int descr, dbref player, char *command)
 				case 'L':
 					Matched("@clone");
 					NOGUEST("@clone", player);
+					BUILDERONLY("@clone", player);
 					do_clone(descr, player, arg1);
 					break;
 				case 'o':
@@ -739,6 +742,7 @@ process_command(int descr, dbref player, char *command)
 					if (string_compare(command, "@credits")) {
 						Matched("@create");
 						NOGUEST("@create", player);
+						BUILDERONLY("@create", player);
 						do_create(player, arg1, arg2);
 					} else {
 						do_credits(player);
@@ -756,6 +760,7 @@ process_command(int descr, dbref player, char *command)
 				case 'b':
 				case 'B':
 					Matched("@dbginfo");
+					WIZARDONLY("@dbginfo", player);
 					do_serverdebug(descr, player, arg1, arg2);
 					break;
 				case 'e':
@@ -768,6 +773,7 @@ process_command(int descr, dbref player, char *command)
 				case 'I':
 					Matched("@dig");
 					NOGUEST("@dig", player);
+					BUILDERONLY("@dig", player);
 					do_dig(descr, player, arg1, arg2);
 					break;
 				case 'o':
@@ -787,6 +793,8 @@ process_command(int descr, dbref player, char *command)
 				case 'u':
 				case 'U':
 					Matched("@dump");
+					WIZARDONLY("@dump", player);
+					PLAYERONLY("@dump", player);
 					do_dump(player, full_command);
 					break;
 				default:
@@ -801,6 +809,8 @@ process_command(int descr, dbref player, char *command)
 				case 'D':
 					Matched("@edit");
 					NOGUEST("@edit", player);
+					PLAYERONLY("@edit", player);
+					MUCKERONLY("@edit", player);
 					do_edit(descr, player, arg1);
 					break;
 				case 'n':
@@ -811,6 +821,7 @@ process_command(int descr, dbref player, char *command)
 				case 'x':
 				case 'X':
 					Matched("@examine");
+					GODONLY("@examine", player);
 					sane_dump_object(player, arg1);
 					break;
 				default:
@@ -916,27 +927,34 @@ process_command(int descr, dbref player, char *command)
 					if (string_prefix("@mcpedit", command)) {
 						Matched("@mcpedit");
 						NOGUEST("@mcpedit", player);
+						PLAYERONLY("@mcpedit", player);
+						MUCKERONLY("@mcpedit", player);
 						do_mcpedit(descr, player, arg1);
 						break;
 					} else {
 						Matched("@mcpprogram");
 						NOGUEST("@mcpprogram", player);
+						PLAYERONLY("@mcpprogram", player);
+						MUCKERONLY("@mcpprogram", player);
 						do_mcpprogram(descr, player, arg1);
 						break;
 					}
 				case 'e':
 				case 'E':
 					Matched("@memory");
+					WIZARDONLY("@memory", player);
 					do_memory(player);
 					break;
 				case 'p':
 			    case 'P':
 			        Matched("@mpitops");
+				WIZARDONLY("@mpitops", player);
 			        do_mpi_topprofs(player, arg1);
 			        break;
 			    case 'u':
 			    case 'U':
 			        Matched("@muftops");
+				WIZARDONLY("@muftops", player);
 			        do_muf_topprofs(player, arg1);
 			        break;
 				default:
@@ -957,6 +975,8 @@ process_command(int descr, dbref player, char *command)
 				case 'E':
 					if (strcmp(command, "@newpassword"))
 						goto bad;
+					WIZARDONLY("@newpassword", player);
+					PLAYERONLY("@newpassword", player);
 					do_newpassword(player, arg1, arg2);
 					break;
 				default:
@@ -990,6 +1010,7 @@ process_command(int descr, dbref player, char *command)
 				case 'P':
 					Matched("@open");
 					NOGUEST("@open", player);
+					BUILDERONLY("@open", player);
 					do_open(descr, player, arg1, arg2);
 					break;
 				case 's':
@@ -1015,12 +1036,15 @@ process_command(int descr, dbref player, char *command)
 				case 'a':
 				case 'A':
 					Matched("@password");
+					PLAYERONLY("@password", player);
 					NOGUEST("@password", player);
 					do_password(player, arg1, arg2);
 					break;
 				case 'c':
 				case 'C':
 					Matched("@pcreate");
+					WIZARDONLY("@pcreate", player);
+					PLAYERONLY("@pcreate", player);
 					do_pcreate(player, arg1, arg2);
 					break;
 				case 'e':
@@ -1032,8 +1056,10 @@ process_command(int descr, dbref player, char *command)
 				case 'r':
 				case 'R':
 					if (string_prefix("@program", command)) {
-						NOGUEST("@program", player);
 						Matched("@program");
+						NOGUEST("@program", player);
+						PLAYERONLY("@program", player);
+						MUCKERONLY("@program", player);
 						do_prog(descr, player, arg1);
 						break;
 					} else {
@@ -1070,8 +1096,14 @@ process_command(int descr, dbref player, char *command)
 				case 's':
 				case 'S':
 					if (!strcmp(command, "@restart")) {
+/*
+						WIZARDONLY("@restart", player);
+						PLAYERONLY("@restart", player);
+*/
 						do_restart(player);
 					} else if (!strcmp(command, "@restrict")) {
+						WIZARDONLY("@restrict", player);
+						PLAYERONLY("@restrict", player);
 						do_restrict(player, arg1);
 					} else {
 						goto bad;
@@ -1089,10 +1121,13 @@ process_command(int descr, dbref player, char *command)
 				case 'a':
 				case 'A':
 					if (!strcmp(command, "@sanity")) {
+						GODONLY("@sanity", player);
 						sanity(player);
 					} else if (!strcmp(command, "@sanchange")) {
+						GODONLY("@sanchange", player);
 						sanechange(player, full_command);
 					} else if (!strcmp(command, "@sanfix")) {
+						GODONLY("@sanfix", player);
 						sanfix(player);
 					} else {
 						goto bad;
@@ -1108,6 +1143,10 @@ process_command(int descr, dbref player, char *command)
 				case 'H':
 					if (strcmp(command, "@shutdown"))
 						goto bad;
+/*
+					WIZARDONLY("@shutdown", player);
+					PLAYERONLY("@shutdown", player);
+*/
 					do_shutdown(player);
 					break;
 				case 't':
@@ -1142,8 +1181,11 @@ process_command(int descr, dbref player, char *command)
 				case 'o':
 				case 'O':
 					if (!strcmp(command, "@toad")) {
+						WIZARDONLY("@toad", player);
+						PLAYERONLY("@toad", player);
 						do_toad(descr, player, arg1, arg2);
 					} else if (!strcmp(command, "@tops")) {
+						WIZARDONLY("@tops", player);
 						do_all_topprofs(player, arg1);
 					} else {
 						goto bad;
@@ -1157,6 +1199,8 @@ process_command(int descr, dbref player, char *command)
 				case 'u':
 				case 'U':
 					Matched("@tune");
+					WIZARDONLY("@tune", player);
+					PLAYERONLY("@tune", player);
 					do_tune(player, arg1, arg2, !!strchr(full_command, ARG_DELIMITER));
 					break;
 				default:
@@ -1172,10 +1216,13 @@ process_command(int descr, dbref player, char *command)
 				case 'n':
 					if (string_prefix(command, "@unb")) {
 						Matched("@unbless");
+						WIZARDONLY("@unbless", player);
+						PLAYERONLY("@unbless", player);
+						NOFORCE("@unbless", force_level, player);
 						do_unbless(descr, player, arg1, arg2);
 					} else if (string_prefix(command, "@unli")) {
-						NOGUEST("@unlink", player);
 						Matched("@unlink");
+						NOGUEST("@unlink", player);
 						do_unlink(descr, player, arg1);
 					} else if (string_prefix(command, "@unlo")) {
 						Matched("@unlock");
@@ -1183,6 +1230,8 @@ process_command(int descr, dbref player, char *command)
 						set_standard_lock(descr, player, arg1, MESGPROP_LOCK, "Lock", "");
 					} else if (string_prefix(command, "@uncom")) {
 						Matched("@uncompile");
+						WIZARDONLY("@uncompile", player);
+						PLAYERONLY("@uncompile", player);
 						do_uncompile(player);
 					} else {
 						goto bad;
@@ -1192,6 +1241,7 @@ process_command(int descr, dbref player, char *command)
 				case 'S':
 				case 's':
 					Matched("@usage");
+					WIZARDONLY("@usage", player);
 					do_usage(player);
 					break;
 
@@ -1211,6 +1261,8 @@ process_command(int descr, dbref player, char *command)
 				/* @wall */
 				if (strcmp(command, "@wall"))
 					goto bad;
+				WIZARDONLY("@wall", player);
+				PLAYERONLY("@wall", player);
 				do_wall(player, full_command);
 				break;
 			default:
@@ -1403,7 +1455,7 @@ process_command(int descr, dbref player, char *command)
 				do_drop(descr, player, arg1, arg2);
 				break;
 			default:
-				goto bad;
+			goto bad;
 			}
 			break;
 		case 'w':

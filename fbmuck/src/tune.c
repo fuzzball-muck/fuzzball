@@ -943,10 +943,6 @@ do_tune(dbref player, char *parmname, char *parmval, int full_command_has_delimi
 	const char *oldvalue;
 	int result;
 	int security = TUNE_MLEV(player);
-	if (!Wizard(player)) {
-		notify(player, "You pull out a harmonica and play a short tune.");
-		return;
-	}
 
 	if (*parmname && full_command_has_delimiter) {
 		if (force_level) {

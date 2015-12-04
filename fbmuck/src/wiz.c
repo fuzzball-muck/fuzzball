@@ -15,7 +15,6 @@
 #    include <malloc.h>
 #  endif
 #endif
-
 #include "db.h"
 #include "params.h"
 #include "tune.h"
@@ -255,11 +254,6 @@ do_unbless(int descr, dbref player, const char *what, const char *propname)
 	char buf[BUFFER_LEN];
 	int cnt;
 
-	if (!Wizard(player) || Typeof(player) != TYPE_PLAYER) {
-		notify(player, "Only Wizard players may use this command.");
-		return;
-	}
-
 	if (!propname || !*propname) {
 		notify(player, "Usage is @unbless object=propname.");
 		return;
@@ -269,11 +263,6 @@ do_unbless(int descr, dbref player, const char *what, const char *propname)
 	init_match(descr, player, what, NOTYPE, &md);
 	match_everything(&md);
 	if ((victim = noisy_match_result(&md)) == NOTHING) {
-		return;
-	}
-
-	if (!Wizard(OWNER(player))) {
-		notify(player, "Permission denied. (You're not a wizard)");
 		return;
 	}
 
@@ -290,17 +279,6 @@ do_bless(int descr, dbref player, const char *what, const char *propname)
 	struct match_data md;
 	char buf[BUFFER_LEN];
 	int cnt;
-
-	if (force_level) {
-		notify(player, "Can't @force an @bless.");
-		return;
-	}
-
-
-	if (!Wizard(player) || Typeof(player) != TYPE_PLAYER) {
-		notify(player, "Only Wizard players may use this command.");
-		return;
-	}
 
 	if (!propname || !*propname) {
 		notify(player, "Usage is @bless object=propname.");
@@ -320,11 +298,6 @@ do_bless(int descr, dbref player, const char *what, const char *propname)
 		return;
 	}
 #endif
-
-	if (!Wizard(OWNER(player))) {
-		notify(player, "Permission denied. (you're not a wizard)");
-		return;
-	}
 
 	cnt = blessprops_wildcard(player, victim, "", propname, 1);
 	snprintf(buf, sizeof(buf), "%d propert%s blessed.", cnt, (cnt == 1)? "y" : "ies");
@@ -585,10 +558,6 @@ do_boot(dbref player, const char *name)
 	dbref victim;
 	char buf[BUFFER_LEN];
 
-	if (!Wizard(player) || Typeof(player) != TYPE_PLAYER) {
-		notify(player, "Only a Wizard player can boot someone off.");
-		return;
-	}
 	if ((victim = lookup_player(name)) == NOTHING) {
 		notify(player, "That player does not exist.");
 		return;
@@ -626,10 +595,6 @@ do_toad(int descr, dbref player, const char *name, const char *recip)
 	dbref stuff;
 	char buf[BUFFER_LEN];
 
-	if (!Wizard(player) || Typeof(player) != TYPE_PLAYER) {
-		notify(player, "Only a Wizard player can turn a person into a toad.");
-		return;
-	}
 	if ((victim = lookup_player(name)) == NOTHING) {
 		notify(player, "That player does not exist.");
 		return;
@@ -746,10 +711,7 @@ do_newpassword(dbref player, const char *name, const char *password)
 	dbref victim;
 	char buf[BUFFER_LEN];
 
-	if (!Wizard(player) || Typeof(player) != TYPE_PLAYER) {
-		notify(player, "Only a Wizard player can newpassword someone.");
-		return;
-	} else if ((victim = lookup_player(name)) == NOTHING) {
+	if ((victim = lookup_player(name)) == NOTHING) {
 		notify(player, "No such player.");
 	} else if (*password != '\0' && !ok_password(password)) {
 		/* Wiz can set null passwords, but not bad passwords */
@@ -785,10 +747,6 @@ do_pcreate(dbref player, const char *user, const char *password)
 	dbref newguy;
 	char buf[BUFFER_LEN];
 
-	if (!Wizard(player) || Typeof(player) != TYPE_PLAYER) {
-		notify(player, "Only a Wizard player can create a player.");
-		return;
-	}
 	newguy = create_player(user, password);
 	if (newguy == NOTHING) {
 		notify(player, "Create failed.");
@@ -809,11 +767,6 @@ extern long propcache_misses;
 void
 do_serverdebug(int descr, dbref player, const char *arg1, const char *arg2)
 {
-	if (!Wizard(OWNER(player))) {
-		notify(player, "Permission denied. (@dbginfo is a wizard-only command)");
-		return;
-	}
-
 #ifdef DISKBASE
 	if (!*arg1 || string_prefix(arg1, "cache")) {
 		notify(player, "Cache info:");
@@ -833,10 +786,6 @@ do_usage(dbref player)
 	struct rusage usage;
 #endif
 
-	if (!Wizard(OWNER(player))) {
-		notify(player, "Permission denied. (@usage is wizard-only)");
-		return;
-	}
 #ifndef NO_USAGE_COMMAND
 	pid = getpid();
 #ifdef HAVE_GETRUSAGE
@@ -895,10 +844,6 @@ do_muf_topprofs(dbref player, char *arg1)
 	int count = atoi(arg1);
 	time_t current_systime = time(NULL);
 
-	if (!Wizard(OWNER(player))) {
-		notify(player, "Permission denied. (MUF profiling stats are wiz-only)");
-		return;
-	}
 	if (!string_compare(arg1, "reset")) {
 		for (i = db_top; i-->0; ) {
 			if (Typeof(i) == TYPE_PROGRAM) {
@@ -1006,10 +951,6 @@ do_mpi_topprofs(dbref player, char *arg1)
 	int count = atoi(arg1);
 	time_t current_systime = time(NULL);
 
-	if (!Wizard(OWNER(player))) {
-		notify(player, "Permission denied. (MPI statistics are wizard-only)");
-		return;
-	}
 	if (!string_compare(arg1, "reset")) {
 		for (i = db_top; i-->0; ) {
 			if (DBFETCH(i)->mpi_prof_use) {
@@ -1117,10 +1058,6 @@ do_all_topprofs(dbref player, char *arg1)
 	int count = atoi(arg1);
 	time_t current_systime = time(NULL);
 
-	if (!Wizard(OWNER(player))) {
-		notify(player, "Permission denied. (server profiling statistics are wizard-only)");
-		return;
-	}
 	if (!string_compare(arg1, "reset")) {
 		for (i = db_top; i-->0; ) {
 			if (DBFETCH(i)->mpi_prof_use) {
@@ -1272,10 +1209,6 @@ do_all_topprofs(dbref player, char *arg1)
 void
 do_memory(dbref who)
 {
-	if (!Wizard(OWNER(who))) {
-		notify(who, "Permission denied. (You don't need to know the memory stats)");
-		return;
-	}
 #ifndef NO_MEMORY_COMMAND
 # ifdef HAVE_MALLINFO
 	{

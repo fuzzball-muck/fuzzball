@@ -61,16 +61,6 @@ sane_dump_object(dbref player, const char *arg)
 	int result;
 
 	if (player > 0) {
-
-#ifdef GOD_PRIV
-		if (!God(player)) {
-#else
-		if (!Wizard(player)) {
-#endif
-
-			notify(player, "Permission Denied.");
-			return;
-		}
 		result = sscanf(arg, "#%i", &d);
 	} else {
 		result = sscanf(arg, "%i", &d);
@@ -496,16 +486,6 @@ sanity(dbref player)
 	const int increp = 10000;
 	int i;
 	int j;
-
-#ifdef GOD_PRIV
-	if (player > NOTHING && !God(player)) {
-#else
-	if (player > NOTHING && !Wizard(player)) {
-#endif
-
-		notify(player, "Permission Denied.");
-		return;
-	}
 
 	sanity_violated = 0;
 
@@ -987,17 +967,6 @@ sanfix(dbref player)
 {
 	dbref loop;
 
-#ifdef GOD_PRIV
-	if (player > NOTHING && !God(player)) {
-#else
-	if (player > NOTHING && !Wizard(player)) {
-#endif
-
-		notify(player, "Yeah right!  With a psyche like yours, you think "
-			   "theres any hope of getting your sanity fixed?");
-		return;
-	}
-
 	sanity_violated = 0;
 
 	for (loop = 0; loop < db_top; loop++) {
@@ -1058,16 +1027,6 @@ sanechange(dbref player, const char *command)
 	int results;
 
 	if (player > NOTHING) {
-
-#ifdef GOD_PRIV
-		if (!God(player)) {
-			notify(player, "Only GOD may alter the basic structure of the universe!");
-#else
-		if (!Wizard(player)) {
-			notify(player, "Only Wizards may alter the basic structure of the universe!");
-#endif
-			return;
-		}
 		results = sscanf(command, "%s %s %s", which, field, value);
 		sscanf(which, "#%d", &d);
 		sscanf(value, "#%d", &v);

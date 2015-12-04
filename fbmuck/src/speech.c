@@ -81,16 +81,12 @@ do_wall(dbref player, const char *message)
 	dbref i;
 	char buf[BUFFER_LEN];
 
-	if (Wizard(player) && Typeof(player) == TYPE_PLAYER) {
-		log_status("WALL from %s(%d): %s", NAME(player), player, message);
-		snprintf(buf, sizeof(buf), "%s shouts, \"%s\"", NAME(player), message);
-		for (i = 0; i < db_top; i++) {
-			if (Typeof(i) == TYPE_PLAYER) {
-				notify_from(player, i, buf);
-			}
+	log_status("WALL from %s(%d): %s", NAME(player), player, message);
+	snprintf(buf, sizeof(buf), "%s shouts, \"%s\"", NAME(player), message);
+	for (i = 0; i < db_top; i++) {
+		if (Typeof(i) == TYPE_PLAYER) {
+			notify_from(player, i, buf);
 		}
-	} else {
-		notify(player, "But what do you want to do with the wall?");
 	}
 }
 

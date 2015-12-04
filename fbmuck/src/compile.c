@@ -614,10 +614,6 @@ do_uncompile(dbref player)
 {
 	dbref i;
 
-	if (!Wizard(OWNER(player))) {
-		notify_nolisten(player, "Permission denied. (uncompile)", 1);
-		return;
-	}
 	for (i = 0; i < db_top; i++) {
 		if (Typeof(i) == TYPE_PROGRAM) {
 			uncompile_program(i);
