@@ -360,6 +360,9 @@
 
 #define LOST_AND_FOUND PLAYER_START
 
+/* Enable functionality conforming to MUD Client Protocol (MCP). */
+#define ENABLE_MCP 1
+
 /* Force 7-bit names */
 #define ASCII_THING_NAMES 1
 #define ASCII_OTHER_NAMES 0

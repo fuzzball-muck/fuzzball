@@ -926,20 +926,24 @@ process_command(int descr, dbref player, char *command)
 				switch (command[2]) {
 				case 'c':
 				case 'C':
-					if (string_prefix("@mcpedit", command)) {
-						Matched("@mcpedit");
-						NOGUEST("@mcpedit", player);
-						PLAYERONLY("@mcpedit", player);
-						MUCKERONLY("@mcpedit", player);
-						do_mcpedit(descr, player, arg1);
-						break;
+					if (tp_enable_mcp) {
+						if (string_prefix("@mcpedit", command)) {
+							Matched("@mcpedit");
+							NOGUEST("@mcpedit", player);
+							PLAYERONLY("@mcpedit", player);
+							MUCKERONLY("@mcpedit", player);
+							do_mcpedit(descr, player, arg1);
+							break;
+						} else {
+							Matched("@mcpprogram");
+							NOGUEST("@mcpprogram", player);
+							PLAYERONLY("@mcpprogram", player);
+							MUCKERONLY("@mcpprogram", player);
+							do_mcpprogram(descr, player, arg1);
+							break;
+						}
 					} else {
-						Matched("@mcpprogram");
-						NOGUEST("@mcpprogram", player);
-						PLAYERONLY("@mcpprogram", player);
-						MUCKERONLY("@mcpprogram", player);
-						do_mcpprogram(descr, player, arg1);
-						break;
+						goto bad;
 					}
 #ifndef NO_MEMORY_COMMAND
 				case 'e':
