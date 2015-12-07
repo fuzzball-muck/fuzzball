@@ -9,6 +9,7 @@
 #include "externs.h"
 #include "mcp.h"
 #include "mcppkg.h"
+#include "tune.h"
 #ifdef HAVE_MALLOC_H
 #include <malloc.h>
 #endif /* HAVE_MALLOC_H */
@@ -240,13 +241,15 @@ mcp_negotiation_start(McpFrame * mfr)
 {
 	McpMesg reply;
 
-	mfr->enabled = 1;
-	mcp_mesg_init(&reply, MCP_INIT_PKG, "");
-	mcp_mesg_arg_append(&reply, "version", "2.1");
-	mcp_mesg_arg_append(&reply, "to", "2.1");
-	mcp_frame_output_mesg(mfr, &reply);
-	mcp_mesg_clear(&reply);
-	mfr->enabled = 0;
+	if (tp_enable_mcp) {
+		mfr->enabled = 1;
+		mcp_mesg_init(&reply, MCP_INIT_PKG, "");
+		mcp_mesg_arg_append(&reply, "version", "2.1");
+		mcp_mesg_arg_append(&reply, "to", "2.1");
+		mcp_frame_output_mesg(mfr, &reply);
+		mcp_mesg_clear(&reply);
+		mfr->enabled = 0;
+	}
 }
 
 
