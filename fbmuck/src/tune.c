@@ -28,9 +28,6 @@ const char *tp_playermax_bootmesg = PLAYERMAX_BOOTMESG;
 
 const char *tp_autolook_cmd = AUTOLOOK_CMD;
 
-const char *tp_proplist_counter_fmt = PROPLIST_COUNTER_FORMAT;
-const char *tp_proplist_entry_fmt = PROPLIST_ENTRY_FORMAT;
-
 const char *tp_ssl_keyfile_passwd = SSL_KEYFILE_PASSWD;
 const char *tp_ssl_cipher_preference_list = SSL_CIPHER_PREFERENCE_LIST;
 
@@ -61,8 +58,6 @@ struct tune_str_entry tune_str_list[] = {
 	{"Idle Boot",  "idle_boot_mesg", &tp_idle_mesg, 0, MLEV_WIZARD, "Boot message for idling out", 0, 1},
 	{"Player Max", "playermax_warnmesg", &tp_playermax_warnmesg, 0, MLEV_WIZARD, "Max. players login warning", 0, 1},
 	{"Player Max", "playermax_bootmesg", &tp_playermax_bootmesg, 0, MLEV_WIZARD, "Max. players boot message", 0, 1},
-	{"Properties", "proplist_counter_fmt", &tp_proplist_counter_fmt, 0, MLEV_WIZARD, "Proplist counter name format", 0, 1},
-	{"Properties", "proplist_entry_fmt", &tp_proplist_entry_fmt, 0, MLEV_WIZARD, "Proplist entry name format", 0, 1},
 	{"Registration", "register_mesg", &tp_register_mesg, 0, MLEV_WIZARD, "Login registration mesg", 0, 1},
 	{"Misc",       "muckname", &tp_muckname, 0, MLEV_WIZARD, "Muck name", 0, 1},
 	{"Misc",       "leave_mesg", &tp_leave_mesg, 0, MLEV_WIZARD, "Logoff message", 0, 1},
@@ -267,7 +262,6 @@ int tp_enable_prefix = ENABLE_PREFIX;
 int tp_enable_match_yield = ENABLE_MATCH_YIELD;
 int tp_thing_movement = SECURE_THING_MOVEMENT;
 int tp_expanded_debug = EXPANDED_DEBUG_TRACE;
-int tp_proplist_int_counter = PROPLIST_INT_COUNTER;
 int tp_log_interactive = LOG_INTERACTIVE;
 int tp_lazy_mpi_istype_perm = LAZY_MPI_ISTYPE_PERM;
 int tp_optimize_muf = OPTIMIZE_MUF;
@@ -331,7 +325,6 @@ struct tune_bool_entry tune_bool_list[] = {
 	{"Player Max", "playermax", &tp_playermax, 0, MLEV_WIZARD, "Limit number of concurrent players allowed"},
 	{"Properties", "look_propqueues", &tp_look_propqueues, 0, MLEV_WIZARD, "When a player looks, trigger _look/ propqueues"},
 	{"Properties", "lock_envcheck", &tp_lock_envcheck, 0, MLEV_WIZARD, "Locks check environment for properties"},
-	{"Properties", "proplist_int_counter", &tp_proplist_int_counter, 0, MLEV_WIZARD, "Proplist counter uses an integer property"},
 	{"Registration", "registration", &tp_registration, 0, MLEV_WIZARD, "Require new players to register manually"},
 	{"Tuning",     "periodic_program_purge", &tp_periodic_program_purge, 0, MLEV_WIZARD, "Periodically free unused MUF programs"},
 	{"WHO",        "use_hostnames", &tp_hostnames, 0, MLEV_WIZARD, "Resolve IP addresses into hostnames"},

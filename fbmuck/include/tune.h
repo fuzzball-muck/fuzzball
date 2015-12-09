@@ -30,8 +30,6 @@ extern const char *tp_playermax_warnmesg;
 extern const char *tp_playermax_bootmesg;
 extern const char *tp_autolook_cmd;
 
-extern const char *tp_proplist_counter_fmt;
-extern const char *tp_proplist_entry_fmt;
 extern const char *tp_ssl_keyfile_passwd;
 extern const char *tp_ssl_cipher_preference_list;
 
@@ -137,7 +135,6 @@ extern int tp_enable_match_yield;
 extern int tp_idle_ping_enable;
 extern int tp_thing_movement;
 extern int tp_expanded_debug;
-extern int tp_proplist_int_counter;
 extern int tp_lazy_mpi_istype_perm;
 extern int tp_optimize_muf;
 extern int tp_ignore_support;

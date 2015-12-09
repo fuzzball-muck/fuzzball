@@ -1433,7 +1433,7 @@ prim_array_put_proplist(PRIM_PROTOTYPE)
 
 	dirlen = strlen(dir);
 	fmtout = propname;
-	fmtin = tp_proplist_counter_fmt;
+	fmtin = "P#";
 	while (*fmtin) {
 		if (*fmtin == 'P') {
 			if ((fmtout + dirlen) - propname > sizeof(propname))
@@ -1450,14 +1450,8 @@ prim_array_put_proplist(PRIM_PROTOTYPE)
 	if (!prop_write_perms(ProgUID, ref, propname, mlev))
 		abort_interp("Permission denied while trying to set protected property.");
 
-	if (tp_proplist_int_counter) {
-		propdat.flags = PROP_INTTYP;
-		propdat.data.val = array_count(arr);
-	} else {
-		snprintf(buf, sizeof(buf), "%d", array_count(arr));
-		propdat.flags = PROP_STRTYP;
-		propdat.data.str = buf;
-	}
+	propdat.flags = PROP_INTTYP;
+	propdat.data.val = array_count(arr);
 	set_property(ref, propname, &propdat);
 
 	if (array_first(arr, &temp1)) {
@@ -1465,7 +1459,7 @@ prim_array_put_proplist(PRIM_PROTOTYPE)
 			oper4 = array_getitem(arr, &temp1);
 
 			fmtout = propname;
-			fmtin = tp_proplist_entry_fmt;
+			fmtin = "P#/N";
 			while (*fmtin) {
 				if (*fmtin == 'N') {
 					if ((fmtout + 18) - propname > sizeof(propname))
@@ -1520,7 +1514,7 @@ prim_array_put_proplist(PRIM_PROTOTYPE)
 	for (;;) {
 		count++;
 		fmtout = propname;
-		fmtin = tp_proplist_entry_fmt;
+		fmtin = "P#/N";
 		while (*fmtin) {
 			if (*fmtin == 'N') {
 				if ((fmtout + 18) - propname > sizeof(propname))
