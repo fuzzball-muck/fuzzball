@@ -3717,8 +3717,7 @@ ARRAY_PUT_PROPLIST
 ARRAY_PUT_PROPLIST ( d s a -- )
 
   Takes the values in the given list array, and stores them in the given
-propdir on the given object as a sequential proplist.  This will use the
-system standard proplist format specified by @tune settings.
+propdir on the given object as a sequential proplist.
 ~
 ~
 PARSEPROP
