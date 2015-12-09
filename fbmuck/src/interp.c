@@ -62,7 +62,9 @@ void (*prim_func[]) (PRIM_PROTOTYPE) = {
 	PRIMS_ARRAY_FUNCS,
 	PRIMS_FLOAT_FUNCS,
 	PRIMS_ERROR_FUNCS,
+#ifdef MCP_SUPPORT
 	PRIMS_MCP_FUNCS,
+#endif
 	PRIMS_REGEX_FUNCS,
 	PRIMS_INTERNAL_FUNCS,
 	NULL
@@ -840,9 +842,9 @@ prog_clean(struct frame *fr)
 
 	if (fr->rndbuf)
 		delete_seed(fr->rndbuf);
-
+#ifdef MCP_SUPPORT
 	muf_dlog_purge(fr);
-
+#endif
 	dequeue_timers(fr->pid, NULL);
 
 	muf_event_purge(fr);

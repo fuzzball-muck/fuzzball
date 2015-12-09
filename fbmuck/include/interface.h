@@ -2,8 +2,9 @@
 #define _INTERFACE_H
 
 #include "db.h"
+#ifdef MCP_SUPPORT
 #include "mcp.h"
-
+#endif
 /* these symbols must be defined by the interface */
 extern int notify_nolisten(dbref player, const char *msg, int ispriv);
 extern int notify_filtered(dbref from, dbref player, const char *msg, int ispriv);
@@ -40,7 +41,9 @@ extern int pdescrnotify(int c, char *outstr);
 extern int dbref_first_descr(dbref c);
 extern int pdescr(int c);
 extern int pdescrcon(int c);
+#ifdef MCP_SUPPORT
 extern McpFrame *descr_mcpframe(int c);
+#endif
 extern int pnextdescr(int c);
 extern int pdescrflush(int c);
 extern int pdescrbufsize(int c);

@@ -196,6 +196,9 @@
 /* if do_memory() in wiz.c gives you problems compiling, define this */
 #undef NO_MEMORY_COMMAND
 
+/* Enable functionality conforming to MUD Client Protocol (MCP). */
+#define MCP_SUPPORT
+
 /************************************************************************/
 /************************************************************************/
 /*    FOR INTERNAL USE ONLY.  DON'T CHANGE ANYTHING PAST THIS POINT.    */
