@@ -335,7 +335,7 @@ if(!Wizard(OWNER(x))) \
 }
 
 #ifndef GOD_PRIV
- #define GODONLY(_cmd,x) PLAYERONLY(_cmd, x); WIZARDONLY(_cmd,x)
+ #define GODONLY(_cmd,x) WIZARDONLY(_cmd, x); PLAYERONLY(_cmd,x)
 #else
  #define GODONLY(_cmd,x) \
 if(!God(x)) \
