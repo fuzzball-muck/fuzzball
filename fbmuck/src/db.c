@@ -703,7 +703,9 @@ db_read_object(FILE * f, dbref objno, int dtype)
 		PROGRAM_SET_SIZ(objno, 0);
 		PROGRAM_SET_START(objno, 0);
 		PROGRAM_SET_PUBS(objno, 0);
+#ifdef MCP_SUPPORT
 		PROGRAM_SET_MCPBINDS(objno, 0);
+#endif
 		PROGRAM_SET_PROFTIME(objno, 0, 0);
 		PROGRAM_SET_PROFSTART(objno, 0);
 		PROGRAM_SET_PROF_USES(objno, 0);

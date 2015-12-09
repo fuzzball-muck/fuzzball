@@ -222,7 +222,7 @@ index_file(dbref player, const char *onwhat, const char *file)
 }
 
 
-#if !defined(STANDALONE_HELP)
+#if defined(MCP_SUPPORT) && !defined(STANDALONE_HELP)
 void
 mcppkg_help_request(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 {
@@ -345,7 +345,6 @@ mcppkg_help_request(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 	}
 }
 #endif
-
 
 int
 show_subfile(dbref player, const char *dir, const char *topic, const char *seg, int partial)

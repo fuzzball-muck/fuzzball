@@ -1,3 +1,4 @@
+#ifdef MCP_SUPPORT
 #ifndef _MCP_H
 #define _MCP_H
 
@@ -345,3 +346,4 @@ int mcp_version_compare(McpVer v1, McpVer v2);
 McpVer mcp_version_select(McpVer min1, McpVer max1, McpVer min2, McpVer max2);
 
 #endif /* _MCP_H */
+#endif

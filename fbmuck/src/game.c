@@ -924,6 +924,7 @@ process_command(int descr, dbref player, char *command)
 				/* @mcpedit, @mcpprogram, @memory, @mpitops,
 				   @muftops */
 				switch (command[2]) {
+#ifdef MCP_SUPPORT
 				case 'c':
 				case 'C':
 					if (tp_enable_mcp) {
@@ -945,6 +946,7 @@ process_command(int descr, dbref player, char *command)
 					} else {
 						goto bad;
 					}
+#endif
 #ifndef NO_MEMORY_COMMAND
 				case 'e':
 				case 'E':

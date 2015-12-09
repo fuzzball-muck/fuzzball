@@ -1,4 +1,5 @@
 #include "config.h"
+#ifdef MCP_SUPPORT
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -1117,3 +1118,4 @@ muf_dlog_purge(struct frame *fr)
 		free(tmp);
 	}
 }
+#endif

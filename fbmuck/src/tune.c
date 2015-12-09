@@ -181,7 +181,11 @@ struct tune_val_entry tune_val_list[] = {
 	{"MUF",         "max_ml4_preempt_count", &tp_max_ml4_preempt_count, 0, MLEV_WIZARD, "Max MUF preempt instruction run length for ML4, (0 = no limit)"},
 	{"MUF",         "instr_slice", &tp_instr_slice, 0, MLEV_WIZARD, "Instructions run per timeslice"},
 	{"MUF",         "process_timer_limit", &tp_process_timer_limit, 0, MLEV_WIZARD, "Max timers per process"},
-	{"MUF",         "mcp_muf_mlev", &tp_mcp_muf_mlev, 0, MLEV_WIZARD, "Mucker Level required to use MCP"},
+	{"MUF",         "mcp_muf_mlev", &tp_mcp_muf_mlev, 0, MLEV_WIZARD, "Mucker Level required to use MCP"
+#ifndef MCP_SUPPORT
+                                                                          " (not active: MCP_SUPPORT is not #defined)"
+#endif
+},
 	{"MUF",		"userlog_mlev", &tp_userlog_mlev, 0, MLEV_WIZARD, "Mucker Level required to write to userlog"},
 	{"MUF",         "movepennies_muf_mlev", &tp_movepennies_muf_mlev, 0, MLEV_WIZARD, "Mucker Level required to move pennies non-destructively"},
 	{"MUF",         "addpennies_muf_mlev", &tp_addpennies_muf_mlev, 0, MLEV_WIZARD, "Mucker Level required to create/destroy pennies"},
@@ -279,7 +283,7 @@ int tp_7bit_other_names = ASCII_OTHER_NAMES;
 int tp_idle_ping_enable = IDLE_PING_ENABLE;
 int tp_recognize_null_command = RECOGNIZE_NULL_COMMAND;
 int tp_strict_god_priv = STRICT_GOD_PRIV;
-int tp_enable_mcp = ENABLE_MCP;
+int tp_enable_mcp = 1;
 
 struct tune_bool_entry {
 	const char *group;
@@ -343,7 +347,11 @@ struct tune_bool_entry tune_bool_list[] = {
                                                                           " (not active: GOD_PRIV is not #defined)"
 #endif
         },
-	{"System",	"enable_mcp", &tp_enable_mcp, MLEV_WIZARD, MLEV_WIZARD, "Enable MUD Client Protocol (MCP)"},
+	{"System",	"enable_mcp", &tp_enable_mcp, MLEV_WIZARD, MLEV_WIZARD, "Enable MUD Client Protocol (MCP)"
+#ifndef MCP_SUPPORT
+                                                                          " (not active: MCP_SUPPORT is not #defined)"
+#endif
+},
 	{"SSL",		"starttls_allow", &tp_starttls_allow, MLEV_MASTER, MLEV_WIZARD, "Enable TELNET STARTTLS encryption on plaintext port"},
         {"SSL",		"server_cipher_preference", &tp_cipher_server_preference, MLEV_WIZARD, MLEV_WIZARD, "Honor server cipher preference order over client's (changes require restart)"},
 	{"Charset",	"7bit_thing_names", &tp_7bit_thing_names, MLEV_WIZARD, MLEV_WIZARD, "Thing names may contain only 7-bit characters"},

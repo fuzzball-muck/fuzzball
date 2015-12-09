@@ -675,6 +675,57 @@ do_edit(int descr, dbref player, const char *name)
 	DBDIRTY(player);
 }
 
+#ifdef MCP_SUPPORT
+void
+mcpedit_program(int descr, dbref player, dbref prog, const char* name)
+{
+	char namestr[BUFFER_LEN];
+	char refstr[BUFFER_LEN];
+	struct line *curr;
+	McpMesg msg;
+	McpFrame *mfr;
+	McpVer supp;
+
+	mfr = descr_mcpframe(descr);
+	if (!mfr) {
+		do_edit(descr, player, name);
+		return;
+	}
+
+	supp = mcp_frame_package_supported(mfr, "dns-org-mud-moo-simpleedit");
+
+	if (supp.verminor == 0 && supp.vermajor == 0) {
+		do_edit(descr, player, name);
+		return;
+	}
+
+	if ((Typeof(prog) != TYPE_PROGRAM) || !controls(player, prog)) {
+		show_mcp_error(mfr, "@mcpedit", "Permission denied!");
+		return;
+	}
+	if (FLAGS(prog) & INTERNAL) {
+		show_mcp_error(mfr, "@mcpedit", "Sorry, this program is currently being edited by someone else.  Try again later.");
+		return;
+	}
+	PROGRAM_SET_FIRST(prog, read_program(prog));
+	PLAYER_SET_CURR_PROG(player, prog);
+
+	snprintf(refstr, sizeof(refstr), "%d.prog.", prog);
+	snprintf(namestr, sizeof(namestr), "a program named %s(%d)", NAME(prog), prog);
+	mcp_mesg_init(&msg, "dns-org-mud-moo-simpleedit", "content");
+	mcp_mesg_arg_append(&msg, "reference", refstr);
+	mcp_mesg_arg_append(&msg, "type", "muf-code");
+	mcp_mesg_arg_append(&msg, "name", namestr);
+	for (curr = PROGRAM_FIRST(prog); curr; curr = curr->next) {
+		mcp_mesg_arg_append(&msg, "content", DoNull(curr->this_line));
+	}
+	mcp_frame_output_mesg(mfr, &msg);
+	mcp_mesg_clear(&msg);
+
+	free_prog_text(PROGRAM_FIRST(prog));
+	PROGRAM_SET_FIRST(prog, NULL);
+}
+
 void
 do_mcpedit(int descr, dbref player, const char *name)
 {
@@ -789,58 +840,7 @@ do_mcpprogram(int descr, dbref player, const char* name)
 
 	mcpedit_program(descr, player, prog, name);
 }
-
-
-void
-mcpedit_program(int descr, dbref player, dbref prog, const char* name)
-{
-	char namestr[BUFFER_LEN];
-	char refstr[BUFFER_LEN];
-	struct line *curr;
-	McpMesg msg;
-	McpFrame *mfr;
-	McpVer supp;
-
-	mfr = descr_mcpframe(descr);
-	if (!mfr) {
-		do_edit(descr, player, name);
-		return;
-	}
-
-	supp = mcp_frame_package_supported(mfr, "dns-org-mud-moo-simpleedit");
-
-	if (supp.verminor == 0 && supp.vermajor == 0) {
-		do_edit(descr, player, name);
-		return;
-	}
-
-	if ((Typeof(prog) != TYPE_PROGRAM) || !controls(player, prog)) {
-		show_mcp_error(mfr, "@mcpedit", "Permission denied!");
-		return;
-	}
-	if (FLAGS(prog) & INTERNAL) {
-		show_mcp_error(mfr, "@mcpedit", "Sorry, this program is currently being edited by someone else.  Try again later.");
-		return;
-	}
-	PROGRAM_SET_FIRST(prog, read_program(prog));
-	PLAYER_SET_CURR_PROG(player, prog);
-
-	snprintf(refstr, sizeof(refstr), "%d.prog.", prog);
-	snprintf(namestr, sizeof(namestr), "a program named %s(%d)", NAME(prog), prog);
-	mcp_mesg_init(&msg, "dns-org-mud-moo-simpleedit", "content");
-	mcp_mesg_arg_append(&msg, "reference", refstr);
-	mcp_mesg_arg_append(&msg, "type", "muf-code");
-	mcp_mesg_arg_append(&msg, "name", namestr);
-	for (curr = PROGRAM_FIRST(prog); curr; curr = curr->next) {
-		mcp_mesg_arg_append(&msg, "content", DoNull(curr->this_line));
-	}
-	mcp_frame_output_mesg(mfr, &msg);
-	mcp_mesg_clear(&msg);
-
-	free_prog_text(PROGRAM_FIRST(prog));
-	PROGRAM_SET_FIRST(prog, NULL);
-}
-
+#endif
 /*
  * copy a single property, identified by its name, from one object to
  * another. helper routine for copy_props (below).

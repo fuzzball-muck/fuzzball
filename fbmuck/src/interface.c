@@ -59,7 +59,9 @@
 #include "params.h"
 #include "tune.h"
 #include "props.h"
+#ifdef MCP_SUPPORT
 #include "mcp.h"
+#endif
 #include "externs.h"
 
 typedef enum {
@@ -148,7 +150,9 @@ struct descriptor_data {
 	int quota;
 	struct descriptor_data *next;
 	struct descriptor_data **prev;
+#ifdef MCP_SUPPORT
 	McpFrame mcpframe;
+#endif
 };
 
 struct descriptor_data *descriptor_list = NULL;
@@ -614,11 +618,11 @@ main(int argc, char **argv)
 	}
 #endif
 
-
+#ifdef MCP_SUPPORT
 	/* Initialize MCP and some packages. */
 	mcp_initialize();
 	gui_initialize();
-
+#endif
     sel_prof_start_time = time(NULL); /* Set useful starting time */
     sel_prof_idle_sec = 0;
     sel_prof_idle_usec = 0;
@@ -779,7 +783,11 @@ queue_ansi(struct descriptor_data *d, const char *msg)
 	} else {
 		strip_ansi(buf, msg);
 	}
+#ifdef MCP_SUPPORT
 	mcp_frame_output_inband(&d->mcpframe, buf);
+#else
+	queue_string(d, buf);
+#endif
 	return strlen(buf);
 	/* return queue_string(d, buf); */
 }
@@ -1074,12 +1082,13 @@ queue_immediate(struct descriptor_data *d, const char *msg)
 		strip_ansi(buf, msg);
 	}
 
+#ifdef MCP_SUPPORT
 	if (d->mcpframe.enabled && !(strncmp(buf, MCP_MESG_PREFIX, 3) && strncmp(buf, MCP_QUOTE_PREFIX, 3)))
 	{
 		quote_len = strlen(MCP_QUOTE_PREFIX);
 		socket_write(d, MCP_QUOTE_PREFIX, quote_len);
 	}
-
+#endif
 	return socket_write(d, buf, strlen(buf)) + quote_len;
 }
 
@@ -1939,12 +1948,15 @@ shutdownsock(struct descriptor_data *d)
 		free((void *) d->hostname);
 	if (d->username)
 		free((void *) d->username);
+#ifdef MCP_SUPPORT
 	mcp_frame_clear(&d->mcpframe);
+#endif
 	FREE(d);
 	ndescriptors--;
 	log_status("CONCOUNT: There are now %d open connections.", ndescriptors);
 }
 
+#ifdef MCP_SUPPORT
 void
 SendText(McpFrame * mfr, const char *text)
 {
@@ -1971,7 +1983,7 @@ mcpframe_to_user(McpFrame * ptr)
 {
 	return ((struct descriptor_data *) ptr->descriptor)->player;
 }
-
+#endif
 struct descriptor_data *
 initializesock(int s, const char *hostname, int is_ssl)
 {
@@ -2010,7 +2022,11 @@ initializesock(int s, const char *hostname, int is_ssl)
 	d->quota = tp_command_burst_size;
 	d->last_time = d->connected_at;
 	d->last_pinged_at = d->connected_at;
+
+#ifdef MCP_SUPPORT
 	mcp_frame_init(&d->mcpframe, d);
+#endif
+
 	strcpyn(buf, sizeof(buf), hostname);
 	ptr = index(buf, ')');
 	if (ptr)
@@ -2036,7 +2052,9 @@ initializesock(int s, const char *hostname, int is_ssl)
 	}
 #endif
 
+#ifdef MCP_SUPPORT
 	mcp_negotiation_start(&d->mcpframe);
+#endif
 	welcome_user(d);
 	return d;
 }
@@ -2633,10 +2651,12 @@ process_commands(void)
 			if (d->quota > 0 && (t = d->input.head)) {
 				if (d->connected && PLAYER_BLOCK(d->player) && !is_interface_command(t->start)) {
 					char *tmp = t->start;
+#ifdef MCP_SUPPORT
 					if (!strncmp(tmp, "#$\"", 3)) {
 						/* Un-escape MCP escaped lines */
 						tmp += 3;
 					}
+#endif
 					/* WORK: send player's foreground/preempt programs an exclusive READ mufevent */
 					if (!read_event_notify(d->descriptor, d->player, tmp) && !*tmp) {
 						/* Didn't send blank line.  Eat it.  */
@@ -2650,10 +2670,12 @@ process_commands(void)
 						free_text_block(t);
 					}
 				} else {
+#ifdef MCP_SUPPORT
 					if (strncmp(t->start, "#$#", 3)) {
 						/* Not an MCP mesg, so count this against quota. */
 						d->quota--;
 					}
+#endif
 					nprocessed++;
 					if (!do_command(d, t->start)) {
 						d->booted = 2;
@@ -2676,12 +2698,14 @@ int
 is_interface_command(const char* cmd)
 {
 	const char* tmp = cmd;
+#ifdef MCP_SUPPORT
 	if (!strncmp(tmp, "#$\"", 3)) {
 		/* dequote MCP quoting. */
 		tmp += 3;
 	}
 	if (!strncmp(cmd, "#$#", 3)) /* MCP mesg. */
 		return 1;
+#endif
 	if (!string_compare(tmp, BREAK_COMMAND))
 		return 1;
 	if (!strcmp(tmp, QUIT_COMMAND))
@@ -2702,12 +2726,16 @@ do_command(struct descriptor_data *d, char *command)
 {
 	char buf[BUFFER_LEN];
 	char cmdbuf[BUFFER_LEN];
-
+#ifdef MCP_SUPPORT
 	if (!mcp_frame_process_input(&d->mcpframe, command, cmdbuf, sizeof(cmdbuf))) {
 		d->quota++;
 		return 1;
 	}
+#else
+	strcpy(cmdbuf, command);
+#endif
 	command = cmdbuf;
+
 	if (d->connected)
 		ts_lastuseobject(d->player);
 
@@ -3007,7 +3035,9 @@ close_sockets(const char *msg)
 			free((void *) d->hostname);
 		if (d->username)
 			free((void *) d->username);
+#ifdef MCP_SUPPORT
 		mcp_frame_clear(&d->mcpframe);
+#endif
 		FREE(d);
 		ndescriptors--;
 	}
@@ -3340,8 +3370,9 @@ announce_disconnect(struct descriptor_data *d)
 		}
 		announce_puppets(player, "falls asleep.", MESGPROP_PDCON);
 	}
+#ifdef MCP_SUPPORT
 	gui_dlog_closeall_descr(d->descriptor);
-
+#endif
 	d->connected = 0;
 	d->player = NOTHING;
 
@@ -4018,7 +4049,7 @@ dbref_first_descr(dbref c)
 	}
 }
 
-
+#ifdef MCP_SUPPORT
 McpFrame *
 descr_mcpframe(int c)
 {
@@ -4030,7 +4061,7 @@ descr_mcpframe(int c)
 	}
 	return NULL;
 }
-
+#endif
 
 int
 pdescrflush(int c)
