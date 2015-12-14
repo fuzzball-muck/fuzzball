@@ -116,7 +116,12 @@ do_open(int descr, dbref player, const char *direction, const char *linkto)
 	if (!*direction) {
 		notify(player, "You must specify a direction or action name to open.");
 		return;
-	} else if (!ok_name(direction)) {
+	}
+	if(!ok_ascii_other(direction)) {
+		notify(player, "Exit names are limited to 7-bit ASCII.");
+		return;
+	}
+	if (!ok_name(direction)) {
 		notify(player, "That's a strange name for an exit!");
 		return;
 	}
@@ -476,7 +481,7 @@ do_dig(int descr, dbref player, const char *name, const char *pname)
 		return;
 	}
 	if (!ok_name(name)) {
-		notify(player, "That's a silly name for a room!");
+		notify(player, "That's a strange name for a room!");
 		return;
 	}
 	if (!payfor(player, tp_room_cost)) {
@@ -565,6 +570,14 @@ do_prog(int descr, dbref player, const char *name)
 
 	if (!*name) {
 		notify(player, "No program name given.");
+		return;
+	}
+	if(!ok_ascii_other(name)) {
+		notify(player, "Program names are limited to 7-bit ASCII.");
+		return;
+	}
+	if (!ok_name(name)) {
+		notify(player, "That's a strange name for a program!");
 		return;
 	}
 	init_match(descr, player, name, TYPE_PROGRAM, &md);
@@ -785,6 +798,14 @@ do_mcpprogram(int descr, dbref player, const char* name)
 
 	if (!*name) {
 		notify(player, "No program name given.");
+		return;
+	}
+	if(!ok_ascii_other(name)) {
+		notify(player, "Program names are limited to 7-bit ASCII.");
+		return;
+	}
+	if (!ok_name(name)) {
+		notify(player, "That's a strange name for a program!");
 		return;
 	}
 	init_match(descr, player, name, TYPE_PROGRAM, &md);
@@ -1072,7 +1093,7 @@ do_create(dbref player, char *name, char *acost)
 		notify(player, "Thing names are limited to 7-bit ASCII.");
 		return;
 	} else if (!ok_name(name)) {
-		notify(player, "That's a silly name for a thing!");
+		notify(player, "That's a strange name for a thing!");
 		return;
 	} else if (cost < 0) {
 		notify(player, "You can't create an object for less than nothing!");
