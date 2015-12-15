@@ -174,7 +174,7 @@ prim_fmtstring(PRIM_PROTOTYPE)
 				if (sstr[scnt] == '~') {
 					switch (oper2->type) {
 					case PROG_OBJECT:
-						sstr[scnt] = 'D';
+						sstr[scnt] = 'd';
 						break;
 					case PROG_FLOAT:
 						sstr[scnt] = 'g';
