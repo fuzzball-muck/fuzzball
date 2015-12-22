@@ -62,9 +62,17 @@ struct tune_str_entry tune_str_list[] = {
 	{"Misc",       "muckname", &tp_muckname, 0, MLEV_WIZARD, "Muck name", 0, 1},
 	{"Misc",       "leave_mesg", &tp_leave_mesg, 0, MLEV_WIZARD, "Logoff message", 0, 1},
 	{"Misc",       "huh_mesg", &tp_huh_mesg, 0, MLEV_WIZARD, "Command unrecognized warning", 0, 1},
-	{"SSL",        "ssl_keyfile_passwd", &tp_ssl_keyfile_passwd, MLEV_GOD, MLEV_GOD, "Password for SSL keyfile", 1, 1},
+	{"SSL",        "ssl_keyfile_passwd", &tp_ssl_keyfile_passwd, MLEV_GOD, MLEV_GOD, "Password for SSL keyfile"
+#ifndef USE_SSL
+                                                                          " (not active: USE_SSL is not #defined)"
+#endif
+	, 1, 1},
         {"SSL",        "ssl_cipher_preference_list", &tp_ssl_cipher_preference_list, MLEV_GOD, MLEV_GOD,
-                       "OpenSSL cipher list (changes require restart)", 0, 1},
+                       "OpenSSL cipher list (changes require restart)"
+#ifndef USE_SSL
+                                                                          " (not active: USE_SSL is not #defined)"
+#endif
+	, 0, 1},
 	{"Database",   "pcreate_flags", &tp_pcreate_flags, 0, MLEV_WIZARD, "Initial Player Flags", 1, 1},
 	{"Database",   "reserved_names", &tp_reserved_names, 0, MLEV_WIZARD, "Reserved names smatch", 1, 1},
 	{"Database",   "reserved_player_names", &tp_reserved_player_names, 0, MLEV_WIZARD, "Reserved player names smatch", 1, 1},
@@ -180,7 +188,7 @@ struct tune_val_entry tune_val_list[] = {
 #ifndef MCP_SUPPORT
                                                                           " (not active: MCP_SUPPORT is not #defined)"
 #endif
-},
+	},
 	{"MUF",		"userlog_mlev", &tp_userlog_mlev, 0, MLEV_WIZARD, "Mucker Level required to write to userlog"},
 	{"MUF",         "movepennies_muf_mlev", &tp_movepennies_muf_mlev, 0, MLEV_WIZARD, "Mucker Level required to move pennies non-destructively"},
 	{"MUF",         "addpennies_muf_mlev", &tp_addpennies_muf_mlev, 0, MLEV_WIZARD, "Mucker Level required to create/destroy pennies"},
@@ -193,7 +201,11 @@ struct tune_val_entry tune_val_list[] = {
 	{"Spam Limits", "max_output", &tp_max_output, 0, MLEV_WIZARD, "Max output buffer size"},
 	{"Tuning",      "pause_min", &tp_pause_min, 0, MLEV_WIZARD, "Min ms to pause between MUF timeslices"},
 	{"Tuning",      "free_frames_pool", &tp_free_frames_pool, 0, MLEV_WIZARD, "Size of MUF process frame pool"},
-	{"Tuning",      "max_loaded_objs", &tp_max_loaded_objs, 0, MLEV_WIZARD, "Max proploaded object percentage"},
+	{"Tuning",      "max_loaded_objs", &tp_max_loaded_objs, 0, MLEV_WIZARD, "Max proploaded object percentage"
+#ifndef DISKBASE
+                                                                          " (not active: DISKBASE is not #defined)"
+#endif
+	},
 	{NULL, NULL, NULL, 0, 0, NULL}
 };
 
@@ -300,7 +312,11 @@ struct tune_bool_entry tune_bool_list[] = {
 	{"Dark",       "who_hides_dark", &tp_who_hides_dark, MLEV_WIZARD, MLEV_WIZARD, "Hide dark players from WHO list"},
 	{"Database",   "realms_control", &tp_realms_control, 0, MLEV_WIZARD, "Enable Realms control"},
 	{"Database",   "compatible_priorities", &tp_compatible_priorities, 0, MLEV_WIZARD, "Use legacy exit priority levels on things"},
-	{"DB Dumps",   "diskbase_propvals", &tp_diskbase_propvals, 0, MLEV_WIZARD, "Enable property value diskbasing (req. restart)"},
+	{"DB Dumps",   "diskbase_propvals", &tp_diskbase_propvals, 0, MLEV_WIZARD, "Enable property value diskbasing (req. restart)"
+#ifndef DISKBASE
+                                                                          " (not active: DISKBASE is not #defined)"
+#endif
+	},
 	{"DB Dumps",   "dbdump_warning", &tp_dbdump_warning, 0, MLEV_WIZARD, "Enable warning messages for full DB dumps"},
 	{"DB Dumps",   "dumpdone_warning", &tp_dumpdone_warning, 0, MLEV_WIZARD, "Enable notification of DB dump completion"},
 	{"Idle Boot",  "idleboot", &tp_idleboot, 0, MLEV_WIZARD, "Enable booting of idle players"},
@@ -344,7 +360,7 @@ struct tune_bool_entry tune_bool_list[] = {
 #ifndef MCP_SUPPORT
                                                                           " (not active: MCP_SUPPORT is not #defined)"
 #endif
-},
+	},
 	{"SSL",		"starttls_allow", &tp_starttls_allow, MLEV_MASTER, MLEV_WIZARD, "Enable TELNET STARTTLS encryption on plaintext port"},
         {"SSL",		"server_cipher_preference", &tp_cipher_server_preference, MLEV_WIZARD, MLEV_WIZARD, "Honor server cipher preference order over client's (changes require restart)"},
 	{"Charset",	"7bit_thing_names", &tp_7bit_thing_names, MLEV_WIZARD, MLEV_WIZARD, "Thing names may contain only 7-bit characters"},
