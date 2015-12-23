@@ -354,7 +354,7 @@ main(int argc, char **argv)
 			for(i=0;i<argc;i++)
 				argv2[i] = argv[i];
 			argv2[argc] = NULL;
-		execvp(argv[0],argv2);
+		execvp(argv[0],(char **)argv2);
 		}
 	}
 #endif /* DEBUG */
