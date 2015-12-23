@@ -477,6 +477,35 @@ do_restrict(dbref player, const char *arg)
 int force_level = 0;
 dbref force_prog = NOTHING; /* Set when a program is the source of FORCE */
 
+const char *compile_options =
+#ifdef DEBUG
+	"DEBUG "
+#endif
+#ifdef DETACH
+	"DETACH "
+#endif
+#ifdef DISKBASE
+	"DISKBASE "
+#endif
+#ifdef GOD_PRIV
+	"GODPRIV "
+#endif
+#ifdef USE_IPV6
+	"IPV6 "
+#endif
+#ifdef MALLOC_PROFILING
+	"MEMPROF "
+#endif
+#ifdef MCP_SUPPORT
+	"MCP "
+#endif
+#ifdef SPAWN_HOST_RESOLVER
+	"RESOLVER "
+#endif
+#ifdef HAVE_LIBSSL
+	"SSL "
+#endif
+"";
 void
 process_command(int descr, dbref player, char *command)
 {

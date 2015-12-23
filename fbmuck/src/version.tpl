@@ -16,11 +16,6 @@
 #define generation "$generation"
 #define creation "$creation"
 $gitavail
-#ifdef DEBUG
-#define debug "Debug Version, assertions enabled"
-#else
-#define debug ""
-#endif
 
 typedef struct hash_file_entry {
 	const char *filename;
@@ -38,7 +33,10 @@ do_version(dbref player)
 {
 	char s[BUFFER_LEN];
 
-	snprintf(s,BUFFER_LEN,"Version: %s(%s) Compiled on: %s %s", VERSION, generation, creation, debug);
+	snprintf(s, BUFFER_LEN, "Version: %s(%s) Compiled on: %s", VERSION, generation, creation);
+	notify(player, s);
+
+	snprintf(s, BUFFER_LEN, "Options: %s", compile_options);
 	notify(player, s);
 }
 

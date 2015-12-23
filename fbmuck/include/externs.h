@@ -103,6 +103,7 @@ extern time_t next_muckevent_time(void);
 
 /* game.c */
 void cleanup_game();
+extern const char *compile_options;
 extern void do_dump(dbref player, const char *newfile);
 extern void do_shutdown(dbref player);
 extern void dump_warning(void);
