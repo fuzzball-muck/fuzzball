@@ -3,7 +3,9 @@
 #include "props.h"
 #include "tune.h"
 #include "externs.h"
-
+#ifdef DISKBASE
+#include "diskprop.h"
+#endif
 
 /****************************************************************
  * Dump the database every so often.
