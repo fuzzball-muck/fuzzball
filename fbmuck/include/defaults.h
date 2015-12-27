@@ -125,7 +125,7 @@
 
 
 /* Max %of db in unchanged objects allowed to be loaded.  Generally 5% */
-/* This is only needed if you defined DISKBASED in config.h */
+/* This is only needed if you defined DISKBASE in config.h */
 #define MAX_LOADED_OBJS 5
 
 /* Maximum number of forces processed within a command. */

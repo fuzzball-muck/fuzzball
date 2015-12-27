@@ -7,6 +7,9 @@
 #include "props.h"
 #include "externs.h"
 #include "interface.h"
+#ifdef DISKBASE
+#include "diskprop.h"
+#endif
 #include <string.h>
 #include <math.h>
 

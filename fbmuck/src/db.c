@@ -195,77 +195,6 @@ putproperties(FILE * f, dbref obj)
 
 extern FILE *input_file;
 
-#ifdef DISKBASE
-
-int
-fetch_propvals(dbref obj, const char *dir)
-{
-	PropPtr p, pptr;
-	int cnt = 0;
-	char buf[BUFFER_LEN];
-	char name[BUFFER_LEN];
-
-	p = first_prop_nofetch(obj, dir, &pptr, name, sizeof(name));
-	while (p) {
-		cnt = (cnt || propfetch(obj, p));
-		if (PropDir(p) || (PropFlags(p) & PROP_DIRUNLOADED)) {
-			strcpyn(buf, sizeof(buf), dir);
-			strcatn(buf, sizeof(buf), name);
-			strcatn(buf, sizeof(buf), "/");
-			if (PropFlags(p) & PROP_DIRUNLOADED) {
-				SetPFlags(p, (PropFlags(p) & ~PROP_DIRUNLOADED));
-				getproperties(input_file, obj, buf);
-			}
-			fetch_propvals(obj, buf);
-		}
-		p = next_prop(pptr, p, name, sizeof(name));
-	}
-	return cnt;
-}
-
-
-void
-putprops_copy(FILE * f, dbref obj)
-{
-	char buf[BUFFER_LEN * 3];
-	char *ptr;
-	FILE *g;
-
-	if (DBFETCH(obj)->propsmode != PROPS_UNLOADED) {
-		if (fetch_propvals(obj, "/")) {
-			fseek(f, 0L, 2);
-		}
-		putproperties(f, obj);
-		return;
-	}
-	if (db_conversion_flag) {
-		if (fetchprops_priority(obj, 1, NULL) || fetch_propvals(obj, "/")) {
-			fseek(f, 0L, 2);
-		}
-		putproperties(f, obj);
-		return;
-	}
-	g = input_file;
-	putstring(f, "*Props*");
-	if (DBFETCH(obj)->propsfpos) {
-		fseek(g, DBFETCH(obj)->propsfpos, 0);
-		ptr = fgets(buf, sizeof(buf), g);
-		if (!ptr)
-			abort();
-		for (;;) {
-			ptr = fgets(buf, sizeof(buf), g);
-			if (!ptr)
-				abort();
-			if (!string_compare(ptr, "*End*\n"))
-				break;
-			fputs(buf, f);
-		}
-	}
-	putstring(f, "*End*");
-}
-
-#endif							/* DISKBASE */
-
 int
 db_write_object(FILE * f, dbref i)
 {
@@ -499,39 +428,6 @@ getproperties(FILE * f, dbref obj, const char *pdir)
 		db_getprops(f, obj, pdir);
 	}
 }
-
-#ifdef DISKBASE
-void
-skipproperties(FILE * f, dbref obj)
-{
-	char buf[BUFFER_LEN * 3];
-	int islisten = 0;
-
-	/* get rid of first line */
-	fgets(buf, sizeof(buf), f);
-
-	fgets(buf, sizeof(buf), f);
-	while (strcmp(buf, "*End*\n")) {
-		if (!islisten) {
-			if (string_prefix(buf, "_listen"))
-				islisten = 1;
-			if (string_prefix(buf, "~listen"))
-				islisten = 1;
-			if (string_prefix(buf, "~olisten"))
-				islisten = 1;
-		}
-		fgets(buf, sizeof(buf), f);
-	}
-	if (islisten) {
-		FLAGS(obj) |= LISTENER;
-	} else {
-		FLAGS(obj) &= ~LISTENER;
-	}
-}
-
-#endif
-
-
 
 void
 db_free_object(dbref i)
