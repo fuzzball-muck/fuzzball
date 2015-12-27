@@ -2049,7 +2049,9 @@ prim_newprogram(PRIM_PROTOTYPE)
 	PROGRAM_SET_CODE(newprog, NULL);
 	PROGRAM_SET_START(newprog, NULL);
 	PROGRAM_SET_PUBS(newprog, NULL);
+#ifdef MCP_SUPPORT
 	PROGRAM_SET_MCPBINDS(newprog, NULL);
+#endif
 	PROGRAM_SET_PROFTIME(newprog, 0, 0);
 	PROGRAM_SET_PROFSTART(newprog, 0);
 	PROGRAM_SET_PROF_USES(newprog, 0);

@@ -5,6 +5,7 @@
 #include <string.h>
 #include "db.h"
 #include "externs.h"
+#include "interface.h"
 #include "mcp.h"
 #include "mcppkg.h"
 #include "tune.h"
@@ -21,14 +22,58 @@
 #define MCP_INIT_MESG		"mcp "
 #define MCP_NEGOTIATE_PKG	"mcp-negotiate"
 
+void
+clean_mcpbinds(struct mcp_binding *mypub)
+{
+        struct mcp_binding *tmppub;
 
+        while (mypub) {
+                tmppub = mypub->next;
+                free(mypub->pkgname);
+                free(mypub->msgname);
+                free(mypub);
+                mypub = tmppub;
+        }
+}
 
+void
+SendText(McpFrame * mfr, const char *text)
+{
+	queue_string((struct descriptor_data *) mfr->descriptor, text);
+}
 
+void
+FlushText(McpFrame * mfr)
+{
+	struct descriptor_data *d = (struct descriptor_data *)mfr->descriptor;
+	if (d && !process_output(d)) {
+		d->booted = 1;
+	}
+}
 
-/* Defined elsewhere.  Used to send text to a connection */
-void SendText(McpFrame * mfr, const char *mesg);
-void FlushText(McpFrame * mfr);
+int
+mcpframe_to_descr(McpFrame * ptr)
+{
+	return ((struct descriptor_data *) ptr->descriptor)->descriptor;
+}
 
+int
+mcpframe_to_user(McpFrame * ptr)
+{
+	return ((struct descriptor_data *) ptr->descriptor)->player;
+}
+
+McpFrame *
+descr_mcpframe(int c)
+{
+        struct descriptor_data *d;
+
+    d = descrdata_by_descr(c);
+        if (d) {
+                return &d->mcpframe;
+        }
+        return NULL;
+}
 
 McpPkg *mcp_PackageList = NULL;
 
@@ -239,15 +284,13 @@ mcp_negotiation_start(McpFrame * mfr)
 {
 	McpMesg reply;
 
-	if (tp_enable_mcp) {
-		mfr->enabled = 1;
-		mcp_mesg_init(&reply, MCP_INIT_PKG, "");
-		mcp_mesg_arg_append(&reply, "version", "2.1");
-		mcp_mesg_arg_append(&reply, "to", "2.1");
-		mcp_frame_output_mesg(mfr, &reply);
-		mcp_mesg_clear(&reply);
-		mfr->enabled = 0;
-	}
+	mfr->enabled = 1;
+	mcp_mesg_init(&reply, MCP_INIT_PKG, "");
+	mcp_mesg_arg_append(&reply, "version", "2.1");
+	mcp_mesg_arg_append(&reply, "to", "2.1");
+	mcp_frame_output_mesg(mfr, &reply);
+	mcp_mesg_clear(&reply);
+	mfr->enabled = 0;
 }
 
 
@@ -1724,5 +1767,177 @@ mcp_internal_parse(McpFrame * mfr, const char *in)
 	if (mcp_intern_is_mesg_start(mfr, in))
 		return 1;
 	return 0;
+}
+
+void
+mcpedit_program(int descr, dbref player, dbref prog, const char* name)
+{
+	char namestr[BUFFER_LEN];
+	char refstr[BUFFER_LEN];
+	struct line *curr;
+	McpMesg msg;
+	McpFrame *mfr;
+	McpVer supp;
+
+	mfr = descr_mcpframe(descr);
+	if (!mfr) {
+		do_edit(descr, player, name);
+		return;
+	}
+
+	supp = mcp_frame_package_supported(mfr, "dns-org-mud-moo-simpleedit");
+
+	if (supp.verminor == 0 && supp.vermajor == 0) {
+		do_edit(descr, player, name);
+		return;
+	}
+
+	if ((Typeof(prog) != TYPE_PROGRAM) || !controls(player, prog)) {
+		show_mcp_error(mfr, "@mcpedit", "Permission denied!");
+		return;
+	}
+	if (FLAGS(prog) & INTERNAL) {
+		show_mcp_error(mfr, "@mcpedit", "Sorry, this program is currently being edited by someone else.  Try again later.");
+		return;
+	}
+	PROGRAM_SET_FIRST(prog, read_program(prog));
+	PLAYER_SET_CURR_PROG(player, prog);
+
+	snprintf(refstr, sizeof(refstr), "%d.prog.", prog);
+	snprintf(namestr, sizeof(namestr), "a program named %s(%d)", NAME(prog), prog);
+	mcp_mesg_init(&msg, "dns-org-mud-moo-simpleedit", "content");
+	mcp_mesg_arg_append(&msg, "reference", refstr);
+	mcp_mesg_arg_append(&msg, "type", "muf-code");
+	mcp_mesg_arg_append(&msg, "name", namestr);
+	for (curr = PROGRAM_FIRST(prog); curr; curr = curr->next) {
+		mcp_mesg_arg_append(&msg, "content", DoNull(curr->this_line));
+	}
+	mcp_frame_output_mesg(mfr, &msg);
+	mcp_mesg_clear(&msg);
+
+	free_prog_text(PROGRAM_FIRST(prog));
+	PROGRAM_SET_FIRST(prog, NULL);
+}
+
+void
+do_mcpedit(int descr, dbref player, const char *name)
+{
+	dbref prog;
+	struct match_data md;
+	McpFrame *mfr;
+	McpVer supp;
+
+	if (!*name) {
+		notify(player, "No program name given.");
+		return;
+	}
+
+	mfr = descr_mcpframe(descr);
+	if (!mfr) {
+		do_edit(descr, player, name);
+		return;
+	}
+
+	supp = mcp_frame_package_supported(mfr, "dns-org-mud-moo-simpleedit");
+
+	if (supp.verminor == 0 && supp.vermajor == 0) {
+		do_edit(descr, player, name);
+		return;
+	}
+
+	init_match(descr, player, name, TYPE_PROGRAM, &md);
+
+	match_possession(&md);
+	match_neighbor(&md);
+	match_registered(&md);
+	match_absolute(&md);
+
+	prog = match_result(&md);
+	if (prog == NOTHING) {
+		/* FIXME: must arrange this to query user. */
+		notify(player, "I don't see that here!");
+		return;
+	}
+
+	if (prog == AMBIGUOUS) {
+		notify(player, "I don't know which one you mean!");
+		return;
+	}
+
+	mcpedit_program(descr, player, prog, name);
+}
+
+void
+do_mcpprogram(int descr, dbref player, const char* name)
+{
+	dbref prog;
+	char buf[BUFFER_LEN];
+	struct match_data md;
+	int jj;
+
+	if (!*name) {
+		notify(player, "No program name given.");
+		return;
+	}
+	if(!ok_ascii_other(name)) {
+		notify(player, "Program names are limited to 7-bit ASCII.");
+		return;
+	}
+	if (!ok_name(name)) {
+		notify(player, "That's a strange name for a program!");
+		return;
+	}
+	init_match(descr, player, name, TYPE_PROGRAM, &md);
+
+	match_possession(&md);
+	match_neighbor(&md);
+	match_registered(&md);
+	match_absolute(&md);
+
+	prog = match_result(&md);
+
+	if (prog == NOTHING) {
+		prog = new_object();
+
+		NAME(prog) = alloc_string(name);
+		snprintf(buf, sizeof(buf), "A scroll containing a spell called %s", name);
+		SETDESC(prog, buf);
+		DBFETCH(prog)->location = player;
+		FLAGS(prog) = TYPE_PROGRAM;
+		jj = MLevel(player);
+		if (jj < 1)
+			jj = 2;
+		if (jj > 3)
+			jj = 3;
+		SetMLevel(prog, jj);
+
+		OWNER(prog) = OWNER(player);
+		ALLOC_PROGRAM_SP(prog);
+		PROGRAM_SET_FIRST(prog, NULL);
+		PROGRAM_SET_CURR_LINE(prog, 0);
+		PROGRAM_SET_SIZ(prog, 0);
+		PROGRAM_SET_CODE(prog, NULL);
+		PROGRAM_SET_START(prog, NULL);
+		PROGRAM_SET_PUBS(prog, NULL);
+		PROGRAM_SET_MCPBINDS(prog, NULL);
+		PROGRAM_SET_PROFTIME(prog, 0, 0);
+		PROGRAM_SET_PROFSTART(prog, 0);
+		PROGRAM_SET_PROF_USES(prog, 0);
+		PROGRAM_SET_INSTANCES(prog, 0);
+
+		PLAYER_SET_CURR_PROG(player, prog);
+
+		PUSH(prog, DBFETCH(player)->contents);
+		DBDIRTY(prog);
+		DBDIRTY(player);
+		snprintf(buf, sizeof(buf), "Program %s created with number %d.", name, prog);
+		notify(player, buf);
+
+	} else if (prog == AMBIGUOUS) {
+		notify(player, "I don't know which one you mean!");
+		return;
+	}
+
+	mcpedit_program(descr, player, prog, name);
 }
 #endif

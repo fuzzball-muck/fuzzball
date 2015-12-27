@@ -1,7 +1,3 @@
-/*
- *  Compile.c   (This is really a tokenizer, not a compiler)
- */
-
 #include "config.h"
 
 #include "db.h"
@@ -13,6 +9,9 @@
 #include "match.h"
 #include "interp.h"
 #include "interface.h"
+#ifdef MCP_SUPPORT
+#include "mcp.h"
+#endif
 #include <ctype.h>
 #include <time.h>
 #include <stdarg.h>
@@ -161,7 +160,6 @@ struct prog_addr *alloc_addr(COMPSTATE *, int, struct inst *);
 struct INTERMEDIATE *prealloc_inst(COMPSTATE * cstat);
 struct INTERMEDIATE *new_inst(COMPSTATE *);
 void cleanpubs(struct publics *mypub);
-void clean_mcpbinds(struct mcp_binding *mcpbinds);
 void cleanup(COMPSTATE *);
 void add_proc(COMPSTATE *, const char *, struct INTERMEDIATE *, int rettype);
 void add_control_structure(COMPSTATE *, int typ, struct INTERMEDIATE *);
@@ -246,8 +244,10 @@ do_abort_compile(COMPSTATE * cstat, const char *c)
 	free_prog(cstat->program);
 	cleanpubs(PROGRAM_PUBS(cstat->program));
 	PROGRAM_SET_PUBS(cstat->program, NULL);
+#ifdef MCP_SUPPORT
 	clean_mcpbinds(PROGRAM_MCPBINDS(cstat->program));
 	PROGRAM_SET_MCPBINDS(cstat->program, NULL);
+#endif
 	PROGRAM_SET_PROFTIME(cstat->program, 0, 0);
 }
 
@@ -601,8 +601,10 @@ uncompile_program(dbref i)
 	free_prog(i);
 	cleanpubs(PROGRAM_PUBS(i));
 	PROGRAM_SET_PUBS(i, NULL);
+#ifdef MCP_SUPPORT
 	clean_mcpbinds(PROGRAM_MCPBINDS(i));
 	PROGRAM_SET_MCPBINDS(i, NULL);
+#endif
 	PROGRAM_SET_PROFTIME(i, 0, 0);
 	PROGRAM_SET_CODE(i, NULL);
 	PROGRAM_SET_SIZ(i, 0);
@@ -1326,8 +1328,10 @@ do_compile(int descr, dbref player_in, dbref program_in, int force_err_display)
 	free_prog(cstat.program);
 	cleanpubs(PROGRAM_PUBS(cstat.program));
 	PROGRAM_SET_PUBS(cstat.program, NULL);
+#ifdef MCP_SUPPORT
 	clean_mcpbinds(PROGRAM_MCPBINDS(cstat.program));
 	PROGRAM_SET_MCPBINDS(cstat.program, NULL);
+#endif
 	PROGRAM_SET_PROFTIME(cstat.program, 0, 0);
 	PROGRAM_SET_PROFSTART(cstat.program, time(NULL));
 	PROGRAM_SET_PROF_USES(cstat.program, 0);
@@ -3585,21 +3589,6 @@ cleanpubs(struct publics *mypub)
 		mypub = tmppub;
 	}
 }
-
-void
-clean_mcpbinds(struct mcp_binding *mypub)
-{
-	struct mcp_binding *tmppub;
-
-	while (mypub) {
-		tmppub = mypub->next;
-		free(mypub->pkgname);
-		free(mypub->msgname);
-		free(mypub);
-		mypub = tmppub;
-	}
-}
-
 
 void
 append_intermediate_chain(struct INTERMEDIATE *chain, struct INTERMEDIATE *add)

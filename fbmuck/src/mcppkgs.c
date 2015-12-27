@@ -275,4 +275,126 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 		}
 	}
 }
+
+void
+mcppkg_help_request(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
+{
+	FILE *f;
+	const char* file;
+	char buf[BUFFER_LEN];
+	char topic[BUFFER_LEN];
+	char *p;
+	int arglen, found;
+	McpVer supp = mcp_frame_package_supported(mfr, "org-fuzzball-help");
+	McpMesg omsg;
+
+	if (supp.verminor == 0 && supp.vermajor == 0) {
+		notify(mcpframe_to_user(mfr), "MCP: org-fuzzball-help not supported.");
+		return;
+	}
+
+	if (!string_compare(msg->mesgname, "request")) {
+		char *onwhat;
+		char *valtype;
+
+		onwhat = mcp_mesg_arg_getline(msg, "topic", 0);
+		valtype = mcp_mesg_arg_getline(msg, "type", 0);
+
+		*topic = '\0';
+		strcpyn(topic, sizeof(topic), onwhat);
+		if (*onwhat) {
+			strcatn(topic, sizeof(topic), "|");
+		}
+
+		if (!string_compare(valtype, "man")) {
+			file = MAN_FILE;
+		} else if (!string_compare(valtype, "mpi")) {
+			file = MPI_FILE;
+		} else if (!string_compare(valtype, "help")) {
+			file = HELP_FILE;
+		} else if (!string_compare(valtype, "news")) {
+			file = NEWS_FILE;
+		} else {
+			snprintf(buf, sizeof(buf), "Sorry, %s is not a valid help type.", valtype);
+			mcp_mesg_init(&omsg, "org-fuzzball-help", "error");
+			mcp_mesg_arg_append(&omsg, "text", buf);
+			mcp_mesg_arg_append(&omsg, "topic", onwhat);
+			mcp_frame_output_mesg(mfr, &omsg);
+			mcp_mesg_clear(&omsg);
+			return;
+		}
+
+		if ((f = fopen(file, "rb")) == NULL) {
+			snprintf(buf, sizeof(buf), "Sorry, %s is missing.  Management has been notified.", file);
+			fprintf(stderr, "help: No file %s!\n", file);
+			mcp_mesg_init(&omsg, "org-fuzzball-help", "error");
+			mcp_mesg_arg_append(&omsg, "text", buf);
+			mcp_mesg_arg_append(&omsg, "topic", onwhat);
+			mcp_frame_output_mesg(mfr, &omsg);
+			mcp_mesg_clear(&omsg);
+		} else {
+			if (*topic) {
+				arglen = strlen(topic);
+				do {
+					do {
+						if (!(fgets(buf, sizeof buf, f))) {
+							snprintf(buf, sizeof(buf), "Sorry, no help available on topic \"%s\"", onwhat);
+							fclose(f);
+							mcp_mesg_init(&omsg, "org-fuzzball-help", "error");
+							mcp_mesg_arg_append(&omsg, "text", buf);
+							mcp_mesg_arg_append(&omsg, "topic", onwhat);
+							mcp_frame_output_mesg(mfr, &omsg);
+							mcp_mesg_clear(&omsg);
+							return;
+						}
+					} while (*buf != '~');
+					do {
+						if (!(fgets(buf, sizeof buf, f))) {
+							snprintf(buf, sizeof(buf), "Sorry, no help available on topic \"%s\"", onwhat);
+							fclose(f);
+							mcp_mesg_init(&omsg, "org-fuzzball-help", "error");
+							mcp_mesg_arg_append(&omsg, "text", buf);
+							mcp_mesg_arg_append(&omsg, "topic", onwhat);
+							mcp_frame_output_mesg(mfr, &omsg);
+							mcp_mesg_clear(&omsg);
+							return;
+						}
+					} while (*buf == '~');
+					p = buf;
+					found = 0;
+					buf[strlen(buf) - 1] = '|';
+					while (*p && !found) {
+						if (strncasecmp(p, topic, arglen)) {
+							while (*p && (*p != '|'))
+								p++;
+							if (*p)
+								p++;
+						} else {
+							found = 1;
+						}
+					}
+				} while (!found);
+			}
+			mcp_mesg_init(&omsg, "org-fuzzball-help", "entry");
+			mcp_mesg_arg_append(&omsg, "topic", onwhat);
+			while (fgets(buf, sizeof buf, f)) {
+				if (*buf == '~')
+					break;
+				for (p = buf; *p; p++) {
+					if (*p == '\n' || *p == '\r') {
+						*p = '\0';
+						break;
+					}
+				}
+				if (!*buf) {
+					strcpyn(buf, sizeof(buf), "  ");
+				}
+				mcp_mesg_arg_append(&omsg, "text", buf);
+			}
+			fclose(f);
+			mcp_frame_output_mesg(mfr, &omsg);
+			mcp_mesg_clear(&omsg);
+		}
+	}
+}
 #endif
