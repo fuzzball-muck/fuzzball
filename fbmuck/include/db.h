@@ -3,7 +3,6 @@
 
 #include "config.h"
 #include "defines.h"
-
 #include <stdio.h>
 #include <math.h>
 #include <time.h>
@@ -59,6 +58,10 @@ extern char match_args[BUFFER_LEN];
 extern char match_cmdname[BUFFER_LEN];
 
 typedef int dbref;				/* offset into db */
+
+#ifdef MCP_SUPPORT
+#include "mcp.h"
+#endif
 
 #define TIME_INFINITE ((sizeof(time_t) == 4)? 0xefffffff : 0xefffffffffffffff)
 
@@ -633,15 +636,6 @@ struct publics {
 	struct publics *next;
 };
 
-
-struct mcp_binding {
-	struct mcp_binding *next;
-
-	char *pkgname;
-	char *msgname;
-	struct inst *addr;
-};
-
 struct program_specific {
 	unsigned short instances;	/* number of instances of this prog running */
 	short curr_line;			/* current-line */
@@ -650,7 +644,9 @@ struct program_specific {
 	struct inst *start;			/* place to start executing */
 	struct line *first;			/* first line */
 	struct publics *pubs;		/* public subroutine addresses */
+#ifdef MCP_SUPPORT
 	struct mcp_binding *mcpbinds;	/* MCP message bindings. */
+#endif
 	struct timeval proftime;	/* profiling time spent in this program. */
 	time_t profstart;			/* time when profiling started for this prog */
 	unsigned int profuses;		/* #calls to this program while profiling */
@@ -667,7 +663,6 @@ struct program_specific {
 #define PROGRAM_START(x)		(PROGRAM_SP(x)->start)
 #define PROGRAM_FIRST(x)		(PROGRAM_SP(x)->first)
 #define PROGRAM_PUBS(x)			(PROGRAM_SP(x)->pubs)
-#define PROGRAM_MCPBINDS(x)		(PROGRAM_SP(x)->mcpbinds)
 #define PROGRAM_PROFTIME(x)		(PROGRAM_SP(x)->proftime)
 #define PROGRAM_PROFSTART(x)	(PROGRAM_SP(x)->profstart)
 #define PROGRAM_PROF_USES(x)	(PROGRAM_SP(x)->profuses)
@@ -683,10 +678,14 @@ struct program_specific {
 #define PROGRAM_SET_START(x,y)		(PROGRAM_SP(x)->start = y)
 #define PROGRAM_SET_FIRST(x,y)		(PROGRAM_SP(x)->first = y)
 #define PROGRAM_SET_PUBS(x,y)		(PROGRAM_SP(x)->pubs = y)
-#define PROGRAM_SET_MCPBINDS(x,y)	(PROGRAM_SP(x)->mcpbinds = y)
 #define PROGRAM_SET_PROFTIME(x,y,z)	(PROGRAM_SP(x)->proftime.tv_usec = z, PROGRAM_SP(x)->proftime.tv_sec = y)
 #define PROGRAM_SET_PROFSTART(x,y)	(PROGRAM_SP(x)->profstart = y)
 #define PROGRAM_SET_PROF_USES(x,y)	(PROGRAM_SP(x)->profuses = y)
+
+#ifdef MCP_SUPPORT
+#define PROGRAM_MCPBINDS(x)		(PROGRAM_SP(x)->mcpbinds)
+#define PROGRAM_SET_MCPBINDS(x,y)	(PROGRAM_SP(x)->mcpbinds = y)
+#endif
 
 #ifndef WIN32
 # define MUCK_LOCALTIME(t)		localtime(&t)

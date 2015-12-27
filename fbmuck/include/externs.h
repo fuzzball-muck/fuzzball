@@ -7,10 +7,6 @@
 #include "db.h"
 /* Definition of match_data */
 #include "match.h"
-#ifdef MCP_SUPPORT
-/* Definition of 'McpFrame' */
-#include "mcp.h"
-#endif
 /* Definition of PropPtr, among other things */
 #include "props.h"
 
@@ -44,10 +40,6 @@ extern void do_create(dbref player, char *name, char *cost);
 extern void do_edit(int descr, dbref player, const char *name);
 extern void do_dig(int descr, dbref player, const char *name, const char *pname);
 extern void do_link(int descr, dbref player, const char *name, const char *room_name);
-#ifdef MCP_SUPPORT
-extern void do_mcpedit(int descr, dbref player, const char *name);
-extern void do_mcpprogram(int descr, dbref player, const char* name);
-#endif
 extern void do_open(int descr, dbref player, const char *direction, const char *linkto);
 extern void do_prog(int descr, dbref player, const char *name);
 extern int exit_loop_check(dbref source, dbref dest);
@@ -132,10 +124,6 @@ extern pid_t global_dumper_pid;
 extern short global_dumpdone;
 extern pid_t global_resolver_pid;
 extern long max_open_files(void);
-#ifdef MCP_SUPPORT
-extern int mcpframe_to_descr(McpFrame *ptr);
-extern int mcpframe_to_user(McpFrame *ptr);
-#endif
 extern int notify(dbref player, const char *msg);
 extern int notify_from(dbref from, dbref player, const char *msg);
 extern int notify_from_echo(dbref from, dbref player, const char *msg, int isprivate);
@@ -192,16 +180,6 @@ extern long size_object(dbref i, int load);
 /* match.c */
 extern void init_match_remote(int descr, dbref player, dbref what, const char *name, int type, struct match_data *md);
 
-#ifdef MCP_SUPPORT
-/* mcpgui.c */
-extern int gui_dlog_closeall_descr(int descr);
-extern int gui_dlog_freeall_descr(int descr);
-extern void gui_initialize(void);
-extern void muf_dlog_purge(struct frame *fr);
-
-/* mcppkgs.c */
-extern void show_mcp_error(McpFrame * mfr, char *topic, char *text);
-#endif
 /* move.c */
 extern int can_move(int descr, dbref player, const char *direction, int lev);
 extern void do_drop(int descr, dbref player, const char *name, const char *obj);

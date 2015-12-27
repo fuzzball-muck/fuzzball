@@ -20,6 +20,9 @@
 #ifdef DISKBASE
 #include "diskprop.h"
 #endif
+#ifdef MCP_SUPPORT
+#include "mcp.h"
+#endif
 
 /* declarations */
 static const char *dumpfile = 0;
@@ -951,24 +954,20 @@ process_command(int descr, dbref player, char *command)
 #ifdef MCP_SUPPORT
 				case 'c':
 				case 'C':
-					if (tp_enable_mcp) {
-						if (string_prefix("@mcpedit", command)) {
-							Matched("@mcpedit");
-							NOGUEST("@mcpedit", player);
-							PLAYERONLY("@mcpedit", player);
-							MUCKERONLY("@mcpedit", player);
-							do_mcpedit(descr, player, arg1);
-							break;
-						} else {
-							Matched("@mcpprogram");
-							NOGUEST("@mcpprogram", player);
-							PLAYERONLY("@mcpprogram", player);
-							MUCKERONLY("@mcpprogram", player);
-							do_mcpprogram(descr, player, arg1);
-							break;
-						}
+					if (string_prefix("@mcpedit", command)) {
+						Matched("@mcpedit");
+						NOGUEST("@mcpedit", player);
+						PLAYERONLY("@mcpedit", player);
+						MUCKERONLY("@mcpedit", player);
+						do_mcpedit(descr, player, arg1);
+						break;
 					} else {
-						goto bad;
+						Matched("@mcpprogram");
+						NOGUEST("@mcpprogram", player);
+						PLAYERONLY("@mcpprogram", player);
+						MUCKERONLY("@mcpprogram", player);
+						do_mcpprogram(descr, player, arg1);
+						break;
 					}
 #endif
 #ifndef NO_MEMORY_COMMAND

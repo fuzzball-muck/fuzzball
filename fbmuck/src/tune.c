@@ -289,7 +289,6 @@ int tp_7bit_other_names = ASCII_OTHER_NAMES;
 int tp_idle_ping_enable = IDLE_PING_ENABLE;
 int tp_recognize_null_command = RECOGNIZE_NULL_COMMAND;
 int tp_strict_god_priv = STRICT_GOD_PRIV;
-int tp_enable_mcp = 1;
 
 struct tune_bool_entry {
 	const char *group;
@@ -356,11 +355,6 @@ struct tune_bool_entry tune_bool_list[] = {
                                                                           " (not active: GOD_PRIV is not #defined)"
 #endif
         },
-	{"System",	"enable_mcp", &tp_enable_mcp, MLEV_WIZARD, MLEV_WIZARD, "Enable MUD Client Protocol (MCP)"
-#ifndef MCP_SUPPORT
-                                                                          " (not active: MCP_SUPPORT is not #defined)"
-#endif
-	},
 	{"SSL",		"starttls_allow", &tp_starttls_allow, MLEV_MASTER, MLEV_WIZARD, "Enable TELNET STARTTLS encryption on plaintext port"},
         {"SSL",		"server_cipher_preference", &tp_cipher_server_preference, MLEV_WIZARD, MLEV_WIZARD, "Honor server cipher preference order over client's (changes require restart)"},
 	{"Charset",	"7bit_thing_names", &tp_7bit_thing_names, MLEV_WIZARD, MLEV_WIZARD, "Thing names may contain only 7-bit characters"},

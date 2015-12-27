@@ -1,6 +1,6 @@
 #ifndef _INST_H
 #define _INST_H
-
+#include "db.h"
 #define IN_JMP        1
 #define IN_READ       2
 #define IN_SLEEP      3

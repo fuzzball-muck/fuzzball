@@ -1,7 +1,7 @@
+#include "config.h"
 #ifdef MCP_SUPPORT
 #ifndef _MCP_H
 #define _MCP_H
-
 /* the type used to specify the connection */
 typedef void *connection_t;
 
@@ -18,6 +18,14 @@ typedef void *connection_t;
 #define MAX_MCP_ARGNAME_LEN    30 /* max length of argument name. */
 #define MAX_MCP_MESG_ARGS      30 /* max number of args per mesg. */
 #define MAX_MCP_MESG_SIZE  262144 /* max mesg size in bytes. */
+
+struct mcp_binding {
+        struct mcp_binding *next;
+
+        char *pkgname;
+        char *msgname;
+        struct inst *addr;
+};
 
 /* This is a convenient struct for dealing with MCP versions. */
 typedef struct McpVersion_T {
@@ -312,7 +320,7 @@ typedef struct McpFrame_T {
  *****************************************************************/
 
 
-
+void clean_mcpbinds(struct mcp_binding *mypub);
 
 void mcp_initialize(void);
 void mcp_negotiation_start(McpFrame * mfr);
@@ -344,6 +352,9 @@ void mcp_mesg_arg_remove(McpMesg * msg, const char *argname);
 
 int mcp_version_compare(McpVer v1, McpVer v2);
 McpVer mcp_version_select(McpVer min1, McpVer max1, McpVer min2, McpVer max2);
+
+void do_mcpedit(int descr, dbref player, const char *name);
+void do_mcpprogram(int descr, dbref player, const char* name);
 
 #endif /* _MCP_H */
 #endif

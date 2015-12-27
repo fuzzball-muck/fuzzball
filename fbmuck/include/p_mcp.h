@@ -1,6 +1,7 @@
+#include "config.h"
+#ifdef MCP_SUPPORT
 #ifndef _P_MCP_H
 #define _P_MCP_H
-#ifdef MCP_SUPPORT
 
 extern void prim_mcp_register(PRIM_PROTOTYPE);
 extern void prim_mcp_register_event(PRIM_PROTOTYPE);
@@ -33,7 +34,7 @@ extern void prim_gui_ctrl_command(PRIM_PROTOTYPE);
 
 
 #define PRIMS_MCP_CNT 14
+#endif /* _P_MCP_H */
 #else
 #define PRIMS_MCP_CNT 0
 #endif
-#endif /* _P_MCP_H */

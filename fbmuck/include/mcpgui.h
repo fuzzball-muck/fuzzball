@@ -1,3 +1,4 @@
+#include "config.h"
 #ifdef MCP_SUPPORT
 #ifndef _MCPGUI_H
 #define _MCPGUI_H
@@ -100,6 +101,7 @@ typedef void (*GuiErr_CB) (GUI_ERROR_CB_ARGS);
 McpVer GuiVersion(int descr);
 int GuiSupported(int descr);
 
+void gui_initialize(void);
 /*
  * Second, create a dialog window.
  */
@@ -200,12 +202,15 @@ int GuiFree(const char *id);
 /*
  * This might be useful for callbacks.
  */
+int gui_dlog_closeall_descr(int descr);
+int gui_dlog_freeall_descr(int descr);
 int gui_dlog_get_descr(const char *dlogid);
 void* gui_dlog_get_context(const char *dlogid);
 
 
 /* internal support for MUF */
 void muf_dlog_add(struct frame *fr, const char *dlogid);
+void muf_dlog_purge(struct frame *fr);
 void muf_dlog_remove(struct frame *fr, const char *dlogid);
 
 #endif /* _MCPGUI_H */
