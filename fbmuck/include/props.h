@@ -174,18 +174,6 @@ extern void add_prop_nofetch(dbref player, const char *type, const char *strval,
 extern void remove_property_nofetch(dbref player, const char *type);
 extern PropPtr first_prop_nofetch(dbref player, const char *dir, PropPtr * list, char *name, int maxlen);
 
-#ifdef DISKBASE
-extern int fetchprops_priority(dbref obj, int mode, const char *pdir);
-extern int fetchprops_nostamp(dbref obj);
-extern void fetchprops(dbref obj, const char *pdir);
-extern void unloadprops_with_prejudice(dbref obj);
-extern int disposeprops_notime(dbref obj);
-extern int disposeprops(dbref obj);
-extern void dirtyprops(dbref obj);
-extern void undirtyprops(dbref obj);
-extern int propfetch(dbref obj, PropPtr p);
-#endif							/* DISKBASE */
-
 extern PropPtr propdir_new_elem(PropPtr * root, char *path);
 extern PropPtr propdir_delete_elem(PropPtr root, char *path);
 extern PropPtr propdir_get_elem(PropPtr root, char *path);

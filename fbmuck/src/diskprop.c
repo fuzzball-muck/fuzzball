@@ -1,14 +1,11 @@
 #include "config.h"
+#ifdef DISKBASE
 #include "params.h"
-
 #include "tune.h"
 #include "externs.h"
 
-#ifdef DISKBASE
-
 extern FILE *input_file;
 extern void getproperties(FILE * f, dbref obj, const char *pdir);
-
 
 long propcache_hits = 0L;
 long propcache_misses = 0L;
@@ -23,6 +20,99 @@ struct pload_Q propchanged_Q = { NOTHING, 0, PROPS_CHANGED };
 struct pload_Q proploaded_Q = { NOTHING, 0, PROPS_LOADED };
 struct pload_Q proppri_Q = { NOTHING, 0, PROPS_PRIORITY };
 
+int
+fetch_propvals(dbref obj, const char *dir)
+{
+	PropPtr p, pptr;
+	int cnt = 0;
+	char buf[BUFFER_LEN];
+	char name[BUFFER_LEN];
+
+	p = first_prop_nofetch(obj, dir, &pptr, name, sizeof(name));
+	while (p) {
+		cnt = (cnt || propfetch(obj, p));
+		if (PropDir(p) || (PropFlags(p) & PROP_DIRUNLOADED)) {
+			strcpyn(buf, sizeof(buf), dir);
+			strcatn(buf, sizeof(buf), name);
+			strcatn(buf, sizeof(buf), "/");
+			if (PropFlags(p) & PROP_DIRUNLOADED) {
+				SetPFlags(p, (PropFlags(p) & ~PROP_DIRUNLOADED));
+				getproperties(input_file, obj, buf);
+			}
+			fetch_propvals(obj, buf);
+		}
+		p = next_prop(pptr, p, name, sizeof(name));
+	}
+	return cnt;
+}
+
+void
+putprops_copy(FILE * f, dbref obj)
+{
+	char buf[BUFFER_LEN * 3];
+	char *ptr;
+	FILE *g;
+
+	if (DBFETCH(obj)->propsmode != PROPS_UNLOADED) {
+		if (fetch_propvals(obj, "/")) {
+			fseek(f, 0L, 2);
+		}
+		putproperties(f, obj);
+		return;
+	}
+	if (db_conversion_flag) {
+		if (fetchprops_priority(obj, 1, NULL) || fetch_propvals(obj, "/")) {
+			fseek(f, 0L, 2);
+		}
+		putproperties(f, obj);
+		return;
+	}
+	g = input_file;
+	putstring(f, "*Props*");
+	if (DBFETCH(obj)->propsfpos) {
+		fseek(g, DBFETCH(obj)->propsfpos, 0);
+		ptr = fgets(buf, sizeof(buf), g);
+		if (!ptr)
+			abort();
+		for (;;) {
+			ptr = fgets(buf, sizeof(buf), g);
+			if (!ptr)
+				abort();
+			if (!string_compare(ptr, "*End*\n"))
+				break;
+			fputs(buf, f);
+		}
+	}
+	putstring(f, "*End*");
+}
+
+void
+skipproperties(FILE * f, dbref obj)
+{
+	char buf[BUFFER_LEN * 3];
+	int islisten = 0;
+
+	/* get rid of first line */
+	fgets(buf, sizeof(buf), f);
+
+	fgets(buf, sizeof(buf), f);
+	while (strcmp(buf, "*End*\n")) {
+		if (!islisten) {
+			if (string_prefix(buf, "_listen"))
+				islisten = 1;
+			if (string_prefix(buf, "~listen"))
+				islisten = 1;
+			if (string_prefix(buf, "~olisten"))
+				islisten = 1;
+		}
+		fgets(buf, sizeof(buf), f);
+	}
+	if (islisten) {
+		FLAGS(obj) |= LISTENER;
+	} else {
+		FLAGS(obj) &= ~LISTENER;
+	}
+}
 
 void
 removeobj_ringqueue(dbref obj)

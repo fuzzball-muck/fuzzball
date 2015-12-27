@@ -65,9 +65,6 @@ extern void CrT_summarize_to_file(const char *file, const char *comment);
 /* db.c */
 extern void db_clear_object(dbref i);
 extern void db_free_object(dbref i);
-#ifdef DISKBASE
-extern int fetch_propvals(dbref obj, const char *dir);
-#endif
 
 /* debugger.c */
 extern void list_proglines(dbref player, dbref program, struct frame *fr, int start, int end);
@@ -77,10 +74,6 @@ extern char *show_line_prims(struct frame *fr, dbref program, struct inst *pc, i
 
 /* disassem.c */
 extern void disassemble(dbref player, dbref program);
-
-/* diskprop.c */
-extern void diskbase_debug(dbref player);
-extern void dispose_all_oldprops(void);
 
 /* edit.c */
 extern void chown_macros(dbref from, dbref to);
@@ -104,6 +97,7 @@ extern time_t next_muckevent_time(void);
 /* game.c */
 void cleanup_game();
 extern const char *compile_options;
+extern short db_conversion_flag;
 extern void do_dump(dbref player, const char *newfile);
 extern void do_shutdown(dbref player);
 extern void dump_warning(void);
@@ -132,10 +126,10 @@ extern void spit_file_segment(dbref player, const char *filename, const char *se
 extern void do_armageddon(dbref player, const char *msg);
 extern void dump_status(void);
 extern void flush_user_output(dbref player);
-extern short global_dumpdone;
 #ifndef DISKBASE
 extern pid_t global_dumper_pid;
 #endif
+extern short global_dumpdone;
 extern pid_t global_resolver_pid;
 extern long max_open_files(void);
 #ifdef MCP_SUPPORT

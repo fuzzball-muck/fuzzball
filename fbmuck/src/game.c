@@ -17,6 +17,9 @@
 #include "tune.h"
 #include "interface.h"
 #include "externs.h"
+#ifdef DISKBASE
+#include "diskprop.h"
+#endif
 
 /* declarations */
 static const char *dumpfile = 0;
@@ -173,12 +176,6 @@ do_restart(dbref player)
 	}
 }
 
-
-#ifdef DISKBASE
-extern long propcache_hits;
-extern long propcache_misses;
-#endif
-
 static void
 dump_database_internal(void)
 {
@@ -239,9 +236,7 @@ dump_database_internal(void)
 	/* Only show dumpdone mesg if not doing background saves. */
 	if (tp_dbdump_warning && tp_dumpdone_warning)
 		wall_and_flush(tp_dumpdone_mesg);
-#endif
 
-#ifdef DISKBASE
 	propcache_hits = 0L;
 	propcache_misses = 1L;
 #endif
