@@ -594,6 +594,7 @@ do_toad(int descr, dbref player, const char *name, const char *recip)
 	dbref recipient;
 	dbref stuff;
 	char buf[BUFFER_LEN];
+        struct tune_ref_entry *tref = tune_ref_list;
 
 	if ((victim = lookup_player(name)) == NOTHING) {
 		notify(player, "That player does not exist.");
@@ -616,9 +617,12 @@ do_toad(int descr, dbref player, const char *name, const char *recip)
 		return;
 	}
 
-	if (victim == tp_toad_default_recipient) {
-		notify(player, "That player is part of the @toad process, and cannot be deleted.");
-		return;
+	while (tref->name) {
+		if (victim == *tref->ref) {
+			notify(player, "That player cannot currently be @toaded.");
+			return;
+		}
+		tref++;
 	}
 
 	if (!*recip) {

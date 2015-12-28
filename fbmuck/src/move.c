@@ -833,6 +833,7 @@ do_recycle(int descr, dbref player, const char *name)
 	dbref thing;
 	char buf[BUFFER_LEN];
 	struct match_data md;
+        struct tune_ref_entry *tref = tune_ref_list;
 
 	init_match(descr, player, name, TYPE_THING, &md);
 	match_all_exits(&md);
@@ -854,18 +855,17 @@ do_recycle(int descr, dbref player, const char *name)
 			else
 				notify(player, "Permission denied. (You don't control what you want to recycle)");
 		} else {
+		        while (tref->name) {
+		                if (thing == *tref->ref) {
+		                        notify(player, "That object cannot currently be @recyled.");
+		                        return;
+		                }
+		                tref++;
+		        }
 			switch (Typeof(thing)) {
 			case TYPE_ROOM:
 				if (OWNER(thing) != OWNER(player)) {
 					notify(player, "Permission denied. (You don't control the room you want to recycle)");
-					return;
-				}
-				if (thing == tp_player_start) {
-					notify(player, "That is the player start room, and may not be recycled.");
-					return;
-				}
-				if (thing == tp_lost_and_found) {
-					notify(player, "That is the lost and found room, and may not be recycled.");
 					return;
 				}
 				if (thing == GLOBAL_ENVIRONMENT) {

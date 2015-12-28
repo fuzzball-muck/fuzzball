@@ -19,9 +19,9 @@ const char *tp_huh_mesg = HUH_MESSAGE;
 const char *tp_idle_mesg = IDLEBOOT_MESSAGE;
 const char *tp_leave_mesg = LEAVE_MESSAGE;
 const char *tp_muckname = MUCKNAME;
+const char *tp_pcreate_flags = PCREATE_FLAGS;
 const char *tp_pennies = PENNIES;
 const char *tp_penny = PENNY;
-const char *tp_pcreate_flags = PCREATE_FLAGS;
 const char *tp_playermax_bootmesg = PLAYERMAX_BOOTMESG;
 const char *tp_playermax_warnmesg = PLAYERMAX_WARNMESG;
 const char *tp_register_mesg = REG_MSG;
@@ -29,18 +29,6 @@ const char *tp_reserved_names = RESERVED_NAMES;
 const char *tp_reserved_player_names = RESERVED_PLAYER_NAMES;
 const char *tp_ssl_cipher_preference_list = SSL_CIPHER_PREFERENCE_LIST;
 const char *tp_ssl_keyfile_passwd = SSL_KEYFILE_PASSWD;
-
-struct tune_str_entry {
-	const char *group;
-	const char *name;
-	const char **str;
-	int readmlev;
-	int writemlev;
-	const char *label;
-	char *module;
-	int isnullable;
-	int isdefault;
-};
 
 struct tune_str_entry tune_str_list[] = {
 	{"Commands",	"autolook_cmd", &tp_autolook_cmd, 0, MLEV_WIZARD, "Room entry look command", "", 0, 1},
@@ -72,16 +60,6 @@ int tp_dump_interval = DUMP_INTERVAL;
 int tp_dump_warntime = DUMP_WARNTIME;
 int tp_idle_ping_time = IDLE_PING_TIME;
 int tp_maxidle = MAXIDLE;
-
-struct tune_time_entry {
-	const char *group;
-	const char *name;
-	int *tim;
-        int readmlev;
-        int writemlev;
-	const char *label;
-	char *module;
-};
 
 struct tune_time_entry tune_time_list[] = {
 	{"Database",	"aging_time", &tp_aging_time, 0, MLEV_WIZARD, "When to considered an object old and unused", ""},
@@ -129,16 +107,6 @@ int tp_playermax_limit = PLAYERMAX_LIMIT;
 int tp_process_timer_limit = PROCESS_TIMER_LIMIT;
 int tp_userlog_mlev = USERLOG_MLEV;
 
-struct tune_val_entry {
-	const char *group;
-	const char *name;
-	int *val;
-	int readmlev;
-	int writemlev;
-	const char *label;
-	char *module;
-};
-
 struct tune_val_entry tune_val_list[] = {
 	{"Costs",	"exit_cost", &tp_exit_cost, 0, MLEV_WIZARD, "Cost to create exit", ""},
 	{"Costs",	"link_cost", &tp_link_cost, 0, MLEV_WIZARD, "Cost to link exit", ""},
@@ -182,17 +150,6 @@ dbref tp_default_room_parent = GLOBAL_ENVIRONMENT;
 dbref tp_lost_and_found = LOST_AND_FOUND;
 dbref tp_player_start = PLAYER_START;
 dbref tp_toad_default_recipient = TOAD_DEFAULT_RECIPIENT;
-
-struct tune_ref_entry {
-	const char *group;
-	const char *name;
-	int typ;
-	dbref *ref;
-	int readmlev;
-	int writemlev;
-	const char *label;
-	char *module;
-};
 
 struct tune_ref_entry tune_ref_list[] = {
 	{"Database",	"default_room_parent", TYPE_ROOM, &tp_default_room_parent, 0, MLEV_WIZARD, "Place to parent new rooms to", ""},
@@ -253,16 +210,6 @@ int tp_who_hides_dark = WHO_HIDES_DARK;
 int tp_wiz_vehicles = WIZ_VEHICLES;
 int tp_verbose_clone = VERBOSE_CLONE;
 int tp_zombies = ZOMBIES;
-
-struct tune_bool_entry {
-	const char *group;
-	const char *name;
-	int *boolval;
-        int readmlev;
-        int writemlev;
-	const char *label;
-	char *module;
-};
 
 struct tune_bool_entry tune_bool_list[] = {
 	{"Charset",	"7bit_thing_names", &tp_7bit_thing_names, MLEV_WIZARD, MLEV_WIZARD, "Thing names may contain only 7-bit characters", ""},
