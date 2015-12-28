@@ -3931,6 +3931,7 @@ Each dictionary contains the following data, keyed with these strings:
     "readmlev"  The mucker level required to read the value of this sysparm.
     "writemlev" The mucker level required to write the value of this sysparm.
     "value"     The value of the sysparm.  May be an int, string, or dbref.
+    "active"	Whether the parameter currently affects the system.
 
 If a given entry is of the "dbref" type, it will also have the extra field:
     "objtype"   The type of object the dbref is restricted to.  Can be one of
