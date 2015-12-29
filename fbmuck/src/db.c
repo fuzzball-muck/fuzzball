@@ -672,6 +672,12 @@ db_read(FILE * f)
 				if (special)
 					free((void *) special);
 
+				rewind(f);
+				free((void *) getstring(f));
+				getref(f);
+				getref(f);
+				tune_load_parms_from_file(f, NOTHING, getref(f));
+
 				for (i = 0; i < db_top; i++) {
 					if (Typeof(i) == TYPE_GARBAGE) {
 						DBFETCH(i)->next = recyclable;
