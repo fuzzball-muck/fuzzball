@@ -415,7 +415,6 @@ init_game(const char *infile, const char *outfile)
 	init_primitives();			/* init muf compiler */
 	mesg_init();				/* init mpi interpreter */
 	SRANDOM(getpid());			/* init random number generator */
-	tune_load_parmsfile(NOTHING);	/* load @tune parms from file */
 
 	/* ok, read the db in */
 	log_status("LOADING: %s", infile);

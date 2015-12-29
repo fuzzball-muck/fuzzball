@@ -609,7 +609,6 @@ main(int argc, char **argv)
 		san_main();
 	} else {
 		dump_database();
-		tune_save_parmsfile();
 
 #ifdef SPAWN_HOST_RESOLVER
 		kill_resolver();

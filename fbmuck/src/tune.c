@@ -565,22 +565,6 @@ tune_parms_array(const char* pattern, int mlev)
 	return nu;
 }
 
-void
-tune_save_parmsfile(void)
-{
-	FILE *f;
-
-	f = fopen(PARMFILE_NAME, "wb");
-	if (!f) {
-		log_status("Couldn't open file %s!", PARMFILE_NAME);
-		return;
-	}
-
-	tune_save_parms_to_file(f);
-
-	fclose(f);
-}
-
 const char *
 tune_get_parmstring(const char *name, int mlev)
 {
@@ -834,22 +818,6 @@ tune_load_parms_from_file(FILE * f, dbref player, int cnt)
 }
 
 void
-tune_load_parmsfile(dbref player)
-{
-	FILE *f;
-
-	f = fopen(PARMFILE_NAME, "rb");
-	if (!f) {
-		log_status("Couldn't open file %s!", PARMFILE_NAME);
-		return;
-	}
-
-	tune_load_parms_from_file(f, player, -1);
-
-	fclose(f);
-}
-
-void
 do_tune(dbref player, char *parmname, char *parmval, int full_command_has_delimiter)
 {
 	const char *oldvalue;
@@ -883,23 +851,10 @@ do_tune(dbref player, char *parmname, char *parmval, int full_command_has_delimi
 		case TUNESET_DENIED:
 			notify(player, "Permission denied.");
 			break;
+		default:
+			break;
 		}
-		return;
-	} else if (*parmname) {
-		if (!string_compare(parmname, "save")) {
-			tune_save_parmsfile();
-			notify(player, "Saved parameters to configuration file.");
-		} else if (!string_compare(parmname, "load")) {
-			tune_load_parmsfile(player);
-			notify(player, "Restored parameters from configuration file.");
-		} else {
-			tune_display_parms(player, parmname, security);
-		}
-		return;
-	} else if (!*parmval && !*parmname) {
-		tune_display_parms(player, parmname, security);
 	} else {
-		notify(player, "But what do you want to tune?");
-		return;
+		tune_display_parms(player, parmname, security);
 	}
 }

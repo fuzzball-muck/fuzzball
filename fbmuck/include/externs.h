@@ -367,8 +367,6 @@ extern struct frame *timequeue_pid_frame(int pid);
 /* tune.c */
 extern void do_tune(dbref player, char *parmname, char *parmval, int full_command_has_delimiter);
 extern void tune_freeparms(void);
-extern void tune_load_parmsfile(dbref player);
-extern void tune_save_parmsfile(void);
 
 /* unparse.c */
 extern const char *unparse_boolexp(dbref player, struct boolexp *b, int fullname);
