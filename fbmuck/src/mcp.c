@@ -1879,14 +1879,6 @@ do_mcpprogram(int descr, dbref player, const char* name)
 		notify(player, "No program name given.");
 		return;
 	}
-	if(!ok_ascii_other(name)) {
-		notify(player, "Program names are limited to 7-bit ASCII.");
-		return;
-	}
-	if (!ok_name(name)) {
-		notify(player, "That's a strange name for a program!");
-		return;
-	}
 	init_match(descr, player, name, TYPE_PROGRAM, &md);
 
 	match_possession(&md);
@@ -1897,6 +1889,14 @@ do_mcpprogram(int descr, dbref player, const char* name)
 	prog = match_result(&md);
 
 	if (prog == NOTHING) {
+		if(!ok_ascii_other(name)) {
+			notify(player, "Program names are limited to 7-bit ASCII.");
+			return;
+		}
+		if (!ok_name(name)) {
+			notify(player, "That's a strange name for a program!");
+			return;
+		}
 		prog = new_object();
 
 		NAME(prog) = alloc_string(name);

@@ -572,14 +572,6 @@ do_prog(int descr, dbref player, const char *name)
 		notify(player, "No program name given.");
 		return;
 	}
-	if(!ok_ascii_other(name)) {
-		notify(player, "Program names are limited to 7-bit ASCII.");
-		return;
-	}
-	if (!ok_name(name)) {
-		notify(player, "That's a strange name for a program!");
-		return;
-	}
 	init_match(descr, player, name, TYPE_PROGRAM, &md);
 
 	match_possession(&md);
@@ -588,8 +580,15 @@ do_prog(int descr, dbref player, const char *name)
 	match_absolute(&md);
 
 	if ((i = match_result(&md)) == NOTHING) {
+		if(!ok_ascii_other(name)) {
+			notify(player, "Program names are limited to 7-bit ASCII.");
+			return;
+		}
+		if (!ok_name(name)) {
+			notify(player, "That's a strange name for a program!");
+			return;
+		}
 		newprog = new_object();
-
 		NAME(newprog) = alloc_string(name);
 		snprintf(buf, sizeof(buf), "A scroll containing a spell called %s", name);
 		SETDESC(newprog, buf);
