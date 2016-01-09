@@ -28,26 +28,24 @@
 *.x86_64
 *.hex
 bin/fbmuck
-fb-resolver
-prochelp
 fbhelp
+fb-resolver
 mkversion
+prochelp
+restart
 
 # Debug files
 *.dSYM/
 
-# configure output
+# generated files
+Makefile
+autom4te.cache/
 config.log
 config.status
-autom4te.cache/
+include/autoconf.h
+src/version.c
 
-# Windows Build Files
-fbmuck/compile
-fbmuck/winsrc
-
-# Generated files
-fbmuck/Makefile
-fbmuck/include/autoconf.h
-fbmuck/src/Makefile
-fbmuck/src/version.c
+# Windows build files
+compile
+winsrc
 
