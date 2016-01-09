@@ -41,12 +41,3 @@ ts_modifyobject(dbref thing)
 	DBSTORE(thing, ts.modified, time(NULL));
 }
 
-struct tm *
-mucktime(const time_t* t) {
-#ifndef WIN32
-	return localtime(t);
-#else
-	return uw32localtime(t);
-#endif
-}
-

@@ -45,7 +45,6 @@ BASE_OBJ="$(INTDIR)\array.obj" \
 	"$(INTDIR)\boolexp.obj" \
 	"$(INTDIR)\compile.obj" \
 	"$(INTDIR)\create.obj" \
-	"$(INTDIR)\db_header.obj" \
 	"$(INTDIR)\db.obj" \
 	"$(INTDIR)\debugger.obj" \
 	"$(INTDIR)\disassem.obj" \
