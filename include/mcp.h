@@ -342,6 +342,9 @@ int mcp_frame_process_input(McpFrame * mfr, const char *linein, char *outbuf, in
 void mcp_frame_output_inband(McpFrame * mfr, const char *lineout);
 int mcp_frame_output_mesg(McpFrame * mfr, McpMesg * msg);
 
+int mcpframe_to_descr(McpFrame *ptr);		
+int mcpframe_to_user(McpFrame *ptr);
+
 void mcp_mesg_init(McpMesg * msg, const char *package, const char *mesgname);
 void mcp_mesg_clear(McpMesg * msg);
 

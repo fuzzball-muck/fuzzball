@@ -57,6 +57,7 @@
 #include "props.h"
 #ifdef MCP_SUPPORT
 #include "mcp.h"
+#include "mcpgui.h"
 #endif
 #include "externs.h"
 
@@ -130,10 +131,8 @@ void parse_connect(const char *msg, char *command, char *user, char *pass);
 void set_userstring(char **userstring, const char *command);
 int do_command(struct descriptor_data *d, char *command);
 int is_interface_command(const char* cmd);
-int queue_string(struct descriptor_data *, const char *);
 int send_keepalive(struct descriptor_data *d);
 int queue_write(struct descriptor_data *, const char *, int);
-int process_output(struct descriptor_data *d);
 int process_input(struct descriptor_data *d);
 void announce_connect(int, dbref);
 void announce_disconnect(struct descriptor_data *);

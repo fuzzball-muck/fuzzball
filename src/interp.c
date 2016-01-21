@@ -11,7 +11,9 @@
 #include "tune.h"
 #include "interp.h"
 #include "interface.h"
-
+#ifdef MCP_SUPPORT
+#include "mcpgui.h"
+#endif
 /* This package performs the interpretation of mud forth programs.
    It is a basically push pop kinda thing, but I'm making some stuff
    inline for maximum efficiency.

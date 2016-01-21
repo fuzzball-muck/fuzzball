@@ -127,7 +127,8 @@ extern int pnextdescr(int c);
 extern int pdescrflush(int c);
 extern int pdescrbufsize(int c);
 extern dbref partial_pmatch(const char *name);
-
+extern int queue_string(struct descriptor_data *, const char *);
+extern int process_output(struct descriptor_data *d);
 extern int ignore_is_ignoring(dbref Player, dbref Who);
 extern int ignore_prime_cache(dbref Player);
 extern void ignore_flush_cache(dbref Player);
