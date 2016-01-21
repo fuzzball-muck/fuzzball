@@ -6,6 +6,7 @@
 #include "interface.h"
 #include "mcp.h"
 #include "mcpgui.h"
+#include "mcppkg.h"
 #include "externs.h"
 #ifdef HAVE_MALLOC_H
 #include <malloc.h>
