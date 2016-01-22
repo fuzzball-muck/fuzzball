@@ -1388,7 +1388,7 @@ prim_array_put_propvals(PRIM_PROTOTYPE)
 				*propname = '\0';
 			}
 			if (*propname) {
-				set_property(ref, propname, &propdat);
+				set_property(ref, propname, &propdat, 0);
 			}
 		} while (array_next(arr, &temp1));
 	}
@@ -1452,7 +1452,7 @@ prim_array_put_proplist(PRIM_PROTOTYPE)
 
 	propdat.flags = PROP_INTTYP;
 	propdat.data.val = array_count(arr);
-	set_property(ref, propname, &propdat);
+	set_property(ref, propname, &propdat, 0);
 
 	if (array_first(arr, &temp1)) {
 		do {
@@ -1506,7 +1506,7 @@ prim_array_put_proplist(PRIM_PROTOTYPE)
 				propdat.flags = PROP_INTTYP;
 				propdat.data.val = 0;
 			}
-			set_property(ref, propname, &propdat);
+			set_property(ref, propname, &propdat, 0);
 		} while (array_next(arr, &temp1));
 	}
 
@@ -1533,7 +1533,7 @@ prim_array_put_proplist(PRIM_PROTOTYPE)
 		}
 		*fmtout++ = '\0';
 		if (get_property(ref, propname)) {
-			remove_property(ref, propname);
+			remove_property(ref, propname, 0);
 		} else {
 			break;
 		}
@@ -1665,10 +1665,10 @@ prim_array_put_reflist(PRIM_PROTOTYPE)
 		} while (array_next(arr, &temp1));
 	}
 
-	remove_property(ref, dir);
+	remove_property(ref, dir, 0);
 	propdat.flags = PROP_STRTYP;
 	propdat.data.str = buf;
-	set_property(ref, dir, &propdat);
+	set_property(ref, dir, &propdat, 0);
 
 	CLEAR(oper1);
 	CLEAR(oper2);

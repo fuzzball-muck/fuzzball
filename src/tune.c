@@ -15,6 +15,7 @@ const char *tp_cpenny = CPENNY;
 const char *tp_dumpdone_mesg = DUMPDONE_MESG;
 const char *tp_dumping_mesg = DUMPING_MESG;
 const char *tp_dumpwarn_mesg = DUMPWARN_MESG;
+const char *tp_gender_prop = LEGACY_GENDER_PROP;
 const char *tp_huh_mesg = HUH_MESSAGE;
 const char *tp_idle_mesg = IDLEBOOT_MESSAGE;
 const char *tp_leave_mesg = LEAVE_MESSAGE;
@@ -45,6 +46,7 @@ struct tune_str_entry tune_str_list[] = {
 	{"Misc",	"muckname", &tp_muckname, 0, MLEV_WIZARD, "Muck name", "", 0, 1},
 	{"Player Max",	"playermax_bootmesg", &tp_playermax_bootmesg, 0, MLEV_WIZARD, "Max. players boot message", "", 0, 1},
 	{"Player Max",	"playermax_warnmesg", &tp_playermax_warnmesg, 0, MLEV_WIZARD, "Max. players login warning", "", 0, 1},
+	{"Properties",  "gender_prop", &tp_gender_prop, 0, MLEV_WIZARD, "Property name used for pronoun substitutions", "", 0, 1},
 	{"Registration","register_mesg", &tp_register_mesg, 0, MLEV_WIZARD, "Login registration mesg", "", 0, 1},
 	{"SSL",		"ssl_keyfile_passwd", &tp_ssl_keyfile_passwd, MLEV_GOD, MLEV_GOD, "Password for SSL keyfile", "SSL", 1, 1},
         {"SSL",		"ssl_cipher_preference_list", &tp_ssl_cipher_preference_list, MLEV_GOD, MLEV_GOD, "OpenSSL cipher list (changes require restart)", "SSL", 0, 1},
@@ -200,6 +202,8 @@ int tp_registration = REGISTRATION;
 int tp_restrict_kill = RESTRICT_KILL;
 int tp_secure_who = SECURE_WHO;
 int tp_secure_teleport = SECURE_TELEPORT;
+int tp_show_legacy_props = SHOW_LEGACY_PROPS;
+int tp_sync_legacy_props = SYNC_LEGACY_PROPS;
 int tp_starttls_allow = STARTTLS_ALLOW;
 int tp_strict_god_priv = STRICT_GOD_PRIV;
 int tp_teleport_to_player = TELEPORT_TO_PLAYER;
@@ -257,6 +261,8 @@ struct tune_bool_entry tune_bool_list[] = {
 	{"Player Max",	"playermax", &tp_playermax, 0, MLEV_WIZARD, "Limit number of concurrent players allowed", ""},
 	{"Properties",	"lock_envcheck", &tp_lock_envcheck, 0, MLEV_WIZARD, "Locks check environment for properties", ""},
 	{"Properties",	"look_propqueues", &tp_look_propqueues, 0, MLEV_WIZARD, "When a player looks, trigger _look/ propqueues", ""},
+	{"Properties",	"show_legacy_props", &tp_show_legacy_props, 0, MLEV_WIZARD, "Examining objects lists legacy props", ""},
+	{"Properties",	"sync_legacy_props", &tp_sync_legacy_props, 0, MLEV_WIZARD, "Setting properties also sets associated legacy props", ""},
 	{"Registration","registration", &tp_registration, 0, MLEV_WIZARD, "Require new players to register manually", ""},
         {"SSL",		"server_cipher_preference", &tp_cipher_server_preference, MLEV_WIZARD, MLEV_WIZARD, "Honor server cipher preference order over client's (changes require restart)", "SSL"},
 	{"Tuning",	"periodic_program_purge", &tp_periodic_program_purge, 0, MLEV_WIZARD, "Periodically free unused MUF programs", ""},

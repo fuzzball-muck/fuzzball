@@ -132,7 +132,7 @@ set_standard_lock(int descr, dbref player, const char *objname,
 
 	if ((object = match_controlled(descr, player, objname)) != NOTHING) {
 		if (!*keyvalue) {
-			remove_property(object, propname);
+			remove_property(object, propname, 0);
 			ts_modifyobject(object);
 			snprintf(buf, sizeof(buf), "%s cleared.", proplabel);
 			notify(player, buf);
@@ -147,7 +147,7 @@ set_standard_lock(int descr, dbref player, const char *objname,
 
 		property.flags = PROP_LOKTYP;
 		property.data.lok = key;
-		set_property(object, propname, &property);
+		set_property(object, propname, &property, 0);
 		ts_modifyobject(object);	
 		snprintf(buf, sizeof(buf), "%s set.", proplabel);
 		notify(player, buf);
@@ -600,7 +600,7 @@ do_set(int descr, dbref player, const char *name, const char *flag)
 
 		if (!(*pname)) {
 			ts_modifyobject(thing);
-			remove_property(thing, type);
+			remove_property(thing, type, 0);
 			notify(player, "Property removed.");
 		} else {
 			ts_modifyobject(thing);
@@ -847,7 +847,7 @@ do_propset(int descr, dbref player, const char *name, const char *prop)
 		}
 		mydat.flags = PROP_FLTTYP;
 		mydat.data.fval = strtod(value, NULL);
-		set_property(thing, pname, &mydat);
+		set_property(thing, pname, &mydat, 0);
 	} else if (string_prefix("dbref", type)) {
 		init_match(descr, player, value, NOTYPE, &md);
 		match_absolute(&md);
@@ -856,7 +856,7 @@ do_propset(int descr, dbref player, const char *name, const char *prop)
 			return;
 		mydat.flags = PROP_REFTYP;
 		mydat.data.ref = ref;
-		set_property(thing, pname, &mydat);
+		set_property(thing, pname, &mydat, 0);
 	} else if (string_prefix("lock", type)) {
 		lok = parse_boolexp(descr, player, value, 0);
 		if (lok == TRUE_BOOLEXP) {
@@ -865,13 +865,13 @@ do_propset(int descr, dbref player, const char *name, const char *prop)
 		}
 		mydat.flags = PROP_LOKTYP;
 		mydat.data.lok = lok;
-		set_property(thing, pname, &mydat);
+		set_property(thing, pname, &mydat, 0);
 	} else if (string_prefix("erase", type)) {
 		if (*value) {
 			notify(player, "Don't give a value when erasing a property.");
 			return;
 		}
-		remove_property(thing, pname);
+		remove_property(thing, pname, 0);
 		notify(player, "Property erased.");
 		return;
 	} else {

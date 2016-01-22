@@ -176,7 +176,7 @@ do_open(int descr, dbref player, const char *direction, const char *linkto)
 		snprintf(buf, sizeof(buf), "_reg/%s", rname);
 		mydat.flags = PROP_REFTYP;
 		mydat.data.ref = exit;
-		set_property(player, buf, &mydat);
+		set_property(player, buf, &mydat, 0);
 	}
 }
 
@@ -547,7 +547,7 @@ do_dig(int descr, dbref player, const char *name, const char *pname)
 		snprintf(buf, sizeof(buf), "_reg/%s", rname);
 		mydat.flags = PROP_REFTYP;
 		mydat.data.ref = room;
-		set_property(player, buf, &mydat);
+		set_property(player, buf, &mydat, 0);
 		snprintf(buf, sizeof(buf), "Room registered as $%s", rname);
 		notify(player, buf);
 	}
@@ -730,7 +730,7 @@ copy_one_prop(dbref player, dbref source, dbref destination, char *propname)
 		}
 
 		/* now hook the new property into the destination object. */
-		set_property(destination, propname, &newprop);
+		set_property(destination, propname, &newprop, 0);
 	}
 	
 	return;
@@ -972,7 +972,7 @@ do_create(dbref player, char *name, char *acost)
 		snprintf(buf, sizeof(buf), "_reg/%s", rname);
 		mydat.flags = PROP_REFTYP;
 		mydat.data.ref = thing;
-		set_property(player, buf, &mydat);
+		set_property(player, buf, &mydat, 0);
 	}
 }
 
@@ -1145,7 +1145,7 @@ do_action(int descr, dbref player, const char *action_name, const char *source_n
 		snprintf(buf, sizeof(buf), "_reg/%s", rname);
 		mydat.flags = PROP_REFTYP;
 		mydat.data.ref = action;
-		set_property(player, buf, &mydat);
+		set_property(player, buf, &mydat, 0);
 	}
 }
 

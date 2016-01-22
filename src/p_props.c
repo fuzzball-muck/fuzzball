@@ -12,6 +12,7 @@
 #include "params.h"
 #include "interp.h"
 #include "msgparse.h"
+#include "tune.h"
 
 static struct inst *oper1, *oper2, *oper3, *oper4;
 static int result;
@@ -42,7 +43,7 @@ prop_write_perms(dbref player, dbref obj, const char *name, int mlev)
 				return 0;
 			if (Prop_ReadOnly(name))
 				return 0;
-			if (!string_compare(name, "sex"))
+			if (!string_compare(name, tp_gender_prop))
 				return 0;
 		}
 		if (string_prefix(name, "_msgmacs/"))
@@ -327,7 +328,7 @@ prim_remove_prop(PRIM_PROTOTYPE)
 	if (!prop_write_perms(ProgUID, oper2->data.objref, buf, mlev))
 		abort_interp("Permission denied.");
 
-	remove_property(oper2->data.objref, buf);
+	remove_property(oper2->data.objref, buf, 0);
 
 #ifdef LOG_PROPS
 	log2file("props.log", "#%d (%d) REMOVEPROP: o=%d n=\"%s\"",
@@ -656,7 +657,7 @@ prim_setprop(PRIM_PROTOTYPE)
 			propdat.data.lok = copy_bool(oper1->data.lock);
 			break;
 		}
-		set_property(oper3->data.objref, tname, &propdat);
+		set_property(oper3->data.objref, tname, &propdat, 0);
 
 #ifdef LOG_PROPS
 		log2file("props.log", "#%d (%d) SETPROP: o=%d n=\"%s\"",

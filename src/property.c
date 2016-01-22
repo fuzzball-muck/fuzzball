@@ -22,7 +22,7 @@
 
 
 void
-set_property_nofetch(dbref player, const char *pname, PData * dat)
+set_property_nofetch(dbref player, const char *pname, PData * dat, int sync)
 {
 	PropPtr p;
 	char buf[BUFFER_LEN];
@@ -65,7 +65,7 @@ set_property_nofetch(dbref player, const char *pname, PData * dat)
 			SetPType(p, PROP_DIRTYP);
 			SetPDataStr(p, NULL);
 			if (!PropDir(p)) {
-				remove_property_nofetch(player, pname);
+				remove_property_nofetch(player, pname, 0);
 			}
 		} else {
 			SetPDataStr(p, alloc_string(dat->data.str));
@@ -76,7 +76,7 @@ set_property_nofetch(dbref player, const char *pname, PData * dat)
 		if (!dat->data.val) {
 			SetPType(p, PROP_DIRTYP);
 			if (!PropDir(p)) {
-				remove_property_nofetch(player, pname);
+				remove_property_nofetch(player, pname, 0);
 			}
 		}
 		break;
@@ -85,7 +85,7 @@ set_property_nofetch(dbref player, const char *pname, PData * dat)
 		if (dat->data.fval == 0.0) {
 			SetPType(p, PROP_DIRTYP);
 			if (!PropDir(p)) {
-				remove_property_nofetch(player, pname);
+				remove_property_nofetch(player, pname, 0);
 			}
 		}
 		break;
@@ -95,7 +95,7 @@ set_property_nofetch(dbref player, const char *pname, PData * dat)
 			SetPType(p, PROP_DIRTYP);
 			SetPDataRef(p, 0);
 			if (!PropDir(p)) {
-				remove_property_nofetch(player, pname);
+				remove_property_nofetch(player, pname, 0);
 			}
 		}
 		break;
@@ -105,22 +105,37 @@ set_property_nofetch(dbref player, const char *pname, PData * dat)
 	case PROP_DIRTYP:
 		SetPDataVal(p, 0);
 		if (!PropDir(p)) {
-			remove_property_nofetch(player, pname);
+			remove_property_nofetch(player, pname, 0);
 		}
 		break;
+	}
+
+	if (!sync && tp_sync_legacy_props && string_compare(tp_gender_prop, LEGACY_GENDER_PROP)) {
+		char *current;
+		static const char *legacy;
+		current = string_dup(tp_gender_prop);
+		legacy = string_dup(LEGACY_GENDER_PROP);
+
+		while (*current == PROPDIR_DELIMITER) current++;
+		while (*legacy == PROPDIR_DELIMITER) legacy++;
+		if (!string_compare(pname, current)) {
+			set_property(player, (char *)legacy, dat, 1);
+		} else if (!string_compare(pname, legacy)) {
+			set_property(player, current, dat, 1);
+		}
 	}
 }
 
 
 void
-set_property(dbref player, const char *name, PData * dat)
+set_property(dbref player, const char *name, PData * dat, int sync)
 {
 #ifdef DISKBASE
 	fetchprops(player, propdir_name(name));
-	set_property_nofetch(player, name, dat);
+	set_property_nofetch(player, name, dat, sync);
 	dirtyprops(player);
 #else
-	set_property_nofetch(player, name, dat);
+	set_property_nofetch(player, name, dat, sync);
 #endif
 	DBDIRTY(player);
 }
@@ -141,7 +156,7 @@ add_prop_nofetch(dbref player, const char *pname, const char *strval, int value)
 		mydat.flags = PROP_DIRTYP;
 		mydat.data.str = NULL;
 	}
-	set_property_nofetch(player, pname, &mydat);
+	set_property_nofetch(player, pname, &mydat, 0);
 }
 
 
@@ -183,7 +198,7 @@ remove_proplist_item(dbref player, PropPtr p, int allp)
 		if (PropFlags(p) & PROP_SYSPERMS)
 			return;
 	}
-	remove_property(player, ptr);
+	remove_property(player, ptr, 0);
 }
 
 
@@ -218,7 +233,7 @@ remove_property_list(dbref player, int all)
 
 /* removes property --- if it's not there then ignore */
 void
-remove_property_nofetch(dbref player, const char *pname)
+remove_property_nofetch(dbref player, const char *pname, int sync)
 {
 	PropPtr l;
 	char buf[BUFFER_LEN];
@@ -230,17 +245,33 @@ remove_property_nofetch(dbref player, const char *pname)
 	l = propdir_delete_elem(l, w);
 	DBFETCH(player)->properties = l;
 	DBDIRTY(player);
+
+	if (!sync && tp_sync_legacy_props && string_compare(tp_gender_prop, LEGACY_GENDER_PROP)) {
+		char *current;
+		static const char *legacy;
+		current = string_dup(tp_gender_prop);
+		legacy = string_dup(LEGACY_GENDER_PROP);
+
+		while (*current == PROPDIR_DELIMITER) current++;
+		while (*legacy == PROPDIR_DELIMITER) legacy++;
+		if (!string_compare(pname, current)) {
+			remove_property(player, (char *)legacy, 1);
+		} else if (!string_compare(pname, legacy)) {
+			remove_property(player, current, 1);
+		}
+	}
+
 }
 
 
 void
-remove_property(dbref player, const char *pname)
+remove_property(dbref player, const char *pname, int sync)
 {
 #ifdef DISKBASE
 	fetchprops(player, propdir_name(pname));
 #endif
 
-	remove_property_nofetch(player, pname);
+	remove_property_nofetch(player, pname, sync);
 
 #ifdef DISKBASE
 	dirtyprops(player);
@@ -849,13 +880,13 @@ db_get_single_prop(FILE * f, dbref obj, long pos, PropPtr pnode, const char *pdi
 			} else {
 				mydat.flags = flg;
 				mydat.data.str = value;
-				set_property_nofetch(obj, name, &mydat);
+				set_property_nofetch(obj, name, &mydat, 0);
 			}
 		} else {
 			flg |= PROP_ISUNLOADED;
 			mydat.flags = flg;
 			mydat.data.val = tpos;
-			set_property_nofetch(obj, name, &mydat);
+			set_property_nofetch(obj, name, &mydat, 0);
 		}
 		break;
 	case PROP_LOKTYP:
@@ -868,13 +899,13 @@ db_get_single_prop(FILE * f, dbref obj, long pos, PropPtr pnode, const char *pdi
 			} else {
 				mydat.flags = flg;
 				mydat.data.lok = lok;
-				set_property_nofetch(obj, name, &mydat);
+				set_property_nofetch(obj, name, &mydat, 0);
 			}
 		} else {
 			flg |= PROP_ISUNLOADED;
 			mydat.flags = flg;
 			mydat.data.val = tpos;
-			set_property_nofetch(obj, name, &mydat);
+			set_property_nofetch(obj, name, &mydat, 0);
 		}
 		break;
 	case PROP_INTTYP:
@@ -887,7 +918,7 @@ db_get_single_prop(FILE * f, dbref obj, long pos, PropPtr pnode, const char *pdi
 		}
 		mydat.flags = flg;
 		mydat.data.val = atoi(value);
-		set_property_nofetch(obj, name, &mydat);
+		set_property_nofetch(obj, name, &mydat, 0);
 		break;
 	case PROP_FLTTYP:
 		mydat.flags = flg;
@@ -921,7 +952,7 @@ db_get_single_prop(FILE * f, dbref obj, long pos, PropPtr pnode, const char *pdi
 		} else {
 			sscanf(value, "%lg", &mydat.data.fval);
 		}
-		set_property_nofetch(obj, name, &mydat);
+		set_property_nofetch(obj, name, &mydat, 0);
 		break;
 	case PROP_REFTYP:
 		if (!number(value)) {
@@ -933,7 +964,7 @@ db_get_single_prop(FILE * f, dbref obj, long pos, PropPtr pnode, const char *pdi
 		}
 		mydat.flags = flg;
 		mydat.data.ref = atoi(value);
-		set_property_nofetch(obj, name, &mydat);
+		set_property_nofetch(obj, name, &mydat, 0);
 		break;
 	case PROP_DIRTYP:
 		break;

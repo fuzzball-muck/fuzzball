@@ -3,6 +3,7 @@
 #include "props.h"
 #include "params.h"
 #include "mpi.h"
+#include "tune.h"
 
 /* String utilities */
 
@@ -191,11 +192,11 @@ pronoun_substitute(int descr, dbref player, const char *str)
 	strcpyn(orig, sizeof(orig), str);
 	str = orig;
 
-	sexstr = get_property_class(player, "sex");
+	sexstr = get_property_class(player, tp_gender_prop);
 	if (sexstr) {
 		sexstr = do_parse_mesg(descr, player, player, sexstr, "(Lock)", sexbuf, sizeof(sexbuf),
 						(MPI_ISPRIVATE | MPI_ISLOCK |
-							(Prop_Blessed(player, "sex")? MPI_ISBLESSED : 0)));
+							(Prop_Blessed(player, tp_gender_prop) ? MPI_ISBLESSED : 0)));
 	}
 	while (sexstr && isspace(*sexstr)) sexstr++;
 
