@@ -364,4 +364,10 @@
 #define ASCII_THING_NAMES 1
 #define ASCII_OTHER_NAMES 0
 
+/* Show legacy props to player */
+#define SHOW_LEGACY_PROPS 0
+
+/* Synchronize legacy props */
+#define SYNC_LEGACY_PROPS 0
+
 #endif /* _DEFAULTS_H */

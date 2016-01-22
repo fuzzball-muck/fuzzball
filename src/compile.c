@@ -1844,7 +1844,7 @@ do_directive(COMPSTATE * cstat, char *direct)
 			v_abort_compile(cstat, "Invalid $pubdef name.  No /, :, @ nor ~ are allowed.");
 		} else {
 			if (!string_compare(tmpname, ":")) {
-				remove_property(cstat->program, "/_defs");
+				remove_property(cstat->program, "/_defs", 0);
 			} else {
 				const char *defstr = NULL;
 				char propname[BUFFER_LEN];
@@ -1871,7 +1871,7 @@ do_directive(COMPSTATE * cstat, char *direct)
 					if (defstr != NULL && *defstr) {
 						add_property(cstat->program, propname, defstr, 0);
 					} else {
-						remove_property(cstat->program, propname);
+						remove_property(cstat->program, propname, 0);
 					}
 				}
 			}
@@ -1926,7 +1926,7 @@ do_directive(COMPSTATE * cstat, char *direct)
 				if (*defstr) {
 					add_property(cstat->program, propname, defstr, 0);
 				} else {
-					remove_property(cstat->program, propname);
+					remove_property(cstat->program, propname, 0);
 				}
 			}
 		}

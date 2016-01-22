@@ -93,7 +93,7 @@ safeputprop(dbref obj, dbref perms, char *buf, char *val, int mesgtyp)
 			return 0;
 	}
 	if (val == NULL) {
-		remove_property(obj, buf);
+		remove_property(obj, buf, 0);
 	} else {
 		add_property(obj, buf, val, 0);
 	}

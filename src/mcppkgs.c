@@ -177,10 +177,10 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 
 				if (lines == 0) {
 					snprintf(buf, sizeof(buf), "%s#", reference);
-					remove_property(obj, buf);
+					remove_property(obj, buf, 0);
 				} else {
 					snprintf(buf, sizeof(buf), "%s#", reference);
-					remove_property(obj, buf);
+					remove_property(obj, buf, 0);
 					add_property(obj, buf, "", lines);
 					for (line = 0; line < lines; line++) {
 						content = mcp_mesg_arg_getline(msg, "content", line);

@@ -448,7 +448,22 @@ listprops_wildcard(dbref player, dbref thing, const char *dir, const char *wild)
 	propadr = first_prop(thing, (char *) dir, &pptr, propname, sizeof(propname));
 	while (propadr) {
 		if (equalstr(wldcrd, propname)) {
+			char *current, *tmpname;
+	                static char *legacy;
+	                current = string_dup(tp_gender_prop);
+	                legacy = string_dup(LEGACY_GENDER_PROP);
+
 			snprintf(buf, sizeof(buf), "%s%c%s", dir, PROPDIR_DELIMITER, propname);
+			tmpname = string_dup(buf);
+
+	                while (*current == PROPDIR_DELIMITER) current++;
+	                while (*legacy == PROPDIR_DELIMITER) legacy++;
+	                while (*tmpname == PROPDIR_DELIMITER) tmpname++;
+
+			if (!tp_show_legacy_props && !string_compare(tmpname, legacy) && string_compare(current, legacy)) {
+				propadr = next_prop(pptr, propadr, propname, sizeof(propname));
+				continue;
+			}
 			if (!Prop_System(buf) && ((!Prop_Hidden(buf) && !(PropFlags(propadr) & PROP_SYSPERMS))
 				|| Wizard(OWNER(player)))) {
 				if (!*ptr || recurse) {

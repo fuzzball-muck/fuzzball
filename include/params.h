@@ -129,6 +129,7 @@
 #define NO_IDLE_PING_PROP	"_/sys/no_idle_ping"
 #define IGNORE_PROP		"@__sys__/ignore/def"
 #define NO_RECYCLE_PROP		"@/precious"
+#define LEGACY_GENDER_PROP	"sex"
 
 /* Do we want MUF math operators (currently =) to work on strings? */
 #undef STRINGMATH
