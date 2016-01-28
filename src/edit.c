@@ -315,7 +315,7 @@ editor(int descr, dbref player, const char *command)
 		buf[j] = '\0';
 		word[i] = alloc_string(buf);
 		if ((i == 1) && !string_compare(word[0], "def")) {
-			if (word[1][0] == '.' || (word[1][0] > '0' && word[1][0] <= '9')) {
+			if (word[1] && (word[1][0] == '.' || (word[1][0] > '0' && word[1][0] <= '9'))) {
 				notify(player, "Invalid macro name.");
 				return;
 			}
