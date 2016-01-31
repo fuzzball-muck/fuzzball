@@ -300,7 +300,8 @@ check_exit(dbref player, dbref obj)
 		violate(player, obj, "has a negative link count.");
 	for (i = 0; i < DBFETCH(obj)->sp.exit.ndest; i++) {
 		if (!valid_ref((DBFETCH(obj)->sp.exit.dest)[i]) &&
-			(DBFETCH(obj)->sp.exit.dest)[i] != HOME) {
+			(DBFETCH(obj)->sp.exit.dest)[i] != HOME &&
+			(DBFETCH(obj)->sp.exit.dest)[i] != NIL) {
 			violate(player, obj, "has an invalid object as one of its link destinations");
 		}
 	}

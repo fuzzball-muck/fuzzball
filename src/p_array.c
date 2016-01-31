@@ -2024,7 +2024,11 @@ prim_array_interpret(PRIM_PROTOTYPE)
                     text = "*HOME*";
                     break;
                 }
-                if (in->data.number < HOME) {
+                if (in->data.objref == NIL) {
+                    text = "*NIL*";
+                    break;
+                }
+                if (in->data.number < NIL) {
                     text = "*INVALID*";
                     break;
                 }

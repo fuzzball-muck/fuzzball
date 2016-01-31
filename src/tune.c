@@ -164,6 +164,7 @@ struct tune_ref_entry tune_ref_list[] = {
 int tp_7bit_other_names = ASCII_OTHER_NAMES;
 int tp_7bit_thing_names = ASCII_THING_NAMES;
 int tp_allow_home = ALLOW_HOME;
+int tp_autolink_actions = AUTOLINK_ACTIONS;
 int tp_cipher_server_preference = SERVER_CIPHER_PREFERENCE;
 int tp_compatible_priorities = COMPATIBLE_PRIORITIES;
 int tp_dark_sleepers = DARK_SLEEPERS;
@@ -249,6 +250,7 @@ struct tune_bool_entry tune_bool_list[] = {
 	{"Misc",	"ignore_bidirectional", &tp_ignore_bidirectional, MLEV_MASTER, MLEV_WIZARD, "Enable bidirectional @ignore", ""},
 	{"Misc",	"m3_huh", &tp_m3_huh, MLEV_MASTER, MLEV_WIZARD, "Enable huh? to call an exit named \"huh?\" and set M3, with full command string", ""},
 	{"Misc",	"strict_god_priv", &tp_strict_god_priv, MLEV_GOD, MLEV_GOD, "Only God can touch God's objects", "GODPRIV"},
+	{"Misc",	"autolink_actions", &tp_autolink_actions, 0, MLEV_WIZARD, "Automatically link @actions to NIL", ""},
 	{"Movement",	"teleport_to_player", &tp_teleport_to_player, 0, MLEV_WIZARD, "Allow teleporting to a player", ""},
 	{"Movement",	"secure_teleport", &tp_secure_teleport, 0, MLEV_WIZARD, "Restrict actions to Jump_OK or controlled rooms", ""},
 	{"Movement",	"secure_thing_movement", &tp_thing_movement, MLEV_WIZARD, MLEV_WIZARD, "Moving things act like player", ""},

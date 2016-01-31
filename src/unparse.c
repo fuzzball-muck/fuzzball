@@ -88,6 +88,8 @@ islog:
 		return "*AMBIGUOUS*";
 	case HOME:
 		return "*HOME*";
+	case NIL:
+		return "*NIL*";
 	default:
 		if (loc < 0 || loc >= db_top)
 			return "*INVALID*";
