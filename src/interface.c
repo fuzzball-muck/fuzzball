@@ -1081,6 +1081,27 @@ shovechars()
 	SSL_load_error_strings ();
  	OpenSSL_add_ssl_algorithms (); 
 	ssl_ctx = SSL_CTX_new (SSLv23_server_method ());
+
+#ifdef SSL_OP_SINGLE_ECDH_USE
+        /* As a default "optimization", OpenSSL shares ephemeral keys between sessions.
+           Disable this to improve forward secrecy. */
+        SSL_CTX_set_options(ssl_ctx, SSL_OP_SINGLE_ECDH_USE);
+#endif
+
+#ifdef SSL_OP_NO_TICKET
+        /* OpenSSL supports session tickets by default but never rotates the keys by default.
+           Since session resumption isn't important for MUCK performance and since this
+           breaks forward secrecy, just disable tickets rather than trying to implement
+           key rotation. */
+        SSL_CTX_set_options(ssl_ctx, SSL_OP_NO_TICKET);
+#endif
+
+        /* Disable the session cache on the assumption that session resumption is not
+           worthwhile given our long-lived connections. This also avoids any concern
+           about session secret keys in memory for a long time. (By default, OpenSSL
+           only clears timed out sessions every 256 connections.) */
+        SSL_CTX_set_session_cache_mode(ssl_ctx, SSL_SESS_CACHE_OFF);
+
 #if defined(SSL_CTX_set_ecdh_auto)
         /* In OpenSSL >= 1.0.2, this exists; otherwise, fallback to the older
            API where we have to name a curve. */
