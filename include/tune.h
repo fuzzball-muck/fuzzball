@@ -134,6 +134,7 @@ extern struct tune_ref_entry tune_ref_list[];
 extern int tp_7bit_other_names;
 extern int tp_7bit_thing_names;
 extern int tp_allow_home;
+extern int tp_autolink_actions;
 extern int tp_cipher_server_preference;
 extern int tp_compatible_priorities;
 extern int tp_dark_sleepers;

@@ -129,7 +129,7 @@ find_registered_obj(dbref player, const char *name)
 		break;
 	case PROP_REFTYP:
 		match = PropDataRef(ptr);
-		if ((match >= 0) && (match < db_top) && (Typeof(match) != TYPE_GARBAGE))
+		if (match == HOME || match == NIL || ((match >= 0) && (match < db_top) && (Typeof(match) != TYPE_GARBAGE)))
 			return (match);
 		break;
 	case PROP_INTTYP:
@@ -229,6 +229,12 @@ match_home(struct match_data *md)
 		md->exact_match = HOME;
 }
 
+void
+match_nil(struct match_data *md)
+{
+	if (!string_compare(md->match_name, "nil"))
+		md->exact_match = NIL;
+}
 
 static void
 match_list(dbref first, struct match_data *md)

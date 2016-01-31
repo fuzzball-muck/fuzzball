@@ -524,6 +524,7 @@ prim_match(PRIM_PROTOTYPE)
 			match_me(&md);
 			match_here(&md);
 			match_home(&md);
+			match_nil(&md);
 		}
 		if (Wizard(ProgUID) || (mlev >= 4)) {
 			match_absolute(&md);
@@ -1073,6 +1074,8 @@ prog_can_link_to(int mlev, dbref who, object_flag_type what_type, dbref where)
 {
 	if (where == HOME)
 		return 1;
+	if (where == NIL && what_type == TYPE_EXIT)
+		return 1;
 	if (where < 0 || where >= db_top)
 		return 0;
 	switch (what_type) {
@@ -1136,7 +1139,7 @@ prim_setlink(PRIM_PROTOTYPE)
 			abort_interp("Invalid object. (1)");
 		}
 	} else {
-		if (oper1->data.objref != HOME && !valid_object(oper1))
+		if (oper1->data.objref != HOME && oper1->data.objref != NIL && !valid_object(oper1))
 			abort_interp("Invalid object. (2)");
 		if (Typeof(ref) == TYPE_PROGRAM)
 			abort_interp("Program objects are not linkable. (1)");
@@ -1146,7 +1149,7 @@ prim_setlink(PRIM_PROTOTYPE)
 		case TYPE_EXIT:
 			if ((mlev < 4) && !permissions(ProgUID, ref))
 				abort_interp("Permission denied.");
-			if (DBFETCH(ref)->sp.exit.ndest != 0)
+			if (DBFETCH(ref)->sp.exit.ndest != 0 && (DBFETCH(ref)->sp.exit.dest)[0] != NIL)
 				abort_interp("Exit is already linked.");
 			if (exit_loop_check(ref, oper1->data.objref))
 				abort_interp("Link would cause a loop.");
@@ -1357,6 +1360,12 @@ prim_newexit(PRIM_PROTOTYPE)
 		/* link it in */
 		PUSH(ref, DBFETCH(oper2->data.objref)->exits);
 		DBDIRTY(oper2->data.objref);
+
+		if (tp_autolink_actions) {
+			DBFETCH(ref)->sp.exit.ndest = 1;
+			DBFETCH(ref)->sp.exit.dest = (dbref *) malloc(sizeof(dbref));
+			(DBFETCH(ref)->sp.exit.dest)[0] = NIL;
+		}
 
 		CLEAR(oper1);
 		CLEAR(oper2);

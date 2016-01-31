@@ -1804,6 +1804,9 @@ prim_unparseobj(PRIM_PROTOTYPE)
 		case HOME:
 			snprintf(buf, sizeof(buf), "*HOME*");
 			break;
+		case NIL:
+			snprintf(buf, sizeof(buf), "*NIL*");
+			break;
 		default:
 			if (result < 0 || result >= db_top)
 				snprintf(buf, sizeof(buf), "*INVALID*");

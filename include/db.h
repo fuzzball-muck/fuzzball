@@ -372,7 +372,8 @@ struct boolexp {
 /* special dbref's */
 #define NOTHING ((dbref) -1)	/* null dbref */
 #define AMBIGUOUS ((dbref) -2)	/* multiple possibilities, for matchers */
-#define HOME ((dbref) -3)		/* virtual room, represents mover's home */
+#define HOME ((dbref) -3)	/* virtual room, represents mover's home */
+#define NIL ((dbref) -4)	/* do-nothing link, for actions */
 
 /* editor data structures */
 

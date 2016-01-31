@@ -47,6 +47,8 @@ extern void match_here(struct match_data *md);
 
 extern void match_home(struct match_data *md);
 
+extern void match_nil(struct match_data *md);
+
 /* match something player is carrying */
 extern void match_possession(struct match_data *md);
 

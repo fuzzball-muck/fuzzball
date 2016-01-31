@@ -31,6 +31,7 @@ parse_linkable_dest(int descr, dbref player, dbref exit, const char *dest_name)
 	match_absolute(&md);
 	match_everything(&md);
 	match_home(&md);
+	match_nil(&md);
 
 	if ((dobj = match_result(&md)) == NOTHING || dobj == AMBIGUOUS) {
 		snprintf(buf, sizeof(buf), "I couldn't find '%s'.", dest_name);
@@ -73,7 +74,7 @@ exit_loop_check(dbref source, dbref dest)
 
 	if (source == dest)
 		return 1;				/* That's an easy one! */
-	if (Typeof(dest) != TYPE_EXIT)
+	if (dest == NIL || Typeof(dest) != TYPE_EXIT)
 		return 0;
 	for (i = 0; i < DBFETCH(dest)->sp.exit.ndest; i++) {
 		if ((DBFETCH(dest)->sp.exit.dest)[i] == source) {
@@ -206,6 +207,14 @@ _link_exit(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_li
 
 		if ((dest = parse_linkable_dest(descr, player, exit, q)) == NOTHING)
 			continue;
+
+		if (dest == NIL) {
+			if (!dryrun) {
+				notify(player, "Linked to NIL.");
+			}
+			dest_list[ndest++] = dest;
+			continue;
+		}
 
 		switch (Typeof(dest)) {
 		case TYPE_PLAYER:
@@ -346,8 +355,10 @@ do_link(int descr, dbref player, const char *thing_name, const char *dest_name)
 		/* we're ok, check the usual stuff */
 		if (DBFETCH(thing)->sp.exit.ndest != 0) {
 			if (controls(player, thing)) {
-				notify(player, "That exit is already linked.");
-				return;
+				if ((DBFETCH(thing)->sp.exit.dest)[0] != NIL) {
+					notify(player, "That exit is already linked.");
+					return;
+				}
 			} else {
 				notify(player, "Permission denied. (you don't control the exit to relink)");
 				return;
@@ -1146,6 +1157,13 @@ do_action(int descr, dbref player, const char *action_name, const char *source_n
 		mydat.flags = PROP_REFTYP;
 		mydat.data.ref = action;
 		set_property(player, buf, &mydat, 0);
+	}
+
+	if (tp_autolink_actions) {
+		DBFETCH(action)->sp.exit.ndest = 1;
+		DBFETCH(action)->sp.exit.dest = (dbref *) malloc(sizeof(dbref));
+		(DBFETCH(action)->sp.exit.dest)[0] = NIL;
+		notify(player, "Linked to NIL.");
 	}
 }
 

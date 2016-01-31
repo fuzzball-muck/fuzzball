@@ -444,37 +444,23 @@ trigger(int descr, dbref player, dbref exit, int pflag)
 				continue;
 			}
 		}
-		switch (Typeof(dest)) {
-		case TYPE_ROOM:
-			if (pflag) {
-				if (parent_loop_check(player, dest)) {
-					notify(player, "That would cause a paradox.");
-					break;
-				}
-				if (!Wizard(OWNER(player)) && Typeof(player) == TYPE_THING
-					&& (FLAGS(dest) & ZOMBIE)) {
-					notify(player, "You can't go that way.");
-					break;
-				}
-				if ((FLAGS(player) & VEHICLE) && ((FLAGS(dest) | FLAGS(exit)) & VEHICLE)) {
-					notify(player, "You can't go that way.");
-					break;
-				}
-				if (GETDROP(exit))
-					exec_or_notify_prop(descr, player, exit, MESGPROP_DROP, "(@Drop)");
-				if (GETODROP(exit) && !Dark(player)) {
-					parse_oprop(descr, player, dest, exit, MESGPROP_ODROP,
-								   NAME(player), "(@Odrop)");
-				}
-				enter_room(descr, player, dest, exit);
-				succ = 1;
-			}
-			break;
-		case TYPE_THING:
-			if (dest == getloc(exit) && (FLAGS(dest) & VEHICLE)) {
+		if (dest == NIL) {
+			succ = 1;
+		} else {
+			switch (Typeof(dest)) {
+			case TYPE_ROOM:
 				if (pflag) {
 					if (parent_loop_check(player, dest)) {
 						notify(player, "That would cause a paradox.");
+						break;
+					}
+					if (!Wizard(OWNER(player)) && Typeof(player) == TYPE_THING
+						&& (FLAGS(dest) & ZOMBIE)) {
+						notify(player, "You can't go that way.");
+						break;
+					}
+					if ((FLAGS(player) & VEHICLE) && ((FLAGS(dest) | FLAGS(exit)) & VEHICLE)) {
+						notify(player, "You can't go that way.");
 						break;
 					}
 					if (GETDROP(exit))
@@ -486,71 +472,89 @@ trigger(int descr, dbref player, dbref exit, int pflag)
 					enter_room(descr, player, dest, exit);
 					succ = 1;
 				}
-			} else {
-				if (Typeof(DBFETCH(exit)->location) == TYPE_THING) {
-					if (parent_loop_check(dest, getloc(getloc(exit)))) {
-						notify(player, "That would cause a paradox.");
-						break;
-					}
-					if (tp_thing_movement) {
-						enter_room(descr, dest, DBFETCH(DBFETCH(exit)->location)->location,
-								   exit);
-					} else {
-						moveto(dest, DBFETCH(DBFETCH(exit)->location)->location);
-					}
-					if (!(FLAGS(exit) & STICKY)) {
-						/* send home source object */
-						sobjact = 1;
+				break;
+			case TYPE_THING:
+				if (dest == getloc(exit) && (FLAGS(dest) & VEHICLE)) {
+					if (pflag) {
+						if (parent_loop_check(player, dest)) {
+							notify(player, "That would cause a paradox.");
+							break;
+						}
+						if (GETDROP(exit))
+							exec_or_notify_prop(descr, player, exit, MESGPROP_DROP, "(@Drop)");
+						if (GETODROP(exit) && !Dark(player)) {
+							parse_oprop(descr, player, dest, exit, MESGPROP_ODROP,
+										   NAME(player), "(@Odrop)");
+						}
+						enter_room(descr, player, dest, exit);
+						succ = 1;
 					}
 				} else {
-					if (parent_loop_check(dest, getloc(exit))) {
-						notify(player, "That would cause a paradox.");
-						break;
-					}
-					if (tp_thing_movement) {
-						enter_room(descr, dest, DBFETCH(exit)->location, exit);
+					if (Typeof(DBFETCH(exit)->location) == TYPE_THING) {
+						if (parent_loop_check(dest, getloc(getloc(exit)))) {
+							notify(player, "That would cause a paradox.");
+							break;
+						}
+						if (tp_thing_movement) {
+							enter_room(descr, dest, DBFETCH(DBFETCH(exit)->location)->location,
+									   exit);
+						} else {
+							moveto(dest, DBFETCH(DBFETCH(exit)->location)->location);
+						}
+						if (!(FLAGS(exit) & STICKY)) {
+							/* send home source object */
+							sobjact = 1;
+						}
 					} else {
-						moveto(dest, DBFETCH(exit)->location);
+						if (parent_loop_check(dest, getloc(exit))) {
+							notify(player, "That would cause a paradox.");
+							break;
+						}
+						if (tp_thing_movement) {
+							enter_room(descr, dest, DBFETCH(exit)->location, exit);
+						} else {
+							moveto(dest, DBFETCH(exit)->location);
+						}
 					}
+					if (GETSUCC(exit))
+						succ = 1;
 				}
+				break;
+			case TYPE_EXIT:		/* It's a meta-link(tm)! */
+				ts_useobject(dest);
+				trigger(descr, player, (DBFETCH(exit)->sp.exit.dest)[i], 0);
 				if (GETSUCC(exit))
 					succ = 1;
-			}
-			break;
-		case TYPE_EXIT:		/* It's a meta-link(tm)! */
-			ts_useobject(dest);
-			trigger(descr, player, (DBFETCH(exit)->sp.exit.dest)[i], 0);
-			if (GETSUCC(exit))
-				succ = 1;
-			break;
-		case TYPE_PLAYER:
-			if (pflag && DBFETCH(dest)->location != NOTHING) {
-				if (parent_loop_check(player, dest)) {
-					notify(player, "That would cause a paradox.");
-					break;
-				}
-				succ = 1;
-				if (FLAGS(dest) & JUMP_OK) {
-					if (GETDROP(exit)) {
-						exec_or_notify_prop(descr, player, exit, MESGPROP_DROP, "(@Drop)");
+				break;
+			case TYPE_PLAYER:
+				if (pflag && DBFETCH(dest)->location != NOTHING) {
+					if (parent_loop_check(player, dest)) {
+						notify(player, "That would cause a paradox.");
+						break;
 					}
-					if (GETODROP(exit) && !Dark(player)) {
-						parse_oprop(descr, player, getloc(dest), exit,
-									   MESGPROP_ODROP, NAME(player), "(@Odrop)");
+					succ = 1;
+					if (FLAGS(dest) & JUMP_OK) {
+						if (GETDROP(exit)) {
+							exec_or_notify_prop(descr, player, exit, MESGPROP_DROP, "(@Drop)");
+						}
+						if (GETODROP(exit) && !Dark(player)) {
+							parse_oprop(descr, player, getloc(dest), exit,
+										   MESGPROP_ODROP, NAME(player), "(@Odrop)");
+						}
+						enter_room(descr, player, DBFETCH(dest)->location, exit);
+					} else {
+						notify(player, "That player does not wish to be disturbed.");
 					}
-					enter_room(descr, player, DBFETCH(dest)->location, exit);
-				} else {
-					notify(player, "That player does not wish to be disturbed.");
 				}
+				break;
+			case TYPE_PROGRAM:
+				tmpfr = interp(descr, player, DBFETCH(player)->location, dest, exit,
+							   FOREGROUND, STD_REGUID, 0);
+				if (tmpfr) {
+					interp_loop(player, dest, tmpfr, 0);
+				}
+				return;
 			}
-			break;
-		case TYPE_PROGRAM:
-			tmpfr = interp(descr, player, DBFETCH(player)->location, dest, exit,
-						   FOREGROUND, STD_REGUID, 0);
-			if (tmpfr) {
-				interp_loop(player, dest, tmpfr, 0);
-			}
-			return;
 		}
 	}
 	if (sobjact)

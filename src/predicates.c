@@ -24,6 +24,11 @@ can_link_to(dbref who, object_flag_type what_type, dbref where)
 		/* Can always link to HOME */
 	if (where == HOME)
 		return 1;
+
+		/* Exits can be linked to NIL */
+	if (where == NIL && what_type == TYPE_EXIT)
+		return 1;
+
 		/* Can't link to an invalid dbref */
 	if (where < 0 || where >= db_top)
 		return 0;
@@ -109,6 +114,9 @@ could_doit(int descr, dbref player, dbref thing)
 		owner = OWNER(thing);
 		source = DBFETCH(player)->location;
 		dest = *(DBFETCH(thing)->sp.exit.dest);
+
+		if (dest == NIL)
+			return (eval_boolexp(descr, player, GETLOCK(thing), thing));
 
 		if (Typeof(dest) == TYPE_PLAYER) {
 			/* Check for additional restrictions related to player dests */
@@ -493,8 +501,8 @@ ok_name(const char *name)
 			&& !index(name, ESCAPE_CHAR)
 			&& !word_start(name, NOT_TOKEN)
 			&& string_compare(name, "me")
-			&& string_compare(name, "home")
 			&& string_compare(name, "here")
+			&& string_compare(name, "home")
 			&& (
 				!*tp_reserved_names ||
 				!equalstr((char*)tp_reserved_names, (char*)name)
