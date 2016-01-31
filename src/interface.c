@@ -1081,6 +1081,13 @@ shovechars()
 	SSL_load_error_strings ();
  	OpenSSL_add_ssl_algorithms (); 
 	ssl_ctx = SSL_CTX_new (SSLv23_server_method ());
+
+#ifdef SSL_OP_SINGLE_ECDH_USE
+        /* As a default "optimization", OpenSSL shares ephemeral keys between sessions.
+           Disable this to improve forward secrecy. */
+        SSL_CTX_set_options(ssl_ctx, SSL_OP_SINGLE_ECDH_USE);
+#endif
+
 #if defined(SSL_CTX_set_ecdh_auto)
         /* In OpenSSL >= 1.0.2, this exists; otherwise, fallback to the older
            API where we have to name a curve. */
