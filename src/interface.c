@@ -1088,6 +1088,14 @@ shovechars()
         SSL_CTX_set_options(ssl_ctx, SSL_OP_SINGLE_ECDH_USE);
 #endif
 
+#ifdef SSL_OP_NO_TICKET
+        /* OpenSSL supports session tickets by default but never rotates the keys by default.
+           Since session resumption isn't important for MUCK performance and since this
+           breaks forward secrecy, just disable tickets rather than trying to implement
+           key rotation. */
+        SSL_CTX_set_options(ssl_ctx, SSL_OP_NO_TICKET);
+#endif
+
 #if defined(SSL_CTX_set_ecdh_auto)
         /* In OpenSSL >= 1.0.2, this exists; otherwise, fallback to the older
            API where we have to name a curve. */
