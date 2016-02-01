@@ -82,6 +82,7 @@ static int ipv6_enabled = 0;
 
 static int numports = 0;
 static int numsocks = 0;
+static int max_descriptor = 0;
 static int listener_port[MAX_LISTEN_SOCKS];
 static int sock[MAX_LISTEN_SOCKS];
 #ifdef USE_IPV6
@@ -97,12 +98,13 @@ static int ssl_sock[MAX_LISTEN_SOCKS];
 static int ssl_numsocks_v6 = 0;
 static int ssl_sock_v6[MAX_LISTEN_SOCKS];
 # endif
-SSL_CTX *ssl_ctx;
+SSL_CTX *ssl_ctx = NULL;
 #endif
 
 static int ndescriptors = 0;
 
 void process_commands(void);
+static void update_max_descriptor(int descr);
 void shovechars();
 void shutdownsock(struct descriptor_data *d);
 struct descriptor_data *initializesock(int s, const char *hostname, int is_ssl);
@@ -167,7 +169,11 @@ ssize_t socket_write(struct descriptor_data *d, const void *buf, size_t count);
 #  define socket_read(d, buf, count) recv(d->descriptor, buf, count,0)
 # endif
 #endif
- 
+
+#ifdef USE_SSL
+static SSL_CTX *configure_new_ssl_ctx(void);
+int reconfigure_ssl(void);
+#endif
 
 void resolve_hostnames(void);
 
@@ -1035,6 +1041,12 @@ static int con_players_max = 0;	/* one of Cynbe's good ideas. */
 static int con_players_curr = 0;	/* for playermax checks. */
 extern void purge_free_frames(void);
 
+static void update_max_descriptor(int descr) {
+    if (descr >= max_descriptor) {
+        max_descriptor = descr + 1;
+    }
+}
+
 void
 shovechars()
 {
@@ -1044,22 +1056,18 @@ shovechars()
 	struct timeval last_slice, current_time;
 	struct timeval next_slice;
 	struct timeval timeout, slice_timeout;
-	int maxd = 0, cnt;
+	int cnt;
 	struct descriptor_data *d, *dnext;
 	struct descriptor_data *newd;
 	struct timeval sel_in, sel_out;
 	int avail_descriptors;
 	int i;
 
-#ifdef USE_SSL
-	int ssl_status_ok = 1;
-        EC_KEY *eckey = NULL;
-#endif
 
 	if (ipv4_enabled) {
 		for (i = 0; i < numports; i++) {
 			sock[i] = make_socket(listener_port[i]);
-			maxd = sock[i] + 1;
+                        update_max_descriptor(sock[i]);
 			numsocks++;
 		}
 	}
@@ -1067,7 +1075,7 @@ shovechars()
 	if (ipv6_enabled) {
 		for (i = 0; i < numports; i++) {
 			sock_v6[i] = make_socket_v6(listener_port[i]);
-			maxd = sock_v6[i] + 1;
+                        update_max_descriptor(sock_v6[i]);
 			numsocks_v6++;
 		}
 	}
@@ -1076,93 +1084,10 @@ shovechars()
 #ifdef USE_SSL
 	SSL_load_error_strings ();
  	OpenSSL_add_ssl_algorithms (); 
-	ssl_ctx = SSL_CTX_new (SSLv23_server_method ());
 
-#ifdef SSL_OP_SINGLE_ECDH_USE
-        /* As a default "optimization", OpenSSL shares ephemeral keys between sessions.
-           Disable this to improve forward secrecy. */
-        SSL_CTX_set_options(ssl_ctx, SSL_OP_SINGLE_ECDH_USE);
+        (void) reconfigure_ssl();
 #endif
-
-#ifdef SSL_OP_NO_TICKET
-        /* OpenSSL supports session tickets by default but never rotates the keys by default.
-           Since session resumption isn't important for MUCK performance and since this
-           breaks forward secrecy, just disable tickets rather than trying to implement
-           key rotation. */
-        SSL_CTX_set_options(ssl_ctx, SSL_OP_NO_TICKET);
-#endif
-
-        /* Disable the session cache on the assumption that session resumption is not
-           worthwhile given our long-lived connections. This also avoids any concern
-           about session secret keys in memory for a long time. (By default, OpenSSL
-           only clears timed out sessions every 256 connections.) */
-        SSL_CTX_set_session_cache_mode(ssl_ctx, SSL_SESS_CACHE_OFF);
-
-#if defined(SSL_CTX_set_ecdh_auto)
-        /* In OpenSSL >= 1.0.2, this exists; otherwise, fallback to the older
-           API where we have to name a curve. */
-        SSL_CTX_set_ecdh_auto(ssl_ctx, 1);
-#else
-        eckey = EC_KEY_new_by_curve_name(NID_X9_62_prime256v1);
-        SSL_CTX_set_tmp_ecdh(ssl_ctx, eckey);
-#endif
-        SSL_CTX_set_cipher_list(ssl_ctx, tp_ssl_cipher_preference_list);
-
-        if (tp_cipher_server_preference) {
-            SSL_CTX_set_options(ssl_ctx, SSL_OP_CIPHER_SERVER_PREFERENCE);
-        }
-
  
-	if (!SSL_CTX_use_certificate_chain_file (ssl_ctx, SSL_CERT_FILE)) {
-		log_status("Could not load certificate file %s", SSL_CERT_FILE);
-		fprintf(stderr, "Could not load certificate file %s\n", SSL_CERT_FILE);
-		ssl_status_ok = 0;
-	}
-	if (ssl_status_ok) {
-		SSL_CTX_set_default_passwd_cb(ssl_ctx, pem_passwd_cb);
-		SSL_CTX_set_default_passwd_cb_userdata(ssl_ctx, (void*)tp_ssl_keyfile_passwd);
-
-		if (!SSL_CTX_use_PrivateKey_file (ssl_ctx, SSL_KEY_FILE, SSL_FILETYPE_PEM)) {
-			log_status("Could not load private key file %s", SSL_KEY_FILE);
-			fprintf(stderr, "Could not load private key file %s\n", SSL_KEY_FILE);
-			ssl_status_ok = 0;
-		}
-	}
-	if (ssl_status_ok) {
-		if (!SSL_CTX_check_private_key (ssl_ctx)) {
-			log_status("Private key does not check out and appears to be invalid.");
-			fprintf(stderr, "Private key does not check out and appears to be invalid.\n");
-			ssl_status_ok = 0;
-		}
-	}
-
-	/* Set ssl_ctx to automatically retry conditions that would
-	   otherwise return SSL_ERROR_WANT_(READ|WRITE) */
-	if (ssl_status_ok) {
-		SSL_CTX_set_mode(ssl_ctx,SSL_MODE_AUTO_RETRY);
-	}
- 
-	if (ssl_status_ok) {
-		if (ipv4_enabled) {
-			for (i = 0; i < ssl_numports; i++) {
-				ssl_sock[i] = make_socket(ssl_listener_port[i]);
-				maxd = ssl_sock[i] + 1;
-				ssl_numsocks++;
-			}
-		}
-# ifdef USE_IPV6
-		if (ipv6_enabled) {
-			for (i = 0; i < ssl_numports; i++) {
-				ssl_sock_v6[i] = make_socket_v6(ssl_listener_port[i]);
-				maxd = ssl_sock_v6[i] + 1;
-				ssl_numsocks_v6++;
-			}
-		}
-# endif
-	} else {
-		ssl_numsocks = 0;
-	}
-#endif
 	gettimeofday(&last_slice, (struct timezone *) 0);
 
 	avail_descriptors = max_open_files() - 5;
@@ -1290,13 +1215,13 @@ shovechars()
 		}
 		gettimeofday(&sel_in,NULL);
 #ifndef WIN32
-		if (select(maxd, &input_set, &output_set, (fd_set *) 0, &timeout) < 0) {
+		if (select(max_descriptor, &input_set, &output_set, (fd_set *) 0, &timeout) < 0) {
 			if (errno != EINTR) {
 				perror("select");
 				return;
 			}
 #else
-		if (select(maxd, &input_set, &output_set, (fd_set *) 0, &timeout) == SOCKET_ERROR) {
+		if (select(max_descriptor, &input_set, &output_set, (fd_set *) 0, &timeout) == SOCKET_ERROR) {
 			if (WSAGetLastError() != WSAEINTR) {
 				perror("select");
 				return;
@@ -1333,8 +1258,7 @@ shovechars()
 						}
 #endif	/* WIN32 */
 					} else {
-						if (newd->descriptor >= maxd)
-							maxd = newd->descriptor + 1;
+                                                update_max_descriptor(newd->descriptor);
 					}
 				}
 			}
@@ -1354,8 +1278,7 @@ shovechars()
 						}
 # endif	/* WIN32 */
 					} else {
-						if (newd->descriptor >= maxd)
-							maxd = newd->descriptor + 1;
+                                                update_max_descriptor(newd->descriptor);
 					}
 				}
 			}
@@ -1376,8 +1299,7 @@ shovechars()
 						}
 # endif
 					} else {
-						if (newd->descriptor >= maxd)
-							maxd = newd->descriptor + 1;
+                                                update_max_descriptor(newd->descriptor);
 						newd->ssl_session = SSL_new(ssl_ctx);
 						SSL_set_fd(newd->ssl_session, newd->descriptor);
 						cnt = SSL_accept(newd->ssl_session);
@@ -1401,8 +1323,7 @@ shovechars()
 						}
 #  endif
 					} else {
-						if (newd->descriptor >= maxd)
-							maxd = newd->descriptor + 1;
+                                                update_max_descriptor(newd->descriptor);
 						newd->ssl_session = SSL_new(ssl_ctx);
 						SSL_set_fd(newd->ssl_session, newd->descriptor);
 						cnt = SSL_accept(newd->ssl_session);
@@ -4445,3 +4366,134 @@ void ignore_remove_from_all_players(dbref Player)
 
 	ignore_flush_all_cache();
 }
+
+#ifdef USE_SSL
+
+/* Create a new SSl_CTX object. We do this rather than reconfiguring
+   an existing one to allow us to recover gracefully if we can't reload
+   a new certificate file, etc. */
+static SSL_CTX *configure_new_ssl_ctx(void) {
+        EC_KEY *eckey;
+        int ssl_status_ok = 1;
+
+	SSL_CTX* new_ssl_ctx = SSL_CTX_new (SSLv23_server_method ());
+
+#ifdef SSL_OP_SINGLE_ECDH_USE
+        /* As a default "optimization", OpenSSL shares ephemeral keys between sessions.
+           Disable this to improve forward secrecy. */
+        SSL_CTX_set_options(new_ssl_ctx, SSL_OP_SINGLE_ECDH_USE);
+#endif
+
+#ifdef SSL_OP_NO_TICKET
+        /* OpenSSL supports session tickets by default but never rotates the keys by default.
+           Since session resumption isn't important for MUCK performance and since this
+           breaks forward secrecy, just disable tickets rather than trying to implement
+           key rotation. */
+        SSL_CTX_set_options(new_ssl_ctx, SSL_OP_NO_TICKET);
+#endif
+
+        /* Disable the session cache on the assumption that session resumption is not
+           worthwhile given our long-lived connections. This also avoids any concern
+           about session secret keys in memory for a long time. (By default, OpenSSL
+           only clears timed out sessions every 256 connections.) */
+        SSL_CTX_set_session_cache_mode(new_ssl_ctx, SSL_SESS_CACHE_OFF);
+
+#if defined(SSL_CTX_set_ecdh_auto)
+        /* In OpenSSL >= 1.0.2, this exists; otherwise, fallback to the older
+           API where we have to name a curve. */
+        SSL_CTX_set_ecdh_auto(new_ssl_ctx, 1);
+#else
+        eckey = EC_KEY_new_by_curve_name(NID_X9_62_prime256v1);
+        SSL_CTX_set_tmp_ecdh(new_ssl_ctx, eckey);
+#endif
+
+        SSL_CTX_set_cipher_list(new_ssl_ctx, tp_ssl_cipher_preference_list);
+
+        if (tp_cipher_server_preference) {
+            SSL_CTX_set_options(new_ssl_ctx, SSL_OP_CIPHER_SERVER_PREFERENCE);
+        }
+
+	if (!SSL_CTX_use_certificate_chain_file (new_ssl_ctx, SSL_CERT_FILE)) {
+		log_status("Could not load certificate file %s", SSL_CERT_FILE);
+		fprintf(stderr, "Could not load certificate file %s\n", SSL_CERT_FILE);
+		ssl_status_ok = 0;
+	}
+
+	if (ssl_status_ok) {
+		SSL_CTX_set_default_passwd_cb(new_ssl_ctx, pem_passwd_cb);
+		SSL_CTX_set_default_passwd_cb_userdata(new_ssl_ctx, (void*)tp_ssl_keyfile_passwd);
+
+		if (!SSL_CTX_use_PrivateKey_file (new_ssl_ctx, SSL_KEY_FILE, SSL_FILETYPE_PEM)) {
+			log_status("Could not load private key file %s", SSL_KEY_FILE);
+			fprintf(stderr, "Could not load private key file %s\n", SSL_KEY_FILE);
+			ssl_status_ok = 0;
+		}
+	}
+
+	if (ssl_status_ok) {
+		if (!SSL_CTX_check_private_key (new_ssl_ctx)) {
+			log_status("Private key does not check out and appears to be invalid.");
+			fprintf(stderr, "Private key does not check out and appears to be invalid.\n");
+			ssl_status_ok = 0;
+		}
+	}
+
+	/* Set ssl_ctx to automatically retry conditions that would
+	   otherwise return SSL_ERROR_WANT_(READ|WRITE) */
+	if (ssl_status_ok) {
+		SSL_CTX_set_mode(new_ssl_ctx,SSL_MODE_AUTO_RETRY);
+	}
+
+        if (!ssl_status_ok) {
+                SSL_CTX_free(new_ssl_ctx);
+                new_ssl_ctx = NULL;
+        }
+
+        return new_ssl_ctx;
+}
+
+static void bind_ssl_sockets(void) {
+        int i = 0;
+        if (ipv4_enabled) {
+                for (i = 0; i < ssl_numports; i++) {
+                        ssl_sock[i] = make_socket(ssl_listener_port[i]);
+                        update_max_descriptor(ssl_sock[i]);
+                        ssl_numsocks++;
+                }
+        }
+# ifdef USE_IPV6
+        if (ipv6_enabled) {
+                for (i = 0; i < ssl_numports; i++) {
+                        ssl_sock_v6[i] = make_socket_v6(ssl_listener_port[i]);
+                        update_max_descriptor(ssl_sock_v6[i]);
+                        ssl_numsocks_v6++;
+                }
+        }
+# endif
+}
+
+/* Reinitialize or configure the SSL_CTX, allowing new connections to get any changed settings, most notably
+   new certificate files. Then, if we haven't already, create the listening sockets for the SSL ports.
+   
+   Does not do one-time library OpenSSL library initailization.
+*/
+int reconfigure_ssl(void) {
+        SSL_CTX *new_ssl_ctx;
+
+        new_ssl_ctx = configure_new_ssl_ctx();
+
+        if (new_ssl_ctx != NULL && ssl_numsocks == 0 && ssl_numsocks_v6 == 0) {
+            bind_ssl_sockets();
+        }
+
+        if (new_ssl_ctx != NULL) {
+            if (ssl_ctx) {
+                SSL_CTX_free(ssl_ctx);
+            }
+            ssl_ctx = new_ssl_ctx;
+            return 1;
+        } else {
+            return 0;
+        }
+}
+#endif
