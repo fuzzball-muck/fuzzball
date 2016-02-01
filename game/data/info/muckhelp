@@ -1565,6 +1565,14 @@ with a corrupted database, it will be with @restricted logins.
   Uncompiles all programs, removing them from memory.
 
 
+@RECONFIGURESSL
+
+  Only wizards may use this command.  Attempt to reread SSL certificate files
+and reset SSL options from @tune settings.  If it fails (for example,
+the new certificate file is not usable), old settings will persist. Must be
+typed in full.
+
+
 
 
 
