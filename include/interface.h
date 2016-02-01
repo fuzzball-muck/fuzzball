@@ -146,6 +146,10 @@ extern void ignore_add_player(dbref Player, dbref Who);
 extern void ignore_remove_player(dbref Player, dbref Who);
 extern void ignore_remove_from_all_players(dbref Player);
 
+#ifdef USE_SSL
+extern int reconfigure_ssl(void);
+#endif
+
 /* the following symbols are provided by game.c */
 
 extern void process_command(int descr, dbref player, char *command);
