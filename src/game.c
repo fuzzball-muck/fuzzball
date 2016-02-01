@@ -168,7 +168,7 @@ do_shutdown(dbref player)
 
 #ifdef USE_SSL
 void
-do_reinitialize_ssl(dbref player)
+do_reconfigure_ssl(dbref player)
 {
         if (reconfigure_ssl()) {
                 notify(player, "Successfully reloaded SSL configuration.");
@@ -1131,7 +1131,7 @@ process_command(int descr, dbref player, char *command)
                                         if (!strcmp(command, "@reconfiguressl")) {
                                                 WIZARDONLY("@reconfiguressl", player);
                                                 PLAYERONLY("@reconfiguressl", player);
-                                                do_reinitialize_ssl(player);
+                                                do_reconfigure_ssl(player);
                                                 break;
                                         }
 #endif
