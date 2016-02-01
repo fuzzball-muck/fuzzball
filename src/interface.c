@@ -38,6 +38,10 @@
 # include <sys/select.h>
 #endif
 
+#ifdef HAVE_LIBSSL
+# define USE_SSL
+#endif
+
 #ifdef USE_SSL
 # ifdef HAVE_OPENSSL
 #  include <openssl/ssl.h>
