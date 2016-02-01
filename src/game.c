@@ -166,6 +166,18 @@ do_shutdown(dbref player)
 	}
 }
 
+#ifdef USE_SSL
+void
+do_reinitialize_ssl(dbref player)
+{
+        if (reconfigure_ssl()) {
+                notify(player, "Successfully reloaded SSL configuration.");
+        } else {
+                notify(player, "Failed to reconfigure SSL; check status log for info.");
+        }
+}
+#endif
+
 void
 do_restart(dbref player)
 {
@@ -1111,14 +1123,22 @@ process_command(int descr, dbref player, char *command)
 				break;
 			case 'r':
 			case 'R':
-				/* @recycle, @relink, @restart, @restrict */
+				/* @recycle, @reconfiguressl, @relink, @restart, @restrict */
 				switch (command[3]) {
 				case 'c':
 				case 'C':
-					Matched("@recycle");
-					NOGUEST("@recycle", player);
-					do_recycle(descr, player, arg1);
-					break;
+#ifdef USE_SSL
+                                        if (!strcmp(command, "@reconfiguressl")) {
+                                                WIZARDONLY("@reconfiguressl", player);
+                                                PLAYERONLY("@reconfiguressl", player);
+                                                do_reinitialize_ssl(player);
+                                                break;
+                                        }
+#endif
+                                        Matched("@recycle");
+                                        NOGUEST("@recycle", player);
+                                        do_recycle(descr, player, arg1);
+                                        break;
 				case 'l':
 				case 'L':
 					Matched("@relink");
