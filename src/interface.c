@@ -4482,7 +4482,11 @@ int reconfigure_ssl(void) {
 
         new_ssl_ctx = configure_new_ssl_ctx();
 
-        if (new_ssl_ctx != NULL && ssl_numsocks == 0 && ssl_numsocks_v6 == 0) {
+        if (new_ssl_ctx != NULL && ssl_numsocks == 0
+#ifdef USE_IPV6
+            && ssl_numsocks_v6 == 0
+#endif
+        ) {
             bind_ssl_sockets();
         }
 
