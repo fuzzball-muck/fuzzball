@@ -32,18 +32,21 @@ ALPHA|ALPHABETICAL|COMMANDS
 You can get more help on the following topics:
 
 Symbols
-  @action        @armageddon    @attach         @bless         @boot
-  @chown         @chown_lock    @conlock        @contents      @create
-  @describe      @dig           @drop           @dump          @edit
-  @entrances     @fail          @find           @force         @force_lock
-  @idescribe     @kill          @link           @list          @lock
-  @mcpedit       @mcpprogram    @name           @newpassword   @odrop
-  @oecho         @ofail         @open           @osuccess      @owned
-  @password      @pcreate       @pecho          @program       @propset
-  @ps            @recycle       @reconfiguressl @restart       @restrict
-  @set           @shutdown      @stats          @success       @teleport
-  @toad          @trace         @unbless        @uncompile     @unlink
-  @unlock        @usage         @wall
+  @action            @armageddon        @attach            @bless
+  @boot              @chown             @chown_lock        @conlock
+  @contents          @create            @describe          @dig
+  @drop              @dump              @edit              @entrances
+  @fail              @find              @force             @force_lock
+  @idescribe         @kill              @link              @list
+  @lock              @mcpedit           @mcpprogram        @name
+  @newpassword       @odrop             @oecho             @ofail
+  @open              @osuccess          @owned             @password
+  @pcreate           @pecho             @program           @propset
+  @ps                @reconfiguressl    @recycle           @restart
+  @restrict          @set               @shutdown          @stats
+  @success           @teleport          @toad              @trace
+  @unbless           @uncompile         @unlink            @unlock
+  @usage             @wall              
 
 A's
   abode  
@@ -1723,9 +1726,10 @@ Also see: @EDIT, @PROGRAM and @MCPEDIT
 Wizardly Commands|WizCmds
 Wizardly Commands
 
-@armageddon    @bless         @boot          @dump          @force
-@newpassword   @pcreate       @restart       @restrict      @shutdown
-@toad          @unbless       @uncompile     @usage         @wall
+@armageddon        @bless             @boot              @dump
+@force             @newpassword       @pcreate           @reconfiguressl
+@restart           @restrict          @shutdown          @toad
+@unbless           @uncompile         @usage             @wall
 
 ~----------------------------------------------------------------------------
 ~
@@ -1897,6 +1901,15 @@ with a corrupted database, it will be with @restricted logins.
   Uncompiles all programs, removing them from memory.
 ~
 ~
+@RECONFIGURESSL
+@RECONFIGURESSL
+
+  Only wizards may use this command.  Attempt to reread SSL certificate files
+and reset SSL options from @tune settings.  If it fails (for example,
+the new certificate file is not usable), old settings will persist. Must be
+typed in full.
+~
+~
 ~
 ~
 ~
@@ -1970,10 +1983,3 @@ robots may use this command.
 Also see: OUTPUTPREFIX
 ~
 ~
-@RECONFIGURESSL
-@RECONFIGURESSL
-
-  Only wizards may use this command.  Attempt to reread SSL certificate files
-and reset SSL options from @tune settings.  If it fails (for example,
-the new certificate file is not usable), old settings will persist. Must be
-typed in full.
