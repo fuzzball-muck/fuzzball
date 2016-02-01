@@ -6,6 +6,15 @@
 #include "mcp.h"
 #endif
 
+/* For the SSL* type. */
+#ifdef USE_SSL
+# ifdef HAVE_OPENSSL
+#  include <openssl/ssl.h>
+# else
+#  include <ssl.h>
+# endif
+#endif
+
 typedef enum {
 	TELNET_STATE_NORMAL,
 	TELNET_STATE_IAC,

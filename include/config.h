@@ -209,6 +209,10 @@
 #define TRUE  1
 #define FALSE 0
 
+#ifdef HAVE_LIBSSL
+# define USE_SSL
+#endif
+
 /*
  * Memory/malloc stuff.
  */
