@@ -6,6 +6,15 @@
 #include "mcp.h"
 #endif
 
+/* For the SSL* type. */
+#ifdef USE_SSL
+# ifdef HAVE_OPENSSL
+#  include <openssl/ssl.h>
+# else
+#  include <ssl.h>
+# endif
+#endif
+
 typedef enum {
 	TELNET_STATE_NORMAL,
 	TELNET_STATE_IAC,
@@ -136,6 +145,10 @@ extern void ignore_flush_all_cache(void);
 extern void ignore_add_player(dbref Player, dbref Who);
 extern void ignore_remove_player(dbref Player, dbref Who);
 extern void ignore_remove_from_all_players(dbref Player);
+
+#ifdef USE_SSL
+extern int reconfigure_ssl(void);
+#endif
 
 /* the following symbols are provided by game.c */
 
