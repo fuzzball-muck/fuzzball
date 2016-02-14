@@ -261,10 +261,6 @@ db_write_object(FILE * f, dbref i)
 	return 0;
 }
 
-#ifndef CLUMP_LOAD_SIZE
-#define CLUMP_LOAD_SIZE 20
-#endif
-
 static int
 do_peek(FILE * f)
 {
