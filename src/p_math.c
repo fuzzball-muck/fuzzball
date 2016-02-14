@@ -1,7 +1,7 @@
 /* Primitives package */
 
 #include "config.h"
-
+#include "params.h"
 #include <sys/types.h>
 #include <stdio.h>
 #include <time.h>
@@ -392,7 +392,7 @@ prim_equal(PRIM_PROTOTYPE)
 		/* easier than prim_strcmp has to be      */
 		/* Not strictly math, but a convenience   */
 		if(oper1->data.string == oper2->data.string) {
-			result = 0;
+			result = 1;
 		} else {
 			result = strcmp(DoNullInd(oper1->data.string),DoNullInd(oper2->data.string));
 			result = result ? 0 : 1;
