@@ -11,6 +11,7 @@ void editor(int descr, dbref player, const char *command);
 void do_insert(dbref player, dbref program, int arg[], int argc);
 void do_delete(dbref player, dbref program, int arg[], int argc);
 void do_quit(dbref player, dbref program);
+void do_cancel(dbref player, dbref program);
 void do_list(dbref player, dbref program, int *arg, int argc);
 void insert(dbref player, const char *line);
 struct line *read_program(dbref i);
@@ -381,6 +382,10 @@ editor(int descr, dbref player, const char *command)
 			do_quit(player, program);
 			notify(player, "Editor exited.");
 			break;
+		case CANCEL_EDIT_COMMAND:
+			do_cancel(player, program);
+			notify(player, "Changes cancelled.");
+			break;
 		case COMPILE_COMMAND:
 			/* compile code belongs in compile.c, not in the editor */
 			do_compile(descr, player, program, 1);
@@ -616,6 +621,19 @@ do_quit(dbref player, dbref program)
 	PLAYER_SET_CURR_PROG(player, NOTHING);
 	DBDIRTY(player);
 	DBDIRTY(program);
+}
+
+/* quit from edit mode, with no changes written */
+void
+do_cancel(dbref player, dbref program)
+{
+	uncompile_program(program);
+        free_prog_text(PROGRAM_FIRST(program));
+        PROGRAM_SET_FIRST(program, NULL);
+        FLAGS(program) &= ~INTERNAL;
+        FLAGS(player) &= ~INTERACTIVE;
+        PLAYER_SET_CURR_PROG(player, NOTHING);
+        DBDIRTY(player);
 }
 
 void
