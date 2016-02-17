@@ -28,6 +28,7 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
 	dbref destination;
 	const char *to;
 	struct match_data md;
+	char buf[BUFFER_LEN];
 
 	/* get victim, destination */
 	if (*arg2 == '\0') {
@@ -50,7 +51,7 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
 	}
 #ifdef GOD_PRIV
 	if(tp_strict_god_priv && !God(player) && God(OWNER(victim))) {
-		notify(player, "God has already set that where He wants it to be.");
+		notify(player, "God has already set that where God wants it to be.");
 		return;
 	}
 #endif
@@ -86,7 +87,7 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
 			if (parent_loop_check(victim, destination)) {
 			  destination = PLAYER_HOME(OWNER(victim));
 			  if (parent_loop_check(victim, destination)) {
-			    destination = (dbref) 0;
+			    destination = GLOBAL_ENVIRONMENT;
 			  }
 			}
 			break;
@@ -125,8 +126,9 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
 				break;
 			}
 			notify(victim, "You feel a wrenching sensation...");
-			enter_room(descr, victim, destination, DBFETCH(victim)->location);
-			notify(player, "Teleported.");
+			enter_room(descr, victim, destination, getloc(victim));
+			snprintf(buf, sizeof(buf), "%s teleported to %s.", unparse_object(player, victim), unparse_object(player, destination));
+			notify(player, buf);
 			break;
 		case TYPE_THING:
 			if (parent_loop_check(victim, destination)) {
@@ -151,11 +153,15 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
 				&& !(FLAGS(destination) & STICKY))
 						destination = DBFETCH(destination)->sp.room.dropto;
 			if (tp_thing_movement && (Typeof(victim) == TYPE_THING)) {
-				enter_room(descr, victim, destination, DBFETCH(victim)->location);
+				if (FLAGS(victim) & ZOMBIE) {
+					notify(victim, "You feel a wrenching sensation...");
+				}
+				enter_room(descr, victim, destination, getloc(victim));
 			} else {
 				moveto(victim, destination);
 			}
-			notify(player, "Teleported.");
+			snprintf(buf, sizeof(buf), "%s teleported to %s.", unparse_object(player, victim), unparse_object(player, destination));
+			notify(player, buf);
 			break;
 		case TYPE_ROOM:
 			if (Typeof(destination) != TYPE_ROOM) {
@@ -173,7 +179,8 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
 				break;
 			}
 			moveto(victim, destination);
-			notify(player, "Parent set.");
+			snprintf(buf, sizeof(buf), "Parent of %s set to %s.", unparse_object(player, victim), unparse_object(player, destination));
+			notify(player, buf);
 			break;
 		case TYPE_GARBAGE:
 			notify(player, "That object is in a place where magic cannot reach it.");

@@ -75,7 +75,7 @@ unparse_flags(dbref thing)
 const char *
 unparse_object(dbref player, dbref loc)
 {
-	static char buf[BUFFER_LEN];
+	char buf[BUFFER_LEN];
 	if (player == NOTHING)
 		goto islog;
 	if (Typeof(player) != TYPE_PLAYER)
@@ -100,7 +100,7 @@ islog:
 			  (controls_link(player, loc) || (FLAGS(loc) & CHOWN_OK)))))) {
 			/* show everything */
 			snprintf(buf, sizeof(buf), "%.*s(#%d%s)", (BUFFER_LEN / 2), NAME(loc), loc, unparse_flags(loc));
-			return buf;
+			return string_dup(buf);
 		} else {
 			/* show only the name */
 			return NAME(loc);
