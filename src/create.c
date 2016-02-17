@@ -149,7 +149,7 @@ do_open(int descr, dbref player, const char *direction, const char *linkto)
 		DBDIRTY(loc);
 
 		/* and we're done */
-		snprintf(buf, sizeof(buf), "Exit opened with number %d.", exit);
+		snprintf(buf, sizeof(buf), "Exit %s opened as #%d.", NAME(exit), exit);
 		notify(player, buf);
 
 		/* check second arg to see if we should do a link */
@@ -518,7 +518,7 @@ do_dig(int descr, dbref player, const char *name, const char *pname)
 	DBDIRTY(room);
 	DBDIRTY(newparent);
 
-	snprintf(buf, sizeof(buf), "%s created with room number %d.", name, room);
+	snprintf(buf, sizeof(buf), "Room %s created as #%d.", name, room);
 	notify(player, buf);
 
 	strcpyn(buf, sizeof(buf), pname);
@@ -633,9 +633,7 @@ do_prog(int descr, dbref player, const char *name)
 		PUSH(newprog, DBFETCH(player)->contents);
 		DBDIRTY(newprog);
 		DBDIRTY(player);
-		snprintf(buf, sizeof(buf), "Program %s created with number %d.", name, newprog);
-		notify(player, buf);
-		snprintf(buf, sizeof(buf), "Entering editor.");
+		snprintf(buf, sizeof(buf), "Entering editor for new program %s.", unparse_object(player, newprog));
 		notify(player, buf);
 	} else if (i == AMBIGUOUS) {
 		notify(player, "I don't know which one you mean!");
@@ -652,7 +650,8 @@ do_prog(int descr, dbref player, const char *name)
 		PROGRAM_SET_FIRST(i, read_program(i));
 		FLAGS(i) |= INTERNAL;
 		PLAYER_SET_CURR_PROG(player, i);
-		notify(player, "Entering editor.");
+		snprintf(buf, sizeof(buf), "Entering editor for %s.", unparse_object(player, i));
+		notify(player, buf);
 		/* list current line */
 		do_list(player, i, NULL, 0);
 		DBDIRTY(i);
@@ -890,7 +889,7 @@ do_clone(int descr, dbref player, char *name)
 		DBDIRTY(player);
 
 		/* and we're done */
-		snprintf(buf, sizeof(buf), "%s created with number %d.", NAME(thing), clonedthing);
+		snprintf(buf, sizeof(buf), "Object %s cloned as #%d.", NAME(thing), clonedthing);
 		notify(player, buf);
 		DBDIRTY(clonedthing);
 	}
@@ -971,7 +970,7 @@ do_create(dbref player, char *name, char *acost)
 		DBDIRTY(player);
 
 		/* and we're done */
-		snprintf(buf, sizeof(buf), "%s created with number %d.", name, thing);
+		snprintf(buf, sizeof(buf), "Object %s created as #%d.", name, thing);
 		notify(player, buf);
 		DBDIRTY(thing);
 	}
@@ -1144,7 +1143,7 @@ do_action(int descr, dbref player, const char *action_name, const char *source_n
 	FLAGS(action) = TYPE_EXIT;
 
 	set_source(player, action, source);
-	snprintf(buf, sizeof(buf), "Action created with number %d and attached.", action);
+	snprintf(buf, sizeof(buf), "Action %s created as #%d and attached.", NAME(action), action);
 	notify(player, buf);
 	DBDIRTY(action);
 
