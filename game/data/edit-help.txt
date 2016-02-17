@@ -39,4 +39,4 @@ Miscellaneous commands:
     help                      show this file
     <dbref of prog> view      view program header
     quit                      quit the program editor
-  
+    cancel                    quit editor without saving changes  
