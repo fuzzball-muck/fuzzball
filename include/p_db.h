@@ -66,10 +66,9 @@ extern void prim_getpidinfo(PRIM_PROTOTYPE);
 extern void prim_program_getlines(PRIM_PROTOTYPE);
 extern void prim_program_setlines(PRIM_PROTOTYPE);
 
-/* WORK: Add these prims */
 extern void prim_toadplayer(PRIM_PROTOTYPE);
 
-#define PRIMS_DB_FUNCS1 prim_addpennies, prim_moveto, prim_pennies,      \
+#define PRIMS_DB_FUNCS prim_addpennies, prim_moveto, prim_pennies,      \
     prim_dbcomp, prim_dbref, prim_contents, prim_exits, prim_next,       \
     prim_name, prim_setname, prim_match, prim_rmatch, prim_copyobj,      \
     prim_set, prim_mlevel, prim_flagp, prim_playerp, prim_thingp,        \
@@ -84,11 +83,9 @@ extern void prim_toadplayer(PRIM_PROTOTYPE);
     prim_exits_array, prim_getlinks_array, prim_entrances_array,         \
     prim_compile, prim_uncompile, prim_newpassword, prim_getpids,        \
     prim_program_getlines, prim_getpidinfo, prim_program_setlines,	 \
-    prim_setlinks_array
+    prim_setlinks_array, prim_toadplayer
 
-
-
-#define PRIMS_DB_NAMES1 "ADDPENNIES", "MOVETO", "PENNIES", \
+#define PRIMS_DB_NAMES "ADDPENNIES", "MOVETO", "PENNIES", \
     "DBCMP", "DBREF", "CONTENTS", "EXITS", "NEXT",         \
     "NAME", "SETNAME", "MATCH", "RMATCH", "COPYOBJ",       \
     "SET", "MLEVEL", "FLAG?", "PLAYER?", "THING?",         \
@@ -103,22 +100,8 @@ extern void prim_toadplayer(PRIM_PROTOTYPE);
     "EXITS_ARRAY", "GETLINKS_ARRAY", "ENTRANCES_ARRAY",    \
     "COMPILE", "UNCOMPILE", "NEWPASSWORD", "GETPIDS",      \
     "PROGRAM_GETLINES", "GETPIDINFO", "PROGRAM_SETLINES",  \
-    "SETLINKS_ARRAY"
+    "SETLINKS_ARRAY", "TOADPLAYER"
 
-#define PRIMS_DB_CNT1 61
-
-
-#ifdef SCARY_MUF_PRIMS
-
- /* These add dangerous, but possibly useful prims. */
-# define PRIMS_DB_FUNCS PRIMS_DB_FUNCS1, prim_toadplayer
-# define PRIMS_DB_NAMES PRIMS_DB_NAMES1, "TOADPLAYER"
-# define PRIMS_DB_CNT (PRIMS_DB_CNT1 + 1)
-
-#else
-# define PRIMS_DB_FUNCS PRIMS_DB_FUNCS1
-# define PRIMS_DB_NAMES PRIMS_DB_NAMES1
-# define PRIMS_DB_CNT PRIMS_DB_CNT1
-#endif
+#define PRIMS_DB_CNT 62
 
 #endif /* _P_DB_H */
