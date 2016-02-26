@@ -60,17 +60,6 @@
 #define SPAWN_HOST_RESOLVER
 
 /*
- * There's a set of MUF prims that are considered dangerous.
- * Currently these include only:
- *     TOADPLAYER which can @toad players.
- * These require wizbits, but if someone finds a new way to hack the
- * system to get wizbit perms, these can cause damage that may require
- * a reversion to a previous database to fix.
- * Define this, to make these MUF prims available.
- */
-#undef SCARY_MUF_PRIMS
-
-/*
  * This is a fairly interesting one -- if there's no DISKBASING, and thus
  * the saves are fork()ed off into the background, then then the child
  * may cause I/O contention with the parent (the interactive, player-
@@ -371,7 +360,6 @@
 #define NO_MEMORY_COMMAND
 #define NO_USAGE_COMMAND
 #define NOCOREDUMP
-#define SCARY_MUF_PRIMS /* Most Windows users don't have their own compiler */
 #include "win32.h"
 #endif
 
