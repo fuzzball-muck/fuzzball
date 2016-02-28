@@ -2957,9 +2957,7 @@ dump_users(struct descriptor_data *e, char *user)
 
 	if (wizard)
 		/* S/he is connected and not quelled. Okay; log it. */
-		log_command("WIZ: %s(%d) in %s(%d):  %s", NAME(e->player),
-					(int) e->player, NAME(LOCATION(e->player)),
-					(int) LOCATION(e->player), "WHO");
+		log_command("%s: %s", whowhere(e->player), "WHO");
 
 	if (!*user)
 		user = NULL;

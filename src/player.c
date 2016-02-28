@@ -225,3 +225,18 @@ delete_player(dbref who)
 
 	return;
 }
+
+char *
+whowhere(dbref who)
+{
+	char buf[BUFFER_LEN];
+
+	snprintf(buf, sizeof(buf), "%s%s%s%s(#%d) in %s(#%d)",
+		Wizard(OWNER(who)) ? "WIZ: " : "",
+		(Typeof(who) != TYPE_PLAYER) ? NAME(who) : "",
+		(Typeof(who) != TYPE_PLAYER) ? " owned by " : "",
+		NAME(OWNER(who)), who,
+		NAME(LOCATION(who)), LOCATION(who));
+
+	return strdup(buf);
+}
