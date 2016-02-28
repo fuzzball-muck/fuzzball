@@ -305,7 +305,7 @@ match_exits(dbref first, struct match_data *md)
 			exitprog = 1;
 		} else if (DBFETCH(exit)->sp.exit.dest) {
 			for (i = 0; i < DBFETCH(exit)->sp.exit.ndest; i++)
-				if (Typeof((DBFETCH(exit)->sp.exit.dest)[i]) == TYPE_PROGRAM)
+				if ((DBFETCH(exit)->sp.exit.dest)[i] == NIL || Typeof((DBFETCH(exit)->sp.exit.dest)[i]) == TYPE_PROGRAM)
 					exitprog = 1;
 		}
 		if (tp_enable_prefix && exitprog && md->partial_exits &&
