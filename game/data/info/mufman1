@@ -1622,6 +1622,7 @@ Very small values will return INF.
 
 
 POW ( f1 f2 -- f )
+^ ( f1 f2 -- f )
 
   Returns f1 to the power of f2.  If f1 is zero, f2 must be greater than
 zero.  If f1 is less than zero, f2 must be an integer value.
