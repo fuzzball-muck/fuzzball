@@ -1210,7 +1210,7 @@ prim_setown(PRIM_PROTOTYPE)
 			abort_interp("Permission denied: not in room. (1)");
 		break;
 	case TYPE_THING:
-		if ((mlev < 4) && LOCATION(player) != player)
+		if ((mlev < 4) && LOCATION(ref) != player)
 			abort_interp("Permission denied: object not carried. (1)");
 		break;
 	case TYPE_PLAYER:
