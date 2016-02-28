@@ -611,8 +611,8 @@ next_timequeue_event(void)
 							NAME(event->uid),
 							(int)(4000 - strlen(NAME(event->uid))),
 							pronoun_substitute(event->descr, event->uid, cbuf));
-					plyr = DBFETCH(event->loc)->contents;
-					for (; plyr != NOTHING; plyr = DBFETCH(plyr)->next) {
+					plyr = CONTENTS(event->loc);
+					for (; plyr != NOTHING; plyr = NEXTOBJ(plyr)) {
 						if (Typeof(plyr) == TYPE_PLAYER && plyr != event->uid)
 							notify_filtered(event->uid, plyr, bbuf, 0);
 					}
@@ -1366,11 +1366,11 @@ propqueue(int descr, dbref player, dbref where, dbref trigger, dbref what, dbref
 
 							snprintf(bbuf, sizeof(bbuf), ">> %.4000s",
 									pronoun_substitute(descr, player, cbuf));
-							plyr = DBFETCH(where)->contents;
+							plyr = CONTENTS(where);
 							while (plyr != NOTHING) {
 								if (Typeof(plyr) == TYPE_PLAYER && plyr != player)
 									notify_filtered(player, plyr, bbuf, 0);
-								plyr = DBFETCH(plyr)->next;
+								plyr = NEXTOBJ(plyr);
 							}
 						}
 					}

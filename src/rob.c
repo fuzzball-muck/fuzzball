@@ -86,7 +86,7 @@ do_kill(int descr, dbref player, const char *what, int cost)
 			if (cost < tp_kill_min_cost)
 				cost = tp_kill_min_cost;
 
-			if (FLAGS(DBFETCH(player)->location) & HAVEN) {
+			if (FLAGS(LOCATION(player)) & HAVEN) {
 				notify(player, "You can't kill anyone here!");
 				break;
 			}
@@ -118,13 +118,12 @@ do_kill(int descr, dbref player, const char *what, int cost)
 				/* now notify everybody else */
 				if (GETODROP(victim)) {
 					snprintf(buf, sizeof(buf), "%s killed %s! ", NAME(player), NAME(victim));
-					parse_oprop(descr, player, getloc(player), victim,
+					parse_oprop(descr, player, LOCATION(player), victim,
 								   MESGPROP_ODROP, buf, "(@Odrop)");
 				} else {
 					snprintf(buf, sizeof(buf), "%s killed %s!", NAME(player), NAME(victim));
 				}
-				notify_except(DBFETCH(DBFETCH(player)->location)->contents, player, buf,
-							  player);
+				notify_except(CONTENTS(LOCATION(player)), player, buf, player);
 
 				/* maybe pay off the bonus */
 				if (GETVALUE(victim) < tp_max_pennies) {

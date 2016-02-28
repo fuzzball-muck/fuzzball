@@ -17,14 +17,14 @@ do_say(dbref player, const char *message)
 	dbref loc;
 	char buf[BUFFER_LEN];
 
-	if ((loc = getloc(player)) == NOTHING)
+	if ((loc = LOCATION(player)) == NOTHING)
 		return;
 
 	/* notify everybody */
 	snprintf(buf, sizeof(buf), "You say, \"%s\"", message);
 	notify(player, buf);
 	snprintf(buf, sizeof(buf), "%s says, \"%s\"", NAME(player), message);
-	notify_except(DBFETCH(loc)->contents, player, buf, player);
+	notify_except(CONTENTS(loc), player, buf, player);
 }
 
 void
@@ -67,12 +67,12 @@ do_pose(dbref player, const char *message)
 	dbref loc;
 	char buf[BUFFER_LEN];
 
-	if ((loc = getloc(player)) == NOTHING)
+	if ((loc = LOCATION(player)) == NOTHING)
 		return;
 
 	/* notify everybody */
 	snprintf(buf, sizeof(buf), "%s %s", NAME(player), message);
-	notify_except(DBFETCH(loc)->contents, NOTHING, buf, player);
+	notify_except(CONTENTS(loc), NOTHING, buf, player);
 }
 
 void
@@ -105,7 +105,7 @@ do_gripe(dbref player, const char *message)
 		return;
 	}
 
-	loc = DBFETCH(player)->location;
+	loc = LOCATION(player);
 	log_gripe("GRIPE from %s(%d) in %s(%d): %s",
 			  NAME(player), player, NAME(loc), loc, message);
 
@@ -136,10 +136,10 @@ do_page(dbref player, const char *arg1, const char *arg2)
 	}
 	if (blank(arg2))
 		snprintf(buf, sizeof(buf), "You sense that %s is looking for you in %s.",
-				NAME(player), NAME(DBFETCH(player)->location));
+				NAME(player), NAME(LOCATION(player)));
 	else
 		snprintf(buf, sizeof(buf), "%s pages from %s: \"%s\"", NAME(player),
-				NAME(DBFETCH(player)->location), arg2);
+				NAME(LOCATION(player)), arg2);
 	if (notify_from(player, target, buf))
 		notify(player, "Your message has been sent.");
 	else {
@@ -165,7 +165,7 @@ notify_listeners(dbref who, dbref xprog, dbref obj, dbref room, const char *msg,
 
 	if (tp_zombies && Typeof(obj) == TYPE_THING && !isprivate) {
 		if (FLAGS(obj) & VEHICLE) {
-			if (getloc(who) == getloc(obj)) {
+			if (LOCATION(who) == LOCATION(obj)) {
 				char pbuf[BUFFER_LEN];
 				const char *prefix;
 
@@ -175,10 +175,10 @@ notify_listeners(dbref who, dbref xprog, dbref obj, dbref room, const char *msg,
 				if (!prefix || !*prefix)
 					prefix = "Outside>";
 				snprintf(buf, sizeof(buf), "%s %.*s", prefix, (int)(BUFFER_LEN - 2 - strlen(prefix)), msg);
-				ref = DBFETCH(obj)->contents;
+				ref = CONTENTS(obj);
 				while (ref != NOTHING) {
 					notify_filtered(who, ref, buf, isprivate);
-					ref = DBFETCH(ref)->next;
+					ref = NEXTOBJ(ref);
 				}
 			}
 		}
@@ -195,13 +195,13 @@ notify_except(dbref first, dbref exception, const char *msg, dbref who)
 
 	if (first != NOTHING) {
 
-		srch = room = DBFETCH(first)->location;
+		srch = room = LOCATION(first);
 
 		if (tp_listeners) {
 			notify_from_echo(who, srch, msg, 0);
 
 			if (tp_listeners_env) {
-				srch = DBFETCH(srch)->location;
+				srch = LOCATION(srch);
 				while (srch != NOTHING) {
 					notify_from_echo(who, srch, msg, 0);
 					srch = getparent(srch);
@@ -252,5 +252,5 @@ parse_omessage(int descr, dbref player, dbref dest, dbref exit, const char *msg,
 
 	prefix_message(buf, ptr, prefix, BUFFER_LEN, 1);
 
-	notify_except(DBFETCH(dest)->contents, player, buf, player);
+	notify_except(CONTENTS(dest), player, buf, player);
 }

@@ -811,7 +811,7 @@ prim_array_notify(PRIM_PROTOTYPE)
 					oper3 = array_getitem(refarr, &temp1);
 
 					notify_listeners(player, program, oper3->data.objref,
-									 getloc(oper3->data.objref), buf, 1);
+									 LOCATION(oper3->data.objref), buf, 1);
 
 					oper3 = NULL;
 				} while (array_next(refarr, &temp1));

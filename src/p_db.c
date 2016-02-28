@@ -136,13 +136,13 @@ prim_moveto(PRIM_PROTOTYPE)
 			if (parent_loop_check(victim, dest))
 				abort_interp("Things can't contain themselves.");
 			if ((mlev < 3)) {
-				if (!(FLAGS(DBFETCH(victim)->location) & JUMP_OK)
-					&& !permissions(ProgUID, DBFETCH(victim)->location))
+				if (!(FLAGS(LOCATION(victim)) & JUMP_OK)
+					&& !permissions(ProgUID, LOCATION(victim)))
 					abort_interp("Source not JUMP_OK.");
 				if (!is_home(oper1) && !(FLAGS(dest) & JUMP_OK)
 					&& !permissions(ProgUID, dest))
 					abort_interp("Destination not JUMP_OK.");
-				if (Typeof(dest) == TYPE_THING && getloc(victim) != getloc(dest))
+				if (Typeof(dest) == TYPE_THING && LOCATION(victim) != LOCATION(dest))
 					abort_interp("Not in same location as vehicle.");
 			}
 			enter_room(fr->descr, victim, dest, program);
@@ -166,8 +166,8 @@ prim_moveto(PRIM_PROTOTYPE)
 				if ((mlev < 3)) {
 					if (permissions(ProgUID, dest))
 						matchroom = dest;
-					if (permissions(ProgUID, DBFETCH(victim)->location))
-						matchroom = DBFETCH(victim)->location;
+					if (permissions(ProgUID, LOCATION(victim)))
+						matchroom = LOCATION(victim);
 					if (matchroom != NOTHING && !(FLAGS(matchroom) & JUMP_OK)
 						&& !permissions(ProgUID, victim))
 						abort_interp("Permission denied.");
@@ -187,7 +187,7 @@ prim_moveto(PRIM_PROTOTYPE)
 			if ((Typeof(dest) != TYPE_ROOM && Typeof(dest) != TYPE_THING &&
 				Typeof(dest) != TYPE_PLAYER) || dest == HOME)
 				abort_interp("Bad destination object.");
-			if (!unset_source(ProgUID, getloc(player), victim))
+			if (!unset_source(ProgUID, LOCATION(player), victim))
 				break;
 			set_source(ProgUID, victim, dest);
 			SetMLevel(victim, 0);
@@ -202,7 +202,7 @@ prim_moveto(PRIM_PROTOTYPE)
 				   the room's location to reparent the room to
 				   #0 */
 				if ((mlev < 3) && (!permissions(ProgUID,victim)
-				     && !permissions(ProgUID,getloc(victim))))
+				     && !permissions(ProgUID,LOCATION(victim))))
 					abort_interp("Permission denied.");
 				dest = GLOBAL_ENVIRONMENT;
 			} else {
@@ -283,9 +283,9 @@ prim_contents(PRIM_PROTOTYPE)
 	if (!valid_object(oper1))
 		abort_interp("Invalid argument type.");
 	CHECKREMOTE(oper1->data.objref);
-	ref = DBFETCH(oper1->data.objref)->contents;
+	ref = CONTENTS(oper1->data.objref);
 	while (mlev < 2 && ref != NOTHING && (FLAGS(ref) & DARK) && !controls(ProgUID, ref))
-		ref = DBFETCH(ref)->next;
+		ref = NEXTOBJ(ref);
 	/* if (Typeof(oper1->data.objref) != TYPE_PLAYER &&
 	   Typeof(oper1->data.objref) != TYPE_PROGRAM) ts_lastuseobject(oper1->data.objref); */
 	CLEAR(oper1);
@@ -308,7 +308,7 @@ prim_exits(PRIM_PROTOTYPE)
 	case TYPE_THING:
 	  /* ts_lastuseobject(ref); */
 	case TYPE_PLAYER:
-		ref = DBFETCH(ref)->exits;
+		ref = EXITS(ref);
 		break;
 	default:
 		abort_interp("Invalid object.");
@@ -326,10 +326,10 @@ prim_next(PRIM_PROTOTYPE)
 	if (!valid_object(oper1))
 		abort_interp("Invalid object.");
 	CHECKREMOTE(oper1->data.objref);
-	ref = DBFETCH(oper1->data.objref)->next;
+	ref = NEXTOBJ(oper1->data.objref);
 	while (mlev < 2 && ref != NOTHING && Typeof(ref) != TYPE_EXIT &&
 		   ((FLAGS(ref) & DARK) || Typeof(ref) == TYPE_ROOM) && !controls(ProgUID, ref))
-		ref = DBFETCH(ref)->next;
+		ref = NEXTOBJ(ref);
 	CLEAR(oper1);
 	PushObject(ref);
 }
@@ -703,9 +703,9 @@ prim_set(PRIM_PROTOTYPE)
                 abort_interp("Permission denied.");
         }
 	if (result && Typeof(ref) == TYPE_THING && tmp == VEHICLE) {
-		dbref obj = DBFETCH(ref)->contents;
+		dbref obj = CONTENTS(ref);
 
-		for (; obj != NOTHING; obj = DBFETCH(obj)->next) {
+		for (; obj != NOTHING; obj = NEXTOBJ(obj)) {
 			if (Typeof(obj) == TYPE_PLAYER) {
 				abort_interp("That vehicle still has players in it!");
 			}
@@ -949,7 +949,7 @@ prim_location(PRIM_PROTOTYPE)
 	if (!valid_object(oper1))
 		abort_interp("Invalid object.");
 	CHECKREMOTE(oper1->data.objref);
-	ref = DBFETCH(oper1->data.objref)->location;
+	ref = LOCATION(oper1->data.objref);
 	CLEAR(oper1);
 	PushObject(ref);
 }
@@ -1206,11 +1206,11 @@ prim_setown(PRIM_PROTOTYPE)
 				abort_interp("Permission denied. (1)");
 	switch (Typeof(ref)) {
 	case TYPE_ROOM:
-		if ((mlev < 4) && DBFETCH(player)->location != ref)
+		if ((mlev < 4) && LOCATION(player) != ref)
 			abort_interp("Permission denied: not in room. (1)");
 		break;
 	case TYPE_THING:
-		if ((mlev < 4) && DBFETCH(ref)->location != player)
+		if ((mlev < 4) && LOCATION(player) != player)
 			abort_interp("Permission denied: object not carried. (1)");
 		break;
 	case TYPE_PLAYER:
@@ -1257,13 +1257,13 @@ prim_newobject(PRIM_PROTOTYPE)
 		/* initialize everything */
 		NAME(ref) = alloc_string(b);
 		ALLOC_THING_SP(ref);
-		DBFETCH(ref)->location = oper2->data.objref;
+		LOCATION(ref) = oper2->data.objref;
 		OWNER(ref) = OWNER(ProgUID);
 		SETVALUE(ref, 1);
-		DBFETCH(ref)->exits = NOTHING;
+		EXITS(ref) = NOTHING;
 		FLAGS(ref) = TYPE_THING;
 
-		if ((loc = DBFETCH(player)->location) != NOTHING && controls(player, loc)) {
+		if ((loc = LOCATION(player)) != NOTHING && controls(player, loc)) {
 			THING_SET_HOME(ref, loc);	/* home */
 		} else {
 			THING_SET_HOME(ref, PLAYER_HOME(player));
@@ -1272,7 +1272,7 @@ prim_newobject(PRIM_PROTOTYPE)
 	}
 
 	/* link it in */
-	PUSH(ref, DBFETCH(oper2->data.objref)->contents);
+	PUSH(ref, CONTENTS(oper2->data.objref));
 	DBDIRTY(ref);
 	DBDIRTY(oper2->data.objref);
 
@@ -1308,12 +1308,12 @@ prim_newroom(PRIM_PROTOTYPE)
 
 		/* Initialize everything */
 		NAME(ref) = alloc_string(b);
-		DBFETCH(ref)->location = oper2->data.objref;
+		LOCATION(ref) = oper2->data.objref;
 		OWNER(ref) = OWNER(ProgUID);
-		DBFETCH(ref)->exits = NOTHING;
+		EXITS(ref) = NOTHING;
 		DBFETCH(ref)->sp.room.dropto = NOTHING;
 		FLAGS(ref) = TYPE_ROOM | (FLAGS(player) & JUMP_OK);
-		PUSH(ref, DBFETCH(oper2->data.objref)->contents);
+		PUSH(ref, CONTENTS(oper2->data.objref));
 		DBDIRTY(ref);
 		DBDIRTY(oper2->data.objref);
 
@@ -1351,14 +1351,14 @@ prim_newexit(PRIM_PROTOTYPE)
 
 		/* initialize everything */
 		NAME(ref) = alloc_string(oper1->data.string->data);
-		DBFETCH(ref)->location = oper2->data.objref;
+		LOCATION(ref) = oper2->data.objref;
 		OWNER(ref) = OWNER(ProgUID);
 		FLAGS(ref) = TYPE_EXIT;
 		DBFETCH(ref)->sp.exit.ndest = 0;
 		DBFETCH(ref)->sp.exit.dest = NULL;
 
 		/* link it in */
-		PUSH(ref, DBFETCH(oper2->data.objref)->exits);
+		PUSH(ref, EXITS(oper2->data.objref));
 		DBDIRTY(oper2->data.objref);
 
 		if (tp_autolink_actions) {
@@ -1428,7 +1428,7 @@ prim_recycle(PRIM_PROTOTYPE)
 				abort_interp("Cannot recycle active program.");
 	}
 	if (Typeof(result) == TYPE_EXIT)
-		if (!unset_source(player, DBFETCH(player)->location, result))
+		if (!unset_source(player, LOCATION(player), result))
 			abort_interp("Cannot recycle old style exits.");
 	CLEAR(oper1);
 	recycle(fr->descr, player, result);
@@ -2040,7 +2040,7 @@ prim_newprogram(PRIM_PROTOTYPE)
 	NAME(newprog) = alloc_string(oper1->data.string->data);
 	snprintf(buf, sizeof(buf), "A scroll containing a spell called %s", oper1->data.string->data);
 	SETDESC(newprog, buf);
-	DBFETCH(newprog)->location = player;
+	LOCATION(newprog) = player;
 	FLAGS(newprog) = TYPE_PROGRAM;
 	jj = MLevel(player);
 	if (jj < 1)
@@ -2067,7 +2067,7 @@ prim_newprogram(PRIM_PROTOTYPE)
 
 	PLAYER_SET_CURR_PROG(player, newprog);
 
-	PUSH(newprog, DBFETCH(player)->contents);
+	PUSH(newprog, CONTENTS(player));
 	DBDIRTY(newprog);
 	DBDIRTY(player);
 
@@ -2226,12 +2226,12 @@ prim_contents_array(PRIM_PROTOTYPE)
 
 	CHECKREMOTE(oper1->data.objref);
 
-	for(ref = DBFETCH(oper1->data.objref)->contents; (ref >= 0) && (ref < db_top); ref = DBFETCH(ref)->next)
+	for(ref = CONTENTS(oper1->data.objref); (ref >= 0) && (ref < db_top); ref = NEXTOBJ(ref))
 		count++;
 
 	nw = new_array_packed(count);
 
-	for(ref = DBFETCH(oper1->data.objref)->contents, count = 0; (ref >= 0) && (ref < db_top); ref = DBFETCH(ref)->next)
+	for(ref = CONTENTS(oper1->data.objref), count = 0; (ref >= 0) && (ref < db_top); ref = NEXTOBJ(ref))
 		array_set_intkey_refval(&nw, count++, ref);
 
 	CLEAR(oper1);
@@ -2259,12 +2259,12 @@ prim_exits_array(PRIM_PROTOTYPE)
 		return;
 	}
 
-	for(ref = DBFETCH(oper1->data.objref)->exits; (ref >= 0) && (ref < db_top); ref = DBFETCH(ref)->next)
+	for(ref = EXITS(oper1->data.objref); (ref >= 0) && (ref < db_top); ref = NEXTOBJ(ref))
 		count++;
 
 	nw = new_array_packed(count);
 
-	for(ref = DBFETCH(oper1->data.objref)->exits, count = 0; (ref >= 0) && (ref < db_top); ref = DBFETCH(ref)->next)
+	for(ref = EXITS(oper1->data.objref), count = 0; (ref >= 0) && (ref < db_top); ref = NEXTOBJ(ref))
 		array_set_intkey_refval(&nw, count++, ref);
 
 	CLEAR(oper1);

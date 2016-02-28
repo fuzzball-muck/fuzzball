@@ -111,9 +111,9 @@ extern void do_abort_interp(dbref player, const char *msg, struct inst *pc,
 #define ProgUID find_uid(player, fr, fr->caller.top, program)
 extern dbref find_uid(dbref player, struct frame *fr, int st, dbref program);
 
-#define CHECKREMOTE(x) if ((mlev < 2) && (getloc(x) != player) &&  \
-                           (getloc(x) != getloc(player)) && \
-                           ((x) != getloc(player)) && ((x) != player) \
+#define CHECKREMOTE(x) if ((mlev < 2) && (LOCATION(x) != player) &&  \
+                           (LOCATION(x) != LOCATION(player)) && \
+                           ((x) != LOCATION(player)) && ((x) != player) \
 			   && !controls(ProgUID, x)) \
                  abort_interp("Mucker Level 2 required to get remote info.");
 

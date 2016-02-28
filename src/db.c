@@ -128,7 +128,7 @@ new_object(void)
 
 	if (recyclable != NOTHING) {
 		newobj = recyclable;
-		recyclable = DBFETCH(newobj)->next;
+		recyclable = NEXTOBJ(newobj);
 		db_free_object(newobj);
 	} else {
 		newobj = db_top;
@@ -676,7 +676,7 @@ db_read(FILE * f)
 
 				for (i = 0; i < db_top; i++) {
 					if (Typeof(i) == TYPE_GARBAGE) {
-						DBFETCH(i)->next = recyclable;
+						NEXTOBJ(i) = recyclable;
 						recyclable = i;
 					}
 				}

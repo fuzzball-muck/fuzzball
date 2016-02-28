@@ -1394,7 +1394,7 @@ prim_notify(PRIM_PROTOTYPE)
 		}
 
 		notify_listeners(player, program, oper2->data.objref,
-						 getloc(oper2->data.objref), buf, 1);
+						 LOCATION(oper2->data.objref), buf, 1);
 	}
 	CLEAR(oper1);
 	CLEAR(oper2);
@@ -1449,7 +1449,7 @@ prim_notify_exclude(PRIM_PROTOTYPE)
 		if (Typeof(where) != TYPE_ROOM && Typeof(where) != TYPE_THING &&
 			Typeof(where) != TYPE_PLAYER) abort_interp("Invalid location argument (1)");
 		CHECKREMOTE(where);
-		what = DBFETCH(where)->contents;
+		what = CONTENTS(where);
 		CLEAR(oper1);
 		if (*buf) {
 			while (what != NOTHING) {
@@ -1463,7 +1463,7 @@ prim_notify_exclude(PRIM_PROTOTYPE)
 				}
 				if (!tmp)
 					notify_listeners(player, program, what, where, buf, 0);
-				what = DBFETCH(what)->next;
+				what = NEXTOBJ(what);
 			}
 		}
 
@@ -1475,8 +1475,8 @@ prim_notify_exclude(PRIM_PROTOTYPE)
 			if (!tmp)
 				notify_listeners(player, program, where, where, buf, 0);
 			if (tp_listeners_env && !tmp) {
-				what = DBFETCH(where)->location;
-				for (; what != NOTHING; what = DBFETCH(what)->location)
+				what = LOCATION(where);
+				for (; what != NOTHING; what = LOCATION(what))
 					notify_listeners(player, program, what, where, buf, 0);
 			}
 		}

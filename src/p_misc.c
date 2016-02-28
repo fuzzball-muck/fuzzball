@@ -194,7 +194,7 @@ prim_queue(PRIM_PROTOTYPE)
 		abort_interp("Non-string argument (3).");
 
 	if ((oper4 = fr->variables + 1)->type != PROG_OBJECT)
-		temproom = DBFETCH(player)->location;
+		temproom = LOCATION(player);
 	else
 		temproom = oper4->data.objref;
 

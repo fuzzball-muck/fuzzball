@@ -391,13 +391,13 @@ isneighbor(dbref d1, dbref d2)
 	if (d1 == d2)
 		return 1;
 	if (Typeof(d1) != TYPE_ROOM)
-		if (getloc(d1) == d2)
+		if (LOCATION(d1) == d2)
 			return 1;
 	if (Typeof(d2) != TYPE_ROOM)
-		if (getloc(d2) == d1)
+		if (LOCATION(d2) == d1)
 			return 1;
 	if (Typeof(d1) != TYPE_ROOM && Typeof(d2) != TYPE_ROOM)
-		if (getloc(d1) == getloc(d2))
+		if (LOCATION(d1) == LOCATION(d2))
 			return 1;
 	return 0;
 }
@@ -406,7 +406,7 @@ isneighbor(dbref d1, dbref d2)
 int
 mesg_local_perms(dbref player, dbref perms, dbref obj, int mesgtyp)
 {
-	if (getloc(obj) != NOTHING && OWNER(perms) == OWNER(getloc(obj)))
+	if (LOCATION(obj) != NOTHING && OWNER(perms) == OWNER(LOCATION(obj)))
 		return 1;
 	if (isneighbor(perms, obj))
 		return 1;
@@ -430,7 +430,7 @@ mesg_dbref_raw(int descr, dbref player, dbref what, dbref perms, const char *buf
 		} else if (!string_compare(buf, "me")) {
 			obj = player;
 		} else if (!string_compare(buf, "here")) {
-			obj = getloc(player);
+			obj = LOCATION(player);
 		} else if (!string_compare(buf, "home")) {
 			obj = HOME;
 		} else {

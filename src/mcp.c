@@ -1902,7 +1902,7 @@ do_mcpprogram(int descr, dbref player, const char* name)
 		NAME(prog) = alloc_string(name);
 		snprintf(buf, sizeof(buf), "A scroll containing a spell called %s", name);
 		SETDESC(prog, buf);
-		DBFETCH(prog)->location = player;
+		LOCATION(prog) = player;
 		FLAGS(prog) = TYPE_PROGRAM;
 		jj = MLevel(player);
 		if (jj < 1)
@@ -1927,7 +1927,7 @@ do_mcpprogram(int descr, dbref player, const char* name)
 
 		PLAYER_SET_CURR_PROG(player, prog);
 
-		PUSH(prog, DBFETCH(player)->contents);
+		PUSH(prog, CONTENTS(player));
 		DBDIRTY(prog);
 		DBDIRTY(player);
 		snprintf(buf, sizeof(buf), "Program %s created with number %d.", name, prog);

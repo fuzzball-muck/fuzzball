@@ -84,6 +84,12 @@ typedef int dbref;				/* offset into db */
 #define NAME(x)     (db[x].name)
 #define FLAGS(x)    (db[x].flags)
 #define OWNER(x)    (db[x].owner)
+#define LOCATION(x) (DBFETCH((x))->location)
+#define CONTENTS(x) (DBFETCH((x))->contents)
+#define EXITS(x)    (DBFETCH((x))->exits)
+#define NEXTOBJ(x)  (DBFETCH((x))->next)
+
+#define TYPEOF(i)   (DBFETCH((i))->flags & TYPE_MASK)
 
 /* defines for possible data access mods. */
 #define MESGPROP_DESC		"_/de"
@@ -864,7 +870,6 @@ extern dbref parse_dbref(const char *);	/* parse a dbref */
   for((var) = (first); (var) != NOTHING; (var) = DBFETCH(var)->next)
 #define PUSH(thing, locative) \
     {DBSTORE((thing), next, (locative)); (locative) = (thing);}
-#define getloc(thing) (DBFETCH(thing)->location)
 
 /*
   Usage guidelines:

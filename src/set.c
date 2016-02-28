@@ -192,7 +192,7 @@ controls_link(dbref who, dbref what)
 				if (controls(who, DBFETCH(what)->sp.exit.dest[--i]))
 					return 1;
 			}
-			if (who == OWNER(DBFETCH(what)->location))
+			if (who == OWNER(LOCATION(what)))
 				return 1;
 			return 0;
 		}
@@ -480,7 +480,7 @@ do_chown(int descr, dbref player, const char *name, const char *newowner)
 
 	switch (Typeof(thing)) {
 	case TYPE_ROOM:
-		if (!Wizard(OWNER(player)) && DBFETCH(player)->location != thing) {
+		if (!Wizard(OWNER(player)) && LOCATION(player) != thing) {
 			notify(player, "You can only chown \"here\".");
 			return;
 		}
@@ -488,7 +488,7 @@ do_chown(int descr, dbref player, const char *name, const char *newowner)
 		OWNER(thing) = OWNER(owner);
 		break;
 	case TYPE_THING:
-		if (!Wizard(OWNER(player)) && DBFETCH(thing)->location != player) {
+		if (!Wizard(OWNER(player)) && LOCATION(thing) != player) {
 			notify(player, "You aren't carrying that.");
 			return;
 		}
@@ -693,9 +693,9 @@ do_set(int descr, dbref player, const char *name, const char *flag)
 	} else if (string_prefix("VEHICLE", p)
 		|| string_prefix("VIEWABLE", p)) {
 		if (*flag == NOT_TOKEN && Typeof(thing) == TYPE_THING) {
-			dbref obj = DBFETCH(thing)->contents;
+			dbref obj = CONTENTS(thing);
 
-			for (; obj != NOTHING; obj = DBFETCH(obj)->next) {
+			for (; obj != NOTHING; obj = NEXTOBJ(obj)) {
 				if (Typeof(obj) == TYPE_PLAYER) {
 					notify(player, "That vehicle still has players in it!");
 					return;

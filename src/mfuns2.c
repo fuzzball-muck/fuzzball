@@ -208,11 +208,11 @@ mfn_contents(MFUNARGS)
 	strcpyn(buf, buflen, "");
 	outlen = 0;
 	ownroom = controls(perms, obj);
-	obj = DBFETCH(obj)->contents;
+	obj = CONTENTS(obj);
 	while (obj != NOTHING && list_limit) {
 		if ((typchk == NOTYPE || Typeof(obj) == typchk) &&
 			(ownroom || controls(perms, obj) ||
-			 !((FLAGS(obj) & DARK) || (FLAGS(getloc(obj)) & DARK) ||
+			 !((FLAGS(obj) & DARK) || (FLAGS(LOCATION(obj)) & DARK) ||
 			   (Typeof(obj) == TYPE_PROGRAM && !(FLAGS(obj) & LINK_OK)))) &&
 			!(Typeof(obj) == TYPE_ROOM && typchk != TYPE_ROOM)) {
 			ref2str(obj, buf2, sizeof(buf2));
@@ -227,7 +227,7 @@ mfn_contents(MFUNARGS)
 			outlen += nextlen;
 			list_limit--;
 		}
-		obj = DBFETCH(obj)->next;
+		obj = NEXTOBJ(obj);
 	}
 	return buf;
 }
@@ -251,7 +251,7 @@ mfn_exits(MFUNARGS)
 	case TYPE_ROOM:
 	case TYPE_THING:
 	case TYPE_PLAYER:
-		obj = DBFETCH(obj)->exits;
+		obj = EXITS(obj);
 		break;
 	default:
 		obj = NOTHING;
@@ -271,7 +271,7 @@ mfn_exits(MFUNARGS)
 		strcatn((buf + outlen), BUFFER_LEN - outlen, buf2);
 		outlen += nextlen;
 		list_limit--;
-		obj = DBFETCH(obj)->next;
+		obj = NEXTOBJ(obj);
 	}
 	return buf;
 }
@@ -1409,7 +1409,7 @@ mfn_delay(MFUNARGS)
 #endif
 	cmdchr = get_mvar("cmd");
 	argchr = get_mvar("arg");
-	i = add_mpi_event(i, descr, player, getloc(player), perms, argv[1], cmdchr, argchr,
+	i = add_mpi_event(i, descr, player, LOCATION(player), perms, argv[1], cmdchr, argchr,
 					  (mesgtyp & MPI_ISLISTENER), (!(mesgtyp & MPI_ISPRIVATE)),
 					  (mesgtyp & MPI_ISBLESSED));
 	snprintf(buf, BUFFER_LEN, "%d", i);
@@ -1468,7 +1468,7 @@ mfn_muf(MFUNARGS)
 	strcpyn(match_args, sizeof(match_args), argv[1]);
 	ptr = get_mvar("how");
 	snprintf(match_cmdname, sizeof(match_cmdname), "%s(MPI)", ptr);
-	tmpfr = interp(descr, player, DBFETCH(player)->location, obj, perms, PREEMPT, STD_HARDUID, 0);
+	tmpfr = interp(descr, player, LOCATION(player), obj, perms, PREEMPT, STD_HARDUID, 0);
 	if (tmpfr) {
 		rv = interp_loop(player, obj, tmpfr, 1);
 	}
@@ -1532,7 +1532,7 @@ mfn_force(MFUNARGS)
 	if (!(mesgtyp & MPI_ISBLESSED)) {
 		const char *ptr = NAME(obj);
 		char objname[BUFFER_LEN], *ptr2;
-		dbref loc = getloc(obj);
+		dbref loc = LOCATION(obj);
 
 		if (Typeof(obj) == TYPE_THING) {
 			if (FLAGS(obj) & DARK)

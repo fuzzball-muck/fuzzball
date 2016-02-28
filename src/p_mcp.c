@@ -67,7 +67,7 @@ muf_mcp_callback(McpFrame * mfr, McpMesg * mesg, McpVer version, void *context)
 		stk_array *argarr;
 		struct inst argname, argval, argpart;
 
-		tmpfr = interp(descr, user, getloc(user), obj, -1, PREEMPT, STD_REGUID, 0);
+		tmpfr = interp(descr, user, LOCATION(user), obj, -1, PREEMPT, STD_REGUID, 0);
 		if (tmpfr) {
 			oper1 = tmpfr->argument.st + --tmpfr->argument.top;
 			CLEAR(oper1);

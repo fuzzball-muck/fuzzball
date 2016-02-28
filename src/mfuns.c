@@ -966,7 +966,7 @@ mfn_contains(MFUNARGS)
 		ABORT_MPI("CONTAINS", "Permission Denied (2).");
 
 	while (obj2 != NOTHING && obj2 != obj1)
-		obj2 = getloc(obj2);
+		obj2 = LOCATION(obj2);
 	if (obj1 == obj2) {
 		return "1";
 	} else {
@@ -994,7 +994,7 @@ mfn_holds(MFUNARGS)
 	if (obj2 == PERMDENIED)
 		ABORT_MPI("HOLDS", "Permission Denied (2).");
 
-	if (obj2 == getloc(obj1)) {
+	if (obj2 == LOCATION(obj1)) {
 		return "1";
 	} else {
 		return "0";
@@ -1760,7 +1760,7 @@ mfn_loc(MFUNARGS)
 		ABORT_MPI("LOC", "Match failed.");
 	if (obj == PERMDENIED)
 		ABORT_MPI("LOC", "Permission denied.");
-	return ref2str(getloc(obj), buf, BUFFER_LEN);
+	return ref2str(LOCATION(obj), buf, BUFFER_LEN);
 }
 
 
@@ -1864,7 +1864,7 @@ mfn_tell(MFUNARGS)
 			ptr2 = ptr + strlen(ptr);
 		}
 		if (Typeof(what) == TYPE_ROOM || OWNER(what) == obj || player == obj ||
-			(Typeof(what) == TYPE_EXIT && Typeof(getloc(what)) == TYPE_ROOM) ||
+			(Typeof(what) == TYPE_EXIT && Typeof(LOCATION(what)) == TYPE_ROOM) ||
 			string_prefix(argv[0], NAME(player))) {
 			snprintf(buf, BUFFER_LEN, "%s%.4093s",
 					((obj == OWNER(perms) || obj == player) ? "" : "> "), ptr);
@@ -1883,7 +1883,7 @@ mfn_otell(MFUNARGS)
 {
 	char buf2[BUFFER_LEN];
 	char *ptr, *ptr2;
-	dbref obj = getloc(player);
+	dbref obj = LOCATION(player);
 	dbref eobj = player;
 	dbref thing;
 
@@ -1907,19 +1907,19 @@ mfn_otell(MFUNARGS)
 		}
 		if (((OWNER(what) == OWNER(obj) || isancestor(what, obj)) &&
 			 (Typeof(what) == TYPE_ROOM ||
-			  (Typeof(what) == TYPE_EXIT && Typeof(getloc(what)) == TYPE_ROOM))) ||
+			  (Typeof(what) == TYPE_EXIT && Typeof(LOCATION(what)) == TYPE_ROOM))) ||
 			string_prefix(argv[0], NAME(player))) {
 			strcpyn(buf, buflen, ptr);
 		} else {
 			snprintf(buf, BUFFER_LEN, "%.16s%s%.4078s", NAME(player),
 					((*argv[0] == '\'' || isspace(*argv[0])) ? "" : " "), ptr);
 		}
-		thing = DBFETCH(obj)->contents;
+		thing = CONTENTS(obj);
 		while (thing != NOTHING) {
 			if (thing != eobj) {
 				notify_from_echo(player, thing, buf, 0);
 			}
-			thing = DBFETCH(thing)->next;
+			thing = NEXTOBJ(thing);
 		}
 	}
 	return argv[0];
