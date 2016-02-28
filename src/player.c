@@ -107,12 +107,12 @@ create_player(const char *name, const char *password)
 
 	/* initialize everything */
 	NAME(player) = alloc_string(name);
-	DBFETCH(player)->location = tp_player_start;	/* home */
+	LOCATION(player) = tp_player_start;	/* home */
 	FLAGS(player) = TYPE_PLAYER;
 	OWNER(player) = player;
 	ALLOC_PLAYER_SP(player);
 	PLAYER_SET_HOME(player, tp_player_start);
-	DBFETCH(player)->exits = NOTHING;
+	EXITS(player) = NOTHING;
 
 	SETVALUE(player, tp_start_pennies);
 	set_password_raw(player, NULL);
@@ -124,7 +124,7 @@ create_player(const char *name, const char *password)
 	PLAYER_SET_IGNORE_LAST(player, NOTHING);
 
 	/* link him to tp_player_start */
-	PUSH(player, DBFETCH(tp_player_start)->contents);
+	PUSH(player, CONTENTS(tp_player_start));
 	add_player(player);
 	DBDIRTY(player);
 	DBDIRTY(tp_player_start);

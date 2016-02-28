@@ -748,10 +748,10 @@ notify_nolisten(dbref player, const char *msg, int isprivate)
 			if ((Typeof(player) == TYPE_THING) && (FLAGS(player) & ZOMBIE) &&
 				!(FLAGS(OWNER(player)) & ZOMBIE) &&
 				(!(FLAGS(player) & DARK) || Wizard(OWNER(player)))) {
-				ref = getloc(player);
+				ref = LOCATION(player);
 				if (Wizard(OWNER(player)) || ref == NOTHING ||
 					Typeof(ref) != TYPE_ROOM || !(FLAGS(ref) & ZOMBIE)) {
-					if (isprivate || getloc(player) != getloc(OWNER(player))) {
+					if (isprivate || LOCATION(player) != LOCATION(OWNER(player))) {
 						char pbuf[BUFFER_LEN];
 						const char *prefix;
 						char ch = *match_args;
@@ -810,11 +810,11 @@ notify_from_echo(dbref from, dbref player, const char *msg, int isprivate)
 
 	if (tp_listeners) {
 		if (tp_listeners_obj || Typeof(player) == TYPE_ROOM) {
-			listenqueue(-1, from, getloc(from), player, player, NOTHING,
+			listenqueue(-1, from, LOCATION(from), player, player, NOTHING,
 						"_listen", ptr, tp_listen_mlev, 1, 0);
-			listenqueue(-1, from, getloc(from), player, player, NOTHING,
+			listenqueue(-1, from, LOCATION(from), player, player, NOTHING,
 						"~listen", ptr, tp_listen_mlev, 1, 1);
-			listenqueue(-1, from, getloc(from), player, player, NOTHING,
+			listenqueue(-1, from, LOCATION(from), player, player, NOTHING,
 						"~olisten", ptr, tp_listen_mlev, 0, 1);
 		}
 	}
@@ -824,11 +824,11 @@ notify_from_echo(dbref from, dbref player, const char *msg, int isprivate)
 			) {
 		dbref ref;
 
-		ref = getloc(player);
+		ref = LOCATION(player);
 		if (Wizard(OWNER(player)) || ref == NOTHING ||
 			Typeof(ref) != TYPE_ROOM || !(FLAGS(ref) & VEHICLE)
 				) {
-			if (!isprivate && getloc(from) == getloc(player)) {
+			if (!isprivate && LOCATION(from) == LOCATION(player)) {
 				char buf[BUFFER_LEN];
 				char pbuf[BUFFER_LEN];
 				const char *prefix;
@@ -841,10 +841,10 @@ notify_from_echo(dbref from, dbref player, const char *msg, int isprivate)
 				if (!prefix || !*prefix)
 					prefix = "Outside>";
 				snprintf(buf, sizeof(buf), "%s %.*s", prefix, (int)(BUFFER_LEN - (strlen(prefix) + 2)), msg);
-				ref = DBFETCH(player)->contents;
+				ref = CONTENTS(player);
 				while (ref != NOTHING) {
 					notify_filtered(from, ref, buf, isprivate);
-					ref = DBFETCH(ref)->next;
+					ref = NEXTOBJ(ref);
 				}
 			}
 		}
@@ -2958,8 +2958,8 @@ dump_users(struct descriptor_data *e, char *user)
 	if (wizard)
 		/* S/he is connected and not quelled. Okay; log it. */
 		log_command("WIZ: %s(%d) in %s(%d):  %s", NAME(e->player),
-					(int) e->player, NAME(DBFETCH(e->player)->location),
-					(int) DBFETCH(e->player)->location, "WHO");
+					(int) e->player, NAME(LOCATION(e->player)),
+					(int) LOCATION(e->player), "WHO");
 
 	if (!*user)
 		user = NULL;
@@ -2999,7 +2999,7 @@ dump_users(struct descriptor_data *e, char *user)
 					snprintf(buf, sizeof(buf),
 							"%-*s [%6d] %10s %4s%c%c %s\r\n",
 							PLAYER_NAME_LIMIT + 10, pbuf,
-							(int) DBFETCH(d->player)->location,
+							(int) LOCATION(d->player),
 							time_format_1(now - d->connected_at),
 							time_format_2(now - d->last_time),
 							((FLAGS(d->player) & INTERACTIVE) ? '*' : ' '),
@@ -3009,7 +3009,7 @@ dump_users(struct descriptor_data *e, char *user)
 					snprintf(buf, sizeof(buf),
 							"%-*s [%6d] %10s %4s%c%c %s(%s)\r\n",
 							PLAYER_NAME_LIMIT + 10, pbuf,
-							(int) DBFETCH(d->player)->location,
+							(int) LOCATION(d->player),
 							time_format_1(now - d->connected_at),
 							time_format_2(now - d->last_time),
 							((FLAGS(d->player) & INTERACTIVE) ? '*' : ' '),
@@ -3098,13 +3098,13 @@ announce_puppets(dbref player, const char *msg, const char *prop)
 	for (what = 0; what < db_top; what++) {
 		if (Typeof(what) == TYPE_THING && (FLAGS(what) & ZOMBIE)) {
 			if (OWNER(what) == player) {
-				where = getloc(what);
+				where = LOCATION(what);
 				if ((!Dark(where)) && (!Dark(player)) && (!Dark(what))) {
 					msg2 = msg;
 					if ((ptr = (char *) get_property_class(what, prop)) && *ptr)
 						msg2 = ptr;
 					snprintf(buf, sizeof(buf), "%.512s %.3000s", NAME(what), msg2);
-					notify_except(DBFETCH(where)->contents, what, buf, what);
+					notify_except(CONTENTS(where), what, buf, what);
 				}
 			}
 		}
@@ -3119,12 +3119,12 @@ announce_connect(int descr, dbref player)
 	struct match_data md;
 	dbref exit;
 
-	if ((loc = getloc(player)) == NOTHING)
+	if ((loc = LOCATION(player)) == NOTHING)
 		return;
 
 	if ((!Dark(player)) && (!Dark(loc))) {
 		snprintf(buf, sizeof(buf), "%s has connected.", NAME(player));
-		notify_except(DBFETCH(loc)->contents, player, buf, player);
+		notify_except(CONTENTS(loc), player, buf, player);
 	}
 
 	exit = NOTHING;
@@ -3160,9 +3160,9 @@ announce_connect(int descr, dbref player)
 	}
 
 	/* queue up all _connect programs referred to by properties */
-	envpropqueue(descr, player, getloc(player), NOTHING, player, NOTHING,
+	envpropqueue(descr, player, LOCATION(player), NOTHING, player, NOTHING,
 				 "_connect", "Connect", 1, 1);
-	envpropqueue(descr, player, getloc(player), NOTHING, player, NOTHING,
+	envpropqueue(descr, player, LOCATION(player), NOTHING, player, NOTHING,
 				 "_oconnect", "Oconnect", 1, 0);
 
 	ts_useobject(player);
@@ -3177,7 +3177,7 @@ announce_disconnect(struct descriptor_data *d)
 	char buf[BUFFER_LEN];
 	int dcount;
 
-	if ((loc = getloc(player)) == NOTHING)
+	if ((loc = LOCATION(player)) == NOTHING)
 		return;
 
 	get_player_descrs(d->player, &dcount);
@@ -3186,7 +3186,7 @@ announce_disconnect(struct descriptor_data *d)
 
 	if ((!Dark(player)) && (!Dark(loc))) {
 		snprintf(buf, sizeof(buf), "%s has disconnected.", NAME(player));
-		notify_except(DBFETCH(loc)->contents, player, buf, player);
+		notify_except(CONTENTS(loc), player, buf, player);
 	}
 
 	/* trigger local disconnect action */
@@ -3206,9 +3206,9 @@ announce_disconnect(struct descriptor_data *d)
     update_desc_count_table();
 
 	/* queue up all _connect programs referred to by properties */
-	envpropqueue(d->descriptor, player, getloc(player), NOTHING, player, NOTHING,
+	envpropqueue(d->descriptor, player, LOCATION(player), NOTHING, player, NOTHING,
 				 "_disconnect", "Disconnect", 1, 1);
-	envpropqueue(d->descriptor, player, getloc(player), NOTHING, player, NOTHING,
+	envpropqueue(d->descriptor, player, LOCATION(player), NOTHING, player, NOTHING,
 				 "_odisconnect", "Odisconnect", 1, 0);
 
 	ts_lastuseobject(player);

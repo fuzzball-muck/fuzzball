@@ -307,7 +307,7 @@ has_property(int descr, dbref player, dbref what, const char *pname, const char 
 
 	if (has_property_strict(descr, player, what, pname, strval, value))
 		return 1;
-	for (things = DBFETCH(what)->contents; things != NOTHING; things = DBFETCH(things)->next) {
+	for (things = CONTENTS(what); things != NOTHING; things = NEXTOBJ(things)) {
 		if (has_property(descr, player, things, pname, strval, value))
 			return 1;
 	}

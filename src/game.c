@@ -549,8 +549,8 @@ process_command(int descr, dbref player, char *command)
 						(Typeof(player) != TYPE_PLAYER) ? NAME(player) : "",
 						(Typeof(player) != TYPE_PLAYER) ? " owned by " : "",
 						NAME(OWNER(player)), (int) player,
-						NAME(DBFETCH(player)->location),
-						(int) DBFETCH(player)->location, " ", command);
+						NAME(LOCATION(player)),
+						(int)LOCATION(player), " ", command);
 		} else {
 			if (tp_log_interactive) {
 				log_command("%s%s%s%s(%d) in %s(%d):%s %s",
@@ -558,8 +558,8 @@ process_command(int descr, dbref player, char *command)
 							(Typeof(player) != TYPE_PLAYER) ? NAME(player) : "",
 							(Typeof(player) != TYPE_PLAYER) ? " owned by " : "",
 							NAME(OWNER(player)), (int) player,
-							NAME(DBFETCH(player)->location),
-							(int) DBFETCH(player)->location,
+							NAME(LOCATION(player)),
+							(int)LOCATION(player),
 							(FLAGS(player) & (READMODE)) ? " [READ] " : " [INTERP] ", command);
 			}
 		}
@@ -1530,11 +1530,11 @@ process_command(int descr, dbref player, char *command)
 				}
 			}	
 			notify(player, tp_huh_mesg);
-			if (tp_log_failed_commands && !controls(player, DBFETCH(player)->location)) {
+			if (tp_log_failed_commands && !controls(player, LOCATION(player))) {
 				log_status("HUH from %s(%d) in %s(%d)[%s]: %s %s",
-						   NAME(player), player, NAME(DBFETCH(player)->location),
-						   DBFETCH(player)->location,
-						   NAME(OWNER(DBFETCH(player)->location)), command, full_command);
+						   NAME(player), player, NAME(LOCATION(player)),
+						   LOCATION(player),
+						   NAME(OWNER(LOCATION(player))), command, full_command);
 			}
 			break;
 		}
@@ -1557,8 +1557,8 @@ process_command(int descr, dbref player, char *command)
 					(Typeof(player) != TYPE_PLAYER) ? NAME(player) : "",
 					(Typeof(player) != TYPE_PLAYER) ? " owned by " : "",
 					NAME(OWNER(player)), (int) player,
-					NAME(DBFETCH(player)->location),
-					(int) DBFETCH(player)->location, " ", command);
+					NAME(LOCATION(player)),
+					(int)LOCATION(player), " ", command);
 	}
 }
 

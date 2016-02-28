@@ -11,15 +11,6 @@
 #include "params.h"
 #include "props.h"
 
-
-
-#define TYPEOF(i)   (DBFETCH((i))->flags & TYPE_MASK)
-#define LOCATION(x) (DBFETCH((x))->location)
-
-#define CONTENTS(x) (DBFETCH((x))->contents)
-#define EXITS(x)    (DBFETCH((x))->exits)
-#define NEXTOBJ(x)  (DBFETCH((x))->next)
-
 #define unparse(x) ((char*)unparse_object(GOD, (x)))
 
 int sanity_violated = 0;
@@ -555,7 +546,7 @@ cut_bad_recyclable(void)
 		if (!valid_ref(loop) || TYPEOF(loop) != TYPE_GARBAGE || FLAGS(loop) & SANEBIT) {
 			SanFixed(loop, "Recyclable object %s is not TYPE_GARBAGE");
 			if (prev != NOTHING) {
-				DBFETCH(prev)->next = NOTHING;
+				NEXTOBJ(prev) = NOTHING;
 				DBDIRTY(prev);
 			} else {
 				recyclable = NOTHING;
@@ -564,7 +555,7 @@ cut_bad_recyclable(void)
 		}
 		FLAGS(loop) |= SANEBIT;
 		prev = loop;
-		loop = DBFETCH(loop)->next;
+		loop = NEXTOBJ(loop);
 	}
 }
 
@@ -592,7 +583,7 @@ cut_bad_contents(dbref obj)
 				SanFixed2(obj, loop, "Contents chain for %s cut at %s");
 			}
 			if (prev != NOTHING) {
-				DBFETCH(prev)->next = NOTHING;
+				NEXTOBJ(prev) = NOTHING;
 				DBDIRTY(prev);
 			} else {
 				CONTENTS(obj) = NOTHING;
@@ -602,7 +593,7 @@ cut_bad_contents(dbref obj)
 		}
 		FLAGS(loop) |= SANEBIT;
 		prev = loop;
-		loop = DBFETCH(loop)->next;
+		loop = NEXTOBJ(loop);
 	}
 }
 
@@ -628,7 +619,7 @@ cut_bad_exits(dbref obj)
 				SanFixed2(obj, loop, "Exits chain for %s cut at %s");
 			}
 			if (prev != NOTHING) {
-				DBFETCH(prev)->next = NOTHING;
+				NEXTOBJ(prev) = NOTHING;
 				DBDIRTY(prev);
 			} else {
 				EXITS(obj) = NOTHING;
@@ -638,7 +629,7 @@ cut_bad_exits(dbref obj)
 		}
 		FLAGS(loop) |= SANEBIT;
 		prev = loop;
-		loop = DBFETCH(loop)->next;
+		loop = NEXTOBJ(loop);
 	}
 }
 
@@ -683,10 +674,10 @@ create_lostandfound(dbref * player, dbref * room)
 	*room = new_object();
 	NAME(*room) = alloc_string("lost+found");
 	LOCATION(*room) = GLOBAL_ENVIRONMENT;
-	DBFETCH(*room)->exits = NOTHING;
+	EXITS(*room) = NOTHING;
 	DBFETCH(*room)->sp.room.dropto = NOTHING;
 	FLAGS(*room) = TYPE_ROOM | SANEBIT;
-	PUSH(*room, DBFETCH(GLOBAL_ENVIRONMENT)->contents);
+	PUSH(*room, CONTENTS(GLOBAL_ENVIRONMENT));
 	SanFixed(*room, "Using %s to resolve unknown location");
 
 	while (lookup_player(player_name) != NOTHING && strlen(player_name) < PLAYER_NAME_LIMIT) {
@@ -712,7 +703,7 @@ create_lostandfound(dbref * player, dbref * room)
 		set_password(*player, rpass);
 		PLAYER_SET_CURR_PROG(*player, NOTHING);
 		PLAYER_SET_INSERT_MODE(*player, 0);
-		PUSH(*player, DBFETCH(*room)->contents);
+		PUSH(*player, CONTENTS(*room));
 		DBDIRTY(*player);
 		add_player(*player);
 		log2file("logs/sanfixed", "Using %s (with password %s) to resolve "
@@ -851,13 +842,13 @@ find_misplaced_objects(void)
 
 						loop1 = LOCATION(loop);
 						if (CONTENTS(loop1) == loop) {
-							CONTENTS(loop1) = DBFETCH(loop)->next;
+							CONTENTS(loop1) = NEXTOBJ(loop);
 							DBDIRTY(loop1);
 						} else
 							for (loop1 = CONTENTS(loop1);
-								 loop1 != NOTHING; loop1 = DBFETCH(loop1)->next) {
-								if (DBFETCH(loop1)->next == loop) {
-									DBFETCH(loop1)->next = DBFETCH(loop)->next;
+								 loop1 != NOTHING; loop1 = NEXTOBJ(loop1)) {
+								if (NEXTOBJ(loop1) == loop) {
+									NEXTOBJ(loop1) = NEXTOBJ(loop);
 									DBDIRTY(loop1);
 									break;
 								}
@@ -925,17 +916,17 @@ adopt_orphans(void)
 			case TYPE_THING:
 			case TYPE_PLAYER:
 			case TYPE_PROGRAM:
-				DBFETCH(loop)->next = DBFETCH(LOCATION(loop))->contents;
-				DBFETCH(LOCATION(loop))->contents = loop;
+				NEXTOBJ(loop) = CONTENTS(LOCATION(loop));
+				CONTENTS(LOCATION(loop)) = loop;
 				SanFixed2(loop, LOCATION(loop), "Orphaned object %s added to contents of %s");
 				break;
 			case TYPE_EXIT:
-				DBFETCH(loop)->next = DBFETCH(LOCATION(loop))->exits;
-				DBFETCH(LOCATION(loop))->exits = loop;
+				NEXTOBJ(loop) = EXITS(LOCATION(loop));
+				EXITS(LOCATION(loop)) = loop;
 				SanFixed2(loop, LOCATION(loop), "Orphaned exit %s added to exits of %s");
 				break;
 			case TYPE_GARBAGE:
-				DBFETCH(loop)->next = recyclable;
+				NEXTOBJ(loop) = recyclable;
 				recyclable = loop;
 				SanFixedRef(loop, "Litter object %d moved to recycle bin");
 				break;
@@ -950,9 +941,9 @@ adopt_orphans(void)
 void
 clean_global_environment(void)
 {
-	if (DBFETCH(GLOBAL_ENVIRONMENT)->next != NOTHING) {
+	if (NEXTOBJ(GLOBAL_ENVIRONMENT) != NOTHING) {
 		SanFixed(GLOBAL_ENVIRONMENT, "Removed the global environment %s from a chain");
-		DBFETCH(GLOBAL_ENVIRONMENT)->next = NOTHING;
+		NEXTOBJ(GLOBAL_ENVIRONMENT) = NOTHING;
 		DBDIRTY(GLOBAL_ENVIRONMENT);
 	}
 	if (LOCATION(GLOBAL_ENVIRONMENT) != NOTHING) {

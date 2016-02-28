@@ -217,8 +217,8 @@ void
 match_here(struct match_data *md)
 {
 	if (!string_compare(md->match_name, "here")
-		&& DBFETCH(md->match_who)->location != NOTHING) {
-		md->exact_match = DBFETCH(md->match_who)->location;
+		&& LOCATION(md->match_who) != NOTHING) {
+		md->exact_match = LOCATION(md->match_who);
 	}
 }
 
@@ -262,7 +262,7 @@ match_list(dbref first, struct match_data *md)
 void
 match_possession(struct match_data *md)
 {
-	match_list(DBFETCH(md->match_from)->contents, md);
+	match_list(CONTENTS(md->match_from), md);
 }
 
 void
@@ -270,8 +270,8 @@ match_neighbor(struct match_data *md)
 {
 	dbref loc;
 
-	if ((loc = DBFETCH(md->match_from)->location) != NOTHING) {
-		match_list(DBFETCH(loc)->contents, md);
+	if ((loc = LOCATION(md->match_from)) != NOTHING) {
+		match_list(CONTENTS(loc), md);
 	}
 }
 
@@ -288,7 +288,7 @@ match_exits(dbref first, struct match_data *md)
 
 	if (first == NOTHING)
 		return;					/* Easy fail match */
-	if ((DBFETCH(md->match_from)->location) == NOTHING)
+	if ((LOCATION(md->match_from)) == NOTHING)
 		return;
 
 	absolute = absolute_name(md);	/* parse #nnn entries */
@@ -334,9 +334,9 @@ match_exits(dbref first, struct match_data *md)
 					exitname++;
 				lev = PLevel(exit);
 				if (tp_compatible_priorities && (lev == 1) &&
-					(DBFETCH(exit)->location == NOTHING ||
-					 Typeof(DBFETCH(exit)->location) != TYPE_THING ||
-					 controls(OWNER(exit), getloc(md->match_from))))
+					(LOCATION(exit) == NOTHING ||
+					 Typeof(LOCATION(exit)) != TYPE_THING ||
+					 controls(OWNER(exit), LOCATION(md->match_from))))
 					lev = 2;
 				if (*exitname == '\0' || *exitname == EXIT_DELIMITER) {
 					/* we got a match on this alias */
@@ -416,11 +416,11 @@ match_invobj_actions(struct match_data *md)
 {
 	dbref thing;
 
-	if (DBFETCH(md->match_from)->contents == NOTHING)
+	if (CONTENTS(md->match_from) == NOTHING)
 		return;
-	DOLIST(thing, DBFETCH(md->match_from)->contents) {
-		if (Typeof(thing) == TYPE_THING && DBFETCH(thing)->exits != NOTHING) {
-			match_exits(DBFETCH(thing)->exits, md);
+	DOLIST(thing, CONTENTS(md->match_from)) {
+		if (Typeof(thing) == TYPE_THING && EXITS(thing) != NOTHING) {
+			match_exits(EXITS(thing), md);
 		}
 	}
 }
@@ -434,13 +434,13 @@ match_roomobj_actions(struct match_data *md)
 {
 	dbref thing, loc;
 
-	if ((loc = DBFETCH(md->match_from)->location) == NOTHING)
+	if ((loc = LOCATION(md->match_from)) == NOTHING)
 		return;
-	if (DBFETCH(loc)->contents == NOTHING)
+	if (CONTENTS(loc) == NOTHING)
 		return;
-	DOLIST(thing, DBFETCH(loc)->contents) {
-		if (Typeof(thing) == TYPE_THING && DBFETCH(thing)->exits != NOTHING) {
-			match_exits(DBFETCH(thing)->exits, md);
+	DOLIST(thing, CONTENTS(loc)) {
+		if (Typeof(thing) == TYPE_THING && EXITS(thing) != NOTHING) {
+			match_exits(EXITS(thing), md);
 		}
 	}
 }
@@ -458,7 +458,7 @@ match_player_actions(struct match_data *md)
 	case TYPE_PLAYER:
 	case TYPE_ROOM:
 	case TYPE_THING:
-		obj = DBFETCH(md->match_from)->exits;
+		obj = EXITS(md->match_from);
 		break;
 	default:
 		obj = NOTHING;
@@ -483,7 +483,7 @@ match_room_exits(dbref loc, struct match_data *md)
 	case TYPE_PLAYER:
 	case TYPE_ROOM:
 	case TYPE_THING:
-		obj = DBFETCH(loc)->exits;
+		obj = EXITS(loc);
 		break;
 	default:
 		obj = NOTHING;
@@ -508,7 +508,7 @@ match_all_exits(struct match_data *md)
 
 	strcpyn(match_args, sizeof(match_args), "\0");
 	strcpyn(match_cmdname, sizeof(match_cmdname), "\0");
-	if ((loc = DBFETCH(md->match_from)->location) != NOTHING)
+	if ((loc = LOCATION(md->match_from)) != NOTHING)
 		match_room_exits(loc, md);
 
 	if (md->exact_match != NOTHING)
@@ -538,7 +538,7 @@ match_all_exits(struct match_data *md)
 
         /* Walk the environment chain to #0, or until depth chain limit
            has been hit, looking for a match. */
-        while ((loc = DBFETCH(loc)->location) != NOTHING) {
+        while ((loc = LOCATION(loc)) != NOTHING) {
                 /* If we're blocking (because of a yield), only match a room if
                    and only if it has overt set on it. */
                 if ((blocking && FLAGS(loc) & OVERT) || !blocking) {
@@ -624,8 +624,8 @@ match_rmatch(dbref arg1, struct match_data *md)
 	case TYPE_PLAYER:
 	case TYPE_ROOM:
 	case TYPE_THING:
-		match_list(DBFETCH(arg1)->contents, md);
-		match_exits(DBFETCH(arg1)->exits, md);
+		match_list(CONTENTS(arg1), md);
+		match_exits(EXITS(arg1), md);
 		break;
 	}
 }

@@ -120,7 +120,7 @@ eval_boolexp_rec(int descr, dbref player, struct boolexp *b, dbref thing)
 				else
 					real_player = OWNER(player);
 
-				tmpfr = interp(descr, real_player, DBFETCH(player)->location,
+				tmpfr = interp(descr, real_player, LOCATION(player),
 							   b->thing, thing, PREEMPT, STD_HARDUID, 0);
 
 				if (!tmpfr)
@@ -131,8 +131,8 @@ eval_boolexp_rec(int descr, dbref player, struct boolexp *b, dbref thing)
 				return (rv != NULL);
 			}
 			return (b->thing == player || b->thing == OWNER(player)
-					|| member(b->thing, DBFETCH(player)->contents)
-					|| b->thing == DBFETCH(player)->location);
+					|| member(b->thing, CONTENTS(player))
+					|| b->thing == LOCATION(player));
 		case BOOLEXP_PROP:
 			if (PropType(b->prop_check) == PROP_STRTYP) {
 				if (has_property_strict(descr, player, thing,

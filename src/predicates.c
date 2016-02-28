@@ -112,7 +112,7 @@ could_doit(int descr, dbref player, dbref thing)
 		}
 
 		owner = OWNER(thing);
-		source = DBFETCH(player)->location;
+		source = LOCATION(player);
 		dest = *(DBFETCH(thing)->sp.exit.dest);
 
 		if (dest == NIL)
@@ -122,7 +122,7 @@ could_doit(int descr, dbref player, dbref thing)
 			/* Check for additional restrictions related to player dests */
 			dbref destplayer = dest;
 
-			dest = DBFETCH(dest)->location;
+			dest = LOCATION(dest);
 			/* If the dest player isn't JUMP_OK, or if the dest player's loc
 			 * is set BOUND, can't do it. */
 			if (!(FLAGS(destplayer) & JUMP_OK) || (FLAGS(dest) & BUILDER)) {
@@ -131,8 +131,8 @@ could_doit(int descr, dbref player, dbref thing)
 		}
 
 		/* for actions */
-		if ((DBFETCH(thing)->location != NOTHING) &&
-			(Typeof(DBFETCH(thing)->location) != TYPE_ROOM)) {
+		if ((LOCATION(thing) != NOTHING) &&
+			(Typeof(LOCATION(thing)) != TYPE_ROOM)) {
 
 			/* If this is an exit on a Thing or a Player... */
 
@@ -192,7 +192,7 @@ can_doit(int descr, dbref player, dbref thing, const char *default_fail_msg)
 {
 	dbref loc;
 
-	if ((loc = getloc(player)) == NOTHING)
+	if ((loc = LOCATION(player)) == NOTHING)
 		return 0;
 
 	if (!Wizard(OWNER(player)) && Typeof(player) == TYPE_THING &&
@@ -284,7 +284,7 @@ controls(dbref who, dbref what)
 		 * owner of that room controls every Room object contained within
 		 * that room, all the way to the leaves of the tree.
 		 * -winged */
-		for (index = what; index != NOTHING; index = getloc(index)) {
+		for (index = what; index != NOTHING; index = LOCATION(index)) {
 			if ((OWNER(index) == who) && (Typeof(index) == TYPE_ROOM)
 					&& Wizard(index)) {
 				/* Realm Owner doesn't control other Player objects */
@@ -312,7 +312,7 @@ controls(dbref who, dbref what)
 	 *        if (who == OWNER(DBFETCH(what)->sp.exit.dest[--i]))
 	 *            return 1;
 	 *    }
-	 *    if (who == OWNER(DBFETCH(what)->location))
+	 *    if (who == OWNER(LOCATION(what)))
 	 *        return 1;
 	 * }
 	 */
@@ -580,7 +580,7 @@ getparent_logic(dbref obj)
                         obj = PLAYER_HOME(obj);
                 }
         } else {
-                obj = getloc(obj);
+                obj = LOCATION(obj);
         }
         return obj;
 }
@@ -591,7 +591,7 @@ getparent(dbref obj)
         dbref ptr, oldptr;
 
         if (tp_thing_movement) {
-                obj = getloc(obj);
+                obj = LOCATION(obj);
         } else {
                 ptr = getparent_logic(obj);
                 do {

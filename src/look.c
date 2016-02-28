@@ -102,7 +102,7 @@ exec_or_notify(int descr, dbref player, dbref thing,
 			p = do_parse_mesg(descr, player, thing, p, whatcalled, buf, sizeof(buf), MPI_ISPRIVATE | mpiflags);
 			strcpyn(match_args, sizeof(match_args), p);
 			strcpyn(match_cmdname, sizeof(match_cmdname), whatcalled);
-			tmpfr = interp(descr, player, DBFETCH(player)->location, i, thing,
+			tmpfr = interp(descr, player, LOCATION(player), i, thing,
 						   PREEMPT, STD_HARDUID, 0);
 			if (tmpfr) {
 				interp_loop(player, i, tmpfr, 0);
@@ -126,11 +126,11 @@ look_contents(dbref player, dbref loc, const char *contents_name)
 	can_see_loc = (!Dark(loc) || controls(player, loc));
 
 	/* check to see if there is anything there */
-	DOLIST(thing, DBFETCH(loc)->contents) {
+	DOLIST(thing, CONTENTS(loc)) {
 		if (can_see(player, thing, can_see_loc)) {
 			/* something exists!  show him everything */
 			notify(player, contents_name);
-			DOLIST(thing, DBFETCH(loc)->contents) {
+			DOLIST(thing, CONTENTS(loc)) {
 				if (can_see(player, thing, can_see_loc)) {
 					notify(player, unparse_object(player, thing));
 				}
@@ -188,7 +188,7 @@ do_look_around(int descr, dbref player)
 {
 	dbref loc;
 
-	if ((loc = getloc(player)) == NOTHING)
+	if ((loc = LOCATION(player)) == NOTHING)
 		return;
 	look_room(descr, player, loc, 1);
 }
@@ -203,7 +203,7 @@ do_look_at(int descr, dbref player, const char *name, const char *detail)
 	char obj_num[20];
 
 	if (*name == '\0' || !string_compare(name, "here")) {
-		if ((thing = getloc(player)) != NOTHING) {
+		if ((thing = LOCATION(player)) != NOTHING) {
 			look_room(descr, player, thing, 1);
 		}
 	} else {
@@ -224,14 +224,14 @@ do_look_at(int descr, dbref player, const char *name, const char *detail)
 		if (thing != NOTHING && thing != AMBIGUOUS && !*detail) {
 			switch (Typeof(thing)) {
 			case TYPE_ROOM:
-				if (getloc(player) != thing && !can_link_to(player, TYPE_ROOM, thing)) {
+				if (LOCATION(player) != thing && !can_link_to(player, TYPE_ROOM, thing)) {
 					notify(player, "Permission denied. (you're not where you want to look, and can't link to it)");
 				} else {
 					look_room(descr, player, thing, 1);
 				}
 				break;
 			case TYPE_PLAYER:
-				if (getloc(player) != getloc(thing)
+				if (LOCATION(player) != LOCATION(thing)
 					&& !controls(player, thing)) {
 					notify(player, "Permission denied. (Your location isn't the same as what you're looking at)");
 				} else {
@@ -245,8 +245,8 @@ do_look_at(int descr, dbref player, const char *name, const char *detail)
 				}
 				break;
 			case TYPE_THING:
-				if (getloc(player) != getloc(thing)
-					&& getloc(thing) != player && !controls(player, thing)) {
+				if (LOCATION(player) != LOCATION(thing)
+					&& LOCATION(thing) != player && !controls(player, thing)) {
 					notify(player, "Permission denied. (You're not in the same room as or carrying the object)");
 				} else {
 					look_simple(descr, player, thing);
@@ -278,7 +278,7 @@ do_look_at(int descr, dbref player, const char *name, const char *detail)
 			PropPtr propadr, pptr, lastmatch = NULL;
 
 			if (thing == NOTHING) {
-				thing = getloc(player);
+				thing = LOCATION(player);
 				snprintf(buf, sizeof(buf), "%s", name);
 			} else {
 				snprintf(buf, sizeof(buf), "%s", detail);
@@ -516,7 +516,7 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
 	struct tm *time_tm;			/* used for timestamps */
 
 	if (*name == '\0') {
-		if ((thing = getloc(player)) == NOTHING)
+		if ((thing = LOCATION(player)) == NOTHING)
 			return;
 	} else {
 		/* look it up */
@@ -557,7 +557,7 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
 				(int) (BUFFER_LEN - strlen(NAME(OWNER(thing))) - 35),
 				unparse_object(player, thing),
 				NAME(OWNER(thing)));
-		strcatn(buf, sizeof(buf), unparse_object(player, DBFETCH(thing)->location));
+		strcatn(buf, sizeof(buf), unparse_object(player, LOCATION(thing)));
 		break;
 	case TYPE_THING:
 		snprintf(buf, sizeof(buf), "%.*s  Owner: %s  Value: %d",
@@ -675,21 +675,21 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
 	notify(player, buf);
 
 	/* show him the contents */
-	if (DBFETCH(thing)->contents != NOTHING) {
+	if (CONTENTS(thing) != NOTHING) {
 		if (Typeof(thing) == TYPE_PLAYER)
 			notify(player, "Carrying:");
 		else
 			notify(player, "Contents:");
-		DOLIST(content, DBFETCH(thing)->contents) {
+		DOLIST(content, CONTENTS(thing)) {
 			notify(player, unparse_object(player, content));
 		}
 	}
 	switch (Typeof(thing)) {
 	case TYPE_ROOM:
 		/* tell him about exits */
-		if (DBFETCH(thing)->exits != NOTHING) {
+		if (EXITS(thing) != NOTHING) {
 			notify(player, "Exits:");
-			DOLIST(exit, DBFETCH(thing)->exits) {
+			DOLIST(exit, EXITS(thing)) {
 				notify(player, unparse_object(player, exit));
 			}
 		} else {
@@ -708,16 +708,16 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
 		snprintf(buf, sizeof(buf), "Home: %s", unparse_object(player, THING_HOME(thing)));	/* home */
 		notify(player, buf);
 		/* print location if player can link to it */
-		if (DBFETCH(thing)->location != NOTHING && (controls(player, DBFETCH(thing)->location)
+		if (LOCATION(thing) != NOTHING && (controls(player, LOCATION(thing))
 													|| can_link_to(player, NOTYPE,
-																   DBFETCH(thing)->location))) {
-			snprintf(buf, sizeof(buf), "Location: %s", unparse_object(player, DBFETCH(thing)->location));
+																   LOCATION(thing)))) {
+			snprintf(buf, sizeof(buf), "Location: %s", unparse_object(player, LOCATION(thing)));
 			notify(player, buf);
 		}
 		/* print thing's actions, if any */
-		if (DBFETCH(thing)->exits != NOTHING) {
+		if (EXITS(thing) != NOTHING) {
 			notify(player, "Actions/exits:");
-			DOLIST(exit, DBFETCH(thing)->exits) {
+			DOLIST(exit, EXITS(thing)) {
 				notify(player, unparse_object(player, exit));
 			}
 		} else {
@@ -731,16 +731,16 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
 		notify(player, buf);
 
 		/* print location if player can link to it */
-		if (DBFETCH(thing)->location != NOTHING && (controls(player, DBFETCH(thing)->location)
+		if (LOCATION(thing) != NOTHING && (controls(player, LOCATION(thing))
 													|| can_link_to(player, NOTYPE,
-																   DBFETCH(thing)->location))) {
-			snprintf(buf, sizeof(buf), "Location: %s", unparse_object(player, DBFETCH(thing)->location));
+																   LOCATION(thing)))) {
+			snprintf(buf, sizeof(buf), "Location: %s", unparse_object(player, LOCATION(thing)));
 			notify(player, buf);
 		}
 		/* print player's actions, if any */
-		if (DBFETCH(thing)->exits != NOTHING) {
+		if (EXITS(thing) != NOTHING) {
 			notify(player, "Actions/exits:");
-			DOLIST(exit, DBFETCH(thing)->exits) {
+			DOLIST(exit, EXITS(thing)) {
 				notify(player, unparse_object(player, exit));
 			}
 		} else {
@@ -748,8 +748,8 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
 		}
 		break;
 	case TYPE_EXIT:
-		if (DBFETCH(thing)->location != NOTHING) {
-			snprintf(buf, sizeof(buf), "Source: %s", unparse_object(player, DBFETCH(thing)->location));
+		if (LOCATION(thing) != NOTHING) {
+			snprintf(buf, sizeof(buf), "Source: %s", unparse_object(player, LOCATION(thing)));
 			notify(player, buf);
 		}
 		/* print destinations */
@@ -783,10 +783,10 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
 		}
 
 		/* print location if player can link to it */
-		if (DBFETCH(thing)->location != NOTHING && (controls(player, DBFETCH(thing)->location)
+		if (LOCATION(thing) != NOTHING && (controls(player, LOCATION(thing))
 													|| can_link_to(player, NOTYPE,
-																   DBFETCH(thing)->location))) {
-			snprintf(buf, sizeof(buf), "Location: %s", unparse_object(player, DBFETCH(thing)->location));
+																   LOCATION(thing)))) {
+			snprintf(buf, sizeof(buf), "Location: %s", unparse_object(player, LOCATION(thing)));
 			notify(player, buf);
 		}
 		break;
@@ -812,7 +812,7 @@ do_inventory(dbref player)
 {
 	dbref thing;
 
-	if ((thing = DBFETCH(player)->contents) == NOTHING) {
+	if ((thing = CONTENTS(player)) == NOTHING) {
 		notify(player, "You aren't carrying anything.");
 	} else {
 		notify(player, "You are carrying:");
@@ -1219,7 +1219,7 @@ display_objinfo(dbref player, dbref obj, int output_type)
 		break;
 	case 3:					/* locations */
 		snprintf(buf, sizeof(buf), "%-38.512s  %.512s", buf2,
-				unparse_object(player, DBFETCH(obj)->location));
+				unparse_object(player, LOCATION(obj)));
 		break;
 	case 4:
 		return;
@@ -1316,7 +1316,7 @@ do_trace(int descr, dbref player, const char *name, int depth)
 			notify(player, unparse_object(player, thing));
 		else
 			notify(player, "**Missing**");
-		thing = DBFETCH(thing)->location;
+		thing = LOCATION(thing);
 	}
 	notify(player, "***End of List***");
 }
@@ -1332,7 +1332,7 @@ do_entrances(int descr, dbref player, const char *name, const char *flags)
 	int output_type = init_checkflags(player, flags, &check);
 
 	if (*name == '\0') {
-		thing = getloc(player);
+		thing = LOCATION(player);
 	} else {
 		init_match(descr, player, name, NOTYPE, &md);
 		match_all_exits(&md);
@@ -1407,7 +1407,7 @@ do_contents(int descr, dbref player, const char *name, const char *flags)
 	int output_type = init_checkflags(player, flags, &check);
 
 	if (*name == '\0') {
-		thing = getloc(player);
+		thing = LOCATION(player);
 	} else {
 		init_match(descr, player, name, NOTYPE, &md);
 		match_me(&md);
@@ -1430,7 +1430,7 @@ do_contents(int descr, dbref player, const char *name, const char *flags)
 		return;
 	}
 	init_checkflags(player, flags, &check);
-	DOLIST(i, DBFETCH(thing)->contents) {
+	DOLIST(i, CONTENTS(thing)) {
 		if (checkflags(i, check)) {
 			display_objinfo(player, i, output_type);
 			total++;
@@ -1445,7 +1445,7 @@ do_contents(int descr, dbref player, const char *name, const char *flags)
 	case TYPE_ROOM:
 	case TYPE_THING:
 	case TYPE_PLAYER:
-		i = DBFETCH(thing)->exits;
+		i = EXITS(thing);
 		break;
 	}
 	DOLIST(i, i) {
@@ -1486,14 +1486,14 @@ exit_match_exists(dbref player, dbref obj, const char *name, int exactMatch)
 	dbref exit;
 	char buf[BUFFER_LEN];
 
-	exit = DBFETCH(obj)->exits;
+	exit = EXITS(obj);
 	while (exit != NOTHING) {
 		if (exit_matches_name(exit, name, exactMatch)) {
 			snprintf(buf, sizeof(buf), "  %ss are trapped on %.2048s", name, unparse_object(player, obj));
 			notify(player, buf);
 			return 1;
 		}
-		exit = DBFETCH(exit)->next;
+		exit = NEXTOBJ(exit);
 	}
 	return 0;
 }
@@ -1507,7 +1507,7 @@ do_sweep(int descr, dbref player, const char *name)
 	char buf[BUFFER_LEN];
 
 	if (*name == '\0') {
-		thing = getloc(player);
+		thing = LOCATION(player);
 	} else {
 		init_match(descr, player, name, NOTYPE, &md);
 		match_me(&md);
@@ -1535,8 +1535,8 @@ do_sweep(int descr, dbref player, const char *name)
 	snprintf(buf, sizeof(buf), "Listeners in %s:", unparse_object(player, thing));
 	notify(player, buf);
 
-	ref = DBFETCH(thing)->contents;
-	for (; ref != NOTHING; ref = DBFETCH(ref)->next) {
+	ref = CONTENTS(thing);
+	for (; ref != NOTHING; ref = NEXTOBJ(ref)) {
 		switch (Typeof(ref)) {
 		case TYPE_PLAYER:
 			if (!Dark(thing) || online(ref)) {

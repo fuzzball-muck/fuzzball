@@ -107,8 +107,8 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
 		case TYPE_PLAYER:
 			if (!controls(player, victim) ||
 				!controls(player, destination) ||
-				!controls(player, getloc(victim)) ||
-				(Typeof(destination) == TYPE_THING && !controls(player, getloc(destination)))) {
+				!controls(player, LOCATION(victim)) ||
+				(Typeof(destination) == TYPE_THING && !controls(player, LOCATION(destination)))) {
 				notify(player, "Permission denied. (must control victim, dest, victim's loc, and dest's loc)");
 				break;
 			}
@@ -126,7 +126,7 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
 				break;
 			}
 			notify(victim, "You feel a wrenching sensation...");
-			enter_room(descr, victim, destination, getloc(victim));
+			enter_room(descr, victim, destination, LOCATION(victim));
 			snprintf(buf, sizeof(buf), "%s teleported to %s.", unparse_object(player, victim), unparse_object(player, destination));
 			notify(player, buf);
 			break;
@@ -143,7 +143,7 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
 			}
 			if (!((controls(player, destination) ||
 				   can_link_to(player, NOTYPE, destination)) &&
-				  (controls(player, victim) || controls(player, DBFETCH(victim)->location)))) {
+				  (controls(player, victim) || controls(player, LOCATION(victim))))) {
 				notify(player, "Permission denied. (must control dest and be able to link to it, or control dest's loc)");
 				break;
 			}
@@ -156,7 +156,7 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
 				if (FLAGS(victim) & ZOMBIE) {
 					notify(victim, "You feel a wrenching sensation...");
 				}
-				enter_room(descr, victim, destination, getloc(victim));
+				enter_room(descr, victim, destination, LOCATION(victim));
 			} else {
 				moveto(victim, destination);
 			}
@@ -378,7 +378,7 @@ do_force(int descr, dbref player, const char *what, char *command)
 		return;
 	}
 
-	loc = getloc(victim);
+	loc = LOCATION(victim);
 	if (!Wizard(player) && Typeof(victim) == TYPE_THING && loc != NOTHING &&
 		(FLAGS(loc) & ZOMBIE) && Typeof(loc) == TYPE_ROOM) {
 		notify(player, "Sorry, but that's in a no-puppet zone.");

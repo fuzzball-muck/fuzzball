@@ -18,8 +18,8 @@ moveto(dbref what, dbref where)
 	}
 
 	/* remove what from old loc */
-	if ((loc = DBFETCH(what)->location) != NOTHING) {
-		DBSTORE(loc, contents, remove_first(DBFETCH(loc)->contents, what));
+	if ((loc = LOCATION(what)) != NOTHING) {
+		DBSTORE(loc, contents, remove_first(CONTENTS(loc), what));
 	}
 	/* test for special cases */
 	switch (where) {
@@ -72,7 +72,7 @@ moveto(dbref what, dbref where)
 	}
 
 	/* now put what in where */
-	PUSH(what, DBFETCH(where)->contents);
+	PUSH(what, CONTENTS(loc));
 	DBDIRTY(where);
 	DBSTORE(what, location, where);
 }
@@ -85,7 +85,7 @@ send_contents(int descr, dbref loc, dbref dest)
 	dbref rest;
 	dbref where;
 
-	first = DBFETCH(loc)->contents;
+	first = CONTENTS(loc);
 	DBSTORE(loc, contents, NOTHING);
 
 	/* blast locations of everything in list */
@@ -94,7 +94,7 @@ send_contents(int descr, dbref loc, dbref dest)
 	}
 
 	while (first != NOTHING) {
-		rest = DBFETCH(first)->next;
+		rest = NEXTOBJ(first);
 		if ((Typeof(first) != TYPE_THING)
 			&& (Typeof(first) != TYPE_PROGRAM)) {
 			moveto(first, loc);
@@ -103,7 +103,7 @@ send_contents(int descr, dbref loc, dbref dest)
 			if (tp_thing_movement && (Typeof(first) == TYPE_THING)) {
 				enter_room(descr, first,
 						   parent_loop_check(first, where) ? loc : where,
-						   DBFETCH(first)->location);
+						   LOCATION(first));
 			} else {
 				moveto(first, parent_loop_check(first, where) ? loc : where);
 			}
@@ -111,7 +111,7 @@ send_contents(int descr, dbref loc, dbref dest)
 		first = rest;
 	}
 
-	DBSTORE(loc, contents, reverse(DBFETCH(loc)->contents));
+	DBSTORE(loc, contents, reverse(CONTENTS(loc)));
 }
 
 void
@@ -123,7 +123,7 @@ maybe_dropto(int descr, dbref loc, dbref dropto)
 		return;					/* bizarre special case */
 
 	/* check for players */
-	DOLIST(thing, DBFETCH(loc)->contents) {
+	DOLIST(thing, CONTENTS(loc)) {
 		/* Make zombies act like players for dropto processing */
 		if (Typeof(thing) == TYPE_PLAYER ||
 		 (Typeof(thing) == TYPE_THING && FLAGS(thing)&ZOMBIE))
@@ -162,7 +162,7 @@ location_loop_check(dbref source, dbref dest)
   pstack[1] = dest;
 
   while (level < MAX_PARENT_DEPTH) {
-    dest = getloc(dest);
+    dest = LOCATION(dest);
     if (dest == NOTHING) {
       return 0;
     }
@@ -258,7 +258,7 @@ enter_room(int descr, dbref player, dbref loc, dbref exit)
 		loc = PLAYER_HOME(player);	/* home */
 
 	/* get old location */
-	old = DBFETCH(player)->location;
+	old = LOCATION(player);
 
 	if (parent_loop_check(player, loc)) {
 	  switch (Typeof(player)) {
@@ -304,7 +304,7 @@ enter_room(int descr, dbref player, dbref loc, dbref exit)
 				&& (Typeof(exit) != TYPE_EXIT || !Dark(exit))) {
 #if !defined(QUIET_MOVES)
 				snprintf(buf, sizeof(buf), "%s has left.", NAME(player));
-				notify_except(DBFETCH(old)->contents, player, buf, player);
+				notify_except(CONTENTS(old), player, buf, player);
 #endif
 			}
 		}
@@ -322,7 +322,7 @@ enter_room(int descr, dbref player, dbref loc, dbref exit)
 			&& (Typeof(exit) != TYPE_EXIT || !Dark(exit))) {
 #if !defined(QUIET_MOVES)
 			snprintf(buf, sizeof(buf), "%s has arrived.", NAME(player));
-			notify_except(DBFETCH(loc)->contents, player, buf, player);
+			notify_except(CONTENTS(loc), player, buf, player);
 #endif
 		}
 	}
@@ -367,13 +367,13 @@ send_home(int descr, dbref thing, int puppethome)
 		/* send his possessions home first! */
 		/* that way he sees them when he arrives */
 		send_contents(descr, thing, HOME);
-		enter_room(descr, thing, PLAYER_HOME(thing), DBFETCH(thing)->location);
+		enter_room(descr, thing, PLAYER_HOME(thing), LOCATION(thing));
 		break;
 	case TYPE_THING:
 		if (puppethome)
 			send_contents(descr, thing, HOME);
 		if (tp_thing_movement || (FLAGS(thing) & (ZOMBIE | LISTENER))) {
-			enter_room(descr, thing, PLAYER_HOME(thing), DBFETCH(thing)->location);
+			enter_room(descr, thing, PLAYER_HOME(thing), LOCATION(thing));
 			break;
 		}
 		moveto(thing, HOME);	/* home */
@@ -474,7 +474,7 @@ trigger(int descr, dbref player, dbref exit, int pflag)
 				}
 				break;
 			case TYPE_THING:
-				if (dest == getloc(exit) && (FLAGS(dest) & VEHICLE)) {
+				if (dest == LOCATION(exit) && (FLAGS(dest) & VEHICLE)) {
 					if (pflag) {
 						if (parent_loop_check(player, dest)) {
 							notify(player, "That would cause a paradox.");
@@ -490,30 +490,29 @@ trigger(int descr, dbref player, dbref exit, int pflag)
 						succ = 1;
 					}
 				} else {
-					if (Typeof(DBFETCH(exit)->location) == TYPE_THING) {
-						if (parent_loop_check(dest, getloc(getloc(exit)))) {
+					if (Typeof(LOCATION(exit)) == TYPE_THING) {
+						if (parent_loop_check(dest, LOCATION(LOCATION(exit)))) {
 							notify(player, "That would cause a paradox.");
 							break;
 						}
 						if (tp_thing_movement) {
-							enter_room(descr, dest, DBFETCH(DBFETCH(exit)->location)->location,
-									   exit);
+							enter_room(descr, dest, LOCATION(LOCATION(exit)), exit);
 						} else {
-							moveto(dest, DBFETCH(DBFETCH(exit)->location)->location);
+							moveto(dest, LOCATION(LOCATION(exit)));
 						}
 						if (!(FLAGS(exit) & STICKY)) {
 							/* send home source object */
 							sobjact = 1;
 						}
 					} else {
-						if (parent_loop_check(dest, getloc(exit))) {
+						if (parent_loop_check(dest, LOCATION(exit))) {
 							notify(player, "That would cause a paradox.");
 							break;
 						}
 						if (tp_thing_movement) {
-							enter_room(descr, dest, DBFETCH(exit)->location, exit);
+							enter_room(descr, dest, LOCATION(exit), exit);
 						} else {
-							moveto(dest, DBFETCH(exit)->location);
+							moveto(dest, LOCATION(exit));
 						}
 					}
 					if (GETSUCC(exit))
@@ -527,7 +526,7 @@ trigger(int descr, dbref player, dbref exit, int pflag)
 					succ = 1;
 				break;
 			case TYPE_PLAYER:
-				if (pflag && DBFETCH(dest)->location != NOTHING) {
+				if (pflag && LOCATION(dest) != NOTHING) {
 					if (parent_loop_check(player, dest)) {
 						notify(player, "That would cause a paradox.");
 						break;
@@ -538,17 +537,17 @@ trigger(int descr, dbref player, dbref exit, int pflag)
 							exec_or_notify_prop(descr, player, exit, MESGPROP_DROP, "(@Drop)");
 						}
 						if (GETODROP(exit) && !Dark(player)) {
-							parse_oprop(descr, player, getloc(dest), exit,
+							parse_oprop(descr, player, LOCATION(dest), exit,
 										   MESGPROP_ODROP, NAME(player), "(@Odrop)");
 						}
-						enter_room(descr, player, DBFETCH(dest)->location, exit);
+						enter_room(descr, player, LOCATION(dest), exit);
 					} else {
 						notify(player, "That player does not wish to be disturbed.");
 					}
 				}
 				break;
 			case TYPE_PROGRAM:
-				tmpfr = interp(descr, player, DBFETCH(player)->location, dest, exit,
+				tmpfr = interp(descr, player, LOCATION(player), dest, exit,
 							   FOREGROUND, STD_REGUID, 0);
 				if (tmpfr) {
 					interp_loop(player, dest, tmpfr, 0);
@@ -558,7 +557,7 @@ trigger(int descr, dbref player, dbref exit, int pflag)
 		}
 	}
 	if (sobjact)
-		send_home(descr, DBFETCH(exit)->location, 0);
+		send_home(descr, LOCATION(exit), 0);
 	if (!succ && pflag)
 		notify(player, "Done.");
 }
@@ -574,10 +573,10 @@ do_move(int descr, dbref player, const char *direction, int lev)
 	if (tp_allow_home && !string_compare(direction, "home")) {
 		/* send him home */
 		/* but steal all his possessions */
-		if ((loc = DBFETCH(player)->location) != NOTHING) {
+		if ((loc = LOCATION(player)) != NOTHING) {
 			/* tell everybody else */
 			snprintf(buf, sizeof(buf), "%s goes home.", NAME(player));
-			notify_except(DBFETCH(loc)->contents, player, buf, player);
+			notify_except(CONTENTS(loc), player, buf, player);
 		}
 		/* give the player the messages */
 		notify(player, "There's no place like home...");
@@ -601,7 +600,7 @@ do_move(int descr, dbref player, const char *direction, int lev)
 			/* we got one */
 			/* check to see if we got through */
 			ts_useobject(exit);
-			loc = DBFETCH(player)->location;
+			loc = LOCATION(player);
 			if (can_doit(descr, player, exit, "You can't go that way.")) {
 				trigger(descr, player, exit, 1);
 			}
@@ -616,7 +615,7 @@ do_leave(int descr, dbref player)
 {
 	dbref loc, dest;
 
-	loc = DBFETCH(player)->location;
+	loc = LOCATION(player);
 	if (loc == NOTHING || Typeof(loc) == TYPE_ROOM) {
 		notify(player, "You can't go that way.");
 		return;
@@ -627,7 +626,7 @@ do_leave(int descr, dbref player)
 		return;
 	}
 
-	dest = DBFETCH(loc)->location;
+	dest = LOCATION(player);
 	if (Typeof(dest) != TYPE_ROOM && Typeof(dest) != TYPE_THING) {
 		notify(player, "You can't exit a vehicle inside of a player.");
 		return;
@@ -684,14 +683,14 @@ do_get(int descr, dbref player, const char *what, const char *obj)
 			}
 		}
 		if (Typeof(player) != TYPE_PLAYER) {
-			if (Typeof(DBFETCH(thing)->location) != TYPE_ROOM) {
+			if (Typeof(LOCATION(thing)) != TYPE_ROOM) {
 				if (OWNER(player) != OWNER(thing)) {
 					notify(player, "Zombies aren't allowed to be thieves!");
 					return;
 				}
 			}
 		}
-		if (DBFETCH(thing)->location == player) {
+		if (LOCATION(thing) == player) {
 			notify(player, "You already have that!");
 			return;
 		}
@@ -716,7 +715,7 @@ do_get(int descr, dbref player, const char *what, const char *obj)
 			}
 			if (cando) {
 				if (tp_thing_movement && (Typeof(thing) == TYPE_THING)) {
-					enter_room(descr, thing, player, DBFETCH(thing)->location);
+					enter_room(descr, thing, player, LOCATION(thing));
 				} else {
 					moveto(thing, player);
 				}
@@ -738,7 +737,7 @@ do_drop(int descr, dbref player, const char *name, const char *obj)
 	char buf[BUFFER_LEN];
 	struct match_data md;
 
-	if ((loc = getloc(player)) == NOTHING)
+	if ((loc = LOCATION(player)) == NOTHING)
 		return;
 
 	init_match(descr, player, name, NOTYPE, &md);
@@ -761,7 +760,7 @@ do_drop(int descr, dbref player, const char *name, const char *obj)
 	case TYPE_THING:
 		ts_useobject(thing);
 	case TYPE_PROGRAM:
-		if (DBFETCH(thing)->location != player) {
+		if (LOCATION(thing) != player) {
 			/* Shouldn't ever happen. */
 			notify(player, "You can't drop that.");
 			break;
@@ -818,7 +817,7 @@ do_drop(int descr, dbref player, const char *name, const char *obj)
 						   NAME(player), "(@Odrop)");
 		} else {
 			snprintf(buf, sizeof(buf), "%s drops %s.", NAME(player), NAME(thing));
-			notify_except(DBFETCH(loc)->contents, player, buf, player);
+			notify_except(CONTENTS(loc), player, buf, player);
 		}
 
 		if (GETODROP(loc)) {
@@ -887,7 +886,7 @@ do_recycle(int descr, dbref player, const char *name)
 					snprintf(buf, sizeof(buf),
 							"%.512s's owner commands it to kill itself.  It blinks a few times in shock, and says, \"But.. but.. WHY?\"  It suddenly clutches it's heart, grimacing with pain..  Staggers a few steps before falling to it's knees, then plops down on it's face.  *thud*  It kicks its legs a few times, with weakening force, as it suffers a seizure.  It's color slowly starts changing to purple, before it explodes with a fatal *POOF*!",
 							NAME(thing));
-					notify_except(DBFETCH(getloc(thing))->contents, thing, buf, player);
+					notify_except(CONTENTS(LOCATION(thing)), thing, buf, player);
 					notify(OWNER(player), buf);
 					notify(OWNER(player), "Now don't you feel guilty?");
 				}
@@ -897,7 +896,7 @@ do_recycle(int descr, dbref player, const char *name)
 					notify(player, "Permission denied. (You may not recycle an exit you don't own)");
 					return;
 				}
-				if (!unset_source(player, DBFETCH(player)->location, thing)) {
+				if (!unset_source(player, LOCATION(player), thing)) {
 					notify(player, "You can't do that to an exit in another room.");
 					return;
 				}
@@ -966,21 +965,21 @@ recycle(int descr, dbref player, dbref thing)
 		if (!Wizard(OWNER(thing)))
 			SETVALUE(OWNER(thing), GETVALUE(OWNER(thing)) + tp_room_cost);
 		DBDIRTY(OWNER(thing));
-		for (first = DBFETCH(thing)->exits; first != NOTHING; first = rest) {
-			rest = DBFETCH(first)->next;
-			if (DBFETCH(first)->location == NOTHING || DBFETCH(first)->location == thing)
+		for (first = EXITS(thing); first != NOTHING; first = rest) {
+			rest = NEXTOBJ(first);
+			if (LOCATION(first) == NOTHING || LOCATION(first) == thing)
 				recycle(descr, player, first);
 		}
-		notify_except(DBFETCH(thing)->contents, NOTHING,
+		notify_except(CONTENTS(thing), NOTHING,
 					  "You feel a wrenching sensation...", player);
 		break;
 	case TYPE_THING:
 		if (!Wizard(OWNER(thing)))
 			SETVALUE(OWNER(thing), GETVALUE(OWNER(thing)) + GETVALUE(thing));
 		DBDIRTY(OWNER(thing));
-		for (first = DBFETCH(thing)->exits; first != NOTHING; first = rest) {
-			rest = DBFETCH(first)->next;
-			if (DBFETCH(first)->location == NOTHING || DBFETCH(first)->location == thing)
+		for (first = EXITS(thing); first != NOTHING; first = rest) {
+			rest = NEXTOBJ(first);
+			if (LOCATION(first) == NOTHING || LOCATION(first) == thing)
 				recycle(descr, player, first);
 		}
 		break;
@@ -1005,8 +1004,8 @@ recycle(int descr, dbref player, dbref thing)
 				DBFETCH(rest)->sp.room.dropto = NOTHING;
 				DBDIRTY(rest);
 			}
-			if (DBFETCH(rest)->exits == thing) {
-				DBFETCH(rest)->exits = DBFETCH(thing)->next;
+			if (EXITS(rest) == thing) {
+				EXITS(rest) = NEXTOBJ(first);
 				DBDIRTY(rest);
 			}
 			if (OWNER(rest) == thing) {
@@ -1030,8 +1029,8 @@ recycle(int descr, dbref player, dbref thing)
 			  THING_SET_HOME(rest, loc);
 			  DBDIRTY(rest);
 			}
-			if (DBFETCH(rest)->exits == thing) {
-				DBFETCH(rest)->exits = DBFETCH(thing)->next;
+			if (EXITS(rest) == thing) {
+				EXITS(rest) = NEXTOBJ(thing);
 				DBDIRTY(rest);
 			}
 			if (OWNER(rest) == thing) {
@@ -1080,8 +1079,8 @@ recycle(int descr, dbref player, dbref thing)
 				PLAYER_SET_HOME(rest, tp_player_start);
 				DBDIRTY(rest);
 			}
-			if (DBFETCH(rest)->exits == thing) {
-				DBFETCH(rest)->exits = DBFETCH(thing)->next;
+			if (EXITS(rest) == thing) {
+				EXITS(rest) = NEXTOBJ(thing);
 				DBDIRTY(rest);
 			}
 			if (PLAYER_CURR_PROG(rest) == thing)
@@ -1094,26 +1093,26 @@ recycle(int descr, dbref player, dbref thing)
 			}
 		}
 		/*
-		 *if (DBFETCH(rest)->location == thing)
+		 *if (LOCATION(rest) == thing)
 		 *    DBSTORE(rest, location, NOTHING);
 		 */
-		if (DBFETCH(rest)->contents == thing)
-			DBSTORE(rest, contents, DBFETCH(thing)->next);
-		if (DBFETCH(rest)->next == thing)
-			DBSTORE(rest, next, DBFETCH(thing)->next);
+		if (CONTENTS(rest) == thing)
+			DBSTORE(rest, contents, NEXTOBJ(thing));
+		if (NEXTOBJ(rest) == thing)
+			DBSTORE(rest, next, NEXTOBJ(thing));
 	}
 
 	looplimit = db_top;
-	while ((looplimit-- > 0) && ((first = DBFETCH(thing)->contents) != NOTHING)) {
+	while ((looplimit-- > 0) && ((first = CONTENTS(thing)) != NOTHING)) {
 		if (Typeof(first) == TYPE_PLAYER ||
 			(Typeof(first) == TYPE_THING &&
 			 (FLAGS(first) & (ZOMBIE | VEHICLE) || tp_thing_movement))
 		) {
-			enter_room(descr, first, HOME, DBFETCH(thing)->location);
+			enter_room(descr, first, HOME, LOCATION(thing));
 			/* If the room is set to drag players back, there'll be no
 			 * reasoning with it.  DRAG the player out.
 			 */
-			if (DBFETCH(first)->location == thing) {
+			if (LOCATION(first)) {
 				notify_fmt(player, "Escaping teleport loop!  Going home.");
 				moveto(first, HOME);
 			}
@@ -1133,7 +1132,7 @@ recycle(int descr, dbref player, dbref thing)
 	SETDESC(thing, "<recyclable>");
 	FLAGS(thing) = TYPE_GARBAGE;
 
-	DBFETCH(thing)->next = recyclable;
+	NEXTOBJ(thing) = recyclable;
 	recyclable = thing;
 	DBDIRTY(thing);
 }

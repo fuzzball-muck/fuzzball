@@ -22,7 +22,7 @@ ts_useobject(dbref thing)
 	DBFETCH(thing)->ts.usecount++;
 	DBDIRTY(thing);
 	if (Typeof(thing) == TYPE_ROOM)
-		ts_useobject(DBFETCH(thing)->location);
+		ts_useobject(LOCATION(thing));
 }
 
 void
@@ -32,7 +32,7 @@ ts_lastuseobject(dbref thing)
 		return;
 	DBSTORE(thing, ts.lastused, time(NULL));
 	if (Typeof(thing) == TYPE_ROOM)
-		ts_lastuseobject(DBFETCH(thing)->location);
+		ts_lastuseobject(LOCATION(thing));
 }
 
 void

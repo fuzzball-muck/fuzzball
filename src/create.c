@@ -112,7 +112,7 @@ do_open(int descr, dbref player, const char *direction, const char *linkto)
 	qname = buf2;
 	for (; *rname && isspace(*rname); rname++) ;
 
-	if ((loc = getloc(player)) == NOTHING)
+	if ((loc = LOCATION(player)) == NOTHING)
 		return;
 	if (!*direction) {
 		notify(player, "You must specify a direction or action name to open.");
@@ -138,14 +138,14 @@ do_open(int descr, dbref player, const char *direction, const char *linkto)
 
 		/* initialize everything */
 		NAME(exit) = alloc_string(direction);
-		DBFETCH(exit)->location = loc;
+		LOCATION(exit) = loc;
 		OWNER(exit) = OWNER(player);
 		FLAGS(exit) = TYPE_EXIT;
 		DBFETCH(exit)->sp.exit.ndest = 0;
 		DBFETCH(exit)->sp.exit.dest = NULL;
 
 		/* link it in */
-		PUSH(exit, DBFETCH(loc)->exits);
+		PUSH(exit, EXITS(loc));
 		DBDIRTY(loc);
 
 		/* and we're done */
@@ -502,19 +502,19 @@ do_dig(int descr, dbref player, const char *name, const char *pname)
 	room = new_object();
 
 	/* Initialize everything */
-	newparent = DBFETCH(DBFETCH(player)->location)->location;
+	newparent = LOCATION(LOCATION(player));
 	while ((newparent != NOTHING) && !(FLAGS(newparent) & ABODE))
-		newparent = DBFETCH(newparent)->location;
+		newparent = LOCATION(newparent);
 	if (newparent == NOTHING)
 		newparent = tp_default_room_parent;
 
 	NAME(room) = alloc_string(name);
-	DBFETCH(room)->location = newparent;
+	LOCATION(room) = newparent;
 	OWNER(room) = OWNER(player);
-	DBFETCH(room)->exits = NOTHING;
+	EXITS(room) = NOTHING;
 	DBFETCH(room)->sp.room.dropto = NOTHING;
 	FLAGS(room) = TYPE_ROOM | (FLAGS(player) & JUMP_OK);
-	PUSH(room, DBFETCH(newparent)->contents);
+	PUSH(room, CONTENTS(newparent));
 	DBDIRTY(room);
 	DBDIRTY(newparent);
 
@@ -603,7 +603,7 @@ do_prog(int descr, dbref player, const char *name)
 		NAME(newprog) = alloc_string(name);
 		snprintf(buf, sizeof(buf), "A scroll containing a spell called %s", name);
 		SETDESC(newprog, buf);
-		DBFETCH(newprog)->location = player;
+		LOCATION(newprog) = player;
 		FLAGS(newprog) = TYPE_PROGRAM;
 		jj = MLevel(player);
 		if (jj < 1)
@@ -630,7 +630,7 @@ do_prog(int descr, dbref player, const char *name)
 
 		PLAYER_SET_CURR_PROG(player, newprog);
 
-		PUSH(newprog, DBFETCH(player)->contents);
+		PUSH(newprog, CONTENTS(player));
 		DBDIRTY(newprog);
 		DBDIRTY(player);
 		snprintf(buf, sizeof(buf), "Entering editor for new program %s.", unparse_object(player, newprog));
@@ -866,11 +866,11 @@ do_clone(int descr, dbref player, char *name)
 		/* initialize everything */
 		NAME(clonedthing) = alloc_string(NAME(thing));
 		ALLOC_THING_SP(clonedthing);
-		DBFETCH(clonedthing)->location = player;
+		LOCATION(clonedthing) = player;
 		OWNER(clonedthing) = OWNER(player);
 		SETVALUE(clonedthing, GETVALUE(thing));
 /* FIXME: should we clone attached actions? */
-		DBFETCH(clonedthing)->exits = NOTHING;
+		EXITS(clonedthing) = NOTHING;
 		FLAGS(clonedthing) = FLAGS(thing);
 
 		/* copy all properties */
@@ -885,7 +885,7 @@ do_clone(int descr, dbref player, char *name)
 		THING_SET_HOME(clonedthing, THING_HOME(thing));
 
 		/* link it in */
-		PUSH(clonedthing, DBFETCH(player)->contents);
+		PUSH(clonedthing, CONTENTS(player));
 		DBDIRTY(player);
 
 		/* and we're done */
@@ -948,17 +948,17 @@ do_create(dbref player, char *name, char *acost)
 		/* initialize everything */
 		NAME(thing) = alloc_string(name);
 		ALLOC_THING_SP(thing);
-		DBFETCH(thing)->location = player;
+		LOCATION(thing) = player;
 		OWNER(thing) = OWNER(player);
 		SETVALUE(thing, OBJECT_ENDOWMENT(cost));
-		DBFETCH(thing)->exits = NOTHING;
+		EXITS(thing) = NOTHING;
 		FLAGS(thing) = TYPE_THING;
 
 		/* endow the object */
 		if (GETVALUE(thing) > tp_max_object_endowment) {
 			SETVALUE(thing, tp_max_object_endowment);
 		}
-		if ((loc = DBFETCH(player)->location) != NOTHING && controls(player, loc)) {
+		if ((loc = LOCATION(player)) != NOTHING && controls(player, loc)) {
 			THING_SET_HOME(thing, loc);	/* home */
 		} else {
 			THING_SET_HOME(thing, player);	/* home */
@@ -966,7 +966,7 @@ do_create(dbref player, char *name, char *acost)
 		}
 
 		/* link it in */
-		PUSH(thing, DBFETCH(player)->contents);
+		PUSH(thing, CONTENTS(player));
 		DBDIRTY(player);
 
 		/* and we're done */
@@ -1046,7 +1046,7 @@ set_source(dbref player, dbref action, dbref source)
 	case TYPE_ROOM:
 	case TYPE_THING:
 	case TYPE_PLAYER:
-		PUSH(action, DBFETCH(source)->exits);
+		PUSH(action, EXITS(source));
 		break;
 	default:
 		notify(player, "Internal error: weird object type.");
@@ -1066,19 +1066,19 @@ unset_source(dbref player, dbref loc, dbref action)
 
 	dbref oldsrc;
 
-	if ((oldsrc = DBFETCH(action)->location) == NOTHING) {
+	if ((oldsrc = LOCATION(action)) == NOTHING) {
 		/* old-style, sourceless exit */
-		if (!member(action, DBFETCH(loc)->exits)) {
+		if (!member(action, EXITS(loc))) {
 			return 0;
 		}
-		DBSTORE(DBFETCH(player)->location, exits,
-				remove_first(DBFETCH(DBFETCH(player)->location)->exits, action));
+		DBSTORE(LOCATION(player), exits,
+				remove_first(EXITS(LOCATION(player)), action));
 	} else {
 		switch (Typeof(oldsrc)) {
 		case TYPE_PLAYER:
 		case TYPE_ROOM:
 		case TYPE_THING:
-			DBSTORE(oldsrc, exits, remove_first(DBFETCH(oldsrc)->exits, action));
+			DBSTORE(oldsrc, exits, remove_first(EXITS(oldsrc), action));
 			break;
 		default:
 			log_status("PANIC: source of action #%d was type: %d.", action, Typeof(oldsrc));
@@ -1136,7 +1136,7 @@ do_action(int descr, dbref player, const char *action_name, const char *source_n
 	action = new_object();
 
 	NAME(action) = alloc_string(action_name);
-	DBFETCH(action)->location = NOTHING;
+	LOCATION(action) = NOTHING;
 	OWNER(action) = OWNER(player);
 	DBFETCH(action)->sp.exit.ndest = 0;
 	DBFETCH(action)->sp.exit.dest = NULL;
@@ -1180,7 +1180,7 @@ do_attach(int descr, dbref player, const char *action_name, const char *source_n
 	dbref loc;				/* player's current location */
 	struct match_data md;
 
-	if ((loc = DBFETCH(player)->location) == NOTHING)
+	if ((loc = LOCATION(player)) == NOTHING)
 		return;
 
 	if (!*action_name || !*source_name) {
