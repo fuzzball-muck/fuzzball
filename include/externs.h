@@ -217,6 +217,7 @@ extern void do_password(dbref player, const char *old, const char *newobj);
 extern dbref lookup_player(const char *name);
 extern void set_password(dbref player, const char *password);
 extern void set_password_raw(dbref player, const char *password);
+extern char *whowhere(dbref player);
 
 /* predicates.c */
 extern int OkObj(dbref obj);

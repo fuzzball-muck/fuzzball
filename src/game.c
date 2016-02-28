@@ -544,23 +544,11 @@ process_command(int descr, dbref player, char *command)
 			if (!*command) {
 				return; 
 			}
-			log_command("%s%s%s%s(%d) in %s(%d):%s %s",
-						Wizard(OWNER(player)) ? "WIZ: " : "",
-						(Typeof(player) != TYPE_PLAYER) ? NAME(player) : "",
-						(Typeof(player) != TYPE_PLAYER) ? " owned by " : "",
-						NAME(OWNER(player)), (int) player,
-						NAME(LOCATION(player)),
-						(int)LOCATION(player), " ", command);
+			log_command("%s: %s", whowhere(player), command);
 		} else {
 			if (tp_log_interactive) {
-				log_command("%s%s%s%s(%d) in %s(%d):%s %s",
-							Wizard(OWNER(player)) ? "WIZ: " : "",
-							(Typeof(player) != TYPE_PLAYER) ? NAME(player) : "",
-							(Typeof(player) != TYPE_PLAYER) ? " owned by " : "",
-							NAME(OWNER(player)), (int) player,
-							NAME(LOCATION(player)),
-							(int)LOCATION(player),
-							(FLAGS(player) & (READMODE)) ? " [READ] " : " [INTERP] ", command);
+				log_command("%s: %s%s", whowhere(player),
+						(FLAGS(player) & (READMODE)) ? "[READ] " : "[INTERP] ", command);
 			}
 		}
 	}
@@ -1551,14 +1539,9 @@ process_command(int descr, dbref player, char *command)
 
 	totaltime = endtime.tv_sec + (endtime.tv_usec * 1.0e-6);
 	if (totaltime > (tp_cmd_log_threshold_msec / 1000.0)) {
-		log2file(LOG_CMD_TIMES, "%6.3fs, %.16s: %s%s%s%s(%d) in %s(%d):%s %s",
+		log2file(LOG_CMD_TIMES, "%6.3fs, %.16s: %s: %s",
 					totaltime, ctime((time_t *)&starttime.tv_sec),
-					Wizard(OWNER(player)) ? "WIZ: " : "",
-					(Typeof(player) != TYPE_PLAYER) ? NAME(player) : "",
-					(Typeof(player) != TYPE_PLAYER) ? " owned by " : "",
-					NAME(OWNER(player)), (int) player,
-					NAME(LOCATION(player)),
-					(int)LOCATION(player), " ", command);
+					whowhere(player), command);
 	}
 }
 
