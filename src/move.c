@@ -1005,7 +1005,7 @@ recycle(int descr, dbref player, dbref thing)
 				DBDIRTY(rest);
 			}
 			if (EXITS(rest) == thing) {
-				EXITS(rest) = NEXTOBJ(first);
+				EXITS(rest) = NEXTOBJ(thing);
 				DBDIRTY(rest);
 			}
 			if (OWNER(rest) == thing) {
