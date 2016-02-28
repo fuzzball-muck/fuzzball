@@ -72,7 +72,7 @@ moveto(dbref what, dbref where)
 	}
 
 	/* now put what in where */
-	PUSH(what, CONTENTS(loc));
+	PUSH(what, CONTENTS(where));
 	DBDIRTY(where);
 	DBSTORE(what, location, where);
 }
@@ -626,7 +626,7 @@ do_leave(int descr, dbref player)
 		return;
 	}
 
-	dest = LOCATION(player);
+	dest = LOCATION(loc);
 	if (Typeof(dest) != TYPE_ROOM && Typeof(dest) != TYPE_THING) {
 		notify(player, "You can't exit a vehicle inside of a player.");
 		return;
@@ -1112,7 +1112,7 @@ recycle(int descr, dbref player, dbref thing)
 			/* If the room is set to drag players back, there'll be no
 			 * reasoning with it.  DRAG the player out.
 			 */
-			if (LOCATION(first)) {
+			if (LOCATION(first) == thing) {
 				notify_fmt(player, "Escaping teleport loop!  Going home.");
 				moveto(first, HOME);
 			}
