@@ -4411,9 +4411,10 @@ static SSL_CTX *configure_new_ssl_ctx(void) {
             SSL_CTX_set_options(new_ssl_ctx, SSL_OP_CIPHER_SERVER_PREFERENCE);
         }
 
-	if (!SSL_CTX_use_certificate_chain_file (new_ssl_ctx, SSL_CERT_FILE)) {
-		log_status("Could not load certificate file %s", SSL_CERT_FILE);
-		fprintf(stderr, "Could not load certificate file %s\n", SSL_CERT_FILE);
+	if (!SSL_CTX_use_certificate_chain_file (new_ssl_ctx, (void*)tp_ssl_cert_file)) {
+		log_status("Could not load certificate file %s", (void*)tp_ssl_cert_file);
+		/* Use (char*) to avoid a -Wformat= warning */
+		fprintf(stderr, "Could not load certificate file %s\n", (char*)tp_ssl_cert_file);
 		ssl_status_ok = 0;
 	}
 
@@ -4421,9 +4422,10 @@ static SSL_CTX *configure_new_ssl_ctx(void) {
 		SSL_CTX_set_default_passwd_cb(new_ssl_ctx, pem_passwd_cb);
 		SSL_CTX_set_default_passwd_cb_userdata(new_ssl_ctx, (void*)tp_ssl_keyfile_passwd);
 
-		if (!SSL_CTX_use_PrivateKey_file (new_ssl_ctx, SSL_KEY_FILE, SSL_FILETYPE_PEM)) {
-			log_status("Could not load private key file %s", SSL_KEY_FILE);
-			fprintf(stderr, "Could not load private key file %s\n", SSL_KEY_FILE);
+		if (!SSL_CTX_use_PrivateKey_file (new_ssl_ctx, (void*)tp_ssl_key_file, SSL_FILETYPE_PEM)) {
+			log_status("Could not load private key file %s", (void*)tp_ssl_key_file);
+			/* Use (char*) to avoid a -Wformat= warning */
+			fprintf(stderr, "Could not load private key file %s\n", (char*)tp_ssl_key_file);
 			ssl_status_ok = 0;
 		}
 	}

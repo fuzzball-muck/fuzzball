@@ -78,6 +78,8 @@
 
 
 /* Information needed for SSL */
+#define SSL_CERT_FILE "data/server.pem" /* SSL certificate */
+#define SSL_KEY_FILE "data/server.pem"  /* SSL private key */
 #define SSL_KEYFILE_PASSWD ""
 /* from https://wiki.mozilla.org/Security/Server_Side_TLS, "intermediate copmatability" */
 #define SSL_CIPHER_PREFERENCE_LIST \
