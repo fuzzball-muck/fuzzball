@@ -1,7 +1,7 @@
 ***Foxen8 TinyMUCK DUMP Format***
 69
 1
-115
+117
 autolook_cmd=look
 penny=penny
 pennies=pennies
@@ -23,6 +23,8 @@ rwho_server=riemann.math.okstate.edu
 muckname=TygryssMUCK2
 leave_mesg=See ya later, alligator!
 huh_mesg=Huh?  (Type "help" for help.)
+ssl_cert_file=data/server.pem
+ssl_key_file=data/server.pem
 ssl_keyfile_passwd=
 pcreate_flags=B
 reserved_names=
