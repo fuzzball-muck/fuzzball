@@ -116,9 +116,6 @@
    Where the system looks for its datafiles.
  ************************************************************************/
 
-#define SSL_CERT_FILE		"data/server.pem"
-#define SSL_KEY_FILE		"data/server.pem"
-
 #define WELC_FILE "data/welcome.txt"	/* For the opening screen      */
 #define MOTD_FILE "data/motd.txt"	/* For the message of the day  */
 #define CREDITS_FILE "data/credits.txt"	/* For acknowledgements        */

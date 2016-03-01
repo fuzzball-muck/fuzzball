@@ -1,7 +1,7 @@
 ***Foxen8 TinyMUCK DUMP Format***
 164
 1
-112
+114
 autolook_cmd=look
 penny=penny
 pennies=pennies
@@ -21,6 +21,8 @@ register_mesg=Sorry, you can get a character by e-mailing XXXX@machine.net.addre
 muckname=TygryssMUCK
 leave_mesg=Come back later!
 huh_mesg=Huh?  (Type "help" for help.)
+ssl_cert_file=data/server.pem
+ssl_key_file=data/server.pem
 ssl_keyfile_passwd=
 pcreate_flags=B
 reserved_names=
