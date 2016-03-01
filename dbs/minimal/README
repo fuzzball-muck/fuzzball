@@ -1,0 +1,11 @@
+Notes to new administrators using minimal.db:
+
+1. There is one objects of type player in minimal.db: One(#1), with
+the password "potrzebie."  One is the administrative player; it has
+its WIZARD bit set, and it owns everything.
+
+2. minimal.db contains no unlinked exits; thus it will be impossible
+for anybody who is not a WIZARD to connect new rooms to the core
+rooms.
+
+Lachesis
