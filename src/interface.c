@@ -1304,6 +1304,8 @@ shovechars()
 						newd->ssl_session = SSL_new(ssl_ctx);
 						SSL_set_fd(newd->ssl_session, newd->descriptor);
 						cnt = SSL_accept(newd->ssl_session);
+						if (cnt != 0)
+							ssl_log_error(newd->ssl_session, cnt);
 						/* log_status("SSL accept1: %i\n", cnt ); */
 					}
 				}
@@ -1328,6 +1330,8 @@ shovechars()
 						newd->ssl_session = SSL_new(ssl_ctx);
 						SSL_set_fd(newd->ssl_session, newd->descriptor);
 						cnt = SSL_accept(newd->ssl_session);
+						if (cnt != 0)
+							ssl_log_error(newd->ssl_session, cnt);
 						/* log_status("SSL accept1: %i\n", cnt ); */
 					}
 				}
@@ -2349,7 +2353,9 @@ process_input(struct descriptor_data *d)
 						    d->is_starttls = 1;
 						    d->ssl_session = SSL_new(ssl_ctx);
 						    SSL_set_fd(d->ssl_session, d->descriptor);
-						    SSL_accept(d->ssl_session);
+						    int ssl_ret_value = SSL_accept(d->ssl_session);
+						    if (ssl_ret_value != 0)
+								ssl_log_error(d->ssl_session, ssl_ret_value);
 						    log_status("STARTTLS: %i", d->descriptor);
 					    }
 					}

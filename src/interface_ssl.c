@@ -82,4 +82,51 @@ int set_ssl_ctx_min_version(SSL_CTX *ssl_ctx, const char *min_version) {
 	}
 }
 
+/** Records the last SSL error to the log
+ *
+ *  Ignores irrelevant error conditions to avoid spamming the log, only handling a small subset.
+ *
+ *  @param[in,out] ssl       SSL structure
+ *  @param[in]     ret_value Return value from SSL function call
+ */
+void ssl_log_error(SSL *ssl, const int ret_value) {
+	/* Errors require a valid SSL structure, and errors only occur when ret_value is not 1.
+	   Bail out early if these conditions aren't met.
+	   See https://www.openssl.org/docs/manmaster/ssl/SSL_accept.html */
+	if (!ssl || ret_value == 0)
+		return;
+
+	/* Get the error value first for requesting the error reason clears the error */
+	int ssl_error_value = SSL_get_error(ssl, ret_value);
+
+#ifdef HAVE_OPENSSL
+	/* OpenSSL has support for getting the error reason string... */
+	const char *reason_str_buf = ERR_reason_error_string(ERR_get_error());
+#else
+	/* ...but other SSL libraries might not, so assume an unknown error.  Remove this check if
+	   not actually needed. */
+	const char *reason_str_buf = NULL;
+#endif
+
+	/* In the future, additional logging may be desired.  Just add new cases.
+	   See https://www.openssl.org/docs/manmaster/ssl/SSL_get_error.html */
+	switch (ssl_error_value) {
+		case SSL_ERROR_SSL:
+			/* Use the specific error message if available, or fall back to a generic error if not
+			   available (assumptions could mislead an unwary sysadmin). */
+			log_status("SSL: Error negotiating encrypted connection (%s)",
+			           (reason_str_buf != NULL) ? reason_str_buf : "unknown error");
+			break;
+		case SSL_ERROR_SYSCALL:
+			/* Use the specific error message if available, or fall back to a generic error if not
+			   available (assumptions could mislead an unwary sysadmin). */
+			log_status("SSL: Error with input/output of encrypted connection (%s)",
+			           (reason_str_buf != NULL) ? reason_str_buf : "unknown error");
+			break;
+		default:
+			/* Don't log by default to avoid spamming the system log */
+			break;
+	}
+}
+
 #endif /* USE_SSL */
