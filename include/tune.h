@@ -29,10 +29,11 @@ extern const char *tp_playermax_warnmesg;
 extern const char *tp_register_mesg;
 extern const char *tp_reserved_names;
 extern const char *tp_reserved_player_names;
-extern const char *tp_ssl_cipher_preference_list;
 extern const char *tp_ssl_cert_file;
 extern const char *tp_ssl_key_file;
 extern const char *tp_ssl_keyfile_passwd;
+extern const char *tp_ssl_cipher_preference_list;
+extern const char *tp_ssl_min_protocol_version;
 
 struct tune_str_entry {
         const char *group;

@@ -39,6 +39,7 @@
 #endif
 
 #ifdef USE_SSL
+# include "interface_ssl.h"
 # ifdef HAVE_OPENSSL
 #  include <openssl/ssl.h>
 # else
@@ -4434,6 +4435,14 @@ static SSL_CTX *configure_new_ssl_ctx(void) {
 		if (!SSL_CTX_check_private_key (new_ssl_ctx)) {
 			log_status("Private key does not check out and appears to be invalid.");
 			fprintf(stderr, "Private key does not check out and appears to be invalid.\n");
+			ssl_status_ok = 0;
+		}
+	}
+
+	if (ssl_status_ok) {
+		if (!set_ssl_ctx_min_version(new_ssl_ctx, tp_ssl_min_protocol_version)) {
+			log_status("Could not set minimum SSL protocol version.");
+			fprintf(stderr, "Could not set minimum SSL protocol version.\n");
 			ssl_status_ok = 0;
 		}
 	}

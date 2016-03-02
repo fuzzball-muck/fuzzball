@@ -95,6 +95,12 @@
 #define STARTTLS_ALLOW 0
 #define SERVER_CIPHER_PREFERENCE 1
 
+/** Minimum SSL protocol version as a string, defaulting to allowing all
+ *
+ *  Must be specified as string according to known protocol versions.  See SSL_PROTOCOLS in interface_ssl.h
+ */
+#define SSL_MIN_PROTOCOL_VERSION "None"
+
 /* amount of object endowment, based on cost */
 #define MAX_OBJECT_ENDOWMENT 100
 

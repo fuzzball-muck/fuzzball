@@ -28,10 +28,11 @@ const char *tp_playermax_warnmesg = PLAYERMAX_WARNMESG;
 const char *tp_register_mesg = REG_MSG;
 const char *tp_reserved_names = RESERVED_NAMES;
 const char *tp_reserved_player_names = RESERVED_PLAYER_NAMES;
-const char *tp_ssl_cipher_preference_list = SSL_CIPHER_PREFERENCE_LIST;
 const char *tp_ssl_cert_file = SSL_CERT_FILE;
 const char *tp_ssl_key_file = SSL_KEY_FILE;
 const char *tp_ssl_keyfile_passwd = SSL_KEYFILE_PASSWD;
+const char *tp_ssl_cipher_preference_list = SSL_CIPHER_PREFERENCE_LIST;
+const char *tp_ssl_min_protocol_version = SSL_MIN_PROTOCOL_VERSION;
 
 struct tune_str_entry tune_str_list[] = {
 	{"Commands",	"autolook_cmd", &tp_autolook_cmd, 0, MLEV_WIZARD, "Room entry look command", "", 0, 1},
@@ -53,7 +54,8 @@ struct tune_str_entry tune_str_list[] = {
 	{"SSL",		"ssl_cert_file", &tp_ssl_cert_file, MLEV_GOD, MLEV_GOD, "Path to SSL certificate .pem", "SSL", 0, 1},
 	{"SSL",		"ssl_key_file", &tp_ssl_key_file, MLEV_GOD, MLEV_GOD, "Path to SSL private key .pem", "SSL", 0, 1},
 	{"SSL",		"ssl_keyfile_passwd", &tp_ssl_keyfile_passwd, MLEV_GOD, MLEV_GOD, "Password for SSL keyfile", "SSL", 1, 1},
-        {"SSL",		"ssl_cipher_preference_list", &tp_ssl_cipher_preference_list, MLEV_GOD, MLEV_GOD, "OpenSSL cipher list", "SSL", 0, 1},
+	{"SSL",		"ssl_cipher_preference_list", &tp_ssl_cipher_preference_list, MLEV_GOD, MLEV_GOD, "OpenSSL cipher list", "SSL", 0, 1},
+	{"SSL",		"ssl_min_protocol_version", &tp_ssl_min_protocol_version, MLEV_GOD, MLEV_GOD, "Minimum allowed SSL version for clients", "SSL", 0, 1},
 	{"Database",	"pcreate_flags", &tp_pcreate_flags, 0, MLEV_WIZARD, "Initial Player Flags", "", 1, 1},
 	{"Database",	"reserved_names", &tp_reserved_names, 0, MLEV_WIZARD, "Reserved names smatch", "", 1, 1},
 	{"Database",	"reserved_player_names", &tp_reserved_player_names, 0, MLEV_WIZARD, "Reserved player names smatch", "", 1, 1},
