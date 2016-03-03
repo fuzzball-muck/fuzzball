@@ -4,11 +4,21 @@
 /* Ensure that 'dbref' type gets properly typedef'd */
 #include "db.h"
 
-#define TUNESET_SUCCESS 0 /* success			*/
-#define TUNESET_UNKNOWN 1 /* unrecognized sysparm	*/
-#define TUNESET_SYNTAX  2 /* bad value syntax		*/
-#define TUNESET_BADVAL  3 /* bad value			*/
-#define TUNESET_DENIED	4 /* mucker level too low    	*/
+#define TUNESET_SUCCESS         0 /* success                  */
+#define TUNESET_SUCCESS_DEFAULT 5 /* success, set to default  */
+#define TUNESET_UNKNOWN         1 /* unrecognized sysparm     */
+#define TUNESET_SYNTAX          2 /* bad value syntax         */
+#define TUNESET_BADVAL          3 /* bad value                */
+#define TUNESET_DENIED          4 /* mucker level too low     */
+
+/* Tunable defaults management */
+
+/* Tunable parameter names must not start with TP_FLAG_DEFAULT or they won't be saved. */
+#define TP_FLAG_DEFAULT '%'
+/* True if parameter starts with default flag, otherwise false */
+#define TP_HAS_FLAG_DEFAULT(param) (param != NULL && param[0] == TP_FLAG_DEFAULT)
+/* If specified, remove the reset to default flag by incrementing past it */
+#define TP_CLEAR_FLAG_DEFAULT(param) if (TP_HAS_FLAG_DEFAULT(param)) { param++; }
 
 extern const char *tp_autolook_cmd;
 extern const char *tp_cpennies;
@@ -45,6 +55,7 @@ struct tune_str_entry {
         char *module;
         int isnullable;
         int isdefault;
+        const char *defaultstr;
 };
 
 extern struct tune_str_entry tune_str_list[];
@@ -64,6 +75,8 @@ struct tune_time_entry {
         int writemlev;
         const char *label;
         char *module;
+        int isdefault;
+        const int defaulttim;
 };
 
 extern struct tune_time_entry tune_time_list[];
@@ -112,6 +125,8 @@ struct tune_val_entry {
         int writemlev;
         const char *label;
         char *module;
+        int isdefault;
+        const int defaultval;
 };
 
 extern struct tune_val_entry tune_val_list[];
@@ -130,6 +145,8 @@ struct tune_ref_entry {
         int writemlev;
         const char *label;
         char *module;
+        int isdefault;
+        const dbref defaultref;
 };
 
 extern struct tune_ref_entry tune_ref_list[];
@@ -197,6 +214,8 @@ struct tune_bool_entry {
         int writemlev;
         const char *label;
         char *module;
+        int isdefault;
+        const int defaultbool;
 };
 
 extern struct tune_bool_entry tune_bool_list[];
