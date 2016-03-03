@@ -724,6 +724,14 @@ prim_setsysparm(PRIM_PROTOTYPE)
 		if (*oldvalue)
 			free(oldvalue);
 		break;
+	case TUNESET_SUCCESS_DEFAULT:
+		/* No need to show the flag in output */
+		TP_CLEAR_FLAG_DEFAULT(parmname);
+		log_status("TUNED (MUF): %s(%d) tuned %s from '%s' to default",
+				   NAME(player), player, parmname, oldvalue);
+		if (*oldvalue)
+			free(oldvalue);
+		break;
 	case TUNESET_UNKNOWN:
 		if (*oldvalue)
 			free(oldvalue);
