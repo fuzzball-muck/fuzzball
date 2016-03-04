@@ -1573,6 +1573,26 @@ the new certificate file is not usable), old settings will persist. Must be
 typed in full.
 
 
+@TUNE
+@TUNE info
+@TUNE <param> [=<value>]
+@TUNE %<param>
+@TUNE info <param>
+
+  This is a wizard-only command.
+
+  View and modify tunable parameters that configure how the server operates,
+or provide help on a parameter.  Examples:
+
+  @tune              shows all parameters and their values
+  @tune info         shows all parameters, values, and brief descriptions
+  @tune foo          shows the value of foo
+  @tune foo=bar      sets the value of foo to bar
+  @tune %foo         resets foo to the default system value
+  @tune info foo     briefly describes foo
+
+  Some parameters may require a @RESTART or reload to apply.
+
 
 
 

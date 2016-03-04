@@ -39,6 +39,7 @@
 #endif
 
 #ifdef USE_SSL
+# include "interface_ssl.h"
 # ifdef HAVE_OPENSSL
 #  include <openssl/ssl.h>
 # else
@@ -1303,6 +1304,8 @@ shovechars()
 						newd->ssl_session = SSL_new(ssl_ctx);
 						SSL_set_fd(newd->ssl_session, newd->descriptor);
 						cnt = SSL_accept(newd->ssl_session);
+						if (cnt != 0)
+							ssl_log_error(newd->ssl_session, cnt);
 						/* log_status("SSL accept1: %i\n", cnt ); */
 					}
 				}
@@ -1327,6 +1330,8 @@ shovechars()
 						newd->ssl_session = SSL_new(ssl_ctx);
 						SSL_set_fd(newd->ssl_session, newd->descriptor);
 						cnt = SSL_accept(newd->ssl_session);
+						if (cnt != 0)
+							ssl_log_error(newd->ssl_session, cnt);
 						/* log_status("SSL accept1: %i\n", cnt ); */
 					}
 				}
@@ -2348,7 +2353,9 @@ process_input(struct descriptor_data *d)
 						    d->is_starttls = 1;
 						    d->ssl_session = SSL_new(ssl_ctx);
 						    SSL_set_fd(d->ssl_session, d->descriptor);
-						    SSL_accept(d->ssl_session);
+						    int ssl_ret_value = SSL_accept(d->ssl_session);
+						    if (ssl_ret_value != 0)
+								ssl_log_error(d->ssl_session, ssl_ret_value);
 						    log_status("STARTTLS: %i", d->descriptor);
 					    }
 					}
@@ -4434,6 +4441,14 @@ static SSL_CTX *configure_new_ssl_ctx(void) {
 		if (!SSL_CTX_check_private_key (new_ssl_ctx)) {
 			log_status("Private key does not check out and appears to be invalid.");
 			fprintf(stderr, "Private key does not check out and appears to be invalid.\n");
+			ssl_status_ok = 0;
+		}
+	}
+
+	if (ssl_status_ok) {
+		if (!set_ssl_ctx_min_version(new_ssl_ctx, tp_ssl_min_protocol_version)) {
+			log_status("Could not set minimum SSL protocol version.");
+			fprintf(stderr, "Could not set minimum SSL protocol version.\n");
 			ssl_status_ok = 0;
 		}
 	}

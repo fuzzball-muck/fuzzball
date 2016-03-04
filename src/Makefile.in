@@ -114,8 +114,8 @@ MISCSRC= Makefile.in
 
 CSRC= array.c boolexp.c compile.c create.c db.c debugger.c \
 	disassem.c diskprop.c edit.c events.c game.c hashtab.c help.c inst.c \
-	interp.c log.c look.c match.c mcp.c mcpgui.c mcppkgs.c mfuns2.c \
-	mfuns.c move.c msgparse.c mufevent.c p_array.c \
+	interface_ssl.c interp.c log.c look.c match.c mcp.c mcpgui.c mcppkgs.c \
+	mfuns2.c mfuns.c move.c msgparse.c mufevent.c p_array.c \
 	p_connects.c p_db.c p_error.c p_float.c player.c p_math.c p_mcp.c \
 	p_misc.c p_props.c p_regex.c predicates.c propdirs.c property.c \
 	props.c p_stack.c p_strings.c random.c rob.c sanity.c set.c \
@@ -126,8 +126,8 @@ MSRC= reconst.c interface.c resolver.c
 
 COBJ= array.o boolexp.o compile.o create.o db.o debugger.o \
 	disassem.o diskprop.o edit.o events.o game.o hashtab.o help.o inst.o \
-	interp.o log.o look.o match.o mcp.o mcpgui.o mcppkgs.o mfuns2.o \
-	mfuns.o move.o msgparse.o mufevent.o p_array.o \
+	interface_ssl.o interp.o log.o look.o match.o mcp.o mcpgui.o mcppkgs.o \
+	mfuns2.o mfuns.o move.o msgparse.o mufevent.o p_array.o \
 	p_connects.o p_db.o p_error.o p_float.o player.o p_math.o p_mcp.o \
 	p_misc.o p_props.o p_regex.o predicates.o propdirs.o property.o \
 	props.o p_stack.o p_strings.o random.o rob.o sanity.o set.o \

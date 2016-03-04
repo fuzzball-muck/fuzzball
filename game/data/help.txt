@@ -45,8 +45,8 @@ Symbols
   @ps                @reconfiguressl    @recycle           @restart
   @restrict          @set               @shutdown          @stats
   @success           @teleport          @toad              @trace
-  @unbless           @uncompile         @unlink            @unlock
-  @usage             @wall              
+  @tune              @unbless           @uncompile         @unlink
+  @unlock            @usage             @wall
 
 A's
   abode  
@@ -1729,7 +1729,8 @@ Wizardly Commands
 @armageddon        @bless             @boot              @dump
 @force             @newpassword       @pcreate           @reconfiguressl
 @restart           @restrict          @shutdown          @toad
-@unbless           @uncompile         @usage             @wall
+@tune              @unbless           @uncompile         @usage
+@wall
 
 ~----------------------------------------------------------------------------
 ~
@@ -1908,6 +1909,28 @@ with a corrupted database, it will be with @restricted logins.
 and reset SSL options from @tune settings.  If it fails (for example,
 the new certificate file is not usable), old settings will persist. Must be
 typed in full.
+~
+~
+@TUNE
+@TUNE
+@TUNE info
+@TUNE <param> [=<value>]
+@TUNE %<param>
+@TUNE info <param>
+
+  This is a wizard-only command.
+
+  View and modify tunable parameters that configure how the server operates,
+or provide help on a parameter.  Examples:
+
+  @tune              shows all parameters and their values
+  @tune info         shows all parameters, values, and brief descriptions
+  @tune foo          shows the value of foo
+  @tune foo=bar      sets the value of foo to bar
+  @tune %foo         resets foo to the default system value
+  @tune info foo     briefly describes foo
+
+  Some parameters may require a @RESTART or reload to apply.
 ~
 ~
 ~

@@ -28,6 +28,7 @@
 *.x86_64
 *.hex
 bin/fbmuck
+src/fbmuck
 fbhelp
 fb-resolver
 mkversion
@@ -43,9 +44,12 @@ autom4te.cache/
 config.log
 config.status
 include/autoconf.h
+include/defines.h
 src/version.c
 
 # Windows build files
 compile
 winsrc
 
+# Temporary backup files
+*~
