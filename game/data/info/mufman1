@@ -3261,91 +3261,129 @@ Checking an invalid parameter or a parameter requiring higher permissions
 than the program has will return an empty string.
 
 Parameters available:
-  (str)  dumpwarn_mesg        - Message to warn of a coming DB dump
-  (str)  deltawarn_mesg       - Message to warn of a coming delta dump
-  (str)  dumpdeltas_mesg      - Message telling of a delta dump
-  (str)  dumping_mesg         - Message telling of a DB dump
-  (str)  dumpdone_mesg        - Message notifying a dump is done
-  (str)  penny                - A single currency
-  (str)  pennies              - Plural currency
-  (str)  cpenny               - Capitolized currency
-  (str)  cpennies             - Capitolized plural currency
-  (str)  muckname             - The name of the MUCK
-  (str)  rwho_passwd          - Password for RWHO servers (Wizbit only)
-  (str)  rwho_server          - RWHO server to connect to (Wizbit only)
-  (str)  huh_mesg             - Message for invalid commands
-  (str)  leave_mesg           - Message given when QUIT is used
-  (str)  idle_boot_mesg       - Message given to an idle booted user
-  (str)  register_mesg        - Message for a failed 'create' at login
-  (str)  playermax_warnmesg   - Message warning off too many connects
-  (str)  playermax_bootmesg   - Error given when a player cannot connect
-  (time) rwho_interval        - Interval between RWHO updates
+  (str)  autolook_cmd         - Command run on entering a room
+  (str)  cpennies             - Currency name, capitalized, plural
+  (str)  cpenny               - Currency name, capitalized
+  (str)  pennies              - Currency name, plural
+  (str)  penny                - Currency name
+  (str)  dumpdone_mesg        - Database dump finished message
+  (str)  dumping_mesg         - Database dump started message
+  (str)  dumpwarn_mesg        - Database dump warning message
+  (str)  idle_boot_mesg       - Boot message given to users idling out
+  (str)  huh_mesg             - Unrecognized command warning
+  (str)  leave_mesg           - Logoff message for QUIT
+  (str)  muckname             - Name of the MUCK
+  (str)  playermax_bootmesg   - Max. players reached connection error message
+  (str)  playermax_warnmesg   - Max. players connection login warning
+  (str)  gender_prop          - Property name used for pronoun substitution
+  (str)  register_mesg        - Login registration denied message
+  (str)  ssl_cert_file        - Path to SSL certificate .pem (God only)
+  (str)  ssl_key_file         - Path to SSL private key .pem (God only)
+  (str)  ssl_keyfile_passwd   - Password for SSL private key (God only)
+  (str)  ssl_cipher_preference_list - Allowed OpenSSL cipher list (God only)
+  (str)  ssl_min_protocol_version - Min. allowed SSL version for clients (God only)
+  (str)  pcreate_flags        - Initial flags for newly created players
+  (str)  reserved_names       - String-match list of reserved names
+  (str)  reserved_player_names - String-match list of reserved player names
+  (time) aging_time           - When to considered an object old and unused
   (time) dump_interval        - Interval between dumps
-  (time) dump_warntime        - Warning prior to a dump
-  (time) monolithic_interval  - Max time between full DB dumps
-  (time) clean_interval       - Interval between unused object purges
-  (time) aging_time           - When an object is considered old and unused
-  (time) maxidle              - Maximum idle time allowed
-  (int)  max_object_endowment - Max value of an object
-  (int)  object_cost          - Cost to create an object
+  (time) dump_warntime        - Interval between warning and dump
+  (time) idle_ping_time       - Server side keepalive time in seconds
+  (time) maxidle              - Maximum idle time before booting
+  (time) clean_interval       - Interval between memory/object cleanups
   (int)  exit_cost            - Cost to create an exit
   (int)  link_cost            - Cost to link an exit
-  (int)  room_cost            - Cost to dig a room
   (int)  lookup_cost          - Cost to lookup a player name
-  (int)  max_pennies          - Max number of pennies a player can own
-  (int)  penny_rate           - Rate for finding pennies
-  (int)  start_pennies        - Starting wealth for new players
-  (int)  kill_base_cost       - Number of pennies for a 100 percent chance
-  (int)  kill_min_cost        - Minimum cost for doing a kill
-  (int)  kill_bonus           - Bonus for a successful kill
-  (int)  command_burst_size   - Maximum number of commands per burst
-  (int)  commands_per_time    - Commands per time slice after burst
-  (int)  command_time_msec    - Time slice length in milliseconds
-  (int)  max_delta_objs       - Max percent of changed objects for a delta
-  (int)  max_loaded_objs      - Max percent of the DB in memory at once
-  (int)  max_force_level      - Maximum number of forces within one command
-  (int)  max_process_limit    - Total processes allowed
-  (int)  max_plyr_processes   - Processes allowed for each player
-  (int)  max_instr_count      - Max preempt mode instructions
-  (int)  instr_slice          - Max uninterrupted instructions per time slice
-  (int)  mpi_max_commands     - Max number of uninterruptable MPI commands
-  (int)  pause_min            - Pause between input and output servicing
-  (int)  free_frames_pool     - Number of program frames pre-allocated
-  (int)  listen_mlev          - Minimum MUCKER level for _listen programs
-  (int)  playermax_limit      - Manimum allowed connections
-  (ref)  player_start         - The home for players without a home
-  (bool) use_hostnames        - Do reverse domain name lookup
-  (bool) log_commands         - The server logs commands (Wizbit only)
-  (bool) log_failed_commands  - The server logs failed commands (Wizbit only)
-  (bool) log_programs         - The server logs programs (Wizbit only)
-  (bool) dbdump_warning       - Warn about coming DB dumps
-  (bool) deltadump_warning    - Warn about coming delta dumps
-  (bool) periodic_program_purge - Purge unused programs from memory
-  (bool) support_rwho         - Use RWHO server
-  (bool) secure_who           - WHO works only in command mode
-  (bool) who_doing            - Server support for @doing
-  (bool) realms_control       - Support for realm wizzes
-  (bool) allow_listeners      - Allow listeners
-  (bool) allow_listeners_obj  - Objects can be listeners
-  (bool) allow_listeners_env  - Listeners can be up the environment
-  (bool) allow_zombies        - Zombie objects allowed
-  (bool) wiz_vehicles         - Only wizzes can make vehicles
-  (bool) force_mlev1_name_notify - M1 programs forced to show name on notify
-  (bool) restrict_kill        - Can only kill KILL_OK players
-  (bool) registration         - Only wizzes can create players
-  (bool) teleport_to_player   - Allow use of exits linked to players
-  (bool) secure_teleport      - Check teleport permissions for personal exits
-  (bool) exit_darking         - Players can set exits dark
-  (bool) thing_darking        - Players can set objects dark
-  (bool) dark_sleepers        - Sleepers are effectively dark
-  (bool) who_hides_dark       - Dark players are hidden (Wizbit only)
-  (bool) compatible_priorities - Backwards compatibility for exit priorities
+  (int)  max_object_endowment - Max. value of an object
+  (int)  object_cost          - Cost to create an object
+  (int)  room_cost            - Cost to create a room
+  (int)  max_pennies          - Max. pennies a player can own
+  (int)  penny_rate           - Avg. moves between finding currency
+  (int)  start_pennies        - Player starting currency count
+  (int)  kill_base_cost       - Cost to guarantee kill
+  (int)  kill_bonus           - Bonus given to a killed player
+  (int)  kill_min_cost        - Min. cost to do a kill
+  (int)  listen_mlev          - Mucker Level required for Listener programs
+  (int)  cmd_log_threshold_msec - Log commands that take longer than X millisecs
+  (int)  max_force_level      - Max. number of forces processed within a command (God only)
+  (int)  mpi_max_commands     - Max. number of uninterruptable MPI commands
+  (int)  addpennies_muf_mlev  - Mucker Level required to create/destroy pennies
+  (int)  instr_slice          - Max. uninterrupted instructions per timeslice
+  (int)  max_instr_count      - Max. preempt mode instructions
+  (int)  max_ml4_preempt_count - Max MUF preempt instruction run length for ML4, (0 = no limit)
+  (int)  max_plyr_processes   - Concurrent processes allowed per player
+  (int)  max_process_limit    - Total concurrent processes allowed on system
+  (int)  mcp_muf_mlev         - Mucker Level required to use MCP
+  (int)  movepennies_muf_mlev - Mucker Level required to move pennies non-destructively
+  (int)  pennies_muf_mlev     - Mucker Level required to read the value of pennies, settings above 1 disable {money}
+  (int)  process_timer_limit  - Max. timers per process
+  (int)  userlog_mlev         - Mucker Level required to write to userlog
+  (int)  playermax_limit      - Max. player connections allowed
+  (int)  command_burst_size   - Max. commands per burst before limiter engages
+  (int)  command_time_msec    - Millisecs per spam limiter time period
+  (int)  commands_per_time    - Commands allowed per time period during limit
+  (int)  max_output           - Max. output buffer size
+  (int)  free_frames_pool     - Size of allocated MUF process frame pool
+  (int)  max_loaded_objs      - Max. percent of proploaded database objects
+  (int)  pause_min            - Min. millisecs between MUF input/output timeslices
+  (ref)  default_room_parent  - Place to parent new rooms to
+  (ref)  lost_and_found       - Place for things without a home
+  (ref)  player_start         - Home where new players start
+  (ref)  toad_default_recipient - Default owner for @toaded player's things
+  (bool) 7bit_thing_names     - Limit thing names to 7-bit characters (Wizbit only)
+  (bool) 7bit_other_names     - Limit exit/room/muf names to 7-bit characters (Wizbit only)
+  (bool) enable_home          - Enable 'home' command (Wizbit only)
+  (bool) enable_match_yield   - Enable yield/overt flags on rooms and things (Wizbit only)
+  (bool) enable_prefix        - Enable prefix actions (Wizbit only)
+  (bool) recognize_null_command - Recognize null command (Wizbit only)
+  (bool) verbose_clone        - Show more information when using @clone command (Wizbit only)
+  (bool) dark_sleepers        - Make sleeping players dark
+  (bool) exit_darking         - Allow players to set exits dark
+  (bool) thing_darking        - Allow players to set things dark
+  (bool) who_hides_dark       - Hide dark players from WHO list (Wizbit only)
+  (bool) compatible_priorities - Use legacy exit priority levels on things
+  (bool) realms_control       - Enable support for realm wizzes
+  (bool) diskbase_propvals    - Enable property value diskbasing (req. restart)
+  (bool) dbdump_warning       - Enable warnings for upcoming database dumps
+  (bool) dumpdone_warning     - Notify when database dump complete
+  (bool) starttls_allow       - Enable TELNET STARTTLS encryption on plaintext port
+  (bool) idleboot             - Enable booting of idle players
+  (bool) idle_ping_enable     - Enable server side keepalive pings
+  (bool) restrict_kill        - Restrict kill command to players set Kill_OK
+  (bool) allow_listeners      - Allow programs to listen to player output
+  (bool) allow_listeners_env  - Allow listeners down environment
+  (bool) allow_listeners_obj  - Allow objects to be listeners
+  (bool) log_commands         - Log player commands (Wizbit only)
+  (bool) log_failed_commands  - Log unrecognized commands (Wizbit only)
+  (bool) log_interactive      - Log text sent to MUF (Wizbit only)
+  (bool) log_programs         - Log programs every time they are saved (Wizbit only)
+  (bool) allow_zombies        - Enable Zombie things to relay what they hear
+  (bool) wiz_vehicles         - Only let Wizards set vehicle bits
+  (bool) ignore_support       - Enable support for @ignoring players (Master only)
+  (bool) ignore_bidirectional - Enable support for bidirectional @ignore (Master only)
+  (bool) m3_huh               - Enable huh? to call an exit named "huh?" and set M3, with full command string (Master only)
+  (bool) strict_god_priv      - Only God can touch God's objects (God only)
+  (bool) autolink_actions     - Automatically link @actions to NIL
+  (bool) teleport_to_player   - Allow using exits linked to players
+  (bool) secure_teleport      - Restrict actions to Jump_OK or controlled rooms
+  (bool) secure_thing_movement - Moving things act like player (Wizbit only)
   (bool) do_mpi_parsing       - Parse MPI strings in messages
-  (bool) look_propqueues      - Look triggers _lookq propqueue
-  (bool) lock_envcheck        - Locks will check the environment
-  (bool) diskbase_propvals    - Allow diskbasing of property values
-  (bool) idleboot             - Enable or disable idlebooting
-  (bool) playermax            - Enable or disable connection limit
+  (bool) lazy_mpi_istype_perm - Enable looser legacy perms for MPI {istype}
+  (bool) expanded_debug_trace - MUF debug trace shows array contents
+  (bool) force_mlev1_name_notify - MUF notify prepends username for ML1 programs
+  (bool) muf_comments_strict  - MUF comments are strict and not recursive
+  (bool) optimize_muf         - Enable MUF bytecode optimize
+  (bool) playermax            - Limit number of concurrent players allowed
+  (bool) lock_envcheck        - Locks check environment for properties
+  (bool) look_propqueues      - Trigger _look/ propqueues when a player looks
+  (bool) show_legacy_props    - Examining objects lists legacy props
+  (bool) sync_legacy_props    - Setting properties also sets associated legacy props
+  (bool) registration         - Require new players to register manually
+  (bool) server_cipher_preference - Honor server cipher preference order over client's (Wizbit only)
+  (bool) periodic_program_purge - Periodically free unused MUF programs
+  (bool) secure_who           - Disallow WHO command from login screen and programs
+  (bool) use_hostnames        - Resolve IP addresses into hostnames 
+  (bool) who_doing            - Show '_/do' property value in WHO lists
 
 
 SYSPARM_ARRAY ( str:pattern -- list:sysparminfo )
@@ -3363,6 +3401,7 @@ Each dictionary contains the following data, keyed with these strings:
     "writemlev" The mucker level required to write the value of this sysparm.
     "value"     The value of the sysparm.  May be an int, string, or dbref.
     "active"	Whether the parameter currently affects the system.
+    "default"	Whether the parameter has been changed from defaults.
 
 If a given entry is of the "dbref" type, it will also have the extra field:
     "objtype"   The type of object the dbref is restricted to.  Can be one of
@@ -3374,7 +3413,8 @@ If a given entry is of the "dbref" type, it will also have the extra field:
 SETSYSPARM ( s1 s2 -- )
 
   Assigns the @tunable parameter s1 a value given by s2.  s2 must contain a
-legal value for s1.  (wizbit only)
+legal value for s1.  If s1 is prefixed with '%', reset s1 to default
+instead, ignoring the value of s2.  (wizbit only)
 
 
 NAME ( d -- s )
