@@ -9,6 +9,18 @@
 
 #define MOD_ENABLED(module) (module[0] == 0 || strstr(compile_options, module) != NULL)
 
+#define TP_SEND_ENTRY_INFO(tune_entry) \
+{ \
+	snprintf(buf, sizeof(buf), "%-27s %.4096s", tune_entry->group, tune_entry->label); \
+	notify(player, buf); \
+}
+
+/* NOTE:  Do NOT use 'info' as the name of a parameter.  '@tune info' gets help on @tune
+   parameters and it would conflict.
+   Reserve it as a preprocessor define so it's a bit easier to change if needed.  If changed,
+   don't forget to update the help files, too! */
+#define TP_INFO_CMD "info"
+
 /* Specify the same default values in the pointer and in the lists of tune_*_entry.
    Default values here will be used if the tunable isn't found, default values in the lists of tune_*_entry
    are used when resetting to default via '%tunable_name'. */
@@ -44,25 +56,25 @@ struct tune_str_entry tune_str_list[] = {
 	{"Currency",	"cpenny", &tp_cpenny, 0, MLEV_WIZARD, "Currency name, capitalized", "", 0, 1, CPENNY},
 	{"Currency",	"pennies", &tp_pennies, 0, MLEV_WIZARD, "Currency name, plural", "", 0, 1, PENNIES},
 	{"Currency",	"penny", &tp_penny, 0, MLEV_WIZARD, "Currency name", "", 0, 1, PENNY},
-	{"DB Dumps",	"dumpdone_mesg", &tp_dumpdone_mesg, 0, MLEV_WIZARD, "Dump completion message", "", 1, 1, DUMPDONE_MESG},
-	{"DB Dumps",	"dumping_mesg", &tp_dumping_mesg, 0, MLEV_WIZARD, "Full dump start mesg", "", 1, 1, DUMPING_MESG},
-	{"DB Dumps",	"dumpwarn_mesg", &tp_dumpwarn_mesg, 0, MLEV_WIZARD, "Full dump warning mesg", "", 1, 1, DUMPWARN_MESG},
-	{"Idle Boot",	"idle_boot_mesg", &tp_idle_mesg, 0, MLEV_WIZARD, "Boot message for idling out", "", 0, 1, IDLEBOOT_MESSAGE},
-	{"Misc",	"huh_mesg", &tp_huh_mesg, 0, MLEV_WIZARD, "Command unrecognized warning", "", 0, 1, HUH_MESSAGE},
-	{"Misc",	"leave_mesg", &tp_leave_mesg, 0, MLEV_WIZARD, "Logoff message", "", 0, 1, LEAVE_MESSAGE},
-	{"Misc",	"muckname", &tp_muckname, 0, MLEV_WIZARD, "Muck name", "", 0, 1, MUCKNAME},
-	{"Player Max",	"playermax_bootmesg", &tp_playermax_bootmesg, 0, MLEV_WIZARD, "Max. players boot message", "", 0, 1, PLAYERMAX_BOOTMESG},
-	{"Player Max",	"playermax_warnmesg", &tp_playermax_warnmesg, 0, MLEV_WIZARD, "Max. players login warning", "", 0, 1, PLAYERMAX_WARNMESG},
+	{"DB Dumps",	"dumpdone_mesg", &tp_dumpdone_mesg, 0, MLEV_WIZARD, "Database dump finished message", "", 1, 1, DUMPDONE_MESG},
+	{"DB Dumps",	"dumping_mesg", &tp_dumping_mesg, 0, MLEV_WIZARD, "Database dump started message", "", 1, 1, DUMPING_MESG},
+	{"DB Dumps",	"dumpwarn_mesg", &tp_dumpwarn_mesg, 0, MLEV_WIZARD, "Database dump warning message", "", 1, 1, DUMPWARN_MESG},
+	{"Idle Boot",	"idle_boot_mesg", &tp_idle_mesg, 0, MLEV_WIZARD, "Boot message given to users idling out", "", 0, 1, IDLEBOOT_MESSAGE},
+	{"Misc",	"huh_mesg", &tp_huh_mesg, 0, MLEV_WIZARD, "Unrecognized command warning", "", 0, 1, HUH_MESSAGE},
+	{"Misc",	"leave_mesg", &tp_leave_mesg, 0, MLEV_WIZARD, "Logoff message for QUIT", "", 0, 1, LEAVE_MESSAGE},
+	{"Misc",	"muckname", &tp_muckname, 0, MLEV_WIZARD, "Name of the MUCK", "", 0, 1, MUCKNAME},
+	{"Player Max",	"playermax_bootmesg", &tp_playermax_bootmesg, 0, MLEV_WIZARD, "Max. players connection error message", "", 0, 1, PLAYERMAX_BOOTMESG},
+	{"Player Max",	"playermax_warnmesg", &tp_playermax_warnmesg, 0, MLEV_WIZARD, "Max. players connection login warning", "", 0, 1, PLAYERMAX_WARNMESG},
 	{"Properties",  "gender_prop", &tp_gender_prop, 0, MLEV_WIZARD, "Property name used for pronoun substitutions", "", 0, 1, LEGACY_GENDER_PROP},
-	{"Registration","register_mesg", &tp_register_mesg, 0, MLEV_WIZARD, "Login registration mesg", "", 0, 1, REG_MSG},
+	{"Registration","register_mesg", &tp_register_mesg, 0, MLEV_WIZARD, "Login registration denied message", "", 0, 1, REG_MSG},
 	{"SSL",		"ssl_cert_file", &tp_ssl_cert_file, MLEV_GOD, MLEV_GOD, "Path to SSL certificate .pem", "SSL", 0, 1, SSL_CERT_FILE},
 	{"SSL",		"ssl_key_file", &tp_ssl_key_file, MLEV_GOD, MLEV_GOD, "Path to SSL private key .pem", "SSL", 0, 1, SSL_KEY_FILE},
-	{"SSL",		"ssl_keyfile_passwd", &tp_ssl_keyfile_passwd, MLEV_GOD, MLEV_GOD, "Password for SSL keyfile", "SSL", 1, 1, SSL_KEYFILE_PASSWD},
-	{"SSL",		"ssl_cipher_preference_list", &tp_ssl_cipher_preference_list, MLEV_GOD, MLEV_GOD, "OpenSSL cipher list", "SSL", 0, 1, SSL_CIPHER_PREFERENCE_LIST},
-	{"SSL",		"ssl_min_protocol_version", &tp_ssl_min_protocol_version, MLEV_GOD, MLEV_GOD, "Minimum allowed SSL version for clients", "SSL", 0, 1, SSL_MIN_PROTOCOL_VERSION},
-	{"Database",	"pcreate_flags", &tp_pcreate_flags, 0, MLEV_WIZARD, "Initial Player Flags", "", 1, 1, PCREATE_FLAGS},
-	{"Database",	"reserved_names", &tp_reserved_names, 0, MLEV_WIZARD, "Reserved names smatch", "", 1, 1, RESERVED_NAMES},
-	{"Database",	"reserved_player_names", &tp_reserved_player_names, 0, MLEV_WIZARD, "Reserved player names smatch", "", 1, 1, RESERVED_PLAYER_NAMES},
+	{"SSL",		"ssl_keyfile_passwd", &tp_ssl_keyfile_passwd, MLEV_GOD, MLEV_GOD, "Password for SSL private key file", "SSL", 1, 1, SSL_KEYFILE_PASSWD},
+	{"SSL",		"ssl_cipher_preference_list", &tp_ssl_cipher_preference_list, MLEV_GOD, MLEV_GOD, "Allowed OpenSSL cipher list", "SSL", 0, 1, SSL_CIPHER_PREFERENCE_LIST},
+	{"SSL",		"ssl_min_protocol_version", &tp_ssl_min_protocol_version, MLEV_GOD, MLEV_GOD, "Min. allowed SSL protocol version for clients", "SSL", 0, 1, SSL_MIN_PROTOCOL_VERSION},
+	{"Database",	"pcreate_flags", &tp_pcreate_flags, 0, MLEV_WIZARD, "Initial flags for newly created players", "", 1, 1, PCREATE_FLAGS},
+	{"Database",	"reserved_names", &tp_reserved_names, 0, MLEV_WIZARD, "String-match list of reserved names", "", 1, 1, RESERVED_NAMES},
+	{"Database",	"reserved_player_names", &tp_reserved_player_names, 0, MLEV_WIZARD, "String-match list of reserved player names", "", 1, 1, RESERVED_PLAYER_NAMES},
 	{NULL, NULL, NULL, 0, 0, NULL, NULL, 0, 0, NULL}
 };
 
@@ -79,7 +91,7 @@ struct tune_time_entry tune_time_list[] = {
 	{"DB Dumps",	"dump_warntime", &tp_dump_warntime, 0, MLEV_WIZARD, "Interval between warning and dump", "", 1, DUMP_WARNTIME},
 	{"Idle Boot",	"idle_ping_time", &tp_idle_ping_time, 0, MLEV_WIZARD, "Server side keepalive time in seconds", "", 1, IDLE_PING_TIME},
 	{"Idle Boot",	"maxidle", &tp_maxidle, 0, MLEV_WIZARD, "Maximum idle time before booting", "", 1, MAXIDLE},
-	{"Tuning",	"clean_interval", &tp_clean_interval, 0, MLEV_WIZARD, "Interval between memory cleanups.", "", 1, CLEAN_INTERVAL},
+	{"Tuning",	"clean_interval", &tp_clean_interval, 0, MLEV_WIZARD, "Interval between memory/object cleanups", "", 1, CLEAN_INTERVAL},
 	{NULL, NULL, NULL, 0, 0, NULL, NULL, 0, 0}
 };
 
@@ -120,41 +132,41 @@ int tp_process_timer_limit = PROCESS_TIMER_LIMIT;
 int tp_userlog_mlev = USERLOG_MLEV;
 
 struct tune_val_entry tune_val_list[] = {
-	{"Costs",	"exit_cost", &tp_exit_cost, 0, MLEV_WIZARD, "Cost to create exit", "", 1, EXIT_COST},
-	{"Costs",	"link_cost", &tp_link_cost, 0, MLEV_WIZARD, "Cost to link exit", "", 1, LINK_COST},
-	{"Costs",	"lookup_cost", &tp_lookup_cost, 0, MLEV_WIZARD, "Cost to lookup playername", "", 1, LOOKUP_COST},
-	{"Costs",	"max_object_endowment", &tp_max_object_endowment, 0, MLEV_WIZARD, "Max value of object", "", 1, MAX_OBJECT_ENDOWMENT},
-	{"Costs",	"object_cost", &tp_object_cost, 0, MLEV_WIZARD, "Cost to create thing", "", 1, OBJECT_COST},
-	{"Costs",	"room_cost", &tp_room_cost, 0, MLEV_WIZARD, "Cost to create room", "", 1, ROOM_COST},
-	{"Currency",	"max_pennies", &tp_max_pennies, 0, MLEV_WIZARD, "Player currency cap", "", 1, MAX_PENNIES},
-	{"Currency",	"penny_rate", &tp_penny_rate, 0, MLEV_WIZARD, "Moves between finding currency, avg", "", 1, PENNY_RATE},
+	{"Costs",	"exit_cost", &tp_exit_cost, 0, MLEV_WIZARD, "Cost to create an exit", "", 1, EXIT_COST},
+	{"Costs",	"link_cost", &tp_link_cost, 0, MLEV_WIZARD, "Cost to link an exit", "", 1, LINK_COST},
+	{"Costs",	"lookup_cost", &tp_lookup_cost, 0, MLEV_WIZARD, "Cost to lookup a player name", "", 1, LOOKUP_COST},
+	{"Costs",	"max_object_endowment", &tp_max_object_endowment, 0, MLEV_WIZARD, "Max. value of an object", "", 1, MAX_OBJECT_ENDOWMENT},
+	{"Costs",	"object_cost", &tp_object_cost, 0, MLEV_WIZARD, "Cost to create an object", "", 1, OBJECT_COST},
+	{"Costs",	"room_cost", &tp_room_cost, 0, MLEV_WIZARD, "Cost to create a room", "", 1, ROOM_COST},
+	{"Currency",	"max_pennies", &tp_max_pennies, 0, MLEV_WIZARD, "Max. pennies a player can own", "", 1, MAX_PENNIES},
+	{"Currency",	"penny_rate", &tp_penny_rate, 0, MLEV_WIZARD, "Avg. moves between finding currency", "", 1, PENNY_RATE},
 	{"Currency",	"start_pennies", &tp_start_pennies, 0, MLEV_WIZARD, "Player starting currency count", "", 1, START_PENNIES},
-	{"Killing",	"kill_base_cost", &tp_kill_base_cost, 0, MLEV_WIZARD, "Cost to guarentee kill", "", 1, KILL_BASE_COST},
-	{"Killing",	"kill_bonus", &tp_kill_bonus, 0, MLEV_WIZARD, "Bonus to killed player", "", 1, KILL_BONUS},
-	{"Killing",	"kill_min_cost", &tp_kill_min_cost, 0, MLEV_WIZARD, "Min cost to kill", "", 1, KILL_MIN_COST},
-	{"Listeners",	"listen_mlev", &tp_listen_mlev, 0, MLEV_WIZARD, "Mucker Level required for Listener progs", "", 1, LISTEN_MLEV},
+	{"Killing",	"kill_base_cost", &tp_kill_base_cost, 0, MLEV_WIZARD, "Cost to guarantee kill", "", 1, KILL_BASE_COST},
+	{"Killing",	"kill_bonus", &tp_kill_bonus, 0, MLEV_WIZARD, "Bonus given to a killed player", "", 1, KILL_BONUS},
+	{"Killing",	"kill_min_cost", &tp_kill_min_cost, 0, MLEV_WIZARD, "Min. cost to do a kill", "", 1, KILL_MIN_COST},
+	{"Listeners",	"listen_mlev", &tp_listen_mlev, 0, MLEV_WIZARD, "Mucker Level required for Listener programs", "", 1, LISTEN_MLEV},
 	{"Logging",	"cmd_log_threshold_msec", &tp_cmd_log_threshold_msec, 0, MLEV_WIZARD, "Log commands that take longer than X millisecs", "", 1, CMD_LOG_THRESHOLD_MSEC},
-	{"Misc",	"max_force_level", &tp_max_force_level, MLEV_GOD, MLEV_GOD, "Maximum number of forces processed within a command", "", 1, MAX_FORCE_LEVEL},
-	{"MPI",		"mpi_max_commands", &tp_mpi_max_commands, 0, MLEV_WIZARD, "Max MPI instruction run length", "", 1, MPI_MAX_COMMANDS},
+	{"Misc",	"max_force_level", &tp_max_force_level, MLEV_GOD, MLEV_GOD, "Max. number of forces processed within a command", "", 1, MAX_FORCE_LEVEL},
+	{"MPI",		"mpi_max_commands", &tp_mpi_max_commands, 0, MLEV_WIZARD, "Max. number of uninterruptable MPI commands", "", 1, MPI_MAX_COMMANDS},
 	{"MUF",		"addpennies_muf_mlev", &tp_addpennies_muf_mlev, 0, MLEV_WIZARD, "Mucker Level required to create/destroy pennies", "", 1, ADDPENNIES_MUF_MLEV},
-	{"MUF",		"instr_slice", &tp_instr_slice, 0, MLEV_WIZARD, "Instructions run per timeslice", "", 1, INSTR_SLICE},
-	{"MUF",		"max_instr_count", &tp_max_instr_count, 0, MLEV_WIZARD, "Max MUF instruction run length for ML1", "", 1, MAX_INSTR_COUNT},
-	{"MUF",		"max_ml4_preempt_count", &tp_max_ml4_preempt_count, 0, MLEV_WIZARD, "Max MUF preempt instruction run length for ML4, (0 = no limit)", "", 1, MAX_ML4_PREEMPT_COUNT},
-	{"MUF",		"max_plyr_processes", &tp_max_plyr_processes, 0, MLEV_WIZARD, "Max concurrent processes per player", "", 1, MAX_PLYR_PROCESSES},
-	{"MUF",		"max_process_limit", &tp_max_process_limit, 0, MLEV_WIZARD, "Max concurrent processes on system", "", 1, MAX_PROCESS_LIMIT},
+	{"MUF",		"instr_slice", &tp_instr_slice, 0, MLEV_WIZARD, "Max. uninterrupted instructions per timeslice", "", 1, INSTR_SLICE},
+	{"MUF",		"max_instr_count", &tp_max_instr_count, 0, MLEV_WIZARD, "Max. MUF instruction run length for ML1", "", 1, MAX_INSTR_COUNT},
+	{"MUF",		"max_ml4_preempt_count", &tp_max_ml4_preempt_count, 0, MLEV_WIZARD, "Max. MUF preempt instruction run length for ML4, (0 = no limit)", "", 1, MAX_ML4_PREEMPT_COUNT},
+	{"MUF",		"max_plyr_processes", &tp_max_plyr_processes, 0, MLEV_WIZARD, "Concurrent processes allowed per player", "", 1, MAX_PLYR_PROCESSES},
+	{"MUF",		"max_process_limit", &tp_max_process_limit, 0, MLEV_WIZARD, "Total concurrent processes allowed on system", "", 1, MAX_PROCESS_LIMIT},
 	{"MUF",		"mcp_muf_mlev", &tp_mcp_muf_mlev, 0, MLEV_WIZARD, "Mucker Level required to use MCP", "MCP", 1, MCP_MUF_MLEV},
 	{"MUF",		"movepennies_muf_mlev", &tp_movepennies_muf_mlev, 0, MLEV_WIZARD, "Mucker Level required to move pennies non-destructively", "", 1, MOVEPENNIES_MUF_MLEV},
 	{"MUF",		"pennies_muf_mlev", &tp_pennies_muf_mlev, 0, MLEV_WIZARD, "Mucker Level required to read the value of pennies, settings above 1 disable {money}", "", 1, PENNIES_MUF_MLEV},
-	{"MUF",		"process_timer_limit", &tp_process_timer_limit, 0, MLEV_WIZARD, "Max timers per process", "", 1, PROCESS_TIMER_LIMIT},
+	{"MUF",		"process_timer_limit", &tp_process_timer_limit, 0, MLEV_WIZARD, "Max. timers per process", "", 1, PROCESS_TIMER_LIMIT},
 	{"MUF",		"userlog_mlev", &tp_userlog_mlev, 0, MLEV_WIZARD, "Mucker Level required to write to userlog", "", 1, USERLOG_MLEV},
-	{"Player Max",	"playermax_limit", &tp_playermax_limit, 0, MLEV_WIZARD, "Max player connections allowed", "", 1, PLAYERMAX_LIMIT},
-	{"Spam Limits",	"command_burst_size", &tp_command_burst_size, 0, MLEV_WIZARD, "Commands before limiter engages", "", 1, COMMAND_BURST_SIZE},
+	{"Player Max",	"playermax_limit", &tp_playermax_limit, 0, MLEV_WIZARD, "Max. player connections allowed", "", 1, PLAYERMAX_LIMIT},
+	{"Spam Limits",	"command_burst_size", &tp_command_burst_size, 0, MLEV_WIZARD, "Max. commands per burst before limiter engages", "", 1, COMMAND_BURST_SIZE},
 	{"Spam Limits",	"command_time_msec", &tp_command_time_msec, 0, MLEV_WIZARD, "Millisecs per spam limiter time period", "", 1, COMMAND_TIME_MSEC},
-	{"Spam Limits",	"commands_per_time", &tp_commands_per_time, 0, MLEV_WIZARD, "Commands allowed per time period", "", 1, COMMANDS_PER_TIME},
-	{"Spam Limits",	"max_output", &tp_max_output, 0, MLEV_WIZARD, "Max output buffer size", "", 1, MAX_OUTPUT},
-	{"Tuning",	"free_frames_pool", &tp_free_frames_pool, 0, MLEV_WIZARD, "Size of MUF process frame pool", "", 1, FREE_FRAMES_POOL},
-	{"Tuning",	"max_loaded_objs", &tp_max_loaded_objs, 0, MLEV_WIZARD, "Max proploaded object percentage", "DISKBASE", 1, MAX_LOADED_OBJS},
-	{"Tuning",	"pause_min", &tp_pause_min, 0, MLEV_WIZARD, "Min ms to pause between MUF timeslices", "", 1, PAUSE_MIN},
+	{"Spam Limits",	"commands_per_time", &tp_commands_per_time, 0, MLEV_WIZARD, "Commands allowed per time period during limit", "", 1, COMMANDS_PER_TIME},
+	{"Spam Limits",	"max_output", &tp_max_output, 0, MLEV_WIZARD, "Max. output buffer size", "", 1, MAX_OUTPUT},
+	{"Tuning",	"free_frames_pool", &tp_free_frames_pool, 0, MLEV_WIZARD, "Size of allocated MUF process frame pool", "", 1, FREE_FRAMES_POOL},
+	{"Tuning",	"max_loaded_objs", &tp_max_loaded_objs, 0, MLEV_WIZARD, "Max. percent of proploaded database objects", "DISKBASE", 1, MAX_LOADED_OBJS},
+	{"Tuning",	"pause_min", &tp_pause_min, 0, MLEV_WIZARD, "Min. millisecs between MUF input/output timeslices", "", 1, PAUSE_MIN},
 	{NULL, NULL, NULL, 0, 0, NULL, NULL, 0, 0}
 };
 
@@ -166,7 +178,7 @@ dbref tp_toad_default_recipient = TOAD_DEFAULT_RECIPIENT;
 struct tune_ref_entry tune_ref_list[] = {
 	{"Database",	"default_room_parent", TYPE_ROOM, &tp_default_room_parent, 0, MLEV_WIZARD, "Place to parent new rooms to", "", 1, GLOBAL_ENVIRONMENT},
 	{"Database",	"lost_and_found", TYPE_ROOM, &tp_lost_and_found, 0, MLEV_WIZARD, "Place for things without a home", "", 1, LOST_AND_FOUND},
-	{"Database",	"player_start", TYPE_ROOM, &tp_player_start, 0, MLEV_WIZARD, "Place where new players start", "", 1, PLAYER_START},
+	{"Database",	"player_start", TYPE_ROOM, &tp_player_start, 0, MLEV_WIZARD, "Home where new players start", "", 1, PLAYER_START},
 	{"Database",	"toad_default_recipient", TYPE_PLAYER, &tp_toad_default_recipient, 0, MLEV_WIZARD, "Default owner for @toaded player's things", "", 1, TOAD_DEFAULT_RECIPIENT},
 	{NULL, NULL, 0, NULL, 0, 0, NULL, NULL, 0, NOTHING}
 };
@@ -227,32 +239,32 @@ int tp_verbose_clone = VERBOSE_CLONE;
 int tp_zombies = ZOMBIES;
 
 struct tune_bool_entry tune_bool_list[] = {
-	{"Charset",	"7bit_thing_names", &tp_7bit_thing_names, MLEV_WIZARD, MLEV_WIZARD, "Thing names may contain only 7-bit characters", "", 1, ASCII_THING_NAMES},
-	{"Charset",	"7bit_other_names", &tp_7bit_other_names, MLEV_WIZARD, MLEV_WIZARD, "Exit/room/muf names may contain only 7-bit characters", "", 1, ASCII_OTHER_NAMES},
+	{"Charset",	"7bit_thing_names", &tp_7bit_thing_names, MLEV_WIZARD, MLEV_WIZARD, "Limit thing names to 7-bit characters", "", 1, ASCII_THING_NAMES},
+	{"Charset",	"7bit_other_names", &tp_7bit_other_names, MLEV_WIZARD, MLEV_WIZARD, "Limit exit/room/muf names to 7-bit characters", "", 1, ASCII_OTHER_NAMES},
 	{"Commands",	"enable_home", &tp_allow_home, MLEV_WIZARD, MLEV_WIZARD, "Enable 'home' command", "", 1, ALLOW_HOME},
 	{"Commands",	"enable_match_yield", &tp_enable_match_yield, MLEV_WIZARD, MLEV_WIZARD, "Enable yield/overt flags on rooms and things", "", 1, ENABLE_MATCH_YIELD},
 	{"Commands",	"enable_prefix", &tp_enable_prefix, MLEV_WIZARD, MLEV_WIZARD, "Enable prefix actions", "", 1, ENABLE_PREFIX},
 	{"Commands",	"recognize_null_command", &tp_recognize_null_command, MLEV_WIZARD, MLEV_WIZARD, "Recognize null command", "", 1, RECOGNIZE_NULL_COMMAND},
-	{"Commands",	"verbose_clone", &tp_verbose_clone, MLEV_WIZARD, MLEV_WIZARD, "Verbose @clone command", "", 1, VERBOSE_CLONE},
+	{"Commands",	"verbose_clone", &tp_verbose_clone, MLEV_WIZARD, MLEV_WIZARD, "Show more information when using @clone command", "", 1, VERBOSE_CLONE},
 	{"Dark",	"dark_sleepers", &tp_dark_sleepers, 0, MLEV_WIZARD, "Make sleeping players dark", "", 1, DARK_SLEEPERS},
-	{"Dark",	"exit_darking", &tp_exit_darking, 0, MLEV_WIZARD, "Allow setting exits dark", "", 1, EXIT_DARKING},
-	{"Dark",	"thing_darking", &tp_thing_darking, 0, MLEV_WIZARD, "Allow setting things dark", "", 1, THING_DARKING},
+	{"Dark",	"exit_darking", &tp_exit_darking, 0, MLEV_WIZARD, "Allow players to set exits dark", "", 1, EXIT_DARKING},
+	{"Dark",	"thing_darking", &tp_thing_darking, 0, MLEV_WIZARD, "Allow players to set things dark", "", 1, THING_DARKING},
 	{"Dark",	"who_hides_dark", &tp_who_hides_dark, MLEV_WIZARD, MLEV_WIZARD, "Hide dark players from WHO list", "", 1, WHO_HIDES_DARK},
 	{"Database",	"compatible_priorities", &tp_compatible_priorities, 0, MLEV_WIZARD, "Use legacy exit priority levels on things", "", 1, COMPATIBLE_PRIORITIES},
-	{"Database",	"realms_control", &tp_realms_control, 0, MLEV_WIZARD, "Enable Realms control", "", 1, REALMS_CONTROL},
+	{"Database",	"realms_control", &tp_realms_control, 0, MLEV_WIZARD, "Enable support for realm wizzes", "", 1, REALMS_CONTROL},
 	{"DB Dumps",	"diskbase_propvals", &tp_diskbase_propvals, 0, MLEV_WIZARD, "Enable property value diskbasing (req. restart)", "DISKBASE", 1, DISKBASE_PROPVALS},
-	{"DB Dumps",	"dbdump_warning", &tp_dbdump_warning, 0, MLEV_WIZARD, "Enable warning messages for full DB dumps", "", 1, DBDUMP_WARNING},
-	{"DB Dumps",	"dumpdone_warning", &tp_dumpdone_warning, 0, MLEV_WIZARD, "Enable notification of DB dump completion", "", 1, DUMPDONE_WARNING},
+	{"DB Dumps",	"dbdump_warning", &tp_dbdump_warning, 0, MLEV_WIZARD, "Enable warnings for upcoming database dumps", "", 1, DBDUMP_WARNING},
+	{"DB Dumps",	"dumpdone_warning", &tp_dumpdone_warning, 0, MLEV_WIZARD, "Notify when database dump complete", "", 1, DUMPDONE_WARNING},
 	{"Encryption",  "starttls_allow", &tp_starttls_allow, MLEV_MASTER, MLEV_WIZARD, "Enable TELNET STARTTLS encryption on plaintext port", "", 1, STARTTLS_ALLOW},
 	{"Idle Boot",	"idleboot", &tp_idleboot, 0, MLEV_WIZARD, "Enable booting of idle players", "", 1, IDLEBOOT},
-	{"Idle Boot",	"idle_ping_enable", &tp_idle_ping_enable, 0, MLEV_WIZARD, "Enable server side keepalive", "", 1, IDLE_PING_ENABLE},
+	{"Idle Boot",	"idle_ping_enable", &tp_idle_ping_enable, 0, MLEV_WIZARD, "Enable server side keepalive pings", "", 1, IDLE_PING_ENABLE},
 	{"Killing",	"restrict_kill", &tp_restrict_kill, 0, MLEV_WIZARD, "Restrict kill command to players set Kill_OK", "", 1, RESTRICT_KILL},
-	{"Listeners",	"allow_listeners", &tp_listeners, 0, MLEV_WIZARD, "Enable programs to listen to player output", "", 1, LISTENERS},
+	{"Listeners",	"allow_listeners", &tp_listeners, 0, MLEV_WIZARD, "Allow programs to listen to player output", "", 1, LISTENERS},
 	{"Listeners",	"allow_listeners_env", &tp_listeners_env, 0, MLEV_WIZARD, "Allow listeners down environment", "", 1, LISTENERS_ENV},
-	{"Listeners",	"allow_listeners_obj", &tp_listeners_obj, 0, MLEV_WIZARD, "Allow listeners on things", "", 1, LISTENERS_OBJ},
-	{"Logging",	"log_commands", &tp_log_commands, MLEV_WIZARD, MLEV_WIZARD, "Enable logging of player commands", "", 1, LOG_COMMANDS},
-	{"Logging",	"log_failed_commands", &tp_log_failed_commands, MLEV_WIZARD, MLEV_WIZARD, "Enable logging of unrecognized commands", "", 1, LOG_FAILED_COMMANDS},
-	{"Logging",	"log_interactive", &tp_log_interactive, MLEV_WIZARD, MLEV_WIZARD, "Enable logging of text sent to MUF", "", 1, LOG_INTERACTIVE},
+	{"Listeners",	"allow_listeners_obj", &tp_listeners_obj, 0, MLEV_WIZARD, "Allow objects to be listeners", "", 1, LISTENERS_OBJ},
+	{"Logging",	"log_commands", &tp_log_commands, MLEV_WIZARD, MLEV_WIZARD, "Log player commands", "", 1, LOG_COMMANDS},
+	{"Logging",	"log_failed_commands", &tp_log_failed_commands, MLEV_WIZARD, MLEV_WIZARD, "Log unrecognized commands", "", 1, LOG_FAILED_COMMANDS},
+	{"Logging",	"log_interactive", &tp_log_interactive, MLEV_WIZARD, MLEV_WIZARD, "Log text sent to MUF", "", 1, LOG_INTERACTIVE},
 	{"Logging",	"log_programs", &tp_log_programs, MLEV_WIZARD, MLEV_WIZARD, "Log programs every time they are saved", "", 1, LOG_PROGRAMS},
 	{"Misc",	"allow_zombies", &tp_zombies, 0, MLEV_WIZARD, "Enable Zombie things to relay what they hear", "", 1, ZOMBIES},
 	{"Misc",	"wiz_vehicles", &tp_wiz_vehicles, 0, MLEV_WIZARD, "Only let Wizards set vehicle bits", "", 1, WIZ_VEHICLES},
@@ -261,18 +273,18 @@ struct tune_bool_entry tune_bool_list[] = {
 	{"Misc",	"m3_huh", &tp_m3_huh, MLEV_MASTER, MLEV_WIZARD, "Enable huh? to call an exit named \"huh?\" and set M3, with full command string", "", 1, M3_HUH},
 	{"Misc",	"strict_god_priv", &tp_strict_god_priv, MLEV_GOD, MLEV_GOD, "Only God can touch God's objects", "GODPRIV", 1, STRICT_GOD_PRIV},
 	{"Misc",	"autolink_actions", &tp_autolink_actions, 0, MLEV_WIZARD, "Automatically link @actions to NIL", "", 1, AUTOLINK_ACTIONS},
-	{"Movement",	"teleport_to_player", &tp_teleport_to_player, 0, MLEV_WIZARD, "Allow teleporting to a player", "", 1, TELEPORT_TO_PLAYER},
+	{"Movement",	"teleport_to_player", &tp_teleport_to_player, 0, MLEV_WIZARD, "Allow using exits linked to players", "", 1, TELEPORT_TO_PLAYER},
 	{"Movement",	"secure_teleport", &tp_secure_teleport, 0, MLEV_WIZARD, "Restrict actions to Jump_OK or controlled rooms", "", 1, SECURE_TELEPORT},
 	{"Movement",	"secure_thing_movement", &tp_thing_movement, MLEV_WIZARD, MLEV_WIZARD, "Moving things act like player", "", 1, SECURE_THING_MOVEMENT},
-	{"MPI",		"do_mpi_parsing", &tp_do_mpi_parsing, 0, MLEV_WIZARD, "Enable parsing of mesgs for MPI", "", 1, DO_MPI_PARSING},
+	{"MPI",		"do_mpi_parsing", &tp_do_mpi_parsing, 0, MLEV_WIZARD, "Parse MPI strings in messages", "", 1, DO_MPI_PARSING},
 	{"MPI",		"lazy_mpi_istype_perm", &tp_lazy_mpi_istype_perm, 0, MLEV_WIZARD, "Enable looser legacy perms for MPI {istype}", "", 1, LAZY_MPI_ISTYPE_PERM},
 	{"MUF",		"expanded_debug_trace", &tp_expanded_debug, 0, MLEV_WIZARD, "MUF debug trace shows array contents", "", 1, EXPANDED_DEBUG_TRACE},
-	{"MUF",		"force_mlev1_name_notify", &tp_force_mlev1_name_notify, 0, MLEV_WIZARD, "MUF notify prepends username at ML1", "", 1, FORCE_MLEV1_NAME_NOTIFY},
+	{"MUF",		"force_mlev1_name_notify", &tp_force_mlev1_name_notify, 0, MLEV_WIZARD, "MUF notify prepends username for ML1 programs", "", 1, FORCE_MLEV1_NAME_NOTIFY},
 	{"MUF",		"muf_comments_strict", &tp_muf_comments_strict, 0, MLEV_WIZARD, "MUF comments are strict and not recursive", "", 1, MUF_COMMENTS_STRICT},
 	{"MUF",		"optimize_muf", &tp_optimize_muf, 0, MLEV_WIZARD, "Enable MUF bytecode optimizer", "", 1, OPTIMIZE_MUF},
 	{"Player Max",	"playermax", &tp_playermax, 0, MLEV_WIZARD, "Limit number of concurrent players allowed", "", 1, PLAYERMAX},
 	{"Properties",	"lock_envcheck", &tp_lock_envcheck, 0, MLEV_WIZARD, "Locks check environment for properties", "", 1, LOCK_ENVCHECK},
-	{"Properties",	"look_propqueues", &tp_look_propqueues, 0, MLEV_WIZARD, "When a player looks, trigger _look/ propqueues", "", 1, LOOK_PROPQUEUES},
+	{"Properties",	"look_propqueues", &tp_look_propqueues, 0, MLEV_WIZARD, "Trigger _look/ propqueues when a player looks", "", 1, LOOK_PROPQUEUES},
 	{"Properties",	"show_legacy_props", &tp_show_legacy_props, 0, MLEV_WIZARD, "Examining objects lists legacy props", "", 1, SHOW_LEGACY_PROPS},
 	{"Properties",	"sync_legacy_props", &tp_sync_legacy_props, 0, MLEV_WIZARD, "Setting properties also sets associated legacy props", "", 1, SYNC_LEGACY_PROPS},
 	{"Registration","registration", &tp_registration, 0, MLEV_WIZARD, "Require new players to register manually", "", 1, REGISTRATION},
@@ -327,7 +339,7 @@ tune_count_parms(void)
 }
 
 void
-tune_display_parms(dbref player, char *name, int mlev)
+tune_display_parms(dbref player, char *name, int mlev, int show_extended)
 {
 	char buf[BUFFER_LEN + 50];
 	struct tune_str_entry *tstr = tune_str_list;
@@ -350,6 +362,8 @@ tune_display_parms(dbref player, char *name, int mlev)
 			         tstr->name, *tstr->str, MOD_ENABLED(tstr->module) ? "" : " [inactive]",
 			         (tstr->isdefault) ? " [default]" : "");
 			notify(player, buf);
+			if (show_extended)
+				TP_SEND_ENTRY_INFO(tstr);
 			if (!parms_found)
 				parms_found = 1;
 		}
@@ -364,6 +378,8 @@ tune_display_parms(dbref player, char *name, int mlev)
 			         ttim->name, timestr_full(*ttim->tim), MOD_ENABLED(ttim->module) ? "" : " [inactive]",
 			         (ttim->isdefault) ? " [default]" : "");
 			notify(player, buf);
+			if (show_extended)
+				TP_SEND_ENTRY_INFO(ttim);
 			if (!parms_found)
 				parms_found = 1;
 		}
@@ -378,6 +394,8 @@ tune_display_parms(dbref player, char *name, int mlev)
 			         tval->name, *tval->val, MOD_ENABLED(tval->module) ? "" : " [inactive]",
 			         (tval->isdefault) ? " [default]" : "");
 			notify(player, buf);
+			if (show_extended)
+				TP_SEND_ENTRY_INFO(tval);
 			if (!parms_found)
 				parms_found = 1;
 		}
@@ -392,6 +410,8 @@ tune_display_parms(dbref player, char *name, int mlev)
 			         tref->name, unparse_object(player, *tref->ref), MOD_ENABLED(tref->module) ? "" : " [inactive]",
 			         (tref->isdefault) ? " [default]" : "");
 			notify(player, buf);
+			if (show_extended)
+				TP_SEND_ENTRY_INFO(tref);
 			if (!parms_found)
 				parms_found = 1;
 		}
@@ -406,6 +426,8 @@ tune_display_parms(dbref player, char *name, int mlev)
 			         tbool->name, ((*tbool->boolval) ? "yes" : "no"), MOD_ENABLED(tbool->module) ? "" : " [inactive]",
 			         (tbool->isdefault) ? " [default]" : "");
 			notify(player, buf);
+			if (show_extended)
+				TP_SEND_ENTRY_INFO(tbool);
 			if (!parms_found)
 				parms_found = 1;
 		}
@@ -1004,7 +1026,7 @@ do_tune(dbref player, char *parmname, char *parmval, int full_command_has_delimi
 				   NAME(player), player, parmname, oldvalue, parmval ? parmval : "");
 				notify(player, "Parameter set.");
 			}
-			tune_display_parms(player, parmname, security);
+			tune_display_parms(player, parmname, security, 0);
 			break;
 		case TUNESET_UNKNOWN:
 			notify(player, "Unknown parameter.");
@@ -1024,7 +1046,23 @@ do_tune(dbref player, char *parmname, char *parmval, int full_command_has_delimi
 		/* Don't let the oldvalue hang around */
 		if (*oldvalue)
 			free(oldvalue);
+	} else if (*parmname && string_prefix(parmname, TP_INFO_CMD)) {
+		/* Space-separated parameters are all in parmname.  Trim out the 'info' command and
+		   any extra spaces */
+		char *p_trim = index(parmname, ' ');
+		if (p_trim != NULL) {
+			/* p_trim now at start of spaces; trim them out */
+			for ( ; isspace(*p_trim); p_trim++) ;
+			if (*p_trim) {
+				tune_display_parms(player, p_trim, security, 1);
+			} else {
+				notify(player, "Usage is @tune " TP_INFO_CMD " [optional: <parameter>]");
+			}
+		} else {
+			/* Show expanded information on all parameters */
+			tune_display_parms(player, "", security, 1);
+		}
 	} else {
-		tune_display_parms(player, parmname, security);
+		tune_display_parms(player, parmname, security, 0);
 	}
 }
