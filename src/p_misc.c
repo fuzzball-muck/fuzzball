@@ -689,7 +689,8 @@ prim_cancallp(PRIM_PROTOTYPE)
 void
 prim_setsysparm(PRIM_PROTOTYPE)
 {
-	const char *oldvalue, *newvalue;
+	const char *parmname, *newvalue;
+	char *oldvalue;
 	int security = TUNE_MLEV(player);
 
 	CHECKOP(2);
@@ -707,27 +708,45 @@ prim_setsysparm(PRIM_PROTOTYPE)
 	if (oper1->type != PROG_STRING)
 		abort_interp("Invalid argument. (2)");
 
-	oldvalue = tune_get_parmstring(oper2->data.string->data, security);
+	parmname = oper2->data.string->data;
+	/* Duplicate the string, otherwise the oldvalue pointer will be overridden to the new value
+	   when tune_setparm() is called. */
+	oldvalue = string_dup(tune_get_parmstring(oper2->data.string->data, security));
 	newvalue = oper1->data.string ? oper1->data.string->data : "";
 
-	result = tune_setparm(oper2->data.string->data, newvalue, security);
+	result = tune_setparm(parmname, newvalue, security);
 
+	/* Note: free(oldvalue) BEFORE calling abort_interp, or it will leak. */
 	switch (result) {
 	case TUNESET_SUCCESS:
 		log_status("TUNED (MUF): %s(%d) tuned %s from '%s' to '%s'",
-				   NAME(player), player, oper2->data.string->data, oldvalue, newvalue);
+				   NAME(player), player, parmname, oldvalue, newvalue);
+		if (*oldvalue)
+			free(oldvalue);
 		break;
 	case TUNESET_UNKNOWN:
+		if (*oldvalue)
+			free(oldvalue);
 		abort_interp("Unknown parameter. (1)");
 		break;
 	case TUNESET_SYNTAX:
+		if (*oldvalue)
+			free(oldvalue);
 		abort_interp("Bad parameter syntax. (2)");
 		break;
 	case TUNESET_BADVAL:
+		if (*oldvalue)
+			free(oldvalue);
 		abort_interp("Bad parameter value. (2)");
 		break;
 	case TUNESET_DENIED:
+		if (*oldvalue)
+			free(oldvalue);
 		abort_interp("Permission denied. (1)");
+		break;
+	default:
+		if (*oldvalue)
+			free(oldvalue);
 		break;
 	}
 	CLEAR(oper1);

@@ -834,7 +834,7 @@ tune_load_parms_from_file(FILE * f, dbref player, int cnt)
 void
 do_tune(dbref player, char *parmname, char *parmval, int full_command_has_delimiter)
 {
-	const char *oldvalue;
+	char *oldvalue;
 	int result;
 	int security = TUNE_MLEV(player);
 
@@ -844,7 +844,9 @@ do_tune(dbref player, char *parmname, char *parmval, int full_command_has_delimi
 			return;
 		}
 
- 		oldvalue = tune_get_parmstring(parmname, security);
+		/* Duplicate the string, otherwise the oldvalue pointer will be overridden to the new value
+		   when tune_setparm() is called. */
+		oldvalue = string_dup(tune_get_parmstring(parmname, security));
 		result = tune_setparm(parmname, parmval, security);
 		switch (result) {
 		case TUNESET_SUCCESS:
@@ -868,6 +870,9 @@ do_tune(dbref player, char *parmname, char *parmval, int full_command_has_delimi
 		default:
 			break;
 		}
+		/* Don't let the oldvalue hang around */
+		if (*oldvalue)
+			free(oldvalue);
 	} else {
 		tune_display_parms(player, parmname, security);
 	}
