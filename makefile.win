@@ -102,7 +102,7 @@ BASE_OBJ="$(INTDIR)\array.obj" \
 	"$(INTDIR)\wiz.obj" \
 	"$(INTDIR)\win32.obj"
 
-INTERFACE_OBJ="$(INTDIR)\interface.obj $(INTDIR)\interface_ssl.obj"
+INTERFACE_OBJ="$(INTDIR)\interface.obj" "$(INTDIR)\interface_ssl.obj"
 
 VERSION_OBJ="$(INTDIR)\version.obj"
 
