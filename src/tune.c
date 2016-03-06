@@ -791,8 +791,6 @@ tune_setparm(const char *parmname, const char *val, int mlev)
 				if (!tstr->isnullable && !*parmval) return TUNESET_BADVAL;
 				if (!tstr->isdefault)
 					free((char *) *tstr->str);
-				if (*parmval == '-')
-					parmval++;
 				tstr->isdefault = 0;
 				*tstr->str = string_dup(parmval);
 				return TUNESET_SUCCESS;
