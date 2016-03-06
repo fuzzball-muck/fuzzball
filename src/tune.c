@@ -317,25 +317,12 @@ timestr_full(long dtime)
 int
 tune_count_parms(void)
 {
-	int total = 0;
-	struct tune_str_entry *tstr = tune_str_list;
-	struct tune_time_entry *ttim = tune_time_list;
-	struct tune_val_entry *tval = tune_val_list;
-	struct tune_ref_entry *tref = tune_ref_list;
-	struct tune_bool_entry *tbool = tune_bool_list;
-
-	while ((tstr++)->name)
-		total++;
-	while ((ttim++)->name)
-		total++;
-	while ((tval++)->name)
-		total++;
-	while ((tref++)->name)
-		total++;
-	while ((tbool++)->name)
-		total++;
-
-	return total;
+	return (int)(
+		sizeof(tune_str_list) / sizeof(tune_str_list[0]) +
+		sizeof(tune_time_list) / sizeof(tune_time_list[0]) +
+		sizeof(tune_val_list) / sizeof(tune_val_list[0]) +
+		sizeof(tune_ref_list) / sizeof(tune_ref_list[0]) +
+		sizeof(tune_bool_list) / sizeof(tune_bool_list[0])) - 5;
 }
 
 void
