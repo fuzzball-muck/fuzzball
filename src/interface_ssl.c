@@ -1,6 +1,7 @@
 /* Needed for USE_SSL */
 #include "config.h"
 
+#include "externs.h"
 #include "interface_ssl.h"
 
 #ifdef USE_SSL
