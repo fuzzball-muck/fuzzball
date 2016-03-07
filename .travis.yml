@@ -1,0 +1,54 @@
+sudo: false
+addons:
+  apt:
+    packages:
+    # For lint
+    - splint
+    # For OpenSSL support
+    - libssl-dev
+
+language: c
+
+compiler:
+  - clang
+  - gcc
+
+env:
+  global:
+    # Always run lint
+    - FLAG_LINT="--with-lint"
+  matrix:
+    # Test with/without SSL, and with/without IPv6
+    # Unfortunately Travis does not yet have a way to build a 2x2 matrix from environment variables
+    # https://stackoverflow.com/questions/22397300/travis-and-matrix-combinations
+    - FLAG_IPV6="--enable-ipv6"   FLAG_SSL="--with-ssl"
+    - FLAG_IPV6="--enable-ipv6"   FLAG_SSL=""
+    - FLAG_IPV6=""                FLAG_SSL="--with-ssl"
+    - FLAG_IPV6=""                FLAG_SSL=""
+
+script:
+  - ./configure $FLAG_LINT $FLAG_IPV6 $FLAG_SSL && make clean && make all
+
+# Currently, --enable-memprof and --enable-debug are ignored for that generates
+# 32 builds instead of 8.  If those need tested in the future, use the
+# following matrix and script:
+#env:
+#  matrix:
+#    - FLAG_IPV6="--enable-ipv6"   FLAG_SSL="--with-ssl"  FLAG_MEMPROF="--enable-memprof"   FLAG_DEBUG="--enable-debug"
+#    - FLAG_IPV6="--enable-ipv6"   FLAG_SSL=""            FLAG_MEMPROF="--enable-memprof"   FLAG_DEBUG="--enable-debug"
+#    - FLAG_IPV6=""                FLAG_SSL="--with-ssl"  FLAG_MEMPROF="--enable-memprof"   FLAG_DEBUG="--enable-debug"
+#    - FLAG_IPV6=""                FLAG_SSL=""            FLAG_MEMPROF="--enable-memprof"   FLAG_DEBUG="--enable-debug"
+#    - FLAG_IPV6="--enable-ipv6"   FLAG_SSL="--with-ssl"  FLAG_MEMPROF="--enable-memprof"   FLAG_DEBUG=""
+#    - FLAG_IPV6="--enable-ipv6"   FLAG_SSL=""            FLAG_MEMPROF="--enable-memprof"   FLAG_DEBUG=""
+#    - FLAG_IPV6=""                FLAG_SSL="--with-ssl"  FLAG_MEMPROF="--enable-memprof"   FLAG_DEBUG=""
+#    - FLAG_IPV6=""                FLAG_SSL=""            FLAG_MEMPROF="--enable-memprof"   FLAG_DEBUG=""
+#    - FLAG_IPV6="--enable-ipv6"   FLAG_SSL="--with-ssl"  FLAG_MEMPROF=""                   FLAG_DEBUG="--enable-debug"
+#    - FLAG_IPV6="--enable-ipv6"   FLAG_SSL=""            FLAG_MEMPROF=""                   FLAG_DEBUG="--enable-debug"
+#    - FLAG_IPV6=""                FLAG_SSL="--with-ssl"  FLAG_MEMPROF=""                   FLAG_DEBUG="--enable-debug"
+#    - FLAG_IPV6=""                FLAG_SSL=""            FLAG_MEMPROF=""                   FLAG_DEBUG="--enable-debug"
+#    - FLAG_IPV6="--enable-ipv6"   FLAG_SSL="--with-ssl"  FLAG_MEMPROF=""                   FLAG_DEBUG=""
+#    - FLAG_IPV6="--enable-ipv6"   FLAG_SSL=""            FLAG_MEMPROF=""                   FLAG_DEBUG=""
+#    - FLAG_IPV6=""                FLAG_SSL="--with-ssl"  FLAG_MEMPROF=""                   FLAG_DEBUG=""
+#    - FLAG_IPV6=""                FLAG_SSL=""            FLAG_MEMPROF=""                   FLAG_DEBUG=""
+#script:
+#  - ./configure $FLAG_LINT $FLAG_IPV6 $FLAG_SSL $FLAG_MEMPROF $FLAG_DEBUG && make clean && make all
