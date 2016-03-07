@@ -11,6 +11,7 @@
 #include <sys/ioctl.h>
 #include <netinet/in.h>
 #include <netdb.h>
+#include <arpa/inet.h>
 #include <errno.h>
 #include <signal.h>
 #include <string.h>
