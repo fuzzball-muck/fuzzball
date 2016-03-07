@@ -1405,6 +1405,8 @@ void
 prim_recycle(PRIM_PROTOTYPE)
 {
 	/* d -- */
+        struct tune_ref_entry *tref = tune_ref_list;
+
 	CHECKOP(1);
 	oper1 = POP();				/* object dbref to recycle */
 	if (oper1->type != PROG_OBJECT)
@@ -1414,10 +1416,18 @@ prim_recycle(PRIM_PROTOTYPE)
 	result = oper1->data.objref;
 	if ((mlev < 3) || ((mlev < 4) && !permissions(ProgUID, result)))
 		abort_interp("Permission denied.");
-	if ((result == tp_player_start) || (result == GLOBAL_ENVIRONMENT))
-		abort_interp("Cannot recycle that room.");
+	if (result == GLOBAL_ENVIRONMENT)
+		abort_interp("Cannot recycle the global environment.");
 	if (Typeof(result) == TYPE_PLAYER)
 		abort_interp("Cannot recycle a player.");
+
+	while (tref->name) {
+		if (result == *tref->ref) {
+			 abort_interp("Cannot currently recycle that object.");
+		}
+		tref++;
+	}
+
 	if (result == program)
 		abort_interp("Cannot recycle currently running program.");
 	{
