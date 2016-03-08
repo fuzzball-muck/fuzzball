@@ -1,0 +1,71 @@
+version: '{build}'
+
+install:
+    # Set up Visual Studio build environment, 32-bit output with a 64-bit builder
+    # > Increment version number when newer version of Visual Studio supported by Appveyor
+    - cmd: '"C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/vcvarsall.bat" amd64_x86'
+    # Set up Conan package manager
+    - cmd: echo Downloading Conan package manager...
+    - ps: wget http://downloads.conan.io/latest_windows -OutFile conan_installer.exe
+    - cmd: conan_installer.exe /VERYSILENT
+    - cmd: set PATH=%PATH%;C:\Program Files (x86)\Conan\conan
+    - cmd: conan --version
+
+build_script:
+    - ps: |
+        # Install Conan dependencies for 32-bit (x86)
+        conan install -s arch=x86
+        # > For statically-linked OpenSSL, specify: -s compiler="Visual Studio" -s compiler.runtime=MT
+        #   Then modify makefile.win to reference ..MT.lib instead.  Dynamic linking is preferred.
+
+        # Set up the OPENSSLDIR variable for makefile.win
+        $env:OPENSSLDIR = "$env:APPVEYOR_BUILD_FOLDER/bin"
+
+        # Build Fuzzball
+        # > NMake writes to standard error for the version header when it's not actually an error.
+        #   Treat all output as standard output instead.
+        #   See https://stackoverflow.com/questions/2095088/error-when-calling-3rd-party-executable-from-powershell-when-using-an-ide
+        cmd /c 'nmake /f %APPVEYOR_BUILD_FOLDER%/makefile.win 2>&1'
+
+        # Package and store the build results
+        # > File name of compressed output
+        $artifact_name = "fuzzball-win32"
+        # > Folder name stored inside compressed output
+        $artifact_root = "$env:APPVEYOR_BUILD_FOLDER/$artifact_name-$env:APPVEYOR_BUILD_VERSION"
+        # > Exact filename for compressed output (change extension for different format)
+        $artifact_zip = "$artifact_name.zip"
+
+        echo "Preparing release artifact..."
+        mkdir "$artifact_root"
+        cp -Recurse "$env:APPVEYOR_BUILD_FOLDER/game/*" "$artifact_root"
+        if ((Test-Path "$artifact_root/fbmuck.exe") -And (Test-Path "$artifact_root/fbhelp.exe") -And (Test-Path "$artifact_root/restart.exe")) {
+            echo "Packaging release artifact..."
+            7z a "$artifact_zip" "$artifact_root"
+            Push-AppveyorArtifact "$artifact_zip"
+            echo "Packaging successful!"
+        } else {
+            echo "Could not find compiled Fuzzball or related executables, build failed"
+            Exit 1
+        }
+
+# Guidance for future maintainers: Powershell versus Windows Command Interpreter
+# Environment variables
+# > Powershell:  $env:NAME
+# > cmd:         %NAME%
+# Quoting
+# > Powershell:  $env:NAME = "TEST"
+#                echo "Test message"
+# > cmd:         set NAME=TEST
+#                echo Test message
+# Running programs with spaces
+# > Powershell:  & "C:\path to\app.exe" Argument1 Argument2
+# > cmd:         "C:\path to\app.exe" Argument1 Argument2
+# (No difference if without spaces)
+# Running programs in current directory
+# > Powershell:  .\app.exe
+# > cmd:         app.exe
+# Paths
+# > Powershell:  'C:/path/to/file' or 'C:\path\to\file'
+# > cmd:         'C:\path\to\file' only
+
+# Thanks to TheOneRing (Freenode #quassel, Github) for initial help with setting up Appveyor
