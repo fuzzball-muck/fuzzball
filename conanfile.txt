@@ -1,0 +1,15 @@
+[requires]
+# Update version whenever a new release of OpenSSL comes out
+OpenSSL/1.0.2g@lasote/stable
+
+[options]
+# Use shared .dll libraries (MD instead of MT)
+OpenSSL:shared=True
+
+[imports]
+# Copy .dll, .lib, and .h files according to the makefile expectations
+# This is specific to OpenSSL and NMake's makefile.win.  In the future, it'd be
+# easier to integrate the Conan package manager by using CMake, or similar.
+bin, *.dll -> ./game
+lib, *.lib* -> ./bin/lib/vc
+include, *.h* -> ./bin/include
