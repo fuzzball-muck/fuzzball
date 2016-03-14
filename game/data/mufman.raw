@@ -2715,6 +2715,12 @@ GETLOCKSTR ( d -- s )
 Returns "*UNLOCKED*" if the object doesn't have a lock set.
 ~
 ~
+SUPPLICANT
+SUPPLICANT ( -- d )
+  If the current program is being executed due to lock evaluation, returns
+the object the lock being tested against. Otherwise, returns #-1.
+~
+~
 ~
 ~~section Array Manipulation Operators|ArrayOps
 ~

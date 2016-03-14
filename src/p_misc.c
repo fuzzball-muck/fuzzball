@@ -413,6 +413,7 @@ prim_fork(PRIM_PROTOTYPE)
 	tmpfr->wantsblanks = fr->wantsblanks;
 	tmpfr->perms = fr->perms;
 	tmpfr->descr = fr->descr;
+	tmpfr->supplicant = fr->supplicant;
 	tmpfr->events = NULL;
 	tmpfr->waiters = NULL;
 	tmpfr->waitees = NULL;

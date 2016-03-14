@@ -2762,3 +2762,12 @@ prim_setlinks_array(PRIM_PROTOTYPE)
 	CLEAR(oper1);
 	CLEAR(oper2);
 }
+
+void
+prim_supplicant(PRIM_PROTOTYPE)
+{
+	CHECKOP(0);
+	ref = fr->supplicant;
+	CHECKOFLOW(1);
+	PushObject(ref);	
+}
