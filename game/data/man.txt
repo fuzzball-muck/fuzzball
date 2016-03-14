@@ -204,8 +204,9 @@ S's
   strcmp             strcut             strdecrypt         strencrypt
   string?            stringcmp          stringpfx          strip
   striplead          striptail          strlen             strncmp
-  strtof             subst              succ               swap
-  sysparm            sysparm_array      systime            systime_precise
+  strtof             subst              succ               supplicant
+  swap               sysparm            sysparm_array      systime
+  systime_precise    
 
 T's
   tan          testlock     textattr     then         thing?       time
@@ -2909,8 +2910,8 @@ returns the values:
 Lock Manipulation Operators|LockOps
 Lock Manipulation Operators
 
-getlockstr   locked?      parselock    prettylock   setlockstr   testlock
-unparselock  
+getlockstr   locked?      parselock    prettylock   setlockstr   supplicant
+testlock     unparselock  
 
 ~----------------------------------------------------------------------------
 ~
@@ -2970,6 +2971,12 @@ GETLOCKSTR ( d -- s )
 
   Returns the lock expression for the given object in the form of a string.
 Returns "*UNLOCKED*" if the object doesn't have a lock set.
+~
+~
+SUPPLICANT
+SUPPLICANT ( -- d )
+If the current program is being executed due to lock evaluation, returns
+the object the lock being tested against. Otherwise, returns #-1.
 ~
 ~
 ~

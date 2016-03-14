@@ -459,6 +459,7 @@ interp(int descr, dbref player, dbref location, dbref program,
 	fr->next = NULL;
 	fr->pid = forced_pid ? forced_pid : top_pid++;
 	fr->descr = descr;
+	fr->supplicant = NOTHING;
 	fr->multitask = nosleeps;
 	fr->perms = whichperms;
 	fr->already_created = 0;

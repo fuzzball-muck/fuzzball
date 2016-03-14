@@ -65,7 +65,7 @@ extern void prim_getpidinfo(PRIM_PROTOTYPE);
 
 extern void prim_program_getlines(PRIM_PROTOTYPE);
 extern void prim_program_setlines(PRIM_PROTOTYPE);
-
+extern void prim_supplicant(PRIM_PROTOTYPE);
 extern void prim_toadplayer(PRIM_PROTOTYPE);
 
 #define PRIMS_DB_FUNCS prim_addpennies, prim_moveto, prim_pennies,      \
@@ -83,7 +83,7 @@ extern void prim_toadplayer(PRIM_PROTOTYPE);
     prim_exits_array, prim_getlinks_array, prim_entrances_array,         \
     prim_compile, prim_uncompile, prim_newpassword, prim_getpids,        \
     prim_program_getlines, prim_getpidinfo, prim_program_setlines,	 \
-    prim_setlinks_array, prim_toadplayer
+    prim_setlinks_array, prim_toadplayer, prim_supplicant
 
 #define PRIMS_DB_NAMES "ADDPENNIES", "MOVETO", "PENNIES", \
     "DBCMP", "DBREF", "CONTENTS", "EXITS", "NEXT",         \
@@ -100,8 +100,8 @@ extern void prim_toadplayer(PRIM_PROTOTYPE);
     "EXITS_ARRAY", "GETLINKS_ARRAY", "ENTRANCES_ARRAY",    \
     "COMPILE", "UNCOMPILE", "NEWPASSWORD", "GETPIDS",      \
     "PROGRAM_GETLINES", "GETPIDINFO", "PROGRAM_SETLINES",  \
-    "SETLINKS_ARRAY", "TOADPLAYER"
+    "SETLINKS_ARRAY", "TOADPLAYER", "SUPPLICANT"
 
-#define PRIMS_DB_CNT 62
+#define PRIMS_DB_CNT 63
 
 #endif /* _P_DB_H */

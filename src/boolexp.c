@@ -126,6 +126,7 @@ eval_boolexp_rec(int descr, dbref player, struct boolexp *b, dbref thing)
 				if (!tmpfr)
 					return (0);
 
+				tmpfr->supplicant = player;
 				rv = interp_loop(real_player, b->thing, tmpfr, 0);
 
 				return (rv != NULL);

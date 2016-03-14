@@ -46,7 +46,7 @@ Symbols
   @restrict          @set               @shutdown          @stats
   @success           @teleport          @toad              @trace
   @tune              @unbless           @uncompile         @unlink
-  @unlock            @usage             @wall
+  @unlock            @usage             @wall              
 
 A's
   abode  
@@ -1730,7 +1730,7 @@ Wizardly Commands
 @force             @newpassword       @pcreate           @reconfiguressl
 @restart           @restrict          @shutdown          @toad
 @tune              @unbless           @uncompile         @usage
-@wall
+@wall              
 
 ~----------------------------------------------------------------------------
 ~
