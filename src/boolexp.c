@@ -9,6 +9,7 @@
 #include "externs.h"
 #include "params.h"
 #include "interface.h"
+#include "interp.h"
 
 /* Lachesis note on the routines in this package:
  *   eval_booexp does just evaluation.
@@ -127,6 +128,8 @@ eval_boolexp_rec(int descr, dbref player, struct boolexp *b, dbref thing)
 					return (0);
 
 				tmpfr->supplicant = player;
+				tmpfr->argument.top--;
+			        push(tmpfr->argument.st, &(tmpfr->argument.top), PROG_STRING, 0);
 				rv = interp_loop(real_player, b->thing, tmpfr, 0);
 
 				return (rv != NULL);
