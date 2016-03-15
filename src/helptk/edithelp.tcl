@@ -216,13 +216,13 @@ tcl::OptProc entryedit {
 	grid columnconf $w 3 -weight 1
 	grid columnconf $w 4 -minsize 5
 
-	grid $w.topicsl -row 1 -col 1
-	grid $w.topics  -row 1 -col 3
-	grid $w.xrefl   -row 3 -col 1
-	grid $w.xref    -row 3 -col 3
-	grid $w.data    -row 5 -col 1 -columnspan 3
-	grid $w.ok      -row 7 -col 1
-	grid $w.cancel  -row 7 -col 3
+	grid $w.topicsl -row 1 -column 1
+	grid $w.topics  -row 1 -column 3
+	grid $w.xrefl   -row 3 -column 1
+	grid $w.xref    -row 3 -column 3
+	grid $w.data    -row 5 -column 1 -columnspan 3
+	grid $w.ok      -row 7 -column 1
+	grid $w.cancel  -row 7 -column 3
 
 	focus $w.topics
 	tkwait window $w
