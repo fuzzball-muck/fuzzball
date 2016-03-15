@@ -2418,7 +2418,7 @@ STRCUT ( s i -- s1 s2 )
   "Foobar" 3 strcut
 returns
   "Foo" "bar"
-If i is zero or greater than the length of s, returns a null string in
+  If i is zero or greater than the length of s, returns a null string in
 the first or second position, respectively.
 ~
 ~
@@ -2743,7 +2743,7 @@ SMATCH ( s s2 -- i )
   Takes a string s, and a string pattern, s2, to check against.  Returns true
 if the string fits the pattern.  This is case insensitive.  In the pattern
 string, the following special characters will do as follows:
-  
+
   *  A '?' matches any single character.
   
   *  A '*' matches any number of any characters.
@@ -2813,10 +2813,10 @@ Also see: INSTRING, INSTR and RINSTR
 NAME-OK?
 NAME-OK? (s -- i)
 
-DEPRECATED: Returns true if the given string would be okay as a general
+  DEPRECATED: Returns true if the given string would be okay as a general
 object's name.
 
-This function remains for backwards compatability, but due to changes in the
+  This function remains for backwards compatability, but due to changes in the
 server it cannot be guaranteed any longer that it will always return the
 correct answer. If muck settings allow 8-bit names in general but not 8-bit
 Thing names, and you pass a name that contains 8-bit chars, NAME-OK? will
@@ -2824,7 +2824,7 @@ return true since the name would be okay for some objects. If you then pass
 that name to the NEWOBJECT primitive, the call will fail due to the more
 restrictive rules for Things.
 
-Instead, use EXT-NAME-OK? which determines legal names for each object type.
+  Instead, use EXT-NAME-OK? which determines legal names for each object type.
 Also see: EXT-NAME-OK?
 ~
 ~
@@ -2842,7 +2842,6 @@ EXT-NAME-OK? ( str:Name str:Type -- int:Ok? )
   Returns true if Name would be a legal name for an object depending on
 the object type. If Obj is the object you are going to SETNAME, then
 EXT-NAME-OK? will use the naming rules for that type of object.
-
 If the object does not exist yet, you may specify a string Type:
         "exit" or "e"              "muf" or "program" or "f"
         "player" or "p"            "thing" or "t"
@@ -2877,13 +2876,13 @@ REGSUB ( str:text str:pattern str:substr int:flags -- str:result )
 replacing the match with substr.  substr may contain \digit to specify
 a submatch.  Uses PCRE style regular expression syntax.
 
-The "Flag" argument may be a combination, or none of the following:
+  The "Flag" argument may be a combination, or none of the following:
 
     $def REG_ICASE    1   (Case insensitive match)
     $def REG_ALL      2   (Substitute all matches, rather than just the first)
     $def REG_EXTENDED 4   (Allows PCRE comments, etc.  See PCRE docs.)
 
-Ie: to replace all words in a string with 'yadda', ignoring case, you would
+  Ie: to replace all words in a string with 'yadda', ignoring case, you would
 use the following code:
 
     "[a-z]+" "yadda" REG_ICASE REG_ALL + REGSUB
@@ -2975,8 +2974,8 @@ Returns "*UNLOCKED*" if the object doesn't have a lock set.
 ~
 SUPPLICANT
 SUPPLICANT ( -- d )
-If the current program is being executed due to lock evaluation, returns
-the object the lock being tested against. Otherwise, returns #-1.
+  If the current program is being executed due to lock evaluation, returns
+the object the lock is being tested against. Otherwise, returns #-1.
 ~
 ~
 ~
@@ -3867,7 +3866,7 @@ LOCATION ( d -- d' )
 MOVETO
 MOVETO ( d1 d2 -- )
 
-Moves object d1 to object d2.
+  Moves object d1 to object d2.
   MOVETO is affected by the following rules:
     a) If the object being moved is !JUMP_OK and is it being moved by someone
       other than the object's owner, then the moveto fails.
@@ -4295,7 +4294,6 @@ If a given entry is of the "dbref" type, it will also have the extra field:
     "objtype"   The type of object the dbref is restricted to.  Can be one of
                 the strings "player", "thing", "room", "exit", "program",
                 "garbage", or "any".
-
 Also see: SETSYSPARM and SYSPARM
 ~
 ~
@@ -4305,6 +4303,7 @@ SETSYSPARM ( s1 s2 -- )
   Assigns the @tunable parameter s1 a value given by s2.  s2 must contain a
 legal value for s1.  If s1 is prefixed with '%', reset s1 to default
 instead, ignoring the value of s2.  (wizbit only)
+Also see: SYSPARM and SYSPARM_ARRAY
 ~
 ~
 NAME
@@ -4692,6 +4691,7 @@ TIMEFMT (s i -- s)
 
   Takes a format string and a SYSTIME integer and returns a string formatted
 with the time.  The format string is ascii text with formatting commands:
+
   %% -- "%"
   %a -- abbreviated weekday name.
   %A -- full weekday name.
@@ -5290,7 +5290,7 @@ See: EVENT_WAITFOR
 EVENT_WAITFOR
 EVENT_WAITFOR (a -- ? s )
 
-Waits for an event to occur that matches one of the eventIDs given in the
+  Waits for an event to occur that matches one of the eventIDs given in the
 string list array.  The comparison is NOT case sensitive, and you may use
 smatch wildcard patterns.  If a matching event isn't in the event queue
 already, this will pause the MUF process until a matching event is added
@@ -5300,15 +5300,16 @@ and the matching eventID string.  If an empty list array is passed to this
 primitive, then it will match any and all events, and return the first one
 pending.
 
-Timer events have eventID strings that are created by prepending "TIMER."
+  Timer events have eventID strings that are created by prepending "TIMER."
 to the timerID passed to the TIMER_START primitive.  The context for Timer
 events is an integer, representing the systime that the timer event was
 scheduled to occur at.  This might not be the time that the event is actually
 processed at, due to system delays.
 
-GUI events have eventID strings that are created by prepending "GUI." to
+  GUI events have eventID strings that are created by prepending "GUI." to
 the dlogID of the dialog that generated the event.  The context for GUI
 events is a dictionary contains the following keys:
+
 descr      Holds the descriptor that generated the event.
 dlogid     Holds the DlogID of the dialog that generated the event.
 id         Holds the ID of the control that generated the event.
@@ -5317,9 +5318,10 @@ event      Holds the type of gui event.  ie: buttonpress, menuselect.
 values     Holds the dictionary of control values, keyed by control name.
 data       Holds array of extra gui-event specific data.
 
-User events have eventID strings that are created by prepending "USER." to
+  User events have eventID strings that are created by prepending "USER." to
 the eventID given to the EVENT_SEND muf primitive.  The context for User
 events is a dictionary containing the following keys:
+
 caller_pid   Holds the integer Process ID of the sending program.
 caller_prog  Holds the dbref of the sending program.
 data         Holds the stack item sent by the EVENT_SEND primitive.
@@ -5329,25 +5331,29 @@ player       Holds the player dbref that ran the calling program.
 prog_uid     Holds the dbref of the player whose permissions the caller
                program is running as.
 
-MCP events have eventID strings formatted like "MCP.packagename-mesgname"
+  MCP events have eventID strings formatted like "MCP.packagename-mesgname"
 where 'packagename' is the name of the MCP package being invoked, and
 'mesgname' is the specific message in the package being invoked.  If the
 'mesgname' is a null string, then the trailing '-' is removed.
-Some example MCP eventIDs are:
+
+  Some example MCP eventIDs are:
+
     MCP.com-belfry-image       Where pkg is 'com-belfry-image' & mesg is ''
     MCP.com-belfry-image-view  Where pkg is 'com-belfry-image' & mesg is 'view'
+
 The context for MCP events is a dictionary containing the following keys:
+
     descr     Holds the integer descriptor of the sending connection.
     package   Holds the string package name the MCP mesg is sent for.
     message   Holds the string message name within that package.
     args      Holds a dictionary, containing the message arguments.
                 Each mesg arg has an array list of strings as a value.
 
-Read events have eventID strings of just "READ".  The context of Read events
+  Read events have eventID strings of just "READ".  The context of Read events
 is the integer descriptor of the first waiting line to be READ.  To get the
 actual line sent by the user you need to use the READ primitive.
 
-Process exit events have eventID strings that are created by prepending
+  Process exit events have eventID strings that are created by prepending
 "PROC.EXIT." to the pid of the watched process that exited.  The context
 is the pid of the process that exited.
 ~
@@ -5363,7 +5369,8 @@ The receiving process will be passed a dictionary with items "data" for
 the given arbitrary stack element, "caller_pid" with the pid of the
 process calling EVENT_SEND, and "caller_prog" with the dbref of the
 program calling EVENT_SEND.
-ie: '23 "foobar" 3.1416 event_send' will send an event to process 23, with
+
+  Ie: '23 "foobar" 3.1416 event_send' will send an event to process 23, with
 an eventid of "USER.foobar", and a floating point data value of 3.1416.
 This primitive requires at least Mucker Level 3.
 ~
@@ -5533,12 +5540,12 @@ is the title to show in the titlebar of the dialog.  dictArgs is a
 dictionary array that contains extra optional arguments for creating
 the dialog.
 
-This primitive returns a string containing the dialogid, used by other
+  This primitive returns a string containing the dialogid, used by other
 prims to add controls or make various changes.  This dialog will be
 hidden and not shown to the user until it has been displayed with the
 GUI_DLOG_SHOW command.
 
-Supported optional args are:
+  Supported optional args are:
     names      list of user-viewable pane names for D_TABBED & D_HELPER dlogs.
     panes      list of pane ids for D_TABBED and D_HELPER dialogs.
     width      requested width of dialog in pixels.
@@ -5707,6 +5714,7 @@ MCP GUI Options:
   The MCP GUI package has several common options used when creating controls
 in dialog.  These options are common to almost all control types.  They
 are as follows:
+
     value     Holds the value of the control.
     valname   Specifies the name used with GUI_VALUE_GET/SET, to refer to the
             value for this control.  Multiple controls can share the same
@@ -6136,10 +6144,10 @@ to different argument types.  The tests are:
   v - local or global variable.
   ? - any stack item type.
 
-Tests can be repeated multiple times by following the test with a number.
+  Tests can be repeated multiple times by following the test with a number.
 ie: '"i12" checkargs' would test the stack for 12 integers.
 
-The last test in the string expression will be done on the top stack item.
+  The last test in the string expression will be done on the top stack item.
 Tests are done from the top of the stack down, in order, so the last test
 that fails in a string expression will be the one that the Program Error
 will be given for.  ie: '"sdSi" checkargs' will test that the top stack
@@ -6147,22 +6155,22 @@ item is an integer, then it tests that the next item down is a non-null
 string, then it tests the third item from the top to see if it is a dbref,
 and lastly it tests to make sure that the 4th item from the top is a string.
 
-Spaces are ignored, so "s d i" is the same as "sdi".  However, multipliers
+  Spaces are ignored, so "s d i" is the same as "sdi".  However, multipliers
 are ignored if they follow a space, so "s 4d i" is also the same as "sdi".
 This is because you are basically telling it to repeat the space 4 times,
 and since spaces are ignored, it has no effect.
 
-If you have a function that takes a stack item of any type, you can use
+  If you have a function that takes a stack item of any type, you can use
 the "?" test.  "?" will match a string, integer, dbref, or any other type.
 
-Since sometimes arguments are passed in ranges, such as the way that the
+  Since sometimes arguments are passed in ranges, such as the way that the
 explode primitive returns multiple strings with an integer count on top,
 there is a way to group arguments, to show that you expect to receive a
 range of that type.  ie: '"{s}" checkargs' would test the stack for a set
 of strings like '"first" "second" "third" "fourth" 4' where the top stack
 item tells how many strings to expect within the range.
 
-Sometimes a function takes a range of paired arguments, such as:
+  Sometimes a function takes a range of paired arguments, such as:
 '"one" 1 "two" 2 "three" 3 "four" 4 4' where the count on the top of the
 range refers to the number of pairs.  To test for the range given above,
 you would use '"{si}" checkargs' to tell it that you want to check for
@@ -6171,16 +6179,16 @@ tests together in a range as you would like.  ie: you could use "{sida}"
 as an expression to test for a range of related strings, integers, dbrefs,
 and function addresses.
 
-Since the argument multipliers refer to the previous test OR range, you
+  Since the argument multipliers refer to the previous test OR range, you
 can test for two string ranges with the test '"{s}2" checkargs'.  ie:
 It would succeed on a stack of: '"one" "two" "three" 3 "four" "five" 2'.
 '"{s2}" checkargs', however, would test for one range of paired strings.
 ie: It would succeed with a stack of: '"one" "1" "two" "2" "three" "3" 3'.
 
-If, for some reason, you need to pass a range of ranges to a function,
+  If, for some reason, you need to pass a range of ranges to a function,
 you can test for it by nesting the braces.  ie: '"{{s}}" checkargs'
 
-Now, as one last example, the primitive notify_exclude, if we were to test
+  Now, as one last example, the primitive notify_exclude, if we were to test
 the arguments passed to it manually, would use the test '"R{p}s" checkargs'
 to test for a valid room dbref, a range of player dbrefs or #-1s, and a
 string.
@@ -6324,6 +6332,7 @@ Instruction notation as given by DEBUG dumps and the MUF debugger:
     ???<file:line>: An instruction that has been freed.  If you see this please
                     report it to the current server code maintainer.
                     (As in ???<p_db.c:1042>)
+
 Some tokens are just used as placeholders, and disappear as soon as the MUF
 is compiled.  These are BEGIN, and THEN.  In addition, FOR loops will
 produce at least two extra instruction, and an IF->lineNUM.  FORITER, the
