@@ -2142,10 +2142,14 @@ STRCUT
 STRCUT ( s i -- s1 s2 )
 
   Cuts string s after its i'th character.  For example,
+~~code
   "Foobar" 3 strcut
+~~endcode
 returns
+~~code
   "Foo" "bar"
-If i is zero or greater than the length of s, returns a null string in
+~~endcode
+  If i is zero or greater than the length of s, returns a null string in
 the first or second position, respectively.
 ~
 ~
@@ -2498,7 +2502,8 @@ SMATCH ( s s2 -- i )
   Takes a string s, and a string pattern, s2, to check against.  Returns true
 if the string fits the pattern.  This is case insensitive.  In the pattern
 string, the following special characters will do as follows:
-  
+
+~~code  
   *  A '?' matches any single character.
   
   *  A '*' matches any number of any characters.
@@ -2533,8 +2538,10 @@ string, the following special characters will do as follows:
   
   *  The '\' character will disable the special meaning of the character that
         follows it, matching it literally.
+~~endcode
   
 Example patterns:
+~~code
     "d*g" matches "dg", "dog", "doog", "dorfg", etc.
     "d?g" matches "dog", "dig" and "dug" but not "dg" or "drug".
     "M[rs]." matches "Mr." and "Ms."
@@ -2545,6 +2552,7 @@ Example patterns:
     "{Foxen|Lynx|Fier[ao]} *t[iy]ckle*\?"  Will match any string starting
       with 'Foxen', 'Lynx', 'Fiera', or 'Fiero', that contains either 'tickle'
       or 'tyckle' and ends with a '?'.
+~~endcode
 ~
 ~
 INSTRING
@@ -2568,10 +2576,10 @@ $def RINSTRING tolower swap tolower swap rinstr
 NAME-OK?
 NAME-OK? (s -- i)
 
-DEPRECATED: Returns true if the given string would be okay as a general
+  DEPRECATED: Returns true if the given string would be okay as a general
 object's name.
 
-This function remains for backwards compatability, but due to changes in the
+  This function remains for backwards compatability, but due to changes in the
 server it cannot be guaranteed any longer that it will always return the
 correct answer. If muck settings allow 8-bit names in general but not 8-bit
 Thing names, and you pass a name that contains 8-bit chars, NAME-OK? will
@@ -2579,7 +2587,7 @@ return true since the name would be okay for some objects. If you then pass
 that name to the NEWOBJECT primitive, the call will fail due to the more
 restrictive rules for Things.
 
-Instead, use EXT-NAME-OK? which determines legal names for each object type.
+  Instead, use EXT-NAME-OK? which determines legal names for each object type.
 ~~alsosee EXT-NAME-OK?
 ~
 ~
@@ -2597,12 +2605,13 @@ EXT-NAME-OK? ( str:Name str:Type -- int:Ok? )
   Returns true if Name would be a legal name for an object depending on
 the object type. If Obj is the object you are going to SETNAME, then
 EXT-NAME-OK? will use the naming rules for that type of object.
-
+~~code
 If the object does not exist yet, you may specify a string Type:
         "exit" or "e"              "muf" or "program" or "f"
         "player" or "p"            "thing" or "t"
         "room" or "r"
 Type's case is ignored.
+~~endcode
 ~
 ~
 REGEXP
@@ -2621,8 +2630,10 @@ string to be position 1.
 
 The "flag" argument may be 0, or a combination of the following:
 
+~~code
     $def REG_ICASE    1   (Case insensitive match)
     $def REG_EXTENDED 4   (Allows PCRE comments, etc.  See PCRE docs.)
+~~endcode
 ~
 ~
 REGSUB
@@ -2632,16 +2643,20 @@ REGSUB ( str:text str:pattern str:substr int:flags -- str:result )
 replacing the match with substr.  substr may contain \digit to specify
 a submatch.  Uses PCRE style regular expression syntax.
 
-The "Flag" argument may be a combination, or none of the following:
+  The "Flag" argument may be a combination, or none of the following:
 
+~~code
     $def REG_ICASE    1   (Case insensitive match)
     $def REG_ALL      2   (Substitute all matches, rather than just the first)
     $def REG_EXTENDED 4   (Allows PCRE comments, etc.  See PCRE docs.)
+~~endcode
 
-Ie: to replace all words in a string with 'yadda', ignoring case, you would
+  Ie: to replace all words in a string with 'yadda', ignoring case, you would
 use the following code:
 
+~~code
     "[a-z]+" "yadda" REG_ICASE REG_ALL + REGSUB
+~~endcode
 ~
 ~
 TOKENSPLIT
@@ -2651,9 +2666,13 @@ TOKENSPLIT (strString strDelim strEscape -- strPre strPost strChar)
 strDelim, so long as it is not escaped by the character given in strEscape.  
 Returns the unescaped string before the found character, the raw string after
 that character, and the character that was found.  For example:
+~~code
     "ab//cd/'efg'hi//jk'lm"   "'"   "/"   TOKENSPLIT
+~~endcode
 returns the values:
+~~code
     "ab/cd'efg"   "hi//jk'lm"   "'"
+~~endcode
 ~
 ~
 ~
@@ -2718,7 +2737,7 @@ Returns "*UNLOCKED*" if the object doesn't have a lock set.
 SUPPLICANT
 SUPPLICANT ( -- d )
   If the current program is being executed due to lock evaluation, returns
-the object the lock being tested against. Otherwise, returns #-1.
+the object the lock is being tested against. Otherwise, returns #-1.
 ~
 ~
 ~
@@ -3064,16 +3083,20 @@ an undefined consistent order.
 that the sorting should be case sensitive and in ascending order.  You
 can change either of those by using one or more of the following inserver
 $defines BITORed or added together:
+~~code
   $def SORTTYPE_CASEINSENS 1   (Sort is to be case insensitive.)
   $def SORTTYPE_DESCENDING 2   (Sort is to be in reversed order.)
   $def SORTTYPE_SHUFFLE    4   (Randomize list completely.)
+~~endcode
 
   The above sort types can be added or bitor'ed together to get the
 following inserver $defines as listed below.
+~~code
   $def SORTTYPE_CASE_ASCEND    0 (Case sensitive and ascending order.)
   $def SORTTYPE_NOCASE_ASCEND  SORTTYPE_CASEINSENS
   $def SORTTYPE_CASE_DESCEND   SORTTYPE_DESCENDING
   $def SORTTYPE_NOCASE_DESCEND SORTTYPE_CASEINSENS SORTTYPE_DESCENDING +
+~~endcode
 ~
 ~
 ARRAY_SORT_INDEXED
@@ -3082,19 +3105,23 @@ ARRAY_SORT_INDEXED (arrData intSortType idxIndex -- arrSorted)
   This takes a list array of arrays, and will sort them, based on the
 value of an indexed value in each subarray, based on the given sort
 type.  For example:
+~~code
     {
         { "name" "One"     "num" 1 }dict
         { "name" "Two"     "num" 2 }dict
         { "name" "Three"   "num" 3 }dict
     }list
     SORTTYPE_DESCENDING "num" ARRAY_SORT_INDEXED
+~~endcode
 ...would return an array of dictionaries, sorted in descending order by the
 value of their "num" entries.  ie, the same as:
+~~code
     {
         { "name" "Three"   "num" 3 }dict
         { "name" "Two"     "num" 2 }dict
         { "name" "One"     "num" 1 }dict
     }list
+~~endcode
   This can be used with an array of list arrays, just like with an array of
 dictionaries.  For list arrays, you just use an integer for the index.
 NOTE: arrays that don't have an item matching the given index, will be
@@ -3553,8 +3580,9 @@ LOCATION ( d -- d' )
 MOVETO
 MOVETO ( d1 d2 -- )
 
-Moves object d1 to object d2.
+  Moves object d1 to object d2.
   MOVETO is affected by the following rules:
+~~code
     a) If the object being moved is !JUMP_OK and is it being moved by someone
       other than the object's owner, then the moveto fails.
     b) If the object being moved is a person and either the source or
@@ -3563,6 +3591,7 @@ Moves object d1 to object d2.
     c) If the object being moved is not a player, is owned by the owner of
       either the source or destination rooms, and either room where the
       ownership matches is !JUMP_OK, the moveto fails.
+~~endcode
   The moveto succeeds under any other circumstances.  MOVETO rules follow the
 permissions of the current effective userid.  MOVETO will run programs in
 the @desc and @succ/@fail of a room when moving a player.
@@ -3836,6 +3865,7 @@ Checking an invalid parameter or a parameter requiring higher permissions
 than the program has will return an empty string.
 
 Parameters available:
+~~code
   (str)  autolook_cmd         - Command run on entering a room
   (str)  cpennies             - Currency name, capitalized, plural
   (str)  cpenny               - Currency name, capitalized
@@ -3959,6 +3989,7 @@ Parameters available:
   (bool) secure_who           - Disallow WHO command from login screen and programs
   (bool) use_hostnames        - Resolve IP addresses into hostnames 
   (bool) who_doing            - Show '_/do' property value in WHO lists
+~~endcode
 ~
 ~
 SYSPARM_ARRAY
@@ -3970,6 +4001,7 @@ about each sysparm.  This will only return items for which your program has
 permission to read the data.
 
 Each dictionary contains the following data, keyed with these strings:
+~~code
     "name"      The name of the @tune setting.
     "group"     The logical group that this parameter belongs to.
     "type"      One of "string", "integer", "timespan", "dbref", or "boolean".
@@ -3983,7 +4015,7 @@ If a given entry is of the "dbref" type, it will also have the extra field:
     "objtype"   The type of object the dbref is restricted to.  Can be one of
                 the strings "player", "thing", "room", "exit", "program",
                 "garbage", or "any".
-
+~~endcode
 ~~alsosee SETSYSPARM, SYSPARM
 ~
 ~
@@ -3993,6 +4025,7 @@ SETSYSPARM ( s1 s2 -- )
   Assigns the @tunable parameter s1 a value given by s2.  s2 must contain a
 legal value for s1.  If s1 is prefixed with '%', reset s1 to default
 instead, ignoring the value of s2.  (wizbit only)
+~~alsosee SYSPARM, SYSPARM_ARRAY
 ~
 ~
 NAME
@@ -4381,6 +4414,8 @@ TIMEFMT (s i -- s)
 
   Takes a format string and a SYSTIME integer and returns a string formatted
 with the time.  The format string is ascii text with formatting commands:
+
+~~code
   %% -- "%"
   %a -- abbreviated weekday name.
   %A -- full weekday name.
@@ -4412,6 +4447,7 @@ with the time.  The format string is ascii text with formatting commands:
   %y -- year, "00" - "99"
   %Y -- year, "1900" - "2155"
   %Z -- Time zone.  "GMT", "EDT", "PST", etc.
+~~endcode
 ~~alsosee FMTSTRING
 ~
 ~
@@ -4586,6 +4622,7 @@ GETPIDINFO ( int:pid -- dict:info )
 
   Given a valid active PID, returns a dictionary with information about
 that process. The information returned is:
+~~code
     CALLED_DATA - The string the program was queued with, if any
     CALLED_PROG - The program dbref# of the process' current call level.
     CPU         - The amount of CPU time used up by the process.
@@ -4598,6 +4635,7 @@ that process. The information returned is:
     SUBTYPE     - Additional information about the process.
     TRIG        - The trigger that called that process.
     TYPE        - What type of process it is. MUF/MPI.
+~~endcode
 ~~alsosee GETPIDS
 ~
 ~
@@ -4930,7 +4968,7 @@ See: EVENT_WAITFOR
 EVENT_WAITFOR
 EVENT_WAITFOR (a -- ? s )
 
-Waits for an event to occur that matches one of the eventIDs given in the
+  Waits for an event to occur that matches one of the eventIDs given in the
 string list array.  The comparison is NOT case sensitive, and you may use
 smatch wildcard patterns.  If a matching event isn't in the event queue
 already, this will pause the MUF process until a matching event is added
@@ -4940,15 +4978,17 @@ and the matching eventID string.  If an empty list array is passed to this
 primitive, then it will match any and all events, and return the first one
 pending.
 
-Timer events have eventID strings that are created by prepending "TIMER."
+  Timer events have eventID strings that are created by prepending "TIMER."
 to the timerID passed to the TIMER_START primitive.  The context for Timer
 events is an integer, representing the systime that the timer event was
 scheduled to occur at.  This might not be the time that the event is actually
 processed at, due to system delays.
 
-GUI events have eventID strings that are created by prepending "GUI." to
+  GUI events have eventID strings that are created by prepending "GUI." to
 the dlogID of the dialog that generated the event.  The context for GUI
 events is a dictionary contains the following keys:
+
+~~code
 descr      Holds the descriptor that generated the event.
 dlogid     Holds the DlogID of the dialog that generated the event.
 id         Holds the ID of the control that generated the event.
@@ -4956,10 +4996,13 @@ dismissed  Holds 1 if the dialog was dismissed, 0 otherwise.
 event      Holds the type of gui event.  ie: buttonpress, menuselect.
 values     Holds the dictionary of control values, keyed by control name.
 data       Holds array of extra gui-event specific data.
+~~endcode
 
-User events have eventID strings that are created by prepending "USER." to
+  User events have eventID strings that are created by prepending "USER." to
 the eventID given to the EVENT_SEND muf primitive.  The context for User
 events is a dictionary containing the following keys:
+
+~~code
 caller_pid   Holds the integer Process ID of the sending program.
 caller_prog  Holds the dbref of the sending program.
 data         Holds the stack item sent by the EVENT_SEND primitive.
@@ -4968,26 +5011,35 @@ trigger      Holds the trigger dbref that initiated the calling program.
 player       Holds the player dbref that ran the calling program.
 prog_uid     Holds the dbref of the player whose permissions the caller
                program is running as.
+~~endcode
 
-MCP events have eventID strings formatted like "MCP.packagename-mesgname"
+  MCP events have eventID strings formatted like "MCP.packagename-mesgname"
 where 'packagename' is the name of the MCP package being invoked, and
 'mesgname' is the specific message in the package being invoked.  If the
 'mesgname' is a null string, then the trailing '-' is removed.
-Some example MCP eventIDs are:
+
+  Some example MCP eventIDs are:
+
+~~code
     MCP.com-belfry-image       Where pkg is 'com-belfry-image' & mesg is ''
     MCP.com-belfry-image-view  Where pkg is 'com-belfry-image' & mesg is 'view'
+~~endcode
+
 The context for MCP events is a dictionary containing the following keys:
+
+~~code
     descr     Holds the integer descriptor of the sending connection.
     package   Holds the string package name the MCP mesg is sent for.
     message   Holds the string message name within that package.
     args      Holds a dictionary, containing the message arguments.
                 Each mesg arg has an array list of strings as a value.
+~~endcode
 
-Read events have eventID strings of just "READ".  The context of Read events
+  Read events have eventID strings of just "READ".  The context of Read events
 is the integer descriptor of the first waiting line to be READ.  To get the
 actual line sent by the user you need to use the READ primitive.
 
-Process exit events have eventID strings that are created by prepending
+  Process exit events have eventID strings that are created by prepending
 "PROC.EXIT." to the pid of the watched process that exited.  The context
 is the pid of the process that exited.
 ~
@@ -5003,7 +5055,8 @@ The receiving process will be passed a dictionary with items "data" for
 the given arbitrary stack element, "caller_pid" with the pid of the
 process calling EVENT_SEND, and "caller_prog" with the dbref of the
 program calling EVENT_SEND.
-ie: '23 "foobar" 3.1416 event_send' will send an event to process 23, with
+
+  Ie: '23 "foobar" 3.1416 event_send' will send an event to process 23, with
 an eventid of "USER.foobar", and a floating point data value of 3.1416.
 This primitive requires at least Mucker Level 3.
 ~
@@ -5141,12 +5194,13 @@ is the title to show in the titlebar of the dialog.  dictArgs is a
 dictionary array that contains extra optional arguments for creating
 the dialog.
 
-This primitive returns a string containing the dialogid, used by other
+  This primitive returns a string containing the dialogid, used by other
 prims to add controls or make various changes.  This dialog will be
 hidden and not shown to the user until it has been displayed with the
 GUI_DLOG_SHOW command.
 
-Supported optional args are:
+  Supported optional args are:
+~~code
     names      list of user-viewable pane names for D_TABBED & D_HELPER dlogs.
     panes      list of pane ids for D_TABBED and D_HELPER dialogs.
     width      requested width of dialog in pixels.
@@ -5156,6 +5210,7 @@ Supported optional args are:
     minheight  minimum height of window in pixels.
     maxwidth   maximum width of window in pixels.
     maxheight  maximum height of window in pixels.
+~~endcode
 ~
 ~
 GUI_DLOG_SIMPLE
@@ -5278,6 +5333,7 @@ The dictionary contains the arguments for the given command.
 
 At the time of this writing, the following commands are supported:
 
+~~code
 "insert" Inserts text or list items into the given control.
         Takes the following arguments:
         "values" list of values or text to insert.
@@ -5307,6 +5363,7 @@ At the time of this writing, the following commands are supported:
 "cursor" Moves the cursor of the given control.
         Takes the following arguments:
         "position" The item or character to move the cursor to or before.
+~~endcode
 ~
 ~
 GUI-OPTIONS|GUI_OPTIONS|GUIOPTIONS
@@ -5315,6 +5372,8 @@ MCP GUI Options:
   The MCP GUI package has several common options used when creating controls
 in dialog.  These options are common to almost all control types.  They
 are as follows:
+
+~~code
     value     Holds the value of the control.
     valname   Specifies the name used with GUI_VALUE_GET/SET, to refer to the
             value for this control.  Multiple controls can share the same
@@ -5363,6 +5422,7 @@ are as follows:
             in the bottom of the pane.
     toppad    Number of pixels padding to add above this control.
     leftpad   Number of pixels padding to add to the left of this control.
+~~endcode
 ~
 ~
 C_DATUM
@@ -5384,10 +5444,12 @@ to create a menu control in a GUI dialog.  The menu control is a pull-down
 menu that a user can select commands from.  It can contain labels, hrules,
 buttons, checkboxes, radiobuttons, and other menus.
 The control options specific to this type of control are:
+~~code
     text    The text to display as the user-visible name of this menu. For
             example: "Settings", "Help", etc.
     pane    The id of the menu in which to place this menu as a cascading
             menu.  If specified as "", then this is a toplevel menu.
+~~endcode
 ~~alsosee GUI_CTRL_CREATE,GUI_DLOG_CREATE
 ~
 ~
@@ -5398,10 +5460,12 @@ C_LABEL ( -- s )
 to create a text label control in a GUI dialog.  The label control is just
 a text label, nothing more.
 The control options specific to this type of control are:
+~~code
     value    Contains the text to be displayed.
     justify  Which way to justify the text, if word wrapped.  Can be one of
             left, right, or center.
     maxwidth The max width in pixels for the label, before it word wraps.
+~~endcode
 ~~alsosee GUI_CTRL_CREATE,GUI_DLOG_CREATE,GUI_OPTIONS
 ~
 ~
@@ -5412,9 +5476,11 @@ C_IMAGE ( -- s )
 to create an image control in a GUI dialog.  The image control is a picture
 whose image is loaded from a URL.
 The control options specific to this type of control are:
+~~code
     value    Holds the url of the image to be displayed.
     width    The width of the image in pixels.  This is required.
     height   The height of the image in pixels.  This is required.
+~~endcode
 ~~alsosee GUI_CTRL_CREATE,GUI_DLOG_CREATE,GUI_OPTIONS
 ~
 ~
@@ -5425,7 +5491,9 @@ C_HRULE ( -- s )
 to create a Horizontal Rule control in a GUI dialog.
 The hrule control is just a horizontal line, nothing more.
 The control options specific to this type of control are:
+~~code
     height   Number of pixels of vertical thickness of the horizontal line.
+~~endcode
 ~~alsosee GUI_CTRL_CREATE,GUI_DLOG_CREATE,GUI_OPTIONS
 ~
 ~
@@ -5447,10 +5515,12 @@ C_BUTTON ( -- s )
 to create a Button control in a GUI dialog.
 The Button control is a simple button the user can press.
 The control options specific to this type of control are:
+~~code
     text     The text label that will show on the button face.
     width    Number of characters text the button should be able to hold.
     dismiss  If 1, the dialog will be dismissed when this button is pressed.
             Defaults to 1.
+~~endcode
 ~~alsosee GUI_CTRL_CREATE,GUI_DLOG_CREATE,GUI_OPTIONS
 ~
 ~
@@ -5461,11 +5531,13 @@ C_CHECKBOX ( -- s )
 to create a CheckBox control in a GUI dialog.
 The CheckBox control is used for indicating simple "on/off" boolean settings.
 The control options specific to this type of control are:
+~~code
     text     The text label that will show to the right of the checkbox.
     onvalue  The value this control should have when checked.
     offvalue The value this control should have when not checked.
     value    The current state/value of the control.  This should match either
             the value of the "onvalue" or "offvalue" argument.
+~~endcode
 ~~alsosee GUI_CTRL_CREATE,GUI_DLOG_CREATE,GUI_OPTIONS
 ~
 ~
@@ -5476,6 +5548,7 @@ C_RADIOBTN ( -- s )
 to create a radio button control in a GUI dialog.
 The radio button control is used for selecting one of a number of options.
 The control options specific to this type of control are:
+~~code
     text     The text label that will show to the right of the radio button.
     valname  The name used to refer to the value of this radio button group.
             A radio button group is defined as radio buttons that share the
@@ -5483,6 +5556,7 @@ The control options specific to this type of control are:
     selvalue The value of this radio button group, when this is selected.
     value    The current state/value of the radio button group.  This should
             match one of the selvalues of a radio button in this group.
+~~endcode
 ~~alsosee GUI_CTRL_CREATE,GUI_DLOG_CREATE,GUI_OPTIONS
 ~
 ~
@@ -5493,6 +5567,7 @@ C_EDIT ( -- s )
 to create a single-line text Edit control in a GUI dialog.
 The Edit control is used for single-line text string editing.
 The control options specific to this type of control are:
+~~code
     text     The text label that will show to the left of the control.
             Defaults to "" (no label).  If there is a label, then this
             control will be split across two columns, with the label in
@@ -5504,6 +5579,7 @@ The control options specific to this type of control are:
     height   Number of lines high this control will be.  Defaults to 1.
             If this is greater than 1, then text will wrap as you type it,
             but you still won't be able to insert carriage returns.
+~~endcode
 ~~alsosee GUI_CTRL_CREATE,GUI_DLOG_CREATE,GUI_OPTIONS
 ~
 ~
@@ -5514,11 +5590,13 @@ C_MULTIEDIT ( -- s )
 to create a Multi-line text Edit control in a GUI dialog.
 The MultiEdit control is used for multi-line text string editing.
 The control options specific to this type of control are:
+~~code
     value    The current contents/value of the control.
     width    Number of average character widths wide this control should be.
             Defaults to 40 characters wide.
     height   Number of lines high this control will be.  Defaults to 1.
     font     Specifies whether the font used is "fixed" or "proportional".
+~~endcode
 ~~alsosee GUI_CTRL_CREATE,GUI_DLOG_CREATE,GUI_OPTIONS
 ~
 ~
@@ -5530,6 +5608,7 @@ to create a Win95 style combobox with a pulldown menu of options.
 The ComboBox control is used for selecting from multiple standard options
 in a compact form factor.  Optionally the user can enter arbitrary data.
 The control options specific to this type of control are:
+~~code
     text     The text label that will show to the left of the control.
             Defaults to "" (no label).  If there is a label, then this
             control will be split across two columns, with the label in
@@ -5543,6 +5622,7 @@ The control options specific to this type of control are:
             user can only pick a value from the combobox pulldown menu.
             Defaults to 0
     sorted   Causes the contents of the pulldown menu to be auto-sorted.
+~~endcode
 ~~alsosee GUI_CTRL_CREATE,GUI_DLOG_CREATE,GUI_OPTIONS
 ~
 ~
@@ -5553,6 +5633,7 @@ C_LISTBOX ( -- s )
 to create a ListBox control in a GUI dialog.  The ListBox control is used
 for selecting one or more entries from a list of options.
 The control options specific to this type of control are:
+~~code
     value    The list of the currently selected list items, given as a list
             of integers that refer to list positions.  0 is the first item.
     font     Specifies whether the font used is "fixed" or "proportional".
@@ -5563,6 +5644,7 @@ The control options specific to this type of control are:
     selectmode  One of "single", "multiple", or "extended".  Specifies how
             list item selection is performed, and whether more than one item
             can be selected at a time.
+~~endcode
 ~~alsosee GUI_CTRL_CREATE,GUI_DLOG_CREATE,GUI_OPTIONS
 ~
 ~
@@ -5574,12 +5656,14 @@ to create a Spinner control in a GUI dialog.  The Spinner control is used
 for setting an integer value, that can be incremented and decremented via
 up and down buttons.
 The control options specific to this type of control are:
+~~code
     value    The current integer value of the control.
     text     If given, makes a label with the given text next to the spinner.
     minval   The minimum integer value that this control can be set to.
     maxval   The maximum integer value that this control can be set to.
     width    Number of digits that this control should be able to hold.
             Defaults to 12 digits.
+~~endcode
 ~~alsosee GUI_CTRL_CREATE,GUI_DLOG_CREATE,GUI_OPTIONS
 ~
 ~
@@ -5590,6 +5674,7 @@ C_SCALE ( -- s )
 to create a Scale control in a GUI dialog.  The Scale control is used for
 setting a floating point value, that can be changed by moving a slider.
 The control options specific to this type of control are:
+~~code
     value      The current floating point value of the control.
     text       If given, makes a label with the given text next to the scale.
     minval     The minimum value that this control can be set to.
@@ -5604,6 +5689,7 @@ The control options specific to this type of control are:
             Defaults to 100 pixels.
     width      The length of the short axis of the scale, in pixels.
             Defaults to 15 pixels.
+~~endcode
 ~~alsosee GUI_CTRL_CREATE,GUI_DLOG_CREATE,GUI_OPTIONS
 ~
 ~
@@ -5616,10 +5702,12 @@ contain and organize other controls.  Frames can be either invisible
 containers that just organize the positions of other controls, or they
 can be visible groupboxes with borders and labels.
 The control options specific to this type of control are:
+~~code
     text        If set, the frame, as a groupbox, will have the given label.
     visible     If set to 1, causes a border to be drawn around the frame.
     collapsible This, is set to 1, allows the group box to be collapsed.
     collapsed   If the frame is collapsible, this sets the state to collapsed.
+~~endcode
 ~~alsosee GUI_CTRL_CREATE,GUI_DLOG_CREATE,GUI_OPTIONS
 ~
 ~
@@ -5631,6 +5719,7 @@ create a tabbed notebook control in a GUI dialog.  Tabbed notebook controls
 are used to contain and organize other controls in multiple pages that the
 user can select between.
 The control options specific to this type of control are:
+~~code
     panes       The list of pane ids to create.  Those are used by other
                 controls, when you wish to specify which pane the control
                 is in.
@@ -5639,6 +5728,7 @@ The control options specific to this type of control are:
                 should be for the second name, etc.
     width       The minimum width of the notebook's client area, in pixels.
     height      The minimum height of the notebook's client area, in pixels.
+~~endcode
 ~~alsosee GUI_CTRL_CREATE,GUI_DLOG_CREATE,GUI_OPTIONS
 ~
 ~
@@ -5674,15 +5764,18 @@ stack, instead of a string.  This dictionary holds much more detailed
 information about the thrown exception.  The following dictionary entries
 are currently supported:
 
+~~code
     "error"    The error message string, like what CATCH returns.
     "instr"    The name string of the instruction which threw the error.
     "line"     The integer program line number where the error was thrown.
     "program"  The dbref of the program in which the error was thrown.
+~~endcode
 
   The ABORT primitive may be used to throw an arbitrary error anywhere.
 If you need to re-propagate an error, you can use ABORT.
 
 Example code:
+~~code
     : get_a_prop ( d s -- s )
         2 TRY
             getpropstr
@@ -5691,6 +5784,7 @@ Example code:
             ""
         ENDCATCH
     ;
+~~endcode
 ~
 ~
 ABORT
@@ -5712,6 +5806,7 @@ the running program with an appropriate Program Error Message.  The
 expression is formed from single character argument tests that refer
 to different argument types.  The tests are:
 
+~~code
   a - function address.
   d - dbref.  (#-1, #-2, #-3 are okay)
   D - valid, non-garbage dbref.  (#-1, #-2 NOT allowed.  #-3 is okay)
@@ -5731,11 +5826,12 @@ to different argument types.  The tests are:
   T - thing dbref.  (#-1, #-2 NOT allowed)
   v - local or global variable.
   ? - any stack item type.
+~~endcode
 
-Tests can be repeated multiple times by following the test with a number.
+  Tests can be repeated multiple times by following the test with a number.
 ie: '"i12" checkargs' would test the stack for 12 integers.
 
-The last test in the string expression will be done on the top stack item.
+  The last test in the string expression will be done on the top stack item.
 Tests are done from the top of the stack down, in order, so the last test
 that fails in a string expression will be the one that the Program Error
 will be given for.  ie: '"sdSi" checkargs' will test that the top stack
@@ -5743,22 +5839,22 @@ item is an integer, then it tests that the next item down is a non-null
 string, then it tests the third item from the top to see if it is a dbref,
 and lastly it tests to make sure that the 4th item from the top is a string.
 
-Spaces are ignored, so "s d i" is the same as "sdi".  However, multipliers
+  Spaces are ignored, so "s d i" is the same as "sdi".  However, multipliers
 are ignored if they follow a space, so "s 4d i" is also the same as "sdi".
 This is because you are basically telling it to repeat the space 4 times,
 and since spaces are ignored, it has no effect.
 
-If you have a function that takes a stack item of any type, you can use
+  If you have a function that takes a stack item of any type, you can use
 the "?" test.  "?" will match a string, integer, dbref, or any other type.
 
-Since sometimes arguments are passed in ranges, such as the way that the
+  Since sometimes arguments are passed in ranges, such as the way that the
 explode primitive returns multiple strings with an integer count on top,
 there is a way to group arguments, to show that you expect to receive a
 range of that type.  ie: '"{s}" checkargs' would test the stack for a set
 of strings like '"first" "second" "third" "fourth" 4' where the top stack
 item tells how many strings to expect within the range.
 
-Sometimes a function takes a range of paired arguments, such as:
+  Sometimes a function takes a range of paired arguments, such as:
 '"one" 1 "two" 2 "three" 3 "four" 4 4' where the count on the top of the
 range refers to the number of pairs.  To test for the range given above,
 you would use '"{si}" checkargs' to tell it that you want to check for
@@ -5767,16 +5863,16 @@ tests together in a range as you would like.  ie: you could use "{sida}"
 as an expression to test for a range of related strings, integers, dbrefs,
 and function addresses.
 
-Since the argument multipliers refer to the previous test OR range, you
+  Since the argument multipliers refer to the previous test OR range, you
 can test for two string ranges with the test '"{s}2" checkargs'.  ie:
 It would succeed on a stack of: '"one" "two" "three" 3 "four" "five" 2'.
 '"{s2}" checkargs', however, would test for one range of paired strings.
 ie: It would succeed with a stack of: '"one" "1" "two" "2" "three" "3" 3'.
 
-If, for some reason, you need to pass a range of ranges to a function,
+  If, for some reason, you need to pass a range of ranges to a function,
 you can test for it by nesting the braces.  ie: '"{{s}}" checkargs'
 
-Now, as one last example, the primitive notify_exclude, if we were to test
+  Now, as one last example, the primitive notify_exclude, if we were to test
 the arguments passed to it manually, would use the test '"R{p}s" checkargs'
 to test for a valid room dbref, a range of player dbrefs or #-1s, and a
 string.
@@ -5835,6 +5931,7 @@ current instruction marked by surrounding braces.
 DEBUGGER_COMMANDS
 Debugger commands:
 
+~~code
   cont            continues execution until a breakpoint is hit.
   finish          completes execution of current function.
   step [NUM]      executes one (or NUM, 1) lines of muf.
@@ -5862,6 +5959,7 @@ Debugger commands:
   pop             pops top data item off the stack.
   help            displays this help screen.
   quit            stop execution here.
+~~endcode
 ~~alsosee DEBUGGER,BREAKPOINTS,NOTATION
 ~
 ~
@@ -5884,6 +5982,7 @@ either 'continue', 'finish', or while in a word called when 'next' or
 DEBUG NOTATION
 Instruction notation as given by DEBUG dumps and the MUF debugger:
 
+~~code
     PRIMITIVE:      A call to that primitive. (As in POP or ROTATE)
     NUM:            An integer. (As in 5 or -154)
     #dbref:         An object dbref. (As in #1 or #63516)
@@ -5907,6 +6006,8 @@ Instruction notation as given by DEBUG dumps and the MUF debugger:
     ???<file:line>: An instruction that has been freed.  If you see this please
                     report it to the current server code maintainer.
                     (As in ???<p_db.c:1042>)
+~~endcode
+
 Some tokens are just used as placeholders, and disappear as soon as the MUF
 is compiled.  These are BEGIN, and THEN.  In addition, FOR loops will
 produce at least two extra instruction, and an IF->lineNUM.  FORITER, the
