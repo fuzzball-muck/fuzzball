@@ -364,7 +364,7 @@ debug_inst(struct frame *fr, int lev, struct inst *pc, int pid, struct inst *sta
 	if (count >= 0) {
 	    for(;;) {
 			if (count && length <= 5) {
-				length -= prepend_string(&bend, bstart, "...");
+				prepend_string(&bend, bstart, "...");
 				break;
 			}
 			/* we use length - 5 to leave room for "..., "
@@ -373,14 +373,11 @@ debug_inst(struct frame *fr, int lev, struct inst *pc, int pid, struct inst *sta
 			if (*ptr) {
 				length -= prepend_string(&bend, bstart, ptr);
 			} else {
-				length -= prepend_string(&bend, bstart, "...");
 				break; /* done because we couldn't display all that */
 			}
 			if (count > 0 && count > sp - 8) {
 				length -= prepend_string(&bend, bstart, ", ");
 			} else {
-				if (count)
-					length -= prepend_string(&bend, bstart, "..., ");
 				break; /* all done! */
 			}
 			count--;

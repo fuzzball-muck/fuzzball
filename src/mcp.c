@@ -858,7 +858,6 @@ mcp_frame_output_mesg(McpFrame * mfr, McpMesg * msg)
 
 				msgarg_escape(out, bufrem, anarg->value->value);
 				out += strlen(out);
-				bufrem = outbuf + sizeof(outbuf) - out;
 			}
 			out += strlen(out);
 			bufrem = outbuf + sizeof(outbuf) - out;
@@ -869,8 +868,6 @@ mcp_frame_output_mesg(McpFrame * mfr, McpMesg * msg)
 	if (mlineflag) {
 		snprintf(datatag, sizeof(datatag), "%.8lX", (unsigned long)(RANDOM() ^ RANDOM()));
 		snprintf(out, bufrem, " %s: %s", MCP_DATATAG, datatag);
-		out += strlen(out);
-		bufrem = outbuf + sizeof(outbuf) - out;
 	}
 
 	/* Send the initial line. */
@@ -1215,8 +1212,8 @@ mcp_mesg_arg_remove(McpMesg * msg, const char *argname)
 			prev->next = ptr->next;
 			msg->bytes -= sizeof(McpArg);
 			if (ptr->name) {
-				free(ptr->name);
 				msg->bytes -= strlen(ptr->name) + 1;
+				free(ptr->name);
 			}
 			while (ptr->value) {
 				McpArgPart *ptr2 = ptr->value;

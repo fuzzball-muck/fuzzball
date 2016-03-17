@@ -101,7 +101,6 @@ prim_clear_error(PRIM_PROTOTYPE)
 		if (!oper1->data.string) {
 			result = 0;
 		} else {
-			loop = 0;
 			result = strlen(oper1->data.string->data);
 			for (loop = 0; loop < result; loop++)
 				buf[loop] = toupper(oper1->data.string->data[loop]);
@@ -144,7 +143,6 @@ prim_set_error(PRIM_PROTOTYPE)
 		if (!oper1->data.string) {
 			result = 0;
 		} else {
-			loop = 0;
 			result = strlen(oper1->data.string->data);
 			for (loop = 0; loop < result; loop++)
 				buf[loop] = toupper(oper1->data.string->data[loop]);
@@ -186,7 +184,6 @@ prim_is_set(PRIM_PROTOTYPE)
 		if (!oper1->data.string) {
 			result = 0;
 		} else {
-			loop = 0;
 			result = strlen(oper1->data.string->data);
 			for (loop = 0; loop < result; loop++)
 				buf[loop] = toupper(oper1->data.string->data[loop]);
@@ -227,7 +224,6 @@ prim_error_str(PRIM_PROTOTYPE)
 		if (!oper1->data.string) {
 			result = -1;
 		} else {
-			loop = 0;
 			result = strlen(oper1->data.string->data);
 			for (loop = 0; loop < result; loop++)
 				buf[loop] = toupper(oper1->data.string->data[loop]);
@@ -287,7 +283,6 @@ prim_error_bit(PRIM_PROTOTYPE)
 	if (!oper1->data.string) {
 		result = -1;
 	} else {
-		loop = 0;
 		result = strlen(oper1->data.string->data);
 		for (loop = 0; loop < result; loop++)
 			buf[loop] = toupper(oper1->data.string->data[loop]);

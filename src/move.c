@@ -600,7 +600,6 @@ do_move(int descr, dbref player, const char *direction, int lev)
 			/* we got one */
 			/* check to see if we got through */
 			ts_useobject(exit);
-			loc = LOCATION(player);
 			if (can_doit(descr, player, exit, "You can't go that way.")) {
 				trigger(descr, player, exit, 1);
 			}

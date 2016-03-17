@@ -135,7 +135,6 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 					len = strlen(content);
 					if (len >= left - 1) {
 						strncat(buf, content, left);
-						left = 0;
 						break;
 					} else {
 						strcatn(buf, sizeof(buf), content);

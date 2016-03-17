@@ -315,7 +315,7 @@ get_concat_list(dbref player, dbref what, dbref perms, dbref obj, char *listname
 	int i, cnt, len;
 	const char *ptr;
 	char *pos = buf;
-	int tmpbless;
+	int tmpbless = 0;
 
 	len = strlen(listname);
 	if (listname[len-1] == NUMBER_TOKEN) listname[len-1] = 0;
@@ -916,7 +916,6 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms,
 			if (wbuf[p + 1] == MFUN_LEADCHAR) {
 				showtextflag = 1;
 				outbuf[q++] = wbuf[p++];
-				ptr = "";
 			} else {
 				ptr = wbuf + (++p);
 				s = 0;

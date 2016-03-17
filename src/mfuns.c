@@ -520,7 +520,6 @@ mfn_select(MFUNARGS)
 	}
 	*out++ = '\0';
 
-	i = targval;
 	bestname[0] = '\0';
 	bestval = 0;
 	baselen = strlen(origprop);
@@ -1676,7 +1675,6 @@ mfn_timestr(MFUNARGS)
 	}
 	if (tm >= 60) {
 		mn = tm / 60;			/* Minutes */
-		tm %= 60;				/* Seconds */
 	}
 
 	*buf = '\0';

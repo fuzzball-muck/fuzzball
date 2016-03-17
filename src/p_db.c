@@ -2383,8 +2383,6 @@ prim_program_getlines(PRIM_PROTOTYPE)
 	oper2 = POP();
 	oper1 = POP();
 
-	start = end = 0;
-	
 	if (!valid_object(oper1))
 		abort_interp("Invalid object dbref. (1)");
 	if (oper2->type != PROG_INTEGER)
