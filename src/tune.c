@@ -338,6 +338,10 @@ tune_display_parms(dbref player, char *name, int mlev, int show_extended)
 	/* Show a helpful message at the end if nothing was found */
 	int parms_found = 0;
 
+	if (name == NULL) {
+		return;
+	}
+
 	/* Treat default parameters as normal */
 	TP_CLEAR_FLAG_DEFAULT(name);
 

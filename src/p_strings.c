@@ -487,7 +487,7 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 	char sstr[BUFFER_LEN], sfmt[255], hold[256], tbuf[BUFFER_LEN];
 	char *ptr, *begptr;
 	char fieldbuf[BUFFER_LEN];
-	char *fieldname = fieldbuf;
+	char *fieldname;
 	char *fmtstr = NULL;
 	stk_array *arr = NULL;
 	stk_array *arr2 = NULL;

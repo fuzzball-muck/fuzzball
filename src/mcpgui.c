@@ -255,12 +255,15 @@ gui_pkg_callback(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 	if (!string_compare(msg->mesgname, "ctrl-value")) {
 		int valcount = mcp_mesg_arg_linecount(msg, "value");
 		int i;
-		const char **value = (const char **) malloc(sizeof(const char *) * valcount);
+		const char **value;
 
 		if (!id || !*id) {
 			show_mcp_error(mfr, msg->mesgname, "Missing control ID.");
 			return;
 		}
+
+		value = (const char **) malloc(sizeof(const char *) * valcount);
+
 		for (i = 0; i < valcount; i++) {
 			value[i] = mcp_mesg_arg_getline(msg, "value", i);
 		}

@@ -212,7 +212,7 @@ add_event(int event_typ, int subtyp, int dtime, int descr, dbref player, dbref l
 		  dbref trig, dbref program, struct frame *fr,
 		  const char *strdata, const char *strcmd, const char *str3)
 {
-	timequeue ptr = tqhead;
+	timequeue ptr;
 	timequeue lastevent = NULL;
 	time_t rtime = time((time_t *) NULL) + (time_t) dtime;
 	int mypids = 0;
@@ -1306,7 +1306,6 @@ propqueue(int descr, dbref player, dbref where, dbref trigger, dbref what, dbref
 	char buf[BUFFER_LEN];
 	char exbuf[BUFFER_LEN];
 
-	the_prog = NOTHING;
 	tmpchar = NULL;
 
 	/* queue up program referred to by the given property */
@@ -1427,7 +1426,6 @@ listenqueue(int descr, dbref player, dbref where, dbref trigger, dbref what, dbr
 	if (!(FLAGS(what) & LISTENER) && !(FLAGS(OWNER(what)) & ZOMBIE))
 		return;
 
-	the_prog = NOTHING;
 	tmpchar = NULL;
 
 	/* queue up program referred to by the given property */

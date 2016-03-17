@@ -88,7 +88,7 @@ show_line_prims(struct frame *fr, dbref program, struct inst *pc, int maxprims, 
 
 	if (linestart > code && (linestart - 1)->line == thisline)
 		strcpyn(buf, sizeof(buf), "...");
-	maxback = maxprims;
+
 	while (linestart <= lineend) {
 		if (strlen(buf) < BUFFER_LEN / 2) {
 			if (*buf)
@@ -274,7 +274,6 @@ muf_backtrace(dbref player, dbref program, int count, struct frame *fr)
 				}
 				bufend += snprintf(bufend, buf2 - bufend - 18, fmt, nam, val);
 			}
-			bufend += snprintf(bufend, buf2 - bufend - 1, "\033[1m)\033[0m");
 			ptr = buf2;
 		}
 		if (pinst != lastinst) {
@@ -791,7 +790,6 @@ muf_debugger(int descr, dbref player, dbref program, const char *text, struct fr
 	} else if (!string_compare(cmd, "list") || !string_compare(cmd, "listi")) {
 		int startline, endline;
 
-		startline = endline = 0;
 		add_muf_read_event(descr, player, program, fr);
 		if ((ptr2 = (char *) index(arg, ','))) {
 			*ptr2++ = '\0';

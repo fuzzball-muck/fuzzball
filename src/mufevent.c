@@ -663,7 +663,6 @@ muf_event_remove(struct frame *fr, char *event, int which)
 
 	while (fr->events && !strcmp(event, fr->events->event)) {
 		if (which == MUFEVENT_LAST) {
-			tmp = fr->events;
 			break;
 		} else {
 			tmp = fr->events;
@@ -679,7 +678,6 @@ muf_event_remove(struct frame *fr, char *event, int which)
 	while (ptr && ptr->next) {
 		if (!strcmp(event, ptr->next->event)) {
 			if (which == MUFEVENT_LAST) {
-				tmp = ptr;
 				ptr = ptr->next;
 			} else {
 				tmp = ptr->next;

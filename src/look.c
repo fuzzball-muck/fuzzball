@@ -428,7 +428,7 @@ listprops_wildcard(dbref player, dbref thing, const char *dir, const char *wild)
 	char wld[BUFFER_LEN];
 	char buf[BUFFER_LEN];
 	char buf2[BUFFER_LEN];
-	char *ptr, *wldcrd = wld;
+	char *ptr, *wldcrd;
 	PropPtr propadr, pptr;
 	int i, cnt = 0;
 	int recurse = 0;

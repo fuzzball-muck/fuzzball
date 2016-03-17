@@ -3750,6 +3750,7 @@ copy_program(COMPSTATE * cstat)
 			code[i].data.call = code + curr->in.data.number;
 			break;
 		default:
+			free(code);
 			v_abort_compile(cstat, "Unknown type compile!  Internal error.");
 			break;
 		}
