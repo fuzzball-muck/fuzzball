@@ -10,7 +10,10 @@ SRCDIR=.\src
 INCDIR=.\include
 OUTDIR=.\game
 INTDIR=.\compile
+!IF "$(OPENSSLDIR)" == ""
+!MESSAGE OpenSSL directory OPENSSLDIR not specified, assuming default
 OPENSSLDIR=e:\sandbox\openssl
+!ENDIF
 
 CPP=cl.exe
 CPP_OPS=/nologo /EHsc /MT /W3 /O2 /c /D "_X86_" /D "_WIN32_" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "FD_SETSIZE=4096" /D "_WINSOCK_DEPRECATED_NO_WARNINGS" /D "_CRT_SECURE_NO_WARNINGS" /D "_CRT_NONSTDC_NO_WARNINGS" /D "_CRT_SECURE_NO_DEPRECATE" /D "POSIX" /I"$(WINDIR)" /I"$(INCDIR)" /I"$(OPENSSLDIR)\include" /Fd"$(INTDIR)\\"
