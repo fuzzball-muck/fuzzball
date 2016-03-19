@@ -15,11 +15,11 @@
 	notify(player, buf); \
 }
 
-/* NOTE:  Do NOT use 'info' as the name of a parameter.  '@tune info' gets help on @tune
-   parameters and it would conflict.
-   Reserve it as a preprocessor define so it's a bit easier to change if needed.  If changed,
-   don't forget to update the help files, too! */
+/* NOTE:  Do NOT use these values as the name of a parameter.  Reserve them as a preprocessor define so
+   it's a bit easier to change if needed.  If changed, don't forget to update the help files, too! */
 #define TP_INFO_CMD "info"
+#define TP_LOAD_CMD "load"
+#define TP_SAVE_CMD "save"
 
 /* Specify the same default values in the pointer and in the lists of tune_*_entry.
    Default values here will be used if the tunable isn't found, default values in the lists of tune_*_entry
@@ -665,6 +665,23 @@ tune_parms_array(const char* pattern, int mlev)
 	return nu;
 }
 
+int
+tune_save_parmsfile(void)
+{
+	FILE *f;
+
+	f = fopen(PARM_FILE, "wb");
+	if (!f) {
+		log_status("Couldn't open file %s!", PARM_FILE);
+		return 0;
+	}
+
+	tune_save_parms_to_file(f);
+
+	fclose(f);
+	return 1;
+}
+
 const char *
 tune_get_parmstring(const char *name, int mlev)
 {
@@ -983,6 +1000,23 @@ tune_load_parms_from_file(FILE * f, dbref player, int cnt)
 	}
 }
 
+int
+tune_load_parmsfile(dbref player)
+{
+	FILE *f;
+
+	f = fopen(PARM_FILE, "rb");
+	if (!f) {
+		log_status("Couldn't open file %s!", PARM_FILE);
+		return 0;
+	}
+
+	tune_load_parms_from_file(f, player, -1);
+
+	fclose(f);
+	return 1;
+}
+
 void
 do_tune(dbref player, char *parmname, char *parmval, int full_command_has_delimiter)
 {
@@ -1050,6 +1084,18 @@ do_tune(dbref player, char *parmname, char *parmval, int full_command_has_delimi
 		} else {
 			/* Show expanded information on all parameters */
 			tune_display_parms(player, "", security, 1);
+		}
+	} else if (*parmname && !string_compare(parmname, TP_SAVE_CMD)) {
+		if (tune_save_parmsfile()) {
+			notify(player, "Saved parameters to configuration file.");
+		} else {
+			notify(player, "Unable to save to configuration file.");
+		}
+	} else if (*parmname && !string_compare(parmname, TP_LOAD_CMD)) {
+		if (tune_load_parmsfile(player)) {
+			notify(player, "Restored parameters from configuration file.");
+		} else {
+			notify(player, "Unable to load from configuration file.");
 		}
 	} else {
 		tune_display_parms(player, parmname, security, 0);
