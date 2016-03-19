@@ -220,6 +220,7 @@ show_program_usage(char *prog)
 	fprintf(stderr, "        -sport NUMBER    Ignored.  SSL support isn't compiled in.\n");
 #endif
 	fprintf(stderr, "        -gamedir PATH    changes directory to PATH before starting up.\n");
+	fprintf(stderr, "        -parmfile PATH   replace the system parameters with those in PATH.\n");
 	fprintf(stderr, "        -convert         load the db, then save and quit.\n");
 	fprintf(stderr, "        -nosanity        don't do db sanity checks at startup time.\n");
 	fprintf(stderr, "        -insanity        load db, then enter the interactive sanity editor.\n");
@@ -243,7 +244,7 @@ extern int sanity_violated;
 int
 main(int argc, char **argv)
 {
-	FILE *ffd;
+	FILE *ffd, *parmfile;
 	char *infile_name;
 	char *outfile_name;
 	char *num_one_new_passwd = NULL;
@@ -377,7 +378,14 @@ main(int argc, char **argv)
 					perror("cd to gamedir");
 					exit(4);
 				}
-
+			} else if (!strcmp(argv[i], "-parmfile")) {
+				if (i + 1 >= argc) {
+					show_program_usage(*argv);
+				}
+				if ((parmfile = fopen(argv[++i], "r")) == NULL) {
+					perror("read parmfile");
+					exit(1);
+				}
 			} else if (!strcmp(argv[i], "--")) {
 				nomore_options = 1;
 			} else {
@@ -555,6 +563,10 @@ main(int argc, char **argv)
 
 	if (num_one_new_passwd != NULL) {
 		set_password(GOD, num_one_new_passwd);
+	}
+
+	if (parmfile) {
+		tune_load_parms_from_file(parmfile, NOTHING, -1);
 	}
 
 	if (!sanity_interactive && !db_conversion_flag) {
