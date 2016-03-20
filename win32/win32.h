@@ -2,6 +2,7 @@
 #define _WIN32_H_
 
 #include <winsock2.h>
+#include <windows.h>
 #include <process.h>
 #include <direct.h>
 #include <time.h>
