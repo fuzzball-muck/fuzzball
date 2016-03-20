@@ -4,13 +4,6 @@
 #include <ctype.h>
 #include <signal.h>
 
-#ifndef WIN32
-#include <sys/wait.h>
-#else
-#include <windows.h>
-#include <process.h>
-#endif
-
 #include "db.h"
 #include "props.h"
 #include "params.h"
@@ -334,17 +327,6 @@ dump_database(void)
 	log_status("DUMPING: %s.#%d# (done)", dumpfile, epoch);
 }
 
-#ifdef WIN32
-/* TODO: This is not thread safe - disabled for now... */
-/*void fork_dump_thread(void *arg) {
-	forked_dump_process_flag = 1;
-	dump_database_internal();
-        global_dumper_pid = 0;
-	_endthread();
-}*/
-#endif
-
-
 /*
  * Named "fork_and_dump()" mostly for historical reasons...
  */
@@ -388,11 +370,6 @@ fork_and_dump(void)
 	}
 # else /* !WIN32 */
 	dump_database_internal();
-	/* TODO: This is not thread safe - disabled for now... */
-	/*global_dumper_pid = (long) _beginthread(fork_dump_thread, 0, 0);
-	if (global_dumper_pid == -1L) {
-		wall_wizards("## Could not create thread for database dumping");
-	}*/
 # endif
 #endif
 }

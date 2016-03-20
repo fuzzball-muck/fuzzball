@@ -353,11 +353,32 @@
  * Windows compile environment.
  */
 #ifdef WIN32
-#undef SPAWN_HOST_RESOLVER
-#define NO_MEMORY_COMMAND
-#define NO_USAGE_COMMAND
-#define NOCOREDUMP
-#include "win32.h"
+# undef SPAWN_HOST_RESOLVER
+# define NO_MEMORY_COMMAND
+# define NO_USAGE_COMMAND
+# define NOCOREDUMP
+# define __STDC__ 1
+# include "./pcre.h"
+# include "win32.h"
+# define MUCK_LOCALTIME(t) uw32localtime(&t)
+ typedef int socklen_t;
+#else
+# define NEED_SOCKLEN_T
+/* "do not include netinet6/in6.h directly, include netinet/in.h.  see RFC2553" */
+# include <sys/socket.h>
+# include <netinet/in.h>
+# include <netinet/tcp.h>
+# include <netdb.h>
+# include <arpa/inet.h>
+# include <sys/file.h>
+# include <sys/ioctl.h>
+# include <sys/wait.h>
+# ifdef HAVE_PCREINCDIR
+#  include <pcre/pcre.h>
+# else
+#  include <pcre.h>
+# endif
+# define MUCK_LOCALTIME(t) localtime(&t)
 #endif
 
 #endif /* _CONFIG_H */
