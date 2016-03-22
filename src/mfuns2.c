@@ -145,8 +145,12 @@ mfn_testlock(MFUNARGS)
 	dbref who = player;
 	dbref obj = mesg_dbref_local(descr, player, what, perms, argv[0], mesgtyp);
 
-	if (argc > 2)
+	if (argc > 2) {
 		who = mesg_dbref_local(descr, player, what, perms, argv[2], mesgtyp);
+		if (Typeof(who) != TYPE_PLAYER && Typeof(who) != TYPE_THING) {
+			ABORT_MPI("TESTLOCK", "Invalid object type. (arg1)");
+		}
+	}		
 	if (who == AMBIGUOUS || who == UNKNOWN || who == NOTHING || who == HOME)
 		ABORT_MPI("TESTLOCK", "Match failed. (arg1)");
 	if (who == PERMDENIED)
