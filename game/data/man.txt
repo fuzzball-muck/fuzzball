@@ -168,7 +168,7 @@ N's
   newpassword        newplayer          newprogram         newroom
   next               nextdescr          nextentrance       nextowned
   nextprop           not                notify             notify_except
-  notify_exclude     number?            
+  notify_exclude     notify_nolisten    number?            
 
 O's
   objmem         odrop          ofail          ok?            online
@@ -1726,8 +1726,8 @@ Also see: PUBLIC, WIZCALL, CALL, $LIBDEF and $PUBDEF
 I/O Operators|IOOps
 I/O Operators
 
-notify             notify_except      notify_exclude     read
-read_wants_blanks  tread              userlog            
+notify             notify_except      notify_exclude     notify_nolisten
+read               read_wants_blanks  tread              userlog
 
 ~----------------------------------------------------------------------------
 ~
@@ -1741,6 +1741,14 @@ NOTIFY ( d s -- )
 s.  If s is null it will print nothing.  This primitive will trigger
 the _listen'er property on the object the message is sent to, unless
 the program that would be run is the same as one one currently running.
+~
+~
+NOTIFY_NOLISTEN
+NOTIFY_NOLISTEN ( d s -- )
+
+  d must be a player object. s must be a string. Tells player d message
+s.  If s is null it will print nothing.  This primitive will not trigger
+any _listen'er properties on the object the message is sent to.
 ~
 ~
 NOTIFY_EXCEPT

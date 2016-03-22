@@ -1272,6 +1272,13 @@ the _listen'er property on the object the message is sent to, unless
 the program that would be run is the same as one one currently running.
 
 
+NOTIFY_NOLISTEN ( d s -- )
+
+  d must be a player object. s must be a string. Tells player d message
+s.  If s is null it will print nothing.  This primitive will not trigger
+any _listen'er properties on the object the message is sent to.
+
+
 NOTIFY_EXCEPT ( d1 d2 s -- )
 
   d1 must be a room object, s must be a string.  Tells everyone at
