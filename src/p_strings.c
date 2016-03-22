@@ -1402,6 +1402,38 @@ prim_notify(PRIM_PROTOTYPE)
 
 
 void
+prim_notify_nolisten(PRIM_PROTOTYPE)
+{
+	struct inst *oper1 = NULL; /* prevents re-entrancy issues! */
+	struct inst *oper2 = NULL; /* prevents re-entrancy issues! */
+
+	CHECKOP(2);
+	oper1 = POP();
+	oper2 = POP();
+	if (oper1->type != PROG_STRING)
+		abort_interp("Non-string argument (2)");
+	if (!valid_object(oper2))
+		abort_interp("Invalid object argument (1)");
+	CHECKREMOTE(oper2->data.objref);
+
+	if (oper1->data.string) {
+		if (tp_force_mlev1_name_notify && mlev < 2 && player != oper2->data.objref) {
+			prefix_message(buf, oper1->data.string->data, NAME(player), BUFFER_LEN, 1);
+		}
+		else
+		{
+			/* TODO: The original code made this copy, is it really necessary? */
+			strcpyn(buf, sizeof(buf), oper1->data.string->data);
+		}
+
+		notify_nolisten(player, buf, 1);
+	}
+	CLEAR(oper1);
+	CLEAR(oper2);
+}
+
+
+void
 prim_notify_exclude(PRIM_PROTOTYPE)
 {
 	/* roomD excludeDn ... excludeD1 nI messageS  -- */
