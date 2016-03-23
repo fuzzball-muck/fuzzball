@@ -695,6 +695,12 @@ struct program_specific {
 #define PROGRAM_SET_MCPBINDS(x,y)	(PROGRAM_SP(x)->mcpbinds = y)
 #endif
 
+#ifndef WIN32
+# define MUCK_LOCALTIME(t)		localtime(&t)
+#else
+# define MUCK_LOCALTIME(t)		uw32localtime(&t)
+#endif
+
 struct player_specific {
 	dbref home;
 	dbref curr_prog;			/* program I'm currently editing */
