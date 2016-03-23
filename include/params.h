@@ -24,12 +24,6 @@
 #define SUFFIX_COMMAND "OUTPUTSUFFIX"
 #define NULL_COMMAND "@@"
 
-/* Turn this back on when you want MUD to set from root to some user_id */
-/* #define MUD_ID "MUCK" */
-
-/* Turn this on when you want MUCK to set to a specific group ID... */
-/* #define MUD_GID "MUCK" */
-
 /* Used for breaking out of muf READs or for stopping foreground programs. */
 #define BREAK_COMMAND "@Q"
 

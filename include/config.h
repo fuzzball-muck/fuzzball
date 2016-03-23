@@ -183,6 +183,12 @@
 /* Enable functionality conforming to MUD Client Protocol (MCP). */
 #define MCP_SUPPORT
 
+/* Turn this on when you want MUD to set from root to some user_id */
+/* #define MUD_ID "MUCK" */
+
+/* Turn this on when you want MUCK to set to a specific group ID... */
+/* #define MUD_GID "MUCK" */
+
 /************************************************************************/
 /************************************************************************/
 /*    FOR INTERNAL USE ONLY.  DON'T CHANGE ANYTHING PAST THIS POINT.    */
