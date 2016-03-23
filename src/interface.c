@@ -4,6 +4,12 @@
 
 #include <sys/types.h>
 
+#ifndef WIN32
+#include <sys/file.h>
+#include <sys/ioctl.h>
+#include <sys/wait.h>
+#endif
+
 #include <fcntl.h>
 #if defined (HAVE_ERRNO_H)
 # include <errno.h>
@@ -15,6 +21,18 @@
 #endif
 #endif
 #include <ctype.h>
+
+#ifndef WIN32
+# define NEED_SOCKLEN_T
+/* "do not include netinet6/in6.h directly, include netinet/in.h.  see RFC2553" */
+# include <sys/socket.h>
+# include <netinet/in.h>
+# include <netinet/tcp.h>
+# include <netdb.h>
+# include <arpa/inet.h>
+#else
+  typedef int socklen_t;
+#endif
 
 #ifdef AIX
 # include <sys/select.h>
@@ -1098,6 +1116,9 @@ shovechars()
 		next_muckevent();
 		process_commands();
 		muf_event_process();
+#ifdef WIN32
+/*		check_console();*/ /* Handle possible CTRL+C */
+#endif
 
 		for (d = descriptor_list; d; d = dnext) {
 			dnext = d->next;
