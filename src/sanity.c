@@ -7,9 +7,11 @@
 #include "db.h"
 #include "tune.h"
 #include "externs.h"
-
 #include "params.h"
 #include "props.h"
+#ifdef DISKBASE
+#include "diskprop.h"
+#endif
 
 #define unparse(x) ((char*)unparse_object(GOD, (x)))
 

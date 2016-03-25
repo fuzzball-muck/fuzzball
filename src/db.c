@@ -8,6 +8,9 @@
 #include "interface.h"
 #include "tune.h"
 #include "externs.h"
+#ifdef DISKBASE
+#include "diskprop.h"
+#endif
 
 struct object *db = 0;
 dbref db_top = 0;

@@ -3,6 +3,7 @@
 #include "params.h"
 #include "tune.h"
 #include "externs.h"
+#include "diskprop.h"
 
 extern FILE *input_file;
 extern void getproperties(FILE * f, dbref obj, const char *pdir);
@@ -539,8 +540,6 @@ undirtyprops(dbref obj)
 int
 propfetch(dbref obj, PropPtr p)
 {
-	FILE *f;
-
 	if (!p)
 		return 0;
 	SetPFlags(p, (PropFlags(p) | PROP_TOUCHED));

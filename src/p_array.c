@@ -13,6 +13,9 @@
 #include "interp.h"
 #include "props.h"
 #include "dbsearch.h"
+#ifdef DISKBASE
+#include "diskprop.h"
+#endif
 
 static struct inst *oper1, *oper2, *oper3, *oper4;
 static struct inst temp1, temp2;

@@ -9,6 +9,9 @@
 #include "tune.h"
 #include "match.h"
 #include "externs.h"
+#ifdef DISKBASE
+#include "diskprop.h"
+#endif
 
 char match_cmdname[BUFFER_LEN];	/* triggering command */
 char match_args[BUFFER_LEN];	/* remaining text */

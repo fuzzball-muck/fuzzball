@@ -12,6 +12,9 @@
 #include "dbsearch.h"
 #include "externs.h"
 #include "interface.h"
+#ifdef DISKBASE
+#include "diskprop.h"
+#endif
 
 #define EXEC_SIGNAL '@'			/* Symbol which tells us what we're looking at
 					   is an execution order and not a message.    */
