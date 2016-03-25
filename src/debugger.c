@@ -850,7 +850,7 @@ muf_debugger(int descr, dbref player, dbref program, const char *text, struct fr
 			for (i = startline; i <= endline; i++) {
 				pinst = linenum_to_pc(program, i);
 				if (pinst) {
-					notifyf_nolisten(player, "[]line %d: %s", i, (i == fr->pc->line) ?
+					notifyf_nolisten(player, "line %d: %s", i, (i == fr->pc->line) ?
 							show_line_prims(fr, program, fr->pc, STACK_SIZE, 1) :
 							show_line_prims(fr, program, pinst, STACK_SIZE, 0));
 				}
@@ -873,7 +873,7 @@ muf_debugger(int descr, dbref player, dbref program, const char *text, struct fr
 			fr->brkpt.showstack = 0;
 			notify_nolisten(player, "Trace turned off.", 1);
 		} else {
-			notifyf_nolisten(player, "[]Trace is currently %s.", fr->brkpt.showstack ? "on" : "off");
+			notifyf_nolisten(player, "Trace is currently %s.", fr->brkpt.showstack ? "on" : "off");
 		}
 		return 0;
 	} else if (!string_compare(cmd, "words")) {
