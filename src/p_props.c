@@ -13,6 +13,9 @@
 #include "interp.h"
 #include "msgparse.h"
 #include "tune.h"
+#ifdef DISKBASE
+#include "diskprop.h"
+#endif
 
 static struct inst *oper1, *oper2, *oper3, *oper4;
 static int result;
@@ -1101,7 +1104,7 @@ prim_blessedp(PRIM_PROTOTYPE)
 	if (!oper2->data.string)
 		abort_interp("Null string not allowed. (2)");
 	ref = oper1->data.objref;
-	(void) strcpyn(buf, sizeof(buf), oper2->data.string->data ? oper2->data.string->data : "");
+	(void) strcpyn(buf, sizeof(buf), oper2->data.string->data);
 	CLEAR(oper1);
 	CLEAR(oper2);
 

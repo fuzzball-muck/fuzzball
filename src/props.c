@@ -12,6 +12,9 @@
 #include "props.h"
 #include "externs.h"
 #include "interface.h"
+#ifdef DISKBASE
+#include "diskprop.h"
+#endif
 
 static PropPtr
 find(char *key, PropPtr avl)
