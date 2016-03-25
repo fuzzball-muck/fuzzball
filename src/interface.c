@@ -878,6 +878,32 @@ notify(dbref player, const char *msg)
 	return notify_from_echo(player, player, msg, 1);
 }
 
+void
+notifyf(dbref player, char *format, ...)
+{
+        va_list args;
+        char bufr[BUFFER_LEN];
+
+        va_start(args, format);
+        vsnprintf(bufr, sizeof(bufr), format, args);
+        bufr[sizeof(bufr)-1] = '\0';
+        notify(player, bufr);
+        va_end(args);
+}
+
+void
+notifyf_nolisten(dbref player, char *format, ...)
+{
+        va_list args;
+        char bufr[BUFFER_LEN];
+
+        va_start(args, format);
+        vsnprintf(bufr, sizeof(bufr), format, args);
+        bufr[sizeof(bufr)-1] = '\0';
+        notify_nolisten(player, bufr, 1);
+        va_end(args);
+}
+
 
 struct timeval
 timeval_sub(struct timeval now, struct timeval then)

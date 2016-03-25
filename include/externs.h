@@ -118,16 +118,18 @@ extern void spit_file_segment(dbref player, const char *filename, const char *se
 extern void do_armageddon(dbref player, const char *msg);
 extern void dump_status(void);
 extern void flush_user_output(dbref player);
+extern short global_dumpdone;
 #ifndef DISKBASE
 extern pid_t global_dumper_pid;
 #endif
-extern short global_dumpdone;
 extern pid_t global_resolver_pid;
 extern long max_open_files(void);
 extern int notify(dbref player, const char *msg);
 extern int notify_from(dbref from, dbref player, const char *msg);
 extern int notify_from_echo(dbref from, dbref player, const char *msg, int isprivate);
 extern int notify_nolisten(dbref player, const char *msg, int isprivate);
+extern void notifyf(dbref player, char *format, ...);
+extern void notifyf_nolisten(dbref player, char *format, ...);
 extern int pdescrsecure(int c);
 extern int pset_user(int c, dbref who);
 extern long sel_prof_idle_sec;
@@ -159,7 +161,6 @@ extern void log_program_text(struct line *first, dbref player, dbref i);
 extern void log_sanity(char *format, ...);
 extern void log_status(char *format, ...);
 extern void log_user(dbref player, dbref program, char *logmessage);
-extern void notify_fmt(dbref player, char *format, ...);
 
 /* look.c */
 extern void do_contents(int descr, dbref player, const char *name, const char *flags);

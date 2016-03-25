@@ -150,9 +150,8 @@ do_list_tree(struct macrotable *node, const char *first, const char *last,
 		if ((strncmp(node->name, first, strlen(first)) >= 0) &&
 			(strncmp(node->name, last, strlen(last)) <= 0)) {
 			if (length) {
-				snprintf(buf, sizeof(buf), "%-16s %-16s  %s", node->name,
+				notifyf(player, "%-16s %-16s  %s", node->name,
 						NAME(node->implementor), node->definition);
-				notify(player, buf);
 				buf[0] = '\0';
 			} else {
 				int blen = strlen(buf);
@@ -439,7 +438,6 @@ void
 do_delete(dbref player, dbref program, int arg[], int argc)
 {
 	struct line *curr, *temp;
-	char buf[BUFFER_LEN];
 	int i;
 
 	switch (argc) {
@@ -458,6 +456,7 @@ do_delete(dbref player, dbref program, int arg[], int argc)
 		for (curr = PROGRAM_FIRST(program); curr && i; i--)
 			curr = curr->next;
 		if (curr) {
+			int n = 0;
 			PROGRAM_SET_CURR_LINE(program, arg[0]);
 			i = arg[1] - arg[0] + 1;
 			/* delete n lines */
@@ -473,8 +472,8 @@ do_delete(dbref player, dbref program, int arg[], int argc)
 				free_line(temp);
 				i--;
 			}
-			snprintf(buf, sizeof(buf), "%d lines deleted", arg[1] - arg[0] - i + 1);
-			notify(player, buf);
+			n = arg[1] - arg[0] - i + 1;
+			notifyf(player, "%d line%s deleted", n, n != 1 ? "s" : "");
 		} else
 			notify(player, "No line to delete!");
 		break;
@@ -745,8 +744,7 @@ do_list(dbref player, dbref program, int *oarg, int argc)
 				curr = curr->next;
 			}
 			if (count - arg[0] > 1) {
-				snprintf(buf, sizeof(buf), "%d lines displayed.", count - arg[0]);
-				notify_nolisten(player, buf, 1);
+				notifyf_nolisten(player, "%d lines displayed.", count - arg[0]);
 			}
 		} else
 			notify_nolisten(player, "Line not available for display.", 1);

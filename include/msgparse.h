@@ -62,9 +62,9 @@ int free_mfuncs(int downto);
 #define MFUNARGS int descr, dbref player, dbref what, dbref perms, int argc, \
                 argv_typ argv, char *buf, int buflen, int mesgtyp
 
-#define CHECKRETURN(vari,funam,num) if (!vari) { snprintf(buf, BUFFER_LEN, "%s %c%s%c (%s)", get_mvar("how"), MFUN_LEADCHAR, funam, MFUN_ARGEND, num);  notify_nolisten(player, buf, 1);  return NULL; }
+#define CHECKRETURN(vari,funam,num) if (!vari) { notifyf_nolisten(player, "[]%s %c%s%c (%s)", get_mvar("how"), MFUN_LEADCHAR, funam, MFUN_ARGEND, num); return NULL; }
 
-#define ABORT_MPI(funam,mesg) { snprintf(buf, BUFFER_LEN, "%s %c%s%c: %s", get_mvar("how"), MFUN_LEADCHAR, funam, MFUN_ARGEND, mesg);  notify_nolisten(player, buf, 1);  return NULL; }
+#define ABORT_MPI(funam,mesg) { notifyf_nolisten(player, "[]%s %c%s%c: %s", get_mvar("how"), MFUN_LEADCHAR, funam, MFUN_ARGEND, mesg); return NULL; }
 
 typedef char **argv_typ;
 

@@ -208,7 +208,6 @@ unparse_breakpoint(struct frame *fr, int brk)
 void
 muf_backtrace(dbref player, dbref program, int count, struct frame *fr)
 {
-	char buf[BUFFER_LEN];
 	char buf2[BUFFER_LEN];
 	char buf3[BUFFER_LEN];
 	char *ptr;
@@ -238,8 +237,7 @@ muf_backtrace(dbref player, dbref program, int count, struct frame *fr)
 			cnt++;
 		} while (pinst == lastinst && j > 1);
 		if (cnt > 1) {
-			snprintf(buf, sizeof(buf), "     [repeats %d times]", cnt);
-			notify_nolisten(player, buf, 1);
+			notifyf_nolisten(player, "     [repeats %d times]", cnt);
 		}
 		lev = fr->system.top - j;
 		if (ptr) {
@@ -277,8 +275,7 @@ muf_backtrace(dbref player, dbref program, int count, struct frame *fr)
 			ptr = buf2;
 		}
 		if (pinst != lastinst) {
-			snprintf(buf, sizeof(buf), "\033[1;33;40m%3d)\033[0m \033[1m%s(#%d)\033[0m %s:", lev, NAME(ref), ref, ptr);
-			notify_nolisten(player, buf, 1);
+			notifyf_nolisten(player, "\033[1;33;40m%3d)\033[0m \033[1m%s(#%d)\033[0m %s:", lev, NAME(ref), ref, ptr);
 			flag = ((FLAGS(player) & INTERNAL) ? 1 : 0);
 			FLAGS(player) &= ~INTERNAL;
 			list_proglines(player, ref, fr, pinst->line, 0);
@@ -780,9 +777,9 @@ muf_debugger(int descr, dbref player, dbref program, const char *text, struct fr
 				cnt++;
 			} while (!string_compare(ptr, buf) && j > 0);
 			if (cnt > 1)
-				notify_fmt(player, "     [repeats %d times]", cnt);
+				notifyf(player, "     [repeats %d times]", cnt);
 			if (string_compare(ptr, buf))
-				notify_fmt(player, "%3d) %s", j + 1, ptr);
+				notifyf(player, "%3d) %s", j + 1, ptr);
 		}
 		notify_nolisten(player, "*done*", 1);
 		add_muf_read_event(descr, player, program, fr);
@@ -853,10 +850,9 @@ muf_debugger(int descr, dbref player, dbref program, const char *text, struct fr
 			for (i = startline; i <= endline; i++) {
 				pinst = linenum_to_pc(program, i);
 				if (pinst) {
-					snprintf(buf, sizeof(buf), "line %d: %s", i, (i == fr->pc->line) ?
+					notifyf_nolisten(player, "[]line %d: %s", i, (i == fr->pc->line) ?
 							show_line_prims(fr, program, fr->pc, STACK_SIZE, 1) :
 							show_line_prims(fr, program, pinst, STACK_SIZE, 0));
-					notify_nolisten(player, buf, 1);
 				}
 			}
 		} else {
@@ -877,8 +873,7 @@ muf_debugger(int descr, dbref player, dbref program, const char *text, struct fr
 			fr->brkpt.showstack = 0;
 			notify_nolisten(player, "Trace turned off.", 1);
 		} else {
-			snprintf(buf, sizeof(buf), "Trace is currently %s.", fr->brkpt.showstack ? "on" : "off");
-			notify_nolisten(player, buf, 1);
+			notifyf_nolisten(player, "[]Trace is currently %s.", fr->brkpt.showstack ? "on" : "off");
 		}
 		return 0;
 	} else if (!string_compare(cmd, "words")) {

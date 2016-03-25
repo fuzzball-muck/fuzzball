@@ -473,7 +473,7 @@ do_restrict(dbref player, const char *arg)
 		wizonly_mode = 0;
 		notify(player, "Login access is now unrestricted.");
 	} else {
-		notify_fmt(player, "Restricted connection mode is currently %s.",
+		notifyf(player, "Restricted connection mode is currently %s.",
 			wizonly_mode ? "on" : "off"
 		);
 	}

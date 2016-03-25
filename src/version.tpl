@@ -31,18 +31,12 @@ $hasharray
 void
 do_version(dbref player)
 {
-	char s[BUFFER_LEN];
-
-	snprintf(s, BUFFER_LEN, "Version: %s(%s) Compiled on: %s", VERSION, generation, creation);
-	notify(player, s);
-
-	snprintf(s, BUFFER_LEN, "Options: %s", compile_options);
-	notify(player, s);
+	notifyf(player, "Version: %s(%s) Compiled on: %s", VERSION, generation, creation);
+	notifyf(player, "Options: %s", compile_options);
 }
 
 void
 do_hashes(dbref player, char *args) {
-	char s[BUFFER_LEN];
 	hash_file_entry *entry;
 	int b_git = 0, b_sha1 = 0;
 	const char *filename;
@@ -84,14 +78,12 @@ do_hashes(dbref player, char *args) {
 		filename = entry->filename;
 
 		if (b_sha1 && entry->sha1hash) {
-			snprintf(s, BUFFER_LEN, "%-15s %s (sha1)", filename, entry->sha1hash);
-			notify(player, s);
+			notifyf(player, "%-15s %s (sha1)", filename, entry->sha1hash);
 			filename = "";
 		}
 
 		if (b_git && entry->githash) {
-			snprintf(s, BUFFER_LEN, "%-15s %s (git)", filename, entry->githash);
-			notify(player, s);
+			notifyf(player, "%-15s %s (git)", filename, entry->githash);
 		}
 
 		entry++;

@@ -11,8 +11,7 @@
 
 #define TP_SEND_ENTRY_INFO(tune_entry) \
 { \
-	snprintf(buf, sizeof(buf), "%-27s %.4096s", tune_entry->group, tune_entry->label); \
-	notify(player, buf); \
+	notifyf(player, "%-27s %.4096s", tune_entry->group, tune_entry->label); \
 }
 
 /* NOTE:  Do NOT use these values as the name of a parameter.  Reserve them as a preprocessor define so
@@ -349,10 +348,9 @@ tune_display_parms(dbref player, char *name, int mlev, int show_extended)
 		if (tstr->readmlev > mlev) { tstr++; continue; }
 		strcpyn(buf, sizeof(buf), tstr->name);
 		if (!*name || equalstr(name, buf)) {
-			snprintf(buf, sizeof(buf), "(str)  %-20s = %.4096s%s%s",
+			notifyf(player, "(str)  %-20s = %.4096s%s%s",
 			         tstr->name, *tstr->str, MOD_ENABLED(tstr->module) ? "" : " [inactive]",
 			         (tstr->isdefault) ? " [default]" : "");
-			notify(player, buf);
 			if (show_extended)
 				TP_SEND_ENTRY_INFO(tstr);
 			if (!parms_found)
@@ -365,10 +363,9 @@ tune_display_parms(dbref player, char *name, int mlev, int show_extended)
 		if (ttim->readmlev > mlev) { ttim++; continue; }
 		strcpyn(buf, sizeof(buf), ttim->name);
 		if (!*name || equalstr(name, buf)) {
-			snprintf(buf, sizeof(buf), "(time) %-20s = %s%s%s",
+			notifyf(player, "(time) %-20s = %s%s%s",
 			         ttim->name, timestr_full(*ttim->tim), MOD_ENABLED(ttim->module) ? "" : " [inactive]",
 			         (ttim->isdefault) ? " [default]" : "");
-			notify(player, buf);
 			if (show_extended)
 				TP_SEND_ENTRY_INFO(ttim);
 			if (!parms_found)
@@ -381,10 +378,9 @@ tune_display_parms(dbref player, char *name, int mlev, int show_extended)
 		if (tval->readmlev > mlev) { tval++; continue; }
 		strcpyn(buf, sizeof(buf), tval->name);
 		if (!*name || equalstr(name, buf)) {
-			snprintf(buf, sizeof(buf), "(int)  %-20s = %d%s%s",
+			notifyf(player, "(int)  %-20s = %d%s%s",
 			         tval->name, *tval->val, MOD_ENABLED(tval->module) ? "" : " [inactive]",
 			         (tval->isdefault) ? " [default]" : "");
-			notify(player, buf);
 			if (show_extended)
 				TP_SEND_ENTRY_INFO(tval);
 			if (!parms_found)
@@ -397,10 +393,9 @@ tune_display_parms(dbref player, char *name, int mlev, int show_extended)
 		if (tref->readmlev > mlev) { tref++; continue; }
 		strcpyn(buf, sizeof(buf), tref->name);
 		if (!*name || equalstr(name, buf)) {
-			snprintf(buf, sizeof(buf), "(ref)  %-20s = %s%s%s",
+			notifyf(player, "(ref)  %-20s = %s%s%s",
 			         tref->name, unparse_object(player, *tref->ref), MOD_ENABLED(tref->module) ? "" : " [inactive]",
 			         (tref->isdefault) ? " [default]" : "");
-			notify(player, buf);
 			if (show_extended)
 				TP_SEND_ENTRY_INFO(tref);
 			if (!parms_found)
@@ -413,10 +408,9 @@ tune_display_parms(dbref player, char *name, int mlev, int show_extended)
 		if (tbool->readmlev > mlev) {tbool++; continue; }
 		strcpyn(buf, sizeof(buf), tbool->name);
 		if (!*name || equalstr(name, buf)) {
-			snprintf(buf, sizeof(buf), "(bool) %-20s = %s%s%s",
+			notifyf(player, "(bool) %-20s = %s%s%s",
 			         tbool->name, ((*tbool->boolval) ? "yes" : "no"), MOD_ENABLED(tbool->module) ? "" : " [inactive]",
 			         (tbool->isdefault) ? " [default]" : "");
-			notify(player, buf);
 			if (show_extended)
 				TP_SEND_ENTRY_INFO(tbool);
 			if (!parms_found)

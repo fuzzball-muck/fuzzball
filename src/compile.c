@@ -1388,9 +1388,7 @@ do_compile(int descr, dbref player_in, dbref program_in, int force_err_display)
 		} while (optcnt > 0 && --maxpasses > 0);
 
 		if (force_err_display && optimcount > 0) {
-			char buf[BUFFER_LEN];
-			snprintf(buf, sizeof(buf), "Program optimized by %d instructions in %d passes.", optimcount, passcount);
-			notify_nolisten(cstat.player, buf, 1);
+			notifyf_nolisten(cstat.player, "Program optimized by %d instructions in %d passes.", optimcount, passcount);
 		}
 	}
 

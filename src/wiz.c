@@ -28,7 +28,6 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
 	dbref destination;
 	const char *to;
 	struct match_data md;
-	char buf[BUFFER_LEN];
 
 	/* get victim, destination */
 	if (*arg2 == '\0') {
@@ -127,8 +126,7 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
 			}
 			notify(victim, "You feel a wrenching sensation...");
 			enter_room(descr, victim, destination, LOCATION(victim));
-			snprintf(buf, sizeof(buf), "%s teleported to %s.", unparse_object(player, victim), unparse_object(player, destination));
-			notify(player, buf);
+			notifyf(player, "%s teleported to %s.", unparse_object(player, victim), unparse_object(player, destination));
 			break;
 		case TYPE_THING:
 			if (parent_loop_check(victim, destination)) {
@@ -160,8 +158,7 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
 			} else {
 				moveto(victim, destination);
 			}
-			snprintf(buf, sizeof(buf), "%s teleported to %s.", unparse_object(player, victim), unparse_object(player, destination));
-			notify(player, buf);
+			notifyf(player, "%s teleported to %s.", unparse_object(player, victim), unparse_object(player, destination));
 			break;
 		case TYPE_ROOM:
 			if (Typeof(destination) != TYPE_ROOM) {
@@ -179,8 +176,7 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
 				break;
 			}
 			moveto(victim, destination);
-			snprintf(buf, sizeof(buf), "Parent of %s set to %s.", unparse_object(player, victim), unparse_object(player, destination));
-			notify(player, buf);
+			notifyf(player, "Parent of %s set to %s.", unparse_object(player, victim), unparse_object(player, destination));
 			break;
 		case TYPE_GARBAGE:
 			notify(player, "That object is in a place where magic cannot reach it.");
@@ -258,7 +254,6 @@ do_unbless(int descr, dbref player, const char *what, const char *propname)
 {
 	dbref victim;
 	struct match_data md;
-	char buf[BUFFER_LEN];
 	int cnt;
 
 	if (!propname || !*propname) {
@@ -274,8 +269,7 @@ do_unbless(int descr, dbref player, const char *what, const char *propname)
 	}
 
 	cnt = blessprops_wildcard(player, victim, "", propname, 0);
-	snprintf(buf, sizeof(buf), "%d propert%s unblessed.", cnt, (cnt == 1)? "y" : "ies");
-	notify(player, buf);
+	notifyf(player, "%d propert%s unblessed.", cnt, (cnt == 1)? "y" : "ies");
 }
 
 
@@ -284,7 +278,6 @@ do_bless(int descr, dbref player, const char *what, const char *propname)
 {
 	dbref victim;
 	struct match_data md;
-	char buf[BUFFER_LEN];
 	int cnt;
 
 	if (!propname || !*propname) {
@@ -307,8 +300,7 @@ do_bless(int descr, dbref player, const char *what, const char *propname)
 #endif
 
 	cnt = blessprops_wildcard(player, victim, "", propname, 1);
-	snprintf(buf, sizeof(buf), "%d propert%s blessed.", cnt, (cnt == 1)? "y" : "ies");
-	notify(player, buf);
+	notifyf(player, "%d propert%s blessed.", cnt, (cnt == 1)? "y" : "ies");
 }
 
 void
@@ -434,11 +426,9 @@ do_stats(dbref player, const char *name)
 	time_t currtime = time(NULL);
 	dbref i;
 	dbref owner=NOTHING;
-	char buf[BUFFER_LEN];
 
 	if (!Wizard(OWNER(player)) && (!name || !*name)) {
-		snprintf(buf, sizeof(buf), "The universe contains %d objects.", db_top);
-		notify(player, buf);
+		notifyf(player, "The universe contains %d objects.", db_top);
 	} else {
 		total = rooms = exits = things = players = programs = 0;
 		if (name != NULL && *name != '\0') {
@@ -535,21 +525,21 @@ do_stats(dbref player, const char *name)
 			}
 		}
 
-		notify_fmt(player, "%7d room%s        %7d exit%s        %7d thing%s",
+		notifyf(player, "%7d room%s        %7d exit%s        %7d thing%s",
 				   rooms, (rooms == 1) ? " " : "s",
 				   exits, (exits == 1) ? " " : "s", things, (things == 1) ? " " : "s");
 
-		notify_fmt(player, "%7d program%s     %7d player%s      %7d garbage",
+		notifyf(player, "%7d program%s     %7d player%s      %7d garbage",
 				   programs, (programs == 1) ? " " : "s",
 				   players, (players == 1) ? " " : "s", garbage);
 
-		notify_fmt(player,
+		notifyf(player,
 				   "%7d total object%s                     %7d old & unused",
 				   total, (total == 1) ? " " : "s", oldobjs);
 
 #ifdef DISKBASE
 		if (Wizard(OWNER(player))) {
-			notify_fmt(player,
+			notifyf(player,
 					   "%7d proploaded object%s                %7d propchanged object%s",
 					   loaded, (loaded == 1) ? " " : "s", changed, (changed == 1) ? "" : "s");
 
@@ -563,7 +553,6 @@ void
 do_boot(dbref player, const char *name)
 {
 	dbref victim;
-	char buf[BUFFER_LEN];
 
 	if ((victim = lookup_player(name)) == NOTHING) {
 		notify(player, "That player does not exist.");
@@ -584,12 +573,10 @@ do_boot(dbref player, const char *name)
 			log_status("BOOTED: %s(%d) by %s(%d)", NAME(victim),
 					   victim, NAME(player), player);
 			if (player != victim) {
-				snprintf(buf, sizeof(buf), "You booted %s off!", NAME(victim));
-				notify(player, buf);
+				notifyf(player, "You booted %s off!", NAME(victim));
 			}
 		} else {
-			snprintf(buf, sizeof(buf), "%s is not connected.", NAME(victim));
-			notify(player, buf);
+			notifyf(player, "%s is not connected.", NAME(victim));
 		}
 	}
 }
@@ -685,8 +672,7 @@ do_toad(int descr, dbref player, const char *name, const char *recip)
 
 		/* notify people */
 		notify(victim, "You have been turned into a toad.");
-		snprintf(buf, sizeof(buf), "You turned %s into a toad!", NAME(victim));
-		notify(player, buf);
+		notifyf(player, "You turned %s into a toad!", NAME(victim));
 		log_status("TOADED: %s(%d) by %s(%d)", NAME(victim), victim, NAME(player), player);
 		/* reset name */
 		delete_player(victim);
@@ -720,7 +706,6 @@ void
 do_newpassword(dbref player, const char *name, const char *password)
 {
 	dbref victim;
-	char buf[BUFFER_LEN];
 
 	if ((victim = lookup_player(name)) == NOTHING) {
 		notify(player, "No such player.");
@@ -745,8 +730,7 @@ do_newpassword(dbref player, const char *name, const char *password)
 		set_password(victim, password);
 		DBDIRTY(victim);
 		notify(player, "Password changed.");
-		snprintf(buf, sizeof(buf), "Your password has been changed by %s.", NAME(player));
-		notify(victim, buf);
+		notifyf(victim, "Your password has been changed by %s.", NAME(player));
 		log_status("NEWPASS'ED: %s(%d) by %s(%d)", NAME(victim), victim,
 				   NAME(player), player);
 	}
@@ -756,15 +740,13 @@ void
 do_pcreate(dbref player, const char *user, const char *password)
 {
 	dbref newguy;
-	char buf[BUFFER_LEN];
 
 	newguy = create_player(user, password);
 	if (newguy == NOTHING) {
 		notify(player, "Create failed.");
 	} else {
 		log_status("PCREATED %s(%d) by %s(%d)", NAME(newguy), newguy, NAME(player), player);
-		snprintf(buf, sizeof(buf), "Player %s created as object #%d.", user, newguy);
-		notify(player, buf);
+		notifyf(player, "Player %s created as object #%d.", user, newguy);
 	}
 }
 
@@ -777,30 +759,30 @@ do_usage(dbref player)
 	struct rusage usage;
 #endif
 
-	notify_fmt(player, "Compiled on: %s", UNAME_VALUE);
-	notify_fmt(player, "Process ID: %d", getpid());
-	notify_fmt(player, "Max descriptors/process: %ld", max_open_files());
+	notifyf(player, "Compiled on: %s", UNAME_VALUE);
+	notifyf(player, "Process ID: %d", getpid());
+	notifyf(player, "Max descriptors/process: %ld", max_open_files());
 
 #ifdef HAVE_GETRUSAGE
 	psize = getpagesize();
 	getrusage(RUSAGE_SELF, &usage);
 
-	notify_fmt(player, "Performed %d input servicings.", usage.ru_inblock);
-	notify_fmt(player, "Performed %d output servicings.", usage.ru_oublock);
-	notify_fmt(player, "Sent %d messages over a socket.", usage.ru_msgsnd);
-	notify_fmt(player, "Received %d messages over a socket.", usage.ru_msgrcv);
-	notify_fmt(player, "Received %d signals.", usage.ru_nsignals);
-	notify_fmt(player, "Page faults NOT requiring physical I/O: %d", usage.ru_minflt);
-	notify_fmt(player, "Page faults REQUIRING physical I/O: %d", usage.ru_majflt);
-	notify_fmt(player, "Swapped out of main memory %d times.", usage.ru_nswap);
-	notify_fmt(player, "Voluntarily context switched %d times.", usage.ru_nvcsw);
-	notify_fmt(player, "Involuntarily context switched %d times.", usage.ru_nivcsw);
-	notify_fmt(player, "User time used: %d sec.", usage.ru_utime.tv_sec);
-	notify_fmt(player, "System time used: %d sec.", usage.ru_stime.tv_sec);
-	notify_fmt(player, "Pagesize for this machine: %d", psize);
-	notify_fmt(player, "Maximum resident memory: %ldk",
+	notifyf(player, "Performed %d input servicings.", usage.ru_inblock);
+	notifyf(player, "Performed %d output servicings.", usage.ru_oublock);
+	notifyf(player, "Sent %d messages over a socket.", usage.ru_msgsnd);
+	notifyf(player, "Received %d messages over a socket.", usage.ru_msgrcv);
+	notifyf(player, "Received %d signals.", usage.ru_nsignals);
+	notifyf(player, "Page faults NOT requiring physical I/O: %d", usage.ru_minflt);
+	notifyf(player, "Page faults REQUIRING physical I/O: %d", usage.ru_majflt);
+	notifyf(player, "Swapped out of main memory %d times.", usage.ru_nswap);
+	notifyf(player, "Voluntarily context switched %d times.", usage.ru_nvcsw);
+	notifyf(player, "Involuntarily context switched %d times.", usage.ru_nivcsw);
+	notifyf(player, "User time used: %d sec.", usage.ru_utime.tv_sec);
+	notifyf(player, "System time used: %d sec.", usage.ru_stime.tv_sec);
+	notifyf(player, "Pagesize for this machine: %d", psize);
+	notifyf(player, "Maximum resident memory: %ldk",
 			   (long) (usage.ru_maxrss * (psize / 1024)));
-	notify_fmt(player, "Integral resident memory: %ldk",
+	notifyf(player, "Integral resident memory: %ldk",
 			   (long) (usage.ru_idrss * (psize / 1024)));
 #endif							/* HAVE_GETRUSAGE */
 }
@@ -822,7 +804,6 @@ do_muf_topprofs(dbref player, char *arg1)
 
 	struct profnode *curr = NULL;
 	int nodecount = 0;
-	char buf[BUFFER_LEN];
 	dbref i = NOTHING;
 	int count = atoi(arg1);
 	time_t current_systime = time(NULL);
@@ -900,17 +881,15 @@ do_muf_topprofs(dbref player, char *arg1)
 	notify(player, "     %CPU   TotalTime  UseCount  Program");
 	while (tops) {
 		curr = tops;
-		snprintf(buf, sizeof(buf), "%10.3f %10.3f %9ld %s", curr->pcnt, curr->proftime, curr->usecount, unparse_object(player, curr->prog));
-		notify(player, buf);
+		notifyf(player, "%10.3f %10.3f %9ld %s", curr->pcnt, curr->proftime, curr->usecount, unparse_object(player, curr->prog));
 		tops = tops->next;
 		free(curr);
 	}
-	snprintf(buf, sizeof(buf), "Profile Length (sec): %5lld  %%idle: %5.2f%%  Total Cycles: %5lu",
+	notifyf(player, "Profile Length (sec): %5lld  %%idle: %5.2f%%  Total Cycles: %5lu",
 			(long long)(current_systime-sel_prof_start_time),
 			((double)(sel_prof_idle_sec+(sel_prof_idle_usec/1000000.0))*100.0)/
 			(double)((current_systime-sel_prof_start_time)+0.01),
 			sel_prof_idle_use);
-	notify(player,buf);
 	notify(player, "*Done*");
 }
 
@@ -929,7 +908,6 @@ do_mpi_topprofs(dbref player, char *arg1)
 
 	struct profnode *curr = NULL;
 	int nodecount = 0;
-	char buf[BUFFER_LEN];
 	dbref i = NOTHING;
 	int count = atoi(arg1);
 	time_t current_systime = time(NULL);
@@ -1006,17 +984,15 @@ do_mpi_topprofs(dbref player, char *arg1)
 	notify(player, "     %CPU   TotalTime  UseCount  Object");
 	while (tops) {
 		curr = tops;
-		snprintf(buf, sizeof(buf), "%10.3f %10.3f %9ld %s", curr->pcnt, curr->proftime, curr->usecount, unparse_object(player, curr->prog));
-		notify(player, buf);
+		notifyf(player, "%10.3f %10.3f %9ld %s", curr->pcnt, curr->proftime, curr->usecount, unparse_object(player, curr->prog));
 		tops = tops->next;
 		free(curr);
 	}
-	snprintf(buf, sizeof(buf), "Profile Length (sec): %5lld  %%idle: %5.2f%%  Total Cycles: %5lu",
+	notifyf(player, "Profile Length (sec): %5lld  %%idle: %5.2f%%  Total Cycles: %5lu",
 			(long long)(current_systime-sel_prof_start_time),
 			(((double)sel_prof_idle_sec+(sel_prof_idle_usec/1000000.0))*100.0)/
 			(double)((current_systime-sel_prof_start_time)+0.01),
 			sel_prof_idle_use);
-	notify(player,buf);
 	notify(player, "*Done*");
 }
 
@@ -1036,7 +1012,6 @@ do_all_topprofs(dbref player, char *arg1)
 
 	struct profnode *curr = NULL;
 	int nodecount = 0;
-	char buf[BUFFER_LEN];
 	dbref i = NOTHING;
 	int count = atoi(arg1);
 	time_t current_systime = time(NULL);
@@ -1174,17 +1149,15 @@ do_all_topprofs(dbref player, char *arg1)
 	notify(player, "     %CPU   TotalTime  UseCount  Type  Object");
 	while (tops) {
 		curr = tops;
-		snprintf(buf, sizeof(buf), "%10.3f %10.3f %9ld%5s   %s", curr->pcnt, curr->proftime, curr->usecount, curr->type?"MUF":"MPI",unparse_object(player, curr->prog));
-		notify(player, buf);
+		notifyf(player, "%10.3f %10.3f %9ld%5s   %s", curr->pcnt, curr->proftime, curr->usecount, curr->type?"MUF":"MPI",unparse_object(player, curr->prog));
 		tops = tops->next;
 		free(curr);
 	}
-	snprintf(buf, sizeof(buf), "Profile Length (sec): %5lld  %%idle: %5.2f%%  Total Cycles: %5lu",
+	notifyf(player, "Profile Length (sec): %5lld  %%idle: %5.2f%%  Total Cycles: %5lu",
 			(long long)(current_systime-sel_prof_start_time),
 			((double)(sel_prof_idle_sec+(sel_prof_idle_usec/1000000.0))*100.0)/
 			(double)((current_systime-sel_prof_start_time)+0.01),
 			sel_prof_idle_use);
-	notify(player,buf);
 	notify(player, "*Done*");
 }
 
@@ -1197,29 +1170,29 @@ do_memory(dbref who)
 		struct mallinfo mi;
 
 		mi = mallinfo();
-		notify_fmt(who, "Total allocated from system:   %6dk", (mi.arena / 1024));
-		notify_fmt(who, "Number of non-inuse chunks:    %6d", mi.ordblks);
-		notify_fmt(who, "Small block count:             %6d", mi.smblks);
-		notify_fmt(who, "Small block mem alloced:       %6dk", (mi.usmblks / 1024));
-		notify_fmt(who, "Small block memory free:       %6dk", (mi.fsmblks / 1024));
+		notifyf(who, "Total allocated from system:   %6dk", (mi.arena / 1024));
+		notifyf(who, "Number of non-inuse chunks:    %6d", mi.ordblks);
+		notifyf(who, "Small block count:             %6d", mi.smblks);
+		notifyf(who, "Small block mem alloced:       %6dk", (mi.usmblks / 1024));
+		notifyf(who, "Small block memory free:       %6dk", (mi.fsmblks / 1024));
 #ifdef HAVE_STRUCT_MALLINFO_HBLKS
-		notify_fmt(who, "Number of mmapped regions:     %6d", mi.hblks);
+		notifyf(who, "Number of mmapped regions:     %6d", mi.hblks);
 #endif
-		notify_fmt(who, "Total memory mmapped:          %6dk", (mi.hblkhd / 1024));
-		notify_fmt(who, "Total memory malloced:         %6dk", (mi.uordblks / 1024));
-		notify_fmt(who, "Mem allocated overhead:        %6dk", ((mi.arena - mi.uordblks) / 1024));
-		notify_fmt(who, "Memory free:                   %6dk", (mi.fordblks / 1024));
+		notifyf(who, "Total memory mmapped:          %6dk", (mi.hblkhd / 1024));
+		notifyf(who, "Total memory malloced:         %6dk", (mi.uordblks / 1024));
+		notifyf(who, "Mem allocated overhead:        %6dk", ((mi.arena - mi.uordblks) / 1024));
+		notifyf(who, "Memory free:                   %6dk", (mi.fordblks / 1024));
 #ifdef HAVE_STRUCT_MALLINFO_KEEPCOST
-		notify_fmt(who, "Top-most releasable chunk size:%6dk", (mi.keepcost / 1024));
+		notifyf(who, "Top-most releasable chunk size:%6dk", (mi.keepcost / 1024));
 #endif
 #ifdef HAVE_STRUCT_MALLINFO_TREEOVERHEAD
-		notify_fmt(who, "Memory free overhead:    %6dk", (mi.treeoverhead / 1024));
+		notifyf(who, "Memory free overhead:    %6dk", (mi.treeoverhead / 1024));
 #endif
 #ifdef HAVE_STRUCT_MALLINFO_GRAIN
-		notify_fmt(who, "Small block grain: %6d", mi.grain);
+		notifyf(who, "Small block grain: %6d", mi.grain);
 #endif
 #ifdef HAVE_STRUCT_MALLINFO_ALLOCATED
-		notify_fmt(who, "Mem chunks alloced:%6d", mi.allocated);
+		notifyf(who, "Mem chunks alloced:%6d", mi.allocated);
 #endif
 	}
 #endif							/* HAVE_MALLINFO */

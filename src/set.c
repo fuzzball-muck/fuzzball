@@ -109,14 +109,12 @@ set_standard_property(int descr, dbref player, const char *objname,
 			const char *propname, const char *proplabel,
 			const char *propvalue)
 {
-	char buf[BUFFER_LEN];
 	dbref object;
 
 	if ((object = match_controlled(descr, player, objname)) != NOTHING) {
 		SETMESG(object, propname, propvalue);
 		ts_modifyobject(object);
-		snprintf(buf, sizeof(buf), "%s %s.", proplabel, propvalue && *propvalue ? "set" : "cleared");
-		notify(player, buf);
+		notifyf(player, "%s %s.", proplabel, propvalue && *propvalue ? "set" : "cleared");
 	}
 }
 
@@ -125,7 +123,6 @@ set_standard_lock(int descr, dbref player, const char *objname,
 			const char *propname, const char *proplabel,
 			const char *keyvalue)
 {
-	char buf[BUFFER_LEN];
 	dbref object;
 	PData property;
 	struct boolexp *key;
@@ -134,8 +131,7 @@ set_standard_lock(int descr, dbref player, const char *objname,
 		if (!*keyvalue) {
 			remove_property(object, propname, 0);
 			ts_modifyobject(object);
-			snprintf(buf, sizeof(buf), "%s cleared.", proplabel);
-			notify(player, buf);
+			notifyf(player, "%s cleared.", proplabel);
 			return;
 		}
 		
@@ -149,8 +145,7 @@ set_standard_lock(int descr, dbref player, const char *objname,
 		property.data.lok = key;
 		set_property(object, propname, &property, 0);
 		ts_modifyobject(object);	
-		snprintf(buf, sizeof(buf), "%s set.", proplabel);
-		notify(player, buf);
+		notifyf(player, "%s set.", proplabel);
 	}
 }
 
@@ -353,7 +348,7 @@ do_relink(int descr, dbref player, const char *thing_name, const char *dest_name
 				}
 			} else {
 				if(!Wizard(OWNER(player)) && (GETVALUE(player) < (tp_link_cost + tp_exit_cost))) {
-					notify_fmt(player, "It costs %d %s to link this exit.",
+					notifyf(player, "It costs %d %s to link this exit.",
 							   (tp_link_cost + tp_exit_cost),
 							   (tp_link_cost + tp_exit_cost == 1) ? tp_penny : tp_pennies);
 					return;
@@ -510,10 +505,7 @@ do_chown(int descr, dbref player, const char *name, const char *newowner)
 	if (owner == player)
 		notify(player, "Owner changed to you.");
 	else {
-		char buf[BUFFER_LEN];
-
-		snprintf(buf, sizeof(buf), "Owner changed to %s.", unparse_object(player, owner));
-		notify(player, buf);
+		notifyf(player, "Owner changed to %s.", unparse_object(player, owner));
 	}
 	DBDIRTY(thing);
 }

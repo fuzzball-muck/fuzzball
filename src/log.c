@@ -117,16 +117,3 @@ log_user(dbref player, dbref program, char *logmessage)
 	strip_evil_characters(logformat);
 	log2file(USER_LOG,"%s",logformat);
 }
-
-void
-notify_fmt(dbref player, char *format, ...)
-{
-	va_list args;
-	char bufr[BUFFER_LEN];
-
-	va_start(args, format);
-	vsnprintf(bufr, sizeof(bufr), format, args);
-	bufr[sizeof(bufr)-1] = '\0';
-	notify(player, bufr);
-	va_end(args);
-}
