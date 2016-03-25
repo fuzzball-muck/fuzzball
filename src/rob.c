@@ -192,12 +192,12 @@ do_give(int descr, dbref player, const char *recipient, int amount)
 		case TYPE_PLAYER:
 			SETVALUE(who, GETVALUE(who) + amount);
 			if(amount >= 0) {
-				notifyf(who, "You give %d %s to %s.",
+				notifyf(player, "You give %d %s to %s.",
 						amount, amount == 1 ? tp_penny : tp_pennies, NAME(who));
 				notifyf(who, "%s gives you %d %s.",
 						NAME(player), amount, amount == 1 ? tp_penny : tp_pennies);
 			} else {
-				notifyf(who, "You take %d %s from %s.",
+				notifyf(player, "You take %d %s from %s.",
 						-amount, amount == -1 ? tp_penny : tp_pennies, NAME(who));
 				notifyf(who, "%s takes %d %s from you!",
 						NAME(player), -amount, -amount == 1 ? tp_penny : tp_pennies);
