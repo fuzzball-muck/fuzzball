@@ -21,8 +21,7 @@ do_say(dbref player, const char *message)
 		return;
 
 	/* notify everybody */
-	snprintf(buf, sizeof(buf), "You say, \"%s\"", message);
-	notify(player, buf);
+	notifyf(player, "You say, \"%s\"", message);
 	snprintf(buf, sizeof(buf), "%s says, \"%s\"", NAME(player), message);
 	notify_except(CONTENTS(loc), player, buf, player);
 }
@@ -51,12 +50,10 @@ do_whisper(int descr, dbref player, const char *arg1, const char *arg2)
 	default:
 		snprintf(buf, sizeof(buf), "%s whispers, \"%s\"", NAME(player), arg2);
 		if (!notify_from(player, who, buf)) {
-			snprintf(buf, sizeof(buf), "%s is not connected.", NAME(who));
-			notify(player, buf);
+			notifyf(player, "%s is not connected.", NAME(who));
 			break;
 		}
-		snprintf(buf, sizeof(buf), "You whisper, \"%s\" to %s.", arg2, NAME(who));
-		notify(player, buf);
+		notifyf(player, "You whisper, \"%s\" to %s.", arg2, NAME(who));
 		break;
 	}
 }
@@ -123,7 +120,7 @@ do_page(dbref player, const char *arg1, const char *arg2)
 	dbref target;
 
 	if (!payfor(player, tp_lookup_cost)) {
-		notify_fmt(player, "You don't have enough %s.", tp_pennies);
+		notifyf(player, "You don't have enough %s.", tp_pennies);
 		return;
 	}
 	if ((target = lookup_player(arg1)) == NOTHING) {
@@ -143,8 +140,7 @@ do_page(dbref player, const char *arg1, const char *arg2)
 	if (notify_from(player, target, buf))
 		notify(player, "Your message has been sent.");
 	else {
-		snprintf(buf, sizeof(buf), "%s is not connected.", NAME(target));
-		notify(player, buf);
+		notifyf(player, "%s is not connected.", NAME(target));
 	}
 }
 

@@ -570,9 +570,8 @@ mfn_with(MFUNARGS)
 	for (cnt = 2; cnt < argc; cnt++) {
 		ptr = MesgParse(argv[cnt], cmdbuf, sizeof(cmdbuf));
 		if (!ptr) {
-			snprintf(buf, BUFFER_LEN, "%s %cWITH%c (arg %d)", get_mvar("how"),
+			notifyf(player, "%s %cWITH%c (arg %d)", get_mvar("how"),
 					MFUN_LEADCHAR, MFUN_ARGEND, cnt);
-			notify(player, buf);
 			return NULL;
 		}
 	}
@@ -1369,7 +1368,6 @@ mfn_revoke(MFUNARGS)
 const char *
 mfn_timing(MFUNARGS)
 {
-	char buf2[128];
 	char *ptr;
 	struct timeval start_time, end_time;
 	int secs;
@@ -1390,8 +1388,7 @@ mfn_timing(MFUNARGS)
 		usecs -= 1000000;
 	}
 	timelen = ((double)secs) + (((double)usecs) / 1000000);
-	snprintf(buf2, sizeof(buf2), "Time elapsed: %.6f seconds", timelen);
-	notify_nolisten(player, buf2, 1);
+	notifyf_nolisten(player, "Time elapsed: %.6f seconds", timelen);
 
 	return buf;
 }

@@ -10,6 +10,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <ctype.h>
+#include <stdarg.h>
 
 /*
  * Ok, directory stuff IS a bit ugly.
@@ -44,6 +45,18 @@ notify(dbref player, const char *msg)
 	return printf("%s\n", msg);
 }
 
+void
+notifyf(dbref player, char *format, ...)
+{
+        va_list args;
+        char bufr[BUFFER_LEN];
+
+        va_start(args, format);
+        vsnprintf(bufr, sizeof(bufr), format, args);
+        bufr[sizeof(bufr)-1] = '\0';
+        notify(player, bufr);
+        va_end(args);
+}
 
 int
 string_prefix(register const char *string, register const char *prefix)
@@ -52,7 +65,6 @@ string_prefix(register const char *string, register const char *prefix)
 				string++, prefix++;
 		return *prefix == '\0';
 }
-
 
 int
 string_compare(register const char *s1, register const char *s2)
@@ -118,8 +130,7 @@ spit_file_segment(dbref player, const char *filename, const char *seg)
 		}
 	}
 	if ((f = fopen(filename, "rb")) == NULL) {
-		snprintf(buf, sizeof(buf), "Sorry, %s is missing.  Management has been notified.", filename);
-		notify(player, buf);
+		notifyf(player, "Sorry, %s is missing.  Management has been notified.", filename);
 		fputs("spit_file:", stderr);
 		perror(filename);
 	} else {
@@ -166,8 +177,7 @@ index_file(dbref player, const char *onwhat, const char *file)
 	}
 
 	if ((f = fopen(file, "rb")) == NULL) {
-		snprintf(buf, sizeof(buf), "Sorry, %s is missing.  Management has been notified.", file);
-		notify(player, buf);
+		notifyf(player, "Sorry, %s is missing.  Management has been notified.", file);
 		fprintf(stderr, "help: No file %s!\n", file);
 	} else {
 		if (*topic) {
@@ -175,16 +185,14 @@ index_file(dbref player, const char *onwhat, const char *file)
 			do {
 				do {
 					if (!(fgets(buf, sizeof buf, f))) {
-						snprintf(buf, sizeof(buf), "Sorry, no help available on topic \"%s\"", onwhat);
-						notify(player, buf);
+						notifyf(player, "Sorry, no help available on topic \"%s\"", onwhat);
 						fclose(f);
 						return;
 					}
 				} while (*buf != '~');
 				do {
 					if (!(fgets(buf, sizeof buf, f))) {
-						snprintf(buf, sizeof(buf), "Sorry, no help available on topic \"%s\"", onwhat);
-						notify(player, buf);
+						notifyf(player, "Sorry, no help available on topic \"%s\"", onwhat);
 						fclose(f);
 						return;
 					}

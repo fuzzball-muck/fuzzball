@@ -249,7 +249,6 @@ report_fetchstats(dbref player)
 {
 	int i, count, slot;
 	double sum, minv, maxv;
-	char buf[BUFFER_LEN];
 	time_t now;
 
 	now = time(NULL);
@@ -274,13 +273,11 @@ report_fetchstats(dbref player)
 			maxv = fetchstats[i];
 		i = ((i + FETCHSTATS_SLOTS - 1) % FETCHSTATS_SLOTS);
 	}
-	snprintf(buf, sizeof(buf), "Disk Fetches %2g minute min/avg/max: %.2f/%.2f/%.2f",
+	notifyf(player, "Disk Fetches %2g minute min/avg/max: %.2f/%.2f/%.2f",
 			(FETCHSTATS_INTERVAL1 / 60.0),
 			(minv * 60.0 / FETCHSTATS_SLOT_TIME),
 			(sum * 60.0 / (FETCHSTATS_SLOT_TIME * count)),
 			(maxv * 60.0 / FETCHSTATS_SLOT_TIME));
-	notify(player, buf);
-
 
 	for (; count < (FETCHSTATS_INTERVAL2 / FETCHSTATS_SLOT_TIME); count++) {
 		if (fetchstats[i] == -1)
@@ -292,13 +289,11 @@ report_fetchstats(dbref player)
 			maxv = fetchstats[i];
 		i = ((i + FETCHSTATS_SLOTS - 1) % FETCHSTATS_SLOTS);
 	}
-	snprintf(buf, sizeof(buf), "Disk Fetches %2g minute min/avg/max: %.2f/%.2f/%.2f",
+	notifyf(player, "Disk Fetches %2g minute min/avg/max: %.2f/%.2f/%.2f",
 			(FETCHSTATS_INTERVAL2 / 60.0),
 			(minv * 60.0 / FETCHSTATS_SLOT_TIME),
 			(sum * 60.0 / (FETCHSTATS_SLOT_TIME * count)),
 			(maxv * 60.0 / FETCHSTATS_SLOT_TIME));
-	notify(player, buf);
-
 
 	for (; count < (FETCHSTATS_INTERVAL3 / FETCHSTATS_SLOT_TIME); count++) {
 		if (fetchstats[i] == -1)
@@ -310,12 +305,11 @@ report_fetchstats(dbref player)
 			maxv = fetchstats[i];
 		i = ((i + FETCHSTATS_SLOTS - 1) % FETCHSTATS_SLOTS);
 	}
-	snprintf(buf, sizeof(buf), "Disk Fetches %2g minute min/avg/max: %.2f/%.2f/%.2f",
+	notifyf(player, "Disk Fetches %2g minute min/avg/max: %.2f/%.2f/%.2f",
 			(FETCHSTATS_INTERVAL3 / 60.0),
 			(minv * 60.0 / FETCHSTATS_SLOT_TIME),
 			(sum * 60.0 / (FETCHSTATS_SLOT_TIME * count)),
 			(maxv * 60.0 / FETCHSTATS_SLOT_TIME));
-	notify(player, buf);
 }
 
 
@@ -326,7 +320,6 @@ report_cachestats(dbref player)
 	int count, total, checked, gap, ipct;
 	time_t when, now;
 	double pct;
-	char buf[BUFFER_LEN];
 
 	notify(player, "LRU proploaded cache time distribution graph.");
 
@@ -351,8 +344,7 @@ report_cachestats(dbref player)
 		if (count) {
 			if (gap)
 				notify(player, "[gap]");
-			snprintf(buf, sizeof(buf), "%3ld:%6d (%5.2f%%) %*s", ((now - when) / 60), count, pct, ipct, "*");
-			notify(player, buf);
+			notifyf(player, "%3ld:%6d (%5.2f%%) %*s", ((now - when) / 60), count, pct, ipct, "*");
 			gap = 0;
 		} else {
 			gap = 1;
@@ -364,22 +356,19 @@ report_cachestats(dbref player)
 void
 diskbase_debug(dbref player)
 {
-	char buf[BUFFER_LEN];
 	double ph, pm;
 
 	ph = propcache_hits;
 	pm = propcache_misses;
 
 	notify(player, "Cache info:");
-	snprintf(buf, sizeof(buf),
-			"Propcache hit ratio: %.3f%% (%ld hits / %ld fetches)",
+	notifyf(player, "Propcache hit ratio: %.3f%% (%ld hits / %ld fetches)",
 			(100.0 * ph / (ph + pm)), propcache_hits, propcache_misses);
-	notify(player, buf);
 	report_fetchstats(player);
 
-	notify_fmt(player, "PropLoaded count: %d", proploaded_Q.count);
-	notify_fmt(player, "PropPriority count: %d", proppri_Q.count);
-	notify_fmt(player, "PropChanged count: %d", propchanged_Q.count);
+	notifyf(player, "PropLoaded count: %d", proploaded_Q.count);
+	notifyf(player, "PropPriority count: %d", proppri_Q.count);
+	notifyf(player, "PropChanged count: %d", propchanged_Q.count);
 	report_cachestats(player);
         notify(player, "Done.");
 }

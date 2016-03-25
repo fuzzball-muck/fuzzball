@@ -11,7 +11,6 @@ void
 do_rob(int descr, dbref player, const char *what)
 {
 	dbref thing;
-	char buf[BUFFER_LEN];
 	struct match_data md;
 
 	init_match(descr, player, what, TYPE_PLAYER, &md);
@@ -34,21 +33,17 @@ do_rob(int descr, dbref player, const char *what)
 		if (Typeof(thing) != TYPE_PLAYER) {
 			notify(player, "Sorry, you can only rob other players.");
 		} else if (GETVALUE(thing) < 1) {
-			snprintf(buf, sizeof(buf), "%s has no %s.", NAME(thing), tp_pennies);
-			notify(player, buf);
-			snprintf(buf, sizeof(buf),
-					"%s tried to rob you, but you have no %s to take.",
+			notifyf(player, "%s has no %s.", NAME(thing), tp_pennies);
+			notifyf(thing, "%s tried to rob you, but you have no %s to take.",
 					NAME(player), tp_pennies);
-			notify(thing, buf);
 		} else if (can_doit(descr, player, thing, "Your conscience tells you not to.")) {
 			/* steal a penny */
 			SETVALUE(OWNER(player), GETVALUE(OWNER(player)) + 1);
 			DBDIRTY(player);
 			SETVALUE(thing, GETVALUE(thing) - 1);
 			DBDIRTY(thing);
-			notify_fmt(player, "You stole a %s.", tp_penny);
-			snprintf(buf, sizeof(buf), "%s stole one of your %s!", NAME(player), tp_pennies);
-			notify(thing, buf);
+			notifyf(player, "You stole a %s.", tp_penny);
+			notifyf(thing, "%s stole one of your %s!", NAME(player), tp_pennies);
 		}
 		break;
 	}
@@ -104,15 +99,14 @@ do_kill(int descr, dbref player, const char *what, int cost)
 
 			/* see if it works */
 			if (!payfor(player, cost)) {
-				notify_fmt(player, "You don't have enough %s.", tp_pennies);
+				notifyf(player, "You don't have enough %s.", tp_pennies);
 			} else if ((RANDOM() % tp_kill_base_cost) < cost && !Wizard(OWNER(victim))) {
 				/* you killed him */
 				if (GETDROP(victim))
 					/* give him the drop message */
 					notify(player, GETDROP(victim));
 				else {
-					snprintf(buf, sizeof(buf), "You killed %s!", NAME(victim));
-					notify(player, buf);
+					notifyf(player, "You killed %s!", NAME(victim));
 				}
 
 				/* now notify everybody else */
@@ -127,9 +121,8 @@ do_kill(int descr, dbref player, const char *what, int cost)
 
 				/* maybe pay off the bonus */
 				if (GETVALUE(victim) < tp_max_pennies) {
-					snprintf(buf, sizeof(buf), "Your insurance policy pays %d %s.",
+					notifyf(victim, "Your insurance policy pays %d %s.",
 							tp_kill_bonus, tp_pennies);
-					notify(victim, buf);
 					SETVALUE(victim, GETVALUE(victim) + tp_kill_bonus);
 					DBDIRTY(victim);
 				} else {
@@ -141,8 +134,7 @@ do_kill(int descr, dbref player, const char *what, int cost)
 			} else {
 				/* notify player and victim only */
 				notify(player, "Your murder attempt failed.");
-				snprintf(buf, sizeof(buf), "%s tried to kill you!", NAME(player));
-				notify(victim, buf);
+				notifyf(victim, "%s tried to kill you!", NAME(player));
 			}
 			break;
 		}
@@ -153,7 +145,6 @@ void
 do_give(int descr, dbref player, const char *recipient, int amount)
 {
 	dbref who;
-	char buf[BUFFER_LEN];
 	struct match_data md;
 
 	/* do amount consistency check */
@@ -161,7 +152,7 @@ do_give(int descr, dbref player, const char *recipient, int amount)
 		notify(player, "Try using the \"rob\" command.");
 		return;
 	} else if (amount == 0) {
-		notify_fmt(player, "You must specify a positive number of %s.", tp_pennies);
+		notifyf(player, "You must specify a positive number of %s.", tp_pennies);
 		return;
 	}
 	/* check recipient */
@@ -185,7 +176,7 @@ do_give(int descr, dbref player, const char *recipient, int amount)
 				notify(player, "You can only give to other players.");
 				return;
 			} else if (GETVALUE(who) + amount > tp_max_pennies) {
-				notify_fmt(player, "That player doesn't need that many %s!", tp_pennies);
+				notifyf(player, "That player doesn't need that many %s!", tp_pennies);
 				return;
 			}
 		}
@@ -194,37 +185,32 @@ do_give(int descr, dbref player, const char *recipient, int amount)
 
 	/* try to do the give */
 	if (!payfor(player, amount)) {
-		notify_fmt(player, "You don't have that many %s to give!", tp_pennies);
+		notifyf(player, "You don't have that many %s to give!", tp_pennies);
 	} else {
 		/* he can do it */
 		switch (Typeof(who)) {
 		case TYPE_PLAYER:
 			SETVALUE(who, GETVALUE(who) + amount);
 			if(amount >= 0) {
-				snprintf(buf, sizeof(buf), "You give %d %s to %s.",
+				notifyf(who, "You give %d %s to %s.",
 						amount, amount == 1 ? tp_penny : tp_pennies, NAME(who));
-				notify(player, buf);
-				snprintf(buf, sizeof(buf), "%s gives you %d %s.",
+				notifyf(who, "%s gives you %d %s.",
 						NAME(player), amount, amount == 1 ? tp_penny : tp_pennies);
-				notify(who, buf);
 			} else {
-				snprintf(buf, sizeof(buf), "You take %d %s from %s.",
+				notifyf(who, "You take %d %s from %s.",
 						-amount, amount == -1 ? tp_penny : tp_pennies, NAME(who));
-				notify(player, buf);
-				snprintf(buf, sizeof(buf), "%s takes %d %s from you!",
+				notifyf(who, "%s takes %d %s from you!",
 						NAME(player), -amount, -amount == 1 ? tp_penny : tp_pennies);
-				notify(who, buf);
 			}
 			break;
 		case TYPE_THING:
 			SETVALUE(who, (GETVALUE(who) + amount));
-			snprintf(buf, sizeof(buf), "You change the value of %s to %d %s.",
+			notifyf(player, "You change the value of %s to %d %s.",
 					NAME(who),
 					GETVALUE(who), GETVALUE(who) == 1 ? tp_penny : tp_pennies);
-			notify(player, buf);
 			break;
 		default:
-			notify_fmt(player, "You can't give %s to that!", tp_pennies);
+			notifyf(player, "You can't give %s to that!", tp_pennies);
 			break;
 		}
 		DBDIRTY(who);

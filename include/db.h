@@ -247,18 +247,14 @@ typedef long object_flag_type;
 #define NOGUEST(_cmd,x) \
 if(ISGUEST(x)) \
 {   \
-    char tmpstr[BUFFER_LEN]; \
     log_status("Guest %s(#%d) failed attempt to %s.\n",NAME(x),x,_cmd); \
-    snprintf(tmpstr, sizeof(tmpstr), "Guests are not allowed to %s.\r", _cmd); \
-    notify_nolisten(x,tmpstr,1); \
+    notifyf_nolisten(x, "Guests are not allowed to %s.\r", _cmd); \
     return; \
 }
 #define NOFORCE(_cmd,fl,x) \
 if(fl) \
 {   \
-    char tmpstr[BUFFER_LEN]; \
-    snprintf(tmpstr, sizeof(tmpstr), "You can't use %s from a @force or {force}.\r", _cmd); \
-    notify_nolisten(x,tmpstr,1); \
+    notifyf_nolisten(x, "You can't use %s from a @force or {force}.\r", _cmd); \
     return; \
 }
 
@@ -310,36 +306,28 @@ if(fl) \
 #define BUILDERONLY(_cmd,x) \
 if(!Builder(x)) \
 {   \
-    char tmpstr[BUFFER_LEN]; \
-    snprintf(tmpstr, sizeof(tmpstr), "Only builders are allowed to %s.\r", _cmd); \
-    notify_nolisten(x,tmpstr,1); \
+    notifyf_nolisten(x, "Only builders are allowed to %s.\r", _cmd); \
     return; \
 }
 
 #define MUCKERONLY(_cmd,x) \
 if(!Mucker(x)) \
 {   \
-    char tmpstr[BUFFER_LEN]; \
-    snprintf(tmpstr, sizeof(tmpstr), "Only programmers are allowed to %s.\r", _cmd); \
-    notify_nolisten(x,tmpstr,1); \
+    notifyf_nolisten(x, "Only programmers are allowed to %s.\r", _cmd); \
     return; \
 }
 
 #define PLAYERONLY(_cmd,x) \
 if(Typeof(x) != TYPE_PLAYER) \
 {   \
-    char tmpstr[BUFFER_LEN]; \
-    snprintf(tmpstr, sizeof(tmpstr), "Only players are allowed to %s.\r", _cmd); \
-    notify_nolisten(x,tmpstr,1); \
+    notifyf_nolisten(x, "Only players are allowed to %s.\r", _cmd); \
     return; \
 }
 
 #define WIZARDONLY(_cmd,x) \
 if(!Wizard(OWNER(x))) \
 {   \
-    char tmpstr[BUFFER_LEN]; \
-    snprintf(tmpstr, sizeof(tmpstr), "You are not allowed to %s.\r", _cmd); \
-    notify_nolisten(x,tmpstr,1); \
+    notifyf_nolisten(x, "You are not allowed to %s.\r", _cmd); \
     return; \
 }
 
@@ -349,9 +337,7 @@ if(!Wizard(OWNER(x))) \
  #define GODONLY(_cmd,x) \
 if(!God(x)) \
 {   \
-    char tmpstr[BUFFER_LEN]; \
-    snprintf(tmpstr, sizeof(tmpstr), "You are not allowed to %s.\r", _cmd); \
-    notify_nolisten(x,tmpstr,1); \
+    notifyf_nolisten(x, "You are not allowed to %s.\r", _cmd); \
     return; \
 }
 #endif

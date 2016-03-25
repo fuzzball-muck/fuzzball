@@ -27,7 +27,6 @@ static dbref
 parse_linkable_dest(int descr, dbref player, dbref exit, const char *dest_name)
 {
 	dbref dobj;					/* destination room/player/thing/link */
-	static char buf[BUFFER_LEN];
 	struct match_data md;
 
 	init_match(descr, player, dest_name, NOTYPE, &md);
@@ -37,16 +36,14 @@ parse_linkable_dest(int descr, dbref player, dbref exit, const char *dest_name)
 	match_nil(&md);
 
 	if ((dobj = match_result(&md)) == NOTHING || dobj == AMBIGUOUS) {
-		snprintf(buf, sizeof(buf), "I couldn't find '%s'.", dest_name);
-		notify(player, buf);
+		notifyf(player, "I couldn't find '%s'.", dest_name);
 		return NOTHING;
 
 	}
 
 	if (!tp_teleport_to_player && Typeof(dobj) == TYPE_PLAYER) {
-		snprintf(buf, sizeof(buf), "You can't link to players.  Destination %s ignored.",
+		notifyf(player, "You can't link to players.  Destination %s ignored.",
 				unparse_object(player, dobj));
-		notify(player, buf);
 		return NOTHING;
 	}
 
@@ -55,8 +52,7 @@ parse_linkable_dest(int descr, dbref player, dbref exit, const char *dest_name)
 		return NOTHING;
 	}
 	if (!can_link_to(player, Typeof(exit), dobj)) {
-		snprintf(buf, sizeof(buf), "You can't link to %s.", unparse_object(player, dobj));
-		notify(player, buf);
+		notifyf(player, "You can't link to %s.", unparse_object(player, dobj));
 		return NOTHING;
 	} else {
 		return dobj;
@@ -133,7 +129,7 @@ do_open(int descr, dbref player, const char *direction, const char *linkto)
 		notify(player, "Permission denied. (you don't control the location)");
 		return;
 	} else if (!payfor(player, tp_exit_cost)) {
-		notify_fmt(player, "Sorry, you don't have enough %s to open an exit.", tp_pennies);
+		notifyf(player, "Sorry, you don't have enough %s to open an exit.", tp_pennies);
 		return;
 	} else {
 		/* create the exit */
@@ -152,14 +148,13 @@ do_open(int descr, dbref player, const char *direction, const char *linkto)
 		DBDIRTY(loc);
 
 		/* and we're done */
-		snprintf(buf, sizeof(buf), "Exit %s opened as #%d.", NAME(exit), exit);
-		notify(player, buf);
+		notifyf(player, "Exit %s opened as #%d.", NAME(exit), exit);
 
 		/* check second arg to see if we should do a link */
 		if (*qname != '\0') {
 			notify(player, "Trying to link...");
 			if (!payfor(player, tp_link_cost)) {
-				notify_fmt(player, "You don't have enough %s to link.", tp_pennies);
+				notifyf(player, "You don't have enough %s to link.", tp_pennies);
 			} else {
 				ndest = link_exit(descr, player, exit, (char *) qname, good_dest);
 				DBFETCH(exit)->sp.exit.ndest = ndest;
@@ -175,8 +170,7 @@ do_open(int descr, dbref player, const char *direction, const char *linkto)
 	if (*rname) {
 		PData mydat;
 
-		snprintf(buf, sizeof(buf), "Registered as $%s", rname);
-		notify(player, buf);
+		notifyf(player, "Registered as $%s", rname);
 		snprintf(buf, sizeof(buf), "_reg/%s", rname);
 		mydat.flags = PROP_REFTYP;
 		mydat.data.ref = exit;
@@ -191,7 +185,7 @@ _link_exit(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_li
 	int prdest;
 	dbref dest;
 	int ndest, error;
-	char buf[BUFFER_LEN], qbuf[BUFFER_LEN];
+	char qbuf[BUFFER_LEN];
 
 	prdest = 0;
 	ndest = 0;
@@ -224,10 +218,8 @@ _link_exit(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_li
 		case TYPE_ROOM:
 		case TYPE_PROGRAM:
 			if (prdest) {
-				snprintf(buf, sizeof(buf),
-						"Only one player, room, or program destination allowed. Destination %s ignored.",
+				notifyf(player, "Only one player, room, or program destination allowed. Destination %s ignored.",
 						unparse_object(player, dest));
-				notify(player, buf);
 
 				if(dryrun)
 					error = 1;
@@ -242,10 +234,8 @@ _link_exit(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_li
 			break;
 		case TYPE_EXIT:
 			if (exit_loop_check(exit, dest)) {
-				snprintf(buf, sizeof(buf),
-						"Destination %s would create a loop, ignored.",
+				notifyf(player, "Destination %s would create a loop, ignored.",
 						unparse_object(player, dest));
-				notify(player, buf);
 				
 				if(dryrun)
 					error = 1;
@@ -267,8 +257,7 @@ _link_exit(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_li
 			if (dest == HOME) {
 				notify(player, "Linked to HOME.");
 			} else {
-				snprintf(buf, sizeof(buf), "Linked to %s.", unparse_object(player, dest));
-				notify(player, buf);
+				notifyf(player, "Linked to %s.", unparse_object(player, dest));
 			}
 		}
 		
@@ -370,13 +359,13 @@ do_link(int descr, dbref player, const char *thing_name, const char *dest_name)
 		/* handle costs */
 		if (OWNER(thing) == OWNER(player)) {
 			if (!payfor(player, tp_link_cost)) {
-				notify_fmt(player, "It costs %d %s to link this exit.",
+				notifyf(player, "It costs %d %s to link this exit.",
 						   tp_link_cost, (tp_link_cost == 1) ? tp_penny : tp_pennies);
 				return;
 			}
 		} else {
 			if (!payfor(player, tp_link_cost + tp_exit_cost)) {
-				notify_fmt(player, "It costs %d %s to link this exit.",
+				notifyf(player, "It costs %d %s to link this exit.",
 						   (tp_link_cost + tp_exit_cost),
 						   (tp_link_cost + tp_exit_cost == 1) ? tp_penny : tp_pennies);
 				return;
@@ -499,7 +488,7 @@ do_dig(int descr, dbref player, const char *name, const char *pname)
 		return;
 	}
 	if (!payfor(player, tp_room_cost)) {
-		notify_fmt(player, "Sorry, you don't have enough %s to dig a room.", tp_pennies);
+		notifyf(player, "Sorry, you don't have enough %s to dig a room.", tp_pennies);
 		return;
 	}
 	room = new_object();
@@ -521,8 +510,7 @@ do_dig(int descr, dbref player, const char *name, const char *pname)
 	DBDIRTY(room);
 	DBDIRTY(newparent);
 
-	snprintf(buf, sizeof(buf), "Room %s created as #%d.", name, room);
-	notify(player, buf);
+	notifyf(player, "Room %s created as #%d.", name, room);
 
 	strcpyn(buf, sizeof(buf), pname);
 	for (rname = buf; (*rname && (*rname != '=')); rname++) ;
@@ -549,8 +537,7 @@ do_dig(int descr, dbref player, const char *name, const char *pname)
 				notify(player, "Permission denied.  Parent set to default.");
 			} else {
 				moveto(room, parent);
-				snprintf(buf, sizeof(buf), "Parent set to %s.", unparse_object(player, parent));
-				notify(player, buf);
+				notifyf(player, "Parent set to %s.", unparse_object(player, parent));
 			}
 		}
 	}
@@ -562,8 +549,7 @@ do_dig(int descr, dbref player, const char *name, const char *pname)
 		mydat.flags = PROP_REFTYP;
 		mydat.data.ref = room;
 		set_property(player, buf, &mydat, 0);
-		snprintf(buf, sizeof(buf), "Room registered as $%s", rname);
-		notify(player, buf);
+		notifyf(player, "Registered as $%s", rname);
 	}
 }
 
@@ -636,8 +622,7 @@ do_prog(int descr, dbref player, const char *name)
 		PUSH(newprog, CONTENTS(player));
 		DBDIRTY(newprog);
 		DBDIRTY(player);
-		snprintf(buf, sizeof(buf), "Entering editor for new program %s.", unparse_object(player, newprog));
-		notify(player, buf);
+		notifyf(player, "Entering editor for new program %s.", unparse_object(player, newprog));
 	} else if (i == AMBIGUOUS) {
 		notify(player, "I don't know which one you mean!");
 		return;
@@ -653,8 +638,7 @@ do_prog(int descr, dbref player, const char *name)
 		PROGRAM_SET_FIRST(i, read_program(i));
 		FLAGS(i) |= INTERNAL;
 		PLAYER_SET_CURR_PROG(player, i);
-		snprintf(buf, sizeof(buf), "Entering editor for %s.", unparse_object(player, i));
-		notify(player, buf);
+		notifyf(player, "Entering editor for %s.", unparse_object(player, i));
 		/* list current line */
 		do_list(player, i, NULL, 0);
 		DBDIRTY(i);
@@ -694,7 +678,7 @@ do_edit(int descr, dbref player, const char *name)
 	FLAGS(i) |= INTERNAL;
 	PROGRAM_SET_FIRST(i, read_program(i));
 	PLAYER_SET_CURR_PROG(player, i);
-	notify(player, "Entering editor.");
+	notifyf(player, "Entering editor for %s.", unparse_object(player, i));
 	/* list current line */
 	do_list(player, i, NULL, 0);
 	FLAGS(player) |= INTERACTIVE;
@@ -759,7 +743,6 @@ copy_props(dbref player, dbref source, dbref destination, const char *dir)
 {
 	char propname[BUFFER_LEN];
 	char buf[BUFFER_LEN];
-	char buf2[BUFFER_LEN];
 	PropPtr propadr, pptr;
 
 	/* loop through all properties in the current propdir */
@@ -771,8 +754,7 @@ copy_props(dbref player, dbref source, dbref destination, const char *dir)
 
 		/* notify player */
 		if(tp_verbose_clone && Wizard(OWNER(player))) {
-			snprintf(buf2, sizeof(buf2), "copying property %s", buf);
-			notify(player, buf2);
+			notifyf(player, "copying property %s", buf);
 		}
 
 		/* copy this property */
@@ -798,7 +780,6 @@ copy_props(dbref player, dbref source, dbref destination, const char *dir)
 void
 do_clone(int descr, dbref player, char *name)
 {
-	static char buf[BUFFER_LEN];
 	dbref  thing, clonedthing;
 	int    cost;
 	struct match_data md;
@@ -855,12 +836,11 @@ do_clone(int descr, dbref player, char *name)
 	}
 	
 	if (!payfor(player, cost)) {
-		notify_fmt(player, "Sorry, you don't have enough %s.", tp_pennies);
+		notifyf(player, "Sorry, you don't have enough %s.", tp_pennies);
 		return;
 	} else {
 		if(tp_verbose_clone) {
-			snprintf(buf, sizeof(buf), "Now cloning %s...", unparse_object(player, thing));
-			notify(player, buf);
+			notifyf(player, "Now cloning %s...", unparse_object(player, thing));
 		}
 		
 		/* create the object */
@@ -892,8 +872,7 @@ do_clone(int descr, dbref player, char *name)
 		DBDIRTY(player);
 
 		/* and we're done */
-		snprintf(buf, sizeof(buf), "Object %s cloned as #%d.", NAME(thing), clonedthing);
-		notify(player, buf);
+		notifyf(player, "Object %s cloned as #%d.", NAME(thing), clonedthing);
 		DBDIRTY(clonedthing);
 	}
 	
@@ -942,7 +921,7 @@ do_create(dbref player, char *name, char *acost)
 		cost = tp_object_cost;
 	}
 	if (!payfor(player, cost)) {
-		notify_fmt(player, "Sorry, you don't have enough %s.", tp_pennies);
+		notifyf(player, "Sorry, you don't have enough %s.", tp_pennies);
 		return;
 	} else {
 		/* create the object */
@@ -973,15 +952,13 @@ do_create(dbref player, char *name, char *acost)
 		DBDIRTY(player);
 
 		/* and we're done */
-		snprintf(buf, sizeof(buf), "Object %s created as #%d.", name, thing);
-		notify(player, buf);
+		notifyf(player, "Object %s created as #%d.", name, thing);
 		DBDIRTY(thing);
 	}
 	if (*rname) {
 		PData mydat;
 
-		snprintf(buf, sizeof(buf), "Registered as $%s", rname);
-		notify(player, buf);
+		notifyf(player, "Registered as $%s", rname);
 		snprintf(buf, sizeof(buf), "_reg/%s", rname);
 		mydat.flags = PROP_REFTYP;
 		mydat.data.ref = thing;
@@ -1132,7 +1109,7 @@ do_action(int descr, dbref player, const char *action_name, const char *source_n
 	if (((source = parse_source(descr, player, qname)) == NOTHING))
 		return;
         if (!payfor(player, tp_exit_cost)) {
-                notify_fmt(player, "Sorry, you don't have enough %s to make an action.", tp_pennies);
+                notifyf(player, "Sorry, you don't have enough %s to make an action.", tp_pennies);
                 return;
         }
 
@@ -1146,15 +1123,13 @@ do_action(int descr, dbref player, const char *action_name, const char *source_n
 	FLAGS(action) = TYPE_EXIT;
 
 	set_source(player, action, source);
-	snprintf(buf, sizeof(buf), "Action %s created as #%d and attached.", NAME(action), action);
-	notify(player, buf);
+	notifyf(player, "Action %s created as #%d and attached.", NAME(action), action);
 	DBDIRTY(action);
 
 	if (*rname) {
 		PData mydat;
 
-		snprintf(buf, sizeof(buf), "Registered as $%s", rname);
-		notify(player, buf);
+		notifyf(player, "Registered as $%s", rname);
 		snprintf(buf, sizeof(buf), "_reg/%s", rname);
 		mydat.flags = PROP_REFTYP;
 		mydat.data.ref = action;

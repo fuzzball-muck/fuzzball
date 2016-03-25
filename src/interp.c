@@ -1178,7 +1178,6 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 			}
 			if (breakflag) {
 				char *m;
-				char buf[BUFFER_LEN];
 
 				if (fr->brkpt.dosyspop) {
 					program = sys[--stop].progref;
@@ -1203,8 +1202,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 					list_proglines(player, program, fr, pc->line, 0);
 				} else {
 					m = show_line_prims(fr, program, pc, 15, 1);
-					snprintf(buf, sizeof(buf), "     %s", m);
-					notify_nolisten(player, buf, 1);
+					notifyf_nolisten(player, "     %s", m);
 				}
 				calc_profile_timing(program,fr);
 				return NULL;
@@ -1809,9 +1807,8 @@ interp_err(dbref player, dbref program, struct inst *pc,
 	}
 	notify_nolisten(player, buf, 1);
 
-	snprintf(buf, sizeof(buf), "\033[1m%s(#%d), line %d; %s: %s\033[0m",
+	notifyf_nolisten(player, "\033[1m%s(#%d), line %d; %s: %s\033[0m",
 			 NAME(program), program, pc ? pc->line : -1, msg1, msg2);
-	notify_nolisten(player, buf, 1);
 
 	lt = time(NULL);
 	format_time(tbuf, 32, "%c", MUCK_LOCALTIME(lt));

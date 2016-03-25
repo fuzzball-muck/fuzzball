@@ -762,10 +762,9 @@ list_events(dbref player)
 	time_t rtime = time((time_t *) NULL);
 	time_t etime;
 	double pcnt;
-	const char* strfmt = "%10s %4s %4s %6s %4s %7s %-10.10s %-12s %.512s";
+	char* strfmt = "%10s %4s %4s %6s %4s %7s %-10.10s %-12s %.512s";
 
-	(void)snprintf(buf, sizeof(buf), strfmt, "PID", "Next", "Run", "KInst", "%CPU", "Prog#", "ProgName", "Player", "");
-	notify_nolisten(player, buf, 1);
+	notifyf_nolisten(player, strfmt, "PID", "Next", "Run", "KInst", "%CPU", "Prog#", "ProgName", "Player", "");
 
 	while (ptr) {
 		/* pid */
@@ -838,8 +837,7 @@ list_events(dbref player)
 		count++;
 	}
 	count += muf_event_list(player, strfmt);
-	snprintf(buf, sizeof(buf), "%d events.", count);
-	notify_nolisten(player, buf, 1);
+	notifyf_nolisten(player, "%d events.", count);
 }
 
 stk_array *

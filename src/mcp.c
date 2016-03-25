@@ -1927,8 +1927,7 @@ do_mcpprogram(int descr, dbref player, const char* name)
 		PUSH(prog, CONTENTS(player));
 		DBDIRTY(prog);
 		DBDIRTY(player);
-		snprintf(buf, sizeof(buf), "Program %s created with number %d.", name, prog);
-		notify(player, buf);
+		notifyf(player, "Program %s created as #%d.", name, prog);
 
 	} else if (prog == AMBIGUOUS) {
 		notify(player, "I don't know which one you mean!");

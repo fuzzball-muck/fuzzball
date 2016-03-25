@@ -347,7 +347,7 @@ enter_room(int descr, dbref player, dbref loc, dbref exit)
 		if (!controls(player, loc)
 			&& GETVALUE(OWNER(player)) <= tp_max_pennies 
                         && RANDOM() % tp_penny_rate == 0) {
-			notify_fmt(player, "You found one %s!", tp_penny);
+			notifyf(player, "You found one %s!", tp_penny);
 			SETVALUE(OWNER(player), GETVALUE(OWNER(player)) + 1);
 			DBDIRTY(OWNER(player));
 		}
@@ -798,8 +798,8 @@ do_drop(int descr, dbref player, const char *name, const char *obj)
 			notify(player, "Put away.");
 			return;
 		} else if (Typeof(cont) == TYPE_PLAYER) {
-			notify_fmt(cont, "%s hands you %s", NAME(player), NAME(thing));
-			notify_fmt(player, "You hand %s to %s", NAME(thing), NAME(cont));
+			notifyf(cont, "%s hands you %s", NAME(player), NAME(thing));
+			notifyf(player, "You hand %s to %s", NAME(thing), NAME(cont));
 			return;
 		}
 
@@ -1112,7 +1112,7 @@ recycle(int descr, dbref player, dbref thing)
 			 * reasoning with it.  DRAG the player out.
 			 */
 			if (LOCATION(first) == thing) {
-				notify_fmt(player, "Escaping teleport loop!  Going home.");
+				notify(player, "Escaping teleport loop!  Going home.");
 				moveto(first, HOME);
 			}
 		} else {
