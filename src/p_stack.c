@@ -998,10 +998,13 @@ void
 prim_secure_sysvars(PRIM_PROTOTYPE)
 {
 	CHECKOP(0);
+	CLEAR(&(fr->variables[0]));
 	fr->variables[0].type = PROG_OBJECT;
         fr->variables[0].data.objref = player;
+	CLEAR(&(fr->variables[1]));
 	fr->variables[1].type = PROG_OBJECT;
         fr->variables[1].data.objref = LOCATION(player);
+	CLEAR(&(fr->variables[2]));
 	fr->variables[2].type = PROG_OBJECT;
         fr->variables[2].data.objref = fr->trig;
 }
