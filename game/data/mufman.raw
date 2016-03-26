@@ -1003,6 +1003,13 @@ and is not recommended.  Use the array stack item type instead.
 ~~alsosee VARIABLE,VAR,LVAR,@,!
 ~
 ~
+SECURE_SYSVARS
+SECURE_SYSVARS ( -- )
+
+  Sets the value of variables "me", "loc", and "trigger" to their correct
+values in one instruction.
+~
+~
 ~
 ~~section Logical Operators|LogicOps
 ~

@@ -993,3 +993,12 @@ prim_lreverse(PRIM_PROTOTYPE)
 	CLEAR(oper1);
 	PushInt(tmp);
 }
+
+void
+prim_secure_sysvars(PRIM_PROTOTYPE)
+{
+	CHECKOP(0);
+        fr->variables[0].data.objref = player;
+        fr->variables[1].data.objref = LOCATION(player);
+        fr->variables[2].data.objref = fr->trig;
+}

@@ -194,19 +194,19 @@ R's
   rot                rotate             round              rsplit
 
 S's
-  set                set_error          setdesc            setdrop
-  setfail            setlink            setlinks_array     setlockstr
-  setmode            setname            setodrop           setofail
-  setosucc           setown             setprop            setseed
-  setsucc            setsysparm         sign               sin
-  sleep              smatch             split              sqrt
-  srand              stats              stod               strcat
-  strcmp             strcut             strdecrypt         strencrypt
-  string?            stringcmp          stringpfx          strip
-  striplead          striptail          strlen             strncmp
-  strtof             subst              succ               supplicant
-  swap               sysparm            sysparm_array      systime
-  systime_precise    
+  secure_sysvars     set                set_error          setdesc
+  setdrop            setfail            setlink            setlinks_array
+  setlockstr         setmode            setname            setodrop
+  setofail           setosucc           setown             setprop
+  setseed            setsucc            setsysparm         sign
+  sin                sleep              smatch             split
+  sqrt               srand              stats              stod
+  strcat             strcmp             strcut             strdecrypt
+  strencrypt         string?            stringcmp          stringpfx
+  strip              striplead          striptail          strlen
+  strncmp            strtof             subst              succ
+  supplicant         swap               sysparm            sysparm_array
+  systime            systime_precise    
 
 T's
   tan          testlock     textattr     then         thing?       time
@@ -1061,8 +1061,9 @@ Also see: {, }list, }dict, }tell and }join
 Variables and Handling Thereof|VarHandling
 Variables and Handling Thereof
 
-!          @          command    loc        localvar   lvar       me
-trigger    var        var!       variable   
+!                  @                  command            loc
+localvar           lvar               me                 secure_sysvars
+trigger            var                var!               variable
 
 ~----------------------------------------------------------------------------
 ~
@@ -1213,6 +1214,13 @@ LOCALVAR (i -- l)
 Similar to the 'variable' primitive.  Use of this command is deprecated
 and is not recommended.  Use the array stack item type instead.
 Also see: VARIABLE, VAR, LVAR, @ and !
+~
+~
+SECURE_SYSVARS
+SECURE_SYSVARS ( -- )
+
+  Sets the value of variables "me", "loc", and "trigger" to their correct
+values in one instruction.
 ~
 ~
 ~

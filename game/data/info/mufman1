@@ -842,6 +842,12 @@ Similar to the 'variable' primitive.  Use of this command is deprecated
 and is not recommended.  Use the array stack item type instead.
 
 
+SECURE_SYSVARS ( -- )
+
+  Sets the value of variables "me", "loc", and "trigger" to their correct
+values in one instruction.
+
+
 
 
 
