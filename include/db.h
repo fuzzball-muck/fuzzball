@@ -590,6 +590,7 @@ struct frame {
 	short wantsblanks;          /* specifies program will accept blank READs */
 	dbref trig;					/* triggering object */
 	dbref supplicant;				/* object for lock evaluation */
+	struct shared_string *cmd;  /* Original command passed to the program, vars[3] */
 	time_t started;				/* When this program started. */
 	int instcnt;				/* How many instructions have run. */
 	int pid;					/* what is the process id? */

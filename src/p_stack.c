@@ -385,6 +385,15 @@ prim_stringp(PRIM_PROTOTYPE)
 	PushInt(result);
 }
 
+void prim_cmd(PRIM_PROTOTYPE)
+{
+	CHECKOP(0);
+	CHECKOFLOW(1);
+	PushStrRaw(fr->cmd);
+	if (fr->cmd)
+		fr->cmd->links++;
+}
+
 void
 prim_dbrefp(PRIM_PROTOTYPE)
 {
@@ -1000,11 +1009,16 @@ prim_secure_sysvars(PRIM_PROTOTYPE)
 	CHECKOP(0);
 	CLEAR(&(fr->variables[0]));
 	fr->variables[0].type = PROG_OBJECT;
-        fr->variables[0].data.objref = player;
+	fr->variables[0].data.objref = player;
 	CLEAR(&(fr->variables[1]));
 	fr->variables[1].type = PROG_OBJECT;
-        fr->variables[1].data.objref = LOCATION(player);
+	fr->variables[1].data.objref = LOCATION(player);
 	CLEAR(&(fr->variables[2]));
 	fr->variables[2].type = PROG_OBJECT;
-        fr->variables[2].data.objref = fr->trig;
+	fr->variables[2].data.objref = fr->trig;
+	CLEAR(&(fr->variables[3]));
+	fr->variables[3].type = PROG_STRING;
+	fr->variables[3].data.string = fr->cmd;
+	if (fr->cmd)
+		fr->cmd->links++;
 }

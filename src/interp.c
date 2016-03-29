@@ -465,6 +465,7 @@ interp(int descr, dbref player, dbref location, dbref program,
 	fr->already_created = 0;
 	fr->been_background = (nosleeps == 2);
 	fr->trig = source;
+	fr->cmd = (!*match_cmdname) ? 0 : alloc_prog_string(match_cmdname);
 	fr->events = NULL;
 	fr->timercount = 0;
 	fr->started = time(NULL);
@@ -548,7 +549,9 @@ interp(int descr, dbref player, dbref location, dbref program,
 	fr->variables[2].type = PROG_OBJECT;
 	fr->variables[2].data.objref = source;
 	fr->variables[3].type = PROG_STRING;
-	fr->variables[3].data.string = (!*match_cmdname) ? 0 : alloc_prog_string(match_cmdname);
+	fr->variables[3].data.string = fr->cmd;
+	if (fr->cmd)
+		fr->cmd->links++;
 
 	if (PROGRAM_CODE(program)) {
 		PROGRAM_INC_PROF_USES(program);
@@ -798,6 +801,9 @@ prog_clean(struct frame *fr)
 
 	for (i = 0; i < MAX_VAR; i++)
 		CLEAR(&fr->variables[i]);
+
+	if (fr->cmd && --fr->cmd->links == 0)
+		free((void *)fr->cmd);
 
 	localvar_freeall(fr);
 	scopedvar_freeall(fr);
