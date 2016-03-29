@@ -752,6 +752,12 @@ The TRIGGER global variable is the same variable as '2 variable'
 The value of TRIGGER will be #-1 for AUTOSTART programs,
 
 
+CMD ( -- s )
+
+  Returns the command the user invoked the program with, without its
+command line arguments.
+
+
 COMMAND @
 
   There is a COMMAND variable, similar to ME, LOC, and TRIGGER, except that
@@ -844,8 +850,8 @@ and is not recommended.  Use the array stack item type instead.
 
 SECURE_SYSVARS ( -- )
 
-  Sets the value of variables "me", "loc", and "trigger" to their correct
-values in one instruction.
+  Sets the value of variables "me", "loc", "trigger" and "command" to their
+correct values in one instruction.
 
 
 
