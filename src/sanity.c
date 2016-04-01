@@ -64,7 +64,7 @@ sane_dump_object(dbref player, const char *arg)
 		return;
 	}
 
-	if (TYPEOF(d) == TYPE_GARBAGE) {
+	if (Typeof(d) == TYPE_GARBAGE) {
 		SanPrint(player, "Object:         *GARBAGE* #%d", d);
 	} else {
 		SanPrint(player, "Object:         %s", unparse(d));
@@ -76,7 +76,7 @@ sane_dump_object(dbref player, const char *arg)
 	SanPrint(player, "  Exits Start:    %s", unparse(EXITS(d)));
 	SanPrint(player, "  Next:           %s", unparse(NEXTOBJ(d)));
 
-	switch (TYPEOF(d)) {
+	switch (Typeof(d)) {
 	case TYPE_THING:
 		SanPrint(player, "  Home:           %s", unparse(THING_HOME(d)));
 		SanPrint(player, "  Value:          %d", GETVALUE(d));
@@ -155,7 +155,7 @@ valid_obj(dbref obj)
 	if (!valid_ref(obj)) {
 		return 0;
 	}
-	switch (TYPEOF(obj)) {
+	switch (Typeof(obj)) {
 	case TYPE_ROOM:
 	case TYPE_EXIT:
 	case TYPE_PLAYER:
@@ -262,7 +262,7 @@ check_room(dbref player, dbref obj)
 
 	if (!valid_ref(i) && i != HOME) {
 		violate(player, obj, "has its dropto set to an invalid object");
-	} else if (i >= 0 && TYPEOF(i) != TYPE_THING && TYPEOF(i) != TYPE_ROOM) {
+	} else if (i >= 0 && Typeof(i) != TYPE_THING && Typeof(i) != TYPE_ROOM) {
 		violate(player, obj, "has its dropto set to a non-room, non-thing object");
 	}
 }
@@ -277,7 +277,7 @@ check_thing(dbref player, dbref obj)
 
 	if (!valid_obj(i)) {
 		violate(player, obj, "has its home set to an invalid object");
-	} else if (TYPEOF(i) != TYPE_ROOM && TYPEOF(i) != TYPE_THING && TYPEOF(i) != TYPE_PLAYER) {
+	} else if (Typeof(i) != TYPE_ROOM && Typeof(i) != TYPE_THING && Typeof(i) != TYPE_PLAYER) {
 		violate(player, obj,
 				"has its home set to an object that is not a room, thing, or player");
 	}
@@ -310,7 +310,7 @@ check_player(dbref player, dbref obj)
 
 	if (!valid_obj(i)) {
 		violate(player, obj, "has its home set to an invalid object");
-	} else if (i >= 0 && TYPEOF(i) != TYPE_ROOM) {
+	} else if (i >= 0 && Typeof(i) != TYPE_ROOM) {
 		violate(player, obj, "has its home set to a non-room object");
 	}
 }
@@ -318,7 +318,7 @@ check_player(dbref player, dbref obj)
 void
 check_garbage(dbref player, dbref obj)
 {
-	if (NEXTOBJ(obj) != NOTHING && TYPEOF(NEXTOBJ(obj)) != TYPE_GARBAGE) {
+	if (NEXTOBJ(obj) != NOTHING && Typeof(NEXTOBJ(obj)) != TYPE_GARBAGE) {
 		violate(player, obj,
 				"has a non-garbage object as the 'next' object in the garbage chain");
 	}
@@ -331,10 +331,10 @@ check_contents_list(dbref player, dbref obj)
 	dbref i;
 	int limit;
 
-	if (TYPEOF(obj) != TYPE_PROGRAM && TYPEOF(obj) != TYPE_EXIT && TYPEOF(obj) != TYPE_GARBAGE) {
+	if (Typeof(obj) != TYPE_PROGRAM && Typeof(obj) != TYPE_EXIT && Typeof(obj) != TYPE_GARBAGE) {
 		for (i = CONTENTS(obj), limit = db_top;
 			 valid_obj(i) &&
-			 --limit && LOCATION(i) == obj && TYPEOF(i) != TYPE_EXIT; i = NEXTOBJ(i)) ;
+			 --limit && LOCATION(i) == obj && Typeof(i) != TYPE_EXIT; i = NEXTOBJ(i)) ;
 		if (i != NOTHING) {
 			if (!limit) {
 				check_next_chain(player, CONTENTS(obj));
@@ -344,7 +344,7 @@ check_contents_list(dbref player, dbref obj)
 				if (!valid_obj(i)) {
 					violate(player, obj, "has an invalid object in its contents list");
 				} else {
-					if (TYPEOF(i) == TYPE_EXIT) {
+					if (Typeof(i) == TYPE_EXIT) {
 						violate(player, obj,
 								"has an exit in its contents list (it shoudln't)");
 					}
@@ -357,9 +357,9 @@ check_contents_list(dbref player, dbref obj)
 		}
 	} else {
 		if (CONTENTS(obj) != NOTHING) {
-			if (TYPEOF(obj) == TYPE_EXIT) {
+			if (Typeof(obj) == TYPE_EXIT) {
 				violate(player, obj, "is an exit/action whose contents aren't #-1");
-			} else if (TYPEOF(obj) == TYPE_GARBAGE) {
+			} else if (Typeof(obj) == TYPE_GARBAGE) {
 				violate(player, obj, "is a garbage object whose contents aren't #-1");
 			} else {
 				violate(player, obj, "is a program whose contents aren't #-1");
@@ -375,10 +375,10 @@ check_exits_list(dbref player, dbref obj)
 	dbref i;
 	int limit;
 
-	if (TYPEOF(obj) != TYPE_PROGRAM && TYPEOF(obj) != TYPE_EXIT && TYPEOF(obj) != TYPE_GARBAGE) {
+	if (Typeof(obj) != TYPE_PROGRAM && Typeof(obj) != TYPE_EXIT && Typeof(obj) != TYPE_GARBAGE) {
 		for (i = EXITS(obj), limit = db_top;
 			 valid_obj(i) &&
-			 --limit && LOCATION(i) == obj && TYPEOF(i) == TYPE_EXIT; i = NEXTOBJ(i)) ;
+			 --limit && LOCATION(i) == obj && Typeof(i) == TYPE_EXIT; i = NEXTOBJ(i)) ;
 		if (i != NOTHING) {
 			if (!limit) {
 				check_next_chain(player, CONTENTS(obj));
@@ -387,7 +387,7 @@ check_exits_list(dbref player, dbref obj)
 			} else if (!valid_obj(i)) {
 				violate(player, obj, "has an invalid object in it's exits list");
 			} else {
-				if (TYPEOF(i) != TYPE_EXIT) {
+				if (Typeof(i) != TYPE_EXIT) {
 					violate(player, obj, "has a non-exit in it's exits list");
 				}
 				if (LOCATION(i) != obj) {
@@ -398,9 +398,9 @@ check_exits_list(dbref player, dbref obj)
 		}
 	} else {
 		if (EXITS(obj) != NOTHING) {
-			if (TYPEOF(obj) == TYPE_EXIT) {
+			if (Typeof(obj) == TYPE_EXIT) {
 				violate(player, obj, "is an exit/action whose exits list isn't #-1");
-			} else if (TYPEOF(obj) == TYPE_GARBAGE) {
+			} else if (Typeof(obj) == TYPE_GARBAGE) {
 				violate(player, obj, "is a garbage object whose exits list isn't #-1");
 			} else {
 				violate(player, obj, "is a program whose exits list isn't #-1");
@@ -422,10 +422,10 @@ check_object(dbref player, dbref obj)
 	/*
 	 * Check the ownership
 	 */
-	if (TYPEOF(obj) != TYPE_GARBAGE) {
+	if (Typeof(obj) != TYPE_GARBAGE) {
 		if (!valid_obj(OWNER(obj))) {
 			violate(player, obj, "has an invalid object as its owner.");
-		} else if (TYPEOF(OWNER(obj)) != TYPE_PLAYER) {
+		} else if (Typeof(OWNER(obj)) != TYPE_PLAYER) {
 			violate(player, obj, "has a non-player object as its owner.");
 		}
 
@@ -439,17 +439,17 @@ check_object(dbref player, dbref obj)
 	}
 
 	if (LOCATION(obj) != NOTHING &&
-		(TYPEOF(LOCATION(obj)) == TYPE_GARBAGE ||
-		 TYPEOF(LOCATION(obj)) == TYPE_EXIT || TYPEOF(LOCATION(obj)) == TYPE_PROGRAM))
+		(Typeof(LOCATION(obj)) == TYPE_GARBAGE ||
+		 Typeof(LOCATION(obj)) == TYPE_EXIT || Typeof(LOCATION(obj)) == TYPE_PROGRAM))
 		violate(player, obj, "thinks it is located in a non-container object");
 
-	if ((TYPEOF(obj) == TYPE_GARBAGE) && (LOCATION(obj) != NOTHING))
+	if ((Typeof(obj) == TYPE_GARBAGE) && (LOCATION(obj) != NOTHING))
 		violate(player, obj, "is a garbage object with a location that isn't #-1");
 
 	check_contents_list(player, obj);
 	check_exits_list(player, obj);
 
-	switch (TYPEOF(obj)) {
+	switch (Typeof(obj)) {
 	case TYPE_ROOM:
 		check_room(player, obj);
 		break;
@@ -545,7 +545,7 @@ cut_bad_recyclable(void)
 	loop = recyclable;
 	prev = NOTHING;
 	while (loop != NOTHING) {
-		if (!valid_ref(loop) || TYPEOF(loop) != TYPE_GARBAGE || FLAGS(loop) & SANEBIT) {
+		if (!valid_ref(loop) || Typeof(loop) != TYPE_GARBAGE || FLAGS(loop) & SANEBIT) {
 			SanFixed(loop, "Recyclable object %s is not TYPE_GARBAGE");
 			if (prev != NOTHING) {
 				NEXTOBJ(prev) = NOTHING;
@@ -570,10 +570,10 @@ cut_bad_contents(dbref obj)
 	prev = NOTHING;
 	while (loop != NOTHING) {
 		if (!valid_obj(loop) || FLAGS(loop) & SANEBIT ||
-			TYPEOF(loop) == TYPE_EXIT || LOCATION(loop) != obj || loop == obj) {
+			Typeof(loop) == TYPE_EXIT || LOCATION(loop) != obj || loop == obj) {
 			if (!valid_obj(loop)) {
 				SanFixed(obj, "Contents chain for %s cut at invalid dbref");
-			} else if (TYPEOF(loop) == TYPE_EXIT) {
+			} else if (Typeof(loop) == TYPE_EXIT) {
 				SanFixed2(obj, loop, "Contents chain for %s cut at exit %s");
 			} else if (loop == obj) {
 				SanFixed(obj, "Contents chain for %s cut at self-reference");
@@ -608,10 +608,10 @@ cut_bad_exits(dbref obj)
 	prev = NOTHING;
 	while (loop != NOTHING) {
 		if (!valid_obj(loop) || FLAGS(loop) & SANEBIT ||
-			TYPEOF(loop) != TYPE_EXIT || LOCATION(loop) != obj) {
+			Typeof(loop) != TYPE_EXIT || LOCATION(loop) != obj) {
 			if (!valid_obj(loop)) {
 				SanFixed(obj, "Exits chain for %s cut at invalid dbref");
-			} else if (TYPEOF(loop) != TYPE_EXIT) {
+			} else if (Typeof(loop) != TYPE_EXIT) {
 				SanFixed2(obj, loop, "Exits chain for %s cut at non-exit %s");
 			} else if (LOCATION(loop) != obj) {
 				SanFixed2(obj, loop, "Exits chain for %s cut at misplaced exit %s");
@@ -642,8 +642,8 @@ hacksaw_bad_chains(void)
 
 	cut_bad_recyclable();
 	for (loop = 0; loop < db_top; loop++) {
-		if (TYPEOF(loop) != TYPE_ROOM && TYPEOF(loop) != TYPE_THING &&
-			TYPEOF(loop) != TYPE_PLAYER) {
+		if (Typeof(loop) != TYPE_ROOM && Typeof(loop) != TYPE_THING &&
+			Typeof(loop) != TYPE_PLAYER) {
 			cut_all_chains(loop);
 		} else {
 			cut_bad_contents(loop);
@@ -728,7 +728,7 @@ fix_room(dbref obj)
 		SanFixed(obj, "Removing invalid drop-to from %s");
 		DBFETCH(obj)->sp.room.dropto = NOTHING;
 		DBDIRTY(obj);
-	} else if (i >= 0 && TYPEOF(i) != TYPE_THING && TYPEOF(i) != TYPE_ROOM) {
+	} else if (i >= 0 && Typeof(i) != TYPE_THING && Typeof(i) != TYPE_ROOM) {
 		SanFixed2(obj, i, "Removing drop-to on %s to %s");
 		DBFETCH(obj)->sp.room.dropto = NOTHING;
 		DBDIRTY(obj);
@@ -742,8 +742,8 @@ fix_thing(dbref obj)
 
 	i = THING_HOME(obj);
 
-	if (!valid_obj(i) || (TYPEOF(i) != TYPE_ROOM && TYPEOF(i) != TYPE_THING &&
-						  TYPEOF(i) != TYPE_PLAYER)) {
+	if (!valid_obj(i) || (Typeof(i) != TYPE_ROOM && Typeof(i) != TYPE_THING &&
+						  Typeof(i) != TYPE_PLAYER)) {
 		SanFixed2(obj, OWNER(obj), "Setting the home on %s to %s, it's owner");
 		THING_SET_HOME(obj, OWNER(obj));
 		DBDIRTY(obj);
@@ -777,7 +777,7 @@ fix_player(dbref obj)
 
 	i = PLAYER_HOME(obj);
 
-	if (!valid_obj(i) || TYPEOF(i) != TYPE_ROOM) {
+	if (!valid_obj(i) || Typeof(i) != TYPE_ROOM) {
 		SanFixed2(obj, tp_player_start, "Setting the home on %s to %s");
 		PLAYER_SET_HOME(obj, tp_player_start);
 		DBDIRTY(obj);
@@ -790,18 +790,17 @@ find_misplaced_objects(void)
 	dbref loop, player = NOTHING, room;
 
 	for (loop = 0; loop < db_top; loop++) {
-		if (TYPEOF(loop) != TYPE_ROOM &&
-			TYPEOF(loop) != TYPE_THING &&
-			TYPEOF(loop) != TYPE_PLAYER &&
-			TYPEOF(loop) != TYPE_EXIT &&
-			TYPEOF(loop) != TYPE_PROGRAM && TYPEOF(loop) != TYPE_GARBAGE) {
+		if (Typeof(loop) != TYPE_ROOM &&
+			Typeof(loop) != TYPE_THING &&
+			Typeof(loop) != TYPE_PLAYER &&
+			Typeof(loop) != TYPE_EXIT &&
+			Typeof(loop) != TYPE_PROGRAM && Typeof(loop) != TYPE_GARBAGE) {
 			SanFixedRef(loop, "Object #%d is of unknown type");
 			sanity_violated = 1;
 			continue;
 		}
 		if (!NAME(loop) || !(*NAME(loop))) {
-			switch TYPEOF
-				(loop) {
+			switch Typeof(loop) {
 			case TYPE_GARBAGE:
 				NAME(loop) = "<garbage>";
 				break;
@@ -823,8 +822,8 @@ find_misplaced_objects(void)
 			SanFixed(loop, "Gave a name to %s");
 			DBDIRTY(loop);
 		}
-		if (TYPEOF(loop) != TYPE_GARBAGE) {
-			if (!valid_obj(OWNER(loop)) || TYPEOF(OWNER(loop)) != TYPE_PLAYER) {
+		if (Typeof(loop) != TYPE_GARBAGE) {
+			if (!valid_obj(OWNER(loop)) || Typeof(OWNER(loop)) != TYPE_PLAYER) {
 				if (player == NOTHING) {
 					create_lostandfound(&player, &room);
 				}
@@ -833,13 +832,13 @@ find_misplaced_objects(void)
 				DBDIRTY(loop);
 			}
 			if (loop != GLOBAL_ENVIRONMENT && (!valid_obj(LOCATION(loop)) ||
-											   TYPEOF(LOCATION(loop)) == TYPE_GARBAGE ||
-											   TYPEOF(LOCATION(loop)) == TYPE_EXIT ||
-											   TYPEOF(LOCATION(loop)) == TYPE_PROGRAM ||
-											   (TYPEOF(loop) == TYPE_PLAYER &&
-												TYPEOF(LOCATION(loop)) == TYPE_PLAYER))) {
-				if (TYPEOF(loop) == TYPE_PLAYER) {
-					if (valid_obj(LOCATION(loop)) && TYPEOF(LOCATION(loop)) == TYPE_PLAYER) {
+											   Typeof(LOCATION(loop)) == TYPE_GARBAGE ||
+											   Typeof(LOCATION(loop)) == TYPE_EXIT ||
+											   Typeof(LOCATION(loop)) == TYPE_PROGRAM ||
+											   (Typeof(loop) == TYPE_PLAYER &&
+												Typeof(LOCATION(loop)) == TYPE_PLAYER))) {
+				if (Typeof(loop) == TYPE_PLAYER) {
+					if (valid_obj(LOCATION(loop)) && Typeof(LOCATION(loop)) == TYPE_PLAYER) {
 						dbref loop1;
 
 						loop1 = LOCATION(loop);
@@ -865,7 +864,7 @@ find_misplaced_objects(void)
 				}
 				DBDIRTY(loop);
 				DBDIRTY(LOCATION(loop));
-				if (TYPEOF(loop) == TYPE_EXIT) {
+				if (Typeof(loop) == TYPE_EXIT) {
 					PUSH(loop, EXITS(LOCATION(loop)));
 				} else {
 					PUSH(loop, CONTENTS(LOCATION(loop)));
@@ -885,7 +884,7 @@ find_misplaced_objects(void)
 				DBDIRTY(loop);
 			}
 		}
-		switch (TYPEOF(loop)) {
+		switch (Typeof(loop)) {
 		case TYPE_ROOM:
 			fix_room(loop);
 			break;
@@ -913,7 +912,7 @@ adopt_orphans(void)
 	for (loop = 0; loop < db_top; loop++) {
 		if (!(FLAGS(loop) & SANEBIT)) {
 			DBDIRTY(loop);
-			switch (TYPEOF(loop)) {
+			switch (Typeof(loop)) {
 			case TYPE_ROOM:
 			case TYPE_THING:
 			case TYPE_PLAYER:
@@ -968,7 +967,7 @@ sanfix(dbref player)
 	}
 	FLAGS(GLOBAL_ENVIRONMENT) |= SANEBIT;
 
-	if (!valid_obj(tp_player_start) || TYPEOF(tp_player_start) != TYPE_ROOM) {
+	if (!valid_obj(tp_player_start) || Typeof(tp_player_start) != TYPE_ROOM) {
 		SanFixed(GLOBAL_ENVIRONMENT, "Reset invalid player_start to %s");
 		tp_player_start = GLOBAL_ENVIRONMENT;
 	}
@@ -1073,7 +1072,7 @@ sanechange(dbref player, const char *command)
 		SanPrint(player, "## Setting #%d's owner to %s", d, unparse(v));
 
 	} else if (!string_compare(field, "home")) {
-		switch (TYPEOF(d)) {
+		switch (Typeof(d)) {
 		case TYPE_PLAYER:
 			ip = &(PLAYER_HOME(d));
 			break;
@@ -1234,7 +1233,7 @@ extract_object(FILE * f, dbref d)
 	fprintf(f, "  Exits Start:    %s\n", unparse(EXITS(d)));
 	fprintf(f, "  Next:           %s\n", unparse(NEXTOBJ(d)));
 
-	switch (TYPEOF(d)) {
+	switch (Typeof(d)) {
 	case TYPE_THING:
 		fprintf(f, "  Home:           %s\n", unparse(THING_HOME(d)));
 		fprintf(f, "  Value:          %d\n", GETVALUE(d));
@@ -1306,7 +1305,7 @@ extract(void)
 	}
 
 	for (i = 0; i < db_top; i++) {
-		if ((OWNER(i) == d) && (TYPEOF(i) != TYPE_GARBAGE)) {
+		if ((OWNER(i) == d) && (Typeof(i) != TYPE_GARBAGE)) {
 			extract_object(f, i);
 		}						/* extract only objects owned by this player */
 	}							/* loop through db */
@@ -1343,7 +1342,7 @@ extract_single(void)
 		f = stdout;
 	}
 
-	if (TYPEOF(d) != TYPE_GARBAGE) {
+	if (Typeof(d) != TYPE_GARBAGE) {
 		extract_object(f, d);
 	}
 	/* extract only objects owned by this player */

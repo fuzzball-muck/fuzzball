@@ -89,8 +89,6 @@ typedef int dbref;				/* offset into db */
 #define EXITS(x)    (DBFETCH((x))->exits)
 #define NEXTOBJ(x)  (DBFETCH((x))->next)
 
-#define TYPEOF(i)   (DBFETCH((i))->flags & TYPE_MASK)
-
 /* defines for possible data access mods. */
 #define MESGPROP_DESC		"_/de"
 #define MESGPROP_IDESC		"_/ide"
