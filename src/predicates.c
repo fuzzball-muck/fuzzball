@@ -263,9 +263,7 @@ controls(dbref who, dbref what)
 	if (Typeof(what) == TYPE_GARBAGE)
 		return 0;
 
-	/* Zombies and puppets use the permissions of their owner */
-	if (Typeof(who) != TYPE_PLAYER)
-		who = OWNER(who);
+	who = OWNER(who);
 
 	/* Wizard controls everything */
 	if (Wizard(who)) {

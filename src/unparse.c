@@ -76,11 +76,10 @@ const char *
 unparse_object(dbref player, dbref loc)
 {
 	char buf[BUFFER_LEN];
-	if (player == NOTHING)
-		goto islog;
-	if (Typeof(player) != TYPE_PLAYER)
+
+	if (player != NOTHING)
 		player = OWNER(player);
-islog:
+
 	switch (loc) {
 	case NOTHING:
 		return "*NOTHING*";
