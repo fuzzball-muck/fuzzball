@@ -240,13 +240,15 @@ match_nil(struct match_data *md)
 }
 
 static void
-match_list(dbref first, struct match_data *md)
+match_contents(dbref obj, struct match_data *md)
 {
-	dbref absolute;
+	dbref absolute, first;
 
 	absolute = absolute_name(md);
 	if (!controls(OWNER(md->match_from), absolute))
 		absolute = NOTHING;
+
+	first = CONTENTS(obj);
 
 	DOLIST(first, first) {
 		if (first == absolute) {
@@ -265,7 +267,7 @@ match_list(dbref first, struct match_data *md)
 void
 match_possession(struct match_data *md)
 {
-	match_list(CONTENTS(md->match_from), md);
+	match_contents(md->match_from, md);
 }
 
 void
@@ -274,7 +276,7 @@ match_neighbor(struct match_data *md)
 	dbref loc;
 
 	if ((loc = LOCATION(md->match_from)) != NOTHING) {
-		match_list(CONTENTS(loc), md);
+		match_contents(loc, md);
 	}
 }
 
@@ -616,7 +618,7 @@ match_rmatch(dbref arg1, struct match_data *md)
 	case TYPE_PLAYER:
 	case TYPE_ROOM:
 	case TYPE_THING:
-		match_list(CONTENTS(arg1), md);
+		match_contents(arg1, md);
 		match_exits(arg1, md);
 		break;
 	}
