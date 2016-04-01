@@ -283,11 +283,13 @@ match_neighbor(struct match_data *md)
  * It will match exits of players, rooms, or things.
  */
 void
-match_exits(dbref first, struct match_data *md)
+match_exits(dbref obj, struct match_data *md)
 {
-	dbref exit, absolute;
+	dbref exit, absolute, first;
 	const char *exitname, *p;
 	int i, exitprog, lev, partial;
+
+	first = EXITS(obj);
 
 	if (first == NOTHING)
 		return;					/* Easy fail match */
@@ -423,7 +425,7 @@ match_invobj_actions(struct match_data *md)
 		return;
 	DOLIST(thing, CONTENTS(md->match_from)) {
 		if (Typeof(thing) == TYPE_THING && EXITS(thing) != NOTHING) {
-			match_exits(EXITS(thing), md);
+			match_exits(thing, md);
 		}
 	}
 }
@@ -443,7 +445,7 @@ match_roomobj_actions(struct match_data *md)
 		return;
 	DOLIST(thing, CONTENTS(loc)) {
 		if (Typeof(thing) == TYPE_THING && EXITS(thing) != NOTHING) {
-			match_exits(EXITS(thing), md);
+			match_exits(thing, md);
 		}
 	}
 }
@@ -455,21 +457,14 @@ match_roomobj_actions(struct match_data *md)
 void
 match_player_actions(struct match_data *md)
 {
-	dbref obj;
-
 	switch (Typeof(md->match_from)) {
 	case TYPE_PLAYER:
 	case TYPE_ROOM:
 	case TYPE_THING:
-		obj = EXITS(md->match_from);
-		break;
+		match_exits(md->match_from, md);
 	default:
-		obj = NOTHING;
 		break;
 	}
-	if (obj == NOTHING)
-		return;
-	match_exits(obj, md);
 }
 
 /*
@@ -480,21 +475,15 @@ match_player_actions(struct match_data *md)
 void
 match_room_exits(dbref loc, struct match_data *md)
 {
-	dbref obj;
-
 	switch (Typeof(loc)) {
 	case TYPE_PLAYER:
 	case TYPE_ROOM:
 	case TYPE_THING:
-		obj = EXITS(loc);
-		break;
+		match_exits(loc, md);
 	default:
-		obj = NOTHING;
 		break;
 	}
-	if (obj == NOTHING)
-		return;
-	match_exits(obj, md);
+
 }
 
 /*
@@ -628,7 +617,7 @@ match_rmatch(dbref arg1, struct match_data *md)
 	case TYPE_ROOM:
 	case TYPE_THING:
 		match_list(CONTENTS(arg1), md);
-		match_exits(EXITS(arg1), md);
+		match_exits(arg1, md);
 		break;
 	}
 }
