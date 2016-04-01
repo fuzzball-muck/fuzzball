@@ -221,7 +221,6 @@ extern void set_password_raw(dbref player, const char *password);
 extern char *whowhere(dbref player);
 
 /* predicates.c */
-extern int OkObj(dbref obj);
 extern int can_doit(int descr, dbref player, dbref thing, const char *default_fail_msg);
 extern int can_link(dbref who, dbref what);
 extern int can_link_to(dbref who, object_flag_type what_type, dbref where);

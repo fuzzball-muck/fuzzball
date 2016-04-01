@@ -340,6 +340,10 @@ if(!God(x)) \
 }
 #endif
 
+#define ObjExists(d)	((d) >= 0 && (d) < db_top)
+#define OkRef(d)	(ObjExists(d) || (d) == NOTHING)
+#define OkObj(d)	(ObjExists(d) && Typeof(d) != TYPE_GARBAGE)
+
 /* Boolean expressions, for locks */
 typedef char boolexp_type;
 
