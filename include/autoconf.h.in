@@ -1,4 +1,4 @@
-/* include/autoconf.h.in.  Generated from configure.in by autoheader.  */
+/* include/autoconf.h.in.  Generated from configure.ac by autoheader.  */
 
 /* Enable debugging assertions. */
 #undef DEBUG
