@@ -381,4 +381,7 @@
 /* Automatically link @actions to NIL. */
 #define AUTOLINK_ACTIONS 0
 
+/* Maintain trigger as lock source in TESTLOCK. */
+#define CONSISTENT_LOCK_SOURCE 1
+
 #endif /* _DEFAULTS_H */

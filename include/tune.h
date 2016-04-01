@@ -157,6 +157,7 @@ extern int tp_allow_home;
 extern int tp_autolink_actions;
 extern int tp_cipher_server_preference;
 extern int tp_compatible_priorities;
+extern int tp_consistent_lock_source;
 extern int tp_dark_sleepers;
 extern int tp_dbdump_warning;
 extern int tp_diskbase_propvals;

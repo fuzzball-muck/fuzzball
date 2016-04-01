@@ -188,6 +188,7 @@ int tp_allow_home = ALLOW_HOME;
 int tp_autolink_actions = AUTOLINK_ACTIONS;
 int tp_cipher_server_preference = SERVER_CIPHER_PREFERENCE;
 int tp_compatible_priorities = COMPATIBLE_PRIORITIES;
+int tp_consistent_lock_source = CONSISTENT_LOCK_SOURCE;
 int tp_dark_sleepers = DARK_SLEEPERS;
 int tp_dbdump_warning = DBDUMP_WARNING;
 int tp_diskbase_propvals = DISKBASE_PROPVALS;
@@ -277,6 +278,7 @@ struct tune_bool_entry tune_bool_list[] = {
 	{"Movement",	"secure_thing_movement", &tp_thing_movement, MLEV_WIZARD, MLEV_WIZARD, "Moving things act like player", "", 1, SECURE_THING_MOVEMENT},
 	{"MPI",		"do_mpi_parsing", &tp_do_mpi_parsing, 0, MLEV_WIZARD, "Parse MPI strings in messages", "", 1, DO_MPI_PARSING},
 	{"MPI",		"lazy_mpi_istype_perm", &tp_lazy_mpi_istype_perm, 0, MLEV_WIZARD, "Enable looser legacy perms for MPI {istype}", "", 1, LAZY_MPI_ISTYPE_PERM},
+	{"MUF",		"consistent_lock_source", &tp_consistent_lock_source, 0, MLEV_WIZARD, "Maintain trigger as lock source in TESTLOCK", "", 1, CONSISTENT_LOCK_SOURCE},
 	{"MUF",		"expanded_debug_trace", &tp_expanded_debug, 0, MLEV_WIZARD, "MUF debug trace shows array contents", "", 1, EXPANDED_DEBUG_TRACE},
 	{"MUF",		"force_mlev1_name_notify", &tp_force_mlev1_name_notify, 0, MLEV_WIZARD, "MUF notify prepends username for ML1 programs", "", 1, FORCE_MLEV1_NAME_NOTIFY},
 	{"MUF",		"muf_comments_strict", &tp_muf_comments_strict, 0, MLEV_WIZARD, "MUF comments are strict and not recursive", "", 1, MUF_COMMENTS_STRICT},
