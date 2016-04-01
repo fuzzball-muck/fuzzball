@@ -2,6 +2,7 @@
 ~~author Revar Desmera <revar@belfry.com>
 ~~doccmd man
 ~~sectlist
+~~secttopics
 ~~index
 ~~file info/mufman1
 ~
@@ -2526,7 +2527,7 @@ SMATCH ( s s2 -- i )
 if the string fits the pattern.  This is case insensitive.  In the pattern
 string, the following special characters will do as follows:
 
-~~code  
+~~code
   *  A '?' matches any single character.
   
   *  A '*' matches any number of any characters.
