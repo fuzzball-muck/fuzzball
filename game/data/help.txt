@@ -140,7 +140,6 @@ whisper      who
 ~
 ~
 ~
-~
 STARTINGOUT|STARTING_OUT|STARTING OUT
 The word 'me' refers to yourself. Some things to do when starting out:
 1) give yourself a description with "@describe me=<description>", then
@@ -1882,7 +1881,6 @@ NOT save the database out to disk.  Use this ONLY when you suspect the
 database has been corrupted, and it would be a BAD thing to save the
 database out to disk.
 Also see: @SHUTDOWN and @RESTART
-~
 ~
 ~
 @RESTRICT

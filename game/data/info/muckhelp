@@ -11,7 +11,6 @@
 
 
 
-
 The word 'me' refers to yourself. Some things to do when starting out:
 1) give yourself a description with "@describe me=<description>", then
     look at yourself with "look me".
@@ -1547,7 +1546,6 @@ in full.
 NOT save the database out to disk.  Use this ONLY when you suspect the
 database has been corrupted, and it would be a BAD thing to save the
 database out to disk.
-
 
 
 @RESTRICT [on|off]

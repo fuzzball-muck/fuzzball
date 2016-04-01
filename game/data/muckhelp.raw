@@ -9,7 +9,6 @@
 ~~section Basics|Basics
 ~
 ~
-~
 STARTINGOUT|STARTING_OUT|STARTING OUT
 The word 'me' refers to yourself. Some things to do when starting out:
 1) give yourself a description with "@describe me=<description>", then
@@ -1698,7 +1697,6 @@ database out to disk.
 ~~alsosee @SHUTDOWN,@RESTART
 ~
 ~
-~
 @RESTRICT
 @RESTRICT [on|off]
 
@@ -1739,6 +1737,7 @@ typed in full.
   View and modify tunable parameters that configure how the server operates,
 or provide help on a parameter.  Examples:
 
+~~code
   @tune              shows all parameters and their values
   @tune info         shows all parameters, values, and brief descriptions
   @tune foo          shows the value of foo
@@ -1747,6 +1746,7 @@ or provide help on a parameter.  Examples:
   @tune info foo     briefly describes foo
   @tune save         save all parameters to data/parmfile.cfg
   @tune load         load all parameters from data/parmfile.cfg
+~~endcode
 
   Some parameters may require a @RESTART or reload to apply.
 ~
