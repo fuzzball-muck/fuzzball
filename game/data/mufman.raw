@@ -2,6 +2,7 @@
 ~~author Revar Desmera <revar@belfry.com>
 ~~doccmd man
 ~~sectlist
+~~secttopics
 ~~index
 ~~file info/mufman1
 ~
@@ -2526,7 +2527,7 @@ SMATCH ( s s2 -- i )
 if the string fits the pattern.  This is case insensitive.  In the pattern
 string, the following special characters will do as follows:
 
-~~code  
+~~code
   *  A '?' matches any single character.
   
   *  A '*' matches any number of any characters.
@@ -3997,6 +3998,7 @@ Parameters available:
   (bool) secure_thing_movement - Moving things act like player (Wizbit only)
   (bool) do_mpi_parsing       - Parse MPI strings in messages
   (bool) lazy_mpi_istype_perm - Enable looser legacy perms for MPI {istype}
+  (bool) consistent_lock_source - Maintain trigger as lock source in TESTLOCK
   (bool) expanded_debug_trace - MUF debug trace shows array contents
   (bool) force_mlev1_name_notify - MUF notify prepends username for ML1 programs
   (bool) muf_comments_strict  - MUF comments are strict and not recursive
