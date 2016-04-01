@@ -244,7 +244,7 @@ extern int sanity_violated;
 int
 main(int argc, char **argv)
 {
-	FILE *ffd, *parmfile;
+	FILE *ffd, *parmfile = NULL;
 	char *infile_name;
 	char *outfile_name;
 	char *num_one_new_passwd = NULL;
