@@ -12,13 +12,6 @@
 #include "interface.h"
 
 int
-OkObj(dbref obj)
-{
-	return(!(obj < 0 || obj >= db_top || Typeof(obj) == TYPE_GARBAGE));
-}
-
-
-int
 can_link_to(dbref who, object_flag_type what_type, dbref where)
 {
 		/* Can always link to HOME */
