@@ -1,6 +1,6 @@
 Summary: 		The FuzzBall TinyMUCK online chat/MUD server
 Name: 			fbmuck
-Version: 		6.00rc9
+Version: 		7.00a1
 Release: 		1
 Group: 			Networking/Chat
 Distribution:	Linux-Mandrake
