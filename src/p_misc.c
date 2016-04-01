@@ -611,7 +611,7 @@ prim_testlock(PRIM_PROTOTYPE)
 	CHECKREMOTE(oper2->data.objref);
 	if (oper1->type != PROG_LOCK)
 		abort_interp("Invalid argument (2).");
-	result = eval_boolexp(fr->descr, oper2->data.objref, oper1->data.lock, player);
+	result = eval_boolexp(fr->descr, oper2->data.objref, oper1->data.lock, tp_consistent_lock_source ? fr->trig : player);
 	CLEAR(oper1);
 	CLEAR(oper2);
 	PushInt(result);
