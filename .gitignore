@@ -38,7 +38,7 @@ restart
 # Debug files
 *.dSYM/
 
-# generated files
+# Generated files
 Makefile
 autom4te.cache/
 config.log
@@ -46,6 +46,7 @@ config.status
 include/autoconf.h
 include/defines.h
 src/version.c
+docs_html/
 
 # Windows build files
 compile

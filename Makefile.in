@@ -6,6 +6,9 @@ RM=rm -f
 SSLTOP=@ssldir@
 RPMDIR="/usr/src/RPM/"
 
+HTML_DOCS_DIR=docs_html
+# Output directory for HTML source.  Relative to the current working directory.
+
 all:	Makefile
 	for d in ${subdirs}; do \
 		cd $${d} && ${MAKE} all; \
@@ -48,6 +51,7 @@ cert game/server.pem:
 	fi
 
 clean:
+	if [ -d ${HTML_DOCS_DIR} ]; then ${RM} -r ${HTML_DOCS_DIR}; fi
 	for d in ${subdirs}; do \
 		cd $${d} && ${MAKE} clean; \
 	done
@@ -78,11 +82,12 @@ Makefile: Makefile.in
 TMPPKGDIR=/tmp/tmp_fbmuck_pkg
 TMPREV=/tmp/tmp_fbmuck_rev
 
-#help:
-#	cd src && make prochelp
-#	cd game/data && ../../src/prochelp mpihelp.raw mpihelp.txt ../../docs/mpihelp.html
-#	cd game/data && ../../src/prochelp mufman.raw man.txt ../../docs/mufman.html
-#	cd game/data && ../../src/prochelp muckhelp.raw help.txt ../../docs/muckhelp.html
+help:
+	mkdir -p ${HTML_DOCS_DIR}
+	cd src && make prochelp
+	cd game/data && ../../src/prochelp mpihelp.raw mpihelp.txt ../../${HTML_DOCS_DIR}/mpihelp.html
+	cd game/data && ../../src/prochelp mufman.raw man.txt ../../${HTML_DOCS_DIR}/mufman.html
+	cd game/data && ../../src/prochelp muckhelp.raw help.txt ../../${HTML_DOCS_DIR}/muckhelp.html
 
 #package: help
 #	rm -rf ${TMPPKGDIR}
