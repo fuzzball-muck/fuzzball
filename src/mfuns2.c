@@ -55,8 +55,7 @@ mfn_controls(MFUNARGS)
 			ABORT_MPI("CONTROLS", "Permission denied. (arg2)");
 		if (obj2 == HOME)
 			obj2 = PLAYER_HOME(player);
-		if (Typeof(obj2) != TYPE_PLAYER)
-			obj2 = OWNER(obj2);
+		obj2 = OWNER(obj2);
 	} else {
 		obj2 = OWNER(perms);
 	}

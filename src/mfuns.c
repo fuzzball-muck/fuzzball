@@ -881,9 +881,8 @@ mfn_ontime(MFUNARGS)
 		return "-1";
 	if (obj == PERMDENIED)
 		ABORT_MPI("ONTIME", "Permission denied.");
-	if (Typeof(obj) != TYPE_PLAYER)
-		obj = OWNER(obj);
-	conn = least_idle_player_descr(obj);
+
+	conn = least_idle_player_descr(OWNER(obj));
 	if (!conn)
 		return "-1";
 	snprintf(buf, BUFFER_LEN, "%d", pontime(conn));
@@ -901,9 +900,8 @@ mfn_idle(MFUNARGS)
 		ABORT_MPI("IDLE", "Permission denied.");
 	if (obj == UNKNOWN || obj == AMBIGUOUS || obj == NOTHING || obj == HOME)
 		return "-1";
-	if (Typeof(obj) != TYPE_PLAYER)
-		obj = OWNER(obj);
-	conn = least_idle_player_descr(obj);
+
+	conn = least_idle_player_descr(OWNER(obj));
 	if (!conn)
 		return "-1";
 	snprintf(buf, BUFFER_LEN, "%d", pidle(conn));
