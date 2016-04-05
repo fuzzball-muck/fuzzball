@@ -523,6 +523,7 @@ tune_parms_array(const char* pattern, int mlev)
 				array_set_strkey_intval(&item, "readmlev",  tbool->readmlev);
 				array_set_strkey_intval(&item, "writemlev",  tbool->writemlev);
 				array_set_strkey_strval(&item, "label", tbool->label);
+				array_set_strkey_intval(&item, "nullable", 0);
 				array_set_strkey_intval(&item, "active", MOD_ENABLED(tbool->module));
 				array_set_strkey_intval(&item, "default", tbool->isdefault);
 
@@ -547,6 +548,7 @@ tune_parms_array(const char* pattern, int mlev)
 				array_set_strkey_intval(&item, "readmlev",  ttim->readmlev);
 				array_set_strkey_intval(&item, "writemlev",  ttim->writemlev);
 				array_set_strkey_strval(&item, "label", ttim->label);
+				array_set_strkey_intval(&item, "nullable", 0);
 				array_set_strkey_intval(&item, "active", MOD_ENABLED(ttim->module));
 				array_set_strkey_intval(&item, "default", ttim->isdefault);
 
@@ -571,6 +573,7 @@ tune_parms_array(const char* pattern, int mlev)
 				array_set_strkey_intval(&item, "readmlev",  tval->readmlev);
 				array_set_strkey_intval(&item, "writemlev",  tval->writemlev);
 				array_set_strkey_strval(&item, "label", tval->label);
+				array_set_strkey_intval(&item, "nullable", 0);
 				array_set_strkey_intval(&item, "active", MOD_ENABLED(tval->module));
 				array_set_strkey_intval(&item, "default", tval->isdefault);
 
@@ -595,6 +598,7 @@ tune_parms_array(const char* pattern, int mlev)
 				array_set_strkey_intval(&item, "readmlev",  tref->readmlev);
 				array_set_strkey_intval(&item, "writemlev",  tref->writemlev);
 				array_set_strkey_strval(&item, "label", tref->label);
+				array_set_strkey_intval(&item, "nullable", 0);
 				array_set_strkey_intval(&item, "active", MOD_ENABLED(tref->module));
 				array_set_strkey_intval(&item, "default", tref->isdefault);
 
@@ -646,6 +650,7 @@ tune_parms_array(const char* pattern, int mlev)
 				array_set_strkey_intval(&item, "readmlev",  tstr->readmlev);
 				array_set_strkey_intval(&item, "writemlev",  tstr->writemlev);
 				array_set_strkey_strval(&item, "label", tstr->label);
+				array_set_strkey_intval(&item, "nullable", tstr->isnullable);
 				array_set_strkey_intval(&item, "active", MOD_ENABLED(tstr->module));
 				array_set_strkey_intval(&item, "default", tstr->isdefault);
 
