@@ -1901,6 +1901,9 @@ prim_toadplayer(PRIM_PROTOTYPE)
 			THING_SET_HOME(stuff, tp_player_start);
 	    }
 	}
+
+	chown_macros(victim, recipient);
+
 	if (PLAYER_PASSWORD(victim)) {
 	    free((void *) PLAYER_PASSWORD(victim));
 		PLAYER_SET_PASSWORD(victim, 0);
