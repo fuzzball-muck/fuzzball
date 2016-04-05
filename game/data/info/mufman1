@@ -3418,12 +3418,14 @@ about each sysparm.  This will only return items for which your program has
 permission to read the data.
 
 Each dictionary contains the following data, keyed with these strings:
-    "name"      The name of the @tune setting.
-    "group"     The logical group that this parameter belongs to.
     "type"      One of "string", "integer", "timespan", "dbref", or "boolean".
+    "group"     The logical group that this parameter belongs to.
+    "name"      The name of the @tune setting.
+    "value"     The value of the sysparm.  May be an int, string, or dbref.
     "readmlev"  The mucker level required to read the value of this sysparm.
     "writemlev" The mucker level required to write the value of this sysparm.
-    "value"     The value of the sysparm.  May be an int, string, or dbref.
+    "label"	A description of the parameter.
+    "nullable"  Whether the parameter can have no value.
     "active"	Whether the parameter currently affects the system.
     "default"	Whether the parameter has been changed from defaults.
 
