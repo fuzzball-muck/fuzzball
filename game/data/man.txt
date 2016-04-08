@@ -168,7 +168,7 @@ N's
   newpassword        newplayer          newprogram         newroom
   next               nextdescr          nextentrance       nextowned
   nextprop           not                notify             notify_except
-  notify_exclude     notify_nolisten    number?            
+  notify_exclude     notify_nolisten    notify_secure      number?
 
 O's
   objmem         odrop          ofail          ok?            online
@@ -1744,7 +1744,8 @@ I/O Operators|IOOps
 I/O Operators
 
 notify             notify_except      notify_exclude     notify_nolisten
-read               read_wants_blanks  tread              userlog
+notify_secure      read               read_wants_blanks  tread
+userlog            
 
 ~----------------------------------------------------------------------------
 ~
@@ -1780,7 +1781,7 @@ NOTIFY_EXCLUDE and DIRECTIVES for more information.
 ~
 ~
 NOTIFY_EXCLUDE
-NOTIFY_EXCLUDE (d dn ... d1 n s -- )
+NOTIFY_EXCLUDE ( d dn ... d1 n s -- )
 
   Displays the message s to all the players (or _listening objects),
 excluding the n given players, in the given room.  For example:
@@ -1788,6 +1789,12 @@ excluding the n given players, in the given room.  For example:
 would send "Hi!" to everyone in room #0 except for players (or objects)
 #1, #7, and #23.  _listener's will not be triggered by a notify_exclude
 if the program they would run is the same as the current program running.
+~
+~
+NOTIFY_SECURE
+NOTIFY_SECURE ( d s1 s2 -- )
+  Notifies player d with s1 over their secure descriptors and s2 over their
+insecure descriptors. Triggers listener prop queues only with s2.
 ~
 ~
 READ_WANTS_BLANKS

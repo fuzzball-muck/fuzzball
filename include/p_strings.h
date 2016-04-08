@@ -42,6 +42,7 @@ extern void prim_ansi_strip(PRIM_PROTOTYPE);
 extern void prim_ansi_midstr(PRIM_PROTOTYPE);
 extern void prim_array_fmtstrings(PRIM_PROTOTYPE);
 extern void prim_notify_nolisten(PRIM_PROTOTYPE);
+extern void prim_notify_secure(PRIM_PROTOTYPE);
 
 #define PRIMS_STRINGS_FUNCS prim_numberp, prim_stringcmp, prim_strcmp,        \
     prim_strncmp, prim_strcut, prim_strlen, prim_strcat, prim_atoi,           \
@@ -52,7 +53,7 @@ extern void prim_notify_nolisten(PRIM_PROTOTYPE);
 	prim_midstr, prim_ctoi, prim_itoc, prim_stod, prim_split, prim_rsplit,    \
 	prim_fmtstring, prim_tokensplit, prim_ansi_strlen, prim_ansi_strcut,      \
 	prim_ansi_strip, prim_ansi_midstr, prim_explode_array,                    \
-	prim_array_fmtstrings, prim_notify_nolisten
+	prim_array_fmtstrings, prim_notify_nolisten, prim_notify_secure
 
 #define PRIMS_STRINGS_NAMES "NUMBER?", "STRINGCMP", "STRCMP",  \
     "STRNCMP", "STRCUT", "STRLEN", "STRCAT", "ATOI",           \
@@ -63,8 +64,8 @@ extern void prim_notify_nolisten(PRIM_PROTOTYPE);
 	"MIDSTR", "CTOI", "ITOC", "STOD", "SPLIT", "RSPLIT",       \
 	"FMTSTRING", "TOKENSPLIT", "ANSI_STRLEN", "ANSI_STRCUT",   \
 	"ANSI_STRIP", "ANSI_MIDSTR", "EXPLODE_ARRAY",              \
-	"ARRAY_FMTSTRINGS", "NOTIFY_NOLISTEN"
+	"ARRAY_FMTSTRINGS", "NOTIFY_NOLISTEN", "NOTIFY_SECURE"
 
-#define PRIMS_STRINGS_CNT 41
+#define PRIMS_STRINGS_CNT 42
 
 #endif /* _P_STRINGS_H */

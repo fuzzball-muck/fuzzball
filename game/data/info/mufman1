@@ -1301,7 +1301,7 @@ translated to '1 swap notify_exclude'.  Please see the man sections on
 NOTIFY_EXCLUDE and DIRECTIVES for more information.
 
 
-NOTIFY_EXCLUDE (d dn ... d1 n s -- )
+NOTIFY_EXCLUDE ( d dn ... d1 n s -- )
 
   Displays the message s to all the players (or _listening objects),
 excluding the n given players, in the given room.  For example:
@@ -1309,6 +1309,11 @@ excluding the n given players, in the given room.  For example:
 would send "Hi!" to everyone in room #0 except for players (or objects)
 #1, #7, and #23.  _listener's will not be triggered by a notify_exclude
 if the program they would run is the same as the current program running.
+
+
+NOTIFY_SECURE ( d s1 s2 -- )
+  Notifies player d with s1 over their secure descriptors and s2 over their
+insecure descriptors. Triggers listener prop queues only with s2.
 
 
 READ_WANTS_BLANKS ( -- )
