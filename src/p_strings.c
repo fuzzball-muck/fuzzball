@@ -11,6 +11,7 @@
 #include "externs.h"
 #include "params.h"
 #include "interp.h"
+#include "interface.h"
 
 static struct inst *oper1, *oper2, *oper3, *oper4;
 static struct inst temp1, temp2, temp3;
@@ -2378,4 +2379,49 @@ prim_ansi_midstr(PRIM_PROTOTYPE)
 	CLEAR(oper2);
 	CLEAR(oper3);
 	PushString(buf);
+}
+
+void
+prim_notify_secure(PRIM_PROTOTYPE)
+{
+	int* darr;
+	int di, dcount;
+
+	if (mlev < 3)
+		abort_interp("Mucker level 3 primitive.");
+
+	CHECKOP(3);
+	oper1 = POP();
+	oper2 = POP();
+	oper3 = POP();
+
+	if (oper1->type != PROG_STRING)
+		abort_interp("Not a string argument. (1)");
+	if (oper2->type != PROG_STRING)
+		abort_interp("Not a string argument. (2)");
+	if (!valid_player(oper3))
+		abort_interp("Not a valid player. (3)");
+
+	ref = oper3->data.objref;
+
+	darr = get_player_descrs(ref, &dcount);
+
+	for (di = 0; di < dcount; di++) {
+		if (pdescrsecure(darr[di])) {
+			pdescrnotify(darr[di], oper2->data.string->data);
+		} else {
+			pdescrnotify(darr[di], oper1->data.string->data);
+		}
+	}
+
+	if (tp_listeners && tp_listeners_obj) {
+		listenqueue(-1, player, LOCATION(ref), ref, ref, program, "_listen", oper1->data.string->data, tp_listen_mlev, 1, 0);
+		listenqueue(-1, player, LOCATION(ref), ref, ref, program, "~listen", oper1->data.string->data, tp_listen_mlev, 1, 1);
+		listenqueue(-1, player, LOCATION(ref), ref, ref, program, "~olisten", oper1->data.string->data, tp_listen_mlev, 0, 1);
+        }
+
+
+	CLEAR(oper1);
+	CLEAR(oper2);
+	CLEAR(oper3);
 }
