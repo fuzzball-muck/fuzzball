@@ -2365,6 +2365,11 @@ ARRAY_NOTIFY ( a1 a2 -- )
 must be homogenous of their respective types.
 
 
+ARRAY_NOTIFY_SECURE ( a1 a2 a3 -- )
+  For every dbref in a3, notify a2 over their secure descriptors and a1 over
+their insecure descriptors. Triggers listener prop queues only with a1.
+
+
 }TELL  ( marker strn ... str1 -- )
 
   Takes all stack items from the top of the stack to the topmost stack
