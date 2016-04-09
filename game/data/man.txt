@@ -77,13 +77,13 @@ A's
   array_make_dict           array_matchkey            array_matchval
   array_ndiff               array_nested_del          array_nested_get
   array_nested_set          array_next                array_nintersect
-  array_notify              array_nunion              array_prev
-  array_put_proplist        array_put_propvals        array_put_reflist
-  array_reverse             array_setitem             array_setrange
-  array_sort                array_sort_indexed        array_union
-  array_vals                arrive                    asin
-  atan                      atan2                     atoi
-  awake?                    
+  array_notify              array_notify_secure       array_nunion
+  array_prev                array_put_proplist        array_put_propvals
+  array_put_reflist         array_reverse             array_setitem
+  array_setrange            array_sort                array_sort_indexed
+  array_union               array_vals                arrive
+  asin                      atan                      atan2
+  atoi                      awake?                    
 
 B's
   background   begin        bg_mode      bitand       bitor        bitshift
@@ -3029,12 +3029,12 @@ array_join                array_keys                array_last
 array_make                array_make_dict           array_matchkey
 array_matchval            array_ndiff               array_nested_del
 array_nested_get          array_nested_set          array_next
-array_nintersect          array_notify              array_nunion
-array_prev                array_reverse             array_setitem
-array_setrange            array_sort                array_sort_indexed
-array_union               array_vals                }cat
-}dict                     }join                     }list
-}tell                     
+array_nintersect          array_notify              array_notify_secure
+array_nunion              array_prev                array_reverse
+array_setitem             array_setrange            array_sort
+array_sort_indexed        array_union               array_vals
+}cat                      }dict                     }join
+}list                     }tell                     
 
 ~----------------------------------------------------------------------------
 ~
@@ -3077,6 +3077,12 @@ ARRAY_NOTIFY ( a1 a2 -- )
 
   Notifies all strings in array a1 to all dbrefs in array a2.  Arrays
 must be homogenous of their respective types.
+~
+~
+ARRAY_NOTIFY_SECURE
+ARRAY_NOTIFY_SECURE ( a1 a2 a3 -- )
+  For every dbref in a3, notify a2 over their secure descriptors and a1 over
+their insecure descriptors. Triggers listener prop queues only with a1.
 ~
 ~
 }TELL

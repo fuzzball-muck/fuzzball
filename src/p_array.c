@@ -13,6 +13,7 @@
 #include "interp.h"
 #include "props.h"
 #include "dbsearch.h"
+#include "interface.h"
 #ifdef DISKBASE
 #include "diskprop.h"
 #endif
@@ -2413,4 +2414,72 @@ prim_array_filter_flags(PRIM_PROTOTYPE)
     CLEAR(oper1);
     CLEAR(oper2);
     PushArrayRaw(nw);
+}
+
+void
+prim_array_notify_secure(PRIM_PROTOTYPE)
+{
+	stk_array *strarr, *strarr2, *refarr;
+	struct inst *oper1=NULL, *oper2=NULL, *oper3=NULL, *oper4=NULL, *oper5=NULL;
+	struct inst temp1, temp2, temp3;
+
+        int* darr;
+        int di, dcount;
+
+        if (mlev < 3)
+                abort_interp("Mucker level 3 primitive.");
+
+	CHECKOP(3);
+	oper1 = POP();
+	oper2 = POP();
+	oper3 = POP();
+
+	if (oper1->type != PROG_ARRAY || !array_is_homogenous(oper1->data.array, PROG_OBJECT))
+		abort_interp("Argument not an array of dbrefs. (3)");
+	if (oper2->type != PROG_ARRAY || !array_is_homogenous(oper2->data.array, PROG_STRING))
+		abort_interp("Argument not an array of strings. (2)");
+	if (oper3->type != PROG_ARRAY || !array_is_homogenous(oper3->data.array, PROG_STRING))
+		abort_interp("Argument not an array of strings. (1)");
+
+	refarr = oper1->data.array;
+	strarr = oper2->data.array;
+	strarr2 = oper3->data.array;
+
+	if (array_first(refarr, &temp3)) {
+		do {
+			oper5 = array_getitem(refarr, &temp3);
+			ref = oper5->data.objref;
+
+			darr = get_player_descrs(ref, &dcount);
+
+			for (di = 0; di < dcount; di++) {
+				if (pdescrsecure(darr[di])) {
+					if (array_first(strarr, &temp2)) {
+						do {
+							oper4 = array_getitem(strarr, &temp2);
+							pdescrnotify(darr[di], oper4->data.string->data);
+							oper4 = NULL;
+						} while (array_next(strarr, &temp2));
+					}
+				} else {
+					if (array_first(strarr2, &temp2)) {
+						do {
+							oper4 = array_getitem(strarr2, &temp2);
+							pdescrnotify(darr[di], oper4->data.string->data);
+
+							listenqueue(-1, player, LOCATION(ref), ref, ref, program, "_listen", oper4->data.string->data, tp_listen_mlev, 1, 0);
+							listenqueue(-1, player, LOCATION(ref), ref, ref, program, "~listen", oper4->data.string->data, tp_listen_mlev, 1, 1);
+							listenqueue(-1, player, LOCATION(ref), ref, ref, program, "~olisten", oper4->data.string->data, tp_listen_mlev, 0, 1);
+
+							oper4 = NULL;
+						} while (array_next(strarr2, &temp2));
+					}
+				}
+			}
+		} while (array_next(refarr, &temp3));
+	}
+
+	CLEAR(oper1);
+	CLEAR(oper2);
+	CLEAR(oper3);
 }
