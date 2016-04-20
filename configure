@@ -4087,7 +4087,7 @@ if test "$pcreenable" = "1"; then
 	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for PCRE directory" >&5
 $as_echo_n "checking for PCRE directory... " >&6; }
 	if test -z "$pcredir"; then
-		for maindir in /usr /usr/local /usr/pkg /opt /sw
+		for maindir in ~ /usr/local /usr/pkg /sw /opt/local /opt /usr
 		do
 			for dir in $maindir $maindir/pcre
 			do
@@ -4168,6 +4168,7 @@ else
 	echo "fbmuck requires the PCRE library to compile."
 	echo "Use --with-pcre option to fix this problem"
 	echo
+	exit -1
 fi
 
 
@@ -4201,7 +4202,7 @@ $as_echo_n "checking for SSL directory... " >&6; }
         	checkssldir "$withval"
 		else
 			sslenable=1
-			for maindir in /usr /usr/local /usr/lib /usr/pkg /opt /var/ssl /sw
+			for maindir in ~ /usr/local /usr/pkg /var/ssl /sw /opt/local /opt /usr
 			do
 				for dir in $maindir $maindir/openssl $maindir/ssl
 				do
@@ -4226,6 +4227,7 @@ $as_echo "Not found" >&6; }
     	echo "Couldn't find your SSL library installation dir."
     	echo "Use --with-ssl option to fix this problem, if you want ssl support"
     	echo
+	exit -1
 	fi
 	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ssldir" >&5
 $as_echo "$ssldir" >&6; }
