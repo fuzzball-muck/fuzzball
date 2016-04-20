@@ -69,10 +69,14 @@ string_prefix(register const char *string, register const char *prefix)
 int
 string_compare(register const char *s1, register const char *s2)
 {
-	while (*s1 && tolower(*s1) == tolower(*s2))
-		s1++, s2++;
+        unsigned char c1, c2;
 
-	return (tolower(*s1) - tolower(*s2));
+        do {
+                c1 = tolower(*(const unsigned char *)s1++);
+                c2 = tolower(*(const unsigned char *)s2++);
+        } while (c1 && c1 == c2);
+
+        return (c1 - c2);
 }
 
 char*
