@@ -2421,7 +2421,7 @@ prim_array_notify_secure(PRIM_PROTOTYPE)
 {
 	stk_array *strarr, *strarr2, *refarr;
 	struct inst *oper1=NULL, *oper2=NULL, *oper3=NULL, *oper4=NULL, *oper5=NULL;
-	struct inst temp1, temp2, temp3;
+	struct inst temp2, temp3;
 
         int* darr;
         int di, dcount;
