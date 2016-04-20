@@ -75,7 +75,7 @@ AC_ARG_WITH(pcre,
 if test "$pcreenable" = "1"; then
 	AC_MSG_CHECKING([for PCRE directory])
 	if test -z "$pcredir"; then
-		for maindir in /usr /usr/local /usr/pkg /opt /sw
+		for maindir in ~ /usr/local /usr/pkg /sw /opt/local /opt /usr
 		do
 			for dir in $maindir $maindir/pcre
 			do
@@ -106,6 +106,7 @@ else
 	echo "fbmuck requires the PCRE library to compile."
 	echo "Use --with-pcre option to fix this problem"
 	echo
+	exit -1
 fi
 
 
@@ -137,7 +138,7 @@ AC_ARG_WITH(ssl,
         	checkssldir "$withval"
 		else
 			sslenable=1
-			for maindir in /usr /usr/local /usr/lib /usr/pkg /opt /var/ssl /sw
+			for maindir in ~ /usr/local /usr/pkg /var/ssl /sw /opt/local /opt /usr
 			do
 				for dir in $maindir $maindir/openssl $maindir/ssl
 				do
@@ -159,6 +160,7 @@ if test "$sslenable" = "1"; then
     	echo "Couldn't find your SSL library installation dir."
     	echo "Use --with-ssl option to fix this problem, if you want ssl support"
     	echo
+	exit -1
 	fi
 	AC_MSG_RESULT([$ssldir])
 	AC_SUBST(ssldir)
