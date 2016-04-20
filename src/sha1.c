@@ -156,7 +156,7 @@ uint8_t* sha1_result(sha1nfo *s) {
 
 /* Turn a 20 byte hash into a 41 byte hex c-string */
 void hash2hex(uint8_t* hash, char *buffer, size_t buflen) {
-	int i;
+	size_t i;
 	uint8_t low, high;
 
 	buffer[0] = '\0';

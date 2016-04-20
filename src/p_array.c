@@ -1440,7 +1440,7 @@ prim_array_put_proplist(PRIM_PROTOTYPE)
 	fmtin = "P#";
 	while (*fmtin) {
 		if (*fmtin == 'P') {
-			if ((fmtout + dirlen) - propname > sizeof(propname))
+			if ((size_t)((fmtout + dirlen) - propname) > sizeof(propname))
 				break;
 			strcpyn(fmtout, sizeof(propname)-(fmtout-propname), dir);
 			fmtout = &fmtout[strlen(fmtout)];
@@ -1466,12 +1466,12 @@ prim_array_put_proplist(PRIM_PROTOTYPE)
 			fmtin = "P#/N";
 			while (*fmtin) {
 				if (*fmtin == 'N') {
-					if ((fmtout + 18) - propname > sizeof(propname))
+					if ((size_t)((fmtout + 18) - propname) > sizeof(propname))
 						break;
 					snprintf(fmtout, sizeof(propname) - (fmtout - propname), "%d", temp1.data.number + 1);
 					fmtout = &fmtout[strlen(fmtout)];
 				} else if (*fmtin == 'P') {
-					if ((fmtout + dirlen) - propname > sizeof(propname))
+					if ((size_t)((fmtout + dirlen) - propname) > sizeof(propname))
 						break;
 					strcpyn(fmtout, sizeof(propname)-(fmtout-propname), dir);
 					fmtout = &fmtout[strlen(fmtout)];
@@ -1521,12 +1521,12 @@ prim_array_put_proplist(PRIM_PROTOTYPE)
 		fmtin = "P#/N";
 		while (*fmtin) {
 			if (*fmtin == 'N') {
-				if ((fmtout + 18) - propname > sizeof(propname))
+				if ((size_t)((fmtout + 18) - propname) > sizeof(propname))
 					break;
 				snprintf(fmtout, sizeof(propname) - (fmtout - propname), "%d", count + 1);
 				fmtout = &fmtout[strlen(fmtout)];
 			} else if (*fmtin == 'P') {
-				if ((fmtout + dirlen) - propname > sizeof(propname))
+				if ((size_t)((fmtout + dirlen) - propname) > sizeof(propname))
 					break;
 				strcpyn(fmtout, sizeof(propname)-(fmtout-propname), dir);
 				fmtout = &fmtout[strlen(fmtout)];
@@ -2242,7 +2242,7 @@ prim_array_nested_set(PRIM_PROTOTYPE)
 	struct inst temp;
 	stk_array *arr;
 	stk_array *idxarr;
-	int i, idxcnt;
+	size_t i, idxcnt;
 
 	CHECKOP(3);
 	oper1 = POP();				/* arr  IndexList */
@@ -2319,7 +2319,7 @@ prim_array_nested_del(PRIM_PROTOTYPE)
 	struct inst *dat;
 	struct inst temp;
 	stk_array *idxarr;
-	int i, idxcnt;
+	size_t i, idxcnt;
 
 	CHECKOP(2);
 	oper1 = POP();				/* arr  IndexList */

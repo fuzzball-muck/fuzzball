@@ -46,7 +46,7 @@
 char*
 strcpyn(char* buf, size_t bufsize, const char* src)
 {
-	int pos = 0;
+	size_t pos = 0;
 	char* dest = buf;
 
 	while (++pos < bufsize && *src) {

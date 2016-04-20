@@ -104,7 +104,7 @@ xMD5Update(struct xMD5Context *ctx, const byte *buf, int len)
 		ctx->bytes[1]++;		/* Carry from low to high */
 
 	t = 64 - (t & 0x3f);		/* Space available in ctx->in (at least 1) */
-	if ((unsigned) t > len) {
+	if ((unsigned) t > (unsigned) len) {
 		bcopy(buf, (byte *) ctx->in + 64 - (unsigned) t, len);
 		return;
 	}
