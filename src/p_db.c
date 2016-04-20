@@ -693,7 +693,7 @@ prim_set(PRIM_PROTOTYPE)
 						|| ((tmp == ZOMBIE) && (Typeof(ref) == TYPE_THING)
 							&& (FLAGS(ProgUID) & ZOMBIE))
 						|| ((tmp == ZOMBIE) && (Typeof(ref) == TYPE_PLAYER))
-						|| (tmp == BUILDER) || (tmp == YIELD) || (tmp == OVERT)
+						|| (tmp == BUILDER) || (tmp == YIELD) || ((unsigned)tmp == OVERT)
 		 )
 		)
 		|| (tmp == WIZARD) || (tmp == QUELL) || (tmp == INTERACTIVE)
@@ -701,7 +701,7 @@ prim_set(PRIM_PROTOTYPE)
 		|| (tmp == MUCKER) || (tmp == SMUCKER) || (tmp == XFORCIBLE)
 			)
 		abort_interp("Permission denied.");
-        if (((tmp == YIELD) || (tmp == OVERT)) &&
+        if (((tmp == YIELD) || ((unsigned)tmp == OVERT)) &&
             (Typeof(ref) != TYPE_THING && Typeof(ref) != TYPE_ROOM)) {
                 abort_interp("Permission denied.");
         }

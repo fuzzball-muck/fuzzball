@@ -774,13 +774,13 @@ is_prop_prefix(const char* Property, const char* Prefix)
 }
 
 /*
- * Like strncpy, except it guarentees null termination of the result string.
+ * Like strncpy, except it guarantees null termination of the result string.
  * It also has a more sensible argument ordering.
  */
 char*
 strcpyn(char* buf, size_t bufsize, const char* src)
 {
-	int pos = 0;
+	size_t pos = 0;
 	char* dest = buf;
 
 	while (++pos < bufsize && *src) {
@@ -798,7 +798,7 @@ strcpyn(char* buf, size_t bufsize, const char* src)
 char*
 strcatn(char* buf, size_t bufsize, const char* src)
 {
-	int pos = strlen(buf);
+	size_t pos = strlen(buf);
 	char* dest = &buf[pos];
 
 	while (++pos < bufsize && *src) {

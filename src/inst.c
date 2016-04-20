@@ -53,7 +53,7 @@ insttotext(struct frame *fr, int lev, struct inst *theinst, char *buffer, int bu
 	case PROG_PRIMITIVE:
 		if (theinst->data.number >= BASE_MIN && theinst->data.number <= BASE_MAX) {
 			ptr = base_inst[theinst->data.number - BASE_MIN];
-			if (strlen(ptr) >= buflen)
+			if (strlen(ptr) >= (size_t)buflen)
 				*buffer = '\0';
 			else
 				strcpyn(buffer, buflen, ptr);

@@ -82,7 +82,7 @@ string_compare(register const char *s1, register const char *s2)
 char*
 strcpyn(char* buf, size_t bufsize, const char* src)
 {
-	int pos = 0;
+	size_t pos = 0;
 	char* dest = buf;
 
 	while (++pos < bufsize && *src) {
@@ -95,7 +95,7 @@ strcpyn(char* buf, size_t bufsize, const char* src)
 char*
 strcatn(char* buf, size_t bufsize, const char* src)
 {
-	int pos = strlen(buf);
+	size_t pos = strlen(buf);
 	char* dest = &buf[pos];
 
 	while (++pos < bufsize && *src) {
