@@ -150,15 +150,26 @@ other players in the room.  Throw and put can be used instead of drop.
 ~~alsosee @DROP,@ODROP,@LOCK,STICKY,DROP-TO,GET,PUT
 ~
 ~
-GO|MOVE
+GO|GOTO|MOVE
 GO <direction>
 GO home
 MOVE <direction>
 MOVE home
 
-  Moves the player in the specified direction. 'go home' is a special command
-that returns you to your starting location.  The word 'go' may be omitted.
-'move' is the same as 'go'.
+  Move the player in a specific direction.  'go home' is a special
+command that returns to you to your starting location.  'go' may be
+omitted by simply specifying a direction, and 'goto', 'move' are the
+same as 'go'.
+
+  Examples:
+~~code
+    go home            teleport home, *leaving behind all possessions*
+                       (See 'help home')
+    goto kitchen       go to the exit called 'kitchen'
+    move up            move in the direction 'up', if it exists
+    north              move to the exit 'north', if it exists
+~~endcode
+~~alsosee HOME
 ~
 ~
 HOME
@@ -167,6 +178,7 @@ HOME
   Sends you home, no matter where you are. You retain your pennies, but
 any objects you are carrying leave your inventory and return to their own
 homes. See HOMES.
+~~alsosee GO,HOMES
 ~
 ~
 GOAL
@@ -260,13 +272,84 @@ the matching properties will be shown recursively.
 ~
 ~
 HELP
-HELP [<subject>]
+HELP
+HELP alpha
+HELP category
+HELP <subject>
 
-  With no arguments, this command returns a brief summary of basic
-commands on playing the game. When <subject> is specified, it returns
-detailed informaion on that topic.  Lists of topics are available by
-typing 'help category', or 'help alpha'.  Seeing as you are reading this,
-you probably already understand how this works.
+  With no arguments, this command shows a brief summary of basic
+commands for playing the game.  With <subject> specified, it shows
+detailed information on that topic.  Use 'help alpha' or
+'help category' to see an alphabetical or categorized list of topics,
+respectively.  Seeing as you are reading this, you probably already
+understand how this works.
+
+  Examples:
+~~code
+    help               see the introductory information
+    help alpha         show an alphabetical list of topics
+    help category      show a categorized list of topics
+    help basics        read commands in the category 'Basics'
+~~endcode
+~~alsosee INFO,MPI
+~
+~
+INFO
+INFO
+INFO <topic>
+INFO <topic>=<range>
+
+  See what information files are available or read information on a
+particular topic, optionally limiting to a specific set of lines.
+
+  Examples:
+~~code
+    info                 list available information files
+    info muf-cheat       read the information file 'muf-cheat'
+    info muf-cheat=180   read line 180 from 'muf-cheat'
+    info muf-cheat=5-10  read lines 5-10 from 'muf-cheat'
+~~endcode
+~~alsosee HELP,MPI
+~
+~
+MPI
+MPI
+MPI alpha
+MPI category
+MPI <subject>
+
+  With no arguments, this command shows a brief summary of MPI
+reference info.  With <subject> specified, it shows detailed
+information on that topic.  Use 'mpi alpha' or 'mpi category' to see an
+alphabetical or categorized list of topics, respectively.
+
+  Examples:
+~~code
+    mpi                see the introductory information
+    mpi alpha          show an alphabetical list of topics
+    mpi category       show a categorized list of topics
+    mpi Looping        read commands in the category 'Looping'
+~~endcode
+~~alsosee HELP,INFO
+~
+~
+MOTD
+MOTD
+MOTD clear
+MOTD <text>
+
+  See the current message of the day.
+  Wizards may clear the message with 'clear', or set a new message by
+typing it after the command.  If longer than 68 characters, the rest of
+the message is split at the nearest word into a new line.
+
+  Examples:
+~~code
+    motd               print the message of the day
+    motd clear         clear the current message of the day
+    motd Fresh start!  set the message of the day to 'Fresh start!'
+~~endcode
+~~alsosee NEWS
 ~
 ~
 NEWS
@@ -274,6 +357,7 @@ NEWS [<topic>]
 
   Displays the current news file for the game. Must be typed in full.  If a
 topic is given, then it displays the information on that specific topic.
+~~alsosee MOTD
 ~
 ~
 @PASSWORD
@@ -297,6 +381,27 @@ WHO [<player>]
 player currently logged in, and how long they have been inactive. If
 given a player name, it displays only the matching names and idle times.
 Wizards also get a display of the host the player is connected from.
+
+  Examples:
+~~code
+    WHO                show all players online
+    WHO Az             show online players that start with 'Az'
+~~endcode
+~~alsosee @DOING
+~
+~
+@DOING
+@DOING <object>=[<description>]
+  Let others see that you're currently doing something, e.g. as shown
+when typing WHO.  This may also be set for objects you control.
+  To use this command, a Wizard must enable the tunable 'who_doing'.
+
+  Example:
+~~code
+    @doing me                        clear your message
+    @doing me=Sharing hugs to all    set your message
+~~endcode
+~~alsosee WHO
 ~
 ~
 QUIT
@@ -305,6 +410,14 @@ QUIT
   Must be in all capitals, and typed in full. Logs out of your character
 and leaves the game. Your character remains at the location you are in when
 you log out, although it might be moved elsewhere while you are 'asleep.'
+~
+~
+DISEMBARK|LEAVE
+DISEMBARK
+LEAVE
+
+  Exit a vehicle, arriving at the destination.  If you can't leave, it
+shows an error message instead.
 ~
 ~
 ~
@@ -387,6 +500,23 @@ object is 100 pennies, which would cost 505 pennies to create. If a
 is set to the dbref of the new object.  This lets players refer to
 the object as $<regname> (ie: $mybutton) in @locks, @sets, et cetera.
 Only a builder may use this command.
+~~alsosee @CLONE
+~
+~
+@CLONE
+@CLONE <object>
+
+  Clones the given object, including name, location, flags, and
+properties.  You must have control of the object, you may not clone
+rooms, exits, etc, and cloning may cost pennies.  If successful, the
+command prints the identifier of the new object.  Only a Builder may
+use this command.
+
+  Example:
+~~code
+    @clone some_object
+~~endcode
+~~alsosee @CREATE
 ~
 ~
 @DIG
@@ -622,6 +752,17 @@ it is LINK_OK. See LINK_OK, ABODE, and @LINK.
 <object2> is either controlled by you or linkable.  Actions may be
 linked to more than one thing, specified in a list separated by
 semi-colons.
+~~alsosee @RELINK,@UNLINK
+~
+~
+@RELINK
+@RELINK <object1>=<object2> [; <object3>; ...  <objectn> ]
+
+  Unlinks <object1>, then links it to <object2>, provided you control
+<object1>, and <object2> is either controlled by you or linkable.
+Actions may be linked to more than one thing, specified in a list
+separated by semi-colons.
+~~alsosee @LINK,@UNLINK
 ~
 ~
 @UNLINK
@@ -632,7 +773,7 @@ semi-colons.
 drop-to on the room. Unlinked exits may be picked up and dropped elsewhere.
 Be careful, anyone can relink an unlinked exit, becoming its new owner
 (but you will be reimbursed your 1 penny).
-~~alsosee @LINK
+~~alsosee @LINK,@RELINK
 ~
 ~
 HOMES
@@ -790,7 +931,7 @@ an object, or 'property:value'.
 ~~code
     @chlock here=*Igor
     @chlock thingy=*Igor|*JohnDoe|me
-	@chlock here=!sex:neuter
+    @chlock here=!sex:neuter
     @chlock here=me|((*Igor|*JohnDoe)&sex:male)&!_flight?:yes
 ~~endcode
 ~~alsosee @LOCK,@CHOWN,CHOWN_OK
@@ -819,7 +960,7 @@ may place things in or remove things from <object>.
   Moves <arg1> to <destination>, if <destination> is not given, moves you
 to <arg1>.  Wizards may teleport anything to anywhere, provided it makes
 sense, and mortals are allowed to do two things: teleport rooms to change
-their parent fields, and the may teleport things to a room they can link
+their parent fields, and they may teleport things to a room they can link
 to, provided they control either the thing or its location.
 ~
 ~
@@ -904,6 +1045,7 @@ The matching on names is as follows:
         Any of these special charcters can be matched by putting a \ before it.
   
 Examples of use:
+~~code
     "@find north = EU = location" will find all of your unlinked exits named
         "north" and print them along with their locations.
     "@find {big|little} = R!L" finds all your rooms whose names contain "big"
@@ -922,7 +1064,7 @@ Examples of use:
         to make the size determination.  On some systems this can take a while,
         and on all systems this is an abuse to the diskbasing cache.  Only
         Wizards may use this search feature.
-  
+~~endcode
 ~~alsosee @OWNED,@ENTRANCES,@CONTENTS
 ~
 ~
@@ -994,6 +1136,21 @@ in the vehicle's _/oecho property. Without a value, "Outside>" is prepended.
 Sets a string to prepend to messages relayed from a puppet in the puppet's
 _/pecho property. By default, the puppet's name followed by ">" is prepended.
 ~~alsosee ZOMBIE
+~
+~
+@SWEEP
+@SWEEP
+@SWEEP <object>
+
+  Perform a security sweep of some object, showing all listeners,
+both players and things.  You must own the object to sweep it.
+
+  Examples:
+~~code
+    @sweep                 check the current room
+    @sweep me              check yourself
+    @sweep janitor_closet  check the object 'janitor_closet'
+~~endcode
 ~
 ~
 ~
@@ -1656,13 +1813,6 @@ room the _msgmacs prop is on.
 player connected. Must be typed in full.
 ~
 ~
-@USAGE
-@USAGE
-
-  A Wizard only command that gives system resource usage stats for the
-muck server process.
-~
-~
 @DUMP
 @DUMP [filename]
 
@@ -1676,24 +1826,32 @@ subsequent dumps to it as well.
 @SHUTDOWN
 @SHUTDOWN
 
-  Only wizards may use this command. Shuts down the game.  Must be typed
-in full.
+  Shuts down the game.  Only wizards may use this command, and it
+must be typed in full.
+~~alsosee @RESTART,@ARMAGEDDON
 ~
 ~
 @RESTART
 @RESTART
 
-  Initiated a full shutdown and restart of the Muck server.
-~~alsosee @SHUTDOWN
+  Initiate a full shutdown and restart of the Muck server.  Only
+wizards may use this command.
+~~alsosee @SHUTDOWN,@ARMAGEDDON
 ~
 ~
 @ARMAGEDDON
-@ARMAGEDDON
+@ARMAGEDDON [<reason>]
 
   Initiates an immediate emergency shutdown of the Muck server, and does
 NOT save the database out to disk.  Use this ONLY when you suspect the
 database has been corrupted, and it would be a BAD thing to save the
-database out to disk.
+database out to disk.  This is a wizard-only command.
+
+  Examples:
+~~code
+    @armageddon                  force shutdown server
+    @armageddon World ending!    force shutdown with given reason
+~~endcode
 ~~alsosee @SHUTDOWN,@RESTART
 ~
 ~
@@ -1732,23 +1890,193 @@ typed in full.
 @TUNE save
 @TUNE load
 
+  View and modify tunable parameters that configure how the server operates,
+provide help on a parameter, or load and save parameters independent of the
+database.
+
   This is a wizard-only command.
 
-  View and modify tunable parameters that configure how the server operates,
-or provide help on a parameter.  Examples:
-
+  Examples:
 ~~code
-  @tune              shows all parameters and their values
-  @tune info         shows all parameters, values, and brief descriptions
-  @tune foo          shows the value of foo
-  @tune foo=bar      sets the value of foo to bar
-  @tune %foo         resets foo to the default system value
-  @tune info foo     briefly describes foo
-  @tune save         save all parameters to data/parmfile.cfg
-  @tune load         load all parameters from data/parmfile.cfg
+    @tune              shows all parameters and their values
+    @tune info         shows all parameters, values, and brief descriptions
+    @tune foo          shows the value of foo
+    @tune foo=bar      sets the value of foo to bar
+    @tune %foo         resets foo to the default system value
+    @tune info foo     briefly describes foo
+    @tune save         save all parameters to data/parmfile.cfg
+    @tune load         load all parameters from data/parmfile.cfg
 ~~endcode
 
   Some parameters may require a @RESTART or reload to apply.
+~
+~
+@HASHES
+@HASHES [all|git|sha1]
+
+  Show hashes calculated for source files at compile time.  Git
+hashes are only available if Git was installed during compilation.
+
+  Examples:
+~~code
+    @hashes all      show all available hashes
+    @hashes git      show only the Git hash (if available)
+    @hashes sha1     show only the SHA1 hash
+~~endcode
+~~alsosee @VERSION
+~
+~
+@VERSION
+@VERSION
+
+  Show the version information, build time, and compile options used.
+
+~~code
+    @version
+~~endcode
+~~alsosee @HASHES
+~
+~
+@DBGINFO
+@DBGINFO
+
+  Wizard only command that gives database usage stats for
+'diskbase'-style databases.  Only available if compiled with DISKBASE.
+~~alsosee @MEMORY,@MPITOPS,@MUFTOPS,@TOPS,@USAGE
+~
+~
+@TOPS
+@TOPS
+@TOPS <count>
+@TOPS reset
+
+  Show process usage and runtime statistics for both MUF and MPI
+programs.  Count controls the maximum rows of results shown.  If left
+blank, it uses the default of '10'.
+
+  This is a wizard-only command.
+
+  Examples:
+~~code
+    @tops              show default amount of profiling statistics
+    @tops 5            show 5 rows of profiling statistics
+    @tops reset        reset all collected profiling statistics
+~~endcode
+~~alsosee @DBGINFO,@MEMORY,@MPITOPS,@MUFTOPS,@USAGE
+~
+~
+@MEMORY
+@MEMORY
+
+  Wizard only command that gives detailed memory stats for the muck
+server process.  If HAVE_MALLINFO is used, this command shows more
+information.
+~~alsosee @DBGINFO,@MPITOPS,@MUFTOPS,@TOPS,@USAGE
+~
+~
+@MPITOPS
+@MPITOPS
+@MPITOPS <count>
+@MPITOPS reset
+
+  Show process usage and runtime statistics only for MPI programs.
+Count controls the maximum rows of results shown.  If left blank, it
+uses the default of '10'.
+
+  This is a wizard-only command.
+
+  Examples:
+~~code
+    @mpitops           show default amount of profiling statistics
+    @mpitops 5         show 5 rows of profiling statistics
+    @mpitops reset     reset collected MPI profiling statistics
+~~endcode
+~~alsosee @DBGINFO,@MEMORY,@MUFTOPS,@TOPS,@USAGE
+~
+~
+@MUFTOPS
+@MUFTOPS
+@MUFTOPS <count>
+@MUFTOPS reset
+
+  Show process usage and runtime statistics only for MUF programs.
+Count controls the maximum rows of results shown.  If left blank, it
+uses the default of '10'.
+
+  This is a wizard-only command.
+
+  Examples:
+~~code
+    @muftops           show default amount of profiling statistics
+    @muftops 5         show 5 rows of profiling statistics
+    @muftops reset     reset collected MUF profiling statistics
+~~endcode
+~~alsosee @DBGINFO,@MEMORY,@MPITOPS,@TOPS,@USAGE
+~
+~
+@USAGE
+@USAGE
+
+  Wizard only command that gives system resource usage stats for the
+muck server process.
+~~alsosee @DBGINFO,@MEMORY,@MPITOPS,@MUFTOPS,@TOPS
+~
+~
+@EXAMINE
+@EXAMINE <object>
+
+  Print detailed information on the given object, including owner,
+location, home, referring objects, and more.  The information printed
+depends on what type the object is, e.g. thing, room, player, exit.
+  Only player #1 can examine if GOD_PRIV is used, otherwise, only
+Wizards may use this command.
+
+  Examples:
+~~code
+    @examine           examine the current room
+    @examine #1        examine database object #1
+~~endcode
+~
+~
+@SANITY
+@SANITY
+
+  Scan the entire database, verifying that all objects have valid data,
+such as names, exits, ownerships, and check for orphan objects.  Shows
+all problems, but does not make any changes.  Only player #1 can manage
+sanity if GOD_PRIV is used, otherwise, only Wizards may do so.
+~~alsosee @SANCHANGE,@SANFIX
+~
+~
+@SANCHANGE
+@SANCHANGE <dbref> <field> <object>
+
+  Manually change the field of an entry in the database, primarily to
+help with repairing a broken database.  Use with caution.  Only player
+#1 can manage sanity if GOD_PRIV is used, otherwise, only Wizards may
+do so.
+
+  Fields are:
+~~code
+    exits              start of Exits list
+	contents           start of Contents list
+	next               next object in list
+	location           object's Location
+	home               object's Home
+	owner              object's Owner
+~~endcode
+~~alsosee @SANITY,@SANFIX
+~
+~
+@SANFIX
+@SANFIX
+
+  As with @sanity, scan the entire database and verify all is sane,
+but also attempt to fix any problems found.  If sanity can not be
+restored, you may need to manually repair the database with other
+commands.  Only player #1 can manage sanity if GOD_PRIV is used,
+otherwise, only Wizards may do so.
+~~alsosee @SANITY,@SANCHANGE
 ~
 ~
 ~
