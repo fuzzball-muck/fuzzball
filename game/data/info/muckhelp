@@ -1713,6 +1713,12 @@ database.
   Some parameters may require a @RESTART or reload to apply.
 
 
+@CREDITS
+
+  Show a bit about those who contributed to the development of the
+muck server software, giving credit where credit is due.
+
+
 @HASHES [all|git|sha1]
 
   Show hashes calculated for source files at compile time.  Git
@@ -1727,8 +1733,6 @@ hashes are only available if Git was installed during compilation.
 @VERSION
 
   Show the version information, build time, and compile options used.
-
-    @version
 
 
 @DBGINFO
