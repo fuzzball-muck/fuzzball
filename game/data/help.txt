@@ -34,23 +34,23 @@ You can get more help on the following topics:
 Symbols
   @action            @armageddon        @attach            @bless
   @boot              @chown             @chown_lock        @clone
-  @conlock           @contents          @create            @dbginfo
-  @describe          @dig               @doing             @drop
-  @dump              @edit              @entrances         @examine
-  @fail              @find              @force             @force_lock
-  @hashes            @idescribe         @kill              @link
-  @list              @lock              @mcpedit           @mcpprogram
-  @memory            @mpitops           @muftops           @name
-  @newpassword       @odrop             @oecho             @ofail
-  @open              @osuccess          @owned             @password
-  @pcreate           @pecho             @program           @propset
-  @ps                @reconfiguressl    @recycle           @relink
-  @restart           @restrict          @sanchange         @sanfix
-  @sanity            @set               @shutdown          @stats
-  @success           @sweep             @teleport          @toad
-  @tops              @trace             @tune              @unbless
-  @uncompile         @unlink            @unlock            @usage
-  @version           @wall              
+  @conlock           @contents          @create            @credits
+  @dbginfo           @describe          @dig               @doing
+  @drop              @dump              @edit              @entrances
+  @examine           @fail              @find              @force
+  @force_lock        @hashes            @idescribe         @kill
+  @link              @list              @lock              @mcpedit
+  @mcpprogram        @memory            @mpitops           @muftops
+  @name              @newpassword       @odrop             @oecho
+  @ofail             @open              @osuccess          @owned
+  @password          @pcreate           @pecho             @program
+  @propset           @ps                @reconfiguressl    @recycle
+  @relink            @restart           @restrict          @sanchange
+  @sanfix            @sanity            @set               @shutdown
+  @stats             @success           @sweep             @teleport
+  @toad              @tops              @trace             @tune
+  @unbless           @uncompile         @unlink            @unlock
+  @usage             @version           @wall              
 
 A's
   abode  
@@ -1867,13 +1867,14 @@ Also see: @EDIT, @PROGRAM and @MCPEDIT
 Wizardly Commands|WizCmds
 Wizardly Commands
 
-@armageddon        @bless             @boot              @dbginfo
-@dump              @examine           @force             @hashes
-@memory            @mpitops           @muftops           @newpassword
-@pcreate           @reconfiguressl    @restart           @restrict
-@sanchange         @sanfix            @sanity            @shutdown
-@toad              @tops              @tune              @unbless
-@uncompile         @usage             @version           @wall
+@armageddon        @bless             @boot              @credits
+@dbginfo           @dump              @examine           @force
+@hashes            @memory            @mpitops           @muftops
+@newpassword       @pcreate           @reconfiguressl    @restart
+@restrict          @sanchange         @sanfix            @sanity
+@shutdown          @toad              @tops              @tune
+@unbless           @uncompile         @usage             @version
+@wall              
 
 ~----------------------------------------------------------------------------
 ~
@@ -2080,6 +2081,14 @@ database.
   Some parameters may require a @RESTART or reload to apply.
 ~
 ~
+@CREDITS
+@CREDITS
+
+  Show a bit about those who contributed to the development of the
+muck server software, giving credit where credit is due.
+Also see: @HASHES and @VERSION
+~
+~
 @HASHES
 @HASHES [all|git|sha1]
 
@@ -2090,16 +2099,14 @@ hashes are only available if Git was installed during compilation.
     @hashes all      show all available hashes
     @hashes git      show only the Git hash (if available)
     @hashes sha1     show only the SHA1 hash
-Also see: @VERSION
+Also see: @CREDITS and @VERSION
 ~
 ~
 @VERSION
 @VERSION
 
   Show the version information, build time, and compile options used.
-
-    @version
-Also see: @HASHES
+Also see: @CREDITS and @HASHES
 ~
 ~
 @DBGINFO

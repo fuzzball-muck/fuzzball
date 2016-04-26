@@ -1911,6 +1911,14 @@ database.
   Some parameters may require a @RESTART or reload to apply.
 ~
 ~
+@CREDITS
+@CREDITS
+
+  Show a bit about those who contributed to the development of the
+muck server software, giving credit where credit is due.
+~~alsosee @HASHES,@VERSION
+~
+~
 @HASHES
 @HASHES [all|git|sha1]
 
@@ -1923,18 +1931,14 @@ hashes are only available if Git was installed during compilation.
     @hashes git      show only the Git hash (if available)
     @hashes sha1     show only the SHA1 hash
 ~~endcode
-~~alsosee @VERSION
+~~alsosee @CREDITS,@VERSION
 ~
 ~
 @VERSION
 @VERSION
 
   Show the version information, build time, and compile options used.
-
-~~code
-    @version
-~~endcode
-~~alsosee @HASHES
+~~alsosee @CREDITS,@HASHES
 ~
 ~
 @DBGINFO
