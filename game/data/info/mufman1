@@ -879,6 +879,11 @@ correct values in one instruction.
   Compares two numbers and returns 1 if n1 is equal to n2, and 0 otherwise.
 
 
+!=  ( n1 n2 -- i )
+
+  Compares two numbers and returns 0 if n1 is equal to n2, and 1 otherwise.
+
+
 <= ( n1 n2 -- i )
 
   Compares two numbers and returns 1 if n1 is less than or equal to n2,

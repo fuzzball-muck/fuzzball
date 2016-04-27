@@ -1027,21 +1027,28 @@ correct values in one instruction.
 <  ( n1 n2 -- i )
 
   Compares two numbers and returns 1 if n1 is less than n2, and 0 otherwise.
-~~alsosee >,<=,>=,=,NOT,AND,OR
+~~alsosee >,<=,>=,=,!=,NOT,AND,OR
 ~
 ~
 >
 >  ( n1 n2 -- i )
 
   Compares two numbers and returns 1 if n1 is greater than n2, and 0 otherwise.
-~~alsosee <,<=,>=,=,NOT,AND,OR
+~~alsosee <,<=,>=,=,!=,NOT,AND,OR
 ~
 ~
 =
 =  ( n1 n2 -- i )
 
   Compares two numbers and returns 1 if n1 is equal to n2, and 0 otherwise.
-~~alsosee <,>,<=,>=,NOT,AND,OR
+~~alsosee <,>,<=,>=,!=,NOT,AND,OR
+~
+~
+!=
+!=  ( n1 n2 -- i )
+
+  Compares two numbers and returns 0 if n1 is equal to n2, and 1 otherwise.
+~~alsosee <,>,<=,>=,!=,NOT,AND,OR
 ~
 ~
 <= 
@@ -1049,7 +1056,7 @@ correct values in one instruction.
 
   Compares two numbers and returns 1 if n1 is less than or equal to n2,
 and 0 otherwise.
-~~alsosee <,>,=,>=,NOT,AND,OR
+~~alsosee <,>,=,!=,>=,NOT,AND,OR
 ~
 ~
 >=
@@ -1057,7 +1064,7 @@ and 0 otherwise.
 
   Compares two numbers and returns 1 if n1 is greater than or equal to n2,
 and 0 otherwise.
-~~alsosee <,>,<=,=,NOT,AND,OR
+~~alsosee <,>,<=,=,!=,NOT,AND,OR
 ~
 ~
 NOT

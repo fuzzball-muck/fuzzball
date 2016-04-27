@@ -785,3 +785,40 @@ prim_sign(PRIM_PROTOTYPE)
 	CLEAR(oper1);
 	PushInt(result);
 }
+
+void
+prim_notequal(PRIM_PROTOTYPE)
+{
+	CHECKOP(2);
+	oper1 = POP();
+	oper2 = POP();
+#ifdef STRINGMATH
+	if (oper1->type == PROG_STRING && oper2->type == PROG_STRING) {
+		if(oper1->data.string == oper2->data.string) {
+			result = 0;
+		} else {
+			result = strcmp(DoNullInd(oper1->data.string),DoNullInd(oper2->data.string));
+			result = result ? 1 : 0;
+		}
+	} else {
+#endif /* STRINGMATH */
+		if (!comp_t(oper1) || !comp_t(oper2))
+			abort_interp("Invalid argument type.");
+		if (oper1->type == PROG_FLOAT || oper2->type == PROG_FLOAT) {
+			tf1 = (oper2->type == PROG_FLOAT) ? oper2->data.fnumber :
+					(oper2->type == PROG_INTEGER) ? oper2->data.number : oper2->data.objref;
+			tf2 = (oper1->type == PROG_FLOAT) ? oper1->data.fnumber :
+					(oper1->type == PROG_INTEGER) ? oper1->data.number : oper1->data.objref;
+			result = tf1 != tf2;
+		} else {
+			result = (((oper2->type == PROG_INTEGER) ? oper2->data.number : oper2->data.objref)
+					  !=
+					  ((oper1->type == PROG_INTEGER) ? oper1->data.number : oper1->data.objref));
+		}
+#ifdef STRINGMATH
+	}
+#endif /* STRINGMATH */
+	CLEAR(oper1);
+	CLEAR(oper2);
+	PushInt(result);
+}
