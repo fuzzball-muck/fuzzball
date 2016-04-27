@@ -1412,7 +1412,7 @@ process_command(int descr, dbref player, char *command)
 			} else {
 				if (string_compare(command, "man"))
 					goto bad;
-				do_man(player, (!*arg1 && !*arg2 && arg1 != arg2) ? "=" : arg1, arg2);
+				do_man(player, full_command, arg2);
 			}
 			break;
 		case 'n':

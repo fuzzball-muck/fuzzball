@@ -908,6 +908,7 @@ OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
 	int ModNo = get_primitive("%");
 	int DecrNo = get_primitive("--");
 	int IncrNo = get_primitive("++");
+	int NotequalsNo = get_primitive("!=");
 
 	/* Code assumes everything is setup nicely, if not, bad things will happen */
 
@@ -1167,6 +1168,17 @@ OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
 								advance = 0;
 								break;
 							}
+						}
+					}
+				}
+				/* = not  ==>  != */
+				if (IntermediateIsPrimitive(curr, EqualsNo)) {
+					if (ContiguousIntermediates(Flags, curr->next, 1)) {
+						if (IntermediateIsPrimitive(curr->next, NotNo)) {
+							curr->in.data.number = NotequalsNo;
+							RemoveNextIntermediate(cstat, curr);
+							advance = 0;
+							break;
 						}
 					}
 				}

@@ -48,16 +48,17 @@ ALPHA|ALPHABETICAL|COMMANDS
 You can get more help on the following topics:
 
 Symbols
-  !              $abort         $author        $cleardefs     $def
-  $define        $echo          $ifcancall     $ifdef         $iflib
-  $iflibver      $ifncancall    $ifndef        $ifnlib        $ifnlibver
-  $ifnver        $ifver         $include       $lib-version   $libdef
-  $note          $pragma        $pubdef        $undef         $version
-  %              '              *              +              ++
-  -              --             /              <              <= 
-  =              >              >=             @              \
-  __fuzzball__   __muckname     __version      {              }
-  }cat           }dict          }join          }list          }tell
+  !              !=             $abort         $author        $cleardefs
+  $def           $define        $echo          $ifcancall     $ifdef
+  $iflib         $iflibver      $ifncancall    $ifndef        $ifnlib
+  $ifnlibver     $ifnver        $ifver         $include       $lib-version
+  $libdef        $note          $pragma        $pubdef        $undef
+  $version       %              '              *              +
+  ++             -              --             /              <
+  <=             =              >              >=             @
+  \              __fuzzball__   __muckname     __version      {
+  }              }cat           }dict          }join          }list
+  }tell          
 
 A's
   abort                     abs                       acos
@@ -1241,9 +1242,9 @@ correct values in one instruction.
 Logical Operators|LogicOps
 Logical Operators
 
-<            <=           =            >            >=           address?
-and          array?       dbref?       dictionary?  float?       int?
-lock?        not          or           string?      xor          
+!=           <            <=           =            >            >=
+address?     and          array?       dbref?       dictionary?  float?
+int?         lock?        not          or           string?      xor
 
 ~----------------------------------------------------------------------------
 ~
@@ -1254,21 +1255,28 @@ lock?        not          or           string?      xor
 <  ( n1 n2 -- i )
 
   Compares two numbers and returns 1 if n1 is less than n2, and 0 otherwise.
-Also see: >, <=, >=, =, NOT, AND and OR
+Also see: >, <=, >=, =, !=, NOT, AND and OR
 ~
 ~
 >
 >  ( n1 n2 -- i )
 
   Compares two numbers and returns 1 if n1 is greater than n2, and 0 otherwise.
-Also see: <, <=, >=, =, NOT, AND and OR
+Also see: <, <=, >=, =, !=, NOT, AND and OR
 ~
 ~
 =
 =  ( n1 n2 -- i )
 
   Compares two numbers and returns 1 if n1 is equal to n2, and 0 otherwise.
-Also see: <, >, <=, >=, NOT, AND and OR
+Also see: <, >, <=, >=, !=, NOT, AND and OR
+~
+~
+!=
+!=  ( n1 n2 -- i )
+
+  Compares two numbers and returns 0 if n1 is equal to n2, and 1 otherwise.
+Also see: <, >, <=, >=, !=, NOT, AND and OR
 ~
 ~
 <= 
@@ -1276,7 +1284,7 @@ Also see: <, >, <=, >=, NOT, AND and OR
 
   Compares two numbers and returns 1 if n1 is less than or equal to n2,
 and 0 otherwise.
-Also see: <, >, =, >=, NOT, AND and OR
+Also see: <, >, =, !=, >=, NOT, AND and OR
 ~
 ~
 >=
@@ -1284,7 +1292,7 @@ Also see: <, >, =, >=, NOT, AND and OR
 
   Compares two numbers and returns 1 if n1 is greater than or equal to n2,
 and 0 otherwise.
-Also see: <, >, <=, =, NOT, AND and OR
+Also see: <, >, <=, =, !=, NOT, AND and OR
 ~
 ~
 NOT
