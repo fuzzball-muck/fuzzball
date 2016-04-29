@@ -2172,7 +2172,7 @@ RINSTR ( s s1 -- i )
 
   Returns the last occurrence of string s1 in string s, or 0 if s1 is
 not found.  '"abcbcba" "bc" rinstr' returns 4.
-~~alsosee INSTR
+~~alsosee INSTR,RINSTRING
 ~
 ~
 STRCUT
@@ -2596,17 +2596,15 @@ INSTRING
 INSTRING ( s s1 -- i )
 
   Returns the first occurrence of string s1 in string s, or 0 if s1 is
-not found. Non-case sensitive.  This is an inserver define equivalent to
-$def INSTRING tolower swap tolower swap instr
+not found. Non-case sensitive.
 ~~alsosee RINSTRING,INSTR,RINSTR
 ~
 ~
 RINSTRING
 RINSTRING ( s s1 -- i )
 
-  Returns the last occurrence of string s1 in string s, or -1 if s1 is
-not found. Non-case sensitive.  This is an inserver define equivalent to
-$def RINSTRING tolower swap tolower swap rinstr
+  Returns the last occurrence of string s1 in string s, or 0 if s1 is
+not found. Non-case sensitive.
 ~~alsosee INSTRING,INSTR,RINSTR
 ~
 ~

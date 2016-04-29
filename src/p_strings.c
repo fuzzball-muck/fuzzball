@@ -1765,6 +1765,92 @@ prim_rinstr(PRIM_PROTOTYPE)
 }
 
 void
+prim_instring(PRIM_PROTOTYPE)
+{
+	CHECKOP(2);
+	oper1 = POP();
+	oper2 = POP();
+	if (oper1->type != PROG_STRING)
+		abort_interp("Invalid argument type (2)");
+	if (!(oper1->data.string))
+		abort_interp("Empty string argument (2)");
+	if (oper2->type != PROG_STRING)
+		abort_interp("Non-string argument (1)");
+	if (!oper2->data.string) {
+		result = 0;
+	} else {
+		char buf2[BUFFER_LEN];
+		const char *remaining, *match;
+		char *cp;
+
+		strcpyn(buf, sizeof(buf), oper1->data.string->data);
+		strcpyn(buf2, sizeof(buf2), oper2->data.string->data);
+		for (cp = buf; *cp; cp++) *cp = tolower(*cp);
+		for (cp = buf2; *cp; cp++) *cp = tolower(*cp);
+		match = buf;
+		remaining = buf2;
+
+		int step = 1;
+
+		result = 0;
+		do {
+			if (!strncmp(remaining, match, oper1->data.string->length)) {
+				result = remaining - buf2 + 1;
+				break;
+			}
+			remaining += step;
+		} while (remaining >= buf2 && *remaining);
+	}
+	CLEAR(oper1);
+	CLEAR(oper2);
+	PushInt(result);
+}
+
+void
+prim_rinstring(PRIM_PROTOTYPE)
+{
+	CHECKOP(2);
+	oper1 = POP();
+	oper2 = POP();
+	if (oper1->type != PROG_STRING)
+		abort_interp("Invalid argument type (2)");
+	if (!(oper1->data.string))
+		abort_interp("Empty string argument (2)");
+	if (oper2->type != PROG_STRING)
+		abort_interp("Non-string argument (1)");
+	if (!oper2->data.string) {
+		result = 0;
+	} else {
+		char buf2[BUFFER_LEN];
+		const char *remaining, *match;
+		char *cp;
+
+		strcpyn(buf, sizeof(buf), oper1->data.string->data);
+		strcpyn(buf2, sizeof(buf2), oper2->data.string->data);
+		for (cp = buf; *cp; cp++) *cp = tolower(*cp);
+		for (cp = buf2; *cp; cp++) *cp = tolower(*cp);
+		match = buf;
+		remaining = buf2;
+
+		int step = -1;
+
+		remaining += oper2->data.string->length - 1;
+
+		result = 0;
+		do {
+			if (!strncmp(remaining, match, oper1->data.string->length)) {
+				result = remaining - buf2 + 1;
+				break;
+			}
+			remaining += step;
+		} while (remaining >= buf2 && *remaining);
+	}
+	CLEAR(oper1);
+	CLEAR(oper2);
+	PushInt(result);
+}
+
+void
 prim_pronoun_sub(PRIM_PROTOTYPE)
 {
 	CHECKOP(2);

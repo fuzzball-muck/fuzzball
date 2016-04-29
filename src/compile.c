@@ -468,8 +468,6 @@ include_internal_defs(COMPSTATE * cstat)
 	insert_def(cstat, "__muckname", tp_muckname);
 	insert_intdef(cstat, "__fuzzball__", 1);
 	insert_def(cstat, "strip", "striplead striptail");
-	insert_def(cstat, "instring", "tolower swap tolower swap instr");
-	insert_def(cstat, "rinstring", "tolower swap tolower swap rinstr");
 	insert_intdef(cstat, "bg_mode", BACKGROUND);
 	insert_intdef(cstat, "fg_mode", FOREGROUND);
 	insert_intdef(cstat, "pr_mode", PREEMPT);
