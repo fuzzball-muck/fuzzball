@@ -1442,7 +1442,7 @@ prim_recycle(PRIM_PROTOTYPE)
 	}
 	if (Typeof(result) == TYPE_EXIT)
 		if (!unset_source(player, LOCATION(player), result))
-			abort_interp("Cannot recycle old style exits.");
+			return;
 	CLEAR(oper1);
 	recycle(fr->descr, player, result);
 }
