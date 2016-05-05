@@ -34,10 +34,12 @@ DBOUT="$GAMEDIR/data/std-db.new"
 
 
 #
-# The ports that the MUCK server should listen to.  This will be overridden if
-# this script is called with port number arguments.
+# The ports that the MUCK server should listen to. This will be overridden if
+# this script is called with port number arguments. If you want an SSL port,
+# the MUCK must be configured with --with-ssl, make cert must have been run,
+# and you must include "-sport PORTNUM" for each SSL port.
 #
-PORTS=4201
+PORTS="4201"
 
 #
 # This is the name of the fbmuck program to run.  You probably don't want to
