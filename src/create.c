@@ -1047,10 +1047,6 @@ unset_source(dbref player, dbref loc, dbref action)
 	dbref oldsrc;
 
 	if ((oldsrc = LOCATION(action)) == NOTHING) {
-		/* old-style, sourceless exit */
-		if (!member(action, EXITS(loc))) {
-			return 0;
-		}
 		DBSTORE(LOCATION(player), exits,
 				remove_first(EXITS(LOCATION(player)), action));
 	} else {
