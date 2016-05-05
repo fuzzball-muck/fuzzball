@@ -534,12 +534,9 @@ prim_setseed(PRIM_PROTOTYPE)
 		return;
 	} else {
 		slen = strlen(oper1->data.string->data);
-		if (slen < 32) {
-			for (sloop = 0; sloop < 32; sloop++)
-				holdbuf[sloop] = oper1->data.string->data[sloop % slen];
-		} else {
-			memcpy(holdbuf, oper1->data.string->data, 32);
-		}
+		if (slen > 32) slen = 32;
+		for (sloop = 0; sloop < 32; sloop++)
+			holdbuf[sloop] = oper1->data.string->data[sloop % slen];
 		for (sloop = 0; sloop < 16; sloop++)
 			buf[sloop] = ((holdbuf[sloop * 2] - 65) & 0x0F) |
 					(((holdbuf[(sloop * 2) + 1] - 65) & 0x0F) << 4);
