@@ -2634,7 +2634,7 @@ do_command(struct descriptor_data *d, char *command)
 	} else if (tp_recognize_null_command && !string_compare(command, NULL_COMMAND)) {
 		return 1;
 	} else if ((!strncmp(command, WHO_COMMAND, sizeof(WHO_COMMAND) - 1)) ||
-                   (*command == OVERIDE_TOKEN &&
+                   (*command == OVERRIDE_TOKEN &&
                     (!strncmp(command+1, WHO_COMMAND, sizeof(WHO_COMMAND) - 1))
                    )) {
 		if (d->output_prefix) {
@@ -2653,12 +2653,12 @@ do_command(struct descriptor_data *d, char *command)
 			}
 		} else {
 			if ((!(TrueWizard(OWNER(d->player)) &&
-                              (*command == OVERIDE_TOKEN))) &&
+                              (*command == OVERRIDE_TOKEN))) &&
                             can_move(d->descriptor, d->player, buf, 2)) {
 				do_move(d->descriptor, d->player, buf, 2);
 			} else {
 				dump_users(d, command + sizeof(WHO_COMMAND) - 
-                                           ((*command == OVERIDE_TOKEN)?0:1));
+                                           ((*command == OVERRIDE_TOKEN)?0:1));
 			}
 		}
 		if (d->output_suffix) {

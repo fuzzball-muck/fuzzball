@@ -54,7 +54,7 @@
 
 #define SAY_TOKEN '"'
 #define POSE_TOKEN ':'
-#define OVERIDE_TOKEN '!'
+#define OVERRIDE_TOKEN '!'
 
 
 /* @edit'or stuff */
