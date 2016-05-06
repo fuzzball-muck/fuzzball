@@ -46,12 +46,6 @@ typedef struct plist *PropPtr;
 #define PROP_FLTTYP   0x6
 #define PROP_TYPMASK  0x7
 
-/* Property flags.  Unimplemented as yet. */
-#define PROP_UREAD       0x0010
-#define PROP_UWRITE      0x0020
-#define PROP_WREAD       0x0040
-#define PROP_WWRITE      0x0080
-
 /* half implemented.  Will be used for stuff like password props. */
 #define PROP_SYSPERMS    0x0100
 

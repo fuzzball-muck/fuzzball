@@ -5,8 +5,6 @@
 /* amount of object endowment, based on cost */
 #define OBJECT_ENDOWMENT(cost) (((cost)-5)/5)
 #define OBJECT_GETCOST(endow) ((endow)*5+5)
-#define OBJECT_DEPOSIT(endow) ((endow)*5+4)
-
 
 /* timing stuff */
 #define TIME_MINUTE(x)  (60 * (x))	/* 60 seconds */

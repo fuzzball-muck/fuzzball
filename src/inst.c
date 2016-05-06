@@ -306,8 +306,6 @@ insttotext(struct frame *fr, int lev, struct inst *theinst, char *buffer, int bu
 /* produce one line summary of current state.  Note that sp is the next
  *    space on the stack -- 0..sp-1 is the current contents. */
 
-#define DEBUG_DEPTH 8 /* how far to give a stack list, at most */
-
 char *
 debug_inst(struct frame *fr, int lev, struct inst *pc, int pid, struct inst *stack,
 		   char *buffer, int buflen, int sp, dbref program)
