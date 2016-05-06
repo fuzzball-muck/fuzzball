@@ -121,7 +121,6 @@ extern dbref find_uid(dbref player, struct frame *fr, int st, dbref program);
 #define PushInt(x)      push(arg, top, PROG_INTEGER, MIPSCAST &x)
 #define PushFloat(x)    push(arg, top, PROG_FLOAT, MIPSCAST &x)
 #define PushLock(x)     push(arg, top, PROG_LOCK, MIPSCAST copy_bool(x))
-#define PushTrueLock(x) push(arg, top, PROG_LOCK, MIPSCAST TRUE_BOOLEXP)
 
 #define PushMark()      push(arg, top, PROG_MARK, MIPSCAST 0)
 #define PushStrRaw(x)   push(arg, top, PROG_STRING, MIPSCAST x)

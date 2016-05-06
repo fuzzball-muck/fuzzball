@@ -1119,7 +1119,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 				return NULL;
 			}
 		}
-		if (((FLAGS(program) & ZOMBIE) || fr->brkpt.force_debugging) &&
+		if (((FLAGS(program) & ZMUF_DEBUGGER) || fr->brkpt.force_debugging) &&
 				!fr->been_background &&
 				controls(player, program)
 		) {

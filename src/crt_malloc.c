@@ -649,7 +649,7 @@ CrT_check_everything(const char *file, int line)
 }
 
 /* }}} */
-#endif							/* CRT_DEUG_ALSO */
+#endif							/* MALLOC_PROFILING_EXTRA */
 
 /* The actual wrappers for malloc/calloc/realloc/free: */
 /* {{{ CrT_malloc							*/

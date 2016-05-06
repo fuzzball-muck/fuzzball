@@ -144,12 +144,9 @@
 #define MACRO_FILE  "muf/macros"
 
 /*
- * File to write the server pid to.  This is generally "fbmuck.pid"
- * for historical reasons.
+ * File to write the server pid to.
  */
 #define PID_FILE    "fbmuck.pid"
-
-#define RESOLVER_PID_FILE "hostfind.pid"	/* Write the resolver pid to ... */
 
 #ifdef DETACH
 # define LOG_FILE     "logs/fbmuck"     /* Log stdout to ... */
@@ -209,7 +206,6 @@
  * Memory/malloc stuff.
  */
 #undef LOG_PROPS
-#undef LOG_DISKBASE
 #undef DEBUGDBDIRTY
 
 /*
@@ -249,7 +245,6 @@
 # define index		strchr
 # define rindex		strrchr
 # define bcopy(s, d, n) memcpy ((d), (s), (n))
-# define bcmp(s1, s2, n) memcmp ((s1), (s2), (n))
 # define bzero(s, n) memset ((s), 0, (n))
 #else			/* not STDC_HEADERS and not HAVE_STRING_H */
 # include <strings.h>
@@ -257,7 +252,6 @@
 # define strchr		index
 # define strrchr	rindex
 # define memcpy(d, s, n) bcopy((s), (d), (n))
-# define memcmp(s1, s2, n) bcmp((s1), (s2), (n))
 /* no real way to map memset to bzero, unfortunatly. */
 #endif			/* not STDC_HEADERS and not HAVE_STRING_H */
 

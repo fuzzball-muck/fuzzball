@@ -16,7 +16,6 @@
 /* max length of command argument to process_command */
 #define MAX_COMMAND_LEN 2048
 #define BUFFER_LEN ((MAX_COMMAND_LEN)*4)
-#define FILE_BUFSIZ ((BUFSIZ)*8)
 
 /* Defining INF as infinite.  This is HUGE_VAL on IEEE754 systems. */
 #if defined(HUGE_VAL)
@@ -62,12 +61,6 @@ typedef int dbref;				/* offset into db */
 #ifdef MCP_SUPPORT
 #include "mcp.h"
 #endif
-
-#define TIME_INFINITE ((sizeof(time_t) == 4)? 0xefffffff : 0xefffffffffffffff)
-
-#define DB_READLOCK(x)
-#define DB_WRITELOCK(x)
-#define DB_RELEASE(x)
 
 #define DBFETCH(x)  (db + (x))
 #ifdef DEBUGDBDIRTY
@@ -128,7 +121,6 @@ typedef int dbref;				/* offset into db */
 
 #define LOADMESG(x,y,z)    {add_prop_nofetch(x,y,z,0); DBDIRTY(x);}
 #define LOADDESC(x,y)	LOADMESG(x, MESGPROP_DESC, y)
-#define LOADIDESC(x,y)	LOADMESG(x, MESGPROP_IDESC, y)
 #define LOADSUCC(x,y)	LOADMESG(x, MESGPROP_SUCC, y)
 #define LOADFAIL(x,y)	LOADMESG(x, MESGPROP_FAIL, y)
 #define LOADDROP(x,y)	LOADMESG(x, MESGPROP_DROP, y)
@@ -143,7 +135,6 @@ typedef int dbref;				/* offset into db */
 
 #define GETVALUE(x)	get_property_value(x, MESGPROP_VALUE)
 #define SETVALUE(x,y)	add_property(x, MESGPROP_VALUE, NULL, y)
-#define LOADVALUE(x,y)	add_prop_nofetch(x, MESGPROP_VALUE, NULL, y)
 
 #define DB_PARMSINFO     0x0001 /* legacy database value */
 
@@ -377,21 +368,8 @@ struct line {
 	struct line *next, *prev;	/* the next line and the previous line */
 };
 
-/* constants and defines for MUV data types */
-#define MUV_ARRAY_OFFSET		16
-#define MUV_ARRAY_MASK			(0xff << MUV_ARRAY_OFFSET)
-#define MUV_ARRAYOF(x)			(x + (1 << MUV_ARRAY_OFFSET))
-#define MUV_TYPEOF(x)			(x & ~MUV_ARRAY_MASK)
-#define MUV_ARRAYSETLEVEL(x,l)	((l << MUV_ARRAY_OFFSET) | MUF_TYPEOF(x))
-#define MUV_ARRAYGETLEVEL(x)	((x & MUV_ARRAY_MASK) >> MUV_ARRAY_OFFSET)
-
-
 /* stack and object declarations */
 /* Integer types go here */
-#define PROG_VARIES      255    /* MUV flag denoting variable number of args */
-#define PROG_VOID        254    /* MUV void return type */
-#define PROG_UNTYPED     253    /* MUV unknown var type */
-
 #define PROG_CLEARED     0
 #define PROG_PRIMITIVE   1		/* forth prims and hard-coded C routines */
 #define PROG_INTEGER     2		/* integer types */
@@ -418,6 +396,8 @@ struct line {
 #define PROG_LVAR_AT     22		/* @ shortcut for local vars */
 #define PROG_LVAR_AT_CLEAR 23	/* @ for local vars, with var clear optim */
 #define PROG_LVAR_BANG   24		/* ! shortcut for local vars */
+
+#define PROG_UNTYPED     253    /* MUV unknown var type */
 
 #define MAX_VAR         54		/* maximum number of variables including the
 								   * basic ME, LOC, TRIGGER, and COMMAND vars */
