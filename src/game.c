@@ -582,9 +582,9 @@ process_command(int descr, dbref player, char *command)
 	/* profile how long command takes. */
 	gettimeofday(&starttime, NULL);
 
-	/* if player is a wizard, and uses overide token to start line... */
+	/* if player is a wizard, and uses override token to start line... */
 	/* ... then do NOT run actions, but run the command they specify. */
-	if (!(TrueWizard(OWNER(player)) && (*command == OVERIDE_TOKEN))) {
+	if (!(TrueWizard(OWNER(player)) && (*command == OVERRIDE_TOKEN))) {
 		if (can_move(descr, player, command, 0)) {
 			do_move(descr, player, command, 0);	/* command is exact match for exit */
 			*match_args = 0;
@@ -616,7 +616,7 @@ process_command(int descr, dbref player, char *command)
 		}
 	} else {
 	  bad_pre_command:
-		if (TrueWizard(OWNER(player)) && (*command == OVERIDE_TOKEN))
+		if (TrueWizard(OWNER(player)) && (*command == OVERRIDE_TOKEN))
 			command++;
 		full_command = strcpyn(xbuf, sizeof(xbuf), command);
 		for (; *full_command && !isspace(*full_command); full_command++) ;
