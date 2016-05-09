@@ -1852,22 +1852,18 @@ prim_toadplayer(PRIM_PROTOTYPE)
 	if (victim == recipient)
 	{
 		abort_interp("Victim and recipient must be different players.");
-		return;
 	}
 
     if (get_property_class( victim, NO_RECYCLE_PROP)) {
 		abort_interp("That player is precious.");
-		return;
     }
 #ifdef GOD_PRIV
 	if (God(victim)) {
 		abort_interp("God may not be toaded. (2)");
-		return;
 	}
 #endif
     if ((FLAGS(victim) & WIZARD)) {
 		abort_interp("You can't toad a wizard.");
-		return;
     }
 
     /* we're ok, do it */

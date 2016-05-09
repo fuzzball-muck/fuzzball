@@ -82,8 +82,6 @@ array_tree_compare_arrays(array_iter * a, array_iter * b, int case_sens)
 		more1 = array_next(a->data.array, &idx1);
 		more2 = array_next(b->data.array, &idx2);
 	}
-	/* NOTREACHED */
-	return 0;
 }
 
 

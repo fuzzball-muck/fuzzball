@@ -1263,7 +1263,6 @@ mfn_type(MFUNARGS)
 	default:
 		return "Bad";
 	}
-	return "Bad";
 }
 
 
@@ -1489,8 +1488,6 @@ mfn_muf(MFUNARGS)
 		CLEAR(rv);
 		return "";
 	}
-	/*NOTREACHED*/
-	return "";
 }
 
 
