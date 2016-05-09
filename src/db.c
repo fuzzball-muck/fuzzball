@@ -166,28 +166,6 @@ putstring(FILE * f, const char *s)
 }
 
 void
-putproperties_rec(FILE * f, const char *dir, dbref obj)
-{
-	PropPtr pref;
-	PropPtr p, pptr;
-	char buf[BUFFER_LEN];
-	char name[BUFFER_LEN];
-
-	pref = first_prop_nofetch(obj, dir, &pptr, name, sizeof(name));
-	while (pref) {
-		p = pref;
-		db_putprop(f, dir, p);
-		strcpyn(buf, sizeof(buf), dir);
-		strcatn(buf, sizeof(buf), name);
-		if (PropDir(p)) {
-			strcatn(buf, sizeof(buf), "/");
-			putproperties_rec(f, buf, obj);
-		}
-		pref = next_prop(pptr, pref, name, sizeof(name));
-	}
-}
-
-void
 putproperties(FILE * f, dbref obj)
 {
 	putstring(f, "*Props*");

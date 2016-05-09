@@ -78,15 +78,6 @@ static timequeue tqhead = NULL;
 
 void prog_clean(struct frame *fr);
 
-static int
-valid_objref(dbref obj)
-{
-	return (!((obj >= db_top)
-			  || (obj >= 0 && Typeof(obj) == TYPE_GARBAGE)
-			  || (obj < 0)));
-}
-
-
 extern int top_pid;
 int process_count = 0;
 
@@ -1225,7 +1216,7 @@ do_dequeue(int descr, dbref player, const char *arg1)
 					notify_nolisten(player, "I don't know what you want to dequeue!", 1);
 					return;
 				}
-				if (!valid_objref(match)) {
+				if (!OkObj(match)) {
 					notify_nolisten(player, "I don't recognize that object.", 1);
 					return;
 				}

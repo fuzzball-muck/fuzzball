@@ -40,13 +40,6 @@ arith_type(struct inst *op1, struct inst *op2)
 			|| (op1->type == PROG_INTEGER && op2->type == PROG_FLOAT));
 }
 
-
-int
-nogood(double test)
-{
-	return (((test == INF) || (test == NINF)));
-}
-
 void
 prim_add(PRIM_PROTOTYPE)
 {
@@ -58,7 +51,7 @@ prim_add(PRIM_PROTOTYPE)
 	if ((oper1->type == PROG_FLOAT) || (oper2->type == PROG_FLOAT)) {
 		tf1 = (oper1->type == PROG_FLOAT) ? oper1->data.fnumber : oper1->data.number;
 		tf2 = (oper2->type == PROG_FLOAT) ? oper2->data.fnumber : oper2->data.number;
-		if (!nogood(tf1) && !nogood(tf2)) {
+		if (!no_good(tf1) && !no_good(tf2)) {
 			fresult = tf1 + tf2;
 		} else {
 			fresult = 0.0;
@@ -91,7 +84,7 @@ prim_subtract(PRIM_PROTOTYPE)
 	if ((oper1->type == PROG_FLOAT) || (oper2->type == PROG_FLOAT)) {
 		tf1 = (oper2->type == PROG_FLOAT) ? oper2->data.fnumber : oper2->data.number;
 		tf2 = (oper1->type == PROG_FLOAT) ? oper1->data.fnumber : oper1->data.number;
-		if (!nogood(tf1) && !nogood(tf2)) {
+		if (!no_good(tf1) && !no_good(tf2)) {
 			fresult = tf1 - tf2;
 		} else {
 			fresult = 0.0;
@@ -124,7 +117,7 @@ prim_multiply(PRIM_PROTOTYPE)
 	if ((oper1->type == PROG_FLOAT) || (oper2->type == PROG_FLOAT)) {
 		tf1 = (oper1->type == PROG_FLOAT) ? oper1->data.fnumber : oper1->data.number;
 		tf2 = (oper2->type == PROG_FLOAT) ? oper2->data.fnumber : oper2->data.number;
-		if (!nogood(tf1) && !nogood(tf2)) {
+		if (!no_good(tf1) && !no_good(tf2)) {
 			fresult = tf1 * tf2;
 		} else {
 			fresult = 0.0;
@@ -163,7 +156,7 @@ prim_divide(PRIM_PROTOTYPE)
 		} else {
 			tf1 = (oper2->type == PROG_FLOAT) ? oper2->data.fnumber : oper2->data.number;
 			tf2 = (oper1->type == PROG_FLOAT) ? oper1->data.fnumber : oper1->data.number;
-			if (!nogood(tf1) && !nogood(tf2)) {
+			if (!no_good(tf1) && !no_good(tf2)) {
 				fresult = tf1 / tf2;
 			} else {
 				fresult = 0.0;
