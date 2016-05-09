@@ -2960,8 +2960,6 @@ process_special(COMPSTATE * cstat, const char *token)
 		} else {
 			abort_compile(cstat, "VAR! used outside of procedure.");
 		}
-		/* NOTREACHED */
-		return 0;
 	} else if (!string_compare(token, "LVAR")) {
 		if (cstat->curr_proc)
 			abort_compile(cstat, "Local variable declared within procedure.");

@@ -795,8 +795,6 @@ do_resolve(void)
 		/* unlock output here. */
 		pthread_mutex_unlock(&output_mutex);
 	}
-
-	return 1;
 }
 
 
@@ -817,7 +815,6 @@ int main(int argc, char **argv)
 	if (argc > 1) {
 		fprintf(stderr, "Usage: %s\n", *argv);
 		exit(1);
-		return 1;
 	}
 
 	/* remember to ignore certain signals */
@@ -839,5 +836,4 @@ int main(int argc, char **argv)
 	fprintf(stderr, "Resolver exited.\n");
 
 	exit(0);
-	return 0;
 }

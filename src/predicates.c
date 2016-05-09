@@ -55,8 +55,6 @@ can_link_to(dbref who, object_flag_type what_type, dbref where)
 		/* Programs can't be linked anywhere */
 		return 0;
 	}
-	/* NOTREACHED */
-	return 0;
 }
 
 /* This checks to see if what can be linked to something else by who. */
