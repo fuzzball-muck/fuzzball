@@ -108,11 +108,9 @@ mfn_links(MFUNARGS)
 		} else {
 			return "#-1";
 		}
-		break;
 	case TYPE_PROGRAM:
 	default:
 		return "#-1";
-		break;
 	}
 	return ref2str(obj, buf, BUFFER_LEN);
 }
@@ -1254,22 +1252,16 @@ mfn_type(MFUNARGS)
 	switch (Typeof(obj)) {
 	case TYPE_PLAYER:
 		return "Player";
-		break;
 	case TYPE_ROOM:
 		return "Room";
-		break;
 	case TYPE_EXIT:
 		return "Exit";
-		break;
 	case TYPE_THING:
 		return "Thing";
-		break;
 	case TYPE_PROGRAM:
 		return "Program";
-		break;
 	default:
 		return "Bad";
-		break;
 	}
 	return "Bad";
 }
@@ -1298,22 +1290,16 @@ mfn_istype(MFUNARGS)
 	switch (Typeof(obj)) {
 	case TYPE_PLAYER:
 		return (string_compare(argv[1], "Player") ? "0" : "1");
-		break;
 	case TYPE_ROOM:
 		return (string_compare(argv[1], "Room") ? "0" : "1");
-		break;
 	case TYPE_EXIT:
 		return (string_compare(argv[1], "Exit") ? "0" : "1");
-		break;
 	case TYPE_THING:
 		return (string_compare(argv[1], "Thing") ? "0" : "1");
-		break;
 	case TYPE_PROGRAM:
 		return (string_compare(argv[1], "Program") ? "0" : "1");
-		break;
 	default:
 		return (string_compare(argv[1], "Bad") ? "0" : "1");
-		break;
 	}
 	return (string_compare(argv[1], "Bad") ? "0" : "1");
 }
@@ -1487,26 +1473,21 @@ mfn_muf(MFUNARGS)
 			CLEAR(rv);
 			return "";
 		}
-		break;
 	case PROG_INTEGER:
 		snprintf(buf, BUFFER_LEN, "%d", rv->data.number);
 		CLEAR(rv);
 		return buf;
-		break;
 	case PROG_FLOAT:
 		snprintf(buf, BUFFER_LEN, "%.15g", rv->data.fnumber);
 		CLEAR(rv);
 		return buf;
-		break;
 	case PROG_OBJECT:
 		ptr = ref2str(rv->data.objref, buf, BUFFER_LEN);
 		CLEAR(rv);
 		return ptr;
-		break;
 	default:
 		CLEAR(rv);
 		return "";
-		break;
 	}
 	/*NOTREACHED*/
 	return "";
@@ -1777,7 +1758,6 @@ mfn_commas(MFUNARGS)
 			if (argc > 2)
 				free_top_mvar();
 			return buf;
-			break;
 		case 1:
 			itemlen = strlen(sepbuf);
 			if ((out - buf) + itemlen >= BUFFER_LEN) {

@@ -1084,28 +1084,18 @@ prog_can_link_to(int mlev, dbref who, object_flag_type what_type, dbref where)
 	switch (what_type) {
 	case TYPE_EXIT:
 		return (mlev > 3 || permissions(who, where) || (FLAGS(where) & LINK_OK));
-		/* NOTREACHED */
-		break;
 	case TYPE_PLAYER:
 		return (Typeof(where) == TYPE_ROOM && (mlev > 3 || permissions(who, where)
 											   || Linkable(where)));
-		/* NOTREACHED */
-		break;
 	case TYPE_ROOM:
 		return ((Typeof(where) == TYPE_ROOM || Typeof(where) == TYPE_THING)
 				&& (mlev > 3 || permissions(who, where) || Linkable(where)));
-		/* NOTREACHED */
-		break;
 	case TYPE_THING:
 		return ((Typeof(where) == TYPE_ROOM || Typeof(where) == TYPE_PLAYER || Typeof(where) == TYPE_THING)
 				&& (mlev > 3 || permissions(who, where) || Linkable(where)));
-		/* NOTREACHED */
-		break;
 	case NOTYPE:
 		return (mlev > 3 || permissions(who, where) || (FLAGS(where) & LINK_OK) ||
 				(Typeof(where) != TYPE_THING && (FLAGS(where) & ABODE)));
-		/* NOTREACHED */
-		break;
 	}
 	return 0;
 }
@@ -2634,7 +2624,6 @@ prim_setlinks_array(PRIM_PROTOTYPE)
 						default:
 							CLEAR(&idx);
 							abort_interp("Invalid object. (2)");
-						break;
 					}
 				break;
 
@@ -2666,7 +2655,6 @@ prim_setlinks_array(PRIM_PROTOTYPE)
 				default:
 					CLEAR(&idx);
 					abort_interp("Invalid object. (1)");
-				break;
 			}
 		}
 		while(array_next(arr, &idx));
@@ -2696,7 +2684,6 @@ prim_setlinks_array(PRIM_PROTOTYPE)
 
 			default:
 				abort_interp("Only exits and rooms may be linked to nothing. (1)");
-			break;
 		}
 	}
 	else
@@ -2757,7 +2744,6 @@ prim_setlinks_array(PRIM_PROTOTYPE)
 
 			default:
 				abort_interp("Invalid object. (1)");
-			break;
 		}
 	}
 

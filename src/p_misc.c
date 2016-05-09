@@ -737,22 +737,18 @@ prim_setsysparm(PRIM_PROTOTYPE)
 		if (*oldvalue)
 			free(oldvalue);
 		abort_interp("Unknown parameter. (1)");
-		break;
 	case TUNESET_SYNTAX:
 		if (*oldvalue)
 			free(oldvalue);
 		abort_interp("Bad parameter syntax. (2)");
-		break;
 	case TUNESET_BADVAL:
 		if (*oldvalue)
 			free(oldvalue);
 		abort_interp("Bad parameter value. (2)");
-		break;
 	case TUNESET_DENIED:
 		if (*oldvalue)
 			free(oldvalue);
 		abort_interp("Permission denied. (1)");
-		break;
 	default:
 		if (*oldvalue)
 			free(oldvalue);

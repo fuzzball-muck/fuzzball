@@ -515,16 +515,12 @@ prim_mcp_send(PRIM_PROTOTYPE)
 			switch (result) {
 				case -1:
 					abort_interp("Args dictionary can only have string keys. (4)");
-					break;
 				case -2:
 					abort_interp("Args dictionary cannot have a null string key. (4)");
-					break;
 				case -3:
 					abort_interp("Unsupported value type in list value. (4)");
-					break;
 				case -4:
 					abort_interp("Unsupported value type in args dictionary. (4)");
-					break;
 			}
 		}
 		
@@ -726,16 +722,12 @@ prim_gui_dlog_create(PRIM_PROTOTYPE)
 		switch (result) {
 			case -1:
 				abort_interp("Args dictionary can only have string keys. (4)");
-				break;
 			case -2:
 				abort_interp("Args dictionary cannot have a null string key. (4)");
-				break;
 			case -3:
 				abort_interp("Unsupported value type in list value. (4)");
-				break;
 			case -4:
 				abort_interp("Unsupported value type in args dictionary. (4)");
-				break;
 		}
 	}
 	
@@ -867,16 +859,12 @@ prim_gui_ctrl_create(PRIM_PROTOTYPE)
 		switch (result) {
 			case -1:
 				abort_interp("Args dictionary can only have string keys. (4)");
-				break;
 			case -2:
 				abort_interp("Args dictionary cannot have a null string key. (4)");
-				break;
 			case -3:
 				abort_interp("Unsupported value type in list value. (4)");
-				break;
 			case -4:
 				abort_interp("Unsupported value type in args dictionary. (4)");
-				break;
 		}
 	}
 	
@@ -966,16 +954,12 @@ prim_gui_ctrl_command(PRIM_PROTOTYPE)
 		switch (result) {
 			case -1:
 				abort_interp("Args dictionary can only have string keys. (4)");
-				break;
 			case -2:
 				abort_interp("Args dictionary cannot have a null string key. (4)");
-				break;
 			case -3:
 				abort_interp("Unsupported value type in list value. (4)");
-				break;
 			case -4:
 				abort_interp("Unsupported value type in args dictionary. (4)");
-				break;
 		}
 	}
 	

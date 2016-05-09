@@ -1221,7 +1221,6 @@ prim_parsepropex(PRIM_PROTOTYPE)
 				default:
 					CLEAR(&idx);
 					abort_interp("Only integer, float, dbref, string and lock values supported. (3)");
-				break;
 			}
 
 			if (string_compare(idx.data.string->data, "how") == 0)

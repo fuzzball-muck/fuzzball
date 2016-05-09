@@ -662,7 +662,6 @@ array_decouple(stk_array * arr)
 				copyinst(&arr->data.packed[i], &nu->data.packed[i]);
 			}
 			return nu;
-			break;
 		}
 
 	case ARRAY_DICTIONARY:{
@@ -677,7 +676,6 @@ array_decouple(stk_array * arr)
 				} while (array_next(arr, &idx));
 			}
 			return nu;
-			break;
 		}
 
 	default:
@@ -795,7 +793,6 @@ array_contains_key(stk_array * arr, array_iter * item)
 				return 1;
 			}
 			return 0;
-			break;
 		}
 	case ARRAY_DICTIONARY:{
 			if (array_tree_find(arr->data.dict, item)) {
@@ -828,7 +825,6 @@ array_contains_value(stk_array * arr, array_data * item)
 				}
 			}
 			return 0;
-			break;
 		}
 	case ARRAY_DICTIONARY:{
 			array_tree *p;
@@ -864,7 +860,6 @@ array_first(stk_array * arr, array_iter * item)
 			item->type = PROG_INTEGER;
 			item->data.number = 0;
 			return 1;
-			break;
 		}
 	case ARRAY_DICTIONARY:{
 			array_tree *p;
@@ -895,7 +890,6 @@ array_last(stk_array * arr, array_iter * item)
 			item->type = PROG_INTEGER;
 			item->data.number = arr->items - 1;
 			return 1;
-			break;
 		}
 	case ARRAY_DICTIONARY:{
 			array_tree *p;
@@ -946,7 +940,6 @@ array_prev(stk_array * arr, array_iter * item)
 			item->type = PROG_INTEGER;
 			item->data.number = idx;
 			return 1;
-			break;
 		}
 	case ARRAY_DICTIONARY:{
 			array_tree *p;
@@ -998,7 +991,6 @@ array_next(stk_array * arr, array_iter * item)
 			item->type = PROG_INTEGER;
 			item->data.number = idx;
 			return 1;
-			break;
 		}
 	case ARRAY_DICTIONARY:{
 			array_tree *p;
@@ -1033,7 +1025,6 @@ array_getitem(stk_array * arr, array_iter * idx)
 			return NULL;
 		}
 		return &arr->data.packed[idx->data.number];
-		break;
 
 	case ARRAY_DICTIONARY:{
 			array_tree *p;
@@ -1093,7 +1084,6 @@ array_setitem(stk_array ** harr, array_iter * idx, array_data * item)
 			} else {
 				return -1;
 			}
-			break;
 		}
 
 	case ARRAY_DICTIONARY:{
@@ -1112,7 +1102,6 @@ array_setitem(stk_array ** harr, array_iter * idx, array_data * item)
 			}
 			copyinst(item, &p->data);
 			return arr->items;
-			break;
 		}
 
 	default:
@@ -1162,7 +1151,6 @@ array_insertitem(stk_array ** harr, array_iter * idx, array_data * item)
 			}
 			copyinst(item, &arr->data.packed[i]);
 			return arr->items;
-			break;
 		}
 
 	case ARRAY_DICTIONARY:{
@@ -1181,7 +1169,6 @@ array_insertitem(stk_array ** harr, array_iter * idx, array_data * item)
 			}
 			copyinst(item, &p->data);
 			return arr->items;
-			break;
 		}
 
 	default:
@@ -1267,7 +1254,6 @@ array_getrange(stk_array * arr, array_iter * start, array_iter * end)
 				idx.data.number++;
 			}
 			return nu;
-			break;
 		}
 
 	case ARRAY_DICTIONARY:{
@@ -1300,7 +1286,6 @@ array_getrange(stk_array * arr, array_iter * start, array_iter * end)
 				s = array_tree_next_node(arr->data.dict, &s->key);
 			}
 			return nu;
-			break;
 		}
 	/* FALLTHRU */
 	default:
@@ -1350,7 +1335,6 @@ array_setrange(stk_array ** harr, array_iter * start, stk_array * inarr)
 				} while (array_next(inarr, &idx));
 			}
 			return arr->items;
-			break;
 		}
 
 	case ARRAY_DICTIONARY:{
@@ -1364,7 +1348,6 @@ array_setrange(stk_array ** harr, array_iter * start, stk_array * inarr)
 				} while (array_next(inarr, &idx));
 			}
 			return arr->items;
-			break;
 		}
 
 	default:
@@ -1436,7 +1419,6 @@ array_insertrange(stk_array ** harr, array_iter * start, stk_array * inarr)
 			}
 			arr->items += inarr->items;
 			return arr->items;
-			break;
 		}
 
 	case ARRAY_DICTIONARY:{
@@ -1450,7 +1432,6 @@ array_insertrange(stk_array ** harr, array_iter * start, stk_array * inarr)
 				} while (array_next(inarr, &idx));
 			}
 			return arr->items;
-			break;
 		}
 
 	default:
@@ -1529,7 +1510,6 @@ array_delrange(stk_array ** harr, array_iter * start, array_iter * end)
 				abort();
 			}
 			return arr->items;
-			break;
 		}
 
 	case ARRAY_DICTIONARY:{
@@ -1565,7 +1545,6 @@ array_delrange(stk_array ** harr, array_iter * start, array_iter * end)
 			}
 			CLEAR(&idx);
 			return arr->items;
-			break;
 		}
 
 	default:

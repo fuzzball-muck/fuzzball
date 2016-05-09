@@ -1287,7 +1287,6 @@ process_command(int descr, dbref player, char *command)
 #endif
 				default:
 					goto bad;
-					break;
 				}
 				break;
 			case 'v':

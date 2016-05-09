@@ -903,8 +903,6 @@ do_recycle(int descr, dbref player, const char *name)
 			case TYPE_PLAYER:
 				notify(player, "You can't recycle a player!");
 				return;
-				/* NOTREACHED */
-				break;
 			case TYPE_PROGRAM:
 				if (OWNER(thing) != OWNER(player)) {
 					notify(player, "Permission denied. (You can't recycle a program you don't own)");
@@ -924,8 +922,6 @@ do_recycle(int descr, dbref player, const char *name)
 			case TYPE_GARBAGE:
 				notify(player, "That's already garbage!");
 				return;
-				/* NOTREACHED */
-				break;
 			}
 			snprintf(buf, sizeof(buf), "Thank you for recycling %.512s (#%d).", NAME(thing), thing);
 			recycle(descr, player, thing);

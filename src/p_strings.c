@@ -438,7 +438,6 @@ prim_fmtstring(PRIM_PROTOTYPE)
 					break;
 				default:
 					abort_interp("Invalid format string.");
-					break;
 				}
 				scnt++;
 				tstop += strlen(tbuf);
@@ -909,7 +908,6 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 							break;
 						default:
 							abort_interp("Invalid format string.");
-							break;
 						}
 						nargs = 2;
 						scnt++;

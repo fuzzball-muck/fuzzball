@@ -142,7 +142,6 @@ find_registered_obj(dbref player, const char *name)
 		break;
 	case PROP_LOKTYP:
 		return (NOTHING);
-		break;
 	}
 	return (NOTHING);
 }

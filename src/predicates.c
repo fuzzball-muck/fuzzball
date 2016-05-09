@@ -31,22 +31,15 @@ can_link_to(dbref who, object_flag_type what_type, dbref where)
 		 * there.  Otherwise, only someone who controls the
 		 * target may link there. */
 		return (controls(who, where) || (FLAGS(where) & LINK_OK));
-		/* NOTREACHED */
-		break;
 	case TYPE_PLAYER:
 		/* Players may only be linked to rooms, that are either
 		 * controlled by the player or set either L or A. */
-		return (Typeof(where) == TYPE_ROOM && (controls(who, where)
-											   || Linkable(where)));
-		/* NOTREACHED */
-		break;
+		return (Typeof(where) == TYPE_ROOM && (controls(who, where) || Linkable(where)));
 	case TYPE_ROOM:
 		/* Rooms may be linked to rooms or things (this sets their
 		 * dropto location).  Target must be controlled, or be L or A. */
 		return ((Typeof(where) == TYPE_ROOM || Typeof(where) == TYPE_THING)
 				&& (controls(who, where) || Linkable(where)));
-		/* NOTREACHED */
-		break;
 	case TYPE_THING:
 		/* Things may be linked to rooms, players, or other things (this
 		 * sets the thing's home).  Target must be controlled, or be L or A. */
@@ -54,19 +47,13 @@ can_link_to(dbref who, object_flag_type what_type, dbref where)
 				(Typeof(where) == TYPE_ROOM || Typeof(where) == TYPE_PLAYER ||
 				 Typeof(where) == TYPE_THING) && 
 				 (controls(who, where) || Linkable(where)));
-		/* NOTREACHED */
-		break;
 	case NOTYPE:
 		/* Why is this here? -winged */
 		return (controls(who, where) || (FLAGS(where) & LINK_OK) ||
 				(Typeof(where) != TYPE_THING && (FLAGS(where) & ABODE)));
-		/* NOTREACHED */
-		break;
 	default:
 		/* Programs can't be linked anywhere */
 		return 0;
-		/* NOTREACHED */
-		break;
 	}
 	/* NOTREACHED */
 	return 0;
@@ -319,8 +306,6 @@ restricted(dbref player, dbref thing, object_flag_type flag)
 	case ABODE:
 			/* Trying to set a program AUTOSTART requires TrueWizard */
 		return (!TrueWizard(OWNER(player)) && (Typeof(thing) == TYPE_PROGRAM));
-		/* NOTREACHED */
-		break;
         case YIELD:
                         /* Mucking with the env-chain matching requires TrueWizard */
                 return (!(Wizard(OWNER(player))));
@@ -366,9 +351,6 @@ restricted(dbref player, dbref thing, object_flag_type flag)
 				return (1);
 		}
 		return (0);
-
-		/* NOTREACHED */
-		break;
 	case QUELL:
 #ifdef GOD_PRIV
 		/* Only God (or God's stuff) can quell or unquell another wizard. */
@@ -378,8 +360,6 @@ restricted(dbref player, dbref thing, object_flag_type flag)
 		/* You cannot quell or unquell another wizard. */
 		return (TrueWizard(thing) && (thing != player) && (Typeof(thing) == TYPE_PLAYER));
 #endif
-		/* NOTREACHED */
-		break;
 	case MUCKER:
 	case SMUCKER:
 	case (SMUCKER | MUCKER):
@@ -392,8 +372,6 @@ restricted(dbref player, dbref thing, object_flag_type flag)
 		 * why is it limited to only a Wizard? -winged */
 		/* Setting a player Builder is limited to a Wizard. */
 		return (!Wizard(OWNER(player)));
-		/* NOTREACHED */
-		break;
 	case WIZARD:
 			/* To do anything with a Wizard flag requires a Wizard. */
 		if (Wizard(OWNER(player))) {
@@ -408,15 +386,10 @@ restricted(dbref player, dbref thing, object_flag_type flag)
 #endif							/* GOD_PRIV */
 		} else
 			return 1;
-		/* NOTREACHED */
-		break;
 	default:
 			/* No other flags are restricted. */
 		return 0;
-		/* NOTREACHED */
-		break;
 	}
-	/* NOTREACHED */
 }
 
 /* Removes 'cost' value from 'who', and returns 1 if the act has been

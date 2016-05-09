@@ -645,7 +645,6 @@ prim_checkargs(PRIM_PROTOTYPE)
 				break;
 			default:
 				abort_interp("Unkown argument type in expression.");
-				break;
 			}
 
 			currpos--;			/* decrement string index */
@@ -740,7 +739,6 @@ prim_setmode(PRIM_PROTOTYPE)
 		break;
 	default:
 		abort_interp("Invalid mode.");
-		break;
 	}
 	fr->multitask = result;
 	CLEAR(oper1);
