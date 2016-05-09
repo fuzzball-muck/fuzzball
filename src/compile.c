@@ -1689,13 +1689,10 @@ do_comment(COMPSTATE * cstat, int depth)
 				switch (retval) {
 				case 1:
 					v_abort_compile(cstat, "Unterminated comment.");
-					break;
 				case 2:
 					v_abort_compile(cstat, "Expected comment.");
-					break;
 				case 3:
 					v_abort_compile(cstat, "Comments nested too deep (more than 7 levels).");
-					break;
 				}
 				return;
 			} else {
@@ -2515,17 +2512,13 @@ process_special(COMPSTATE * cstat, const char *token)
 				break;
 			case CTYPE_TRY:
 				abort_compile(cstat, "Unterminated TRY-CATCH block at ELSE.");
-				break;
 			case CTYPE_CATCH:
 				abort_compile(cstat, "Unterminated CATCH-ENDCATCH block at ELSE.");
-				break;
 			case CTYPE_FOR:
 			case CTYPE_BEGIN:
 				abort_compile(cstat, "Unterminated Loop at ELSE.");
-				break;
 			default:
 				abort_compile(cstat, "ELSE without IF.");
-				break;
 		}
 
 		nu = new_inst(cstat);
@@ -2549,17 +2542,13 @@ process_special(COMPSTATE * cstat, const char *token)
 				break;
 			case CTYPE_TRY:
 				abort_compile(cstat, "Unterminated TRY-CATCH block at THEN.");
-				break;
 			case CTYPE_CATCH:
 				abort_compile(cstat, "Unterminated CATCH-ENDCATCH block at THEN.");
-				break;
 			case CTYPE_FOR:
 			case CTYPE_BEGIN:
 				abort_compile(cstat, "Unterminated Loop at THEN.");
-				break;
 			default:
 				abort_compile(cstat, "THEN without IF.");
-				break;
 		}
 
 		prealloc_inst(cstat);
@@ -2627,17 +2616,13 @@ process_special(COMPSTATE * cstat, const char *token)
 				break;
 			case CTYPE_TRY:
 				abort_compile(cstat, "Unterminated TRY-CATCH block at UNTIL.");
-				break;
 			case CTYPE_CATCH:
 				abort_compile(cstat, "Unterminated CATCH-ENDCATCH block at UNTIL.");
-				break;
 			case CTYPE_IF:
 			case CTYPE_ELSE:
 				abort_compile(cstat, "Unterminated IF-THEN at UNTIL.");
-				break;
 			default:
 				abort_compile(cstat, "Loop start not found for UNTIL.");
-				break;
 		}
 
 		prealloc_inst(cstat);
@@ -2767,17 +2752,13 @@ process_special(COMPSTATE * cstat, const char *token)
 				break;
 			case CTYPE_TRY:
 				abort_compile(cstat, "Unterminated TRY-CATCH block at REPEAT.");
-				break;
 			case CTYPE_CATCH:
 				abort_compile(cstat, "Unterminated CATCH-ENDCATCH block at REPEAT.");
-				break;
 			case CTYPE_IF:
 			case CTYPE_ELSE:
 				abort_compile(cstat, "Unterminated IF-THEN at REPEAT.");
-				break;
 			default:
 				abort_compile(cstat, "Loop start not found for REPEAT.");
-				break;
 		}
 
 		prealloc_inst(cstat);
@@ -2823,15 +2804,12 @@ process_special(COMPSTATE * cstat, const char *token)
 			case CTYPE_FOR:
 			case CTYPE_BEGIN:
 				abort_compile(cstat, "Unterminated Loop at CATCH.");
-				break;
 			case CTYPE_IF:
 			case CTYPE_ELSE:
 				abort_compile(cstat, "Unterminated IF-THEN at CATCH.");
-				break;
 			case CTYPE_CATCH:
 			default:
 				abort_compile(cstat, "No TRY found for CATCH.");
-				break;
 		}
 
 		nu = new_inst(cstat);
@@ -2872,15 +2850,12 @@ process_special(COMPSTATE * cstat, const char *token)
 			case CTYPE_FOR:
 			case CTYPE_BEGIN:
 				abort_compile(cstat, "Unterminated Loop at ENDCATCH.");
-				break;
 			case CTYPE_IF:
 			case CTYPE_ELSE:
 				abort_compile(cstat, "Unterminated IF-THEN at ENDCATCH.");
-				break;
 			case CTYPE_TRY:
 			default:
 				abort_compile(cstat, "No CATCH found for ENDCATCH.");
-				break;
 		}
 
 		prealloc_inst(cstat);
@@ -3760,7 +3735,6 @@ copy_program(COMPSTATE * cstat)
 		default:
 			free(code);
 			v_abort_compile(cstat, "Unknown type compile!  Internal error.");
-			break;
 		}
 		i++;
 	}

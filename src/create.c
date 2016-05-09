@@ -1033,7 +1033,6 @@ set_source(dbref player, dbref action, dbref source)
 		log_status("PANIC: tried to source %d to %d: type: %d",
 				   action, source, Typeof(source));
 		return;
-		break;
 	}
 	DBDIRTY(source);
 	DBSTORE(action, location, source);
@@ -1059,8 +1058,6 @@ unset_source(dbref player, dbref loc, dbref action)
 		default:
 			log_status("PANIC: source of action #%d was type: %d.", action, Typeof(oldsrc));
 			return 0;
-			/* NOTREACHED */
-			break;
 		}
 	}
 	return 1;

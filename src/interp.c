@@ -1671,8 +1671,6 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 				interp_depth--;
 				calc_profile_timing(program,fr);
 				return NULL;
-				/* NOTREACHED */
-				break;
 
 			case IN_READ:
 				if (writeonly)
@@ -1688,8 +1686,6 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 				interp_depth--;
 				calc_profile_timing(program,fr);
 				return NULL;
-				/* NOTREACHED */
-				break;
 
 			case IN_SLEEP:
 				if (atop < 1)
@@ -1709,8 +1705,6 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 				interp_depth--;
 				calc_profile_timing(program,fr);
 				return NULL;
-				/* NOTREACHED */
-				break;
 
 			default:
 				nargs = 0;

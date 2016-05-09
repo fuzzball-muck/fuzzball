@@ -664,7 +664,6 @@ db_read(FILE * f)
 				autostart_progs();
 				return db_top;
 			}
-			break;
 		default:
 			return -1;
 			/* break; */
