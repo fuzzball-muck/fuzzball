@@ -16,12 +16,6 @@ static struct inst *oper1, *oper2, *oper3, *oper4;
 static double fresult;
 static char buf[BUFFER_LEN];
 
-int
-no_good(double test)
-{
-	return (((test == INF) || (test == NINF)));
-}
-
 void
 prim_inf(PRIM_PROTOTYPE)
 {

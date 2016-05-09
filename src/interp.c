@@ -1987,3 +1987,9 @@ do_abort_silent(void)
 {
 	err = ERROR_DIE_NOW;
 }
+
+int
+no_good(double test)
+{
+        return test == INF || test == NINF;
+}

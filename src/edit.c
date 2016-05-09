@@ -13,7 +13,7 @@ void do_delete(dbref player, dbref program, int arg[], int argc);
 void do_quit(dbref player, dbref program);
 void do_cancel(dbref player, dbref program);
 void do_list(dbref player, dbref program, int *arg, int argc);
-void insert(dbref player, const char *line);
+void insert_line(dbref player, const char *line);
 struct line *read_program(dbref i);
 void do_compile(int descr, dbref player, dbref program, int force_err_disp);
 void free_line(struct line *l);
@@ -299,7 +299,7 @@ editor(int descr, dbref player, const char *command)
 
 	/* check to see if we are insert mode */
 	if (PLAYER_INSERT_MODE(player)) {
-		insert(player, command);	/* insert it! */
+		insert_line(player, command);	/* insert it! */
 		return;
 	}
 	/* parse the commands */
@@ -868,7 +868,7 @@ toggle_numbers(dbref player, int arg[], int argc)
 
 /* insert this line into program */
 void
-insert(dbref player, const char *line)
+insert_line(dbref player, const char *line)
 {
 	dbref program;
 	int i;

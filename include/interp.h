@@ -71,6 +71,8 @@ extern int permissions(dbref player, dbref thing);
 
 extern int arith_type(struct inst *op1, struct inst *op2);
 
+extern int no_good(double test);
+
 #define POP() (arg + --(*top))
 
 #define abort_interp(C) \
