@@ -895,7 +895,7 @@ do_recycle(int descr, dbref player, const char *name)
 					notify(player, "Permission denied. (You may not recycle an exit you don't own)");
 					return;
 				}
-				if (!unset_source(player, LOCATION(player), thing)) {
+				if (!unset_source(player, thing)) {
 					notify(player, "You can't do that to an exit in another room.");
 					return;
 				}

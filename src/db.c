@@ -473,6 +473,8 @@ db_read_object(FILE * f, dbref objno, int dtype)
 	const char *password;
 	struct object *o;
 
+	if (dtype == 0) return;
+
 	db_clear_object(objno);
 
 	FLAGS(objno) = 0;

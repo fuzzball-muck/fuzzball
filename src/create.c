@@ -691,7 +691,7 @@ do_edit(int descr, dbref player, const char *name)
  * another. helper routine for copy_props (below).
  */
 void
-copy_one_prop(dbref player, dbref source, dbref destination, char *propname)
+copy_one_prop(dbref source, dbref destination, char *propname)
 {
 	PropPtr currprop;
 	PData newprop;
@@ -758,7 +758,7 @@ copy_props(dbref player, dbref source, dbref destination, const char *dir)
 		}
 
 		/* copy this property */
-		copy_one_prop(player, source, destination, buf);
+		copy_one_prop(source, destination, buf);
 		
 		/* recursively copy this property directory */
 		copy_props(player, source, destination, buf);
@@ -1040,9 +1040,8 @@ set_source(dbref player, dbref action, dbref source)
 }
 
 int
-unset_source(dbref player, dbref loc, dbref action)
+unset_source(dbref player, dbref action)
 {
-
 	dbref oldsrc;
 
 	if ((oldsrc = LOCATION(action)) == NOTHING) {
@@ -1148,10 +1147,9 @@ void
 do_attach(int descr, dbref player, const char *action_name, const char *source_name)
 {
 	dbref action, source;
-	dbref loc;				/* player's current location */
 	struct match_data md;
 
-	if ((loc = LOCATION(player)) == NOTHING)
+	if (LOCATION(player) == NOTHING)
 		return;
 
 	if (!*action_name || !*source_name) {
@@ -1177,7 +1175,7 @@ do_attach(int descr, dbref player, const char *action_name, const char *source_n
 		|| Typeof(source) == TYPE_PROGRAM)
 		return;
 
-	if (!unset_source(player, loc, action)) {
+	if (!unset_source(player, action)) {
 		return;
 	}
 	set_source(player, action, source);
