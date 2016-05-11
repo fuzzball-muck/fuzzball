@@ -44,12 +44,10 @@ int set_ssl_ctx_min_version(SSL_CTX *ssl_ctx, const char *min_version) {
 			log_status("ERROR: Unknown ssl_min_protocol_version '%s'.  Specify one of: %s", min_version, SSL_KNOWN_PROTOCOLS);
 			fprintf(stderr, "ERROR: Unknown ssl_min_protocol_version '%s'.  Specify one of: %s\n", min_version, SSL_KNOWN_PROTOCOLS);
 			return 0;
-			break;
 		case SSL_UNSUPPORTED_PROTOCOL:
 			log_status("ERROR: ssl_min_protocol_version '%s' not supported by the SSL library in this build.  Specify one of: %s", min_version, SSL_KNOWN_PROTOCOLS);
 			fprintf(stderr, "ERROR: ssl_min_protocol_version '%s' not supported by the SSL library in this build.  Specify one of: %s\n", min_version, SSL_KNOWN_PROTOCOLS);
 			return 0;
-			break;
 		default:
 			log_status("Requiring SSL protocol version '%s' or higher for encrypted connections", min_version);
 #if defined(SSL_CTX_set_min_proto_version)
@@ -79,7 +77,6 @@ int set_ssl_ctx_min_version(SSL_CTX *ssl_ctx, const char *min_version) {
 			fprintf(stderr, "specifying ssl_min_protocol_version is not supported by the SSL library used in this build.  Set to 'None', or maybe use OpenSSL?\n");
 			return 0;
 #endif
-			break;
 	}
 }
 

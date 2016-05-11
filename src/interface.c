@@ -23,7 +23,6 @@
 #include <ctype.h>
 
 #ifndef WIN32
-# define NEED_SOCKLEN_T
 /* "do not include netinet6/in6.h directly, include netinet/in.h.  see RFC2553" */
 # include <sys/socket.h>
 # include <netinet/in.h>
@@ -4415,7 +4414,7 @@ void ignore_remove_from_all_players(dbref Player)
    an existing one to allow us to recover gracefully if we can't reload
    a new certificate file, etc. */
 static SSL_CTX *configure_new_ssl_ctx(void) {
-        EC_KEY *eckey;
+        EC_KEY *eckey = NULL;
         int ssl_status_ok = 1;
 
 	SSL_CTX* new_ssl_ctx = SSL_CTX_new (SSLv23_server_method ());

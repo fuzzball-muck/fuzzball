@@ -1207,7 +1207,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 				if (pc <= PROGRAM_CODE(program) || (pc - 1)->line != pc->line) {
 					list_proglines(player, program, fr, pc->line, 0);
 				} else {
-					m = show_line_prims(fr, program, pc, 15, 1);
+					m = show_line_prims(program, pc, 15, 1);
 					notifyf_nolisten(player, "     %s", m);
 				}
 				calc_profile_timing(program,fr);

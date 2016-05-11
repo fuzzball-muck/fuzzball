@@ -155,7 +155,7 @@ look_simple(int descr, dbref player, dbref thing)
 }
 
 void
-look_room(int descr, dbref player, dbref loc, int verbose)
+look_room(int descr, dbref player, dbref loc)
 {
 	char obj_num[20];
 
@@ -193,7 +193,7 @@ do_look_around(int descr, dbref player)
 
 	if ((loc = LOCATION(player)) == NOTHING)
 		return;
-	look_room(descr, player, loc, 1);
+	look_room(descr, player, loc);
 }
 
 void
@@ -207,7 +207,7 @@ do_look_at(int descr, dbref player, const char *name, const char *detail)
 
 	if (*name == '\0' || !string_compare(name, "here")) {
 		if ((thing = LOCATION(player)) != NOTHING) {
-			look_room(descr, player, thing, 1);
+			look_room(descr, player, thing);
 		}
 	} else {
 		/* look at a thing here */
@@ -230,7 +230,7 @@ do_look_at(int descr, dbref player, const char *name, const char *detail)
 				if (LOCATION(player) != thing && !can_link_to(player, TYPE_ROOM, thing)) {
 					notify(player, "Permission denied. (you're not where you want to look, and can't link to it)");
 				} else {
-					look_room(descr, player, thing, 1);
+					look_room(descr, player, thing);
 				}
 				break;
 			case TYPE_PLAYER:

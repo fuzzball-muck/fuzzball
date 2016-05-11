@@ -56,7 +56,7 @@ list_proglines(dbref player, dbref program, struct frame *fr, int start, int end
 
 
 char *
-show_line_prims(struct frame *fr, dbref program, struct inst *pc, int maxprims, int markpc)
+show_line_prims(dbref program, struct inst *pc, int maxprims, int markpc)
 {
 	static char buf[BUFFER_LEN];
 	static char buf2[BUFFER_LEN];
@@ -851,8 +851,8 @@ muf_debugger(int descr, dbref player, dbref program, const char *text, struct fr
 				pinst = linenum_to_pc(program, i);
 				if (pinst) {
 					notifyf_nolisten(player, "line %d: %s", i, (i == fr->pc->line) ?
-							show_line_prims(fr, program, fr->pc, STACK_SIZE, 1) :
-							show_line_prims(fr, program, pinst, STACK_SIZE, 0));
+							show_line_prims(program, fr->pc, STACK_SIZE, 1) :
+							show_line_prims(program, pinst, STACK_SIZE, 0));
 				}
 			}
 		} else {

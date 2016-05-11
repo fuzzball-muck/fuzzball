@@ -17,10 +17,8 @@
  */
 #if defined(HAVE_DIRENT_H) || defined(_POSIX_VERSION)
 # include <dirent.h>
-# define NLENGTH(dirent) (strlen((dirent)->d_name))
 #else							/* not (HAVE_DIRENT_H or _POSIX_VERSION) */
 # define dirent direct
-# define NLENGTH(dirent) ((dirent)->d_namlen)
 # ifdef HAVE_SYS_NDIR_H
 #  include <sys/ndir.h>
 # endif							/* HAVE_SYS_NDIR_H */

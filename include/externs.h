@@ -46,7 +46,7 @@ extern int exit_loop_check(dbref source, dbref dest);
 extern int link_exit(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_list);
 extern int link_exit_dry(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_list);
 extern void set_source(dbref player, dbref action, dbref source);
-extern int unset_source(dbref player, dbref loc, dbref action);
+extern int unset_source(dbref player, dbref action);
 
 /* crt_malloc.c */
 #ifdef MALLOC_PROFILING
@@ -62,7 +62,7 @@ extern void db_free_object(dbref i);
 extern void list_proglines(dbref player, dbref program, struct frame *fr, int start, int end);
 extern void muf_backtrace(dbref player, dbref program, int count, struct frame *fr);
 extern int muf_debugger(int descr, dbref player, dbref program, const char *text, struct frame *fr);
-extern char *show_line_prims(struct frame *fr, dbref program, struct inst *pc, int maxprims, int markpc);
+extern char *show_line_prims(dbref program, struct inst *pc, int maxprims, int markpc);
 
 /* disassem.c */
 extern void disassemble(dbref player, dbref program);
@@ -175,7 +175,6 @@ extern void do_sweep(int descr, dbref player, const char *name);
 extern void do_trace(int descr, dbref player, const char *name, int depth);
 extern void exec_or_notify(int descr, dbref player, dbref thing, const char *message, const char *whatcalled, int mpiflags);
 extern void exec_or_notify_prop(int descr, dbref player, dbref thing, const char *propname, const char *whatcalled);
-extern void look_room(int descr, dbref player, dbref room, int verbose);
 extern long size_object(dbref i, int load);
 
 /* match.c */

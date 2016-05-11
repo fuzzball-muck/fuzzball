@@ -237,7 +237,7 @@ erase_node(struct macrotable *oldnode, struct macrotable *node,
 int
 kill_macro(const char *macroname, dbref player, struct macrotable **mtop)
 {
-	if (!(*mtop)) {
+	if (!(*mtop) || player == NOTHING) {
 		return (0);
 	} else if (!string_compare(macroname, (*mtop)->name)) {
 		struct macrotable *macrotemp = (*mtop);

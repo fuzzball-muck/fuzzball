@@ -240,8 +240,8 @@ mcp_package_deregister(const char *pkgname)
 /*****************************************************************/
 
 
-void mcp_basic_handler(McpFrame * mfr, McpMesg * mesg, void *dummy);
-void mcp_negotiate_handler(McpFrame * mfr, McpMesg * mesg, McpVer version, void *dummy);
+void mcp_basic_handler(McpFrame * mfr, McpMesg * mesg);
+void mcp_negotiate_handler(McpFrame * mfr, McpMesg * mesg, McpVer version, void *context);
 void mcppkg_simpleedit(McpFrame * mfr, McpMesg * mesg, McpVer ver, void *context);
 
 
@@ -641,7 +641,7 @@ mcp_frame_package_docallback(McpFrame * mfr, McpMesg * msg)
 	McpPkg *ptr = NULL;
 
 	if (!strcmp_nocase(msg->package, MCP_INIT_PKG)) {
-		mcp_basic_handler(mfr, msg, NULL);
+		mcp_basic_handler(mfr, msg);
 	} else {
 		if (!mfr->enabled) {
 			return EMCP_NOMCP;
@@ -1322,7 +1322,7 @@ mcp_version_select(McpVer min1, McpVer max1, McpVer min2, McpVer max2)
 /*****************************************************************/
 
 void
-mcp_basic_handler(McpFrame * mfr, McpMesg * mesg, void *dummy)
+mcp_basic_handler(McpFrame * mfr, McpMesg * mesg)
 {
 	McpVer myminver = { 2, 1 };
 	McpVer mymaxver = { 2, 1 };
@@ -1410,7 +1410,7 @@ mcp_basic_handler(McpFrame * mfr, McpMesg * mesg, void *dummy)
 /*****************************************************************/
 
 void
-mcp_negotiate_handler(McpFrame * mfr, McpMesg * mesg, McpVer version, void *dummy)
+mcp_negotiate_handler(McpFrame * mfr, McpMesg * mesg, McpVer version, void *context)
 {
 	McpVer minver = { 0, 0 };
 	McpVer maxver = { 0, 0 };
