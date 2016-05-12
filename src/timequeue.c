@@ -79,7 +79,7 @@ static timequeue tqhead = NULL;
 void prog_clean(struct frame *fr);
 
 extern int top_pid;
-int process_count = 0;
+static int process_count = 0;
 
 static timequeue free_timenode_list = NULL;
 static int free_timenode_count = 0;

@@ -810,6 +810,7 @@ typedef hash_entry *hash_tab;
 extern struct object *db;
 extern struct macrotable *macrotop;
 extern dbref db_top;
+extern int recyclable;
 
 #ifndef MALLOC_PROFILING
 extern char *alloc_string(const char *);

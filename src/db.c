@@ -15,7 +15,7 @@
 struct object *db = 0;
 dbref db_top = 0;
 dbref recyclable = NOTHING;
-int db_load_format = 0;
+static int db_load_format = 0;
 
 #ifndef DB_INITIAL_SIZE
 #define DB_INITIAL_SIZE 10000

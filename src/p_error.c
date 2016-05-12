@@ -29,7 +29,7 @@ union error_mask {
 #define ERROR_STRING_MAX_LEN 80
 #define ERROR_NUM 5
 
-union error_mask err_bits[ERROR_NUM];
+static union error_mask err_bits[ERROR_NUM];
 
 struct err_type {
 	int error_bit;

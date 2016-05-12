@@ -586,7 +586,7 @@ struct mpifunc {
 };
 
 static struct mpifunc funcv[MPI_MAX_FUNCTIONS];
-int funcc = 0;
+static int funcc = 0;
 
 int
 new_mfunc(const char *funcname, const char *buf)

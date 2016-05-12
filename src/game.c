@@ -29,7 +29,7 @@ static const char *dumpfile = 0;
 static int epoch = 0;
 static int forked_dump_process_flag = 0;
 FILE *input_file;
-char *in_filename = NULL;
+static char *in_filename = NULL;
 
 void fork_and_dump(void);
 void dump_database(void);
@@ -461,8 +461,6 @@ cleanup_game()
 	free((void *) in_filename);
 }
 
-
-extern short wizonly_mode;
 void
 do_restrict(dbref player, const char *arg)
 {

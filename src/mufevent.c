@@ -16,7 +16,7 @@
 #include "array.h"
 
 
-struct mufevent_process {
+static struct mufevent_process {
 	struct mufevent_process *prev, *next;
 	dbref player;
 	dbref prog;

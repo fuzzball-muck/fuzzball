@@ -19,7 +19,7 @@ struct mfun_dat {
 
 /******** MFUN LIST ********/
 #ifdef DEFINE_MFUN_LIST
-MFNDAT mfun_list[] = {
+static MFNDAT mfun_list[] = {
 	/* Name, Func, Preparse?, Postparse?, strip?, Minargs, Maxargs  */
 
     {"ABS",          mfn_abs,         1, 0, 1, 1,  1}, 

@@ -23,7 +23,7 @@ typedef struct hash_file_entry {
 	const char *sha1hash;
 } hash_file_entry;
 
-hash_file_entry hash_file_array[] = {
+static hash_file_entry hash_file_array[] = {
 $hasharray
 	{ NULL, NULL, NULL }
 };

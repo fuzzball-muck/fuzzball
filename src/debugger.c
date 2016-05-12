@@ -468,7 +468,7 @@ push_arg(dbref player, struct frame *fr, const char *arg)
 
 extern int primitive(const char *token);
 
-struct inst primset[5];
+static struct inst primset[5];
 static struct muf_proc_data temp_muf_proc_data = {
     "__Temp_Debugger_Proc",
 	0,

@@ -61,7 +61,7 @@ char *get_sha1_hash(const char *name, char *hash, size_t hash_len);
 int endswith(const char *str, const char *suf);
 int qcmp(const void *arg1, const void *arg2);
 
-int git_available = 0;
+static int git_available = 0;
 
 typedef struct file_entry {
 	char *filepath;
