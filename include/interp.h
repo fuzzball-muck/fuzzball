@@ -22,6 +22,7 @@ extern void RCLEAR(struct inst *oper, char *file, int line);
 
 extern struct localvars *localvars_get(struct frame *fr, dbref prog);
 extern void localvar_dupall(struct frame *fr, struct frame *oldfr);
+
 extern struct inst *scopedvar_get(struct frame *fr, int level, int varnum);
 extern const char* scopedvar_getname(struct frame *fr, int level, int varnum);
 extern const char* scopedvar_getname_byinst(struct inst *pc, int varnum);
@@ -149,6 +150,7 @@ extern dbref find_uid(dbref player, struct frame *fr, int st, dbref program);
 #define SORTTYPE_NOCASE_DESCEND (SORTTYPE_CASEINSENS | SORTTYPE_DESCENDING)
 #define SORTTYPE_SHUFFLE        4
 
+extern int top_pid;
 extern int nargs;				/* DO NOT TOUCH THIS VARIABLE */
 
 #include "p_array.h"

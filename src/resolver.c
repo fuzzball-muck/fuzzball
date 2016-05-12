@@ -76,7 +76,7 @@ const char *addrout(long, unsigned short, unsigned short);
 #define FREE(x) (free((void *) x))
 
 
-struct hostcache {
+static struct hostcache {
 #ifdef USE_IPV6
 	struct in6_addr ipnum_v6;
 #endif
@@ -676,9 +676,9 @@ const char *addrout(long a, unsigned short prt, unsigned short myprt)
 
 
 
-volatile short shutdown_was_requested = 0;
-pthread_mutex_t input_mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t output_mutex = PTHREAD_MUTEX_INITIALIZER;
+static volatile short shutdown_was_requested = 0;
+static pthread_mutex_t input_mutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t output_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 int
 do_resolve(void)

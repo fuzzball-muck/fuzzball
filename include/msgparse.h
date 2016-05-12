@@ -57,7 +57,7 @@ int new_mfunc(const char *funcname, const char *buf);
 const char *get_mfunc(const char *funcname);
 int free_mfuncs(int downto);
 
-
+extern int varc;
 
 #define MFUNARGS int descr, dbref player, dbref what, dbref perms, int argc, \
                 argv_typ argv, char *buf, int buflen, int mesgtyp

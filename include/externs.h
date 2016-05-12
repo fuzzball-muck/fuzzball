@@ -18,7 +18,6 @@ extern int array_delrange(stk_array **harr, array_iter *start, array_iter *end);
 extern struct boolexp *copy_bool(struct boolexp *old);
 extern int eval_boolexp(int descr, dbref player, struct boolexp *b, dbref thing);
 extern void free_boolexp(struct boolexp *b);
-extern struct boolexp *negate_boolexp(struct boolexp *b);
 extern struct boolexp *parse_boolexp(int descr, dbref player, const char *string, int dbloadp);
 extern long size_boolexp(struct boolexp *b);
 
@@ -43,8 +42,8 @@ extern void do_link(int descr, dbref player, const char *name, const char *room_
 extern void do_open(int descr, dbref player, const char *direction, const char *linkto);
 extern void do_prog(int descr, dbref player, const char *name);
 extern int exit_loop_check(dbref source, dbref dest);
-extern int link_exit(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_list);
-extern int link_exit_dry(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_list);
+extern int link_exit(int descr, dbref player, dbref exit, char *dest_name, dbref *dest_list);
+extern int link_exit_dry(int descr, dbref player, dbref exit, char *dest_name, dbref *dest_list);
 extern void set_source(dbref player, dbref action, dbref source);
 extern int unset_source(dbref player, dbref action);
 
@@ -87,7 +86,7 @@ extern void next_muckevent(void);
 extern time_t next_muckevent_time(void);
 
 /* game.c */
-void cleanup_game();
+extern void cleanup_game();
 extern const char *compile_options;
 extern short db_conversion_flag;
 extern void do_dump(dbref player, const char *newfile);
@@ -96,6 +95,7 @@ extern void dump_warning(void);
 extern int force_level;
 extern dbref force_prog;
 extern void fork_and_dump(void);
+extern FILE *input_file;
 
 /* hashtab.c */
 extern hash_entry *add_hash(const char *name, hash_data data, hash_tab *table, unsigned size);
@@ -112,7 +112,6 @@ extern void do_motd(dbref player, char *text);
 extern void do_mpihelp(dbref player, char *topic, char *seg);
 extern void do_news(dbref player, char *topic, char *seg);
 extern void spit_file(dbref player, const char *filename);
-extern void spit_file_segment(dbref player, const char *filename, const char *seg);
 
 /* interface.c */
 extern void do_armageddon(dbref player, const char *msg);
@@ -140,6 +139,7 @@ extern time_t sel_prof_start_time;
 extern void spawn_resolver(void);
 #endif
 extern char *time_format_2(time_t dt);
+extern short wizonly_mode;
 
 /* interp.c */
 extern void do_abort_silent(void);
@@ -150,7 +150,6 @@ extern void prog_clean(struct frame *fr);
 extern void purge_all_free_frames();
 extern void purge_for_pool(void);
 extern void purge_try_pool(void);
-extern int scopedvar_poplevel(struct frame *fr);
 
 /* log.c */
 extern void log2file(char *myfilename, char *format, ...);
@@ -173,7 +172,6 @@ extern void do_owned(dbref player, const char *name, const char *flags);
 extern void do_score(dbref player);
 extern void do_sweep(int descr, dbref player, const char *name);
 extern void do_trace(int descr, dbref player, const char *name, int depth);
-extern void exec_or_notify(int descr, dbref player, dbref thing, const char *message, const char *whatcalled, int mpiflags);
 extern void exec_or_notify_prop(int descr, dbref player, dbref thing, const char *propname, const char *whatcalled);
 extern long size_object(dbref i, int load);
 
@@ -202,7 +200,7 @@ extern void purge_mfns();
 /* mufevent.c */
 extern void muf_event_add(struct frame *fr, char *event, struct inst *val, int exclusive);
 extern int muf_event_count(struct frame *fr);
-extern int muf_event_exists(struct frame* fr, const char* eventid);
+extern int muf_event_exists(struct frame *fr, const char *eventid);
 
 /* p_props.c */
 extern int prop_read_perms(dbref player, dbref obj, const char *name, int mlev);
@@ -240,7 +238,7 @@ extern int test_lock(int descr, dbref player, dbref thing, const char *lockprop)
 extern int test_lock_false_default(int descr, dbref player, dbref thing, const char *lockprop);
 
 /* property.c */
-extern char * displayprop(dbref player, dbref obj, const char *name, char *buf, size_t bufsiz);
+extern char *displayprop(dbref player, dbref obj, const char *name, char *buf, size_t bufsiz);
 extern long size_properties(dbref player, int load);
 extern void untouchprops_incremental(int limit);
 
@@ -266,6 +264,7 @@ extern void sane_dump_object(dbref player, const char *arg);
 extern void sanechange(dbref player, const char *command);
 extern void sanfix(dbref player);
 extern void sanity(dbref player);
+extern int sanity_violated;
 
 /* set.c */
 extern void do_chown(int descr, dbref player, const char *name, const char *newobj);
@@ -275,7 +274,7 @@ extern void do_relink(int descr, dbref player, const char *thing_name, const cha
 extern void do_set(int descr, dbref player, const char *name, const char *flag);
 extern void do_unlink(int descr, dbref player, const char *name);
 extern void do_unlink_quiet(int descr, dbref player, const char *name);
-extern void set_flags_from_tunestr(dbref obj, const char* flags);
+extern void set_flags_from_tunestr(dbref obj, const char *flags);
 extern void set_standard_lock(int descr, dbref player, const char *objname, const char *propname, const char *proplabel, const char *keyvalue);
 extern void set_standard_property(int descr, dbref player, const char *objname, const char *propname, const char *proplabel, const char *propvalue);
 extern int setlockstr(int descr, dbref player, dbref thing, const char *keyname);
@@ -299,7 +298,7 @@ extern void do_wall(dbref player, const char *message);
 extern void do_whisper(int descr, dbref player, const char *arg1, const char *arg2);
 extern void notify_except(dbref first, dbref exception, const char *msg, dbref who);
 extern void notify_listeners(dbref who, dbref xprog, dbref obj, dbref room, const char *msg, int isprivate);
-extern void parse_omessage(int descr, dbref player, dbref dest, dbref exit, const char *msg, const char *prefix, const char *whatcalled, int mpiflags) ;
+extern void parse_omessage(int descr, dbref player, dbref dest, dbref exit, const char *msg, const char *prefix, const char *whatcalled, int mpiflags);
 extern void parse_oprop(int descr, dbref player, dbref dest, dbref exit, const char *propname, const char *prefix, const char *whatcalled);
 
 /* strftime.c */
@@ -319,8 +318,8 @@ extern int prepend_string(char **before, char *start, const char *what);
 extern char *pronoun_substitute(int descr, dbref player, const char *str);
 extern char *strcatn(char *buf, size_t bufsize, const char *src);
 extern char *strcpyn(char *buf, size_t bufsize, const char *src);
-const char *strencrypt(const char *, const char *);
-const char *strdecrypt(const char *, const char *);
+extern const char *strencrypt(const char *, const char *);
+extern const char *strdecrypt(const char *, const char *);
 extern int string_compare(const char *s1, const char *s2);
 #if !defined(MALLOC_PROFILING)
 extern char *string_dup(const char *s);
@@ -337,30 +336,28 @@ extern void ts_newobject(struct object *thing);
 extern void ts_useobject(dbref thing);
 
 /* timequeue.c */
-extern int add_event(int event_type, int subtyp, int dtime, int descr, dbref player, dbref loc, dbref trig, dbref program, struct frame *fr, const char *strdata, const char *strcmd, const char *str3);
 extern int add_mpi_event(int delay, int descr, dbref player, dbref loc, dbref trig, const char *mpi, const char *cmdstr, const char *argstr, int listen_p, int omesg_p, int bless_p);
 extern int add_muf_read_event(int descr, dbref player, dbref prog, struct frame *fr);
 extern int add_muf_delay_event(int delay, int descr, dbref player, dbref loc, dbref trig, dbref prog, struct frame *fr, const char *mode);
 extern int add_muf_delayq_event(int delay, int descr, dbref player, dbref loc, dbref trig, dbref prog, const char *argstr, const char *cmdstr, int listen_p);
 extern int add_muf_timer_event(int descr, dbref player, dbref prog, struct frame *fr, int delay, char *id);
-extern int add_muf_tread_event(int descr, dbref player, dbref prog, struct frame *fr, int delay);
 extern int add_muf_queue_event(int descr, dbref player, dbref loc, dbref trig, dbref prog, const char *argstr, const char *cmdstr, int listen_p);
 extern int control_process(dbref player, int procnum);
 extern int dequeue_process(int procnum);
 extern int dequeue_prog_real(dbref, int, const char *, const int);
-extern int dequeue_timers(int procnum, char* timerid);
+extern int dequeue_timers(int procnum, char *timerid);
 extern void do_dequeue(int descr, dbref player, const char *arg1);
 extern void envpropqueue(int descr, dbref player, dbref where, dbref trigger, dbref what, dbref xclude, const char *propname, const char *toparg, int mlev, int mt);
 extern stk_array *get_pidinfo(int pid);
 extern stk_array *get_pids(dbref ref);
-extern void handle_read_event(int descr, dbref player, const char* command);
+extern void handle_read_event(int descr, dbref player, const char *command);
 extern void listenqueue(int descr, dbref player, dbref where, dbref trigger, dbref what, dbref xclude, const char *propname, const char *toparg, int mlev, int mt, int mpi_p);
 extern void list_events(dbref program);
 extern int in_timequeue(int pid);
 extern void next_timequeue_event(void);
 extern void propqueue(int descr, dbref player, dbref where, dbref trigger, dbref what, dbref xclude, const char *propname, const char *toparg, int mlev, int mt);
 extern void purge_timenode_free_pool(void);
-extern int read_event_notify(int descr, dbref player, const char* cmd);
+extern int read_event_notify(int descr, dbref player, const char *cmd);
 extern int scan_instances(dbref program);
 extern struct frame *timequeue_pid_frame(int pid);
 

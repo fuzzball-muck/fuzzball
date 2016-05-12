@@ -46,8 +46,7 @@ p_null(PRIM_PROTOTYPE)
 	return;
 }
 
-/* void    (*prim_func[]) (PRIM_PROTOTYPE) = */
-void (*prim_func[]) (PRIM_PROTOTYPE) = {
+static void (*prim_func[]) (PRIM_PROTOTYPE) = {
 	p_null, p_null, p_null, p_null, p_null,  p_null,
 	/* JMP, READ,   SLEEP,  CALL,   EXECUTE, RETURN, */
 	p_null,           p_null, p_null,
@@ -208,12 +207,6 @@ scopedvar_dupall(struct frame *fr, struct frame *oldfr)
 	}
 }
 
-void
-scopedvar_freeall(struct frame *fr)
-{
-	while (scopedvar_poplevel(fr)) ;
-}
-
 int
 scopedvar_poplevel(struct frame *fr)
 {
@@ -228,6 +221,12 @@ scopedvar_poplevel(struct frame *fr)
 	}
 	free(tmp);
 	return 1;
+}
+
+void
+scopedvar_freeall(struct frame *fr)
+{
+	while (scopedvar_poplevel(fr)) ;
 }
 
 struct inst *
@@ -367,10 +366,10 @@ int nargs = 0;
 
 static struct frame *free_frames_list = NULL;
 
-struct forvars *for_pool = NULL;
-struct forvars **last_for = &for_pool;
-struct tryvars *try_pool = NULL;
-struct tryvars **last_try = &try_pool;
+static struct forvars *for_pool = NULL;
+static struct forvars **last_for = &for_pool;
+static struct tryvars *try_pool = NULL;
+static struct tryvars **last_try = &try_pool;
 
 void
 purge_free_frames(void)
@@ -563,7 +562,7 @@ interp(int descr, dbref player, dbref location, dbref program,
 }
 
 static int err;
-int already_created;
+static int already_created;
 
 struct forvars *
 copy_fors(struct forvars *forstack)

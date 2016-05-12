@@ -31,8 +31,8 @@ typedef struct DlogData_t {
 	void *context;
 } DlogData;
 
-DlogData *dialog_list = NULL;
-DlogData *dialog_last_accessed = NULL;
+static DlogData *dialog_list = NULL;
+static DlogData *dialog_last_accessed = NULL;
 
 
 void gui_pkg_callback(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context);

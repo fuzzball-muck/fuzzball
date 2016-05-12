@@ -69,9 +69,9 @@ static const char *create_fail =
 static const char *flushed_message = "<Output Flushed>\r\n";
 static const char *shutdown_message = "\r\nGoing down - Bye\r\n";
 
-int resolver_sock[2];
+static int resolver_sock[2];
 
-struct descriptor_data *descriptor_list = NULL;
+static struct descriptor_data *descriptor_list = NULL;
 
 #define MAX_LISTEN_SOCKS 16
 
@@ -98,7 +98,7 @@ static int ssl_sock[MAX_LISTEN_SOCKS];
 static int ssl_numsocks_v6 = 0;
 static int ssl_sock_v6[MAX_LISTEN_SOCKS];
 # endif
-SSL_CTX *ssl_ctx = NULL;
+static SSL_CTX *ssl_ctx = NULL;
 #endif
 
 static int ndescriptors = 0;
@@ -184,8 +184,6 @@ void resolve_hostnames(void);
 
 #define FREE(x) (free((void *) x))
 
-extern FILE *input_file;
-
 short db_conversion_flag = 0;
 short wizonly_mode = 0;
 pid_t global_resolver_pid=0;
@@ -237,8 +235,6 @@ show_program_usage(char *prog)
 
 /* NOTE: Will need to think about this more for unicode */
 #define isinput( q ) isprint( (q) & 127 )
-
-extern int sanity_violated;
 
 int
 main(int argc, char **argv)
@@ -722,7 +718,7 @@ queue_ansi(struct descriptor_data *d, const char *msg)
 }
 
 
-int notify_nolisten_level = 0;
+static int notify_nolisten_level = 0;
 
 int
 notify_nolisten(dbref player, const char *msg, int isprivate)
@@ -3297,8 +3293,8 @@ do_setgid(char *name)
 
 
 /***** O(1) Connection Optimizations *****/
-struct descriptor_data *descr_count_table[FD_SETSIZE];
-int current_descr_count = 0;
+static struct descriptor_data *descr_count_table[FD_SETSIZE];
+static int current_descr_count = 0;
 
 void
 init_descr_count_lookup()
@@ -3337,7 +3333,7 @@ descrdata_by_count(int c)
 	return descr_count_table[c];
 }
 
-struct descriptor_data *descr_lookup_table[FD_SETSIZE];
+static struct descriptor_data *descr_lookup_table[FD_SETSIZE];
 
 #ifdef WIN32
 int descr_hash_table[FD_SETSIZE];
@@ -4414,7 +4410,7 @@ void ignore_remove_from_all_players(dbref Player)
    an existing one to allow us to recover gracefully if we can't reload
    a new certificate file, etc. */
 static SSL_CTX *configure_new_ssl_ctx(void) {
-        EC_KEY *eckey = NULL;
+        EC_KEY *eckey;
         int ssl_status_ok = 1;
 
 	SSL_CTX* new_ssl_ctx = SSL_CTX_new (SSLv23_server_method ());
@@ -4442,6 +4438,7 @@ static SSL_CTX *configure_new_ssl_ctx(void) {
 #if defined(SSL_CTX_set_ecdh_auto)
         /* In OpenSSL >= 1.0.2, this exists; otherwise, fallback to the older
            API where we have to name a curve. */
+	eckey = NULL;
         SSL_CTX_set_ecdh_auto(new_ssl_ctx, 1);
 #else
         eckey = EC_KEY_new_by_curve_name(NID_X9_62_prime256v1);

@@ -933,7 +933,6 @@ do_recycle(int descr, dbref player, const char *name)
 void
 recycle(int descr, dbref player, dbref thing)
 {
-	extern dbref recyclable;
 	static int depth = 0;
 	dbref first;
 	dbref rest;

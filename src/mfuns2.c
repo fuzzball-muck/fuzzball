@@ -1300,7 +1300,6 @@ mfn_istype(MFUNARGS)
 	default:
 		return (string_compare(argv[1], "Bad") ? "0" : "1");
 	}
-	return (string_compare(argv[1], "Bad") ? "0" : "1");
 }
 
 

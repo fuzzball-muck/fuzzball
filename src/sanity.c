@@ -156,8 +156,6 @@ check_next_chain(dbref player, dbref obj)
 }
 
 
-extern dbref recyclable;
-
 static void
 find_orphan_objects(dbref player)
 {
@@ -748,7 +746,7 @@ fix_player(dbref obj)
 void
 find_misplaced_objects(void)
 {
-	dbref loop, player = NOTHING, room;
+	dbref loop, player = NOTHING, room = NOTHING;
 
 	for (loop = 0; loop < db_top; loop++) {
 		if (Typeof(loop) != TYPE_ROOM &&
@@ -967,8 +965,8 @@ sanfix(dbref player)
 
 
 
-char cbuf[1000];
-char buf2[1000];
+static char cbuf[1000];
+static char buf2[1000];
 
 void
 sanechange(dbref player, const char *command)

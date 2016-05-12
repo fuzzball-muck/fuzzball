@@ -43,17 +43,6 @@ print_owner(dbref player, dbref thing)
 }
 
 void
-exec_or_notify_prop(int descr, dbref player, dbref thing,
-					const char *propname, const char *whatcalled)
-{
-	const char *message = get_property_class(thing, propname);
-	int mpiflags = Prop_Blessed(thing, propname)? MPI_ISBLESSED : 0;
-
-	if (message)
-		exec_or_notify(descr, player, thing, message, whatcalled, mpiflags);
-}
-
-void
 exec_or_notify(int descr, dbref player, dbref thing,
 			   const char *message, const char *whatcalled,
 			   int mpiflags)
@@ -117,6 +106,17 @@ exec_or_notify(int descr, dbref player, dbref thing,
 		p = do_parse_mesg(descr, player, thing, p, whatcalled, buf, sizeof(buf), MPI_ISPRIVATE | mpiflags);
 		notify(player, p);
 	}
+}
+
+void
+exec_or_notify_prop(int descr, dbref player, dbref thing,
+					const char *propname, const char *whatcalled)
+{
+	const char *message = get_property_class(thing, propname);
+	int mpiflags = Prop_Blessed(thing, propname)? MPI_ISBLESSED : 0;
+
+	if (message)
+		exec_or_notify(descr, player, thing, message, whatcalled, mpiflags);
 }
 
 static void

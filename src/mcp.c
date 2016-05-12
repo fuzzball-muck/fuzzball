@@ -75,7 +75,7 @@ descr_mcpframe(int c)
         return NULL;
 }
 
-McpPkg *mcp_PackageList = NULL;
+static McpPkg *mcp_PackageList = NULL;
 
 
 
@@ -310,7 +310,7 @@ struct McpFrameList_t {
 	struct McpFrameList_t* next;
 };
 typedef struct McpFrameList_t McpFrameList;
-McpFrameList* mcp_frame_list;
+static McpFrameList* mcp_frame_list;
 
 
 /*****************************************************************

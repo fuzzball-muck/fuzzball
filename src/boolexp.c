@@ -422,23 +422,6 @@ size_boolexp(struct boolexp *b)
 	}
 }
 
-
-struct boolexp *
-negate_boolexp(struct boolexp *b)
-{
-	struct boolexp *n;
-
-	/* Obscure fact: !NOTHING == NOTHING in old-format databases! */
-	if (b == TRUE_BOOLEXP)
-		return TRUE_BOOLEXP;
-
-	n = alloc_boolnode();
-	n->type = BOOLEXP_NOT;
-	n->sub1 = b;
-
-	return n;
-}
-
 void
 free_boolexp(struct boolexp *b)
 {
