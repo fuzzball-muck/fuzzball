@@ -122,7 +122,7 @@ CSRC= array.c boolexp.c compile.c create.c db.c debugger.c \
 	signal.c smatch.c snprintf.c speech.c strftime.c stringutil.c \
 	time.c timequeue.c tune.c unparse.c utils.c wiz.c
 
-MSRC= reconst.c interface.c resolver.c
+MSRC= interface.c resolver.c
 
 COBJ= array.o boolexp.o compile.o create.o db.o debugger.o \
 	disassem.o diskprop.o edit.o events.o game.o hashtab.o help.o inst.o \
@@ -134,7 +134,7 @@ COBJ= array.o boolexp.o compile.o create.o db.o debugger.o \
 	signal.o smatch.o snprintf.o speech.o strftime.o stringutil.o \
 	time.o timequeue.o tune.o unparse.o utils.o wiz.o
 
-MOBJ= reconst.o interface.o resolver.o
+MOBJ= interface.o resolver.o
 
 SRC= ${MISCSRC} ${CSRC} ${MSRC}
 OBJ= ${COBJ} ${ROBJ} ${MOBJ}
