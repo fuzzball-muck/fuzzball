@@ -195,7 +195,6 @@ extern int tp_restrict_kill;
 extern int tp_secure_teleport;
 extern int tp_secure_who;
 extern int tp_show_legacy_props;
-extern int tp_sync_legacy_props;
 extern int tp_starttls_allow;
 extern int tp_strict_god_priv;
 extern int tp_teleport_to_player;

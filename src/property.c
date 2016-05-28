@@ -110,7 +110,7 @@ set_property_nofetch(dbref player, const char *pname, PData * dat, int sync)
 		break;
 	}
 
-	if (!sync && tp_sync_legacy_props && string_compare(tp_gender_prop, LEGACY_GENDER_PROP)) {
+	if (!sync && string_compare(tp_gender_prop, LEGACY_GENDER_PROP)) {
 		char *current;
 		static const char *legacy;
 		current = string_dup(tp_gender_prop);
@@ -246,7 +246,7 @@ remove_property_nofetch(dbref player, const char *pname, int sync)
 	DBFETCH(player)->properties = l;
 	DBDIRTY(player);
 
-	if (!sync && tp_sync_legacy_props && string_compare(tp_gender_prop, LEGACY_GENDER_PROP)) {
+	if (!sync && string_compare(tp_gender_prop, LEGACY_GENDER_PROP)) {
 		char *current;
 		static const char *legacy;
 		current = string_dup(tp_gender_prop);
