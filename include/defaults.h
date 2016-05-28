@@ -375,9 +375,6 @@
 /* Show legacy props to player */
 #define SHOW_LEGACY_PROPS 0
 
-/* Synchronize legacy props */
-#define SYNC_LEGACY_PROPS 0
-
 /* Automatically link @actions to NIL. */
 #define AUTOLINK_ACTIONS 0
 

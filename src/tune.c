@@ -226,7 +226,6 @@ int tp_restrict_kill = RESTRICT_KILL;
 int tp_secure_who = SECURE_WHO;
 int tp_secure_teleport = SECURE_TELEPORT;
 int tp_show_legacy_props = SHOW_LEGACY_PROPS;
-int tp_sync_legacy_props = SYNC_LEGACY_PROPS;
 int tp_starttls_allow = STARTTLS_ALLOW;
 int tp_strict_god_priv = STRICT_GOD_PRIV;
 int tp_teleport_to_player = TELEPORT_TO_PLAYER;
@@ -287,7 +286,6 @@ struct tune_bool_entry tune_bool_list[] = {
 	{"Properties",	"lock_envcheck", &tp_lock_envcheck, 0, MLEV_WIZARD, "Locks check environment for properties", "", 1, LOCK_ENVCHECK},
 	{"Properties",	"look_propqueues", &tp_look_propqueues, 0, MLEV_WIZARD, "Trigger _look/ propqueues when a player looks", "", 1, LOOK_PROPQUEUES},
 	{"Properties",	"show_legacy_props", &tp_show_legacy_props, 0, MLEV_WIZARD, "Examining objects lists legacy props", "", 1, SHOW_LEGACY_PROPS},
-	{"Properties",	"sync_legacy_props", &tp_sync_legacy_props, 0, MLEV_WIZARD, "Setting properties also sets associated legacy props", "", 1, SYNC_LEGACY_PROPS},
 	{"Registration","registration", &tp_registration, 0, MLEV_WIZARD, "Require new players to register manually", "", 1, REGISTRATION},
 	{"SSL",		"server_cipher_preference", &tp_cipher_server_preference, MLEV_WIZARD, MLEV_WIZARD, "Honor server cipher preference order over client's", "SSL", 1, SERVER_CIPHER_PREFERENCE},
 	{"Tuning",	"periodic_program_purge", &tp_periodic_program_purge, 0, MLEV_WIZARD, "Periodically free unused MUF programs", "", 1, PERIODIC_PROGRAM_PURGE},
