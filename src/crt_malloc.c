@@ -332,9 +332,7 @@ static Block
 blocks_nth(						/* Return nth block in list, first is #0. */
 			  Block b, int n)
 {
-	int i;
-
-	for (i = 0; i < n; b = b->next)
+	for (int i = 0; i < n; b = b->next)
 		++i;
 	return b;
 }
@@ -441,9 +439,7 @@ block_alloc(const char *file, int line)
 static Block
 block_find(const char *file, int line)
 {
-	Block b;
-
-	for (b = block_list; b; b = b->next) {
+	for (Block b = block_list; b; b = b->next) {
 		if (b->line == line && !strcmp(b->file, file)
 				) {
 			return b;
@@ -480,8 +476,6 @@ static void
 summarize(void (*fn) (char *)
 		)
 {
-	Block b;
-
 	int sum_blks = 0;
 	int sum_byts = 0;
 	int sum_totblks = 0;
@@ -496,7 +490,7 @@ summarize(void (*fn) (char *)
 	X("         File Line CurBlks CurBytes MaxBlks MaxBytes MxByTime TotBlks TotBytes");
 	X("------------- ---- ------- -------- ------- -------- -------- ------- --------")
 
-			for (b = block_list; b; b = b->next) {
+	for (Block b = block_list; b; b = b->next) {
 
 		sum_blks += b->live_blocks;
 		sum_byts += b->live_bytes;

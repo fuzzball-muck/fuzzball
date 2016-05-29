@@ -488,7 +488,6 @@ prim_getseed(PRIM_PROTOTYPE)
 {
 	char buf[33];
 	char buf2[17];
-	int loop;
 
 	CHECKOP(0);
 	CHECKOFLOW(1);
@@ -497,7 +496,7 @@ prim_getseed(PRIM_PROTOTYPE)
 	} else {
 		memcpy(buf2, fr->rndbuf, 16);
 		buf2[16] = '\0';
-		for (loop = 0; loop < 16; loop++) {
+		for (int loop = 0; loop < 16; loop++) {
 			buf[loop * 2] = (buf2[loop] & 0x0F) + 65;
 			buf[(loop * 2) + 1] = ((buf2[loop] & 0xF0) >> 4) + 65;
 		}
@@ -509,7 +508,7 @@ prim_getseed(PRIM_PROTOTYPE)
 void
 prim_setseed(PRIM_PROTOTYPE)
 {
-	int slen, sloop;
+	int slen;
 	char holdbuf[33];
 	char buf[17];
 
@@ -528,9 +527,9 @@ prim_setseed(PRIM_PROTOTYPE)
 	} else {
 		slen = strlen(oper1->data.string->data);
 		if (slen > 32) slen = 32;
-		for (sloop = 0; sloop < 32; sloop++)
+		for (int sloop = 0; sloop < 32; sloop++)
 			holdbuf[sloop] = oper1->data.string->data[sloop % slen];
-		for (sloop = 0; sloop < 16; sloop++)
+		for (int sloop = 0; sloop < 16; sloop++)
 			buf[sloop] = ((holdbuf[sloop * 2] - 65) & 0x0F) |
 					(((holdbuf[(sloop * 2) + 1] - 65) & 0x0F) << 4);
 		buf[16] = '\0';

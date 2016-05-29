@@ -10,7 +10,6 @@ disassemble(dbref player, dbref program)
 {
 	struct inst *curr;
 	struct inst *codestart;
-	int i;
 	char buf[BUFFER_LEN];
 
 	codestart = curr = PROGRAM_CODE(program);
@@ -18,7 +17,7 @@ disassemble(dbref player, dbref program)
 		notify(player, "Nothing to disassemble!");
 		return;
 	}
-	for (i = 0; i < PROGRAM_SIZ(program); i++, curr++) {
+	for (int i = 0; i < PROGRAM_SIZ(program); i++, curr++) {
 		switch (curr->type) {
 		case PROG_PRIMITIVE:
 			if (curr->data.number >= BASE_MIN && curr->data.number <= BASE_MAX)

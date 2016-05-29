@@ -416,7 +416,6 @@ void *
 init_seed(char *seed)
 {
 	word32* digest;
-	int loop;
 	int tbuf[8];
 
 	if (!(digest = (word32*) malloc(sizeof(word32) * 4))) {
@@ -425,7 +424,7 @@ init_seed(char *seed)
 	if (!seed) {
 		/* No fixed seed given... make something up */
 		srand((unsigned int) time(NULL));
-		for (loop = 0; loop < 8; loop++)
+		for (int loop = 0; loop < 8; loop++)
 			tbuf[loop] = rand();
 		memcpy(digest, tbuf, 16);
 	} else {

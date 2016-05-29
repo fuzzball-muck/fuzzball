@@ -175,8 +175,8 @@ delete_player(dbref who)
 	int result;
 	char buf[BUFFER_LEN];
 	char namebuf[BUFFER_LEN];
-	int i, j;
-	dbref found, ren;
+	dbref i, found, ren;
+	int j;
 
 
 	result = free_hash(NAME(who), player_list, PLAYER_HASH_SIZE);
@@ -185,7 +185,7 @@ delete_player(dbref who)
 		wall_wizards
 				("## WARNING: Playername hashtable is inconsistent.  Rebuilding it.  Don't panic.");
 		clear_players();
-		for (i = 0; i < db_top; i++) {
+		for (dbref i = 0; i < db_top; i++) {
 			if (Typeof(i) == TYPE_PLAYER) {
 				found = lookup_player(NAME(i));
 				if (found != NOTHING) {
