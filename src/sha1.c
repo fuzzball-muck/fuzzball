@@ -50,7 +50,6 @@ uint32_t sha1_rol32(uint32_t number, uint8_t bits) {
 
 /* Hash the data in the block */
 void sha1_hashBlock(sha1nfo *s) {
-	uint8_t i;
 	uint32_t a, b, c, d, e, t;
 
 	a = s->state[0];
@@ -58,7 +57,7 @@ void sha1_hashBlock(sha1nfo *s) {
 	c = s->state[2];
 	d = s->state[3];
 	e = s->state[4];
-	for (i = 0; i < 80; i++) {
+	for (uint8_t i = 0; i < 80; i++) {
 		if (i >= 16) {
 			t = s->buffer[(i + 13) & 15] ^ s->buffer[(i + 8) & 15] ^ s->buffer[(i + 2) & 15] ^ s->buffer[i & 15];
 			s->buffer[i & 15] = sha1_rol32(t, 1);
@@ -140,8 +139,7 @@ uint8_t* sha1_result(sha1nfo *s) {
 
 #ifndef SHA_BIG_ENDIAN
 	// Swap byte order back
-	int i;
-	for (i = 0; i < 5; i++) {
+	for (int i = 0; i < 5; i++) {
 		s->state[i] =
 			(((s->state[i]) << 24) & 0xff000000)
 			| (((s->state[i]) << 8) & 0x00ff0000)
@@ -156,11 +154,10 @@ uint8_t* sha1_result(sha1nfo *s) {
 
 /* Turn a 20 byte hash into a 41 byte hex c-string */
 void hash2hex(uint8_t* hash, char *buffer, size_t buflen) {
-	size_t i;
 	uint8_t low, high;
 
 	buffer[0] = '\0';
-	for (i = 0; i < 20; i++) {
+	for (size_t i = 0; i < 20; i++) {
 		/* Make sure the buffer has two bytes + null */
 		if (i * 2 + 3 > buflen)
 			break;

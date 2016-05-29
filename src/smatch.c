@@ -93,12 +93,12 @@ cmatch(char *s1, char c1)
 		if (*s1 == '\\' && *(s1 + 1))
 			s1++;
 		if (*s1 == '-') {
-			char c, start = *(s1 - 1), end = *(s1 + 1);
+			char start = *(s1 - 1), end = *(s1 + 1);
 
 			if (start > end) {
 				test(*s1++);
 			} else {
-				for (c = start; c <= end; c++)
+				for (char c = start; c <= end; c++)
 					test(c);
 				s1 += 2;
 			}

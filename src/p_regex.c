@@ -99,7 +99,7 @@ prim_regexp(PRIM_PROTOTYPE)
 	muf_re*		re;
 	char*		text;
 	int			flags	= 0;
-	int			len, i;
+	int			len;
 	int			matchcnt = 0;
 	const char*	errstr;
 
@@ -162,7 +162,7 @@ prim_regexp(PRIM_PROTOTYPE)
 			abort_interp("Out of memory");
 		}
 
-		for(i = 0; i < matchcnt; i++)
+		for (int i = 0; i < matchcnt; i++)
 		{
 			int substart = matches[i*2];
 			int subend = matches[i*2+1];
@@ -300,7 +300,7 @@ prim_regsub(PRIM_PROTOTYPE)
 			char*		read_ptr	= DoNullInd(oper3->data.string);
 			int			count;
 
-			for(count = allstart-(text-textstart); (write_left > 0) && (*text != '\0') && (count > 0); count--)
+			for (count = allstart-(text-textstart); (write_left > 0) && (*text != '\0') && (count > 0); count--)
 			{
 				*write_ptr++ = *text++;
 				write_left--;
@@ -338,7 +338,7 @@ prim_regsub(PRIM_PROTOTYPE)
 								abort_interp("Operation would result in overflow");
 							}
 
-							for(; (write_left > 0) && (count > 0) && (*ptr != '\0'); count--)
+							for (; (write_left > 0) && (count > 0) && (*ptr != '\0'); count--)
 							{
 								*write_ptr++ = *ptr++;
 								write_left--;
@@ -353,7 +353,7 @@ prim_regsub(PRIM_PROTOTYPE)
 				}
 			}
 
-			for(count = allend - allstart; (*text != '\0') && (count > 0); count--)
+			for (count = allend - allstart; (*text != '\0') && (count > 0); count--)
 				text++;
 
 			if (allstart == allend && *text) {

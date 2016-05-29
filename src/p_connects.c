@@ -53,7 +53,6 @@ void
 prim_online_array(PRIM_PROTOTYPE)
 {
 	stk_array *nu;
-	int i;
 
 	CHECKOP(0);
 	if (mlev < 3)
@@ -66,7 +65,7 @@ prim_online_array(PRIM_PROTOTYPE)
 	temp1.line = 0;
 	temp2.line = 0;
 	nu = new_array_packed(result);
-	for (i = 0; i < result; i++) {
+	for (int i = 0; i < result; i++) {
 		temp1.data.number = i;
 		temp2.data.number = pdbref(i + 1);
 		array_setitem(&nu, &temp1, &temp2);
@@ -475,7 +474,7 @@ prim_descriptors(PRIM_PROTOTYPE)
 {
 	int mydescr, mycount = 0;
 	int* darr;
-	int di, dcount;
+	int dcount;
 
 	CHECKOP(1);
 	oper1 = POP();
@@ -501,9 +500,9 @@ prim_descriptors(PRIM_PROTOTYPE)
 			result--;
         }
     } else {
-		darr = get_player_descrs(ref, &dcount);
-		CHECKOFLOW(dcount + 1);
-        for (di = 0; di < dcount; di++) {
+	darr = get_player_descrs(ref, &dcount);
+	CHECKOFLOW(dcount + 1);
+        for (int di = 0; di < dcount; di++) {
             PushInt(darr[di]);
             mycount++;
         }
@@ -516,8 +515,7 @@ prim_descr_array(PRIM_PROTOTYPE)
 {
 	stk_array *newarr;
 	int* darr;
-	int di, dcount;
-	int i;
+	int dcount;
 
 	CHECKOP(1);
 	oper1 = POP();
@@ -537,22 +535,22 @@ prim_descr_array(PRIM_PROTOTYPE)
 	temp2.type = PROG_INTEGER;
 	temp1.line = 0;
 	temp2.line = 0;
-    if (ref == NOTHING) {
+	if (ref == NOTHING) {
 		result = pcount();
 		newarr = new_array_packed(result);
-		for (i = 0; i < result; i++) {
+		for (int i = 0; i < result; i++) {
 			temp1.data.number = i;
 			temp2.data.number = pdescr(i + 1);
 			array_setitem(&newarr, &temp1, &temp2);
-        }
+        	}
 	} else {
 		darr = get_player_descrs(ref, &dcount);
 		newarr = new_array_packed(dcount);
-        for (di = 0; di < dcount; di++) {
+	        for (int di = 0; di < dcount; di++) {
 			temp1.data.number = (dcount - 1) - di;
 			temp2.data.number = darr[di];
 			array_setitem(&newarr, &temp1, &temp2);
-        }
+        	}
 	}
 	PushArrayRaw(newarr);
 }
