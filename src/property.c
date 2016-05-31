@@ -195,8 +195,6 @@ remove_proplist_item(dbref player, PropPtr p, int allp)
 			return;
 		if (ptr[0] == '_' && ptr[1] == '\0')
 			return;
-		if (PropFlags(p) & PROP_SYSPERMS)
-			return;
 	}
 	remove_property(player, ptr, 0);
 }
