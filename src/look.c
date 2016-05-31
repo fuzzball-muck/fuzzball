@@ -467,8 +467,7 @@ listprops_wildcard(dbref player, dbref thing, const char *dir, const char *wild)
 				propadr = next_prop(pptr, propadr, propname, sizeof(propname));
 				continue;
 			}
-			if (!Prop_System(buf) && ((!Prop_Hidden(buf) && !(PropFlags(propadr) & PROP_SYSPERMS))
-				|| Wizard(OWNER(player)))) {
+			if (!Prop_System(buf) && (!Prop_Hidden(buf) || Wizard(OWNER(player)))) {
 				if (!*ptr || recurse) {
 					cnt++;
 					displayprop(player, thing, buf, buf2, sizeof(buf2));

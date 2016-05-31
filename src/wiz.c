@@ -225,8 +225,7 @@ blessprops_wildcard(dbref player, dbref thing, const char *dir, const char *wild
 	while (propadr) {
 		if (equalstr(wldcrd, propname)) {
 			snprintf(buf, sizeof(buf), "%s%c%s", dir, PROPDIR_DELIMITER, propname);
-			if (!Prop_System(buf) && ((!Prop_Hidden(buf) && !(PropFlags(propadr) & PROP_SYSPERMS))
-				|| Wizard(OWNER(player)))) {
+			if (!Prop_System(buf) && (!Prop_Hidden(buf) || Wizard(OWNER(player)))) {
 				if (!*ptr || recurse) {
 					cnt++;
 					if (blessp) {

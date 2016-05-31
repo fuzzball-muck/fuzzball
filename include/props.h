@@ -46,9 +46,6 @@ typedef struct plist *PropPtr;
 #define PROP_FLTTYP   0x6
 #define PROP_TYPMASK  0x7
 
-/* half implemented.  Will be used for stuff like password props. */
-#define PROP_SYSPERMS    0x0100
-
 /* Internally used prop flags.  Never stored on disk. */
 #define PROP_ISUNLOADED  0x0200
 #define PROP_TOUCHED     0x0400
