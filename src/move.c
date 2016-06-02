@@ -152,7 +152,6 @@ int
 location_loop_check(dbref source, dbref dest)
 {   
   unsigned int level = 0;
-  unsigned int place = 0;
   dbref pstack[MAX_PARENT_DEPTH+2];
 
   if (source == dest) {
@@ -173,7 +172,7 @@ location_loop_check(dbref source, dbref dest)
       return 0;
     }
     /* Check to see if we've found this item before.. */
-    for (place = 0; place < (level+2); place++) {
+    for (unsigned int place = 0; place < (level+2); place++) {
       if (pstack[place] == dest) {
         return 1;
       }
@@ -188,7 +187,6 @@ int
 parent_loop_check(dbref source, dbref dest)
 {   
   unsigned int level = 0;
-  unsigned int place = 0;
   dbref pstack[MAX_PARENT_DEPTH+2];
 
   if (dest == HOME) {
@@ -234,7 +232,7 @@ parent_loop_check(dbref source, dbref dest)
       return 0;
     }
     /* Check to see if we've found this item before.. */
-    for (place = 0; place < (level+2); place++) {
+    for (unsigned int place = 0; place < (level+2); place++) {
       if (pstack[place] == dest) {
         return 1;
       }
@@ -422,7 +420,6 @@ can_move(int descr, dbref player, const char *direction, int lev)
 void
 trigger(int descr, dbref player, dbref exit, int pflag)
 {
-	int i;
 	dbref dest;
 	int sobjact;				/* sticky object action flag, sends home
 
@@ -433,7 +430,7 @@ trigger(int descr, dbref player, dbref exit, int pflag)
 	sobjact = 0;
 	succ = 0;
 
-	for (i = 0; i < DBFETCH(exit)->sp.exit.ndest; i++) {
+	for (int i = 0; i < DBFETCH(exit)->sp.exit.ndest; i++) {
 		dest = (DBFETCH(exit)->sp.exit.dest)[i];
 		if (dest == HOME) {
 			dest = PLAYER_HOME(player);
@@ -971,7 +968,7 @@ recycle(int descr, dbref player, dbref thing)
 		if (!Wizard(OWNER(thing)))
 			SETVALUE(OWNER(thing), GETVALUE(OWNER(thing)) + GETVALUE(thing));
 		DBDIRTY(OWNER(thing));
-		for (first = EXITS(thing); first != NOTHING; first = rest) {
+		for (dbref first = EXITS(thing); first != NOTHING; first = rest) {
 			rest = NEXTOBJ(first);
 			if (LOCATION(first) == NOTHING || LOCATION(first) == thing)
 				recycle(descr, player, first);
@@ -1034,9 +1031,9 @@ recycle(int descr, dbref player, dbref thing)
 			break;
 		case TYPE_EXIT:
 			{
-				int i, j;
+				int j;
 
-				for (i = j = 0; i < DBFETCH(rest)->sp.exit.ndest; i++) {
+				for (int i = j = 0; i < DBFETCH(rest)->sp.exit.ndest; i++) {
 					if ((DBFETCH(rest)->sp.exit.dest)[i] != thing)
 						(DBFETCH(rest)->sp.exit.dest)[j++] = (DBFETCH(rest)->sp.exit.dest)[i];
 				}

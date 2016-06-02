@@ -36,7 +36,7 @@ prim_dup(PRIM_PROTOTYPE)
 void
 prim_popn(PRIM_PROTOTYPE)
 {
-	int i, count;
+	int count;
 
 	CHECKOP(1);
 	oper1 = POP();
@@ -46,7 +46,7 @@ prim_popn(PRIM_PROTOTYPE)
 	CLEAR(oper1);
 	if (count < 0)
 		abort_interp("Operand is negative.");
-	for (i = count; i > 0; i--) {
+	for (int i = count; i > 0; i--) {
 		CHECKOP(1);
 		oper1 = POP();
 		CLEAR(oper1);
@@ -56,8 +56,6 @@ prim_popn(PRIM_PROTOTYPE)
 void
 prim_dupn(PRIM_PROTOTYPE)
 {
-	int i;
-
 	CHECKOP(1);
 	oper1 = POP();
 	if (oper1->type != PROG_INTEGER)
@@ -69,7 +67,7 @@ prim_dupn(PRIM_PROTOTYPE)
 	CHECKOP(result);
 	nargs = 0;
 	CHECKOFLOW(result);
-	for (i = result; i > 0; i--) {
+	for (int i = result; i > 0; i--) {
 		copyinst(&arg[*top - result], &arg[*top]);
 		(*top)++;
 	}
@@ -79,8 +77,6 @@ prim_dupn(PRIM_PROTOTYPE)
 void
 prim_ldup(PRIM_PROTOTYPE)
 {
-	int i;
-
 	CHECKOP_READONLY(1);
 	nargs = 0;
 
@@ -97,7 +93,7 @@ prim_ldup(PRIM_PROTOTYPE)
 	nargs = 0;
 	CHECKOFLOW(result);
 
-	for (i = result; i > 0; i--) {
+	for (int i = result; i > 0; i--) {
 		copyinst(&arg[*top - result], &arg[*top]);
 		(*top)++;
 	}
@@ -956,8 +952,6 @@ prim_trypop(PRIM_PROTOTYPE)
 void
 prim_reverse(PRIM_PROTOTYPE)
 {
-	int i;
-
 	CHECKOP(1);
 	oper1 = POP();
 	if (oper1->type != PROG_INTEGER)
@@ -967,7 +961,7 @@ prim_reverse(PRIM_PROTOTYPE)
 		abort_interp("Argument must be positive.");
 	CHECKOP(tmp);
 	if (tmp > 0) {
-		for (i = 0; i < (tmp / 2); i++) {
+		for (int i = 0; i < (tmp / 2); i++) {
 			temp2 = arg[*top - (tmp - i)];
 			arg[*top - (tmp - i)] = arg[*top - (i + 1)];
 			arg[*top - (i + 1)] = temp2;
@@ -980,8 +974,6 @@ prim_reverse(PRIM_PROTOTYPE)
 void
 prim_lreverse(PRIM_PROTOTYPE)
 {
-	int i;
-
 	CHECKOP(1);
 	oper1 = POP();
 	if (oper1->type != PROG_INTEGER)
@@ -991,7 +983,7 @@ prim_lreverse(PRIM_PROTOTYPE)
 		abort_interp("Argument must be positive.");
 	CHECKOP(tmp);
 	if (tmp > 0) {
-		for (i = 0; i < (tmp / 2); i++) {
+		for (int i = 0; i < (tmp / 2); i++) {
 			temp2 = arg[*top - (tmp - i)];
 			arg[*top - (tmp - i)] = arg[*top - (i + 1)];
 			arg[*top - (i + 1)] = temp2;

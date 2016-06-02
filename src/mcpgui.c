@@ -186,7 +186,6 @@ gui_value_set_local(const char *dlogid, const char *id, int lines, const char **
 {
 	DlogValue *ptr;
 	DlogData *ddata = gui_dlog_find(dlogid);
-	int i;
 	int limit = 256;
 
 	if (!ddata) {
@@ -200,7 +199,7 @@ gui_value_set_local(const char *dlogid, const char *id, int lines, const char **
 		}
 	}
 	if (ptr) {
-		for (i = 0; i < ptr->lines; i++) {
+		for (int i = 0; i < ptr->lines; i++) {
 			free(ptr->value[i]);
 		}
 		free(ptr->value);
@@ -215,7 +214,7 @@ gui_value_set_local(const char *dlogid, const char *id, int lines, const char **
 	ptr->lines = lines;
 	ptr->value = (char **) malloc(sizeof(char *) * lines);
 
-	for (i = 0; i < lines; i++) {
+	for (int i = 0; i < lines; i++) {
 		int vlen = strlen(value[i])+1;
 		ptr->value[i] = (char *) malloc(vlen);
 		strcpyn(ptr->value[i], vlen, value[i]);
@@ -226,10 +225,8 @@ gui_value_set_local(const char *dlogid, const char *id, int lines, const char **
 void
 gui_value_free(DlogValue * ptr)
 {
-	int i;
-
 	free(ptr->name);
-	for (i = 0; i < ptr->lines; i++) {
+	for (int i = 0; i < ptr->lines; i++) {
 		free(ptr->value[i]);
 	}
 	free(ptr->value);
@@ -254,7 +251,6 @@ gui_pkg_callback(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 	}
 	if (!string_compare(msg->mesgname, "ctrl-value")) {
 		int valcount = mcp_mesg_arg_linecount(msg, "value");
-		int i;
 		const char **value;
 
 		if (!id || !*id) {
@@ -264,7 +260,7 @@ gui_pkg_callback(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 
 		value = (const char **) malloc(sizeof(const char *) * valcount);
 
-		for (i = 0; i < valcount; i++) {
+		for (int i = 0; i < valcount; i++) {
 			value[i] = mcp_mesg_arg_getline(msg, "value", i);
 		}
 		gui_value_set_local(dlogid, id, valcount, value);
@@ -524,7 +520,6 @@ GuiTabbed(int descr,
 	McpMesg msg;
 	McpFrame *mfr = descr_mcpframe(descr);
 	const char *id;
-	int i;
 
 	if (!mfr) {
 		return NULL;
@@ -535,7 +530,7 @@ GuiTabbed(int descr,
 		mcp_mesg_arg_append(&msg, "dlogid", id);
 		mcp_mesg_arg_append(&msg, "type", "tabbed");
 		mcp_mesg_arg_append(&msg, "title", title);
-		for (i = 0; i < pagecount; i++) {
+		for (int i = 0; i < pagecount; i++) {
 			mcp_mesg_arg_append(&msg, "panes", pageids[i]);
 			mcp_mesg_arg_append(&msg, "names", pagenames[i]);
 		}
@@ -557,7 +552,6 @@ GuiHelper(int descr,
 	McpMesg msg;
 	McpFrame *mfr = descr_mcpframe(descr);
 	const char *id;
-	int i;
 
 	if (!mfr) {
 		return NULL;
@@ -568,7 +562,7 @@ GuiHelper(int descr,
 		mcp_mesg_arg_append(&msg, "dlogid", id);
 		mcp_mesg_arg_append(&msg, "type", "helper");
 		mcp_mesg_arg_append(&msg, "title", title);
-		for (i = 0; i < pagecount; i++) {
+		for (int i = 0; i < pagecount; i++) {
 			mcp_mesg_arg_append(&msg, "panes", pageids[i]);
 			mcp_mesg_arg_append(&msg, "names", pagenames[i]);
 		}
@@ -636,7 +630,6 @@ GuiSetVal(const char *dlogid, const char *id, int lines, const char **value)
 {
 	McpMesg msg;
 	McpFrame *mfr;
-	int i;
 	int descr = gui_dlog_get_descr(dlogid);
 
 	mfr = descr_mcpframe(descr);
@@ -647,7 +640,7 @@ GuiSetVal(const char *dlogid, const char *id, int lines, const char **value)
 		mcp_mesg_init(&msg, GUI_PACKAGE, "ctrl-value");
 		mcp_mesg_arg_append(&msg, "dlogid", dlogid);
 		mcp_mesg_arg_append(&msg, "id", id);
-		for (i = 0; i < lines; i++) {
+		for (int i = 0; i < lines; i++) {
 			mcp_mesg_arg_append(&msg, "value", value[i]);
 		}
 		mcp_frame_output_mesg(mfr, &msg);
@@ -666,7 +659,6 @@ GuiListInsert(const char *dlogid, const char *id, int after, int lines, const ch
 	McpMesg msg;
 	McpFrame *mfr;
 	char numbuf[32];
-	int i;
 	int descr = gui_dlog_get_descr(dlogid);
 
 	mfr = descr_mcpframe(descr);
@@ -681,7 +673,7 @@ GuiListInsert(const char *dlogid, const char *id, int after, int lines, const ch
 			snprintf(numbuf, sizeof(numbuf), "%d", after);
 			mcp_mesg_arg_append(&msg, "after", numbuf);
 		}
-		for (i = 0; i < lines; i++) {
+		for (int i = 0; i < lines; i++) {
 			mcp_mesg_arg_append(&msg, "values", value[i]);
 		}
 		mcp_frame_output_mesg(mfr, &msg);

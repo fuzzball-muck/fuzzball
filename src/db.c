@@ -180,7 +180,6 @@ int
 db_write_object(FILE * f, dbref i)
 {
 	struct object *o = DBFETCH(i);
-	int j;
 #ifdef DISKBASE
 	long tmppos;
 #endif							/* DISKBASE */
@@ -222,7 +221,7 @@ db_write_object(FILE * f, dbref i)
 
 	case TYPE_EXIT:
 		putref(f, o->sp.exit.ndest);
-		for (j = 0; j < o->sp.exit.ndest; j++) {
+		for (int j = 0; j < o->sp.exit.ndest; j++) {
 			putref(f, (o->sp.exit.dest)[j]);
 		}
 		putref(f, OWNER(i));
@@ -339,11 +338,9 @@ db_write_header(FILE *f)
 dbref
 db_write(FILE * f)
 {
-	dbref i;
-
 	db_write_header(f);
 
-	for (i = db_top; i-- > 0;) {
+	for (dbref i = db_top; i-- > 0;) {
 		if (fprintf(f, "#%d\n", i) < 0)
 			abort();
 		db_write_object(f, i);
@@ -451,10 +448,8 @@ db_free_object(dbref i)
 void
 db_free(void)
 {
-	dbref i;
-
 	if (db) {
-		for (i = 0; i < db_top; i++)
+		for (dbref i = 0; i < db_top; i++)
 			db_free_object(i);
 		free((void *) db);
 		db = 0;
@@ -594,14 +589,13 @@ db_read_object(FILE * f, dbref objno, int dtype)
 void
 autostart_progs(void)
 {
-	dbref i;
 	struct line *tmp;
 
 	if (db_conversion_flag) {
 		return;
 	}
 
-	for (i = 0; i < db_top; i++) {
+	for (dbref i = 0; i < db_top; i++) {
 		if (Typeof(i) == TYPE_PROGRAM) {
 			if ((FLAGS(i) & ABODE) && TrueWizard(OWNER(i))) {
 				/* pre-compile AUTOSTART programs. */
@@ -621,7 +615,6 @@ autostart_progs(void)
 dbref
 db_read(FILE * f)
 {
-	int i;
 	dbref grow;
 	const char *special;
 	char c;
@@ -635,7 +628,7 @@ db_read(FILE * f)
 	db_grow(grow);
 
 	c = getc(f);			/* get next char */
-	for (i = 0;; i++) {
+	for (int i = 0;; i++) {
 		switch (c) {
 		case NUMBER_TOKEN:
 			db_read_object(f, getref(f), db_load_format);

@@ -16,8 +16,7 @@
  */
 int ssl_protocol_from_string(const char *value) {
 	/* Find the desired version */
-	size_t i;
-	for (i = 0; i < SSL_PROTOCOLS_SIZE; i++)
+	for (size_t i = 0; i < SSL_PROTOCOLS_SIZE; i++)
 		if (strcmp(SSL_PROTOCOLS[i].name, value) == 0)
 			return SSL_PROTOCOLS[i].version;
 

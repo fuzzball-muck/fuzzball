@@ -59,7 +59,6 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 		dbref player;
 		char buf[BUFFER_LEN];
 		char *content;
-		int line;
 		int descr;
 
 		reference = mcp_mesg_arg_getline(msg, "reference", 0);
@@ -122,7 +121,7 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 				int len;
 
 				buf[0] = '\0';
-				for (line = 0; line < lines; line++) {
+				for (int line = 0; line < lines; line++) {
 					content = mcp_mesg_arg_getline(msg, "content", line);
 					if (line > 0) {
 						if (left >= 1) {
@@ -181,7 +180,7 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 					snprintf(buf, sizeof(buf), "%s#", reference);
 					remove_property(obj, buf, 0);
 					add_property(obj, buf, "", lines);
-					for (line = 0; line < lines; line++) {
+					for (int line = 0; line < lines; line++) {
 						content = mcp_mesg_arg_getline(msg, "content", line);
 						if (!content || !*content) {
 							content = " ";
@@ -221,7 +220,7 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 			tmpline = PROGRAM_FIRST(obj);
 			PROGRAM_SET_FIRST(obj, NULL);
 
-			for (line = 0; line < lines; line++) {
+			for (int line = 0; line < lines; line++) {
 				new_line = get_new_line();
 				content = mcp_mesg_arg_getline(msg, "content", line);
 				if (!content || !*content) {
