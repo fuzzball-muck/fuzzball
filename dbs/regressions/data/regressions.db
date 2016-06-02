@@ -1,7 +1,7 @@
 ***Foxen9 TinyMUCK DUMP Format***
 31
 1
-124
+123
 autolook_cmd=look
 cpennies=Pennies
 cpenny=Penny
@@ -119,7 +119,6 @@ playermax=no
 lock_envcheck=no
 look_propqueues=no
 show_legacy_props=no
-sync_legacy_props=no
 registration=yes
 %server_cipher_preference=yes
 periodic_program_purge=yes
