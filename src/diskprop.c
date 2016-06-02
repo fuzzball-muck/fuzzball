@@ -225,13 +225,13 @@ void
 update_fetchstats(void)
 {
 	time_t now;
-	int slot, i;
+	int slot;
 
 	now = time(NULL);
 	slot = ((now / FETCHSTATS_SLOT_TIME) % FETCHSTATS_SLOTS);
 	if (slot != lastfetchslot) {
 		if (lastfetchslot == -1) {
-			for (i = 0; i < FETCHSTATS_SLOTS; i++) {
+			for (int i = 0; i < FETCHSTATS_SLOTS; i++) {
 				fetchstats[i] = -1;
 			}
 		}
@@ -415,10 +415,9 @@ disposeprops(dbref obj)
 void
 dispose_all_oldprops(void)
 {
-	dbref i;
 	time_t now = time(NULL);
 
-	for (i = 0; i < db_top; i++) {
+	for (dbref i = 0; i < db_top; i++) {
 		if ((now - DBFETCH(i)->propstime) >= tp_clean_interval)
 			disposeprops_notime(i);
 	}

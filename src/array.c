@@ -60,7 +60,7 @@ array_tree_compare_arrays(array_iter * a, array_iter * b, int case_sens)
 
 	more1 = array_first(a->data.array, &idx1);
 	more2 = array_first(b->data.array, &idx2);
-	for(;;) {
+	for (;;) {
 		if (more1 && more2) {
 			val1 = array_getitem(a->data.array, &idx1);
 			val2 = array_getitem(b->data.array, &idx2);
@@ -583,7 +583,6 @@ stk_array *
 new_array_packed(int size)
 {
 	stk_array *nu;
-	int i;
 
 	if (size < 0) {
 		return NULL;
@@ -600,7 +599,7 @@ new_array_packed(int size)
 		fprintf(stderr, "new_array_packed(): Out of Memory!");
 		abort();
 	}
-	for (i = size; i-- > 0;) {
+	for (int i = size; i-- > 0;) {
 		nu->data.packed[i].type = PROG_INTEGER;
 		nu->data.packed[i].line = 0;
 		nu->data.packed[i].data.number = 0;
@@ -648,15 +647,13 @@ array_decouple(stk_array * arr)
 	nu->type = arr->type;
 	switch (arr->type) {
 	case ARRAY_PACKED:{
-			int i;
-
 			nu->items = arr->items;
 			nu->data.packed = (array_data *) malloc(sizeof(array_data) * arr->items);
 			if(nu->data.packed == NULL) {
 				fprintf(stderr, "array_decouple(): Out of Memory!");
 				abort();
 			}
-			for (i = arr->items; i-- > 0;) {
+			for (int i = arr->items; i-- > 0;) {
 				copyinst(&arr->data.packed[i], &nu->data.packed[i]);
 			}
 			return nu;
@@ -687,7 +684,6 @@ stk_array *
 array_promote(stk_array * arr)
 {
 	stk_array *nu;
-	int i;
 	array_iter idx;
 
 	if (arr == NULL) {
@@ -701,7 +697,7 @@ array_promote(stk_array * arr)
 	assert(nu != NULL);
 
 	idx.type = PROG_INTEGER;
-	for (i = 0; i < arr->items; i++) {
+	for (int i = 0; i < arr->items; i++) {
 		idx.data.number = i;
 		array_setitem(&nu, &idx, array_getitem(arr, &idx));
 	}
@@ -723,9 +719,7 @@ array_free(stk_array * arr)
 	}
 	switch (arr->type) {
 	case ARRAY_PACKED:{
-			int i;
-			
-			for (i = arr->items; i-- > 0;) {
+			for (int i = arr->items; i-- > 0;) {
 				CLEAR(&arr->data.packed[i]);
 			}
 			free(arr->data.packed);
@@ -815,9 +809,7 @@ array_contains_value(stk_array * arr, array_data * item)
 	}
 	switch (arr->type) {
 	case ARRAY_PACKED:{
-			int i;
-
-			for (i = arr->items; i-- > 0;) {
+			for (int i = arr->items; i-- > 0;) {
 				if (!array_tree_compare(&arr->data.packed[i], item, 0)) {
 					return 1;
 				}

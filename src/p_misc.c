@@ -238,8 +238,6 @@ prim_force(PRIM_PROTOTYPE)
 	struct inst *oper1 = NULL; /* prevents re-entrancy issues! */
 	struct inst *oper2 = NULL; /* prevents re-entrancy issues! */
 
-	int i;
-
 	/* d s -- */
 	CHECKOP(2);
 	oper1 = POP();				/* string to @force */
@@ -272,7 +270,7 @@ prim_force(PRIM_PROTOTYPE)
 	force_level--;
 	force_prog = NOTHING;
 
-	for (i = 1; i <= fr->caller.top; i++) {
+	for (int i = 1; i <= fr->caller.top; i++) {
 		if (Typeof(fr->caller.st[i]) != TYPE_PROGRAM) {
 #ifdef DEBUG
 			char str[BUFFER_LEN];
@@ -318,7 +316,6 @@ struct tryvars *copy_trys(struct tryvars *);
 void
 prim_fork(PRIM_PROTOTYPE)
 {
-	int i;
 	struct frame *tmpfr;
 
 	CHECKOP(0);
@@ -333,15 +330,15 @@ prim_fork(PRIM_PROTOTYPE)
 	tmpfr->next = NULL;
 
 	tmpfr->system.top = fr->system.top;
-	for (i = 0; i < fr->system.top; i++)
+	for (int i = 0; i < fr->system.top; i++)
 		tmpfr->system.st[i] = fr->system.st[i];
 
 	tmpfr->argument.top = fr->argument.top;
-	for (i = 0; i < fr->argument.top; i++)
+	for (int i = 0; i < fr->argument.top; i++)
 		copyinst(&fr->argument.st[i], &tmpfr->argument.st[i]);
 
 	tmpfr->caller.top = fr->caller.top;
-	for (i = 0; i <= fr->caller.top; i++) {
+	for (int i = 0; i <= fr->caller.top; i++) {
 		tmpfr->caller.st[i] = fr->caller.st[i];
 		if (i > 0)
 			PROGRAM_INC_INSTANCES(fr->caller.st[i]);
@@ -353,7 +350,7 @@ prim_fork(PRIM_PROTOTYPE)
 	tmpfr->fors.top = fr->fors.top;
 	tmpfr->fors.st = copy_fors(fr->fors.st);
 
-	for (i = 0; i < MAX_VAR; i++)
+	for (int i = 0; i < MAX_VAR; i++)
 		copyinst(&fr->variables[i], &tmpfr->variables[i]);
 
 	localvar_dupall(tmpfr, fr);
@@ -457,12 +454,11 @@ prim_stats(PRIM_PROTOTYPE)
 	ref = oper1->data.objref;
 	CLEAR(oper1);
 	{
-		dbref i;
 		int rooms, exits, things, players, programs, garbage;
 
 		/* tmp, ref */
 		rooms = exits = things = players = programs = garbage = 0;
-		for (i = 0; i < db_top; i++) {
+		for (dbref i = 0; i < db_top; i++) {
 			if (ref == NOTHING || OWNER(i) == ref) {
 				switch (Typeof(i)) {
 				case TYPE_ROOM:

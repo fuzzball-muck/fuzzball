@@ -51,9 +51,7 @@ static int err_init = 0;
 void
 init_err_val(void)
 {
-	int i;
-
-	for (i = 0; i < ERROR_NUM; i++)
+	for (int i = 0; i < ERROR_NUM; i++)
 		err_bits[i].is_flags = 0;
 	err_bits[0].error_flags.div_zero = 1;
 	err_bits[1].error_flags.nan = 1;
