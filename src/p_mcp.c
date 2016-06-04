@@ -438,7 +438,7 @@ prim_mcp_bind(PRIM_PROTOTYPE)
 	}
 
 	pkgname = oper1->data.string->data;
-	msgname = oper2->data.string ? oper2->data.string->data : "";
+	msgname = DoNullInd(oper2->data.string);
 
 	for (ptr = PROGRAM_MCPBINDS(program); ptr; ptr = ptr->next) {
 		if (ptr->pkgname && ptr->msgname) {
@@ -495,7 +495,7 @@ prim_mcp_send(PRIM_PROTOTYPE)
 		abort_interp("Arguments dictionary expected. (4)");
 
 	pkgname = oper1->data.string->data;
-	msgname = oper2->data.string ? oper2->data.string->data : "";
+	msgname = DoNullInd(oper2->data.string);
 	arr = oper3->data.array;
 	descr = oper4->data.number;
 
@@ -703,7 +703,7 @@ prim_gui_dlog_create(PRIM_PROTOTYPE)
 	if (oper4->type != PROG_ARRAY)
 		abort_interp("Window options array expected. (4)");
 
-	title = oper3->data.string ? oper3->data.string->data : "";
+	title = DoNullInd(oper3->data.string);
 	wintype = oper2->data.string ? oper2->data.string->data : "simple";
 	arr = oper4->data.array;
 	mfr = descr_mcpframe(oper1->data.number);
@@ -1021,7 +1021,7 @@ prim_gui_value_set(PRIM_PROTOTYPE)
 		count = 1;
 		valarray = (char **) malloc(sizeof(char *) * count);
 
-		value = oper3->data.string ? oper3->data.string->data : "";
+		value = DoNullInd(oper3->data.string);
 		valarray[0] = string_dup(value);
 	} else {
 		count = array_count(oper3->data.array);

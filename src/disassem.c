@@ -31,7 +31,7 @@ disassemble(dbref player, dbref program)
 			break;
 		case PROG_STRING:
 			snprintf(buf, sizeof(buf), "%d: (line %d) STRING: \"%s\"", i, curr->line,
-					curr->data.string ? curr->data.string->data : "");
+					DoNullInd(curr->data.string));
 			break;
 		case PROG_ARRAY:
 			snprintf(buf, sizeof(buf), "%d: (line %d) ARRAY: %d items", i, curr->line,

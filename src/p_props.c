@@ -884,7 +884,7 @@ prim_parseprop(PRIM_PROTOTYPE)
 #endif
 
 	}
-	ptr = (oper2->data.string) ? oper2->data.string->data : "";
+	ptr = DoNullInd(oper2->data.string);
 	if (temp) {
 		result = 0;
 		if (oper4->data.number)

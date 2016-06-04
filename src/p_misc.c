@@ -709,7 +709,7 @@ prim_setsysparm(PRIM_PROTOTYPE)
 	/* Duplicate the string, otherwise the oldvalue pointer will be overridden to the new value
 	   when tune_setparm() is called. */
 	oldvalue = string_dup(tune_get_parmstring(oper2->data.string->data, security));
-	newvalue = oper1->data.string ? oper1->data.string->data : "";
+	newvalue = DoNullInd(oper1->data.string);
 
 	result = tune_setparm(parmname, newvalue, security);
 
