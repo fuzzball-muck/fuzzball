@@ -130,8 +130,8 @@ array_tree_compare(array_iter * a, array_iter * b, int case_sens)
 			return -1;
 		}
 	} else if (a->type == PROG_STRING) {
-		char *astr = (a->data.string) ? a->data.string->data : "";
-		char *bstr = (b->data.string) ? b->data.string->data : "";
+		char *astr = DoNullInd(a->data.string);
+		char *bstr = DoNullInd(b->data.string);
 
 		if (0 != case_sens) {
 			return strcmp(astr, bstr);

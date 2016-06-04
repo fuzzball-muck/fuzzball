@@ -225,8 +225,7 @@ prim_fmtstring(PRIM_PROTOTYPE)
 					strcatn(sfmt, sizeof(sfmt), "s");
 					if (oper2->type != PROG_STRING)
 						abort_interp("Format specified string argument not found.");
-					snprintf(tbuf, sizeof(tbuf), sfmt,
-							((oper2->data.string) ? oper2->data.string->data : ""));
+					snprintf(tbuf, sizeof(tbuf), sfmt, DoNullInd(oper2->data.string));
 					tlen = strlen(tbuf);
 					if (slrj == 2) {
 						tnum = 0;

@@ -1517,7 +1517,7 @@ prim_checkpassword(PRIM_PROTOTYPE)
 		abort_interp("Player dbref expected. (1)");
 	if (oper2->type != PROG_STRING)
 		abort_interp("Password string expected. (2)");
-	ptr = oper2->data.string ? oper2->data.string->data : "";
+	ptr = DoNullInd(oper2->data.string);
 	if (ref != NOTHING) {
 		result = check_password(ref, ptr);
 	} else {

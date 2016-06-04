@@ -768,7 +768,7 @@ prim_interp(PRIM_PROTOTYPE)
 	CHECKREMOTE(oper2->data.objref);
 
 	strcpyn(buf, sizeof(buf), match_args);
-	strcpyn(match_args, sizeof(match_args), oper3->data.string ? oper3->data.string->data : "");
+	strcpyn(match_args, sizeof(match_args), DoNullInd(oper3->data.string));
 	tmpfr = interp(fr->descr, player, LOCATION(player), oper1->data.objref,
 				   oper2->data.objref, PREEMPT, STD_HARDUID, 0);
 	if (tmpfr) {

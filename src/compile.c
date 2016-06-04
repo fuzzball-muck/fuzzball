@@ -876,7 +876,7 @@ IntermediateIsString(struct INTERMEDIATE* ptr, const char* val)
 	const char* myval;
 
 	if (ptr && ptr->in.type == PROG_STRING) {
-		myval = ptr->in.data.string? ptr->in.data.string->data : "";
+		myval = DoNullInd(ptr->in.data.string);
 		if (!strcmp(myval, val)) {
 			return 1;
 		}
