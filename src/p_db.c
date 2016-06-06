@@ -1451,8 +1451,7 @@ prim_setlockstr(PRIM_PROTOTYPE)
 	ref = oper2->data.objref;
 	if ((mlev < 4) && !permissions(ProgUID, ref))
 		abort_interp("Permission denied.");
-	result = setlockstr(fr->descr, player, ref,
-						oper1->data.string ? oper1->data.string->data : (char *) "");
+	result = setlockstr(fr->descr, player, ref, DoNullInd(oper1->data.string));
 	CLEAR(oper1);
 	CLEAR(oper2);
 	PushInt(result);

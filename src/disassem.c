@@ -39,7 +39,7 @@ disassemble(dbref player, dbref program)
 			break;
 		case PROG_FUNCTION:
 			snprintf(buf, sizeof(buf), "%d: (line %d) FUNCTION: %s, VARS: %d, ARGS: %d", i, curr->line,
-					curr->data.mufproc->procname ? curr->data.mufproc->procname : "",
+					DoNull(curr->data.mufproc->procname),
 					curr->data.mufproc->vars, curr->data.mufproc->args);
 			break;
 		case PROG_LOCK:

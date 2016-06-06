@@ -1045,7 +1045,7 @@ do_tune(dbref player, char *parmname, char *parmval, int full_command_has_delimi
 				notify(player, "Parameter reset to default.");
 			} else {
 				log_status("TUNED: %s(%d) tuned %s from '%s' to '%s'",
-				   NAME(player), player, parmname, oldvalue, parmval ? parmval : "");
+				   NAME(player), player, parmname, oldvalue, DoNull(parmval));
 				notify(player, "Parameter set.");
 			}
 			tune_display_parms(player, parmname, security, 0);
