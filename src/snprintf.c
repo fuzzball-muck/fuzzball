@@ -1129,14 +1129,13 @@ main (void)
     NULL
   };
   LLONG llint_nums[] = { -1, 134, 91340, 87359837092359824ll, 341, 0203, 0};
-  int x, y;
   int fail = 0;
   int num = 0;
 
   printf ("Testing snprintf format codes against system sprintf...\n");
 
-  for (x = 0; fp_fmt[x] != NULL ; x++)
-    for (y = 0; fp_nums[y] != 0 ; y++)
+  for (int x = 0; fp_fmt[x] != NULL ; x++)
+    for (int y = 0; fp_nums[y] != 0 ; y++)
     {
       snprintf (buf1, sizeof (buf1), fp_fmt[x], fp_nums[y]);
       sprintf (buf2, fp_fmt[x], fp_nums[y]);
@@ -1149,8 +1148,8 @@ main (void)
       num++;
     }
 
-  for (x = 0; int_fmt[x] != NULL ; x++)
-    for (y = 0; int_nums[y] != 0 ; y++)
+  for (int x = 0; int_fmt[x] != NULL ; x++)
+    for (int y = 0; int_nums[y] != 0 ; y++)
     {
       snprintf (buf1, sizeof (buf1), int_fmt[x], int_nums[y]);
       sprintf (buf2, int_fmt[x], int_nums[y]);
@@ -1163,8 +1162,8 @@ main (void)
       num++;
     }
 
-  for (x = 0; llint_fmt[x] != NULL ; x++)
-    for (y = 0; llint_nums[y] != 0 ; y++)
+  for (int x = 0; llint_fmt[x] != NULL ; x++)
+    for (int y = 0; llint_nums[y] != 0 ; y++)
     {
       snprintf (buf1, sizeof (buf1), llint_fmt[x], llint_nums[y]);
       sprintf (buf2, llint_fmt[x], llint_nums[y]);

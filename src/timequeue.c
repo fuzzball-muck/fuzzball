@@ -709,8 +709,6 @@ next_event_time(void)
 static int
 has_refs(dbref program, timequeue ptr)
 {
-	int loop;
-
 	if (!ptr) {
 		log_status("WARNING: has_refs(): NULL ptr passed !  Ignored.");
 		return 0;
@@ -720,12 +718,12 @@ has_refs(dbref program, timequeue ptr)
 		Typeof(program) != TYPE_PROGRAM || !(PROGRAM_INSTANCES(program)))
 		return 0;
 
-	for (loop = 1; loop < ptr->fr->caller.top; loop++) {
+	for (int loop = 1; loop < ptr->fr->caller.top; loop++) {
 		if (ptr->fr->caller.st[loop] == program)
 			return 1;
 	}
 
-	for (loop = 0; loop < ptr->fr->argument.top; loop++) {
+	for (int loop = 0; loop < ptr->fr->argument.top; loop++) {
 		if (ptr->fr->argument.st[loop].type == PROG_ADD &&
 			ptr->fr->argument.st[loop].data.addr->progref == program)
 			return 1;
@@ -1261,18 +1259,18 @@ int
 scan_instances(dbref program)
 {
 	timequeue tq = tqhead;
-	int i = 0, loop;
+	int i = 0;
 
 	while (tq) {
 		if (tq->typ == TQ_MUF_TYP && tq->fr) {
 			if (tq->called_prog == program) {
 				i++;
 			}
-			for (loop = 1; loop < tq->fr->caller.top; loop++) {
+			for (int loop = 1; loop < tq->fr->caller.top; loop++) {
 				if (tq->fr->caller.st[loop] == program)
 					i++;
 			}
-			for (loop = 0; loop < tq->fr->argument.top; loop++) {
+			for (int loop = 0; loop < tq->fr->argument.top; loop++) {
 				if (tq->fr->argument.st[loop].type == PROG_ADD &&
 					tq->fr->argument.st[loop].data.addr->progref == program)
 					i++;

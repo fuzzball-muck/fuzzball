@@ -33,8 +33,6 @@ static struct mufevent_process {
 static void
 muf_event_process_free(struct mufevent_process *ptr)
 {
-	int i;
-
 	if (ptr->next) {
 		ptr->next->prev = ptr->prev;
 	}
@@ -55,7 +53,7 @@ muf_event_process_free(struct mufevent_process *ptr)
 	}
 	ptr->prog = NOTHING;
 	if (ptr->filters) {
-		for (i = 0; i < ptr->filtercount; i++) {
+		for (int i = 0; i < ptr->filtercount; i++) {
 			if (ptr->filters[i]) {
 				free(ptr->filters[i]);
 				ptr->filters[i] = NULL;
@@ -81,8 +79,6 @@ muf_event_register_specific(dbref player, dbref prog, struct frame *fr, int even
 {
 	struct mufevent_process *newproc;
 	struct mufevent_process *ptr;
-	int i;
-
 
 	newproc = (struct mufevent_process *) malloc(sizeof(struct mufevent_process));
 
@@ -95,7 +91,7 @@ muf_event_register_specific(dbref player, dbref prog, struct frame *fr, int even
 	newproc->filtercount = eventcount;
 	if (eventcount > 0) {
 		newproc->filters = (char**) malloc(eventcount * sizeof(char**));
-		for (i = 0; i < eventcount; i++) {
+		for (int i = 0; i < eventcount; i++) {
 			newproc->filters[i] = string_dup(eventids[i]);
 		}
 	} else {
@@ -191,7 +187,6 @@ muf_event_dequeue_pid(int pid)
 static int
 event_has_refs(dbref program, struct mufevent_process *proc)
 {
-	int loop;
 	struct frame* fr = NULL;
 	
 	if (proc->deleted) {
@@ -203,14 +198,14 @@ event_has_refs(dbref program, struct mufevent_process *proc)
 	}
 
 
-	for (loop = 1; loop < fr->caller.top; loop++) {
+	for (int loop = 1; loop < fr->caller.top; loop++) {
 		if (fr->caller.st[loop] == program) {
 			return 1;
 		}
 	}
 
 
-	for (loop = 0; loop < fr->argument.top; loop++) {
+	for (int loop = 0; loop < fr->argument.top; loop++) {
 		if (fr->argument.st[loop].type == PROG_ADD &&
 			fr->argument.st[loop].data.addr->progref == program) {
 			return 1;
@@ -400,7 +395,6 @@ get_mufevent_pidinfo(stk_array* nw, int pid)
 	time_t      rtime = time(NULL);
 	time_t      etime = 0;
 	double      pcnt  = 0.0;
-	int         i;
 
 	struct mufevent_process *proc = mufevent_processes;
 	while (proc && (proc->deleted || proc->fr->pid != pid)) {
@@ -507,7 +501,7 @@ get_mufevent_pidinfo(stk_array* nw, int pid)
 		temp1.type = PROG_STRING;
 		temp1.data.string = alloc_prog_string("FILTERS");
 		arr = new_array_packed(0);
-		for (i = 0; i < proc->filtercount; i++) {
+		for (int i = 0; i < proc->filtercount; i++) {
 			array_set_intkey_strval(&arr, i, proc->filters[i]);
 		}
 		temp2.type = PROG_ARRAY;
@@ -622,9 +616,8 @@ muf_event_pop_specific(struct frame *fr, int eventcount, char **events)
 {
 	struct mufevent *tmp = NULL;
 	struct mufevent *ptr = NULL;
-	int i;
 
-	for (i = 0; i < eventcount; i++) {
+	for (int i = 0; i < eventcount; i++) {
 		if (fr->events && equalstr(events[i], fr->events->event)) {
 			tmp = fr->events;
 			fr->events = tmp->next;
@@ -634,7 +627,7 @@ muf_event_pop_specific(struct frame *fr, int eventcount, char **events)
 
 	ptr = fr->events;
 	while (ptr && ptr->next) {
-		for (i = 0; i < eventcount; i++) {
+		for (int i = 0; i < eventcount; i++) {
 			if (equalstr(events[i], ptr->next->event)) {
 				tmp = ptr->next;
 				ptr->next = tmp->next;
@@ -778,8 +771,7 @@ muf_event_process(void)
 				 * backgrounded */
 
 				if (proc->fr->been_background) {
-					int cnt = 0;
-					for(cnt = 0; cnt < proc->filtercount; cnt++) {
+					for (int cnt = 0; cnt < proc->filtercount; cnt++) {
 						if(0==strcasecmp(proc->filters[cnt],"READ")) {
 					/* It's a backgrounded process, waiting for a READ...
 					 * should we throw an error?  Should we push a

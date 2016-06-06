@@ -30,7 +30,6 @@ void
 prim_array_make(PRIM_PROTOTYPE)
 {
 	stk_array *nu;
-	int i;
 
 	CHECKOP(1);
 	oper1 = POP();
@@ -48,7 +47,7 @@ prim_array_make(PRIM_PROTOTYPE)
 	temp1.type = PROG_INTEGER;
 	temp1.line = 0;
 	nu = new_array_packed(result);
-	for (i = result; i-- > 0;) {
+	for (int i = result; i-- > 0;) {
 		temp1.data.number = i;
 		CHECKOP(1);
 		oper1 = POP();
@@ -65,7 +64,6 @@ void
 prim_array_make_dict(PRIM_PROTOTYPE)
 {
 	stk_array *nu;
-	int i;
 
 	CHECKOP(1);
 	oper1 = POP();
@@ -81,7 +79,7 @@ prim_array_make_dict(PRIM_PROTOTYPE)
 		abort_interp("Stack underflow.");
 
 	nu = new_array_dictionary();
-	for (i = result; i-- > 0;) {
+	for (int i = result; i-- > 0;) {
 		CHECKOP(2);
 		oper1 = POP();			/* val */
 		oper2 = POP();			/* key */
@@ -641,7 +639,6 @@ prim_array_n_union(PRIM_PROTOTYPE)
 {
 	stk_array *new_union;
 	stk_array *new_mash;
-	int num_arrays;
 
 	CHECKOP(1);
 	oper1 = POP();
@@ -658,7 +655,7 @@ prim_array_n_union(PRIM_PROTOTYPE)
 
 	if (result > 0) {
 		new_mash = new_array_dictionary();
-		for (num_arrays = 0; num_arrays < result; num_arrays++) {
+		for (int num_arrays = 0; num_arrays < result; num_arrays++) {
 			CHECKOP(1);
 			oper1 = POP();
 			if (oper1->type != PROG_ARRAY) {
@@ -683,7 +680,6 @@ prim_array_n_intersection(PRIM_PROTOTYPE)
 	stk_array *new_union;
 	stk_array *new_mash;
 	stk_array *temp_mash;
-	int num_arrays;
 
 	CHECKOP(1);
 	oper1 = POP();
@@ -700,7 +696,7 @@ prim_array_n_intersection(PRIM_PROTOTYPE)
 
 	if (result > 0) {
 		new_mash = new_array_dictionary();
-		for (num_arrays = 0; num_arrays < result; num_arrays++) {
+		for (int num_arrays = 0; num_arrays < result; num_arrays++) {
 			oper1 = POP();
 			if (oper1->type != PROG_ARRAY) {
 				array_free(new_mash);
@@ -730,7 +726,6 @@ prim_array_n_difference(PRIM_PROTOTYPE)
 {
 	stk_array *new_union;
 	stk_array *new_mash;
-	int num_arrays;
 
 	CHECKOP(1);
 	oper1 = POP();
@@ -756,7 +751,7 @@ prim_array_n_difference(PRIM_PROTOTYPE)
 		array_mash(oper1->data.array, &new_mash, 1);
 		CLEAR(oper1);
 
-		for (num_arrays = 1; num_arrays < result; num_arrays++) {
+		for (int num_arrays = 1; num_arrays < result; num_arrays++) {
 			oper1 = POP();
 			if (oper1->type != PROG_ARRAY) {
 				array_free(new_mash);
@@ -835,7 +830,6 @@ prim_array_reverse(PRIM_PROTOTYPE)
 {
 	stk_array *arr;
 	stk_array *nu;
-	int i;
 
 	CHECKOP(1);
 	oper1 = POP();				/* arr  Array   */
@@ -850,7 +844,7 @@ prim_array_reverse(PRIM_PROTOTYPE)
 
 	temp1.type = PROG_INTEGER;
 	temp2.type = PROG_INTEGER;
-	for (i = 0; i < result; i++) {
+	for (int i = 0; i < result; i++) {
 		temp1.data.number = i;
 		temp2.data.number = (result - i) - 1;
 		array_setitem(&nu, &temp1, array_getitem(arr, &temp2));
@@ -912,7 +906,7 @@ prim_array_sort(PRIM_PROTOTYPE)
 {
 	stk_array *arr;
 	stk_array *nu;
-	int count, i;
+	int count;
 	int (*comparator)(const void*, const void*);
 	struct inst** tmparr = NULL;
 
@@ -933,7 +927,7 @@ prim_array_sort(PRIM_PROTOTYPE)
 	nu = new_array_packed(count);
 	tmparr = (struct inst**)malloc(count * sizeof(struct inst*));
 
-	for (i = 0; i < count; i++) {
+	for (int i = 0; i < count; i++) {
 		temp1.data.number = i;
 		tmparr[i] = array_getitem(arr, &temp1);
 	}
@@ -954,7 +948,7 @@ prim_array_sort(PRIM_PROTOTYPE)
 	/* WORK: if we go multithreaded, the mutex should be released here. */
 	/*       Share this mutex with ARRAY_SORT_INDEXED. */
 
-	for (i = 0; i < count; i++) {
+	for (int i = 0; i < count; i++) {
 		temp1.data.number = i;
 		array_setitem(&nu, &temp1, tmparr[i]);
 	}
@@ -978,7 +972,7 @@ prim_array_sort_indexed(PRIM_PROTOTYPE)
 {
 	stk_array *arr;
 	stk_array *nu;
-	int count, i;
+	int count;
 	int (*comparator)(const void*, const void*);
 	struct inst** tmparr = NULL;
 
@@ -1005,7 +999,7 @@ prim_array_sort_indexed(PRIM_PROTOTYPE)
 	nu = new_array_packed(count);
 	tmparr = (struct inst**)malloc(count * sizeof(struct inst*));
 
-	for (i = 0; i < count; i++) {
+	for (int i = 0; i < count; i++) {
 		temp1.data.number = i;
 		tmparr[i] = array_getitem(arr, &temp1);
 	}
@@ -1026,7 +1020,7 @@ prim_array_sort_indexed(PRIM_PROTOTYPE)
 	/* WORK: if we go multithreaded, the mutex should be released here. */
 	/*       Share this mutex with ARRAY_SORT. */
 
-	for (i = 0; i < count; i++) {
+	for (int i = 0; i < count; i++) {
 		temp1.data.number = i;
 		array_setitem(&nu, &temp1, tmparr[i]);
 	}
@@ -2190,7 +2184,7 @@ prim_array_nested_get(PRIM_PROTOTYPE)
 	struct inst *dat;
 	struct inst temp;
 	stk_array *idxarr;
-	int i, idxcnt;
+	int idxcnt;
 
 	CHECKOP(2);
 	oper1 = POP();				/* arr  IndexList */
@@ -2205,7 +2199,7 @@ prim_array_nested_get(PRIM_PROTOTYPE)
 	idxarr = oper1->data.array;
 	idxcnt = array_count(idxarr);
 	dat = oper2;
-	for (i = 0; dat && i < idxcnt; i++) {
+	for (int i = 0; dat && i < idxcnt; i++) {
 		temp1.type = PROG_INTEGER;
 		temp1.data.number = i;
 		idx = array_getitem(idxarr, &temp1);
@@ -2242,7 +2236,7 @@ prim_array_nested_set(PRIM_PROTOTYPE)
 	struct inst temp;
 	stk_array *arr;
 	stk_array *idxarr;
-	size_t i, idxcnt;
+	size_t idxcnt;
 
 	CHECKOP(3);
 	oper1 = POP();				/* arr  IndexList */
@@ -2264,7 +2258,7 @@ prim_array_nested_set(PRIM_PROTOTYPE)
 		copyinst(oper2, &nest[0]);
 	} else {
 		dat = oper2;
-		for (i = 0; i < idxcnt; i++) {
+		for (size_t i = 0; i < idxcnt; i++) {
 			copyinst(dat, &nest[i]);
 			temp.type = PROG_INTEGER;
 			temp.data.number = i;
@@ -2291,7 +2285,7 @@ prim_array_nested_set(PRIM_PROTOTYPE)
 		}
 
 		array_setitem(&nest[idxcnt-1].data.array, idx, oper3);
-		for (i = idxcnt - 1; i--> 0;) {
+		for (size_t i = idxcnt - 1; i--> 0;) {
 			temp.type = PROG_INTEGER;
 			temp.data.number = i;
 			idx = array_getitem(idxarr, &temp);
@@ -2319,7 +2313,7 @@ prim_array_nested_del(PRIM_PROTOTYPE)
 	struct inst *dat;
 	struct inst temp;
 	stk_array *idxarr;
-	size_t i, idxcnt;
+	size_t idxcnt;
 
 	CHECKOP(2);
 	oper1 = POP();				/* arr  IndexList */
@@ -2341,7 +2335,7 @@ prim_array_nested_del(PRIM_PROTOTYPE)
 	} else {
 		int doneearly = 0;
 		dat = oper2;
-		for (i = 0; i < idxcnt; i++) {
+		for (size_t i = 0; i < idxcnt; i++) {
 			copyinst(dat, &nest[i]);
 			temp.type = PROG_INTEGER;
 			temp.data.number = i;
@@ -2361,7 +2355,7 @@ prim_array_nested_del(PRIM_PROTOTYPE)
 		}
 		if (!doneearly) {
 			array_delitem(&nest[idxcnt-1].data.array, idx);
-			for (i = idxcnt - 1; i--> 0;) {
+			for (size_t i = idxcnt - 1; i--> 0;) {
 				temp.type = PROG_INTEGER;
 				temp.data.number = i;
 				idx = array_getitem(idxarr, &temp);
@@ -2424,7 +2418,7 @@ prim_array_notify_secure(PRIM_PROTOTYPE)
 	struct inst temp2, temp3;
 
         int* darr;
-        int di, dcount;
+        int dcount;
 
         if (mlev < 3)
                 abort_interp("Mucker level 3 primitive.");
@@ -2452,7 +2446,7 @@ prim_array_notify_secure(PRIM_PROTOTYPE)
 
 			darr = get_player_descrs(ref, &dcount);
 
-			for (di = 0; di < dcount; di++) {
+			for (int di = 0; di < dcount; di++) {
 				if (pdescrsecure(darr[di])) {
 					if (array_first(strarr, &temp2)) {
 						do {

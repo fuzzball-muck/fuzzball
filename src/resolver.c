@@ -810,7 +810,6 @@ void *resolver_thread_root(void* threadid)
 int main(int argc, char **argv)
 {
 	pthread_t threads[NUM_THREADS];
-	long i;
 
 	if (argc > 1) {
 		fprintf(stderr, "Usage: %s\n", *argv);
@@ -821,14 +820,14 @@ int main(int argc, char **argv)
 	set_signals();
 
 	/* go do it */
-	for(i = 0; i < NUM_THREADS; i++){
+	for (long i = 0; i < NUM_THREADS; i++) {
 		int rc = pthread_create(&threads[i], NULL, resolver_thread_root, (void *)i);
-		if (rc){
+		if (rc) {
 			printf("ERROR; return code from pthread_create() is %d\n", rc);
 			exit(-1);
 		}
 	}
-	for(i = 0; i < NUM_THREADS; i++){
+	for (long i = 0; i < NUM_THREADS; i++) {
 		void* retval;
 	    pthread_join(threads[i], &retval);
 	}

@@ -426,7 +426,7 @@ db_free_object(dbref i)
         if (PLAYER_PASSWORD(i)) {
 			free((void*)PLAYER_PASSWORD(i));
         }
-        if (PLAYER_DESCRS(i)){ 
+        if (PLAYER_DESCRS(i)) {
 			free(PLAYER_DESCRS(i));
 			PLAYER_SET_DESCRS(i, NULL);
 			PLAYER_SET_DESCRCOUNT(i, 0);

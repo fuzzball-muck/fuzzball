@@ -787,7 +787,7 @@ prog_clean(struct frame *fr)
 	watchpid_process (fr);
 
 	fr->system.top = 0;
-	for (i = 0; i < fr->argument.top; i++){
+	for (i = 0; i < fr->argument.top; i++) {
 		CLEAR(&fr->argument.st[i]);
 	}
 

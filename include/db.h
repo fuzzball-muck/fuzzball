@@ -838,7 +838,7 @@ extern void db_free(void);
 extern dbref parse_dbref(const char *);	/* parse a dbref */
 
 #define DOLIST(var, first) \
-  for((var) = (first); (var) != NOTHING; (var) = DBFETCH(var)->next)
+  for ((var) = (first); (var) != NOTHING; (var) = DBFETCH(var)->next)
 #define PUSH(thing, locative) \
     {DBSTORE((thing), next, (locative)); (locative) = (thing);}
 

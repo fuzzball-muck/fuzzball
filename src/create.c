@@ -68,14 +68,11 @@ parse_linkable_dest(int descr, dbref player, dbref exit, const char *dest_name)
 int
 exit_loop_check(dbref source, dbref dest)
 {
-
-	int i;
-
 	if (source == dest)
 		return 1;				/* That's an easy one! */
 	if (dest == NIL || Typeof(dest) != TYPE_EXIT)
 		return 0;
-	for (i = 0; i < DBFETCH(dest)->sp.exit.ndest; i++) {
+	for (int i = 0; i < DBFETCH(dest)->sp.exit.ndest; i++) {
 		if ((DBFETCH(dest)->sp.exit.dest)[i] == source) {
 			return 1;			/* Found a loop! */
 		}
@@ -97,7 +94,7 @@ do_open(int descr, dbref player, const char *direction, const char *linkto)
 	char buf[BUFFER_LEN];
 	char buf2[BUFFER_LEN];
 	char *rname, *qname;
-	int i, ndest;
+	int ndest;
 
 	strcpyn(buf2, sizeof(buf2), linkto);
 	for (rname = buf2; (*rname && (*rname != '=')); rname++) ;
@@ -159,7 +156,7 @@ do_open(int descr, dbref player, const char *direction, const char *linkto)
 				ndest = link_exit(descr, player, exit, (char *) qname, good_dest);
 				DBFETCH(exit)->sp.exit.ndest = ndest;
 				DBFETCH(exit)->sp.exit.dest = (dbref *) malloc(sizeof(dbref) * ndest);
-				for (i = 0; i < ndest; i++) {
+				for (int i = 0; i < ndest; i++) {
 					(DBFETCH(exit)->sp.exit.dest)[i] = good_dest[i];
 				}
 				DBDIRTY(exit);
@@ -326,7 +323,7 @@ do_link(int descr, dbref player, const char *thing_name, const char *dest_name)
 	dbref good_dest[MAX_LINKS];
 	struct match_data md;
 
-	int ndest, i;
+	int ndest;
 
 	init_match(descr, player, thing_name, TYPE_EXIT, &md);
 	match_all_exits(&md);
@@ -395,7 +392,7 @@ do_link(int descr, dbref player, const char *thing_name, const char *dest_name)
 		    free(DBFETCH(thing)->sp.exit.dest);
 		}
 		DBFETCH(thing)->sp.exit.dest = (dbref *) malloc(sizeof(dbref) * ndest);
-		for (i = 0; i < ndest; i++) {
+		for (int i = 0; i < ndest; i++) {
 			(DBFETCH(thing)->sp.exit.dest)[i] = good_dest[i];
 		}
 		break;

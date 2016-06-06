@@ -816,7 +816,7 @@ int list_contains(char* word, int len, char* list) {
 
 	w = w2 = list;
 	do {
-		for(; *w2 && *w2 != '\r'; w2++) {};
+		for (; *w2 && *w2 != '\r'; w2++) {};
 		if(w2 - w == len && !strncmp(word, w, len)) return 1;
 		if(*w2) w = ++w2;
 	} while(*w2);

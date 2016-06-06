@@ -231,8 +231,6 @@ can_see(dbref player, dbref thing, int can_see_loc)
 int
 controls(dbref who, dbref what)
 {
-	dbref index;
-
 	/* No one controls invalid objects */
 	if (what < 0 || what >= db_top)
 		return 0;
@@ -260,7 +258,7 @@ controls(dbref who, dbref what)
 		 * owner of that room controls every Room object contained within
 		 * that room, all the way to the leaves of the tree.
 		 * -winged */
-		for (index = what; index != NOTHING; index = LOCATION(index)) {
+		for (dbref index = what; index != NOTHING; index = LOCATION(index)) {
 			if ((OWNER(index) == who) && (Typeof(index) == TYPE_ROOM)
 					&& Wizard(index)) {
 				/* Realm Owner doesn't control other Player objects */
@@ -411,9 +409,7 @@ payfor(dbref who, int cost)
 int
 word_start(const char *str, const char let)
 {
-	int chk;
-
-	for (chk = 1; *str; str++) {
+	for (int chk = 1; *str; str++) {
 		if (chk && (*str == let))
 			return 1;
 		chk = (*str == ' ');

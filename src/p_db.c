@@ -1022,7 +1022,7 @@ prim_getlink(PRIM_PROTOTYPE)
 void
 prim_getlinks(PRIM_PROTOTYPE)
 {
-	int i, count;
+	int count;
 	dbref my_obj;
 
 	CHECKOP(1);
@@ -1037,7 +1037,7 @@ prim_getlinks(PRIM_PROTOTYPE)
 	switch (Typeof(my_obj)) {
 	case TYPE_EXIT:
 		count = DBFETCH(my_obj)->sp.exit.ndest;
-		for (i = 0; i < count; i++) {
+		for (int i = 0; i < count; i++) {
 			PushObject((DBFETCH(my_obj)->sp.exit.dest)[i]);
 		}
 		PushInt(count);
@@ -1423,13 +1423,11 @@ prim_recycle(PRIM_PROTOTYPE)
 
 	if (result == program)
 		abort_interp("Cannot recycle currently running program.");
-	{
-		int ii;
 
-		for (ii = 0; ii < fr->caller.top; ii++)
-			if (fr->caller.st[ii] == result)
-				abort_interp("Cannot recycle active program.");
-	}
+	for (int ii = 0; ii < fr->caller.top; ii++)
+		if (fr->caller.st[ii] == result)
+			abort_interp("Cannot recycle active program.");
+
 	if (Typeof(result) == TYPE_EXIT)
 		if (!unset_source(player, result))
 			return;
@@ -1581,7 +1579,7 @@ void
 prim_findnext(PRIM_PROTOTYPE)
 {
 	struct flgchkdat check;
-	dbref who, item, ref, i;
+	dbref who, item, ref;
 	const char* name;
 
 	CHECKOP(4);
@@ -1633,7 +1631,7 @@ prim_findnext(PRIM_PROTOTYPE)
 
 	ref = NOTHING;
 	init_checkflags(player, DoNullInd(oper4->data.string), &check);
-	for (i = item; i < db_top; i++) {
+	for (dbref i = item; i < db_top; i++) {
 		if ((who == NOTHING || OWNER(i) == who) &&
 			checkflags(i, check) && NAME(i) && Typeof(i) != TYPE_GARBAGE &&
 			(!*name || equalstr(buf, (char *) NAME(i))))
@@ -1661,7 +1659,7 @@ prim_nextentrance(PRIM_PROTOTYPE)
 {
 	dbref linkref, ref;
 	int foundref = 0;
-	int i, count;
+	int count;
 
 	if (mlev < 3)
 		abort_interp("Permission denied.  Requires Mucker Level 3.");
@@ -1694,7 +1692,7 @@ prim_nextentrance(PRIM_PROTOTYPE)
 					break;
 				case TYPE_EXIT:
 					count = DBFETCH(ref)->sp.exit.ndest;
-					for (i = 0; i < count; i++) {
+					for (int i = 0; i < count; i++) {
 						if (DBFETCH(ref)->sp.exit.dest[i] == linkref)
 							foundref = 1;
 					}
@@ -2227,12 +2225,12 @@ prim_contents_array(PRIM_PROTOTYPE)
 
 	CHECKREMOTE(oper1->data.objref);
 
-	for(ref = CONTENTS(oper1->data.objref); (ref >= 0) && (ref < db_top); ref = NEXTOBJ(ref))
+	for (ref = CONTENTS(oper1->data.objref); (ref >= 0) && (ref < db_top); ref = NEXTOBJ(ref))
 		count++;
 
 	nw = new_array_packed(count);
 
-	for(ref = CONTENTS(oper1->data.objref), count = 0; (ref >= 0) && (ref < db_top); ref = NEXTOBJ(ref))
+	for (ref = CONTENTS(oper1->data.objref), count = 0; (ref >= 0) && (ref < db_top); ref = NEXTOBJ(ref))
 		array_set_intkey_refval(&nw, count++, ref);
 
 	CLEAR(oper1);
@@ -2260,12 +2258,12 @@ prim_exits_array(PRIM_PROTOTYPE)
 		return;
 	}
 
-	for(ref = EXITS(oper1->data.objref); (ref >= 0) && (ref < db_top); ref = NEXTOBJ(ref))
+	for (ref = EXITS(oper1->data.objref); (ref >= 0) && (ref < db_top); ref = NEXTOBJ(ref))
 		count++;
 
 	nw = new_array_packed(count);
 
-	for(ref = EXITS(oper1->data.objref), count = 0; (ref >= 0) && (ref < db_top); ref = NEXTOBJ(ref))
+	for (ref = EXITS(oper1->data.objref), count = 0; (ref >= 0) && (ref < db_top); ref = NEXTOBJ(ref))
 		array_set_intkey_refval(&nw, count++, ref);
 
 	CLEAR(oper1);
@@ -2450,7 +2448,7 @@ prim_program_getlines(PRIM_PROTOTYPE)
 		 * so we count down from the number of lines we have, 
 		 * and set our array appropriatly.
 		 */
-		for(curr = segment, i = 0; count--; i++, curr = curr->next) {
+		for (curr = segment, i = 0; count--; i++, curr = curr->next) {
 			array_set_intkey_strval(&ary, i, curr->this_line);
 		}
 

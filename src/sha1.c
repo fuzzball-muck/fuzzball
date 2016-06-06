@@ -111,7 +111,7 @@ void sha1_writebyte(sha1nfo *s, uint8_t data) {
 
 /* Write a length of data into the buffer */
 void sha1_write(sha1nfo *s, const char *data, size_t len) {
-	for (; len--;) sha1_writebyte(s, (uint8_t)*data++);
+	for (; len--;) sha1_writebyte(s, (uint8_t)*data++) ;
 }
 
 /* Pad if not enough data when finalized */

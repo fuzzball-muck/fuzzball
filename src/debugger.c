@@ -114,12 +114,12 @@ show_line_prims(dbref program, struct inst *pc, int maxprims, int markpc)
 struct inst *
 funcname_to_pc(dbref program, const char *name)
 {
-	int i, siz;
+	int siz;
 	struct inst *code;
 
 	code = PROGRAM_CODE(program);
 	siz = PROGRAM_SIZ(program);
-	for (i = 0; i < siz; i++) {
+	for (int i = 0; i < siz; i++) {
 		if ((code[i].type == PROG_FUNCTION) &&
 			!string_compare(name, code[i].data.mufproc->procname)) {
 			return (code + i);
@@ -132,12 +132,12 @@ funcname_to_pc(dbref program, const char *name)
 struct inst *
 linenum_to_pc(dbref program, int whatline)
 {
-	int i, siz;
+	int siz;
 	struct inst *code;
 
 	code = PROGRAM_CODE(program);
 	siz = PROGRAM_SIZ(program);
-	for (i = 0; i < siz; i++) {
+	for (int i = 0; i < siz; i++) {
 		if (code[i].line == whatline) {
 			return (code + i);
 		}
@@ -241,7 +241,6 @@ muf_backtrace(dbref player, dbref program, int count, struct frame *fr)
 		}
 		lev = fr->system.top - j;
 		if (ptr) {
-			int k;
 			int snplen;
 			char* bufend = buf2;
 			struct inst* fntop = fr->pc;
@@ -256,7 +255,7 @@ muf_backtrace(dbref player, dbref program, int count, struct frame *fr)
 				snplen = sizeof(buf2) - 1;
 			}
 			bufend += snplen;
-			for (k = 0; k < fntop->data.mufproc->args; k++) {
+			for (int k = 0; k < fntop->data.mufproc->args; k++) {
 				const char* nam = scopedvar_getname(fr, lev, k);
 				char* val;
 				const char* fmt;

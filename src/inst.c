@@ -360,7 +360,7 @@ debug_inst(struct frame *fr, int lev, struct inst *pc, int pid, struct inst *sta
 	
 	count = sp - 1;
 	if (count >= 0) {
-	    for(;;) {
+	    for (;;) {
 			if (count && length <= 5) {
 				prepend_string(&bend, bstart, "...");
 				break;
