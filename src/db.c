@@ -377,7 +377,7 @@ getproperties(FILE * f, dbref obj, const char *pdir)
 		fgets(buf, sizeof(buf), f);
 		while (1) {
 			/* fgets reads in \n too! */
-			if (!strcmp(buf, "***Property list end ***\n") || !strcmp(buf, "*End*\n"))
+			if (!strcmp(buf, "*End*\n"))
 				break;
 			p = index(buf, PROP_DELIMITER);
 			*(p++) = '\0';		/* Purrrrrrrrrr... */
