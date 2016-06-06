@@ -288,7 +288,7 @@ match_exits(dbref obj, struct match_data *md)
 {
 	dbref exit, absolute, first;
 	const char *exitname, *p;
-	int i, exitprog, lev, partial;
+	int exitprog, lev, partial;
 
 	first = EXITS(obj);
 
@@ -310,7 +310,7 @@ match_exits(dbref obj, struct match_data *md)
 		if (FLAGS(exit) & HAVEN) {
 			exitprog = 1;
 		} else if (DBFETCH(exit)->sp.exit.dest) {
-			for (i = 0; i < DBFETCH(exit)->sp.exit.ndest; i++)
+			for (int i = 0; i < DBFETCH(exit)->sp.exit.ndest; i++)
 				if ((DBFETCH(exit)->sp.exit.dest)[i] == NIL || Typeof((DBFETCH(exit)->sp.exit.dest)[i]) == TYPE_PROGRAM)
 					exitprog = 1;
 		}

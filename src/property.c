@@ -1186,7 +1186,7 @@ reflist_add(dbref obj, const char* propname, dbref toadd)
 			snprintf(buf, sizeof(buf), " #%d", toadd);
 			if (strlen(outbuf) + strlen(buf) < BUFFER_LEN) {
 				strcatn(outbuf, sizeof(outbuf), buf);
-				for (temp = outbuf; isspace(*temp); temp++);
+				for (temp = outbuf; isspace(*temp); temp++) ;
 				add_property(obj, propname, temp, 0);
 			}
 			break;
@@ -1255,7 +1255,7 @@ reflist_del(dbref obj, const char* propname, dbref todel)
 					strcpyn(outbuf, charcount, list);
 				}
 				strcatn(outbuf, sizeof(outbuf), temp);
-				for (temp = outbuf; isspace(*temp); temp++);
+				for (temp = outbuf; isspace(*temp); temp++) ;
 				add_property(obj, propname, temp, 0);
 			}
 			break;

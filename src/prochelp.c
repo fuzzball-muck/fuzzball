@@ -350,7 +350,6 @@ print_topics(FILE * f, FILE * hf)
 	char buf[256];
 	char buf2[256];
 	char buf3[256];
-	char alph;
 	char firstletter;
 	char *divpos;
 	int cnt = 0;
@@ -368,7 +367,7 @@ print_topics(FILE * f, FILE * hf)
         fprintf(f, "                 Alphabetical List of Topics:\n");
         fprintf(f, " \n");
 	fprintf(f, "You can get more help on the following topics:\n");
-	for (alph = 'A' - 1; alph <= 'Z'; alph++) {
+	for (char alph = 'A' - 1; alph <= 'Z'; alph++) {
 		cnt = 0;
 		longest = 0;
 		for (ptr = topichead; ptr; ptr = ptr->next) {

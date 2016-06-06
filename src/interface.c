@@ -267,7 +267,7 @@ main(int argc, char **argv)
 		{
 			const char *argv2[argc+1];
 			int i=0;
-			for(i=0;i<argc;i++)
+			for (i = 0; i < argc; i++)
 				argv2[i] = argv[i];
 			argv2[argc] = NULL;
 		execvp(argv[0],(char **)argv2);
@@ -4277,7 +4277,7 @@ int ignore_prime_cache(dbref Player)
 		return 0;
 	}
 
-	for(Ptr = Txt; *Ptr; )
+	for (Ptr = Txt; *Ptr; )
 	{
 		Count++;
 
@@ -4294,7 +4294,7 @@ int ignore_prime_cache(dbref Player)
 	if ((List = (dbref*)malloc(sizeof(dbref) * Count)) == 0)
 		return 0;
 
-	for(Ptr = Txt, i = 0; *Ptr; )
+	for (Ptr = Txt, i = 0; *Ptr; )
 	{
 		if (*Ptr == NUMBER_TOKEN)
 			Ptr++;
@@ -4342,7 +4342,7 @@ void ignore_flush_all_cache(void)
 	if (db == 0)
 		return;
 	
-	for(i = 0; i < db_top; i++)
+	for (i = 0; i < db_top; i++)
 	{
 		if (Typeof(i) == TYPE_PLAYER)
 		{
@@ -4397,7 +4397,7 @@ void ignore_remove_from_all_players(dbref Player)
 	if (!tp_ignore_support)
 		return;
 
-	for(i = 0; i < db_top; i++)
+	for (i = 0; i < db_top; i++)
 		if (Typeof(i) == TYPE_PLAYER)
 			reflist_del(i, IGNORE_PROP, Player);
 

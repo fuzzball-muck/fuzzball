@@ -513,7 +513,7 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
 	char buf[BUFFER_LEN];
 	dbref content;
 	dbref exit;
-	int i, cnt;
+	int cnt;
 	struct match_data md;
 	struct tm *time_tm;			/* used for timestamps */
 
@@ -730,7 +730,7 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
 		/* print destinations */
 		if (DBFETCH(thing)->sp.exit.ndest == 0)
 			break;
-		for (i = 0; i < DBFETCH(thing)->sp.exit.ndest; i++) {
+		for (int i = 0; i < DBFETCH(thing)->sp.exit.ndest; i++) {
 			switch ((DBFETCH(thing)->sp.exit.dest)[i]) {
 			case NOTHING:
 				break;
@@ -1203,7 +1203,6 @@ display_objinfo(dbref player, dbref obj, int output_type)
 void
 do_find(dbref player, const char *name, const char *flags)
 {
-	dbref i;
 	struct flgchkdat check;
 	char buf[BUFFER_LEN + 2];
 	int total = 0;
@@ -1216,7 +1215,7 @@ do_find(dbref player, const char *name, const char *flags)
 	if (!payfor(player, tp_lookup_cost)) {
 		notifyf(player, "You don't have enough %s.", tp_pennies);
 	} else {
-		for (i = 0; i < db_top; i++) {
+		for (dbref i = 0; i < db_top; i++) {
 			if ((Wizard(OWNER(player)) || OWNER(i) == OWNER(player)) &&
 				checkflags(i, check) && NAME(i) && (!*name || equalstr(buf, (char *) NAME(i)))) {
 				display_objinfo(player, i, output_type);
@@ -1232,7 +1231,7 @@ do_find(dbref player, const char *name, const char *flags)
 void
 do_owned(dbref player, const char *name, const char *flags)
 {
-	dbref victim, i;
+	dbref victim;
 	struct flgchkdat check;
 	int total = 0;
 	int output_type = init_checkflags(player, flags, &check);
@@ -1249,7 +1248,7 @@ do_owned(dbref player, const char *name, const char *flags)
 	} else
 		victim = player;
 
-	for (i = 0; i < db_top; i++) {
+	for (dbref i = 0; i < db_top; i++) {
 		if ((OWNER(i) == OWNER(victim)) && checkflags(i, check)) {
 			display_objinfo(player, i, output_type);
 			total++;
@@ -1263,7 +1262,6 @@ void
 do_trace(int descr, dbref player, const char *name, int depth)
 {
 	dbref thing;
-	int i;
 	struct match_data md;
 
 	init_match(descr, player, name, NOTYPE, &md);
@@ -1276,7 +1274,7 @@ do_trace(int descr, dbref player, const char *name, int depth)
 	if ((thing = noisy_match_result(&md)) == NOTHING || thing == AMBIGUOUS)
 		return;
 
-	for (i = 0; (!depth || i < depth) && thing != NOTHING; i++) {
+	for (dbref i = 0; (!depth || i < depth) && thing != NOTHING; i++) {
 		if (controls(player, thing) || can_link_to(player, NOTYPE, thing))
 			notify(player, unparse_object(player, thing));
 		else
@@ -1289,7 +1287,6 @@ do_trace(int descr, dbref player, const char *name, int depth)
 void
 do_entrances(int descr, dbref player, const char *name, const char *flags)
 {
-	dbref i, j;
 	dbref thing;
 	struct match_data md;
 	struct flgchkdat check;
@@ -1322,11 +1319,11 @@ do_entrances(int descr, dbref player, const char *name, const char *flags)
 		return;
 	}
 	init_checkflags(player, flags, &check);
-	for (i = 0; i < db_top; i++) {
+	for (dbref i = 0; i < db_top; i++) {
 		if (checkflags(i, check)) {
 			switch (Typeof(i)) {
 			case TYPE_EXIT:
-				for (j = DBFETCH(i)->sp.exit.ndest; j--;) {
+				for (int j = DBFETCH(i)->sp.exit.ndest; j--;) {
 					if (DBFETCH(i)->sp.exit.dest[j] == thing) {
 						display_objinfo(player, i, output_type);
 						total++;

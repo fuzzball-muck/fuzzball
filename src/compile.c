@@ -658,7 +658,7 @@ MaybeOptimizeVarsAt(COMPSTATE * cstat, struct INTERMEDIATE* first, int AtNo, int
 	if (first->in.type == PROG_LVAR_AT || first->in.type == PROG_LVAR_AT_CLEAR)
 		lvarflag = 1;
 
-	for(; curr; curr = curr->next) {
+	for (; curr; curr = curr->next) {
 		if (curr->flags & INTMEDFLG_INTRY)
 			return;
 
@@ -924,7 +924,7 @@ OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
 
 	/* Mark instructions which jumps reference */
 
-	for(curr = cstat->first_word; curr; curr = curr->next) {
+	for (curr = cstat->first_word; curr; curr = curr->next) {
 		switch(curr->in.type) {
 			case PROG_ADD:
 			case PROG_IF:
@@ -938,7 +938,7 @@ OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
 		}
 	}
 
-	for(curr = cstat->first_word; curr; ) {
+	for (curr = cstat->first_word; curr; ) {
 		int advance = 1;
 		switch(curr->in.type) {
 			case PROG_LVAR:
@@ -1190,7 +1190,7 @@ OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
 
 	/* Turn all var@'s which have a following var! into a var@-clear */
 
-	for(curr = cstat->first_word; curr; curr = curr->next)
+	for (curr = cstat->first_word; curr; curr = curr->next)
 		if (curr->in.type == PROG_SVAR_AT || curr->in.type == PROG_LVAR_AT)
 				MaybeOptimizeVarsAt(cstat, curr, AtNo, BangNo);
 

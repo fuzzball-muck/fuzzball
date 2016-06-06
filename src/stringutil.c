@@ -202,7 +202,7 @@ pronoun_substitute(int descr, dbref player, const char *str)
 		char* last_non_space = sexbuf;
 		char* ptr = sexbuf;
 
-		for(; *ptr; ptr++)
+		for (; *ptr; ptr++)
 			if (!isspace(*ptr))
 				last_non_space = ptr;
 		
@@ -451,13 +451,11 @@ static int initialized_crypt = 0;
 void
 init_crypt(void)
 {
-	int i;
-
-	for (i = 0; i <= 255; i++)
+	for (int i = 0; i <= 255; i++)
 		enarr[i] = (char) i;
-	for (i = 'A'; i <= 'M'; i++)
+	for (int i = 'A'; i <= 'M'; i++)
 		enarr[i] = (char) enarr[i] + 13;
-	for (i = 'N'; i <= 'Z'; i++)
+	for (int i = 'N'; i <= 'Z'; i++)
 		enarr[i] = (char) enarr[i] - 13;
 	enarr['\r'] = 127;
 	enarr[127] = '\r';

@@ -423,7 +423,6 @@ do_stats(dbref player, const char *name)
 	int changed = 0;
 #endif
 	time_t currtime = time(NULL);
-	dbref i;
 	dbref owner=NOTHING;
 
 	if (!Wizard(OWNER(player)) && (!name || !*name)) {
@@ -440,7 +439,7 @@ do_stats(dbref player, const char *name)
 				notify(player, "Permission denied. (you must be a wizard to get someone else's stats)");
 				return;
 			}
-			for (i = 0; i < db_top; i++) {
+			for (dbref i = 0; i < db_top; i++) {
 
 #ifdef DISKBASE
 				if ((OWNER(i) == owner) && DBFETCH(i)->propsmode != PROPS_UNLOADED)
@@ -482,7 +481,7 @@ do_stats(dbref player, const char *name)
 				}
 			}
 		} else {
-			for (i = 0; i < db_top; i++) {
+			for (dbref i = 0; i < db_top; i++) {
 
 #ifdef DISKBASE
 				if (DBFETCH(i)->propsmode != PROPS_UNLOADED)
@@ -585,7 +584,6 @@ do_toad(int descr, dbref player, const char *name, const char *recip)
 {
 	dbref victim;
 	dbref recipient;
-	dbref stuff;
 	char buf[BUFFER_LEN];
         struct tune_ref_entry *tref = tune_ref_list;
 
@@ -640,7 +638,7 @@ do_toad(int descr, dbref player, const char *name, const char *recip)
 		/* do it */
 		send_contents(descr, victim, HOME);
 		dequeue_prog(victim, 0);  /* Dequeue the programs that the player's running */
-		for (stuff = 0; stuff < db_top; stuff++) {
+		for (dbref stuff = 0; stuff < db_top; stuff++) {
 			if (OWNER(stuff) == victim) {
 				switch (Typeof(stuff)) {
 				case TYPE_PROGRAM:
@@ -803,12 +801,11 @@ do_muf_topprofs(dbref player, char *arg1)
 
 	struct profnode *curr = NULL;
 	int nodecount = 0;
-	dbref i = NOTHING;
 	int count = atoi(arg1);
 	time_t current_systime = time(NULL);
 
 	if (!string_compare(arg1, "reset")) {
-		for (i = db_top; i-->0; ) {
+		for (dbref i = db_top; i-->0; ) {
 			if (Typeof(i) == TYPE_PROGRAM) {
 				PROGRAM_SET_PROFTIME(i, 0, 0);
 				PROGRAM_SET_PROFSTART(i, current_systime);
@@ -825,7 +822,7 @@ do_muf_topprofs(dbref player, char *arg1)
 		count = 10;
 	}
 
-	for (i = db_top; i-->0; ) {
+	for (dbref i = db_top; i-->0; ) {
 		if (Typeof(i) == TYPE_PROGRAM && PROGRAM_CODE(i)) {
 			struct profnode *newnode = (struct profnode *)malloc(sizeof(struct profnode));
 			struct timeval tmpt = PROGRAM_PROFTIME(i);
@@ -907,12 +904,11 @@ do_mpi_topprofs(dbref player, char *arg1)
 
 	struct profnode *curr = NULL;
 	int nodecount = 0;
-	dbref i = NOTHING;
 	int count = atoi(arg1);
 	time_t current_systime = time(NULL);
 
 	if (!string_compare(arg1, "reset")) {
-		for (i = db_top; i-->0; ) {
+		for (dbref i = db_top; i-->0; ) {
 			if (DBFETCH(i)->mpi_prof_use) {
 				DBFETCH(i)->mpi_prof_use = 0;
 				DBFETCH(i)->mpi_proftime.tv_usec = 0;
@@ -930,7 +926,7 @@ do_mpi_topprofs(dbref player, char *arg1)
 		count = 10;
 	}
 
-	for (i = db_top; i-->0; ) {
+	for (dbref i = db_top; i-->0; ) {
 		if (DBFETCH(i)->mpi_prof_use) {
 			struct profnode *newnode = (struct profnode *)malloc(sizeof(struct profnode));
 			newnode->next = NULL;
@@ -1011,12 +1007,11 @@ do_all_topprofs(dbref player, char *arg1)
 
 	struct profnode *curr = NULL;
 	int nodecount = 0;
-	dbref i = NOTHING;
 	int count = atoi(arg1);
 	time_t current_systime = time(NULL);
 
 	if (!string_compare(arg1, "reset")) {
-		for (i = db_top; i-->0; ) {
+		for (dbref i = db_top; i-->0; ) {
 			if (DBFETCH(i)->mpi_prof_use) {
 				DBFETCH(i)->mpi_prof_use = 0;
 				DBFETCH(i)->mpi_proftime.tv_usec = 0;
@@ -1043,7 +1038,7 @@ do_all_topprofs(dbref player, char *arg1)
 		count = 10;
 	}
 
-	for (i = db_top; i-->0; ) {
+	for (dbref i = db_top; i-->0; ) {
 		if (DBFETCH(i)->mpi_prof_use) {
 			struct profnode *newnode = (struct profnode *)malloc(sizeof(struct profnode));
 			newnode->next = NULL;
