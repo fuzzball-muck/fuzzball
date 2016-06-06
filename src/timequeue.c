@@ -501,7 +501,7 @@ handle_read_event(int descr, dbref player, const char *command)
 			 */
 			fr->argument.st[fr->argument.top].type = PROG_STRING;
 			fr->argument.st[fr->argument.top++].data.string =
-					alloc_prog_string(command ? command : "");
+					alloc_prog_string(DoNull(command));
 			if (typ == TQ_MUF_TREAD) {
 				if (nothing_flag) {
 					fr->argument.st[fr->argument.top].type = PROG_INTEGER;
@@ -574,8 +574,8 @@ next_timequeue_event(void)
 			char cbuf[BUFFER_LEN];
 			int ival;
 
-			strcpyn(match_args, sizeof(match_args), event->str3 ? event->str3 : "");
-			strcpyn(match_cmdname, sizeof(match_cmdname), event->command ? event->command : "");
+			strcpyn(match_args, sizeof(match_args), DoNull(event->str3));
+			strcpyn(match_cmdname, sizeof(match_cmdname), DoNull(event->command));
 			ival = (event->subtyp & TQ_MPI_OMESG) ? MPI_ISPUBLIC : MPI_ISPRIVATE;
 			if (event->subtyp & TQ_MPI_BLESSED) {
 				ival |= MPI_ISBLESSED;
@@ -630,8 +630,8 @@ next_timequeue_event(void)
 				} else if (event->subtyp == TQ_MUF_TREAD) {
 					handle_read_event(event->descr, event->uid, NULL);
 				} else {
-					strcpyn(match_args, sizeof(match_args), event->called_data ? event->called_data : "");
-					strcpyn(match_cmdname, sizeof(match_cmdname), event->command ? event->command : "");
+					strcpyn(match_args, sizeof(match_args), DoNull(event->called_data));
+					strcpyn(match_cmdname, sizeof(match_cmdname), DoNull(event->command));
 					tmpfr = interp(event->descr, event->uid, event->loc, event->called_prog,
 								   event->trig, BACKGROUND, STD_HARDUID, forced_pid);
 					if (tmpfr) {
@@ -817,7 +817,7 @@ list_events(dbref player)
 		}
 		(void) snprintf(buf, sizeof(buf), strfmt, pidstr, duestr, runstr,
 						inststr, cpustr, progstr, prognamestr, NAME(ptr->uid), 
-						(ptr->called_data? ptr->called_data : ""));
+						DoNull(ptr->called_data));
 		if (Wizard(OWNER(player)) || ptr->uid == player) {
 			notify_nolisten(player, buf, 1);
 		} else if (ptr->called_prog != NOTHING &&
@@ -1365,7 +1365,7 @@ propqueue(int descr, dbref player, dbref where, dbref trigger, dbref what, dbref
 				} else if (the_prog != NOTHING) {
 					struct frame *tmpfr;
 
-					strcpyn(match_args, sizeof(match_args), toparg ? toparg : "");
+					strcpyn(match_args, sizeof(match_args), DoNull(toparg));
 					strcpyn(match_cmdname, sizeof(match_cmdname), "Queued event.");
 					tmpfr = interp(descr, player, where, the_prog, trigger,
 								   BACKGROUND, STD_HARDUID, 0);
