@@ -119,6 +119,8 @@
 
 /* Property defines */
 
+#define REGISTRATION_PROPDIR	"_reg"
+
 #define NO_IDLE_PING_PROP	"_/sys/no_idle_ping"
 #define IGNORE_PROP		"@__sys__/ignore/def"
 #define NO_RECYCLE_PROP		"@/precious"

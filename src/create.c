@@ -85,13 +85,24 @@ exit_loop_check(dbref source, dbref dest)
     return 0;			/* No loops found */
 }
 
+void
+register_object(dbref location, char *propdir, char *name, dbref object)
+{
+    PData mydat;
+    char buf[BUFFER_LEN];
+
+    snprintf(buf, sizeof(buf), "%s/%s", propdir, name);
+    mydat.flags = PROP_REFTYP;
+    mydat.data.ref = object;
+    set_property(location, buf, &mydat, 0);
+}
+
 /* use this to create an exit */
 void
 do_open(int descr, dbref player, const char *direction, const char *linkto)
 {
     dbref loc, exit;
     dbref good_dest[MAX_LINKS];
-    char buf[BUFFER_LEN];
     char buf2[BUFFER_LEN];
     char *rname, *qname;
     int ndest;
@@ -165,13 +176,8 @@ do_open(int descr, dbref player, const char *direction, const char *linkto)
     }
 
     if (*rname) {
-	PData mydat;
-
-	notifyf(player, "Registered as $%s", rname);
-	snprintf(buf, sizeof(buf), "_reg/%s", rname);
-	mydat.flags = PROP_REFTYP;
-	mydat.data.ref = exit;
-	set_property(player, buf, &mydat, 0);
+        register_object(player, REGISTRATION_PROPDIR, rname, exit);
+        notifyf(player, "Registered as $%s", rname);
     }
 }
 
@@ -543,13 +549,8 @@ do_dig(int descr, dbref player, const char *name, const char *pname)
     }
 
     if (*rname) {
-	PData mydat;
-
-	snprintf(buf, sizeof(buf), "_reg/%s", rname);
-	mydat.flags = PROP_REFTYP;
-	mydat.data.ref = room;
-	set_property(player, buf, &mydat, 0);
-	notifyf(player, "Registered as $%s", rname);
+        register_object(player, REGISTRATION_PROPDIR, rname, room);
+        notifyf(player, "Registered as $%s", rname);
     }
 }
 
@@ -893,7 +894,6 @@ do_create(dbref player, char *name, char *acost)
     dbref thing;
     int cost;
 
-    static char buf[BUFFER_LEN];
     char buf2[BUFFER_LEN];
     char *rname, *qname;
 
@@ -958,14 +958,10 @@ do_create(dbref player, char *name, char *acost)
 	notifyf(player, "Object %s created as #%d.", name, thing);
 	DBDIRTY(thing);
     }
-    if (*rname) {
-	PData mydat;
 
-	notifyf(player, "Registered as $%s", rname);
-	snprintf(buf, sizeof(buf), "_reg/%s", rname);
-	mydat.flags = PROP_REFTYP;
-	mydat.data.ref = thing;
-	set_property(player, buf, &mydat, 0);
+    if (*rname) {
+        register_object(player, REGISTRATION_PROPDIR, rname, thing);
+        notifyf(player, "Registered as $%s", rname);
     }
 }
 
@@ -1076,7 +1072,6 @@ void
 do_action(int descr, dbref player, const char *action_name, const char *source_name)
 {
     dbref action, source;
-    static char buf[BUFFER_LEN];
     char buf2[BUFFER_LEN];
     char *rname, *qname;
 
@@ -1120,21 +1115,16 @@ do_action(int descr, dbref player, const char *action_name, const char *source_n
     notifyf(player, "Action %s created as #%d and attached.", NAME(action), action);
     DBDIRTY(action);
 
-    if (*rname) {
-	PData mydat;
-
-	notifyf(player, "Registered as $%s", rname);
-	snprintf(buf, sizeof(buf), "_reg/%s", rname);
-	mydat.flags = PROP_REFTYP;
-	mydat.data.ref = action;
-	set_property(player, buf, &mydat, 0);
-    }
-
     if (tp_autolink_actions) {
 	DBFETCH(action)->sp.exit.ndest = 1;
 	DBFETCH(action)->sp.exit.dest = (dbref *) malloc(sizeof(dbref));
 	(DBFETCH(action)->sp.exit.dest)[0] = NIL;
 	notify(player, "Linked to NIL.");
+    }
+
+    if (*rname) {
+        register_object(player, REGISTRATION_PROPDIR, rname, action);
+        notifyf(player, "Registered as $%s", rname);
     }
 }
 
