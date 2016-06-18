@@ -68,18 +68,20 @@
 
 /** A single SSL protocol version */
 struct ssl_protocol_version {
-	const char *name;
-	int version;
+    const char *name;
+    int version;
 };
 
 /** Valid SSL protocol versions */
 static const struct ssl_protocol_version SSL_PROTOCOLS[] = {
-	{"None", 0},
-	{"SSLv3", FB_SSL3_VERSION},
-	{"TLSv1", FB_TLS1_VERSION},
-	{"TLSv1.1", FB_TLS1_1_VERSION},
-	{"TLSv1.2", FB_TLS1_2_VERSION}};
-static const size_t SSL_PROTOCOLS_SIZE = (sizeof(SSL_PROTOCOLS)/sizeof(SSL_PROTOCOLS[0]));
+    {"None", 0},
+    {"SSLv3", FB_SSL3_VERSION},
+    {"TLSv1", FB_TLS1_VERSION},
+    {"TLSv1.1", FB_TLS1_1_VERSION},
+    {"TLSv1.2", FB_TLS1_2_VERSION}
+};
+
+static const size_t SSL_PROTOCOLS_SIZE = (sizeof(SSL_PROTOCOLS) / sizeof(SSL_PROTOCOLS[0]));
 /* end of lookup table */
 
 /* SSL protocol management */
@@ -88,5 +90,5 @@ extern int set_ssl_ctx_min_version(SSL_CTX *, const char *);
 
 extern void ssl_log_error(SSL *, const int);
 
-#endif /* USE_SSL */
-#endif /* _INTERFACE_SSL_H */
+#endif				/* USE_SSL */
+#endif				/* _INTERFACE_SSL_H */

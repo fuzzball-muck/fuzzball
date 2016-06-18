@@ -39,8 +39,8 @@ extern void prim_ldup(PRIM_PROTOTYPE);	/*   {?} -- {?} {?}      */
 extern void prim_popn(PRIM_PROTOTYPE);	/*   {?} --              */
 extern void prim_for(PRIM_PROTOTYPE);	/* i i i --              */
 extern void prim_foreach(PRIM_PROTOTYPE);	/*     i --              */
-extern void prim_secure_sysvars(PRIM_PROTOTYPE);/* -- */
-extern void prim_cmd(PRIM_PROTOTYPE);		/* -- s */
+extern void prim_secure_sysvars(PRIM_PROTOTYPE);	/* -- */
+extern void prim_cmd(PRIM_PROTOTYPE);	/* -- s */
 extern void prim_foriter(PRIM_PROTOTYPE);	/*       -- i  or  @ ?   */
 extern void prim_forpop(PRIM_PROTOTYPE);	/*       --              */
 extern void prim_mark(PRIM_PROTOTYPE);	/*       -- m            */
@@ -73,4 +73,4 @@ extern void prim_trypop(PRIM_PROTOTYPE);	/* -- */
 
 #define PRIMS_INTERNAL_CNT 3
 
-#endif /* _P_STACK_H */
+#endif				/* _P_STACK_H */

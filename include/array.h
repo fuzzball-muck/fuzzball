@@ -11,22 +11,22 @@ typedef struct inst array_iter;
 typedef struct inst array_data;
 
 typedef struct array_tree_t {
-	struct array_tree_t *left;
-	struct array_tree_t *right;
-	array_iter key;
-	array_data data;
-	short height;
+    struct array_tree_t *left;
+    struct array_tree_t *right;
+    array_iter key;
+    array_data data;
+    short height;
 } array_tree;
 
 typedef struct stk_array_t {
-	int links;					/* number of pointers  to array */
-	int items;					/* number of items in array */
-	short type;					/* type of array */
-	int pinned;				/* if pinned, don't dup array on changes */
-	union {
-		array_data *packed;		/* pointer to packed array */
-		array_tree *dict;		/* pointer to dictionary AVL tree */
-	} data;
+    int links;			/* number of pointers  to array */
+    int items;			/* number of items in array */
+    short type;			/* type of array */
+    int pinned;			/* if pinned, don't dup array on changes */
+    union {
+	array_data *packed;	/* pointer to packed array */
+	array_tree *dict;	/* pointer to dictionary AVL tree */
+    } data;
 } stk_array;
 
 stk_array *new_array_dictionary(void);
@@ -70,7 +70,7 @@ int array_set_strkey_intval(stk_array ** arr, const char *key, int val);
 int array_set_strkey_fltval(stk_array ** arr, const char *key, double val);
 int array_set_strkey_refval(stk_array ** harr, const char *key, dbref val);
 int array_set_strkey_strval(stk_array ** harr, const char *key, const char *val);
-int array_set_strkey_arrval(stk_array ** harr, const char *key, stk_array* val);
+int array_set_strkey_arrval(stk_array ** harr, const char *key, stk_array * val);
 
 int array_set_intkey(stk_array ** harr, int key, struct inst *val);
 
@@ -78,14 +78,14 @@ int array_set_intkey_intval(stk_array ** harr, int key, int val);
 int array_set_intkey_fltval(stk_array ** harr, int key, double val);
 int array_set_intkey_refval(stk_array ** harr, int key, dbref val);
 int array_set_intkey_strval(stk_array ** harr, int key, const char *val);
-int array_set_intkey_arrval(stk_array ** harr, int key, stk_array* val);
+int array_set_intkey_arrval(stk_array ** harr, int key, stk_array * val);
 
-char* array_get_intkey_strval(stk_array * arr, int key);
+char *array_get_intkey_strval(stk_array * arr, int key);
 
-int array_set_intval(stk_array ** harr, struct inst* key, int val);
-int array_set_fltval(stk_array ** harr, struct inst* key, double val);
-int array_set_refval(stk_array ** harr, struct inst* key, dbref val);
-int array_set_strval(stk_array ** harr, struct inst* key, const char *val);
-int array_set_arrval(stk_array ** harr, struct inst* key, stk_array* val);
+int array_set_intval(stk_array ** harr, struct inst *key, int val);
+int array_set_fltval(stk_array ** harr, struct inst *key, double val);
+int array_set_refval(stk_array ** harr, struct inst *key, dbref val);
+int array_set_strval(stk_array ** harr, struct inst *key, const char *val);
+int array_set_arrval(stk_array ** harr, struct inst *key, stk_array * val);
 
-#endif /* _ARRAY_H */
+#endif				/* _ARRAY_H */

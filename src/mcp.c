@@ -11,7 +11,7 @@
 #include "tune.h"
 #ifdef HAVE_MALLOC_H
 #include <malloc.h>
-#endif /* HAVE_MALLOC_H */
+#endif				/* HAVE_MALLOC_H */
 
 
 #define MCP_MESG_PREFIX		"#$#"
@@ -25,54 +25,54 @@
 void
 clean_mcpbinds(struct mcp_binding *mypub)
 {
-        struct mcp_binding *tmppub;
+    struct mcp_binding *tmppub;
 
-        while (mypub) {
-                tmppub = mypub->next;
-                free(mypub->pkgname);
-                free(mypub->msgname);
-                free(mypub);
-                mypub = tmppub;
-        }
+    while (mypub) {
+	tmppub = mypub->next;
+	free(mypub->pkgname);
+	free(mypub->msgname);
+	free(mypub);
+	mypub = tmppub;
+    }
 }
 
 void
 SendText(McpFrame * mfr, const char *text)
 {
-	queue_string((struct descriptor_data *) mfr->descriptor, text);
+    queue_string((struct descriptor_data *) mfr->descriptor, text);
 }
 
 void
 FlushText(McpFrame * mfr)
 {
-	struct descriptor_data *d = (struct descriptor_data *)mfr->descriptor;
-	if (d && !process_output(d)) {
-		d->booted = 1;
-	}
+    struct descriptor_data *d = (struct descriptor_data *) mfr->descriptor;
+    if (d && !process_output(d)) {
+	d->booted = 1;
+    }
 }
 
 int
 mcpframe_to_descr(McpFrame * ptr)
 {
-	return ((struct descriptor_data *) ptr->descriptor)->descriptor;
+    return ((struct descriptor_data *) ptr->descriptor)->descriptor;
 }
 
 int
 mcpframe_to_user(McpFrame * ptr)
 {
-	return ((struct descriptor_data *) ptr->descriptor)->player;
+    return ((struct descriptor_data *) ptr->descriptor)->player;
 }
 
 McpFrame *
 descr_mcpframe(int c)
 {
-        struct descriptor_data *d;
+    struct descriptor_data *d;
 
     d = descrdata_by_descr(c);
-        if (d) {
-                return &d->mcpframe;
-        }
-        return NULL;
+    if (d) {
+	return &d->mcpframe;
+    }
+    return NULL;
 }
 
 static McpPkg *mcp_PackageList = NULL;
@@ -82,9 +82,9 @@ static McpPkg *mcp_PackageList = NULL;
 int
 strcmp_nocase(const char *s1, const char *s2)
 {
-	while (*s1 && tolower(*s1) == tolower(*s2))
-		s1++, s2++;
-	return (tolower(*s1) - tolower(*s2));
+    while (*s1 && tolower(*s1) == tolower(*s2))
+	s1++, s2++;
+    return (tolower(*s1) - tolower(*s2));
 }
 
 
@@ -92,41 +92,41 @@ strcmp_nocase(const char *s1, const char *s2)
 int
 strncmp_nocase(const char *s1, const char *s2, int cnt)
 {
-	while (cnt && *s1 && tolower(*s1) == tolower(*s2))
-		s1++, s2++, cnt--;
-	if (!cnt) {
-		return 0;
-	} else {
-		return (tolower(*s1) - tolower(*s2));
-	}
+    while (cnt && *s1 && tolower(*s1) == tolower(*s2))
+	s1++, s2++, cnt--;
+    if (!cnt) {
+	return 0;
+    } else {
+	return (tolower(*s1) - tolower(*s2));
+    }
 }
 
 
 /* Used internally to escape and quote argument values. */
 int
-msgarg_escape(char* buf, int bufsize, const char* in)
+msgarg_escape(char *buf, int bufsize, const char *in)
 {
-	char *out = buf;
-	int len = 0;
+    char *out = buf;
+    int len = 0;
 
-	if (bufsize < 3) {
-		return 0;
+    if (bufsize < 3) {
+	return 0;
+    }
+    *out++ = '"';
+    len++;
+    while (*in && len < bufsize - 3) {
+	if (*in == '"' || *in == '\\') {
+	    *out++ = '\\';
+	    len++;
 	}
-	*out++ = '"';
+	*out++ = *in++;
 	len++;
-	while (*in && len < bufsize - 3) {
-		if (*in == '"' || *in == '\\') {
-			*out++ = '\\';
-			len++;
-		}
-		*out++ = *in++;
-		len++;
-	}
-	*out++ = '"';
-	*out = '\0';
-	len++;
+    }
+    *out++ = '"';
+    *out = '\0';
+    len++;
 
-	return len;
+    return len;
 }
 
 
@@ -158,21 +158,21 @@ int mcp_internal_parse(McpFrame * mfr, const char *in);
 
 void
 mcp_package_register(const char *pkgname, McpVer minver, McpVer maxver, McpPkg_CB callback,
-					 void *context, ContextCleanup_CB cleanup)
+		     void *context, ContextCleanup_CB cleanup)
 {
-	McpPkg *nu = (McpPkg *) malloc(sizeof(McpPkg));
+    McpPkg *nu = (McpPkg *) malloc(sizeof(McpPkg));
 
-	nu->pkgname = string_dup(pkgname);
-	nu->minver = minver;
-	nu->maxver = maxver;
-	nu->callback = callback;
-	nu->context = context;
-	nu->cleanup = cleanup;
+    nu->pkgname = string_dup(pkgname);
+    nu->minver = minver;
+    nu->maxver = maxver;
+    nu->callback = callback;
+    nu->context = context;
+    nu->cleanup = cleanup;
 
-	mcp_package_deregister(pkgname);
-	nu->next = mcp_PackageList;
-	mcp_PackageList = nu;
-	mcp_frame_package_renegotiate(pkgname);
+    mcp_package_deregister(pkgname);
+    nu->next = mcp_PackageList;
+    mcp_PackageList = nu;
+    mcp_frame_package_renegotiate(pkgname);
 }
 
 
@@ -192,38 +192,38 @@ mcp_package_register(const char *pkgname, McpVer minver, McpVer maxver, McpPkg_C
 void
 mcp_package_deregister(const char *pkgname)
 {
-	McpPkg *ptr = mcp_PackageList;
-	McpPkg *prev = NULL;
+    McpPkg *ptr = mcp_PackageList;
+    McpPkg *prev = NULL;
 
-	while (ptr && !strcmp_nocase(ptr->pkgname, pkgname)) {
-		mcp_PackageList = ptr->next;
-		if (ptr->cleanup)
-			ptr->cleanup(ptr->context);
-		if (ptr->pkgname)
-			free(ptr->pkgname);
-		free(ptr);
-		ptr = mcp_PackageList;
+    while (ptr && !strcmp_nocase(ptr->pkgname, pkgname)) {
+	mcp_PackageList = ptr->next;
+	if (ptr->cleanup)
+	    ptr->cleanup(ptr->context);
+	if (ptr->pkgname)
+	    free(ptr->pkgname);
+	free(ptr);
+	ptr = mcp_PackageList;
+    }
+
+    prev = mcp_PackageList;
+    if (ptr)
+	ptr = ptr->next;
+
+    while (ptr) {
+	if (!strcmp_nocase(pkgname, ptr->pkgname)) {
+	    prev->next = ptr->next;
+	    if (ptr->cleanup)
+		ptr->cleanup(ptr->context);
+	    if (ptr->pkgname)
+		free(ptr->pkgname);
+	    free(ptr);
+	    ptr = prev->next;
+	} else {
+	    prev = ptr;
+	    ptr = ptr->next;
 	}
-
-	prev = mcp_PackageList;
-	if (ptr)
-		ptr = ptr->next;
-
-	while (ptr) {
-		if (!strcmp_nocase(pkgname, ptr->pkgname)) {
-			prev->next = ptr->next;
-			if (ptr->cleanup)
-				ptr->cleanup(ptr->context);
-			if (ptr->pkgname)
-				free(ptr->pkgname);
-			free(ptr);
-			ptr = prev->next;
-		} else {
-			prev = ptr;
-			ptr = ptr->next;
-		}
-	}
-	mcp_frame_package_renegotiate(pkgname);
+    }
+    mcp_frame_package_renegotiate(pkgname);
 }
 
 
@@ -256,16 +256,18 @@ void mcppkg_simpleedit(McpFrame * mfr, McpMesg * mesg, McpVer ver, void *context
 void
 mcp_initialize(void)
 {
-	McpVer oneoh = { 1, 0 };
-	McpVer twooh = { 2, 0 };
+    McpVer oneoh = { 1, 0 };
+    McpVer twooh = { 2, 0 };
 
-	/* McpVer twoone = {2,1}; */
+    /* McpVer twoone = {2,1}; */
 
-	mcp_package_register(MCP_NEGOTIATE_PKG, oneoh, twooh, mcp_negotiate_handler, NULL, NULL);
-	mcp_package_register("org-fuzzball-help", oneoh, oneoh, mcppkg_help_request, NULL, NULL);
-	mcp_package_register("org-fuzzball-notify", oneoh, oneoh, mcppkg_simpleedit, NULL, NULL);
-	mcp_package_register("org-fuzzball-simpleedit", oneoh, oneoh, mcppkg_simpleedit, NULL, NULL);
-	mcp_package_register("dns-org-mud-moo-simpleedit", oneoh, oneoh, mcppkg_simpleedit, NULL, NULL);
+    mcp_package_register(MCP_NEGOTIATE_PKG, oneoh, twooh, mcp_negotiate_handler, NULL, NULL);
+    mcp_package_register("org-fuzzball-help", oneoh, oneoh, mcppkg_help_request, NULL, NULL);
+    mcp_package_register("org-fuzzball-notify", oneoh, oneoh, mcppkg_simpleedit, NULL, NULL);
+    mcp_package_register("org-fuzzball-simpleedit", oneoh, oneoh, mcppkg_simpleedit, NULL,
+			 NULL);
+    mcp_package_register("dns-org-mud-moo-simpleedit", oneoh, oneoh, mcppkg_simpleedit, NULL,
+			 NULL);
 }
 
 
@@ -282,15 +284,15 @@ mcp_initialize(void)
 void
 mcp_negotiation_start(McpFrame * mfr)
 {
-	McpMesg reply;
+    McpMesg reply;
 
-	mfr->enabled = 1;
-	mcp_mesg_init(&reply, MCP_INIT_PKG, "");
-	mcp_mesg_arg_append(&reply, "version", "2.1");
-	mcp_mesg_arg_append(&reply, "to", "2.1");
-	mcp_frame_output_mesg(mfr, &reply);
-	mcp_mesg_clear(&reply);
-	mfr->enabled = 0;
+    mfr->enabled = 1;
+    mcp_mesg_init(&reply, MCP_INIT_PKG, "");
+    mcp_mesg_arg_append(&reply, "version", "2.1");
+    mcp_mesg_arg_append(&reply, "to", "2.1");
+    mcp_frame_output_mesg(mfr, &reply);
+    mcp_mesg_clear(&reply);
+    mfr->enabled = 0;
 }
 
 
@@ -306,11 +308,11 @@ mcp_negotiation_start(McpFrame * mfr)
 /*****************************************************************/
 
 struct McpFrameList_t {
-	McpFrame* mfr;
-	struct McpFrameList_t* next;
+    McpFrame *mfr;
+    struct McpFrameList_t *next;
 };
 typedef struct McpFrameList_t McpFrameList;
-static McpFrameList* mcp_frame_list;
+static McpFrameList *mcp_frame_list;
 
 
 /*****************************************************************
@@ -326,20 +328,20 @@ static McpFrameList* mcp_frame_list;
 void
 mcp_frame_init(McpFrame * mfr, connection_t con)
 {
-	McpFrameList* mfrl;
+    McpFrameList *mfrl;
 
-	mfr->descriptor = con;
-	mfr->version.verminor = 0;
-	mfr->version.vermajor = 0;
-	mfr->authkey = NULL;
-	mfr->packages = NULL;
-	mfr->messages = NULL;
-	mfr->enabled = 0;
+    mfr->descriptor = con;
+    mfr->version.verminor = 0;
+    mfr->version.vermajor = 0;
+    mfr->authkey = NULL;
+    mfr->packages = NULL;
+    mfr->messages = NULL;
+    mfr->enabled = 0;
 
-	mfrl = (McpFrameList*)malloc(sizeof(McpFrameList));
-	mfrl->mfr = mfr;
-	mfrl->next = mcp_frame_list;
-	mcp_frame_list = mfrl;
+    mfrl = (McpFrameList *) malloc(sizeof(McpFrameList));
+    mfrl->mfr = mfr;
+    mfrl->next = mcp_frame_list;
+    mcp_frame_list = mfrl;
 }
 
 
@@ -358,49 +360,49 @@ mcp_frame_init(McpFrame * mfr, connection_t con)
 void
 mcp_frame_clear(McpFrame * mfr)
 {
-	McpPkg *tmp = mfr->packages;
-	McpMesg *tmp2 = mfr->messages;
-	McpFrameList* mfrl = mcp_frame_list;
-	McpFrameList* prev;
+    McpPkg *tmp = mfr->packages;
+    McpMesg *tmp2 = mfr->messages;
+    McpFrameList *mfrl = mcp_frame_list;
+    McpFrameList *prev;
 
-	if (mfr->authkey) {
-	        free(mfr->authkey);
-	        mfr->authkey = NULL;
-	}
-	while (tmp) {
-		mfr->packages = tmp->next;
-		if (tmp->pkgname)
-			free(tmp->pkgname);
-		free(tmp);
-		tmp = mfr->packages;
-	}
-	while (tmp2) {
-		mfr->messages = tmp2->next;
-		mcp_mesg_clear(tmp2);
-		free(tmp2);
-		tmp2 = mfr->messages;
-	}
+    if (mfr->authkey) {
+	free(mfr->authkey);
+	mfr->authkey = NULL;
+    }
+    while (tmp) {
+	mfr->packages = tmp->next;
+	if (tmp->pkgname)
+	    free(tmp->pkgname);
+	free(tmp);
+	tmp = mfr->packages;
+    }
+    while (tmp2) {
+	mfr->messages = tmp2->next;
+	mcp_mesg_clear(tmp2);
+	free(tmp2);
+	tmp2 = mfr->messages;
+    }
 
-	while (mfrl && mfrl->mfr == mfr) {
-		mcp_frame_list = mfrl->next;
-		free(mfrl);
-		mfrl = mcp_frame_list;
+    while (mfrl && mfrl->mfr == mfr) {
+	mcp_frame_list = mfrl->next;
+	free(mfrl);
+	mfrl = mcp_frame_list;
+    }
+    if (!mcp_frame_list) {
+	return;
+    }
+    prev = mcp_frame_list;
+    mfrl = prev->next;
+    while (mfrl) {
+	if (mfrl->mfr == mfr) {
+	    prev->next = mfrl->next;
+	    free(mfrl);
+	    mfrl = prev->next;
+	} else {
+	    prev = mfrl;
+	    mfrl = mfrl->next;
 	}
-	if (!mcp_frame_list) {
-		return;
-	}
-	prev = mcp_frame_list;
-	mfrl = prev->next;
-	while (mfrl) {
-		if (mfrl->mfr == mfr) {
-			prev->next = mfrl->next;
-			free(mfrl);
-			mfrl = prev->next;
-		} else {
-			prev = mfrl;
-			mfrl = mfrl->next;
-		}
-	}
+    }
 }
 
 
@@ -421,54 +423,54 @@ mcp_frame_clear(McpFrame * mfr)
  *****************************************************************/
 
 void
-mcp_frame_package_renegotiate(const char* package)
+mcp_frame_package_renegotiate(const char *package)
 {
-	McpVer nullver = { 0, 0 };
-	McpFrameList* mfrl = mcp_frame_list;
-	McpFrame* mfr;
-	McpMesg cando;
-	char verbuf[32];
-	McpPkg *p;
+    McpVer nullver = { 0, 0 };
+    McpFrameList *mfrl = mcp_frame_list;
+    McpFrame *mfr;
+    McpMesg cando;
+    char verbuf[32];
+    McpPkg *p;
 
-	p = mcp_PackageList;
-	while (p) {
-		if (!strcmp_nocase(p->pkgname, package)) {
-			break;
-		}
-		p = p->next;
+    p = mcp_PackageList;
+    while (p) {
+	if (!strcmp_nocase(p->pkgname, package)) {
+	    break;
 	}
+	p = p->next;
+    }
 
-	if (!p) {
-		mcp_mesg_init(&cando, MCP_NEGOTIATE_PKG, "can");
-		mcp_mesg_arg_append(&cando, "package", package);
-		mcp_mesg_arg_append(&cando, "min-version", "0.0");
-		mcp_mesg_arg_append(&cando, "max-version", "0.0");
-	} else {
-		mcp_mesg_init(&cando, MCP_NEGOTIATE_PKG, "can");
-		mcp_mesg_arg_append(&cando, "package", p->pkgname);
-		snprintf(verbuf, sizeof(verbuf), "%d.%d", p->minver.vermajor, p->minver.verminor);
-		mcp_mesg_arg_append(&cando, "min-version", verbuf);
-		snprintf(verbuf, sizeof(verbuf), "%d.%d", p->maxver.vermajor, p->maxver.verminor);
-		mcp_mesg_arg_append(&cando, "max-version", verbuf);
+    if (!p) {
+	mcp_mesg_init(&cando, MCP_NEGOTIATE_PKG, "can");
+	mcp_mesg_arg_append(&cando, "package", package);
+	mcp_mesg_arg_append(&cando, "min-version", "0.0");
+	mcp_mesg_arg_append(&cando, "max-version", "0.0");
+    } else {
+	mcp_mesg_init(&cando, MCP_NEGOTIATE_PKG, "can");
+	mcp_mesg_arg_append(&cando, "package", p->pkgname);
+	snprintf(verbuf, sizeof(verbuf), "%d.%d", p->minver.vermajor, p->minver.verminor);
+	mcp_mesg_arg_append(&cando, "min-version", verbuf);
+	snprintf(verbuf, sizeof(verbuf), "%d.%d", p->maxver.vermajor, p->maxver.verminor);
+	mcp_mesg_arg_append(&cando, "max-version", verbuf);
+    }
+
+    while (mfrl) {
+	mfr = mfrl->mfr;
+	if (mfr->enabled) {
+	    if (mcp_version_compare(mfr->version, nullver) > 0) {
+		mcp_frame_package_remove(mfr, package);
+		mcp_frame_output_mesg(mfr, &cando);
+	    }
 	}
+	mfrl = mfrl->next;
+    }
+    mcp_mesg_clear(&cando);
 
-	while (mfrl) {
-		mfr = mfrl->mfr;
-		if (mfr->enabled) {
-			if (mcp_version_compare(mfr->version, nullver) > 0) {
-				mcp_frame_package_remove(mfr, package);
-				mcp_frame_output_mesg(mfr, &cando);
-			}
-		}
-		mfrl = mfrl->next;
-	}
-	mcp_mesg_clear(&cando);
-
-	/*
-	mcp_mesg_init(&cando, MCP_NEGOTIATE_PKG, "end");
-	mcp_frame_output_mesg(mfr, &cando);
-	mcp_mesg_clear(&cando);
-	*/
+    /*
+       mcp_mesg_init(&cando, MCP_NEGOTIATE_PKG, "end");
+       mcp_frame_output_mesg(mfr, &cando);
+       mcp_mesg_clear(&cando);
+     */
 }
 
 
@@ -495,44 +497,44 @@ mcp_frame_package_renegotiate(const char* package)
 int
 mcp_frame_package_add(McpFrame * mfr, const char *package, McpVer minver, McpVer maxver)
 {
-	McpPkg *nu;
-	McpPkg *ptr;
-	McpVer selver;
+    McpPkg *nu;
+    McpPkg *ptr;
+    McpVer selver;
 
-	if (!mfr->enabled) {
-		return EMCP_NOMCP;
+    if (!mfr->enabled) {
+	return EMCP_NOMCP;
+    }
+
+    for (ptr = mcp_PackageList; ptr; ptr = ptr->next) {
+	if (!strcmp_nocase(ptr->pkgname, package)) {
+	    break;
 	}
+    }
+    if (!ptr) {
+	return EMCP_NOPACKAGE;
+    }
 
-	for (ptr = mcp_PackageList; ptr; ptr = ptr->next) {
-		if (!strcmp_nocase(ptr->pkgname, package)) {
-			break;
-		}
-	}
-	if (!ptr) {
-		return EMCP_NOPACKAGE;
-	}
+    mcp_frame_package_remove(mfr, package);
 
-	mcp_frame_package_remove(mfr, package);
+    selver = mcp_version_select(ptr->minver, ptr->maxver, minver, maxver);
+    nu = (McpPkg *) malloc(sizeof(McpPkg));
+    nu->pkgname = string_dup(ptr->pkgname);
+    nu->minver = selver;
+    nu->maxver = selver;
+    nu->callback = ptr->callback;
+    nu->context = ptr->context;
+    nu->next = NULL;
 
-	selver = mcp_version_select(ptr->minver, ptr->maxver, minver, maxver);
-	nu = (McpPkg *) malloc(sizeof(McpPkg));
-	nu->pkgname = string_dup(ptr->pkgname);
-	nu->minver = selver;
-	nu->maxver = selver;
-	nu->callback = ptr->callback;
-	nu->context = ptr->context;
-	nu->next = NULL;
+    if (!mfr->packages) {
+	mfr->packages = nu;
+    } else {
+	McpPkg *lastpkg = mfr->packages;
 
-	if (!mfr->packages) {
-		mfr->packages = nu;
-	} else {
-		McpPkg *lastpkg = mfr->packages;
-
-		while (lastpkg->next)
-			lastpkg = lastpkg->next;
-		lastpkg->next = nu;
-	}
-	return EMCP_SUCCESS;
+	while (lastpkg->next)
+	    lastpkg = lastpkg->next;
+	lastpkg->next = nu;
+    }
+    return EMCP_SUCCESS;
 }
 
 
@@ -554,29 +556,29 @@ mcp_frame_package_add(McpFrame * mfr, const char *package, McpVer minver, McpVer
 void
 mcp_frame_package_remove(McpFrame * mfr, const char *package)
 {
-	McpPkg *tmp;
-	McpPkg *prev;
+    McpPkg *tmp;
+    McpPkg *prev;
 
-	while (mfr->packages && !strcmp_nocase(mfr->packages->pkgname, package)) {
-		tmp = mfr->packages;
-		mfr->packages = tmp->next;
-		if (tmp->pkgname)
-			free(tmp->pkgname);
-		free(tmp);
-	}
+    while (mfr->packages && !strcmp_nocase(mfr->packages->pkgname, package)) {
+	tmp = mfr->packages;
+	mfr->packages = tmp->next;
+	if (tmp->pkgname)
+	    free(tmp->pkgname);
+	free(tmp);
+    }
 
-	prev = mfr->packages;
-	while (prev && prev->next) {
-		if (!strcmp_nocase(prev->next->pkgname, package)) {
-			tmp = prev->next;
-			prev->next = tmp->next;
-			if (tmp->pkgname)
-				free(tmp->pkgname);
-			free(tmp);
-		} else {
-			prev = prev->next;
-		}
+    prev = mfr->packages;
+    while (prev && prev->next) {
+	if (!strcmp_nocase(prev->next->pkgname, package)) {
+	    tmp = prev->next;
+	    prev->next = tmp->next;
+	    if (tmp->pkgname)
+		free(tmp->pkgname);
+	    free(tmp);
+	} else {
+	    prev = prev->next;
 	}
+    }
 }
 
 
@@ -598,23 +600,23 @@ mcp_frame_package_remove(McpFrame * mfr, const char *package)
 McpVer
 mcp_frame_package_supported(McpFrame * mfr, const char *package)
 {
-	McpPkg *ptr;
-	McpVer errver = { 0, 0 };
+    McpPkg *ptr;
+    McpVer errver = { 0, 0 };
 
-	if (!mfr->enabled) {
-		return errver;
-	}
+    if (!mfr->enabled) {
+	return errver;
+    }
 
-	for (ptr = mfr->packages; ptr; ptr = ptr->next) {
-		if (!strcmp_nocase(ptr->pkgname, package)) {
-			break;
-		}
+    for (ptr = mfr->packages; ptr; ptr = ptr->next) {
+	if (!strcmp_nocase(ptr->pkgname, package)) {
+	    break;
 	}
-	if (!ptr) {
-		return errver;
-	}
+    }
+    if (!ptr) {
+	return errver;
+    }
 
-	return (ptr->minver);
+    return (ptr->minver);
 }
 
 
@@ -638,33 +640,33 @@ mcp_frame_package_supported(McpFrame * mfr, const char *package)
 int
 mcp_frame_package_docallback(McpFrame * mfr, McpMesg * msg)
 {
-	McpPkg *ptr = NULL;
+    McpPkg *ptr = NULL;
 
-	if (!strcmp_nocase(msg->package, MCP_INIT_PKG)) {
-		mcp_basic_handler(mfr, msg);
-	} else {
-		if (!mfr->enabled) {
-			return EMCP_NOMCP;
-		}
-
-		for (ptr = mfr->packages; ptr; ptr = ptr->next) {
-			if (!strcmp_nocase(ptr->pkgname, msg->package)) {
-				break;
-			}
-		}
-		if (!ptr) {
-			if (!strcmp_nocase(msg->package, MCP_NEGOTIATE_PKG)) {
-				McpVer twooh = { 2, 0 };
-
-				mcp_negotiate_handler(mfr, msg, twooh, NULL);
-			} else {
-				return EMCP_NOPACKAGE;
-			}
-		} else {
-			ptr->callback(mfr, msg, ptr->maxver, ptr->context);
-		}
+    if (!strcmp_nocase(msg->package, MCP_INIT_PKG)) {
+	mcp_basic_handler(mfr, msg);
+    } else {
+	if (!mfr->enabled) {
+	    return EMCP_NOMCP;
 	}
-	return EMCP_SUCCESS;
+
+	for (ptr = mfr->packages; ptr; ptr = ptr->next) {
+	    if (!strcmp_nocase(ptr->pkgname, msg->package)) {
+		break;
+	    }
+	}
+	if (!ptr) {
+	    if (!strcmp_nocase(msg->package, MCP_NEGOTIATE_PKG)) {
+		McpVer twooh = { 2, 0 };
+
+		mcp_negotiate_handler(mfr, msg, twooh, NULL);
+	    } else {
+		return EMCP_NOPACKAGE;
+	    }
+	} else {
+	    ptr->callback(mfr, msg, ptr->maxver, ptr->context);
+	}
+    }
+    return EMCP_SUCCESS;
 }
 
 
@@ -690,29 +692,29 @@ mcp_frame_package_docallback(McpFrame * mfr, McpMesg * msg)
 int
 mcp_frame_process_input(McpFrame * mfr, const char *linein, char *outbuf, int bufsize)
 {
-	if (!strncmp_nocase(linein, MCP_MESG_PREFIX, 3)) {
-		/* treat it as an out-of-band message, and parse it. */
-		if (mfr->enabled || !strncmp_nocase(MCP_INIT_MESG, linein + 3, 4)) {
-			if (!mcp_internal_parse(mfr, linein + 3)) {
-				strncpy(outbuf, linein, bufsize);
-				outbuf[bufsize - 1] = '\0';
-				return 1;
-			}
-			return 0;
-		} else {
-			strncpy(outbuf, linein, bufsize);
-			outbuf[bufsize - 1] = '\0';
-			return 1;
-		}
-	} else if (mfr->enabled && !strncmp_nocase(linein, MCP_QUOTE_PREFIX, 3)) {
-		/* It's quoted in-band data.  Strip the quoting. */
-		strncpy(outbuf, linein + 3, bufsize);
-	} else {
-		/* It's in-band data.  Return it raw. */
+    if (!strncmp_nocase(linein, MCP_MESG_PREFIX, 3)) {
+	/* treat it as an out-of-band message, and parse it. */
+	if (mfr->enabled || !strncmp_nocase(MCP_INIT_MESG, linein + 3, 4)) {
+	    if (!mcp_internal_parse(mfr, linein + 3)) {
 		strncpy(outbuf, linein, bufsize);
+		outbuf[bufsize - 1] = '\0';
+		return 1;
+	    }
+	    return 0;
+	} else {
+	    strncpy(outbuf, linein, bufsize);
+	    outbuf[bufsize - 1] = '\0';
+	    return 1;
 	}
-	outbuf[bufsize - 1] = '\0';
-	return 1;
+    } else if (mfr->enabled && !strncmp_nocase(linein, MCP_QUOTE_PREFIX, 3)) {
+	/* It's quoted in-band data.  Strip the quoting. */
+	strncpy(outbuf, linein + 3, bufsize);
+    } else {
+	/* It's in-band data.  Return it raw. */
+	strncpy(outbuf, linein, bufsize);
+    }
+    outbuf[bufsize - 1] = '\0';
+    return 1;
 }
 
 
@@ -734,15 +736,15 @@ mcp_frame_process_input(McpFrame * mfr, const char *linein, char *outbuf, int bu
 void
 mcp_frame_output_inband(McpFrame * mfr, const char *lineout)
 {
-	if (!mfr->enabled ||
-		(strncmp(lineout, MCP_MESG_PREFIX, 3) && strncmp(lineout, MCP_QUOTE_PREFIX, 3))
-			) {
-		SendText(mfr, lineout);
-	} else {
-		SendText(mfr, MCP_QUOTE_PREFIX);
-		SendText(mfr, lineout);
-	}
-	/* SendText(mfr, "\r\n"); */
+    if (!mfr->enabled ||
+	(strncmp(lineout, MCP_MESG_PREFIX, 3) && strncmp(lineout, MCP_QUOTE_PREFIX, 3))
+	    ) {
+	SendText(mfr, lineout);
+    } else {
+	SendText(mfr, MCP_QUOTE_PREFIX);
+	SendText(mfr, lineout);
+    }
+    /* SendText(mfr, "\r\n"); */
 }
 
 
@@ -767,141 +769,142 @@ mcp_frame_output_inband(McpFrame * mfr, const char *lineout)
 int
 mcp_frame_output_mesg(McpFrame * mfr, McpMesg * msg)
 {
-	char outbuf[BUFFER_LEN * 2];
-	int bufrem = sizeof(outbuf);
-	char mesgname[128];
-	char datatag[32];
-	McpArg *anarg = NULL;
-	int mlineflag = 0;
-	char *p;
-	char *out;
-	int flushcount = 8;
+    char outbuf[BUFFER_LEN * 2];
+    int bufrem = sizeof(outbuf);
+    char mesgname[128];
+    char datatag[32];
+    McpArg *anarg = NULL;
+    int mlineflag = 0;
+    char *p;
+    char *out;
+    int flushcount = 8;
 
-	if (!mfr->enabled && strcmp_nocase(msg->package, MCP_INIT_PKG)) {
-		return EMCP_NOMCP;
+    if (!mfr->enabled && strcmp_nocase(msg->package, MCP_INIT_PKG)) {
+	return EMCP_NOMCP;
+    }
+
+    /* Create the message name from the package and message subnames */
+    if (msg->mesgname && *msg->mesgname) {
+	snprintf(mesgname, sizeof(mesgname), "%s-%s", msg->package, msg->mesgname);
+    } else {
+	snprintf(mesgname, sizeof(mesgname), "%s", msg->package);
+    }
+
+    strcpyn(outbuf, sizeof(outbuf), MCP_MESG_PREFIX);
+    strcatn(outbuf, sizeof(outbuf), mesgname);
+    if (strcmp_nocase(mesgname, MCP_INIT_PKG)) {
+	McpVer nullver = { 0, 0 };
+
+	strcatn(outbuf, sizeof(outbuf), " ");
+	strcatn(outbuf, sizeof(outbuf), mfr->authkey);
+	if (strcmp_nocase(msg->package, MCP_NEGOTIATE_PKG)) {
+	    McpVer ver = mcp_frame_package_supported(mfr, msg->package);
+
+	    if (!mcp_version_compare(ver, nullver)) {
+		return EMCP_NOPACKAGE;
+	    }
 	}
+    }
 
-	/* Create the message name from the package and message subnames */
-	if (msg->mesgname && *msg->mesgname) {
-		snprintf(mesgname, sizeof(mesgname), "%s-%s", msg->package, msg->mesgname);
-	} else {
-		snprintf(mesgname, sizeof(mesgname), "%s", msg->package);
-	}
+    /* If the argument lines contain newlines, split them into separate lines. */
+    for (anarg = msg->args; anarg; anarg = anarg->next) {
+	if (anarg->value) {
+	    McpArgPart *ap = anarg->value;
 
-	strcpyn(outbuf, sizeof(outbuf), MCP_MESG_PREFIX);
-	strcatn(outbuf, sizeof(outbuf), mesgname);
-	if (strcmp_nocase(mesgname, MCP_INIT_PKG)) {
-		McpVer nullver = { 0, 0 };
+	    while (ap) {
+		p = ap->value;
+		while (*p) {
+		    if (*p == '\n' || *p == '\r') {
+			McpArgPart *nu = (McpArgPart *) malloc(sizeof(McpArgPart));
 
-		strcatn(outbuf, sizeof(outbuf), " ");
-		strcatn(outbuf, sizeof(outbuf), mfr->authkey);
-		if (strcmp_nocase(msg->package, MCP_NEGOTIATE_PKG)) {
-			McpVer ver = mcp_frame_package_supported(mfr, msg->package);
-
-			if (!mcp_version_compare(ver, nullver)) {
-				return EMCP_NOPACKAGE;
-			}
+			nu->next = ap->next;
+			ap->next = nu;
+			*p++ = '\0';
+			nu->value = string_dup(p);
+			ap->value = (char *) realloc(ap->value, strlen(ap->value) + 1);
+			ap = nu;
+			p = nu->value;
+		    } else {
+			p++;
+		    }
 		}
+		ap = ap->next;
+	    }
 	}
+    }
 
-	/* If the argument lines contain newlines, split them into separate lines. */
-	for (anarg = msg->args; anarg; anarg = anarg->next) {
-		if (anarg->value) {
-			McpArgPart *ap = anarg->value;
-
-			while (ap) {
-				p = ap->value;
-				while (*p) {
-					if (*p == '\n' || *p == '\r') {
-						McpArgPart *nu = (McpArgPart *) malloc(sizeof(McpArgPart));
-
-						nu->next = ap->next;
-						ap->next = nu;
-						*p++ = '\0';
-						nu->value = string_dup(p);
-						ap->value = (char *) realloc(ap->value, strlen(ap->value) + 1);
-						ap = nu;
-						p = nu->value;
-					} else {
-						p++;
-					}
-				}
-				ap = ap->next;
-			}
-		}
-	}
-
-	/* Build the initial message string */
-	out = outbuf;
+    /* Build the initial message string */
+    out = outbuf;
+    bufrem = outbuf + sizeof(outbuf) - out;
+    for (anarg = msg->args; anarg; anarg = anarg->next) {
+	out += strlen(out);
 	bufrem = outbuf + sizeof(outbuf) - out;
-	for (anarg = msg->args; anarg; anarg = anarg->next) {
+	if (!anarg->value) {
+	    anarg->was_shown = 1;
+	    snprintf(out, bufrem, " %s: %s", anarg->name, MCP_ARG_EMPTY);
+	    out += strlen(out);
+	    bufrem = outbuf + sizeof(outbuf) - out;
+	} else {
+	    int totlen = strlen(anarg->value->value) + strlen(anarg->name) + 5;
+
+	    if (anarg->value->next || totlen > ((BUFFER_LEN - (out - outbuf)) / 2)) {
+		/* Value is multi-line or too long.  Send on separate line(s). */
+		mlineflag = 1;
+		anarg->was_shown = 0;
+		snprintf(out, bufrem, " %s*: %s", anarg->name, MCP_ARG_EMPTY);
+	    } else {
+		anarg->was_shown = 1;
+		snprintf(out, bufrem, " %s: ", anarg->name);
 		out += strlen(out);
 		bufrem = outbuf + sizeof(outbuf) - out;
-		if (!anarg->value) {
-			anarg->was_shown = 1;
-			snprintf(out, bufrem, " %s: %s", anarg->name, MCP_ARG_EMPTY);
-			out += strlen(out);
-			bufrem = outbuf + sizeof(outbuf) - out;
-		} else {
-			int totlen = strlen(anarg->value->value) + strlen(anarg->name) + 5;
 
-			if (anarg->value->next || totlen > ((BUFFER_LEN - (out - outbuf)) / 2)) {
-				/* Value is multi-line or too long.  Send on separate line(s). */
-				mlineflag = 1;
-				anarg->was_shown = 0;
-				snprintf(out, bufrem, " %s*: %s", anarg->name, MCP_ARG_EMPTY);
-			} else {
-				anarg->was_shown = 1;
-				snprintf(out, bufrem, " %s: ", anarg->name);
-				out += strlen(out);
-				bufrem = outbuf + sizeof(outbuf) - out;
+		msgarg_escape(out, bufrem, anarg->value->value);
+		out += strlen(out);
+	    }
+	    out += strlen(out);
+	    bufrem = outbuf + sizeof(outbuf) - out;
+	}
+    }
 
-				msgarg_escape(out, bufrem, anarg->value->value);
-				out += strlen(out);
-			}
-			out += strlen(out);
-			bufrem = outbuf + sizeof(outbuf) - out;
+    /* If the message is multi-line, make sure it has a _data-tag field. */
+    if (mlineflag) {
+	snprintf(datatag, sizeof(datatag), "%.8lX", (unsigned long) (RANDOM() ^ RANDOM()));
+	snprintf(out, bufrem, " %s: %s", MCP_DATATAG, datatag);
+    }
+
+    /* Send the initial line. */
+    SendText(mfr, outbuf);
+    SendText(mfr, "\r\n");
+
+    if (mlineflag) {
+	/* Start sending arguments whose values weren't already sent. */
+	/* This is usually just multi-line argument values. */
+	for (anarg = msg->args; anarg; anarg = anarg->next) {
+	    if (!anarg->was_shown) {
+		McpArgPart *ap = anarg->value;
+
+		while (ap) {
+		    *outbuf = '\0';
+		    snprintf(outbuf, sizeof(outbuf), "%s* %s %s: %s", MCP_MESG_PREFIX, datatag,
+			     anarg->name, ap->value);
+		    SendText(mfr, outbuf);
+		    SendText(mfr, "\r\n");
+		    if (!--flushcount) {
+			FlushText(mfr);
+			flushcount = 8;
+		    }
+		    ap = ap->next;
 		}
+	    }
 	}
 
-	/* If the message is multi-line, make sure it has a _data-tag field. */
-	if (mlineflag) {
-		snprintf(datatag, sizeof(datatag), "%.8lX", (unsigned long)(RANDOM() ^ RANDOM()));
-		snprintf(out, bufrem, " %s: %s", MCP_DATATAG, datatag);
-	}
-
-	/* Send the initial line. */
+	/* Let the other side know we're done sending multi-line arg vals. */
+	snprintf(outbuf, sizeof(outbuf), "%s: %s", MCP_MESG_PREFIX, datatag);
 	SendText(mfr, outbuf);
 	SendText(mfr, "\r\n");
+    }
 
-	if (mlineflag) {
-		/* Start sending arguments whose values weren't already sent. */
-		/* This is usually just multi-line argument values. */
-		for (anarg = msg->args; anarg; anarg = anarg->next) {
-			if (!anarg->was_shown) {
-				McpArgPart *ap = anarg->value;
-
-				while (ap) {
-					*outbuf = '\0';
-					snprintf(outbuf, sizeof(outbuf), "%s* %s %s: %s", MCP_MESG_PREFIX, datatag, anarg->name, ap->value);
-					SendText(mfr, outbuf);
-					SendText(mfr, "\r\n");
-					if (!--flushcount) {
-						FlushText(mfr);
-						flushcount = 8;
-					}
-					ap = ap->next;
-				}
-			}
-		}
-
-		/* Let the other side know we're done sending multi-line arg vals. */
-		snprintf(outbuf, sizeof(outbuf), "%s: %s", MCP_MESG_PREFIX, datatag);
-		SendText(mfr, outbuf);
-		SendText(mfr, "\r\n");
-	}
-
-	return EMCP_SUCCESS;
+    return EMCP_SUCCESS;
 }
 
 
@@ -937,13 +940,13 @@ mcp_frame_output_mesg(McpFrame * mfr, McpMesg * msg)
 void
 mcp_mesg_init(McpMesg * msg, const char *package, const char *mesgname)
 {
-	msg->package = string_dup(package);
-	msg->mesgname = string_dup(mesgname);
-	msg->datatag = NULL;
-	msg->args = NULL;
-	msg->incomplete = 0;
-	msg->bytes = 0;
-	msg->next = NULL;
+    msg->package = string_dup(package);
+    msg->mesgname = string_dup(mesgname);
+    msg->datatag = NULL;
+    msg->args = NULL;
+    msg->incomplete = 0;
+    msg->bytes = 0;
+    msg->next = NULL;
 }
 
 
@@ -964,30 +967,30 @@ mcp_mesg_init(McpMesg * msg, const char *package, const char *mesgname)
 void
 mcp_mesg_clear(McpMesg * msg)
 {
-	if (msg->package)
-		free(msg->package);
-	if (msg->mesgname)
-		free(msg->mesgname);
-	if (msg->datatag)
-		free(msg->datatag);
+    if (msg->package)
+	free(msg->package);
+    if (msg->mesgname)
+	free(msg->mesgname);
+    if (msg->datatag)
+	free(msg->datatag);
 
-	while (msg->args) {
-		McpArg *tmp = msg->args;
+    while (msg->args) {
+	McpArg *tmp = msg->args;
 
-		msg->args = tmp->next;
-		if (tmp->name)
-			free(tmp->name);
-		while (tmp->value) {
-			McpArgPart *ptr2 = tmp->value;
+	msg->args = tmp->next;
+	if (tmp->name)
+	    free(tmp->name);
+	while (tmp->value) {
+	    McpArgPart *ptr2 = tmp->value;
 
-			tmp->value = tmp->value->next;
-			if (ptr2->value)
-				free(ptr2->value);
-			free(ptr2);
-		}
-		free(tmp);
+	    tmp->value = tmp->value->next;
+	    if (ptr2->value)
+		free(ptr2->value);
+	    free(ptr2);
 	}
-	msg->bytes = 0;
+	free(tmp);
+    }
+    msg->bytes = 0;
 }
 
 
@@ -1021,21 +1024,21 @@ mcp_mesg_clear(McpMesg * msg)
 int
 mcp_mesg_arg_linecount(McpMesg * msg, const char *name)
 {
-	McpArg *ptr = msg->args;
-	int cnt = 0;
+    McpArg *ptr = msg->args;
+    int cnt = 0;
 
-	while (ptr && strcmp_nocase(ptr->name, name)) {
-		ptr = ptr->next;
-	}
-	if (ptr) {
-		McpArgPart *ptr2 = ptr->value;
+    while (ptr && strcmp_nocase(ptr->name, name)) {
+	ptr = ptr->next;
+    }
+    if (ptr) {
+	McpArgPart *ptr2 = ptr->value;
 
-		while (ptr2) {
-			ptr2 = ptr2->next;
-			cnt++;
-		}
+	while (ptr2) {
+	    ptr2 = ptr2->next;
+	    cnt++;
 	}
-	return cnt;
+    }
+    return cnt;
 }
 
 
@@ -1056,24 +1059,24 @@ mcp_mesg_arg_linecount(McpMesg * msg, const char *name)
 char *
 mcp_mesg_arg_getline(McpMesg * msg, const char *argname, int linenum)
 {
-	McpArg *ptr = msg->args;
+    McpArg *ptr = msg->args;
 
-	while (ptr && strcmp_nocase(ptr->name, argname)) {
-		ptr = ptr->next;
+    while (ptr && strcmp_nocase(ptr->name, argname)) {
+	ptr = ptr->next;
+    }
+    if (ptr) {
+	McpArgPart *ptr2 = ptr->value;
+
+	while (linenum > 0 && ptr2) {
+	    ptr2 = ptr2->next;
+	    linenum--;
 	}
-	if (ptr) {
-		McpArgPart *ptr2 = ptr->value;
-
-		while (linenum > 0 && ptr2) {
-			ptr2 = ptr2->next;
-			linenum--;
-		}
-		if (ptr2) {
-			return (ptr2->value);
-		}
-		return NULL;
+	if (ptr2) {
+	    return (ptr2->value);
 	}
 	return NULL;
+    }
+    return NULL;
 }
 
 
@@ -1100,65 +1103,65 @@ mcp_mesg_arg_getline(McpMesg * msg, const char *argname, int linenum)
 int
 mcp_mesg_arg_append(McpMesg * msg, const char *argname, const char *argval)
 {
-	McpArg *ptr = msg->args;
-	int namelen = strlen(argname);
-	int vallen = argval? strlen(argval) : 0;
+    McpArg *ptr = msg->args;
+    int namelen = strlen(argname);
+    int vallen = argval ? strlen(argval) : 0;
 
-	if (namelen > MAX_MCP_ARGNAME_LEN) {
-		return EMCP_ARGNAMELEN;
+    if (namelen > MAX_MCP_ARGNAME_LEN) {
+	return EMCP_ARGNAMELEN;
+    }
+    if (vallen + msg->bytes > MAX_MCP_MESG_SIZE) {
+	return EMCP_MESGSIZE;
+    }
+    while (ptr && strcmp_nocase(ptr->name, argname)) {
+	ptr = ptr->next;
+    }
+    if (!ptr) {
+	if (namelen + vallen + msg->bytes > MAX_MCP_MESG_SIZE) {
+	    return EMCP_MESGSIZE;
 	}
-	if (vallen + msg->bytes > MAX_MCP_MESG_SIZE) {
-		return EMCP_MESGSIZE;
-	}
-	while (ptr && strcmp_nocase(ptr->name, argname)) {
-		ptr = ptr->next;
-	}
-	if (!ptr) {
-		if (namelen + vallen + msg->bytes > MAX_MCP_MESG_SIZE) {
-			return EMCP_MESGSIZE;
+	ptr = (McpArg *) malloc(sizeof(McpArg));
+	ptr->name = (char *) malloc(namelen + 1);
+	strcpyn(ptr->name, namelen + 1, argname);
+	ptr->value = NULL;
+	ptr->last = NULL;
+	ptr->next = NULL;
+	if (!msg->args) {
+	    msg->args = ptr;
+	} else {
+	    int limit = MAX_MCP_MESG_ARGS;
+	    McpArg *lastarg = msg->args;
+
+	    while (lastarg->next) {
+		if (limit-- <= 0) {
+		    free(ptr->name);
+		    free(ptr);
+		    return EMCP_ARGCOUNT;
 		}
-		ptr = (McpArg *) malloc(sizeof(McpArg));
-		ptr->name = (char *) malloc(namelen + 1);
-		strcpyn(ptr->name, namelen+1, argname);
-		ptr->value = NULL;
-		ptr->last = NULL;
-		ptr->next = NULL;
-		if (!msg->args) {
-			msg->args = ptr;
-		} else {
-			int limit = MAX_MCP_MESG_ARGS;
-			McpArg *lastarg = msg->args;
-
-			while (lastarg->next) {
-				if (limit-- <= 0) {
-					free(ptr->name);
-					free(ptr);
-					return EMCP_ARGCOUNT;
-				}
-				lastarg = lastarg->next;
-			}
-			lastarg->next = ptr;
-		}
-		msg->bytes += sizeof(McpArg) + namelen + 1;
+		lastarg = lastarg->next;
+	    }
+	    lastarg->next = ptr;
 	}
+	msg->bytes += sizeof(McpArg) + namelen + 1;
+    }
 
-	if (argval) {
-		McpArgPart *nu = (McpArgPart *) malloc(sizeof(McpArgPart));
+    if (argval) {
+	McpArgPart *nu = (McpArgPart *) malloc(sizeof(McpArgPart));
 
-		nu->value = (char *) malloc(vallen + 1);
-		strcpyn(nu->value, vallen+1, argval);
-		nu->next = NULL;
+	nu->value = (char *) malloc(vallen + 1);
+	strcpyn(nu->value, vallen + 1, argval);
+	nu->next = NULL;
 
-		if (!ptr->last) {
-			ptr->value = ptr->last = nu;
-		} else {
-			ptr->last->next = nu;
-			ptr->last = nu;
-		}
-		msg->bytes += sizeof(McpArgPart) + vallen + 1;
+	if (!ptr->last) {
+	    ptr->value = ptr->last = nu;
+	} else {
+	    ptr->last->next = nu;
+	    ptr->last = nu;
 	}
-	ptr->was_shown = 0;
-	return EMCP_SUCCESS;
+	msg->bytes += sizeof(McpArgPart) + vallen + 1;
+    }
+    ptr->was_shown = 0;
+    return EMCP_SUCCESS;
 }
 
 
@@ -1178,61 +1181,61 @@ mcp_mesg_arg_append(McpMesg * msg, const char *argname, const char *argval)
 void
 mcp_mesg_arg_remove(McpMesg * msg, const char *argname)
 {
-	McpArg *ptr = msg->args;
-	McpArg *prev = NULL;
+    McpArg *ptr = msg->args;
+    McpArg *prev = NULL;
 
-	while (ptr && !strcmp_nocase(ptr->name, argname)) {
-		msg->args = ptr->next;
-		msg->bytes -= sizeof(McpArg);
-		if (ptr->name) {
-			free(ptr->name);
-			msg->bytes -= strlen(ptr->name) + 1;
-		}
-		while (ptr->value) {
-			McpArgPart *ptr2 = ptr->value;
-
-			ptr->value = ptr->value->next;
-			msg->bytes -= sizeof(McpArgPart);
-			if (ptr2->value) {
-				msg->bytes -= strlen(ptr2->value) + 1;
-				free(ptr2->value);
-			}
-			free(ptr2);
-		}
-		free(ptr);
-		ptr = msg->args;
+    while (ptr && !strcmp_nocase(ptr->name, argname)) {
+	msg->args = ptr->next;
+	msg->bytes -= sizeof(McpArg);
+	if (ptr->name) {
+	    free(ptr->name);
+	    msg->bytes -= strlen(ptr->name) + 1;
 	}
+	while (ptr->value) {
+	    McpArgPart *ptr2 = ptr->value;
 
-	prev = msg->args;
-	if (ptr)
-		ptr = ptr->next;
-
-	while (ptr) {
-		if (!strcmp_nocase(argname, ptr->name)) {
-			prev->next = ptr->next;
-			msg->bytes -= sizeof(McpArg);
-			if (ptr->name) {
-				msg->bytes -= strlen(ptr->name) + 1;
-				free(ptr->name);
-			}
-			while (ptr->value) {
-				McpArgPart *ptr2 = ptr->value;
-
-				ptr->value = ptr->value->next;
-				msg->bytes -= sizeof(McpArgPart);
-				if (ptr2->value) {
-					msg->bytes -= strlen(ptr2->value) + 1;
-					free(ptr2->value);
-				}
-				free(ptr2);
-			}
-			free(ptr);
-			ptr = prev->next;
-		} else {
-			prev = ptr;
-			ptr = ptr->next;
-		}
+	    ptr->value = ptr->value->next;
+	    msg->bytes -= sizeof(McpArgPart);
+	    if (ptr2->value) {
+		msg->bytes -= strlen(ptr2->value) + 1;
+		free(ptr2->value);
+	    }
+	    free(ptr2);
 	}
+	free(ptr);
+	ptr = msg->args;
+    }
+
+    prev = msg->args;
+    if (ptr)
+	ptr = ptr->next;
+
+    while (ptr) {
+	if (!strcmp_nocase(argname, ptr->name)) {
+	    prev->next = ptr->next;
+	    msg->bytes -= sizeof(McpArg);
+	    if (ptr->name) {
+		msg->bytes -= strlen(ptr->name) + 1;
+		free(ptr->name);
+	    }
+	    while (ptr->value) {
+		McpArgPart *ptr2 = ptr->value;
+
+		ptr->value = ptr->value->next;
+		msg->bytes -= sizeof(McpArgPart);
+		if (ptr2->value) {
+		    msg->bytes -= strlen(ptr2->value) + 1;
+		    free(ptr2->value);
+		}
+		free(ptr2);
+	    }
+	    free(ptr);
+	    ptr = prev->next;
+	} else {
+	    prev = ptr;
+	    ptr = ptr->next;
+	}
+    }
 }
 
 
@@ -1262,10 +1265,10 @@ mcp_mesg_arg_remove(McpMesg * msg, const char *argname)
 int
 mcp_version_compare(McpVer v1, McpVer v2)
 {
-	if (v1.vermajor != v2.vermajor) {
-		return (v1.vermajor - v2.vermajor);
-	}
-	return (v1.verminor - v2.verminor);
+    if (v1.vermajor != v2.vermajor) {
+	return (v1.vermajor - v2.vermajor);
+    }
+    return (v1.verminor - v2.verminor);
 }
 
 
@@ -1290,25 +1293,25 @@ mcp_version_compare(McpVer v1, McpVer v2)
 McpVer
 mcp_version_select(McpVer min1, McpVer max1, McpVer min2, McpVer max2)
 {
-	McpVer result = { 0, 0 };
+    McpVer result = { 0, 0 };
 
-	if (mcp_version_compare(min1, max1) > 0) {
-		return result;
-	}
-	if (mcp_version_compare(min2, max2) > 0) {
-		return result;
-	}
-	if (mcp_version_compare(min1, max2) > 0) {
-		return result;
-	}
-	if (mcp_version_compare(min2, max1) > 0) {
-		return result;
-	}
-	if (mcp_version_compare(max1, max2) > 0) {
-		return max2;
-	} else {
-		return max1;
-	}
+    if (mcp_version_compare(min1, max1) > 0) {
+	return result;
+    }
+    if (mcp_version_compare(min2, max2) > 0) {
+	return result;
+    }
+    if (mcp_version_compare(min1, max2) > 0) {
+	return result;
+    }
+    if (mcp_version_compare(min2, max1) > 0) {
+	return result;
+    }
+    if (mcp_version_compare(max1, max2) > 0) {
+	return max2;
+    } else {
+	return max1;
+    }
 }
 
 
@@ -1324,79 +1327,81 @@ mcp_version_select(McpVer min1, McpVer max1, McpVer min2, McpVer max2)
 void
 mcp_basic_handler(McpFrame * mfr, McpMesg * mesg)
 {
-	McpVer myminver = { 2, 1 };
-	McpVer mymaxver = { 2, 1 };
-	McpVer minver = { 0, 0 };
-	McpVer maxver = { 0, 0 };
-	McpVer nullver = { 0, 0 };
-	const char *ptr;
-	const char *auth;
+    McpVer myminver = { 2, 1 };
+    McpVer mymaxver = { 2, 1 };
+    McpVer minver = { 0, 0 };
+    McpVer maxver = { 0, 0 };
+    McpVer nullver = { 0, 0 };
+    const char *ptr;
+    const char *auth;
 
-	if (!*mesg->mesgname) {
-		auth = mcp_mesg_arg_getline(mesg, "authentication-key", 0);
-		if (auth) {
-			mfr->authkey = string_dup(auth);
-		} else {
-			McpMesg reply;
-			char authval[128];
+    if (!*mesg->mesgname) {
+	auth = mcp_mesg_arg_getline(mesg, "authentication-key", 0);
+	if (auth) {
+	    mfr->authkey = string_dup(auth);
+	} else {
+	    McpMesg reply;
+	    char authval[128];
 
-			mcp_mesg_init(&reply, MCP_INIT_PKG, "");
-			mcp_mesg_arg_append(&reply, "version", "2.1");
-			mcp_mesg_arg_append(&reply, "to", "2.1");
-			snprintf(authval, sizeof(authval), "%.8lX", (unsigned long)(RANDOM() ^ RANDOM()));
-			mcp_mesg_arg_append(&reply, "authentication-key", authval);
-			mfr->authkey = string_dup(authval);
-			mcp_frame_output_mesg(mfr, &reply);
-			mcp_mesg_clear(&reply);
-		}
-
-		ptr = mcp_mesg_arg_getline(mesg, "version", 0);
-		if (!ptr)
-			return;
-		while (isdigit(*ptr))
-			minver.vermajor = (minver.vermajor * 10) + (*ptr++ - '0');
-		if (*ptr++ != '.')
-			return;
-		while (isdigit(*ptr))
-			minver.verminor = (minver.verminor * 10) + (*ptr++ - '0');
-
-		ptr = mcp_mesg_arg_getline(mesg, "to", 0);
-		if (!ptr) {
-			maxver = minver;
-		} else {
-			while (isdigit(*ptr))
-				maxver.vermajor = (maxver.vermajor * 10) + (*ptr++ - '0');
-			if (*ptr++ != '.')
-				return;
-			while (isdigit(*ptr))
-				maxver.verminor = (maxver.verminor * 10) + (*ptr++ - '0');
-		}
-
-		mfr->version = mcp_version_select(myminver, mymaxver, minver, maxver);
-		if (mcp_version_compare(mfr->version, nullver)) {
-			McpMesg cando;
-			char verbuf[32];
-			McpPkg *p = mcp_PackageList;
-
-			mfr->enabled = 1;
-			while (p) {
-				if (strcmp_nocase(p->pkgname, MCP_INIT_PKG)) {
-					mcp_mesg_init(&cando, MCP_NEGOTIATE_PKG, "can");
-					mcp_mesg_arg_append(&cando, "package", p->pkgname);
-					snprintf(verbuf, sizeof(verbuf), "%d.%d", p->minver.vermajor, p->minver.verminor);
-					mcp_mesg_arg_append(&cando, "min-version", verbuf);
-					snprintf(verbuf, sizeof(verbuf), "%d.%d", p->maxver.vermajor, p->maxver.verminor);
-					mcp_mesg_arg_append(&cando, "max-version", verbuf);
-					mcp_frame_output_mesg(mfr, &cando);
-					mcp_mesg_clear(&cando);
-				}
-				p = p->next;
-			}
-			mcp_mesg_init(&cando, MCP_NEGOTIATE_PKG, "end");
-			mcp_frame_output_mesg(mfr, &cando);
-			mcp_mesg_clear(&cando);
-		}
+	    mcp_mesg_init(&reply, MCP_INIT_PKG, "");
+	    mcp_mesg_arg_append(&reply, "version", "2.1");
+	    mcp_mesg_arg_append(&reply, "to", "2.1");
+	    snprintf(authval, sizeof(authval), "%.8lX", (unsigned long) (RANDOM() ^ RANDOM()));
+	    mcp_mesg_arg_append(&reply, "authentication-key", authval);
+	    mfr->authkey = string_dup(authval);
+	    mcp_frame_output_mesg(mfr, &reply);
+	    mcp_mesg_clear(&reply);
 	}
+
+	ptr = mcp_mesg_arg_getline(mesg, "version", 0);
+	if (!ptr)
+	    return;
+	while (isdigit(*ptr))
+	    minver.vermajor = (minver.vermajor * 10) + (*ptr++ - '0');
+	if (*ptr++ != '.')
+	    return;
+	while (isdigit(*ptr))
+	    minver.verminor = (minver.verminor * 10) + (*ptr++ - '0');
+
+	ptr = mcp_mesg_arg_getline(mesg, "to", 0);
+	if (!ptr) {
+	    maxver = minver;
+	} else {
+	    while (isdigit(*ptr))
+		maxver.vermajor = (maxver.vermajor * 10) + (*ptr++ - '0');
+	    if (*ptr++ != '.')
+		return;
+	    while (isdigit(*ptr))
+		maxver.verminor = (maxver.verminor * 10) + (*ptr++ - '0');
+	}
+
+	mfr->version = mcp_version_select(myminver, mymaxver, minver, maxver);
+	if (mcp_version_compare(mfr->version, nullver)) {
+	    McpMesg cando;
+	    char verbuf[32];
+	    McpPkg *p = mcp_PackageList;
+
+	    mfr->enabled = 1;
+	    while (p) {
+		if (strcmp_nocase(p->pkgname, MCP_INIT_PKG)) {
+		    mcp_mesg_init(&cando, MCP_NEGOTIATE_PKG, "can");
+		    mcp_mesg_arg_append(&cando, "package", p->pkgname);
+		    snprintf(verbuf, sizeof(verbuf), "%d.%d", p->minver.vermajor,
+			     p->minver.verminor);
+		    mcp_mesg_arg_append(&cando, "min-version", verbuf);
+		    snprintf(verbuf, sizeof(verbuf), "%d.%d", p->maxver.vermajor,
+			     p->maxver.verminor);
+		    mcp_mesg_arg_append(&cando, "max-version", verbuf);
+		    mcp_frame_output_mesg(mfr, &cando);
+		    mcp_mesg_clear(&cando);
+		}
+		p = p->next;
+	    }
+	    mcp_mesg_init(&cando, MCP_NEGOTIATE_PKG, "end");
+	    mcp_frame_output_mesg(mfr, &cando);
+	    mcp_mesg_clear(&cando);
+	}
+    }
 }
 
 
@@ -1412,41 +1417,41 @@ mcp_basic_handler(McpFrame * mfr, McpMesg * mesg)
 void
 mcp_negotiate_handler(McpFrame * mfr, McpMesg * mesg, McpVer version, void *context)
 {
-	McpVer minver = { 0, 0 };
-	McpVer maxver = { 0, 0 };
-	const char *ptr;
-	const char *pkg;
+    McpVer minver = { 0, 0 };
+    McpVer maxver = { 0, 0 };
+    const char *ptr;
+    const char *pkg;
 
-	if (!strcmp(mesg->mesgname, "can")) {
-		pkg = mcp_mesg_arg_getline(mesg, "package", 0);
-		if (!pkg)
-			return;
-		ptr = mcp_mesg_arg_getline(mesg, "min-version", 0);
-		if (!ptr)
-			return;
-		while (isdigit(*ptr))
-			minver.vermajor = (minver.vermajor * 10) + (*ptr++ - '0');
-		if (*ptr++ != '.')
-			return;
-		while (isdigit(*ptr))
-			minver.verminor = (minver.verminor * 10) + (*ptr++ - '0');
+    if (!strcmp(mesg->mesgname, "can")) {
+	pkg = mcp_mesg_arg_getline(mesg, "package", 0);
+	if (!pkg)
+	    return;
+	ptr = mcp_mesg_arg_getline(mesg, "min-version", 0);
+	if (!ptr)
+	    return;
+	while (isdigit(*ptr))
+	    minver.vermajor = (minver.vermajor * 10) + (*ptr++ - '0');
+	if (*ptr++ != '.')
+	    return;
+	while (isdigit(*ptr))
+	    minver.verminor = (minver.verminor * 10) + (*ptr++ - '0');
 
-		ptr = mcp_mesg_arg_getline(mesg, "max-version", 0);
-		if (!ptr) {
-			maxver = minver;
-		} else {
-			while (isdigit(*ptr))
-				maxver.vermajor = (maxver.vermajor * 10) + (*ptr++ - '0');
-			if (*ptr++ != '.')
-				return;
-			while (isdigit(*ptr))
-				maxver.verminor = (maxver.verminor * 10) + (*ptr++ - '0');
-		}
-
-		mcp_frame_package_add(mfr, pkg, minver, maxver);
-	} else if (!strcmp(mesg->mesgname, "end")) {
-		/* nothing to do for end of package negotiations. */
+	ptr = mcp_mesg_arg_getline(mesg, "max-version", 0);
+	if (!ptr) {
+	    maxver = minver;
+	} else {
+	    while (isdigit(*ptr))
+		maxver.vermajor = (maxver.vermajor * 10) + (*ptr++ - '0');
+	    if (*ptr++ != '.')
+		return;
+	    while (isdigit(*ptr))
+		maxver.verminor = (maxver.verminor * 10) + (*ptr++ - '0');
 	}
+
+	mcp_frame_package_add(mfr, pkg, minver, maxver);
+    } else if (!strcmp(mesg->mesgname, "end")) {
+	/* nothing to do for end of package negotiations. */
+    }
 }
 
 
@@ -1462,133 +1467,133 @@ mcp_negotiate_handler(McpFrame * mfr, McpMesg * mesg, McpVer version, void *cont
 int
 mcp_intern_is_ident(const char **in, char *buf, int buflen)
 {
-	int origbuflen = buflen;
+    int origbuflen = buflen;
 
-	if (!isalpha(**in) && **in != '_')
-		return 0;
-	while (isalpha(**in) || **in == '_' || isdigit(**in) || **in == '-') {
-		if (--buflen > 0) {
-			*buf++ = **in;
-		}
-		(*in)++;
+    if (!isalpha(**in) && **in != '_')
+	return 0;
+    while (isalpha(**in) || **in == '_' || isdigit(**in) || **in == '-') {
+	if (--buflen > 0) {
+	    *buf++ = **in;
 	}
-	if (origbuflen > 0)
-		*buf = '\0';
-	return 1;
+	(*in)++;
+    }
+    if (origbuflen > 0)
+	*buf = '\0';
+    return 1;
 }
 
 
 int
 mcp_intern_is_simplechar(char in)
 {
-	if (in == '*' || in == ':' || in == '\\' || in == '"')
-		return 0;
-	if (!isprint(in) || in == ' ')
-		return 0;
-	return 1;
+    if (in == '*' || in == ':' || in == '\\' || in == '"')
+	return 0;
+    if (!isprint(in) || in == ' ')
+	return 0;
+    return 1;
 }
 
 
 int
 mcp_intern_is_unquoted(const char **in, char *buf, int buflen)
 {
-	int origbuflen = buflen;
+    int origbuflen = buflen;
 
-	if (!mcp_intern_is_simplechar(**in))
-		return 0;
-	while (mcp_intern_is_simplechar(**in)) {
-		if (--buflen > 0) {
-			*buf++ = **in;
-		}
-		(*in)++;
+    if (!mcp_intern_is_simplechar(**in))
+	return 0;
+    while (mcp_intern_is_simplechar(**in)) {
+	if (--buflen > 0) {
+	    *buf++ = **in;
 	}
-	if (origbuflen > 0)
-		*buf = '\0';
-	return 1;
+	(*in)++;
+    }
+    if (origbuflen > 0)
+	*buf = '\0';
+    return 1;
 }
 
 
 int
 mcp_intern_is_quoted(const char **in, char *buf, int buflen)
 {
-	int origbuflen = buflen;
-	const char *old = *in;
+    int origbuflen = buflen;
+    const char *old = *in;
 
-	if (**in != '"')
-		return 0;
-	(*in)++;
-	while (**in) {
-		if (**in == '\\') {
-			(*in)++;
-			if (**in && --buflen > 0) {
-				*buf++ = **in;
-			}
-		} else if (**in == '"') {
-			break;
-		} else {
-			if (--buflen > 0) {
-				*buf++ = **in;
-			}
-		}
-		(*in)++;
-	}
-	if (**in != '"') {
-		*in = old;
-		return 0;
+    if (**in != '"')
+	return 0;
+    (*in)++;
+    while (**in) {
+	if (**in == '\\') {
+	    (*in)++;
+	    if (**in && --buflen > 0) {
+		*buf++ = **in;
+	    }
+	} else if (**in == '"') {
+	    break;
+	} else {
+	    if (--buflen > 0) {
+		*buf++ = **in;
+	    }
 	}
 	(*in)++;
-	if (origbuflen > 0) {
-		*buf = '\0';
-	}
-	return 1;
+    }
+    if (**in != '"') {
+	*in = old;
+	return 0;
+    }
+    (*in)++;
+    if (origbuflen > 0) {
+	*buf = '\0';
+    }
+    return 1;
 }
 
 
 int
 mcp_intern_is_keyval(McpMesg * msg, const char **in)
 {
-	char keyname[128];
-	char value[BUFFER_LEN];
-	const char *old = *in;
-	int deferred = 0;
+    char keyname[128];
+    char value[BUFFER_LEN];
+    const char *old = *in;
+    int deferred = 0;
 
-	if (!isspace(**in))
-		return 0;
-	while (isspace(**in))
-		(*in)++;
-	if (!mcp_intern_is_ident(in, keyname, sizeof(keyname))) {
-		*in = old;
-		return 0;
-	}
-	if (**in == '*') {
-		msg->incomplete = 1;
-		deferred = 1;
-		(*in)++;
-	}
-	if (**in != ':') {
-		*in = old;
-		return 0;
-	}
+    if (!isspace(**in))
+	return 0;
+    while (isspace(**in))
 	(*in)++;
-	if (!isspace(**in)) {
-		*in = old;
-		return 0;
-	}
-	while (isspace(**in))
-		(*in)++;
-	if (!mcp_intern_is_unquoted(in, value, sizeof(value)) &&
-		!mcp_intern_is_quoted(in, value, sizeof(value))
-			) {
-		*in = old;
-		return 0;
-	}
+    if (!mcp_intern_is_ident(in, keyname, sizeof(keyname))) {
+	*in = old;
+	return 0;
+    }
+    if (**in == '*') {
+	msg->incomplete = 1;
+	deferred = 1;
+	(*in)++;
+    }
+    if (**in != ':') {
+	*in = old;
+	return 0;
+    }
+    (*in)++;
+    if (!isspace(**in)) {
+	*in = old;
+	return 0;
+    }
+    while (isspace(**in))
+	(*in)++;
+    if (!mcp_intern_is_unquoted(in, value, sizeof(value)) &&
+	!mcp_intern_is_quoted(in, value, sizeof(value))
+	    ) {
+	*in = old;
+	return 0;
+    }
 
-	if (deferred) {
-		mcp_mesg_arg_append(msg, keyname, NULL);
-	} else {
-		mcp_mesg_arg_append(msg, keyname, value);
-	}
-	return 1;
+    if (deferred) {
+	mcp_mesg_arg_append(msg, keyname, NULL);
+    } else {
+	mcp_mesg_arg_append(msg, keyname, value);
+    }
+    return 1;
 }
 
 
@@ -1596,344 +1601,345 @@ mcp_intern_is_keyval(McpMesg * msg, const char **in)
 int
 mcp_intern_is_mesg_start(McpFrame * mfr, const char *in)
 {
-	char mesgname[128];
-	char authkey[128];
-	char *subname = NULL;
-	McpMesg *newmsg = NULL;
-	McpPkg *pkg = NULL;
-	int longlen = 0;
+    char mesgname[128];
+    char authkey[128];
+    char *subname = NULL;
+    McpMesg *newmsg = NULL;
+    McpPkg *pkg = NULL;
+    int longlen = 0;
 
-	if (!mcp_intern_is_ident(&in, mesgname, sizeof(mesgname)))
-		return 0;
-	if (strcmp_nocase(mesgname, MCP_INIT_PKG)) {
-		if (!isspace(*in))
-			return 0;
-		while (isspace(*in))
-			in++;
-		if (!mcp_intern_is_unquoted(&in, authkey, sizeof(authkey)))
-			return 0;
-		if (strcmp(authkey, mfr->authkey))
-			return 0;
-	}
+    if (!mcp_intern_is_ident(&in, mesgname, sizeof(mesgname)))
+	return 0;
+    if (strcmp_nocase(mesgname, MCP_INIT_PKG)) {
+	if (!isspace(*in))
+	    return 0;
+	while (isspace(*in))
+	    in++;
+	if (!mcp_intern_is_unquoted(&in, authkey, sizeof(authkey)))
+	    return 0;
+	if (strcmp(authkey, mfr->authkey))
+	    return 0;
+    }
 
-	if (strncmp_nocase(mesgname, MCP_INIT_PKG, 3)) {
-		for (pkg = mfr->packages; pkg; pkg = pkg->next) {
-			int pkgnamelen = strlen(pkg->pkgname);
+    if (strncmp_nocase(mesgname, MCP_INIT_PKG, 3)) {
+	for (pkg = mfr->packages; pkg; pkg = pkg->next) {
+	    int pkgnamelen = strlen(pkg->pkgname);
 
-			if (!strncmp_nocase(pkg->pkgname, mesgname, pkgnamelen)) {
-				if (mesgname[pkgnamelen] == '\0' || mesgname[pkgnamelen] == '-') {
-					if (pkgnamelen > longlen) {
-						longlen = pkgnamelen;
-					}
-				}
-			}
+	    if (!strncmp_nocase(pkg->pkgname, mesgname, pkgnamelen)) {
+		if (mesgname[pkgnamelen] == '\0' || mesgname[pkgnamelen] == '-') {
+		    if (pkgnamelen > longlen) {
+			longlen = pkgnamelen;
+		    }
 		}
+	    }
 	}
-	if (!longlen) {
-		int neglen = strlen(MCP_NEGOTIATE_PKG);
+    }
+    if (!longlen) {
+	int neglen = strlen(MCP_NEGOTIATE_PKG);
 
-		if (!strncmp_nocase(mesgname, MCP_NEGOTIATE_PKG, neglen)) {
-			longlen = neglen;
-		} else if (!strcmp_nocase(mesgname, MCP_INIT_PKG)) {
-			longlen = strlen(mesgname);
-		} else {
-			return 0;
-		}
-	}
-	subname = mesgname + longlen;
-	if (*subname) {
-		*subname++ = '\0';
-	}
-
-	newmsg = (McpMesg *) malloc(sizeof(McpMesg));
-	mcp_mesg_init(newmsg, mesgname, subname);
-	while (*in) {
-		if (!mcp_intern_is_keyval(newmsg, &in)) {
-			mcp_mesg_clear(newmsg);
-			free(newmsg);
-			return 0;
-		}
-	}
-
-	/* Okay, we've recieved a valid message. */
-	if (newmsg->incomplete) {
-		/* It's incomplete.  Remember it to finish later. */
-		const char *msgdt = mcp_mesg_arg_getline(newmsg, MCP_DATATAG, 0);
-
-		newmsg->datatag = string_dup(msgdt);
-		mcp_mesg_arg_remove(newmsg, MCP_DATATAG);
-		newmsg->next = mfr->messages;
-		mfr->messages = newmsg;
+	if (!strncmp_nocase(mesgname, MCP_NEGOTIATE_PKG, neglen)) {
+	    longlen = neglen;
+	} else if (!strcmp_nocase(mesgname, MCP_INIT_PKG)) {
+	    longlen = strlen(mesgname);
 	} else {
-		/* It's complete.  Execute the callback function for this package. */
-		mcp_frame_package_docallback(mfr, newmsg);
-		mcp_mesg_clear(newmsg);
-		free(newmsg);
+	    return 0;
 	}
-	return 1;
+    }
+    subname = mesgname + longlen;
+    if (*subname) {
+	*subname++ = '\0';
+    }
+
+    newmsg = (McpMesg *) malloc(sizeof(McpMesg));
+    mcp_mesg_init(newmsg, mesgname, subname);
+    while (*in) {
+	if (!mcp_intern_is_keyval(newmsg, &in)) {
+	    mcp_mesg_clear(newmsg);
+	    free(newmsg);
+	    return 0;
+	}
+    }
+
+    /* Okay, we've recieved a valid message. */
+    if (newmsg->incomplete) {
+	/* It's incomplete.  Remember it to finish later. */
+	const char *msgdt = mcp_mesg_arg_getline(newmsg, MCP_DATATAG, 0);
+
+	newmsg->datatag = string_dup(msgdt);
+	mcp_mesg_arg_remove(newmsg, MCP_DATATAG);
+	newmsg->next = mfr->messages;
+	mfr->messages = newmsg;
+    } else {
+	/* It's complete.  Execute the callback function for this package. */
+	mcp_frame_package_docallback(mfr, newmsg);
+	mcp_mesg_clear(newmsg);
+	free(newmsg);
+    }
+    return 1;
 }
 
 
 int
 mcp_intern_is_mesg_cont(McpFrame * mfr, const char *in)
 {
-	char datatag[128];
-	char keyname[128];
-	McpMesg *ptr;
+    char datatag[128];
+    char keyname[128];
+    McpMesg *ptr;
 
-	if (*in != '*') {
-		return 0;
-	}
+    if (*in != '*') {
+	return 0;
+    }
+    in++;
+    if (!isspace(*in))
+	return 0;
+    while (isspace(*in))
 	in++;
-	if (!isspace(*in))
-		return 0;
-	while (isspace(*in))
-		in++;
-	if (!mcp_intern_is_unquoted(&in, datatag, sizeof(datatag)))
-		return 0;
-	if (!isspace(*in))
-		return 0;
-	while (isspace(*in))
-		in++;
-	if (!mcp_intern_is_ident(&in, keyname, sizeof(keyname)))
-		return 0;
-	if (*in != ':')
-		return 0;
+    if (!mcp_intern_is_unquoted(&in, datatag, sizeof(datatag)))
+	return 0;
+    if (!isspace(*in))
+	return 0;
+    while (isspace(*in))
 	in++;
-	if (!isspace(*in))
-		return 0;
-	in++;
+    if (!mcp_intern_is_ident(&in, keyname, sizeof(keyname)))
+	return 0;
+    if (*in != ':')
+	return 0;
+    in++;
+    if (!isspace(*in))
+	return 0;
+    in++;
 
-	for (ptr = mfr->messages; ptr; ptr = ptr->next) {
-		if (!strcmp(datatag, ptr->datatag)) {
-			mcp_mesg_arg_append(ptr, keyname, in);
-			break;
-		}
+    for (ptr = mfr->messages; ptr; ptr = ptr->next) {
+	if (!strcmp(datatag, ptr->datatag)) {
+	    mcp_mesg_arg_append(ptr, keyname, in);
+	    break;
 	}
-	if (!ptr) {
-		return 0;
-	}
-	return 1;
+    }
+    if (!ptr) {
+	return 0;
+    }
+    return 1;
 }
 
 
 int
 mcp_intern_is_mesg_end(McpFrame * mfr, const char *in)
 {
-	char datatag[128];
-	McpMesg *ptr, **prev;
+    char datatag[128];
+    McpMesg *ptr, **prev;
 
-	if (*in != ':') {
-		return 0;
-	}
+    if (*in != ':') {
+	return 0;
+    }
+    in++;
+    if (!isspace(*in))
+	return 0;
+    while (isspace(*in))
 	in++;
-	if (!isspace(*in))
-		return 0;
-	while (isspace(*in))
-		in++;
-	if (!mcp_intern_is_unquoted(&in, datatag, sizeof(datatag)))
-		return 0;
-	if (*in)
-		return 0;
-	prev = &mfr->messages;
-	for (ptr = mfr->messages; ptr; ptr = ptr->next, prev = &ptr->next) {
-		if (!strcmp(datatag, ptr->datatag)) {
-			*prev = ptr->next;
-			break;
-		}
+    if (!mcp_intern_is_unquoted(&in, datatag, sizeof(datatag)))
+	return 0;
+    if (*in)
+	return 0;
+    prev = &mfr->messages;
+    for (ptr = mfr->messages; ptr; ptr = ptr->next, prev = &ptr->next) {
+	if (!strcmp(datatag, ptr->datatag)) {
+	    *prev = ptr->next;
+	    break;
 	}
-	if (!ptr) {
-		return 0;
-	}
-	ptr->incomplete = 0;
-	mcp_frame_package_docallback(mfr, ptr);
-	mcp_mesg_clear(ptr);
-	free(ptr);
+    }
+    if (!ptr) {
+	return 0;
+    }
+    ptr->incomplete = 0;
+    mcp_frame_package_docallback(mfr, ptr);
+    mcp_mesg_clear(ptr);
+    free(ptr);
 
-	return 1;
+    return 1;
 }
 
 
 int
 mcp_internal_parse(McpFrame * mfr, const char *in)
 {
-	if (mcp_intern_is_mesg_cont(mfr, in))
-		return 1;
-	if (mcp_intern_is_mesg_end(mfr, in))
-		return 1;
-	if (mcp_intern_is_mesg_start(mfr, in))
-		return 1;
-	return 0;
+    if (mcp_intern_is_mesg_cont(mfr, in))
+	return 1;
+    if (mcp_intern_is_mesg_end(mfr, in))
+	return 1;
+    if (mcp_intern_is_mesg_start(mfr, in))
+	return 1;
+    return 0;
 }
 
 void
-mcpedit_program(int descr, dbref player, dbref prog, const char* name)
+mcpedit_program(int descr, dbref player, dbref prog, const char *name)
 {
-	char namestr[BUFFER_LEN];
-	char refstr[BUFFER_LEN];
-	struct line *curr;
-	McpMesg msg;
-	McpFrame *mfr;
-	McpVer supp;
+    char namestr[BUFFER_LEN];
+    char refstr[BUFFER_LEN];
+    struct line *curr;
+    McpMesg msg;
+    McpFrame *mfr;
+    McpVer supp;
 
-	mfr = descr_mcpframe(descr);
-	if (!mfr) {
-		do_edit(descr, player, name);
-		return;
-	}
+    mfr = descr_mcpframe(descr);
+    if (!mfr) {
+	do_edit(descr, player, name);
+	return;
+    }
 
-	supp = mcp_frame_package_supported(mfr, "dns-org-mud-moo-simpleedit");
+    supp = mcp_frame_package_supported(mfr, "dns-org-mud-moo-simpleedit");
 
-	if (supp.verminor == 0 && supp.vermajor == 0) {
-		do_edit(descr, player, name);
-		return;
-	}
+    if (supp.verminor == 0 && supp.vermajor == 0) {
+	do_edit(descr, player, name);
+	return;
+    }
 
-	if ((Typeof(prog) != TYPE_PROGRAM) || !controls(player, prog)) {
-		show_mcp_error(mfr, "@mcpedit", "Permission denied!");
-		return;
-	}
-	if (FLAGS(prog) & INTERNAL) {
-		show_mcp_error(mfr, "@mcpedit", "Sorry, this program is currently being edited by someone else.  Try again later.");
-		return;
-	}
-	PROGRAM_SET_FIRST(prog, read_program(prog));
-	PLAYER_SET_CURR_PROG(player, prog);
+    if ((Typeof(prog) != TYPE_PROGRAM) || !controls(player, prog)) {
+	show_mcp_error(mfr, "@mcpedit", "Permission denied!");
+	return;
+    }
+    if (FLAGS(prog) & INTERNAL) {
+	show_mcp_error(mfr, "@mcpedit",
+		       "Sorry, this program is currently being edited by someone else.  Try again later.");
+	return;
+    }
+    PROGRAM_SET_FIRST(prog, read_program(prog));
+    PLAYER_SET_CURR_PROG(player, prog);
 
-	snprintf(refstr, sizeof(refstr), "%d.prog.", prog);
-	snprintf(namestr, sizeof(namestr), "a program named %s(%d)", NAME(prog), prog);
-	mcp_mesg_init(&msg, "dns-org-mud-moo-simpleedit", "content");
-	mcp_mesg_arg_append(&msg, "reference", refstr);
-	mcp_mesg_arg_append(&msg, "type", "muf-code");
-	mcp_mesg_arg_append(&msg, "name", namestr);
-	for (curr = PROGRAM_FIRST(prog); curr; curr = curr->next) {
-		mcp_mesg_arg_append(&msg, "content", DoNull(curr->this_line));
-	}
-	mcp_frame_output_mesg(mfr, &msg);
-	mcp_mesg_clear(&msg);
+    snprintf(refstr, sizeof(refstr), "%d.prog.", prog);
+    snprintf(namestr, sizeof(namestr), "a program named %s(%d)", NAME(prog), prog);
+    mcp_mesg_init(&msg, "dns-org-mud-moo-simpleedit", "content");
+    mcp_mesg_arg_append(&msg, "reference", refstr);
+    mcp_mesg_arg_append(&msg, "type", "muf-code");
+    mcp_mesg_arg_append(&msg, "name", namestr);
+    for (curr = PROGRAM_FIRST(prog); curr; curr = curr->next) {
+	mcp_mesg_arg_append(&msg, "content", DoNull(curr->this_line));
+    }
+    mcp_frame_output_mesg(mfr, &msg);
+    mcp_mesg_clear(&msg);
 
-	free_prog_text(PROGRAM_FIRST(prog));
-	PROGRAM_SET_FIRST(prog, NULL);
+    free_prog_text(PROGRAM_FIRST(prog));
+    PROGRAM_SET_FIRST(prog, NULL);
 }
 
 void
 do_mcpedit(int descr, dbref player, const char *name)
 {
-	dbref prog;
-	struct match_data md;
-	McpFrame *mfr;
-	McpVer supp;
+    dbref prog;
+    struct match_data md;
+    McpFrame *mfr;
+    McpVer supp;
 
-	if (!*name) {
-		notify(player, "No program name given.");
-		return;
-	}
+    if (!*name) {
+	notify(player, "No program name given.");
+	return;
+    }
 
-	mfr = descr_mcpframe(descr);
-	if (!mfr) {
-		do_edit(descr, player, name);
-		return;
-	}
+    mfr = descr_mcpframe(descr);
+    if (!mfr) {
+	do_edit(descr, player, name);
+	return;
+    }
 
-	supp = mcp_frame_package_supported(mfr, "dns-org-mud-moo-simpleedit");
+    supp = mcp_frame_package_supported(mfr, "dns-org-mud-moo-simpleedit");
 
-	if (supp.verminor == 0 && supp.vermajor == 0) {
-		do_edit(descr, player, name);
-		return;
-	}
+    if (supp.verminor == 0 && supp.vermajor == 0) {
+	do_edit(descr, player, name);
+	return;
+    }
 
-	init_match(descr, player, name, TYPE_PROGRAM, &md);
+    init_match(descr, player, name, TYPE_PROGRAM, &md);
 
-	match_possession(&md);
-	match_neighbor(&md);
-	match_registered(&md);
-	match_absolute(&md);
+    match_possession(&md);
+    match_neighbor(&md);
+    match_registered(&md);
+    match_absolute(&md);
 
-	prog = match_result(&md);
-	if (prog == NOTHING) {
-		/* FIXME: must arrange this to query user. */
-		notify(player, "I don't see that here!");
-		return;
-	}
+    prog = match_result(&md);
+    if (prog == NOTHING) {
+	/* FIXME: must arrange this to query user. */
+	notify(player, "I don't see that here!");
+	return;
+    }
 
-	if (prog == AMBIGUOUS) {
-		notify(player, "I don't know which one you mean!");
-		return;
-	}
+    if (prog == AMBIGUOUS) {
+	notify(player, "I don't know which one you mean!");
+	return;
+    }
 
-	mcpedit_program(descr, player, prog, name);
+    mcpedit_program(descr, player, prog, name);
 }
 
 void
-do_mcpprogram(int descr, dbref player, const char* name)
+do_mcpprogram(int descr, dbref player, const char *name)
 {
-	dbref prog;
-	char buf[BUFFER_LEN];
-	struct match_data md;
-	int jj;
+    dbref prog;
+    char buf[BUFFER_LEN];
+    struct match_data md;
+    int jj;
 
-	if (!*name) {
-		notify(player, "No program name given.");
-		return;
+    if (!*name) {
+	notify(player, "No program name given.");
+	return;
+    }
+    init_match(descr, player, name, TYPE_PROGRAM, &md);
+
+    match_possession(&md);
+    match_neighbor(&md);
+    match_registered(&md);
+    match_absolute(&md);
+
+    prog = match_result(&md);
+
+    if (prog == NOTHING) {
+	if (!ok_ascii_other(name)) {
+	    notify(player, "Program names are limited to 7-bit ASCII.");
+	    return;
 	}
-	init_match(descr, player, name, TYPE_PROGRAM, &md);
-
-	match_possession(&md);
-	match_neighbor(&md);
-	match_registered(&md);
-	match_absolute(&md);
-
-	prog = match_result(&md);
-
-	if (prog == NOTHING) {
-		if(!ok_ascii_other(name)) {
-			notify(player, "Program names are limited to 7-bit ASCII.");
-			return;
-		}
-		if (!ok_name(name)) {
-			notify(player, "That's a strange name for a program!");
-			return;
-		}
-		prog = new_object();
-
-		NAME(prog) = alloc_string(name);
-		snprintf(buf, sizeof(buf), "A scroll containing a spell called %s", name);
-		SETDESC(prog, buf);
-		LOCATION(prog) = player;
-		FLAGS(prog) = TYPE_PROGRAM;
-		jj = MLevel(player);
-		if (jj < 1)
-			jj = 2;
-		if (jj > 3)
-			jj = 3;
-		SetMLevel(prog, jj);
-
-		OWNER(prog) = OWNER(player);
-		ALLOC_PROGRAM_SP(prog);
-		PROGRAM_SET_FIRST(prog, NULL);
-		PROGRAM_SET_CURR_LINE(prog, 0);
-		PROGRAM_SET_SIZ(prog, 0);
-		PROGRAM_SET_CODE(prog, NULL);
-		PROGRAM_SET_START(prog, NULL);
-		PROGRAM_SET_PUBS(prog, NULL);
-		PROGRAM_SET_MCPBINDS(prog, NULL);
-		PROGRAM_SET_PROFTIME(prog, 0, 0);
-		PROGRAM_SET_PROFSTART(prog, 0);
-		PROGRAM_SET_PROF_USES(prog, 0);
-		PROGRAM_SET_INSTANCES(prog, 0);
-
-		PLAYER_SET_CURR_PROG(player, prog);
-
-		PUSH(prog, CONTENTS(player));
-		DBDIRTY(prog);
-		DBDIRTY(player);
-		notifyf(player, "Program %s created as #%d.", name, prog);
-
-	} else if (prog == AMBIGUOUS) {
-		notify(player, "I don't know which one you mean!");
-		return;
+	if (!ok_name(name)) {
+	    notify(player, "That's a strange name for a program!");
+	    return;
 	}
+	prog = new_object();
 
-	mcpedit_program(descr, player, prog, name);
+	NAME(prog) = alloc_string(name);
+	snprintf(buf, sizeof(buf), "A scroll containing a spell called %s", name);
+	SETDESC(prog, buf);
+	LOCATION(prog) = player;
+	FLAGS(prog) = TYPE_PROGRAM;
+	jj = MLevel(player);
+	if (jj < 1)
+	    jj = 2;
+	if (jj > 3)
+	    jj = 3;
+	SetMLevel(prog, jj);
+
+	OWNER(prog) = OWNER(player);
+	ALLOC_PROGRAM_SP(prog);
+	PROGRAM_SET_FIRST(prog, NULL);
+	PROGRAM_SET_CURR_LINE(prog, 0);
+	PROGRAM_SET_SIZ(prog, 0);
+	PROGRAM_SET_CODE(prog, NULL);
+	PROGRAM_SET_START(prog, NULL);
+	PROGRAM_SET_PUBS(prog, NULL);
+	PROGRAM_SET_MCPBINDS(prog, NULL);
+	PROGRAM_SET_PROFTIME(prog, 0, 0);
+	PROGRAM_SET_PROFSTART(prog, 0);
+	PROGRAM_SET_PROF_USES(prog, 0);
+	PROGRAM_SET_INSTANCES(prog, 0);
+
+	PLAYER_SET_CURR_PROG(player, prog);
+
+	PUSH(prog, CONTENTS(player));
+	DBDIRTY(prog);
+	DBDIRTY(player);
+	notifyf(player, "Program %s created as #%d.", name, prog);
+
+    } else if (prog == AMBIGUOUS) {
+	notify(player, "I don't know which one you mean!");
+	return;
+    }
+
+    mcpedit_program(descr, player, prog, name);
 }
 #endif

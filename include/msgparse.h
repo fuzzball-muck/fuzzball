@@ -21,20 +21,23 @@
 int Wizperms(dbref what);
 
 int safeputprop(dbref obj, dbref perms, char *buf, char *val, int mesgtyp);
-const char *safegetprop(dbref player, dbref what, dbref perms, const char *inbuf, int mesgtyp, int* blessed);
-const char *safegetprop_strict(dbref player, dbref what, dbref perms, const char *inbuf, int mesgtyp, int* blessed);
+const char *safegetprop(dbref player, dbref what, dbref perms, const char *inbuf, int mesgtyp,
+			int *blessed);
+const char *safegetprop_strict(dbref player, dbref what, dbref perms, const char *inbuf,
+			       int mesgtyp, int *blessed);
 int safeblessprop(dbref obj, dbref perms, char *buf, int mesgtyp, int set_p);
 
 char *stripspaces(char *buf, int buflen, char *in);
 char *string_substitute(const char *str, const char *oldstr, const char *newstr, char *buf,
-
-						int maxlen);
+			int maxlen);
 char *cr2slash(char *buf, int buflen, const char *in);
 
-int get_list_count(dbref trig, dbref what, dbref perms, char *listname, int mesgtyp, int* blessed);
-const char *get_list_item(dbref trig, dbref what, dbref perms, char *listname, int itemnum, int mesgtyp, int* blessed);
+int get_list_count(dbref trig, dbref what, dbref perms, char *listname, int mesgtyp,
+		   int *blessed);
+const char *get_list_item(dbref trig, dbref what, dbref perms, char *listname, int itemnum,
+			  int mesgtyp, int *blessed);
 char *get_concat_list(dbref player, dbref what, dbref perms, dbref obj, char *listname,
-					  char *buf, int maxchars, int mode, int mesgtyp, int* blessed);
+		      char *buf, int maxchars, int mode, int mesgtyp, int *blessed);
 
 int isneighbor(dbref d1, dbref d2);
 int mesg_read_perms(dbref player, dbref perms, dbref obj, int mesgtyp);
@@ -42,8 +45,10 @@ int mesg_local_perms(dbref player, dbref perms, dbref obj, int mesgtyp);
 
 dbref mesg_dbref_raw(int descr, dbref player, dbref what, dbref perms, const char *buf);
 dbref mesg_dbref(int descr, dbref player, dbref what, dbref perms, char *buf, int mesgtyp);
-dbref mesg_dbref_strict(int descr, dbref player, dbref what, dbref perms, char *buf, int mesgtyp);
-dbref mesg_dbref_local(int descr, dbref player, dbref what, dbref perms, char *buf, int mesgtyp);
+dbref mesg_dbref_strict(int descr, dbref player, dbref what, dbref perms, char *buf,
+			int mesgtyp);
+dbref mesg_dbref_local(int descr, dbref player, dbref what, dbref perms, char *buf,
+		       int mesgtyp);
 
 char *ref2str(dbref obj, char *buf, size_t buflen);
 int truestr(char *buf);
@@ -70,4 +75,4 @@ typedef char **argv_typ;
 
 #define MesgParse(in,out,outlen) mesg_parse(descr, player, what, perms, (in), (out), (outlen), mesgtyp)
 
-#endif /* _MSGPARSE_H */
+#endif				/* _MSGPARSE_H */

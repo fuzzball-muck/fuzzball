@@ -56,4 +56,4 @@ extern void prim_descr_bufsize(PRIM_PROTOTYPE);
 
 #define PRIMS_CONNECTS_CNT 32
 
-#endif /* _P_CONNECTS_H */
+#endif				/* _P_CONNECTS_H */

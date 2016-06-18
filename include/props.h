@@ -2,29 +2,29 @@
 #define _PROPS_H
 
 union pdata_u {
-	char *str;
-	struct boolexp *lok;
-	int val;
-	double fval;
-	dbref ref;
-	long pos;
+    char *str;
+    struct boolexp *lok;
+    int val;
+    double fval;
+    dbref ref;
+    long pos;
 };
 
 /* data struct for setting data. */
 struct pdata {
-	unsigned short flags;
-	union pdata_u data;
+    unsigned short flags;
+    union pdata_u data;
 };
 typedef struct pdata PData;
 
 
 /* Property struct */
 struct plist {
-	unsigned short flags;
-	short height;				/* satisfy the avl monster.  */
-	union pdata_u data;
-	struct plist *left, *right, *dir;
-	char key[1];
+    unsigned short flags;
+    short height;		/* satisfy the avl monster.  */
+    union pdata_u data;
+    struct plist *left, *right, *dir;
+    char key[1];
 };
 
 /* property node pointer type */
@@ -134,9 +134,9 @@ extern void remove_property_list(dbref player, int all);
 extern void remove_property(dbref player, const char *type, int sync);
 
 extern int has_property(int descr, dbref player, dbref what, const char *type,
-						const char *strval, int value);
+			const char *strval, int value);
 extern int has_property_strict(int descr, dbref player, dbref what, const char *type,
-							   const char *strval, int value);
+			       const char *strval, int value);
 
 extern const char *get_property_class(dbref player, const char *type);
 extern double get_property_fvalue(dbref player, const char *type);
@@ -153,7 +153,8 @@ extern void clear_property_flags(dbref player, const char *type, int flags);
 extern int genderof(int descr, dbref player);
 extern struct plist *copy_prop(dbref old);
 
-extern PropPtr first_prop(dbref player, const char *dir, PropPtr * list, char *name, int maxlen);
+extern PropPtr first_prop(dbref player, const char *dir, PropPtr * list, char *name,
+			  int maxlen);
 extern PropPtr next_prop(PropPtr list, PropPtr prop, char *name, int maxlen);
 extern char *next_prop_name(dbref player, char *outbuf, int outbuflen, char *name);
 
@@ -163,7 +164,8 @@ extern void delete_proplist(PropPtr p);
 extern void set_property_nofetch(dbref player, const char *pname, PData * dat, int sync);
 extern void add_prop_nofetch(dbref player, const char *type, const char *strval, int value);
 extern void remove_property_nofetch(dbref player, const char *type, int sync);
-extern PropPtr first_prop_nofetch(dbref player, const char *dir, PropPtr * list, char *name, int maxlen);
+extern PropPtr first_prop_nofetch(dbref player, const char *dir, PropPtr * list, char *name,
+				  int maxlen);
 
 extern PropPtr propdir_new_elem(PropPtr * root, char *path);
 extern PropPtr propdir_delete_elem(PropPtr root, char *path);
@@ -179,8 +181,8 @@ extern int db_get_single_prop(FILE * f, dbref obj, long pos, PropPtr pnode, cons
 extern void db_getprops(FILE * f, dbref obj, const char *pdir);
 extern void db_dump_props(FILE * f, dbref obj);
 
-extern void reflist_add(dbref obj, const char* propname, dbref toadd);
-extern void reflist_del(dbref obj, const char* propname, dbref todel);
-extern int reflist_find(dbref obj, const char* propname, dbref tofind);
+extern void reflist_add(dbref obj, const char *propname, dbref toadd);
+extern void reflist_del(dbref obj, const char *propname, dbref todel);
+extern int reflist_find(dbref obj, const char *propname, dbref tofind);
 
-#endif /* _PROPS_H */
+#endif				/* _PROPS_H */

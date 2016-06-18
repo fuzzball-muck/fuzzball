@@ -26,31 +26,31 @@ static char buf[BUFFER_LEN];
 void
 copyobj(dbref player, dbref old, dbref nu)
 {
-	struct object *newp = DBFETCH(nu);
+    struct object *newp = DBFETCH(nu);
 
-	NAME(nu) = alloc_string(NAME(old));
-	if (Typeof(old) == TYPE_THING) {
-		ALLOC_THING_SP(nu);
-		THING_SET_HOME(nu, player);
-		SETVALUE(nu, 1);
-	}
-	newp->properties = copy_prop(old);
-	newp->exits = NOTHING;
-	newp->contents = NOTHING;
-	newp->next = NOTHING;
-	newp->location = NOTHING;
-	moveto(nu, player);
+    NAME(nu) = alloc_string(NAME(old));
+    if (Typeof(old) == TYPE_THING) {
+	ALLOC_THING_SP(nu);
+	THING_SET_HOME(nu, player);
+	SETVALUE(nu, 1);
+    }
+    newp->properties = copy_prop(old);
+    newp->exits = NOTHING;
+    newp->contents = NOTHING;
+    newp->next = NOTHING;
+    newp->location = NOTHING;
+    moveto(nu, player);
 
 #ifdef DISKBASE
-	newp->propsfpos = 0;
-	newp->propsmode = PROPS_UNLOADED;
-	newp->propstime = 0;
-	newp->nextold = NOTHING;
-	newp->prevold = NOTHING;
-	dirtyprops(nu);
+    newp->propsfpos = 0;
+    newp->propsmode = PROPS_UNLOADED;
+    newp->propstime = 0;
+    newp->nextold = NOTHING;
+    newp->prevold = NOTHING;
+    dirtyprops(nu);
 #endif
 
-	DBDIRTY(nu);
+    DBDIRTY(nu);
 }
 
 
@@ -58,552 +58,554 @@ copyobj(dbref player, dbref old, dbref nu)
 void
 prim_addpennies(PRIM_PROTOTYPE)
 {
-	CHECKOP(2);
-	oper1 = POP();
-	oper2 = POP();
-	if (mlev < tp_addpennies_muf_mlev)
-		abort_interp("Permission Denied (mlev < tp_addpennies_muf_mlev)");
-	if (!valid_object(oper2))
-		abort_interp("Invalid object.");
-	if (oper1->type != PROG_INTEGER)
-		abort_interp("Non-integer argument (2)");
-	ref = oper2->data.objref;
-	if (Typeof(ref) == TYPE_PLAYER) {
-		result = GETVALUE(ref);
-		if (mlev < 4) {
-			if (oper1->data.number > 0) {
-				if (result > (result + oper1->data.number))
-					abort_interp("Would roll over player's score.");
-				if ((result + oper1->data.number) > tp_max_pennies)
-					abort_interp("Would exceed MAX_PENNIES.");
-			} else {
-				if (result < (result + oper1->data.number))
-					abort_interp("Would roll over player's score.");
-				if ((result + oper1->data.number) < 0)
-					abort_interp("Result would be negative.");
-			}
-		}
-		result += oper1->data.number;
-		SETVALUE(ref, GETVALUE(ref) + oper1->data.number);
-		DBDIRTY(ref);
-	} else if (Typeof(ref) == TYPE_THING) {
-		if (mlev < 4)
-			abort_interp("Permission denied.");
-		result = GETVALUE(ref) + oper1->data.number;
-		if (result < 1)
-			abort_interp("Result must be positive.");
-		SETVALUE(ref, (GETVALUE(ref) + oper1->data.number));
-		DBDIRTY(ref);
-	} else {
-		abort_interp("Invalid object type.");
+    CHECKOP(2);
+    oper1 = POP();
+    oper2 = POP();
+    if (mlev < tp_addpennies_muf_mlev)
+	abort_interp("Permission Denied (mlev < tp_addpennies_muf_mlev)");
+    if (!valid_object(oper2))
+	abort_interp("Invalid object.");
+    if (oper1->type != PROG_INTEGER)
+	abort_interp("Non-integer argument (2)");
+    ref = oper2->data.objref;
+    if (Typeof(ref) == TYPE_PLAYER) {
+	result = GETVALUE(ref);
+	if (mlev < 4) {
+	    if (oper1->data.number > 0) {
+		if (result > (result + oper1->data.number))
+		    abort_interp("Would roll over player's score.");
+		if ((result + oper1->data.number) > tp_max_pennies)
+		    abort_interp("Would exceed MAX_PENNIES.");
+	    } else {
+		if (result < (result + oper1->data.number))
+		    abort_interp("Would roll over player's score.");
+		if ((result + oper1->data.number) < 0)
+		    abort_interp("Result would be negative.");
+	    }
 	}
-	CLEAR(oper1);
-	CLEAR(oper2);
+	result += oper1->data.number;
+	SETVALUE(ref, GETVALUE(ref) + oper1->data.number);
+	DBDIRTY(ref);
+    } else if (Typeof(ref) == TYPE_THING) {
+	if (mlev < 4)
+	    abort_interp("Permission denied.");
+	result = GETVALUE(ref) + oper1->data.number;
+	if (result < 1)
+	    abort_interp("Result must be positive.");
+	SETVALUE(ref, (GETVALUE(ref) + oper1->data.number));
+	DBDIRTY(ref);
+    } else {
+	abort_interp("Invalid object type.");
+    }
+    CLEAR(oper1);
+    CLEAR(oper2);
 }
 
 void
 prim_moveto(PRIM_PROTOTYPE)
 {
-	struct inst *oper1=NULL, *oper2=NULL, *oper3=NULL, *oper4=NULL;
+    struct inst *oper1 = NULL, *oper2 = NULL, *oper3 = NULL, *oper4 = NULL;
 
-	CHECKOP(2);
-	oper1 = POP();
-	oper2 = POP();
-	if (fr->level > 8)
-		abort_interp("Interp call loops not allowed.");
-	/* Needs to be an object, and object needs to be valid */
-	if (!(oper2->type == PROG_OBJECT && valid_object(oper2)))
-		abort_interp("Non-object argument. (2)");
-	/* Needs to be an object, and object needs to be valid or HOME */
-	if (!(oper1->type == PROG_OBJECT && (valid_object(oper1) || is_home(oper1))))
-		abort_interp("Non-object argument. (1)");
-	{
-		dbref victim, dest;
+    CHECKOP(2);
+    oper1 = POP();
+    oper2 = POP();
+    if (fr->level > 8)
+	abort_interp("Interp call loops not allowed.");
+    /* Needs to be an object, and object needs to be valid */
+    if (!(oper2->type == PROG_OBJECT && valid_object(oper2)))
+	abort_interp("Non-object argument. (2)");
+    /* Needs to be an object, and object needs to be valid or HOME */
+    if (!(oper1->type == PROG_OBJECT && (valid_object(oper1) || is_home(oper1))))
+	abort_interp("Non-object argument. (1)");
+    {
+	dbref victim, dest;
 
-		victim = oper2->data.objref;
-		dest = oper1->data.objref;
+	victim = oper2->data.objref;
+	dest = oper1->data.objref;
 
-		if (Typeof(dest) == TYPE_EXIT)
-			abort_interp("Destination argument is an exit.");
-		if (Typeof(victim) == TYPE_EXIT && (mlev < 3))
+	if (Typeof(dest) == TYPE_EXIT)
+	    abort_interp("Destination argument is an exit.");
+	if (Typeof(victim) == TYPE_EXIT && (mlev < 3))
+	    abort_interp("Permission denied.");
+	if (!(FLAGS(victim) & JUMP_OK)
+	    && !permissions(ProgUID, victim) && (mlev < 3))
+	    abort_interp("Object can't be moved.");
+	switch (Typeof(victim)) {
+	case TYPE_PLAYER:
+	    if (Typeof(dest) != TYPE_ROOM &&
+		!(Typeof(dest) == TYPE_THING && (FLAGS(dest) & VEHICLE)))
+		abort_interp("Bad destination.");
+	    /* Check permissions */
+	    if (parent_loop_check(victim, dest))
+		abort_interp("Things can't contain themselves.");
+	    if ((mlev < 3)) {
+		if (!(FLAGS(LOCATION(victim)) & JUMP_OK)
+		    && !permissions(ProgUID, LOCATION(victim)))
+		    abort_interp("Source not JUMP_OK.");
+		if (!is_home(oper1) && !(FLAGS(dest) & JUMP_OK)
+		    && !permissions(ProgUID, dest))
+		    abort_interp("Destination not JUMP_OK.");
+		if (Typeof(dest) == TYPE_THING && LOCATION(victim) != LOCATION(dest))
+		    abort_interp("Not in same location as vehicle.");
+	    }
+	    enter_room(fr->descr, victim, dest, program);
+	    break;
+	case TYPE_THING:
+	    if (parent_loop_check(victim, dest))
+		abort_interp("A thing cannot contain itself.");
+	    if (mlev < 3 && (FLAGS(victim) & VEHICLE) &&
+		(FLAGS(dest) & VEHICLE) && Typeof(dest) != TYPE_THING)
+		abort_interp("Destination doesn't accept vehicles.");
+	    if (mlev < 3 && (FLAGS(victim) & ZOMBIE) &&
+		(FLAGS(dest) & ZOMBIE) && Typeof(dest) != TYPE_THING)
+		abort_interp("Destination doesn't accept zombies.");
+	    ts_lastuseobject(victim);
+	case TYPE_PROGRAM:
+	    {
+		dbref matchroom = NOTHING;
+
+		if (Typeof(dest) != TYPE_ROOM && Typeof(dest) != TYPE_PLAYER
+		    && Typeof(dest) != TYPE_THING)
+		    abort_interp("Bad destination.");
+		if ((mlev < 3)) {
+		    if (permissions(ProgUID, dest))
+			matchroom = dest;
+		    if (permissions(ProgUID, LOCATION(victim)))
+			matchroom = LOCATION(victim);
+		    if (matchroom != NOTHING && !(FLAGS(matchroom) & JUMP_OK)
+			&& !permissions(ProgUID, victim))
 			abort_interp("Permission denied.");
-		if (!(FLAGS(victim) & JUMP_OK)
-			&& !permissions(ProgUID, victim) && (mlev < 3))
-			abort_interp("Object can't be moved.");
-		switch (Typeof(victim)) {
-		case TYPE_PLAYER:
-			if (Typeof(dest) != TYPE_ROOM &&
-				!(Typeof(dest) == TYPE_THING && (FLAGS(dest) & VEHICLE)))
-						abort_interp("Bad destination.");
-			/* Check permissions */
-			if (parent_loop_check(victim, dest))
-				abort_interp("Things can't contain themselves.");
-			if ((mlev < 3)) {
-				if (!(FLAGS(LOCATION(victim)) & JUMP_OK)
-					&& !permissions(ProgUID, LOCATION(victim)))
-					abort_interp("Source not JUMP_OK.");
-				if (!is_home(oper1) && !(FLAGS(dest) & JUMP_OK)
-					&& !permissions(ProgUID, dest))
-					abort_interp("Destination not JUMP_OK.");
-				if (Typeof(dest) == TYPE_THING && LOCATION(victim) != LOCATION(dest))
-					abort_interp("Not in same location as vehicle.");
-			}
-			enter_room(fr->descr, victim, dest, program);
-			break;
-		case TYPE_THING:
-			if (parent_loop_check(victim, dest))
-				abort_interp("A thing cannot contain itself.");
-			if (mlev < 3 && (FLAGS(victim) & VEHICLE) &&
-				(FLAGS(dest) & VEHICLE) && Typeof(dest) != TYPE_THING)
-				abort_interp("Destination doesn't accept vehicles.");
-			if (mlev < 3 && (FLAGS(victim) & ZOMBIE) &&
-				(FLAGS(dest) & ZOMBIE) && Typeof(dest) != TYPE_THING)
-				abort_interp("Destination doesn't accept zombies.");
-			ts_lastuseobject(victim);
-		case TYPE_PROGRAM:
-			{
-				dbref matchroom = NOTHING;
-
-				if (Typeof(dest) != TYPE_ROOM && Typeof(dest) != TYPE_PLAYER
-					&& Typeof(dest) != TYPE_THING) abort_interp("Bad destination.");
-				if ((mlev < 3)) {
-					if (permissions(ProgUID, dest))
-						matchroom = dest;
-					if (permissions(ProgUID, LOCATION(victim)))
-						matchroom = LOCATION(victim);
-					if (matchroom != NOTHING && !(FLAGS(matchroom) & JUMP_OK)
-						&& !permissions(ProgUID, victim))
-						abort_interp("Permission denied.");
-				}
-			}
-			if (Typeof(victim) == TYPE_THING &&
-				(tp_thing_movement || (FLAGS(victim) & ZOMBIE))) {
-				enter_room(fr->descr, victim, dest, program);
-			} else {
-				moveto(victim, dest);
-			}
-			break;
-		case TYPE_EXIT:
-			if ((mlev < 3) && (!permissions(ProgUID, victim)
-							   || !permissions(ProgUID, dest)))
-				abort_interp("Permission denied.");
-			if ((Typeof(dest) != TYPE_ROOM && Typeof(dest) != TYPE_THING &&
-				Typeof(dest) != TYPE_PLAYER) || dest == HOME)
-				abort_interp("Bad destination object.");
-			if (!unset_source(ProgUID, victim))
-				break;
-			set_source(ProgUID, victim, dest);
-			SetMLevel(victim, 0);
-			break;
-		case TYPE_ROOM:
-			if (!tp_thing_movement && Typeof(dest) != TYPE_ROOM)
-				abort_interp("Bad destination.");
-			if (victim == GLOBAL_ENVIRONMENT)
-				abort_interp("Permission denied.");
-			if (dest == HOME) {
-				/* Allow the owner of the room or the owner of
-				   the room's location to reparent the room to
-				   #0 */
-				if ((mlev < 3) && (!permissions(ProgUID,victim)
-				     && !permissions(ProgUID,LOCATION(victim))))
-					abort_interp("Permission denied.");
-				dest = GLOBAL_ENVIRONMENT;
-			} else {
-				if ((mlev < 3) && (!permissions(ProgUID, victim)
-								   || !can_link_to(ProgUID, NOTYPE, dest)))
-					abort_interp("Permission denied.");
-				if (parent_loop_check(victim, dest)) {
-					abort_interp("Parent room would create a loop.");
-				}
-			}
-			ts_lastuseobject(victim);
-			moveto(victim, dest);
-			break;
-		default:
-			abort_interp("Invalid object type (1)");
 		}
+	    }
+	    if (Typeof(victim) == TYPE_THING &&
+		(tp_thing_movement || (FLAGS(victim) & ZOMBIE))) {
+		enter_room(fr->descr, victim, dest, program);
+	    } else {
+		moveto(victim, dest);
+	    }
+	    break;
+	case TYPE_EXIT:
+	    if ((mlev < 3) && (!permissions(ProgUID, victim)
+			       || !permissions(ProgUID, dest)))
+		abort_interp("Permission denied.");
+	    if ((Typeof(dest) != TYPE_ROOM && Typeof(dest) != TYPE_THING &&
+		 Typeof(dest) != TYPE_PLAYER) || dest == HOME)
+		abort_interp("Bad destination object.");
+	    if (!unset_source(ProgUID, victim))
+		break;
+	    set_source(ProgUID, victim, dest);
+	    SetMLevel(victim, 0);
+	    break;
+	case TYPE_ROOM:
+	    if (!tp_thing_movement && Typeof(dest) != TYPE_ROOM)
+		abort_interp("Bad destination.");
+	    if (victim == GLOBAL_ENVIRONMENT)
+		abort_interp("Permission denied.");
+	    if (dest == HOME) {
+		/* Allow the owner of the room or the owner of
+		   the room's location to reparent the room to
+		   #0 */
+		if ((mlev < 3) && (!permissions(ProgUID, victim)
+				   && !permissions(ProgUID, LOCATION(victim))))
+		    abort_interp("Permission denied.");
+		dest = GLOBAL_ENVIRONMENT;
+	    } else {
+		if ((mlev < 3) && (!permissions(ProgUID, victim)
+				   || !can_link_to(ProgUID, NOTYPE, dest)))
+		    abort_interp("Permission denied.");
+		if (parent_loop_check(victim, dest)) {
+		    abort_interp("Parent room would create a loop.");
+		}
+	    }
+	    ts_lastuseobject(victim);
+	    moveto(victim, dest);
+	    break;
+	default:
+	    abort_interp("Invalid object type (1)");
 	}
-	CLEAR(oper1);
-	CLEAR(oper2);
+    }
+    CLEAR(oper1);
+    CLEAR(oper2);
 }
 
 void
 prim_pennies(PRIM_PROTOTYPE)
 {
-	CHECKOP(1);
-	oper1 = POP();
-	if (!valid_object(oper1))
-		abort_interp("Invalid argument.");
-	if (mlev < tp_pennies_muf_mlev)
-		abort_interp("Permission Denied (mlev < tp_pennies_muf_mlev)");
-	CHECKREMOTE(oper1->data.objref);
-	switch (Typeof(oper1->data.objref)) {
-	case TYPE_PLAYER:
-		result = GETVALUE(oper1->data.objref);
-		break;
-	case TYPE_THING:
-		result = GETVALUE(oper1->data.objref);
-		break;
-	default:
-		abort_interp("Invalid argument.");
-	}
-	CLEAR(oper1);
-	PushInt(result);
+    CHECKOP(1);
+    oper1 = POP();
+    if (!valid_object(oper1))
+	abort_interp("Invalid argument.");
+    if (mlev < tp_pennies_muf_mlev)
+	abort_interp("Permission Denied (mlev < tp_pennies_muf_mlev)");
+    CHECKREMOTE(oper1->data.objref);
+    switch (Typeof(oper1->data.objref)) {
+    case TYPE_PLAYER:
+	result = GETVALUE(oper1->data.objref);
+	break;
+    case TYPE_THING:
+	result = GETVALUE(oper1->data.objref);
+	break;
+    default:
+	abort_interp("Invalid argument.");
+    }
+    CLEAR(oper1);
+    PushInt(result);
 }
 
 
 void
 prim_dbcomp(PRIM_PROTOTYPE)
 {
-	CHECKOP(2);
-	oper1 = POP();
-	oper2 = POP();
-	if (oper1->type != PROG_OBJECT || oper2->type != PROG_OBJECT)
-		abort_interp("Invalid argument type.");
-	result = oper1->data.objref == oper2->data.objref;
-	CLEAR(oper1);
-	CLEAR(oper2);
-	PushInt(result);
+    CHECKOP(2);
+    oper1 = POP();
+    oper2 = POP();
+    if (oper1->type != PROG_OBJECT || oper2->type != PROG_OBJECT)
+	abort_interp("Invalid argument type.");
+    result = oper1->data.objref == oper2->data.objref;
+    CLEAR(oper1);
+    CLEAR(oper2);
+    PushInt(result);
 }
 
 void
 prim_dbref(PRIM_PROTOTYPE)
 {
-	CHECKOP(1);
-	oper1 = POP();
-	if (oper1->type != PROG_INTEGER)
-		abort_interp("Non-integer argument.");
-	ref = (dbref) oper1->data.number;
-	CLEAR(oper1);
-	PushObject(ref);
+    CHECKOP(1);
+    oper1 = POP();
+    if (oper1->type != PROG_INTEGER)
+	abort_interp("Non-integer argument.");
+    ref = (dbref) oper1->data.number;
+    CLEAR(oper1);
+    PushObject(ref);
 }
 
 void
 prim_contents(PRIM_PROTOTYPE)
 {
-	CHECKOP(1);
-	oper1 = POP();
-	if (!valid_object(oper1))
-		abort_interp("Invalid argument type.");
-	CHECKREMOTE(oper1->data.objref);
-	ref = CONTENTS(oper1->data.objref);
-	while (mlev < 2 && ref != NOTHING && (FLAGS(ref) & DARK) && !controls(ProgUID, ref))
-		ref = NEXTOBJ(ref);
-	/* if (Typeof(oper1->data.objref) != TYPE_PLAYER &&
-	   Typeof(oper1->data.objref) != TYPE_PROGRAM) ts_lastuseobject(oper1->data.objref); */
-	CLEAR(oper1);
-	PushObject(ref);
+    CHECKOP(1);
+    oper1 = POP();
+    if (!valid_object(oper1))
+	abort_interp("Invalid argument type.");
+    CHECKREMOTE(oper1->data.objref);
+    ref = CONTENTS(oper1->data.objref);
+    while (mlev < 2 && ref != NOTHING && (FLAGS(ref) & DARK) && !controls(ProgUID, ref))
+	ref = NEXTOBJ(ref);
+    /* if (Typeof(oper1->data.objref) != TYPE_PLAYER &&
+       Typeof(oper1->data.objref) != TYPE_PROGRAM) ts_lastuseobject(oper1->data.objref); */
+    CLEAR(oper1);
+    PushObject(ref);
 }
 
 void
 prim_exits(PRIM_PROTOTYPE)
 {
-	CHECKOP(1);
-	oper1 = POP();
-	if (!valid_object(oper1))
-		abort_interp("Invalid object.");
-	ref = oper1->data.objref;
-	CHECKREMOTE(ref);
-	if ((mlev < 3) && !permissions(ProgUID, ref))
-		abort_interp("Permission denied.");
-	switch (Typeof(ref)) {
-	case TYPE_ROOM:
-	case TYPE_THING:
-	  /* ts_lastuseobject(ref); */
-	case TYPE_PLAYER:
-		ref = EXITS(ref);
-		break;
-	default:
-		abort_interp("Invalid object.");
-	}
-	CLEAR(oper1);
-	PushObject(ref);
+    CHECKOP(1);
+    oper1 = POP();
+    if (!valid_object(oper1))
+	abort_interp("Invalid object.");
+    ref = oper1->data.objref;
+    CHECKREMOTE(ref);
+    if ((mlev < 3) && !permissions(ProgUID, ref))
+	abort_interp("Permission denied.");
+    switch (Typeof(ref)) {
+    case TYPE_ROOM:
+    case TYPE_THING:
+	/* ts_lastuseobject(ref); */
+    case TYPE_PLAYER:
+	ref = EXITS(ref);
+	break;
+    default:
+	abort_interp("Invalid object.");
+    }
+    CLEAR(oper1);
+    PushObject(ref);
 }
 
 
 void
 prim_next(PRIM_PROTOTYPE)
 {
-	CHECKOP(1);
-	oper1 = POP();
-	if (!valid_object(oper1))
-		abort_interp("Invalid object.");
-	CHECKREMOTE(oper1->data.objref);
-	ref = NEXTOBJ(oper1->data.objref);
-	while (mlev < 2 && ref != NOTHING && Typeof(ref) != TYPE_EXIT &&
-		   ((FLAGS(ref) & DARK) || Typeof(ref) == TYPE_ROOM) && !controls(ProgUID, ref))
-		ref = NEXTOBJ(ref);
-	CLEAR(oper1);
-	PushObject(ref);
+    CHECKOP(1);
+    oper1 = POP();
+    if (!valid_object(oper1))
+	abort_interp("Invalid object.");
+    CHECKREMOTE(oper1->data.objref);
+    ref = NEXTOBJ(oper1->data.objref);
+    while (mlev < 2 && ref != NOTHING && Typeof(ref) != TYPE_EXIT &&
+	   ((FLAGS(ref) & DARK) || Typeof(ref) == TYPE_ROOM) && !controls(ProgUID, ref))
+	ref = NEXTOBJ(ref);
+    CLEAR(oper1);
+    PushObject(ref);
 }
 
 
 void
 prim_nextowned(PRIM_PROTOTYPE)
 {
-	dbref ownr;
+    dbref ownr;
 
-	CHECKOP(1);
-	oper1 = POP();
-	if (!valid_object(oper1))
-		abort_interp("Invalid object.");
-	if (mlev < 2)
-		abort_interp("Permission denied.");
-	ref = oper1->data.objref;
-	CHECKREMOTE(ref);
+    CHECKOP(1);
+    oper1 = POP();
+    if (!valid_object(oper1))
+	abort_interp("Invalid object.");
+    if (mlev < 2)
+	abort_interp("Permission denied.");
+    ref = oper1->data.objref;
+    CHECKREMOTE(ref);
 
-	ownr = OWNER(ref);
-	if (Typeof(ref) == TYPE_PLAYER) {
-		ref = 0;
-	} else {
-		ref++;
-	}
-	while (ref < db_top && (OWNER(ref) != ownr || ref == ownr))
-		ref++;
+    ownr = OWNER(ref);
+    if (Typeof(ref) == TYPE_PLAYER) {
+	ref = 0;
+    } else {
+	ref++;
+    }
+    while (ref < db_top && (OWNER(ref) != ownr || ref == ownr))
+	ref++;
 
-	if (ref >= db_top) {
-		ref = NOTHING;
-	}
-	CLEAR(oper1);
-	PushObject(ref);
+    if (ref >= db_top) {
+	ref = NOTHING;
+    }
+    CLEAR(oper1);
+    PushObject(ref);
 }
 
 
 void
 prim_name(PRIM_PROTOTYPE)
 {
-	CHECKOP(1);
-	oper1 = POP();
-	if (oper1->type != PROG_OBJECT)
-		abort_interp("Invalid argument type.");
+    CHECKOP(1);
+    oper1 = POP();
+    if (oper1->type != PROG_OBJECT)
+	abort_interp("Invalid argument type.");
 
-	ref = oper1->data.objref;
-	if (ref < 0 || ref >= db_top)
-		abort_interp("Invalid object.");
+    ref = oper1->data.objref;
+    if (ref < 0 || ref >= db_top)
+	abort_interp("Invalid object.");
 
-	if (Typeof(ref) == TYPE_GARBAGE) {
-		strcpyn(buf, sizeof(buf), "<garbage>");
+    if (Typeof(ref) == TYPE_GARBAGE) {
+	strcpyn(buf, sizeof(buf), "<garbage>");
+    } else {
+	CHECKREMOTE(ref);
+	/* if ((Typeof(ref) != TYPE_PLAYER) && (Typeof(ref) != TYPE_PROGRAM))
+	   ts_lastuseobject(ref); */
+	if (NAME(ref)) {
+	    strcpyn(buf, sizeof(buf), NAME(ref));
 	} else {
-		CHECKREMOTE(ref);
-		/* if ((Typeof(ref) != TYPE_PLAYER) && (Typeof(ref) != TYPE_PROGRAM))
-		   ts_lastuseobject(ref); */
-		if (NAME(ref)) {
-			strcpyn(buf, sizeof(buf), NAME(ref));
-		} else {
-			buf[0] = '\0';
-		}
+	    buf[0] = '\0';
 	}
-	CLEAR(oper1);
-	PushString(buf);
+    }
+    CLEAR(oper1);
+    PushString(buf);
 }
 
 void
 prim_setname(PRIM_PROTOTYPE)
 {
-	char *password;
+    char *password;
 
-	CHECKOP(2);
-	oper1 = POP();
-	oper2 = POP();
-	if (!valid_object(oper2))
-		abort_interp("Invalid argument type (1)");
-	if (oper1->type != PROG_STRING)
-		abort_interp("Non-string argument (2)");
-	ref = oper2->data.objref;
-	if ((mlev < 4) && !permissions(ProgUID, ref))
+    CHECKOP(2);
+    oper1 = POP();
+    oper2 = POP();
+    if (!valid_object(oper2))
+	abort_interp("Invalid argument type (1)");
+    if (oper1->type != PROG_STRING)
+	abort_interp("Non-string argument (2)");
+    ref = oper2->data.objref;
+    if ((mlev < 4) && !permissions(ProgUID, ref))
+	abort_interp("Permission denied.");
+    {
+	const char *b = DoNullInd(oper1->data.string);
+
+	if (Typeof(ref) == TYPE_PLAYER) {
+	    strcpyn(buf, sizeof(buf), b);
+	    b = buf;
+	    if (mlev < 4) {
 		abort_interp("Permission denied.");
-	{
-		const char *b = DoNullInd(oper1->data.string);
+	    }
 
-		if (Typeof(ref) == TYPE_PLAYER) {
-			strcpyn(buf, sizeof(buf), b);
-			b = buf;
-			if (mlev < 4) {
-				abort_interp("Permission denied.");
-			}
+	    /* split off password */
+	    for (password = buf; *password && !isspace(*password); password++) ;
 
-			/* split off password */
-			for (password = buf; *password && !isspace(*password); password++) ;
-
-			/* eat whitespace */
-			if (*password) {
-				*password++ = '\0';	/* terminate name */
-				while (*password && isspace(*password)) {
-					password++;
-				}
-			}
-
-			/* check for null password */
-			if (!*password) {
-				abort_interp("Player namechange requires password.");
-			} else if (!check_password(ref, password)) {
-				abort_interp("Incorrect password.");
-			} else if (string_compare(b, NAME(ref)) && !ok_player_name(b)) {
-				abort_interp("You can't give a player that name.");
-			}
-
-			/* everything ok, notify */
-			log_status("NAME CHANGE (MUF): %s(#%d) to %s", NAME(ref), ref, b);
-			delete_player(ref);
-			if (NAME(ref)) {
-				free((void *) NAME(ref));
-			}
-			NAME(ref) = alloc_string(b);
-			add_player(ref);
-			ts_modifyobject(ref);
-		} else {
-			if (((Typeof(ref) == TYPE_THING) && !ok_ascii_thing(b)) ||
-			    ((Typeof(ref) != TYPE_THING) && !ok_ascii_other(b)) ) {
-					abort_interp("Invalid 8-bit name.");
-			}
-			if (!ok_name(b)) {
-				abort_interp("Invalid name.");
-			}
-			if (NAME(ref)) {
-				free((void *) NAME(ref));
-			}
-			NAME(ref) = alloc_string(b);
-			ts_modifyobject(ref);
-			if (MLevRaw(ref)) {
-				SetMLevel(ref, 0);
-			}
+	    /* eat whitespace */
+	    if (*password) {
+		*password++ = '\0';	/* terminate name */
+		while (*password && isspace(*password)) {
+		    password++;
 		}
+	    }
+
+	    /* check for null password */
+	    if (!*password) {
+		abort_interp("Player namechange requires password.");
+	    } else if (!check_password(ref, password)) {
+		abort_interp("Incorrect password.");
+	    } else if (string_compare(b, NAME(ref)) && !ok_player_name(b)) {
+		abort_interp("You can't give a player that name.");
+	    }
+
+	    /* everything ok, notify */
+	    log_status("NAME CHANGE (MUF): %s(#%d) to %s", NAME(ref), ref, b);
+	    delete_player(ref);
+	    if (NAME(ref)) {
+		free((void *) NAME(ref));
+	    }
+	    NAME(ref) = alloc_string(b);
+	    add_player(ref);
+	    ts_modifyobject(ref);
+	} else {
+	    if (((Typeof(ref) == TYPE_THING) && !ok_ascii_thing(b)) ||
+		((Typeof(ref) != TYPE_THING) && !ok_ascii_other(b))) {
+		abort_interp("Invalid 8-bit name.");
+	    }
+	    if (!ok_name(b)) {
+		abort_interp("Invalid name.");
+	    }
+	    if (NAME(ref)) {
+		free((void *) NAME(ref));
+	    }
+	    NAME(ref) = alloc_string(b);
+	    ts_modifyobject(ref);
+	    if (MLevRaw(ref)) {
+		SetMLevel(ref, 0);
+	    }
 	}
-	CLEAR(oper1);
-	CLEAR(oper2);
+    }
+    CLEAR(oper1);
+    CLEAR(oper2);
 }
 
 void
 prim_pmatch(PRIM_PROTOTYPE)
 {
-	dbref ref;
+    dbref ref;
 
-	CHECKOP(1);
-	oper1 = POP();
-	if (oper1->type != PROG_STRING)
-		abort_interp("Non-string argument.");
-	if (!oper1->data.string)
-		abort_interp("Empty string argument.");
+    CHECKOP(1);
+    oper1 = POP();
+    if (oper1->type != PROG_STRING)
+	abort_interp("Non-string argument.");
+    if (!oper1->data.string)
+	abort_interp("Empty string argument.");
 
-        strip_ansi(buf, oper1->data.string->data);
+    strip_ansi(buf, oper1->data.string->data);
 
-	if (!string_compare(buf, "me")) {
-		ref = player;
-	} else {
-		ref = lookup_player(buf);
-	}
-	CLEAR(oper1);
-	PushObject(ref);
+    if (!string_compare(buf, "me")) {
+	ref = player;
+    } else {
+	ref = lookup_player(buf);
+    }
+    CLEAR(oper1);
+    PushObject(ref);
 }
 
 
 void
 prim_match(PRIM_PROTOTYPE)
 {
-	struct inst *oper1=NULL, *oper2=NULL, *oper3=NULL, *oper4=NULL;
-	dbref ref;
-	char buf2[BUFFER_LEN];
+    struct inst *oper1 = NULL, *oper2 = NULL, *oper3 = NULL, *oper4 = NULL;
+    dbref ref;
+    char buf2[BUFFER_LEN];
 
-	CHECKOP(1);
-	oper1 = POP();
-	if (oper1->type != PROG_STRING)
-		abort_interp("Non-string argument.");
-	if (!oper1->data.string)
-		abort_interp("Empty string argument.");
-	{
-		char tmppp[BUFFER_LEN];
-		struct match_data md;
+    CHECKOP(1);
+    oper1 = POP();
+    if (oper1->type != PROG_STRING)
+	abort_interp("Non-string argument.");
+    if (!oper1->data.string)
+	abort_interp("Empty string argument.");
+    {
+	char tmppp[BUFFER_LEN];
+	struct match_data md;
 
-		(void) strcpyn(buf, sizeof(buf), match_args);
-		(void) strcpyn(tmppp, sizeof(tmppp), match_cmdname);
-		strip_ansi(buf2, oper1->data.string->data);
-		init_match(fr->descr, player, buf2, NOTYPE, &md);
-		if (buf2[0] == REGISTERED_TOKEN) {
-			match_registered(&md);
-		} else {
-			match_all_exits(&md);
-			match_neighbor(&md);
-			match_possession(&md);
-			match_me(&md);
-			match_here(&md);
-			match_home(&md);
-			match_nil(&md);
-		}
-		if (Wizard(ProgUID) || (mlev >= 4)) {
-			match_absolute(&md);
-			match_player(&md);
-		}
-		ref = match_result(&md);
-		(void) strcpyn(match_args, sizeof(match_args), buf);
-		(void) strcpyn(match_cmdname, sizeof(match_cmdname), tmppp);
+	(void) strcpyn(buf, sizeof(buf), match_args);
+	(void) strcpyn(tmppp, sizeof(tmppp), match_cmdname);
+	strip_ansi(buf2, oper1->data.string->data);
+	init_match(fr->descr, player, buf2, NOTYPE, &md);
+	if (buf2[0] == REGISTERED_TOKEN) {
+	    match_registered(&md);
+	} else {
+	    match_all_exits(&md);
+	    match_neighbor(&md);
+	    match_possession(&md);
+	    match_me(&md);
+	    match_here(&md);
+	    match_home(&md);
+	    match_nil(&md);
 	}
-	CLEAR(oper1);
-	PushObject(ref);
+	if (Wizard(ProgUID) || (mlev >= 4)) {
+	    match_absolute(&md);
+	    match_player(&md);
+	}
+	ref = match_result(&md);
+	(void) strcpyn(match_args, sizeof(match_args), buf);
+	(void) strcpyn(match_cmdname, sizeof(match_cmdname), tmppp);
+    }
+    CLEAR(oper1);
+    PushObject(ref);
 }
 
 
 void
 prim_rmatch(PRIM_PROTOTYPE)
 {
-	struct inst *oper1=NULL, *oper2=NULL, *oper3=NULL, *oper4=NULL;
-	dbref ref;
+    struct inst *oper1 = NULL, *oper2 = NULL, *oper3 = NULL, *oper4 = NULL;
+    dbref ref;
 
-	CHECKOP(2);
-	oper1 = POP();
-	oper2 = POP();
-	if (oper1->type != PROG_STRING)
-		abort_interp("Invalid argument (2)");
-	if (oper2->type != PROG_OBJECT
-		|| oper2->data.objref < 0
-		|| oper2->data.objref >= db_top
-		|| Typeof(oper2->data.objref) == TYPE_PROGRAM
-		|| Typeof(oper2->data.objref) == TYPE_EXIT) abort_interp("Invalid argument (1)");
-	CHECKREMOTE(oper2->data.objref);
-	{
-		char tmppp[BUFFER_LEN];
-		struct match_data md;
+    CHECKOP(2);
+    oper1 = POP();
+    oper2 = POP();
+    if (oper1->type != PROG_STRING)
+	abort_interp("Invalid argument (2)");
+    if (oper2->type != PROG_OBJECT
+	|| oper2->data.objref < 0
+	|| oper2->data.objref >= db_top
+	|| Typeof(oper2->data.objref) == TYPE_PROGRAM
+	|| Typeof(oper2->data.objref) == TYPE_EXIT)
+	abort_interp("Invalid argument (1)");
+    CHECKREMOTE(oper2->data.objref);
+    {
+	char tmppp[BUFFER_LEN];
+	struct match_data md;
 
-		(void) strcpyn(buf, sizeof(buf), match_args);
-		(void) strcpyn(tmppp, sizeof(tmppp), match_cmdname);
-		init_match(fr->descr, player, DoNullInd(oper1->data.string), TYPE_THING, &md);
-		match_rmatch(oper2->data.objref, &md);
-		ref = match_result(&md);
-		(void) strcpyn(match_args, sizeof(match_args), buf);
-		(void) strcpyn(match_cmdname, sizeof(match_cmdname), tmppp);
-	}
-	CLEAR(oper1);
-	CLEAR(oper2);
-	PushObject(ref);
+	(void) strcpyn(buf, sizeof(buf), match_args);
+	(void) strcpyn(tmppp, sizeof(tmppp), match_cmdname);
+	init_match(fr->descr, player, DoNullInd(oper1->data.string), TYPE_THING, &md);
+	match_rmatch(oper2->data.objref, &md);
+	ref = match_result(&md);
+	(void) strcpyn(match_args, sizeof(match_args), buf);
+	(void) strcpyn(match_cmdname, sizeof(match_cmdname), tmppp);
+    }
+    CLEAR(oper1);
+    CLEAR(oper2);
+    PushObject(ref);
 }
 
 
 void
 prim_copyobj(PRIM_PROTOTYPE)
 {
-	CHECKOP(1);
-	oper1 = POP();
-	if (!valid_object(oper1))
-		abort_interp("Invalid object.");
-	CHECKREMOTE(oper1->data.objref);
-	if ((mlev < 3) && (fr->already_created))
-		abort_interp("An object was already created this program run.");
-	ref = oper1->data.objref;
-	if (Typeof(ref) != TYPE_THING)
-		abort_interp("Invalid object type.");
-	if ((mlev < 3) && !permissions(ProgUID, ref))
-		abort_interp("Permission denied.");
-	if (!ok_name(NAME(oper1->data.objref)))
-		abort_interp("Invalid name.");
-	fr->already_created++;
-	{
-		dbref newobj;
+    CHECKOP(1);
+    oper1 = POP();
+    if (!valid_object(oper1))
+	abort_interp("Invalid object.");
+    CHECKREMOTE(oper1->data.objref);
+    if ((mlev < 3) && (fr->already_created))
+	abort_interp("An object was already created this program run.");
+    ref = oper1->data.objref;
+    if (Typeof(ref) != TYPE_THING)
+	abort_interp("Invalid object type.");
+    if ((mlev < 3) && !permissions(ProgUID, ref))
+	abort_interp("Permission denied.");
+    if (!ok_name(NAME(oper1->data.objref)))
+	abort_interp("Invalid name.");
+    fr->already_created++;
+    {
+	dbref newobj;
 
-		newobj = new_object();
-		*DBFETCH(newobj) = *DBFETCH(ref);
-		copyobj(player, ref, newobj);
-		CLEAR(oper1);
-		PushObject(newobj);
-	}
+	newobj = new_object();
+	*DBFETCH(newobj) = *DBFETCH(ref);
+	copyobj(player, ref, newobj);
+	CLEAR(oper1);
+	PushObject(newobj);
+    }
 }
 
 
@@ -611,660 +613,702 @@ void
 prim_set(PRIM_PROTOTYPE)
 /* SET */
 {
-	CHECKOP(2);
-	oper1 = POP();
-	oper2 = POP();
-	if (oper1->type != PROG_STRING)
-		abort_interp("Invalid argument type (2)");
-	if (!(oper1->data.string))
-		abort_interp("Empty string argument (2)");
-	if (!valid_object(oper2))
-		abort_interp("Invalid object.");
-	ref = oper2->data.objref;
-	CHECKREMOTE(ref);
-	tmp = 0;
-	result = (*oper1->data.string->data == '!');
-	{
-		char *flag = oper1->data.string->data;
+    CHECKOP(2);
+    oper1 = POP();
+    oper2 = POP();
+    if (oper1->type != PROG_STRING)
+	abort_interp("Invalid argument type (2)");
+    if (!(oper1->data.string))
+	abort_interp("Empty string argument (2)");
+    if (!valid_object(oper2))
+	abort_interp("Invalid object.");
+    ref = oper2->data.objref;
+    CHECKREMOTE(ref);
+    tmp = 0;
+    result = (*oper1->data.string->data == '!');
+    {
+	char *flag = oper1->data.string->data;
 
-		if (result)
-			flag++;
+	if (result)
+	    flag++;
 
-		if (string_prefix("dark", flag)
-			|| string_prefix("debug", flag))
-			tmp = DARK;
-		else if (string_prefix("abode", flag)
-				 || string_prefix("autostart", flag)
-				 || string_prefix("abate", flag))
-			tmp = ABODE;
-		else if (string_prefix("chown_ok", flag)
-				 || string_prefix("color", flag))
-			tmp = CHOWN_OK;
-		else if (string_prefix("haven", flag)
-				 || string_prefix("harduid", flag))
-			tmp = HAVEN;
-		else if (string_prefix("jump_ok", flag))
-			tmp = JUMP_OK;
-		else if (string_prefix("link_ok", flag))
-			tmp = LINK_OK;
+	if (string_prefix("dark", flag)
+	    || string_prefix("debug", flag))
+	    tmp = DARK;
+	else if (string_prefix("abode", flag)
+		 || string_prefix("autostart", flag)
+		 || string_prefix("abate", flag))
+	    tmp = ABODE;
+	else if (string_prefix("chown_ok", flag)
+		 || string_prefix("color", flag))
+	    tmp = CHOWN_OK;
+	else if (string_prefix("haven", flag)
+		 || string_prefix("harduid", flag))
+	    tmp = HAVEN;
+	else if (string_prefix("jump_ok", flag))
+	    tmp = JUMP_OK;
+	else if (string_prefix("link_ok", flag))
+	    tmp = LINK_OK;
 
-		else if (string_prefix("kill_ok", flag))
-			tmp = KILL_OK;
+	else if (string_prefix("kill_ok", flag))
+	    tmp = KILL_OK;
 
-		else if (string_prefix("builder", flag))
-			tmp = BUILDER;
-		else if (string_prefix("mucker", flag))
-			tmp = MUCKER;
-		else if (string_prefix("nucker", flag))
-			tmp = SMUCKER;
-		else if (string_prefix("interactive", flag))
-			tmp = INTERACTIVE;
-		else if (string_prefix("sticky", flag)
-				 || string_prefix("silent", flag))
-			tmp = STICKY;
-		else if (string_prefix("wizard", flag))
-			tmp = WIZARD;
-		else if (string_prefix("truewizard", flag))
-			tmp = WIZARD;
-		else if (string_prefix("xforcible", flag))
-			tmp = XFORCIBLE;
-		else if (string_prefix("zombie", flag))
-			tmp = ZOMBIE;
-		else if (string_prefix("vehicle", flag)
-			 || string_prefix("viewable", flag))
-			tmp = VEHICLE;
-		else if (string_prefix("quell", flag))
-			tmp = QUELL;
-                else if (tp_enable_match_yield && string_prefix("yield", flag))
-                        tmp = YIELD;
-                else if (tp_enable_match_yield && string_prefix("overt", flag))
-                        tmp = OVERT;
-	}
-	if (!tmp)
-		abort_interp("Unrecognized flag.");
-	if ((mlev < 4) && !permissions(ProgUID, ref))
-		abort_interp("Permission denied.");
+	else if (string_prefix("builder", flag))
+	    tmp = BUILDER;
+	else if (string_prefix("mucker", flag))
+	    tmp = MUCKER;
+	else if (string_prefix("nucker", flag))
+	    tmp = SMUCKER;
+	else if (string_prefix("interactive", flag))
+	    tmp = INTERACTIVE;
+	else if (string_prefix("sticky", flag)
+		 || string_prefix("silent", flag))
+	    tmp = STICKY;
+	else if (string_prefix("wizard", flag))
+	    tmp = WIZARD;
+	else if (string_prefix("truewizard", flag))
+	    tmp = WIZARD;
+	else if (string_prefix("xforcible", flag))
+	    tmp = XFORCIBLE;
+	else if (string_prefix("zombie", flag))
+	    tmp = ZOMBIE;
+	else if (string_prefix("vehicle", flag)
+		 || string_prefix("viewable", flag))
+	    tmp = VEHICLE;
+	else if (string_prefix("quell", flag))
+	    tmp = QUELL;
+	else if (tp_enable_match_yield && string_prefix("yield", flag))
+	    tmp = YIELD;
+	else if (tp_enable_match_yield && string_prefix("overt", flag))
+	    tmp = OVERT;
+    }
+    if (!tmp)
+	abort_interp("Unrecognized flag.");
+    if ((mlev < 4) && !permissions(ProgUID, ref))
+	abort_interp("Permission denied.");
 
-	if (((mlev < 4) && ((tmp == DARK && ((Typeof(ref) == TYPE_PLAYER)
-										 || (!tp_exit_darking && Typeof(ref) == TYPE_EXIT)
-										 || (!tp_thing_darking && Typeof(ref) == TYPE_THING)
-						 )
-						)
-						|| ((tmp == ZOMBIE) && (Typeof(ref) == TYPE_THING)
-							&& (FLAGS(ProgUID) & ZOMBIE))
-						|| ((tmp == ZOMBIE) && (Typeof(ref) == TYPE_PLAYER))
-						|| (tmp == BUILDER) || (tmp == YIELD) || ((unsigned)tmp == OVERT)
-		 )
-		)
-		|| (tmp == WIZARD) || (tmp == QUELL) || (tmp == INTERACTIVE)
-		|| ((tmp == ABODE) && (Typeof(ref) == TYPE_PROGRAM))
-		|| (tmp == MUCKER) || (tmp == SMUCKER) || (tmp == XFORCIBLE)
+    if (((mlev < 4) && ((tmp == DARK && ((Typeof(ref) == TYPE_PLAYER)
+					 || (!tp_exit_darking && Typeof(ref) == TYPE_EXIT)
+					 || (!tp_thing_darking && Typeof(ref) == TYPE_THING)
+			 )
 			)
-		abort_interp("Permission denied.");
-        if (((tmp == YIELD) || ((unsigned)tmp == OVERT)) &&
-            (Typeof(ref) != TYPE_THING && Typeof(ref) != TYPE_ROOM)) {
-                abort_interp("Permission denied.");
-        }
-	if (result && Typeof(ref) == TYPE_THING && tmp == VEHICLE) {
-		dbref obj = CONTENTS(ref);
+			|| ((tmp == ZOMBIE) && (Typeof(ref) == TYPE_THING)
+			    && (FLAGS(ProgUID) & ZOMBIE))
+			|| ((tmp == ZOMBIE) && (Typeof(ref) == TYPE_PLAYER))
+			|| (tmp == BUILDER) || (tmp == YIELD) || ((unsigned) tmp == OVERT)
+	 )
+	)
+	|| (tmp == WIZARD) || (tmp == QUELL) || (tmp == INTERACTIVE)
+	|| ((tmp == ABODE) && (Typeof(ref) == TYPE_PROGRAM))
+	|| (tmp == MUCKER) || (tmp == SMUCKER) || (tmp == XFORCIBLE)
+	    )
+	abort_interp("Permission denied.");
+    if (((tmp == YIELD) || ((unsigned) tmp == OVERT)) &&
+	(Typeof(ref) != TYPE_THING && Typeof(ref) != TYPE_ROOM)) {
+	abort_interp("Permission denied.");
+    }
+    if (result && Typeof(ref) == TYPE_THING && tmp == VEHICLE) {
+	dbref obj = CONTENTS(ref);
 
-		for (; obj != NOTHING; obj = NEXTOBJ(obj)) {
-			if (Typeof(obj) == TYPE_PLAYER) {
-				abort_interp("That vehicle still has players in it!");
-			}
-		}
+	for (; obj != NOTHING; obj = NEXTOBJ(obj)) {
+	    if (Typeof(obj) == TYPE_PLAYER) {
+		abort_interp("That vehicle still has players in it!");
+	    }
 	}
-	if (!result) {
-		FLAGS(ref) |= tmp;
-		DBDIRTY(ref);
-	} else {
-		FLAGS(ref) &= ~tmp;
-		DBDIRTY(ref);
-	}
-	CLEAR(oper1);
-	CLEAR(oper2);
+    }
+    if (!result) {
+	FLAGS(ref) |= tmp;
+	DBDIRTY(ref);
+    } else {
+	FLAGS(ref) &= ~tmp;
+	DBDIRTY(ref);
+    }
+    CLEAR(oper1);
+    CLEAR(oper2);
 }
 
 void
 prim_mlevel(PRIM_PROTOTYPE)
 /* MLEVEL */
 {
-	CHECKOP(1);
-	oper1 = POP();
-	if (!valid_object(oper1))
-		abort_interp("Invalid object.");
-	ref = oper1->data.objref;
-	CHECKREMOTE(ref);
-	result = MLevRaw(ref);
-	CLEAR(oper1);
-	PushInt(result);
+    CHECKOP(1);
+    oper1 = POP();
+    if (!valid_object(oper1))
+	abort_interp("Invalid object.");
+    ref = oper1->data.objref;
+    CHECKREMOTE(ref);
+    result = MLevRaw(ref);
+    CLEAR(oper1);
+    PushInt(result);
 }
 
 void
 prim_flagp(PRIM_PROTOTYPE)
 /* FLAG? */
 {
-	int truwiz = 0;
+    int truwiz = 0;
 
-	CHECKOP(2);
-	oper1 = POP();
-	oper2 = POP();
-	if (oper1->type != PROG_STRING)
-		abort_interp("Invalid argument type (2)");
-	if (!(oper1->data.string))
-		abort_interp("Empty string argument (2)");
-	if (!valid_object(oper2))
-		abort_interp("Invalid object.");
-	ref = oper2->data.objref;
-	CHECKREMOTE(ref);
-	tmp = 0;
-	result = 0;
-	{
-		char *flag = oper1->data.string->data;
+    CHECKOP(2);
+    oper1 = POP();
+    oper2 = POP();
+    if (oper1->type != PROG_STRING)
+	abort_interp("Invalid argument type (2)");
+    if (!(oper1->data.string))
+	abort_interp("Empty string argument (2)");
+    if (!valid_object(oper2))
+	abort_interp("Invalid object.");
+    ref = oper2->data.objref;
+    CHECKREMOTE(ref);
+    tmp = 0;
+    result = 0;
+    {
+	char *flag = oper1->data.string->data;
 
-		while (*flag == '!') {
-			flag++;
-			result = (!result);
-		}
-		if (!*flag)
-			abort_interp("Unknown flag.");
-
-		if (string_prefix("dark", flag)
-			|| string_prefix("debug", flag))
-			tmp = DARK;
-		else if (string_prefix("abode", flag)
-				 || string_prefix("autostart", flag)
-				 || string_prefix("abate", flag))
-			tmp = ABODE;
-		else if (string_prefix("chown_ok", flag)
-				 || string_prefix("color", flag))
-			tmp = CHOWN_OK;
-		else if (string_prefix("haven", flag)
-				 || string_prefix("harduid", flag))
-			tmp = HAVEN;
-		else if (string_prefix("jump_ok", flag))
-			tmp = JUMP_OK;
-		else if (string_prefix("link_ok", flag))
-			tmp = LINK_OK;
-
-		else if (string_prefix("kill_ok", flag))
-			tmp = KILL_OK;
-
-		else if (string_prefix("builder", flag))
-			tmp = BUILDER;
-		else if (string_prefix("mucker", flag))
-			tmp = MUCKER;
-		else if (string_prefix("nucker", flag))
-			tmp = SMUCKER;
-		else if (string_prefix("interactive", flag))
-			tmp = INTERACTIVE;
-		else if (string_prefix("sticky", flag)
-				 || string_prefix("silent", flag))
-			tmp = STICKY;
-		else if (string_prefix("wizard", flag))
-			tmp = WIZARD;
-		else if (string_prefix("truewizard", flag)) {
-			tmp = WIZARD;
-			truwiz = 1;
-		} else if (string_prefix("zombie", flag))
-			tmp = ZOMBIE;
-		else if (string_prefix("xforcible", flag))
-			tmp = XFORCIBLE;
-		else if (string_prefix("vehicle", flag)
-			|| string_prefix("viewable", flag))
-			tmp = VEHICLE;
-		else if (string_prefix("quell", flag))
-			tmp = QUELL;
-                else if (tp_enable_match_yield && string_prefix("yield", flag))
-                        tmp = YIELD;
-                else if (tp_enable_match_yield && string_prefix("overt", flag))
-                        tmp = OVERT;
+	while (*flag == '!') {
+	    flag++;
+	    result = (!result);
 	}
-	if (result) {
-		if ((!truwiz) && (tmp == WIZARD)) {
-			result = (!Wizard(ref));
-		} else {
-			result = (tmp && ((FLAGS(ref) & tmp) == 0));
-		}
+	if (!*flag)
+	    abort_interp("Unknown flag.");
+
+	if (string_prefix("dark", flag)
+	    || string_prefix("debug", flag))
+	    tmp = DARK;
+	else if (string_prefix("abode", flag)
+		 || string_prefix("autostart", flag)
+		 || string_prefix("abate", flag))
+	    tmp = ABODE;
+	else if (string_prefix("chown_ok", flag)
+		 || string_prefix("color", flag))
+	    tmp = CHOWN_OK;
+	else if (string_prefix("haven", flag)
+		 || string_prefix("harduid", flag))
+	    tmp = HAVEN;
+	else if (string_prefix("jump_ok", flag))
+	    tmp = JUMP_OK;
+	else if (string_prefix("link_ok", flag))
+	    tmp = LINK_OK;
+
+	else if (string_prefix("kill_ok", flag))
+	    tmp = KILL_OK;
+
+	else if (string_prefix("builder", flag))
+	    tmp = BUILDER;
+	else if (string_prefix("mucker", flag))
+	    tmp = MUCKER;
+	else if (string_prefix("nucker", flag))
+	    tmp = SMUCKER;
+	else if (string_prefix("interactive", flag))
+	    tmp = INTERACTIVE;
+	else if (string_prefix("sticky", flag)
+		 || string_prefix("silent", flag))
+	    tmp = STICKY;
+	else if (string_prefix("wizard", flag))
+	    tmp = WIZARD;
+	else if (string_prefix("truewizard", flag)) {
+	    tmp = WIZARD;
+	    truwiz = 1;
+	} else if (string_prefix("zombie", flag))
+	    tmp = ZOMBIE;
+	else if (string_prefix("xforcible", flag))
+	    tmp = XFORCIBLE;
+	else if (string_prefix("vehicle", flag)
+		 || string_prefix("viewable", flag))
+	    tmp = VEHICLE;
+	else if (string_prefix("quell", flag))
+	    tmp = QUELL;
+	else if (tp_enable_match_yield && string_prefix("yield", flag))
+	    tmp = YIELD;
+	else if (tp_enable_match_yield && string_prefix("overt", flag))
+	    tmp = OVERT;
+    }
+    if (result) {
+	if ((!truwiz) && (tmp == WIZARD)) {
+	    result = (!Wizard(ref));
 	} else {
-		if ((!truwiz) && (tmp == WIZARD)) {
-			result = Wizard(ref);
-		} else {
-			result = (tmp && ((FLAGS(ref) & tmp) != 0));
-		}
+	    result = (tmp && ((FLAGS(ref) & tmp) == 0));
 	}
-	CLEAR(oper1);
-	CLEAR(oper2);
-	PushInt(result);
+    } else {
+	if ((!truwiz) && (tmp == WIZARD)) {
+	    result = Wizard(ref);
+	} else {
+	    result = (tmp && ((FLAGS(ref) & tmp) != 0));
+	}
+    }
+    CLEAR(oper1);
+    CLEAR(oper2);
+    PushInt(result);
 }
 
 
 void
 prim_playerp(PRIM_PROTOTYPE)
 {
-	CHECKOP(1);
-	oper1 = POP();
-	if (oper1->type != PROG_OBJECT)
-		abort_interp("Invalid argument type.");
-	if (!valid_object(oper1) && !is_home(oper1)) {
-		result = 0;
-	} else {
-		ref = oper1->data.objref;
-		CHECKREMOTE(ref);
-		result = (Typeof(ref) == TYPE_PLAYER);
-	}
-	CLEAR(oper1);
-	PushInt(result);
+    CHECKOP(1);
+    oper1 = POP();
+    if (oper1->type != PROG_OBJECT)
+	abort_interp("Invalid argument type.");
+    if (!valid_object(oper1) && !is_home(oper1)) {
+	result = 0;
+    } else {
+	ref = oper1->data.objref;
+	CHECKREMOTE(ref);
+	result = (Typeof(ref) == TYPE_PLAYER);
+    }
+    CLEAR(oper1);
+    PushInt(result);
 }
 
 
 void
 prim_thingp(PRIM_PROTOTYPE)
 {
-	CHECKOP(1);
-	oper1 = POP();
-	if (oper1->type != PROG_OBJECT)
-		abort_interp("Invalid argument type.");
-	if (!valid_object(oper1) && !is_home(oper1)) {
-		result = 0;
-	} else {
-		ref = oper1->data.objref;
-		CHECKREMOTE(ref);
-		result = (Typeof(ref) == TYPE_THING);
-	}
-	CLEAR(oper1);
-	PushInt(result);
+    CHECKOP(1);
+    oper1 = POP();
+    if (oper1->type != PROG_OBJECT)
+	abort_interp("Invalid argument type.");
+    if (!valid_object(oper1) && !is_home(oper1)) {
+	result = 0;
+    } else {
+	ref = oper1->data.objref;
+	CHECKREMOTE(ref);
+	result = (Typeof(ref) == TYPE_THING);
+    }
+    CLEAR(oper1);
+    PushInt(result);
 }
 
 
 void
 prim_roomp(PRIM_PROTOTYPE)
 {
-	CHECKOP(1);
-	oper1 = POP();
-	if (oper1->type != PROG_OBJECT)
-		abort_interp("Invalid argument type.");
-	if (!valid_object(oper1) && !is_home(oper1)) {
-		result = 0;
-	} else {
-		ref = oper1->data.objref;
-		CHECKREMOTE(ref);
-		result = (Typeof(ref) == TYPE_ROOM);
-	}
-	CLEAR(oper1);
-	PushInt(result);
+    CHECKOP(1);
+    oper1 = POP();
+    if (oper1->type != PROG_OBJECT)
+	abort_interp("Invalid argument type.");
+    if (!valid_object(oper1) && !is_home(oper1)) {
+	result = 0;
+    } else {
+	ref = oper1->data.objref;
+	CHECKREMOTE(ref);
+	result = (Typeof(ref) == TYPE_ROOM);
+    }
+    CLEAR(oper1);
+    PushInt(result);
 }
 
 
 void
 prim_programp(PRIM_PROTOTYPE)
 {
-	CHECKOP(1);
-	oper1 = POP();
-	if (oper1->type != PROG_OBJECT)
-		abort_interp("Invalid argument type.");
-	if (!valid_object(oper1) && !is_home(oper1)) {
-		result = 0;
-	} else {
-		ref = oper1->data.objref;
-		CHECKREMOTE(ref);
-		result = (Typeof(ref) == TYPE_PROGRAM);
-	}
-	CLEAR(oper1);
-	PushInt(result);
+    CHECKOP(1);
+    oper1 = POP();
+    if (oper1->type != PROG_OBJECT)
+	abort_interp("Invalid argument type.");
+    if (!valid_object(oper1) && !is_home(oper1)) {
+	result = 0;
+    } else {
+	ref = oper1->data.objref;
+	CHECKREMOTE(ref);
+	result = (Typeof(ref) == TYPE_PROGRAM);
+    }
+    CLEAR(oper1);
+    PushInt(result);
 }
 
 
 void
 prim_exitp(PRIM_PROTOTYPE)
 {
-	CHECKOP(1);
-	oper1 = POP();
-	if (oper1->type != PROG_OBJECT)
-		abort_interp("Invalid argument type.");
-	if (!valid_object(oper1) && !is_home(oper1)) {
-		result = 0;
-	} else {
-		ref = oper1->data.objref;
-		CHECKREMOTE(ref);
-		result = (Typeof(ref) == TYPE_EXIT);
-	}
-	CLEAR(oper1);
-	PushInt(result);
+    CHECKOP(1);
+    oper1 = POP();
+    if (oper1->type != PROG_OBJECT)
+	abort_interp("Invalid argument type.");
+    if (!valid_object(oper1) && !is_home(oper1)) {
+	result = 0;
+    } else {
+	ref = oper1->data.objref;
+	CHECKREMOTE(ref);
+	result = (Typeof(ref) == TYPE_EXIT);
+    }
+    CLEAR(oper1);
+    PushInt(result);
 }
 
 
 void
 prim_okp(PRIM_PROTOTYPE)
 {
-	CHECKOP(1);
-	oper1 = POP();
-	result = (valid_object(oper1));
-	CLEAR(oper1);
-	PushInt(result);
+    CHECKOP(1);
+    oper1 = POP();
+    result = (valid_object(oper1));
+    CLEAR(oper1);
+    PushInt(result);
 }
 
 void
 prim_location(PRIM_PROTOTYPE)
 {
-	CHECKOP(1);
-	oper1 = POP();
-	if (!valid_object(oper1))
-		abort_interp("Invalid object.");
-	CHECKREMOTE(oper1->data.objref);
-	ref = LOCATION(oper1->data.objref);
-	CLEAR(oper1);
-	PushObject(ref);
+    CHECKOP(1);
+    oper1 = POP();
+    if (!valid_object(oper1))
+	abort_interp("Invalid object.");
+    CHECKREMOTE(oper1->data.objref);
+    ref = LOCATION(oper1->data.objref);
+    CLEAR(oper1);
+    PushObject(ref);
 }
 
 void
 prim_owner(PRIM_PROTOTYPE)
 {
-	CHECKOP(1);
-	oper1 = POP();
-	if (!valid_object(oper1))
-		abort_interp("Invalid object.");
-	CHECKREMOTE(oper1->data.objref);
-	ref = OWNER(oper1->data.objref);
-	CLEAR(oper1);
-	PushObject(ref);
+    CHECKOP(1);
+    oper1 = POP();
+    if (!valid_object(oper1))
+	abort_interp("Invalid object.");
+    CHECKREMOTE(oper1->data.objref);
+    ref = OWNER(oper1->data.objref);
+    CLEAR(oper1);
+    PushObject(ref);
 }
 
 void
 prim_controls(PRIM_PROTOTYPE)
 {
-	CHECKOP(2);
-	oper1 = POP();
-	oper2 = POP();
-	if (!valid_object(oper1))
-		abort_interp("Invalid object. (2)");
-	if (!valid_object(oper2))
-		abort_interp("Invalid object. (1)");
-	CHECKREMOTE(oper1->data.objref);
-	result = controls(oper2->data.objref, oper1->data.objref);
-	CLEAR(oper1);
-	CLEAR(oper2);
-	PushInt(result);
+    CHECKOP(2);
+    oper1 = POP();
+    oper2 = POP();
+    if (!valid_object(oper1))
+	abort_interp("Invalid object. (2)");
+    if (!valid_object(oper2))
+	abort_interp("Invalid object. (1)");
+    CHECKREMOTE(oper1->data.objref);
+    result = controls(oper2->data.objref, oper1->data.objref);
+    CLEAR(oper1);
+    CLEAR(oper2);
+    PushInt(result);
 }
 
 void
 prim_getlink(PRIM_PROTOTYPE)
 {
-	CHECKOP(1);
-	oper1 = POP();
-	if (!valid_object(oper1))
-		abort_interp("Invalid object.");
-	CHECKREMOTE(oper1->data.objref);
-	if (Typeof(oper1->data.objref) == TYPE_PROGRAM)
-		abort_interp("Illegal object referenced.");
-	switch (Typeof(oper1->data.objref)) {
-	case TYPE_EXIT:
-		ref = (DBFETCH(oper1->data.objref)->sp.exit.ndest) ?
-				(DBFETCH(oper1->data.objref)->sp.exit.dest)[0] : NOTHING;
-		break;
-	case TYPE_PLAYER:
-		ref = PLAYER_HOME(oper1->data.objref);
-		break;
-	case TYPE_THING:
-		ref = THING_HOME(oper1->data.objref);
-		break;
-	case TYPE_ROOM:
-		ref = DBFETCH(oper1->data.objref)->sp.room.dropto;
-		break;
-	default:
-		ref = NOTHING;
-		break;
-	}
-	CLEAR(oper1);
-	PushObject(ref);
+    CHECKOP(1);
+    oper1 = POP();
+    if (!valid_object(oper1))
+	abort_interp("Invalid object.");
+    CHECKREMOTE(oper1->data.objref);
+    if (Typeof(oper1->data.objref) == TYPE_PROGRAM)
+	abort_interp("Illegal object referenced.");
+    switch (Typeof(oper1->data.objref)) {
+    case TYPE_EXIT:
+	ref = (DBFETCH(oper1->data.objref)->sp.exit.ndest) ?
+		(DBFETCH(oper1->data.objref)->sp.exit.dest)[0] : NOTHING;
+	break;
+    case TYPE_PLAYER:
+	ref = PLAYER_HOME(oper1->data.objref);
+	break;
+    case TYPE_THING:
+	ref = THING_HOME(oper1->data.objref);
+	break;
+    case TYPE_ROOM:
+	ref = DBFETCH(oper1->data.objref)->sp.room.dropto;
+	break;
+    default:
+	ref = NOTHING;
+	break;
+    }
+    CLEAR(oper1);
+    PushObject(ref);
 }
 
 void
 prim_getlinks(PRIM_PROTOTYPE)
 {
-	int count;
-	dbref my_obj;
+    int count;
+    dbref my_obj;
 
-	CHECKOP(1);
-	oper1 = POP();
-	if (!valid_object(oper1))
-		abort_interp("Invalid object.");
-	CHECKREMOTE(oper1->data.objref);
-	if (Typeof(oper1->data.objref) == TYPE_PROGRAM)
-		abort_interp("Illegal object referenced.");
-	my_obj = oper1->data.objref;
-	CLEAR(oper1);
-	switch (Typeof(my_obj)) {
-	case TYPE_EXIT:
-		count = DBFETCH(my_obj)->sp.exit.ndest;
-		for (int i = 0; i < count; i++) {
-			PushObject((DBFETCH(my_obj)->sp.exit.dest)[i]);
-		}
-		PushInt(count);
-		break;
-	case TYPE_PLAYER:
-		ref = PLAYER_HOME(my_obj);
-		count = 1;
-		PushObject(ref);
-		PushInt(count);
-		break;
-	case TYPE_THING:
-		ref = THING_HOME(my_obj);
-		count = 1;
-		PushObject(ref);
-		PushInt(count);
-		break;
-	case TYPE_ROOM:
-		ref = DBFETCH(my_obj)->sp.room.dropto;
-		if (ref != NOTHING) {
-			count = 0;
-			PushInt(count);
-		} else {
-			count = 1;
-			PushObject(ref);
-			PushInt(count);
-		}
-		break;
-	default:
-		count = 0;
-		PushInt(count);
-		break;
+    CHECKOP(1);
+    oper1 = POP();
+    if (!valid_object(oper1))
+	abort_interp("Invalid object.");
+    CHECKREMOTE(oper1->data.objref);
+    if (Typeof(oper1->data.objref) == TYPE_PROGRAM)
+	abort_interp("Illegal object referenced.");
+    my_obj = oper1->data.objref;
+    CLEAR(oper1);
+    switch (Typeof(my_obj)) {
+    case TYPE_EXIT:
+	count = DBFETCH(my_obj)->sp.exit.ndest;
+	for (int i = 0; i < count; i++) {
+	    PushObject((DBFETCH(my_obj)->sp.exit.dest)[i]);
 	}
+	PushInt(count);
+	break;
+    case TYPE_PLAYER:
+	ref = PLAYER_HOME(my_obj);
+	count = 1;
+	PushObject(ref);
+	PushInt(count);
+	break;
+    case TYPE_THING:
+	ref = THING_HOME(my_obj);
+	count = 1;
+	PushObject(ref);
+	PushInt(count);
+	break;
+    case TYPE_ROOM:
+	ref = DBFETCH(my_obj)->sp.room.dropto;
+	if (ref != NOTHING) {
+	    count = 0;
+	    PushInt(count);
+	} else {
+	    count = 1;
+	    PushObject(ref);
+	    PushInt(count);
+	}
+	break;
+    default:
+	count = 0;
+	PushInt(count);
+	break;
+    }
 }
 
 int
 prog_can_link_to(int mlev, dbref who, object_flag_type what_type, dbref where)
 {
-	if (where == HOME)
-		return 1;
-	if (where == NIL && what_type == TYPE_EXIT)
-		return 1;
-	if (where < 0 || where >= db_top)
-		return 0;
-	switch (what_type) {
-	case TYPE_EXIT:
-		return (mlev > 3 || permissions(who, where) || (FLAGS(where) & LINK_OK));
-	case TYPE_PLAYER:
-		return (Typeof(where) == TYPE_ROOM && (mlev > 3 || permissions(who, where)
-											   || Linkable(where)));
-	case TYPE_ROOM:
-		return ((Typeof(where) == TYPE_ROOM || Typeof(where) == TYPE_THING)
-				&& (mlev > 3 || permissions(who, where) || Linkable(where)));
-	case TYPE_THING:
-		return ((Typeof(where) == TYPE_ROOM || Typeof(where) == TYPE_PLAYER || Typeof(where) == TYPE_THING)
-				&& (mlev > 3 || permissions(who, where) || Linkable(where)));
-	case NOTYPE:
-		return (mlev > 3 || permissions(who, where) || (FLAGS(where) & LINK_OK) ||
-				(Typeof(where) != TYPE_THING && (FLAGS(where) & ABODE)));
-	}
+    if (where == HOME)
+	return 1;
+    if (where == NIL && what_type == TYPE_EXIT)
+	return 1;
+    if (where < 0 || where >= db_top)
 	return 0;
+    switch (what_type) {
+    case TYPE_EXIT:
+	return (mlev > 3 || permissions(who, where) || (FLAGS(where) & LINK_OK));
+    case TYPE_PLAYER:
+	return (Typeof(where) == TYPE_ROOM && (mlev > 3 || permissions(who, where)
+					       || Linkable(where)));
+    case TYPE_ROOM:
+	return ((Typeof(where) == TYPE_ROOM || Typeof(where) == TYPE_THING)
+		&& (mlev > 3 || permissions(who, where) || Linkable(where)));
+    case TYPE_THING:
+	return ((Typeof(where) == TYPE_ROOM || Typeof(where) == TYPE_PLAYER
+		 || Typeof(where) == TYPE_THING)
+		&& (mlev > 3 || permissions(who, where) || Linkable(where)));
+    case NOTYPE:
+	return (mlev > 3 || permissions(who, where) || (FLAGS(where) & LINK_OK) ||
+		(Typeof(where) != TYPE_THING && (FLAGS(where) & ABODE)));
+    }
+    return 0;
 }
 
 
 void
 prim_setlink(PRIM_PROTOTYPE)
 {
-	CHECKOP(2);
-	oper1 = POP();				/* dbref: destination */
-	oper2 = POP();				/* dbref: source */
-	if ((oper1->type != PROG_OBJECT) || (oper2->type != PROG_OBJECT))
-		abort_interp("setlink requires two dbrefs.");
-	if (!valid_object(oper2))
-		abort_interp("Invalid object. (1)");
-	ref = oper2->data.objref;
-	if (oper1->data.objref == NOTHING) {
-		if ((mlev < 4) && !permissions(ProgUID, ref))
-			abort_interp("Permission denied.");
-		switch (Typeof(ref)) {
-		case TYPE_EXIT:
-			DBSTORE(ref, sp.exit.ndest, 0);
-			if (DBFETCH(ref)->sp.exit.dest) {
-				free((void *) DBFETCH(ref)->sp.exit.dest);
-				DBSTORE(ref, sp.exit.dest, NULL);
-			}
-			if (MLevRaw(ref))
-				SetMLevel(ref, 0);
-			break;
-		case TYPE_ROOM:
-			DBSTORE(ref, sp.room.dropto, NOTHING);
-			break;
-		default:
-			abort_interp("Invalid object. (1)");
-		}
-	} else {
-		if (oper1->data.objref != HOME && oper1->data.objref != NIL && !valid_object(oper1))
-			abort_interp("Invalid object. (2)");
-		if (Typeof(ref) == TYPE_PROGRAM)
-			abort_interp("Program objects are not linkable. (1)");
-		if (!prog_can_link_to(mlev, ProgUID, Typeof(ref), oper1->data.objref))
-			abort_interp("Can't link source to destination.");
-		switch (Typeof(ref)) {
-		case TYPE_EXIT:
-			if ((mlev < 4) && !permissions(ProgUID, ref))
-				abort_interp("Permission denied.");
-			if (DBFETCH(ref)->sp.exit.ndest != 0 && (DBFETCH(ref)->sp.exit.dest)[0] != NIL)
-				abort_interp("Exit is already linked.");
-			if (exit_loop_check(ref, oper1->data.objref))
-				abort_interp("Link would cause a loop.");
-			DBFETCH(ref)->sp.exit.ndest = 1;
-			DBFETCH(ref)->sp.exit.dest = (dbref *) malloc(sizeof(dbref));
-			(DBFETCH(ref)->sp.exit.dest)[0] = oper1->data.objref;
-			DBDIRTY(ref);
-			break;
-		case TYPE_PLAYER:
-			if ((mlev < 4) && !permissions(ProgUID, ref))
-				abort_interp("Permission denied.");
-			if (oper1->data.objref == HOME)
-				abort_interp("Cannot link player to HOME.");
-			PLAYER_SET_HOME(ref, oper1->data.objref);
-			DBDIRTY(ref);
-			break;
-		case TYPE_THING:
-			if ((mlev < 4) && !permissions(ProgUID, ref))
-				abort_interp("Permission denied.");
-			if (oper1->data.objref == HOME)
-				abort_interp("Cannot link thing to HOME.");
-			if (parent_loop_check(ref, oper1->data.objref))
-				abort_interp("That would cause a parent paradox.");
-			THING_SET_HOME(ref, oper1->data.objref);
-			DBDIRTY(ref);
-			break;
-		case TYPE_ROOM:
-			if ((mlev < 4) && !permissions(ProgUID, ref))
-				abort_interp("Permission denied.");
-			DBFETCH(ref)->sp.room.dropto = oper1->data.objref;
-			DBDIRTY(ref);
-			break;
-		}
+    CHECKOP(2);
+    oper1 = POP();		/* dbref: destination */
+    oper2 = POP();		/* dbref: source */
+    if ((oper1->type != PROG_OBJECT) || (oper2->type != PROG_OBJECT))
+	abort_interp("setlink requires two dbrefs.");
+    if (!valid_object(oper2))
+	abort_interp("Invalid object. (1)");
+    ref = oper2->data.objref;
+    if (oper1->data.objref == NOTHING) {
+	if ((mlev < 4) && !permissions(ProgUID, ref))
+	    abort_interp("Permission denied.");
+	switch (Typeof(ref)) {
+	case TYPE_EXIT:
+	    DBSTORE(ref, sp.exit.ndest, 0);
+	    if (DBFETCH(ref)->sp.exit.dest) {
+		free((void *) DBFETCH(ref)->sp.exit.dest);
+		DBSTORE(ref, sp.exit.dest, NULL);
+	    }
+	    if (MLevRaw(ref))
+		SetMLevel(ref, 0);
+	    break;
+	case TYPE_ROOM:
+	    DBSTORE(ref, sp.room.dropto, NOTHING);
+	    break;
+	default:
+	    abort_interp("Invalid object. (1)");
 	}
-	CLEAR(oper1);
-	CLEAR(oper2);
+    } else {
+	if (oper1->data.objref != HOME && oper1->data.objref != NIL && !valid_object(oper1))
+	    abort_interp("Invalid object. (2)");
+	if (Typeof(ref) == TYPE_PROGRAM)
+	    abort_interp("Program objects are not linkable. (1)");
+	if (!prog_can_link_to(mlev, ProgUID, Typeof(ref), oper1->data.objref))
+	    abort_interp("Can't link source to destination.");
+	switch (Typeof(ref)) {
+	case TYPE_EXIT:
+	    if ((mlev < 4) && !permissions(ProgUID, ref))
+		abort_interp("Permission denied.");
+	    if (DBFETCH(ref)->sp.exit.ndest != 0 && (DBFETCH(ref)->sp.exit.dest)[0] != NIL)
+		abort_interp("Exit is already linked.");
+	    if (exit_loop_check(ref, oper1->data.objref))
+		abort_interp("Link would cause a loop.");
+	    DBFETCH(ref)->sp.exit.ndest = 1;
+	    DBFETCH(ref)->sp.exit.dest = (dbref *) malloc(sizeof(dbref));
+	    (DBFETCH(ref)->sp.exit.dest)[0] = oper1->data.objref;
+	    DBDIRTY(ref);
+	    break;
+	case TYPE_PLAYER:
+	    if ((mlev < 4) && !permissions(ProgUID, ref))
+		abort_interp("Permission denied.");
+	    if (oper1->data.objref == HOME)
+		abort_interp("Cannot link player to HOME.");
+	    PLAYER_SET_HOME(ref, oper1->data.objref);
+	    DBDIRTY(ref);
+	    break;
+	case TYPE_THING:
+	    if ((mlev < 4) && !permissions(ProgUID, ref))
+		abort_interp("Permission denied.");
+	    if (oper1->data.objref == HOME)
+		abort_interp("Cannot link thing to HOME.");
+	    if (parent_loop_check(ref, oper1->data.objref))
+		abort_interp("That would cause a parent paradox.");
+	    THING_SET_HOME(ref, oper1->data.objref);
+	    DBDIRTY(ref);
+	    break;
+	case TYPE_ROOM:
+	    if ((mlev < 4) && !permissions(ProgUID, ref))
+		abort_interp("Permission denied.");
+	    DBFETCH(ref)->sp.room.dropto = oper1->data.objref;
+	    DBDIRTY(ref);
+	    break;
+	}
+    }
+    CLEAR(oper1);
+    CLEAR(oper2);
 }
 
 void
 prim_setown(PRIM_PROTOTYPE)
 {
-	CHECKOP(2);
-	oper1 = POP();				/* dbref: new owner */
-	oper2 = POP();				/* dbref: what */
-	if (!valid_object(oper2))
-		abort_interp("Invalid argument (1)");
-	if (!valid_player(oper1))
-		abort_interp("Invalid argument (2)");
-	ref = oper2->data.objref;
-	if ((mlev < 4) && oper1->data.objref != player)
-		abort_interp("Permission denied. (2)");
-	if ((mlev < 4) && (!(FLAGS(ref) & CHOWN_OK) ||
-					   !test_lock(fr->descr, player, ref, MESGPROP_CHLOCK)))
-				abort_interp("Permission denied. (1)");
-	switch (Typeof(ref)) {
-	case TYPE_ROOM:
-		if ((mlev < 4) && LOCATION(player) != ref)
-			abort_interp("Permission denied: not in room. (1)");
-		break;
-	case TYPE_THING:
-		if ((mlev < 4) && LOCATION(ref) != player)
-			abort_interp("Permission denied: object not carried. (1)");
-		break;
-	case TYPE_PLAYER:
-		abort_interp("Permission denied: cannot set owner of player. (1)");
-	case TYPE_EXIT:
-	case TYPE_PROGRAM:
-		break;
-	case TYPE_GARBAGE:
-		abort_interp("Permission denied: who would want to own garbage? (1)");
-	}
-	OWNER(ref) = OWNER(oper1->data.objref);
-	DBDIRTY(ref);
-	CLEAR(oper1);
-	CLEAR(oper2);
+    CHECKOP(2);
+    oper1 = POP();		/* dbref: new owner */
+    oper2 = POP();		/* dbref: what */
+    if (!valid_object(oper2))
+	abort_interp("Invalid argument (1)");
+    if (!valid_player(oper1))
+	abort_interp("Invalid argument (2)");
+    ref = oper2->data.objref;
+    if ((mlev < 4) && oper1->data.objref != player)
+	abort_interp("Permission denied. (2)");
+    if ((mlev < 4) && (!(FLAGS(ref) & CHOWN_OK) ||
+		       !test_lock(fr->descr, player, ref, MESGPROP_CHLOCK)))
+	abort_interp("Permission denied. (1)");
+    switch (Typeof(ref)) {
+    case TYPE_ROOM:
+	if ((mlev < 4) && LOCATION(player) != ref)
+	    abort_interp("Permission denied: not in room. (1)");
+	break;
+    case TYPE_THING:
+	if ((mlev < 4) && LOCATION(ref) != player)
+	    abort_interp("Permission denied: object not carried. (1)");
+	break;
+    case TYPE_PLAYER:
+	abort_interp("Permission denied: cannot set owner of player. (1)");
+    case TYPE_EXIT:
+    case TYPE_PROGRAM:
+	break;
+    case TYPE_GARBAGE:
+	abort_interp("Permission denied: who would want to own garbage? (1)");
+    }
+    OWNER(ref) = OWNER(oper1->data.objref);
+    DBDIRTY(ref);
+    CLEAR(oper1);
+    CLEAR(oper2);
 }
 
 void
 prim_newobject(PRIM_PROTOTYPE)
 {
-	CHECKOP(2);
-	oper1 = POP();				/* string: name */
-	oper2 = POP();				/* dbref: location */
-	if ((mlev < 3) && (fr->already_created))
-		abort_interp("An object was already created this program run.");
-	CHECKOFLOW(1);
-	ref = oper2->data.objref;
-	if (!valid_object(oper2) || !(valid_player(oper2) || (Typeof(ref) == TYPE_ROOM)))
-		abort_interp("Invalid argument (1)");
-	if (oper1->type != PROG_STRING)
-		abort_interp("Invalid argument (2)");
-	CHECKREMOTE(ref);
-	if ((mlev < 3) && !permissions(ProgUID, ref))
-		abort_interp("Permission denied.");
-	fr->already_created++;
-	{
-		const char *b = DoNullInd(oper1->data.string);
-		dbref loc;
+    CHECKOP(2);
+    oper1 = POP();		/* string: name */
+    oper2 = POP();		/* dbref: location */
+    if ((mlev < 3) && (fr->already_created))
+	abort_interp("An object was already created this program run.");
+    CHECKOFLOW(1);
+    ref = oper2->data.objref;
+    if (!valid_object(oper2) || !(valid_player(oper2) || (Typeof(ref) == TYPE_ROOM)))
+	abort_interp("Invalid argument (1)");
+    if (oper1->type != PROG_STRING)
+	abort_interp("Invalid argument (2)");
+    CHECKREMOTE(ref);
+    if ((mlev < 3) && !permissions(ProgUID, ref))
+	abort_interp("Permission denied.");
+    fr->already_created++;
+    {
+	const char *b = DoNullInd(oper1->data.string);
+	dbref loc;
 
-		if(!ok_ascii_thing(b) || !ok_name(b))
-			abort_interp("Invalid name. (2)");
+	if (!ok_ascii_thing(b) || !ok_name(b))
+	    abort_interp("Invalid name. (2)");
 
-		ref = new_object();
+	ref = new_object();
 
-		/* initialize everything */
-		NAME(ref) = alloc_string(b);
-		ALLOC_THING_SP(ref);
-		LOCATION(ref) = oper2->data.objref;
-		OWNER(ref) = OWNER(ProgUID);
-		SETVALUE(ref, 1);
-		EXITS(ref) = NOTHING;
-		FLAGS(ref) = TYPE_THING;
+	/* initialize everything */
+	NAME(ref) = alloc_string(b);
+	ALLOC_THING_SP(ref);
+	LOCATION(ref) = oper2->data.objref;
+	OWNER(ref) = OWNER(ProgUID);
+	SETVALUE(ref, 1);
+	EXITS(ref) = NOTHING;
+	FLAGS(ref) = TYPE_THING;
 
-		if ((loc = LOCATION(player)) != NOTHING && controls(player, loc)) {
-			THING_SET_HOME(ref, loc);	/* home */
-		} else {
-			THING_SET_HOME(ref, PLAYER_HOME(player));
-			/* set to player's home instead */
-		}
+	if ((loc = LOCATION(player)) != NOTHING && controls(player, loc)) {
+	    THING_SET_HOME(ref, loc);	/* home */
+	} else {
+	    THING_SET_HOME(ref, PLAYER_HOME(player));
+	    /* set to player's home instead */
 	}
+    }
 
-	/* link it in */
+    /* link it in */
+    PUSH(ref, CONTENTS(oper2->data.objref));
+    DBDIRTY(ref);
+    DBDIRTY(oper2->data.objref);
+
+    CLEAR(oper1);
+    CLEAR(oper2);
+    PushObject(ref);
+}
+
+void
+prim_newroom(PRIM_PROTOTYPE)
+{
+    CHECKOP(2);
+    oper1 = POP();		/* string: name */
+    oper2 = POP();		/* dbref: location */
+    if ((mlev < 3) && (fr->already_created))
+	abort_interp("An object was already created this program run.");
+    CHECKOFLOW(1);
+    ref = oper2->data.objref;
+    if (!valid_object(oper2) || (Typeof(ref) != TYPE_ROOM))
+	abort_interp("Invalid argument (1)");
+    if (oper1->type != PROG_STRING)
+	abort_interp("Invalid argument (2)");
+    if ((mlev < 3) && !permissions(ProgUID, ref))
+	abort_interp("Permission denied.");
+    fr->already_created++;
+    {
+	const char *b = DoNullInd(oper1->data.string);
+
+	if (!ok_ascii_other(b) || !ok_name(b))
+	    abort_interp("Invalid name. (2)");
+
+	ref = new_object();
+
+	/* Initialize everything */
+	NAME(ref) = alloc_string(b);
+	LOCATION(ref) = oper2->data.objref;
+	OWNER(ref) = OWNER(ProgUID);
+	EXITS(ref) = NOTHING;
+	DBFETCH(ref)->sp.room.dropto = NOTHING;
+	FLAGS(ref) = TYPE_ROOM | (FLAGS(player) & JUMP_OK);
 	PUSH(ref, CONTENTS(oper2->data.objref));
 	DBDIRTY(ref);
 	DBDIRTY(oper2->data.objref);
@@ -1272,381 +1316,339 @@ prim_newobject(PRIM_PROTOTYPE)
 	CLEAR(oper1);
 	CLEAR(oper2);
 	PushObject(ref);
-}
-
-void
-prim_newroom(PRIM_PROTOTYPE)
-{
-	CHECKOP(2);
-	oper1 = POP();				/* string: name */
-	oper2 = POP();				/* dbref: location */
-	if ((mlev < 3) && (fr->already_created))
-		abort_interp("An object was already created this program run.");
-	CHECKOFLOW(1);
-	ref = oper2->data.objref;
-	if (!valid_object(oper2) || (Typeof(ref) != TYPE_ROOM))
-		abort_interp("Invalid argument (1)");
-	if (oper1->type != PROG_STRING)
-		abort_interp("Invalid argument (2)");
-	if ((mlev < 3) && !permissions(ProgUID, ref))
-		abort_interp("Permission denied.");
-	fr->already_created++;
-	{
-		const char *b = DoNullInd(oper1->data.string);
-
-		if (!ok_ascii_other(b) || !ok_name(b))
-			abort_interp("Invalid name. (2)");
-
-		ref = new_object();
-
-		/* Initialize everything */
-		NAME(ref) = alloc_string(b);
-		LOCATION(ref) = oper2->data.objref;
-		OWNER(ref) = OWNER(ProgUID);
-		EXITS(ref) = NOTHING;
-		DBFETCH(ref)->sp.room.dropto = NOTHING;
-		FLAGS(ref) = TYPE_ROOM | (FLAGS(player) & JUMP_OK);
-		PUSH(ref, CONTENTS(oper2->data.objref));
-		DBDIRTY(ref);
-		DBDIRTY(oper2->data.objref);
-
-		CLEAR(oper1);
-		CLEAR(oper2);
-		PushObject(ref);
-	}
+    }
 }
 
 void
 prim_newexit(PRIM_PROTOTYPE)
 {
-	CHECKOP(2);
-	oper1 = POP();				/* string: name */
-	oper2 = POP();				/* dbref: location */
-	if (mlev < 3)
-		abort_interp("Requires Mucker Level 3.");
-	CHECKOFLOW(1);
-	ref = oper2->data.objref;
-	if (!valid_object(oper2) ||
-		((!valid_player(oper2)) && (Typeof(ref) != TYPE_ROOM) && (Typeof(ref) != TYPE_THING)))
-		abort_interp("Invalid argument (1)");
-	if (oper1->type != PROG_STRING)
-		abort_interp("Invalid argument (2)");
-	CHECKREMOTE(ref);
-	if ((mlev < 4) && !permissions(ProgUID, ref))
-		abort_interp("Permission denied.");
-	{
-		const char *b = DoNullInd(oper1->data.string);
+    CHECKOP(2);
+    oper1 = POP();		/* string: name */
+    oper2 = POP();		/* dbref: location */
+    if (mlev < 3)
+	abort_interp("Requires Mucker Level 3.");
+    CHECKOFLOW(1);
+    ref = oper2->data.objref;
+    if (!valid_object(oper2) ||
+	((!valid_player(oper2)) && (Typeof(ref) != TYPE_ROOM) && (Typeof(ref) != TYPE_THING)))
+	abort_interp("Invalid argument (1)");
+    if (oper1->type != PROG_STRING)
+	abort_interp("Invalid argument (2)");
+    CHECKREMOTE(ref);
+    if ((mlev < 4) && !permissions(ProgUID, ref))
+	abort_interp("Permission denied.");
+    {
+	const char *b = DoNullInd(oper1->data.string);
 
-		if (!ok_ascii_other(b) || !ok_name(b))
-			abort_interp("Invalid name. (2)");
+	if (!ok_ascii_other(b) || !ok_name(b))
+	    abort_interp("Invalid name. (2)");
 
-		ref = new_object();
+	ref = new_object();
 
-		/* initialize everything */
-		NAME(ref) = alloc_string(oper1->data.string->data);
-		LOCATION(ref) = oper2->data.objref;
-		OWNER(ref) = OWNER(ProgUID);
-		FLAGS(ref) = TYPE_EXIT;
-		DBFETCH(ref)->sp.exit.ndest = 0;
-		DBFETCH(ref)->sp.exit.dest = NULL;
+	/* initialize everything */
+	NAME(ref) = alloc_string(oper1->data.string->data);
+	LOCATION(ref) = oper2->data.objref;
+	OWNER(ref) = OWNER(ProgUID);
+	FLAGS(ref) = TYPE_EXIT;
+	DBFETCH(ref)->sp.exit.ndest = 0;
+	DBFETCH(ref)->sp.exit.dest = NULL;
 
-		/* link it in */
-		PUSH(ref, EXITS(oper2->data.objref));
-		DBDIRTY(oper2->data.objref);
+	/* link it in */
+	PUSH(ref, EXITS(oper2->data.objref));
+	DBDIRTY(oper2->data.objref);
 
-		if (tp_autolink_actions) {
-			DBFETCH(ref)->sp.exit.ndest = 1;
-			DBFETCH(ref)->sp.exit.dest = (dbref *) malloc(sizeof(dbref));
-			(DBFETCH(ref)->sp.exit.dest)[0] = NIL;
-		}
-
-		CLEAR(oper1);
-		CLEAR(oper2);
-		PushObject(ref);
+	if (tp_autolink_actions) {
+	    DBFETCH(ref)->sp.exit.ndest = 1;
+	    DBFETCH(ref)->sp.exit.dest = (dbref *) malloc(sizeof(dbref));
+	    (DBFETCH(ref)->sp.exit.dest)[0] = NIL;
 	}
+
+	CLEAR(oper1);
+	CLEAR(oper2);
+	PushObject(ref);
+    }
 }
 
 
 void
 prim_lockedp(PRIM_PROTOTYPE)
 {
-	struct inst *oper1 = NULL; /* prevents re-entrancy issues! */
-	struct inst *oper2 = NULL; /* prevents re-entrancy issues! */
+    struct inst *oper1 = NULL;	/* prevents re-entrancy issues! */
+    struct inst *oper2 = NULL;	/* prevents re-entrancy issues! */
 
-	/* d d - i */
-	CHECKOP(2);
-	oper1 = POP();				/* objdbref */
-	oper2 = POP();				/* player dbref */
-	if (fr->level > 8)
-		abort_interp("Interp call loops not allowed.");
-	if (!valid_object(oper2))
-		abort_interp("invalid object (1).");
-	if (!valid_player(oper2) && Typeof(oper2->data.objref) != TYPE_THING)
-		abort_interp("Non-player argument (1).");
-	CHECKREMOTE(oper2->data.objref);
-	if (!valid_object(oper1))
-		abort_interp("invalid object (2).");
-	CHECKREMOTE(oper1->data.objref);
-	result = !could_doit(fr->descr, oper2->data.objref, oper1->data.objref);
-	CLEAR(oper1);
-	CLEAR(oper2);
-	PushInt(result);
+    /* d d - i */
+    CHECKOP(2);
+    oper1 = POP();		/* objdbref */
+    oper2 = POP();		/* player dbref */
+    if (fr->level > 8)
+	abort_interp("Interp call loops not allowed.");
+    if (!valid_object(oper2))
+	abort_interp("invalid object (1).");
+    if (!valid_player(oper2) && Typeof(oper2->data.objref) != TYPE_THING)
+	abort_interp("Non-player argument (1).");
+    CHECKREMOTE(oper2->data.objref);
+    if (!valid_object(oper1))
+	abort_interp("invalid object (2).");
+    CHECKREMOTE(oper1->data.objref);
+    result = !could_doit(fr->descr, oper2->data.objref, oper1->data.objref);
+    CLEAR(oper1);
+    CLEAR(oper2);
+    PushInt(result);
 }
 
 
 void
 prim_recycle(PRIM_PROTOTYPE)
 {
-	/* d -- */
-        struct tune_ref_entry *tref = tune_ref_list;
+    /* d -- */
+    struct tune_ref_entry *tref = tune_ref_list;
 
-	CHECKOP(1);
-	oper1 = POP();				/* object dbref to recycle */
-	if (oper1->type != PROG_OBJECT)
-		abort_interp("Non-object argument (1).");
-	if (!valid_object(oper1))
-		abort_interp("Invalid object (1).");
-	result = oper1->data.objref;
-	if ((mlev < 3) || ((mlev < 4) && !permissions(ProgUID, result)))
-		abort_interp("Permission denied.");
-	if (result == GLOBAL_ENVIRONMENT)
-		abort_interp("Cannot recycle the global environment.");
-	if (Typeof(result) == TYPE_PLAYER)
-		abort_interp("Cannot recycle a player.");
+    CHECKOP(1);
+    oper1 = POP();		/* object dbref to recycle */
+    if (oper1->type != PROG_OBJECT)
+	abort_interp("Non-object argument (1).");
+    if (!valid_object(oper1))
+	abort_interp("Invalid object (1).");
+    result = oper1->data.objref;
+    if ((mlev < 3) || ((mlev < 4) && !permissions(ProgUID, result)))
+	abort_interp("Permission denied.");
+    if (result == GLOBAL_ENVIRONMENT)
+	abort_interp("Cannot recycle the global environment.");
+    if (Typeof(result) == TYPE_PLAYER)
+	abort_interp("Cannot recycle a player.");
 
-	while (tref->name) {
-		if (result == *tref->ref) {
-			 abort_interp("Cannot currently recycle that object.");
-		}
-		tref++;
+    while (tref->name) {
+	if (result == *tref->ref) {
+	    abort_interp("Cannot currently recycle that object.");
 	}
+	tref++;
+    }
 
-	if (result == program)
-		abort_interp("Cannot recycle currently running program.");
+    if (result == program)
+	abort_interp("Cannot recycle currently running program.");
 
-	for (int ii = 0; ii < fr->caller.top; ii++)
-		if (fr->caller.st[ii] == result)
-			abort_interp("Cannot recycle active program.");
+    for (int ii = 0; ii < fr->caller.top; ii++)
+	if (fr->caller.st[ii] == result)
+	    abort_interp("Cannot recycle active program.");
 
-	if (Typeof(result) == TYPE_EXIT)
-		if (!unset_source(player, result))
-			return;
-	CLEAR(oper1);
-	recycle(fr->descr, player, result);
+    if (Typeof(result) == TYPE_EXIT)
+	if (!unset_source(player, result))
+	    return;
+    CLEAR(oper1);
+    recycle(fr->descr, player, result);
 }
 
 
 void
 prim_setlockstr(PRIM_PROTOTYPE)
 {
-	CHECKOP(2);
-	oper1 = POP();
-	oper2 = POP();
-	if (!valid_object(oper2))
-		abort_interp("Invalid argument type (1)");
-	if (oper1->type != PROG_STRING)
-		abort_interp("Non-string argument (2)");
-	ref = oper2->data.objref;
-	if ((mlev < 4) && !permissions(ProgUID, ref))
-		abort_interp("Permission denied.");
-	result = setlockstr(fr->descr, player, ref, DoNullInd(oper1->data.string));
-	CLEAR(oper1);
-	CLEAR(oper2);
-	PushInt(result);
+    CHECKOP(2);
+    oper1 = POP();
+    oper2 = POP();
+    if (!valid_object(oper2))
+	abort_interp("Invalid argument type (1)");
+    if (oper1->type != PROG_STRING)
+	abort_interp("Non-string argument (2)");
+    ref = oper2->data.objref;
+    if ((mlev < 4) && !permissions(ProgUID, ref))
+	abort_interp("Permission denied.");
+    result = setlockstr(fr->descr, player, ref, DoNullInd(oper1->data.string));
+    CLEAR(oper1);
+    CLEAR(oper2);
+    PushInt(result);
 }
 
 
 void
 prim_getlockstr(PRIM_PROTOTYPE)
 {
-	CHECKOP(1);
-	oper1 = POP();
-	if (!valid_object(oper1))
-		abort_interp("Invalid argument type");
-	ref = oper1->data.objref;
-	CHECKREMOTE(ref);
-	if ((mlev < 3) && !permissions(ProgUID, ref))
-		abort_interp("Permission denied.");
-	{
-		char *tmpstr;
+    CHECKOP(1);
+    oper1 = POP();
+    if (!valid_object(oper1))
+	abort_interp("Invalid argument type");
+    ref = oper1->data.objref;
+    CHECKREMOTE(ref);
+    if ((mlev < 3) && !permissions(ProgUID, ref))
+	abort_interp("Permission denied.");
+    {
+	char *tmpstr;
 
-		tmpstr = (char *) unparse_boolexp(player, GETLOCK(ref), 0);
-		CLEAR(oper1);
-		PushString(tmpstr);
-	}
+	tmpstr = (char *) unparse_boolexp(player, GETLOCK(ref), 0);
+	CLEAR(oper1);
+	PushString(tmpstr);
+    }
 }
 
 
 void
 prim_part_pmatch(PRIM_PROTOTYPE)
 {
-	dbref ref;
+    dbref ref;
 
-	CHECKOP(1);
-	oper1 = POP();
-	if (oper1->type != PROG_STRING)
-		abort_interp("Non-string argument.");
-	if (!oper1->data.string)
-		abort_interp("Empty string argument.");
-	if (mlev < 3)
-		abort_interp("Permission denied.  Requires Mucker Level 3.");
-	ref = partial_pmatch(oper1->data.string->data);
-	CLEAR(oper1);
-	PushObject(ref);
+    CHECKOP(1);
+    oper1 = POP();
+    if (oper1->type != PROG_STRING)
+	abort_interp("Non-string argument.");
+    if (!oper1->data.string)
+	abort_interp("Empty string argument.");
+    if (mlev < 3)
+	abort_interp("Permission denied.  Requires Mucker Level 3.");
+    ref = partial_pmatch(oper1->data.string->data);
+    CLEAR(oper1);
+    PushObject(ref);
 }
 
 
 void
 prim_checkpassword(PRIM_PROTOTYPE)
 {
-	char *ptr;
+    char *ptr;
 
-	CHECKOP(2);
-	oper2 = POP();
-	oper1 = POP();
+    CHECKOP(2);
+    oper2 = POP();
+    oper1 = POP();
 
-	if (mlev < 4)
-		abort_interp("Permission denied.  Requires Wizbit.");
-	if (oper1->type != PROG_OBJECT)
-		abort_interp("Player dbref expected. (1)");
-	ref = oper1->data.objref;
-	if ((ref != NOTHING && !valid_player(oper1)) || ref == NOTHING)
-		abort_interp("Player dbref expected. (1)");
-	if (oper2->type != PROG_STRING)
-		abort_interp("Password string expected. (2)");
-	ptr = DoNullInd(oper2->data.string);
-	if (ref != NOTHING) {
-		result = check_password(ref, ptr);
-	} else {
-		result = 0;
-	}
+    if (mlev < 4)
+	abort_interp("Permission denied.  Requires Wizbit.");
+    if (oper1->type != PROG_OBJECT)
+	abort_interp("Player dbref expected. (1)");
+    ref = oper1->data.objref;
+    if ((ref != NOTHING && !valid_player(oper1)) || ref == NOTHING)
+	abort_interp("Player dbref expected. (1)");
+    if (oper2->type != PROG_STRING)
+	abort_interp("Password string expected. (2)");
+    ptr = DoNullInd(oper2->data.string);
+    if (ref != NOTHING) {
+	result = check_password(ref, ptr);
+    } else {
+	result = 0;
+    }
 
-	CLEAR(oper1);
-	CLEAR(oper2);
-	PushInt(result);
+    CLEAR(oper1);
+    CLEAR(oper2);
+    PushInt(result);
 }
 
 void
 prim_movepennies(PRIM_PROTOTYPE)
 {
-	dbref ref2;
+    dbref ref2;
 
-	CHECKOP(3);
-	oper1 = POP();
-	oper2 = POP();
-	oper3 = POP();
-	if (mlev < tp_movepennies_muf_mlev)
-		abort_interp("Permission Denied (mlev < tp_movepennies_muf_mlev)");
-	if (!valid_object(oper3))
-		abort_interp("Invalid object. (1)");
-	if (!valid_object(oper2))
-		abort_interp("Invalid object. (2)");
-	if (oper1->type != PROG_INTEGER)
-		abort_interp("Non-integer argument (3)");
-	if (oper1->data.number < 0)
-		abort_interp("Invalid argument. (3)");
-	ref = oper3->data.objref;
-	ref2 = oper2->data.objref;
-	if (mlev < 4) {
-		if (Typeof(ref) == TYPE_PLAYER) {
-			if (GETVALUE(ref) < (GETVALUE(ref) - oper1->data.number))
-				abort_interp("Would roll over player's score. (1)");
-			if ((GETVALUE(ref) - oper1->data.number) < 0)
-				abort_interp("Result would be negative. (1)");
-		} else {
-			abort_interp("Permission denied. (2)");
-		}
-		if (Typeof(ref2) == TYPE_PLAYER) {
-			if (GETVALUE(ref2) > (GETVALUE(ref2) + oper1->data.number))
-				abort_interp("Would roll over player's score. (2)");
-			if ((GETVALUE(ref2) + oper1->data.number) > tp_max_pennies)
-				abort_interp("Would exceed MAX_PENNIES. (2)");
-		} else {
-			abort_interp("Permission denied. (2)");
-		}
+    CHECKOP(3);
+    oper1 = POP();
+    oper2 = POP();
+    oper3 = POP();
+    if (mlev < tp_movepennies_muf_mlev)
+	abort_interp("Permission Denied (mlev < tp_movepennies_muf_mlev)");
+    if (!valid_object(oper3))
+	abort_interp("Invalid object. (1)");
+    if (!valid_object(oper2))
+	abort_interp("Invalid object. (2)");
+    if (oper1->type != PROG_INTEGER)
+	abort_interp("Non-integer argument (3)");
+    if (oper1->data.number < 0)
+	abort_interp("Invalid argument. (3)");
+    ref = oper3->data.objref;
+    ref2 = oper2->data.objref;
+    if (mlev < 4) {
+	if (Typeof(ref) == TYPE_PLAYER) {
+	    if (GETVALUE(ref) < (GETVALUE(ref) - oper1->data.number))
+		abort_interp("Would roll over player's score. (1)");
+	    if ((GETVALUE(ref) - oper1->data.number) < 0)
+		abort_interp("Result would be negative. (1)");
+	} else {
+	    abort_interp("Permission denied. (2)");
 	}
-	SETVALUE(ref, GETVALUE(ref) - oper1->data.number);
-	DBDIRTY(ref);
-	SETVALUE(ref2, GETVALUE(ref2) + oper1->data.number);
-	DBDIRTY(ref2);
-	CLEAR(oper1);
-	CLEAR(oper2);
-	CLEAR(oper3);
+	if (Typeof(ref2) == TYPE_PLAYER) {
+	    if (GETVALUE(ref2) > (GETVALUE(ref2) + oper1->data.number))
+		abort_interp("Would roll over player's score. (2)");
+	    if ((GETVALUE(ref2) + oper1->data.number) > tp_max_pennies)
+		abort_interp("Would exceed MAX_PENNIES. (2)");
+	} else {
+	    abort_interp("Permission denied. (2)");
+	}
+    }
+    SETVALUE(ref, GETVALUE(ref) - oper1->data.number);
+    DBDIRTY(ref);
+    SETVALUE(ref2, GETVALUE(ref2) + oper1->data.number);
+    DBDIRTY(ref2);
+    CLEAR(oper1);
+    CLEAR(oper2);
+    CLEAR(oper3);
 }
 
 
 void
 prim_findnext(PRIM_PROTOTYPE)
 {
-	struct flgchkdat check;
-	dbref who, item, ref;
-	const char* name;
+    struct flgchkdat check;
+    dbref who, item, ref;
+    const char *name;
 
-	CHECKOP(4);
-	oper4 = POP(); /* str:flags */
-	oper3 = POP(); /* str:namepattern */
-	oper2 = POP(); /* ref:owner */
-	oper1 = POP(); /* ref:currobj */
+    CHECKOP(4);
+    oper4 = POP();		/* str:flags */
+    oper3 = POP();		/* str:namepattern */
+    oper2 = POP();		/* ref:owner */
+    oper1 = POP();		/* ref:currobj */
 
-	if (oper4->type != PROG_STRING)
-		abort_interp("Expected string argument. (4)");
-	if (oper3->type != PROG_STRING)
-		abort_interp("Expected string argument. (3)");
-	if (oper2->type != PROG_OBJECT)
-		abort_interp("Expected dbref argument. (2)");
-	if (oper2->data.objref < NOTHING || oper2->data.objref >= db_top)
-		abort_interp("Bad object. (2)");
-	if (oper2->data.objref != NOTHING &&
-	    Typeof(oper2->data.objref) == TYPE_GARBAGE)
-		abort_interp("Garbage object. (2)");
-	if (oper1->type != PROG_OBJECT)
-		abort_interp("Expected dbref argument. (1)");
-	if (oper1->data.objref < NOTHING || oper1->data.objref >= db_top)
-		abort_interp("Bad object. (1)");
-	if (oper1->data.objref != NOTHING &&
-	    Typeof(oper1->data.objref) == TYPE_GARBAGE)
-		abort_interp("Garbage object. (1)");
+    if (oper4->type != PROG_STRING)
+	abort_interp("Expected string argument. (4)");
+    if (oper3->type != PROG_STRING)
+	abort_interp("Expected string argument. (3)");
+    if (oper2->type != PROG_OBJECT)
+	abort_interp("Expected dbref argument. (2)");
+    if (oper2->data.objref < NOTHING || oper2->data.objref >= db_top)
+	abort_interp("Bad object. (2)");
+    if (oper2->data.objref != NOTHING && Typeof(oper2->data.objref) == TYPE_GARBAGE)
+	abort_interp("Garbage object. (2)");
+    if (oper1->type != PROG_OBJECT)
+	abort_interp("Expected dbref argument. (1)");
+    if (oper1->data.objref < NOTHING || oper1->data.objref >= db_top)
+	abort_interp("Bad object. (1)");
+    if (oper1->data.objref != NOTHING && Typeof(oper1->data.objref) == TYPE_GARBAGE)
+	abort_interp("Garbage object. (1)");
 
-	item = oper1->data.objref;
-	who = oper2->data.objref;
-	name = DoNullInd(oper3->data.string);
+    item = oper1->data.objref;
+    who = oper2->data.objref;
+    name = DoNullInd(oper3->data.string);
 
-	if (mlev < 2)
-		abort_interp("Permission denied.  Requires at least Mucker Level 2.");
+    if (mlev < 2)
+	abort_interp("Permission denied.  Requires at least Mucker Level 2.");
 
-	if (mlev < 3) {
-		if (who == NOTHING) {
-			abort_interp("Permission denied.  Owner inspecific searches require Mucker Level 3.");
-		} else if (who != ProgUID) {
-			abort_interp("Permission denied.  Searching for other people's stuff requires Mucker Level 3.");
-		}
+    if (mlev < 3) {
+	if (who == NOTHING) {
+	    abort_interp
+		    ("Permission denied.  Owner inspecific searches require Mucker Level 3.");
+	} else if (who != ProgUID) {
+	    abort_interp
+		    ("Permission denied.  Searching for other people's stuff requires Mucker Level 3.");
 	}
+    }
 
-	if (item == NOTHING) {
-		item = 0;
-	} else {
-		item++;
+    if (item == NOTHING) {
+	item = 0;
+    } else {
+	item++;
+    }
+    strcpyn(buf, sizeof(buf), name);
+
+    ref = NOTHING;
+    init_checkflags(player, DoNullInd(oper4->data.string), &check);
+    for (dbref i = item; i < db_top; i++) {
+	if ((who == NOTHING || OWNER(i) == who) &&
+	    checkflags(i, check) && NAME(i) && Typeof(i) != TYPE_GARBAGE &&
+	    (!*name || equalstr(buf, (char *) NAME(i)))) {
+	    ref = i;
+	    break;
 	}
-	strcpyn(buf, sizeof(buf), name);
+    }
 
-	ref = NOTHING;
-	init_checkflags(player, DoNullInd(oper4->data.string), &check);
-	for (dbref i = item; i < db_top; i++) {
-		if ((who == NOTHING || OWNER(i) == who) &&
-			checkflags(i, check) && NAME(i) && Typeof(i) != TYPE_GARBAGE &&
-			(!*name || equalstr(buf, (char *) NAME(i))))
-		{
-			ref = i;
-			break;
-		}
-	}
+    CLEAR(oper1);
+    CLEAR(oper2);
+    CLEAR(oper3);
+    CLEAR(oper4);
 
-	CLEAR(oper1);
-	CLEAR(oper2);
-	CLEAR(oper3);
-	CLEAR(oper4);
-
-	PushObject(ref);
+    PushObject(ref);
 }
 
 
@@ -1657,93 +1659,93 @@ prim_findnext(PRIM_PROTOTYPE)
 void
 prim_nextentrance(PRIM_PROTOTYPE)
 {
-	dbref linkref, ref;
-	int foundref = 0;
-	int count;
+    dbref linkref, ref;
+    int foundref = 0;
+    int count;
 
-	if (mlev < 3)
-		abort_interp("Permission denied.  Requires Mucker Level 3.");
-	oper2 = POP();
-	oper1 = POP();
-	linkref = oper1->data.objref;
-	ref = oper2->data.objref;
-	if (!valid_object(oper1) && (linkref != NOTHING) && (linkref != HOME))
-		abort_interp("Invalid link reference object (2)");
-	if (!valid_object(oper2) && ref != NOTHING)
-		abort_interp("Invalid reference object (1)");
-	if (linkref == HOME)
-		linkref = PLAYER_HOME(player);
-	(void) ref++;
-	for (; ref < db_top; ref++) {
-		oper2->data.objref = ref;
-		if (valid_object(oper2)) {
-			switch(Typeof(ref)) {
-				case TYPE_PLAYER:
-					if (PLAYER_HOME(ref) == linkref)
-						foundref = 1;
-					break;
-				case TYPE_ROOM:
-					if (DBFETCH(ref)->sp.room.dropto == linkref)
-						foundref = 1;
-					break;
-				case TYPE_THING:
-					if (THING_HOME(ref) == linkref)
-						foundref = 1;
-					break;
-				case TYPE_EXIT:
-					count = DBFETCH(ref)->sp.exit.ndest;
-					for (int i = 0; i < count; i++) {
-						if (DBFETCH(ref)->sp.exit.dest[i] == linkref)
-							foundref = 1;
-					}
-					break;
-			}
-            if (foundref)
-				break;
+    if (mlev < 3)
+	abort_interp("Permission denied.  Requires Mucker Level 3.");
+    oper2 = POP();
+    oper1 = POP();
+    linkref = oper1->data.objref;
+    ref = oper2->data.objref;
+    if (!valid_object(oper1) && (linkref != NOTHING) && (linkref != HOME))
+	abort_interp("Invalid link reference object (2)");
+    if (!valid_object(oper2) && ref != NOTHING)
+	abort_interp("Invalid reference object (1)");
+    if (linkref == HOME)
+	linkref = PLAYER_HOME(player);
+    (void) ref++;
+    for (; ref < db_top; ref++) {
+	oper2->data.objref = ref;
+	if (valid_object(oper2)) {
+	    switch (Typeof(ref)) {
+	    case TYPE_PLAYER:
+		if (PLAYER_HOME(ref) == linkref)
+		    foundref = 1;
+		break;
+	    case TYPE_ROOM:
+		if (DBFETCH(ref)->sp.room.dropto == linkref)
+		    foundref = 1;
+		break;
+	    case TYPE_THING:
+		if (THING_HOME(ref) == linkref)
+		    foundref = 1;
+		break;
+	    case TYPE_EXIT:
+		count = DBFETCH(ref)->sp.exit.ndest;
+		for (int i = 0; i < count; i++) {
+		    if (DBFETCH(ref)->sp.exit.dest[i] == linkref)
+			foundref = 1;
 		}
+		break;
+	    }
+	    if (foundref)
+		break;
 	}
-	if (!foundref)
-		ref = NOTHING;
-	CLEAR(oper1);
-	CLEAR(oper2);
-	PushObject(ref);
+    }
+    if (!foundref)
+	ref = NOTHING;
+    CLEAR(oper1);
+    CLEAR(oper2);
+    PushObject(ref);
 }
 
 void
 prim_newplayer(PRIM_PROTOTYPE)
 {
-	dbref newplayer;
-	char *name, *password;
+    dbref newplayer;
+    char *name, *password;
 
     CHECKOP(2);
     oper1 = POP();
     oper2 = POP();
 
     if (mlev < 4)
-		abort_interp("Permission denied.  Requires Wizbit.");
+	abort_interp("Permission denied.  Requires Wizbit.");
     if (oper1->type != PROG_STRING)
-		abort_interp("Non-string argument. (1)");
+	abort_interp("Non-string argument. (1)");
     if (!oper1->data.string)
-		abort_interp("Empty string argument. (1)");
+	abort_interp("Empty string argument. (1)");
     if (oper2->type != PROG_STRING)
-		abort_interp("Non-string argument. (2)");
+	abort_interp("Non-string argument. (2)");
     if (!oper2->data.string)
-		abort_interp("Empty string argument. (2)");
+	abort_interp("Empty string argument. (2)");
 
     name = oper2->data.string->data;
     password = oper1->data.string->data;
 
     if (!ok_player_name(name))
-       abort_interp("Invalid player name. (1)");
+	abort_interp("Invalid player name. (1)");
     if (!ok_password(password))
-       abort_interp("Invalid password. (1)");
+	abort_interp("Invalid password. (1)");
 
     /* else he doesn't already exist, create him */
     newplayer = create_player(name, password);
 
     log_status("PCREATED[MUF]: %s(%d) by %s(%d)",
-        NAME(newplayer), (int) newplayer, NAME(player), (int) player);
-    
+	       NAME(newplayer), (int) newplayer, NAME(player), (int) player);
+
     CLEAR(oper1);
     CLEAR(oper2);
     PushObject(newplayer);
@@ -1752,9 +1754,9 @@ prim_newplayer(PRIM_PROTOTYPE)
 void
 prim_copyplayer(PRIM_PROTOTYPE)
 {
-   dbref newplayer, ref;
-   char *name, *password;
-   struct object *newp;
+    dbref newplayer, ref;
+    char *name, *password;
+    struct object *newp;
 
     CHECKOP(3);
     oper1 = POP();
@@ -1762,183 +1764,181 @@ prim_copyplayer(PRIM_PROTOTYPE)
     oper3 = POP();
 
     if (mlev < 4)
-		abort_interp("Permission denied.  Requires Wizbit.");
+	abort_interp("Permission denied.  Requires Wizbit.");
     if (oper1->type != PROG_STRING)
-		abort_interp("Non-string argument. (3)");
+	abort_interp("Non-string argument. (3)");
     if (!oper1->data.string)
-		abort_interp("Empty string argument. (3)");
+	abort_interp("Empty string argument. (3)");
     if (oper2->type != PROG_STRING)
-		abort_interp("Non-string argument. (2)");
+	abort_interp("Non-string argument. (2)");
     if (!oper2->data.string)
 	abort_interp("Empty string argument. (2)");
     ref = oper3->data.objref;
     if ((ref != NOTHING && !valid_player(oper3)) || ref == NOTHING)
-       abort_interp("Player dbref expected. (1)");
+	abort_interp("Player dbref expected. (1)");
     CHECKREMOTE(ref);
 
     name = oper2->data.string->data;
     password = oper1->data.string->data;
 
     if (!ok_player_name(name))
-       abort_interp("Invalid player name. (2)");
+	abort_interp("Invalid player name. (2)");
     if (!ok_password(password))
-       abort_interp("Invalid password. (2)");
+	abort_interp("Invalid password. (2)");
 
     /* else he doesn't already exist, create him */
     newplayer = create_player(name, password);
 
     /* initialize everything */
-	FLAGS(newplayer) = FLAGS(ref);
+    FLAGS(newplayer) = FLAGS(ref);
 
     newp = DBFETCH(newplayer);
-	newp->properties = copy_prop(ref);
-	newp->exits = NOTHING;
-	newp->contents = NOTHING;
-	newp->next = NOTHING;
+    newp->properties = copy_prop(ref);
+    newp->exits = NOTHING;
+    newp->contents = NOTHING;
+    newp->next = NOTHING;
 #ifdef DISKBASE
-	newp->propsfpos = 0;
-	newp->propsmode = PROPS_UNLOADED;
-	newp->propstime = 0;
-	newp->nextold = NOTHING;
-	newp->prevold = NOTHING;
-	dirtyprops(newplayer);
+    newp->propsfpos = 0;
+    newp->propsmode = PROPS_UNLOADED;
+    newp->propstime = 0;
+    newp->nextold = NOTHING;
+    newp->prevold = NOTHING;
+    dirtyprops(newplayer);
 #endif
 
-	PLAYER_SET_HOME(newplayer, PLAYER_HOME(ref));
-	SETVALUE(newplayer, GETVALUE(newplayer) + GETVALUE(ref));
-	moveto(newplayer, PLAYER_HOME(ref));
+    PLAYER_SET_HOME(newplayer, PLAYER_HOME(ref));
+    SETVALUE(newplayer, GETVALUE(newplayer) + GETVALUE(ref));
+    moveto(newplayer, PLAYER_HOME(ref));
 
-	/* link him to player_start */
-	log_status("PCREATE[MUF]: %s(%d) by %s(%d)",
-        NAME(newplayer), (int) newplayer, NAME(player), (int) player);
-    
-	CLEAR(oper1);
-	CLEAR(oper2);
-	CLEAR(oper3);
-	PushObject(newplayer);
+    /* link him to player_start */
+    log_status("PCREATE[MUF]: %s(%d) by %s(%d)",
+	       NAME(newplayer), (int) newplayer, NAME(player), (int) player);
+
+    CLEAR(oper1);
+    CLEAR(oper2);
+    CLEAR(oper3);
+    PushObject(newplayer);
 }
 
 void
 prim_toadplayer(PRIM_PROTOTYPE)
 {
-    dbref   victim;
-    dbref   recipient;
-    dbref   stuff;
-    char    buf[BUFFER_LEN];
+    dbref victim;
+    dbref recipient;
+    dbref stuff;
+    char buf[BUFFER_LEN];
 
     CHECKOP(2);
     oper1 = POP();
     oper2 = POP();
 
     if (mlev < 4)
-		abort_interp("Permission denied.  Requires Wizbit.");
+	abort_interp("Permission denied.  Requires Wizbit.");
 
-	victim = oper1->data.objref;
+    victim = oper1->data.objref;
 
     if (!valid_player(oper1))
-		abort_interp("Player dbref expected for player to be toaded (2)");
+	abort_interp("Player dbref expected for player to be toaded (2)");
 
     recipient = oper2->data.objref;
 
     if (!valid_player(oper2))
-		abort_interp("Player dbref expected for recipient (1)");
+	abort_interp("Player dbref expected for recipient (1)");
 
     CHECKREMOTE(victim);
     CHECKREMOTE(recipient);
 
-	if (victim == recipient)
-	{
-		abort_interp("Victim and recipient must be different players.");
-	}
+    if (victim == recipient) {
+	abort_interp("Victim and recipient must be different players.");
+    }
 
-    if (get_property_class( victim, NO_RECYCLE_PROP)) {
-		abort_interp("That player is precious.");
+    if (get_property_class(victim, NO_RECYCLE_PROP)) {
+	abort_interp("That player is precious.");
     }
 #ifdef GOD_PRIV
-	if (God(victim)) {
-		abort_interp("God may not be toaded. (2)");
-	}
+    if (God(victim)) {
+	abort_interp("God may not be toaded. (2)");
+    }
 #endif
     if ((FLAGS(victim) & WIZARD)) {
-		abort_interp("You can't toad a wizard.");
+	abort_interp("You can't toad a wizard.");
     }
 
     /* we're ok, do it */
-	send_contents(fr->descr, victim, HOME);
-	for (stuff = 0; stuff < db_top; stuff++) {
-	    if (OWNER(stuff) == victim) {
-			switch (Typeof(stuff)) {
-				case TYPE_PROGRAM:
-					dequeue_prog(stuff, 0);  /* dequeue player's progs */
-					FLAGS(stuff) &= ~(ABODE | WIZARD);
-					SetMLevel(stuff,0);
-				case TYPE_ROOM:
-				case TYPE_THING:
-				case TYPE_EXIT:
-					OWNER(stuff) = recipient;
-					DBDIRTY(stuff);
-				break;
-			}
-	    }
-	    if (Typeof(stuff) == TYPE_THING && THING_HOME(stuff) == victim) {
-			THING_SET_HOME(stuff, tp_player_start);
+    send_contents(fr->descr, victim, HOME);
+    for (stuff = 0; stuff < db_top; stuff++) {
+	if (OWNER(stuff) == victim) {
+	    switch (Typeof(stuff)) {
+	    case TYPE_PROGRAM:
+		dequeue_prog(stuff, 0);	/* dequeue player's progs */
+		FLAGS(stuff) &= ~(ABODE | WIZARD);
+		SetMLevel(stuff, 0);
+	    case TYPE_ROOM:
+	    case TYPE_THING:
+	    case TYPE_EXIT:
+		OWNER(stuff) = recipient;
+		DBDIRTY(stuff);
+		break;
 	    }
 	}
-
-	chown_macros(victim, recipient);
-
-	if (PLAYER_PASSWORD(victim)) {
-	    free((void *) PLAYER_PASSWORD(victim));
-		PLAYER_SET_PASSWORD(victim, 0);
+	if (Typeof(stuff) == TYPE_THING && THING_HOME(stuff) == victim) {
+	    THING_SET_HOME(stuff, tp_player_start);
 	}
-	dequeue_prog(victim, 0);  /* dequeue progs that player's running */
+    }
 
-	log_status("TOADED[MUF]: %s(%d) by %s(%d)", NAME(victim),
-		   victim, NAME(player), player);
+    chown_macros(victim, recipient);
 
-	delete_player(victim);
-	snprintf(buf, sizeof(buf), "A slimy toad named %s", NAME(victim));
-	free((void *) NAME(victim));
-	NAME(victim) = alloc_string(buf);
-	DBDIRTY(victim);
-	boot_player_off(victim);
+    if (PLAYER_PASSWORD(victim)) {
+	free((void *) PLAYER_PASSWORD(victim));
+	PLAYER_SET_PASSWORD(victim, 0);
+    }
+    dequeue_prog(victim, 0);	/* dequeue progs that player's running */
 
-	if (PLAYER_DESCRS(victim)) {
-		free(PLAYER_DESCRS(victim));
-		PLAYER_SET_DESCRS(victim, NULL);
-		PLAYER_SET_DESCRCOUNT(victim, 0);
-	}
+    log_status("TOADED[MUF]: %s(%d) by %s(%d)", NAME(victim), victim, NAME(player), player);
 
-	ignore_remove_from_all_players(victim);
-	ignore_flush_cache(victim);
+    delete_player(victim);
+    snprintf(buf, sizeof(buf), "A slimy toad named %s", NAME(victim));
+    free((void *) NAME(victim));
+    NAME(victim) = alloc_string(buf);
+    DBDIRTY(victim);
+    boot_player_off(victim);
 
-	FREE_PLAYER_SP(victim);
-	ALLOC_THING_SP(victim);
-	THING_SET_HOME(victim, PLAYER_HOME(recipient));
+    if (PLAYER_DESCRS(victim)) {
+	free(PLAYER_DESCRS(victim));
+	PLAYER_SET_DESCRS(victim, NULL);
+	PLAYER_SET_DESCRCOUNT(victim, 0);
+    }
 
-	/* reset name */
-	FLAGS(victim) = TYPE_THING;
-	OWNER(victim) = recipient;
-	SETVALUE(victim, 1);
+    ignore_remove_from_all_players(victim);
+    ignore_flush_cache(victim);
 
-	CLEAR(oper1);
-	CLEAR(oper2);
+    FREE_PLAYER_SP(victim);
+    ALLOC_THING_SP(victim);
+    THING_SET_HOME(victim, PLAYER_HOME(recipient));
+
+    /* reset name */
+    FLAGS(victim) = TYPE_THING;
+    OWNER(victim) = recipient;
+    SETVALUE(victim, 1);
+
+    CLEAR(oper1);
+    CLEAR(oper2);
 }
 
 void
 prim_objmem(PRIM_PROTOTYPE)
 {
-	int i;
+    int i;
 
-	oper1 = POP();
-	if (oper1->type != PROG_OBJECT)
-		abort_interp("Argument must be a dbref.");
-	ref = oper1->data.objref;
-	if (ref >= db_top || ref <= NOTHING)
-		abort_interp("Invalid object.");
-	CLEAR(oper1);
-	i = size_object(ref, 0);
-	PushInt(i);
+    oper1 = POP();
+    if (oper1->type != PROG_OBJECT)
+	abort_interp("Argument must be a dbref.");
+    ref = oper1->data.objref;
+    if (ref >= db_top || ref <= NOTHING)
+	abort_interp("Invalid object.");
+    CLEAR(oper1);
+    i = size_object(ref, 0);
+    PushInt(i);
 }
 
 
@@ -1946,41 +1946,41 @@ prim_objmem(PRIM_PROTOTYPE)
 void
 prim_instances(PRIM_PROTOTYPE)
 {
-   unsigned short a = 0;
-   int b = 0;
-   CHECKOP(1);
-   oper1 = POP();
+    unsigned short a = 0;
+    int b = 0;
+    CHECKOP(1);
+    oper1 = POP();
 
-   if (!valid_object(oper1))
-      abort_interp("Invalid object.");
+    if (!valid_object(oper1))
+	abort_interp("Invalid object.");
 
-   ref = oper1->data.objref;
-   if (Typeof(ref) != TYPE_PROGRAM)
-      abort_interp("Object must be a program.");
+    ref = oper1->data.objref;
+    if (Typeof(ref) != TYPE_PROGRAM)
+	abort_interp("Object must be a program.");
 
-   CLEAR(oper1);
-   a = PROGRAM_INSTANCES(ref);
-   b = a;
-   PushInt(b);
+    CLEAR(oper1);
+    a = PROGRAM_INSTANCES(ref);
+    b = a;
+    PushInt(b);
 }
 
 void
 prim_compiledp(PRIM_PROTOTYPE)
 {
-	int i = 0;
-	CHECKOP(1);
-	oper1 = POP();
+    int i = 0;
+    CHECKOP(1);
+    oper1 = POP();
 
-	if (!valid_object(oper1))
-		abort_interp("Invalid object.");
+    if (!valid_object(oper1))
+	abort_interp("Invalid object.");
 
-	ref = oper1->data.objref;
-	if (Typeof(ref) != TYPE_PROGRAM)
-		abort_interp("Object must be a program.");
+    ref = oper1->data.objref;
+    if (Typeof(ref) != TYPE_PROGRAM)
+	abort_interp("Object must be a program.");
 
-	CLEAR(oper1);
-	i = PROGRAM_SIZ(ref);
-	PushInt(i);
+    CLEAR(oper1);
+    i = PROGRAM_SIZ(ref);
+    PushInt(i);
 }
 
 
@@ -1994,25 +1994,25 @@ prim_newpassword(PRIM_PROTOTYPE)
     oper1 = POP();
     oper2 = POP();
     if (mlev < 4)
-		abort_interp("Permission denied.  Requires Wizbit.");
+	abort_interp("Permission denied.  Requires Wizbit.");
     if (oper1->type != PROG_STRING)
-		abort_interp("Password string expected. (2)");
+	abort_interp("Password string expected. (2)");
     if (oper2->type != PROG_OBJECT)
-		abort_interp("Player dbref expected. (1)");
-    ptr2 = oper1->data.string? oper1->data.string->data : pad_char;
+	abort_interp("Player dbref expected. (1)");
+    ptr2 = oper1->data.string ? oper1->data.string->data : pad_char;
     ref = oper2->data.objref;
     if (!valid_player(oper2))
-		abort_interp("Player dbref expected. (1)");
+	abort_interp("Player dbref expected. (1)");
     CHECKREMOTE(ref);
 
 #ifdef GOD_PRIV
-	if (God(ref))
-		abort_interp("God cannot be newpassworded.");
-	if (!God(player) && TrueWizard(ref) && (player != ref))
-		abort_interp("Only God can change a wizards password");
+    if (God(ref))
+	abort_interp("God cannot be newpassworded.");
+    if (!God(player) && TrueWizard(ref) && (player != ref))
+	abort_interp("Only God can change a wizards password");
 #endif
 
-	set_password(ref, ptr2);
+    set_password(ref, ptr2);
     CLEAR(oper1);
     CLEAR(oper2);
 }
@@ -2020,57 +2020,58 @@ prim_newpassword(PRIM_PROTOTYPE)
 void
 prim_newprogram(PRIM_PROTOTYPE)
 {
-	dbref newprog;
-	char buf[BUFFER_LEN];
-	int jj;
+    dbref newprog;
+    char buf[BUFFER_LEN];
+    int jj;
 
-	CHECKOP(1);
-	oper1 = POP();
+    CHECKOP(1);
+    oper1 = POP();
 
-	if (mlev < 4)
-		abort_interp("Permission denied.  Requires Wizbit.");
-	if (oper1->type != PROG_STRING)
-		abort_interp("Expected string argument.");
-	if (!ok_ascii_other(oper1->data.string->data) || !ok_name(oper1->data.string->data))
-		abort_interp("Invalid name (2)");
+    if (mlev < 4)
+	abort_interp("Permission denied.  Requires Wizbit.");
+    if (oper1->type != PROG_STRING)
+	abort_interp("Expected string argument.");
+    if (!ok_ascii_other(oper1->data.string->data) || !ok_name(oper1->data.string->data))
+	abort_interp("Invalid name (2)");
 
-	newprog = new_object();
+    newprog = new_object();
 
-	NAME(newprog) = alloc_string(oper1->data.string->data);
-	snprintf(buf, sizeof(buf), "A scroll containing a spell called %s", oper1->data.string->data);
-	SETDESC(newprog, buf);
-	LOCATION(newprog) = player;
-	FLAGS(newprog) = TYPE_PROGRAM;
-	jj = MLevel(player);
-	if (jj < 1)
-	    jj = 1;
-	if (jj > 3)
-	    jj = 3;
-	SetMLevel(newprog, jj);
+    NAME(newprog) = alloc_string(oper1->data.string->data);
+    snprintf(buf, sizeof(buf), "A scroll containing a spell called %s",
+	     oper1->data.string->data);
+    SETDESC(newprog, buf);
+    LOCATION(newprog) = player;
+    FLAGS(newprog) = TYPE_PROGRAM;
+    jj = MLevel(player);
+    if (jj < 1)
+	jj = 1;
+    if (jj > 3)
+	jj = 3;
+    SetMLevel(newprog, jj);
 
-	OWNER(newprog) = OWNER(player);
-	ALLOC_PROGRAM_SP(newprog);
-	PROGRAM_SET_FIRST(newprog, NULL);
-	PROGRAM_SET_INSTANCES(newprog, 0);
-	PROGRAM_SET_CURR_LINE(newprog, 0);
-	PROGRAM_SET_SIZ(newprog, 0);
-	PROGRAM_SET_CODE(newprog, NULL);
-	PROGRAM_SET_START(newprog, NULL);
-	PROGRAM_SET_PUBS(newprog, NULL);
+    OWNER(newprog) = OWNER(player);
+    ALLOC_PROGRAM_SP(newprog);
+    PROGRAM_SET_FIRST(newprog, NULL);
+    PROGRAM_SET_INSTANCES(newprog, 0);
+    PROGRAM_SET_CURR_LINE(newprog, 0);
+    PROGRAM_SET_SIZ(newprog, 0);
+    PROGRAM_SET_CODE(newprog, NULL);
+    PROGRAM_SET_START(newprog, NULL);
+    PROGRAM_SET_PUBS(newprog, NULL);
 #ifdef MCP_SUPPORT
-	PROGRAM_SET_MCPBINDS(newprog, NULL);
+    PROGRAM_SET_MCPBINDS(newprog, NULL);
 #endif
-	PROGRAM_SET_PROFTIME(newprog, 0, 0);
-	PROGRAM_SET_PROFSTART(newprog, 0);
-	PROGRAM_SET_PROF_USES(newprog, 0);
+    PROGRAM_SET_PROFTIME(newprog, 0, 0);
+    PROGRAM_SET_PROFSTART(newprog, 0);
+    PROGRAM_SET_PROF_USES(newprog, 0);
 
-	PLAYER_SET_CURR_PROG(player, newprog);
+    PLAYER_SET_CURR_PROG(player, newprog);
 
-	PUSH(newprog, CONTENTS(player));
-	DBDIRTY(newprog);
-	DBDIRTY(player);
+    PUSH(newprog, CONTENTS(player));
+    DBDIRTY(newprog);
+    DBDIRTY(player);
 
-	PushObject(newprog);
+    PushObject(newprog);
 }
 
 extern struct line *read_program(dbref prog);
@@ -2078,242 +2079,240 @@ extern struct line *read_program(dbref prog);
 void
 prim_compile(PRIM_PROTOTYPE)
 {
-	dbref ref;
-	struct line *tmpline;
+    dbref ref;
+    struct line *tmpline;
 
-	CHECKOP(2);
-	oper2 = POP();
-	oper1 = POP();
-	if (mlev < 4)
-		abort_interp("Permission denied.  Requires Wizbit.");
-	if (!valid_object(oper1))
-		abort_interp("No program dbref given. (1)");
-	ref = oper1->data.objref;
-	if (Typeof(ref) != TYPE_PROGRAM)
-		abort_interp("No program dbref given. (1)");
-	if (oper2->type != PROG_INTEGER)
-		abort_interp("No boolean integer given. (2)");
+    CHECKOP(2);
+    oper2 = POP();
+    oper1 = POP();
+    if (mlev < 4)
+	abort_interp("Permission denied.  Requires Wizbit.");
+    if (!valid_object(oper1))
+	abort_interp("No program dbref given. (1)");
+    ref = oper1->data.objref;
+    if (Typeof(ref) != TYPE_PROGRAM)
+	abort_interp("No program dbref given. (1)");
+    if (oper2->type != PROG_INTEGER)
+	abort_interp("No boolean integer given. (2)");
     if (PROGRAM_INSTANCES(ref) > 0)
-		abort_interp("That program is currently in use.");
-	tmpline = PROGRAM_FIRST(ref);
-	PROGRAM_SET_FIRST(ref, read_program(ref));
-	do_compile(fr->descr, player, ref, oper2->data.number);
-	free_prog_text(PROGRAM_FIRST(ref));
-	PROGRAM_SET_FIRST(ref, tmpline);
-	PushInt(PROGRAM_SIZ(ref));
+	abort_interp("That program is currently in use.");
+    tmpline = PROGRAM_FIRST(ref);
+    PROGRAM_SET_FIRST(ref, read_program(ref));
+    do_compile(fr->descr, player, ref, oper2->data.number);
+    free_prog_text(PROGRAM_FIRST(ref));
+    PROGRAM_SET_FIRST(ref, tmpline);
+    PushInt(PROGRAM_SIZ(ref));
 }
 
 
 void
 prim_uncompile(PRIM_PROTOTYPE)
 {
-	dbref ref;
+    dbref ref;
 
-	CHECKOP(1);
-	oper1 = POP();
-	if (mlev < 4)
-		abort_interp("Permission denied.  Requires Wizbit.");
-	if (!valid_object(oper1))
-		abort_interp("No program dbref given.");
-	ref = oper1->data.objref;
-	if (Typeof(ref) != TYPE_PROGRAM)
-		abort_interp("No program dbref given.");
+    CHECKOP(1);
+    oper1 = POP();
+    if (mlev < 4)
+	abort_interp("Permission denied.  Requires Wizbit.");
+    if (!valid_object(oper1))
+	abort_interp("No program dbref given.");
+    ref = oper1->data.objref;
+    if (Typeof(ref) != TYPE_PROGRAM)
+	abort_interp("No program dbref given.");
     if (PROGRAM_INSTANCES(ref) > 0)
-		abort_interp("That program is currently in use.");
-	uncompile_program(ref);
+	abort_interp("That program is currently in use.");
+    uncompile_program(ref);
 }
 
 
 void
 prim_getpids(PRIM_PROTOTYPE)
 {
-	stk_array *nw;
+    stk_array *nw;
 
-	CHECKOP(1);
-	oper1 = POP();
-	if (mlev < 3)
-		abort_interp("Permission denied.  Requires Mucker Level 3.");
-	if (oper1->type != PROG_OBJECT)
-		abort_interp("Non-object argument (1)");
-	nw = get_pids(oper1->data.objref);
+    CHECKOP(1);
+    oper1 = POP();
+    if (mlev < 3)
+	abort_interp("Permission denied.  Requires Mucker Level 3.");
+    if (oper1->type != PROG_OBJECT)
+	abort_interp("Non-object argument (1)");
+    nw = get_pids(oper1->data.objref);
 
-	if (program == oper1->data.objref)
-	{
-		struct inst temp;
+    if (program == oper1->data.objref) {
+	struct inst temp;
 
-		temp.type			= PROG_INTEGER;
-		temp.data.number	= fr->pid;
+	temp.type = PROG_INTEGER;
+	temp.data.number = fr->pid;
 
-		array_appenditem(&nw, &temp);
+	array_appenditem(&nw, &temp);
 
-		CLEAR(&temp);
-	}
-	
-	CLEAR(oper1);
-	PushArrayRaw(nw);
+	CLEAR(&temp);
+    }
+
+    CLEAR(oper1);
+    PushArrayRaw(nw);
 }
 
 void
 prim_getpidinfo(PRIM_PROTOTYPE)
 {
-	stk_array*	nu;
-	double		cpu;
-	time_t		etime;
+    stk_array *nu;
+    double cpu;
+    time_t etime;
 
-	CHECKOP(1);
-	oper1 = POP();
-	if (mlev < 3)
-		abort_interp("Permission denied.  Requires Mucker Level 3.");
-	if (oper1->type != PROG_INTEGER)
-		abort_interp("Non-integer argument (1)");
+    CHECKOP(1);
+    oper1 = POP();
+    if (mlev < 3)
+	abort_interp("Permission denied.  Requires Mucker Level 3.");
+    if (oper1->type != PROG_INTEGER)
+	abort_interp("Non-integer argument (1)");
 
-	if (oper1->data.number == fr->pid)
-	{
-		if ((nu = new_array_dictionary()) == NULL)
-			abort_interp("Out of memory");
+    if (oper1->data.number == fr->pid) {
+	if ((nu = new_array_dictionary()) == NULL)
+	    abort_interp("Out of memory");
 
-		if ((etime = time(NULL) - fr->started) > 0)
-		{
-			cpu = ((fr->totaltime.tv_sec + (fr->totaltime.tv_usec / 1000000.0f)) * 100.0f) / etime;
+	if ((etime = time(NULL) - fr->started) > 0) {
+	    cpu = ((fr->totaltime.tv_sec +
+		    (fr->totaltime.tv_usec / 1000000.0f)) * 100.0f) / etime;
 
-			if (cpu > 100.0f)
-				cpu = 100.0f;
-		}
-		else
-			cpu = 0.0f;
-			
-		array_set_strkey_intval(&nu, "PID",			fr->pid);
-		array_set_strkey_intval(&nu, "INSTCNT",		fr->instcnt);
-		array_set_strkey_intval(&nu, "DESCR",		fr->descr);
-		array_set_strkey_intval(&nu, "NEXTRUN",		0);
-		array_set_strkey_intval(&nu, "STARTED",		fr->started);
+	    if (cpu > 100.0f)
+		cpu = 100.0f;
+	} else
+	    cpu = 0.0f;
 
-		array_set_strkey_refval(&nu, "CALLED_PROG",	program);
-		array_set_strkey_refval(&nu, "TRIG",		fr->trig);
-		array_set_strkey_refval(&nu, "PLAYER",		player);
+	array_set_strkey_intval(&nu, "PID", fr->pid);
+	array_set_strkey_intval(&nu, "INSTCNT", fr->instcnt);
+	array_set_strkey_intval(&nu, "DESCR", fr->descr);
+	array_set_strkey_intval(&nu, "NEXTRUN", 0);
+	array_set_strkey_intval(&nu, "STARTED", fr->started);
 
-		array_set_strkey_fltval(&nu, "CPU",			cpu);
+	array_set_strkey_refval(&nu, "CALLED_PROG", program);
+	array_set_strkey_refval(&nu, "TRIG", fr->trig);
+	array_set_strkey_refval(&nu, "PLAYER", player);
 
-		array_set_strkey_strval(&nu, "CALLED_DATA",	"");
-		array_set_strkey_strval(&nu, "TYPE",		"MUF");
-		array_set_strkey_strval(&nu, "SUBTYPE",		"");
-	}
-	else
-		nu = get_pidinfo(oper1->data.number);
+	array_set_strkey_fltval(&nu, "CPU", cpu);
 
-	CLEAR(oper1);
-	PushArrayRaw(nu);
+	array_set_strkey_strval(&nu, "CALLED_DATA", "");
+	array_set_strkey_strval(&nu, "TYPE", "MUF");
+	array_set_strkey_strval(&nu, "SUBTYPE", "");
+    } else
+	nu = get_pidinfo(oper1->data.number);
+
+    CLEAR(oper1);
+    PushArrayRaw(nu);
 }
 
 
 void
 prim_contents_array(PRIM_PROTOTYPE)
 {
-	stk_array *nw;
-	int count = 0;
+    stk_array *nw;
+    int count = 0;
 
-	CHECKOP(1);
-	oper1 = POP();
-	if (!valid_object(oper1))
-		abort_interp("Invalid dbref (1)");
-	ref = oper1->data.objref;
+    CHECKOP(1);
+    oper1 = POP();
+    if (!valid_object(oper1))
+	abort_interp("Invalid dbref (1)");
+    ref = oper1->data.objref;
 
-	if ((Typeof(ref) == TYPE_PROGRAM) || (Typeof(ref) == TYPE_EXIT)) {
-		PushArrayRaw(new_array_packed(0));
-		return;
-	}		
+    if ((Typeof(ref) == TYPE_PROGRAM) || (Typeof(ref) == TYPE_EXIT)) {
+	PushArrayRaw(new_array_packed(0));
+	return;
+    }
 
-	CHECKREMOTE(oper1->data.objref);
+    CHECKREMOTE(oper1->data.objref);
 
-	for (ref = CONTENTS(oper1->data.objref); (ref >= 0) && (ref < db_top); ref = NEXTOBJ(ref))
-		count++;
+    for (ref = CONTENTS(oper1->data.objref); (ref >= 0) && (ref < db_top); ref = NEXTOBJ(ref))
+	count++;
 
-	nw = new_array_packed(count);
+    nw = new_array_packed(count);
 
-	for (ref = CONTENTS(oper1->data.objref), count = 0; (ref >= 0) && (ref < db_top); ref = NEXTOBJ(ref))
-		array_set_intkey_refval(&nw, count++, ref);
+    for (ref = CONTENTS(oper1->data.objref), count = 0; (ref >= 0) && (ref < db_top);
+	 ref = NEXTOBJ(ref))
+	array_set_intkey_refval(&nw, count++, ref);
 
-	CLEAR(oper1);
+    CLEAR(oper1);
 
-	PushArrayRaw(nw);
+    PushArrayRaw(nw);
 }
 
 void
 prim_exits_array(PRIM_PROTOTYPE)
 {
-	stk_array *nw;
-	int count = 0;
+    stk_array *nw;
+    int count = 0;
 
-	CHECKOP(1);
-	oper1 = POP();
-	if (!valid_object(oper1))
-		abort_interp("Invalid dbref (1)");
-	ref = oper1->data.objref;
-	CHECKREMOTE(oper1->data.objref);
-	if ((mlev < 3) && !permissions(ProgUID, ref))
-		abort_interp("Permission denied.");
+    CHECKOP(1);
+    oper1 = POP();
+    if (!valid_object(oper1))
+	abort_interp("Invalid dbref (1)");
+    ref = oper1->data.objref;
+    CHECKREMOTE(oper1->data.objref);
+    if ((mlev < 3) && !permissions(ProgUID, ref))
+	abort_interp("Permission denied.");
 
-	if ((Typeof(ref) == TYPE_PROGRAM) || (Typeof(ref) == TYPE_EXIT)) {
-		PushArrayRaw(new_array_packed(0));
-		return;
-	}
+    if ((Typeof(ref) == TYPE_PROGRAM) || (Typeof(ref) == TYPE_EXIT)) {
+	PushArrayRaw(new_array_packed(0));
+	return;
+    }
 
-	for (ref = EXITS(oper1->data.objref); (ref >= 0) && (ref < db_top); ref = NEXTOBJ(ref))
-		count++;
+    for (ref = EXITS(oper1->data.objref); (ref >= 0) && (ref < db_top); ref = NEXTOBJ(ref))
+	count++;
 
-	nw = new_array_packed(count);
+    nw = new_array_packed(count);
 
-	for (ref = EXITS(oper1->data.objref), count = 0; (ref >= 0) && (ref < db_top); ref = NEXTOBJ(ref))
-		array_set_intkey_refval(&nw, count++, ref);
+    for (ref = EXITS(oper1->data.objref), count = 0; (ref >= 0) && (ref < db_top);
+	 ref = NEXTOBJ(ref))
+	array_set_intkey_refval(&nw, count++, ref);
 
-	CLEAR(oper1);
+    CLEAR(oper1);
 
-	PushArrayRaw(nw);
+    PushArrayRaw(nw);
 }
 
 stk_array *
 array_getlinks(dbref obj)
 {
-	stk_array* nw = new_array_packed(0);
-	int count = 0;
+    stk_array *nw = new_array_packed(0);
+    int count = 0;
 
-	if ((obj >= 0) && (obj < db_top)) {
-		switch (Typeof(obj)) {
-			case TYPE_ROOM:
-				array_set_intkey_refval(&nw, count++, DBFETCH(obj)->sp.room.dropto);
-			break;
+    if ((obj >= 0) && (obj < db_top)) {
+	switch (Typeof(obj)) {
+	case TYPE_ROOM:
+	    array_set_intkey_refval(&nw, count++, DBFETCH(obj)->sp.room.dropto);
+	    break;
 
-			case TYPE_THING:
-				array_set_intkey_refval(&nw, count++, THING_HOME(obj));
-			break;
+	case TYPE_THING:
+	    array_set_intkey_refval(&nw, count++, THING_HOME(obj));
+	    break;
 
-			case TYPE_PLAYER:
-				array_set_intkey_refval(&nw, count++, PLAYER_HOME(obj));
-			break;
+	case TYPE_PLAYER:
+	    array_set_intkey_refval(&nw, count++, PLAYER_HOME(obj));
+	    break;
 
-			case TYPE_EXIT:
-				for (count = 0; count < (DBFETCH(obj)->sp.exit.ndest); count++)
-					array_set_intkey_refval(&nw, count, (DBFETCH(obj)->sp.exit.dest)[count]);
-			break;
-		}
+	case TYPE_EXIT:
+	    for (count = 0; count < (DBFETCH(obj)->sp.exit.ndest); count++)
+		array_set_intkey_refval(&nw, count, (DBFETCH(obj)->sp.exit.dest)[count]);
+	    break;
 	}
+    }
 
-	return nw;
+    return nw;
 }
 
 void
 prim_getlinks_array(PRIM_PROTOTYPE)
 {
-	CHECKOP(1);
-	oper1 = POP();
+    CHECKOP(1);
+    oper1 = POP();
 
-	if (!valid_object(oper1))
-		abort_interp("Invalid object dbref. (1)");
-	ref = oper1->data.objref;
-	CHECKREMOTE(oper1->data.objref);
+    if (!valid_object(oper1))
+	abort_interp("Invalid object dbref. (1)");
+    ref = oper1->data.objref;
+    CHECKREMOTE(oper1->data.objref);
 
-	CLEAR(oper1);
-	PushArrayRaw(array_getlinks(ref));
+    CLEAR(oper1);
+    PushArrayRaw(array_getlinks(ref));
 }
 
 void
@@ -2327,35 +2326,35 @@ prim_entrances_array(PRIM_PROTOTYPE)
     oper1 = POP();
 
     if (!valid_object(oper1))
-        abort_interp("Invalid object dbref. (1)");
+	abort_interp("Invalid object dbref. (1)");
 
     ref = oper1->data.objref;
     nw = new_array_packed(0);
 
     for (i = 0; i < db_top; i++) {
-        switch (Typeof(i)) {
-            case TYPE_EXIT:
-                for (j = DBFETCH(i)->sp.exit.ndest; j--;) {
-                    if (DBFETCH(i)->sp.exit.dest[j] == ref)
-			array_set_intkey_refval(&nw, count++, i);
-                }
-                break;
-            case TYPE_PLAYER:
-                if (PLAYER_HOME(i) == ref)
+	switch (Typeof(i)) {
+	case TYPE_EXIT:
+	    for (j = DBFETCH(i)->sp.exit.ndest; j--;) {
+		if (DBFETCH(i)->sp.exit.dest[j] == ref)
 		    array_set_intkey_refval(&nw, count++, i);
-                break;
-            case TYPE_THING:
-                if (THING_HOME(i) == ref)
-		    array_set_intkey_refval(&nw, count++, i);
-                break;
-            case TYPE_ROOM:
-                if (DBFETCH(i)->sp.room.dropto == ref)
-		    array_set_intkey_refval(&nw, count++, i);
-                break;
-            case TYPE_PROGRAM:
-            case TYPE_GARBAGE:
-                break;
-        }
+	    }
+	    break;
+	case TYPE_PLAYER:
+	    if (PLAYER_HOME(i) == ref)
+		array_set_intkey_refval(&nw, count++, i);
+	    break;
+	case TYPE_THING:
+	    if (THING_HOME(i) == ref)
+		array_set_intkey_refval(&nw, count++, i);
+	    break;
+	case TYPE_ROOM:
+	    if (DBFETCH(i)->sp.room.dropto == ref)
+		array_set_intkey_refval(&nw, count++, i);
+	    break;
+	case TYPE_PROGRAM:
+	case TYPE_GARBAGE:
+	    break;
+	}
     }
 
     CLEAR(oper1);
@@ -2365,392 +2364,366 @@ prim_entrances_array(PRIM_PROTOTYPE)
 void
 prim_program_getlines(PRIM_PROTOTYPE)
 {
-	stk_array* ary;
-	int start, end;
-	CHECKOP(3);
-	oper3 = POP();
-	oper2 = POP();
-	oper1 = POP();
+    stk_array *ary;
+    int start, end;
+    CHECKOP(3);
+    oper3 = POP();
+    oper2 = POP();
+    oper1 = POP();
 
-	if (!valid_object(oper1))
-		abort_interp("Invalid object dbref. (1)");
-	if (oper2->type != PROG_INTEGER)
-		abort_interp("Expected integer. (2)");
-	if (oper3->type != PROG_INTEGER)
-		abort_interp("Expected integer. (3)");
+    if (!valid_object(oper1))
+	abort_interp("Invalid object dbref. (1)");
+    if (oper2->type != PROG_INTEGER)
+	abort_interp("Expected integer. (2)");
+    if (oper3->type != PROG_INTEGER)
+	abort_interp("Expected integer. (3)");
 
-	ref = oper1->data.objref;
-	start = oper2->data.number;
-	end = oper3->data.number;
+    ref = oper1->data.objref;
+    start = oper2->data.number;
+    end = oper3->data.number;
 
-	if (Typeof(ref) != TYPE_PROGRAM)
-		abort_interp("Non-program object. (1)");
-	if (mlev < 4 && !controls(ProgUID, ref) && !(FLAGS(ref) & VEHICLE))
-		abort_interp("Permission denied.");
-	if (start < 0 || end < 0)
-	    abort_interp("Line indexes must be non-negative.");
+    if (Typeof(ref) != TYPE_PROGRAM)
+	abort_interp("Non-program object. (1)");
+    if (mlev < 4 && !controls(ProgUID, ref) && !(FLAGS(ref) & VEHICLE))
+	abort_interp("Permission denied.");
+    if (start < 0 || end < 0)
+	abort_interp("Line indexes must be non-negative.");
 
-	if (start == 0)
-		start = 1;
+    if (start == 0)
+	start = 1;
 
-	if (end && start > end)
-		abort_interp("Illogical line range.");
+    if (end && start > end)
+	abort_interp("Illogical line range.");
 
-	CLEAR(oper1);
-	CLEAR(oper2);
-	CLEAR(oper3);
+    CLEAR(oper1);
+    CLEAR(oper2);
+    CLEAR(oper3);
 
-	{
-		/* we make two passes over our linked list's data,
-		 * first we figure out how many lines are
-		 * actually there. This is so we only allocate
-		 * our array once, rather re-allocating 4000 times
-		 * for a 4000-line program listing, while avoiding
-		 * letting calls like '#xxx 1 999999 program_getlines'
-		 * taking up tones of memory.
-		 */
-		int i, count;
-		/* current line we're iterating over */
-		struct line* curr;
-		/* first line in the program */
-		struct line* first;
-		/* starting line in our segment of the program */
-		struct line* segment;
+    {
+	/* we make two passes over our linked list's data,
+	 * first we figure out how many lines are
+	 * actually there. This is so we only allocate
+	 * our array once, rather re-allocating 4000 times
+	 * for a 4000-line program listing, while avoiding
+	 * letting calls like '#xxx 1 999999 program_getlines'
+	 * taking up tones of memory.
+	 */
+	int i, count;
+	/* current line we're iterating over */
+	struct line *curr;
+	/* first line in the program */
+	struct line *first;
+	/* starting line in our segment of the program */
+	struct line *segment;
 
-		curr = first = read_program(ref);
+	curr = first = read_program(ref);
 
-		/* find our line */
-		for (i = 1; curr && i < start; i++)
-			curr = curr->next;
+	/* find our line */
+	for (i = 1; curr && i < start; i++)
+	    curr = curr->next;
 
-		if (!curr) {
-			/* alright, we have no data! */
-			free_prog_text(first);
-			PushNullArray;
-			return;
-		}
-
-		segment = curr; /* we need to keep this line */
-
-		/* continue our looping */
-		for (; curr && (!end || i < end); i++)
-			curr = curr->next;
-
-		count = i - start + 1;
-		
-		if (!curr) /* if we have don't have curr, we counted one beyond
-			      the end of the program, so we account for that. */
-		    count--;
-		
-		ary = new_array_packed(count);
-
-		/*
-		 * so we count down from the number of lines we have, 
-		 * and set our array appropriatly.
-		 */
-		for (curr = segment, i = 0; count--; i++, curr = curr->next) {
-			array_set_intkey_strval(&ary, i, curr->this_line);
-		}
-
-		free_prog_text(first);
+	if (!curr) {
+	    /* alright, we have no data! */
+	    free_prog_text(first);
+	    PushNullArray;
+	    return;
 	}
-	PushArrayRaw(ary);
+
+	segment = curr;		/* we need to keep this line */
+
+	/* continue our looping */
+	for (; curr && (!end || i < end); i++)
+	    curr = curr->next;
+
+	count = i - start + 1;
+
+	if (!curr)		/* if we have don't have curr, we counted one beyond
+				   the end of the program, so we account for that. */
+	    count--;
+
+	ary = new_array_packed(count);
+
+	/*
+	 * so we count down from the number of lines we have, 
+	 * and set our array appropriatly.
+	 */
+	for (curr = segment, i = 0; count--; i++, curr = curr->next) {
+	    array_set_intkey_strval(&ary, i, curr->this_line);
+	}
+
+	free_prog_text(first);
+    }
+    PushArrayRaw(ary);
 }
 
 void
 prim_program_setlines(PRIM_PROTOTYPE)
 {
-	struct line*	lines	= 0;
-	struct line*	prev	= 0;
-	array_iter		idx;
+    struct line *lines = 0;
+    struct line *prev = 0;
+    array_iter idx;
 
-	CHECKOP(2);
+    CHECKOP(2);
 
-	oper2 = POP(); /* list:Lines */
-	oper1 = POP(); /* ref:Program */
+    oper2 = POP();		/* list:Lines */
+    oper1 = POP();		/* ref:Program */
 
-	if (mlev < 4)
-		abort_interp("Mucker level 4 or greater required.");
+    if (mlev < 4)
+	abort_interp("Mucker level 4 or greater required.");
 
-	if (oper1->type != PROG_OBJECT)
-		abort_interp("Non-object argument. (1)");
-	if (oper2->type != PROG_ARRAY)
-		abort_interp("Non-array argument. (2)");
+    if (oper1->type != PROG_OBJECT)
+	abort_interp("Non-object argument. (1)");
+    if (oper2->type != PROG_ARRAY)
+	abort_interp("Non-array argument. (2)");
 
-	if (!valid_object(oper1))
-		abort_interp("Invalid object. (1)");
-	if (Typeof(oper1->data.objref) != TYPE_PROGRAM)
-		abort_interp("Non-program object. (1)");
-	if (oper2->data.array && (oper2->data.array->type != ARRAY_PACKED))
-		abort_interp("Array list type required. (2)");
-	if (!array_is_homogenous(oper2->data.array, PROG_STRING))
-		abort_interp("Argument not an array of strings. (2)");
+    if (!valid_object(oper1))
+	abort_interp("Invalid object. (1)");
+    if (Typeof(oper1->data.objref) != TYPE_PROGRAM)
+	abort_interp("Non-program object. (1)");
+    if (oper2->data.array && (oper2->data.array->type != ARRAY_PACKED))
+	abort_interp("Array list type required. (2)");
+    if (!array_is_homogenous(oper2->data.array, PROG_STRING))
+	abort_interp("Argument not an array of strings. (2)");
 
-	if (!controls(ProgUID, oper1->data.objref))
-		abort_interp("Permission denied.");
+    if (!controls(ProgUID, oper1->data.objref))
+	abort_interp("Permission denied.");
 
-	if (FLAGS(oper1->data.objref) & INTERNAL)
-		abort_interp("Program already being edited.");
+    if (FLAGS(oper1->data.objref) & INTERNAL)
+	abort_interp("Program already being edited.");
 
-	if (array_first(oper2->data.array, &idx))
-	{
-		do
-		{
-			array_data*		val	= array_getitem(oper2->data.array, &idx);
-			struct line*	ln	= get_new_line();
+    if (array_first(oper2->data.array, &idx)) {
+	do {
+	    array_data *val = array_getitem(oper2->data.array, &idx);
+	    struct line *ln = get_new_line();
 
-			ln->this_line = alloc_string(val->data.string ? val->data.string->data : " ");
+	    ln->this_line = alloc_string(val->data.string ? val->data.string->data : " ");
 
-			if (prev)
-			{
-				prev->next	= ln;
-				ln->prev	= prev;
-			}
-			else
-				lines = ln;
+	    if (prev) {
+		prev->next = ln;
+		ln->prev = prev;
+	    } else
+		lines = ln;
 
-			prev = ln;
-		}
-		while(array_next(oper2->data.array, &idx));
+	    prev = ln;
 	}
+	while (array_next(oper2->data.array, &idx));
+    }
 
-	write_program(lines, oper1->data.objref);
+    write_program(lines, oper1->data.objref);
 
-	log_status("PROGRAM SAVED: %s by %s(%d)", unparse_object(player, oper1->data.objref), NAME(player), player);
+    log_status("PROGRAM SAVED: %s by %s(%d)", unparse_object(player, oper1->data.objref),
+	       NAME(player), player);
 
-	if (tp_log_programs)
-		log_program_text(lines, player, oper1->data.objref);
+    if (tp_log_programs)
+	log_program_text(lines, player, oper1->data.objref);
 
-	free_prog_text(lines);
+    free_prog_text(lines);
 
-	CLEAR(oper1);
-	CLEAR(oper2);
+    CLEAR(oper1);
+    CLEAR(oper2);
 
-	DBDIRTY(program);
+    DBDIRTY(program);
 }
 
 void
 prim_setlinks_array(PRIM_PROTOTYPE)
 {
-	array_iter	idx;
-	int			dest_count;
-	dbref		what;
-	stk_array*	arr;
+    array_iter idx;
+    int dest_count;
+    dbref what;
+    stk_array *arr;
 
-	CHECKOP(2);
+    CHECKOP(2);
 
-	oper2 = POP(); /* arr:Destination(s) */
-	oper1 = POP(); /* ref:Source */
+    oper2 = POP();		/* arr:Destination(s) */
+    oper1 = POP();		/* ref:Source */
 
-	if (oper1->type != PROG_OBJECT)
-		abort_interp("Non-object argument. (1)");
-	if (oper2->type != PROG_ARRAY)
-		abort_interp("Non-array argument. (3)");
+    if (oper1->type != PROG_OBJECT)
+	abort_interp("Non-object argument. (1)");
+    if (oper2->type != PROG_ARRAY)
+	abort_interp("Non-array argument. (3)");
 
-	if (!array_is_homogenous(oper2->data.array, PROG_OBJECT))
-		abort_interp("Argument not an array of dbrefs. (2)");
+    if (!array_is_homogenous(oper2->data.array, PROG_OBJECT))
+	abort_interp("Argument not an array of dbrefs. (2)");
 
-	if (!valid_object(oper1))
+    if (!valid_object(oper1))
+	abort_interp("Invalid object. (1)");
+
+    if ((mlev < 4) && !permissions(ProgUID, oper1->data.objref))
+	abort_interp("Permission denied. (1)");
+
+    if ((dest_count = array_count(oper2->data.array)) >= MAX_LINKS)
+	abort_interp("Too many destinations. (2)");
+
+    if ((dest_count > 1) && (Typeof(oper1->data.objref) != TYPE_EXIT))
+	abort_interp("Only exit may be linked to multiple destinations.");
+
+    what = oper1->data.objref;
+    arr = oper2->data.array;
+
+    if (array_first(arr, &idx)) {
+	int found_prp = 0;
+
+	do {
+	    array_data *val = array_getitem(arr, &idx);
+	    dbref where = val->data.objref;
+
+	    if ((where != HOME) && !valid_object(val)) {
+		CLEAR(&idx);
+		abort_interp("Invalid object. (2)");
+	    }
+
+	    if (!prog_can_link_to(mlev, ProgUID, Typeof(what), where)) {
+		CLEAR(&idx);
+		abort_interp("Can't link source to destination. (2)");
+	    }
+
+	    switch (Typeof(what)) {
+	    case TYPE_EXIT:
+		switch (Typeof(where)) {
+		case TYPE_PLAYER:
+		case TYPE_ROOM:
+		case TYPE_PROGRAM:
+		    if (found_prp != 0) {
+			CLEAR(&idx);
+			abort_interp("Only one player, room, or program destination allowed.");
+		    }
+
+		    found_prp = 1;
+		    break;
+
+		case TYPE_THING:
+		    break;
+
+		case TYPE_EXIT:
+		    if (exit_loop_check(what, where)) {
+			CLEAR(&idx);
+			abort_interp("Destination would create loop.");
+		    }
+		    break;
+
+		default:
+		    CLEAR(&idx);
+		    abort_interp("Invalid object. (2)");
+		}
+		break;
+
+	    case TYPE_PLAYER:
+		if (where == HOME) {
+		    CLEAR(&idx);
+		    abort_interp("Cannot link player to HOME.");
+		}
+		break;
+
+	    case TYPE_THING:
+		if (where == HOME) {
+		    CLEAR(&idx);
+		    abort_interp("Cannot link thing to HOME.");
+		}
+
+		if (parent_loop_check(what, where)) {
+		    CLEAR(&idx);
+		    abort_interp("That would case a parent paradox.");
+		}
+		break;
+
+	    case TYPE_ROOM:
+		break;
+
+	    default:
+		CLEAR(&idx);
 		abort_interp("Invalid object. (1)");
+	    }
+	}
+	while (array_next(arr, &idx));
+    }
 
-	if ((mlev < 4) && !permissions(ProgUID, oper1->data.objref))
-		abort_interp("Permission denied. (1)");
+    if (Typeof(what) == TYPE_EXIT) {
+	if (MLevRaw(what))
+	    SetMLevel(what, 0);
 
-	if ((dest_count = array_count(oper2->data.array)) >= MAX_LINKS)
-		abort_interp("Too many destinations. (2)");
+	if (DBFETCH(what)->sp.exit.dest != NULL)
+	    free((void *) DBFETCH(what)->sp.exit.dest);
+    }
 
-	if ((dest_count > 1) && (Typeof(oper1->data.objref) != TYPE_EXIT))
-		abort_interp("Only exit may be linked to multiple destinations.");
+    if (dest_count <= 0) {
+	switch (Typeof(what)) {
+	case TYPE_EXIT:
+	    DBSTORE(what, sp.exit.ndest, 0);
+	    DBSTORE(what, sp.exit.dest, NULL);
+	    break;
 
-	what	= oper1->data.objref;
-	arr		= oper2->data.array;
-	
-	if (array_first(arr, &idx))
-	{
-		int found_prp = 0;
+	case TYPE_ROOM:
+	    DBSTORE(what, sp.room.dropto, NOTHING);
+	    break;
 
-		do
-		{
-			array_data*	val		= array_getitem(arr, &idx);
-			dbref		where	= val->data.objref;
+	default:
+	    abort_interp("Only exits and rooms may be linked to nothing. (1)");
+	}
+    } else {
+	switch (Typeof(what)) {
+	case TYPE_EXIT:
+	    {
+		dbref *dests = (dbref *) malloc(sizeof(dbref) * dest_count);
 
-			if ((where != HOME) && !valid_object(val))
-			{
-				CLEAR(&idx);
-				abort_interp("Invalid object. (2)");
-			}
-
-			if (!prog_can_link_to(mlev, ProgUID, Typeof(what), where))
-			{
-				CLEAR(&idx);
-				abort_interp("Can't link source to destination. (2)");
-			}
-
-			switch(Typeof(what))
-			{
-				case TYPE_EXIT:
-					switch(Typeof(where))
-					{
-						case TYPE_PLAYER:
-						case TYPE_ROOM:
-						case TYPE_PROGRAM:
-							if (found_prp != 0)
-							{
-								CLEAR(&idx);
-								abort_interp("Only one player, room, or program destination allowed.");
-							}
-
-							found_prp = 1;
-						break;
-
-						case TYPE_THING:
-						break;
-
-						case TYPE_EXIT:
-							if (exit_loop_check(what, where))
-							{
-								CLEAR(&idx);
-								abort_interp("Destination would create loop.");
-							}
-						break;
-
-						default:
-							CLEAR(&idx);
-							abort_interp("Invalid object. (2)");
-					}
-				break;
-
-				case TYPE_PLAYER:
-					if (where == HOME)
-					{
-						CLEAR(&idx);
-						abort_interp("Cannot link player to HOME.");
-					}
-				break;
-
-				case TYPE_THING:
-					if (where == HOME)
-					{
-						CLEAR(&idx);
-						abort_interp("Cannot link thing to HOME.");
-					}
-
-					if (parent_loop_check(what, where))
-					{
-						CLEAR(&idx);
-						abort_interp("That would case a parent paradox.");
-					}
-				break;
-
-				case TYPE_ROOM:
-				break;
-
-				default:
-					CLEAR(&idx);
-					abort_interp("Invalid object. (1)");
-			}
+		if (dests == NULL) {
+		    DBSTORE(what, sp.exit.ndest, 0);
+		    DBSTORE(what, sp.exit.dest, NULL);
+		    abort_interp("Out of memory.");
 		}
-		while(array_next(arr, &idx));
-	}
 
-	if (Typeof(what) == TYPE_EXIT)
-	{
-		if (MLevRaw(what))
-			SetMLevel(what, 0);
+		if (array_first(arr, &idx)) {
+		    int i = 0;
 
-		if (DBFETCH(what)->sp.exit.dest != NULL)
-			free((void*)DBFETCH(what)->sp.exit.dest);
-	}
-
-	if (dest_count <= 0)
-	{
-		switch(Typeof(what))
-		{
-			case TYPE_EXIT:
-				DBSTORE(what, sp.exit.ndest, 0);
-				DBSTORE(what, sp.exit.dest, NULL);
-			break;
-
-			case TYPE_ROOM:
-				DBSTORE(what, sp.room.dropto, NOTHING);
-			break;
-
-			default:
-				abort_interp("Only exits and rooms may be linked to nothing. (1)");
+		    do {
+			if (i < dest_count)
+			    dests[i++] = array_getitem(arr, &idx)->data.objref;
+		    }
+		    while (array_next(arr, &idx));
 		}
+
+		DBSTORE(what, sp.exit.ndest, dest_count);
+		DBSTORE(what, sp.exit.dest, dests);
+	    }
+	    break;
+
+	case TYPE_ROOM:
+	    if (array_first(arr, &idx)) {
+		DBSTORE(what, sp.room.dropto, array_getitem(arr, &idx)->data.objref);
+		CLEAR(&idx);
+	    }
+	    break;
+
+	case TYPE_PLAYER:
+	    if (array_first(arr, &idx)) {
+		PLAYER_SET_HOME(what, array_getitem(arr, &idx)->data.objref);
+		CLEAR(&idx);
+	    }
+	    break;
+
+	case TYPE_THING:
+	    if (array_first(arr, &idx)) {
+		THING_SET_HOME(what, array_getitem(arr, &idx)->data.objref);
+		CLEAR(&idx);
+	    }
+	    break;
+
+	default:
+	    abort_interp("Invalid object. (1)");
 	}
-	else
-	{
-		switch(Typeof(what))
-		{
-			case TYPE_EXIT:
-			{
-				dbref* dests = (dbref*)malloc(sizeof(dbref) * dest_count);
+    }
 
-				if (dests == NULL)
-				{
-					DBSTORE(what, sp.exit.ndest, 0);
-					DBSTORE(what, sp.exit.dest, NULL);
-					abort_interp("Out of memory.");
-				}
+    DBDIRTY(what);
 
-				if (array_first(arr, &idx))
-				{
-					int i = 0;
-
-					do
-					{
-						if (i < dest_count)
-							dests[i++] = array_getitem(arr, &idx)->data.objref;
-					}
-					while(array_next(arr, &idx));
-				}
-
-				DBSTORE(what, sp.exit.ndest, dest_count);
-				DBSTORE(what, sp.exit.dest, dests);
-			}
-			break;
-
-			case TYPE_ROOM:
-				if (array_first(arr, &idx))
-				{
-					DBSTORE(what, sp.room.dropto, array_getitem(arr, &idx)->data.objref);
-					CLEAR(&idx);
-				}
-			break;
-
-			case TYPE_PLAYER:
-				if (array_first(arr, &idx))
-				{
-					PLAYER_SET_HOME(what, array_getitem(arr, &idx)->data.objref);
-					CLEAR(&idx);
-				}
-			break;
-
-			case TYPE_THING:
-				if (array_first(arr, &idx))
-				{
-					THING_SET_HOME(what, array_getitem(arr, &idx)->data.objref);
-					CLEAR(&idx);
-				}
-			break;
-
-			default:
-				abort_interp("Invalid object. (1)");
-		}
-	}
-
-	DBDIRTY(what);
-
-	CLEAR(oper1);
-	CLEAR(oper2);
+    CLEAR(oper1);
+    CLEAR(oper2);
 }
 
 void
 prim_supplicant(PRIM_PROTOTYPE)
 {
-	CHECKOP(0);
-	ref = fr->supplicant;
-	CHECKOFLOW(1);
-	PushObject(ref);	
+    CHECKOP(0);
+    ref = fr->supplicant;
+    CHECKOFLOW(1);
+    PushObject(ref);
 }

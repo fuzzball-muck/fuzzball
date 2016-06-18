@@ -4,12 +4,12 @@
 /* Ensure that 'dbref' type gets properly typedef'd */
 #include "db.h"
 
-#define TUNESET_SUCCESS         0 /* success                  */
-#define TUNESET_SUCCESS_DEFAULT 5 /* success, set to default  */
-#define TUNESET_UNKNOWN         1 /* unrecognized sysparm     */
-#define TUNESET_SYNTAX          2 /* bad value syntax         */
-#define TUNESET_BADVAL          3 /* bad value                */
-#define TUNESET_DENIED          4 /* mucker level too low     */
+#define TUNESET_SUCCESS         0	/* success                  */
+#define TUNESET_SUCCESS_DEFAULT 5	/* success, set to default  */
+#define TUNESET_UNKNOWN         1	/* unrecognized sysparm     */
+#define TUNESET_SYNTAX          2	/* bad value syntax         */
+#define TUNESET_BADVAL          3	/* bad value                */
+#define TUNESET_DENIED          4	/* mucker level too low     */
 
 /* Tunable defaults management */
 
@@ -46,16 +46,16 @@ extern const char *tp_ssl_cipher_preference_list;
 extern const char *tp_ssl_min_protocol_version;
 
 struct tune_str_entry {
-        const char *group;
-        const char *name;
-        const char **str;
-        int readmlev;
-        int writemlev;
-        const char *label;
-        char *module;
-        int isnullable;
-        int isdefault;
-        const char *defaultstr;
+    const char *group;
+    const char *name;
+    const char **str;
+    int readmlev;
+    int writemlev;
+    const char *label;
+    char *module;
+    int isnullable;
+    int isdefault;
+    const char *defaultstr;
 };
 
 extern struct tune_str_entry tune_str_list[];
@@ -68,15 +68,15 @@ extern int tp_idle_ping_time;
 extern int tp_maxidle;
 
 struct tune_time_entry {
-        const char *group;
-        const char *name;
-        int *tim;
-        int readmlev;
-        int writemlev;
-        const char *label;
-        char *module;
-        int isdefault;
-        const int defaulttim;
+    const char *group;
+    const char *name;
+    int *tim;
+    int readmlev;
+    int writemlev;
+    const char *label;
+    char *module;
+    int isdefault;
+    const int defaulttim;
 };
 
 extern struct tune_time_entry tune_time_list[];
@@ -118,15 +118,15 @@ extern int tp_start_pennies;
 extern int tp_userlog_mlev;
 
 struct tune_val_entry {
-        const char *group;
-        const char *name;
-        int *val;
-        int readmlev;
-        int writemlev;
-        const char *label;
-        char *module;
-        int isdefault;
-        const int defaultval;
+    const char *group;
+    const char *name;
+    int *val;
+    int readmlev;
+    int writemlev;
+    const char *label;
+    char *module;
+    int isdefault;
+    const int defaultval;
 };
 
 extern struct tune_val_entry tune_val_list[];
@@ -137,16 +137,16 @@ extern dbref tp_player_start;
 extern dbref tp_toad_default_recipient;
 
 struct tune_ref_entry {
-        const char *group;
-        const char *name;
-        int typ;
-        dbref *ref;
-        int readmlev;
-        int writemlev;
-        const char *label;
-        char *module;
-        int isdefault;
-        const dbref defaultref;
+    const char *group;
+    const char *name;
+    int typ;
+    dbref *ref;
+    int readmlev;
+    int writemlev;
+    const char *label;
+    char *module;
+    int isdefault;
+    const dbref defaultref;
 };
 
 extern struct tune_ref_entry tune_ref_list[];
@@ -207,15 +207,15 @@ extern int tp_wiz_vehicles;
 extern int tp_zombies;
 
 struct tune_bool_entry {
-        const char *group;
-        const char *name;
-        int *boolval;
-        int readmlev;
-        int writemlev;
-        const char *label;
-        char *module;
-        int isdefault;
-        const int defaultbool;
+    const char *group;
+    const char *name;
+    int *boolval;
+    int readmlev;
+    int writemlev;
+    const char *label;
+    char *module;
+    int isdefault;
+    const int defaultbool;
 };
 
 extern struct tune_bool_entry tune_bool_list[];
@@ -224,7 +224,7 @@ extern int tune_count_parms(void);
 extern void tune_load_parms_from_file(FILE * f, dbref player, int cnt);
 extern void tune_save_parms_to_file(FILE * f);
 extern int tune_setparm(const char *parmname, const char *val, int security);
-extern stk_array *tune_parms_array(const char* pattern, int mlev);
+extern stk_array *tune_parms_array(const char *pattern, int mlev);
 const char *tune_get_parmstring(const char *name, int mlev);
 
-#endif /* _TUNE_H */
+#endif				/* _TUNE_H */

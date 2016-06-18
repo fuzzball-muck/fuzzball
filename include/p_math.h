@@ -45,4 +45,4 @@ extern void prim_notequal(PRIM_PROTOTYPE);
 
 #define PRIMS_MATH_CNT 28
 
-#endif /* _P_MATH_H */
+#endif				/* _P_MATH_H */

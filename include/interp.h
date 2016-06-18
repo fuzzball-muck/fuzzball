@@ -24,9 +24,9 @@ extern struct localvars *localvars_get(struct frame *fr, dbref prog);
 extern void localvar_dupall(struct frame *fr, struct frame *oldfr);
 
 extern struct inst *scopedvar_get(struct frame *fr, int level, int varnum);
-extern const char* scopedvar_getname(struct frame *fr, int level, int varnum);
-extern const char* scopedvar_getname_byinst(struct inst *pc, int varnum);
-extern int scopedvar_getnum(struct frame *fr, int level, const char* varname);
+extern const char *scopedvar_getname(struct frame *fr, int level, int varnum);
+extern const char *scopedvar_getname_byinst(struct inst *pc, int varnum);
+extern int scopedvar_getnum(struct frame *fr, int level, const char *varname);
 extern void scopedvar_dupall(struct frame *fr, struct frame *oldfr);
 extern int false_inst(struct inst *p);
 
@@ -51,14 +51,12 @@ extern void copyinst(struct inst *from, struct inst *to);
 }
 
 extern void do_abort_loop(dbref player, dbref program, const char *msg,
-						  struct frame *fr, struct inst *pc,
-
-						  int atop, int stop, struct inst *clinst1, struct inst *clinst2);
+			  struct frame *fr, struct inst *pc,
+			  int atop, int stop, struct inst *clinst1, struct inst *clinst2);
 
 extern void interp_err(dbref player, dbref program, struct inst *pc,
-					   struct inst *arg, int atop, dbref origprog,
-
-					   const char *msg1, const char *msg2);
+		       struct inst *arg, int atop, dbref origprog,
+		       const char *msg1, const char *msg2);
 
 extern void push(struct inst *stack, int *top, int type, voidptr res);
 
@@ -102,11 +100,10 @@ extern int no_good(double test);
 }
 
 extern void do_abort_interp(dbref player, const char *msg, struct inst *pc,
-							struct inst *arg, int atop, struct frame *fr,
-							struct inst *oper1, struct inst *oper2, struct inst *oper3,
-							struct inst *oper4, int nargs, dbref program, char *file,
-
-							int line);
+			    struct inst *arg, int atop, struct frame *fr,
+			    struct inst *oper1, struct inst *oper2, struct inst *oper3,
+			    struct inst *oper4, int nargs, dbref program, char *file,
+			    int line);
 
 
 #define ProgMLevel(x) (find_mlev(x, fr, fr->caller.top))
@@ -151,7 +148,7 @@ extern dbref find_uid(dbref player, struct frame *fr, int st, dbref program);
 #define SORTTYPE_SHUFFLE        4
 
 extern int top_pid;
-extern int nargs;				/* DO NOT TOUCH THIS VARIABLE */
+extern int nargs;		/* DO NOT TOUCH THIS VARIABLE */
 
 #include "p_array.h"
 #include "p_connects.h"
@@ -166,4 +163,4 @@ extern int nargs;				/* DO NOT TOUCH THIS VARIABLE */
 #include "p_strings.h"
 #include "p_regex.h"
 
-#endif /* _INTERP_H */
+#endif				/* _INTERP_H */

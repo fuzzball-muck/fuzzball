@@ -2,7 +2,7 @@
 
 #ifdef SOLARIS
 #  ifndef _POSIX_SOURCE
-#    define _POSIX_SOURCE		/* Solaris needs this */
+#    define _POSIX_SOURCE	/* Solaris needs this */
 #  endif
 #endif
 
@@ -43,23 +43,23 @@
  * Like strncpy, except it guarentees null termination of the result string.
  * It also has a more sensible argument ordering.
  */
-char*
-strcpyn(char* buf, size_t bufsize, const char* src)
+char *
+strcpyn(char *buf, size_t bufsize, const char *src)
 {
-	size_t pos = 0;
-	char* dest = buf;
+    size_t pos = 0;
+    char *dest = buf;
 
-	while (++pos < bufsize && *src) {
-		*dest++ = *src++;
-	}
-	*dest = '\0';
-	return buf;
+    while (++pos < bufsize && *src) {
+	*dest++ = *src++;
+    }
+    *dest = '\0';
+    return buf;
 }
 
 int
-notify(int player, const char* msg)
+notify(int player, const char *msg)
 {
-	return printf("%s\n", msg);
+    return printf("%s\n", msg);
 }
 
 #ifdef USE_IPV6
@@ -78,131 +78,136 @@ const char *addrout(long, unsigned short, unsigned short);
 
 static struct hostcache {
 #ifdef USE_IPV6
-	struct in6_addr ipnum_v6;
+    struct in6_addr ipnum_v6;
 #endif
-	long ipnum;
-	char name[128];
-	time_t time;
-	struct hostcache *next;
-	struct hostcache **prev;
+    long ipnum;
+    char name[128];
+    time_t time;
+    struct hostcache *next;
+    struct hostcache **prev;
 } *hostcache_list = 0;
 
 
 
 #ifdef USE_IPV6
-int ipcmp(struct in6_addr *a, struct in6_addr *b)
+int
+ipcmp(struct in6_addr *a, struct in6_addr *b)
 {
-	int i = 128;
-	char *A = (char *) a;
-	char *B = (char *) b;
+    int i = 128;
+    char *A = (char *) a;
+    char *B = (char *) b;
 
-	while (i) {
-		i--;
-		if (*A++ != *B++)
-			break;
-	}
-	return i;
+    while (i) {
+	i--;
+	if (*A++ != *B++)
+	    break;
+    }
+    return i;
 }
 #endif
 
 
 
 #ifdef USE_IPV6
-void hostdel_v6(struct in6_addr *ip)
+void
+hostdel_v6(struct in6_addr *ip)
 {
-	struct hostcache *ptr;
+    struct hostcache *ptr;
 
-	for (ptr = hostcache_list; ptr; ptr = ptr->next) {
-		if (!ipcmp(&(ptr->ipnum_v6), ip)) {
-			if (ptr->next) {
-				ptr->next->prev = ptr->prev;
-			}
-			*ptr->prev = ptr->next;
-			FREE(ptr);
-			return;
-		}
+    for (ptr = hostcache_list; ptr; ptr = ptr->next) {
+	if (!ipcmp(&(ptr->ipnum_v6), ip)) {
+	    if (ptr->next) {
+		ptr->next->prev = ptr->prev;
+	    }
+	    *ptr->prev = ptr->next;
+	    FREE(ptr);
+	    return;
 	}
+    }
 }
 #endif
 
 
 
-void hostdel(long ip)
+void
+hostdel(long ip)
 {
-	struct hostcache *ptr;
+    struct hostcache *ptr;
 
-	for (ptr = hostcache_list; ptr; ptr = ptr->next) {
-		if (ptr->ipnum == ip) {
-			if (ptr->next) {
-				ptr->next->prev = ptr->prev;
-			}
-			*ptr->prev = ptr->next;
-			FREE(ptr);
-			return;
-		}
+    for (ptr = hostcache_list; ptr; ptr = ptr->next) {
+	if (ptr->ipnum == ip) {
+	    if (ptr->next) {
+		ptr->next->prev = ptr->prev;
+	    }
+	    *ptr->prev = ptr->next;
+	    FREE(ptr);
+	    return;
 	}
+    }
 }
 
 
 
 #ifdef USE_IPV6
-const char * hostfetch_v6(struct in6_addr *ip)
+const char *
+hostfetch_v6(struct in6_addr *ip)
 {
-	struct hostcache *ptr;
+    struct hostcache *ptr;
 
-	for (ptr = hostcache_list; ptr; ptr = ptr->next) {
-		if (!ipcmp(&(ptr->ipnum_v6), ip)) {
-			if (time(NULL) - ptr->time > EXPIRE_TIME) {
-				hostdel_v6(ip);
-				return NULL;
-			}
-			if (ptr != hostcache_list) {
-				*ptr->prev = ptr->next;
-				if (ptr->next) {
-					ptr->next->prev = ptr->prev;
-				}
-				ptr->next = hostcache_list;
-				if (ptr->next) {
-					ptr->next->prev = &ptr->next;
-				}
-				ptr->prev = &hostcache_list;
-				hostcache_list = ptr;
-			}
-			return (ptr->name);
+    for (ptr = hostcache_list; ptr; ptr = ptr->next) {
+	if (!ipcmp(&(ptr->ipnum_v6), ip)) {
+	    if (time(NULL) - ptr->time > EXPIRE_TIME) {
+		hostdel_v6(ip);
+		return NULL;
+	    }
+	    if (ptr != hostcache_list) {
+		*ptr->prev = ptr->next;
+		if (ptr->next) {
+		    ptr->next->prev = ptr->prev;
 		}
+		ptr->next = hostcache_list;
+		if (ptr->next) {
+		    ptr->next->prev = &ptr->next;
+		}
+		ptr->prev = &hostcache_list;
+		hostcache_list = ptr;
+	    }
+	    return (ptr->name);
 	}
-	return NULL;
+    }
+    return NULL;
 }
 #endif
 
 
 
-const char *hostfetch(long ip)
+const char *
+hostfetch(long ip)
 {
-	struct hostcache *ptr;
+    struct hostcache *ptr;
 
-	for (ptr = hostcache_list; ptr; ptr = ptr->next) {
-		if (ptr->ipnum == ip) {
-			if (time(NULL) - ptr->time > EXPIRE_TIME) {
-				hostdel(ip);
-				return NULL;
-			}
-			if (ptr != hostcache_list) {
-				*ptr->prev = ptr->next;
-				if (ptr->next) {
-					ptr->next->prev = ptr->prev;
-				}
-				ptr->next = hostcache_list;
-				if (ptr->next) {
-					ptr->next->prev = &ptr->next;
-				}
-				ptr->prev = &hostcache_list;
-				hostcache_list = ptr;
-			}
-			return (ptr->name);
+    for (ptr = hostcache_list; ptr; ptr = ptr->next) {
+	if (ptr->ipnum == ip) {
+	    if (time(NULL) - ptr->time > EXPIRE_TIME) {
+		hostdel(ip);
+		return NULL;
+	    }
+	    if (ptr != hostcache_list) {
+		*ptr->prev = ptr->next;
+		if (ptr->next) {
+		    ptr->next->prev = ptr->prev;
 		}
+		ptr->next = hostcache_list;
+		if (ptr->next) {
+		    ptr->next->prev = &ptr->next;
+		}
+		ptr->prev = &hostcache_list;
+		hostcache_list = ptr;
+	    }
+	    return (ptr->name);
 	}
-	return NULL;
+    }
+    return NULL;
 }
 
 
@@ -210,85 +215,89 @@ const char *hostfetch(long ip)
 void
 hostprune(void)
 {
-	struct hostcache *ptr;
-	struct hostcache *tmp;
-	int i = HOST_CACHE_SIZE;
+    struct hostcache *ptr;
+    struct hostcache *tmp;
+    int i = HOST_CACHE_SIZE;
 
-	ptr = hostcache_list;
-	while (i-- && ptr) {
-		ptr = ptr->next;
+    ptr = hostcache_list;
+    while (i-- && ptr) {
+	ptr = ptr->next;
+    }
+    if (i < 0 && ptr) {
+	*ptr->prev = NULL;
+	while (ptr) {
+	    tmp = ptr->next;
+	    FREE(ptr);
+	    ptr = tmp;
 	}
-	if (i < 0 && ptr) {
-		*ptr->prev = NULL;
-		while (ptr) {
-			tmp = ptr->next;
-			FREE(ptr);
-			ptr = tmp;
-		}
-	}
+    }
 }
 
 
 
 #ifdef USE_IPV6
-void hostadd_v6(struct in6_addr *ip, const char *name)
+void
+hostadd_v6(struct in6_addr *ip, const char *name)
 {
-	struct hostcache *ptr;
+    struct hostcache *ptr;
 
-	MALLOC(ptr, struct hostcache, 1);
+    MALLOC(ptr, struct hostcache, 1);
 
-	ptr->next = hostcache_list;
-	if (ptr->next) {
-		ptr->next->prev = &ptr->next;
-	}
-	ptr->prev = &hostcache_list;
-	hostcache_list = ptr;
-	memcpy(&(ptr->ipnum_v6), ip, sizeof(struct in6_addr));
-	ptr->ipnum = 0;
-	ptr->time = 0;
-	strcpyn(ptr->name, sizeof(ptr->name), name);
-	hostprune();
+    ptr->next = hostcache_list;
+    if (ptr->next) {
+	ptr->next->prev = &ptr->next;
+    }
+    ptr->prev = &hostcache_list;
+    hostcache_list = ptr;
+    memcpy(&(ptr->ipnum_v6), ip, sizeof(struct in6_addr));
+    ptr->ipnum = 0;
+    ptr->time = 0;
+    strcpyn(ptr->name, sizeof(ptr->name), name);
+    hostprune();
 }
 #endif
 
 
-void hostadd(long ip, const char *name)
+void
+hostadd(long ip, const char *name)
 {
-	struct hostcache *ptr;
+    struct hostcache *ptr;
 
-	MALLOC(ptr, struct hostcache, 1);
+    MALLOC(ptr, struct hostcache, 1);
 
-	ptr->next = hostcache_list;
-	if (ptr->next) {
-		ptr->next->prev = &ptr->next;
-	}
-	ptr->prev = &hostcache_list;
-	hostcache_list = ptr;
+    ptr->next = hostcache_list;
+    if (ptr->next) {
+	ptr->next->prev = &ptr->next;
+    }
+    ptr->prev = &hostcache_list;
+    hostcache_list = ptr;
 #ifdef USE_IPV6
-	memset(&(ptr->ipnum_v6), 0, sizeof(struct in6_addr));
+    memset(&(ptr->ipnum_v6), 0, sizeof(struct in6_addr));
 #endif
-	ptr->ipnum = ip;
-	ptr->time = 0;
-	strcpyn(ptr->name, sizeof(ptr->name), name);
-	hostprune();
+    ptr->ipnum = ip;
+    ptr->time = 0;
+    strcpyn(ptr->name, sizeof(ptr->name), name);
+    hostprune();
 }
 
 
 #ifdef USE_IPV6
-void hostadd_timestamp_v6(struct in6_addr *ip, const char *name)
+void
+hostadd_timestamp_v6(struct in6_addr *ip, const char *name)
 {
-	hostadd_v6(ip, name);
-	hostcache_list->time = time(NULL);
+    hostadd_v6(ip, name);
+    hostcache_list->time = time(NULL);
 }
 #endif
 
 
 
 
-void hostadd_timestamp(long ip, const char *name)
+void
+hostadd_timestamp(long ip, const char *name)
 {
-	hostadd(ip, name);
-	hostcache_list->time = time(NULL);
+    hostadd(ip, name);
+    hostcache_list->time = time(NULL);
 }
 
 
@@ -318,22 +327,22 @@ void our_signal(int signo, void (*sighandler) (int));
 void
 our_signal(int signo, void (*sighandler) (int))
 {
-	struct sigaction act, oact;
+    struct sigaction act, oact;
 
-	act.sa_handler = sighandler;
-	sigemptyset(&act.sa_mask);
-	act.sa_flags = 0;
+    act.sa_handler = sighandler;
+    sigemptyset(&act.sa_mask);
+    act.sa_flags = 0;
 
-	/* Restart long system calls if a signal is caught. */
+    /* Restart long system calls if a signal is caught. */
 #ifdef SA_RESTART
-	act.sa_flags |= SA_RESTART;
+    act.sa_flags |= SA_RESTART;
 #endif
 
-	/* Make it so */
-	sigaction(signo, &act, &oact);
+    /* Make it so */
+    sigaction(signo, &act, &oact);
 }
 
-#endif							/* _POSIX_VERSION */
+#endif				/* _POSIX_VERSION */
 
 /*
  * set_signals()
@@ -350,11 +359,11 @@ our_signal(int signo, void (*sighandler) (int))
 void
 set_signals(void)
 {
-	/* we don't care about SIGPIPE, we notice it in select() and write() */
-	our_signal(SIGPIPE, SIG_IGN);
+    /* we don't care about SIGPIPE, we notice it in select() and write() */
+    our_signal(SIGPIPE, SIG_IGN);
 
-	/* didn't manage to lose that control tty, did we? Ignore it anyway. */
-	our_signal(SIGHUP, SIG_IGN);
+    /* didn't manage to lose that control tty, did we? Ignore it anyway. */
+    our_signal(SIGHUP, SIG_IGN);
 }
 
 
@@ -366,312 +375,316 @@ void
 make_nonblocking(int s)
 {
 #if !defined(O_NONBLOCK) || defined(ULTRIX)	/* POSIX ME HARDER */
-# ifdef FNDELAY					/* SUN OS */
+# ifdef FNDELAY			/* SUN OS */
 #  define O_NONBLOCK FNDELAY
 # else
-#  ifdef O_NDELAY				/* SyseVil */
+#  ifdef O_NDELAY		/* SyseVil */
 #   define O_NONBLOCK O_NDELAY
-#  endif						/* O_NDELAY */
-# endif							/* FNDELAY */
+#  endif			/* O_NDELAY */
+# endif				/* FNDELAY */
 #endif
 
-	if (fcntl(s, F_SETFL, O_NONBLOCK) == -1) {
-		perror("make_nonblocking: fcntl");
-		abort();
-	}
+    if (fcntl(s, F_SETFL, O_NONBLOCK) == -1) {
+	perror("make_nonblocking: fcntl");
+	abort();
+    }
 }
 
 
 #ifdef USE_IPV6
-const char *get_username_v6(struct in6_addr *a, int prt, int myprt)
+const char *
+get_username_v6(struct in6_addr *a, int prt, int myprt)
 {
-	int fd, len, result;
-	char *ptr, *ptr2;
-	static char buf[1024];
-	int lasterr;
-	int timeout = IDENTD_TIMEOUT;
+    int fd, len, result;
+    char *ptr, *ptr2;
+    static char buf[1024];
+    int lasterr;
+    int timeout = IDENTD_TIMEOUT;
 
-	struct sockaddr_in6 addr;
+    struct sockaddr_in6 addr;
 
-	if ((fd = socket(AF_INET6, SOCK_STREAM, 0)) < 0) {
-		perror("resolver ident socket");
-		return (0);
+    if ((fd = socket(AF_INET6, SOCK_STREAM, 0)) < 0) {
+	perror("resolver ident socket");
+	return (0);
+    }
+
+    make_nonblocking(fd);
+
+    len = sizeof(addr);
+    addr.sin6_family = AF_INET6;
+    memcpy(&addr.sin6_addr.s6_addr, a, sizeof(struct in6_addr));
+    addr.sin6_port = htons((short) 113);
+
+    do {
+	result = connect(fd, (struct sockaddr *) &addr, len);
+	lasterr = errno;
+	if (result < 0) {
+	    if (!timeout--)
+		break;
+	    sleep(1);
 	}
+    } while (result < 0 && lasterr == EINPROGRESS);
+    if (result < 0 && lasterr != EISCONN) {
+	goto bad;
+    }
 
-	make_nonblocking(fd);
-
-	len = sizeof(addr);
-	addr.sin6_family = AF_INET6;
-	memcpy(&addr.sin6_addr.s6_addr, a, sizeof(struct in6_addr));
-	addr.sin6_port = htons((short) 113);
-
-	do {
-		result = connect(fd, (struct sockaddr *) &addr, len);
-		lasterr = errno;
-		if (result < 0) {
-			if (!timeout--)
-				break;
-			sleep(1);
-		}
-	} while (result < 0 && lasterr == EINPROGRESS);
-	if (result < 0 && lasterr != EISCONN) {
-		goto bad;
+    snprintf(buf, sizeof(buf), "%d,%d\n", prt, myprt);
+    do {
+	result = write(fd, buf, strlen(buf));
+	lasterr = errno;
+	if (result < 0) {
+	    if (!timeout--)
+		break;
+	    sleep(1);
 	}
+    } while (result < 0 && lasterr == EAGAIN);
+    if (result < 0)
+	goto bad2;
 
-	snprintf(buf, sizeof(buf), "%d,%d\n", prt, myprt);
-	do {
-		result = write(fd, buf, strlen(buf));
-		lasterr = errno;
-		if (result < 0) {
-			if (!timeout--)
-				break;
-			sleep(1);
-		}
-	} while (result < 0 && lasterr == EAGAIN);
-	if (result < 0)
-		goto bad2;
+    do {
+	result = read(fd, buf, sizeof(buf));
+	lasterr = errno;
+	if (result < 0) {
+	    if (!timeout--)
+		break;
+	    sleep(1);
+	}
+    } while (result < 0 && lasterr == EAGAIN);
+    if (result < 0)
+	goto bad2;
 
-	do {
-		result = read(fd, buf, sizeof(buf));
-		lasterr = errno;
-		if (result < 0) {
-			if (!timeout--)
-				break;
-			sleep(1);
-		}
-	} while (result < 0 && lasterr == EAGAIN);
-	if (result < 0)
-		goto bad2;
-
-	ptr = index(buf, ':');
-	if (!ptr)
-		goto bad2;
+    ptr = index(buf, ':');
+    if (!ptr)
+	goto bad2;
+    ptr++;
+    if (*ptr)
 	ptr++;
-	if (*ptr)
-		ptr++;
-	if (strncmp(ptr, "USERID", 6))
-		goto bad2;
+    if (strncmp(ptr, "USERID", 6))
+	goto bad2;
 
-	ptr = index(ptr, ':');
-	if (!ptr)
-		goto bad2;
-	ptr = index(ptr + 1, ':');
-	if (!ptr)
-		goto bad2;
-	ptr++;
-	/* if (*ptr) ptr++; */
+    ptr = index(ptr, ':');
+    if (!ptr)
+	goto bad2;
+    ptr = index(ptr + 1, ':');
+    if (!ptr)
+	goto bad2;
+    ptr++;
+    /* if (*ptr) ptr++; */
 
-	shutdown(fd, 2);
-	close(fd);
-	if ((ptr2 = index(ptr, '\r')))
-		*ptr2 = '\0';
-	if (!*ptr)
-		return (0);
-	return ptr;
+    shutdown(fd, 2);
+    close(fd);
+    if ((ptr2 = index(ptr, '\r')))
+	*ptr2 = '\0';
+    if (!*ptr)
+	return (0);
+    return ptr;
 
   bad2:
-	shutdown(fd, 2);
+    shutdown(fd, 2);
 
   bad:
-	close(fd);
-	return (0);
+    close(fd);
+    return (0);
 }
 #endif
 
 
-const char *get_username(long a, int prt, int myprt)
+const char *
+get_username(long a, int prt, int myprt)
 {
-	int fd, len, result;
-	char *ptr, *ptr2;
-	static char buf[1024];
-	int lasterr;
-	int timeout = IDENTD_TIMEOUT;
+    int fd, len, result;
+    char *ptr, *ptr2;
+    static char buf[1024];
+    int lasterr;
+    int timeout = IDENTD_TIMEOUT;
 
-	struct sockaddr_in addr;
+    struct sockaddr_in addr;
 
-	if ((fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-		perror("resolver ident socket");
-		return (0);
+    if ((fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+	perror("resolver ident socket");
+	return (0);
+    }
+
+    make_nonblocking(fd);
+
+    len = sizeof(addr);
+    addr.sin_family = AF_INET;
+    addr.sin_addr.s_addr = a;
+    addr.sin_port = htons((short) 113);
+
+    do {
+	result = connect(fd, (struct sockaddr *) &addr, len);
+	lasterr = errno;
+	if (result < 0) {
+	    if (!timeout--)
+		break;
+	    sleep(1);
 	}
+    } while (result < 0 && lasterr == EINPROGRESS);
+    if (result < 0 && lasterr != EISCONN) {
+	goto bad;
+    }
 
-	make_nonblocking(fd);
-
-	len = sizeof(addr);
-	addr.sin_family = AF_INET;
-	addr.sin_addr.s_addr = a;
-	addr.sin_port = htons((short) 113);
-
-	do {
-		result = connect(fd, (struct sockaddr *) &addr, len);
-		lasterr = errno;
-		if (result < 0) {
-			if (!timeout--)
-				break;
-			sleep(1);
-		}
-	} while (result < 0 && lasterr == EINPROGRESS);
-	if (result < 0 && lasterr != EISCONN) {
-		goto bad;
+    snprintf(buf, sizeof(buf), "%d,%d\n", prt, myprt);
+    do {
+	result = write(fd, buf, strlen(buf));
+	lasterr = errno;
+	if (result < 0) {
+	    if (!timeout--)
+		break;
+	    sleep(1);
 	}
+    } while (result < 0 && lasterr == EAGAIN);
+    if (result < 0)
+	goto bad2;
 
-	snprintf(buf, sizeof(buf), "%d,%d\n", prt, myprt);
-	do {
-		result = write(fd, buf, strlen(buf));
-		lasterr = errno;
-		if (result < 0) {
-			if (!timeout--)
-				break;
-			sleep(1);
-		}
-	} while (result < 0 && lasterr == EAGAIN);
-	if (result < 0)
-		goto bad2;
+    do {
+	result = read(fd, buf, sizeof(buf));
+	lasterr = errno;
+	if (result < 0) {
+	    if (!timeout--)
+		break;
+	    sleep(1);
+	}
+    } while (result < 0 && lasterr == EAGAIN);
+    if (result < 0)
+	goto bad2;
 
-	do {
-		result = read(fd, buf, sizeof(buf));
-		lasterr = errno;
-		if (result < 0) {
-			if (!timeout--)
-				break;
-			sleep(1);
-		}
-	} while (result < 0 && lasterr == EAGAIN);
-	if (result < 0)
-		goto bad2;
-
-	ptr = index(buf, ':');
-	if (!ptr)
-		goto bad2;
+    ptr = index(buf, ':');
+    if (!ptr)
+	goto bad2;
+    ptr++;
+    if (*ptr)
 	ptr++;
-	if (*ptr)
-		ptr++;
-	if (strncmp(ptr, "USERID", 6))
-		goto bad2;
+    if (strncmp(ptr, "USERID", 6))
+	goto bad2;
 
-	ptr = index(ptr, ':');
-	if (!ptr)
-		goto bad2;
-	ptr = index(ptr + 1, ':');
-	if (!ptr)
-		goto bad2;
-	ptr++;
-	/* if (*ptr) ptr++; */
+    ptr = index(ptr, ':');
+    if (!ptr)
+	goto bad2;
+    ptr = index(ptr + 1, ':');
+    if (!ptr)
+	goto bad2;
+    ptr++;
+    /* if (*ptr) ptr++; */
 
-	shutdown(fd, 2);
-	close(fd);
-	if ((ptr2 = index(ptr, '\r')))
-		*ptr2 = '\0';
-	if (!*ptr)
-		return (0);
-	return ptr;
+    shutdown(fd, 2);
+    close(fd);
+    if ((ptr2 = index(ptr, '\r')))
+	*ptr2 = '\0';
+    if (!*ptr)
+	return (0);
+    return ptr;
 
   bad2:
-	shutdown(fd, 2);
+    shutdown(fd, 2);
 
   bad:
-	close(fd);
-	return (0);
+    close(fd);
+    return (0);
 }
 
 
 
 /*  addrout_v6 -- Translate address 'a' to text.          */
 #ifdef USE_IPV6
-const char *addrout_v6(struct in6_addr *a, unsigned short prt, unsigned short myprt)
+const char *
+addrout_v6(struct in6_addr *a, unsigned short prt, unsigned short myprt)
 {
-	static char buf[128];
-	char tmpbuf[128];
-	const char *ptr, *ptr2;
-	struct hostent *he;
+    static char buf[128];
+    char tmpbuf[128];
+    const char *ptr, *ptr2;
+    struct hostent *he;
 
-	struct in6_addr addr;
-	memcpy(&addr.s6_addr, a, sizeof(struct in6_addr));
+    struct in6_addr addr;
+    memcpy(&addr.s6_addr, a, sizeof(struct in6_addr));
 
-	ptr = hostfetch_v6(a);
+    ptr = hostfetch_v6(a);
 
-	if (ptr) {
-		ptr2 = get_username_v6(a, prt, myprt);
-		if (ptr2) {
-			snprintf(buf, sizeof(buf), "%s(%s)", ptr, ptr2);
-		} else {
-			snprintf(buf, sizeof(buf), "%s(%d)", ptr, prt);
-		}
-		return buf;
-	}
-	he = gethostbyaddr(((char *) &addr), sizeof(addr), AF_INET6);
-
-	if (he) {
-		strcpyn(tmpbuf, sizeof(tmpbuf), he->h_name);
-		hostadd_v6(a, tmpbuf);
-		ptr = get_username_v6(a, prt, myprt);
-		if (ptr) {
-			snprintf(buf, sizeof(buf), "%s(%s)", tmpbuf, ptr);
-		} else {
-			snprintf(buf, sizeof(buf), "%s(%d)", tmpbuf, prt);
-		}
-		return buf;
-	}
-	inet_ntop(AF_INET6, a, tmpbuf, 128);
-	hostadd_timestamp_v6(a, tmpbuf);
-	ptr = get_username_v6(a, prt, myprt);
-
-	if (ptr) {
-		snprintf(buf, sizeof(buf), "%s(%s)", tmpbuf, ptr);
+    if (ptr) {
+	ptr2 = get_username_v6(a, prt, myprt);
+	if (ptr2) {
+	    snprintf(buf, sizeof(buf), "%s(%s)", ptr, ptr2);
 	} else {
-		snprintf(buf, sizeof(buf), "%s(%d)", tmpbuf, prt);
+	    snprintf(buf, sizeof(buf), "%s(%d)", ptr, prt);
 	}
 	return buf;
+    }
+    he = gethostbyaddr(((char *) &addr), sizeof(addr), AF_INET6);
+
+    if (he) {
+	strcpyn(tmpbuf, sizeof(tmpbuf), he->h_name);
+	hostadd_v6(a, tmpbuf);
+	ptr = get_username_v6(a, prt, myprt);
+	if (ptr) {
+	    snprintf(buf, sizeof(buf), "%s(%s)", tmpbuf, ptr);
+	} else {
+	    snprintf(buf, sizeof(buf), "%s(%d)", tmpbuf, prt);
+	}
+	return buf;
+    }
+    inet_ntop(AF_INET6, a, tmpbuf, 128);
+    hostadd_timestamp_v6(a, tmpbuf);
+    ptr = get_username_v6(a, prt, myprt);
+
+    if (ptr) {
+	snprintf(buf, sizeof(buf), "%s(%s)", tmpbuf, ptr);
+    } else {
+	snprintf(buf, sizeof(buf), "%s(%d)", tmpbuf, prt);
+    }
+    return buf;
 }
 #endif
 
 
 /*  addrout -- Translate address 'a' to text.          */
-const char *addrout(long a, unsigned short prt, unsigned short myprt)
+const char *
+addrout(long a, unsigned short prt, unsigned short myprt)
 {
-	static char buf[128];
-	char tmpbuf[128];
-	const char *ptr, *ptr2;
-	struct hostent *he;
-	struct in_addr addr;
+    static char buf[128];
+    char tmpbuf[128];
+    const char *ptr, *ptr2;
+    struct hostent *he;
+    struct in_addr addr;
 
-	addr.s_addr = a;
-	ptr = hostfetch(ntohl(a));
+    addr.s_addr = a;
+    ptr = hostfetch(ntohl(a));
 
-	if (ptr) {
-		ptr2 = get_username(a, prt, myprt);
-		if (ptr2) {
-			snprintf(buf, sizeof(buf), "%s(%s)", ptr, ptr2);
-		} else {
-			snprintf(buf, sizeof(buf), "%s(%d)", ptr, prt);
-		}
-		return buf;
-	}
-	he = gethostbyaddr(((char *) &addr), sizeof(addr), AF_INET);
-
-	if (he) {
-		strcpyn(tmpbuf, sizeof(tmpbuf), he->h_name);
-		hostadd(ntohl(a), tmpbuf);
-		ptr = get_username(a, prt, myprt);
-		if (ptr) {
-			snprintf(buf, sizeof(buf), "%s(%s)", tmpbuf, ptr);
-		} else {
-			snprintf(buf, sizeof(buf), "%s(%d)", tmpbuf, prt);
-		}
-		return buf;
-	}
-
-	a = ntohl(a);
-	snprintf(tmpbuf, sizeof(tmpbuf), "%ld.%ld.%ld.%ld",
-			(a >> 24) & 0xff, (a >> 16) & 0xff, (a >> 8) & 0xff, a & 0xff);
-	hostadd_timestamp(a, tmpbuf);
-	ptr = get_username(htonl(a), prt, myprt);
-
-	if (ptr) {
-		snprintf(buf, sizeof(buf), "%s(%s)", tmpbuf, ptr);
+    if (ptr) {
+	ptr2 = get_username(a, prt, myprt);
+	if (ptr2) {
+	    snprintf(buf, sizeof(buf), "%s(%s)", ptr, ptr2);
 	} else {
-		snprintf(buf, sizeof(buf), "%s(%d)", tmpbuf, prt);
+	    snprintf(buf, sizeof(buf), "%s(%d)", ptr, prt);
 	}
 	return buf;
+    }
+    he = gethostbyaddr(((char *) &addr), sizeof(addr), AF_INET);
+
+    if (he) {
+	strcpyn(tmpbuf, sizeof(tmpbuf), he->h_name);
+	hostadd(ntohl(a), tmpbuf);
+	ptr = get_username(a, prt, myprt);
+	if (ptr) {
+	    snprintf(buf, sizeof(buf), "%s(%s)", tmpbuf, ptr);
+	} else {
+	    snprintf(buf, sizeof(buf), "%s(%d)", tmpbuf, prt);
+	}
+	return buf;
+    }
+
+    a = ntohl(a);
+    snprintf(tmpbuf, sizeof(tmpbuf), "%ld.%ld.%ld.%ld",
+	     (a >> 24) & 0xff, (a >> 16) & 0xff, (a >> 8) & 0xff, a & 0xff);
+    hostadd_timestamp(a, tmpbuf);
+    ptr = get_username(htonl(a), prt, myprt);
+
+    if (ptr) {
+	snprintf(buf, sizeof(buf), "%s(%s)", tmpbuf, ptr);
+    } else {
+	snprintf(buf, sizeof(buf), "%s(%d)", tmpbuf, prt);
+    }
+    return buf;
 }
 
 
@@ -683,156 +696,159 @@ static pthread_mutex_t output_mutex = PTHREAD_MUTEX_INITIALIZER;
 int
 do_resolve(void)
 {
-	int ip1, ip2, ip3, ip4;
-	int prt, myprt;
-	int doagain;
-	char *result;
-	const char *ptr;
-	char buf[1024];
-	char outbuf[1024];
-	char *bufptr = NULL;
-	long fullip;
+    int ip1, ip2, ip3, ip4;
+    int prt, myprt;
+    int doagain;
+    char *result;
+    const char *ptr;
+    char buf[1024];
+    char outbuf[1024];
+    char *bufptr = NULL;
+    long fullip;
 
 #ifdef USE_IPV6
-	char ipv6addr[128];
-	struct in6_addr fullip_v6;
+    char ipv6addr[128];
+    struct in6_addr fullip_v6;
 #endif
 
-	for (;;) {
-		ip1 = ip2 = ip3 = ip4 = prt = myprt = -1;
-		do {
-			doagain = 0;
-			*buf = '\0';
+    for (;;) {
+	ip1 = ip2 = ip3 = ip4 = prt = myprt = -1;
+	do {
+	    doagain = 0;
+	    *buf = '\0';
 
-			/* lock input here. */
-			if (pthread_mutex_lock(&input_mutex)) {
-				return 0;
-			}
-			if (shutdown_was_requested) {
-				/* unlock input here. */
-				pthread_mutex_unlock(&input_mutex);
-				return 0;
-			}
+	    /* lock input here. */
+	    if (pthread_mutex_lock(&input_mutex)) {
+		return 0;
+	    }
+	    if (shutdown_was_requested) {
+		/* unlock input here. */
+		pthread_mutex_unlock(&input_mutex);
+		return 0;
+	    }
 
-			result = fgets(buf, sizeof(buf), stdin);
+	    result = fgets(buf, sizeof(buf), stdin);
 
-			/* unlock input here. */
-			pthread_mutex_unlock(&input_mutex);
+	    /* unlock input here. */
+	    pthread_mutex_unlock(&input_mutex);
 
-			if (shutdown_was_requested) {
-				return 0;
-			}
-			if (!result) {
-				if (errno == EAGAIN) {
-					doagain = 1;
-					sleep(1);
-				} else {
-					if (feof(stdin)) {
-						shutdown_was_requested = 1;
-						return 0;
-					}
-					perror("fgets");
-					shutdown_was_requested = 1;
-					return 0;
-				}
-			}
-		} while (doagain || !strcmp(buf, "\n"));
-		if (!strncmp("QUIT", buf, 4)) {
+	    if (shutdown_was_requested) {
+		return 0;
+	    }
+	    if (!result) {
+		if (errno == EAGAIN) {
+		    doagain = 1;
+		    sleep(1);
+		} else {
+		    if (feof(stdin)) {
 			shutdown_was_requested = 1;
-			fclose(stdin);
 			return 0;
+		    }
+		    perror("fgets");
+		    shutdown_was_requested = 1;
+		    return 0;
 		}
-
-		bufptr = NULL;
-	#ifdef USE_IPV6
-		bufptr = strchr(buf, ':');
-		if (bufptr) {
-			/* Is an IPv6 addr. */
-			bufptr = strchr(buf, '(');
-			if (!bufptr) {
-				continue;
-			}
-			sscanf(bufptr, "(%d)%d", &prt, &myprt);
-			*bufptr = '\0';
-			if (myprt > 65535 || myprt < 0) {
-				continue;
-			}
-			if (inet_pton(AF_INET6, buf, &fullip_v6) <= 0) {
-				continue;
-			}
-			ptr = addrout_v6(&fullip_v6, prt, myprt);
-			snprintf(outbuf, sizeof(outbuf), "%s(%d)|%s", buf, prt, ptr);
-		}
-	#endif
-		if (!bufptr) {
-			/* Is an IPv4 addr. */
-			sscanf(buf, "%d.%d.%d.%d(%d)%d", &ip1, &ip2, &ip3, &ip4, &prt, &myprt);
-			if (ip1 < 0 || ip2 < 0 || ip3 < 0 || ip4 < 0 || prt < 0) {
-				continue;
-			}
-			if (ip1 > 255 || ip2 > 255 || ip3 > 255 || ip4 > 255 || prt > 65535) {
-				continue;
-			}
-			if (myprt > 65535 || myprt < 0) {
-				continue;
-			}
-
-			fullip = (ip1 << 24) | (ip2 << 16) | (ip3 << 8) | ip4;
-			fullip = htonl(fullip);
-
-			ptr = addrout(fullip, prt, myprt);
-			snprintf(outbuf, sizeof(outbuf), "%d.%d.%d.%d(%d)|%s", ip1, ip2, ip3, ip4, prt, ptr);
-		}
-
-		/* lock output here. */
-		if (pthread_mutex_lock(&output_mutex)) {
-			return 0;
-		}
-
-		fprintf(stdout, "%s\n", outbuf);
-		fflush(stdout);
-
-		/* unlock output here. */
-		pthread_mutex_unlock(&output_mutex);
+	    }
+	} while (doagain || !strcmp(buf, "\n"));
+	if (!strncmp("QUIT", buf, 4)) {
+	    shutdown_was_requested = 1;
+	    fclose(stdin);
+	    return 0;
 	}
+
+	bufptr = NULL;
+#ifdef USE_IPV6
+	bufptr = strchr(buf, ':');
+	if (bufptr) {
+	    /* Is an IPv6 addr. */
+	    bufptr = strchr(buf, '(');
+	    if (!bufptr) {
+		continue;
+	    }
+	    sscanf(bufptr, "(%d)%d", &prt, &myprt);
+	    *bufptr = '\0';
+	    if (myprt > 65535 || myprt < 0) {
+		continue;
+	    }
+	    if (inet_pton(AF_INET6, buf, &fullip_v6) <= 0) {
+		continue;
+	    }
+	    ptr = addrout_v6(&fullip_v6, prt, myprt);
+	    snprintf(outbuf, sizeof(outbuf), "%s(%d)|%s", buf, prt, ptr);
+	}
+#endif
+	if (!bufptr) {
+	    /* Is an IPv4 addr. */
+	    sscanf(buf, "%d.%d.%d.%d(%d)%d", &ip1, &ip2, &ip3, &ip4, &prt, &myprt);
+	    if (ip1 < 0 || ip2 < 0 || ip3 < 0 || ip4 < 0 || prt < 0) {
+		continue;
+	    }
+	    if (ip1 > 255 || ip2 > 255 || ip3 > 255 || ip4 > 255 || prt > 65535) {
+		continue;
+	    }
+	    if (myprt > 65535 || myprt < 0) {
+		continue;
+	    }
+
+	    fullip = (ip1 << 24) | (ip2 << 16) | (ip3 << 8) | ip4;
+	    fullip = htonl(fullip);
+
+	    ptr = addrout(fullip, prt, myprt);
+	    snprintf(outbuf, sizeof(outbuf), "%d.%d.%d.%d(%d)|%s", ip1, ip2, ip3, ip4, prt,
+		     ptr);
+	}
+
+	/* lock output here. */
+	if (pthread_mutex_lock(&output_mutex)) {
+	    return 0;
+	}
+
+	fprintf(stdout, "%s\n", outbuf);
+	fflush(stdout);
+
+	/* unlock output here. */
+	pthread_mutex_unlock(&output_mutex);
+    }
 }
 
 
 
 
-void *resolver_thread_root(void* threadid)
+void *
+resolver_thread_root(void *threadid)
 {
-	do_resolve();
+    do_resolve();
     pthread_exit(NULL);
 }
 
 
-int main(int argc, char **argv)
+int
+main(int argc, char **argv)
 {
-	pthread_t threads[NUM_THREADS];
+    pthread_t threads[NUM_THREADS];
 
-	if (argc > 1) {
-		fprintf(stderr, "Usage: %s\n", *argv);
-		exit(1);
+    if (argc > 1) {
+	fprintf(stderr, "Usage: %s\n", *argv);
+	exit(1);
+    }
+
+    /* remember to ignore certain signals */
+    set_signals();
+
+    /* go do it */
+    for (long i = 0; i < NUM_THREADS; i++) {
+	int rc = pthread_create(&threads[i], NULL, resolver_thread_root, (void *) i);
+	if (rc) {
+	    printf("ERROR; return code from pthread_create() is %d\n", rc);
+	    exit(-1);
 	}
+    }
+    for (long i = 0; i < NUM_THREADS; i++) {
+	void *retval;
+	pthread_join(threads[i], &retval);
+    }
 
-	/* remember to ignore certain signals */
-	set_signals();
+    fprintf(stderr, "Resolver exited.\n");
 
-	/* go do it */
-	for (long i = 0; i < NUM_THREADS; i++) {
-		int rc = pthread_create(&threads[i], NULL, resolver_thread_root, (void *)i);
-		if (rc) {
-			printf("ERROR; return code from pthread_create() is %d\n", rc);
-			exit(-1);
-		}
-	}
-	for (long i = 0; i < NUM_THREADS; i++) {
-		void* retval;
-	    pthread_join(threads[i], &retval);
-	}
-
-	fprintf(stderr, "Resolver exited.\n");
-
-	exit(0);
+    exit(0);
 }

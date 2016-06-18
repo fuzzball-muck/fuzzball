@@ -38,4 +38,4 @@ extern void prim_parsepropex(PRIM_PROTOTYPE);
 
 #define PRIMS_PROPS_CNT 20
 
-#endif /* _P_PROPS_H */
+#endif				/* _P_PROPS_H */

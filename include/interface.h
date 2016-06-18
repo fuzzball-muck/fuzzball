@@ -16,13 +16,13 @@
 #endif
 
 typedef enum {
-	TELNET_STATE_NORMAL,
-	TELNET_STATE_IAC,
-	TELNET_STATE_WILL,
-	TELNET_STATE_DO,
-	TELNET_STATE_WONT,
-	TELNET_STATE_DONT,
-	TELNET_STATE_SB
+    TELNET_STATE_NORMAL,
+    TELNET_STATE_IAC,
+    TELNET_STATE_WILL,
+    TELNET_STATE_DO,
+    TELNET_STATE_WONT,
+    TELNET_STATE_DONT,
+    TELNET_STATE_SB
 } telnet_states_t;
 
 #define TELNET_IAC	255
@@ -45,50 +45,50 @@ typedef enum {
 #define TELOPT_STARTTLS	46
 
 struct text_block {
-	int nchars;
-	struct text_block *nxt;
-	char *start;
-	char *buf;
+    int nchars;
+    struct text_block *nxt;
+    char *start;
+    char *buf;
 };
 
 struct text_queue {
-	int lines;
-	struct text_block *head;
-	struct text_block **tail;
+    int lines;
+    struct text_block *head;
+    struct text_block **tail;
 };
 
 struct descriptor_data {
-	int descriptor;
-	int connected;
-	int con_number;
-	int booted;
-	int block_writes;
-	int is_starttls;
+    int descriptor;
+    int connected;
+    int con_number;
+    int booted;
+    int block_writes;
+    int is_starttls;
 #ifdef USE_SSL
-	SSL *ssl_session;
+    SSL *ssl_session;
 #endif
-	dbref player;
-	char *output_prefix;
-	char *output_suffix;
-	int output_size;
-	struct text_queue output;
-	struct text_queue input;
-	char *raw_input;
-	char *raw_input_at;
-	int telnet_enabled;
-	telnet_states_t telnet_state;
-	int telnet_sb_opt;
-	int short_reads;
-	time_t last_time;
-	time_t connected_at;
-	time_t last_pinged_at;
-	const char *hostname;
-	const char *username;
-	int quota;
-	struct descriptor_data *next;
-	struct descriptor_data **prev;
+    dbref player;
+    char *output_prefix;
+    char *output_suffix;
+    int output_size;
+    struct text_queue output;
+    struct text_queue input;
+    char *raw_input;
+    char *raw_input_at;
+    int telnet_enabled;
+    telnet_states_t telnet_state;
+    int telnet_sb_opt;
+    int short_reads;
+    time_t last_time;
+    time_t connected_at;
+    time_t last_pinged_at;
+    const char *hostname;
+    const char *username;
+    int quota;
+    struct descriptor_data *next;
+    struct descriptor_data **prev;
 #ifdef MCP_SUPPORT
-	McpFrame mcpframe;
+    McpFrame mcpframe;
 #endif
 };
 
@@ -98,14 +98,14 @@ extern int notify_nolisten(dbref player, const char *msg, int ispriv);
 extern int notify_filtered(dbref from, dbref player, const char *msg, int ispriv);
 extern void wall_and_flush(const char *msg);
 extern void wall_wizards(const char *msg);
-extern int shutdown_flag;		/* if non-zero, interface should shut down */
-extern int restart_flag;		/* if non-zero, should restart after shut down */
+extern int shutdown_flag;	/* if non-zero, interface should shut down */
+extern int restart_flag;	/* if non-zero, should restart after shut down */
 extern void emergency_shutdown(void);
 extern int boot_off(dbref player);
 extern void boot_player_off(dbref player);
 extern int online(dbref player);
 extern int index_descr(int c);
-extern int* get_player_descrs(dbref player, int*count);
+extern int *get_player_descrs(dbref player, int *count);
 extern int least_idle_player_descr(dbref who);
 extern int most_idle_player_descr(dbref who);
 extern int pcount(void);
@@ -162,4 +162,4 @@ extern int init_game(const char *infile, const char *outfile);
 extern void dump_database(void);
 extern void panic(const char *);
 
-#endif /* _INTERFACE_H */
+#endif				/* _INTERFACE_H */
