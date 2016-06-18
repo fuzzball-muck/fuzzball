@@ -924,8 +924,8 @@ prim_ext_name_okp(PRIM_PROTOTYPE)
 	int(*ok2) (const char*) = NULL;
 	
 	CHECKOP(2);
-	oper1 = POP();
 	oper2 = POP();
+	oper1 = POP();
 
 	if (oper1->type != PROG_STRING)
 		abort_interp("Object name string expected (1).");
