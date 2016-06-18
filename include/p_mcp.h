@@ -34,7 +34,7 @@ extern void prim_gui_ctrl_command(PRIM_PROTOTYPE);
 
 
 #define PRIMS_MCP_CNT 14
-#endif /* _P_MCP_H */
+#endif				/* _P_MCP_H */
 #else
 #define PRIMS_MCP_CNT 0
 #endif

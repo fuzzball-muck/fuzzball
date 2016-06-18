@@ -20,4 +20,4 @@ extern void prim_error_num(PRIM_PROTOTYPE);
 
 #define PRIMS_ERROR_CNT 9
 
-#endif /* _P_ERROR_H */
+#endif				/* _P_ERROR_H */

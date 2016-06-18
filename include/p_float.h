@@ -49,4 +49,4 @@ extern void prim_diff3(PRIM_PROTOTYPE);
 
 #define PRIMS_FLOAT_CNT 32
 
-#endif /* _P_FLOAT_H */
+#endif				/* _P_FLOAT_H */

@@ -18,5 +18,5 @@ extern void putprops_copy(FILE * f, dbref obj);
 extern void skipproperties(FILE * f, dbref obj);
 extern void unloadprops_with_prejudice(dbref obj);
 extern void undirtyprops(dbref obj);
-#endif /* _DISKPROP_H */
+#endif				/* _DISKPROP_H */
 #endif

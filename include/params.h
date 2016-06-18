@@ -12,7 +12,7 @@
 #define TIME_DAY(x)     ((x) * (TIME_HOUR(24)))	/* 24 hours   */
 
 
-#define DB_INITIAL_SIZE 100		/* initial malloc() size for the db */
+#define DB_INITIAL_SIZE 100	/* initial malloc() size for the db */
 
 
 /* User interface low level commands */
@@ -25,10 +25,10 @@
 /* Used for breaking out of muf READs or for stopping foreground programs. */
 #define BREAK_COMMAND "@Q"
 
-#define EXIT_DELIMITER ';'		/* delimiter for lists of exit aliases  */
-#define MAX_LINKS 50			/* maximum number of destinations for an exit */
+#define EXIT_DELIMITER ';'	/* delimiter for lists of exit aliases  */
+#define MAX_LINKS 50		/* maximum number of destinations for an exit */
 
-#define MAX_PARENT_DEPTH 256            /* Maximum parenting depth allowed. */
+#define MAX_PARENT_DEPTH 256	/* Maximum parenting depth allowed. */
 
 #define GLOBAL_ENVIRONMENT ((dbref) 0)	/* parent of all rooms.  Always #0 */
 
@@ -59,7 +59,7 @@
 
 /* @edit'or stuff */
 
-#define EXIT_INSERT "."			/* character to exit from insert mode    */
+#define EXIT_INSERT "."		/* character to exit from insert mode    */
 #define INSERT_COMMAND 'i'
 #define DELETE_COMMAND 'd'
 #define QUIT_EDIT_COMMAND   'q'
@@ -126,5 +126,5 @@
 
 /* Do we want MUF math operators (currently =) to work on strings? */
 #undef STRINGMATH
- 
-#endif /* _PARAMS_H */
+
+#endif				/* _PARAMS_H */

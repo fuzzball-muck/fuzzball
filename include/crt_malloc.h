@@ -29,4 +29,4 @@ extern struct shared_string *CrT_alloc_prog_string(const char *, const char *, i
 #define alloc_string(x)      CrT_alloc_string(     x,    __FILE__, __LINE__)
 #define alloc_prog_string(x) CrT_alloc_prog_string(x,    __FILE__, __LINE__)
 
-#endif /* _CRT_MALLOC_H */
+#endif				/* _CRT_MALLOC_H */

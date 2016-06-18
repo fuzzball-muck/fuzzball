@@ -39,25 +39,25 @@
 PropPtr
 propdir_new_elem(PropPtr * root, char *path)
 {
-	PropPtr p;
-	char *n;
+    PropPtr p;
+    char *n;
 
-	while (*path && *path == PROPDIR_DELIMITER)
-		path++;
-	if (!*path)
-		return (NULL);
-	n = index(path, PROPDIR_DELIMITER);
-	while (n && *n == PROPDIR_DELIMITER)
-		*(n++) = '\0';
-	if (n && *n) {
-		/* just another propdir in the path */
-		p = new_prop(root, path);
-		return (propdir_new_elem(&PropDir(p), n));
-	} else {
-		/* aha, we are finally to the property itself. */
-		p = new_prop(root, path);
-		return (p);
-	}
+    while (*path && *path == PROPDIR_DELIMITER)
+	path++;
+    if (!*path)
+	return (NULL);
+    n = index(path, PROPDIR_DELIMITER);
+    while (n && *n == PROPDIR_DELIMITER)
+	*(n++) = '\0';
+    if (n && *n) {
+	/* just another propdir in the path */
+	p = new_prop(root, path);
+	return (propdir_new_elem(&PropDir(p), n));
+    } else {
+	/* aha, we are finally to the property itself. */
+	p = new_prop(root, path);
+	return (p);
+    }
 }
 
 
@@ -67,39 +67,39 @@ propdir_new_elem(PropPtr * root, char *path)
 PropPtr
 propdir_delete_elem(PropPtr root, char *path)
 {
-	PropPtr p;
-	char *n;
+    PropPtr p;
+    char *n;
 
-	if (!root)
-		return (NULL);
-	while (*path && *path == PROPDIR_DELIMITER)
-		path++;
-	if (!*path)
-		return (root);
-	n = index(path, PROPDIR_DELIMITER);
-	while (n && *n == PROPDIR_DELIMITER)
-		*(n++) = '\0';
-	if (n && *n) {
-		/* just another propdir in the path */
-		p = locate_prop(root, path);
-		if (p && PropDir(p)) {
-			/* yup, found the propdir */
-			SetPDir(p, propdir_delete_elem(PropDir(p), n));
-			if (!PropDir(p) && PropType(p) == PROP_DIRTYP) {
-				root = delete_prop(&root, PropName(p));
-			}
-		}
-		/* return the updated root pntr */
-		return (root);
-	} else {
-		/* aha, we are finally to the property itself. */
-		p = locate_prop(root, path);
-		if (p && PropDir(p)) {
-			delete_proplist(PropDir(p));
-		}
-		(void) delete_prop(&root, path);
-		return (root);
+    if (!root)
+	return (NULL);
+    while (*path && *path == PROPDIR_DELIMITER)
+	path++;
+    if (!*path)
+	return (root);
+    n = index(path, PROPDIR_DELIMITER);
+    while (n && *n == PROPDIR_DELIMITER)
+	*(n++) = '\0';
+    if (n && *n) {
+	/* just another propdir in the path */
+	p = locate_prop(root, path);
+	if (p && PropDir(p)) {
+	    /* yup, found the propdir */
+	    SetPDir(p, propdir_delete_elem(PropDir(p), n));
+	    if (!PropDir(p) && PropType(p) == PROP_DIRTYP) {
+		root = delete_prop(&root, PropName(p));
+	    }
 	}
+	/* return the updated root pntr */
+	return (root);
+    } else {
+	/* aha, we are finally to the property itself. */
+	p = locate_prop(root, path);
+	if (p && PropDir(p)) {
+	    delete_proplist(PropDir(p));
+	}
+	(void) delete_prop(&root, path);
+	return (root);
+    }
 }
 
 
@@ -109,34 +109,34 @@ propdir_delete_elem(PropPtr root, char *path)
 PropPtr
 propdir_get_elem(PropPtr root, char *path)
 {
-	PropPtr p;
-	char *n;
+    PropPtr p;
+    char *n;
 
-	if (!root)
-		return (NULL);
-	while (*path && *path == PROPDIR_DELIMITER)
-		path++;
-	if (!*path)
-		return (NULL);
-	n = index(path, PROPDIR_DELIMITER);
-	while (n && *n == PROPDIR_DELIMITER)
-		*(n++) = '\0';
-	if (n && *n) {
-		/* just another propdir in the path */
-		p = locate_prop(root, path);
-		if (p && PropDir(p)) {
-			/* yup, found the propdir */
-			return (propdir_get_elem(PropDir(p), n));
-		}
-		return (NULL);
-	} else {
-		/* aha, we are finally to the property subname itself. */
-		if ((p = locate_prop(root, path))) {
-			/* found the property! */
-			return (p);
-		}
-		return (NULL);			/* nope, doesn't exist */
+    if (!root)
+	return (NULL);
+    while (*path && *path == PROPDIR_DELIMITER)
+	path++;
+    if (!*path)
+	return (NULL);
+    n = index(path, PROPDIR_DELIMITER);
+    while (n && *n == PROPDIR_DELIMITER)
+	*(n++) = '\0';
+    if (n && *n) {
+	/* just another propdir in the path */
+	p = locate_prop(root, path);
+	if (p && PropDir(p)) {
+	    /* yup, found the propdir */
+	    return (propdir_get_elem(PropDir(p), n));
 	}
+	return (NULL);
+    } else {
+	/* aha, we are finally to the property subname itself. */
+	if ((p = locate_prop(root, path))) {
+	    /* found the property! */
+	    return (p);
+	}
+	return (NULL);		/* nope, doesn't exist */
+    }
 }
 
 
@@ -146,17 +146,17 @@ propdir_get_elem(PropPtr root, char *path)
 PropPtr
 propdir_first_elem(PropPtr root, char *path)
 {
-	PropPtr p;
+    PropPtr p;
 
-	while (*path && *path == PROPDIR_DELIMITER)
-		path++;
-	if (!*path)
-		return (first_node(root));
-	p = propdir_get_elem(root, path);
-	if (p && PropDir(p)) {
-		return (first_node(PropDir(p)));	/* found the property! */
-	}
-	return (NULL);				/* nope, doesn't exist */
+    while (*path && *path == PROPDIR_DELIMITER)
+	path++;
+    if (!*path)
+	return (first_node(root));
+    p = propdir_get_elem(root, path);
+    if (p && PropDir(p)) {
+	return (first_node(PropDir(p)));	/* found the property! */
+    }
+    return (NULL);		/* nope, doesn't exist */
 }
 
 
@@ -168,30 +168,30 @@ propdir_first_elem(PropPtr root, char *path)
 PropPtr
 propdir_next_elem(PropPtr root, char *path)
 {
-	PropPtr p;
-	char *n;
+    PropPtr p;
+    char *n;
 
-	if (!root)
-		return (NULL);
-	while (*path && *path == PROPDIR_DELIMITER)
-		path++;
-	if (!*path)
-		return (NULL);
-	n = index(path, PROPDIR_DELIMITER);
-	while (n && *n == PROPDIR_DELIMITER)
-		*(n++) = '\0';
-	if (n && *n) {
-		/* just another propdir in the path */
-		p = locate_prop(root, path);
-		if (p && PropDir(p)) {
-			/* yup, found the propdir */
-			return (propdir_next_elem(PropDir(p), n));
-		}
-		return (NULL);
-	} else {
-		/* aha, we are finally to the property subname itself. */
-		return (next_node(root, path));
+    if (!root)
+	return (NULL);
+    while (*path && *path == PROPDIR_DELIMITER)
+	path++;
+    if (!*path)
+	return (NULL);
+    n = index(path, PROPDIR_DELIMITER);
+    while (n && *n == PROPDIR_DELIMITER)
+	*(n++) = '\0';
+    if (n && *n) {
+	/* just another propdir in the path */
+	p = locate_prop(root, path);
+	if (p && PropDir(p)) {
+	    /* yup, found the propdir */
+	    return (propdir_next_elem(PropDir(p), n));
 	}
+	return (NULL);
+    } else {
+	/* aha, we are finally to the property subname itself. */
+	return (next_node(root, path));
+    }
 }
 
 
@@ -199,34 +199,34 @@ propdir_next_elem(PropPtr root, char *path)
 int
 propdir_check(PropPtr root, char *path)
 {
-	PropPtr p;
+    PropPtr p;
 
-	if ((p = propdir_get_elem(root, path)))
-		return (PropDir(p) != NULL);
-	return (0);
+    if ((p = propdir_get_elem(root, path)))
+	return (PropDir(p) != NULL);
+    return (0);
 }
 
 
 const char *
 propdir_name(const char *name)
 {
-	static char pnbuf[BUFFER_LEN];
-	const char *i;
-	char *o;
+    static char pnbuf[BUFFER_LEN];
+    const char *i;
+    char *o;
 
-	i = name;
-	o = pnbuf;
-	while (*i) {
-		while (*i == PROPDIR_DELIMITER)
-			i++;
-		*o++ = PROPDIR_DELIMITER;
-		while (*i && *i != PROPDIR_DELIMITER)
-			*o++ = *i++;
-	}
-	*o = '\0';
-	while (*o != PROPDIR_DELIMITER)
-		*o-- = '\0';
-	return pnbuf;
+    i = name;
+    o = pnbuf;
+    while (*i) {
+	while (*i == PROPDIR_DELIMITER)
+	    i++;
+	*o++ = PROPDIR_DELIMITER;
+	while (*i && *i != PROPDIR_DELIMITER)
+	    *o++ = *i++;
+    }
+    *o = '\0';
+    while (*o != PROPDIR_DELIMITER)
+	*o-- = '\0';
+    return pnbuf;
 }
 
 /* returns path of first unloaded propdir in given path */
@@ -236,36 +236,36 @@ propdir_name(const char *name)
 const char *
 propdir_unloaded(PropPtr root, const char *path)
 {
-	PropPtr p;
-	const char *n;
-	char *o, *l;
-	static char buf[BUFFER_LEN];
+    PropPtr p;
+    const char *n;
+    char *o, *l;
+    static char buf[BUFFER_LEN];
 
-	if (!root)
-		return NULL;
-	n = path;
-	o = buf;
-	while (*n == PROPDIR_DELIMITER)
-		n++;
-	if (!*n)
-		return NULL;
-	while (*n) {
-		*o++ = '/';
-		l = o;
-		while (*n && *n != PROPDIR_DELIMITER)
-			*o++ = *n++;
-		while (*n == PROPDIR_DELIMITER)
-			n++;
-		*o = '\0';
-		p = locate_prop(root, l);
-		if (!p) {
-			return NULL;
-		}
-		if (PropFlags(p) & PROP_DIRUNLOADED) {
-			SetPFlags(p, (PropFlags(p) & ~PROP_DIRUNLOADED));
-			return buf + 1;
-		}
-		root = PropDir(p);
-	}
+    if (!root)
 	return NULL;
+    n = path;
+    o = buf;
+    while (*n == PROPDIR_DELIMITER)
+	n++;
+    if (!*n)
+	return NULL;
+    while (*n) {
+	*o++ = '/';
+	l = o;
+	while (*n && *n != PROPDIR_DELIMITER)
+	    *o++ = *n++;
+	while (*n == PROPDIR_DELIMITER)
+	    n++;
+	*o = '\0';
+	p = locate_prop(root, l);
+	if (!p) {
+	    return NULL;
+	}
+	if (PropFlags(p) & PROP_DIRUNLOADED) {
+	    SetPFlags(p, (PropFlags(p) & ~PROP_DIRUNLOADED));
+	    return buf + 1;
+	}
+	root = PropDir(p);
+    }
+    return NULL;
 }

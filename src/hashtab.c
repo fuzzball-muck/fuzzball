@@ -13,12 +13,12 @@
 unsigned int
 hash(register const char *s, unsigned int hash_size)
 {
-	unsigned int hashval;
+    unsigned int hashval;
 
-	for (hashval = 0; *s != '\0'; s++) {
-		hashval = (*s | 0x20) + 31 * hashval;
-	}
-	return hashval % hash_size;
+    for (hashval = 0; *s != '\0'; s++) {
+	hashval = (*s | 0x20) + 31 * hashval;
+    }
+    return hashval % hash_size;
 }
 
 /* find_hash:  lookup a name in a hash table
@@ -28,14 +28,14 @@ hash(register const char *s, unsigned int hash_size)
 hash_data *
 find_hash(register const char *s, hash_tab * table, unsigned int size)
 {
-	register hash_entry *hp;
+    register hash_entry *hp;
 
-	for (hp = table[hash(s, size)]; hp != NULL; hp = hp->next) {
-		if (string_compare(s, hp->name) == 0) {
-			return &(hp->dat);	/* found */
-		}
+    for (hp = table[hash(s, size)]; hp != NULL; hp = hp->next) {
+	if (string_compare(s, hp->name) == 0) {
+	    return &(hp->dat);	/* found */
 	}
-	return NULL;				/* not found */
+    }
+    return NULL;		/* not found */
 }
 
 /* add_hash:  add a string to a hash table
@@ -50,36 +50,36 @@ find_hash(register const char *s, hash_tab * table, unsigned int size)
 hash_entry *
 add_hash(register const char *name, hash_data data, hash_tab * table, unsigned int size)
 {
-	register hash_entry *hp;
-	unsigned int hashval;
+    register hash_entry *hp;
+    unsigned int hashval;
 
-	hashval = hash(name, size);
+    hashval = hash(name, size);
 
-	/* an inline find_hash */
-	for (hp = table[hashval]; hp != NULL; hp = hp->next) {
-		if (string_compare(name, hp->name) == 0) {
-			break;
-		}
+    /* an inline find_hash */
+    for (hp = table[hashval]; hp != NULL; hp = hp->next) {
+	if (string_compare(name, hp->name) == 0) {
+	    break;
 	}
+    }
 
-	/* If not found, set up a new entry */
+    /* If not found, set up a new entry */
+    if (hp == NULL) {
+	hp = (hash_entry *) malloc(sizeof(hash_entry));
 	if (hp == NULL) {
-		hp = (hash_entry *) malloc(sizeof(hash_entry));
-		if (hp == NULL) {
-			perror("add_hash: out of memory!");
-			abort();			/* can't allocate new entry -- die */
-		}
-		hp->next = table[hashval];
-		table[hashval] = hp;
-		hp->name = (char *) string_dup(name);	/* This might be wasteful. */
-		if (hp->name == NULL) {
-			perror("add_hash: out of memory!");
-			abort();			/* can't allocate new entry -- die */
-		}
+	    perror("add_hash: out of memory!");
+	    abort();		/* can't allocate new entry -- die */
 	}
-	/* One way or another, the pointer is now valid */
-	hp->dat = data;
-	return hp;
+	hp->next = table[hashval];
+	table[hashval] = hp;
+	hp->name = (char *) string_dup(name);	/* This might be wasteful. */
+	if (hp->name == NULL) {
+	    perror("add_hash: out of memory!");
+	    abort();		/* can't allocate new entry -- die */
+	}
+    }
+    /* One way or another, the pointer is now valid */
+    hp->dat = data;
+    return hp;
 }
 
 /* free_hash:  free a hash table entry
@@ -90,36 +90,36 @@ add_hash(register const char *name, hash_data data, hash_tab * table, unsigned i
 int
 free_hash(register const char *name, hash_tab * table, unsigned int size)
 {
-	register hash_entry **lp, *hp;
+    register hash_entry **lp, *hp;
 
-	lp = &table[hash(name, size)];
-	for (hp = *lp; hp != NULL; lp = &(hp->next), hp = hp->next) {
-		if (string_compare(name, hp->name) == 0) {
-			*lp = hp->next;		/* got it.  fix the pointers */
-			free((void *) hp->name);
-			free((void *) hp);
-			return 0;
-		}
+    lp = &table[hash(name, size)];
+    for (hp = *lp; hp != NULL; lp = &(hp->next), hp = hp->next) {
+	if (string_compare(name, hp->name) == 0) {
+	    *lp = hp->next;	/* got it.  fix the pointers */
+	    free((void *) hp->name);
+	    free((void *) hp);
+	    return 0;
 	}
-	return -1;					/* not found */
+    }
+    return -1;			/* not found */
 }
 
 /* kill_hash:  kill an entire hash table, by freeing every entry */
 void
 kill_hash(hash_tab * table, unsigned int size, int freeptrs)
 {
-	register hash_entry *hp, *np;
-	unsigned int i;
+    register hash_entry *hp, *np;
+    unsigned int i;
 
-	for (i = 0; i < size; i++) {
-		for (hp = table[i]; hp != NULL; hp = np) {
-			np = hp->next;		/* Don't dereference the pointer after */
-			free((void *) hp->name);
-			if (freeptrs) {
-				free((void *) hp->dat.pval);
-			}
-			free((void *) hp);	/* we've freed it! */
-		}
-		table[i] = NULL;
+    for (i = 0; i < size; i++) {
+	for (hp = table[i]; hp != NULL; hp = np) {
+	    np = hp->next;	/* Don't dereference the pointer after */
+	    free((void *) hp->name);
+	    if (freeptrs) {
+		free((void *) hp->dat.pval);
+	    }
+	    free((void *) hp);	/* we've freed it! */
 	}
+	table[i] = NULL;
+    }
 }

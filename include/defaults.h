@@ -57,8 +57,8 @@
 
 /* Format of standardized property lists. */
 #define PROPLIST_INT_COUNTER 1	/* Specifies that the proplist counter
-								   property should be stored as an integer
-								   property instead of as a string. */
+				   property should be stored as an integer
+				   property instead of as a string. */
 
 #define PROPLIST_COUNTER_FORMAT "P#"	/* The prop that has the count of lines. */
 									 /* Define as empty string for no counter. */
@@ -78,8 +78,8 @@
 
 
 /* Information needed for SSL */
-#define SSL_CERT_FILE "data/server.pem" /* SSL certificate */
-#define SSL_KEY_FILE "data/server.pem"  /* SSL private key */
+#define SSL_CERT_FILE "data/server.pem"	/* SSL certificate */
+#define SSL_KEY_FILE "data/server.pem"	/* SSL private key */
 #define SSL_KEYFILE_PASSWD ""
 /* from https://wiki.mozilla.org/Security/Server_Side_TLS, "intermediate copmatability" */
 #define SSL_CIPHER_PREFERENCE_LIST \
@@ -112,23 +112,23 @@
 #define PENNIES_MUF_MLEV 1
 
 /* minimum costs for various things */
-#define OBJECT_COST 10			/* Amount it costs to make an object    */
-#define EXIT_COST 1				/* Amount it costs to make an exit      */
-#define LINK_COST 1				/* Amount it costs to make a link       */
-#define ROOM_COST 10			/* Amount it costs to dig a room        */
-#define LOOKUP_COST 0			/* cost to do a scan                    */
-#define MAX_PENNIES 10000		/* amount at which temple gets cheap    */
-#define PENNY_RATE 8			/* 1/chance of getting a penny per room */
-#define START_PENNIES 50		/* # of pennies a player's created with */
+#define OBJECT_COST 10		/* Amount it costs to make an object    */
+#define EXIT_COST 1		/* Amount it costs to make an exit      */
+#define LINK_COST 1		/* Amount it costs to make a link       */
+#define ROOM_COST 10		/* Amount it costs to dig a room        */
+#define LOOKUP_COST 0		/* cost to do a scan                    */
+#define MAX_PENNIES 10000	/* amount at which temple gets cheap    */
+#define PENNY_RATE 8		/* 1/chance of getting a penny per room */
+#define START_PENNIES 50	/* # of pennies a player's created with */
 
 /* costs of kill command */
-#define KILL_BASE_COST 100		/* prob = expenditure/KILL_BASE_COST    */
-#define KILL_MIN_COST 10		/* minimum amount needed to kill        */
-#define KILL_BONUS 50			/* amount of "insurance" paid to victim */
+#define KILL_BASE_COST 100	/* prob = expenditure/KILL_BASE_COST    */
+#define KILL_MIN_COST 10	/* minimum amount needed to kill        */
+#define KILL_BONUS 50		/* amount of "insurance" paid to victim */
 
 /* player spam input limiters */
 #define COMMAND_BURST_SIZE 500	/* commands allowed per user in a burst */
-#define COMMANDS_PER_TIME 2		/* commands per time slice after burst  */
+#define COMMANDS_PER_TIME 2	/* commands per time slice after burst  */
 #define COMMAND_TIME_MSEC 1000	/* time slice length in milliseconds    */
 
 
@@ -381,4 +381,4 @@
 /* Maintain trigger as lock source in TESTLOCK. */
 #define CONSISTENT_LOCK_SOURCE 1
 
-#endif /* _DEFAULTS_H */
+#endif				/* _DEFAULTS_H */

@@ -71,4 +71,4 @@ extern void prim_debug_line(PRIM_PROTOTYPE);
 
 #define PRIMS_MISC_CNT 43
 
-#endif /* _P_MISC_H */
+#endif				/* _P_MISC_H */

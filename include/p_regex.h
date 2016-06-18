@@ -14,4 +14,4 @@ extern void prim_regsub(PRIM_PROTOTYPE);
 
 #define PRIMS_REGEX_CNT 2
 
-#endif /* _P_REGEX_H */
+#endif				/* _P_REGEX_H */

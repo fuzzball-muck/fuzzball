@@ -100,4 +100,4 @@ extern void prim_array_notify_secure(PRIM_PROTOTYPE);
 
 #define PRIMS_ARRAY_CNT 50
 
-#endif /* _P_ARRAY_H */
+#endif				/* _P_ARRAY_H */

@@ -15,59 +15,58 @@ typedef void *connection_t;
 #define EMCP_ARGNAMELEN		-5	/* Arg name is too long. */
 #define EMCP_MESGSIZE		-6	/* Message is too large. */
 
-#define MAX_MCP_ARGNAME_LEN    30 /* max length of argument name. */
-#define MAX_MCP_MESG_ARGS      30 /* max number of args per mesg. */
-#define MAX_MCP_MESG_SIZE  262144 /* max mesg size in bytes. */
+#define MAX_MCP_ARGNAME_LEN    30	/* max length of argument name. */
+#define MAX_MCP_MESG_ARGS      30	/* max number of args per mesg. */
+#define MAX_MCP_MESG_SIZE  262144	/* max mesg size in bytes. */
 
 struct mcp_binding {
-        struct mcp_binding *next;
+    struct mcp_binding *next;
 
-        char *pkgname;
-        char *msgname;
-        struct inst *addr;
+    char *pkgname;
+    char *msgname;
+    struct inst *addr;
 };
 
 /* This is a convenient struct for dealing with MCP versions. */
 typedef struct McpVersion_T {
-	unsigned short vermajor;	/* major version number */
-	unsigned short verminor;	/* minor version number */
+    unsigned short vermajor;	/* major version number */
+    unsigned short verminor;	/* minor version number */
 } McpVer;
 
 
 
 /* This is one line of a multi-line argument value. */
 typedef struct McpArgPart_T {
-	struct McpArgPart_T *next;
-	char *value;
+    struct McpArgPart_T *next;
+    char *value;
 } McpArgPart;
 
 
 /* This is one argument of a message. */
 typedef struct McpArg_T {
-	struct McpArg_T *next;
-	char *name;
-	McpArgPart *value;
-	McpArgPart *last;
-	int was_shown;
+    struct McpArg_T *next;
+    char *name;
+    McpArgPart *value;
+    McpArgPart *last;
+    int was_shown;
 } McpArg;
 
 
 /* This is an MCP message. */
 typedef struct McpMesg_T {
-	struct McpMesg_T *next;
-	char *package;
-	char *mesgname;
-	char *datatag;
-	McpArg *args;
-	int incomplete;
-	int bytes;
+    struct McpMesg_T *next;
+    char *package;
+    char *mesgname;
+    char *datatag;
+    McpArg *args;
+    int incomplete;
+    int bytes;
 } McpMesg;
 
 
 struct McpFrame_T;
 typedef void (*McpPkg_CB) (struct McpFrame_T * mfr,
-
-						   McpMesg * mesg, McpVer version, void *context);
+			   McpMesg * mesg, McpVer version, void *context);
 
 typedef void (*ContextCleanup_CB) (void *context);
 
@@ -75,25 +74,25 @@ typedef void (*ContextCleanup_CB) (void *context);
 
 /* This is used to keep track of registered packages. */
 typedef struct McpPkg_T {
-	char *pkgname;				/* Name of the package */
-	McpVer minver;				/* min supported version number */
-	McpVer maxver;				/* max supported version number */
-	McpPkg_CB callback;			/* function to call with mesgs */
-	void *context;				/* user defined callback context */
-	ContextCleanup_CB cleanup;  /* callback to use to free context */
-	struct McpPkg_T *next;
+    char *pkgname;		/* Name of the package */
+    McpVer minver;		/* min supported version number */
+    McpVer maxver;		/* max supported version number */
+    McpPkg_CB callback;		/* function to call with mesgs */
+    void *context;		/* user defined callback context */
+    ContextCleanup_CB cleanup;	/* callback to use to free context */
+    struct McpPkg_T *next;
 } McpPkg;
 
 
 
 /* This keeps connection specific data for MCP. */
 typedef struct McpFrame_T {
-	void *descriptor;			/* The descriptor to send output to */
-	unsigned int enabled;		/* Flag denoting if MCP is enabled. */
-	char *authkey;				/* Authorization key. */
-	McpVer version;				/* Supported MCP version number. */
-	McpPkg *packages;			/* Pkgs supported on this connection. */
-	McpMesg *messages;			/* Partial messages, under construction. */
+    void *descriptor;		/* The descriptor to send output to */
+    unsigned int enabled;	/* Flag denoting if MCP is enabled. */
+    char *authkey;		/* Authorization key. */
+    McpVer version;		/* Supported MCP version number. */
+    McpPkg *packages;		/* Pkgs supported on this connection. */
+    McpMesg *messages;		/* Partial messages, under construction. */
 } McpFrame;
 
 
@@ -326,7 +325,7 @@ void mcp_initialize(void);
 void mcp_negotiation_start(McpFrame * mfr);
 
 void mcp_package_register(const char *pkgname, McpVer minver, McpVer maxver,
-						  McpPkg_CB callback, void *context, ContextCleanup_CB cleanup);
+			  McpPkg_CB callback, void *context, ContextCleanup_CB cleanup);
 void mcp_package_deregister(const char *pkgname);
 
 void mcp_frame_init(McpFrame * mfr, connection_t con);
@@ -342,8 +341,8 @@ int mcp_frame_process_input(McpFrame * mfr, const char *linein, char *outbuf, in
 void mcp_frame_output_inband(McpFrame * mfr, const char *lineout);
 int mcp_frame_output_mesg(McpFrame * mfr, McpMesg * msg);
 
-int mcpframe_to_descr(McpFrame *ptr);		
-int mcpframe_to_user(McpFrame *ptr);
+int mcpframe_to_descr(McpFrame * ptr);
+int mcpframe_to_user(McpFrame * ptr);
 
 void mcp_mesg_init(McpMesg * msg, const char *package, const char *mesgname);
 void mcp_mesg_clear(McpMesg * msg);
@@ -357,7 +356,7 @@ int mcp_version_compare(McpVer v1, McpVer v2);
 McpVer mcp_version_select(McpVer min1, McpVer max1, McpVer min2, McpVer max2);
 
 void do_mcpedit(int descr, dbref player, const char *name);
-void do_mcpprogram(int descr, dbref player, const char* name);
+void do_mcpprogram(int descr, dbref player, const char *name);
 
-#endif /* _MCP_H */
+#endif				/* _MCP_H */
 #endif

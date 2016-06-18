@@ -26,37 +26,37 @@ struct line *read_program(dbref i);
 static dbref
 parse_linkable_dest(int descr, dbref player, dbref exit, const char *dest_name)
 {
-	dbref dobj;					/* destination room/player/thing/link */
-	struct match_data md;
+    dbref dobj;			/* destination room/player/thing/link */
+    struct match_data md;
 
-	init_match(descr, player, dest_name, NOTYPE, &md);
-	match_absolute(&md);
-	match_everything(&md);
-	match_home(&md);
-	match_nil(&md);
+    init_match(descr, player, dest_name, NOTYPE, &md);
+    match_absolute(&md);
+    match_everything(&md);
+    match_home(&md);
+    match_nil(&md);
 
-	if ((dobj = match_result(&md)) == NOTHING || dobj == AMBIGUOUS) {
-		notifyf(player, "I couldn't find '%s'.", dest_name);
-		return NOTHING;
+    if ((dobj = match_result(&md)) == NOTHING || dobj == AMBIGUOUS) {
+	notifyf(player, "I couldn't find '%s'.", dest_name);
+	return NOTHING;
 
-	}
+    }
 
-	if (!tp_teleport_to_player && Typeof(dobj) == TYPE_PLAYER) {
-		notifyf(player, "You can't link to players.  Destination %s ignored.",
-				unparse_object(player, dobj));
-		return NOTHING;
-	}
+    if (!tp_teleport_to_player && Typeof(dobj) == TYPE_PLAYER) {
+	notifyf(player, "You can't link to players.  Destination %s ignored.",
+		unparse_object(player, dobj));
+	return NOTHING;
+    }
 
-	if (!can_link(player, exit)) {
-		notify(player, "You can't link that.");
-		return NOTHING;
-	}
-	if (!can_link_to(player, Typeof(exit), dobj)) {
-		notifyf(player, "You can't link to %s.", unparse_object(player, dobj));
-		return NOTHING;
-	} else {
-		return dobj;
-	}
+    if (!can_link(player, exit)) {
+	notify(player, "You can't link that.");
+	return NOTHING;
+    }
+    if (!can_link_to(player, Typeof(exit), dobj)) {
+	notifyf(player, "You can't link to %s.", unparse_object(player, dobj));
+	return NOTHING;
+    } else {
+	return dobj;
+    }
 }
 
 /* exit_loop_check()
@@ -68,210 +68,211 @@ parse_linkable_dest(int descr, dbref player, dbref exit, const char *dest_name)
 int
 exit_loop_check(dbref source, dbref dest)
 {
-	if (source == dest)
-		return 1;				/* That's an easy one! */
-	if (dest == NIL || Typeof(dest) != TYPE_EXIT)
-		return 0;
-	for (int i = 0; i < DBFETCH(dest)->sp.exit.ndest; i++) {
-		if ((DBFETCH(dest)->sp.exit.dest)[i] == source) {
-			return 1;			/* Found a loop! */
-		}
-		if (Typeof((DBFETCH(dest)->sp.exit.dest)[i]) == TYPE_EXIT) {
-			if (exit_loop_check(source, (DBFETCH(dest)->sp.exit.dest)[i])) {
-				return 1;		/* Found one recursively */
-			}
-		}
+    if (source == dest)
+	return 1;		/* That's an easy one! */
+    if (dest == NIL || Typeof(dest) != TYPE_EXIT)
+	return 0;
+    for (int i = 0; i < DBFETCH(dest)->sp.exit.ndest; i++) {
+	if ((DBFETCH(dest)->sp.exit.dest)[i] == source) {
+	    return 1;		/* Found a loop! */
 	}
-	return 0;					/* No loops found */
+	if (Typeof((DBFETCH(dest)->sp.exit.dest)[i]) == TYPE_EXIT) {
+	    if (exit_loop_check(source, (DBFETCH(dest)->sp.exit.dest)[i])) {
+		return 1;	/* Found one recursively */
+	    }
+	}
+    }
+    return 0;			/* No loops found */
 }
 
 /* use this to create an exit */
 void
 do_open(int descr, dbref player, const char *direction, const char *linkto)
 {
-	dbref loc, exit;
-	dbref good_dest[MAX_LINKS];
-	char buf[BUFFER_LEN];
-	char buf2[BUFFER_LEN];
-	char *rname, *qname;
-	int ndest;
+    dbref loc, exit;
+    dbref good_dest[MAX_LINKS];
+    char buf[BUFFER_LEN];
+    char buf2[BUFFER_LEN];
+    char *rname, *qname;
+    int ndest;
 
-	strcpyn(buf2, sizeof(buf2), linkto);
-	for (rname = buf2; (*rname && (*rname != '=')); rname++) ;
-	qname = rname;
-	if (*rname)
-		rname++;
+    strcpyn(buf2, sizeof(buf2), linkto);
+    for (rname = buf2; (*rname && (*rname != '=')); rname++) ;
+    qname = rname;
+    if (*rname)
+	rname++;
+    *qname = '\0';
+
+    while (((qname--) > buf2) && (isspace(*qname)))
 	*qname = '\0';
+    qname = buf2;
+    for (; *rname && isspace(*rname); rname++) ;
 
-	while (((qname--) > buf2) && (isspace(*qname)))
-		*qname = '\0';
-	qname = buf2;
-	for (; *rname && isspace(*rname); rname++) ;
+    if ((loc = LOCATION(player)) == NOTHING)
+	return;
+    if (!*direction) {
+	notify(player, "You must specify a direction or action name to open.");
+	return;
+    }
+    if (!ok_ascii_other(direction)) {
+	notify(player, "Exit names are limited to 7-bit ASCII.");
+	return;
+    }
+    if (!ok_name(direction)) {
+	notify(player, "That's a strange name for an exit!");
+	return;
+    }
+    if (!controls(player, loc)) {
+	notify(player, "Permission denied. (you don't control the location)");
+	return;
+    } else if (!payfor(player, tp_exit_cost)) {
+	notifyf(player, "Sorry, you don't have enough %s to open an exit.", tp_pennies);
+	return;
+    } else {
+	/* create the exit */
+	exit = new_object();
 
-	if ((loc = LOCATION(player)) == NOTHING)
-		return;
-	if (!*direction) {
-		notify(player, "You must specify a direction or action name to open.");
-		return;
-	}
-	if(!ok_ascii_other(direction)) {
-		notify(player, "Exit names are limited to 7-bit ASCII.");
-		return;
-	}
-	if (!ok_name(direction)) {
-		notify(player, "That's a strange name for an exit!");
-		return;
-	}
-	if (!controls(player, loc)) {
-		notify(player, "Permission denied. (you don't control the location)");
-		return;
-	} else if (!payfor(player, tp_exit_cost)) {
-		notifyf(player, "Sorry, you don't have enough %s to open an exit.", tp_pennies);
-		return;
-	} else {
-		/* create the exit */
-		exit = new_object();
+	/* initialize everything */
+	NAME(exit) = alloc_string(direction);
+	LOCATION(exit) = loc;
+	OWNER(exit) = OWNER(player);
+	FLAGS(exit) = TYPE_EXIT;
+	DBFETCH(exit)->sp.exit.ndest = 0;
+	DBFETCH(exit)->sp.exit.dest = NULL;
 
-		/* initialize everything */
-		NAME(exit) = alloc_string(direction);
-		LOCATION(exit) = loc;
-		OWNER(exit) = OWNER(player);
-		FLAGS(exit) = TYPE_EXIT;
-		DBFETCH(exit)->sp.exit.ndest = 0;
-		DBFETCH(exit)->sp.exit.dest = NULL;
+	/* link it in */
+	PUSH(exit, EXITS(loc));
+	DBDIRTY(loc);
 
-		/* link it in */
-		PUSH(exit, EXITS(loc));
-		DBDIRTY(loc);
+	/* and we're done */
+	notifyf(player, "Exit %s opened as #%d.", NAME(exit), exit);
 
-		/* and we're done */
-		notifyf(player, "Exit %s opened as #%d.", NAME(exit), exit);
-
-		/* check second arg to see if we should do a link */
-		if (*qname != '\0') {
-			notify(player, "Trying to link...");
-			if (!payfor(player, tp_link_cost)) {
-				notifyf(player, "You don't have enough %s to link.", tp_pennies);
-			} else {
-				ndest = link_exit(descr, player, exit, (char *) qname, good_dest);
-				DBFETCH(exit)->sp.exit.ndest = ndest;
-				DBFETCH(exit)->sp.exit.dest = (dbref *) malloc(sizeof(dbref) * ndest);
-				for (int i = 0; i < ndest; i++) {
-					(DBFETCH(exit)->sp.exit.dest)[i] = good_dest[i];
-				}
-				DBDIRTY(exit);
-			}
+	/* check second arg to see if we should do a link */
+	if (*qname != '\0') {
+	    notify(player, "Trying to link...");
+	    if (!payfor(player, tp_link_cost)) {
+		notifyf(player, "You don't have enough %s to link.", tp_pennies);
+	    } else {
+		ndest = link_exit(descr, player, exit, (char *) qname, good_dest);
+		DBFETCH(exit)->sp.exit.ndest = ndest;
+		DBFETCH(exit)->sp.exit.dest = (dbref *) malloc(sizeof(dbref) * ndest);
+		for (int i = 0; i < ndest; i++) {
+		    (DBFETCH(exit)->sp.exit.dest)[i] = good_dest[i];
 		}
+		DBDIRTY(exit);
+	    }
 	}
+    }
 
-	if (*rname) {
-		PData mydat;
+    if (*rname) {
+	PData mydat;
 
-		notifyf(player, "Registered as $%s", rname);
-		snprintf(buf, sizeof(buf), "_reg/%s", rname);
-		mydat.flags = PROP_REFTYP;
-		mydat.data.ref = exit;
-		set_property(player, buf, &mydat, 0);
-	}
+	notifyf(player, "Registered as $%s", rname);
+	snprintf(buf, sizeof(buf), "_reg/%s", rname);
+	mydat.flags = PROP_REFTYP;
+	mydat.data.ref = exit;
+	set_property(player, buf, &mydat, 0);
+    }
 }
 
 int
 _link_exit(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_list, int dryrun)
 {
-	char *p, *q;
-	int prdest;
-	dbref dest;
-	int ndest, error;
-	char qbuf[BUFFER_LEN];
+    char *p, *q;
+    int prdest;
+    dbref dest;
+    int ndest, error;
+    char qbuf[BUFFER_LEN];
 
-	prdest = 0;
-	ndest = 0;
-	error = 0;
+    prdest = 0;
+    ndest = 0;
+    error = 0;
 
-	while (*dest_name) {
-		while (isspace(*dest_name))
-			dest_name++;		/* skip white space */
-		p = dest_name;
-		while (*dest_name && (*dest_name != EXIT_DELIMITER))
-			dest_name++;
-		q = (char *) strncpy(qbuf, p, BUFFER_LEN);	/* copy word */
-		q[(dest_name - p)] = '\0';	/* terminate it */
-		if (*dest_name)
-			for (dest_name++; *dest_name && isspace(*dest_name); dest_name++) ;
+    while (*dest_name) {
+	while (isspace(*dest_name))
+	    dest_name++;	/* skip white space */
+	p = dest_name;
+	while (*dest_name && (*dest_name != EXIT_DELIMITER))
+	    dest_name++;
+	q = (char *) strncpy(qbuf, p, BUFFER_LEN);	/* copy word */
+	q[(dest_name - p)] = '\0';	/* terminate it */
+	if (*dest_name)
+	    for (dest_name++; *dest_name && isspace(*dest_name); dest_name++) ;
 
-		if ((dest = parse_linkable_dest(descr, player, exit, q)) == NOTHING)
-			continue;
+	if ((dest = parse_linkable_dest(descr, player, exit, q)) == NOTHING)
+	    continue;
 
-		if (dest == NIL) {
-			if (!dryrun) {
-				notify(player, "Linked to NIL.");
-			}
-			dest_list[ndest++] = dest;
-			continue;
-		}
-
-		switch (Typeof(dest)) {
-		case TYPE_PLAYER:
-		case TYPE_ROOM:
-		case TYPE_PROGRAM:
-			if (prdest) {
-				notifyf(player, "Only one player, room, or program destination allowed. Destination %s ignored.",
-						unparse_object(player, dest));
-
-				if(dryrun)
-					error = 1;
-
-				continue;
-			}
-			dest_list[ndest++] = dest;
-			prdest = 1;
-			break;
-		case TYPE_THING:
-			dest_list[ndest++] = dest;
-			break;
-		case TYPE_EXIT:
-			if (exit_loop_check(exit, dest)) {
-				notifyf(player, "Destination %s would create a loop, ignored.",
-						unparse_object(player, dest));
-				
-				if(dryrun)
-					error = 1;
-
-				continue;
-			}
-			dest_list[ndest++] = dest;
-			break;
-		default:
-			notify(player, "Internal error: weird object type.");
-			log_status("PANIC: weird object: Typeof(%d) = %d", dest, Typeof(dest));
-
-			if(dryrun)
-				error = 1;
-				
-			break;
-		}
-		if(!dryrun) {
-			if (dest == HOME) {
-				notify(player, "Linked to HOME.");
-			} else {
-				notifyf(player, "Linked to %s.", unparse_object(player, dest));
-			}
-		}
-		
-		if (ndest >= MAX_LINKS) {
-			notify(player, "Too many destinations, rest ignored.");
-
-			if(dryrun)
-				error = 1;
-
-			break;
-		}
+	if (dest == NIL) {
+	    if (!dryrun) {
+		notify(player, "Linked to NIL.");
+	    }
+	    dest_list[ndest++] = dest;
+	    continue;
 	}
-	
-	if(dryrun && error)
-		return 0;
-		
-	return ndest;
+
+	switch (Typeof(dest)) {
+	case TYPE_PLAYER:
+	case TYPE_ROOM:
+	case TYPE_PROGRAM:
+	    if (prdest) {
+		notifyf(player,
+			"Only one player, room, or program destination allowed. Destination %s ignored.",
+			unparse_object(player, dest));
+
+		if (dryrun)
+		    error = 1;
+
+		continue;
+	    }
+	    dest_list[ndest++] = dest;
+	    prdest = 1;
+	    break;
+	case TYPE_THING:
+	    dest_list[ndest++] = dest;
+	    break;
+	case TYPE_EXIT:
+	    if (exit_loop_check(exit, dest)) {
+		notifyf(player, "Destination %s would create a loop, ignored.",
+			unparse_object(player, dest));
+
+		if (dryrun)
+		    error = 1;
+
+		continue;
+	    }
+	    dest_list[ndest++] = dest;
+	    break;
+	default:
+	    notify(player, "Internal error: weird object type.");
+	    log_status("PANIC: weird object: Typeof(%d) = %d", dest, Typeof(dest));
+
+	    if (dryrun)
+		error = 1;
+
+	    break;
+	}
+	if (!dryrun) {
+	    if (dest == HOME) {
+		notify(player, "Linked to HOME.");
+	    } else {
+		notifyf(player, "Linked to %s.", unparse_object(player, dest));
+	    }
+	}
+
+	if (ndest >= MAX_LINKS) {
+	    notify(player, "Too many destinations, rest ignored.");
+
+	    if (dryrun)
+		error = 1;
+
+	    break;
+	}
+    }
+
+    if (dryrun && error)
+	return 0;
+
+    return ndest;
 }
 
 /*
@@ -291,7 +292,7 @@ _link_exit(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_li
 int
 link_exit(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_list)
 {
-	return _link_exit(descr, player, exit, dest_name, dest_list, 0);
+    return _link_exit(descr, player, exit, dest_name, dest_list, 0);
 }
 
 /*
@@ -303,7 +304,7 @@ link_exit(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_lis
 int
 link_exit_dry(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_list)
 {
-	return _link_exit(descr, player, exit, dest_name, dest_list, 1);
+    return _link_exit(descr, player, exit, dest_name, dest_list, 1);
 }
 
 /* do_link
@@ -318,140 +319,142 @@ link_exit_dry(int descr, dbref player, dbref exit, char *dest_name, dbref * dest
 void
 do_link(int descr, dbref player, const char *thing_name, const char *dest_name)
 {
-	dbref thing;
-	dbref dest;
-	dbref good_dest[MAX_LINKS];
-	struct match_data md;
+    dbref thing;
+    dbref dest;
+    dbref good_dest[MAX_LINKS];
+    struct match_data md;
 
-	int ndest;
+    int ndest;
 
-	init_match(descr, player, thing_name, TYPE_EXIT, &md);
-	match_all_exits(&md);
+    init_match(descr, player, thing_name, TYPE_EXIT, &md);
+    match_all_exits(&md);
+    match_neighbor(&md);
+    match_possession(&md);
+    match_me(&md);
+    match_here(&md);
+    match_absolute(&md);
+    match_registered(&md);
+    if (Wizard(OWNER(player))) {
+	match_player(&md);
+    }
+    if ((thing = noisy_match_result(&md)) == NOTHING)
+	return;
+
+    switch (Typeof(thing)) {
+    case TYPE_EXIT:
+	/* we're ok, check the usual stuff */
+	if (DBFETCH(thing)->sp.exit.ndest != 0) {
+	    if (controls(player, thing)) {
+		if ((DBFETCH(thing)->sp.exit.dest)[0] != NIL) {
+		    notify(player, "That exit is already linked.");
+		    return;
+		}
+	    } else {
+		notify(player, "Permission denied. (you don't control the exit to relink)");
+		return;
+	    }
+	}
+	/* handle costs */
+	if (OWNER(thing) == OWNER(player)) {
+	    if (!payfor(player, tp_link_cost)) {
+		notifyf(player, "It costs %d %s to link this exit.",
+			tp_link_cost, (tp_link_cost == 1) ? tp_penny : tp_pennies);
+		return;
+	    }
+	} else {
+	    if (!payfor(player, tp_link_cost + tp_exit_cost)) {
+		notifyf(player, "It costs %d %s to link this exit.",
+			(tp_link_cost + tp_exit_cost),
+			(tp_link_cost + tp_exit_cost == 1) ? tp_penny : tp_pennies);
+		return;
+	    } else if (!Builder(player)) {
+		notify(player, "Only authorized builders may seize exits.");
+		return;
+	    } else {
+		/* pay the owner for his loss */
+		dbref owner = OWNER(thing);
+
+		SETVALUE(owner, GETVALUE(owner) + tp_exit_cost);
+		DBDIRTY(owner);
+	    }
+	}
+
+	/* link has been validated and paid for; do it */
+	OWNER(thing) = OWNER(player);
+	ndest = link_exit(descr, player, thing, (char *) dest_name, good_dest);
+	if (ndest == 0) {
+	    notify(player, "No destinations linked.");
+	    SETVALUE(player, GETVALUE(player) + tp_link_cost);
+	    DBDIRTY(player);
+	    break;
+	}
+	DBFETCH(thing)->sp.exit.ndest = ndest;
+	if (DBFETCH(thing)->sp.exit.dest) {
+	    free(DBFETCH(thing)->sp.exit.dest);
+	}
+	DBFETCH(thing)->sp.exit.dest = (dbref *) malloc(sizeof(dbref) * ndest);
+	for (int i = 0; i < ndest; i++) {
+	    (DBFETCH(thing)->sp.exit.dest)[i] = good_dest[i];
+	}
+	break;
+    case TYPE_THING:
+    case TYPE_PLAYER:
+	init_match(descr, player, dest_name, TYPE_ROOM, &md);
 	match_neighbor(&md);
-	match_possession(&md);
-	match_me(&md);
-	match_here(&md);
 	match_absolute(&md);
 	match_registered(&md);
-	if (Wizard(OWNER(player))) {
-		match_player(&md);
+	match_me(&md);
+	match_here(&md);
+	if (Typeof(thing) == TYPE_THING)
+	    match_possession(&md);
+	if ((dest = noisy_match_result(&md)) == NOTHING)
+	    return;
+	if (!controls(player, thing)
+	    || !can_link_to(player, Typeof(thing), dest)) {
+	    notify(player,
+		   "Permission denied. (you don't control the thing, or you can't link to dest)");
+	    return;
 	}
-	if ((thing = noisy_match_result(&md)) == NOTHING)
-		return;
-
-	switch (Typeof(thing)) {
-	case TYPE_EXIT:
-		/* we're ok, check the usual stuff */
-		if (DBFETCH(thing)->sp.exit.ndest != 0) {
-			if (controls(player, thing)) {
-				if ((DBFETCH(thing)->sp.exit.dest)[0] != NIL) {
-					notify(player, "That exit is already linked.");
-					return;
-				}
-			} else {
-				notify(player, "Permission denied. (you don't control the exit to relink)");
-				return;
-			}
-		}
-		/* handle costs */
-		if (OWNER(thing) == OWNER(player)) {
-			if (!payfor(player, tp_link_cost)) {
-				notifyf(player, "It costs %d %s to link this exit.",
-						   tp_link_cost, (tp_link_cost == 1) ? tp_penny : tp_pennies);
-				return;
-			}
-		} else {
-			if (!payfor(player, tp_link_cost + tp_exit_cost)) {
-				notifyf(player, "It costs %d %s to link this exit.",
-						   (tp_link_cost + tp_exit_cost),
-						   (tp_link_cost + tp_exit_cost == 1) ? tp_penny : tp_pennies);
-				return;
-			} else if (!Builder(player)) {
-				notify(player, "Only authorized builders may seize exits.");
-				return;
-			} else {
-				/* pay the owner for his loss */
-				dbref owner = OWNER(thing);
-
-				SETVALUE(owner, GETVALUE(owner) + tp_exit_cost);
-				DBDIRTY(owner);
-			}
-		}
-
-		/* link has been validated and paid for; do it */
-		OWNER(thing) = OWNER(player);
-		ndest = link_exit(descr, player, thing, (char *) dest_name, good_dest);
-		if (ndest == 0) {
-			notify(player, "No destinations linked.");
-			SETVALUE(player, GETVALUE(player) + tp_link_cost);
-			DBDIRTY(player);
-			break;
-		}
-		DBFETCH(thing)->sp.exit.ndest = ndest;
-		if (DBFETCH(thing)->sp.exit.dest) {
-		    free(DBFETCH(thing)->sp.exit.dest);
-		}
-		DBFETCH(thing)->sp.exit.dest = (dbref *) malloc(sizeof(dbref) * ndest);
-		for (int i = 0; i < ndest; i++) {
-			(DBFETCH(thing)->sp.exit.dest)[i] = good_dest[i];
-		}
-		break;
-	case TYPE_THING:
-	case TYPE_PLAYER:
-		init_match(descr, player, dest_name, TYPE_ROOM, &md);
-		match_neighbor(&md);
-		match_absolute(&md);
-		match_registered(&md);
-		match_me(&md);
-		match_here(&md);
-		if (Typeof(thing) == TYPE_THING)
-			match_possession(&md);
-		if ((dest = noisy_match_result(&md)) == NOTHING)
-			return;
-		if (!controls(player, thing)
-			|| !can_link_to(player, Typeof(thing), dest)) {
-			notify(player, "Permission denied. (you don't control the thing, or you can't link to dest)");
-			return;
-		}
-		if (parent_loop_check(thing, dest)) {
-			notify(player, "That would cause a parent paradox.");
-			return;
-		}
-		/* do the link */
-		if (Typeof(thing) == TYPE_THING) {
-			THING_SET_HOME(thing, dest);
-		} else {
-			PLAYER_SET_HOME(thing, dest);
-		}
-		notify(player, "Home set.");
-		break;
-	case TYPE_ROOM:			/* room dropto's */
-		init_match(descr, player, dest_name, TYPE_ROOM, &md);
-		match_neighbor(&md);
-		match_possession(&md);
-		match_registered(&md);
-		match_absolute(&md);
-		match_home(&md);
-		if ((dest = noisy_match_result(&md)) == NOTHING)
-			break;
-		if (!controls(player, thing) || !can_link_to(player, Typeof(thing), dest)
-			|| (thing == dest)) {
-			notify(player, "Permission denied. (you don't control the room, or can't link to the dropto)");
-		} else {
-			DBFETCH(thing)->sp.room.dropto = dest;	/* dropto */
-			notify(player, "Dropto set.");
-		}
-		break;
-	case TYPE_PROGRAM:
-		notify(player, "You can't link programs to things!");
-		break;
-	default:
-		notify(player, "Internal error: weird object type.");
-		log_status("PANIC: weird object: Typeof(%d) = %d", thing, Typeof(thing));
-		break;
+	if (parent_loop_check(thing, dest)) {
+	    notify(player, "That would cause a parent paradox.");
+	    return;
 	}
-	DBDIRTY(thing);
-	return;
+	/* do the link */
+	if (Typeof(thing) == TYPE_THING) {
+	    THING_SET_HOME(thing, dest);
+	} else {
+	    PLAYER_SET_HOME(thing, dest);
+	}
+	notify(player, "Home set.");
+	break;
+    case TYPE_ROOM:		/* room dropto's */
+	init_match(descr, player, dest_name, TYPE_ROOM, &md);
+	match_neighbor(&md);
+	match_possession(&md);
+	match_registered(&md);
+	match_absolute(&md);
+	match_home(&md);
+	if ((dest = noisy_match_result(&md)) == NOTHING)
+	    break;
+	if (!controls(player, thing) || !can_link_to(player, Typeof(thing), dest)
+	    || (thing == dest)) {
+	    notify(player,
+		   "Permission denied. (you don't control the room, or can't link to the dropto)");
+	} else {
+	    DBFETCH(thing)->sp.room.dropto = dest;	/* dropto */
+	    notify(player, "Dropto set.");
+	}
+	break;
+    case TYPE_PROGRAM:
+	notify(player, "You can't link programs to things!");
+	break;
+    default:
+	notify(player, "Internal error: weird object type.");
+	log_status("PANIC: weird object: Typeof(%d) = %d", thing, Typeof(thing));
+	break;
+    }
+    DBDIRTY(thing);
+    return;
 }
 
 /*
@@ -462,92 +465,92 @@ do_link(int descr, dbref player, const char *thing_name, const char *dest_name)
 void
 do_dig(int descr, dbref player, const char *name, const char *pname)
 {
-	dbref room;
-	dbref parent;
-	dbref newparent;
-	char buf[BUFFER_LEN];
-	char rbuf[BUFFER_LEN];
-	char qbuf[BUFFER_LEN];
-	char *rname;
-	char *qname;
-	struct match_data md;
+    dbref room;
+    dbref parent;
+    dbref newparent;
+    char buf[BUFFER_LEN];
+    char rbuf[BUFFER_LEN];
+    char qbuf[BUFFER_LEN];
+    char *rname;
+    char *qname;
+    struct match_data md;
 
-	if (*name == '\0') {
-		notify(player, "You must specify a name for the room.");
-		return;
+    if (*name == '\0') {
+	notify(player, "You must specify a name for the room.");
+	return;
+    }
+    if (!ok_ascii_other(name)) {
+	notify(player, "Room names are limited to 7-bit ASCII.");
+	return;
+    }
+    if (!ok_name(name)) {
+	notify(player, "That's a strange name for a room!");
+	return;
+    }
+    if (!payfor(player, tp_room_cost)) {
+	notifyf(player, "Sorry, you don't have enough %s to dig a room.", tp_pennies);
+	return;
+    }
+    room = new_object();
+
+    /* Initialize everything */
+    newparent = LOCATION(LOCATION(player));
+    while ((newparent != NOTHING) && !(FLAGS(newparent) & ABODE))
+	newparent = LOCATION(newparent);
+    if (newparent == NOTHING)
+	newparent = tp_default_room_parent;
+
+    NAME(room) = alloc_string(name);
+    LOCATION(room) = newparent;
+    OWNER(room) = OWNER(player);
+    EXITS(room) = NOTHING;
+    DBFETCH(room)->sp.room.dropto = NOTHING;
+    FLAGS(room) = TYPE_ROOM | (FLAGS(player) & JUMP_OK);
+    PUSH(room, CONTENTS(newparent));
+    DBDIRTY(room);
+    DBDIRTY(newparent);
+
+    notifyf(player, "Room %s created as #%d.", name, room);
+
+    strcpyn(buf, sizeof(buf), pname);
+    for (rname = buf; (*rname && (*rname != '=')); rname++) ;
+    qname = rname;
+    if (*rname)
+	*(rname++) = '\0';
+    while ((qname > buf) && (isspace(*qname)))
+	*(qname--) = '\0';
+    qname = buf;
+    for (; *rname && isspace(*rname); rname++) ;
+    rname = strcpyn(rbuf, sizeof(rbuf), rname);
+    qname = strcpyn(qbuf, sizeof(qbuf), qname);
+
+    if (*qname) {
+	notify(player, "Trying to set parent...");
+	init_match(descr, player, qname, TYPE_ROOM, &md);
+	match_absolute(&md);
+	match_registered(&md);
+	match_here(&md);
+	if ((parent = noisy_match_result(&md)) == NOTHING || parent == AMBIGUOUS) {
+	    notify(player, "Parent set to default.");
+	} else {
+	    if (!can_link_to(player, Typeof(room), parent) || room == parent) {
+		notify(player, "Permission denied.  Parent set to default.");
+	    } else {
+		moveto(room, parent);
+		notifyf(player, "Parent set to %s.", unparse_object(player, parent));
+	    }
 	}
-	if(!ok_ascii_other(name)) {
-		notify(player, "Room names are limited to 7-bit ASCII.");
-		return;
-	}
-	if (!ok_name(name)) {
-		notify(player, "That's a strange name for a room!");
-		return;
-	}
-	if (!payfor(player, tp_room_cost)) {
-		notifyf(player, "Sorry, you don't have enough %s to dig a room.", tp_pennies);
-		return;
-	}
-	room = new_object();
+    }
 
-	/* Initialize everything */
-	newparent = LOCATION(LOCATION(player));
-	while ((newparent != NOTHING) && !(FLAGS(newparent) & ABODE))
-		newparent = LOCATION(newparent);
-	if (newparent == NOTHING)
-		newparent = tp_default_room_parent;
+    if (*rname) {
+	PData mydat;
 
-	NAME(room) = alloc_string(name);
-	LOCATION(room) = newparent;
-	OWNER(room) = OWNER(player);
-	EXITS(room) = NOTHING;
-	DBFETCH(room)->sp.room.dropto = NOTHING;
-	FLAGS(room) = TYPE_ROOM | (FLAGS(player) & JUMP_OK);
-	PUSH(room, CONTENTS(newparent));
-	DBDIRTY(room);
-	DBDIRTY(newparent);
-
-	notifyf(player, "Room %s created as #%d.", name, room);
-
-	strcpyn(buf, sizeof(buf), pname);
-	for (rname = buf; (*rname && (*rname != '=')); rname++) ;
-	qname = rname;
-	if (*rname)
-		*(rname++) = '\0';
-	while ((qname > buf) && (isspace(*qname)))
-		*(qname--) = '\0';
-	qname = buf;
-	for (; *rname && isspace(*rname); rname++) ;
-	rname = strcpyn(rbuf, sizeof(rbuf), rname);
-	qname = strcpyn(qbuf, sizeof(qbuf), qname);
-
-	if (*qname) {
-		notify(player, "Trying to set parent...");
-		init_match(descr, player, qname, TYPE_ROOM, &md);
-		match_absolute(&md);
-		match_registered(&md);
-		match_here(&md);
-		if ((parent = noisy_match_result(&md)) == NOTHING || parent == AMBIGUOUS) {
-			notify(player, "Parent set to default.");
-		} else {
-			if (!can_link_to(player, Typeof(room), parent) || room == parent) {
-				notify(player, "Permission denied.  Parent set to default.");
-			} else {
-				moveto(room, parent);
-				notifyf(player, "Parent set to %s.", unparse_object(player, parent));
-			}
-		}
-	}
-
-	if (*rname) {
-		PData mydat;
-
-		snprintf(buf, sizeof(buf), "_reg/%s", rname);
-		mydat.flags = PROP_REFTYP;
-		mydat.data.ref = room;
-		set_property(player, buf, &mydat, 0);
-		notifyf(player, "Registered as $%s", rname);
-	}
+	snprintf(buf, sizeof(buf), "_reg/%s", rname);
+	mydat.flags = PROP_REFTYP;
+	mydat.data.ref = room;
+	set_property(player, buf, &mydat, 0);
+	notifyf(player, "Registered as $%s", rname);
+    }
 }
 
 /*
@@ -559,128 +562,131 @@ do_dig(int descr, dbref player, const char *name, const char *pname)
 void
 do_prog(int descr, dbref player, const char *name)
 {
-	dbref i;
-	int jj;
-	dbref newprog;
-	char buf[BUFFER_LEN];
-	struct match_data md;
+    dbref i;
+    int jj;
+    dbref newprog;
+    char buf[BUFFER_LEN];
+    struct match_data md;
 
-	if (!*name) {
-		notify(player, "No program name given.");
-		return;
+    if (!*name) {
+	notify(player, "No program name given.");
+	return;
+    }
+    init_match(descr, player, name, TYPE_PROGRAM, &md);
+
+    match_possession(&md);
+    match_neighbor(&md);
+    match_registered(&md);
+    match_absolute(&md);
+
+    if ((i = match_result(&md)) == NOTHING) {
+	if (!ok_ascii_other(name)) {
+	    notify(player, "Program names are limited to 7-bit ASCII.");
+	    return;
 	}
-	init_match(descr, player, name, TYPE_PROGRAM, &md);
+	if (!ok_name(name)) {
+	    notify(player, "That's a strange name for a program!");
+	    return;
+	}
+	newprog = new_object();
+	NAME(newprog) = alloc_string(name);
+	snprintf(buf, sizeof(buf), "A scroll containing a spell called %s", name);
+	SETDESC(newprog, buf);
+	LOCATION(newprog) = player;
+	FLAGS(newprog) = TYPE_PROGRAM;
+	jj = MLevel(player);
+	if (jj < 1)
+	    jj = 2;
+	if (jj > 3)
+	    jj = 3;
+	SetMLevel(newprog, jj);
 
-	match_possession(&md);
-	match_neighbor(&md);
-	match_registered(&md);
-	match_absolute(&md);
-
-	if ((i = match_result(&md)) == NOTHING) {
-		if(!ok_ascii_other(name)) {
-			notify(player, "Program names are limited to 7-bit ASCII.");
-			return;
-		}
-		if (!ok_name(name)) {
-			notify(player, "That's a strange name for a program!");
-			return;
-		}
-		newprog = new_object();
-		NAME(newprog) = alloc_string(name);
-		snprintf(buf, sizeof(buf), "A scroll containing a spell called %s", name);
-		SETDESC(newprog, buf);
-		LOCATION(newprog) = player;
-		FLAGS(newprog) = TYPE_PROGRAM;
-		jj = MLevel(player);
-		if (jj < 1)
-			jj = 2;
-		if (jj > 3)
-			jj = 3;
-		SetMLevel(newprog, jj);
-
-		OWNER(newprog) = OWNER(player);
-		ALLOC_PROGRAM_SP(newprog);
-		PROGRAM_SET_FIRST(newprog, NULL);
-		PROGRAM_SET_CURR_LINE(newprog, 0);
-		PROGRAM_SET_SIZ(newprog, 0);
-		PROGRAM_SET_CODE(newprog, NULL);
-		PROGRAM_SET_START(newprog, NULL);
-		PROGRAM_SET_PUBS(newprog, NULL);
+	OWNER(newprog) = OWNER(player);
+	ALLOC_PROGRAM_SP(newprog);
+	PROGRAM_SET_FIRST(newprog, NULL);
+	PROGRAM_SET_CURR_LINE(newprog, 0);
+	PROGRAM_SET_SIZ(newprog, 0);
+	PROGRAM_SET_CODE(newprog, NULL);
+	PROGRAM_SET_START(newprog, NULL);
+	PROGRAM_SET_PUBS(newprog, NULL);
 #ifdef MCP_SUPPORT
-		PROGRAM_SET_MCPBINDS(newprog, NULL);
+	PROGRAM_SET_MCPBINDS(newprog, NULL);
 #endif
-		PROGRAM_SET_PROFTIME(newprog, 0, 0);
-		PROGRAM_SET_PROFSTART(newprog, 0);
-		PROGRAM_SET_PROF_USES(newprog, 0);
-		PROGRAM_SET_INSTANCES(newprog, 0);
+	PROGRAM_SET_PROFTIME(newprog, 0, 0);
+	PROGRAM_SET_PROFSTART(newprog, 0);
+	PROGRAM_SET_PROF_USES(newprog, 0);
+	PROGRAM_SET_INSTANCES(newprog, 0);
 
-		PLAYER_SET_CURR_PROG(player, newprog);
+	PLAYER_SET_CURR_PROG(player, newprog);
 
-		PUSH(newprog, CONTENTS(player));
-		DBDIRTY(newprog);
-		DBDIRTY(player);
-		notifyf(player, "Entering editor for new program %s.", unparse_object(player, newprog));
-	} else if (i == AMBIGUOUS) {
-		notify(player, "I don't know which one you mean!");
-		return;
-	} else {
-		if ((Typeof(i) != TYPE_PROGRAM) || !controls(player, i)) {
-			notify(player, "Permission denied!");
-			return;
-		}
-		if (FLAGS(i) & INTERNAL) {
-			notify(player, "Sorry, this program is currently being edited by someone else.  Try again later.");
-			return;
-		}
-		PROGRAM_SET_FIRST(i, read_program(i));
-		FLAGS(i) |= INTERNAL;
-		PLAYER_SET_CURR_PROG(player, i);
-		notifyf(player, "Entering editor for %s.", unparse_object(player, i));
-		/* list current line */
-		do_list(player, i, NULL, 0);
-		DBDIRTY(i);
-	}
-	FLAGS(player) |= INTERACTIVE;
+	PUSH(newprog, CONTENTS(player));
+	DBDIRTY(newprog);
 	DBDIRTY(player);
+	notifyf(player, "Entering editor for new program %s.",
+		unparse_object(player, newprog));
+    } else if (i == AMBIGUOUS) {
+	notify(player, "I don't know which one you mean!");
+	return;
+    } else {
+	if ((Typeof(i) != TYPE_PROGRAM) || !controls(player, i)) {
+	    notify(player, "Permission denied!");
+	    return;
+	}
+	if (FLAGS(i) & INTERNAL) {
+	    notify(player,
+		   "Sorry, this program is currently being edited by someone else.  Try again later.");
+	    return;
+	}
+	PROGRAM_SET_FIRST(i, read_program(i));
+	FLAGS(i) |= INTERNAL;
+	PLAYER_SET_CURR_PROG(player, i);
+	notifyf(player, "Entering editor for %s.", unparse_object(player, i));
+	/* list current line */
+	do_list(player, i, NULL, 0);
+	DBDIRTY(i);
+    }
+    FLAGS(player) |= INTERACTIVE;
+    DBDIRTY(player);
 }
 
 void
 do_edit(int descr, dbref player, const char *name)
 {
-	dbref i;
-	struct match_data md;
+    dbref i;
+    struct match_data md;
 
-	if (!*name) {
-		notify(player, "No program name given.");
-		return;
-	}
-	init_match(descr, player, name, TYPE_PROGRAM, &md);
+    if (!*name) {
+	notify(player, "No program name given.");
+	return;
+    }
+    init_match(descr, player, name, TYPE_PROGRAM, &md);
 
-	match_possession(&md);
-	match_neighbor(&md);
-	match_registered(&md);
-	match_absolute(&md);
+    match_possession(&md);
+    match_neighbor(&md);
+    match_registered(&md);
+    match_absolute(&md);
 
-	if ((i = noisy_match_result(&md)) == NOTHING || i == AMBIGUOUS)
-		return;
+    if ((i = noisy_match_result(&md)) == NOTHING || i == AMBIGUOUS)
+	return;
 
-	if ((Typeof(i) != TYPE_PROGRAM) || !controls(player, i)) {
-		notify(player, "Permission denied!");
-		return;
-	}
-	if (FLAGS(i) & INTERNAL) {
-		notify(player, "Sorry, this program is currently being edited by someone else.  Try again later.");
-		return;
-	}
-	FLAGS(i) |= INTERNAL;
-	PROGRAM_SET_FIRST(i, read_program(i));
-	PLAYER_SET_CURR_PROG(player, i);
-	notifyf(player, "Entering editor for %s.", unparse_object(player, i));
-	/* list current line */
-	do_list(player, i, NULL, 0);
-	FLAGS(player) |= INTERACTIVE;
-	DBDIRTY(i);
-	DBDIRTY(player);
+    if ((Typeof(i) != TYPE_PROGRAM) || !controls(player, i)) {
+	notify(player, "Permission denied!");
+	return;
+    }
+    if (FLAGS(i) & INTERNAL) {
+	notify(player,
+	       "Sorry, this program is currently being edited by someone else.  Try again later.");
+	return;
+    }
+    FLAGS(i) |= INTERNAL;
+    PROGRAM_SET_FIRST(i, read_program(i));
+    PLAYER_SET_CURR_PROG(player, i);
+    notifyf(player, "Entering editor for %s.", unparse_object(player, i));
+    /* list current line */
+    do_list(player, i, NULL, 0);
+    FLAGS(player) |= INTERACTIVE;
+    DBDIRTY(i);
+    DBDIRTY(player);
 }
 
 /*
@@ -690,44 +696,44 @@ do_edit(int descr, dbref player, const char *name)
 void
 copy_one_prop(dbref source, dbref destination, char *propname)
 {
-	PropPtr currprop;
-	PData newprop;
+    PropPtr currprop;
+    PData newprop;
 
-	/* read property from old object */
-	currprop = get_property(source, propname);
+    /* read property from old object */
+    currprop = get_property(source, propname);
 
 #ifdef DISKBASE
-	/* make sure the property value is there */
-	propfetch(source, currprop);
+    /* make sure the property value is there */
+    propfetch(source, currprop);
 #endif
 
-	if(currprop) {
+    if (currprop) {
 
-		/* flags can be copied. */		
-		newprop.flags = currprop->flags;
+	/* flags can be copied. */
+	newprop.flags = currprop->flags;
 
-		/* data, however, must be cloned in case it's a string or a
-		   lock. */
-		switch(PropType(currprop)) {
-			case PROP_STRTYP:
-				newprop.data.str = alloc_string((currprop->data).str);
-				break;
-			case PROP_INTTYP:
-			case PROP_FLTTYP:
-			case PROP_REFTYP:
-				newprop.data = currprop->data;
-				break;
-			case PROP_LOKTYP:
-				newprop.data.lok = copy_bool((currprop->data).lok);
-			case PROP_DIRTYP:
-				break;
-		}
-
-		/* now hook the new property into the destination object. */
-		set_property(destination, propname, &newprop, 0);
+	/* data, however, must be cloned in case it's a string or a
+	   lock. */
+	switch (PropType(currprop)) {
+	case PROP_STRTYP:
+	    newprop.data.str = alloc_string((currprop->data).str);
+	    break;
+	case PROP_INTTYP:
+	case PROP_FLTTYP:
+	case PROP_REFTYP:
+	    newprop.data = currprop->data;
+	    break;
+	case PROP_LOKTYP:
+	    newprop.data.lok = copy_bool((currprop->data).lok);
+	case PROP_DIRTYP:
+	    break;
 	}
-	
-	return;
+
+	/* now hook the new property into the destination object. */
+	set_property(destination, propname, &newprop, 0);
+    }
+
+    return;
 }
 
 /*
@@ -738,35 +744,35 @@ copy_one_prop(dbref source, dbref destination, char *propname)
 void
 copy_props(dbref player, dbref source, dbref destination, const char *dir)
 {
-	char propname[BUFFER_LEN];
-	char buf[BUFFER_LEN];
-	PropPtr propadr, pptr;
+    char propname[BUFFER_LEN];
+    char buf[BUFFER_LEN];
+    PropPtr propadr, pptr;
 
-	/* loop through all properties in the current propdir */
-	propadr = first_prop(source, (char *) dir, &pptr, propname, sizeof(propname));
-	while (propadr) {
-	
-		/* generate name for current property */
-		snprintf(buf, sizeof(buf), "%s%c%s", dir, PROPDIR_DELIMITER, propname);
+    /* loop through all properties in the current propdir */
+    propadr = first_prop(source, (char *) dir, &pptr, propname, sizeof(propname));
+    while (propadr) {
 
-		/* notify player */
-		if(tp_verbose_clone && Wizard(OWNER(player))) {
-			notifyf(player, "copying property %s", buf);
-		}
+	/* generate name for current property */
+	snprintf(buf, sizeof(buf), "%s%c%s", dir, PROPDIR_DELIMITER, propname);
 
-		/* copy this property */
-		copy_one_prop(source, destination, buf);
-		
-		/* recursively copy this property directory */
-		copy_props(player, source, destination, buf);
-		
-		/* find next property in current dir */
-		propadr = next_prop(pptr, propadr, propname, sizeof(propname));
-
+	/* notify player */
+	if (tp_verbose_clone && Wizard(OWNER(player))) {
+	    notifyf(player, "copying property %s", buf);
 	}
-	
-	/* chaos and disorder - our work here is done. */
-	return;
+
+	/* copy this property */
+	copy_one_prop(source, destination, buf);
+
+	/* recursively copy this property directory */
+	copy_props(player, source, destination, buf);
+
+	/* find next property in current dir */
+	propadr = next_prop(pptr, propadr, propname, sizeof(propname));
+
+    }
+
+    /* chaos and disorder - our work here is done. */
+    return;
 }
 
 /*
@@ -777,102 +783,102 @@ copy_props(dbref player, dbref source, dbref destination, const char *dir)
 void
 do_clone(int descr, dbref player, char *name)
 {
-	dbref  thing, clonedthing;
-	int    cost;
-	struct match_data md;
+    dbref thing, clonedthing;
+    int cost;
+    struct match_data md;
 
-	/* Perform sanity checks */
+    /* Perform sanity checks */
 
-	if (*name == '\0') {
-		notify(player, "Clone what?");
-		return;
-	} 
+    if (*name == '\0') {
+	notify(player, "Clone what?");
+	return;
+    }
 
-	/* All OK so far, so try to find the thing that should be cloned. We
-	   do not allow rooms, exits, etc. to be cloned for now. */
+    /* All OK so far, so try to find the thing that should be cloned. We
+       do not allow rooms, exits, etc. to be cloned for now. */
 
-	init_match(descr, player, name, TYPE_THING, &md);
-	match_possession(&md);
-	match_neighbor(&md);
-	match_registered(&md);
-	match_absolute(&md);
-	
-	if ((thing = noisy_match_result(&md)) == NOTHING)
-		return;
+    init_match(descr, player, name, TYPE_THING, &md);
+    match_possession(&md);
+    match_neighbor(&md);
+    match_registered(&md);
+    match_absolute(&md);
 
-	if (thing == AMBIGUOUS) {
-		notify(player, "I don't know which one you mean!");
-		return;
+    if ((thing = noisy_match_result(&md)) == NOTHING)
+	return;
+
+    if (thing == AMBIGUOUS) {
+	notify(player, "I don't know which one you mean!");
+	return;
+    }
+
+    /* Further sanity checks */
+
+    /* things only. */
+    if (Typeof(thing) != TYPE_THING) {
+	notify(player, "That is not a cloneable object.");
+	return;
+    }
+
+    /* check the name again, just in case reserved name patterns have
+       changed since the original object was created. */
+    if (!ok_name(NAME(thing))) {
+	notify(player, "You cannot clone something with such a weird name!");
+	return;
+    }
+
+    /* no stealing stuff. */
+    if (!controls(player, thing)) {
+	notify(player, "Permission denied. (you can't clone this)");
+	return;
+    }
+
+    /* there ain't no such lunch as a free thing. */
+    cost = OBJECT_GETCOST(GETVALUE(thing));
+    if (cost < tp_object_cost) {
+	cost = tp_object_cost;
+    }
+
+    if (!payfor(player, cost)) {
+	notifyf(player, "Sorry, you don't have enough %s.", tp_pennies);
+	return;
+    } else {
+	if (tp_verbose_clone) {
+	    notifyf(player, "Now cloning %s...", unparse_object(player, thing));
 	}
 
-	/* Further sanity checks */
+	/* create the object */
+	clonedthing = new_object();
 
-	/* things only. */
-	if(Typeof(thing) != TYPE_THING) {
-		notify(player, "That is not a cloneable object.");
-		return;
-	}		
-	
-	/* check the name again, just in case reserved name patterns have
-	   changed since the original object was created. */
-	if (!ok_name(NAME(thing))) {
-		notify(player, "You cannot clone something with such a weird name!");
-		return;
-	}
-
-	/* no stealing stuff. */
-	if(!controls(player, thing)) {
-		notify(player, "Permission denied. (you can't clone this)");
-		return;
-	}
-
-	/* there ain't no such lunch as a free thing. */
-	cost = OBJECT_GETCOST(GETVALUE(thing));
-	if (cost < tp_object_cost) {
-		cost = tp_object_cost;
-	}
-	
-	if (!payfor(player, cost)) {
-		notifyf(player, "Sorry, you don't have enough %s.", tp_pennies);
-		return;
-	} else {
-		if(tp_verbose_clone) {
-			notifyf(player, "Now cloning %s...", unparse_object(player, thing));
-		}
-		
-		/* create the object */
-		clonedthing = new_object();
-
-		/* initialize everything */
-		NAME(clonedthing) = alloc_string(NAME(thing));
-		ALLOC_THING_SP(clonedthing);
-		LOCATION(clonedthing) = player;
-		OWNER(clonedthing) = OWNER(player);
-		SETVALUE(clonedthing, GETVALUE(thing));
+	/* initialize everything */
+	NAME(clonedthing) = alloc_string(NAME(thing));
+	ALLOC_THING_SP(clonedthing);
+	LOCATION(clonedthing) = player;
+	OWNER(clonedthing) = OWNER(player);
+	SETVALUE(clonedthing, GETVALUE(thing));
 /* FIXME: should we clone attached actions? */
-		EXITS(clonedthing) = NOTHING;
-		FLAGS(clonedthing) = FLAGS(thing);
+	EXITS(clonedthing) = NOTHING;
+	FLAGS(clonedthing) = FLAGS(thing);
 
-		/* copy all properties */
-		copy_props(player, thing, clonedthing, "");
+	/* copy all properties */
+	copy_props(player, thing, clonedthing, "");
 
-		/* endow the object */
-		if (GETVALUE(thing) > tp_max_object_endowment) {
-			SETVALUE(thing, tp_max_object_endowment);
-		}
-		
-		/* Home, sweet home */
-		THING_SET_HOME(clonedthing, THING_HOME(thing));
-
-		/* link it in */
-		PUSH(clonedthing, CONTENTS(player));
-		DBDIRTY(player);
-
-		/* and we're done */
-		notifyf(player, "Object %s cloned as #%d.", NAME(thing), clonedthing);
-		DBDIRTY(clonedthing);
+	/* endow the object */
+	if (GETVALUE(thing) > tp_max_object_endowment) {
+	    SETVALUE(thing, tp_max_object_endowment);
 	}
-	
+
+	/* Home, sweet home */
+	THING_SET_HOME(clonedthing, THING_HOME(thing));
+
+	/* link it in */
+	PUSH(clonedthing, CONTENTS(player));
+	DBDIRTY(player);
+
+	/* and we're done */
+	notifyf(player, "Object %s cloned as #%d.", NAME(thing), clonedthing);
+	DBDIRTY(clonedthing);
+    }
+
 }
 
 /*
@@ -883,84 +889,84 @@ do_clone(int descr, dbref player, char *name)
 void
 do_create(dbref player, char *name, char *acost)
 {
-	dbref loc;
-	dbref thing;
-	int cost;
+    dbref loc;
+    dbref thing;
+    int cost;
 
-	static char buf[BUFFER_LEN];
-	char buf2[BUFFER_LEN];
-	char *rname, *qname;
+    static char buf[BUFFER_LEN];
+    char buf2[BUFFER_LEN];
+    char *rname, *qname;
 
-	strcpyn(buf2, sizeof(buf2), acost);
-	for (rname = buf2; (*rname && (*rname != '=')); rname++) ;
-	qname = rname;
-	if (*rname)
-		*(rname++) = '\0';
-	while ((qname > buf2) && (isspace(*qname)))
-		*(qname--) = '\0';
-	qname = buf2;
-	for (; *rname && isspace(*rname); rname++) ;
+    strcpyn(buf2, sizeof(buf2), acost);
+    for (rname = buf2; (*rname && (*rname != '=')); rname++) ;
+    qname = rname;
+    if (*rname)
+	*(rname++) = '\0';
+    while ((qname > buf2) && (isspace(*qname)))
+	*(qname--) = '\0';
+    qname = buf2;
+    for (; *rname && isspace(*rname); rname++) ;
 
-	cost = atoi(qname);
-	if (*name == '\0') {
-		notify(player, "Create what?");
-		return;
-	} else if(!ok_ascii_thing(name)) {
-		notify(player, "Thing names are limited to 7-bit ASCII.");
-		return;
-	} else if (!ok_name(name)) {
-		notify(player, "That's a strange name for a thing!");
-		return;
-	} else if (cost < 0) {
-		notify(player, "You can't create an object for less than nothing!");
-		return;
-	} else if (cost < tp_object_cost) {
-		cost = tp_object_cost;
+    cost = atoi(qname);
+    if (*name == '\0') {
+	notify(player, "Create what?");
+	return;
+    } else if (!ok_ascii_thing(name)) {
+	notify(player, "Thing names are limited to 7-bit ASCII.");
+	return;
+    } else if (!ok_name(name)) {
+	notify(player, "That's a strange name for a thing!");
+	return;
+    } else if (cost < 0) {
+	notify(player, "You can't create an object for less than nothing!");
+	return;
+    } else if (cost < tp_object_cost) {
+	cost = tp_object_cost;
+    }
+    if (!payfor(player, cost)) {
+	notifyf(player, "Sorry, you don't have enough %s.", tp_pennies);
+	return;
+    } else {
+	/* create the object */
+	thing = new_object();
+
+	/* initialize everything */
+	NAME(thing) = alloc_string(name);
+	ALLOC_THING_SP(thing);
+	LOCATION(thing) = player;
+	OWNER(thing) = OWNER(player);
+	SETVALUE(thing, OBJECT_ENDOWMENT(cost));
+	EXITS(thing) = NOTHING;
+	FLAGS(thing) = TYPE_THING;
+
+	/* endow the object */
+	if (GETVALUE(thing) > tp_max_object_endowment) {
+	    SETVALUE(thing, tp_max_object_endowment);
 	}
-	if (!payfor(player, cost)) {
-		notifyf(player, "Sorry, you don't have enough %s.", tp_pennies);
-		return;
+	if ((loc = LOCATION(player)) != NOTHING && controls(player, loc)) {
+	    THING_SET_HOME(thing, loc);	/* home */
 	} else {
-		/* create the object */
-		thing = new_object();
-
-		/* initialize everything */
-		NAME(thing) = alloc_string(name);
-		ALLOC_THING_SP(thing);
-		LOCATION(thing) = player;
-		OWNER(thing) = OWNER(player);
-		SETVALUE(thing, OBJECT_ENDOWMENT(cost));
-		EXITS(thing) = NOTHING;
-		FLAGS(thing) = TYPE_THING;
-
-		/* endow the object */
-		if (GETVALUE(thing) > tp_max_object_endowment) {
-			SETVALUE(thing, tp_max_object_endowment);
-		}
-		if ((loc = LOCATION(player)) != NOTHING && controls(player, loc)) {
-			THING_SET_HOME(thing, loc);	/* home */
-		} else {
-			THING_SET_HOME(thing, player);	/* home */
-			/* set thing's home to player instead */
-		}
-
-		/* link it in */
-		PUSH(thing, CONTENTS(player));
-		DBDIRTY(player);
-
-		/* and we're done */
-		notifyf(player, "Object %s created as #%d.", name, thing);
-		DBDIRTY(thing);
+	    THING_SET_HOME(thing, player);	/* home */
+	    /* set thing's home to player instead */
 	}
-	if (*rname) {
-		PData mydat;
 
-		notifyf(player, "Registered as $%s", rname);
-		snprintf(buf, sizeof(buf), "_reg/%s", rname);
-		mydat.flags = PROP_REFTYP;
-		mydat.data.ref = thing;
-		set_property(player, buf, &mydat, 0);
-	}
+	/* link it in */
+	PUSH(thing, CONTENTS(player));
+	DBDIRTY(player);
+
+	/* and we're done */
+	notifyf(player, "Object %s created as #%d.", name, thing);
+	DBDIRTY(thing);
+    }
+    if (*rname) {
+	PData mydat;
+
+	notifyf(player, "Registered as $%s", rname);
+	snprintf(buf, sizeof(buf), "_reg/%s", rname);
+	mydat.flags = PROP_REFTYP;
+	mydat.data.ref = thing;
+	set_property(player, buf, &mydat, 0);
+    }
 }
 
 /*
@@ -977,36 +983,36 @@ do_create(dbref player, char *name, char *acost)
 dbref
 parse_source(int descr, dbref player, const char *source_name)
 {
-	dbref source;
-	struct match_data md;
+    dbref source;
+    struct match_data md;
 
-	init_match(descr, player, source_name, NOTYPE, &md);
-	/* source type can be any */
-	match_neighbor(&md);
-	match_me(&md);
-	match_here(&md);
-	match_possession(&md);
-	match_registered(&md);
-	match_absolute(&md);
-	source = noisy_match_result(&md);
+    init_match(descr, player, source_name, NOTYPE, &md);
+    /* source type can be any */
+    match_neighbor(&md);
+    match_me(&md);
+    match_here(&md);
+    match_possession(&md);
+    match_registered(&md);
+    match_absolute(&md);
+    source = noisy_match_result(&md);
 
-	if (source == NOTHING)
-		return NOTHING;
+    if (source == NOTHING)
+	return NOTHING;
 
-	/* You can only attach actions to things you control */
-	if (!controls(player, source)) {
-		notify(player, "Permission denied. (you don't control the attachment point)");
-		return NOTHING;
-	}
-	if (Typeof(source) == TYPE_EXIT) {
-		notify(player, "You can't attach an action to an action.");
-		return NOTHING;
-	}
-	if (Typeof(source) == TYPE_PROGRAM) {
-		notify(player, "You can't attach an action to a program.");
-		return NOTHING;
-	}
-	return source;
+    /* You can only attach actions to things you control */
+    if (!controls(player, source)) {
+	notify(player, "Permission denied. (you don't control the attachment point)");
+	return NOTHING;
+    }
+    if (Typeof(source) == TYPE_EXIT) {
+	notify(player, "You can't attach an action to an action.");
+	return NOTHING;
+    }
+    if (Typeof(source) == TYPE_PROGRAM) {
+	notify(player, "You can't attach an action to a program.");
+	return NOTHING;
+    }
+    return source;
 }
 
 /*
@@ -1019,44 +1025,43 @@ parse_source(int descr, dbref player, const char *source_name)
 void
 set_source(dbref player, dbref action, dbref source)
 {
-	switch (Typeof(source)) {
-	case TYPE_ROOM:
-	case TYPE_THING:
-	case TYPE_PLAYER:
-		PUSH(action, EXITS(source));
-		break;
-	default:
-		notify(player, "Internal error: weird object type.");
-		log_status("PANIC: tried to source %d to %d: type: %d",
-				   action, source, Typeof(source));
-		return;
-	}
-	DBDIRTY(source);
-	DBSTORE(action, location, source);
+    switch (Typeof(source)) {
+    case TYPE_ROOM:
+    case TYPE_THING:
+    case TYPE_PLAYER:
+	PUSH(action, EXITS(source));
+	break;
+    default:
+	notify(player, "Internal error: weird object type.");
+	log_status("PANIC: tried to source %d to %d: type: %d",
+		   action, source, Typeof(source));
 	return;
+    }
+    DBDIRTY(source);
+    DBSTORE(action, location, source);
+    return;
 }
 
 int
 unset_source(dbref player, dbref action)
 {
-	dbref oldsrc;
+    dbref oldsrc;
 
-	if ((oldsrc = LOCATION(action)) == NOTHING) {
-		DBSTORE(LOCATION(player), exits,
-				remove_first(EXITS(LOCATION(player)), action));
-	} else {
-		switch (Typeof(oldsrc)) {
-		case TYPE_PLAYER:
-		case TYPE_ROOM:
-		case TYPE_THING:
-			DBSTORE(oldsrc, exits, remove_first(EXITS(oldsrc), action));
-			break;
-		default:
-			log_status("PANIC: source of action #%d was type: %d.", action, Typeof(oldsrc));
-			return 0;
-		}
+    if ((oldsrc = LOCATION(action)) == NOTHING) {
+	DBSTORE(LOCATION(player), exits, remove_first(EXITS(LOCATION(player)), action));
+    } else {
+	switch (Typeof(oldsrc)) {
+	case TYPE_PLAYER:
+	case TYPE_ROOM:
+	case TYPE_THING:
+	    DBSTORE(oldsrc, exits, remove_first(EXITS(oldsrc), action));
+	    break;
+	default:
+	    log_status("PANIC: source of action #%d was type: %d.", action, Typeof(oldsrc));
+	    return 0;
 	}
-	return 1;
+    }
+    return 1;
 }
 
 /*
@@ -1070,67 +1075,67 @@ unset_source(dbref player, dbref action)
 void
 do_action(int descr, dbref player, const char *action_name, const char *source_name)
 {
-	dbref action, source;
-	static char buf[BUFFER_LEN];
-	char buf2[BUFFER_LEN];
-	char *rname, *qname;
+    dbref action, source;
+    static char buf[BUFFER_LEN];
+    char buf2[BUFFER_LEN];
+    char *rname, *qname;
 
-	strcpyn(buf2, sizeof(buf2), source_name);
-	for (rname = buf2; (*rname && (*rname != '=')); rname++) ;
-	qname = rname;
-	if (*rname)
-		*(rname++) = '\0';
-	while ((qname > buf2) && (isspace(*qname)))
-		*(qname--) = '\0';
-	qname = buf2;
-	for (; *rname && isspace(*rname); rname++) ;
+    strcpyn(buf2, sizeof(buf2), source_name);
+    for (rname = buf2; (*rname && (*rname != '=')); rname++) ;
+    qname = rname;
+    if (*rname)
+	*(rname++) = '\0';
+    while ((qname > buf2) && (isspace(*qname)))
+	*(qname--) = '\0';
+    qname = buf2;
+    for (; *rname && isspace(*rname); rname++) ;
 
-	if (!*action_name || !*qname) {
-		notify(player, "You must specify an action name and a source object.");
-		return;
-	} else if(!ok_ascii_other(action_name)) {
-		notify(player, "Action names are limited to 7-bit ASCII.");
-		return;
-	} else if (!ok_name(action_name)) {
-		notify(player, "That's a strange name for an action!");
-		return;
-	}
-	if (((source = parse_source(descr, player, qname)) == NOTHING))
-		return;
-        if (!payfor(player, tp_exit_cost)) {
-                notifyf(player, "Sorry, you don't have enough %s to make an action.", tp_pennies);
-                return;
-        }
+    if (!*action_name || !*qname) {
+	notify(player, "You must specify an action name and a source object.");
+	return;
+    } else if (!ok_ascii_other(action_name)) {
+	notify(player, "Action names are limited to 7-bit ASCII.");
+	return;
+    } else if (!ok_name(action_name)) {
+	notify(player, "That's a strange name for an action!");
+	return;
+    }
+    if (((source = parse_source(descr, player, qname)) == NOTHING))
+	return;
+    if (!payfor(player, tp_exit_cost)) {
+	notifyf(player, "Sorry, you don't have enough %s to make an action.", tp_pennies);
+	return;
+    }
 
-	action = new_object();
+    action = new_object();
 
-	NAME(action) = alloc_string(action_name);
-	LOCATION(action) = NOTHING;
-	OWNER(action) = OWNER(player);
-	DBFETCH(action)->sp.exit.ndest = 0;
-	DBFETCH(action)->sp.exit.dest = NULL;
-	FLAGS(action) = TYPE_EXIT;
+    NAME(action) = alloc_string(action_name);
+    LOCATION(action) = NOTHING;
+    OWNER(action) = OWNER(player);
+    DBFETCH(action)->sp.exit.ndest = 0;
+    DBFETCH(action)->sp.exit.dest = NULL;
+    FLAGS(action) = TYPE_EXIT;
 
-	set_source(player, action, source);
-	notifyf(player, "Action %s created as #%d and attached.", NAME(action), action);
-	DBDIRTY(action);
+    set_source(player, action, source);
+    notifyf(player, "Action %s created as #%d and attached.", NAME(action), action);
+    DBDIRTY(action);
 
-	if (*rname) {
-		PData mydat;
+    if (*rname) {
+	PData mydat;
 
-		notifyf(player, "Registered as $%s", rname);
-		snprintf(buf, sizeof(buf), "_reg/%s", rname);
-		mydat.flags = PROP_REFTYP;
-		mydat.data.ref = action;
-		set_property(player, buf, &mydat, 0);
-	}
+	notifyf(player, "Registered as $%s", rname);
+	snprintf(buf, sizeof(buf), "_reg/%s", rname);
+	mydat.flags = PROP_REFTYP;
+	mydat.data.ref = action;
+	set_property(player, buf, &mydat, 0);
+    }
 
-	if (tp_autolink_actions) {
-		DBFETCH(action)->sp.exit.ndest = 1;
-		DBFETCH(action)->sp.exit.dest = (dbref *) malloc(sizeof(dbref));
-		(DBFETCH(action)->sp.exit.dest)[0] = NIL;
-		notify(player, "Linked to NIL.");
-	}
+    if (tp_autolink_actions) {
+	DBFETCH(action)->sp.exit.ndest = 1;
+	DBFETCH(action)->sp.exit.dest = (dbref *) malloc(sizeof(dbref));
+	(DBFETCH(action)->sp.exit.dest)[0] = NIL;
+	notify(player, "Linked to NIL.");
+    }
 }
 
 /*
@@ -1143,42 +1148,43 @@ do_action(int descr, dbref player, const char *action_name, const char *source_n
 void
 do_attach(int descr, dbref player, const char *action_name, const char *source_name)
 {
-	dbref action, source;
-	struct match_data md;
+    dbref action, source;
+    struct match_data md;
 
-	if (LOCATION(player) == NOTHING)
-		return;
+    if (LOCATION(player) == NOTHING)
+	return;
 
-	if (!*action_name || !*source_name) {
-		notify(player, "You must specify an action name and a source object.");
-		return;
-	}
-	init_match(descr, player, action_name, TYPE_EXIT, &md);
-	match_all_exits(&md);
-	match_registered(&md);
-	match_absolute(&md);
+    if (!*action_name || !*source_name) {
+	notify(player, "You must specify an action name and a source object.");
+	return;
+    }
+    init_match(descr, player, action_name, TYPE_EXIT, &md);
+    match_all_exits(&md);
+    match_registered(&md);
+    match_absolute(&md);
 
-	if ((action = noisy_match_result(&md)) == NOTHING)
-		return;
+    if ((action = noisy_match_result(&md)) == NOTHING)
+	return;
 
-	if (Typeof(action) != TYPE_EXIT) {
-		notify(player, "That's not an action!");
-		return;
-	} else if (!controls(player, action)) {
-		notify(player, "Permission denied. (you don't control the action you're trying to reattach)");
-		return;
-	}
-	if (((source = parse_source(descr, player, source_name)) == NOTHING)
-		|| Typeof(source) == TYPE_PROGRAM)
-		return;
+    if (Typeof(action) != TYPE_EXIT) {
+	notify(player, "That's not an action!");
+	return;
+    } else if (!controls(player, action)) {
+	notify(player,
+	       "Permission denied. (you don't control the action you're trying to reattach)");
+	return;
+    }
+    if (((source = parse_source(descr, player, source_name)) == NOTHING)
+	|| Typeof(source) == TYPE_PROGRAM)
+	return;
 
-	if (!unset_source(player, action)) {
-		return;
-	}
-	set_source(player, action, source);
-	notify(player, "Action re-attached.");
-	if (MLevRaw(action)) {
-		SetMLevel(action, 0);
-		notify(player, "Action priority Level reset to zero.");
-	}
+    if (!unset_source(player, action)) {
+	return;
+    }
+    set_source(player, action, source);
+    notify(player, "Action re-attached.");
+    if (MLevRaw(action)) {
+	SetMLevel(action, 0);
+	notify(player, "Action priority Level reset to zero.");
+    }
 }

@@ -48,7 +48,7 @@
  * TinyMUD Classic ran on that port.  It was the office number of James
  * Aspnes, who wrote TinyMUD from which TinyMUCK eventually was derived.
  */
-#define TINYPORT 4201			/* Port that players connect to */
+#define TINYPORT 4201		/* Port that players connect to */
 
 /*
  * Some systems can hang for up to 30 seconds while trying to resolve
@@ -119,8 +119,8 @@
 #define WELC_FILE "data/welcome.txt"	/* For the opening screen      */
 #define MOTD_FILE "data/motd.txt"	/* For the message of the day  */
 #define CREDITS_FILE "data/credits.txt"	/* For acknowledgements        */
-#define CONHELP_FILE "data/connect-help.txt" /* For 'help' before login*/
-#define PARM_FILE "data/parmfile.cfg"   /* For system parameters       */
+#define CONHELP_FILE "data/connect-help.txt"	/* For 'help' before login */
+#define PARM_FILE "data/parmfile.cfg"	/* For system parameters       */
 #define HELP_FILE "data/help.txt"	/* For the 'help' command      */
 #define HELP_DIR  "data/help"	/* For 'help' subtopic files   */
 #define NEWS_FILE "data/news.txt"	/* For the 'news' command      */
@@ -139,7 +139,7 @@
 #define LOG_MUF     "logs/muf-errors"	/* Muf compiler errors and warnings. */
 #define COMMAND_LOG "logs/commands"	/* Player commands */
 #define PROGRAM_LOG "logs/programs"	/* text of changed programs */
-#define USER_LOG    "logs/user"		/* log of player/program-init msgs. */
+#define USER_LOG    "logs/user"	/* log of player/program-init msgs. */
 
 #define MACRO_FILE  "muf/macros"
 
@@ -149,9 +149,9 @@
 #define PID_FILE    "fbmuck.pid"
 
 #ifdef DETACH
-# define LOG_FILE     "logs/fbmuck"     /* Log stdout to ... */
-# define LOG_ERR_FILE "logs/fbmuck.err" /* Log stderr to ... */
-#endif							/* DETACH */
+# define LOG_FILE     "logs/fbmuck"	/* Log stdout to ... */
+# define LOG_ERR_FILE "logs/fbmuck.err"	/* Log stderr to ... */
+#endif				/* DETACH */
 
 /************************************************************************
   System Dependency Defines. 
@@ -223,7 +223,7 @@
 # define NDEBUG
 #include <assert.h>
 #define DEBUGPRINT(x,y,z) ;
-#endif /* DEBUG */
+#endif				/* DEBUG */
 
 #ifdef STDC_HEADERS
 # include <stdlib.h>
@@ -240,20 +240,20 @@
 /* An ANSI string.h and pre-ANSI memory.h might conflict.  */
 # if !defined(STDC_HEADERS) && defined(HAVE_MEMORY_H)
 #  include <memory.h>
-# endif			/* not STDC_HEADERS and HAVE_MEMORY_H */
+# endif				/* not STDC_HEADERS and HAVE_MEMORY_H */
 /* Map BSD funcs to ANSI ones. */
 # define index		strchr
 # define rindex		strrchr
 # define bcopy(s, d, n) memcpy ((d), (s), (n))
 # define bzero(s, n) memset ((s), 0, (n))
-#else			/* not STDC_HEADERS and not HAVE_STRING_H */
+#else				/* not STDC_HEADERS and not HAVE_STRING_H */
 # include <strings.h>
 /* Map ANSI funcs to BSD ones. */
 # define strchr		index
 # define strrchr	rindex
 # define memcpy(d, s, n) bcopy((s), (d), (n))
 /* no real way to map memset to bzero, unfortunatly. */
-#endif			/* not STDC_HEADERS and not HAVE_STRING_H */
+#endif				/* not STDC_HEADERS and not HAVE_STRING_H */
 
 #ifdef HAVE_RANDOM
 # define SRANDOM(seed)	srandom((seed))
@@ -360,4 +360,4 @@
 #include "win32.h"
 #endif
 
-#endif /* _CONFIG_H */
+#endif				/* _CONFIG_H */

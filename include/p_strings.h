@@ -72,4 +72,4 @@ extern void prim_rinstring(PRIM_PROTOTYPE);
 
 #define PRIMS_STRINGS_CNT 44
 
-#endif /* _P_STRINGS_H */
+#endif				/* _P_STRINGS_H */

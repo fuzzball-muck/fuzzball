@@ -143,4 +143,4 @@ const char *mfn_while(MFUNARGS);
 const char *mfn_with(MFUNARGS);
 const char *mfn_xor(MFUNARGS);
 
-#endif /* _MFUN_H */
+#endif				/* _MFUN_H */

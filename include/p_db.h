@@ -104,4 +104,4 @@ extern void prim_toadplayer(PRIM_PROTOTYPE);
 
 #define PRIMS_DB_CNT 63
 
-#endif /* _P_DB_H */
+#endif				/* _P_DB_H */

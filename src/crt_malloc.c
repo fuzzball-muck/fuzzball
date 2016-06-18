@@ -158,18 +158,18 @@
 /* for each textually distinct [mc]alloc() call:       */
 
 struct CrT_block_rec {
-	const char *file;
-	int line;
+    const char *file;
+    int line;
 
-	long tot_bytes_alloc;
-	long tot_allocs_done;
-	long live_blocks;
-	long live_bytes;
-	long max_blocks;
-	long max_bytes;
-	time_t max_bytes_time;
+    long tot_bytes_alloc;
+    long tot_allocs_done;
+    long live_blocks;
+    long live_bytes;
+    long max_blocks;
+    long max_bytes;
+    time_t max_bytes_time;
 
-	struct CrT_block_rec *next;
+    struct CrT_block_rec *next;
 };
 typedef struct CrT_block_rec A_Block;
 typedef struct CrT_block_rec *Block;
@@ -180,12 +180,12 @@ static Block block_list = NULL;
 /* {{{ Header, a header we add to each block allocated: 		*/
 
 struct CrT_header_rec {
-	Block b;
-	size_t size;
+    Block b;
+    size_t size;
 #ifdef MALLOC_PROFILING_EXTRA
-	struct CrT_header_rec *next;
-	struct CrT_header_rec *prev;
-	char *end;
+    struct CrT_header_rec *next;
+    struct CrT_header_rec *prev;
+    char *end;
 #endif
 };
 typedef struct CrT_header_rec A_Header;
@@ -197,28 +197,28 @@ typedef struct CrT_header_rec *Header;
 #ifdef MALLOC_PROFILING_EXTRA
 static A_Block Root_Owner = {
 
-	__FILE__,					/* file */
-	__LINE__,					/* line */
+    __FILE__,			/* file */
+    __LINE__,			/* line */
 
-	0,							/* tot_bytes_alloc */
-	0,							/* tot_allocs_done */
-	0,							/* live_blocks     */
-	0,							/* live_bytes      */
-	0,							/* max_blocks      */
-	0,							/* max_bytes       */
-	0,							/* max_bytes_time  */
+    0,				/* tot_bytes_alloc */
+    0,				/* tot_allocs_done */
+    0,				/* live_blocks     */
+    0,				/* live_bytes      */
+    0,				/* max_blocks      */
+    0,				/* max_bytes       */
+    0,				/* max_bytes_time  */
 
-	NULL						/* next            */
+    NULL			/* next            */
 };
 
 static char root_end = CRT_MAGIC;
 
 static A_Header root = {
-	&Root_Owner,				/* b    */
-	0,							/* size */
-	&root,						/* next */
-	&root,						/* prev */
-	&root_end,					/* end  */
+    &Root_Owner,		/* b    */
+    0,				/* size */
+    &root,			/* next */
+    &root,			/* prev */
+    &root_end,			/* end  */
 };
 
 /* Clockhand that we run circularly around  */
@@ -243,46 +243,47 @@ static Header rover = &root;
 
 /* An array tracking last CRT_NEW_TO_CHECK blocks touched: */
 static Header just_touched[CRT_NEW_TO_CHECK] = {
-	/* I can't think of an elegant way of generating the */
-	/* right number of initializers automatically via    */
-	/* cpp :( so:                                        */
-	&root, &root, &root, &root,
-	&root, &root, &root, &root,
-	&root, &root, &root, &root,
-	&root, &root, &root, &root,
-	&root, &root, &root, &root,
-	&root, &root, &root, &root,
-	&root, &root, &root, &root,
-	&root, &root, &root, &root,
+    /* I can't think of an elegant way of generating the */
+    /* right number of initializers automatically via    */
+    /* cpp :( so:                                        */
+    &root, &root, &root, &root,
+    &root, &root, &root, &root,
+    &root, &root, &root, &root,
+    &root, &root, &root, &root,
+    &root, &root, &root, &root,
+    &root, &root, &root, &root,
+    &root, &root, &root, &root,
+    &root, &root, &root, &root,
 
-	&root, &root, &root, &root,
-	&root, &root, &root, &root,
-	&root, &root, &root, &root,
-	&root, &root, &root, &root,
-	&root, &root, &root, &root,
-	&root, &root, &root, &root,
-	&root, &root, &root, &root,
-	&root, &root, &root, &root,
+    &root, &root, &root, &root,
+    &root, &root, &root, &root,
+    &root, &root, &root, &root,
+    &root, &root, &root, &root,
+    &root, &root, &root, &root,
+    &root, &root, &root, &root,
+    &root, &root, &root, &root,
+    &root, &root, &root, &root,
 
-	&root, &root, &root, &root,
-	&root, &root, &root, &root,
-	&root, &root, &root, &root,
-	&root, &root, &root, &root,
-	&root, &root, &root, &root,
-	&root, &root, &root, &root,
-	&root, &root, &root, &root,
-	&root, &root, &root, &root,
+    &root, &root, &root, &root,
+    &root, &root, &root, &root,
+    &root, &root, &root, &root,
+    &root, &root, &root, &root,
+    &root, &root, &root, &root,
+    &root, &root, &root, &root,
+    &root, &root, &root, &root,
+    &root, &root, &root, &root,
 
-	&root, &root, &root, &root,
-	&root, &root, &root, &root,
-	&root, &root, &root, &root,
-	&root, &root, &root, &root,
-	&root, &root, &root, &root,
-	&root, &root, &root, &root,
-	&root, &root, &root, &root,
-	&root, &root, &root, &root,
+    &root, &root, &root, &root,
+    &root, &root, &root, &root,
+    &root, &root, &root, &root,
+    &root, &root, &root, &root,
+    &root, &root, &root, &root,
+    &root, &root, &root, &root,
+    &root, &root, &root, &root,
+    &root, &root, &root, &root,
 
 };
+
 static int next_touched = 0;	/* Always indexes above. */
 
 #endif
@@ -318,93 +319,93 @@ static int next_touched = 0;	/* Always indexes above. */
 static int
 block_count(Block b)
 {
-	int i;
+    int i;
 
-	for (i = 0; b; b = b->next)
-		++i;
-	return i;
+    for (i = 0; b; b = b->next)
+	++i;
+    return i;
 }
 
 /* }}} */
 /* {{{ blocks_nth -- Return nth block in a blocklist.			*/
 
 static Block
-blocks_nth(						/* Return nth block in list, first is #0. */
-			  Block b, int n)
+blocks_nth(			/* Return nth block in list, first is #0. */
+	      Block b, int n)
 {
-	for (int i = 0; i < n; b = b->next)
-		++i;
-	return b;
+    for (int i = 0; i < n; b = b->next)
+	++i;
+    return b;
 }
 
 /* }}} */
 /* {{{ blocks_split -- Split blocklist 'b' into two lists, return 2nd. 	*/
 
 static Block
-blocks_split(Block b, int n		/* Nth block becomes first in 2nd list. */
-		)
+blocks_split(Block b, int n	/* Nth block becomes first in 2nd list. */
+	)
 {
-	Block tail = blocks_nth(b, n - 1);
-	Block head = tail->next;
+    Block tail = blocks_nth(b, n - 1);
+    Block head = tail->next;
 
-	tail->next = NULL;
-	return head;
+    tail->next = NULL;
+    return head;
 }
 
 /* }}} */
 /* {{{ blocks_merge -- Merge two sorted lists into one sorted list. 	*/
 
 static Block
-blocks_merge(					/* Merge two sorted lists into one. */
-				Block b0, Block b1)
+blocks_merge(			/* Merge two sorted lists into one. */
+		Block b0, Block b1)
 {
-	A_Block head;
-	Block tail = &head;
+    A_Block head;
+    Block tail = &head;
 
-	while (b0 || b1) {
-		Block nxt;
+    while (b0 || b1) {
+	Block nxt;
 
-		if (!b1) {
-			nxt = b0;
-			b0 = b0->next;
-		} else if (!b0) {
-			nxt = b1;
-			b1 = b1->next;
-		} else if (b0->live_bytes < b1->live_bytes) {
-			nxt = b0;
-			b0 = b0->next;
-		} else {
-			nxt = b1;
-			b1 = b1->next;
-		}
-
-		tail->next = nxt;
-		tail = nxt;
+	if (!b1) {
+	    nxt = b0;
+	    b0 = b0->next;
+	} else if (!b0) {
+	    nxt = b1;
+	    b1 = b1->next;
+	} else if (b0->live_bytes < b1->live_bytes) {
+	    nxt = b0;
+	    b0 = b0->next;
+	} else {
+	    nxt = b1;
+	    b1 = b1->next;
 	}
 
-	tail->next = NULL;
+	tail->next = nxt;
+	tail = nxt;
+    }
 
-	return head.next;
+    tail->next = NULL;
+
+    return head.next;
 }
 
 /* }}} */
 /* {{{ blocks_merge -- Sort blocklist on 'live_bytes'.		 	*/
 
 static Block
-blocks_sort(					/* Sort 'b1' on 'live_bytes'. */
-			   Block b1)
+blocks_sort(			/* Sort 'b1' on 'live_bytes'. */
+	       Block b1)
 {
-	int len = block_count(b1);
+    int len = block_count(b1);
 
-	if (len < 2)
-		return b1;
+    if (len < 2)
+	return b1;
 
-	{
-		Block b2 = blocks_split(b1, len / 2);
+    {
+	Block b2 = blocks_split(b1, len / 2);
 
-		return blocks_merge(blocks_sort(b1), blocks_sort(b2)
-				);
-	}
+	return blocks_merge(blocks_sort(b1), blocks_sort(b2)
+		);
+    }
 }
 
 /* }}} */
@@ -416,21 +417,21 @@ blocks_sort(					/* Sort 'b1' on 'live_bytes'. */
 static Block
 block_alloc(const char *file, int line)
 {
-	Block b = malloc(sizeof(A_Block));
+    Block b = malloc(sizeof(A_Block));
 
-	b->file = file;
-	b->line = line;
+    b->file = file;
+    b->line = line;
 
-	b->tot_bytes_alloc = 0;
-	b->tot_allocs_done = 0;
-	b->live_blocks = 0;
-	b->live_bytes = 0;
-	b->max_blocks = 0;
-	b->max_bytes = 0;
+    b->tot_bytes_alloc = 0;
+    b->tot_allocs_done = 0;
+    b->live_blocks = 0;
+    b->live_bytes = 0;
+    b->max_blocks = 0;
+    b->max_bytes = 0;
 
-	b->next = block_list;
-	block_list = b;
-	return b;
+    b->next = block_list;
+    block_list = b;
+    return b;
 }
 
 /* }}} */
@@ -439,13 +440,13 @@ block_alloc(const char *file, int line)
 static Block
 block_find(const char *file, int line)
 {
-	for (Block b = block_list; b; b = b->next) {
-		if (b->line == line && !strcmp(b->file, file)
-				) {
-			return b;
-		}
+    for (Block b = block_list; b; b = b->next) {
+	if (b->line == line && !strcmp(b->file, file)
+		) {
+	    return b;
 	}
-	return block_alloc(file, line);
+    }
+    return block_alloc(file, line);
 }
 
 /* }}} */
@@ -458,14 +459,14 @@ block_find(const char *file, int line)
 const char *
 CrT_timestr(time_t when)
 {
-	static char buf[20];
-	struct tm *da_time;
+    static char buf[20];
+    struct tm *da_time;
 
-	da_time = MUCK_LOCALTIME(when);
+    da_time = MUCK_LOCALTIME(when);
 
-	snprintf(buf, sizeof(buf), "%02d%02d%02d%02d",
-			da_time->tm_mday, da_time->tm_hour, da_time->tm_min, da_time->tm_sec);
-	return buf;
+    snprintf(buf, sizeof(buf), "%02d%02d%02d%02d",
+	     da_time->tm_mday, da_time->tm_hour, da_time->tm_min, da_time->tm_sec);
+    return buf;
 }
 
 /* }}} */
@@ -474,57 +475,57 @@ static dbref summarize_player;
 
 static void
 summarize(void (*fn) (char *)
-		)
+	)
 {
-	int sum_blks = 0;
-	int sum_byts = 0;
-	int sum_totblks = 0;
-	int sum_totbyts = 0;
+    int sum_blks = 0;
+    int sum_byts = 0;
+    int sum_totblks = 0;
+    int sum_totbyts = 0;
 
-	char buf[256];
+    char buf[256];
 
-	block_list = blocks_sort(block_list);
+    block_list = blocks_sort(block_list);
 
 #undef  X
 #define X(t) (*fn)(t);
-	X("         File Line CurBlks CurBytes MaxBlks MaxBytes MxByTime TotBlks TotBytes");
-	X("------------- ---- ------- -------- ------- -------- -------- ------- --------")
+    X("         File Line CurBlks CurBytes MaxBlks MaxBytes MxByTime TotBlks TotBytes");
+    X("------------- ---- ------- -------- ------- -------- -------- ------- --------")
 
-	for (Block b = block_list; b; b = b->next) {
+	    for (Block b = block_list; b; b = b->next) {
 
-		sum_blks += b->live_blocks;
-		sum_byts += b->live_bytes;
+	sum_blks += b->live_blocks;
+	sum_byts += b->live_bytes;
 
-		sum_totblks += b->tot_allocs_done;
-		sum_totbyts += b->tot_bytes_alloc;
+	sum_totblks += b->tot_allocs_done;
+	sum_totbyts += b->tot_bytes_alloc;
 
-		snprintf(buf, sizeof(buf),
-				"%13s%5d:%7ld %8ld %7ld %8ld %8s %7ld %8ld",
-				b->file,
-				b->line,
-				b->live_blocks,
-				b->live_bytes,
-				b->max_blocks,
-				b->max_bytes,
-				CrT_timestr(b->max_bytes_time), b->tot_allocs_done, b->tot_bytes_alloc);
-		X(buf);
-	}
-	snprintf(buf, sizeof(buf), " Cumulative totals:%7d %8d                           %7d %8d",
-			sum_blks, sum_byts, sum_totblks, sum_totbyts);
+	snprintf(buf, sizeof(buf),
+		 "%13s%5d:%7ld %8ld %7ld %8ld %8s %7ld %8ld",
+		 b->file,
+		 b->line,
+		 b->live_blocks,
+		 b->live_bytes,
+		 b->max_blocks,
+		 b->max_bytes,
+		 CrT_timestr(b->max_bytes_time), b->tot_allocs_done, b->tot_bytes_alloc);
 	X(buf);
+    }
+    snprintf(buf, sizeof(buf), " Cumulative totals:%7d %8d                           %7d %8d",
+	     sum_blks, sum_byts, sum_totblks, sum_totbyts);
+    X(buf);
 }
 
 static void
 summarize_notify(char *t)
 {
-	notify(summarize_player, t);
+    notify(summarize_player, t);
 }
 
 void
 CrT_summarize(dbref player)
 {
-	summarize_player = player;
-	summarize(summarize_notify);
+    summarize_player = player;
+    summarize(summarize_notify);
 }
 
 /* }}} */
@@ -535,25 +536,26 @@ static FILE *summarize_fd;
 static void
 summarize_to_file(char *t)
 {
-	fprintf(summarize_fd, "%s\n", t);
+    fprintf(summarize_fd, "%s\n", t);
 }
 
 void
 CrT_summarize_to_file(const char *file, const char *comment)
 {
-	if ((summarize_fd = fopen(file, "ab")) == 0)
-		return;
-	if (comment && *comment) {
-		fprintf(summarize_fd, "%s\n", comment);
-	} {
-		time_t lt = time(NULL);
+    if ((summarize_fd = fopen(file, "ab")) == 0)
+	return;
+    if (comment && *comment) {
+	fprintf(summarize_fd, "%s\n", comment);
+    }
+    {
+	time_t lt = time(NULL);
 
-		fprintf(summarize_fd, "%s", ctime(&lt));
-	}
+	fprintf(summarize_fd, "%s", ctime(&lt));
+    }
 
-	summarize(summarize_to_file);
+    summarize(summarize_to_file);
 
-	fclose(summarize_fd);
+    fclose(summarize_fd);
 }
 
 /* }}} */
@@ -568,16 +570,17 @@ CrT_summarize_to_file(const char *file, const char *comment)
 static void
 crash2(char *err)
 {
-	abort();
+    abort();
 }
 
 static void
 crash(char *err, Header m, const char *file, int line)
 {
-	char buf[256];
+    char buf[256];
 
-	snprintf(buf, sizeof(buf), "Err found at %s:%d in block from %s:%d", file, line, m->b->file, m->b->line);
-	crash2(buf);				/* Makes above easy to read from dbx 'where'.   */
+    snprintf(buf, sizeof(buf), "Err found at %s:%d in block from %s:%d", file, line,
+	     m->b->file, m->b->line);
+    crash2(buf);		/* Makes above easy to read from dbx 'where'.   */
 }
 
 /* }}} */
@@ -586,12 +589,12 @@ crash(char *err, Header m, const char *file, int line)
 static void
 check_block(Header m, const char *file, int line)
 {
-	if (*m->end != CRT_MAGIC)
-		crash("Bottom overwritten", m, file, line);
-	if (m->next->prev != m)
-		crash("next->prev != m", m, file, line);
-	if (m->prev->next != m)
-		crash("prev->next != m", m, file, line);
+    if (*m->end != CRT_MAGIC)
+	crash("Bottom overwritten", m, file, line);
+    if (m->next->prev != m)
+	crash("next->prev != m", m, file, line);
+    if (m->prev->next != m)
+	crash("prev->next != m", m, file, line);
 }
 
 /* }}} */
@@ -600,12 +603,12 @@ check_block(Header m, const char *file, int line)
 static void
 check_old_blocks(const char *file, int line)
 {
-	int i = CRT_OLD_TO_CHECK;
+    int i = CRT_OLD_TO_CHECK;
 
-	while (i-- > 0) {
-		check_block(rover, file, line);
-		rover = rover->next;
-	}
+    while (i-- > 0) {
+	check_block(rover, file, line);
+	rover = rover->next;
+    }
 }
 
 /* }}} */
@@ -614,10 +617,10 @@ check_old_blocks(const char *file, int line)
 static void
 check_new_blocks(const char *file, int line)
 {
-	int i = CRT_NEW_TO_CHECK;
+    int i = CRT_NEW_TO_CHECK;
 
-	while (i-- > 0)
-		check_block(just_touched[i], file, line);
+    while (i-- > 0)
+	check_block(just_touched[i], file, line);
 }
 
 /* }}} */
@@ -625,8 +628,8 @@ check_new_blocks(const char *file, int line)
 void
 CrT_check(const char *file, int line)
 {
-	check_old_blocks(file, line);
-	check_new_blocks(file, line);
+    check_old_blocks(file, line);
+    check_new_blocks(file, line);
 }
 
 /* }}} */
@@ -635,15 +638,15 @@ CrT_check(const char *file, int line)
 int
 CrT_check_everything(const char *file, int line)
 {
-	Header m = root.next;
-	int i = 0;;
-	for (; m != &root; ++i, m = m->next)
-		check_block(m, file, line);
-	return i;
+    Header m = root.next;
+    int i = 0;
+    for (; m != &root; ++i, m = m->next)
+	check_block(m, file, line);
+    return i;
 }
 
 /* }}} */
-#endif							/* MALLOC_PROFILING_EXTRA */
+#endif				/* MALLOC_PROFILING_EXTRA */
 
 /* The actual wrappers for malloc/calloc/realloc/free: */
 /* {{{ CrT_malloc							*/
@@ -651,52 +654,52 @@ CrT_check_everything(const char *file, int line)
 void *
 CrT_malloc(size_t size, const char *file, int line)
 {
-	Block b = block_find(file, line);
+    Block b = block_find(file, line);
 
-	Header m = (Header) malloc(size + CRT_OVERHEAD_BYTES);
+    Header m = (Header) malloc(size + CRT_OVERHEAD_BYTES);
 
-	if (!m) {
-		fprintf(stderr, "CrT_malloc(): Out of Memory!\n");
-		abort();
-	}
+    if (!m) {
+	fprintf(stderr, "CrT_malloc(): Out of Memory!\n");
+	abort();
+    }
 
-	m->b = b;
-	m->size = size;
+    m->b = b;
+    m->size = size;
 
 
 
 #ifdef MALLOC_PROFILING_EXTRA
-	/* Look around for trashed ram blocks: */
-	CrT_check(file, line);
+    /* Look around for trashed ram blocks: */
+    CrT_check(file, line);
 
-	/* Remember where end of block is: */
-	m->end = &((char *) m)[size + (CRT_OVERHEAD_BYTES - 1)];
+    /* Remember where end of block is: */
+    m->end = &((char *) m)[size + (CRT_OVERHEAD_BYTES - 1)];
 
-	/* Write a sacred value at end of block: */
-	*m->end = CRT_MAGIC;
+    /* Write a sacred value at end of block: */
+    *m->end = CRT_MAGIC;
 
-	/* Thread m into linklist of allocated blocks: */
-	INSERT(m);
+    /* Thread m into linklist of allocated blocks: */
+    INSERT(m);
 
-	/* Remember we've touched 'm' recently: */
-	just_touched[++next_touched & (CRT_NEW_TO_CHECK - 1)] = m;
+    /* Remember we've touched 'm' recently: */
+    just_touched[++next_touched & (CRT_NEW_TO_CHECK - 1)] = m;
 
 #endif
 
 
-	b->tot_bytes_alloc += size;
-	b->tot_allocs_done++;
-	b->live_blocks++;
-	b->live_bytes += size;
+    b->tot_bytes_alloc += size;
+    b->tot_allocs_done++;
+    b->live_blocks++;
+    b->live_bytes += size;
 
-	if (b->live_bytes > b->max_bytes) {
-		b->max_bytes = b->live_bytes;
-		b->max_bytes_time = time(NULL);
-	}
-	if (b->live_blocks > b->max_blocks)
-		b->max_blocks = b->live_blocks;
+    if (b->live_bytes > b->max_bytes) {
+	b->max_bytes = b->live_bytes;
+	b->max_bytes_time = time(NULL);
+    }
+    if (b->live_blocks > b->max_blocks)
+	b->max_blocks = b->live_blocks;
 
-	return (void *) (m + 1);
+    return (void *) (m + 1);
 }
 
 /* }}} */
@@ -705,54 +708,54 @@ CrT_malloc(size_t size, const char *file, int line)
 void *
 CrT_calloc(size_t num, size_t siz, const char *file, int line)
 {
-	size_t size = siz * num;
-	Block b = block_find(file, line);
-	Header m = (Header) calloc(size + CRT_OVERHEAD_BYTES, 1);
+    size_t size = siz * num;
+    Block b = block_find(file, line);
+    Header m = (Header) calloc(size + CRT_OVERHEAD_BYTES, 1);
 
-	if (!m) {
-		fprintf(stderr, "CrT_calloc(): Out of Memory!\n");
-		abort();
-	}
+    if (!m) {
+	fprintf(stderr, "CrT_calloc(): Out of Memory!\n");
+	abort();
+    }
 
-	m->b = b;
-	m->size = size;
+    m->b = b;
+    m->size = size;
 
 
 
 #ifdef MALLOC_PROFILING_EXTRA
 
-	/* Look around for trashed ram blocks: */
-	CrT_check(file, line);
+    /* Look around for trashed ram blocks: */
+    CrT_check(file, line);
 
-	/* Remember where end of block is: */
-	m->end = &((char *) m)[size + (CRT_OVERHEAD_BYTES - 1)];
+    /* Remember where end of block is: */
+    m->end = &((char *) m)[size + (CRT_OVERHEAD_BYTES - 1)];
 
-	/* Write a sacred value at end of block: */
-	*m->end = CRT_MAGIC;
+    /* Write a sacred value at end of block: */
+    *m->end = CRT_MAGIC;
 
-	/* Thread m into linklist of allocated blocks: */
-	INSERT(m);
+    /* Thread m into linklist of allocated blocks: */
+    INSERT(m);
 
-	/* Remember we've touched 'm' recently: */
-	just_touched[++next_touched & (CRT_NEW_TO_CHECK - 1)] = m;
+    /* Remember we've touched 'm' recently: */
+    just_touched[++next_touched & (CRT_NEW_TO_CHECK - 1)] = m;
 
 #endif
 
 
 
-	b->tot_bytes_alloc += size;
-	b->tot_allocs_done++;
-	b->live_blocks++;
-	b->live_bytes += size;
+    b->tot_bytes_alloc += size;
+    b->tot_allocs_done++;
+    b->live_blocks++;
+    b->live_bytes += size;
 
-	if (b->live_bytes > b->max_bytes) {
-		b->max_bytes = b->live_bytes;
-		b->max_bytes_time = time(NULL);
-	}
-	if (b->live_blocks > b->max_blocks)
-		b->max_blocks = b->live_blocks;
+    if (b->live_bytes > b->max_bytes) {
+	b->max_bytes = b->live_bytes;
+	b->max_bytes_time = time(NULL);
+    }
+    if (b->live_blocks > b->max_blocks)
+	b->max_blocks = b->live_blocks;
 
-	return (void *) (m + 1);
+    return (void *) (m + 1);
 }
 
 /* }}} */
@@ -761,67 +764,67 @@ CrT_calloc(size_t num, size_t siz, const char *file, int line)
 void *
 CrT_realloc(void *p, size_t size, const char *file, int line)
 {
-	Header m = ((Header) p) - 1;
-	Block b = m->b;
+    Header m = ((Header) p) - 1;
+    Block b = m->b;
 
 #ifdef MALLOC_PROFILING_EXTRA
-	/* Look around for trashed ram blocks: */
-	check_block(m, __FILE__, __LINE__);
-	CrT_check(file, line);
-	/* Don't clobber 'rover': */
-	if (rover == m) {
-		rover = rover->next;
-	}
-	/* Remove m from linklist of allocated blocks: */
-	REMOVE(m);
-	/* Remove m from just_touched[], if present: */
-	{
-		int i = CRT_NEW_TO_CHECK;
+    /* Look around for trashed ram blocks: */
+    check_block(m, __FILE__, __LINE__);
+    CrT_check(file, line);
+    /* Don't clobber 'rover': */
+    if (rover == m) {
+	rover = rover->next;
+    }
+    /* Remove m from linklist of allocated blocks: */
+    REMOVE(m);
+    /* Remove m from just_touched[], if present: */
+    {
+	int i = CRT_NEW_TO_CHECK;
 
-		while (i-- > 0) {
-			if (just_touched[i] == m) {
-				just_touched[i] = &root;
-			}
-		}
+	while (i-- > 0) {
+	    if (just_touched[i] == m) {
+		just_touched[i] = &root;
+	    }
 	}
+    }
 #endif
 
-	m = (Header) realloc(m, size + CRT_OVERHEAD_BYTES);
+    m = (Header) realloc(m, size + CRT_OVERHEAD_BYTES);
 
-	if (!m) {
-		fprintf(stderr, "CrT_realloc(): Out of Memory!\n");
-		abort();
-	}
+    if (!m) {
+	fprintf(stderr, "CrT_realloc(): Out of Memory!\n");
+	abort();
+    }
 
-	b->live_bytes -= m->size;
-	b->live_bytes += size;
+    b->live_bytes -= m->size;
+    b->live_bytes += size;
 
-	m->size = size;
+    m->size = size;
 
 #ifdef MALLOC_PROFILING_EXTRA
 
-	/* Remember where end of block is: */
-	m->end = &((char *) m)[size + (CRT_OVERHEAD_BYTES - 1)];
+    /* Remember where end of block is: */
+    m->end = &((char *) m)[size + (CRT_OVERHEAD_BYTES - 1)];
 
-	/* Write a sacred value at end of block: */
-	*m->end = CRT_MAGIC;
+    /* Write a sacred value at end of block: */
+    *m->end = CRT_MAGIC;
 
-	/* Thread m into linklist of allocated blocks: */
-	INSERT(m);
+    /* Thread m into linklist of allocated blocks: */
+    INSERT(m);
 
-	/* Remember we've touched 'm' recently: */
-	just_touched[++next_touched & (CRT_NEW_TO_CHECK - 1)] = m;
+    /* Remember we've touched 'm' recently: */
+    just_touched[++next_touched & (CRT_NEW_TO_CHECK - 1)] = m;
 
 #endif
 
 
 
-	if (b->live_bytes > b->max_bytes) {
-		b->max_bytes = b->live_bytes;
-		b->max_bytes_time = time(NULL);
-	}
+    if (b->live_bytes > b->max_bytes) {
+	b->max_bytes = b->live_bytes;
+	b->max_bytes_time = time(NULL);
+    }
 
-	return (void *) (m + 1);
+    return (void *) (m + 1);
 }
 
 /* }}} */
@@ -830,42 +833,42 @@ CrT_realloc(void *p, size_t size, const char *file, int line)
 void
 CrT_free(void *p, const char *file, int line)
 {
-	Header m = ((Header) p) - 1;
-	Block b = m->b;
+    Header m = ((Header) p) - 1;
+    Block b = m->b;
 
 #ifdef MALLOC_PROFILING_EXTRA
-	/* Look around for trashed ram blocks: */
-	if (*m->end == CRT_FREE_MAGIC)
-		crash("Duplicate free()", m, file, line);
+    /* Look around for trashed ram blocks: */
+    if (*m->end == CRT_FREE_MAGIC)
+	crash("Duplicate free()", m, file, line);
 
-	check_block(m, __FILE__, __LINE__);
-	CrT_check(file, line);
-	/* Don't clobber 'rover': */
-	if (rover == m) {
-		rover = rover->next;
-	}
-	/* Remove m from linklist of allocated blocks: */
-	REMOVE(m);
-	/* Remove m from just_touched[], if present: */
-	{
-		int i = CRT_NEW_TO_CHECK;
+    check_block(m, __FILE__, __LINE__);
+    CrT_check(file, line);
+    /* Don't clobber 'rover': */
+    if (rover == m) {
+	rover = rover->next;
+    }
+    /* Remove m from linklist of allocated blocks: */
+    REMOVE(m);
+    /* Remove m from just_touched[], if present: */
+    {
+	int i = CRT_NEW_TO_CHECK;
 
-		while (i-- > 0) {
-			if (just_touched[i] == m) {
-				just_touched[i] = &root;
-			}
-		}
+	while (i-- > 0) {
+	    if (just_touched[i] == m) {
+		just_touched[i] = &root;
+	    }
 	}
-	/* Mark m so as to give some chance of */
-	/* diagnosing repeat free()s of same   */
-	/* block:                              */
-	*m->end = CRT_FREE_MAGIC;
+    }
+    /* Mark m so as to give some chance of */
+    /* diagnosing repeat free()s of same   */
+    /* block:                              */
+    *m->end = CRT_FREE_MAGIC;
 #endif
 
-	b->live_bytes -= m->size;
-	b->live_blocks--;
+    b->live_bytes -= m->size;
+    b->live_blocks--;
 
-	free(m);
+    free(m);
 }
 
 /* }}} */
@@ -876,17 +879,17 @@ CrT_free(void *p, const char *file, int line)
 char *
 CrT_alloc_string(const char *string, const char *file, int line)
 {
-	char *s;
+    char *s;
 
-	/* NULL, "" -> NULL */
-	if (!string || !*string)
-		return 0;
+    /* NULL, "" -> NULL */
+    if (!string || !*string)
+	return 0;
 
-	if ((s = (char *) CrT_malloc(strlen(string) + 1, file, line)) == 0) {
-		abort();
-	}
-	strcpy(s, string);  /* Guaranteed enough space. */
-	return s;
+    if ((s = (char *) CrT_malloc(strlen(string) + 1, file, line)) == 0) {
+	abort();
+    }
+    strcpy(s, string);		/* Guaranteed enough space. */
+    return s;
 }
 
 /* }}} */
@@ -895,21 +898,21 @@ CrT_alloc_string(const char *string, const char *file, int line)
 struct shared_string *
 CrT_alloc_prog_string(const char *s, const char *file, int line)
 {
-	struct shared_string *ss;
-	int length;
+    struct shared_string *ss;
+    int length;
 
-	if (s == NULL || *s == '\0')
-		return (NULL);
+    if (s == NULL || *s == '\0')
+	return (NULL);
 
-	length = strlen(s);
-	if ((ss = (struct shared_string *)
-		 CrT_malloc(sizeof(struct shared_string) + length, file, line)) == NULL)
-		abort();
+    length = strlen(s);
+    if ((ss = (struct shared_string *)
+	 CrT_malloc(sizeof(struct shared_string) + length, file, line)) == NULL)
+	abort();
 
-	ss->links = 1;
-	ss->length = length;
-	bcopy(s, ss->data, ss->length + 1);
-	return (ss);
+    ss->links = 1;
+    ss->length = length;
+    bcopy(s, ss->data, ss->length + 1);
+    return (ss);
 }
 
 /* }}} */
@@ -918,17 +921,17 @@ CrT_alloc_prog_string(const char *s, const char *file, int line)
 char *
 CrT_string_dup(const char *s, const char *file, int line)
 {
-	char *p;
+    char *p;
 
-	p = (char *) CrT_malloc(1 + strlen(s), file, line);
-	if (p)
-		strcpy(p, s);  /* Guaranteed enough space. */
-	return (p);
+    p = (char *) CrT_malloc(1 + strlen(s), file, line);
+    if (p)
+	strcpy(p, s);		/* Guaranteed enough space. */
+    return (p);
 }
 
 /* }}} */
 
-#endif							/* MALLOC_PROFILING */
+#endif				/* MALLOC_PROFILING */
 
 /* {{{ File variables							*/
 /*
