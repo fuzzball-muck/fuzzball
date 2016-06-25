@@ -73,7 +73,7 @@ void
 prim_systime(PRIM_PROTOTYPE)
 {
     CHECKOP(0);
-    result = time(NULL);
+    result = (int)time(NULL);
     CHECKOFLOW(1);
     PushInt(result);
 }
@@ -300,11 +300,11 @@ prim_timestamps(PRIM_PROTOTYPE)
     CHECKOFLOW(4);
     ref = oper1->data.objref;
     CLEAR(oper1);
-    result = DBFETCH(ref)->ts.created;
+    result = (int)DBFETCH(ref)->ts.created;
     PushInt(result);
-    result = DBFETCH(ref)->ts.modified;
+    result = (int)DBFETCH(ref)->ts.modified;
     PushInt(result);
-    result = DBFETCH(ref)->ts.lastused;
+    result = (int)DBFETCH(ref)->ts.lastused;
     PushInt(result);
     result = DBFETCH(ref)->ts.usecount;
     PushInt(result);

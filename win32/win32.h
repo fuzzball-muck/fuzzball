@@ -5,7 +5,6 @@
 #include <process.h>
 #include <direct.h>
 #include <time.h>
-#pragma warning( disable : 4244 4101 4018 )
 
 extern int gettimeofday(struct timeval *tv, struct timezone *tz);
 extern struct tm *uw32localtime(const time_t *t);

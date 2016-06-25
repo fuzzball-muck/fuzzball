@@ -190,10 +190,10 @@ db_write_object(FILE * f, dbref i)
     putref(f, o->next);
     putref(f, FLAGS(i) & ~DUMP_MASK);	/* write non-internal flags */
 
-    putref(f, o->ts.created);
-    putref(f, o->ts.lastused);
+    putref(f, (int)o->ts.created);
+    putref(f, (int)o->ts.lastused);
     putref(f, o->ts.usecount);
-    putref(f, o->ts.modified);
+    putref(f, (int)o->ts.modified);
 
 
 #ifdef DISKBASE

@@ -419,8 +419,6 @@ HandleConsole(DWORD mesg)
 void
 set_console()
 {
-    HANDLE InputHandle;
-
     SetConsoleCtrlHandler(HandleConsole, TRUE);
     SetConsoleTitle(VERSION);
 }

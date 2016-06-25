@@ -2184,7 +2184,7 @@ prim_getpidinfo(PRIM_PROTOTYPE)
 	array_set_strkey_intval(&nu, "INSTCNT", fr->instcnt);
 	array_set_strkey_intval(&nu, "DESCR", fr->descr);
 	array_set_strkey_intval(&nu, "NEXTRUN", 0);
-	array_set_strkey_intval(&nu, "STARTED", fr->started);
+	array_set_strkey_intval(&nu, "STARTED", (int)fr->started);
 
 	array_set_strkey_refval(&nu, "CALLED_PROG", program);
 	array_set_strkey_refval(&nu, "TRIG", fr->trig);

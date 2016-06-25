@@ -918,7 +918,7 @@ array_prev(stk_array * arr, array_iter * item)
 		if (item->data.fnumber >= arr->items) {
 		    idx = arr->items - 1;
 		} else {
-		    idx = item->data.fnumber - 1.0;
+		    idx = (int)item->data.fnumber - 1;
 		}
 	    } else {
 		idx = item->data.number - 1;
@@ -969,7 +969,7 @@ array_next(stk_array * arr, array_iter * item)
 		if (item->data.fnumber < 0.0) {
 		    idx = 0;
 		} else {
-		    idx = item->data.fnumber + 1.0;
+		    idx = (int)item->data.fnumber + 1;
 		}
 	    } else {
 		idx = item->data.number + 1;

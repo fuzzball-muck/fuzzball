@@ -3575,7 +3575,7 @@ pidle(int c)
 
     (void) time(&now);
     if (d) {
-	return (now - d->last_time);
+	return (int)(now - d->last_time);
     }
 
     return -1;
@@ -3591,7 +3591,7 @@ pdescridle(int c)
 
     (void) time(&now);
     if (d) {
-	return (now - d->last_time);
+	return (int)(now - d->last_time);
     }
 
     return -1;
@@ -3635,7 +3635,7 @@ pontime(int c)
 
     (void) time(&now);
     if (d) {
-	return (now - d->connected_at);
+	return (int)(now - d->connected_at);
     }
 
     return -1;
@@ -3651,7 +3651,7 @@ pdescrontime(int c)
 
     (void) time(&now);
     if (d) {
-	return (now - d->connected_at);
+	return (int)(now - d->connected_at);
     }
     return -1;
 }
