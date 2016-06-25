@@ -1231,7 +1231,7 @@ shovechars()
 		    FD_SET(d->descriptor, &output_set);
 		} else {
 		    if (timeout.tv_sec > welcome_pause - timeon) {
-			timeout.tv_sec = welcome_pause - timeon;
+			timeout.tv_sec = (long)(welcome_pause - timeon);
 			timeout.tv_usec = 10;	/* 10 msecs min.  Arbitrary. */
 		    }
 		}
@@ -1260,7 +1260,7 @@ shovechars()
 	FD_SET(resolver_sock[1], &input_set);
 #endif
 
-	tmptq = next_muckevent_time();
+	tmptq = (long)next_muckevent_time();
 	if ((tmptq >= 0L) && (timeout.tv_sec > tmptq)) {
 	    timeout.tv_sec = tmptq + (tp_pause_min / 1000);
 	    timeout.tv_usec = (tp_pause_min % 1000) * 1000L;
@@ -1789,7 +1789,7 @@ addrout(int lport, long a, unsigned short prt)
 	    time_t lag = gethost_stop - gethost_start;
 
 	    if (lag > 10) {
-		secs_lost = lag;
+		secs_lost = (int)lag;
 
 #if MIN_SECS_TO_LOG
 		if (lag >= CFG_MIN_SECS_TO_LOG) {
