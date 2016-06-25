@@ -492,6 +492,7 @@ log_program_text(struct line *first, dbref player, dbref i)
 {
     FILE *f;
     char fname[BUFFER_LEN];
+    char tbuf[24];
     time_t lt = time(NULL);
 
     strcpyn(fname, sizeof(fname), PROGRAM_LOG);
@@ -501,10 +502,11 @@ log_program_text(struct line *first, dbref player, dbref i)
 	return;
     }
 
+    format_time(tbuf, sizeof(tbuf), "%Y-%m-%dT%H:%M:%S", MUCK_LOCALTIME(lt));
     fputs("#######################################", f);
     fputs("#######################################\n", f);
-    fprintf(f, "PROGRAM %s, SAVED AT %s BY %s(%d)\n",
-	    unparse_object(player, i), ctime(&lt), NAME(player), player);
+    fprintf(f, "%s: %s SAVED BY %s(#%d)\n",
+	    tbuf, unparse_object(player, i), NAME(player), player);
     fputs("#######################################", f);
     fputs("#######################################\n\n", f);
 

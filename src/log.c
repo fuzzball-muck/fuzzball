@@ -30,11 +30,12 @@ vlog2file(int prepend_time, char *filename, char *format, va_list args)
     if ((fp = fopen(filename, "ab")) == NULL) {
 	fprintf(stderr, "Unable to open %s!\n", filename);
 	if (prepend_time)
-	    fprintf(stderr, "%.16s: ", ctime(&lt));
+	    format_time(buf, 32, "%Y-%m-%dT%H:%M:%S", MUCK_LOCALTIME(lt));
+	    fprintf(fp, "%.32s: ", buf);
 	vfprintf(stderr, format, args);
     } else {
 	if (prepend_time) {
-	    format_time(buf, 32, "%c", MUCK_LOCALTIME(lt));
+	    format_time(buf, 32, "%Y-%m-%dT%H:%M:%S", MUCK_LOCALTIME(lt));
 	    fprintf(fp, "%.32s: ", buf);
 	}
 
@@ -114,10 +115,10 @@ log_user(dbref player, dbref program, char *logmessage)
     *logformat = '\0';
 
     lt = time(NULL);
-    format_time(buf, 32, "%c", MUCK_LOCALTIME(lt));
+    format_time(buf, 32, "%Y-%m-%dT%H:%M:%S", MUCK_LOCALTIME(lt));
 
-    snprintf(logformat, BUFFER_LEN, "%s(#%d) [%s(#%d)] at %.32s: ", NAME(player), player,
-	     NAME(program), program, buf);
+    snprintf(logformat, BUFFER_LEN, "%s: %s(#%d) [%s(#%d)]: ",
+             buf, NAME(player), player, NAME(program), program);
     len = BUFFER_LEN - strlen(logformat) - 1;
     strncat(logformat, logmessage, len);
     strip_evil_characters(logformat);

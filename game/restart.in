@@ -101,7 +101,6 @@ if [ -r $PIDFILE -a -s $PIDFILE ]; then
 	fi
 fi
 
-datestamp=`date +%m%d%y%H%M`
 
 PANICDB="${DBOUT}.PANIC"
 if [ -r $PANICDB ]; then
@@ -114,7 +113,6 @@ if [ -r $PANICDB ]; then
 fi
 
 if [ -r $DBOUT ]; then
-    # mv $DBOLD $DBOLD.$datestamp
     mv -f $DBIN $DBOLD
     mv $DBOUT $DBIN
 fi
@@ -131,8 +129,6 @@ if [ "x$end" != 'x***END OF DUMP***' ]; then
 	echo "Restart attempt aborted."
 	exit
 fi
-
-# nice -20 gzip -9 $DBOLD.$datestamp &
 
 dbsiz=`ls -1s $DBIN | awk '{print $1}'`
 diskfree=`df -k . | tail -1 | awk '{print $4}'`
@@ -151,7 +147,7 @@ if [ "x$*" != "x" ]; then
 fi
 
 touch $RESTARTS_LOGFILE
-echo "`date` - `who am i`" >> $RESTARTS_LOGFILE
+echo "`date +%Y-%m-%dT%H:%M:%S`: `who am i`" >> $RESTARTS_LOGFILE
 
 # echo "Server started at: `date`"
 $SERVER -gamedir $GAMEDIR -dbin $DBIN -dbout $DBOUT $PORTS
