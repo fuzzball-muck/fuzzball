@@ -624,7 +624,7 @@ next_timequeue_event(void)
 		    struct inst temp;
 
 		    temp.type = PROG_INTEGER;
-		    temp.data.number = event->when;
+		    temp.data.number = (int)event->when;
 		    event->fr->timercount--;
 		    muf_event_add(event->fr, event->called_data, &temp, 0);
 		} else if (event->subtyp == TQ_MUF_TREAD) {

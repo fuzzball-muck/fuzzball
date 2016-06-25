@@ -593,12 +593,12 @@ prim_gaussian(PRIM_PROTOTYPE)
 	second_call = 0;
     } else {
 	while (radius >= 1.0) {
-	    srca = 2.0 * _int_f_rand() - 1.0;
-	    srcb = 2.0 * _int_f_rand() - 1.0;
+	    srca = 2.0f * _int_f_rand() - 1.0f;
+	    srcb = 2.0f * _int_f_rand() - 1.0f;
 	    radius = srca * srca + srcb * srcb;
 	}
 
-	radius = sqrt((-2.0 * log(radius)) / radius);
+	radius = (float)sqrt((-2.0 * log(radius)) / radius);
 	resulta = srca * radius;
 	resultb = srcb * radius;
 	second_call = 1;	/* Prime for next call in. */
