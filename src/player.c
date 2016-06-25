@@ -175,7 +175,7 @@ delete_player(dbref who)
     int result;
     char buf[BUFFER_LEN];
     char namebuf[BUFFER_LEN];
-    dbref i, found, ren;
+    dbref i = 0, found, ren;
     int j;
 
 
