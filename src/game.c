@@ -1548,8 +1548,10 @@ process_command(int descr, dbref player, char *command)
 
     totaltime = endtime.tv_sec + (endtime.tv_usec * 1.0e-6);
     if (totaltime > (tp_cmd_log_threshold_msec / 1000.0)) {
-	log2file(LOG_CMD_TIMES, "%6.3fs, %.16s: %s: %s",
-		 totaltime, ctime((time_t *) & starttime.tv_sec), whowhere(player), command);
+        char tbuf[24];
+        format_time(tbuf, sizeof(tbuf), "%Y-%m-%dT%H:%M:%S", MUCK_LOCALTIME(starttime.tv_sec));
+	log2file(LOG_CMD_TIMES, "%s: (%.3f) %s: %s",
+		 tbuf, totaltime, whowhere(player), command);
     }
 }
 
