@@ -1558,7 +1558,6 @@ prim_explode(PRIM_PROTOTYPE)
     if (!temp1.data.string)
 	abort_interp("Empty string argument (2)");
     {
-	int i;
 	const char *delimit = temp1.data.string->data;
 
 	if (!temp2.data.string) {
@@ -1571,7 +1570,7 @@ prim_explode(PRIM_PROTOTYPE)
 	} else {
 	    result = 0;
 	    bcopy(temp2.data.string->data, buf, temp2.data.string->length + 1);
-	    for (i = temp2.data.string->length - 1; i >= 0; i--) {
+	    for (int i = temp2.data.string->length - 1; i >= 0; i--) {
 		if (!strncmp(buf + i, delimit, temp1.data.string->length)) {
 		    buf[i] = '\0';
 		    CHECKOFLOW(1);
@@ -2480,7 +2479,7 @@ void
 prim_notify_secure(PRIM_PROTOTYPE)
 {
     int *darr;
-    int di, dcount;
+    int dcount;
 
     if (mlev < 3)
 	abort_interp("Mucker level 3 primitive.");
@@ -2501,7 +2500,7 @@ prim_notify_secure(PRIM_PROTOTYPE)
 
     darr = get_player_descrs(ref, &dcount);
 
-    for (di = 0; di < dcount; di++) {
+    for (int di = 0; di < dcount; di++) {
 	if (pdescrsecure(darr[di])) {
 	    pdescrnotify(darr[di], oper2->data.string->data);
 	} else {

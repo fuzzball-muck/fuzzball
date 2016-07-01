@@ -256,7 +256,7 @@ main(int argc, char **argv)
     char *infile_name;
     char *outfile_name;
     char *num_one_new_passwd = NULL;
-    int i, nomore_options;
+    int nomore_options;
     int sanity_skip;
     int sanity_interactive;
     int sanity_autofix;
@@ -279,8 +279,7 @@ main(int argc, char **argv)
 	   that argv[argc] must be NULL? */
 	{
 	    const char *argv2[argc + 1];
-	    int i = 0;
-	    for (i = 0; i < argc; i++)
+	    for (int i = 0; i < argc; i++)
 		argv2[i] = argv[i];
 	    argv2[argc] = NULL;
 	    execvp(argv[0], (char **) argv2);
@@ -299,7 +298,7 @@ main(int argc, char **argv)
     infile_name = NULL;
     outfile_name = NULL;
 
-    for (i = 1; i < argc; i++) {
+    for (int i = 1; i < argc; i++) {
 	if (!nomore_options && argv[i][0] == '-') {
 	    if (!strcmp(argv[i], "-convert")) {
 		db_conversion_flag = 1;
@@ -670,7 +669,7 @@ main(int argc, char **argv)
 
 	    argslist = (char **) calloc(argcnt, sizeof(char *));
 
-	    for (i = 0; i < numports; i++) {
+	    for (int i = 0; i < numports; i++) {
 		int alen = strlen(numbuf) + 1;
 		snprintf(numbuf, sizeof(numbuf), "%d", listener_port[i]);
 		argslist[argnum] = (char *) malloc(alen);
@@ -678,7 +677,7 @@ main(int argc, char **argv)
 	    }
 
 #ifdef USE_SSL
-	    for (i = 0; i < ssl_numports; i++) {
+	    for (int i = 0; i < ssl_numports; i++) {
 		int alen = strlen(numbuf) + 1;
 		snprintf(numbuf, sizeof(numbuf), "-sport %d", ssl_listener_port[i]);
 		argslist[argnum] = (char *) malloc(alen);
@@ -742,7 +741,6 @@ notify_nolisten(dbref player, const char *msg, int isprivate)
     char *ptr1;
     const char *ptr2;
     dbref ref;
-    int di;
     int *darr;
     int dcount;
 
@@ -758,7 +756,7 @@ notify_nolisten(dbref player, const char *msg, int isprivate)
 	    ptr2++;
 
 	darr = get_player_descrs(player, &dcount);
-	for (di = 0; di < dcount; di++) {
+	for (int di = 0; di < dcount; di++) {
 	    queue_ansi(descrdata_by_descr(darr[di]), buf);
 	    if (firstpass)
 		retval++;
@@ -801,7 +799,7 @@ notify_nolisten(dbref player, const char *msg, int isprivate)
 			}
 
 			darr = get_player_descrs(OWNER(player), &dcount);
-			for (di = 0; di < dcount; di++) {
+			for (int di = 0; di < dcount; di++) {
 			    queue_ansi(descrdata_by_descr(darr[di]), buf2);
 			    if (firstpass)
 				retval++;
@@ -1113,11 +1111,9 @@ shovechars()
     struct descriptor_data *newd;
     struct timeval sel_in, sel_out;
     int avail_descriptors;
-    int i;
-
 
     if (ipv4_enabled) {
-	for (i = 0; i < numports; i++) {
+	for (int i = 0; i < numports; i++) {
 	    sock[i] = make_socket(listener_port[i]);
 	    update_max_descriptor(sock[i]);
 	    numsocks++;
@@ -1125,7 +1121,7 @@ shovechars()
     }
 #ifdef USE_IPV6
     if (ipv6_enabled) {
-	for (i = 0; i < numports; i++) {
+	for (int i = 0; i < numports; i++) {
 	    sock_v6[i] = make_socket_v6(listener_port[i]);
 	    update_max_descriptor(sock_v6[i]);
 	    numsocks_v6++;
@@ -1190,21 +1186,21 @@ shovechars()
 	FD_ZERO(&input_set);
 	FD_ZERO(&output_set);
 	if (ndescriptors < avail_descriptors) {
-	    for (i = 0; i < numsocks; i++) {
+	    for (int i = 0; i < numsocks; i++) {
 		FD_SET(sock[i], &input_set);
 	    }
 #ifdef USE_IPV6
-	    for (i = 0; i < numsocks_v6; i++) {
+	    for (int i = 0; i < numsocks_v6; i++) {
 		FD_SET(sock_v6[i], &input_set);
 	    }
 #endif
 
 #ifdef USE_SSL
-	    for (i = 0; i < ssl_numsocks; i++) {
+	    for (int i = 0; i < ssl_numsocks; i++) {
 		FD_SET(ssl_sock[i], &input_set);
 	    }
 # ifdef USE_IPV6
-	    for (i = 0; i < ssl_numsocks_v6; i++) {
+	    for (int i = 0; i < ssl_numsocks_v6; i++) {
 		FD_SET(ssl_sock_v6[i], &input_set);
 	    }
 # endif
@@ -1296,7 +1292,7 @@ shovechars()
 	    }
 	    sel_prof_idle_use++;
 	    (void) time(&now);
-	    for (i = 0; i < numsocks; i++) {
+	    for (int i = 0; i < numsocks; i++) {
 		if (FD_ISSET(sock[i], &input_set)) {
 		    if (!(newd = new_connection(listener_port[i], sock[i], 0))) {
 #ifndef WIN32
@@ -1316,7 +1312,7 @@ shovechars()
 		}
 	    }
 #ifdef USE_IPV6
-	    for (i = 0; i < numsocks_v6; i++) {
+	    for (int i = 0; i < numsocks_v6; i++) {
 		if (FD_ISSET(sock_v6[i], &input_set)) {
 		    if (!(newd = new_connection_v6(listener_port[i], sock_v6[i], 0))) {
 # ifndef WIN32
@@ -1337,7 +1333,7 @@ shovechars()
 	    }
 #endif
 #ifdef USE_SSL
-	    for (i = 0; i < ssl_numsocks; i++) {
+	    for (int i = 0; i < ssl_numsocks; i++) {
 		if (FD_ISSET(ssl_sock[i], &input_set)) {
 		    if (!(newd = new_connection(ssl_listener_port[i], ssl_sock[i], 1))) {
 # ifndef WIN32
@@ -1363,7 +1359,7 @@ shovechars()
 		}
 	    }
 # ifdef USE_IPV6
-	    for (i = 0; i < ssl_numsocks_v6; i++) {
+	    for (int i = 0; i < ssl_numsocks_v6; i++) {
 		if (FD_ISSET(ssl_sock_v6[i], &input_set)) {
 		    if (!(newd = new_connection_v6(ssl_listener_port[i], ssl_sock_v6[i], 1))) {
 #  ifndef WIN32
@@ -1473,13 +1469,12 @@ wall_and_flush(const char *msg)
 void
 flush_user_output(dbref player)
 {
-    int di;
     int *darr;
     int dcount;
     struct descriptor_data *d;
 
     darr = get_player_descrs(OWNER(player), &dcount);
-    for (di = 0; di < dcount; di++) {
+    for (int di = 0; di < dcount; di++) {
 	d = descrdata_by_descr(darr[di]);
 	if (d && !process_output(d)) {
 	    d->booted = 1;
@@ -2889,13 +2884,12 @@ boot_off(dbref player)
 void
 boot_player_off(dbref player)
 {
-    int di;
     int *darr;
     int dcount;
     struct descriptor_data *d;
 
     darr = get_player_descrs(player, &dcount);
-    for (di = 0; di < dcount; di++) {
+    for (int di = 0; di < dcount; di++) {
 	d = descrdata_by_descr(darr[di]);
 	if (d) {
 	    d->booted = 1;
@@ -2936,20 +2930,20 @@ close_sockets(const char *msg)
 	ndescriptors--;
     }
     update_desc_count_table();
-    for (i = 0; i < numsocks; i++) {
+    for (int i = 0; i < numsocks; i++) {
 	close(sock[i]);
     }
 #ifdef USE_IPV6
-    for (i = 0; i < numsocks_v6; i++) {
+    for (int i = 0; i < numsocks_v6; i++) {
 	close(sock_v6[i]);
     }
 #endif
 #ifdef USE_SSL
-    for (i = 0; i < ssl_numsocks; i++) {
+    for (int i = 0; i < ssl_numsocks; i++) {
 	close(ssl_sock[i]);
     }
 # ifdef USE_IPV6
-    for (i = 0; i < ssl_numsocks_v6; i++) {
+    for (int i = 0; i < ssl_numsocks_v6; i++) {
 	close(ssl_sock_v6[i]);
     }
 # endif
@@ -3154,11 +3148,11 @@ time_format_2(time_t dt)
 void
 announce_puppets(dbref player, const char *msg, const char *prop)
 {
-    dbref what, where;
+    dbref where;
     const char *ptr, *msg2;
     char buf[BUFFER_LEN];
 
-    for (what = 0; what < db_top; what++) {
+    for (dbref what = 0; what < db_top; what++) {
 	if (Typeof(what) == TYPE_THING && (FLAGS(what) & ZOMBIE)) {
 	    if (OWNER(what) == player) {
 		where = LOCATION(what);
@@ -3325,8 +3319,7 @@ static int current_descr_count = 0;
 void
 init_descr_count_lookup()
 {
-    int i;
-    for (i = 0; i < FD_SETSIZE; i++) {
+    for (int i = 0; i < FD_SETSIZE; i++) {
 	descr_count_table[i] = NULL;
     }
 }
@@ -3403,13 +3396,12 @@ unsethash_descr(int d)
 void
 init_descriptor_lookup()
 {
-    int i;
 #ifdef WIN32
-    for (i = 0; i < FD_SETSIZE; i++) {
+    for (int i = 0; i < FD_SETSIZE; i++) {
 	descr_hash_table[i] = -1;
     }
 #endif
-    for (i = 0; i < FD_SETSIZE; i++) {
+    for (int i = 0; i < FD_SETSIZE; i++) {
 	descr_lookup_table[i] = NULL;
     }
 }
@@ -3484,8 +3476,8 @@ forget_player_descr(dbref player, int descr)
     if (!arr) {
 	count = 0;
     } else if (count > 1) {
-	int src, dest;
-	for (src = dest = 0; src < count; src++) {
+	int dest = 0;
+	for (int src = 0; src < count; src++) {
 	    if (arr[src] != descr) {
 		if (src != dest) {
 		    arr[dest] = arr[src];
@@ -3718,12 +3710,12 @@ least_idle_player_descr(dbref who)
 {
     struct descriptor_data *d;
     struct descriptor_data *best_d = NULL;
-    int dcount, di;
+    int dcount;
     int *darr;
     time_t best_time = 0;
 
     darr = get_player_descrs(who, &dcount);
-    for (di = 0; di < dcount; di++) {
+    for (int di = 0; di < dcount; di++) {
 	d = descrdata_by_descr(darr[di]);
 	if (d && (!best_time || d->last_time > best_time)) {
 	    best_d = d;
@@ -3742,12 +3734,12 @@ most_idle_player_descr(dbref who)
 {
     struct descriptor_data *d;
     struct descriptor_data *best_d = NULL;
-    int dcount, di;
+    int dcount;
     int *darr;
     time_t best_time = 0;
 
     darr = get_player_descrs(who, &dcount);
-    for (di = 0; di < dcount; di++) {
+    for (int di = 0; di < dcount; di++) {
 	d = descrdata_by_descr(darr[di]);
 	if (d && (!best_time || d->last_time < best_time)) {
 	    best_d = d;
@@ -4379,13 +4371,11 @@ ignore_flush_cache(dbref Player)
 void
 ignore_flush_all_cache(void)
 {
-    int i;
-
     /* Don't touch the database if it's not been loaded yet... */
     if (db == 0)
 	return;
 
-    for (i = 0; i < db_top; i++) {
+    for (dbref i = 0; i < db_top; i++) {
 	if (Typeof(i) == TYPE_PLAYER) {
 	    if (PLAYER_IGNORE_CACHE(i)) {
 		free(PLAYER_IGNORE_CACHE(i));
@@ -4435,12 +4425,10 @@ ignore_remove_player(dbref Player, dbref Who)
 void
 ignore_remove_from_all_players(dbref Player)
 {
-    int i;
-
     if (!tp_ignore_support)
 	return;
 
-    for (i = 0; i < db_top; i++)
+    for (dbref i = 0; i < db_top; i++)
 	if (Typeof(i) == TYPE_PLAYER)
 	    reflist_del(i, IGNORE_PROP, Player);
 
@@ -4549,9 +4537,8 @@ configure_new_ssl_ctx(void)
 static void
 bind_ssl_sockets(void)
 {
-    int i = 0;
     if (ipv4_enabled) {
-	for (i = 0; i < ssl_numports; i++) {
+	for (int i = 0; i < ssl_numports; i++) {
 	    ssl_sock[i] = make_socket(ssl_listener_port[i]);
 	    update_max_descriptor(ssl_sock[i]);
 	    ssl_numsocks++;
@@ -4559,7 +4546,7 @@ bind_ssl_sockets(void)
     }
 # ifdef USE_IPV6
     if (ipv6_enabled) {
-	for (i = 0; i < ssl_numports; i++) {
+	for (int i = 0; i < ssl_numports; i++) {
 	    ssl_sock_v6[i] = make_socket_v6(ssl_listener_port[i]);
 	    update_max_descriptor(ssl_sock_v6[i]);
 	    ssl_numsocks_v6++;

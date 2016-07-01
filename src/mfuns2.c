@@ -72,7 +72,7 @@ mfn_links(MFUNARGS)
 {
     char buf2[BUFFER_LEN];
     dbref obj;
-    int i, cnt;
+    int cnt;
 
     obj = mesg_dbref(descr, player, what, perms, argv[0], mesgtyp);
     if (obj == AMBIGUOUS || obj == UNKNOWN || obj == NOTHING || obj == HOME)
@@ -95,7 +95,7 @@ mfn_links(MFUNARGS)
 	if (cnt) {
 	    dbref obj2;
 
-	    for (i = 0; i < cnt; i++) {
+	    for (int i = 0; i < cnt; i++) {
 		obj2 = DBFETCH(obj)->sp.exit.dest[i];
 		ref2str(obj2, buf2, sizeof(buf2));
 		if (strlen(buf) + strlen(buf2) + 2 < BUFFER_LEN) {
@@ -443,7 +443,6 @@ mfn_sublist(MFUNARGS)
     int which;
     int end;
     int incr = 1;
-    int i;
     int pflag;
 
     if (argc > 1) {
@@ -492,7 +491,7 @@ mfn_sublist(MFUNARGS)
 
     *buf = '\0';
     pflag = 0;
-    for (i = which; ((i <= end) && (incr == 1)) || ((i >= end) && (incr == -1)); i += incr) {
+    for (int i = which; ((i <= end) && (incr == 1)) || ((i >= end) && (incr == -1)); i += incr) {
 	if (pflag) {
 	    strcatn(buf, BUFFER_LEN, sepbuf);
 	} else {
@@ -552,7 +551,7 @@ mfn_with(MFUNARGS)
     char cmdbuf[BUFFER_LEN];
     char vbuf[BUFFER_LEN];
     char *ptr, *valptr;
-    int v, cnt;
+    int v;
 
     ptr = MesgParse(argv[0], namebuf, sizeof(namebuf));
     CHECKRETURN(ptr, "WITH", "arg 1");
@@ -564,7 +563,7 @@ mfn_with(MFUNARGS)
     if (v == 2)
 	ABORT_MPI("WITH", "Too many variables already defined.");
     *buf = '\0';
-    for (cnt = 2; cnt < argc; cnt++) {
+    for (int cnt = 2; cnt < argc; cnt++) {
 	ptr = MesgParse(argv[cnt], cmdbuf, sizeof(cmdbuf));
 	if (!ptr) {
 	    notifyf(player, "%s %cWITH%c (arg %d)", get_mvar("how"),
@@ -653,7 +652,7 @@ mfn_for(MFUNARGS)
     char scratch[BUFFER_LEN];
     char tmp[BUFFER_LEN];
     char *ptr, *dptr;
-    int v, i, start, end, incr;
+    int v, start, end, incr;
 
     ptr = MesgParse(argv[0], scratch, sizeof(scratch));
     CHECKRETURN(ptr, "FOR", "arg 1 (varname)");
@@ -676,7 +675,7 @@ mfn_for(MFUNARGS)
     incr = atoi(dptr);
 
     *buf = '\0';
-    for (i = start; ((incr >= 0 && i <= end) || (incr < 0 && i >= end)); i += incr) {
+    for (int i = start; ((incr >= 0 && i <= end) || (incr < 0 && i >= end)); i += incr) {
 	snprintf(tmp, sizeof(tmp), "%d", i);
 	dptr = MesgParse(argv[4], buf, buflen);
 	CHECKRETURN(dptr, "FOR", "arg 5 (repeated command)");
@@ -1007,12 +1006,12 @@ mfn_lsort(MFUNARGS)
     char vbuf[BUFFER_LEN];
     char vbuf2[BUFFER_LEN];
     char *ptr, *ptr2, *tmp;
-    int i, j, count;
+    int j, count;
     int outcount = 0;
 
     if (argc > 1 && argc < 4)
 	ABORT_MPI("LSORT", "Takes 1 or 4 arguments.");
-    for (i = 0; i < MAX_MFUN_LIST_LEN; i++)
+    for (int i = 0; i < MAX_MFUN_LIST_LEN; i++)
 	litem[i] = NULL;
     ptr = MesgParse(argv[0], listbuf, sizeof(listbuf));
     CHECKRETURN(ptr, "LSORT", "arg 1");
@@ -1042,7 +1041,7 @@ mfn_lsort(MFUNARGS)
 	if (count >= MAX_MFUN_LIST_LEN)
 	    ABORT_MPI("LSORT", "Iteration limit exceeded");
     }
-    for (i = 0; i < count; i++) {
+    for (int i = 0; i < count; i++) {
 	for (j = i + 1; j < count; j++) {
 	    if (argc > 1) {
 		strcpyn(vbuf, sizeof(vbuf), litem[i]);
@@ -1064,7 +1063,7 @@ mfn_lsort(MFUNARGS)
 	}
     }
     *buf = '\0';
-    for (i = 0; i < count; i++) {
+    for (int i = 0; i < count; i++) {
 	if (outcount++)
 	    strcatn(buf, BUFFER_LEN, "\r");
 	strcatn(buf, BUFFER_LEN, litem[i]);
@@ -1578,7 +1577,7 @@ mfn_force(MFUNARGS)
 const char *
 mfn_midstr(MFUNARGS)
 {
-    int i, len = strlen(argv[0]);
+    int len = strlen(argv[0]);
     int pos1 = atoi(argv[1]);
     int pos2 = pos1;
     char *ptr = buf;
@@ -1605,10 +1604,10 @@ mfn_midstr(MFUNARGS)
 	pos2 = 1;
 
     if (pos2 >= pos1) {
-	for (i = pos1; i <= pos2; i++)
+	for (int i = pos1; i <= pos2; i++)
 	    *(ptr++) = argv[0][i - 1];
     } else {
-	for (i = pos1; i >= pos2; i--)
+	for (int i = pos1; i >= pos2; i--)
 	    *(ptr++) = argv[0][i - 1];
     }
     *ptr = '\0';
@@ -1702,7 +1701,7 @@ mfn_toupper(MFUNARGS)
 const char *
 mfn_commas(MFUNARGS)
 {
-    int v, i, count, itemlen;
+    int v, count, itemlen;
     char *ptr;
     char *out;
     char listbuf[BUFFER_LEN];
@@ -1739,7 +1738,7 @@ mfn_commas(MFUNARGS)
 
     *buf = '\0';
     out = buf;
-    for (i = 1; i <= count; i++) {
+    for (int i = 1; i <= count; i++) {
 	ptr = getlitem(buf2, sizeof(buf2), listbuf, "\r", i);
 	if (argc > 2) {
 	    strcpyn(tmp, BUFFER_LEN, ptr);
@@ -1789,11 +1788,10 @@ mfn_commas(MFUNARGS)
 const char *
 mfn_attr(MFUNARGS)
 {
-    int i;
     int exlen;
 
     buf[0] = '\0';
-    for (i = 0; i < argc - 1; i++) {
+    for (int i = 0; i < argc - 1; i++) {
 	if (!string_compare(argv[i], "reset") || !string_compare(argv[i], "normal")) {
 	    strcatn(buf, BUFFER_LEN, ANSI_RESET);
 	} else if (!string_compare(argv[i], "bold")) {

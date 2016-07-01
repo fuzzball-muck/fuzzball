@@ -734,11 +734,11 @@ mfn_nl(MFUNARGS)
 const char *
 mfn_lit(MFUNARGS)
 {
-    int i, len, len2;
+    int len, len2;
 
     strcpyn(buf, buflen, argv[0]);
     len = strlen(buf);
-    for (i = 1; i < argc; i++) {
+    for (int i = 1; i < argc; i++) {
 	len2 = strlen(argv[i]);
 	if (len2 + len + 3 >= BUFFER_LEN) {
 	    if (len + 3 < BUFFER_LEN) {
@@ -758,13 +758,13 @@ mfn_lit(MFUNARGS)
 const char *
 mfn_eval(MFUNARGS)
 {
-    int i, len, len2;
+    int len, len2;
     char buf2[BUFFER_LEN];
     char *ptr;
 
     strcpyn(buf, buflen, argv[0]);
     len = strlen(buf);
-    for (i = 1; i < argc; i++) {
+    for (int i = 1; i < argc; i++) {
 	len2 = strlen(argv[i]);
 	if (len2 + len + 3 >= BUFFER_LEN) {
 	    if (len + 3 < BUFFER_LEN) {
@@ -788,13 +788,13 @@ mfn_eval(MFUNARGS)
 const char *
 mfn_evalbang(MFUNARGS)
 {
-    int i, len, len2;
+    int len, len2;
     char buf2[BUFFER_LEN];
     char *ptr;
 
     strcpyn(buf, buflen, argv[0]);
     len = strlen(buf);
-    for (i = 1; i < argc; i++) {
+    for (int i = 1; i < argc; i++) {
 	len2 = strlen(argv[i]);
 	if (len2 + len + 3 >= BUFFER_LEN) {
 	    if (len + 3 < BUFFER_LEN) {
@@ -817,13 +817,13 @@ mfn_evalbang(MFUNARGS)
 const char *
 mfn_strip(MFUNARGS)
 {
-    int i, len, len2;
+    int len, len2;
     char *ptr;
 
     for (ptr = argv[0]; *ptr == ' '; ptr++) ;
     strcpyn(buf, buflen, ptr);
     len = strlen(buf);
-    for (i = 1; i < argc; i++) {
+    for (int i = 1; i < argc; i++) {
 	len2 = strlen(argv[i]);
 	if (len2 + len + 3 >= BUFFER_LEN) {
 	    if (len + 3 < BUFFER_LEN) {
@@ -846,12 +846,12 @@ mfn_strip(MFUNARGS)
 const char *
 mfn_mklist(MFUNARGS)
 {
-    int i, len, tlen;
+    int len, tlen;
     int outcount = 0;
 
     tlen = 0;
     *buf = '\0';
-    for (i = 0; i < argc; i++) {
+    for (int i = 0; i < argc; i++) {
 	len = strlen(argv[i]);
 	if (tlen + len + 2 < BUFFER_LEN) {
 	    if (outcount++)
@@ -1185,9 +1185,9 @@ mfn_dec(MFUNARGS)
 const char *
 mfn_add(MFUNARGS)
 {
-    int j, i = atoi(argv[0]);
+    int i = atoi(argv[0]);
 
-    for (j = 1; j < argc; j++)
+    for (int j = 1; j < argc; j++)
 	i += atoi(argv[j]);
     snprintf(buf, BUFFER_LEN, "%d", i);
     return (buf);
@@ -1197,9 +1197,9 @@ mfn_add(MFUNARGS)
 const char *
 mfn_subt(MFUNARGS)
 {
-    int j, i = atoi(argv[0]);
+    int i = atoi(argv[0]);
 
-    for (j = 1; j < argc; j++)
+    for (int j = 1; j < argc; j++)
 	i -= atoi(argv[j]);
     snprintf(buf, BUFFER_LEN, "%d", i);
     return (buf);
@@ -1209,9 +1209,9 @@ mfn_subt(MFUNARGS)
 const char *
 mfn_mult(MFUNARGS)
 {
-    int j, i = atoi(argv[0]);
+    int i = atoi(argv[0]);
 
-    for (j = 1; j < argc; j++)
+    for (int j = 1; j < argc; j++)
 	i *= atoi(argv[j]);
     snprintf(buf, BUFFER_LEN, "%d", i);
     return (buf);
@@ -1221,9 +1221,9 @@ mfn_mult(MFUNARGS)
 const char *
 mfn_div(MFUNARGS)
 {
-    int k, j, i = atoi(argv[0]);
+    int k, i = atoi(argv[0]);
 
-    for (j = 1; j < argc; j++) {
+    for (int j = 1; j < argc; j++) {
 	k = atoi(argv[j]);
 	if (!k) {
 	    i = 0;
@@ -1239,9 +1239,9 @@ mfn_div(MFUNARGS)
 const char *
 mfn_mod(MFUNARGS)
 {
-    int k, j, i = atoi(argv[0]);
+    int k, i = atoi(argv[0]);
 
-    for (j = 1; j < argc; j++) {
+    for (int j = 1; j < argc; j++) {
 	k = atoi(argv[j]);
 	if (!k) {
 	    i = 0;
@@ -1337,9 +1337,8 @@ mfn_or(MFUNARGS)
 {
     char *ptr;
     char buf2[16];
-    int i;
 
-    for (i = 0; i < argc; i++) {
+    for (int i = 0; i < argc; i++) {
 	ptr = MesgParse(argv[i], buf, buflen);
 	snprintf(buf2, sizeof(buf2), "arg %d", i + 1);
 	CHECKRETURN(ptr, "OR", buf2);
@@ -1369,9 +1368,8 @@ mfn_and(MFUNARGS)
 {
     char *ptr;
     char buf2[16];
-    int i;
 
-    for (i = 0; i < argc; i++) {
+    for (int i = 0; i < argc; i++) {
 	ptr = MesgParse(argv[i], buf, buflen);
 	snprintf(buf2, sizeof(buf2), "arg %d", i + 1);
 	CHECKRETURN(ptr, "AND", buf2);

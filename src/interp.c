@@ -277,7 +277,6 @@ int
 scopedvar_getnum(struct frame *fr, int level, const char *varname)
 {
     struct scopedvar_t *svinfo = NULL;
-    int varnum;
 
     assert(varname != NULL);
     assert(*varname != '\0');
@@ -293,7 +292,7 @@ scopedvar_getnum(struct frame *fr, int level, const char *varname)
     if (!svinfo->varnames) {
 	return -1;
     }
-    for (varnum = 0; varnum < svinfo->count; varnum++) {
+    for (int varnum = 0; varnum < svinfo->count; varnum++) {
 	assert(svinfo->varnames[varnum] != NULL);
 	if (!string_compare(svinfo->varnames[varnum], varname)) {
 	    return varnum;
@@ -305,7 +304,7 @@ scopedvar_getnum(struct frame *fr, int level, const char *varname)
 void
 RCLEAR(struct inst *oper, char *file, int line)
 {
-    int varcnt, j;
+    int varcnt;
 
     assert(oper != NULL);
     assert(file != NULL);
@@ -334,7 +333,7 @@ RCLEAR(struct inst *oper, char *file, int line)
 	    free((void *) oper->data.mufproc->procname);
 	    varcnt = oper->data.mufproc->vars;
 	    if (oper->data.mufproc->varnames) {
-		for (j = 0; j < varcnt; j++) {
+		for (int j = 0; j < varcnt; j++) {
 		    free((void *) oper->data.mufproc->varnames[j]);
 		}
 		free((void *) oper->data.mufproc->varnames);
@@ -435,7 +434,6 @@ interp(int descr, dbref player, dbref location, dbref program,
        dbref source, int nosleeps, int whichperms, int forced_pid)
 {
     struct frame *fr;
-    int i;
 
     if (!MLevel(program) || !MLevel(OWNER(program)) ||
 	((source != NOTHING) && !TrueWizard(OWNER(source)) &&
@@ -501,7 +499,7 @@ interp(int descr, dbref player, dbref location, dbref program,
 
     fr->svars = NULL;
     fr->lvars = NULL;
-    for (i = 0; i < MAX_VAR; i++) {
+    for (int i = 0; i < MAX_VAR; i++) {
 	fr->variables[i].type = PROG_INTEGER;
 	fr->variables[i].data.number = 0;
     }
@@ -763,7 +761,6 @@ watchpid_process(struct frame *fr)
 void
 prog_clean(struct frame *fr)
 {
-    int i;
     struct frame *ptr;
 
     if (!fr) {
@@ -782,17 +779,17 @@ prog_clean(struct frame *fr)
     watchpid_process(fr);
 
     fr->system.top = 0;
-    for (i = 0; i < fr->argument.top; i++) {
+    for (int i = 0; i < fr->argument.top; i++) {
 	CLEAR(&fr->argument.st[i]);
     }
 
     DEBUGPRINT("prog_clean: fr->caller.top=%d\n", fr->caller.top, 0);
-    for (i = 1; i <= fr->caller.top; i++) {
+    for (int i = 1; i <= fr->caller.top; i++) {
 	DEBUGPRINT("Decreasing instances of fr->caller.st[%d](#%d)\n", i, fr->caller.st[i]);
 	PROGRAM_DEC_INSTANCES(fr->caller.st[i]);
     }
 
-    for (i = 0; i < MAX_VAR; i++)
+    for (int i = 0; i < MAX_VAR; i++)
 	CLEAR(&fr->variables[i]);
 
     if (fr->cmd && --fr->cmd->links == 0)
@@ -882,7 +879,7 @@ void
 copyinst(struct inst *from, struct inst *to)
 {
     assert(from && to);
-    int j, varcnt;
+    int varcnt;
     *to = *from;
     switch (from->type) {
     case PROG_FUNCTION:
@@ -892,7 +889,7 @@ copyinst(struct inst *from, struct inst *to)
 	    to->data.mufproc->vars = varcnt = from->data.mufproc->vars;
 	    to->data.mufproc->args = from->data.mufproc->args;
 	    to->data.mufproc->varnames = (const char **) calloc(varcnt, sizeof(const char *));
-	    for (j = 0; j < varcnt; j++) {
+	    for (int j = 0; j < varcnt; j++) {
 		to->data.mufproc->varnames[j] = string_dup(from->data.mufproc->varnames[j]);
 	    }
 	}
@@ -925,8 +922,7 @@ copyvars(vars * from, vars * to)
 {
     assert(from && to);
 
-    int i;
-    for (i = 0; i < MAX_VAR; i++) {
+    for (int i = 0; i < MAX_VAR; i++) {
 	copyinst(&(*from)[i], &(*to)[i]);
     }
 }

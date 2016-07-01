@@ -276,8 +276,6 @@ compiler_warning(COMPSTATE * cstat, char *text, ...)
 int
 get_address(COMPSTATE * cstat, struct INTERMEDIATE *dest, int offset)
 {
-    int i;
-
     if (!cstat->addrlist) {
 	cstat->addrcount = 0;
 	cstat->addrmax = ADDRLIST_ALLOC_CHUNK_SIZE;
@@ -287,7 +285,7 @@ get_address(COMPSTATE * cstat, struct INTERMEDIATE *dest, int offset)
 		malloc(cstat->addrmax * sizeof(int));
     }
 
-    for (i = 0; i < cstat->addrcount; i++)
+    for (int i = 0; i < cstat->addrcount; i++)
 	if (cstat->addrlist[i] == dest && cstat->addroffsets[i] == offset)
 	    return i;
 
@@ -572,9 +570,7 @@ void
 init_defs(COMPSTATE * cstat)
 {
     /* initialize hash table */
-    int i;
-
-    for (i = 0; i < DEFHASHSIZE; i++) {
+    for (int i = 0; i < DEFHASHSIZE; i++) {
 	cstat->defhash[i] = NULL;
     }
 
@@ -611,9 +607,7 @@ uncompile_program(dbref i)
 void
 do_uncompile(dbref player)
 {
-    dbref i;
-
-    for (i = 0; i < db_top; i++) {
+    for (dbref i = 0; i < db_top; i++) {
 	if (Typeof(i) == TYPE_PROGRAM) {
 	    uncompile_program(i);
 	}
@@ -624,10 +618,9 @@ do_uncompile(dbref player)
 void
 free_unused_programs()
 {
-    dbref i;
     time_t now = time(NULL);
 
-    for (i = 0; i < db_top; i++) {
+    for (dbref i = 0; i < db_top; i++) {
 	if ((Typeof(i) == TYPE_PROGRAM) && !(FLAGS(i) & (ABODE | INTERNAL)) &&
 	    (now - DBFETCH(i)->ts.lastused > tp_clean_interval)
 	    && (PROGRAM_INSTANCES(i) == 0)) {
@@ -768,14 +761,13 @@ void
 RemoveNextIntermediate(COMPSTATE * cstat, struct INTERMEDIATE *curr)
 {
     struct INTERMEDIATE *tmp;
-    int i;
 
     if (!curr->next) {
 	return;
     }
 
     tmp = curr->next;
-    for (i = 0; i < cstat->addrcount; i++) {
+    for (int i = 0; i < cstat->addrcount; i++) {
 	if (cstat->addrlist[i] == tmp) {
 	    cstat->addrlist[i] = curr;
 	}
@@ -1264,7 +1256,6 @@ do_compile(int descr, dbref player_in, dbref program_in, int force_err_display)
 {
     const char *token;
     struct INTERMEDIATE *new_word;
-    int i;
     COMPSTATE cstat;
 
     /* set all compile state variables */
@@ -1280,7 +1271,7 @@ do_compile(int descr, dbref player_in, dbref program_in, int force_err_display)
     cstat.nested_trys = 0;
     cstat.addrcount = 0;
     cstat.addrmax = 0;
-    for (i = 0; i < MAX_VAR; i++) {
+    for (int i = 0; i < MAX_VAR; i++) {
 	cstat.variables[i] = NULL;
 	cstat.variabletypes[i] = 0;
 	cstat.localvars[i] = NULL;
@@ -2444,7 +2435,7 @@ process_special(COMPSTATE * cstat, const char *token)
 
 	return nu;
     } else if (!string_compare(token, ";")) {
-	int i, varcnt;
+	int varcnt;
 
 	if (cstat->control_stack)
 	    abort_compile(cstat, "Unexpected end of procedure definition.");
@@ -2461,7 +2452,7 @@ process_special(COMPSTATE * cstat, const char *token)
 	if (varcnt) {
 	    cstat->curr_proc->in.data.mufproc->varnames =
 		    (const char **) calloc(varcnt, sizeof(char *));
-	    for (i = 0; i < varcnt; i++) {
+	    for (int i = 0; i < varcnt; i++) {
 		cstat->curr_proc->in.data.mufproc->varnames[i] = cstat->scopedvars[i];
 		cstat->scopedvars[i] = 0;
 	    }
@@ -2954,12 +2945,12 @@ struct INTERMEDIATE *
 primitive_word(COMPSTATE * cstat, const char *token)
 {
     struct INTERMEDIATE *nu, *cur;
-    int pnum, loop;
+    int pnum;
 
     pnum = get_primitive(token);
     cur = nu = new_inst(cstat);
     if (pnum == IN_RET || pnum == IN_JMP) {
-	for (loop = 0; loop < cstat->nested_trys; loop++) {
+	for (int loop = 0; loop < cstat->nested_trys; loop++) {
 	    cur->no = cstat->nowords++;
 	    cur->in.type = PROG_PRIMITIVE;
 	    cur->in.line = cstat->lineno;
@@ -2967,7 +2958,7 @@ primitive_word(COMPSTATE * cstat, const char *token)
 	    cur->next = new_inst(cstat);
 	    cur = cur->next;
 	}
-	for (loop = 0; loop < cstat->nested_fors; loop++) {
+	for (int loop = 0; loop < cstat->nested_fors; loop++) {
 	    cur->no = cstat->nowords++;
 	    cur->in.type = PROG_PRIMITIVE;
 	    cur->in.line = cstat->lineno;
@@ -3072,13 +3063,13 @@ struct INTERMEDIATE *
 var_word(COMPSTATE * cstat, const char *token)
 {
     struct INTERMEDIATE *nu;
-    int i, var_no;
+    int var_no = 0;
 
     nu = new_inst(cstat);
     nu->no = cstat->nowords++;
     nu->in.type = PROG_VAR;
     nu->in.line = cstat->lineno;
-    for (var_no = i = 0; i < MAX_VAR; i++) {
+    for (int i = 0; i < MAX_VAR; i++) {
 	if (!cstat->variables[i])
 	    break;
 	if (!string_compare(token, cstat->variables[i]))
@@ -3093,13 +3084,13 @@ struct INTERMEDIATE *
 svar_word(COMPSTATE * cstat, const char *token)
 {
     struct INTERMEDIATE *nu;
-    int i, var_no;
+    int var_no = 0;
 
     nu = new_inst(cstat);
     nu->no = cstat->nowords++;
     nu->in.type = PROG_SVAR;
     nu->in.line = cstat->lineno;
-    for (i = var_no = 0; i < MAX_VAR; i++) {
+    for (int i = 0; i < MAX_VAR; i++) {
 	if (!cstat->scopedvars[i])
 	    break;
 	if (!string_compare(token, cstat->scopedvars[i]))
@@ -3114,13 +3105,13 @@ struct INTERMEDIATE *
 lvar_word(COMPSTATE * cstat, const char *token)
 {
     struct INTERMEDIATE *nu;
-    int i, var_no;
+    int var_no;
 
     nu = new_inst(cstat);
     nu->no = cstat->nowords++;
     nu->in.type = PROG_LVAR;
     nu->in.line = cstat->lineno;
-    for (i = var_no = 0; i < MAX_VAR; i++) {
+    for (int i = 0; i < MAX_VAR; i++) {
 	if (!cstat->localvars[i])
 	    break;
 	if (!string_compare(token, cstat->localvars[i]))
@@ -3472,9 +3463,7 @@ string(const char *token)
 int
 variable(COMPSTATE * cstat, const char *token)
 {
-    int i;
-
-    for (i = 0; i < MAX_VAR && cstat->variables[i]; i++)
+    for (int i = 0; i < MAX_VAR && cstat->variables[i]; i++)
 	if (!string_compare(token, cstat->variables[i]))
 	    return 1;
 
@@ -3484,9 +3473,7 @@ variable(COMPSTATE * cstat, const char *token)
 int
 scopedvar(COMPSTATE * cstat, const char *token)
 {
-    int i;
-
-    for (i = 0; i < MAX_VAR && cstat->scopedvars[i]; i++)
+    for (int i = 0; i < MAX_VAR && cstat->scopedvars[i]; i++)
 	if (!string_compare(token, cstat->scopedvars[i]))
 	    return 1;
 
@@ -3496,9 +3483,7 @@ scopedvar(COMPSTATE * cstat, const char *token)
 int
 localvar(COMPSTATE * cstat, const char *token)
 {
-    int i;
-
-    for (i = 0; i < MAX_VAR && cstat->localvars[i]; i++)
+    for (int i = 0; i < MAX_VAR && cstat->localvars[i]; i++)
 	if (!string_compare(token, cstat->localvars[i]))
 	    return 1;
 
@@ -3557,7 +3542,7 @@ append_intermediate_chain(struct INTERMEDIATE *chain, struct INTERMEDIATE *add)
 void
 free_intermediate_node(struct INTERMEDIATE *wd)
 {
-    int varcnt, j;
+    int varcnt;
 
     if (wd->in.type == PROG_STRING) {
 	if (wd->in.data.string)
@@ -3567,7 +3552,7 @@ free_intermediate_node(struct INTERMEDIATE *wd)
 	free((void *) wd->in.data.mufproc->procname);
 	varcnt = wd->in.data.mufproc->vars;
 	if (wd->in.data.mufproc->varnames) {
-	    for (j = 0; j < varcnt; j++) {
+	    for (int j = 0; j < varcnt; j++) {
 		free((void *) wd->in.data.mufproc->varnames[j]);
 	    }
 	    free((void *) wd->in.data.mufproc->varnames);
@@ -3594,7 +3579,6 @@ cleanup(COMPSTATE * cstat)
 /*	struct INTERMEDIATE *wd, *tempword; */
     struct CONTROL_STACK *eef, *tempif;
     struct PROC_LIST *p, *tempp;
-    int i;
 
     free_intermediate_chain(cstat->first_word);
     cstat->first_word = 0;
@@ -3615,17 +3599,17 @@ cleanup(COMPSTATE * cstat)
     purge_defs(cstat);
     free_addresses(cstat);
 
-    for (i = RES_VAR; i < MAX_VAR && cstat->variables[i]; i++) {
+    for (int i = RES_VAR; i < MAX_VAR && cstat->variables[i]; i++) {
 	free((void *) cstat->variables[i]);
 	cstat->variables[i] = 0;
     }
 
-    for (i = 0; i < MAX_VAR && cstat->scopedvars[i]; i++) {
+    for (int i = 0; i < MAX_VAR && cstat->scopedvars[i]; i++) {
 	free((void *) cstat->scopedvars[i]);
 	cstat->scopedvars[i] = 0;
     }
 
-    for (i = 0; i < MAX_VAR && cstat->localvars[i]; i++) {
+    for (int i = 0; i < MAX_VAR && cstat->localvars[i]; i++) {
 	free((void *) cstat->localvars[i]);
 	cstat->localvars[i] = 0;
     }
@@ -3642,7 +3626,7 @@ copy_program(COMPSTATE * cstat)
      */
     struct INTERMEDIATE *curr;
     struct inst *code;
-    int i, j, varcnt;
+    int i, varcnt;
 
     if (!cstat->first_word)
 	v_abort_compile(cstat, "Nothing to compile.");
@@ -3684,7 +3668,7 @@ copy_program(COMPSTATE * cstat)
 		if (curr->in.data.mufproc->varnames) {
 		    code[i].data.mufproc->varnames =
 			    (const char **) calloc(varcnt, sizeof(char *));
-		    for (j = 0; j < varcnt; j++) {
+		    for (int j = 0; j < varcnt; j++) {
 			code[i].data.mufproc->varnames[j] =
 				string_dup(curr->in.data.mufproc->varnames[j]);
 		    }
@@ -3840,19 +3824,19 @@ long
 size_prog(dbref prog)
 {
     struct inst *c;
-    long i, j, varcnt, siz, byts = 0;
+    long varcnt, siz, byts = 0;
 
     c = PROGRAM_CODE(prog);
     if (!c)
 	return 0;
     siz = PROGRAM_SIZ(prog);
-    for (i = 0L; i < siz; i++) {
+    for (long i = 0L; i < siz; i++) {
 	byts += sizeof(*c);
 	if (c[i].type == PROG_FUNCTION) {
 	    byts += strlen(c[i].data.mufproc->procname) + 1;
 	    varcnt = c[i].data.mufproc->vars;
 	    if (c[i].data.mufproc->varnames) {
-		for (j = 0; j < varcnt; j++) {
+		for (long j = 0; j < varcnt; j++) {
 		    byts += strlen(c[i].data.mufproc->varnames[j]) + 1;
 		}
 		byts += sizeof(char **) * varcnt;
@@ -3890,10 +3874,8 @@ clear_primitives(void)
 void
 init_primitives(void)
 {
-    int i;
-
     clear_primitives();
-    for (i = BASE_MIN; i <= BASE_MAX; i++) {
+    for (int i = BASE_MIN; i <= BASE_MAX; i++) {
 	add_primitive(i);
     }
     IN_FORPOP = get_primitive(" FORPOP");
