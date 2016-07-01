@@ -317,7 +317,7 @@ get_concat_list(dbref player, dbref what, dbref perms, dbref obj, char *listname
 		char *buf, int maxchars, int mode, int mesgtyp, int *blessed)
 {
     int line_limit = MAX_MFUN_LIST_LEN;
-    int i, cnt, len;
+    int cnt, len;
     const char *ptr;
     char *pos = buf;
     int tmpbless = 0;
@@ -338,7 +338,7 @@ get_concat_list(dbref player, dbref what, dbref perms, dbref obj, char *listname
     }
     maxchars -= 2;
     *buf = '\0';
-    for (i = 1; ((pos - buf) < (maxchars - 1)) && i <= cnt && line_limit--; i++) {
+    for (int i = 1; ((pos - buf) < (maxchars - 1)) && i <= cnt && line_limit--; i++) {
 	ptr = get_list_item(what, obj, perms, listname, i, mesgtyp, &tmpbless);
 	if (ptr) {
 	    if (!tmpbless) {
@@ -768,9 +768,7 @@ purge_mfns(void)
 void
 mesg_init(void)
 {
-    int i;
-
-    for (i = 0; mfun_list[i].name; i++)
+    for (int i = 0; mfun_list[i].name; i++)
 	insert_mfn(mfun_list[i].name, i + 1);
     mpi_prof_start_time = time(NULL);
 }
@@ -782,7 +780,7 @@ int
 mesg_args(char *wbuf, int maxlen, argv_typ argv, char ulv, char sep, char dlv, char quot,
 	  int maxargs)
 {
-    int r, lev, argc = 0;
+    int argc = 0;
     char buf[BUFFER_LEN];
     char *ptr;
     int litflag = 0;
@@ -790,7 +788,7 @@ mesg_args(char *wbuf, int maxlen, argv_typ argv, char ulv, char sep, char dlv, c
     /* for (ptr = wbuf; ptr && isspace(*ptr); ptr++); */
     strcpyn(buf, sizeof(buf), wbuf);
     ptr = buf;
-    for (lev = r = 0; (r < (BUFFER_LEN - 2)); r++) {
+    for (int lev = 0, r = 0; (r < (BUFFER_LEN - 2)); r++) {
 	if (buf[r] == '\0') {
 	    return (-1);
 	} else if (buf[r] == '\\') {
@@ -879,7 +877,7 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms,
     char cmdbuf[MAX_MFUN_NAME_LEN + 1];
     const char *ptr;
     char *dptr;
-    int p, q, s;
+    int q = 0, s;
     int i;
     char *argv[10] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
     int argc = 0;
@@ -907,7 +905,7 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms,
 	return NULL;
     }
     strcpyn(wbuf, sizeof(wbuf), inbuf);
-    for (p = q = 0; wbuf[p] && (p < maxchars - 1) && q < (maxchars - 1); p++) {
+    for (int p = 0; wbuf[p] && (p < maxchars - 1) && q < (maxchars - 1); p++) {
 	if (wbuf[p] == '\\') {
 	    p++;
 	    showtextflag = 1;

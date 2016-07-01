@@ -50,7 +50,6 @@ void
 sane_dump_object(dbref player, const char *arg)
 {
     dbref d;
-    int i;
     int result;
 
     if (player > 0) {
@@ -96,7 +95,7 @@ sane_dump_object(dbref player, const char *arg)
 
     case TYPE_EXIT:
 	SanPrint(player, "  Links:");
-	for (i = 0; i < DBFETCH(d)->sp.exit.ndest; i++)
+	for (int i = 0; i < DBFETCH(d)->sp.exit.ndest; i++)
 	    SanPrint(player, "    %s", unparse(DBFETCH(d)->sp.exit.dest[i]));
 	break;
 
@@ -106,7 +105,7 @@ sane_dump_object(dbref player, const char *arg)
 	break;
     }
     SanPrint(player, "Referring Objects:");
-    for (i = 0; i < db_top; i++) {
+    for (dbref i = 0; i < db_top; i++) {
 	if (CONTENTS(i) == d) {
 	    SanPrint(player, "  By contents field: %s", unparse(i));
 	}
@@ -133,12 +132,11 @@ violate(dbref player, dbref i, const char *s)
 static void
 check_next_chain(dbref player, dbref obj)
 {
-    dbref i;
     dbref orig;
 
     orig = obj;
     while (obj != NOTHING && OkRef(obj)) {
-	for (i = orig; i != NOTHING; i = NEXTOBJ(i)) {
+	for (dbref i = orig; i != NOTHING; i = NEXTOBJ(i)) {
 	    if (i == NEXTOBJ(obj)) {
 		violate(player, obj,
 			"has a 'next' field that forms an illegal loop in an object chain");
@@ -159,11 +157,9 @@ check_next_chain(dbref player, dbref obj)
 static void
 find_orphan_objects(dbref player)
 {
-    int i;
-
     SanPrint(player, "Searching for orphan objects...");
 
-    for (i = 0; i < db_top; i++) {
+    for (dbref i = 0; i < db_top; i++) {
 	FLAGS(i) &= ~SANEBIT;
     }
 
@@ -172,7 +168,7 @@ find_orphan_objects(dbref player)
     }
     FLAGS(GLOBAL_ENVIRONMENT) |= SANEBIT;
 
-    for (i = 0; i < db_top; i++) {
+    for (dbref i = 0; i < db_top; i++) {
 	if (EXITS(i) != NOTHING) {
 	    if (FLAGS(EXITS(i)) & SANEBIT) {
 		violate(player, EXITS(i),
@@ -199,14 +195,14 @@ find_orphan_objects(dbref player)
 	}
     }
 
-    for (i = 0; i < db_top; i++) {
+    for (dbref i = 0; i < db_top; i++) {
 	if (!(FLAGS(i) & SANEBIT)) {
 	    violate(player, i,
 		    "appears to be an orphan object, that is not referred to by any other object");
 	}
     }
 
-    for (i = 0; i < db_top; i++) {
+    for (dbref i = 0; i < db_top; i++) {
 	FLAGS(i) &= ~SANEBIT;
     }
 }
@@ -246,11 +242,9 @@ check_thing(dbref player, dbref obj)
 void
 check_exit(dbref player, dbref obj)
 {
-    int i;
-
     if (DBFETCH(obj)->sp.exit.ndest < 0)
 	violate(player, obj, "has a negative link count.");
-    for (i = 0; i < DBFETCH(obj)->sp.exit.ndest; i++) {
+    for (int i = 0; i < DBFETCH(obj)->sp.exit.ndest; i++) {
 	if (!OkRef((DBFETCH(obj)->sp.exit.dest)[i]) &&
 	    (DBFETCH(obj)->sp.exit.dest)[i] != HOME &&
 	    (DBFETCH(obj)->sp.exit.dest)[i] != NIL) {
@@ -436,12 +430,11 @@ void
 sanity(dbref player)
 {
     const int increp = 10000;
-    int i;
     int j;
 
     sanity_violated = 0;
 
-    for (i = 0; i < db_top; i++) {
+    for (dbref i = 0; i < db_top; i++) {
 	if (!(i % increp)) {
 	    j = i + increp - 1;
 	    j = (j >= db_top) ? (db_top - 1) : j;
@@ -596,10 +589,8 @@ cut_bad_exits(dbref obj)
 void
 hacksaw_bad_chains(void)
 {
-    dbref loop;
-
     cut_bad_recyclable();
-    for (loop = 0; loop < db_top; loop++) {
+    for (dbref loop = 0; loop < db_top; loop++) {
 	if (Typeof(loop) != TYPE_ROOM && Typeof(loop) != TYPE_THING &&
 	    Typeof(loop) != TYPE_PLAYER) {
 	    cut_all_chains(loop);
@@ -613,12 +604,11 @@ hacksaw_bad_chains(void)
 char *
 rand_password(void)
 {
-    int loop;
     char pwdchars[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     char password[17];
     int charslen = strlen(pwdchars);
 
-    for (loop = 0; loop < 16; loop++) {
+    for (int loop = 0; loop < 16; loop++) {
 	password[loop] = pwdchars[(RANDOM() >> 8) % charslen];
     }
     password[16] = 0;
@@ -711,14 +701,12 @@ fix_thing(dbref obj)
 void
 fix_exit(dbref obj)
 {
-    int i, j;
-
-    for (i = 0; i < DBFETCH(obj)->sp.exit.ndest;) {
+    for (int i = 0; i < DBFETCH(obj)->sp.exit.ndest;) {
 	if (!OkObj((DBFETCH(obj)->sp.exit.dest)[i]) && (DBFETCH(obj)->sp.exit.dest)[i] != HOME) {
 	    SanFixed(obj, "Removing invalid destination from %s");
 	    DBFETCH(obj)->sp.exit.ndest--;
 	    DBDIRTY(obj);
-	    for (j = i; j < DBFETCH(obj)->sp.exit.ndest; j++) {
+	    for (int j = i; j < DBFETCH(obj)->sp.exit.ndest; j++) {
 		(DBFETCH(obj)->sp.exit.dest)[i] = (DBFETCH(obj)->sp.exit.dest)[i + 1];
 	    }
 	} else {
@@ -744,9 +732,9 @@ fix_player(dbref obj)
 void
 find_misplaced_objects(void)
 {
-    dbref loop, player = NOTHING, room = NOTHING;
+    dbref player = NOTHING, room = NOTHING;
 
-    for (loop = 0; loop < db_top; loop++) {
+    for (dbref loop = 0; loop < db_top; loop++) {
 	if (Typeof(loop) != TYPE_ROOM &&
 	    Typeof(loop) != TYPE_THING &&
 	    Typeof(loop) != TYPE_PLAYER &&
@@ -865,9 +853,7 @@ find_misplaced_objects(void)
 void
 adopt_orphans(void)
 {
-    dbref loop;
-
-    for (loop = 0; loop < db_top; loop++) {
+    for (dbref loop = 0; loop < db_top; loop++) {
 	if (!(FLAGS(loop) & SANEBIT)) {
 	    DBDIRTY(loop);
 	    switch (Typeof(loop)) {
@@ -916,11 +902,9 @@ clean_global_environment(void)
 void
 sanfix(dbref player)
 {
-    dbref loop;
-
     sanity_violated = 0;
 
-    for (loop = 0; loop < db_top; loop++) {
+    for (dbref loop = 0; loop < db_top; loop++) {
 	FLAGS(loop) &= ~SANEBIT;
     }
     FLAGS(GLOBAL_ENVIRONMENT) |= SANEBIT;
@@ -935,7 +919,7 @@ sanfix(dbref player)
     adopt_orphans();
     clean_global_environment();
 
-    for (loop = 0; loop < db_top; loop++) {
+    for (dbref loop = 0; loop < db_top; loop++) {
 	FLAGS(loop) &= ~SANEBIT;
     }
 
@@ -1181,8 +1165,6 @@ extract_program(FILE * f, dbref obj)
 void
 extract_object(FILE * f, dbref d)
 {
-    int i;
-
     fprintf(f, "  #%d\n", d);
     fprintf(f, "  Object:         %s\n", unparse(d));
     fprintf(f, "  Owner:          %s\n", unparse(OWNER(d)));
@@ -1208,7 +1190,7 @@ extract_object(FILE * f, dbref d)
 
     case TYPE_EXIT:
 	fprintf(f, "  Links:         ");
-	for (i = 0; i < DBFETCH(d)->sp.exit.ndest; i++)
+	for (int i = 0; i < DBFETCH(d)->sp.exit.ndest; i++)
 	    fprintf(f, " %s;", unparse(DBFETCH(d)->sp.exit.dest[i]));
 	fprintf(f, "\n");
 	break;
@@ -1262,7 +1244,7 @@ extract(void)
 	f = stdout;
     }
 
-    for (i = 0; i < db_top; i++) {
+    for (int i = 0; i < db_top; i++) {
 	if ((OWNER(i) == d) && (Typeof(i) != TYPE_GARBAGE)) {
 	    extract_object(f, i);
 	}			/* extract only objects owned by this player */
