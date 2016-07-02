@@ -110,20 +110,24 @@ set_property_nofetch(dbref player, const char *pname, PData * dat, int sync)
 	break;
     }
 
-    if (!sync && string_compare(tp_gender_prop, LEGACY_GENDER_PROP)) {
-	char *current;
-	static const char *legacy;
-	current = string_dup(tp_gender_prop);
-	legacy = string_dup(LEGACY_GENDER_PROP);
+    if (Typeof(player) == TYPE_PLAYER) {
+	if (!string_compare(pname, LEGACY_GUEST_PROP)) {
+	    FLAGS(player) |= GUEST;
+	} else if (!sync && string_compare(tp_gender_prop, LEGACY_GENDER_PROP)) {
+	    char *current;
+	    static const char *legacy;
+	    current = string_dup(tp_gender_prop);
+	    legacy = string_dup(LEGACY_GENDER_PROP);
 
-	while (*current == PROPDIR_DELIMITER)
-	    current++;
-	while (*legacy == PROPDIR_DELIMITER)
-	    legacy++;
-	if (!string_compare(pname, current)) {
-	    set_property(player, (char *) legacy, dat, 1);
-	} else if (!string_compare(pname, legacy)) {
-	    set_property(player, current, dat, 1);
+	    while (*current == PROPDIR_DELIMITER)
+	        current++;
+	    while (*legacy == PROPDIR_DELIMITER)
+	        legacy++;
+	    if (!string_compare(pname, current)) {
+	        set_property(player, (char *) legacy, dat, 1);
+	    } else if (!string_compare(pname, legacy)) {
+	        set_property(player, current, dat, 1);
+	    }
 	}
     }
 }
@@ -243,22 +247,26 @@ remove_property_nofetch(dbref player, const char *pname, int sync)
     l = DBFETCH(player)->properties;
     l = propdir_delete_elem(l, w);
     DBFETCH(player)->properties = l;
-    DBDIRTY(player);
 
-    if (!sync && string_compare(tp_gender_prop, LEGACY_GENDER_PROP)) {
-	char *current;
-	static const char *legacy;
-	current = string_dup(tp_gender_prop);
-	legacy = string_dup(LEGACY_GENDER_PROP);
+    if (Typeof(player) == TYPE_PLAYER) {
+	if (!string_compare(pname, LEGACY_GUEST_PROP)) {
+	    FLAGS(player) &= ~GUEST;
+	    DBDIRTY(player);
+	} else if (!sync && string_compare(tp_gender_prop, LEGACY_GENDER_PROP)) {
+	    char *current;
+	    static const char *legacy;
+	    current = string_dup(tp_gender_prop);
+	    legacy = string_dup(LEGACY_GENDER_PROP);
 
-	while (*current == PROPDIR_DELIMITER)
-	    current++;
-	while (*legacy == PROPDIR_DELIMITER)
-	    legacy++;
-	if (!string_compare(pname, current)) {
-	    remove_property(player, (char *) legacy, 1);
-	} else if (!string_compare(pname, legacy)) {
-	    remove_property(player, current, 1);
+	    while (*current == PROPDIR_DELIMITER)
+	        current++;
+	    while (*legacy == PROPDIR_DELIMITER)
+	        legacy++;
+	    if (!string_compare(pname, current)) {
+	        remove_property(player, (char *) legacy, 1);
+	    } else if (!string_compare(pname, legacy)) {
+	        remove_property(player, current, 1);
+	    }
 	}
     }
 
