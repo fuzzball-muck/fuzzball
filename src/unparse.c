@@ -39,6 +39,8 @@ unparse_flags(dbref thing)
 	    *p++ = 'C';
 	if (FLAGS(thing) & JUMP_OK)
 	    *p++ = 'J';
+	if (FLAGS(thing) & GUEST)
+	    *p++ = 'G';
 	if (FLAGS(thing) & HAVEN)
 	    *p++ = 'H';
 	if (FLAGS(thing) & ABODE)

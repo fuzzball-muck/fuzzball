@@ -106,6 +106,10 @@ could_doit(int descr, dbref player, dbref thing)
 	    }
 	}
 
+	if (dest != HOME && Typeof(dest) == TYPE_ROOM && (FLAGS(dest) & GUEST) && ISGUEST(player)) {
+	    return 0;
+	}
+
 	/* for actions */
 	if ((LOCATION(thing) != NOTHING) && (Typeof(LOCATION(thing)) != TYPE_ROOM)) {
 
@@ -295,6 +299,9 @@ restricted(dbref player, dbref thing, object_flag_type flag)
     case ABODE:
 	/* Trying to set a program AUTOSTART requires TrueWizard */
 	return (!TrueWizard(OWNER(player)) && (Typeof(thing) == TYPE_PROGRAM));
+    case GUEST:
+	/* Guest operations require a wizard */
+	return (!(Wizard(OWNER(player))));
     case YIELD:
 	/* Mucking with the env-chain matching requires TrueWizard */
 	return (!(Wizard(OWNER(player))));

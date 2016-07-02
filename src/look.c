@@ -413,6 +413,10 @@ flag_description(dbref thing)
 	}
 	if (FLAGS(thing) & ZOMBIE)
 	    strcatn(buf, sizeof(buf), " ZOMBIE");
+	if (FLAGS(thing) & GUEST)
+	    strcatn(buf, sizeof(buf),
+                    (Typeof(thing) == TYPE_PROGRAM || Typeof(thing) == TYPE_EXIT || Typeof(thing) == TYPE_ROOM) ?
+				       " NOGUEST" : " GUEST");
 	if (FLAGS(thing) & HAVEN)
 	    strcatn(buf, sizeof(buf),
 		    (Typeof(thing) !=
@@ -990,6 +994,12 @@ init_checkflags(dbref player, const char *flags, struct flgchkdat *check)
 		check->clearflags |= DARK;
 	    else
 		check->setflags |= DARK;
+	    break;
+	case 'G':
+	    if (mode)
+		check->clearflags |= GUEST;
+	    else
+		check->setflags |= GUEST;
 	    break;
 	case 'H':
 	    if (mode)

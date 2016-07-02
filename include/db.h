@@ -174,7 +174,7 @@ typedef int dbref;		/* offset into db */
 #define EXPANSION1		 0x1000	/* Expansion bit */
 #define EXPANSION2		 0x2000	/* Expansion bit */
 #define KILL_OK	         0x4000	/* Kill_OK bit.  Means you can be killed. */
-#define EXPANSION3		 0x8000	/* Expansion bit */
+#define GUEST		 0x8000	/* Guest flag */
 #define HAVEN           0x10000	/* can't kill here */
 #define HIDE HAVEN
 #define HARDUID HAVEN		/* Program runs with uid of trigger owner */
@@ -229,9 +229,9 @@ typedef long object_flag_type;
    QUELL set would be prevented from unsetting their own QUELL flag to be able to
    clear MESGPROP_GUEST.) */
 #ifdef GOD_PRIV
-#define ISGUEST(x)	(get_property(x, MESGPROP_GUEST) != NULL && !God(x))
+#define ISGUEST(x)	((FLAGS(x) & GUEST) && !God(x))
 #else				/* !defined(GOD_PRIV) */
-#define ISGUEST(x)	(get_property(x, MESGPROP_GUEST) != NULL && ((FLAGS(x) & TYPE_PLAYER) && !TrueWizard(x)))
+#define ISGUEST(x)	((FLAGS(x) & GUEST) && (FLAGS(x) & TYPE_PLAYER) && !TrueWizard(x))
 #endif				/* GOD_PRIV */
 #define NOGUEST(_cmd,x) \
 if(ISGUEST(x)) \

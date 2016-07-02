@@ -728,6 +728,8 @@ do_set(int descr, dbref player, const char *name, const char *flag)
 	f = CHOWN_OK;
     } else if (string_prefix("JUMP_OK", p)) {
 	f = JUMP_OK;
+    } else if (string_prefix("GUEST", p)) {
+	f = GUEST;
     } else if (string_prefix("HAVEN", p) || string_prefix("HARDUID", p)) {
 	f = HAVEN;
     } else if ((string_prefix("ABODE", p)) ||
