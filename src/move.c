@@ -458,6 +458,10 @@ trigger(int descr, dbref player, dbref exit, int pflag)
 			notify(player, "You can't go that way.");
 			break;
 		    }
+		    if (ISGUEST(player) && ((FLAGS(dest) | FLAGS(exit)) & GUEST)) {
+			notify(player, "You can't go that way.");
+			break;
+		    }
 		    if (GETDROP(exit))
 			exec_or_notify_prop(descr, player, exit, MESGPROP_DROP, "(@Drop)");
 		    if (GETODROP(exit) && !Dark(player)) {
@@ -542,6 +546,10 @@ trigger(int descr, dbref player, dbref exit, int pflag)
 		}
 		break;
 	    case TYPE_PROGRAM:
+	        if (ISGUEST(player) && ((FLAGS(dest) | FLAGS(exit)) & GUEST)) {
+		    notify(player, "You can't go that way.");
+		    break;
+	        }
 		tmpfr = interp(descr, player, LOCATION(player), dest, exit,
 			       FOREGROUND, STD_REGUID, 0);
 		if (tmpfr) {

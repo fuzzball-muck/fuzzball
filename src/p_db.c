@@ -147,6 +147,9 @@ prim_moveto(PRIM_PROTOTYPE)
 		    abort_interp("Destination not JUMP_OK.");
 		if (Typeof(dest) == TYPE_THING && LOCATION(victim) != LOCATION(dest))
 		    abort_interp("Not in same location as vehicle.");
+		if (ISGUEST(victim) && (FLAGS(dest) & GUEST) && Typeof(dest) == TYPE_ROOM)
+		abort_interp("Destination doesn't accept guests.");
+
 	    }
 	    enter_room(fr->descr, victim, dest, program);
 	    break;
@@ -642,6 +645,8 @@ prim_set(PRIM_PROTOTYPE)
 	else if (string_prefix("chown_ok", flag)
 		 || string_prefix("color", flag))
 	    tmp = CHOWN_OK;
+	else if (string_prefix("guest", flag))
+	    tmp = GUEST;
 	else if (string_prefix("haven", flag)
 		 || string_prefix("harduid", flag))
 	    tmp = HAVEN;
@@ -696,6 +701,7 @@ prim_set(PRIM_PROTOTYPE)
 			    && (FLAGS(ProgUID) & ZOMBIE))
 			|| ((tmp == ZOMBIE) && (Typeof(ref) == TYPE_PLAYER))
 			|| (tmp == BUILDER) || (tmp == YIELD) || ((unsigned) tmp == OVERT)
+			|| (tmp == GUEST)
 	 )
 	)
 	|| (tmp == WIZARD) || (tmp == QUELL) || (tmp == INTERACTIVE)
@@ -781,6 +787,8 @@ prim_flagp(PRIM_PROTOTYPE)
 	else if (string_prefix("chown_ok", flag)
 		 || string_prefix("color", flag))
 	    tmp = CHOWN_OK;
+	else if (string_prefix("guest", flag))
+	    tmp = GUEST;
 	else if (string_prefix("haven", flag)
 		 || string_prefix("harduid", flag))
 	    tmp = HAVEN;
