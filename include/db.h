@@ -101,7 +101,6 @@ typedef int dbref;		/* offset into db */
 #define MESGPROP_PCON		"_/pcon"
 #define MESGPROP_PDCON		"_/pdcon"
 #define MESGPROP_VALUE		"@/value"
-#define MESGPROP_GUEST		"~/isguest"
 
 #define GETMESG(x,y)   (get_property_class(x, y))
 #define GETDESC(x)	GETMESG(x, MESGPROP_DESC)

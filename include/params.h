@@ -125,6 +125,7 @@
 #define IGNORE_PROP		"@__sys__/ignore/def"
 #define NO_RECYCLE_PROP		"@/precious"
 #define LEGACY_GENDER_PROP	"sex"
+#define LEGACY_GUEST_PROP	"~/isguest"
 
 /* Do we want MUF math operators (currently =) to work on strings? */
 #undef STRINGMATH

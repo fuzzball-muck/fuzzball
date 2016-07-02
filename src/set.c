@@ -762,12 +762,21 @@ do_set(int descr, dbref player, const char *name, const char *flag)
 	ts_modifyobject(thing);
 	FLAGS(thing) &= ~f;
 	DBDIRTY(thing);
+	if (f == GUEST && Typeof(thing) == TYPE_PLAYER) {
+	    remove_property(thing, LEGACY_GUEST_PROP, 0);
+	}
 	notify(player, "Flag reset.");
     } else {
 	/* set the flag */
 	ts_modifyobject(thing);
 	FLAGS(thing) |= f;
 	DBDIRTY(thing);
+	if (f == GUEST && Typeof(thing) == TYPE_PLAYER) {
+	    PData property;
+	    property.flags = PROP_STRTYP;
+	    property.data.str = "yes";
+	    set_property(thing, LEGACY_GUEST_PROP, &property, 0);
+	}
 	notify(player, "Flag set.");
     }
 }

@@ -461,22 +461,26 @@ listprops_wildcard(dbref player, dbref thing, const char *dir, const char *wild)
     while (propadr) {
 	if (equalstr(wldcrd, propname)) {
 	    char *current, *tmpname;
-	    static char *legacy;
+	    static char *legacy_gender;
+	    static char *legacy_guest;
 	    current = string_dup(tp_gender_prop);
-	    legacy = string_dup(LEGACY_GENDER_PROP);
+	    legacy_gender = string_dup(LEGACY_GENDER_PROP);
+	    legacy_guest = string_dup(LEGACY_GUEST_PROP);
 
 	    snprintf(buf, sizeof(buf), "%s%c%s", dir, PROPDIR_DELIMITER, propname);
 	    tmpname = string_dup(buf);
 
 	    while (*current == PROPDIR_DELIMITER)
 		current++;
-	    while (*legacy == PROPDIR_DELIMITER)
-		legacy++;
+	    while (*legacy_gender == PROPDIR_DELIMITER)
+		legacy_gender++;
+	    while (*legacy_guest == PROPDIR_DELIMITER)
+		legacy_guest++;
 	    while (*tmpname == PROPDIR_DELIMITER)
 		tmpname++;
 
-	    if (!tp_show_legacy_props && !string_compare(tmpname, legacy)
-		&& string_compare(current, legacy)) {
+	    if (!tp_show_legacy_props &&
+	            (!string_compare(tmpname, legacy_guest) || (!string_compare(tmpname, legacy_gender) && string_compare(current, legacy_gender)))) {
 		propadr = next_prop(pptr, propadr, propname, sizeof(propname));
 		continue;
 	    }
