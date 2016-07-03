@@ -11,6 +11,7 @@
 #endif
 #include "mpi.h"
 #include "msgparse.h"
+#include "mufevent.h"
 #include "params.h"
 #include "props.h"
 #include "tune.h"
@@ -2904,8 +2905,6 @@ void
 close_sockets(const char *msg)
 {
     struct descriptor_data *d, *dnext;
-    int i;
-
     for (d = descriptor_list; d; d = dnext) {
 	dnext = d->next;
 	if (d->connected) {

@@ -5,6 +5,7 @@
 #include "interface.h"
 #include "interp.h"
 #include "match.h"
+#include "mufevent.h"
 #include "mpi.h"
 #include "params.h"
 #include "props.h"

@@ -8,6 +8,7 @@
 #ifdef MCP_SUPPORT
 #include "mcpgui.h"
 #endif
+#include "mufevent.h"
 #include "props.h"
 #include "tune.h"
 

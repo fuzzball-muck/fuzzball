@@ -5,6 +5,7 @@
 #include "inst.h"
 #include "interface.h"
 #include "interp.h"
+#include "mufevent.h"
 #include "tune.h"
 
 #include <stdio.h>

@@ -3,6 +3,8 @@
 #ifndef _ARRAY_H
 #define _ARRAY_H
 
+#include "db.h"
+
 #define ARRAY_UNDEFINED		0
 #define ARRAY_PACKED		1
 #define ARRAY_DICTIONARY	2

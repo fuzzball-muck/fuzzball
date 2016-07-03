@@ -8,6 +8,7 @@
 #include "interp.h"
 #include "mcp.h"
 #include "mcpgui.h"
+#include "mufevent.h"
 #include "tune.h"
 
 #include <sys/types.h>
