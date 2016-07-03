@@ -1,11 +1,3 @@
-/***********************************
- *                                 *
- * smatch string compare utility   *
- * Written by Explorer_Bob.        *
- * modified by Foxen               *
- *                                 *
- ***********************************/
-
 #include "config.h"
 
 static int cmatch(char *s1, char c1);

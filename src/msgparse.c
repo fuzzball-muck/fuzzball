@@ -1,36 +1,18 @@
-/* do_parse_mesg()  Parses a message string, expanding {prop}s, {list}s, etc.
- * Written 4/93 - 5/93 by Foxen
- *
- * Args:
- *   int descr             Descriptor that triggered this.
- *   dbref player          Player triggering this.
- *   dbref what            Object that mesg is on.
- *   dbref perms           Object permissions are checked from.
- *   const char *inbuf     A pointer to the input raw mesg string.
- *   char *abuf            Argument string for {&how}.
- *   char *outbuf          Buffer to return results in.
- *   int mesgtyp           1 for personal messages, 0 for omessages.
- *
- *   extern char *match_args     Arg string for {&args}
- *   extern char *match_cmdname  Arg string for {&cmd}
- *
- * Returns a pointer to output string.  Usually in outbuf.
- */
-
-
 #include "config.h"
-#include <math.h>
-#include <ctype.h>
-#include "params.h"
+
 #include "db.h"
+#include "externs.h"
+#include "interface.h"
+#include "match.h"
+#include "mfun.h"
+#include "mpi.h"
+#include "msgparse.h"
+#include "params.h"
+#include "props.h"
 #include "tune.h"
 
-#include "mpi.h"
-#include "externs.h"
-#include "props.h"
-#include "match.h"
-#include "msgparse.h"
-#include "mfun.h"
+#include <ctype.h>
+#include <math.h>
 
 time_t mpi_prof_start_time;
 

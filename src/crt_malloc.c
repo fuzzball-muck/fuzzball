@@ -106,9 +106,9 @@
 /* {{{ #includes							*/
 
 #include "config.h"
-#include "externs.h"
 
 #ifdef MALLOC_PROFILING
+#include "interface.h"
 
 /* }}} */
 /* {{{ #defines you might want to configure.				*/

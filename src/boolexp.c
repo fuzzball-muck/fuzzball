@@ -1,33 +1,15 @@
 #include "config.h"
 
-#include <ctype.h>
-#include <stdio.h>
-
 #include "db.h"
-#include "props.h"
-#include "match.h"
 #include "externs.h"
-#include "params.h"
 #include "interface.h"
 #include "interp.h"
+#include "match.h"
+#include "params.h"
+#include "props.h"
 
-/* Lachesis note on the routines in this package:
- *   eval_booexp does just evaluation.
- *
- *   parse_boolexp makes potentially recursive calls to several different
- *   subroutines ---
- *        parse_boolexp_F
- *            This routine does the leaf level parsing and the NOT.
- *        parse_boolexp_E
- *            This routine does the ORs.
- *        parse_boolexp_T
- *            This routine does the ANDs.
- *
- *   Because property expressions are leaf level expressions, I have only
- *   touched eval_boolexp_F, asking it to call my additional parse_boolprop()
- *   routine.
- */
-
+#include <ctype.h>
+#include <stdio.h>
 
 struct boolexp *
 alloc_boolnode(void)

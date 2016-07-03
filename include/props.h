@@ -120,7 +120,6 @@ extern PropPtr alloc_propnode(const char *name);
 extern void free_propnode(PropPtr node);
 extern PropPtr first_node(PropPtr p);
 extern PropPtr next_node(PropPtr p, char *c);
-extern void putprop(FILE * f, PropPtr p);
 extern int Prop_Check(const char *name, const char what);
 extern PropPtr locate_prop(PropPtr l, char *path);
 extern PropPtr new_prop(PropPtr * l, char *path);
@@ -150,7 +149,6 @@ extern int get_property_flags(dbref player, const char *type);
 extern void set_property_flags(dbref player, const char *type, int flags);
 extern void clear_property_flags(dbref player, const char *type, int flags);
 
-extern int genderof(int descr, dbref player);
 extern struct plist *copy_prop(dbref old);
 
 extern PropPtr first_prop(dbref player, const char *dir, PropPtr * list, char *name,
@@ -172,7 +170,6 @@ extern PropPtr propdir_delete_elem(PropPtr root, char *path);
 extern PropPtr propdir_get_elem(PropPtr root, char *path);
 extern PropPtr propdir_first_elem(PropPtr root, char *path);
 extern PropPtr propdir_next_elem(PropPtr root, char *path);
-extern int propdir_check(PropPtr root, char *path);
 extern const char *propdir_name(const char *name);
 extern const char *propdir_unloaded(PropPtr root, const char *path);
 
@@ -184,5 +181,13 @@ extern void db_dump_props(FILE * f, dbref obj);
 extern void reflist_add(dbref obj, const char *propname, dbref toadd);
 extern void reflist_del(dbref obj, const char *propname, dbref todel);
 extern int reflist_find(dbref obj, const char *propname, dbref tofind);
+
+extern char *displayprop(dbref player, dbref obj, const char *name, char *buf, size_t bufsiz);
+extern long size_properties(dbref player, int load);
+extern void untouchprops_incremental(int limit);
+
+extern void clear_propnode(PropPtr p);
+extern void copy_proplist(dbref obj, PropPtr * newer, PropPtr old);
+extern long size_proplist(PropPtr avl);
 
 #endif				/* _PROPS_H */

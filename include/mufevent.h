@@ -26,4 +26,8 @@ void muf_event_process(void);
 stk_array *get_mufevent_pids(stk_array * nw, dbref ref);
 stk_array *get_mufevent_pidinfo(stk_array * nw, int pid);
 
+void muf_event_add(struct frame *fr, char *event, struct inst *val, int exclusive);
+int muf_event_count(struct frame *fr);
+int muf_event_exists(struct frame *fr, const char *eventid);
+
 #endif				/* _MUFEVENT_H */

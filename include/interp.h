@@ -150,6 +150,16 @@ extern dbref find_uid(dbref player, struct frame *fr, int st, dbref program);
 extern int top_pid;
 extern int nargs;		/* DO NOT TOUCH THIS VARIABLE */
 
+extern void do_abort_silent(void);
+extern dbref find_mlev(dbref prog, struct frame *fr, int st);
+extern struct frame *interp(int descr, dbref player, dbref location, dbref program,
+                            dbref source, int nosleeping, int whichperms, int forced_pid);
+extern struct inst *interp_loop(dbref player, dbref program, struct frame *fr, int rettyp);
+extern void prog_clean(struct frame *fr);
+extern void purge_all_free_frames();
+extern void purge_for_pool(void);
+extern void purge_try_pool(void);
+
 #include "p_array.h"
 #include "p_connects.h"
 #include "p_db.h"

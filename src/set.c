@@ -1,16 +1,15 @@
 #include "config.h"
 
-/* commands which set parameters */
-#include <stdio.h>
-#include <ctype.h>
-
 #include "db.h"
-#include "params.h"
-#include "tune.h"
-#include "props.h"
-#include "match.h"
 #include "externs.h"
+#include "interface.h"
+#include "match.h"
+#include "params.h"
+#include "props.h"
+#include "tune.h"
 
+#include <ctype.h>
+#include <stdio.h>
 
 static dbref
 match_controlled(int descr, dbref player, const char *name)

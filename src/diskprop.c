@@ -1,9 +1,9 @@
 #include "config.h"
+
 #ifdef DISKBASE
+#include "diskprop.h"
 #include "params.h"
 #include "tune.h"
-#include "externs.h"
-#include "diskprop.h"
 
 extern FILE *input_file;
 extern void getproperties(FILE * f, dbref obj, const char *pdir);

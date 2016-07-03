@@ -1,4 +1,5 @@
 #include "config.h"
+
 #include "externs.h"
 
 void

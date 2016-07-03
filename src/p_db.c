@@ -1,22 +1,21 @@
-/* Primitives package */
-
 #include "config.h"
-#include "params.h"
+
 
 #include <sys/types.h>
 #include <stdio.h>
 #include <time.h>
 #include "db.h"
-#include "tune.h"
-#include "props.h"
-#include "externs.h"
-#include "match.h"
 #include "dbsearch.h"
-#include "interp.h"
-#include "interface.h"
 #ifdef DISKBASE
 #include "diskprop.h"
 #endif
+#include "externs.h"
+#include "match.h"
+#include "interp.h"
+#include "interface.h"
+#include "params.h"
+#include "props.h"
+#include "tune.h"
 
 static struct inst *oper1, *oper2, *oper3, *oper4;
 static int tmp, result;

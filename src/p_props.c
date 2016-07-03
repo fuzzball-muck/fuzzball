@@ -1,21 +1,20 @@
-/* Primitives package */
-
 #include "config.h"
 
-#include <sys/types.h>
-#include <stdio.h>
-#include <time.h>
 #include "db.h"
-#include "mpi.h"
-#include "props.h"
-#include "externs.h"
-#include "params.h"
-#include "interp.h"
-#include "msgparse.h"
-#include "tune.h"
 #ifdef DISKBASE
 #include "diskprop.h"
 #endif
+#include "externs.h"
+#include "interp.h"
+#include "msgparse.h"
+#include "mpi.h"
+#include "params.h"
+#include "props.h"
+#include "tune.h"
+
+#include <stdio.h>
+#include <sys/types.h>
+#include <time.h>
 
 static struct inst *oper1, *oper2, *oper3, *oper4;
 static int result;

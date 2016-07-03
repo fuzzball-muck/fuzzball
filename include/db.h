@@ -118,18 +118,8 @@ typedef int dbref;		/* offset into db */
 #define SETMESG(x,y,z)    {add_property(x, y, z, 0);}
 #define SETDESC(x,y)	SETMESG(x, MESGPROP_DESC, y)
 
-#define LOADMESG(x,y,z)    {add_prop_nofetch(x,y,z,0); DBDIRTY(x);}
-#define LOADDESC(x,y)	LOADMESG(x, MESGPROP_DESC, y)
-#define LOADSUCC(x,y)	LOADMESG(x, MESGPROP_SUCC, y)
-#define LOADFAIL(x,y)	LOADMESG(x, MESGPROP_FAIL, y)
-#define LOADDROP(x,y)	LOADMESG(x, MESGPROP_DROP, y)
-#define LOADOSUCC(x,y)	LOADMESG(x, MESGPROP_OSUCC, y)
-#define LOADOFAIL(x,y)	LOADMESG(x, MESGPROP_OFAIL, y)
-#define LOADODROP(x,y)	LOADMESG(x, MESGPROP_ODROP, y)
-
 #define GETLOCK(x)    (get_property_lock(x, MESGPROP_LOCK))
 #define SETLOCK(x,y)  {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = y; set_property(x, MESGPROP_LOCK, &mydat, 0);}
-#define LOADLOCK(x,y) {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = y; set_property_nofetch(x, MESGPROP_LOCK, &mydat, 0); DBDIRTY(x);}
 #define CLEARLOCK(x)  {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = TRUE_BOOLEXP; set_property(x, MESGPROP_LOCK, &mydat, 0); DBDIRTY(x);}
 
 #define GETVALUE(x)	get_property_value(x, MESGPROP_VALUE)
@@ -833,6 +823,8 @@ extern dbref db_read(FILE * f);	/* read db from file, return # of objects */
  /* Warning: destroys existing db contents! */
 
 extern void db_free(void);
+extern void db_clear_object(dbref i);
+extern void db_free_object(dbref i);
 
 extern dbref parse_dbref(const char *);	/* parse a dbref */
 

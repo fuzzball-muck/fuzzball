@@ -1,43 +1,20 @@
-/* Muf Interpreter and dispatcher. */
-
 #include "config.h"
 
-#include <sys/types.h>
-#include <stdio.h>
-#include <time.h>
 #include "db.h"
-#include "inst.h"
 #include "externs.h"
-#include "tune.h"
-#include "interp.h"
+#include "inst.h"
 #include "interface.h"
+#include "interp.h"
 #ifdef MCP_SUPPORT
 #include "mcpgui.h"
 #endif
-/* This package performs the interpretation of mud forth programs.
-   It is a basically push pop kinda thing, but I'm making some stuff
-   inline for maximum efficiency.
+#include "props.h"
+#include "tune.h"
 
-   Oh yeah, because it is an interpreted language, please do type
-   checking during this time.  While you're at it, any objects you
-   are referencing should be checked against db_top.
-   */
+#include <stdio.h>
+#include <sys/types.h>
+#include <time.h>
 
-/* in cases of boolean expressions, we do return a value, the stuff
-   that's on top of a stack when a mud-forth program finishes executing.
-   In cases where they don't, leave a value, we just return a 0.  Note:
-   this stuff does not return string or whatnot.  It at most can be
-   relied on to return a boolean value.
-
-   interp sets up a player's frames and so on and prepares it for
-   execution.
-   */
-
-/* The static variable 'err' defined below means to die immediately when
- * set to this value. do_abort_silent() uses this.
- *
- * Otherwise err++ seems popular.
- */
 #define ERROR_DIE_NOW -1
 
 void

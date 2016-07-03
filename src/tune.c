@@ -1,10 +1,12 @@
 #include "config.h"
-#include "params.h"
+
+#include "array.h"
 #include "db.h"
 #include "defaults.h"
 #include "externs.h"
-#include "array.h"
+#include "interface.h"
 #include "interp.h"
+#include "params.h"
 #include "tune.h"
 
 #define MOD_ENABLED(module) (module[0] == 0 || strstr(compile_options, module) != NULL)

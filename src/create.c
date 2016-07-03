@@ -1,17 +1,16 @@
 #include "config.h"
 
-/* Commands that create new objects */
-
 #include "db.h"
-#include "props.h"
-#include "params.h"
-#include "tune.h"
-#include "interface.h"
-#include "externs.h"
-#include "match.h"
 #ifdef DISKBASE
 #include "diskprop.h"
 #endif
+#include "externs.h"
+#include "interface.h"
+#include "match.h"
+#include "params.h"
+#include "props.h"
+#include "tune.h"
+
 #include <ctype.h>
 
 struct line *read_program(dbref i);

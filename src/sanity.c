@@ -1,17 +1,18 @@
 #include "config.h"
 
-#include <stdio.h>
-#include <sys/types.h>
-#include <stdarg.h>
-
 #include "db.h"
-#include "tune.h"
-#include "externs.h"
-#include "params.h"
-#include "props.h"
 #ifdef DISKBASE
 #include "diskprop.h"
 #endif
+#include "externs.h"
+#include "interface.h"
+#include "params.h"
+#include "props.h"
+#include "tune.h"
+
+#include <stdio.h>
+#include <sys/types.h>
+#include <stdarg.h>
 
 #define unparse(x) ((char*)unparse_object(GOD, (x)))
 

@@ -1,22 +1,12 @@
-/*
- * signal.c -- Curently included into interface.c
- *
- * Seperates the signal handlers and such into a seperate file
- * for maintainability.
- *
- * Broken off from interface.c, and restructured for POSIX
- * compatible systems by Peter A. Torkelson, aka WhiteFire.
- */
+#include "config.h"
+#include "externs.h"
+#include "interface.h"
 
 #ifdef SOLARIS
 #  ifndef _POSIX_SOURCE
 #    define _POSIX_SOURCE	/* Solaris needs this */
 #  endif
 #endif
-
-#include "config.h"
-#include "interface.h"
-#include "externs.h"
 
 #ifndef WIN32
 #include <signal.h>

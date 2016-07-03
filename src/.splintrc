@@ -1,6 +1,0 @@
-+gnuextensions
--skipposixheaders
-+posixlib
--I../include
--temptrans
-

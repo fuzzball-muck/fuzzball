@@ -88,4 +88,7 @@ int array_set_refval(stk_array ** harr, struct inst *key, dbref val);
 int array_set_strval(stk_array ** harr, struct inst *key, const char *val);
 int array_set_arrval(stk_array ** harr, struct inst *key, stk_array * val);
 
+int array_delitem(stk_array ** harr, array_iter * item);
+int array_delrange(stk_array ** harr, array_iter * start, array_iter * end);
+
 #endif				/* _ARRAY_H */

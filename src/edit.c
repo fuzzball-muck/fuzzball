@@ -2,9 +2,11 @@
 
 #include "db.h"
 #include "externs.h"
+#include "interface.h"
+#include "match.h"
 #include "params.h"
 #include "tune.h"
-#include "match.h"
+
 #include <ctype.h>
 
 void editor(int descr, dbref player, const char *command);

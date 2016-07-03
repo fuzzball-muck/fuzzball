@@ -11,7 +11,9 @@
  */
 
 #include "config.h"
+
 #include "externs.h"
+#include "interface.h"
 
 #define generation "$generation"
 #define creation "$creation"

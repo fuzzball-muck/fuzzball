@@ -1,32 +1,8 @@
 #include "config.h"
-#include "params.h"
 
 #include "db.h"
+#include "params.h"
 #include "props.h"
-
-
-/* propdirs.c -- handles propdirs property creation, deletion, and finding.  */
-/* WARNING: These routines all hack up the path string passed to them. */
-
-/* USES:
-
-     PropPtr locate_prop(PropPtr root, char *name)
-       if root is NULL, return NULL.
-
-     PropPtr new_prop(PropPtr *root, char *name)
-       if *root is NULL, create a new propdir, then insert the prop
-
-     PropPtr delete_prop(PropPtr *root, char *name)
-       when last prop in dir is deleted, destroy propdir & change *root to NULL
-
-     PropPtr first_node(PropPtr root)
-       if root is NULL, return NULL
-
-     PropPtr next_node(PropPtr root)
-       if root is NULL, return NULL
-
- */
-
 
 /*
  * returns pointer to the new property node.  Returns a pointer to an
@@ -192,18 +168,6 @@ propdir_next_elem(PropPtr root, char *path)
 	/* aha, we are finally to the property subname itself. */
 	return (next_node(root, path));
     }
-}
-
-
-/* return true if a property contains a propdir */
-int
-propdir_check(PropPtr root, char *path)
-{
-    PropPtr p;
-
-    if ((p = propdir_get_elem(root, path)))
-	return (PropDir(p) != NULL);
-    return (0);
 }
 
 

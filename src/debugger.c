@@ -1,17 +1,14 @@
-/*
- *  debugger.c   (sort of a dbx for MUF.)
- */
-
 #include "config.h"
 
 #include "db.h"
-#include "inst.h"
 #include "externs.h"
-#include "params.h"
+#include "inst.h"
+#include "interface.h"
 #include "interp.h"
+#include "params.h"
+
 #include <ctype.h>
 #include <time.h>
-
 
 void
 list_proglines(dbref player, dbref program, struct frame *fr, int start, int end)

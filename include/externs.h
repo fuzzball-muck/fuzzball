@@ -7,12 +7,6 @@
 #include "db.h"
 /* Definition of match_data */
 #include "match.h"
-/* Definition of PropPtr, among other things */
-#include "props.h"
-
-/* array.c */
-extern int array_delitem(stk_array ** harr, array_iter * item);
-extern int array_delrange(stk_array ** harr, array_iter * start, array_iter * end);
 
 /* boolexp.c */
 extern struct boolexp *copy_bool(struct boolexp *old);
@@ -49,16 +43,6 @@ extern int link_exit_dry(int descr, dbref player, dbref exit, char *dest_name,
 			 dbref * dest_list);
 extern void set_source(dbref player, dbref action, dbref source);
 extern int unset_source(dbref player, dbref action);
-
-/* crt_malloc.c */
-#ifdef MALLOC_PROFILING
-extern void CrT_summarize(dbref player);
-extern void CrT_summarize_to_file(const char *file, const char *comment);
-#endif
-
-/* db.c */
-extern void db_clear_object(dbref i);
-extern void db_free_object(dbref i);
 
 /* debugger.c */
 extern void list_proglines(dbref player, dbref program, struct frame *fr, int start, int end);
@@ -117,45 +101,6 @@ extern void do_mpihelp(dbref player, char *topic, char *seg);
 extern void do_news(dbref player, char *topic, char *seg);
 extern void spit_file(dbref player, const char *filename);
 
-/* interface.c */
-extern void do_armageddon(dbref player, const char *msg);
-extern void dump_status(void);
-extern void flush_user_output(dbref player);
-extern short global_dumpdone;
-#ifndef DISKBASE
-extern pid_t global_dumper_pid;
-#endif
-extern pid_t global_resolver_pid;
-extern long max_open_files(void);
-extern int notify(dbref player, const char *msg);
-extern int notify_from(dbref from, dbref player, const char *msg);
-extern int notify_from_echo(dbref from, dbref player, const char *msg, int isprivate);
-extern int notify_nolisten(dbref player, const char *msg, int isprivate);
-extern void notifyf(dbref player, char *format, ...);
-extern void notifyf_nolisten(dbref player, char *format, ...);
-extern int pdescrsecure(int c);
-extern int pset_user(int c, dbref who);
-extern long sel_prof_idle_sec;
-extern unsigned long sel_prof_idle_use;
-extern long sel_prof_idle_usec;
-extern time_t sel_prof_start_time;
-#ifdef SPAWN_HOST_RESOLVER
-extern void spawn_resolver(void);
-#endif
-extern char *time_format_2(time_t dt);
-extern short wizonly_mode;
-
-/* interp.c */
-extern void do_abort_silent(void);
-extern dbref find_mlev(dbref prog, struct frame *fr, int st);
-extern struct frame *interp(int descr, dbref player, dbref location, dbref program,
-			    dbref source, int nosleeping, int whichperms, int forced_pid);
-extern struct inst *interp_loop(dbref player, dbref program, struct frame *fr, int rettyp);
-extern void prog_clean(struct frame *fr);
-extern void purge_all_free_frames();
-extern void purge_for_pool(void);
-extern void purge_try_pool(void);
-
 /* log.c */
 extern void log2file(char *myfilename, char *format, ...);
 extern void log_command(char *format, ...);
@@ -181,10 +126,6 @@ extern void exec_or_notify_prop(int descr, dbref player, dbref thing, const char
 				const char *whatcalled);
 extern long size_object(dbref i, int load);
 
-/* match.c */
-extern void init_match_remote(int descr, dbref player, dbref what, const char *name, int type,
-			      struct match_data *md);
-
 /* move.c */
 extern int can_move(int descr, dbref player, const char *direction, int lev);
 extern void do_drop(int descr, dbref player, const char *name, const char *obj);
@@ -198,20 +139,6 @@ extern int parent_loop_check(dbref source, dbref dest);
 extern void send_contents(int descr, dbref loc, dbref dest);
 extern void send_home(int descr, dbref thing, int homepuppet);
 extern void recycle(int descr, dbref player, dbref thing);
-
-/* msgparse.c */
-extern void mesg_init(void);
-extern time_t mpi_prof_start_time;
-extern void purge_mfns();
-
-/* mufevent.c */
-extern void muf_event_add(struct frame *fr, char *event, struct inst *val, int exclusive);
-extern int muf_event_count(struct frame *fr);
-extern int muf_event_exists(struct frame *fr, const char *eventid);
-
-/* p_props.c */
-extern int prop_read_perms(dbref player, dbref obj, const char *name, int mlev);
-extern int prop_write_perms(dbref player, dbref obj, const char *name, int mlev);
 
 /* player.c */
 extern void add_player(dbref who);
@@ -243,16 +170,6 @@ extern int payfor(dbref who, int cost);
 extern int restricted(dbref player, dbref thing, object_flag_type flag);
 extern int test_lock(int descr, dbref player, dbref thing, const char *lockprop);
 extern int test_lock_false_default(int descr, dbref player, dbref thing, const char *lockprop);
-
-/* property.c */
-extern char *displayprop(dbref player, dbref obj, const char *name, char *buf, size_t bufsiz);
-extern long size_properties(dbref player, int load);
-extern void untouchprops_incremental(int limit);
-
-/* props.c */
-extern void clear_propnode(PropPtr p);
-extern void copy_proplist(dbref obj, PropPtr * newer, PropPtr old);
-extern long size_proplist(PropPtr avl);
 
 /* random.c */
 extern void delete_seed(void *buffer);
@@ -388,11 +305,6 @@ extern void purge_timenode_free_pool(void);
 extern int read_event_notify(int descr, dbref player, const char *cmd);
 extern int scan_instances(dbref program);
 extern struct frame *timequeue_pid_frame(int pid);
-
-/* tune.c */
-extern void do_tune(dbref player, char *parmname, char *parmval,
-		    int full_command_has_delimiter);
-extern void tune_freeparms(void);
 
 /* unparse.c */
 extern const char *unparse_boolexp(dbref player, struct boolexp *b, int fullname);

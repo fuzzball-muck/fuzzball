@@ -1,14 +1,13 @@
-/* Primitives Package */
-
-#include <sys/types.h>
-#include <stdio.h>
-#include <time.h>
-#include <ctype.h>
-#include <stdlib.h>
-
 #include "config.h"
+
 #include "db.h"
 #include "interp.h"
+
+#include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <time.h>
 
 static struct inst *oper1, *oper2, *oper3, *oper4;
 static int result;

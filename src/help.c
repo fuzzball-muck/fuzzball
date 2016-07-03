@@ -1,16 +1,16 @@
 #include "config.h"
 
-/* commands for giving help */
-
 #include "db.h"
 #include "externs.h"
+#include "interface.h"
 #if defined(MCP_SUPPORT) && !defined(STANDALONE_HELP)
 #include "mcppkg.h"
 #endif
-#include <sys/types.h>
-#include <sys/stat.h>
+
 #include <ctype.h>
 #include <stdarg.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 /*
  * Ok, directory stuff IS a bit ugly.

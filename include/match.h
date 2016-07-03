@@ -87,6 +87,9 @@ extern dbref last_match_result(struct match_data *md);	/* returns last
 
 extern dbref noisy_match_result(struct match_data *md);
 
+extern void init_match_remote(int descr, dbref player, dbref what, const char *name, int type,
+                              struct match_data *md);
+
 				/* wrapper for match_result */
 				/* noisily notifies player */
 				/* returns matched object or NOTHING */

@@ -10,17 +10,19 @@
 * overkill for such a simple substituion.
 */
 
+#include "sha1.h"
+
 #include <ctype.h>
-#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
+
 #ifndef WIN32
 #include <dirent.h>
 #else
 #include "win32.h"
 #endif
-#include "sha1.h"
 
 /* Define if you want the timezone to show UTC. Windows doesn't do
    abbreviations for timezone, so this is the only way to get it shortened. */

@@ -1,13 +1,16 @@
 #include "config.h"
+
 #ifdef MCP_SUPPORT
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+#include "externs.h"
 #include "interface.h"
 #include "mcp.h"
 #include "mcpgui.h"
 #include "mcppkg.h"
-#include "externs.h"
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
 #ifdef HAVE_MALLOC_H
 #include <malloc.h>
 #endif				/* HAVE_MALLOC_H */

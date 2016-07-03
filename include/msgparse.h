@@ -62,6 +62,10 @@ int new_mfunc(const char *funcname, const char *buf);
 const char *get_mfunc(const char *funcname);
 int free_mfuncs(int downto);
 
+void mesg_init(void);
+time_t mpi_prof_start_time;
+void purge_mfns();
+
 extern int varc;
 
 #define MFUNARGS int descr, dbref player, dbref what, dbref perms, int argc, \

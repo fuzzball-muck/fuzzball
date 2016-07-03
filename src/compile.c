@@ -1,29 +1,21 @@
 #include "config.h"
 
 #include "db.h"
-#include "props.h"
-#include "inst.h"
 #include "externs.h"
-#include "params.h"
-#include "tune.h"
-#include "match.h"
-#include "interp.h"
+#include "inst.h"
 #include "interface.h"
+#include "interp.h"
+#include "match.h"
 #ifdef MCP_SUPPORT
 #include "mcp.h"
 #endif
+#include "params.h"
+#include "props.h"
+#include "tune.h"
+
 #include <ctype.h>
-#include <time.h>
 #include <stdarg.h>
-
-/* This file contains code for doing "byte-compilation" of
-   mud-forth programs.  As such, it contains many internal
-   data structures and other such which are not found in other
-   parts of TinyMUCK.                                       */
-
-/* The CONTROL_STACK is a stack for holding previous control statements.
-   This is used to resolve forward references for IF/THEN and loops, as well
-   as a placeholder for back references for loops. */
+#include <time.h>
 
 #define CTYPE_IF    1
 #define CTYPE_ELSE  2

@@ -1,20 +1,20 @@
 #include "config.h"
-#include "params.h"
 
-/* commands which look at things */
-
-#include <ctype.h>
 #include "db.h"
-#include "tune.h"
-#include "mpi.h"
-#include "props.h"
-#include "match.h"
 #include "dbsearch.h"
-#include "externs.h"
-#include "interface.h"
 #ifdef DISKBASE
 #include "diskprop.h"
 #endif
+#include "externs.h"
+#include "interface.h"
+#include "interp.h"
+#include "match.h"
+#include "mpi.h"
+#include "params.h"
+#include "props.h"
+#include "tune.h"
+
+#include <ctype.h>
 
 #define EXEC_SIGNAL '@'		/* Symbol which tells us what we're looking at
 				   is an execution order and not a message.    */
