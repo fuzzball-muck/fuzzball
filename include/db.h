@@ -437,7 +437,7 @@ struct inst {			/* instruction */
 };
 
 #include "array.h"
-#include "mufevent.h"
+//#include "mufevent.h"
 
 typedef struct inst vars[MAX_VAR];
 
