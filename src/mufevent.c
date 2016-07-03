@@ -1,20 +1,18 @@
-/* Primitives Package */
-
 #include "config.h"
 
-#include <sys/types.h>
-#include <stdio.h>
-#include <time.h>
-#include <ctype.h>
+#include "array.h"
 #include "db.h"
-#include "tune.h"
-#include "inst.h"
 #include "externs.h"
-#include "match.h"
+#include "inst.h"
 #include "interface.h"
 #include "interp.h"
-#include "array.h"
+#include "match.h"
+#include "tune.h"
 
+#include <ctype.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <time.h>
 
 static struct mufevent_process {
     struct mufevent_process *prev, *next;

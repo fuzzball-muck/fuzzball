@@ -1,17 +1,17 @@
 #include "config.h"
 
-/* Routines for parsing arguments */
-#include <ctype.h>
-
 #include "db.h"
-#include "props.h"
-#include "params.h"
-#include "tune.h"
-#include "match.h"
-#include "externs.h"
 #ifdef DISKBASE
 #include "diskprop.h"
 #endif
+#include "externs.h"
+#include "interface.h"
+#include "match.h"
+#include "params.h"
+#include "props.h"
+#include "tune.h"
+
+#include <ctype.h>
 
 char match_cmdname[BUFFER_LEN];	/* triggering command */
 char match_args[BUFFER_LEN];	/* remaining text */

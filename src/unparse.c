@@ -3,9 +3,9 @@
 #include "db.h"
 #include "externs.h"
 #include "params.h"
-#include "tune.h"
 #include "interface.h"
 #include "props.h"
+#include "tune.h"
 
 const char *
 unparse_flags(dbref thing)

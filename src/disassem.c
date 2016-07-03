@@ -2,8 +2,9 @@
 
 #include "db.h"
 #include "externs.h"
-#include "interp.h"
 #include "inst.h"
+#include "interface.h"
+#include "interp.h"
 
 void
 disassemble(dbref player, dbref program)

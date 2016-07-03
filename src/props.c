@@ -1,20 +1,15 @@
-/*
-  AVL binary tree code by Lynx (or his instructor)
-
-  modified for MUCK use by Sthiss
-  Remodified by Foxen
-*/
-
-#include <string.h>
 #include "config.h"
-#include "params.h"
+
 #include "db.h"
-#include "props.h"
-#include "externs.h"
-#include "interface.h"
 #ifdef DISKBASE
 #include "diskprop.h"
 #endif
+#include "externs.h"
+#include "interface.h"
+#include "params.h"
+#include "props.h"
+
+#include <string.h>
 
 static PropPtr
 find(char *key, PropPtr avl)

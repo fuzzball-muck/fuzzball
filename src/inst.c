@@ -1,10 +1,10 @@
 #include "config.h"
 
 #include "db.h"
-#include "tune.h"
-#include "inst.h"
 #include "externs.h"
+#include "inst.h"
 #include "interp.h"
+#include "tune.h"
 
 #undef DEBUGARRAYS
 

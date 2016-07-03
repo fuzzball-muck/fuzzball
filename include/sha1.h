@@ -3,6 +3,7 @@
 
 /* Just in case the including file doesn't use stdint for uint8_t */
 #include <stdint.h>
+#include <sys/types.h>
 
 /* Size of the hash and size of block */
 #define HASH_LENGTH 20

@@ -1,6 +1,8 @@
-#include <time.h>
 #include "config.h"
+
 #include "db.h"
+
+#include <time.h>
 
 void
 ts_newobject(struct object *thing)

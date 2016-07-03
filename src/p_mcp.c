@@ -1,16 +1,18 @@
 #include "config.h"
+
 #ifdef MCP_SUPPORT
+#include "array.h"
+#include "db.h"
+#include "externs.h"
+#include "interface.h"
+#include "interp.h"
+#include "mcp.h"
+#include "mcpgui.h"
+#include "tune.h"
+
 #include <sys/types.h>
 #include <stdio.h>
 #include <time.h>
-#include "db.h"
-#include "mcp.h"
-#include "externs.h"
-#include "interface.h"
-#include "tune.h"
-#include "interp.h"
-#include "mcpgui.h"
-#include "array.h"
 
 static struct inst *oper1, *oper2, *oper3, *oper4;
 static int result;

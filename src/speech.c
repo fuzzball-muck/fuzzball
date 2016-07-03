@@ -1,15 +1,14 @@
 #include "config.h"
 
 #include "db.h"
-#include "mpi.h"
+#include "externs.h"
 #include "interface.h"
 #include "match.h"
-#include "tune.h"
+#include "mpi.h"
 #include "props.h"
-#include "externs.h"
-#include <ctype.h>
+#include "tune.h"
 
-/* Commands which involve speaking */
+#include <ctype.h>
 
 void
 do_say(dbref player, const char *message)

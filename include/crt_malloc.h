@@ -10,6 +10,8 @@
 # include <stdlib.h>
 #endif
 
+#include "db.h"
+
 extern void CrT_check(const char *, int);
 extern int CrT_check_everything(const char *, int);
 extern void *CrT_malloc(size_t size, const char *whatfile, int whatline);
@@ -20,6 +22,8 @@ extern char *CrT_string_dup(const char *, const char *, int);
 extern char *CrT_alloc_string(const char *, const char *, int);
 extern struct shared_string *CrT_alloc_prog_string(const char *, const char *, int);
 
+extern void CrT_summarize(dbref player);
+extern void CrT_summarize_to_file(const char *file, const char *comment);
 
 #define malloc(x)            CrT_malloc(           x,    __FILE__, __LINE__)
 #define calloc(x,y)          CrT_calloc(           x, y, __FILE__, __LINE__)

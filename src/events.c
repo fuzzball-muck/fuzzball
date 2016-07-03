@@ -1,11 +1,13 @@
 #include "config.h"
+
 #include "db.h"
-#include "props.h"
-#include "tune.h"
-#include "externs.h"
 #ifdef DISKBASE
 #include "diskprop.h"
 #endif
+#include "externs.h"
+#include "interp.h"
+#include "props.h"
+#include "tune.h"
 
 /****************************************************************
  * Dump the database every so often.

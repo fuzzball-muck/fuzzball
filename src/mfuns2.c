@@ -1,21 +1,18 @@
 #include "config.h"
-#include <math.h>
-#include <ctype.h>
-#include "params.h"
 
 #include "db.h"
-#include "tune.h"
-#include "mpi.h"
 #include "externs.h"
-#include "props.h"
-#include "match.h"
 #include "interp.h"
 #include "interface.h"
+#include "match.h"
+#include "mpi.h"
 #include "msgparse.h"
+#include "params.h"
+#include "props.h"
+#include "tune.h"
 
-
-
-/***** Insert MFUNs here *****/
+#include <ctype.h>
+#include <math.h>
 
 const char *
 mfn_owner(MFUNARGS)

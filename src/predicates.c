@@ -1,15 +1,13 @@
 #include "config.h"
 
-/* Predicates for testing various conditions */
-
-#include <ctype.h>
-
 #include "db.h"
-#include "props.h"
-#include "params.h"
-#include "tune.h"
 #include "externs.h"
 #include "interface.h"
+#include "params.h"
+#include "props.h"
+#include "tune.h"
+
+#include <ctype.h>
 
 int
 can_link_to(dbref who, object_flag_type what_type, dbref where)

@@ -1,23 +1,18 @@
-/*
-  Timequeue event code by Foxen
-*/
-
 #include "config.h"
-#include "params.h"
-#include "match.h"
 
 #include "db.h"
-#include "tune.h"
-#include "mpi.h"
-#include "props.h"
-#include "interface.h"
 #include "externs.h"
+#include "interface.h"
 #include "interp.h"
+#include "match.h"
+#include "mpi.h"
+#include "params.h"
+#include "props.h"
+#include "tune.h"
 
 #include <stdio.h>
 #include <sys/types.h>
 #include <time.h>
-
 
 #define TQ_MUF_TYP 0
 #define TQ_MPI_TYP 1

@@ -225,6 +225,10 @@ extern void tune_load_parms_from_file(FILE * f, dbref player, int cnt);
 extern void tune_save_parms_to_file(FILE * f);
 extern int tune_setparm(const char *parmname, const char *val, int security);
 extern stk_array *tune_parms_array(const char *pattern, int mlev);
-const char *tune_get_parmstring(const char *name, int mlev);
+extern const char *tune_get_parmstring(const char *name, int mlev);
+
+extern void do_tune(dbref player, char *parmname, char *parmval,
+                    int full_command_has_delimiter);
+extern void tune_freeparms(void);
 
 #endif				/* _TUNE_H */

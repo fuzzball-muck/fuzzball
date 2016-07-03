@@ -1,19 +1,11 @@
-/*
- * Handles logging of tinymuck
- *
- * Copyright (c) 1990 Chelsea Dyerman
- * University of California, Berkeley (XCF)
- *
- */
-
 #include "config.h"
 
+#include "externs.h"
+
+#include <stdarg.h>
 #include <stdio.h>
 #include <sys/types.h>
-#include <stdarg.h>
 #include <time.h>
-
-#include "externs.h"
 
 /* cks: these are varargs routines. We are assuming ANSI C. We could at least
    USE ANSI C varargs features, no? Sigh. */

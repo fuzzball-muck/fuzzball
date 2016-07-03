@@ -1,11 +1,13 @@
 #include "config.h"
 
 #include "db.h"
-#include "params.h"
-#include "tune.h"
-#include "match.h"
 #include "externs.h"
 #include "interface.h"
+#include "interp.h"
+#include "match.h"
+#include "params.h"
+#include "props.h"
+#include "tune.h"
 
 void
 moveto(dbref what, dbref where)

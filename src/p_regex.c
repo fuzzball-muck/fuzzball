@@ -1,11 +1,13 @@
-/* Primitives Package */
-
 #include "config.h"
 
-#include <sys/types.h>
-#include <stdio.h>
-#include <time.h>
+#include "db.h"
+#include "externs.h"
+#include "interp.h"
+
 #include <ctype.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <time.h>
 
 #ifdef WIN32
 # define __STDC__ 1
@@ -17,10 +19,6 @@
 #  include <pcre.h>
 # endif
 #endif
-
-#include "db.h"
-#include "interp.h"
-#include "externs.h"
 
 #define MUF_RE_CACHE_ITEMS 64
 

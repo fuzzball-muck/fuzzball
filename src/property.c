@@ -1,25 +1,18 @@
 #include "config.h"
-#include "params.h"
 
 #include "db.h"
-#include "tune.h"
-#include "mpi.h"
-#include "props.h"
-#include "externs.h"
-#include "interface.h"
 #ifdef DISKBASE
 #include "diskprop.h"
 #endif
-#include <string.h>
+#include "externs.h"
+#include "interface.h"
+#include "mpi.h"
+#include "params.h"
+#include "props.h"
+#include "tune.h"
+
 #include <math.h>
-
-/* property.c
-   A whole new lachesis mod.
-   Adds property manipulation routines to TinyMUCK.   */
-
-/* Completely rewritten by darkfox and Foxen, for propdirs and other things */
-
-
+#include <string.h>
 
 void
 set_property_nofetch(dbref player, const char *pname, PData * dat, int sync)

@@ -1,14 +1,13 @@
-/* Primitives package */
-
 #include "config.h"
 
-#include <sys/types.h>
-#include <stdio.h>
-#include <time.h>
 #include "db.h"
+#include "externs.h"
 #include "interface.h"
 #include "interp.h"
-#include "externs.h"
+
+#include <stdio.h>
+#include <sys/types.h>
+#include <time.h>
 
 static struct inst *oper1, *oper2, *oper3, *oper4;
 static struct inst temp1, temp2;

@@ -1,6 +1,12 @@
 #include "config.h"
 
-/* Wizard-only commands */
+#include "db.h"
+#include "externs.h"
+#include "interface.h"
+#include "msgparse.h"
+#include "params.h"
+#include "props.h"
+#include "tune.h"
 
 #include <stdio.h>
 
@@ -15,11 +21,6 @@
 #    include <malloc.h>
 #  endif
 #endif
-#include "db.h"
-#include "params.h"
-#include "tune.h"
-#include "interface.h"
-#include "externs.h"
 
 void
 do_teleport(int descr, dbref player, const char *arg1, const char *arg2)

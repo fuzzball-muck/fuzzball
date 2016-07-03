@@ -1,6 +1,9 @@
 #ifndef _P_PROPS_H
 #define _P_PROPS_H
 
+extern int prop_read_perms(dbref player, dbref obj, const char *name, int mlev);
+extern int prop_write_perms(dbref player, dbref obj, const char *name, int mlev);
+
 extern void prim_getpropval(PRIM_PROTOTYPE);
 extern void prim_getpropfval(PRIM_PROTOTYPE);
 extern void prim_getpropstr(PRIM_PROTOTYPE);

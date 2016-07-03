@@ -162,4 +162,31 @@ extern int init_game(const char *infile, const char *outfile);
 extern void dump_database(void);
 extern void panic(const char *);
 
+extern void do_armageddon(dbref player, const char *msg);
+extern void dump_status(void);
+extern void flush_user_output(dbref player);
+extern short global_dumpdone;
+#ifndef DISKBASE
+extern pid_t global_dumper_pid;
+#endif
+extern pid_t global_resolver_pid;
+extern long max_open_files(void);
+extern int notify(dbref player, const char *msg);
+extern int notify_from(dbref from, dbref player, const char *msg);
+extern int notify_from_echo(dbref from, dbref player, const char *msg, int isprivate);
+extern int notify_nolisten(dbref player, const char *msg, int isprivate);
+extern void notifyf(dbref player, char *format, ...);
+extern void notifyf_nolisten(dbref player, char *format, ...);
+extern int pdescrsecure(int c);
+extern int pset_user(int c, dbref who);
+extern long sel_prof_idle_sec;
+extern unsigned long sel_prof_idle_use;
+extern long sel_prof_idle_usec;
+extern time_t sel_prof_start_time;
+#ifdef SPAWN_HOST_RESOLVER
+extern void spawn_resolver(void);
+#endif
+extern char *time_format_2(time_t dt);
+extern short wizonly_mode;
+
 #endif				/* _INTERFACE_H */

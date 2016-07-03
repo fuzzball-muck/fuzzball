@@ -1,15 +1,17 @@
 #include "config.h"
+
 #ifdef MCP_SUPPORT
-#include <math.h>
-#include <ctype.h>
 #include "params.h"
 
 #include "db.h"
-#include "tune.h"
-#include "mcp.h"
 #include "externs.h"
-#include "props.h"
 #include "interface.h"
+#include "mcp.h"
+#include "props.h"
+#include "tune.h"
+
+#include <ctype.h>
+#include <math.h>
 
 void
 show_mcp_error(McpFrame * mfr, char *topic, char *text)

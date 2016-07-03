@@ -1,10 +1,11 @@
 #include "config.h"
 
 #include "db.h"
-#include "params.h"
-#include "tune.h"
 #include "externs.h"
 #include "interface.h"
+#include "params.h"
+#include "props.h"
+#include "tune.h"
 
 static hash_tab player_list[PLAYER_HASH_SIZE];
 

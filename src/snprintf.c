@@ -1,5 +1,8 @@
+#include "config.h"
+
 #include <math.h>
 #include <stdio.h>
+
 /*
  * Copyright Patrick Powell 1995
  * This code is based on code written by Patrick Powell (papowell@astart.com)
@@ -70,8 +73,6 @@
  *    Expanded testing to include longlong integers, %e, and %g formats.
  *
  ***************************************************************************/
-
-#include "autoconf.h"
 
 #ifdef TEST_SNPRINTF
 # undef HAVE_SNPRINTF

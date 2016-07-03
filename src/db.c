@@ -1,16 +1,16 @@
 #include "config.h"
 
-#include <ctype.h>
-
 #include "db.h"
-#include "props.h"
-#include "params.h"
-#include "interface.h"
-#include "tune.h"
-#include "externs.h"
 #ifdef DISKBASE
 #include "diskprop.h"
 #endif
+#include "externs.h"
+#include "interface.h"
+#include "params.h"
+#include "props.h"
+#include "tune.h"
+
+#include <ctype.h>
 
 struct object *db = 0;
 dbref db_top = 0;

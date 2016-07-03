@@ -1,6 +1,19 @@
 #include "config.h"
+
+#include "db.h"
+#include "interface.h"
+#include "externs.h"
+#include "interp.h"
 #include "match.h"
+#ifdef MCP_SUPPORT
+#include "mcp.h"
+#include "mcpgui.h"
+#endif
 #include "mpi.h"
+#include "msgparse.h"
+#include "params.h"
+#include "props.h"
+#include "tune.h"
 
 #include <sys/types.h>
 
@@ -45,17 +58,6 @@ typedef int socklen_t;
 #  include <ssl.h>
 # endif
 #endif
-
-#include "db.h"
-#include "interface.h"
-#include "params.h"
-#include "tune.h"
-#include "props.h"
-#ifdef MCP_SUPPORT
-#include "mcp.h"
-#include "mcpgui.h"
-#endif
-#include "externs.h"
 
 int shutdown_flag = 0;
 int restart_flag = 0;

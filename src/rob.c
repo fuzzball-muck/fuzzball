@@ -1,11 +1,11 @@
 #include "config.h"
 
-/* rob and kill */
-
 #include "db.h"
-#include "tune.h"
-#include "match.h"
 #include "externs.h"
+#include "interface.h"
+#include "match.h"
+#include "props.h"
+#include "tune.h"
 
 void
 do_rob(int descr, dbref player, const char *what)

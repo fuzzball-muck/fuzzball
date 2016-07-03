@@ -1,10 +1,9 @@
-/* Needed for USE_SSL */
 #include "config.h"
+
+#ifdef USE_SSL
 
 #include "externs.h"
 #include "interface_ssl.h"
-
-#ifdef USE_SSL
 
 /** Converts an SSL protocol version string to a version number
  *

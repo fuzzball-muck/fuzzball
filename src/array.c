@@ -1,24 +1,15 @@
-/* Primitives Package */
-
 #include "config.h"
 
-#include <sys/types.h>
-#include <stdio.h>
-#include <time.h>
-#include <ctype.h>
-#include <float.h>
 #include "db.h"
 #include "externs.h"
 #include "interface.h"
 #include "interp.h"
 
-
-/*
-  AVL binary tree code by Lynx (or his instructor)
-
-  Modified for MUCK use by Sthiss
-  Remodified by Revar
-*/
+#include <ctype.h>
+#include <float.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <time.h>
 
 #ifndef AVL_RT
 #define AVL_RT(x)  (x->right)

@@ -1,27 +1,28 @@
 #include "config.h"
 
-#include <stdio.h>
+#include "db.h"
+#ifdef DISKBASE
+#include "diskprop.h"
+#endif
+#include "externs.h"
+#include "interface.h"
+#include "msgparse.h"
+#ifdef MCP_SUPPORT
+#include "mcp.h"
+#endif
+#include "params.h"
+#include "props.h"
+#include "tune.h"
+
 #include <ctype.h>
 #include <signal.h>
+#include <stdio.h>
 
 #ifndef WIN32
 #include <sys/wait.h>
 #else
-#include <windows.h>
 #include <process.h>
-#endif
-
-#include "db.h"
-#include "props.h"
-#include "params.h"
-#include "tune.h"
-#include "interface.h"
-#include "externs.h"
-#ifdef DISKBASE
-#include "diskprop.h"
-#endif
-#ifdef MCP_SUPPORT
-#include "mcp.h"
+#include <windows.h>
 #endif
 
 /* declarations */
