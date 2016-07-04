@@ -4,11 +4,6 @@
 #include "externs.h"
 #include "interp.h"
 
-#include <ctype.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <time.h>
-
 #ifdef WIN32
 # define __STDC__ 1
 # include "./pcre.h"

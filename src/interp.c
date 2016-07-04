@@ -12,10 +12,6 @@
 #include "props.h"
 #include "tune.h"
 
-#include <stdio.h>
-#include <sys/types.h>
-#include <time.h>
-
 #define ERROR_DIE_NOW -1
 
 void

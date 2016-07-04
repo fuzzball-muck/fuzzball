@@ -1,4 +1,5 @@
 #include "config.h"
+
 #ifdef MCP_SUPPORT
 #ifndef _MCPGUI_H
 #define _MCPGUI_H

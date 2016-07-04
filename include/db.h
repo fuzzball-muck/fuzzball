@@ -2,10 +2,11 @@
 #define _DB_H
 
 #include "config.h"
+
 #include "defines.h"
-#include <stdio.h>
+
 #include <math.h>
-#include <time.h>
+
 #ifdef HAVE_TIMEBITS_H
 #  define __need_timeval 1
 #  include <timebits.h>
@@ -51,12 +52,11 @@
 # define NQ_PI -0.7853981633974
 #endif
 
+#define MIN(p,q) ((p >= q) ? q : p)
 #define MAX(p,q) ((p >= q) ? p : q)
 
 extern char match_args[BUFFER_LEN];
 extern char match_cmdname[BUFFER_LEN];
-
-typedef int dbref;		/* offset into db */
 
 #ifdef MCP_SUPPORT
 #include "mcp.h"

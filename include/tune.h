@@ -1,8 +1,7 @@
 #ifndef _TUNE_H
 #define _TUNE_H
 
-/* Ensure that 'dbref' type gets properly typedef'd */
-#include "db.h"
+#include "config.h"
 
 #define TUNESET_SUCCESS         0	/* success                  */
 #define TUNESET_SUCCESS_DEFAULT 5	/* success, set to default  */

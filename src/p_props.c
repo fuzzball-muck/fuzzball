@@ -12,10 +12,6 @@
 #include "props.h"
 #include "tune.h"
 
-#include <stdio.h>
-#include <sys/types.h>
-#include <time.h>
-
 static struct inst *oper1, *oper2, *oper3, *oper4;
 static int result;
 static dbref ref;

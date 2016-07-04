@@ -1,15 +1,11 @@
 #include "config.h"
+
 #include "db.h"
-#include "props.h"
-#include "params.h"
-#include "mpi.h"
-#include "tune.h"
-
-/* String utilities */
-
-#include <stdio.h>
-#include <ctype.h>
 #include "externs.h"
+#include "mpi.h"
+#include "params.h"
+#include "props.h"
+#include "tune.h"
 
 /*
  * routine to be used instead of strcasecmp() in a sorting routine

@@ -1,11 +1,9 @@
 #include "config.h"
 
+#include "db.h"
 #include "externs.h"
 
 #include <stdarg.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <time.h>
 
 /* cks: these are varargs routines. We are assuming ANSI C. We could at least
    USE ANSI C varargs features, no? Sigh. */

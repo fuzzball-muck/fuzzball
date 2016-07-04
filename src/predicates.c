@@ -7,8 +7,6 @@
 #include "props.h"
 #include "tune.h"
 
-#include <ctype.h>
-
 int
 can_link_to(dbref who, object_flag_type what_type, dbref where)
 {

@@ -8,9 +8,6 @@
 #include "props.h"
 #include "tune.h"
 
-#include <ctype.h>
-#include <stdio.h>
-
 static dbref
 match_controlled(int descr, dbref player, const char *name)
 {

@@ -1,12 +1,9 @@
 #ifndef _EXTERNS_H
 #define _EXTERNS_H
 
-/* Definition of pid_t */
-#include <sys/types.h>
-/* Definition of 'dbref' */
+#include "config.h"
+
 #include "db.h"
-/* Definition of match_data */
-#include "match.h"
 
 /* boolexp.c */
 extern struct boolexp *copy_bool(struct boolexp *old);

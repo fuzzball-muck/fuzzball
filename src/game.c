@@ -14,9 +14,7 @@
 #include "props.h"
 #include "tune.h"
 
-#include <ctype.h>
 #include <signal.h>
-#include <stdio.h>
 
 #ifndef WIN32
 #include <sys/wait.h>

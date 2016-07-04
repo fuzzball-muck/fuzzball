@@ -4,14 +4,11 @@
 #include "db.h"
 #include "externs.h"
 #include "interface.h"
+#include "match.h"
 #include "mcp.h"
 #include "mcppkg.h"
 #include "props.h"
 #include "tune.h"
-
-#include <ctype.h>
-#include <stdlib.h>
-#include <string.h>
 
 #ifdef HAVE_MALLOC_H
 #include <malloc.h>

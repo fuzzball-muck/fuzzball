@@ -1,7 +1,6 @@
 #include "config.h"
 
 #include <math.h>
-#include <stdio.h>
 
 /*
  * Copyright Patrick Powell 1995
@@ -81,8 +80,6 @@
 
 #if !defined(HAVE_SNPRINTF) || !defined(HAVE_VSNPRINTF)
 #include <string.h>
-#include <ctype.h>
-#include <sys/types.h>
 
 /* Define this as a fall through, HAVE_STDARG_H is probably already set */
 
@@ -936,7 +933,7 @@ va_dcl
 #ifndef LONG_STRING
 #define LONG_STRING 1024
 #endif
-#include <stdio.h>
+
 int
 main(void)
 {

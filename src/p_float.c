@@ -1,15 +1,11 @@
 #include "config.h"
 
 #include "db.h"
-#include "interp.h"
 #include "externs.h"
+#include "interp.h"
 
-#include <ctype.h>
 #include <float.h>
 #include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/types.h>
 
 static struct inst *oper1, *oper2, *oper3, *oper4;
 static double fresult;

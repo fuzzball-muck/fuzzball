@@ -1,7 +1,7 @@
 #ifndef _MATCH_H
 #define _MATCH_H
 
-#include "db.h"
+#include "config.h"
 
 struct match_data {
     dbref exact_match;		/* holds result of exact match */

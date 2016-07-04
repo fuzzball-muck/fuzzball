@@ -7,10 +7,8 @@
 #include "mcppkg.h"
 #endif
 
-#include <ctype.h>
 #include <stdarg.h>
 #include <sys/stat.h>
-#include <sys/types.h>
 
 /*
  * Ok, directory stuff IS a bit ugly.
@@ -35,7 +33,7 @@
 #endif
 
 #if defined(STANDALONE_HELP)
-# define dbref int
+//# define dbref int
 
 int
 notify(dbref player, const char *msg)

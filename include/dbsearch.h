@@ -1,7 +1,3 @@
-/*
- * DB search helper routines for @find, @owned, etc type commands.
- */
-
 #ifndef _DBSEARCH_H
 #define _DBSEARCH_H
 

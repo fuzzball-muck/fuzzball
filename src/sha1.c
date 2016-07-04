@@ -1,4 +1,5 @@
 #include "config.h"
+
 #include "sha1.h"
 
 /* Test for endian options -- Windows is LITTLE by default */

@@ -11,7 +11,6 @@
 #include "props.h"
 #include "tune.h"
 
-#include <ctype.h>
 #include <math.h>
 
 const char *

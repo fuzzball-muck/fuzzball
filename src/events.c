@@ -129,20 +129,13 @@ check_clean_time(void)
  **********************************************************************/
 
 time_t
-mintime(time_t a, time_t b)
-{
-    return ((a > b) ? b : a);
-}
-
-
-time_t
 next_muckevent_time(void)
 {
     time_t nexttime = 1000L;
 
-    nexttime = mintime(next_event_time(), nexttime);
-    nexttime = mintime(next_dump_time(), nexttime);
-    nexttime = mintime(next_clean_time(), nexttime);
+    nexttime = MIN(next_event_time(), nexttime);
+    nexttime = MIN(next_dump_time(), nexttime);
+    nexttime = MIN(next_clean_time(), nexttime);
 
     return (nexttime);
 }

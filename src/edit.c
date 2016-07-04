@@ -7,8 +7,6 @@
 #include "params.h"
 #include "tune.h"
 
-#include <ctype.h>
-
 void editor(int descr, dbref player, const char *command);
 void do_insert(dbref player, dbref program, int arg[], int argc);
 void do_delete(dbref player, dbref program, int arg[], int argc);

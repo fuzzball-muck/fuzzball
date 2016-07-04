@@ -1,18 +1,14 @@
 #include "config.h"
 
-
-#include <sys/types.h>
-#include <stdio.h>
-#include <time.h>
 #include "db.h"
 #include "dbsearch.h"
 #ifdef DISKBASE
 #include "diskprop.h"
 #endif
 #include "externs.h"
-#include "match.h"
-#include "interp.h"
 #include "interface.h"
+#include "interp.h"
+#include "match.h"
 #include "params.h"
 #include "props.h"
 #include "tune.h"

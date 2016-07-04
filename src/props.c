@@ -9,8 +9,6 @@
 #include "params.h"
 #include "props.h"
 
-#include <string.h>
-
 static PropPtr
 find(char *key, PropPtr avl)
 {

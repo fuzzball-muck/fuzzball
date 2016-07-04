@@ -10,8 +10,6 @@
 #include "props.h"
 #include "tune.h"
 
-#include <stdio.h>
-#include <sys/types.h>
 #include <stdarg.h>
 
 #define unparse(x) ((char*)unparse_object(GOD, (x)))

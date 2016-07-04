@@ -14,8 +14,6 @@
 #include "props.h"
 #include "tune.h"
 
-#include <ctype.h>
-
 #define EXEC_SIGNAL '@'		/* Symbol which tells us what we're looking at
 				   is an execution order and not a message.    */
 
