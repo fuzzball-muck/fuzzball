@@ -215,6 +215,8 @@
 #include <ctype.h>
 #include <sys/types.h>
 
+typedef int dbref;
+
 #ifdef DEBUG
 # undef NDEBUG
 #include <assert.h>

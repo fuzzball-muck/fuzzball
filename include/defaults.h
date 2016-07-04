@@ -55,21 +55,6 @@
 /* command to run when entering a room. */
 #define AUTOLOOK_CMD "look"
 
-/* Format of standardized property lists. */
-#define PROPLIST_INT_COUNTER 1	/* Specifies that the proplist counter
-				   property should be stored as an integer
-				   property instead of as a string. */
-
-#define PROPLIST_COUNTER_FORMAT "P#"	/* The prop that has the count of lines. */
-									 /* Define as empty string for no counter. */
-									 /* P substitutes the proplist name */
-									 /* All other chars are literal. */
-
-#define PROPLIST_ENTRY_FORMAT "P#/N"	/* The props that contain the list data. */
-									 /* P substitutes the proplist name */
-									 /* N substitutes the item number */
-									 /* All other chars are literal. */
-
 /* various times */
 #define AGING_TIME TIME_DAY(90)	/* Unused time before obj shows as old. */
 #define DUMP_INTERVAL TIME_HOUR(4)	/* time between dumps */

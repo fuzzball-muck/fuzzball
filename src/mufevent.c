@@ -10,11 +10,6 @@
 #include "mufevent.h"
 #include "tune.h"
 
-#include <ctype.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <time.h>
-
 static struct mufevent_process {
     struct mufevent_process *prev, *next;
     dbref player;

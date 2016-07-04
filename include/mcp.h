@@ -1,7 +1,9 @@
 #include "config.h"
+
 #ifdef MCP_SUPPORT
 #ifndef _MCP_H
 #define _MCP_H
+
 /* the type used to specify the connection */
 typedef void *connection_t;
 

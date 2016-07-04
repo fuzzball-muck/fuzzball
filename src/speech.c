@@ -8,8 +8,6 @@
 #include "props.h"
 #include "tune.h"
 
-#include <ctype.h>
-
 void
 do_say(dbref player, const char *message)
 {

@@ -3,12 +3,11 @@
 #include "db.h"
 #include "externs.h"
 #include "interface.h"
+#include "match.h"
 #include "msgparse.h"
 #include "params.h"
 #include "props.h"
 #include "tune.h"
-
-#include <stdio.h>
 
 #ifndef WIN32
 # include <sys/resource.h>

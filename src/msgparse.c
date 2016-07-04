@@ -11,7 +11,6 @@
 #include "props.h"
 #include "tune.h"
 
-#include <ctype.h>
 #include <math.h>
 
 time_t mpi_prof_start_time;

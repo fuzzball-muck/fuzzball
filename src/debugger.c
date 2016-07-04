@@ -7,9 +7,6 @@
 #include "interp.h"
 #include "params.h"
 
-#include <ctype.h>
-#include <time.h>
-
 void
 list_proglines(dbref player, dbref program, struct frame *fr, int start, int end)
 {

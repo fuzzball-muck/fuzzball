@@ -1,5 +1,3 @@
-/* Array/Dictionary Package */
-
 #ifndef _ARRAY_H
 #define _ARRAY_H
 

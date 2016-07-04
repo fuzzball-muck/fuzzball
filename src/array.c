@@ -5,11 +5,7 @@
 #include "interface.h"
 #include "interp.h"
 
-#include <ctype.h>
 #include <float.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <time.h>
 
 #ifndef AVL_RT
 #define AVL_RT(x)  (x->right)

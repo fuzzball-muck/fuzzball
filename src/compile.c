@@ -13,9 +13,7 @@
 #include "props.h"
 #include "tune.h"
 
-#include <ctype.h>
 #include <stdarg.h>
-#include <time.h>
 
 #define CTYPE_IF    1
 #define CTYPE_ELSE  2

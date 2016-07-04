@@ -12,7 +12,6 @@
 #include "tune.h"
 
 #include <math.h>
-#include <string.h>
 
 void
 set_property_nofetch(dbref player, const char *pname, PData * dat, int sync)

@@ -7,10 +7,6 @@
 #include "mcpgui.h"
 #include "mcppkg.h"
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-
 #ifdef HAVE_MALLOC_H
 #include <malloc.h>
 #endif				/* HAVE_MALLOC_H */

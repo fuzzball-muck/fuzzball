@@ -11,10 +11,6 @@
 #include "props.h"
 #include "tune.h"
 
-#include <stdio.h>
-#include <sys/types.h>
-#include <time.h>
-
 #define TQ_MUF_TYP 0
 #define TQ_MPI_TYP 1
 

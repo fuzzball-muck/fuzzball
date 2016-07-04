@@ -11,8 +11,6 @@
 #include "props.h"
 #include "tune.h"
 
-#include <ctype.h>
-
 struct line *read_program(dbref i);
 
 /* parse_linkable_dest()

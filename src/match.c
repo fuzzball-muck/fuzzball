@@ -11,8 +11,6 @@
 #include "props.h"
 #include "tune.h"
 
-#include <ctype.h>
-
 char match_cmdname[BUFFER_LEN];	/* triggering command */
 char match_args[BUFFER_LEN];	/* remaining text */
 

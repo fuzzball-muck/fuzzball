@@ -10,8 +10,6 @@
 #include "props.h"
 #include "tune.h"
 
-#include <ctype.h>
-
 struct object *db = 0;
 dbref db_top = 0;
 dbref recyclable = NOTHING;

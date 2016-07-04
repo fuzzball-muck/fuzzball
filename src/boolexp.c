@@ -8,9 +8,6 @@
 #include "params.h"
 #include "props.h"
 
-#include <ctype.h>
-#include <stdio.h>
-
 struct boolexp *
 alloc_boolnode(void)
 {

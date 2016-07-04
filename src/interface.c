@@ -16,8 +16,6 @@
 #include "props.h"
 #include "tune.h"
 
-#include <sys/types.h>
-
 #ifndef WIN32
 #include <sys/file.h>
 #include <sys/ioctl.h>
@@ -34,7 +32,6 @@
 extern int errno;
 #endif
 #endif
-#include <ctype.h>
 
 #ifndef WIN32
 /* "do not include netinet6/in6.h directly, include netinet/in.h.  see RFC2553" */
