@@ -653,12 +653,6 @@ struct program_specific {
 #define PROGRAM_SET_MCPBINDS(x,y)	(PROGRAM_SP(x)->mcpbinds = y)
 #endif
 
-#ifndef WIN32
-# define MUCK_LOCALTIME(t)		localtime(&t)
-#else
-# define MUCK_LOCALTIME(t)		uw32localtime(&t)
-#endif
-
 struct player_specific {
     dbref home;
     dbref curr_prog;		/* program I'm currently editing */
@@ -774,91 +768,67 @@ struct macrotable {
     struct macrotable *right;
 };
 
-/* Possible data types that may be stored in a hash table */
-union u_hash_data {
-    int ival;			/* Store compiler tokens here */
-    dbref dbval;		/* Player hashing will want this */
-    void *pval;			/* compiler $define strings use this */
-};
-
-/* The actual hash entry for each item */
-struct t_hash_entry {
-    struct t_hash_entry *next;	/* Pointer for conflict resolution */
-    const char *name;		/* The name of the item */
-    union u_hash_data dat;	/* Data value for item */
-};
-
-typedef union u_hash_data hash_data;
-typedef struct t_hash_entry hash_entry;
-typedef hash_entry *hash_tab;
-
-#define PLAYER_HASH_SIZE   (1024)	/* Table for player lookups */
-#define COMP_HASH_SIZE     (256)	/* Table for compiler keywords */
-#define DEFHASHSIZE        (256)	/* Table for compiler $defines */
-
 extern struct object *db;
 extern struct macrotable *macrotop;
 extern dbref db_top;
 extern int recyclable;
 
 #ifndef MALLOC_PROFILING
-extern char *alloc_string(const char *);
-extern struct shared_string *alloc_prog_string(const char *);
+char *alloc_string(const char *);
+struct shared_string *alloc_prog_string(const char *);
 #endif
 
-extern void putref(FILE * f, dbref ref);
-extern void putstring(FILE * f, const char *s);
-extern void putproperties(FILE * f, dbref obj);
-extern dbref getref(FILE * f);
-extern void getproperties(FILE * f, dbref obj, const char *pdir);
+void putref(FILE * f, dbref ref);
+void putstring(FILE * f, const char *s);
+void putproperties(FILE * f, dbref obj);
+dbref getref(FILE * f);
+void getproperties(FILE * f, dbref obj, const char *pdir);
 
-extern dbref new_object(void);	/* return a new object */
+dbref new_object(void);	/* return a new object */
 
-extern int db_write_object(FILE *, dbref);	/* write one object to file */
+int db_write_object(FILE *, dbref);	/* write one object to file */
 
-extern dbref db_write(FILE * f);	/* write db to file, return # of objects */
+dbref db_write(FILE * f);	/* write db to file, return # of objects */
 
-extern dbref db_read(FILE * f);	/* read db from file, return # of objects */
+dbref db_read(FILE * f);	/* read db from file, return # of objects */
 
  /* Warning: destroys existing db contents! */
 
-extern void db_free(void);
-extern void db_clear_object(dbref i);
-extern void db_free_object(dbref i);
+void db_free(void);
+void db_clear_object(dbref i);
+void db_free_object(dbref i);
 
-extern dbref parse_dbref(const char *);	/* parse a dbref */
+dbref parse_dbref(const char *);	/* parse a dbref */
+
+const char *unparse_flags(dbref thing);
+const char *unparse_object(dbref player, dbref object);
+
+int member(dbref thing, dbref list);
+dbref remove_first(dbref first, dbref what);
+dbref reverse(dbref);
+
+long size_object(dbref i, int load);
+
+int ok_ascii_other(const char *name);
+int ok_ascii_thing(const char *name);
+int ok_name(const char *name);
+
+dbref getparent(dbref obj);
+
+int controls(dbref who, dbref what);
+int controls_link(dbref who, dbref what);
+
+void set_source(dbref player, dbref action, dbref source);
+int unset_source(dbref player, dbref action);
+
+dbref parse_linkable_dest(int descr, dbref player, dbref exit, const char *dest_name);
+int link_exit(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_list);
+int link_exit_dry(int descr, dbref player, dbref exit, char *dest_name,
+                         dbref * dest_list);
 
 #define DOLIST(var, first) \
   for ((var) = (first); (var) != NOTHING; (var) = DBFETCH(var)->next)
 #define PUSH(thing, locative) \
     {DBSTORE((thing), next, (locative)); (locative) = (thing);}
-
-/*
-  Usage guidelines:
-
-  To obtain an object pointer use DBFETCH(i).  Pointers returned by DBFETCH
-  may become invalid after a call to new_object().
-
-  To update an object, use DBSTORE(i, f, v), where i is the object number,
-  f is the field (after ->), and v is the new value.
-
-  If you have updated an object without using DBSTORE, use DBDIRTY(i) before
-  leaving the routine that did the update.
-
-  When using PUSH, be sure to call DBDIRTY on the object which contains
-  the locative (see PUSH definition above).
-
-  Some fields are now handled in a unique way, since they are always memory
-  resident, even in the GDBM_DATABASE disk-based muck.  These are: name,
-  flags and owner.  Refer to these by NAME(i), FLAGS(i) and OWNER(i).
-  Always call DBDIRTY(i) after updating one of these fields.
-
-  The programmer is responsible for managing storage for string
-  components of entries; db_read will produce malloc'd strings.  The
-  alloc_string routine is provided for generating malloc'd strings
-  duplicates of other strings.  Note that db_free and db_read will
-  attempt to free any non-NULL string that exists in db when they are
-  invoked.
-*/
 
 #endif				/* _DB_H */

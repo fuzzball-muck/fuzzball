@@ -1,9 +1,12 @@
 #include "config.h"
 
+#include "boolexp.h"
 #include "db.h"
-#include "externs.h"
+#include "fbstrings.h"
 #include "interface.h"
+#include "match.h"
 #include "params.h"
+#include "player.h"
 #include "props.h"
 #include "tune.h"
 
@@ -139,30 +142,6 @@ could_doit(int descr, dbref player, dbref thing)
     return (eval_boolexp(descr, player, GETLOCK(thing), thing));
 }
 
-
-int
-test_lock(int descr, dbref player, dbref thing, const char *lockprop)
-{
-    struct boolexp *lokptr;
-
-    lokptr = get_property_lock(thing, lockprop);
-    return (eval_boolexp(descr, player, lokptr, thing));
-}
-
-
-int
-test_lock_false_default(int descr, dbref player, dbref thing, const char *lockprop)
-{
-    struct boolexp *lok;
-
-    lok = get_property_lock(thing, lockprop);
-
-    if (lok == TRUE_BOOLEXP)
-	return 0;
-    return (eval_boolexp(descr, player, lok, thing));
-}
-
-
 int
 can_doit(int descr, dbref player, dbref thing, const char *default_fail_msg)
 {
@@ -198,360 +177,152 @@ can_doit(int descr, dbref player, dbref thing, const char *default_fail_msg)
     }
 }
 
+/* exit_loop_check()
+ *
+ * Recursive check for loops in destinations of exits.  Checks to see
+ * if any circular references are present in the destination chain.
+ * Returns 1 if circular reference found, 0 if not.
+ */
 int
-can_see(dbref player, dbref thing, int can_see_loc)
+exit_loop_check(dbref source, dbref dest)
 {
-    if (player == thing || Typeof(thing) == TYPE_EXIT || Typeof(thing) == TYPE_ROOM)
-	return 0;
-
-    if (can_see_loc) {
-	switch (Typeof(thing)) {
-	case TYPE_PROGRAM:
-	    return ((FLAGS(thing) & LINK_OK) || controls(player, thing));
-	case TYPE_PLAYER:
-	    if (tp_dark_sleepers) {
-		return (!Dark(thing) && online(thing));
-	    }
-	default:
-	    return (!Dark(thing) || (controls(player, thing) && !(FLAGS(player) & STICKY)));
-	}
-    } else {
-	/* can't see loc */
-	return (controls(player, thing) && !(FLAGS(player) & STICKY));
+    if (source == dest)
+        return 1;               /* That's an easy one! */
+    if (dest == NIL || Typeof(dest) != TYPE_EXIT)
+        return 0;
+    for (int i = 0; i < DBFETCH(dest)->sp.exit.ndest; i++) {
+        if ((DBFETCH(dest)->sp.exit.dest)[i] == source) {
+            return 1;           /* Found a loop! */
+        }
+        if (Typeof((DBFETCH(dest)->sp.exit.dest)[i]) == TYPE_EXIT) {
+            if (exit_loop_check(source, (DBFETCH(dest)->sp.exit.dest)[i])) {
+                return 1;       /* Found one recursively */
+            }
+        }
     }
+    return 0;                   /* No loops found */
 }
 
-int
-controls(dbref who, dbref what)
-{
-    /* No one controls invalid objects */
-    if (what < 0 || what >= db_top)
-	return 0;
-
-    /* No one controls garbage */
-    if (Typeof(what) == TYPE_GARBAGE)
-	return 0;
-
-    who = OWNER(who);
-
-    /* Wizard controls everything */
-    if (Wizard(who)) {
-#ifdef GOD_PRIV
-	if (tp_strict_god_priv && God(OWNER(what)) && !God(who))
-	    /* Only God controls God's objects */
-	    return 0;
-	else
-#endif
-	    return 1;
-    }
-
-    if (tp_realms_control) {
-	/* Realm Owner controls everything under his environment. */
-	/* To set up a Realm, a Wizard sets the W flag on a room.  The
-	 * owner of that room controls every Room object contained within
-	 * that room, all the way to the leaves of the tree.
-	 * -winged */
-	for (dbref index = what; index != NOTHING; index = LOCATION(index)) {
-	    if ((OWNER(index) == who) && (Typeof(index) == TYPE_ROOM)
-		&& Wizard(index)) {
-		/* Realm Owner doesn't control other Player objects */
-		if (Typeof(what) == TYPE_PLAYER) {
-		    return 0;
-		} else {
-		    return 1;
-		}
-	    }
-	}
-    }
-
-    /* exits are also controlled by the owners of the source and destination */
-    /* ACTUALLY, THEY AREN'T.  IT OPENS A BAD MPI SECURITY HOLE. */
-    /* any MPI on an exit's @succ or @fail would be run in the context
-     * of the owner, which would allow the owner of the src or dest to
-     * write malicious code for the owner of the exit to run.  Allowing them
-     * control would allow them to modify _ properties, thus enabling the
-     * security hole. -winged */
-    /*
-     * if (Typeof(what) == TYPE_EXIT) {
-     *    int     i = DBFETCH(what)->sp.exit.ndest;
-     *
-     *    while (i > 0) {
-     *        if (who == OWNER(DBFETCH(what)->sp.exit.dest[--i]))
-     *            return 1;
-     *    }
-     *    if (who == OWNER(LOCATION(what)))
-     *        return 1;
-     * }
-     */
-
-    /* owners control their own stuff */
-    return (who == OWNER(what));
-}
+/* What are we doing here?  Quick explanation - we want to prevent
+   environment loops from happening.  Any item should always be able
+   to 'find' its way to room #0.  Since the loop check is recursive,
+   we also put in a max iteration check, to keep people from creating
+   huge envchains in order to bring the server down.  We have a loop
+   if we:
+   a) Try to parent to ourselves.
+   b) Parent to nothing (not really a loop, but won't get you to #0).
+   c) Parent to our own home (not a valid destination).
+   d) Find our source room down the environment chain.
+   Note: This system will only work if every step _up_ to this point has
+   resulted in a consistent (ie: no loops) environment.
+*/
 
 int
-restricted(dbref player, dbref thing, object_flag_type flag)
+location_loop_check(dbref source, dbref dest)
 {
-    switch (flag) {
-    case ABODE:
-	/* Trying to set a program AUTOSTART requires TrueWizard */
-	return (!TrueWizard(OWNER(player)) && (Typeof(thing) == TYPE_PROGRAM));
-    case GUEST:
-	/* Guest operations require a wizard */
-	return (!(Wizard(OWNER(player))));
-    case YIELD:
-	/* Mucking with the env-chain matching requires TrueWizard */
-	return (!(Wizard(OWNER(player))));
-    case OVERT:
-	/* Mucking with the env-chain matching requires TrueWizard */
-	return (!(Wizard(OWNER(player))));
-    case ZOMBIE:
-	/* Restricting a player from using zombies requires a wizard. */
-	if (Typeof(thing) == TYPE_PLAYER)
-	    return (!(Wizard(OWNER(player))));
-	/* If a player's set Zombie, he's restricted from using them...
-	 * unless he's a wizard, in which case he can do whatever. */
-	if ((Typeof(thing) == TYPE_THING) && (FLAGS(OWNER(player)) & ZOMBIE))
-	    return (!(Wizard(OWNER(player))));
-	return (0);
-    case VEHICLE:
-	/* Restricting a player from using vehicles requires a wizard. */
-	if (Typeof(thing) == TYPE_PLAYER)
-	    return (!(Wizard(OWNER(player))));
-	/* If only wizards can create vehicles... */
-	if (tp_wiz_vehicles) {
-	    /* then only a wizard can create a vehicle. :) */
-	    if (Typeof(thing) == TYPE_THING)
-		return (!(Wizard(OWNER(player))));
-	} else {
-	    /* But, if vehicles aren't restricted to wizards, then
-	     * players who have not been restricted can do so */
-	    if ((Typeof(thing) == TYPE_THING) && (FLAGS(player) & VEHICLE))
-		return (!(Wizard(OWNER(player))));
-	}
-	return (0);
-    case DARK:
-	/* Dark can be set on a Program or Room by anyone. */
-	if (!Wizard(OWNER(player))) {
-	    /* Setting a player dark requires a wizard. */
-	    if (Typeof(thing) == TYPE_PLAYER)
-		return (1);
-	    /* If exit darking is restricted, it requires a wizard. */
-	    if (!tp_exit_darking && Typeof(thing) == TYPE_EXIT)
-		return (1);
-	    /* If thing darking is restricted, it requires a wizard. */
-	    if (!tp_thing_darking && Typeof(thing) == TYPE_THING)
-		return (1);
-	}
-	return (0);
-    case QUELL:
-#ifdef GOD_PRIV
-	/* Only God (or God's stuff) can quell or unquell another wizard. */
-	return (God(OWNER(player)) || (TrueWizard(thing) && (thing != player) &&
-				       Typeof(thing) == TYPE_PLAYER));
-#else
-	/* You cannot quell or unquell another wizard. */
-	return (TrueWizard(thing) && (thing != player) && (Typeof(thing) == TYPE_PLAYER));
-#endif
-    case MUCKER:
-    case SMUCKER:
-    case (SMUCKER | MUCKER):
-    case BUILDER:
-	/* Would someone tell me why setting a program SMUCKER|MUCKER doesn't
-	 * go through here? -winged */
-	/* Setting a program Bound causes any function called therein to be
-	 * put in preempt mode, regardless of the mode it had before.
-	 * Since this is just a convenience for atomic-functionwriters,
-	 * why is it limited to only a Wizard? -winged */
-	/* Setting a player Builder is limited to a Wizard. */
-	return (!Wizard(OWNER(player)));
-    case WIZARD:
-	/* To do anything with a Wizard flag requires a Wizard. */
-	if (Wizard(OWNER(player))) {
-#ifdef GOD_PRIV
-	    /* ...but only God can make a player a Wizard, or re-mort
-	     * one. */
-	    return ((Typeof(thing) == TYPE_PLAYER) && !God(player));
-#else				/* !GOD_PRIV */
-	    /* We don't want someone setting themselves !W, to prevent
-	     * a case where there are no wizards at all */
-	    return ((Typeof(thing) == TYPE_PLAYER && thing == OWNER(player)));
-#endif				/* GOD_PRIV */
-	} else
-	    return 1;
-    default:
-	/* No other flags are restricted. */
-	return 0;
-    }
-}
+    unsigned int level = 0;
+    dbref pstack[MAX_PARENT_DEPTH + 2];
 
-/* Removes 'cost' value from 'who', and returns 1 if the act has been
- * paid for, else returns 0. */
-int
-payfor(dbref who, int cost)
-{
-    who = OWNER(who);
-    /* Wizards don't have to pay for anything. */
-    if (Wizard(who)) {
-	return 1;
-    } else if (GETVALUE(who) >= cost) {
-	SETVALUE(who, GETVALUE(who) - cost);
-	DBDIRTY(who);
-	return 1;
-    } else {
-	return 0;
+    if (source == dest) {
+        return 1;
     }
-}
+    pstack[0] = source;
+    pstack[1] = dest;
 
-int
-word_start(const char *str, const char let)
-{
-    for (int chk = 1; *str; str++) {
-	if (chk && (*str == let))
-	    return 1;
-	chk = (*str == ' ');
-    }
-    return 0;
-}
-
-#ifdef WIN32
-static __inline int
-#else
-static inline int
-#endif
-ok_ascii_any(const char *name)
-{
-    const unsigned char *scan;
-    for (scan = (const unsigned char *) name; *scan; ++scan) {
-	if (*scan > 127)
-	    return 0;
+    while (level < MAX_PARENT_DEPTH) {
+        dest = LOCATION(dest);
+        if (dest == NOTHING) {
+            return 0;
+        }
+        if (dest == HOME) {     /* We should never get this, either. */
+            return 1;
+        }
+        if (dest == (dbref) 0) {        /* Reached the top of the chain. */
+            return 0;
+        }
+        /* Check to see if we've found this item before.. */
+        for (unsigned int place = 0; place < (level + 2); place++) {
+            if (pstack[place] == dest) {
+                return 1;
+            }
+        }
+        pstack[level + 2] = dest;
+        level++;
     }
     return 1;
 }
 
 int
-ok_ascii_thing(const char *name)
+parent_loop_check(dbref source, dbref dest)
 {
-    return !tp_7bit_thing_names || ok_ascii_any(name);
-}
+    unsigned int level = 0;
+    dbref pstack[MAX_PARENT_DEPTH + 2];
 
-int
-ok_ascii_other(const char *name)
-{
-    return !tp_7bit_other_names || ok_ascii_any(name);
-}
-
-int
-ok_name(const char *name)
-{
-    return (name
-	    && *name
-	    && *name != LOOKUP_TOKEN
-	    && *name != REGISTERED_TOKEN
-	    && *name != NUMBER_TOKEN && !index(name, ARG_DELIMITER)
-	    && !index(name, AND_TOKEN)
-	    && !index(name, OR_TOKEN)
-	    && !index(name, '\r')
-	    && !index(name, ESCAPE_CHAR)
-	    && !word_start(name, NOT_TOKEN)
-	    && string_compare(name, "me")
-	    && string_compare(name, "here")
-	    && string_compare(name, "home")
-	    && (!*tp_reserved_names || !equalstr((char *) tp_reserved_names, (char *) name)
-	    ));
-}
-
-int
-ok_player_name(const char *name)
-{
-    const char *scan;
-
-    if (!ok_name(name) || strlen(name) > PLAYER_NAME_LIMIT)
-	return 0;
-
-
-    for (scan = name; *scan; scan++) {
-	if (!(isprint(*scan)
-	      && !isspace(*scan))
-	    && *scan != '(' && *scan != ')' && *scan != '\'' && *scan != ',') {
-	    /* was isgraph(*scan) */
-	    return 0;
-	}
+    if (dest == HOME) {
+        switch (Typeof(source)) {
+        case TYPE_PLAYER:
+            dest = PLAYER_HOME(source);
+            break;
+        case TYPE_THING:
+            dest = THING_HOME(source);
+            break;
+        case TYPE_ROOM:
+            dest = GLOBAL_ENVIRONMENT;
+            break;
+        case TYPE_PROGRAM:
+            dest = OWNER(source);
+            break;
+        default:
+            return 1;
+        }
+    }
+    if (location_loop_check(source, dest)) {
+        return 1;
     }
 
-    /* Check the name isn't reserved */
-    if (*tp_reserved_player_names
-	&& equalstr((char *) tp_reserved_player_names, (char *) name))
-	return 0;
-
-    /* lookup name to avoid conflicts */
-    return (lookup_player(name) == NOTHING);
-}
-
-int
-ok_password(const char *password)
-{
-    const char *scan;
-
-    /* Password cannot be blank */
-    if (*password == '\0')
-	return 0;
-
-    /* Password also cannot contain any nonprintable or space-type
-     * characters */
-    for (scan = password; *scan; scan++) {
-	if (!(isprint(*scan) && !isspace(*scan))) {
-	    return 0;
-	}
+    if (source == dest) {
+        return 1;
     }
+    pstack[0] = source;
+    pstack[1] = dest;
 
-    /* Anything else is fair game */
+    while (level < MAX_PARENT_DEPTH) {
+        /* if (Typeof(dest) == TYPE_THING) {
+           dest = THING_HOME(dest);
+           } */
+        dest = getparent(dest);
+        if (dest == NOTHING) {
+            return 0;
+        }
+        if (dest == HOME) {     /* We should never get this, either. */
+            return 1;
+        }
+        if (dest == (dbref) 0) {        /* Reached the top of the chain. */
+            return 0;
+        }
+        /* Check to see if we've found this item before.. */
+        for (unsigned int place = 0; place < (level + 2); place++) {
+            if (pstack[place] == dest) {
+                return 1;
+            }
+        }
+        pstack[level + 2] = dest;
+        level++;
+    }
     return 1;
 }
 
-/* If only paternity checks were this easy in real life... 
- * Returns 1 if the given 'child' is contained by the 'parent'.*/
 int
-isancestor(dbref parent, dbref child)
+can_move(int descr, dbref player, const char *direction, int lev)
 {
-    while (child != NOTHING && child != parent) {
-	child = getparent(child);
-    }
-    return child == parent;
-}
+    struct match_data md;
 
-dbref
-getparent_logic(dbref obj)
-{
-    if (obj == NOTHING)
-	return NOTHING;
-    if (Typeof(obj) == TYPE_THING && (FLAGS(obj) & VEHICLE)) {
-	obj = THING_HOME(obj);
-	if (obj != NOTHING && Typeof(obj) == TYPE_PLAYER) {
-	    obj = PLAYER_HOME(obj);
-	}
-    } else {
-	obj = LOCATION(obj);
-    }
-    return obj;
-}
+    if (tp_allow_home && !string_compare(direction, "home"))
+        return 1;
 
-dbref
-getparent(dbref obj)
-{
-    dbref ptr, oldptr;
-
-    if (tp_thing_movement) {
-	obj = LOCATION(obj);
-    } else {
-	ptr = getparent_logic(obj);
-	do {
-	    obj = getparent_logic(obj);
-	} while (obj != (oldptr = ptr = getparent_logic(ptr)) &&
-		 obj != (ptr = getparent_logic(ptr)) &&
-		 obj != NOTHING && Typeof(obj) == TYPE_THING);
-	if (obj != NOTHING && (obj == oldptr || obj == ptr)) {
-	    obj = GLOBAL_ENVIRONMENT;
-	}
-    }
-    return obj;
+    /* otherwise match on exits */
+    init_match(descr, player, direction, TYPE_EXIT, &md);
+    md.match_level = lev;
+    match_all_exits(&md);
+    return (last_match_result(&md) != NOTHING);
 }

@@ -1,17 +1,28 @@
 #include "config.h"
 
+#include "commands.h"
+#include "compile.h"
 #include "db.h"
 #ifdef DISKBASE
 #include "diskprop.h"
 #endif
-#include "externs.h"
+#include "edit.h"
+#include "events.h"
+#include "fbsignal.h"
+#include "fbstrings.h"
+#include "fbtime.h"
+#include "game.h"
 #include "interface.h"
+#include "log.h"
 #include "msgparse.h"
 #ifdef MCP_SUPPORT
 #include "mcp.h"
 #endif
 #include "params.h"
+#include "player.h"
+#include "predicates.h"
 #include "props.h"
+#include "timequeue.h"
 #include "tune.h"
 
 #include <signal.h>
@@ -396,14 +407,6 @@ fork_and_dump(void)
 #endif
 }
 
-void
-dump_warning(void)
-{
-    if (tp_dbdump_warning) {
-	wall_and_flush(tp_dumpwarn_mesg);
-    }
-}
-
 extern short db_conversion_flag;
 
 int
@@ -451,12 +454,11 @@ init_game(const char *infile, const char *outfile)
     return 0;
 }
 
-
 void
 cleanup_game()
 {
     if (dumpfile)
-	free((void *) dumpfile);
+        free((void *) dumpfile);
     free((void *) in_filename);
 }
 
@@ -787,7 +789,7 @@ process_command(int descr, dbref player, char *command)
 		case 'B':
 		    Matched("@dbginfo");
 		    WIZARDONLY("@dbginfo", player);
-		    diskbase_debug(player);
+		    do_dbginfo(player);
 		    break;
 #endif
 		case 'e':
@@ -851,7 +853,7 @@ process_command(int descr, dbref player, char *command)
 		case 'X':
 		    Matched("@examine");
 		    GODONLY("@examine", player);
-		    sane_dump_object(player, arg1);
+		    do_examine_sanity(player, arg1);
 		    break;
 		default:
 		    goto bad;
@@ -915,7 +917,7 @@ process_command(int descr, dbref player, char *command)
 	    case 'K':
 		/* @kill */
 		Matched("@kill");
-		do_dequeue(descr, player, arg1);
+		do_kill_process(descr, player, arg1);
 		break;
 	    case 'l':
 	    case 'L':
@@ -933,7 +935,7 @@ process_command(int descr, dbref player, char *command)
 		    case 's':
 		    case 'S':
 			Matched("@list");
-			match_and_list(descr, player, arg1, arg2);
+			do_list(descr, player, arg1, arg2);
 			break;
 		    default:
 			goto bad;
@@ -1112,7 +1114,7 @@ process_command(int descr, dbref player, char *command)
 		case 's':
 		case 'S':
 		    Matched("@ps");
-		    list_events(player);
+		    do_process_status(player);
 		    break;
 		default:
 		    goto bad;
@@ -1171,13 +1173,13 @@ process_command(int descr, dbref player, char *command)
 		case 'A':
 		    if (!strcmp(command, "@sanity")) {
 			GODONLY("@sanity", player);
-			sanity(player);
+			do_sanity(player);
 		    } else if (!strcmp(command, "@sanchange")) {
 			GODONLY("@sanchange", player);
-			sanechange(player, full_command);
+			do_sanchange(player, full_command);
 		    } else if (!strcmp(command, "@sanfix")) {
 			GODONLY("@sanfix", player);
-			sanfix(player);
+			do_sanfix(player);
 		    } else {
 			goto bad;
 		    }
@@ -1236,7 +1238,7 @@ process_command(int descr, dbref player, char *command)
 			do_toad(descr, player, arg1, arg2);
 		    } else if (!strcmp(command, "@tops")) {
 			WIZARDONLY("@tops", player);
-			do_all_topprofs(player, arg1);
+			do_topprofs(player, arg1);
 		    } else {
 			goto bad;
 		    }

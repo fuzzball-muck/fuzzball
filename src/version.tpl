@@ -12,7 +12,7 @@
 
 #include "config.h"
 
-#include "externs.h"
+#include "game.h"
 #include "interface.h"
 
 #define generation "$generation"

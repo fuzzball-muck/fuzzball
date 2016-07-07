@@ -1,9 +1,16 @@
 #include "config.h"
 
+#include "commands.h"
 #include "db.h"
+#include "edit.h"
+#include "events.h"
+#include "fbsignal.h"
+#include "fbstrings.h"
+#include "fbtime.h"
+#include "game.h"
 #include "interface.h"
-#include "externs.h"
 #include "interp.h"
+#include "log.h"
 #include "match.h"
 #ifdef MCP_SUPPORT
 #include "mcp.h"
@@ -13,7 +20,10 @@
 #include "msgparse.h"
 #include "mufevent.h"
 #include "params.h"
+#include "player.h"
+#include "predicates.h"
 #include "props.h"
+#include "timequeue.h"
 #include "tune.h"
 
 #ifndef WIN32
@@ -23,6 +33,8 @@
 #endif
 
 #include <fcntl.h>
+#include <sys/stat.h>
+
 #if defined (HAVE_ERRNO_H)
 # include <errno.h>
 #else
@@ -581,11 +593,11 @@ main(int argc, char **argv)
 	set_signals();
 
 	if (!sanity_skip) {
-	    sanity(AMBIGUOUS);
+	    do_sanity(AMBIGUOUS);
 	    if (sanity_violated) {
 		wizonly_mode = 1;
 		if (sanity_autofix) {
-		    sanfix(AMBIGUOUS);
+		    do_sanfix(AMBIGUOUS);
 		}
 	    }
 	}
@@ -617,7 +629,7 @@ main(int argc, char **argv)
 	    close_sockets("\r\nServer shutting down normally.\r\n");
 	}
 
-	do_dequeue(-1, (dbref) 1, "all");
+	do_kill_process(-1, (dbref) 1, "all");
 
 #ifdef WIN32
 	WSACleanup();
@@ -912,6 +924,77 @@ notifyf_nolisten(dbref player, char *format, ...)
     va_end(args);
 }
 
+void
+notify_listeners(dbref who, dbref xprog, dbref obj, dbref room, const char *msg, int isprivate)
+{
+    char buf[BUFFER_LEN];
+    dbref ref;
+
+    if (obj == NOTHING)
+	return;
+
+    if (tp_listeners && (tp_listeners_obj || Typeof(obj) == TYPE_ROOM)) {
+	listenqueue(-1, who, room, obj, obj, xprog, "_listen", msg, tp_listen_mlev, 1, 0);
+	listenqueue(-1, who, room, obj, obj, xprog, "~listen", msg, tp_listen_mlev, 1, 1);
+	listenqueue(-1, who, room, obj, obj, xprog, "~olisten", msg, tp_listen_mlev, 0, 1);
+    }
+
+    if (tp_zombies && Typeof(obj) == TYPE_THING && !isprivate) {
+	if (FLAGS(obj) & VEHICLE) {
+	    if (LOCATION(who) == LOCATION(obj)) {
+		char pbuf[BUFFER_LEN];
+		const char *prefix;
+
+		memset(buf, 0, BUFFER_LEN);	/* Make sure the buffer is zeroed */
+
+		prefix = do_parse_prop(-1, who, obj, MESGPROP_OECHO, "(@Oecho)", pbuf,
+				       sizeof(pbuf), MPI_ISPRIVATE);
+		if (!prefix || !*prefix)
+		    prefix = "Outside>";
+		snprintf(buf, sizeof(buf), "%s %.*s", prefix,
+			 (int) (BUFFER_LEN - 2 - strlen(prefix)), msg);
+		ref = CONTENTS(obj);
+		while (ref != NOTHING) {
+		    notify_filtered(who, ref, buf, isprivate);
+		    ref = NEXTOBJ(ref);
+		}
+	    }
+	}
+    }
+
+    if (Typeof(obj) == TYPE_PLAYER || Typeof(obj) == TYPE_THING)
+	notify_filtered(who, obj, msg, isprivate);
+}
+
+void
+notify_except(dbref first, dbref exception, const char *msg, dbref who)
+{
+    dbref room, srch;
+
+    if (first != NOTHING) {
+
+	srch = room = LOCATION(first);
+
+	if (tp_listeners) {
+	    notify_from_echo(who, srch, msg, 0);
+
+	    if (tp_listeners_env) {
+		srch = LOCATION(srch);
+		while (srch != NOTHING) {
+		    notify_from_echo(who, srch, msg, 0);
+		    srch = getparent(srch);
+		}
+	    }
+	}
+
+	DOLIST(first, first) {
+	    if ((Typeof(first) != TYPE_ROOM) && (first != exception)) {
+		/* don't want excepted player or child rooms to hear */
+		notify_from_echo(who, first, msg, 0);
+	    }
+	}
+    }
+}
 
 struct timeval
 timeval_sub(struct timeval now, struct timeval then)
@@ -4584,3 +4667,142 @@ reconfigure_ssl(void)
     }
 }
 #endif
+
+int
+show_subfile(dbref player, const char *dir, const char *topic, const char *seg, int partial)
+{
+    char buf[256];
+    struct stat st;
+
+#ifdef DIR_AVALIBLE
+    DIR *df;
+    struct dirent *dp;
+#endif
+
+#ifdef WIN32
+    char *dirname;
+    int dirnamelen = 0;
+    HANDLE hFind;
+    BOOL bMore;
+    WIN32_FIND_DATA finddata;
+#endif
+
+    if (!topic || !*topic)
+	return 0;
+
+    if ((*topic == '.') || (*topic == '~') || (index(topic, '/'))) {
+	return 0;
+    }
+    if (strlen(topic) > 63)
+	return 0;
+
+
+#ifdef DIR_AVALIBLE
+    /* TO DO: (1) exact match, or (2) partial match, but unique */
+    *buf = 0;
+
+    if ((df = (DIR *) opendir(dir))) {
+	while ((dp = readdir(df))) {
+	    if ((partial && string_prefix(dp->d_name, topic)) ||
+		(!partial && !string_compare(dp->d_name, topic))
+		    ) {
+		snprintf(buf, sizeof(buf), "%s/%s", dir, dp->d_name);
+		break;
+	    }
+	}
+	closedir(df);
+    }
+
+    if (!*buf) {
+	return 0;		/* no such file or directory */
+    }
+#elif WIN32
+    /* TO DO: (1) exact match, or (2) partial match, but unique */
+    *buf = 0;
+
+    dirnamelen = strlen(dir) + 5;
+    dirname = (char *) malloc(dirnamelen);
+    strcpyn(dirname, dirnamelen, dir);
+    strcatn(dirname, dirnamelen, "/*.*");
+    hFind = FindFirstFile(dirname, &finddata);
+    bMore = (hFind != (HANDLE) - 1);
+
+    free(dirname);
+
+    while (bMore) {
+	if (!(finddata.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
+	    if ((partial && string_prefix(finddata.cFileName, topic)) ||
+		(!partial && !string_compare(finddata.cFileName, topic))
+		    ) {
+		snprintf(buf, sizeof(buf), "%s/%s", dir, finddata.cFileName);
+		break;
+	    }
+	}
+	bMore = FindNextFile(hFind, &finddata);
+    }
+#else				/* !DIR_AVAILABLE && !WIN32 */
+    snprintf(buf, sizeof(buf), "%s/%s", dir, topic);
+#endif
+
+    if (stat(buf, &st)) {
+	return 0;
+    } else {
+	spit_file_segment(player, buf, seg);
+	return 1;
+    }
+}
+
+void
+spit_file_segment(dbref player, const char *filename, const char *seg)
+{
+    FILE *f;
+    char buf[BUFFER_LEN];
+    char segbuf[BUFFER_LEN];
+    char *p;
+    int startline, endline, currline;
+
+    startline = endline = currline = 0;
+    if (seg && *seg) {
+        strcpyn(segbuf, sizeof(segbuf), seg);
+        for (p = segbuf; isdigit(*p); p++) ;
+        if (*p) {
+            *p++ = '\0';
+            startline = atoi(segbuf);
+            while (*p && !isdigit(*p))
+                p++;
+            if (*p)
+                endline = atoi(p);
+        } else {
+            endline = startline = atoi(segbuf);
+        }
+    }
+    if ((f = fopen(filename, "rb")) == NULL) {
+        notifyf(player, "Sorry, %s is missing.  Management has been notified.", filename);
+        fputs("spit_file:", stderr);
+        perror(filename);
+    } else {
+        while (fgets(buf, sizeof buf, f)) {
+            for (p = buf; *p; p++) {
+                if (*p == '\n' || *p == '\r') {
+                    *p = '\0';
+                    break;
+                }
+            }
+            currline++;
+            if ((!startline || (currline >= startline)) && (!endline || (currline <= endline))) {
+                if (*buf) {
+                    notify(player, buf);
+                } else {
+                    notify(player, "  ");
+                }
+            }
+        }
+        fclose(f);
+    } 
+}
+
+void
+spit_file(dbref player, const char *filename)
+{
+    spit_file_segment(player, filename, "");
+}

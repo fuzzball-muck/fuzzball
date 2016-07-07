@@ -1,39 +1,16 @@
 #include "config.h"
 
 #include "db.h"
-#include "externs.h"
+#include "fbstrings.h"
 #include "interface.h"
+#include "log.h"
 #if defined(MCP_SUPPORT) && !defined(STANDALONE_HELP)
 #include "mcppkg.h"
 #endif
 
 #include <stdarg.h>
-#include <sys/stat.h>
-
-/*
- * Ok, directory stuff IS a bit ugly.
- */
-#if defined(HAVE_DIRENT_H) || defined(_POSIX_VERSION)
-# include <dirent.h>
-#else				/* not (HAVE_DIRENT_H or _POSIX_VERSION) */
-# define dirent direct
-# ifdef HAVE_SYS_NDIR_H
-#  include <sys/ndir.h>
-# endif				/* HAVE_SYS_NDIR_H */
-# ifdef HAVE_SYS_DIR_H
-#  include <sys/dir.h>
-# endif				/* HAVE_SYS_DIR_H */
-# ifdef HAVE_NDIR_H
-#  include <ndir.h>
-# endif				/* HAVE_NDIR_H */
-#endif				/* not (HAVE_DIRENT_H or _POSIX_VERSION) */
-
-#if defined(HAVE_DIRENT_H) || defined(_POSIX_VERSION) || defined(HAVE_SYS_NDIR_H) || defined(HAVE_SYS_DIR_H) || defined(HAVE_NDIR_H)
-# define DIR_AVALIBLE
-#endif
 
 #if defined(STANDALONE_HELP)
-//# define dbref int
 
 int
 notify(dbref player, const char *msg)
@@ -106,62 +83,6 @@ strcatn(char *buf, size_t bufsize, const char *src)
 #endif
 
 void
-spit_file_segment(dbref player, const char *filename, const char *seg)
-{
-    FILE *f;
-    char buf[BUFFER_LEN];
-    char segbuf[BUFFER_LEN];
-    char *p;
-    int startline, endline, currline;
-
-    startline = endline = currline = 0;
-    if (seg && *seg) {
-	strcpyn(segbuf, sizeof(segbuf), seg);
-	for (p = segbuf; isdigit(*p); p++) ;
-	if (*p) {
-	    *p++ = '\0';
-	    startline = atoi(segbuf);
-	    while (*p && !isdigit(*p))
-		p++;
-	    if (*p)
-		endline = atoi(p);
-	} else {
-	    endline = startline = atoi(segbuf);
-	}
-    }
-    if ((f = fopen(filename, "rb")) == NULL) {
-	notifyf(player, "Sorry, %s is missing.  Management has been notified.", filename);
-	fputs("spit_file:", stderr);
-	perror(filename);
-    } else {
-	while (fgets(buf, sizeof buf, f)) {
-	    for (p = buf; *p; p++) {
-		if (*p == '\n' || *p == '\r') {
-		    *p = '\0';
-		    break;
-		}
-	    }
-	    currline++;
-	    if ((!startline || (currline >= startline)) && (!endline || (currline <= endline))) {
-		if (*buf) {
-		    notify(player, buf);
-		} else {
-		    notify(player, "  ");
-		}
-	    }
-	}
-	fclose(f);
-    }
-}
-
-void
-spit_file(dbref player, const char *filename)
-{
-    spit_file_segment(player, filename, "");
-}
-
-
-void
 index_file(dbref player, const char *onwhat, const char *file)
 {
     FILE *f;
@@ -230,91 +151,6 @@ index_file(dbref player, const char *onwhat, const char *file)
 	fclose(f);
     }
 }
-
-int
-show_subfile(dbref player, const char *dir, const char *topic, const char *seg, int partial)
-{
-    char buf[256];
-    struct stat st;
-
-#ifdef DIR_AVALIBLE
-    DIR *df;
-    struct dirent *dp;
-#endif
-
-#ifdef WIN32
-    char *dirname;
-    int dirnamelen = 0;
-    HANDLE hFind;
-    BOOL bMore;
-    WIN32_FIND_DATA finddata;
-#endif
-
-    if (!topic || !*topic)
-	return 0;
-
-    if ((*topic == '.') || (*topic == '~') || (index(topic, '/'))) {
-	return 0;
-    }
-    if (strlen(topic) > 63)
-	return 0;
-
-
-#ifdef DIR_AVALIBLE
-    /* TO DO: (1) exact match, or (2) partial match, but unique */
-    *buf = 0;
-
-    if ((df = (DIR *) opendir(dir))) {
-	while ((dp = readdir(df))) {
-	    if ((partial && string_prefix(dp->d_name, topic)) ||
-		(!partial && !string_compare(dp->d_name, topic))
-		    ) {
-		snprintf(buf, sizeof(buf), "%s/%s", dir, dp->d_name);
-		break;
-	    }
-	}
-	closedir(df);
-    }
-
-    if (!*buf) {
-	return 0;		/* no such file or directory */
-    }
-#elif WIN32
-    /* TO DO: (1) exact match, or (2) partial match, but unique */
-    *buf = 0;
-
-    dirnamelen = strlen(dir) + 5;
-    dirname = (char *) malloc(dirnamelen);
-    strcpyn(dirname, dirnamelen, dir);
-    strcatn(dirname, dirnamelen, "/*.*");
-    hFind = FindFirstFile(dirname, &finddata);
-    bMore = (hFind != (HANDLE) - 1);
-
-    free(dirname);
-
-    while (bMore) {
-	if (!(finddata.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
-	    if ((partial && string_prefix(finddata.cFileName, topic)) ||
-		(!partial && !string_compare(finddata.cFileName, topic))
-		    ) {
-		snprintf(buf, sizeof(buf), "%s/%s", dir, finddata.cFileName);
-		break;
-	    }
-	}
-	bMore = FindNextFile(hFind, &finddata);
-    }
-#else				/* !DIR_AVAILABLE && !WIN32 */
-    snprintf(buf, sizeof(buf), "%s/%s", dir, topic);
-#endif
-
-    if (stat(buf, &st)) {
-	return 0;
-    } else {
-	spit_file_segment(player, buf, seg);
-	return 1;
-    }
-}
-
 
 #if !defined(STANDALONE_HELP)
 void

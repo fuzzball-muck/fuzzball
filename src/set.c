@@ -1,31 +1,19 @@
 #include "config.h"
 
+#include "boolexp.h"
+#include "commands.h"
 #include "db.h"
-#include "externs.h"
+#include "fbstrings.h"
+#include "fbtime.h"
+#include "game.h"
 #include "interface.h"
+#include "log.h"
 #include "match.h"
 #include "params.h"
+#include "player.h"
+#include "predicates.h"
 #include "props.h"
 #include "tune.h"
-
-static dbref
-match_controlled(int descr, dbref player, const char *name)
-{
-    dbref match;
-    struct match_data md;
-
-    init_match(descr, player, name, NOTYPE, &md);
-    match_absolute(&md);
-    match_everything(&md);
-
-    match = noisy_match_result(&md);
-    if (match != NOTHING && !controls(player, match)) {
-	notify(player, "Permission denied. (You don't control what was matched)");
-	return NOTHING;
-    } else {
-	return match;
-    }
-}
 
 void
 do_name(int descr, dbref player, const char *name, char *newname)
@@ -97,119 +85,6 @@ do_name(int descr, dbref player, const char *name, char *newname)
 	    SetMLevel(thing, 0);
 	    notify(player, "Action priority Level reset to zero.");
 	}
-    }
-}
-
-void
-set_standard_property(int descr, dbref player, const char *objname,
-		      const char *propname, const char *proplabel, const char *propvalue)
-{
-    dbref object;
-
-    if ((object = match_controlled(descr, player, objname)) != NOTHING) {
-	SETMESG(object, propname, propvalue);
-	ts_modifyobject(object);
-	notifyf(player, "%s %s.", proplabel, propvalue && *propvalue ? "set" : "cleared");
-    }
-}
-
-void
-set_standard_lock(int descr, dbref player, const char *objname,
-		  const char *propname, const char *proplabel, const char *keyvalue)
-{
-    dbref object;
-    PData property;
-    struct boolexp *key;
-
-    if ((object = match_controlled(descr, player, objname)) != NOTHING) {
-	if (!*keyvalue) {
-	    remove_property(object, propname, 0);
-	    ts_modifyobject(object);
-	    notifyf(player, "%s cleared.", proplabel);
-	    return;
-	}
-
-	key = parse_boolexp(descr, player, keyvalue, 0);
-	if (key == TRUE_BOOLEXP) {
-	    notify(player, "I don't understand that key.");
-	    return;
-	}
-
-	property.flags = PROP_LOKTYP;
-	property.data.lok = key;
-	set_property(object, propname, &property, 0);
-	ts_modifyobject(object);
-	notifyf(player, "%s set.", proplabel);
-    }
-}
-
-
-/* sets a lock on an object to the lockstring passed to it.
-   If the lockstring is null, then it unlocks the object.
-   this returns a 1 or a 0 to represent success. */
-int
-setlockstr(int descr, dbref player, dbref thing, const char *keyname)
-{
-    struct boolexp *key;
-
-    if (*keyname != '\0') {
-	key = parse_boolexp(descr, player, keyname, 0);
-	if (key == TRUE_BOOLEXP) {
-	    return 0;
-	} else {
-	    /* everything ok, do it */
-	    ts_modifyobject(thing);
-	    SETLOCK(thing, key);
-	    return 1;
-	}
-    } else {
-	ts_modifyobject(thing);
-	CLEARLOCK(thing);
-	return 1;
-    }
-}
-
-int
-controls_link(dbref who, dbref what)
-{
-    switch (Typeof(what)) {
-    case TYPE_EXIT:
-	{
-	    int i = DBFETCH(what)->sp.exit.ndest;
-
-	    while (i > 0) {
-		if (controls(who, DBFETCH(what)->sp.exit.dest[--i]))
-		    return 1;
-	    }
-	    if (who == OWNER(LOCATION(what)))
-		return 1;
-	    return 0;
-	}
-
-    case TYPE_ROOM:
-	{
-	    if (controls(who, DBFETCH(what)->sp.room.dropto))
-		return 1;
-	    return 0;
-	}
-
-    case TYPE_PLAYER:
-	{
-	    if (controls(who, PLAYER_HOME(what)))
-		return 1;
-	    return 0;
-	}
-
-    case TYPE_THING:
-	{
-	    if (controls(who, THING_HOME(what)))
-		return 1;
-	    return 0;
-	}
-
-    case TYPE_PROGRAM:
-    default:
-	return 0;
     }
 }
 
@@ -506,20 +381,101 @@ do_chown(int descr, dbref player, const char *name, const char *newowner)
     DBDIRTY(thing);
 }
 
-
-/* Note: Gender code taken out.  All gender references are now to be handled
-   by property lists...
-   Setting of flags and property code done here.  Note that the PROP_DELIMITER
-   identifies when you're setting a property.
-   A @set <thing>= :clear
-   will clear all properties.
-   A @set <thing>= type:
-   will remove that property.
-   A @set <thing>= propname:string
-   will add that string property or replace it.
-   A @set <thing>= propname:^value
-   will add that integer property or replace it.
- */
+int
+restricted(dbref player, dbref thing, object_flag_type flag)
+{
+    switch (flag) {
+    case ABODE:
+	/* Trying to set a program AUTOSTART requires TrueWizard */
+	return (!TrueWizard(OWNER(player)) && (Typeof(thing) == TYPE_PROGRAM));
+    case GUEST:
+	/* Guest operations require a wizard */
+	return (!(Wizard(OWNER(player))));
+    case YIELD:
+	/* Mucking with the env-chain matching requires TrueWizard */
+	return (!(Wizard(OWNER(player))));
+    case OVERT:
+	/* Mucking with the env-chain matching requires TrueWizard */
+	return (!(Wizard(OWNER(player))));
+    case ZOMBIE:
+	/* Restricting a player from using zombies requires a wizard. */
+	if (Typeof(thing) == TYPE_PLAYER)
+	    return (!(Wizard(OWNER(player))));
+	/* If a player's set Zombie, he's restricted from using them...
+	 * unless he's a wizard, in which case he can do whatever. */
+	if ((Typeof(thing) == TYPE_THING) && (FLAGS(OWNER(player)) & ZOMBIE))
+	    return (!(Wizard(OWNER(player))));
+	return (0);
+    case VEHICLE:
+	/* Restricting a player from using vehicles requires a wizard. */
+	if (Typeof(thing) == TYPE_PLAYER)
+	    return (!(Wizard(OWNER(player))));
+	/* If only wizards can create vehicles... */
+	if (tp_wiz_vehicles) {
+	    /* then only a wizard can create a vehicle. :) */
+	    if (Typeof(thing) == TYPE_THING)
+		return (!(Wizard(OWNER(player))));
+	} else {
+	    /* But, if vehicles aren't restricted to wizards, then
+	     * players who have not been restricted can do so */
+	    if ((Typeof(thing) == TYPE_THING) && (FLAGS(player) & VEHICLE))
+		return (!(Wizard(OWNER(player))));
+	}
+	return (0);
+    case DARK:
+	/* Dark can be set on a Program or Room by anyone. */
+	if (!Wizard(OWNER(player))) {
+	    /* Setting a player dark requires a wizard. */
+	    if (Typeof(thing) == TYPE_PLAYER)
+		return (1);
+	    /* If exit darking is restricted, it requires a wizard. */
+	    if (!tp_exit_darking && Typeof(thing) == TYPE_EXIT)
+		return (1);
+	    /* If thing darking is restricted, it requires a wizard. */
+	    if (!tp_thing_darking && Typeof(thing) == TYPE_THING)
+		return (1);
+	}
+	return (0);
+    case QUELL:
+#ifdef GOD_PRIV
+	/* Only God (or God's stuff) can quell or unquell another wizard. */
+	return (God(OWNER(player)) || (TrueWizard(thing) && (thing != player) &&
+				       Typeof(thing) == TYPE_PLAYER));
+#else
+	/* You cannot quell or unquell another wizard. */
+	return (TrueWizard(thing) && (thing != player) && (Typeof(thing) == TYPE_PLAYER));
+#endif
+    case MUCKER:
+    case SMUCKER:
+    case (SMUCKER | MUCKER):
+    case BUILDER:
+	/* Would someone tell me why setting a program SMUCKER|MUCKER doesn't
+	 * go through here? -winged */
+	/* Setting a program Bound causes any function called therein to be
+	 * put in preempt mode, regardless of the mode it had before.
+	 * Since this is just a convenience for atomic-functionwriters,
+	 * why is it limited to only a Wizard? -winged */
+	/* Setting a player Builder is limited to a Wizard. */
+	return (!Wizard(OWNER(player)));
+    case WIZARD:
+	/* To do anything with a Wizard flag requires a Wizard. */
+	if (Wizard(OWNER(player))) {
+#ifdef GOD_PRIV
+	    /* ...but only God can make a player a Wizard, or re-mort
+	     * one. */
+	    return ((Typeof(thing) == TYPE_PLAYER) && !God(player));
+#else				/* !GOD_PRIV */
+	    /* We don't want someone setting themselves !W, to prevent
+	     * a case where there are no wizards at all */
+	    return ((Typeof(thing) == TYPE_PLAYER && thing == OWNER(player)));
+#endif				/* GOD_PRIV */
+	} else
+	    return 1;
+    default:
+	/* No other flags are restricted. */
+	return 0;
+    }
+}
 
 void
 do_set(int descr, dbref player, const char *name, const char *flag)
@@ -882,64 +838,4 @@ do_propset(int descr, dbref player, const char *name, const char *prop)
 	return;
     }
     notify(player, "Property set.");
-}
-
-void
-set_flags_from_tunestr(dbref obj, const char *tunestr)
-{
-    const char *p = tunestr;
-    object_flag_type f = 0;
-
-    for (;;) {
-	char pcc = toupper(*p);
-	if (pcc == '\0' || pcc == '\n' || pcc == '\r') {
-	    break;
-	} else if (pcc == '0') {
-	    SetMLevel(obj, 0);
-	} else if (pcc == '1') {
-	    SetMLevel(obj, 1);
-	} else if (pcc == '2') {
-	    SetMLevel(obj, 2);
-	} else if (pcc == '3') {
-	    SetMLevel(obj, 3);
-	} else if (pcc == 'A') {
-	    f = ABODE;
-	} else if (pcc == 'B') {
-	    f = BUILDER;
-	} else if (pcc == 'C') {
-	    f = CHOWN_OK;
-	} else if (pcc == 'D') {
-	    f = DARK;
-	} else if (pcc == 'H') {
-	    f = HAVEN;
-	} else if (pcc == 'J') {
-	    f = JUMP_OK;
-	} else if (pcc == 'K') {
-	    f = KILL_OK;
-	} else if (pcc == 'L') {
-	    f = LINK_OK;
-	} else if (pcc == 'M') {
-	    SetMLevel(obj, 2);
-	} else if (pcc == 'Q') {
-	    f = QUELL;
-	} else if (pcc == 'S') {
-	    f = STICKY;
-	} else if (pcc == 'V') {
-	    f = VEHICLE;
-	} else if (pcc == 'W') {
-	    /* f = WIZARD;     This is very bad to auto-set. */
-	} else if (pcc == 'X') {
-	    f = XFORCIBLE;
-	} else if (pcc == 'Y') {
-	    f = YIELD;
-	} else if (pcc == 'O') {
-	    f = OVERT;
-	} else if (pcc == 'Z') {
-	    f = ZOMBIE;
-	}
-	FLAGS(obj) |= f;
-	p++;
-    }
-    ts_modifyobject(obj);
-    DBDIRTY(obj);
 }

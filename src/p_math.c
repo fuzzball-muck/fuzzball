@@ -1,9 +1,9 @@
 #include "config.h"
 
 #include "db.h"
-#include "externs.h"
 #include "interp.h"
 #include "params.h"
+#include "random.h"
 
 #include <float.h>
 

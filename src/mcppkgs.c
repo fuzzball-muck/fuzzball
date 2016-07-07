@@ -1,12 +1,14 @@
 #include "config.h"
 
 #ifdef MCP_SUPPORT
-#include "params.h"
-
+#include "compile.h"
 #include "db.h"
-#include "externs.h"
+#include "edit.h"
+#include "fbstrings.h"
 #include "interface.h"
+#include "log.h"
 #include "mcp.h"
+#include "params.h"
 #include "props.h"
 #include "tune.h"
 

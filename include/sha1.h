@@ -18,10 +18,10 @@ typedef struct sha1nfo {
     uint8_t innerHash[HASH_LENGTH];
 } sha1nfo;
 
-extern void sha1_init(sha1nfo * s);
-extern void sha1_writebyte(sha1nfo * s, uint8_t data);
-extern void sha1_write(sha1nfo * s, const char *data, size_t len);
-extern uint8_t *sha1_result(sha1nfo * s);
-extern void hash2hex(uint8_t * hash, char *buffer, size_t buflen);
+void sha1_init(sha1nfo * s);
+void sha1_writebyte(sha1nfo * s, uint8_t data);
+void sha1_write(sha1nfo * s, const char *data, size_t len);
+uint8_t *sha1_result(sha1nfo * s);
+void hash2hex(uint8_t * hash, char *buffer, size_t buflen);
 
 #endif

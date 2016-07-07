@@ -108,6 +108,7 @@
 #include "config.h"
 
 #ifdef MALLOC_PROFILING
+#include "fbtime.h"
 #include "interface.h"
 
 /* }}} */

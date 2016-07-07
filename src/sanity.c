@@ -1,12 +1,17 @@
 #include "config.h"
 
+#include "boolexp.h"
+#include "commands.h"
 #include "db.h"
 #ifdef DISKBASE
 #include "diskprop.h"
 #endif
-#include "externs.h"
+#include "fbstrings.h"
+#include "game.h"
 #include "interface.h"
+#include "log.h"
 #include "params.h"
+#include "player.h"
 #include "props.h"
 #include "tune.h"
 
@@ -43,10 +48,8 @@ SanPrint(dbref player, const char *format, ...)
 }
 
 
-
-
 void
-sane_dump_object(dbref player, const char *arg)
+do_examine_sanity(dbref player, const char *arg)
 {
     dbref d;
     int result;
@@ -426,7 +429,7 @@ check_object(dbref player, dbref obj)
 
 
 void
-sanity(dbref player)
+do_sanity(dbref player)
 {
     const int increp = 10000;
     int j;
@@ -899,7 +902,7 @@ clean_global_environment(void)
 }
 
 void
-sanfix(dbref player)
+do_sanfix(dbref player)
 {
     sanity_violated = 0;
 
@@ -951,7 +954,7 @@ static char cbuf[1000];
 static char buf2[1000];
 
 void
-sanechange(dbref player, const char *command)
+do_sanchange(dbref player, const char *command)
 {
     dbref d, v;
     char field[50];
@@ -1304,19 +1307,19 @@ hack_it_up(void)
 	switch (tolower(cbuf[0])) {
 	case 's':
 	    printf("Running Sanity...\n");
-	    sanity(NOTHING);
+	    do_sanity(NOTHING);
 	    break;
 
 	case 'f':
 	    printf("Running Sanfix...\n");
-	    sanfix(NOTHING);
+	    do_sanfix(NOTHING);
 	    break;
 
 	case 'p':
 	    for (ptr = cbuf; *ptr && !isspace(*ptr); ptr++) ;
 	    if (*ptr)
 		ptr++;
-	    sane_dump_object(NOTHING, ptr);
+	    do_examine_sanity(NOTHING, ptr);
 	    break;
 
 	case 'w':
@@ -1335,7 +1338,7 @@ hack_it_up(void)
 	    for (ptr = cbuf; *ptr && !isspace(*ptr); ptr++) ;
 	    if (*ptr)
 		ptr++;
-	    sanechange(NOTHING, ptr);
+	    do_examine_sanity(NOTHING, ptr);
 	    break;
 
 	case 'x':

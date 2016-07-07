@@ -1,11 +1,19 @@
 #include "config.h"
 
+#include "boolexp.h"
+#include "compile.h"
 #include "db.h"
-#include "externs.h"
+#include "edit.h"
+#include "fbstrings.h"
+#include "fbtime.h"
+#include "game.h"
 #include "inst.h"
 #include "interface.h"
 #include "interp.h"
+#include "log.h"
 #include "mufevent.h"
+#include "player.h"
+#include "timequeue.h"
 #include "tune.h"
 
 static struct inst *oper1, *oper2, *oper3, *oper4;

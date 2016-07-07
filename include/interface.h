@@ -18,6 +18,28 @@
 # endif
 #endif
 
+/*
+ * Ok, directory stuff IS a bit ugly.
+ */
+#if defined(HAVE_DIRENT_H) || defined(_POSIX_VERSION)
+# include <dirent.h>
+#else                           /* not (HAVE_DIRENT_H or _POSIX_VERSION) */
+# define dirent direct
+# ifdef HAVE_SYS_NDIR_H
+#  include <sys/ndir.h>
+# endif                         /* HAVE_SYS_NDIR_H */
+# ifdef HAVE_SYS_DIR_H
+#  include <sys/dir.h>
+# endif                         /* HAVE_SYS_DIR_H */
+# ifdef HAVE_NDIR_H
+#  include <ndir.h>
+# endif                         /* HAVE_NDIR_H */
+#endif                          /* not (HAVE_DIRENT_H or _POSIX_VERSION) */
+
+#if defined(HAVE_DIRENT_H) || defined(_POSIX_VERSION) || defined(HAVE_SYS_NDIR_H) || defined(HAVE_SYS_DIR_H) || defined(HAVE_NDIR_H)
+# define DIR_AVALIBLE
+#endif
+
 typedef enum {
     TELNET_STATE_NORMAL,
     TELNET_STATE_IAC,
@@ -96,100 +118,109 @@ struct descriptor_data {
 };
 
 /* these symbols must be defined by the interface */
-extern struct descriptor_data *descrdata_by_descr(int i);
-extern int notify_nolisten(dbref player, const char *msg, int ispriv);
-extern int notify_filtered(dbref from, dbref player, const char *msg, int ispriv);
-extern void wall_and_flush(const char *msg);
-extern void wall_wizards(const char *msg);
+struct descriptor_data *descrdata_by_descr(int i);
+int notify_nolisten(dbref player, const char *msg, int ispriv);
+int notify_filtered(dbref from, dbref player, const char *msg, int ispriv);
+void wall_and_flush(const char *msg);
+void wall_wizards(const char *msg);
 extern int shutdown_flag;	/* if non-zero, interface should shut down */
 extern int restart_flag;	/* if non-zero, should restart after shut down */
-extern void emergency_shutdown(void);
-extern int boot_off(dbref player);
-extern void boot_player_off(dbref player);
-extern int online(dbref player);
-extern int index_descr(int c);
-extern int *get_player_descrs(dbref player, int *count);
-extern int least_idle_player_descr(dbref who);
-extern int most_idle_player_descr(dbref who);
-extern int pcount(void);
-extern int pdescrcount(void);
-extern int pidle(int c);
-extern int pdescridle(int c);
-extern int pdbref(int c);
-extern int pdescrdbref(int c);
-extern int pontime(int c);
-extern int pdescrontime(int c);
-extern char *phost(int c);
-extern char *pdescrhost(int c);
-extern char *puser(int c);
-extern char *pdescruser(int c);
-extern int pfirstdescr(void);
-extern int plastdescr(void);
-extern void pboot(int c);
-extern int pdescrboot(int c);
-extern void pnotify(int c, char *outstr);
-extern int pdescrnotify(int c, char *outstr);
-extern int dbref_first_descr(dbref c);
-extern int pdescr(int c);
-extern int pdescrcon(int c);
+void emergency_shutdown(void);
+int boot_off(dbref player);
+void boot_player_off(dbref player);
+int online(dbref player);
+int index_descr(int c);
+int *get_player_descrs(dbref player, int *count);
+int least_idle_player_descr(dbref who);
+int most_idle_player_descr(dbref who);
+int pcount(void);
+int pdescrcount(void);
+int pidle(int c);
+int pdescridle(int c);
+int pdbref(int c);
+int pdescrdbref(int c);
+int pontime(int c);
+int pdescrontime(int c);
+char *phost(int c);
+char *pdescrhost(int c);
+char *puser(int c);
+char *pdescruser(int c);
+int pfirstdescr(void);
+int plastdescr(void);
+void pboot(int c);
+int pdescrboot(int c);
+void pnotify(int c, char *outstr);
+int pdescrnotify(int c, char *outstr);
+int dbref_first_descr(dbref c);
+int pdescr(int c);
+int pdescrcon(int c);
 #ifdef MCP_SUPPORT
-extern McpFrame *descr_mcpframe(int c);
+McpFrame *descr_mcpframe(int c);
 #endif
-extern int pnextdescr(int c);
-extern int pdescrflush(int c);
-extern int pdescrbufsize(int c);
-extern dbref partial_pmatch(const char *name);
-extern int queue_string(struct descriptor_data *, const char *);
-extern int process_output(struct descriptor_data *d);
-extern int ignore_is_ignoring(dbref Player, dbref Who);
-extern int ignore_prime_cache(dbref Player);
-extern void ignore_flush_cache(dbref Player);
-extern void ignore_flush_all_cache(void);
-extern void ignore_add_player(dbref Player, dbref Who);
-extern void ignore_remove_player(dbref Player, dbref Who);
-extern void ignore_remove_from_all_players(dbref Player);
+int pnextdescr(int c);
+int pdescrflush(int c);
+int pdescrbufsize(int c);
+dbref partial_pmatch(const char *name);
+int queue_string(struct descriptor_data *, const char *);
+int process_output(struct descriptor_data *d);
+int ignore_is_ignoring(dbref Player, dbref Who);
+int ignore_prime_cache(dbref Player);
+void ignore_flush_cache(dbref Player);
+void ignore_flush_all_cache(void);
+void ignore_add_player(dbref Player, dbref Who);
+void ignore_remove_player(dbref Player, dbref Who);
+void ignore_remove_from_all_players(dbref Player);
 
 #ifdef USE_SSL
-extern int reconfigure_ssl(void);
+int reconfigure_ssl(void);
 #endif
 
 /* the following symbols are provided by game.c */
 
-extern void process_command(int descr, dbref player, char *command);
+void process_command(int descr, dbref player, char *command);
 
-extern dbref create_player(const char *name, const char *password);
-extern dbref connect_player(const char *name, const char *password);
-extern void do_look_around(int descr, dbref player);
+dbref create_player(const char *name, const char *password);
+dbref connect_player(const char *name, const char *password);
+void do_look_around(int descr, dbref player);
 
-extern int init_game(const char *infile, const char *outfile);
-extern void dump_database(void);
-extern void panic(const char *);
+int init_game(const char *infile, const char *outfile);
+void dump_database(void);
+void panic(const char *);
 
-extern void do_armageddon(dbref player, const char *msg);
-extern void dump_status(void);
-extern void flush_user_output(dbref player);
+void dump_status(void);
+void flush_user_output(dbref player);
 extern short global_dumpdone;
 #ifndef DISKBASE
 extern pid_t global_dumper_pid;
 #endif
 extern pid_t global_resolver_pid;
-extern long max_open_files(void);
-extern int notify(dbref player, const char *msg);
-extern int notify_from(dbref from, dbref player, const char *msg);
-extern int notify_from_echo(dbref from, dbref player, const char *msg, int isprivate);
-extern int notify_nolisten(dbref player, const char *msg, int isprivate);
-extern void notifyf(dbref player, char *format, ...);
-extern void notifyf_nolisten(dbref player, char *format, ...);
-extern int pdescrsecure(int c);
-extern int pset_user(int c, dbref who);
+long max_open_files(void);
+int notify(dbref player, const char *msg);
+void notify_except(dbref first, dbref exception, const char *msg, dbref who);
+int notify_from(dbref from, dbref player, const char *msg);
+int notify_from_echo(dbref from, dbref player, const char *msg, int isprivate);
+void notify_listeners(dbref who, dbref xprog, dbref obj, dbref room, const char *msg,
+                             int isprivate);
+int notify_nolisten(dbref player, const char *msg, int isprivate);
+void notifyf(dbref player, char *format, ...);
+void notifyf_nolisten(dbref player, char *format, ...);
+int pdescrsecure(int c);
+int pset_user(int c, dbref who);
 extern long sel_prof_idle_sec;
 extern unsigned long sel_prof_idle_use;
 extern long sel_prof_idle_usec;
 extern time_t sel_prof_start_time;
 #ifdef SPAWN_HOST_RESOLVER
-extern void spawn_resolver(void);
+void spawn_resolver(void);
 #endif
-extern char *time_format_2(time_t dt);
+char *time_format_2(time_t dt);
 extern short wizonly_mode;
+
+int show_subfile(dbref player, const char *dir, const char *topic, const char *seg, int partial);
+void spit_file(dbref player, const char *filename);
+void spit_file_segment(dbref player, const char *filename, const char *seg);
+
+void san_main(void);
+extern int sanity_violated;
 
 #endif				/* _INTERFACE_H */

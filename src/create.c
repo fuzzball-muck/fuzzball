@@ -1,86 +1,21 @@
 #include "config.h"
 
+#include "boolexp.h"
 #include "db.h"
 #ifdef DISKBASE
 #include "diskprop.h"
 #endif
-#include "externs.h"
+#include "edit.h"
+#include "fbstrings.h"
+#include "log.h"
+#include "move.h"
 #include "interface.h"
 #include "match.h"
 #include "params.h"
+#include "predicates.h"
+#include "player.h"
 #include "props.h"
 #include "tune.h"
-
-struct line *read_program(dbref i);
-
-/* parse_linkable_dest()
- *
- * A utility for open and link which checks whether a given destination
- * string is valid.  It returns a parsed dbref on success, and NOTHING
- * on failure.
- */
-
-static dbref
-parse_linkable_dest(int descr, dbref player, dbref exit, const char *dest_name)
-{
-    dbref dobj;			/* destination room/player/thing/link */
-    struct match_data md;
-
-    init_match(descr, player, dest_name, NOTYPE, &md);
-    match_absolute(&md);
-    match_everything(&md);
-    match_home(&md);
-    match_nil(&md);
-
-    if ((dobj = match_result(&md)) == NOTHING || dobj == AMBIGUOUS) {
-	notifyf(player, "I couldn't find '%s'.", dest_name);
-	return NOTHING;
-
-    }
-
-    if (!tp_teleport_to_player && Typeof(dobj) == TYPE_PLAYER) {
-	notifyf(player, "You can't link to players.  Destination %s ignored.",
-		unparse_object(player, dobj));
-	return NOTHING;
-    }
-
-    if (!can_link(player, exit)) {
-	notify(player, "You can't link that.");
-	return NOTHING;
-    }
-    if (!can_link_to(player, Typeof(exit), dobj)) {
-	notifyf(player, "You can't link to %s.", unparse_object(player, dobj));
-	return NOTHING;
-    } else {
-	return dobj;
-    }
-}
-
-/* exit_loop_check()
- *
- * Recursive check for loops in destinations of exits.  Checks to see
- * if any circular references are present in the destination chain.
- * Returns 1 if circular reference found, 0 if not.
- */
-int
-exit_loop_check(dbref source, dbref dest)
-{
-    if (source == dest)
-	return 1;		/* That's an easy one! */
-    if (dest == NIL || Typeof(dest) != TYPE_EXIT)
-	return 0;
-    for (int i = 0; i < DBFETCH(dest)->sp.exit.ndest; i++) {
-	if ((DBFETCH(dest)->sp.exit.dest)[i] == source) {
-	    return 1;		/* Found a loop! */
-	}
-	if (Typeof((DBFETCH(dest)->sp.exit.dest)[i]) == TYPE_EXIT) {
-	    if (exit_loop_check(source, (DBFETCH(dest)->sp.exit.dest)[i])) {
-		return 1;	/* Found one recursively */
-	    }
-	}
-    }
-    return 0;			/* No loops found */
-}
 
 void
 register_object(dbref location, char *propdir, char *name, dbref object)
@@ -176,138 +111,6 @@ do_open(int descr, dbref player, const char *direction, const char *linkto)
         register_object(player, REGISTRATION_PROPDIR, rname, exit);
         notifyf(player, "Registered as $%s", rname);
     }
-}
-
-int
-_link_exit(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_list, int dryrun)
-{
-    char *p, *q;
-    int prdest;
-    dbref dest;
-    int ndest, error;
-    char qbuf[BUFFER_LEN];
-
-    prdest = 0;
-    ndest = 0;
-    error = 0;
-
-    while (*dest_name) {
-	while (isspace(*dest_name))
-	    dest_name++;	/* skip white space */
-	p = dest_name;
-	while (*dest_name && (*dest_name != EXIT_DELIMITER))
-	    dest_name++;
-	q = (char *) strncpy(qbuf, p, BUFFER_LEN);	/* copy word */
-	q[(dest_name - p)] = '\0';	/* terminate it */
-	if (*dest_name)
-	    for (dest_name++; *dest_name && isspace(*dest_name); dest_name++) ;
-
-	if ((dest = parse_linkable_dest(descr, player, exit, q)) == NOTHING)
-	    continue;
-
-	if (dest == NIL) {
-	    if (!dryrun) {
-		notify(player, "Linked to NIL.");
-	    }
-	    dest_list[ndest++] = dest;
-	    continue;
-	}
-
-	switch (Typeof(dest)) {
-	case TYPE_PLAYER:
-	case TYPE_ROOM:
-	case TYPE_PROGRAM:
-	    if (prdest) {
-		notifyf(player,
-			"Only one player, room, or program destination allowed. Destination %s ignored.",
-			unparse_object(player, dest));
-
-		if (dryrun)
-		    error = 1;
-
-		continue;
-	    }
-	    dest_list[ndest++] = dest;
-	    prdest = 1;
-	    break;
-	case TYPE_THING:
-	    dest_list[ndest++] = dest;
-	    break;
-	case TYPE_EXIT:
-	    if (exit_loop_check(exit, dest)) {
-		notifyf(player, "Destination %s would create a loop, ignored.",
-			unparse_object(player, dest));
-
-		if (dryrun)
-		    error = 1;
-
-		continue;
-	    }
-	    dest_list[ndest++] = dest;
-	    break;
-	default:
-	    notify(player, "Internal error: weird object type.");
-	    log_status("PANIC: weird object: Typeof(%d) = %d", dest, Typeof(dest));
-
-	    if (dryrun)
-		error = 1;
-
-	    break;
-	}
-	if (!dryrun) {
-	    if (dest == HOME) {
-		notify(player, "Linked to HOME.");
-	    } else {
-		notifyf(player, "Linked to %s.", unparse_object(player, dest));
-	    }
-	}
-
-	if (ndest >= MAX_LINKS) {
-	    notify(player, "Too many destinations, rest ignored.");
-
-	    if (dryrun)
-		error = 1;
-
-	    break;
-	}
-    }
-
-    if (dryrun && error)
-	return 0;
-
-    return ndest;
-}
-
-/*
- * link_exit()
- *
- * This routine connects an exit to a bunch of destinations.
- *
- * 'player' contains the player's name.
- * 'exit' is the the exit whose destinations are to be linked.
- * 'dest_name' is a character string containing the list of exits.
- *
- * 'dest_list' is an array of dbref's where the valid destinations are
- * stored.
- *
- */
-
-int
-link_exit(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_list)
-{
-    return _link_exit(descr, player, exit, dest_name, dest_list, 0);
-}
-
-/*
- * link_exit_dry()
- *
- * like link_exit(), but only checks whether the link would be ok or not.
- * error messages are still output.
- */
-int
-link_exit_dry(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_list)
-{
-    return _link_exit(descr, player, exit, dest_name, dest_list, 1);
 }
 
 /* do_link
@@ -640,7 +443,7 @@ do_prog(int descr, dbref player, const char *name)
 	PLAYER_SET_CURR_PROG(player, i);
 	notifyf(player, "Entering editor for %s.", unparse_object(player, i));
 	/* list current line */
-	do_list(player, i, NULL, 0);
+	list_program(player, i, NULL, 0);
 	DBDIRTY(i);
     }
     FLAGS(player) |= INTERACTIVE;
@@ -681,7 +484,7 @@ do_edit(int descr, dbref player, const char *name)
     PLAYER_SET_CURR_PROG(player, i);
     notifyf(player, "Entering editor for %s.", unparse_object(player, i));
     /* list current line */
-    do_list(player, i, NULL, 0);
+    list_program(player, i, NULL, 0);
     FLAGS(player) |= INTERACTIVE;
     DBDIRTY(i);
     DBDIRTY(player);
@@ -1006,55 +809,6 @@ parse_source(int descr, dbref player, const char *source_name)
 	return NOTHING;
     }
     return source;
-}
-
-/*
- * set_source()
- *
- * This routine sets the source of an action to the specified source.
- * It is called by do_action and do_attach.
- *
- */
-void
-set_source(dbref player, dbref action, dbref source)
-{
-    switch (Typeof(source)) {
-    case TYPE_ROOM:
-    case TYPE_THING:
-    case TYPE_PLAYER:
-	PUSH(action, EXITS(source));
-	break;
-    default:
-	notify(player, "Internal error: weird object type.");
-	log_status("PANIC: tried to source %d to %d: type: %d",
-		   action, source, Typeof(source));
-	return;
-    }
-    DBDIRTY(source);
-    DBSTORE(action, location, source);
-    return;
-}
-
-int
-unset_source(dbref player, dbref action)
-{
-    dbref oldsrc;
-
-    if ((oldsrc = LOCATION(action)) == NOTHING) {
-	DBSTORE(LOCATION(player), exits, remove_first(EXITS(LOCATION(player)), action));
-    } else {
-	switch (Typeof(oldsrc)) {
-	case TYPE_PLAYER:
-	case TYPE_ROOM:
-	case TYPE_THING:
-	    DBSTORE(oldsrc, exits, remove_first(EXITS(oldsrc), action));
-	    break;
-	default:
-	    log_status("PANIC: source of action #%d was type: %d.", action, Typeof(oldsrc));
-	    return 0;
-	}
-    }
-    return 1;
 }
 
 /*

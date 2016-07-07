@@ -1,12 +1,13 @@
 #include "config.h"
 
-#include "params.h"
-
 #include "db.h"
-#include "externs.h"
+#include "fbstrings.h"
+#include "fbtime.h"
 #include "interface.h"
 #include "mpi.h"
 #include "msgparse.h"
+#include "params.h"
+
 #include "props.h"
 #include "tune.h"
 
@@ -1880,6 +1881,15 @@ mfn_tell(MFUNARGS)
 	notify_from_echo(player, obj, buf, 1);
     }
     return argv[0];
+}
+
+int
+isancestor(dbref parent, dbref child)
+{
+    while (child != NOTHING && child != parent) {
+        child = getparent(child);
+    }
+    return child == parent;
 }
 
 const char *

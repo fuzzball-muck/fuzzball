@@ -1,10 +1,15 @@
 #include "config.h"
 
 #include "db.h"
-#include "externs.h"
+#include "fbstrings.h"
+#include "fbtime.h"
+#include "hashtab.h"
 #include "interface.h"
+#include "log.h"
 #include "params.h"
+#include "player.h"
 #include "props.h"
+#include "random.h"
 #include "tune.h"
 
 static hash_tab player_list[PLAYER_HASH_SIZE];
@@ -227,16 +232,68 @@ delete_player(dbref who)
     return;
 }
 
-char *
-whowhere(dbref who)
+/* Removes 'cost' value from 'who', and returns 1 if the act has been
+ * paid for, else returns 0. */
+int
+payfor(dbref who, int cost)
 {
-    char buf[BUFFER_LEN];
+    who = OWNER(who);
+    /* Wizards don't have to pay for anything. */
+    if (Wizard(who)) {
+        return 1;
+    } else if (GETVALUE(who) >= cost) {
+        SETVALUE(who, GETVALUE(who) - cost);
+        DBDIRTY(who);
+        return 1;
+    } else {
+        return 0;
+    }
+}
 
-    snprintf(buf, sizeof(buf), "%s%s%s%s(#%d) in %s(#%d)",
-	     Wizard(OWNER(who)) ? "WIZ: " : "",
-	     (Typeof(who) != TYPE_PLAYER) ? NAME(who) : "",
-	     (Typeof(who) != TYPE_PLAYER) ? " owned by " : "",
-	     NAME(OWNER(who)), who, NAME(LOCATION(who)), LOCATION(who));
+int
+ok_player_name(const char *name)
+{
+    const char *scan;
 
-    return strdup(buf);
+    if (!ok_name(name) || strlen(name) > PLAYER_NAME_LIMIT)
+        return 0;
+
+
+    for (scan = name; *scan; scan++) {
+        if (!(isprint(*scan)
+              && !isspace(*scan))
+            && *scan != '(' && *scan != ')' && *scan != '\'' && *scan != ',') {
+            /* was isgraph(*scan) */
+            return 0;
+        }
+    }
+
+    /* Check the name isn't reserved */
+    if (*tp_reserved_player_names
+        && equalstr((char *) tp_reserved_player_names, (char *) name))
+        return 0;
+
+    /* lookup name to avoid conflicts */
+    return (lookup_player(name) == NOTHING);
+}
+
+int
+ok_password(const char *password)
+{
+    const char *scan;
+
+    /* Password cannot be blank */
+    if (*password == '\0')
+        return 0;
+
+    /* Password also cannot contain any nonprintable or space-type
+     * characters */
+    for (scan = password; *scan; scan++) {
+        if (!(isprint(*scan) && !isspace(*scan))) {
+            return 0;
+        }
+    }
+
+    /* Anything else is fair game */
+    return 1;
 }

@@ -116,78 +116,88 @@ typedef struct plist *PropPtr;
 
  */
 
-extern PropPtr alloc_propnode(const char *name);
-extern void free_propnode(PropPtr node);
-extern PropPtr first_node(PropPtr p);
-extern PropPtr next_node(PropPtr p, char *c);
-extern int Prop_Check(const char *name, const char what);
-extern PropPtr locate_prop(PropPtr l, char *path);
-extern PropPtr new_prop(PropPtr * l, char *path);
-extern PropPtr delete_prop(PropPtr * list, char *name);
+PropPtr alloc_propnode(const char *name);
+void free_propnode(PropPtr node);
+PropPtr first_node(PropPtr p);
+PropPtr next_node(PropPtr p, char *c);
+int Prop_Check(const char *name, const char what);
+PropPtr locate_prop(PropPtr l, char *path);
+PropPtr new_prop(PropPtr * l, char *path);
+PropPtr delete_prop(PropPtr * list, char *name);
 
 
-extern void set_property(dbref player, const char *pname, PData * dat, int sync);
-extern void add_property(dbref player, const char *type, const char *strval, int value);
+void set_property(dbref player, const char *pname, PData * dat, int sync);
+void add_property(dbref player, const char *type, const char *strval, int value);
 
-extern void remove_property_list(dbref player, int all);
-extern void remove_property(dbref player, const char *type, int sync);
+void remove_property_list(dbref player, int all);
+void remove_property(dbref player, const char *type, int sync);
 
-extern int has_property(int descr, dbref player, dbref what, const char *type,
+int has_property(int descr, dbref player, dbref what, const char *type,
 			const char *strval, int value);
-extern int has_property_strict(int descr, dbref player, dbref what, const char *type,
+int has_property_strict(int descr, dbref player, dbref what, const char *type,
 			       const char *strval, int value);
 
-extern const char *get_property_class(dbref player, const char *type);
-extern double get_property_fvalue(dbref player, const char *type);
-extern int get_property_value(dbref player, const char *type);
-extern struct boolexp *get_property_lock(dbref player, const char *type);
-extern dbref get_property_dbref(dbref player, const char *pname);
-extern const char *envpropstr(dbref * where, const char *propname);
-extern PropPtr get_property(dbref player, const char *type);
-extern PropPtr envprop(dbref * where, const char *propname, int typ);
-extern int get_property_flags(dbref player, const char *type);
-extern void set_property_flags(dbref player, const char *type, int flags);
-extern void clear_property_flags(dbref player, const char *type, int flags);
+const char *get_property_class(dbref player, const char *type);
+double get_property_fvalue(dbref player, const char *type);
+int get_property_value(dbref player, const char *type);
+struct boolexp *get_property_lock(dbref player, const char *type);
+dbref get_property_dbref(dbref player, const char *pname);
+const char *envpropstr(dbref * where, const char *propname);
+PropPtr get_property(dbref player, const char *type);
+PropPtr envprop(dbref * where, const char *propname, int typ);
+int get_property_flags(dbref player, const char *type);
+void set_property_flags(dbref player, const char *type, int flags);
+void clear_property_flags(dbref player, const char *type, int flags);
 
-extern struct plist *copy_prop(dbref old);
+struct plist *copy_prop(dbref old);
 
-extern PropPtr first_prop(dbref player, const char *dir, PropPtr * list, char *name,
+PropPtr first_prop(dbref player, const char *dir, PropPtr * list, char *name,
 			  int maxlen);
-extern PropPtr next_prop(PropPtr list, PropPtr prop, char *name, int maxlen);
-extern char *next_prop_name(dbref player, char *outbuf, int outbuflen, char *name);
+PropPtr next_prop(PropPtr list, PropPtr prop, char *name, int maxlen);
+char *next_prop_name(dbref player, char *outbuf, int outbuflen, char *name);
 
-extern int is_propdir(dbref player, const char *dir);
+int is_propdir(dbref player, const char *dir);
 
-extern void delete_proplist(PropPtr p);
-extern void set_property_nofetch(dbref player, const char *pname, PData * dat, int sync);
-extern void add_prop_nofetch(dbref player, const char *type, const char *strval, int value);
-extern void remove_property_nofetch(dbref player, const char *type, int sync);
-extern PropPtr first_prop_nofetch(dbref player, const char *dir, PropPtr * list, char *name,
+void delete_proplist(PropPtr p);
+void set_property_nofetch(dbref player, const char *pname, PData * dat, int sync);
+void add_prop_nofetch(dbref player, const char *type, const char *strval, int value);
+void remove_property_nofetch(dbref player, const char *type, int sync);
+PropPtr first_prop_nofetch(dbref player, const char *dir, PropPtr * list, char *name,
 				  int maxlen);
 
-extern PropPtr propdir_new_elem(PropPtr * root, char *path);
-extern PropPtr propdir_delete_elem(PropPtr root, char *path);
-extern PropPtr propdir_get_elem(PropPtr root, char *path);
-extern PropPtr propdir_first_elem(PropPtr root, char *path);
-extern PropPtr propdir_next_elem(PropPtr root, char *path);
-extern const char *propdir_name(const char *name);
-extern const char *propdir_unloaded(PropPtr root, const char *path);
+PropPtr propdir_new_elem(PropPtr * root, char *path);
+PropPtr propdir_delete_elem(PropPtr root, char *path);
+PropPtr propdir_get_elem(PropPtr root, char *path);
+PropPtr propdir_first_elem(PropPtr root, char *path);
+PropPtr propdir_next_elem(PropPtr root, char *path);
+const char *propdir_name(const char *name);
+const char *propdir_unloaded(PropPtr root, const char *path);
 
-extern void db_putprop(FILE * f, const char *dir, PropPtr p);
-extern int db_get_single_prop(FILE * f, dbref obj, long pos, PropPtr pnode, const char *pdir);
-extern void db_getprops(FILE * f, dbref obj, const char *pdir);
-extern void db_dump_props(FILE * f, dbref obj);
+void db_putprop(FILE * f, const char *dir, PropPtr p);
+int db_get_single_prop(FILE * f, dbref obj, long pos, PropPtr pnode, const char *pdir);
+void db_getprops(FILE * f, dbref obj, const char *pdir);
+void db_dump_props(FILE * f, dbref obj);
 
-extern void reflist_add(dbref obj, const char *propname, dbref toadd);
-extern void reflist_del(dbref obj, const char *propname, dbref todel);
-extern int reflist_find(dbref obj, const char *propname, dbref tofind);
+void reflist_add(dbref obj, const char *propname, dbref toadd);
+void reflist_del(dbref obj, const char *propname, dbref todel);
+int reflist_find(dbref obj, const char *propname, dbref tofind);
 
-extern char *displayprop(dbref player, dbref obj, const char *name, char *buf, size_t bufsiz);
-extern long size_properties(dbref player, int load);
-extern void untouchprops_incremental(int limit);
+char *displayprop(dbref player, dbref obj, const char *name, char *buf, size_t bufsiz);
+long size_properties(dbref player, int load);
+void untouchprops_incremental(int limit);
 
-extern void clear_propnode(PropPtr p);
-extern void copy_proplist(dbref obj, PropPtr * newer, PropPtr old);
-extern long size_proplist(PropPtr avl);
+void clear_propnode(PropPtr p);
+void copy_proplist(dbref obj, PropPtr * newer, PropPtr old);
+long size_proplist(PropPtr avl);
+
+void exec_or_notify(int descr, dbref player, dbref thing, const char *message,
+				const char *whatcalled, int mpiflags);
+void exec_or_notify_prop(int descr, dbref player, dbref thing, const char *propname,
+                                const char *whatcalled);         
+void parse_omessage(int descr, dbref player, dbref dest, dbref exit, const char *msg,
+                           const char *prefix, const char *whatcalled, int mpiflags);
+void parse_oprop(int descr, dbref player, dbref dest, dbref exit, const char *propname,
+                        const char *prefix, const char *whatcalled);
+
 
 #endif				/* _PROPS_H */

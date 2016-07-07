@@ -2,7 +2,7 @@
 
 #include "array.h"
 #include "db.h"
-#include "externs.h"
+#include "fbstrings.h"
 #include "inst.h"
 #include "interface.h"
 #include "interp.h"

@@ -1,15 +1,24 @@
 #include "config.h"
 
+#include "boolexp.h"
+#include "compile.h"
 #include "db.h"
-#include "externs.h"
+#include "debugger.h"
+#include "edit.h"
+#include "fbstrings.h"
+#include "fbtime.h"
 #include "inst.h"
 #include "interface.h"
 #include "interp.h"
+#include "log.h"
 #ifdef MCP_SUPPORT
 #include "mcpgui.h"
 #endif
 #include "mufevent.h"
+#include "predicates.h"
 #include "props.h"
+#include "random.h"
+#include "timequeue.h"
 #include "tune.h"
 
 #define ERROR_DIE_NOW -1

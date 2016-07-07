@@ -1,11 +1,14 @@
 #include "config.h"
 
+#include "compile.h"
 #include "db.h"
-#include "externs.h"
+#include "edit.h"
+#include "fbstrings.h"
 #include "inst.h"
 #include "interface.h"
 #include "interp.h"
 #include "params.h"
+#include "timequeue.h"
 
 void
 list_proglines(dbref player, dbref program, struct frame *fr, int start, int end)
@@ -37,7 +40,7 @@ list_proglines(dbref player, dbref program, struct frame *fr, int start, int end
 
 	    FLAGS(player) |= INTERNAL;
 
-	    do_list(player, program, range, argc);
+	    list_program(player, program, range, argc);
 
 	    if (!tmpflg) {
 		FLAGS(player) &= ~INTERNAL;

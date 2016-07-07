@@ -4,10 +4,12 @@
 #ifdef DISKBASE
 #include "diskprop.h"
 #endif
-#include "externs.h"
+#include "fbstrings.h"
 #include "interface.h"
 #include "match.h"
 #include "params.h"
+#include "player.h"
+#include "predicates.h"
 #include "props.h"
 #include "tune.h"
 
@@ -622,5 +624,24 @@ match_rmatch(dbref arg1, struct match_data *md)
 	match_contents(arg1, md);
 	match_exits(arg1, md);
 	break;
+    }
+}
+
+dbref
+match_controlled(int descr, dbref player, const char *name)
+{
+    dbref match;
+    struct match_data md;
+
+    init_match(descr, player, name, NOTYPE, &md);
+    match_absolute(&md);
+    match_everything(&md);
+
+    match = noisy_match_result(&md);
+    if (match != NOTHING && !controls(player, match)) {
+        notify(player, "Permission denied. (You don't control what was matched)");
+        return NOTHING;
+    } else {
+        return match;
     }
 }

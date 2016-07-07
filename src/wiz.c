@@ -1,12 +1,20 @@
 #include "config.h"
 
+#include "boolexp.h"
 #include "db.h"
-#include "externs.h"
+#include "edit.h"
+#include "fbstrings.h"
+#include "game.h"
 #include "interface.h"
+#include "log.h"
 #include "match.h"
+#include "move.h"
 #include "msgparse.h"
 #include "params.h"
+#include "player.h"
+#include "predicates.h"
 #include "props.h"
+#include "timequeue.h"
 #include "tune.h"
 
 #ifndef WIN32
@@ -999,7 +1007,7 @@ do_mpi_topprofs(dbref player, char *arg1)
 
 
 void
-do_all_topprofs(dbref player, char *arg1)
+do_topprofs(dbref player, char *arg1)
 {
     struct profnode {
 	struct profnode *next;

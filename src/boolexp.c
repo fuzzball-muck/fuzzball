@@ -1,7 +1,8 @@
 #include "config.h"
 
+#include "boolexp.h"
 #include "db.h"
-#include "externs.h"
+#include "fbstrings.h"
 #include "interface.h"
 #include "interp.h"
 #include "match.h"
@@ -427,4 +428,100 @@ free_boolexp(struct boolexp *b)
 	    break;
 	}
     }
+}
+
+static char boolexp_buf[BUFFER_LEN];
+static char *buftop;
+
+static void
+unparse_boolexp1(dbref player, struct boolexp *b, boolexp_type outer_type, int fullname)
+{
+    if ((buftop - boolexp_buf) > (BUFFER_LEN / 2))
+	return;
+    if (b == TRUE_BOOLEXP) {
+	strcpyn(buftop, sizeof(boolexp_buf) - (buftop - boolexp_buf), "*UNLOCKED*");
+	buftop += strlen(buftop);
+    } else {
+	switch (b->type) {
+	case BOOLEXP_AND:
+	    if (outer_type == BOOLEXP_NOT) {
+		*buftop++ = '(';
+	    }
+	    unparse_boolexp1(player, b->sub1, b->type, fullname);
+	    *buftop++ = AND_TOKEN;
+	    unparse_boolexp1(player, b->sub2, b->type, fullname);
+	    if (outer_type == BOOLEXP_NOT) {
+		*buftop++ = ')';
+	    }
+	    break;
+	case BOOLEXP_OR:
+	    if (outer_type == BOOLEXP_NOT || outer_type == BOOLEXP_AND) {
+		*buftop++ = '(';
+	    }
+	    unparse_boolexp1(player, b->sub1, b->type, fullname);
+	    *buftop++ = OR_TOKEN;
+	    unparse_boolexp1(player, b->sub2, b->type, fullname);
+	    if (outer_type == BOOLEXP_NOT || outer_type == BOOLEXP_AND) {
+		*buftop++ = ')';
+	    }
+	    break;
+	case BOOLEXP_NOT:
+	    *buftop++ = '!';
+	    unparse_boolexp1(player, b->sub1, b->type, fullname);
+	    break;
+	case BOOLEXP_CONST:
+	    if (fullname) {
+		strcpyn(buftop, sizeof(boolexp_buf) - (buftop - boolexp_buf),
+			unparse_object(player, b->thing));
+	    } else {
+		snprintf(buftop, sizeof(boolexp_buf) - (buftop - boolexp_buf), "#%d",
+			 b->thing);
+	    }
+	    buftop += strlen(buftop);
+	    break;
+	case BOOLEXP_PROP:
+	    strcpyn(buftop, sizeof(boolexp_buf) - (buftop - boolexp_buf),
+		    PropName(b->prop_check));
+	    strcatn(buftop, sizeof(boolexp_buf) - (buftop - boolexp_buf), ":");
+	    if (PropType(b->prop_check) == PROP_STRTYP)
+		strcatn(buftop, sizeof(boolexp_buf) - (buftop - boolexp_buf),
+			PropDataStr(b->prop_check));
+	    buftop += strlen(buftop);
+	    break;
+	default:
+	    panic("unparse_boolexp1(): bad type !");
+	}
+    }
+}
+
+const char *
+unparse_boolexp(dbref player, struct boolexp *b, int fullname)
+{
+    buftop = boolexp_buf;
+    unparse_boolexp1(player, b, BOOLEXP_CONST, fullname);	/* no outer type */
+    *buftop++ = '\0';
+
+    return boolexp_buf;
+}
+
+int
+test_lock(int descr, dbref player, dbref thing, const char *lockprop)
+{
+    struct boolexp *lokptr;
+
+    lokptr = get_property_lock(thing, lockprop);
+    return (eval_boolexp(descr, player, lokptr, thing));
+}
+
+
+int
+test_lock_false_default(int descr, dbref player, dbref thing, const char *lockprop)
+{
+    struct boolexp *lok;
+
+    lok = get_property_lock(thing, lockprop);
+
+    if (lok == TRUE_BOOLEXP)
+        return 0;
+    return (eval_boolexp(descr, player, lok, thing));
 }

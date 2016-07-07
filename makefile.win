@@ -50,10 +50,11 @@ BASE_OBJ="$(INTDIR)\array.obj" \
 	"$(INTDIR)\create.obj" \
 	"$(INTDIR)\db.obj" \
 	"$(INTDIR)\debugger.obj" \
-	"$(INTDIR)\disassem.obj" \
 	"$(INTDIR)\diskprop.obj" \
 	"$(INTDIR)\edit.obj" \
 	"$(INTDIR)\events.obj" \
+	"$(INTDIR)\fbstrings.obj" \
+	"$(INTDIR)\fbtime.obj" \
 	"$(INTDIR)\game.obj" \
 	"$(INTDIR)\hashtab.obj" \
 	"$(INTDIR)\help.obj" \
@@ -65,8 +66,8 @@ BASE_OBJ="$(INTDIR)\array.obj" \
 	"$(INTDIR)\mcp.obj" \
 	"$(INTDIR)\mcpgui.obj" \
 	"$(INTDIR)\mcppkgs.obj" \
-	"$(INTDIR)\mfuns2.obj" \
 	"$(INTDIR)\mfuns.obj" \
+	"$(INTDIR)\mfuns2.obj" \
 	"$(INTDIR)\move.obj" \
 	"$(INTDIR)\msgparse.obj" \
 	"$(INTDIR)\mufevent.obj" \
@@ -75,33 +76,26 @@ BASE_OBJ="$(INTDIR)\array.obj" \
 	"$(INTDIR)\p_db.obj" \
 	"$(INTDIR)\p_error.obj" \
 	"$(INTDIR)\p_float.obj" \
-	"$(INTDIR)\player.obj" \
 	"$(INTDIR)\p_math.obj" \
 	"$(INTDIR)\p_mcp.obj" \
 	"$(INTDIR)\p_misc.obj" \
 	"$(INTDIR)\p_props.obj" \
 	"$(INTDIR)\p_regex.obj" \
+	"$(INTDIR)\p_stack.obj" \
+	"$(INTDIR)\p_strings.obj" \
+	"$(INTDIR)\player.obj" \
 	"$(INTDIR)\predicates.obj" \
 	"$(INTDIR)\propdirs.obj" \
 	"$(INTDIR)\property.obj" \
 	"$(INTDIR)\props.obj" \
-	"$(INTDIR)\p_stack.obj" \
-	"$(INTDIR)\p_strings.obj" \
 	"$(INTDIR)\random.obj" \
 	"$(INTDIR)\rob.obj" \
 	"$(INTDIR)\sanity.obj" \
 	"$(INTDIR)\set.obj" \
-	"$(INTDIR)\signal.obj" \
-	"$(INTDIR)\smatch.obj" \
 	"$(INTDIR)\snprintf.obj" \
 	"$(INTDIR)\speech.obj" \
-	"$(INTDIR)\strftime.obj" \
-	"$(INTDIR)\stringutil.obj" \
-	"$(INTDIR)\time.obj" \
 	"$(INTDIR)\timequeue.obj" \
 	"$(INTDIR)\tune.obj" \
-	"$(INTDIR)\unparse.obj" \
-	"$(INTDIR)\utils.obj" \
 	"$(INTDIR)\wiz.obj" \
 	"$(INTDIR)\win32.obj"
 

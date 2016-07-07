@@ -3,9 +3,12 @@
 #include "array.h"
 #include "db.h"
 #include "defaults.h"
-#include "externs.h"
+#include "fbstrings.h"
+#include "fbtime.h"
+#include "game.h"
 #include "interface.h"
 #include "interp.h"
+#include "log.h"
 #include "params.h"
 #include "tune.h"
 
@@ -1249,4 +1252,66 @@ do_tune(dbref player, char *parmname, char *parmval, int full_command_has_delimi
     } else {
 	tune_display_parms(player, parmname, security, 0);
     }
+}
+
+void
+set_flags_from_tunestr(dbref obj, const char *tunestr)
+{
+    const char *p = tunestr;
+    object_flag_type f = 0;
+
+    for (;;) {
+        char pcc = toupper(*p);
+        if (pcc == '\0' || pcc == '\n' || pcc == '\r') {
+            break;
+        } else if (pcc == '0') {
+            SetMLevel(obj, 0);
+        } else if (pcc == '1') {
+            SetMLevel(obj, 1);
+        } else if (pcc == '2') {
+            SetMLevel(obj, 2);
+        } else if (pcc == '3') {
+            SetMLevel(obj, 3);
+        } else if (pcc == 'A') {
+            f = ABODE;
+        } else if (pcc == 'B') {
+            f = BUILDER;
+        } else if (pcc == 'C') {
+            f = CHOWN_OK;
+        } else if (pcc == 'D') {
+            f = DARK;
+        } else if (pcc == 'G') {
+            f = GUEST;
+        } else if (pcc == 'H') {
+            f = HAVEN;
+        } else if (pcc == 'J') {
+            f = JUMP_OK;
+        } else if (pcc == 'K') {
+            f = KILL_OK;
+        } else if (pcc == 'L') {
+            f = LINK_OK;
+        } else if (pcc == 'M') {
+            SetMLevel(obj, 2);
+        } else if (pcc == 'Q') {
+            f = QUELL;
+        } else if (pcc == 'S') {
+            f = STICKY;
+        } else if (pcc == 'V') {
+            f = VEHICLE;
+        } else if (pcc == 'W') {
+            /* f = WIZARD;     This is very bad to auto-set. */
+        } else if (pcc == 'X') {
+            f = XFORCIBLE;
+        } else if (pcc == 'Y') {
+            f = YIELD;
+        } else if (pcc == 'O') {
+            f = OVERT;
+        } else if (pcc == 'Z') {
+            f = ZOMBIE;
+        }
+        FLAGS(obj) |= f;
+        p++;
+    }
+    ts_modifyobject(obj);
+    DBDIRTY(obj);
 }

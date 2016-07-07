@@ -24,10 +24,10 @@
 /* now refer to tables to map instruction number to name */
 extern const char *base_inst[];
 
-extern char *insttotext(struct frame *, int, struct inst *, char *, int, int, dbref, int);
+char *insttotext(struct frame *, int, struct inst *, char *, int, int, dbref, int);
 
 /* and declare debug instruction diagnostic routine */
-extern char *debug_inst(struct frame *, int, struct inst *, int, struct inst *, char *, int,
+char *debug_inst(struct frame *, int, struct inst *, int, struct inst *, char *, int,
 			int, dbref);
 
 #endif				/* _INST_H */

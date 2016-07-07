@@ -1,29 +1,29 @@
 #ifndef _P_PROPS_H
 #define _P_PROPS_H
 
-extern int prop_read_perms(dbref player, dbref obj, const char *name, int mlev);
-extern int prop_write_perms(dbref player, dbref obj, const char *name, int mlev);
+int prop_read_perms(dbref player, dbref obj, const char *name, int mlev);
+int prop_write_perms(dbref player, dbref obj, const char *name, int mlev);
 
-extern void prim_getpropval(PRIM_PROTOTYPE);
-extern void prim_getpropfval(PRIM_PROTOTYPE);
-extern void prim_getpropstr(PRIM_PROTOTYPE);
-extern void prim_remove_prop(PRIM_PROTOTYPE);
-extern void prim_envprop(PRIM_PROTOTYPE);
-extern void prim_envpropstr(PRIM_PROTOTYPE);
-extern void prim_addprop(PRIM_PROTOTYPE);
-extern void prim_nextprop(PRIM_PROTOTYPE);
-extern void prim_propdirp(PRIM_PROTOTYPE);
-extern void prim_parseprop(PRIM_PROTOTYPE);
-extern void prim_getprop(PRIM_PROTOTYPE);
-extern void prim_setprop(PRIM_PROTOTYPE);
-extern void prim_blessprop(PRIM_PROTOTYPE);
-extern void prim_unblessprop(PRIM_PROTOTYPE);
-extern void prim_array_filter_prop(PRIM_PROTOTYPE);
-extern void prim_reflist_find(PRIM_PROTOTYPE);
-extern void prim_reflist_add(PRIM_PROTOTYPE);
-extern void prim_reflist_del(PRIM_PROTOTYPE);
-extern void prim_blessedp(PRIM_PROTOTYPE);
-extern void prim_parsepropex(PRIM_PROTOTYPE);
+void prim_getpropval(PRIM_PROTOTYPE);
+void prim_getpropfval(PRIM_PROTOTYPE);
+void prim_getpropstr(PRIM_PROTOTYPE);
+void prim_remove_prop(PRIM_PROTOTYPE);
+void prim_envprop(PRIM_PROTOTYPE);
+void prim_envpropstr(PRIM_PROTOTYPE);
+void prim_addprop(PRIM_PROTOTYPE);
+void prim_nextprop(PRIM_PROTOTYPE);
+void prim_propdirp(PRIM_PROTOTYPE);
+void prim_parseprop(PRIM_PROTOTYPE);
+void prim_getprop(PRIM_PROTOTYPE);
+void prim_setprop(PRIM_PROTOTYPE);
+void prim_blessprop(PRIM_PROTOTYPE);
+void prim_unblessprop(PRIM_PROTOTYPE);
+void prim_array_filter_prop(PRIM_PROTOTYPE);
+void prim_reflist_find(PRIM_PROTOTYPE);
+void prim_reflist_add(PRIM_PROTOTYPE);
+void prim_reflist_del(PRIM_PROTOTYPE);
+void prim_blessedp(PRIM_PROTOTYPE);
+void prim_parsepropex(PRIM_PROTOTYPE);
 
 #define PRIMS_PROPS_FUNCS prim_getpropval, prim_getpropstr, prim_remove_prop, \
    prim_envprop, prim_envpropstr, prim_addprop, prim_nextprop, prim_propdirp, \

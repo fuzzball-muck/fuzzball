@@ -112,27 +112,25 @@ MALLOBJ= crt_malloc.o
 
 MISCSRC= Makefile.in
 
-CSRC= array.c boolexp.c compile.c create.c db.c debugger.c \
-	disassem.c diskprop.c edit.c events.c game.c hashtab.c help.c inst.c \
-	interface_ssl.c interp.c log.c look.c match.c mcp.c mcpgui.c mcppkgs.c \
-	mfuns2.c mfuns.c move.c msgparse.c mufevent.c p_array.c \
-	p_connects.c p_db.c p_error.c p_float.c player.c p_math.c p_mcp.c \
-	p_misc.c p_props.c p_regex.c predicates.c propdirs.c property.c \
-	props.c p_stack.c p_strings.c random.c rob.c sanity.c set.c \
-	signal.c smatch.c snprintf.c speech.c strftime.c stringutil.c \
-	time.c timequeue.c tune.c unparse.c utils.c wiz.c
+CSRC= array.c boolexp.c compile.c create.c db.c debugger.c diskprop.c edit.c \
+	events.c fbsignal.c fbstrings.c fbtime.c game.c hashtab.c help.c \
+	inst.c interface_ssl.c interp.c log.c look.c match.c mcp.c mcpgui.c \
+	mcppkgs.c mfuns.c mfuns2.c move.c msgparse.c mufevent.c p_array.c \
+	p_connects.c p_db.c p_error.c p_float.c p_math.c p_mcp.c p_misc.c \
+	p_props.c p_regex.c p_stack.c p_strings.c player.c predicates.c \
+	propdirs.c property.c props.c random.c rob.c sanity.c set.c snprintf.c \
+	speech.c timequeue.c tune.c wiz.c
 
 MSRC= interface.c resolver.c
 
-COBJ= array.o boolexp.o compile.o create.o db.o debugger.o \
-	disassem.o diskprop.o edit.o events.o game.o hashtab.o help.o inst.o \
-	interface_ssl.o interp.o log.o look.o match.o mcp.o mcpgui.o mcppkgs.o \
-	mfuns2.o mfuns.o move.o msgparse.o mufevent.o p_array.o \
-	p_connects.o p_db.o p_error.o p_float.o player.o p_math.o p_mcp.o \
-	p_misc.o p_props.o p_regex.o predicates.o propdirs.o property.o \
-	props.o p_stack.o p_strings.o random.o rob.o sanity.o set.o \
-	signal.o smatch.o snprintf.o speech.o strftime.o stringutil.o \
-	time.o timequeue.o tune.o unparse.o utils.o wiz.o
+COBJ= array.o boolexp.o compile.o create.o db.o debugger.o diskprop.o edit.o \
+	events.o fbsignal.o fbstrings.o fbtime.o game.o hashtab.o help.o \
+	inst.o interface_ssl.o interp.o log.o look.o match.o mcp.o mcpgui.o \
+	mcppkgs.o mfuns.o mfuns2.o move.o msgparse.o mufevent.o p_array.o \
+	p_connects.o p_db.o p_error.o p_float.o p_math.o p_mcp.o p_misc.o \
+	p_props.o p_regex.o p_stack.o p_strings.o player.o predicates.o \
+	propdirs.o property.o props.o random.o rob.o sanity.o set.o snprintf.o \
+	speech.o timequeue.o tune.o wiz.o
 
 MOBJ= interface.o resolver.o
 

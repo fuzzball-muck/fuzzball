@@ -1,12 +1,15 @@
 #include "config.h"
 
+#include "compile.h"
 #include "db.h"
 #ifdef DISKBASE
 #include "diskprop.h"
 #endif
-#include "externs.h"
+#include "game.h"
+#include "interface.h"
 #include "interp.h"
 #include "props.h"
+#include "timequeue.h"
 #include "tune.h"
 
 /****************************************************************
@@ -39,6 +42,13 @@ next_dump_time(void)
     return (last_dump_time + tp_dump_interval - currtime);
 }
 
+void
+dump_warning(void)
+{
+    if (tp_dbdump_warning) {
+        wall_and_flush(tp_dumpwarn_mesg);
+    }
+}
 
 void
 check_dump_time(void)
@@ -147,3 +157,4 @@ next_muckevent(void)
     check_dump_time();
     check_clean_time();
 }
+

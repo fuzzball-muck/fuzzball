@@ -1,5 +1,3 @@
-/* Stuff the interpreter needs. */
-
 #ifndef _INTERP_H
 #define _INTERP_H
 
@@ -16,21 +14,21 @@ typedef void *voidptr;
 
 #define DoNullInd(x) ((x) ? (x) -> data : "")
 
-extern void RCLEAR(struct inst *oper, char *file, int line);
+void RCLEAR(struct inst *oper, char *file, int line);
 
 #define CLEAR(oper) RCLEAR(oper, __FILE__, __LINE__)
 
-extern struct localvars *localvars_get(struct frame *fr, dbref prog);
-extern void localvar_dupall(struct frame *fr, struct frame *oldfr);
+struct localvars *localvars_get(struct frame *fr, dbref prog);
+void localvar_dupall(struct frame *fr, struct frame *oldfr);
 
-extern struct inst *scopedvar_get(struct frame *fr, int level, int varnum);
-extern const char *scopedvar_getname(struct frame *fr, int level, int varnum);
-extern const char *scopedvar_getname_byinst(struct inst *pc, int varnum);
-extern int scopedvar_getnum(struct frame *fr, int level, const char *varname);
-extern void scopedvar_dupall(struct frame *fr, struct frame *oldfr);
-extern int false_inst(struct inst *p);
+struct inst *scopedvar_get(struct frame *fr, int level, int varnum);
+const char *scopedvar_getname(struct frame *fr, int level, int varnum);
+const char *scopedvar_getname_byinst(struct inst *pc, int varnum);
+int scopedvar_getnum(struct frame *fr, int level, const char *varname);
+void scopedvar_dupall(struct frame *fr, struct frame *oldfr);
+int false_inst(struct inst *p);
 
-extern void copyinst(struct inst *from, struct inst *to);
+void copyinst(struct inst *from, struct inst *to);
 
 #define abort_loop(S, C1, C2) \
 { \
@@ -50,27 +48,27 @@ extern void copyinst(struct inst *from, struct inst *to);
 	return 0; \
 }
 
-extern void do_abort_loop(dbref player, dbref program, const char *msg,
+void do_abort_loop(dbref player, dbref program, const char *msg,
 			  struct frame *fr, struct inst *pc,
 			  int atop, int stop, struct inst *clinst1, struct inst *clinst2);
 
-extern void interp_err(dbref player, dbref program, struct inst *pc,
+void interp_err(dbref player, dbref program, struct inst *pc,
 		       struct inst *arg, int atop, dbref origprog,
 		       const char *msg1, const char *msg2);
 
-extern void push(struct inst *stack, int *top, int type, voidptr res);
+void push(struct inst *stack, int *top, int type, voidptr res);
 
-extern int valid_player(struct inst *oper);
+int valid_player(struct inst *oper);
 
-extern int valid_object(struct inst *oper);
+int valid_object(struct inst *oper);
 
-extern int is_home(struct inst *oper);
+int is_home(struct inst *oper);
 
-extern int permissions(dbref player, dbref thing);
+int permissions(dbref player, dbref thing);
 
-extern int arith_type(struct inst *op1, struct inst *op2);
+int arith_type(struct inst *op1, struct inst *op2);
 
-extern int no_good(double test);
+int no_good(double test);
 
 #define POP() (arg + --(*top))
 
@@ -99,7 +97,7 @@ extern int no_good(double test);
 	} \
 }
 
-extern void do_abort_interp(dbref player, const char *msg, struct inst *pc,
+void do_abort_interp(dbref player, const char *msg, struct inst *pc,
 			    struct inst *arg, int atop, struct frame *fr,
 			    struct inst *oper1, struct inst *oper2, struct inst *oper3,
 			    struct inst *oper4, int nargs, dbref program, char *file,
@@ -109,7 +107,7 @@ extern void do_abort_interp(dbref player, const char *msg, struct inst *pc,
 #define ProgMLevel(x) (find_mlev(x, fr, fr->caller.top))
 
 #define ProgUID find_uid(player, fr, fr->caller.top, program)
-extern dbref find_uid(dbref player, struct frame *fr, int st, dbref program);
+dbref find_uid(dbref player, struct frame *fr, int st, dbref program);
 
 #define CHECKREMOTE(x) if ((mlev < 2) && (LOCATION(x) != player) &&  \
                            (LOCATION(x) != LOCATION(player)) && \
@@ -150,15 +148,15 @@ extern dbref find_uid(dbref player, struct frame *fr, int st, dbref program);
 extern int top_pid;
 extern int nargs;		/* DO NOT TOUCH THIS VARIABLE */
 
-extern void do_abort_silent(void);
-extern dbref find_mlev(dbref prog, struct frame *fr, int st);
-extern struct frame *interp(int descr, dbref player, dbref location, dbref program,
+void do_abort_silent(void);
+dbref find_mlev(dbref prog, struct frame *fr, int st);
+struct frame *interp(int descr, dbref player, dbref location, dbref program,
                             dbref source, int nosleeping, int whichperms, int forced_pid);
-extern struct inst *interp_loop(dbref player, dbref program, struct frame *fr, int rettyp);
-extern void prog_clean(struct frame *fr);
-extern void purge_all_free_frames();
-extern void purge_for_pool(void);
-extern void purge_try_pool(void);
+struct inst *interp_loop(dbref player, dbref program, struct frame *fr, int rettyp);
+void prog_clean(struct frame *fr);
+void purge_all_free_frames();
+void purge_for_pool(void);
+void purge_try_pool(void);
 
 #include "p_array.h"
 #include "p_connects.h"

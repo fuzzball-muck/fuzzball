@@ -1,16 +1,21 @@
 #include "config.h"
 
+#include "compile.h"
 #include "db.h"
-#include "externs.h"
+#include "edit.h"
+#include "fbstrings.h"
+#include "hashtab.h"
 #include "inst.h"
 #include "interface.h"
 #include "interp.h"
+#include "log.h"
 #include "match.h"
 #ifdef MCP_SUPPORT
 #include "mcp.h"
 #endif
 #include "params.h"
 #include "props.h"
+#include "timequeue.h"
 #include "tune.h"
 
 #include <stdarg.h>
