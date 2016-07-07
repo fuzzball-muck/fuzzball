@@ -1,6 +1,8 @@
 #ifndef _LOG_H
 #define _LOG_H
 
+#include "db.h"
+
 void log2file(char *myfilename, char *format, ...);
 void log_command(char *format, ...);
 void log_gripe(char *format, ...);
