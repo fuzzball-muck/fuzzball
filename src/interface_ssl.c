@@ -3,6 +3,7 @@
 #ifdef USE_SSL
 
 #include "interface_ssl.h"
+#include "log.h"
 
 /** Converts an SSL protocol version string to a version number
  *
