@@ -1,9 +1,10 @@
 #include "config.h"
 
 #include "db.h"
-#include "externs.h"
 #include "interface.h"
 #include "interp.h"
+#include "log.h"
+#include "player.h"
 
 static struct inst *oper1, *oper2, *oper3, *oper4;
 static struct inst temp1, temp2;

@@ -1,7 +1,7 @@
 #include "config.h"
 
 #include "db.h"
-#include "externs.h"
+#include "fbstrings.h"
 #include "interp.h"
 
 #include <float.h>

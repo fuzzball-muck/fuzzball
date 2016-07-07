@@ -85,10 +85,10 @@ static const size_t SSL_PROTOCOLS_SIZE = (sizeof(SSL_PROTOCOLS) / sizeof(SSL_PRO
 /* end of lookup table */
 
 /* SSL protocol management */
-extern int ssl_protocol_from_string(const char *);
-extern int set_ssl_ctx_min_version(SSL_CTX *, const char *);
+int ssl_protocol_from_string(const char *);
+int set_ssl_ctx_min_version(SSL_CTX *, const char *);
 
-extern void ssl_log_error(SSL *, const int);
+void ssl_log_error(SSL *, const int);
 
 #endif				/* USE_SSL */
 #endif				/* _INTERFACE_SSL_H */

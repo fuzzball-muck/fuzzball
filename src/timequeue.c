@@ -1,14 +1,17 @@
 #include "config.h"
 
 #include "db.h"
-#include "externs.h"
+#include "debugger.h"
+#include "fbstrings.h"
 #include "interface.h"
 #include "interp.h"
+#include "log.h"
 #include "match.h"
 #include "mufevent.h"
 #include "mpi.h"
 #include "params.h"
 #include "props.h"
+#include "timequeue.h"
 #include "tune.h"
 
 #define TQ_MUF_TYP 0
@@ -728,7 +731,7 @@ has_refs(dbref program, timequeue ptr)
 extern char *time_format_2(time_t dt);
 
 void
-list_events(dbref player)
+do_process_status(dbref player)
 {
     char buf[BUFFER_LEN];
     char pidstr[128];
@@ -1172,7 +1175,7 @@ dequeue_timers(int pid, char *id)
 
 
 void
-do_dequeue(int descr, dbref player, const char *arg1)
+do_kill_process(int descr, dbref player, const char *arg1)
 {
     char buf[BUFFER_LEN];
     int count;

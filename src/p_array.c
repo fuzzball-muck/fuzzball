@@ -1,15 +1,17 @@
 #include "config.h"
 
+#include "boolexp.h"
 #include "db.h"
 #include "dbsearch.h"
 #ifdef DISKBASE
 #include "diskprop.h"
 #endif
-#include "externs.h"
+#include "fbstrings.h"
 #include "interface.h"
 #include "interp.h"
 #include "params.h"
 #include "props.h"
+#include "timequeue.h"
 #include "tune.h"
 
 static struct inst *oper1, *oper2, *oper3, *oper4;

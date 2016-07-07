@@ -4,21 +4,21 @@
 #ifndef _P_MCP_H
 #define _P_MCP_H
 
-extern void prim_mcp_register(PRIM_PROTOTYPE);
-extern void prim_mcp_register_event(PRIM_PROTOTYPE);
-extern void prim_mcp_bind(PRIM_PROTOTYPE);
-extern void prim_mcp_supports(PRIM_PROTOTYPE);
-extern void prim_mcp_send(PRIM_PROTOTYPE);
+void prim_mcp_register(PRIM_PROTOTYPE);
+void prim_mcp_register_event(PRIM_PROTOTYPE);
+void prim_mcp_bind(PRIM_PROTOTYPE);
+void prim_mcp_supports(PRIM_PROTOTYPE);
+void prim_mcp_send(PRIM_PROTOTYPE);
 
-extern void prim_gui_available(PRIM_PROTOTYPE);
-extern void prim_gui_dlog_create(PRIM_PROTOTYPE);
-extern void prim_gui_dlog_show(PRIM_PROTOTYPE);
-extern void prim_gui_dlog_close(PRIM_PROTOTYPE);
-extern void prim_gui_value_set(PRIM_PROTOTYPE);
-extern void prim_gui_value_get(PRIM_PROTOTYPE);
-extern void prim_gui_values_get(PRIM_PROTOTYPE);
-extern void prim_gui_ctrl_create(PRIM_PROTOTYPE);
-extern void prim_gui_ctrl_command(PRIM_PROTOTYPE);
+void prim_gui_available(PRIM_PROTOTYPE);
+void prim_gui_dlog_create(PRIM_PROTOTYPE);
+void prim_gui_dlog_show(PRIM_PROTOTYPE);
+void prim_gui_dlog_close(PRIM_PROTOTYPE);
+void prim_gui_value_set(PRIM_PROTOTYPE);
+void prim_gui_value_get(PRIM_PROTOTYPE);
+void prim_gui_values_get(PRIM_PROTOTYPE);
+void prim_gui_ctrl_create(PRIM_PROTOTYPE);
+void prim_gui_ctrl_command(PRIM_PROTOTYPE);
 
 
 #define PRIMS_MCP_FUNCS prim_mcp_register, prim_mcp_bind, prim_mcp_supports, \

@@ -1,12 +1,19 @@
 #include "config.h"
 
+#include "compile.h"
 #include "db.h"
 #ifdef DISKBASE
 #include "diskprop.h"
 #endif
-#include "externs.h"
+#include "edit.h"
+#include "fbstrings.h"
+#include "fbtime.h"
 #include "interface.h"
+#include "match.h"
+#include "log.h"
 #include "params.h"
+#include "player.h"
+#include "predicates.h"
 #include "props.h"
 #include "tune.h"
 
@@ -665,3 +672,595 @@ db_read(FILE * f)
 	c = getc(f);
     }				/* for */
 }				/* db_read */
+
+const char *
+unparse_flags(dbref thing)
+{
+    static char buf[BUFFER_LEN];
+    char *p;
+    const char *type_codes = "R-EPFG";
+
+    p = buf;
+    if (Typeof(thing) != TYPE_THING)
+	*p++ = type_codes[Typeof(thing)];
+    if (FLAGS(thing) & ~TYPE_MASK) {
+	/* print flags */
+	if (FLAGS(thing) & WIZARD)
+	    *p++ = 'W';
+	if (FLAGS(thing) & LINK_OK)
+	    *p++ = 'L';
+
+	if (FLAGS(thing) & KILL_OK)
+	    *p++ = 'K';
+
+	if (FLAGS(thing) & DARK)
+	    *p++ = 'D';
+	if (FLAGS(thing) & STICKY)
+	    *p++ = 'S';
+	if (FLAGS(thing) & QUELL)
+	    *p++ = 'Q';
+	if (FLAGS(thing) & BUILDER)
+	    *p++ = 'B';
+	if (FLAGS(thing) & CHOWN_OK)
+	    *p++ = 'C';
+	if (FLAGS(thing) & JUMP_OK)
+	    *p++ = 'J';
+	if (FLAGS(thing) & GUEST)
+	    *p++ = 'G';
+	if (FLAGS(thing) & HAVEN)
+	    *p++ = 'H';
+	if (FLAGS(thing) & ABODE)
+	    *p++ = 'A';
+	if (FLAGS(thing) & VEHICLE)
+	    *p++ = 'V';
+	if (FLAGS(thing) & XFORCIBLE)
+	    *p++ = 'X';
+	if (FLAGS(thing) & ZOMBIE)
+	    *p++ = 'Z';
+	if (FLAGS(thing) & YIELD && tp_enable_match_yield)
+	    *p++ = 'Y';
+	if (FLAGS(thing) & OVERT && tp_enable_match_yield)
+	    *p++ = 'O';
+	if (MLevRaw(thing)) {
+	    *p++ = 'M';
+	    switch (MLevRaw(thing)) {
+	    case 1:
+		*p++ = '1';
+		break;
+	    case 2:
+		*p++ = '2';
+		break;
+	    case 3:
+		*p++ = '3';
+		break;
+	    }
+	}
+    }
+    *p = '\0';
+    return buf;
+}
+
+const char *
+unparse_object(dbref player, dbref loc)
+{
+    char buf[BUFFER_LEN];
+
+    if (player != NOTHING)
+	player = OWNER(player);
+
+    switch (loc) {
+    case NOTHING:
+	return "*NOTHING*";
+    case AMBIGUOUS:
+	return "*AMBIGUOUS*";
+    case HOME:
+	return "*HOME*";
+    case NIL:
+	return "*NIL*";
+    default:
+	if (loc < 0 || loc >= db_top)
+	    return "*INVALID*";
+
+	if ((player == NOTHING) || (!(FLAGS(player) & STICKY) &&
+				    (can_link_to(player, NOTYPE, loc) ||
+				     ((Typeof(loc) != TYPE_PLAYER) &&
+				      (controls_link(player, loc)
+				       || (FLAGS(loc) & CHOWN_OK)))))) {
+	    /* show everything */
+	    snprintf(buf, sizeof(buf), "%.*s(#%d%s)", (BUFFER_LEN / 2), NAME(loc), loc,
+		     unparse_flags(loc));
+	    return string_dup(buf);
+	} else {
+	    /* show only the name */
+	    return NAME(loc);
+	}
+    }
+}
+
+dbref
+remove_first(dbref first, dbref what)
+{
+    dbref prev;
+
+    /* special case if it's the first one */
+    if (first == what) {
+	return NEXTOBJ(first);
+    } else {
+	/* have to find it */
+	DOLIST(prev, first) {
+	    if (NEXTOBJ(prev) == what) {
+		DBSTORE(prev, next, NEXTOBJ(what));
+		return first;
+	    }
+	}
+	return first;
+    }
+}
+
+int
+member(dbref thing, dbref list)
+{
+    DOLIST(list, list) {
+	if (list == thing)
+	    return 1;
+	if ((CONTENTS(list)) && (member(thing, CONTENTS(list)))) {
+	    return 1;
+	}
+    }
+
+    return 0;
+}
+
+dbref
+reverse(dbref list)
+{
+    dbref newlist;
+    dbref rest;
+
+    newlist = NOTHING;
+    while (list != NOTHING) {
+	rest = NEXTOBJ(list);
+	PUSH(list, newlist);
+	DBDIRTY(newlist);
+	list = rest;
+    }
+    return newlist;
+}
+
+long
+size_object(dbref i, int load)
+{
+    long byts;
+    byts = sizeof(struct object);
+
+    if (NAME(i)) {
+        byts += strlen(NAME(i)) + 1;
+    }
+    byts += size_properties(i, load);
+
+    if (Typeof(i) == TYPE_EXIT && DBFETCH(i)->sp.exit.dest) {
+        byts += sizeof(dbref) * DBFETCH(i)->sp.exit.ndest;
+    } else if (Typeof(i) == TYPE_PLAYER && PLAYER_PASSWORD(i)) {
+        byts += strlen(PLAYER_PASSWORD(i)) + 1;
+    } else if (Typeof(i) == TYPE_PROGRAM) {
+        byts += size_prog(i);
+    }
+    return byts;
+}
+
+
+static inline int
+ok_ascii_any(const char *name)
+{
+    const unsigned char *scan;
+    for (scan = (const unsigned char *) name; *scan; ++scan) {
+        if (*scan > 127)
+            return 0;
+    }
+    return 1;
+}
+
+int
+ok_ascii_thing(const char *name)
+{
+    return !tp_7bit_thing_names || ok_ascii_any(name);
+}
+
+int
+ok_ascii_other(const char *name)
+{
+    return !tp_7bit_other_names || ok_ascii_any(name);
+}
+
+int
+ok_name(const char *name)
+{
+    return (name
+            && *name
+            && *name != NOT_TOKEN
+            && *name != LOOKUP_TOKEN
+            && *name != REGISTERED_TOKEN
+            && *name != NUMBER_TOKEN
+            && !index(name, ARG_DELIMITER)
+            && !index(name, AND_TOKEN)
+            && !index(name, OR_TOKEN)
+            && !index(name, '\r')
+            && !index(name, ESCAPE_CHAR)
+            && string_compare(name, "me")
+            && string_compare(name, "here")
+            && string_compare(name, "home")
+            && (!*tp_reserved_names || !equalstr((char *) tp_reserved_names, (char *) name)
+            ));
+}
+
+dbref
+getparent_logic(dbref obj)
+{
+    if (obj == NOTHING)
+        return NOTHING;
+    if (Typeof(obj) == TYPE_THING && (FLAGS(obj) & VEHICLE)) {
+        obj = THING_HOME(obj);
+        if (obj != NOTHING && Typeof(obj) == TYPE_PLAYER) {
+            obj = PLAYER_HOME(obj);
+        }
+    } else {
+        obj = LOCATION(obj);
+    }
+    return obj;
+}
+
+dbref
+getparent(dbref obj)
+{
+    dbref ptr, oldptr;
+
+    if (tp_thing_movement) {
+        obj = LOCATION(obj);
+    } else {
+        ptr = getparent_logic(obj);
+        do {
+            obj = getparent_logic(obj);
+        } while (obj != (oldptr = ptr = getparent_logic(ptr)) &&
+                 obj != (ptr = getparent_logic(ptr)) &&
+                 obj != NOTHING && Typeof(obj) == TYPE_THING);
+        if (obj != NOTHING && (obj == oldptr || obj == ptr)) {
+            obj = GLOBAL_ENVIRONMENT;
+        }
+    }
+    return obj;
+}
+
+int
+controls(dbref who, dbref what)
+{
+    /* No one controls invalid objects */
+    if (what < 0 || what >= db_top)
+        return 0;
+
+    /* No one controls garbage */
+    if (Typeof(what) == TYPE_GARBAGE)
+        return 0;
+
+    who = OWNER(who);
+
+    /* Wizard controls everything */
+    if (Wizard(who)) {
+#ifdef GOD_PRIV
+        if (tp_strict_god_priv && God(OWNER(what)) && !God(who))
+            /* Only God controls God's objects */
+            return 0;
+        else
+#endif
+            return 1;
+    }
+
+    if (tp_realms_control) {
+        /* Realm Owner controls everything under his environment. */
+        /* To set up a Realm, a Wizard sets the W flag on a room.  The
+         * owner of that room controls every Room object contained within
+         * that room, all the way to the leaves of the tree.
+         * -winged */
+        for (dbref index = what; index != NOTHING; index = LOCATION(index)) {
+            if ((OWNER(index) == who) && (Typeof(index) == TYPE_ROOM)
+                && Wizard(index)) {
+                /* Realm Owner doesn't control other Player objects */
+                if (Typeof(what) == TYPE_PLAYER) {
+                    return 0;
+                } else {
+                    return 1;
+                }
+            }
+        }
+    }
+
+    /* exits are also controlled by the owners of the source and destination */
+    /* ACTUALLY, THEY AREN'T.  IT OPENS A BAD MPI SECURITY HOLE. */
+    /* any MPI on an exit's @succ or @fail would be run in the context
+     * of the owner, which would allow the owner of the src or dest to
+     * write malicious code for the owner of the exit to run.  Allowing them
+     * control would allow them to modify _ properties, thus enabling the
+     * security hole. -winged */
+    /*
+     * if (Typeof(what) == TYPE_EXIT) {
+     *    int     i = DBFETCH(what)->sp.exit.ndest;
+     *
+     *    while (i > 0) {
+     *        if (who == OWNER(DBFETCH(what)->sp.exit.dest[--i]))
+     *            return 1;
+     *    }
+     *    if (who == OWNER(LOCATION(what)))
+     *        return 1;
+     * }
+     */
+
+    /* owners control their own stuff */
+    return (who == OWNER(what));
+}
+
+int
+controls_link(dbref who, dbref what)
+{
+    switch (Typeof(what)) {
+    case TYPE_EXIT:
+        {
+            int i = DBFETCH(what)->sp.exit.ndest;
+
+            while (i > 0) {
+                if (controls(who, DBFETCH(what)->sp.exit.dest[--i]))
+                    return 1;
+            }
+            if (who == OWNER(LOCATION(what)))
+                return 1;
+            return 0;
+        }
+
+    case TYPE_ROOM:
+        {
+            if (controls(who, DBFETCH(what)->sp.room.dropto))
+                return 1;
+            return 0;
+        } 
+
+    case TYPE_PLAYER:
+        {
+            if (controls(who, PLAYER_HOME(what)))
+                return 1;
+            return 0;
+        }
+
+    case TYPE_THING:
+        {
+            if (controls(who, THING_HOME(what)))
+                return 1;
+            return 0;
+        }
+
+    case TYPE_PROGRAM:
+    default:
+        return 0;
+    }
+}
+
+/*
+ * set_source()
+ *
+ * This routine sets the source of an action to the specified source.
+ * It is called by do_action and do_attach.
+ *
+ */
+void
+set_source(dbref player, dbref action, dbref source)
+{
+    switch (Typeof(source)) {
+    case TYPE_ROOM:
+    case TYPE_THING:
+    case TYPE_PLAYER:
+        PUSH(action, EXITS(source));
+        break;
+    default:
+        notify(player, "Internal error: weird object type.");
+        log_status("PANIC: tried to source %d to %d: type: %d",
+                   action, source, Typeof(source));
+        return;
+    }
+    DBDIRTY(source);
+    DBSTORE(action, location, source);
+    return;
+}
+
+int
+unset_source(dbref player, dbref action)
+{
+    dbref oldsrc;
+
+    if ((oldsrc = LOCATION(action)) == NOTHING) {
+        DBSTORE(LOCATION(player), exits, remove_first(EXITS(LOCATION(player)), action));
+    } else {
+        switch (Typeof(oldsrc)) {
+        case TYPE_PLAYER:
+        case TYPE_ROOM:
+        case TYPE_THING:
+            DBSTORE(oldsrc, exits, remove_first(EXITS(oldsrc), action));
+            break;
+        default:
+            log_status("PANIC: source of action #%d was type: %d.", action, Typeof(oldsrc));
+            return 0;
+        }
+    }
+    return 1;
+}
+
+/* parse_linkable_dest()
+ *
+ * A utility for open and link which checks whether a given destination
+ * string is valid.  It returns a parsed dbref on success, and NOTHING
+ * on failure.
+ */
+
+dbref
+parse_linkable_dest(int descr, dbref player, dbref exit, const char *dest_name)
+{
+    dbref dobj;                 /* destination room/player/thing/link */
+    struct match_data md;
+
+    init_match(descr, player, dest_name, NOTYPE, &md);
+    match_absolute(&md);
+    match_everything(&md);
+    match_home(&md);
+    match_nil(&md);
+
+    if ((dobj = match_result(&md)) == NOTHING || dobj == AMBIGUOUS) {
+        notifyf(player, "I couldn't find '%s'.", dest_name);
+        return NOTHING;
+
+    }
+
+    if (!tp_teleport_to_player && Typeof(dobj) == TYPE_PLAYER) {
+        notifyf(player, "You can't link to players.  Destination %s ignored.",
+                unparse_object(player, dobj));
+        return NOTHING;
+    }
+
+    if (!can_link(player, exit)) {
+        notify(player, "You can't link that.");
+        return NOTHING;
+    }
+    if (!can_link_to(player, Typeof(exit), dobj)) {
+        notifyf(player, "You can't link to %s.", unparse_object(player, dobj));
+        return NOTHING;
+    } else {
+        return dobj;
+    }
+}
+
+int
+_link_exit(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_list, int dryrun)
+{
+    char *p, *q;
+    int prdest;
+    dbref dest;
+    int ndest, error;
+    char qbuf[BUFFER_LEN];
+
+    prdest = 0;
+    ndest = 0;
+    error = 0;
+
+    while (*dest_name) {
+	while (isspace(*dest_name))
+	    dest_name++;	/* skip white space */
+	p = dest_name;
+	while (*dest_name && (*dest_name != EXIT_DELIMITER))
+	    dest_name++;
+	q = (char *) strncpy(qbuf, p, BUFFER_LEN);	/* copy word */
+	q[(dest_name - p)] = '\0';	/* terminate it */
+	if (*dest_name)
+	    for (dest_name++; *dest_name && isspace(*dest_name); dest_name++) ;
+
+	if ((dest = parse_linkable_dest(descr, player, exit, q)) == NOTHING)
+	    continue;
+
+	if (dest == NIL) {
+	    if (!dryrun) {
+		notify(player, "Linked to NIL.");
+	    }
+	    dest_list[ndest++] = dest;
+	    continue;
+	}
+
+	switch (Typeof(dest)) {
+	case TYPE_PLAYER:
+	case TYPE_ROOM:
+	case TYPE_PROGRAM:
+	    if (prdest) {
+		notifyf(player,
+			"Only one player, room, or program destination allowed. Destination %s ignored.",
+			unparse_object(player, dest));
+
+		if (dryrun)
+		    error = 1;
+
+		continue;
+	    }
+	    dest_list[ndest++] = dest;
+	    prdest = 1;
+	    break;
+	case TYPE_THING:
+	    dest_list[ndest++] = dest;
+	    break;
+	case TYPE_EXIT:
+	    if (exit_loop_check(exit, dest)) {
+		notifyf(player, "Destination %s would create a loop, ignored.",
+			unparse_object(player, dest));
+
+		if (dryrun)
+		    error = 1;
+
+		continue;
+	    }
+	    dest_list[ndest++] = dest;
+	    break;
+	default:
+	    notify(player, "Internal error: weird object type.");
+	    log_status("PANIC: weird object: Typeof(%d) = %d", dest, Typeof(dest));
+
+	    if (dryrun)
+		error = 1;
+
+	    break;
+	}
+	if (!dryrun) {
+	    if (dest == HOME) {
+		notify(player, "Linked to HOME.");
+	    } else {
+		notifyf(player, "Linked to %s.", unparse_object(player, dest));
+	    }
+	}
+
+	if (ndest >= MAX_LINKS) {
+	    notify(player, "Too many destinations, rest ignored.");
+
+	    if (dryrun)
+		error = 1;
+
+	    break;
+	}
+    }
+
+    if (dryrun && error)
+	return 0;
+
+    return ndest;
+}
+
+/*
+ * link_exit()
+ *
+ * This routine connects an exit to a bunch of destinations.
+ *
+ * 'player' contains the player's name.
+ * 'exit' is the the exit whose destinations are to be linked.
+ * 'dest_name' is a character string containing the list of exits.
+ *
+ * 'dest_list' is an array of dbref's where the valid destinations are
+ * stored.
+ *
+ */
+
+int
+link_exit(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_list)
+{
+    return _link_exit(descr, player, exit, dest_name, dest_list, 0);
+}
+
+/*
+ * link_exit_dry()
+ *
+ * like link_exit(), but only checks whether the link would be ok or not.
+ * error messages are still output.
+ */
+int
+link_exit_dry(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_list)
+{
+    return _link_exit(descr, player, exit, dest_name, dest_list, 1);
+}

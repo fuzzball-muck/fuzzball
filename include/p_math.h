@@ -1,34 +1,34 @@
 #ifndef _P_MATH_H
 #define _P_MATH_H
 
-extern void prim_add(PRIM_PROTOTYPE);
-extern void prim_subtract(PRIM_PROTOTYPE);
-extern void prim_multiply(PRIM_PROTOTYPE);
-extern void prim_divide(PRIM_PROTOTYPE);
-extern void prim_mod(PRIM_PROTOTYPE);
-extern void prim_bitor(PRIM_PROTOTYPE);
-extern void prim_bitxor(PRIM_PROTOTYPE);
-extern void prim_bitand(PRIM_PROTOTYPE);
-extern void prim_bitshift(PRIM_PROTOTYPE);
-extern void prim_and(PRIM_PROTOTYPE);
-extern void prim_or(PRIM_PROTOTYPE);
-extern void prim_xor(PRIM_PROTOTYPE);
-extern void prim_not(PRIM_PROTOTYPE);
-extern void prim_lessthan(PRIM_PROTOTYPE);
-extern void prim_greathan(PRIM_PROTOTYPE);
-extern void prim_equal(PRIM_PROTOTYPE);
-extern void prim_lesseq(PRIM_PROTOTYPE);
-extern void prim_greateq(PRIM_PROTOTYPE);
-extern void prim_random(PRIM_PROTOTYPE);
-extern void prim_int(PRIM_PROTOTYPE);
-extern void prim_srand(PRIM_PROTOTYPE);
-extern void prim_getseed(PRIM_PROTOTYPE);
-extern void prim_setseed(PRIM_PROTOTYPE);
-extern void prim_plusplus(PRIM_PROTOTYPE);
-extern void prim_minusminus(PRIM_PROTOTYPE);
-extern void prim_abs(PRIM_PROTOTYPE);
-extern void prim_sign(PRIM_PROTOTYPE);
-extern void prim_notequal(PRIM_PROTOTYPE);
+void prim_add(PRIM_PROTOTYPE);
+void prim_subtract(PRIM_PROTOTYPE);
+void prim_multiply(PRIM_PROTOTYPE);
+void prim_divide(PRIM_PROTOTYPE);
+void prim_mod(PRIM_PROTOTYPE);
+void prim_bitor(PRIM_PROTOTYPE);
+void prim_bitxor(PRIM_PROTOTYPE);
+void prim_bitand(PRIM_PROTOTYPE);
+void prim_bitshift(PRIM_PROTOTYPE);
+void prim_and(PRIM_PROTOTYPE);
+void prim_or(PRIM_PROTOTYPE);
+void prim_xor(PRIM_PROTOTYPE);
+void prim_not(PRIM_PROTOTYPE);
+void prim_lessthan(PRIM_PROTOTYPE);
+void prim_greathan(PRIM_PROTOTYPE);
+void prim_equal(PRIM_PROTOTYPE);
+void prim_lesseq(PRIM_PROTOTYPE);
+void prim_greateq(PRIM_PROTOTYPE);
+void prim_random(PRIM_PROTOTYPE);
+void prim_int(PRIM_PROTOTYPE);
+void prim_srand(PRIM_PROTOTYPE);
+void prim_getseed(PRIM_PROTOTYPE);
+void prim_setseed(PRIM_PROTOTYPE);
+void prim_plusplus(PRIM_PROTOTYPE);
+void prim_minusminus(PRIM_PROTOTYPE);
+void prim_abs(PRIM_PROTOTYPE);
+void prim_sign(PRIM_PROTOTYPE);
+void prim_notequal(PRIM_PROTOTYPE);
 
 #define PRIMS_MATH_FUNCS prim_add, prim_subtract, prim_multiply, prim_divide, \
     prim_mod, prim_bitor, prim_bitxor, prim_bitand, prim_bitshift, prim_and,  \

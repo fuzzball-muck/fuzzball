@@ -1,119 +1,22 @@
 #include "config.h"
 
+#include "boolexp.h"
+#include "commands.h"
 #include "db.h"
-#include "externs.h"
+#include "edit.h"
+#include "fbstrings.h"
+#include "fbtime.h"
+#include "game.h"
 #include "interface.h"
 #include "interp.h"
+#include "log.h"
 #include "match.h"
+#include "move.h"
 #include "params.h"
+#include "predicates.h"
 #include "props.h"
+#include "timequeue.h"
 #include "tune.h"
-
-void
-moveto(dbref what, dbref where)
-{
-    dbref loc;
-
-    /* do NOT move garbage */
-    if (what != NOTHING && Typeof(what) == TYPE_GARBAGE) {
-	return;
-    }
-
-    /* remove what from old loc */
-    if ((loc = LOCATION(what)) != NOTHING) {
-	DBSTORE(loc, contents, remove_first(CONTENTS(loc), what));
-    }
-    /* test for special cases */
-    switch (where) {
-    case NOTHING:
-	DBSTORE(what, location, NOTHING);
-	return;			/* NOTHING doesn't have contents */
-    case HOME:
-	switch (Typeof(what)) {
-	case TYPE_PLAYER:
-	    where = PLAYER_HOME(what);
-	    break;
-	case TYPE_THING:
-	    where = THING_HOME(what);
-	    if (parent_loop_check(what, where)) {
-		where = PLAYER_HOME(OWNER(what));
-		if (parent_loop_check(what, where))
-		    where = (dbref) tp_player_start;
-	    }
-	    break;
-	case TYPE_ROOM:
-	    where = GLOBAL_ENVIRONMENT;
-	    break;
-	case TYPE_PROGRAM:
-	    where = OWNER(what);
-	    break;
-	}
-	break;
-    default:
-	if (parent_loop_check(what, where)) {
-	    switch (Typeof(what)) {
-	    case TYPE_PLAYER:
-		where = PLAYER_HOME(what);
-		break;
-	    case TYPE_THING:
-		where = THING_HOME(what);
-		if (parent_loop_check(what, where)) {
-		    where = PLAYER_HOME(OWNER(what));
-		    if (parent_loop_check(what, where))
-			where = (dbref) tp_player_start;
-		}
-		break;
-	    case TYPE_ROOM:
-		where = GLOBAL_ENVIRONMENT;
-		break;
-	    case TYPE_PROGRAM:
-		where = OWNER(what);
-		break;
-	    }
-	}
-    }
-
-    /* now put what in where */
-    PUSH(what, CONTENTS(where));
-    DBDIRTY(where);
-    DBSTORE(what, location, where);
-}
-
-dbref reverse(dbref);
-void
-send_contents(int descr, dbref loc, dbref dest)
-{
-    dbref first;
-    dbref rest;
-    dbref where;
-
-    first = CONTENTS(loc);
-    DBSTORE(loc, contents, NOTHING);
-
-    /* blast locations of everything in list */
-    DOLIST(rest, first) {
-	DBSTORE(rest, location, NOTHING);
-    }
-
-    while (first != NOTHING) {
-	rest = NEXTOBJ(first);
-	if ((Typeof(first) != TYPE_THING)
-	    && (Typeof(first) != TYPE_PROGRAM)) {
-	    moveto(first, loc);
-	} else {
-	    where = FLAGS(first) & STICKY ? HOME : dest;
-	    if (tp_thing_movement && (Typeof(first) == TYPE_THING)) {
-		enter_room(descr, first,
-			   parent_loop_check(first, where) ? loc : where, LOCATION(first));
-	    } else {
-		moveto(first, parent_loop_check(first, where) ? loc : where);
-	    }
-	}
-	first = rest;
-    }
-
-    DBSTORE(loc, contents, reverse(CONTENTS(loc)));
-}
 
 void
 maybe_dropto(int descr, dbref loc, dbref dropto)
@@ -133,115 +36,6 @@ maybe_dropto(int descr, dbref loc, dbref dropto)
 
     /* no players, send everything to the dropto */
     send_contents(descr, loc, dropto);
-}
-
-/* What are we doing here?  Quick explanation - we want to prevent
-   environment loops from happening.  Any item should always be able
-   to 'find' its way to room #0.  Since the loop check is recursive,
-   we also put in a max iteration check, to keep people from creating
-   huge envchains in order to bring the server down.  We have a loop
-   if we:
-   a) Try to parent to ourselves.
-   b) Parent to nothing (not really a loop, but won't get you to #0).
-   c) Parent to our own home (not a valid destination).
-   d) Find our source room down the environment chain.
-   Note: This system will only work if every step _up_ to this point has
-   resulted in a consistent (ie: no loops) environment.
-*/
-
-int
-location_loop_check(dbref source, dbref dest)
-{
-    unsigned int level = 0;
-    dbref pstack[MAX_PARENT_DEPTH + 2];
-
-    if (source == dest) {
-	return 1;
-    }
-    pstack[0] = source;
-    pstack[1] = dest;
-
-    while (level < MAX_PARENT_DEPTH) {
-	dest = LOCATION(dest);
-	if (dest == NOTHING) {
-	    return 0;
-	}
-	if (dest == HOME) {	/* We should never get this, either. */
-	    return 1;
-	}
-	if (dest == (dbref) 0) {	/* Reached the top of the chain. */
-	    return 0;
-	}
-	/* Check to see if we've found this item before.. */
-	for (unsigned int place = 0; place < (level + 2); place++) {
-	    if (pstack[place] == dest) {
-		return 1;
-	    }
-	}
-	pstack[level + 2] = dest;
-	level++;
-    }
-    return 1;
-}
-
-int
-parent_loop_check(dbref source, dbref dest)
-{
-    unsigned int level = 0;
-    dbref pstack[MAX_PARENT_DEPTH + 2];
-
-    if (dest == HOME) {
-	switch (Typeof(source)) {
-	case TYPE_PLAYER:
-	    dest = PLAYER_HOME(source);
-	    break;
-	case TYPE_THING:
-	    dest = THING_HOME(source);
-	    break;
-	case TYPE_ROOM:
-	    dest = GLOBAL_ENVIRONMENT;
-	    break;
-	case TYPE_PROGRAM:
-	    dest = OWNER(source);
-	    break;
-	default:
-	    return 1;
-	}
-    }
-    if (location_loop_check(source, dest)) {
-	return 1;
-    }
-
-    if (source == dest) {
-	return 1;
-    }
-    pstack[0] = source;
-    pstack[1] = dest;
-
-    while (level < MAX_PARENT_DEPTH) {
-	/* if (Typeof(dest) == TYPE_THING) {
-	   dest = THING_HOME(dest);
-	   } */
-	dest = getparent(dest);
-	if (dest == NOTHING) {
-	    return 0;
-	}
-	if (dest == HOME) {	/* We should never get this, either. */
-	    return 1;
-	}
-	if (dest == (dbref) 0) {	/* Reached the top of the chain. */
-	    return 0;
-	}
-	/* Check to see if we've found this item before.. */
-	for (unsigned int place = 0; place < (level + 2); place++) {
-	    if (pstack[place] == dest) {
-		return 1;
-	    }
-	}
-	pstack[level + 2] = dest;
-	level++;
-    }
-    return 1;
 }
 
 static int donelook = 0;
@@ -358,6 +152,111 @@ enter_room(int descr, dbref player, dbref loc, dbref exit)
 }
 
 void
+moveto(dbref what, dbref where)
+{
+    dbref loc;
+
+    /* do NOT move garbage */
+    if (what != NOTHING && Typeof(what) == TYPE_GARBAGE) {
+	return;
+    }
+
+    /* remove what from old loc */
+    if ((loc = LOCATION(what)) != NOTHING) {
+	DBSTORE(loc, contents, remove_first(CONTENTS(loc), what));
+    }
+    /* test for special cases */
+    switch (where) {
+    case NOTHING:
+	DBSTORE(what, location, NOTHING);
+	return;			/* NOTHING doesn't have contents */
+    case HOME:
+	switch (Typeof(what)) {
+	case TYPE_PLAYER:
+	    where = PLAYER_HOME(what);
+	    break;
+	case TYPE_THING:
+	    where = THING_HOME(what);
+	    if (parent_loop_check(what, where)) {
+		where = PLAYER_HOME(OWNER(what));
+		if (parent_loop_check(what, where))
+		    where = (dbref) tp_player_start;
+	    }
+	    break;
+	case TYPE_ROOM:
+	    where = GLOBAL_ENVIRONMENT;
+	    break;
+	case TYPE_PROGRAM:
+	    where = OWNER(what);
+	    break;
+	}
+	break;
+    default:
+	if (parent_loop_check(what, where)) {
+	    switch (Typeof(what)) {
+	    case TYPE_PLAYER:
+		where = PLAYER_HOME(what);
+		break;
+	    case TYPE_THING:
+		where = THING_HOME(what);
+		if (parent_loop_check(what, where)) {
+		    where = PLAYER_HOME(OWNER(what));
+		    if (parent_loop_check(what, where))
+			where = (dbref) tp_player_start;
+		}
+		break;
+	    case TYPE_ROOM:
+		where = GLOBAL_ENVIRONMENT;
+		break;
+	    case TYPE_PROGRAM:
+		where = OWNER(what);
+		break;
+	    }
+	}
+    }
+
+    /* now put what in where */
+    PUSH(what, CONTENTS(where));
+    DBDIRTY(where);
+    DBSTORE(what, location, where);
+}
+
+void
+send_contents(int descr, dbref loc, dbref dest)
+{
+    dbref first;
+    dbref rest;
+    dbref where;
+
+    first = CONTENTS(loc);
+    DBSTORE(loc, contents, NOTHING);
+
+    /* blast locations of everything in list */
+    DOLIST(rest, first) {
+	DBSTORE(rest, location, NOTHING);
+    }
+
+    while (first != NOTHING) {
+	rest = NEXTOBJ(first);
+	if ((Typeof(first) != TYPE_THING)
+	    && (Typeof(first) != TYPE_PROGRAM)) {
+	    moveto(first, loc);
+	} else {
+	    where = FLAGS(first) & STICKY ? HOME : dest;
+	    if (tp_thing_movement && (Typeof(first) == TYPE_THING)) {
+		enter_room(descr, first,
+			   parent_loop_check(first, where) ? loc : where, LOCATION(first));
+	    } else {
+		moveto(first, parent_loop_check(first, where) ? loc : where);
+	    }
+	}
+	first = rest;
+    }
+
+    DBSTORE(loc, contents, reverse(CONTENTS(loc)));
+}
+
+void
 send_home(int descr, dbref thing, int puppethome)
 {
     switch (Typeof(thing)) {
@@ -384,21 +283,6 @@ send_home(int descr, dbref thing, int puppethome)
 	break;
     }
     return;
-}
-
-int
-can_move(int descr, dbref player, const char *direction, int lev)
-{
-    struct match_data md;
-
-    if (tp_allow_home && !string_compare(direction, "home"))
-	return 1;
-
-    /* otherwise match on exits */
-    init_match(descr, player, direction, TYPE_EXIT, &md);
-    md.match_level = lev;
-    match_all_exits(&md);
-    return (last_match_result(&md) != NOTHING);
 }
 
 /*
@@ -833,114 +717,6 @@ do_drop(int descr, dbref player, const char *name, const char *obj)
 }
 
 void
-do_recycle(int descr, dbref player, const char *name)
-{
-    dbref thing;
-    char buf[BUFFER_LEN];
-    struct match_data md;
-    struct tune_ref_entry *tref = tune_ref_list;
-
-    init_match(descr, player, name, TYPE_THING, &md);
-    match_all_exits(&md);
-    match_neighbor(&md);
-    match_possession(&md);
-    match_registered(&md);
-    match_here(&md);
-    match_absolute(&md);
-    if ((thing = noisy_match_result(&md)) != NOTHING) {
-#ifdef GOD_PRIV
-	if (tp_strict_god_priv && !God(player) && God(OWNER(thing))) {
-	    notify(player, "Only God may reclaim God's property.");
-	    return;
-	}
-#endif
-	if (!controls(player, thing)) {
-	    if (Wizard(OWNER(player)) && (Typeof(thing) == TYPE_GARBAGE))
-		notify(player, "That's already garbage!");
-	    else
-		notify(player,
-		       "Permission denied. (You don't control what you want to recycle)");
-	} else {
-	    while (tref->name) {
-		if (thing == *tref->ref) {
-		    notify(player, "That object cannot currently be @recyled.");
-		    return;
-		}
-		tref++;
-	    }
-	    switch (Typeof(thing)) {
-	    case TYPE_ROOM:
-		if (OWNER(thing) != OWNER(player)) {
-		    notify(player,
-			   "Permission denied. (You don't control the room you want to recycle)");
-		    return;
-		}
-		if (thing == GLOBAL_ENVIRONMENT) {
-		    notify(player,
-			   "If you want to do that, why don't you just delete the database instead?  Room #0 contains everything, and is needed for database sanity.");
-		    return;
-		}
-		break;
-	    case TYPE_THING:
-		if (OWNER(thing) != OWNER(player)) {
-		    notify(player,
-			   "Permission denied. (You can't recycle a thing you don't control)");
-		    return;
-		}
-		/* player may be a zombie or puppet */
-		if (thing == player) {
-		    snprintf(buf, sizeof(buf),
-			     "%.512s's owner commands it to kill itself.  It blinks a few times in shock, and says, \"But.. but.. WHY?\"  It suddenly clutches it's heart, grimacing with pain..  Staggers a few steps before falling to it's knees, then plops down on it's face.  *thud*  It kicks its legs a few times, with weakening force, as it suffers a seizure.  It's color slowly starts changing to purple, before it explodes with a fatal *POOF*!",
-			     NAME(thing));
-		    notify_except(CONTENTS(LOCATION(thing)), thing, buf, player);
-		    notify(OWNER(player), buf);
-		    notify(OWNER(player), "Now don't you feel guilty?");
-		}
-		break;
-	    case TYPE_EXIT:
-		if (OWNER(thing) != OWNER(player)) {
-		    notify(player,
-			   "Permission denied. (You may not recycle an exit you don't own)");
-		    return;
-		}
-		if (!unset_source(player, thing)) {
-		    notify(player, "You can't do that to an exit in another room.");
-		    return;
-		}
-		break;
-	    case TYPE_PLAYER:
-		notify(player, "You can't recycle a player!");
-		return;
-	    case TYPE_PROGRAM:
-		if (OWNER(thing) != OWNER(player)) {
-		    notify(player,
-			   "Permission denied. (You can't recycle a program you don't own)");
-		    return;
-		}
-		SetMLevel(thing, 0);
-		if (PROGRAM_INSTANCES(thing)) {
-		    dequeue_prog(thing, 0);
-		}
-		/* FIXME: This is a workaround for bug #201633 */
-		if (PROGRAM_INSTANCES(thing)) {
-		    assert(0);	/* getting here is a bug - we already dequeued it. */
-		    notify(player, "Recycle failed: Program is still running.");
-		    return;
-		}
-		break;
-	    case TYPE_GARBAGE:
-		notify(player, "That's already garbage!");
-		return;
-	    }
-	    snprintf(buf, sizeof(buf), "Thank you for recycling %.512s (#%d).", NAME(thing),
-		     thing);
-	    recycle(descr, player, thing);
-	    notify(player, buf);
-	}
-    }
-}
-
-void
 recycle(int descr, dbref player, dbref thing)
 {
     static int depth = 0;
@@ -1139,4 +915,112 @@ recycle(int descr, dbref player, dbref thing)
     NEXTOBJ(thing) = recyclable;
     recyclable = thing;
     DBDIRTY(thing);
+}
+
+void
+do_recycle(int descr, dbref player, const char *name)
+{
+    dbref thing;
+    char buf[BUFFER_LEN];
+    struct match_data md;
+    struct tune_ref_entry *tref = tune_ref_list;
+
+    init_match(descr, player, name, TYPE_THING, &md);
+    match_all_exits(&md);
+    match_neighbor(&md);
+    match_possession(&md);
+    match_registered(&md);
+    match_here(&md);
+    match_absolute(&md);
+    if ((thing = noisy_match_result(&md)) != NOTHING) {
+#ifdef GOD_PRIV
+	if (tp_strict_god_priv && !God(player) && God(OWNER(thing))) {
+	    notify(player, "Only God may reclaim God's property.");
+	    return;
+	}
+#endif
+	if (!controls(player, thing)) {
+	    if (Wizard(OWNER(player)) && (Typeof(thing) == TYPE_GARBAGE))
+		notify(player, "That's already garbage!");
+	    else
+		notify(player,
+		       "Permission denied. (You don't control what you want to recycle)");
+	} else {
+	    while (tref->name) {
+		if (thing == *tref->ref) {
+		    notify(player, "That object cannot currently be @recyled.");
+		    return;
+		}
+		tref++;
+	    }
+	    switch (Typeof(thing)) {
+	    case TYPE_ROOM:
+		if (OWNER(thing) != OWNER(player)) {
+		    notify(player,
+			   "Permission denied. (You don't control the room you want to recycle)");
+		    return;
+		}
+		if (thing == GLOBAL_ENVIRONMENT) {
+		    notify(player,
+			   "If you want to do that, why don't you just delete the database instead?  Room #0 contains everything, and is needed for database sanity.");
+		    return;
+		}
+		break;
+	    case TYPE_THING:
+		if (OWNER(thing) != OWNER(player)) {
+		    notify(player,
+			   "Permission denied. (You can't recycle a thing you don't control)");
+		    return;
+		}
+		/* player may be a zombie or puppet */
+		if (thing == player) {
+		    snprintf(buf, sizeof(buf),
+			     "%.512s's owner commands it to kill itself.  It blinks a few times in shock, and says, \"But.. but.. WHY?\"  It suddenly clutches it's heart, grimacing with pain..  Staggers a few steps before falling to it's knees, then plops down on it's face.  *thud*  It kicks its legs a few times, with weakening force, as it suffers a seizure.  It's color slowly starts changing to purple, before it explodes with a fatal *POOF*!",
+			     NAME(thing));
+		    notify_except(CONTENTS(LOCATION(thing)), thing, buf, player);
+		    notify(OWNER(player), buf);
+		    notify(OWNER(player), "Now don't you feel guilty?");
+		}
+		break;
+	    case TYPE_EXIT:
+		if (OWNER(thing) != OWNER(player)) {
+		    notify(player,
+			   "Permission denied. (You may not recycle an exit you don't own)");
+		    return;
+		}
+		if (!unset_source(player, thing)) {
+		    notify(player, "You can't do that to an exit in another room.");
+		    return;
+		}
+		break;
+	    case TYPE_PLAYER:
+		notify(player, "You can't recycle a player!");
+		return;
+	    case TYPE_PROGRAM:
+		if (OWNER(thing) != OWNER(player)) {
+		    notify(player,
+			   "Permission denied. (You can't recycle a program you don't own)");
+		    return;
+		}
+		SetMLevel(thing, 0);
+		if (PROGRAM_INSTANCES(thing)) {
+		    dequeue_prog(thing, 0);
+		}
+		/* FIXME: This is a workaround for bug #201633 */
+		if (PROGRAM_INSTANCES(thing)) {
+		    assert(0);	/* getting here is a bug - we already dequeued it. */
+		    notify(player, "Recycle failed: Program is still running.");
+		    return;
+		}
+		break;
+	    case TYPE_GARBAGE:
+		notify(player, "That's already garbage!");
+		return;
+	    }
+	    snprintf(buf, sizeof(buf), "Thank you for recycling %.512s (#%d).", NAME(thing),
+		     thing);
+	    recycle(descr, player, thing);
+	    notify(player, buf);
+	}
+    }
 }

@@ -1,10 +1,11 @@
 #include "config.h"
 
+#include "boolexp.h"
 #include "db.h"
 #ifdef DISKBASE
 #include "diskprop.h"
 #endif
-#include "externs.h"
+#include "fbstrings.h"
 #include "interface.h"
 #include "params.h"
 #include "props.h"

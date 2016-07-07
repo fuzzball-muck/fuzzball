@@ -1,10 +1,12 @@
 #include "config.h"
 
+#include "boolexp.h"
 #include "db.h"
-#include "externs.h"
+#include "fbstrings.h"
 #include "interface.h"
 #include "interp.h"
 #include "params.h"
+#include "timequeue.h"
 #include "tune.h"
 
 static struct inst *oper1, *oper2, *oper3, *oper4;

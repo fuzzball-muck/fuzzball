@@ -1,10 +1,12 @@
 #include "config.h"
 
+#include "boolexp.h"
 #include "db.h"
 #ifdef DISKBASE
 #include "diskprop.h"
 #endif
-#include "externs.h"
+#include "fbstrings.h"
+#include "fbtime.h"
 #include "interp.h"
 #include "msgparse.h"
 #include "mpi.h"

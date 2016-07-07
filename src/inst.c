@@ -1,7 +1,8 @@
 #include "config.h"
 
+#include "boolexp.h"
 #include "db.h"
-#include "externs.h"
+#include "fbstrings.h"
 #include "inst.h"
 #include "interp.h"
 #include "tune.h"

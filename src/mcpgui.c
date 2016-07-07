@@ -1,7 +1,7 @@
 #include "config.h"
 
 #ifdef MCP_SUPPORT
-#include "externs.h"
+#include "fbstrings.h"
 #include "interface.h"
 #include "mcp.h"
 #include "mcpgui.h"

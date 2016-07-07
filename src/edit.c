@@ -1,29 +1,20 @@
 #include "config.h"
 
+#include "boolexp.h"
+#include "commands.h"
+#include "compile.h"
 #include "db.h"
-#include "externs.h"
+#include "edit.h"
+#include "fbstrings.h"
+#include "fbtime.h"
+#include "inst.h"
 #include "interface.h"
+#include "interp.h"
+#include "log.h"
 #include "match.h"
 #include "params.h"
+#include "timequeue.h"
 #include "tune.h"
-
-void editor(int descr, dbref player, const char *command);
-void do_insert(dbref player, dbref program, int arg[], int argc);
-void do_delete(dbref player, dbref program, int arg[], int argc);
-void do_quit(dbref player, dbref program);
-void do_cancel(dbref player, dbref program);
-void do_list(dbref player, dbref program, int *arg, int argc);
-void insert_line(dbref player, const char *line);
-struct line *read_program(dbref i);
-void do_compile(int descr, dbref player, dbref program, int force_err_disp);
-void free_line(struct line *l);
-void val_and_head(dbref player, int arg[], int argc);
-void do_list_header(dbref player, dbref program);
-void list_publics(int descr, dbref player, int arg[], int argc);
-void do_list_publics(dbref player, dbref program);
-void toggle_numbers(dbref player, int arg[], int argc);
-
-/* Editor routines --- Also contains routines to handle input */
 
 void
 free_line(struct line *l)
@@ -42,27 +33,6 @@ free_prog_text(struct line *l)
 	next = l->next;
 	free_line(l);
 	l = next;
-    }
-}
-
-/* This routine determines if a player is editing or running an interactive
-   command.  It does it by checking the frame pointer field of the player ---
-   if the program counter is NULL, then the player is not running anything
-   The reason we don't just check the pointer but check the pc too is because
-   I plan to leave the frame always on to save the time required allocating
-   space each time a program is run.
-   */
-void
-interactive(int descr, dbref player, const char *command)
-{
-    if (FLAGS(player) & READMODE) {
-	/*
-	 * process command, push onto stack, and return control to forth
-	 * program
-	 */
-	handle_read_event(descr, player, command);
-    } else {
-	editor(descr, player, command);
     }
 }
 
@@ -286,6 +256,447 @@ chown_macros(dbref from, dbref to)
     chown_macros_rec(macrotop, from, to);
 }
 
+void
+disassemble(dbref player, dbref program)
+{
+    struct inst *curr;
+    struct inst *codestart;
+    char buf[BUFFER_LEN];
+
+    codestart = curr = PROGRAM_CODE(program);
+    if (!PROGRAM_SIZ(program)) {
+	notify(player, "Nothing to disassemble!");
+	return;
+    }
+    for (int i = 0; i < PROGRAM_SIZ(program); i++, curr++) {
+	switch (curr->type) {
+	case PROG_PRIMITIVE:
+	    if (curr->data.number >= BASE_MIN && curr->data.number <= BASE_MAX)
+		snprintf(buf, sizeof(buf), "%d: (line %d) PRIMITIVE: %s", i,
+			 curr->line, base_inst[curr->data.number - BASE_MIN]);
+	    else
+		snprintf(buf, sizeof(buf), "%d: (line %d) PRIMITIVE: %d", i, curr->line,
+			 curr->data.number);
+	    break;
+	case PROG_MARK:
+	    snprintf(buf, sizeof(buf), "%d: (line %d) MARK", i, curr->line);
+	    break;
+	case PROG_STRING:
+	    snprintf(buf, sizeof(buf), "%d: (line %d) STRING: \"%s\"", i, curr->line,
+		     DoNullInd(curr->data.string));
+	    break;
+	case PROG_ARRAY:
+	    snprintf(buf, sizeof(buf), "%d: (line %d) ARRAY: %d items", i, curr->line,
+		     curr->data.array ? curr->data.array->items : 0);
+	    break;
+	case PROG_FUNCTION:
+	    snprintf(buf, sizeof(buf), "%d: (line %d) FUNCTION: %s, VARS: %d, ARGS: %d", i,
+		     curr->line, DoNull(curr->data.mufproc->procname),
+		     curr->data.mufproc->vars, curr->data.mufproc->args);
+	    break;
+	case PROG_LOCK:
+	    snprintf(buf, sizeof(buf), "%d: (line %d) LOCK: [%s]", i, curr->line,
+		     curr->data.lock == TRUE_BOOLEXP ? "TRUE_BOOLEXP" :
+		     unparse_boolexp(0, curr->data.lock, 0));
+	    break;
+	case PROG_INTEGER:
+	    snprintf(buf, sizeof(buf), "%d: (line %d) INTEGER: %d", i, curr->line,
+		     curr->data.number);
+	    break;
+	case PROG_FLOAT:
+	    snprintf(buf, sizeof(buf), "%d: (line %d) FLOAT: %.17g", i, curr->line,
+		     curr->data.fnumber);
+	    break;
+	case PROG_ADD:
+	    snprintf(buf, sizeof(buf), "%d: (line %d) ADDRESS: %d", i,
+		     curr->line, (int) (curr->data.addr->data - codestart));
+	    break;
+	case PROG_TRY:
+	    snprintf(buf, sizeof(buf), "%d: (line %d) TRY: %d", i, curr->line,
+		     (int) (curr->data.call - codestart));
+	    break;
+	case PROG_IF:
+	    snprintf(buf, sizeof(buf), "%d: (line %d) IF: %d", i, curr->line,
+		     (int) (curr->data.call - codestart));
+	    break;
+	case PROG_JMP:
+	    snprintf(buf, sizeof(buf), "%d: (line %d) JMP: %d", i, curr->line,
+		     (int) (curr->data.call - codestart));
+	    break;
+	case PROG_EXEC:
+	    snprintf(buf, sizeof(buf), "%d: (line %d) EXEC: %d", i, curr->line,
+		     (int) (curr->data.call - codestart));
+	    break;
+	case PROG_OBJECT:
+	    snprintf(buf, sizeof(buf), "%d: (line %d) OBJECT REF: %d", i, curr->line,
+		     curr->data.number);
+	    break;
+	case PROG_VAR:
+	    snprintf(buf, sizeof(buf), "%d: (line %d) VARIABLE: %d", i, curr->line,
+		     curr->data.number);
+	    break;
+	case PROG_SVAR:
+	    snprintf(buf, sizeof(buf), "%d: (line %d) SCOPEDVAR: %d (%s)", i, curr->line,
+		     curr->data.number, scopedvar_getname_byinst(curr, curr->data.number));
+	    break;
+	case PROG_SVAR_AT:
+	    snprintf(buf, sizeof(buf), "%d: (line %d) FETCH SCOPEDVAR: %d (%s)", i, curr->line,
+		     curr->data.number, scopedvar_getname_byinst(curr, curr->data.number));
+	    break;
+	case PROG_SVAR_AT_CLEAR:
+	    snprintf(buf, sizeof(buf), "%d: (line %d) FETCH SCOPEDVAR (clear optim): %d (%s)",
+		     i, curr->line, curr->data.number, scopedvar_getname_byinst(curr,
+										curr->data.
+										number));
+	    break;
+	case PROG_SVAR_BANG:
+	    snprintf(buf, sizeof(buf), "%d: (line %d) SET SCOPEDVAR: %d (%s)", i, curr->line,
+		     curr->data.number, scopedvar_getname_byinst(curr, curr->data.number));
+	    break;
+	case PROG_LVAR:
+	    snprintf(buf, sizeof(buf), "%d: (line %d) LOCALVAR: %d", i, curr->line,
+		     curr->data.number);
+	    break;
+	case PROG_LVAR_AT:
+	    snprintf(buf, sizeof(buf), "%d: (line %d) FETCH LOCALVAR: %d", i, curr->line,
+		     curr->data.number);
+	    break;
+	case PROG_LVAR_AT_CLEAR:
+	    snprintf(buf, sizeof(buf), "%d: (line %d) FETCH LOCALVAR (clear optim): %d", i,
+		     curr->line, curr->data.number);
+	    break;
+	case PROG_LVAR_BANG:
+	    snprintf(buf, sizeof(buf), "%d: (line %d) SET LOCALVAR: %d", i, curr->line,
+		     curr->data.number);
+	    break;
+	case PROG_CLEARED:
+	    snprintf(buf, sizeof(buf), "%d: (line ?) CLEARED INST AT %s:%d", i,
+		     (char *) curr->data.addr, curr->line);
+	default:
+	    snprintf(buf, sizeof(buf), "%d: (line ?) UNKNOWN INST", i);
+	}
+	notify(player, buf);
+    }
+}
+
+/* puts program into insert mode */
+void
+do_insert(dbref player, dbref program, int arg[], int argc)
+{
+    PLAYER_SET_INSERT_MODE(player, PLAYER_INSERT_MODE(player) + 1);
+    /* DBDIRTY(player); */
+    if (argc)
+	PROGRAM_SET_CURR_LINE(program, arg[0] - 1);
+    /* set current line to something else */
+}
+
+/* deletes line n if one argument,
+   lines arg1 -- arg2 if two arguments
+   current line if no argument */
+void
+do_delete(dbref player, dbref program, int arg[], int argc)
+{
+    struct line *curr, *temp;
+    int i;
+
+    switch (argc) {
+    case 0:
+	arg[0] = PROGRAM_CURR_LINE(program);
+    case 1:
+	arg[1] = arg[0];
+    case 2:
+	/* delete from line 1 to line 2 */
+	/* first, check for conflict */
+	if (arg[0] > arg[1]) {
+	    notify(player, "Nonsensical arguments.");
+	    return;
+	}
+	i = arg[0] - 1;
+	for (curr = PROGRAM_FIRST(program); curr && i; i--)
+	    curr = curr->next;
+	if (curr) {
+	    int n = 0;
+	    PROGRAM_SET_CURR_LINE(program, arg[0]);
+	    i = arg[1] - arg[0] + 1;
+	    /* delete n lines */
+	    while (i && curr) {
+		temp = curr;
+		if (curr->prev)
+		    curr->prev->next = curr->next;
+		else
+		    PROGRAM_SET_FIRST(program, curr->next);
+		if (curr->next)
+		    curr->next->prev = curr->prev;
+		curr = curr->next;
+		free_line(temp);
+		i--;
+	    }
+	    n = arg[1] - arg[0] - i + 1;
+	    notifyf(player, "%d line%s deleted", n, n != 1 ? "s" : "");
+	} else
+	    notify(player, "No line to delete!");
+	break;
+    default:
+	notify(player, "Too many arguments!");
+	break;
+    }
+}
+
+/* quit from edit mode.  Put player back into the regular game mode */
+void
+do_quit(dbref player, dbref program)
+{
+    log_status("PROGRAM SAVED: %s by %s(%d)", unparse_object(player, program),
+	       NAME(player), player);
+    write_program(PROGRAM_FIRST(program), program);
+
+    if (tp_log_programs)
+	log_program_text(PROGRAM_FIRST(program), player, program);
+
+    free_prog_text(PROGRAM_FIRST(program));
+    PROGRAM_SET_FIRST(program, NULL);
+    FLAGS(program) &= ~INTERNAL;
+    FLAGS(player) &= ~INTERACTIVE;
+    PLAYER_SET_CURR_PROG(player, NOTHING);
+    DBDIRTY(player);
+    DBDIRTY(program);
+}
+
+/* quit from edit mode, with no changes written */
+void
+do_cancel(dbref player, dbref program)
+{
+    uncompile_program(program);
+    free_prog_text(PROGRAM_FIRST(program));
+    PROGRAM_SET_FIRST(program, NULL);
+    FLAGS(program) &= ~INTERNAL;
+    FLAGS(player) &= ~INTERACTIVE;
+    PLAYER_SET_CURR_PROG(player, NOTHING);
+    DBDIRTY(player);
+}
+
+/* list --- if no argument, redisplay the current line
+   if 1 argument, display that line
+   if 2 arguments, display all in between   */
+void
+list_program(dbref player, dbref program, int *oarg, int argc)
+{
+    struct line *curr;
+    int i, count;
+    int arg[2];
+    char buf[BUFFER_LEN];
+
+    if (oarg) {
+	arg[0] = oarg[0];
+	arg[1] = oarg[1];
+    } else
+	arg[0] = arg[1] = 0;
+    switch (argc) {
+    case 0:
+	arg[0] = PROGRAM_CURR_LINE(program);
+    case 1:
+	arg[1] = arg[0];
+    case 2:
+	if ((arg[0] > arg[1]) && (arg[1] != -1)) {
+	    notify_nolisten(player, "Arguments don't make sense!", 1);
+	    return;
+	}
+	i = arg[0] - 1;
+	for (curr = PROGRAM_FIRST(program); i && curr; i--)
+	    curr = curr->next;
+	if (curr) {
+	    i = arg[1] - arg[0] + 1;
+	    /* display n lines */
+	    for (count = arg[0]; curr && (i || (arg[1] == -1)); i--) {
+		if (FLAGS(player) & INTERNAL)
+		    snprintf(buf, sizeof(buf), "%3d: %s", count, DoNull(curr->this_line));
+		else
+		    snprintf(buf, sizeof(buf), "%s", DoNull(curr->this_line));
+		notify_nolisten(player, buf, 1);
+		count++;
+		curr = curr->next;
+	    }
+	    if (count - arg[0] > 1) {
+		notifyf_nolisten(player, "%d lines displayed.", count - arg[0]);
+	    }
+	} else
+	    notify_nolisten(player, "Line not available for display.", 1);
+	break;
+    default:
+	notify_nolisten(player, "Too many arguments!", 1);
+	break;
+    }
+}
+
+void
+do_list_header(dbref player, dbref program)
+{
+    struct line *curr = read_program(program);
+
+    while (curr && (curr->this_line)[0] == '(') {
+	notify(player, curr->this_line);
+	curr = curr->next;
+    }
+    if (!(FLAGS(program) & INTERNAL)) {
+	free_prog_text(curr);
+    }
+    notify(player, "Done.");
+}
+
+void
+val_and_head(dbref player, int arg[], int argc)
+{
+    dbref program;
+
+    if (argc != 1) {
+	notify(player, "I don't understand which header you're trying to look at.");
+	return;
+    }
+    program = arg[0];
+    if ((program < 0) || (program >= db_top)
+	|| (Typeof(program) != TYPE_PROGRAM)) {
+	notify(player, "That isn't a program.");
+	return;
+    }
+    if (!(controls(player, program) || Linkable(program))) {
+	notify(player, "That's not a public program.");
+	return;
+    }
+    do_list_header(player, program);
+}
+
+void
+do_list_publics(dbref player, dbref program)
+{
+    struct publics *ptr;
+
+    notify(player, "PUBLIC funtions:");
+    for (ptr = PROGRAM_PUBS(program); ptr; ptr = ptr->next)
+	notify(player, ptr->subname);
+}
+
+void
+list_publics(int descr, dbref player, int arg[], int argc)
+{
+    dbref program;
+
+    if (argc > 1) {
+	notify(player,
+	       "I don't understand which program you want to list PUBLIC functions for.");
+	return;
+    }
+    program = (argc == 0) ? PLAYER_CURR_PROG(player) : arg[0];
+    if (Typeof(program) != TYPE_PROGRAM) {
+	notify(player, "That isn't a program.");
+	return;
+    }
+    if (!(controls(player, program) || Linkable(program))) {
+	notify(player, "That's not a public program.");
+	return;
+    }
+    if (!(PROGRAM_CODE(program))) {
+	if (program == PLAYER_CURR_PROG(player)) {
+	    do_compile(descr, OWNER(program), program, 0);
+	} else {
+	    struct line *tmpline;
+
+	    tmpline = PROGRAM_FIRST(program);
+	    PROGRAM_SET_FIRST(program, (struct line *) read_program(program));
+	    do_compile(descr, OWNER(program), program, 0);
+	    free_prog_text(PROGRAM_FIRST(program));
+	    PROGRAM_SET_FIRST(program, tmpline);
+	}
+	if (!PROGRAM_CODE(program)) {
+	    notify(player, "Program not compilable.");
+	    return;
+	}
+    }
+    do_list_publics(player, program);
+}
+
+void
+toggle_numbers(dbref player, int arg[], int argc)
+{
+    if (argc) {
+	switch (arg[0]) {
+	case 0:
+	    FLAGS(player) &= ~INTERNAL;
+	    notify(player, "Line numbers off.");
+	    break;
+
+	default:
+	    FLAGS(player) |= INTERNAL;
+	    notify(player, "Line numbers on.");
+	    break;
+	}
+    } else if (FLAGS(player) & INTERNAL) {
+	FLAGS(player) &= ~INTERNAL;
+	notify(player, "Line numbers off.");
+    } else {
+	FLAGS(player) |= INTERNAL;
+	notify(player, "Line numbers on.");
+    }
+}
+
+/* insert this line into program */
+void
+insert_line(dbref player, const char *line)
+{
+    dbref program;
+    int i;
+    struct line *curr;
+    struct line *new_line;
+
+    program = PLAYER_CURR_PROG(player);
+    if (!string_compare(line, EXIT_INSERT)) {
+	PLAYER_SET_INSERT_MODE(player, 0);	/* turn off insert mode */
+	notify_nolisten(player, "Exiting insert mode.", 1);
+	return;
+    }
+    i = PROGRAM_CURR_LINE(program) - 1;
+    for (curr = PROGRAM_FIRST(program); curr && i && i + 1; i--)
+	curr = curr->next;
+    new_line = get_new_line();	/* initialize line */
+    if (!*line) {
+	new_line->this_line = alloc_string(" ");
+    } else {
+	new_line->this_line = alloc_string(line);
+    }
+    if (!PROGRAM_FIRST(program)) {	/* nothing --- insert in front */
+	PROGRAM_SET_FIRST(program, new_line);
+	PROGRAM_SET_CURR_LINE(program, 2);	/* insert at the end */
+	/* DBDIRTY(program); */
+	return;
+    }
+    if (!curr) {		/* insert at the end */
+	i = 1;
+	for (curr = PROGRAM_FIRST(program); curr->next; curr = curr->next)
+	    i++;		/* count lines */
+	PROGRAM_SET_CURR_LINE(program, i + 2);
+	new_line->prev = curr;
+	curr->next = new_line;
+	/* DBDIRTY(program); */
+	return;
+    }
+    if (!PROGRAM_CURR_LINE(program)) {	/* insert at the
+					 * beginning */
+	PROGRAM_SET_CURR_LINE(program, 1);	/* insert after this new
+						 * line */
+	new_line->next = PROGRAM_FIRST(program);
+	PROGRAM_SET_FIRST(program, new_line);
+	/* DBDIRTY(program); */
+	return;
+    }
+    /* inserting in the middle */
+    PROGRAM_SET_CURR_LINE(program, PROGRAM_CURR_LINE(program) + 1);
+    new_line->prev = curr;
+    new_line->next = curr->next;
+    if (new_line->next)
+	new_line->next->prev = new_line;
+    curr->next = new_line;
+    /* DBDIRTY(program); */
+}
+
 /* The editor itself --- this gets called each time every time to
  * parse a command.
  */
@@ -395,7 +806,7 @@ editor(int descr, dbref player, const char *command)
 	    notify(player, "Compiler done.");
 	    break;
 	case LIST_COMMAND:
-	    do_list(player, program, arg, i);
+	    list_program(player, program, arg, i);
 	    break;
 	case EDITOR_HELP_COMMAND:
 	    spit_file(player, EDITOR_HELP_FILE);
@@ -420,70 +831,6 @@ editor(int descr, dbref player, const char *command)
     for (; i >= 0; i--) {
 	if (word[i])
 	    free((void *) word[i]);
-    }
-}
-
-
-/* puts program into insert mode */
-void
-do_insert(dbref player, dbref program, int arg[], int argc)
-{
-    PLAYER_SET_INSERT_MODE(player, PLAYER_INSERT_MODE(player) + 1);
-    /* DBDIRTY(player); */
-    if (argc)
-	PROGRAM_SET_CURR_LINE(program, arg[0] - 1);
-    /* set current line to something else */
-}
-
-/* deletes line n if one argument,
-   lines arg1 -- arg2 if two arguments
-   current line if no argument */
-void
-do_delete(dbref player, dbref program, int arg[], int argc)
-{
-    struct line *curr, *temp;
-    int i;
-
-    switch (argc) {
-    case 0:
-	arg[0] = PROGRAM_CURR_LINE(program);
-    case 1:
-	arg[1] = arg[0];
-    case 2:
-	/* delete from line 1 to line 2 */
-	/* first, check for conflict */
-	if (arg[0] > arg[1]) {
-	    notify(player, "Nonsensical arguments.");
-	    return;
-	}
-	i = arg[0] - 1;
-	for (curr = PROGRAM_FIRST(program); curr && i; i--)
-	    curr = curr->next;
-	if (curr) {
-	    int n = 0;
-	    PROGRAM_SET_CURR_LINE(program, arg[0]);
-	    i = arg[1] - arg[0] + 1;
-	    /* delete n lines */
-	    while (i && curr) {
-		temp = curr;
-		if (curr->prev)
-		    curr->prev->next = curr->next;
-		else
-		    PROGRAM_SET_FIRST(program, curr->next);
-		if (curr->next)
-		    curr->next->prev = curr->prev;
-		curr = curr->next;
-		free_line(temp);
-		i--;
-	    }
-	    n = arg[1] - arg[0] - i + 1;
-	    notifyf(player, "%d line%s deleted", n, n != 1 ? "s" : "");
-	} else
-	    notify(player, "No line to delete!");
-	break;
-    default:
-	notify(player, "Too many arguments!");
-	break;
     }
 }
 
@@ -608,41 +955,8 @@ write_program(struct line *first, dbref i)
     fclose(f);
 }
 
-/* quit from edit mode.  Put player back into the regular game mode */
 void
-do_quit(dbref player, dbref program)
-{
-    log_status("PROGRAM SAVED: %s by %s(%d)", unparse_object(player, program),
-	       NAME(player), player);
-    write_program(PROGRAM_FIRST(program), program);
-
-    if (tp_log_programs)
-	log_program_text(PROGRAM_FIRST(program), player, program);
-
-    free_prog_text(PROGRAM_FIRST(program));
-    PROGRAM_SET_FIRST(program, NULL);
-    FLAGS(program) &= ~INTERNAL;
-    FLAGS(player) &= ~INTERACTIVE;
-    PLAYER_SET_CURR_PROG(player, NOTHING);
-    DBDIRTY(player);
-    DBDIRTY(program);
-}
-
-/* quit from edit mode, with no changes written */
-void
-do_cancel(dbref player, dbref program)
-{
-    uncompile_program(program);
-    free_prog_text(PROGRAM_FIRST(program));
-    PROGRAM_SET_FIRST(program, NULL);
-    FLAGS(program) &= ~INTERNAL;
-    FLAGS(player) &= ~INTERACTIVE;
-    PLAYER_SET_CURR_PROG(player, NOTHING);
-    DBDIRTY(player);
-}
-
-void
-match_and_list(int descr, dbref player, const char *name, char *linespec)
+do_list(int descr, dbref player, const char *name, char *linespec)
 {
     dbref thing;
     char *p;
@@ -702,233 +1016,29 @@ match_and_list(int descr, dbref player, const char *name, char *linespec)
     }
     tmpline = PROGRAM_FIRST(thing);
     PROGRAM_SET_FIRST(thing, read_program(thing));
-    do_list(player, thing, range, argc);
+    list_program(player, thing, range, argc);
     free_prog_text(PROGRAM_FIRST(thing));
     PROGRAM_SET_FIRST(thing, tmpline);
     return;
 }
 
-
-/* list --- if no argument, redisplay the current line
-   if 1 argument, display that line
-   if 2 arguments, display all in between   */
+/* This routine determines if a player is editing or running an interactive
+   command.  It does it by checking the frame pointer field of the player ---
+   if the program counter is NULL, then the player is not running anything
+   The reason we don't just check the pointer but check the pc too is because
+   I plan to leave the frame always on to save the time required allocating
+   space each time a program is run.
+   */
 void
-do_list(dbref player, dbref program, int *oarg, int argc)
+interactive(int descr, dbref player, const char *command)
 {
-    struct line *curr;
-    int i, count;
-    int arg[2];
-    char buf[BUFFER_LEN];
-
-    if (oarg) {
-	arg[0] = oarg[0];
-	arg[1] = oarg[1];
-    } else
-	arg[0] = arg[1] = 0;
-    switch (argc) {
-    case 0:
-	arg[0] = PROGRAM_CURR_LINE(program);
-    case 1:
-	arg[1] = arg[0];
-    case 2:
-	if ((arg[0] > arg[1]) && (arg[1] != -1)) {
-	    notify_nolisten(player, "Arguments don't make sense!", 1);
-	    return;
-	}
-	i = arg[0] - 1;
-	for (curr = PROGRAM_FIRST(program); i && curr; i--)
-	    curr = curr->next;
-	if (curr) {
-	    i = arg[1] - arg[0] + 1;
-	    /* display n lines */
-	    for (count = arg[0]; curr && (i || (arg[1] == -1)); i--) {
-		if (FLAGS(player) & INTERNAL)
-		    snprintf(buf, sizeof(buf), "%3d: %s", count, DoNull(curr->this_line));
-		else
-		    snprintf(buf, sizeof(buf), "%s", DoNull(curr->this_line));
-		notify_nolisten(player, buf, 1);
-		count++;
-		curr = curr->next;
-	    }
-	    if (count - arg[0] > 1) {
-		notifyf_nolisten(player, "%d lines displayed.", count - arg[0]);
-	    }
-	} else
-	    notify_nolisten(player, "Line not available for display.", 1);
-	break;
-    default:
-	notify_nolisten(player, "Too many arguments!", 1);
-	break;
-    }
-}
-
-void
-val_and_head(dbref player, int arg[], int argc)
-{
-    dbref program;
-
-    if (argc != 1) {
-	notify(player, "I don't understand which header you're trying to look at.");
-	return;
-    }
-    program = arg[0];
-    if ((program < 0) || (program >= db_top)
-	|| (Typeof(program) != TYPE_PROGRAM)) {
-	notify(player, "That isn't a program.");
-	return;
-    }
-    if (!(controls(player, program) || Linkable(program))) {
-	notify(player, "That's not a public program.");
-	return;
-    }
-    do_list_header(player, program);
-}
-
-void
-do_list_header(dbref player, dbref program)
-{
-    struct line *curr = read_program(program);
-
-    while (curr && (curr->this_line)[0] == '(') {
-	notify(player, curr->this_line);
-	curr = curr->next;
-    }
-    if (!(FLAGS(program) & INTERNAL)) {
-	free_prog_text(curr);
-    }
-    notify(player, "Done.");
-}
-
-void
-list_publics(int descr, dbref player, int arg[], int argc)
-{
-    dbref program;
-
-    if (argc > 1) {
-	notify(player,
-	       "I don't understand which program you want to list PUBLIC functions for.");
-	return;
-    }
-    program = (argc == 0) ? PLAYER_CURR_PROG(player) : arg[0];
-    if (Typeof(program) != TYPE_PROGRAM) {
-	notify(player, "That isn't a program.");
-	return;
-    }
-    if (!(controls(player, program) || Linkable(program))) {
-	notify(player, "That's not a public program.");
-	return;
-    }
-    if (!(PROGRAM_CODE(program))) {
-	if (program == PLAYER_CURR_PROG(player)) {
-	    do_compile(descr, OWNER(program), program, 0);
-	} else {
-	    struct line *tmpline;
-
-	    tmpline = PROGRAM_FIRST(program);
-	    PROGRAM_SET_FIRST(program, (struct line *) read_program(program));
-	    do_compile(descr, OWNER(program), program, 0);
-	    free_prog_text(PROGRAM_FIRST(program));
-	    PROGRAM_SET_FIRST(program, tmpline);
-	}
-	if (!PROGRAM_CODE(program)) {
-	    notify(player, "Program not compilable.");
-	    return;
-	}
-    }
-    do_list_publics(player, program);
-}
-
-void
-do_list_publics(dbref player, dbref program)
-{
-    struct publics *ptr;
-
-    notify(player, "PUBLIC funtions:");
-    for (ptr = PROGRAM_PUBS(program); ptr; ptr = ptr->next)
-	notify(player, ptr->subname);
-}
-
-void
-toggle_numbers(dbref player, int arg[], int argc)
-{
-    if (argc) {
-	switch (arg[0]) {
-	case 0:
-	    FLAGS(player) &= ~INTERNAL;
-	    notify(player, "Line numbers off.");
-	    break;
-
-	default:
-	    FLAGS(player) |= INTERNAL;
-	    notify(player, "Line numbers on.");
-	    break;
-	}
-    } else if (FLAGS(player) & INTERNAL) {
-	FLAGS(player) &= ~INTERNAL;
-	notify(player, "Line numbers off.");
+    if (FLAGS(player) & READMODE) {
+	/*
+	 * process command, push onto stack, and return control to forth
+	 * program
+	 */
+	handle_read_event(descr, player, command);
     } else {
-	FLAGS(player) |= INTERNAL;
-	notify(player, "Line numbers on.");
+	editor(descr, player, command);
     }
-}
-
-
-
-/* insert this line into program */
-void
-insert_line(dbref player, const char *line)
-{
-    dbref program;
-    int i;
-    struct line *curr;
-    struct line *new_line;
-
-    program = PLAYER_CURR_PROG(player);
-    if (!string_compare(line, EXIT_INSERT)) {
-	PLAYER_SET_INSERT_MODE(player, 0);	/* turn off insert mode */
-	notify_nolisten(player, "Exiting insert mode.", 1);
-	return;
-    }
-    i = PROGRAM_CURR_LINE(program) - 1;
-    for (curr = PROGRAM_FIRST(program); curr && i && i + 1; i--)
-	curr = curr->next;
-    new_line = get_new_line();	/* initialize line */
-    if (!*line) {
-	new_line->this_line = alloc_string(" ");
-    } else {
-	new_line->this_line = alloc_string(line);
-    }
-    if (!PROGRAM_FIRST(program)) {	/* nothing --- insert in front */
-	PROGRAM_SET_FIRST(program, new_line);
-	PROGRAM_SET_CURR_LINE(program, 2);	/* insert at the end */
-	/* DBDIRTY(program); */
-	return;
-    }
-    if (!curr) {		/* insert at the end */
-	i = 1;
-	for (curr = PROGRAM_FIRST(program); curr->next; curr = curr->next)
-	    i++;		/* count lines */
-	PROGRAM_SET_CURR_LINE(program, i + 2);
-	new_line->prev = curr;
-	curr->next = new_line;
-	/* DBDIRTY(program); */
-	return;
-    }
-    if (!PROGRAM_CURR_LINE(program)) {	/* insert at the
-					 * beginning */
-	PROGRAM_SET_CURR_LINE(program, 1);	/* insert after this new
-						 * line */
-	new_line->next = PROGRAM_FIRST(program);
-	PROGRAM_SET_FIRST(program, new_line);
-	/* DBDIRTY(program); */
-	return;
-    }
-    /* inserting in the middle */
-    PROGRAM_SET_CURR_LINE(program, PROGRAM_CURR_LINE(program) + 1);
-    new_line->prev = curr;
-    new_line->next = curr->next;
-    if (new_line->next)
-	new_line->next->prev = new_line;
-    curr->next = new_line;
-    /* DBDIRTY(program); */
 }

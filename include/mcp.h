@@ -357,8 +357,5 @@ void mcp_mesg_arg_remove(McpMesg * msg, const char *argname);
 int mcp_version_compare(McpVer v1, McpVer v2);
 McpVer mcp_version_select(McpVer min1, McpVer max1, McpVer min2, McpVer max2);
 
-void do_mcpedit(int descr, dbref player, const char *name);
-void do_mcpprogram(int descr, dbref player, const char *name);
-
 #endif				/* _MCP_H */
 #endif

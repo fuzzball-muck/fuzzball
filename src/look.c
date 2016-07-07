@@ -1,21 +1,22 @@
 #include "config.h"
 
+#include "boolexp.h"
 #include "db.h"
 #include "dbsearch.h"
 #ifdef DISKBASE
 #include "diskprop.h"
 #endif
-#include "externs.h"
+#include "fbstrings.h"
+#include "fbtime.h"
 #include "interface.h"
-#include "interp.h"
 #include "match.h"
 #include "mpi.h"
 #include "params.h"
+#include "player.h"
+#include "predicates.h"
 #include "props.h"
+#include "timequeue.h"
 #include "tune.h"
-
-#define EXEC_SIGNAL '@'		/* Symbol which tells us what we're looking at
-				   is an execution order and not a message.    */
 
 /* prints owner of something */
 static void
@@ -40,81 +41,27 @@ print_owner(dbref player, dbref thing)
     notify(player, buf);
 }
 
-void
-exec_or_notify(int descr, dbref player, dbref thing,
-	       const char *message, const char *whatcalled, int mpiflags)
+int
+can_see(dbref player, dbref thing, int can_see_loc)
 {
-    const char *p;
-    char *p2;
-    char *p3;
-    char buf[BUFFER_LEN];
-    char tmpcmd[BUFFER_LEN];
-    char tmparg[BUFFER_LEN];
+    if (player == thing || Typeof(thing) == TYPE_EXIT || Typeof(thing) == TYPE_ROOM)
+        return 0;
 
-    p = message;
-
-    if (*p == EXEC_SIGNAL) {
-	int i;
-
-	if (*(++p) == REGISTERED_TOKEN) {
-	    strcpyn(buf, sizeof(buf), p);
-	    for (p2 = buf; *p && !isspace(*p); p++) ;
-	    if (*p)
-		p++;
-
-	    for (p3 = buf; *p3 && !isspace(*p3); p3++) ;
-	    if (*p3)
-		*p3 = '\0';
-
-	    if (*p2) {
-		i = (dbref) find_registered_obj(thing, p2);
-	    } else {
-		i = 0;
-	    }
-	} else {
-	    i = atoi(p);
-	    for (; *p && !isspace(*p); p++) ;
-	    if (*p)
-		p++;
-	}
-	if (i < 0 || i >= db_top || (Typeof(i) != TYPE_PROGRAM)) {
-	    if (*p) {
-		notify(player, p);
-	    } else {
-		notify(player, "You see nothing special.");
-	    }
-	} else {
-	    struct frame *tmpfr;
-
-	    strcpyn(tmparg, sizeof(tmparg), match_args);
-	    strcpyn(tmpcmd, sizeof(tmpcmd), match_cmdname);
-	    p = do_parse_mesg(descr, player, thing, p, whatcalled, buf, sizeof(buf),
-			      MPI_ISPRIVATE | mpiflags);
-	    strcpyn(match_args, sizeof(match_args), p);
-	    strcpyn(match_cmdname, sizeof(match_cmdname), whatcalled);
-	    tmpfr = interp(descr, player, LOCATION(player), i, thing, PREEMPT, STD_HARDUID, 0);
-	    if (tmpfr) {
-		interp_loop(player, i, tmpfr, 0);
-	    }
-	    strcpyn(match_args, sizeof(match_args), tmparg);
-	    strcpyn(match_cmdname, sizeof(match_cmdname), tmpcmd);
-	}
+    if (can_see_loc) {
+        switch (Typeof(thing)) {
+        case TYPE_PROGRAM:
+            return ((FLAGS(thing) & LINK_OK) || controls(player, thing));
+        case TYPE_PLAYER:
+            if (tp_dark_sleepers) {
+                return (!Dark(thing) && online(thing));
+            }
+        default:
+            return (!Dark(thing) || (controls(player, thing) && !(FLAGS(player) & STICKY)));
+        }
     } else {
-	p = do_parse_mesg(descr, player, thing, p, whatcalled, buf, sizeof(buf),
-			  MPI_ISPRIVATE | mpiflags);
-	notify(player, p);
+        /* can't see loc */
+        return (controls(player, thing) && !(FLAGS(player) & STICKY));
     }
-}
-
-void
-exec_or_notify_prop(int descr, dbref player, dbref thing,
-		    const char *propname, const char *whatcalled)
-{
-    const char *message = get_property_class(thing, propname);
-    int mpiflags = Prop_Blessed(thing, propname) ? MPI_ISBLESSED : 0;
-
-    if (message)
-	exec_or_notify(descr, player, thing, message, whatcalled, mpiflags);
 }
 
 static void
@@ -497,29 +444,6 @@ listprops_wildcard(dbref player, dbref thing, const char *dir, const char *wild)
     }
     return cnt;
 }
-
-
-long
-size_object(dbref i, int load)
-{
-    long byts;
-    byts = sizeof(struct object);
-
-    if (NAME(i)) {
-	byts += strlen(NAME(i)) + 1;
-    }
-    byts += size_properties(i, load);
-
-    if (Typeof(i) == TYPE_EXIT && DBFETCH(i)->sp.exit.dest) {
-	byts += sizeof(dbref) * DBFETCH(i)->sp.exit.ndest;
-    } else if (Typeof(i) == TYPE_PLAYER && PLAYER_PASSWORD(i)) {
-	byts += strlen(PLAYER_PASSWORD(i)) + 1;
-    } else if (Typeof(i) == TYPE_PROGRAM) {
-	byts += size_prog(i);
-    }
-    return byts;
-}
-
 
 void
 do_examine(int descr, dbref player, const char *name, const char *dir)

@@ -1,16 +1,25 @@
 #include "config.h"
 
+#include "boolexp.h"
+#include "compile.h"
 #include "db.h"
 #include "dbsearch.h"
 #ifdef DISKBASE
 #include "diskprop.h"
 #endif
-#include "externs.h"
+#include "edit.h"
+#include "fbstrings.h"
+#include "fbtime.h"
 #include "interface.h"
 #include "interp.h"
+#include "log.h"
 #include "match.h"
+#include "move.h"
 #include "params.h"
+#include "player.h"
+#include "predicates.h"
 #include "props.h"
+#include "timequeue.h"
 #include "tune.h"
 
 static struct inst *oper1, *oper2, *oper3, *oper4;
@@ -1451,6 +1460,30 @@ prim_recycle(PRIM_PROTOTYPE)
     recycle(fr->descr, player, result);
 }
 
+/* sets a lock on an object to the lockstring passed to it.
+   If the lockstring is null, then it unlocks the object.
+   this returns a 1 or a 0 to represent success. */
+int
+setlockstr(int descr, dbref player, dbref thing, const char *keyname)
+{
+    struct boolexp *key;
+
+    if (*keyname != '\0') {
+        key = parse_boolexp(descr, player, keyname, 0);
+        if (key == TRUE_BOOLEXP) {
+            return 0;
+        } else {
+            /* everything ok, do it */
+            ts_modifyobject(thing);
+            SETLOCK(thing, key);
+            return 1;
+        }
+    } else {
+        ts_modifyobject(thing);
+        CLEARLOCK(thing);
+        return 1;
+    }
+}
 
 void
 prim_setlockstr(PRIM_PROTOTYPE)

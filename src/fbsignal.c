@@ -1,7 +1,8 @@
 #include "config.h"
 
-#include "externs.h"
 #include "interface.h"
+#include "log.h"
+#include "fbsignal.h"
 
 #ifdef SOLARIS
 #  ifndef _POSIX_SOURCE

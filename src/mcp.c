@@ -1,8 +1,10 @@
 #include "config.h"
 
 #ifdef MCP_SUPPORT
+#include "commands.h"
 #include "db.h"
-#include "externs.h"
+#include "edit.h"
+#include "fbstrings.h"
 #include "interface.h"
 #include "match.h"
 #include "mcp.h"

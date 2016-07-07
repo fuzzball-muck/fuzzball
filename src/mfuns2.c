@@ -1,14 +1,19 @@
 #include "config.h"
 
+#include "boolexp.h"
 #include "db.h"
-#include "externs.h"
+#include "fbstrings.h"
+#include "game.h"
 #include "interp.h"
 #include "interface.h"
 #include "match.h"
 #include "mpi.h"
 #include "msgparse.h"
 #include "params.h"
+#include "player.h"
+#include "predicates.h"
 #include "props.h"
+#include "timequeue.h"
 #include "tune.h"
 
 #include <math.h>

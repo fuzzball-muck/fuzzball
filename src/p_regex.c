@@ -1,7 +1,7 @@
 #include "config.h"
 
 #include "db.h"
-#include "externs.h"
+#include "hashtab.h"
 #include "interp.h"
 
 #ifdef WIN32

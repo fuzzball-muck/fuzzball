@@ -1,11 +1,16 @@
 #include "config.h"
 
+#include "boolexp.h"
 #include "db.h"
 #ifdef DISKBASE
 #include "diskprop.h"
 #endif
-#include "externs.h"
+#include "fbstrings.h"
+#include "fbtime.h"
 #include "interface.h"
+#include "interp.h"
+#include "log.h"
+#include "match.h"
 #include "mpi.h"
 #include "params.h"
 #include "props.h"
@@ -1351,4 +1356,163 @@ reflist_find(dbref obj, const char *propname, dbref tofind)
 	}
     }
     return pos;
+}
+
+void
+set_standard_property(int descr, dbref player, const char *objname,
+		      const char *propname, const char *proplabel, const char *propvalue)
+{
+    dbref object;
+
+    if ((object = match_controlled(descr, player, objname)) != NOTHING) {
+	SETMESG(object, propname, propvalue);
+	ts_modifyobject(object);
+	notifyf(player, "%s %s.", proplabel, propvalue && *propvalue ? "set" : "cleared");
+    }
+}
+
+void
+set_standard_lock(int descr, dbref player, const char *objname,
+		  const char *propname, const char *proplabel, const char *keyvalue)
+{
+    dbref object;
+    PData property;
+    struct boolexp *key;
+
+    if ((object = match_controlled(descr, player, objname)) != NOTHING) {
+	if (!*keyvalue) {
+	    remove_property(object, propname, 0);
+	    ts_modifyobject(object);
+	    notifyf(player, "%s cleared.", proplabel);
+	    return;
+	}
+
+	key = parse_boolexp(descr, player, keyvalue, 0);
+	if (key == TRUE_BOOLEXP) {
+	    notify(player, "I don't understand that key.");
+	    return;
+	}
+
+	property.flags = PROP_LOKTYP;
+	property.data.lok = key;
+	set_property(object, propname, &property, 0);
+	ts_modifyobject(object);
+	notifyf(player, "%s set.", proplabel);
+    }
+}
+
+#define EXEC_SIGNAL '@'         /* Symbol which tells us what we're looking at
+                                   is an execution order and not a message.    */
+void
+exec_or_notify(int descr, dbref player, dbref thing,
+	       const char *message, const char *whatcalled, int mpiflags)
+{
+    const char *p;
+    char *p2;
+    char *p3;
+    char buf[BUFFER_LEN];
+    char tmpcmd[BUFFER_LEN];
+    char tmparg[BUFFER_LEN];
+
+    p = message;
+
+    if (*p == EXEC_SIGNAL) {
+	int i;
+
+	if (*(++p) == REGISTERED_TOKEN) {
+	    strcpyn(buf, sizeof(buf), p);
+	    for (p2 = buf; *p && !isspace(*p); p++) ;
+	    if (*p)
+		p++;
+
+	    for (p3 = buf; *p3 && !isspace(*p3); p3++) ;
+	    if (*p3)
+		*p3 = '\0';
+
+	    if (*p2) {
+		i = (dbref) find_registered_obj(thing, p2);
+	    } else {
+		i = 0;
+	    }
+	} else {
+	    i = atoi(p);
+	    for (; *p && !isspace(*p); p++) ;
+	    if (*p)
+		p++;
+	}
+	if (i < 0 || i >= db_top || (Typeof(i) != TYPE_PROGRAM)) {
+	    if (*p) {
+		notify(player, p);
+	    } else {
+		notify(player, "You see nothing special.");
+	    }
+	} else {
+	    struct frame *tmpfr;
+
+	    strcpyn(tmparg, sizeof(tmparg), match_args);
+	    strcpyn(tmpcmd, sizeof(tmpcmd), match_cmdname);
+	    p = do_parse_mesg(descr, player, thing, p, whatcalled, buf, sizeof(buf),
+			      MPI_ISPRIVATE | mpiflags);
+	    strcpyn(match_args, sizeof(match_args), p);
+	    strcpyn(match_cmdname, sizeof(match_cmdname), whatcalled);
+	    tmpfr = interp(descr, player, LOCATION(player), i, thing, PREEMPT, STD_HARDUID, 0);
+	    if (tmpfr) {
+		interp_loop(player, i, tmpfr, 0);
+	    }
+	    strcpyn(match_args, sizeof(match_args), tmparg);
+	    strcpyn(match_cmdname, sizeof(match_cmdname), tmpcmd);
+	}
+    } else {
+	p = do_parse_mesg(descr, player, thing, p, whatcalled, buf, sizeof(buf),
+			  MPI_ISPRIVATE | mpiflags);
+	notify(player, p);
+    }
+}
+
+void
+exec_or_notify_prop(int descr, dbref player, dbref thing,
+		    const char *propname, const char *whatcalled)
+{
+    const char *message = get_property_class(thing, propname);
+    int mpiflags = Prop_Blessed(thing, propname) ? MPI_ISBLESSED : 0;
+
+    if (message)
+        exec_or_notify(descr, player, thing, message, whatcalled, mpiflags);
+}
+
+void
+parse_oprop(int descr, dbref player, dbref dest, dbref exit, const char *propname,
+            const char *prefix, const char *whatcalled)
+{
+    const char *msg = get_property_class(exit, propname);
+    int ival = 0;
+    if (Prop_Blessed(exit, propname))
+        ival |= MPI_ISBLESSED;
+
+    if (msg)
+        parse_omessage(descr, player, dest, exit, msg, prefix, whatcalled, ival);
+}
+
+void
+parse_omessage(int descr, dbref player, dbref dest, dbref exit, const char *msg,
+               const char *prefix, const char *whatcalled, int mpiflags)
+{
+    char buf[BUFFER_LEN];
+    char *ptr;
+
+    do_parse_mesg(descr, player, exit, msg, whatcalled, buf, sizeof(buf),
+                  MPI_ISPUBLIC | mpiflags);
+    ptr = pronoun_substitute(descr, player, buf);
+    if (!*ptr)
+        return;
+
+    /* 
+       TODO: Find out if this should be prefixing with NAME(player), or if
+       it should use the prefix argument...  The original code just ignored
+       the prefix argument...
+     */
+
+    prefix_message(buf, ptr, prefix, BUFFER_LEN, 1);
+
+    notify_except(CONTENTS(dest), player, buf, player);
 }

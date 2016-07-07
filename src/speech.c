@@ -1,11 +1,11 @@
 #include "config.h"
 
 #include "db.h"
-#include "externs.h"
+#include "fbstrings.h"
 #include "interface.h"
+#include "log.h"
 #include "match.h"
-#include "mpi.h"
-#include "props.h"
+#include "player.h"
 #include "tune.h"
 
 void
@@ -138,114 +138,4 @@ do_page(dbref player, const char *arg1, const char *arg2)
     else {
 	notifyf(player, "%s is not connected.", NAME(target));
     }
-}
-
-void
-notify_listeners(dbref who, dbref xprog, dbref obj, dbref room, const char *msg, int isprivate)
-{
-    char buf[BUFFER_LEN];
-    dbref ref;
-
-    if (obj == NOTHING)
-	return;
-
-    if (tp_listeners && (tp_listeners_obj || Typeof(obj) == TYPE_ROOM)) {
-	listenqueue(-1, who, room, obj, obj, xprog, "_listen", msg, tp_listen_mlev, 1, 0);
-	listenqueue(-1, who, room, obj, obj, xprog, "~listen", msg, tp_listen_mlev, 1, 1);
-	listenqueue(-1, who, room, obj, obj, xprog, "~olisten", msg, tp_listen_mlev, 0, 1);
-    }
-
-    if (tp_zombies && Typeof(obj) == TYPE_THING && !isprivate) {
-	if (FLAGS(obj) & VEHICLE) {
-	    if (LOCATION(who) == LOCATION(obj)) {
-		char pbuf[BUFFER_LEN];
-		const char *prefix;
-
-		memset(buf, 0, BUFFER_LEN);	/* Make sure the buffer is zeroed */
-
-		prefix = do_parse_prop(-1, who, obj, MESGPROP_OECHO, "(@Oecho)", pbuf,
-				       sizeof(pbuf), MPI_ISPRIVATE);
-		if (!prefix || !*prefix)
-		    prefix = "Outside>";
-		snprintf(buf, sizeof(buf), "%s %.*s", prefix,
-			 (int) (BUFFER_LEN - 2 - strlen(prefix)), msg);
-		ref = CONTENTS(obj);
-		while (ref != NOTHING) {
-		    notify_filtered(who, ref, buf, isprivate);
-		    ref = NEXTOBJ(ref);
-		}
-	    }
-	}
-    }
-
-    if (Typeof(obj) == TYPE_PLAYER || Typeof(obj) == TYPE_THING)
-	notify_filtered(who, obj, msg, isprivate);
-}
-
-void
-notify_except(dbref first, dbref exception, const char *msg, dbref who)
-{
-    dbref room, srch;
-
-    if (first != NOTHING) {
-
-	srch = room = LOCATION(first);
-
-	if (tp_listeners) {
-	    notify_from_echo(who, srch, msg, 0);
-
-	    if (tp_listeners_env) {
-		srch = LOCATION(srch);
-		while (srch != NOTHING) {
-		    notify_from_echo(who, srch, msg, 0);
-		    srch = getparent(srch);
-		}
-	    }
-	}
-
-	DOLIST(first, first) {
-	    if ((Typeof(first) != TYPE_ROOM) && (first != exception)) {
-		/* don't want excepted player or child rooms to hear */
-		notify_from_echo(who, first, msg, 0);
-	    }
-	}
-    }
-}
-
-
-void
-parse_oprop(int descr, dbref player, dbref dest, dbref exit, const char *propname,
-	    const char *prefix, const char *whatcalled)
-{
-    const char *msg = get_property_class(exit, propname);
-    int ival = 0;
-    if (Prop_Blessed(exit, propname))
-	ival |= MPI_ISBLESSED;
-
-    if (msg)
-	parse_omessage(descr, player, dest, exit, msg, prefix, whatcalled, ival);
-}
-
-void
-parse_omessage(int descr, dbref player, dbref dest, dbref exit, const char *msg,
-	       const char *prefix, const char *whatcalled, int mpiflags)
-{
-    char buf[BUFFER_LEN];
-    char *ptr;
-
-    do_parse_mesg(descr, player, exit, msg, whatcalled, buf, sizeof(buf),
-		  MPI_ISPUBLIC | mpiflags);
-    ptr = pronoun_substitute(descr, player, buf);
-    if (!*ptr)
-	return;
-
-    /*
-       TODO: Find out if this should be prefixing with NAME(player), or if
-       it should use the prefix argument...  The original code just ignored
-       the prefix argument...
-     */
-
-    prefix_message(buf, ptr, prefix, BUFFER_LEN, 1);
-
-    notify_except(CONTENTS(dest), player, buf, player);
 }

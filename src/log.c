@@ -1,7 +1,8 @@
 #include "config.h"
 
 #include "db.h"
-#include "externs.h"
+#include "fbtime.h"
+#include "log.h"
 
 #include <stdarg.h>
 
@@ -113,4 +114,18 @@ log_user(dbref player, dbref program, char *logmessage)
     strncat(logformat, logmessage, len);
     strip_evil_characters(logformat);
     log2file(USER_LOG, "%s", logformat);
+}
+
+char *
+whowhere(dbref who)
+{
+    char buf[BUFFER_LEN];
+
+    snprintf(buf, sizeof(buf), "%s%s%s%s(#%d) in %s(#%d)",
+             Wizard(OWNER(who)) ? "WIZ: " : "",
+             (Typeof(who) != TYPE_PLAYER) ? NAME(who) : "",
+             (Typeof(who) != TYPE_PLAYER) ? " owned by " : "",
+             NAME(OWNER(who)), who, NAME(LOCATION(who)), LOCATION(who));
+
+    return strdup(buf);
 }

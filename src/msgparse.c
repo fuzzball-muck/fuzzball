@@ -1,7 +1,8 @@
 #include "config.h"
 
 #include "db.h"
-#include "externs.h"
+#include "fbstrings.h"
+#include "hashtab.h"
 #include "interface.h"
 #include "match.h"
 #include "mfun.h"
