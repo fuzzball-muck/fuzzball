@@ -921,16 +921,23 @@ process_command(int descr, dbref player, char *command)
 		break;
 	    case 'l':
 	    case 'L':
-		/* @link, @list, @lock */
+		/* @link, @linklock, @list, @lock */
 		switch (command[2]) {
 		case 'i':
 		case 'I':
 		    switch (command[3]) {
 		    case 'n':
 		    case 'N':
-			Matched("@link");
-			NOGUEST("@link", player);
-			do_link(descr, player, arg1, arg2);
+			if (strlen(command) < 7) {
+			    Matched("@link");
+			    NOGUEST("@link", player);
+			    do_link(descr, player, arg1, arg2);
+			} else {
+			    Matched("@linklock");
+			    NOGUEST("@linklock", player);
+			    set_standard_lock(descr, player, arg1, MESGPROP_LINKLOCK,
+						"Link Lock", arg2);
+			}
 			break;
 		    case 's':
 		    case 'S':

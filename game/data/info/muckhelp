@@ -816,6 +816,12 @@ an object, or 'property:value'.
 may place things in or remove things from <object>. 
 
 
+@LINKLOCK <object>=<lock expression>
+
+  @linklocks <object> such that only those for whom <lock expression> is true
+may link to <object>.
+
+
 @TELEPORT <arg1> [=<destination>]
 
   Moves <arg1> to <destination>, if <destination> is not given, moves you

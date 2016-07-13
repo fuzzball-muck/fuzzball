@@ -39,18 +39,18 @@ Symbols
   @drop              @dump              @edit              @entrances
   @examine           @fail              @find              @force
   @force_lock        @hashes            @idescribe         @kill
-  @link              @list              @lock              @mcpedit
-  @mcpprogram        @memory            @mpitops           @muftops
-  @name              @newpassword       @odrop             @oecho
-  @ofail             @open              @osuccess          @owned
-  @password          @pcreate           @pecho             @program
-  @propset           @ps                @reconfiguressl    @recycle
-  @relink            @restart           @restrict          @sanchange
-  @sanfix            @sanity            @set               @shutdown
-  @stats             @success           @sweep             @teleport
-  @toad              @tops              @trace             @tune
-  @unbless           @uncompile         @unlink            @unlock
-  @usage             @version           @wall              
+  @link              @linklock          @list              @lock
+  @mcpedit           @mcpprogram        @memory            @mpitops
+  @muftops           @name              @newpassword       @odrop
+  @oecho             @ofail             @open              @osuccess
+  @owned             @password          @pcreate           @pecho
+  @program           @propset           @ps                @reconfiguressl
+  @recycle           @relink            @restart           @restrict
+  @sanchange         @sanfix            @sanity            @set
+  @shutdown          @stats             @success           @sweep
+  @teleport          @toad              @tops              @trace
+  @tune              @unbless           @uncompile         @unlink
+  @unlock            @usage             @version           @wall
 
 A's
   abode  
@@ -551,14 +551,15 @@ Building Help
 @clone             @conlock           @contents          @create
 @describe          @dig               @drop              @entrances
 @fail              @find              @force_lock        @idescribe
-@link              @lock              @name              @odrop
-@oecho             @ofail             @open              @osuccess
-@owned             @pecho             @propset           @recycle
-@relink            @set               @stats             @success
-@sweep             @teleport          @trace             @unlink
-@unlock            bogus              control            drop-to
-failure            homes              linking            objectmatching
-substitutions      success            timestamps         types
+@link              @linklock          @lock              @name
+@odrop             @oecho             @ofail             @open
+@osuccess          @owned             @pecho             @propset
+@recycle           @relink            @set               @stats
+@success           @sweep             @teleport          @trace
+@unlink            @unlock            bogus              control
+drop-to            failure            homes              linking
+objectmatching     substitutions      success            timestamps
+types              
 
 ~----------------------------------------------------------------------------
 ~
@@ -1075,6 +1076,14 @@ Also see: @LOCK and @FORCE
   @conlocks <object> such that only those for whom <lock expression> is true
 may place things in or remove things from <object>. 
 Also see: @LOCK, GET and PUT
+~
+~
+@LINKLOCK
+@LINKLOCK <object>=<lock expression>
+
+  @linklocks <object> such that only those for whom <lock expression> is true
+may link to <object>.
+Also see: @LOCK and @LINK
 ~
 ~
 @TELEPORT

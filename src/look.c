@@ -528,6 +528,8 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
 	notify(player, GETDESC(thing));
 
     notifyf(player, "Key: %s", unparse_boolexp(player, GETLOCK(thing), 1));
+    notifyf(player, "Link_OK Key: %s",
+	    unparse_boolexp(player, get_property_lock(thing, MESGPROP_LINKLOCK), 1));
     notifyf(player, "Chown_OK Key: %s",
 	    unparse_boolexp(player, get_property_lock(thing, MESGPROP_CHLOCK), 1));
     notifyf(player, "Container Key: %s",
