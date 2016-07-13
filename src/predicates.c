@@ -34,9 +34,6 @@ can_link_to(dbref who, object_flag_type what_type, dbref where)
     case TYPE_PLAYER:
 	/* Players may only be linked to rooms, that are either
 	 * controlled by the player or set either L or A. */
-notifyf(1, "controls: %s", controls(who, where) ? "1" : "0");
-notifyf(1, "linkable: %s", Linkable(where) ? "1" : "0");
-notifyf(1, "lock: %s", test_lock(NOTHING, who, where, MESGPROP_LINKLOCK) ? "1" : "0");
 	return (Typeof(where) == TYPE_ROOM && (controls(who, where) || (Linkable(where) && test_lock(NOTHING, who, where, MESGPROP_LINKLOCK))));
     case TYPE_ROOM:
 	/* Rooms may be linked to rooms or things (this sets their
