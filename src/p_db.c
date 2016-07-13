@@ -1105,6 +1105,8 @@ prog_can_link_to(int mlev, dbref who, object_flag_type what_type, dbref where)
 	return 1;
     if (where < 0 || where >= db_top)
 	return 0;
+    if (!test_lock(NOTHING, who, where, MESGPROP_LINKLOCK))
+	return 0;
     switch (what_type) {
     case TYPE_EXIT:
 	return (mlev > 3 || permissions(who, where) || (FLAGS(where) & LINK_OK));
