@@ -24,32 +24,27 @@ can_link_to(dbref who, object_flag_type what_type, dbref where)
     /* Can't link to an invalid dbref */
     if (where < 0 || where >= db_top)
 	return 0;
-    if (!test_lock(NOTHING, who, where, MESGPROP_LINKLOCK))
-	return 0;
+
     switch (what_type) {
     case TYPE_EXIT:
 	/* If the target is LINK_OK, then any exit may be linked
 	 * there.  Otherwise, only someone who controls the
 	 * target may link there. */
-	return (controls(who, where) || (FLAGS(where) & LINK_OK));
+	return (controls(who, where) || ((FLAGS(where) & LINK_OK) && test_lock(NOTHING, who, where, MESGPROP_LINKLOCK)));
     case TYPE_PLAYER:
 	/* Players may only be linked to rooms, that are either
 	 * controlled by the player or set either L or A. */
-	return (Typeof(where) == TYPE_ROOM && (controls(who, where) || Linkable(where)));
+	return (Typeof(where) == TYPE_ROOM && (controls(who, where) || (Linkable(where) && test_lock(NOTHING, who, where, MESGPROP_LINKLOCK))));
     case TYPE_ROOM:
 	/* Rooms may be linked to rooms or things (this sets their
 	 * dropto location).  Target must be controlled, or be L or A. */
 	return ((Typeof(where) == TYPE_ROOM || Typeof(where) == TYPE_THING)
-		&& (controls(who, where) || Linkable(where)));
+		&& (controls(who, where) || (Linkable(where) && test_lock(NOTHING, who, where, MESGPROP_LINKLOCK))));
     case TYPE_THING:
 	/* Things may be linked to rooms, players, or other things (this
 	 * sets the thing's home).  Target must be controlled, or be L or A. */
 	return ((Typeof(where) == TYPE_ROOM || Typeof(where) == TYPE_PLAYER ||
-		 Typeof(where) == TYPE_THING) && (controls(who, where) || Linkable(where)));
-    case NOTYPE:
-	/* Why is this here? -winged */
-	return (controls(who, where) || (FLAGS(where) & LINK_OK) ||
-		(Typeof(where) != TYPE_THING && (FLAGS(where) & ABODE)));
+		 Typeof(where) == TYPE_THING) && (controls(who, where) || (Linkable(where) && test_lock(NOTHING, who, where, MESGPROP_LINKLOCK))));
     default:
 	/* Programs can't be linked anywhere */
 	return 0;
