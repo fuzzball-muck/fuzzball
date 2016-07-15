@@ -2,6 +2,7 @@
 #define _ARRAY_H
 
 #include "db.h"
+#include "inst.h"
 
 #define ARRAY_UNDEFINED		0
 #define ARRAY_PACKED		1

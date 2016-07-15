@@ -1,5 +1,6 @@
 #include "config.h"
 
+#include "array.h"
 #include "db.h"
 #include "interface.h"
 #include "interp.h"

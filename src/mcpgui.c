@@ -3,6 +3,7 @@
 #ifdef MCP_SUPPORT
 #include "fbstrings.h"
 #include "interface.h"
+#include "interp.h"
 #include "mcp.h"
 #include "mcpgui.h"
 #include "mcppkg.h"
@@ -10,25 +11,6 @@
 #ifdef HAVE_MALLOC_H
 #include <malloc.h>
 #endif				/* HAVE_MALLOC_H */
-
-typedef struct DlogValue_t {
-    struct DlogValue_t *next;
-    char *name;
-    int lines;
-    char **value;
-} DlogValue;
-
-typedef struct DlogData_t {
-    struct DlogData_t *next;
-    struct DlogData_t **prev;
-    char *id;
-    int descr;
-    int dismissed;
-    DlogValue *values;
-    Gui_CB callback;
-    GuiErr_CB error_cb;
-    void *context;
-} DlogData;
 
 static DlogData *dialog_list = NULL;
 static DlogData *dialog_last_accessed = NULL;

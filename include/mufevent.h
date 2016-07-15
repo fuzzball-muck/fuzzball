@@ -1,11 +1,23 @@
 #ifndef _MUFEVENT_H
 #define _MUFEVENT_H
 
+#include "array.h"
+
 struct mufevent {
     struct mufevent *next;
     char *event;
     struct inst data;
 };
+
+static struct mufevent_process {
+    struct mufevent_process *prev, *next;
+    dbref player;
+    dbref prog;
+    short filtercount;
+    short deleted;
+    char **filters;
+    struct frame *fr;
+} *mufevent_processes;
 
 #define MUFEVENT_ALL	-1
 #define MUFEVENT_FIRST	-2

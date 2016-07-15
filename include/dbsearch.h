@@ -26,9 +26,8 @@ struct flgchkdat {
     int size;			/* what size to check against. No check if 0 */
 };
 
-
-int init_checkflags(dbref player, const char *flags, struct flgchkdat *check);
 int checkflags(dbref what, struct flgchkdat check);
 void display_objinfo(dbref player, dbref obj, int output_type);
+int init_checkflags(dbref player, const char *flags, struct flgchkdat *check);
 
 #endif				/* _DBSEARCH_H */

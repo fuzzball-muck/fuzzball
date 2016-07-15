@@ -1,6 +1,15 @@
 #ifdef DISKBASE
 #ifndef _DISKPROP_H
 #define _DISKPROP_H
+
+#include "props.h"
+
+struct pload_Q {
+    dbref obj;
+    long count;
+    int Qtype;
+};
+
 void dirtyprops(dbref obj);
 int disposeprops(dbref obj);
 int disposeprops_notime(dbref obj);
@@ -17,5 +26,6 @@ void putprops_copy(FILE * f, dbref obj);
 void skipproperties(FILE * f, dbref obj);
 void unloadprops_with_prejudice(dbref obj);
 void undirtyprops(dbref obj);
+
 #endif				/* _DISKPROP_H */
 #endif

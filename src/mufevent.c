@@ -10,16 +10,6 @@
 #include "mufevent.h"
 #include "tune.h"
 
-static struct mufevent_process {
-    struct mufevent_process *prev, *next;
-    dbref player;
-    dbref prog;
-    short filtercount;
-    short deleted;
-    char **filters;
-    struct frame *fr;
-} *mufevent_processes;
-
 /* static void muf_event_process_free(struct mufevent* ptr)
  * Frees up a mufevent_process once you are done with it.
  * This shouldn't be used outside this module.

@@ -2,6 +2,7 @@
 #define _DEBUGGER_H
 
 #include "db.h"
+#include "interp.h"
 
 void list_proglines(dbref player, dbref program, struct frame *fr, int start, int end);
 void muf_backtrace(dbref player, dbref program, int count, struct frame *fr);

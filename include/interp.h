@@ -1,6 +1,8 @@
 #ifndef _INTERP_H
 #define _INTERP_H
 
+#include "inst.h"
+
 /* Some icky machine/compiler #defines. --jim */
 #ifdef MIPS
 typedef char *voidptr;
@@ -17,6 +19,168 @@ typedef void *voidptr;
 void RCLEAR(struct inst *oper, char *file, int line);
 
 #define CLEAR(oper) RCLEAR(oper, __FILE__, __LINE__)
+
+typedef struct inst vars[MAX_VAR];
+
+struct forvars {
+    int didfirst;
+    struct inst cur;
+    struct inst end;
+    int step;
+    struct forvars *next;
+};
+
+struct tryvars {
+    int depth;
+    int call_level;
+    int for_count;
+    struct inst *addr;
+    struct tryvars *next;
+};
+
+struct stack {
+    int top;
+    struct inst st[STACK_SIZE];
+};
+
+struct sysstack {
+    int top;
+    struct stack_addr st[STACK_SIZE];
+};
+
+struct callstack {
+    int top;
+    dbref st[STACK_SIZE];
+};
+
+struct localvars {
+    struct localvars *next;
+    struct localvars **prev;
+    dbref prog;
+    vars lvars;
+};
+
+struct forstack {
+    int top;
+    struct forvars *st;
+};
+
+struct trystack {
+    int top;
+    struct tryvars *st;
+};
+
+#define MAX_BREAKS 16
+struct debuggerdata {
+    unsigned debugging:1;	/* if set, this frame is being debugged */
+    unsigned force_debugging:1;	/* if set, debugger is active, even if not set Z */
+    unsigned bypass:1;		/* if set, bypass breakpoint on starting instr */
+    unsigned isread:1;		/* if set, the prog is trying to do a read */
+    unsigned showstack:1;	/* if set, show stack debug line, each inst. */
+    unsigned dosyspop:1;	/* if set, fix up system stack before returning. */
+    int lastlisted;		/* last listed line */
+    char *lastcmd;		/* last executed debugger command */
+    short breaknum;		/* the breakpoint that was just caught on */
+
+    dbref lastproglisted;	/* What program's text was last loaded to list? */
+    struct line *proglines;	/* The actual program text last loaded to list. */
+
+    short count;		/* how many breakpoints are currently set */
+    short temp[MAX_BREAKS];	/* is this a temp breakpoint? */
+    short level[MAX_BREAKS];	/* level breakpnts.  If -1, no check. */
+    struct inst *lastpc;	/* Last inst interped.  For inst changes. */
+    struct inst *pc[MAX_BREAKS];	/* pc breakpoint.  If null, no check. */
+    int pccount[MAX_BREAKS];	/* how many insts to interp.  -2 for inf. */
+    int lastline;		/* Last line interped.  For line changes. */
+    int line[MAX_BREAKS];	/* line breakpts.  -1 no check. */
+    int linecount[MAX_BREAKS];	/* how many lines to interp.  -2 for inf. */
+    dbref prog[MAX_BREAKS];	/* program that breakpoint is in. */
+};
+
+struct scopedvar_t {
+    int count;
+    const char **varnames;
+    struct scopedvar_t *next;
+    struct inst vars[1];
+};
+
+struct dlogidlist {
+    struct dlogidlist *next;
+    char dlogid[32];
+};
+
+struct mufwatchpidlist {
+    struct mufwatchpidlist *next;
+    int pid;
+};
+
+#define dequeue_prog(x,i) dequeue_prog_real(x,i,__FILE__,__LINE__)
+
+#define STD_REGUID 0
+#define STD_SETUID 1
+#define STD_HARDUID 2
+
+/* frame data structure necessary for executing programs */
+struct frame {
+    struct frame *next;
+    struct sysstack system;	/* system stack */
+    struct stack argument;	/* argument stack */
+    struct callstack caller;	/* caller prog stack */
+    struct forstack fors;	/* for loop stack */
+    struct trystack trys;	/* try block stack */
+    struct localvars *lvars;	/* local variables */
+    vars variables;		/* global variables */
+    struct inst *pc;		/* next executing instruction */
+    short writeonly;		/* This program should not do reads */
+    short multitask;		/* This program's multitasking mode */
+    short timercount;		/* How many timers currently exist. */
+    short level;		/* prevent interp call loops */
+    int perms;			/* permissions restrictions on program */
+    short already_created;	/* this prog already created an object */
+    short been_background;	/* this prog has run in the background */
+    short skip_declare;		/* tells interp to skip next scoped var decl */
+    short wantsblanks;		/* specifies program will accept blank READs */
+    dbref trig;			/* triggering object */
+    dbref supplicant;		/* object for lock evaluation */
+    struct shared_string *cmd;	/* Original command passed to the program, vars[3] */
+    time_t started;		/* When this program started. */
+    int instcnt;		/* How many instructions have run. */
+    int pid;			/* what is the process id? */
+    char *errorstr;		/* the error string thrown */
+    char *errorinst;		/* the instruction name that threw an error */
+    dbref errorprog;		/* the program that threw an error */
+    int errorline;		/* the program line that threw an error */
+    int descr;			/* what is the descriptor that started this? */
+    void *rndbuf;		/* buffer for seedable random */
+    struct scopedvar_t *svars;	/* Variables with function scoping. */
+    struct debuggerdata brkpt;	/* info the debugger needs */
+    struct timeval proftime;	/* profiling timing code */
+    struct timeval totaltime;	/* profiling timing code */
+    struct mufevent *events;	/* MUF event list. */
+    struct dlogidlist *dlogids;	/* List of dlogids this frame uses. */
+    struct mufwatchpidlist *waiters;
+    struct mufwatchpidlist *waitees;
+    union {
+	struct {
+	    unsigned int div_zero:1;	/* Divide by zero */
+	    unsigned int nan:1;	/* Result would not be a number */
+	    unsigned int imaginary:1;	/* Result would be imaginary */
+	    unsigned int f_bounds:1;	/* Float boundary error */
+	    unsigned int i_bounds:1;	/* Integer boundary error */
+	} error_flags;
+	int is_flags;
+    } error;
+};
+
+struct publics {
+    char *subname;
+    int mlev;
+    union {
+        struct inst *ptr;
+        int no;
+    } addr;
+    struct publics *next;
+};
 
 struct localvars *localvars_get(struct frame *fr, dbref prog);
 void localvar_dupall(struct frame *fr, struct frame *oldfr);
@@ -147,9 +311,13 @@ dbref find_uid(dbref player, struct frame *fr, int st, dbref program);
 
 extern int top_pid;
 extern int nargs;		/* DO NOT TOUCH THIS VARIABLE */
+extern const char *base_inst[];
 
+char *debug_inst(struct frame *, int, struct inst *, int, struct inst *, char *, int,
+                        int, dbref);
 void do_abort_silent(void);
 dbref find_mlev(dbref prog, struct frame *fr, int st);
+char *insttotext(struct frame *, int, struct inst *, char *, int, int, dbref, int);
 struct frame *interp(int descr, dbref player, dbref location, dbref program,
                             dbref source, int nosleeping, int whichperms, int forced_pid);
 struct inst *interp_loop(dbref player, dbref program, struct frame *fr, int rettyp);
@@ -158,6 +326,7 @@ void purge_all_free_frames();
 void purge_for_pool(void);
 void purge_try_pool(void);
 
+/* and declare debug instruction diagnostic routine */
 #include "p_array.h"
 #include "p_connects.h"
 #include "p_db.h"

@@ -5,6 +5,7 @@
 #include "db.h"
 #include "edit.h"
 #include "fbstrings.h"
+#include "inst.h"
 #include "interface.h"
 #include "match.h"
 #include "mcp.h"
@@ -15,14 +16,6 @@
 #ifdef HAVE_MALLOC_H
 #include <malloc.h>
 #endif				/* HAVE_MALLOC_H */
-
-#define MCP_MESG_PREFIX		"#$#"
-#define MCP_QUOTE_PREFIX	"#$\""
-#define MCP_ARG_EMPTY		"\"\""
-#define MCP_INIT_PKG		"mcp"
-#define MCP_DATATAG			"_data-tag"
-#define MCP_INIT_MESG		"mcp "
-#define MCP_NEGOTIATE_PKG	"mcp-negotiate"
 
 void
 clean_mcpbinds(struct mcp_binding *mypub)
@@ -297,23 +290,6 @@ mcp_negotiation_start(McpFrame * mfr)
     mfr->enabled = 0;
 }
 
-
-
-
-
-
-
-/*****************************************************************/
-/***                       ***************************************/
-/*** MCP CONNECTION FRAMES ***************************************/
-/***                       ***************************************/
-/*****************************************************************/
-
-struct McpFrameList_t {
-    McpFrame *mfr;
-    struct McpFrameList_t *next;
-};
-typedef struct McpFrameList_t McpFrameList;
 static McpFrameList *mcp_frame_list;
 
 

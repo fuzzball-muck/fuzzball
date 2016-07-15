@@ -7,28 +7,7 @@ static struct inst *oper1, *oper2, *oper3, *oper4;
 static int result;
 static char buf[BUFFER_LEN];
 
-union error_mask {
-    struct {
-	unsigned int div_zero:1;	/* Divide by zero */
-	unsigned int nan:1;	/* Result would not be a number */
-	unsigned int imaginary:1;	/* Result would be imaginary */
-	unsigned int f_bounds:1;	/* Float boundary error */
-	unsigned int i_bounds:1;	/* Integer boundary error */
-    } error_flags;
-    int is_flags;
-};
-
-#define ERROR_NAME_MAX_LEN 15
-#define ERROR_STRING_MAX_LEN 80
-#define ERROR_NUM 5
-
 static union error_mask err_bits[ERROR_NUM];
-
-struct err_type {
-    int error_bit;
-    char error_name[ERROR_NAME_MAX_LEN];
-    char error_string[ERROR_STRING_MAX_LEN];
-};
 
 static struct err_type err_defs[] = {
     {0, "DIV_ZERO", "Division by zero attempted."},
