@@ -1,25 +1,23 @@
 #include "config.h"
 
 #ifdef DISKBASE
+#include "db.h"
 #include "diskprop.h"
+#include "fbstrings.h"
+#include "interface.h"
 #include "params.h"
 #include "tune.h"
 
 extern FILE *input_file;
+extern short db_conversion_flag;
 extern void getproperties(FILE * f, dbref obj, const char *pdir);
-
-long propcache_hits = 0L;
-long propcache_misses = 0L;
-
-struct pload_Q {
-    dbref obj;
-    long count;
-    int Qtype;
-};
 
 struct pload_Q propchanged_Q = { NOTHING, 0, PROPS_CHANGED };
 struct pload_Q proploaded_Q = { NOTHING, 0, PROPS_LOADED };
 struct pload_Q proppri_Q = { NOTHING, 0, PROPS_PRIORITY };
+
+long propcache_hits = 0L;
+long propcache_misses = 0L;
 
 int
 fetch_propvals(dbref obj, const char *dir)
@@ -355,7 +353,7 @@ report_cachestats(dbref player)
 
 
 void
-diskbase_debug(dbref player)
+do_dbginfo(dbref player)
 {
     double ph, pm;
 

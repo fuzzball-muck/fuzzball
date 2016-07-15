@@ -1,5 +1,6 @@
 #include "config.h"
 
+#include "array.h"
 #include "db.h"
 #include "fbstrings.h"
 #include "interp.h"

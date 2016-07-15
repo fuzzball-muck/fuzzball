@@ -6,7 +6,6 @@
 
 #include <stdarg.h>
 
-
 /*
  * Error results.
  */
@@ -95,6 +94,25 @@ typedef void (*Gui_CB) (GUI_EVENT_CB_ARGS);
     void* context
 
 typedef void (*GuiErr_CB) (GUI_ERROR_CB_ARGS);
+
+typedef struct DlogValue_t {
+    struct DlogValue_t *next;
+    char *name;
+    int lines;
+    char **value;
+} DlogValue;
+
+typedef struct DlogData_t {
+    struct DlogData_t *next;
+    struct DlogData_t **prev;
+    char *id;
+    int descr;
+    int dismissed;
+    DlogValue *values;
+    Gui_CB callback;
+    GuiErr_CB error_cb;
+    void *context;
+} DlogData;
 
 /*
  * First you check to see if the MCP GUI package is supported.

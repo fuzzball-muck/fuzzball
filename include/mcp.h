@@ -7,8 +7,14 @@
 /* the type used to specify the connection */
 typedef void *connection_t;
 
-#define MCP_MESG_PREFIX     "#$#"
-#define MCP_QUOTE_PREFIX    "#$\""
+#define MCP_MESG_PREFIX		"#$#"
+#define MCP_QUOTE_PREFIX	"#$\""
+
+#define MCP_ARG_EMPTY           "\"\""
+#define MCP_INIT_PKG            "mcp"
+#define MCP_DATATAG                     "_data-tag"
+#define MCP_INIT_MESG           "mcp "
+#define MCP_NEGOTIATE_PKG       "mcp-negotiate"
 
 #define EMCP_SUCCESS		 0	/* successful result */
 #define EMCP_NOMCP			-1	/* MCP isn't supported on this connection. */
@@ -85,8 +91,6 @@ typedef struct McpPkg_T {
     struct McpPkg_T *next;
 } McpPkg;
 
-
-
 /* This keeps connection specific data for MCP. */
 typedef struct McpFrame_T {
     void *descriptor;		/* The descriptor to send output to */
@@ -97,8 +101,11 @@ typedef struct McpFrame_T {
     McpMesg *messages;		/* Partial messages, under construction. */
 } McpFrame;
 
-
-
+struct McpFrameList_t {
+    McpFrame *mfr;
+    struct McpFrameList_t *next;
+};
+typedef struct McpFrameList_t McpFrameList;
 
 /*****************************************************************
  *

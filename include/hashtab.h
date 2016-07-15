@@ -1,8 +1,6 @@
 #ifndef _HASHTAB_H
 #define _HASHTAB_H
 
-#include "config.h"
-
 /* Possible data types that may be stored in a hash table */
 union u_hash_data {
     int ival;                   /* Store compiler tokens here */

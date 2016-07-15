@@ -516,13 +516,7 @@ truestr(char *buf)
     return 1;
 }
 
-
 /******** MPI Variable handling ********/
-
-struct mpivar {
-    char name[MAX_MFUN_NAME_LEN + 1];
-    char *buf;
-};
 
 static struct mpivar varv[MPI_MAX_VARIABLES];
 int varc = 0;
@@ -565,14 +559,7 @@ free_top_mvar(void)
     return 0;
 }
 
-
 /***** MPI function handling *****/
-
-
-struct mpifunc {
-    char name[MAX_MFUN_NAME_LEN + 1];
-    char *buf;
-};
 
 static struct mpifunc funcv[MPI_MAX_FUNCTIONS];
 static int funcc = 0;

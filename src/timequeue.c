@@ -50,25 +50,6 @@
  *  tevmuf 0    5   when  user  loc    trig  prog  frame  mode  event   --
  */
 
-
-typedef struct timenode {
-    struct timenode *next;
-    int typ;
-    int subtyp;
-    time_t when;
-    int descr;
-    dbref called_prog;
-    char *called_data;
-    char *command;
-    char *str3;
-    dbref uid;
-    dbref loc;
-    dbref trig;
-    struct frame *fr;
-    struct inst *where;
-    int eventnum;
-} *timequeue;
-
 static timequeue tqhead = NULL;
 
 void prog_clean(struct frame *fr);

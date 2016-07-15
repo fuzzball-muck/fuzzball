@@ -4,6 +4,14 @@
 #ifndef _P_MCP_H
 #define _P_MCP_H
 
+struct mcp_muf_context {
+    dbref prog;
+};
+
+struct mcpevent_context {
+    int pid;
+};
+
 void prim_mcp_register(PRIM_PROTOTYPE);
 void prim_mcp_register_event(PRIM_PROTOTYPE);
 void prim_mcp_bind(PRIM_PROTOTYPE);

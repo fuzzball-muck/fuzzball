@@ -1958,3 +1958,88 @@ no_good(double test)
 {
     return test == INF || test == NINF;
 }
+
+char *
+debug_inst(struct frame *fr, int lev, struct inst *pc, int pid, struct inst *stack,
+           char *buffer, int buflen, int sp, dbref program)
+{
+    char *bend;
+    char *bstart;
+    char *ptr;
+    int length;
+
+    char buf2[BUFFER_LEN];
+    /* To hold Debug> ... at the beginning */
+    char buf3[64];
+    int count;
+
+    assert(buflen > 1);
+
+    buffer[buflen - 1] = '\0';
+
+#ifdef DEBUGARRAYS
+    length = snprintf(buf3, sizeof(buf3), "Debug> (%d Insts.) #%d %d (", PROGRAM_INSTANCES(2),
+                      program, pc->line);
+#else
+    length = snprintf(buf3, sizeof(buf3), "Debug> Pid %d: #%d %d (", pid, program, pc->line);
+#endif
+    if (length == -1) {
+        length = sizeof(buf3) - 1;
+    }
+    bstart = buffer + length;   /* start far enough away so we can fit Debug> #xxx xxx ( thingy. */
+    length = buflen - length - 1;       /* - 1 for the '\0' */
+    bend = buffer + (buflen - 1);       /* - 1 for the '\0' */
+
+    /* + 10 because we must at least be able to store " ... ) ..." after that. */
+    if (bstart + 10 > bend) {   /* we have no room. Eeek! */
+        /*                                  123456789012345678 */
+        memcpy((void *) buffer, (const void *) "Need buffer space!",
+               (buflen - 1 > 18) ? 18 : buflen - 1);
+        return buffer;
+    }
+
+
+    /* We use this if-else structure to handle errors and such nicely. */
+    /* We use length - 7 so we KNOW we'll have room for " ... ) " */
+
+    ptr = insttotext(fr, lev, pc, buf2, length - 7, 30, program, 1);
+    if (*ptr) {
+        length -= prepend_string(&bend, bstart, ptr);
+    } else {
+        strcpyn(buffer, buflen, buf3);
+        strcatn(buffer, buflen, " ... ) ...");
+        return buffer;
+    }
+
+    length -= prepend_string(&bend, bstart, ") ");
+
+    count = sp - 1;
+    if (count >= 0) {
+        for (;;) {
+            if (count && length <= 5) {
+                prepend_string(&bend, bstart, "...");
+                break;
+            }
+            /* we use length - 5 to leave room for "..., "
+             * ... except if we're outputing the last item (count == 0) */
+            ptr = insttotext(fr, lev, stack + count, buf2, (count) ? length - 5 : length, 30,
+                             program, 1);
+            if (*ptr) {
+                length -= prepend_string(&bend, bstart, ptr);
+            } else {
+                break;          /* done because we couldn't display all that */
+            }
+            if (count > 0 && count > sp - 8) {
+                length -= prepend_string(&bend, bstart, ", ");
+            } else {
+                break;          /* all done! */
+            }
+            count--;
+        }
+    }
+
+    /* we don't use bstart, because it's compensated for the length of this. */
+    prepend_string(&bend, buffer, buf3);
+    /* and return the pointer to the beginning of our backwards grown string. */
+    return bend;
+}

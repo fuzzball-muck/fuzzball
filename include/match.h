@@ -1,8 +1,6 @@
 #ifndef _MATCH_H
 #define _MATCH_H
 
-#include "config.h"
-
 struct match_data {
     dbref exact_match;		/* holds result of exact match */
     int check_keys;		/* if non-zero, check for keys */

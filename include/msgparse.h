@@ -17,6 +17,15 @@
 
 #undef WIZZED_DELAY
 
+struct mpivar {
+    char name[MAX_MFUN_NAME_LEN + 1];
+    char *buf;
+};
+
+struct mpifunc {
+    char name[MAX_MFUN_NAME_LEN + 1];
+    char *buf;
+};
 
 int Wizperms(dbref what);
 

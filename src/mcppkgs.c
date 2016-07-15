@@ -5,6 +5,7 @@
 #include "db.h"
 #include "edit.h"
 #include "fbstrings.h"
+#include "inst.h"
 #include "interface.h"
 #include "log.h"
 #include "mcp.h"

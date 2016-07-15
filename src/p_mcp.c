@@ -15,11 +15,6 @@
 static struct inst *oper1, *oper2, *oper3, *oper4;
 static int result;
 
-
-struct mcp_muf_context {
-    dbref prog;
-};
-
 /* This allows using GUI if the player owns the MUF, which drops the
    requirement from an M3. This is not .top because .top will usually 
    be $lib/gui. This could be expanded to check the entire MUF chain. */
@@ -109,12 +104,6 @@ muf_mcp_callback(McpFrame * mfr, McpMesg * mesg, McpVer version, void *context)
 	}
     }
 }
-
-
-struct mcpevent_context {
-    int pid;
-};
-
 
 void
 mcpevent_context_cleanup(void *context)
