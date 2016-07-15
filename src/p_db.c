@@ -1106,24 +1106,20 @@ prog_can_link_to(int mlev, dbref who, object_flag_type what_type, dbref where)
 	return 1;
     if (where < 0 || where >= db_top)
 	return 0;
-    if (!test_lock(NOTHING, who, where, MESGPROP_LINKLOCK))
-	return 0;
+
     switch (what_type) {
     case TYPE_EXIT:
-	return (mlev > 3 || permissions(who, where) || (FLAGS(where) & LINK_OK));
+	return (mlev > 3 || permissions(who, where) || ((FLAGS(where) & LINK_OK) && test_lock(NOTHING, who, where, MESGPROP_LINKLOCK)));
     case TYPE_PLAYER:
 	return (Typeof(where) == TYPE_ROOM && (mlev > 3 || permissions(who, where)
-					       || Linkable(where)));
+					       || (Linkable(where) && test_lock(NOTHING, who, where, MESGPROP_LINKLOCK))));
     case TYPE_ROOM:
 	return ((Typeof(where) == TYPE_ROOM || Typeof(where) == TYPE_THING)
-		&& (mlev > 3 || permissions(who, where) || Linkable(where)));
+		&& (mlev > 3 || permissions(who, where) || (Linkable(where) && test_lock(NOTHING, who, where, MESGPROP_LINKLOCK))));
     case TYPE_THING:
 	return ((Typeof(where) == TYPE_ROOM || Typeof(where) == TYPE_PLAYER
 		 || Typeof(where) == TYPE_THING)
-		&& (mlev > 3 || permissions(who, where) || Linkable(where)));
-    case NOTYPE:
-	return (mlev > 3 || permissions(who, where) || (FLAGS(where) & LINK_OK) ||
-		(Typeof(where) != TYPE_THING && (FLAGS(where) & ABODE)));
+		&& (mlev > 3 || permissions(who, where) || (Linkable(where) && test_lock(NOTHING, who, where, MESGPROP_LINKLOCK))));
     }
     return 0;
 }
