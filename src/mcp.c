@@ -1852,9 +1852,7 @@ void
 do_mcpprogram(int descr, dbref player, const char *name)
 {
     dbref prog;
-    char buf[BUFFER_LEN];
     struct match_data md;
-    int jj;
 
     if (!*name) {
 	notify(player, "No program name given.");
@@ -1878,41 +1876,8 @@ do_mcpprogram(int descr, dbref player, const char *name)
 	    notify(player, "That's a strange name for a program!");
 	    return;
 	}
-	prog = new_object();
-
-	NAME(prog) = alloc_string(name);
-	snprintf(buf, sizeof(buf), "A scroll containing a spell called %s", name);
-	SETDESC(prog, buf);
-	LOCATION(prog) = player;
-	FLAGS(prog) = TYPE_PROGRAM;
-	jj = MLevel(player);
-	if (jj < 1)
-	    jj = 2;
-	if (jj > 3)
-	    jj = 3;
-	SetMLevel(prog, jj);
-
-	OWNER(prog) = OWNER(player);
-	ALLOC_PROGRAM_SP(prog);
-	PROGRAM_SET_FIRST(prog, NULL);
-	PROGRAM_SET_CURR_LINE(prog, 0);
-	PROGRAM_SET_SIZ(prog, 0);
-	PROGRAM_SET_CODE(prog, NULL);
-	PROGRAM_SET_START(prog, NULL);
-	PROGRAM_SET_PUBS(prog, NULL);
-	PROGRAM_SET_MCPBINDS(prog, NULL);
-	PROGRAM_SET_PROFTIME(prog, 0, 0);
-	PROGRAM_SET_PROFSTART(prog, 0);
-	PROGRAM_SET_PROF_USES(prog, 0);
-	PROGRAM_SET_INSTANCES(prog, 0);
-
-	PLAYER_SET_CURR_PROG(player, prog);
-
-	PUSH(prog, CONTENTS(player));
-	DBDIRTY(prog);
-	DBDIRTY(player);
+	prog = create_program(player, name);
 	notifyf(player, "Program %s created as #%d.", name, prog);
-
     } else if (prog == AMBIGUOUS) {
 	notify(player, "I don't know which one you mean!");
 	return;

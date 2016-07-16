@@ -546,6 +546,8 @@ int link_exit(int descr, dbref player, dbref exit, char *dest_name, dbref * dest
 int link_exit_dry(int descr, dbref player, dbref exit, char *dest_name,
                          dbref * dest_list);
 
+dbref create_program(dbref player, const char *name);
+
 #define DOLIST(var, first) \
   for ((var) = (first); (var) != NOTHING; (var) = DBFETCH(var)->next)
 #define PUSH(thing, locative) \
