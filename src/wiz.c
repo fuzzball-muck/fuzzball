@@ -466,7 +466,7 @@ do_stats(dbref player, const char *name)
 
 		/* if unused for 90 days, inc oldobj count */
 		if ((OWNER(i) == owner) &&
-		    (currtime - DBFETCH(i)->ts.lastused) > tp_aging_time)
+		    (currtime - DBFETCH(i)->ts_lastused) > tp_aging_time)
 		    oldobjs++;
 
 		switch (Typeof(i)) {
@@ -508,7 +508,7 @@ do_stats(dbref player, const char *name)
 #endif
 
 		/* if unused for 90 days, inc oldobj count */
-		if ((currtime - DBFETCH(i)->ts.lastused) > tp_aging_time)
+		if ((currtime - DBFETCH(i)->ts_lastused) > tp_aging_time)
 		    oldobjs++;
 
 		switch (Typeof(i)) {
@@ -805,16 +805,7 @@ do_usage(dbref player)
 void
 do_muf_topprofs(dbref player, char *arg1)
 {
-    struct profnode {
-	struct profnode *next;
-	dbref prog;
-	double proftime;
-	double pcnt;
-	time_t comptime;
-	long usecount;
-    } *tops = NULL;
-
-    struct profnode *curr = NULL;
+    struct profnode *tops = NULL, *curr = NULL;
     int nodecount = 0;
     int count = atoi(arg1);
     time_t current_systime = time(NULL);
@@ -848,6 +839,7 @@ do_muf_topprofs(dbref player, char *arg1)
 	    newnode->proftime += (tmpt.tv_usec / 1000000.0);
 	    newnode->comptime = current_systime - PROGRAM_PROFSTART(i);
 	    newnode->usecount = PROGRAM_PROF_USES(i);
+	    newnode->type = 1;
 	    if (newnode->comptime > 0) {
 		newnode->pcnt = 100.0 * newnode->proftime / newnode->comptime;
 	    } else {
@@ -908,16 +900,7 @@ do_muf_topprofs(dbref player, char *arg1)
 void
 do_mpi_topprofs(dbref player, char *arg1)
 {
-    struct profnode {
-	struct profnode *next;
-	dbref prog;
-	double proftime;
-	double pcnt;
-	time_t comptime;
-	long usecount;
-    } *tops = NULL;
-
-    struct profnode *curr = NULL;
+    struct profnode *tops = NULL, *curr = NULL;
     int nodecount = 0;
     int count = atoi(arg1);
     time_t current_systime = time(NULL);
@@ -950,6 +933,7 @@ do_mpi_topprofs(dbref player, char *arg1)
 	    newnode->proftime += (DBFETCH(i)->mpi_proftime.tv_usec / 1000000.0);
 	    newnode->comptime = current_systime - mpi_prof_start_time;
 	    newnode->usecount = DBFETCH(i)->mpi_prof_use;
+	    newnode->type = 0;
 	    if (newnode->comptime > 0) {
 		newnode->pcnt = 100.0 * newnode->proftime / newnode->comptime;
 	    } else {
@@ -1010,17 +994,7 @@ do_mpi_topprofs(dbref player, char *arg1)
 void
 do_topprofs(dbref player, char *arg1)
 {
-    struct profnode {
-	struct profnode *next;
-	dbref prog;
-	double proftime;
-	double pcnt;
-	time_t comptime;
-	long usecount;
-	short type;
-    } *tops = NULL;
-
-    struct profnode *curr = NULL;
+    struct profnode *tops = NULL, *curr = NULL;
     int nodecount = 0;
     int count = atoi(arg1);
     time_t current_systime = time(NULL);
