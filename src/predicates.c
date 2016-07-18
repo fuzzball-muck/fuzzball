@@ -45,8 +45,10 @@ can_link_to(dbref who, object_flag_type what_type, dbref where)
 	 * sets the thing's home).  Target must be controlled, or be L or A. */
 	return ((Typeof(where) == TYPE_ROOM || Typeof(where) == TYPE_PLAYER ||
 		 Typeof(where) == TYPE_THING) && (controls(who, where) || (Linkable(where) && test_lock(NOTHING, who, where, MESGPROP_LINKLOCK))));
+    case NOTYPE:
+	return (controls(who, where) || (test_lock(NOTHING, who, where, MESGPROP_LINKLOCK) &&
+		((FLAGS(where) & LINK_OK) || (Typeof(where) != TYPE_THING && (FLAGS(where) & ABODE)))));
     default:
-	/* Programs can't be linked anywhere */
 	return 0;
     }
 }

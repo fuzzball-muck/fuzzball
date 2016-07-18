@@ -1120,6 +1120,9 @@ prog_can_link_to(int mlev, dbref who, object_flag_type what_type, dbref where)
 	return ((Typeof(where) == TYPE_ROOM || Typeof(where) == TYPE_PLAYER
 		 || Typeof(where) == TYPE_THING)
 		&& (mlev > 3 || permissions(who, where) || (Linkable(where) && test_lock(NOTHING, who, where, MESGPROP_LINKLOCK))));
+    case NOTYPE:
+        return (mlev > 3 || permissions(who, where) || (test_lock(NOTHING, who, where, MESGPROP_LINKLOCK) &&
+                ((FLAGS(where) & LINK_OK) || (Typeof(where) != TYPE_THING && (FLAGS(where) & ABODE)))));
     }
     return 0;
 }
