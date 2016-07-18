@@ -571,23 +571,23 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
 
     /* Timestamps */
 
-    time_tm = MUCK_LOCALTIME(DBFETCH(thing)->ts.created);
+    time_tm = MUCK_LOCALTIME(DBFETCH(thing)->ts_created);
     format_time(buf, BUFFER_LEN, (char *) "Created:  %a %b %e %T %Z %Y", time_tm);
     notify(player, buf);
 
-    time_tm = MUCK_LOCALTIME(DBFETCH(thing)->ts.modified);
+    time_tm = MUCK_LOCALTIME(DBFETCH(thing)->ts_modified);
     format_time(buf, BUFFER_LEN, (char *) "Modified: %a %b %e %T %Z %Y", time_tm);
     notify(player, buf);
 
-    time_tm = MUCK_LOCALTIME(DBFETCH(thing)->ts.lastused);
+    time_tm = MUCK_LOCALTIME(DBFETCH(thing)->ts_lastused);
     format_time(buf, BUFFER_LEN, (char *) "Lastused: %a %b %e %T %Z %Y", time_tm);
     notify(player, buf);
 
     if (Typeof(thing) == TYPE_PROGRAM) {
 	snprintf(buf, sizeof(buf), "Usecount: %d     Instances: %d",
-		 DBFETCH(thing)->ts.usecount, PROGRAM_INSTANCES(thing));
+		 DBFETCH(thing)->ts_usecount, PROGRAM_INSTANCES(thing));
     } else {
-	snprintf(buf, sizeof(buf), "Usecount: %d", DBFETCH(thing)->ts.usecount);
+	snprintf(buf, sizeof(buf), "Usecount: %d", DBFETCH(thing)->ts_usecount);
     }
     notify(player, buf);
 
@@ -1072,8 +1072,8 @@ checkflags(dbref what, struct flgchkdat check)
 	}
     }
     if (check.forold) {
-	if (((((time(NULL)) - DBFETCH(what)->ts.lastused) < tp_aging_time) ||
-	     (((time(NULL)) - DBFETCH(what)->ts.modified) < tp_aging_time))
+	if (((((time(NULL)) - DBFETCH(what)->ts_lastused) < tp_aging_time) ||
+	     (((time(NULL)) - DBFETCH(what)->ts_modified) < tp_aging_time))
 	    != (!check.isold))
 	    return (0);
     }

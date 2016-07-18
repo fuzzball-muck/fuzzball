@@ -450,17 +450,6 @@ union specific {		/* I've been railroaded! */
     } program;
 };
 
-
-/* timestamps record */
-
-struct timestamps {
-    time_t created;
-    time_t modified;
-    time_t lastused;
-    int usecount;
-};
-
-
 struct object {
 
     const char *name;
@@ -485,8 +474,22 @@ struct object {
     unsigned int mpi_prof_use;
     struct timeval mpi_proftime;
 
-    struct timestamps ts;
+    time_t ts_created;
+    time_t ts_modified;
+    time_t ts_lastused;
+    int ts_usecount;
+
     union specific sp;
+};
+
+struct profnode {
+    struct profnode *next;
+    dbref prog;
+    double proftime;
+    double pcnt;
+    time_t comptime;
+    long usecount;
+    short type;
 };
 
 extern struct object *db;

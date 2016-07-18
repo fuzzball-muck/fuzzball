@@ -240,10 +240,10 @@ db_write_object(FILE * f, dbref i)
     putref(f, o->next);
     putref(f, FLAGS(i) & ~DUMP_MASK);	/* write non-internal flags */
 
-    putref(f, (int)o->ts.created);
-    putref(f, (int)o->ts.lastused);
-    putref(f, o->ts.usecount);
-    putref(f, (int)o->ts.modified);
+    putref(f, (int)o->ts_created);
+    putref(f, (int)o->ts_lastused);
+    putref(f, o->ts_usecount);
+    putref(f, (int)o->ts_modified);
 
 
 #ifdef DISKBASE
@@ -535,10 +535,10 @@ db_read_object(FILE * f, dbref objno, int dtype)
     tmp &= ~DUMP_MASK;
     FLAGS(objno) |= tmp;
 
-    o->ts.created = getref(f);
-    o->ts.lastused = getref(f);
-    o->ts.usecount = getref(f);
-    o->ts.modified = getref(f);
+    o->ts_created = getref(f);
+    o->ts_lastused = getref(f);
+    o->ts_usecount = getref(f);
+    o->ts_modified = getref(f);
 
     c = getc(f);
     if (c == '*') {

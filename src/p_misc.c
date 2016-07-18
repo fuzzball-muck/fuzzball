@@ -304,13 +304,13 @@ prim_timestamps(PRIM_PROTOTYPE)
     CHECKOFLOW(4);
     ref = oper1->data.objref;
     CLEAR(oper1);
-    result = (int)DBFETCH(ref)->ts.created;
+    result = (int)DBFETCH(ref)->ts_created;
     PushInt(result);
-    result = (int)DBFETCH(ref)->ts.modified;
+    result = (int)DBFETCH(ref)->ts_modified;
     PushInt(result);
-    result = (int)DBFETCH(ref)->ts.lastused;
+    result = (int)DBFETCH(ref)->ts_lastused;
     PushInt(result);
-    result = DBFETCH(ref)->ts.usecount;
+    result = DBFETCH(ref)->ts_usecount;
     PushInt(result);
 }
 

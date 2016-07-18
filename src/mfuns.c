@@ -2042,7 +2042,7 @@ mfn_created(MFUNARGS)
     if (obj == PERMDENIED)
 	ABORT_MPI("CREATED", "Permission denied.");
 
-    snprintf(buf, BUFFER_LEN, "%lld", (long long) DBFETCH(obj)->ts.created);
+    snprintf(buf, BUFFER_LEN, "%lld", (long long) DBFETCH(obj)->ts_created);
 
     return buf;
 }
@@ -2059,7 +2059,7 @@ mfn_lastused(MFUNARGS)
     if (obj == PERMDENIED)
 	ABORT_MPI("LASTUSED", "Permission denied.");
 
-    snprintf(buf, BUFFER_LEN, "%lld", (long long) DBFETCH(obj)->ts.lastused);
+    snprintf(buf, BUFFER_LEN, "%lld", (long long) DBFETCH(obj)->ts_lastused);
 
     return buf;
 }
@@ -2076,7 +2076,7 @@ mfn_modified(MFUNARGS)
     if (obj == PERMDENIED)
 	ABORT_MPI("MODIFIED", "Permission denied.");
 
-    snprintf(buf, BUFFER_LEN, "%lld", (long long) DBFETCH(obj)->ts.modified);
+    snprintf(buf, BUFFER_LEN, "%lld", (long long) DBFETCH(obj)->ts_modified);
 
     return buf;
 }
@@ -2093,7 +2093,7 @@ mfn_usecount(MFUNARGS)
     if (obj == PERMDENIED)
 	ABORT_MPI("USECOUNT", "Permission denied.");
 
-    snprintf(buf, BUFFER_LEN, "%d", DBFETCH(obj)->ts.usecount);
+    snprintf(buf, BUFFER_LEN, "%d", DBFETCH(obj)->ts_usecount);
 
     return buf;
 }

@@ -492,7 +492,7 @@ free_unused_programs()
 
     for (dbref i = 0; i < db_top; i++) {
 	if ((Typeof(i) == TYPE_PROGRAM) && !(FLAGS(i) & (ABODE | INTERNAL)) &&
-	    (now - DBFETCH(i)->ts.lastused > tp_clean_interval)
+	    (now - DBFETCH(i)->ts_lastused > tp_clean_interval)
 	    && (PROGRAM_INSTANCES(i) == 0)) {
 	    uncompile_program(i);
 	}
