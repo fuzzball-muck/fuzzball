@@ -189,6 +189,7 @@ extern int tp_muf_comments_strict;
 extern int tp_optimize_muf;
 extern int tp_periodic_program_purge;
 extern int tp_playermax;
+extern int tp_quiet_moves;
 extern int tp_realms_control;
 extern int tp_recognize_null_command;
 extern int tp_registration;
