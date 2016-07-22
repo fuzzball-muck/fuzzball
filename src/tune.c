@@ -293,6 +293,7 @@ int tp_muf_comments_strict = MUF_COMMENTS_STRICT;
 int tp_optimize_muf = OPTIMIZE_MUF;
 int tp_periodic_program_purge = PERIODIC_PROGRAM_PURGE;
 int tp_playermax = PLAYERMAX;
+int tp_quiet_moves = QUIET_MOVES;
 int tp_realms_control = REALMS_CONTROL;
 int tp_recognize_null_command = RECOGNIZE_NULL_COMMAND;
 int tp_registration = REGISTRATION;
@@ -403,6 +404,8 @@ struct tune_bool_entry tune_bool_list[] = {
      "", 1, OPTIMIZE_MUF},
     {"Player Max", "playermax", &tp_playermax, 0, MLEV_WIZARD,
      "Limit number of concurrent players allowed", "", 1, PLAYERMAX},
+    {"Movement", "quiet_moves", &tp_quiet_moves, 0, MLEV_WIZARD,
+     "Suppress basic arrive and depart notifications", "", 1, QUIET_MOVES},
     {"Properties", "lock_envcheck", &tp_lock_envcheck, 0, MLEV_WIZARD,
      "Locks check environment for properties", "", 1, LOCK_ENVCHECK},
     {"Properties", "look_propqueues", &tp_look_propqueues, 0, MLEV_WIZARD,

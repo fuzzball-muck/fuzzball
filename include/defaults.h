@@ -366,4 +366,7 @@
 /* Maintain trigger as lock source in TESTLOCK. */
 #define CONSISTENT_LOCK_SOURCE 1
 
+/* Suppress basic arrive and depart notifications. */
+#define QUIET_MOVES 0
+
 #endif				/* _DEFAULTS_H */

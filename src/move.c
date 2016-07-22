@@ -91,14 +91,13 @@ enter_room(int descr, dbref player, dbref loc, dbref exit)
 	    envpropqueue(descr, player, old, exit, old, NOTHING, "_odepart", "Odepart", 1, 0);
 
 	    /* notify others unless DARK */
-	    if (!Dark(old) && !Dark(player) &&
+	    if (!tp_quiet_moves &&
+                !Dark(old) && !Dark(player) &&
 		((Typeof(player) != TYPE_THING) ||
 		 ((Typeof(player) == TYPE_THING) && (FLAGS(player) & (ZOMBIE | VEHICLE))))
 		&& (Typeof(exit) != TYPE_EXIT || !Dark(exit))) {
-#if !defined(QUIET_MOVES)
 		snprintf(buf, sizeof(buf), "%s has left.", NAME(player));
 		notify_except(CONTENTS(old), player, buf, player);
-#endif
 	    }
 	}
 
@@ -109,14 +108,13 @@ enter_room(int descr, dbref player, dbref loc, dbref exit)
 	}
 
 	/* tell other folks in new location if not DARK */
-	if (!Dark(loc) && !Dark(player) &&
+	if (!tp_quiet_moves &&
+            !Dark(loc) && !Dark(player) &&
 	    ((Typeof(player) != TYPE_THING) ||
 	     ((Typeof(player) == TYPE_THING) && (FLAGS(player) & (ZOMBIE | VEHICLE))))
 	    && (Typeof(exit) != TYPE_EXIT || !Dark(exit))) {
-#if !defined(QUIET_MOVES)
 	    snprintf(buf, sizeof(buf), "%s has arrived.", NAME(player));
 	    notify_except(CONTENTS(loc), player, buf, player);
-#endif
 	}
     }
     /* autolook */
