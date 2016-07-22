@@ -4306,10 +4306,7 @@ ignore_is_ignoring_sub(dbref Player, dbref Who)
     if (!tp_ignore_support)
 	return 0;
 
-    if ((Player < 0) || (Player >= db_top) || (Typeof(Player) == TYPE_GARBAGE))
-	return 0;
-
-    if ((Who < 0) || (Who >= db_top) || (Typeof(Who) == TYPE_GARBAGE))
+    if (!OkObj(Player) || !OkObj(Who))
 	return 0;
 
     Player = OWNER(Player);
@@ -4379,7 +4376,7 @@ ignore_prime_cache(dbref Player)
     if (!tp_ignore_support)
 	return 0;
 
-    if ((Player < 0) || (Player >= db_top) || (Typeof(Player) != TYPE_PLAYER))
+    if (!ObjExists(Player) || Typeof(Player) != TYPE_PLAYER)
 	return 0;
 
     if ((Txt = get_property_class(Player, IGNORE_PROP)) == NULL) {
@@ -4438,7 +4435,7 @@ ignore_prime_cache(dbref Player)
 void
 ignore_flush_cache(dbref Player)
 {
-    if ((Player < 0) || (Player >= db_top) || (Typeof(Player) != TYPE_PLAYER))
+    if (!ObjExists(Player) || Typeof(Player) != TYPE_PLAYER)
 	return;
 
     if (PLAYER_IGNORE_CACHE(Player)) {
@@ -4476,10 +4473,7 @@ ignore_add_player(dbref Player, dbref Who)
     if (!tp_ignore_support)
 	return;
 
-    if ((Player < 0) || (Player >= db_top) || (Typeof(Player) == TYPE_GARBAGE))
-	return;
-
-    if ((Who < 0) || (Who >= db_top) || (Typeof(Who) == TYPE_GARBAGE))
+    if (!OkObj(Player) || !OkObj(Who))
 	return;
 
     reflist_add(OWNER(Player), IGNORE_PROP, OWNER(Who));
@@ -4493,10 +4487,7 @@ ignore_remove_player(dbref Player, dbref Who)
     if (!tp_ignore_support)
 	return;
 
-    if ((Player < 0) || (Player >= db_top) || (Typeof(Player) == TYPE_GARBAGE))
-	return;
-
-    if ((Who < 0) || (Who >= db_top) || (Typeof(Who) == TYPE_GARBAGE))
+    if (!OkObj(Player) || !OkObj(Who))
 	return;
 
     reflist_del(OWNER(Player), IGNORE_PROP, OWNER(Who));

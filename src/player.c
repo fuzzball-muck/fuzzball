@@ -87,7 +87,7 @@ connect_player(const char *name, const char *password)
 
     if (*name == NUMBER_TOKEN && number(name + 1) && atoi(name + 1)) {
 	player = (dbref) atoi(name + 1);
-	if ((player < 0) || (player >= db_top) || (Typeof(player) != TYPE_PLAYER))
+	if (!ObjExists(player) || Typeof(player) != TYPE_PLAYER)
 	    player = NOTHING;
     } else {
 	player = lookup_player(name);

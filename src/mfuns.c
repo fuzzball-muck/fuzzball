@@ -1141,9 +1141,7 @@ mfn_isdbref(MFUNARGS)
     if (!number(ptr))
 	return "0";
     obj = (dbref) atoi(ptr);
-    if (obj < 0 || obj >= db_top)
-	return "0";
-    if (Typeof(obj) == TYPE_GARBAGE)
+    if (!OkObj(obj))
 	return "0";
     return "1";
 }

@@ -1296,7 +1296,7 @@ propqueue(int descr, dbref player, dbref where, dbref trigger, dbref what, dbref
 		    the_prog = NOTHING;
 	    }
 	    if (the_prog != AMBIGUOUS) {
-		if (the_prog < 0 || the_prog >= db_top) {
+		if (!ObjExists(the_prog)) {
 		    the_prog = NOTHING;
 		} else if (Typeof(the_prog) != TYPE_PROGRAM) {
 		    the_prog = NOTHING;
@@ -1440,7 +1440,7 @@ listenqueue(int descr, dbref player, dbref where, dbref trigger, dbref what, dbr
 		    the_prog = NOTHING;
 	    }
 	    if (the_prog != AMBIGUOUS) {
-		if (the_prog < 0 || the_prog >= db_top) {
+		if (!ObjExists(the_prog)) {
 		    the_prog = NOTHING;
 		} else if (Typeof(the_prog) != TYPE_PROGRAM) {
 		    the_prog = NOTHING;

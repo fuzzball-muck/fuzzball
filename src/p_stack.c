@@ -544,7 +544,7 @@ prim_checkargs(PRIM_PROTOTYPE)
 		if (arg[stackpos].type != PROG_OBJECT)
 		    ABORT_CHECKARGS("Expected a dbref.");
 		ref = arg[stackpos].data.objref;
-		if ((ref >= db_top) || (ref < HOME))
+		if (ref >= db_top || ref < HOME)
 		    ABORT_CHECKARGS("Invalid dbref.");
 		switch (buf[currpos]) {
 		case 'D':

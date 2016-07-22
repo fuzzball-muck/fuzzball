@@ -803,7 +803,7 @@ unparse_object(dbref player, dbref loc)
     case NIL:
 	return "*NIL*";
     default:
-	if (loc < 0 || loc >= db_top)
+	if (!ObjExists(loc))
 	    return "*INVALID*";
 
 	if ((player == NOTHING) || (!(FLAGS(player) & STICKY) &&
@@ -979,11 +979,7 @@ int
 controls(dbref who, dbref what)
 {
     /* No one controls invalid objects */
-    if (what < 0 || what >= db_top)
-        return 0;
-
-    /* No one controls garbage */
-    if (Typeof(what) == TYPE_GARBAGE)
+    if (!OkObj(what))
         return 0;
 
     who = OWNER(who);

@@ -387,7 +387,7 @@ prim_name(PRIM_PROTOTYPE)
 	abort_interp("Invalid argument type.");
 
     ref = oper1->data.objref;
-    if (ref < 0 || ref >= db_top)
+    if (!ObjExists(ref))
 	abort_interp("Invalid object.");
 
     if (Typeof(ref) == TYPE_GARBAGE) {
@@ -563,8 +563,7 @@ prim_rmatch(PRIM_PROTOTYPE)
     if (oper1->type != PROG_STRING)
 	abort_interp("Invalid argument (2)");
     if (oper2->type != PROG_OBJECT
-	|| oper2->data.objref < 0
-	|| oper2->data.objref >= db_top
+	|| !ObjExists(oper2->data.objref)
 	|| Typeof(oper2->data.objref) == TYPE_PROGRAM
 	|| Typeof(oper2->data.objref) == TYPE_EXIT)
 	abort_interp("Invalid argument (1)");
@@ -1104,7 +1103,7 @@ prog_can_link_to(int mlev, dbref who, object_flag_type what_type, dbref where)
 	return 1;
     if (where == NIL && what_type == TYPE_EXIT)
 	return 1;
-    if (where < 0 || where >= db_top)
+    if (!ObjExists(where))
 	return 0;
 
     switch (what_type) {
@@ -1645,13 +1644,13 @@ prim_findnext(PRIM_PROTOTYPE)
 	abort_interp("Expected string argument. (3)");
     if (oper2->type != PROG_OBJECT)
 	abort_interp("Expected dbref argument. (2)");
-    if (oper2->data.objref < NOTHING || oper2->data.objref >= db_top)
+    if (!OkRef(oper2->data.objref))
 	abort_interp("Bad object. (2)");
     if (oper2->data.objref != NOTHING && Typeof(oper2->data.objref) == TYPE_GARBAGE)
 	abort_interp("Garbage object. (2)");
     if (oper1->type != PROG_OBJECT)
 	abort_interp("Expected dbref argument. (1)");
-    if (oper1->data.objref < NOTHING || oper1->data.objref >= db_top)
+    if (OkRef(oper1->data.objref))
 	abort_interp("Bad object. (1)");
     if (oper1->data.objref != NOTHING && Typeof(oper1->data.objref) == TYPE_GARBAGE)
 	abort_interp("Garbage object. (1)");
@@ -1982,7 +1981,7 @@ prim_objmem(PRIM_PROTOTYPE)
     if (oper1->type != PROG_OBJECT)
 	abort_interp("Argument must be a dbref.");
     ref = oper1->data.objref;
-    if (ref >= db_top || ref <= NOTHING)
+    if (!ObjExists(ref))
 	abort_interp("Invalid object.");
     CLEAR(oper1);
     i = size_object(ref, 0);
@@ -2270,12 +2269,12 @@ prim_contents_array(PRIM_PROTOTYPE)
 
     CHECKREMOTE(oper1->data.objref);
 
-    for (ref = CONTENTS(oper1->data.objref); (ref >= 0) && (ref < db_top); ref = NEXTOBJ(ref))
+    for (ref = CONTENTS(oper1->data.objref); ObjExists(ref); ref = NEXTOBJ(ref))
 	count++;
 
     nw = new_array_packed(count);
 
-    for (ref = CONTENTS(oper1->data.objref), count = 0; (ref >= 0) && (ref < db_top);
+    for (ref = CONTENTS(oper1->data.objref), count = 0; ObjExists(ref);
 	 ref = NEXTOBJ(ref))
 	array_set_intkey_refval(&nw, count++, ref);
 
@@ -2304,12 +2303,12 @@ prim_exits_array(PRIM_PROTOTYPE)
 	return;
     }
 
-    for (ref = EXITS(oper1->data.objref); (ref >= 0) && (ref < db_top); ref = NEXTOBJ(ref))
+    for (ref = EXITS(oper1->data.objref); ObjExists(ref); ref = NEXTOBJ(ref))
 	count++;
 
     nw = new_array_packed(count);
 
-    for (ref = EXITS(oper1->data.objref), count = 0; (ref >= 0) && (ref < db_top);
+    for (ref = EXITS(oper1->data.objref), count = 0; ObjExists(ref);
 	 ref = NEXTOBJ(ref))
 	array_set_intkey_refval(&nw, count++, ref);
 
@@ -2324,7 +2323,7 @@ array_getlinks(dbref obj)
     stk_array *nw = new_array_packed(0);
     int count = 0;
 
-    if ((obj >= 0) && (obj < db_top)) {
+    if (ObjExists(obj)) {
 	switch (Typeof(obj)) {
 	case TYPE_ROOM:
 	    array_set_intkey_refval(&nw, count++, DBFETCH(obj)->sp.room.dropto);
