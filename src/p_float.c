@@ -1,11 +1,9 @@
 #include "config.h"
 
 #include "db.h"
+#include "fbmath.h"
 #include "fbstrings.h"
 #include "interp.h"
-
-#include <float.h>
-#include <math.h>
 
 static struct inst *oper1, *oper2, *oper3, *oper4;
 static double fresult;
@@ -542,13 +540,6 @@ prim_pow(PRIM_PROTOTYPE)
     CLEAR(oper1);
     CLEAR(oper2);
     PushFloat(fresult);
-}
-
-/* Helper function - generate a float rand from an int rand. */
-static float
-_int_f_rand(void)
-{
-    return (rand() / (float) RAND_MAX);
 }
 
 void

@@ -5,6 +5,7 @@
 #ifdef DISKBASE
 #include "diskprop.h"
 #endif
+#include "fbmath.h"
 #include "fbstrings.h"
 #include "fbtime.h"
 #include "interface.h"

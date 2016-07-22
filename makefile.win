@@ -53,6 +53,7 @@ BASE_OBJ="$(INTDIR)\array.obj" \
 	"$(INTDIR)\diskprop.obj" \
 	"$(INTDIR)\edit.obj" \
 	"$(INTDIR)\events.obj" \
+	"$(INTDIR)\fbmath.obj" \
 	"$(INTDIR)\fbsignal.obj" \
 	"$(INTDIR)\fbstrings.obj" \
 	"$(INTDIR)\fbtime.obj" \
