@@ -1061,7 +1061,7 @@ tune_setparm(const char *parmname, const char *val, int mlev)
 		if (!number(parmval + 1))
 		    return TUNESET_SYNTAX;
 		obj = (dbref) atoi(parmval + 1);
-		if (obj < 0 || obj >= db_top)
+		if (!ObjExists(obj))
 		    return TUNESET_SYNTAX;
 		if (tref->typ != NOTYPE && Typeof(obj) != tref->typ)
 		    return TUNESET_BADVAL;

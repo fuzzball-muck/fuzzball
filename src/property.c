@@ -1441,7 +1441,7 @@ exec_or_notify(int descr, dbref player, dbref thing,
 	    if (*p)
 		p++;
 	}
-	if (i < 0 || i >= db_top || (Typeof(i) != TYPE_PROGRAM)) {
+	if (!ObjExists(i) || (Typeof(i) != TYPE_PROGRAM)) {
 	    if (*p) {
 		notify(player, p);
 	    } else {

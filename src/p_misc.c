@@ -255,7 +255,7 @@ prim_force(PRIM_PROTOTYPE)
     if (oper2->type != PROG_OBJECT)
 	abort_interp("Non-object argument (1).");
     ref = oper2->data.objref;
-    if (ref < 0 || ref >= db_top)
+    if (!ObjExists(ref))
 	abort_interp("Invalid object to force. (1)");
     if (Typeof(ref) != TYPE_PLAYER && Typeof(ref) != TYPE_THING)
 	abort_interp("Object to force not a thing or player. (1)");

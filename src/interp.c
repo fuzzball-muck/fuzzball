@@ -1053,8 +1053,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
     while (stop) {
 
 	/* Abort program if player/thing running it is recycled */
-	if ((player < 0) || (player >= db_top)
-	    || ((Typeof(player) != TYPE_PLAYER) && (Typeof(player) != TYPE_THING))) {
+	if (!OkObj(player)) {
 	    reload(fr, atop, stop);
 	    prog_clean(fr);
 	    interp_depth--;
@@ -1393,9 +1392,8 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 		temp1 = arg + --atop;
 		if (temp1->type != PROG_ADD)
 		    abort_loop("Argument is not an address.", temp1, NULL);
-		if (temp1->data.addr->progref >= db_top ||
-		    temp1->data.addr->progref < 0 ||
-		    (Typeof(temp1->data.addr->progref) != TYPE_PROGRAM))
+		if (!ObjExists(temp1->data.addr->progref) ||
+		    Typeof(temp1->data.addr->progref) != TYPE_PROGRAM)
 		    abort_loop_hard("Internal error.  Invalid address.", temp1, NULL);
 		if (program != temp1->data.addr->progref) {
 		    abort_loop("Destination outside current program.", temp1, NULL);
@@ -1415,9 +1413,8 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 		temp1 = arg + --atop;
 		if (temp1->type != PROG_ADD)
 		    abort_loop("Argument is not an address.", temp1, NULL);
-		if (temp1->data.addr->progref >= db_top ||
-		    temp1->data.addr->progref < 0 ||
-		    (Typeof(temp1->data.addr->progref) != TYPE_PROGRAM))
+		if (!ObjExists(temp1->data.addr->progref) ||
+		    Typeof(temp1->data.addr->progref) != TYPE_PROGRAM)
 		    abort_loop_hard("Internal error.  Invalid address.", temp1, NULL);
 		if (stop >= STACK_SIZE)
 		    abort_loop("System Stack Overflow", temp1, NULL);
@@ -1516,9 +1513,8 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 
 	    case IN_RET:
 		if (stop > 1 && program != sys[stop - 1].progref) {
-		    if (sys[stop - 1].progref >= db_top ||
-			sys[stop - 1].progref < 0 ||
-			(Typeof(sys[stop - 1].progref) != TYPE_PROGRAM))
+		    if (!ObjExists(sys[stop - 1].progref) ||
+			Typeof(sys[stop - 1].progref) != TYPE_PROGRAM)
 			abort_loop_hard("Internal error.  Invalid address.", NULL, NULL);
 		    calc_profile_timing(program, fr);
 		    gettimeofday(&fr->proftime, NULL);
@@ -1700,9 +1696,8 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 	    if (err != ERROR_DIE_NOW && fr->trys.top) {
 		while (fr->trys.st->call_level < stop) {
 		    if (stop > 1 && program != sys[stop - 1].progref) {
-			if (sys[stop - 1].progref >= db_top ||
-			    sys[stop - 1].progref < 0 ||
-			    (Typeof(sys[stop - 1].progref) != TYPE_PROGRAM))
+			if (!ObjExists(sys[stop - 1].progref) ||
+			    Typeof(sys[stop - 1].progref) != TYPE_PROGRAM)
 			    abort_loop_hard("Internal error.  Invalid address.", NULL, NULL);
 			calc_profile_timing(program, fr);
 			gettimeofday(&fr->proftime, NULL);
@@ -1821,8 +1816,8 @@ push(struct inst *stack, int *top, int type, voidptr res)
 int
 valid_player(struct inst *oper)
 {
-    return (!(oper->type != PROG_OBJECT || oper->data.objref >= db_top
-	      || oper->data.objref < 0 || (Typeof(oper->data.objref) != TYPE_PLAYER)));
+    return (!(oper->type != PROG_OBJECT || !ObjExists(oper->data.objref)
+	      || (Typeof(oper->data.objref) != TYPE_PLAYER)));
 }
 
 
@@ -1830,8 +1825,8 @@ valid_player(struct inst *oper)
 int
 valid_object(struct inst *oper)
 {
-    return (!(oper->type != PROG_OBJECT || oper->data.objref >= db_top
-	      || (oper->data.objref < 0) || Typeof(oper->data.objref) == TYPE_GARBAGE));
+    return (!(oper->type != PROG_OBJECT || !ObjExists(oper->data.objref)
+	      || Typeof(oper->data.objref) == TYPE_GARBAGE));
 }
 
 

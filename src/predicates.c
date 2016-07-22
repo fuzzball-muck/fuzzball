@@ -22,7 +22,7 @@ can_link_to(dbref who, object_flag_type what_type, dbref where)
 	return 1;
 
     /* Can't link to an invalid dbref */
-    if (where < 0 || where >= db_top)
+    if (!ObjExists(where))
 	return 0;
 
     switch (what_type) {

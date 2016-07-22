@@ -1798,8 +1798,7 @@ do_directive(COMPSTATE * cstat, char *direct)
 	    strcpyn(match_cmdname, sizeof(match_cmdname), tempb);
 	}
 	free(tmpname);
-	if (((dbref) i == NOTHING) || (i < 0) || (i >= db_top)
-	    || (Typeof(i) == TYPE_GARBAGE))
+	if (!OkObj(i))
 	    v_abort_compile(cstat, "I don't understand what object you want to $include.");
 	include_defs(cstat, (dbref) i);
 
@@ -1937,7 +1936,7 @@ do_directive(COMPSTATE * cstat, char *direct)
 	    i = cstat->program;
 	}
 	free(tmpname);
-	if (((dbref) i == NOTHING) || (i < 0) || (i >= db_top) || (Typeof(i) == TYPE_GARBAGE))
+	if (!OkObj(i))
 	    v_abort_compile(cstat,
 			    "I don't understand what program you want to check in ifcancall.");
 	tmpname = (char *) next_token_raw(cstat);
@@ -2022,7 +2021,7 @@ do_directive(COMPSTATE * cstat, char *direct)
 	    i = cstat->program;
 	}
 	free(tmpname);
-	if (((dbref) i == NOTHING) || (i < 0) || (i >= db_top) || (Typeof(i) == TYPE_GARBAGE))
+	if (!OkObj(i))
 	    v_abort_compile(cstat,
 			    "I don't understand what object you want to check with $ifver.");
 	if (!string_compare(temp, "ifver") || !string_compare(temp, "ifnver")) {
@@ -2098,9 +2097,7 @@ do_directive(COMPSTATE * cstat, char *direct)
 	strcpyn(match_cmdname, sizeof(match_cmdname), tempb);
 
 	free(tmpname);
-	if ((((dbref) i == NOTHING) || (i < 0) || (i >= db_top)
-	     || (Typeof(i) == TYPE_GARBAGE)) ? 0 : (Typeof(i) == TYPE_PROGRAM)
-		) {
+	if (OkObj(i) && Typeof(i) == TYPE_PROGRAM) {
 	    j = 1;
 	} else {
 	    j = 0;

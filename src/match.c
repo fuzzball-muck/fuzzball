@@ -126,20 +126,19 @@ find_registered_obj(dbref player, const char *name)
 	    p++;
 	if (number(p)) {
 	    match = (dbref) atoi(p);
-	    if ((match >= 0) && (match < db_top) && (Typeof(match) != TYPE_GARBAGE))
-		return (match);
+	    if (OkObj(match))
+		return match;
 	}
 	break;
     case PROP_REFTYP:
 	match = PropDataRef(ptr);
-	if (match == HOME || match == NIL
-	    || ((match >= 0) && (match < db_top) && (Typeof(match) != TYPE_GARBAGE)))
-	    return (match);
+	if (match == HOME || match == NIL || OkObj(match))
+	    return match;
 	break;
     case PROP_INTTYP:
 	match = (dbref) PropDataVal(ptr);
-	if ((match > 0) && (match < db_top) && (Typeof(match) != TYPE_GARBAGE))
-	    return (match);
+	if (OkObj(match))
+	    return match;
 	break;
     case PROP_LOKTYP:
 	return (NOTHING);
@@ -188,7 +187,7 @@ absolute_name(struct match_data *md)
 
     if (*(md->match_name) == NUMBER_TOKEN) {
 	match = parse_dbref((md->match_name) + 1);
-	if (match < 0 || match >= db_top) {
+	if (!ObjExists(match)) {
 	    return NOTHING;
 	} else {
 	    return match;

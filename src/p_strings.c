@@ -1931,7 +1931,7 @@ prim_unparseobj(PRIM_PROTOTYPE)
 	    snprintf(buf, sizeof(buf), "*NIL*");
 	    break;
 	default:
-	    if (result < 0 || result >= db_top)
+	    if (!ObjExists(result))
 		snprintf(buf, sizeof(buf), "*INVALID*");
 	    else
 		snprintf(buf, sizeof(buf), "%s(#%d%s)", NAME(result), result,

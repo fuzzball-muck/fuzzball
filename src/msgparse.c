@@ -441,7 +441,7 @@ mesg_dbref_raw(int descr, dbref player, dbref what, dbref perms, const char *buf
 	}
     }
 
-    if (obj < 0 || obj >= db_top || Typeof(obj) == TYPE_GARBAGE)
+    if (!OkObj(obj))
 	obj = UNKNOWN;
     return obj;
 }
@@ -492,7 +492,7 @@ mesg_dbref_local(int descr, dbref player, dbref what, dbref perms, char *buf, in
 char *
 ref2str(dbref obj, char *buf, size_t buflen)
 {
-    if (obj < -3 || obj >= db_top) {
+    if (obj < -4 || obj >= db_top) {
 	snprintf(buf, buflen, "Bad");
 	return buf;
     }

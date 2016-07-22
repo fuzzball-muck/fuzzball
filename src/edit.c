@@ -553,8 +553,7 @@ val_and_head(dbref player, int arg[], int argc)
 	return;
     }
     program = arg[0];
-    if ((program < 0) || (program >= db_top)
-	|| (Typeof(program) != TYPE_PROGRAM)) {
+    if (!ObjExists(program) || Typeof(program) != TYPE_PROGRAM) {
 	notify(player, "That isn't a program.");
 	return;
     }

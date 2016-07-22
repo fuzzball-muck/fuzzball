@@ -249,7 +249,7 @@ parse_boolexp_F(int descr, const char **parsebuf, dbref player, int dbloadp)
 		return TRUE_BOOLEXP;
 	    }
 	    b->thing = (dbref) atoi(buf + 1);
-	    if (b->thing < 0 || b->thing >= db_top || Typeof(b->thing) == TYPE_GARBAGE) {
+	    if (!OkObj(b->thing)) {
 		free_boolnode(b);
 		return TRUE_BOOLEXP;
 	    } else {

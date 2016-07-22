@@ -60,7 +60,7 @@ do_examine_sanity(dbref player, const char *arg)
 	result = sscanf(arg, "%i", &d);
     }
 
-    if (!result || d < 0 || d >= db_top) {
+    if (!result || !ObjExists(d)) {
 	SanPrint(player, "Invalid Object.");
 	return;
     }

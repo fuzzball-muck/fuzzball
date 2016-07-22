@@ -102,7 +102,7 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 
 	/* the rest is category specific data. */
 	if (!string_compare(category, "prop")) {
-	    if (obj < 0 || obj >= db_top || Typeof(obj) == TYPE_GARBAGE) {
+	    if (!OkObj(obj)) {
 		show_mcp_error(mfr, "simpleedit-set", "Bad reference object.");
 		return;
 	    }
@@ -158,7 +158,7 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 	    }
 
 	} else if (!string_compare(category, "proplist")) {
-	    if (obj < 0 || obj >= db_top || Typeof(obj) == TYPE_GARBAGE) {
+	    if (!OkObj(obj)) {
 		show_mcp_error(mfr, "simpleedit-set", "Bad reference object.");
 		return;
 	    }
@@ -206,7 +206,7 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 	    struct line *curr = NULL;
 	    struct line *new_line;
 
-	    if (obj < 0 || obj >= db_top || Typeof(obj) == TYPE_GARBAGE) {
+	    if (!OkObj(obj)) {
 		show_mcp_error(mfr, "simpleedit-set", "Bad reference object.");
 		return;
 	    }

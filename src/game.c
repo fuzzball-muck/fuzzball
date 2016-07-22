@@ -439,7 +439,7 @@ process_command(int descr, dbref player, char *command)
 	abort();
 
     /* robustify player */
-    if (player < 0 || player >= db_top ||
+    if (!ObjExists(player) ||
 	(Typeof(player) != TYPE_PLAYER && Typeof(player) != TYPE_THING)) {
 	log_status("process_command: bad player %d", player);
 	return;
