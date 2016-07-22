@@ -5,6 +5,7 @@
 #include "db.h"
 #include "debugger.h"
 #include "edit.h"
+#include "fbmath.h"
 #include "fbstrings.h"
 #include "fbtime.h"
 #include "inst.h"
@@ -1951,12 +1952,6 @@ void
 do_abort_silent(void)
 {
     err = ERROR_DIE_NOW;
-}
-
-int
-no_good(double test)
-{
-    return test == INF || test == NINF;
 }
 
 char *

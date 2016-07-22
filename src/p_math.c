@@ -1,41 +1,15 @@
 #include "config.h"
 
 #include "db.h"
+#include "fbmath.h"
 #include "interp.h"
 #include "params.h"
 #include "random.h"
-
-#include <float.h>
 
 static struct inst *oper1, *oper2, *oper3, *oper4;
 static int tmp, result;
 static double tl;
 static double fresult, tf1, tf2;
-
-#ifndef MAXINT
-#define MAXINT ~(1<<((sizeof(int)*8)-1))
-#endif
-#ifndef MININT
-#define MININT (1<<((sizeof(int)*8)-1))
-#endif
-
-int
-arith_good(double test)
-{
-    return ((test <= (double) (MAXINT)) && (test >= (double) (MININT)));
-}
-
-int
-arith_type(struct inst *op1, struct inst *op2)
-{
-    return ((op1->type == PROG_INTEGER && op2->type == PROG_INTEGER)	/* real stuff */
-	    ||(op1->type == PROG_OBJECT && op2->type == PROG_INTEGER)	/* inc. dbref */
-	    ||(op1->type == PROG_VAR && op2->type == PROG_INTEGER)	/* offset array */
-	    ||(op1->type == PROG_LVAR && op2->type == PROG_INTEGER)
-	    || (op1->type == PROG_FLOAT && op2->type == PROG_FLOAT)
-	    || (op1->type == PROG_FLOAT && op2->type == PROG_INTEGER)
-	    || (op1->type == PROG_INTEGER && op2->type == PROG_FLOAT));
-}
 
 void
 prim_add(PRIM_PROTOTYPE)
@@ -315,12 +289,6 @@ prim_not(PRIM_PROTOTYPE)
     result = false_inst(oper1);
     CLEAR(oper1);
     PushInt(result);
-}
-
-int
-comp_t(struct inst *op)
-{
-    return (op->type == PROG_INTEGER || op->type == PROG_FLOAT || op->type == PROG_OBJECT);
 }
 
 void

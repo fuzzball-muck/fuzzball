@@ -2,6 +2,7 @@
 
 #include "commands.h"
 #include "db.h"
+#include "defines.h"
 #include "edit.h"
 #include "events.h"
 #include "fbsignal.h"

@@ -3,10 +3,6 @@
 
 #include "config.h"
 
-#include "defines.h"
-
-#include <math.h>
-
 #ifdef HAVE_TIMEBITS_H
 #  define __need_timeval 1
 #  include <timebits.h>
@@ -17,43 +13,6 @@
 /* max length of command argument to process_command */
 #define MAX_COMMAND_LEN 2048
 #define BUFFER_LEN ((MAX_COMMAND_LEN)*4)
-
-/* Defining INF as infinite.  This is HUGE_VAL on IEEE754 systems. */
-#if defined(HUGE_VAL)
-# define INF (HUGE_VAL)
-# define NINF (-HUGE_VAL)
-#else
-# define INF (9.9E999)
-# define NINF (-9.9E999)
-#endif
-
-/* Defining Pi, Half Pi, and Quarter Pi.  */
-#ifdef M_PI
-# define F_PI M_PI
-# define NF_PI -M_PI
-#else
-# define F_PI 3.141592653589793239
-# define NF_PI -3.141592653589793239
-#endif
-
-#ifdef M_PI_2
-# define H_PI M_PI_2
-# define NH_PI -M_PI_2
-#else
-# define H_PI 1.5707963267949
-# define NH_PI -1.5707963267949
-#endif
-
-#ifdef M_PI_4			/* A quarter slice.  Yum. */
-# define Q_PI M_PI_4
-# define NQ_PI -M_PI_4
-#else
-# define Q_PI 0.7853981633974
-# define NQ_PI -0.7853981633974
-#endif
-
-#define MIN(p,q) ((p >= q) ? q : p)
-#define MAX(p,q) ((p >= q) ? p : q)
 
 extern char match_args[BUFFER_LEN];
 extern char match_cmdname[BUFFER_LEN];
