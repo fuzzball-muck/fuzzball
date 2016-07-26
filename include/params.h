@@ -18,8 +18,6 @@
 /* User interface low level commands */
 #define QUIT_COMMAND "QUIT"
 #define WHO_COMMAND "WHO"
-#define PREFIX_COMMAND "OUTPUTPREFIX"
-#define SUFFIX_COMMAND "OUTPUTSUFFIX"
 #define NULL_COMMAND "@@"
 
 /* Used for breaking out of muf READs or for stopping foreground programs. */

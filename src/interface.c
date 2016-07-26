@@ -449,19 +449,6 @@ save_command(struct descriptor_data *d, const char *command)
 }
 
 static void
-set_userstring(char **userstring, const char *command)
-{
-    if (*userstring) {
-	FREE(*userstring);
-	*userstring = 0;
-    }
-    while (*command && isinput(*command) && isspace(*command))
-	command++;
-    if (*command)
-	*userstring = string_dup(command);
-}
-
-static void
 parse_connect(const char *msg, char *command, char *user, char *pass)
 {
     char *p;
@@ -987,18 +974,10 @@ do_command(struct descriptor_data *d, char *command)
 	if (!d->connected)
 	    return 0;
 	if (dequeue_prog(d->player, 2)) {
-	    if (d->output_prefix) {
-		queue_ansi(d, d->output_prefix);
-		queue_write(d, "\r\n", 2);
-	    }
 	    queue_ansi(d, "Foreground program aborted.\r\n");
 	    if ((FLAGS(d->player) & INTERACTIVE))
 		if ((FLAGS(d->player) & READMODE))
 		    process_command(d->descriptor, d->player, command);
-	    if (d->output_suffix) {
-		queue_ansi(d, d->output_suffix);
-		queue_write(d, "\r\n", 2);
-	    }
 	}
 	PLAYER_SET_BLOCK(d->player, 0);
 	return 1;
@@ -1010,10 +989,6 @@ do_command(struct descriptor_data *d, char *command)
 	       (*command == OVERRIDE_TOKEN &&
 		(!strncmp(command + 1, WHO_COMMAND, sizeof(WHO_COMMAND) - 1))
 	       )) {
-	if (d->output_prefix) {
-	    queue_ansi(d, d->output_prefix);
-	    queue_write(d, "\r\n", 2);
-	}
 	strcpyn(buf, sizeof(buf), "@");
 	strcatn(buf, sizeof(buf), WHO_COMMAND);
 	strcatn(buf, sizeof(buf), " ");
@@ -1034,25 +1009,9 @@ do_command(struct descriptor_data *d, char *command)
 			   ((*command == OVERRIDE_TOKEN) ? 0 : 1));
 	    }
 	}
-	if (d->output_suffix) {
-	    queue_ansi(d, d->output_suffix);
-	    queue_write(d, "\r\n", 2);
-	}
-    } else if (!strncmp(command, PREFIX_COMMAND, sizeof(PREFIX_COMMAND) - 1)) {
-	set_userstring(&d->output_prefix, command + sizeof(PREFIX_COMMAND) - 1);
-    } else if (!strncmp(command, SUFFIX_COMMAND, sizeof(SUFFIX_COMMAND) - 1)) {
-	set_userstring(&d->output_suffix, command + sizeof(SUFFIX_COMMAND) - 1);
     } else {
 	if (d->connected) {
-	    if (d->output_prefix) {
-		queue_ansi(d, d->output_prefix);
-		queue_write(d, "\r\n", 2);
-	    }
 	    process_command(d->descriptor, d->player, command);
-	    if (d->output_suffix) {
-		queue_ansi(d, d->output_suffix);
-		queue_write(d, "\r\n", 2);
-	    }
 	} else {
 	    check_connect(d, command);
 	}
@@ -1077,10 +1036,6 @@ is_interface_command(const char *cmd)
     if (!strcmp(tmp, QUIT_COMMAND))
 	return 1;
     if (!strncmp(tmp, WHO_COMMAND, strlen(WHO_COMMAND)))
-	return 1;
-    if (!strncmp(tmp, PREFIX_COMMAND, strlen(PREFIX_COMMAND)))
-	return 1;
-    if (!strncmp(tmp, SUFFIX_COMMAND, strlen(SUFFIX_COMMAND)))
 	return 1;
     if (tp_recognize_null_command && !string_compare(tmp, NULL_COMMAND))
 	return 1;
@@ -1327,19 +1282,6 @@ idleboot_user(struct descriptor_data *d)
 }
 
 static void
-clearstrings(struct descriptor_data *d)
-{
-    if (d->output_prefix) {
-	FREE(d->output_prefix);
-	d->output_prefix = 0;
-    }
-    if (d->output_suffix) {
-	FREE(d->output_suffix);
-	d->output_suffix = 0;
-    }
-}
-
-static void
 freeqs(struct descriptor_data *d)
 {
     struct text_block *cur, *next;
@@ -1427,7 +1369,6 @@ shutdownsock(struct descriptor_data *d)
 	log_status("DISCONNECT: descriptor %d from %s(%s) never connected.",
 		   d->descriptor, d->hostname, d->username);
     }
-    clearstrings(d);
     shutdown(d->descriptor, 2);
     close(d->descriptor);
     forget_descriptor(d);
@@ -1498,8 +1439,6 @@ initializesock(int s, const char *hostname, int is_ssl)
     d->con_number = 0;
     d->connected_at = time(NULL);
     make_nonblocking(s);
-    d->output_prefix = 0;
-    d->output_suffix = 0;
     d->output_size = 0;
     d->output.lines = 0;
     d->output.head = 0;
@@ -3174,7 +3113,6 @@ close_sockets(const char *msg)
 	}
 	socket_write(d, msg, strlen(msg));
 	socket_write(d, shutdown_message, strlen(shutdown_message));
-	clearstrings(d);
 	if (shutdown(d->descriptor, 2) < 0)
 	    perror("shutdown");
 	close(d->descriptor);
