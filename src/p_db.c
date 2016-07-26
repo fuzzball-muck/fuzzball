@@ -259,20 +259,6 @@ prim_pennies(PRIM_PROTOTYPE)
 }
 
 void
-prim_dbcomp(PRIM_PROTOTYPE)
-{
-    CHECKOP(2);
-    oper1 = POP();
-    oper2 = POP();
-    if (oper1->type != PROG_OBJECT || oper2->type != PROG_OBJECT)
-	abort_interp("Invalid argument type.");
-    result = oper1->data.objref == oper2->data.objref;
-    CLEAR(oper1);
-    CLEAR(oper2);
-    PushInt(result);
-}
-
-void
 prim_dbref(PRIM_PROTOTYPE)
 {
     CHECKOP(1);

@@ -1,4 +1,3 @@
-
 !IF "$(OS)" == "Windows_NT"
 NULL=
 !ELSE 
@@ -25,7 +24,7 @@ LINK32_OPS=/NODEFAULTLIB:libc /LIBPATH:".\win32" /LIBPATH:"$(OPENSSLDIR)\lib\vc"
 #LINK32_OPS=/DEBUG /NODEFAULTLIB:libc /LIBPATH:".\win32" /LIBPATH:"$(OPENSSLDIR)\lib\vc" pcre.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ws2_32.lib libeay32MD.lib ssleay32MD.lib winmm.lib /nologo /subsystem:console /incremental:no /machine:I386
 
 
-ALL : "$(OUTDIR)\fbmuck.exe" "$(OUTDIR)\restart.exe" "$(OUTDIR)\fbhelp.exe"
+ALL : "$(OUTDIR)\fbmuck.exe" "$(OUTDIR)\restart.exe"
 
 CLEAN :
 	-@erase "$(INTDIR)\*.obj"
@@ -33,7 +32,6 @@ CLEAN :
 	-@erase "$(INTDIR)\*.exe"
      -@erase "$(SRCDIR)\mkversion.exe"
      -@erase "$(OUTDIR)\restart.exe"
-     -@erase "$(OUTDIR)\fbhelp.exe"
      -@erase "$(OUTDIR)\fbmuck.exe"
 
 # Object files
@@ -130,15 +128,6 @@ RESOLVER_OBJ="$(INTDIR)\resolver.obj"
 {$(WINDIR)}.c{$(INTDIR)}.obj::
    $(CPP) @<<
    $(CPP_OPS) /Fo"$(INTDIR)\\" $<
-<<
-
-# Standalone fbhelp
-"$(INTDIR)\fbhelp.obj" : "$(INTDIR)" "$(SRCDIR)\help.c"
-   $(CPP) $(CPP_OPS) /D "STANDALONE_HELP" /Fo$(INTDIR)\fbhelp.obj $(SRCDIR)\help.c
-
-"$(OUTDIR)\fbhelp.exe" : "$(OUTDIR)" "$(INTDIR)\fbhelp.obj" $(MALLOC_OBJ)
-    $(LINK32) @<<
-  $(LINK32_OPS)  /out:"$(OUTDIR)\fbhelp.exe" "$(INTDIR)\fbhelp.obj" $(MALLOC_OBJ)
 <<
 
 # how to build version.c
