@@ -510,6 +510,7 @@ include_internal_defs(COMPSTATE * cstat)
     insert_def(cstat, "tread",
 	       "\"__tread\" timer_start { \"TIMER.__tread\" \"READ\" }list event_waitfor swap pop \"READ\" strcmp if \"\" 0 else read 1 \"__tread\" timer_stop then");
     insert_def(cstat, "truename", "name");
+    insert_def(cstat, "dbcmp", "=");
 
     /* MUF Error defines */
     insert_def(cstat, "err_divzero?", "0 is_set?");

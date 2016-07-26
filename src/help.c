@@ -4,85 +4,10 @@
 #include "fbstrings.h"
 #include "interface.h"
 #include "log.h"
-#if defined(MCP_SUPPORT) && !defined(STANDALONE_HELP)
-#include "mcppkg.h"
-#endif
 
 #include <stdarg.h>
 
-#if defined(STANDALONE_HELP)
-
-int
-notify(dbref player, const char *msg)
-{
-    return printf("%s\n", msg);
-}
-
-void
-notifyf(dbref player, char *format, ...)
-{
-    va_list args;
-    char bufr[BUFFER_LEN];
-
-    va_start(args, format);
-    vsnprintf(bufr, sizeof(bufr), format, args);
-    bufr[sizeof(bufr) - 1] = '\0';
-    notify(player, bufr);
-    va_end(args);
-}
-
-int
-string_prefix(register const char *string, register const char *prefix)
-{
-    while (*string && *prefix && tolower(*string) == tolower(*prefix))
-	string++, prefix++;
-    return *prefix == '\0';
-}
-
-int
-string_compare(register const char *s1, register const char *s2)
-{
-    unsigned char c1, c2;
-
-    do {
-	c1 = tolower(*(const unsigned char *) s1++);
-	c2 = tolower(*(const unsigned char *) s2++);
-    } while (c1 && c1 == c2);
-
-    return (c1 - c2);
-}
-
-char *
-strcpyn(char *buf, size_t bufsize, const char *src)
-{
-    size_t pos = 0;
-    char *dest = buf;
-
-    while (++pos < bufsize && *src) {
-	*dest++ = *src++;
-    }
-    *dest = '\0';
-    return buf;
-}
-
-char *
-strcatn(char *buf, size_t bufsize, const char *src)
-{
-    size_t pos = strlen(buf);
-    char *dest = &buf[pos];
-
-    while (++pos < bufsize && *src) {
-	*dest++ = *src++;
-    }
-    if (pos <= bufsize) {
-	*dest = '\0';
-    }
-    return buf;
-}
-
-#endif
-
-void
+static void
 index_file(dbref player, const char *onwhat, const char *file)
 {
     FILE *f;
@@ -152,7 +77,6 @@ index_file(dbref player, const char *onwhat, const char *file)
     }
 }
 
-#if !defined(STANDALONE_HELP)
 void
 do_man(dbref player, char *topic, char *seg)
 {
@@ -160,7 +84,6 @@ do_man(dbref player, char *topic, char *seg)
 	return;
     index_file(player, topic, MAN_FILE);
 }
-
 
 void
 do_mpihelp(dbref player, char *topic, char *seg)
@@ -170,7 +93,6 @@ do_mpihelp(dbref player, char *topic, char *seg)
     index_file(player, topic, MPI_FILE);
 }
 
-
 void
 do_help(dbref player, char *topic, char *seg)
 {
@@ -178,7 +100,6 @@ do_help(dbref player, char *topic, char *seg)
 	return;
     index_file(player, topic, HELP_FILE);
 }
-
 
 void
 do_news(dbref player, char *topic, char *seg)
@@ -188,8 +109,7 @@ do_news(dbref player, char *topic, char *seg)
     index_file(player, topic, NEWS_FILE);
 }
 
-
-void
+static void
 add_motd_text_fmt(const char *text)
 {
     char buf[80];
@@ -209,7 +129,6 @@ add_motd_text_fmt(const char *text)
 	count = 0;
     }
 }
-
 
 void
 do_motd(dbref player, char *text)
@@ -234,7 +153,6 @@ do_motd(dbref player, char *text)
 	     "- - - - - - - - - - - - - - - - - - -");
     notify(player, "MOTD updated.");
 }
-
 
 void
 do_info(dbref player, const char *topic, const char *seg)
@@ -343,52 +261,3 @@ do_credits(dbref player)
 {
     spit_file(player, CREDITS_FILE);
 }
-
-#else				/* STANDALONE_HELP */
-
-int
-main(int argc, char **argv)
-{
-    char *helpfile = NULL;
-    char *topic = NULL;
-    char buf[BUFFER_LEN];
-    if (argc < 2) {
-	fprintf(stderr, "Usage: %s muf|mpi|help [topic]\n", argv[0]);
-	exit(-1);
-    } else if (argc == 2 || argc == 3) {
-	if (argc == 2) {
-	    topic = "";
-	} else {
-	    topic = argv[2];
-	}
-	if (!strcmp(argv[1], "man")) {
-	    helpfile = MAN_FILE;
-	} else if (!strcmp(argv[1], "muf")) {
-	    helpfile = MAN_FILE;
-	} else if (!strcmp(argv[1], "mpi")) {
-	    helpfile = MPI_FILE;
-	} else if (!strcmp(argv[1], "help")) {
-	    helpfile = HELP_FILE;
-	} else {
-	    fprintf(stderr, "Usage: %s muf|mpi|help [topic]\n", argv[0]);
-	    exit(-2);
-	}
-
-	helpfile = rindex(helpfile, '/');
-	helpfile++;
-#ifdef HELPFILE_DIR
-	snprintf(buf, sizeof(buf), "%s/%s", HELPFILE_DIR, helpfile);
-#else
-	snprintf(buf, sizeof(buf), "%s/%s", "/usr/local/fbmuck/help", helpfile);
-#endif
-
-	index_file(1, topic, buf);
-	exit(0);
-    } else if (argc > 3) {
-	fprintf(stderr, "Usage: %s muf|mpi|help [topic]\n", argv[0]);
-	exit(-1);
-    }
-    return 0;
-}
-
-#endif				/* STANDALONE_HELP */
