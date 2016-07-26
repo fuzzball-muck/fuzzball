@@ -3,25 +3,24 @@
 #include "boolexp.h"
 #include "db.h"
 #include "fbstrings.h"
+#include "game.h"
 #include "interface.h"
 #include "interp.h"
 #include "match.h"
 #include "params.h"
 #include "props.h"
 
-struct boolexp *
+static struct boolexp *
 alloc_boolnode(void)
 {
     return ((struct boolexp *) malloc(sizeof(struct boolexp)));
 }
 
-
-void
+static void
 free_boolnode(struct boolexp *ptr)
 {
     free(ptr);
 }
-
 
 struct boolexp *
 copy_bool(struct boolexp *old)
@@ -72,8 +71,7 @@ copy_bool(struct boolexp *old)
     return o;
 }
 
-
-int
+static int
 eval_boolexp_rec(int descr, dbref player, struct boolexp *b, dbref thing)
 {
     if (b == TRUE_BOOLEXP) {
@@ -135,7 +133,6 @@ eval_boolexp_rec(int descr, dbref player, struct boolexp *b, dbref thing)
     return 0;
 }
 
-
 int
 eval_boolexp(int descr, dbref player, struct boolexp *b, dbref thing)
 {
@@ -145,17 +142,6 @@ eval_boolexp(int descr, dbref player, struct boolexp *b, dbref thing)
     result = eval_boolexp_rec(descr, player, b, thing);
     free_boolexp(b);
     return (result);
-}
-
-
-/* If the parser returns TRUE_BOOLEXP, you lose */
-/* TRUE_BOOLEXP cannot be typed in by the user; use @unlock instead */
-
-static void
-skip_whitespace(const char **parsebuf)
-{
-    while (**parsebuf && isspace(**parsebuf))
-	(*parsebuf)++;
 }
 
 static struct boolexp *parse_boolexp_E(int descr, const char **parsebuf, dbref player, int dbloadp);	/* defined below */
@@ -434,7 +420,7 @@ static char boolexp_buf[BUFFER_LEN];
 static char *buftop;
 
 static void
-unparse_boolexp1(dbref player, struct boolexp *b, boolexp_type outer_type, int fullname)
+unparse_boolexp1(dbref player, struct boolexp *b, short outer_type, int fullname)
 {
     if ((buftop - boolexp_buf) > (BUFFER_LEN / 2))
 	return;

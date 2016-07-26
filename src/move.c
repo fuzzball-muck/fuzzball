@@ -18,7 +18,9 @@
 #include "timequeue.h"
 #include "tune.h"
 
-void
+static int donelook = 0;
+
+static void
 maybe_dropto(int descr, dbref loc, dbref dropto)
 {
     dbref thing;
@@ -38,7 +40,6 @@ maybe_dropto(int descr, dbref loc, dbref dropto)
     send_contents(descr, loc, dropto);
 }
 
-static int donelook = 0;
 void
 enter_room(int descr, dbref player, dbref loc, dbref exit)
 {
@@ -299,7 +300,7 @@ send_home(int descr, dbref thing, int puppethome)
  *
  */
 
-void
+static void
 trigger(int descr, dbref player, dbref exit, int pflag)
 {
     dbref dest;

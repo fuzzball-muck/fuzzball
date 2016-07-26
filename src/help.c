@@ -156,7 +156,7 @@ index_file(dbref player, const char *onwhat, const char *file)
 void
 do_man(dbref player, char *topic, char *seg)
 {
-    if (show_subfile(player, MAN_DIR, topic, seg, FALSE))
+    if (show_subfile(player, MAN_DIR, topic, seg, 0))
 	return;
     index_file(player, topic, MAN_FILE);
 }
@@ -165,7 +165,7 @@ do_man(dbref player, char *topic, char *seg)
 void
 do_mpihelp(dbref player, char *topic, char *seg)
 {
-    if (show_subfile(player, MPI_DIR, topic, seg, FALSE))
+    if (show_subfile(player, MPI_DIR, topic, seg, 0))
 	return;
     index_file(player, topic, MPI_FILE);
 }
@@ -174,7 +174,7 @@ do_mpihelp(dbref player, char *topic, char *seg)
 void
 do_help(dbref player, char *topic, char *seg)
 {
-    if (show_subfile(player, HELP_DIR, topic, seg, FALSE))
+    if (show_subfile(player, HELP_DIR, topic, seg, 0))
 	return;
     index_file(player, topic, HELP_FILE);
 }
@@ -183,7 +183,7 @@ do_help(dbref player, char *topic, char *seg)
 void
 do_news(dbref player, char *topic, char *seg)
 {
-    if (show_subfile(player, NEWS_DIR, topic, seg, FALSE))
+    if (show_subfile(player, NEWS_DIR, topic, seg, 0))
 	return;
     index_file(player, topic, NEWS_FILE);
 }
@@ -257,7 +257,7 @@ do_info(dbref player, const char *topic, const char *seg)
 #endif
 
     if (*topic) {
-	if (!show_subfile(player, INFO_DIR, topic, seg, TRUE)) {
+	if (!show_subfile(player, INFO_DIR, topic, seg, 1)) {
 	    notify(player, NO_INFO_MSG);
 	}
     } else {

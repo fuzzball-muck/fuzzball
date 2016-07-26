@@ -427,24 +427,6 @@ struct tune_bool_entry tune_bool_list[] = {
     {NULL, NULL, NULL, 0, 0, NULL, 0, 0, 0}
 };
 
-static const char *
-timestr_full(long dtime)
-{
-    static char buf[32];
-    int days, hours, minutes, seconds;
-
-    days = dtime / 86400;
-    dtime %= 86400;
-    hours = dtime / 3600;
-    dtime %= 3600;
-    minutes = dtime / 60;
-    seconds = dtime % 60;
-
-    snprintf(buf, sizeof(buf), "%3dd %2d:%02d:%02d", days, hours, minutes, seconds);
-
-    return buf;
-}
-
 int
 tune_count_parms(void)
 {
@@ -455,7 +437,7 @@ tune_count_parms(void)
 		  sizeof(tune_bool_list) / sizeof(tune_bool_list[0])) - 5;
 }
 
-void
+static void
 tune_display_parms(dbref player, char *name, int mlev, int show_extended)
 {
     char buf[BUFFER_LEN + 50];
@@ -814,7 +796,7 @@ tune_parms_array(const char *pattern, int mlev)
     return nu;
 }
 
-int
+static int
 tune_save_parmsfile(void)
 {
     FILE *f;
@@ -1155,7 +1137,7 @@ tune_load_parms_from_file(FILE * f, dbref player, int cnt)
     }
 }
 
-int
+static int
 tune_load_parmsfile(dbref player)
 {
     FILE *f;

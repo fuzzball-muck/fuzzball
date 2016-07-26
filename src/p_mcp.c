@@ -15,6 +15,14 @@
 static struct inst *oper1, *oper2, *oper3, *oper4;
 static int result;
 
+struct mcp_muf_context {
+    dbref prog;
+};
+
+struct mcpevent_context {
+    int pid;
+};
+
 /* This allows using GUI if the player owns the MUF, which drops the
    requirement from an M3. This is not .top because .top will usually 
    be $lib/gui. This could be expanded to check the entire MUF chain. */
@@ -22,8 +30,7 @@ static int result;
   if ((mlev < tp_mcp_muf_mlev) && !(player == OWNER(fr->caller.st[1]))) \
 	  abort_interp("Permission denied!!!");
 
-
-void
+static void
 muf_mcp_context_cleanup(void *context)
 {
     struct mcp_muf_context *mmc = (struct mcp_muf_context *) context;
@@ -31,8 +38,7 @@ muf_mcp_context_cleanup(void *context)
     free(mmc);
 }
 
-
-void
+static void
 muf_mcp_callback(McpFrame * mfr, McpMesg * mesg, McpVer version, void *context)
 {
     struct mcp_muf_context *mmc = (struct mcp_muf_context *) context;
@@ -105,7 +111,7 @@ muf_mcp_callback(McpFrame * mfr, McpMesg * mesg, McpVer version, void *context)
     }
 }
 
-void
+static void
 mcpevent_context_cleanup(void *context)
 {
     struct mcpevent_context *mec = (struct mcpevent_context *) context;
@@ -113,8 +119,7 @@ mcpevent_context_cleanup(void *context)
     free(mec);
 }
 
-
-void
+static void
 muf_mcp_event_callback(McpFrame * mfr, McpMesg * mesg, McpVer version, void *context)
 {
     struct mcpevent_context *mec = (struct mcpevent_context *) context;
@@ -184,8 +189,7 @@ muf_mcp_event_callback(McpFrame * mfr, McpMesg * mesg, McpVer version, void *con
     }
 }
 
-
-int
+static int
 stuff_dict_in_mesg(stk_array * arr, McpMesg * msg)
 {
     struct inst argname, *argval;
@@ -265,7 +269,6 @@ stuff_dict_in_mesg(stk_array * arr, McpMesg * msg)
     return 0;
 }
 
-
 void
 prim_mcp_register(PRIM_PROTOTYPE)
 {
@@ -307,8 +310,6 @@ prim_mcp_register(PRIM_PROTOTYPE)
     CLEAR(oper2);
     CLEAR(oper3);
 }
-
-
 
 void
 prim_mcp_register_event(PRIM_PROTOTYPE)
@@ -353,8 +354,6 @@ prim_mcp_register_event(PRIM_PROTOTYPE)
     CLEAR(oper3);
 }
 
-
-
 void
 prim_mcp_supports(PRIM_PROTOTYPE)
 {
@@ -393,8 +392,6 @@ prim_mcp_supports(PRIM_PROTOTYPE)
 
     PushFloat(fver);
 }
-
-
 
 void
 prim_mcp_bind(PRIM_PROTOTYPE)
@@ -453,7 +450,6 @@ prim_mcp_bind(PRIM_PROTOTYPE)
     CLEAR(oper2);
     CLEAR(oper3);
 }
-
 
 void
 prim_mcp_send(PRIM_PROTOTYPE)
@@ -522,9 +518,7 @@ prim_mcp_send(PRIM_PROTOTYPE)
     CLEAR(oper2);
 }
 
-
-
-void
+static void
 fbgui_muf_event_cb(GUI_EVENT_CB_ARGS)
 {
     char buf[BUFFER_LEN];
@@ -616,9 +610,7 @@ fbgui_muf_event_cb(GUI_EVENT_CB_ARGS)
     CLEAR(&temp);
 }
 
-
-
-void
+static void
 fbgui_muf_error_cb(GUI_ERROR_CB_ARGS)
 {
     char buf[BUFFER_LEN];
@@ -641,8 +633,6 @@ fbgui_muf_error_cb(GUI_ERROR_CB_ARGS)
     CLEAR(&temp);
 }
 
-
-
 void
 prim_gui_available(PRIM_PROTOTYPE)
 {
@@ -662,8 +652,6 @@ prim_gui_available(PRIM_PROTOTYPE)
 
     PushFloat(fver);
 }
-
-
 
 void
 prim_gui_dlog_create(PRIM_PROTOTYPE)
@@ -737,8 +725,6 @@ prim_gui_dlog_create(PRIM_PROTOTYPE)
     PushString(dlogid);
 }
 
-
-
 void
 prim_gui_dlog_show(PRIM_PROTOTYPE)
 {
@@ -759,7 +745,6 @@ prim_gui_dlog_show(PRIM_PROTOTYPE)
 
     CLEAR(oper1);
 }
-
 
 void
 prim_gui_dlog_close(PRIM_PROTOTYPE)
@@ -783,8 +768,6 @@ prim_gui_dlog_close(PRIM_PROTOTYPE)
 
     CLEAR(oper1);
 }
-
-
 
 void
 prim_gui_ctrl_create(PRIM_PROTOTYPE)
@@ -886,7 +869,6 @@ prim_gui_ctrl_create(PRIM_PROTOTYPE)
     CLEAR(oper4);
 }
 
-
 void
 prim_gui_ctrl_command(PRIM_PROTOTYPE)
 {
@@ -971,7 +953,6 @@ prim_gui_ctrl_command(PRIM_PROTOTYPE)
     CLEAR(oper3);
     CLEAR(oper4);
 }
-
 
 void
 prim_gui_value_set(PRIM_PROTOTYPE)
@@ -1065,7 +1046,6 @@ prim_gui_value_set(PRIM_PROTOTYPE)
     CLEAR(oper3);
 }
 
-
 void
 prim_gui_values_get(PRIM_PROTOTYPE)
 {
@@ -1121,7 +1101,6 @@ prim_gui_values_get(PRIM_PROTOTYPE)
     CLEAR(oper1);
     PushArrayRaw(nu);
 }
-
 
 void
 prim_gui_value_get(PRIM_PROTOTYPE)

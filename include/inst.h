@@ -50,12 +50,6 @@ struct muf_proc_data {
     const char **varnames;
 };
 
-#define MAX_VAR         54      /* maximum number of variables including the
-                                 * basic ME, LOC, TRIGGER, and COMMAND vars */
-#define RES_VAR          4      /* no of reserved variables */
-
-#define STACK_SIZE       1024   /* maximum size of stack */
-
 /* stack and object declarations */
 /* Integer types go here */
 #define PROG_CLEARED     0
@@ -86,6 +80,14 @@ struct muf_proc_data {
 #define PROG_LVAR_BANG   24     /* ! shortcut for local vars */
 
 #define PROG_UNTYPED     253    /* MUV unknown var type */
+
+#define MAX_VAR         54      /* maximum number of variables including the
+                                 * basic ME, LOC, TRIGGER, and COMMAND vars */
+#define RES_VAR          4      /* no of reserved variables */
+
+#define STACK_SIZE       1024   /* maximum size of stack */
+
+#define DoNullInd(x) ((x) ? (x) -> data : "")
 
 struct inst {                   /* instruction */
     short type;

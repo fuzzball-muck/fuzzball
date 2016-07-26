@@ -41,7 +41,7 @@ print_owner(dbref player, dbref thing)
     notify(player, buf);
 }
 
-int
+static int
 can_see(dbref player, dbref thing, int can_see_loc)
 {
     if (player == thing || Typeof(thing) == TYPE_EXIT || Typeof(thing) == TYPE_ROOM)
@@ -99,7 +99,7 @@ look_simple(int descr, dbref player, dbref thing)
     }
 }
 
-void
+static void
 look_room(int descr, dbref player, dbref loc)
 {
     char obj_num[20];
@@ -378,7 +378,7 @@ flag_description(dbref thing)
 
 #endif				/* VERBOSE_EXAMINE */
 
-int
+static int
 listprops_wildcard(dbref player, dbref thing, const char *dir, const char *wild)
 {
     char propname[BUFFER_LEN];
@@ -1394,7 +1394,7 @@ exit_matches_name(dbref exit, const char *name, int exactMatch)
     return 0;
 }
 
-int
+static int
 exit_match_exists(dbref player, dbref obj, const char *name, int exactMatch)
 {
     dbref exit;

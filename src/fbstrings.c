@@ -78,6 +78,26 @@ string_compare(register const char *s1, register const char *s2)
     return (c1 - c2);
 }
 
+int
+strcmp_nocase(const char *s1, const char *s2)
+{
+    while (*s1 && tolower(*s1) == tolower(*s2))
+        s1++, s2++;
+    return (tolower(*s1) - tolower(*s2));
+}
+
+int
+strncmp_nocase(const char *s1, const char *s2, int cnt)
+{
+    while (cnt && *s1 && tolower(*s1) == tolower(*s2))
+        s1++, s2++, cnt--;
+    if (!cnt) {
+        return 0;
+    } else {
+        return (tolower(*s1) - tolower(*s2));
+    }
+}
+
 const char *
 exit_prefix(register const char *string, register const char *prefix)
 {
@@ -932,12 +952,12 @@ strstr(char *s1, char *s2)
 static int
 cmatch(char *s1, char c1)
 {
-    int truthval = FALSE;
+    int truthval = 0;
 
     c1 = tolower(c1);
     if (*s1 == '^') {
 	s1++;
-	truthval = TRUE;
+	truthval = 1;
     }
     if (*s1 == '-')
 	test(*s1++);
@@ -1102,4 +1122,124 @@ int
 equalstr(char *pattern, char *str)
 {
     return !smatch(pattern, str);
+}
+
+void
+int2str(char *buf, int val, int len, char pref)
+{
+    int lp;
+
+    buf[lp = len] = '\0';
+    while (lp--) {
+        buf[lp] = '0' + (val % 10);
+        val /= 10;
+    }
+    while (((++lp) < (len - 1)) && (buf[lp] == '0'))
+        buf[lp] = pref;
+    if (!pref)
+        (void) strcpyn(buf, len, buf + lp);
+}
+
+char *
+cr2slash(char *buf, int buflen, const char *in)
+{
+    char *ptr = buf;
+    const char *ptr2 = in;
+
+    for (ptr = buf, ptr2 = in; *ptr2 && ptr - buf < buflen - 3; ptr2++) {
+        if (*ptr2 == '\r') {
+            *(ptr++) = '\\';
+            *(ptr++) = 'r';
+        } else if (*ptr2 == ESCAPE_CHAR) {
+            *(ptr++) = '\\';
+            *(ptr++) = '[';
+        } else if (*ptr2 == '`') {
+            *(ptr++) = '\\';
+            *(ptr++) = '`';
+        } else if (*ptr2 == '\\') {
+            *(ptr++) = '\\';
+            *(ptr++) = '\\';
+        } else {
+            *(ptr++) = *ptr2;
+        }
+    }
+    *(ptr++) = '\0';
+    return buf;
+}
+
+char *
+stripspaces(char *buf, int buflen, char *in)
+{
+    char *ptr;
+
+    for (ptr = in; *ptr == ' '; ptr++) ;
+    strcpyn(buf, buflen, ptr);
+    ptr = strlen(buf) + buf - 1;
+    while (*ptr == ' ' && ptr > buf)
+        *(ptr--) = '\0';
+    return buf;
+}
+
+
+char *
+string_substitute(const char *str, const char *oldstr, const char *newstr,
+                  char *buf, int maxlen)
+{
+    const char *ptr = str;
+    char *ptr2 = buf;
+    const char *ptr3;
+    int len = strlen(oldstr);
+    int clen = 0;
+
+    if (len == 0) {
+        strcpyn(buf, maxlen, str);
+        return buf;
+    }
+    while (*ptr && clen < (maxlen + 2)) {
+        if (!strncmp(ptr, oldstr, len)) {
+            for (ptr3 = newstr; ((ptr2 - buf) < (maxlen - 2)) && *ptr3;)
+                *(ptr2++) = *(ptr3++);
+            ptr += len;
+            clen += len;
+        } else {
+            *(ptr2++) = *(ptr++);
+            clen++;
+        }
+    }
+    *ptr2 = '\0';
+    return buf;
+}
+
+char *
+ref2str(dbref obj, char *buf, size_t buflen)
+{
+    if (obj < -4 || obj >= db_top) {
+        snprintf(buf, buflen, "Bad");
+        return buf;
+    }
+
+    if (obj >= 0 && Typeof(obj) == TYPE_PLAYER) {
+        snprintf(buf, buflen, "*%s", NAME(obj));
+    } else {
+        snprintf(buf, buflen, "#%d", obj);
+    }
+    return buf;
+}
+
+
+int
+truestr(char *buf)
+{
+    while (isspace(*buf))
+        buf++;
+    if (!*buf || (number(buf) && !atoi(buf)))
+        return 0;
+    return 1;
+}
+
+void
+skip_whitespace(const char **parsebuf)
+{
+    while (**parsebuf && isspace(**parsebuf))
+        (*parsebuf)++;
 }

@@ -1,6 +1,7 @@
 #ifndef _INTERP_H
 #define _INTERP_H
 
+#include "fbstrings.h"
 #include "inst.h"
 
 /* Some icky machine/compiler #defines. --jim */
@@ -14,11 +15,12 @@ typedef void *voidptr;
 #define MIPSCAST
 #endif
 
-#define DoNullInd(x) ((x) ? (x) -> data : "")
-
 void RCLEAR(struct inst *oper, char *file, int line);
 
 #define CLEAR(oper) RCLEAR(oper, __FILE__, __LINE__)
+#define ProgMLevel(x) (find_mlev(x, fr, fr->caller.top))
+#define ProgUID find_uid(player, fr, fr->caller.top, program)
+
 
 typedef struct inst vars[MAX_VAR];
 
@@ -182,18 +184,6 @@ struct publics {
     struct publics *next;
 };
 
-struct localvars *localvars_get(struct frame *fr, dbref prog);
-void localvar_dupall(struct frame *fr, struct frame *oldfr);
-
-struct inst *scopedvar_get(struct frame *fr, int level, int varnum);
-const char *scopedvar_getname(struct frame *fr, int level, int varnum);
-const char *scopedvar_getname_byinst(struct inst *pc, int varnum);
-int scopedvar_getnum(struct frame *fr, int level, const char *varname);
-void scopedvar_dupall(struct frame *fr, struct frame *oldfr);
-int false_inst(struct inst *p);
-
-void copyinst(struct inst *from, struct inst *to);
-
 #define abort_loop(S, C1, C2) \
 { \
 	do_abort_loop(player, program, (S), fr, pc, atop, stop, (C1), (C2)); \
@@ -211,28 +201,6 @@ void copyinst(struct inst *from, struct inst *to);
 	if (fr) fr->trys.top = tmp; \
 	return 0; \
 }
-
-void do_abort_loop(dbref player, dbref program, const char *msg,
-			  struct frame *fr, struct inst *pc,
-			  int atop, int stop, struct inst *clinst1, struct inst *clinst2);
-
-void interp_err(dbref player, dbref program, struct inst *pc,
-		       struct inst *arg, int atop, dbref origprog,
-		       const char *msg1, const char *msg2);
-
-void push(struct inst *stack, int *top, int type, voidptr res);
-
-int valid_player(struct inst *oper);
-
-int valid_object(struct inst *oper);
-
-int is_home(struct inst *oper);
-
-int permissions(dbref player, dbref thing);
-
-int arith_type(struct inst *op1, struct inst *op2);
-
-int no_good(double test);
 
 #define POP() (arg + --(*top))
 
@@ -261,18 +229,6 @@ int no_good(double test);
 	} \
 }
 
-void do_abort_interp(dbref player, const char *msg, struct inst *pc,
-			    struct inst *arg, int atop, struct frame *fr,
-			    struct inst *oper1, struct inst *oper2, struct inst *oper3,
-			    struct inst *oper4, int nargs, dbref program, char *file,
-			    int line);
-
-
-#define ProgMLevel(x) (find_mlev(x, fr, fr->caller.top))
-
-#define ProgUID find_uid(player, fr, fr->caller.top, program)
-dbref find_uid(dbref player, struct frame *fr, int st, dbref program);
-
 #define CHECKREMOTE(x) if ((mlev < 2) && (LOCATION(x) != player) &&  \
                            (LOCATION(x) != LOCATION(player)) && \
                            ((x) != LOCATION(player)) && ((x) != player) \
@@ -291,7 +247,7 @@ dbref find_uid(dbref player, struct frame *fr, int st, dbref program);
 
 #define PushArrayRaw(x) push(arg, top, PROG_ARRAY, MIPSCAST x)
 #define PushNullArray   PushArrayRaw(0)
-#define PushInst(x) copyinst(x, &arg[((*top)++)])
+#define PushInst(x)	copyinst(x, &arg[((*top)++)])
 
 #define CHECKOFLOW(x) if((*top + (x - 1)) >= STACK_SIZE) \
 			  abort_interp("Stack Overflow!");
@@ -310,23 +266,48 @@ dbref find_uid(dbref player, struct frame *fr, int st, dbref program);
 #define SORTTYPE_SHUFFLE        4
 
 extern int top_pid;
-extern int nargs;		/* DO NOT TOUCH THIS VARIABLE */
+extern int nargs;
 extern const char *base_inst[];
 
+struct forvars *copy_fors(struct forvars *);
+struct tryvars *copy_trys(struct tryvars *);
+void copyinst(struct inst *from, struct inst *to);
 char *debug_inst(struct frame *, int, struct inst *, int, struct inst *, char *, int,
                         int, dbref);
+void do_abort_interp(dbref player, const char *msg, struct inst *pc,
+			    struct inst *arg, int atop, struct frame *fr,
+			    struct inst *oper1, struct inst *oper2, struct inst *oper3,
+			    struct inst *oper4, int nargs, dbref program, char *file,
+			    int line);
 void do_abort_silent(void);
+int false_inst(struct inst *p);
 dbref find_mlev(dbref prog, struct frame *fr, int st);
+dbref find_uid(dbref player, struct frame *fr, int st, dbref program);
 char *insttotext(struct frame *, int, struct inst *, char *, int, int, dbref, int);
 struct frame *interp(int descr, dbref player, dbref location, dbref program,
                             dbref source, int nosleeping, int whichperms, int forced_pid);
 struct inst *interp_loop(dbref player, dbref program, struct frame *fr, int rettyp);
+int is_home(struct inst *oper);
+void localvar_dupall(struct frame *fr, struct frame *oldfr);
+struct localvars *localvars_get(struct frame *fr, dbref prog);
+int permissions(dbref player, dbref thing);
+struct forvars *pop_for(struct forvars *);
+struct tryvars *pop_try(struct tryvars *);
 void prog_clean(struct frame *fr);
 void purge_all_free_frames();
+void purge_free_frames();
 void purge_for_pool(void);
 void purge_try_pool(void);
+void push(struct inst *stack, int *top, int type, voidptr res);
+struct forvars *push_for(struct forvars *);
+struct tryvars *push_try(struct tryvars *);
+void scopedvar_dupall(struct frame *fr, struct frame *oldfr);
+struct inst *scopedvar_get(struct frame *fr, int level, int varnum);
+const char *scopedvar_getname(struct frame *fr, int level, int varnum);
+const char *scopedvar_getname_byinst(struct inst *pc, int varnum);
+int valid_object(struct inst *oper);
+int valid_player(struct inst *oper);
 
-/* and declare debug instruction diagnostic routine */
 #include "p_array.h"
 #include "p_connects.h"
 #include "p_db.h"
@@ -339,5 +320,4 @@ void purge_try_pool(void);
 #include "p_mcp.h"
 #include "p_strings.h"
 #include "p_regex.h"
-
 #endif				/* _INTERP_H */

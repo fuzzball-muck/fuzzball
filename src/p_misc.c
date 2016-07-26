@@ -43,7 +43,6 @@ prim_time(PRIM_PROTOTYPE)
     }
 }
 
-
 void
 prim_date(PRIM_PROTOTYPE)
 {
@@ -82,7 +81,6 @@ prim_systime(PRIM_PROTOTYPE)
     PushInt(result);
 }
 
-
 void
 prim_systime_precise(PRIM_PROTOTYPE)
 {
@@ -95,7 +93,6 @@ prim_systime_precise(PRIM_PROTOTYPE)
     dbltime = fulltime.tv_sec + (((double) fulltime.tv_usec) / 1.0e6);
     PushFloat(dbltime);
 }
-
 
 void
 prim_timesplit(PRIM_PROTOTYPE)
@@ -129,7 +126,6 @@ prim_timesplit(PRIM_PROTOTYPE)
     result = time_tm->tm_yday + 1;
     PushInt(result);
 }
-
 
 void
 prim_timefmt(PRIM_PROTOTYPE)
@@ -212,7 +208,6 @@ prim_queue(PRIM_PROTOTYPE)
     PushInt(result);
 }
 
-
 void
 prim_kill(PRIM_PROTOTYPE)
 {
@@ -234,7 +229,6 @@ prim_kill(PRIM_PROTOTYPE)
     CLEAR(oper1);
     PushInt(result);
 }
-
 
 void
 prim_force(PRIM_PROTOTYPE)
@@ -290,7 +284,6 @@ prim_force(PRIM_PROTOTYPE)
     CLEAR(oper2);
 }
 
-
 void
 prim_timestamps(PRIM_PROTOTYPE)
 {
@@ -315,8 +308,6 @@ prim_timestamps(PRIM_PROTOTYPE)
 }
 
 extern int top_pid;
-struct forvars *copy_fors(struct forvars *);
-struct tryvars *copy_trys(struct tryvars *);
 
 void
 prim_fork(PRIM_PROTOTYPE)
@@ -435,7 +426,6 @@ prim_fork(PRIM_PROTOTYPE)
     PushInt(result);
 }
 
-
 void
 prim_pid(PRIM_PROTOTYPE)
 {
@@ -445,11 +435,9 @@ prim_pid(PRIM_PROTOTYPE)
     PushInt(result);
 }
 
-
 void
 prim_stats(PRIM_PROTOTYPE)
 {
-    /* A WhiteFire special. :) */
     CHECKOP(1);
     oper1 = POP();
     if (mlev < 3)
@@ -511,7 +499,6 @@ prim_abort(PRIM_PROTOTYPE)
     abort_interp(buf);
 }
 
-
 void
 prim_ispidp(PRIM_PROTOTYPE)
 {
@@ -528,7 +515,6 @@ prim_ispidp(PRIM_PROTOTYPE)
     CLEAR(oper1);
     PushInt(result);
 }
-
 
 void
 prim_parselock(PRIM_PROTOTYPE)
@@ -549,7 +535,6 @@ prim_parselock(PRIM_PROTOTYPE)
     PushLock(lok);
     free_boolexp(lok);
 }
-
 
 void
 prim_unparselock(PRIM_PROTOTYPE)
@@ -574,7 +559,6 @@ prim_unparselock(PRIM_PROTOTYPE)
     }
 }
 
-
 void
 prim_prettylock(PRIM_PROTOTYPE)
 {
@@ -589,7 +573,6 @@ prim_prettylock(PRIM_PROTOTYPE)
     CLEAR(oper1);
     PushString(ptr);
 }
-
 
 void
 prim_testlock(PRIM_PROTOTYPE)
@@ -619,7 +602,6 @@ prim_testlock(PRIM_PROTOTYPE)
     PushInt(result);
 }
 
-
 void
 prim_sysparm(PRIM_PROTOTYPE)
 {
@@ -638,7 +620,6 @@ prim_sysparm(PRIM_PROTOTYPE)
     CLEAR(oper1);
     PushString(ptr);
 }
-
 
 void
 prim_cancallp(PRIM_PROTOTYPE)
@@ -760,8 +741,6 @@ prim_setsysparm(PRIM_PROTOTYPE)
     CLEAR(oper2);
 }
 
-
-
 void
 prim_sysparm_array(PRIM_PROTOTYPE)
 {
@@ -778,8 +757,6 @@ prim_sysparm_array(PRIM_PROTOTYPE)
     CLEAR(oper1);
     PushArrayRaw(nu);
 }
-
-
 
 void
 prim_timer_start(PRIM_PROTOTYPE)
@@ -803,7 +780,6 @@ prim_timer_start(PRIM_PROTOTYPE)
     CLEAR(oper2);
 }
 
-
 void
 prim_timer_stop(PRIM_PROTOTYPE)
 {
@@ -817,7 +793,6 @@ prim_timer_stop(PRIM_PROTOTYPE)
 
     CLEAR(oper1);
 }
-
 
 void
 prim_event_exists(PRIM_PROTOTYPE)
@@ -834,7 +809,6 @@ prim_event_exists(PRIM_PROTOTYPE)
     PushInt(result);
 }
 
-
 void
 prim_event_count(PRIM_PROTOTYPE)
 {
@@ -843,7 +817,6 @@ prim_event_count(PRIM_PROTOTYPE)
     result = muf_event_count(fr);
     PushInt(result);
 }
-
 
 void
 prim_event_send(PRIM_PROTOTYPE)
@@ -893,7 +866,6 @@ prim_event_send(PRIM_PROTOTYPE)
     CLEAR(oper3);
 }
 
-
 void
 prim_pname_okp(PRIM_PROTOTYPE)
 {
@@ -907,7 +879,6 @@ prim_pname_okp(PRIM_PROTOTYPE)
     CLEAR(oper1);
     PushInt(result);
 }
-
 
 void
 prim_name_okp(PRIM_PROTOTYPE)
@@ -994,7 +965,6 @@ prim_ext_name_okp(PRIM_PROTOTYPE)
     PushInt(result);
 }
 
-
 void
 prim_force_level(PRIM_PROTOTYPE)
 {
@@ -1018,8 +988,6 @@ prim_watchpid(PRIM_PROTOTYPE)
 	abort_interp("Process PID expected.");
     }
 
-/* Lets see if the batbat catches this one. */
-/* Heh.  - Revar */
     if (oper1->data.number == fr->pid) {
 	abort_interp("Narcissistic processes not allowed.");
     }
@@ -1060,13 +1028,11 @@ prim_watchpid(PRIM_PROTOTYPE)
     CLEAR(oper1);
 }
 
-
 void
 prim_read_wants_blanks(PRIM_PROTOTYPE)
 {
     fr->wantsblanks = 1;
 }
-
 
 void
 prim_debugger_break(PRIM_PROTOTYPE)

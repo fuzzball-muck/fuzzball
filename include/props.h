@@ -54,10 +54,12 @@ typedef struct plist *PropPtr;
 /* Blessed props evaluate with wizbit MPI perms. */
 #define PROP_BLESSED     0x1000
 
-
-/* Macros */
-#define AVL_LF(x) (x)->left
-#define AVL_RT(x) (x)->right
+#ifndef AVL_RT
+#define AVL_RT(x)  (x->right)
+#endif
+#ifndef AVL_LF
+#define AVL_LF(x)  (x->left)
+#endif
 
 #define SetPDir(x,y) {(x)->dir = y;}
 #define PropDir(x) ((x)->dir)
@@ -96,108 +98,77 @@ typedef struct plist *PropPtr;
 #define Prop_Hidden(name) Prop_Check(name, PROP_HIDDEN)
 #define Prop_System(name) is_prop_prefix(name, "@__sys__")
 
-
-/* Routines as they need to be:
-
-     PropPtr locate_prop(PropPtr list, char *name)
-       if list is NULL, return NULL.
-
-     PropPtr new_prop(PropPtr *list, char *name)
-       if *list is NULL, create a new propdir, then insert the prop
-
-     PropPtr delete_prop(PropPtr *list, char *name)
-       when last prop in dir is deleted, destroy propdir & change *list to NULL
-
-     PropPtr first_node(PropPtr list)
-       if list is NULL, return NULL
-
-     PropPtr next_node(PropPtr list, char *name)
-       if list is NULL, return NULL
-
- */
-
-PropPtr alloc_propnode(const char *name);
-void free_propnode(PropPtr node);
-PropPtr first_node(PropPtr p);
-PropPtr next_node(PropPtr p, char *c);
 int Prop_Check(const char *name, const char what);
-PropPtr locate_prop(PropPtr l, char *path);
-PropPtr new_prop(PropPtr * l, char *path);
-PropPtr delete_prop(PropPtr * list, char *name);
-
-
-void set_property(dbref player, const char *pname, PData * dat, int sync);
-void add_property(dbref player, const char *type, const char *strval, int value);
-
-void remove_property_list(dbref player, int all);
-void remove_property(dbref player, const char *type, int sync);
-
-int has_property(int descr, dbref player, dbref what, const char *type,
-			const char *strval, int value);
-int has_property_strict(int descr, dbref player, dbref what, const char *type,
-			       const char *strval, int value);
-
-const char *get_property_class(dbref player, const char *type);
-double get_property_fvalue(dbref player, const char *type);
-int get_property_value(dbref player, const char *type);
-struct boolexp *get_property_lock(dbref player, const char *type);
-dbref get_property_dbref(dbref player, const char *pname);
-const char *envpropstr(dbref * where, const char *propname);
-PropPtr get_property(dbref player, const char *type);
-PropPtr envprop(dbref * where, const char *propname, int typ);
-int get_property_flags(dbref player, const char *type);
-void set_property_flags(dbref player, const char *type, int flags);
-void clear_property_flags(dbref player, const char *type, int flags);
-
-struct plist *copy_prop(dbref old);
-
-PropPtr first_prop(dbref player, const char *dir, PropPtr * list, char *name,
-			  int maxlen);
-PropPtr next_prop(PropPtr list, PropPtr prop, char *name, int maxlen);
-char *next_prop_name(dbref player, char *outbuf, int outbuflen, char *name);
-
-int is_propdir(dbref player, const char *dir);
-
-void delete_proplist(PropPtr p);
-void set_property_nofetch(dbref player, const char *pname, PData * dat, int sync);
 void add_prop_nofetch(dbref player, const char *type, const char *strval, int value);
-void remove_property_nofetch(dbref player, const char *type, int sync);
-PropPtr first_prop_nofetch(dbref player, const char *dir, PropPtr * list, char *name,
-				  int maxlen);
-
-PropPtr propdir_new_elem(PropPtr * root, char *path);
-PropPtr propdir_delete_elem(PropPtr root, char *path);
-PropPtr propdir_get_elem(PropPtr root, char *path);
-PropPtr propdir_first_elem(PropPtr root, char *path);
-PropPtr propdir_next_elem(PropPtr root, char *path);
-const char *propdir_name(const char *name);
-const char *propdir_unloaded(PropPtr root, const char *path);
-
-void db_putprop(FILE * f, const char *dir, PropPtr p);
+void add_property(dbref player, const char *type, const char *strval, int value);
+PropPtr alloc_propnode(const char *name);
+void clear_property_flags(dbref player, const char *type, int flags);
+void clear_propnode(PropPtr p);
+struct plist *copy_prop(dbref old);
+void copy_proplist(dbref obj, PropPtr * newer, PropPtr old);
+void db_dump_props(FILE * f, dbref obj);
 int db_get_single_prop(FILE * f, dbref obj, long pos, PropPtr pnode, const char *pdir);
 void db_getprops(FILE * f, dbref obj, const char *pdir);
-void db_dump_props(FILE * f, dbref obj);
-
-void reflist_add(dbref obj, const char *propname, dbref toadd);
-void reflist_del(dbref obj, const char *propname, dbref todel);
-int reflist_find(dbref obj, const char *propname, dbref tofind);
-
+void db_putprop(FILE * f, const char *dir, PropPtr p);
+PropPtr delete_prop(PropPtr * list, char *name);
+void delete_proplist(PropPtr p);
 char *displayprop(dbref player, dbref obj, const char *name, char *buf, size_t bufsiz);
-long size_properties(dbref player, int load);
-void untouchprops_incremental(int limit);
-
-void clear_propnode(PropPtr p);
-void copy_proplist(dbref obj, PropPtr * newer, PropPtr old);
-long size_proplist(PropPtr avl);
-
+PropPtr envprop(dbref * where, const char *propname, int typ);
+const char *envpropstr(dbref * where, const char *propname);
 void exec_or_notify(int descr, dbref player, dbref thing, const char *message,
 				const char *whatcalled, int mpiflags);
 void exec_or_notify_prop(int descr, dbref player, dbref thing, const char *propname,
                                 const char *whatcalled);         
+PropPtr first_node(PropPtr p);
+PropPtr first_prop(dbref player, const char *dir, PropPtr * list, char *name,
+			  int maxlen);
+PropPtr first_prop_nofetch(dbref player, const char *dir, PropPtr * list, char *name,
+				  int maxlen);
+void free_propnode(PropPtr node);
+PropPtr get_property(dbref player, const char *type);
+const char *get_property_class(dbref player, const char *type);
+dbref get_property_dbref(dbref player, const char *pname);
+int get_property_flags(dbref player, const char *type);
+double get_property_fvalue(dbref player, const char *type);
+struct boolexp *get_property_lock(dbref player, const char *type);
+int get_property_value(dbref player, const char *type);
+int has_property(int descr, dbref player, dbref what, const char *type,
+			const char *strval, int value);
+int has_property_strict(int descr, dbref player, dbref what, const char *type,
+			       const char *strval, int value);
+int is_propdir(dbref player, const char *dir);
+PropPtr locate_prop(PropPtr l, char *path);
+PropPtr new_prop(PropPtr * l, char *path);
+PropPtr next_node(PropPtr p, char *c);
+PropPtr next_prop(PropPtr list, PropPtr prop, char *name, int maxlen);
+char *next_prop_name(dbref player, char *outbuf, int outbuflen, char *name);
 void parse_omessage(int descr, dbref player, dbref dest, dbref exit, const char *msg,
                            const char *prefix, const char *whatcalled, int mpiflags);
 void parse_oprop(int descr, dbref player, dbref dest, dbref exit, const char *propname,
                         const char *prefix, const char *whatcalled);
+PropPtr propdir_delete_elem(PropPtr root, char *path);
+PropPtr propdir_first_elem(PropPtr root, char *path);
+PropPtr propdir_get_elem(PropPtr root, char *path);
+const char *propdir_name(const char *name);
+PropPtr propdir_new_elem(PropPtr * root, char *path);
+PropPtr propdir_next_elem(PropPtr root, char *path);
+const char *propdir_unloaded(PropPtr root, const char *path);
+void reflist_add(dbref obj, const char *propname, dbref toadd);
+void reflist_del(dbref obj, const char *propname, dbref todel);
+int reflist_find(dbref obj, const char *propname, dbref tofind);
+void remove_property(dbref player, const char *type, int sync);
+void remove_property_list(dbref player, int all);
+void remove_property_nofetch(dbref player, const char *type, int sync);
+void set_standard_lock(int descr, dbref player, const char *objname,
+                  const char *propname, const char *proplabel, const char *keyvalue);
+void set_standard_property(int descr, dbref player, const char *objname,
+                      const char *propname, const char *proplabel, const char *propvalue);
+void set_property(dbref player, const char *pname, PData * dat, int sync);
+void set_property_flags(dbref player, const char *type, int flags);
+void set_property_nofetch(dbref player, const char *pname, PData * dat, int sync);
+long size_properties(dbref player, int load);
+long size_proplist(PropPtr avl);
+void untouchprops_incremental(int limit);
 
 
 #endif				/* _PROPS_H */

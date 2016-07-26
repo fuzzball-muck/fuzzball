@@ -3,6 +3,7 @@
 #include "array.h"
 #include "db.h"
 #include "fbstrings.h"
+#include "fbtime.h"
 #include "inst.h"
 #include "interface.h"
 #include "interp.h"
@@ -10,7 +11,27 @@
 #include "mufevent.h"
 #include "tune.h"
 
-/* static void muf_event_process_free(struct mufevent* ptr)
+struct mufevent {
+    struct mufevent *next;
+    char *event;
+    struct inst data;
+};
+
+static struct mufevent_process {
+    struct mufevent_process *prev, *next;
+    dbref player;
+    dbref prog;
+    short filtercount;
+    short deleted;
+    char **filters;
+    struct frame *fr;
+} *mufevent_processes;
+
+#define MUFEVENT_ALL    -1
+#define MUFEVENT_FIRST  -2
+#define MUFEVENT_LAST   -3
+
+/*
  * Frees up a mufevent_process once you are done with it.
  * This shouldn't be used outside this module.
  */
@@ -51,8 +72,7 @@ muf_event_process_free(struct mufevent_process *ptr)
     free(ptr);
 }
 
-
-/* void muf_event_register_specific(dbref player, dbref prog, struct frame* fr, int eventcount, char** eventids)
+/*
  * Called when a MUF program enters EVENT_WAITFOR, to register that
  * the program is ready to process MUF events of the given ID type.
  * This duplicates the eventids list for itself, so the caller is
@@ -95,19 +115,17 @@ muf_event_register_specific(dbref player, dbref prog, struct frame *fr, int even
     }
 }
 
-
-/* void muf_event_register(dbref player, dbref prog, struct frame* fr)
+/*
  * Called when a MUF program enters EVENT_WAIT, to register that
  * the program is ready to process any type of MUF events.
  */
-void
+static void
 muf_event_register(dbref player, dbref prog, struct frame *fr)
 {
     muf_event_register_specific(player, prog, fr, 0, NULL);
 }
 
-
-/* int muf_event_read_notify(int descr, dbref player)
+/*
  * Sends a "READ" event to the first foreground or preempt muf process
  * that is owned by the given player.  Returns 1 if an event was sent,
  * 0 otherwise.
@@ -138,8 +156,7 @@ muf_event_read_notify(int descr, dbref player, const char *cmd)
     return 0;
 }
 
-
-/* int muf_event_dequeue_pid(int pid)
+/*
  * removes the MUF program with the given PID from the EVENT_WAIT queue.
  */
 int
@@ -164,8 +181,7 @@ muf_event_dequeue_pid(int pid)
     return count;
 }
 
-
-/* static int event_has_refs(dbref program, struct mufevent_process *proc)
+/*
  * Checks the MUF event queue for address references on the stack or
  * dbref references on the callstack
  */
@@ -200,8 +216,7 @@ event_has_refs(dbref program, struct mufevent_process *proc)
     return 0;
 }
 
-
-/* int muf_event_dequeue(dbref prog, int killmode)
+/*
  * Deregisters a program from any instances of it in the EVENT_WAIT queue.
  * killmode values:
  *     0: kill all matching processes (Equivalent to 1)
@@ -245,7 +260,6 @@ muf_event_dequeue(dbref prog, int killmode)
     return count;
 }
 
-
 struct frame *
 muf_event_pid_frame(int pid)
 {
@@ -259,8 +273,7 @@ muf_event_pid_frame(int pid)
     return NULL;
 }
 
-
-/* int muf_event_controls(dbref player, int pid)
+/*
  * Returns true if the given player controls the given PID.
  */
 int
@@ -282,8 +295,7 @@ muf_event_controls(dbref player, int pid)
     return 1;
 }
 
-
-/* int muf_event_list(dbref player, char* pat)
+/*
  * List all processes in the EVENT_WAIT queue that the given player controls.
  * This is used by the @ps command.
  */
@@ -341,8 +353,7 @@ muf_event_list(dbref player, const char *pat)
     return count;
 }
 
-
-/* stk_array *get_mufevent_pids(stk_array *nw, dbref ref)
+/*
  * Given a muf list array, appends pids to it where ref
  * matches the trigger, program, or player.  If ref is #-1
  * then all processes waiting for mufevents are added.
@@ -498,8 +509,7 @@ get_mufevent_pidinfo(stk_array * nw, int pid)
     return nw;
 }
 
-
-/* int muf_event_count(struct frame* fr)
+/*
  * Returns how many events are waiting to be processed.
  */
 int
@@ -514,8 +524,7 @@ muf_event_count(struct frame *fr)
     return count;
 }
 
-
-/* int muf_event_exists(struct frame* fr, const char* eventid)
+/*
  * Returns how many events of the given event type are waiting to be processed.
  * The eventid passed can be an smatch string.
  */
@@ -535,8 +544,7 @@ muf_event_exists(struct frame *fr, const char *eventid)
     return count;
 }
 
-
-/* static void muf_event_free(struct mufevent* ptr)
+/*
  * Frees up a MUF event once you are done with it.  This shouldn't be used
  * outside this module.
  */
@@ -550,8 +558,7 @@ muf_event_free(struct mufevent *ptr)
     free(ptr);
 }
 
-
-/* void muf_event_add(struct frame* fr, char* event, struct inst* val, int exclusive)
+/*
  * Adds a MUF event to the event queue for the given program instance.
  * If the exclusive flag is true, and if an item of the same event type
  * already exists in the queue, the new one will NOT be added.
@@ -586,9 +593,7 @@ muf_event_add(struct frame *fr, char *event, struct inst *val, int exclusive)
     }
 }
 
-
-
-/* struct mufevent* muf_event_pop_specific(struct frame* fr, int eventcount, const char** events)
+/*
  * Removes the first event of one of the specified types from the event queue
  * of the given program instance.
  * Returns a pointer to the removed event to the caller.
@@ -625,9 +630,7 @@ muf_event_pop_specific(struct frame *fr, int eventcount, char **events)
     return NULL;
 }
 
-
-
-/* void muf_event_remove(struct frame* fr, char* event, int doall)
+/*
  * Removes a given MUF event type from the event queue of the given
  * program instance.  If which is MUFEVENT_ALL, all instances are removed.
  * If which is MUFEVENT_FIRST, only the first instance is removed.
@@ -671,25 +674,7 @@ muf_event_remove(struct frame *fr, char *event, int which)
     }
 }
 
-
-
-/* static struct mufevent* muf_event_peek(struct frame* fr)
- * This returns a pointer to the top muf event of the given
- * program instance's event queue.  The event is not removed
- * from the queue.
- */
 /*
- * Commented out by Winged for non-reference.  If you need it, de-comment.
- *
-static struct mufevent *
-muf_event_peek(struct frame *fr)
-{
-	return fr->events;
-}
- */
-
-
-/* static struct mufevent* muf_event_pop(struct frame* fr)
  * This pops the top muf event off of the given program instance's
  * event queue, and returns it to the caller.  The caller should
  * call muf_event_free() on the data when it is done with it.
@@ -706,9 +691,7 @@ muf_event_pop(struct frame *fr)
     return ptr;
 }
 
-
-
-/* void muf_event_purge(struct frame* fr)
+/*
  * purges all muf events from the given program instance's event queue.
  */
 void
@@ -719,9 +702,7 @@ muf_event_purge(struct frame *fr)
     }
 }
 
-
-
-/* void muf_event_process()
+/*
  * For all program instances who are in the EVENT_WAIT queue,
  * check to see if they have any items in their event queue.
  * If so, then process one each.  Up to ten programs can have

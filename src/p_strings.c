@@ -478,7 +478,6 @@ prim_fmtstring(PRIM_PROTOTYPE)
 	PushNullStr;
 }
 
-
 void
 prim_array_fmtstrings(PRIM_PROTOTYPE)
 {
@@ -961,8 +960,6 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
     PushArrayRaw(nu);
 }
 
-
-
 void
 prim_split(PRIM_PROTOTYPE)
 {
@@ -1404,7 +1401,6 @@ prim_notify(PRIM_PROTOTYPE)
     CLEAR(oper2);
 }
 
-
 void
 prim_notify_nolisten(PRIM_PROTOTYPE)
 {
@@ -1433,7 +1429,6 @@ prim_notify_nolisten(PRIM_PROTOTYPE)
     CLEAR(oper1);
     CLEAR(oper2);
 }
-
 
 void
 prim_notify_exclude(PRIM_PROTOTYPE)
@@ -1585,7 +1580,6 @@ prim_explode(PRIM_PROTOTYPE)
     PushInt(result);
 }
 
-
 void
 prim_explode_array(PRIM_PROTOTYPE)
 {
@@ -1643,7 +1637,6 @@ prim_explode_array(PRIM_PROTOTYPE)
 
     PushArrayRaw(nu);
 }
-
 
 void
 prim_subst(PRIM_PROTOTYPE)
@@ -2006,7 +1999,6 @@ prim_stringpfx(PRIM_PROTOTYPE)
     PushInt(result);
 }
 
-
 void
 prim_strencrypt(PRIM_PROTOTYPE)
 {
@@ -2027,7 +2019,6 @@ prim_strencrypt(PRIM_PROTOTYPE)
     PushString(ptr);
 }
 
-
 void
 prim_strdecrypt(PRIM_PROTOTYPE)
 {
@@ -2047,7 +2038,6 @@ prim_strdecrypt(PRIM_PROTOTYPE)
     CLEAR(oper2);
     PushString(ptr);
 }
-
 
 void
 prim_textattr(PRIM_PROTOTYPE)

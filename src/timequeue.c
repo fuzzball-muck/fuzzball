@@ -3,6 +3,8 @@
 #include "db.h"
 #include "debugger.h"
 #include "fbstrings.h"
+#include "fbtime.h"
+#include "game.h"
 #include "interface.h"
 #include "interp.h"
 #include "log.h"
@@ -32,6 +34,23 @@
 #define TQ_MPI_OMESG   0x10
 #define TQ_MPI_BLESSED 0x20
 
+typedef struct timenode {
+    struct timenode *next;
+    int typ;
+    int subtyp;
+    time_t when;
+    int descr;
+    dbref called_prog;
+    char *called_data;
+    char *command;
+    char *str3;
+    dbref uid;
+    dbref loc;
+    dbref trig;
+    struct frame *fr;
+    struct inst *where;
+    int eventnum;
+} *timequeue;
 
 /*
  * Events types and data:
@@ -51,8 +70,6 @@
  */
 
 static timequeue tqhead = NULL;
-
-void prog_clean(struct frame *fr);
 
 extern int top_pid;
 static int process_count = 0;
@@ -174,8 +191,7 @@ control_process(dbref player, int pid)
     return 1;
 }
 
-
-int
+static int
 add_event(int event_typ, int subtyp, int dtime, int descr, dbref player, dbref loc,
 	  dbref trig, dbref program, struct frame *fr,
 	  const char *strdata, const char *strcmd, const char *str3)
@@ -244,7 +260,6 @@ add_event(int event_typ, int subtyp, int dtime, int descr, dbref player, dbref l
     return (ptr->next->eventnum);
 }
 
-
 int
 add_mpi_event(int delay, int descr, dbref player, dbref loc, dbref trig,
 	      const char *mpi, const char *cmdstr, const char *argstr,
@@ -268,7 +283,6 @@ add_mpi_event(int delay, int descr, dbref player, dbref loc, dbref trig,
 		     NOTHING, NULL, mpi, cmdstr, argstr);
 }
 
-
 int
 add_muf_queue_event(int descr, dbref player, dbref loc, dbref trig, dbref prog,
 		    const char *argstr, const char *cmdstr, int listen_p)
@@ -277,7 +291,6 @@ add_muf_queue_event(int descr, dbref player, dbref loc, dbref trig, dbref prog,
 		     descr, player, loc, trig, prog, NULL, argstr, cmdstr, NULL);
 }
 
-
 int
 add_muf_delayq_event(int delay, int descr, dbref player, dbref loc, dbref trig,
 		     dbref prog, const char *argstr, const char *cmdstr, int listen_p)
@@ -285,7 +298,6 @@ add_muf_delayq_event(int delay, int descr, dbref player, dbref loc, dbref trig,
     return add_event(TQ_MUF_TYP, (listen_p ? TQ_MUF_LISTEN : TQ_MUF_QUEUE),
 		     delay, descr, player, loc, trig, prog, NULL, argstr, cmdstr, NULL);
 }
-
 
 int
 add_muf_read_event(int descr, dbref player, dbref prog, struct frame *fr)
@@ -333,8 +345,6 @@ add_muf_delay_event(int delay, int descr, dbref player, dbref loc, dbref trig, d
 		     prog, fr, mode, NULL, NULL);
 }
 
-
-
 int
 read_event_notify(int descr, dbref player, const char *cmd)
 {
@@ -362,7 +372,6 @@ read_event_notify(int descr, dbref player, const char *cmd)
     }
     return 0;
 }
-
 
 void
 handle_read_event(int descr, dbref player, const char *command)
@@ -518,7 +527,6 @@ handle_read_event(int descr, dbref player, const char *command)
     }
 }
 
-
 void
 next_timequeue_event(void)
 {
@@ -621,7 +629,6 @@ next_timequeue_event(void)
     }
 }
 
-
 int
 in_timequeue(int pid)
 {
@@ -639,7 +646,6 @@ in_timequeue(int pid)
 	return 1;
     return 0;
 }
-
 
 struct frame *
 timequeue_pid_frame(int pid)
@@ -661,7 +667,6 @@ timequeue_pid_frame(int pid)
 	return ptr->fr;
     return NULL;
 }
-
 
 time_t
 next_event_time(void)
@@ -707,9 +712,6 @@ has_refs(dbref program, timequeue ptr)
 
     return 0;
 }
-
-
-extern char *time_format_2(time_t dt);
 
 void
 do_process_status(dbref player)
@@ -1063,7 +1065,6 @@ dequeue_prog_real(dbref program, int killmode, const char *file, const int line)
     return (count);
 }
 
-
 int
 dequeue_process(int pid)
 {
@@ -1111,7 +1112,6 @@ dequeue_process(int pid)
     return 1;
 }
 
-
 int
 dequeue_timers(int pid, char *id)
 {
@@ -1153,7 +1153,6 @@ dequeue_timers(int pid, char *id)
 
     return deqflag;
 }
-
 
 void
 do_kill_process(int descr, dbref player, const char *arg1)
@@ -1233,7 +1232,6 @@ do_kill_process(int descr, dbref player, const char *arg1)
     return;
 }
 
-
 int
 scan_instances(dbref program)
 {
@@ -1259,7 +1257,6 @@ scan_instances(dbref program)
     }
     return i;
 }
-
 
 static int propq_level = 0;
 void
@@ -1367,7 +1364,6 @@ propqueue(int descr, dbref player, dbref where, dbref trigger, dbref what, dbref
     }
 }
 
-
 void
 envpropqueue(int descr, dbref player, dbref where, dbref trigger, dbref what, dbref xclude,
 	     const char *propname, const char *toparg, int mlev, int mt)
@@ -1377,7 +1373,6 @@ envpropqueue(int descr, dbref player, dbref where, dbref trigger, dbref what, db
 	what = getparent(what);
     }
 }
-
 
 void
 listenqueue(int descr, dbref player, dbref where, dbref trigger, dbref what, dbref xclude,

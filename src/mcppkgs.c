@@ -13,8 +13,6 @@
 #include "props.h"
 #include "tune.h"
 
-#include <math.h>
-
 void
 show_mcp_error(McpFrame * mfr, char *topic, char *text)
 {
@@ -31,8 +29,6 @@ show_mcp_error(McpFrame * mfr, char *topic, char *text)
 	notify(mcpframe_to_user(mfr), text);
     }
 }
-
-
 
 /*
  * reference is in the format objnum.category.misc where objnum is the

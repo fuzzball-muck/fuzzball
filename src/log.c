@@ -2,6 +2,8 @@
 
 #include "db.h"
 #include "fbtime.h"
+#include "fbstrings.h"
+#include "inst.h"
 #include "log.h"
 
 #include <stdarg.h>
@@ -114,6 +116,40 @@ log_user(dbref player, dbref program, char *logmessage)
     strncat(logformat, logmessage, len);
     strip_evil_characters(logformat);
     log2file(USER_LOG, "%s", logformat);
+}
+
+void
+log_program_text(struct line *first, dbref player, dbref i)
+{
+    FILE *f;
+    char fname[BUFFER_LEN];
+    char tbuf[24];
+    time_t lt = time(NULL);
+
+    strcpyn(fname, sizeof(fname), PROGRAM_LOG);
+    f = fopen(fname, "ab");
+    if (!f) {
+        log_status("Couldn't open file %s!", fname);
+        return;
+    }
+
+    format_time(tbuf, sizeof(tbuf), "%Y-%m-%dT%H:%M:%S", MUCK_LOCALTIME(lt));
+    fputs("#######################################", f);
+    fputs("#######################################\n", f);
+    fprintf(f, "%s: %s SAVED BY %s(#%d)\n",
+            tbuf, unparse_object(player, i), NAME(player), player);
+    fputs("#######################################", f);
+    fputs("#######################################\n\n", f);
+
+    while (first) {
+        if (!first->this_line)
+            continue;
+        fputs(first->this_line, f);
+        fputc('\n', f);
+        first = first->next;
+    }
+    fputs("\n\n\n", f);
+    fclose(f);
 }
 
 char *

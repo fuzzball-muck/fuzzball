@@ -281,7 +281,6 @@ prim_dist3d(PRIM_PROTOTYPE)
     PushFloat(dist);
 }
 
-
 void
 prim_diff3(PRIM_PROTOTYPE)
 {
@@ -335,7 +334,6 @@ prim_diff3(PRIM_PROTOTYPE)
     PushFloat(yout);
     PushFloat(zout);
 }
-
 
 void
 prim_xyz_to_polar(PRIM_PROTOTYPE)
@@ -499,7 +497,6 @@ prim_fabs(PRIM_PROTOTYPE)
     CLEAR(oper1);
     PushFloat(fresult);
 }
-
 
 void
 prim_float(PRIM_PROTOTYPE)

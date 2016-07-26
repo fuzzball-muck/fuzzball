@@ -17,7 +17,7 @@
 #include "props.h"
 #include "tune.h"
 
-void
+static void
 register_object(dbref location, char *propdir, char *name, dbref object)
 {
     PData mydat;
@@ -459,7 +459,7 @@ do_edit(int descr, dbref player, const char *name)
  * copy a single property, identified by its name, from one object to
  * another. helper routine for copy_props (below).
  */
-void
+static void
 copy_one_prop(dbref source, dbref destination, char *propname)
 {
     PropPtr currprop;
@@ -507,7 +507,7 @@ copy_one_prop(dbref source, dbref destination, char *propname)
  * helper routine used by do_clone, based loosely on listprops_wildcard from
  * look.c.
  */
-void
+static void
 copy_props(dbref player, dbref source, dbref destination, const char *dir)
 {
     char propname[BUFFER_LEN];
@@ -741,7 +741,7 @@ do_create(dbref player, char *name, char *acost)
  * error occurs.
  *
  */
-dbref
+static dbref
 parse_source(int descr, dbref player, const char *source_name)
 {
     dbref source;

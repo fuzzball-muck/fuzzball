@@ -20,7 +20,7 @@
 static time_t last_dump_time = 0L;
 static int dump_warned = 0;
 
-time_t
+static time_t
 next_dump_time(void)
 {
     time_t currtime = (time_t) time((time_t *) NULL);
@@ -43,7 +43,7 @@ next_dump_time(void)
     return (last_dump_time + tp_dump_interval - currtime);
 }
 
-void
+static void
 dump_warning(void)
 {
     if (tp_dbdump_warning) {
@@ -51,7 +51,7 @@ dump_warning(void)
     }
 }
 
-void
+static void
 check_dump_time(void)
 {
     time_t currtime = (time_t) time((time_t *) NULL);
@@ -82,7 +82,6 @@ check_dump_time(void)
     }
 }
 
-
 void
 dump_db_now(void)
 {
@@ -100,7 +99,7 @@ dump_db_now(void)
 
 static time_t last_clean_time = 0L;
 
-time_t
+static time_t
 next_clean_time(void)
 {
     time_t currtime = (time_t) time((time_t *) NULL);
@@ -114,8 +113,7 @@ next_clean_time(void)
     return (last_clean_time + tp_clean_interval - currtime);
 }
 
-
-void
+static void
 check_clean_time(void)
 {
     time_t currtime = (time_t) time((time_t *) NULL);
@@ -133,7 +131,6 @@ check_clean_time(void)
 #endif
     }
 }
-
 
 /**********************************************************************
  *  general handling for timed events like dbdumps, timequeues, etc.

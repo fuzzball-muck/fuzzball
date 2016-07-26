@@ -4,6 +4,8 @@
 #include "db.h"
 #include "edit.h"
 #include "fbstrings.h"
+#include "game.h"
+#include "hashtab.h"
 #include "inst.h"
 #include "interface.h"
 #include "interp.h"
@@ -19,56 +21,236 @@
 
 #include <stdarg.h>
 
-void free_prog_real(dbref, const char *, const int);
-const char *next_token(COMPSTATE *);
-const char *next_token_raw(COMPSTATE *);
-struct INTERMEDIATE *next_word(COMPSTATE *, const char *);
-struct INTERMEDIATE *process_special(COMPSTATE *, const char *);
-struct INTERMEDIATE *primitive_word(COMPSTATE *, const char *);
-struct INTERMEDIATE *string_word(COMPSTATE *, const char *);
-struct INTERMEDIATE *number_word(COMPSTATE *, const char *);
-struct INTERMEDIATE *float_word(COMPSTATE *, const char *);
-struct INTERMEDIATE *object_word(COMPSTATE *, const char *);
-struct INTERMEDIATE *quoted_word(COMPSTATE *, const char *);
-struct INTERMEDIATE *call_word(COMPSTATE *, const char *);
-struct INTERMEDIATE *var_word(COMPSTATE *, const char *);
-struct INTERMEDIATE *lvar_word(COMPSTATE *, const char *);
-struct INTERMEDIATE *svar_word(COMPSTATE *, const char *);
-const char *do_string(COMPSTATE *);
-void do_comment(COMPSTATE *, int);
-void do_directive(COMPSTATE *, char *direct);
-struct prog_addr *alloc_addr(COMPSTATE *, int, struct inst *);
-struct INTERMEDIATE *prealloc_inst(COMPSTATE * cstat);
-struct INTERMEDIATE *new_inst(COMPSTATE *);
-void cleanpubs(struct publics *mypub);
-void cleanup(COMPSTATE *);
-void add_proc(COMPSTATE *, const char *, struct INTERMEDIATE *, int rettype);
-void add_control_structure(COMPSTATE *, int typ, struct INTERMEDIATE *);
-void add_loop_exit(COMPSTATE *, struct INTERMEDIATE *);
-int in_loop(COMPSTATE * cstat);
-int innermost_control_type(COMPSTATE * cstat);
-int count_trys_inside_loop(COMPSTATE * cstat);
-struct INTERMEDIATE *locate_control_structure(COMPSTATE * cstat, int type1, int type2);
-struct INTERMEDIATE *innermost_control_place(COMPSTATE * cstat, int type1);
-struct INTERMEDIATE *pop_control_structure(COMPSTATE * cstat, int type1, int type2);
-struct INTERMEDIATE *pop_loop_exit(COMPSTATE *);
-void resolve_loop_addrs(COMPSTATE *, int where);
-int add_variable(COMPSTATE *, const char *, int valtype);
-int add_localvar(COMPSTATE *, const char *, int valtype);
-int add_scopedvar(COMPSTATE *, const char *, int valtype);
-int special(const char *);
-int call(COMPSTATE *, const char *);
-int quoted(COMPSTATE *, const char *);
-int object(const char *);
-int string(const char *);
-int variable(COMPSTATE *, const char *);
-int localvar(COMPSTATE *, const char *);
-int scopedvar(COMPSTATE *, const char *);
-void copy_program(COMPSTATE *);
-void set_start(COMPSTATE *);
-void free_intermediate_node(struct INTERMEDIATE *wd);
+#define BEGINCOMMENT '('
+#define ENDCOMMENT ')'
+#define BEGINSTRING '"'
+#define ENDSTRING '"'
+#define BEGINMACRO '.'
+#define BEGINDIRECTIVE '$'
+#define BEGINESCAPE '\\'
 
-void
+#define SUBSTITUTIONS 20 
+
+#define CTYPE_IF    1
+#define CTYPE_ELSE  2
+#define CTYPE_BEGIN 3
+#define CTYPE_FOR   4
+#define CTYPE_WHILE 5
+#define CTYPE_TRY   6
+#define CTYPE_CATCH 7
+
+#define ADDRLIST_ALLOC_CHUNK_SIZE 256
+
+#define abort_compile(ST,C) { do_abort_compile(ST,C); return 0; }
+#define v_abort_compile(ST,C) { do_abort_compile(ST,C); return; }
+
+static hash_tab primitive_list[COMP_HASH_SIZE];
+
+struct CONTROL_STACK {
+    short type;
+    struct INTERMEDIATE *place;
+    struct CONTROL_STACK *next;
+    struct CONTROL_STACK *extra;
+};
+
+/* This structure is an association list that contains both a procedure
+   name and the place in the code that it belongs.  A lookup to the procedure
+   will see both it's name and it's number and so we can generate a
+   reference to it.  Since I want to disallow co-recursion,  I will not allow
+   forward referencing.
+   */
+
+struct PROC_LIST {
+    const char *name;
+    int returntype;
+    struct INTERMEDIATE *code;
+    struct PROC_LIST *next;
+};
+
+/* The intermediate code is code generated as a linked list
+   when there is no hint or notion of how much code there
+   will be, and to help resolve all references.
+   There is always a pointer to the current word that is
+   being compiled kept.
+   */
+
+#define INTMEDFLG_DIVBYZERO 1
+#define INTMEDFLG_MODBYZERO 2
+#define INTMEDFLG_INTRY         4
+
+#define IMMFLAG_REFERENCED	1	/* Referenced by a jump */
+
+struct INTERMEDIATE {
+    int no;                     /* which number instruction this is */
+    struct inst in;             /* instruction itself */
+    short line;                 /* line number of instruction */
+    short flags;
+    struct INTERMEDIATE *next;  /* next instruction */
+};
+
+/* The state structure for a compile. */
+typedef struct COMPILE_STATE_T {
+    struct CONTROL_STACK *control_stack;
+    struct PROC_LIST *procs;
+
+    int nowords;                /* number of words compiled */
+    struct INTERMEDIATE *curr_word;     /* word being compiled */
+    struct INTERMEDIATE *first_word;    /* first word of the list */
+    struct INTERMEDIATE *curr_proc;     /* first word of curr. proc. */
+    struct publics *currpubs;
+    int nested_fors;
+    int nested_trys;
+
+    /* Address resolution data.  Used to relink addresses after compile. */
+    struct INTERMEDIATE **addrlist;     /* list of addresses to resolve */
+    int *addroffsets;           /* list of offsets from instrs */
+    int addrmax;                /* size of current addrlist array */
+    int addrcount;              /* number of allocated addresses */
+
+    /* variable names.  The index into cstat->variables give you what position
+     * the variable holds.
+     */
+    const char *variables[MAX_VAR];
+    int variabletypes[MAX_VAR];
+    const char *localvars[MAX_VAR];
+    int localvartypes[MAX_VAR];
+    const char *scopedvars[MAX_VAR];
+    int scopedvartypes[MAX_VAR];
+
+    struct line *curr_line;     /* current line */
+    int lineno;                 /* current line number */
+    int start_comment;          /* Line last comment started at */
+    int force_comment;          /* Only attempt certain compile. */
+    const char *next_char;      /* next char * */
+    dbref player, program;      /* player and program for this compile */
+
+    int compile_err;            /* 1 if error occured */
+
+    char *line_copy;
+    int macrosubs;              /* Safeguard for macro-subst. infinite loops */
+    int descr;                  /* the descriptor that initiated compiling */
+    int force_err_display;      /* If true, always show compiler errors. */
+    struct INTERMEDIATE *nextinst;
+    hash_tab defhash[DEFHASHSIZE];
+} COMPSTATE;
+
+int IN_FOR;
+int IN_FOREACH;
+int IN_FORITER;
+int IN_FORPOP;
+int IN_TRYPOP;
+
+static void free_prog_real(dbref, const char *, const int);
+static const char *next_token(COMPSTATE *);
+static struct INTERMEDIATE *process_special(COMPSTATE *, const char *);
+
+static void
+cleanpubs(struct publics *mypub)
+{
+    struct publics *tmppub;
+
+    while (mypub) {
+	tmppub = mypub->next;
+	free(mypub->subname);
+	free(mypub);
+	mypub = tmppub;
+    }
+}
+
+static void
+free_intermediate_node(struct INTERMEDIATE *wd)
+{
+    int varcnt;
+
+    if (wd->in.type == PROG_STRING) {
+	if (wd->in.data.string)
+	    free((void *) wd->in.data.string);
+    }
+    if (wd->in.type == PROG_FUNCTION) {
+	free((void *) wd->in.data.mufproc->procname);
+	varcnt = wd->in.data.mufproc->vars;
+	if (wd->in.data.mufproc->varnames) {
+	    for (int j = 0; j < varcnt; j++) {
+		free((void *) wd->in.data.mufproc->varnames[j]);
+	    }
+	    free((void *) wd->in.data.mufproc->varnames);
+	}
+	free((void *) wd->in.data.mufproc);
+    }
+    free((void *) wd);
+}
+
+static void
+free_intermediate_chain(struct INTERMEDIATE *wd)
+{
+    struct INTERMEDIATE *tempword;
+    while (wd) {
+	tempword = wd->next;
+	free_intermediate_node(wd);
+	wd = tempword;
+    }
+}
+
+static void
+free_addresses(COMPSTATE * cstat)
+{
+    cstat->addrcount = 0;
+    cstat->addrmax = 0;
+    if (cstat->addrlist)
+	free(cstat->addrlist);
+    if (cstat->addroffsets)
+	free(cstat->addroffsets);
+    cstat->addrlist = NULL;
+}
+
+static void
+purge_defs(COMPSTATE * cstat)
+{
+    kill_hash(cstat->defhash, DEFHASHSIZE, 1);
+}
+
+static void
+cleanup(COMPSTATE * cstat)
+{
+    struct CONTROL_STACK *eef, *tempif;
+    struct PROC_LIST *p, *tempp;
+
+    free_intermediate_chain(cstat->first_word);
+    cstat->first_word = 0;
+
+    for (eef = cstat->control_stack; eef; eef = tempif) {
+	tempif = eef->next;
+	free((void *) eef);
+    }
+    cstat->control_stack = 0;
+
+    for (p = cstat->procs; p; p = tempp) {
+	tempp = p->next;
+	free((void *) p->name);
+	free((void *) p);
+    }
+    cstat->procs = 0;
+
+    purge_defs(cstat);
+    free_addresses(cstat);
+
+    for (int i = RES_VAR; i < MAX_VAR && cstat->variables[i]; i++) {
+	free((void *) cstat->variables[i]);
+	cstat->variables[i] = 0;
+    }
+
+    for (int i = 0; i < MAX_VAR && cstat->scopedvars[i]; i++) {
+	free((void *) cstat->scopedvars[i]);
+	cstat->scopedvars[i] = 0;
+    }
+
+    for (int i = 0; i < MAX_VAR && cstat->localvars[i]; i++) {
+	free((void *) cstat->localvars[i]);
+	cstat->localvars[i] = 0;
+    }
+}
+
+static void
 do_abort_compile(COMPSTATE * cstat, const char *c)
 {
     static char _buf[BUFFER_LEN];
@@ -119,13 +301,7 @@ do_abort_compile(COMPSTATE * cstat, const char *c)
     PROGRAM_SET_PROFTIME(cstat->program, 0, 0);
 }
 
-/* abort compile macro */
-#define abort_compile(ST,C) { do_abort_compile(ST,C); return 0; }
-
-/* abort compile for void functions */
-#define v_abort_compile(ST,C) { do_abort_compile(ST,C); return; }
-
-void
+static void
 compiler_warning(COMPSTATE * cstat, char *text, ...)
 {
     char buf[BUFFER_LEN];
@@ -138,12 +314,7 @@ compiler_warning(COMPSTATE * cstat, char *text, ...)
     notify_nolisten(cstat->player, buf, 1);
 }
 
-/*****************************************************************/
-
-
-#define ADDRLIST_ALLOC_CHUNK_SIZE 256
-
-int
+static int
 get_address(COMPSTATE * cstat, struct INTERMEDIATE *dest, int offset)
 {
     if (!cstat->addrlist) {
@@ -172,8 +343,7 @@ get_address(COMPSTATE * cstat, struct INTERMEDIATE *dest, int offset)
     return cstat->addrcount++;
 }
 
-
-void
+static void
 fix_addresses(COMPSTATE * cstat)
 {
     struct INTERMEDIATE *ptr;
@@ -205,24 +375,7 @@ fix_addresses(COMPSTATE * cstat)
     }
 }
 
-
-void
-free_addresses(COMPSTATE * cstat)
-{
-    cstat->addrcount = 0;
-    cstat->addrmax = 0;
-    if (cstat->addrlist)
-	free(cstat->addrlist);
-    if (cstat->addroffsets)
-	free(cstat->addroffsets);
-    cstat->addrlist = NULL;
-}
-
-
-/*****************************************************************/
-
-
-void
+static void
 fixpubs(struct publics *mypubs, struct inst *offset)
 {
     while (mypubs) {
@@ -231,8 +384,7 @@ fixpubs(struct publics *mypubs, struct inst *offset)
     }
 }
 
-
-int
+static int
 size_pubs(struct publics *mypubs)
 {
     int bytes = 0;
@@ -244,9 +396,7 @@ size_pubs(struct publics *mypubs)
     return bytes;
 }
 
-
-
-char *
+static char *
 expand_def(COMPSTATE * cstat, const char *defname)
 {
     hash_data *exp = find_hash(defname, cstat->defhash, DEFHASHSIZE);
@@ -261,8 +411,7 @@ expand_def(COMPSTATE * cstat, const char *defname)
     return (string_dup((char *) exp->pval));
 }
 
-
-void
+static void
 kill_def(COMPSTATE * cstat, const char *defname)
 {
     hash_data *exp = find_hash(defname, cstat->defhash, DEFHASHSIZE);
@@ -273,8 +422,7 @@ kill_def(COMPSTATE * cstat, const char *defname)
     }
 }
 
-
-void
+static void
 insert_def(COMPSTATE * cstat, const char *defname, const char *deff)
 {
     hash_data hd;
@@ -284,8 +432,7 @@ insert_def(COMPSTATE * cstat, const char *defname, const char *deff)
     (void) add_hash(defname, hd, cstat->defhash, DEFHASHSIZE);
 }
 
-
-void
+static void
 insert_intdef(COMPSTATE * cstat, const char *defname, int deff)
 {
     char buf[sizeof(int) * 3];
@@ -294,15 +441,7 @@ insert_intdef(COMPSTATE * cstat, const char *defname, int deff)
     insert_def(cstat, defname, buf);
 }
 
-
-void
-purge_defs(COMPSTATE * cstat)
-{
-    kill_hash(cstat->defhash, DEFHASHSIZE, 1);
-}
-
-
-void
+static void
 include_defs(COMPSTATE * cstat, dbref i)
 {
     char dirname[BUFFER_LEN];
@@ -322,8 +461,7 @@ include_defs(COMPSTATE * cstat, dbref i)
     }
 }
 
-
-void
+static void
 include_internal_defs(COMPSTATE * cstat)
 {
     /* Create standard server defines */
@@ -435,8 +573,7 @@ include_internal_defs(COMPSTATE * cstat)
     insert_intdef(cstat, "reg_extended", MUF_RE_EXTENDED);
 }
 
-
-void
+static void
 init_defs(COMPSTATE * cstat)
 {
     /* initialize hash table */
@@ -453,7 +590,6 @@ init_defs(COMPSTATE * cstat)
     /* Include any defines set in program owner's _defs/ propdir. */
     include_defs(cstat, OWNER(cstat->program));
 }
-
 
 void
 uncompile_program(dbref i)
@@ -472,7 +608,6 @@ uncompile_program(dbref i)
     PROGRAM_SET_SIZ(i, 0);
     PROGRAM_SET_START(i, NULL);
 }
-
 
 void
 do_uncompile(dbref player)
@@ -499,13 +634,8 @@ free_unused_programs()
     }
 }
 
-/* Various flags for the IMMEDIATE instructions */
-
-#define IMMFLAG_REFERENCED	1	/* Referenced by a jump */
-
-
 /* Checks code for valid fetch-and-clear optim changes, and does them. */
-void
+static void
 MaybeOptimizeVarsAt(COMPSTATE * cstat, struct INTERMEDIATE *first, int AtNo, int BangNo)
 {
     struct INTERMEDIATE *curr = first->next;
@@ -626,7 +756,6 @@ MaybeOptimizeVarsAt(COMPSTATE * cstat, struct INTERMEDIATE *first, int AtNo, int
     }
 }
 
-
 void
 RemoveNextIntermediate(COMPSTATE * cstat, struct INTERMEDIATE *curr)
 {
@@ -647,8 +776,7 @@ RemoveNextIntermediate(COMPSTATE * cstat, struct INTERMEDIATE *curr)
     cstat->nowords--;
 }
 
-
-void
+static void
 RemoveIntermediate(COMPSTATE * cstat, struct INTERMEDIATE *curr)
 {
     if (!curr->next) {
@@ -686,8 +814,7 @@ RemoveIntermediate(COMPSTATE * cstat, struct INTERMEDIATE *curr)
     RemoveNextIntermediate(cstat, curr);
 }
 
-
-int
+static int
 ContiguousIntermediates(int *Flags, struct INTERMEDIATE *ptr, int count)
 {
     while (count-- > 0) {
@@ -702,8 +829,7 @@ ContiguousIntermediates(int *Flags, struct INTERMEDIATE *ptr, int count)
     return 1;
 }
 
-
-int
+static int
 IntermediateIsPrimitive(struct INTERMEDIATE *ptr, int primnum)
 {
     if (ptr && ptr->in.type == PROG_PRIMITIVE) {
@@ -714,8 +840,7 @@ IntermediateIsPrimitive(struct INTERMEDIATE *ptr, int primnum)
     return 0;
 }
 
-
-int
+static int
 IntermediateIsInteger(struct INTERMEDIATE *ptr, int val)
 {
     if (ptr && ptr->in.type == PROG_INTEGER) {
@@ -726,8 +851,7 @@ IntermediateIsInteger(struct INTERMEDIATE *ptr, int val)
     return 0;
 }
 
-
-int
+static int
 IntermediateIsString(struct INTERMEDIATE *ptr, const char *val)
 {
     const char *myval;
@@ -741,7 +865,7 @@ IntermediateIsString(struct INTERMEDIATE *ptr, const char *val)
     return 0;
 }
 
-int
+static int
 OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
 {
     struct INTERMEDIATE *curr;
@@ -1041,6 +1165,15 @@ OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
     return (old_instr_count - cstat->nowords);
 }
 
+static void
+set_start(COMPSTATE * cstat)
+{
+    PROGRAM_SET_SIZ(cstat->program, cstat->nowords);
+
+    /* address instr no is resolved before this gets called. */
+    PROGRAM_SET_START(cstat->program, (PROGRAM_CODE(cstat->program) + cstat->procs->code->no));
+}
+
 /* Genericized Optimizer ideas:
  *
  * const int OI_ANY = -121314;   // arbitrary unlikely-to-be-needed value.
@@ -1118,6 +1251,479 @@ OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
  *
  */
 
+/* allocate an address */
+static struct prog_addr *
+alloc_addr(COMPSTATE * cstat, int offset, struct inst *codestart)
+{
+    struct prog_addr *nu;
+
+    nu = (struct prog_addr *) malloc(sizeof(struct prog_addr));
+
+    nu->links = 1;
+    nu->progref = cstat->program;
+    nu->data = codestart + offset;
+    return nu;
+}
+
+/* copy program to an array */
+static void
+copy_program(COMPSTATE * cstat)
+{
+    /*
+     * Everything should be peachy keen now, so we don't do any error checking
+     */
+    struct INTERMEDIATE *curr;
+    struct inst *code;
+    int i, varcnt;
+
+    if (!cstat->first_word)
+	v_abort_compile(cstat, "Nothing to compile.");
+
+    code = (struct inst *) malloc(sizeof(struct inst) * (cstat->nowords + 1));
+
+    i = 0;
+    for (curr = cstat->first_word; curr; curr = curr->next) {
+	code[i].type = curr->in.type;
+	code[i].line = curr->in.line;
+	switch (code[i].type) {
+	case PROG_PRIMITIVE:
+	case PROG_INTEGER:
+	case PROG_SVAR:
+	case PROG_SVAR_AT:
+	case PROG_SVAR_AT_CLEAR:
+	case PROG_SVAR_BANG:
+	case PROG_LVAR:
+	case PROG_LVAR_AT:
+	case PROG_LVAR_AT_CLEAR:
+	case PROG_LVAR_BANG:
+	case PROG_VAR:
+	    code[i].data.number = curr->in.data.number;
+	    break;
+	case PROG_FLOAT:
+	    code[i].data.fnumber = curr->in.data.fnumber;
+	    break;
+	case PROG_STRING:
+	    code[i].data.string = curr->in.data.string ?
+		    alloc_prog_string(curr->in.data.string->data) : 0;
+	    break;
+	case PROG_FUNCTION:
+	    code[i].data.mufproc =
+		    (struct muf_proc_data *) malloc(sizeof(struct muf_proc_data));
+	    code[i].data.mufproc->procname = string_dup(curr->in.data.mufproc->procname);
+	    code[i].data.mufproc->vars = varcnt = curr->in.data.mufproc->vars;
+	    code[i].data.mufproc->args = curr->in.data.mufproc->args;
+	    if (varcnt) {
+		if (curr->in.data.mufproc->varnames) {
+		    code[i].data.mufproc->varnames =
+			    (const char **) calloc(varcnt, sizeof(char *));
+		    for (int j = 0; j < varcnt; j++) {
+			code[i].data.mufproc->varnames[j] =
+				string_dup(curr->in.data.mufproc->varnames[j]);
+		    }
+		} else {
+		    code[i].data.mufproc->varnames = NULL;
+		}
+	    } else {
+		code[i].data.mufproc->varnames = NULL;
+	    }
+	    break;
+	case PROG_OBJECT:
+	    code[i].data.objref = curr->in.data.objref;
+	    break;
+	case PROG_ADD:
+	    code[i].data.addr = alloc_addr(cstat, curr->in.data.number, code);
+	    break;
+	case PROG_IF:
+	case PROG_JMP:
+	case PROG_EXEC:
+	case PROG_TRY:
+	    code[i].data.call = code + curr->in.data.number;
+	    break;
+	default:
+	    free(code);
+	    v_abort_compile(cstat, "Unknown type compile!  Internal error.");
+	}
+	i++;
+    }
+    PROGRAM_SET_CODE(cstat->program, code);
+}
+
+/* allocate and initialize data linked structure. */
+static struct INTERMEDIATE *
+alloc_inst(void)
+{
+    struct INTERMEDIATE *nu;
+
+    nu = (struct INTERMEDIATE *) malloc(sizeof(struct INTERMEDIATE));
+
+    nu->next = 0;
+    nu->no = 0;
+    nu->line = 0;
+    nu->flags = 0;
+    nu->in.type = 0;
+    nu->in.line = 0;
+    nu->in.data.number = 0;
+    return nu;
+}
+
+static struct INTERMEDIATE *
+new_inst(COMPSTATE * cstat)
+{
+    struct INTERMEDIATE *nu;
+
+    nu = cstat->nextinst;
+    if (!nu) {
+	nu = alloc_inst();
+    }
+    cstat->nextinst = nu->next;
+    nu->next = NULL;
+
+    nu->flags |= (cstat->nested_trys > 0) ? INTMEDFLG_INTRY : 0;
+
+    return nu;
+}
+
+/* return primitive word. */
+static struct INTERMEDIATE *
+primitive_word(COMPSTATE * cstat, const char *token)
+{
+    struct INTERMEDIATE *nu, *cur;
+    int pnum;
+
+    pnum = get_primitive(token);
+    cur = nu = new_inst(cstat);
+    if (pnum == IN_RET || pnum == IN_JMP) {
+	for (int loop = 0; loop < cstat->nested_trys; loop++) {
+	    cur->no = cstat->nowords++;
+	    cur->in.type = PROG_PRIMITIVE;
+	    cur->in.line = cstat->lineno;
+	    cur->in.data.number = IN_TRYPOP;
+	    cur->next = new_inst(cstat);
+	    cur = cur->next;
+	}
+	for (int loop = 0; loop < cstat->nested_fors; loop++) {
+	    cur->no = cstat->nowords++;
+	    cur->in.type = PROG_PRIMITIVE;
+	    cur->in.line = cstat->lineno;
+	    cur->in.data.number = IN_FORPOP;
+	    cur->next = new_inst(cstat);
+	    cur = cur->next;
+	}
+    }
+
+    cur->no = cstat->nowords++;
+    cur->in.type = PROG_PRIMITIVE;
+    cur->in.line = cstat->lineno;
+    cur->in.data.number = pnum;
+
+    return nu;
+}
+
+/* return self pushing word (string) */
+static struct INTERMEDIATE *
+string_word(COMPSTATE * cstat, const char *token)
+{
+    struct INTERMEDIATE *nu;
+
+    nu = new_inst(cstat);
+    nu->no = cstat->nowords++;
+    nu->in.type = PROG_STRING;
+    nu->in.line = cstat->lineno;
+    nu->in.data.string = alloc_prog_string(token);
+    return nu;
+}
+
+/* return self pushing word (float) */
+static struct INTERMEDIATE *
+float_word(COMPSTATE * cstat, const char *token)
+{
+    struct INTERMEDIATE *nu;
+
+    nu = new_inst(cstat);
+    nu->no = cstat->nowords++;
+    nu->in.type = PROG_FLOAT;
+    nu->in.line = cstat->lineno;
+    sscanf(token, "%lg", &(nu->in.data.fnumber));
+    return nu;
+}
+
+/* return self pushing word (number) */
+static struct INTERMEDIATE *
+number_word(COMPSTATE * cstat, const char *token)
+{
+    struct INTERMEDIATE *nu;
+
+    nu = new_inst(cstat);
+    nu->no = cstat->nowords++;
+    nu->in.type = PROG_INTEGER;
+    nu->in.line = cstat->lineno;
+    nu->in.data.number = atoi(token);
+    return nu;
+}
+
+/* do a subroutine call --- push address onto stack, then make a primitive
+   CALL.
+   */
+static struct INTERMEDIATE *
+call_word(COMPSTATE * cstat, const char *token)
+{
+    struct INTERMEDIATE *nu;
+    struct PROC_LIST *p;
+
+    nu = new_inst(cstat);
+    nu->no = cstat->nowords++;
+    nu->in.type = PROG_EXEC;
+    nu->in.line = cstat->lineno;
+    for (p = cstat->procs; p; p = p->next)
+	if (!string_compare(p->name, token))
+	    break;
+
+    nu->in.data.number = get_address(cstat, p->code, 0);
+    return nu;
+}
+
+static struct INTERMEDIATE *
+quoted_word(COMPSTATE * cstat, const char *token)
+{
+    struct INTERMEDIATE *nu;
+    struct PROC_LIST *p;
+
+    nu = new_inst(cstat);
+    nu->no = cstat->nowords++;
+    nu->in.type = PROG_ADD;
+    nu->in.line = cstat->lineno;
+    for (p = cstat->procs; p; p = p->next)
+	if (!string_compare(p->name, token))
+	    break;
+
+    nu->in.data.number = get_address(cstat, p->code, 0);
+    return nu;
+}
+
+/* returns number corresponding to variable number.
+   We assume that it DOES exist */
+static struct INTERMEDIATE *
+var_word(COMPSTATE * cstat, const char *token)
+{
+    struct INTERMEDIATE *nu;
+    int var_no = 0;
+
+    nu = new_inst(cstat);
+    nu->no = cstat->nowords++;
+    nu->in.type = PROG_VAR;
+    nu->in.line = cstat->lineno;
+    for (int i = 0; i < MAX_VAR; i++) {
+	if (!cstat->variables[i])
+	    break;
+	if (!string_compare(token, cstat->variables[i]))
+	    var_no = i;
+    }
+    nu->in.data.number = var_no;
+
+    return nu;
+}
+
+static struct INTERMEDIATE *
+svar_word(COMPSTATE * cstat, const char *token)
+{
+    struct INTERMEDIATE *nu;
+    int var_no = 0;
+
+    nu = new_inst(cstat);
+    nu->no = cstat->nowords++;
+    nu->in.type = PROG_SVAR;
+    nu->in.line = cstat->lineno;
+    for (int i = 0; i < MAX_VAR; i++) {
+	if (!cstat->scopedvars[i])
+	    break;
+	if (!string_compare(token, cstat->scopedvars[i]))
+	    var_no = i;
+    }
+    nu->in.data.number = var_no;
+
+    return nu;
+}
+
+static struct INTERMEDIATE *
+lvar_word(COMPSTATE * cstat, const char *token)
+{
+    struct INTERMEDIATE *nu;
+    int var_no;
+
+    nu = new_inst(cstat);
+    nu->no = cstat->nowords++;
+    nu->in.type = PROG_LVAR;
+    nu->in.line = cstat->lineno;
+    for (int i = 0; i < MAX_VAR; i++) {
+	if (!cstat->localvars[i])
+	    break;
+	if (!string_compare(token, cstat->localvars[i]))
+	    var_no = i;
+    }
+    nu->in.data.number = var_no;
+
+    return nu;
+}
+
+/* check if object is in database before putting it in */
+static struct INTERMEDIATE *
+object_word(COMPSTATE * cstat, const char *token)
+{
+    struct INTERMEDIATE *nu;
+    int objno;
+
+    objno = atol(token + 1);
+    nu = new_inst(cstat);
+    nu->no = cstat->nowords++;
+    nu->in.type = PROG_OBJECT;
+    nu->in.line = cstat->lineno;
+    nu->in.data.objref = objno;
+    return nu;
+}
+
+/* predicates for procedure calls */
+static int
+special(const char *token)
+{
+    return (token && !(string_compare(token, ":")
+		       && string_compare(token, ";")
+		       && string_compare(token, "IF")
+		       && string_compare(token, "ELSE")
+		       && string_compare(token, "THEN")
+		       && string_compare(token, "BEGIN")
+		       && string_compare(token, "FOR")
+		       && string_compare(token, "FOREACH")
+		       && string_compare(token, "UNTIL")
+		       && string_compare(token, "WHILE")
+		       && string_compare(token, "BREAK")
+		       && string_compare(token, "CONTINUE")
+		       && string_compare(token, "REPEAT")
+		       && string_compare(token, "TRY")
+		       && string_compare(token, "CATCH")
+		       && string_compare(token, "CATCH_DETAILED")
+		       && string_compare(token, "ENDCATCH")
+		       && string_compare(token, "CALL")
+		       && string_compare(token, "PUBLIC")
+		       && string_compare(token, "WIZCALL")
+		       && string_compare(token, "LVAR")
+		       && string_compare(token, "VAR!")
+		       && string_compare(token, "VAR")));
+}
+
+/* see if procedure call */
+static int
+call(COMPSTATE * cstat, const char *token)
+{
+    struct PROC_LIST *i;
+
+    for (i = cstat->procs; i; i = i->next)
+	if (!string_compare(i->name, token))
+	    return 1;
+
+    return 0;
+}
+
+/* see if it's a quoted procedure name */
+static int
+quoted(COMPSTATE * cstat, const char *token)
+{
+    return (*token == '\'' && call(cstat, token + 1));
+}
+
+/* see if it's an object # */
+static int
+object(const char *token)
+{
+    if (*token == NUMBER_TOKEN && number(token + 1))
+	return 1;
+    else
+	return 0;
+}
+
+/* see if string */
+static int
+string(const char *token)
+{
+    return (token[0] == BEGINSTRING);
+}
+
+static int
+variable(COMPSTATE * cstat, const char *token)
+{
+    for (int i = 0; i < MAX_VAR && cstat->variables[i]; i++)
+	if (!string_compare(token, cstat->variables[i]))
+	    return 1;
+
+    return 0;
+}
+
+static int
+scopedvar(COMPSTATE * cstat, const char *token)
+{
+    for (int i = 0; i < MAX_VAR && cstat->scopedvars[i]; i++)
+	if (!string_compare(token, cstat->scopedvars[i]))
+	    return 1;
+
+    return 0;
+}
+
+static int
+localvar(COMPSTATE * cstat, const char *token)
+{
+    for (int i = 0; i < MAX_VAR && cstat->localvars[i]; i++)
+	if (!string_compare(token, cstat->localvars[i]))
+	    return 1;
+
+    return 0;
+}
+
+/* see if token is primitive */
+int
+primitive(const char *token)
+{
+    int primnum;
+
+    primnum = get_primitive(token);
+    return (primnum && primnum <= BASE_MAX - PRIMS_INTERNAL_CNT);
+}
+
+static struct INTERMEDIATE *
+next_word(COMPSTATE * cstat, const char *token)
+{
+    struct INTERMEDIATE *new_word;
+    static char buf[BUFFER_LEN];
+
+    if (!token)
+	return 0;
+
+    if (call(cstat, token))
+	new_word = call_word(cstat, token);
+    else if (scopedvar(cstat, token))
+	new_word = svar_word(cstat, token);
+    else if (localvar(cstat, token))
+	new_word = lvar_word(cstat, token);
+    else if (variable(cstat, token))
+	new_word = var_word(cstat, token);
+    else if (special(token))
+	new_word = process_special(cstat, token);
+    else if (primitive(token))
+	new_word = primitive_word(cstat, token);
+    else if (string(token))
+	new_word = string_word(cstat, token + 1);
+    else if (number(token))
+	new_word = number_word(cstat, token);
+    else if (ifloat(token))
+	new_word = float_word(cstat, token);
+    else if (object(token))
+	new_word = object_word(cstat, token);
+    else if (quoted(cstat, token))
+	new_word = quoted_word(cstat, token + 1);
+    else {
+	snprintf(buf, sizeof(buf), "Unrecognized word %s.", token);
+	abort_compile(cstat, buf);
+    }
+    return new_word;
+}
 
 /* overall control code.  Does piece-meal tokenization parsing and
    backward checking.                                            */
@@ -1279,48 +1885,8 @@ do_compile(int descr, dbref player_in, dbref program_in, int force_err_display)
 	notify_nolisten(cstat.player, "Program compiled successfully.", 1);
 }
 
-struct INTERMEDIATE *
-next_word(COMPSTATE * cstat, const char *token)
-{
-    struct INTERMEDIATE *new_word;
-    static char buf[BUFFER_LEN];
-
-    if (!token)
-	return 0;
-
-    if (call(cstat, token))
-	new_word = call_word(cstat, token);
-    else if (scopedvar(cstat, token))
-	new_word = svar_word(cstat, token);
-    else if (localvar(cstat, token))
-	new_word = lvar_word(cstat, token);
-    else if (variable(cstat, token))
-	new_word = var_word(cstat, token);
-    else if (special(token))
-	new_word = process_special(cstat, token);
-    else if (primitive(token))
-	new_word = primitive_word(cstat, token);
-    else if (string(token))
-	new_word = string_word(cstat, token + 1);
-    else if (number(token))
-	new_word = number_word(cstat, token);
-    else if (ifloat(token))
-	new_word = float_word(cstat, token);
-    else if (object(token))
-	new_word = object_word(cstat, token);
-    else if (quoted(cstat, token))
-	new_word = quoted_word(cstat, token + 1);
-    else {
-	snprintf(buf, sizeof(buf), "Unrecognized word %s.", token);
-	abort_compile(cstat, buf);
-    }
-    return new_word;
-}
-
-
-
 /* Little routine to do the line_copy handling right */
-void
+static void
 advance_line(COMPSTATE * cstat)
 {
     cstat->curr_line = cstat->curr_line->next;
@@ -1336,99 +1902,46 @@ advance_line(COMPSTATE * cstat)
 	cstat->next_char = (cstat->line_copy = NULL);
 }
 
-/* Skips comments, grabs strings, returns NULL when no more tokens to grab. */
-const char *
-next_token_raw(COMPSTATE * cstat)
+
+/* return string */
+static const char *
+do_string(COMPSTATE * cstat)
 {
     static char buf[BUFFER_LEN];
-    int i;
+    int i = 0, quoted = 0;
 
-    if (!cstat->curr_line)
-	return (char *) 0;
-
-    if (!cstat->next_char)
-	return (char *) 0;
-
-    /* skip white space */
-    while (*cstat->next_char && isspace(*cstat->next_char))
-	cstat->next_char++;
-
-    if (!(*cstat->next_char)) {
-	advance_line(cstat);
-	return next_token_raw(cstat);
-    }
-    /* take care of comments */
-    if (*cstat->next_char == BEGINCOMMENT) {
-	cstat->start_comment = cstat->lineno;
-	if (cstat->force_comment == 1) {
-	    do_comment(cstat, -1);
+    buf[i] = *cstat->next_char;
+    cstat->next_char++;
+    i++;
+    while ((quoted || *cstat->next_char != ENDSTRING) && *cstat->next_char) {
+	if (*cstat->next_char == BEGINESCAPE && !quoted) {
+	    quoted++;
+	    cstat->next_char++;
+	} else if (*cstat->next_char == 'r' && quoted) {
+	    buf[i++] = '\r';
+	    cstat->next_char++;
+	    quoted = 0;
+	} else if (*cstat->next_char == '[' && quoted) {
+	    buf[i++] = ESCAPE_CHAR;
+	    cstat->next_char++;
+	    quoted = 0;
 	} else {
-	    do_comment(cstat, 0);
+	    buf[i] = *cstat->next_char;
+	    i++;
+	    cstat->next_char++;
+	    quoted = 0;
 	}
-	cstat->start_comment = 0;
-	return next_token_raw(cstat);
     }
-    if (*cstat->next_char == BEGINSTRING)
-	return do_string(cstat);
-
-    for (i = 0; *cstat->next_char && !isspace(*cstat->next_char); i++) {
-	buf[i] = *cstat->next_char;
-	cstat->next_char++;
+    if (!*cstat->next_char) {
+	abort_compile(cstat, "Unterminated string found at end of line.");
     }
+    cstat->next_char++;
     buf[i] = '\0';
     return alloc_string(buf);
 }
 
-
-const char *
-next_token(COMPSTATE * cstat)
-{
-    char *expansion, *temp;
-    int elen = 0;
-
-    temp = (char *) next_token_raw(cstat);
-    if (!temp)
-	return NULL;
-
-    if (temp[0] == BEGINDIRECTIVE) {
-	do_directive(cstat, temp);
-	free(temp);
-	return next_token(cstat);
-    }
-    if (temp[0] == BEGINESCAPE) {
-	if (temp[1]) {
-	    expansion = temp;
-	    elen = strlen(expansion);
-	    temp = (char *) malloc(elen);
-	    strcpyn(temp, elen, (expansion + 1));
-	    free(expansion);
-	}
-	return (temp);
-    }
-    if ((expansion = expand_def(cstat, temp))) {
-	free(temp);
-	if (++cstat->macrosubs > SUBSTITUTIONS) {
-	    abort_compile(cstat, "Too many macro substitutions.");
-	} else {
-	    int templen = strlen(cstat->next_char) + strlen(expansion) + 21;
-	    temp = (char *) malloc(templen);
-	    strcpyn(temp, templen, expansion);
-	    strcatn(temp, templen, cstat->next_char);
-	    free((void *) expansion);
-	    if (cstat->line_copy) {
-		free((void *) cstat->line_copy);
-	    }
-	    cstat->next_char = cstat->line_copy = temp;
-	    return next_token(cstat);
-	}
-    } else {
-	return (temp);
-    }
-}
-
-
 /* Old-style comment parser */
-int
+static int
 do_old_comment(COMPSTATE * cstat)
 {
     while (*cstat->next_char && *cstat->next_char != ENDCOMMENT)
@@ -1448,7 +1961,7 @@ do_old_comment(COMPSTATE * cstat)
 }
 
 /* skip comments, recursive style */
-int
+static int
 do_new_comment(COMPSTATE * cstat, int depth)
 {
     int retval = 0;
@@ -1508,8 +2021,38 @@ do_new_comment(COMPSTATE * cstat, int depth)
     return 0;
 }
 
+static int
+is_preprocessor_conditional(const char *tmpptr)
+{
+    if (*tmpptr != BEGINDIRECTIVE)
+	return 0;
+
+    if (!string_compare(tmpptr + 1, "ifdef"))
+	return 1;
+    else if (!string_compare(tmpptr + 1, "ifndef"))
+	return 1;
+    else if (!string_compare(tmpptr + 1, "iflib"))
+	return 1;
+    else if (!string_compare(tmpptr + 1, "ifnlib"))
+	return 1;
+    else if (!string_compare(tmpptr + 1, "ifver"))
+	return 1;
+    else if (!string_compare(tmpptr + 1, "iflibver"))
+	return 1;
+    else if (!string_compare(tmpptr + 1, "ifnver"))
+	return 1;
+    else if (!string_compare(tmpptr + 1, "ifnlibver"))
+	return 1;
+    else if (!string_compare(tmpptr + 1, "ifcancall"))
+	return 1;
+    else if (!string_compare(tmpptr + 1, "ifncancall"))
+	return 1;
+
+    return 0;
+}
+
 /* skip comments */
-void
+static void
 do_comment(COMPSTATE * cstat, int depth)
 {
     unsigned int next_char = 0;	/* Save state if needed. */
@@ -1564,39 +2107,51 @@ do_comment(COMPSTATE * cstat, int depth)
     }
 }
 
-int
-is_preprocessor_conditional(const char *tmpptr)
+/* Skips comments, grabs strings, returns NULL when no more tokens to grab. */
+static const char *
+next_token_raw(COMPSTATE * cstat)
 {
-    if (*tmpptr != BEGINDIRECTIVE)
-	return 0;
+    static char buf[BUFFER_LEN];
+    int i;
 
-    if (!string_compare(tmpptr + 1, "ifdef"))
-	return 1;
-    else if (!string_compare(tmpptr + 1, "ifndef"))
-	return 1;
-    else if (!string_compare(tmpptr + 1, "iflib"))
-	return 1;
-    else if (!string_compare(tmpptr + 1, "ifnlib"))
-	return 1;
-    else if (!string_compare(tmpptr + 1, "ifver"))
-	return 1;
-    else if (!string_compare(tmpptr + 1, "iflibver"))
-	return 1;
-    else if (!string_compare(tmpptr + 1, "ifnver"))
-	return 1;
-    else if (!string_compare(tmpptr + 1, "ifnlibver"))
-	return 1;
-    else if (!string_compare(tmpptr + 1, "ifcancall"))
-	return 1;
-    else if (!string_compare(tmpptr + 1, "ifncancall"))
-	return 1;
+    if (!cstat->curr_line)
+	return (char *) 0;
 
-    return 0;
+    if (!cstat->next_char)
+	return (char *) 0;
+
+    /* skip white space */
+    while (*cstat->next_char && isspace(*cstat->next_char))
+	cstat->next_char++;
+
+    if (!(*cstat->next_char)) {
+	advance_line(cstat);
+	return next_token_raw(cstat);
+    }
+    /* take care of comments */
+    if (*cstat->next_char == BEGINCOMMENT) {
+	cstat->start_comment = cstat->lineno;
+	if (cstat->force_comment == 1) {
+	    do_comment(cstat, -1);
+	} else {
+	    do_comment(cstat, 0);
+	}
+	cstat->start_comment = 0;
+	return next_token_raw(cstat);
+    }
+    if (*cstat->next_char == BEGINSTRING)
+	return do_string(cstat);
+
+    for (i = 0; *cstat->next_char && !isspace(*cstat->next_char); i++) {
+	buf[i] = *cstat->next_char;
+	cstat->next_char++;
+    }
+    buf[i] = '\0';
+    return alloc_string(buf);
 }
 
-
 /* handle compiler directives */
-void
+static void
 do_directive(COMPSTATE * cstat, char *direct)
 {
     char temp[BUFFER_LEN];
@@ -2177,50 +2732,335 @@ do_directive(COMPSTATE * cstat, char *direct)
     }
 }
 
-
-/* return string */
-const char *
-do_string(COMPSTATE * cstat)
+static const char *
+next_token(COMPSTATE * cstat)
 {
-    static char buf[BUFFER_LEN];
-    int i = 0, quoted = 0;
+    char *expansion, *temp;
+    int elen = 0;
 
-    buf[i] = *cstat->next_char;
-    cstat->next_char++;
-    i++;
-    while ((quoted || *cstat->next_char != ENDSTRING) && *cstat->next_char) {
-	if (*cstat->next_char == BEGINESCAPE && !quoted) {
-	    quoted++;
-	    cstat->next_char++;
-	} else if (*cstat->next_char == 'r' && quoted) {
-	    buf[i++] = '\r';
-	    cstat->next_char++;
-	    quoted = 0;
-	} else if (*cstat->next_char == '[' && quoted) {
-	    buf[i++] = ESCAPE_CHAR;
-	    cstat->next_char++;
-	    quoted = 0;
-	} else {
-	    buf[i] = *cstat->next_char;
-	    i++;
-	    cstat->next_char++;
-	    quoted = 0;
+    temp = (char *) next_token_raw(cstat);
+    if (!temp)
+	return NULL;
+
+    if (temp[0] == BEGINDIRECTIVE) {
+	do_directive(cstat, temp);
+	free(temp);
+	return next_token(cstat);
+    }
+    if (temp[0] == BEGINESCAPE) {
+	if (temp[1]) {
+	    expansion = temp;
+	    elen = strlen(expansion);
+	    temp = (char *) malloc(elen);
+	    strcpyn(temp, elen, (expansion + 1));
+	    free(expansion);
 	}
+	return (temp);
     }
-    if (!*cstat->next_char) {
-	abort_compile(cstat, "Unterminated string found at end of line.");
+    if ((expansion = expand_def(cstat, temp))) {
+	free(temp);
+	if (++cstat->macrosubs > SUBSTITUTIONS) {
+	    abort_compile(cstat, "Too many macro substitutions.");
+	} else {
+	    int templen = strlen(cstat->next_char) + strlen(expansion) + 21;
+	    temp = (char *) malloc(templen);
+	    strcpyn(temp, templen, expansion);
+	    strcatn(temp, templen, cstat->next_char);
+	    free((void *) expansion);
+	    if (cstat->line_copy) {
+		free((void *) cstat->line_copy);
+	    }
+	    cstat->next_char = cstat->line_copy = temp;
+	    return next_token(cstat);
+	}
+    } else {
+	return (temp);
     }
-    cstat->next_char++;
-    buf[i] = '\0';
-    return alloc_string(buf);
+}
+
+/* adds variable.  Return 0 if no space left */
+static int
+add_variable(COMPSTATE * cstat, const char *varname, int valtype)
+{
+    int i;
+
+    for (i = RES_VAR; i < MAX_VAR; i++)
+	if (!cstat->variables[i])
+	    break;
+
+    if (i == MAX_VAR)
+	return 0;
+
+    cstat->variables[i] = alloc_string(varname);
+    cstat->variabletypes[i] = valtype;
+    return i;
 }
 
 
+/* adds local variable.  Return 0 if no space left */
+static int
+add_scopedvar(COMPSTATE * cstat, const char *varname, int valtype)
+{
+    int i;
+
+    for (i = 0; i < MAX_VAR; i++)
+	if (!cstat->scopedvars[i])
+	    break;
+
+    if (i == MAX_VAR)
+	return -1;
+
+    cstat->scopedvars[i] = alloc_string(varname);
+    cstat->scopedvartypes[i] = valtype;
+    return i;
+}
+
+
+/* adds local variable.  Return 0 if no space left */
+static int
+add_localvar(COMPSTATE * cstat, const char *varname, int valtype)
+{
+    int i;
+
+    for (i = 0; i < MAX_VAR; i++)
+	if (!cstat->localvars[i])
+	    break;
+
+    if (i == MAX_VAR)
+	return -1;
+
+    cstat->localvars[i] = alloc_string(varname);
+    cstat->localvartypes[i] = valtype;
+    return i;
+}
+
+/* pops first while off the innermost control structure, if it's a loop. */
+static struct INTERMEDIATE *
+pop_loop_exit(COMPSTATE * cstat)
+{
+    struct INTERMEDIATE *temp;
+    struct CONTROL_STACK *tofree;
+    struct CONTROL_STACK *parent;
+
+    parent = cstat->control_stack;
+
+    if (!parent)
+	return 0;
+    if (parent->type != CTYPE_BEGIN && parent->type != CTYPE_FOR)
+	return 0;
+    if (!parent->extra)
+	return 0;
+    if (parent->extra->type != CTYPE_WHILE)
+	return 0;
+
+    temp = parent->extra->place;
+    tofree = parent->extra;
+    parent->extra = parent->extra->extra;
+    free((void *) tofree);
+    return temp;
+}
+
+/* checks if topmost loop stack item is a for */
+static struct INTERMEDIATE *
+innermost_control_place(COMPSTATE * cstat, int type1)
+{
+    struct CONTROL_STACK *ctrl;
+
+    ctrl = cstat->control_stack;
+    if (!ctrl)
+	return 0;
+    if (ctrl->type != type1)
+	return 0;
+
+    return ctrl->place;
+}
+
+static void
+resolve_loop_addrs(COMPSTATE * cstat, int where)
+{
+    struct INTERMEDIATE *eef;
+
+    while ((eef = pop_loop_exit(cstat)))
+	eef->in.data.number = where;
+    eef = innermost_control_place(cstat, CTYPE_FOR);
+    if (eef) {
+	eef->next->in.data.number = where;
+    }
+}
+
+/* support routines for internal data structures. */
+
+/* add procedure to procedures list */
+static void
+add_proc(COMPSTATE * cstat, const char *proc_name, struct INTERMEDIATE *place, int rettype)
+{
+    struct PROC_LIST *nu;
+
+    nu = (struct PROC_LIST *) malloc(sizeof(struct PROC_LIST));
+
+    nu->name = alloc_string(proc_name);
+    nu->returntype = rettype;
+    nu->code = place;
+    nu->next = cstat->procs;
+    cstat->procs = nu;
+}
+
+/* add if to control stack */
+static void
+add_control_structure(COMPSTATE * cstat, int typ, struct INTERMEDIATE *place)
+{
+    struct CONTROL_STACK *nu;
+
+    nu = (struct CONTROL_STACK *) malloc(sizeof(struct CONTROL_STACK));
+
+    nu->place = place;
+    nu->type = typ;
+    nu->next = cstat->control_stack;
+    nu->extra = 0;
+    cstat->control_stack = nu;
+}
+
+/* add while to current loop's list of exits remaining to be resolved. */
+static void
+add_loop_exit(COMPSTATE * cstat, struct INTERMEDIATE *place)
+{
+    struct CONTROL_STACK *nu;
+    struct CONTROL_STACK *loop;
+
+    loop = cstat->control_stack;
+
+    while (loop && loop->type != CTYPE_BEGIN && loop->type != CTYPE_FOR) {
+	loop = loop->next;
+    }
+
+    if (!loop)
+	return;
+
+    nu = (struct CONTROL_STACK *) malloc(sizeof(struct CONTROL_STACK));
+
+    nu->place = place;
+    nu->type = CTYPE_WHILE;
+    nu->next = 0;
+    nu->extra = loop->extra;
+    loop->extra = nu;
+}
+
+/* Returns true if a loop start is in the control structure stack. */
+static int
+in_loop(COMPSTATE * cstat)
+{
+    struct CONTROL_STACK *loop;
+
+    loop = cstat->control_stack;
+    while (loop && loop->type != CTYPE_BEGIN && loop->type != CTYPE_FOR) {
+	loop = loop->next;
+    }
+    return (loop != NULL);
+}
+
+/* Returns the type of the innermost nested control structure. */
+static int
+innermost_control_type(COMPSTATE * cstat)
+{
+    struct CONTROL_STACK *ctrl;
+
+    ctrl = cstat->control_stack;
+    if (!ctrl)
+	return 0;
+
+    return ctrl->type;
+}
+
+/* Returns number of TRYs before topmost Loop */
+static int
+count_trys_inside_loop(COMPSTATE * cstat)
+{
+    struct CONTROL_STACK *loop;
+    int count = 0;
+
+    loop = cstat->control_stack;
+
+    while (loop) {
+	if (loop->type == CTYPE_FOR || loop->type == CTYPE_BEGIN) {
+	    break;
+	}
+	if (loop->type == CTYPE_TRY) {
+	    count++;
+	}
+	loop = loop->next;
+    }
+
+    return count;
+}
+
+/* returns topmost begin or for off the stack */
+static struct INTERMEDIATE *
+locate_control_structure(COMPSTATE * cstat, int type1, int type2)
+{
+    struct CONTROL_STACK *loop;
+
+    loop = cstat->control_stack;
+
+    while (loop) {
+	if (loop->type == type1 || loop->type == type2) {
+	    return loop->place;
+	}
+	loop = loop->next;
+    }
+
+    return 0;
+}
+
+/* Pops off the innermost control structure and returns the place. */
+static struct INTERMEDIATE *
+pop_control_structure(COMPSTATE * cstat, int type1, int type2)
+{
+    struct CONTROL_STACK *ctrl;
+    struct INTERMEDIATE *place;
+
+    ctrl = cstat->control_stack;
+    if (!ctrl)
+	return NULL;
+    if (ctrl->type != type1 && ctrl->type != type2)
+	return NULL;
+
+    place = ctrl->place;
+    cstat->control_stack = ctrl->next;
+    free(ctrl);
+
+    return place;
+}
+
+static struct INTERMEDIATE *
+prealloc_inst(COMPSTATE * cstat)
+{
+    struct INTERMEDIATE *ptr;
+    struct INTERMEDIATE *nu;
+
+    /* only allocate at most one extra instr */
+    if (cstat->nextinst)
+	return NULL;
+
+    nu = alloc_inst();
+
+    nu->flags |= (cstat->nested_trys > 0) ? INTMEDFLG_INTRY : 0;
+
+    if (!cstat->nextinst) {
+	cstat->nextinst = nu;
+    } else {
+	for (ptr = cstat->nextinst; ptr->next; ptr = ptr->next) ;
+	ptr->next = nu;
+    }
+
+    nu->no = cstat->nowords;
+
+    return nu;
+}
 
 /* process special.  Performs special processing.
    It sets up FOR and IF structures.  Remember --- for those,
    we've got to set aside an extra argument space.         */
-struct INTERMEDIATE *
+static struct INTERMEDIATE *
 process_special(COMPSTATE * cstat, const char *token)
 {
     static char buf[BUFFER_LEN];
@@ -2807,566 +3647,6 @@ process_special(COMPSTATE * cstat, const char *token)
     }
 }
 
-/* return primitive word. */
-struct INTERMEDIATE *
-primitive_word(COMPSTATE * cstat, const char *token)
-{
-    struct INTERMEDIATE *nu, *cur;
-    int pnum;
-
-    pnum = get_primitive(token);
-    cur = nu = new_inst(cstat);
-    if (pnum == IN_RET || pnum == IN_JMP) {
-	for (int loop = 0; loop < cstat->nested_trys; loop++) {
-	    cur->no = cstat->nowords++;
-	    cur->in.type = PROG_PRIMITIVE;
-	    cur->in.line = cstat->lineno;
-	    cur->in.data.number = IN_TRYPOP;
-	    cur->next = new_inst(cstat);
-	    cur = cur->next;
-	}
-	for (int loop = 0; loop < cstat->nested_fors; loop++) {
-	    cur->no = cstat->nowords++;
-	    cur->in.type = PROG_PRIMITIVE;
-	    cur->in.line = cstat->lineno;
-	    cur->in.data.number = IN_FORPOP;
-	    cur->next = new_inst(cstat);
-	    cur = cur->next;
-	}
-    }
-
-    cur->no = cstat->nowords++;
-    cur->in.type = PROG_PRIMITIVE;
-    cur->in.line = cstat->lineno;
-    cur->in.data.number = pnum;
-
-    return nu;
-}
-
-/* return self pushing word (string) */
-struct INTERMEDIATE *
-string_word(COMPSTATE * cstat, const char *token)
-{
-    struct INTERMEDIATE *nu;
-
-    nu = new_inst(cstat);
-    nu->no = cstat->nowords++;
-    nu->in.type = PROG_STRING;
-    nu->in.line = cstat->lineno;
-    nu->in.data.string = alloc_prog_string(token);
-    return nu;
-}
-
-/* return self pushing word (float) */
-struct INTERMEDIATE *
-float_word(COMPSTATE * cstat, const char *token)
-{
-    struct INTERMEDIATE *nu;
-
-    nu = new_inst(cstat);
-    nu->no = cstat->nowords++;
-    nu->in.type = PROG_FLOAT;
-    nu->in.line = cstat->lineno;
-    sscanf(token, "%lg", &(nu->in.data.fnumber));
-    return nu;
-}
-
-/* return self pushing word (number) */
-struct INTERMEDIATE *
-number_word(COMPSTATE * cstat, const char *token)
-{
-    struct INTERMEDIATE *nu;
-
-    nu = new_inst(cstat);
-    nu->no = cstat->nowords++;
-    nu->in.type = PROG_INTEGER;
-    nu->in.line = cstat->lineno;
-    nu->in.data.number = atoi(token);
-    return nu;
-}
-
-/* do a subroutine call --- push address onto stack, then make a primitive
-   CALL.
-   */
-struct INTERMEDIATE *
-call_word(COMPSTATE * cstat, const char *token)
-{
-    struct INTERMEDIATE *nu;
-    struct PROC_LIST *p;
-
-    nu = new_inst(cstat);
-    nu->no = cstat->nowords++;
-    nu->in.type = PROG_EXEC;
-    nu->in.line = cstat->lineno;
-    for (p = cstat->procs; p; p = p->next)
-	if (!string_compare(p->name, token))
-	    break;
-
-    nu->in.data.number = get_address(cstat, p->code, 0);
-    return nu;
-}
-
-struct INTERMEDIATE *
-quoted_word(COMPSTATE * cstat, const char *token)
-{
-    struct INTERMEDIATE *nu;
-    struct PROC_LIST *p;
-
-    nu = new_inst(cstat);
-    nu->no = cstat->nowords++;
-    nu->in.type = PROG_ADD;
-    nu->in.line = cstat->lineno;
-    for (p = cstat->procs; p; p = p->next)
-	if (!string_compare(p->name, token))
-	    break;
-
-    nu->in.data.number = get_address(cstat, p->code, 0);
-    return nu;
-}
-
-/* returns number corresponding to variable number.
-   We assume that it DOES exist */
-struct INTERMEDIATE *
-var_word(COMPSTATE * cstat, const char *token)
-{
-    struct INTERMEDIATE *nu;
-    int var_no = 0;
-
-    nu = new_inst(cstat);
-    nu->no = cstat->nowords++;
-    nu->in.type = PROG_VAR;
-    nu->in.line = cstat->lineno;
-    for (int i = 0; i < MAX_VAR; i++) {
-	if (!cstat->variables[i])
-	    break;
-	if (!string_compare(token, cstat->variables[i]))
-	    var_no = i;
-    }
-    nu->in.data.number = var_no;
-
-    return nu;
-}
-
-struct INTERMEDIATE *
-svar_word(COMPSTATE * cstat, const char *token)
-{
-    struct INTERMEDIATE *nu;
-    int var_no = 0;
-
-    nu = new_inst(cstat);
-    nu->no = cstat->nowords++;
-    nu->in.type = PROG_SVAR;
-    nu->in.line = cstat->lineno;
-    for (int i = 0; i < MAX_VAR; i++) {
-	if (!cstat->scopedvars[i])
-	    break;
-	if (!string_compare(token, cstat->scopedvars[i]))
-	    var_no = i;
-    }
-    nu->in.data.number = var_no;
-
-    return nu;
-}
-
-struct INTERMEDIATE *
-lvar_word(COMPSTATE * cstat, const char *token)
-{
-    struct INTERMEDIATE *nu;
-    int var_no;
-
-    nu = new_inst(cstat);
-    nu->no = cstat->nowords++;
-    nu->in.type = PROG_LVAR;
-    nu->in.line = cstat->lineno;
-    for (int i = 0; i < MAX_VAR; i++) {
-	if (!cstat->localvars[i])
-	    break;
-	if (!string_compare(token, cstat->localvars[i]))
-	    var_no = i;
-    }
-    nu->in.data.number = var_no;
-
-    return nu;
-}
-
-/* check if object is in database before putting it in */
-struct INTERMEDIATE *
-object_word(COMPSTATE * cstat, const char *token)
-{
-    struct INTERMEDIATE *nu;
-    int objno;
-
-    objno = atol(token + 1);
-    nu = new_inst(cstat);
-    nu->no = cstat->nowords++;
-    nu->in.type = PROG_OBJECT;
-    nu->in.line = cstat->lineno;
-    nu->in.data.objref = objno;
-    return nu;
-}
-
-
-
-/* support routines for internal data structures. */
-
-/* add procedure to procedures list */
-void
-add_proc(COMPSTATE * cstat, const char *proc_name, struct INTERMEDIATE *place, int rettype)
-{
-    struct PROC_LIST *nu;
-
-    nu = (struct PROC_LIST *) malloc(sizeof(struct PROC_LIST));
-
-    nu->name = alloc_string(proc_name);
-    nu->returntype = rettype;
-    nu->code = place;
-    nu->next = cstat->procs;
-    cstat->procs = nu;
-}
-
-/* add if to control stack */
-void
-add_control_structure(COMPSTATE * cstat, int typ, struct INTERMEDIATE *place)
-{
-    struct CONTROL_STACK *nu;
-
-    nu = (struct CONTROL_STACK *) malloc(sizeof(struct CONTROL_STACK));
-
-    nu->place = place;
-    nu->type = typ;
-    nu->next = cstat->control_stack;
-    nu->extra = 0;
-    cstat->control_stack = nu;
-}
-
-/* add while to current loop's list of exits remaining to be resolved. */
-void
-add_loop_exit(COMPSTATE * cstat, struct INTERMEDIATE *place)
-{
-    struct CONTROL_STACK *nu;
-    struct CONTROL_STACK *loop;
-
-    loop = cstat->control_stack;
-
-    while (loop && loop->type != CTYPE_BEGIN && loop->type != CTYPE_FOR) {
-	loop = loop->next;
-    }
-
-    if (!loop)
-	return;
-
-    nu = (struct CONTROL_STACK *) malloc(sizeof(struct CONTROL_STACK));
-
-    nu->place = place;
-    nu->type = CTYPE_WHILE;
-    nu->next = 0;
-    nu->extra = loop->extra;
-    loop->extra = nu;
-}
-
-/* Returns true if a loop start is in the control structure stack. */
-int
-in_loop(COMPSTATE * cstat)
-{
-    struct CONTROL_STACK *loop;
-
-    loop = cstat->control_stack;
-    while (loop && loop->type != CTYPE_BEGIN && loop->type != CTYPE_FOR) {
-	loop = loop->next;
-    }
-    return (loop != NULL);
-}
-
-/* Returns the type of the innermost nested control structure. */
-int
-innermost_control_type(COMPSTATE * cstat)
-{
-    struct CONTROL_STACK *ctrl;
-
-    ctrl = cstat->control_stack;
-    if (!ctrl)
-	return 0;
-
-    return ctrl->type;
-}
-
-/* Returns number of TRYs before topmost Loop */
-int
-count_trys_inside_loop(COMPSTATE * cstat)
-{
-    struct CONTROL_STACK *loop;
-    int count = 0;
-
-    loop = cstat->control_stack;
-
-    while (loop) {
-	if (loop->type == CTYPE_FOR || loop->type == CTYPE_BEGIN) {
-	    break;
-	}
-	if (loop->type == CTYPE_TRY) {
-	    count++;
-	}
-	loop = loop->next;
-    }
-
-    return count;
-}
-
-/* returns topmost begin or for off the stack */
-struct INTERMEDIATE *
-locate_control_structure(COMPSTATE * cstat, int type1, int type2)
-{
-    struct CONTROL_STACK *loop;
-
-    loop = cstat->control_stack;
-
-    while (loop) {
-	if (loop->type == type1 || loop->type == type2) {
-	    return loop->place;
-	}
-	loop = loop->next;
-    }
-
-    return 0;
-}
-
-/* checks if topmost loop stack item is a for */
-struct INTERMEDIATE *
-innermost_control_place(COMPSTATE * cstat, int type1)
-{
-    struct CONTROL_STACK *ctrl;
-
-    ctrl = cstat->control_stack;
-    if (!ctrl)
-	return 0;
-    if (ctrl->type != type1)
-	return 0;
-
-    return ctrl->place;
-}
-
-/* Pops off the innermost control structure and returns the place. */
-struct INTERMEDIATE *
-pop_control_structure(COMPSTATE * cstat, int type1, int type2)
-{
-    struct CONTROL_STACK *ctrl;
-    struct INTERMEDIATE *place;
-
-    ctrl = cstat->control_stack;
-    if (!ctrl)
-	return NULL;
-    if (ctrl->type != type1 && ctrl->type != type2)
-	return NULL;
-
-    place = ctrl->place;
-    cstat->control_stack = ctrl->next;
-    free(ctrl);
-
-    return place;
-}
-
-/* pops first while off the innermost control structure, if it's a loop. */
-struct INTERMEDIATE *
-pop_loop_exit(COMPSTATE * cstat)
-{
-    struct INTERMEDIATE *temp;
-    struct CONTROL_STACK *tofree;
-    struct CONTROL_STACK *parent;
-
-    parent = cstat->control_stack;
-
-    if (!parent)
-	return 0;
-    if (parent->type != CTYPE_BEGIN && parent->type != CTYPE_FOR)
-	return 0;
-    if (!parent->extra)
-	return 0;
-    if (parent->extra->type != CTYPE_WHILE)
-	return 0;
-
-    temp = parent->extra->place;
-    tofree = parent->extra;
-    parent->extra = parent->extra->extra;
-    free((void *) tofree);
-    return temp;
-}
-
-void
-resolve_loop_addrs(COMPSTATE * cstat, int where)
-{
-    struct INTERMEDIATE *eef;
-
-    while ((eef = pop_loop_exit(cstat)))
-	eef->in.data.number = where;
-    eef = innermost_control_place(cstat, CTYPE_FOR);
-    if (eef) {
-	eef->next->in.data.number = where;
-    }
-}
-
-/* adds variable.  Return 0 if no space left */
-int
-add_variable(COMPSTATE * cstat, const char *varname, int valtype)
-{
-    int i;
-
-    for (i = RES_VAR; i < MAX_VAR; i++)
-	if (!cstat->variables[i])
-	    break;
-
-    if (i == MAX_VAR)
-	return 0;
-
-    cstat->variables[i] = alloc_string(varname);
-    cstat->variabletypes[i] = valtype;
-    return i;
-}
-
-
-/* adds local variable.  Return 0 if no space left */
-int
-add_scopedvar(COMPSTATE * cstat, const char *varname, int valtype)
-{
-    int i;
-
-    for (i = 0; i < MAX_VAR; i++)
-	if (!cstat->scopedvars[i])
-	    break;
-
-    if (i == MAX_VAR)
-	return -1;
-
-    cstat->scopedvars[i] = alloc_string(varname);
-    cstat->scopedvartypes[i] = valtype;
-    return i;
-}
-
-
-/* adds local variable.  Return 0 if no space left */
-int
-add_localvar(COMPSTATE * cstat, const char *varname, int valtype)
-{
-    int i;
-
-    for (i = 0; i < MAX_VAR; i++)
-	if (!cstat->localvars[i])
-	    break;
-
-    if (i == MAX_VAR)
-	return -1;
-
-    cstat->localvars[i] = alloc_string(varname);
-    cstat->localvartypes[i] = valtype;
-    return i;
-}
-
-
-/* predicates for procedure calls */
-int
-special(const char *token)
-{
-    return (token && !(string_compare(token, ":")
-		       && string_compare(token, ";")
-		       && string_compare(token, "IF")
-		       && string_compare(token, "ELSE")
-		       && string_compare(token, "THEN")
-		       && string_compare(token, "BEGIN")
-		       && string_compare(token, "FOR")
-		       && string_compare(token, "FOREACH")
-		       && string_compare(token, "UNTIL")
-		       && string_compare(token, "WHILE")
-		       && string_compare(token, "BREAK")
-		       && string_compare(token, "CONTINUE")
-		       && string_compare(token, "REPEAT")
-		       && string_compare(token, "TRY")
-		       && string_compare(token, "CATCH")
-		       && string_compare(token, "CATCH_DETAILED")
-		       && string_compare(token, "ENDCATCH")
-		       && string_compare(token, "CALL")
-		       && string_compare(token, "PUBLIC")
-		       && string_compare(token, "WIZCALL")
-		       && string_compare(token, "LVAR")
-		       && string_compare(token, "VAR!")
-		       && string_compare(token, "VAR")));
-}
-
-/* see if procedure call */
-int
-call(COMPSTATE * cstat, const char *token)
-{
-    struct PROC_LIST *i;
-
-    for (i = cstat->procs; i; i = i->next)
-	if (!string_compare(i->name, token))
-	    return 1;
-
-    return 0;
-}
-
-/* see if it's a quoted procedure name */
-int
-quoted(COMPSTATE * cstat, const char *token)
-{
-    return (*token == '\'' && call(cstat, token + 1));
-}
-
-/* see if it's an object # */
-int
-object(const char *token)
-{
-    if (*token == NUMBER_TOKEN && number(token + 1))
-	return 1;
-    else
-	return 0;
-}
-
-/* see if string */
-int
-string(const char *token)
-{
-    return (token[0] == BEGINSTRING);
-}
-
-int
-variable(COMPSTATE * cstat, const char *token)
-{
-    for (int i = 0; i < MAX_VAR && cstat->variables[i]; i++)
-	if (!string_compare(token, cstat->variables[i]))
-	    return 1;
-
-    return 0;
-}
-
-int
-scopedvar(COMPSTATE * cstat, const char *token)
-{
-    for (int i = 0; i < MAX_VAR && cstat->scopedvars[i]; i++)
-	if (!string_compare(token, cstat->scopedvars[i]))
-	    return 1;
-
-    return 0;
-}
-
-int
-localvar(COMPSTATE * cstat, const char *token)
-{
-    for (int i = 0; i < MAX_VAR && cstat->localvars[i]; i++)
-	if (!string_compare(token, cstat->localvars[i]))
-	    return 1;
-
-    return 0;
-}
-
-/* see if token is primitive */
-int
-primitive(const char *token)
-{
-    int primnum;
-
-    primnum = get_primitive(token);
-    return (primnum && primnum <= BASE_MAX - PRIMS_INTERNAL_CNT);
-}
-
 /* return primitive instruction */
 int
 get_primitive(const char *token)
@@ -3380,24 +3660,7 @@ get_primitive(const char *token)
     }
 }
 
-
-
-/* clean up as nicely as we can. */
-
-void
-cleanpubs(struct publics *mypub)
-{
-    struct publics *tmppub;
-
-    while (mypub) {
-	tmppub = mypub->next;
-	free(mypub->subname);
-	free(mypub);
-	mypub = tmppub;
-    }
-}
-
-void
+static void
 append_intermediate_chain(struct INTERMEDIATE *chain, struct INTERMEDIATE *add)
 {
     while (chain->next)
@@ -3405,254 +3668,7 @@ append_intermediate_chain(struct INTERMEDIATE *chain, struct INTERMEDIATE *add)
     chain->next = add;
 }
 
-
-void
-free_intermediate_node(struct INTERMEDIATE *wd)
-{
-    int varcnt;
-
-    if (wd->in.type == PROG_STRING) {
-	if (wd->in.data.string)
-	    free((void *) wd->in.data.string);
-    }
-    if (wd->in.type == PROG_FUNCTION) {
-	free((void *) wd->in.data.mufproc->procname);
-	varcnt = wd->in.data.mufproc->vars;
-	if (wd->in.data.mufproc->varnames) {
-	    for (int j = 0; j < varcnt; j++) {
-		free((void *) wd->in.data.mufproc->varnames[j]);
-	    }
-	    free((void *) wd->in.data.mufproc->varnames);
-	}
-	free((void *) wd->in.data.mufproc);
-    }
-    free((void *) wd);
-}
-
-void
-free_intermediate_chain(struct INTERMEDIATE *wd)
-{
-    struct INTERMEDIATE *tempword;
-    while (wd) {
-	tempword = wd->next;
-	free_intermediate_node(wd);
-	wd = tempword;
-    }
-}
-
-void
-cleanup(COMPSTATE * cstat)
-{
-/*	struct INTERMEDIATE *wd, *tempword; */
-    struct CONTROL_STACK *eef, *tempif;
-    struct PROC_LIST *p, *tempp;
-
-    free_intermediate_chain(cstat->first_word);
-    cstat->first_word = 0;
-
-    for (eef = cstat->control_stack; eef; eef = tempif) {
-	tempif = eef->next;
-	free((void *) eef);
-    }
-    cstat->control_stack = 0;
-
-    for (p = cstat->procs; p; p = tempp) {
-	tempp = p->next;
-	free((void *) p->name);
-	free((void *) p);
-    }
-    cstat->procs = 0;
-
-    purge_defs(cstat);
-    free_addresses(cstat);
-
-    for (int i = RES_VAR; i < MAX_VAR && cstat->variables[i]; i++) {
-	free((void *) cstat->variables[i]);
-	cstat->variables[i] = 0;
-    }
-
-    for (int i = 0; i < MAX_VAR && cstat->scopedvars[i]; i++) {
-	free((void *) cstat->scopedvars[i]);
-	cstat->scopedvars[i] = 0;
-    }
-
-    for (int i = 0; i < MAX_VAR && cstat->localvars[i]; i++) {
-	free((void *) cstat->localvars[i]);
-	cstat->localvars[i] = 0;
-    }
-}
-
-
-
-/* copy program to an array */
-void
-copy_program(COMPSTATE * cstat)
-{
-    /*
-     * Everything should be peachy keen now, so we don't do any error checking
-     */
-    struct INTERMEDIATE *curr;
-    struct inst *code;
-    int i, varcnt;
-
-    if (!cstat->first_word)
-	v_abort_compile(cstat, "Nothing to compile.");
-
-    code = (struct inst *) malloc(sizeof(struct inst) * (cstat->nowords + 1));
-
-    i = 0;
-    for (curr = cstat->first_word; curr; curr = curr->next) {
-	code[i].type = curr->in.type;
-	code[i].line = curr->in.line;
-	switch (code[i].type) {
-	case PROG_PRIMITIVE:
-	case PROG_INTEGER:
-	case PROG_SVAR:
-	case PROG_SVAR_AT:
-	case PROG_SVAR_AT_CLEAR:
-	case PROG_SVAR_BANG:
-	case PROG_LVAR:
-	case PROG_LVAR_AT:
-	case PROG_LVAR_AT_CLEAR:
-	case PROG_LVAR_BANG:
-	case PROG_VAR:
-	    code[i].data.number = curr->in.data.number;
-	    break;
-	case PROG_FLOAT:
-	    code[i].data.fnumber = curr->in.data.fnumber;
-	    break;
-	case PROG_STRING:
-	    code[i].data.string = curr->in.data.string ?
-		    alloc_prog_string(curr->in.data.string->data) : 0;
-	    break;
-	case PROG_FUNCTION:
-	    code[i].data.mufproc =
-		    (struct muf_proc_data *) malloc(sizeof(struct muf_proc_data));
-	    code[i].data.mufproc->procname = string_dup(curr->in.data.mufproc->procname);
-	    code[i].data.mufproc->vars = varcnt = curr->in.data.mufproc->vars;
-	    code[i].data.mufproc->args = curr->in.data.mufproc->args;
-	    if (varcnt) {
-		if (curr->in.data.mufproc->varnames) {
-		    code[i].data.mufproc->varnames =
-			    (const char **) calloc(varcnt, sizeof(char *));
-		    for (int j = 0; j < varcnt; j++) {
-			code[i].data.mufproc->varnames[j] =
-				string_dup(curr->in.data.mufproc->varnames[j]);
-		    }
-		} else {
-		    code[i].data.mufproc->varnames = NULL;
-		}
-	    } else {
-		code[i].data.mufproc->varnames = NULL;
-	    }
-	    break;
-	case PROG_OBJECT:
-	    code[i].data.objref = curr->in.data.objref;
-	    break;
-	case PROG_ADD:
-	    code[i].data.addr = alloc_addr(cstat, curr->in.data.number, code);
-	    break;
-	case PROG_IF:
-	case PROG_JMP:
-	case PROG_EXEC:
-	case PROG_TRY:
-	    code[i].data.call = code + curr->in.data.number;
-	    break;
-	default:
-	    free(code);
-	    v_abort_compile(cstat, "Unknown type compile!  Internal error.");
-	}
-	i++;
-    }
-    PROGRAM_SET_CODE(cstat->program, code);
-}
-
-void
-set_start(COMPSTATE * cstat)
-{
-    PROGRAM_SET_SIZ(cstat->program, cstat->nowords);
-
-    /* address instr no is resolved before this gets called. */
-    PROGRAM_SET_START(cstat->program, (PROGRAM_CODE(cstat->program) + cstat->procs->code->no));
-}
-
-
-/* allocate and initialize data linked structure. */
-struct INTERMEDIATE *
-alloc_inst(void)
-{
-    struct INTERMEDIATE *nu;
-
-    nu = (struct INTERMEDIATE *) malloc(sizeof(struct INTERMEDIATE));
-
-    nu->next = 0;
-    nu->no = 0;
-    nu->line = 0;
-    nu->flags = 0;
-    nu->in.type = 0;
-    nu->in.line = 0;
-    nu->in.data.number = 0;
-    return nu;
-}
-
-struct INTERMEDIATE *
-prealloc_inst(COMPSTATE * cstat)
-{
-    struct INTERMEDIATE *ptr;
-    struct INTERMEDIATE *nu;
-
-    /* only allocate at most one extra instr */
-    if (cstat->nextinst)
-	return NULL;
-
-    nu = alloc_inst();
-
-    nu->flags |= (cstat->nested_trys > 0) ? INTMEDFLG_INTRY : 0;
-
-    if (!cstat->nextinst) {
-	cstat->nextinst = nu;
-    } else {
-	for (ptr = cstat->nextinst; ptr->next; ptr = ptr->next) ;
-	ptr->next = nu;
-    }
-
-    nu->no = cstat->nowords;
-
-    return nu;
-}
-
-struct INTERMEDIATE *
-new_inst(COMPSTATE * cstat)
-{
-    struct INTERMEDIATE *nu;
-
-    nu = cstat->nextinst;
-    if (!nu) {
-	nu = alloc_inst();
-    }
-    cstat->nextinst = nu->next;
-    nu->next = NULL;
-
-    nu->flags |= (cstat->nested_trys > 0) ? INTMEDFLG_INTRY : 0;
-
-    return nu;
-}
-
-/* allocate an address */
-struct prog_addr *
-alloc_addr(COMPSTATE * cstat, int offset, struct inst *codestart)
-{
-    struct prog_addr *nu;
-
-    nu = (struct prog_addr *) malloc(sizeof(struct prog_addr));
-
-    nu->links = 1;
-    nu->progref = cstat->program;
-    nu->data = codestart + offset;
-    return nu;
-}
-
-void
+static void
 free_prog_real(dbref prog, const char *file, const int line)
 {
     int i;

@@ -2,23 +2,11 @@
 
 #include "array.h"
 #include "boolexp.h"
-#include "db.h"
 #include "fbmath.h"
 #include "fbstrings.h"
+#include "game.h"
 #include "inst.h"
-#include "interface.h"
 #include "interp.h"
-
-#include <float.h>
-
-#ifndef AVL_RT
-#define AVL_RT(x)  (x->right)
-#endif
-#ifndef AVL_LF
-#define AVL_LF(x)  (x->left)
-#endif
-#define AVL_KEY(x) (&(x->key))
-#define AVL_COMPARE(x,y) array_tree_compare(x,y,0)
 
 static int array_tree_compare(array_iter * a, array_iter * b, int case_sens);
 
@@ -74,7 +62,6 @@ array_tree_compare_arrays(array_iter * a, array_iter * b, int case_sens)
 	more2 = array_next(b->data.array, &idx2);
     }
 }
-
 
 /*
 ** Compares two array_iter's (struct insts)
@@ -158,7 +145,6 @@ array_tree_compare(array_iter * a, array_iter * b, int case_sens)
     }
 }
 
-/*@null@*/
 static array_tree *
 array_tree_find(array_tree * avl, array_iter * key)
 {
@@ -168,11 +154,11 @@ array_tree_find(array_tree * avl, array_iter * key)
     assert(key != NULL);
 
     while (avl) {
-	cmpval = AVL_COMPARE(key, AVL_KEY(avl));
+	cmpval = array_tree_compare(key, &(avl->key), 0);
 	if (cmpval > 0) {
-	    avl = AVL_RT(avl);
+	    avl = avl->right;
 	} else if (cmpval < 0) {
-	    avl = AVL_LF(avl);
+	    avl = avl->left;
 	} else {
 	    break;
 	}
@@ -193,7 +179,7 @@ static int
 array_tree_height_diff(array_tree * node)
 {
     if (node != NULL)
-	return (array_tree_height_of(AVL_RT(node)) - array_tree_height_of(AVL_LF(node)));
+	return (array_tree_height_of(node->right) - array_tree_height_of(node->left));
     else
 	return 0;
 }
@@ -203,8 +189,8 @@ array_tree_fixup_height(array_tree * node)
 {
     if (node != NULL)
 	node->height = (short) (1 +
-				MAX(array_tree_height_of(AVL_LF(node)),
-				    array_tree_height_of(AVL_RT(node))));
+				MAX(array_tree_height_of(node->left),
+				    array_tree_height_of(node->right)));
 }
 
 static array_tree *
@@ -212,10 +198,10 @@ array_tree_rotate_left_single(array_tree * a)
 {
     array_tree *b;
     assert(a != NULL);
-    b = AVL_RT(a);
+    b = a->right;
 
-    AVL_RT(a) = AVL_LF(b);
-    AVL_LF(b) = a;
+    a->right = b->left;
+    b->left = a;
 
     array_tree_fixup_height(a);
     array_tree_fixup_height(b);
@@ -228,16 +214,16 @@ array_tree_rotate_left_double(array_tree * a)
 {
     array_tree *b, *c;
     assert(a != NULL);
-    b = AVL_RT(a);
-    c = AVL_LF(b);
+    b = a->right;
+    c = b->left;
 
     assert(b != NULL);
     assert(c != NULL);
 
-    AVL_RT(a) = AVL_LF(c);
-    AVL_LF(b) = AVL_RT(c);
-    AVL_LF(c) = a;
-    AVL_RT(c) = b;
+    a->right = c->left;
+    b->left = c->right;
+    c->left = a;
+    c->right = b;
 
     array_tree_fixup_height(a);
     array_tree_fixup_height(b);
@@ -251,10 +237,10 @@ array_tree_rotate_right_single(array_tree * a)
 {
     array_tree *b;
     assert(a != NULL);
-    b = AVL_LF(a);
+    b = a->left;
 
-    AVL_LF(a) = AVL_RT(b);
-    AVL_RT(b) = a;
+    a->left = b->right;
+    b->right = a;
 
     array_tree_fixup_height(a);
     array_tree_fixup_height(b);
@@ -267,16 +253,16 @@ array_tree_rotate_right_double(array_tree * a)
 {
     array_tree *b, *c;
     assert(a != NULL);
-    b = AVL_LF(a);
-    c = AVL_RT(b);
+    b = a->left;
+    c = b->right;
 
     assert(b != NULL);
     assert(c != NULL);
 
-    AVL_LF(a) = AVL_RT(c);
-    AVL_RT(b) = AVL_LF(c);
-    AVL_RT(c) = a;
-    AVL_LF(c) = b;
+    a->left = c->right;
+    b->right = c->left;
+    c->right = a;
+    c->left = b;
 
     array_tree_fixup_height(a);
     array_tree_fixup_height(b);
@@ -285,7 +271,6 @@ array_tree_rotate_right_double(array_tree * a)
     return c;
 }
 
-/*@-branchstate@*/
 static array_tree *
 array_tree_balance_node(array_tree * a)
 {
@@ -297,12 +282,12 @@ array_tree_balance_node(array_tree * a)
 	array_tree_fixup_height(a);
     } else {
 	if (dh == 2) {
-	    if (array_tree_height_diff(AVL_RT(a)) >= 0) {
+	    if (array_tree_height_diff(a->right) >= 0) {
 		a = array_tree_rotate_left_single(a);
 	    } else {
 		a = array_tree_rotate_left_double(a);
 	    }
-	} else if (array_tree_height_diff(AVL_LF(a)) <= 0) {
+	} else if (array_tree_height_diff(a->left) <= 0) {
 	    a = array_tree_rotate_right_single(a);
 	} else {
 	    a = array_tree_rotate_right_double(a);
@@ -311,8 +296,7 @@ array_tree_balance_node(array_tree * a)
     return a;
 }
 
-/*@-nullret -mustfreeonly =branchstate@*/
-array_tree *
+static array_tree *
 array_tree_alloc_node(array_iter * key)
 {
     array_tree *new_node;
@@ -324,29 +308,26 @@ array_tree_alloc_node(array_iter * key)
 	abort();
     }
 
-    AVL_LF(new_node) = NULL;
-    AVL_RT(new_node) = NULL;
+    new_node->left = NULL;
+    new_node->right = NULL;
     new_node->height = 1;
 
-    copyinst(key, AVL_KEY(new_node));
+    copyinst(key, &(new_node->key));
     new_node->data.type = PROG_INTEGER;
     new_node->data.data.number = 0;
     return new_node;
 }
 
-/*@=nullret =mustfreeonly@*/
-
-void
+static void
 array_tree_free_node(array_tree * p)
 {
-    assert(AVL_LF(p) == NULL);
-    assert(AVL_RT(p) == NULL);
-    CLEAR(AVL_KEY(p));
-    CLEAR(&p->data);
+    assert(p->left == NULL);
+    assert(p->right == NULL);
+    CLEAR(&(p->key));
+    CLEAR(&(p->data));
     free(p);
 }
 
-/*@-usereleased -compdef@*/
 static array_tree *
 array_tree_insert(array_tree ** avl, array_iter * key)
 {
@@ -360,11 +341,11 @@ array_tree_insert(array_tree ** avl, array_iter * key)
     assert(key != NULL);
 
     if (p) {
-	cmp = AVL_COMPARE(key, AVL_KEY(p));
+	cmp = array_tree_compare(key, &(p->key), 0);
 	if (cmp > 0) {
-	    ret = array_tree_insert(&(AVL_RT(p)), key);
+	    ret = array_tree_insert(&(p->right), key);
 	} else if (cmp < 0) {
-	    ret = array_tree_insert(&(AVL_LF(p)), key);
+	    ret = array_tree_insert(&(p->left), key);
 	} else {
 	    balancep = 0;
 	    return (p);
@@ -380,14 +361,12 @@ array_tree_insert(array_tree ** avl, array_iter * key)
     }
 }
 
-/*@=usereleased =compdef@*/
-
 static array_tree *
 array_tree_getmax(array_tree * avl)
 {
     assert(avl != NULL);
-    if (avl && AVL_RT(avl))
-	return array_tree_getmax(AVL_RT(avl));
+    if (avl && avl->right)
+	return array_tree_getmax(avl->right);
     return avl;
 }
 
@@ -405,34 +384,33 @@ array_tree_remove_node(array_iter * key, array_tree ** root)
 
     save = avl;
     if (avl) {
-	cmpval = AVL_COMPARE(key, AVL_KEY(avl));
+	cmpval = array_tree_compare(key, &(avl->key), 0);
 	if (cmpval < 0) {
-	    save = array_tree_remove_node(key, &AVL_LF(avl));
+	    save = array_tree_remove_node(key, &(avl->left));
 	} else if (cmpval > 0) {
-	    save = array_tree_remove_node(key, &AVL_RT(avl));
-	} else if (!(AVL_LF(avl))) {
-	    avl = AVL_RT(avl);
-	} else if (!(AVL_RT(avl))) {
-	    avl = AVL_LF(avl);
+	    save = array_tree_remove_node(key, &(avl->right));
+	} else if (!(avl->left)) {
+	    avl = avl->right;
+	} else if (!(avl->right)) {
+	    avl = avl->left;
 	} else {
-	    tmp = array_tree_remove_node(AVL_KEY(array_tree_getmax(AVL_LF(avl))),
-					 &AVL_LF(avl));
+	    tmp = array_tree_remove_node(&((array_tree_getmax(avl->left))->key),
+					 &(avl->left));
 	    if (!tmp) {		/* this shouldn't be possible. */
 		panic("array_tree_remove_node() returned NULL !");
 	    }
-	    AVL_LF(tmp) = AVL_LF(avl);
-	    AVL_RT(tmp) = AVL_RT(avl);
+	    tmp->left = avl->left;
+	    tmp->right = avl->right;
 	    avl = tmp;
 	}
 	if (save) {
-	    AVL_LF(save) = NULL;
-	    AVL_RT(save) = NULL;
+	    save->left = NULL;
+	    save->right = NULL;
 	}
 	*root = array_tree_balance_node(avl);
     }
     return save;
 }
-
 
 static array_tree *
 array_tree_delete(array_iter * key, array_tree * avl)
@@ -447,47 +425,43 @@ array_tree_delete(array_iter * key, array_tree * avl)
     return avl;
 }
 
-
-void
+static void
 array_tree_delete_all(array_tree * p)
 {
     if (p == NULL)
 	return;
-    array_tree_delete_all(AVL_LF(p));
-    AVL_LF(p) = NULL;
-    array_tree_delete_all(AVL_RT(p));
-    AVL_RT(p) = NULL;
+    array_tree_delete_all(p->left);
+    p->left = NULL;
+    array_tree_delete_all(p->right);
+    p->right = NULL;
     array_tree_free_node(p);
 }
 
-
-array_tree *
+static array_tree *
 array_tree_first_node(array_tree * list)
 {
     if (list == NULL)
 	return ((array_tree *) NULL);
 
-    while (AVL_LF(list))
-	list = AVL_LF(list);
+    while (list->left)
+	list = list->left;
 
     return (list);
 }
 
-
-array_tree *
+static array_tree *
 array_tree_last_node(array_tree * list)
 {
     if (!list)
 	return NULL;
 
-    while (AVL_RT(list))
-	list = AVL_RT(list);
+    while (list->right)
+	list = list->right;
 
     return (list);
 }
 
-
-array_tree *
+static array_tree *
 array_tree_prev_node(array_tree * ptr, array_iter * key)
 {
     array_tree *from;
@@ -497,27 +471,25 @@ array_tree_prev_node(array_tree * ptr, array_iter * key)
 	return NULL;
     if (key == NULL)
 	return NULL;
-    cmpval = AVL_COMPARE(key, AVL_KEY(ptr));
+    cmpval = array_tree_compare(key, &(ptr->key), 0);
     if (cmpval > 0) {
-	from = array_tree_prev_node(AVL_RT(ptr), key);
+	from = array_tree_prev_node(ptr->right, key);
 	if (from)
 	    return from;
 	return ptr;
     } else if (cmpval < 0) {
-	return array_tree_prev_node(AVL_LF(ptr), key);
-    } else if (AVL_LF(ptr)) {
-	from = AVL_LF(ptr);
-	while (AVL_RT(from))
-	    from = AVL_RT(from);
+	return array_tree_prev_node(ptr->left, key);
+    } else if (ptr->left) {
+	from = ptr->left;
+	while (from->right)
+	    from = from->right;
 	return from;
     } else {
 	return NULL;
     }
 }
 
-
-
-array_tree *
+static array_tree *
 array_tree_next_node(array_tree * ptr, array_iter * key)
 {
     array_tree *from;
@@ -527,25 +499,23 @@ array_tree_next_node(array_tree * ptr, array_iter * key)
 	return NULL;
     if (key == NULL)
 	return NULL;
-    cmpval = AVL_COMPARE(key, AVL_KEY(ptr));
+    cmpval = array_tree_compare(key, &(ptr->key), 0);
     if (cmpval < 0) {
-	from = array_tree_next_node(AVL_LF(ptr), key);
+	from = array_tree_next_node(ptr->left, key);
 	if (from)
 	    return from;
 	return ptr;
     } else if (cmpval > 0) {
-	return array_tree_next_node(AVL_RT(ptr), key);
-    } else if (AVL_RT(ptr)) {
-	from = AVL_RT(ptr);
-	while (AVL_LF(from))
-	    from = AVL_LF(from);
+	return array_tree_next_node(ptr->right, key);
+    } else if (ptr->right) {
+	from = ptr->right;
+	while (from->left)
+	    from = from->left;
 	return from;
     } else {
 	return NULL;
     }
 }
-
-
 
 /*****************************************************************
  *  Stack Array Handling Routines
@@ -570,7 +540,6 @@ new_array(void)
 
     return nu;
 }
-
 
 stk_array *
 new_array_packed(int size)
@@ -600,7 +569,6 @@ new_array_packed(int size)
     return nu;
 }
 
-
 stk_array *
 new_array_dictionary(void)
 {
@@ -612,7 +580,6 @@ new_array_dictionary(void)
     return nu;
 }
 
-
 void
 array_set_pinned(stk_array * arr, int pinned)
 {
@@ -623,7 +590,6 @@ array_set_pinned(stk_array * arr, int pinned)
 	arr->pinned = pinned;
     }
 }
-
 
 stk_array *
 array_decouple(stk_array * arr)
@@ -672,34 +638,6 @@ array_decouple(stk_array * arr)
     return NULL;
 }
 
-
-stk_array *
-array_promote(stk_array * arr)
-{
-    stk_array *nu;
-    array_iter idx;
-
-    if (arr == NULL) {
-	return NULL;
-    }
-    if (arr->type != ARRAY_PACKED) {
-	return NULL;
-    }
-
-    nu = new_array_dictionary();
-    assert(nu != NULL);
-
-    idx.type = PROG_INTEGER;
-    for (int i = 0; i < arr->items; i++) {
-	idx.data.number = i;
-	array_setitem(&nu, &idx, array_getitem(arr, &idx));
-    }
-    array_free(arr);
-
-    return nu;
-}
-
-
 void
 array_free(stk_array * arr)
 {
@@ -733,7 +671,6 @@ array_free(stk_array * arr)
     free(arr);
 }
 
-
 int
 array_count(stk_array * arr)
 {
@@ -743,16 +680,6 @@ array_count(stk_array * arr)
     return arr->items;
 }
 
-
-int
-array_idxcmp(array_iter * a, array_iter * b)
-{
-    assert(a != NULL);
-    assert(b != NULL);
-    return array_tree_compare(a, b, 0);
-}
-
-
 int
 array_idxcmp_case(array_iter * a, array_iter * b, int case_sens)
 {
@@ -760,76 +687,6 @@ array_idxcmp_case(array_iter * a, array_iter * b, int case_sens)
     assert(b != NULL);
     return array_tree_compare(a, b, case_sens);
 }
-
-
-int
-array_contains_key(stk_array * arr, array_iter * item)
-{
-    assert(item != NULL);
-    if ((arr == NULL) || (arr->items == 0)) {
-	return 0;
-    }
-    switch (arr->type) {
-    case ARRAY_PACKED:{
-	    if (item->type != PROG_INTEGER) {
-		return 0;
-	    }
-	    if (item->data.number >= 0 && item->data.number < arr->items) {
-		return 1;
-	    }
-	    return 0;
-	}
-    case ARRAY_DICTIONARY:{
-	    if (array_tree_find(arr->data.dict, item)) {
-		return 1;
-	    }
-	    return 0;
-	}
-    default:{
-	    break;
-	}
-    }
-    return 0;
-}
-
-
-int
-array_contains_value(stk_array * arr, array_data * item)
-{
-    assert(item != NULL);
-    if ((arr == NULL) || (arr->items == 0)) {
-	return 0;
-    }
-    switch (arr->type) {
-    case ARRAY_PACKED:{
-	    for (int i = arr->items; i-- > 0;) {
-		if (!array_tree_compare(&arr->data.packed[i], item, 0)) {
-		    return 1;
-		}
-	    }
-	    return 0;
-	}
-    case ARRAY_DICTIONARY:{
-	    array_tree *p;
-
-	    p = array_tree_first_node(arr->data.dict);
-	    if (p == NULL)
-		return 0;
-	    while (p) {
-		if (!array_tree_compare(&p->data, item, 0)) {
-		    return 1;
-		}
-		p = array_tree_next_node(arr->data.dict, &p->data);
-	    }
-	    return 0;
-	}
-    default:{
-	    break;
-	}
-    }
-    return 0;
-}
-
 
 int
 array_first(stk_array * arr, array_iter * item)
@@ -860,7 +717,6 @@ array_first(stk_array * arr, array_iter * item)
     return 0;
 }
 
-
 int
 array_last(stk_array * arr, array_iter * item)
 {
@@ -889,7 +745,6 @@ array_last(stk_array * arr, array_iter * item)
     }
     return 0;
 }
-
 
 int
 array_prev(stk_array * arr, array_iter * item)
@@ -941,7 +796,6 @@ array_prev(stk_array * arr, array_iter * item)
     return 0;
 }
 
-
 int
 array_next(stk_array * arr, array_iter * item)
 {
@@ -992,7 +846,6 @@ array_next(stk_array * arr, array_iter * item)
     return 0;
 }
 
-
 array_data *
 array_getitem(stk_array * arr, array_iter * idx)
 {
@@ -1024,7 +877,6 @@ array_getitem(stk_array * arr, array_iter * idx)
     }
     return NULL;
 }
-
 
 int
 array_setitem(stk_array ** harr, array_iter * idx, array_data * item)
@@ -1093,8 +945,6 @@ array_setitem(stk_array ** harr, array_iter * idx, array_data * item)
     return -1;
 }
 
-
-
 int
 array_insertitem(stk_array ** harr, array_iter * idx, array_data * item)
 {
@@ -1160,8 +1010,6 @@ array_insertitem(stk_array ** harr, array_iter * idx, array_data * item)
     return -1;
 }
 
-
-
 int
 array_appenditem(stk_array ** harr, array_data * item)
 {
@@ -1180,8 +1028,6 @@ array_appenditem(stk_array ** harr, array_data * item)
 
     return array_setitem(harr, &key, item);
 }
-
-
 
 stk_array *
 array_getrange(stk_array * arr, array_iter * start, array_iter * end)
@@ -1240,7 +1086,6 @@ array_getrange(stk_array * arr, array_iter * start, array_iter * end)
 	}
 
     case ARRAY_DICTIONARY:{
-	    /* stk_array *nu; *//* Redundant */
 	    array_tree *s;
 	    array_tree *e;
 
@@ -1270,13 +1115,11 @@ array_getrange(stk_array * arr, array_iter * start, array_iter * end)
 	    }
 	    return nu;
 	}
-	/* FALLTHRU */
     default:
 	break;
     }
     return NULL;
 }
-
 
 int
 array_setrange(stk_array ** harr, array_iter * start, stk_array * inarr)
@@ -1338,7 +1181,6 @@ array_setrange(stk_array ** harr, array_iter * start, stk_array * inarr)
     }
     return -1;
 }
-
 
 int
 array_insertrange(stk_array ** harr, array_iter * start, stk_array * inarr)
@@ -1423,7 +1265,6 @@ array_insertrange(stk_array ** harr, array_iter * start, stk_array * inarr)
     }
     return -1;
 }
-
 
 int
 array_delrange(stk_array ** harr, array_iter * start, array_iter * end)
@@ -1537,7 +1378,6 @@ array_delrange(stk_array ** harr, array_iter * start, array_iter * end)
     return -1;
 }
 
-
 int
 array_delitem(stk_array ** harr, array_iter * item)
 {
@@ -1553,16 +1393,6 @@ array_delitem(stk_array ** harr, array_iter * item)
     CLEAR(&idx);
     return result;
 }
-
-
-/*\
-|*| Must not code b-trees, must not code b-trees...
-\*/
-
-/*\
-|*| I use 4-space tabs, darn it.
-\*/
-
 
 /*\
 |*| array_demote_only
@@ -1650,8 +1480,6 @@ array_mash(stk_array * arr_in, stk_array ** mash, int value)
     }
 }
 
-
-
 int
 array_is_homogenous(stk_array * arr, int typ)
 {
@@ -1671,10 +1499,6 @@ array_is_homogenous(stk_array * arr, int typ)
     }
     return (!failedflag);
 }
-
-
-
-/**** STRKEY ****/
 
 int
 array_set_strkey(stk_array ** harr, const char *key, struct inst *val)
@@ -1780,31 +1604,6 @@ array_set_strkey_refval(stk_array ** harr, const char *key, dbref val)
 }
 
 int
-array_set_strkey_arrval(stk_array ** harr, const char *key, stk_array * val)
-{
-    struct inst value;
-    int result;
-
-    assert(harr != NULL);
-    assert(*harr != NULL);
-    assert(key != NULL);
-    assert(val != NULL);
-
-    value.type = PROG_ARRAY;
-    value.data.array = val;
-
-    result = array_set_strkey(harr, key, &value);
-
-    CLEAR(&value);
-
-    return result;
-}
-
-
-
-/**** INTKEY ****/
-
-int
 array_set_intkey(stk_array ** harr, int key, struct inst *val)
 {
     struct inst name;
@@ -1820,44 +1619,6 @@ array_set_intkey(stk_array ** harr, int key, struct inst *val)
     result = array_setitem(harr, &name, val);
 
     CLEAR(&name);
-
-    return result;
-}
-
-int
-array_set_intkey_intval(stk_array ** harr, int key, int val)
-{
-    struct inst value;
-    int result;
-
-    assert(harr != NULL);
-    assert(*harr != NULL);
-
-    value.type = PROG_INTEGER;
-    value.data.number = val;
-
-    result = array_set_intkey(harr, key, &value);
-
-    CLEAR(&value);
-
-    return result;
-}
-
-int
-array_set_intkey_fltval(stk_array ** harr, int key, double val)
-{
-    struct inst value;
-    int result;
-
-    assert(harr != NULL);
-    assert(*harr != NULL);
-
-    value.type = PROG_FLOAT;
-    value.data.fnumber = val;
-
-    result = array_set_intkey(harr, key, &value);
-
-    CLEAR(&value);
 
     return result;
 }
@@ -1902,27 +1663,6 @@ array_set_intkey_strval(stk_array ** harr, int key, const char *val)
     return result;
 }
 
-int
-array_set_intkey_arrval(stk_array ** harr, int key, stk_array * val)
-{
-    struct inst value;
-    int result;
-
-    assert(harr != NULL);
-    assert(*harr != NULL);
-    assert(val != NULL);
-
-    value.type = PROG_ARRAY;
-    value.data.array = val;
-
-    result = array_set_intkey(harr, key, &value);
-
-    CLEAR(&value);
-
-    return result;
-}
-
-
 char *
 array_get_intkey_strval(stk_array * arr, int key)
 {
@@ -1947,110 +1687,3 @@ array_get_intkey_strval(stk_array * arr, int key)
     }
 }
 
-
-
-
-/**** KEY-VAL ****/
-
-int
-array_set_strval(stk_array ** harr, struct inst *key, const char *val)
-{
-    struct inst value;
-    int result;
-
-    assert(harr != NULL);
-    assert(*harr != NULL);
-    assert(key != NULL);
-    assert(val != NULL);
-
-    value.type = PROG_STRING;
-    value.data.string = alloc_prog_string(val);
-
-    result = array_setitem(harr, key, &value);
-
-    CLEAR(&value);
-
-    return result;
-}
-
-int
-array_set_intval(stk_array ** harr, struct inst *key, int val)
-{
-    struct inst value;
-    int result;
-
-    assert(harr != NULL);
-    assert(*harr != NULL);
-    assert(key != NULL);
-
-    value.type = PROG_INTEGER;
-    value.data.number = val;
-
-    result = array_setitem(harr, key, &value);
-
-    CLEAR(&value);
-
-    return result;
-}
-
-int
-array_set_fltval(stk_array ** harr, struct inst *key, double val)
-{
-    struct inst value;
-    int result;
-
-    assert(harr != NULL);
-    assert(*harr != NULL);
-    assert(key != NULL);
-
-    value.type = PROG_FLOAT;
-    value.data.fnumber = val;
-
-    result = array_setitem(harr, key, &value);
-
-    CLEAR(&value);
-
-    return result;
-}
-
-int
-array_set_refval(stk_array ** harr, struct inst *key, dbref val)
-{
-    struct inst value;
-    int result;
-
-    assert(harr != NULL);
-    assert(*harr != NULL);
-    assert(key != NULL);
-    assert((int) val > -4);
-
-    value.type = PROG_OBJECT;
-    value.data.objref = val;
-
-    result = array_setitem(harr, key, &value);
-
-    CLEAR(&value);
-
-    return result;
-}
-
-int
-array_set_arrval(stk_array ** harr, struct inst *key, stk_array * val)
-{
-    struct inst value;
-    int result;
-
-    assert(harr != NULL);
-    assert(*harr != NULL);
-    assert(key != NULL);
-    assert(val != NULL);
-
-    value.type = PROG_ARRAY;
-    value.data.array = val;
-
-    result = array_setitem(harr, key, &value);
-
-    CLEAR(&value);
-
-    return result;
-}

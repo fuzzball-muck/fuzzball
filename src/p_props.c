@@ -58,7 +58,6 @@ prop_write_perms(dbref player, dbref obj, const char *name, int mlev)
     return 1;
 }
 
-
 void
 prim_getpropval(PRIM_PROTOTYPE)
 {
@@ -141,7 +140,6 @@ prim_getpropfval(PRIM_PROTOTYPE)
     PushFloat(fresult);
 }
 
-
 void
 prim_getprop(PRIM_PROTOTYPE)
 {
@@ -221,7 +219,6 @@ prim_getprop(PRIM_PROTOTYPE)
     }
 }
 
-
 void
 prim_getpropstr(PRIM_PROTOTYPE)
 {
@@ -297,7 +294,6 @@ prim_getpropstr(PRIM_PROTOTYPE)
     PushString(temp);
 }
 
-
 void
 prim_remove_prop(PRIM_PROTOTYPE)
 {
@@ -340,7 +336,6 @@ prim_remove_prop(PRIM_PROTOTYPE)
     CLEAR(oper1);
     CLEAR(oper2);
 }
-
 
 void
 prim_envprop(PRIM_PROTOTYPE)
@@ -416,7 +411,6 @@ prim_envprop(PRIM_PROTOTYPE)
 	}
     }
 }
-
 
 void
 prim_envpropstr(PRIM_PROTOTYPE)
@@ -496,8 +490,6 @@ prim_envpropstr(PRIM_PROTOTYPE)
     }
 }
 
-
-
 void
 prim_blessprop(PRIM_PROTOTYPE)
 {
@@ -544,7 +536,6 @@ prim_blessprop(PRIM_PROTOTYPE)
     CLEAR(oper2);
 }
 
-
 void
 prim_unblessprop(PRIM_PROTOTYPE)
 {
@@ -590,7 +581,6 @@ prim_unblessprop(PRIM_PROTOTYPE)
     CLEAR(oper1);
     CLEAR(oper2);
 }
-
 
 void
 prim_setprop(PRIM_PROTOTYPE)
@@ -671,7 +661,6 @@ prim_setprop(PRIM_PROTOTYPE)
     CLEAR(oper3);
 }
 
-
 void
 prim_addprop(PRIM_PROTOTYPE)
 {
@@ -734,8 +723,6 @@ prim_addprop(PRIM_PROTOTYPE)
     CLEAR(oper4);
 }
 
-
-
 void
 prim_nextprop(PRIM_PROTOTYPE)
 {
@@ -789,7 +776,6 @@ prim_nextprop(PRIM_PROTOTYPE)
     }
 }
 
-
 void
 prim_propdirp(PRIM_PROTOTYPE)
 {
@@ -821,8 +807,6 @@ prim_propdirp(PRIM_PROTOTYPE)
 
     PushInt(result);
 }
-
-
 
 void
 prim_parseprop(PRIM_PROTOTYPE)
@@ -903,8 +887,6 @@ prim_parseprop(PRIM_PROTOTYPE)
 	PushNullStr;
     }
 }
-
-
 
 void
 prim_array_filter_prop(PRIM_PROTOTYPE)
@@ -999,7 +981,6 @@ prim_array_filter_prop(PRIM_PROTOTYPE)
     PushArrayRaw(nu);
 }
 
-
 void
 prim_reflist_find(PRIM_PROTOTYPE)
 {
@@ -1027,7 +1008,6 @@ prim_reflist_find(PRIM_PROTOTYPE)
     PushInt(result);
 }
 
-
 void
 prim_reflist_add(PRIM_PROTOTYPE)
 {
@@ -1054,7 +1034,6 @@ prim_reflist_add(PRIM_PROTOTYPE)
     CLEAR(oper3);
 }
 
-
 void
 prim_reflist_del(PRIM_PROTOTYPE)
 {
@@ -1080,7 +1059,6 @@ prim_reflist_del(PRIM_PROTOTYPE)
     CLEAR(oper2);
     CLEAR(oper3);
 }
-
 
 void
 prim_blessedp(PRIM_PROTOTYPE)

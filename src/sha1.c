@@ -18,12 +18,6 @@
 # endif
 #endif
 
-
-void sha1_init(sha1nfo * s);
-uint8_t *sha1_result(sha1nfo * s);
-void hash2hex(uint8_t * hash, char *buffer, size_t buflen);
-
-
 /* K values for SHA1 */
 #define SHA1_K0  0x5a827999
 #define SHA1_K20 0x6ed9eba1
@@ -44,14 +38,14 @@ sha1_init(sha1nfo * s)
 }
 
 /* Roll bits */
-uint32_t
+static uint32_t
 sha1_rol32(uint32_t number, uint8_t bits)
 {
     return ((number << bits) | (number >> (32 - bits)));
 }
 
 /* Hash the data in the block */
-void
+static void
 sha1_hashBlock(sha1nfo * s)
 {
     uint32_t a, b, c, d, e, t;
@@ -92,7 +86,7 @@ sha1_hashBlock(sha1nfo * s)
 }
 
 /* Used to add single bytes of data in case of padding */
-void
+static void
 sha1_addUncounted(sha1nfo * s, uint8_t data)
 {
     uint8_t *const b = (uint8_t *) s->buffer;
@@ -125,7 +119,7 @@ sha1_write(sha1nfo * s, const char *data, size_t len)
 }
 
 /* Pad if not enough data when finalized */
-void
+static void
 sha1_pad(sha1nfo * s)
 {
     // Implement SHA-1 padding

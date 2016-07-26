@@ -2,7 +2,7 @@
 
 #ifdef SOLARIS
 #  ifndef _POSIX_SOURCE
-#    define _POSIX_SOURCE	/* Solaris needs this */
+#    define _POSIX_SOURCE	/* Solaris needs this */ 
 #  endif
 #endif
 
@@ -17,7 +17,7 @@
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 
-#define NUM_THREADS     5
+#define NUM_THREADS 5
 
 /*
  * SunOS can't include signal.h and sys/signal.h, stupid broken OS.
@@ -26,26 +26,19 @@
 # include <sys/signal.h>
 #endif
 
-
-
 /* number of hostnames cached in an LRU queue */
 #define HOST_CACHE_SIZE 8192
 
-/* Time before retrying to resolve a previously unresolved IP address. */
-/* 1800 seconds == 30 minutes */
+/* Time before retrying to resolve a previously unresolved IP address. */ /* 1800 seconds == 30 minutes */
 #define EXPIRE_TIME 1800
 
 /* Time before the resolver gives up on a identd lookup.  Prevents hangs. */
 #define IDENTD_TIMEOUT 60
 
-
 /*
  * Like strncpy, except it guarentees null termination of the result string.
  * It also has a more sensible argument ordering.
- */
-char *
-strcpyn(char *buf, size_t bufsize, const char *src)
-{
+ */ char * strcpyn(char *buf, size_t bufsize, const char *src) {
     size_t pos = 0;
     char *dest = buf;
 
@@ -56,25 +49,16 @@ strcpyn(char *buf, size_t bufsize, const char *src)
     return buf;
 }
 
-int
-notify(int player, const char *msg)
-{
+int notify(int player, const char *msg) {
     return printf("%s\n", msg);
 }
 
-#ifdef USE_IPV6
-const char *addrout_v6(struct in6_addr *, unsigned short, unsigned short);
-#endif
-const char *addrout(long, unsigned short, unsigned short);
-
-
-#define MALLOC(result, type, number) do {   \
+#define MALLOC(result, type, number) do { \
                                        if (!((result) = (type *) malloc ((number) * sizeof (type)))) \
-                                       abort();                             \
+                                       abort(); \
                                      } while (0)
 
 #define FREE(x) (free((void *) x))
-
 
 static struct hostcache {
 #ifdef USE_IPV6
@@ -87,12 +71,44 @@ static struct hostcache {
     struct hostcache **prev;
 } *hostcache_list = 0;
 
+void hostprune(void) {
+    struct hostcache *ptr;
+    struct hostcache *tmp;
+    int i = HOST_CACHE_SIZE;
 
+    ptr = hostcache_list;
+    while (i-- && ptr) {
+	ptr = ptr->next;
+    }
+    if (i < 0 && ptr) {
+	*ptr->prev = NULL;
+	while (ptr) {
+	    tmp = ptr->next;
+	    FREE(ptr);
+	    ptr = tmp;
+	}
+    }
+}
+
+void make_nonblocking(int s) {
+#if !defined(O_NONBLOCK) || defined(ULTRIX)
+# ifdef FNDELAY			/* SUN OS */
+#  define O_NONBLOCK FNDELAY
+# else
+#  ifdef O_NDELAY		/* SyseVil */
+#   define O_NONBLOCK O_NDELAY
+#  endif			/* O_NDELAY */
+# endif				/* FNDELAY */ 
+#endif
+
+    if (fcntl(s, F_SETFL, O_NONBLOCK) == -1) {
+	perror("make_nonblocking: fcntl");
+	abort();
+    }
+}
 
 #ifdef USE_IPV6
-int
-ipcmp(struct in6_addr *a, struct in6_addr *b)
-{
+int ipcmp(struct in6_addr *a, struct in6_addr *b) {
     int i = 128;
     char *A = (char *) a;
     char *B = (char *) b;
@@ -104,14 +120,8 @@ ipcmp(struct in6_addr *a, struct in6_addr *b)
     }
     return i;
 }
-#endif
 
-
-
-#ifdef USE_IPV6
-void
-hostdel_v6(struct in6_addr *ip)
-{
+void hostdel_v6(struct in6_addr *ip) {
     struct hostcache *ptr;
 
     for (ptr = hostcache_list; ptr; ptr = ptr->next) {
@@ -125,33 +135,8 @@ hostdel_v6(struct in6_addr *ip)
 	}
     }
 }
-#endif
 
-
-
-void
-hostdel(long ip)
-{
-    struct hostcache *ptr;
-
-    for (ptr = hostcache_list; ptr; ptr = ptr->next) {
-	if (ptr->ipnum == ip) {
-	    if (ptr->next) {
-		ptr->next->prev = ptr->prev;
-	    }
-	    *ptr->prev = ptr->next;
-	    FREE(ptr);
-	    return;
-	}
-    }
-}
-
-
-
-#ifdef USE_IPV6
-const char *
-hostfetch_v6(struct in6_addr *ip)
-{
+const char * hostfetch_v6(struct in6_addr *ip) {
     struct hostcache *ptr;
 
     for (ptr = hostcache_list; ptr; ptr = ptr->next) {
@@ -177,68 +162,8 @@ hostfetch_v6(struct in6_addr *ip)
     }
     return NULL;
 }
-#endif
 
-
-
-const char *
-hostfetch(long ip)
-{
-    struct hostcache *ptr;
-
-    for (ptr = hostcache_list; ptr; ptr = ptr->next) {
-	if (ptr->ipnum == ip) {
-	    if (time(NULL) - ptr->time > EXPIRE_TIME) {
-		hostdel(ip);
-		return NULL;
-	    }
-	    if (ptr != hostcache_list) {
-		*ptr->prev = ptr->next;
-		if (ptr->next) {
-		    ptr->next->prev = ptr->prev;
-		}
-		ptr->next = hostcache_list;
-		if (ptr->next) {
-		    ptr->next->prev = &ptr->next;
-		}
-		ptr->prev = &hostcache_list;
-		hostcache_list = ptr;
-	    }
-	    return (ptr->name);
-	}
-    }
-    return NULL;
-}
-
-
-
-void
-hostprune(void)
-{
-    struct hostcache *ptr;
-    struct hostcache *tmp;
-    int i = HOST_CACHE_SIZE;
-
-    ptr = hostcache_list;
-    while (i-- && ptr) {
-	ptr = ptr->next;
-    }
-    if (i < 0 && ptr) {
-	*ptr->prev = NULL;
-	while (ptr) {
-	    tmp = ptr->next;
-	    FREE(ptr);
-	    ptr = tmp;
-	}
-    }
-}
-
-
-
-#ifdef USE_IPV6
-void
-hostadd_v6(struct in6_addr *ip, const char *name)
-{
+void hostadd_v6(struct in6_addr *ip, const char *name) {
     struct hostcache *ptr;
 
     MALLOC(ptr, struct hostcache, 1);
@@ -255,146 +180,13 @@ hostadd_v6(struct in6_addr *ip, const char *name)
     strcpyn(ptr->name, sizeof(ptr->name), name);
     hostprune();
 }
-#endif
 
-
-void
-hostadd(long ip, const char *name)
-{
-    struct hostcache *ptr;
-
-    MALLOC(ptr, struct hostcache, 1);
-
-    ptr->next = hostcache_list;
-    if (ptr->next) {
-	ptr->next->prev = &ptr->next;
-    }
-    ptr->prev = &hostcache_list;
-    hostcache_list = ptr;
-#ifdef USE_IPV6
-    memset(&(ptr->ipnum_v6), 0, sizeof(struct in6_addr));
-#endif
-    ptr->ipnum = ip;
-    ptr->time = 0;
-    strcpyn(ptr->name, sizeof(ptr->name), name);
-    hostprune();
-}
-
-
-#ifdef USE_IPV6
-void
-hostadd_timestamp_v6(struct in6_addr *ip, const char *name)
-{
+void hostadd_timestamp_v6(struct in6_addr *ip, const char *name) {
     hostadd_v6(ip, name);
     hostcache_list->time = time(NULL);
 }
-#endif
 
-
-
-
-void
-hostadd_timestamp(long ip, const char *name)
-{
-    hostadd(ip, name);
-    hostcache_list->time = time(NULL);
-}
-
-
-
-
-
-
-
-
-void set_signals(void);
-
-#ifdef _POSIX_VERSION
-void our_signal(int signo, void (*sighandler) (int));
-#else
-# define our_signal(s,f) signal((s),(f))
-#endif
-
-/*
- * our_signal(signo, sighandler)
- *
- * signo      - Signal #, see defines in signal.h
- * sighandler - The handler function desired.
- *
- * Calls sigaction() to set a signal, if we are posix.
- */
-#ifdef _POSIX_VERSION
-void
-our_signal(int signo, void (*sighandler) (int))
-{
-    struct sigaction act, oact;
-
-    act.sa_handler = sighandler;
-    sigemptyset(&act.sa_mask);
-    act.sa_flags = 0;
-
-    /* Restart long system calls if a signal is caught. */
-#ifdef SA_RESTART
-    act.sa_flags |= SA_RESTART;
-#endif
-
-    /* Make it so */
-    sigaction(signo, &act, &oact);
-}
-
-#endif				/* _POSIX_VERSION */
-
-/*
- * set_signals()
- * set_sigs_intern(bail)
- *
- * Traps a bunch of signals and reroutes them to various
- * handlers. Mostly bailout.
- *
- * If called from bailout, then reset all to default.
- *
- * Called from main() and bailout()
- */
-
-void
-set_signals(void)
-{
-    /* we don't care about SIGPIPE, we notice it in select() and write() */
-    our_signal(SIGPIPE, SIG_IGN);
-
-    /* didn't manage to lose that control tty, did we? Ignore it anyway. */
-    our_signal(SIGHUP, SIG_IGN);
-}
-
-
-
-
-
-
-void
-make_nonblocking(int s)
-{
-#if !defined(O_NONBLOCK) || defined(ULTRIX)	/* POSIX ME HARDER */
-# ifdef FNDELAY			/* SUN OS */
-#  define O_NONBLOCK FNDELAY
-# else
-#  ifdef O_NDELAY		/* SyseVil */
-#   define O_NONBLOCK O_NDELAY
-#  endif			/* O_NDELAY */
-# endif				/* FNDELAY */
-#endif
-
-    if (fcntl(s, F_SETFL, O_NONBLOCK) == -1) {
-	perror("make_nonblocking: fcntl");
-	abort();
-    }
-}
-
-
-#ifdef USE_IPV6
-const char *
-get_username_v6(struct in6_addr *a, int prt, int myprt)
-{
+const char * get_username_v6(struct in6_addr *a, int prt, int myprt) {
     int fd, len, result;
     char *ptr, *ptr2;
     static char buf[1024];
@@ -486,12 +278,176 @@ get_username_v6(struct in6_addr *a, int prt, int myprt)
     close(fd);
     return (0);
 }
+
+/* addrout_v6 -- Translate address 'a' to text.  */
+const char * addrout_v6(struct in6_addr *a, unsigned short prt, unsigned short myprt) {
+    static char buf[128];
+    char tmpbuf[128];
+    const char *ptr, *ptr2;
+    struct hostent *he;
+
+    struct in6_addr addr;
+    memcpy(&addr.s6_addr, a, sizeof(struct in6_addr));
+
+    ptr = hostfetch_v6(a);
+
+    if (ptr) {
+	ptr2 = get_username_v6(a, prt, myprt);
+	if (ptr2) {
+	    snprintf(buf, sizeof(buf), "%s(%s)", ptr, ptr2);
+	} else {
+	    snprintf(buf, sizeof(buf), "%s(%d)", ptr, prt);
+	}
+	return buf;
+    }
+    he = gethostbyaddr(((char *) &addr), sizeof(addr), AF_INET6);
+
+    if (he) {
+	strcpyn(tmpbuf, sizeof(tmpbuf), he->h_name);
+	hostadd_v6(a, tmpbuf);
+	ptr = get_username_v6(a, prt, myprt);
+	if (ptr) {
+	    snprintf(buf, sizeof(buf), "%s(%s)", tmpbuf, ptr);
+	} else {
+	    snprintf(buf, sizeof(buf), "%s(%d)", tmpbuf, prt);
+	}
+	return buf;
+    }
+    inet_ntop(AF_INET6, a, tmpbuf, 128);
+    hostadd_timestamp_v6(a, tmpbuf);
+    ptr = get_username_v6(a, prt, myprt);
+
+    if (ptr) {
+	snprintf(buf, sizeof(buf), "%s(%s)", tmpbuf, ptr);
+    } else {
+	snprintf(buf, sizeof(buf), "%s(%d)", tmpbuf, prt);
+    }
+    return buf;
+}
 #endif
 
+void hostdel(long ip) {
+    struct hostcache *ptr;
 
-const char *
-get_username(long a, int prt, int myprt)
-{
+    for (ptr = hostcache_list; ptr; ptr = ptr->next) {
+	if (ptr->ipnum == ip) {
+	    if (ptr->next) {
+		ptr->next->prev = ptr->prev;
+	    }
+	    *ptr->prev = ptr->next;
+	    FREE(ptr);
+	    return;
+	}
+    }
+}
+
+const char * hostfetch(long ip) {
+    struct hostcache *ptr;
+
+    for (ptr = hostcache_list; ptr; ptr = ptr->next) {
+	if (ptr->ipnum == ip) {
+	    if (time(NULL) - ptr->time > EXPIRE_TIME) {
+		hostdel(ip);
+		return NULL;
+	    }
+	    if (ptr != hostcache_list) {
+		*ptr->prev = ptr->next;
+		if (ptr->next) {
+		    ptr->next->prev = ptr->prev;
+		}
+		ptr->next = hostcache_list;
+		if (ptr->next) {
+		    ptr->next->prev = &ptr->next;
+		}
+		ptr->prev = &hostcache_list;
+		hostcache_list = ptr;
+	    }
+	    return (ptr->name);
+	}
+    }
+    return NULL;
+}
+
+void hostadd(long ip, const char *name) {
+    struct hostcache *ptr;
+
+    MALLOC(ptr, struct hostcache, 1);
+
+    ptr->next = hostcache_list;
+    if (ptr->next) {
+	ptr->next->prev = &ptr->next;
+    }
+    ptr->prev = &hostcache_list;
+    hostcache_list = ptr;
+#ifdef USE_IPV6
+    memset(&(ptr->ipnum_v6), 0, sizeof(struct in6_addr));
+#endif
+    ptr->ipnum = ip;
+    ptr->time = 0;
+    strcpyn(ptr->name, sizeof(ptr->name), name);
+    hostprune();
+}
+
+void hostadd_timestamp(long ip, const char *name) {
+    hostadd(ip, name);
+    hostcache_list->time = time(NULL);
+}
+
+void set_signals(void);
+
+#ifdef _POSIX_VERSION
+void our_signal(int signo, void (*sighandler) (int));
+#else
+# define our_signal(s,f) signal((s),(f))
+#endif
+
+/*
+ * our_signal(signo, sighandler)
+ *
+ * signo - Signal #, see defines in signal.h
+ * sighandler - The handler function desired.
+ *
+ * Calls sigaction() to set a signal, if we are posix.
+ */
+#ifdef _POSIX_VERSION
+void our_signal(int signo, void (*sighandler) (int)) {
+    struct sigaction act, oact;
+
+    act.sa_handler = sighandler;
+    sigemptyset(&act.sa_mask);
+    act.sa_flags = 0;
+
+    /* Restart long system calls if a signal is caught. */
+#ifdef SA_RESTART
+    act.sa_flags |= SA_RESTART;
+#endif
+
+    /* Make it so */
+    sigaction(signo, &act, &oact);
+}
+#endif /* _POSIX_VERSION */
+
+/*
+ * set_signals()
+ * set_sigs_intern(bail)
+ *
+ * Traps a bunch of signals and reroutes them to various
+ * handlers. Mostly bailout.
+ *
+ * If called from bailout, then reset all to default.
+ *
+ * Called from main() and bailout()
+ */
+
+void set_signals(void) {
+    /* we don't care about SIGPIPE, we notice it in select() and write() */
+    our_signal(SIGPIPE, SIG_IGN);
+
+    /* didn't manage to lose that control tty, did we? Ignore it anyway. */
+    our_signal(SIGHUP, SIG_IGN);
+}
+
+const char * get_username(long a, int prt, int myprt) {
     int fd, len, result;
     char *ptr, *ptr2;
     static char buf[1024];
@@ -584,63 +540,8 @@ get_username(long a, int prt, int myprt)
     return (0);
 }
 
-
-
-/*  addrout_v6 -- Translate address 'a' to text.          */
-#ifdef USE_IPV6
-const char *
-addrout_v6(struct in6_addr *a, unsigned short prt, unsigned short myprt)
-{
-    static char buf[128];
-    char tmpbuf[128];
-    const char *ptr, *ptr2;
-    struct hostent *he;
-
-    struct in6_addr addr;
-    memcpy(&addr.s6_addr, a, sizeof(struct in6_addr));
-
-    ptr = hostfetch_v6(a);
-
-    if (ptr) {
-	ptr2 = get_username_v6(a, prt, myprt);
-	if (ptr2) {
-	    snprintf(buf, sizeof(buf), "%s(%s)", ptr, ptr2);
-	} else {
-	    snprintf(buf, sizeof(buf), "%s(%d)", ptr, prt);
-	}
-	return buf;
-    }
-    he = gethostbyaddr(((char *) &addr), sizeof(addr), AF_INET6);
-
-    if (he) {
-	strcpyn(tmpbuf, sizeof(tmpbuf), he->h_name);
-	hostadd_v6(a, tmpbuf);
-	ptr = get_username_v6(a, prt, myprt);
-	if (ptr) {
-	    snprintf(buf, sizeof(buf), "%s(%s)", tmpbuf, ptr);
-	} else {
-	    snprintf(buf, sizeof(buf), "%s(%d)", tmpbuf, prt);
-	}
-	return buf;
-    }
-    inet_ntop(AF_INET6, a, tmpbuf, 128);
-    hostadd_timestamp_v6(a, tmpbuf);
-    ptr = get_username_v6(a, prt, myprt);
-
-    if (ptr) {
-	snprintf(buf, sizeof(buf), "%s(%s)", tmpbuf, ptr);
-    } else {
-	snprintf(buf, sizeof(buf), "%s(%d)", tmpbuf, prt);
-    }
-    return buf;
-}
-#endif
-
-
-/*  addrout -- Translate address 'a' to text.          */
-const char *
-addrout(long a, unsigned short prt, unsigned short myprt)
-{
+/* addrout -- Translate address 'a' to text.  */ const char * addrout(long a, unsigned short prt, unsigned 
+short myprt) {
     static char buf[128];
     char tmpbuf[128];
     const char *ptr, *ptr2;
@@ -687,15 +588,10 @@ addrout(long a, unsigned short prt, unsigned short myprt)
     return buf;
 }
 
+static volatile short shutdown_was_requested = 0; static pthread_mutex_t input_mutex = 
+PTHREAD_MUTEX_INITIALIZER; static pthread_mutex_t output_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-
-static volatile short shutdown_was_requested = 0;
-static pthread_mutex_t input_mutex = PTHREAD_MUTEX_INITIALIZER;
-static pthread_mutex_t output_mutex = PTHREAD_MUTEX_INITIALIZER;
-
-int
-do_resolve(void)
-{
+int do_resolve(void) {
     int ip1, ip2, ip3, ip4;
     int prt, myprt;
     int doagain;
@@ -811,20 +707,12 @@ do_resolve(void)
     }
 }
 
-
-
-
-void *
-resolver_thread_root(void *threadid)
-{
+void * resolver_thread_root(void *threadid) {
     do_resolve();
     pthread_exit(NULL);
 }
 
-
-int
-main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     pthread_t threads[NUM_THREADS];
 
     if (argc > 1) {

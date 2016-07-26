@@ -14,12 +14,18 @@
 #define MD5STEP(f,w,x,y,z,in,s) \
 	 (w += f(x,y,z) + in, w = (w<<s | w>>(32-s)) + x)
 
+struct xMD5Context {
+    word32 buf[4];
+    word32 bytes[2];
+    word32 in[16];
+};
+
 /*
  * The core of the MD5 algorithm, this alters an existing MD5 hash to
  * reflect the addition of 16 longwords of new data.  MD5Update blocks
  * the data and converts bytes into longwords for this routine.
  */
-void
+static void
 xMD5Transform(word32 buf[4], word32 const in[16])
 {
     register word32 a, b, c, d;
@@ -107,7 +113,7 @@ xMD5Transform(word32 buf[4], word32 const in[16])
  * Shuffle the bytes into little-endian order within words, as per the
  * MD5 spec.  Note: this code works regardless of the byte order.
  */
-void
+static void
 byteSwap(word32 * buf, unsigned words)
 {
     byte *p = (byte *) buf;
@@ -122,7 +128,7 @@ byteSwap(word32 * buf, unsigned words)
  * Start MD5 accumulation.  Set bit count to 0 and buffer to mysterious
  * initialization constants.
  */
-void
+static void
 xMD5Init(struct xMD5Context *ctx)
 {
     ctx->buf[0] = 0x67452301;
@@ -138,7 +144,7 @@ xMD5Init(struct xMD5Context *ctx)
  * Update context to reflect the concatenation of another buffer full
  * of bytes.
  */
-void
+static void
 xMD5Update(struct xMD5Context *ctx, const byte * buf, int len)
 {
     word32 t;
@@ -178,7 +184,7 @@ xMD5Update(struct xMD5Context *ctx, const byte * buf, int len)
  * Final wrapup - pad to 64-byte boundary with the bit pattern 
  * 1 0* (64-bit count of bits processed, MSB-first)
  */
-void
+static void
 xMD5Final(byte digest[16], struct xMD5Context *ctx)
 {
     int count = (int) (ctx->bytes[0] & 0x3f);	/* Bytes in ctx->in */
@@ -210,9 +216,8 @@ xMD5Final(byte digest[16], struct xMD5Context *ctx)
     bzero((byte *) ctx, sizeof(ctx));
 }
 
-
 /* dest buffer MUST be at least 16 bytes long. */
-void
+static void
 MD5hash(void *dest, const void *orig, int len)
 {
     struct xMD5Context context;
@@ -222,13 +227,12 @@ MD5hash(void *dest, const void *orig, int len)
     xMD5Final((byte *) dest, &context);
 }
 
-
 /*
  * outbuf MUST be at least (((strlen(inbuf)+3)/4)*3)+1 chars long to read
  * the full set of base64 encoded data in the string.  More simply, make sure
  * your output buffer is at least 3/4ths the size of your input, plus 4 bytes.
  */
-size_t
+static size_t
 Base64Decode(void *outbuf, size_t outbuflen, const char *inbuf)
 {
     unsigned char *outb = (unsigned char *) outbuf;
@@ -272,13 +276,12 @@ Base64Decode(void *outbuf, size_t outbuflen, const char *inbuf)
     return bytcnt;
 }
 
-
 /*
  * outbuf MUST be at least (((inlen+2)/3)*4)+1 chars long.
  * More simply, make sure your output buffer is at least 4/3rds the size
  * of the input buffer, plus five bytes.
  */
-void
+static void
 Base64Encode(char *outbuf, const void *inbuf, size_t inlen)
 {
     const char b64[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -338,7 +341,6 @@ Base64Encode(char *outbuf, const void *inbuf, size_t inlen)
     }
 }
 
-
 /* dest buffer MUST be at least 24 chars long. */
 void
 MD5base64(char *dest, const void *orig, int len)
@@ -348,12 +350,6 @@ MD5base64(char *dest, const void *orig, int len)
     Base64Encode(dest, tmp, 16);
     free(tmp);
 }
-
-/*****************************************************************/
-
-/*
-static unsigned long digest[4];
-*/
 
 /* Create the initial buffer for the given connection and dump some semi-
    random string into it to start.  If seed is zero, seed off the clock. */

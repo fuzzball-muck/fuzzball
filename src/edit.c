@@ -16,7 +16,7 @@
 #include "timequeue.h"
 #include "tune.h"
 
-void
+static void
 free_line(struct line *l)
 {
     if (l->this_line)
@@ -53,7 +53,7 @@ macro_expansion(struct macrotable *node, const char *match)
     }
 }
 
-struct macrotable *
+static struct macrotable *
 new_macro(const char *name, const char *definition, dbref player)
 {
     struct macrotable *newmacro = (struct macrotable *) malloc(sizeof(struct macrotable));
@@ -71,7 +71,7 @@ new_macro(const char *name, const char *definition, dbref player)
     return (newmacro);
 }
 
-int
+static int
 grow_macro_tree(struct macrotable *node, struct macrotable *newmacro)
 {
     register int value = strcmp(newmacro->name, node->name);
@@ -93,7 +93,7 @@ grow_macro_tree(struct macrotable *node, struct macrotable *newmacro)
     }
 }
 
-int
+static int
 insert_macro(const char *macroname, const char *macrodef,
 	     dbref player, struct macrotable **node)
 {
@@ -107,7 +107,7 @@ insert_macro(const char *macroname, const char *macrodef,
 	return (grow_macro_tree((*node), newmacro));
 }
 
-void
+static void
 do_list_tree(struct macrotable *node, const char *first, const char *last,
 	     int length, dbref player)
 {
@@ -143,7 +143,7 @@ do_list_tree(struct macrotable *node, const char *first, const char *last,
     }
 }
 
-void
+static void
 list_macros(const char *word[], int k, dbref player, int length)
 {
     if (!k--) {
@@ -155,7 +155,7 @@ list_macros(const char *word[], int k, dbref player, int length)
     return;
 }
 
-void
+static void
 purge_macro_tree(struct macrotable *node)
 {
     if (!node)
@@ -169,7 +169,7 @@ purge_macro_tree(struct macrotable *node)
     free(node);
 }
 
-int
+static int
 erase_node(struct macrotable *oldnode, struct macrotable *node,
 	   const char *killname, struct macrotable *mtop)
 {
@@ -204,8 +204,7 @@ erase_node(struct macrotable *oldnode, struct macrotable *node,
     }
 }
 
-
-int
+static int
 kill_macro(const char *macroname, dbref player, struct macrotable **mtop)
 {
     if (!(*mtop) || player == NOTHING) {
@@ -229,14 +228,13 @@ kill_macro(const char *macroname, dbref player, struct macrotable **mtop)
 	return (0);
 }
 
-
 void
 free_old_macros(void)
 {
     purge_macro_tree(macrotop);
 }
 
-void
+static void
 chown_macros_rec(struct macrotable *node, dbref from, dbref to)
 {
     if (!node)
@@ -256,7 +254,7 @@ chown_macros(dbref from, dbref to)
     chown_macros_rec(macrotop, from, to);
 }
 
-void
+static void
 disassemble(dbref player, dbref program)
 {
     struct inst *curr;
@@ -380,7 +378,7 @@ disassemble(dbref player, dbref program)
 }
 
 /* puts program into insert mode */
-void
+static void
 do_insert(dbref player, dbref program, int arg[], int argc)
 {
     PLAYER_SET_INSERT_MODE(player, PLAYER_INSERT_MODE(player) + 1);
@@ -393,7 +391,7 @@ do_insert(dbref player, dbref program, int arg[], int argc)
 /* deletes line n if one argument,
    lines arg1 -- arg2 if two arguments
    current line if no argument */
-void
+static void
 do_delete(dbref player, dbref program, int arg[], int argc)
 {
     struct line *curr, *temp;
@@ -443,7 +441,7 @@ do_delete(dbref player, dbref program, int arg[], int argc)
 }
 
 /* quit from edit mode.  Put player back into the regular game mode */
-void
+static void
 do_quit(dbref player, dbref program)
 {
     log_status("PROGRAM SAVED: %s by %s(%d)", unparse_object(player, program),
@@ -463,7 +461,7 @@ do_quit(dbref player, dbref program)
 }
 
 /* quit from edit mode, with no changes written */
-void
+static void
 do_cancel(dbref player, dbref program)
 {
     uncompile_program(program);
@@ -528,7 +526,7 @@ list_program(dbref player, dbref program, int *oarg, int argc)
     }
 }
 
-void
+static void
 do_list_header(dbref player, dbref program)
 {
     struct line *curr = read_program(program);
@@ -543,7 +541,7 @@ do_list_header(dbref player, dbref program)
     notify(player, "Done.");
 }
 
-void
+static void
 val_and_head(dbref player, int arg[], int argc)
 {
     dbref program;
@@ -564,7 +562,7 @@ val_and_head(dbref player, int arg[], int argc)
     do_list_header(player, program);
 }
 
-void
+static void
 do_list_publics(dbref player, dbref program)
 {
     struct publics *ptr;
@@ -574,7 +572,7 @@ do_list_publics(dbref player, dbref program)
 	notify(player, ptr->subname);
 }
 
-void
+static void
 list_publics(int descr, dbref player, int arg[], int argc)
 {
     dbref program;
@@ -613,7 +611,7 @@ list_publics(int descr, dbref player, int arg[], int argc)
     do_list_publics(player, program);
 }
 
-void
+static void
 toggle_numbers(dbref player, int arg[], int argc)
 {
     if (argc) {
@@ -638,7 +636,7 @@ toggle_numbers(dbref player, int arg[], int argc)
 }
 
 /* insert this line into program */
-void
+static void
 insert_line(dbref player, const char *line)
 {
     dbref program;
@@ -700,7 +698,7 @@ insert_line(dbref player, const char *line)
  * parse a command.
  */
 
-void
+static void
 editor(int descr, dbref player, const char *command)
 {
     dbref program;
@@ -833,40 +831,6 @@ editor(int descr, dbref player, const char *command)
     }
 }
 
-void
-log_program_text(struct line *first, dbref player, dbref i)
-{
-    FILE *f;
-    char fname[BUFFER_LEN];
-    char tbuf[24];
-    time_t lt = time(NULL);
-
-    strcpyn(fname, sizeof(fname), PROGRAM_LOG);
-    f = fopen(fname, "ab");
-    if (!f) {
-	log_status("Couldn't open file %s!", fname);
-	return;
-    }
-
-    format_time(tbuf, sizeof(tbuf), "%Y-%m-%dT%H:%M:%S", MUCK_LOCALTIME(lt));
-    fputs("#######################################", f);
-    fputs("#######################################\n", f);
-    fprintf(f, "%s: %s SAVED BY %s(#%d)\n",
-	    tbuf, unparse_object(player, i), NAME(player), player);
-    fputs("#######################################", f);
-    fputs("#######################################\n\n", f);
-
-    while (first) {
-	if (!first->this_line)
-	    continue;
-	fputs(first->this_line, f);
-	fputc('\n', f);
-	first = first->next;
-    }
-    fputs("\n\n\n", f);
-    fclose(f);
-}
-
 struct line *
 get_new_line(void)
 {
@@ -976,7 +940,6 @@ do_list(int descr, dbref player, const char *name, char *linespec)
 	notify(player, "You can't list anything but a program.");
 	return;
     }
-/*	if (!(controls(player, thing) || Linkable(thing))) { */
     if (!(controls(player, thing) || (FLAGS(thing) & VEHICLE))) {
 	notify(player,
 	       "Permission denied. (You don't control the program, and it's not set Viewable)");
@@ -1054,7 +1017,7 @@ macrodump(struct macrotable *node, FILE * f)
     macrodump(node->right, f);
 }
 
-char *
+static char *
 file_line(FILE * f)
 {
     char buf[BUFFER_LEN];
@@ -1072,7 +1035,7 @@ file_line(FILE * f)
     return alloc_string(buf);
 }
 
-void
+static void
 foldtree(struct macrotable *center)
 {
     int count = 0;
@@ -1097,7 +1060,7 @@ foldtree(struct macrotable *center)
     }
 }
 
-int
+static int
 macrochain(struct macrotable *lastnode, FILE * f)
 {
     char *line, *line2;

@@ -69,7 +69,6 @@ prim_dupn(PRIM_PROTOTYPE)
     }
 }
 
-
 void
 prim_ldup(PRIM_PROTOTYPE)
 {
@@ -94,7 +93,6 @@ prim_ldup(PRIM_PROTOTYPE)
 	(*top)++;
     }
 }
-
 
 void
 prim_at(PRIM_PROTOTYPE)
@@ -417,10 +415,9 @@ prim_lockp(PRIM_PROTOTYPE)
     PushInt(result);
 }
 
-
 #define ABORT_CHECKARGS(msg) { if (*top == stackpos+1) snprintf(zbuf, sizeof(zbuf), "%s (top)", msg); else snprintf(zbuf, sizeof(zbuf), "%s (top-%d)", msg, ((*top)-stackpos-1));  abort_interp(zbuf); }
 
-#define MaxComplexity 18	/* A truly ridiculously high number! */
+#define MaxComplexity 18
 
 void
 prim_checkargs(PRIM_PROTOTYPE)
@@ -664,7 +661,6 @@ prim_checkargs(PRIM_PROTOTYPE)
 
 #undef ABORT_CHECKARGS
 
-
 void
 prim_mode(PRIM_PROTOTYPE)
 {
@@ -708,7 +704,6 @@ prim_findmark(PRIM_PROTOTYPE)
     PushInt(count);
 }
 
-
 void
 prim_setmode(PRIM_PROTOTYPE)
 {
@@ -734,7 +729,6 @@ prim_setmode(PRIM_PROTOTYPE)
     fr->multitask = result;
     CLEAR(oper1);
 }
-
 
 void
 prim_interp(PRIM_PROTOTYPE)
@@ -787,12 +781,6 @@ prim_interp(PRIM_PROTOTYPE)
 
 }
 
-
-/* Internal stack primitives */
-
-struct forvars *push_for(struct forvars *);
-struct forvars *pop_for(struct forvars *);
-
 void
 prim_for(PRIM_PROTOTYPE)
 {
@@ -825,7 +813,6 @@ prim_for(PRIM_PROTOTYPE)
     CLEAR(oper3);
 }
 
-
 void
 prim_foreach(PRIM_PROTOTYPE)
 {
@@ -853,7 +840,6 @@ prim_foreach(PRIM_PROTOTYPE)
 
     CLEAR(oper1);
 }
-
 
 void
 prim_foriter(PRIM_PROTOTYPE)
@@ -909,7 +895,6 @@ prim_foriter(PRIM_PROTOTYPE)
     PushInt(tmp);
 }
 
-
 void
 prim_forpop(PRIM_PROTOTYPE)
 {
@@ -927,10 +912,6 @@ prim_forpop(PRIM_PROTOTYPE)
     fr->fors.st = pop_for(fr->fors.st);
 }
 
-
-struct tryvars *push_try(struct tryvars *);
-struct tryvars *pop_try(struct tryvars *);
-
 void
 prim_trypop(PRIM_PROTOTYPE)
 {
@@ -942,7 +923,6 @@ prim_trypop(PRIM_PROTOTYPE)
     fr->trys.top--;
     fr->trys.st = pop_try(fr->trys.st);
 }
-
 
 void
 prim_reverse(PRIM_PROTOTYPE)
@@ -964,7 +944,6 @@ prim_reverse(PRIM_PROTOTYPE)
     }
     CLEAR(oper1);
 }
-
 
 void
 prim_lreverse(PRIM_PROTOTYPE)

@@ -92,84 +92,98 @@ extern char match_cmdname[BUFFER_LEN];
 #define TYPE_EXIT           0x2
 #define TYPE_PLAYER         0x3
 #define TYPE_PROGRAM        0x4
-#define NOTYPE1				0x5	/* Room for expansion */
+#define NOTYPE1 	    0x5	/* Room for expansion */
 #define TYPE_GARBAGE        0x6
 #define NOTYPE              0x7	/* no particular type */
-#define TYPE_MASK           0x7	/* room for expansion */
+#define TYPE_MASK           0x7
 
-#define EXPANSION0		   0x08	/* Not a flag, but one add'l flag for
-					 * expansion purposes */
+#define EXPANSION0	   0x08	/* Expansion bit */
 
 #define WIZARD             0x10	/* gets automatic control */
 #define LINK_OK            0x20	/* anybody can link to this */
 #define DARK               0x40	/* contents of room are not printed */
-
-/* This #define disabled to avoid accidentally triggerring debugging code */
-				/* #define DEBUG DARK *//* Used to print debugging information on
-				 * on MUF programs */
-
 #define INTERNAL           0x80	/* internal-use-only flag */
 #define STICKY            0x100	/* this object goes home when dropped */
-#define SETUID STICKY		/* Used for programs that must run with the
-				 * permissions of their owner */
-#define SILENT STICKY
 #define BUILDER           0x200	/* this player can use construction commands */
-#define BOUND BUILDER
 #define CHOWN_OK          0x400	/* this object can be @chowned, or
 				   this player can see color */
-#define COLOR CHOWN_OK
 #define JUMP_OK           0x800	/* A room which can be jumped from, or
 				 * a player who can be jumped to */
-#define EXPANSION1		 0x1000	/* Expansion bit */
-#define EXPANSION2		 0x2000	/* Expansion bit */
+#define EXPANSION1	 0x1000	/* Expansion bit */
+#define EXPANSION2	 0x2000	/* Expansion bit */
 #define KILL_OK	         0x4000	/* Kill_OK bit.  Means you can be killed. */
 #define GUEST		 0x8000	/* Guest flag */
 #define HAVEN           0x10000	/* can't kill here */
-#define HIDE HAVEN
-#define HARDUID HAVEN		/* Program runs with uid of trigger owner */
 #define ABODE           0x20000	/* can set home here */
-#define ABATE ABODE
-#define AUTOSTART ABODE
 #define MUCKER          0x40000	/* programmer */
 #define QUELL           0x80000	/* When set, wiz-perms are turned off */
 #define SMUCKER        0x100000	/* second programmer bit.  For levels */
-#define INTERACTIVE    0x200000	/* internal: denotes player is in editor, or
-				 * muf READ. */
-#define OBJECT_CHANGED 0x400000	/* internal: when an object is dbdirty()ed,
-				 * set this */
+#define INTERACTIVE    0x200000	/* internal: player in MUF editor */
+#define OBJECT_CHANGED 0x400000	/* internal: set when an object is dbdirty()ed */
+#define EXPANSION3     0x800000 /* Expansion bit */
 #define VEHICLE       0x1000000	/* Vehicle flag */
-#define VIEWABLE VEHICLE
 #define ZOMBIE        0x2000000	/* Zombie flag */
-#define ZMUF_DEBUGGER ZOMBIE
 #define LISTENER      0x4000000	/* internal: listener flag */
 #define XFORCIBLE     0x8000000	/* externally forcible flag */
-#define XPRESS XFORCIBLE
 #define READMODE     0x10000000	/* internal: when set, player is in a READ */
 #define SANEBIT      0x20000000	/* internal: used to check db sanity */
 #define YIELD	     0x40000000	/* Yield flag */
 #define OVERT        0x80000000	/* Overt flag */
 
+#define ABATE		ABODE
+#define AUTOSTART	ABODE
+#define BOUND		BUILDER
+#define COLOR		CHOWN_OK
+#define HARDUID		HAVEN
+#define HIDE		HAVEN
+#define SETUID		STICKY
+#define SILENT		STICKY
+#define VIEWABLE	VEHICLE
+#define XPRESS		XFORCIBLE
+#define ZMUF_DEBUGGER	ZOMBIE
 
 /* what flags to NOT dump to disk. */
 #define DUMP_MASK    (INTERACTIVE | OBJECT_CHANGED | LISTENER | READMODE | SANEBIT)
 
+#define Typeof(x) (x == HOME ? TYPE_ROOM : (FLAGS(x) & TYPE_MASK))
 
-typedef long object_flag_type;
+#define GOD		((dbref)  1)	/* head player */
+#define NOTHING		((dbref) -1)	/* null dbref */
+#define AMBIGUOUS	((dbref) -2)	/* multiple possibilities, for matchers */
+#define HOME		((dbref) -3)	/* virtual room, represents mover's home */
+#define NIL		((dbref) -4)	/* do-nothing link, for actions */
 
-#define GOD ((dbref) 1)
+#define ObjExists(d)	((d) >= 0 && (d) < db_top)
+#define OkRef(d)	(ObjExists(d) || (d) == NOTHING)
+#define OkObj(d)	(ObjExists(d) && Typeof(d) != TYPE_GARBAGE)
 
 #ifdef GOD_PRIV
 #define God(x) ((x) == (GOD))
 #endif
 
-#define DoNull(s) ((s) ? (s) : "")
-#define Typeof(x) (x == HOME ? TYPE_ROOM : (FLAGS(x) & TYPE_MASK))
-#define Wizard(x) ((FLAGS(x) & WIZARD) != 0 && (FLAGS(x) & QUELL) == 0)
+#define MLevRaw(x)	(((FLAGS(x) & MUCKER)? 2:0) + ((FLAGS(x) & SMUCKER)? 1:0))
+#define MLevel(x)	(((FLAGS(x) & WIZARD) && \
+			((FLAGS(x) & MUCKER) || (FLAGS(x) & SMUCKER)))? 4 : \
+			(((FLAGS(x) & MUCKER)? 2 : 0) + \
+			((FLAGS(x) & SMUCKER)? 1 : 0)))
+#define PLevel(x)	((FLAGS(x) & (MUCKER | SMUCKER))? \
+			(((FLAGS(x) & MUCKER)? 2:0) + ((FLAGS(x) & SMUCKER)? 1:0) + 1) : \
+			((FLAGS(x) & ABODE)? 0 : 1))
 
-/* TrueWizard is only appropriate when you care about whether the person
-   or thing is, well, truely a wizard. Ie it ignores QUELL. */
-#define TrueWizard(x) ((FLAGS(x) & WIZARD) != 0)
-#define Dark(x) ((FLAGS(x) & DARK) != 0)
+#define Dark(x)		((FLAGS(x) & DARK) != 0)
+#define Wizard(x)	((FLAGS(x) & WIZARD) != 0 && (FLAGS(x) & QUELL) == 0)
+#define TrueWizard(x)	((FLAGS(x) & WIZARD) != 0)
+#define Mucker(x)	(MLevel(x) != 0)
+#define Builder(x)	((FLAGS(x) & (WIZARD|BUILDER)) != 0)
+#define Linkable(x)	((x) == HOME || \
+			(((Typeof(x) == TYPE_ROOM || Typeof(x) == TYPE_THING) ? \
+			(FLAGS(x) & ABODE) : (FLAGS(x) & LINK_OK)) != 0))
+
+
+#define SetMLevel(x,y) { FLAGS(x) &= ~(MUCKER | SMUCKER); \
+			 if (y>=2) FLAGS(x) |= MUCKER; \
+                         if (y%2) FLAGS(x) |= SMUCKER; }
+
 
 /* ISGUEST determines whether a particular player is a guest, based on the existence
    of the property MESGPROP_GUEST.  If GOD_PRIV is defined, then only God can bypass
@@ -182,6 +196,7 @@ typedef long object_flag_type;
 #else				/* !defined(GOD_PRIV) */
 #define ISGUEST(x)	((FLAGS(x) & GUEST) && (FLAGS(x) & TYPE_PLAYER) && !TrueWizard(x))
 #endif				/* GOD_PRIV */
+
 #define NOGUEST(_cmd,x) \
 if(ISGUEST(x)) \
 {   \
@@ -196,24 +211,6 @@ if(fl) \
     return; \
 }
 
-
-#define MLevRaw(x) (((FLAGS(x) & MUCKER)? 2:0) + ((FLAGS(x) & SMUCKER)? 1:0))
-
-/* Setting a program M0 is supposed to make it not run, but if it's set
- * Wizard, it used to run anyway without the extra double-check for MUCKER
- * or SMUCKER -- now it doesn't, change by Winged */
-#define MLevel(x) (((FLAGS(x) & WIZARD) && \
-			((FLAGS(x) & MUCKER) || (FLAGS(x) & SMUCKER)))? 4 : \
-		   (((FLAGS(x) & MUCKER)? 2 : 0) + \
-		    ((FLAGS(x) & SMUCKER)? 1 : 0)))
-
-#define SetMLevel(x,y) { FLAGS(x) &= ~(MUCKER | SMUCKER); \
-			 if (y>=2) FLAGS(x) |= MUCKER; \
-                         if (y%2) FLAGS(x) |= SMUCKER; }
-
-#define PLevel(x) ((FLAGS(x) & (MUCKER | SMUCKER))? \
-                   (((FLAGS(x) & MUCKER)? 2:0) + ((FLAGS(x) & SMUCKER)? 1:0) + 1) : \
-                    ((FLAGS(x) & ABODE)? 0 : 1))
 
 /* Mucker levels */
 #define MLEV_APPRENTICE   1
@@ -233,13 +230,6 @@ if(fl) \
 #define FOREGROUND 1
 #define BACKGROUND 2
 
-#define Mucker(x) (MLevel(x) != 0)
-
-#define Builder(x) ((FLAGS(x) & (WIZARD|BUILDER)) != 0)
-
-#define Linkable(x) ((x) == HOME || \
-                     (((Typeof(x) == TYPE_ROOM || Typeof(x) == TYPE_THING) ? \
-                      (FLAGS(x) & ABODE) : (FLAGS(x) & LINK_OK)) != 0))
 
 #define BUILDERONLY(_cmd,x) \
 if(!Builder(x)) \
@@ -280,15 +270,12 @@ if(!God(x)) \
 }
 #endif
 
-#define ObjExists(d)	((d) >= 0 && (d) < db_top)
-#define OkRef(d)	(ObjExists(d) || (d) == NOTHING)
-#define OkObj(d)	(ObjExists(d) && Typeof(d) != TYPE_GARBAGE)
+#define DOLIST(var, first) \
+  for ((var) = (first); (var) != NOTHING; (var) = DBFETCH(var)->next)
+#define PUSH(thing, locative) \
+    {DBSTORE((thing), next, (locative)); (locative) = (thing);}
 
-/* special dbref's */
-#define NOTHING ((dbref) -1)	/* null dbref */
-#define AMBIGUOUS ((dbref) -2)	/* multiple possibilities, for matchers */
-#define HOME ((dbref) -3)	/* virtual room, represents mover's home */
-#define NIL ((dbref) -4)	/* do-nothing link, for actions */
+typedef long object_flag_type;
 
 struct program_specific {
     unsigned short instances;	/* number of instances of this prog running */
@@ -310,16 +297,16 @@ struct program_specific {
 #define ALLOC_PROGRAM_SP(x)     { PROGRAM_SP(x) = (struct program_specific *)malloc(sizeof(struct program_specific)); }
 #define FREE_PROGRAM_SP(x)      { dbref foo = x; if(PROGRAM_SP(foo)) free(PROGRAM_SP(foo)); PROGRAM_SP(foo) = (struct program_specific *)NULL; }
 
-#define PROGRAM_INSTANCES(x)	(PROGRAM_SP(x)!=NULL?PROGRAM_SP(x)->instances:0)
-#define PROGRAM_CURR_LINE(x)	(PROGRAM_SP(x)->curr_line)
+#define PROGRAM_INSTANCES(x)		(PROGRAM_SP(x)!=NULL?PROGRAM_SP(x)->instances:0)
+#define PROGRAM_CURR_LINE(x)		(PROGRAM_SP(x)->curr_line)
 #define PROGRAM_SIZ(x)			(PROGRAM_SP(x)->siz)
 #define PROGRAM_CODE(x)			(PROGRAM_SP(x)->code)
 #define PROGRAM_START(x)		(PROGRAM_SP(x)->start)
 #define PROGRAM_FIRST(x)		(PROGRAM_SP(x)->first)
 #define PROGRAM_PUBS(x)			(PROGRAM_SP(x)->pubs)
 #define PROGRAM_PROFTIME(x)		(PROGRAM_SP(x)->proftime)
-#define PROGRAM_PROFSTART(x)	(PROGRAM_SP(x)->profstart)
-#define PROGRAM_PROF_USES(x)	(PROGRAM_SP(x)->profuses)
+#define PROGRAM_PROFSTART(x)		(PROGRAM_SP(x)->profstart)
+#define PROGRAM_PROF_USES(x)		(PROGRAM_SP(x)->profuses)
 
 #define PROGRAM_INC_INSTANCES(x)	(PROGRAM_SP(x)->instances++)
 #define PROGRAM_DEC_INSTANCES(x)	(PROGRAM_SP(x)->instances--)
@@ -371,7 +358,7 @@ struct player_specific {
 #define PLAYER_INSERT_MODE(x)	(PLAYER_SP(x)->insert_mode)
 #define PLAYER_BLOCK(x)		(PLAYER_SP(x)->block)
 #define PLAYER_PASSWORD(x)	(PLAYER_SP(x)->password)
-#define PLAYER_DESCRS(x)    (PLAYER_SP(x)->descrs)
+#define PLAYER_DESCRS(x)	(PLAYER_SP(x)->descrs)
 #define PLAYER_DESCRCOUNT(x)    (PLAYER_SP(x)->descr_count)
 #define PLAYER_IGNORE_CACHE(x)  (PLAYER_SP(x)->ignore_cache)
 #define PLAYER_IGNORE_COUNT(x)  (PLAYER_SP(x)->ignore_count)
@@ -394,9 +381,11 @@ union specific {		/* I've been railroaded! */
     struct {			/* ROOM-specific fields */
 	dbref dropto;
     } room;
-    /*    struct {		*//* THING-specific fields */
-/*	dbref   home;   */
-/*    }       thing;    */
+    /*
+    struct {			// THING-specific fields
+	dbref home;
+    } thing;
+    */
     struct {			/* EXIT-specific fields */
 	int ndest;
 	dbref *dest;
@@ -410,7 +399,6 @@ union specific {		/* I've been railroaded! */
 };
 
 struct object {
-
     const char *name;
     dbref location;		/* pointer to container */
     dbref owner;
@@ -418,7 +406,6 @@ struct object {
     dbref exits;
     dbref next;			/* pointer to next in contents/exits chain */
     struct plist *properties;
-
 #ifdef DISKBASE
     long propsfpos;
     time_t propstime;
@@ -427,17 +414,13 @@ struct object {
     short propsmode;
     short spacer;
 #endif
-
     object_flag_type flags;
-
     unsigned int mpi_prof_use;
     struct timeval mpi_proftime;
-
     time_t ts_created;
     time_t ts_modified;
     time_t ts_lastused;
     int ts_usecount;
-
     union specific sp;
 };
 
@@ -455,64 +438,34 @@ extern struct object *db;
 extern dbref db_top;
 extern int recyclable;
 
-#ifndef MALLOC_PROFILING
-char *alloc_string(const char *);
-struct shared_string *alloc_prog_string(const char *);
-#endif
-
-void putref(FILE * f, dbref ref);
-void putstring(FILE * f, const char *s);
-void putproperties(FILE * f, dbref obj);
-dbref getref(FILE * f);
-void getproperties(FILE * f, dbref obj, const char *pdir);
-
-dbref new_object(void);	/* return a new object */
-
-int db_write_object(FILE *, dbref);	/* write one object to file */
-
-dbref db_write(FILE * f);	/* write db to file, return # of objects */
-
-dbref db_read(FILE * f);	/* read db from file, return # of objects */
-
- /* Warning: destroys existing db contents! */
-
-void db_free(void);
-void db_clear_object(dbref i);
-void db_free_object(dbref i);
-
-dbref parse_dbref(const char *);	/* parse a dbref */
-
-const char *unparse_flags(dbref thing);
-const char *unparse_object(dbref player, dbref object);
-
-int member(dbref thing, dbref list);
-dbref remove_first(dbref first, dbref what);
-dbref reverse(dbref);
-
-long size_object(dbref i, int load);
-
-int ok_ascii_other(const char *name);
-int ok_ascii_thing(const char *name);
-int ok_name(const char *name);
-
-dbref getparent(dbref obj);
-
 int controls(dbref who, dbref what);
 int controls_link(dbref who, dbref what);
-
-void set_source(dbref player, dbref action, dbref source);
-int unset_source(dbref player, dbref action);
-
-dbref parse_linkable_dest(int descr, dbref player, dbref exit, const char *dest_name);
+dbref create_program(dbref player, const char *name);
+void db_clear_object(dbref i);
+void db_free(void);
+void db_free_object(dbref i);
+dbref db_read(FILE * f);
+dbref db_write(FILE * f);
+dbref getparent(dbref obj);
+void getproperties(FILE * f, dbref obj, const char *pdir);
+dbref getref(FILE * f);
 int link_exit(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_list);
 int link_exit_dry(int descr, dbref player, dbref exit, char *dest_name,
                          dbref * dest_list);
-
-dbref create_program(dbref player, const char *name);
-
-#define DOLIST(var, first) \
-  for ((var) = (first); (var) != NOTHING; (var) = DBFETCH(var)->next)
-#define PUSH(thing, locative) \
-    {DBSTORE((thing), next, (locative)); (locative) = (thing);}
+int member(dbref thing, dbref list);
+dbref new_object(void);
+int ok_ascii_other(const char *name);
+int ok_ascii_thing(const char *name);
+int ok_name(const char *name);
+void putref(FILE * f, dbref ref);
+void putproperties(FILE * f, dbref obj);
+void putstring(FILE * f, const char *s);
+dbref remove_first(dbref first, dbref what);
+dbref reverse(dbref);
+void set_source(dbref player, dbref action, dbref source);
+long size_object(dbref i, int load);
+const char *unparse_flags(dbref thing);
+const char *unparse_object(dbref player, dbref object);
+int unset_source(dbref player, dbref action);
 
 #endif				/* _DB_H */

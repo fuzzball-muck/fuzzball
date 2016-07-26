@@ -4,19 +4,9 @@
 
 #include "props.h"
 
-struct pload_Q {
-    dbref obj;
-    long count;
-    int Qtype;
-};
-
 void dirtyprops(dbref obj);
-int disposeprops(dbref obj);
-int disposeprops_notime(dbref obj);
 void dispose_all_oldprops(void);
 void fetchprops(dbref obj, const char *pdir);
-int fetchprops_nostamp(dbref obj);
-int fetchprops_priority(dbref obj, int mode, const char *pdir);
 int fetch_propvals(dbref obj, const char *dir);
 extern pid_t global_dumper_pid;
 extern long propcache_hits;

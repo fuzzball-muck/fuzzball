@@ -20,7 +20,6 @@ void list_program(dbref player, dbref program, int *oarg, int argc);
 char *macro_expansion(struct macrotable *node, const char *match);
 void macrodump(struct macrotable *node, FILE * f);
 void macroload(FILE * f);
-struct macrotable *new_macro(const char *name, const char *definition, dbref player);
 struct line *read_program(dbref i);
 void write_program(struct line *first, dbref i);
 
