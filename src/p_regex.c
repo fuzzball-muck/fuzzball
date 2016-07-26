@@ -29,7 +29,7 @@ typedef struct {
 
 static muf_re muf_re_cache[MUF_RE_CACHE_ITEMS];
 
-muf_re *
+static muf_re *
 muf_re_get(struct shared_string *pattern, int flags, const char **errmsg)
 {
     int idx = (hash(DoNullInd(pattern), MUF_RE_CACHE_ITEMS) + flags) % MUF_RE_CACHE_ITEMS;
@@ -60,7 +60,7 @@ muf_re_get(struct shared_string *pattern, int flags, const char **errmsg)
     return re;
 }
 
-const char *
+static const char *
 muf_re_error(int err)
 {
     switch (err) {

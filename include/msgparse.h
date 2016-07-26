@@ -27,55 +27,7 @@ struct mpifunc {
     char *buf;
 };
 
-int Wizperms(dbref what);
-
-int safeputprop(dbref obj, dbref perms, char *buf, char *val, int mesgtyp);
-const char *safegetprop(dbref player, dbref what, dbref perms, const char *inbuf, int mesgtyp,
-			int *blessed);
-const char *safegetprop_strict(dbref player, dbref what, dbref perms, const char *inbuf,
-			       int mesgtyp, int *blessed);
-int safeblessprop(dbref obj, dbref perms, char *buf, int mesgtyp, int set_p);
-
-char *stripspaces(char *buf, int buflen, char *in);
-char *string_substitute(const char *str, const char *oldstr, const char *newstr, char *buf,
-			int maxlen);
-char *cr2slash(char *buf, int buflen, const char *in);
-
-int get_list_count(dbref trig, dbref what, dbref perms, char *listname, int mesgtyp,
-		   int *blessed);
-const char *get_list_item(dbref trig, dbref what, dbref perms, char *listname, int itemnum,
-			  int mesgtyp, int *blessed);
-char *get_concat_list(dbref player, dbref what, dbref perms, dbref obj, char *listname,
-		      char *buf, int maxchars, int mode, int mesgtyp, int *blessed);
-
-int isneighbor(dbref d1, dbref d2);
-int mesg_read_perms(dbref player, dbref perms, dbref obj, int mesgtyp);
-int mesg_local_perms(dbref player, dbref perms, dbref obj, int mesgtyp);
-
-dbref mesg_dbref_raw(int descr, dbref player, dbref what, dbref perms, const char *buf);
-dbref mesg_dbref(int descr, dbref player, dbref what, dbref perms, char *buf, int mesgtyp);
-dbref mesg_dbref_strict(int descr, dbref player, dbref what, dbref perms, char *buf,
-			int mesgtyp);
-dbref mesg_dbref_local(int descr, dbref player, dbref what, dbref perms, char *buf,
-		       int mesgtyp);
-
-char *ref2str(dbref obj, char *buf, size_t buflen);
-int truestr(char *buf);
-
-int check_mvar_overflow(int count);
-int new_mvar(const char *varname, char *buf);
-char *get_mvar(const char *varname);
-int free_top_mvar(void);
-
-int new_mfunc(const char *funcname, const char *buf);
-const char *get_mfunc(const char *funcname);
-int free_mfuncs(int downto);
-
-void mesg_init(void);
-time_t mpi_prof_start_time;
-void purge_mfns();
-
-extern int varc;
+typedef char **argv_typ;
 
 #define MFUNARGS int descr, dbref player, dbref what, dbref perms, int argc, \
                 argv_typ argv, char *buf, int buflen, int mesgtyp
@@ -84,8 +36,34 @@ extern int varc;
 
 #define ABORT_MPI(funam,mesg) { notifyf_nolisten(player, "%s %c%s%c: %s", get_mvar("how"), MFUN_LEADCHAR, funam, MFUN_ARGEND, mesg); return NULL; }
 
-typedef char **argv_typ;
-
 #define MesgParse(in,out,outlen) mesg_parse(descr, player, what, perms, (in), (out), (outlen), mesgtyp)
+
+extern time_t mpi_prof_start_time;
+extern int varc;
+
+int check_mvar_overflow(int count);
+int free_top_mvar(void);
+char *get_concat_list(dbref player, dbref what, dbref perms, dbref obj, char *listname,
+		      char *buf, int maxchars, int mode, int mesgtyp, int *blessed);
+int get_list_count(dbref trig, dbref what, dbref perms, char *listname, int mesgtyp,
+		   int *blessed);
+const char *get_list_item(dbref trig, dbref what, dbref perms, char *listname, int itemnum,
+			  int mesgtyp, int *blessed);
+char *get_mvar(const char *varname);
+int isneighbor(dbref d1, dbref d2);
+dbref mesg_dbref(int descr, dbref player, dbref what, dbref perms, char *buf, int mesgtyp);
+dbref mesg_dbref_local(int descr, dbref player, dbref what, dbref perms, char *buf,
+		       int mesgtyp);
+dbref mesg_dbref_raw(int descr, dbref player, dbref what, dbref perms, const char *buf);
+dbref mesg_dbref_strict(int descr, dbref player, dbref what, dbref perms, char *buf,
+			int mesgtyp);
+void mesg_init(void);
+int new_mfunc(const char *funcname, const char *buf);
+int new_mvar(const char *varname, char *buf);
+void purge_mfns();
+int safeblessprop(dbref obj, dbref perms, char *buf, int mesgtyp, int set_p);
+const char *safegetprop(dbref player, dbref what, dbref perms, const char *inbuf, int mesgtyp, int *blessed);
+const char *safegetprop_strict(dbref player, dbref what, dbref perms, const char *inbuf, int mesgtyp, int *blessed);
+int safeputprop(dbref obj, dbref perms, char *buf, char *val, int mesgtyp);
 
 #endif				/* _MSGPARSE_H */

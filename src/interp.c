@@ -8,6 +8,7 @@
 #include "fbmath.h"
 #include "fbstrings.h"
 #include "fbtime.h"
+#include "game.h"
 #include "inst.h"
 #include "interface.h"
 #include "interp.h"
@@ -108,7 +109,7 @@ localvar_dupall(struct frame *fr, struct frame *oldfr)
     }
 }
 
-void
+static void
 localvar_freeall(struct frame *fr)
 {
     if (!fr) {
@@ -132,7 +133,7 @@ localvar_freeall(struct frame *fr)
     fr->lvars = NULL;
 }
 
-void
+static void
 scopedvar_addlevel(struct frame *fr, struct inst *pc, int count)
 {
     if (!fr) {
@@ -184,7 +185,7 @@ scopedvar_dupall(struct frame *fr, struct frame *oldfr)
     }
 }
 
-int
+static int
 scopedvar_poplevel(struct frame *fr)
 {
     if (!fr || !fr->svars) {
@@ -200,7 +201,7 @@ scopedvar_poplevel(struct frame *fr)
     return 1;
 }
 
-void
+static void
 scopedvar_freeall(struct frame *fr)
 {
     while (scopedvar_poplevel(fr)) ;
@@ -255,34 +256,6 @@ scopedvar_getname(struct frame *fr, int level, int varnum)
 	return NULL;
     }
     return svinfo->varnames[varnum];
-}
-
-int
-scopedvar_getnum(struct frame *fr, int level, const char *varname)
-{
-    struct scopedvar_t *svinfo = NULL;
-
-    assert(varname != NULL);
-    assert(*varname != '\0');
-
-    svinfo = fr ? fr->svars : NULL;
-
-    while (svinfo && level-- > 0)
-	svinfo = svinfo->next;
-
-    if (!svinfo) {
-	return -1;
-    }
-    if (!svinfo->varnames) {
-	return -1;
-    }
-    for (int varnum = 0; varnum < svinfo->count; varnum++) {
-	assert(svinfo->varnames[varnum] != NULL);
-	if (!string_compare(svinfo->varnames[varnum], varname)) {
-	    return varnum;
-	}
-    }
-    return -1;
 }
 
 void
@@ -392,7 +365,6 @@ purge_for_pool(void)
     }
 }
 
-
 void
 purge_try_pool(void)
 {
@@ -410,8 +382,6 @@ purge_try_pool(void)
 	cur = next;
     }
 }
-
-
 
 struct frame *
 interp(int descr, dbref player, dbref location, dbref program,
@@ -610,7 +580,6 @@ pop_for(struct forvars *forstack)
     return newstack;
 }
 
-
 struct tryvars *
 copy_trys(struct tryvars *trystack)
 {
@@ -681,9 +650,8 @@ pop_try(struct tryvars *trystack)
     return newstack;
 }
 
-
 /* clean up lists from watchpid and sends event */
-void
+static void
 watchpid_process(struct frame *fr)
 {
     if (!fr) {
@@ -739,7 +707,6 @@ watchpid_process(struct frame *fr)
 	}
     }
 }
-
 
 /* clean up the stack. */
 void
@@ -836,15 +803,13 @@ prog_clean(struct frame *fr)
     err = 0;
 }
 
-
-void
+static void
 reload(struct frame *fr, int atop, int stop)
 {
     assert(fr);
     fr->argument.top = atop;
     fr->system.top = stop;
 }
-
 
 int
 false_inst(struct inst *p)
@@ -857,7 +822,6 @@ false_inst(struct inst *p)
 	    || (p->type == PROG_FLOAT && p->data.fnumber == 0.0)
 	    || (p->type == PROG_OBJECT && p->data.objref == NOTHING));
 }
-
 
 void
 copyinst(struct inst *from, struct inst *to)
@@ -900,8 +864,7 @@ copyinst(struct inst *from, struct inst *to)
     }
 }
 
-
-void
+static void
 copyvars(vars * from, vars * to)
 {
     assert(from && to);
@@ -911,8 +874,7 @@ copyvars(vars * from, vars * to)
     }
 }
 
-
-void
+static void
 calc_profile_timing(dbref prog, struct frame *fr)
 {
     assert(fr);
@@ -943,11 +905,55 @@ calc_profile_timing(dbref prog, struct frame *fr)
     }
 }
 
-
-
 static int interp_depth = 0;
 
-void
+static void
+interp_err(dbref player, dbref program, struct inst *pc,
+	   struct inst *arg, int atop, dbref origprog, const char *msg1, const char *msg2)
+{
+    char buf[BUFFER_LEN];
+    char buf2[BUFFER_LEN];
+    char tbuf[40];
+    int errcount;
+    time_t lt;
+
+    err++;
+
+    if (OWNER(origprog) == OWNER(player)) {
+	strcpyn(buf, sizeof(buf),
+		"\033[1;31;40mProgram Error.  Your program just got the following error.\033[0m");
+    } else {
+	snprintf(buf, sizeof(buf),
+		 "\033[1;31;40mProgrammer Error.  Please tell %s what you typed, and the following message.\033[0m",
+		 NAME(OWNER(origprog)));
+    }
+    notify_nolisten(player, buf, 1);
+
+    notifyf_nolisten(player, "\033[1m%s(#%d), line %d; %s: %s\033[0m",
+		     NAME(program), program, pc ? pc->line : -1, msg1, msg2);
+
+    lt = time(NULL);
+    format_time(tbuf, 32, "%c", MUCK_LOCALTIME(lt));
+
+    strip_ansi(buf2, buf);
+    errcount = get_property_value(origprog, ".debug/errcount");
+    errcount++;
+    add_property(origprog, ".debug/errcount", NULL, errcount);
+    add_property(origprog, ".debug/lasterr", buf2, 0);
+    add_property(origprog, ".debug/lastcrash", NULL, (int) lt);
+    add_property(origprog, ".debug/lastcrashtime", tbuf, 0);
+
+    if (origprog != program) {
+	errcount = get_property_value(program, ".debug/errcount");
+	errcount++;
+	add_property(program, ".debug/errcount", NULL, errcount);
+	add_property(program, ".debug/lasterr", buf2, 0);
+	add_property(program, ".debug/lastcrash", NULL, (int) lt);
+	add_property(program, ".debug/lastcrashtime", tbuf, 0);
+    }
+}
+
+static void
 do_abort_loop(dbref player, dbref program, const char *msg,
 	      struct frame *fr, struct inst *pc, int atop, int stop,
 	      struct inst *clinst1, struct inst *clinst2)
@@ -996,7 +1002,6 @@ do_abort_loop(dbref player, dbref program, const char *msg,
 	PLAYER_SET_BLOCK(player, 0);
     }
 }
-
 
 struct inst *
 interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
@@ -1750,55 +1755,6 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
     return NULL;
 }
 
-
-void
-interp_err(dbref player, dbref program, struct inst *pc,
-	   struct inst *arg, int atop, dbref origprog, const char *msg1, const char *msg2)
-{
-    char buf[BUFFER_LEN];
-    char buf2[BUFFER_LEN];
-    char tbuf[40];
-    int errcount;
-    time_t lt;
-
-    err++;
-
-    if (OWNER(origprog) == OWNER(player)) {
-	strcpyn(buf, sizeof(buf),
-		"\033[1;31;40mProgram Error.  Your program just got the following error.\033[0m");
-    } else {
-	snprintf(buf, sizeof(buf),
-		 "\033[1;31;40mProgrammer Error.  Please tell %s what you typed, and the following message.\033[0m",
-		 NAME(OWNER(origprog)));
-    }
-    notify_nolisten(player, buf, 1);
-
-    notifyf_nolisten(player, "\033[1m%s(#%d), line %d; %s: %s\033[0m",
-		     NAME(program), program, pc ? pc->line : -1, msg1, msg2);
-
-    lt = time(NULL);
-    format_time(tbuf, 32, "%c", MUCK_LOCALTIME(lt));
-
-    strip_ansi(buf2, buf);
-    errcount = get_property_value(origprog, ".debug/errcount");
-    errcount++;
-    add_property(origprog, ".debug/errcount", NULL, errcount);
-    add_property(origprog, ".debug/lasterr", buf2, 0);
-    add_property(origprog, ".debug/lastcrash", NULL, (int) lt);
-    add_property(origprog, ".debug/lastcrashtime", tbuf, 0);
-
-    if (origprog != program) {
-	errcount = get_property_value(program, ".debug/errcount");
-	errcount++;
-	add_property(program, ".debug/errcount", NULL, errcount);
-	add_property(program, ".debug/lasterr", buf2, 0);
-	add_property(program, ".debug/lastcrash", NULL, (int) lt);
-	add_property(program, ".debug/lastcrashtime", tbuf, 0);
-    }
-}
-
-
-
 void
 push(struct inst *stack, int *top, int type, voidptr res)
 {
@@ -1812,15 +1768,12 @@ push(struct inst *stack, int *top, int type, voidptr res)
     (*top)++;
 }
 
-
 int
 valid_player(struct inst *oper)
 {
     return (!(oper->type != PROG_OBJECT || !ObjExists(oper->data.objref)
 	      || (Typeof(oper->data.objref) != TYPE_PLAYER)));
 }
-
-
 
 int
 valid_object(struct inst *oper)
@@ -1829,13 +1782,11 @@ valid_object(struct inst *oper)
 	      || Typeof(oper->data.objref) == TYPE_GARBAGE));
 }
 
-
 int
 is_home(struct inst *oper)
 {
     return (oper->type == PROG_OBJECT && oper->data.objref == HOME);
 }
-
 
 int
 permissions(dbref player, dbref thing)
@@ -1872,7 +1823,6 @@ find_mlev(dbref prog, struct frame * fr, int st)
     }
 }
 
-
 dbref
 find_uid(dbref player, struct frame * fr, int st, dbref program)
 {
@@ -1893,7 +1843,6 @@ find_uid(dbref player, struct frame * fr, int st, dbref program)
     }
     return (OWNER(player));
 }
-
 
 void
 do_abort_interp(dbref player, const char *msg, struct inst *pc,

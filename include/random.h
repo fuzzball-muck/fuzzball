@@ -22,12 +22,6 @@ typedef unsigned long word32;
 typedef unsigned char byte;
 #endif
 
-struct xMD5Context {
-    word32 buf[4];
-    word32 bytes[2];
-    word32 in[16];
-};
-
 void delete_seed(void *buffer);
 void *init_seed(char *seed);
 void MD5base64(char *dest, const void *orig, int len);

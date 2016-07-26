@@ -3,6 +3,7 @@
 #include "db.h"
 #include "fbstrings.h"
 #include "fbtime.h"
+#include "game.h"
 #include "hashtab.h"
 #include "interface.h"
 #include "log.h"
@@ -25,7 +26,6 @@ lookup_player(const char *name)
 	return (hd->dbval);
     }
 }
-
 
 int
 check_password(dbref player, const char *password)
@@ -53,14 +53,12 @@ check_password(dbref player, const char *password)
     return 0;
 }
 
-
 void
 set_password_raw(dbref player, const char *password)
 {
     PLAYER_SET_PASSWORD(player, password);
     DBDIRTY(player);
 }
-
 
 void
 set_password(dbref player, const char *password)
@@ -77,27 +75,6 @@ set_password(dbref player, const char *password)
 	free((void *) PLAYER_PASSWORD(player));
 
     set_password_raw(player, alloc_string(processed));
-}
-
-
-dbref
-connect_player(const char *name, const char *password)
-{
-    dbref player;
-
-    if (*name == NUMBER_TOKEN && number(name + 1) && atoi(name + 1)) {
-	player = (dbref) atoi(name + 1);
-	if (!ObjExists(player) || Typeof(player) != TYPE_PLAYER)
-	    player = NOTHING;
-    } else {
-	player = lookup_player(name);
-    }
-    if (player == NOTHING)
-	return NOTHING;
-    if (!check_password(player, password))
-	return NOTHING;
-
-    return player;
 }
 
 dbref
@@ -173,7 +150,6 @@ add_player(dbref who)
 	return;
     }
 }
-
 
 void
 delete_player(dbref who)

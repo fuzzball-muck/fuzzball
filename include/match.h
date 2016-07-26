@@ -1,6 +1,9 @@
 #ifndef _MATCH_H
 #define _MATCH_H
 
+#define NOMATCH_MESSAGE "I don't see that here."
+#define AMBIGUOUS_MESSAGE "I don't know which one you mean!"
+
 struct match_data {
     dbref exact_match;		/* holds result of exact match */
     int check_keys;		/* if non-zero, check for keys */
@@ -17,77 +20,25 @@ struct match_data {
     int partial_exits;		/* if non-zero, allow exits to match partially */
 };
 
-/* match functions */
-/* Usage: init_match(descr, player, name, type); match_this(); match_that(); ... */
-/* Then get value from match_result() */
-
-/* initialize matcher */
-void init_match(int descr, dbref player, const char *name, int type,
-		       struct match_data *md);
-void init_match_check_keys(int descr, dbref player, const char *name, int type,
-				  struct match_data *md);
-
-/* match (LOOKUP_TOKEN)player */
-void match_player(struct match_data *md);
-
-/* match (REGISTERED_TOKEN)program */
 dbref find_registered_obj(dbref player, const char *name);
-void match_registered(struct match_data *md);
-
-/* match (NUMBER_TOKEN)number */
+void init_match(int descr, dbref player, const char *name, int type, struct match_data *md);
+void init_match_check_keys(int descr, dbref player, const char *name, int type, struct match_data *md);
+void init_match_remote(int descr, dbref player, dbref what, const char *name, int type, struct match_data *md);
+dbref last_match_result(struct match_data *md);
 void match_absolute(struct match_data *md);
-
-void match_me(struct match_data *md);
-
-void match_here(struct match_data *md);
-
-void match_home(struct match_data *md);
-
-void match_nil(struct match_data *md);
-
-/* match something player is carrying */
-void match_possession(struct match_data *md);
-
-/* match something in the same room as player */
-void match_neighbor(struct match_data *md);
-
-/* match an exit from player's room */
-void match_room_exits(dbref loc, struct match_data *md);
-
-/* match an action attached to a room object */
-void match_roomobj_actions(struct match_data *md);
-
-/* match an action attached to an object in inventory */
-void match_invobj_actions(struct match_data *md);
-
-/* match an action attached to a player */
-void match_player_actions(struct match_data *md);
-
-/* match 4 above */
 void match_all_exits(struct match_data *md);
-
-/* only used for rmatch */
-void match_rmatch(dbref, struct match_data *md);
-
-/* all of the above, except only Wizards do match_absolute and match_player */
-void match_everything(struct match_data *md);
-
-/* return match results */
-dbref match_result(struct match_data *md);	/* returns AMBIGUOUS for
-
-							   multiple inexacts */
-dbref last_match_result(struct match_data *md);	/* returns last
-
-							   result */
-
-#define NOMATCH_MESSAGE "I don't see that here."
-#define AMBIGUOUS_MESSAGE "I don't know which one you mean!"
-
-dbref noisy_match_result(struct match_data *md);
-
-void init_match_remote(int descr, dbref player, dbref what, const char *name, int type,
-                              struct match_data *md);
-
 dbref match_controlled(int descr, dbref player, const char *name);
+void match_everything(struct match_data *md);
+void match_here(struct match_data *md);
+void match_home(struct match_data *md);
+void match_nil(struct match_data *md);
+void match_me(struct match_data *md);
+void match_neighbor(struct match_data *md);
+void match_player(struct match_data *md);
+void match_possession(struct match_data *md);
+void match_registered(struct match_data *md);
+dbref match_result(struct match_data *md);	
+void match_rmatch(dbref, struct match_data *md);
+dbref noisy_match_result(struct match_data *md);
 
 #endif				/* _MATCH_H */

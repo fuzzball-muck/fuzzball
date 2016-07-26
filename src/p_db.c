@@ -28,7 +28,7 @@ static int tmp, result;
 static dbref ref;
 static char buf[BUFFER_LEN];
 
-void
+static void
 copyobj(dbref player, dbref old, dbref nu)
 {
     struct object *newp = DBFETCH(nu);
@@ -57,8 +57,6 @@ copyobj(dbref player, dbref old, dbref nu)
 
     DBDIRTY(nu);
 }
-
-
 
 void
 prim_addpennies(PRIM_PROTOTYPE)
@@ -260,7 +258,6 @@ prim_pennies(PRIM_PROTOTYPE)
     PushInt(result);
 }
 
-
 void
 prim_dbcomp(PRIM_PROTOTYPE)
 {
@@ -329,7 +326,6 @@ prim_exits(PRIM_PROTOTYPE)
     PushObject(ref);
 }
 
-
 void
 prim_next(PRIM_PROTOTYPE)
 {
@@ -345,7 +341,6 @@ prim_next(PRIM_PROTOTYPE)
     CLEAR(oper1);
     PushObject(ref);
 }
-
 
 void
 prim_nextowned(PRIM_PROTOTYPE)
@@ -376,7 +371,6 @@ prim_nextowned(PRIM_PROTOTYPE)
     CLEAR(oper1);
     PushObject(ref);
 }
-
 
 void
 prim_name(PRIM_PROTOTYPE)
@@ -505,7 +499,6 @@ prim_pmatch(PRIM_PROTOTYPE)
     PushObject(ref);
 }
 
-
 void
 prim_match(PRIM_PROTOTYPE)
 {
@@ -550,7 +543,6 @@ prim_match(PRIM_PROTOTYPE)
     PushObject(ref);
 }
 
-
 void
 prim_rmatch(PRIM_PROTOTYPE)
 {
@@ -585,7 +577,6 @@ prim_rmatch(PRIM_PROTOTYPE)
     PushObject(ref);
 }
 
-
 void
 prim_copyobj(PRIM_PROTOTYPE)
 {
@@ -615,10 +606,8 @@ prim_copyobj(PRIM_PROTOTYPE)
     }
 }
 
-
 void
 prim_set(PRIM_PROTOTYPE)
-/* SET */
 {
     CHECKOP(2);
     oper1 = POP();
@@ -749,7 +738,6 @@ prim_set(PRIM_PROTOTYPE)
 
 void
 prim_mlevel(PRIM_PROTOTYPE)
-/* MLEVEL */
 {
     CHECKOP(1);
     oper1 = POP();
@@ -764,7 +752,6 @@ prim_mlevel(PRIM_PROTOTYPE)
 
 void
 prim_flagp(PRIM_PROTOTYPE)
-/* FLAG? */
 {
     int truwiz = 0;
 
@@ -862,7 +849,6 @@ prim_flagp(PRIM_PROTOTYPE)
     PushInt(result);
 }
 
-
 void
 prim_playerp(PRIM_PROTOTYPE)
 {
@@ -880,7 +866,6 @@ prim_playerp(PRIM_PROTOTYPE)
     CLEAR(oper1);
     PushInt(result);
 }
-
 
 void
 prim_thingp(PRIM_PROTOTYPE)
@@ -900,7 +885,6 @@ prim_thingp(PRIM_PROTOTYPE)
     PushInt(result);
 }
 
-
 void
 prim_roomp(PRIM_PROTOTYPE)
 {
@@ -918,7 +902,6 @@ prim_roomp(PRIM_PROTOTYPE)
     CLEAR(oper1);
     PushInt(result);
 }
-
 
 void
 prim_programp(PRIM_PROTOTYPE)
@@ -938,7 +921,6 @@ prim_programp(PRIM_PROTOTYPE)
     PushInt(result);
 }
 
-
 void
 prim_exitp(PRIM_PROTOTYPE)
 {
@@ -956,7 +938,6 @@ prim_exitp(PRIM_PROTOTYPE)
     CLEAR(oper1);
     PushInt(result);
 }
-
 
 void
 prim_okp(PRIM_PROTOTYPE)
@@ -1096,7 +1077,7 @@ prim_getlinks(PRIM_PROTOTYPE)
     }
 }
 
-int
+static int
 prog_can_link_to(int mlev, dbref who, object_flag_type what_type, dbref where)
 {
     if (where == HOME)
@@ -1125,7 +1106,6 @@ prog_can_link_to(int mlev, dbref who, object_flag_type what_type, dbref where)
     }
     return 0;
 }
-
 
 void
 prim_setlink(PRIM_PROTOTYPE)
@@ -1419,7 +1399,6 @@ prim_lockedp(PRIM_PROTOTYPE)
     PushInt(result);
 }
 
-
 void
 prim_recycle(PRIM_PROTOTYPE)
 {
@@ -1464,7 +1443,7 @@ prim_recycle(PRIM_PROTOTYPE)
 /* sets a lock on an object to the lockstring passed to it.
    If the lockstring is null, then it unlocks the object.
    this returns a 1 or a 0 to represent success. */
-int
+static int
 setlockstr(int descr, dbref player, dbref thing, const char *keyname)
 {
     struct boolexp *key;
@@ -1505,7 +1484,6 @@ prim_setlockstr(PRIM_PROTOTYPE)
     PushInt(result);
 }
 
-
 void
 prim_getlockstr(PRIM_PROTOTYPE)
 {
@@ -1526,7 +1504,6 @@ prim_getlockstr(PRIM_PROTOTYPE)
     }
 }
 
-
 void
 prim_part_pmatch(PRIM_PROTOTYPE)
 {
@@ -1544,7 +1521,6 @@ prim_part_pmatch(PRIM_PROTOTYPE)
     CLEAR(oper1);
     PushObject(ref);
 }
-
 
 void
 prim_checkpassword(PRIM_PROTOTYPE)
@@ -1624,7 +1600,6 @@ prim_movepennies(PRIM_PROTOTYPE)
     CLEAR(oper3);
 }
 
-
 void
 prim_findnext(PRIM_PROTOTYPE)
 {
@@ -1697,11 +1672,6 @@ prim_findnext(PRIM_PROTOTYPE)
 
     PushObject(ref);
 }
-
-
-/* ============================ */
-/* = More ProtoMuck prims     = */
-/* ============================ */
 
 void
 prim_nextentrance(PRIM_PROTOTYPE)
@@ -1988,8 +1958,6 @@ prim_objmem(PRIM_PROTOTYPE)
     PushInt(i);
 }
 
-
-
 void
 prim_instances(PRIM_PROTOTYPE)
 {
@@ -2029,7 +1997,6 @@ prim_compiledp(PRIM_PROTOTYPE)
     i = PROGRAM_SIZ(ref);
     PushInt(i);
 }
-
 
 void
 prim_newpassword(PRIM_PROTOTYPE)
@@ -2121,8 +2088,6 @@ prim_newprogram(PRIM_PROTOTYPE)
     PushObject(newprog);
 }
 
-extern struct line *read_program(dbref prog);
-
 void
 prim_compile(PRIM_PROTOTYPE)
 {
@@ -2151,7 +2116,6 @@ prim_compile(PRIM_PROTOTYPE)
     PushInt(PROGRAM_SIZ(ref));
 }
 
-
 void
 prim_uncompile(PRIM_PROTOTYPE)
 {
@@ -2170,7 +2134,6 @@ prim_uncompile(PRIM_PROTOTYPE)
 	abort_interp("That program is currently in use.");
     uncompile_program(ref);
 }
-
 
 void
 prim_getpids(PRIM_PROTOTYPE)
@@ -2249,7 +2212,6 @@ prim_getpidinfo(PRIM_PROTOTYPE)
     PushArrayRaw(nu);
 }
 
-
 void
 prim_contents_array(PRIM_PROTOTYPE)
 {
@@ -2317,7 +2279,7 @@ prim_exits_array(PRIM_PROTOTYPE)
     PushArrayRaw(nw);
 }
 
-stk_array *
+static stk_array *
 array_getlinks(dbref obj)
 {
     stk_array *nw = new_array_packed(0);

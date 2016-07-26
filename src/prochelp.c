@@ -38,7 +38,6 @@
 #define HTML_ALSOSEE_ENTRY      "    <a href=\"#%s\">%s</a>"
 #define HTML_ALSOSEE_END        "\n</h5>\n"
 
-
 const char *title = "";
 const char *author = "";
 const char *doccmd = "";
@@ -54,7 +53,6 @@ string_dup(const char *s)
     return p;
 }
 
-/* from stringutil.c */
 char *
 strcpyn(char *buf, size_t bufsize, const char *src)
 {
@@ -68,8 +66,6 @@ strcpyn(char *buf, size_t bufsize, const char *src)
     return buf;
 }
 
-
-
 char sect[256] = "";
 
 struct topiclist {
@@ -81,7 +77,6 @@ struct topiclist {
 
 struct topiclist *topichead;
 struct topiclist *secthead;
-
 
 void
 add_section(const char *str)
@@ -273,16 +268,6 @@ print_section_topics(FILE * f, FILE * hf, const char *whichsect)
 		fprintf(f, "%s\n", buf);
 	    fprintf(f, "\n");
 	}
-    }
-}
-
-void
-print_all_section_topics(FILE * f, FILE * hf)
-{
-    struct topiclist *sptr;
-
-    for (sptr = secthead; sptr; sptr = sptr->next) {
-	print_section_topics(f, hf, sptr->section);
     }
 }
 
@@ -510,7 +495,6 @@ find_topics(FILE * infile)
     return (longest);
 }
 
-
 void
 process_lines(FILE * infile, FILE * outfile, FILE * htmlfile, int cols)
 {
@@ -671,7 +655,6 @@ process_lines(FILE * infile, FILE * outfile, FILE * htmlfile, int cols)
     fprintf(htmlfile, HTML_PAGE_FOOT);
     fclose(docsfile);
 }
-
 
 int
 main(int argc, char **argv)

@@ -4,24 +4,7 @@
 #include "config.h"
 
 #include "array.h"
-
-typedef struct timenode {
-    struct timenode *next;
-    int typ;
-    int subtyp;
-    time_t when;
-    int descr;
-    dbref called_prog;
-    char *called_data;
-    char *command;
-    char *str3;
-    dbref uid;
-    dbref loc;
-    dbref trig;
-    struct frame *fr;
-    struct inst *where;
-    int eventnum;
-} *timequeue;
+#include "interp.h"
 
 int add_mpi_event(int delay, int descr, dbref player, dbref loc, dbref trig,
                          const char *mpi, const char *cmdstr, const char *argstr, int listen_p,

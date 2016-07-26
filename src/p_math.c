@@ -43,7 +43,6 @@ prim_add(PRIM_PROTOTYPE)
 	push(arg, top, tmp, MIPSCAST & result);
 }
 
-
 void
 prim_subtract(PRIM_PROTOTYPE)
 {
@@ -76,7 +75,6 @@ prim_subtract(PRIM_PROTOTYPE)
 	push(arg, top, tmp, MIPSCAST & result);
 }
 
-
 void
 prim_multiply(PRIM_PROTOTYPE)
 {
@@ -108,7 +106,6 @@ prim_multiply(PRIM_PROTOTYPE)
     else
 	push(arg, top, tmp, MIPSCAST & result);
 }
-
 
 void
 prim_divide(PRIM_PROTOTYPE)
@@ -151,7 +148,6 @@ prim_divide(PRIM_PROTOTYPE)
 	push(arg, top, tmp, MIPSCAST & result);
 }
 
-
 void
 prim_mod(PRIM_PROTOTYPE)
 {
@@ -171,7 +167,6 @@ prim_mod(PRIM_PROTOTYPE)
     push(arg, top, tmp, MIPSCAST & result);
 }
 
-
 void
 prim_bitor(PRIM_PROTOTYPE)
 {
@@ -186,7 +181,6 @@ prim_bitor(PRIM_PROTOTYPE)
     CLEAR(oper2);
     push(arg, top, tmp, MIPSCAST & result);
 }
-
 
 void
 prim_bitxor(PRIM_PROTOTYPE)
@@ -203,7 +197,6 @@ prim_bitxor(PRIM_PROTOTYPE)
     push(arg, top, tmp, MIPSCAST & result);
 }
 
-
 void
 prim_bitand(PRIM_PROTOTYPE)
 {
@@ -218,7 +211,6 @@ prim_bitand(PRIM_PROTOTYPE)
     CLEAR(oper2);
     push(arg, top, tmp, MIPSCAST & result);
 }
-
 
 void
 prim_bitshift(PRIM_PROTOTYPE)
@@ -239,7 +231,6 @@ prim_bitshift(PRIM_PROTOTYPE)
     CLEAR(oper2);
     push(arg, top, tmp, MIPSCAST & result);
 }
-
 
 void
 prim_and(PRIM_PROTOTYPE)
@@ -314,7 +305,6 @@ prim_lessthan(PRIM_PROTOTYPE)
     PushInt(result);
 }
 
-
 void
 prim_greathan(PRIM_PROTOTYPE)
 {
@@ -337,7 +327,6 @@ prim_greathan(PRIM_PROTOTYPE)
     CLEAR(oper2);
     PushInt(result);
 }
-
 
 void
 prim_equal(PRIM_PROTOTYPE)
@@ -380,7 +369,6 @@ prim_equal(PRIM_PROTOTYPE)
     PushInt(result);
 }
 
-
 void
 prim_lesseq(PRIM_PROTOTYPE)
 {
@@ -404,7 +392,6 @@ prim_lesseq(PRIM_PROTOTYPE)
     CLEAR(oper2);
     PushInt(result);
 }
-
 
 void
 prim_greateq(PRIM_PROTOTYPE)
@@ -527,7 +514,6 @@ prim_int(PRIM_PROTOTYPE)
     PushInt(result);
 }
 
-
 void
 prim_plusplus(PRIM_PROTOTYPE)
 {
@@ -618,8 +604,6 @@ prim_plusplus(PRIM_PROTOTYPE)
     CLEAR(oper1);
 }
 
-
-
 void
 prim_minusminus(PRIM_PROTOTYPE)
 {
@@ -709,7 +693,6 @@ prim_minusminus(PRIM_PROTOTYPE)
     }
     CLEAR(oper1);
 }
-
 
 void
 prim_abs(PRIM_PROTOTYPE)

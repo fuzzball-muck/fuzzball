@@ -222,13 +222,13 @@ struct tune_bool_entry {
 
 extern struct tune_bool_entry tune_bool_list[];
 
+void set_flags_from_tunestr(dbref obj, const char *flags);
 int tune_count_parms(void);
+void tune_freeparms(void);
+const char *tune_get_parmstring(const char *name, int mlev);
 void tune_load_parms_from_file(FILE * f, dbref player, int cnt);
+stk_array *tune_parms_array(const char *pattern, int mlev);
 void tune_save_parms_to_file(FILE * f);
 int tune_setparm(const char *parmname, const char *val, int security);
-stk_array *tune_parms_array(const char *pattern, int mlev);
-const char *tune_get_parmstring(const char *name, int mlev);
-void tune_freeparms(void);
-void set_flags_from_tunestr(dbref obj, const char *flags);
 
 #endif				/* _TUNE_H */

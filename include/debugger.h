@@ -1,7 +1,7 @@
 #ifndef _DEBUGGER_H
 #define _DEBUGGER_H
-
 #include "db.h"
+#include "inst.h"
 #include "interp.h"
 
 void list_proglines(dbref player, dbref program, struct frame *fr, int start, int end);

@@ -10,7 +10,19 @@
 
 extern FILE *input_file;
 extern short db_conversion_flag;
-extern void getproperties(FILE * f, dbref obj, const char *pdir);
+
+#define FETCHSTATS_INTERVAL1 120
+#define FETCHSTATS_INTERVAL2 600
+#define FETCHSTATS_INTERVAL3 3600
+
+#define FETCHSTATS_SLOT_TIME 30
+#define FETCHSTATS_SLOTS ((FETCHSTATS_INTERVAL3 / FETCHSTATS_SLOT_TIME) + 1)
+
+struct pload_Q {
+    dbref obj;
+    long count;
+    int Qtype;
+};
 
 struct pload_Q propchanged_Q = { NOTHING, 0, PROPS_CHANGED };
 struct pload_Q proploaded_Q = { NOTHING, 0, PROPS_LOADED };
@@ -18,6 +30,11 @@ struct pload_Q proppri_Q = { NOTHING, 0, PROPS_PRIORITY };
 
 long propcache_hits = 0L;
 long propcache_misses = 0L;
+
+static int fetchstats[FETCHSTATS_SLOTS];
+static int lastfetchslot = -1;
+
+static int fetchprops_priority(dbref obj, int mode, const char *pdir);
 
 int
 fetch_propvals(dbref obj, const char *dir)
@@ -113,7 +130,7 @@ skipproperties(FILE * f, dbref obj)
     }
 }
 
-void
+static void
 removeobj_ringqueue(dbref obj)
 {
     struct pload_Q *ref = NULL;
@@ -152,7 +169,7 @@ removeobj_ringqueue(dbref obj)
     ref->count--;
 }
 
-void
+static void
 addobject_ringqueue(dbref obj, int mode)
 {
     struct pload_Q *ref = NULL;
@@ -191,7 +208,7 @@ addobject_ringqueue(dbref obj, int mode)
 }
 
 
-dbref
+static dbref
 first_ringqueue_obj(struct pload_Q *ref)
 {
     if (!ref)
@@ -200,7 +217,7 @@ first_ringqueue_obj(struct pload_Q *ref)
 }
 
 
-dbref
+static dbref
 next_ringqueue_obj(struct pload_Q * ref, dbref obj)
 {
     if (DBFETCH(obj)->nextold == ref->obj)
@@ -208,18 +225,7 @@ next_ringqueue_obj(struct pload_Q * ref, dbref obj)
     return (DBFETCH(obj)->nextold);
 }
 
-
-#define FETCHSTATS_INTERVAL1 120
-#define FETCHSTATS_INTERVAL2 600
-#define FETCHSTATS_INTERVAL3 3600
-
-#define FETCHSTATS_SLOT_TIME 30
-#define FETCHSTATS_SLOTS ((FETCHSTATS_INTERVAL3 / FETCHSTATS_SLOT_TIME) + 1)
-
-static int fetchstats[FETCHSTATS_SLOTS];
-static int lastfetchslot = -1;
-
-void
+static void
 update_fetchstats(void)
 {
     time_t now;
@@ -241,8 +247,7 @@ update_fetchstats(void)
     fetchstats[slot] += 1;
 }
 
-
-void
+static void
 report_fetchstats(dbref player)
 {
     int i, count, slot;
@@ -310,8 +315,7 @@ report_fetchstats(dbref player)
 	    (maxv * 60.0 / FETCHSTATS_SLOT_TIME));
 }
 
-
-void
+static void
 report_cachestats(dbref player)
 {
     dbref obj;
@@ -351,7 +355,6 @@ report_cachestats(dbref player)
     }
 }
 
-
 void
 do_dbginfo(dbref player)
 {
@@ -372,7 +375,6 @@ do_dbginfo(dbref player)
     notify(player, "Done.");
 }
 
-
 void
 unloadprops_with_prejudice(dbref obj)
 {
@@ -388,8 +390,7 @@ unloadprops_with_prejudice(dbref obj)
     DBFETCH(obj)->propstime = 0;
 }
 
-
-int
+static int
 disposeprops_notime(dbref obj)
 {
     if (DBFETCH(obj)->propsmode == PROPS_UNLOADED)
@@ -401,15 +402,13 @@ disposeprops_notime(dbref obj)
     return 1;
 }
 
-
-int
+static int
 disposeprops(dbref obj)
 {
     if ((time(NULL) - DBFETCH(obj)->propstime) < tp_clean_interval)
 	return 0;		/* don't dispose if less than X minutes old */
     return disposeprops_notime(obj);
 }
-
 
 void
 dispose_all_oldprops(void)
@@ -422,7 +421,7 @@ dispose_all_oldprops(void)
     }
 }
 
-void
+static void
 housecleanprops(void)
 {
     int limit, max;
@@ -443,8 +442,7 @@ housecleanprops(void)
     }
 }
 
-
-int
+static int
 fetchprops_priority(dbref obj, int mode, const char *pdir)
 {
     const char *s;
@@ -492,13 +490,11 @@ fetchprops_priority(dbref obj, int mode, const char *pdir)
     return 1;
 }
 
-
 void
 fetchprops(dbref obj, const char *pdir)
 {
     fetchprops_priority(obj, 0, pdir);
 }
-
 
 void
 dirtyprops(dbref obj)
@@ -523,7 +519,6 @@ undirtyprops(dbref obj)
     addobject_ringqueue(obj, PROPS_LOADED);
     disposeprops(obj);
 }
-
 
 int
 propfetch(dbref obj, PropPtr p)

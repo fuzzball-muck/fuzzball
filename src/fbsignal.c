@@ -1,8 +1,9 @@
 #include "config.h"
 
+#include "fbsignal.h"
+#include "game.h"
 #include "interface.h"
 #include "log.h"
-#include "fbsignal.h"
 
 #ifdef SOLARIS
 #  ifndef _POSIX_SOURCE
@@ -189,7 +190,7 @@ set_sigs_intern(int bail)
 void
 set_signals(void)
 {
-    set_sigs_intern(FALSE);
+    set_sigs_intern(0);
 }
 
 /*
@@ -205,7 +206,7 @@ bailout(int sig)
     char message[1024];
 
     /* turn off signals */
-    set_sigs_intern(TRUE);
+    set_sigs_intern(1);
 
     snprintf(message, sizeof(message), "BAILOUT: caught signal %d", sig);
 
@@ -402,16 +403,16 @@ HandleConsole(DWORD mesg)
 	break;
 
     default:
-	return FALSE;
+	return 0;
     }
 
-    return TRUE;
+    return 1;
 }
 
 void
 set_console()
 {
-    SetConsoleCtrlHandler(HandleConsole, TRUE);
+    SetConsoleCtrlHandler(HandleConsole, 1);
     SetConsoleTitle(VERSION);
 }
 

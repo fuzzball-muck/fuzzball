@@ -206,7 +206,7 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
     return;
 }
 
-int
+static int
 blessprops_wildcard(dbref player, dbref thing, const char *dir, const char *wild, int blessp)
 {
     char propname[BUFFER_LEN];
@@ -286,7 +286,6 @@ do_unbless(int descr, dbref player, const char *what, const char *propname)
     cnt = blessprops_wildcard(player, victim, "", propname, 0);
     notifyf(player, "%d propert%s unblessed.", cnt, (cnt == 1) ? "y" : "ies");
 }
-
 
 void
 do_bless(int descr, dbref player, const char *what, const char *propname)
@@ -563,7 +562,6 @@ do_stats(dbref player, const char *name)
     }
 }
 
-
 void
 do_boot(dbref player, const char *name)
 {
@@ -800,8 +798,6 @@ do_usage(dbref player)
 }
 #endif				/* NO_USAGE_COMMAND */
 
-
-
 void
 do_muf_topprofs(dbref player, char *arg1)
 {
@@ -896,7 +892,6 @@ do_muf_topprofs(dbref player, char *arg1)
     notify(player, "*Done*");
 }
 
-
 void
 do_mpi_topprofs(dbref player, char *arg1)
 {
@@ -989,7 +984,6 @@ do_mpi_topprofs(dbref player, char *arg1)
 	    (double) ((current_systime - sel_prof_start_time) + 0.01), sel_prof_idle_use);
     notify(player, "*Done*");
 }
-
 
 void
 do_topprofs(dbref player, char *arg1)

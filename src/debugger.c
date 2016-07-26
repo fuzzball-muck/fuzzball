@@ -10,6 +10,34 @@
 #include "params.h"
 #include "timequeue.h"
 
+int
+scopedvar_getnum(struct frame *fr, int level, const char *varname)
+{
+    struct scopedvar_t *svinfo = NULL;
+
+    assert(varname != NULL);
+    assert(*varname != '\0');
+
+    svinfo = fr ? fr->svars : NULL;
+
+    while (svinfo && level-- > 0)
+        svinfo = svinfo->next;
+
+    if (!svinfo) {
+        return -1;
+    }
+    if (!svinfo->varnames) {
+        return -1;
+    }
+    for (int varnum = 0; varnum < svinfo->count; varnum++) {
+        assert(svinfo->varnames[varnum] != NULL);
+        if (!string_compare(svinfo->varnames[varnum], varname)) {
+            return varnum;
+        }
+    }
+    return -1;
+}
+
 void
 list_proglines(dbref player, dbref program, struct frame *fr, int start, int end)
 {
@@ -469,9 +497,6 @@ push_arg(dbref player, struct frame *fr, const char *arg)
 	}
     }
 }
-
-
-extern int primitive(const char *token);
 
 static struct inst primset[5];
 static struct muf_proc_data temp_muf_proc_data = {

@@ -34,15 +34,49 @@
 #include <windows.h>
 #endif
 
+#define Matched(string) { if(!string_prefix((string), command)) goto bad; }
+
+int force_level = 0;
+dbref force_prog = NOTHING;	/* Set when a program is the source of FORCE */
+
+const char *compile_options =
+#ifdef DEBUG
+	"DEBUG "
+#endif
+#ifdef DETACH
+	"DETACH "
+#endif
+#ifdef DISKBASE
+	"DISKBASE "
+#endif
+#ifdef GOD_PRIV
+	"GODPRIV "
+#endif
+#ifdef USE_IPV6
+	"IPV6 "
+#endif
+#ifdef MALLOC_PROFILING
+	"MEMPROF "
+#endif
+#ifdef MCP_SUPPORT
+	"MCP "
+#endif
+#ifdef SPAWN_HOST_RESOLVER
+	"RESOLVER "
+#endif
+#ifdef HAVE_LIBSSL
+	"SSL "
+#endif
+	"";
+
+extern short db_conversion_flag;
+
 /* declarations */
 static const char *dumpfile = 0;
 static int epoch = 0;
 static int forked_dump_process_flag = 0;
 FILE *input_file;
 static char *in_filename = NULL;
-
-void fork_and_dump(void);
-void dump_database(void);
 
 void
 do_dump(dbref player, const char *newfile)
@@ -315,8 +349,6 @@ fork_and_dump(void)
 #endif
 }
 
-extern short db_conversion_flag;
-
 int
 init_game(const char *infile, const char *outfile)
 {
@@ -385,42 +417,6 @@ do_restrict(dbref player, const char *arg)
     }
 }
 
-
-/* use this only in process_command */
-#define Matched(string) { if(!string_prefix((string), command)) goto bad; }
-
-int force_level = 0;
-dbref force_prog = NOTHING;	/* Set when a program is the source of FORCE */
-
-const char *compile_options =
-#ifdef DEBUG
-	"DEBUG "
-#endif
-#ifdef DETACH
-	"DETACH "
-#endif
-#ifdef DISKBASE
-	"DISKBASE "
-#endif
-#ifdef GOD_PRIV
-	"GODPRIV "
-#endif
-#ifdef USE_IPV6
-	"IPV6 "
-#endif
-#ifdef MALLOC_PROFILING
-	"MEMPROF "
-#endif
-#ifdef MCP_SUPPORT
-	"MCP "
-#endif
-#ifdef SPAWN_HOST_RESOLVER
-	"RESOLVER "
-#endif
-#ifdef HAVE_LIBSSL
-	"SSL "
-#endif
-	"";
 void
 process_command(int descr, dbref player, char *command)
 {

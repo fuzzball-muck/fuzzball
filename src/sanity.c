@@ -18,10 +18,29 @@
 #include <stdarg.h>
 
 #define unparse(x) ((char*)unparse_object(GOD, (x)))
+#define SanFixed(ref, fixed) san_fixed_log((fixed), 1, (ref), -1)
+#define SanFixed2(ref, ref2, fixed) san_fixed_log((fixed), 1, (ref), (ref2))
+#define SanFixedRef(ref, fixed) san_fixed_log((fixed), 0, (ref), -1)
 
 int sanity_violated = 0;
 
-void
+static void
+flush_user_output(dbref player)
+{
+    int *darr;
+    int dcount;
+    struct descriptor_data *d;
+
+    darr = get_player_descrs(OWNER(player), &dcount);
+    for (int di = 0; di < dcount; di++) {
+        d = descrdata_by_descr(darr[di]);
+        if (d && !process_output(d)) {
+            d->booted = 1;
+        }
+    }
+}
+
+static void
 SanPrint(dbref player, const char *format, ...)
 {
     va_list args;
@@ -46,7 +65,6 @@ SanPrint(dbref player, const char *format, ...)
 
     va_end(args);
 }
-
 
 void
 do_examine_sanity(dbref player, const char *arg)
@@ -122,14 +140,12 @@ do_examine_sanity(dbref player, const char *arg)
     SanPrint(player, "Done.");
 }
 
-
-void
+static void
 violate(dbref player, dbref i, const char *s)
 {
     SanPrint(player, "Object \"%s\" %s!", unparse(i), s);
     sanity_violated = 1;
 }
-
 
 static void
 check_next_chain(dbref player, dbref obj)
@@ -154,7 +170,6 @@ check_next_chain(dbref player, dbref obj)
 	violate(player, obj, "has an invalid object in its 'next' chain");
     }
 }
-
 
 static void
 find_orphan_objects(dbref player)
@@ -209,8 +224,7 @@ find_orphan_objects(dbref player)
     }
 }
 
-
-void
+static void
 check_room(dbref player, dbref obj)
 {
     dbref i;
@@ -224,8 +238,7 @@ check_room(dbref player, dbref obj)
     }
 }
 
-
-void
+static void
 check_thing(dbref player, dbref obj)
 {
     dbref i;
@@ -240,8 +253,7 @@ check_thing(dbref player, dbref obj)
     }
 }
 
-
-void
+static void
 check_exit(dbref player, dbref obj)
 {
     if (DBFETCH(obj)->sp.exit.ndest < 0)
@@ -255,8 +267,7 @@ check_exit(dbref player, dbref obj)
     }
 }
 
-
-void
+static void
 check_player(dbref player, dbref obj)
 {
     dbref i;
@@ -270,7 +281,7 @@ check_player(dbref player, dbref obj)
     }
 }
 
-void
+static void
 check_garbage(dbref player, dbref obj)
 {
     if (NEXTOBJ(obj) != NOTHING && Typeof(NEXTOBJ(obj)) != TYPE_GARBAGE) {
@@ -279,8 +290,7 @@ check_garbage(dbref player, dbref obj)
     }
 }
 
-
-void
+static void
 check_contents_list(dbref player, dbref obj)
 {
     dbref i;
@@ -323,8 +333,7 @@ check_contents_list(dbref player, dbref obj)
     }
 }
 
-
-void
+static void
 check_exits_list(dbref player, dbref obj)
 {
     dbref i;
@@ -364,8 +373,7 @@ check_exits_list(dbref player, dbref obj)
     }
 }
 
-
-void
+static void
 check_object(dbref player, dbref obj)
 {
     /*
@@ -427,7 +435,6 @@ check_object(dbref player, dbref obj)
     }
 }
 
-
 void
 do_sanity(dbref player)
 {
@@ -453,10 +460,7 @@ do_sanity(dbref player)
     SanPrint(player, "Done.");
 }
 
-#define SanFixed(ref, fixed) san_fixed_log((fixed), 1, (ref), -1)
-#define SanFixed2(ref, ref2, fixed) san_fixed_log((fixed), 1, (ref), (ref2))
-#define SanFixedRef(ref, fixed) san_fixed_log((fixed), 0, (ref), -1)
-void
+static void
 san_fixed_log(char *format, int unparse, dbref ref1, dbref ref2)
 {
     char buf1[4096];
@@ -475,7 +479,7 @@ san_fixed_log(char *format, int unparse, dbref ref1, dbref ref2)
     }
 }
 
-void
+static void
 cut_all_chains(dbref obj)
 {
     if (CONTENTS(obj) != NOTHING) {
@@ -490,7 +494,7 @@ cut_all_chains(dbref obj)
     }
 }
 
-void
+static void
 cut_bad_recyclable(void)
 {
     dbref loop, prev;
@@ -514,7 +518,7 @@ cut_bad_recyclable(void)
     }
 }
 
-void
+static void
 cut_bad_contents(dbref obj)
 {
     dbref loop, prev;
@@ -552,7 +556,7 @@ cut_bad_contents(dbref obj)
     }
 }
 
-void
+static void
 cut_bad_exits(dbref obj)
 {
     dbref loop, prev;
@@ -588,7 +592,7 @@ cut_bad_exits(dbref obj)
     }
 }
 
-void
+static void
 hacksaw_bad_chains(void)
 {
     cut_bad_recyclable();
@@ -603,7 +607,7 @@ hacksaw_bad_chains(void)
     }
 }
 
-char *
+static char *
 rand_password(void)
 {
     char pwdchars[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -617,7 +621,7 @@ rand_password(void)
     return alloc_string(password);
 }
 
-void
+static void
 create_lostandfound(dbref * player, dbref * room)
 {
     char player_name[PLAYER_NAME_LIMIT + 2] = "lost+found";
@@ -667,7 +671,7 @@ create_lostandfound(dbref * player, dbref * room)
     DBDIRTY(GLOBAL_ENVIRONMENT);
 }
 
-void
+static void
 fix_room(dbref obj)
 {
     dbref i;
@@ -685,7 +689,7 @@ fix_room(dbref obj)
     }
 }
 
-void
+static void
 fix_thing(dbref obj)
 {
     dbref i;
@@ -700,7 +704,7 @@ fix_thing(dbref obj)
     }
 }
 
-void
+static void
 fix_exit(dbref obj)
 {
     for (int i = 0; i < DBFETCH(obj)->sp.exit.ndest;) {
@@ -717,7 +721,7 @@ fix_exit(dbref obj)
     }
 }
 
-void
+static void
 fix_player(dbref obj)
 {
     dbref i;
@@ -731,7 +735,7 @@ fix_player(dbref obj)
     }
 }
 
-void
+static void
 find_misplaced_objects(void)
 {
     dbref player = NOTHING, room = NOTHING;
@@ -852,7 +856,7 @@ find_misplaced_objects(void)
     }
 }
 
-void
+static void
 adopt_orphans(void)
 {
     for (dbref loop = 0; loop < db_top; loop++) {
@@ -885,7 +889,7 @@ adopt_orphans(void)
     }
 }
 
-void
+static void
 clean_global_environment(void)
 {
     if (NEXTOBJ(GLOBAL_ENVIRONMENT) != NOTHING) {
@@ -947,8 +951,6 @@ do_sanfix(dbref player)
 		 "WARNING: The database is still corrupted, please repair by hand");
     }
 }
-
-
 
 static char cbuf[1000];
 static char buf2[1000];
@@ -1056,7 +1058,7 @@ do_sanchange(dbref player, const char *command)
     }
 }
 
-void
+static void
 extract_prop(FILE * f, const char *dir, PropPtr p)
 {
     char buf[BUFFER_LEN * 2];
@@ -1118,7 +1120,7 @@ extract_prop(FILE * f, const char *dir, PropPtr p)
     }
 }
 
-void
+static void
 extract_props_rec(FILE * f, dbref obj, const char *dir, PropPtr p)
 {
     char buf[BUFFER_LEN];
@@ -1136,13 +1138,13 @@ extract_props_rec(FILE * f, dbref obj, const char *dir, PropPtr p)
 }
 
 
-void
+static void
 extract_props(FILE * f, dbref obj)
 {
     extract_props_rec(f, obj, "/", DBFETCH(obj)->properties);
 }
 
-void
+static void
 extract_program(FILE * f, dbref obj)
 {
     char buf[BUFFER_LEN];
@@ -1163,8 +1165,7 @@ extract_program(FILE * f, dbref obj)
     fprintf(f, "  End of program listing (%d lines)\n", c);
 }
 
-
-void
+static void
 extract_object(FILE * f, dbref d)
 {
     fprintf(f, "  #%d\n", d);
@@ -1220,7 +1221,7 @@ extract_object(FILE * f, dbref d)
     fprintf(f, "\n");
 }
 
-void
+static void
 extract(void)
 {
     dbref d;
@@ -1258,7 +1259,7 @@ extract(void)
     printf("\nDone.\n");
 }
 
-void
+static void
 extract_single(void)
 {
     dbref d;
@@ -1294,8 +1295,7 @@ extract_single(void)
     printf("\nDone.\n");
 }
 
-
-void
+static void
 hack_it_up(void)
 {
     char *ptr;
@@ -1370,7 +1370,6 @@ hack_it_up(void)
 
     printf("Quitting.\n\n");
 }
-
 
 void
 san_main(void)

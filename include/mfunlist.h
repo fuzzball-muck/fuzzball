@@ -1,10 +1,6 @@
 #ifndef _MFUNLIST_H
 #define _MFUNLIST_H
 
-/*********************************************************************
- *  mfunlist.h   MPI functions list.    7/30/94
- *********************************************************************/
-
 typedef struct mfun_dat MFNDAT;
 
 struct mfun_dat {
@@ -17,7 +13,6 @@ struct mfun_dat {
     short maxargs;
 };
 
-/******** MFUN LIST ********/
 #ifdef DEFINE_MFUN_LIST
 static MFNDAT mfun_list[] = {
     /* Name, Func, Preparse?, Postparse?, strip?, Minargs, Maxargs  */

@@ -1,7 +1,7 @@
 #ifndef _LOG_H
 #define _LOG_H
 
-#include "db.h"
+#include "inst.h"
 
 void log2file(char *myfilename, char *format, ...);
 void log_command(char *format, ...);

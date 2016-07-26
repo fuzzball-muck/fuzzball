@@ -4,6 +4,7 @@
 void add_player(dbref who);
 int check_password(dbref player, const char *password);
 void clear_players(void);
+dbref create_player(const char *name, const char *password);
 void delete_player(dbref who);
 dbref lookup_player(const char *name);
 int ok_password(const char *password);

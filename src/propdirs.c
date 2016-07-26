@@ -36,7 +36,6 @@ propdir_new_elem(PropPtr * root, char *path)
     }
 }
 
-
 /* returns pointer to the updated propdir structure's root node */
 /* root is the pointer to the root propdir node */
 /* path is the name of the property to delete */
@@ -78,7 +77,6 @@ propdir_delete_elem(PropPtr root, char *path)
     }
 }
 
-
 /* returns pointer to given property */
 /* root is the pointer to the root propdir node */
 /* path is the name of the property to find */
@@ -115,7 +113,6 @@ propdir_get_elem(PropPtr root, char *path)
     }
 }
 
-
 /* returns pointer to first property in the given propdir */
 /* root is the pointer to the root propdir node */
 /* path is the name of the propdir to find the first node of */
@@ -134,7 +131,6 @@ propdir_first_elem(PropPtr root, char *path)
     }
     return (NULL);		/* nope, doesn't exist */
 }
-
 
 /* returns pointer to next property after the given one in the propdir */
 /* root is the pointer to the root propdir node */
@@ -169,7 +165,6 @@ propdir_next_elem(PropPtr root, char *path)
 	return (next_node(root, path));
     }
 }
-
 
 const char *
 propdir_name(const char *name)

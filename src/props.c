@@ -7,7 +7,7 @@
 #endif
 #include "fbmath.h"
 #include "fbstrings.h"
-#include "interface.h"
+#include "game.h"
 #include "params.h"
 #include "props.h"
 
@@ -189,7 +189,6 @@ clear_propnode(PropPtr p)
     SetPType(p, PROP_DIRTYP);
 }
 
-
 static PropPtr
 insert(char *key, PropPtr * avl)
 {
@@ -264,7 +263,6 @@ remove_propnode(char *key, PropPtr * root)
     return save;
 }
 
-
 static PropPtr
 delnode(char *key, PropPtr avl)
 {
@@ -319,7 +317,6 @@ first_node(PropPtr list)
     return (list);
 }
 
-
 PropPtr
 next_node(PropPtr ptr, char *name)
 {
@@ -347,7 +344,6 @@ next_node(PropPtr ptr, char *name)
 	return NULL;
     }
 }
-
 
 /* copies properties */
 void
@@ -393,8 +389,6 @@ copy_proplist(dbref obj, PropPtr * nu, PropPtr old)
     }
 }
 
-
-
 long
 size_proplist(PropPtr avl)
 {
@@ -422,8 +416,6 @@ size_proplist(PropPtr avl)
     bytes += size_proplist(PropDir(avl));
     return bytes;
 }
-
-
 
 int
 Prop_Check(const char *name, const char what)

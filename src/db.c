@@ -39,6 +39,7 @@ extern char *alloc_string(const char *);
 #endif
 
 extern short db_conversion_flag;
+extern FILE *input_file;
 
 #ifdef DB_DOUBLING
 
@@ -223,9 +224,6 @@ putproperties(FILE * f, dbref obj)
     putstring(f, "*End*");
 }
 
-
-extern FILE *input_file;
-
 int
 db_write_object(FILE * f, dbref i)
 {
@@ -318,7 +316,7 @@ getref(FILE * f)
     return atol(buf);
 }
 
-const char *
+static const char *
 getstring(FILE * f)
 {
     static char buf[BUFFER_LEN];
@@ -344,7 +342,7 @@ getstring(FILE * f)
     return alloc_string(buf);
 }
 
-int
+static int
 db_read_header(FILE * f, int *grow)
 {
     int result = 0;
@@ -374,7 +372,7 @@ db_read_header(FILE * f, int *grow)
     return load_format;
 }
 
-void
+static void
 db_write_header(FILE * f)
 {
     putstring(f, DB_VERSION_STRING);
@@ -510,7 +508,7 @@ db_free(void)
     recyclable = NOTHING;
 }
 
-void
+static void
 db_read_object(FILE * f, dbref objno, int dtype)
 {
     int tmp, c, prop_flag = 0;
@@ -938,7 +936,7 @@ ok_name(const char *name)
             ));
 }
 
-dbref
+static dbref
 getparent_logic(dbref obj)
 {
     if (obj == NOTHING)
@@ -1138,7 +1136,7 @@ unset_source(dbref player, dbref action)
  * on failure.
  */
 
-dbref
+static dbref
 parse_linkable_dest(int descr, dbref player, dbref exit, const char *dest_name)
 {
     dbref dobj;                 /* destination room/player/thing/link */
@@ -1174,7 +1172,7 @@ parse_linkable_dest(int descr, dbref player, dbref exit, const char *dest_name)
     }
 }
 
-int
+static int
 _link_exit(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_list, int dryrun)
 {
     char *p, *q;

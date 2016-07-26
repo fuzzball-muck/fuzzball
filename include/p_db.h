@@ -44,8 +44,6 @@ void prim_nextowned(PRIM_PROTOTYPE);
 void prim_movepennies(PRIM_PROTOTYPE);
 void prim_findnext(PRIM_PROTOTYPE);
 void prim_setlinks_array(PRIM_PROTOTYPE);
-
-/* new protomuck prims */
 void prim_nextentrance(PRIM_PROTOTYPE);
 void prim_newplayer(PRIM_PROTOTYPE);
 void prim_copyplayer(PRIM_PROTOTYPE);

@@ -90,7 +90,7 @@ do_name(int descr, dbref player, const char *name, char *newname)
 
 /* like do_unlink, but if quiet is true, then only error messages are
    printed. */
-void
+static void
 _do_unlink(int descr, dbref player, const char *name, int quiet)
 {
     dbref exit;
@@ -167,7 +167,7 @@ do_unlink(int descr, dbref player, const char *name)
     _do_unlink(descr, player, name, 0);
 }
 
-void
+static void
 do_unlink_quiet(int descr, dbref player, const char *name)
 {
     _do_unlink(descr, player, name, 1);
@@ -381,7 +381,7 @@ do_chown(int descr, dbref player, const char *name, const char *newowner)
     DBDIRTY(thing);
 }
 
-int
+static int
 restricted(dbref player, dbref thing, object_flag_type flag)
 {
     switch (flag) {

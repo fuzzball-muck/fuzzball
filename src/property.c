@@ -17,8 +17,6 @@
 #include "props.h"
 #include "tune.h"
 
-#include <math.h>
-
 void
 set_property_nofetch(dbref player, const char *pname, PData * dat, int sync)
 {
@@ -130,7 +128,6 @@ set_property_nofetch(dbref player, const char *pname, PData * dat, int sync)
     }
 }
 
-
 void
 set_property(dbref player, const char *name, PData * dat, int sync)
 {
@@ -163,7 +160,6 @@ add_prop_nofetch(dbref player, const char *pname, const char *strval, int value)
     set_property_nofetch(player, pname, &mydat, 0);
 }
 
-
 /* adds a new property to an object */
 void
 add_property(dbref player, const char *pname, const char *strval, int value)
@@ -179,8 +175,7 @@ add_property(dbref player, const char *pname, const char *strval, int value)
     DBDIRTY(player);
 }
 
-
-void
+static void
 remove_proplist_item(dbref player, PropPtr p, int allp)
 {
     const char *ptr;
@@ -202,7 +197,6 @@ remove_proplist_item(dbref player, PropPtr p, int allp)
     }
     remove_property(player, ptr, 0);
 }
-
 
 /* removes property list --- if it's not there then ignore */
 void
@@ -270,7 +264,6 @@ remove_property_nofetch(dbref player, const char *pname, int sync)
 
 }
 
-
 void
 remove_property(dbref player, const char *pname, int sync)
 {
@@ -284,7 +277,6 @@ remove_property(dbref player, const char *pname, int sync)
     dirtyprops(player);
 #endif
 }
-
 
 PropPtr
 get_property(dbref player, const char *pname)
@@ -302,7 +294,6 @@ get_property(dbref player, const char *pname)
     p = propdir_get_elem(DBFETCH(player)->properties, w);
     return (p);
 }
-
 
 /* checks if object has property, returning 1 if it or any of its contents has
    the property stated                                                      */
@@ -328,7 +319,6 @@ has_property(int descr, dbref player, dbref what, const char *pname, const char 
     }
     return 0;
 }
-
 
 static int has_prop_recursion_limit = 2;
 /* checks if object has property, returns 1 if it has the property */
@@ -449,7 +439,6 @@ get_property_dbref(dbref player, const char *pname)
     return PropDataRef(p);
 }
 
-
 /* return boolexp lock of property */
 struct boolexp *
 get_property_lock(dbref player, const char *pname)
@@ -469,7 +458,6 @@ get_property_lock(dbref player, const char *pname)
     return PropDataLok(p);
 }
 
-
 /* return flags of property */
 int
 get_property_flags(dbref player, const char *pname)
@@ -484,7 +472,6 @@ get_property_flags(dbref player, const char *pname)
 	return 0;
     }
 }
-
 
 /* return flags of property */
 void
@@ -502,7 +489,6 @@ clear_property_flags(dbref player, const char *pname, int flags)
     }
 }
 
-
 /* return flags of property */
 void
 set_property_flags(dbref player, const char *pname, int flags)
@@ -519,9 +505,8 @@ set_property_flags(dbref player, const char *pname, int flags)
     }
 }
 
-
 /* return type of property */
-int
+static int
 get_property_type(dbref player, const char *pname)
 {
     PropPtr p;
@@ -534,8 +519,6 @@ get_property_type(dbref player, const char *pname)
 	return 0;
     }
 }
-
-
 
 PropPtr
 copy_prop(dbref old)
@@ -593,7 +576,6 @@ first_prop_nofetch(dbref player, const char *dir, PropPtr * list, char *name, in
     return (p);
 }
 
-
 /* first_prop() returns a pointer to the first property.
  * player    dbref of object that the properties are on.
  * dir       pointer to string name of the propdir
@@ -612,8 +594,6 @@ first_prop(dbref player, const char *dir, PropPtr * list, char *name, int maxlen
     return (first_prop_nofetch(player, dir, list, name, maxlen));
 }
 
-
-
 /* next_prop() returns a pointer to the next property node.
  * list    Pointer to the root node of the list.
  * prop    Pointer to the previous prop.
@@ -631,8 +611,6 @@ next_prop(PropPtr list, PropPtr prop, char *name, int maxlen)
     strcpyn(name, maxlen, PropName(p));
     return (p);
 }
-
-
 
 /* next_prop_name() returns a ptr to the string name of the next property.
  * player   object the properties are on.
@@ -694,9 +672,8 @@ size_properties(dbref player, int load)
     return size_proplist(DBFETCH(player)->properties);
 }
 
-
 /* return true if a property contains a propdir */
-int
+static int
 is_propdir_nofetch(dbref player, const char *pname)
 {
     PropPtr p;
@@ -709,7 +686,6 @@ is_propdir_nofetch(dbref player, const char *pname)
     return (PropDir(p) != (PropPtr) NULL);
 }
 
-
 int
 is_propdir(dbref player, const char *pname)
 {
@@ -720,7 +696,6 @@ is_propdir(dbref player, const char *pname)
 
     return (is_propdir_nofetch(player, pname));
 }
-
 
 PropPtr
 envprop(dbref * where, const char *propname, int typ)
@@ -740,7 +715,6 @@ envprop(dbref * where, const char *propname, int typ)
     return NULL;
 }
 
-
 const char *
 envpropstr(dbref * where, const char *propname)
 {
@@ -753,7 +727,6 @@ envpropstr(dbref * where, const char *propname)
 	return (PropDataStr(temp));
     return NULL;
 }
-
 
 char *
 displayprop(dbref player, dbref obj, const char *name, char *buf, size_t bufsiz)
@@ -1065,8 +1038,7 @@ db_putprop(FILE * f, const char *dir, PropPtr p)
     }
 }
 
-
-int
+static int
 db_dump_props_rec(dbref obj, FILE * f, const char *dir, PropPtr p)
 {
     char buf[BUFFER_LEN];
@@ -1129,15 +1101,13 @@ db_dump_props_rec(dbref obj, FILE * f, const char *dir, PropPtr p)
     return count;
 }
 
-
 void
 db_dump_props(FILE * f, dbref obj)
 {
     db_dump_props_rec(obj, f, "/", DBFETCH(obj)->properties);
 }
 
-
-void
+static void
 untouchprop_rec(PropPtr p)
 {
     if (!p)
@@ -1149,6 +1119,7 @@ untouchprop_rec(PropPtr p)
 }
 
 static dbref untouch_lastdone = 0;
+
 void
 untouchprops_incremental(int limit)
 {
@@ -1166,7 +1137,6 @@ untouchprops_incremental(int limit)
     }
     untouch_lastdone = 0;
 }
-
 
 void
 reflist_add(dbref obj, const char *propname, dbref toadd)
@@ -1242,7 +1212,6 @@ reflist_add(dbref obj, const char *propname, dbref toadd)
     }
 }
 
-
 void
 reflist_del(dbref obj, const char *propname, dbref todel)
 {
@@ -1304,7 +1273,6 @@ reflist_del(dbref obj, const char *propname, dbref todel)
 	}
     }
 }
-
 
 int
 reflist_find(dbref obj, const char *propname, dbref tofind)

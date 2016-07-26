@@ -7,6 +7,27 @@ static struct inst *oper1, *oper2, *oper3, *oper4;
 static int result;
 static char buf[BUFFER_LEN];
 
+#define ERROR_NAME_MAX_LEN 15
+#define ERROR_STRING_MAX_LEN 80
+#define ERROR_NUM 5
+
+union error_mask {
+    struct {
+        unsigned int div_zero:1;        /* Divide by zero */
+        unsigned int nan:1;     /* Result would not be a number */
+        unsigned int imaginary:1;       /* Result would be imaginary */
+        unsigned int f_bounds:1;        /* Float boundary error */
+        unsigned int i_bounds:1;        /* Integer boundary error */
+    } error_flags;
+    int is_flags;
+};
+
+struct err_type {
+    int error_bit;
+    char error_name[ERROR_NAME_MAX_LEN];
+    char error_string[ERROR_STRING_MAX_LEN];
+};
+
 static union error_mask err_bits[ERROR_NUM];
 
 static struct err_type err_defs[] = {
@@ -20,7 +41,7 @@ static struct err_type err_defs[] = {
 
 static int err_init = 0;
 
-void
+static void
 init_err_val(void)
 {
     for (int i = 0; i < ERROR_NUM; i++)
