@@ -1902,16 +1902,3 @@ Costs:
 Wizards don't need money to do anything.
 
 
-OUTPUTPREFIX [string]
-
-  Must be in all capitals, and typed in full. Prints the given line before
-the output of every command, setting them apart from other messages.
-
-
-OUTPUTSUFFIX [string]
-
-  Must be in all capitals, and typed in full. Prints the given line after
-the output of every command, setting them apart from other messages. Only
-robots may use this command.
-
-

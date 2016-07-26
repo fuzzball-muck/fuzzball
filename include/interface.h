@@ -93,8 +93,6 @@ struct descriptor_data {
     SSL *ssl_session;
 #endif
     dbref player;
-    char *output_prefix;
-    char *output_suffix;
     int output_size;
     struct text_queue output;
     struct text_queue input;
