@@ -1447,6 +1447,20 @@ shutdownsock(struct descriptor_data *d)
     log_status("CONCOUNT: There are now %d open connections.", ndescriptors);
 }
 
+#ifdef WIN32
+# define O_NONBLOCK 1
+#else
+# if !defined(O_NONBLOCK) || defined(ULTRIX)
+#  ifdef FNDELAY		/* SUN OS */
+#   define O_NONBLOCK FNDELAY
+#  else
+#   ifdef O_NDELAY		/* SyseVil */
+#    define O_NONBLOCK O_NDELAY
+#   endif
+#  endif
+# endif
+#endif
+
 void
 make_nonblocking(int s)
 {
@@ -3111,20 +3125,6 @@ process_output(struct descriptor_data *d)
     }
     return 1;
 }
-
-#ifdef WIN32
-# define O_NONBLOCK 1
-#else
-# if !defined(O_NONBLOCK) || defined(ULTRIX)	/* POSIX ME HARDER */
-#  ifdef FNDELAY		/* SUN OS */
-#   define O_NONBLOCK FNDELAY
-#  else
-#   ifdef O_NDELAY		/* SyseVil */
-#    define O_NONBLOCK O_NDELAY
-#   endif
-#  endif
-# endif
-#endif
 
 int
 boot_off(dbref player)
