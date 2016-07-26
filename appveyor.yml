@@ -38,7 +38,7 @@ build_script:
         echo "Preparing release artifact..."
         mkdir "$artifact_root"
         cp -Recurse "$env:APPVEYOR_BUILD_FOLDER/game/*" "$artifact_root"
-        if ((Test-Path "$artifact_root/fbmuck.exe") -And (Test-Path "$artifact_root/fbhelp.exe") -And (Test-Path "$artifact_root/restart.exe")) {
+        if ((Test-Path "$artifact_root/fbmuck.exe") -And (Test-Path "$artifact_root/restart.exe")) {
             echo "Packaging release artifact..."
             7z a "$artifact_zip" "$artifact_root"
             Push-AppveyorArtifact "$artifact_zip"
