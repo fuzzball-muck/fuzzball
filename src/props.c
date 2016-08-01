@@ -19,9 +19,9 @@ find(char *key, PropPtr avl)
     while (avl) {
 	cmpval = string_compare(key, PropName(avl));
 	if (cmpval > 0) {
-	    avl = AVL_RT(avl);
+	    avl = avl->right;
 	} else if (cmpval < 0) {
-	    avl = AVL_LF(avl);
+	    avl = avl->left;
 	} else {
 	    break;
 	}
@@ -42,7 +42,7 @@ static int
 height_diff(PropPtr node)
 {
     if (node)
-	return (height_of(AVL_RT(node)) - height_of(AVL_LF(node)));
+	return (height_of(node->right) - height_of(node->left));
     else
 	return 0;
 }
@@ -51,16 +51,16 @@ static void
 fixup_height(PropPtr node)
 {
     if (node)
-	node->height = 1 + MAX(height_of(AVL_LF(node)), height_of(AVL_RT(node)));
+	node->height = 1 + MAX(height_of(node->left), height_of(node->right));
 }
 
 static PropPtr
 rotate_left_single(PropPtr a)
 {
-    PropPtr b = AVL_RT(a);
+    PropPtr b = a->right;
 
-    AVL_RT(a) = AVL_LF(b);
-    AVL_LF(b) = a;
+    a->right = b->left;
+    b->left = a;
 
     fixup_height(a);
     fixup_height(b);
@@ -71,12 +71,12 @@ rotate_left_single(PropPtr a)
 static PropPtr
 rotate_left_double(PropPtr a)
 {
-    PropPtr b = AVL_RT(a), c = AVL_LF(b);
+    PropPtr b = a->right, c = b->left;
 
-    AVL_RT(a) = AVL_LF(c);
-    AVL_LF(b) = AVL_RT(c);
-    AVL_LF(c) = a;
-    AVL_RT(c) = b;
+    a->right = c->left;
+    b->left = c->right;
+    c->left = a;
+    c->right = b;
 
     fixup_height(a);
     fixup_height(b);
@@ -88,10 +88,10 @@ rotate_left_double(PropPtr a)
 static PropPtr
 rotate_right_single(PropPtr a)
 {
-    PropPtr b = AVL_LF(a);
+    PropPtr b = a->left;
 
-    AVL_LF(a) = AVL_RT(b);
-    AVL_RT(b) = a;
+    a->left = b->right;
+    b->right = a;
 
     fixup_height(a);
     fixup_height(b);
@@ -102,12 +102,12 @@ rotate_right_single(PropPtr a)
 static PropPtr
 rotate_right_double(PropPtr a)
 {
-    PropPtr b = AVL_LF(a), c = AVL_RT(b);
+    PropPtr b = a->left, c = b->right;
 
-    AVL_LF(a) = AVL_RT(c);
-    AVL_RT(b) = AVL_LF(c);
-    AVL_RT(c) = a;
-    AVL_LF(c) = b;
+    a->left = c->right;
+    b->right = c->left;
+    c->right = a;
+    c->left = b;
 
     fixup_height(a);
     fixup_height(b);
@@ -125,11 +125,11 @@ balance_node(PropPtr a)
 	fixup_height(a);
     } else {
 	if (dh == 2)
-	    if (height_diff(AVL_RT(a)) >= 0)
+	    if (height_diff(a->right) >= 0)
 		a = rotate_left_single(a);
 	    else
 		a = rotate_left_double(a);
-	else if (height_diff(AVL_LF(a)) <= 0)
+	else if (height_diff(a->left) <= 0)
 	    a = rotate_right_single(a);
 	else
 	    a = rotate_right_double(a);
@@ -150,8 +150,8 @@ alloc_propnode(const char *name)
 	abort();
     }
 
-    AVL_LF(new_node) = NULL;
-    AVL_RT(new_node) = NULL;
+    new_node->left = NULL;
+    new_node->right = NULL;
     new_node->height = 1;
 
     strcpyn(PropName(new_node), nlen + 1, name);
@@ -200,9 +200,9 @@ insert(char *key, PropPtr * avl)
     if (p) {
 	cmp = string_compare(key, PropName(p));
 	if (cmp > 0) {
-	    ret = insert(key, &(AVL_RT(p)));
+	    ret = insert(key, &(p->right));
 	} else if (cmp < 0) {
-	    ret = insert(key, &(AVL_LF(p)));
+	    ret = insert(key, &(p->left));
 	} else {
 	    balancep = 0;
 	    return (p);
@@ -221,8 +221,8 @@ insert(char *key, PropPtr * avl)
 static PropPtr
 getmax(PropPtr avl)
 {
-    if (avl && AVL_RT(avl))
-	return getmax(AVL_RT(avl));
+    if (avl && avl->right)
+	return getmax(avl->right);
     return avl;
 }
 
@@ -238,25 +238,25 @@ remove_propnode(char *key, PropPtr * root)
     if (avl) {
 	cmpval = string_compare(key, PropName(avl));
 	if (cmpval < 0) {
-	    save = remove_propnode(key, &AVL_LF(avl));
+	    save = remove_propnode(key, &(avl->left));
 	} else if (cmpval > 0) {
-	    save = remove_propnode(key, &AVL_RT(avl));
-	} else if (!(AVL_LF(avl))) {
-	    avl = AVL_RT(avl);
-	} else if (!(AVL_RT(avl))) {
-	    avl = AVL_LF(avl);
+	    save = remove_propnode(key, &(avl->right));
+	} else if (!(avl->left)) {
+	    avl = avl->right;
+	} else if (!(avl->right)) {
+	    avl = avl->left;
 	} else {
-	    tmp = remove_propnode(PropName(getmax(AVL_LF(avl))), &AVL_LF(avl));
+	    tmp = remove_propnode(PropName(getmax(avl->left)), &(avl->left));
 	    if (!tmp) {		/* this shouldn't be possible. */
 		panic("remove_propnode() returned NULL !");
 	    }
-	    AVL_LF(tmp) = AVL_LF(avl);
-	    AVL_RT(tmp) = AVL_RT(avl);
+	    tmp->left = avl->left;
+	    tmp->right = avl->right;
 	    avl = tmp;
 	}
 	if (save) {
-	    AVL_LF(save) = NULL;
-	    AVL_RT(save) = NULL;
+	    save->left = NULL;
+	    save->right = NULL;
 	}
 	*root = balance_node(avl);
     }
@@ -280,9 +280,9 @@ delete_proplist(PropPtr p)
 {
     if (!p)
 	return;
-    delete_proplist(AVL_LF(p));
+    delete_proplist(p->left);
     delete_proplist(PropDir(p));
-    delete_proplist(AVL_RT(p));
+    delete_proplist(p->right);
     free_propnode(p);
 }
 
@@ -311,8 +311,8 @@ first_node(PropPtr list)
     if (!list)
 	return ((PropPtr) NULL);
 
-    while (AVL_LF(list))
-	list = AVL_LF(list);
+    while (list->left)
+	list = list->left;
 
     return (list);
 }
@@ -329,16 +329,16 @@ next_node(PropPtr ptr, char *name)
 	return (PropPtr) NULL;
     cmpval = string_compare(name, PropName(ptr));
     if (cmpval < 0) {
-	from = next_node(AVL_LF(ptr), name);
+	from = next_node(ptr->left, name);
 	if (from)
 	    return from;
 	return ptr;
     } else if (cmpval > 0) {
-	return next_node(AVL_RT(ptr), name);
-    } else if (AVL_RT(ptr)) {
-	from = AVL_RT(ptr);
-	while (AVL_LF(from))
-	    from = AVL_LF(from);
+	return next_node(ptr->right, name);
+    } else if (ptr->right) {
+	from = ptr->right;
+	while (from->left)
+	    from = from->left;
 	return from;
     } else {
 	return NULL;
@@ -380,12 +380,8 @@ copy_proplist(dbref obj, PropPtr * nu, PropPtr old)
 	    break;
 	}
 	copy_proplist(obj, &PropDir(p), PropDir(old));
-	copy_proplist(obj, &AVL_LF(p), AVL_LF(old));
-	copy_proplist(obj, &AVL_RT(p), AVL_RT(old));
-	/*
-	   copy_proplist(obj, nu, AVL_LF(old));
-	   copy_proplist(obj, nu, AVL_RT(old));
-	 */
+	copy_proplist(obj, &(p->left), old->left);
+	copy_proplist(obj, &(p->right), old->right);
     }
 }
 
@@ -411,8 +407,8 @@ size_proplist(PropPtr avl)
 	    break;
 	}
     }
-    bytes += size_proplist(AVL_LF(avl));
-    bytes += size_proplist(AVL_RT(avl));
+    bytes += size_proplist(avl->left);
+    bytes += size_proplist(avl->right);
     bytes += size_proplist(PropDir(avl));
     return bytes;
 }

@@ -54,13 +54,6 @@ typedef struct plist *PropPtr;
 /* Blessed props evaluate with wizbit MPI perms. */
 #define PROP_BLESSED     0x1000
 
-#ifndef AVL_RT
-#define AVL_RT(x)  (x->right)
-#endif
-#ifndef AVL_LF
-#define AVL_LF(x)  (x->left)
-#endif
-
 #define SetPDir(x,y) {(x)->dir = y;}
 #define PropDir(x) ((x)->dir)
 
