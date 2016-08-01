@@ -251,7 +251,7 @@ pronoun_substitute(int descr, dbref player, const char *str)
 		mywhere = player;
 		d = (isupper(c)) ? c : toupper(c);
 
-		snprintf(globprop, sizeof(globprop), "_pronouns/%.64s/%s", sexstr, prn);
+		snprintf(globprop, sizeof(globprop), "%s/%.64s/%s", PRONOUNS_PROPDIR, sexstr, prn);
 		if (d == 'A' || d == 'S' || d == 'O' || d == 'P' || d == 'R' || d == 'N') {
 		    self_sub = get_property_class(mywhere, prn);
 		} else {
@@ -264,7 +264,7 @@ pronoun_substitute(int descr, dbref player, const char *str)
 		    self_sub = get_property_class(0, globprop);
 		}
 		if (!self_sub && (sex == GENDER_UNASSIGNED)) {
-		    snprintf(globprop, sizeof(globprop), "_pronouns/_default/%s", prn);
+		    snprintf(globprop, sizeof(globprop), "%s/_default/%s", PRONOUNS_PROPDIR, prn);
 
 		    if (!(self_sub = get_property_class(player, globprop)))
 			self_sub = get_property_class(0, globprop);

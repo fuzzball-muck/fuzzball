@@ -17,6 +17,7 @@
 #include "mcpgui.h"
 #endif
 #include "mufevent.h"
+#include "params.h"
 #include "predicates.h"
 #include "props.h"
 #include "random.h"
@@ -936,20 +937,20 @@ interp_err(dbref player, dbref program, struct inst *pc,
     format_time(tbuf, 32, "%c", MUCK_LOCALTIME(lt));
 
     strip_ansi(buf2, buf);
-    errcount = get_property_value(origprog, ".debug/errcount");
+    errcount = get_property_value(origprog, MUF_ERRCOUNT_PROP);
     errcount++;
-    add_property(origprog, ".debug/errcount", NULL, errcount);
-    add_property(origprog, ".debug/lasterr", buf2, 0);
-    add_property(origprog, ".debug/lastcrash", NULL, (int) lt);
-    add_property(origprog, ".debug/lastcrashtime", tbuf, 0);
+    add_property(origprog, MUF_ERRCOUNT_PROP, NULL, errcount);
+    add_property(origprog, MUF_LASTERR_PROP, buf2, 0);
+    add_property(origprog, MUF_LASTCRASH_PROP, NULL, (int) lt);
+    add_property(origprog, MUF_LASTCRASHTIME_PROP, tbuf, 0);
 
     if (origprog != program) {
-	errcount = get_property_value(program, ".debug/errcount");
+	errcount = get_property_value(program, MUF_ERRCOUNT_PROP);
 	errcount++;
-	add_property(program, ".debug/errcount", NULL, errcount);
-	add_property(program, ".debug/lasterr", buf2, 0);
-	add_property(program, ".debug/lastcrash", NULL, (int) lt);
-	add_property(program, ".debug/lastcrashtime", tbuf, 0);
+	add_property(program, MUF_ERRCOUNT_PROP, NULL, errcount);
+	add_property(program, MUF_LASTERR_PROP, buf2, 0);
+	add_property(program, MUF_LASTCRASH_PROP, NULL, (int) lt);
+	add_property(program, MUF_LASTCRASHTIME_PROP, tbuf, 0);
     }
 }
 

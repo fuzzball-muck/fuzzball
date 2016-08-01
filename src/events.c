@@ -9,6 +9,7 @@
 #include "game.h"
 #include "interface.h"
 #include "interp.h"
+#include "params.h"
 #include "props.h"
 #include "timequeue.h"
 #include "tune.h"
@@ -69,7 +70,7 @@ check_dump_time(void)
 
     if ((last_dump_time + tp_dump_interval) < currtime) {
 	last_dump_time = currtime;
-	add_property((dbref) 0, "_sys/lastdumptime", NULL, (int) currtime);
+	add_property((dbref) 0, SYS_LASTDUMPTIME_PROP, NULL, (int) currtime);
 
 	if (tp_periodic_program_purge)
 	    free_unused_programs();
@@ -87,7 +88,7 @@ dump_db_now(void)
 {
     time_t currtime = (time_t) time((time_t *) NULL);
 
-    add_property((dbref) 0, "_sys/lastdumptime", NULL, (int) currtime);
+    add_property((dbref) 0, SYS_LASTDUMPTIME_PROP, NULL, (int) currtime);
     fork_and_dump();
     last_dump_time = currtime;
     dump_warned = 0;

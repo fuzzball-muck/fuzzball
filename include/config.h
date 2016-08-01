@@ -180,6 +180,9 @@
 /* Enable functionality conforming to MUD Client Protocol (MCP). */
 #define MCP_SUPPORT
 
+/* Do we want MUF math operators (currently =) to work on strings? */
+#undef STRINGMATH
+
 /* Turn this on when you want MUD to set from root to some user_id */
 /* #define MUD_ID "MUCK" */
 

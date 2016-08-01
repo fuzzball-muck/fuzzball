@@ -11,9 +11,7 @@
 #define TIME_HOUR(x)    ((x) * (TIME_MINUTE(60)))	/* 60 minutes */
 #define TIME_DAY(x)     ((x) * (TIME_HOUR(24)))	/* 24 hours   */
 
-
 #define DB_INITIAL_SIZE 100	/* initial malloc() size for the db */
-
 
 /* User interface low level commands */
 #define QUIT_COMMAND "QUIT"
@@ -54,7 +52,6 @@
 #define POSE_TOKEN ':'
 #define OVERRIDE_TOKEN '!'
 
-
 /* @edit'or stuff */
 
 #define EXIT_INSERT "."		/* character to exit from insert mode    */
@@ -75,15 +72,6 @@
 
 /* maximum number of arguments */
 #define MAX_ARG  2
-
-/* Usage comments:
-   Line numbers start from 1, so when an argument variable is equal to 0, it
-   means that it is non existent.
-
-   I've chosen to put the parameters before the command, because this should
-   more or less make the players get used to the idea of forth coding..     */
-
-
 
 /* ANSI attributes and color codes */
 
@@ -117,15 +105,44 @@
 
 /* Property defines */
 
+#define ARRIVE_PROPQUEUE	"_arrive"
+#define CONNECT_PROPQUEUE	"_connect"
+#define DEPART_PROPQUEUE	"_depart"
+#define DISCONNECT_PROPQUEUE	"_disconnect"
+#define LISTEN_PROPQUEUE	"_listen"
+#define LOOK_PROPQUEUE		"_lookq"
+#define OARRIVE_PROPQUEUE	"_oarrive"
+#define OCONNECT_PROPQUEUE	"_oconnect"
+#define ODEPART_PROPQUEUE	"_odepart"
+#define ODISCONNECT_PROPQUEUE	"_odisconnect"
+#define WLISTEN_PROPQUEUE	"~listen"
+#define WOLISTEN_PROPQUEUE	"~olisten"
+
+#define DETAILS_PROPDIR		"_details"
+#define MPI_MACROS_PROPDIR	"_msgmacs"
+#define PRONOUNS_PROPDIR	"_pronouns"
 #define REGISTRATION_PROPDIR	"_reg"
+
+#define MUF_AUTHOR_PROP		"_author"
+#define MUF_ERRCOUNT_PROP	".debug/errcount"
+#define MUF_LASTCRASH_PROP	".debug/lastcrash"
+#define MUF_LASTCRASHTIME_PROP	".debug/lastcrashtime"
+#define MUF_LASTERR_PROP	".debug/lasterr"
+#define MUF_LIB_VERSION_PROP	"_lib-version"
+#define MUF_NOTE_PROP		"_note"
+#define MUF_VERSION_PROP	"_version"
+
+#define SYS_DUMPINTERVAL_PROP	"_sys/dumpinterval"
+#define SYS_LASTDUMPTIME_PROP	"_sys/lastdumptime"
+#define SYS_MAX_CONNECTS_PROP	"_sys/max_connects"
+#define SYS_MAXPENNIES_PROP	"_sys/maxpennies"
+#define SYS_SHUTDOWNTIME_PROP	"_sys/shutdowntime"
+#define SYS_STARTUPTIME_PROP	"_sys/startuptime"
 
 #define NO_IDLE_PING_PROP	"_/sys/no_idle_ping"
 #define IGNORE_PROP		"@__sys__/ignore/def"
 #define NO_RECYCLE_PROP		"@/precious"
 #define LEGACY_GENDER_PROP	"sex"
 #define LEGACY_GUEST_PROP	"~/isguest"
-
-/* Do we want MUF math operators (currently =) to work on strings? */
-#undef STRINGMATH
 
 #endif				/* _PARAMS_H */

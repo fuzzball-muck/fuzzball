@@ -68,7 +68,7 @@ safeputprop(dbref obj, dbref perms, char *buf, char *val, int mesgtyp)
 	    return 0;
 	if (Prop_SeeOnly(buf))
 	    return 0;
-	if (string_prefix(buf, "_msgmacs/"))
+	if (string_prefix(buf, MPI_MACROS_PROPDIR "/"))
 	    return 0;
     }
     if (val == NULL) {
@@ -520,7 +520,7 @@ msg_is_macro(dbref player, dbref what, dbref perms, const char *name, int mesgty
 
     if (!*name)
 	return 0;
-    snprintf(buf2, sizeof(buf2), "_msgmacs/%s", name);
+    snprintf(buf2, sizeof(buf2), "%s/%s", MPI_MACROS_PROPDIR, name);
     obj = what;
     ptr = get_mfunc(name);
     if (!ptr || !*ptr)

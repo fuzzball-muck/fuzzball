@@ -2385,7 +2385,7 @@ do_directive(COMPSTATE * cstat, char *direct)
 	tmpname = (char *) next_token_raw(cstat);
 	if (!ifloat(tmpname))
 	    v_abort_compile(cstat, "Expected a floating point number for the version.");
-	add_property(cstat->program, "_version", tmpname, 0);
+	add_property(cstat->program, MUF_VERSION_PROP, tmpname, 0);
 	while (*cstat->next_char)
 	    cstat->next_char++;
 	advance_line(cstat);
@@ -2395,7 +2395,7 @@ do_directive(COMPSTATE * cstat, char *direct)
 	tmpname = (char *) next_token_raw(cstat);
 	if (!ifloat(tmpname))
 	    v_abort_compile(cstat, "Expected a floating point number for the version.");
-	add_property(cstat->program, "_lib-version", tmpname, 0);
+	add_property(cstat->program, MUF_LIB_VERSION_PROP, tmpname, 0);
 	while (*cstat->next_char)
 	    cstat->next_char++;
 	advance_line(cstat);
@@ -2407,7 +2407,7 @@ do_directive(COMPSTATE * cstat, char *direct)
 	tmpname = (char *) cstat->next_char;
 	while (*cstat->next_char)
 	    cstat->next_char++;
-	add_property(cstat->program, "_author", tmpname, 0);
+	add_property(cstat->program, MUF_AUTHOR_PROP, tmpname, 0);
 	advance_line(cstat);
 
     } else if (!string_compare(temp, "note")) {
@@ -2416,7 +2416,7 @@ do_directive(COMPSTATE * cstat, char *direct)
 	tmpname = (char *) cstat->next_char;
 	while (*cstat->next_char)
 	    cstat->next_char++;
-	add_property(cstat->program, "_note", tmpname, 0);
+	add_property(cstat->program, MUF_NOTE_PROP, tmpname, 0);
 	advance_line(cstat);
 
     } else if (!string_compare(temp, "ifdef") || !string_compare(temp, "ifndef")) {
@@ -2581,9 +2581,9 @@ do_directive(COMPSTATE * cstat, char *direct)
 	    v_abort_compile(cstat,
 			    "I don't understand what object you want to check with $ifver.");
 	if (!string_compare(temp, "ifver") || !string_compare(temp, "ifnver")) {
-	    tmpptr = (char *) get_property_class(i, "_version");
+	    tmpptr = (char *) get_property_class(i, MUF_VERSION_PROP);
 	} else {
-	    tmpptr = (char *) get_property_class(i, "_lib-version");
+	    tmpptr = (char *) get_property_class(i, MUF_LIB_VERSION_PROP);
 	}
 	if (!tmpptr || !*tmpptr) {
 	    tmpptr = (char *) malloc(4 * sizeof(char));
