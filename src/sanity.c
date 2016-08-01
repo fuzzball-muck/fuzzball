@@ -1128,13 +1128,13 @@ extract_props_rec(FILE * f, dbref obj, const char *dir, PropPtr p)
     if (!p)
 	return;
 
-    extract_props_rec(f, obj, dir, AVL_LF(p));
+    extract_props_rec(f, obj, dir, p->left);
     extract_prop(f, dir, p);
     if (PropDir(p)) {
 	snprintf(buf, sizeof(buf), "%s%s%c", dir, PropName(p), PROPDIR_DELIMITER);
 	extract_props_rec(f, obj, buf, PropDir(p));
     }
-    extract_props_rec(f, obj, dir, AVL_RT(p));
+    extract_props_rec(f, obj, dir, p->right);
 }
 
 

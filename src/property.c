@@ -1053,7 +1053,7 @@ db_dump_props_rec(dbref obj, FILE * f, const char *dir, PropPtr p)
     if (!p)
 	return 0;
 
-    count += db_dump_props_rec(obj, f, dir, AVL_LF(p));
+    count += db_dump_props_rec(obj, f, dir, p->left);
 
 #ifdef DISKBASE
     wastouched = (PropFlags(p) & PROP_TOUCHED);
@@ -1096,7 +1096,7 @@ db_dump_props_rec(dbref obj, FILE * f, const char *dir, PropPtr p)
 	count += pdcount;
     }
 
-    count += db_dump_props_rec(obj, f, dir, AVL_RT(p));
+    count += db_dump_props_rec(obj, f, dir, p->right);
 
     return count;
 }
@@ -1113,8 +1113,8 @@ untouchprop_rec(PropPtr p)
     if (!p)
 	return;
     SetPFlags(p, (PropFlags(p) & ~PROP_TOUCHED));
-    untouchprop_rec(AVL_LF(p));
-    untouchprop_rec(AVL_RT(p));
+    untouchprop_rec(p->left);
+    untouchprop_rec(p->right);
     untouchprop_rec(PropDir(p));
 }
 
