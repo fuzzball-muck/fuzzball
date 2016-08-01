@@ -570,9 +570,9 @@ announce_connect(int descr, dbref player)
 
     /* queue up all _connect programs referred to by properties */
     envpropqueue(descr, player, LOCATION(player), NOTHING, player, NOTHING,
-		 "_connect", "Connect", 1, 1);
+		 CONNECT_PROPQUEUE, "Connect", 1, 1);
     envpropqueue(descr, player, LOCATION(player), NOTHING, player, NOTHING,
-		 "_oconnect", "Oconnect", 1, 0);
+		 OCONNECT_PROPQUEUE, "Oconnect", 1, 0);
 
     ts_useobject(player);
     return;
@@ -1350,9 +1350,9 @@ announce_disconnect(struct descriptor_data *d)
 
     /* queue up all _connect programs referred to by properties */
     envpropqueue(d->descriptor, player, LOCATION(player), NOTHING, player, NOTHING,
-		 "_disconnect", "Disconnect", 1, 1);
+		 DISCONNECT_PROPQUEUE, "Disconnect", 1, 1);
     envpropqueue(d->descriptor, player, LOCATION(player), NOTHING, player, NOTHING,
-		 "_odisconnect", "Odisconnect", 1, 0);
+		 ODISCONNECT_PROPQUEUE, "Odisconnect", 1, 0);
 
     ts_lastuseobject(player);
     DBDIRTY(player);
@@ -2633,7 +2633,7 @@ shovechars()
 		}
 	    }
 	    if (cnt > con_players_max) {
-		add_property((dbref) 0, "_sys/max_connects", NULL, cnt);
+		add_property((dbref) 0, SYS_MAX_CONNECTS_PROP, NULL, cnt);
 		con_players_max = cnt;
 	    }
 	    con_players_curr = cnt;
@@ -2643,8 +2643,8 @@ shovechars()
     /* End of the player processing loop */
 
     (void) time(&now);
-    add_property((dbref) 0, "_sys/lastdumptime", NULL, (int) now);
-    add_property((dbref) 0, "_sys/shutdowntime", NULL, (int) now);
+    add_property((dbref) 0, SYS_LASTDUMPTIME_PROP, NULL, (int) now);
+    add_property((dbref) 0, SYS_SHUTDOWNTIME_PROP, NULL, (int) now);
 }
 
 static int notify_nolisten_level = 0;
@@ -2748,11 +2748,11 @@ notify_from_echo(dbref from, dbref player, const char *msg, int isprivate)
     if (tp_listeners) {
 	if (tp_listeners_obj || Typeof(player) == TYPE_ROOM) {
 	    listenqueue(-1, from, LOCATION(from), player, player, NOTHING,
-			"_listen", ptr, tp_listen_mlev, 1, 0);
+			LISTEN_PROPQUEUE, ptr, tp_listen_mlev, 1, 0);
 	    listenqueue(-1, from, LOCATION(from), player, player, NOTHING,
-			"~listen", ptr, tp_listen_mlev, 1, 1);
+			WLISTEN_PROPQUEUE, ptr, tp_listen_mlev, 1, 1);
 	    listenqueue(-1, from, LOCATION(from), player, player, NOTHING,
-			"~olisten", ptr, tp_listen_mlev, 0, 1);
+			WOLISTEN_PROPQUEUE, ptr, tp_listen_mlev, 0, 1);
 	}
     }
 
@@ -2840,9 +2840,9 @@ notify_listeners(dbref who, dbref xprog, dbref obj, dbref room, const char *msg,
 	return;
 
     if (tp_listeners && (tp_listeners_obj || Typeof(obj) == TYPE_ROOM)) {
-	listenqueue(-1, who, room, obj, obj, xprog, "_listen", msg, tp_listen_mlev, 1, 0);
-	listenqueue(-1, who, room, obj, obj, xprog, "~listen", msg, tp_listen_mlev, 1, 1);
-	listenqueue(-1, who, room, obj, obj, xprog, "~olisten", msg, tp_listen_mlev, 0, 1);
+	listenqueue(-1, who, room, obj, obj, xprog, LISTEN_PROPQUEUE, msg, tp_listen_mlev, 1, 0);
+	listenqueue(-1, who, room, obj, obj, xprog, WLISTEN_PROPQUEUE, msg, tp_listen_mlev, 1, 1);
+	listenqueue(-1, who, room, obj, obj, xprog, WOLISTEN_PROPQUEUE, msg, tp_listen_mlev, 0, 1);
     }
 
     if (tp_zombies && Typeof(obj) == TYPE_THING && !isprivate) {

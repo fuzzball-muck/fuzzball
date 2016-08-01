@@ -384,11 +384,10 @@ init_game(const char *infile, const char *outfile)
     dumpfile = alloc_string(outfile);
 
     if (!db_conversion_flag) {
-	/* initialize the _sys/startuptime property */
-	add_property((dbref) 0, "_sys/startuptime", NULL, (int) time((time_t *) NULL));
-	add_property((dbref) 0, "_sys/maxpennies", NULL, tp_max_pennies);
-	add_property((dbref) 0, "_sys/dumpinterval", NULL, tp_dump_interval);
-	add_property((dbref) 0, "_sys/max_connects", NULL, 0);
+	add_property((dbref) 0, SYS_STARTUPTIME_PROP, NULL, (int) time((time_t *) NULL));
+	add_property((dbref) 0, SYS_MAXPENNIES_PROP, NULL, tp_max_pennies);
+	add_property((dbref) 0, SYS_DUMPINTERVAL_PROP, NULL, tp_dump_interval);
+	add_property((dbref) 0, SYS_MAX_CONNECTS_PROP, NULL, 0);
     }
 
     return 0;

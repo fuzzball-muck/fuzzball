@@ -127,7 +127,7 @@ look_room(int descr, dbref player, dbref loc)
     look_contents(player, loc, "Contents:");
     if (tp_look_propqueues) {
 	snprintf(obj_num, sizeof(obj_num), "#%d", loc);
-	envpropqueue(descr, player, loc, player, loc, NOTHING, "_lookq", obj_num, 1, 1);
+	envpropqueue(descr, player, loc, player, loc, NOTHING, LOOK_PROPQUEUE, obj_num, 1, 1);
     }
 }
 
@@ -190,7 +190,7 @@ do_look_at(int descr, dbref player, const char *name, const char *detail)
 		    if (tp_look_propqueues) {
 			snprintf(obj_num, sizeof(obj_num), "#%d", thing);
 			envpropqueue(descr, player, thing, player, thing,
-				     NOTHING, "_lookq", obj_num, 1, 1);
+				     NOTHING, LOOK_PROPQUEUE, obj_num, 1, 1);
 		    }
 		}
 		break;
@@ -208,7 +208,7 @@ do_look_at(int descr, dbref player, const char *name, const char *detail)
 		    if (tp_look_propqueues) {
 			snprintf(obj_num, sizeof(obj_num), "#%d", thing);
 			envpropqueue(descr, player, thing, player, thing,
-				     NOTHING, "_lookq", obj_num, 1, 1);
+				     NOTHING, LOOK_PROPQUEUE, obj_num, 1, 1);
 		    }
 		}
 		break;
@@ -219,7 +219,7 @@ do_look_at(int descr, dbref player, const char *name, const char *detail)
 		if (tp_look_propqueues) {
 		    snprintf(obj_num, sizeof(obj_num), "#%d", thing);
 		    envpropqueue(descr, player, thing, player, thing,
-				 NOTHING, "_lookq", obj_num, 1, 1);
+				 NOTHING, LOOK_PROPQUEUE, obj_num, 1, 1);
 		}
 		break;
 	    }
@@ -236,11 +236,11 @@ do_look_at(int descr, dbref player, const char *name, const char *detail)
 	    }
 
 #ifdef DISKBASE
-	    fetchprops(thing, "/_details/");
+	    fetchprops(thing, DETAILS_PROPDIR);
 #endif
 
 	    lastmatch = NULL;
-	    propadr = first_prop(thing, "_details/", &pptr, propname, sizeof(propname));
+	    propadr = first_prop(thing, DETAILS_PROPDIR, &pptr, propname, sizeof(propname));
 	    while (propadr) {
 		if (exit_prefix(propname, buf)) {
 		    if (lastmatch) {

@@ -85,11 +85,11 @@ enter_room(int descr, dbref player, dbref loc, dbref exit)
 	moveto(player, loc);
 
 	if (old != NOTHING) {
-	    propqueue(descr, player, old, exit, player, NOTHING, "_depart", "Depart", 1, 1);
-	    envpropqueue(descr, player, old, exit, old, NOTHING, "_depart", "Depart", 1, 1);
+	    propqueue(descr, player, old, exit, player, NOTHING, DEPART_PROPQUEUE, "Depart", 1, 1);
+	    envpropqueue(descr, player, old, exit, old, NOTHING, DEPART_PROPQUEUE, "Depart", 1, 1);
 
-	    propqueue(descr, player, old, exit, player, NOTHING, "_odepart", "Odepart", 1, 0);
-	    envpropqueue(descr, player, old, exit, old, NOTHING, "_odepart", "Odepart", 1, 0);
+	    propqueue(descr, player, old, exit, player, NOTHING, ODEPART_PROPQUEUE, "Odepart", 1, 0);
+	    envpropqueue(descr, player, old, exit, old, NOTHING, ODEPART_PROPQUEUE, "Odepart", 1, 0);
 
 	    /* notify others unless DARK */
 	    if (!tp_quiet_moves &&
@@ -145,8 +145,8 @@ enter_room(int descr, dbref player, dbref loc, dbref exit)
     }
 
     if (loc != old) {
-	envpropqueue(descr, player, loc, exit, player, NOTHING, "_arrive", "Arrive", 1, 1);
-	envpropqueue(descr, player, loc, exit, player, NOTHING, "_oarrive", "Oarrive", 1, 0);
+	envpropqueue(descr, player, loc, exit, player, NOTHING, ARRIVE_PROPQUEUE, "Arrive", 1, 1);
+	envpropqueue(descr, player, loc, exit, player, NOTHING, OARRIVE_PROPQUEUE, "Oarrive", 1, 0);
     }
 }
 
