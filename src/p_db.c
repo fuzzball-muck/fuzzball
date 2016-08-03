@@ -1611,7 +1611,7 @@ prim_findnext(PRIM_PROTOTYPE)
 	abort_interp("Garbage object. (2)");
     if (oper1->type != PROG_OBJECT)
 	abort_interp("Expected dbref argument. (1)");
-    if (OkRef(oper1->data.objref))
+    if (!OkRef(oper1->data.objref))
 	abort_interp("Bad object. (1)");
     if (oper1->data.objref != NOTHING && Typeof(oper1->data.objref) == TYPE_GARBAGE)
 	abort_interp("Garbage object. (1)");
