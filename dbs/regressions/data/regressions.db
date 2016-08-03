@@ -1,7 +1,7 @@
 ***Foxen9 TinyMUCK DUMP Format***
 31
 1
-123
+124
 autolook_cmd=look
 cpennies=Pennies
 cpenny=Penny
@@ -116,6 +116,7 @@ force_mlev1_name_notify=yes
 muf_comments_strict=yes
 optimize_muf=yes
 playermax=no
+quiet_moves=no
 lock_envcheck=no
 look_propqueues=no
 show_legacy_props=no
