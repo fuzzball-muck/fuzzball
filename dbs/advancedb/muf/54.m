@@ -37,18 +37,12 @@ lvar v_loud?
         "Command: \"" over strcat "\"" strcat .tell  ( str )
     then  ( str )
  
-$ifdef Glow
-    ( Use the exit if Archwizard, since we won't be able to parse MPI on the player. )
-    me @ "Archwizard" flag? if trig else me @ then  ( str db )
-    swap  ( db str )
-$else
     me @ "_temp/mpi" rot setprop  (  )
     command @ "@wmpi" strcmp if 0 else me @ "wizard" flag? then if  (  )
         me @ "_temp/mpi" blessprop  (  )
     then  (  )
     me @ "_temp/mpi"  ( db str )
 $def parsempi \parseprop
-$endif
     ( Parse! )
     "(" command @ strcat ")" strcat 0  ( db strMpi strHow intDelay )
     parsempi  ( str' )

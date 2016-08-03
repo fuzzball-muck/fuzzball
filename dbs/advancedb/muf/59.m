@@ -154,11 +154,7 @@ $def strip-trailspaces striptail
 $ifdef ENCRYPTPROPS 
 : pencrypt ( i s -- s )
     dup not if swap pop exit then
-$ifdef __version>Muck2.2fb5.46
     encrypt3 "!" swap strcat
-$else
-    crypt2 "*" swap strcat
-$endif
 ;
 $else
     $def pencrypt swap pop
@@ -168,20 +164,14 @@ $endif
     dup not if swap pop exit then
     dup 1 strcut pop "*!" swap instr
     dup 1 = if pop 1 strcut swap pop crypt2 exit then
-$ifdef __version>Muck2.2fb5.46
     dup 2 = if pop 1 strcut swap pop decrypt3 exit then
-$endif
     pop swap pop
 ;
   
 $ifdef MAILTYPE=PAGEMAIL
 : mencrypt ( i s -- s )
     dup not if swap pop exit then
-$ifdef __version>Muck2.2fb5.46
     encrypt3 "E" swap strcat
-$else
-    crypt2 "D" swap strcat
-$endif
 ;
   
 : mdecrypt ( i s -- s )
@@ -189,9 +179,7 @@ $endif
     dup 1 strcut pop "CDE" swap instr
     dup 1 = if pop 1 strcut swap pop swap pop encrypt exit then
     dup 2 = if pop 1 strcut swap pop crypt2 exit then
-$ifdef __version>Muck2.2fb5.46
     dup 3 = if pop 1 strcut swap pop decrypt3 exit then
-$endif
     pop swap pop
 ;
 $endif
