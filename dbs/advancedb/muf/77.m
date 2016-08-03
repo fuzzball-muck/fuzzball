@@ -42,9 +42,6 @@ $include $lib/optionsgui
  
 : main[ str:args -- ]
     me @ "wizard" flag? not
-$ifdef __muckname=FurryMUCK
-    me @ #1026 dbcmp not and
-$endif
     if
         "You pull out a harmonica and play a tune, but the harmonica gets all sticky."
         .tell exit

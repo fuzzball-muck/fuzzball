@@ -195,15 +195,11 @@ $def uval_active                "_prefs/bolding/active"  (0/1=on, -1=off)
                 
  
  
-$ifdef __version>Muck2.2fb6
 $def COLOR
 $def bold-possible? ( dbref:who -- bool:yesno ) owner "c" flag? 
   ( May be HTML support later, so don't hardcode ANSI except here )
 $def colorstart "\[["
 $def colorend   "m"
-$else
-$error This only works on FB6+ MUCKs
-$endif
  
 ( -----------------------------------------------------------
   Worker procedures, not visible outside

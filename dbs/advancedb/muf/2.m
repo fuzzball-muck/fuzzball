@@ -271,14 +271,10 @@
    var newarray 0 array_make newarray !
    FOREACH
       swap dup firstpos @ >= swap endpos @ <= and if
-$ifdef __proto
-         dbobj @ swap stype @ imesg @ parsempi
-$else
          "@/mpi/" systime intostr strcat dup rot
          dbobj @ rot rot setprop
          dbobj @ over stype @ imesg @ parseprop
          dbobj @ swap remove_prop
-$endif
          newarray @ array_appenditem newarray !
       swap
          pop
