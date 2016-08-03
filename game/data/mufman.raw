@@ -3531,6 +3531,27 @@ the room to get the omessages. NOTE: for security reasons, you cannot use
 PARSEPROP with a mucker level of less than 3.
 ~
 ~
+PARSEMPI
+PARSEMPI (d s s i -- s)
+
+  Returns the string output of the MPI Parser, given an object, an
+MPI string to parse, an input string for the {&how} variable, and an
+integer that should either be 1, for when you want {delay} messages to be
+sent to the player only, or 0, when you want the rest of the players in
+the room to get the omessages. NOTE: for security reasons, you cannot use
+PARSEMPI with a mucker level of less than 3.
+~
+~
+PARSEMPIBLESSED
+PARSEMPIBLESSED (d s s i -- s)
+
+  Returns the string output of blessed execution of the MPI Parser, given
+an object, an MPI string to parse, an input string for the {&how} variable,
+and an integer that should either be 1, for when you want {delay} messages
+to be sent to the player only, or 0, when you want the rest of the players
+in the room to get the omessages. Requires Wizard permissions.
+~
+~
 PARSEPROPEX
 PARSEPROPEX ( ref:Obj str:Prop dict:Vars int:Private -- dict:Vars str:Result )
 

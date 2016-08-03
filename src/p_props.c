@@ -1,3 +1,4 @@
+
 #include "config.h"
 
 #include "boolexp.h"
@@ -806,6 +807,119 @@ prim_propdirp(PRIM_PROTOTYPE)
 #endif
 
     PushInt(result);
+}
+
+void
+prim_parsempi(PRIM_PROTOTYPE)
+{
+    const char *temp;
+    char *ptr;
+    struct inst *oper1 = NULL;  /* prevents re-entrancy issues! */
+    struct inst *oper2 = NULL;  /* prevents re-entrancy issues! */
+    struct inst *oper3 = NULL;  /* prevents re-entrancy issues! */
+    struct inst *oper4 = NULL;  /* prevents re-entrancy issues! */
+
+    char buf[BUFFER_LEN];
+
+    CHECKOP(4);
+    oper4 = POP();		/* int */
+    oper2 = POP();		/* arg str */
+    oper1 = POP();		/* mpi str */
+    oper3 = POP();		/* object dbref */
+    if (mlev < 3)
+        abort_interp("Permission denied.");
+    if (oper3->type != PROG_OBJECT)
+        abort_interp("Non-object argument (1)");
+    if (!OkObj(oper3->data.objref))
+        abort_interp("Invalid object (1)");
+    if (oper2->type != PROG_STRING)
+        abort_interp("String expected (3)");
+    if (oper1->type != PROG_STRING)
+        abort_interp("String expected (2)");
+    if (oper4->type != PROG_INTEGER)
+        abort_interp("Integer expected (4)");
+    if (oper4->data.number < 0 || oper4->data.number > 1)
+        abort_interp("Integer of 0 or 1 expected (4)");
+    CHECKREMOTE(oper3->data.objref);
+
+    temp = DoNullInd(oper1->data.string);
+    ptr  = DoNullInd(oper2->data.string);
+
+    if (temp && *temp && ptr) {
+	result = 0;
+	if (oper4->data.number)
+	    result |= MPI_ISPRIVATE;
+        ptr = do_parse_mesg(fr->descr, player, oper3->data.objref, temp,
+                              ptr, buf, sizeof(buf), result);
+        CLEAR(oper1);
+        CLEAR(oper2);
+        CLEAR(oper3);
+        CLEAR(oper4);
+        PushString(ptr);
+    } else {
+        CLEAR(oper1);
+        CLEAR(oper2);
+        CLEAR(oper3);
+        CLEAR(oper4);
+        PushNullStr;
+    }
+}
+
+void
+prim_parsempiblessed(PRIM_PROTOTYPE)
+{
+    const char *temp;
+    char *ptr;
+    struct inst *oper1 = NULL;  /* prevents re-entrancy issues! */
+    struct inst *oper2 = NULL;  /* prevents re-entrancy issues! */
+    struct inst *oper3 = NULL;  /* prevents re-entrancy issues! */
+    struct inst *oper4 = NULL;  /* prevents re-entrancy issues! */
+
+    char buf[BUFFER_LEN];
+
+    CHECKOP(4);
+    oper4 = POP();		/* int */
+    oper2 = POP();		/* arg str */
+    oper1 = POP();		/* mpi str */
+    oper3 = POP();		/* object dbref */
+    if (mlev < 4)
+        abort_interp("Permission denied.");
+    if (oper3->type != PROG_OBJECT)
+        abort_interp("Non-object argument (1)");
+    if (!OkObj(oper3->data.objref))
+        abort_interp("Invalid object (1)");
+    if (oper2->type != PROG_STRING)
+        abort_interp("String expected (3)");
+    if (oper1->type != PROG_STRING)
+        abort_interp("String expected (2)");
+    if (oper4->type != PROG_INTEGER)
+        abort_interp("Integer expected (4)");
+    if (oper4->data.number < 0 || oper4->data.number > 1)
+        abort_interp("Integer of 0 or 1 expected (4)");
+    CHECKREMOTE(oper3->data.objref);
+
+    temp = DoNullInd(oper1->data.string);
+    ptr  = DoNullInd(oper2->data.string);
+
+    if (temp && *temp && ptr) {
+	result = 0;
+	if (oper4->data.number)
+	    result |= MPI_ISPRIVATE;
+	result |= MPI_ISBLESSED;
+        ptr = do_parse_mesg(fr->descr, player, oper3->data.objref, temp,
+                              ptr, buf, sizeof(buf), result);
+        CLEAR(oper1);
+        CLEAR(oper2);
+        CLEAR(oper3);
+        CLEAR(oper4);
+        PushString(ptr);
+    } else {
+        CLEAR(oper1);
+        CLEAR(oper2);
+        CLEAR(oper3);
+        CLEAR(oper4);
+        PushNullStr;
+    }
 }
 
 void
