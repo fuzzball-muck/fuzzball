@@ -3430,6 +3430,7 @@ Parameters available:
   (bool) muf_comments_strict  - MUF comments are strict and not recursive
   (bool) optimize_muf         - Enable MUF bytecode optimize
   (bool) playermax            - Limit number of concurrent players allowed
+  (bool) quiet_moves          - Suppress basic arrive and depart notifications
   (bool) lock_envcheck        - Locks check environment for properties
   (bool) look_propqueues      - Trigger _look/ propqueues when a player looks
   (bool) show_legacy_props    - Examining objects lists legacy props
