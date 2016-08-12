@@ -17,7 +17,6 @@ struct pdata {
 };
 typedef struct pdata PData;
 
-
 /* Property struct */
 struct plist {
     unsigned short flags;
@@ -36,7 +35,6 @@ typedef struct plist *PropPtr;
 #define PROPS_PRIORITY 0x2
 #define PROPS_CHANGED  0x3
 
-
 /* property value types */
 #define PROP_DIRTYP   0x0
 #define PROP_STRTYP   0x2
@@ -50,6 +48,8 @@ typedef struct plist *PropPtr;
 #define PROP_ISUNLOADED  0x0200
 #define PROP_TOUCHED     0x0400
 #define PROP_DIRUNLOADED 0x0800
+
+#define PROP_UNLOCKED_VAL	"*UNLOCKED*"
 
 /* Blessed props evaluate with wizbit MPI perms. */
 #define PROP_BLESSED     0x1000
@@ -162,6 +162,5 @@ void set_property_nofetch(dbref player, const char *pname, PData * dat, int sync
 long size_properties(dbref player, int load);
 long size_proplist(PropPtr avl);
 void untouchprops_incremental(int limit);
-
 
 #endif				/* _PROPS_H */

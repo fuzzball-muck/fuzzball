@@ -425,7 +425,7 @@ unparse_boolexp1(dbref player, struct boolexp *b, short outer_type, int fullname
     if ((buftop - boolexp_buf) > (BUFFER_LEN / 2))
 	return;
     if (b == TRUE_BOOLEXP) {
-	strcpyn(buftop, sizeof(boolexp_buf) - (buftop - boolexp_buf), "*UNLOCKED*");
+	strcpyn(buftop, sizeof(boolexp_buf) - (buftop - boolexp_buf), PROP_UNLOCKED_VAL);
 	buftop += strlen(buftop);
     } else {
 	switch (b->type) {

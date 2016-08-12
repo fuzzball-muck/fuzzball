@@ -765,7 +765,7 @@ displayprop(dbref player, dbref obj, const char *name, char *buf, size_t bufsiz)
 	break;
     case PROP_LOKTYP:
 	if (PropFlags(p) & PROP_ISUNLOADED) {
-	    snprintf(buf, bufsiz, "%c lok %s:*UNLOCKED*", blesschar, mybuf);
+	    snprintf(buf, bufsiz, "%c lok %s:%s", blesschar, mybuf, PROP_UNLOCKED_VAL);
 	} else {
 	    snprintf(buf, bufsiz, "%c lok %s:%.*s", blesschar, mybuf, (BUFFER_LEN / 2),
 		     unparse_boolexp(player, PropDataLok(p), 1));

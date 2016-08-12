@@ -271,7 +271,7 @@ prim_getpropstr(PRIM_PROTOTYPE)
 		break;
 	    case PROP_LOKTYP:
 		if (PropFlags(ptr) & PROP_ISUNLOADED) {
-		    temp = "*UNLOCKED*";
+		    temp = PROP_UNLOCKED_VAL;
 		} else {
 		    temp = unparse_boolexp(ProgUID, PropDataLok(ptr), 1);
 		}
@@ -462,7 +462,7 @@ prim_envpropstr(PRIM_PROTOTYPE)
 		break;
 	    case PROP_LOKTYP:
 		if (PropFlags(ptr) & PROP_ISUNLOADED) {
-		    temp = "*UNLOCKED*";
+		    temp = PROP_UNLOCKED_VAL;
 		} else {
 		    temp = unparse_boolexp(ProgUID, PropDataLok(ptr), 1);
 		}
@@ -1054,7 +1054,7 @@ prim_array_filter_prop(PRIM_PROTOTYPE)
 
 			case PROP_LOKTYP:
 			    if (PropFlags(pptr) & PROP_ISUNLOADED) {
-				strncpy(buf, "*UNLOCKED*", BUFFER_LEN);
+				strncpy(buf, PROP_UNLOCKED_VAL, BUFFER_LEN);
 			    } else {
 				strncpy(buf, unparse_boolexp(ProgUID, PropDataLok(pptr), 0),
 					BUFFER_LEN);
