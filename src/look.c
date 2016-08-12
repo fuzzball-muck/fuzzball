@@ -450,6 +450,7 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
 {
     dbref thing;
     char buf[BUFFER_LEN];
+    const char *temp;
     dbref content;
     dbref exit;
     int cnt;
@@ -527,15 +528,16 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
     if (GETDESC(thing))
 	notify(player, GETDESC(thing));
 
-    notifyf(player, "Key: %s", unparse_boolexp(player, GETLOCK(thing), 1));
-    notifyf(player, "Link_OK Key: %s",
-	    unparse_boolexp(player, get_property_lock(thing, MESGPROP_LINKLOCK), 1));
-    notifyf(player, "Chown_OK Key: %s",
-	    unparse_boolexp(player, get_property_lock(thing, MESGPROP_CHLOCK), 1));
-    notifyf(player, "Container Key: %s",
-	    unparse_boolexp(player, get_property_lock(thing, MESGPROP_CONLOCK), 1));
-    notifyf(player, "Force Key: %s",
-	    unparse_boolexp(player, get_property_lock(thing, MESGPROP_FLOCK), 1));
+    if (strcmp(temp = unparse_boolexp(player, GETLOCK(thing), 1), PROP_UNLOCKED_VAL))
+	notifyf(player, "Key: %s", temp);
+    if (strcmp(temp = unparse_boolexp(player, get_property_lock(thing, MESGPROP_LINKLOCK), 1), PROP_UNLOCKED_VAL))
+	notifyf(player, "Link_OK Key: %s", temp);
+    if (strcmp(temp = unparse_boolexp(player, get_property_lock(thing, MESGPROP_CHLOCK), 1), PROP_UNLOCKED_VAL))
+	notifyf(player, "Chown_OK Key: %s", temp);
+    if (strcmp(temp = unparse_boolexp(player, get_property_lock(thing, MESGPROP_CONLOCK), 1), PROP_UNLOCKED_VAL))
+	notifyf(player, "Container Key: %s", temp);
+    if (strcmp(temp = unparse_boolexp(player, get_property_lock(thing, MESGPROP_FLOCK), 1), PROP_UNLOCKED_VAL))
+	notifyf(player, "Force Key: %s", temp);
 
     if (GETSUCC(thing)) {
 	notifyf(player, "Success: %s", GETSUCC(thing));
