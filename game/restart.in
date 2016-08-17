@@ -12,7 +12,7 @@ exec_prefix=@exec_prefix@
 # You'll want to edit this to match the base directory of your muck's files.
 # This should be the directory containing the 'data' and 'muf' directories.
 #
-GAMEDIR="@localstatedir@/fbmuck"
+GAMEDIR="$prefix/game"
 
 # If you want your database to be accessible by someone other than the
 # user the MUCK is running under, you should change this to the appropriate

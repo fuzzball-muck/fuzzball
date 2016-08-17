@@ -55,11 +55,10 @@ For a comprehensive guide to running a MUCK, check out [MINK - The Muck Informat
 * Copy the relevant databases (*alternatively, use ```fuzzball/scripts/fbmuck-add```*)
 ```sh
 FB_DIR="$(pwd)"   # Directory containing Fuzzball
-PREFIX=""         # If installing to a different prefix, set it here
-mkdir --parents              "$PREFIX/var/fbmuck"                          # Create data directory
-cp -r "$FB_DIR/game/."       "$PREFIX/var/fbmuck"                          # Copy game information
-cp -r "$FB_DIR/dbs/basedb/." "$PREFIX/var/fbmuck"                          # Copy database
-mv "$PREFIX/var/fbmuck/data/basedb.db" "$PREFIX/var/fbmuck/data/std-db.db" # Rename database to standard
+PREFIX="."        # If installing to a different prefix, set it here
+cp -r "$FB_DIR/game/."       "$PREFIX/game"                          # Copy game information
+cp -r "$FB_DIR/dbs/basedb/." "$PREFIX/game"                          # Copy database
+mv "$PREFIX/game/data/basedb.db" "$PREFIX/game/data/std-db.db" # Rename database to standard
 ```
 * Start Fuzzball
 ```sh
