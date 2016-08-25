@@ -41,7 +41,5 @@ void prim_parsempiblessed(PRIM_PROTOTYPE);
 	"REFLIST_FIND", "REFLIST_ADD", "REFLIST_DEL", "BLESSED?", \
 	"PARSEPROPEX", "PARSEMPI", "PARSEMPIBLESSED"
 
-#define PRIMS_PROPS_CNT 22
-
 #endif				/* _P_PROPS_H */
 

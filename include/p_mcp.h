@@ -33,9 +33,5 @@ void prim_gui_ctrl_command(PRIM_PROTOTYPE);
 		"GUI_VALUE_SET", "GUI_CTRL_CREATE", "GUI_CTRL_COMMAND", \
 		"GUI_DLOG_CREATE", "MCP_REGISTER_EVENT"
 
-
-#define PRIMS_MCP_CNT 14
 #endif				/* _P_MCP_H */
-#else
-#define PRIMS_MCP_CNT 0
 #endif

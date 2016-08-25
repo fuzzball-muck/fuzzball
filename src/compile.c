@@ -1685,7 +1685,7 @@ primitive(const char *token)
     int primnum;
 
     primnum = get_primitive(token);
-    return (primnum && primnum <= BASE_MAX - PRIMS_INTERNAL_CNT);
+    return (primnum && primnum <= prim_count - 3); /* don't match internal prims */
 }
 
 static struct INTERMEDIATE *
@@ -3742,7 +3742,7 @@ add_primitive(int val)
     hash_data hd;
 
     hd.ival = val;
-    if (add_hash(base_inst[val - BASE_MIN], hd, primitive_list, COMP_HASH_SIZE) == NULL)
+    if (add_hash(base_inst[val - 1], hd, primitive_list, COMP_HASH_SIZE) == NULL)
 	panic("Out of memory");
     else
 	return;
@@ -3755,11 +3755,23 @@ clear_primitives(void)
     return;
 }
 
+const char *base_inst[] = {
+    "JMP", "READ", "SLEEP", "CALL", "EXECUTE", "EXIT", "EVENT_WAITFOR", "CATCH", "CATCH_DETAILED",
+    PRIMS_CONNECTS_NAMES, PRIMS_DB_NAMES, PRIMS_MATH_NAMES, PRIMS_MISC_NAMES, PRIMS_PROPS_NAMES, PRIMS_STACK_NAMES,
+    PRIMS_STRINGS_NAMES, PRIMS_ARRAY_NAMES, PRIMS_FLOAT_NAMES, PRIMS_ERROR_NAMES,
+#ifdef MCP_SUPPORT
+    PRIMS_MCP_NAMES,
+#endif
+    PRIMS_REGEX_NAMES, PRIMS_INTERNAL_NAMES
+};
+
 void
 init_primitives(void)
 {
     clear_primitives();
-    for (int i = BASE_MIN; i <= BASE_MAX; i++) {
+
+    prim_count = ARRAYSIZE(base_inst);
+    for (int i = 1; i <= prim_count; i++) {
 	add_primitive(i);
     }
     IN_FORPOP = get_primitive(" FORPOP");
@@ -3767,5 +3779,5 @@ init_primitives(void)
     IN_FOR = get_primitive(" FOR");
     IN_FOREACH = get_primitive(" FOREACH");
     IN_TRYPOP = get_primitive(" TRYPOP");
-    log_status("MUF: %d primitives exist.", BASE_MAX);
+    log_status("MUF: %d primitives exist.", prim_count);
 }

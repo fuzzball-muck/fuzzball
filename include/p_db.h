@@ -99,6 +99,4 @@ void prim_toadplayer(PRIM_PROTOTYPE);
     "PROGRAM_GETLINES", "GETPIDINFO", "PROGRAM_SETLINES",  \
     "SETLINKS_ARRAY", "TOADPLAYER", "SUPPLICANT"
 
-#define PRIMS_DB_CNT 62
-
 #endif				/* _P_DB_H */

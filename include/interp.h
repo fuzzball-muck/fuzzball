@@ -267,6 +267,7 @@ struct publics {
 
 extern int top_pid;
 extern int nargs;
+extern int prim_count;
 extern const char *base_inst[];
 
 struct forvars *copy_fors(struct forvars *);

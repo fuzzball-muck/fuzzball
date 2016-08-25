@@ -65,12 +65,8 @@ void prim_trypop(PRIM_PROTOTYPE);	/* -- */
     "LDUP", "LREVERSE", "ARRAY?", "DICTIONARY?", "{",         \
     "}", "FULLDEPTH", "SECURE_SYSVARS", "CMD"
 
-#define PRIMS_STACK_CNT 42
-
 #define PRIMS_INTERNAL_FUNCS prim_foriter, prim_forpop, prim_trypop
 
 #define PRIMS_INTERNAL_NAMES " FORITER", " FORPOP", " TRYPOP"
-
-#define PRIMS_INTERNAL_CNT 3
 
 #endif				/* _P_STACK_H */

@@ -34,18 +34,18 @@ p_null(PRIM_PROTOTYPE)
 
 static void (*prim_func[]) (PRIM_PROTOTYPE) = {
     p_null, p_null, p_null, p_null, p_null, p_null,
-	    /* JMP, READ,   SLEEP,  CALL,   EXECUTE, RETURN, */
-	    p_null, p_null, p_null,
-	    /* EVENT_WAITFOR, CATCH,  CATCH_DETAILED */
-	    PRIMS_CONNECTS_FUNCS,
-	    PRIMS_DB_FUNCS,
-	    PRIMS_MATH_FUNCS,
-	    PRIMS_MISC_FUNCS,
-	    PRIMS_PROPS_FUNCS,
-	    PRIMS_STACK_FUNCS,
-	    PRIMS_STRINGS_FUNCS, PRIMS_ARRAY_FUNCS, PRIMS_FLOAT_FUNCS, PRIMS_ERROR_FUNCS,
+            /* JMP, READ,   SLEEP,  CALL,   EXECUTE, RETURN, */
+            p_null, p_null, p_null,
+            /* EVENT_WAITFOR, CATCH,  CATCH_DETAILED */
+            PRIMS_CONNECTS_FUNCS,
+            PRIMS_DB_FUNCS,
+            PRIMS_MATH_FUNCS,
+            PRIMS_MISC_FUNCS,
+            PRIMS_PROPS_FUNCS,
+            PRIMS_STACK_FUNCS,
+            PRIMS_STRINGS_FUNCS, PRIMS_ARRAY_FUNCS, PRIMS_FLOAT_FUNCS, PRIMS_ERROR_FUNCS,
 #ifdef MCP_SUPPORT
-	    PRIMS_MCP_FUNCS,
+            PRIMS_MCP_FUNCS,
 #endif
 PRIMS_REGEX_FUNCS, PRIMS_INTERNAL_FUNCS, NULL};
 
@@ -314,6 +314,7 @@ RCLEAR(struct inst *oper, char *file, int line)
 
 int top_pid = 1;
 int nargs = 0;
+int prim_count = 0;
 
 static struct frame *free_frames_list = NULL;
 

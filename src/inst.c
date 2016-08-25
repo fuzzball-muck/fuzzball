@@ -9,26 +9,7 @@
 
 #undef DEBUGARRAYS
 
-/* these arrays MUST agree with what's in inst.h */
-const char *base_inst[] = {
-    "JMP", "READ", "SLEEP", "CALL", "EXECUTE", "EXIT", "EVENT_WAITFOR", "CATCH",
-	    "CATCH_DETAILED",
-    PRIMS_CONNECTS_NAMES,
-    PRIMS_DB_NAMES,
-    PRIMS_MATH_NAMES,
-    PRIMS_MISC_NAMES,
-    PRIMS_PROPS_NAMES,
-    PRIMS_STACK_NAMES,
-    PRIMS_STRINGS_NAMES,
-    PRIMS_ARRAY_NAMES,
-    PRIMS_FLOAT_NAMES,
-    PRIMS_ERROR_NAMES,
-#ifdef MCP_SUPPORT
-    PRIMS_MCP_NAMES,
-#endif
-    PRIMS_REGEX_NAMES,
-    PRIMS_INTERNAL_NAMES
-};
+extern const char *base_inst[];
 
 /* converts an instruction into a printable string, stores the string in
    buffer and returns a pointer to it.
@@ -54,8 +35,8 @@ insttotext(struct frame *fr, int lev, struct inst *theinst, char *buffer, int bu
 
     switch (theinst->type) {
     case PROG_PRIMITIVE:
-	if (theinst->data.number >= BASE_MIN && theinst->data.number <= BASE_MAX) {
-	    ptr = base_inst[theinst->data.number - BASE_MIN];
+	if (theinst->data.number >= 1 && theinst->data.number <= prim_count) {
+	    ptr = base_inst[theinst->data.number - 1];
 	    if (strlen(ptr) >= (size_t) buflen)
 		*buffer = '\0';
 	    else

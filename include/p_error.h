@@ -18,6 +18,4 @@ void prim_error_num(PRIM_PROTOTYPE);
 #define PRIMS_ERROR_NAMES "CLEAR","CLEAR_ERROR","ERROR?","SET_ERROR",     \
         "IS_SET?","ERROR_STR","ERROR_NAME","ERROR_BIT","ERROR_NUM"
 
-#define PRIMS_ERROR_CNT 9
-
 #endif				/* _P_ERROR_H */

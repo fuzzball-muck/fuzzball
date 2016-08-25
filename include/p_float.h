@@ -47,6 +47,4 @@ void prim_diff3(PRIM_PROTOTYPE);
 	"PI", "INF", "ROUND", "DIST3D", "XYZ_TO_POLAR",     \
 	"POLAR_TO_XYZ", "DIFF3", "EPSILON", "FTOSTRC", "**"
 
-#define PRIMS_FLOAT_CNT 32
-
 #endif				/* _P_FLOAT_H */

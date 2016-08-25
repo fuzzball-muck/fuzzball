@@ -43,6 +43,4 @@ void prim_notequal(PRIM_PROTOTYPE);
     ">=", "RANDOM", "INT", "SRAND", "SETSEED", "XOR",     \
 	"GETSEED", "++", "--", "ABS", "SIGN", "!="
 
-#define PRIMS_MATH_CNT 28
-
 #endif				/* _P_MATH_H */
