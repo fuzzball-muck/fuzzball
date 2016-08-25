@@ -217,11 +217,11 @@ typedef int dbref;
 #ifdef DEBUG
 # undef NDEBUG
 #include <assert.h>
-#define DEBUGPRINT(x,y,z) fprintf(stderr,x,y,z)
+#define DEBUGPRINT(...) fprintf(stderr, __VA_ARGS__)
 #else
 # define NDEBUG
 #include <assert.h>
-#define DEBUGPRINT(x,y,z) ;
+#define DEBUGPRINT(...)
 #endif				/* DEBUG */
 
 #ifdef STDC_HEADERS

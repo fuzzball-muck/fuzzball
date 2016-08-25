@@ -123,7 +123,7 @@ free_timenode(timequeue ptr)
     if (ptr->str3)
 	free(ptr->str3);
     if (ptr->fr) {
-	DEBUGPRINT("free_timenode: ptr->type = MUF? %d  ptr->subtyp = MUF_TIMER? %d",
+	DEBUGPRINT("free_timenode: ptr->type = MUF? %d  ptr->subtyp = MUF_TIMER? %d\n",
 		   (ptr->typ == TQ_MUF_TYP), (ptr->subtyp == TQ_MUF_TIMER));
 	if (ptr->typ != TQ_MUF_TYP || ptr->subtyp != TQ_MUF_TIMER) {
 	    if (ptr->fr->multitask != BACKGROUND)
@@ -989,11 +989,11 @@ dequeue_prog_real(dbref program, int killmode, const char *file, const int line)
     fprintf(stderr, "[debug] dequeue_prog(#%d, %d) called from %s:%d\n", program, killmode,
 	    file, line);
 #endif				/* DEBUG */
-    DEBUGPRINT("dequeue_prog: tqhead = %p\n", tqhead, 0);
+    DEBUGPRINT("dequeue_prog: tqhead = %p\n", tqhead);
     while (tqhead) {
 	DEBUGPRINT("dequeue_prog: tqhead->called_prog = #%d, has_refs = %d ",
 		   tqhead->called_prog, has_refs(program, tqhead));
-	DEBUGPRINT("tqhead->uid = #%d\n", tqhead->uid, 0);
+	DEBUGPRINT("tqhead->uid = #%d\n", tqhead->uid);
 	if (tqhead->called_prog != program && !has_refs(program, tqhead)
 	    && tqhead->uid != program) {
 	    break;
@@ -1004,7 +1004,7 @@ dequeue_prog_real(dbref program, int killmode, const char *file, const int line)
 	    }
 	} else if (killmode == 1) {
 	    if (!tqhead->fr) {
-		DEBUGPRINT("dequeue_prog: killmode 1, no frame\n", 0, 0);
+		DEBUGPRINT("dequeue_prog: killmode 1, no frame\n");
 		break;
 	    }
 	}
@@ -1019,7 +1019,7 @@ dequeue_prog_real(dbref program, int killmode, const char *file, const int line)
 	for (tmp = tqhead, ptr = tqhead->next; ptr; tmp = ptr, ptr = ptr->next) {
 	    DEBUGPRINT("dequeue_prog(2): ptr->called_prog=#%d, has_refs()=%d ",
 		       ptr->called_prog, has_refs(program, ptr));
-	    DEBUGPRINT("ptr->uid=#%d.\n", ptr->uid, 0);
+	    DEBUGPRINT("ptr->uid=#%d.\n", ptr->uid);
 	    if (ptr->called_prog != program && !has_refs(program, ptr) && ptr->uid != program) {
 		continue;
 	    }
@@ -1029,7 +1029,7 @@ dequeue_prog_real(dbref program, int killmode, const char *file, const int line)
 		}
 	    } else if (killmode == 1) {
 		if (!ptr->fr) {
-		    DEBUGPRINT("dequeue_prog(2): killmode 1, no frame.\n", 0, 0);
+		    DEBUGPRINT("dequeue_prog(2): killmode 1, no frame.\n");
 		    continue;
 		}
 	    }

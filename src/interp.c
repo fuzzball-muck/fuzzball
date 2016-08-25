@@ -736,7 +736,7 @@ prog_clean(struct frame *fr)
 	CLEAR(&fr->argument.st[i]);
     }
 
-    DEBUGPRINT("prog_clean: fr->caller.top=%d\n", fr->caller.top, 0);
+    DEBUGPRINT("prog_clean: fr->caller.top=%d\n", fr->caller.top);
     for (int i = 1; i <= fr->caller.top; i++) {
 	DEBUGPRINT("Decreasing instances of fr->caller.st[%d](#%d)\n", i, fr->caller.st[i]);
 	PROGRAM_DEC_INSTANCES(fr->caller.st[i]);
