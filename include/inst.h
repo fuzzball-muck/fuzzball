@@ -13,12 +13,6 @@
 #define IN_CATCH      8
 #define IN_CATCH_DETAILED  9
 
-#define BASE_MIN 1
-#define BASE_MAX (9 + PRIMS_CONNECTS_CNT + PRIMS_DB_CNT + PRIMS_MATH_CNT + \
-    PRIMS_MISC_CNT + PRIMS_PROPS_CNT + PRIMS_STACK_CNT + PRIMS_STRINGS_CNT + \
-    PRIMS_ARRAY_CNT + PRIMS_FLOAT_CNT + PRIMS_ERROR_CNT + PRIMS_MCP_CNT \
-  + PRIMS_REGEX_CNT + PRIMS_INTERNAL_CNT)
-
 struct line {
     const char *this_line;      /* the line itself */
     struct line *next, *prev;   /* the next line and the previous line */

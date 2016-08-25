@@ -430,11 +430,8 @@ struct tune_bool_entry tune_bool_list[] = {
 int
 tune_count_parms(void)
 {
-    return (int) (sizeof(tune_str_list) / sizeof(tune_str_list[0]) +
-		  sizeof(tune_time_list) / sizeof(tune_time_list[0]) +
-		  sizeof(tune_val_list) / sizeof(tune_val_list[0]) +
-		  sizeof(tune_ref_list) / sizeof(tune_ref_list[0]) +
-		  sizeof(tune_bool_list) / sizeof(tune_bool_list[0])) - 5;
+    return ARRAYSIZE(tune_str_list) + ARRAYSIZE(tune_time_list) + ARRAYSIZE(tune_val_list)
+         + ARRAYSIZE(tune_ref_list) + ARRAYSIZE(tune_bool_list) - 5;
 }
 
 static void

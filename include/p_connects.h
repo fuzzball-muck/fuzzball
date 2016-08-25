@@ -54,6 +54,4 @@ void prim_descr_bufsize(PRIM_PROTOTYPE);
 	"DESCRLEASTIDLE", "DESCRMOSTIDLE", "DESCRSECURE?",        \
 	"DESCRBUFSIZE"
 
-#define PRIMS_CONNECTS_CNT 32
-
 #endif				/* _P_CONNECTS_H */

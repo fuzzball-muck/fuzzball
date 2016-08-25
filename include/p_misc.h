@@ -69,6 +69,4 @@ void prim_debug_line(PRIM_PROTOTYPE);
     "IGNORING?", "IGNORE_ADD", "IGNORE_DEL", "DEBUG_ON", \
     "DEBUG_OFF", "DEBUG_LINE", "SYSTIME_PRECISE"
 
-#define PRIMS_MISC_CNT 43
-
 #endif				/* _P_MISC_H */

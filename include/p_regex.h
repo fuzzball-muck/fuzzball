@@ -12,6 +12,4 @@ void prim_regsub(PRIM_PROTOTYPE);
 
 #define PRIMS_REGEX_NAMES "REGEXP", "REGSUB"
 
-#define PRIMS_REGEX_CNT 2
-
 #endif				/* _P_REGEX_H */

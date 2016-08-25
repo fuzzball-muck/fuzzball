@@ -269,9 +269,9 @@ disassemble(dbref player, dbref program)
     for (int i = 0; i < PROGRAM_SIZ(program); i++, curr++) {
 	switch (curr->type) {
 	case PROG_PRIMITIVE:
-	    if (curr->data.number >= BASE_MIN && curr->data.number <= BASE_MAX)
+	    if (curr->data.number >= 1 && curr->data.number <= prim_count)
 		snprintf(buf, sizeof(buf), "%d: (line %d) PRIMITIVE: %s", i,
-			 curr->line, base_inst[curr->data.number - BASE_MIN]);
+			 curr->line, base_inst[curr->data.number - 1]);
 	    else
 		snprintf(buf, sizeof(buf), "%d: (line %d) PRIMITIVE: %d", i, curr->line,
 			 curr->data.number);
