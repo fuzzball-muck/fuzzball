@@ -375,7 +375,9 @@ struct player_specific {
 #define PLAYER_SET_IGNORE_COUNT(x,y)	(PLAYER_SP(x)->ignore_count = y)
 #define PLAYER_SET_IGNORE_LAST(x,y)		(PLAYER_SP(x)->ignore_last = y)
 
+#ifndef ARRAYSIZE
 #define ARRAYSIZE(a)	(sizeof(a) / sizeof(a[0]))
+#endif
 
 /* union of type-specific fields */
 
