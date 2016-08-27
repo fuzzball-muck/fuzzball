@@ -190,9 +190,10 @@ Q's
 R's
   random             read               read_wants_blanks  recycle
   reflist_add        reflist_del        reflist_find       regexp
-  regsub             remove_prop        repeat             reverse
-  rinstr             rinstring          rmatch             room?
-  rot                rotate             round              rsplit
+  regsplit           regsplit_noempty   regsub             remove_prop
+  repeat             reverse            rinstr             rinstring
+  rmatch             room?              rot                rotate
+  round              rsplit             
 
 S's
   secure_sysvars     set                set_error          setdesc
@@ -2358,13 +2359,13 @@ array_fmtstrings   atoi               ctoi               explode
 explode_array      ext-name-ok?       fmtstring          instr
 instring           intostr            itoc               midstr
 name-ok?           number?            pname-ok?          pronoun_sub
-regexp             regsub             rinstr             rinstring
-rsplit             smatch             split              stod
-strcat             strcmp             strcut             strdecrypt
-strencrypt         stringcmp          stringpfx          strip
-striplead          striptail          strlen             strncmp
-subst              textattr           tokensplit         tolower
-toupper            
+regexp             regsplit           regsplit_noempty   regsub
+rinstr             rinstring          rsplit             smatch
+split              stod               strcat             strcmp
+strcut             strdecrypt         strencrypt         stringcmp
+stringpfx          strip              striplead          striptail
+strlen             strncmp            subst              textattr
+tokensplit         tolower            toupper            
 
 ~----------------------------------------------------------------------------
 ~
@@ -2924,6 +2925,22 @@ a submatch.  Uses PCRE style regular expression syntax.
 use the following code:
 
     "[a-z]+" "yadda" REG_ICASE REG_ALL + REGSUB
+~
+~
+REGSPLIT
+REGSPLIT ( str:text str:pattern -- list:result )
+
+  Splits the text by the given regular expression pattern. Empty pieces will
+be returned for consecutive matches.
+Also see: REGSPLIT_NOEMPTY
+~
+~
+REGSPLIT_NOEMPTY
+REGSPLIT_NOEMPTY ( str:text str:pattern -- list:result )
+
+  Splits the text by the given regular expression pattern, into non-empty
+pieces.
+Also see: REGSPLIT
 ~
 ~
 TOKENSPLIT
