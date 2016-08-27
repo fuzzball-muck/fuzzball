@@ -2255,6 +2255,18 @@ use the following code:
     "[a-z]+" "yadda" REG_ICASE REG_ALL + REGSUB
 
 
+REGSPLIT ( str:text str:pattern -- list:result )
+
+  Splits the text by the given regular expression pattern. Empty pieces will
+be returned for consecutive matches.
+
+
+REGSPLIT_NOEMPTY ( str:text str:pattern -- list:result )
+
+  Splits the text by the given regular expression pattern, into non-empty
+pieces.
+
+
 TOKENSPLIT (strString strDelim strEscape -- strPre strPost strChar)
 
   Searches strString for the first character that matches any character in

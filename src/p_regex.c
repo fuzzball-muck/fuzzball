@@ -360,3 +360,90 @@ prim_regsub(PRIM_PROTOTYPE)
 
     PushString(buf);
 }
+
+/**/ #include "interface.h"
+void
+_prim_regsplit(PRIM_PROTOTYPE, int empty)
+{
+    stk_array* nu_val = 0;
+    int matches[MATCH_ARR_SIZE];
+    muf_re *re;
+    char *text, *textstart;
+    int len;
+    int matchcnt = 0, pos = 0;
+    const char *errstr;
+    struct inst val;
+
+    CHECKOP(2);
+
+    oper2 = POP(); /* str:Pattern */
+    oper1 = POP(); /* str:Text */
+
+    if (oper1->type != PROG_STRING)
+	abort_interp("Non-string argument (1)");
+    if (oper2->type != PROG_STRING)
+	abort_interp("Non-string argument (2)");
+    if (!oper2->data.string)
+	abort_interp("Empty string argument (2)");
+
+    if ((re = muf_re_get(oper2->data.string, 0, &errstr)) == NULL)
+	abort_interp(errstr);
+
+    textstart = text = DoNullInd(oper1->data.string);
+    len = strlen(text);
+
+    if ((nu_val = new_array_packed(0)) == NULL) {
+	array_free(nu_val);
+	abort_interp("Out of memory");
+    }
+
+    while(*text != '\0') {
+	if ((matchcnt = pcre_exec(re->re, NULL, textstart, len, text-textstart, 0, matches, MATCH_ARR_SIZE)) < 0) {
+	    if (matchcnt != PCRE_ERROR_NOMATCH) {
+		abort_interp(muf_re_error(matchcnt));
+	    }
+	    val.type = PROG_STRING;
+	    val.data.string = alloc_prog_string(&textstart[pos]);
+notify(1,"* no more matches");
+	    array_appenditem(&nu_val, &val);
+
+	    break;
+	} else {
+	    int start = matches[0];
+	    int end = matches[1];
+
+notifyf(1,"* match found at %d:%d", start, end);
+	    if (empty && pos == start) {
+		val.type = PROG_STRING;
+		val.data.string	= alloc_prog_string("");
+		array_appenditem(&nu_val, &val);
+notify(1,"* empty");
+	    } else if (start - pos > 0) {
+		snprintf(buf, sizeof(buf), "%.*s", start - pos, &textstart[pos]);
+		val.type = PROG_STRING;
+		val.data.string	= alloc_prog_string(buf);
+		array_appenditem(&nu_val, &val);
+	    }
+
+	    text = &textstart[end];
+	    pos = end;
+	}
+    }
+
+    CLEAR(oper2);
+    CLEAR(oper1);
+
+    PushArrayRaw(nu_val);
+}
+
+void
+prim_regsplit_noempty(PRIM_PROTOTYPE)
+{
+    _prim_regsplit(player, program, mlev, pc, arg, top, fr, 0);
+}
+
+void
+prim_regsplit(PRIM_PROTOTYPE)
+{
+    _prim_regsplit(player, program, mlev, pc, arg, top, fr, 1);
+}

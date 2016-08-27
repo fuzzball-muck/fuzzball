@@ -2694,6 +2694,22 @@ use the following code:
 ~~endcode
 ~
 ~
+REGSPLIT
+REGSPLIT ( str:text str:pattern -- list:result )
+
+  Splits the text by the given regular expression pattern. Empty pieces will
+be returned for consecutive matches.
+~~alsosee REGSPLIT_NOEMPTY
+~
+~
+REGSPLIT_NOEMPTY
+REGSPLIT_NOEMPTY ( str:text str:pattern -- list:result )
+
+  Splits the text by the given regular expression pattern, into non-empty
+pieces.
+~~alsosee REGSPLIT
+~
+~
 TOKENSPLIT
 TOKENSPLIT (strString strDelim strEscape -- strPre strPost strChar)
 
