@@ -361,7 +361,6 @@ prim_regsub(PRIM_PROTOTYPE)
     PushString(buf);
 }
 
-/**/ #include "interface.h"
 void
 _prim_regsplit(PRIM_PROTOTYPE, int empty)
 {
@@ -404,7 +403,6 @@ _prim_regsplit(PRIM_PROTOTYPE, int empty)
 	    }
 	    val.type = PROG_STRING;
 	    val.data.string = alloc_prog_string(&textstart[pos]);
-notify(1,"* no more matches");
 	    array_appenditem(&nu_val, &val);
 
 	    break;
@@ -412,12 +410,10 @@ notify(1,"* no more matches");
 	    int start = matches[0];
 	    int end = matches[1];
 
-notifyf(1,"* match found at %d:%d", start, end);
 	    if (empty && pos == start) {
 		val.type = PROG_STRING;
 		val.data.string	= alloc_prog_string("");
 		array_appenditem(&nu_val, &val);
-notify(1,"* empty");
 	    } else if (start - pos > 0) {
 		snprintf(buf, sizeof(buf), "%.*s", start - pos, &textstart[pos]);
 		val.type = PROG_STRING;
