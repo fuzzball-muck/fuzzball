@@ -37,7 +37,7 @@
 #define GITAVAIL "$gitavail"
 #define GENDEF  "#define generation"
 #define HASHARRAY "$hasharray"
-#define HASH_ARRAY_TPL "\t{ \"%s\", \"%s\", \"%s\" },\n"
+#define HASH_ARRAY_TPL "    { \"%s\", \"%s\", \"%s\" },\n"
 #define DEF_GITYES "#define GIT_AVAILABLE"
 #define DEF_GITNO  "#undef GIT_AVAILABLE"
 
