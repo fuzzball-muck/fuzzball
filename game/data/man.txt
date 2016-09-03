@@ -4336,7 +4336,6 @@ Parameters available:
   (bool) secure_teleport      - Restrict actions to Jump_OK or controlled rooms
   (bool) secure_thing_movement - Moving things act like player (Wizbit only)
   (bool) do_mpi_parsing       - Parse MPI strings in messages
-  (bool) lazy_mpi_istype_perm - Enable looser legacy perms for MPI {istype}
   (bool) consistent_lock_source - Maintain trigger as lock source in TESTLOCK
   (bool) expanded_debug_trace - MUF debug trace shows array contents
   (bool) force_mlev1_name_notify - MUF notify prepends username for ML1 programs

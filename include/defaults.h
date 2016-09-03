@@ -251,9 +251,6 @@
  * be controlled by the player, or else be set JUMP_OK */
 #define SECURE_TELEPORT 0
 
-/* Is MPI's {istype} and {type} command set to be lazy permission?  1 = yes */
-#define LAZY_MPI_ISTYPE_PERM 0
-
 /* Allow MUF to perform bytecode optimizations. */
 #define OPTIMIZE_MUF 1
 
