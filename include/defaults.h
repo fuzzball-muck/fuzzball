@@ -303,9 +303,6 @@
  * creation to Wizards using the @pcreate command */
 #define REGISTRATION 1
 
-/* Define to 1 to allow _look/ propqueue hooks. */
-#define LOOK_PROPQUEUES 0
-
 /* Define to 1 to allow locks to check down the environment for props. */
 #define LOCK_ENVCHECK 0
 

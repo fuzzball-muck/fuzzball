@@ -287,7 +287,6 @@ int tp_log_commands = LOG_COMMANDS;
 int tp_log_failed_commands = LOG_FAILED_COMMANDS;
 int tp_log_interactive = LOG_INTERACTIVE;
 int tp_log_programs = LOG_PROGRAMS;
-int tp_look_propqueues = LOOK_PROPQUEUES;
 int tp_m3_huh = M3_HUH;
 int tp_muf_comments_strict = MUF_COMMENTS_STRICT;
 int tp_optimize_muf = OPTIMIZE_MUF;
@@ -408,8 +407,6 @@ struct tune_bool_entry tune_bool_list[] = {
      "Suppress basic arrive and depart notifications", "", 1, QUIET_MOVES},
     {"Properties", "lock_envcheck", &tp_lock_envcheck, 0, MLEV_WIZARD,
      "Locks check environment for properties", "", 1, LOCK_ENVCHECK},
-    {"Properties", "look_propqueues", &tp_look_propqueues, 0, MLEV_WIZARD,
-     "Trigger _look/ propqueues when a player looks", "", 1, LOOK_PROPQUEUES},
     {"Properties", "show_legacy_props", &tp_show_legacy_props, 0, MLEV_WIZARD,
      "Examining objects lists legacy props", "", 1, SHOW_LEGACY_PROPS},
     {"Registration", "registration", &tp_registration, 0, MLEV_WIZARD,

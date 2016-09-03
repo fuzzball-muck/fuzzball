@@ -183,7 +183,6 @@ extern int tp_log_commands;
 extern int tp_log_failed_commands;
 extern int tp_log_interactive;
 extern int tp_log_programs;
-extern int tp_look_propqueues;
 extern int tp_m3_huh;
 extern int tp_muf_comments_strict;
 extern int tp_optimize_muf;
