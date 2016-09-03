@@ -278,7 +278,6 @@ int tp_idleboot = IDLEBOOT;
 int tp_idle_ping_enable = IDLE_PING_ENABLE;
 int tp_ignore_bidirectional = IGNORE_BIDIRECTIONAL;
 int tp_ignore_support = IGNORE_SUPPORT;
-int tp_lazy_mpi_istype_perm = LAZY_MPI_ISTYPE_PERM;
 int tp_listeners = LISTENERS;
 int tp_listeners_env = LISTENERS_ENV;
 int tp_listeners_obj = LISTENERS_OBJ;
@@ -389,8 +388,6 @@ struct tune_bool_entry tune_bool_list[] = {
      "Moving things act like player", "", 1, SECURE_THING_MOVEMENT},
     {"MPI", "do_mpi_parsing", &tp_do_mpi_parsing, 0, MLEV_WIZARD,
      "Parse MPI strings in messages", "", 1, DO_MPI_PARSING},
-    {"MPI", "lazy_mpi_istype_perm", &tp_lazy_mpi_istype_perm, 0, MLEV_WIZARD,
-     "Enable looser legacy perms for MPI {istype}", "", 1, LAZY_MPI_ISTYPE_PERM},
     {"MUF", "consistent_lock_source", &tp_consistent_lock_source, 0, MLEV_WIZARD,
      "Maintain trigger as lock source in TESTLOCK", "", 1, CONSISTENT_LOCK_SOURCE},
     {"MUF", "expanded_debug_trace", &tp_expanded_debug, 0, MLEV_WIZARD,

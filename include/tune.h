@@ -174,7 +174,6 @@ extern int tp_idleboot;
 extern int tp_idle_ping_enable;
 extern int tp_ignore_bidirectional;
 extern int tp_ignore_support;
-extern int tp_lazy_mpi_istype_perm;
 extern int tp_listeners;
 extern int tp_listeners_env;
 extern int tp_listeners_obj;
