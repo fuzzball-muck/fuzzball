@@ -94,7 +94,7 @@ putprops_copy(FILE * f, dbref obj)
 	    ptr = fgets(buf, sizeof(buf), g);
 	    if (!ptr)
 		abort();
-	    if (!string_compare(ptr, "*End*\n"))
+	    if (!strcasecmp(ptr, "*End*\n"))
 		break;
 	    fputs(buf, f);
 	}

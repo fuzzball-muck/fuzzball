@@ -806,7 +806,7 @@ do_muf_topprofs(dbref player, char *arg1)
     int count = atoi(arg1);
     time_t current_systime = time(NULL);
 
-    if (!string_compare(arg1, "reset")) {
+    if (!strcasecmp(arg1, "reset")) {
 	for (dbref i = db_top; i-- > 0;) {
 	    if (Typeof(i) == TYPE_PROGRAM) {
 		PROGRAM_SET_PROFTIME(i, 0, 0);
@@ -900,7 +900,7 @@ do_mpi_topprofs(dbref player, char *arg1)
     int count = atoi(arg1);
     time_t current_systime = time(NULL);
 
-    if (!string_compare(arg1, "reset")) {
+    if (!strcasecmp(arg1, "reset")) {
 	for (dbref i = db_top; i-- > 0;) {
 	    if (DBFETCH(i)->mpi_prof_use) {
 		DBFETCH(i)->mpi_prof_use = 0;
@@ -993,7 +993,7 @@ do_topprofs(dbref player, char *arg1)
     int count = atoi(arg1);
     time_t current_systime = time(NULL);
 
-    if (!string_compare(arg1, "reset")) {
+    if (!strcasecmp(arg1, "reset")) {
 	for (dbref i = db_top; i-- > 0;) {
 	    if (DBFETCH(i)->mpi_prof_use) {
 		DBFETCH(i)->mpi_prof_use = 0;

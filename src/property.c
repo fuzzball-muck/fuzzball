@@ -107,9 +107,9 @@ set_property_nofetch(dbref player, const char *pname, PData * dat, int sync)
     }
 
     if (Typeof(player) == TYPE_PLAYER) {
-	if (!string_compare(pname, LEGACY_GUEST_PROP)) {
+	if (!strcasecmp(pname, LEGACY_GUEST_PROP)) {
 	    FLAGS(player) |= GUEST;
-	} else if (!sync && string_compare(tp_gender_prop, LEGACY_GENDER_PROP)) {
+	} else if (!sync && strcasecmp(tp_gender_prop, LEGACY_GENDER_PROP)) {
 	    char *current;
 	    static const char *legacy;
 	    current = string_dup(tp_gender_prop);
@@ -119,9 +119,9 @@ set_property_nofetch(dbref player, const char *pname, PData * dat, int sync)
 	        current++;
 	    while (*legacy == PROPDIR_DELIMITER)
 	        legacy++;
-	    if (!string_compare(pname, current)) {
+	    if (!strcasecmp(pname, current)) {
 	        set_property(player, (char *) legacy, dat, 1);
-	    } else if (!string_compare(pname, legacy)) {
+	    } else if (!strcasecmp(pname, legacy)) {
 	        set_property(player, current, dat, 1);
 	    }
 	}
@@ -241,10 +241,10 @@ remove_property_nofetch(dbref player, const char *pname, int sync)
     DBFETCH(player)->properties = l;
 
     if (Typeof(player) == TYPE_PLAYER) {
-	if (!string_compare(pname, LEGACY_GUEST_PROP)) {
+	if (!strcasecmp(pname, LEGACY_GUEST_PROP)) {
 	    FLAGS(player) &= ~GUEST;
 	    DBDIRTY(player);
-	} else if (!sync && string_compare(tp_gender_prop, LEGACY_GENDER_PROP)) {
+	} else if (!sync && strcasecmp(tp_gender_prop, LEGACY_GENDER_PROP)) {
 	    char *current;
 	    static const char *legacy;
 	    current = string_dup(tp_gender_prop);
@@ -254,9 +254,9 @@ remove_property_nofetch(dbref player, const char *pname, int sync)
 	        current++;
 	    while (*legacy == PROPDIR_DELIMITER)
 	        legacy++;
-	    if (!string_compare(pname, current)) {
+	    if (!strcasecmp(pname, current)) {
 	        remove_property(player, (char *) legacy, 1);
-	    } else if (!string_compare(pname, legacy)) {
+	    } else if (!strcasecmp(pname, legacy)) {
 	        remove_property(player, current, 1);
 	    }
 	}

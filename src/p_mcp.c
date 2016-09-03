@@ -55,8 +55,8 @@ muf_mcp_callback(McpFrame * mfr, McpMesg * mesg, McpVer version, void *context)
 
     for (ptr = PROGRAM_MCPBINDS(obj); ptr; ptr = ptr->next) {
 	if (ptr->pkgname && ptr->msgname) {
-	    if (!string_compare(ptr->pkgname, pkgname)) {
-		if (!string_compare(ptr->msgname, msgname)) {
+	    if (!strcasecmp(ptr->pkgname, pkgname)) {
+		if (!strcasecmp(ptr->msgname, msgname)) {
 		    break;
 		}
 	    }
@@ -429,8 +429,8 @@ prim_mcp_bind(PRIM_PROTOTYPE)
 
     for (ptr = PROGRAM_MCPBINDS(program); ptr; ptr = ptr->next) {
 	if (ptr->pkgname && ptr->msgname) {
-	    if (!string_compare(ptr->pkgname, pkgname)) {
-		if (!string_compare(ptr->msgname, msgname)) {
+	    if (!strcasecmp(ptr->pkgname, pkgname)) {
+		if (!strcasecmp(ptr->msgname, msgname)) {
 		    break;
 		}
 	    }

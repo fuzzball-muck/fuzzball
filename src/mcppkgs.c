@@ -49,7 +49,7 @@ show_mcp_error(McpFrame * mfr, char *topic, char *text)
 void
 mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 {
-    if (!string_compare(msg->mesgname, "set")) {
+    if (!strcasecmp(msg->mesgname, "set")) {
 	dbref obj = NOTHING;
 	char *reference;
 	char *valtype;
@@ -97,7 +97,7 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 	reference++;
 
 	/* the rest is category specific data. */
-	if (!string_compare(category, "prop")) {
+	if (!strcasecmp(category, "prop")) {
 	    if (!OkObj(obj)) {
 		show_mcp_error(mfr, "simpleedit-set", "Bad reference object.");
 		return;
@@ -117,7 +117,7 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 		show_mcp_error(mfr, "simpleedit-set", "Permission denied.");
 		return;
 	    }
-	    if (!string_compare(valtype, "string-list") || !string_compare(valtype, "string")) {
+	    if (!strcasecmp(valtype, "string-list") || !strcasecmp(valtype, "string")) {
 		int left = BUFFER_LEN - 1;
 		int len;
 
@@ -144,7 +144,7 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 		buf[BUFFER_LEN - 1] = '\0';
 		add_property(obj, reference, buf, 0);
 
-	    } else if (!string_compare(valtype, "integer")) {
+	    } else if (!strcasecmp(valtype, "integer")) {
 		if (lines != 1) {
 		    show_mcp_error(mfr, "simpleedit-set", "Bad integer value.");
 		    return;
@@ -153,7 +153,7 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 		add_property(obj, reference, NULL, atoi(content));
 	    }
 
-	} else if (!string_compare(category, "proplist")) {
+	} else if (!strcasecmp(category, "proplist")) {
 	    if (!OkObj(obj)) {
 		show_mcp_error(mfr, "simpleedit-set", "Bad reference object.");
 		return;
@@ -173,7 +173,7 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 		show_mcp_error(mfr, "simpleedit-set", "Permission denied.");
 		return;
 	    }
-	    if (!string_compare(valtype, "string-list")) {
+	    if (!strcasecmp(valtype, "string-list")) {
 
 		if (lines == 0) {
 		    snprintf(buf, sizeof(buf), "%s#", reference);
@@ -191,13 +191,13 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 			add_property(obj, buf, content, 0);
 		    }
 		}
-	    } else if (!string_compare(valtype, "string") ||
-		       !string_compare(valtype, "integer")) {
+	    } else if (!strcasecmp(valtype, "string") ||
+		       !strcasecmp(valtype, "integer")) {
 		show_mcp_error(mfr, "simpleedit-set", "Bad value type for proplist.");
 		return;
 	    }
 
-	} else if (!string_compare(category, "prog")) {
+	} else if (!strcasecmp(category, "prog")) {
 	    struct line *tmpline;
 	    struct line *curr = NULL;
 	    struct line *new_line;
@@ -256,7 +256,7 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 	    DBDIRTY(player);
 	    DBDIRTY(obj);
 
-	} else if (!string_compare(category, "sysparm")) {
+	} else if (!strcasecmp(category, "sysparm")) {
 	    if (!Wizard(player)) {
 		show_mcp_error(mfr, "simpleedit-set", "Permission denied.");
 		return;
@@ -268,7 +268,7 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 	    content = mcp_mesg_arg_getline(msg, "content", 0);
 	    tune_setparm(reference, content, TUNE_MLEV(player));
 
-	} else if (!string_compare(category, "user")) {
+	} else if (!strcasecmp(category, "user")) {
 	} else {
 	    show_mcp_error(mfr, "simpleedit-set", "Unknown reference category.");
 	    return;
@@ -293,7 +293,7 @@ mcppkg_help_request(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 	return;
     }
 
-    if (!string_compare(msg->mesgname, "request")) {
+    if (!strcasecmp(msg->mesgname, "request")) {
 	char *onwhat;
 	char *valtype;
 
@@ -306,13 +306,13 @@ mcppkg_help_request(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 	    strcatn(topic, sizeof(topic), "|");
 	}
 
-	if (!string_compare(valtype, "man")) {
+	if (!strcasecmp(valtype, "man")) {
 	    file = MAN_FILE;
-	} else if (!string_compare(valtype, "mpi")) {
+	} else if (!strcasecmp(valtype, "mpi")) {
 	    file = MPI_FILE;
-	} else if (!string_compare(valtype, "help")) {
+	} else if (!strcasecmp(valtype, "help")) {
 	    file = HELP_FILE;
-	} else if (!string_compare(valtype, "news")) {
+	} else if (!strcasecmp(valtype, "news")) {
 	    file = NEWS_FILE;
 	} else {
 	    snprintf(buf, sizeof(buf), "Sorry, %s is not a valid help type.", valtype);

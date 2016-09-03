@@ -657,7 +657,7 @@ prim_cancallp(PRIM_PROTOTYPE)
 
 	pbs = PROGRAM_PUBS(oper1->data.objref);
 	while (pbs) {
-	    if (!string_compare(oper2->data.string->data, pbs->subname))
+	    if (!strcasecmp(oper2->data.string->data, pbs->subname))
 		break;
 	    pbs = pbs->next;
 	}

@@ -115,7 +115,7 @@ array_tree_compare(array_iter * a, array_iter * b, int case_sens)
 	if (0 != case_sens) {
 	    return strcmp(astr, bstr);
 	} else {
-	    return string_compare(astr, bstr);
+	    return strcasecmp(astr, bstr);
 	}
     } else if (a->type == PROG_ARRAY) {
 	return array_tree_compare_arrays(a, b, case_sens);

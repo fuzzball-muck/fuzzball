@@ -949,7 +949,7 @@ msg_compare(const char *s1, const char *s2)
     if (*s1 && *s2 && number(s1) && number(s2)) {
 	return (atoi(s1) - atoi(s2));
     } else {
-	return string_compare(s1, s2);
+	return strcasecmp(s1, s2);
     }
 }
 

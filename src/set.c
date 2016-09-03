@@ -45,7 +45,7 @@ do_name(int descr, dbref player, const char *name, char *newname)
 	    } else if (!check_password(thing, password)) {
 		notify(player, "Incorrect password.");
 		return;
-	    } else if (string_compare(newname, NAME(thing))
+	    } else if (strcasecmp(newname, NAME(thing))
 		       && !ok_player_name(newname)) {
 		notify(player, "You can't give a player that name.");
 		return;
@@ -308,7 +308,7 @@ do_chown(int descr, dbref player, const char *name, const char *newowner)
     if ((thing = noisy_match_result(&md)) == NOTHING)
 	return;
 
-    if (*newowner && string_compare(newowner, "me")) {
+    if (*newowner && strcasecmp(newowner, "me")) {
 	if ((owner = lookup_player(newowner)) == NOTHING) {
 	    notify(player, "I couldn't find that player.");
 	    return;
@@ -514,7 +514,7 @@ do_set(int descr, dbref player, const char *name, const char *flag)
 	if (*type == PROP_DELIMITER) {
 	    /* clear all properties */
 	    for (type++; isspace(*type); type++) ;
-	    if (string_compare(type, "clear")) {
+	    if (strcasecmp(type, "clear")) {
 		notify(player, "Use '@set <obj>=:clear' to clear all props on an object");
 		free((void *) x);
 		return;
@@ -563,7 +563,7 @@ do_set(int descr, dbref player, const char *name, const char *flag)
     if (*p == '\0') {
 	notify(player, "You must specify a flag to set.");
 	return;
-    } else if ((!string_compare("0", p) || !string_compare("M0", p)) ||
+    } else if ((!strcasecmp("0", p) || !strcasecmp("M0", p)) ||
 	       ((string_prefix("MUCKER", p)) && (*flag == NOT_TOKEN))) {
 	if (!Wizard(OWNER(player))) {
 	    if ((OWNER(player) != OWNER(thing)) || (Typeof(thing) != TYPE_PROGRAM)) {
@@ -578,7 +578,7 @@ do_set(int descr, dbref player, const char *name, const char *flag)
 	SetMLevel(thing, 0);
 	notify(player, "Mucker level set.");
 	return;
-    } else if (!string_compare("1", p) || !string_compare("M1", p)) {
+    } else if (!strcasecmp("1", p) || !strcasecmp("M1", p)) {
 	if (!Wizard(OWNER(player))) {
 	    if ((OWNER(player) != OWNER(thing)) || (Typeof(thing) != TYPE_PROGRAM)
 		|| (MLevRaw(player) < 1)) {
@@ -593,7 +593,7 @@ do_set(int descr, dbref player, const char *name, const char *flag)
 	SetMLevel(thing, 1);
 	notify(player, "Mucker level set.");
 	return;
-    } else if ((!string_compare("2", p) || !string_compare("M2", p)) ||
+    } else if ((!strcasecmp("2", p) || !strcasecmp("M2", p)) ||
 	       ((string_prefix("MUCKER", p)) && (*flag != NOT_TOKEN))) {
 	if (!Wizard(OWNER(player))) {
 	    if ((OWNER(player) != OWNER(thing)) || (Typeof(thing) != TYPE_PROGRAM)
@@ -609,7 +609,7 @@ do_set(int descr, dbref player, const char *name, const char *flag)
 	SetMLevel(thing, 2);
 	notify(player, "Mucker level set.");
 	return;
-    } else if (!string_compare("3", p) || !string_compare("M3", p)) {
+    } else if (!strcasecmp("3", p) || !strcasecmp("M3", p)) {
 	if (!Wizard(OWNER(player))) {
 	    if ((OWNER(player) != OWNER(thing)) || (Typeof(thing) != TYPE_PROGRAM)
 		|| (MLevRaw(player) < 3)) {
@@ -624,7 +624,7 @@ do_set(int descr, dbref player, const char *name, const char *flag)
 	SetMLevel(thing, 3);
 	notify(player, "Mucker level set.");
 	return;
-    } else if (!string_compare("4", p) || !string_compare("M4", p)) {
+    } else if (!strcasecmp("4", p) || !strcasecmp("M4", p)) {
 	notify(player, "To set Mucker Level 4, set the Wizard bit and another Mucker bit.");
 	return;
     } else if (string_prefix("WIZARD", p)) {

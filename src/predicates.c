@@ -316,7 +316,7 @@ can_move(int descr, dbref player, const char *direction, int lev)
 {
     struct match_data md;
 
-    if (tp_allow_home && !string_compare(direction, "home"))
+    if (tp_allow_home && !strcasecmp(direction, "home"))
         return 1;
 
     /* otherwise match on exits */

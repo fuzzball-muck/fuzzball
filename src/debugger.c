@@ -31,7 +31,7 @@ scopedvar_getnum(struct frame *fr, int level, const char *varname)
     }
     for (int varnum = 0; varnum < svinfo->count; varnum++) {
         assert(svinfo->varnames[varnum] != NULL);
-        if (!string_compare(svinfo->varnames[varnum], varname)) {
+        if (!strcasecmp(svinfo->varnames[varnum], varname)) {
             return varnum;
         }
     }
@@ -149,7 +149,7 @@ funcname_to_pc(dbref program, const char *name)
     siz = PROGRAM_SIZ(program);
     for (int i = 0; i < siz; i++) {
 	if ((code[i].type == PROG_FUNCTION) &&
-	    !string_compare(name, code[i].data.mufproc->procname)) {
+	    !strcasecmp(name, code[i].data.mufproc->procname)) {
 	    return (code + i);
 	}
     }
@@ -551,8 +551,8 @@ muf_debugger(int descr, dbref player, dbref program, const char *text, struct fr
     }
     fr->brkpt.breaknum = -1;
 
-    if (!string_compare(cmd, "cont")) {
-    } else if (!string_compare(cmd, "finish")) {
+    if (!strcasecmp(cmd, "cont")) {
+    } else if (!strcasecmp(cmd, "finish")) {
 	if (fr->brkpt.count >= MAX_BREAKS) {
 	    notify_nolisten(player,
 			    "Cannot finish because there are too many breakpoints set.", 1);
@@ -569,7 +569,7 @@ muf_debugger(int descr, dbref player, dbref program, const char *text, struct fr
 	fr->brkpt.prog[j] = program;
 	fr->brkpt.bypass = 1;
 	return 0;
-    } else if (!string_compare(cmd, "stepi")) {
+    } else if (!strcasecmp(cmd, "stepi")) {
 	i = atoi(arg);
 	if (!i)
 	    i = 1;
@@ -589,7 +589,7 @@ muf_debugger(int descr, dbref player, dbref program, const char *text, struct fr
 	fr->brkpt.prog[j] = NOTHING;
 	fr->brkpt.bypass = 1;
 	return 0;
-    } else if (!string_compare(cmd, "step")) {
+    } else if (!strcasecmp(cmd, "step")) {
 	i = atoi(arg);
 	if (!i)
 	    i = 1;
@@ -609,7 +609,7 @@ muf_debugger(int descr, dbref player, dbref program, const char *text, struct fr
 	fr->brkpt.prog[j] = NOTHING;
 	fr->brkpt.bypass = 1;
 	return 0;
-    } else if (!string_compare(cmd, "nexti")) {
+    } else if (!strcasecmp(cmd, "nexti")) {
 	i = atoi(arg);
 	if (!i)
 	    i = 1;
@@ -629,7 +629,7 @@ muf_debugger(int descr, dbref player, dbref program, const char *text, struct fr
 	fr->brkpt.prog[j] = program;
 	fr->brkpt.bypass = 1;
 	return 0;
-    } else if (!string_compare(cmd, "next")) {
+    } else if (!strcasecmp(cmd, "next")) {
 	i = atoi(arg);
 	if (!i)
 	    i = 1;
@@ -649,7 +649,7 @@ muf_debugger(int descr, dbref player, dbref program, const char *text, struct fr
 	fr->brkpt.prog[j] = program;
 	fr->brkpt.bypass = 1;
 	return 0;
-    } else if (!string_compare(cmd, "exec")) {
+    } else if (!strcasecmp(cmd, "exec")) {
 	if (fr->brkpt.count >= MAX_BREAKS) {
 	    notify_nolisten(player,
 			    "Cannot finish because there are too many breakpoints set.", 1);
@@ -680,7 +680,7 @@ muf_debugger(int descr, dbref player, dbref program, const char *text, struct fr
 	fr->brkpt.prog[j] = program;
 	fr->brkpt.bypass = 1;
 	return 0;
-    } else if (!string_compare(cmd, "prim")) {
+    } else if (!strcasecmp(cmd, "prim")) {
 	if (fr->brkpt.count >= MAX_BREAKS) {
 	    notify_nolisten(player,
 			    "Cannot finish because there are too many breakpoints set.", 1);
@@ -727,7 +727,7 @@ muf_debugger(int descr, dbref player, dbref program, const char *text, struct fr
 	fr->brkpt.bypass = 1;
 	fr->brkpt.dosyspop = 1;
 	return 0;
-    } else if (!string_compare(cmd, "break")) {
+    } else if (!strcasecmp(cmd, "break")) {
 	add_muf_read_event(descr, player, program, fr);
 	if (fr->brkpt.count >= MAX_BREAKS) {
 	    notify_nolisten(player, "Too many breakpoints set.", 1);
@@ -755,7 +755,7 @@ muf_debugger(int descr, dbref player, dbref program, const char *text, struct fr
 	fr->brkpt.prog[j] = program;
 	notify_nolisten(player, "Breakpoint set.", 1);
 	return 0;
-    } else if (!string_compare(cmd, "delete")) {
+    } else if (!strcasecmp(cmd, "delete")) {
 	add_muf_read_event(descr, player, program, fr);
 	i = atoi(arg);
 	if (!i) {
@@ -779,7 +779,7 @@ muf_debugger(int descr, dbref player, dbref program, const char *text, struct fr
 	fr->brkpt.count--;
 	notify_nolisten(player, "Breakpoint deleted.", 1);
 	return 0;
-    } else if (!string_compare(cmd, "breaks")) {
+    } else if (!strcasecmp(cmd, "breaks")) {
 	notify_nolisten(player, "Breakpoints:", 1);
 	for (i = 0; i < fr->brkpt.count; i++) {
 	    ptr = unparse_breakpoint(fr, i);
@@ -788,12 +788,12 @@ muf_debugger(int descr, dbref player, dbref program, const char *text, struct fr
 	notify_nolisten(player, "*done*", 1);
 	add_muf_read_event(descr, player, program, fr);
 	return 0;
-    } else if (!string_compare(cmd, "where")) {
+    } else if (!strcasecmp(cmd, "where")) {
 	i = atoi(arg);
 	muf_backtrace(player, program, i, fr);
 	add_muf_read_event(descr, player, program, fr);
 	return 0;
-    } else if (!string_compare(cmd, "stack")) {
+    } else if (!strcasecmp(cmd, "stack")) {
 	notify_nolisten(player, "*Argument stack top*", 1);
 	i = atoi(arg);
 	if (!i)
@@ -806,16 +806,16 @@ muf_debugger(int descr, dbref player, dbref program, const char *text, struct fr
 		ptr = insttotext(NULL, 0, &fr->argument.st[--j], buf2, sizeof(buf2), 4000,
 				 program, 1);
 		cnt++;
-	    } while (!string_compare(ptr, buf) && j > 0);
+	    } while (!strcasecmp(ptr, buf) && j > 0);
 	    if (cnt > 1)
 		notifyf(player, "     [repeats %d times]", cnt);
-	    if (string_compare(ptr, buf))
+	    if (strcasecmp(ptr, buf))
 		notifyf(player, "%3d) %s", j + 1, ptr);
 	}
 	notify_nolisten(player, "*done*", 1);
 	add_muf_read_event(descr, player, program, fr);
 	return 0;
-    } else if (!string_compare(cmd, "list") || !string_compare(cmd, "listi")) {
+    } else if (!strcasecmp(cmd, "list") || !strcasecmp(cmd, "listi")) {
 	int startline, endline;
 
 	add_muf_read_event(descr, player, program, fr);
@@ -877,7 +877,7 @@ muf_debugger(int descr, dbref player, dbref program, const char *text, struct fr
 	if (endline < startline)
 	    endline = startline;
 	notify_nolisten(player, "Listing:", 1);
-	if (!string_compare(cmd, "listi")) {
+	if (!strcasecmp(cmd, "listi")) {
 	    for (i = startline; i <= endline; i++) {
 		pinst = linenum_to_pc(program, i);
 		if (pinst) {
@@ -892,15 +892,15 @@ muf_debugger(int descr, dbref player, dbref program, const char *text, struct fr
 	fr->brkpt.lastlisted = endline;
 	notify_nolisten(player, "*done*", 1);
 	return 0;
-    } else if (!string_compare(cmd, "quit")) {
+    } else if (!strcasecmp(cmd, "quit")) {
 	notify_nolisten(player, "Halting execution.", 1);
 	return 1;
-    } else if (!string_compare(cmd, "trace")) {
+    } else if (!strcasecmp(cmd, "trace")) {
 	add_muf_read_event(descr, player, program, fr);
-	if (!string_compare(arg, "on")) {
+	if (!strcasecmp(arg, "on")) {
 	    fr->brkpt.showstack = 1;
 	    notify_nolisten(player, "Trace turned on.", 1);
-	} else if (!string_compare(arg, "off")) {
+	} else if (!strcasecmp(arg, "off")) {
 	    fr->brkpt.showstack = 0;
 	    notify_nolisten(player, "Trace turned off.", 1);
 	} else {
@@ -908,19 +908,19 @@ muf_debugger(int descr, dbref player, dbref program, const char *text, struct fr
 			     fr->brkpt.showstack ? "on" : "off");
 	}
 	return 0;
-    } else if (!string_compare(cmd, "words")) {
+    } else if (!strcasecmp(cmd, "words")) {
 	list_program_functions(player, program, arg);
 	add_muf_read_event(descr, player, program, fr);
 	return 0;
-    } else if (!string_compare(cmd, "print")) {
+    } else if (!strcasecmp(cmd, "print")) {
 	debug_printvar(player, program, fr, arg);
 	add_muf_read_event(descr, player, program, fr);
 	return 0;
-    } else if (!string_compare(cmd, "push")) {
+    } else if (!strcasecmp(cmd, "push")) {
 	push_arg(player, fr, arg);
 	add_muf_read_event(descr, player, program, fr);
 	return 0;
-    } else if (!string_compare(cmd, "pop")) {
+    } else if (!strcasecmp(cmd, "pop")) {
 	add_muf_read_event(descr, player, program, fr);
 	if (fr->argument.top < 1) {
 	    notify_nolisten(player, "Nothing to pop.", 1);
@@ -930,7 +930,7 @@ muf_debugger(int descr, dbref player, dbref program, const char *text, struct fr
 	CLEAR(fr->argument.st + fr->argument.top);
 	notify_nolisten(player, "Stack item popped.", 1);
 	return 0;
-    } else if (!string_compare(cmd, "help")) {
+    } else if (!strcasecmp(cmd, "help")) {
 	notify_nolisten(player,
 			"cont            continues execution until a breakpoint is hit.", 1);
 	notify_nolisten(player, "finish          completes execution of current function.", 1);

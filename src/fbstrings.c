@@ -65,39 +65,6 @@ alphanum_compare(const char *t1, const char *s2)
     return (tolower(*s1) - tolower(*s2));
 }
 
-int
-string_compare(register const char *s1, register const char *s2)
-{
-    unsigned char c1, c2;
-
-    do {
-	c1 = tolower(*(const unsigned char *) s1++);
-	c2 = tolower(*(const unsigned char *) s2++);
-    } while (c1 && c1 == c2);
-
-    return (c1 - c2);
-}
-
-int
-strcmp_nocase(const char *s1, const char *s2)
-{
-    while (*s1 && tolower(*s1) == tolower(*s2))
-        s1++, s2++;
-    return (tolower(*s1) - tolower(*s2));
-}
-
-int
-strncmp_nocase(const char *s1, const char *s2, int cnt)
-{
-    while (cnt && *s1 && tolower(*s1) == tolower(*s2))
-        s1++, s2++, cnt--;
-    if (!cnt) {
-        return 0;
-    } else {
-        return (tolower(*s1) - tolower(*s2));
-    }
-}
-
 const char *
 exit_prefix(register const char *string, register const char *prefix)
 {
@@ -224,15 +191,15 @@ pronoun_substitute(int descr, dbref player, const char *str)
 	if (*last_non_space)
 	    *(last_non_space + 1) = '\0';
 
-	if (string_compare(sexstr, "male") == 0)
+	if (strcasecmp(sexstr, "male") == 0)
 	    sex = GENDER_MALE;
-	else if (string_compare(sexstr, "female") == 0)
+	else if (strcasecmp(sexstr, "female") == 0)
 	    sex = GENDER_FEMALE;
-	else if (string_compare(sexstr, "hermaphrodite") == 0)
+	else if (strcasecmp(sexstr, "hermaphrodite") == 0)
 	    sex = GENDER_HERM;
-	else if (string_compare(sexstr, "herm") == 0)
+	else if (strcasecmp(sexstr, "herm") == 0)
 	    sex = GENDER_HERM;
-	else if (string_compare(sexstr, "neuter") == 0)
+	else if (strcasecmp(sexstr, "neuter") == 0)
 	    sex = GENDER_NEUTER;
     }
 
@@ -856,10 +823,10 @@ ifloat(const char *s)
     if (*s == '+' || *s == '-')
 	s++;
     /* WORK: for when float parsing is improved.
-     * if (!string_compare(s, "inf")) {
+     * if (!strcasecmp(s, "inf")) {
      * return 1;
      * }
-     * if (!string_compare(s, "nan")) {
+     * if (!strcasecmp(s, "nan")) {
      * return 1;
      * }
      */
