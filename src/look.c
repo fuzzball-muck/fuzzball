@@ -125,10 +125,8 @@ look_room(int descr, dbref player, dbref loc)
 
     /* tell him the contents */
     look_contents(player, loc, "Contents:");
-    if (tp_look_propqueues) {
-	snprintf(obj_num, sizeof(obj_num), "#%d", loc);
-	envpropqueue(descr, player, loc, player, loc, NOTHING, LOOK_PROPQUEUE, obj_num, 1, 1);
-    }
+    snprintf(obj_num, sizeof(obj_num), "#%d", loc);
+    envpropqueue(descr, player, loc, player, loc, NOTHING, LOOK_PROPQUEUE, obj_num, 1, 1);
 }
 
 void
@@ -187,11 +185,9 @@ do_look_at(int descr, dbref player, const char *name, const char *detail)
 		} else {
 		    look_simple(descr, player, thing);
 		    look_contents(player, thing, "Carrying:");
-		    if (tp_look_propqueues) {
-			snprintf(obj_num, sizeof(obj_num), "#%d", thing);
-			envpropqueue(descr, player, thing, player, thing,
-				     NOTHING, LOOK_PROPQUEUE, obj_num, 1, 1);
-		    }
+		    snprintf(obj_num, sizeof(obj_num), "#%d", thing);
+		    envpropqueue(descr, player, thing, player, thing,
+			    NOTHING, LOOK_PROPQUEUE, obj_num, 1, 1);
 		}
 		break;
 	    case TYPE_THING:
@@ -205,22 +201,18 @@ do_look_at(int descr, dbref player, const char *name, const char *detail)
 			look_contents(player, thing, "Contains:");
 			ts_useobject(thing);
 		    }
-		    if (tp_look_propqueues) {
-			snprintf(obj_num, sizeof(obj_num), "#%d", thing);
-			envpropqueue(descr, player, thing, player, thing,
-				     NOTHING, LOOK_PROPQUEUE, obj_num, 1, 1);
-		    }
+		    snprintf(obj_num, sizeof(obj_num), "#%d", thing);
+		    envpropqueue(descr, player, thing, player, thing,
+			    NOTHING, LOOK_PROPQUEUE, obj_num, 1, 1);
 		}
 		break;
 	    default:
 		look_simple(descr, player, thing);
 		if (Typeof(thing) != TYPE_PROGRAM)
 		    ts_useobject(thing);
-		if (tp_look_propqueues) {
-		    snprintf(obj_num, sizeof(obj_num), "#%d", thing);
-		    envpropqueue(descr, player, thing, player, thing,
-				 NOTHING, LOOK_PROPQUEUE, obj_num, 1, 1);
-		}
+		snprintf(obj_num, sizeof(obj_num), "#%d", thing);
+		envpropqueue(descr, player, thing, player, thing,
+		        NOTHING, LOOK_PROPQUEUE, obj_num, 1, 1);
 		break;
 	    }
 	} else if (thing == NOTHING || (*detail && thing != AMBIGUOUS)) {

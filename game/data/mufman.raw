@@ -4060,7 +4060,6 @@ Parameters available:
   (bool) playermax            - Limit number of concurrent players allowed
   (bool) quiet_moves          - Suppress basic arrive and depart notifications
   (bool) lock_envcheck        - Locks check environment for properties
-  (bool) look_propqueues      - Trigger _look/ propqueues when a player looks
   (bool) show_legacy_props    - Examining objects lists legacy props
   (bool) registration         - Require new players to register manually
   (bool) server_cipher_preference - Honor server cipher preference order over client's (Wizbit only)
