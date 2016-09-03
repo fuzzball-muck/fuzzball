@@ -355,13 +355,13 @@ mesg_dbref_raw(int descr, dbref player, dbref what, dbref perms, const char *buf
     dbref obj = UNKNOWN;
 
     if (buf && *buf) {
-	if (!string_compare(buf, "this")) {
+	if (!strcasecmp(buf, "this")) {
 	    obj = what;
-	} else if (!string_compare(buf, "me")) {
+	} else if (!strcasecmp(buf, "me")) {
 	    obj = player;
-	} else if (!string_compare(buf, "here")) {
+	} else if (!strcasecmp(buf, "here")) {
 	    obj = LOCATION(player);
-	} else if (!string_compare(buf, "home")) {
+	} else if (!strcasecmp(buf, "home")) {
 	    obj = HOME;
 	} else {
 	    init_match(descr, player, buf, NOTYPE, &md);
@@ -455,7 +455,7 @@ get_mvar(const char *varname)
 {
     int i = 0;
 
-    for (i = varc - 1; i >= 0 && string_compare(varname, varv[i].name); i--) ;
+    for (i = varc - 1; i >= 0 && strcasecmp(varname, varv[i].name); i--) ;
     if (i < 0)
 	return NULL;
     return varv[i].buf;
@@ -492,7 +492,7 @@ get_mfunc(const char *funcname)
 {
     int i = 0;
 
-    for (i = funcc - 1; i >= 0 && string_compare(funcname, funcv[i].name); i--) ;
+    for (i = funcc - 1; i >= 0 && strcasecmp(funcname, funcv[i].name); i--) ;
     if (i < 0)
 	return NULL;
     return funcv[i].buf;

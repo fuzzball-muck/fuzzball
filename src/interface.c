@@ -970,7 +970,7 @@ do_command(struct descriptor_data *d, char *command)
     if (d->connected)
 	ts_lastuseobject(d->player);
 
-    if (!string_compare(command, BREAK_COMMAND)) {
+    if (!strcasecmp(command, BREAK_COMMAND)) {
 	if (!d->connected)
 	    return 0;
 	if (dequeue_prog(d->player, 2)) {
@@ -983,7 +983,7 @@ do_command(struct descriptor_data *d, char *command)
 	return 1;
     } else if (!strcmp(command, QUIT_COMMAND)) {
 	return 0;
-    } else if (tp_recognize_null_command && !string_compare(command, NULL_COMMAND)) {
+    } else if (tp_recognize_null_command && !strcasecmp(command, NULL_COMMAND)) {
 	return 1;
     } else if ((!strncmp(command, WHO_COMMAND, sizeof(WHO_COMMAND) - 1)) ||
 	       (*command == OVERRIDE_TOKEN &&
@@ -1031,13 +1031,13 @@ is_interface_command(const char *cmd)
     if (!strncmp(cmd, "#$#", 3))	/* MCP mesg. */
 	return 1;
 #endif
-    if (!string_compare(tmp, BREAK_COMMAND))
+    if (!strcasecmp(tmp, BREAK_COMMAND))
 	return 1;
     if (!strcmp(tmp, QUIT_COMMAND))
 	return 1;
     if (!strncmp(tmp, WHO_COMMAND, strlen(WHO_COMMAND)))
 	return 1;
-    if (tp_recognize_null_command && !string_compare(tmp, NULL_COMMAND))
+    if (tp_recognize_null_command && !strcasecmp(tmp, NULL_COMMAND))
 	return 1;
     return 0;
 }
@@ -4021,7 +4021,7 @@ show_subfile(dbref player, const char *dir, const char *topic, const char *seg, 
     if ((df = (DIR *) opendir(dir))) {
 	while ((dp = readdir(df))) {
 	    if ((partial && string_prefix(dp->d_name, topic)) ||
-		(!partial && !string_compare(dp->d_name, topic))
+		(!partial && !strcasecmp(dp->d_name, topic))
 		    ) {
 		snprintf(buf, sizeof(buf), "%s/%s", dir, dp->d_name);
 		break;
@@ -4049,7 +4049,7 @@ show_subfile(dbref player, const char *dir, const char *topic, const char *seg, 
     while (bMore) {
 	if (!(finddata.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
 	    if ((partial && string_prefix(finddata.cFileName, topic)) ||
-		(!partial && !string_compare(finddata.cFileName, topic))
+		(!partial && !strcasecmp(finddata.cFileName, topic))
 		    ) {
 		snprintf(buf, sizeof(buf), "%s/%s", dir, finddata.cFileName);
 		break;

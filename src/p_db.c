@@ -427,7 +427,7 @@ prim_setname(PRIM_PROTOTYPE)
 		abort_interp("Player namechange requires password.");
 	    } else if (!check_password(ref, password)) {
 		abort_interp("Incorrect password.");
-	    } else if (string_compare(b, NAME(ref)) && !ok_player_name(b)) {
+	    } else if (strcasecmp(b, NAME(ref)) && !ok_player_name(b)) {
 		abort_interp("You can't give a player that name.");
 	    }
 
@@ -476,7 +476,7 @@ prim_pmatch(PRIM_PROTOTYPE)
 
     strip_ansi(buf, oper1->data.string->data);
 
-    if (!string_compare(buf, "me")) {
+    if (!strcasecmp(buf, "me")) {
 	ref = player;
     } else {
 	ref = lookup_player(buf);

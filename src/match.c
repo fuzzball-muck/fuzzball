@@ -210,7 +210,7 @@ match_absolute(struct match_data *md)
 void
 match_me(struct match_data *md)
 {
-    if (!string_compare(md->match_name, "me")) {
+    if (!strcasecmp(md->match_name, "me")) {
 	md->exact_match = md->match_who;
     }
 }
@@ -218,7 +218,7 @@ match_me(struct match_data *md)
 void
 match_here(struct match_data *md)
 {
-    if (!string_compare(md->match_name, "here")
+    if (!strcasecmp(md->match_name, "here")
 	&& LOCATION(md->match_who) != NOTHING) {
 	md->exact_match = LOCATION(md->match_who);
     }
@@ -227,14 +227,14 @@ match_here(struct match_data *md)
 void
 match_home(struct match_data *md)
 {
-    if (!string_compare(md->match_name, "home"))
+    if (!strcasecmp(md->match_name, "home"))
 	md->exact_match = HOME;
 }
 
 void
 match_nil(struct match_data *md)
 {
-    if (!string_compare(md->match_name, "nil"))
+    if (!strcasecmp(md->match_name, "nil"))
 	md->exact_match = NIL;
 }
 
@@ -253,7 +253,7 @@ match_contents(dbref obj, struct match_data *md)
 	if (first == absolute) {
 	    md->exact_match = first;
 	    return;
-	} else if (!string_compare(NAME(first), md->match_name)) {
+	} else if (!strcasecmp(NAME(first), md->match_name)) {
 	    /* if there are multiple exact matches, randomly choose one */
 	    md->exact_match = choose_thing(md->match_descr, md->exact_match, first, md);
 	} else if (string_match(NAME(first), md->match_name)) {

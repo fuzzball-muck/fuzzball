@@ -669,7 +669,7 @@ process_command(int descr, dbref player, char *command)
 		    break;
 		case 'r':
 		case 'R':
-		    if (string_compare(command, "@credits")) {
+		    if (strcasecmp(command, "@credits")) {
 			Matched("@create");
 			NOGUEST("@create", player);
 			BUILDERONLY("@create", player);
@@ -1275,7 +1275,7 @@ process_command(int descr, dbref player, char *command)
 		break;
 	    case 'r':
 	    case 'R':
-		if (string_compare(command, "gripe"))
+		if (strcasecmp(command, "gripe"))
 		    goto bad;
 		do_gripe(player, full_command);
 		break;
@@ -1292,7 +1292,7 @@ process_command(int descr, dbref player, char *command)
 	case 'i':
 	case 'I':
 	    /* inventory, info */
-	    if (string_compare(command, "info")) {
+	    if (strcasecmp(command, "info")) {
 		Matched("inventory");
 		do_inventory(player);
 	    } else {
@@ -1324,14 +1324,14 @@ process_command(int descr, dbref player, char *command)
 	    if (string_prefix(command, "move")) {
 		do_move(descr, player, arg1, 0);
 		break;
-	    } else if (!string_compare(command, "motd")) {
+	    } else if (!strcasecmp(command, "motd")) {
 		do_motd(player, full_command);
 		break;
-	    } else if (!string_compare(command, "mpi")) {
+	    } else if (!strcasecmp(command, "mpi")) {
 		do_mpihelp(player, arg1, arg2);
 		break;
 	    } else {
-		if (string_compare(command, "man"))
+		if (strcasecmp(command, "man"))
 		    goto bad;
 		do_man(player, full_command, arg2);
 	    }

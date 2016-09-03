@@ -458,7 +458,7 @@ do_move(int descr, dbref player, const char *direction, int lev)
     char buf[BUFFER_LEN];
     struct match_data md;
 
-    if (tp_allow_home && !string_compare(direction, "home")) {
+    if (tp_allow_home && !strcasecmp(direction, "home")) {
 	/* send him home */
 	/* but steal all his possessions */
 	if ((loc = LOCATION(player)) != NOTHING) {

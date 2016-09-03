@@ -139,7 +139,7 @@ do_motd(dbref player, char *text)
 	spit_file(player, MOTD_FILE);
 	return;
     }
-    if (!string_compare(text, "clear")) {
+    if (!strcasecmp(text, "clear")) {
 	unlink(MOTD_FILE);
 	log2file(MOTD_FILE, "%s %s", "- - - - - - - - - - - - - - - - - - -",
 		 "- - - - - - - - - - - - - - - - - - -");

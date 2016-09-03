@@ -824,7 +824,7 @@ tune_get_parmstring(const char *name, int mlev)
     TP_CLEAR_FLAG_DEFAULT(name);
 
     while (tstr->name) {
-	if (!string_compare(name, tstr->name)) {
+	if (!strcasecmp(name, tstr->name)) {
 	    if (tstr->readmlev > mlev)
 		return "";
 	    return (*tstr->str);
@@ -833,7 +833,7 @@ tune_get_parmstring(const char *name, int mlev)
     }
 
     while (ttim->name) {
-	if (!string_compare(name, ttim->name)) {
+	if (!strcasecmp(name, ttim->name)) {
 	    if (ttim->readmlev > mlev)
 		return "";
 	    snprintf(buf, sizeof(buf), "%d", *ttim->tim);
@@ -843,7 +843,7 @@ tune_get_parmstring(const char *name, int mlev)
     }
 
     while (tval->name) {
-	if (!string_compare(name, tval->name)) {
+	if (!strcasecmp(name, tval->name)) {
 	    if (tval->readmlev > mlev)
 		return "";
 	    snprintf(buf, sizeof(buf), "%d", *tval->val);
@@ -853,7 +853,7 @@ tune_get_parmstring(const char *name, int mlev)
     }
 
     while (tref->name) {
-	if (!string_compare(name, tref->name)) {
+	if (!strcasecmp(name, tref->name)) {
 	    if (tref->readmlev > mlev)
 		return "";
 	    snprintf(buf, sizeof(buf), "#%d", *tref->ref);
@@ -863,7 +863,7 @@ tune_get_parmstring(const char *name, int mlev)
     }
 
     while (tbool->name) {
-	if (!string_compare(name, tbool->name)) {
+	if (!strcasecmp(name, tbool->name)) {
 	    if (tbool->readmlev > mlev)
 		return "";
 	    snprintf(buf, sizeof(buf), "%s", ((*tbool->boolval) ? "yes" : "no"));
@@ -912,7 +912,7 @@ tune_setparm(const char *parmname, const char *val, int mlev)
     }
 
     while (tstr->name) {
-	if (!string_compare(parmname, tstr->name)) {
+	if (!strcasecmp(parmname, tstr->name)) {
 	    if (tstr->writemlev > mlev)
 		return TUNESET_DENIED;
 
@@ -938,7 +938,7 @@ tune_setparm(const char *parmname, const char *val, int mlev)
     }
 
     while (ttim->name) {
-	if (!string_compare(parmname, ttim->name)) {
+	if (!strcasecmp(parmname, ttim->name)) {
 	    if (ttim->writemlev > mlev)
 		return TUNESET_DENIED;
 
@@ -998,7 +998,7 @@ tune_setparm(const char *parmname, const char *val, int mlev)
     }
 
     while (tval->name) {
-	if (!string_compare(parmname, tval->name)) {
+	if (!strcasecmp(parmname, tval->name)) {
 	    if (tval->writemlev > mlev)
 		return TUNESET_DENIED;
 
@@ -1022,7 +1022,7 @@ tune_setparm(const char *parmname, const char *val, int mlev)
     }
 
     while (tref->name) {
-	if (!string_compare(parmname, tref->name)) {
+	if (!strcasecmp(parmname, tref->name)) {
 	    if (tref->writemlev > mlev)
 		return TUNESET_DENIED;
 
@@ -1055,7 +1055,7 @@ tune_setparm(const char *parmname, const char *val, int mlev)
     }
 
     while (tbool->name) {
-	if (!string_compare(parmname, tbool->name)) {
+	if (!strcasecmp(parmname, tbool->name)) {
 	    if (tbool->writemlev > mlev)
 		return TUNESET_DENIED;
 
@@ -1219,13 +1219,13 @@ do_tune(dbref player, char *parmname, char *parmval, int full_command_has_delimi
 	    /* Show expanded information on all parameters */
 	    tune_display_parms(player, "", security, 1);
 	}
-    } else if (*parmname && !string_compare(parmname, TP_SAVE_CMD)) {
+    } else if (*parmname && !strcasecmp(parmname, TP_SAVE_CMD)) {
 	if (tune_save_parmsfile()) {
 	    notify(player, "Saved parameters to configuration file.");
 	} else {
 	    notify(player, "Unable to save to configuration file.");
 	}
-    } else if (*parmname && !string_compare(parmname, TP_LOAD_CMD)) {
+    } else if (*parmname && !strcasecmp(parmname, TP_LOAD_CMD)) {
 	if (tune_load_parmsfile(player)) {
 	    notify(player, "Restored parameters from configuration file.");
 	} else {

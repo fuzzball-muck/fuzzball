@@ -32,7 +32,7 @@ find_hash(register const char *s, hash_tab * table, unsigned int size)
     register hash_entry *hp;
 
     for (hp = table[hash(s, size)]; hp != NULL; hp = hp->next) {
-	if (string_compare(s, hp->name) == 0) {
+	if (strcasecmp(s, hp->name) == 0) {
 	    return &(hp->dat);	/* found */
 	}
     }
@@ -58,7 +58,7 @@ add_hash(register const char *name, hash_data data, hash_tab * table, unsigned i
 
     /* an inline find_hash */
     for (hp = table[hashval]; hp != NULL; hp = hp->next) {
-	if (string_compare(name, hp->name) == 0) {
+	if (strcasecmp(name, hp->name) == 0) {
 	    break;
 	}
     }
@@ -95,7 +95,7 @@ free_hash(register const char *name, hash_tab * table, unsigned int size)
 
     lp = &table[hash(name, size)];
     for (hp = *lp; hp != NULL; lp = &(hp->next), hp = hp->next) {
-	if (string_compare(name, hp->name) == 0) {
+	if (strcasecmp(name, hp->name) == 0) {
 	    *lp = hp->next;	/* got it.  fix the pointers */
 	    free((void *) hp->name);
 	    free((void *) hp);

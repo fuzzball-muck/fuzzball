@@ -24,12 +24,9 @@ char *pronoun_substitute(int descr, dbref player, const char *str);
 char *ref2str(dbref obj, char *buf, size_t buflen);
 void skip_whitespace(const char **parsebuf);
 char *strcatn(char *buf, size_t bufsize, const char *src);
-int strcmp_nocase(const char *s1, const char *s2);
 char *strcpyn(char *buf, size_t bufsize, const char *src);
 const char *strencrypt(const char *, const char *);
 const char *strdecrypt(const char *, const char *);
-int strncmp_nocase(const char *s1, const char *s2, int cnt);
-int string_compare(const char *s1, const char *s2);
 #ifndef MALLOC_PROFILING
 char *string_dup(const char *s);
 #endif

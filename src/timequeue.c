@@ -461,7 +461,7 @@ handle_read_event(int descr, dbref player, const char *command)
 	    }
 	} else {
 	    /* This is a MUF READ event. */
-	    if (command && !string_compare(command, BREAK_COMMAND)) {
+	    if (command && !strcasecmp(command, BREAK_COMMAND)) {
 
 		/* Whoops!  The user typed @Q.  Free the frame and exit. */
 		prog_clean(fr);
@@ -1167,7 +1167,7 @@ do_kill_process(int descr, dbref player, const char *arg1)
     if (*arg1 == '\0') {
 	notify_nolisten(player, "What event do you want to dequeue?", 1);
     } else {
-	if (!string_compare(arg1, "all")) {
+	if (!strcasecmp(arg1, "all")) {
 	    if (!Wizard(OWNER(player))) {
 		notify_nolisten(player, "Permission denied", 1);
 		return;

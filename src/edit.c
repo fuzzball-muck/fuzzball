@@ -42,7 +42,7 @@ macro_expansion(struct macrotable *node, const char *match)
     if (!node)
 	return NULL;
     else {
-	register int value = string_compare(match, node->name);
+	register int value = strcasecmp(match, node->name);
 
 	if (value < 0)
 	    return macro_expansion(node->left, match);
@@ -209,7 +209,7 @@ kill_macro(const char *macroname, dbref player, struct macrotable **mtop)
 {
     if (!(*mtop) || player == NOTHING) {
 	return (0);
-    } else if (!string_compare(macroname, (*mtop)->name)) {
+    } else if (!strcasecmp(macroname, (*mtop)->name)) {
 	struct macrotable *macrotemp = (*mtop);
 	int whichway = ((*mtop)->left) ? 1 : 0;
 
@@ -645,7 +645,7 @@ insert_line(dbref player, const char *line)
     struct line *new_line;
 
     program = PLAYER_CURR_PROG(player);
-    if (!string_compare(line, EXIT_INSERT)) {
+    if (!strcasecmp(line, EXIT_INSERT)) {
 	PLAYER_SET_INSERT_MODE(player, 0);	/* turn off insert mode */
 	notify_nolisten(player, "Exiting insert mode.", 1);
 	return;
@@ -726,7 +726,7 @@ editor(int descr, dbref player, const char *command)
 
 	buf[j] = '\0';
 	word[i] = alloc_string(buf);
-	if ((i == 1) && !string_compare(word[0], "def")) {
+	if ((i == 1) && !strcasecmp(word[0], "def")) {
 	    if (word[1] && (word[1][0] == '.' || (word[1][0] >= '0' && word[1][0] <= '9'))) {
 		notify(player, "Invalid macro name.");
 		return;

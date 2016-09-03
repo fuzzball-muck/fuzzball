@@ -929,9 +929,9 @@ ok_name(const char *name)
             && !index(name, OR_TOKEN)
             && !index(name, '\r')
             && !index(name, ESCAPE_CHAR)
-            && string_compare(name, "me")
-            && string_compare(name, "here")
-            && string_compare(name, "home")
+            && strcasecmp(name, "me")
+            && strcasecmp(name, "here")
+            && strcasecmp(name, "home")
             && (!*tp_reserved_names || !equalstr((char *) tp_reserved_names, (char *) name)
             ));
 }

@@ -150,7 +150,7 @@ do_look_at(int descr, dbref player, const char *name, const char *detail)
     char buf[BUFFER_LEN];
     char obj_num[20];
 
-    if (*name == '\0' || !string_compare(name, "here")) {
+    if (*name == '\0' || !strcasecmp(name, "here")) {
 	if ((thing = LOCATION(player)) != NOTHING) {
 	    look_room(descr, player, thing);
 	}
@@ -425,7 +425,7 @@ listprops_wildcard(dbref player, dbref thing, const char *dir, const char *wild)
 		tmpname++;
 
 	    if (!tp_show_legacy_props &&
-	            (!string_compare(tmpname, legacy_guest) || (!string_compare(tmpname, legacy_gender) && string_compare(current, legacy_gender)))) {
+	            (!strcasecmp(tmpname, legacy_guest) || (!strcasecmp(tmpname, legacy_gender) && strcasecmp(current, legacy_gender)))) {
 		propadr = next_prop(pptr, propadr, propname, sizeof(propname));
 		continue;
 	    }

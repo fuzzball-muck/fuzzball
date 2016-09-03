@@ -17,7 +17,7 @@ find(char *key, PropPtr avl)
     int cmpval;
 
     while (avl) {
-	cmpval = string_compare(key, PropName(avl));
+	cmpval = strcasecmp(key, PropName(avl));
 	if (cmpval > 0) {
 	    avl = avl->right;
 	} else if (cmpval < 0) {
@@ -198,7 +198,7 @@ insert(char *key, PropPtr * avl)
     static short balancep;
 
     if (p) {
-	cmp = string_compare(key, PropName(p));
+	cmp = strcasecmp(key, PropName(p));
 	if (cmp > 0) {
 	    ret = insert(key, &(p->right));
 	} else if (cmp < 0) {
@@ -236,7 +236,7 @@ remove_propnode(char *key, PropPtr * root)
 
     save = avl;
     if (avl) {
-	cmpval = string_compare(key, PropName(avl));
+	cmpval = strcasecmp(key, PropName(avl));
 	if (cmpval < 0) {
 	    save = remove_propnode(key, &(avl->left));
 	} else if (cmpval > 0) {
@@ -327,7 +327,7 @@ next_node(PropPtr ptr, char *name)
 	return NULL;
     if (!name || !*name)
 	return (PropPtr) NULL;
-    cmpval = string_compare(name, PropName(ptr));
+    cmpval = strcasecmp(name, PropName(ptr));
     if (cmpval < 0) {
 	from = next_node(ptr->left, name);
 	if (from)

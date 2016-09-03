@@ -1490,7 +1490,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 
 		    pbs = PROGRAM_PUBS(temp1->data.objref);
 		    while (pbs) {
-			tmpint = string_compare(temp2->data.string->data, pbs->subname);
+			tmpint = strcasecmp(temp2->data.string->data, pbs->subname);
 			if (!tmpint)
 			    break;
 			pbs = pbs->next;
