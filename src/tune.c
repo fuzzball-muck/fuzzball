@@ -305,6 +305,7 @@ int tp_strict_god_priv = STRICT_GOD_PRIV;
 int tp_teleport_to_player = TELEPORT_TO_PLAYER;
 int tp_thing_darking = THING_DARKING;
 int tp_thing_movement = SECURE_THING_MOVEMENT;
+int tp_toad_recycle = TOAD_RECYCLE;
 int tp_who_doing = WHO_DOING;
 int tp_who_hides_dark = WHO_HIDES_DARK;
 int tp_wiz_vehicles = WIZ_VEHICLES;
@@ -338,6 +339,8 @@ struct tune_bool_entry tune_bool_list[] = {
      "Use legacy exit priority levels on things", "", 1, COMPATIBLE_PRIORITIES},
     {"Database", "realms_control", &tp_realms_control, 0, MLEV_WIZARD,
      "Enable support for realm wizzes", "", 1, REALMS_CONTROL},
+    {"Database", "toad_recycle", &tp_toad_recycle, 0, MLEV_WIZARD,
+     "Recycle newly-created toads", "", 1, TOAD_RECYCLE},
     {"DB Dumps", "diskbase_propvals", &tp_diskbase_propvals, 0, MLEV_WIZARD,
      "Enable property value diskbasing (req. restart)", "DISKBASE", 1, DISKBASE_PROPVALS},
     {"DB Dumps", "dbdump_warning", &tp_dbdump_warning, 0, MLEV_WIZARD,
