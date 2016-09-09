@@ -127,8 +127,8 @@ E's
 F's
   fabs         fail         fg_mode      findnext     firstdescr   flag?
   flags        float        float?       floor        fmod         fmtstring
-  for          force        force_level  foreach      foreground   fork
-  frand        ftostr       ftostrc      fulldepth    
+  for          force        force_level  forcedby     foreach      foreground
+  fork         frand        ftostr       ftostrc      fulldepth    
 
 G's
   gaussian           getlink            getlinks           getlinks_array
@@ -6433,7 +6433,7 @@ before the JMP or EXIT for each nexted FOR loop.
 Miscellaneous|MiscOps
 Miscellaneous
 
-force        force_level  version      
+force        force_level  forcedby     version      
 
 ~----------------------------------------------------------------------------
 ~
@@ -6451,13 +6451,21 @@ FORCE
 FORCE (d s -- )
 
   Forces player d to do action s as if they were @forced.  (wizbit only)
-Also see: FORCE_LEVEL
+Also see: FORCE_LEVEL and FORCEDBY
 ~
 ~
 FORCE_LEVEL
 FORCE_LEVEL ( -- i)
 
   Returns non-zero if the code we are running was triggered by an @force.
-Also see: FORCE
+Also see: FORCE and FORCEDBY
+~
+~
+FORCEDBY
+FORCEDBY ( -- d)
+
+  Returns the dbref of the object forcing the code to run, or #-1 if none.
+  (Wizbit only)
+Also see: FORCE and FORCE_LEVEL
 ~
 ~

@@ -6110,13 +6110,21 @@ FORCE
 FORCE (d s -- )
 
   Forces player d to do action s as if they were @forced.  (wizbit only)
-~~alsosee FORCE_LEVEL
+~~alsosee FORCE_LEVEL, FORCEDBY
 ~
 ~
 FORCE_LEVEL
 FORCE_LEVEL ( -- i)
 
   Returns non-zero if the code we are running was triggered by an @force.
-~~alsosee FORCE
+~~alsosee FORCE, FORCEDBY
+~
+~
+FORCEDBY
+FORCEDBY ( -- d)
+
+  Returns the dbref of the object forcing the code to run, or #-1 if none.
+  (Wizbit only)
+~~alsosee FORCE, FORCE_LEVEL
 ~
 ~
