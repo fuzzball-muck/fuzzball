@@ -110,7 +110,7 @@ db_clear_object(dbref i)
     bzero(o, sizeof(struct object));
 
     NAME(i) = 0;
-    ts_newobject(o);
+    ts_newobject(i);
     o->location = NOTHING;
     o->contents = NOTHING;
     o->exits = NOTHING;
