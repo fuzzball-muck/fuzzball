@@ -1,5 +1,6 @@
 #include "config.h"
 
+#include "array.h"
 #include "boolexp.h"
 #include "db.h"
 #include "dbsearch.h"
@@ -7,6 +8,7 @@
 #include "diskprop.h"
 #endif
 #include "fbstrings.h"
+#include "inst.h"
 #include "interface.h"
 #include "interp.h"
 #include "params.h"

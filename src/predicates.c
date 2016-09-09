@@ -2,11 +2,10 @@
 
 #include "boolexp.h"
 #include "db.h"
-#include "fbstrings.h"
 #include "interface.h"
 #include "match.h"
 #include "params.h"
-#include "player.h"
+#include "predicates.h"
 #include "props.h"
 #include "tune.h"
 

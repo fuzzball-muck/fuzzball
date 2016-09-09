@@ -7,7 +7,6 @@
 #include "game.h"
 #include "interp.h"
 #include "interface.h"
-#include "match.h"
 #include "mpi.h"
 #include "msgparse.h"
 #include "params.h"

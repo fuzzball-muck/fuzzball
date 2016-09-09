@@ -1,6 +1,7 @@
 #include "config.h"
 
 #include "db.h"
+#include "inst.h"
 #include "interp.h"
 
 static struct inst *oper1, *oper2, *oper3, *oper4;

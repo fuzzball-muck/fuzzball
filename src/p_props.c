@@ -1,6 +1,6 @@
-
 #include "config.h"
 
+#include "array.h"
 #include "boolexp.h"
 #include "db.h"
 #ifdef DISKBASE
@@ -8,6 +8,7 @@
 #endif
 #include "fbstrings.h"
 #include "fbtime.h"
+#include "inst.h"
 #include "interp.h"
 #include "msgparse.h"
 #include "mpi.h"

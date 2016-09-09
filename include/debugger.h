@@ -1,6 +1,6 @@
 #ifndef _DEBUGGER_H
 #define _DEBUGGER_H
-#include "db.h"
+
 #include "inst.h"
 #include "interp.h"
 

@@ -2,7 +2,6 @@
 
 #ifdef MCP_SUPPORT
 #include "fbstrings.h"
-#include "interface.h"
 #include "interp.h"
 #include "mcp.h"
 #include "mcpgui.h"

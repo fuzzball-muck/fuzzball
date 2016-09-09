@@ -6,6 +6,7 @@
 #include "fbstrings.h"
 #include "fbtime.h"
 #include "game.h"
+#include "inst.h"
 #include "interface.h"
 #include "interp.h"
 #include "log.h"

@@ -3,11 +3,6 @@
 
 #include "config.h"
 
-#ifdef HAVE_TIMEBITS_H
-#  define __need_timeval 1
-#  include <timebits.h>
-#endif
-
 #define DB_VERSION_STRING "***Foxen9 TinyMUCK DUMP Format***"
 
 /* max length of command argument to process_command */

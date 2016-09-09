@@ -1,8 +1,6 @@
 #ifndef _TUNE_H
 #define _TUNE_H
 
-#include "config.h"
-
 #include "array.h"
 
 #define TUNESET_SUCCESS         0	/* success                  */

@@ -3,8 +3,6 @@
 
 #include "config.h"
 
-//#include "db.h"
-
 #ifdef MCP_SUPPORT
 #include "mcp.h"
 #endif

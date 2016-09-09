@@ -3,6 +3,7 @@
 #include "boolexp.h"
 #include "db.h"
 #include "fbstrings.h"
+#include "inst.h"
 #include "interface.h"
 #include "interp.h"
 #include "params.h"
