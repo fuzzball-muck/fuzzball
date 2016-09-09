@@ -2380,13 +2380,13 @@ prim_array_notify_secure(PRIM_PROTOTYPE)
 			    pdescrnotify(darr[di], oper4->data.string->data);
 
 			    listenqueue(-1, player, LOCATION(ref), ref, ref, program,
-					"_listen", oper4->data.string->data, tp_listen_mlev, 1,
+					LISTEN_PROPQUEUE, oper4->data.string->data, tp_listen_mlev, 1,
 					0);
 			    listenqueue(-1, player, LOCATION(ref), ref, ref, program,
-					"~listen", oper4->data.string->data, tp_listen_mlev, 1,
+					WLISTEN_PROPQUEUE, oper4->data.string->data, tp_listen_mlev, 1,
 					1);
 			    listenqueue(-1, player, LOCATION(ref), ref, ref, program,
-					"~olisten", oper4->data.string->data, tp_listen_mlev,
+					WOLISTEN_PROPQUEUE, oper4->data.string->data, tp_listen_mlev,
 					0, 1);
 
 			    oper4 = NULL;

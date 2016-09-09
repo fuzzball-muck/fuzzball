@@ -31,8 +31,8 @@ set_property_nofetch(dbref player, const char *pname, PData * dat, int sync)
     while (*pname == PROPDIR_DELIMITER)
 	pname++;
     if ((!(FLAGS(player) & LISTENER)) &&
-	(string_prefix(pname, "_listen") ||
-	 string_prefix(pname, "~listen") || string_prefix(pname, "~olisten"))) {
+	(string_prefix(pname, LISTEN_PROPQUEUE) ||
+	 string_prefix(pname, WLISTEN_PROPQUEUE) || string_prefix(pname, WOLISTEN_PROPQUEUE))) {
 	FLAGS(player) |= LISTENER;
     }
 
