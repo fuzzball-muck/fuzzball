@@ -1,8 +1,6 @@
 #ifndef _FBMATH_H
 #define _FBMATH_H
 
-#include "inst.h"
-
 #include <float.h>
 #include <math.h>
 
@@ -50,8 +48,8 @@
 
 float _int_f_rand(void);
 int arith_good(double test);
-int arith_type(struct inst *op1, struct inst *op2);
-int comp_t(struct inst *op);
+int arith_type(short op1_type, short op2_type);
+int comp_t(short op_type);
 int no_good(double test);
 
 #endif				/* _FBMATH_H */

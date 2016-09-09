@@ -16,21 +16,21 @@ arith_good(double test)
 }
 
 int
-arith_type(struct inst *op1, struct inst *op2)
+arith_type(short op1_type, short op2_type)
 {
-    return ((op1->type == PROG_INTEGER && op2->type == PROG_INTEGER)    /* real stuff */
-            ||(op1->type == PROG_OBJECT && op2->type == PROG_INTEGER)   /* inc. dbref */
-            ||(op1->type == PROG_VAR && op2->type == PROG_INTEGER)      /* offset array */
-            ||(op1->type == PROG_LVAR && op2->type == PROG_INTEGER)
-            || (op1->type == PROG_FLOAT && op2->type == PROG_FLOAT)
-            || (op1->type == PROG_FLOAT && op2->type == PROG_INTEGER)
-            || (op1->type == PROG_INTEGER && op2->type == PROG_FLOAT));
+    return ((op1_type == PROG_INTEGER && op2_type == PROG_INTEGER)
+            || (op1_type == PROG_OBJECT && op2_type == PROG_INTEGER)
+            || (op1_type == PROG_VAR && op2_type == PROG_INTEGER)
+            || (op1_type == PROG_LVAR && op2_type == PROG_INTEGER)
+            || (op1_type == PROG_FLOAT && op2_type == PROG_FLOAT)
+            || (op1_type == PROG_FLOAT && op2_type == PROG_INTEGER)
+            || (op1_type == PROG_INTEGER && op2_type == PROG_FLOAT));
 }
 
 int
-comp_t(struct inst *op)
+comp_t(short op_type)
 {
-    return (op->type == PROG_INTEGER || op->type == PROG_FLOAT || op->type == PROG_OBJECT);
+    return (op_type == PROG_INTEGER || op_type == PROG_FLOAT || op_type == PROG_OBJECT);
 }
 
 int

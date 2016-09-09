@@ -17,7 +17,7 @@ prim_add(PRIM_PROTOTYPE)
     CHECKOP(2);
     oper1 = POP();
     oper2 = POP();
-    if (!arith_type(oper2, oper1))
+    if (!arith_type(oper2->type, oper1->type))
 	abort_interp("Invalid argument type.");
     if ((oper1->type == PROG_FLOAT) || (oper2->type == PROG_FLOAT)) {
 	tf1 = (oper1->type == PROG_FLOAT) ? oper1->data.fnumber : oper1->data.number;
@@ -49,7 +49,7 @@ prim_subtract(PRIM_PROTOTYPE)
     CHECKOP(2);
     oper1 = POP();
     oper2 = POP();
-    if (!arith_type(oper2, oper1))
+    if (!arith_type(oper2->type, oper1->type))
 	abort_interp("Invalid argument type.");
     if ((oper1->type == PROG_FLOAT) || (oper2->type == PROG_FLOAT)) {
 	tf1 = (oper2->type == PROG_FLOAT) ? oper2->data.fnumber : oper2->data.number;
@@ -81,7 +81,7 @@ prim_multiply(PRIM_PROTOTYPE)
     CHECKOP(2);
     oper1 = POP();
     oper2 = POP();
-    if (!arith_type(oper2, oper1))
+    if (!arith_type(oper2->type, oper1->type))
 	abort_interp("Invalid argument type.");
     if ((oper1->type == PROG_FLOAT) || (oper2->type == PROG_FLOAT)) {
 	tf1 = (oper1->type == PROG_FLOAT) ? oper1->data.fnumber : oper1->data.number;
@@ -113,7 +113,7 @@ prim_divide(PRIM_PROTOTYPE)
     CHECKOP(2);
     oper1 = POP();
     oper2 = POP();
-    if (!arith_type(oper2, oper1))
+    if (!arith_type(oper2->type, oper1->type))
 	abort_interp("Invalid argument type.");
     if ((oper1->type == PROG_FLOAT) || (oper2->type == PROG_FLOAT)) {
 	if ((oper1->type == PROG_INTEGER && !oper1->data.number) ||
@@ -154,7 +154,7 @@ prim_mod(PRIM_PROTOTYPE)
     CHECKOP(2);
     oper1 = POP();
     oper2 = POP();
-    if ((!arith_type(oper2, oper1)) || (oper1->type == PROG_FLOAT) ||
+    if ((!arith_type(oper2->type, oper1->type)) || (oper1->type == PROG_FLOAT) ||
 	(oper2->type == PROG_FLOAT))
 	abort_interp("Invalid argument type.");
     if (oper1->data.number)
@@ -173,7 +173,7 @@ prim_bitor(PRIM_PROTOTYPE)
     CHECKOP(2);
     oper1 = POP();
     oper2 = POP();
-    if (!arith_type(oper2, oper1))
+    if (!arith_type(oper2->type, oper1->type))
 	abort_interp("Invalid argument type.");
     result = oper2->data.number | oper1->data.number;
     tmp = oper2->type;
@@ -188,7 +188,7 @@ prim_bitxor(PRIM_PROTOTYPE)
     CHECKOP(2);
     oper1 = POP();
     oper2 = POP();
-    if (!arith_type(oper2, oper1))
+    if (!arith_type(oper2->type, oper1->type))
 	abort_interp("Invalid argument type.");
     result = oper2->data.number ^ oper1->data.number;
     tmp = oper2->type;
@@ -203,7 +203,7 @@ prim_bitand(PRIM_PROTOTYPE)
     CHECKOP(2);
     oper1 = POP();
     oper2 = POP();
-    if (!arith_type(oper2, oper1))
+    if (!arith_type(oper2->type, oper1->type))
 	abort_interp("Invalid argument type.");
     result = oper2->data.number & oper1->data.number;
     tmp = oper2->type;
@@ -218,7 +218,7 @@ prim_bitshift(PRIM_PROTOTYPE)
     CHECKOP(2);
     oper1 = POP();
     oper2 = POP();
-    if (!arith_type(oper2, oper1) || oper1->type != PROG_INTEGER)
+    if (!arith_type(oper2->type, oper1->type) || oper1->type != PROG_INTEGER)
 	abort_interp("Invalid argument type.");
     if (oper1->data.number > 0)
 	result = oper2->data.number << oper1->data.number;
@@ -288,7 +288,7 @@ prim_lessthan(PRIM_PROTOTYPE)
     CHECKOP(2);
     oper1 = POP();
     oper2 = POP();
-    if (!comp_t(oper1) || !comp_t(oper2))
+    if (!comp_t(oper1->type) || !comp_t(oper2->type))
 	abort_interp("Invalid argument type.");
     if (oper1->type == PROG_FLOAT || oper2->type == PROG_FLOAT) {
 	tf1 = (oper2->type == PROG_FLOAT) ? oper2->data.fnumber :
@@ -311,7 +311,7 @@ prim_greathan(PRIM_PROTOTYPE)
     CHECKOP(2);
     oper1 = POP();
     oper2 = POP();
-    if (!comp_t(oper1) || !comp_t(oper2))
+    if (!comp_t(oper1->type) || !comp_t(oper2->type))
 	abort_interp("Invalid argument type.");
     if (oper1->type == PROG_FLOAT || oper2->type == PROG_FLOAT) {
 	tf1 = (oper2->type == PROG_FLOAT) ? oper2->data.fnumber :
@@ -347,7 +347,7 @@ prim_equal(PRIM_PROTOTYPE)
 	}
     } else {
 #endif				/* STRINGMATH */
-	if (!comp_t(oper1) || !comp_t(oper2))
+	if (!comp_t(oper1->type) || !comp_t(oper2->type))
 	    abort_interp("Invalid argument type.");
 	if (oper1->type == PROG_FLOAT || oper2->type == PROG_FLOAT) {
 	    tf1 = (oper2->type == PROG_FLOAT) ? oper2->data.fnumber :
@@ -375,7 +375,7 @@ prim_lesseq(PRIM_PROTOTYPE)
     CHECKOP(2);
     oper1 = POP();
     oper2 = POP();
-    if (!comp_t(oper1) || !comp_t(oper2))
+    if (!comp_t(oper1->type) || !comp_t(oper2->type))
 	abort_interp("Invalid argument type.");
     if (oper1->type == PROG_FLOAT || oper2->type == PROG_FLOAT) {
 	tf1 = (oper2->type == PROG_FLOAT) ? oper2->data.fnumber :
@@ -399,7 +399,7 @@ prim_greateq(PRIM_PROTOTYPE)
     CHECKOP(2);
     oper1 = POP();
     oper2 = POP();
-    if (!comp_t(oper1) || !comp_t(oper2))
+    if (!comp_t(oper1->type) || !comp_t(oper2->type))
 	abort_interp("Invalid argument type.");
     if (oper1->type == PROG_FLOAT || oper2->type == PROG_FLOAT) {
 	tf1 = (oper2->type == PROG_FLOAT) ? oper2->data.fnumber :
@@ -742,7 +742,7 @@ prim_notequal(PRIM_PROTOTYPE)
 	}
     } else {
 #endif				/* STRINGMATH */
-	if (!comp_t(oper1) || !comp_t(oper2))
+	if (!comp_t(oper1->type) || !comp_t(oper2->type))
 	    abort_interp("Invalid argument type.");
 	if (oper1->type == PROG_FLOAT || oper2->type == PROG_FLOAT) {
 	    tf1 = (oper2->type == PROG_FLOAT) ? oper2->data.fnumber :
