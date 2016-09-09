@@ -973,6 +973,21 @@ prim_force_level(PRIM_PROTOTYPE)
 }
 
 void
+prim_forcedby(PRIM_PROTOTYPE)
+{
+    CHECKOFLOW(1);
+    if (mlev < 4)
+	abort_interp("Wizbit only primitive.");
+
+    if (force_level) {
+	ref = force_prog;
+    } else {
+	ref = NOTHING;
+    }
+    PushObject(ref);
+}
+
+void
 prim_watchpid(PRIM_PROTOTYPE)
 {
     struct frame *frame;
