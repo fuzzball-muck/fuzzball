@@ -3,8 +3,6 @@
 
 #include "config.h"
 
-#include "db.h"
-
 #ifndef WIN32
 # define MUCK_LOCALTIME(t)              localtime(&t)
 #else
@@ -21,7 +19,7 @@ const char *timestr_full(long dtime);
 struct timeval timeval_sub(struct timeval now, struct timeval then);
 void ts_lastuseobject(dbref thing);
 void ts_modifyobject(dbref thing);
-void ts_newobject(struct object *thing);
+void ts_newobject(dbref thing);
 void ts_useobject(dbref thing);
 
 #endif				/* _FBTIME_H */

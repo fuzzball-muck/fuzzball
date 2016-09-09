@@ -5,14 +5,14 @@
 #include "fbtime.h"
 
 void
-ts_newobject(struct object *thing)
+ts_newobject(dbref thing)
 {
     time_t now = time(NULL);
 
-    thing->ts_created = now;
-    thing->ts_modified = now;
-    thing->ts_lastused = now;
-    thing->ts_usecount = 0;
+    DBFETCH(thing)->ts_created = now;
+    DBFETCH(thing)->ts_modified = now;
+    DBFETCH(thing)->ts_lastused = now;
+    DBFETCH(thing)->ts_usecount = 0;
 }
 
 void
