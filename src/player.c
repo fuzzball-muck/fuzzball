@@ -8,9 +8,7 @@
 #include "hashtab.h"
 #include "interface.h"
 #include "log.h"
-#include "params.h"
 #include "player.h"
-#include "props.h"
 #include "tune.h"
 
 static hash_tab player_list[PLAYER_HASH_SIZE];

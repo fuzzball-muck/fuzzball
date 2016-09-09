@@ -2,6 +2,7 @@
 
 #include "array.h"
 #include "db.h"
+#include "inst.h"
 #include "interface.h"
 #include "interp.h"
 #include "log.h"

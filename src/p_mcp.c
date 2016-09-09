@@ -4,7 +4,7 @@
 #include "array.h"
 #include "db.h"
 #include "fbstrings.h"
-#include "interface.h"
+#include "inst.h"
 #include "interp.h"
 #include "mcp.h"
 #include "mcpgui.h"

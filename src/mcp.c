@@ -10,8 +10,6 @@
 #include "match.h"
 #include "mcp.h"
 #include "mcppkg.h"
-#include "props.h"
-#include "tune.h"
 
 #ifdef HAVE_MALLOC_H
 #include <malloc.h>

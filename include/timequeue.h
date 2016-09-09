@@ -1,8 +1,6 @@
 #ifndef _TIMEQUEUE_H
 #define _TIMEQUEUE_H
 
-#include "config.h"
-
 #include "array.h"
 #include "interp.h"
 

@@ -15,14 +15,9 @@
 #include "interface.h"
 #include "log.h"
 #include "msgparse.h"
-#ifdef MCP_SUPPORT
-#include "mcp.h"
-#endif
 #include "params.h"
-#include "player.h"
 #include "predicates.h"
 #include "props.h"
-#include "timequeue.h"
 #include "tune.h"
 
 #include <signal.h>

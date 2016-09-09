@@ -1,10 +1,12 @@
 #include "config.h"
 
+#include "array.h"
 #include "db.h"
 #include "debugger.h"
 #include "fbstrings.h"
 #include "fbtime.h"
 #include "game.h"
+#include "inst.h"
 #include "interface.h"
 #include "interp.h"
 #include "log.h"

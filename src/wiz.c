@@ -6,7 +6,6 @@
 #include "fbstrings.h"
 #include "game.h"
 #include "interface.h"
-#include "interp.h"
 #include "log.h"
 #include "match.h"
 #include "move.h"

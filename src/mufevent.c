@@ -7,9 +7,7 @@
 #include "inst.h"
 #include "interface.h"
 #include "interp.h"
-#include "match.h"
 #include "mufevent.h"
-#include "tune.h"
 
 struct mufevent {
     struct mufevent *next;

@@ -7,7 +7,6 @@
 #include "diskprop.h"
 #endif
 #include "fbstrings.h"
-#include "game.h"
 #include "interface.h"
 #include "log.h"
 #include "params.h"

@@ -3,6 +3,7 @@
 #include "array.h"
 #include "db.h"
 #include "hashtab.h"
+#include "inst.h"
 #include "interp.h"
 
 #ifdef WIN32
