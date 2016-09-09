@@ -345,7 +345,11 @@
 /* Default owner for @toaded player's things */
 #define TOAD_DEFAULT_RECIPIENT GOD
 
-#define LOST_AND_FOUND PLAYER_START
+/* Recycle newly-created toads */
+#define TOAD_RECYCLE 0
+
+/* Place for things without a home */
+ #define LOST_AND_FOUND PLAYER_START
 
 /* Force 7-bit names */
 #define ASCII_THING_NAMES 1

@@ -4023,6 +4023,7 @@ Parameters available:
   (bool) dark_sleepers        - Make sleeping players dark
   (bool) exit_darking         - Allow players to set exits dark
   (bool) thing_darking        - Allow players to set things dark
+  (bool) toad_recycle         - Recycle newly-created toads
   (bool) who_hides_dark       - Hide dark players from WHO list (Wizbit only)
   (bool) compatible_priorities - Use legacy exit priority levels on things
   (bool) realms_control       - Enable support for realm wizzes

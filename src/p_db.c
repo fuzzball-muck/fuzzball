@@ -1920,8 +1920,11 @@ prim_toadplayer(PRIM_PROTOTYPE)
     THING_SET_HOME(victim, PLAYER_HOME(recipient));
 
     /* reset name */
-    FLAGS(victim) = TYPE_THING;
+    FLAGS(victim) = (FLAGS(victim) & ~TYPE_MASK) | TYPE_THING;
     OWNER(victim) = recipient;
+    if (tp_toad_recycle) {
+	recycle(fr->descr, player, victim);
+    }
     SETVALUE(victim, 1);
 
     CLEAR(oper1);

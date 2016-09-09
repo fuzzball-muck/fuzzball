@@ -198,6 +198,7 @@ extern int tp_strict_god_priv;
 extern int tp_teleport_to_player;
 extern int tp_thing_darking;
 extern int tp_thing_movement;
+extern int tp_toad_recycle;
 extern int tp_verbose_clone;
 extern int tp_who_doing;
 extern int tp_who_hides_dark;
