@@ -1,6 +1,6 @@
 #include "config.h"
 
-#include <math.h>
+#include "fbmath.h"
 
 /*
  * Copyright Patrick Powell 1995

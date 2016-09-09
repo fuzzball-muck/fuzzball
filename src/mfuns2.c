@@ -2,6 +2,7 @@
 
 #include "boolexp.h"
 #include "db.h"
+#include "fbmath.h"
 #include "fbstrings.h"
 #include "game.h"
 #include "interp.h"
@@ -15,8 +16,6 @@
 #include "props.h"
 #include "timequeue.h"
 #include "tune.h"
-
-#include <math.h>
 
 const char *
 mfn_owner(MFUNARGS)
