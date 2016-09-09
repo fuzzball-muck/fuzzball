@@ -1,6 +1,7 @@
 #include "config.h"
 
 #include "db.h"
+#include "fbmath.h"
 #include "fbstrings.h"
 #include "fbtime.h"
 #include "game.h"
@@ -10,7 +11,6 @@
 #include "params.h"
 #include "player.h"
 #include "props.h"
-#include "random.h"
 #include "tune.h"
 
 static hash_tab player_list[PLAYER_HASH_SIZE];

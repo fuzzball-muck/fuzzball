@@ -1,17 +1,15 @@
 #include "config.h"
 
 #include "db.h"
+#include "fbmath.h"
 #include "fbstrings.h"
 #include "fbtime.h"
 #include "interface.h"
 #include "mpi.h"
 #include "msgparse.h"
 #include "params.h"
-
 #include "props.h"
 #include "tune.h"
-
-#include <math.h>
 
 const char *
 mfn_func(MFUNARGS)

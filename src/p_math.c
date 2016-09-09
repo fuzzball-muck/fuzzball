@@ -4,7 +4,6 @@
 #include "fbmath.h"
 #include "interp.h"
 #include "params.h"
-#include "random.h"
 
 static struct inst *oper1, *oper2, *oper3, *oper4;
 static int tmp, result;

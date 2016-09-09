@@ -88,7 +88,6 @@ BASE_OBJ="$(INTDIR)\array.obj" \
 	"$(INTDIR)\propdirs.obj" \
 	"$(INTDIR)\property.obj" \
 	"$(INTDIR)\props.obj" \
-	"$(INTDIR)\random.obj" \
 	"$(INTDIR)\rob.obj" \
 	"$(INTDIR)\sanity.obj" \
 	"$(INTDIR)\set.obj" \
