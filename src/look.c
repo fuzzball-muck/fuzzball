@@ -1463,8 +1463,8 @@ do_sweep(int descr, dbref player, const char *name)
 		    strcatn(buf, sizeof(buf), " zombie");
 		}
 		if ((FLAGS(ref) & LISTENER) &&
-		    (get_property(ref, "_listen") ||
-		     get_property(ref, "~listen") || get_property(ref, "~olisten"))) {
+		    (get_property(ref, LISTEN_PROPQUEUE) ||
+		     get_property(ref, WLISTEN_PROPQUEUE) || get_property(ref, WOLISTEN_PROPQUEUE))) {
 		    strcatn(buf, sizeof(buf), " listener");
 		    tellflag = 1;
 		}
@@ -1492,8 +1492,8 @@ do_sweep(int descr, dbref player, const char *name)
 	}
 
 	if ((FLAGS(loc) & LISTENER) &&
-	    (get_property(loc, "_listen") ||
-	     get_property(loc, "~listen") || get_property(loc, "~olisten"))) {
+	    (get_property(loc, LISTEN_PROPQUEUE) ||
+	     get_property(loc, WLISTEN_PROPQUEUE) || get_property(loc, WOLISTEN_PROPQUEUE))) {
 	    notifyf(player, "  %s is a listening room.", unparse_object(player, loc));
 	}
 

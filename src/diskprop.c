@@ -114,11 +114,11 @@ skipproperties(FILE * f, dbref obj)
     fgets(buf, sizeof(buf), f);
     while (strcmp(buf, "*End*\n")) {
 	if (!islisten) {
-	    if (string_prefix(buf, "_listen"))
+	    if (string_prefix(buf, LISTEN_PROPQUEUE))
 		islisten = 1;
-	    if (string_prefix(buf, "~listen"))
+	    if (string_prefix(buf, WLISTEN_PROPQUEUE))
 		islisten = 1;
-	    if (string_prefix(buf, "~olisten"))
+	    if (string_prefix(buf, WOLISTEN_PROPQUEUE))
 		islisten = 1;
 	}
 	fgets(buf, sizeof(buf), f);

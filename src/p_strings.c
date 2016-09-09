@@ -2495,11 +2495,11 @@ prim_notify_secure(PRIM_PROTOTYPE)
     }
 
     if (tp_listeners && tp_listeners_obj) {
-	listenqueue(-1, player, LOCATION(ref), ref, ref, program, "_listen",
+	listenqueue(-1, player, LOCATION(ref), ref, ref, program, LISTEN_PROPQUEUE,
 		    oper1->data.string->data, tp_listen_mlev, 1, 0);
-	listenqueue(-1, player, LOCATION(ref), ref, ref, program, "~listen",
+	listenqueue(-1, player, LOCATION(ref), ref, ref, program, WLISTEN_PROPQUEUE,
 		    oper1->data.string->data, tp_listen_mlev, 1, 1);
-	listenqueue(-1, player, LOCATION(ref), ref, ref, program, "~olisten",
+	listenqueue(-1, player, LOCATION(ref), ref, ref, program, WOLISTEN_PROPQUEUE,
 		    oper1->data.string->data, tp_listen_mlev, 0, 1);
     }
 
