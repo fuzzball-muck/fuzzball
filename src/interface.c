@@ -3711,11 +3711,11 @@ dump_status(void)
     for (d = descriptor_list; d; d = d->next) {
 	if (d->connected) {
 	    snprintf(buf, sizeof(buf),
-		     "PLAYING descriptor %d player %s(%d) from host %s(%s), %s.\n",
+		     "PLAYING descriptor %d player %s(%d) from host %s(%s), %s.",
 		     d->descriptor, NAME(d->player), d->player, d->hostname, d->username,
 		     (d->last_time) ? "idle %d seconds" : "never used");
 	} else {
-	    snprintf(buf, sizeof(buf), "CONNECTING descriptor %d from host %s(%s), %s.\n",
+	    snprintf(buf, sizeof(buf), "CONNECTING descriptor %d from host %s(%s), %s.",
 		     d->descriptor, d->hostname, d->username,
 		     (d->last_time) ? "idle %d seconds" : "never used");
 	}
