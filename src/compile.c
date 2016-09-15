@@ -408,7 +408,7 @@ expand_def(COMPSTATE * cstat, const char *defname)
 	    return (NULL);
 	}
     }
-    return (string_dup((char *) exp->pval));
+    return (strdup((char *) exp->pval));
 }
 
 static void
@@ -428,7 +428,7 @@ insert_def(COMPSTATE * cstat, const char *defname, const char *deff)
     hash_data hd;
 
     (void) kill_def(cstat, defname);
-    hd.pval = (void *) string_dup(deff);
+    hd.pval = (void *) strdup(deff);
     (void) add_hash(defname, hd, cstat->defhash, DEFHASHSIZE);
 }
 
@@ -1310,7 +1310,7 @@ copy_program(COMPSTATE * cstat)
 	case PROG_FUNCTION:
 	    code[i].data.mufproc =
 		    (struct muf_proc_data *) malloc(sizeof(struct muf_proc_data));
-	    code[i].data.mufproc->procname = string_dup(curr->in.data.mufproc->procname);
+	    code[i].data.mufproc->procname = strdup(curr->in.data.mufproc->procname);
 	    code[i].data.mufproc->vars = varcnt = curr->in.data.mufproc->vars;
 	    code[i].data.mufproc->args = curr->in.data.mufproc->args;
 	    if (varcnt) {
@@ -1319,7 +1319,7 @@ copy_program(COMPSTATE * cstat)
 			    (const char **) calloc(varcnt, sizeof(char *));
 		    for (int j = 0; j < varcnt; j++) {
 			code[i].data.mufproc->varnames[j] =
-				string_dup(curr->in.data.mufproc->varnames[j]);
+				strdup(curr->in.data.mufproc->varnames[j]);
 		    }
 		} else {
 		    code[i].data.mufproc->varnames = NULL;
@@ -3095,7 +3095,7 @@ process_special(COMPSTATE * cstat, const char *token)
 	nu->in.type = PROG_FUNCTION;
 	nu->in.line = cstat->lineno;
 	nu->in.data.mufproc = (struct muf_proc_data *) malloc(sizeof(struct muf_proc_data));
-	nu->in.data.mufproc->procname = string_dup(proc_name);
+	nu->in.data.mufproc->procname = strdup(proc_name);
 	nu->in.data.mufproc->vars = 0;
 	nu->in.data.mufproc->args = 0;
 	nu->in.data.mufproc->varnames = NULL;
@@ -3562,7 +3562,7 @@ process_special(COMPSTATE * cstat, const char *token)
 	    cstat->currpubs = (struct publics *) malloc(sizeof(struct publics));
 
 	    cstat->currpubs->next = NULL;
-	    cstat->currpubs->subname = (char *) string_dup(tok);
+	    cstat->currpubs->subname = (char *) strdup(tok);
 	    if (tok)
 		free((void *) tok);
 	    cstat->currpubs->addr.no = get_address(cstat, p->code, 0);
@@ -3580,7 +3580,7 @@ process_special(COMPSTATE * cstat, const char *token)
 
 		    pub = pub->next;
 		    pub->next = NULL;
-		    pub->subname = (char *) string_dup(tok);
+		    pub->subname = (char *) strdup(tok);
 		    if (tok)
 			free((void *) tok);
 		    pub->addr.no = get_address(cstat, p->code, 0);

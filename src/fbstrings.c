@@ -380,21 +380,7 @@ alloc_prog_string(const char *s)
     bcopy(s, ss->data, ss->length + 1);
     return (ss);
 }
-
-
-char *
-string_dup(const char *s)
-{
-    char *p;
-
-    p = (char *) malloc(1 + strlen(s));
-    if (p)
-	(void) strcpy(p, s);	/* Guaranteed enough space. */
-    return (p);
-}
 #endif
-
-
 
 char *
 intostr(int i)

@@ -812,7 +812,7 @@ unparse_object(dbref player, dbref loc)
 	    /* show everything */
 	    snprintf(buf, sizeof(buf), "%.*s(#%d%s)", (BUFFER_LEN / 2), NAME(loc), loc,
 		     unparse_flags(loc));
-	    return string_dup(buf);
+	    return strdup(buf);
 	} else {
 	    /* show only the name */
 	    return NAME(loc);

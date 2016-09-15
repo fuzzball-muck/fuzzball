@@ -112,8 +112,8 @@ set_property_nofetch(dbref player, const char *pname, PData * dat, int sync)
 	} else if (!sync && strcasecmp(tp_gender_prop, LEGACY_GENDER_PROP)) {
 	    char *current;
 	    static const char *legacy;
-	    current = string_dup(tp_gender_prop);
-	    legacy = string_dup(LEGACY_GENDER_PROP);
+	    current = strdup(tp_gender_prop);
+	    legacy = strdup(LEGACY_GENDER_PROP);
 
 	    while (*current == PROPDIR_DELIMITER)
 	        current++;
@@ -247,8 +247,8 @@ remove_property_nofetch(dbref player, const char *pname, int sync)
 	} else if (!sync && strcasecmp(tp_gender_prop, LEGACY_GENDER_PROP)) {
 	    char *current;
 	    static const char *legacy;
-	    current = string_dup(tp_gender_prop);
-	    legacy = string_dup(LEGACY_GENDER_PROP);
+	    current = strdup(tp_gender_prop);
+	    legacy = strdup(LEGACY_GENDER_PROP);
 
 	    while (*current == PROPDIR_DELIMITER)
 	        current++;

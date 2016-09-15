@@ -128,7 +128,7 @@ array_tree_compare(array_iter * a, array_iter * b, int case_sens)
 	const char *lb;
 	int retval = 0;
 
-	la = string_dup(unparse_boolexp((dbref) 1, a->data.lock, 0));
+	la = strdup(unparse_boolexp((dbref) 1, a->data.lock, 0));
 	lb = unparse_boolexp((dbref) 1, b->data.lock, 0);
 	retval = strcmp(la, lb);
 	free(la);
