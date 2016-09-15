@@ -350,7 +350,7 @@ clean_mcpbinds(struct mcp_binding *mypub)
 static void
 SendText(McpFrame * mfr, const char *text)
 {
-    queue_string((struct descriptor_data *) mfr->descriptor, text);
+    queue_write((struct descriptor_data *) mfr->descriptor, text, strlen(text));
 }
 
 static void
