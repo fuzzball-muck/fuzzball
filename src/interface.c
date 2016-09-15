@@ -294,7 +294,7 @@ add_to_queue(struct text_queue *q, const char *b, int n)
     q->lines++;
 }
 
-static int
+int
 queue_write(struct descriptor_data *d, const char *b, int n)
 {
     int space;
@@ -324,10 +324,9 @@ queue_ansi(struct descriptor_data *d, const char *msg)
 #ifdef MCP_SUPPORT
     mcp_frame_output_inband(&d->mcpframe, buf);
 #else
-    queue_string(d, buf);
+    queue_write(d, buf, strlen(buf));
 #endif
     return strlen(buf);
-    /* return queue_string(d, buf); */
 }
 
 static void
@@ -628,7 +627,7 @@ welcome_user(struct descriptor_data *d)
     } else if (tp_playermax && con_players_curr >= tp_playermax_limit) {
 	if (tp_playermax_warnmesg && *tp_playermax_warnmesg) {
 	    queue_ansi(d, tp_playermax_warnmesg);
-	    queue_string(d, "\r\n");
+	    queue_write(d, "\r\n", 2);
 	}
     }
 }
@@ -881,7 +880,7 @@ check_connect(struct descriptor_data *d, const char *msg)
 		} else {
 		    queue_ansi(d, tp_playermax_bootmesg);
 		}
-		queue_string(d, "\r\n");
+		queue_write(d, "\r\n", 2);
 		d->booted = 1;
 	    } else {
 		log_status("CONNECTED: %s(%d) on descriptor %d",
@@ -916,7 +915,7 @@ check_connect(struct descriptor_data *d, const char *msg)
 		} else {
 		    queue_ansi(d, tp_playermax_bootmesg);
 		}
-		queue_string(d, "\r\n");
+		queue_write(d, "\r\n", 2);
 		d->booted = 1;
 	    } else {
 		player = create_player(user, password);
@@ -940,7 +939,7 @@ check_connect(struct descriptor_data *d, const char *msg)
 	    }
 	} else {
 	    queue_ansi(d, tp_register_mesg);
-	    queue_string(d, "\r\n");
+	    queue_write(d, "\r\n", 2);
 	    log_status("FAILED CREATE %s on descriptor %d", user, d->descriptor);
 	}
     } else if (!strncmp(command, "help", 4)) {
@@ -1024,11 +1023,11 @@ is_interface_command(const char *cmd)
 {
     const char *tmp = cmd;
 #ifdef MCP_SUPPORT
-    if (!strncmp(tmp, "#$\"", 3)) {
+    if (!strncmp(tmp, MCP_QUOTE_PREFIX, 3)) {
 	/* dequote MCP quoting. */
 	tmp += 3;
     }
-    if (!strncmp(cmd, "#$#", 3))	/* MCP mesg. */
+    if (!strncmp(cmd, MCP_MESG_PREFIX, 3))	/* MCP mesg. */
 	return 1;
 #endif
     if (!strcasecmp(tmp, BREAK_COMMAND))
@@ -1057,7 +1056,7 @@ process_commands(void)
 		if (d->connected && PLAYER_BLOCK(d->player) && !is_interface_command(t->start)) {
 		    char *tmp = t->start;
 #ifdef MCP_SUPPORT
-		    if (!strncmp(tmp, "#$\"", 3)) {
+		    if (!strncmp(tmp, MCP_QUOTE_PREFIX, 3)) {
 			/* Un-escape MCP escaped lines */
 			tmp += 3;
 		    }
@@ -1076,7 +1075,7 @@ process_commands(void)
 		    }
 		} else {
 #ifdef MCP_SUPPORT
-		    if (strncmp(t->start, "#$#", 3)) {
+		    if (strncmp(t->start, MCP_MESG_PREFIX, 3)) {
 			/* Not an MCP mesg, so count this against quota. */
 			d->quota--;
 		    }
@@ -1481,7 +1480,7 @@ initializesock(int s, const char *hostname, int is_ssl)
 	    TELNET_IAC, TELNET_DO, TELOPT_STARTTLS, '\0'
 	};
 	socket_write(d, telnet_do_starttls, 3);
-	queue_string(d, "\r\n");
+	queue_write(d, "\r\n", 2);
     }
 #endif
 
@@ -3004,12 +3003,6 @@ wall_wizards(const char *msg)
 	    }
 	}
     }
-}
-
-int
-queue_string(struct descriptor_data *d, const char *s)
-{
-    return queue_write(d, s, strlen(s));
 }
 
 int
