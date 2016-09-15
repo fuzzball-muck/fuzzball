@@ -10,9 +10,14 @@ extern int gettimeofday(struct timeval *tv, struct timezone *tz);
 extern struct tm *uw32localtime(const time_t *t);
 extern void sync(void);
 extern void set_console();
+
 #define close(x) closesocket(x)
 #define chdir _chdir
+#define execv _execv
 #define getpid _getpid
+#define strdup _strdup
+#define unlink _unlink
+
 #define pid_t int
 #define ssize_t long
 
