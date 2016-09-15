@@ -166,7 +166,7 @@ dump_database_internal(void)
 
 #ifdef DISKBASE
 	free((void *) in_filename);
-	in_filename = string_dup(dumpfile);
+	in_filename = strdup(dumpfile);
 	if ((input_file = fopen(in_filename, "rb")) == NULL)
 	    perror(dumpfile);
 #endif
@@ -356,7 +356,7 @@ init_game(const char *infile, const char *outfile)
 	fclose(f);
     }
 
-    in_filename = (char *) string_dup(infile);
+    in_filename = (char *) strdup(infile);
     if ((input_file = fopen(infile, "rb")) == NULL)
 	return -1;
 

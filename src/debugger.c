@@ -533,7 +533,7 @@ muf_debugger(int descr, dbref player, dbref program, const char *text, struct fr
 	if (fr->brkpt.lastcmd)
 	    free(fr->brkpt.lastcmd);
 	if (*cmd)
-	    fr->brkpt.lastcmd = string_dup(cmd);
+	    fr->brkpt.lastcmd = strdup(cmd);
     }
     /* delete triggering breakpoint, if it's only temp. */
     j = fr->brkpt.breaknum;

@@ -903,10 +903,10 @@ CrT_alloc_prog_string(const char *s, const char *file, int line)
 }
 
 /* }}} */
-/* {{{ CrT_string_dup							*/
+/* {{{ CrT_strdup							*/
 
 char *
-CrT_string_dup(const char *s, const char *file, int line)
+CrT_strdup(const char *s, const char *file, int line)
 {
     char *p;
 

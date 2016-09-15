@@ -2289,8 +2289,8 @@ resolve_hostnames()
 		    if (!strcmp(d->hostname, hostip) && !strcmp(d->username, port)) {
 			FREE(d->hostname);
 			FREE(d->username);
-			d->hostname = string_dup(hostname);
-			d->username = string_dup(username);
+			d->hostname = strdup(hostname);
+			d->username = strdup(username);
 		    }
 		}
 	    }

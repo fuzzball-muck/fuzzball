@@ -834,12 +834,12 @@ copyinst(struct inst *from, struct inst *to)
     case PROG_FUNCTION:
 	if (from->data.mufproc) {
 	    to->data.mufproc = (struct muf_proc_data *) malloc(sizeof(struct muf_proc_data));
-	    to->data.mufproc->procname = string_dup(from->data.mufproc->procname);
+	    to->data.mufproc->procname = strdup(from->data.mufproc->procname);
 	    to->data.mufproc->vars = varcnt = from->data.mufproc->vars;
 	    to->data.mufproc->args = from->data.mufproc->args;
 	    to->data.mufproc->varnames = (const char **) calloc(varcnt, sizeof(const char *));
 	    for (int j = 0; j < varcnt; j++) {
-		to->data.mufproc->varnames[j] = string_dup(from->data.mufproc->varnames[j]);
+		to->data.mufproc->varnames[j] = strdup(from->data.mufproc->varnames[j]);
 	    }
 	}
 	break;
@@ -966,10 +966,10 @@ do_abort_loop(dbref player, dbref program, const char *msg,
     char buffer[128];
 
     if (fr->trys.top) {
-	fr->errorstr = string_dup(msg);
+	fr->errorstr = strdup(msg);
 	if (pc) {
 	    fr->errorinst =
-		    string_dup(insttotext(fr, 0, pc, buffer, sizeof(buffer), 30, program, 1));
+		    strdup(insttotext(fr, 0, pc, buffer, sizeof(buffer), 30, program, 1));
 	    fr->errorline = pc->line;
 	} else {
 	    fr->errorinst = NULL;
@@ -1855,10 +1855,10 @@ do_abort_interp(dbref player, const char *msg, struct inst *pc,
     char buffer[128];
 
     if (fr->trys.top) {
-	fr->errorstr = string_dup(msg);
+	fr->errorstr = strdup(msg);
 	if (pc) {
 	    fr->errorinst =
-		    string_dup(insttotext(fr, 0, pc, buffer, sizeof(buffer), 30, program, 1));
+		    strdup(insttotext(fr, 0, pc, buffer, sizeof(buffer), 30, program, 1));
 	    fr->errorline = pc->line;
 	} else {
 	    fr->errorinst = NULL;

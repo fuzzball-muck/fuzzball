@@ -27,9 +27,6 @@ char *strcatn(char *buf, size_t bufsize, const char *src);
 char *strcpyn(char *buf, size_t bufsize, const char *src);
 const char *strencrypt(const char *, const char *);
 const char *strdecrypt(const char *, const char *);
-#ifndef MALLOC_PROFILING
-char *string_dup(const char *s);
-#endif
 const char *string_match(const char *src, const char *sub);
 int string_prefix(const char *string, const char *prefix);
 char *string_substitute(const char *str, const char *oldstr, const char *newstr, char *buf,

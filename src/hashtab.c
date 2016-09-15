@@ -72,7 +72,7 @@ add_hash(register const char *name, hash_data data, hash_tab * table, unsigned i
 	}
 	hp->next = table[hashval];
 	table[hashval] = hp;
-	hp->name = (char *) string_dup(name);	/* This might be wasteful. */
+	hp->name = (char *) strdup(name);	/* This might be wasteful. */
 	if (hp->name == NULL) {
 	    perror("add_hash: out of memory!");
 	    abort();		/* can't allocate new entry -- die */

@@ -928,7 +928,7 @@ tune_setparm(const char *parmname, const char *val, int mlev)
 		if (!tstr->isdefault)
 		    free((char *) *tstr->str);
 		tstr->isdefault = 0;
-		*tstr->str = string_dup(parmval);
+		*tstr->str = strdup(parmval);
 		return TUNESET_SUCCESS;
 	    }
 	}
@@ -1166,7 +1166,7 @@ do_tune(dbref player, char *parmname, char *parmval, int full_command_has_delimi
 
 	/* Duplicate the string, otherwise the oldvalue pointer will be overridden to the new value
 	   when tune_setparm() is called. */
-	oldvalue = string_dup(tune_get_parmstring(parmname, security));
+	oldvalue = strdup(tune_get_parmstring(parmname, security));
 	result = tune_setparm(parmname, parmval, security);
 	switch (result) {
 	case TUNESET_SUCCESS:

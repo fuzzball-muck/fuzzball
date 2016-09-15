@@ -102,7 +102,7 @@ alloc_timenode(int typ, int subtyp, time_t mytime, int descr, dbref player,
     ptr->descr = descr;
     ptr->fr = fr;
     ptr->called_prog = program;
-    ptr->called_data = (char *) string_dup((char *) strdata);
+    ptr->called_data = (char *) strdup((char *) strdata);
     ptr->command = alloc_string(strcmd);
     ptr->str3 = alloc_string(str3);
     ptr->eventnum = (fr) ? fr->pid : top_pid++;

@@ -43,17 +43,6 @@ const char *author = "";
 const char *doccmd = "";
 
 char *
-string_dup(const char *s)
-{
-    char *p;
-
-    p = (char *) malloc(strlen(s) + 1);
-    if (p)
-	strcpy(p, s);		/* Guaranteed enough space. */
-    return p;
-}
-
-char *
 strcpyn(char *buf, size_t bufsize, const char *src)
 {
     int pos = 0;
@@ -88,7 +77,7 @@ add_section(const char *str)
     top = (struct topiclist *) malloc(sizeof(struct topiclist));
 
     top->topic = NULL;
-    top->section = (char *) string_dup(sect);
+    top->section = (char *) strdup(sect);
     top->printed = 0;
     top->next = NULL;
 
@@ -119,8 +108,8 @@ add_topic(const char *str)
 
     top = (struct topiclist *) malloc(sizeof(struct topiclist));
 
-    top->topic = (char *) string_dup(buf);
-    top->section = (char *) string_dup(sect);
+    top->topic = (char *) strdup(buf);
+    top->section = (char *) strdup(sect);
     top->printed = 0;
 
     if (!topichead) {
@@ -445,13 +434,13 @@ find_topics(FILE * infile)
 		    add_section(sect);
 		} else if (!strncmp(buf, "~~title ", 8)) {
 		    buf[strlen(buf) - 1] = '\0';
-		    title = string_dup(buf + 8);
+		    title = strdup(buf + 8);
 		} else if (!strncmp(buf, "~~author ", 9)) {
 		    buf[strlen(buf) - 1] = '\0';
-		    author = string_dup(buf + 9);
+		    author = strdup(buf + 9);
 		} else if (!strncmp(buf, "~~doccmd ", 9)) {
 		    buf[strlen(buf) - 1] = '\0';
-		    doccmd = string_dup(buf + 9);
+		    doccmd = strdup(buf + 9);
 		}
 	    }
 	} while (!feof(infile) &&
@@ -469,13 +458,13 @@ find_topics(FILE * infile)
 		    add_section(sect);
 		} else if (!strncmp(buf, "~~title ", 8)) {
 		    buf[strlen(buf) - 1] = '\0';
-		    title = string_dup(buf + 8);
+		    title = strdup(buf + 8);
 		} else if (!strncmp(buf, "~~author ", 9)) {
 		    buf[strlen(buf) - 1] = '\0';
-		    author = string_dup(buf + 9);
+		    author = strdup(buf + 9);
 		} else if (!strncmp(buf, "~~doccmd ", 9)) {
 		    buf[strlen(buf) - 1] = '\0';
-		    doccmd = string_dup(buf + 9);
+		    doccmd = strdup(buf + 9);
 		}
 	    }
 	} while (*buf == '~' && !feof(infile));

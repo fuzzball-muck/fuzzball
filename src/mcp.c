@@ -230,7 +230,7 @@ mcp_intern_is_mesg_start(McpFrame * mfr, const char *in)
 	/* It's incomplete.  Remember it to finish later. */
 	const char *msgdt = mcp_mesg_arg_getline(newmsg, MCP_DATATAG, 0);
 
-	newmsg->datatag = string_dup(msgdt);
+	newmsg->datatag = strdup(msgdt);
 	mcp_mesg_arg_remove(newmsg, MCP_DATATAG);
 	newmsg->next = mfr->messages;
 	mfr->messages = newmsg;
@@ -425,7 +425,7 @@ mcp_package_register(const char *pkgname, McpVer minver, McpVer maxver, McpPkg_C
 {
     McpPkg *nu = (McpPkg *) malloc(sizeof(McpPkg));
 
-    nu->pkgname = string_dup(pkgname);
+    nu->pkgname = strdup(pkgname);
     nu->minver = minver;
     nu->maxver = maxver;
     nu->callback = callback;
@@ -495,7 +495,7 @@ mcp_basic_handler(McpFrame * mfr, McpMesg * mesg)
     if (!*mesg->mesgname) {
 	auth = mcp_mesg_arg_getline(mesg, "authentication-key", 0);
 	if (auth) {
-	    mfr->authkey = string_dup(auth);
+	    mfr->authkey = strdup(auth);
 	} else {
 	    McpMesg reply;
 	    char authval[128];
@@ -505,7 +505,7 @@ mcp_basic_handler(McpFrame * mfr, McpMesg * mesg)
 	    mcp_mesg_arg_append(&reply, "to", "2.1");
 	    snprintf(authval, sizeof(authval), "%.8lX", (unsigned long) (RANDOM() ^ RANDOM()));
 	    mcp_mesg_arg_append(&reply, "authentication-key", authval);
-	    mfr->authkey = string_dup(authval);
+	    mfr->authkey = strdup(authval);
 	    mcp_frame_output_mesg(mfr, &reply);
 	    mcp_mesg_clear(&reply);
 	}
@@ -830,7 +830,7 @@ mcp_frame_package_add(McpFrame * mfr, const char *package, McpVer minver, McpVer
 
     selver = mcp_version_select(ptr->minver, ptr->maxver, minver, maxver);
     nu = (McpPkg *) malloc(sizeof(McpPkg));
-    nu->pkgname = string_dup(ptr->pkgname);
+    nu->pkgname = strdup(ptr->pkgname);
     nu->minver = selver;
     nu->maxver = selver;
     nu->callback = ptr->callback;
@@ -1075,7 +1075,7 @@ mcp_frame_output_mesg(McpFrame * mfr, McpMesg * msg)
 			nu->next = ap->next;
 			ap->next = nu;
 			*p++ = '\0';
-			nu->value = string_dup(p);
+			nu->value = strdup(p);
 			ap->value = (char *) realloc(ap->value, strlen(ap->value) + 1);
 			ap = nu;
 			p = nu->value;
@@ -1179,8 +1179,8 @@ mcp_frame_output_mesg(McpFrame * mfr, McpMesg * msg)
 void
 mcp_mesg_init(McpMesg * msg, const char *package, const char *mesgname)
 {
-    msg->package = string_dup(package);
-    msg->mesgname = string_dup(mesgname);
+    msg->package = strdup(package);
+    msg->mesgname = strdup(mesgname);
     msg->datatag = NULL;
     msg->args = NULL;
     msg->incomplete = 0;

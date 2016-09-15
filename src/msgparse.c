@@ -483,7 +483,7 @@ new_mfunc(const char *funcname, const char *buf)
     if (funcc > MPI_MAX_FUNCTIONS)
 	return 2;
     strcpyn(funcv[funcc].name, sizeof(funcv[funcc].name), funcname);
-    funcv[funcc++].buf = (char *) string_dup(buf);
+    funcv[funcc++].buf = (char *) strdup(buf);
     return 0;
 }
 
@@ -854,7 +854,7 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms,
 				free(argv[0]);
 				argv[0] = NULL;
 			    }
-			    argv[0] = string_dup(zptr);
+			    argv[0] = strdup(zptr);
 			    argc++;
 			}
 			if (mesgtyp & MPI_ISDEBUG) {
