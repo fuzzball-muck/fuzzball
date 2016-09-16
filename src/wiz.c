@@ -722,9 +722,8 @@ do_newpassword(dbref player, const char *name, const char *password)
 
     if ((victim = lookup_player(name)) == NOTHING) {
 	notify(player, "No such player.");
-    } else if (*password != '\0' && !ok_password(password)) {
-	/* Wiz can set null passwords, but not bad passwords */
-	notify(player, "Bad password");
+    } else if (!ok_password(password)) {
+	notify(player, "Invalid password.");
 
 #ifdef GOD_PRIV
     } else if (God(victim)) {
