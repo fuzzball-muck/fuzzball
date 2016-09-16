@@ -1739,7 +1739,7 @@ prim_newplayer(PRIM_PROTOTYPE)
     password = oper1->data.string->data;
 
     if (!ok_player_name(name))
-	abort_interp("Invalid player name. (1)");
+	abort_interp("Invalid player name. (2)");
     if (!ok_password(password))
 	abort_interp("Invalid password. (1)");
 
@@ -2002,6 +2002,8 @@ prim_newpassword(PRIM_PROTOTYPE)
 	abort_interp("Password string expected. (2)");
     if (oper2->type != PROG_OBJECT)
 	abort_interp("Player dbref expected. (1)");
+    if (!ok_password(oper1->data.string->data))
+        abort_interp("Invalid password. (2)");
     ptr2 = oper1->data.string ? oper1->data.string->data : pad_char;
     ref = oper2->data.objref;
     if (!valid_player(oper2))
