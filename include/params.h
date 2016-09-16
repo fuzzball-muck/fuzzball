@@ -118,6 +118,8 @@
 #define PRONOUNS_PROPDIR	"_pronouns"
 #define REGISTRATION_PROPDIR	"_reg"
 
+#define WELCOME_PROPLIST	"welcome"
+
 #define MUF_AUTHOR_PROP		"_author"
 #define MUF_ERRCOUNT_PROP	".debug/errcount"
 #define MUF_LASTCRASH_PROP	".debug/lastcrash"

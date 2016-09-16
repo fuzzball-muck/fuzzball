@@ -605,6 +605,20 @@ welcome_user(struct descriptor_data *d)
     FILE *f;
     char *ptr;
     char buf[BUFFER_LEN];
+    int welcome_proplist = 0;
+
+    for (int i = 1; ; i++) {
+	const char *line;
+	snprintf(buf, sizeof(buf), "%s#/%d", WELCOME_PROPLIST, i);
+	if ((line = get_property_class(GLOBAL_ENVIRONMENT, buf))) {
+	    welcome_proplist = 1;
+	    queue_ansi(d, line);
+	    queue_write(d, "\r\n", 2);
+	} else {
+	    break;
+	}
+    }
+    if (welcome_proplist) return;
 
     if ((f = fopen(WELC_FILE, "rb")) == NULL) {
 	queue_ansi(d, DEFAULT_WELCOME_MESSAGE);
