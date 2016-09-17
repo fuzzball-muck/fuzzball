@@ -821,6 +821,11 @@ tune_get_parmstring(const char *name, int mlev)
     /* Treat default parameters as normal */
     TP_CLEAR_FLAG_DEFAULT(name);
 
+    if (!name) {
+	strcpyn(buf, sizeof(buf), "");
+	return (buf);
+    }
+
     while (tstr->name) {
 	if (!strcasecmp(name, tstr->name)) {
 	    if (tstr->readmlev > mlev)
@@ -908,6 +913,8 @@ tune_setparm(const char *parmname, const char *val, int mlev)
 	TP_CLEAR_FLAG_DEFAULT(parmname);
 	reset_default = 1;
     }
+
+    if (!parmname) return TUNESET_UNKNOWN;
 
     while (tstr->name) {
 	if (!strcasecmp(parmname, tstr->name)) {

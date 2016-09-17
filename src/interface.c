@@ -3169,7 +3169,7 @@ do_armageddon(dbref player, const char *msg)
 	return;
     }
     snprintf(buf, sizeof(buf), "\r\nImmediate shutdown initiated by %s.\r\n", NAME(player));
-    if (msg || *msg)
+    if (msg && *msg)
 	strcatn(buf, sizeof(buf), msg);
     log_status("ARMAGEDDON initiated by %s(%d): %s", NAME(player), player, msg);
     fprintf(stderr, "ARMAGEDDON initiated by %s(%d): %s\n", NAME(player), player, msg);

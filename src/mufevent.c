@@ -326,7 +326,7 @@ muf_event_list(dbref player, const char *pat)
 		} else {
 		    pcnt = 0.0;
 		}
-	    }
+	    } else continue;
 	    snprintf(pidstr, sizeof(pidstr), "%d", proc->fr->pid);
 	    snprintf(inststr, sizeof(inststr), "%d", (proc->fr->instcnt / 1000));
 	    snprintf(cpustr, sizeof(cpustr), "%4.1f", pcnt);
