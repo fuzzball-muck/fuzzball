@@ -999,7 +999,7 @@ prim_split(PRIM_PROTOTYPE)
 	    } else {
 		PushString(buf);
 	    }
-	    if (temp[0] == '\0') {
+	    if (!temp || temp[0] == '\0') {
 		PushNullStr;
 	    } else {
 		PushString(temp);

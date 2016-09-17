@@ -1479,7 +1479,7 @@ call_word(COMPSTATE * cstat, const char *token)
 	if (!strcasecmp(p->name, token))
 	    break;
 
-    nu->in.data.number = get_address(cstat, p->code, 0);
+    if (p) nu->in.data.number = get_address(cstat, p->code, 0);
     return nu;
 }
 
@@ -1497,7 +1497,7 @@ quoted_word(COMPSTATE * cstat, const char *token)
 	if (!strcasecmp(p->name, token))
 	    break;
 
-    nu->in.data.number = get_address(cstat, p->code, 0);
+    if (p) nu->in.data.number = get_address(cstat, p->code, 0);
     return nu;
 }
 
@@ -1549,7 +1549,7 @@ static struct INTERMEDIATE *
 lvar_word(COMPSTATE * cstat, const char *token)
 {
     struct INTERMEDIATE *nu;
-    int var_no;
+    int var_no = 0;
 
     nu = new_inst(cstat);
     nu->no = cstat->nowords++;

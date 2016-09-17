@@ -484,7 +484,7 @@ list_program(dbref player, dbref program, int *oarg, int argc)
 
     if (oarg) {
 	arg[0] = oarg[0];
-	arg[1] = oarg[1];
+	if (argc > 1) arg[1] = oarg[1];
     } else
 	arg[0] = arg[1] = 0;
     switch (argc) {
@@ -1076,7 +1076,7 @@ macrochain(struct macrotable *lastnode, FILE * f)
 	macrotop = (struct macrotable *) newmacro;
     else {
 	newmacro->left = lastnode;
-	lastnode->right = newmacro;
+	if (lastnode) lastnode->right = newmacro;
     }
     return (1 + macrochain(newmacro, f));
 }
