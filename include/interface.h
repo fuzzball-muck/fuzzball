@@ -113,6 +113,7 @@ struct descriptor_data {
 #endif
 };
 
+extern struct descriptor_data *descriptor_list;
 extern short global_dumpdone;
 #ifndef DISKBASE
 extern pid_t global_dumper_pid;

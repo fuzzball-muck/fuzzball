@@ -81,7 +81,7 @@ static const char *shutdown_message = "\r\nGoing down - Bye\r\n";
 
 static int resolver_sock[2];
 
-static struct descriptor_data *descriptor_list = NULL;
+struct descriptor_data *descriptor_list = NULL;
 
 static int con_players_max = 0;	/* one of Cynbe's good ideas. */
 static int con_players_curr = 0;	/* for playermax checks. */
