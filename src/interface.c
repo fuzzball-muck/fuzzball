@@ -3178,7 +3178,7 @@ do_armageddon(dbref player, const char *msg)
 #ifdef SPAWN_HOST_RESOLVER
     kill_resolver();
 #endif
-
+    unlink(PID_FILE);
     exit(1);
 }
 
@@ -4399,6 +4399,7 @@ main(int argc, char **argv)
 
     if (init_game(infile_name, outfile_name) < 0) {
 	fprintf(stderr, "Couldn't load %s!\n", infile_name);
+	unlink(PID_FILE);
 	exit(2);
     }
 
