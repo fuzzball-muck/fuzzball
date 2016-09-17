@@ -1749,19 +1749,19 @@ BITOR (i i -- i)
   Does a mathematical bitwise or.
 ~
 ~
-BITXOR
+BITXOR|^
 BITXOR (i i -- i)
 
   Does a mathematical bitwise exclusive or.
 ~
 ~
-BITAND
+BITAND|&
 BITAND (i i -- i)
 
   Does a mathematical bitwise and.
 ~
 ~
-BITSHIFT
+BITSHIFT|<<
 BITSHIFT (i i -- i)
 
   Shifts the first integer by the second integer's number of bit positions.
