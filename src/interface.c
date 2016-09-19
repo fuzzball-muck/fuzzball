@@ -618,23 +618,25 @@ welcome_user(struct descriptor_data *d)
 	    break;
 	}
     }
-    if (welcome_proplist) return;
 
-    if ((f = fopen(WELC_FILE, "rb")) == NULL) {
-	queue_ansi(d, DEFAULT_WELCOME_MESSAGE);
-	perror("spit_file: welcome.txt");
-    } else {
-	while (fgets(buf, sizeof(buf) - 3, f)) {
-	    ptr = index(buf, '\n');
-	    if (ptr && ptr > buf && *(ptr - 1) != '\r') {
-		*ptr++ = '\r';
-		*ptr++ = '\n';
-		*ptr++ = '\0';
-	    }
-	    queue_ansi(d, buf);
-	}
-	fclose(f);
+    if (!welcome_proplist) {
+        if ((f = fopen(WELC_FILE, "rb")) == NULL) {
+            queue_ansi(d, DEFAULT_WELCOME_MESSAGE);
+            perror("spit_file: welcome.txt");
+        } else {
+            while (fgets(buf, sizeof(buf) - 3, f)) {
+                ptr = index(buf, '\n');
+                if (ptr && ptr > buf && *(ptr - 1) != '\r') {
+                    *ptr++ = '\r';
+                    *ptr++ = '\n';
+                    *ptr++ = '\0';
+                }
+                queue_ansi(d, buf);
+            }
+            fclose(f);
+        }
     }
+
     if (wizonly_mode) {
 	queue_ansi(d,
 		   "## The game is currently in maintenance mode, and only wizards will be able to connect.\r\n");
