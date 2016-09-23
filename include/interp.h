@@ -122,6 +122,17 @@ struct mufwatchpidlist {
 #define STD_SETUID 1
 #define STD_HARDUID 2
 
+union error_mask {
+    struct {
+        unsigned int div_zero:1;        /* Divide by zero */
+        unsigned int nan:1;     /* Result would not be a number */
+        unsigned int imaginary:1;       /* Result would be imaginary */
+        unsigned int f_bounds:1;        /* Float boundary error */
+        unsigned int i_bounds:1;        /* Integer boundary error */
+    } error_flags;
+    int is_flags;
+};
+
 /* frame data structure necessary for executing programs */
 struct frame {
     struct frame *next;
@@ -162,16 +173,7 @@ struct frame {
     struct dlogidlist *dlogids;	/* List of dlogids this frame uses. */
     struct mufwatchpidlist *waiters;
     struct mufwatchpidlist *waitees;
-    union {
-	struct {
-	    unsigned int div_zero:1;	/* Divide by zero */
-	    unsigned int nan:1;	/* Result would not be a number */
-	    unsigned int imaginary:1;	/* Result would be imaginary */
-	    unsigned int f_bounds:1;	/* Float boundary error */
-	    unsigned int i_bounds:1;	/* Integer boundary error */
-	} error_flags;
-	int is_flags;
-    } error;
+    union error_mask error;
 };
 
 struct publics {
