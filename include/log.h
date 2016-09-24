@@ -3,7 +3,7 @@
 
 #include "inst.h"
 
-void log2file(char *myfilename, char *format, ...);
+void log2file(const char *myfilename, char *format, ...);
 void log_command(char *format, ...);
 void log_gripe(char *format, ...);
 void log_muf(char *format, ...);

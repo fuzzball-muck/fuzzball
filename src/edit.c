@@ -804,7 +804,7 @@ editor(int descr, dbref player, const char *command)
 	    list_program(player, program, arg, i);
 	    break;
 	case EDITOR_HELP_COMMAND:
-	    spit_file(player, EDITOR_HELP_FILE);
+	    spit_file(player, tp_file_editor_help);
 	    break;
 	case VIEW_COMMAND:
 	    val_and_head(player, arg, i);

@@ -36,6 +36,31 @@ const char *tp_cpenny = CPENNY;
 const char *tp_dumpdone_mesg = DUMPDONE_MESG;
 const char *tp_dumping_mesg = DUMPING_MESG;
 const char *tp_dumpwarn_mesg = DUMPWARN_MESG;
+const char *tp_file_connection_help = CONHELP_FILE;
+const char *tp_file_credits = CREDITS_FILE;
+const char *tp_file_editor_help = EDITOR_HELP_FILE;
+const char *tp_file_help = HELP_FILE;
+const char *tp_file_help_dir = HELP_DIR;
+const char *tp_file_info_dir = INFO_DIR;
+const char *tp_file_log_cmd_times = LOG_CMD_TIMES;
+const char *tp_file_log_commands = COMMAND_LOG;
+const char *tp_file_log_gripes = LOG_GRIPE;
+const char *tp_file_log_muf_errors = LOG_MUF;
+const char *tp_file_log_programs = PROGRAM_LOG;
+const char *tp_file_log_sanity = LOG_SANITY;
+const char *tp_file_log_status = LOG_STATUS;
+const char *tp_file_log_stderr = LOG_ERR_FILE;
+const char *tp_file_log_stdout = LOG_FILE;
+const char *tp_file_log_user = USER_LOG;
+const char *tp_file_man = MAN_FILE;
+const char *tp_file_man_dir = MAN_DIR;
+const char *tp_file_mpihelp = MPI_FILE;
+const char *tp_file_mpihelp_dir = MPI_DIR;
+const char *tp_file_motd = MOTD_FILE;
+const char *tp_file_news = NEWS_FILE;
+const char *tp_file_news_dir = NEWS_DIR;
+const char *tp_file_sysparms = PARM_FILE;
+const char *tp_file_welcome_screen = WELC_FILE;
 const char *tp_gender_prop = LEGACY_GENDER_PROP;
 const char *tp_huh_mesg = HUH_MESSAGE;
 const char *tp_idle_mesg = IDLEBOOT_MESSAGE;
@@ -71,6 +96,56 @@ struct tune_str_entry tune_str_list[] = {
      "Database dump started message", "", 1, 1, DUMPING_MESG},
     {"DB Dumps", "dumpwarn_mesg", &tp_dumpwarn_mesg, 0, MLEV_WIZARD,
      "Database dump warning message", "", 1, 1, DUMPWARN_MESG},
+    {"Files", "file_connection_help", &tp_file_connection_help, MLEV_WIZARD, MLEV_WIZARD,
+     "'help' before login", "", 0, 1, CONHELP_FILE},
+    {"Files", "file_credits", &tp_file_credits, MLEV_WIZARD, MLEV_WIZARD,
+     "Acknowledgements", "", 0, 1, CREDITS_FILE},
+    {"Files", "file_editor_help", &tp_file_editor_help, MLEV_WIZARD, MLEV_WIZARD,
+     "Editor help", "", 0, 1, EDITOR_HELP_FILE},
+    {"Files", "file_help", &tp_file_help, MLEV_WIZARD, MLEV_WIZARD,
+     "'help' main content", "", 0, 1, HELP_FILE},
+    {"Files", "file_help_dir", &tp_file_help_dir, MLEV_WIZARD, MLEV_WIZARD,
+     "'help' topic directory", "", 0, 1, HELP_DIR},
+    {"Files", "file_info_dir", &tp_file_info_dir, MLEV_WIZARD, MLEV_WIZARD,
+     "'info' topic directory", "", 0, 1, INFO_DIR},
+    {"Files", "file_log_cmd_times", &tp_file_log_cmd_times, MLEV_WIZARD, MLEV_WIZARD,
+     "Command times", "", 0, 1, LOG_CMD_TIMES},
+    {"Files", "file_log_commands", &tp_file_log_commands, MLEV_WIZARD, MLEV_WIZARD,
+     "Player commands", "", 0, 1, COMMAND_LOG},
+    {"Files", "file_log_gripes", &tp_file_log_gripes, MLEV_WIZARD, MLEV_WIZARD,
+     "Player gripes", "", 0, 1, LOG_GRIPE},
+    {"Files", "file_log_muf_errors", &tp_file_log_muf_errors, MLEV_WIZARD, MLEV_WIZARD,
+     "MUF compile errors and warnings", "", 0, 1, LOG_MUF},
+    {"Files", "file_log_programs", &tp_file_log_programs, MLEV_WIZARD, MLEV_WIZARD,
+     "Text of changed programs", "", 0, 1, PROGRAM_LOG},
+    {"Files", "file_log_sanity", &tp_file_log_sanity, MLEV_WIZARD, MLEV_WIZARD,
+     "Databased corruption and errors", "", 0, 1, LOG_SANITY},
+    {"Files", "file_log_status", &tp_file_log_status, MLEV_WIZARD, MLEV_WIZARD,
+     "System errors and stats", "", 0, 1, LOG_STATUS},
+    {"Files", "file_log_stderr", &tp_file_log_stderr, MLEV_WIZARD, MLEV_WIZARD,
+     "Server error redirect", "DETACH", 0, 1, LOG_ERR_FILE},
+    {"Files", "file_log_stdout", &tp_file_log_stdout, MLEV_WIZARD, MLEV_WIZARD,
+     "Server output redirect", "DETACH", 0, 1, LOG_FILE},
+    {"Files", "file_log_user", &tp_file_log_user, MLEV_WIZARD, MLEV_WIZARD,
+     "MUF-writable messages", "", 0, 1, USER_LOG},
+    {"Files", "file_man", &tp_file_man, MLEV_WIZARD, MLEV_WIZARD,
+     "'man' main content", "", 0, 1, MAN_FILE},
+    {"Files", "file_man_dir", &tp_file_man_dir, MLEV_WIZARD, MLEV_WIZARD,
+     "'man' topic directory", "", 0, 1, MAN_DIR},
+    {"Files", "file_motd", &tp_file_motd, MLEV_WIZARD, MLEV_WIZARD,
+     "Message of the day", "", 0, 1, MOTD_FILE},
+    {"Files", "file_mpihelp", &tp_file_mpihelp, MLEV_WIZARD, MLEV_WIZARD,
+     "'mpi' main content", "", 0, 1, MPI_FILE},
+    {"Files", "file_mpihelp_dir", &tp_file_mpihelp_dir, MLEV_WIZARD, MLEV_WIZARD,
+     "'mpi' topic directory", "", 0, 1, MPI_DIR},
+    {"Files", "file_news", &tp_file_news, MLEV_WIZARD, MLEV_WIZARD,
+     "'news' main content", "", 0, 1, NEWS_FILE},
+    {"Files", "file_news_dir", &tp_file_news_dir, MLEV_WIZARD, MLEV_WIZARD,
+     "'news' topic directory", "", 0, 1, NEWS_DIR},
+    {"Files", "file_sysparms", &tp_file_sysparms, MLEV_WIZARD, MLEV_WIZARD,
+     "System parameters", "", 0, 1, PARM_FILE},
+    {"Files", "file_welcome_screen", &tp_file_welcome_screen, MLEV_WIZARD, MLEV_WIZARD,
+     "Opening screen", "", 0, 1, WELC_FILE},
     {"Idle Boot", "idle_boot_mesg", &tp_idle_mesg, 0, MLEV_WIZARD,
      "Boot message given to users idling out", "", 0, 1, IDLEBOOT_MESSAGE},
     {"Misc", "huh_mesg", &tp_huh_mesg, 0, MLEV_WIZARD, "Unrecognized command warning", "", 0,
@@ -796,9 +871,9 @@ tune_save_parmsfile(void)
 {
     FILE *f;
 
-    f = fopen(PARM_FILE, "wb");
+    f = fopen(tp_file_sysparms, "wb");
     if (!f) {
-	log_status("Couldn't open file %s!", PARM_FILE);
+	log_status("Couldn't open file %s!", tp_file_sysparms);
 	return 0;
     }
 
@@ -1144,9 +1219,9 @@ tune_load_parmsfile(dbref player)
 {
     FILE *f;
 
-    f = fopen(PARM_FILE, "rb");
+    f = fopen(tp_file_sysparms, "rb");
     if (!f) {
-	log_status("Couldn't open file %s!", PARM_FILE);
+	log_status("Couldn't open file %s!", tp_file_sysparms);
 	return 0;
     }
 

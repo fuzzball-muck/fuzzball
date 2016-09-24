@@ -5,6 +5,7 @@
 #include "fbstrings.h"
 #include "inst.h"
 #include "log.h"
+#include "tune.h"
 
 #include <stdarg.h>
 
@@ -12,7 +13,7 @@
    USE ANSI C varargs features, no? Sigh. */
 
 void
-vlog2file(int prepend_time, char *filename, char *format, va_list args)
+vlog2file(int prepend_time, const char *filename, char *format, va_list args)
 {
     FILE *fp;
     time_t lt;
@@ -40,7 +41,7 @@ vlog2file(int prepend_time, char *filename, char *format, va_list args)
 }
 
 void
-log2file(char *filename, char *format, ...)
+log2file(const char *filename, char *format, ...)
 {
     va_list args;
     va_start(args, format);
@@ -58,23 +59,23 @@ log2file(char *filename, char *format, ...)
 
 void
 log_sanity(char *format, ...)
-log_function(LOG_SANITY)
+log_function(tp_file_log_sanity)
 
 void
 log_status(char *format, ...)
-log_function(LOG_STATUS)
+log_function(tp_file_log_status)
 
 void
 log_muf(char *format, ...)
-log_function(LOG_MUF)
+log_function(tp_file_log_muf_errors)
 
 void
 log_gripe(char *format, ...)
-log_function(LOG_GRIPE)
+log_function(tp_file_log_gripes)
 
 void
 log_command(char *format, ...)
-log_function(COMMAND_LOG)
+log_function(tp_file_log_commands)
 
 void
 strip_evil_characters(char *badstring)
@@ -115,7 +116,7 @@ log_user(dbref player, dbref program, char *logmessage)
     len = BUFFER_LEN - strlen(logformat) - 1;
     strncat(logformat, logmessage, len);
     strip_evil_characters(logformat);
-    log2file(USER_LOG, "%s", logformat);
+    log2file(tp_file_log_user, "%s", logformat);
 }
 
 void
@@ -126,7 +127,7 @@ log_program_text(struct line *first, dbref player, dbref i)
     char tbuf[24];
     time_t lt = time(NULL);
 
-    strcpyn(fname, sizeof(fname), PROGRAM_LOG);
+    strcpyn(fname, sizeof(fname), tp_file_log_programs);
     f = fopen(fname, "ab");
     if (!f) {
         log_status("Couldn't open file %s!", fname);

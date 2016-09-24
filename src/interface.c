@@ -620,7 +620,7 @@ welcome_user(struct descriptor_data *d)
     }
 
     if (!welcome_proplist) {
-        if ((f = fopen(WELC_FILE, "rb")) == NULL) {
+        if ((f = fopen(tp_file_welcome_screen, "rb")) == NULL) {
             queue_ansi(d, DEFAULT_WELCOME_MESSAGE);
             perror("spit_file: welcome.txt");
         } else {
@@ -908,7 +908,7 @@ check_connect(struct descriptor_data *d, const char *msg)
 		remember_player_descr(player, d->descriptor);
 		/* cks: someone has to initialize this somewhere. */
 		PLAYER_SET_BLOCK(d->player, 0);
-		show_file(d, MOTD_FILE);
+		show_file(d, tp_file_motd);
 		announce_connect(d->descriptor, player);
 		interact_warn(player);
 		if (sanity_violated && Wizard(player)) {
@@ -948,7 +948,7 @@ check_connect(struct descriptor_data *d, const char *msg)
 		    remember_player_descr(player, d->descriptor);
 		    /* cks: someone has to initialize this somewhere. */
 		    PLAYER_SET_BLOCK(d->player, 0);
-		    spit_file(player, MOTD_FILE);
+		    spit_file(player, tp_file_motd);
 		    announce_connect(d->descriptor, player);
 		    con_players_curr++;
 		}
@@ -959,7 +959,7 @@ check_connect(struct descriptor_data *d, const char *msg)
 	    log_status("FAILED CREATE %s on descriptor %d", user, d->descriptor);
 	}
     } else if (!strncmp(command, "help", 4)) {
-	show_file(d, CONHELP_FILE);
+	show_file(d, tp_file_connection_help);
     } else if (!*command) {
 	/* do nothing */
     } else {
@@ -4323,9 +4323,9 @@ main(int argc, char **argv)
 # ifndef WIN32
 	if (!sanity_interactive && !db_conversion_flag) {
 	    /* Detach from the TTY, log whatever output we have... */
-	    freopen(LOG_ERR_FILE, "a", stderr);
+	    freopen(tp_file_log_stderr, "a", stderr);
 	    setbuf(stderr, NULL);
-	    freopen(LOG_FILE, "a", stdout);
+	    freopen(tp_file_log_stdout, "a", stdout);
 	    setbuf(stdout, NULL);
 
 	    /* Disassociate from Process Group */
@@ -4354,9 +4354,9 @@ main(int argc, char **argv)
 
 #ifdef WIN32
 	if (!sanity_interactive && !db_conversion_flag && freeconsole) {
-	    freopen(LOG_ERR_FILE, "a", stderr);
+	    freopen(tp_file_log_stderr, "a", stderr);
 	    setbuf(stderr, NULL);
-	    freopen(LOG_FILE, "a", stdout);
+	    freopen(tp_file_log_stdout, "a", stdout);
 	    setbuf(stdout, NULL);
 	}
 #endif

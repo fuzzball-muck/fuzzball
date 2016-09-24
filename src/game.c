@@ -1457,7 +1457,7 @@ process_command(int descr, dbref player, char *command)
         char tbuf[24];
         time_t st = (time_t)starttime.tv_sec;
         format_time(tbuf, sizeof(tbuf), "%Y-%m-%dT%H:%M:%S", MUCK_LOCALTIME(st));
-	log2file(LOG_CMD_TIMES, "%s: (%.3f) %s: %s",
+	log2file(tp_file_log_cmd_times, "%s: (%.3f) %s: %s",
 		 tbuf, totaltime, whowhere(player), command);
     }
 }

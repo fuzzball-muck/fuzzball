@@ -307,13 +307,13 @@ mcppkg_help_request(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 	}
 
 	if (!strcasecmp(valtype, "man")) {
-	    file = MAN_FILE;
+	    file = tp_file_man;
 	} else if (!strcasecmp(valtype, "mpi")) {
-	    file = MPI_FILE;
+	    file = tp_file_mpihelp;
 	} else if (!strcasecmp(valtype, "help")) {
-	    file = HELP_FILE;
+	    file = tp_file_help;
 	} else if (!strcasecmp(valtype, "news")) {
-	    file = NEWS_FILE;
+	    file = tp_file_news;
 	} else {
 	    snprintf(buf, sizeof(buf), "Sorry, %s is not a valid help type.", valtype);
 	    mcp_mesg_init(&omsg, "org-fuzzball-help", "error");
