@@ -94,7 +94,7 @@ do_gripe(dbref player, const char *message)
 
     if (!message || !*message) {
 	if (Wizard(player)) {
-	    spit_file(player, LOG_GRIPE);
+	    spit_file(player, tp_file_log_gripes);
 	} else {
 	    notify(player, "If you wish to gripe, use 'gripe <message>'.");
 	}

@@ -367,4 +367,35 @@
 /* Suppress basic arrive and depart notifications. */
 #define QUIET_MOVES 0
 
+/* System data and log files. */
+#define WELC_FILE "data/welcome.txt"		/* For the opening screen	*/
+#define MOTD_FILE "data/motd.txt"		/* For the message of the day	*/
+#define CREDITS_FILE "data/credits.txt"		/* For acknowledgements		*/
+#define CONHELP_FILE "data/connect-help.txt"	/* For 'help' before login	*/
+#define PARM_FILE "data/parmfile.cfg"		/* For system parameters	*/
+#define HELP_FILE "data/help.txt"		/* For the 'help' command	*/
+#define HELP_DIR  "data/help"			/* For 'help' subtopic files	*/
+#define NEWS_FILE "data/news.txt"		/* For the 'news' command	*/
+#define NEWS_DIR  "data/news"			/* For 'news' subtopic files	*/
+#define MAN_FILE  "data/man.txt"		/* For the 'man' command	*/
+#define MAN_DIR   "data/man"			/* For 'man' subtopic files	*/
+#define MPI_FILE  "data/mpihelp.txt"		/* For the 'mpi' command	*/
+#define MPI_DIR   "data/mpihelp"        	/* For 'mpi' subtopic files	*/
+#define INFO_DIR  "data/info/"			/* For 'info' files		*/
+#define EDITOR_HELP_FILE "data/edit-help.txt"   /* editor help file		*/
+
+#define LOG_CMD_TIMES "logs/cmd-times"		/* Command times Log		*/
+#define LOG_GRIPE   "logs/gripes"		/* Gripes Log			*/
+#define LOG_STATUS  "logs/status"		/* System errors and stats	*/
+#define LOG_SANITY  "logs/sanity"		/* Database corruption and errors */
+#define LOG_MUF     "logs/muf-errors"		/* Muf compiler errors and warnings. */
+#define COMMAND_LOG "logs/commands"		/* Player commands */
+#define PROGRAM_LOG "logs/programs"		/* text of changed programs */
+#define USER_LOG    "logs/user"			/* log of player/program-init msgs. */
+
+#ifdef DETACH
+# define LOG_FILE "logs/fbmuck"			/* Log stdout to ...		*/
+# define LOG_ERR_FILE "logs/fbmuck.err"		/* Log stderr to ...	*/
+#endif
+
 #endif				/* _DEFAULTS_H */

@@ -4,6 +4,7 @@
 #include "fbstrings.h"
 #include "interface.h"
 #include "log.h"
+#include "tune.h"
 
 #include <stdarg.h>
 
@@ -80,33 +81,33 @@ index_file(dbref player, const char *onwhat, const char *file)
 void
 do_man(dbref player, char *topic, char *seg)
 {
-    if (show_subfile(player, MAN_DIR, topic, seg, 0))
+    if (show_subfile(player, tp_file_man_dir, topic, seg, 0))
 	return;
-    index_file(player, topic, MAN_FILE);
+    index_file(player, topic, tp_file_man);
 }
 
 void
 do_mpihelp(dbref player, char *topic, char *seg)
 {
-    if (show_subfile(player, MPI_DIR, topic, seg, 0))
+    if (show_subfile(player, tp_file_mpihelp_dir, topic, seg, 0))
 	return;
-    index_file(player, topic, MPI_FILE);
+    index_file(player, topic, tp_file_mpihelp);
 }
 
 void
 do_help(dbref player, char *topic, char *seg)
 {
-    if (show_subfile(player, HELP_DIR, topic, seg, 0))
+    if (show_subfile(player, tp_file_help_dir, topic, seg, 0))
 	return;
-    index_file(player, topic, HELP_FILE);
+    index_file(player, topic, tp_file_help);
 }
 
 void
 do_news(dbref player, char *topic, char *seg)
 {
-    if (show_subfile(player, NEWS_DIR, topic, seg, 0))
+    if (show_subfile(player, tp_file_news_dir, topic, seg, 0))
 	return;
-    index_file(player, topic, NEWS_FILE);
+    index_file(player, topic, tp_file_news);
 }
 
 static void
@@ -123,7 +124,7 @@ add_motd_text_fmt(const char *text)
 	while (*p && !isspace(*p) && (count < 76))
 	    buf[count++] = *p++;
 	buf[count] = '\0';
-	log2file(MOTD_FILE, "%s", buf);
+	log2file(tp_file_motd, "%s", buf);
 	while (*p && isspace(*p))
 	    p++;
 	count = 0;
@@ -136,20 +137,20 @@ do_motd(dbref player, char *text)
     time_t lt;
 
     if (!*text || !Wizard(OWNER(player))) {
-	spit_file(player, MOTD_FILE);
+	spit_file(player, tp_file_motd);
 	return;
     }
     if (!strcasecmp(text, "clear")) {
-	unlink(MOTD_FILE);
-	log2file(MOTD_FILE, "%s %s", "- - - - - - - - - - - - - - - - - - -",
+	unlink(tp_file_motd);
+	log2file(tp_file_motd, "%s %s", "- - - - - - - - - - - - - - - - - - -",
 		 "- - - - - - - - - - - - - - - - - - -");
 	notify(player, "MOTD cleared.");
 	return;
     }
     lt = time(NULL);
-    log2file(MOTD_FILE, "%.16s", ctime(&lt));
+    log2file(tp_file_motd, "%.16s", ctime(&lt));
     add_motd_text_fmt(text);
-    log2file(MOTD_FILE, "%s %s", "- - - - - - - - - - - - - - - - - - -",
+    log2file(tp_file_motd, "%s %s", "- - - - - - - - - - - - - - - - - - -",
 	     "- - - - - - - - - - - - - - - - - - -");
     notify(player, "MOTD updated.");
 }
@@ -175,7 +176,7 @@ do_info(dbref player, const char *topic, const char *seg)
 #endif
 
     if (*topic) {
-	if (!show_subfile(player, INFO_DIR, topic, seg, 1)) {
+	if (!show_subfile(player, tp_file_info_dir, topic, seg, 1)) {
 	    notify(player, NO_INFO_MSG);
 	}
     } else {
@@ -184,7 +185,7 @@ do_info(dbref player, const char *topic, const char *seg)
 	(void) strcpyn(buf, buflen, "    ");
 	f = 0;
 	cols = 0;
-	if ((df = (DIR *) opendir(INFO_DIR))) {
+	if ((df = (DIR *) opendir(tp_file_info_dir))) {
 	    while ((dp = readdir(df))) {
 
 		if (*(dp->d_name) != '.') {
@@ -216,9 +217,9 @@ do_info(dbref player, const char *topic, const char *seg)
 	f = 0;
 	cols = 0;
 
-	dirnamelen = strlen(INFO_DIR) + 4;
+	dirnamelen = strlen(tp_file_infodir) + 4;
 	dirname = (char *) malloc(dirnamelen);
-	strcpyn(dirname, dirnamelen, INFO_DIR);
+	strcpyn(dirname, dirnamelen, tp_file_infodir);
 	strcatn(dirname, dirnamelen, "*.*");
 	hFind = FindFirstFile(dirname, &finddata);
 	bMore = (hFind != (HANDLE) - 1);
@@ -259,5 +260,5 @@ do_info(dbref player, const char *topic, const char *seg)
 void
 do_credits(dbref player)
 {
-    spit_file(player, CREDITS_FILE);
+    spit_file(player, tp_file_credits);
 }

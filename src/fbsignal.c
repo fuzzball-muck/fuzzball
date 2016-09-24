@@ -4,6 +4,7 @@
 #include "game.h"
 #include "interface.h"
 #include "log.h"
+#include "tune.h"
 
 #ifdef SOLARIS
 #  ifndef _POSIX_SOURCE
@@ -292,7 +293,7 @@ sig_reap(int i)
     reapedpid = waitpid(-1, &status, WNOHANG);
     if (!reapedpid) {
 #ifdef DETACH
-	log2file(LOG_ERR_FILE, "SIG_CHILD signal handler called with no pid!");
+	log2file(tp_file_log_stderr, "SIG_CHILD signal handler called with no pid!");
 #else
 	fprintf(stderr, "SIG_CHILD signal handler called with no pid!\n");
 #endif
