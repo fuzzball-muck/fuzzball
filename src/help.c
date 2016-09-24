@@ -217,9 +217,9 @@ do_info(dbref player, const char *topic, const char *seg)
 	f = 0;
 	cols = 0;
 
-	dirnamelen = strlen(tp_file_infodir) + 4;
+	dirnamelen = strlen(tp_file_info_dir) + 4;
 	dirname = (char *) malloc(dirnamelen);
-	strcpyn(dirname, dirnamelen, tp_file_infodir);
+	strcpyn(dirname, dirnamelen, tp_file_info_dir);
 	strcatn(dirname, dirnamelen, "*.*");
 	hFind = FindFirstFile(dirname, &finddata);
 	bMore = (hFind != (HANDLE) - 1);
