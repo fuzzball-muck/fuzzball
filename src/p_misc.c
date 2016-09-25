@@ -261,12 +261,12 @@ prim_force(PRIM_PROTOTYPE)
     if (God(oper2->data.objref) && !God(OWNER(program)))
 	abort_interp("Cannot force god (1).");
 #endif
-    force_prog = program;
+    objnode_push(&forcelist, program);
     force_level++;
     process_command(dbref_first_descr(oper2->data.objref), oper2->data.objref,
 		    oper1->data.string->data);
     force_level--;
-    force_prog = NOTHING;
+    objnode_pop(&forcelist);
 
     for (int i = 1; i <= fr->caller.top; i++) {
 	if (Typeof(fr->caller.st[i]) != TYPE_PROGRAM) {
@@ -979,12 +979,36 @@ prim_forcedby(PRIM_PROTOTYPE)
     if (mlev < 4)
 	abort_interp("Wizbit only primitive.");
 
-    if (force_level) {
-	ref = force_prog;
+    if (forcelist) {
+	ref = forcelist->data;
     } else {
 	ref = NOTHING;
     }
     PushObject(ref);
+}
+
+void
+prim_forcedby_array(PRIM_PROTOTYPE)
+{
+    stk_array *nu;
+    int count = 0;
+
+    CHECKOFLOW(1);
+    if (mlev < 4)
+	abort_interp("Wizbit only primitive.");
+
+    if (!forcelist) {
+	PushArrayRaw(0);
+	return;
+    }
+
+    nu = new_array_packed(force_level);
+
+    for (objnode *tmp = forcelist; tmp; tmp = tmp->next) {
+        array_set_intkey_refval(&nu, count++, tmp->data);
+    }
+
+    PushArrayRaw(nu);
 }
 
 void

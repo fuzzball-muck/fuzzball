@@ -433,7 +433,13 @@ struct profnode {
     short type;
 };
 
+typedef struct objnode {
+    dbref data;
+    struct objnode *next;
+} objnode;
+
 extern struct object *db;
+extern objnode *forcelist;
 extern dbref db_top;
 extern int recyclable;
 
@@ -453,6 +459,9 @@ int link_exit_dry(int descr, dbref player, dbref exit, char *dest_name,
                          dbref * dest_list);
 int member(dbref thing, dbref list);
 dbref new_object(void);
+int objnode_find(objnode *head, dbref data);
+void objnode_push(objnode **head, dbref data);
+void objnode_pop(objnode **head);
 int ok_ascii_other(const char *name);
 int ok_ascii_thing(const char *name);
 int ok_name(const char *name);

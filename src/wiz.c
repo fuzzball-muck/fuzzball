@@ -413,11 +413,11 @@ do_force(int descr, dbref player, const char *what, char *command)
     log_status("FORCED: %s(%d) by %s(%d): %s", NAME(victim),
 	       victim, NAME(player), player, command);
     /* force victim to do command */
-    force_prog = player;
+    objnode_push(&forcelist, player);
     force_level++;
     process_command(dbref_first_descr(victim), victim, command);
     force_level--;
-    force_prog = NOTHING;
+    objnode_pop(&forcelist);
 }
 
 void

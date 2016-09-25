@@ -125,10 +125,12 @@ E's
   exp                explode            explode_array      ext-name-ok?
 
 F's
-  fabs         fail         fg_mode      findnext     firstdescr   flag?
-  flags        float        float?       floor        fmod         fmtstring
-  for          force        force_level  forcedby     foreach      foreground
-  fork         frand        ftostr       ftostrc      fulldepth    
+  fabs               fail               fg_mode            findnext
+  firstdescr         flag?              flags              float
+  float?             floor              fmod               fmtstring
+  for                force              force_level        forcedby
+  forcedby_array     foreach            foreground         fork
+  frand              ftostr             ftostrc            fulldepth
 
 G's
   gaussian           getlink            getlinks           getlinks_array
@@ -6434,7 +6436,8 @@ before the JMP or EXIT for each nexted FOR loop.
 Miscellaneous|MiscOps
 Miscellaneous
 
-force        force_level  forcedby     version      
+force              force_level        forcedby           forcedby_array
+version            
 
 ~----------------------------------------------------------------------------
 ~
@@ -6465,8 +6468,16 @@ Also see: FORCE and FORCEDBY
 FORCEDBY
 FORCEDBY ( -- d)
 
-  Returns the dbref of the object forcing the code to run, or #-1 if none.
-  (Wizbit only)
-Also see: FORCE and FORCE_LEVEL
+  Returns the dbref of the most recent object forcing the code to run, or
+  #-1 if none. (Wizbit only)
+Also see: FORCE, FORCE_LEVEL and FORCEDBY_ARRAY
+~
+~
+FORCEDBY_ARRAY
+FORCEDBY_ARRAY ( -- a)
+
+  Returns an array containg the dbrefs of all objects forcing the code to run,
+  most recent first. (Wizbit only)
+Also see: FORCE, FORCE_LEVEL and FORCEDBY
 ~
 ~
