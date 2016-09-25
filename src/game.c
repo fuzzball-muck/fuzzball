@@ -32,7 +32,6 @@
 #define Matched(string) { if(!string_prefix((string), command)) goto bad; }
 
 int force_level = 0;
-dbref force_prog = NOTHING;	/* Set when a program is the source of FORCE */
 
 const char *compile_options =
 #ifdef DEBUG

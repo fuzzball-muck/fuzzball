@@ -18,6 +18,7 @@
 #include "tune.h"
 
 struct object *db = 0;
+objnode *forcelist = 0;
 dbref db_top = 0;
 dbref recyclable = NOTHING;
 static int db_load_format = 0;
@@ -715,6 +716,43 @@ db_read(FILE * f)
 	c = getc(f);
     }				/* for */
 }				/* db_read */
+
+int
+objnode_find(objnode *head, dbref data)
+{
+    objnode *tmp = head;
+
+    while (tmp) {
+	if (tmp->data == data) return 1;
+	tmp = tmp->next;
+    }
+
+    return 0;
+}
+
+void
+objnode_push(objnode **head, dbref data)
+{
+    objnode *tmp;
+
+    if (!(tmp = (objnode *)malloc(sizeof(objnode)))) {
+        fprintf(stderr, "objnode_add: out of memory\n");
+        return;
+    }
+
+    tmp->data = data;
+    tmp->next = *head;
+    *head = tmp;
+}
+
+void objnode_pop(objnode **head)
+{
+    if (!*head) return;
+
+    objnode *tmp = *head;
+    *head = tmp->next;
+    free(tmp);
+}
 
 const char *
 unparse_flags(dbref thing)

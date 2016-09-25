@@ -726,7 +726,7 @@ recycle(int descr, dbref player, dbref thing)
 
     depth++;
     if (force_level) {
-	if (thing == force_prog) {
+	if (objnode_find(forcelist, thing)) {
 	    log_status("SANITYCHECK: Was about to recycle FORCEing object #%d!", thing);
 	    notify(player, "ERROR: Cannot recycle an object FORCEing you!");
 	    return;

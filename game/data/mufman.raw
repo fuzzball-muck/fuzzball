@@ -6124,8 +6124,16 @@ FORCE_LEVEL ( -- i)
 FORCEDBY
 FORCEDBY ( -- d)
 
-  Returns the dbref of the object forcing the code to run, or #-1 if none.
-  (Wizbit only)
-~~alsosee FORCE, FORCE_LEVEL
+  Returns the dbref of the most recent object forcing the code to run, or
+  #-1 if none. (Wizbit only)
+~~alsosee FORCE, FORCE_LEVEL, FORCEDBY_ARRAY
+~
+~
+FORCEDBY_ARRAY
+FORCEDBY_ARRAY ( -- a)
+
+  Returns an array containg the dbrefs of all objects forcing the code to run,
+  most recent first. (Wizbit only)
+~~alsosee FORCE, FORCE_LEVEL, FORCEDBY
 ~
 ~
