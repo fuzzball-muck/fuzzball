@@ -4,11 +4,12 @@ Program commands:
     <lines> insert	[i]	insert program lines
     <lines> list	[l]	list program lines
     publics		[p]	show PUBLIC/WIZCALL words in program
-    uncompile		[u]     disassemble program (not usually useful)
+    unassemble		[u]     disassemble program (not usually useful)
 
   <lines> can be nothing, a single number, or two numbers for a range.
 
 Editor commands:
+    help		[h]	show this file
     numbers		[n]	toggle line numbers
     quit		[q]	quit the program editor
     <dbref> view	[v]	list the program header
