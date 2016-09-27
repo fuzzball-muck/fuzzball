@@ -4239,6 +4239,31 @@ Parameters available:
   (str)  dumpdone_mesg        - Database dump finished message
   (str)  dumping_mesg         - Database dump started message
   (str)  dumpwarn_mesg        - Database dump warning message
+  (str)  file_connection_help - 'help' before login
+  (str)  file_credits         - Acknowledgements
+  (str)  file_editor_help     - Editor help
+  (str)  file_help            - 'help' main content
+  (str)  file_help_dir        - 'help' topic directory
+  (str)  file_info_dir        - 'info' topic directory
+  (str)  file_log_cmd_times   - Command times
+  (str)  file_log_commands    - Player commands
+  (str)  file_log_gripes      - Player gripes
+  (str)  file_log_muf_errors  - MUF compile errors and warnings
+  (str)  file_log_programs    - Text of changed programs
+  (str)  file_log_sanity      - Databased corruption and errors
+  (str)  file_log_status      - System errors and stats
+  (str)  file_log_stderr      - Server error redirect
+  (str)  file_log_stdout      - Server output redirect
+  (str)  file_log_user        - MUF-writable messages
+  (str)  file_man             - 'man' main content
+  (str)  file_man_dir         - 'man' topic directory
+  (str)  file_motd            - Message of the day
+  (str)  file_mpihelp         - 'mpi' main content
+  (str)  file_mpihelp_dir     - 'mpi' topic directory
+  (str)  file_news            - 'news' main content
+  (str)  file_news_dir        - 'news' topic directory
+  (str)  file_parameters      - System parameters
+  (str)  file_welcome_screen  - Opening screen
   (str)  idle_boot_mesg       - Boot message given to users idling out
   (str)  huh_mesg             - Unrecognized command warning
   (str)  leave_mesg           - Logoff message for QUIT
