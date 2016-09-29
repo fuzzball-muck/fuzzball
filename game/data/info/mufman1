@@ -4105,14 +4105,14 @@ the game. This will be 0 if they are not connected.
 
 ONLINE ( -- d ... i )
 
-  Returns a dbref for every connection to the server, and lastly the number
-of connections.
+  Returns a dbref for every player connected to the server, and lastly the
+number of connections.
 
 
 ONLINE_ARRAY ( -- a )
 
   Returns a single stack item, which is a list array, containing a dbref for
-every connection to the server.
+every player connected to the server.
 
 
 CONCOUNT ( -- i)
