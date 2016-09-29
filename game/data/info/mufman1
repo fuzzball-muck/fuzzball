@@ -2092,6 +2092,16 @@ STRDECRYPT ( s1 s2 -- s3 )
 the plaintext string s3.
 
 
+MD5HASH ( s -- )
+
+  Calculates the MD5 hash of the given string.
+
+
+SHA1HASH ( s -- )
+
+  Calculates the SHA1 hash of the given string.
+
+
 TOUPPER (s -- s)
 
   Takes a string and returns it with all the letters in uppercase.

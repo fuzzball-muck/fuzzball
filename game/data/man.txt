@@ -161,10 +161,10 @@ L's
 M's
   match                     max_variable_count        mcp_bind
   mcp_register              mcp_register_event        mcp_send
-  mcp_supports              me                        midstr
-  mlevel                    mode                      modf
-  movepennies               moveto                    mucker levels
-  multitasking              
+  mcp_supports              md5hash                   me
+  midstr                    mlevel                    mode
+  modf                      movepennies               moveto
+  mucker levels             multitasking              
 
 N's
   name               name-ok?           newexit            newobject
@@ -202,15 +202,15 @@ S's
   setdrop            setfail            setlink            setlinks_array
   setlockstr         setmode            setname            setodrop
   setofail           setosucc           setown             setprop
-  setseed            setsucc            setsysparm         sign
-  sin                sleep              smatch             split
-  sqrt               srand              stats              stod
-  strcat             strcmp             strcut             strdecrypt
-  strencrypt         string?            stringcmp          stringpfx
-  strip              striplead          striptail          strlen
-  strncmp            strtof             subst              succ
-  supplicant         swap               sysparm            sysparm_array
-  systime            systime_precise    
+  setseed            setsucc            setsysparm         sha1hash
+  sign               sin                sleep              smatch
+  split              sqrt               srand              stats
+  stod               strcat             strcmp             strcut
+  strdecrypt         strencrypt         string?            stringcmp
+  stringpfx          strip              striplead          striptail
+  strlen             strncmp            strtof             subst
+  succ               supplicant         swap               sysparm
+  sysparm_array      systime            systime_precise    
 
 T's
   tan          testlock     textattr     then         thing?       time
@@ -2359,15 +2359,16 @@ String Manipulation Operators
 ansi_midstr        ansi_strcut        ansi_strip         ansi_strlen
 array_fmtstrings   atoi               ctoi               explode
 explode_array      ext-name-ok?       fmtstring          instr
-instring           intostr            itoc               midstr
-name-ok?           number?            pname-ok?          pronoun_sub
-regexp             regsplit           regsplit_noempty   regsub
-rinstr             rinstring          rsplit             smatch
-split              stod               strcat             strcmp
-strcut             strdecrypt         strencrypt         stringcmp
-stringpfx          strip              striplead          striptail
-strlen             strncmp            subst              textattr
-tokensplit         tolower            toupper            
+instring           intostr            itoc               md5hash
+midstr             name-ok?           number?            pname-ok?
+pronoun_sub        regexp             regsplit           regsplit_noempty
+regsub             rinstr             rinstring          rsplit
+sha1hash           smatch             split              stod
+strcat             strcmp             strcut             strdecrypt
+strencrypt         stringcmp          stringpfx          strip
+striplead          striptail          strlen             strncmp
+subst              textattr           tokensplit         tolower
+toupper            
 
 ~----------------------------------------------------------------------------
 ~
@@ -2747,6 +2748,20 @@ STRDECRYPT ( s1 s2 -- s3 )
   Takes the encrypted string s1, and decrypts it, using the key s2, returning
 the plaintext string s3.
 Also see: STRENCRYPT
+~
+~
+MD5HASH
+MD5HASH ( s -- )
+
+  Calculates the MD5 hash of the given string.
+Also see: SHA1HASH
+~
+~
+SHA1HASH
+SHA1HASH ( s -- )
+
+  Calculates the SHA1 hash of the given string.
+Also see: MD5HASH
 ~
 ~
 TOUPPER

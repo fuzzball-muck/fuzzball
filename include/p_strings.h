@@ -45,6 +45,8 @@ void prim_notify_nolisten(PRIM_PROTOTYPE);
 void prim_notify_secure(PRIM_PROTOTYPE);
 void prim_instring(PRIM_PROTOTYPE);
 void prim_rinstring(PRIM_PROTOTYPE);
+void prim_md5hash(PRIM_PROTOTYPE);
+void prim_sha1hash(PRIM_PROTOTYPE);
 
 #define PRIMS_STRINGS_FUNCS prim_numberp, prim_stringcmp, prim_strcmp,        \
     prim_strncmp, prim_strcut, prim_strlen, prim_strcat, prim_atoi,           \
@@ -56,7 +58,7 @@ void prim_rinstring(PRIM_PROTOTYPE);
 	prim_fmtstring, prim_tokensplit, prim_ansi_strlen, prim_ansi_strcut,      \
 	prim_ansi_strip, prim_ansi_midstr, prim_explode_array,                    \
 	prim_array_fmtstrings, prim_notify_nolisten, prim_notify_secure,	\
-	prim_instring, prim_rinstring
+	prim_instring, prim_rinstring, prim_md5hash, prim_sha1hash
 
 #define PRIMS_STRINGS_NAMES "NUMBER?", "STRINGCMP", "STRCMP",  \
     "STRNCMP", "STRCUT", "STRLEN", "STRCAT", "ATOI",           \
@@ -68,6 +70,6 @@ void prim_rinstring(PRIM_PROTOTYPE);
 	"FMTSTRING", "TOKENSPLIT", "ANSI_STRLEN", "ANSI_STRCUT",   \
 	"ANSI_STRIP", "ANSI_MIDSTR", "EXPLODE_ARRAY",              \
 	"ARRAY_FMTSTRINGS", "NOTIFY_NOLISTEN", "NOTIFY_SECURE",	\
-	"INSTRING", "RINSTRING"
+	"INSTRING", "RINSTRING", "MD5HASH", "SHA1HASH"
 
 #endif				/* _P_STRINGS_H */
