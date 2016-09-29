@@ -2502,6 +2502,20 @@ the plaintext string s3.
 ~~alsosee STRENCRYPT
 ~
 ~
+MD5HASH
+MD5HASH ( s -- )
+
+  Calculates the MD5 hash of the given string.
+~~alsosee SHA1HASH
+~
+~
+SHA1HASH
+SHA1HASH ( s -- )
+
+  Calculates the SHA1 hash of the given string.
+~~alsosee MD5HASH
+~
+~
 TOUPPER
 TOUPPER (s -- s)
 

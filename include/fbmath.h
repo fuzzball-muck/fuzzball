@@ -72,6 +72,7 @@ int comp_t(short op_type);
 void delete_seed(void *buffer);
 void *init_seed(char *seed);
 void MD5base64(char *dest, const void *orig, int len);
+void MD5hex(void *dest, const void *orig, int len);
 int no_good(double test);
 word32 rnd(void *buffer);
 

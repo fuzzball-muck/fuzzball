@@ -378,6 +378,18 @@ Base64Encode(char *outbuf, const void *inbuf, size_t inlen)
     }
 }
 
+void
+MD5hex(void *dest, const void *orig, int len)
+{
+    unsigned char tmp[16];
+
+    MD5hash(tmp, orig, len);
+
+    for (int i = 0; i < 16; i++) {
+	snprintf((char *)dest + (i*2), 255, "%.2x", tmp[i]);
+    }
+}
+
 /* dest buffer MUST be at least 24 chars long. */
 void
 MD5base64(char *dest, const void *orig, int len)

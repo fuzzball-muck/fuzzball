@@ -118,7 +118,7 @@ CSRC= array.c boolexp.c compile.c create.c db.c debugger.c diskprop.c edit.c \
 	mcppkgs.c mfuns.c mfuns2.c move.c msgparse.c mufevent.c p_array.c \
 	p_connects.c p_db.c p_error.c p_float.c p_math.c p_mcp.c p_misc.c \
 	p_props.c p_regex.c p_stack.c p_strings.c player.c predicates.c \
-	propdirs.c property.c props.c rob.c sanity.c set.c snprintf.c \
+	propdirs.c property.c props.c rob.c sanity.c set.c sha1.c snprintf.c \
 	speech.c timequeue.c tune.c wiz.c
 
 MSRC= interface.c resolver.c
@@ -129,7 +129,7 @@ COBJ= array.o boolexp.o compile.o create.o db.o debugger.o diskprop.o edit.o \
 	mcppkgs.o mfuns.o mfuns2.o move.o msgparse.o mufevent.o p_array.o \
 	p_connects.o p_db.o p_error.o p_float.o p_math.o p_mcp.o p_misc.o \
 	p_props.o p_regex.o p_stack.o p_strings.o player.o predicates.o \
-	propdirs.o property.o props.o rob.o sanity.o set.o snprintf.o \
+	propdirs.o property.o props.o rob.o sanity.o set.o sha1.o snprintf.o \
 	speech.o timequeue.o tune.o wiz.o
 
 MOBJ= interface.o resolver.o

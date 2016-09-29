@@ -2,11 +2,13 @@
 
 #include "boolexp.h"
 #include "db.h"
+#include "fbmath.h"
 #include "fbstrings.h"
 #include "inst.h"
 #include "interface.h"
 #include "interp.h"
 #include "params.h"
+#include "sha1.h"
 #include "timequeue.h"
 #include "tune.h"
 
@@ -2508,4 +2510,56 @@ prim_notify_secure(PRIM_PROTOTYPE)
     CLEAR(oper1);
     CLEAR(oper2);
     CLEAR(oper3);
+}
+
+void
+prim_md5hash(PRIM_PROTOTYPE)
+{
+    char hash[33];
+    const char *p;
+
+    CHECKOFLOW(1);
+    oper1 = POP();
+
+    if (oper1->type != PROG_STRING)
+	abort_interp("Not a string argument. (1)");
+
+    if (!oper1->data.string) {
+	MD5hex(hash, "", 0);
+    } else {
+	MD5hex(hash, oper1->data.string->data, strlen(oper1->data.string->data));
+    }
+
+    p = hash;
+
+    CLEAR(oper1);
+    PushString(p);
+}
+
+void
+prim_sha1hash(PRIM_PROTOTYPE)
+{
+    char hash[41];
+    const char *p;
+
+    CHECKOFLOW(1);
+    oper1 = POP();
+
+    if (oper1->type != PROG_STRING)
+	abort_interp("Not a string argument. (1)");
+
+    p = DoNullInd(oper1->data.string);
+
+    sha1nfo info;
+    sha1_init(&info);
+    while (*p) {
+	sha1_writebyte(&info, (uint8_t)*p);
+	p++;
+    }
+
+    hash2hex(sha1_result(&info), hash, sizeof(hash));
+
+    p = hash;
+    CLEAR(oper1);
+    PushString(p);
 }
