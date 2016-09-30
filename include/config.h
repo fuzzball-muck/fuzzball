@@ -15,7 +15,7 @@
 
 #include "autoconf.h"
 
-#define VERSION "Muck2.2fb7.00a1"
+#define VERSION "Muck2.2fb7.00a2"
 
 /************************************************************************
    Administrative Options 
