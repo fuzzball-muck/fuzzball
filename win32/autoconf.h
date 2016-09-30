@@ -161,7 +161,7 @@
 #define PACKAGE_NAME "fbmuck"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "fbmuck 7.00a1"
+#define PACKAGE_STRING "fbmuck 7.00a2"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "fbmuck"
@@ -170,7 +170,7 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "7.00a1"
+#define PACKAGE_VERSION "7.00a2"
 
 /* Define as the return type of signal handlers (`int' or `void'). */
 #define RETSIGTYPE void

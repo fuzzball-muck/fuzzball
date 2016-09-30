@@ -6,7 +6,7 @@ dnl Rewritten for fb6.x by revar@belfry.com
 dnl
 AC_REVISION($Revision: 1.30 $)
 AC_PREREQ(2.69)
-AC_INIT(fbmuck, 7.00a1, [feedback@fuzzball.org])
+AC_INIT(fbmuck, 7.00a2, [feedback@fuzzball.org])
 AC_CONFIG_AUX_DIR(auto)
 AC_CONFIG_HEADER([include/autoconf.h])
 
