@@ -87,13 +87,11 @@ extern char match_cmdname[BUFFER_LEN];
 #define TYPE_EXIT           0x2
 #define TYPE_PLAYER         0x3
 #define TYPE_PROGRAM        0x4
-#define NOTYPE1 	    0x5	/* Room for expansion */
+/* 0x5 available */
 #define TYPE_GARBAGE        0x6
 #define NOTYPE              0x7	/* no particular type */
 #define TYPE_MASK           0x7
-
-#define EXPANSION0	   0x08	/* Expansion bit */
-
+/* 0x8 available */
 #define WIZARD             0x10	/* gets automatic control */
 #define LINK_OK            0x20	/* anybody can link to this */
 #define DARK               0x40	/* contents of room are not printed */
@@ -104,8 +102,8 @@ extern char match_cmdname[BUFFER_LEN];
 				   this player can see color */
 #define JUMP_OK           0x800	/* A room which can be jumped from, or
 				 * a player who can be jumped to */
-#define EXPANSION1	 0x1000	/* Expansion bit */
-#define EXPANSION2	 0x2000	/* Expansion bit */
+/* 0x1000 available */
+/* 0x2000 available */
 #define KILL_OK	         0x4000	/* Kill_OK bit.  Means you can be killed. */
 #define GUEST		 0x8000	/* Guest flag */
 #define HAVEN           0x10000	/* can't kill here */
@@ -115,7 +113,7 @@ extern char match_cmdname[BUFFER_LEN];
 #define SMUCKER        0x100000	/* second programmer bit.  For levels */
 #define INTERACTIVE    0x200000	/* internal: player in MUF editor */
 #define OBJECT_CHANGED 0x400000	/* internal: set when an object is dbdirty()ed */
-#define EXPANSION3     0x800000 /* Expansion bit */
+/* 0x800000 available */
 #define VEHICLE       0x1000000	/* Vehicle flag */
 #define ZOMBIE        0x2000000	/* Zombie flag */
 #define LISTENER      0x4000000	/* internal: listener flag */

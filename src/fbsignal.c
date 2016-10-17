@@ -351,9 +351,6 @@ sig_reap(int i)
 #include <wincon.h>
 #include <windows.h>
 #include <signal.h>
-#define VK_C         0x43
-#define CONTROL_KEY (RIGHT_CTRL_PRESSED | LEFT_CTRL_PRESSED)
-
 
 #ifdef SPAWN_HOST_RESOLVER
 void
