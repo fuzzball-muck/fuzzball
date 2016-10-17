@@ -105,9 +105,6 @@
 /*
  * Error messeges spewed by the help system.
  */
-#define NO_NEWS_MSG "That topic does not exist.  Type 'news topics' to list the news topics available."
-#define NO_HELP_MSG "That topic does not exist.  Type 'help index' to list the help topics available."
-#define NO_MAN_MSG "That topic does not exist.  Type 'man' to list the MUF topics available."
 #define NO_INFO_MSG "That file does not exist.  Type 'info' to get a list of the info files available."
 
 #define MACRO_FILE  "muf/macros"
@@ -252,60 +249,20 @@ typedef int dbref;
  */
 
 #if defined(linux) || defined(__linux__) || defined(LINUX)
-# define SYS_TYPE "Linux"
-# define LINUX
 # define SYSV
-# define SYS_POSIX		/* Linux is POSIX */
-#endif
-
-#ifdef sgi
-# define SYS_TYPE "SGI"
 #endif
 
 #ifdef sun
-# define SYS_TYPE "SUN"
 # define SUN_OS
-# define BSD43
 #endif
 
 #ifdef ultrix
-# define SYS_TYPE "ULTRIX"
 # define ULTRIX
 #endif
 
 #ifdef _AIX
-# define SYS_TYPE "AIX"
 # define AIX
 # define NO_MEMORY_COMMAND
-#endif
-
-#ifdef bds4_3
-# ifndef SYS_TYPE
-#  define SYS_TYPE "BSD 4.3"
-# endif
-# define BSD43
-#endif
-
-#ifdef bds4_2
-# ifndef SYS_TYPE
-#  define SYS_TYPE "BSD 4.2"
-# endif
-#endif
-
-#if defined(SVR3)
-# ifndef SYS_TYPE
-#  define SYS_TYPE "SVR3"
-# endif
-#endif
-
-#if defined(SYSTYPE_SYSV) || defined(_SYSTYPE_SYSV)
-# ifndef SYS_TYPE
-#  define SYS_TYPE "SYSV"
-# endif
-#endif
-
-#ifndef SYS_TYPE
-# define SYS_TYPE "UNKNOWN"
 #endif
 
 /*

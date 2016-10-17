@@ -25,7 +25,6 @@ static struct mufevent_process {
     struct frame *fr;
 } *mufevent_processes;
 
-#define MUFEVENT_ALL    -1
 #define MUFEVENT_FIRST  -2
 #define MUFEVENT_LAST   -3
 
@@ -626,50 +625,6 @@ muf_event_pop_specific(struct frame *fr, int eventcount, char **events)
     }
 
     return NULL;
-}
-
-/*
- * Removes a given MUF event type from the event queue of the given
- * program instance.  If which is MUFEVENT_ALL, all instances are removed.
- * If which is MUFEVENT_FIRST, only the first instance is removed.
- * If which is MUFEVENT_LAST, only the last instance is removed.
- */
-void
-muf_event_remove(struct frame *fr, char *event, int which)
-{
-    struct mufevent *tmp = NULL;
-    struct mufevent *ptr = NULL;
-
-    while (fr->events && !strcmp(event, fr->events->event)) {
-	if (which == MUFEVENT_LAST) {
-	    break;
-	} else {
-	    tmp = fr->events;
-	    fr->events = tmp->next;
-	    muf_event_free(tmp);
-	    if (which == MUFEVENT_FIRST) {
-		return;
-	    }
-	}
-    }
-
-    ptr = fr->events;
-    while (ptr && ptr->next) {
-	if (!strcmp(event, ptr->next->event)) {
-	    if (which == MUFEVENT_LAST) {
-		ptr = ptr->next;
-	    } else {
-		tmp = ptr->next;
-		ptr->next = tmp->next;
-		muf_event_free(tmp);
-		if (which == MUFEVENT_FIRST) {
-		    return;
-		}
-	    }
-	} else {
-	    ptr = ptr->next;
-	}
-    }
 }
 
 /*

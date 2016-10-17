@@ -6,8 +6,6 @@
 #define OBJECT_ENDOWMENT(cost) (((cost)-5)/5)
 #define OBJECT_GETCOST(endow) ((endow)*5+5)
 
-#define DB_INITIAL_SIZE 100	/* initial malloc() size for the db */
-
 /* User interface low level commands */
 #define QUIT_COMMAND "QUIT"
 #define WHO_COMMAND "WHO"
