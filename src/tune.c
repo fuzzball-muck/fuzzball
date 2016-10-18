@@ -30,55 +30,55 @@
    Default values here will be used if the tunable isn't found, default values in the lists of tune_*_entry
    are used when resetting to default via '%tunable_name'. */
 
-const char *tp_autolook_cmd = AUTOLOOK_CMD;
-const char *tp_cpennies = CPENNIES;
-const char *tp_cpenny = CPENNY;
-const char *tp_dumpdone_mesg = DUMPDONE_MESG;
-const char *tp_dumping_mesg = DUMPING_MESG;
-const char *tp_dumpwarn_mesg = DUMPWARN_MESG;
-const char *tp_file_connection_help = CONHELP_FILE;
-const char *tp_file_credits = CREDITS_FILE;
-const char *tp_file_editor_help = EDITOR_HELP_FILE;
-const char *tp_file_help = HELP_FILE;
-const char *tp_file_help_dir = HELP_DIR;
-const char *tp_file_info_dir = INFO_DIR;
-const char *tp_file_log_cmd_times = LOG_CMD_TIMES;
-const char *tp_file_log_commands = COMMAND_LOG;
-const char *tp_file_log_gripes = LOG_GRIPE;
-const char *tp_file_log_muf_errors = LOG_MUF;
-const char *tp_file_log_programs = PROGRAM_LOG;
-const char *tp_file_log_sanity = LOG_SANITY;
-const char *tp_file_log_status = LOG_STATUS;
-const char *tp_file_log_stderr = LOG_ERR_FILE;
-const char *tp_file_log_stdout = LOG_FILE;
-const char *tp_file_log_user = USER_LOG;
-const char *tp_file_man = MAN_FILE;
-const char *tp_file_man_dir = MAN_DIR;
-const char *tp_file_mpihelp = MPI_FILE;
-const char *tp_file_mpihelp_dir = MPI_DIR;
-const char *tp_file_motd = MOTD_FILE;
-const char *tp_file_news = NEWS_FILE;
-const char *tp_file_news_dir = NEWS_DIR;
-const char *tp_file_sysparms = PARM_FILE;
-const char *tp_file_welcome_screen = WELC_FILE;
-const char *tp_gender_prop = LEGACY_GENDER_PROP;
-const char *tp_huh_mesg = HUH_MESSAGE;
-const char *tp_idle_mesg = IDLEBOOT_MESSAGE;
-const char *tp_leave_mesg = LEAVE_MESSAGE;
-const char *tp_muckname = MUCKNAME;
-const char *tp_pcreate_flags = PCREATE_FLAGS;
-const char *tp_pennies = PENNIES;
-const char *tp_penny = PENNY;
-const char *tp_playermax_bootmesg = PLAYERMAX_BOOTMESG;
-const char *tp_playermax_warnmesg = PLAYERMAX_WARNMESG;
-const char *tp_register_mesg = REG_MSG;
-const char *tp_reserved_names = RESERVED_NAMES;
-const char *tp_reserved_player_names = RESERVED_PLAYER_NAMES;
-const char *tp_ssl_cert_file = SSL_CERT_FILE;
-const char *tp_ssl_key_file = SSL_KEY_FILE;
-const char *tp_ssl_keyfile_passwd = SSL_KEYFILE_PASSWD;
-const char *tp_ssl_cipher_preference_list = SSL_CIPHER_PREFERENCE_LIST;
-const char *tp_ssl_min_protocol_version = SSL_MIN_PROTOCOL_VERSION;
+const char *tp_autolook_cmd;
+const char *tp_cpennies;
+const char *tp_cpenny;
+const char *tp_dumpdone_mesg;
+const char *tp_dumping_mesg;
+const char *tp_dumpwarn_mesg;
+const char *tp_file_connection_help;
+const char *tp_file_credits;
+const char *tp_file_editor_help;
+const char *tp_file_help;
+const char *tp_file_help_dir;
+const char *tp_file_info_dir;
+const char *tp_file_log_cmd_times;
+const char *tp_file_log_commands;
+const char *tp_file_log_gripes;
+const char *tp_file_log_muf_errors;
+const char *tp_file_log_programs;
+const char *tp_file_log_sanity;
+const char *tp_file_log_status;
+const char *tp_file_log_stderr;
+const char *tp_file_log_stdout;
+const char *tp_file_log_user;
+const char *tp_file_man;
+const char *tp_file_man_dir;
+const char *tp_file_mpihelp;
+const char *tp_file_mpihelp_dir;
+const char *tp_file_motd;
+const char *tp_file_news;
+const char *tp_file_news_dir;
+const char *tp_file_sysparms;
+const char *tp_file_welcome_screen;
+const char *tp_gender_prop;
+const char *tp_huh_mesg;
+const char *tp_idle_mesg;
+const char *tp_leave_mesg;
+const char *tp_muckname;
+const char *tp_pcreate_flags;
+const char *tp_pennies;
+const char *tp_penny;
+const char *tp_playermax_bootmesg;
+const char *tp_playermax_warnmesg;
+const char *tp_register_mesg;
+const char *tp_reserved_names;
+const char *tp_reserved_player_names;
+const char *tp_ssl_cert_file;
+const char *tp_ssl_key_file;
+const char *tp_ssl_keyfile_passwd;
+const char *tp_ssl_cipher_preference_list;
+const char *tp_ssl_min_protocol_version;
 
 struct tune_str_entry tune_str_list[] = {
     {"Commands", "autolook_cmd", &tp_autolook_cmd, 0, MLEV_WIZARD, "Room entry look command",
@@ -180,12 +180,12 @@ struct tune_str_entry tune_str_list[] = {
     {NULL, NULL, NULL, 0, 0, NULL, NULL, 0, 0, NULL}
 };
 
-int tp_aging_time = AGING_TIME;
-int tp_clean_interval = CLEAN_INTERVAL;
-int tp_dump_interval = DUMP_INTERVAL;
-int tp_dump_warntime = DUMP_WARNTIME;
-int tp_idle_ping_time = IDLE_PING_TIME;
-int tp_maxidle = MAXIDLE;
+int tp_aging_time;
+int tp_clean_interval;
+int tp_dump_interval;
+int tp_dump_warntime;
+int tp_idle_ping_time;
+int tp_maxidle;
 
 struct tune_time_entry tune_time_list[] = {
     {"Database", "aging_time", &tp_aging_time, 0, MLEV_WIZARD,
@@ -203,41 +203,41 @@ struct tune_time_entry tune_time_list[] = {
     {NULL, NULL, NULL, 0, 0, NULL, NULL, 0, 0}
 };
 
-int tp_addpennies_muf_mlev = ADDPENNIES_MUF_MLEV;
-int tp_cmd_log_threshold_msec = CMD_LOG_THRESHOLD_MSEC;
-int tp_command_burst_size = COMMAND_BURST_SIZE;
-int tp_command_time_msec = COMMAND_TIME_MSEC;
-int tp_commands_per_time = COMMANDS_PER_TIME;
-int tp_exit_cost = EXIT_COST;
-int tp_free_frames_pool = FREE_FRAMES_POOL;
-int tp_instr_slice = INSTR_SLICE;
-int tp_kill_base_cost = KILL_BASE_COST;
-int tp_kill_bonus = KILL_BONUS;
-int tp_kill_min_cost = KILL_MIN_COST;
-int tp_link_cost = LINK_COST;
-int tp_listen_mlev = LISTEN_MLEV;
-int tp_lookup_cost = LOOKUP_COST;
-int tp_max_force_level = MAX_FORCE_LEVEL;
-int tp_max_instr_count = MAX_INSTR_COUNT;
-int tp_max_loaded_objs = MAX_LOADED_OBJS;
-int tp_max_ml4_preempt_count = MAX_ML4_PREEMPT_COUNT;
-int tp_max_object_endowment = MAX_OBJECT_ENDOWMENT;
-int tp_max_output = MAX_OUTPUT;
-int tp_max_pennies = MAX_PENNIES;
-int tp_max_plyr_processes = MAX_PLYR_PROCESSES;
-int tp_max_process_limit = MAX_PROCESS_LIMIT;
-int tp_mcp_muf_mlev = MCP_MUF_MLEV;
-int tp_mpi_max_commands = MPI_MAX_COMMANDS;
-int tp_movepennies_muf_mlev = MOVEPENNIES_MUF_MLEV;
-int tp_object_cost = OBJECT_COST;
-int tp_pause_min = PAUSE_MIN;
-int tp_pennies_muf_mlev = PENNIES_MUF_MLEV;
-int tp_penny_rate = PENNY_RATE;
-int tp_room_cost = ROOM_COST;
-int tp_start_pennies = START_PENNIES;
-int tp_playermax_limit = PLAYERMAX_LIMIT;
-int tp_process_timer_limit = PROCESS_TIMER_LIMIT;
-int tp_userlog_mlev = USERLOG_MLEV;
+int tp_addpennies_muf_mlev;
+int tp_cmd_log_threshold_msec;
+int tp_command_burst_size;
+int tp_command_time_msec;
+int tp_commands_per_time;
+int tp_exit_cost;
+int tp_free_frames_pool;
+int tp_instr_slice;
+int tp_kill_base_cost;
+int tp_kill_bonus;
+int tp_kill_min_cost;
+int tp_link_cost;
+int tp_listen_mlev;
+int tp_lookup_cost;
+int tp_max_force_level;
+int tp_max_instr_count;
+int tp_max_loaded_objs;
+int tp_max_ml4_preempt_count;
+int tp_max_object_endowment;
+int tp_max_output;
+int tp_max_pennies;
+int tp_max_plyr_processes;
+int tp_max_process_limit;
+int tp_mcp_muf_mlev;
+int tp_mpi_max_commands;
+int tp_movepennies_muf_mlev;
+int tp_object_cost;
+int tp_pause_min;
+int tp_pennies_muf_mlev;
+int tp_penny_rate;
+int tp_room_cost;
+int tp_start_pennies;
+int tp_playermax_limit;
+int tp_process_timer_limit;
+int tp_userlog_mlev;
 
 struct tune_val_entry tune_val_list[] = {
     {"Costs", "exit_cost", &tp_exit_cost, 0, MLEV_WIZARD, "Cost to create an exit", "", 1,
@@ -315,10 +315,10 @@ struct tune_val_entry tune_val_list[] = {
     {NULL, NULL, NULL, 0, 0, NULL, NULL, 0, 0}
 };
 
-dbref tp_default_room_parent = GLOBAL_ENVIRONMENT;
-dbref tp_lost_and_found = LOST_AND_FOUND;
-dbref tp_player_start = PLAYER_START;
-dbref tp_toad_default_recipient = TOAD_DEFAULT_RECIPIENT;
+dbref tp_default_room_parent;
+dbref tp_lost_and_found;
+dbref tp_player_start;
+dbref tp_toad_default_recipient;
 
 struct tune_ref_entry tune_ref_list[] = {
     {"Database", "default_room_parent", TYPE_ROOM, &tp_default_room_parent, 0, MLEV_WIZARD,
@@ -332,60 +332,60 @@ struct tune_ref_entry tune_ref_list[] = {
     {NULL, NULL, 0, NULL, 0, 0, NULL, NULL, 0, NOTHING}
 };
 
-int tp_7bit_other_names = ASCII_OTHER_NAMES;
-int tp_7bit_thing_names = ASCII_THING_NAMES;
-int tp_allow_home = ALLOW_HOME;
-int tp_autolink_actions = AUTOLINK_ACTIONS;
-int tp_cipher_server_preference = SERVER_CIPHER_PREFERENCE;
-int tp_compatible_priorities = COMPATIBLE_PRIORITIES;
-int tp_consistent_lock_source = CONSISTENT_LOCK_SOURCE;
-int tp_dark_sleepers = DARK_SLEEPERS;
-int tp_dbdump_warning = DBDUMP_WARNING;
-int tp_diskbase_propvals = DISKBASE_PROPVALS;
-int tp_do_mpi_parsing = DO_MPI_PARSING;
-int tp_dumpdone_warning = DUMPDONE_WARNING;
-int tp_enable_match_yield = ENABLE_MATCH_YIELD;
-int tp_enable_prefix = ENABLE_PREFIX;
-int tp_exit_darking = EXIT_DARKING;
-int tp_expanded_debug = EXPANDED_DEBUG_TRACE;
-int tp_force_mlev1_name_notify = FORCE_MLEV1_NAME_NOTIFY;
-int tp_hostnames = HOSTNAMES;
-int tp_idleboot = IDLEBOOT;
-int tp_idle_ping_enable = IDLE_PING_ENABLE;
-int tp_ignore_bidirectional = IGNORE_BIDIRECTIONAL;
-int tp_ignore_support = IGNORE_SUPPORT;
-int tp_listeners = LISTENERS;
-int tp_listeners_env = LISTENERS_ENV;
-int tp_listeners_obj = LISTENERS_OBJ;
-int tp_lock_envcheck = LOCK_ENVCHECK;
-int tp_log_commands = LOG_COMMANDS;
-int tp_log_failed_commands = LOG_FAILED_COMMANDS;
-int tp_log_interactive = LOG_INTERACTIVE;
-int tp_log_programs = LOG_PROGRAMS;
-int tp_m3_huh = M3_HUH;
-int tp_muf_comments_strict = MUF_COMMENTS_STRICT;
-int tp_optimize_muf = OPTIMIZE_MUF;
-int tp_periodic_program_purge = PERIODIC_PROGRAM_PURGE;
-int tp_playermax = PLAYERMAX;
-int tp_quiet_moves = QUIET_MOVES;
-int tp_realms_control = REALMS_CONTROL;
-int tp_recognize_null_command = RECOGNIZE_NULL_COMMAND;
-int tp_registration = REGISTRATION;
-int tp_restrict_kill = RESTRICT_KILL;
-int tp_secure_who = SECURE_WHO;
-int tp_secure_teleport = SECURE_TELEPORT;
-int tp_show_legacy_props = SHOW_LEGACY_PROPS;
-int tp_starttls_allow = STARTTLS_ALLOW;
-int tp_strict_god_priv = STRICT_GOD_PRIV;
-int tp_teleport_to_player = TELEPORT_TO_PLAYER;
-int tp_thing_darking = THING_DARKING;
-int tp_thing_movement = SECURE_THING_MOVEMENT;
-int tp_toad_recycle = TOAD_RECYCLE;
-int tp_who_doing = WHO_DOING;
-int tp_who_hides_dark = WHO_HIDES_DARK;
-int tp_wiz_vehicles = WIZ_VEHICLES;
-int tp_verbose_clone = VERBOSE_CLONE;
-int tp_zombies = ZOMBIES;
+int tp_7bit_other_names;
+int tp_7bit_thing_names;
+int tp_allow_home;
+int tp_autolink_actions;
+int tp_cipher_server_preference;
+int tp_compatible_priorities;
+int tp_consistent_lock_source;
+int tp_dark_sleepers;
+int tp_dbdump_warning;
+int tp_diskbase_propvals;
+int tp_do_mpi_parsing;
+int tp_dumpdone_warning;
+int tp_enable_match_yield;
+int tp_enable_prefix;
+int tp_exit_darking;
+int tp_expanded_debug;
+int tp_force_mlev1_name_notify;
+int tp_hostnames;
+int tp_idleboot;
+int tp_idle_ping_enable;
+int tp_ignore_bidirectional;
+int tp_ignore_support;
+int tp_listeners;
+int tp_listeners_env;
+int tp_listeners_obj;
+int tp_lock_envcheck;
+int tp_log_commands;
+int tp_log_failed_commands;
+int tp_log_interactive;
+int tp_log_programs;
+int tp_m3_huh;
+int tp_muf_comments_strict;
+int tp_optimize_muf;
+int tp_periodic_program_purge;
+int tp_playermax;
+int tp_quiet_moves;
+int tp_realms_control;
+int tp_recognize_null_command;
+int tp_registration;
+int tp_restrict_kill;
+int tp_secure_who;
+int tp_secure_teleport;
+int tp_show_legacy_props;
+int tp_starttls_allow;
+int tp_strict_god_priv;
+int tp_teleport_to_player;
+int tp_thing_darking;
+int tp_thing_movement;
+int tp_toad_recycle;
+int tp_who_doing;
+int tp_who_hides_dark;
+int tp_wiz_vehicles;
+int tp_verbose_clone;
+int tp_zombies;
 
 struct tune_bool_entry tune_bool_list[] = {
     {"Charset", "7bit_thing_names", &tp_7bit_thing_names, MLEV_WIZARD, MLEV_WIZARD,
@@ -1162,6 +1162,34 @@ tune_setparm(const char *parmname, const char *val, int mlev)
     }
 
     return TUNESET_UNKNOWN;
+}
+
+void
+tune_load_parms_defaults()
+{
+    for (struct tune_str_entry *tstr = tune_str_list; tstr->name; tstr++) {
+	if (!tstr->isdefault) {
+	    free((char *)*tstr->str);
+	}
+	tstr->isdefault = 1;
+	*tstr->str = tstr->defaultstr;
+    }
+    for (struct tune_time_entry *ttim = tune_time_list; ttim->name; ttim++) {
+	ttim->isdefault = 1;
+	*ttim->tim = ttim->defaulttim;
+    }
+    for (struct tune_val_entry *tval = tune_val_list; tval->name; tval++) {
+	tval->isdefault = 1;
+	*tval->val = tval->defaultval;
+    }
+    for (struct tune_ref_entry *tref = tune_ref_list; tref->name; tref++) {
+	tref->isdefault = 1;
+	*tref->ref = tref->defaultref;
+    }
+    for (struct tune_bool_entry *tbool = tune_bool_list; tbool->name; tbool++) {
+	tbool->isdefault = 1;
+	*tbool->boolval = tbool->defaultbool;
+    }
 }
 
 void
