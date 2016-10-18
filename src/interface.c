@@ -4282,6 +4282,8 @@ main(int argc, char **argv)
     }
 #endif
 
+    tune_load_parms_defaults();
+
     if (!sanity_interactive) {
 
 	log_status("INIT: TinyMUCK %s starting.", "version");
