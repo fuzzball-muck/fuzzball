@@ -5,9 +5,9 @@
 #include "diskprop.h"
 #endif
 #include "fbstrings.h"
+#include "game.h"
 #include "interface.h"
 #include "match.h"
-#include "params.h"
 #include "player.h"
 #include "predicates.h"
 #include "props.h"

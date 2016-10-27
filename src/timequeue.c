@@ -13,7 +13,6 @@
 #include "match.h"
 #include "mufevent.h"
 #include "mpi.h"
-#include "params.h"
 #include "props.h"
 #include "timequeue.h"
 #include "tune.h"

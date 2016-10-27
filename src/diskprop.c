@@ -5,7 +5,6 @@
 #include "diskprop.h"
 #include "fbstrings.h"
 #include "interface.h"
-#include "params.h"
 #include "props.h"
 #include "tune.h"
 

@@ -7,7 +7,6 @@
 #include "interface.h"
 #include "interp.h"
 #include "match.h"
-#include "params.h"
 #include "props.h"
 
 static struct boolexp *

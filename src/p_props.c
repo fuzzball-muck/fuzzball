@@ -8,11 +8,11 @@
 #endif
 #include "fbstrings.h"
 #include "fbtime.h"
+#include "game.h"
 #include "inst.h"
 #include "interp.h"
 #include "msgparse.h"
 #include "mpi.h"
-#include "params.h"
 #include "props.h"
 #include "tune.h"
 

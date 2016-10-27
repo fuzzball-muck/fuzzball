@@ -9,7 +9,6 @@
 #include "log.h"
 #include "mcp.h"
 #include "mcppkg.h"
-#include "params.h"
 #include "props.h"
 #include "tune.h"
 

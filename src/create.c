@@ -7,11 +7,11 @@
 #endif
 #include "edit.h"
 #include "fbstrings.h"
+#include "game.h"
 #include "log.h"
 #include "move.h"
 #include "interface.h"
 #include "match.h"
-#include "params.h"
 #include "predicates.h"
 #include "player.h"
 #include "props.h"

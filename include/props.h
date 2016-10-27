@@ -54,6 +54,9 @@ typedef struct plist *PropPtr;
 /* Blessed props evaluate with wizbit MPI perms. */
 #define PROP_BLESSED     0x1000
 
+#define PROP_DELIMITER ':'
+#define PROPDIR_DELIMITER '/'
+
 #define SetPDir(x,y) {(x)->dir = y;}
 #define PropDir(x) ((x)->dir)
 
@@ -84,6 +87,13 @@ typedef struct plist *PropPtr;
 #define Prop_Blessed(obj,propname) (get_property_flags(obj, propname) & PROP_BLESSED)
 
 /* property access macros */
+
+#define PROP_RDONLY '_'
+#define PROP_RDONLY2 '%'
+#define PROP_PRIVATE '.'
+#define PROP_HIDDEN '@'
+#define PROP_SEEONLY '~'
+
 #define Prop_ReadOnly(name) \
     (Prop_Check(name, PROP_RDONLY) || Prop_Check(name, PROP_RDONLY2))
 #define Prop_Private(name) Prop_Check(name, PROP_PRIVATE)

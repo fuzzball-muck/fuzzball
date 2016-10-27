@@ -10,7 +10,6 @@
 #include "interface.h"
 #include "interp.h"
 #include "log.h"
-#include "params.h"
 #include "tune.h"
 
 #define MOD_ENABLED(module) (module[0] == 0 || strstr(compile_options, module) != NULL)

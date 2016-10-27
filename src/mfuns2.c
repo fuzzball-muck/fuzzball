@@ -1,6 +1,7 @@
 #include "config.h"
 
 #include "boolexp.h"
+#include "color.h"
 #include "db.h"
 #include "fbmath.h"
 #include "fbstrings.h"
@@ -9,7 +10,6 @@
 #include "interface.h"
 #include "mpi.h"
 #include "msgparse.h"
-#include "params.h"
 #include "player.h"
 #include "predicates.h"
 #include "props.h"

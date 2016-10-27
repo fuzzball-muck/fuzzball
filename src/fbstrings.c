@@ -2,8 +2,8 @@
 
 #include "db.h"
 #include "fbstrings.h"
+#include "game.h"
 #include "mpi.h"
-#include "params.h"
 #include "props.h"
 #include "tune.h"
 

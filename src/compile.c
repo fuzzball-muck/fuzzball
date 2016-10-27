@@ -14,7 +14,6 @@
 #ifdef MCP_SUPPORT
 #include "mcp.h"
 #endif
-#include "params.h"
 #include "props.h"
 #include "timequeue.h"
 #include "tune.h"

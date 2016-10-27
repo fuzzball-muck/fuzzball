@@ -4,10 +4,10 @@
 #include "db.h"
 #include "edit.h"
 #include "fbstrings.h"
+#include "game.h"
 #include "inst.h"
 #include "interface.h"
 #include "interp.h"
-#include "params.h"
 #include "timequeue.h"
 
 int

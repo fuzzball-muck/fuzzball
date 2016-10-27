@@ -10,7 +10,6 @@
 #include "interp.h"
 #include "log.h"
 #include "match.h"
-#include "params.h"
 #include "timequeue.h"
 #include "tune.h"
 

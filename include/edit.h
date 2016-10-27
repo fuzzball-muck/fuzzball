@@ -9,6 +9,23 @@ struct macrotable {
     struct macrotable *right;
 };
 
+#define MAX_ARG 2
+#define EXIT_INSERT "."
+#define INSERT_COMMAND 'i'
+#define DELETE_COMMAND 'd'
+#define QUIT_EDIT_COMMAND   'q'
+#define CANCEL_EDIT_COMMAND 'x'
+#define COMPILE_COMMAND 'c'
+#define LIST_COMMAND   'l'
+#define EDITOR_HELP_COMMAND 'h'
+#define KILL_COMMAND 'k'
+#define SHOW_COMMAND 's'
+#define SHORTSHOW_COMMAND 'a'
+#define VIEW_COMMAND 'v'
+#define UNASSEMBLE_COMMAND 'u'
+#define NUMBER_COMMAND 'n'
+#define PUBLICS_COMMAND 'p'
+
 extern struct macrotable *macrotop;
 
 void chown_macros(dbref from, dbref to);

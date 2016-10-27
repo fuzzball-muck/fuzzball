@@ -2,13 +2,13 @@
 
 #include "db.h"
 #include "fbstrings.h"
+#include "game.h"
 #include "hashtab.h"
 #include "interface.h"
 #include "match.h"
 #include "mfun.h"
 #include "mpi.h"
 #include "msgparse.h"
-#include "params.h"
 #include "props.h"
 #include "tune.h"
 

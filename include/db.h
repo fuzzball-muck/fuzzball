@@ -5,8 +5,12 @@
 
 #define DB_VERSION_STRING "***Foxen9 TinyMUCK DUMP Format***"
 
-/* max length of command argument to process_command */
-#define MAX_COMMAND_LEN 2048
+#define GLOBAL_ENVIRONMENT ((dbref) 0)  /* parent of all rooms (always #0) */
+
+#define MAX_COMMAND_LEN 2048	/* max process_command arg length */
+#define MAX_LINKS 50            /* max destinations for an exit */
+#define MAX_PARENT_DEPTH 256    /* max parenting depth allowed */
+
 #define BUFFER_LEN ((MAX_COMMAND_LEN)*4)
 
 extern char match_args[BUFFER_LEN];
@@ -420,6 +424,9 @@ struct object {
     int ts_usecount;
     union specific sp;
 };
+
+#define OBJECT_ENDOWMENT(cost) (((cost)-5)/5)
+#define OBJECT_GETCOST(endow) ((endow)*5+5)
 
 struct profnode {
     struct profnode *next;

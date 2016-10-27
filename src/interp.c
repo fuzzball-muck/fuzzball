@@ -17,7 +17,6 @@
 #include "mcpgui.h"
 #endif
 #include "mufevent.h"
-#include "params.h"
 #include "predicates.h"
 #include "props.h"
 #include "timequeue.h"
