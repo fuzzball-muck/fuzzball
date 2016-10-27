@@ -8,10 +8,10 @@
 #include "diskprop.h"
 #endif
 #include "fbstrings.h"
+#include "game.h"
 #include "inst.h"
 #include "interface.h"
 #include "interp.h"
-#include "params.h"
 #include "props.h"
 #include "timequeue.h"
 #include "tune.h"

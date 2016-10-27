@@ -7,7 +7,6 @@
 #include "fbmath.h"
 #include "fbstrings.h"
 #include "game.h"
-#include "params.h"
 #include "props.h"
 
 static PropPtr

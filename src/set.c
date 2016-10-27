@@ -9,7 +9,6 @@
 #include "interface.h"
 #include "log.h"
 #include "match.h"
-#include "params.h"
 #include "player.h"
 #include "predicates.h"
 #include "props.h"

@@ -20,7 +20,6 @@
 #include "mpi.h"
 #include "msgparse.h"
 #include "mufevent.h"
-#include "params.h"
 #include "player.h"
 #include "predicates.h"
 #include "props.h"

@@ -1,7 +1,6 @@
 #include "config.h"
 
 #include "db.h"
-#include "params.h"
 #include "props.h"
 
 /*

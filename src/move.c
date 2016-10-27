@@ -12,7 +12,6 @@
 #include "log.h"
 #include "match.h"
 #include "move.h"
-#include "params.h"
 #include "predicates.h"
 #include "props.h"
 #include "timequeue.h"

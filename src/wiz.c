@@ -10,7 +10,6 @@
 #include "match.h"
 #include "move.h"
 #include "msgparse.h"
-#include "params.h"
 #include "player.h"
 #include "predicates.h"
 #include "props.h"

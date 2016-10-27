@@ -4,7 +4,6 @@
 #include "db.h"
 #include "interface.h"
 #include "match.h"
-#include "params.h"
 #include "predicates.h"
 #include "props.h"
 #include "tune.h"

@@ -8,12 +8,12 @@
 #include "fbmath.h"
 #include "fbstrings.h"
 #include "fbtime.h"
+#include "game.h"
 #include "interface.h"
 #include "interp.h"
 #include "log.h"
 #include "match.h"
 #include "mpi.h"
-#include "params.h"
 #include "props.h"
 #include "tune.h"
 
