@@ -876,7 +876,12 @@ OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
     int AtNo = get_primitive("@");	/* Wince */
     int BangNo = get_primitive("!");
     int SwapNo = get_primitive("swap");
+    int PopNo = get_primitive("pop");
+    int OverNo = get_primitive("over");
+    int NipNo = get_primitive("nip");
+    int TuckNo = get_primitive("tuck");
     int RotNo = get_primitive("rot");
+    int RrotNo = get_primitive("-rot");
     int NotNo = get_primitive("not");
     int StrcmpNo = get_primitive("strcmp");
     int EqualsNo = get_primitive("=");
@@ -1120,6 +1125,46 @@ OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
 			    advance = 0;
 			    break;
 			}
+		    }
+		}
+	    }
+	    /* rot rot  ==>  rrot */
+	    if (IntermediateIsPrimitive(curr, RotNo)) {
+		if (ContiguousIntermediates(Flags, curr->next, 1)) {
+		    if (IntermediateIsPrimitive(curr->next, RotNo)) {
+			curr->in.data.number = RrotNo;
+			RemoveNextIntermediate(cstat, curr);
+			advance = 0;
+			break;
+		    }
+		}
+	    }
+	    /* rrot rrot  ==>  rot */
+	    if (IntermediateIsPrimitive(curr, RrotNo)) {
+		if (ContiguousIntermediates(Flags, curr->next, 1)) {
+		    if (IntermediateIsPrimitive(curr->next, RrotNo)) {
+			curr->in.data.number = RotNo;
+			RemoveNextIntermediate(cstat, curr);
+			advance = 0;
+			break;
+		    }
+		}
+	    }
+	    if (IntermediateIsPrimitive(curr, SwapNo)) {
+		if (ContiguousIntermediates(Flags, curr->next, 1)) {
+		    /* swap pop  ==>  nip */
+		    if (IntermediateIsPrimitive(curr->next, PopNo)) {
+			curr->in.data.number = NipNo;
+			RemoveNextIntermediate(cstat, curr);
+			advance = 0;
+			break;
+		    }
+		    /* swap over  ==>  tuck */
+		    if (IntermediateIsPrimitive(curr->next, OverNo)) {
+			curr->in.data.number = TuckNo;
+			RemoveNextIntermediate(cstat, curr);
+			advance = 0;
+			break;
 		    }
 		}
 	    }

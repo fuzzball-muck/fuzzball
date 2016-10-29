@@ -706,6 +706,28 @@ DUPN ( ?n..?1 i -- ?n..?1 ?n..?1 )
 ~~alsosee DUP,LDUP
 ~
 ~
+?DUP
+DUP ( x -- x x | x )
+
+  Duplicates the item at the top of the stack if it does not resolve to false.
+~~alsosee DUP
+~
+~
+NIP
+NIP ( x y -- y )
+
+  Pops the second item off the stack.
+~~alsosee POP
+~
+~
+TUCK
+TUCK ( x y -- y x y )
+
+  Duplicates y and places it under x.
+~~alsosee OVER
+~
+~
+
 LDUP
 LDUP ( {?} -- {?} {?} )
 
@@ -731,7 +753,14 @@ ROT
 ROT ( x y z -- y z x )
 
   Rotates the top three things on the stack.  This is equivalent to 3 rotate.
-~~alsosee ROTATE,SWAP
+~~alsosee ROTATE,-ROT,SWAP
+~
+~
+-ROT
+-ROT ( x y z -- z x y )
+
+  Rotates the top three things on the stack, in reverse.  Equivalent to -3 rotate.
+~~alsosee ROTATE,ROT,SWAP
 ~
 ~
 ROTATE

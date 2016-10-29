@@ -54,11 +54,11 @@ Symbols
   $ifnlibver     $ifnver        $ifver         $include       $lib-version
   $libdef        $note          $pragma        $pubdef        $undef
   $version       %              '              *              +
-  ++             -              --             /              <
-  <=             =              >              >=             @
-  \              __fuzzball__   __muckname     __version      {
-  }              }cat           }dict          }join          }list
-  }tell          
+  ++             -              --             -rot           /
+  <              <=             =              >              >=
+  ?dup           @              \              __fuzzball__   __muckname
+  __version      {              }              }cat           }dict
+  }join          }list          }tell          
 
 A's
   abort                     abs                       acos
@@ -153,10 +153,10 @@ K's
   kill  
 
 L's
-  lastdescr      ldup           libraries      listeners      loc
-  localvar       location       lock?          locked?        log
-  log10          loop-example1  loop-example2  loop-example3  loops
-  lreverse       lvar           
+  lastdescr      libraries      listeners      loc            localvar
+  location       lock?          locked?        log            log10
+  loop-example1  loop-example2  loop-example3  loops          lreverse
+  lvar           
 
 M's
   match                     max_variable_count        mcp_bind
@@ -170,8 +170,9 @@ N's
   name               name-ok?           newexit            newobject
   newpassword        newplayer          newprogram         newroom
   next               nextdescr          nextentrance       nextowned
-  nextprop           not                notify             notify_except
-  notify_exclude     notify_nolisten    notify_secure      number?
+  nextprop           nip                not                notify
+  notify_except      notify_exclude     notify_nolisten    notify_secure
+  number?            
 
 O's
   objmem         odrop          ofail          ok?            online
@@ -216,7 +217,7 @@ T's
   tan          testlock     textattr     then         thing?       time
   timefmt      timer_start  timer_stop   timesplit    timestamps   toadplayer
   tokensplit   tolower      toupper      tread        trig         trigger
-  truename     try          
+  truename     try          tuck         
 
 U's
   unblessprop  uncompile    unparselock  unparseobj   until        userlog
@@ -903,9 +904,9 @@ recursively.  It will call the actual addprop.
 Stack Manipulation Operators|StackOps
 Stack Manipulation Operators
 
-depth      dup        dupn       fulldepth  ldup       lreverse   over
-pick       pop        popn       put        reverse    rot        rotate
-swap       {          }          
+-rot       ?dup       depth      dup        dupn       fulldepth  lreverse
+nip        over       pick       pop        popn       put        reverse
+rot        rotate     swap       tuck       {          }          
 
 ~----------------------------------------------------------------------------
 ~
@@ -940,6 +941,28 @@ DUPN ( ?n..?1 i -- ?n..?1 ?n..?1 )
 Also see: DUP and LDUP
 ~
 ~
+?DUP
+DUP ( x -- x x | x )
+
+  Duplicates the item at the top of the stack if it does not resolve to false.
+Also see: DUP
+~
+~
+NIP
+NIP ( x y -- y )
+
+  Pops the second item off the stack.
+Also see: POP
+~
+~
+TUCK
+TUCK ( x y -- y x y )
+
+  Duplicates y and places it under x.
+Also see: OVER
+~
+~
+
 LDUP
 LDUP ( {?} -- {?} {?} )
 
@@ -965,7 +988,14 @@ ROT
 ROT ( x y z -- y z x )
 
   Rotates the top three things on the stack.  This is equivalent to 3 rotate.
-Also see: ROTATE and SWAP
+Also see: ROTATE, -ROT and SWAP
+~
+~
+-ROT
+-ROT ( x y z -- z x y )
+
+  Rotates the top three things on the stack, in reverse.  Equivalent to -3 rotate.
+Also see: ROTATE, ROT and SWAP
 ~
 ~
 ROTATE
