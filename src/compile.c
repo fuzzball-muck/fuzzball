@@ -873,17 +873,21 @@ OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
     int i;
     int count = 0;
     int old_instr_count = cstat->nowords;
-    int AtNo = get_primitive("@");	/* Wince */
+    int AtNo = get_primitive("@");
     int BangNo = get_primitive("!");
     int SwapNo = get_primitive("swap");
     int PopNo = get_primitive("pop");
     int OverNo = get_primitive("over");
+    int PickNo = get_primitive("pick");
     int NipNo = get_primitive("nip");
     int TuckNo = get_primitive("tuck");
+    int DupNo = get_primitive("dup");
     int RotNo = get_primitive("rot");
     int RrotNo = get_primitive("-rot");
+    int RotateNo = get_primitive("rotate");
     int NotNo = get_primitive("not");
     int StrcmpNo = get_primitive("strcmp");
+    int StringcmpNo = get_primitive("stringcmp");
     int EqualsNo = get_primitive("=");
     int PlusNo = get_primitive("+");
     int MinusNo = get_primitive("-");
@@ -974,12 +978,30 @@ OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
 	    break;
 
 	case PROG_STRING:
-	    /* "" strcmp 0 =  ==>  not */
 	    if (IntermediateIsString(curr, "")) {
 		if (ContiguousIntermediates(Flags, curr->next, 3)) {
+		    /* "" strcmp 0 =  ==>   not */
 		    if (IntermediateIsPrimitive(curr->next, StrcmpNo)) {
 			if (IntermediateIsInteger(curr->next->next, 0)) {
-			    if (IntermediateIsPrimitive(curr->next->next->next, EqualsNo)) {
+			    if (IntermediateIsPrimitive(curr->next->next->next,
+				    EqualsNo)) {
+				if (curr->in.data.string)
+				    free((void *) curr->in.data.string);
+				curr->in.type = PROG_PRIMITIVE;
+				curr->in.data.number = NotNo;
+				RemoveNextIntermediate(cstat, curr);
+				RemoveNextIntermediate(cstat, curr);
+				RemoveNextIntermediate(cstat, curr);
+				advance = 0;
+				break;
+			    }
+			}
+		    }
+		    /* "" stringcmp 0 =  ==>   not */
+		    if (IntermediateIsPrimitive(curr->next, StringcmpNo)) {
+			if (IntermediateIsInteger(curr->next->next, 0)) {
+			    if (IntermediateIsPrimitive(curr->next->next->next,
+				    EqualsNo)) {
 				if (curr->in.data.string)
 				    free((void *) curr->in.data.string);
 				curr->in.type = PROG_PRIMITIVE;
@@ -995,7 +1017,6 @@ OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
 		}
 	    }
 	    break;
-
 	case PROG_INTEGER:
 	    /* consolidate constant integer calculations */
 	    if (ContiguousIntermediates(Flags, curr->next, 2)) {
@@ -1111,8 +1132,78 @@ OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
 		    }
 		}
 	    }
-	    break;
 
+	    /* 1 pick  ==>  dup */
+	    if (IntermediateIsInteger(curr, 1)) {
+		if (ContiguousIntermediates(Flags, curr->next, 1)) {
+		    if (IntermediateIsPrimitive(curr->next, PickNo)) {
+			curr->in.type = PROG_PRIMITIVE;
+			curr->in.data.number = DupNo;
+			RemoveNextIntermediate(cstat, curr);
+			advance = 0;
+		    }
+		}
+	    }
+
+	    /* 2 pick  ==>  over */
+	    if (IntermediateIsInteger(curr, 2)) {
+		if (ContiguousIntermediates(Flags, curr->next, 1)) {
+		    if (IntermediateIsPrimitive(curr->next, PickNo)) {
+			curr->in.type = PROG_PRIMITIVE;
+			curr->in.data.number = OverNo;
+			RemoveNextIntermediate(cstat, curr);
+			advance = 0;
+		    }
+		}
+	    }
+
+	    /* 3 rotate  ==>  rot */
+	    if (IntermediateIsInteger(curr, 3)) {
+		if (ContiguousIntermediates(Flags, curr->next, 1)) {
+		    if (IntermediateIsPrimitive(curr->next, RotateNo)) {
+			curr->in.type = PROG_PRIMITIVE;
+			curr->in.data.number = RotNo;
+			RemoveNextIntermediate(cstat, curr);
+			advance = 0;
+		    }
+		}
+	    }
+
+	    /* -3 rotate  ==>  -rot */
+	    if (IntermediateIsInteger(curr, -3)) {
+		if (ContiguousIntermediates(Flags, curr->next, 1)) {
+		    if (IntermediateIsPrimitive(curr->next, RotateNo)) {
+			curr->in.type = PROG_PRIMITIVE;
+			curr->in.data.number = RrotNo;
+			RemoveNextIntermediate(cstat, curr);
+			advance = 0;
+		    }
+		}
+	    }
+
+	    /* 2|-2 rotate  ==>  swap */
+	    if (IntermediateIsInteger(curr, 2) || IntermediateIsInteger(curr, -2)) {
+		if (ContiguousIntermediates(Flags, curr->next, 1)) {
+		    if (IntermediateIsPrimitive(curr->next, RotateNo)) {
+			curr->in.type = PROG_PRIMITIVE;
+			curr->in.data.number = SwapNo;
+			RemoveNextIntermediate(cstat, curr);
+			advance = 0;
+		    }
+		}
+	    }
+
+	    /* 1|0|-1 rotate  ==>  (nothing) */
+	    if (IntermediateIsInteger(curr, 1) || IntermediateIsInteger(curr, 0) || IntermediateIsInteger(curr, -1)) {
+		if (ContiguousIntermediates(Flags, curr->next, 1)) {
+		    if (IntermediateIsPrimitive(curr->next, RotateNo)) {
+			RemoveNextIntermediate(cstat, curr);
+			RemoveIntermediate(cstat, curr);
+			advance = 0;
+		    }
+		}
+	    }
+	    break;
 	case PROG_PRIMITIVE:
 	    /* rot rot swap  ==>  swap rot */
 	    if (IntermediateIsPrimitive(curr, RotNo)) {
@@ -1128,7 +1219,7 @@ OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
 		    }
 		}
 	    }
-	    /* rot rot  ==>  rrot */
+	    /* rot rot  ==>  -rot */
 	    if (IntermediateIsPrimitive(curr, RotNo)) {
 		if (ContiguousIntermediates(Flags, curr->next, 1)) {
 		    if (IntermediateIsPrimitive(curr->next, RotNo)) {
@@ -1139,7 +1230,7 @@ OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
 		    }
 		}
 	    }
-	    /* rrot rrot  ==>  rot */
+	    /* -rot -rot  ==>  rot */
 	    if (IntermediateIsPrimitive(curr, RrotNo)) {
 		if (ContiguousIntermediates(Flags, curr->next, 1)) {
 		    if (IntermediateIsPrimitive(curr->next, RrotNo)) {
