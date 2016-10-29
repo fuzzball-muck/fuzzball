@@ -618,6 +618,22 @@ DUPN ( ?n..?1 i -- ?n..?1 ?n..?1 )
   Duplicates the top i stack items.
 
 
+DUP ( x -- x x | x )
+
+  Duplicates the item at the top of the stack if it does not resolve to false.
+
+
+NIP ( x y -- y )
+
+  Pops the second item off the stack.
+
+
+TUCK ( x y -- y x y )
+
+  Duplicates y and places it under x.
+
+
+LDUP
 LDUP ( {?} -- {?} {?} )
 
   Duplicates a stackrange on top of the stack.
@@ -636,6 +652,11 @@ OVER ( x y -- x y x )
 ROT ( x y z -- y z x )
 
   Rotates the top three things on the stack.  This is equivalent to 3 rotate.
+
+
+-ROT ( x y z -- z x y )
+
+  Rotates the top three things on the stack, in reverse.  Equivalent to -3 rotate.
 
 
 ROTATE ( ni ... n1 i -- n(i-1) ... n1 ni )

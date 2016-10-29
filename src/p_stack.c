@@ -31,6 +31,17 @@ prim_dup(PRIM_PROTOTYPE)
 }
 
 void
+prim_pdup(PRIM_PROTOTYPE)
+{
+    CHECKOP_READONLY(1);
+    if (!false_inst(&arg[*top - 1])) {
+	CHECKOFLOW(1);
+	copyinst(&arg[*top - 1], &arg[*top]);
+	(*top)++;
+    }
+}
+
+void
 prim_popn(PRIM_PROTOTYPE)
 {
     int count;
@@ -93,6 +104,29 @@ prim_ldup(PRIM_PROTOTYPE)
 	copyinst(&arg[*top - result], &arg[*top]);
 	(*top)++;
     }
+}
+
+void
+prim_nip(PRIM_PROTOTYPE)
+{
+    CHECKOP(2);
+    oper1 = POP();
+    oper2 = POP();
+    CLEAR(oper2);
+    arg[(*top)++] = *oper1;
+}
+
+void
+prim_tuck(PRIM_PROTOTYPE)
+{
+    CHECKOP(2);
+    CHECKOFLOW(1);
+    oper1 = POP();
+    temp2 = *(oper2 = POP());
+    arg[(*top)++] = *oper1;
+    arg[(*top)++] = temp2;
+    copyinst(&arg[*top - 2], &arg[*top]);
+    (*top)++;
 }
 
 void
@@ -238,6 +272,18 @@ prim_rot(PRIM_PROTOTYPE)
     arg[(*top)++] = *oper2;
     arg[(*top)++] = *oper1;
     arg[(*top)++] = temp3;
+}
+
+void
+prim_rrot(PRIM_PROTOTYPE)
+{
+    CHECKOP(3);
+    oper1 = POP();
+    temp2 = *(oper2 = POP());
+    temp3 = *(oper3 = POP());
+    arg[(*top)++] = *oper1;
+    arg[(*top)++] = temp3;
+    arg[(*top)++] = temp2;
 }
 
 void
