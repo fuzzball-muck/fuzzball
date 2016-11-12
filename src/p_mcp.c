@@ -44,7 +44,6 @@ muf_mcp_callback(McpFrame * mfr, McpMesg * mesg, McpVer version, void *context)
     struct mcp_muf_context *mmc = (struct mcp_muf_context *) context;
     dbref obj = mmc->prog;
     struct mcp_binding *ptr;
-    McpArg *arg;
     char *pkgname = mesg->package;
     char *msgname = mesg->mesgname;
     dbref user;
@@ -73,7 +72,7 @@ muf_mcp_callback(McpFrame * mfr, McpMesg * mesg, McpVer version, void *context)
 	    oper1 = tmpfr->argument.st + --tmpfr->argument.top;
 	    CLEAR(oper1);
 	    argarr = new_array_dictionary();
-	    for (arg = mesg->args; arg; arg = arg->next) {
+	    for (McpArg *arg = mesg->args; arg; arg = arg->next) {
 		if (!arg->value) {
 		    argval.type = PROG_STRING;
 		    argval.data.string = NULL;
@@ -81,7 +80,6 @@ muf_mcp_callback(McpFrame * mfr, McpMesg * mesg, McpVer version, void *context)
 		    argval.type = PROG_STRING;
 		    argval.data.string = alloc_prog_string(arg->value->value);
 		} else {
-		    McpArgPart *partptr;
 		    int count = 0;
 
 		    argname.type = PROG_INTEGER;
@@ -89,7 +87,7 @@ muf_mcp_callback(McpFrame * mfr, McpMesg * mesg, McpVer version, void *context)
 		    argval.data.array =
 			    new_array_packed(mcp_mesg_arg_linecount(mesg, arg->name));
 
-		    for (partptr = arg->value; partptr; partptr = partptr->next) {
+		    for (McpArgPart *partptr = arg->value; partptr; partptr = partptr->next) {
 			argname.data.number = count++;
 			argpart.type = PROG_STRING;
 			argpart.data.string = alloc_prog_string(partptr->value);
@@ -128,7 +126,6 @@ muf_mcp_event_callback(McpFrame * mfr, McpMesg * mesg, McpVer version, void *con
     int descr = mcpframe_to_descr(mfr);
     char *pkgname = mesg->package;
     char *msgname = mesg->mesgname;
-    McpArg *arg;
 
     if (destfr) {
 	char buf[BUFFER_LEN];
@@ -137,19 +134,18 @@ muf_mcp_event_callback(McpFrame * mfr, McpMesg * mesg, McpVer version, void *con
 	struct inst argname, argval, argpart;
 
 	argarr = new_array_dictionary();
-	for (arg = mesg->args; arg; arg = arg->next) {
+	for (McpArg *arg = mesg->args; arg; arg = arg->next) {
 	    if (!arg->value) {
 		argval.type = PROG_ARRAY;
 		argval.data.array = NULL;
 	    } else {
-		McpArgPart *partptr;
 		int count = 0;
 
 		argname.type = PROG_INTEGER;
 		argval.type = PROG_ARRAY;
 		argval.data.array = new_array_packed(mcp_mesg_arg_linecount(mesg, arg->name));
 
-		for (partptr = arg->value; partptr; partptr = partptr->next) {
+		for (McpArgPart *partptr = arg->value; partptr; partptr = partptr->next) {
 		    argname.data.number = count++;
 		    argpart.type = PROG_STRING;
 		    argpart.data.string = alloc_prog_string(partptr->value);
@@ -528,7 +524,6 @@ fbgui_muf_event_cb(GUI_EVENT_CB_ARGS)
     struct inst temp1;
     struct inst temp2;
     stk_array *nu;
-    int i;
     int lines;
 
     nu = new_array_dictionary();
@@ -542,7 +537,7 @@ fbgui_muf_event_cb(GUI_EVENT_CB_ARGS)
 	temp2.type = PROG_ARRAY;
 	temp2.data.array = new_array_packed(lines);
 
-	for (i = 0; i < lines; i++) {
+	for (int i = 0; i < lines; i++) {
 	    struct inst temp3;
 	    array_data temp4;
 
@@ -582,7 +577,7 @@ fbgui_muf_event_cb(GUI_EVENT_CB_ARGS)
     if (lines > 0) {
 	temp2.type = PROG_ARRAY;
 	temp2.data.array = new_array_packed(lines);
-	for (i = 0; i < lines; i++) {
+	for (int i = 0; i < lines; i++) {
 	    struct inst temp3;
 	    array_data temp4;
 
@@ -848,7 +843,7 @@ prim_gui_ctrl_create(PRIM_PROTOTYPE)
     }
     if (valname && vallines > 0) {
 	vallist = (char **) malloc(sizeof(char *) * vallines);
-	for (i = 0; i < vallines; i++)
+	for (int i = 0; i < vallines; i++)
 	    vallist[i] = mcp_mesg_arg_getline(&msg, "value", i);
 	gui_value_set_local(dlogid, valname, vallines, (const char **) vallist);
 	free(vallist);
@@ -999,7 +994,7 @@ prim_gui_value_set(PRIM_PROTOTYPE)
 	count = array_count(oper3->data.array);
 	valarray = (char **) malloc(sizeof(char *) * count);
 
-	for (i = 0; i < count; i++) {
+	for (int i = 0; i < count; i++) {
 	    temp1.type = PROG_INTEGER;
 	    temp1.data.number = i;
 
@@ -1077,7 +1072,7 @@ prim_gui_values_get(PRIM_PROTOTYPE)
 	temp2.type = PROG_ARRAY;
 	temp2.data.array = new_array_packed(lines);
 
-	for (i = 0; i < lines; i++) {
+	for (int i = 0; i < lines; i++) {
 	    struct inst temp3;
 	    array_data temp4;
 
@@ -1111,7 +1106,6 @@ prim_gui_value_get(PRIM_PROTOTYPE)
     struct inst temp1;
     array_data temp2;
     int lines;
-    int i;
 
     CHECKOP(2);
     oper2 = POP();		/* str  ctrlid */
@@ -1134,7 +1128,7 @@ prim_gui_value_get(PRIM_PROTOTYPE)
     lines = gui_value_linecount(dlogid, ctrlid);
     nu = new_array_packed(lines);
 
-    for (i = 0; i < lines; i++) {
+    for (int i = 0; i < lines; i++) {
 	temp1.type = PROG_INTEGER;
 	temp1.data.number = i;
 

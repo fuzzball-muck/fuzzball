@@ -161,14 +161,13 @@ scopedvar_dupall(struct frame *fr, struct frame *oldfr)
 	panic("scopedvar_dupall(): NULL frame passed !");
     }
 
-    struct scopedvar_t *cur;
     struct scopedvar_t *newsv;
     struct scopedvar_t **prev;
     int siz, count;
 
     prev = &fr->svars;
     *prev = NULL;
-    for (cur = oldfr->svars; cur; cur = cur->next) {
+    for (struct scopedvar_t *cur = oldfr->svars; cur; cur = cur->next) {
 	count = cur->count;
 	siz = sizeof(struct scopedvar_t) + (sizeof(struct inst) * (count - 1));
 
@@ -513,12 +512,11 @@ static int already_created;
 struct forvars *
 copy_fors(struct forvars *forstack)
 {
-    struct forvars *in;
     struct forvars *out = NULL;
     struct forvars *nu;
     struct forvars *last = NULL;
 
-    for (in = forstack; in; in = in->next) {
+    for (struct forvars *in = forstack; in; in = in->next) {
 	if (!for_pool) {
 	    nu = (struct forvars *) malloc(sizeof(struct forvars));
 	} else {
@@ -583,12 +581,11 @@ pop_for(struct forvars *forstack)
 struct tryvars *
 copy_trys(struct tryvars *trystack)
 {
-    struct tryvars *in;
     struct tryvars *out = NULL;
     struct tryvars *nu;
     struct tryvars *last = NULL;
 
-    for (in = trystack; in; in = in->next) {
+    for (struct tryvars *in = trystack; in; in = in->next) {
 	if (!try_pool) {
 	    nu = (struct tryvars *) malloc(sizeof(struct tryvars));
 	} else {
@@ -661,7 +658,6 @@ watchpid_process(struct frame *fr)
 
     struct frame *frame;
     struct mufwatchpidlist *cur;
-    struct mufwatchpidlist **curptr;
     struct inst temp1;
     temp1.type = PROG_INTEGER;
     temp1.data.number = fr->pid;
@@ -673,7 +669,7 @@ watchpid_process(struct frame *fr)
 	frame = timequeue_pid_frame(cur->pid);
 	free(cur);
 	if (frame) {
-	    for (curptr = &frame->waiters; *curptr; curptr = &(*curptr)->next) {
+	    for (struct mufwatchpidlist **curptr = &frame->waiters; *curptr; curptr = &(*curptr)->next) {
 		if ((*curptr)->pid == fr->pid) {
 		    cur = *curptr;
 		    *curptr = (*curptr)->next;
@@ -696,7 +692,7 @@ watchpid_process(struct frame *fr)
 	free(cur);
 	if (frame) {
 	    muf_event_add(frame, buf, &temp1, 0);
-	    for (curptr = &frame->waitees; *curptr; curptr = &(*curptr)->next) {
+	    for (struct mufwatchpidlist **curptr = &frame->waitees; *curptr; curptr = &(*curptr)->next) {
 		if ((*curptr)->pid == fr->pid) {
 		    cur = *curptr;
 		    *curptr = (*curptr)->next;
@@ -712,14 +708,12 @@ watchpid_process(struct frame *fr)
 void
 prog_clean(struct frame *fr)
 {
-    struct frame *ptr;
-
     if (!fr) {
 	log_status("WARNING: prog_clean(): Tried to free a NULL frame !  Ignored.");
 	return;
     }
 
-    for (ptr = free_frames_list; ptr; ptr = ptr->next) {
+    for (struct frame *ptr = free_frames_list; ptr; ptr = ptr->next) {
 	if (ptr == fr) {
 	    log_status
 		    ("WARNING: prog_clean(): tried to free an already freed program frame !  Ignored.");
@@ -1620,8 +1614,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 			char *val = array_get_intkey_strval(temp1->data.array, i);
 			if (val != NULL) {
 			    int found = 0;
-			    int j;
-			    for (j = 0; j < outcount; j++) {
+			    for (int j = 0; j < outcount; j++) {
 				if (!strcmp(events[j], val)) {
 				    found = 1;
 				    break;

@@ -321,7 +321,6 @@ static const char *
 getstring(FILE * f)
 {
     static char buf[BUFFER_LEN];
-    char *p;
     char c;
 
     if (fgets(buf, sizeof(buf), f) == NULL) {
@@ -333,7 +332,7 @@ getstring(FILE * f)
 	if (buf[BUFFER_LEN - 2] != '\n')
 	    while ((c = fgetc(f)) != '\n') ;
     }
-    for (p = buf; *p; p++) {
+    for (char *p = buf; *p; p++) {
 	if (*p == '\n') {
 	    *p = '\0';
 	    break;
@@ -700,10 +699,10 @@ db_read(FILE * f)
 		getref(f);
 		tune_load_parms_from_file(f, NOTHING, getref(f));
 
-		for (i = 0; i < db_top; i++) {
-		    if (Typeof(i) == TYPE_GARBAGE) {
-			NEXTOBJ(i) = recyclable;
-			recyclable = i;
+		for (dbref j = 0; j < db_top; j++) {
+		    if (Typeof(j) == TYPE_GARBAGE) {
+			NEXTOBJ(j) = recyclable;
+			recyclable = j;
 		    }
 		}
 		autostart_progs();
@@ -736,7 +735,7 @@ objnode_push(objnode **head, dbref data)
     objnode *tmp;
 
     if (!(tmp = (objnode *)malloc(sizeof(objnode)))) {
-        fprintf(stderr, "objnode_add: out of memory\n");
+        fprintf(stderr, "objnode_push: out of memory\n");
         return;
     }
 
@@ -933,8 +932,7 @@ size_object(dbref i, int load)
 static inline int
 ok_ascii_any(const char *name)
 {
-    const unsigned char *scan;
-    for (scan = (const unsigned char *) name; *scan; ++scan) {
+    for (const unsigned char *scan = (const unsigned char *) name; *scan; ++scan) {
         if (*scan > 127)
             return 0;
     }

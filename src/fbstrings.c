@@ -1140,7 +1140,6 @@ string_substitute(const char *str, const char *oldstr, const char *newstr,
 {
     const char *ptr = str;
     char *ptr2 = buf;
-    const char *ptr3;
     int len = strlen(oldstr);
     int clen = 0;
 
@@ -1150,7 +1149,7 @@ string_substitute(const char *str, const char *oldstr, const char *newstr,
     }
     while (*ptr && clen < (maxlen + 2)) {
         if (!strncmp(ptr, oldstr, len)) {
-            for (ptr3 = newstr; ((ptr2 - buf) < (maxlen - 2)) && *ptr3;)
+            for (const char *ptr3 = newstr; ((ptr2 - buf) < (maxlen - 2)) && *ptr3;)
                 *(ptr2++) = *(ptr3++);
             ptr += len;
             clen += len;

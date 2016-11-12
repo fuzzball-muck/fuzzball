@@ -211,12 +211,11 @@ update_quotas(struct timeval last, struct timeval current)
 {
     int nslices;
     int cmds_per_time;
-    struct descriptor_data *d;
 
     nslices = msec_diff(current, last) / tp_command_time_msec;
 
     if (nslices > 0) {
-	for (d = descriptor_list; d; d = d->next) {
+	for (struct descriptor_data *d = descriptor_list; d; d = d->next) {
 	    if (d->connected) {
 		cmds_per_time = ((FLAGS(d->player) & INTERACTIVE)
 				 ? (tp_commands_per_time * 8) : tp_commands_per_time);
@@ -724,11 +723,10 @@ init_descr_count_lookup()
 static void
 update_desc_count_table()
 {
-    int c;
-    struct descriptor_data *d;
+    int c = 0;
 
     current_descr_count = 0;
-    for (c = 0, d = descriptor_list; d; d = d->next) {
+    for (struct descriptor_data *d = descriptor_list; d; d = d->next) {
 	if (d->connected) {
 	    d->con_number = c + 1;
 	    descr_count_table[c++] = d;
@@ -1060,12 +1058,12 @@ static void
 process_commands(void)
 {
     int nprocessed;
-    struct descriptor_data *d, *dnext;
+    struct descriptor_data *dnext;
     struct text_block *t;
 
     do {
 	nprocessed = 0;
-	for (d = descriptor_list; d; d = dnext) {
+	for (struct descriptor_data *d = descriptor_list; d; d = dnext) {
 	    dnext = d->next;
 	    if (d->quota > 0 && (t = d->input.head)) {
 		if (d->connected && PLAYER_BLOCK(d->player) && !is_interface_command(t->start)) {
@@ -2257,7 +2255,6 @@ resolve_hostnames()
 {
     char buf[BUFFER_LEN];
     char *ptr, *ptr2, *ptr3, *hostip, *port, *hostname, *username, *tempptr;
-    struct descriptor_data *d;
     int got, dc;
 
     got = read(resolver_sock[1], buf, sizeof(buf));
@@ -2300,7 +2297,7 @@ resolve_hostnames()
 		*port++ = '\0';
 		*hostname++ = '\0';
 		*username++ = '\0';
-		for (d = descriptor_list; d; d = d->next) {
+		for (struct descriptor_data *d = descriptor_list; d; d = d->next) {
 		    if (!strcmp(d->hostname, hostip) && !strcmp(d->username, port)) {
 			FREE(d->hostname);
 			FREE(d->username);
@@ -2325,7 +2322,7 @@ shovechars()
     struct timeval next_slice;
     struct timeval timeout, slice_timeout;
     int cnt;
-    struct descriptor_data *d, *dnext;
+    struct descriptor_data *dnext;
     struct descriptor_data *newd;
     struct timeval sel_in, sel_out;
     int avail_descriptors;
@@ -2369,11 +2366,8 @@ shovechars()
 	next_muckevent();
 	process_commands();
 	muf_event_process();
-#ifdef WIN32
-	/*		check_console();*//* Handle possible CTRL+C */
-#endif
 
-	for (d = descriptor_list; d; d = dnext) {
+	for (struct descriptor_data *d = descriptor_list; d; d = dnext) {
 	    dnext = d->next;
 	    if (d->booted) {
 		process_output(d);
@@ -2424,7 +2418,7 @@ shovechars()
 # endif
 #endif
 	}
-	for (d = descriptor_list; d; d = d->next) {
+	for (struct descriptor_data *d = descriptor_list; d; d = d->next) {
 	    if (d->input.lines > 100)
 		timeout = slice_timeout;
 	    else
@@ -2609,7 +2603,8 @@ shovechars()
 		resolve_hostnames();
 	    }
 #endif
-	    for (cnt = 0, d = descriptor_list; d; d = dnext) {
+	    cnt = 0;
+	    for (struct descriptor_data *d = descriptor_list; d; d = dnext) {
 		dnext = d->next;
 		if (FD_ISSET(d->descriptor, &input_set)
 #ifdef USE_SSL
@@ -2982,7 +2977,7 @@ max_open_files(void)
 void
 wall_and_flush(const char *msg)
 {
-    struct descriptor_data *d, *dnext;
+    struct descriptor_data *dnext;
     char buf[BUFFER_LEN + 2];
 
     if (!msg || !*msg)
@@ -2990,7 +2985,7 @@ wall_and_flush(const char *msg)
     strcpyn(buf, sizeof(buf), msg);
     strcatn(buf, sizeof(buf), "\r\n");
 
-    for (d = descriptor_list; d; d = dnext) {
+    for (struct descriptor_data *d = descriptor_list; d; d = dnext) {
 	dnext = d->next;
 	queue_ansi(d, buf);
 	/* queue_write(d, "\r\n", 2); */
@@ -3003,13 +2998,13 @@ wall_and_flush(const char *msg)
 void
 wall_wizards(const char *msg)
 {
-    struct descriptor_data *d, *dnext;
+    struct descriptor_data *dnext;
     char buf[BUFFER_LEN + 2];
 
     strcpyn(buf, sizeof(buf), msg);
     strcatn(buf, sizeof(buf), "\r\n");
 
-    for (d = descriptor_list; d; d = dnext) {
+    for (struct descriptor_data *d = descriptor_list; d; d = dnext) {
 	dnext = d->next;
 	if (d->connected && Wizard(d->player)) {
 	    queue_ansi(d, buf);
@@ -3113,8 +3108,8 @@ boot_player_off(dbref player)
 static void
 close_sockets(const char *msg)
 {
-    struct descriptor_data *d, *dnext;
-    for (d = descriptor_list; d; d = dnext) {
+    struct descriptor_data *dnext;
+    for (struct descriptor_data *d = descriptor_list; d; d = dnext) {
 	dnext = d->next;
 	if (d->connected) {
 	    forget_player_descr(d->player, d->descriptor);
@@ -3710,13 +3705,12 @@ partial_pmatch(const char *name)
 void
 dump_status(void)
 {
-    struct descriptor_data *d;
     time_t now;
     char buf[BUFFER_LEN];
 
     (void) time(&now);
     log_status("STATUS REPORT:");
-    for (d = descriptor_list; d; d = d->next) {
+    for (struct descriptor_data *d = descriptor_list; d; d = d->next) {
 	if (d->connected) {
 	    snprintf(buf, sizeof(buf),
 		     "PLAYING descriptor %d player %s(%d) from host %s(%s), %s.",
@@ -3743,10 +3737,9 @@ static int
 ignore_prime_cache(dbref Player)
 {
     const char *Txt = 0;
-    const char *Ptr = 0;
     dbref *List = 0;
     int Count = 0;
-    int i;
+    int i = 0;
 
     if (!tp_ignore_support)
 	return 0;
@@ -3767,7 +3760,7 @@ ignore_prime_cache(dbref Player)
 	return 0;
     }
 
-    for (Ptr = Txt; *Ptr;) {
+    for (const char *Ptr = Txt; *Ptr;) {
 	Count++;
 
 	if (*Ptr == NUMBER_TOKEN)
@@ -3783,7 +3776,7 @@ ignore_prime_cache(dbref Player)
     if ((List = (dbref *) malloc(sizeof(dbref) * Count)) == 0)
 	return 0;
 
-    for (Ptr = Txt, i = 0; *Ptr;) {
+    for (const char *Ptr = Txt; *Ptr;) {
 	if (*Ptr == NUMBER_TOKEN)
 	    Ptr++;
 

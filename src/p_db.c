@@ -1828,7 +1828,6 @@ prim_toadplayer(PRIM_PROTOTYPE)
 {
     dbref victim;
     dbref recipient;
-    dbref stuff;
     char buf[BUFFER_LEN];
 
     CHECKOP(2);
@@ -1869,7 +1868,7 @@ prim_toadplayer(PRIM_PROTOTYPE)
 
     /* we're ok, do it */
     send_contents(fr->descr, victim, HOME);
-    for (stuff = 0; stuff < db_top; stuff++) {
+    for (dbref stuff = 0; stuff < db_top; stuff++) {
 	if (OWNER(stuff) == victim) {
 	    switch (Typeof(stuff)) {
 	    case TYPE_PROGRAM:
@@ -2283,7 +2282,7 @@ prim_entrances_array(PRIM_PROTOTYPE)
 {
     stk_array *nw;
     int count = 0;
-    dbref i, j;
+    dbref j;
 
     CHECKOP(1);
     oper1 = POP();
@@ -2294,10 +2293,10 @@ prim_entrances_array(PRIM_PROTOTYPE)
     ref = oper1->data.objref;
     nw = new_array_packed(0);
 
-    for (i = 0; i < db_top; i++) {
+    for (dbref i = 0; i < db_top; i++) {
 	switch (Typeof(i)) {
 	case TYPE_EXIT:
-	    for (j = DBFETCH(i)->sp.exit.ndest; j--;) {
+	    for (dbref j = DBFETCH(i)->sp.exit.ndest; j--;) {
 		if (DBFETCH(i)->sp.exit.dest[j] == ref)
 		    array_set_intkey_refval(&nw, count++, i);
 	    }

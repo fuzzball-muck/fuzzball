@@ -1844,7 +1844,7 @@ const char *
 mfn_tell(MFUNARGS)
 {
     char buf2[BUFFER_LEN];
-    char *ptr, *ptr2;
+    char *ptr2;
     dbref obj = player;
 
     if (argc > 1)
@@ -1857,7 +1857,7 @@ mfn_tell(MFUNARGS)
 	ABORT_MPI("TELL", "Permission denied.");
     *buf = '\0';
     strcpyn(buf2, sizeof(buf2), argv[0]);
-    for (ptr = buf2; (ptr != NULL) && *ptr != '\0'; ptr = ptr2) {
+    for (char *ptr = buf2; (ptr != NULL) && *ptr != '\0'; ptr = ptr2) {
 	ptr2 = index(ptr, '\r');
 	if (ptr2 != NULL) {
 	    *ptr2++ = '\0';
@@ -1892,7 +1892,7 @@ const char *
 mfn_otell(MFUNARGS)
 {
     char buf2[BUFFER_LEN];
-    char *ptr, *ptr2;
+    char *ptr2;
     dbref obj = LOCATION(player);
     dbref eobj = player;
     dbref thing;
@@ -1908,7 +1908,7 @@ mfn_otell(MFUNARGS)
     if (argc > 2)
 	eobj = mesg_dbref_raw(descr, player, what, perms, argv[2]);
     strcpyn(buf2, sizeof(buf2), argv[0]);
-    for (ptr = buf2; *ptr; ptr = ptr2) {
+    for (char *ptr = buf2; *ptr; ptr = ptr2) {
 	ptr2 = index(ptr, '\r');
 	if (ptr2) {
 	    *ptr2 = '\0';

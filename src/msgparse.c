@@ -17,8 +17,6 @@ time_t mpi_prof_start_time;
 int
 safeblessprop(dbref obj, dbref perms, char *buf, int mesgtyp, int set_p)
 {
-    char *ptr;
-
     if (!buf)
 	return 0;
     while (*buf == PROPDIR_DELIMITER)
@@ -27,7 +25,7 @@ safeblessprop(dbref obj, dbref perms, char *buf, int mesgtyp, int set_p)
 	return 0;
 
     /* disallow CR's and :'s in prop names. */
-    for (ptr = buf; *ptr; ptr++)
+    for (char *ptr = buf; *ptr; ptr++)
 	if (*ptr == '\r' || *ptr == PROP_DELIMITER)
 	    return 0;
 
@@ -56,7 +54,7 @@ safeputprop(dbref obj, dbref perms, char *buf, char *val, int mesgtyp)
 	return 0;
 
     /* disallow CR's and :'s in prop names. */
-    for (ptr = buf; *ptr; ptr++)
+    for (char *ptr = buf; *ptr; ptr++)
 	if (*ptr == '\r' || *ptr == PROP_DELIMITER)
 	    return 0;
 

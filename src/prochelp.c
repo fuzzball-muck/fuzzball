@@ -161,8 +161,6 @@ escape_html(char *buf, int buflen, const char *in)
 void
 print_section_topics(FILE * f, FILE * hf, const char *whichsect)
 {
-    struct topiclist *ptr;
-    struct topiclist *sptr;
     char sectname[256];
     char *sectptr;
     char *osectptr;
@@ -178,10 +176,10 @@ print_section_topics(FILE * f, FILE * hf, const char *whichsect)
     char *currsect;
 
     longest = 0;
-    for (sptr = secthead; sptr; sptr = sptr->next) {
+    for (struct topiclist *sptr = secthead; sptr; sptr = sptr->next) {
 	if (!strncasecmp(whichsect, sptr->section, strlen(whichsect))) {
 	    currsect = sptr->section;
-	    for (ptr = topichead; ptr; ptr = ptr->next) {
+	    for (struct topiclist *ptr = topichead; ptr; ptr = ptr->next) {
 		if (!strcasecmp(currsect, ptr->section)) {
 		    divpos = index(ptr->topic, '|');
 		    if (!divpos) {
@@ -201,7 +199,7 @@ print_section_topics(FILE * f, FILE * hf, const char *whichsect)
 	cols = 1;
     }
     width = 78 / cols;
-    for (sptr = secthead; sptr; sptr = sptr->next) {
+    for (struct topiclist *sptr = secthead; sptr; sptr = sptr->next) {
 	if (!strncasecmp(whichsect, sptr->section, strlen(whichsect))) {
 	    currsect = sptr->section;
 	    cnt = 0;
@@ -228,7 +226,7 @@ print_section_topics(FILE * f, FILE * hf, const char *whichsect)
 		    escape_html(buf3, sizeof(buf3), sectname));
 	    fprintf(f, "~\n~\n%s\n%s\n\n", currsect, sectname);
 	    fprintf(hf, HTML_SECTIDX_BEGIN);
-	    for (ptr = topichead; ptr; ptr = ptr->next) {
+	    for (struct topiclist *ptr = topichead; ptr; ptr = ptr->next) {
 		if (!strcasecmp(currsect, ptr->section)) {
 		    ptr->printed++;
 		    cnt++;
@@ -288,7 +286,7 @@ print_sections(FILE * f, FILE * hf, int cols)
 	cols = 1;
     }
     width = 78 / cols;
-    for (sptr = secthead; sptr; sptr = sptr->next) {
+    for (struct topiclist *sptr = secthead; sptr; sptr = sptr->next) {
 	currsect = sptr->section;
 	cnt = 0;
 	hcol = 0;
@@ -321,7 +319,6 @@ print_sections(FILE * f, FILE * hf, int cols)
 void
 print_topics(FILE * f, FILE * hf)
 {
-    struct topiclist *ptr;
     char buf[256];
     char buf2[256];
     char buf3[256];
@@ -345,7 +342,7 @@ print_topics(FILE * f, FILE * hf)
     for (char alph = 'A' - 1; alph <= 'Z'; alph++) {
 	cnt = 0;
 	longest = 0;
-	for (ptr = topichead; ptr; ptr = ptr->next) {
+	for (struct topiclist *ptr = topichead; ptr; ptr = ptr->next) {
 	    firstletter = toupper(ptr->topic[0]);
 	    if (firstletter == alph || (!isalpha(alph) && !isalpha(firstletter))) {
 		cnt++;
@@ -380,7 +377,7 @@ print_topics(FILE * f, FILE * hf)
 	    buf[0] = '\0';
 	    cnt = 0;
 	    hcol = 0;
-	    for (ptr = topichead; ptr; ptr = ptr->next) {
+	    for (struct topiclist *ptr = topichead; ptr; ptr = ptr->next) {
 		firstletter = toupper(ptr->topic[0]);
 		if (firstletter == alph || (!isalpha(alph) && !isalpha(firstletter))) {
 		    cnt++;
@@ -498,7 +495,6 @@ process_lines(FILE * infile, FILE * outfile, FILE * htmlfile, int cols)
     int codeblock = 0;
     char *ptr;
     char *ptr2;
-    char *ptr3;
 
     docsfile = stdout;
     escape_html(buf, sizeof(buf), title);
@@ -567,7 +563,7 @@ process_lines(FILE * infile, FILE * outfile, FILE * htmlfile, int cols)
 			}
 			escape_html(buf3, sizeof(buf3), ptr2);
 			strcpyn(buf4, sizeof(buf4), buf3);
-			for (ptr3 = buf4; *ptr3; ptr3++) {
+			for (char *ptr3 = buf4; *ptr3; ptr3++) {
 			    *ptr3 = tolower(*ptr3);
 			}
 			fprintf(htmlfile, HTML_ALSOSEE_ENTRY, buf4, buf3);

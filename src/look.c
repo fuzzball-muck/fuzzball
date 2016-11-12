@@ -1370,10 +1370,10 @@ static int
 exit_matches_name(dbref exit, const char *name, int exactMatch)
 {
     char buf[BUFFER_LEN];
-    char *ptr, *ptr2;
+    char *ptr;
 
     strcpyn(buf, sizeof(buf), NAME(exit));
-    for (ptr2 = ptr = buf; *ptr; ptr = ptr2) {
+    for (char *ptr2 = ptr = buf; *ptr; ptr = ptr2) {
 	while (*ptr2 && *ptr2 != ';')
 	    ptr2++;
 	if (*ptr2)

@@ -223,13 +223,12 @@ event_has_refs(dbref program, struct mufevent_process *proc)
 int
 muf_event_dequeue(dbref prog, int killmode)
 {
-    struct mufevent_process *proc;
     int count = 0;
 
     if (killmode == 0)
 	killmode = 1;
 
-    for (proc = mufevent_processes; proc; proc = proc->next) {
+    for (struct mufevent_process *proc = mufevent_processes; proc; proc = proc->next) {
 	if (proc->deleted) {
 	    continue;
 	}
@@ -512,10 +511,9 @@ get_mufevent_pidinfo(stk_array * nw, int pid)
 int
 muf_event_count(struct frame *fr)
 {
-    struct mufevent *ptr;
     int count = 0;
 
-    for (ptr = fr->events; ptr; ptr = ptr->next)
+    for (struct mufevent *ptr = fr->events; ptr; ptr = ptr->next)
 	count++;
 
     return count;
@@ -528,13 +526,12 @@ muf_event_count(struct frame *fr)
 int
 muf_event_exists(struct frame *fr, const char *eventid)
 {
-    struct mufevent *ptr;
     int count = 0;
     char pattern[BUFFER_LEN];
 
     strcpyn(pattern, sizeof(pattern), eventid);
 
-    for (ptr = fr->events; ptr; ptr = ptr->next)
+    for (struct mufevent *ptr = fr->events; ptr; ptr = ptr->next)
 	if (equalstr(pattern, ptr->event))
 	    count++;
 

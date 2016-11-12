@@ -984,7 +984,7 @@ int
 dequeue_prog_real(dbref program, int killmode, const char *file, const int line)
 {
     int count = 0, ocount;
-    timequeue tmp, ptr;
+    timequeue ptr;
 
 #ifdef DEBUG
     fprintf(stderr, "[debug] dequeue_prog(#%d, %d) called from %s:%d\n", program, killmode,
@@ -1017,7 +1017,7 @@ dequeue_prog_real(dbref program, int killmode, const char *file, const int line)
     }
 
     if (tqhead) {
-	for (tmp = tqhead, ptr = tqhead->next; ptr; tmp = ptr, ptr = ptr->next) {
+	for (timequeue tmp = tqhead, ptr = tqhead->next; ptr; tmp = ptr, ptr = ptr->next) {
 	    DEBUGPRINT("dequeue_prog(2): ptr->called_prog=#%d, has_refs()=%d ",
 		       ptr->called_prog, has_refs(program, ptr));
 	    DEBUGPRINT("ptr->uid=#%d.\n", ptr->uid);
