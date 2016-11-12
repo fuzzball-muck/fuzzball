@@ -72,13 +72,13 @@ do_pose(dbref player, const char *message)
 void
 do_wall(dbref player, const char *message)
 {
-    struct descriptor_data *d, *dnext;
+    struct descriptor_data *dnext;
     char buf[BUFFER_LEN];
 
     log_status("WALL from %s(%d): %s", NAME(player), player, message);
     snprintf(buf, sizeof(buf), "%s shouts, \"%s\"", NAME(player), message);
 
-    for (d = descriptor_list; d; d = dnext) {
+    for (struct descriptor_data *d = descriptor_list; d; d = dnext) {
 	dnext = d->next;
 	if (d->connected) {
 	    notify_from(player, d->player, buf);

@@ -160,7 +160,6 @@ match_registered(struct match_data *md)
 dbref
 parse_dbref(const char *s)
 {
-    const char *p;
     long x;
 
     x = atol(s);
@@ -168,7 +167,7 @@ parse_dbref(const char *s)
 	return x;
     } else if (x == 0) {
 	/* check for 0 */
-	for (p = s; *p; p++) {
+	for (const char *p = s; *p; p++) {
 	    if (*p == '0')
 		return 0;
 	    if (!isspace(*p))

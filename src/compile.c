@@ -211,19 +211,19 @@ purge_defs(COMPSTATE * cstat)
 static void
 cleanup(COMPSTATE * cstat)
 {
-    struct CONTROL_STACK *eef, *tempif;
-    struct PROC_LIST *p, *tempp;
+    struct CONTROL_STACK *tempif;
+    struct PROC_LIST *tempp;
 
     free_intermediate_chain(cstat->first_word);
     cstat->first_word = 0;
 
-    for (eef = cstat->control_stack; eef; eef = tempif) {
+    for (struct CONTROL_STACK *eef = cstat->control_stack; eef; eef = tempif) {
 	tempif = eef->next;
 	free((void *) eef);
     }
     cstat->control_stack = 0;
 
-    for (p = cstat->procs; p; p = tempp) {
+    for (struct PROC_LIST *p = cstat->procs; p; p = tempp) {
 	tempp = p->next;
 	free((void *) p->name);
 	free((void *) p);
@@ -345,20 +345,18 @@ get_address(COMPSTATE * cstat, struct INTERMEDIATE *dest, int offset)
 static void
 fix_addresses(COMPSTATE * cstat)
 {
-    struct INTERMEDIATE *ptr;
-    struct publics *pub;
     int count = 0;
 
     /* renumber the instruction chain */
-    for (ptr = cstat->first_word; ptr; ptr = ptr->next)
+    for (struct INTERMEDIATE *ptr = cstat->first_word; ptr; ptr = ptr->next)
 	ptr->no = count++;
 
     /* repoint publics to targets */
-    for (pub = cstat->currpubs; pub; pub = pub->next)
+    for (struct publics *pub = cstat->currpubs; pub; pub = pub->next)
 	pub->addr.no = cstat->addrlist[pub->addr.no]->no + cstat->addroffsets[pub->addr.no];
 
     /* repoint addresses to targets */
-    for (ptr = cstat->first_word; ptr; ptr = ptr->next) {
+    for (struct INTERMEDIATE *ptr = cstat->first_word; ptr; ptr = ptr->next) {
 	switch (ptr->in.type) {
 	case PROG_ADD:
 	case PROG_IF:
@@ -868,7 +866,6 @@ IntermediateIsString(struct INTERMEDIATE *ptr, const char *val)
 static int
 OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
 {
-    struct INTERMEDIATE *curr;
     int *Flags;
     int i;
     int count = 0;
@@ -904,7 +901,7 @@ OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
 	return 0;
 
     /* renumber the instruction chain */
-    for (curr = cstat->first_word; curr; curr = curr->next)
+    for (struct INTERMEDIATE *curr = cstat->first_word; curr; curr = curr->next)
 	curr->no = count++;
 
     if ((Flags = (int *) malloc(sizeof(int) * count)) == 0)
@@ -914,7 +911,7 @@ OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
 
     /* Mark instructions which jumps reference */
 
-    for (curr = cstat->first_word; curr; curr = curr->next) {
+    for (struct INTERMEDIATE *curr = cstat->first_word; curr; curr = curr->next) {
 	switch (curr->in.type) {
 	case PROG_ADD:
 	case PROG_IF:
@@ -928,7 +925,7 @@ OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
 	}
     }
 
-    for (curr = cstat->first_word; curr;) {
+    for (struct INTERMEDIATE *curr = cstat->first_word; curr;) {
 	int advance = 1;
 	switch (curr->in.type) {
 	case PROG_LVAR:
@@ -1293,7 +1290,7 @@ OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
 
     /* Turn all var@'s which have a following var! into a var@-clear */
 
-    for (curr = cstat->first_word; curr; curr = curr->next)
+    for (struct INTERMEDIATE *curr = cstat->first_word; curr; curr = curr->next)
 	if (curr->in.type == PROG_SVAR_AT || curr->in.type == PROG_LVAR_AT)
 	    MaybeOptimizeVarsAt(cstat, curr, AtNo, BangNo);
 
@@ -1408,7 +1405,6 @@ copy_program(COMPSTATE * cstat)
     /*
      * Everything should be peachy keen now, so we don't do any error checking
      */
-    struct INTERMEDIATE *curr;
     struct inst *code;
     int i, varcnt;
 
@@ -1418,7 +1414,7 @@ copy_program(COMPSTATE * cstat)
     code = (struct inst *) malloc(sizeof(struct inst) * (cstat->nowords + 1));
 
     i = 0;
-    for (curr = cstat->first_word; curr; curr = curr->next) {
+    for (struct INTERMEDIATE *curr = cstat->first_word; curr; curr = curr->next) {
 	code[i].type = curr->in.type;
 	code[i].line = curr->in.line;
 	switch (code[i].type) {
@@ -1750,9 +1746,7 @@ special(const char *token)
 static int
 call(COMPSTATE * cstat, const char *token)
 {
-    struct PROC_LIST *i;
-
-    for (i = cstat->procs; i; i = i->next)
+    for (struct PROC_LIST *i = cstat->procs; i; i = i->next)
 	if (!strcasecmp(i->name, token))
 	    return 1;
 
@@ -2308,9 +2302,7 @@ do_directive(COMPSTATE * cstat, char *direct)
 	i = 0;
 	while ((tmpptr = (char *) next_token_raw(cstat)) &&
 	       (strcasecmp(tmpptr, "$enddef"))) {
-	    char *cp;
-
-	    for (cp = tmpptr; i < (BUFFER_LEN / 2) && *cp;) {
+	    for (char *cp = tmpptr; i < (BUFFER_LEN / 2) && *cp;) {
 		if (*tmpptr == BEGINSTRING && cp != tmpptr &&
 		    (*cp == ENDSTRING || *cp == BEGINESCAPE)) {
 		    temp[i++] = BEGINESCAPE;
@@ -3170,8 +3162,7 @@ pop_control_structure(COMPSTATE * cstat, int type1, int type2)
 static struct INTERMEDIATE *
 prealloc_inst(COMPSTATE * cstat)
 {
-    struct INTERMEDIATE *ptr;
-    struct INTERMEDIATE *nu;
+    struct INTERMEDIATE *ptr, *nu;
 
     /* only allocate at most one extra instr */
     if (cstat->nextinst)
@@ -3678,7 +3669,6 @@ process_special(COMPSTATE * cstat, const char *token)
 	return nu;
     } else if (!strcasecmp(token, "WIZCALL") || !strcasecmp(token, "PUBLIC")) {
 	struct PROC_LIST *p;
-	struct publics *pub;
 	int wizflag = 0;
 
 	if (!strcasecmp(token, "WIZCALL"))
@@ -3704,7 +3694,7 @@ process_special(COMPSTATE * cstat, const char *token)
 	    cstat->currpubs->mlev = wizflag ? 4 : 1;
 	    return 0;
 	}
-	for (pub = cstat->currpubs; pub;) {
+	for (struct publics *pub = cstat->currpubs; pub;) {
 	    if (!strcasecmp(tok, pub->subname)) {
 		abort_compile(cstat, "Function already declared public.");
 	    } else {

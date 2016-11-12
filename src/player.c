@@ -227,13 +227,10 @@ payfor(dbref who, int cost)
 int
 ok_player_name(const char *name)
 {
-    const char *scan;
-
     if (!ok_name(name) || strlen(name) > PLAYER_NAME_LIMIT)
         return 0;
 
-
-    for (scan = name; *scan; scan++) {
+    for (const char *scan = name; *scan; scan++) {
         if (!(isprint(*scan)
               && !isspace(*scan))
             && *scan != '(' && *scan != ')' && *scan != '\'' && *scan != ',') {
@@ -254,15 +251,13 @@ ok_player_name(const char *name)
 int
 ok_password(const char *password)
 {
-    const char *scan;
-
     /* Password cannot be blank */
     if (*password == '\0')
         return 0;
 
     /* Password also cannot contain any nonprintable or space-type
      * characters */
-    for (scan = password; *scan; scan++) {
+    for (const char *scan = password; *scan; scan++) {
         if (!(isprint(*scan) && !isspace(*scan))) {
             return 0;
         }

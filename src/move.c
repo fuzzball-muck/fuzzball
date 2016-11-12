@@ -755,7 +755,7 @@ recycle(int descr, dbref player, dbref thing)
 	if (!Wizard(OWNER(thing)))
 	    SETVALUE(OWNER(thing), GETVALUE(OWNER(thing)) + GETVALUE(thing));
 	DBDIRTY(OWNER(thing));
-	for (dbref first = EXITS(thing); first != NOTHING; first = rest) {
+	for (first = EXITS(thing); first != NOTHING; first = rest) {
 	    rest = NEXTOBJ(first);
 	    if (LOCATION(first) == NOTHING || LOCATION(first) == thing)
 		recycle(descr, player, first);

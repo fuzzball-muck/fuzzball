@@ -170,7 +170,6 @@ mcp_intern_is_mesg_start(McpFrame * mfr, const char *in)
     char authkey[128];
     char *subname = NULL;
     McpMesg *newmsg = NULL;
-    McpPkg *pkg = NULL;
     int longlen = 0;
 
     if (!mcp_intern_is_ident(&in, mesgname, sizeof(mesgname)))
@@ -187,7 +186,7 @@ mcp_intern_is_mesg_start(McpFrame * mfr, const char *in)
     }
 
     if (strncasecmp(mesgname, MCP_INIT_PKG, 3)) {
-	for (pkg = mfr->packages; pkg; pkg = pkg->next) {
+	for (McpPkg *pkg = mfr->packages; pkg; pkg = pkg->next) {
 	    int pkgnamelen = strlen(pkg->pkgname);
 
 	    if (!strncasecmp(pkg->pkgname, mesgname, pkgnamelen)) {
@@ -1028,7 +1027,6 @@ mcp_frame_output_mesg(McpFrame * mfr, McpMesg * msg)
     int bufrem = sizeof(outbuf);
     char mesgname[128];
     char datatag[32];
-    McpArg *anarg = NULL;
     int mlineflag = 0;
     char *p;
     char *out;
@@ -1062,7 +1060,7 @@ mcp_frame_output_mesg(McpFrame * mfr, McpMesg * msg)
     }
 
     /* If the argument lines contain newlines, split them into separate lines. */
-    for (anarg = msg->args; anarg; anarg = anarg->next) {
+    for (McpArg *anarg = msg->args; anarg; anarg = anarg->next) {
 	if (anarg->value) {
 	    McpArgPart *ap = anarg->value;
 
@@ -1091,7 +1089,7 @@ mcp_frame_output_mesg(McpFrame * mfr, McpMesg * msg)
     /* Build the initial message string */
     out = outbuf;
     bufrem = outbuf + sizeof(outbuf) - out;
-    for (anarg = msg->args; anarg; anarg = anarg->next) {
+    for (McpArg *anarg = msg->args; anarg; anarg = anarg->next) {
 	out += strlen(out);
 	bufrem = outbuf + sizeof(outbuf) - out;
 	if (!anarg->value) {
@@ -1134,7 +1132,7 @@ mcp_frame_output_mesg(McpFrame * mfr, McpMesg * msg)
     if (mlineflag) {
 	/* Start sending arguments whose values weren't already sent. */
 	/* This is usually just multi-line argument values. */
-	for (anarg = msg->args; anarg; anarg = anarg->next) {
+	for (McpArg *anarg = msg->args; anarg; anarg = anarg->next) {
 	    if (!anarg->was_shown) {
 		McpArgPart *ap = anarg->value;
 
@@ -1492,7 +1490,6 @@ mcpedit_program(int descr, dbref player, dbref prog, const char *name)
 {
     char namestr[BUFFER_LEN];
     char refstr[BUFFER_LEN];
-    struct line *curr;
     McpMesg msg;
     McpFrame *mfr;
     McpVer supp;
@@ -1528,7 +1525,7 @@ mcpedit_program(int descr, dbref player, dbref prog, const char *name)
     mcp_mesg_arg_append(&msg, "reference", refstr);
     mcp_mesg_arg_append(&msg, "type", "muf-code");
     mcp_mesg_arg_append(&msg, "name", namestr);
-    for (curr = PROGRAM_FIRST(prog); curr; curr = curr->next) {
+    for (struct line *curr = PROGRAM_FIRST(prog); curr; curr = curr->next) {
 	mcp_mesg_arg_append(&msg, "content", DoNull(curr->this_line));
     }
     mcp_frame_output_mesg(mfr, &msg);

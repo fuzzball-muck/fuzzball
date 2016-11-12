@@ -415,7 +415,6 @@ process_command(int descr, dbref player, char *command)
     char *arg1;
     char *arg2;
     char *full_command;
-    char *p;			/* utility */
     char pbuf[BUFFER_LEN];
     char xbuf[BUFFER_LEN];
     char ybuf[BUFFER_LEN];
@@ -536,7 +535,7 @@ process_command(int descr, dbref player, char *command)
 	for (arg2 = arg1; *arg2 && *arg2 != ARG_DELIMITER; arg2++) ;
 
 	/* truncate arg1 */
-	for (p = arg2 - 1; p >= arg1 && isspace(*p); p--)
+	for (char *p = arg2 - 1; p >= arg1 && isspace(*p); p--)
 	    *p = '\0';
 
 	/* go past delimiter if present */

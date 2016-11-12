@@ -122,9 +122,7 @@ int ipcmp(struct in6_addr *a, struct in6_addr *b) {
 }
 
 void hostdel_v6(struct in6_addr *ip) {
-    struct hostcache *ptr;
-
-    for (ptr = hostcache_list; ptr; ptr = ptr->next) {
+    for (struct hostcache *ptr = hostcache_list; ptr; ptr = ptr->next) {
 	if (!ipcmp(&(ptr->ipnum_v6), ip)) {
 	    if (ptr->next) {
 		ptr->next->prev = ptr->prev;
@@ -137,9 +135,7 @@ void hostdel_v6(struct in6_addr *ip) {
 }
 
 const char * hostfetch_v6(struct in6_addr *ip) {
-    struct hostcache *ptr;
-
-    for (ptr = hostcache_list; ptr; ptr = ptr->next) {
+    for (struct hostcache *ptr = hostcache_list; ptr; ptr = ptr->next) {
 	if (!ipcmp(&(ptr->ipnum_v6), ip)) {
 	    if (time(NULL) - ptr->time > EXPIRE_TIME) {
 		hostdel_v6(ip);
@@ -327,9 +323,7 @@ const char * addrout_v6(struct in6_addr *a, unsigned short prt, unsigned short m
 #endif
 
 void hostdel(long ip) {
-    struct hostcache *ptr;
-
-    for (ptr = hostcache_list; ptr; ptr = ptr->next) {
+    for (struct hostcache *ptr = hostcache_list; ptr; ptr = ptr->next) {
 	if (ptr->ipnum == ip) {
 	    if (ptr->next) {
 		ptr->next->prev = ptr->prev;
@@ -342,9 +336,7 @@ void hostdel(long ip) {
 }
 
 const char * hostfetch(long ip) {
-    struct hostcache *ptr;
-
-    for (ptr = hostcache_list; ptr; ptr = ptr->next) {
+    for (struct hostcache *ptr = hostcache_list; ptr; ptr = ptr->next) {
 	if (ptr->ipnum == ip) {
 	    if (time(NULL) - ptr->time > EXPIRE_TIME) {
 		hostdel(ip);
