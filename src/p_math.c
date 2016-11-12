@@ -4,6 +4,7 @@
 #include "fbmath.h"
 #include "inst.h"
 #include "interp.h"
+#include "tune.h"
 
 static struct inst *oper1, *oper2, *oper3, *oper4;
 static int tmp, result;
@@ -333,11 +334,7 @@ prim_equal(PRIM_PROTOTYPE)
     CHECKOP(2);
     oper1 = POP();
     oper2 = POP();
-#ifdef STRINGMATH
-    if (oper1->type == PROG_STRING && oper2->type == PROG_STRING) {
-	/* Code to handle RFE#859214 -- by winged */
-	/* easier than prim_strcmp has to be      */
-	/* Not strictly math, but a convenience   */
+    if (tp_muf_string_math && oper1->type == PROG_STRING && oper2->type == PROG_STRING) {
 	if (oper1->data.string == oper2->data.string) {
 	    result = 1;
 	} else {
@@ -345,7 +342,6 @@ prim_equal(PRIM_PROTOTYPE)
 	    result = result ? 0 : 1;
 	}
     } else {
-#endif				/* STRINGMATH */
 	if (!comp_t(oper1->type) || !comp_t(oper2->type))
 	    abort_interp("Invalid argument type.");
 	if (oper1->type == PROG_FLOAT || oper2->type == PROG_FLOAT) {
@@ -360,9 +356,7 @@ prim_equal(PRIM_PROTOTYPE)
 		      ((oper1->type ==
 			PROG_INTEGER) ? oper1->data.number : oper1->data.objref));
 	}
-#ifdef STRINGMATH
     }
-#endif				/* STRINGMATH */
     CLEAR(oper1);
     CLEAR(oper2);
     PushInt(result);
@@ -731,8 +725,7 @@ prim_notequal(PRIM_PROTOTYPE)
     CHECKOP(2);
     oper1 = POP();
     oper2 = POP();
-#ifdef STRINGMATH
-    if (oper1->type == PROG_STRING && oper2->type == PROG_STRING) {
+    if (tp_muf_string_math && oper1->type == PROG_STRING && oper2->type == PROG_STRING) {
 	if (oper1->data.string == oper2->data.string) {
 	    result = 0;
 	} else {
@@ -740,7 +733,6 @@ prim_notequal(PRIM_PROTOTYPE)
 	    result = result ? 1 : 0;
 	}
     } else {
-#endif				/* STRINGMATH */
 	if (!comp_t(oper1->type) || !comp_t(oper2->type))
 	    abort_interp("Invalid argument type.");
 	if (oper1->type == PROG_FLOAT || oper2->type == PROG_FLOAT) {
@@ -755,9 +747,7 @@ prim_notequal(PRIM_PROTOTYPE)
 		      ((oper1->type ==
 			PROG_INTEGER) ? oper1->data.number : oper1->data.objref));
 	}
-#ifdef STRINGMATH
     }
-#endif				/* STRINGMATH */
     CLEAR(oper1);
     CLEAR(oper2);
     PushInt(result);

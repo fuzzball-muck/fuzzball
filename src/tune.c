@@ -363,6 +363,7 @@ int tp_log_interactive;
 int tp_log_programs;
 int tp_m3_huh;
 int tp_muf_comments_strict;
+int tp_muf_string_math;
 int tp_optimize_muf;
 int tp_periodic_program_purge;
 int tp_playermax;
@@ -474,6 +475,8 @@ struct tune_bool_entry tune_bool_list[] = {
      "MUF notify prepends username for ML1 programs", "", 1, FORCE_MLEV1_NAME_NOTIFY},
     {"MUF", "muf_comments_strict", &tp_muf_comments_strict, 0, MLEV_WIZARD,
      "MUF comments are strict and not recursive", "", 1, MUF_COMMENTS_STRICT},
+    {"MUF", "muf_string_math", &tp_muf_string_math, 0, MLEV_WIZARD,
+     "Allow some math operators to work with string operands", "", 1, MUF_STRING_MATH},
     {"MUF", "optimize_muf", &tp_optimize_muf, 0, MLEV_WIZARD, "Enable MUF bytecode optimizer",
      "", 1, OPTIMIZE_MUF},
     {"Player Max", "playermax", &tp_playermax, 0, MLEV_WIZARD,

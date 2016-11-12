@@ -4413,6 +4413,7 @@ Parameters available:
   (bool) expanded_debug_trace - MUF debug trace shows array contents
   (bool) force_mlev1_name_notify - MUF notify prepends username for ML1 programs
   (bool) muf_comments_strict  - MUF comments are strict and not recursive
+  (bool) muf_string_math      - Allow some math operators to work with strings
   (bool) optimize_muf         - Enable MUF bytecode optimize
   (bool) playermax            - Limit number of concurrent players allowed
   (bool) quiet_moves          - Suppress basic arrive and depart notifications
