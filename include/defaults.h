@@ -367,6 +367,9 @@
 /* Suppress basic arrive and depart notifications. */
 #define QUIET_MOVES 0
 
+/* Allow some math operators to work with string operands. */
+#define MUF_STRING_MATH 0
+
 /* System data and log files. */
 #define WELC_FILE "data/welcome.txt"		/* For the opening screen	*/
 #define MOTD_FILE "data/motd.txt"		/* For the message of the day	*/
