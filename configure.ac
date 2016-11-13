@@ -27,19 +27,10 @@ AC_PROG_INSTALL
 dnl AC_PROG_CXX for finding the C++ compiler.
 
 dnl
-dnl Specific systems tests.
-dnl
-AC_ISC_POSIX
-AC_MINIX
-
-dnl
-dnl Libraries and functions.
+dnl Libraries
 dnl
 AC_CHECK_LIB(m, cos)
 AC_CHECK_LIB(socket, shutdown)
-AC_CHECK_LIB(nsl, gethostbyname)
-AC_FUNC_VPRINTF
-
 
 checkpcredir() { :
     if test -f "$1/include/pcre/pcre.h"; then
@@ -109,9 +100,6 @@ else
 	exit -1
 fi
 
-
-
-
 checkssldir() { :
     if test -f "$1/include/openssl/ssl.h"; then
         AC_DEFINE(HAVE_OPENSSL, [], [ssl headers are under openssl dir.])
@@ -175,8 +163,6 @@ if test "$sslenable" = "1"; then
 	AC_SUBST(INC)
 fi
 
-
-
 AC_ARG_WITH(lint,
 [  --with-lint[=lint_path]    use lint at lint_path, defaults to splint],
 [AC_DEFINE(LINT, [], [Configures which LINT to use to evaluate the sources.])
@@ -210,10 +196,9 @@ if test "$enableval" = yes; then
 fi
 ])
 
-
-#
-# IPv6
-#
+dnl
+dnl IPv6
+dnl
 AC_ARG_ENABLE(ipv6,
     [  --enable-ipv6             enable IPv6-support],
     [
@@ -223,15 +208,13 @@ AC_ARG_ENABLE(ipv6,
 	fi
     ])
 
-
-
 dnl
 dnl Header files
 dnl
 AC_HEADER_STDC
 AC_CHECK_HEADERS(malloc.h sys/resource.h sys/signal.h)
 AC_HEADER_TIME
-AC_CHECK_HEADERS(sys/time.h timebits.h)
+AC_CHECK_HEADERS(sys/time.h)
 AC_CHECK_HEADERS(varargs.h stdarg.h)
 AC_CHECK_HEADERS(errno.h sys/errno.h)
 AC_HEADER_DIRENT
@@ -243,7 +226,6 @@ dnl
 dnl Types and structures
 dnl
 AC_TYPE_PID_T
-AC_TYPE_UID_T
 AC_TYPE_SIZE_T
 AC_TYPE_SIGNAL
 AC_STRUCT_TM
@@ -257,25 +239,6 @@ if test "$rb_cv_member_struct_tm_tm_gmtoff" = yes; then
   AC_DEFINE(HAVE_STRUCT_TM_TM_GMTOFF, [], [Define to 1 if 'tm_gmtoff' is a member of 'struct tm'.])
 fi
 
-
-dnl
-dnl Check if socklen_t is defined in sys/socket.h.
-dnl
-AC_DEFUN([TYPE_SOCKLEN_T],
-[AC_CACHE_CHECK([for socklen_t], ac_cv_type_socklen_t,
-  [AC_TRY_COMPILE(
-    [#include <sys/types.h>
-     #include <sys/socket.h>],
-    [socklen_t len = 42; return 0;],
-    ac_cv_type_socklen_t=yes,
-    ac_cv_type_socklen_t=no)
-  ])
-  if test $ac_cv_type_socklen_t != yes; then
-    AC_DEFINE(socklen_t, int, [The type that holds socket length values on this system.])
-  fi
-])
-TYPE_SOCKLEN_T
-
 AC_CHECK_FUNCS(mallinfo getrlimit getrusage random snprintf vsnprintf)
 AC_CHECK_MEMBER([struct mallinfo.hblks])
 AC_CHECK_MEMBER([struct mallinfo.keepcost])
@@ -285,12 +248,10 @@ AC_CHECK_MEMBER([struct mallinfo.allocated])
 AC_CHECK_MEMBER([struct tm.tm_gmtoff])
 AC_CHECK_DECL([_timezone])
 
-
 dnl
 dnl Compiler characteristics
 dnl
 AC_C_CONST
-AC_C_INLINE
 AC_C_LONG_DOUBLE
 
 AC_DEFUN([AC_C_LONG_LONG],
