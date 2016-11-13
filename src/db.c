@@ -929,7 +929,7 @@ size_object(dbref i, int load)
 }
 
 
-static inline int
+static int
 ok_ascii_any(const char *name)
 {
     for (const unsigned char *scan = (const unsigned char *) name; *scan; ++scan) {
