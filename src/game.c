@@ -1024,8 +1024,13 @@ process_command(int descr, dbref player, char *command)
 		break;
 	    case 'r':
 	    case 'R':
-		/* @recycle, @reconfiguressl, @relink, @restart, @restrict */
+		/* @readlock, @recycle, @reconfiguressl, @relink, @restart, @restrict */
 		switch (command[3]) {
+		case 'a':
+		case 'A':
+		    NOGUEST("@readlock", player);
+		    set_standard_lock(descr, player, arg1, MESGPROP_READLOCK, "Read Lock", arg2);
+		    break;
 		case 'c':
 		case 'C':
 #ifdef USE_SSL

@@ -954,6 +954,14 @@ may place things in or remove things from <object>.
 ~~alsosee @LOCK,GET,PUT
 ~
 ~
+@READLOCK
+@READLOCK <object>=<lock expression>
+
+  @readlocks <object> such that those who pass <lock expression> is true can
+bypass non-MUF read permissions for <object>.
+~~alsosee @LOCK
+~
+~
 @LINKLOCK
 @LINKLOCK <object>=<lock expression>
 
