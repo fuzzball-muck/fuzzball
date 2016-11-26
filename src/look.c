@@ -474,7 +474,7 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
 	    return;
     }
 
-    if (!can_link(player, thing)) {
+    if (!can_link(player, thing) && !test_lock_false_default(descr, player, thing, MESGPROP_READLOCK)) {
 	print_owner(player, thing);
 	return;
     }
@@ -530,6 +530,8 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
 	notifyf(player, "Container Key: %s", temp);
     if (strcmp(temp = unparse_boolexp(player, get_property_lock(thing, MESGPROP_FLOCK), 1), PROP_UNLOCKED_VAL))
 	notifyf(player, "Force Key: %s", temp);
+    if (strcmp(temp = unparse_boolexp(player, get_property_lock(thing, MESGPROP_READLOCK), 1), PROP_UNLOCKED_VAL))
+	notifyf(player, "Read Key: %s", temp);
 
     if (GETSUCC(thing)) {
 	notifyf(player, "Success: %s", GETSUCC(thing));

@@ -304,11 +304,13 @@ get_concat_list(dbref player, dbref what, dbref perms, dbref obj, char *listname
 }
 
 static int
-mesg_read_perms(dbref player, dbref perms, dbref obj, int mesgtyp)
+mesg_read_perms(int descr, dbref player, dbref perms, dbref obj, int mesgtyp)
 {
     if ((obj == 0) || (obj == player) || (obj == perms))
 	return 1;
     if (OWNER(perms) == OWNER(obj))
+	return 1;
+    if (test_lock_false_default(descr, OWNER(perms), obj, MESGPROP_READLOCK))
 	return 1;
     if ((mesgtyp & MPI_ISBLESSED))
 	return 1;
@@ -333,7 +335,7 @@ isneighbor(dbref d1, dbref d2)
 }
 
 static int
-mesg_local_perms(dbref player, dbref perms, dbref obj, int mesgtyp)
+mesg_local_perms(int descr, dbref player, dbref perms, dbref obj, int mesgtyp)
 {
     if (LOCATION(obj) != NOTHING && OWNER(perms) == OWNER(LOCATION(obj)))
 	return 1;
@@ -341,7 +343,9 @@ mesg_local_perms(dbref player, dbref perms, dbref obj, int mesgtyp)
 	return 1;
     if (isneighbor(player, obj))
 	return 1;
-    if (mesg_read_perms(player, perms, obj, mesgtyp))
+    if (LOCATION(obj) != NOTHING && test_lock_false_default(descr, OWNER(perms), OWNER(LOCATION(obj)), MESGPROP_READLOCK))
+	return 1;
+    if (mesg_read_perms(descr, player, perms, obj, mesgtyp))
 	return 1;
     return 0;
 }
@@ -393,7 +397,7 @@ mesg_dbref(int descr, dbref player, dbref what, dbref perms, char *buf, int mesg
 
     if (obj == UNKNOWN)
 	return obj;
-    if (!mesg_read_perms(player, perms, obj, mesgtyp)) {
+    if (!mesg_read_perms(descr, player, perms, obj, mesgtyp)) {
 	obj = PERMDENIED;
     }
     return obj;
@@ -419,7 +423,7 @@ mesg_dbref_local(int descr, dbref player, dbref what, dbref perms, char *buf, in
 
     if (obj == UNKNOWN)
 	return obj;
-    if (!mesg_local_perms(player, perms, obj, mesgtyp)) {
+    if (!mesg_local_perms(descr, player, perms, obj, mesgtyp)) {
 	obj = PERMDENIED;
     }
     return obj;
