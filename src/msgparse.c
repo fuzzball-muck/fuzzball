@@ -44,8 +44,6 @@ safeblessprop(dbref obj, dbref perms, char *buf, int mesgtyp, int set_p)
 int
 safeputprop(dbref obj, dbref perms, char *buf, char *val, int mesgtyp)
 {
-    char *ptr;
-
     if (!buf)
 	return 0;
     while (*buf == PROPDIR_DELIMITER)
