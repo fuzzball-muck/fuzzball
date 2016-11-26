@@ -777,7 +777,6 @@ prim_gui_ctrl_create(PRIM_PROTOTYPE)
     McpMesg msg;
     McpFrame *mfr;
     int descr;
-    int i;
     char cmdname[64];
 
     CHECKOP(4);
@@ -953,7 +952,6 @@ void
 prim_gui_value_set(PRIM_PROTOTYPE)
 {
     int count;
-    int i;
     char buf[BUFFER_LEN];
     char *name;
     char *dlogid;
@@ -1063,7 +1061,6 @@ prim_gui_values_get(PRIM_PROTOTYPE)
     nu = new_array_dictionary();
     name = GuiValueFirst(oper1->data.string->data);
     while (name) {
-	int i;
 	int lines = gui_value_linecount(dlogid, name);
 
 	temp1.type = PROG_STRING;

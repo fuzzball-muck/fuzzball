@@ -2282,7 +2282,6 @@ prim_entrances_array(PRIM_PROTOTYPE)
 {
     stk_array *nw;
     int count = 0;
-    dbref j;
 
     CHECKOP(1);
     oper1 = POP();
