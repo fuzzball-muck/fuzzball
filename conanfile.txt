@@ -1,6 +1,6 @@
 [requires]
 # Update version whenever a new release of OpenSSL comes out
-OpenSSL/1.0.2g@lasote/stable
+OpenSSL/1.0.2j@lasote/stable
 
 [options]
 # Use shared .dll libraries (MD instead of MT)
