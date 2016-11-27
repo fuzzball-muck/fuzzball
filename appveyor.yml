@@ -6,7 +6,10 @@ install:
     - cmd: '"C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/vcvarsall.bat" amd64_x86'
     # Set up Conan package manager
     - cmd: echo Downloading Conan package manager...
-    - ps: wget http://downloads.conan.io/latest_windows -OutFile conan_installer.exe
+# FIXME: Conan.io seems to be broken in 0.15; no packages are searched on remotes
+# This will need reverted in the future! (uncomment the latest_windows line, remove the Github line)
+    - ps: wget https://github.com/conan-io/conan/releases/download/0.14.1/conan-win_0_14_1.exe -OutFile conan_installer.exe
+#    - ps: wget http://downloads.conan.io/latest_windows -OutFile conan_installer.exe
     - cmd: conan_installer.exe /VERYSILENT
     - cmd: set PATH=%PATH%;C:\Program Files (x86)\Conan\conan
     - cmd: conan --version
