@@ -9,6 +9,7 @@
 static struct inst *oper1, *oper2, *oper3, *oper4;
 static int tmp, result;
 static double tl;
+static char buf[BUFFER_LEN];
 static double fresult, tf1, tf2;
 
 void
@@ -17,6 +18,30 @@ prim_add(PRIM_PROTOTYPE)
     CHECKOP(2);
     oper1 = POP();
     oper2 = POP();
+
+    if (tp_muf_string_math && oper1->type == PROG_STRING && oper2->type == PROG_STRING) {
+        struct shared_string *string;
+	if (!oper1->data.string && !oper2->data.string)
+	    string = NULL;
+	else if (!oper2->data.string) {
+	    oper1->data.string->links++;
+	    string = oper1->data.string;
+	} else if (!oper1->data.string) {
+	    oper2->data.string->links++;
+	    string = oper2->data.string;
+	} else if (oper1->data.string->length + oper2->data.string->length > (BUFFER_LEN) - 1) {
+	    abort_interp("Operation would result in overflow.");
+	} else {
+	    bcopy(oper2->data.string->data, buf, oper2->data.string->length);
+	    bcopy(oper1->data.string->data, buf + oper2->data.string->length,
+	            oper1->data.string->length + 1);
+	    string = alloc_prog_string(buf);
+	}
+	CLEAR(oper1);
+	CLEAR(oper2);
+	PushStrRaw(string);
+	return;
+    }
     if (!arith_type(oper2->type, oper1->type))
 	abort_interp("Invalid argument type.");
     if ((oper1->type == PROG_FLOAT) || (oper2->type == PROG_FLOAT)) {
@@ -81,6 +106,37 @@ prim_multiply(PRIM_PROTOTYPE)
     CHECKOP(2);
     oper1 = POP();
     oper2 = POP();
+
+    if (tp_muf_string_math && ((oper1->type == PROG_STRING && oper2->type == PROG_INTEGER) ||
+	(oper1->type == PROG_INTEGER && oper2->type == PROG_STRING))) {
+        struct shared_string *string;
+
+	if (oper1->type == PROG_INTEGER) {
+	    tmp = oper1->data.number;
+	    string = oper2->data.string;
+	} else {
+	    tmp = oper2->data.number;
+	    string = oper1->data.string;
+        }
+
+	if (tmp < 0) {
+	    abort_interp("Must use a positive amount to repeat.");
+	}
+
+	if (tmp * string->length > (BUFFER_LEN) - 1) {
+	    abort_interp("Operation would result in overflow.");
+	}
+
+	for (int i = 0; i < tmp; i++) {
+	    bcopy(DoNullInd(string), buf + i * string->length, string->length);
+	}
+	buf[tmp * string->length] = 0;
+	CLEAR(oper1);
+	CLEAR(oper2);
+	PushStrRaw(alloc_prog_string(buf));
+	return;
+    }
+
     if (!arith_type(oper2->type, oper1->type))
 	abort_interp("Invalid argument type.");
     if ((oper1->type == PROG_FLOAT) || (oper2->type == PROG_FLOAT)) {
