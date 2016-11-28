@@ -7,7 +7,7 @@ install:
     # Set up Conan package manager
     - cmd: set PATH=%PATH%;%PYTHON%/Scripts/
     - cmd: pip.exe install conan
-    - cmd: set PATH=%PATH%;C:\Program Files (x86)\Conan\conan
+    - cmd: conan user # Create conan data directory
     - cmd: conan --version
 
 build_script:
@@ -17,8 +17,10 @@ build_script:
         # > For statically-linked OpenSSL, specify: -s compiler="Visual Studio" -s compiler.runtime=MT
         #   Then modify makefile.win to reference ..MT.lib instead.  Dynamic linking is preferred.
 
-        # Set up the OPENSSLDIR variable for makefile.win
-        $env:OPENSSLDIR = "$env:APPVEYOR_BUILD_FOLDER/bin"
+        # Set up the variables for makefile.win
+        $env:OUTDIR = "$env:APPVEYOR_BUILD_FOLDER/build"
+        # Conan.io exports outputs to here, including OpenSSL
+        $env:PACKAGE_DIR = "$env:APPVEYOR_BUILD_FOLDER/bin"
 
         # Build Fuzzball
         # > NMake writes to standard error for the version header when it's not actually an error.
@@ -36,7 +38,10 @@ build_script:
 
         echo "Preparing release artifact..."
         mkdir "$artifact_root"
+        # Copy game data
         cp -Recurse "$env:APPVEYOR_BUILD_FOLDER/game/*" "$artifact_root"
+        # Copy compiled binaries and libraries
+        cp -Recurse "$env:APPVEYOR_BUILD_FOLDER/build/*" "$artifact_root"
         if ((Test-Path "$artifact_root/fbmuck.exe") -And (Test-Path "$artifact_root/restart.exe")) {
             echo "Packaging release artifact..."
             7z a "$artifact_zip" "$artifact_root"

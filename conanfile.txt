@@ -10,6 +10,6 @@ OpenSSL:shared=True
 # Copy .dll, .lib, and .h files according to the makefile expectations
 # This is specific to OpenSSL and NMake's makefile.win.  In the future, it'd be
 # easier to integrate the Conan package manager by using CMake, or similar.
-bin, *.dll -> ./game
+bin, *.dll -> ./build
 lib, *.lib* -> ./bin/lib/vc
 include, *.h* -> ./bin/include
