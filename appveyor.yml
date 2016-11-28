@@ -7,7 +7,7 @@ install:
     # Set up Conan package manager
     - cmd: set PATH=%PATH%;%PYTHON%/Scripts/
     - cmd: pip.exe install conan
-    - cmd: set PATH=%PATH%;C:\Program Files (x86)\Conan\conan
+    - cmd: conan user # Create conan data directory
     - cmd: conan --version
 
 build_script:
