@@ -6,6 +6,7 @@
 #include "fbtime.h"
 #include "game.h"
 #include "interface.h"
+#include "mfun.h"
 #include "mpi.h"
 #include "msgparse.h"
 #include "props.h"
