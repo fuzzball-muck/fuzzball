@@ -535,7 +535,7 @@ msg_is_macro(dbref player, dbref what, dbref perms, const char *name, int mesgty
 }
 
 static void
-msg_unparse_macro(dbref player, dbref what, dbref perms, char *name, int argc, argv_typ argv,
+msg_unparse_macro(dbref player, dbref what, dbref perms, char *name, int argc, char **argv,
 		  char *rest, int maxchars, int mesgtyp)
 {
     const char *ptr;
@@ -631,10 +631,6 @@ purge_mfns(void)
     kill_hash(msghash, MSGHASHSIZE, 0);
 }
 
-
-#define DEFINE_MFUN_LIST
-#include "mfunlist.h"
-
 void
 mesg_init(void)
 {
@@ -644,7 +640,7 @@ mesg_init(void)
 }
 
 static int
-mesg_args(char *wbuf, int maxlen, argv_typ argv, char ulv, char sep, char dlv, char quot,
+mesg_args(char *wbuf, int maxlen, char **argv, char ulv, char sep, char dlv, char quot,
 	  int maxargs)
 {
     int argc = 0;

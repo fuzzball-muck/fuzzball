@@ -8,6 +8,7 @@
 #include "game.h"
 #include "interp.h"
 #include "interface.h"
+#include "mfun.h"
 #include "mpi.h"
 #include "msgparse.h"
 #include "player.h"
