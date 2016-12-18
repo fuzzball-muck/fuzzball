@@ -2321,6 +2321,9 @@ shovechars()
     struct timeval last_slice, current_time;
     struct timeval next_slice;
     struct timeval timeout, slice_timeout;
+#ifdef HAVE_PSELECT
+    struct timespec timeout_for_pselect;
+#endif
     int cnt;
     struct descriptor_data *dnext;
     struct descriptor_data *newd;
@@ -2474,7 +2477,17 @@ shovechars()
 	    timeout.tv_usec = (tp_pause_min % 1000) * 1000L;
 	}
 	gettimeofday(&sel_in, NULL);
-#ifndef WIN32
+
+#ifdef HAVE_PSELECT
+        timeout_for_pselect.tv_sec = timeout.tv_sec;
+        timeout_for_pselect.tv_nsec = timeout.tv_usec * 1000L;
+	if (pselect(max_descriptor, &input_set, &output_set, (fd_set *) 0,
+                    &timeout_for_pselect, &pselect_signal_mask) < 0) {
+	    if (errno != EINTR) {
+		perror("select");
+		return;
+	    }
+#elif !defined(WIN32)
 	if (select(max_descriptor, &input_set, &output_set, (fd_set *) 0, &timeout) < 0) {
 	    if (errno != EINTR) {
 		perror("select");

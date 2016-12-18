@@ -67,6 +67,9 @@
 /* PCRE headers are under pcre dir. */
 #undef HAVE_PCREINCDIR
 
+/* Define to 1 if you have the `pselect' function. */
+#undef HAVE_PSELECT
+
 /* Define to 1 if you have the `random' function. */
 #undef HAVE_RANDOM
 

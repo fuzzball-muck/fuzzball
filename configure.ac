@@ -239,7 +239,7 @@ if test "$rb_cv_member_struct_tm_tm_gmtoff" = yes; then
   AC_DEFINE(HAVE_STRUCT_TM_TM_GMTOFF, [], [Define to 1 if 'tm_gmtoff' is a member of 'struct tm'.])
 fi
 
-AC_CHECK_FUNCS(mallinfo getrlimit getrusage random snprintf vsnprintf)
+AC_CHECK_FUNCS(mallinfo getrlimit getrusage random snprintf vsnprintf pselect)
 AC_CHECK_MEMBER([struct mallinfo.hblks])
 AC_CHECK_MEMBER([struct mallinfo.keepcost])
 AC_CHECK_MEMBER([struct mallinfo.treeoverhead])
