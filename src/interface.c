@@ -1704,7 +1704,7 @@ addrout(int lport, long a, unsigned short prt)
     a = ntohl(a);
 
 #ifdef SPAWN_HOST_RESOLVER
-    snprintf(buf, sizeof(buf), "%ld.%ld.%ld.%ld(%u)%u",
+    snprintf(buf, sizeof(buf), "%ld.%ld.%ld.%ld(%u)%u\n",
 	     (a >> 24) & 0xff, (a >> 16) & 0xff, (a >> 8) & 0xff, a & 0xff, prt, lport);
     if (tp_hostnames) {
 	write(resolver_sock[1], buf, strlen(buf));
@@ -2208,6 +2208,7 @@ static kill_resolver(void)
     int i;
 
     write(resolver_sock[1], "QUIT\n", 5);
+    shutdown(resolver_sock[1], 2);
     wait(&i);
 }
 
