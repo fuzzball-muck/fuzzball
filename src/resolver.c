@@ -617,32 +617,31 @@ int do_resolve(void) {
 
 	    result = fgets(buf, sizeof(buf), stdin);
 
+            /* detect if QUIT was requested before letting
+               another thread start reading */
+	    if (!result) {
+		if (errno == EAGAIN) {
+		    doagain = 1;
+		} else {
+		    if (!feof(stdin)) {
+                        perror("fgets");
+                    }
+		    shutdown_was_requested = 1;
+		}
+	    } else if (!strncmp("QUIT", buf, 4)) {
+                shutdown_was_requested = 1;
+                fclose(stdin);
+            }
+
 	    /* unlock input here. */
 	    pthread_mutex_unlock(&input_mutex);
 
 	    if (shutdown_was_requested) {
 		return 0;
-	    }
-	    if (!result) {
-		if (errno == EAGAIN) {
-		    doagain = 1;
-		    sleep(1);
-		} else {
-		    if (feof(stdin)) {
-			shutdown_was_requested = 1;
-			return 0;
-		    }
-		    perror("fgets");
-		    shutdown_was_requested = 1;
-		    return 0;
-		}
-	    }
+	    } else if (doagain) {
+                sleep(1);
+            }
 	} while (doagain || !strcmp(buf, "\n"));
-	if (!strncmp("QUIT", buf, 4)) {
-	    shutdown_was_requested = 1;
-	    fclose(stdin);
-	    return 0;
-	}
 
 	bufptr = NULL;
 #ifdef USE_IPV6
