@@ -2208,6 +2208,7 @@ static kill_resolver(void)
     int i;
 
     write(resolver_sock[1], "QUIT\n", 5);
+    shutdown(resolver_sock[1], 2);
     wait(&i);
 }
 
