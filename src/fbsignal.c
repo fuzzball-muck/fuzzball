@@ -49,6 +49,11 @@ void our_signal(int signo, void (*sighandler) (int));
 # define our_signal(s,f) signal((s),(f))
 #endif
 
+#ifdef HAVE_PSELECT
+int set_pselect_signal_mask = 0;
+sigset_t pselect_signal_mask;
+#endif
+
 /*
  * our_signal(signo, sighandler)
  *
@@ -186,6 +191,23 @@ set_sigs_intern(int bail)
 
     /* status dumper (predates "WHO" command) */
     our_signal(SIGUSR1, bail ? SIG_DFL : sig_dump_status);
+
+#ifdef HAVE_PSELECT
+    if (!set_pselect_signal_mask) {
+        sigset_t signals_to_block;
+
+        sigemptyset(&signals_to_block);
+        /* block signals we expect during normal operation from that it
+           should be okay to wait for the current MUCK event to finish
+           before processing */
+        sigaddset(&signals_to_block, SIGCHLD);
+        sigaddset(&signals_to_block, SIGUSR1);
+
+        /* block signals and record current signal mask */
+        sigprocmask(SIG_BLOCK, &signals_to_block, &pselect_signal_mask);
+        set_pselect_signal_mask = 1;
+    }
+#endif
 }
 
 void
