@@ -150,7 +150,6 @@ array_tree_find(array_tree * avl, array_iter * key)
 {
     int cmpval;
 
-    assert(avl != NULL);
     assert(key != NULL);
 
     while (avl) {
