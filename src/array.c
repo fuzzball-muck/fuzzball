@@ -657,8 +657,7 @@ array_free(stk_array * arr)
 	}
     case ARRAY_DICTIONARY:
 	array_tree_delete_all(arr->data.dict);
-
-	/* FALLTHRU */
+	break;
     default:{
 	    assert(0);		/* should never get here */
 	    break;
