@@ -253,12 +253,20 @@ make_text_block(const char *s, int n)
 }
 
 static int
-flush_queue(struct text_queue *q, int n)
+flush_queue(struct text_queue *q, int n, int skip_head, int add_flushed_message)
 {
     struct text_block *p;
+    struct text_block *save_head;
     int really_flushed = 0;
 
-    n += strlen(flushed_message);
+    if (add_flushed_message) {
+        n += strlen(flushed_message);
+    }
+
+    if (skip_head) {
+        save_head = q->head;
+        q->head = q->head->nxt;
+    }
 
     while (n > 0 && (p = q->head)) {
 	n -= p->nchars;
@@ -267,13 +275,28 @@ flush_queue(struct text_queue *q, int n)
 	q->lines--;
 	free_text_block(p);
     }
-    p = make_text_block(flushed_message, strlen(flushed_message));
-    p->nxt = q->head;
-    q->head = p;
-    q->lines++;
-    if (!p->nxt)
-	q->tail = &p->nxt;
-    really_flushed -= p->nchars;
+
+    if (skip_head) {
+        save_head->nxt = q->head;
+        q->head = save_head;
+        if (!save_head->nxt) {
+            q->tail = &save_head->nxt;
+        }
+    }
+    if (add_flushed_message) {
+        p = make_text_block(flushed_message, strlen(flushed_message));
+        if (skip_head) {
+            p->nxt = q->head->nxt;
+            q->head->nxt = p;
+        } else {
+            p->nxt = q->head;
+            q->head = p;
+        }
+        q->lines++;
+        if (!p->nxt)
+            q->tail = &p->nxt;
+        really_flushed -= p->nchars;
+    }
     return really_flushed;
 }
 
@@ -292,14 +315,24 @@ add_to_queue(struct text_queue *q, const char *b, int n)
     q->lines++;
 }
 
+static void
+flush_output_queue(struct descriptor_data *d, int include_message, int size_limit) {
+    int space;
+
+    space = size_limit - d->output_size;
+    if (space < 0) {
+#ifdef USE_SSL
+	d->output_size -= flush_queue(&d->output, -space, d->pending_ssl_write, 1);
+#else
+	d->output_size -= flush_queue(&d->output, -space, 0, 1);
+#endif
+    }
+}
+
 int
 queue_write(struct descriptor_data *d, const char *b, int n)
 {
-    int space;
-
-    space = tp_max_output - d->output_size - n;
-    if (space < 0)
-	d->output_size -= flush_queue(&d->output, -space);
+    flush_output_queue(d, 1, tp_max_output - n);
     add_to_queue(&d->output, b, n);
     d->output_size += n;
     return n;
@@ -1215,10 +1248,19 @@ socket_write(struct descriptor_data * d, const void *buf, size_t count)
 	return write(d->descriptor, buf, count);
 #endif
     } else {
+        d->pending_ssl_write = 0;
 	i = SSL_write(d->ssl_session, buf, count);
 	if (i < 0) {
 	    i = SSL_get_error(d->ssl_session, i);
-	    if (i == SSL_ERROR_WANT_READ || i == SSL_ERROR_WANT_WRITE) {
+            if (i == SSL_ERROR_WANT_WRITE) {
+                d->pending_ssl_write = 1;
+#ifdef WIN32
+		WSASetLastError(WSAEWOULDBLOCK);
+#else
+		errno = EWOULDBLOCK;
+#endif
+		return -1;
+	    } else if (i == SSL_ERROR_WANT_READ) {
 		/* log_ssl_error("write 0", d->descriptor, i); */
 #ifdef WIN32
 		WSASetLastError(WSAEWOULDBLOCK);
@@ -1251,7 +1293,7 @@ socket_write(struct descriptor_data * d, const void *buf, size_t count)
 #endif
 
 static int
-queue_immediate(struct descriptor_data *d, const char *msg)
+queue_immediate_and_flush(struct descriptor_data *d, const char *msg)
 {
     char buf[BUFFER_LEN + 8];
     int quote_len = 0;
@@ -1266,30 +1308,32 @@ queue_immediate(struct descriptor_data *d, const char *msg)
 	strip_ansi(buf, msg);
     }
 
+    flush_output_queue(d, 0, 0);
 #ifdef MCP_SUPPORT
     if (d->mcpframe.enabled
-	&& !(strncmp(buf, MCP_MESG_PREFIX, 3) && strncmp(buf, MCP_QUOTE_PREFIX, 3))) {
-	quote_len = strlen(MCP_QUOTE_PREFIX);
-	socket_write(d, MCP_QUOTE_PREFIX, quote_len);
+        && !(strncmp(buf, MCP_MESG_PREFIX, 3) && strncmp(buf, MCP_QUOTE_PREFIX, 3))) {
+        quote_len = strlen(MCP_QUOTE_PREFIX);
+        queue_write(d, MCP_QUOTE_PREFIX, quote_len);
     }
 #endif
-    return socket_write(d, buf, strlen(buf)) + quote_len;
+    queue_write(d, buf, strlen(buf));
+    process_output(d);
 }
 
 static void
 goodbye_user(struct descriptor_data *d)
 {
-    queue_immediate(d, "\r\n");
-    queue_immediate(d, tp_leave_mesg);
-    queue_immediate(d, "\r\n\r\n");
+    char buf[BUFFER_LEN];
+    snprintf(buf, sizeof(buf), "\r\n%s\r\n\r\n", tp_leave_mesg);
+    queue_immediate_and_flush(d, buf);
 }
 
 static void
 idleboot_user(struct descriptor_data *d)
 {
-    queue_immediate(d, "\r\n");
-    queue_immediate(d, tp_idle_mesg);
-    queue_immediate(d, "\r\n\r\n");
+    char buf[BUFFER_LEN];
+    snprintf(buf, sizeof(buf), "\r\n%s\r\n\r\n", tp_idle_mesg);
+    queue_immediate_and_flush(d, buf);
     d->booted = 1;
 }
 
