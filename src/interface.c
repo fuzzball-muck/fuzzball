@@ -1252,16 +1252,8 @@ socket_write(struct descriptor_data * d, const void *buf, size_t count)
 	i = SSL_write(d->ssl_session, buf, count);
 	if (i < 0) {
 	    i = SSL_get_error(d->ssl_session, i);
-            if (i == SSL_ERROR_WANT_WRITE) {
+            if (i == SSL_ERROR_WANT_WRITE || i == SSL_ERROR_WANT_READ) {
                 d->pending_ssl_write = 1;
-#ifdef WIN32
-		WSASetLastError(WSAEWOULDBLOCK);
-#else
-		errno = EWOULDBLOCK;
-#endif
-		return -1;
-	    } else if (i == SSL_ERROR_WANT_READ) {
-		/* log_ssl_error("write 0", d->descriptor, i); */
 #ifdef WIN32
 		WSASetLastError(WSAEWOULDBLOCK);
 #else
