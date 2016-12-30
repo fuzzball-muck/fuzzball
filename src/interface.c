@@ -1317,6 +1317,7 @@ queue_immediate_and_flush(struct descriptor_data *d, const char *msg)
     }
 #endif
     queue_write(d, buf, strlen(buf));
+    d->block_writes = 0;
     process_output(d);
 }
 
