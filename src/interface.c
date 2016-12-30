@@ -1487,6 +1487,7 @@ initializesock(int s, const char *hostname, int is_ssl)
     d->descriptor = s;
 #ifdef USE_SSL
     d->ssl_session = NULL;
+    d->pending_ssl_write = 0;
 #endif
     d->connected = 0;
     d->booted = 0;
