@@ -89,6 +89,7 @@ struct descriptor_data {
     int is_starttls;
 #ifdef USE_SSL
     SSL *ssl_session;
+    int pending_ssl_write;
 #endif
     dbref player;
     int output_size;
