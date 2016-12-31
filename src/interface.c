@@ -4330,7 +4330,7 @@ main(int argc, char **argv)
 
     if (!sanity_interactive) {
 
-	log_status("INIT: TinyMUCK %s starting.", "version");
+	log_status("INIT: TinyMUCK %s starting.", VERSION);
 
 #ifdef DETACH
 # ifndef WIN32
