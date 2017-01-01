@@ -1302,7 +1302,7 @@ queue_immediate_and_flush(struct descriptor_data *d, const char *msg)
         queue_immediate_raw(d, MCP_QUOTE_PREFIX);
     }
 #endif
-    queue_immediate_raw(d, buf);
+    queue_immediate_raw(d, (const char *) buf);
     process_output(d);
 }
 
