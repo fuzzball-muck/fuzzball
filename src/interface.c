@@ -270,7 +270,6 @@ static int
 flush_queue(struct text_queue *q, int n, int add_flushed_message)
 {
     struct text_block *p;
-    struct text_block *save_head;
     int really_flushed = 0;
 
     if (add_flushed_message) {
@@ -3061,7 +3060,7 @@ write_text_block(struct descriptor_data *d, struct text_block **qp)
 
 #ifdef WIN32
     if (count <= 0 || count == SOCKET_ERROR) {
-        if (WSAGetLastError() == WSAEWOULDBLOCK) {
+        if (WSAGetLastError() == WSAEWOULDBLOCK)
             was_wouldblock = 1;
         else
             was_error = 1;
