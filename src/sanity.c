@@ -32,8 +32,8 @@ flush_user_output(dbref player)
     darr = get_player_descrs(OWNER(player), &dcount);
     for (int di = 0; di < dcount; di++) {
         d = descrdata_by_descr(darr[di]);
-        if (d && !process_output(d)) {
-            d->booted = 1;
+        if (d) {
+            process_output(d);
         }
     }
 }

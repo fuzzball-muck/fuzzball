@@ -84,16 +84,19 @@ struct descriptor_data {
     int descriptor;
     int connected;
     int con_number;
-    int booted;
-    int block_writes;
+    int booted; /* 0 = do not boot; 1 = boot without message; 2 = boot with goodbye */
+    int block_writes; /* if true, block non-priority writes. Used for STARTTLS. */
     int is_starttls;
 #ifdef USE_SSL
     SSL *ssl_session;
-    int pending_ssl_write;
+    /* incomplete SSL_write() because OpenSSL does not allow us to switch from a partial
+       write of something from output to writing something else from priority_output. */
+    struct text_queue pending_ssl_write;
 #endif
     dbref player;
     int output_size;
     struct text_queue output;
+    struct text_queue priority_output; /* used for telnet messages */
     struct text_queue input;
     char *raw_input;
     char *raw_input_at;
@@ -182,13 +185,13 @@ int pidle(int c);
 int pnextdescr(int c);
 void pnotify(int c, char *outstr);
 int pontime(int c);
-int process_output(struct descriptor_data *d);
+void process_output(struct descriptor_data *d);
 int pset_user(int c, dbref who);
 char *puser(int c);
 #ifdef USE_SSL
 int reconfigure_ssl(void);
 #endif
-int queue_write(struct descriptor_data *, const char *, int);
+void queue_write(struct descriptor_data *, const char *, int);
 void san_main(void);
 int show_subfile(dbref player, const char *dir, const char *topic, const char *seg, int partial);
 #ifdef SPAWN_HOST_RESOLVER
