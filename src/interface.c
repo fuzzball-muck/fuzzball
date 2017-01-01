@@ -1273,13 +1273,13 @@ socket_write(struct descriptor_data * d, const void *buf, size_t count)
 }
 #endif
 
-static int
+static void
 queue_immediate_raw(struct descriptor_data *d, const char *msg)
 {
     add_to_queue(&d->priority_output, msg, strlen(msg));
 }
 
-static int
+static void
 queue_immediate_and_flush(struct descriptor_data *d, const char *msg)
 {
     char buf[BUFFER_LEN + 8];
@@ -1528,7 +1528,7 @@ initializesock(int s, const char *hostname, int is_ssl)
 	unsigned char telnet_do_starttls[] = {
 	    TELNET_IAC, TELNET_DO, TELOPT_STARTTLS, '\0'
 	};
-	queue_immediate_raw(d, telnet_do_starttls);
+	queue_immediate_raw(d, (const char *)telnet_do_starttls);
 	queue_write(d, "\r\n", 2);
     }
 #endif
@@ -1827,7 +1827,6 @@ new_connection(int port, int sock, int is_ssl)
 static void 
 send_keepalive(struct descriptor_data *d)
 {
-    int cnt;
     unsigned char telnet_nop[] = {
 	TELNET_IAC, TELNET_NOP, '\0'
     };
@@ -1838,7 +1837,7 @@ send_keepalive(struct descriptor_data *d)
     }
 
     if (d->telnet_enabled) {
-        queue_immediate_raw(d, telnet_nop);
+        queue_immediate_raw(d, (const char *)telnet_nop);
     } else {
         queue_immediate_raw(d, "");
     }
@@ -1913,7 +1912,7 @@ process_input(struct descriptor_data *d)
 	    case TELNET_AYT:	/* AYT */
 		{
 		    char sendbuf[] = "[Yes]\r\n";
-                    queue_immediate_raw(d, sendbuf);
+                    queue_immediate_raw(d, (const char *)sendbuf);
 		    d->telnet_state = TELNET_STATE_NORMAL;
 		    break;
 		}
@@ -1988,7 +1987,7 @@ process_input(struct descriptor_data *d)
 		sendbuf[4] = TELNET_IAC;
 		sendbuf[5] = TELNET_SE;
 		sendbuf[6] = '\0';
-                queue_immediate_raw(d, sendbuf);
+                queue_immediate_raw(d, (const char *)sendbuf);
 		d->block_writes = 1;
 		d->short_reads = 1;
                 process_output(d);
@@ -2000,7 +1999,7 @@ process_input(struct descriptor_data *d)
 		sendbuf[1] = TELNET_DONT;
 		sendbuf[2] = *q;
 		sendbuf[3] = '\0';
-                queue_immediate_raw(d, sendbuf);
+                queue_immediate_raw(d, (const char *)sendbuf);
 	    }
 	    d->telnet_state = TELNET_STATE_NORMAL;
 	    d->telnet_enabled = 1;
@@ -2011,7 +2010,7 @@ process_input(struct descriptor_data *d)
 	    sendbuf[1] = TELNET_WONT;
 	    sendbuf[2] = *q;
 	    sendbuf[3] = '\0';
-            queue_immediate_raw(d, sendbuf);
+            queue_immediate_raw(d, (const char *)sendbuf);
 	    d->telnet_state = TELNET_STATE_NORMAL;
 	    d->telnet_enabled = 1;
 	} else if (d->telnet_state == TELNET_STATE_WONT) {
@@ -2025,7 +2024,7 @@ process_input(struct descriptor_data *d)
 	    sendbuf[1] = TELNET_WONT;
 	    sendbuf[2] = *q;
 	    sendbuf[3] = '\0';
-            queue_immediate_raw(d, sendbuf);
+            queue_immediate_raw(d, (const char *)sendbuf);
 	    d->telnet_state = TELNET_STATE_NORMAL;
 	    d->telnet_enabled = 1;
 	} else if (d->telnet_state == TELNET_STATE_SB) {
@@ -3125,8 +3124,6 @@ write_queue(struct descriptor_data * d, struct text_queue *queue)
 void
 process_output(struct descriptor_data *d)
 {
-    int result;
-
     /* drastic, but this may give us crash test data */
     if (!d || !d->descriptor) {
 	panic("process_output(): bad descriptor or connect struct !");
