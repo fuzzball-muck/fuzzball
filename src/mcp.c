@@ -356,9 +356,8 @@ static void
 FlushText(McpFrame * mfr)
 {
     struct descriptor_data *d = (struct descriptor_data *) mfr->descriptor;
-    if (d && !process_output(d)) {
-	d->booted = 1;
-    }
+    if (d)
+        process_output(d);
 }
 
 int
