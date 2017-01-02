@@ -591,8 +591,10 @@ tune_display_parms(dbref player, char *name, int mlev, int show_extended)
 	}
 	strcpyn(buf, sizeof(buf), tref->name);
 	if (!*name || equalstr(name, buf)) {
+            char unparse_buf[BUFFER_LEN];
+            unparse_object(player, *tref->ref, unparse_buf, sizeof(unparse_buf));
 	    notifyf(player, "(ref)  %-20s = %s%s%s",
-		    tref->name, unparse_object(player, *tref->ref),
+		    tref->name, unparse_buf,
 		    MOD_ENABLED(tref->module) ? "" : " [inactive]",
 		    (tref->isdefault) ? " [default]" : "");
 	    if (show_extended)

@@ -441,7 +441,9 @@ do_delete(dbref player, dbref program, int arg[], int argc)
 static void
 do_quit(dbref player, dbref program)
 {
-    log_status("PROGRAM SAVED: %s by %s(%d)", unparse_object(player, program),
+    char unparse_buf[BUFFER_LEN];
+    unparse_object(player, program, unparse_buf, sizeof(unparse_buf));
+    log_status("PROGRAM SAVED: %s by %s(%d)", unparse_buf,
 	       NAME(player), player);
     write_program(PROGRAM_FIRST(program), program);
 

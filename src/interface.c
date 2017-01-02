@@ -369,9 +369,12 @@ dump_users(struct descriptor_data *e, char *user)
 	user++;
     }
 
-    if (wizard)
+    if (wizard) {
+        char *log_name = whowhere(e->player);
 	/* S/he is connected and not quelled. Okay; log it. */
-	log_command("%s: %s", whowhere(e->player), "WHO");
+	log_command("%s: %s", log_name, "WHO");
+        free(log_name);
+    }
 
     if (!*user)
 	user = NULL;
@@ -1324,30 +1327,30 @@ idleboot_user(struct descriptor_data *d)
 }
 
 static void
-freeqs(struct descriptor_data *d)
+free_queue(struct text_queue *q)
 {
     struct text_block *cur, *next;
 
-    cur = d->output.head;
+    cur = q->head;
     while (cur) {
 	next = cur->nxt;
 	free_text_block(cur);
 	cur = next;
     }
-    d->output.lines = 0;
-    d->output.head = 0;
-    d->output.tail = &d->output.head;
+    q->lines = 0;
+    q->head = NULL;
+    q->tail = &q->head;
+}
 
-    cur = d->input.head;
-    while (cur) {
-	next = cur->nxt;
-	free_text_block(cur);
-	cur = next;
-    }
-    d->input.lines = 0;
-    d->input.head = 0;
-    d->input.tail = &d->input.head;
-
+static void
+freeqs(struct descriptor_data *d)
+{
+#ifdef USE_SSL
+    free_queue(&d->pending_ssl_write);
+#endif
+    free_queue(&d->priority_output);
+    free_queue(&d->output);
+    free_queue(&d->input);
     if (d->raw_input)
 	FREE(d->raw_input);
     d->raw_input = 0;
@@ -1424,6 +1427,10 @@ shutdownsock(struct descriptor_data *d)
 	free((void *) d->username);
 #ifdef MCP_SUPPORT
     mcp_frame_clear(&d->mcpframe);
+#endif
+#ifdef USE_SSL
+    if (d->ssl_session)
+        SSL_free(d->ssl_session);
 #endif
     FREE(d);
     ndescriptors--;
@@ -3238,8 +3245,10 @@ do_armageddon(dbref player, const char *msg)
     char buf[BUFFER_LEN];
 
     if (!Wizard(player) || Typeof(player) != TYPE_PLAYER) {
+        char unparse_buf[BUFFER_LEN];
+        unparse_object(player, player, unparse_buf, sizeof(unparse_buf));
 	notify(player, "Sorry, but you don't look like the god of War to me.");
-	log_status("ILLEGAL ARMAGEDDON: tried by %s", unparse_object(player, player));
+	log_status("ILLEGAL ARMAGEDDON: tried by %s", unparse_buf);
 	return;
     }
     snprintf(buf, sizeof(buf), "\r\nImmediate shutdown initiated by %s.\r\n", NAME(player));
