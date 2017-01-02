@@ -91,7 +91,9 @@ static int con_players_curr = 0;	/* for playermax checks. */
 /* If both are still disabled after arg parsing, we'll enable one or both. */
 static int ipv4_enabled = 0;
 static int ipv6_enabled = 0;
+#ifdef USE_IPV6
 static struct in6_addr bind_ipv6_address;
+#endif
 static uint32_t bind_ipv4_address;
 
 static int numports = 0;
