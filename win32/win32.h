@@ -1,52 +1,33 @@
 #ifndef _WIN32_H_
 #define _WIN32_H_
 
-#include <winsock2.h>
-#include <process.h>
 #include <direct.h>
+#include <process.h>
 #include <time.h>
-
-extern int gettimeofday(struct timeval *tv, struct timezone *tz);
-extern struct tm *uw32localtime(const time_t *t);
-extern void sync(void);
-extern void set_console();
-
-#define close(x) closesocket(x)
-#define chdir _chdir
-#define execv _execv
-#define getpid _getpid
-#define strdup _strdup
-#define unlink _unlink
+#include <winsock2.h>
+#include <ws2tcpip.h>
 
 #define pid_t int
 #define ssize_t long
 
-#ifndef tzname
-#define tzname _tzname
-#endif
+#define close(x)	closesocket(x)
+#define chdir		_chdir
+#define execv		_execv
+#define getpid		_getpid
+#define inet_pton	InetPton
+#define pclose		_pclose
+#define popen		_popen
+#define snprintf	_snprintf
+#define strcasecmp	_stricmp
+#define strdup		_strdup
+#define strncasecmp	_strnicmp
+#define tzname		_tzname
+#define unlink		_unlink
+#define vsnprintf	_vsnprintf
 
-#ifndef strncasecmp
-#define strncasecmp _strnicmp
-#endif
-
-#ifndef strcasecmp
-#define strcasecmp _stricmp
-#endif
-
-#ifndef vsnprintf
-#define vsnprintf _vsnprintf
-#endif
-
-#ifndef snprintf
-#define snprintf _snprintf
-#endif
-
-#ifndef popen
-#define popen _popen
-#endif
-
-#ifndef pclose
-#define pclose _pclose
-#endif
+int gettimeofday(struct timeval *tv, struct timezone *tz);
+void set_console();
+void sync(void);
+struct tm *uw32localtime(const time_t *t);
 
 #endif
