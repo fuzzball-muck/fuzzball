@@ -1638,13 +1638,6 @@ addrout_v6(int lport, struct in6_addr *a, unsigned short prt)
 
 	    if (lag > 10) {
 		secs_lost = lag;
-
-# if MIN_SECS_TO_LOG
-		if (lag >= CFG_MIN_SECS_TO_LOG) {
-		    log_status("GETHOSTBYNAME-RAN: secs %3d", lag);
-		}
-# endif
-
 	    }
 	    if (he) {
 		snprintf(buf, sizeof(buf), "%s(%u)", he->h_name, prt);
@@ -1728,13 +1721,6 @@ addrout(int lport, long a, unsigned short prt)
 
 	    if (lag > 10) {
 		secs_lost = (int)lag;
-
-#if MIN_SECS_TO_LOG
-		if (lag >= CFG_MIN_SECS_TO_LOG) {
-		    log_status("GETHOSTBYNAME-RAN: secs %3d", lag);
-		}
-#endif
-
 	    }
 	    if (he) {
 		snprintf(buf, sizeof(buf), "%s(%u)", he->h_name, prt);
