@@ -3205,6 +3205,10 @@ close_sockets(const char *msg)
 	    perror("shutdown");
 	close(d->descriptor);
 	freeqs(d);
+#ifdef USE_SSL
+        if (d->ssl_session)
+            SSL_free(d->ssl_session);
+#endif
 	*d->prev = d->next;
 	if (d->next)
 	    d->next->prev = d->prev;
@@ -3236,6 +3240,8 @@ close_sockets(const char *msg)
 	close(ssl_sock_v6[i]);
     }
 # endif
+    SSL_CTX_free(ssl_ctx);
+    ssl_ctx = NULL;
 #endif
 }
 
