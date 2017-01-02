@@ -1324,30 +1324,30 @@ idleboot_user(struct descriptor_data *d)
 }
 
 static void
-freeqs(struct descriptor_data *d)
+free_queue(struct text_queue *q)
 {
     struct text_block *cur, *next;
 
-    cur = d->output.head;
+    cur = q->head;
     while (cur) {
 	next = cur->nxt;
 	free_text_block(cur);
 	cur = next;
     }
-    d->output.lines = 0;
-    d->output.head = 0;
-    d->output.tail = &d->output.head;
+    q->lines = 0;
+    q->head = NULL;
+    q->tail = &q->head;
+}
 
-    cur = d->input.head;
-    while (cur) {
-	next = cur->nxt;
-	free_text_block(cur);
-	cur = next;
-    }
-    d->input.lines = 0;
-    d->input.head = 0;
-    d->input.tail = &d->input.head;
-
+static void
+freeqs(struct descriptor_data *d)
+{
+#ifdef USE_SSL
+    free_queue(&d->pending_ssl_write);
+#endif
+    free_queue(&d->priority_output);
+    free_queue(&d->output);
+    free_queue(&d->input);
     if (d->raw_input)
 	FREE(d->raw_input);
     d->raw_input = 0;
