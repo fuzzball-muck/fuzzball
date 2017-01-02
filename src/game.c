@@ -435,6 +435,7 @@ process_command(int descr, dbref player, char *command)
     if ((tp_log_commands || Wizard(OWNER(player)))) {
 	if (!(FLAGS(player) & (INTERACTIVE | READMODE))) {
 	    if (!*command) {
+                free(log_name);
 		return;
 	    }
 	    log_command("%s: %s", whowhere(player), command);
