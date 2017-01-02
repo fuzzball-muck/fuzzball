@@ -24,12 +24,6 @@
  are compiled in.
  ************************************************************************/
 
-/* Detaches the process as a daemon so that it don't cause problems
- * keeping a terminal line open and such. Logs normal output to a file
- * and writes out a fbmuck.pid file 
- */
-#define DETACH
-
 /* Makes God (#1) immune to @force, @newpassword, and being set !Wizard.  
  */
 #define GOD_PRIV

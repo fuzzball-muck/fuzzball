@@ -198,9 +198,7 @@ show_program_usage(char *prog)
 #ifdef USE_IPV6
     fprintf(stderr, "        -bindv6 ADDRESS  set listening IP address for IPv6 sockets (default: all)\n");
 #endif
-#ifdef DETACH
     fprintf(stderr, "        -nodetach        do not detach server process\n");
-#endif
     fprintf(stderr, "        -resolver PATH   path to fb-resolver program\n");
     fprintf(stderr, "        -version         display this server's version.\n");
     fprintf(stderr, "        -help            display this message.\n");
@@ -4328,7 +4326,6 @@ main(int argc, char **argv)
 
 	log_status("INIT: TinyMUCK %s starting.", "version");
 
-#ifdef DETACH
 # ifndef WIN32
 	/* Go into the background unless requested not to */
 	if (!no_detach_flag && !sanity_interactive && !db_conversion_flag) {
@@ -4339,7 +4336,6 @@ main(int argc, char **argv)
 		_exit(0);
 	}
 # endif
-#endif
 
 #ifdef WIN32
 	if (!sanity_interactive && !db_conversion_flag && freeconsole) {
@@ -4361,7 +4357,6 @@ main(int argc, char **argv)
 	log_status("%s PID is: %d", argv[0], getpid());
 
 
-#ifdef DETACH
 # ifndef WIN32
 	if (!sanity_interactive && !db_conversion_flag && !no_detach_flag) {
 	    /* Detach from the TTY, log whatever output we have... */
@@ -4391,8 +4386,7 @@ main(int argc, char **argv)
 #   endif			/* TIOCNOTTY */
 #  endif			/* !_POSIX_SOURCE */
 	}
-# endif				/* WIN32 */
-#endif				/* DETACH */
+#endif				/* WIN32 */
 
 #ifdef WIN32
 	if (!sanity_interactive && !db_conversion_flag && freeconsole) {
