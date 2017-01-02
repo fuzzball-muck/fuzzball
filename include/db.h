@@ -479,7 +479,7 @@ dbref reverse(dbref);
 void set_source(dbref player, dbref action, dbref source);
 long size_object(dbref i, int load);
 const char *unparse_flags(dbref thing);
-const char *unparse_object(dbref player, dbref object);
+void unparse_object(dbref player, dbref object, char *buffer, size_t size);
 int unset_source(dbref player, dbref action);
 
 #endif				/* _DB_H */

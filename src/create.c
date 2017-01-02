@@ -342,8 +342,10 @@ do_dig(int descr, dbref player, const char *name, const char *pname)
 	    if (!can_link_to(player, Typeof(room), parent) || room == parent) {
 		notify(player, "Permission denied.  Parent set to default.");
 	    } else {
+                char unparse_buf[BUFFER_LEN];
 		moveto(room, parent);
-		notifyf(player, "Parent set to %s.", unparse_object(player, parent));
+                unparse_object(player, parent, unparse_buf, sizeof(unparse_buf));
+		notifyf(player, "Parent set to %s.", unparse_buf);
 	    }
 	}
     }
@@ -365,6 +367,7 @@ do_prog(int descr, dbref player, const char *name)
 {
     dbref i;
     dbref newprog;
+    char unparse_buf[BUFFER_LEN];
     struct match_data md;
 
     if (!*name) {
@@ -388,8 +391,9 @@ do_prog(int descr, dbref player, const char *name)
 	    return;
 	}
 	newprog = create_program(player, name);
+        unparse_object(player, newprog, unparse_buf, sizeof(unparse_buf));
 	notifyf(player, "Entering editor for new program %s.",
-		unparse_object(player, newprog));
+                unparse_buf);
     } else if (i == AMBIGUOUS) {
 	notify(player, "I don't know which one you mean!");
 	return;
@@ -406,7 +410,8 @@ do_prog(int descr, dbref player, const char *name)
 	PROGRAM_SET_FIRST(i, read_program(i));
 	FLAGS(i) |= INTERNAL;
 	PLAYER_SET_CURR_PROG(player, i);
-	notifyf(player, "Entering editor for %s.", unparse_object(player, i));
+        unparse_object(player, i, unparse_buf, sizeof(unparse_buf));
+	notifyf(player, "Entering editor for %s.", unparse_buf);
 	/* list current line */
 	list_program(player, i, NULL, 0);
 	DBDIRTY(i);
@@ -419,6 +424,7 @@ void
 do_edit(int descr, dbref player, const char *name)
 {
     dbref i;
+    char unparse_buf[BUFFER_LEN];
     struct match_data md;
 
     if (!*name) {
@@ -447,7 +453,8 @@ do_edit(int descr, dbref player, const char *name)
     FLAGS(i) |= INTERNAL;
     PROGRAM_SET_FIRST(i, read_program(i));
     PLAYER_SET_CURR_PROG(player, i);
-    notifyf(player, "Entering editor for %s.", unparse_object(player, i));
+    unparse_object(player, i, unparse_buf, sizeof(unparse_buf));
+    notifyf(player, "Entering editor for %s.", unparse_buf);
     /* list current line */
     list_program(player, i, NULL, 0);
     FLAGS(player) |= INTERACTIVE;
@@ -609,7 +616,9 @@ do_clone(int descr, dbref player, char *name)
 	return;
     } else {
 	if (tp_verbose_clone) {
-	    notifyf(player, "Now cloning %s...", unparse_object(player, thing));
+            char unparse_buf[BUFFER_LEN];
+            unparse_object(player, thing, unparse_buf, sizeof(unparse_buf));
+	    notifyf(player, "Now cloning %s...", unparse_buf);
 	}
 
 	/* create the object */

@@ -124,6 +124,7 @@ log_program_text(struct line *first, dbref player, dbref i)
 {
     FILE *f;
     char fname[BUFFER_LEN];
+    char unparse_buf[BUFFER_LEN];
     char tbuf[24];
     time_t lt = time(NULL);
 
@@ -137,8 +138,9 @@ log_program_text(struct line *first, dbref player, dbref i)
     format_time(tbuf, sizeof(tbuf), "%Y-%m-%dT%H:%M:%S", MUCK_LOCALTIME(lt));
     fputs("#######################################", f);
     fputs("#######################################\n", f);
+    unparse_object(player, i, unparse_buf, sizeof(unparse_buf));
     fprintf(f, "%s: %s SAVED BY %s(#%d)\n",
-            tbuf, unparse_object(player, i), NAME(player), player);
+            tbuf, unparse_buf, NAME(player), player);
     fputs("#######################################", f);
     fputs("#######################################\n\n", f);
 

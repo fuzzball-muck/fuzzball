@@ -34,6 +34,8 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
     dbref victim;
     dbref destination;
     const char *to;
+    char victim_name_buf[BUFFER_LEN];
+    char destination_name_buf[BUFFER_LEN];
     struct match_data md;
 
     /* get victim, destination */
@@ -74,7 +76,9 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
 	match_neighbor(&md);
 	match_player(&md);
     }
-    switch (destination = match_result(&md)) {
+    destination = match_result(&md);
+    unparse_object(player, victim, victim_name_buf, sizeof(victim_name_buf));
+    switch (destination) {
     case NOTHING:
 	notify(player, "Send it where?");
 	break;
@@ -134,9 +138,10 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
 		break;
 	    }
 	    notify(victim, "You feel a wrenching sensation...");
+            unparse_object(player, destination, destination_name_buf, sizeof(destination_name_buf));
 	    enter_room(descr, victim, destination, LOCATION(victim));
-	    notifyf(player, "%s teleported to %s.", unparse_object(player, victim),
-		    unparse_object(player, destination));
+	    notifyf(player, "%s teleported to %s.", victim_name_buf,
+                    destination_name_buf);
 	    break;
 	case TYPE_THING:
 	    if (parent_loop_check(victim, destination)) {
@@ -169,8 +174,9 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
 	    } else {
 		moveto(victim, destination);
 	    }
-	    notifyf(player, "%s teleported to %s.", unparse_object(player, victim),
-		    unparse_object(player, destination));
+            unparse_object(player, destination, destination_name_buf, sizeof(destination_name_buf));
+	    notifyf(player, "%s teleported to %s.", victim_name_buf,
+		    destination_name_buf);
 	    break;
 	case TYPE_ROOM:
 	    if (Typeof(destination) != TYPE_ROOM) {
@@ -189,8 +195,9 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
 		break;
 	    }
 	    moveto(victim, destination);
-	    notifyf(player, "Parent of %s set to %s.", unparse_object(player, victim),
-		    unparse_object(player, destination));
+            unparse_object(player, destination, destination_name_buf, sizeof(destination_name_buf));
+	    notifyf(player, "Parent of %s set to %s.", victim_name_buf,
+		    destination_name_buf);
 	    break;
 	case TYPE_GARBAGE:
 	    notify(player, "That object is in a place where magic cannot reach it.");
@@ -879,9 +886,11 @@ do_muf_topprofs(dbref player, char *arg1)
     }
     notify(player, "     %CPU   TotalTime  UseCount  Program");
     while (tops) {
+        char unparse_buf[BUFFER_LEN];
 	curr = tops;
+        unparse_object(player, curr->prog, unparse_buf, sizeof(unparse_buf));
 	notifyf(player, "%10.3f %10.3f %9ld %s", curr->pcnt, curr->proftime, curr->usecount,
-		unparse_object(player, curr->prog));
+                unparse_buf);
 	tops = tops->next;
 	free(curr);
     }
@@ -972,9 +981,11 @@ do_mpi_topprofs(dbref player, char *arg1)
     }
     notify(player, "     %CPU   TotalTime  UseCount  Object");
     while (tops) {
+        char unparse_buf[BUFFER_LEN];
 	curr = tops;
+        unparse_object(player, curr->prog, unparse_buf, sizeof(unparse_buf));
 	notifyf(player, "%10.3f %10.3f %9ld %s", curr->pcnt, curr->proftime, curr->usecount,
-		unparse_object(player, curr->prog));
+                unparse_buf);
 	tops = tops->next;
 	free(curr);
     }
@@ -1125,10 +1136,11 @@ do_topprofs(dbref player, char *arg1)
     }
     notify(player, "     %CPU   TotalTime  UseCount  Type  Object");
     while (tops) {
+        char unparse_buf[BUFFER_LEN];
 	curr = tops;
+        unparse_object(player, curr->prog, unparse_buf, sizeof(unparse_buf));
 	notifyf(player, "%10.3f %10.3f %9ld%5s   %s", curr->pcnt, curr->proftime,
-		curr->usecount, curr->type ? "MUF" : "MPI", unparse_object(player,
-									   curr->prog));
+		curr->usecount, curr->type ? "MUF" : "MPI", unparse_buf);
 	tops = tops->next;
 	free(curr);
     }

@@ -732,6 +732,7 @@ char *
 displayprop(dbref player, dbref obj, const char *name, char *buf, size_t bufsiz)
 {
     char mybuf[BUFFER_LEN];
+    char unparse_buf[BUFFER_LEN];
     int pdflag;
     char blesschar = '-';
     PropPtr p = get_property(obj, name);
@@ -754,8 +755,8 @@ displayprop(dbref player, dbref obj, const char *name, char *buf, size_t bufsiz)
 		 PropDataStr(p));
 	break;
     case PROP_REFTYP:
-	snprintf(buf, bufsiz, "%c ref %s:%s", blesschar, mybuf,
-		 unparse_object(player, PropDataRef(p)));
+        unparse_object(player, PropDataRef(p), unparse_buf, sizeof(unparse_buf));
+	snprintf(buf, bufsiz, "%c ref %s:%s", blesschar, mybuf, unparse_buf);
 	break;
     case PROP_INTTYP:
 	snprintf(buf, bufsiz, "%c int %s:%d", blesschar, mybuf, PropDataVal(p));

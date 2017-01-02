@@ -317,7 +317,7 @@ getref(FILE * f)
     return atol(buf);
 }
 
-static const char *
+static char *
 getstring(FILE * f)
 {
     static char buf[BUFFER_LEN];
@@ -347,7 +347,7 @@ db_read_header(FILE * f, int *grow)
 {
     int result = 0;
     int load_format = 0;
-    const char *special;
+    char *special;
 
     *grow = 0;
 
@@ -362,6 +362,8 @@ db_read_header(FILE * f, int *grow)
     } else if (!strcmp(special, DB_VERSION_STRING)) {
 	load_format = 11;
     }
+
+    free(special);
 
     *grow = getref(f);
 
@@ -820,26 +822,30 @@ unparse_flags(dbref thing)
     return buf;
 }
 
-const char *
-unparse_object(dbref player, dbref loc)
+void
+unparse_object(dbref player, dbref loc, char *buffer, size_t size)
 {
-    char buf[BUFFER_LEN];
-
     if (player != NOTHING)
 	player = OWNER(player);
 
     switch (loc) {
     case NOTHING:
-	return "*NOTHING*";
+	strcpyn(buffer, size, "*NOTHING*");
+        return;
     case AMBIGUOUS:
-	return "*AMBIGUOUS*";
+	strcpyn(buffer, size, "*AMBIGUOUS*");
+        return;
     case HOME:
-	return "*HOME*";
+	strcpyn(buffer, size, "*HOME*");
+        return;
     case NIL:
-	return "*NIL*";
+	strcpyn(buffer, size, "*NIL*");
+        return;
     default:
-	if (!ObjExists(loc))
-	    return "*INVALID*";
+	if (!ObjExists(loc)) {
+            strcpyn(buffer, size, "*INVALID*");
+            return;
+        }
 
 	if ((player == NOTHING) || (!(FLAGS(player) & STICKY) &&
 				    (can_link_to(player, NOTYPE, loc) ||
@@ -847,12 +853,11 @@ unparse_object(dbref player, dbref loc)
 				      (controls_link(player, loc)
 				       || (FLAGS(loc) & CHOWN_OK)))))) {
 	    /* show everything */
-	    snprintf(buf, sizeof(buf), "%.*s(#%d%s)", (BUFFER_LEN / 2), NAME(loc), loc,
+	    snprintf(buffer, size, "%.*s(#%d%s)", (BUFFER_LEN / 2), NAME(loc), loc,
 		     unparse_flags(loc));
-	    return strdup(buf);
 	} else {
 	    /* show only the name */
-	    return NAME(loc);
+	    strcpyn(buffer, size, NAME(loc));
 	}
     }
 }
@@ -1191,8 +1196,10 @@ parse_linkable_dest(int descr, dbref player, dbref exit, const char *dest_name)
     }
 
     if (!tp_teleport_to_player && Typeof(dobj) == TYPE_PLAYER) {
+        char unparse_buf[BUFFER_LEN];
+        unparse_object(player, dobj, unparse_buf, sizeof(unparse_buf));
         notifyf(player, "You can't link to players.  Destination %s ignored.",
-                unparse_object(player, dobj));
+                unparse_buf);
         return NOTHING;
     }
 
@@ -1201,7 +1208,9 @@ parse_linkable_dest(int descr, dbref player, dbref exit, const char *dest_name)
         return NOTHING;
     }
     if (!can_link_to(player, Typeof(exit), dobj)) {
-        notifyf(player, "You can't link to %s.", unparse_object(player, dobj));
+        char unparse_buf[BUFFER_LEN];
+        unparse_object(player, dobj, unparse_buf, sizeof(unparse_buf));
+        notifyf(player, "You can't link to %s.", unparse_buf);
         return NOTHING;
     } else {
         return dobj;
@@ -1216,6 +1225,7 @@ _link_exit(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_li
     dbref dest;
     int ndest, error;
     char qbuf[BUFFER_LEN];
+    char unparse_buf[BUFFER_LEN];
 
     prdest = 0;
     ndest = 0;
@@ -1243,14 +1253,17 @@ _link_exit(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_li
 	    continue;
 	}
 
+        unparse_object(player, dest, unparse_buf, sizeof(unparse_buf));
+
 	switch (Typeof(dest)) {
 	case TYPE_PLAYER:
 	case TYPE_ROOM:
 	case TYPE_PROGRAM:
 	    if (prdest) {
+                char unparse_buf[BUFFER_LEN];
 		notifyf(player,
 			"Only one player, room, or program destination allowed. Destination %s ignored.",
-			unparse_object(player, dest));
+                        unparse_buf);
 
 		if (dryrun)
 		    error = 1;
@@ -1266,7 +1279,7 @@ _link_exit(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_li
 	case TYPE_EXIT:
 	    if (exit_loop_check(exit, dest)) {
 		notifyf(player, "Destination %s would create a loop, ignored.",
-			unparse_object(player, dest));
+			unparse_buf);
 
 		if (dryrun)
 		    error = 1;
@@ -1288,7 +1301,7 @@ _link_exit(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_li
 	    if (dest == HOME) {
 		notify(player, "Linked to HOME.");
 	    } else {
-		notifyf(player, "Linked to %s.", unparse_object(player, dest));
+		notifyf(player, "Linked to %s.", unparse_buf);
 	    }
 	}
 
