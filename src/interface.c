@@ -247,6 +247,20 @@ update_quotas(struct timeval last, struct timeval current)
     return msec_add(last, nslices * tp_command_time_msec);
 }
 
+static int
+has_output(struct descriptor_data *d)
+{
+#ifdef USE_SSL
+    if (d->pending_ssl_write.head)
+        return 1;
+#endif
+    if (d->priority_output.head)
+        return 1;
+    if (!d->block_writes && d->output.head)
+        return 1;
+    return 0;
+}
+
 static void
 free_text_block(struct text_block *t)
 {
@@ -270,12 +284,14 @@ make_text_block(const char *s, int n)
 }
 
 static int
-flush_queue(struct text_queue *q, int n)
+flush_queue(struct text_queue *q, int n, int add_flushed_message)
 {
     struct text_block *p;
     int really_flushed = 0;
 
-    n += strlen(flushed_message);
+    if (add_flushed_message) {
+        n += strlen(flushed_message);
+    }
 
     while (n > 0 && (p = q->head)) {
 	n -= p->nchars;
@@ -284,13 +300,16 @@ flush_queue(struct text_queue *q, int n)
 	q->lines--;
 	free_text_block(p);
     }
-    p = make_text_block(flushed_message, strlen(flushed_message));
-    p->nxt = q->head;
-    q->head = p;
-    q->lines++;
-    if (!p->nxt)
-	q->tail = &p->nxt;
-    really_flushed -= p->nchars;
+
+    if (add_flushed_message) {
+        p = make_text_block(flushed_message, strlen(flushed_message));
+        p->nxt = q->head;
+        q->head = p;
+        q->lines++;
+        if (!p->nxt)
+            q->tail = &p->nxt;
+        really_flushed -= p->nchars;
+    }
     return really_flushed;
 }
 
@@ -299,9 +318,6 @@ add_to_queue(struct text_queue *q, const char *b, int n)
 {
     struct text_block *p;
 
-    if (n == 0)
-	return;
-
     p = make_text_block(b, n);
     p->nxt = 0;
     *q->tail = p;
@@ -309,17 +325,25 @@ add_to_queue(struct text_queue *q, const char *b, int n)
     q->lines++;
 }
 
-int
-queue_write(struct descriptor_data *d, const char *b, int n)
-{
+static void
+flush_output_queue(struct descriptor_data *d, int include_message, int size_limit) {
     int space;
 
-    space = tp_max_output - d->output_size - n;
-    if (space < 0)
-	d->output_size -= flush_queue(&d->output, -space);
+    space = size_limit - d->output_size;
+    if (space < 0) {
+	d->output_size -= flush_queue(&d->output, -space, 1);
+    }
+}
+
+void
+queue_write(struct descriptor_data *d, const char *b, int n)
+{
+    if (n == 0)
+        return;
+    flush_output_queue(d, 1, tp_max_output - n);
     add_to_queue(&d->output, b, n);
     d->output_size += n;
-    return n;
+    return;
 }
 
 static int
@@ -362,9 +386,12 @@ dump_users(struct descriptor_data *e, char *user)
 	user++;
     }
 
-    if (wizard)
+    if (wizard) {
+        char *log_name = whowhere(e->player);
 	/* S/he is connected and not quelled. Okay; log it. */
-	log_command("%s: %s", whowhere(e->player), "WHO");
+	log_command("%s: %s", log_name, "WHO");
+        free(log_name);
+    }
 
     if (!*user)
 	user = NULL;
@@ -1235,8 +1262,7 @@ socket_write(struct descriptor_data * d, const void *buf, size_t count)
 	i = SSL_write(d->ssl_session, buf, count);
 	if (i < 0) {
 	    i = SSL_get_error(d->ssl_session, i);
-	    if (i == SSL_ERROR_WANT_READ || i == SSL_ERROR_WANT_WRITE) {
-		/* log_ssl_error("write 0", d->descriptor, i); */
+            if (i == SSL_ERROR_WANT_WRITE || i == SSL_ERROR_WANT_READ) {
 #ifdef WIN32
 		WSASetLastError(WSAEWOULDBLOCK);
 #else
@@ -1267,8 +1293,14 @@ socket_write(struct descriptor_data * d, const void *buf, size_t count)
 }
 #endif
 
-static int
-queue_immediate(struct descriptor_data *d, const char *msg)
+static void
+queue_immediate_raw(struct descriptor_data *d, const char *msg)
+{
+    add_to_queue(&d->priority_output, msg, strlen(msg));
+}
+
+static void
+queue_immediate_and_flush(struct descriptor_data *d, const char *msg)
 {
     char buf[BUFFER_LEN + 8];
     int quote_len = 0;
@@ -1283,58 +1315,59 @@ queue_immediate(struct descriptor_data *d, const char *msg)
 	strip_ansi(buf, msg);
     }
 
+    flush_output_queue(d, 0, 0);
 #ifdef MCP_SUPPORT
     if (d->mcpframe.enabled
-	&& !(strncmp(buf, MCP_MESG_PREFIX, 3) && strncmp(buf, MCP_QUOTE_PREFIX, 3))) {
-	quote_len = strlen(MCP_QUOTE_PREFIX);
-	socket_write(d, MCP_QUOTE_PREFIX, quote_len);
+        && !(strncmp(buf, MCP_MESG_PREFIX, 3) && strncmp(buf, MCP_QUOTE_PREFIX, 3))) {
+        queue_immediate_raw(d, MCP_QUOTE_PREFIX);
     }
 #endif
-    return socket_write(d, buf, strlen(buf)) + quote_len;
+    queue_immediate_raw(d, (const char *) buf);
+    process_output(d);
 }
 
 static void
 goodbye_user(struct descriptor_data *d)
 {
-    queue_immediate(d, "\r\n");
-    queue_immediate(d, tp_leave_mesg);
-    queue_immediate(d, "\r\n\r\n");
+    char buf[BUFFER_LEN];
+    snprintf(buf, sizeof(buf), "\r\n%s\r\n\r\n", tp_leave_mesg);
+    queue_immediate_and_flush(d, buf);
 }
 
 static void
 idleboot_user(struct descriptor_data *d)
 {
-    queue_immediate(d, "\r\n");
-    queue_immediate(d, tp_idle_mesg);
-    queue_immediate(d, "\r\n\r\n");
+    char buf[BUFFER_LEN];
+    snprintf(buf, sizeof(buf), "\r\n%s\r\n\r\n", tp_idle_mesg);
+    queue_immediate_and_flush(d, buf);
     d->booted = 1;
+}
+
+static void
+free_queue(struct text_queue *q)
+{
+    struct text_block *cur, *next;
+
+    cur = q->head;
+    while (cur) {
+	next = cur->nxt;
+	free_text_block(cur);
+	cur = next;
+    }
+    q->lines = 0;
+    q->head = NULL;
+    q->tail = &q->head;
 }
 
 static void
 freeqs(struct descriptor_data *d)
 {
-    struct text_block *cur, *next;
-
-    cur = d->output.head;
-    while (cur) {
-	next = cur->nxt;
-	free_text_block(cur);
-	cur = next;
-    }
-    d->output.lines = 0;
-    d->output.head = 0;
-    d->output.tail = &d->output.head;
-
-    cur = d->input.head;
-    while (cur) {
-	next = cur->nxt;
-	free_text_block(cur);
-	cur = next;
-    }
-    d->input.lines = 0;
-    d->input.head = 0;
-    d->input.tail = &d->input.head;
-
+#ifdef USE_SSL
+    free_queue(&d->pending_ssl_write);
+#endif
+    free_queue(&d->priority_output);
+    free_queue(&d->output);
+    free_queue(&d->input);
     if (d->raw_input)
 	FREE(d->raw_input);
     d->raw_input = 0;
@@ -1412,6 +1445,10 @@ shutdownsock(struct descriptor_data *d)
 #ifdef MCP_SUPPORT
     mcp_frame_clear(&d->mcpframe);
 #endif
+#ifdef USE_SSL
+    if (d->ssl_session)
+        SSL_free(d->ssl_session);
+#endif
     FREE(d);
     ndescriptors--;
     log_status("CONCOUNT: There are now %d open connections.", ndescriptors);
@@ -1459,6 +1496,9 @@ initializesock(int s, const char *hostname, int is_ssl)
     d->descriptor = s;
 #ifdef USE_SSL
     d->ssl_session = NULL;
+    d->pending_ssl_write.lines = 0;
+    d->pending_ssl_write.head = 0;
+    d->pending_ssl_write.tail = &d->pending_ssl_write.head;
 #endif
     d->connected = 0;
     d->booted = 0;
@@ -1469,6 +1509,9 @@ initializesock(int s, const char *hostname, int is_ssl)
     d->connected_at = time(NULL);
     make_nonblocking(s);
     d->output_size = 0;
+    d->priority_output.lines = 0;
+    d->priority_output.head = 0;
+    d->priority_output.tail = &d->priority_output.head;
     d->output.lines = 0;
     d->output.head = 0;
     d->output.tail = &d->output.head;
@@ -1509,7 +1552,7 @@ initializesock(int s, const char *hostname, int is_ssl)
 	unsigned char telnet_do_starttls[] = {
 	    TELNET_IAC, TELNET_DO, TELOPT_STARTTLS, '\0'
 	};
-	socket_write(d, telnet_do_starttls, 3);
+	queue_immediate_raw(d, (const char *)telnet_do_starttls);
 	queue_write(d, "\r\n", 2);
     }
 #endif
@@ -1612,13 +1655,6 @@ addrout_v6(int lport, struct in6_addr *a, unsigned short prt)
 
 	    if (lag > 10) {
 		secs_lost = lag;
-
-# if MIN_SECS_TO_LOG
-		if (lag >= CFG_MIN_SECS_TO_LOG) {
-		    log_status("GETHOSTBYNAME-RAN: secs %3d", lag);
-		}
-# endif
-
 	    }
 	    if (he) {
 		snprintf(buf, sizeof(buf), "%s(%u)", he->h_name, prt);
@@ -1702,13 +1738,6 @@ addrout(int lport, long a, unsigned short prt)
 
 	    if (lag > 10) {
 		secs_lost = (int)lag;
-
-#if MIN_SECS_TO_LOG
-		if (lag >= CFG_MIN_SECS_TO_LOG) {
-		    log_status("GETHOSTBYNAME-RAN: secs %3d", lag);
-		}
-#endif
-
 	    }
 	    if (he) {
 		snprintf(buf, sizeof(buf), "%s(%u)", he->h_name, prt);
@@ -1804,10 +1833,10 @@ new_connection(int port, int sock, int is_ssl)
     }
 }
 
-static int
+/* sends keppalive; depends on process_output to set booted if connection is dead */
+static void 
 send_keepalive(struct descriptor_data *d)
 {
-    int cnt;
     unsigned char telnet_nop[] = {
 	TELNET_IAC, TELNET_NOP, '\0'
     };
@@ -1818,29 +1847,11 @@ send_keepalive(struct descriptor_data *d)
     }
 
     if (d->telnet_enabled) {
-	cnt = socket_write(d, telnet_nop, 2);
+        queue_immediate_raw(d, (const char *)telnet_nop);
     } else {
-	cnt = socket_write(d, "", 0);
+        queue_immediate_raw(d, "");
     }
-#ifdef WIN32
-    /* We expect a 0 return */
-    if (cnt < 0 || cnt == SOCKET_ERROR) {
-	if (WSAGetLastError() == WSAEWOULDBLOCK)
-	    return 1;
-	return 0;
-    }
-#else
-    /* We expect a 0 return */
-    if (cnt < 0) {
-	if (errno == EWOULDBLOCK)
-	    return 1;
-	if (errno == 0)
-	    return 1;
-	log_status("keepalive socket write descr=%i, errno=%i", d->descriptor, errno);
-	return 0;
-    }
-#endif
-    return 1;
+    process_output(d);
 }
 
 static int
@@ -1911,7 +1922,7 @@ process_input(struct descriptor_data *d)
 	    case TELNET_AYT:	/* AYT */
 		{
 		    char sendbuf[] = "[Yes]\r\n";
-		    socket_write(d, sendbuf, strlen(sendbuf));
+                    queue_immediate_raw(d, (const char *)sendbuf);
 		    d->telnet_state = TELNET_STATE_NORMAL;
 		    break;
 		}
@@ -1945,18 +1956,18 @@ process_input(struct descriptor_data *d)
 		break;
 	    case TELNET_SE:	/* Go Ahead */
 #ifdef USE_SSL
-		if (d->telnet_sb_opt == TELOPT_STARTTLS) {
-		    d->block_writes = 0;
-		    d->short_reads = 0;
-		    if (tp_starttls_allow) {
-			d->is_starttls = 1;
-			d->ssl_session = SSL_new(ssl_ctx);
-			SSL_set_fd(d->ssl_session, d->descriptor);
-			int ssl_ret_value = SSL_accept(d->ssl_session);
-			if (ssl_ret_value != 0)
-			    ssl_log_error(d->ssl_session, ssl_ret_value);
-			log_status("STARTTLS: %i", d->descriptor);
-		    }
+		if (d->telnet_sb_opt == TELOPT_STARTTLS && !d->ssl_session) {
+                    d->block_writes = 0;
+                    d->short_reads = 0;
+                    if (tp_starttls_allow) {
+                        d->is_starttls = 1;
+                        d->ssl_session = SSL_new(ssl_ctx);
+                        SSL_set_fd(d->ssl_session, d->descriptor);
+                        int ssl_ret_value = SSL_accept(d->ssl_session);
+                        if (ssl_ret_value != 0)
+                            ssl_log_error(d->ssl_session, ssl_ret_value);
+                        log_status("STARTTLS: %i", d->descriptor);
+                    }
 		}
 #endif
 		d->telnet_state = TELNET_STATE_NORMAL;
@@ -1986,9 +1997,10 @@ process_input(struct descriptor_data *d)
 		sendbuf[4] = TELNET_IAC;
 		sendbuf[5] = TELNET_SE;
 		sendbuf[6] = '\0';
-		socket_write(d, sendbuf, 6);
+                queue_immediate_raw(d, (const char *)sendbuf);
 		d->block_writes = 1;
 		d->short_reads = 1;
+                process_output(d);
 	    } else
 #endif
 		/* Otherwise, we don't negotiate: send back DONT option */
@@ -1997,7 +2009,7 @@ process_input(struct descriptor_data *d)
 		sendbuf[1] = TELNET_DONT;
 		sendbuf[2] = *q;
 		sendbuf[3] = '\0';
-		socket_write(d, sendbuf, 3);
+                queue_immediate_raw(d, (const char *)sendbuf);
 	    }
 	    d->telnet_state = TELNET_STATE_NORMAL;
 	    d->telnet_enabled = 1;
@@ -2008,7 +2020,7 @@ process_input(struct descriptor_data *d)
 	    sendbuf[1] = TELNET_WONT;
 	    sendbuf[2] = *q;
 	    sendbuf[3] = '\0';
-	    socket_write(d, sendbuf, 3);
+            queue_immediate_raw(d, (const char *)sendbuf);
 	    d->telnet_state = TELNET_STATE_NORMAL;
 	    d->telnet_enabled = 1;
 	} else if (d->telnet_state == TELNET_STATE_WONT) {
@@ -2022,7 +2034,7 @@ process_input(struct descriptor_data *d)
 	    sendbuf[1] = TELNET_WONT;
 	    sendbuf[2] = *q;
 	    sendbuf[3] = '\0';
-	    socket_write(d, sendbuf, 3);
+            queue_immediate_raw(d, (const char *)sendbuf);
 	    d->telnet_state = TELNET_STATE_NORMAL;
 	    d->telnet_enabled = 1;
 	} else if (d->telnet_state == TELNET_STATE_SB) {
@@ -2397,7 +2409,6 @@ shovechars()
 		if (d->booted == 2) {
 		    goodbye_user(d);
 		}
-		d->booted = 0;
 		process_output(d);
 		shutdownsock(d);
 	    }
@@ -2442,13 +2453,13 @@ shovechars()
 #endif
 	}
 	for (struct descriptor_data *d = descriptor_list; d; d = d->next) {
-	    if (d->input.lines > 100)
+	    if (d->input.lines > 0)
 		timeout = slice_timeout;
-	    else
+            if (d->input.lines < 100)
 		FD_SET(d->descriptor, &input_set);
 
 #ifdef USE_SSL
-	    if (d->output.head && !d->block_writes) {
+	    if (has_output(d)) {
 		/*
 		 * If SSL isn't already in place, give TELNET STARTTLS
 		 * handshaking a couple seconds to respond, to start it.
@@ -2481,7 +2492,7 @@ shovechars()
 		}
 	    }
 #else
-	    if (d->output.head && !d->block_writes) {
+	    if (has_output(d)) {
 		FD_SET(d->descriptor, &output_set);
 	    }
 #endif
@@ -2649,9 +2660,7 @@ shovechars()
 		    }
 		}
 		if (FD_ISSET(d->descriptor, &output_set)) {
-		    if (!process_output(d)) {
-			d->booted = 1;
-		    }
+		    process_output(d);
 		}
 		if (d->connected) {
 		    cnt++;
@@ -2669,9 +2678,9 @@ shovechars()
 		if (d->connected && tp_idle_ping_enable && (tp_idle_ping_time > 0)
 		    && ((now - d->last_pinged_at) > tp_idle_ping_time)) {
 		    const char *tmpptr = get_property_class(d->player, NO_IDLE_PING_PROP);
-		    if (!tmpptr && !send_keepalive(d)) {
-			d->booted = 1;
-		    }
+		    if (!tmpptr) {
+                        send_keepalive(d);
+                    }
 		}
 	    }
 	    if (cnt > con_players_max) {
@@ -3021,10 +3030,7 @@ wall_and_flush(const char *msg)
     for (struct descriptor_data *d = descriptor_list; d; d = dnext) {
 	dnext = d->next;
 	queue_ansi(d, buf);
-	/* queue_write(d, "\r\n", 2); */
-	if (!process_output(d)) {
-	    d->booted = 1;
-	}
+	process_output(d);
     }
 }
 
@@ -3041,64 +3047,111 @@ wall_wizards(const char *msg)
 	dnext = d->next;
 	if (d->connected && Wizard(d->player)) {
 	    queue_ansi(d, buf);
-	    if (!process_output(d)) {
-		d->booted = 1;
-	    }
+	    process_output(d);
 	}
     }
 }
 
-int
+/* write a text block from a queue, advancing the queue if needed;
+   adding the block to d->pending_ssl_write if needed;
+   returns 1 if something incomplete written, 0 if write started blocking,
+   -1 if I/O error
+*/
+static int
+write_text_block(struct descriptor_data *d, struct text_block **qp)
+{
+    int count;
+    struct text_block *cur = *qp;
+    int was_wouldblock = 0, was_error = 0;
+
+    if (!cur)
+        return 1;
+
+    count = socket_write(d, cur->start, cur->nchars);
+
+#ifdef WIN32
+    if (count <= 0 || count == SOCKET_ERROR) {
+        if (WSAGetLastError() == WSAEWOULDBLOCK)
+            was_wouldblock = 1;
+        else
+            was_error = 1;
+    }
+#else
+    if (count <= 0) {
+        if (errno == EWOULDBLOCK)
+            was_wouldblock = 1;
+        else
+            was_error = 1;
+    }
+#endif
+    if (was_error) {
+        return -1;
+    } else if (was_wouldblock) {
+        count = 0;
+    }
+    d->output_size -= count;
+    if (count == cur->nchars) {
+        *qp = cur->nxt;
+        free_text_block(cur);
+        return 0;
+    }
+    cur->nchars -= count;
+    cur->start += count;
+#ifdef USE_SSL
+    if (cur != d->pending_ssl_write.head) {
+        assert(!d->pending_ssl_write.head);
+        d->pending_ssl_write.head = cur;
+        d->pending_ssl_write.tail = &cur->nxt;
+        d->pending_ssl_write.lines = 1;
+        *qp = cur->nxt;
+        cur->nxt = 0;
+    }
+#endif
+    return 1;
+}
+
+static int
+write_queue(struct descriptor_data * d, struct text_queue *queue)
+{
+    int result = 0;
+    struct text_block **qp = &queue->head;
+    while (*qp && result == 0) {
+        result = write_text_block(d, qp);
+        if (result == 0) {
+            queue->lines--;
+        }
+    }
+    if (!*qp) {
+        queue->tail = &queue->head;
+    }
+    if (result == -1) {
+        if (!d->booted) {
+            d->booted = 1;
+        }
+        result = 1;
+    }
+    return result;
+}
+
+void
 process_output(struct descriptor_data *d)
 {
-    struct text_block **qp, *cur;
-    int cnt;
-
     /* drastic, but this may give us crash test data */
     if (!d || !d->descriptor) {
 	panic("process_output(): bad descriptor or connect struct !");
     }
 
-    if (d->output.lines == 0) {
-	return 1;
-    }
 
-    if (d->block_writes) {
-	return 1;
-    }
-
-    for (qp = &d->output.head; (cur = *qp);) {
-	cnt = socket_write(d, cur->start, cur->nchars);
-
-#ifdef WIN32
-	if (cnt <= 0 || cnt == SOCKET_ERROR) {
-	    if (WSAGetLastError() == WSAEWOULDBLOCK)
-		return 1;
-	    return 0;
-	}
-#else
-	if (cnt <= 0) {
-	    if (errno == EWOULDBLOCK)
-		return 1;
-	    return 0;
-	}
+#ifdef USE_SSL
+    if (write_queue(d, &d->pending_ssl_write))
+        return;
 #endif
-	d->output_size -= cnt;
-	if (cnt == cur->nchars) {
-	    d->output.lines--;
-	    if (!cur->nxt) {
-		d->output.tail = qp;
-		d->output.lines = 0;
-	    }
-	    *qp = cur->nxt;
-	    free_text_block(cur);
-	    continue;		/* do not adv ptr */
-	}
-	cur->nchars -= cnt;
-	cur->start += cnt;
-	break;
-    }
-    return 1;
+    if (write_queue(d, &d->priority_output))
+        return;
+    if (d->block_writes)
+	return;
+    if (write_queue(d, &d->output))
+        return;
 }
 
 int
@@ -3147,12 +3200,20 @@ close_sockets(const char *msg)
 	if (d->connected) {
 	    forget_player_descr(d->player, d->descriptor);
 	}
+#ifdef USE_SSL
+        if (d->pending_ssl_write.head)
+            socket_write(d, d->pending_ssl_write.head->start, d->pending_ssl_write.head->nchars);
+#endif
 	socket_write(d, msg, strlen(msg));
 	socket_write(d, shutdown_message, strlen(shutdown_message));
 	if (shutdown(d->descriptor, 2) < 0)
 	    perror("shutdown");
 	close(d->descriptor);
 	freeqs(d);
+#ifdef USE_SSL
+        if (d->ssl_session)
+            SSL_free(d->ssl_session);
+#endif
 	*d->prev = d->next;
 	if (d->next)
 	    d->next->prev = d->prev;
@@ -3184,6 +3245,8 @@ close_sockets(const char *msg)
 	close(ssl_sock_v6[i]);
     }
 # endif
+    SSL_CTX_free(ssl_ctx);
+    ssl_ctx = NULL;
 #endif
 }
 
@@ -3193,8 +3256,10 @@ do_armageddon(dbref player, const char *msg)
     char buf[BUFFER_LEN];
 
     if (!Wizard(player) || Typeof(player) != TYPE_PLAYER) {
+        char unparse_buf[BUFFER_LEN];
+        unparse_object(player, player, unparse_buf, sizeof(unparse_buf));
 	notify(player, "Sorry, but you don't look like the god of War to me.");
-	log_status("ILLEGAL ARMAGEDDON: tried by %s", unparse_object(player, player));
+	log_status("ILLEGAL ARMAGEDDON: tried by %s", unparse_buf);
 	return;
     }
     snprintf(buf, sizeof(buf), "\r\nImmediate shutdown initiated by %s.\r\n", NAME(player));
@@ -3668,16 +3733,12 @@ pdescrflush(int c)
     if (c != -1) {
 	d = descrdata_by_descr(c);
 	if (d) {
-	    if (!process_output(d)) {
-		d->booted = 1;
-	    }
+	    process_output(d);
 	    i++;
 	}
     } else {
 	for (d = descriptor_list; d; d = d->next) {
-	    if (!process_output(d)) {
-		d->booted = 1;
-	    }
+	    process_output(d);
 	    i++;
 	}
     }
@@ -4330,7 +4391,7 @@ main(int argc, char **argv)
 
     if (!sanity_interactive) {
 
-	log_status("INIT: TinyMUCK %s starting.", "version");
+	log_status("INIT: TinyMUCK %s starting.", VERSION);
 
 # ifndef WIN32
 	/* Go into the background unless requested not to */

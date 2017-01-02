@@ -15,7 +15,6 @@
 
 #include <stdarg.h>
 
-#define unparse(x) ((char*)unparse_object(GOD, (x)))
 #define SanFixed(ref, fixed) san_fixed_log((fixed), 1, (ref), -1)
 #define SanFixed2(ref, ref2, fixed) san_fixed_log((fixed), 1, (ref), (ref2))
 #define SanFixedRef(ref, fixed) san_fixed_log((fixed), 0, (ref), -1)
@@ -32,8 +31,8 @@ flush_user_output(dbref player)
     darr = get_player_descrs(OWNER(player), &dcount);
     for (int di = 0; di < dcount; di++) {
         d = descrdata_by_descr(darr[di]);
-        if (d && !process_output(d)) {
-            d->booted = 1;
+        if (d) {
+            process_output(d);
         }
     }
 }
@@ -64,6 +63,15 @@ SanPrint(dbref player, const char *format, ...)
     va_end(args);
 }
 
+static void
+SanPrintObject(dbref player, const char *prefix, dbref ref)
+{
+    char unparse_buf[16384];
+    unparse_object(NOTHING, ref, unparse_buf, sizeof(unparse_buf));
+    SanPrint(player, "%s%s\n", prefix, unparse_buf);
+}
+
+
 void
 do_examine_sanity(dbref player, const char *arg)
 {
@@ -84,27 +92,27 @@ do_examine_sanity(dbref player, const char *arg)
     if (Typeof(d) == TYPE_GARBAGE) {
 	SanPrint(player, "Object:         *GARBAGE* #%d", d);
     } else {
-	SanPrint(player, "Object:         %s", unparse(d));
+        SanPrintObject(player, "Object:         ", d);
     }
 
-    SanPrint(player, "  Owner:          %s", unparse(OWNER(d)));
-    SanPrint(player, "  Location:       %s", unparse(LOCATION(d)));
-    SanPrint(player, "  Contents Start: %s", unparse(CONTENTS(d)));
-    SanPrint(player, "  Exits Start:    %s", unparse(EXITS(d)));
-    SanPrint(player, "  Next:           %s", unparse(NEXTOBJ(d)));
+    SanPrintObject(player, "  Owner:          ", OWNER(d));
+    SanPrintObject(player, "  Location:       ", LOCATION(d));
+    SanPrintObject(player, "  Contents Start: ", CONTENTS(d));
+    SanPrintObject(player, "  Exits Start:    ", EXITS(d));
+    SanPrintObject(player, "  Next:           ", NEXTOBJ(d));
 
     switch (Typeof(d)) {
     case TYPE_THING:
-	SanPrint(player, "  Home:           %s", unparse(THING_HOME(d)));
+	SanPrintObject(player, "  Home:           ", THING_HOME(d));
 	SanPrint(player, "  Value:          %d", GETVALUE(d));
 	break;
 
     case TYPE_ROOM:
-	SanPrint(player, "  Drop-to:        %s", unparse(DBFETCH(d)->sp.room.dropto));
+	SanPrintObject(player, "  Drop-to:        ", DBFETCH(d)->sp.room.dropto);
 	break;
 
     case TYPE_PLAYER:
-	SanPrint(player, "  Home:           %s", unparse(PLAYER_HOME(d)));
+	SanPrintObject(player, "  Home:           ", PLAYER_HOME(d));
 	SanPrint(player, "  Pennies:        %d", GETVALUE(d));
 	if (player < 0) {
 	    SanPrint(player, "  Password MD5:   %s", PLAYER_PASSWORD(d));
@@ -114,7 +122,7 @@ do_examine_sanity(dbref player, const char *arg)
     case TYPE_EXIT:
 	SanPrint(player, "  Links:");
 	for (int i = 0; i < DBFETCH(d)->sp.exit.ndest; i++)
-	    SanPrint(player, "    %s", unparse(DBFETCH(d)->sp.exit.dest[i]));
+	    SanPrintObject(player, "    ", DBFETCH(d)->sp.exit.dest[i]);
 	break;
 
     case TYPE_PROGRAM:
@@ -125,13 +133,13 @@ do_examine_sanity(dbref player, const char *arg)
     SanPrint(player, "Referring Objects:");
     for (dbref i = 0; i < db_top; i++) {
 	if (CONTENTS(i) == d) {
-	    SanPrint(player, "  By contents field: %s", unparse(i));
+	    SanPrintObject(player, "  By contents field: ", i);
 	}
 	if (EXITS(i) == d) {
-	    SanPrint(player, "  By exits field:    %s", unparse(i));
+	    SanPrintObject(player, "  By exits field:    ", i);
 	}
 	if (NEXTOBJ(i) == d) {
-	    SanPrint(player, "  By next field:     %s", unparse(i));
+	    SanPrintObject(player, "  By next field:     ", i);
 	}
     }
 
@@ -141,7 +149,9 @@ do_examine_sanity(dbref player, const char *arg)
 static void
 violate(dbref player, dbref i, const char *s)
 {
-    SanPrint(player, "Object \"%s\" %s!", unparse(i), s);
+    char unparse_buf[16384];
+    unparse_object(NOTHING, i, unparse_buf, sizeof(unparse_buf));
+    SanPrint(player, "Object \"%s\" %s!", unparse_buf, s);
     sanity_violated = 1;
 }
 
@@ -466,10 +476,10 @@ san_fixed_log(char *format, int unparse, dbref ref1, dbref ref2)
 
     if (unparse) {
 	if (ref1 >= 0) {
-	    strcpyn(buf1, sizeof(buf1), unparse(ref1));
+            unparse_object(NOTHING, ref1, buf1, sizeof(buf1));
 	}
 	if (ref2 >= 0) {
-	    strcpyn(buf2, sizeof(buf2), unparse(ref2));
+            unparse_object(NOTHING, ref2, buf2, sizeof(buf2));
 	}
 	log2file("logs/sanfixed", format, buf1, buf2);
     } else {
@@ -623,6 +633,7 @@ static void
 create_lostandfound(dbref * player, dbref * room)
 {
     char player_name[PLAYER_NAME_LIMIT + 2] = "lost+found";
+    char unparse_buf[16384];
     int temp = 0;
 
     *room = new_object();
@@ -638,8 +649,9 @@ create_lostandfound(dbref * player, dbref * room)
 	snprintf(player_name, sizeof(player_name), "lost+found%d", ++temp);
     }
     if (strlen(player_name) >= PLAYER_NAME_LIMIT) {
+        unparse_object(NOTHING, GOD, unparse_buf, sizeof(unparse_buf));
 	log2file("logs/sanfixed", "WARNING: Unable to get lost+found player, "
-		 "using %s", unparse(GOD));
+		 "using %s", unparse_buf);
 	*player = GOD;
     } else {
 	const char *rpass;
@@ -660,8 +672,9 @@ create_lostandfound(dbref * player, dbref * room)
 	PUSH(*player, CONTENTS(*room));
 	DBDIRTY(*player);
 	add_player(*player);
+        unparse_object(NOTHING, *player, unparse_buf, sizeof(unparse_buf));
 	log2file("logs/sanfixed", "Using %s (with password %s) to resolve "
-		 "unknown owner", unparse(*player), rpass);
+		 "unknown owner", unparse_buf, rpass);
     }
     OWNER(*room) = *player;
     DBDIRTY(*room);
@@ -960,6 +973,7 @@ do_sanchange(dbref player, const char *command)
     char field[50];
     char which[1000];
     char value[1000];
+    char unparse_buf[1000];
     int *ip;
     int results;
 
@@ -985,35 +999,37 @@ do_sanchange(dbref player, const char *command)
 	return;
     }
 
+    unparse_object(NOTHING, v, unparse_buf, sizeof(unparse_buf));
+
     if (!strcasecmp(field, "next")) {
-	strcpyn(buf2, sizeof(buf2), unparse(NEXTOBJ(d)));
+        unparse_object(NOTHING, NEXTOBJ(d), buf2, sizeof(buf2));
 	NEXTOBJ(d) = v;
 	DBDIRTY(d);
-	SanPrint(player, "## Setting #%d's next field to %s", d, unparse(v));
+	SanPrint(player, "## Setting #%d's next field to %s", d, unparse_buf);
 
     } else if (!strcasecmp(field, "exits")) {
-	strcpyn(buf2, sizeof(buf2), unparse(EXITS(d)));
+        unparse_object(NOTHING, EXITS(d), buf2, sizeof(buf2));
 	EXITS(d) = v;
 	DBDIRTY(d);
-	SanPrint(player, "## Setting #%d's Exits list start to %s", d, unparse(v));
+	SanPrint(player, "## Setting #%d's next field to %s", d, unparse_buf);
 
     } else if (!strcasecmp(field, "contents")) {
-	strcpyn(buf2, sizeof(buf2), unparse(CONTENTS(d)));
+        unparse_object(NOTHING, CONTENTS(d), buf2, sizeof(buf2));
 	CONTENTS(d) = v;
 	DBDIRTY(d);
-	SanPrint(player, "## Setting #%d's Contents list start to %s", d, unparse(v));
+	SanPrint(player, "## Setting #%d's Contents list start to %s", d, unparse_buf);
 
     } else if (!strcasecmp(field, "location")) {
-	strcpyn(buf2, sizeof(buf2), unparse(LOCATION(d)));
+        unparse_object(NOTHING, LOCATION(d), buf2, sizeof(buf2));
 	LOCATION(d) = v;
 	DBDIRTY(d);
-	SanPrint(player, "## Setting #%d's location to %s", d, unparse(v));
+	SanPrint(player, "## Setting #%d's location to %s", d, unparse_buf);
 
     } else if (!strcasecmp(field, "owner")) {
-	strcpyn(buf2, sizeof(buf2), unparse(OWNER(d)));
+        unparse_object(NOTHING, OWNER(d), buf2, sizeof(buf2));
 	OWNER(d) = v;
 	DBDIRTY(d);
-	SanPrint(player, "## Setting #%d's owner to %s", d, unparse(v));
+	SanPrint(player, "## Setting #%d's owner to %s", d, unparse_buf);
 
     } else if (!strcasecmp(field, "home")) {
 	switch (Typeof(d)) {
@@ -1026,14 +1042,14 @@ do_sanchange(dbref player, const char *command)
 	    break;
 
 	default:
-	    printf("%s has no home to set.\n", unparse(d));
+	    printf("%s has no home to set.\n", unparse_buf);
 	    return;
 	}
 
-	strcpyn(buf2, sizeof(buf2), unparse(*ip));
+        unparse_object(NOTHING, *ip, buf2, sizeof(buf2));
 	*ip = v;
 	DBDIRTY(d);
-	printf("Setting home to: %s\n", unparse(v));
+	SanPrint(player, "## Setting #%d's home to: %s\n", d, unparse_buf);
 
     } else {
 	if (player > NOTHING) {
@@ -1166,6 +1182,8 @@ extract_program(FILE * f, dbref obj)
 static void
 extract_object(FILE * f, dbref d)
 {
+    char unparse_buf[1024];
+#define unparse(x) (unparse_object(NOTHING, (x), unparse_buf, sizeof(unparse_buf)), unparse_buf)
     fprintf(f, "  #%d\n", d);
     fprintf(f, "  Object:         %s\n", unparse(d));
     fprintf(f, "  Owner:          %s\n", unparse(OWNER(d)));
@@ -1205,6 +1223,7 @@ extract_object(FILE * f, dbref d)
     default:
 	break;
     }
+#undef unparse
 
 #ifdef DISKBASE
     fetchprops(d, NULL);
@@ -1372,14 +1391,17 @@ hack_it_up(void)
 void
 san_main(void)
 {
+    char unparse_buf[1024];
     printf("\nEntering the Interactive Sanity DB editor.\n");
     printf("Good luck!\n\n");
 
     printf("Number of objects in DB is: %d\n", db_top - 1);
-    printf("Global Environment is: %s\n", unparse(GLOBAL_ENVIRONMENT));
+    unparse_object(NOTHING, GLOBAL_ENVIRONMENT, unparse_buf, sizeof(unparse_buf));
+    printf("Global Environment is: %s\n", unparse_buf);
 
 #ifdef GOD_PRIV
-    printf("God is: %s\n", unparse(GOD));
+    unparse_object(NOTHING, GOD, unparse_buf, sizeof(unparse_buf));
+    printf("God is: %s\n", unparse_buf);
     printf("\n");
 #endif
 

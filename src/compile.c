@@ -3802,20 +3802,22 @@ free_prog_real(dbref prog, const char *file, const int line)
     int siz = PROGRAM_SIZ(prog);
 
     if (c) {
+        char unparse_buf[BUFFER_LEN];
+        unparse_object(GOD, prog, unparse_buf, sizeof(unparse_buf));
 	if (PROGRAM_INSTANCES(prog)) {
 	    log_status("WARNING: freeing program %s with %d instances reported from %s:%d",
-		       unparse_object(GOD, prog), PROGRAM_INSTANCES(prog), file, line);
+		       unparse_buf, PROGRAM_INSTANCES(prog), file, line);
 	}
 	i = scan_instances(prog);
 	if (i) {
 	    log_status("WARNING: freeing program %s with %d instances found from %s:%d",
-		       unparse_object(GOD, prog), i, file, line);
+		       unparse_buf, i, file, line);
 	}
 	for (i = 0; i < siz; i++) {
 	    if (c[i].type == PROG_ADD) {
 		if (c[i].data.addr->links != 1) {
 		    log_status("WARNING: Freeing address in %s with link count %d from %s:%d",
-			       unparse_object(GOD, prog), c[i].data.addr->links, file, line);
+			      unparse_buf, c[i].data.addr->links, file, line);
 		}
 		free(c[i].data.addr);
 	    } else {

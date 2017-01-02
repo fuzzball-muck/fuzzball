@@ -148,16 +148,10 @@
 #endif
 
 /*
- * Memory/malloc stuff.
- */
-#undef LOG_PROPS
-#undef DEBUGDBDIRTY
-
-/*
  * Include all the good standard headers here.
  */
-#include <stdio.h>
 #include <ctype.h>
+#include <stdio.h>
 #include <sys/types.h>
 
 typedef int dbref;

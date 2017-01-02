@@ -456,8 +456,10 @@ unparse_boolexp1(dbref player, struct boolexp *b, short outer_type, int fullname
 	    break;
 	case BOOLEXP_CONST:
 	    if (fullname) {
+                char unparse_buf[BUFFER_LEN];
+                unparse_object(player, b->thing, unparse_buf, sizeof(unparse_buf));
 		strcpyn(buftop, sizeof(boolexp_buf) - (buftop - boolexp_buf),
-			unparse_object(player, b->thing));
+                        unparse_buf);
 	    } else {
 		snprintf(buftop, sizeof(boolexp_buf) - (buftop - boolexp_buf), "#%d",
 			 b->thing);

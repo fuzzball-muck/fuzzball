@@ -21,14 +21,7 @@ extern char match_cmdname[BUFFER_LEN];
 #endif
 
 #define DBFETCH(x)  (db + (x))
-#ifdef DEBUGDBDIRTY
-#  define DBDIRTY(x)  {if (!(db[x].flags & OBJECT_CHANGED))  \
-			   log2file("dirty.out", "#%d: %s %d\n", (int)x, \
-			   __FILE__, __LINE__); \
-		       db[x].flags |= OBJECT_CHANGED;}
-#else
-#  define DBDIRTY(x)  {db[x].flags |= OBJECT_CHANGED;}
-#endif
+#define DBDIRTY(x)  {db[x].flags |= OBJECT_CHANGED;}
 
 #define DBSTORE(x, y, z)    {DBFETCH(x)->y = z; DBDIRTY(x);}
 
@@ -479,7 +472,7 @@ dbref reverse(dbref);
 void set_source(dbref player, dbref action, dbref source);
 long size_object(dbref i, int load);
 const char *unparse_flags(dbref thing);
-const char *unparse_object(dbref player, dbref object);
+void unparse_object(dbref player, dbref object, char *buffer, size_t size);
 int unset_source(dbref player, dbref action);
 
 #endif				/* _DB_H */

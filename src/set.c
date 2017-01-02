@@ -375,7 +375,9 @@ do_chown(int descr, dbref player, const char *name, const char *newowner)
     if (owner == player)
 	notify(player, "Owner changed to you.");
     else {
-	notifyf(player, "Owner changed to %s.", unparse_object(player, owner));
+        char unparse_buf[BUFFER_LEN];
+        unparse_object(player, owner, unparse_buf, sizeof(unparse_buf));
+	notifyf(player, "Owner changed to %s.", unparse_buf);
     }
     DBDIRTY(thing);
 }
