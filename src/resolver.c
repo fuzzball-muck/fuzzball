@@ -38,7 +38,8 @@
 /*
  * Like strncpy, except it guarentees null termination of the result string.
  * It also has a more sensible argument ordering.
- */ char * strcpyn(char *buf, size_t bufsize, const char *src) {
+ */
+char * strcpyn(char *buf, size_t bufsize, const char *src) {
     size_t pos = 0;
     char *dest = buf;
 
@@ -47,10 +48,6 @@
     }
     *dest = '\0';
     return buf;
-}
-
-int notify(int player, const char *msg) {
-    return printf("%s\n", msg);
 }
 
 #define MALLOC(result, type, number) do { \
@@ -532,7 +529,8 @@ const char * get_username(long a, int prt, int myprt) {
     return (0);
 }
 
-/* addrout -- Translate address 'a' to text.  */ const char * addrout(long a, unsigned short prt, unsigned 
+/* addrout -- Translate address 'a' to text.  */
+const char * addrout(long a, unsigned short prt, unsigned 
 short myprt) {
     static char buf[128];
     char tmpbuf[128];
@@ -580,8 +578,9 @@ short myprt) {
     return buf;
 }
 
-static volatile short shutdown_was_requested = 0; static pthread_mutex_t input_mutex = 
-PTHREAD_MUTEX_INITIALIZER; static pthread_mutex_t output_mutex = PTHREAD_MUTEX_INITIALIZER;
+static volatile short shutdown_was_requested = 0;
+static pthread_mutex_t input_mutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t output_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 int do_resolve(void) {
     int ip1, ip2, ip3, ip4;

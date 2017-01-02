@@ -8,8 +8,6 @@
 #include "interp.h"
 #include "tune.h"
 
-#undef DEBUGARRAYS
-
 extern const char *base_inst[];
 
 /* converts an instruction into a printable string, stores the string in
@@ -81,12 +79,8 @@ insttotext(struct frame *fr, int lev, struct inst *theinst, char *buffer, int bu
 	    break;
 	}
 	if (tp_expanded_debug && expandarrs) {
-#ifdef DEBUGARRAYS
-	    length = snprintf(buffer, buflen, "R%dC%d{", theinst->data.array->links,
-			      theinst->data.array->items);
-#else
 	    length = snprintf(buffer, buflen, "%d{", theinst->data.array->items);
-#endif
+
 	    if (length >= buflen || length == -1) {
 		/* >= because we need room for one more charctor at the end */
 		*buffer = '\0';

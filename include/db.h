@@ -21,14 +21,7 @@ extern char match_cmdname[BUFFER_LEN];
 #endif
 
 #define DBFETCH(x)  (db + (x))
-#ifdef DEBUGDBDIRTY
-#  define DBDIRTY(x)  {if (!(db[x].flags & OBJECT_CHANGED))  \
-			   log2file("dirty.out", "#%d: %s %d\n", (int)x, \
-			   __FILE__, __LINE__); \
-		       db[x].flags |= OBJECT_CHANGED;}
-#else
-#  define DBDIRTY(x)  {db[x].flags |= OBJECT_CHANGED;}
-#endif
+#define DBDIRTY(x)  {db[x].flags |= OBJECT_CHANGED;}
 
 #define DBSTORE(x, y, z)    {DBFETCH(x)->y = z; DBDIRTY(x);}
 

@@ -1909,12 +1909,8 @@ debug_inst(struct frame *fr, int lev, struct inst *pc, int pid, struct inst *sta
 
     buffer[buflen - 1] = '\0';
 
-#ifdef DEBUGARRAYS
-    length = snprintf(buf3, sizeof(buf3), "Debug> (%d Insts.) #%d %d (", PROGRAM_INSTANCES(2),
-                      program, pc->line);
-#else
     length = snprintf(buf3, sizeof(buf3), "Debug> Pid %d: #%d %d (", pid, program, pc->line);
-#endif
+
     if (length == -1) {
         length = sizeof(buf3) - 1;
     }
