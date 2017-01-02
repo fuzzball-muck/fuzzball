@@ -36,9 +36,6 @@ const char *compile_options =
 #ifdef DEBUG
 	"DEBUG "
 #endif
-#ifdef DETACH
-	"DETACH "
-#endif
 #ifdef DISKBASE
 	"DISKBASE "
 #endif

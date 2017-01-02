@@ -396,9 +396,7 @@
 #define PROGRAM_LOG "logs/programs"		/* text of changed programs */
 #define USER_LOG    "logs/user"			/* log of player/program-init msgs. */
 
-#ifdef DETACH
-# define LOG_FILE "logs/fbmuck"			/* Log stdout to ...		*/
-# define LOG_ERR_FILE "logs/fbmuck.err"		/* Log stderr to ...	*/
-#endif
+#define LOG_FILE "logs/fbmuck"			/* Log stdout to ...		*/
+#define LOG_ERR_FILE "logs/fbmuck.err"		/* Log stderr to ...	*/
 
 #endif				/* _DEFAULTS_H */

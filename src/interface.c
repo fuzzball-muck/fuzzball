@@ -91,6 +91,14 @@ static int con_players_curr = 0;	/* for playermax checks. */
 /* If both are still disabled after arg parsing, we'll enable one or both. */
 static int ipv4_enabled = 0;
 static int ipv6_enabled = 0;
+#ifdef USE_IPV6
+static struct in6_addr bind_ipv6_address;
+#endif
+#ifdef WIN32
+static unsigned __int32 bind_ipv4_address;
+#else
+static uint32_t bind_ipv4_address;
+#endif
 
 static int numports = 0;
 static int numsocks = 0;
@@ -135,6 +143,9 @@ static struct descriptor_data *descr_lookup_table[FD_SETSIZE];
                                      } while (0)
 
 #define FREE(x) (free((void *) x))
+
+static int no_detach_flag = 0;
+static char resolver_program[BUFFER_LEN];
 
 short db_conversion_flag = 0;
 
@@ -189,6 +200,12 @@ show_program_usage(char *prog)
     fprintf(stderr,
 	    "        -godpasswd PASS  reset God(#1)'s password to PASS.  Implies -convert\n");
     fprintf(stderr, "        -ipv6            enable listening on ipv6 sockets.\n");
+    fprintf(stderr, "        -bindv4 ADDRESS  set listening IP address for IPv4 sockets (default: all)\n");
+#ifdef USE_IPV6
+    fprintf(stderr, "        -bindv6 ADDRESS  set listening IP address for IPv6 sockets (default: all)\n");
+#endif
+    fprintf(stderr, "        -nodetach        do not detach server process\n");
+    fprintf(stderr, "        -resolver PATH   path to fb-resolver program\n");
     fprintf(stderr, "        -version         display this server's version.\n");
     fprintf(stderr, "        -help            display this message.\n");
 #ifdef WIN32
@@ -1591,7 +1608,7 @@ make_socket_v6(int port)
     memset((char *) &server, 0, sizeof(server));
     /* server.sin6_len = sizeof(server); */
     server.sin6_family = AF_INET6;
-    server.sin6_addr = in6addr_any;
+    server.sin6_addr = bind_ipv6_address;
     server.sin6_port = htons(port);
 
     if (bind(s, (struct sockaddr *) &server, sizeof(server))) {
@@ -1780,7 +1797,7 @@ make_socket(int port)
      */
 
     server.sin_family = AF_INET;
-    server.sin_addr.s_addr = INADDR_ANY;
+    server.sin_addr.s_addr = bind_ipv4_address;
     server.sin_port = htons(port);
 
     if (bind(s, (struct sockaddr *) &server, sizeof(server))) {
@@ -2243,6 +2260,8 @@ spawn_resolver(void)
 	close(1);
 	dup(resolver_sock[0]);
 	dup(resolver_sock[0]);
+        if (resolver_program[0])
+            execl(resolver_program, "fb-resolver", NULL);
 #ifdef BINDIR
 	{
 	    char resolverpath[BUFFER_LEN];
@@ -4190,6 +4209,11 @@ main(int argc, char **argv)
 #endif				/* DEBUG */
     listener_port[0] = TINYPORT;
 
+#ifdef USE_IPV6
+    bind_ipv6_address = in6addr_any;
+#endif
+    bind_ipv4_address = INADDR_ANY;
+
     init_descriptor_lookup();
     init_descr_count_lookup();
 
@@ -4297,6 +4321,20 @@ main(int argc, char **argv)
 		    perror("read parmfile");
 		    exit(1);
 		}
+            } else if (!strcmp(argv[i], "-bindv4")) {
+                if (1 != inet_pton(AF_INET, argv[++i], &bind_ipv4_address)) {
+                    fprintf(stderr, "invalid address to bind to: %s\n", argv[i]);
+                }
+#ifdef USE_IPV6
+            } else if (!strcmp(argv[i], "-bindv6")) {
+                if (1 != inet_pton(AF_INET6, argv[++i], &bind_ipv6_address)) {
+                    fprintf(stderr, "invalid address to bind to: %s\n", argv[i]);
+                }
+#endif
+            } else if (!strcmp(argv[i], "-nodetach")) {
+                no_detach_flag = 1;
+            } else if (!strcmp(argv[i], "-resolver")) {
+                strcpyn(resolver_program, sizeof(resolver_program), argv[++i]);
 	    } else if (!strcmp(argv[i], "--")) {
 		nomore_options = 1;
 	    } else {
@@ -4355,10 +4393,9 @@ main(int argc, char **argv)
 
 	log_status("INIT: TinyMUCK %s starting.", VERSION);
 
-#ifdef DETACH
 # ifndef WIN32
 	/* Go into the background unless requested not to */
-	if (!sanity_interactive && !db_conversion_flag) {
+	if (!no_detach_flag && !sanity_interactive && !db_conversion_flag) {
 	    fclose(stdin);
 	    fclose(stdout);
 	    fclose(stderr);
@@ -4366,7 +4403,6 @@ main(int argc, char **argv)
 		_exit(0);
 	}
 # endif
-#endif
 
 #ifdef WIN32
 	if (!sanity_interactive && !db_conversion_flag && freeconsole) {
@@ -4388,9 +4424,8 @@ main(int argc, char **argv)
 	log_status("%s PID is: %d", argv[0], getpid());
 
 
-#ifdef DETACH
 # ifndef WIN32
-	if (!sanity_interactive && !db_conversion_flag) {
+	if (!sanity_interactive && !db_conversion_flag && !no_detach_flag) {
 	    /* Detach from the TTY, log whatever output we have... */
 	    freopen(tp_file_log_stderr, "a", stderr);
 	    setbuf(stderr, NULL);
@@ -4418,8 +4453,7 @@ main(int argc, char **argv)
 #   endif			/* TIOCNOTTY */
 #  endif			/* !_POSIX_SOURCE */
 	}
-# endif				/* WIN32 */
-#endif				/* DETACH */
+#endif				/* WIN32 */
 
 #ifdef WIN32
 	if (!sanity_interactive && !db_conversion_flag && freeconsole) {
