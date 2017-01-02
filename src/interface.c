@@ -94,7 +94,11 @@ static int ipv6_enabled = 0;
 #ifdef USE_IPV6
 static struct in6_addr bind_ipv6_address;
 #endif
+#ifdef WIN32
+static unsigned __int32 bind_ipv4_address;
+#else
 static uint32_t bind_ipv4_address;
+#endif
 
 static int numports = 0;
 static int numsocks = 0;
