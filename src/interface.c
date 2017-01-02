@@ -1428,6 +1428,10 @@ shutdownsock(struct descriptor_data *d)
 #ifdef MCP_SUPPORT
     mcp_frame_clear(&d->mcpframe);
 #endif
+#ifdef USE_SSL
+    if (d->ssl_session)
+        SSL_free(d->ssl_session);
+#endif
     FREE(d);
     ndescriptors--;
     log_status("CONCOUNT: There are now %d open connections.", ndescriptors);
