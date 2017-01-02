@@ -3245,8 +3245,10 @@ do_armageddon(dbref player, const char *msg)
     char buf[BUFFER_LEN];
 
     if (!Wizard(player) || Typeof(player) != TYPE_PLAYER) {
+        char unparse_buf[BUFFER_LEN];
+        unparse_object(player, player, unparse_buf, sizeof(unparse_buf));
 	notify(player, "Sorry, but you don't look like the god of War to me.");
-	log_status("ILLEGAL ARMAGEDDON: tried by %s", unparse_object(player, player));
+	log_status("ILLEGAL ARMAGEDDON: tried by %s", unparse_buf);
 	return;
     }
     snprintf(buf, sizeof(buf), "\r\nImmediate shutdown initiated by %s.\r\n", NAME(player));

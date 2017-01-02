@@ -171,7 +171,9 @@ set_sigs_intern(int bail)
     our_signal(SIGSYS, SET_BAIL);
 #endif
     our_signal(SIGFPE, SET_BAIL);
+#if 0
     our_signal(SIGSEGV, SET_BAIL);
+#endif
     our_signal(SIGTERM, bail ? SET_BAIL : sig_shutdown);
 #ifdef SIGXCPU
     our_signal(SIGXCPU, SET_BAIL);
@@ -234,6 +236,10 @@ bailout(int sig)
     snprintf(message, sizeof(message), "BAILOUT: caught signal %d", sig);
 
     panic(message);
+
+    /* keep failing */
+    volatile char *x = 0;
+    *x = 1;
     exit(7);
 
 #if !defined(SYSV) && !defined(_POSIX_VERSION) && !defined(ULTRIX)

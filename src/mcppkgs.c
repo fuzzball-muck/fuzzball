@@ -200,6 +200,7 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 	    struct line *tmpline;
 	    struct line *curr = NULL;
 	    struct line *new_line;
+            char unparse_buf[BUFFER_LEN];
 
 	    if (!OkObj(obj)) {
 		show_mcp_error(mfr, "simpleedit-set", "Bad reference object.");
@@ -238,8 +239,9 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 		curr = new_line;
 	    }
 
+            unparse_object(player, obj, unparse_buf, sizeof(unparse_buf));
 	    log_status("PROGRAM SAVED: %s by %s(%d)",
-		       unparse_object(player, obj), NAME(player), player);
+		       unparse_buf, NAME(player), player);
 
 	    write_program(PROGRAM_FIRST(obj), obj);
 

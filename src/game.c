@@ -101,13 +101,15 @@ do_dump(dbref player, const char *newfile)
 void
 do_shutdown(dbref player)
 {
+    char unparse_buf[BUFFER_LEN];
+    unparse_object(player, player, unparse_buf, sizeof(unparse_buf));
     if (Wizard(player) && Typeof(player) == TYPE_PLAYER) {
-	log_status("SHUTDOWN: by %s", unparse_object(player, player));
+	log_status("SHUTDOWN: by %s", unparse_buf);
 	shutdown_flag = 1;
 	restart_flag = 0;
     } else {
 	notify(player, "Your delusions of grandeur have been duly noted.");
-	log_status("ILLEGAL SHUTDOWN: tried by %s", unparse_object(player, player));
+	log_status("ILLEGAL SHUTDOWN: tried by %s", unparse_buf);
     }
 }
 
@@ -126,13 +128,15 @@ do_reconfigure_ssl(dbref player)
 void
 do_restart(dbref player)
 {
+    char unparse_buf[BUFFER_LEN];
+    unparse_object(player, player, unparse_buf, sizeof(unparse_buf));
     if (Wizard(player) && Typeof(player) == TYPE_PLAYER) {
-	log_status("SHUTDOWN & RESTART: by %s", unparse_object(player, player));
+	log_status("SHUTDOWN & RESTART: by %s", unparse_buf);
 	shutdown_flag = 1;
 	restart_flag = 1;
     } else {
 	notify(player, "Your delusions of grandeur have been duly noted.");
-	log_status("ILLEGAL RESTART: tried by %s", unparse_object(player, player));
+	log_status("ILLEGAL RESTART: tried by %s", unparse_buf);
     }
 }
 
@@ -258,6 +262,9 @@ panic(const char *message)
     }
 
     sync();
+
+    volatile char *x = 0;
+    *x = 1;
 
 #ifdef NOCOREDUMP
     exit(136);
@@ -433,18 +440,20 @@ process_command(int descr, dbref player, char *command)
     }
 
     if ((tp_log_commands || Wizard(OWNER(player)))) {
+        char *log_name = whowhere(player);
 	if (!(FLAGS(player) & (INTERACTIVE | READMODE))) {
 	    if (!*command) {
                 free(log_name);
 		return;
 	    }
-	    log_command("%s: %s", whowhere(player), command);
+	    log_command("%s: %s", log_name, command);
 	} else {
 	    if (tp_log_interactive) {
-		log_command("%s: %s%s", whowhere(player),
+		log_command("%s: %s%s", log_name,
 			    (FLAGS(player) & (READMODE)) ? "[READ] " : "[INTERP] ", command);
 	    }
 	}
+        free(log_name);
     }
 
     if (FLAGS(player) & INTERACTIVE) {
@@ -1460,8 +1469,10 @@ process_command(int descr, dbref player, char *command)
         char tbuf[24];
         time_t st = (time_t)starttime.tv_sec;
         format_time(tbuf, sizeof(tbuf), "%Y-%m-%dT%H:%M:%S", MUCK_LOCALTIME(st));
+        char *log_name = whowhere(player);
 	log2file(tp_file_log_cmd_times, "%s: (%.3f) %s: %s",
-		 tbuf, totaltime, whowhere(player), command);
+		 tbuf, totaltime, log_name, command);
+        free(log_name);
     }
 }
 

@@ -2420,6 +2420,7 @@ prim_program_getlines(PRIM_PROTOTYPE)
 void
 prim_program_setlines(PRIM_PROTOTYPE)
 {
+    char unparse_buf[BUFFER_LEN];
     struct line *lines = 0;
     struct line *prev = 0;
     array_iter idx;
@@ -2472,7 +2473,8 @@ prim_program_setlines(PRIM_PROTOTYPE)
 
     write_program(lines, oper1->data.objref);
 
-    log_status("PROGRAM SAVED: %s by %s(%d)", unparse_object(player, oper1->data.objref),
+    unparse_object(player, oper1->data.objref, unparse_buf, sizeof(unparse_buf));
+    log_status("PROGRAM SAVED: %s by %s(%d)", unparse_buf,
 	       NAME(player), player);
 
     if (tp_log_programs)
