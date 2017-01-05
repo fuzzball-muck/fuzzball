@@ -816,28 +816,14 @@ mfn_evalbang(MFUNARGS)
 const char *
 mfn_strip(MFUNARGS)
 {
-    int len, len2;
     char *ptr;
 
     for (ptr = argv[0]; *ptr == ' '; ptr++) ;
     strcpyn(buf, buflen, ptr);
-    len = strlen(buf);
-    for (int i = 1; i < argc; i++) {
-	len2 = strlen(argv[i]);
-	if (len2 + len + 3 >= BUFFER_LEN) {
-	    if (len + 3 < BUFFER_LEN) {
-		strncpy(buf + len, argv[i], (BUFFER_LEN - len - 3));
-		buf[BUFFER_LEN - 3] = '\0';
-	    }
-	    break;
-	}
-	strcpyn(buf + len, buflen - len, ",");
-	strcpyn(buf + len, buflen - len, argv[i]);
-	len += len2;
-    }
     ptr = &buf[strlen(buf) - 1];
     while (ptr >= buf && isspace(*ptr))
 	*(ptr--) = '\0';
+
     return buf;
 }
 
