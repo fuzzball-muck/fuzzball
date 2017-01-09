@@ -151,6 +151,7 @@
  * Include all the good standard headers here.
  */
 #include <ctype.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <sys/types.h>
 
