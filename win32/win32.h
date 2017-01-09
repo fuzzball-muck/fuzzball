@@ -7,8 +7,8 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
-#define pid_t int
-#define ssize_t long
+#define pid_t		int
+#define ssize_t		long
 
 #define close(x)	closesocket(x)
 #define chdir		_chdir
@@ -23,11 +23,11 @@
 #define strncasecmp	_strnicmp
 #define tzname		_tzname
 #define unlink		_unlink
-#define vsnprintf	_vsnprintf
+#define vnsprintf	_vsnprintf
 
 int gettimeofday(struct timeval *tv, struct timezone *tz);
 void set_console();
-void sync(void);
+void sync();
 struct tm *uw32localtime(const time_t *t);
 
 #endif
