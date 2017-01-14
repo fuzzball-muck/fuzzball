@@ -506,10 +506,9 @@ list_program(dbref player, dbref program, int *oarg, int argc)
 	    /* display n lines */
 	    for (count = arg[0]; curr && (i || (arg[1] == -1)); i--) {
 		if (FLAGS(player) & INTERNAL)
-		    snprintf(buf, sizeof(buf), "%3d: %s", count, DoNull(curr->this_line));
+		    notifyf_nolisten(player, "%3d: %s", count, DoNull(curr->this_line));
 		else
-		    snprintf(buf, sizeof(buf), "%s", DoNull(curr->this_line));
-		notify_nolisten(player, buf, 1);
+		    notifyf_nolisten(player, "%s", DoNull(curr->this_line));
 		count++;
 		curr = curr->next;
 	    }

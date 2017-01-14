@@ -730,7 +730,7 @@ do_process_status(dbref player)
     time_t rtime = time((time_t *) NULL);
     time_t etime;
     double pcnt;
-    char *strfmt = "%10s %4s %4s %6s %4s %7s %-10.10s %-12s %.512s";
+    char *strfmt = "**%10s %4s %4s %6s %4s %7s %-10.10s %-12s %.512s";
 
     notifyf_nolisten(player, strfmt, "PID", "Next", "Run", "KInst", "%CPU", "Prog#",
 		     "ProgName", "Player", "");
@@ -1207,11 +1207,10 @@ do_kill_process(int descr, dbref player, const char *arg1)
 		    return;
 		}
 		if (count > 1) {
-		    snprintf(buf, sizeof(buf), "%d processes dequeued.", count);
+		    notifyf_nolisten(player, "%d processes dequeued.", count);
 		} else {
-		    snprintf(buf, sizeof(buf), "Process dequeued.");
+		    notify_nolisten(player, "Process dequeued.", 1);
 		}
-		notify_nolisten(player, buf, 1);
 	    } else {
 		if ((count = atoi(arg1))) {
 		    if (!(control_process(player, count))) {

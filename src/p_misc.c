@@ -271,10 +271,7 @@ prim_force(PRIM_PROTOTYPE)
     for (int i = 1; i <= fr->caller.top; i++) {
 	if (Typeof(fr->caller.st[i]) != TYPE_PROGRAM) {
 #ifdef DEBUG
-	    char str[BUFFER_LEN];
-	    snprintf(str, BUFFER_LEN, "[debug] prim_force: fr->caller.st[%d] isn't a program.",
-		     i);
-	    notify_nolisten(player, str, 1);
+	    notifyf_nolisten(player, "[debug] prim_force: fr->caller.st[%d] isn't a program.", i);
 #endif				/* DEBUG */
 	    do_abort_silent();
 	}
