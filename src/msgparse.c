@@ -719,8 +719,7 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms,
     mesg_rec_cnt++;
     if (mesg_rec_cnt > 26) {
 	char *zptr = get_mvar("how");
-	snprintf(dbuf, sizeof(dbuf), "%s Recursion limit exceeded.", zptr);
-	notify_nolisten(player, dbuf, 1);
+	notifyf_nolisten(player, "%s Recursion limit exceeded.", zptr);
 	mesg_rec_cnt--;
 	outbuf[0] = '\0';
 	return NULL;
@@ -784,11 +783,9 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms,
 			if (++mesg_instr_cnt > tp_mpi_max_commands) {
 			    char *zptr = get_mvar("how");
 
-			    snprintf(dbuf, sizeof(dbuf),
-				     "%s %c%s%c: Instruction limit exceeded.", zptr,
+			    notifyf_nolisten(player, "%s %c%s%c: Instruction limit exceeded.", zptr,
 				     MFUN_LEADCHAR, (varflag ? cmdbuf : mfun_list[s].name),
 				     MFUN_ARGEND);
-			    notify_nolisten(player, dbuf, 1);
 			    mesg_rec_cnt--;
 			    outbuf[0] = '\0';
 			    return NULL;
@@ -816,9 +813,8 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms,
 			    if (argc == -1) {
 				char *zptr = get_mvar("how");
 
-				snprintf(ebuf, sizeof(ebuf), "%s %c%s%c: End brace not found.",
-					 zptr, MFUN_LEADCHAR, cmdbuf, MFUN_ARGEND);
-				notify_nolisten(player, ebuf, 1);
+				notifyf_nolisten(player, "%s %c%s%c: End brace not found.", zptr,
+					 MFUN_LEADCHAR, cmdbuf, MFUN_ARGEND);
 				for (i = 0; i < argc; i++) {
 				    free(argv[i + (varflag ? 1 : 0)]);
 				}
@@ -833,10 +829,8 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms,
 			    zptr = get_mvar(cmdbuf + 1);
 			    if (!zptr) {
 				zptr = get_mvar("how");
-				snprintf(ebuf, sizeof(ebuf),
-					 "%s %c%s%c: Unrecognized variable.", zptr,
+				notifyf_nolisten(player, "%s %c%s%c: Unrecognized variable.", zptr,
 					 MFUN_LEADCHAR, cmdbuf, MFUN_ARGEND);
-				notify_nolisten(player, ebuf, 1);
 				for (i = 0; i < argc; i++) {
 				    if (argv[i + (varflag ? 1 : 0)]) {
 					free(argv[i + (varflag ? 1 : 0)]);
@@ -895,11 +889,10 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms,
 				if (!ptr) {
 				    char *zptr = get_mvar("how");
 
-				    snprintf(dbuf, sizeof(dbuf), "%s %c%s%c (arg %d)", zptr,
+				    notifyf_nolisten(player, "%s %c%s%c (arg %d)", zptr,
 					     MFUN_LEADCHAR,
 					     (varflag ? cmdbuf : mfun_list[s].name),
 					     MFUN_ARGEND, i + 1);
-				    notify_nolisten(player, dbuf, 1);
 				    for (i = 0; i < argc; i++) {
 					free(argv[i]);
 				    }
@@ -938,10 +931,9 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms,
 			if (argc < mfun_list[s].minargs) {
 			    char *zptr = get_mvar("how");
 
-			    snprintf(ebuf, sizeof(ebuf), "%s %c%s%c: Too few arguments",
-				     zptr, MFUN_LEADCHAR,
+			    notifyf_nolisten(player, "%s %c%s%c: Too few arguments.", zptr,
+				     MFUN_LEADCHAR,
 				     (varflag ? cmdbuf : mfun_list[s].name), MFUN_ARGEND);
-			    notify_nolisten(player, ebuf, 1);
 			    for (i = 0; i < argc; i++) {
 				free(argv[i]);
 			    }
@@ -951,10 +943,9 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms,
 			} else if (mfun_list[s].maxargs > 0 && argc > mfun_list[s].maxargs) {
 			    char *zptr = get_mvar("how");
 
-			    snprintf(ebuf, sizeof(ebuf), "%s %c%s%c: Too many arguments",
-				     zptr, MFUN_LEADCHAR,
+			    notifyf_nolisten(player, "%s %c%s%c: Too many arguments.", zptr,
+				     MFUN_LEADCHAR,
 				     (varflag ? cmdbuf : mfun_list[s].name), MFUN_ARGEND);
-			    notify_nolisten(player, ebuf, 1);
 			    for (i = 0; i < argc; i++) {
 				free(argv[i]);
 			    }
@@ -978,11 +969,9 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms,
 				if (!dptr) {
 				    char *zptr = get_mvar("how");
 
-				    snprintf(ebuf, sizeof(ebuf), "%s %c%s%c (returned string)",
-					     zptr, MFUN_LEADCHAR,
-					     (varflag ? cmdbuf : mfun_list[s].name),
-					     MFUN_ARGEND);
-				    notify_nolisten(player, ebuf, 1);
+				    notifyf_nolisten(player, "%s %c%s%c (returned string)", zptr,
+					     MFUN_LEADCHAR,
+					     (varflag ? cmdbuf : mfun_list[s].name), MFUN_ARGEND);
 				    for (i = 0; i < argc; i++) {
 					free(argv[i]);
 				    }
@@ -1018,9 +1007,8 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms,
 			    if (argc == -1) {
 				char *zptr = get_mvar("how");
 
-				snprintf(ebuf, sizeof(ebuf), "%s %c%s%c: End brace not found.",
-					 zptr, MFUN_LEADCHAR, cmdbuf, MFUN_ARGEND);
-				notify_nolisten(player, ebuf, 1);
+				notifyf_nolisten(player, "%s %c%s%c: End brace not found.", zptr,
+					 MFUN_LEADCHAR, cmdbuf, MFUN_ARGEND);
 				for (i = 0; i < argc; i++) {
 				    free(argv[i]);
 				}
@@ -1037,9 +1025,8 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms,
 			/* unknown function */
 			char *zptr = get_mvar("how");
 
-			snprintf(ebuf, sizeof(ebuf), "%s %c%s%c: Unrecognized function.",
-				 zptr, MFUN_LEADCHAR, cmdbuf, MFUN_ARGEND);
-			notify_nolisten(player, ebuf, 1);
+			notifyf_nolisten(player, "%s %c%s%c: Unrecognized function.", zptr,
+				 MFUN_LEADCHAR, cmdbuf, MFUN_ARGEND);
 			for (i = 0; i < argc; i++) {
 			    free(argv[i]);
 			}
@@ -1071,9 +1058,8 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms,
     if ((mesgtyp & MPI_ISDEBUG) && showtextflag) {
 	char *zptr = get_mvar("how");
 
-	snprintf(dbuf, sizeof(dbuf), "%s %*s`%.512s`",
-		 zptr, (mesg_rec_cnt * 2 - 4), "", cr2slash(buf2, sizeof(buf2), outbuf));
-	notify_nolisten(player, dbuf, 1);
+	notifyf_nolisten(player, "%s %*s`%.512s`", zptr,
+		 (mesg_rec_cnt * 2 - 4), "", cr2slash(buf2, sizeof(buf2), outbuf));
     }
     for (i = 0; i < argc; i++) {
 	free(argv[i]);
@@ -1103,8 +1089,7 @@ do_parse_mesg_2(int descr, dbref player, dbref what, dbref perms,
 
     if ((mesgtyp & MPI_NOHOW) == 0) {
 	if (new_mvar("how", howvar)) {
-	    snprintf(howvar, sizeof(howvar), "%s Out of MPI variables.", abuf);
-	    notify_nolisten(player, howvar, 1);
+	    notifyf_nolisten(player, "%s Out of MPI variables.", abuf);
 	    varc = mvarcnt;
 	    return outbuf;
 	}
@@ -1112,8 +1097,7 @@ do_parse_mesg_2(int descr, dbref player, dbref what, dbref perms,
     }
 
     if (new_mvar("cmd", cmdvar)) {
-	snprintf(cmdvar, sizeof(cmdvar), "%s Out of MPI variables.", abuf);
-	notify_nolisten(player, cmdvar, 1);
+	notifyf_nolisten(player, "%s Out of MPI variables.", abuf);
 	varc = mvarcnt;
 	return outbuf;
     }
@@ -1121,8 +1105,7 @@ do_parse_mesg_2(int descr, dbref player, dbref what, dbref perms,
     strcpyn(tmpcmd, sizeof(tmpcmd), match_cmdname);
 
     if (new_mvar("arg", argvar)) {
-	snprintf(argvar, sizeof(argvar), "%s Out of MPI variables.", abuf);
-	notify_nolisten(player, argvar, 1);
+	notifyf_nolisten(player, "%s Out of MPI variables.", abuf);
 	varc = mvarcnt;
 	return outbuf;
     }
