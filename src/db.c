@@ -1074,7 +1074,10 @@ controls(dbref who, dbref what)
      */
 
     /* owners control their own stuff */
-    return (who == OWNER(what));
+    if (who == OWNER(what))
+	return 1;
+
+    return (test_lock_false_default(NOTHING, who, what, MESGPROP_OWNLOCK));
 }
 
 int
