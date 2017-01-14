@@ -3066,14 +3066,14 @@ write_text_block(struct descriptor_data *d, struct text_block **qp)
     count = socket_write(d, cur->start, cur->nchars);
 
 #ifdef WIN32
-    if (count <= 0 || count == SOCKET_ERROR) {
+    if (count < 0 || count == SOCKET_ERROR) {
         if (WSAGetLastError() == WSAEWOULDBLOCK)
             was_wouldblock = 1;
         else
             was_error = 1;
     }
 #else
-    if (count <= 0) {
+    if (count < 0) {
         if (errno == EWOULDBLOCK)
             was_wouldblock = 1;
         else
