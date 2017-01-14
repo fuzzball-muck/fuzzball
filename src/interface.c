@@ -3050,7 +3050,7 @@ wall_wizards(const char *msg)
 
 /* write a text block from a queue, advancing the queue if needed;
    adding the block to d->pending_ssl_write if needed;
-   returns 1 if something incomplete written, 0 if write started blocking,
+   returns 1 if something incomplete written, 0 if write was successful, 
    -1 if I/O error
 */
 static int
@@ -3061,7 +3061,7 @@ write_text_block(struct descriptor_data *d, struct text_block **qp)
     int was_wouldblock = 0, was_error = 0;
 
     if (!cur)
-        return 1;
+        return 0;
 
     count = socket_write(d, cur->start, cur->nchars);
 
@@ -3106,6 +3106,10 @@ write_text_block(struct descriptor_data *d, struct text_block **qp)
     return 1;
 }
 
+/* write all messages in queue; returns 0 if completed successfuly,
+   1 if write blocked or failed, so we are done handling 
+   writing this connection for this cycle of the main loop.
+ */
 static int
 write_queue(struct descriptor_data * d, struct text_queue *queue)
 {
