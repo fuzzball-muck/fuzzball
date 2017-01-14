@@ -959,6 +959,7 @@ tune_get_parmstring(const char *name, int mlev)
     return (buf);
 }
 
+#ifdef MALLOC_PROFILING
 void
 tune_freeparms()
 {
@@ -970,6 +971,7 @@ tune_freeparms()
 	tstr++;
     }
 }
+#endif
 
 int
 tune_setparm(const char *parmname, const char *val, int mlev)

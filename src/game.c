@@ -390,6 +390,7 @@ init_game(const char *infile, const char *outfile)
     return 0;
 }
 
+#ifdef MALLOC_PROFILING
 void
 cleanup_game()
 {
@@ -397,6 +398,7 @@ cleanup_game()
         free((void *) dumpfile);
     free((void *) in_filename);
 }
+#endif
 
 void
 do_restrict(dbref player, const char *arg)

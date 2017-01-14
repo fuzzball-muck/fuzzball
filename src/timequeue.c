@@ -148,6 +148,7 @@ free_timenode(timequeue ptr)
     }
 }
 
+#ifdef MALLOC_PROFILING
 void
 purge_timenode_free_pool(void)
 {
@@ -162,6 +163,7 @@ purge_timenode_free_pool(void)
     free_timenode_count = 0;
     free_timenode_list = NULL;
 }
+#endif
 
 int
 control_process(dbref player, int pid)
