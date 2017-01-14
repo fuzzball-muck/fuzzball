@@ -50,6 +50,10 @@ char * strcpyn(char *buf, size_t bufsize, const char *src) {
     return buf;
 }
 
+int notify(int player, const char *msg) {		
+    return printf("%s\n", msg);		
+}
+
 #define MALLOC(result, type, number) do { \
                                        if (!((result) = (type *) malloc ((number) * sizeof (type)))) \
                                        abort(); \

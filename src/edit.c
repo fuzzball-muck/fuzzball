@@ -225,11 +225,13 @@ kill_macro(const char *macroname, dbref player, struct macrotable **mtop)
 	return (0);
 }
 
+#ifdef MALLOC_PROFILING
 void
 free_old_macros(void)
 {
     purge_macro_tree(macrotop);
 }
+#endif
 
 static void
 chown_macros_rec(struct macrotable *node, dbref from, dbref to)

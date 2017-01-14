@@ -334,6 +334,7 @@ purge_free_frames(void)
     }
 }
 
+#ifdef MALLOC_PROFILING
 void
 purge_all_free_frames(void)
 {
@@ -345,6 +346,7 @@ purge_all_free_frames(void)
 	free(ptr);
     }
 }
+#endif
 
 void
 purge_for_pool(void)
