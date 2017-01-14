@@ -595,7 +595,7 @@ process_command(int descr, dbref player, char *command)
 		    Matched("@bless");
 		    WIZARDONLY("@bless", player);
 		    PLAYERONLY("@bless", player);
-		    NOFORCE("@bless", force_level, player);
+		    NOFORCE("@bless", player);
 		    do_bless(descr, player, arg1, arg2);
 		    break;
 		case 'o':
@@ -781,7 +781,7 @@ process_command(int descr, dbref player, char *command)
 		case 'L':
 		    Matched("@flock");
 		    NOGUEST("@flock", player);
-		    NOFORCE("@flock", force_level, player);
+		    NOFORCE("@flock", player);
 		    set_standard_lock(descr, player, arg1, MESGPROP_FLOCK, "Force Lock", arg2);
 		    break;
 		case 'o':
@@ -792,7 +792,7 @@ process_command(int descr, dbref player, char *command)
 		    } else {
 			Matched("@force_lock");
 			NOGUEST("@force_lock", player);
-			NOFORCE("@force_lock", force_level, player);
+			NOFORCE("@force_lock", player);
 			set_standard_lock(descr, player, arg1, MESGPROP_FLOCK, "Force Lock",
 					  arg2);
 		    }
@@ -979,7 +979,7 @@ process_command(int descr, dbref player, char *command)
 		    } else {
 			Matched("@ownlock");
 			NOGUEST("@ownlock", player);
-			NOFORCE("@ownlock", force_level, player);
+			NOFORCE("@ownlock", player);
 			set_standard_lock(descr, player, arg1, MESGPROP_OWNLOCK, "Ownership Lock", arg2);
 			break;
 		    }
@@ -1045,7 +1045,7 @@ process_command(int descr, dbref player, char *command)
 		case 'A':
 		    Matched("@readlock");
 		    NOGUEST("@readlock", player);
-		    NOFORCE("@readlock", force_level, player);
+		    NOFORCE("@readlock", player);
 		    set_standard_lock(descr, player, arg1, MESGPROP_READLOCK, "Read Lock", arg2);
 		    break;
 		case 'c':
@@ -1194,7 +1194,7 @@ process_command(int descr, dbref player, char *command)
 			Matched("@unbless");
 			WIZARDONLY("@unbless", player);
 			PLAYERONLY("@unbless", player);
-			NOFORCE("@unbless", force_level, player);
+			NOFORCE("@unbless", player);
 			do_unbless(descr, player, arg1, arg2);
 		    } else if (string_prefix(command, "@unli")) {
 			Matched("@unlink");

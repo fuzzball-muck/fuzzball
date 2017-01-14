@@ -196,8 +196,8 @@ if(ISGUEST(x)) \
     notifyf_nolisten(x, "Guests are not allowed to %s.\r", _cmd); \
     return; \
 }
-#define NOFORCE(_cmd,fl,x) \
-if(fl) \
+#define NOFORCE(_cmd,x) \
+if(force_level) \
 {   \
     notifyf_nolisten(x, "You can't use %s from a @force or {force}.\r", _cmd); \
     return; \
