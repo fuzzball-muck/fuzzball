@@ -538,6 +538,8 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
 	notifyf(player, "Force Key: %s", temp);
     if (strcmp(temp = unparse_boolexp(player, get_property_lock(thing, MESGPROP_READLOCK), 1), PROP_UNLOCKED_VAL))
 	notifyf(player, "Read Key: %s", temp);
+    if (strcmp(temp = unparse_boolexp(player, get_property_lock(thing, MESGPROP_OWNLOCK), 1), PROP_UNLOCKED_VAL))
+	notifyf(player, "Ownership Key: %s", temp);
 
     if (GETSUCC(thing)) {
 	notifyf(player, "Success: %s", GETSUCC(thing));

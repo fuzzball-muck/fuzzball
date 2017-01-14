@@ -933,7 +933,7 @@ process_command(int descr, dbref player, char *command)
 	    case 'o':
 	    case 'O':
 		/* @odrop, @oecho, @ofail, @open, @osuccess,
-		   @owned */
+		   @owned, @ownlock */
 		switch (command[2]) {
 		case 'd':
 		case 'D':
@@ -972,9 +972,17 @@ process_command(int descr, dbref player, char *command)
 		    break;
 		case 'w':
 		case 'W':
-		    Matched("@owned");
-		    do_owned(player, arg1, arg2);
-		    break;
+		    if (string_prefix("@owned", command)) {
+			Matched("@owned");
+			do_owned(player, arg1, arg2);
+			break;
+		    } else {
+			Matched("@ownlock");
+			NOGUEST("@ownlock", player);
+			NOFORCE("@ownlock", force_level, player);
+			set_standard_lock(descr, player, arg1, MESGPROP_OWNLOCK, "Ownership Lock", arg2);
+			break;
+		    }
 		default:
 		    goto bad;
 		}
@@ -1035,7 +1043,9 @@ process_command(int descr, dbref player, char *command)
 		switch (command[3]) {
 		case 'a':
 		case 'A':
+		    Matched("@readlock");
 		    NOGUEST("@readlock", player);
+		    NOFORCE("@readlock", force_level, player);
 		    set_standard_lock(descr, player, arg1, MESGPROP_READLOCK, "Read Lock", arg2);
 		    break;
 		case 'c':

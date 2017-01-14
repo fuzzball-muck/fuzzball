@@ -51,6 +51,7 @@ extern char match_cmdname[BUFFER_LEN];
 #define MESGPROP_CHLOCK		"_/chlk"
 #define MESGPROP_LINKLOCK	"_/lklk"
 #define MESGPROP_READLOCK	"@/rlk"
+#define MESGPROP_OWNLOCK	"@/olk"
 #define MESGPROP_PCON		"_/pcon"
 #define MESGPROP_PDCON		"_/pdcon"
 #define MESGPROP_VALUE		"@/value"
