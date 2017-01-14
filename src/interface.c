@@ -583,19 +583,16 @@ announce_connect(int descr, dbref player)
 	    exit = NOTHING;
     }
 
-    if (exit == NOTHING || !(FLAGS(exit) & STICKY)) {
-	if (can_move(descr, player, tp_autolook_cmd, 1)) {
-	    do_move(descr, player, tp_autolook_cmd, 1);
-	} else {
-	    do_look_around(descr, player);
-	}
+    if (can_move(descr, player, tp_autolook_cmd, 1)) {
+	do_move(descr, player, tp_autolook_cmd, 1);
+    } else {
+	do_look_around(descr, player);
     }
 
 
     /*
      * See if there's a connect action.  If so, and the player is the first to
-     * connect, send the player through it.  If the connect action is set
-     * sticky, then suppress the normal look-around.
+     * connect, send the player through it.
      */
 
     if (exit != NOTHING)
