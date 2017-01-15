@@ -719,7 +719,7 @@ static void
 fix_exit(dbref obj)
 {
     for (int i = 0; i < DBFETCH(obj)->sp.exit.ndest;) {
-	if (!OkObj((DBFETCH(obj)->sp.exit.dest)[i]) && (DBFETCH(obj)->sp.exit.dest)[i] != HOME) {
+	if (!OkObj((DBFETCH(obj)->sp.exit.dest)[i]) && (DBFETCH(obj)->sp.exit.dest)[i] != HOME && (DBFETCH(obj)->sp.exit.dest)[i] != NIL) {
 	    SanFixed(obj, "Removing invalid destination from %s");
 	    DBFETCH(obj)->sp.exit.ndest--;
 	    DBDIRTY(obj);
