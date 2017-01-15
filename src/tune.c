@@ -1208,7 +1208,7 @@ tune_load_parms_from_file(FILE * f, dbref player, int cnt)
     while (!feof(f) && (cnt < 0 || cnt--)) {
 	fgets(buf, sizeof(buf), f);
 	if (*buf != '#') {
-	    p = c = index(buf, '=');
+	    p = c = index(buf, ARG_DELIMITER);
 	    if (c) {
 		*c++ = '\0';
 		while (p > buf && isspace(*(--p)))

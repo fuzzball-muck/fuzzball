@@ -40,7 +40,7 @@ do_open(int descr, dbref player, const char *direction, const char *linkto)
     int ndest;
 
     strcpyn(buf2, sizeof(buf2), linkto);
-    for (rname = buf2; (*rname && (*rname != '=')); rname++) ;
+    for (rname = buf2; (*rname && (*rname != ARG_DELIMITER)); rname++) ;
     qname = rname;
     if (*rname)
 	rname++;
@@ -319,7 +319,7 @@ do_dig(int descr, dbref player, const char *name, const char *pname)
     notifyf(player, "Room %s created as #%d.", name, room);
 
     strcpyn(buf, sizeof(buf), pname);
-    for (rname = buf; (*rname && (*rname != '=')); rname++) ;
+    for (rname = buf; (*rname && (*rname != ARG_DELIMITER)); rname++) ;
     qname = rname;
     if (*rname)
 	*(rname++) = '\0';
@@ -672,7 +672,7 @@ do_create(dbref player, char *name, char *acost)
     char *rname, *qname;
 
     strcpyn(buf2, sizeof(buf2), acost);
-    for (rname = buf2; (*rname && (*rname != '=')); rname++) ;
+    for (rname = buf2; (*rname && (*rname != ARG_DELIMITER)); rname++) ;
     qname = rname;
     if (*rname)
 	*(rname++) = '\0';
@@ -801,7 +801,7 @@ do_action(int descr, dbref player, const char *action_name, const char *source_n
     char *rname, *qname;
 
     strcpyn(buf2, sizeof(buf2), source_name);
-    for (rname = buf2; (*rname && (*rname != '=')); rname++) ;
+    for (rname = buf2; (*rname && (*rname != ARG_DELIMITER)); rname++) ;
     qname = rname;
     if (*rname)
 	*(rname++) = '\0';

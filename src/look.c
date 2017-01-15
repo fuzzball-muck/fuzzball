@@ -754,8 +754,8 @@ init_checkflags(dbref player, const char *flags, struct flgchkdat *check)
     int mode = 0;
 
     strcpyn(buf, sizeof(buf), flags);
-    for (cptr = buf; *cptr && (*cptr != '='); cptr++) ;
-    if (*cptr == '=')
+    for (cptr = buf; *cptr && (*cptr != ARG_DELIMITER); cptr++) ;
+    if (*cptr == ARG_DELIMITER)
 	*(cptr++) = '\0';
     flags = buf;
     while (*cptr && isspace(*cptr))
@@ -1399,11 +1399,11 @@ exit_matches_name(dbref exit, const char *name, int exactMatch)
 
     strcpyn(buf, sizeof(buf), NAME(exit));
     for (char *ptr2 = ptr = buf; *ptr; ptr = ptr2) {
-	while (*ptr2 && *ptr2 != ';')
+	while (*ptr2 && *ptr2 != EXIT_DELIMITER)
 	    ptr2++;
 	if (*ptr2)
 	    *ptr2++ = '\0';
-	while (*ptr2 == ';')
+	while (*ptr2 == EXIT_DELIMITER)
 	    ptr2++;
 	if ((exactMatch ? !strcasecmp(name, ptr) : string_prefix(name, ptr)) &&
 	    DBFETCH(exit)->sp.exit.ndest &&

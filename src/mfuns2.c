@@ -346,7 +346,7 @@ mfn_name(MFUNARGS)
     }
     strcpyn(buf, buflen, NAME(obj));
     if (Typeof(obj) == TYPE_EXIT) {
-	ptr = index(buf, ';');
+	ptr = index(buf, EXIT_DELIMITER);
 	if (ptr)
 	    *ptr = '\0';
     }
