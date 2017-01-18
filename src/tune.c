@@ -46,6 +46,7 @@ const char *tp_file_log_commands;
 const char *tp_file_log_gripes;
 const char *tp_file_log_muf_errors;
 const char *tp_file_log_programs;
+const char *tp_file_log_sanfix;
 const char *tp_file_log_sanity;
 const char *tp_file_log_status;
 const char *tp_file_log_stderr;
@@ -117,8 +118,10 @@ struct tune_str_entry tune_str_list[] = {
      "MUF compile errors and warnings", "", 0, 1, LOG_MUF},
     {"Files", "file_log_programs", &tp_file_log_programs, MLEV_WIZARD, MLEV_GOD,
      "Text of changed programs", "", 0, 1, PROGRAM_LOG},
+    {"Files", "file_log_sanfix", &tp_file_log_sanfix, MLEV_WIZARD, MLEV_GOD,
+     "Database fixes", "", 0, 1, LOG_SANFIX},
     {"Files", "file_log_sanity", &tp_file_log_sanity, MLEV_WIZARD, MLEV_GOD,
-     "Databased corruption and errors", "", 0, 1, LOG_SANITY},
+     "Database corruption and errors", "", 0, 1, LOG_SANITY},
     {"Files", "file_log_status", &tp_file_log_status, MLEV_WIZARD, MLEV_GOD,
      "System errors and stats", "", 0, 1, LOG_STATUS},
     {"Files", "file_log_stderr", &tp_file_log_stderr, MLEV_WIZARD, MLEV_GOD,

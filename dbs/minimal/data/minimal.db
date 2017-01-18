@@ -1,7 +1,7 @@
 ***Foxen9 TinyMUCK DUMP Format***
 2
 1
-148
+150
 autolook_cmd=look
 cpennies=Pennies
 cpenny=Penny
@@ -21,6 +21,7 @@ file_log_commands=logs/commands
 file_log_gripes=logs/gripes
 file_log_muf_errors=logs/muf-errors
 file_log_programs=logs/programs
+file_log_sanfix=logs/sanfixed
 file_log_sanity=logs/sanity
 file_log_status=logs/status
 file_log_stderr=logs/fbmuck.err
@@ -139,6 +140,7 @@ consistent_lock_source=yes
 expanded_debug_trace=yes
 force_mlev1_name_notify=yes
 muf_comments_strict=yes
+muf_string_math=no
 optimize_muf=yes
 playermax=no
 quiet_moves=no
