@@ -62,6 +62,10 @@ log_sanity(char *format, ...)
 log_function(tp_file_log_sanity)
 
 void
+log_sanfix(char *format, ...)
+log_function(tp_file_log_sanfix)
+
+void
 log_status(char *format, ...)
 log_function(tp_file_log_status)
 

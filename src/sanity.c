@@ -481,9 +481,9 @@ san_fixed_log(char *format, int unparse, dbref ref1, dbref ref2)
 	if (ref2 >= 0) {
             unparse_object(NOTHING, ref2, buf2, sizeof(buf2));
 	}
-	log2file("logs/sanfixed", format, buf1, buf2);
+	log_sanfix(format, buf1, buf2);
     } else {
-	log2file("logs/sanfixed", format, ref1, ref2);
+	log_sanfix(format, ref1, ref2);
     }
 }
 
@@ -650,8 +650,7 @@ create_lostandfound(dbref * player, dbref * room)
     }
     if (strlen(player_name) >= PLAYER_NAME_LIMIT) {
         unparse_object(NOTHING, GOD, unparse_buf, sizeof(unparse_buf));
-	log2file("logs/sanfixed", "WARNING: Unable to get lost+found player, "
-		 "using %s", unparse_buf);
+	log_sanfix("WARNING: Unable to get lost+found player, using %s", unparse_buf);
 	*player = GOD;
     } else {
 	const char *rpass;
@@ -673,8 +672,8 @@ create_lostandfound(dbref * player, dbref * room)
 	DBDIRTY(*player);
 	add_player(*player);
         unparse_object(NOTHING, *player, unparse_buf, sizeof(unparse_buf));
-	log2file("logs/sanfixed", "Using %s (with password %s) to resolve "
-		 "unknown owner", unparse_buf, rpass);
+	log_sanfix("Using %s (with password %s) to resolve unknown owner",
+		unparse_buf, rpass);
     }
     OWNER(*room) = *player;
     DBDIRTY(*room);
@@ -942,8 +941,8 @@ do_sanfix(dbref player)
 
     if (player > NOTHING) {
 	if (!sanity_violated) {
-	    notify_nolisten(player, "Database repair complete, please re-run"
-			    " @sanity.  For details of repairs, check logs/sanfixed.", 1);
+	    notifyf_nolisten(player, "Database repair complete, please re-run"
+			    " @sanity.  For details of repairs, check %s.", tp_file_log_sanfix);
 	} else {
 	    notify_nolisten(player, "Database repair complete, however the "
 			    "database is still corrupt.  Please re-run @sanity.", 1);
@@ -955,11 +954,10 @@ do_sanfix(dbref player)
 	else
 	    fprintf(stderr, "however the database is still corrupt.\n"
 		    "Please re-run sanity check for details and fix it by hand.\n");
-	fprintf(stderr, "For details of repairs made, check logs/sanfixed.\n");
+	fprintf(stderr, "For details of repairs made, check %s.\n", tp_file_log_sanfix);
     }
     if (sanity_violated) {
-	log2file("logs/sanfixed",
-		 "WARNING: The database is still corrupted, please repair by hand");
+	log_sanfix("WARNING: The database is still corrupted, please repair by hand");
     }
 }
 

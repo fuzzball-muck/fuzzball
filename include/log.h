@@ -8,6 +8,7 @@ void log_command(char *format, ...);
 void log_gripe(char *format, ...);
 void log_muf(char *format, ...);
 void log_program_text(struct line *first, dbref player, dbref i);
+void log_sanfix(char *format, ...);
 void log_sanity(char *format, ...);
 void log_status(char *format, ...);
 void log_user(dbref player, dbref program, char *logmessage);
