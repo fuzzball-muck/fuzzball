@@ -120,16 +120,6 @@ static SSL_CTX *ssl_ctx = NULL;
 static int ndescriptors = 0;
 static struct descriptor_data *descr_lookup_table[FD_SETSIZE];
 
-#ifndef USE_SSL
-# ifndef WIN32
-#  define socket_write(d, buf, count) write(d->descriptor, buf, count)
-#  define socket_read(d, buf, count) read(d->descriptor, buf, count)
-# else
-#  define socket_write(d, buf, count) send(d->descriptor, buf, count,0)
-#  define socket_read(d, buf, count) recv(d->descriptor, buf, count,0)
-# endif
-#endif
-
 /* NOTE: Will need to think about this more for unicode */
 #define isinput( q ) isprint( (q) & 127 )
 
@@ -1148,19 +1138,20 @@ process_commands(void)
     } while (nprocessed > 0);
 }
 
-#ifdef USE_SSL
-
 static ssize_t
 socket_read(struct descriptor_data *d, void *buf, size_t count)
 {
     int i;
 
+#ifdef USE_SSL
     if (!d->ssl_session) {
+#endif
 #ifdef WIN32
 	return recv(d->descriptor, (char *) buf, count, 0);
 #else
 	return read(d->descriptor, buf, count);
 #endif
+#ifdef USE_SSL
     } else {
 	i = SSL_read(d->ssl_session, buf, count);
 	if (i < 0) {
@@ -1194,6 +1185,7 @@ socket_read(struct descriptor_data *d, void *buf, size_t count)
 	}
 	return i;
     }
+#endif // USE_SSL
 }
 
 static ssize_t
@@ -1202,12 +1194,15 @@ socket_write(struct descriptor_data * d, const void *buf, size_t count)
     int i;
 
     d->last_pinged_at = time(NULL);
+#ifdef USE_SSL
     if (!d->ssl_session) {
+#endif
 #ifdef WIN32
 	return send(d->descriptor, (char *) buf, count, 0);
 #else
 	return write(d->descriptor, buf, count);
 #endif
+#ifdef USE_SSL
     } else {
 	i = SSL_write(d->ssl_session, buf, count);
 	if (i < 0) {
@@ -1240,8 +1235,8 @@ socket_write(struct descriptor_data * d, const void *buf, size_t count)
 	}
 	return i;
     }
+#endif // USE_SSL
 }
-#endif
 
 static void
 queue_immediate_raw(struct descriptor_data *d, const char *msg)
