@@ -268,7 +268,6 @@ do_look_at(int descr, dbref player, const char *name, const char *detail)
     }
 }
 
-#ifdef VERBOSE_EXAMINE
 static const char *
 flag_description(dbref thing)
 {
@@ -371,8 +370,6 @@ flag_description(dbref thing)
     }
     return buf;
 }
-
-#endif				/* VERBOSE_EXAMINE */
 
 static int
 listprops_wildcard(dbref player, dbref thing, const char *dir, const char *wild)
@@ -519,9 +516,8 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
     }
     notify(player, buf);
 
-#ifdef VERBOSE_EXAMINE
-    notify(player, flag_description(thing));
-#endif				/* VERBOSE_EXAMINE */
+    if (tp_verbose_examine)
+	notify(player, flag_description(thing));
 
     if (GETDESC(thing))
 	notify(player, GETDESC(thing));

@@ -79,9 +79,6 @@
    These are the ones players will notice. 
  ************************************************************************/
 
-/* Make the `examine' command display full names for types and flags */
-#define VERBOSE_EXAMINE
-
 /* limit on player name length */
 #define PLAYER_NAME_LIMIT 16
 

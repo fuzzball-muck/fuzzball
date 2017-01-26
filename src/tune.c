@@ -388,6 +388,7 @@ int tp_who_doing;
 int tp_who_hides_dark;
 int tp_wiz_vehicles;
 int tp_verbose_clone;
+int tp_verbose_examine;
 int tp_zombies;
 
 struct tune_bool_entry tune_bool_list[] = {
@@ -405,6 +406,8 @@ struct tune_bool_entry tune_bool_list[] = {
      MLEV_WIZARD, "Recognize null command", "", 1, RECOGNIZE_NULL_COMMAND},
     {"Commands", "verbose_clone", &tp_verbose_clone, MLEV_WIZARD, MLEV_WIZARD,
      "Show more information when using @clone command", "", 1, VERBOSE_CLONE},
+    {"Commands", "verbose_examine", &tp_verbose_examine, MLEV_WIZARD, MLEV_WIZARD,
+     "Show more information when using examine command", "", 1, VERBOSE_EXAMINE},
     {"Dark", "dark_sleepers", &tp_dark_sleepers, 0, MLEV_WIZARD, "Make sleeping players dark",
      "", 1, DARK_SLEEPERS},
     {"Dark", "exit_darking", &tp_exit_darking, 0, MLEV_WIZARD,

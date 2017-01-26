@@ -3465,6 +3465,7 @@ Parameters available:
   (bool) enable_prefix        - Enable prefix actions (Wizbit only)
   (bool) recognize_null_command - Recognize null command (Wizbit only)
   (bool) verbose_clone        - Show more information when using @clone command (Wizbit only)
+  (bool) verbose_clone        - Show more information when using examine command (Wizbit only)
   (bool) dark_sleepers        - Make sleeping players dark
   (bool) exit_darking         - Allow players to set exits dark
   (bool) thing_darking        - Allow players to set things dark
