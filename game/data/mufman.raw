@@ -4047,6 +4047,7 @@ Parameters available:
   (time) idle_ping_time       - Server side keepalive time in seconds
   (time) maxidle              - Maximum idle time before booting
   (time) clean_interval       - Interval between memory/object cleanups
+  (int)  player_name_limit    - Limit on player name length
   (int)  exit_cost            - Cost to create an exit
   (int)  link_cost            - Cost to link an exit
   (int)  lookup_cost          - Cost to lookup a player name

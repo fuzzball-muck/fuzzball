@@ -420,13 +420,13 @@ dump_users(struct descriptor_data *e, char *user)
 
 	    if (wizard) {
 		/* don't print flags, to save space */
-		snprintf(pbuf, sizeof(pbuf), "%.*s(#%d)", PLAYER_NAME_LIMIT + 1,
+		snprintf(pbuf, sizeof(pbuf), "%.*s(#%d)", tp_player_name_limit + 1,
 			 NAME(d->player), (int) d->player);
 #ifdef GOD_PRIV
 		if (!God(e->player))
 		    snprintf(buf, sizeof(buf),
 			     "%-*s [%6d] %10s %4s%c%c %s\r\n",
-			     PLAYER_NAME_LIMIT + 10, pbuf,
+			     tp_player_name_limit + 10, pbuf,
 			     (int) LOCATION(d->player),
 			     time_format_1(now - d->connected_at),
 			     time_format_2(now - d->last_time),
@@ -436,7 +436,7 @@ dump_users(struct descriptor_data *e, char *user)
 #endif
 		    snprintf(buf, sizeof(buf),
 			     "%-*s [%6d] %10s %4s%c%c %s(%s)\r\n",
-			     PLAYER_NAME_LIMIT + 10, pbuf,
+			     tp_player_name_limit + 10, pbuf,
 			     (int) LOCATION(d->player),
 			     time_format_1(now - d->connected_at),
 			     time_format_2(now - d->last_time),
@@ -444,9 +444,9 @@ dump_users(struct descriptor_data *e, char *user)
 			     secchar, d->hostname, d->username);
 	    } else {
 		if (tp_who_doing) {
-		    /* Modified to take into account PLAYER_NAME_LIMIT changes */
+		    /* Modified to take into account tp_player_name_limit changes */
 		    snprintf(buf, sizeof(buf), "%-*s %10s %4s%c%c %.*s\r\n",
-			     PLAYER_NAME_LIMIT + 1,
+			     tp_player_name_limit + 1,
 			     NAME(d->player),
 			     time_format_1(now - d->connected_at),
 			     time_format_2(now - d->last_time),
@@ -457,11 +457,11 @@ dump_users(struct descriptor_data *e, char *user)
 			      *
 			      * !! Don't forget to update this if that changes
 			      */
-			     (int) (79 - (PLAYER_NAME_LIMIT + 20)),
+			     (int) (79 - (tp_player_name_limit + 20)),
 			     GETDOING(d->player) ? GETDOING(d->player) : "");
 		} else {
 		    snprintf(buf, sizeof(buf), "%-*s %10s %4s%c%c\r\n",
-			     (int) (PLAYER_NAME_LIMIT + 1),
+			     (int) (tp_player_name_limit + 1),
 			     NAME(d->player),
 			     time_format_1(now - d->connected_at),
 			     time_format_2(now - d->last_time),

@@ -136,6 +136,7 @@ extern int tp_object_cost;
 extern int tp_pause_min;
 extern int tp_pennies_muf_mlev;
 extern int tp_penny_rate;
+extern int tp_player_name_limit;
 extern int tp_playermax_limit;
 extern int tp_process_timer_limit;
 extern int tp_room_cost;

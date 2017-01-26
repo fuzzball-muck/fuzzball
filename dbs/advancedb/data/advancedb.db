@@ -1,7 +1,7 @@
 ***Foxen9 TinyMUCK DUMP Format***
 164
 1
-151
+152
 autolook_cmd=look
 cpennies=Pennies
 cpenny=Penny
@@ -58,6 +58,7 @@ dump_warntime=  0d  0:02:00
 idle_ping_time=  0d  0:00:55
 maxidle=  0d  2:00:00
 clean_interval=  0d  0:15:00
+player_name_limit=16
 exit_cost=1
 link_cost=1
 lookup_cost=0
