@@ -336,6 +336,9 @@
 /* Verbose @clone command. */
 #define VERBOSE_CLONE 0
 
+/* Expanded flag description in examine command. */
+#define VERBOSE_EXAMINE 1
+
 /* Recognize null command. */
 #define RECOGNIZE_NULL_COMMAND 0
 

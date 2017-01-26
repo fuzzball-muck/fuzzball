@@ -227,6 +227,7 @@ extern int tp_thing_darking;
 extern int tp_thing_movement;
 extern int tp_toad_recycle;
 extern int tp_verbose_clone;
+extern int tp_verbose_examine;
 extern int tp_who_doing;
 extern int tp_who_hides_dark;
 extern int tp_wiz_vehicles;
