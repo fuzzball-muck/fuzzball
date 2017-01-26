@@ -339,6 +339,9 @@
 /* Expanded flag description in examine command. */
 #define VERBOSE_EXAMINE 1
 
+/* Limit on player name length. */
+#define PLAYER_NAME_LIMIT 16
+
 /* Recognize null command. */
 #define RECOGNIZE_NULL_COMMAND 0
 

@@ -74,15 +74,6 @@
 #define SIGEMERG
 
 /************************************************************************
-   Game Options
-
-   These are the ones players will notice. 
- ************************************************************************/
-
-/* limit on player name length */
-#define PLAYER_NAME_LIMIT 16
-
-/************************************************************************
    Various Messages 
  
    Printed from the server at times, esp. during login.

@@ -227,7 +227,7 @@ payfor(dbref who, int cost)
 int
 ok_player_name(const char *name)
 {
-    if (!ok_name(name) || strlen(name) > PLAYER_NAME_LIMIT)
+    if (!ok_name(name) || strlen(name) > tp_player_name_limit)
         return 0;
 
     for (const char *scan = name; *scan; scan++) {

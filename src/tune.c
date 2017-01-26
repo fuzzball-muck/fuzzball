@@ -235,14 +235,17 @@ int tp_object_cost;
 int tp_pause_min;
 int tp_pennies_muf_mlev;
 int tp_penny_rate;
+int tp_playermax_limit;
+int tp_player_name_limit;
+int tp_process_timer_limit;
 int tp_room_cost;
 int tp_start_pennies;
-int tp_playermax_limit;
-int tp_process_timer_limit;
 int tp_userlog_mlev;
 
 struct tune_val_entry tune_val_list[] = {
-    {"Costs", "exit_cost", &tp_exit_cost, 0, MLEV_WIZARD, "Cost to create an exit", "", 1,
+    {"Commands", "player_name_limit", &tp_player_name_limit, 0, MLEV_WIZARD, "Limit on player name length", "", 1,
+     PLAYER_NAME_LIMIT},
+    {"Costs", "exit_cost", &tp_exit_cost, 0, MLEV_WIZARD, "Cost to create an exit", "", 1,		 
      EXIT_COST},
     {"Costs", "link_cost", &tp_link_cost, 0, MLEV_WIZARD, "Cost to link an exit", "", 1,
      LINK_COST},
