@@ -3,6 +3,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "db.h"
+#include "tune.h"
+#include "tunelist.h"
+
 #define HRULE_TEXT "----------------------------------------------------------------------------"
 
 #define HTML_PAGE_HEAD     	"<html><head><title>%s</title></head>\n<body><div align=\"center\"><h1>%s</h1>\n<h3>by %s</h3></div>\n<ul><li><a href=\"#AlphaList\">Alphabetical List of Topics</a></li>\n<li><a href=\"#SectList\">List of Topics by Category</a></li></ul>\n"
@@ -37,6 +41,40 @@
 #define HTML_ALSOSEE_BEGIN      "<p><h5>Also see:\n"
 #define HTML_ALSOSEE_ENTRY      "    <a href=\"#%s\">%s</a>"
 #define HTML_ALSOSEE_END        "\n</h5>\n"
+
+// Token Replacement System
+// - replaces entire line with result of function
+// - currently does not escape HTML
+
+typedef struct {
+    char *token;
+    void (*func)(FILE *);
+} replacement;
+
+static void
+man_sysparm_list(FILE *f)
+{
+    for (struct tune_str_entry *tstr = tune_str_list; tstr->name; tstr++) {
+	fprintf(f, " (str)  %-25s - %s\n", tstr->name, tstr->label);
+    }
+    for (struct tune_time_entry *ttim = tune_time_list; ttim->name; ttim++) {
+	fprintf(f, " (time) %-25s - %s\n", ttim->name, ttim->label);
+    }
+    for (struct tune_val_entry *tval = tune_val_list; tval->name; tval++) {
+	fprintf(f, " (int)  %-25s - %s\n", tval->name, tval->label);
+    }
+    for (struct tune_ref_entry *tref = tune_ref_list; tref->name; tref++) {
+	fprintf(f, " (ref)  %-25s - %s\n", tref->name, tref->label);
+    }
+    for (struct tune_bool_entry *tbool = tune_bool_list; tbool->name; tbool++) {
+	fprintf(f, " (bool) %-25s - %s\n", tbool->name, tbool->label);
+    }
+}
+
+static replacement replacements[] = {
+    { "%%SYSPARM_LIST", man_sysparm_list },
+    { NULL, NULL }
+};
 
 const char *title = "";
 const char *author = "";
@@ -628,10 +666,24 @@ process_lines(FILE * infile, FILE * outfile, FILE * htmlfile, int cols)
 	    escape_html(buf3, sizeof(buf3), buf);
 	    fprintf(htmlfile, "%s", buf3);
 	} else {
-	    fprintf(outfile, "%s", buf);
-	    fprintf(docsfile, "%s", buf);
-	    escape_html(buf3, sizeof(buf3), buf);
-	    fprintf(htmlfile, "%s", buf3);
+	    int found = 0;
+	    for (replacement *temp = replacements; temp->token; temp++) {
+		if (strstr(buf, temp->token)) {
+		    found = 1;
+		    (temp->func)(outfile);
+		    (temp->func)(docsfile);
+		    (temp->func)(htmlfile);
+		    break;
+		}
+	    }
+
+	    if (!found) {
+		fprintf(outfile, "%s", buf);
+		fprintf(docsfile, "%s", buf);
+		escape_html(buf3, sizeof(buf3), buf);
+		fprintf(htmlfile, "%s", buf3);
+	    }
+
 	    if (topichead) {
 		fprintf(htmlfile, HTML_TOPICHEAD_BREAK);
 	    }
