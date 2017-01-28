@@ -43,7 +43,7 @@
 #define HTML_ALSOSEE_END        "\n</h5>\n"
 
 // Token Replacement System
-// - replaces entire line with result of function
+// - replaces entire line with call to function
 // - currently does not escape HTML
 
 typedef struct {
@@ -72,7 +72,7 @@ man_sysparm_list(FILE *f)
 }
 
 static replacement replacements[] = {
-    { "%%SYSPARM_LIST", man_sysparm_list },
+    { "%%SYSPARM_LIST%%", man_sysparm_list },
     { NULL, NULL }
 };
 
