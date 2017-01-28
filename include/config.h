@@ -92,6 +92,15 @@
 #define MACRO_FILE  "muf/macros"
 #define PID_FILE    "fbmuck.pid"
 
+/*
+ * Debugging options (these may be removed or changed at any time)
+ */
+
+/* Define this to log all SSL connection messages, including those that
+   generally aren't problematic.  Undefined by default to avoid spamming
+   the status log. */
+#undef DEBUG_SSL_LOG_ALL
+
 /************************************************************************
   System Dependency Defines. 
 

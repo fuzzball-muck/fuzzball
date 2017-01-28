@@ -1150,49 +1150,6 @@ process_commands(void)
 
 #ifdef USE_SSL
 
-/* SSL_ERROR_WANT_ACCEPT is not defined in OpenSSL v0.9.6i and before. This
-   fix allows to compile fbmuck on systems with an 'old' OpenSSL library, and
-   yet have the server recognize the WANT_ACCEPT error when ran on systems with
-   a newer OpenSSL version installed... Of course, should the value of the
-   define change in ssl.h in the future (unlikely but not impossible), the
-   define below would have to be changed too...
- */
-#ifndef SSL_ERROR_WANT_ACCEPT
-#define SSL_ERROR_WANT_ACCEPT 8
-#endif
-
-static void
-log_ssl_error(const char *text, int descr, int errnum)
-{
-    switch (errnum) {
-    case SSL_ERROR_SSL:
-	log_status("SSL %s: sock %d, Error SSL_ERROR_SSL", text, descr);
-	break;
-    case SSL_ERROR_WANT_READ:
-	log_status("SSL %s: sock %d, Error SSL_ERROR_WANT_READ", text, descr);
-	break;
-    case SSL_ERROR_WANT_WRITE:
-	log_status("SSL %s: sock %d, Error SSL_ERROR_WANT_WRITE", text, descr);
-	break;
-    case SSL_ERROR_WANT_X509_LOOKUP:
-	log_status("SSL %s: sock %d, Error SSL_ERROR_WANT_X509_LOOKUP", text, descr);
-	break;
-    case SSL_ERROR_SYSCALL:
-	log_status("SSL %s: sock %d, Error SSL_ERROR_SYSCALL: %s", text, descr,
-		   strerror(errno));
-	break;
-    case SSL_ERROR_ZERO_RETURN:
-	log_status("SSL %s: sock %d, Error SSL_ERROR_ZERO_RETURN", text, descr);
-	break;
-    case SSL_ERROR_WANT_CONNECT:
-	log_status("SSL %s: sock %d, Error SSL_ERROR_WANT_CONNECT", text, descr);
-	break;
-    case SSL_ERROR_WANT_ACCEPT:
-	log_status("SSL %s: sock %d, Error SSL_ERROR_WANT_ACCEPT", text, descr);
-	break;
-    }
-}
-
 static ssize_t
 socket_read(struct descriptor_data *d, void *buf, size_t count)
 {
@@ -1207,9 +1164,9 @@ socket_read(struct descriptor_data *d, void *buf, size_t count)
     } else {
 	i = SSL_read(d->ssl_session, buf, count);
 	if (i < 0) {
-	    i = SSL_get_error(d->ssl_session, i);
+	    i = ssl_check_error(d, i, ssl_logging_stream);
 	    if (i == SSL_ERROR_WANT_READ || i == SSL_ERROR_WANT_WRITE) {
-		/* log_ssl_error("read 0", d->descriptor, i); */
+		// "read 0" error situation
 #ifdef WIN32
 		WSASetLastError(WSAEWOULDBLOCK);
 #else
@@ -1217,7 +1174,7 @@ socket_read(struct descriptor_data *d, void *buf, size_t count)
 #endif
 		return -1;
 	    } else if (d->is_starttls && (i == SSL_ERROR_ZERO_RETURN || i == SSL_ERROR_SSL)) {
-		/* log_ssl_error("read 1", d->descriptor, i); */
+		// "read 1" error situation
 		d->is_starttls = 0;
 		SSL_free(d->ssl_session);
 		d->ssl_session = NULL;
@@ -1228,7 +1185,7 @@ socket_read(struct descriptor_data *d, void *buf, size_t count)
 #endif
 		return -1;
 	    } else {
-		/* log_ssl_error("read 1", d->descriptor, i); */
+		// "read 1" error situation
 #ifndef WIN32
 		errno = EBADF;
 #endif
@@ -1254,7 +1211,7 @@ socket_write(struct descriptor_data * d, const void *buf, size_t count)
     } else {
 	i = SSL_write(d->ssl_session, buf, count);
 	if (i < 0) {
-	    i = SSL_get_error(d->ssl_session, i);
+	    i = ssl_check_error(d, i, ssl_logging_stream);
             if (i == SSL_ERROR_WANT_WRITE || i == SSL_ERROR_WANT_READ) {
 #ifdef WIN32
 		WSASetLastError(WSAEWOULDBLOCK);
@@ -1263,7 +1220,7 @@ socket_write(struct descriptor_data * d, const void *buf, size_t count)
 #endif
 		return -1;
 	    } else if (d->is_starttls && (i == SSL_ERROR_ZERO_RETURN || i == SSL_ERROR_SSL)) {
-		/* log_ssl_error("write 1", d->descriptor, i); */
+		// "write 1" error situation
 		d->is_starttls = 0;
 		SSL_free(d->ssl_session);
 		d->ssl_session = NULL;
@@ -1274,7 +1231,7 @@ socket_write(struct descriptor_data * d, const void *buf, size_t count)
 #endif
 		return -1;
 	    } else {
-		/* log_ssl_error("write 2", d->descriptor, i); */
+		// "write 2" error situation
 #ifndef WIN32
 		errno = EBADF;
 #endif
@@ -1957,8 +1914,12 @@ process_input(struct descriptor_data *d)
                         d->ssl_session = SSL_new(ssl_ctx);
                         SSL_set_fd(d->ssl_session, d->descriptor);
                         int ssl_ret_value = SSL_accept(d->ssl_session);
-                        if (ssl_ret_value != 0)
-                            ssl_log_error(d->ssl_session, ssl_ret_value);
+                        ssl_check_error(d, ssl_ret_value, ssl_logging_connect);
+                        // Eventually it might be nice to use the return value to close the
+                        // connection if SSL fails.  Unfortunately, OpenSSL makes this a proper
+                        // hassle, requiring inspecting a changing list of possible SSL_ERROR
+                        // defines.
+                        // See: https://www.openssl.org/docs/man1.1.0/ssl/SSL_accept.html#RETURN-VALUES
                         log_status("STARTTLS: %i", d->descriptor);
                     }
 		}
@@ -2601,8 +2562,12 @@ shovechars()
 			newd->ssl_session = SSL_new(ssl_ctx);
 			SSL_set_fd(newd->ssl_session, newd->descriptor);
 			cnt = SSL_accept(newd->ssl_session);
-			if (cnt != 0)
-			    ssl_log_error(newd->ssl_session, cnt);
+			ssl_check_error(newd, cnt, ssl_logging_connect);
+			// Eventually it might be nice to use the return value to close the
+			// connection if SSL fails.  Unfortunately, OpenSSL makes this a proper
+			// hassle, requiring inspecting a changing list of possible SSL_ERROR
+			// defines.
+			// See: https://www.openssl.org/docs/man1.1.0/ssl/SSL_accept.html#RETURN-VALUES
 			/* log_status("SSL accept1: %i\n", cnt ); */
 		    }
 		}
@@ -2627,8 +2592,12 @@ shovechars()
 			newd->ssl_session = SSL_new(ssl_ctx);
 			SSL_set_fd(newd->ssl_session, newd->descriptor);
 			cnt = SSL_accept(newd->ssl_session);
-			if (cnt != 0)
-			    ssl_log_error(newd->ssl_session, cnt);
+			ssl_check_error(newd, cnt, ssl_logging_connect);
+			// Eventually it might be nice to use the return value to close the
+			// connection if SSL fails.  Unfortunately, OpenSSL makes this a proper
+			// hassle, requiring inspecting a changing list of possible SSL_ERROR
+			// defines.
+			// See: https://www.openssl.org/docs/man1.1.0/ssl/SSL_accept.html#RETURN-VALUES
 			/* log_status("SSL accept1: %i\n", cnt ); */
 		    }
 		}
