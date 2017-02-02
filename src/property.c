@@ -779,8 +779,6 @@ displayprop(dbref player, dbref obj, const char *name, char *buf, size_t bufsiz)
     return buf;
 }
 
-extern short db_conversion_flag;
-
 int
 db_get_single_prop(FILE * f, dbref obj, long pos, PropPtr pnode, const char *pdir)
 {

@@ -55,7 +55,6 @@
 #define WOLISTEN_PROPQUEUE      "~olisten"
 
 extern const char *compile_options;
-extern short db_conversion_flag;
 extern int force_level;
 extern FILE *input_file;
 

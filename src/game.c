@@ -59,8 +59,6 @@ const char *compile_options =
 #endif
 	"";
 
-extern short db_conversion_flag;
-
 /* declarations */
 static const char *dumpfile = 0;
 static int epoch = 0;
