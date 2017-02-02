@@ -1561,7 +1561,13 @@ make_socket_v6(int port)
 	close(s);
 	exit(4);
     }
-    listen(s, 5);
+
+    /* We separate the binding of the socket and the listening on the socket */
+    /*  to support binding to privileged ports, then dropping privileges */
+    /* before listening.  Listening now happens in listen_bound_sockets(), */
+    /* called during shovechars().  This function is now called before the */
+    /* checks for MUD_GID and MUD_ID in main(). */
+    /*    listen(s, 5);	*/
     return s;
 }
 
@@ -1750,8 +1756,21 @@ make_socket(int port)
 	close(s);
 	exit(4);
     }
-    listen(s, 5);
+
+    /* We separate the binding of the socket and the listening on the socket */
+    /* to support binding to privileged ports, then dropping privileges */
+    /* before listening.  Listening now happens in listen_bound_sockets(), */
+    /* called during shovechars().  This function is now called before the */
+    /* checks for MUD_GID and MUD_ID in main(). */
+    /*    listen(s, 5);	*/
     return s;
+}
+
+static void listen_bound_sockets()
+{
+    for (int i = 0; i < numports; i++) {
+	listen(sock[i], 5);
+    }
 }
 
 static struct descriptor_data *
@@ -2311,29 +2330,7 @@ shovechars()
     struct timeval sel_in, sel_out;
     int avail_descriptors;
 
-    if (ipv4_enabled) {
-	for (int i = 0; i < numports; i++) {
-	    sock[i] = make_socket(listener_port[i]);
-	    update_max_descriptor(sock[i]);
-	    numsocks++;
-	}
-    }
-#ifdef USE_IPV6
-    if (ipv6_enabled) {
-	for (int i = 0; i < numports; i++) {
-	    sock_v6[i] = make_socket_v6(listener_port[i]);
-	    update_max_descriptor(sock_v6[i]);
-	    numsocks_v6++;
-	}
-    }
-#endif
-
-#ifdef USE_SSL
-    SSL_load_error_strings();
-    OpenSSL_add_ssl_algorithms();
-
-    (void) reconfigure_ssl();
-#endif
+    listen_bound_sockets();
 
     gettimeofday(&last_slice, (struct timezone *) 0);
 
@@ -4427,12 +4424,42 @@ main(int argc, char **argv)
     }
 
 
-
 /*
- * You have to change gid first, since setgid() relies on root permissions
- * if you don't call initgroups() -- and since initgroups() isn't standard,
- * I'd rather assume the user knows what he's doing.
-*/
+ * It is necessary to create the sockets at this point, because the main
+ * reason to use MUD_ID is if you want to bind to a privileged port, thus
+ * (usually) requiring root permissions.  setuid() requires root permissions
+ * anyway (unless obsolete, draft privileges are available on the platform)
+ * so MUD_ID is usually only useful in this circumstance.
+ */
+
+    if (ipv4_enabled) {
+	for (int i = 0; i < numports; i++) {
+	    sock[i] = make_socket(listener_port[i]);
+	    update_max_descriptor(sock[i]);
+	    numsocks++;
+	}
+    }
+#ifdef USE_IPV6
+    if (ipv6_enabled) {
+	for (int i = 0; i < numports; i++) {
+	    sock_v6[i] = make_socket_v6(listener_port[i]);
+	    update_max_descriptor(sock_v6[i]);
+	    numsocks_v6++;
+	}
+    }
+#endif
+
+#ifdef USE_SSL
+    SSL_load_error_strings();
+    OpenSSL_add_ssl_algorithms();
+
+    (void)reconfigure_ssl();
+#endif
+
+    /*
+     * Reset the GID before resetting the UID.  setgid() requires root
+     * permissions, which no longer exist after we drop them.
+     */
 
 #ifdef MUD_GID
     if (!sanity_interactive) {
