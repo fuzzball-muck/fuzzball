@@ -304,8 +304,6 @@ prim_timestamps(PRIM_PROTOTYPE)
     PushInt(result);
 }
 
-extern int top_pid;
-
 void
 prim_fork(PRIM_PROTOTYPE)
 {

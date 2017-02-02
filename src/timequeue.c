@@ -72,7 +72,6 @@ typedef struct timenode {
 
 static timequeue tqhead = NULL;
 
-extern int top_pid;
 static int process_count = 0;
 
 static timequeue free_timenode_list = NULL;

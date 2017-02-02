@@ -8,8 +8,6 @@
 #include "interp.h"
 #include "tune.h"
 
-extern const char *base_inst[];
-
 /* converts an instruction into a printable string, stores the string in
    buffer and returns a pointer to it.
    the first byte of the return value will be NULL if a buffer overflow

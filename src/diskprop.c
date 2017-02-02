@@ -4,12 +4,10 @@
 #include "db.h"
 #include "diskprop.h"
 #include "fbstrings.h"
+#include "game.h"
 #include "interface.h"
 #include "props.h"
 #include "tune.h"
-
-extern FILE *input_file;
-extern short db_conversion_flag;
 
 #define FETCHSTATS_INTERVAL1 120
 #define FETCHSTATS_INTERVAL2 600

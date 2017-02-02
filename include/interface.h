@@ -117,6 +117,7 @@ struct descriptor_data {
 #endif
 };
 
+extern short db_conversion_flag;
 extern struct descriptor_data *descriptor_list;
 extern short global_dumpdone;
 #ifndef DISKBASE
