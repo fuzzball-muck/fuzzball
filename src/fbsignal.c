@@ -317,6 +317,7 @@ sig_reap(int i)
 
     int status = 0;
     int reapedpid = 0;
+    int need_to_spawn_resolver = 0;
     /* look for children to reap in a loop in case a resolver and dumper
        process die at almost the same time. */
     do {
@@ -326,10 +327,10 @@ sig_reap(int i)
                 log_status("resolver exited with status %d", status);
                 if (WIFEXITED(status) && WEXITSTATUS(status) != 0) {
                     /* If the resolver exited with an error, respawn it. */
-                    spawn_resolver();
+                    need_to_spawn_resolver = 1;
                 } else if (WIFSIGNALED(status)) {
                     /* If the resolver exited due to a signal, respawn it. */
-                    spawn_resolver();
+                    need_to_spawn_resolver = 1;
                 }
 #ifndef DISKBASE
             } else if (reapedpid == global_dumper_pid) {
@@ -365,8 +366,14 @@ sig_reap(int i)
                 fprintf(stderr, "unknown child process (pid %d) exited with status %d\n",
                         reapedpid, status);
             }
-        }
+         }
     } while (reapedpid != -1);
+
+    /* spawn the resolver after the loop so if it exits immediately,
+       we still manage to exit this signal handler. */
+    if (need_to_spawn_resolver) {
+        spawn_resolver();
+    }
     return RETSIGVAL;
 }
 #endif
