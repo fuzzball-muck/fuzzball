@@ -317,55 +317,56 @@ sig_reap(int i)
 
     int status = 0;
     int reapedpid = 0;
-
-    reapedpid = waitpid(-1, &status, WNOHANG);
-    if (!reapedpid) {
-	fprintf(stderr, "SIG_CHILD signal handler called with no pid!\n");
-    } else {
-	if (reapedpid == global_resolver_pid) {
-	    log_status("resolver exited with status %d", status);
-	    if (WIFEXITED(status) && WEXITSTATUS(status) != 0) {
-		/* If the resolver exited with an error, respawn it. */
-		spawn_resolver();
-	    } else if (WIFSIGNALED(status)) {
-		/* If the resolver exited due to a signal, respawn it. */
-		spawn_resolver();
-	    }
+    /* look for children to reap in a loop in case a resolver and dumper
+       process die at almost the same time. */
+    do {
+        reapedpid = waitpid(-1, &status, WNOHANG);
+        if (reapedpid) {
+            if (reapedpid == global_resolver_pid) {
+                log_status("resolver exited with status %d", status);
+                if (WIFEXITED(status) && WEXITSTATUS(status) != 0) {
+                    /* If the resolver exited with an error, respawn it. */
+                    spawn_resolver();
+                } else if (WIFSIGNALED(status)) {
+                    /* If the resolver exited due to a signal, respawn it. */
+                    spawn_resolver();
+                }
 #ifndef DISKBASE
-	} else if (reapedpid == global_dumper_pid) {
-	    int warnflag = 0;
+            } else if (reapedpid == global_dumper_pid) {
+                int warnflag = 0;
 
-	    log_status("forked DB dump task exited with status %d", status);
+                log_status("forked DB dump task exited with status %d", status);
 
-	    if (WIFSIGNALED(status)) {
-		warnflag = 1;
-	    } else if (WIFEXITED(status)) {
-		/* In case NOCOREDUMP is defined, check for panic()s exit codes. */
-		int statres = WEXITSTATUS(status);
-		if (statres == 135 || statres == 136) {
-		    warnflag = 1;
-		}
-	    }
-	    if (warnflag) {
-		wall_wizards
-			("# WARNING: The forked DB save process crashed while saving the database.");
-		wall_wizards
-			("# This is probably due to memory corruption, which can crash this server.");
-		wall_wizards
-			("# Unless you have a REALLY good unix programmer around who can try to fix");
-		wall_wizards
-			("# this process live with a debugger, you should try to restart this Muck");
-		wall_wizards
-			("# as soon as possible, and accept the data lost since the previous DB save.");
-	    }
-	    global_dumpdone = 1;
-	    global_dumper_pid = 0;
+                if (WIFSIGNALED(status)) {
+                    warnflag = 1;
+                } else if (WIFEXITED(status)) {
+                    /* In case NOCOREDUMP is defined, check for panic()s exit codes. */
+                    int statres = WEXITSTATUS(status);
+                    if (statres == 135 || statres == 136) {
+                        warnflag = 1;
+                    }
+                }
+                if (warnflag) {
+                    wall_wizards
+                            ("# WARNING: The forked DB save process crashed while saving the database.");
+                    wall_wizards
+                            ("# This is probably due to memory corruption, which can crash this server.");
+                    wall_wizards
+                            ("# Unless you have a REALLY good unix programmer around who can try to fix");
+                    wall_wizards
+                            ("# this process live with a debugger, you should try to restart this Muck");
+                    wall_wizards
+                            ("# as soon as possible, and accept the data lost since the previous DB save.");
+                }
+                global_dumpdone = 1;
+                global_dumper_pid = 0;
 #endif
-	} else {
-	    fprintf(stderr, "unknown child process (pid %d) exited with status %d\n",
-		    reapedpid, status);
-	}
-    }
+            } else {
+                fprintf(stderr, "unknown child process (pid %d) exited with status %d\n",
+                        reapedpid, status);
+            }
+        }
+    } while (reapedpid);
     return RETSIGVAL;
 }
 #endif
