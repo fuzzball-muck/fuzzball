@@ -33,7 +33,7 @@
  * this is not defined, the MUCK will fork into the background to dump
  * the database, eliminating save delays.)
  */
-#define DISKBASE
+#undef DISKBASE
 
 /*
  * Port where tinymuck lives -- Note: If you use a port lower than
