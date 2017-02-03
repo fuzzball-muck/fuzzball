@@ -321,7 +321,7 @@ sig_reap(int i)
        process die at almost the same time. */
     do {
         reapedpid = waitpid(-1, &status, WNOHANG);
-        if (reapedpid) {
+        if (reapedpid != -1) {
             if (reapedpid == global_resolver_pid) {
                 log_status("resolver exited with status %d", status);
                 if (WIFEXITED(status) && WEXITSTATUS(status) != 0) {
@@ -366,7 +366,7 @@ sig_reap(int i)
                         reapedpid, status);
             }
         }
-    } while (reapedpid);
+    } while (reapedpid != -1);
     return RETSIGVAL;
 }
 #endif
