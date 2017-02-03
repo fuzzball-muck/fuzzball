@@ -4472,13 +4472,6 @@ main(int argc, char **argv)
     }
 #endif				/* MUD_ID */
 
-    /* Have to do this after setting GID/UID, else we can't kill
-     * the bloody thing... */
-#ifdef SPAWN_HOST_RESOLVER
-    if (!db_conversion_flag) {
-	spawn_resolver();
-    }
-#endif
 
 #ifdef MCP_SUPPORT
     /* Initialize MCP and some packages. */
@@ -4516,6 +4509,16 @@ main(int argc, char **argv)
 		}
 	    }
 	}
+
+        /* Have to do this after setting GID/UID, else we can't kill
+         * the bloody thing...
+         *
+         * Should also wait until after set_signals() is called, so
+         * we handle if it immediately crashes.
+         */
+#ifdef SPAWN_HOST_RESOLVER
+        spawn_resolver();
+#endif
 
 #ifdef WIN32
 	wVersionRequested = MAKEWORD(2, 0);
@@ -4558,7 +4561,9 @@ main(int argc, char **argv)
 	dump_database();
 
 #ifdef SPAWN_HOST_RESOLVER
-	kill_resolver();
+        if (!db_conversion_flag) {
+            kill_resolver();
+        }
 #endif
 
 #ifdef MALLOC_PROFILING
