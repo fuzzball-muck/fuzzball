@@ -1771,6 +1771,12 @@ static void listen_bound_sockets()
     for (int i = 0; i < numports; i++) {
 	listen(sock[i], 5);
     }
+
+#ifdef USE_SSL
+    for (int i = 0; i < ssl_numports; i++) {
+	listen(ssl_sock[i], 5);
+    }
+#endif
 }
 
 static struct descriptor_data *
