@@ -1768,21 +1768,32 @@ make_socket(int port)
 
 static void listen_bound_sockets()
 {
-    for (int i = 0; i < numports; i++) {
-	listen(sock[i], 5);
-#ifdef IPV6
-	listen(sock_v6[i], 5);
-#endif
-    }
+    if(ipv4_enabled) {
+
+        for (int i = 0; i < numsocks; i++) {
+            listen(sock[i], 5);
+        }
 
 #ifdef USE_SSL
-    for (int i = 0; i < ssl_numports; i++) {
-	listen(ssl_sock[i], 5);
-#ifdef IPV6
-	listen(ssl_sock_v6[i], 5);
-#endif
+        for (int i = 0; i < ssl_numsocks; i++) {
+            listen(ssl_sock[i], 5);
+        }
+#endif /* defined(USE_SSL) */
     }
-#endif
+
+#ifdef USE_IPV6
+    if(ipv6_enabled) {
+
+        for (int i = 0; i< numsocks_v6; i++) {
+            listen(sock_v6[i],5);
+        }
+#ifdef USE_SSL
+        for (int i = 0; i < ssl_numsocks_v6; i++) {
+            listen(ssl_sock_v6[i], 5);
+        }
+#endif /* defined(USE_SSL) */
+    }
+#endif /* defined(USE_IPV6) */
 }
 
 static struct descriptor_data *
