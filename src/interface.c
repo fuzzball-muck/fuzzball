@@ -1563,7 +1563,7 @@ make_socket_v6(int port)
     }
 
     /* We separate the binding of the socket and the listening on the socket */
-    /*  to support binding to privileged ports, then dropping privileges */
+    /* to support binding to privileged ports, then dropping privileges */
     /* before listening.  Listening now happens in listen_bound_sockets(), */
     /* called during shovechars().  This function is now called before the */
     /* checks for MUD_GID and MUD_ID in main(). */
@@ -1770,11 +1770,17 @@ static void listen_bound_sockets()
 {
     for (int i = 0; i < numports; i++) {
 	listen(sock[i], 5);
+#ifdef IPV6
+	listen(sock_v6[i], 5);
+#endif
     }
 
 #ifdef USE_SSL
     for (int i = 0; i < ssl_numports; i++) {
 	listen(ssl_sock[i], 5);
+#ifdef IPV6
+	listen(ssl_sock_v6[i], 5);
+#endif
     }
 #endif
 }
