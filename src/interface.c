@@ -2200,14 +2200,6 @@ reconfigure_ssl(void)
 
     new_ssl_ctx = configure_new_ssl_ctx();
 
-    if (new_ssl_ctx != NULL && ssl_numsocks == 0
-#ifdef USE_IPV6
-	&& ssl_numsocks_v6 == 0
-#endif
-	    ) {
-	bind_ssl_sockets();
-    }
-
     if (new_ssl_ctx != NULL) {
 	if (ssl_ctx) {
 	    SSL_CTX_free(ssl_ctx);
@@ -4473,10 +4465,7 @@ main(int argc, char **argv)
 #endif
 
 #ifdef USE_SSL
-    SSL_load_error_strings();
-    OpenSSL_add_ssl_algorithms();
-
-    (void)reconfigure_ssl();
+    bind_ssl_sockets();
 #endif
 
     /*
@@ -4519,6 +4508,15 @@ main(int argc, char **argv)
     if (parmfile) {
 	tune_load_parms_from_file(parmfile, NOTHING, -1);
     }
+
+#ifdef USE_SSL
+    /* This should be done after loading parms (from extra file or DB)
+       in order to ensure that SSL settings are honored. */
+    SSL_load_error_strings();
+    OpenSSL_add_ssl_algorithms();
+
+    (void)reconfigure_ssl();
+#endif
 
     if (!sanity_interactive && !db_conversion_flag) {
 	set_signals();
