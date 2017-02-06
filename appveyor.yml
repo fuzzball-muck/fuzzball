@@ -10,6 +10,20 @@ install:
     - cmd: conan user # Create conan data directory
     - cmd: conan --version
 
+init:
+    # Set "build version number" to "short-commit-hash" or when tagged to "tag name" (Travis style)
+    # Thanks to @jakoch and @ronaldbarendse
+    # Modified to also include the build number, distinguishes rebuilds of the same commit
+    # See comments on https://github.com/appveyor/ci/issues/691
+    - ps: |
+        if ($env:APPVEYOR_REPO_TAG -eq "true")
+        {
+            # Trim any starting 'v' from tags
+            Update-AppveyorBuild -Version "$($env:APPVEYOR_REPO_TAG_NAME.TrimStart("v"))-$env:APPVEYOR_BUILD_NUMBER"
+        } else {
+            Update-AppveyorBuild -Version "dev-$($env:APPVEYOR_REPO_COMMIT.Substring(0, 8))-$env:APPVEYOR_BUILD_NUMBER"
+        }
+
 build_script:
     - ps: |
         # Install Conan dependencies for 32-bit (x86)
@@ -30,9 +44,10 @@ build_script:
 
         # Package and store the build results
         # > File name of compressed output
-        $artifact_name = "fuzzball-win32"
+        $artifact_name = "fuzzball-win32-$env:APPVEYOR_BUILD_VERSION"
         # > Folder name stored inside compressed output
-        $artifact_root = "$env:APPVEYOR_BUILD_FOLDER/$artifact_name-$env:APPVEYOR_BUILD_VERSION"
+        #   Don't include "...-$env:APPVEYOR_BUILD_VERSION" as that's now part of the artifact name
+        $artifact_root = "$env:APPVEYOR_BUILD_FOLDER/$artifact_name"
         # > Exact filename for compressed output (change extension for different format)
         $artifact_zip = "$artifact_name.zip"
 
