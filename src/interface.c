@@ -4438,6 +4438,29 @@ main(int argc, char **argv)
 #endif
     }
 
+/*
+ * Make sure that this block of code happens BEFORE any attempt to initialize
+ * the sockets. Otherwise, calls to socket() will fail with INVALID_SOCKET.
+ * This manifests as the process exiting with an error code of 3.
+ */
+#ifdef WIN32
+	wVersionRequested = MAKEWORD(2, 0);
+
+	err = WSAStartup(wVersionRequested, &wsaData);
+	if (err != 0) {
+	    perror("Unable to start socket layer");
+	    return 1;
+	}
+
+	if (LOBYTE(wsaData.wVersion) != 2 || HIBYTE(wsaData.wVersion) != 0) {
+	    perror("Winsock 2.0 or later is required to run this application.");
+	    WSACleanup();
+	    return 1;
+	}
+
+	set_console();
+#endif
+
 
 /*
  * It is necessary to create the sockets at this point, because the main
@@ -4539,24 +4562,6 @@ main(int argc, char **argv)
          */
 #ifdef SPAWN_HOST_RESOLVER
         spawn_resolver();
-#endif
-
-#ifdef WIN32
-	wVersionRequested = MAKEWORD(2, 0);
-
-	err = WSAStartup(wVersionRequested, &wsaData);
-	if (err != 0) {
-	    perror("Unable to start socket layer");
-	    return 1;
-	}
-
-	if (LOBYTE(wsaData.wVersion) != 2 || HIBYTE(wsaData.wVersion) != 0) {
-	    perror("Winsock 2.0 or later is required to run this application.");
-	    WSACleanup();
-	    return 1;
-	}
-
-	set_console();
 #endif
 
 	/* go do it */
