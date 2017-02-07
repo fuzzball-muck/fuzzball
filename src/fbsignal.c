@@ -322,52 +322,52 @@ sig_reap(int i)
        process die at almost the same time. */
     do {
         reapedpid = waitpid(-1, &status, WNOHANG);
-        if (reapedpid != -1) {
-            if (reapedpid == global_resolver_pid) {
-                log_status("resolver exited with status %d", status);
-                if (WIFEXITED(status) && WEXITSTATUS(status) != 0) {
-                    /* If the resolver exited with an error, respawn it. */
-                    need_to_spawn_resolver = 1;
-                } else if (WIFSIGNALED(status)) {
-                    /* If the resolver exited due to a signal, respawn it. */
-                    need_to_spawn_resolver = 1;
-                }
-#ifndef DISKBASE
-            } else if (reapedpid == global_dumper_pid) {
-                int warnflag = 0;
-
-                log_status("forked DB dump task exited with status %d", status);
-
-                if (WIFSIGNALED(status)) {
-                    warnflag = 1;
-                } else if (WIFEXITED(status)) {
-                    /* In case NOCOREDUMP is defined, check for panic()s exit codes. */
-                    int statres = WEXITSTATUS(status);
-                    if (statres == 135 || statres == 136) {
-                        warnflag = 1;
-                    }
-                }
-                if (warnflag) {
-                    wall_wizards
-                            ("# WARNING: The forked DB save process crashed while saving the database.");
-                    wall_wizards
-                            ("# This is probably due to memory corruption, which can crash this server.");
-                    wall_wizards
-                            ("# Unless you have a REALLY good unix programmer around who can try to fix");
-                    wall_wizards
-                            ("# this process live with a debugger, you should try to restart this Muck");
-                    wall_wizards
-                            ("# as soon as possible, and accept the data lost since the previous DB save.");
-                }
-                global_dumpdone = 1;
-                global_dumper_pid = 0;
-#endif
-            } else {
-                fprintf(stderr, "unknown child process (pid %d) exited with status %d\n",
-                        reapedpid, status);
+        if (reapedpid == global_resolver_pid) {
+            log_status("resolver exited with status %d", status);
+            if (WIFEXITED(status) && WEXITSTATUS(status) != 0) {
+                /* If the resolver exited with an error, respawn it. */
+                need_to_spawn_resolver = 1;
+            } else if (WIFSIGNALED(status)) {
+                /* If the resolver exited due to a signal, respawn it. */
+                need_to_spawn_resolver = 1;
             }
-         }
-    } while (reapedpid != -1);
+#ifndef DISKBASE
+        } else if (reapedpid == global_dumper_pid) {
+            int warnflag = 0;
+
+            log_status("forked DB dump task exited with status %d", status);
+
+            if (WIFSIGNALED(status)) {
+                warnflag = 1;
+            } else if (WIFEXITED(status)) {
+                /* In case NOCOREDUMP is defined, check for panic()s exit codes. */
+                int statres = WEXITSTATUS(status);
+                if (statres == 135 || statres == 136) {
+                    warnflag = 1;
+                }
+            }
+            if (warnflag) {
+                wall_wizards
+                        ("# WARNING: The forked DB save process crashed while saving the database.");
+                wall_wizards
+                        ("# This is probably due to memory corruption, which can crash this server.");
+                wall_wizards
+                        ("# Unless you have a REALLY good unix programmer around who can try to fix");
+                wall_wizards
+                        ("# this process live with a debugger, you should try to restart this Muck");
+                wall_wizards
+                        ("# as soon as possible, and accept the data lost since the previous DB save.");
+            }
+            global_dumpdone = 1;
+            global_dumper_pid = 0;
+#endif
+        } else if (reapedpid == -1) {
+            log_status("waitpid() call from SIGCHLD handler returned errno=%d", errno);
+        } else {
+            fprintf(stderr, "unknown child process (pid %d) exited with status %d\n",
+                    reapedpid, status);
+        }
+    } while (reapedpid != -1 && reapedpid != 0);
 
     /* spawn the resolver after the loop so if it exits immediately,
        we still manage to exit this signal handler. */
