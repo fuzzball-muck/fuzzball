@@ -1159,7 +1159,6 @@ dequeue_timers(int pid, char *id)
 void
 do_kill_process(int descr, dbref player, const char *arg1)
 {
-    char buf[BUFFER_LEN];
     int count;
     dbref match;
     struct match_data md;

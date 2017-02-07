@@ -645,10 +645,10 @@ create_lostandfound(dbref * player, dbref * room)
     PUSH(*room, CONTENTS(GLOBAL_ENVIRONMENT));
     SanFixed(*room, "Using %s to resolve unknown location");
 
-    while (lookup_player(player_name) != NOTHING && strlen(player_name) < tp_player_name_limit) {
+    while (lookup_player(player_name) != NOTHING && strlen(player_name) < (unsigned int)tp_player_name_limit) {
 	snprintf(player_name, sizeof(player_name), "lost+found%d", ++temp);
     }
-    if (strlen(player_name) >= tp_player_name_limit) {
+    if (strlen(player_name) >= (unsigned int)tp_player_name_limit) {
         unparse_object(NOTHING, GOD, unparse_buf, sizeof(unparse_buf));
 	log_sanfix("WARNING: Unable to get lost+found player, using %s", unparse_buf);
 	*player = GOD;
@@ -771,7 +771,7 @@ find_misplaced_objects(void)
 		    char *name = "Unnamed";
 		    int temp = 0;
 
-		    while (lookup_player(name) != NOTHING && strlen(name) < tp_player_name_limit) {
+		    while (lookup_player(name) != NOTHING && strlen(name) < (unsigned int)tp_player_name_limit) {
 			snprintf(name, sizeof(name), "Unnamed%d", ++temp);
 		    }
 		    NAME(loop) = alloc_string(name);

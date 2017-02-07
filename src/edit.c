@@ -483,7 +483,6 @@ list_program(dbref player, dbref program, int *oarg, int argc)
     struct line *curr;
     int i, count;
     int arg[2];
-    char buf[BUFFER_LEN];
 
     if (oarg) {
 	arg[0] = oarg[0];
