@@ -758,11 +758,11 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms,
 		s = 0;
 		while (wbuf[p] && wbuf[p] != MFUN_LEADCHAR &&
 		       !isspace(wbuf[p]) && wbuf[p] != MFUN_ARGSTART &&
-		       wbuf[p] != MFUN_ARGEND && s < MAX_MFUN_NAME_LEN) {
+		       wbuf[p] != MFUN_ARGEND && s <= MAX_MFUN_NAME_LEN) {
 		    p++;
 		    s++;
 		}
-		if (s < MAX_MFUN_NAME_LEN &&
+		if ( ( s <= MAX_MFUN_NAME_LEN || ( s <= MAX_MFUN_NAME_LEN + 1 && *ptr == '&' ) ) &&
 		    (wbuf[p] == MFUN_ARGSTART || wbuf[p] == MFUN_ARGEND)) {
 		    int varflag;
 
