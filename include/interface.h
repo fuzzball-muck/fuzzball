@@ -170,7 +170,6 @@ int pdescr(int c);
 int pdescrboot(int c);
 int pdescrbufsize(int c);
 int pdescrcon(int c);
-int pdescrcount(void);
 int pdescrdbref(int c);
 int pdescrflush(int c);
 char *pdescrhost(int c);
