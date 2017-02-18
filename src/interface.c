@@ -3594,12 +3594,6 @@ pdescr(int c)
 }
 
 int
-pdescrcount(void)
-{
-    return current_descr_count;
-}
-
-int
 pfirstdescr(void)
 {
     struct descriptor_data *d;
