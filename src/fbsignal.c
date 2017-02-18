@@ -28,6 +28,12 @@
 #define RETSIGTYPE void
 #endif
 
+#if !defined(SYSV) && !defined(_POSIX_VERSION) && !defined(ULTRIX)
+#define RETSIGVAL 0
+#else
+#define RETSIGVAL
+#endif
+
 /*
  * Function prototypes
  */
@@ -242,9 +248,7 @@ bailout(int sig)
     *x = 1;
     exit(7);
 
-#if !defined(SYSV) && !defined(_POSIX_VERSION) && !defined(ULTRIX)
-    return 0;
-#endif
+    return RETSIGVAL;
 }
 
 /*
@@ -254,9 +258,7 @@ RETSIGTYPE
 sig_dump_status(int i)
 {
     dump_status();
-#if !defined(SYSV) && !defined(_POSIX_VERSION) && !defined(ULTRIX)
-    return 0;
-#endif
+    return RETSIGVAL;
 }
 
 #ifdef SIGEMERG
@@ -268,9 +270,7 @@ sig_emerg(int i)
     dump_database();
     shutdown_flag = 1;
     restart_flag = 0;
-#if !defined(SYSV) && !defined(_POSIX_VERSION) && !defined(ULTRIX)
-    return 0;
-#endif
+    return RETSIGVAL;
 }
 #endif
 
@@ -283,20 +283,13 @@ sig_shutdown(int i)
     log_status("SHUTDOWN: via SIGNAL");
     shutdown_flag = 1;
     restart_flag = 0;
-#if !defined(SYSV) && !defined(_POSIX_VERSION) && !defined(ULTRIX)
-    return 0;
-#endif
+    return RETSIGVAL;
 }
 
 #ifdef SPAWN_HOST_RESOLVER
 /*
  * Clean out Zombie Resolver Process.
  */
-#if !defined(SYSV) && !defined(_POSIX_VERSION) && !defined(ULTRIX)
-#define RETSIGVAL 0
-#else
-#define RETSIGVAL
-#endif
 
 RETSIGTYPE
 sig_reap(int i)
