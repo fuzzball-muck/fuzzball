@@ -145,6 +145,30 @@ new_object(void)
 }
 
 dbref
+create_action(dbref player, const char *name, dbref source)
+{
+    dbref newact;
+
+    newact = new_object();
+    NAME(newact) = alloc_string(name);
+    FLAGS(newact) = TYPE_EXIT;
+    OWNER(newact) = OWNER(player);
+
+    set_source(player, newact, source);
+
+    DBFETCH(newact)->sp.exit.ndest = 0;
+    DBFETCH(newact)->sp.exit.dest = NULL;
+
+    if (tp_autolink_actions) {
+	DBFETCH(newact)->sp.exit.ndest = 1;
+	DBFETCH(newact)->sp.exit.dest = (dbref *) malloc(sizeof(dbref));
+	(DBFETCH(newact)->sp.exit.dest)[0] = NIL;
+    }
+
+    return newact;
+}
+
+dbref
 create_program(dbref player, const char *name)
 {
     dbref newprog;
