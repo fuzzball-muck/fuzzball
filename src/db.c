@@ -213,6 +213,25 @@ create_program(dbref player, const char *name)
     return newprog;
 }
 
+dbref
+create_room(dbref player, const char *name, dbref parent)
+{
+    dbref newroom;
+
+    newroom = new_object();
+    NAME(newroom) = alloc_string(name);
+    LOCATION(newroom) = parent;
+    PUSH(newroom, CONTENTS(parent));
+    FLAGS(newroom) = TYPE_ROOM | (FLAGS(player) & JUMP_OK);
+    OWNER(newroom) = OWNER(player);
+    EXITS(newroom) = NOTHING;
+    DBFETCH(newroom)->sp.room.dropto = NOTHING;
+
+    DBDIRTY(parent);
+
+    return newroom;
+}
+
 void
 putref(FILE * f, dbref ref)
 {

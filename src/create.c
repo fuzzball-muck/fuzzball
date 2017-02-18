@@ -297,24 +297,14 @@ do_dig(int descr, dbref player, const char *name, const char *pname)
 	notifyf(player, "Sorry, you don't have enough %s to dig a room.", tp_pennies);
 	return;
     }
-    room = new_object();
 
-    /* Initialize everything */
     newparent = LOCATION(LOCATION(player));
     while ((newparent != NOTHING) && !(FLAGS(newparent) & ABODE))
 	newparent = LOCATION(newparent);
     if (newparent == NOTHING)
 	newparent = tp_default_room_parent;
 
-    NAME(room) = alloc_string(name);
-    LOCATION(room) = newparent;
-    OWNER(room) = OWNER(player);
-    EXITS(room) = NOTHING;
-    DBFETCH(room)->sp.room.dropto = NOTHING;
-    FLAGS(room) = TYPE_ROOM | (FLAGS(player) & JUMP_OK);
-    PUSH(room, CONTENTS(newparent));
-    DBDIRTY(room);
-    DBDIRTY(newparent);
+    room = create_room(player, name, newparent);
 
     notifyf(player, "Room %s created as #%d.", name, room);
 
