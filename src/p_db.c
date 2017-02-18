@@ -1332,25 +1332,7 @@ prim_newexit(PRIM_PROTOTYPE)
 	if (!ok_ascii_other(b) || !ok_name(b))
 	    abort_interp("Invalid name. (2)");
 
-	ref = new_object();
-
-	/* initialize everything */
-	NAME(ref) = alloc_string(oper1->data.string->data);
-	LOCATION(ref) = oper2->data.objref;
-	OWNER(ref) = OWNER(ProgUID);
-	FLAGS(ref) = TYPE_EXIT;
-	DBFETCH(ref)->sp.exit.ndest = 0;
-	DBFETCH(ref)->sp.exit.dest = NULL;
-
-	/* link it in */
-	PUSH(ref, EXITS(oper2->data.objref));
-	DBDIRTY(oper2->data.objref);
-
-	if (tp_autolink_actions) {
-	    DBFETCH(ref)->sp.exit.ndest = 1;
-	    DBFETCH(ref)->sp.exit.dest = (dbref *) malloc(sizeof(dbref));
-	    (DBFETCH(ref)->sp.exit.dest)[0] = NIL;
-	}
+	ref = create_action(ProgUID, oper1->data.string->data, oper2->data.objref);
 
 	CLEAR(oper1);
 	CLEAR(oper2);

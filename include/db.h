@@ -445,6 +445,7 @@ extern int recyclable;
 
 int controls(dbref who, dbref what);
 int controls_link(dbref who, dbref what);
+dbref create_action(dbref player, const char *name, dbref source);
 dbref create_program(dbref player, const char *name);
 void db_clear_object(dbref i);
 void db_free(void);

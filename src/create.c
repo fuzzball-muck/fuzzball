@@ -827,23 +827,11 @@ do_action(int descr, dbref player, const char *action_name, const char *source_n
 	return;
     }
 
-    action = new_object();
+    action = create_action(player, action_name, source);
 
-    NAME(action) = alloc_string(action_name);
-    LOCATION(action) = NOTHING;
-    OWNER(action) = OWNER(player);
-    DBFETCH(action)->sp.exit.ndest = 0;
-    DBFETCH(action)->sp.exit.dest = NULL;
-    FLAGS(action) = TYPE_EXIT;
-
-    set_source(player, action, source);
     notifyf(player, "Action %s created as #%d and attached.", NAME(action), action);
-    DBDIRTY(action);
 
     if (tp_autolink_actions) {
-	DBFETCH(action)->sp.exit.ndest = 1;
-	DBFETCH(action)->sp.exit.dest = (dbref *) malloc(sizeof(dbref));
-	(DBFETCH(action)->sp.exit.dest)[0] = NIL;
 	notify(player, "Linked to NIL.");
     }
 
