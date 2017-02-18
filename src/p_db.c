@@ -1289,18 +1289,7 @@ prim_newroom(PRIM_PROTOTYPE)
 	if (!ok_ascii_other(b) || !ok_name(b))
 	    abort_interp("Invalid name. (2)");
 
-	ref = new_object();
-
-	/* Initialize everything */
-	NAME(ref) = alloc_string(b);
-	LOCATION(ref) = oper2->data.objref;
-	OWNER(ref) = OWNER(ProgUID);
-	EXITS(ref) = NOTHING;
-	DBFETCH(ref)->sp.room.dropto = NOTHING;
-	FLAGS(ref) = TYPE_ROOM | (FLAGS(player) & JUMP_OK);
-	PUSH(ref, CONTENTS(oper2->data.objref));
-	DBDIRTY(ref);
-	DBDIRTY(oper2->data.objref);
+	ref = create_room(ProgUID, b, ref);
 
 	CLEAR(oper1);
 	CLEAR(oper2);

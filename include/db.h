@@ -447,6 +447,7 @@ int controls(dbref who, dbref what);
 int controls_link(dbref who, dbref what);
 dbref create_action(dbref player, const char *name, dbref source);
 dbref create_program(dbref player, const char *name);
+dbref create_room(dbref player, const char *name, dbref parent);
 void db_clear_object(dbref i);
 void db_free(void);
 void db_free_object(dbref i);
