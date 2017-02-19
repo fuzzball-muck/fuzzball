@@ -72,22 +72,8 @@ do_open(int descr, dbref player, const char *direction, const char *linkto)
 	notifyf(player, "Sorry, you don't have enough %s to open an exit.", tp_pennies);
 	return;
     } else {
-	/* create the exit */
-	exit = new_object();
+	exit = create_action(player, direction, loc);
 
-	/* initialize everything */
-	NAME(exit) = alloc_string(direction);
-	LOCATION(exit) = loc;
-	OWNER(exit) = OWNER(player);
-	FLAGS(exit) = TYPE_EXIT;
-	DBFETCH(exit)->sp.exit.ndest = 0;
-	DBFETCH(exit)->sp.exit.dest = NULL;
-
-	/* link it in */
-	PUSH(exit, EXITS(loc));
-	DBDIRTY(loc);
-
-	/* and we're done */
 	notifyf(player, "Exit %s opened as #%d.", NAME(exit), exit);
 
 	/* check second arg to see if we should do a link */
