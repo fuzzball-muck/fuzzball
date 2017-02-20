@@ -232,6 +232,33 @@ create_room(dbref player, const char *name, dbref parent)
     return newroom;
 }
 
+dbref
+create_thing(dbref player, const char *name, dbref location)
+{
+    dbref newthing, loc;
+
+    newthing = new_object();
+
+    NAME(newthing) = alloc_string(name);
+    ALLOC_THING_SP(newthing);
+    LOCATION(newthing) = location;
+    PUSH(newthing, CONTENTS(location));
+    FLAGS(newthing) = TYPE_THING;
+    OWNER(newthing) = OWNER(player);
+    EXITS(newthing) = NOTHING;
+    SETVALUE(newthing, 1);
+
+    if ((loc = LOCATION(player)) != NOTHING && controls(player, loc)) {
+	THING_SET_HOME(newthing, loc);
+    } else {
+	THING_SET_HOME(newthing, player);
+    }
+
+    DBDIRTY(location);
+
+    return newthing;
+}
+
 void
 putref(FILE * f, dbref ref)
 {
