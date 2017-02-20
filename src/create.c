@@ -6,6 +6,7 @@
 #include "diskprop.h"
 #endif
 #include "edit.h"
+#include "fbmath.h"
 #include "fbstrings.h"
 #include "game.h"
 #include "log.h"
@@ -590,46 +591,25 @@ do_clone(int descr, dbref player, char *name)
     if (!payfor(player, cost)) {
 	notifyf(player, "Sorry, you don't have enough %s.", tp_pennies);
 	return;
-    } else {
-	if (tp_verbose_clone) {
-            char unparse_buf[BUFFER_LEN];
-            unparse_object(player, thing, unparse_buf, sizeof(unparse_buf));
-	    notifyf(player, "Now cloning %s...", unparse_buf);
-	}
-
-	/* create the object */
-	clonedthing = new_object();
-
-	/* initialize everything */
-	NAME(clonedthing) = alloc_string(NAME(thing));
-	ALLOC_THING_SP(clonedthing);
-	LOCATION(clonedthing) = player;
-	OWNER(clonedthing) = OWNER(player);
-	SETVALUE(clonedthing, GETVALUE(thing));
-/* FIXME: should we clone attached actions? */
-	EXITS(clonedthing) = NOTHING;
-	FLAGS(clonedthing) = FLAGS(thing);
-
-	/* copy all properties */
-	copy_props(player, thing, clonedthing, "");
-
-	/* endow the object */
-	if (GETVALUE(thing) > tp_max_object_endowment) {
-	    SETVALUE(thing, tp_max_object_endowment);
-	}
-
-	/* Home, sweet home */
-	THING_SET_HOME(clonedthing, THING_HOME(thing));
-
-	/* link it in */
-	PUSH(clonedthing, CONTENTS(player));
-	DBDIRTY(player);
-
-	/* and we're done */
-	notifyf(player, "Object %s cloned as #%d.", NAME(thing), clonedthing);
-	DBDIRTY(clonedthing);
     }
 
+    if (tp_verbose_clone) {
+	char unparse_buf[BUFFER_LEN];
+	unparse_object(player, thing, unparse_buf, sizeof(unparse_buf));
+	notifyf(player, "Now cloning %s...", unparse_buf);
+    }
+
+    clonedthing = create_thing(player, NAME(thing), player);
+
+    /* copy all properties */
+    copy_props(player, thing, clonedthing, "");
+
+    SETVALUE(clonedthing, MIN(GETVALUE(thing), tp_max_object_endowment));
+
+    /* FIXME: should we clone attached actions? */
+    EXITS(clonedthing) = NOTHING;
+
+    notifyf(player, "Object %s cloned as #%d.", NAME(thing), clonedthing);
 }
 
 /*
@@ -676,38 +656,12 @@ do_create(dbref player, char *name, char *acost)
     if (!payfor(player, cost)) {
 	notifyf(player, "Sorry, you don't have enough %s.", tp_pennies);
 	return;
-    } else {
-	/* create the object */
-	thing = new_object();
-
-	/* initialize everything */
-	NAME(thing) = alloc_string(name);
-	ALLOC_THING_SP(thing);
-	LOCATION(thing) = player;
-	OWNER(thing) = OWNER(player);
-	SETVALUE(thing, OBJECT_ENDOWMENT(cost));
-	EXITS(thing) = NOTHING;
-	FLAGS(thing) = TYPE_THING;
-
-	/* endow the object */
-	if (GETVALUE(thing) > tp_max_object_endowment) {
-	    SETVALUE(thing, tp_max_object_endowment);
-	}
-	if ((loc = LOCATION(player)) != NOTHING && controls(player, loc)) {
-	    THING_SET_HOME(thing, loc);	/* home */
-	} else {
-	    THING_SET_HOME(thing, player);	/* home */
-	    /* set thing's home to player instead */
-	}
-
-	/* link it in */
-	PUSH(thing, CONTENTS(player));
-	DBDIRTY(player);
-
-	/* and we're done */
-	notifyf(player, "Object %s created as #%d.", name, thing);
-	DBDIRTY(thing);
     }
+
+    thing = create_thing(player, name, player); 
+    SETVALUE(thing, MIN(OBJECT_ENDOWMENT(cost), tp_max_object_endowment));
+
+    notifyf(player, "Object %s created as #%d.", name, thing);
 
     if (*rname) {
         register_object(player, REGISTRATION_PROPDIR, rname, thing);

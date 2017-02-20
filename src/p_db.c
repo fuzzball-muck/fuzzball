@@ -1237,29 +1237,8 @@ prim_newobject(PRIM_PROTOTYPE)
 	if (!ok_ascii_thing(b) || !ok_name(b))
 	    abort_interp("Invalid name. (2)");
 
-	ref = new_object();
-
-	/* initialize everything */
-	NAME(ref) = alloc_string(b);
-	ALLOC_THING_SP(ref);
-	LOCATION(ref) = oper2->data.objref;
-	OWNER(ref) = OWNER(ProgUID);
-	SETVALUE(ref, 1);
-	EXITS(ref) = NOTHING;
-	FLAGS(ref) = TYPE_THING;
-
-	if ((loc = LOCATION(player)) != NOTHING && controls(player, loc)) {
-	    THING_SET_HOME(ref, loc);	/* home */
-	} else {
-	    THING_SET_HOME(ref, PLAYER_HOME(player));
-	    /* set to player's home instead */
-	}
+	ref = create_thing(player, b, oper2->data.objref);
     }
-
-    /* link it in */
-    PUSH(ref, CONTENTS(oper2->data.objref));
-    DBDIRTY(ref);
-    DBDIRTY(oper2->data.objref);
 
     CLEAR(oper1);
     CLEAR(oper2);
