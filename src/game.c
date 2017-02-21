@@ -683,24 +683,23 @@ process_command(int descr, dbref player, char *command)
 		break;
 	    case 'd':
 	    case 'D':
-		/* @dbginfo, @describe, @dig, @doing,
+		/* @debug, @describe, @dig, @doing,
 		   @drop, @dump */
 		switch (command[2]) {
-#ifdef DISKBASE
-		case 'b':
-		case 'B':
-		    Matched("@dbginfo");
-		    WIZARDONLY("@dbginfo", player);
-		    do_dbginfo(player);
-		    break;
-#endif
 		case 'e':
 		case 'E':
-		    Matched("@describe");
-		    NOGUEST("@describe", player);
-		    set_standard_property(descr, player, arg1, MESGPROP_DESC,
+                    if (strcasecmp(command, "@debug")) {
+			Matched("@describe");
+			NOGUEST("@describe", player);
+			set_standard_property(descr, player, arg1, MESGPROP_DESC,
 					  "Object Description", arg2);
-		    break;
+			break;
+		    } else {
+			Matched("@debug");
+			WIZARDONLY("@debug", player);
+			do_debug(player, arg1);
+			break;
+		    }
 		case 'i':
 		case 'I':
 		    Matched("@dig");

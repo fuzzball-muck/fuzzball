@@ -354,7 +354,7 @@ report_cachestats(dbref player)
 }
 
 void
-do_dbginfo(dbref player)
+display_propcache(dbref player)
 {
     double ph, pm;
 

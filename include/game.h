@@ -1,6 +1,8 @@
 #ifndef _GAME_H
 #define _GAME_H
 
+#define MOD_ENABLED(module) (module[0] == 0 || strstr(compile_options, module) != NULL)
+
 #define BREAK_COMMAND "@Q"
 #define NULL_COMMAND "@@"
 #define OVERRIDE_TOKEN '!'

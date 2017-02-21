@@ -2,6 +2,9 @@
 
 #include "boolexp.h"
 #include "db.h"
+#ifdef DISKBASE
+#include "diskprop.h"
+#endif
 #include "edit.h"
 #include "fbstrings.h"
 #include "game.h"
@@ -1196,3 +1199,18 @@ do_memory(dbref who)
     notify(who, "Done.");
 }
 #endif				/* NO_MEMORY_COMMAND */
+
+void
+do_debug(dbref player, const char *args)
+{
+    /* for future expansion */
+
+    if (MOD_ENABLED("DISKBASE") && !strcasecmp(args, "display propcache")) {
+#ifdef DISKBASE
+	display_propcache(player);
+#endif
+    } else {
+        notify(player, "Unrecognized option.");
+    }
+}
+

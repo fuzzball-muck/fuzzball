@@ -16,9 +16,7 @@ void do_contents(int descr, dbref player, const char *name, const char *flags);
 void do_create(dbref player, char *name, char *cost);
 void do_credits(dbref player);
 
-#ifdef DISKBASE
-void do_dbginfo(dbref player);
-#endif
+void do_debug(dbref player, const char *args);
 void do_dig(int descr, dbref player, const char *name, const char *pname);
 void do_dump(dbref player, const char *newfile);
 
