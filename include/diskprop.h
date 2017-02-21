@@ -5,6 +5,7 @@
 #include "props.h"
 
 void dirtyprops(dbref obj);
+void display_propcache(dbref player);
 void dispose_all_oldprops(void);
 void fetchprops(dbref obj, const char *pdir);
 int fetch_propvals(dbref obj, const char *dir);

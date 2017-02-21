@@ -13,8 +13,6 @@
 #include "tune.h"
 #include "tunelist.h"
 
-#define MOD_ENABLED(module) (module[0] == 0 || strstr(compile_options, module) != NULL)
-
 #define TP_SEND_ENTRY_INFO(tune_entry) \
 { \
 	notifyf(player, "%-27s %.4096s", tune_entry->group, tune_entry->label); \
