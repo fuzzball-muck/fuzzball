@@ -137,8 +137,8 @@ MOBJ= interface.o resolver.o
 SRC= ${MISCSRC} ${CSRC} ${MSRC}
 OBJ= ${COBJ} ${ROBJ} ${MOBJ}
 
-TARGETS= fbmuck fb-resolver
-OLDTARGETS = fbmuck~ fb-resolver~
+TARGETS= fbmuck fb-resolver prochelp
+OLDTARGETS = fbmuck~ fb-resolver~ prochelp~
 HELPFILES= man.txt help.txt mpihelp.txt
 
 .c.o:
@@ -168,6 +168,9 @@ fbmuck: $(INCLUDE)/defines.h ${P} ${COBJ} ${MALLOBJ} interface.o Makefile
 
 fb-resolver: resolver.o ${MALLOBJ} Makefile
 	${PRE} ${CC} ${CFLAGS} ${INCL} ${DEFS} -o fb-resolver resolver.o ${MALLOBJ} ${LIBR} -lpthread
+
+prochelp: prochelp.o Makefile
+	${PRE} ${CC} ${CFLAGS} ${INCL} ${DEFS} -o prochelp prochelp.o
 
 #############################################################
 # Funky stuff for debugging and coding work.
@@ -212,10 +215,10 @@ Makefile: Makefile.in
 #
 
 clean:
-	-${RM} ${OBJ} core version.o mkversion.o ${SOBJ} ${MALLOBJ} resolver.o ${TARGETS} ${OLDTARGETS}
+	-${RM} ${OBJ} core version.o mkversion.o ${SOBJ} ${MALLOBJ} resolver.o ${TARGETS} ${OLDTARGETS} prochelp.o
 
 cleaner: clean
-	-${RM} Makefile config.status config.cache config.log ${INCLUDE}/autoconf.h ${TARGETS} version.c mkversion prochelp ${INCLUDE}/defines.h
+	-${RM} Makefile config.status config.cache config.log ${INCLUDE}/autoconf.h ${TARGETS} version.c mkversion ${INCLUDE}/defines.h
 
 distclean: cleaner
 

@@ -35,7 +35,7 @@ Symbols
   @action            @armageddon        @attach            @bless
   @boot              @chown             @chown_lock        @clone
   @conlock           @contents          @create            @credits
-  @dbginfo           @describe          @dig               @doing
+  @debug             @describe          @dig               @doing
   @drop              @dump              @edit              @entrances
   @examine           @fail              @find              @force
   @force_lock        @hashes            @idescribe         @kill
@@ -1923,7 +1923,7 @@ Wizardly Commands|WizCmds
 Wizardly Commands
 
 @armageddon        @bless             @boot              @credits
-@dbginfo           @dump              @examine           @force
+@debug             @dump              @examine           @force
 @hashes            @memory            @mpitops           @muftops
 @newpassword       @pcreate           @reconfiguressl    @restart
 @restrict          @sanchange         @sanfix            @sanity
@@ -2164,11 +2164,15 @@ Also see: @CREDITS and @VERSION
 Also see: @CREDITS and @HASHES
 ~
 ~
-@DBGINFO
-@DBGINFO
+@DEBUG
+@DEBUG
 
   Wizard only command that gives database usage stats for
 'diskbase'-style databases.  Only available if compiled with DISKBASE.
+More options will be added in the future.
+
+  Examples:
+    @debug display propcache    display database property cache
 Also see: @MEMORY, @MPITOPS, @MUFTOPS, @TOPS and @USAGE
 ~
 ~
@@ -2187,7 +2191,7 @@ blank, it uses the default of '10'.
     @tops              show default amount of profiling statistics
     @tops 5            show 5 rows of profiling statistics
     @tops reset        reset all collected profiling statistics
-Also see: @DBGINFO, @MEMORY, @MPITOPS, @MUFTOPS and @USAGE
+Also see: @DEBUG, @MEMORY, @MPITOPS, @MUFTOPS and @USAGE
 ~
 ~
 @MEMORY
@@ -2196,7 +2200,7 @@ Also see: @DBGINFO, @MEMORY, @MPITOPS, @MUFTOPS and @USAGE
   Wizard only command that gives detailed memory stats for the muck
 server process.  If HAVE_MALLINFO is used, this command shows more
 information.
-Also see: @DBGINFO, @MPITOPS, @MUFTOPS, @TOPS and @USAGE
+Also see: @DEBUG, @MPITOPS, @MUFTOPS, @TOPS and @USAGE
 ~
 ~
 @MPITOPS
@@ -2214,7 +2218,7 @@ uses the default of '10'.
     @mpitops           show default amount of profiling statistics
     @mpitops 5         show 5 rows of profiling statistics
     @mpitops reset     reset collected MPI profiling statistics
-Also see: @DBGINFO, @MEMORY, @MUFTOPS, @TOPS and @USAGE
+Also see: @DEBUG, @MEMORY, @MUFTOPS, @TOPS and @USAGE
 ~
 ~
 @MUFTOPS
@@ -2232,7 +2236,7 @@ uses the default of '10'.
     @muftops           show default amount of profiling statistics
     @muftops 5         show 5 rows of profiling statistics
     @muftops reset     reset collected MUF profiling statistics
-Also see: @DBGINFO, @MEMORY, @MPITOPS, @TOPS and @USAGE
+Also see: @DEBUG, @MEMORY, @MPITOPS, @TOPS and @USAGE
 ~
 ~
 @USAGE
@@ -2240,7 +2244,7 @@ Also see: @DBGINFO, @MEMORY, @MPITOPS, @TOPS and @USAGE
 
   Wizard only command that gives system resource usage stats for the
 muck server process.
-Also see: @DBGINFO, @MEMORY, @MPITOPS, @MUFTOPS and @TOPS
+Also see: @DEBUG, @MEMORY, @MPITOPS, @MUFTOPS and @TOPS
 ~
 ~
 @EXAMINE

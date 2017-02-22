@@ -27,7 +27,12 @@ env:
     - FLAG_IPV6=""                FLAG_SSL=""
 
 script:
-  - ./configure $FLAG_LINT $FLAG_IPV6 $FLAG_SSL && make clean && make all
+  # Set up configure flags
+  - ./configure $FLAG_LINT $FLAG_IPV6 $FLAG_SSL
+  # Clean up build directory
+  - make clean
+  # Make Fuzzball and all related code
+  - make all
 
 # Currently, --enable-memprof and --enable-debug are ignored for that generates
 # 32 builds instead of 8.  If those need tested in the future, use the
