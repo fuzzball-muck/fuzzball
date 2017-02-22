@@ -1749,8 +1749,8 @@ database.
     @tune foo=bar      sets the value of foo to bar
     @tune %foo         resets foo to the default system value
     @tune info foo     briefly describes foo
-    @tune save         save all parameters to data/parmfile.cfg
-    @tune load         load all parameters from data/parmfile.cfg
+    @tune save         save all parameters to configuration file
+    @tune load         load all parameters from configuration file
 
   Some parameters may require a @RESTART or reload to apply.
 
