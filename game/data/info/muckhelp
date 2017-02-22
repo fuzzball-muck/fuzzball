@@ -1777,10 +1777,14 @@ hashes are only available if Git was installed during compilation.
   Show the version information, build time, and compile options used.
 
 
-@DBGINFO
+@DEBUG
 
   Wizard only command that gives database usage stats for
 'diskbase'-style databases.  Only available if compiled with DISKBASE.
+More options will be added in the future.
+
+  Examples:
+    @debug display propcache    display database property cache
 
 
 @TOPS
