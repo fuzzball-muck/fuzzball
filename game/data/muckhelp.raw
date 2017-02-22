@@ -1991,11 +1991,17 @@ hashes are only available if Git was installed during compilation.
 ~~alsosee @CREDITS,@HASHES
 ~
 ~
-@DBGINFO
-@DBGINFO
+@DEBUG
+@DEBUG
 
   Wizard only command that gives database usage stats for
 'diskbase'-style databases.  Only available if compiled with DISKBASE.
+More options will be added in the future.
+
+  Examples:
+~~code
+    @debug display propcache    display database property cache
+~~endcode
 ~~alsosee @MEMORY,@MPITOPS,@MUFTOPS,@TOPS,@USAGE
 ~
 ~
@@ -2016,7 +2022,7 @@ blank, it uses the default of '10'.
     @tops 5            show 5 rows of profiling statistics
     @tops reset        reset all collected profiling statistics
 ~~endcode
-~~alsosee @DBGINFO,@MEMORY,@MPITOPS,@MUFTOPS,@USAGE
+~~alsosee @DEBUG,@MEMORY,@MPITOPS,@MUFTOPS,@USAGE
 ~
 ~
 @MEMORY
@@ -2025,7 +2031,7 @@ blank, it uses the default of '10'.
   Wizard only command that gives detailed memory stats for the muck
 server process.  If HAVE_MALLINFO is used, this command shows more
 information.
-~~alsosee @DBGINFO,@MPITOPS,@MUFTOPS,@TOPS,@USAGE
+~~alsosee @DEBUG,@MPITOPS,@MUFTOPS,@TOPS,@USAGE
 ~
 ~
 @MPITOPS
@@ -2045,7 +2051,7 @@ uses the default of '10'.
     @mpitops 5         show 5 rows of profiling statistics
     @mpitops reset     reset collected MPI profiling statistics
 ~~endcode
-~~alsosee @DBGINFO,@MEMORY,@MUFTOPS,@TOPS,@USAGE
+~~alsosee @DEBUG,@MEMORY,@MUFTOPS,@TOPS,@USAGE
 ~
 ~
 @MUFTOPS
@@ -2065,7 +2071,7 @@ uses the default of '10'.
     @muftops 5         show 5 rows of profiling statistics
     @muftops reset     reset collected MUF profiling statistics
 ~~endcode
-~~alsosee @DBGINFO,@MEMORY,@MPITOPS,@TOPS,@USAGE
+~~alsosee @DEBUG,@MEMORY,@MPITOPS,@TOPS,@USAGE
 ~
 ~
 @USAGE
@@ -2073,7 +2079,7 @@ uses the default of '10'.
 
   Wizard only command that gives system resource usage stats for the
 muck server process.
-~~alsosee @DBGINFO,@MEMORY,@MPITOPS,@MUFTOPS,@TOPS
+~~alsosee @DEBUG,@MEMORY,@MPITOPS,@MUFTOPS,@TOPS
 ~
 ~
 @EXAMINE
