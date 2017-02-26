@@ -462,12 +462,9 @@ copy_one_prop(dbref source, dbref destination, char *propname)
 	/* flags can be copied. */
 	newprop.flags = currprop->flags;
 
-	/* data, however, must be cloned in case it's a string or a
-	   lock. */
+	/* data, however, must be cloned if it's a lock. */
 	switch (PropType(currprop)) {
 	case PROP_STRTYP:
-	    newprop.data.str = alloc_string((currprop->data).str);
-	    break;
 	case PROP_INTTYP:
 	case PROP_FLTTYP:
 	case PROP_REFTYP:
