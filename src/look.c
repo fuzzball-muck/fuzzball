@@ -398,15 +398,15 @@ listprops_wildcard(dbref player, dbref thing, const char *dir, const char *wild)
     propadr = first_prop(thing, (char *) dir, &pptr, propname, sizeof(propname));
     while (propadr) {
 	if (equalstr(wldcrd, propname)) {
-	    char *current, *tmpname;
-	    static char *legacy_gender;
-	    static char *legacy_guest;
-	    current = strdup(tp_gender_prop);
-	    legacy_gender = strdup(LEGACY_GENDER_PROP);
-	    legacy_guest = strdup(LEGACY_GUEST_PROP);
+	    const char *current, *tmpname;
+	    static const char *legacy_gender;
+	    static const char *legacy_guest;
+	    current = tp_gender_prop;
+	    legacy_gender = LEGACY_GENDER_PROP;
+	    legacy_guest = LEGACY_GUEST_PROP;
 
 	    snprintf(buf, sizeof(buf), "%s%c%s", dir, PROPDIR_DELIMITER, propname);
-	    tmpname = strdup(buf);
+	    tmpname = buf;
 
 	    while (*current == PROPDIR_DELIMITER)
 		current++;
