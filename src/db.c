@@ -1326,7 +1326,6 @@ _link_exit(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_li
 	case TYPE_ROOM:
 	case TYPE_PROGRAM:
 	    if (prdest) {
-                char unparse_buf[BUFFER_LEN];
 		notifyf(player,
 			"Only one player, room, or program destination allowed. Destination %s ignored.",
                         unparse_buf);
