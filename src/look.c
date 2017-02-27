@@ -1403,8 +1403,7 @@ exit_matches_name(dbref exit, const char *name, int exactMatch)
 	while (*ptr2 == EXIT_DELIMITER)
 	    ptr2++;
 	if ((exactMatch ? !strcasecmp(name, ptr) : string_prefix(name, ptr)) &&
-	    DBFETCH(exit)->sp.exit.ndest &&
-	    Typeof((DBFETCH(exit)->sp.exit.dest)[0]) == TYPE_PROGRAM)
+	    DBFETCH(exit)->sp.exit.ndest)
 	    return 1;
     }
     return 0;
