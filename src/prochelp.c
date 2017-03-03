@@ -308,9 +308,6 @@ print_sections(FILE * f, FILE * hf, int cols)
     char buf2[256];
     char buf3[256];
     char buf4[256];
-    int cnt;
-    int width;
-    int hcol;
     char *currsect;
 
     fprintf(f, "~\n");
@@ -320,14 +317,9 @@ print_sections(FILE * f, FILE * hf, int cols)
     fprintf(f, "                   List of Topics by Category:\n \n");
     fprintf(f, "You can get more help on the following topics:\n \n");
     fprintf(hf, HTML_SECTLIST_HEAD);
-    if (cols < 1) {
-	cols = 1;
-    }
-    width = 78 / cols;
+
     for (struct topiclist *sptr = secthead; sptr; sptr = sptr->next) {
 	currsect = sptr->section;
-	cnt = 0;
-	hcol = 0;
 	buf[0] = '\0';
 	strcpyn(sectname, sizeof(sectname), currsect);
 	sectptr = index(sectname, '|');
@@ -511,7 +503,6 @@ find_topics(FILE * infile)
 		lng = strlen(p);
 		if (lng > longest)
 		    longest = lng;
-		p = s;
 		break;
 	    }
 	}
