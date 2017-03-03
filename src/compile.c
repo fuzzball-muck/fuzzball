@@ -2888,6 +2888,7 @@ next_token(COMPSTATE * cstat)
     if ((expansion = expand_def(cstat, temp))) {
 	free(temp);
 	if (++cstat->macrosubs > SUBSTITUTIONS) {
+	    free((void *) expansion);
 	    abort_compile(cstat, "Too many macro substitutions.");
 	} else {
 	    int templen = strlen(cstat->next_char) + strlen(expansion) + 21;
