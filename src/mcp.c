@@ -1376,8 +1376,8 @@ mcp_mesg_arg_remove(McpMesg * msg, const char *argname)
 	msg->args = ptr->next;
 	msg->bytes -= sizeof(McpArg);
 	if (ptr->name) {
-	    free(ptr->name);
 	    msg->bytes -= strlen(ptr->name) + 1;
+	    free(ptr->name);
 	}
 	while (ptr->value) {
 	    McpArgPart *ptr2 = ptr->value;
