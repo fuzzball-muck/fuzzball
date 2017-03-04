@@ -400,11 +400,13 @@ _prim_regsplit(PRIM_PROTOTYPE, int empty)
     while(*text != '\0') {
 	if ((matchcnt = pcre_exec(re->re, NULL, textstart, len, text-textstart, 0, matches, MATCH_ARR_SIZE)) < 0) {
 	    if (matchcnt != PCRE_ERROR_NOMATCH) {
+                array_free(nu_val);
 		abort_interp(muf_re_error(matchcnt));
 	    }
 	    val.type = PROG_STRING;
 	    val.data.string = alloc_prog_string(&textstart[pos]);
 	    array_appenditem(&nu_val, &val);
+            CLEAR(&val);
 
 	    break;
 	} else {
@@ -415,11 +417,13 @@ _prim_regsplit(PRIM_PROTOTYPE, int empty)
 		val.type = PROG_STRING;
 		val.data.string	= alloc_prog_string("");
 		array_appenditem(&nu_val, &val);
+                CLEAR(&val);
 	    } else if (start - pos > 0) {
 		snprintf(buf, sizeof(buf), "%.*s", start - pos, &textstart[pos]);
 		val.type = PROG_STRING;
 		val.data.string	= alloc_prog_string(buf);
 		array_appenditem(&nu_val, &val);
+                CLEAR(&val);
 	    }
 
 	    text = &textstart[end];
