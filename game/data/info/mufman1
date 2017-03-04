@@ -2995,11 +2995,10 @@ or . may require special permissions to save.
 
 ARRAY_GET_PROPLIST ( d s -- a )
 
-  Reads in properties from a classic style proplist, and returns them
-in a dictionary, keyed by propname.  Proplists can be in any of the
-common proplist styles: ie: "propname#/1", "propname/1", or "propname1".
-If the program doesn't have permission to read the list, it returns an
-empty dictionary.  Reads up to 511 props maximum.
+  Reads in properties from a sequential proplist, and returns them in a list
+array.  Proplists can be in any of these proplist styles: "propname#/1",
+"propname/1", or "propname1".  If the program doesn't have permission to read
+the list, it returns an empty array.  Reads up to 511 props maximum.
 
 
 ARRAY_PUT_PROPLIST ( d s a -- )
