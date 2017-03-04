@@ -64,7 +64,7 @@ static void
 to_upper_string_n(char *buffer, const char *input, int limit) {
     int i;
     for (i = 0; input[i] && i < limit - 1; ++i) {
-        buffer[i] = input[i];
+        buffer[i] = toupper(input[i]);
     }
     buffer[i] = '\0';
 }
