@@ -495,6 +495,7 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
     stk_array *arr = NULL;
     stk_array *arr2 = NULL;
     stk_array *nu = NULL;
+    const char *abort_message = NULL;
 
     CHECKOP(2);
     oper2 = POP();
@@ -565,7 +566,8 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 				while ((sstr[scnt] >= '0') && (sstr[scnt] <= '9'))
 				    scnt++;
 			    } else {
-				abort_interp("Invalid format string.");
+                                abort_message = "Invalid format string.";
+                                goto cleanup_and_abort;
 			    }
 			} else {
 			    slen2 = -1;
@@ -578,8 +580,9 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 				*fieldname++ = sstr[scnt++];
 			    }
 			    if (sstr[scnt] != ']') {
-				abort_interp
-					("Specified format field didn't have an array index terminator ']'.");
+                                abort_message = 
+                                    "Specified format field didn't have an array index terminator ']'.";
+                                goto cleanup_and_abort;
 			    }
 			    scnt++;
 			    *fieldname++ = '\0';
@@ -605,7 +608,8 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 			    }
 			    nargs = 2;
 			} else {
-			    abort_interp("Specified format field didn't have an array index.");
+                            abort_message = "Specified format field didn't have an array index.";
+                            goto cleanup_and_abort;
 			}
 
 			/* If s is the format and oper3 is really a string, repair the lengths to account for ansi codes. */
@@ -636,8 +640,10 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 				};
 			    }
 			}
-			if ((slen1 > 0) && ((slen1 + result) > BUFFER_LEN))
-			    abort_interp("Specified format field width too large.");
+			if ((slen1 > 0) && ((slen1 + result) > BUFFER_LEN)) {
+                            abort_message = "Specified format field width too large.";
+                            goto cleanup_and_abort;
+                        }
 
 			sfmt[0] = '%';
 			sfmt[1] = '\0';
@@ -685,8 +691,10 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 			switch (sstr[scnt]) {
 			case 'i':
 			    strcatn(sfmt, sizeof(sfmt), "d");
-			    if (oper3->type != PROG_INTEGER)
-				abort_interp("Format specified integer argument not found.");
+			    if (oper3->type != PROG_INTEGER) {
+				abort_message = "Format specified integer argument not found.";
+                                goto cleanup_and_abort;
+                            }
 			    snprintf(tbuf, sizeof(tbuf), sfmt, oper3->data.number);
 			    tlen = strlen(tbuf);
 			    if (slrj == 2) {
@@ -701,8 +709,10 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 					tbuf[i] = ' ';
 				}
 			    }
-			    if (tlen + result > BUFFER_LEN)
-				abort_interp("Resultant string would overflow buffer.");
+			    if (tlen + result > BUFFER_LEN) {
+				abort_message = "Resultant string would overflow buffer.";
+                                goto cleanup_and_abort;
+                            }
 			    buf[result] = '\0';
 			    strcatn(buf, sizeof(buf), tbuf);
 			    result += tlen;
@@ -710,8 +720,10 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 			case 'S':
 			case 's':
 			    strcatn(sfmt, sizeof(sfmt), "s");
-			    if (oper3->type != PROG_STRING)
-				abort_interp("Format specified string argument not found.");
+			    if (oper3->type != PROG_STRING) {
+				abort_message = "Format specified string argument not found.";
+                                goto cleanup_and_abort;
+                            }
 			    snprintf(tbuf, sizeof(tbuf), sfmt, DoNullInd(oper3->data.string));
 			    tlen = strlen(tbuf);
 			    if (slrj == 2) {
@@ -726,8 +738,10 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 					tbuf[i] = ' ';
 				}
 			    }
-			    if (strlen(tbuf) + result > BUFFER_LEN)
-				abort_interp("Resultant string would overflow buffer.");
+			    if (strlen(tbuf) + result > BUFFER_LEN) {
+				abort_message ="Resultant string would overflow buffer.";
+                                goto cleanup_and_abort;
+                            }
 			    buf[result] = '\0';
 			    strcatn(buf, sizeof(buf), tbuf);
 			    result += strlen(tbuf);
@@ -797,16 +811,20 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 					tbuf[i] = ' ';
 				}
 			    }
-			    if (strlen(tbuf) + result > BUFFER_LEN)
-				abort_interp("Resultant string would overflow buffer.");
+			    if (strlen(tbuf) + result > BUFFER_LEN) {
+				abort_message = "Resultant string would overflow buffer.";
+                                goto cleanup_and_abort;
+                            }
 			    buf[result] = '\0';
 			    strcatn(buf, sizeof(buf), tbuf);
 			    result += strlen(tbuf);
 			    break;
 			case 'd':
 			    strcatn(sfmt, sizeof(sfmt), "s");
-			    if (oper3->type != PROG_OBJECT)
-				abort_interp("Format specified object not found.");
+			    if (oper3->type != PROG_OBJECT) {
+				abort_message = "Format specified object not found.";
+                                goto cleanup_and_abort;
+                            }
 			    snprintf(hold, sizeof(hold), "#%d", oper3->data.objref);
 			    snprintf(tbuf, sizeof(tbuf), sfmt, hold);
 			    tlen = strlen(tbuf);
@@ -822,18 +840,24 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 					tbuf[i] = ' ';
 				}
 			    }
-			    if (strlen(tbuf) + result > BUFFER_LEN)
-				abort_interp("Resultant string would overflow buffer.");
+			    if (strlen(tbuf) + result > BUFFER_LEN) {
+				abort_message = "Resultant string would overflow buffer.";
+                                goto cleanup_and_abort;
+                            }
 			    buf[result] = '\0';
 			    strcatn(buf, sizeof(buf), tbuf);
 			    result += strlen(tbuf);
 			    break;
 			case 'D':
 			    strcatn(sfmt, sizeof(sfmt), "s");
-			    if (oper3->type != PROG_OBJECT)
-				abort_interp("Format specified object not found.");
-			    if (!valid_object(oper3))
-				abort_interp("Format specified object not valid.");
+			    if (oper3->type != PROG_OBJECT) {
+				abort_message = "Format specified object not found.";
+                                goto cleanup_and_abort;
+                            } 
+			    if (!valid_object(oper3)) {
+				abort_message = "Format specified object not valid.";
+                                goto cleanup_and_abort;
+                            }
 			    ref = oper3->data.objref;
 			    CHECKREMOTE(ref);
 			    if (NAME(ref)) {
@@ -855,16 +879,20 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 					tbuf[i] = ' ';
 				}
 			    }
-			    if (strlen(tbuf) + result > BUFFER_LEN)
-				abort_interp("Resultant string would overflow buffer.");
+			    if (strlen(tbuf) + result > BUFFER_LEN) {
+                                abort_message = "Resultant string would overflow buffer.";
+                                goto cleanup_and_abort;
+                            }
 			    buf[result] = '\0';
 			    strcatn(buf, sizeof(buf), tbuf);
 			    result += strlen(tbuf);
 			    break;
 			case 'l':
 			    strcatn(sfmt, sizeof(sfmt), "s");
-			    if (oper3->type != PROG_LOCK)
-				abort_interp("Format specified lock not found.");
+			    if (oper3->type != PROG_LOCK) {
+				abort_message = "Format specified lock not found.";
+                                goto cleanup_and_abort;
+                            }
 			    strcpyn(hold, sizeof(hold),
 				    unparse_boolexp(ProgUID, oper3->data.lock, 1));
 			    snprintf(tbuf, sizeof(tbuf), sfmt, hold);
@@ -881,8 +909,10 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 					tbuf[i] = ' ';
 				}
 			    }
-			    if (strlen(tbuf) + result > BUFFER_LEN)
-				abort_interp("Resultant string would overflow buffer.");
+			    if (strlen(tbuf) + result > BUFFER_LEN) {
+				abort_message = "Resultant string would overflow buffer.";
+                                goto cleanup_and_abort;
+                            }
 			    buf[result] = '\0';
 			    strcatn(buf, sizeof(buf), tbuf);
 			    result += strlen(tbuf);
@@ -893,8 +923,10 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 			    strcatn(sfmt, sizeof(sfmt), "l");
 			    snprintf(hold, sizeof(hold), "%c", sstr[scnt]);
 			    strcatn(sfmt, sizeof(sfmt), hold);
-			    if (oper3->type != PROG_FLOAT)
-				abort_interp("Format specified float not found.");
+			    if (oper3->type != PROG_FLOAT) {
+				abort_message = "Format specified float not found.";
+                                goto cleanup_and_abort;
+                            }
 			    snprintf(tbuf, sizeof(tbuf), sfmt, oper3->data.fnumber);
 			    tlen = strlen(tbuf);
 			    if (slrj == 2) {
@@ -909,8 +941,10 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 					tbuf[i] = ' ';
 				}
 			    }
-			    if (strlen(tbuf) + result > BUFFER_LEN)
-				abort_interp("Resultant string would overflow buffer.");
+			    if (strlen(tbuf) + result > BUFFER_LEN) {
+				abort_message ="Resultant string would overflow buffer.";
+                                goto cleanup_and_abort;
+                            }
 			    buf[result] = '\0';
 			    strcatn(buf, sizeof(buf), tbuf);
 			    result += strlen(tbuf);
@@ -924,8 +958,10 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 		    }
 		} else {
 		    if ((sstr[scnt] == '\\') && (sstr[scnt + 1] == 't')) {
-			if ((result - (tstop % 8) + 1) >= BUFFER_LEN)
-			    abort_interp("Resultant string would overflow buffer.");
+			if ((result - (tstop % 8) + 1) >= BUFFER_LEN) {
+                            abort_message = "Resultant string would overflow buffer.";
+                            goto cleanup_and_abort;
+                        }
 			if ((tstop % 8) == 0) {
 			    buf[result++] = ' ';
 			    tstop++;
@@ -948,8 +984,10 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 		    }
 		}
 	    }
-	    if (result >= BUFFER_LEN)
-		abort_interp("Resultant string would overflow buffer.");
+	    if (result >= BUFFER_LEN) {
+                abort_message = "Resultant string would overflow buffer.";
+                goto cleanup_and_abort;
+            }
 	    buf[result] = '\0';
 
 	    temp2.type = PROG_STRING;
@@ -962,6 +1000,12 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
     CLEAR(oper1);
     CLEAR(oper2);
     PushArrayRaw(nu);
+    return;
+
+cleanup_and_abort:
+    array_free(nu);
+    abort_interp(abort_message);
+    return;
 }
 
 void
