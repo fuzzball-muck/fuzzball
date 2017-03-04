@@ -60,6 +60,15 @@ prim_error_num(PRIM_PROTOTYPE)
     PushInt(result);
 }
 
+static void
+to_upper_string_n(char *buffer, const char *input, int limit) {
+    int i;
+    for (i = 0; input[i] && i < limit - 1; ++i) {
+        buffer[i] = toupper(input[i]);
+    }
+    buffer[i] = '\0';
+}
+
 void
 prim_clear_error(PRIM_PROTOTYPE)
 {
@@ -82,9 +91,7 @@ prim_clear_error(PRIM_PROTOTYPE)
 	if (!oper1->data.string) {
 	    result = 0;
 	} else {
-	    result = strlen(oper1->data.string->data);
-	    for (loop = 0; loop < result; loop++)
-		buf[loop] = toupper(oper1->data.string->data[loop]);
+            to_upper_string_n(buf, oper1->data.string->data, BUFFER_LEN);
 	    result = 0;
 	    loop = 0;
 	    while (loop < ERROR_NUM) {
@@ -124,9 +131,7 @@ prim_set_error(PRIM_PROTOTYPE)
 	if (!oper1->data.string) {
 	    result = 0;
 	} else {
-	    result = strlen(oper1->data.string->data);
-	    for (loop = 0; loop < result; loop++)
-		buf[loop] = toupper(oper1->data.string->data[loop]);
+            to_upper_string_n(buf, oper1->data.string->data, BUFFER_LEN);
 	    result = 0;
 	    loop = 0;
 	    while (loop < ERROR_NUM) {
@@ -165,9 +170,7 @@ prim_is_set(PRIM_PROTOTYPE)
 	if (!oper1->data.string) {
 	    result = 0;
 	} else {
-	    result = strlen(oper1->data.string->data);
-	    for (loop = 0; loop < result; loop++)
-		buf[loop] = toupper(oper1->data.string->data[loop]);
+            to_upper_string_n(buf, oper1->data.string->data, BUFFER_LEN);
 	    result = 0;
 	    loop = 0;
 	    while (loop < ERROR_NUM) {
@@ -205,9 +208,7 @@ prim_error_str(PRIM_PROTOTYPE)
 	if (!oper1->data.string) {
 	    result = -1;
 	} else {
-	    result = strlen(oper1->data.string->data);
-	    for (loop = 0; loop < result; loop++)
-		buf[loop] = toupper(oper1->data.string->data[loop]);
+            to_upper_string_n(buf, oper1->data.string->data, BUFFER_LEN);
 	    result = -1;
 	    loop = 0;
 	    while (loop < ERROR_NUM) {
@@ -264,9 +265,7 @@ prim_error_bit(PRIM_PROTOTYPE)
     if (!oper1->data.string) {
 	result = -1;
     } else {
-	result = strlen(oper1->data.string->data);
-	for (loop = 0; loop < result; loop++)
-	    buf[loop] = toupper(oper1->data.string->data[loop]);
+        to_upper_string_n(buf, oper1->data.string->data, BUFFER_LEN);
 	result = -1;
 	loop = 0;
 	while (loop < ERROR_NUM) {
