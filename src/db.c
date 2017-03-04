@@ -145,14 +145,21 @@ new_object(void)
 }
 
 dbref
+create_object(const char *name, dbref owner, object_flag_type flags)
+{
+    dbref newobj = new_object();
+
+    NAME(newobj) = alloc_string(name);
+    FLAGS(newobj) = flags;
+    OWNER(newobj) = OWNER(owner);
+
+    return newobj;
+}
+
+dbref
 create_action(dbref player, const char *name, dbref source)
 {
-    dbref newact;
-
-    newact = new_object();
-    NAME(newact) = alloc_string(name);
-    FLAGS(newact) = TYPE_EXIT;
-    OWNER(newact) = OWNER(player);
+    dbref newact = create_object(name, player, TYPE_EXIT);
 
     set_source(player, newact, source);
 
@@ -171,16 +178,13 @@ create_action(dbref player, const char *name, dbref source)
 dbref
 create_program(dbref player, const char *name)
 {
-    dbref newprog;
     char buf[BUFFER_LEN];
     int jj;
+    dbref newprog = create_object(name, player, TYPE_PROGRAM);
 
-    newprog = new_object();
-    NAME(newprog) = alloc_string(name);
     snprintf(buf, sizeof(buf), "A scroll containing a spell called %s", name);
     SETDESC(newprog, buf);
     LOCATION(newprog) = player;
-    FLAGS(newprog) = TYPE_PROGRAM;
     jj = MLevel(player);
     if (jj < 1)
 	jj = 2;
@@ -188,7 +192,6 @@ create_program(dbref player, const char *name)
         jj = 3;
     SetMLevel(newprog, jj);
 
-    OWNER(newprog) = OWNER(player);
     ALLOC_PROGRAM_SP(newprog);
     PROGRAM_SET_FIRST(newprog, NULL);
     PROGRAM_SET_CURR_LINE(newprog, 0);
@@ -216,14 +219,12 @@ create_program(dbref player, const char *name)
 dbref
 create_room(dbref player, const char *name, dbref parent)
 {
-    dbref newroom;
+    dbref newroom = create_object(name, player,
+	    TYPE_ROOM | (FLAGS(player) & JUMP_OK));
 
-    newroom = new_object();
-    NAME(newroom) = alloc_string(name);
     LOCATION(newroom) = parent;
     PUSH(newroom, CONTENTS(parent));
-    FLAGS(newroom) = TYPE_ROOM | (FLAGS(player) & JUMP_OK);
-    OWNER(newroom) = OWNER(player);
+
     EXITS(newroom) = NOTHING;
     DBFETCH(newroom)->sp.room.dropto = NOTHING;
 
@@ -235,18 +236,16 @@ create_room(dbref player, const char *name, dbref parent)
 dbref
 create_thing(dbref player, const char *name, dbref location)
 {
-    dbref newthing, loc;
+    dbref loc;
+    dbref newthing = create_object(name, player, TYPE_THING);
 
-    newthing = new_object();
-
-    NAME(newthing) = alloc_string(name);
-    ALLOC_THING_SP(newthing);
     LOCATION(newthing) = location;
     PUSH(newthing, CONTENTS(location));
-    FLAGS(newthing) = TYPE_THING;
-    OWNER(newthing) = OWNER(player);
+
     EXITS(newthing) = NOTHING;
     SETVALUE(newthing, 1);
+
+    ALLOC_THING_SP(newthing);
 
     if ((loc = LOCATION(player)) != NOTHING && controls(player, loc)) {
 	THING_SET_HOME(newthing, loc);
