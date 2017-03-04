@@ -1955,7 +1955,7 @@ TAN
 TAN ( f -- f )
 
   Returns the tangent of a float.  Only operates within the range of
--Pi/4 to Pi/4.
+K*pi + pi/2 (for some K).
 ~
 ~
 ATAN
