@@ -1721,7 +1721,7 @@ prim_subst(PRIM_PROTOTYPE)
 		    i += oper1->data.string->length;
 		    j += k;
 		} else {
-		    if ((j + 1) > BUFFER_LEN)
+		    if ((j + 2) > BUFFER_LEN)
 			abort_interp("Operation would result in overflow.");
 		    buf[j++] = xbuf[i++];
 		    buf[j] = '\0';
