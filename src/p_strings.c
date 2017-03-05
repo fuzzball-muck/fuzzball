@@ -1191,7 +1191,7 @@ prim_stod(PRIM_PROTOTYPE)
 	nptr = ptr;
 	if (*nptr == '-')
 	    nptr++;
-	while (*nptr && !isspace(*nptr) && (*nptr >= '0' || *nptr <= '9')) {
+	while (*nptr && !isspace(*nptr) && (*nptr >= '0' && *nptr <= '9')) {
 	    nptr++;
 	}			/* while */
 	if (*nptr && !isspace(*nptr)) {
