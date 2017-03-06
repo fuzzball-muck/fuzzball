@@ -90,7 +90,8 @@ insttotext(struct frame *fr, int lev, struct inst *theinst, char *buffer, int bu
 	    firstflag = 1;
 	    arrcount = 0;
 	    if (array_first(theinst->data.array, &temp1)) {
-		do {
+                int truncated_array = 1;
+                while (1) {
 		    char *inststr;
 
 		    if (arrcount++ >= 8) {
@@ -145,7 +146,14 @@ insttotext(struct frame *fr, int lev, struct inst *theinst, char *buffer, int bu
 			length--;
 			break;
 		    }
-		} while (array_next(theinst->data.array, &temp1));
+		    if (!array_next(theinst->data.array, &temp1)) {
+                        truncated_array = 0;
+                        break;
+                    }
+                }
+                if (truncated_array) {
+                    CLEAR(&temp1);
+                }
 	    }
 	    strcatn(buffer, buflen, "}");
 	} else {
