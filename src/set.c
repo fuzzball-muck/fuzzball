@@ -104,7 +104,7 @@ _do_unlink(int descr, dbref player, const char *name, int quiet)
 	notify(player, "Unlink what?");
 	break;
     case AMBIGUOUS:
-	notify(player, "I don't know which one you mean!");
+	notify(player, AMBIGUOUS_MESSAGE);
 	break;
     default:
 	if (!controls(player, exit) && !controls_link(player, exit)) {
