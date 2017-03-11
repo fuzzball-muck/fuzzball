@@ -372,7 +372,7 @@ do_prog(int descr, dbref player, const char *name)
 	notifyf(player, "Entering editor for new program %s.",
                 unparse_buf);
     } else if (i == AMBIGUOUS) {
-	notify(player, "I don't know which one you mean!");
+	notify(player, AMBIGUOUS_MESSAGE);
 	return;
     } else {
 	if ((Typeof(i) != TYPE_PROGRAM) || !controls(player, i)) {
@@ -554,7 +554,7 @@ do_clone(int descr, dbref player, char *name)
 	return;
 
     if (thing == AMBIGUOUS) {
-	notify(player, "I don't know which one you mean!");
+	notify(player, AMBIGUOUS_MESSAGE);
 	return;
     }
 

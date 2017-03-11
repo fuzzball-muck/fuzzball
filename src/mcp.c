@@ -1570,12 +1570,12 @@ do_mcpedit(int descr, dbref player, const char *name)
     prog = match_result(&md);
     if (prog == NOTHING) {
 	/* FIXME: must arrange this to query user. */
-	notify(player, "I don't see that here!");
+	notify(player, NOMATCH_MESSAGE);
 	return;
     }
 
     if (prog == AMBIGUOUS) {
-	notify(player, "I don't know which one you mean!");
+	notify(player, AMBIGUOUS_MESSAGE);
 	return;
     }
 
