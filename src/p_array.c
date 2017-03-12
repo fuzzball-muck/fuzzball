@@ -663,13 +663,6 @@ prim_array_n_intersection(PRIM_PROTOTYPE)
                 CLEAR(oper1);
 		abort_interp("Argument not an array.");
 	    }
-	    temp_mash = new_array_dictionary();
-	    array_mash(oper1->data.array, &temp_mash, 1);
-	    CLEAR(oper1);
-	    new_union = array_demote_only(temp_mash, 1);
-	    array_free(temp_mash);
-	    PushArrayRaw(new_union);
-	    oper1 = POP();
 	    array_mash(oper1->data.array, &new_mash, 1);
 	    CLEAR(oper1);
 	}
