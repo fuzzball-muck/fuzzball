@@ -652,8 +652,7 @@ prim_array_n_intersection(PRIM_PROTOTYPE)
     CLEAR(oper1);
     nargs = 0;
 
-    if (*top < result)
-	abort_interp("Stack underflow.");
+    EXPECT_POP_STACK(result);
 
     if (result > 0) {
 	new_mash = new_array_dictionary();
@@ -699,8 +698,7 @@ prim_array_n_difference(PRIM_PROTOTYPE)
     CLEAR(oper1);
     nargs = 0;
 
-    if (*top < result)
-	abort_interp("Stack underflow.");
+    EXPECT_POP_STACK(result);
 
     if (result > 0) {
 	new_mash = new_array_dictionary();

@@ -311,6 +311,11 @@ RCLEAR(struct inst *oper, char *file, int line)
 
 int top_pid = 1;
 int nargs = 0;
+#ifdef DEBUG
+int expect_pop = 0;
+int actual_pop = 0;
+int expect_push_to = 0;
+#endif
 int prim_count = 0;
 
 static struct frame *free_frames_list = NULL;
@@ -1671,9 +1676,18 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 
 	    default:
 		nargs = 0;
+#ifdef DEBUG
+                expect_pop = actual_pop = 0;
+                expect_push_to = -1;
+#endif
 		reload(fr, atop, stop);
 		tmp = atop;
 		prim_func[pc->data.number - 1] (player, program, mlev, pc, arg, &tmp, fr);
+#ifdef DEBUG
+                assert(expect_pop == actual_pop);
+                assert(expect_push_to == -1 || expect_push_to == tmp);
+                assert(expect_push_to != -1 || tmp <= atop);
+#endif
 		atop = tmp;
 		pc++;
 		break;

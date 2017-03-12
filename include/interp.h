@@ -204,7 +204,11 @@ struct publics {
 	return 0; \
 }
 
+#ifdef DEBUG
+#define POP() (++actual_pop, arg + --(*top))
+#else
 #define POP() (arg + --(*top))
+#endif
 
 #define abort_interp(C) \
 { \
@@ -213,22 +217,49 @@ struct publics {
   return; \
 }
 
+#define EXPECT_READ_STACK(N) \
+do { \
+    int depth = (N); \
+    if (*top < depth) { \
+        abort_interp("Stack underflow."); \
+    } \
+} while (0)
+
+#define EXPECT_WRITE_STACK(N) \
+do { \
+    int depth = (N); \
+    if (*top < depth) { \
+        abort_interp("Stack underflow."); \
+    } \
+    if (fr->trys.top && *top - fr->trys.st->depth < depth)  { \
+        abort_interp("Stack protection fault."); \
+    } \
+} while (0)
+
+#ifdef DEBUG
+#define EXPECT_POP_STACK(N) \
+{ \
+    EXPECT_WRITE_STACK(N); \
+    expect_pop += (N); \
+}
+#else
+#define EXPECT_POP_STACK(N) \
+{ \
+    EXPECT_WRITE_STACK(N); \
+}
+#endif
+
+
 #define CHECKOP_READONLY(N) \
 { \
+    EXPECT_READ_STACK(N); \
     nargs = (N); \
-    if (*top < nargs) { \
-		nargs = 0; \
-        abort_interp("Stack underflow."); \
-	} \
 }
 
 #define CHECKOP(N) \
 { \
-	CHECKOP_READONLY(N); \
-    if (fr->trys.top && *top - fr->trys.st->depth < nargs)  { \
-		nargs = 0; \
-        abort_interp("Stack protection fault."); \
-	} \
+    EXPECT_POP_STACK(N); \
+    nargs = (N); \
 }
 
 #define CHECKREMOTE(x) if ((mlev < 2) && (LOCATION(x) != player) &&  \
@@ -251,8 +282,18 @@ struct publics {
 #define PushNullArray   PushArrayRaw(0)
 #define PushInst(x)	copyinst(x, &arg[((*top)++)])
 
-#define CHECKOFLOW(x) if((*top + (x - 1)) >= STACK_SIZE) \
-			  abort_interp("Stack Overflow!");
+#ifdef DEBUG
+#define CHECKOFLOW(x) do { \
+        if((*top + (x - 1)) >= STACK_SIZE) \
+            abort_interp("Stack Overflow!"); \
+        expect_push_to = *top + (x); \
+    } while (0)
+#else
+#define CHECKOFLOW(x) do { \
+        if((*top + (x - 1)) >= STACK_SIZE) \
+            abort_interp("Stack Overflow!"); \
+    } while (0)
+#endif
 
 #define MUF_AUTHOR_PROP         "_author"
 #define MUF_ERRCOUNT_PROP       ".debug/errcount"
@@ -278,6 +319,11 @@ struct publics {
 
 extern int top_pid;
 extern int nargs;
+#ifdef DEBUG
+extern int expect_pop;
+extern int actual_pop;
+extern int expect_push_to;
+#endif
 extern int prim_count;
 extern const char *base_inst[];
 
