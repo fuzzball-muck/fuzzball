@@ -51,9 +51,9 @@ prim_popn(PRIM_PROTOTYPE)
     if (oper1->type != PROG_INTEGER)
 	abort_interp("Operand not an integer.");
     count = oper1->data.number;
-    CLEAR(oper1);
     if (count < 0)
 	abort_interp("Operand is negative.");
+    CLEAR(oper1);
     for (int i = count; i > 0; i--) {
 	CHECKOP(1);
 	oper1 = POP();
