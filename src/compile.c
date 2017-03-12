@@ -2510,8 +2510,10 @@ do_directive(COMPSTATE * cstat, char *direct)
 
     } else if (!strcasecmp(temp, "version")) {
 	tmpname = (char *) next_token_raw(cstat);
-	if (!ifloat(tmpname))
+	if (!ifloat(tmpname)) {
+            free(tmpname);
 	    v_abort_compile(cstat, "Expected a floating point number for the version.");
+        }
 	add_property(cstat->program, MUF_VERSION_PROP, tmpname, 0);
 	while (*cstat->next_char)
 	    cstat->next_char++;
@@ -2520,8 +2522,10 @@ do_directive(COMPSTATE * cstat, char *direct)
 
     } else if (!strcasecmp(temp, "lib-version")) {
 	tmpname = (char *) next_token_raw(cstat);
-	if (!ifloat(tmpname))
+	if (!ifloat(tmpname)) {
+            free(tmpname);
 	    v_abort_compile(cstat, "Expected a floating point number for the version.");
+        }
 	add_property(cstat->program, MUF_LIB_VERSION_PROP, tmpname, 0);
 	while (*cstat->next_char)
 	    cstat->next_char++;
@@ -3253,8 +3257,10 @@ process_special(COMPSTATE * cstat, const char *token)
 			varname = varspec;
 		    }
 		    if (*varname) {
-			if (add_scopedvar(cstat, varname, PROG_UNTYPED) < 0)
+			if (add_scopedvar(cstat, varname, PROG_UNTYPED) < 0) {
+                            free((void *) varspec);
 			    abort_compile(cstat, "Variable limit exceeded.");
+                        }
 
 			nu->in.data.mufproc->vars++;
 			nu->in.data.mufproc->args++;
@@ -3677,13 +3683,16 @@ process_special(COMPSTATE * cstat, const char *token)
 	if (cstat->curr_proc)
 	    abort_compile(cstat, "PUBLIC  or WIZCALL declaration within procedure.");
 	tok = next_token(cstat);
-	if ((!tok) || !call(cstat, tok))
+	if (!tok) {
 	    abort_compile(cstat, "Subroutine unknown in PUBLIC or WIZCALL declaration.");
+        }
 	for (p = cstat->procs; p; p = p->next)
 	    if (!strcasecmp(p->name, tok))
 		break;
-	if (!p)
+	if (!p) {
+            free((void *) tok);
 	    abort_compile(cstat, "Subroutine unknown in PUBLIC or WIZCALL declaration.");
+        }
 	if (!cstat->currpubs) {
 	    cstat->currpubs = (struct publics *) malloc(sizeof(struct publics));
 
@@ -3697,6 +3706,7 @@ process_special(COMPSTATE * cstat, const char *token)
 	}
 	for (struct publics *pub = cstat->currpubs; pub;) {
 	    if (!strcasecmp(tok, pub->subname)) {
+                free((void *) tok);
 		abort_compile(cstat, "Function already declared public.");
 	    } else {
 		if (pub->next) {
@@ -3721,8 +3731,10 @@ process_special(COMPSTATE * cstat, const char *token)
 	    tok = next_token(cstat);
 	    if (!tok)
 		abort_compile(cstat, "Unexpected end of program.");
-	    if (add_scopedvar(cstat, tok, PROG_UNTYPED) < 0)
+	    if (add_scopedvar(cstat, tok, PROG_UNTYPED) < 0) {
+                free((void *) tok);
 		abort_compile(cstat, "Variable limit exceeded.");
+            }
 	    if (tok)
 		free((void *) tok);
 	    cstat->curr_proc->in.data.mufproc->vars++;
@@ -3730,8 +3742,10 @@ process_special(COMPSTATE * cstat, const char *token)
 	    tok = next_token(cstat);
 	    if (!tok)
 		abort_compile(cstat, "Unexpected end of program.");
-	    if (!add_variable(cstat, tok, PROG_UNTYPED))
+	    if (!add_variable(cstat, tok, PROG_UNTYPED)) {
+                free((void *) tok);
 		abort_compile(cstat, "Variable limit exceeded.");
+            }
 	    if (tok)
 		free((void *) tok);
 	}
@@ -3743,8 +3757,10 @@ process_special(COMPSTATE * cstat, const char *token)
 	    tok = next_token(cstat);
 	    if (!tok)
 		abort_compile(cstat, "Unexpected end of program.");
-	    if (add_scopedvar(cstat, tok, PROG_UNTYPED) < 0)
+	    if (add_scopedvar(cstat, tok, PROG_UNTYPED) < 0) {
+                free((void *) tok);
 		abort_compile(cstat, "Variable limit exceeded.");
+            }
 	    if (tok)
 		free((void *) tok);
 
@@ -3762,8 +3778,10 @@ process_special(COMPSTATE * cstat, const char *token)
 	if (cstat->curr_proc)
 	    abort_compile(cstat, "Local variable declared within procedure.");
 	tok = next_token(cstat);
-	if (!tok || (add_localvar(cstat, tok, PROG_UNTYPED) == -1))
+	if (!tok || (add_localvar(cstat, tok, PROG_UNTYPED) == -1)) {
+            free((void *) tok);
 	    abort_compile(cstat, "Local variable limit exceeded.");
+        }
 	if (tok)
 	    free((void *) tok);
 	return 0;
