@@ -88,11 +88,12 @@ prim_fmtstring(PRIM_PROTOTYPE)
 		    if (sstr[scnt] == '*') {
 			scnt++;
 			CHECKOP(1);
-			oper2 = POP();
-			if (oper2->type != PROG_INTEGER)
+			oper1 = POP();
+			if (oper1->type != PROG_INTEGER)
 			    abort_interp("Format specified integer argument not found.");
-			slen1 = oper2->data.number;
-			CLEAR(oper2);
+			slen1 = oper1->data.number;
+			CLEAR(oper1);
+                        CHECKOP(0);
 		    } else {
 			slen1 = 0;
 		    }
@@ -108,13 +109,14 @@ prim_fmtstring(PRIM_PROTOTYPE)
 			    scnt++;
 			    CHECKOP(1);
 			    oper2 = POP();
-			    if (oper2->type != PROG_INTEGER)
+			    if (oper1->type != PROG_INTEGER)
 				abort_interp("Format specified integer argument not found.");
-			    if (oper2->data.number < 0)
+			    if (oper1->data.number < 0)
 				abort_interp
 					("Dynamic precision value must be a positive integer.");
-			    slen2 = oper2->data.number;
-			    CLEAR(oper2);
+			    slen2 = oper1->data.number;
+			    CLEAR(oper1);
+                            CHECKOP(0);
 			} else {
 			    abort_interp("Invalid format string.");
 			}
@@ -123,12 +125,12 @@ prim_fmtstring(PRIM_PROTOTYPE)
 		    slen2 = -1;
 		}
 
-		/* If s is the format and oper2 is really a string, repair the lengths to account for ansi codes. */
+		/* If s is the format and oper1 is really a string, repair the lengths to account for ansi codes. */
 		CHECKOP(1);
-		oper2 = POP();
-		if (('s' == sstr[scnt]) && (PROG_STRING == oper2->type)
-		    && (oper2->data.string)) {
-		    ptr = oper2->data.string->data;
+		oper1 = POP();
+		if (('s' == sstr[scnt]) && (PROG_STRING == oper1->type)
+		    && (oper1->data.string)) {
+		    ptr = oper1->data.string->data;
 
 		    i = 0;
 		    while ((-1 == slen2 || i < slen2) && *ptr) {	/* adapted from prim_ansi_strlen */
@@ -178,7 +180,7 @@ prim_fmtstring(PRIM_PROTOTYPE)
 		}
 
 		if (sstr[scnt] == '~') {
-		    switch (oper2->type) {
+		    switch (oper1->type) {
 		    case PROG_OBJECT:
 			sstr[scnt] = 'd';
 			break;
@@ -202,9 +204,9 @@ prim_fmtstring(PRIM_PROTOTYPE)
 		switch (sstr[scnt]) {
 		case 'i':
 		    strcatn(sfmt, sizeof(sfmt), "d");
-		    if (oper2->type != PROG_INTEGER)
+		    if (oper1->type != PROG_INTEGER)
 			abort_interp("Format specified integer argument not found.");
-		    snprintf(tbuf, sizeof(tbuf), sfmt, oper2->data.number);
+		    snprintf(tbuf, sizeof(tbuf), sfmt, oper1->data.number);
 		    tlen = strlen(tbuf);
 		    if (slrj == 2) {
 			tnum = 0;
@@ -223,14 +225,13 @@ prim_fmtstring(PRIM_PROTOTYPE)
 		    buf[result] = '\0';
 		    strcatn(buf, sizeof(buf), tbuf);
 		    result += tlen;
-		    CLEAR(oper2);
 		    break;
 		case 'S':
 		case 's':
 		    strcatn(sfmt, sizeof(sfmt), "s");
-		    if (oper2->type != PROG_STRING)
+		    if (oper1->type != PROG_STRING)
 			abort_interp("Format specified string argument not found.");
-		    snprintf(tbuf, sizeof(tbuf), sfmt, DoNullInd(oper2->data.string));
+		    snprintf(tbuf, sizeof(tbuf), sfmt, DoNullInd(oper1->data.string));
 		    tlen = strlen(tbuf);
 		    if (slrj == 2) {
 			tnum = 0;
@@ -249,11 +250,10 @@ prim_fmtstring(PRIM_PROTOTYPE)
 		    buf[result] = '\0';
 		    strcatn(buf, sizeof(buf), tbuf);
 		    result += strlen(tbuf);
-		    CLEAR(oper2);
 		    break;
 		case '?':
 		    strcatn(sfmt, sizeof(sfmt), "s");
-		    switch (oper2->type) {
+		    switch (oper1->type) {
 		    case PROG_OBJECT:
 			strcpyn(hold, sizeof(hold), "OBJECT");
 			break;
@@ -321,13 +321,12 @@ prim_fmtstring(PRIM_PROTOTYPE)
 		    buf[result] = '\0';
 		    strcatn(buf, sizeof(buf), tbuf);
 		    result += strlen(tbuf);
-		    CLEAR(oper2);
 		    break;
 		case 'd':
 		    strcatn(sfmt, sizeof(sfmt), "s");
-		    if (oper2->type != PROG_OBJECT)
+		    if (oper1->type != PROG_OBJECT)
 			abort_interp("Format specified object not found.");
-		    snprintf(hold, sizeof(hold), "#%d", oper2->data.objref);
+		    snprintf(hold, sizeof(hold), "#%d", oper1->data.objref);
 		    snprintf(tbuf, sizeof(tbuf), sfmt, hold);
 		    tlen = strlen(tbuf);
 		    if (slrj == 2) {
@@ -347,15 +346,14 @@ prim_fmtstring(PRIM_PROTOTYPE)
 		    buf[result] = '\0';
 		    strcatn(buf, sizeof(buf), tbuf);
 		    result += strlen(tbuf);
-		    CLEAR(oper2);
 		    break;
 		case 'D':
 		    strcatn(sfmt, sizeof(sfmt), "s");
-		    if (oper2->type != PROG_OBJECT)
+		    if (oper1->type != PROG_OBJECT)
 			abort_interp("Format specified object not found.");
-		    if (!valid_object(oper2))
+		    if (!valid_object(oper1))
 			abort_interp("Format specified object not valid.");
-		    ref = oper2->data.objref;
+		    ref = oper1->data.objref;
 		    CHECKREMOTE(ref);
 		    /* if ((Typeof(ref) != TYPE_PLAYER) && (Typeof(ref) != TYPE_PROGRAM))
 		       ts_lastuseobject(ref); */
@@ -383,13 +381,12 @@ prim_fmtstring(PRIM_PROTOTYPE)
 		    buf[result] = '\0';
 		    strcatn(buf, sizeof(buf), tbuf);
 		    result += strlen(tbuf);
-		    CLEAR(oper2);
 		    break;
 		case 'l':
 		    strcatn(sfmt, sizeof(sfmt), "s");
-		    if (oper2->type != PROG_LOCK)
+		    if (oper1->type != PROG_LOCK)
 			abort_interp("Format specified lock not found.");
-		    strcpyn(hold, sizeof(hold), unparse_boolexp(ProgUID, oper2->data.lock, 1));
+		    strcpyn(hold, sizeof(hold), unparse_boolexp(ProgUID, oper1->data.lock, 1));
 		    snprintf(tbuf, sizeof(tbuf), sfmt, hold);
 		    tlen = strlen(tbuf);
 		    if (slrj == 2) {
@@ -409,7 +406,6 @@ prim_fmtstring(PRIM_PROTOTYPE)
 		    buf[result] = '\0';
 		    strcatn(buf, sizeof(buf), tbuf);
 		    result += strlen(tbuf);
-		    CLEAR(oper2);
 		    break;
 		case 'f':
 		case 'e':
@@ -417,9 +413,9 @@ prim_fmtstring(PRIM_PROTOTYPE)
 		    strcatn(sfmt, sizeof(sfmt), "l");
 		    snprintf(hold, sizeof(hold), "%c", sstr[scnt]);
 		    strcatn(sfmt, sizeof(sfmt), hold);
-		    if (oper2->type != PROG_FLOAT)
+		    if (oper1->type != PROG_FLOAT)
 			abort_interp("Format specified float not found.");
-		    snprintf(tbuf, sizeof(tbuf), sfmt, oper2->data.fnumber);
+		    snprintf(tbuf, sizeof(tbuf), sfmt, oper1->data.fnumber);
 		    tlen = strlen(tbuf);
 		    if (slrj == 2) {
 			tnum = 0;
@@ -438,11 +434,12 @@ prim_fmtstring(PRIM_PROTOTYPE)
 		    buf[result] = '\0';
 		    strcatn(buf, sizeof(buf), tbuf);
 		    result += strlen(tbuf);
-		    CLEAR(oper2);
 		    break;
 		default:
 		    abort_interp("Invalid format string.");
 		}
+                CLEAR(oper1);
+                CHECKOP(0);
 		scnt++;
 		tstop += strlen(tbuf);
 	    }
