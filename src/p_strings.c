@@ -2563,7 +2563,7 @@ prim_md5hash(PRIM_PROTOTYPE)
     char hash[33];
     const char *p;
 
-    CHECKOFLOW(1);
+    CHECKOP(1);
     oper1 = POP();
 
     if (oper1->type != PROG_STRING)
@@ -2587,7 +2587,7 @@ prim_sha1hash(PRIM_PROTOTYPE)
     char hash[41];
     const char *p;
 
-    CHECKOFLOW(1);
+    CHECKOP(1);
     oper1 = POP();
 
     if (oper1->type != PROG_STRING)

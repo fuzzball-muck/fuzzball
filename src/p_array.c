@@ -197,6 +197,7 @@ prim_array_first(PRIM_PROTOTYPE)
     result = array_first(oper1->data.array, &temp1);
 
     CLEAR(oper1);
+    CHECKOFLOW(2);
     if (result) {
 	copyinst(&temp1, &arg[((*top)++)]);
     } else {
@@ -219,6 +220,7 @@ prim_array_last(PRIM_PROTOTYPE)
     result = array_last(oper1->data.array, &temp1);
 
     CLEAR(oper1);
+    CHECKOFLOW(2);
     if (result) {
 	copyinst(&temp1, &arg[((*top)++)]);
     } else {
@@ -244,6 +246,8 @@ prim_array_prev(PRIM_PROTOTYPE)
 
     CLEAR(oper1);
     CLEAR(oper2);
+
+    CHECKOFLOW(2);
 
     if (result) {
 	copyinst(&temp1, &arg[((*top)++)]);
@@ -657,6 +661,7 @@ prim_array_n_intersection(PRIM_PROTOTYPE)
 	    oper1 = POP();
 	    if (oper1->type != PROG_ARRAY) {
 		array_free(new_mash);
+                CLEAR(oper1);
 		abort_interp("Argument not an array.");
 	    }
 	    temp_mash = new_array_dictionary();
@@ -703,6 +708,7 @@ prim_array_n_difference(PRIM_PROTOTYPE)
 	oper1 = POP();
 	if (oper1->type != PROG_ARRAY) {
 	    array_free(new_mash);
+            CLEAR(oper1);
 	    abort_interp("Argument not an array.");
 	}
 	array_mash(oper1->data.array, &new_mash, 1);
