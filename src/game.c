@@ -215,6 +215,12 @@ panic(const char *message)
 	emergency_shutdown();
     }
 
+#ifdef SPAWN_HOST_RESOLVER
+    if (global_resolver_pid != 0) {
+        (void) kill(global_resolver_pid, SIGKILL);
+    }
+#endif
+
     /* dump panic file */
     snprintf(panicfile, sizeof(panicfile), "%s.PANIC", dumpfile);
     if ((f = fopen(panicfile, "wb")) == NULL) {
