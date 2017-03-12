@@ -1430,6 +1430,22 @@ make_nonblocking(int s)
 #endif
 }
 
+static
+void make_cloexec(int s)
+{
+#ifdef FD_CLOEXEC
+    int flags;
+    if ((flags = fcntl(s, F_GETFD, 0)) == -1) {
+        perror("make_cloexec: fcntl F_GETFD");
+        panic("fcntl F_GETFD failed");
+    }
+    if ( fcntl(s, F_SETFD, flags | FD_CLOEXEC) == -1) {
+        perror("make_cloexec: fcntl F_SETFD");
+        panic("fcntl F_SETFD failed");
+    }
+#endif
+}
+
 static struct descriptor_data *
 initializesock(int s, const char *hostname, int is_ssl)
 {
@@ -1453,6 +1469,7 @@ initializesock(int s, const char *hostname, int is_ssl)
     d->con_number = 0;
     d->connected_at = time(NULL);
     make_nonblocking(s);
+    make_cloexec(s);
     d->output_size = 0;
     d->priority_output.lines = 0;
     d->priority_output.head = 0;
@@ -1561,6 +1578,8 @@ make_socket_v6(int port)
 	close(s);
 	exit(4);
     }
+
+    make_cloexec(s);
 
     /* We separate the binding of the socket and the listening on the socket */
     /* to support binding to privileged ports, then dropping privileges */
@@ -1756,6 +1775,8 @@ make_socket(int port)
 	close(s);
 	exit(4);
     }
+
+    make_cloexec(s);
 
     /* We separate the binding of the socket and the listening on the socket */
     /* to support binding to privileged ports, then dropping privileges */
@@ -2238,6 +2259,7 @@ spawn_resolver(void)
 
     socketpair(AF_UNIX, SOCK_STREAM, 0, resolver_sock);
     make_nonblocking(resolver_sock[1]);
+    make_cloexec(resolver_sock[1]);
     if ((global_resolver_pid = fork()) == 0) {
 	close(0);
 	close(1);
