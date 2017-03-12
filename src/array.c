@@ -336,7 +336,6 @@ array_tree_insert(array_tree ** avl, array_iter * key)
     static short balancep;
 
     assert(avl != NULL);
-    assert(*avl != NULL);
     assert(key != NULL);
 
     if (p) {
