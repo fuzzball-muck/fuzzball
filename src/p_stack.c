@@ -72,8 +72,7 @@ prim_dupn(PRIM_PROTOTYPE)
     if (result < 0)
 	abort_interp("Operand is negative.");
     CLEAR(oper1);
-    CHECKOP(result);
-    nargs = 0;
+    EXPECT_READ_STACK(result);
     CHECKOFLOW(result);
     for (int i = result; i > 0; i--) {
 	copyinst(&arg[*top - result], &arg[*top]);
@@ -96,8 +95,7 @@ prim_ldup(PRIM_PROTOTYPE)
 	abort_interp("Operand is negative.");
 
     result++;
-    CHECKOP_READONLY(result);
-    nargs = 0;
+    EXPECT_READ_STACK(result);
     CHECKOFLOW(result);
 
     for (int i = result; i > 0; i--) {
@@ -255,7 +253,7 @@ prim_put(PRIM_PROTOTYPE)
     if (oper1->type != PROG_INTEGER || oper1->data.number <= 0)
 	abort_interp("Operand not a positive integer.");
     tmp = oper1->data.number;
-    CHECKOP(tmp);
+    EXPECT_WRITE_STACK(tmp);
     CLEAR(&arg[*top - tmp]);
     copyinst(oper2, &arg[*top - tmp]);
     CLEAR(oper1);
@@ -746,6 +744,7 @@ prim_findmark(PRIM_PROTOTYPE)
 	    arg[*top - depth] = arg[*top - depth + 1];
 	arg[*top - 1] = temp2;
     }
+    EXPECT_POP_STACK(1);
     oper1 = POP();
     CLEAR(oper1);
     PushInt(count);
@@ -981,7 +980,7 @@ prim_reverse(PRIM_PROTOTYPE)
     tmp = oper1->data.number;	/* Depth on stack */
     if (tmp < 0)
 	abort_interp("Argument must be positive.");
-    CHECKOP(tmp);
+    EXPECT_WRITE_STACK(tmp);
     if (tmp > 0) {
 	for (int i = 0; i < (tmp / 2); i++) {
 	    temp2 = arg[*top - (tmp - i)];
