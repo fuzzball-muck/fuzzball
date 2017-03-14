@@ -4693,8 +4693,8 @@ COPYOBJ
 COPYOBJ ( d -- d' )
 
   Creates a new object (returning d' on top of the stack), that is a
-copy of object d. Each program is allowed to create only one new
-object per run.
+copy of object d, in the inventory of the current player.
+Can only create one object per program run, if under Mucker Level 3.
 ~
 ~
 COPYPLAYER
