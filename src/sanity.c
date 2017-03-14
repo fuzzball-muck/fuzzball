@@ -1353,7 +1353,7 @@ hack_it_up(void)
 	    for (ptr = cbuf; *ptr && !isspace(*ptr); ptr++) ;
 	    if (*ptr)
 		ptr++;
-	    do_examine_sanity(NOTHING, ptr);
+	    do_sanchange(NOTHING, ptr);
 	    break;
 
 	case 'x':
