@@ -1745,8 +1745,8 @@ prim_copyplayer(PRIM_PROTOTYPE)
     /* initialize everything */
     FLAGS(newplayer) = FLAGS(ref);
 
+    copy_properties_onto(ref, newplayer);
     newp = DBFETCH(newplayer);
-    newp->properties = copy_prop(ref);
     newp->exits = NOTHING;
     newp->contents = NOTHING;
     newp->next = NOTHING;
