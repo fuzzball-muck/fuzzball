@@ -1001,7 +1001,7 @@ prim_lreverse(PRIM_PROTOTYPE)
     tmp = oper1->data.number;	/* Depth on stack */
     if (tmp < 0)
 	abort_interp("Argument must be positive.");
-    CHECKOP(tmp);
+    EXPECT_WRITE_STACK(tmp);
     if (tmp > 0) {
 	for (int i = 0; i < (tmp / 2); i++) {
 	    temp2 = arg[*top - (tmp - i)];
