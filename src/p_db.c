@@ -1878,6 +1878,7 @@ prim_objmem(PRIM_PROTOTYPE)
 {
     int i;
 
+    CHECKOP(1);
     oper1 = POP();
     if (oper1->type != PROG_OBJECT)
 	abort_interp("Argument must be a dbref.");
