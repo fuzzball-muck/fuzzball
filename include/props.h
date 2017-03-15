@@ -108,6 +108,7 @@ PropPtr alloc_propnode(const char *name);
 void clear_property_flags(dbref player, const char *type, int flags);
 void clear_propnode(PropPtr p);
 struct plist *copy_prop(dbref old);
+void copy_properties_onto(dbref from, dbref to);
 void copy_proplist(dbref obj, PropPtr * newer, PropPtr old);
 void db_dump_props(FILE * f, dbref obj);
 int db_get_single_prop(FILE * f, dbref obj, long pos, PropPtr pnode, const char *pdir);
