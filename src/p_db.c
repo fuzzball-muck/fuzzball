@@ -1750,19 +1750,7 @@ prim_copyplayer(PRIM_PROTOTYPE)
     /* initialize everything */
     FLAGS(newplayer) = FLAGS(ref);
 
-    newp = DBFETCH(newplayer);
-    newp->properties = copy_prop(ref);
-    newp->exits = NOTHING;
-    newp->contents = NOTHING;
-    newp->next = NOTHING;
-#ifdef DISKBASE
-    newp->propsfpos = 0;
-    newp->propsmode = PROPS_UNLOADED;
-    newp->propstime = 0;
-    newp->nextold = NOTHING;
-    newp->prevold = NOTHING;
-    dirtyprops(newplayer);
-#endif
+    copy_properties_onto(ref, newplayer);
 
     PLAYER_SET_HOME(newplayer, PLAYER_HOME(ref));
     SETVALUE(newplayer, GETVALUE(newplayer) + GETVALUE(ref));

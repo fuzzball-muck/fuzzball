@@ -534,6 +534,20 @@ copy_prop(dbref old)
     return (n);
 }
 
+void
+copy_properties_onto(dbref from, dbref to)
+{
+    PropPtr from_props;
+#ifdef DISKBASE
+    fetchprops(from, NULL);
+    fetchprops(to, NULL);
+#endif
+
+    from_props = DBFETCH(from)->properties;
+
+    copy_proplist(from, &DBFETCH(to)->properties, from_props);
+}
+
 /* Return a pointer to the first property in a propdir and duplicates the
    property name into 'name'.  Returns NULL if the property list is empty
    or does not exist. */
