@@ -1025,21 +1025,25 @@ prim_getlinks(PRIM_PROTOTYPE)
 	abort_interp("Illegal object referenced.");
     my_obj = oper1->data.objref;
     CLEAR(oper1);
+    nargs = 0;
     switch (Typeof(my_obj)) {
     case TYPE_EXIT:
 	count = DBFETCH(my_obj)->sp.exit.ndest;
+        CHECKOFLOW(count + 1);
 	for (int i = 0; i < count; i++) {
 	    PushObject((DBFETCH(my_obj)->sp.exit.dest)[i]);
 	}
 	PushInt(count);
 	break;
     case TYPE_PLAYER:
+        CHECKOFLOW(2);
 	ref = PLAYER_HOME(my_obj);
 	count = 1;
 	PushObject(ref);
 	PushInt(count);
 	break;
     case TYPE_THING:
+        CHECKOFLOW(2);
 	ref = THING_HOME(my_obj);
 	count = 1;
 	PushObject(ref);
@@ -1051,6 +1055,7 @@ prim_getlinks(PRIM_PROTOTYPE)
 	    count = 0;
 	    PushInt(count);
 	} else {
+            CHECKOFLOW(2);
 	    count = 1;
 	    PushObject(ref);
 	    PushInt(count);
