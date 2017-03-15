@@ -292,7 +292,7 @@ prim_rotate(PRIM_PROTOTYPE)
     if (oper1->type != PROG_INTEGER)
 	abort_interp("Invalid argument type.");
     tmp = oper1->data.number;	/* Depth on stack */
-    CHECKOP(abs(tmp));
+    EXPECT_WRITE_STACK(abs(tmp));
     if (tmp > 0) {
 	temp2 = arg[*top - tmp];
 	for (; tmp > 0; tmp--)
