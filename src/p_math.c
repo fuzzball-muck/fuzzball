@@ -123,6 +123,11 @@ prim_multiply(PRIM_PROTOTYPE)
 	    abort_interp("Must use a positive amount to repeat.");
 	}
 
+        /* this check avoids integer overflow with tmp * length */
+        if (string->length != 0 && string->length > MAXINT / tmp) {
+	    abort_interp("Operation would result in overflow.");
+        }
+
 	if (tmp * string->length > (BUFFER_LEN) - 1) {
 	    abort_interp("Operation would result in overflow.");
 	}
