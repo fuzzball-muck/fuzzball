@@ -197,7 +197,10 @@ prim_divide(PRIM_PROTOTYPE)
 	    }
 	}
     } else {
-	if (oper1->data.number) {
+	if (oper1->data.number == -1 && oper2->data.number == MININT) {
+	    result = 0;
+	    fr->error.error_flags.i_bounds = 1;
+        } else if (oper1->data.number) {
 	    result = oper2->data.number / oper1->data.number;
 	} else {
 	    result = 0;
@@ -222,7 +225,10 @@ prim_mod(PRIM_PROTOTYPE)
     if ((!arith_type(oper2->type, oper1->type)) || (oper1->type == PROG_FLOAT) ||
 	(oper2->type == PROG_FLOAT))
 	abort_interp("Invalid argument type.");
-    if (oper1->data.number)
+    if (oper1->data.number == -1 && oper2->data.number == MININT) {
+        result = 1;
+        fr->error.error_flags.i_bounds = 1;
+    } else if (oper1->data.number)
 	result = oper2->data.number % oper1->data.number;
     else
 	result = 0;
