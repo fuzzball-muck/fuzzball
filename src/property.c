@@ -654,7 +654,12 @@ next_prop_name(dbref player, char *outbuf, int outbuflen, char *name)
 	    *outbuf = '\0';
 	    return NULL;
 	}
-	strcpyn(outbuf, outbuflen, name);
+        if (!*name) {
+            outbuf[0] = PROPDIR_DELIMITER;
+            outbuf[1] = '\0';
+        } else {
+            strcpyn(outbuf, outbuflen, name);
+        }
 	strcatn(outbuf, outbuflen, PropName(p));
     } else {
 	l = DBFETCH(player)->properties;
