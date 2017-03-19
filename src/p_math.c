@@ -123,19 +123,23 @@ prim_multiply(PRIM_PROTOTYPE)
 	    abort_interp("Must use a positive amount to repeat.");
 	}
 
-        /* this check avoids integer overflow with tmp * length */
-        if (string->length != 0 && string->length > MAXINT / tmp) {
-	    abort_interp("Operation would result in overflow.");
+        if (string && string->length > 0 && tmp > 0) {
+            /* this check avoids integer overflow with tmp * length */
+            if (string->length > MAXINT / tmp) {
+                abort_interp("Operation would result in overflow.");
+            }
+
+            if (tmp * string->length > (BUFFER_LEN) - 1) {
+                abort_interp("Operation would result in overflow.");
+            }
+
+            for (int i = 0; i < tmp; i++) {
+                bcopy(DoNullInd(string), buf + i * string->length, string->length);
+            }
+            buf[tmp * string->length] = 0;
+        } else {
+            buf[0] = 0;
         }
-
-	if (tmp * string->length > (BUFFER_LEN) - 1) {
-	    abort_interp("Operation would result in overflow.");
-	}
-
-	for (int i = 0; i < tmp; i++) {
-	    bcopy(DoNullInd(string), buf + i * string->length, string->length);
-	}
-	buf[tmp * string->length] = 0;
 	CLEAR(oper1);
 	CLEAR(oper2);
 	PushStrRaw(alloc_prog_string(buf));
