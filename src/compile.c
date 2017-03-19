@@ -3,6 +3,7 @@
 #include "compile.h"
 #include "db.h"
 #include "edit.h"
+#include "fbmath.h"
 #include "fbstrings.h"
 #include "game.h"
 #include "hashtab.h"
@@ -76,6 +77,7 @@ struct PROC_LIST {
 #define INTMEDFLG_DIVBYZERO 1
 #define INTMEDFLG_MODBYZERO 2
 #define INTMEDFLG_INTRY         4
+#define INTMEDFLG_OVERFLOW 8
 
 #define IMMFLAG_REFERENCED	1	/* Referenced by a jump */
 
@@ -1054,6 +1056,18 @@ OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
 				if (force_err_display) {
 				    compiler_warning(cstat,
 						     "Warning on line %i: Divide by zero",
+						     curr->next->next->in.line);
+				}
+			    }
+                        } else if (
+                            curr->next->in.data.number == -1 &&
+                            curr->in.data.number == MININT) {
+			    if (!(curr->next->next->flags & INTMEDFLG_OVERFLOW)) {
+				curr->next->next->flags |= INTMEDFLG_OVERFLOW;
+
+				if (force_err_display) {
+				    compiler_warning(cstat,
+						     "Warning on line %i: Integer overflow",
 						     curr->next->next->in.line);
 				}
 			    }
