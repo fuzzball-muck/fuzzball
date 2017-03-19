@@ -1081,7 +1081,7 @@ OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
 			break;
 		    }
 
-		    /* Int Int %  ==>  Div  */
+		    /* Int Int %  ==>  Mod */
 		    if (IntermediateIsPrimitive(curr->next->next, ModNo)) {
 			if (curr->next->in.data.number == 0) {
 			    if (!(curr->next->next->flags & INTMEDFLG_MODBYZERO)) {
@@ -1090,6 +1090,18 @@ OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
 				if (force_err_display) {
 				    compiler_warning(cstat,
 						     "Warning on line %i: Modulus by zero",
+						     curr->next->next->in.line);
+				}
+			    }
+                        } else if (
+                            curr->next->in.data.number == -1 &&
+                            curr->in.data.number == MININT) {
+			    if (!(curr->next->next->flags & INTMEDFLG_OVERFLOW)) {
+				curr->next->next->flags |= INTMEDFLG_OVERFLOW;
+
+				if (force_err_display) {
+				    compiler_warning(cstat,
+						     "Warning on line %i: Integer overflow",
 						     curr->next->next->in.line);
 				}
 			    }
