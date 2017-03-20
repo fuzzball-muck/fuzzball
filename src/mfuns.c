@@ -20,6 +20,7 @@ mfn_func(MFUNARGS)
     char namebuf[BUFFER_LEN];
     char argbuf[BUFFER_LEN];
     char defbuf[BUFFER_LEN];
+    char defbuf_copy[BUFFER_LEN];
     int i;
 
     funcname = MesgParse(argv[0], namebuf, sizeof(namebuf));
@@ -29,8 +30,9 @@ mfn_func(MFUNARGS)
     for (i = 1; i < argc - 1; i++) {
 	ptr = MesgParse(argv[i], argbuf, sizeof(argbuf));
 	CHECKRETURN(ptr, "FUNC", "variable name argument");
+        strcpyn(defbuf_copy, sizeof(defbuf_copy), i == 1 ? def : defbuf);
 	snprintf(defbuf, sizeof(defbuf), "{with:%.*s,{:%d},%.*s}", MAX_MFUN_NAME_LEN, ptr, i,
-		 (BUFFER_LEN - MAX_MFUN_NAME_LEN - 20), def);
+		 (BUFFER_LEN - MAX_MFUN_NAME_LEN - 20), defbuf_copy);
     }
     i = new_mfunc(funcname, defbuf);
     if (i == 1)
