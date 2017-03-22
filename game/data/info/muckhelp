@@ -1227,6 +1227,15 @@ or *<player>.  Only player #1 can set and unset the WIZARD flag of other
 players if GOD_PRIV is used.
 
 
+@SET <thing>=X
+
+  A thing or player set XFORCIBLE can be forced by anything passing its
+force-lock. When the @tune enable_prefix is on, wizards may set this flag
+on any wizard-owned action to allow matching on the beginning of the user's
+command string, much like the builtin '"' and ':'. The flag is named XPRESS
+when used in this way.
+
+
 @SET <thing>=Z
 
   @force and the FORCE muf primitive can be used on objects of type
