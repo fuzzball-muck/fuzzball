@@ -12,5 +12,6 @@ int ok_player_name(const char *name);
 int payfor(dbref who, int cost);
 void set_password(dbref player, const char *password);
 void set_password_raw(dbref player, const char *password);
+void set_player_name(dbref player, const char *name);
 
 #endif				/* _PLAYER_H */

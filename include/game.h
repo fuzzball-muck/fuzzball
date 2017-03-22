@@ -23,23 +23,29 @@
 
 #define ESCAPE_CHAR 27
 
-#define NO_IDLE_PING_PROP       "_/sys/no_idle_ping"
-#define IGNORE_PROP             "@__sys__/ignore/def"
-#define NO_RECYCLE_PROP         "@/precious"
-#define LEGACY_GENDER_PROP      "sex"
-#define LEGACY_GUEST_PROP       "~/isguest"
-
-#define SYS_DUMPINTERVAL_PROP   "_sys/dumpinterval"
-#define SYS_LASTDUMPTIME_PROP   "_sys/lastdumptime"
-#define SYS_MAX_CONNECTS_PROP   "_sys/max_connects"
-#define SYS_MAXPENNIES_PROP     "_sys/maxpennies"
-#define SYS_SHUTDOWNTIME_PROP   "_sys/shutdowntime"
-#define SYS_STARTUPTIME_PROP    "_sys/startuptime"
-
 #define DETAILS_PROPDIR         "_details"
 #define MPI_MACROS_PROPDIR      "_msgmacs"
 #define PRONOUNS_PROPDIR        "_pronouns"
 #define REGISTRATION_PROPDIR    "_reg"
+#define SYSTEM_PROPDIR_NOREAD	"@__sys__"
+#define SYSTEM_PROPDIR_PROTECT1	"_/sys"
+#define SYSTEM_PROPDIR_PROTECT2	"_sys"
+
+#define PNAME_HISTORY_PROPDIR	SYSTEM_PROPDIR_NOREAD "/name"
+
+#define IGNORE_PROP		SYSTEM_PROPDIR_NOREAD "/ignore/def"
+#define NO_IDLE_PING_PROP	SYSTEM_PROPDIR_PROTECT1 "/no_idle_ping"
+
+#define SYS_DUMPINTERVAL_PROP	SYSTEM_PROPDIR_PROTECT2 "/dumpinterval"
+#define SYS_LASTDUMPTIME_PROP	SYSTEM_PROPDIR_PROTECT2 "/lastdumptime"
+#define SYS_MAX_CONNECTS_PROP	SYSTEM_PROPDIR_PROTECT2 "/max_connects"
+#define SYS_MAXPENNIES_PROP	SYSTEM_PROPDIR_PROTECT2 "/maxpennies"
+#define SYS_SHUTDOWNTIME_PROP	SYSTEM_PROPDIR_PROTECT2 "/shutdowntime"
+#define SYS_STARTUPTIME_PROP	SYSTEM_PROPDIR_PROTECT2 "/startuptime"
+
+#define NO_RECYCLE_PROP         "@/precious"
+#define LEGACY_GENDER_PROP      "sex"
+#define LEGACY_GUEST_PROP       "~/isguest"
 
 #define WELCOME_PROPLIST        "welcome"
 

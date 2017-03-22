@@ -182,10 +182,11 @@ P's
   parselock          parsempi           parsempiblessed    parseprop
   parsepropex        part_pmatch        pennies            pi
   pick               pid                player?            pmatch
-  pname-ok?          polar_to_xyz       pop                popn
-  pow                pr_mode            preempt            prettylock
-  prog               program?           program_getlines   program_setlines
-  pronoun_sub        propdir?           public             put
+  pname-ok?          pname_history      polar_to_xyz       pop
+  popn               pow                pr_mode            preempt
+  prettylock         prog               program?           program_getlines
+  program_setlines   pronoun_sub        propdir?           public
+  put                
 
 Q's
   queue  
@@ -3910,16 +3911,16 @@ next                      nextentrance              nextowned
 objmem                    odrop                     ofail
 ok?                       osucc                     owner
 part_pmatch               pennies                   player?
-pmatch                    prog                      program?
-recycle                   rmatch                    room?
-set                       setdesc                   setdrop
-setfail                   setlink                   setlinks_array
-setname                   setodrop                  setofail
-setosucc                  setown                    setsucc
-setsysparm                stats                     succ
-sysparm                   sysparm_array             thing?
-timestamps                toadplayer                trig
-truename                  unparseobj                
+pmatch                    pname_history             prog
+program?                  recycle                   rmatch
+room?                     set                       setdesc
+setdrop                   setfail                   setlink
+setlinks_array            setname                   setodrop
+setofail                  setosucc                  setown
+setsucc                   setsysparm                stats
+succ                      sysparm                   sysparm_array
+thing?                    timestamps                toadplayer
+trig                      truename                  unparseobj
 
 ~----------------------------------------------------------------------------
 ~
@@ -4490,6 +4491,14 @@ TRUENAME ( d -- s )
 
   Takes object d and returns its true name string field.
 This is the same as name if the MUCK doesn't use anoniminity.
+~
+~
+PNAME_HISTORY
+PNAME_HISTORY ( d -- a )
+
+  Returns a dictionary repesenting the times when the given player had a
+name change, including creation. If an associated time cannot be determined,
+that key is 0. Requires Wizbit.
 ~
 ~
 DESC
