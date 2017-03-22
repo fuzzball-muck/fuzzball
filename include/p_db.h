@@ -59,7 +59,7 @@ void prim_compile(PRIM_PROTOTYPE);
 void prim_uncompile(PRIM_PROTOTYPE);
 void prim_getpids(PRIM_PROTOTYPE);
 void prim_getpidinfo(PRIM_PROTOTYPE);
-
+void prim_pname_history(PRIM_PROTOTYPE);
 void prim_program_getlines(PRIM_PROTOTYPE);
 void prim_program_setlines(PRIM_PROTOTYPE);
 void prim_supplicant(PRIM_PROTOTYPE);
@@ -80,7 +80,8 @@ void prim_toadplayer(PRIM_PROTOTYPE);
     prim_exits_array, prim_getlinks_array, prim_entrances_array,        \
     prim_compile, prim_uncompile, prim_newpassword, prim_getpids,       \
     prim_program_getlines, prim_getpidinfo, prim_program_setlines,	\
-    prim_setlinks_array, prim_toadplayer, prim_supplicant
+    prim_setlinks_array, prim_toadplayer, prim_supplicant,		\
+    prim_pname_history
 
 #define PRIMS_DB_NAMES "ADDPENNIES", "MOVETO", "PENNIES",  \
     "DBREF", "CONTENTS", "EXITS", "NEXT", "NAME",	   \
@@ -97,6 +98,7 @@ void prim_toadplayer(PRIM_PROTOTYPE);
     "EXITS_ARRAY", "GETLINKS_ARRAY", "ENTRANCES_ARRAY",    \
     "COMPILE", "UNCOMPILE", "NEWPASSWORD", "GETPIDS",      \
     "PROGRAM_GETLINES", "GETPIDINFO", "PROGRAM_SETLINES",  \
-    "SETLINKS_ARRAY", "TOADPLAYER", "SUPPLICANT"
+    "SETLINKS_ARRAY", "TOADPLAYER", "SUPPLICANT",	   \
+    "PNAME_HISTORY"
 
 #endif				/* _P_DB_H */

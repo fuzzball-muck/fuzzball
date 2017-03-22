@@ -350,6 +350,20 @@ fork_and_dump(void)
 #endif
 }
 
+static void
+ensure_support()
+{
+    char buf[BUFFER_LEN];
+
+    /* players need at least one pname_history entry */
+    for (dbref i = 0; i < db_top; i++) {
+	if (Typeof(i) == TYPE_PLAYER && !is_propdir(i, PNAME_HISTORY_PROPDIR)) {
+	    snprintf(buf, sizeof(buf), "%s/0", PNAME_HISTORY_PROPDIR);
+	    add_property(i, buf, NAME(i), 0);
+	}
+    }
+}
+
 int
 init_game(const char *infile, const char *outfile)
 {
@@ -378,6 +392,8 @@ init_game(const char *infile, const char *outfile)
 	return -1;
     log_status("LOADING: %s (done)", infile);
     fprintf(stderr, "LOADING: %s (done)\n", infile);
+
+    ensure_support();
 
     /* set up dumper */
     if (dumpfile)

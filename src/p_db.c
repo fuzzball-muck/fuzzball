@@ -2634,3 +2634,40 @@ prim_supplicant(PRIM_PROTOTYPE)
     CHECKOFLOW(1);
     PushObject(ref);
 }
+
+void
+prim_pname_history(PRIM_PROTOTYPE)
+{
+    stk_array *nu;
+    struct inst temp1, temp2;
+    PropPtr propadr, pptr;
+    char propname[BUFFER_LEN];
+
+    CHECKOP(1);
+    oper1 = POP();
+
+    if (mlev < 4)
+	abort_interp("Permission denied.  Requires Wizbit.");
+
+    if (!valid_player(oper1))
+	abort_interp("Non-player argument (1).");
+
+    if ((nu = new_array_dictionary()) == NULL)
+	abort_interp("Out of memory");
+
+    ref = oper1->data.objref;
+
+    propadr = first_prop(ref, PNAME_HISTORY_PROPDIR, &pptr, propname, sizeof(propname));
+    while (propadr) {
+	temp1.type = PROG_STRING;
+	temp1.data.string = alloc_prog_string(propname);
+	temp2.type = PROG_STRING;
+	temp2.data.string = alloc_prog_string(PropDataStr(propadr));
+	array_setitem(&nu, &temp1, &temp2);
+	CLEAR(&temp1);
+	CLEAR(&temp2);
+	propadr = next_prop(pptr, propadr, propname, sizeof(propname));
+    }
+
+    PushArrayRaw(nu);
+}

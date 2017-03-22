@@ -87,7 +87,7 @@ create_player(const char *name, const char *password)
     player = new_object();
 
     /* initialize everything */
-    NAME(player) = alloc_string(name);
+    set_player_name(player, name);
     LOCATION(player) = tp_player_start;	/* home */
     FLAGS(player) = TYPE_PLAYER;
     OWNER(player) = player;
@@ -188,8 +188,7 @@ delete_player(dbref who)
 		    if (NAME(ren)) {
 			free((void *) NAME(ren));
 		    }
-		    ts_modifyobject(ren);
-		    NAME(ren) = alloc_string(namebuf);
+		    set_player_name(ren, namebuf);
 		    add_player(ren);
 		} else {
 		    add_player(i);
@@ -265,4 +264,15 @@ ok_password(const char *password)
 
     /* Anything else is fair game */
     return 1;
+}
+
+void
+set_player_name(dbref player, const char *name)
+{
+    char buf[BUFFER_LEN];
+
+    snprintf(buf, sizeof(buf), "%s/%d", PNAME_HISTORY_PROPDIR, (int) time((time_t *) NULL));
+    add_property(player, buf, name, 0);
+    NAME(player) = alloc_string(name);
+    ts_modifyobject(player);
 }

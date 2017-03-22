@@ -55,8 +55,7 @@ do_name(int descr, dbref player, const char *name, char *newname)
 	    if (NAME(thing)) {
 		free((void *) NAME(thing));
 	    }
-	    ts_modifyobject(thing);
-	    NAME(thing) = alloc_string(newname);
+	    set_player_name(thing, newname);
 	    add_player(thing);
 	    notify(player, "Name set.");
 	    return;
