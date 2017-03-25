@@ -2349,8 +2349,10 @@ do_directive(COMPSTATE * cstat, char *direct)
 	if (i)
 	    i--;
 	temp[i] = '\0';
-	if (!tmpptr)
+	if (!tmpptr) {
+            free(tmpname);
 	    v_abort_compile(cstat, "Unexpected end of file in $define definition.");
+        }
 	free(tmpptr);
 	(void) insert_def(cstat, tmpname, temp);
 	free(tmpname);
