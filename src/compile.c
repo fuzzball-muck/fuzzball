@@ -3271,9 +3271,11 @@ process_special(COMPSTATE * cstat, const char *token)
 
 	    do {
 		varspec = next_token(cstat);
-		if (!varspec)
+		if (!varspec) {
+                    free_intermediate_node(nu);
 		    abort_compile(cstat,
 				  "Unexpected end of file within procedure arguments declaration.");
+                }
 
 		if (!strcmp(varspec, "]")) {
 		    argsdone = 1;
