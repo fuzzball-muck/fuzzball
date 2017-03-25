@@ -1236,7 +1236,7 @@ do_trace(int descr, dbref player, const char *name, int depth)
     match_neighbor(&md);
     match_possession(&md);
     match_registered(&md);
-    if ((thing = noisy_match_result(&md)) == NOTHING || thing == AMBIGUOUS)
+    if ((thing = noisy_match_result(&md)) == NOTHING)
 	return;
 
     for (dbref i = 0; (!depth || i < depth) && thing != NOTHING; i++) {
