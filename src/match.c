@@ -600,10 +600,10 @@ noisy_match_result(struct match_data * md)
 
     switch (match = match_result(md)) {
     case NOTHING:
-	notify(md->match_who, NOMATCH_MESSAGE);
+	notifyf_nolisten(md->match_who, NOMATCH_MESSAGE);
 	return NOTHING;
     case AMBIGUOUS:
-	notify(md->match_who, AMBIGUOUS_MESSAGE);
+	notifyf_nolisten(md->match_who, AMBIGUOUS_MESSAGE);
 	return NOTHING;
     default:
 	return match;
