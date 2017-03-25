@@ -3291,6 +3291,7 @@ process_special(COMPSTATE * cstat, const char *token)
 		    if (*varname) {
 			if (add_scopedvar(cstat, varname, PROG_UNTYPED) < 0) {
                             free((void *) varspec);
+                            free_intermediate_node(nu);
 			    abort_compile(cstat, "Variable limit exceeded.");
                         }
 
