@@ -98,62 +98,58 @@ _do_unlink(int descr, dbref player, const char *name, int quiet)
     match_absolute(&md);
     match_player(&md);
     match_everything(&md);
-    switch (exit = match_result(&md)) {
-    case NOTHING:
-	notify(player, "Unlink what?");
-	break;
-    case AMBIGUOUS:
-	notify(player, AMBIGUOUS_MESSAGE);
-	break;
-    default:
-	if (!controls(player, exit) && !controls_link(player, exit)) {
-	    notify(player, "Permission denied. (You don't control the exit or its link)");
-	} else {
-	    switch (Typeof(exit)) {
-	    case TYPE_EXIT:
-		if (DBFETCH(exit)->sp.exit.ndest != 0) {
-		    SETVALUE(OWNER(exit), GETVALUE(OWNER(exit)) + tp_link_cost);
-		    DBDIRTY(OWNER(exit));
-		}
-		ts_modifyobject(exit);
-		DBSTORE(exit, sp.exit.ndest, 0);
-		if (DBFETCH(exit)->sp.exit.dest) {
-		    free((void *) DBFETCH(exit)->sp.exit.dest);
-		    DBSTORE(exit, sp.exit.dest, NULL);
-		}
-		if (!quiet)
-		    notify(player, "Unlinked.");
-		if (MLevRaw(exit)) {
-		    SetMLevel(exit, 0);
-		    DBDIRTY(exit);
-		    if (!quiet)
-			notify(player, "Action priority Level reset to 0.");
-		}
-		break;
-	    case TYPE_ROOM:
-		ts_modifyobject(exit);
-		DBSTORE(exit, sp.room.dropto, NOTHING);
-		if (!quiet)
-		    notify(player, "Dropto removed.");
-		break;
-	    case TYPE_THING:
-		ts_modifyobject(exit);
-		THING_SET_HOME(exit, OWNER(exit));
-		DBDIRTY(exit);
-		if (!quiet)
-		    notify(player, "Thing's home reset to owner.");
-		break;
-	    case TYPE_PLAYER:
-		ts_modifyobject(exit);
-		PLAYER_SET_HOME(exit, tp_player_start);
-		DBDIRTY(exit);
-		if (!quiet)
-		    notify(player, "Player's home reset to default player start room.");
-		break;
-	    default:
-		notify(player, "You can't unlink that!");
-		break;
+
+    if ((exit = noisy_match_result(&md)) == NOTHING) {
+	return;
+    }
+
+    if (!controls(player, exit) && !controls_link(player, exit)) {
+	notify(player, "Permission denied. (You don't control the exit or its link)");
+    } else {
+	switch (Typeof(exit)) {
+	case TYPE_EXIT:
+	    if (DBFETCH(exit)->sp.exit.ndest != 0) {
+		SETVALUE(OWNER(exit), GETVALUE(OWNER(exit)) + tp_link_cost);
+		DBDIRTY(OWNER(exit));
 	    }
+	    ts_modifyobject(exit);
+	    DBSTORE(exit, sp.exit.ndest, 0);
+	    if (DBFETCH(exit)->sp.exit.dest) {
+		free((void *) DBFETCH(exit)->sp.exit.dest);
+		DBSTORE(exit, sp.exit.dest, NULL);
+	    }
+	    if (!quiet)
+		notify(player, "Unlinked.");
+	    if (MLevRaw(exit)) {
+		SetMLevel(exit, 0);
+		DBDIRTY(exit);
+		if (!quiet)
+		    notify(player, "Action priority Level reset to 0.");
+	    }
+	    break;
+	case TYPE_ROOM:
+	    ts_modifyobject(exit);
+	    DBSTORE(exit, sp.room.dropto, NOTHING);
+	    if (!quiet)
+		notify(player, "Dropto removed.");
+	    break;
+	case TYPE_THING:
+	    ts_modifyobject(exit);
+	    THING_SET_HOME(exit, OWNER(exit));
+	    DBDIRTY(exit);
+	    if (!quiet)
+		notify(player, "Thing's home reset to owner.");
+	    break;
+	case TYPE_PLAYER:
+	    ts_modifyobject(exit);
+	    PLAYER_SET_HOME(exit, tp_player_start);
+	    DBDIRTY(exit);
+	    if (!quiet)
+		notify(player, "Player's home reset to default player start room.");
+	    break;
+	default:
+	    notify(player, "You can't unlink that!");
+	    break;
 	}
     }
 }

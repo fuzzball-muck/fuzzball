@@ -1349,10 +1349,11 @@ do_contents(int descr, dbref player, const char *name, const char *flags)
 	    match_player(&md);
 	}
 
-	thing = noisy_match_result(&md);
+	if ((thing = noisy_match_result(&md)) == NOTHING) {
+	    return;
+	}
     }
-    if (thing == NOTHING)
-	return;
+
     if (!controls(OWNER(player), thing)) {
 	notify(player,
 	       "Permission denied. (You can't get the contents of something you don't control)");
@@ -1449,11 +1450,9 @@ do_sweep(int descr, dbref player, const char *name)
 	    match_absolute(&md);
 	    match_player(&md);
 	}
-	thing = noisy_match_result(&md);
-    }
-    if (thing == NOTHING) {
-	notify(player, "I don't know what object you mean.");
-	return;
+	if ((thing = noisy_match_result(&md)) == NOTHING) {
+	    return;
+	}
     }
 
     if (*name && !controls(OWNER(player), thing)) {

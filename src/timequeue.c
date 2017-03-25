@@ -1188,11 +1188,10 @@ do_kill_process(int descr, dbref player, const char *arg1)
 		match_absolute(&md);
 		match_everything(&md);
 
-		match = noisy_match_result(&md);
-		if (match == NOTHING) {
-		    notify_nolisten(player, "I don't know what you want to dequeue!", 1);
+		if ((match = noisy_match_result(&md)) == NOTHING) {
 		    return;
 		}
+
 		if (!OkObj(match)) {
 		    notify_nolisten(player, "I don't recognize that object.", 1);
 		    return;
