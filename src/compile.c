@@ -1552,6 +1552,9 @@ primitive_word(COMPSTATE * cstat, const char *token)
     struct INTERMEDIATE *nu, *cur;
     int pnum;
 
+    if (!cstat->curr_proc)
+        abort_compile(cstat, "Primitive outside procedure.");
+
     pnum = get_primitive(token);
     cur = nu = new_inst(cstat);
     if (pnum == IN_RET || pnum == IN_JMP) {
@@ -1587,6 +1590,9 @@ string_word(COMPSTATE * cstat, const char *token)
 {
     struct INTERMEDIATE *nu;
 
+    if (!cstat->curr_proc)
+        abort_compile(cstat, "String outside procedure.");
+
     nu = new_inst(cstat);
     nu->no = cstat->nowords++;
     nu->in.type = PROG_STRING;
@@ -1601,6 +1607,9 @@ float_word(COMPSTATE * cstat, const char *token)
 {
     struct INTERMEDIATE *nu;
 
+    if (!cstat->curr_proc)
+        abort_compile(cstat, "Floating point number outside procedure.");
+
     nu = new_inst(cstat);
     nu->no = cstat->nowords++;
     nu->in.type = PROG_FLOAT;
@@ -1614,6 +1623,9 @@ static struct INTERMEDIATE *
 number_word(COMPSTATE * cstat, const char *token)
 {
     struct INTERMEDIATE *nu;
+
+    if (!cstat->curr_proc)
+        abort_compile(cstat, "Number outside procedure.");
 
     nu = new_inst(cstat);
     nu->no = cstat->nowords++;
@@ -1632,6 +1644,9 @@ call_word(COMPSTATE * cstat, const char *token)
     struct INTERMEDIATE *nu;
     struct PROC_LIST *p;
 
+    if (!cstat->curr_proc)
+        abort_compile(cstat, "Procedure call outside procedure.");
+
     nu = new_inst(cstat);
     nu->no = cstat->nowords++;
     nu->in.type = PROG_EXEC;
@@ -1649,6 +1664,9 @@ quoted_word(COMPSTATE * cstat, const char *token)
 {
     struct INTERMEDIATE *nu;
     struct PROC_LIST *p;
+
+    if (!cstat->curr_proc)
+        abort_compile(cstat, "Address outside procedure.");
 
     nu = new_inst(cstat);
     nu->no = cstat->nowords++;
@@ -1669,6 +1687,9 @@ var_word(COMPSTATE * cstat, const char *token)
 {
     struct INTERMEDIATE *nu;
     int var_no = 0;
+
+    if (!cstat->curr_proc)
+        abort_compile(cstat, "Local variable outside procedure.");
 
     nu = new_inst(cstat);
     nu->no = cstat->nowords++;
@@ -1691,6 +1712,9 @@ svar_word(COMPSTATE * cstat, const char *token)
     struct INTERMEDIATE *nu;
     int var_no = 0;
 
+    if (!cstat->curr_proc)
+        abort_compile(cstat, "Scoped variable outside procedure.");
+
     nu = new_inst(cstat);
     nu->no = cstat->nowords++;
     nu->in.type = PROG_SVAR;
@@ -1711,6 +1735,9 @@ lvar_word(COMPSTATE * cstat, const char *token)
 {
     struct INTERMEDIATE *nu;
     int var_no = 0;
+
+    if (!cstat->curr_proc)
+        abort_compile(cstat, "Local variable outside procedure.");
 
     nu = new_inst(cstat);
     nu->no = cstat->nowords++;
@@ -1733,6 +1760,9 @@ object_word(COMPSTATE * cstat, const char *token)
 {
     struct INTERMEDIATE *nu;
     int objno;
+
+    if (!cstat->curr_proc)
+        abort_compile(cstat, "DBRef constant outside procedure.");
 
     objno = atol(token + 1);
     nu = new_inst(cstat);
@@ -3331,6 +3361,8 @@ process_special(COMPSTATE * cstat, const char *token)
 	cstat->curr_proc = 0;
 	return nu;
     } else if (!strcasecmp(token, "IF")) {
+	if (!cstat->curr_proc)
+	    abort_compile(cstat, "IF outside procedure.");
 	nu = new_inst(cstat);
 	nu->no = cstat->nowords++;
 	nu->in.type = PROG_IF;
@@ -3339,6 +3371,8 @@ process_special(COMPSTATE * cstat, const char *token)
 	add_control_structure(cstat, CTYPE_IF, nu);
 	return nu;
     } else if (!strcasecmp(token, "ELSE")) {
+	if (!cstat->curr_proc)
+	    abort_compile(cstat, "ELSE outside procedure.");
 	struct INTERMEDIATE *eef;
 	int ctrltype = innermost_control_type(cstat);
 
@@ -3367,6 +3401,8 @@ process_special(COMPSTATE * cstat, const char *token)
 	eef->in.data.number = get_address(cstat, nu, 1);
 	return nu;
     } else if (!strcasecmp(token, "THEN")) {
+	if (!cstat->curr_proc)
+	    abort_compile(cstat, "THEN outside procedure.");
 	/* can't use 'if' because it's a reserved word */
 	struct INTERMEDIATE *eef;
 	int ctrltype = innermost_control_type(cstat);
@@ -3391,10 +3427,14 @@ process_special(COMPSTATE * cstat, const char *token)
 	eef->in.data.number = get_address(cstat, cstat->nextinst, 0);
 	return NULL;
     } else if (!strcasecmp(token, "BEGIN")) {
+	if (!cstat->curr_proc)
+	    abort_compile(cstat, "BEGIN outside procedure.");
 	prealloc_inst(cstat);
 	add_control_structure(cstat, CTYPE_BEGIN, cstat->nextinst);
 	return NULL;
     } else if (!strcasecmp(token, "FOR")) {
+	if (!cstat->curr_proc)
+	    abort_compile(cstat, "FOR outside procedure.");
 	struct INTERMEDIATE *new2, *new3;
 
 	nu = new_inst(cstat);
@@ -3417,6 +3457,8 @@ process_special(COMPSTATE * cstat, const char *token)
 	cstat->nested_fors++;
 	return nu;
     } else if (!strcasecmp(token, "FOREACH")) {
+	if (!cstat->curr_proc)
+	    abort_compile(cstat, "FOREACH outside procedure.");
 	struct INTERMEDIATE *new2, *new3;
 
 	nu = new_inst(cstat);
@@ -3439,6 +3481,8 @@ process_special(COMPSTATE * cstat, const char *token)
 	cstat->nested_fors++;
 	return nu;
     } else if (!strcasecmp(token, "UNTIL")) {
+	if (!cstat->curr_proc)
+	    abort_compile(cstat, "UNTIL outside procedure.");
 	/* can't use 'if' because it's a reserved word */
 	struct INTERMEDIATE *eef;
 	struct INTERMEDIATE *curr;
@@ -3479,6 +3523,8 @@ process_special(COMPSTATE * cstat, const char *token)
 	}
 	return nu;
     } else if (!strcasecmp(token, "WHILE")) {
+	if (!cstat->curr_proc)
+	    abort_compile(cstat, "WHILE outside procedure.");
 	struct INTERMEDIATE *curr;
 	int trycount;
 	if (!in_loop(cstat))
@@ -3510,6 +3556,8 @@ process_special(COMPSTATE * cstat, const char *token)
 	add_loop_exit(cstat, nu);
 	return curr;
     } else if (!strcasecmp(token, "BREAK")) {
+	if (!cstat->curr_proc)
+	    abort_compile(cstat, "BREAK outside procedure.");
 	int trycount;
 	struct INTERMEDIATE *curr;
 	if (!in_loop(cstat))
@@ -3541,6 +3589,8 @@ process_special(COMPSTATE * cstat, const char *token)
 	add_loop_exit(cstat, nu);
 	return curr;
     } else if (!strcasecmp(token, "CONTINUE")) {
+	if (!cstat->curr_proc)
+	    abort_compile(cstat, "CONTINUE outside procedure.");
 	/* can't use 'if' because it's a reserved word */
 	struct INTERMEDIATE *beef;
 	struct INTERMEDIATE *curr;
@@ -3575,6 +3625,8 @@ process_special(COMPSTATE * cstat, const char *token)
 
 	return curr;
     } else if (!strcasecmp(token, "REPEAT")) {
+	if (!cstat->curr_proc)
+	    abort_compile(cstat, "REPEAT outside procedure.");
 	/* can't use 'if' because it's a reserved word */
 	struct INTERMEDIATE *eef;
 	struct INTERMEDIATE *curr;
@@ -3616,6 +3668,8 @@ process_special(COMPSTATE * cstat, const char *token)
 
 	return nu;
     } else if (!strcasecmp(token, "TRY")) {
+	if (!cstat->curr_proc)
+	    abort_compile(cstat, "TRY outside procedure.");
 	nu = new_inst(cstat);
 	nu->no = cstat->nowords++;
 	nu->in.type = PROG_TRY;
@@ -3627,6 +3681,8 @@ process_special(COMPSTATE * cstat, const char *token)
 
 	return nu;
     } else if (!strcasecmp(token, "CATCH") || !strcasecmp(token, "CATCH_DETAILED")) {
+	if (!cstat->curr_proc)
+	    abort_compile(cstat, "CATCH outside procedure.");
 	/* can't use 'if' because it's a reserved word */
 	struct INTERMEDIATE *eef;
 	struct INTERMEDIATE *curr;
@@ -3698,6 +3754,8 @@ process_special(COMPSTATE * cstat, const char *token)
 	eef->in.data.number = get_address(cstat, cstat->nextinst, 0);
 	return NULL;
     } else if (!strcasecmp(token, "CALL")) {
+	if (!cstat->curr_proc)
+	    abort_compile(cstat, "CALL outside procedure.");
 	nu = new_inst(cstat);
 	nu->no = cstat->nowords++;
 	nu->in.type = PROG_PRIMITIVE;
