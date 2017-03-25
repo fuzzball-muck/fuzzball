@@ -266,6 +266,7 @@ do_abort_compile(COMPSTATE * cstat, const char *c)
     if (cstat->line_copy) {
 	free((void *) cstat->line_copy);
 	cstat->line_copy = NULL;
+        cstat->next_char = NULL;
     }
     if (((FLAGS(cstat->player) & INTERACTIVE) && !(FLAGS(cstat->player) & READMODE)) ||
 	cstat->force_err_display) {
