@@ -2907,7 +2907,10 @@ next_token(COMPSTATE * cstat)
     if (temp[0] == BEGINDIRECTIVE) {
 	do_directive(cstat, temp);
 	free(temp);
-	return next_token(cstat);
+        if (cstat->compile_err)
+            return NULL;
+        else
+            return next_token(cstat);
     }
     if (temp[0] == BEGINESCAPE) {
 	if (temp[1]) {
