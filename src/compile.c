@@ -2649,7 +2649,7 @@ do_directive(COMPSTATE * cstat, char *direct)
 	    i = cstat->program;
 	}
 	free(tmpname);
-	if (!OkObj(i))
+	if (!OkObj(i) || Typeof(i) != TYPE_PROGRAM)
 	    v_abort_compile(cstat,
 			    "I don't understand what program you want to check in ifcancall.");
 	tmpname = (char *) next_token_raw(cstat);
