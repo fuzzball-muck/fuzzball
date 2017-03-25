@@ -1274,12 +1274,11 @@ do_entrances(int descr, dbref player, const char *name, const char *flags)
 	match_here(&md);
 	match_me(&md);
 
-	thing = noisy_match_result(&md);
+	if ((thing = noisy_match_result(&md)) == NOTHING) {
+	    return;
+	}
     }
-    if (thing == NOTHING) {
-	notify(player, "I don't know what object you mean.");
-	return;
-    }
+
     if (!controls(OWNER(player), thing)) {
 	notify(player,
 	       "Permission denied. (You can't list entrances of objects you don't control)");
