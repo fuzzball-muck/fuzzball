@@ -923,7 +923,10 @@ OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
 	case PROG_EXEC:
 	    i = cstat->addrlist[curr->in.data.number]->no +
 		    cstat->addroffsets[curr->in.data.number];
-	    Flags[i] |= IMMFLAG_REFERENCED;
+            /* unreachable code (outside of any word, like ': x ; if then' can have
+               references one-past-the-end of a file */
+            if (i < count)
+                Flags[i] |= IMMFLAG_REFERENCED;
 	    break;
 	}
     }
