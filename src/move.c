@@ -628,7 +628,7 @@ do_drop(int descr, dbref player, const char *name, const char *obj)
 
     init_match(descr, player, name, NOTYPE, &md);
     match_possession(&md);
-    if ((thing = noisy_match_result(&md)) == NOTHING || thing == AMBIGUOUS)
+    if ((thing = noisy_match_result(&md)) == NOTHING)
 	return;
 
     cont = loc;
@@ -638,7 +638,7 @@ do_drop(int descr, dbref player, const char *name, const char *obj)
 	match_neighbor(&md);
 	if (Wizard(OWNER(player)))
 	    match_absolute(&md);	/* the wizard has long fingers */
-	if ((cont = noisy_match_result(&md)) == NOTHING || cont == AMBIGUOUS) {
+	if ((cont = noisy_match_result(&md)) == NOTHING) {
 	    return;
 	}
     }

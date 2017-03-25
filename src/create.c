@@ -313,7 +313,7 @@ do_dig(int descr, dbref player, const char *name, const char *pname)
 	match_absolute(&md);
 	match_registered(&md);
 	match_here(&md);
-	if ((parent = noisy_match_result(&md)) == NOTHING || parent == AMBIGUOUS) {
+	if ((parent = noisy_match_result(&md)) == NOTHING) {
 	    notify(player, "Parent set to default.");
 	} else {
 	    if (!can_link_to(player, Typeof(room), parent) || room == parent) {
@@ -415,7 +415,7 @@ do_edit(int descr, dbref player, const char *name)
     match_registered(&md);
     match_absolute(&md);
 
-    if ((i = noisy_match_result(&md)) == NOTHING || i == AMBIGUOUS)
+    if ((i = noisy_match_result(&md)) == NOTHING)
 	return;
 
     if ((Typeof(i) != TYPE_PROGRAM) || !controls(player, i)) {
@@ -552,11 +552,6 @@ do_clone(int descr, dbref player, char *name)
 
     if ((thing = noisy_match_result(&md)) == NOTHING)
 	return;
-
-    if (thing == AMBIGUOUS) {
-	notify(player, AMBIGUOUS_MESSAGE);
-	return;
-    }
 
     /* Further sanity checks */
 
