@@ -1127,6 +1127,8 @@ stripspaces(char *buf, int buflen, char *in)
 
     for (ptr = in; *ptr == ' '; ptr++) ;
     strcpyn(buf, buflen, ptr);
+    if (!*buf)
+        return buf;
     ptr = strlen(buf) + buf - 1;
     while (*ptr == ' ' && ptr > buf)
         *(ptr--) = '\0';
