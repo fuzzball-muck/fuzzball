@@ -588,8 +588,6 @@ compiled.
 ~
 ~
 $IFCANCALL
-$IFCANCALL this <publicname> <truebranch> $endif
-$IFCANCALL this <publicname> <truebranch> $else <falsebranch> $endif
 $IFCANCALL $<libname> <publicname> <truebranch> $endif
 $IFCANCALL $<libname> <publicname> <truebranch> $else <falsebranch> $endif
 $IFCANCALL <dbref> <publicname> <truebranch> $endif
@@ -598,8 +596,6 @@ $IFCANCALL <dbref> <publicname> <truebranch> $else <falsebranch> $endif
   This determines whether or not to compile optional sections of code,
 depending on the ability for the compiling program to call a given public
 function on a given program.
-  If the given program is given as 'this', then this will check if the
-given callable function was declared earlier in this compiling program.
   The <truebranch> will be compiled if the given program exists, is a
 program, and has a given callable function (declared with PUBLIC or WIZCALL)
 that this compiling program has permission to call.  Otherwise, the
@@ -608,8 +604,6 @@ that this compiling program has permission to call.  Otherwise, the
 ~
 ~
 $IFNCANCALL
-$IFNCANCALL this <publicname> <truebranch> $endif
-$IFNCANCALL this <publicname> <truebranch> $else <falsebranch> $endif
 $IFNCANCALL $<libname> <publicname> <truebranch> $endif
 $IFNCANCALL $<libname> <publicname> <truebranch> $else <falsebranch> $endif
 $IFNCANCALL <dbref> <publicname> <truebranch> $endif
@@ -618,8 +612,6 @@ $IFNCANCALL <dbref> <publicname> <truebranch> $else <falsebranch> $endif
   This determines whether or not to compile optional sections of code,
 depending on the ability for the compiling program to call a given public
 function on a given program.
-  If the given program is given as 'this', then this will check if the
-given callable function was declared earlier in this compiling program.
   The <truebranch> will be compiled if the given program does not exist,
 is not a program, or does not have a given callable function (declared with
 PUBLIC or WIZCALL) that this compiling program has permission to call.
