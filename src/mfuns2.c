@@ -144,20 +144,19 @@ mfn_testlock(MFUNARGS)
 
     if (argc > 2) {
 	who = mesg_dbref_local(descr, player, what, perms, argv[2], mesgtyp);
-	if (Typeof(who) != TYPE_PLAYER && Typeof(who) != TYPE_THING) {
-	    ABORT_MPI("TESTLOCK", "Invalid object type. (arg1)");
-	}
     }
     if (who == AMBIGUOUS || who == UNKNOWN || who == NOTHING || who == HOME)
-	ABORT_MPI("TESTLOCK", "Match failed. (arg1)");
+        ABORT_MPI("TESTLOCK", "Match failed. (arg3)");
     if (who == PERMDENIED)
-	ABORT_MPI("TESTLOCK", "Permission denied. (arg1)");
+        ABORT_MPI("TESTLOCK", "Permission denied. (arg3)");
+    if (Typeof(who) != TYPE_PLAYER && Typeof(who) != TYPE_THING)
+        ABORT_MPI("TESTLOCK", "Invalid object type. (arg3)");
     if (obj == AMBIGUOUS || obj == UNKNOWN || obj == NOTHING || obj == HOME)
-	ABORT_MPI("TESTLOCK", "Match failed. (arg2)");
+	ABORT_MPI("TESTLOCK", "Match failed. (arg1)");
     if (obj == PERMDENIED)
-	ABORT_MPI("TESTLOCK", "Permission denied. (arg2)");
+	ABORT_MPI("TESTLOCK", "Permission denied. (arg1)");
     if (Prop_System(argv[1]))
-	ABORT_MPI("TESTLOCK", "Permission denied. (arg2)");
+	ABORT_MPI("TESTLOCK", "Permission denied. (arg1)");
     if (!(mesgtyp & MPI_ISBLESSED)) {
 	if (Prop_Hidden(argv[1]))
 	    ABORT_MPI("TESTLOCK", "Permission denied. (arg2)");
