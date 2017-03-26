@@ -46,6 +46,10 @@ ts_modifyobject(dbref thing)
 int
 format_time(char *buf, int max_len, const char *fmt, struct tm *tmval)
 {
+    if (!tmval) {
+        *buf = '\0';
+        return 0;
+    }
 
 #ifdef USE_STRFTIME
     return (strftime(buf, max_len, fmt, tmval));
