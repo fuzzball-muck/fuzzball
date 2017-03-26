@@ -2669,25 +2669,20 @@ do_directive(COMPSTATE * cstat, char *direct)
 	tmpname = (char *) next_token_raw(cstat);
 	if (!tmpname)
 	    v_abort_compile(cstat, "Unexpected end of file for ifcancall.");
-	if (strcasecmp(tmpname, "this")) {
-	    char tempa[BUFFER_LEN], tempb[BUFFER_LEN];
+	char tempa[BUFFER_LEN], tempb[BUFFER_LEN];
 
-	    strcpyn(tempa, sizeof(tempa), match_args);
-	    strcpyn(tempb, sizeof(tempb), match_cmdname);
-	    init_match(cstat->descr, cstat->player, tmpname, NOTYPE, &md);
-	    match_registered(&md);
-	    match_absolute(&md);
-	    match_me(&md);
-	    i = (int) match_result(&md);
-	    strcpyn(match_args, sizeof(match_args), tempa);
-	    strcpyn(match_cmdname, sizeof(match_cmdname), tempb);
-	} else {
-	    i = cstat->program;
-	}
+	strcpyn(tempa, sizeof(tempa), match_args);
+	strcpyn(tempb, sizeof(tempb), match_cmdname);
+	init_match(cstat->descr, cstat->player, tmpname, NOTYPE, &md);
+	match_registered(&md);
+	match_absolute(&md);
+	i = (int) match_result(&md);
+	strcpyn(match_args, sizeof(match_args), tempa);
+	strcpyn(match_cmdname, sizeof(match_cmdname), tempb);
 	free(tmpname);
 	if (!OkObj(i))
 	    v_abort_compile(cstat,
-			    "I don't understand what program you want to check in ifcancall.");
+			    "I don't understand what object you want to check in ifcancall.");
 	tmpname = (char *) next_token_raw(cstat);
 	if (!tmpname || !*tmpname) {
 	    if (tmpptr) {
@@ -2698,30 +2693,33 @@ do_directive(COMPSTATE * cstat, char *direct)
 	while (*cstat->next_char)
 	    cstat->next_char++;
 	advance_line(cstat);
-	if (!PROGRAM_CODE(i)) {
-	    struct line *tmpline;
 
-	    tmpline = PROGRAM_FIRST(i);
-	    PROGRAM_SET_FIRST(i, ((struct line *) read_program(i)));
-	    do_compile(cstat->descr, OWNER(i), i, 0);
-	    free_prog_text(PROGRAM_FIRST(i));
-	    PROGRAM_SET_FIRST(i, tmpline);
-	}
 	j = 0;
-	if (MLevel(OWNER(i)) > 0 &&
-	    (MLevel(OWNER(cstat->program)) >= 4 || OWNER(i) == OWNER(cstat->program)
-	     || Linkable(i))
-		) {
-	    struct publics *pbs;
+	if (Typeof(i) == TYPE_PROGRAM) {
+	    if (!PROGRAM_CODE(i)) {
+		struct line *tmpline;
 
-	    pbs = PROGRAM_PUBS(i);
-	    while (pbs) {
-		if (!strcasecmp(tmpname, pbs->subname))
-		    break;
-		pbs = pbs->next;
+		tmpline = PROGRAM_FIRST(i);
+		PROGRAM_SET_FIRST(i, ((struct line *) read_program(i)));
+		do_compile(cstat->descr, OWNER(i), i, 0);
+		free_prog_text(PROGRAM_FIRST(i));
+		PROGRAM_SET_FIRST(i, tmpline);
 	    }
-	    if (pbs && MLevel(OWNER(cstat->program)) >= pbs->mlev)
-		j = 1;
+	    if (MLevel(OWNER(i)) > 0 &&
+		(MLevel(OWNER(cstat->program)) >= 4 || OWNER(i) == OWNER(cstat->program)
+		|| Linkable(i))
+		) {
+		struct publics *pbs;
+
+		pbs = PROGRAM_PUBS(i);
+		while (pbs) {
+		    if (!strcasecmp(tmpname, pbs->subname))
+			break;
+		    pbs = pbs->next;
+		}
+		if (pbs && MLevel(OWNER(cstat->program)) >= pbs->mlev)
+		    j = 1;
+	    }
 	}
 	free(tmpname);
 	if (!strcasecmp(temp, "ifncancall")) {
@@ -2840,7 +2838,6 @@ do_directive(COMPSTATE * cstat, char *direct)
 	init_match(cstat->descr, cstat->player, tmpname, NOTYPE, &md);
 	match_registered(&md);
 	match_absolute(&md);
-	match_me(&md);
 	i = (int) match_result(&md);
 	strcpyn(match_args, sizeof(match_args), tempa);
 	strcpyn(match_cmdname, sizeof(match_cmdname), tempb);
