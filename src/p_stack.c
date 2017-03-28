@@ -624,7 +624,7 @@ prim_checkargs(PRIM_PROTOTYPE)
 		    if ((ref >= 0) && (Typeof(ref) != TYPE_THING))
 			ABORT_CHECKARGS("Expected thing dbref.");
 		    if (ref == HOME)
-			ABORT_CHECKARGS("Expected player dbref.");
+			ABORT_CHECKARGS("Expected thing dbref.");
 		    break;
 
 		case 'E':
@@ -634,7 +634,7 @@ prim_checkargs(PRIM_PROTOTYPE)
 		    if ((ref >= 0) && (Typeof(ref) != TYPE_EXIT))
 			ABORT_CHECKARGS("Expected exit dbref.");
 		    if (ref == HOME)
-			ABORT_CHECKARGS("Expected player dbref.");
+			ABORT_CHECKARGS("Expected exit dbref.");
 		    break;
 
 		case 'F':
@@ -644,7 +644,7 @@ prim_checkargs(PRIM_PROTOTYPE)
 		    if ((ref >= 0) && (Typeof(ref) != TYPE_PROGRAM))
 			ABORT_CHECKARGS("Expected program dbref.");
 		    if (ref == HOME)
-			ABORT_CHECKARGS("Expected player dbref.");
+			ABORT_CHECKARGS("Expected program dbref.");
 		    break;
 		}
 		break;
