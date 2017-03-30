@@ -504,7 +504,7 @@ Only a builder may use this command.
 ~
 ~
 @CLONE
-@CLONE <object>
+@CLONE <object> [=<regname>]
 
   Clones the given object, including name, location, flags, and
 properties.  You must have control of the object, you may not clone
@@ -1735,9 +1735,10 @@ edit mode.  Programs must be created with @PROGRAM or @MCPPROGRAM.
 ~
 ~
 @PROGRAM
-@PROGRAM <program>
+@PROGRAM <program> [=<regname>]
 
-  Create a new program, or enter edit mode on an existing one.
+  Create a new program, or enter edit mode on an existing one. If a <regname>
+is specified, a new program is always created.
 ~~alsosee @MCPPROGRAM,@EDIT,@MCPEDIT
 ~
 ~
@@ -1751,11 +1752,11 @@ text edit mode.  Programs must be created with @PROGRAM or @MCPPROGRAM.
 ~
 ~
 @MCPPROGRAM
-@MCPPROGRAM <program>
+@MCPPROGRAM <program> [=<regname>]
 
-  Create a new program, or enter edit mode on an existing one.  If the
-client supports the MCP edit package, an editor window will appear instead
-of using the text edit mode.
+  Create a new program, or enter edit mode on an existing one.  If a <regname>
+is specified, a new program is always created.  If the client supports the MCP
+edit package, an editor window will appear instead of using the text edit mode.
 ~~alsosee @EDIT,@PROGRAM,@MCPEDIT
 ~
 ~

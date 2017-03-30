@@ -5,6 +5,7 @@
 #include "db.h"
 #include "edit.h"
 #include "fbstrings.h"
+#include "game.h"
 #include "inst.h"
 #include "interface.h"
 #include "match.h"
@@ -1575,10 +1576,11 @@ do_mcpedit(int descr, dbref player, const char *name)
 }
 
 void
-do_mcpprogram(int descr, dbref player, const char *name)
+do_mcpprogram(int descr, dbref player, const char *name, const char *rname)
 {
     dbref prog;
     struct match_data md;
+    char unparse_buf[BUFFER_LEN];
 
     if (!*name) {
 	notify(player, "No program name given.");
@@ -1593,7 +1595,7 @@ do_mcpprogram(int descr, dbref player, const char *name)
 
     prog = match_result(&md);
 
-    if (prog == NOTHING) {
+    if (*rname || prog == NOTHING) {
 	if (!ok_ascii_other(name)) {
 	    notify(player, "Program names are limited to 7-bit ASCII.");
 	    return;
@@ -1603,7 +1605,13 @@ do_mcpprogram(int descr, dbref player, const char *name)
 	    return;
 	}
 	prog = create_program(player, name);
-	notifyf(player, "Program %s created as #%d.", name, prog);
+        unparse_object(player, prog, unparse_buf, sizeof(unparse_buf));
+        notifyf(player, "Program %s created.", unparse_buf);
+
+        if (*rname) {
+            register_object(player, REGISTRATION_PROPDIR, (char *)rname, prog);
+            notifyf(player, "Registered as $%s", rname);
+        }
     } else if (prog == AMBIGUOUS) {
 	notify(player, "I don't know which one you mean!");
 	return;
