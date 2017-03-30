@@ -1416,3 +1416,15 @@ link_exit_dry(int descr, dbref player, dbref exit, char *dest_name, dbref * dest
 {
     return _link_exit(descr, player, exit, dest_name, dest_list, 1);
 }
+
+void
+register_object(dbref location, char *propdir, char *name, dbref object)
+{
+    PData mydat;
+    char buf[BUFFER_LEN];
+
+    snprintf(buf, sizeof(buf), "%s/%s", propdir, name);
+    mydat.flags = PROP_REFTYP;
+    mydat.data.ref = object;
+    set_property(location, buf, &mydat, 0);
+}

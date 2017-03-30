@@ -18,18 +18,6 @@
 #include "props.h"
 #include "tune.h"
 
-static void
-register_object(dbref location, char *propdir, char *name, dbref object)
-{
-    PData mydat;
-    char buf[BUFFER_LEN];
-
-    snprintf(buf, sizeof(buf), "%s/%s", propdir, name);
-    mydat.flags = PROP_REFTYP;
-    mydat.data.ref = object;
-    set_property(location, buf, &mydat, 0);
-}
-
 /* use this to create an exit */
 void
 do_open(int descr, dbref player, const char *direction, const char *linkto)
@@ -37,6 +25,7 @@ do_open(int descr, dbref player, const char *direction, const char *linkto)
     dbref loc, exit;
     dbref good_dest[MAX_LINKS];
     char buf2[BUFFER_LEN];
+    char unparse_buf[BUFFER_LEN];
     char *rname, *qname;
     int ndest;
 
@@ -74,8 +63,8 @@ do_open(int descr, dbref player, const char *direction, const char *linkto)
 	return;
     } else {
 	exit = create_action(player, direction, loc);
-
-	notifyf(player, "Exit %s opened as #%d.", NAME(exit), exit);
+	unparse_object(player, exit, unparse_buf, sizeof(unparse_buf));
+	notifyf(player, "Exit %s opened.", unparse_buf);
 
 	/* check second arg to see if we should do a link */
 	if (*qname != '\0') {
@@ -264,6 +253,7 @@ do_dig(int descr, dbref player, const char *name, const char *pname)
     char buf[BUFFER_LEN];
     char rbuf[BUFFER_LEN];
     char qbuf[BUFFER_LEN];
+    char unparse_buf[BUFFER_LEN];
     char *rname;
     char *qname;
     struct match_data md;
@@ -292,8 +282,8 @@ do_dig(int descr, dbref player, const char *name, const char *pname)
 	newparent = tp_default_room_parent;
 
     room = create_room(player, name, newparent);
-
-    notifyf(player, "Room %s created as #%d.", name, room);
+    unparse_object(player, room, unparse_buf, sizeof(unparse_buf));
+    notifyf(player, "Room %s created.", unparse_buf);
 
     strcpyn(buf, sizeof(buf), pname);
     for (rname = buf; (*rname && (*rname != ARG_DELIMITER)); rname++) ;
@@ -319,7 +309,6 @@ do_dig(int descr, dbref player, const char *name, const char *pname)
 	    if (!can_link_to(player, Typeof(room), parent) || room == parent) {
 		notify(player, "Permission denied.  Parent set to default.");
 	    } else {
-                char unparse_buf[BUFFER_LEN];
 		moveto(room, parent);
                 unparse_object(player, parent, unparse_buf, sizeof(unparse_buf));
 		notifyf(player, "Parent set to %s.", unparse_buf);
@@ -340,12 +329,12 @@ do_dig(int descr, dbref player, const char *name, const char *pname)
   Otherwise, we create a new object for him, and call it a program.
   */
 void
-do_prog(int descr, dbref player, const char *name)
+do_program(int descr, dbref player, const char *name, const char *rname)
 {
     dbref i;
     dbref newprog;
-    char unparse_buf[BUFFER_LEN];
     struct match_data md;
+    char unparse_buf[BUFFER_LEN];
 
     if (!*name) {
 	notify(player, "No program name given.");
@@ -358,7 +347,7 @@ do_prog(int descr, dbref player, const char *name)
     match_registered(&md);
     match_absolute(&md);
 
-    if ((i = match_result(&md)) == NOTHING) {
+    if (*rname || (i = match_result(&md)) == NOTHING) {
 	if (!ok_ascii_other(name)) {
 	    notify(player, "Program names are limited to 7-bit ASCII.");
 	    return;
@@ -367,10 +356,17 @@ do_prog(int descr, dbref player, const char *name)
 	    notify(player, "That's a strange name for a program!");
 	    return;
 	}
+
 	newprog = create_program(player, name);
         unparse_object(player, newprog, unparse_buf, sizeof(unparse_buf));
-	notifyf(player, "Entering editor for new program %s.",
-                unparse_buf);
+	notifyf(player, "Program %s created.", unparse_buf);
+
+	if (*rname) {
+	    register_object(player, REGISTRATION_PROPDIR, (char *)rname, newprog);
+	    notifyf(player, "Registered as $%s", rname);
+	}
+
+	notify(player, "Entering editor.");
     } else if (i == AMBIGUOUS) {
 	notify(player, AMBIGUOUS_MESSAGE);
 	return;
@@ -387,7 +383,8 @@ do_prog(int descr, dbref player, const char *name)
 	PROGRAM_SET_FIRST(i, read_program(i));
 	FLAGS(i) |= INTERNAL;
 	PLAYER_SET_CURR_PROG(player, i);
-        unparse_object(player, i, unparse_buf, sizeof(unparse_buf));
+
+	unparse_object(player, i, unparse_buf, sizeof(unparse_buf));
 	notifyf(player, "Entering editor for %s.", unparse_buf);
 	/* list current line */
 	list_program(player, i, NULL, 0);
@@ -401,8 +398,8 @@ void
 do_edit(int descr, dbref player, const char *name)
 {
     dbref i;
-    char unparse_buf[BUFFER_LEN];
     struct match_data md;
+    char unparse_buf[BUFFER_LEN];
 
     if (!*name) {
 	notify(player, "No program name given.");
@@ -430,6 +427,7 @@ do_edit(int descr, dbref player, const char *name)
     FLAGS(i) |= INTERNAL;
     PROGRAM_SET_FIRST(i, read_program(i));
     PLAYER_SET_CURR_PROG(player, i);
+    
     unparse_object(player, i, unparse_buf, sizeof(unparse_buf));
     notifyf(player, "Entering editor for %s.", unparse_buf);
     /* list current line */
@@ -528,11 +526,16 @@ copy_props(dbref player, dbref source, dbref destination, const char *dir)
  * Use this to clone an object.
  */
 void
-do_clone(int descr, dbref player, char *name)
+do_clone(int descr, dbref player, const char *name, const char *rname)
 {
     dbref thing, clonedthing;
     int cost;
     struct match_data md;
+    char buf2[BUFFER_LEN];
+    char unparse_buf[BUFFER_LEN];
+    char unparse_buf2[BUFFER_LEN];
+    char *qname;
+    int ndest;
 
     /* Perform sanity checks */
 
@@ -586,7 +589,6 @@ do_clone(int descr, dbref player, char *name)
     }
 
     if (tp_verbose_clone) {
-	char unparse_buf[BUFFER_LEN];
 	unparse_object(player, thing, unparse_buf, sizeof(unparse_buf));
 	notifyf(player, "Now cloning %s...", unparse_buf);
     }
@@ -601,7 +603,14 @@ do_clone(int descr, dbref player, char *name)
     /* FIXME: should we clone attached actions? */
     EXITS(clonedthing) = NOTHING;
 
-    notifyf(player, "Object %s cloned as #%d.", NAME(thing), clonedthing);
+    unparse_object(player, thing, unparse_buf, sizeof(unparse_buf));
+    unparse_object(player, clonedthing, unparse_buf2, sizeof(unparse_buf2));
+    notifyf(player, "Object %s cloned as %s.", unparse_buf, unparse_buf2);
+
+    if (*rname) {
+	register_object(player, REGISTRATION_PROPDIR, (char *)rname, clonedthing);
+	notifyf(player, "Registered as $%s", rname);
+    }
 }
 
 /*
@@ -617,6 +626,7 @@ do_create(dbref player, char *name, char *acost)
     int cost;
 
     char buf2[BUFFER_LEN];
+    char unparse_buf[BUFFER_LEN];
     char *rname, *qname;
 
     strcpyn(buf2, sizeof(buf2), acost);
@@ -653,7 +663,8 @@ do_create(dbref player, char *name, char *acost)
     thing = create_thing(player, name, player); 
     SETVALUE(thing, MIN(OBJECT_ENDOWMENT(cost), tp_max_object_endowment));
 
-    notifyf(player, "Object %s created as #%d.", name, thing);
+    unparse_object(player, thing, unparse_buf, sizeof(unparse_buf));
+    notifyf(player, "Object %s created.", unparse_buf);
 
     if (*rname) {
         register_object(player, REGISTRATION_PROPDIR, rname, thing);
@@ -720,6 +731,7 @@ do_action(int descr, dbref player, const char *action_name, const char *source_n
 {
     dbref action, source;
     char buf2[BUFFER_LEN];
+    char unparse_buf[BUFFER_LEN];
     char *rname, *qname;
 
     strcpyn(buf2, sizeof(buf2), source_name);
@@ -750,8 +762,8 @@ do_action(int descr, dbref player, const char *action_name, const char *source_n
     }
 
     action = create_action(player, action_name, source);
-
-    notifyf(player, "Action %s created as #%d and attached.", NAME(action), action);
+    unparse_object(player, action, unparse_buf, sizeof(unparse_buf));
+    notifyf(player, "Action %s created and attached.", unparse_buf);
 
     if (tp_autolink_actions) {
 	notify(player, "Linked to NIL.");

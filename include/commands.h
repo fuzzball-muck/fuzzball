@@ -11,7 +11,7 @@ void do_bless(int descr, dbref player, const char *target, const char *propname)
 void do_boot(dbref player, const char *name);
 
 void do_chown(int descr, dbref player, const char *name, const char *newobj);
-void do_clone(int descr, dbref player, char *name);
+void do_clone(int descr, dbref player, const char *name, const char *rname);
 void do_contents(int descr, dbref player, const char *name, const char *flags);
 void do_create(dbref player, char *name, char *cost);
 void do_credits(dbref player);
@@ -36,7 +36,7 @@ void do_list(int descr, dbref player, const char *name, char *linespec);
 
 #ifdef MCP_SUPPORT
 void do_mcpedit(int descr, dbref player, const char *name);
-void do_mcpprogram(int descr, dbref player, const char *name);
+void do_mcpprogram(int descr, dbref player, const char *name, const char *rname);
 #endif
 #ifndef NO_MEMORY_COMMAND
 void do_memory(dbref who);
@@ -53,7 +53,7 @@ void do_owned(dbref player, const char *name, const char *flags);
 void do_password(dbref player, const char *old, const char *newobj);
 void do_pcreate(dbref player, const char *arg1, const char *arg2);
 void do_process_status(dbref player);
-void do_prog(int descr, dbref player, const char *name);
+void do_program(int descr, dbref player, const char *name, const char *rname);
 void do_propset(int descr, dbref player, const char *name, const char *prop);
 
 #ifdef USE_SSL

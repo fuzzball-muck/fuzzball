@@ -667,7 +667,7 @@ process_command(int descr, dbref player, char *command)
 		    Matched("@clone");
 		    NOGUEST("@clone", player);
 		    BUILDERONLY("@clone", player);
-		    do_clone(descr, player, arg1);
+		    do_clone(descr, player, arg1, arg2);
 		    break;
 		case 'o':
 		case 'O':
@@ -901,7 +901,7 @@ process_command(int descr, dbref player, char *command)
 			NOGUEST("@mcpprogram", player);
 			PLAYERONLY("@mcpprogram", player);
 			MUCKERONLY("@mcpprogram", player);
-			do_mcpprogram(descr, player, arg1);
+			do_mcpprogram(descr, player, arg1, arg2);
 			break;
 		    }
 #endif
@@ -1041,7 +1041,7 @@ process_command(int descr, dbref player, char *command)
 			NOGUEST("@program", player);
 			PLAYERONLY("@program", player);
 			MUCKERONLY("@program", player);
-			do_prog(descr, player, arg1);
+			do_program(descr, player, arg1, arg2);
 			break;
 		    } else {
 			Matched("@propset");
