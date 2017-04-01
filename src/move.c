@@ -569,7 +569,7 @@ do_get(int descr, dbref player, const char *what, const char *obj)
 	    }
 	}
 	if (Typeof(player) != TYPE_PLAYER) {
-	    if (Typeof(LOCATION(thing)) != TYPE_ROOM) {
+	    if (LOCATION(thing) != NOTHING && Typeof(LOCATION(thing)) != TYPE_ROOM) {
 		if (OWNER(player) != OWNER(thing)) {
 		    notify(player, "Zombies aren't allowed to be thieves!");
 		    return;
