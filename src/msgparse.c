@@ -187,7 +187,7 @@ get_list_item(dbref player, dbref what, dbref perms, char *listname, int itemnum
     const char *ptr;
     int len = strlen(listname);
 
-    if (listname[len - 1] == NUMBER_TOKEN)
+    if (len > 0 && listname[len - 1] == NUMBER_TOKEN)
 	listname[len - 1] = 0;
 
     snprintf(buf, sizeof(buf), "%.512s#/%d", listname, itemnum);
@@ -211,7 +211,7 @@ get_list_count(dbref player, dbref obj, dbref perms, char *listname, int mesgtyp
     const char *ptr;
     int i, len = strlen(listname);
 
-    if (listname[len - 1] == NUMBER_TOKEN)
+    if (len > 0 && listname[len - 1] == NUMBER_TOKEN)
 	listname[len - 1] = 0;
 
     snprintf(buf, sizeof(buf), "%.512s#", listname);
