@@ -1623,6 +1623,8 @@ prim_nextentrance(PRIM_PROTOTYPE)
 
     if (mlev < 3)
 	abort_interp("Permission denied.  Requires Mucker Level 3.");
+
+    CHECKOP(2);
     oper2 = POP();
     oper1 = POP();
     linkref = oper1->data.objref;
