@@ -1975,8 +1975,8 @@ prim_newprogram(PRIM_PROTOTYPE)
 
     if (mlev < 4)
 	abort_interp("Permission denied.  Requires Wizbit.");
-    if (oper1->type != PROG_STRING)
-	abort_interp("Expected string argument.");
+    if (oper1->type != PROG_STRING || !oper1->data.string)
+	abort_interp("Expected non-empty string argument.");
     if (!ok_ascii_other(oper1->data.string->data) || !ok_name(oper1->data.string->data))
 	abort_interp("Invalid name (2)");
 
