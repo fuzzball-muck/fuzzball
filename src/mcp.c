@@ -1486,7 +1486,7 @@ mcp_version_select(McpVer min1, McpVer max1, McpVer min2, McpVer max2)
 }
 
 static void
-mcpedit_program(int descr, dbref player, dbref prog, const char *name)
+mcpedit_program(int descr, dbref player, dbref program)
 {
     char namestr[BUFFER_LEN];
     char refstr[BUFFER_LEN];
@@ -1496,49 +1496,51 @@ mcpedit_program(int descr, dbref player, dbref prog, const char *name)
 
     mfr = descr_mcpframe(descr);
     if (!mfr) {
-	do_edit(descr, player, name);
+	edit_program(player, program);
 	return;
     }
 
     supp = mcp_frame_package_supported(mfr, "dns-org-mud-moo-simpleedit");
 
     if (supp.verminor == 0 && supp.vermajor == 0) {
-	do_edit(descr, player, name);
+	edit_program(player, program);
 	return;
     }
 
-    if ((Typeof(prog) != TYPE_PROGRAM) || !controls(player, prog)) {
-	show_mcp_error(mfr, "@mcpedit", "Permission denied!");
+    if ((Typeof(program) != TYPE_PROGRAM) || !controls(player, program)) {
+	show_mcp_error(mfr, "edit program", "Permission denied!");
 	return;
     }
-    if (FLAGS(prog) & INTERNAL) {
-	show_mcp_error(mfr, "@mcpedit",
+    if (FLAGS(program) & INTERNAL) {
+	show_mcp_error(mfr, "edit program",
 		       "Sorry, this program is currently being edited by someone else.  Try again later.");
 	return;
     }
-    PROGRAM_SET_FIRST(prog, read_program(prog));
-    PLAYER_SET_CURR_PROG(player, prog);
 
-    snprintf(refstr, sizeof(refstr), "%d.prog.", prog);
-    snprintf(namestr, sizeof(namestr), "a program named %s(%d)", NAME(prog), prog);
+    PROGRAM_SET_FIRST(program, read_program(program));
+    PLAYER_SET_CURR_PROG(player, program);
+    DBDIRTY(player);
+
+    snprintf(refstr, sizeof(refstr), "%d.prog.", program);
+    snprintf(namestr, sizeof(namestr), "a program named %s(%d)", NAME(program), program);
     mcp_mesg_init(&msg, "dns-org-mud-moo-simpleedit", "content");
     mcp_mesg_arg_append(&msg, "reference", refstr);
     mcp_mesg_arg_append(&msg, "type", "muf-code");
     mcp_mesg_arg_append(&msg, "name", namestr);
-    for (struct line *curr = PROGRAM_FIRST(prog); curr; curr = curr->next) {
+    for (struct line *curr = PROGRAM_FIRST(program); curr; curr = curr->next) {
 	mcp_mesg_arg_append(&msg, "content", DoNull(curr->this_line));
     }
     mcp_frame_output_mesg(mfr, &msg);
     mcp_mesg_clear(&msg);
 
-    free_prog_text(PROGRAM_FIRST(prog));
-    PROGRAM_SET_FIRST(prog, NULL);
+    free_prog_text(PROGRAM_FIRST(program));
+    PROGRAM_SET_FIRST(program, NULL);
 }
 
 void
 do_mcpedit(int descr, dbref player, const char *name)
 {
-    dbref prog;
+    dbref program;
     struct match_data md;
     McpFrame *mfr;
     McpVer supp;
@@ -1548,19 +1550,6 @@ do_mcpedit(int descr, dbref player, const char *name)
 	return;
     }
 
-    mfr = descr_mcpframe(descr);
-    if (!mfr) {
-	do_edit(descr, player, name);
-	return;
-    }
-
-    supp = mcp_frame_package_supported(mfr, "dns-org-mud-moo-simpleedit");
-
-    if (supp.verminor == 0 && supp.vermajor == 0) {
-	do_edit(descr, player, name);
-	return;
-    }
-
     init_match(descr, player, name, TYPE_PROGRAM, &md);
 
     match_possession(&md);
@@ -1568,17 +1557,17 @@ do_mcpedit(int descr, dbref player, const char *name)
     match_registered(&md);
     match_absolute(&md);
 
-    if ((prog = match_result(&md)) == NOTHING) {
+    if ((program = noisy_match_result(&md)) == NOTHING) {
 	return;
     }
 
-    mcpedit_program(descr, player, prog, name);
+    mcpedit_program(descr, player, program);
 }
 
 void
 do_mcpprogram(int descr, dbref player, const char *name, const char *rname)
 {
-    dbref prog;
+    dbref program;
     struct match_data md;
     char unparse_buf[BUFFER_LEN];
 
@@ -1586,6 +1575,7 @@ do_mcpprogram(int descr, dbref player, const char *name, const char *rname)
 	notify(player, "No program name given.");
 	return;
     }
+
     init_match(descr, player, name, TYPE_PROGRAM, &md);
 
     match_possession(&md);
@@ -1593,9 +1583,7 @@ do_mcpprogram(int descr, dbref player, const char *name, const char *rname)
     match_registered(&md);
     match_absolute(&md);
 
-    prog = match_result(&md);
-
-    if (*rname || prog == NOTHING) {
+    if (*rname || (program = match_result(&md)) == NOTHING) {
 	if (!ok_ascii_other(name)) {
 	    notify(player, "Program names are limited to 7-bit ASCII.");
 	    return;
@@ -1604,19 +1592,20 @@ do_mcpprogram(int descr, dbref player, const char *name, const char *rname)
 	    notify(player, "That's a strange name for a program!");
 	    return;
 	}
-	prog = create_program(player, name);
-        unparse_object(player, prog, unparse_buf, sizeof(unparse_buf));
+
+	program = create_program(player, name);
+        unparse_object(player, program, unparse_buf, sizeof(unparse_buf));
         notifyf(player, "Program %s created.", unparse_buf);
 
         if (*rname) {
-            register_object(player, REGISTRATION_PROPDIR, (char *)rname, prog);
+            register_object(player, REGISTRATION_PROPDIR, (char *)rname, program);
             notifyf(player, "Registered as $%s", rname);
         }
-    } else if (prog == AMBIGUOUS) {
-	notify(player, "I don't know which one you mean!");
+    } else if (program == AMBIGUOUS) {
+	notify(player, AMBIGUOUS_MESSAGE);
 	return;
     }
 
-    mcpedit_program(descr, player, prog, name);
+    mcpedit_program(descr, player, program);
 }
 #endif

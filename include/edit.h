@@ -29,6 +29,7 @@ struct macrotable {
 extern struct macrotable *macrotop;
 
 void chown_macros(dbref from, dbref to);
+void edit_program(dbref player, dbref program);
 void free_old_macros();
 void free_prog_text(struct line *l);
 struct line *get_new_line(void);

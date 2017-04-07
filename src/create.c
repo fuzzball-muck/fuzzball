@@ -331,8 +331,7 @@ do_dig(int descr, dbref player, const char *name, const char *pname)
 void
 do_program(int descr, dbref player, const char *name, const char *rname)
 {
-    dbref i;
-    dbref newprog;
+    dbref program;
     struct match_data md;
     char unparse_buf[BUFFER_LEN];
 
@@ -340,6 +339,7 @@ do_program(int descr, dbref player, const char *name, const char *rname)
 	notify(player, "No program name given.");
 	return;
     }
+
     init_match(descr, player, name, TYPE_PROGRAM, &md);
 
     match_possession(&md);
@@ -347,64 +347,44 @@ do_program(int descr, dbref player, const char *name, const char *rname)
     match_registered(&md);
     match_absolute(&md);
 
-    if (*rname || (i = match_result(&md)) == NOTHING) {
+    if (*rname || (program = match_result(&md)) == NOTHING) {
 	if (!ok_ascii_other(name)) {
 	    notify(player, "Program names are limited to 7-bit ASCII.");
 	    return;
 	}
+
 	if (!ok_name(name)) {
 	    notify(player, "That's a strange name for a program!");
 	    return;
 	}
 
-	newprog = create_program(player, name);
-        unparse_object(player, newprog, unparse_buf, sizeof(unparse_buf));
+	program = create_program(player, name);
+        unparse_object(player, program, unparse_buf, sizeof(unparse_buf));
 	notifyf(player, "Program %s created.", unparse_buf);
 
 	if (*rname) {
-	    register_object(player, REGISTRATION_PROPDIR, (char *)rname, newprog);
+	    register_object(player, REGISTRATION_PROPDIR, (char *)rname, program);
 	    notifyf(player, "Registered as $%s", rname);
 	}
-
-	notify(player, "Entering editor.");
-    } else if (i == AMBIGUOUS) {
+    } else if (program == AMBIGUOUS) {
 	notify(player, AMBIGUOUS_MESSAGE);
 	return;
-    } else {
-	if ((Typeof(i) != TYPE_PROGRAM) || !controls(player, i)) {
-	    notify(player, "Permission denied!");
-	    return;
-	}
-	if (FLAGS(i) & INTERNAL) {
-	    notify(player,
-		   "Sorry, this program is currently being edited by someone else.  Try again later.");
-	    return;
-	}
-	PROGRAM_SET_FIRST(i, read_program(i));
-	FLAGS(i) |= INTERNAL;
-	PLAYER_SET_CURR_PROG(player, i);
-
-	unparse_object(player, i, unparse_buf, sizeof(unparse_buf));
-	notifyf(player, "Entering editor for %s.", unparse_buf);
-	/* list current line */
-	list_program(player, i, NULL, 0);
-	DBDIRTY(i);
     }
-    FLAGS(player) |= INTERACTIVE;
-    DBDIRTY(player);
+
+    edit_program(player, program);
 }
 
 void
 do_edit(int descr, dbref player, const char *name)
 {
-    dbref i;
+    dbref program;
     struct match_data md;
-    char unparse_buf[BUFFER_LEN];
 
     if (!*name) {
 	notify(player, "No program name given.");
 	return;
     }
+
     init_match(descr, player, name, TYPE_PROGRAM, &md);
 
     match_possession(&md);
@@ -412,29 +392,10 @@ do_edit(int descr, dbref player, const char *name)
     match_registered(&md);
     match_absolute(&md);
 
-    if ((i = noisy_match_result(&md)) == NOTHING)
+    if ((program = noisy_match_result(&md)) == NOTHING)
 	return;
 
-    if ((Typeof(i) != TYPE_PROGRAM) || !controls(player, i)) {
-	notify(player, "Permission denied!");
-	return;
-    }
-    if (FLAGS(i) & INTERNAL) {
-	notify(player,
-	       "Sorry, this program is currently being edited by someone else.  Try again later.");
-	return;
-    }
-    FLAGS(i) |= INTERNAL;
-    PROGRAM_SET_FIRST(i, read_program(i));
-    PLAYER_SET_CURR_PROG(player, i);
-    
-    unparse_object(player, i, unparse_buf, sizeof(unparse_buf));
-    notifyf(player, "Entering editor for %s.", unparse_buf);
-    /* list current line */
-    list_program(player, i, NULL, 0);
-    FLAGS(player) |= INTERACTIVE;
-    DBDIRTY(i);
-    DBDIRTY(player);
+    edit_program(player, program);
 }
 
 /*

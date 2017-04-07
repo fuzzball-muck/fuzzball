@@ -207,8 +207,6 @@ create_program(dbref player, const char *name)
     PROGRAM_SET_PROF_USES(newprog, 0);
     PROGRAM_SET_INSTANCES(newprog, 0);
 
-    PLAYER_SET_CURR_PROG(player, newprog);
-
     PUSH(newprog, CONTENTS(player));
     DBDIRTY(newprog);
     DBDIRTY(player);
