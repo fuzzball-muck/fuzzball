@@ -1091,3 +1091,33 @@ macroload(FILE * f)
     foldtree(macrotop);
     return;
 }
+
+void
+edit_program(dbref player, dbref program)
+{
+    char unparse_buf[BUFFER_LEN];
+
+    if ((Typeof(program) != TYPE_PROGRAM) || !controls(player, program)) {
+	notify(player, "Permission denied!");
+	return;
+    }
+
+    if (FLAGS(program) & INTERNAL) {
+	notify(player,
+		"Sorry, this program is currently being edited by someone else.  Try again later.");
+	return;
+    }
+
+    PROGRAM_SET_FIRST(program, read_program(program));
+    FLAGS(program) |= INTERNAL;
+    DBDIRTY(program);
+
+    PLAYER_SET_CURR_PROG(player, program);
+    FLAGS(player) |= INTERACTIVE;
+    DBDIRTY(player);
+
+    unparse_object(player, program, unparse_buf, sizeof(unparse_buf));
+    notifyf(player, "Entering editor for %s.", unparse_buf);
+
+    list_program(player, program, NULL, 0);
+}
