@@ -549,8 +549,9 @@ CrT_summarize_to_file(const char *file, const char *comment)
     }
     {
 	time_t lt = time(NULL);
-
-	fprintf(summarize_fd, "%s", ctime(&lt));
+	char buf[30];
+	strftime(buf, sizeof(buf), "%a %b %d %T %Z %Y", MUCK_LOCALTIME(lt));
+	fprintf(summarize_fd, "%s\n", buf);
     }
 
     summarize(summarize_to_file);

@@ -2,6 +2,7 @@
 
 #include "db.h"
 #include "fbstrings.h"
+#include "fbtime.h"
 #include "interface.h"
 #include "log.h"
 #include "tune.h"
@@ -135,6 +136,7 @@ void
 do_motd(dbref player, char *text)
 {
     time_t lt;
+    char buf[BUFFER_LEN];
 
     if (!*text || !Wizard(OWNER(player))) {
 	spit_file(player, tp_file_motd);
@@ -147,8 +149,10 @@ do_motd(dbref player, char *text)
 	notify(player, "MOTD cleared.");
 	return;
     }
+
     lt = time(NULL);
-    log2file(tp_file_motd, "%.16s", ctime(&lt));
+    format_time(buf, sizeof(buf), "%a %b %d %T %Z %Y", MUCK_LOCALTIME(lt));
+    log2file(tp_file_motd, "%s", buf);
     add_motd_text_fmt(text);
     log2file(tp_file_motd, "%s %s", "- - - - - - - - - - - - - - - - - - -",
 	     "- - - - - - - - - - - - - - - - - - -");

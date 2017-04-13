@@ -1732,10 +1732,11 @@ const char *
 mfn_convsecs(MFUNARGS)
 {
     time_t lt;
+    char timebuf[BUFFER_LEN];
 
     lt = atol(argv[0]);
-    snprintf(buf, BUFFER_LEN, "%s", ctime(&lt));
-    buf[strlen(buf) - 1] = '\0';
+    format_time(timebuf, sizeof(timebuf), "%a %b %d %T %Z %Y", MUCK_LOCALTIME(lt));
+    strcpyn(buf, BUFFER_LEN, timebuf);
     return buf;
 }
 

@@ -7,6 +7,9 @@
 #include "tune.h"
 #include "tunelist.h"
 
+#undef malloc
+#undef strdup
+
 #define HRULE_TEXT "----------------------------------------------------------------------------"
 
 #define HTML_PAGE_HEAD     	"<html><head><title>%s</title></head>\n<body><div align=\"center\"><h1>%s</h1>\n<h3>by %s</h3></div>\n<ul><li><a href=\"#AlphaList\">Alphabetical List of Topics</a></li>\n<li><a href=\"#SectList\">List of Topics by Category</a></li></ul>\n"
