@@ -776,7 +776,7 @@ process_command(int descr, dbref player, char *command)
 		case 'X':
 		    Matched("@examine");
 		    GODONLY("@examine", player);
-		    do_examine_sanity(player, arg1);
+		    do_examine_sanity(descr, player, arg1);
 		    break;
 		default:
 		    goto bad;
