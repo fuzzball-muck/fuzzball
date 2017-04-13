@@ -22,7 +22,7 @@ void do_dump(dbref player, const char *newfile);
 
 void do_edit(int descr, dbref player, const char *name);
 void do_entrances(int descr, dbref player, const char *name, const char *flags);
-void do_examine_sanity(dbref player, const char *arg);
+void do_examine_sanity(int descr, dbref player, const char *arg);
 
 void do_find(dbref player, const char *name, const char *flags);
 void do_force(int descr, dbref player, const char *what, char *command);

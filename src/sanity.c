@@ -9,6 +9,7 @@
 #include "fbstrings.h"
 #include "interface.h"
 #include "log.h"
+#include "match.h"
 #include "player.h"
 #include "props.h"
 #include "tune.h"
@@ -73,20 +74,25 @@ SanPrintObject(dbref player, const char *prefix, dbref ref)
 
 
 void
-do_examine_sanity(dbref player, const char *arg)
+do_examine_sanity(int descr, dbref player, const char *arg)
 {
     dbref d;
     int result;
+    struct match_data md;
 
     if (player > 0) {
-	result = sscanf(arg, "#%i", &d);
+	init_match(descr, player, arg, NOTYPE, &md);
+	match_everything(&md);
+
+        if ((d = noisy_match_result(&md)) == NOTHING) {
+	    return;
+	}
     } else {
 	result = sscanf(arg, "%i", &d);
-    }
-
-    if (!result || !ObjExists(d)) {
-	SanPrint(player, "Invalid Object.");
-	return;
+	if (!result || !ObjExists(d)) {
+	    SanPrint(player, "Invalid Object.");
+	    return;
+	}
     }
 
     if (Typeof(d) == TYPE_GARBAGE) {
@@ -1334,7 +1340,7 @@ hack_it_up(void)
 	    for (ptr = cbuf; *ptr && !isspace(*ptr); ptr++) ;
 	    if (*ptr)
 		ptr++;
-	    do_examine_sanity(NOTHING, ptr);
+	    do_examine_sanity(0, NOTHING, ptr);
 	    break;
 
 	case 'w':
