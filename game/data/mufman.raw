@@ -2367,7 +2367,7 @@ For example, the code:
         }dict
     }list
     "%-16.15[username]s %3[count]i %5[object]d %4.2[4]g"
-    array_formatstrings
+    array_fmtstrings
     { me @ }list array_notify
 ~~endcode
 
@@ -2379,8 +2379,8 @@ For example, the code:
 ~~endcode
 
   Note that if a key does not exist in an input dictionary, then that
-format field will be assumed to either be 0, #-1, or a null string,
-as apropriate for the format type.
+format field will be assumed to either be the appropriate false value for
+for the format type.
 
   Numeric keys can be referred to as well as string keys.  This also
 means that you may use a list of list arrays as input, instead of a

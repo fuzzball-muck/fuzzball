@@ -599,9 +599,41 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 				CLEAR(&temp2);
 			    }
 			    if (!oper3) {
-				temp3.type = PROG_STRING;
-				temp3.data.string = NULL;
-				oper3 = &temp3;
+				switch (sstr[scnt]) {
+				case 'l':
+				    temp3.type = PROG_LOCK;
+				    temp3.data.lock = TRUE_BOOLEXP;
+				    oper3 = &temp3;
+				    break;
+				case 'i':
+				    temp3.type = PROG_INTEGER;
+				    temp3.data.number = 0;
+				    oper3 = &temp3;
+				    break;
+				case 'e':
+				case 'f':
+				case 'g':
+				    temp3.type = PROG_FLOAT;
+				    temp3.data.fnumber = 0.0;
+				    oper3 = &temp3;
+				    break;
+				case 'd':
+				case 'D':
+				    temp3.type = PROG_OBJECT;
+				    temp3.data.objref = NOTHING;
+				    oper3 = &temp3;
+				    break;
+				case 's':
+				case 'S':
+				case '?':
+				case '~':
+				    temp3.type = PROG_STRING;
+				    temp3.data.string = NULL;
+				    oper3 = &temp3;
+				    break;
+				default:
+				    break;
+				}
 			    }
 			    nargs = 2;
 			} else {
@@ -822,6 +854,10 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 				abort_message = "Format specified object not found.";
                                 goto cleanup_and_abort;
                             }
+			    if (!valid_object(oper3) && oper3->data.objref != NOTHING) {
+				abort_message = "Format specified object not found.";
+                                goto cleanup_and_abort;
+                            }
 			    snprintf(hold, sizeof(hold), "#%d", oper3->data.objref);
 			    snprintf(tbuf, sizeof(tbuf), sfmt, hold);
 			    tlen = strlen(tbuf);
@@ -851,13 +887,9 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 				abort_message = "Format specified object not found.";
                                 goto cleanup_and_abort;
                             } 
-			    if (!valid_object(oper3)) {
-				abort_message = "Format specified object not valid.";
-                                goto cleanup_and_abort;
-                            }
 			    ref = oper3->data.objref;
 			    CHECKREMOTE(ref);
-			    if (NAME(ref)) {
+			    if (ref != NOTHING && NAME(ref)) {
 				strcpyn(hold, sizeof(hold), NAME(ref));
 			    } else {
 				hold[0] = '\0';
