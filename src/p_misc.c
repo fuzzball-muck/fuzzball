@@ -143,7 +143,7 @@ prim_timefmt(PRIM_PROTOTYPE)
 	abort_interp("Invalid argument (2)");
     lt = (time_t) oper2->data.number;
     time_tm = MUCK_LOCALTIME(lt);
-    if (!format_time(buf, BUFFER_LEN, oper1->data.string->data, time_tm))
+    if (!strftime(buf, BUFFER_LEN, oper1->data.string->data, time_tm))
 	abort_interp("Operation would result in overflow.");
     CHECKOFLOW(1);
     CLEAR(oper1);

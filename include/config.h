@@ -108,9 +108,6 @@
  to compile for some reason.
  ************************************************************************/
 
-/* If you get problems compiling strftime.c, define this. */
-#undef USE_STRFTIME
-
 /* Use this only if your realloc does not allocate in powers of 2
  * (if your realloc is clever, this option will cause you to waste space).
  * SunOS requires DB_DOUBLING.  ULTRIX doesn't.  */
