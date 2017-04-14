@@ -706,7 +706,7 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms,
     char buf2[BUFFER_LEN];
     char dbuf[BUFFER_LEN];
     char ebuf[BUFFER_LEN];
-    char cmdbuf[MAX_MFUN_NAME_LEN + 1];
+    char cmdbuf[MAX_MFUN_NAME_LEN + 2];
     const char *ptr;
     char *dptr;
     int q = 0, s;
