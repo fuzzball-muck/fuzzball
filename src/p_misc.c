@@ -993,7 +993,7 @@ prim_forcedby_array(PRIM_PROTOTYPE)
 	abort_interp("Wizbit only primitive.");
 
     if (!forcelist) {
-	PushArrayRaw(0);
+	PushArrayRaw(new_array_packed(0));
 	return;
     }
 
