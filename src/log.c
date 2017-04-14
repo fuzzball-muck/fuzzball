@@ -24,12 +24,12 @@ vlog2file(int prepend_time, const char *filename, char *format, va_list args)
     if ((fp = fopen(filename, "ab")) == NULL) {
 	fprintf(stderr, "Unable to open %s!\n", filename);
 	if (prepend_time)
-	    format_time(buf, 32, "%Y-%m-%dT%H:%M:%S", MUCK_LOCALTIME(lt));
+	    strftime(buf, 32, "%Y-%m-%dT%H:%M:%S", MUCK_LOCALTIME(lt));
 	    fprintf(fp, "%.32s: ", buf);
 	vfprintf(stderr, format, args);
     } else {
 	if (prepend_time) {
-	    format_time(buf, 32, "%Y-%m-%dT%H:%M:%S", MUCK_LOCALTIME(lt));
+	    strftime(buf, 32, "%Y-%m-%dT%H:%M:%S", MUCK_LOCALTIME(lt));
 	    fprintf(fp, "%.32s: ", buf);
 	}
 
@@ -113,7 +113,7 @@ log_user(dbref player, dbref program, char *logmessage)
     *logformat = '\0';
 
     lt = time(NULL);
-    format_time(buf, 32, "%Y-%m-%dT%H:%M:%S", MUCK_LOCALTIME(lt));
+    strftime(buf, 32, "%Y-%m-%dT%H:%M:%S", MUCK_LOCALTIME(lt));
 
     snprintf(logformat, BUFFER_LEN, "%s: %s(#%d) [%s(#%d)]: ",
              buf, NAME(player), player, NAME(program), program);
@@ -139,7 +139,7 @@ log_program_text(struct line *first, dbref player, dbref i)
         return;
     }
 
-    format_time(tbuf, sizeof(tbuf), "%Y-%m-%dT%H:%M:%S", MUCK_LOCALTIME(lt));
+    strftime(tbuf, sizeof(tbuf), "%Y-%m-%dT%H:%M:%S", MUCK_LOCALTIME(lt));
     fputs("#######################################", f);
     fputs("#######################################\n", f);
     unparse_object(player, i, unparse_buf, sizeof(unparse_buf));

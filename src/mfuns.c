@@ -1483,7 +1483,7 @@ mfn_time(MFUNARGS)
 	lt -= get_tz_offset();
     }
 
-    format_time(buf, BUFFER_LEN - 1, "%T", MUCK_LOCALTIME(lt));
+    strftime(buf, BUFFER_LEN - 1, "%T", MUCK_LOCALTIME(lt));
     return buf;
 }
 
@@ -1499,7 +1499,7 @@ mfn_date(MFUNARGS)
 	lt -= get_tz_offset();
     }
 
-    format_time(buf, BUFFER_LEN - 1, "%D", MUCK_LOCALTIME(lt));
+    strftime(buf, BUFFER_LEN - 1, "%D", MUCK_LOCALTIME(lt));
     return buf;
 }
 
@@ -1524,7 +1524,7 @@ mfn_ftime(MFUNARGS)
 	lt -= get_tz_offset();
     }
 
-    format_time(buf, BUFFER_LEN - 1, argv[0], MUCK_LOCALTIME(lt));
+    strftime(buf, BUFFER_LEN - 1, argv[0], MUCK_LOCALTIME(lt));
     return buf;
 }
 
@@ -1735,7 +1735,7 @@ mfn_convsecs(MFUNARGS)
     char timebuf[BUFFER_LEN];
 
     lt = atol(argv[0]);
-    format_time(timebuf, sizeof(timebuf), "%a %b %d %T %Z %Y", MUCK_LOCALTIME(lt));
+    strftime(timebuf, sizeof(timebuf), "%a %b %d %T %Z %Y", MUCK_LOCALTIME(lt));
     strcpyn(buf, BUFFER_LEN, timebuf);
     return buf;
 }
