@@ -1193,7 +1193,7 @@ do_memory(dbref who)
 #ifdef MALLOC_PROFILING
     notify(who, "  ");
     CrT_summarize(who);
-    CrT_summarize_to_file("malloc_log", "Manual Checkpoint");
+    CrT_summarize_to_file(tp_file_log_malloc, "Manual Checkpoint");
 #endif
 
     notify(who, "Done.");

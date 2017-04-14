@@ -4289,6 +4289,7 @@ Parameters available:
  (str)  file_log_cmd_times        - Command times
  (str)  file_log_commands         - Player commands
  (str)  file_log_gripes           - Player gripes
+ (str)  file_log_malloc           - Memory allocations
  (str)  file_log_muf_errors       - MUF compile errors and warnings
  (str)  file_log_programs         - Text of changed programs
  (str)  file_log_sanfix           - Database fixes

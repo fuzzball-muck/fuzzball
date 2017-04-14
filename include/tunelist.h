@@ -24,6 +24,7 @@ const char *tp_file_info_dir;
 const char *tp_file_log_cmd_times;
 const char *tp_file_log_commands;
 const char *tp_file_log_gripes;
+const char *tp_file_log_malloc;
 const char *tp_file_log_muf_errors;
 const char *tp_file_log_programs;
 const char *tp_file_log_sanfix;
@@ -94,6 +95,8 @@ struct tune_str_entry tune_str_list[] = {
      "Player commands", "", 0, 1, COMMAND_LOG},
     {"Files", "file_log_gripes", &tp_file_log_gripes, MLEV_WIZARD, MLEV_GOD,
      "Player gripes", "", 0, 1, LOG_GRIPE},
+    {"Files", "file_log_malloc", &tp_file_log_malloc, MLEV_WIZARD, MLEV_GOD,
+     "Memory allocations", "", 0, 1, LOG_MALLOC},
     {"Files", "file_log_muf_errors", &tp_file_log_muf_errors, MLEV_WIZARD, MLEV_GOD,
      "MUF compile errors and warnings", "", 0, 1, LOG_MUF},
     {"Files", "file_log_programs", &tp_file_log_programs, MLEV_WIZARD, MLEV_GOD,

@@ -34,6 +34,7 @@ extern const char *tp_file_info_dir;
 extern const char *tp_file_log_cmd_times;
 extern const char *tp_file_log_commands;
 extern const char *tp_file_log_gripes;
+extern const char *tp_file_log_malloc;
 extern const char *tp_file_log_muf_errors;
 extern const char *tp_file_log_programs;
 extern const char *tp_file_log_sanfix;
