@@ -4627,7 +4627,7 @@ main(int argc, char **argv)
 #endif
 
 #ifdef MALLOC_PROFILING
-	CrT_summarize_to_file("malloc_log", "Shutdown");
+	CrT_summarize_to_file(tp_file_log_malloc, "Shutdown");
 #endif
 
 	if (restart_flag) {
