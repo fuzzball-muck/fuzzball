@@ -254,10 +254,7 @@ pronoun_substitute(int descr, dbref player, const char *str)
 			if (((result - buf) + strlen(temp_sub + 2)) > (BUFFER_LEN - 2))
 			    return buf;
 			strcatn(result, sizeof(buf) - (result - buf), temp_sub + 2);
-			if (isupper(temp_sub[1]) && islower(*result))
-			    *result = toupper(*result);
 			result += strlen(result);
-			str++;
 		    }
 		} else if (sex == GENDER_UNASSIGNED) {
 		    switch (c) {
