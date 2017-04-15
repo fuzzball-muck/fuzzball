@@ -2332,7 +2332,7 @@ prim_program_getlines(PRIM_PROTOTYPE)
 	if (!curr) {
 	    /* alright, we have no data! */
 	    free_prog_text(first);
-	    PushNullArray;
+	    PushArrayRaw(new_array_packed(0));
 	    return;
 	}
 

@@ -279,7 +279,6 @@ do { \
 #define PushNullStr     PushStrRaw(0)
 
 #define PushArrayRaw(x) push(arg, top, PROG_ARRAY, MIPSCAST x)
-#define PushNullArray   PushArrayRaw(0)
 #define PushInst(x)	copyinst(x, &arg[((*top)++)])
 
 #ifdef DEBUG
