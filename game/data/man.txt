@@ -4858,12 +4858,13 @@ TIMEFMT (s i -- s)
 with the time.  The format string is ascii text with formatting commands:
 
   %% -- "%"
+  %+ -- The date and time in server date format.
   %a -- abbreviated weekday name.
   %A -- full weekday name.
   %b -- abbreviated month name.
   %B -- full month name.
-  %C -- "%A %B %e, %Y"
-  %c -- "%x %X"
+  %C -- "%x %X"
+  %c -- century number.
   %D -- "%m/%d/%y"
   %d -- month day, "01" - "31"
   %e -- month day, " 1" - "31"
@@ -4883,11 +4884,12 @@ with the time.  The format string is ascii text with formatting commands:
   %U -- week number of the year. "00" - "52"
   %w -- week day number, "0" - "6"
   %W -- week# of year, starting on a monday, "00" - "52"
-  %X -- "%H:%M:%S"
-  %x -- "%m/%d/%y"
+  %X -- preferred date representation for the current locale.
+  %x -- preferred time representation for the current locale.
   %y -- year, "00" - "99"
   %Y -- year, "1900" - "2155"
-  %Z -- Time zone.  "GMT", "EDT", "PST", etc.
+  %z -- numeric time zone. (+hhmm)
+  %Z -- string time zone.  "GMT", "EDT", "PST", etc.
 Also see: FMTSTRING
 ~
 ~
