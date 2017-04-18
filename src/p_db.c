@@ -1984,6 +1984,8 @@ prim_newprogram(PRIM_PROTOTYPE)
 
     newprog = create_program(player , oper1->data.string->data);
 
+    CLEAR(oper1);
+
     PushObject(newprog);
 }
 
@@ -2012,6 +2014,10 @@ prim_compile(PRIM_PROTOTYPE)
     do_compile(fr->descr, player, ref, oper2->data.number);
     free_prog_text(PROGRAM_FIRST(ref));
     PROGRAM_SET_FIRST(ref, tmpline);
+
+    CLEAR(oper1);
+    CLEAR(oper2);
+
     PushInt(PROGRAM_SIZ(ref));
 }
 
@@ -2032,6 +2038,8 @@ prim_uncompile(PRIM_PROTOTYPE)
     if (PROGRAM_INSTANCES(ref) > 0)
 	abort_interp("That program is currently in use.");
     uncompile_program(ref);
+
+    CLEAR(oper1);
 }
 
 void
