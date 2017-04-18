@@ -1114,6 +1114,8 @@ prim_array_get_propvals(PRIM_PROTOTYPE)
 	propadr = next_prop(pptr, propadr, propname, sizeof(propname));
     }
 
+    CLEAR(oper1);
+    CLEAR(oper2);
     PushArrayRaw(nu);
 }
 
@@ -1236,6 +1238,8 @@ prim_array_get_proplist(PRIM_PROTOTYPE)
 	count++;
     }
 
+    CLEAR(oper1);
+    CLEAR(oper2);
     PushArrayRaw(nu);
 }
 
@@ -1530,6 +1534,8 @@ prim_array_get_reflist(PRIM_PROTOTYPE)
 	}
     }
 
+    CLEAR(oper1);
+    CLEAR(oper2);
     PushArrayRaw(nu);
 }
 
