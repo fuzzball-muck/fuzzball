@@ -508,6 +508,7 @@ do_set(int descr, dbref player, const char *name, const char *flag)
 	const char *x;		/* to preserve string location so we can free it */
 	char *temp;
 	int ival = 0;
+	int wizperms = Wizard(OWNER(player));
 
 	x = type;
 	while (isspace(*type) && (*type != PROP_DELIMITER))
@@ -521,9 +522,9 @@ do_set(int descr, dbref player, const char *name, const char *flag)
 		free((void *) x);
 		return;
 	    }
-	    remove_property_list(thing, Wizard(OWNER(player)));
+	    remove_property_list(thing, wizperms);
 	    ts_modifyobject(thing);
-	    notify(player, "All user-owned properties removed.");
+	    notifyf(player, "All %sproperties removed.", wizperms ? "" : "user-owned ");
 	    free((void *) x);
 	    return;
 	}
