@@ -122,6 +122,11 @@ do_link(int descr, dbref player, const char *thing_name, const char *dest_name)
     if ((thing = noisy_match_result(&md)) == NOTHING)
 	return;
 
+    if (Typeof(thing) != TYPE_EXIT && index(dest_name, EXIT_DELIMITER)) {
+        notify(player, "Only actions and exits can be linked to multiple destinations.");
+        return;
+    }
+
     switch (Typeof(thing)) {
     case TYPE_EXIT:
 	/* we're ok, check the usual stuff */

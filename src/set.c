@@ -203,6 +203,11 @@ do_relink(int descr, dbref player, const char *thing_name, const char *dest_name
     if ((thing = noisy_match_result(&md)) == NOTHING)
 	return;
 
+    if (Typeof(thing) != TYPE_EXIT && index(dest_name, EXIT_DELIMITER)) {
+	notify(player, "Only actions and exits can be linked to multiple destinations.");
+	return;
+    }
+
     /* first of all, check if the new target would be valid, so we can
        avoid breaking the old link if it isn't. */
 
