@@ -78,8 +78,7 @@ exit_prefix(register const char *string, register const char *prefix)
 	    s++;
 	    p++;
 	}
-	while (*s && isspace(*s))
-	    s++;
+	skip_whitespace(&s);
 	if (!*p && (!*s || *s == EXIT_DELIMITER)) {
 	    return string;
 	}
@@ -87,8 +86,7 @@ exit_prefix(register const char *string, register const char *prefix)
 	    s++;
 	if (*s)
 	    s++;
-	while (*s && isspace(*s))
-	    s++;
+	skip_whitespace(&s);
     }
     return 0;
 }
@@ -173,8 +171,9 @@ pronoun_substitute(int descr, dbref player, const char *str)
 			       (MPI_ISPRIVATE | MPI_ISLOCK |
 				(Prop_Blessed(player, tp_gender_prop) ? MPI_ISBLESSED : 0)));
     }
-    while (sexstr && isspace(*sexstr))
-	sexstr++;
+
+    if (sexstr)
+	skip_whitespace(&sexstr);
 
     sex = GENDER_UNASSIGNED;
 
@@ -769,8 +768,7 @@ strcatn(char *buf, size_t bufsize, const char *src)
 int
 blank(const char *s)
 {
-    while (*s && isspace(*s))
-	s++;
+    skip_whitespace(&s);
 
     return !(*s);
 }
@@ -781,8 +779,7 @@ number(const char *s)
 {
     if (!s)
 	return 0;
-    while (isspace(*s))
-	s++;
+    skip_whitespace(&s);
     if (*s == '+' || *s == '-')
 	s++;
     if (!*s)
@@ -801,8 +798,7 @@ ifloat(const char *s)
 
     if (!s)
 	return 0;
-    while (isspace(*s))
-	s++;
+    skip_whitespace(&s);
     if (*s == '+' || *s == '-')
 	s++;
     /* WORK: for when float parsing is improved.
@@ -1179,10 +1175,9 @@ ref2str(dbref obj, char *buf, size_t buflen)
 
 
 int
-truestr(char *buf)
+truestr(const char *buf)
 {
-    while (isspace(*buf))
-        buf++;
+    skip_whitespace(&buf);
     if (!*buf || (number(buf) && !atoi(buf)))
         return 0;
     return 1;

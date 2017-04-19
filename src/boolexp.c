@@ -309,9 +309,9 @@ parse_boolexp(int descr, dbref player, const char *buf, int dbloadp)
 static struct boolexp *
 parse_boolprop(char *buf)
 {
-    char *type = alloc_string(buf);
-    char *strval = (char *) index(type, PROP_DELIMITER);
-    char *x;
+    const char *type = alloc_string(buf);
+    const char *strval = index(type, PROP_DELIMITER);
+    const char *x;
     struct boolexp *b;
     PropPtr p;
     char *temp;
@@ -321,8 +321,8 @@ parse_boolprop(char *buf)
     b->type = BOOLEXP_PROP;
     b->sub1 = b->sub2 = 0;
     b->thing = NOTHING;
-    while (isspace(*type))
-	type++;
+    skip_whitespace(&type);
+
     if (*type == PROP_DELIMITER) {
 	/* Oops!  Clean up and return a TRUE */
 	free((void *) x);
@@ -330,12 +330,11 @@ parse_boolprop(char *buf)
 	return TRUE_BOOLEXP;
     }
     /* get rid of trailing spaces */
-    for (temp = strval - 1; isspace(*temp); temp--) ;
+    for (temp = (char *)strval - 1; isspace(*temp); temp--) ;
     temp++;
     *temp = '\0';
     strval++;
-    while (isspace(*strval) && *strval)
-	strval++;
+    skip_whitespace(&strval);
     if (!*strval) {
 	/* Oops!  CLEAN UP AND RETURN A TRUE */
 	free((void *) x);
@@ -343,7 +342,7 @@ parse_boolprop(char *buf)
 	return TRUE_BOOLEXP;
     }
     /* get rid of trailing spaces */
-    for (temp = strval; !isspace(*temp) && *temp; temp++) ;
+    for (temp = (char *)strval; !isspace(*temp) && *temp; temp++) ;
     *temp = '\0';
 
     b->prop_check = p = alloc_propnode(type);

@@ -30,11 +30,9 @@ do_name(int descr, dbref player, const char *name, char *newname)
 	if (Typeof(thing) == TYPE_PLAYER) {
 	    /* split off password */
 	    for (password = newname; *password && !isspace(*password); password++) ;
-	    /* eat whitespace */
 	    if (*password) {
 		*password++ = '\0';	/* terminate name */
-		while (*password && isspace(*password))
-		    password++;
+		skip_whitespace((const char **)&password);
 	    }
 	    /* check for null password */
 	    if (!*password) {
@@ -505,9 +503,9 @@ do_set(int descr, dbref player, const char *name, const char *flag)
     /* if this gets changed, please also modify boolexp.c */
     if (index(flag, PROP_DELIMITER)) {
 	/* copy the string so we can muck with it */
-	char *type = alloc_string(flag);	/* type */
+	const char *type = alloc_string(flag);	/* type */
 	char *pname = (char *) index(type, PROP_DELIMITER);	/* propname */
-	char *x;		/* to preserve string location so we can free it */
+	const char *x;		/* to preserve string location so we can free it */
 	char *temp;
 	int ival = 0;
 
@@ -516,7 +514,8 @@ do_set(int descr, dbref player, const char *name, const char *flag)
 	    type++;
 	if (*type == PROP_DELIMITER) {
 	    /* clear all properties */
-	    for (type++; isspace(*type); type++) ;
+	    type++;
+	    skip_whitespace(&type);
 	    if (strcasecmp(type, "clear")) {
 		notify(player, "Use '@set <obj>=:clear' to clear all props on an object");
 		free((void *) x);
@@ -535,7 +534,7 @@ do_set(int descr, dbref player, const char *name, const char *flag)
 	*(++temp) = '\0';
 
 	pname++;		/* move to next character */
-	/* while (isspace(*pname) && *pname) pname++; */
+	/* skip_whitespace((const char **)&pname); */
 	if (*pname == '^' && number(pname + 1))
 	    ival = atoi(++pname);
 
@@ -751,8 +750,7 @@ do_propset(int descr, dbref player, const char *name, const char *prop)
     if ((thing = match_controlled(descr, player, name)) == NOTHING)
 	return;
 
-    while (isspace(*prop))
-	prop++;
+    skip_whitespace(&prop);
     strcpyn(buf, sizeof(buf), prop);
 
     type = p = buf;

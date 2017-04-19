@@ -1295,16 +1295,16 @@ _link_exit(int descr, dbref player, dbref exit, char *dest_name, dbref * dest_li
     error = 0;
 
     while (*dest_name) {
-	while (isspace(*dest_name))
-	    dest_name++;	/* skip white space */
+        skip_whitespace((const char **)&dest_name);
 	p = dest_name;
 	while (*dest_name && (*dest_name != EXIT_DELIMITER))
 	    dest_name++;
 	q = (char *) strncpy(qbuf, p, BUFFER_LEN);	/* copy word */
 	q[(dest_name - p)] = '\0';	/* terminate it */
-	if (*dest_name)
-	    for (dest_name++; *dest_name && isspace(*dest_name); dest_name++) ;
-
+	if (*dest_name) {
+	    dest_name++;
+	    skip_whitespace((const char **)&dest_name);
+	}
 	if ((dest = parse_linkable_dest(descr, player, exit, q)) == NOTHING)
 	    continue;
 
@@ -1416,7 +1416,7 @@ link_exit_dry(int descr, dbref player, dbref exit, char *dest_name, dbref * dest
 }
 
 void
-register_object(dbref location, char *propdir, char *name, dbref object)
+register_object(dbref location, const char *propdir, char *name, dbref object)
 {
     PData mydat;
     char buf[BUFFER_LEN];

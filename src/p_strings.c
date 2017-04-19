@@ -1211,8 +1211,7 @@ prim_stod(PRIM_PROTOTYPE)
 	const char *ptr = oper1->data.string->data;
 	const char *nptr = NULL;
 
-	while (isspace(*ptr))
-	    ptr++;
+	skip_whitespace(&ptr);
 	if (*ptr == NUMBER_TOKEN)
 	    ptr++;
 	if (*ptr == '+')
@@ -2038,7 +2037,8 @@ prim_striplead(PRIM_PROTOTYPE)
     if (oper1->type != PROG_STRING)
 	abort_interp("Not a string argument.");
     strcpyn(buf, sizeof(buf), DoNullInd(oper1->data.string));
-    for (pname = buf; *pname && isspace(*pname); pname++) ;
+    pname = buf;
+    skip_whitespace((const char **)&pname);
     CLEAR(oper1);
     PushString(pname);
 }

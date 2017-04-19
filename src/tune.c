@@ -735,11 +735,11 @@ tune_load_parms_from_file(FILE * f, dbref player, int cnt)
 		*c++ = '\0';
 		while (p > buf && isspace(*(--p)))
 		    *p = '\0';
-		while (isspace(*c))
-		    c++;
+		skip_whitespace((const char **)&c);
 		for (p = c; *p && *p != '\n' && *p != '\r'; p++) ;
 		*p = '\0';
-		for (p = buf; isspace(*p); p++) ;
+		p = buf;
+		skip_whitespace((const char **)&p);
 		if (*p) {
 		    result = tune_setparm(p, c, MLEV_GOD);
 		}
@@ -842,12 +842,11 @@ do_tune(dbref player, char *parmname, char *parmval, int full_command_has_delimi
     } else if (*parmname && string_prefix(parmname, TP_INFO_CMD)) {
 	/* Space-separated parameters are all in parmname.  Trim out the 'info' command and
 	   any extra spaces */
-	char *p_trim = index(parmname, ' ');
+	const char *p_trim = index(parmname, ' ');
 	if (p_trim != NULL) {
-	    /* p_trim now at start of spaces; trim them out */
-	    for (; isspace(*p_trim); p_trim++) ;
+	    skip_whitespace(&p_trim);
 	    if (*p_trim) {
-		tune_display_parms(player, p_trim, security, 1);
+		tune_display_parms(player, (char *)p_trim, security, 1);
 	    } else {
 		notify(player, "Usage is @tune " TP_INFO_CMD " [optional: <parameter>]");
 	    }

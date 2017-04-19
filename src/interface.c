@@ -480,20 +480,17 @@ parse_connect(const char *msg, char *command, char *user, char *pass)
 {
     char *p;
 
-    while (*msg && isinput(*msg) && isspace(*msg))
-	msg++;
+    skip_whitespace(&msg);
     p = command;
     while (*msg && isinput(*msg) && !isspace(*msg))
 	*p++ = tolower(*msg++);
     *p = '\0';
-    while (*msg && isinput(*msg) && isspace(*msg))
-	msg++;
+    skip_whitespace(&msg);
     p = user;
     while (*msg && isinput(*msg) && !isspace(*msg))
 	*p++ = *msg++;
     *p = '\0';
-    while (*msg && isinput(*msg) && isspace(*msg))
-	msg++;
+    skip_whitespace(&msg);
     p = pass;
     while (*msg && isinput(*msg) && !isspace(*msg))
 	*p++ = *msg++;
@@ -3835,8 +3832,7 @@ ignore_prime_cache(dbref Player)
 	return 0;
     }
 
-    while (*Txt && isspace(*Txt))
-	Txt++;
+    skip_whitespace(&Txt);
 
     if (*Txt == '\0') {
 	PLAYER_SET_IGNORE_LAST(Player, AMBIGUOUS);
@@ -3852,8 +3848,7 @@ ignore_prime_cache(dbref Player)
 	while (*Ptr && !isspace(*Ptr))
 	    Ptr++;
 
-	while (*Ptr && isspace(*Ptr))
-	    Ptr++;
+	skip_whitespace(&Ptr);
     }
 
     if ((List = (dbref *) malloc(sizeof(dbref) * Count)) == 0)
@@ -3871,8 +3866,7 @@ ignore_prime_cache(dbref Player)
 	while (*Ptr && !isspace(*Ptr))
 	    Ptr++;
 
-	while (*Ptr && isspace(*Ptr))
-	    Ptr++;
+	skip_whitespace(&Ptr);
     }
 
     qsort(List, Count, sizeof(dbref), ignore_dbref_compare);

@@ -70,6 +70,6 @@ void cleanup_game();
 void fork_and_dump(void);
 int init_game(const char *infile, const char *outfile);
 void panic(const char *);
-void process_command(int descr, dbref player, char *command);
+void process_command(int descr, dbref player, const char *command);
 
 #endif				/* _GAME_H */

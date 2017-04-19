@@ -414,12 +414,9 @@ prim_setname(PRIM_PROTOTYPE)
 	    /* split off password */
 	    for (password = buf; *password && !isspace(*password); password++) ;
 
-	    /* eat whitespace */
 	    if (*password) {
 		*password++ = '\0';	/* terminate name */
-		while (*password && isspace(*password)) {
-		    password++;
-		}
+		skip_whitespace((const char **)&password);
 	    }
 
 	    /* check for null password */

@@ -516,8 +516,7 @@ muf_debugger(int descr, dbref player, dbref program, const char *text, struct fr
     struct inst *pinst;
     int i, j, cnt;
 
-    while (isspace(*text))
-	text++;
+    skip_whitespace(&text);
     strcpyn(cmd, sizeof(cmd), text);
     ptr = cmd + strlen(cmd);
     if (ptr > cmd)

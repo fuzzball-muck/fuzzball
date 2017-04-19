@@ -26,7 +26,7 @@ do_open(int descr, dbref player, const char *direction, const char *linkto)
     dbref good_dest[MAX_LINKS];
     char buf2[BUFFER_LEN];
     char unparse_buf[BUFFER_LEN];
-    char *rname, *qname;
+    char *qname, *rname;
     int ndest;
 
     strcpyn(buf2, sizeof(buf2), linkto);
@@ -39,7 +39,7 @@ do_open(int descr, dbref player, const char *direction, const char *linkto)
     while (((qname--) > buf2) && (isspace(*qname)))
 	*qname = '\0';
     qname = buf2;
-    for (; *rname && isspace(*rname); rname++) ;
+    skip_whitespace((const char **)&rname);
 
     if ((loc = LOCATION(player)) == NOTHING)
 	return;
@@ -293,7 +293,7 @@ do_dig(int descr, dbref player, const char *name, const char *pname)
     while ((qname > buf) && (isspace(*qname)))
 	*(qname--) = '\0';
     qname = buf;
-    for (; *rname && isspace(*rname); rname++) ;
+    skip_whitespace((const char **)&rname);
     rname = strcpyn(rbuf, sizeof(rbuf), rname);
     qname = strcpyn(qbuf, sizeof(qbuf), qname);
 
@@ -598,7 +598,7 @@ do_create(dbref player, char *name, char *acost)
     while ((qname > buf2) && (isspace(*qname)))
 	*(qname--) = '\0';
     qname = buf2;
-    for (; *rname && isspace(*rname); rname++) ;
+    skip_whitespace((const char **)&rname);
 
     cost = atoi(qname);
     if (*name == '\0') {
@@ -703,7 +703,7 @@ do_action(int descr, dbref player, const char *action_name, const char *source_n
     while ((qname > buf2) && (isspace(*qname)))
 	*(qname--) = '\0';
     qname = buf2;
-    for (; *rname && isspace(*rname); rname++) ;
+    skip_whitespace((const char **)&rname);
 
     if (!*action_name || !*qname) {
 	notify(player, "You must specify an action name and a source object.");

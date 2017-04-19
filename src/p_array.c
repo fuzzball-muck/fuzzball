@@ -1507,8 +1507,7 @@ prim_array_get_reflist(PRIM_PROTOTYPE)
     rawstr = get_property_class(ref, dir);
 
     if (rawstr) {
-	while (isspace(*rawstr))
-	    rawstr++;
+	skip_whitespace(&rawstr);
 	while (*rawstr) {
 	    if (*rawstr == NUMBER_TOKEN)
 		rawstr++;
@@ -1517,8 +1516,7 @@ prim_array_get_reflist(PRIM_PROTOTYPE)
 	    result = atoi(rawstr);
 	    while (*rawstr && !isspace(*rawstr))
 		rawstr++;
-	    while (isspace(*rawstr))
-		rawstr++;
+	    skip_whitespace(&rawstr);
 
 	    temp1.type = PROG_INTEGER;
 	    temp1.data.number = count;
@@ -2073,8 +2071,7 @@ prim_array_get_ignorelist(PRIM_PROTOTYPE)
 	rawstr = get_property_class(ref, IGNORE_PROP);
 
 	if (rawstr) {
-	    while (isspace(*rawstr))
-		rawstr++;
+	    skip_whitespace(&rawstr);
 	    while (*rawstr) {
 		if (*rawstr == NUMBER_TOKEN)
 		    rawstr++;
@@ -2083,8 +2080,7 @@ prim_array_get_ignorelist(PRIM_PROTOTYPE)
 		result = atoi(rawstr);
 		while (*rawstr && !isspace(*rawstr))
 		    rawstr++;
-		while (isspace(*rawstr))
-		    rawstr++;
+		skip_whitespace(&rawstr);
 
 		temp1.type = PROG_INTEGER;
 		temp1.data.number = count;

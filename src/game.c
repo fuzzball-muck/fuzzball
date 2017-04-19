@@ -436,7 +436,7 @@ do_restrict(dbref player, const char *arg)
 }
 
 void
-process_command(int descr, dbref player, char *command)
+process_command(int descr, dbref player, const char *command)
 {
     char *arg1;
     char *arg2;
@@ -479,9 +479,7 @@ process_command(int descr, dbref player, char *command)
 	interactive(descr, player, command);
 	return;
     }
-    /* eat leading whitespace */
-    while (*command && isspace(*command))
-	command++;
+    skip_whitespace(&command);
 
     /* Disable null command once past READ line */
     if (!*command)
@@ -547,7 +545,7 @@ process_command(int descr, dbref player, char *command)
 
 	/* find arg1 -- move over command word */
 	command = strcpyn(ybuf, sizeof(ybuf), command);
-	for (arg1 = command; *arg1 && !isspace(*arg1); arg1++) ;
+	for (arg1 = (char *)command; *arg1 && !isspace(*arg1); arg1++) ;
 	/* truncate command */
 	if (*arg1)
 	    *arg1++ = '\0';
@@ -556,9 +554,7 @@ process_command(int descr, dbref player, char *command)
 	strcpyn(match_args, sizeof(match_args), full_command);
 	strcpyn(match_cmdname, sizeof(match_cmdname), command);
 
-	/* move over spaces */
-	while (*arg1 && isspace(*arg1))
-	    arg1++;
+	skip_whitespace((const char **)&arg1);
 
 	/* find end of arg1, start of arg2 */
 	for (arg2 = arg1; *arg2 && *arg2 != ARG_DELIMITER; arg2++) ;
@@ -570,8 +566,7 @@ process_command(int descr, dbref player, char *command)
 	/* go past delimiter if present */
 	if (*arg2)
 	    *arg2++ = '\0';
-	while (*arg2 && isspace(*arg2))
-	    arg2++;
+	skip_whitespace((const char **)&arg2);
 
 	switch (command[0]) {
 	case '@':

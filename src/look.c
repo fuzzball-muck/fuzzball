@@ -755,8 +755,7 @@ init_checkflags(dbref player, const char *flags, struct flgchkdat *check)
     if (*cptr == ARG_DELIMITER)
 	*(cptr++) = '\0';
     flags = buf;
-    while (*cptr && isspace(*cptr))
-	cptr++;
+    skip_whitespace((const char **)&cptr);
 
     if (!*cptr) {
 	output_type = 0;

@@ -2310,9 +2310,7 @@ next_token_raw(COMPSTATE * cstat)
     if (!cstat->next_char)
 	return (char *) 0;
 
-    /* skip white space */
-    while (*cstat->next_char && isspace(*cstat->next_char))
-	cstat->next_char++;
+    skip_whitespace(&cstat->next_char);
 
     if (!(*cstat->next_char)) {
 	advance_line(cstat);
@@ -2386,27 +2384,22 @@ do_directive(COMPSTATE * cstat, char *direct)
 	free(tmpptr);
 	(void) insert_def(cstat, tmpname, temp);
 	free(tmpname);
-
     } else if (!strcasecmp(temp, "cleardefs")) {
 	char nextToken[BUFFER_LEN];
 
 	purge_defs(cstat);	/* Get rid of all defs first. */
 	include_internal_defs(cstat);	/* Always include internal defs. */
-	while (*cstat->next_char && isspace(*cstat->next_char))
-	    cstat->next_char++;	/* eating leading spaces */
+	skip_whitespace(&cstat->next_char);
 	strcpyn(nextToken, sizeof(nextToken), cstat->next_char);
 	tmpname = nextToken;
-	while (*cstat->next_char)
-	    cstat->next_char++;
+	skip_whitespace(&cstat->next_char);
 	advance_line(cstat);
 	if (!tmpname || !*tmpname || MLevel(OWNER(cstat->program)) < 4) {
 	    include_defs(cstat, OWNER(cstat->program));
 	    include_defs(cstat, (dbref) 0);
 	}
-
     } else if (!strcasecmp(temp, "enddef")) {
 	v_abort_compile(cstat, "$enddef without a previous matching $define.");
-
     } else if (!strcasecmp(temp, "def")) {
 	tmpname = (char *) next_token_raw(cstat);
 	if (!tmpname)
@@ -2416,7 +2409,6 @@ do_directive(COMPSTATE * cstat, char *direct)
 	    cstat->next_char++;
 	advance_line(cstat);
 	free(tmpname);
-
     } else if (!strcasecmp(temp, "pubdef")) {
 	char *holder = NULL;
 
@@ -2439,8 +2431,7 @@ do_directive(COMPSTATE * cstat, char *direct)
 		char propname[BUFFER_LEN];
 		int doitset = 1;
 
-		while (*cstat->next_char && isspace(*cstat->next_char))
-		    cstat->next_char++;	/* eating leading spaces */
+		skip_whitespace(&cstat->next_char);
 		defstr = cstat->next_char;
 
 		if (*tmpname == BEGINESCAPE) {
@@ -2470,7 +2461,6 @@ do_directive(COMPSTATE * cstat, char *direct)
 	    cstat->next_char++;
 	advance_line(cstat);
 	free(holder);
-
     } else if (!strcasecmp(temp, "libdef")) {
 	char *holder = NULL;
 
@@ -2490,8 +2480,7 @@ do_directive(COMPSTATE * cstat, char *direct)
 	    char defstr[BUFFER_LEN];
 	    int doitset = 1;
 
-	    while (*cstat->next_char && isspace(*cstat->next_char))
-		cstat->next_char++;	/* eating leading spaces */
+	    skip_whitespace(&cstat->next_char);
 
 	    if (*tmpname == BEGINESCAPE) {
 		char *temppropstr = NULL;
@@ -2546,30 +2535,25 @@ do_directive(COMPSTATE * cstat, char *direct)
 	if (!OkObj(i))
 	    v_abort_compile(cstat, "I don't understand what object you want to $include.");
 	include_defs(cstat, (dbref) i);
-
     } else if (!strcasecmp(temp, "undef")) {
 	tmpname = (char *) next_token_raw(cstat);
 	if (!tmpname)
 	    v_abort_compile(cstat, "Unexpected end of file looking for name to $undef.");
 	kill_def(cstat, tmpname);
 	free(tmpname);
-
     } else if (!strcasecmp(temp, "echo")) {
 	notify_nolisten(cstat->player, cstat->next_char, 1);
 	while (*cstat->next_char)
 	    cstat->next_char++;
 	advance_line(cstat);
-
     } else if (!strcasecmp(temp, "abort")) {
-	while (*cstat->next_char && isspace(*cstat->next_char))
-	    cstat->next_char++;	/* eating leading spaces */
+	skip_whitespace(&cstat->next_char);
 	tmpname = (char *) cstat->next_char;
 	if (tmpname && *tmpname) {
 	    v_abort_compile(cstat, tmpname);
 	} else {
 	    v_abort_compile(cstat, "Forced abort for the compile.");
 	}
-
     } else if (!strcasecmp(temp, "version")) {
 	tmpname = (char *) next_token_raw(cstat);
 	if (!ifloat(tmpname)) {
@@ -2581,7 +2565,6 @@ do_directive(COMPSTATE * cstat, char *direct)
 	    cstat->next_char++;
 	advance_line(cstat);
 	free(tmpname);
-
     } else if (!strcasecmp(temp, "lib-version")) {
 	tmpname = (char *) next_token_raw(cstat);
 	if (!ifloat(tmpname)) {
@@ -2593,25 +2576,18 @@ do_directive(COMPSTATE * cstat, char *direct)
 	    cstat->next_char++;
 	advance_line(cstat);
 	free(tmpname);
-
     } else if (!strcasecmp(temp, "author")) {
-	while (*cstat->next_char && isspace(*cstat->next_char))
-	    cstat->next_char++;	/* eating leading spaces */
+	skip_whitespace(&cstat->next_char);
 	tmpname = (char *) cstat->next_char;
-	while (*cstat->next_char)
-	    cstat->next_char++;
+	skip_whitespace(&cstat->next_char);
 	add_property(cstat->program, MUF_AUTHOR_PROP, tmpname, 0);
 	advance_line(cstat);
-
     } else if (!strcasecmp(temp, "note")) {
-	while (*cstat->next_char && isspace(*cstat->next_char))
-	    cstat->next_char++;	/* eating leading spaces */
+	skip_whitespace(&cstat->next_char);
 	tmpname = (char *) cstat->next_char;
-	while (*cstat->next_char)
-	    cstat->next_char++;
+	skip_whitespace(&cstat->next_char);
 	add_property(cstat->program, MUF_NOTE_PROP, tmpname, 0);
 	advance_line(cstat);
-
     } else if (!strcasecmp(temp, "ifdef") || !strcasecmp(temp, "ifndef")) {
 	int invert_flag = !strcasecmp(temp, "ifndef");
 	tmpname = (char *) next_token_raw(cstat);
@@ -2662,7 +2638,6 @@ do_directive(COMPSTATE * cstat, char *direct)
 	    }
 	    free(tmpptr);
 	}
-
     } else if (!strcasecmp(temp, "ifcancall") || !strcasecmp(temp, "ifncancall")) {
 	struct match_data md;
 
@@ -2741,7 +2716,6 @@ do_directive(COMPSTATE * cstat, char *direct)
 	    }
 	    free(tmpptr);
 	}
-
     } else if (!strcasecmp(temp, "ifver") || !strcasecmp(temp, "iflibver") ||
 	       !strcasecmp(temp, "ifnver") || !strcasecmp(temp, "ifnlibver")) {
 	struct match_data md;
@@ -2824,7 +2798,6 @@ do_directive(COMPSTATE * cstat, char *direct)
 	    }
 	    free(tmpptr);
 	}
-
     } else if (!strcasecmp(temp, "iflib") || !strcasecmp(temp, "ifnlib")) {
 	struct match_data md;
 	char tempa[BUFFER_LEN], tempb[BUFFER_LEN];
@@ -2867,7 +2840,6 @@ do_directive(COMPSTATE * cstat, char *direct)
 	    }
 	    free(tmpptr);
 	}
-
     } else if (!strcasecmp(temp, "else")) {
 	i = 0;
 	while ((tmpptr = (char *) next_token_raw(cstat)) &&
@@ -2882,13 +2854,10 @@ do_directive(COMPSTATE * cstat, char *direct)
 	    v_abort_compile(cstat, "Unexpected end of file in $else clause.");
 	}
 	free(tmpptr);
-
     } else if (!strcasecmp(temp, "endif")) {
-
     } else if (!strcasecmp(temp, "pragma")) {
 	/* TODO - move pragmas to its own section for easy expansion. */
-	while (*cstat->next_char && isspace(*cstat->next_char))
-	    cstat->next_char++;
+	skip_whitespace(&cstat->next_char);
 	if (!*cstat->next_char || !(tmpptr = (char *) next_token_raw(cstat)))
 	    v_abort_compile(cstat, "Pragma requires at least one argument.");
 	if (!strcasecmp(tmpptr, "comment_strict")) {

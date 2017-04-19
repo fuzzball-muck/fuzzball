@@ -1319,7 +1319,7 @@ extract_single(void)
 static void
 hack_it_up(void)
 {
-    char *ptr;
+    const char *ptr;
 
     do {
 	printf("\nCommand: (? for help)\n");
@@ -1337,7 +1337,8 @@ hack_it_up(void)
 	    break;
 
 	case 'p':
-	    for (ptr = cbuf; *ptr && !isspace(*ptr); ptr++) ;
+	    ptr = cbuf;
+	    skip_whitespace(&ptr);
 	    if (*ptr)
 		ptr++;
 	    do_examine_sanity(0, NOTHING, ptr);
@@ -1356,7 +1357,8 @@ hack_it_up(void)
 	    break;
 
 	case 'c':
-	    for (ptr = cbuf; *ptr && !isspace(*ptr); ptr++) ;
+	    ptr = cbuf;
+	    skip_whitespace(&ptr);
 	    if (*ptr)
 		ptr++;
 	    do_sanchange(NOTHING, ptr);
