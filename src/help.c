@@ -126,8 +126,7 @@ add_motd_text_fmt(const char *text)
 	    buf[count++] = *p++;
 	buf[count] = '\0';
 	log2file(tp_file_motd, "%s", buf);
-	while (*p && isspace(*p))
-	    p++;
+	skip_whitespace(&p);
 	count = 0;
     }
 }

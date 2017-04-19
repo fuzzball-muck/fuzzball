@@ -1119,10 +1119,9 @@ const char *
 mfn_isdbref(MFUNARGS)
 {
     dbref obj;
-    char *ptr = argv[0];
+    const char *ptr = argv[0];
 
-    while (isspace(*ptr))
-	ptr++;
+    skip_whitespace(&ptr);
     if (*ptr++ != NUMBER_TOKEN)
 	return "0";
     if (!number(ptr))

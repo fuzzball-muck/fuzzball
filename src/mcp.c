@@ -127,8 +127,7 @@ mcp_intern_is_keyval(McpMesg * msg, const char **in)
 
     if (!isspace(**in))
 	return 0;
-    while (isspace(**in))
-	(*in)++;
+    skip_whitespace(in);
     if (!mcp_intern_is_ident(in, keyname, sizeof(keyname))) {
 	*in = old;
 	return 0;
@@ -147,8 +146,7 @@ mcp_intern_is_keyval(McpMesg * msg, const char **in)
 	*in = old;
 	return 0;
     }
-    while (isspace(**in))
-	(*in)++;
+    skip_whitespace(in);
     if (!mcp_intern_is_unquoted(in, value, sizeof(value)) &&
 	!mcp_intern_is_quoted(in, value, sizeof(value))
 	    ) {
@@ -178,8 +176,7 @@ mcp_intern_is_mesg_start(McpFrame * mfr, const char *in)
     if (strcasecmp(mesgname, MCP_INIT_PKG)) {
 	if (!isspace(*in))
 	    return 0;
-	while (isspace(*in))
-	    in++;
+	skip_whitespace(&in);
 	if (!mcp_intern_is_unquoted(&in, authkey, sizeof(authkey)))
 	    return 0;
 	if (strcmp(authkey, mfr->authkey))
@@ -256,14 +253,12 @@ mcp_intern_is_mesg_cont(McpFrame * mfr, const char *in)
     in++;
     if (!isspace(*in))
 	return 0;
-    while (isspace(*in))
-	in++;
+    skip_whitespace(&in);
     if (!mcp_intern_is_unquoted(&in, datatag, sizeof(datatag)))
 	return 0;
     if (!isspace(*in))
 	return 0;
-    while (isspace(*in))
-	in++;
+    skip_whitespace(&in);
     if (!mcp_intern_is_ident(&in, keyname, sizeof(keyname)))
 	return 0;
     if (*in != ':')
@@ -297,8 +292,7 @@ mcp_intern_is_mesg_end(McpFrame * mfr, const char *in)
     in++;
     if (!isspace(*in))
 	return 0;
-    while (isspace(*in))
-	in++;
+    skip_whitespace(&in);
     if (!mcp_intern_is_unquoted(&in, datatag, sizeof(datatag)))
 	return 0;
     if (*in)

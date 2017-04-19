@@ -96,6 +96,13 @@ strcpyn(char *buf, size_t bufsize, const char *src)
     return buf;
 }
 
+void
+skip_whitespace(const char **parsebuf)
+{
+    while (**parsebuf && isspace(**parsebuf))
+        (*parsebuf)++;
+}
+
 char sect[256] = "";
 
 struct topiclist {
@@ -574,15 +581,13 @@ process_lines(FILE * infile, FILE * outfile, FILE * htmlfile, int cols)
 		    fprintf(htmlfile, HTML_ALSOSEE_BEGIN);
 		    fprintf(outfile, "Also see: ");
 		    ptr = buf + 10;
-		    while (*ptr && isspace(*ptr))
-			ptr++;
+		    skip_whitespace((const char **)&ptr);
 		    while (ptr && *ptr) {
 			ptr2 = ptr;
 			ptr = index(ptr, ',');
 			if (ptr) {
 			    *ptr++ = '\0';
-			    while (*ptr && isspace(*ptr))
-				ptr++;
+			    skip_whitespace((const char **)&ptr);
 			}
 			if (ptr2 > buf + 10) {
 			    if (!ptr || !*ptr) {

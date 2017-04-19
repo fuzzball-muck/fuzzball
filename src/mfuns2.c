@@ -304,9 +304,9 @@ const char *
 mfn_ref(MFUNARGS)
 {
     dbref obj;
-    char *p;
+    const char *p = argv[0];
 
-    for (p = argv[0]; *p && isspace(*p); p++) ;
+    skip_whitespace(&p);
     if (*p == NUMBER_TOKEN && number(p + 1)) {
 	obj = atoi(p + 1);
     } else {

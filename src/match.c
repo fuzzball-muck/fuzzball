@@ -91,7 +91,8 @@ match_player(struct match_data *md)
     const char *p;
 
     if (*(md->match_name) == LOOKUP_TOKEN && payfor(OWNER(md->match_from), tp_lookup_cost)) {
-	for (p = (md->match_name) + 1; isspace(*p); p++) ;
+	p = md->match_name + 1;
+	skip_whitespace(&p);
 	if ((match = lookup_player(p)) != NOTHING) {
 	    md->exact_match = match;
 	}
@@ -109,7 +110,8 @@ find_registered_obj(dbref player, const char *name)
 
     if (*name != REGISTERED_TOKEN)
 	return (NOTHING);
-    for (p = name + 1; *p && isspace(*p); p++) ;
+    p = name + 1;
+    skip_whitespace(&p);
     if (!*p)
 	return (NOTHING);
     snprintf(buf, sizeof(buf), "_reg/%s", p);
@@ -333,9 +335,7 @@ match_exits(dbref obj, struct match_data *md)
 	    }
 	    /* did we get a match on this alias? */
 	    if ((partial && notnull) || ((*p == '\0') || (*p == ' ' && exitprog))) {
-		/* make sure there's nothing afterwards */
-		while (isspace(*exitname))
-		    exitname++;
+		skip_whitespace(&exitname);
 		lev = PLevel(exit);
 		if (tp_compatible_priorities && (lev == 1) &&
 		    (LOCATION(exit) == NOTHING ||
@@ -407,8 +407,7 @@ match_exits(dbref obj, struct match_data *md)
 	    }
 	    /* we didn't get it, go on to next alias */
 	    while (*exitname && *exitname++ != EXIT_DELIMITER) ;
-	    while (isspace(*exitname))
-		exitname++;
+	    skip_whitespace(&exitname);
 	}			/* end of while alias string matches */
       next_exit:
 	;

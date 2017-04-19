@@ -713,8 +713,7 @@ editor(int descr, dbref player, const char *command)
     }
     /* parse the commands */
     for (i = 0; i <= MAX_ARG && *command; i++) {
-	while (*command && isspace(*command))
-	    command++;
+	skip_whitespace(&command);
 	j = 0;
 	while (*command && !isspace(*command)) {
 	    buf[j] = *command;
@@ -728,8 +727,7 @@ editor(int descr, dbref player, const char *command)
 		notify(player, "Invalid macro name.");
 		return;
 	    }
-	    while (*command && isspace(*command))
-		command++;
+	    skip_whitespace(&command);
 	    word[2] = alloc_string(command);
 	    if (!word[2])
 		notify(player, "Invalid definition syntax.");
@@ -919,7 +917,7 @@ void
 do_list(int descr, dbref player, const char *name, char *linespec)
 {
     dbref thing;
-    char *p;
+    const char *p;
     char *q;
     int range[2];
     int argc;
@@ -947,11 +945,11 @@ do_list(int descr, dbref player, const char *name, char *linespec)
 	range[1] = -1;
 	argc = 2;
     } else {
-	q = p = linespec;
+	q = (char *)(p = linespec);
 	while (*p) {
 	    while (*p && !isspace(*p))
 		*q++ = *p++;
-	    while (*p && isspace(*++p)) ;
+	    skip_whitespace(&p);
 	}
 	*q = '\0';
 

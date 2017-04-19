@@ -1209,7 +1209,8 @@ reflist_add(dbref obj, const char *propname, dbref toadd)
 	    snprintf(buf, sizeof(buf), " #%d", toadd);
 	    if (strlen(outbuf) + strlen(buf) < BUFFER_LEN) {
 		strcatn(outbuf, sizeof(outbuf), buf);
-		for (temp = outbuf; isspace(*temp); temp++) ;
+		temp = outbuf;
+		skip_whitespace(&temp);
 		add_property(obj, propname, temp, 0);
 	    }
 	    break;
@@ -1277,7 +1278,7 @@ reflist_del(dbref obj, const char *propname, dbref todel)
 		    strcpyn(outbuf, charcount, list);
 		}
 		strcatn(outbuf, sizeof(outbuf), temp);
-		for (temp = outbuf; isspace(*temp); temp++) ;
+                skip_whitespace(&temp);
 		add_property(obj, propname, temp, 0);
 	    }
 	    break;
@@ -1395,7 +1396,7 @@ exec_or_notify(int descr, dbref player, dbref thing,
 	       const char *message, const char *whatcalled, int mpiflags)
 {
     const char *p;
-    char *p2;
+    const char *p2;
     char *p3;
     char buf[BUFFER_LEN];
     char tmpcmd[BUFFER_LEN];
@@ -1408,11 +1409,13 @@ exec_or_notify(int descr, dbref player, dbref thing,
 
 	if (*(++p) == REGISTERED_TOKEN) {
 	    strcpyn(buf, sizeof(buf), p);
-	    for (p2 = buf; *p && !isspace(*p); p++) ;
+	    p2 = buf;
+	    skip_whitespace(&p2);
 	    if (*p)
 		p++;
 
-	    for (p3 = buf; *p3 && !isspace(*p3); p3++) ;
+	    p3 = buf;
+	    skip_whitespace((const char **)&p3);
 	    if (*p3)
 		*p3 = '\0';
 
@@ -1423,7 +1426,7 @@ exec_or_notify(int descr, dbref player, dbref thing,
 	    }
 	} else {
 	    i = atoi(p);
-	    for (; *p && !isspace(*p); p++) ;
+	    skip_whitespace(&p);
 	    if (*p)
 		p++;
 	}
