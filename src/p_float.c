@@ -289,7 +289,9 @@ prim_diff3(PRIM_PROTOTYPE)
     double x, y, z;
     double x2, y2, z2;
 
-    CHECKOP(6);
+    EXPECT_POP_STACK(6);
+    // three things to CLEAR on abort_interp()
+    nargs = 3;
     oper3 = POP();
     oper2 = POP();
     oper1 = POP();
