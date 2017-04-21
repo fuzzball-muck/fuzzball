@@ -1525,7 +1525,7 @@ mfn_ftime(MFUNARGS)
 
     struct tm *tm = MUCK_LOCALTIME(lt);
     if (tm) {
-        strftime(buf, BUFFER_LEN - 1, argv[0], MUCK_LOCALTIME(lt));
+        strftime(buf, BUFFER_LEN - 1, argv[0], tm);
     } else {
         ABORT_MPI("FTIME", "Out of range time argument.");
     }
@@ -1739,7 +1739,13 @@ mfn_convsecs(MFUNARGS)
     char timebuf[BUFFER_LEN];
 
     lt = atol(argv[0]);
-    strftime(timebuf, sizeof(timebuf), "%a %b %d %T %Z %Y", MUCK_LOCALTIME(lt));
+    
+    struct tm *tm = MUCK_LOCALTIME(lt);
+    if (tm) {
+	strftime(timebuf, sizeof(timebuf), "%a %b %d %T %Z %Y", tm);
+    } else {
+        ABORT_MPI("CONVSECS", "Out of range time argument.");
+    }
     strcpyn(buf, BUFFER_LEN, timebuf);
     return buf;
 }
