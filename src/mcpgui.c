@@ -7,10 +7,6 @@
 #include "mcpgui.h"
 #include "mcppkg.h"
 
-#ifdef HAVE_MALLOC_H
-#include <malloc.h>
-#endif				/* HAVE_MALLOC_H */
-
 static DlogData *dialog_list = NULL;
 static DlogData *dialog_last_accessed = NULL;
 

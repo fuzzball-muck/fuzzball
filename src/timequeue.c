@@ -147,7 +147,7 @@ free_timenode(timequeue ptr)
     }
 }
 
-#ifdef MALLOC_PROFILING
+#ifdef MEMORY_CLEANUP
 void
 purge_timenode_free_pool(void)
 {

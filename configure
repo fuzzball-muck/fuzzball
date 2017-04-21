@@ -685,6 +685,7 @@ enable_option_checking
 with_pcre
 with_ssl
 with_lint
+enable_memcleanup
 enable_memprof
 enable_debug
 enable_ipv6
@@ -1307,6 +1308,7 @@ Optional Features:
   --disable-option-checking  ignore unrecognized --enable/--with options
   --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
+  --enable-memcleanup        free all memory on exit (for memory debugging tools)
   --enable-memprof           enable memory leak detection and profiling (slow)
   --enable-debug             enable developer assertions
   --enable-ipv6             enable IPv6-support
@@ -3907,11 +3909,25 @@ $as_echo "#define WITH_LINT /**/" >>confdefs.h
 fi
 
 
+# Check whether --enable-memcleanup was given.
+if test "${enable_memcleanup+set}" = set; then :
+  enableval=$enable_memcleanup;
+if test "$enableval" = yes; then
+
+$as_echo "#define MEMORY_CLEANUP /**/" >>confdefs.h
+
+fi
+
+fi
+
+
 # Check whether --enable-memprof was given.
 if test "${enable_memprof+set}" = set; then :
   enableval=$enable_memprof;
 if test "$enableval" = yes; then
 	$as_echo "#define MALLOC_PROFILING 1" >>confdefs.h
+
+        $as_echo "#define MEMORY_CLEANUP 1" >>confdefs.h
 
 else
 	if test "$enableval" = debug; then

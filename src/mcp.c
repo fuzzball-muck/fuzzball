@@ -12,10 +12,6 @@
 #include "mcp.h"
 #include "mcppkg.h"
 
-#ifdef HAVE_MALLOC_H
-#include <malloc.h>
-#endif				/* HAVE_MALLOC_H */
-
 #define EMCP_SUCCESS             0      /* successful result */
 #define EMCP_NOMCP                      -1      /* MCP isn't supported on this connection. */
 #define EMCP_NOPACKAGE          -2      /* Package isn't supported for this connection. */

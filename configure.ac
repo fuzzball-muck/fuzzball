@@ -175,11 +175,20 @@ AC_DEFINE(WITH_LINT, [], [Makefile is configured to run lint on sources.])
 AC_SUBST(LINT)
 ])
 
+AC_ARG_ENABLE(memcleanup,
+[  --enable-memcleanup        free all memory on exit (for memory debugging tools)],
+[
+if test "$enableval" = yes; then
+	AC_DEFINE(MEMORY_CLEANUP, [], [Enable memory usage profiling.])
+fi
+])
+
 AC_ARG_ENABLE(memprof,
 [  --enable-memprof           enable memory leak detection and profiling (slow)],
 [
 if test "$enableval" = yes; then
 	AC_DEFINE(MALLOC_PROFILING)
+        AC_DEFINE(MEMORY_CLEANUP)
 else
 	if test "$enableval" = debug; then
 		AC_DEFINE(MALLOC_PROFILING, [], [Enables memory usage profiling.])

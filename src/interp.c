@@ -339,7 +339,7 @@ purge_free_frames(void)
     }
 }
 
-#ifdef MALLOC_PROFILING
+#ifdef MEMORY_CLEANUP
 void
 purge_all_free_frames(void)
 {
