@@ -837,7 +837,7 @@ do_tune(dbref player, char *parmname, char *parmval, int full_command_has_delimi
 	    break;
 	}
 	/* Don't let the oldvalue hang around */
-	if (*oldvalue)
+	if (oldvalue)
 	    free(oldvalue);
     } else if (*parmname && string_prefix(parmname, TP_INFO_CMD)) {
 	/* Space-separated parameters are all in parmname.  Trim out the 'info' command and
