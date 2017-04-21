@@ -48,6 +48,9 @@ const char *compile_options =
 #ifdef MALLOC_PROFILING
 	"MEMPROF "
 #endif
+#ifdef MEMORY_CLEANUP
+        "MEMCLEANUP "
+#endif
 #ifdef MCP_SUPPORT
 	"MCP "
 #endif
@@ -410,7 +413,7 @@ init_game(const char *infile, const char *outfile)
     return 0;
 }
 
-#ifdef MALLOC_PROFILING
+#ifdef MEMORY_CLEANUP
 void
 cleanup_game()
 {
