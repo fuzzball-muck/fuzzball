@@ -107,6 +107,9 @@ prim_timesplit(PRIM_PROTOTYPE)
 
     time_tm = MUCK_LOCALTIME(lt);
 
+    if (!time_tm)
+        abort_interp("Out of range time argument");
+
     CHECKOFLOW(8);
     CLEAR(oper1);
     result = time_tm->tm_sec;
@@ -143,6 +146,8 @@ prim_timefmt(PRIM_PROTOTYPE)
 	abort_interp("Invalid argument (2)");
     lt = (time_t) oper2->data.number;
     time_tm = MUCK_LOCALTIME(lt);
+    if (!time_tm)
+        abort_interp("Out of range time argument");
     if (!strftime(buf, BUFFER_LEN, oper1->data.string->data, time_tm))
 	abort_interp("Operation would result in overflow.");
     CHECKOFLOW(1);

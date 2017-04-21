@@ -1523,7 +1523,12 @@ mfn_ftime(MFUNARGS)
 	lt -= get_tz_offset();
     }
 
-    strftime(buf, BUFFER_LEN - 1, argv[0], MUCK_LOCALTIME(lt));
+    struct tm *tm = MUCK_LOCALTIME(lt);
+    if (tm) {
+        strftime(buf, BUFFER_LEN - 1, argv[0], MUCK_LOCALTIME(lt));
+    } else {
+        ABORT_MPI("FTIME", "Out of range time argument.");
+    }
     return buf;
 }
 
