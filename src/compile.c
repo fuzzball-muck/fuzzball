@@ -221,6 +221,8 @@ cleanup(COMPSTATE * cstat)
 
     for (struct CONTROL_STACK *eef = cstat->control_stack; eef; eef = tempif) {
 	tempif = eef->next;
+        if (eef->extra)
+            free(eef->extra);
 	free((void *) eef);
     }
     cstat->control_stack = 0;
