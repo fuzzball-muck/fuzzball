@@ -149,6 +149,9 @@
 /* With MALLOC_PROFILING, can detect double-frees, buffer overruns, etc. */
 #undef MALLOC_PROFILING_EXTRA
 
+/* Enable freeing memory on exit. */
+#undef MEMORY_CLEANUP
+
 /* Define to the address where bug reports for this package should be sent. */
 #undef PACKAGE_BUGREPORT
 

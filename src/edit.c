@@ -225,7 +225,7 @@ kill_macro(const char *macroname, dbref player, struct macrotable **mtop)
 	return (0);
 }
 
-#ifdef MALLOC_PROFILING
+#ifdef MEMORY_CLEANUP
 void
 free_old_macros(void)
 {

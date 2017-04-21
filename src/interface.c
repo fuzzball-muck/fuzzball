@@ -4602,7 +4602,7 @@ main(int argc, char **argv)
         }
 #endif
 
-#ifdef MALLOC_PROFILING
+#ifdef MEMORY_CLEANUP
 	db_free();
 	free_old_macros();
 	purge_all_free_frames();

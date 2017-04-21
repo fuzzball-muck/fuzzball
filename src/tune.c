@@ -481,7 +481,7 @@ tune_get_parmstring(const char *name, int mlev)
     return (buf);
 }
 
-#ifdef MALLOC_PROFILING
+#ifdef MEMORY_CLEANUP
 void
 tune_freeparms()
 {
