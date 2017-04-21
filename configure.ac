@@ -175,8 +175,8 @@ AC_DEFINE(WITH_LINT, [], [Makefile is configured to run lint on sources.])
 AC_SUBST(LINT)
 ])
 
-AC_ARG_ENABLE(memcleanup,
-[  --enable-memcleanup        free all memory on exit (for memory debugging tools)],
+AC_ARG_ENABLE(memory-cleanup,
+[  --enable-memory-cleanup        free all memory on exit (for memory debugging tools)],
 [
 if test "$enableval" = yes; then
 	AC_DEFINE(MEMORY_CLEANUP, [], [Enable freeing memory on exit.])
