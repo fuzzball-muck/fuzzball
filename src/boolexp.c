@@ -190,7 +190,7 @@ parse_boolexp_F(int descr, const char **parsebuf, dbref player, int dbloadp)
 	}
 	/* strip trailing whitespace */
 	*p-- = '\0';
-	while (isspace(*p))
+	while (p >= buf && isspace(*p))
 	    *p-- = '\0';
 
 	/* check to see if this is a property expression */
