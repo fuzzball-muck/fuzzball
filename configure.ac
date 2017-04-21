@@ -179,7 +179,7 @@ AC_ARG_ENABLE(memcleanup,
 [  --enable-memcleanup        free all memory on exit (for memory debugging tools)],
 [
 if test "$enableval" = yes; then
-	AC_DEFINE(MEMORY_CLEANUP, [], [Enable memory usage profiling.])
+	AC_DEFINE(MEMORY_CLEANUP, [], [Enable freeing memory on exit.])
 fi
 ])
 
