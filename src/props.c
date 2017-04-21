@@ -354,6 +354,7 @@ copy_proplist(dbref obj, PropPtr * nu, PropPtr old)
 	propfetch(obj, old);
 #endif
 	p = new_prop(nu, PropName(old));
+        clear_propnode(p);
 	SetPFlagsRaw(p, PropFlagsRaw(old));
 	switch (PropType(old)) {
 	case PROP_STRTYP:
