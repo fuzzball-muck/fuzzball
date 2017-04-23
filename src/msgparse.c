@@ -653,6 +653,9 @@ mesg_args(char *wbuf, int maxlen, char **argv, char ulv, char sep, char dlv, cha
     ptr = buf;
     for (int lev = 0, r = 0; (r < (BUFFER_LEN - 2)); r++) {
 	if (buf[r] == '\0') {
+            for (int i = 0; i < argc; ++i) {
+                free(argv[i]);
+            }
 	    return (-1);
 	} else if (buf[r] == '\\') {
 	    r++;
