@@ -900,6 +900,9 @@ cmatch(char *s1, char c1)
 {
     int truthval = 0;
 
+    if (c1 == '\0')
+        return 1;
+
     c1 = tolower(c1);
     if (*s1 == '^') {
 	s1++;
