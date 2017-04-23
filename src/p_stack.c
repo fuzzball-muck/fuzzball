@@ -52,12 +52,12 @@ prim_popn(PRIM_PROTOTYPE)
     count = oper1->data.number;
     if (count < 0)
 	abort_interp("Operand is negative.");
-    CLEAR(oper1);
+    EXPECT_POP_STACK(count);
     for (int i = count; i > 0; i--) {
-	CHECKOP(1);
-	oper1 = POP();
-	CLEAR(oper1);
+	oper2 = POP();
+	CLEAR(oper2);
     }
+    CLEAR(oper1);
 }
 
 void
@@ -70,8 +70,8 @@ prim_dupn(PRIM_PROTOTYPE)
     result = oper1->data.number;
     if (result < 0)
 	abort_interp("Operand is negative.");
-    CLEAR(oper1);
     EXPECT_READ_STACK(result);
+    CLEAR(oper1);
     CHECKOFLOW(result);
     for (int i = result; i > 0; i--) {
 	copyinst(&arg[*top - result], &arg[*top]);
