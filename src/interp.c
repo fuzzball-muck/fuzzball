@@ -1684,7 +1684,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 		tmp = atop;
 		prim_func[pc->data.number - 1] (player, program, mlev, pc, arg, &tmp, fr);
 #ifdef DEBUG
-                assert(expect_pop == actual_pop);
+                assert(expect_pop == actual_pop || err);
                 assert(expect_push_to == -1 || expect_push_to == tmp || err);
                 assert(expect_push_to != -1 || tmp <= atop);
 #endif
