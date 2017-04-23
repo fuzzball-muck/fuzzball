@@ -23,8 +23,7 @@ prim_pop(PRIM_PROTOTYPE)
 void
 prim_dup(PRIM_PROTOTYPE)
 {
-    CHECKOP_READONLY(1);
-    nargs = 0;
+    EXPECT_READ_STACK(1);
     CHECKOFLOW(1);
     copyinst(&arg[*top - 1], &arg[*top]);
     (*top)++;
@@ -33,7 +32,7 @@ prim_dup(PRIM_PROTOTYPE)
 void
 prim_pdup(PRIM_PROTOTYPE)
 {
-    CHECKOP_READONLY(1);
+    EXPECT_READ_STACK(1);
     if (!false_inst(&arg[*top - 1])) {
 	CHECKOFLOW(1);
 	copyinst(&arg[*top - 1], &arg[*top]);
@@ -83,7 +82,7 @@ prim_dupn(PRIM_PROTOTYPE)
 void
 prim_ldup(PRIM_PROTOTYPE)
 {
-    CHECKOP_READONLY(1);
+    EXPECT_READ_STACK(1);
     nargs = 0;
 
     if (arg[*top - 1].type != PROG_INTEGER)
@@ -226,7 +225,7 @@ prim_swap(PRIM_PROTOTYPE)
 void
 prim_over(PRIM_PROTOTYPE)
 {
-    CHECKOP_READONLY(2);
+    EXPECT_READ_STACK(2);
     CHECKOFLOW(1);
     copyinst(&arg[*top - 2], &arg[*top]);
     (*top)++;
