@@ -116,8 +116,8 @@ prim_nip(PRIM_PROTOTYPE)
 void
 prim_tuck(PRIM_PROTOTYPE)
 {
-    CHECKOP(2);
     CHECKOFLOW(1);
+    CHECKOP(2);
     oper1 = POP();
     temp2 = *(oper2 = POP());
     arg[(*top)++] = *oper1;
