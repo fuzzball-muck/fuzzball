@@ -780,6 +780,10 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms,
 		    }
 		    if (s) {
 			s--;
+			for (i = 0; i < argc; i++) {
+			    free(argv[i]);
+			    argv[i] = NULL;
+			}
 			if (++mesg_instr_cnt > tp_mpi_max_commands) {
 			    char *zptr = get_mvar("how");
 
@@ -789,10 +793,6 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms,
 			    mesg_rec_cnt--;
 			    outbuf[0] = '\0';
 			    return NULL;
-			}
-			for (i = 0; i < argc; i++) {
-			    free(argv[i]);
-			    argv[i] = NULL;
 			}
 			if (wbuf[p] == MFUN_ARGEND) {
 			    argc = 0;
@@ -827,6 +827,10 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms,
 			    char *zptr;
 
 			    zptr = get_mvar(cmdbuf + 1);
+			    if (argv[0]) {
+				free(argv[0]);
+				argv[0] = NULL;
+			    }
 			    if (!zptr) {
 				zptr = get_mvar("how");
 				notifyf_nolisten(player, "%s %c%s%c: Unrecognized variable.", zptr,
@@ -839,10 +843,6 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms,
 				mesg_rec_cnt--;
 				outbuf[0] = '\0';
 				return NULL;
-			    }
-			    if (argv[0]) {
-				free(argv[0]);
-				argv[0] = NULL;
 			    }
 			    argv[0] = strdup(zptr);
 			    argc++;
