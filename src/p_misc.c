@@ -446,6 +446,7 @@ prim_stats(PRIM_PROTOTYPE)
 	abort_interp("non-player argument (1)");
     ref = oper1->data.objref;
     CLEAR(oper1);
+    nargs = 0;
     {
 	int rooms, exits, things, players, programs, garbage;
 
