@@ -624,6 +624,7 @@ prim_modf(PRIM_PROTOTYPE)
 
     CHECKOP(1);
     oper1 = POP();
+    CHECKOFLOW(2);
     if (oper1->type != PROG_FLOAT)
 	abort_interp("Non-float argument. (1)");
     if (!no_good(oper1->data.fnumber)) {
@@ -635,7 +636,6 @@ prim_modf(PRIM_PROTOTYPE)
     }
     CLEAR(oper1);
     tresult = dresult;
-    CHECKOFLOW(2);
     PushFloat(tresult);
     PushFloat(fresult);
 }
