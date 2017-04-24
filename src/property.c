@@ -241,7 +241,7 @@ remove_property_nofetch(dbref player, const char *pname, int sync)
     DBFETCH(player)->properties = l;
 
     if (Typeof(player) == TYPE_PLAYER) {
-	if (!strcasecmp(pname, LEGACY_GUEST_PROP)) {
+	if (!strcasecmp(buf, LEGACY_GUEST_PROP)) {
 	    FLAGS(player) &= ~GUEST;
 	    DBDIRTY(player);
 	} else if (!sync && strcasecmp(tp_gender_prop, LEGACY_GENDER_PROP)) {
