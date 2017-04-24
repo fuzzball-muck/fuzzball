@@ -252,12 +252,14 @@ do { \
 
 #define CHECKOP_READONLY(N) \
 { \
+    nargs = (0); \
     EXPECT_READ_STACK(N); \
     nargs = (N); \
 }
 
 #define CHECKOP(N) \
 { \
+    nargs = (0); \
     EXPECT_POP_STACK(N); \
     nargs = (N); \
 }
