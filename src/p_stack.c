@@ -72,6 +72,7 @@ prim_dupn(PRIM_PROTOTYPE)
 	abort_interp("Operand is negative.");
     EXPECT_READ_STACK(result);
     CLEAR(oper1);
+    nargs = 0;
     CHECKOFLOW(result);
     for (int i = result; i > 0; i--) {
 	copyinst(&arg[*top - result], &arg[*top]);
