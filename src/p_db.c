@@ -1944,7 +1944,7 @@ prim_newpassword(PRIM_PROTOTYPE)
 	abort_interp("Password string expected. (2)");
     if (oper2->type != PROG_OBJECT)
 	abort_interp("Player dbref expected. (1)");
-    if (!ok_password(oper1->data.string->data))
+    if (!oper1->data.string || !ok_password(oper1->data.string->data))
         abort_interp("Invalid password. (2)");
     ptr2 = oper1->data.string ? oper1->data.string->data : pad_char;
     ref = oper2->data.objref;
