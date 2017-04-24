@@ -197,6 +197,7 @@ prim_array_first(PRIM_PROTOTYPE)
     result = array_first(oper1->data.array, &temp1);
 
     CLEAR(oper1);
+    nargs = 0;
     CHECKOFLOW(2);
     if (result) {
 	copyinst(&temp1, &arg[((*top)++)]);
@@ -220,6 +221,7 @@ prim_array_last(PRIM_PROTOTYPE)
     result = array_last(oper1->data.array, &temp1);
 
     CLEAR(oper1);
+    nargs = 0;
     CHECKOFLOW(2);
     if (result) {
 	copyinst(&temp1, &arg[((*top)++)]);
