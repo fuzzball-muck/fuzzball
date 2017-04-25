@@ -116,7 +116,8 @@ eval_boolexp_rec(int descr, dbref player, struct boolexp *b, dbref thing)
 		    || b->thing == LOCATION(player));
 	case BOOLEXP_PROP:
 	    if (PropType(b->prop_check) == PROP_STRTYP) {
-		if (has_property_strict(descr, player, thing,
+		if (OkObj(thing) &&
+                    has_property_strict(descr, player, thing,
 					PropName(b->prop_check),
 					PropDataStr(b->prop_check), 0))
 		    return 1;
