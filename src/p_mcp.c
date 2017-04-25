@@ -531,6 +531,9 @@ fbgui_muf_event_cb(GUI_EVENT_CB_ARGS)
     while (name) {
 	lines = gui_value_linecount(dlogid, name);
 
+        if (lines < 0)
+            lines = 0;
+
 	temp1.type = PROG_STRING;
 	temp1.data.string = alloc_prog_string(name);
 
@@ -1063,6 +1066,9 @@ prim_gui_values_get(PRIM_PROTOTYPE)
     while (name) {
 	int lines = gui_value_linecount(dlogid, name);
 
+        if (lines < 0)
+            lines = 0;
+
 	temp1.type = PROG_STRING;
 	temp1.data.string = alloc_prog_string(name);
 
@@ -1123,6 +1129,8 @@ prim_gui_value_get(PRIM_PROTOTYPE)
     ctrlid = oper2->data.string->data;
 
     lines = gui_value_linecount(dlogid, ctrlid);
+    if (lines < 0)
+        lines = 0;
     nu = new_array_packed(lines);
 
     for (int i = 0; i < lines; i++) {
