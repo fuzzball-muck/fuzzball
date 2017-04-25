@@ -6,6 +6,8 @@
 #include "inst.h"
 #include "interp.h"
 
+#include <limits.h>
+
 static struct inst *oper1, *oper2, *oper3, *oper4;
 static struct inst temp1, temp2, temp3;
 static int result, tmp;
@@ -291,16 +293,18 @@ prim_rotate(PRIM_PROTOTYPE)
     oper1 = POP();
     if (oper1->type != PROG_INTEGER)
 	abort_interp("Invalid argument type.");
-    tmp = oper1->data.number;	/* Depth on stack */
-    EXPECT_WRITE_STACK(abs(tmp));
-    if (tmp > 0) {
-	temp2 = arg[*top - tmp];
-	for (; tmp > 0; tmp--)
+    int n = oper1->data.number;	/* Depth on stack */
+    if (n == INT_MIN)
+        abort_interp("Stack underflow.");
+    EXPECT_WRITE_STACK(abs(n));
+    if (n > 0) {
+	temp2 = arg[*top - n];
+	for (tmp = n; tmp > 0; tmp--)
 	    arg[*top - tmp] = arg[*top - tmp + 1];
 	arg[*top - 1] = temp2;
-    } else if (tmp < 0) {
+    } else if (n < 0) {
 	temp2 = arg[*top - 1];
-	for (tmp = -1; tmp > oper1->data.number; tmp--)
+	for (tmp = -1; tmp > n; tmp--)
 	    arg[*top + tmp] = arg[*top + tmp - 1];
 	arg[*top + tmp] = temp2;
     }
