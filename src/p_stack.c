@@ -2,6 +2,7 @@
 
 #include "array.h"
 #include "db.h"
+#include "fbmath.h"
 #include "fbstrings.h"
 #include "inst.h"
 #include "interp.h"
@@ -89,6 +90,9 @@ prim_ldup(PRIM_PROTOTYPE)
 	abort_interp("Operand is not an integer.");
 
     result = arg[*top - 1].data.number;
+
+    if (result >= MAXINT)
+        abort_interp("Integer overflow.");
 
     if (result < 0)
 	abort_interp("Operand is negative.");
