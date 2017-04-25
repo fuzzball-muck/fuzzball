@@ -1177,6 +1177,9 @@ do_kill_process(int descr, dbref player, const char *arg1)
 		tmp = ptr;
 		tqhead = ptr = ptr->next;
 		free_timenode(tmp);
+                /* free_timenode can free other things on the list when cleaning up
+                   timers for a backgrounded process */
+                ptr = tqhead;
 		process_count--;
 	    }
 	    tqhead = NULL;
