@@ -6,6 +6,7 @@
 #include "fbstrings.h"
 #include "inst.h"
 #include "interp.h"
+#include "tune.h"
 
 #include <limits.h>
 
@@ -806,7 +807,7 @@ prim_interp(PRIM_PROTOTYPE)
 	abort_interp("Bad object. (2)");
     if ((mlev < 3) && !permissions(ProgUID, oper2->data.objref))
 	abort_interp("Permission denied.");
-    if (fr->level > 8)
+    if (fr->level > tp_max_interp_depth)
 	abort_interp("Interp call loops not allowed.");
     CHECKREMOTE(oper2->data.objref);
 

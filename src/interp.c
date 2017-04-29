@@ -906,7 +906,7 @@ calc_profile_timing(dbref prog, struct frame *fr)
     }
 }
 
-static int interp_depth = 0;
+int interp_depth = 0;
 
 static void
 interp_err(dbref player, dbref program, struct inst *pc,

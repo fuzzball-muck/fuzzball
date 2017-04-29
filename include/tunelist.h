@@ -204,6 +204,7 @@ int tp_listen_mlev;
 int tp_lookup_cost;
 int tp_max_force_level;
 int tp_max_instr_count;
+int tp_max_interp_depth;
 int tp_max_loaded_objs;
 int tp_max_ml4_preempt_count;
 int tp_max_object_endowment;
@@ -266,6 +267,8 @@ struct tune_val_entry tune_val_list[] = {
      "Max. uninterrupted instructions per timeslice", "", 1, INSTR_SLICE},
     {"MUF", "max_instr_count", &tp_max_instr_count, 0, MLEV_WIZARD,
      "Max. MUF instruction run length for ML1", "", 1, MAX_INSTR_COUNT},
+    {"MUF", "max_interp_depth", &tp_max_interp_depth, 0, MLEV_WIZARD,
+     "Max. level of nested MUF interpreter calls", "", 1, MAX_INTERP_DEPTH},
     {"MUF", "max_ml4_preempt_count", &tp_max_ml4_preempt_count, 0, MLEV_WIZARD,
      "Max. MUF preempt instruction run length for ML4, (0 = no limit)", "", 1,
      MAX_ML4_PREEMPT_COUNT},

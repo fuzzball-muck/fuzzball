@@ -8,6 +8,7 @@
 #include "interp.h"
 #include "match.h"
 #include "props.h"
+#include "tune.h"
 
 static struct boolexp *
 alloc_boolnode(void)
@@ -92,6 +93,9 @@ eval_boolexp_rec(int descr, dbref player, struct boolexp *b, dbref thing)
 		struct inst *rv;
 		struct frame *tmpfr;
 		dbref real_player;
+
+                if (interp_depth > tp_max_interp_depth)
+                    return 0;
 
 		if (Typeof(player) == TYPE_PLAYER || Typeof(player) == TYPE_THING)
 		    real_player = player;

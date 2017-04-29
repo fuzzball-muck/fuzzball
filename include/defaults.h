@@ -133,6 +133,11 @@
 /* Max # of instrs in uninterruptable muf programs before timeout. */
 #define MAX_INSTR_COUNT 20000
 
+/* Maximum number of nested interp calls (via the INTERP muf primitive,
+   MPI called via MUF, locks called via MUF, etc.) 
+ */
+#define MAX_INTERP_DEPTH 8
+
 /* Max # of instrs in uninterruptable muf programs before timeout at ML4. */
 #define MAX_ML4_PREEMPT_COUNT 0
 
