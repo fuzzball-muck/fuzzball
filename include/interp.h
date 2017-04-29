@@ -174,6 +174,11 @@ struct frame {
     struct mufwatchpidlist *waiters;
     struct mufwatchpidlist *waitees;
     union error_mask error;
+#ifdef DEBUG
+    int expect_pop;
+    int actual_pop;
+    int expect_push_to;
+#endif
 };
 
 struct publics {
@@ -205,7 +210,7 @@ struct publics {
 }
 
 #ifdef DEBUG
-#define POP() (++actual_pop, arg + --(*top))
+#define POP() (++fr->actual_pop, arg + --(*top))
 #else
 #define POP() (arg + --(*top))
 #endif
@@ -240,7 +245,7 @@ do { \
 #define EXPECT_POP_STACK(N) \
 { \
     EXPECT_WRITE_STACK(N); \
-    expect_pop += (N); \
+    fr->expect_pop += (N); \
 }
 #else
 #define EXPECT_POP_STACK(N) \
@@ -287,7 +292,7 @@ do { \
 #define CHECKOFLOW(x) do { \
         if((*top + (x - 1)) >= STACK_SIZE) \
             abort_interp("Stack Overflow!"); \
-        expect_push_to = *top + (x); \
+        fr->expect_push_to = *top + (x); \
     } while (0)
 #else
 #define CHECKOFLOW(x) do { \
@@ -320,11 +325,6 @@ do { \
 
 extern int top_pid;
 extern int nargs;
-#ifdef DEBUG
-extern int expect_pop;
-extern int actual_pop;
-extern int expect_push_to;
-#endif
 extern int prim_count;
 extern const char *base_inst[];
 
