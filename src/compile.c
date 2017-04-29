@@ -597,6 +597,9 @@ init_defs(COMPSTATE * cstat)
 void
 uncompile_program(dbref i)
 {
+    if (PROGRAM_INSTANCES_IN_PRIMITIVE(i) > 0) {
+        return;
+    }
     /* free program */
     (void) dequeue_prog(i, 1);
     free_prog(i);
@@ -1925,6 +1928,14 @@ do_compile(int descr, dbref player_in, dbref program_in, int force_err_display)
     const char *token;
     struct INTERMEDIATE *new_word;
     COMPSTATE cstat;
+
+    if (PROGRAM_INSTANCES_IN_PRIMITIVE(program_in) > 0) {
+        if (force_err_display ||
+            ((FLAGS(player_in) & INTERACTIVE) && !(FLAGS(player_in) & READMODE))) {
+            notify_nolisten(player_in, "Error: Cannot compile program from primitive it is running.", 1);
+        }
+        return;
+    }
 
     /* set all compile state variables */
     cstat.force_err_display = force_err_display;

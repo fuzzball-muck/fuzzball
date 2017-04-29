@@ -206,6 +206,7 @@ create_program(dbref player, const char *name)
     PROGRAM_SET_PROFSTART(newprog, 0);
     PROGRAM_SET_PROF_USES(newprog, 0);
     PROGRAM_SET_INSTANCES(newprog, 0);
+    PROGRAM_SET_INSTANCES_IN_PRIMITIVE(newprog, 0);
 
     PUSH(newprog, CONTENTS(player));
     DBDIRTY(newprog);
@@ -691,6 +692,7 @@ db_read_object(FILE * f, dbref objno, int dtype)
 	PROGRAM_SET_PROFSTART(objno, 0);
 	PROGRAM_SET_PROF_USES(objno, 0);
 	PROGRAM_SET_INSTANCES(objno, 0);
+        PROGRAM_SET_INSTANCES_IN_PRIMITIVE(objno, 0);
 	break;
     case TYPE_GARBAGE:
 	break;

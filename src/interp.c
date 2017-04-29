@@ -1676,13 +1676,16 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 
 	    default:
 		nargs = 0;
+                fprintf(stderr, "about to run %s\n", base_inst[pc->data.number - 1]);
 #ifdef DEBUG
                 expect_pop = actual_pop = 0;
                 expect_push_to = -1;
 #endif
 		reload(fr, atop, stop);
 		tmp = atop;
+                PROGRAM_INC_INSTANCES_IN_PRIMITIVE(program);
 		prim_func[pc->data.number - 1] (player, program, mlev, pc, arg, &tmp, fr);
+                PROGRAM_DEC_INSTANCES_IN_PRIMITIVE(program);
 #ifdef DEBUG
                 assert(expect_pop == actual_pop || err);
                 assert(expect_push_to == -1 || expect_push_to == tmp || err);

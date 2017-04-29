@@ -271,6 +271,7 @@ typedef long object_flag_type;
 
 struct program_specific {
     unsigned short instances;	/* number of instances of this prog running */
+    unsigned short instances_in_primitive; /* number instances running a primitive */
     short curr_line;		/* current-line */
     int siz;			/* size of code */
     struct inst *code;		/* byte-compiled code */
@@ -290,6 +291,7 @@ struct program_specific {
 #define FREE_PROGRAM_SP(x)      { dbref foo = x; if(PROGRAM_SP(foo)) free(PROGRAM_SP(foo)); PROGRAM_SP(foo) = (struct program_specific *)NULL; }
 
 #define PROGRAM_INSTANCES(x)		(PROGRAM_SP(x)!=NULL?PROGRAM_SP(x)->instances:0)
+#define PROGRAM_INSTANCES_IN_PRIMITIVE(x)   (PROGRAM_SP(x)!=NULL?PROGRAM_SP(x)->instances_in_primitive:0)
 #define PROGRAM_CURR_LINE(x)		(PROGRAM_SP(x)->curr_line)
 #define PROGRAM_SIZ(x)			(PROGRAM_SP(x)->siz)
 #define PROGRAM_CODE(x)			(PROGRAM_SP(x)->code)
@@ -302,9 +304,12 @@ struct program_specific {
 
 #define PROGRAM_INC_INSTANCES(x)	(PROGRAM_SP(x)->instances++)
 #define PROGRAM_DEC_INSTANCES(x)	(PROGRAM_SP(x)->instances--)
+#define PROGRAM_INC_INSTANCES_IN_PRIMITIVE(x)	(PROGRAM_SP(x)->instances_in_primitive++)
+#define PROGRAM_DEC_INSTANCES_IN_PRIMITIVE(x)	(PROGRAM_SP(x)->instances_in_primitive--)
 #define PROGRAM_INC_PROF_USES(x)	(PROGRAM_SP(x)->profuses++)
 
 #define PROGRAM_SET_INSTANCES(x,y)	(PROGRAM_SP(x)->instances = y)
+#define PROGRAM_SET_INSTANCES_IN_PRIMITIVE(x,y)	(PROGRAM_SP(x)->instances_in_primitive = y)
 #define PROGRAM_SET_CURR_LINE(x,y)	(PROGRAM_SP(x)->curr_line = y)
 #define PROGRAM_SET_SIZ(x,y)		(PROGRAM_SP(x)->siz = y)
 #define PROGRAM_SET_CODE(x,y)		(PROGRAM_SP(x)->code = y)
