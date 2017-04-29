@@ -1279,7 +1279,7 @@ reflist_del(dbref obj, const char *propname, dbref todel)
 		}
 		strcatn(outbuf, sizeof(outbuf), temp);
                 skip_whitespace(&temp);
-		add_property(obj, propname, temp, 0);
+		add_property(obj, propname, outbuf, 0);
 	    }
 	    break;
 	case PROP_REFTYP:
