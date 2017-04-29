@@ -551,6 +551,10 @@ db_free_object(dbref i)
     }
     if (Typeof(i) == TYPE_PROGRAM) {
 	uncompile_program(i);
+        if (PROGRAM_FIRST(i)) {
+            free_prog_text(PROGRAM_FIRST(i));
+            PROGRAM_SET_FIRST(i, NULL);
+        }
 	FREE_PROGRAM_SP(i);
     }
 }
