@@ -303,7 +303,7 @@ prim_bitshift(PRIM_PROTOTYPE)
     } else if (shiftBy <= -maxShift) {
         result = oper2->data.number > 0 ? 0 : -1;
     } else if (shiftBy > 0) {
-	result = oper2->data.number << shiftBy;
+	result = (unsigned) oper2->data.number << (unsigned) shiftBy;
     } else if (shiftBy < 0) {
 	result = oper2->data.number >> (-shiftBy);
     } else {
