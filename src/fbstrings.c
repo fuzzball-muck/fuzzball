@@ -408,7 +408,7 @@ intostr(int i)
 
 #define CHARCOUNT 97
 
-static char enarr[256];
+static unsigned char enarr[256];
 static int charset_count[] = { 96, 97, 0 };
 
 static int initialized_crypt = 0;
@@ -417,11 +417,11 @@ void
 init_crypt(void)
 {
     for (int i = 0; i <= 255; i++)
-	enarr[i] = (char) i;
+	enarr[i] = (unsigned char) i;
     for (int i = 'A'; i <= 'M'; i++)
-	enarr[i] = (char) enarr[i] + 13;
+	enarr[i] = (unsigned char) enarr[i] + 13;
     for (int i = 'N'; i <= 'Z'; i++)
-	enarr[i] = (char) enarr[i] - 13;
+	enarr[i] = (unsigned char) enarr[i] - 13;
     enarr['\r'] = 127;
     enarr[127] = '\r';
     enarr[ESCAPE_CHAR] = 31;
