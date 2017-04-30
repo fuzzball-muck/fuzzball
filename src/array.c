@@ -274,7 +274,6 @@ static array_tree *
 array_tree_balance_node(array_tree * a)
 {
     int dh;
-    assert(a != NULL);
     dh = array_tree_height_diff(a);
 
     if (abs(dh) < 2) {
