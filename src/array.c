@@ -1363,6 +1363,7 @@ array_delrange(stk_array ** harr, array_iter * start, array_iter * end)
 	    while (s && array_tree_compare(&s->key, &e->key, 0) <= 0) {
 		arr->data.dict = array_tree_delete(&s->key, arr->data.dict);
 		arr->items--;
+                if (s == e) break;
 		s = array_tree_next_node(arr->data.dict, &idx);
 	    }
 	    CLEAR(&idx);
