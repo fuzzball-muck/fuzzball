@@ -185,14 +185,17 @@ exit_loop_check(dbref source, dbref dest)
 {
     if (source == dest)
         return 1;               /* That's an easy one! */
-    if (dest == NIL || Typeof(dest) != TYPE_EXIT)
+    if (!ObjExists(dest) || Typeof(dest) != TYPE_EXIT)
         return 0;
     for (int i = 0; i < DBFETCH(dest)->sp.exit.ndest; i++) {
-        if ((DBFETCH(dest)->sp.exit.dest)[i] == source) {
+        dbref current = (DBFETCH(dest)->sp.exit.dest)[i];
+        if (!ObjExists(current))
+            continue;
+        if (current == source) {
             return 1;           /* Found a loop! */
         }
-        if (Typeof((DBFETCH(dest)->sp.exit.dest)[i]) == TYPE_EXIT) {
-            if (exit_loop_check(source, (DBFETCH(dest)->sp.exit.dest)[i])) {
+        if (Typeof(current) == TYPE_EXIT) {
+            if (exit_loop_check(source, current)) {
                 return 1;       /* Found one recursively */
             }
         }
