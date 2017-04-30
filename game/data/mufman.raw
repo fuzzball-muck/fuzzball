@@ -4532,8 +4532,7 @@ worked on.  A program will remain in preempt mode until it's execution is
 completed.  Basically what this command does is to turn off multitasking,
 but then you have a limit on how many instructions you can run without
 needing either to pause with a SLEEP, or have a wizbit on the program.
-This primitive is actually an inserver $define to 'pr_mode setmode'.
-~~alsosee MULTITASKING,PR_MODE,MODE,SETMODE
+~~alsosee MULTITASKING,MODE
 ~
 ~
 FOREGROUND
@@ -4546,8 +4545,7 @@ will be blocking any input from the user of the program until the program
 finishes.  You cannot foreground a program once it is running in the
 background. A program will stay in foreground mode until it finishes
 running or until you change the mode.
-This primitive is actually an inserver $define to 'fg_mode setmode'.
-~~alsosee MULTITASKING,BG_MODE,MODE,SETMODE
+~~alsosee MULTITASKING,MODE
 ~
 ~
 BACKGROUND
@@ -4559,8 +4557,7 @@ other things while waiting for the program to finish.  You cannot use
 the READ command in a background program.  Once a program is put into
 background mode, you cannot set it into foreground or preempt mode.
 A program will remain in the background until it finishes execution.
-This primitive is actually an inserver $define to 'bg_mode setmode'.
-~~alsosee MULTITASKING,BG_MODE,MODE,SETMODE
+~~alsosee MULTITASKING,MODE
 ~
 ~
 QUEUE

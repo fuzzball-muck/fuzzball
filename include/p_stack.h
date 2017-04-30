@@ -45,6 +45,9 @@ void prim_for(PRIM_PROTOTYPE);	/* i i i --              */
 void prim_foreach(PRIM_PROTOTYPE);	/*     i --              */
 void prim_secure_sysvars(PRIM_PROTOTYPE);	/* -- */
 void prim_cmd(PRIM_PROTOTYPE);	/* -- s */
+void prim_preempt(PRIM_PROTOTYPE);	/* -- */
+void prim_foreground(PRIM_PROTOTYPE);	/* -- */
+void prim_background(PRIM_PROTOTYPE);	/* -- */
 void prim_foriter(PRIM_PROTOTYPE);	/*       -- i  or  @ ?   */
 void prim_forpop(PRIM_PROTOTYPE);	/*       --              */
 void prim_mark(PRIM_PROTOTYPE);	/*       -- m            */
@@ -59,7 +62,8 @@ void prim_trypop(PRIM_PROTOTYPE);	/* -- */
     prim_mode, prim_setmode, prim_interp, prim_for, prim_foreach, prim_floatp, \
     prim_reverse, prim_popn, prim_dupn, prim_ldup, prim_lreverse, \
     prim_arrayp, prim_dictionaryp, prim_mark, prim_findmark, prim_fulldepth, \
-    prim_secure_sysvars, prim_cmd
+    prim_secure_sysvars, prim_cmd, prim_preempt, prim_foreground, \
+    prim_background
 
 #define PRIMS_STACK_NAMES "POP", "DUP", "?DUP", "NIP", "TUCK",	\
     "@", "!", "VARIABLE", "LOCALVAR", "SWAP", "OVER", "PICK",	\
@@ -68,7 +72,8 @@ void prim_trypop(PRIM_PROTOTYPE);	/* -- */
     "ADDRESS?", "LOCK?", "CHECKARGS", "MODE", "SETMODE",	\
     "INTERP", " FOR", " FOREACH", "FLOAT?", "REVERSE", "POPN",	\
     "DUPN", "LDUP", "LREVERSE", "ARRAY?", "DICTIONARY?", "{",	\
-    "}", "FULLDEPTH", "SECURE_SYSVARS", "CMD"
+    "}", "FULLDEPTH", "SECURE_SYSVARS", "CMD", "PREEMPT",	\
+    "FOREGROUND", "BACKGROUND"
 
 #define PRIMS_INTERNAL_FUNCS prim_foriter, prim_forpop, prim_trypop
 
