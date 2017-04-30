@@ -182,7 +182,7 @@ unparse_sysreturn(dbref * program, struct inst *pc)
     char *fname;
 
     buf[0] = '\0';
-    for (ptr = pc - 1; ptr >= PROGRAM_CODE(*program); ptr--) {
+    for (ptr = pc; ptr >= PROGRAM_CODE(*program); ptr--) {
 	if (ptr->type == PROG_FUNCTION) {
 	    break;
 	}
