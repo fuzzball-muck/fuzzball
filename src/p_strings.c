@@ -108,7 +108,7 @@ prim_fmtstring(PRIM_PROTOTYPE)
 			if (sstr[scnt] == '*') {
 			    scnt++;
 			    CHECKOP(1);
-			    oper2 = POP();
+			    oper1 = POP();
 			    if (oper1->type != PROG_INTEGER)
 				abort_interp("Format specified integer argument not found.");
 			    if (oper1->data.number < 0)
