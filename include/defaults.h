@@ -136,6 +136,12 @@
 /* Max # of instrs in uninterruptable muf programs before timeout at ML4. */
 #define MAX_ML4_PREEMPT_COUNT 0
 
+/* Max # of recursive interpreter calls at ML4. */
+#define MAX_ML4_NESTED_INTERP_LOOP_COUNT 0
+
+/* Max # of recursive interpreter calls other than at ML4. */
+#define MAX_NESTED_INTERP_LOOP_COUNT 16
+
 /* INSTR_SLICE is the number of instructions to run before forcing a
  * context switch to the next waiting muf program.  This is for the
  * multitasking interpreter.

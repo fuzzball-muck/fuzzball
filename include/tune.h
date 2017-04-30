@@ -125,6 +125,8 @@ extern int tp_max_force_level;
 extern int tp_max_instr_count;
 extern int tp_max_loaded_objs;
 extern int tp_max_ml4_preempt_count;
+extern int tp_max_ml4_nested_interp_loop_count;
+extern int tp_max_nested_interp_loop_count;
 extern int tp_max_plyr_processes;
 extern int tp_max_process_limit;
 extern int tp_max_object_endowment;
