@@ -1085,14 +1085,14 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 		    instr_count = 0;
                 if (tp_max_ml4_nested_interp_loop_count)
                     if (nested_interp_loop_count >= tp_max_ml4_nested_interp_loop_count)
-                        abort_loop_hard("Maximum interp loop nested depth exceeded in preempt mode",
+                        abort_loop_hard("Maximum interp loop nested call count exceeded in preempt mode",
                                         NULL, NULL);
 	    } else {
 		/* else make sure that the program doesn't run too long */
 		if (instr_count >= tp_max_instr_count)
 		    abort_loop_hard("Maximum preempt instruction count exceeded", NULL, NULL);
                 if (nested_interp_loop_count >= tp_max_nested_interp_loop_count)
-                    abort_loop_hard("Maximum interp loop nested depth exceeded in preempt mode",
+                    abort_loop_hard("Maximum interp loop nested call count exceeded in preempt mode",
                                     NULL, NULL);
 	    }
 	} else {
