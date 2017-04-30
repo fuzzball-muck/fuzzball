@@ -269,7 +269,8 @@ do { \
     nargs = (N); \
 }
 
-#define CHECKREMOTE(x) if ((mlev < 2) && (LOCATION(x) != player) &&  \
+#define CHECKREMOTE(x) if ((mlev < 2) && ((x) != HOME) && \
+                           (LOCATION(x) != player) &&  \
                            (LOCATION(x) != LOCATION(player)) && \
                            ((x) != LOCATION(player)) && ((x) != player) \
 			   && !controls(ProgUID, x)) \
