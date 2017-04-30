@@ -1186,6 +1186,7 @@ array_insertrange(stk_array ** harr, array_iter * start, stk_array * inarr)
     array_data *itm;
     array_iter idx;
     array_iter didx;
+    int copied_inarr = 0;
 
     assert(harr != NULL);
     assert(*harr != NULL);
@@ -1198,6 +1199,11 @@ array_insertrange(stk_array ** harr, array_iter * start, stk_array * inarr)
     arr = *harr;
     if (!inarr || !inarr->items) {
 	return arr->items;
+    }
+    if (inarr == arr && arr->pinned) {
+        /* avoid iterating over arr == inarr while modifying arr */
+        inarr = array_decouple(inarr);
+        copied_inarr = 1;
     }
     switch (arr->type) {
     case ARRAY_PACKED:{
@@ -1241,6 +1247,9 @@ array_insertrange(stk_array ** harr, array_iter * start, stk_array * inarr)
 		} while (array_next(inarr, &idx));
 	    }
 	    arr->items += inarr->items;
+            if (copied_inarr) {
+                array_free(inarr);
+            }
 	    return arr->items;
 	}
 
@@ -1254,6 +1263,9 @@ array_insertrange(stk_array ** harr, array_iter * start, stk_array * inarr)
 		    array_setitem(&arr, &idx, array_getitem(inarr, &idx));
 		} while (array_next(inarr, &idx));
 	    }
+            if (copied_inarr) {
+                array_free(inarr);
+            }
 	    return arr->items;
 	}
 
