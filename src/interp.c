@@ -1502,10 +1502,10 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 			pbs = pbs->next;
 		    }
 		    if (!pbs)
-			abort_loop("PUBLIC or WIZCALL function not found. (2)", temp2, temp2);
+			abort_loop("PUBLIC or WIZCALL function not found. (2)", temp1, temp2);
 		    if (mlev < pbs->mlev)
 			abort_loop("Insufficient permissions to call WIZCALL function. (2)",
-				   temp2, temp2);
+				   temp1, temp2);
 		    pc = pbs->addr.ptr;
 		}
 		stop++;
