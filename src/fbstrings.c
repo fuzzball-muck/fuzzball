@@ -567,7 +567,7 @@ strip_ansi(char *buf, const char *input)
 		    is++;
 		if (*is == 'm')
 		    is++;
-	    } else {
+	    } else if (*is != '\0') {
 		is++;
 	    }
 	} else {
