@@ -206,6 +206,8 @@ int tp_max_force_level;
 int tp_max_instr_count;
 int tp_max_loaded_objs;
 int tp_max_ml4_preempt_count;
+int tp_max_ml4_nested_interp_loop_count;
+int tp_max_nested_interp_loop_count;
 int tp_max_object_endowment;
 int tp_max_output;
 int tp_max_pennies;
@@ -269,6 +271,12 @@ struct tune_val_entry tune_val_list[] = {
     {"MUF", "max_ml4_preempt_count", &tp_max_ml4_preempt_count, 0, MLEV_WIZARD,
      "Max. MUF preempt instruction run length for ML4, (0 = no limit)", "", 1,
      MAX_ML4_PREEMPT_COUNT},
+    {"MUF", "max_ml4_nested_interp_loop_count", &tp_max_ml4_nested_interp_loop_count, 0, MLEV_WIZARD,
+     "Max. MUF preempt interp loop nesting level for ML4 (0 = no limit)", "", 1,
+     MAX_ML4_NESTED_INTERP_LOOP_COUNT},
+    {"MUF", "max_nested_interp_loop_count", &tp_max_nested_interp_loop_count, 0, MLEV_WIZARD,
+     "Max. MUF preempt interp loop nesting level", "", 1,
+     MAX_NESTED_INTERP_LOOP_COUNT},
     {"MUF", "max_plyr_processes", &tp_max_plyr_processes, 0, MLEV_WIZARD,
      "Concurrent processes allowed per player", "", 1, MAX_PLYR_PROCESSES},
     {"MUF", "max_process_limit", &tp_max_process_limit, 0, MLEV_WIZARD,
