@@ -1676,7 +1676,6 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 
 	    default:
 		nargs = 0;
-                fprintf(stderr, "about to run %s\n", base_inst[pc->data.number - 1]);
 #ifdef DEBUG
                 expect_pop = actual_pop = 0;
                 expect_push_to = -1;

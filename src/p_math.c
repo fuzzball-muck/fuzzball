@@ -244,13 +244,14 @@ prim_bitor(PRIM_PROTOTYPE)
     CHECKOP(2);
     oper1 = POP();
     oper2 = POP();
-    if (!arith_type(oper2->type, oper1->type))
-	abort_interp("Invalid argument type.");
+    if (oper1->type != PROG_INTEGER)
+        abort_interp("Non-integer argument (1)");
+    if (oper2->type != PROG_INTEGER)
+        abort_interp("Non-integer argument (2)");
     result = oper2->data.number | oper1->data.number;
-    tmp = oper2->type;
     CLEAR(oper1);
     CLEAR(oper2);
-    push(arg, top, tmp, MIPSCAST & result);
+    PushInt(result);
 }
 
 void
@@ -259,13 +260,14 @@ prim_bitxor(PRIM_PROTOTYPE)
     CHECKOP(2);
     oper1 = POP();
     oper2 = POP();
-    if (!arith_type(oper2->type, oper1->type))
-	abort_interp("Invalid argument type.");
+    if (oper1->type != PROG_INTEGER)
+        abort_interp("Non-integer argument (1)");
+    if (oper2->type != PROG_INTEGER)
+        abort_interp("Non-integer argument (2)");
     result = oper2->data.number ^ oper1->data.number;
-    tmp = oper2->type;
     CLEAR(oper1);
     CLEAR(oper2);
-    push(arg, top, tmp, MIPSCAST & result);
+    PushInt(result);
 }
 
 void
@@ -274,13 +276,14 @@ prim_bitand(PRIM_PROTOTYPE)
     CHECKOP(2);
     oper1 = POP();
     oper2 = POP();
-    if (!arith_type(oper2->type, oper1->type))
-	abort_interp("Invalid argument type.");
+    if (oper1->type != PROG_INTEGER)
+        abort_interp("Non-integer argument (1)");
+    if (oper2->type != PROG_INTEGER)
+        abort_interp("Non-integer argument (2)");
     result = oper2->data.number & oper1->data.number;
-    tmp = oper2->type;
     CLEAR(oper1);
     CLEAR(oper2);
-    push(arg, top, tmp, MIPSCAST & result);
+    PushInt(result);
 }
 
 void
@@ -289,18 +292,26 @@ prim_bitshift(PRIM_PROTOTYPE)
     CHECKOP(2);
     oper1 = POP();
     oper2 = POP();
-    if (!arith_type(oper2->type, oper1->type) || oper1->type != PROG_INTEGER)
-	abort_interp("Invalid argument type.");
-    if (oper1->data.number > 0)
-	result = oper2->data.number << oper1->data.number;
-    else if (oper1->data.number < 0)
-	result = oper2->data.number >> (-(oper1->data.number));
-    else
+    if (oper1->type != PROG_INTEGER)
+        abort_interp("Non-integer argument (1)");
+    if (oper2->type != PROG_INTEGER)
+        abort_interp("Non-integer argument (2)");
+    int shiftBy = oper1->data.number;
+    int maxShift = sizeof(int) * 8;
+    if (shiftBy >= maxShift) {
+        result = 0;
+    } else if (shiftBy <= -maxShift) {
+        result = oper2->data.number > 0 ? 0 : -1;
+    } else if (shiftBy > 0) {
+	result = oper2->data.number << shiftBy;
+    } else if (shiftBy < 0) {
+	result = oper2->data.number >> (-shiftBy);
+    } else {
 	result = oper2->data.number;
-    tmp = oper2->type;
+    }
     CLEAR(oper1);
     CLEAR(oper2);
-    push(arg, top, tmp, MIPSCAST & result);
+    PushInt(result);
 }
 
 void
