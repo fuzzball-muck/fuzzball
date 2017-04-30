@@ -519,6 +519,18 @@ db_free_object(dbref i)
 {
     struct object *o;
 
+    /* do this before freeing the name because uncompile_program()
+       may try to print some error messages.
+       */
+    if (Typeof(i) == TYPE_PROGRAM) {
+	uncompile_program(i);
+        if (PROGRAM_FIRST(i)) {
+            free_prog_text(PROGRAM_FIRST(i));
+            PROGRAM_SET_FIRST(i, NULL);
+        }
+	FREE_PROGRAM_SP(i);
+    }
+
     o = DBFETCH(i);
     if (NAME(i))
 	free((void *) NAME(i));
@@ -549,14 +561,6 @@ db_free_object(dbref i)
     }
     if (Typeof(i) == TYPE_PLAYER) {
 	FREE_PLAYER_SP(i);
-    }
-    if (Typeof(i) == TYPE_PROGRAM) {
-	uncompile_program(i);
-        if (PROGRAM_FIRST(i)) {
-            free_prog_text(PROGRAM_FIRST(i));
-            PROGRAM_SET_FIRST(i, NULL);
-        }
-	FREE_PROGRAM_SP(i);
     }
 }
 
