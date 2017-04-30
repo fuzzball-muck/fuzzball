@@ -759,6 +759,30 @@ prim_findmark(PRIM_PROTOTYPE)
 }
 
 void
+prim_preempt(PRIM_PROTOTYPE)
+{
+    fr->multitask = PREEMPT;
+}
+
+void
+prim_foreground(PRIM_PROTOTYPE)
+{
+    if (fr->been_background)
+	abort_interp("Cannot FOREGROUND a BACKGROUNDed program.");
+
+    fr->multitask = FOREGROUND;
+
+}
+
+void
+prim_background(PRIM_PROTOTYPE)
+{
+    fr->multitask = BACKGROUND;
+    fr->been_background = 1;
+    fr->writeonly = 1;
+}
+
+void
 prim_setmode(PRIM_PROTOTYPE)
 {
     CHECKOP(1);

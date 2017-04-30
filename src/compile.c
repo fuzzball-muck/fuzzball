@@ -470,10 +470,6 @@ include_internal_defs(COMPSTATE * cstat)
     insert_def(cstat, "__version", VERSION);
     insert_def(cstat, "__muckname", tp_muckname);
     insert_intdef(cstat, "__fuzzball__", 1);
-    insert_def(cstat, "strip", "striplead striptail");
-    insert_intdef(cstat, "bg_mode", BACKGROUND);
-    insert_intdef(cstat, "fg_mode", FOREGROUND);
-    insert_intdef(cstat, "pr_mode", PREEMPT);
     insert_intdef(cstat, "max_variable_count", MAX_VAR);
     insert_intdef(cstat, "sorttype_caseinsens", SORTTYPE_CASEINSENS);
     insert_intdef(cstat, "sorttype_descending", SORTTYPE_DESCENDING);
@@ -482,6 +478,8 @@ include_internal_defs(COMPSTATE * cstat)
     insert_intdef(cstat, "sorttype_case_descend", SORTTYPE_CASE_DESCEND);
     insert_intdef(cstat, "sorttype_nocase_descend", SORTTYPE_NOCASE_DESCEND);
     insert_intdef(cstat, "sorttype_shuffle", SORTTYPE_SHUFFLE);
+    insert_def(cstat, "notify_except", "1 swap notify_exclude");
+    insert_def(cstat, "strip", "striplead striptail");
 
     /* Make defines for compatability to removed primitives */
     insert_def(cstat, "desc", "\"" MESGPROP_DESC "\" getpropstr");
@@ -504,15 +502,11 @@ include_internal_defs(COMPSTATE * cstat)
     insert_def(cstat, "setodrop", "\"" MESGPROP_ODROP "\" swap setprop");
     insert_def(cstat, "setoecho", "\"" MESGPROP_OECHO "\" swap setprop");
     insert_def(cstat, "setpecho", "\"" MESGPROP_PECHO "\" swap setprop");
-    insert_def(cstat, "preempt", "pr_mode setmode");
-    insert_def(cstat, "background", "bg_mode setmode");
-    insert_def(cstat, "foreground", "fg_mode setmode");
-    insert_def(cstat, "notify_except", "1 swap notify_exclude");
+
+    /* Events */
     insert_def(cstat, "event_wait", "0 array_make event_waitfor");
     insert_def(cstat, "tread",
 	       "\"__tread\" timer_start { \"TIMER.__tread\" \"READ\" }list event_waitfor swap pop \"READ\" strcmp if \"\" 0 else read 1 \"__tread\" timer_stop then");
-    insert_def(cstat, "truename", "name");
-    insert_def(cstat, "dbcmp", "=");
 
     /* MUF Error defines */
     insert_def(cstat, "err_divzero?", "0 is_set?");
@@ -574,6 +568,13 @@ include_internal_defs(COMPSTATE * cstat)
     insert_intdef(cstat, "reg_icase", MUF_RE_ICASE);
     insert_intdef(cstat, "reg_all", MUF_RE_ALL);
     insert_intdef(cstat, "reg_extended", MUF_RE_EXTENDED);
+
+    /* Deprecations */
+    insert_def(cstat, "truename", "name");
+    insert_def(cstat, "dbcmp", "=");
+    insert_intdef(cstat, "bg_mode", BACKGROUND);
+    insert_intdef(cstat, "fg_mode", FOREGROUND);
+    insert_intdef(cstat, "pr_mode", PREEMPT);
 }
 
 static void
