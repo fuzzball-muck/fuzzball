@@ -1729,8 +1729,8 @@ lines to list.  If no lines are given, the entire program is listed.
 
 ~~code
   !	Outputs system messages as MUF comments.
-  #	Lists program lines with numbers, overriding current setting.
-  @	Lists program lines without numbers, overriding current setting.
+  #	Lists program with line numbers, overriding current setting.
+  @	Lists program without line numbers, overriding current setting.
 ~~endcode
 ~
 ~

@@ -4350,6 +4350,8 @@ Parameters available:
  (int)  instr_slice               - Max. uninterrupted instructions per timeslice
  (int)  max_instr_count           - Max. MUF instruction run length for ML1
  (int)  max_ml4_preempt_count     - Max. MUF preempt instruction run length for ML4, (0 = no limit)
+ (int)  max_ml4_nested_interp_loop_count - Max. MUF preempt interp loop nesting level for ML4 (0 = no limit)
+ (int)  max_nested_interp_loop_count - Max. MUF preempt interp loop nesting level
  (int)  max_plyr_processes        - Concurrent processes allowed per player
  (int)  max_process_limit         - Total concurrent processes allowed on system
  (int)  mcp_muf_mlev              - Mucker Level required to use MCP
