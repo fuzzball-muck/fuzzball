@@ -34,7 +34,7 @@ void free_old_macros();
 void free_prog_text(struct line *l);
 struct line *get_new_line(void);
 void interactive(int descr, dbref player, const char *command);
-void list_program(dbref player, dbref program, int *oarg, int argc);
+void list_program(dbref player, dbref program, int *oarg, int argc, int comment_sysmsg);
 char *macro_expansion(struct macrotable *node, const char *match);
 void macrodump(struct macrotable *node, FILE * f);
 void macroload(FILE * f);
