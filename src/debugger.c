@@ -68,7 +68,7 @@ list_proglines(dbref player, dbref program, struct frame *fr, int start, int end
 
 	    FLAGS(player) |= INTERNAL;
 
-	    list_program(player, program, range, argc);
+	    list_program(player, program, range, argc, 0);
 
 	    if (!tmpflg) {
 		FLAGS(player) &= ~INTERNAL;

@@ -1719,11 +1719,19 @@ processes on the timequeue.
 ~
 ~
 @LIST
-@LIST <program>  [=[line1] [-] [line2]]
+@LIST <program>  [=[!#@]*[line1][-line2]]
 
-  Lists  lines  in a  program, provided you control it or it is VIEWABLE.
-Zero, one,  or  two  line numbers may be specified, denoting the range of
-lines to list.   If no lines are given, the entire program is listed.
+  Lists lines in a program, provided you control it or it is VIEWABLE.
+Zero, one, or two line numbers may be specified, denoting the range of
+lines to list.  If no lines are given, the entire program is listed.
+
+  Additionally, a set of prefixes can be given to control the output:
+
+~~code
+  !	Outputs system messages as MUF comments.
+  #	Lists program lines with numbers, overriding current setting.
+  @	Lists program lines without numbers, overriding current setting.
+~~endcode
 ~
 ~
 @EDIT

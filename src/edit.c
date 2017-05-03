@@ -478,11 +478,13 @@ do_cancel(dbref player, dbref program)
    if 1 argument, display that line
    if 2 arguments, display all in between   */
 void
-list_program(dbref player, dbref program, int *oarg, int argc)
+list_program(dbref player, dbref program, int *oarg, int argc, int comment_sysmsg)
 {
     struct line *curr;
     int i, count;
     int arg[2];
+    char *msg_start = comment_sysmsg ? "( " : "";
+    char *msg_end = comment_sysmsg ? " )" : "";
 
     if (oarg) {
 	arg[0] = oarg[0];
@@ -496,7 +498,7 @@ list_program(dbref player, dbref program, int *oarg, int argc)
 	arg[1] = arg[0];
     case 2:
 	if ((arg[0] > arg[1]) && (arg[1] != -1)) {
-	    notify_nolisten(player, "Arguments don't make sense!", 1);
+	    notifyf_nolisten(player, "%sArguments don't make sense!%s", msg_start, msg_end);
 	    return;
 	}
 	i = arg[0] - 1;
@@ -514,13 +516,13 @@ list_program(dbref player, dbref program, int *oarg, int argc)
 		curr = curr->next;
 	    }
 	    if (count - arg[0] > 1) {
-		notifyf_nolisten(player, "%d lines displayed.", count - arg[0]);
+		notifyf_nolisten(player, "%s%d lines displayed.%s", msg_start, count - arg[0], msg_end);
 	    }
 	} else
-	    notify_nolisten(player, "Line not available for display.", 1);
+	    notifyf_nolisten(player, "%sLine not available for display.%s", msg_start, msg_end);
 	break;
     default:
-	notify_nolisten(player, "Too many arguments!", 1);
+	notifyf_nolisten(player, "%sToo many arguments!%s", msg_start, msg_end);
 	break;
     }
 }
@@ -798,7 +800,7 @@ editor(int descr, dbref player, const char *command)
 	    notify(player, "Compiler done.");
 	    break;
 	case LIST_COMMAND:
-	    list_program(player, program, arg, i);
+	    list_program(player, program, arg, i, 0);
 	    break;
 	case EDITOR_HELP_COMMAND:
 	    spit_file(player, tp_file_editor_help);
@@ -921,6 +923,8 @@ do_list(int descr, dbref player, const char *name, char *linespec)
     char *q;
     int range[2];
     int argc;
+    int comment_sysmsg = 0;
+    object_flag_type prevflags = FLAGS(player);
     struct match_data md;
     struct line *tmpline;
 
@@ -940,6 +944,25 @@ do_list(int descr, dbref player, const char *name, char *linespec)
 	       "Permission denied. (You don't control the program, and it's not set Viewable)");
 	return;
     }
+
+    while (*linespec && (*linespec == '!' || *linespec == '#' || *linespec == '@')) {
+	prevflags = FLAGS(player);
+	switch (*linespec) {
+	case '!':
+	    comment_sysmsg = 1;
+	    break;
+	case '#':
+	    FLAGS(player) |= INTERNAL;
+	    break;
+	case '@':
+	    FLAGS(player) &= ~INTERNAL;
+	    break;
+	default:
+	    break;
+	}
+	(void) *linespec++;
+    }
+
     if (!*linespec) {
 	range[0] = 1;
 	range[1] = -1;
@@ -973,9 +996,10 @@ do_list(int descr, dbref player, const char *name, char *linespec)
     }
     tmpline = PROGRAM_FIRST(thing);
     PROGRAM_SET_FIRST(thing, read_program(thing));
-    list_program(player, thing, range, argc);
+    list_program(player, thing, range, argc, comment_sysmsg);
     free_prog_text(PROGRAM_FIRST(thing));
     PROGRAM_SET_FIRST(thing, tmpline);
+    FLAGS(player) = prevflags;
     return;
 }
 
@@ -1117,5 +1141,5 @@ edit_program(dbref player, dbref program)
     unparse_object(player, program, unparse_buf, sizeof(unparse_buf));
     notifyf(player, "Entering editor for %s.", unparse_buf);
 
-    list_program(player, program, NULL, 0);
+    list_program(player, program, NULL, 0, 0);
 }
