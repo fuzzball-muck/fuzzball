@@ -1119,9 +1119,11 @@ process_command(int descr, dbref player, const char *command)
 			do_sanity(player);
 		    } else if (!strcmp(command, "@sanchange")) {
 			GODONLY("@sanchange", player);
+			NOFORCE("@sanchange", player);
 			do_sanchange(player, full_command);
 		    } else if (!strcmp(command, "@sanfix")) {
 			GODONLY("@sanfix", player);
+			NOFORCE("@sanfix", player);
 			do_sanfix(player);
 		    } else {
 			goto bad;
