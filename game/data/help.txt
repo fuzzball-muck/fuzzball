@@ -1895,8 +1895,8 @@ lines to list.  If no lines are given, the entire program is listed.
   Additionally, a set of prefixes can be given to control the output:
 
   !	Outputs system messages as MUF comments.
-  #	Lists program lines with numbers, overriding current setting.
-  @	Lists program lines without numbers, overriding current setting.
+  #	Lists program with line numbers, overriding current setting.
+  @	Lists program without line numbers, overriding current setting.
 ~
 ~
 @EDIT
