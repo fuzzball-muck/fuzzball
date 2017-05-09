@@ -2669,7 +2669,7 @@ do_directive(COMPSTATE * cstat, char *direct)
 	strcpyn(match_args, sizeof(match_args), tempa);
 	strcpyn(match_cmdname, sizeof(match_cmdname), tempb);
 	free(tmpname);
-	if (!OkObj(i))
+	if (!OkObj(i) || Typeof(i) != TYPE_PROGRAM)
 	    v_abort_compile(cstat,
 			    "I don't understand what object you want to check in ifcancall.");
 	tmpname = (char *) next_token_raw(cstat);
