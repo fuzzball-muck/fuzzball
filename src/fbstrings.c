@@ -874,24 +874,6 @@ estrchr(char *s, char c, char e)
 	return NULL;
 }
 
-#ifdef STRSTR
-char *
-strstr(char *s1, char *s2)
-{
-    register char *temp = s1;
-    int len = strlen(s2);
-
-    while (temp = strchr(temp, *s2)) {
-	if (!strncmp(temp, s2, len))
-	    return temp;
-	else
-	    temp++;
-    }
-    return NULL;
-}
-
-#endif
-
 #define test(x) if (tolower(x) == c1) return truthval
 /* Watch if-else constructions */
 
