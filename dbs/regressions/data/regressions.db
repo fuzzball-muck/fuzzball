@@ -1,7 +1,7 @@
 ***Foxen9 TinyMUCK DUMP Format***
 31
 1
-152
+155
 autolook_cmd=look
 cpennies=Pennies
 cpenny=Penny
@@ -19,6 +19,7 @@ file_info_dir=data/info/
 file_log_cmd_times=logs/cmd-times
 file_log_commands=logs/commands
 file_log_gripes=logs/gripes
+file_log_malloc=logs/malloc
 file_log_muf_errors=logs/muf-errors
 file_log_programs=logs/programs
 file_log_sanfix=logs/sanfixed
@@ -79,6 +80,8 @@ addpennies_muf_mlev=2
 instr_slice=2000
 max_instr_count=20000
 max_ml4_preempt_count=0
+max_ml4_nested_interp_loop_count=0
+max_nested_interp_loop_count=16
 max_plyr_processes=32
 max_process_limit=400
 mcp_muf_mlev=3
