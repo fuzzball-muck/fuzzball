@@ -1239,7 +1239,7 @@ prim_newobject(PRIM_PROTOTYPE)
 	if (!ok_ascii_thing(b) || !ok_name(b))
 	    abort_interp("Invalid name. (2)");
 
-	ref = create_thing(player, b, oper2->data.objref);
+	ref = create_thing(ProgUID, b, oper2->data.objref);
     }
 
     CLEAR(oper1);
@@ -1979,7 +1979,7 @@ prim_newprogram(PRIM_PROTOTYPE)
     if (!ok_ascii_other(oper1->data.string->data) || !ok_name(oper1->data.string->data))
 	abort_interp("Invalid name (2)");
 
-    newprog = create_program(player , oper1->data.string->data);
+    newprog = create_program(ProgUID, oper1->data.string->data);
 
     CLEAR(oper1);
 
