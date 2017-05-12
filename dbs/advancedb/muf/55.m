@@ -44,8 +44,8 @@ $note Runs MUF code you enter. A MUF version of @mpi.
         then  ( str )
     then  ( str )
  
-    ( The user must be a player, and must have an Mlevel or be a Wizard {Quelled is OK}. )
-    me @ player? me @ mlevel me @ "truewizard" flag? or and not if  ( str )
+    ( The user must be a player, and must have an Mlevel. )
+    me @ player? me @ mlevel and not if  ( str )
         "@muf is only available to users with a MUCKer bit." .tell
         pop exit  (  )
     then  ( str )
