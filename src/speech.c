@@ -65,7 +65,8 @@ do_pose(dbref player, const char *message)
 	return;
 
     /* notify everybody */
-    snprintf(buf, sizeof(buf), "%s %s", NAME(player), message);
+    snprintf(buf, sizeof(buf), "%s%s%s", NAME(player),
+	    is_valid_pose_separator(*message) ? "" : " ", message);
     notify_except(CONTENTS(loc), NOTHING, buf, player);
 }
 
