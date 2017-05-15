@@ -1055,22 +1055,6 @@ equalstr(char *pattern, char *str)
     return !smatch(pattern, str);
 }
 
-void
-int2str(char *buf, int val, int len, char pref)
-{
-    int lp;
-
-    buf[lp = len] = '\0';
-    while (lp--) {
-        buf[lp] = '0' + (val % 10);
-        val /= 10;
-    }
-    while (((++lp) < (len - 1)) && (buf[lp] == '0'))
-        buf[lp] = pref;
-    if (!pref)
-        (void) strcpyn(buf, len, buf + lp);
-}
-
 char *
 cr2slash(char *buf, int buflen, const char *in)
 {

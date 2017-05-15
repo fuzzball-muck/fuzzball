@@ -14,7 +14,6 @@ const char *exit_prefix(register const char *string, register const char *prefix
 int equalstr(char *s, char *t);
 int ifloat(const char *s);
 int is_valid_pose_separator(char ch);
-void int2str(char *buf, int val, int len, char pref);
 char *intostr(int i);
 int is_prop_prefix(const char *Property, const char *Prefix);
 int number(const char *s);
