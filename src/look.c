@@ -298,7 +298,7 @@ flag_description(dbref thing)
 	break;
     }
 
-    if (FLAGS(thing) & ~TYPE_MASK) {
+    if (FLAGS(thing) & ~TYPE_MASK & ~DUMP_MASK) {
 	/* print flags */
 	strcatn(buf, sizeof(buf), "  Flags:");
 	if (FLAGS(thing) & WIZARD)
