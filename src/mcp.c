@@ -1532,8 +1532,6 @@ do_mcpedit(int descr, dbref player, const char *name)
 {
     dbref program;
     struct match_data md;
-    McpFrame *mfr;
-    McpVer supp;
 
     if (!*name) {
 	notify(player, "No program name given.");

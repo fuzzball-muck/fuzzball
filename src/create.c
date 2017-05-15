@@ -497,11 +497,8 @@ do_clone(int descr, dbref player, const char *name, const char *rname)
     dbref thing, clonedthing;
     int cost;
     struct match_data md;
-    char buf2[BUFFER_LEN];
     char unparse_buf[BUFFER_LEN];
     char unparse_buf2[BUFFER_LEN];
-    char *qname;
-    int ndest;
 
     /* Perform sanity checks */
 
@@ -587,7 +584,6 @@ do_clone(int descr, dbref player, const char *name, const char *rname)
 void
 do_create(dbref player, char *name, char *acost)
 {
-    dbref loc;
     dbref thing;
     int cost;
 

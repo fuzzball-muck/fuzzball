@@ -1234,7 +1234,6 @@ prim_newobject(PRIM_PROTOTYPE)
     fr->already_created++;
     {
 	const char *b = DoNullInd(oper1->data.string);
-	dbref loc;
 
 	if (!ok_ascii_thing(b) || !ok_name(b))
 	    abort_interp("Invalid name. (2)");
@@ -1713,7 +1712,6 @@ prim_copyplayer(PRIM_PROTOTYPE)
 {
     dbref newplayer, ref;
     char *name, *password;
-    struct object *newp;
 
     CHECKOP(3);
     oper1 = POP();
@@ -2678,3 +2676,4 @@ prim_pname_history(PRIM_PROTOTYPE)
 
     PushArrayRaw(nu);
 }
+

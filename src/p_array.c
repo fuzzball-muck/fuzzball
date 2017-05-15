@@ -642,7 +642,6 @@ prim_array_n_intersection(PRIM_PROTOTYPE)
 {
     stk_array *new_union;
     stk_array *new_mash;
-    stk_array *temp_mash;
 
     CHECKOP(1);
     oper1 = POP();
