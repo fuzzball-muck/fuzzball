@@ -17,13 +17,15 @@
 #define inet_pton	InetPton
 #define pclose		_pclose
 #define popen		_popen
-#define snprintf	_snprintf
+#define snprintf(str, size, format, ...) \
+			_snprintf_s(str, size, _TRUNCATE, format, __VA_ARGS__)
 #define strcasecmp	_stricmp
 #define strdup		_strdup
 #define strncasecmp	_strnicmp
 #define tzname		_tzname
 #define unlink		_unlink
-#define vnsprintf	_vsnprintf
+#define vsnprintf(str, size, format, ...) \
+			_vsnprintf_s(str, size, _TRUNCATE, format, __VA_ARGS__)
 
 int gettimeofday(struct timeval *tv, struct timezone *tz);
 void set_console();
