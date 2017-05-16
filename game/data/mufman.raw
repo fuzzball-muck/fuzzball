@@ -3920,7 +3920,8 @@ the "Nucker" flag returns the least significant bit. (Use MLEVEL instead.)
 MLEVEL
 MLEVEL (d -- i)
 
-  returns the mucker (or priority) level of the given object.
+  returns the mucker (or priority) level of the given object. If #-1 is
+passed, this returns the effective mucker level of the current program.
 ~~alsosee MUCKER LEVELS
 ~
 ~
@@ -4632,6 +4633,7 @@ that process. The information returned is:
     DESCR       - The descriptor that called the program.
     FILTERS     - Array of event strings being watched for.
     INSTCNT     - The number of instructions run so far.
+    MLEVEL	- The current MUCKER level.
     NEXTRUN     - When the process is due to run again.
     PID         - That process ID.
     PLAYER      - The player dbref that PID belongs to.
