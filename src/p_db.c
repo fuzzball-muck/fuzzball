@@ -2068,6 +2068,7 @@ prim_getpids(PRIM_PROTOTYPE)
 void
 prim_getpidinfo(PRIM_PROTOTYPE)
 {
+    struct inst temp1, temp2;
     stk_array *nu;
     double cpu;
     time_t etime;
@@ -2091,22 +2092,25 @@ prim_getpidinfo(PRIM_PROTOTYPE)
 		cpu = 100.0f;
 	} else
 	    cpu = 0.0f;
-
-	array_set_strkey_intval(&nu, "PID", fr->pid);
-	array_set_strkey_intval(&nu, "INSTCNT", fr->instcnt);
-	array_set_strkey_intval(&nu, "DESCR", fr->descr);
-	array_set_strkey_intval(&nu, "NEXTRUN", 0);
-	array_set_strkey_intval(&nu, "STARTED", (int)fr->started);
-
-	array_set_strkey_refval(&nu, "CALLED_PROG", program);
-	array_set_strkey_refval(&nu, "TRIG", fr->trig);
-	array_set_strkey_refval(&nu, "PLAYER", player);
-
-	array_set_strkey_fltval(&nu, "CPU", cpu);
-
 	array_set_strkey_strval(&nu, "CALLED_DATA", "");
-	array_set_strkey_strval(&nu, "TYPE", "MUF");
+	array_set_strkey_refval(&nu, "CALLED_PROG", program);
+	array_set_strkey_fltval(&nu, "CPU", cpu);
+	array_set_strkey_intval(&nu, "DESCR", fr->descr);
+        temp1.type = PROG_STRING;
+        temp1.data.string = alloc_prog_string("FILTERS");
+        temp2.type = PROG_ARRAY;
+        temp2.data.array = new_array_packed(0);
+        array_setitem(&nu, &temp1, &temp2);
+        CLEAR(&temp1);
+        CLEAR(&temp2);
+	array_set_strkey_intval(&nu, "INSTCNT", fr->instcnt);
+	array_set_strkey_intval(&nu, "NEXTRUN", 0);
+	array_set_strkey_intval(&nu, "PID", fr->pid);
+	array_set_strkey_refval(&nu, "PLAYER", player);
+	array_set_strkey_intval(&nu, "STARTED", (int)fr->started);
 	array_set_strkey_strval(&nu, "SUBTYPE", "");
+	array_set_strkey_refval(&nu, "TRIG", fr->trig);
+	array_set_strkey_strval(&nu, "TYPE", "MUF");
     } else
 	nu = get_pidinfo(oper1->data.number);
 
