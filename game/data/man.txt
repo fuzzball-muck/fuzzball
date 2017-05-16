@@ -5084,6 +5084,7 @@ that process. The information returned is:
     CALLED_PROG - The program dbref# of the process' current call level.
     CPU         - The amount of CPU time used up by the process.
     DESCR       - The descriptor that called the program.
+    FILTERS     - Array of event strings being watched for.
     INSTCNT     - The number of instructions run so far.
     NEXTRUN     - When the process is due to run again.
     PID         - That process ID.
