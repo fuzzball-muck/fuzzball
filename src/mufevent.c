@@ -423,6 +423,7 @@ get_mufevent_pidinfo(stk_array * nw, int pid)
 	CLEAR(&temp1);
 	CLEAR(&temp2);
         array_set_strkey_intval(&nw, "INSTCNT", proc->fr->instcnt);
+        array_set_strkey_intval(&nw, "MLEVEL", 0);
         array_set_strkey_intval(&nw, "PID", proc->fr->pid);
         array_set_strkey_refval(&nw, "PLAYER", proc->player);
         array_set_strkey_refval(&nw, "TRIG", proc->fr->trig);

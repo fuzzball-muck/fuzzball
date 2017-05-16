@@ -724,11 +724,15 @@ prim_mlevel(PRIM_PROTOTYPE)
 {
     CHECKOP(1);
     oper1 = POP();
-    if (!valid_object(oper1))
-	abort_interp("Invalid object.");
-    ref = oper1->data.objref;
-    CHECKREMOTE(ref);
-    result = MLevRaw(ref);
+    if (oper1->data.objref == NOTHING) {
+	result = mlev;
+    } else {
+	if (!valid_object(oper1))
+	    abort_interp("Invalid object.");
+	ref = oper1->data.objref;
+	CHECKREMOTE(ref);
+	result = MLevRaw(ref);
+    }
     CLEAR(oper1);
     PushInt(result);
 }
@@ -2104,6 +2108,7 @@ prim_getpidinfo(PRIM_PROTOTYPE)
         CLEAR(&temp1);
         CLEAR(&temp2);
 	array_set_strkey_intval(&nu, "INSTCNT", fr->instcnt);
+	array_set_strkey_intval(&nu, "MLEVEL", mlev);
 	array_set_strkey_intval(&nu, "NEXTRUN", 0);
 	array_set_strkey_intval(&nu, "PID", fr->pid);
 	array_set_strkey_refval(&nu, "PLAYER", player);
