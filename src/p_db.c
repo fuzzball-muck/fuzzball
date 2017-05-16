@@ -2075,10 +2075,10 @@ prim_getpidinfo(PRIM_PROTOTYPE)
 
     CHECKOP(1);
     oper1 = POP();
-    if (mlev < 3)
-	abort_interp("Permission denied.  Requires Mucker Level 3.");
     if (oper1->type != PROG_INTEGER)
 	abort_interp("Non-integer argument (1)");
+    if (mlev < 3 && oper1->data.number != fr->pid)
+	abort_interp("Permission denied.  Requires Mucker Level 3.");
 
     if (oper1->data.number == fr->pid) {
 	if ((nu = new_array_dictionary()) == NULL)

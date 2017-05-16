@@ -5093,6 +5093,8 @@ that process. The information returned is:
     SUBTYPE     - Additional information about the process.
     TRIG        - The trigger that called that process.
     TYPE        - What type of process it is. MUF/MPI.
+
+Requires Mucker level 3 to check a pid other than current.
 Also see: GETPIDS
 ~
 ~
