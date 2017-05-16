@@ -4640,6 +4640,8 @@ that process. The information returned is:
     TRIG        - The trigger that called that process.
     TYPE        - What type of process it is. MUF/MPI.
 ~~endcode
+
+Requires Mucker level 3 to check a pid other than current.
 ~~alsosee GETPIDS
 ~
 ~
