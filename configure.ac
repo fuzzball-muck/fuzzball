@@ -22,9 +22,15 @@ dnl
 dnl Find the compiler first.
 dnl
 AC_PROG_CC
+AC_PROG_CC_STDC
 AC_PROG_CPP
 AC_PROG_INSTALL
-dnl AC_PROG_CXX for finding the C++ compiler.
+
+dnl
+dnl Requires autoconf-archive project.
+dnl
+AX_CHECK_COMPILE_FLAG([-std=gnu99], [CFLAGS="$CFLAGS -std=gnu99"])
+AX_CHECK_COMPILE_FLAG([-fwrapv], [CFLAGS="$CFLAGS -fwrapv"])
 
 dnl
 dnl Libraries

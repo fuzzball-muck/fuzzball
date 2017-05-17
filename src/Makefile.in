@@ -24,7 +24,7 @@
 # -Wall -pedantic	Good way to get spammed with warnings from GCC.
 # -ftest-coverage -fprofile-arcs  Generate test coverage debug code for gcov.
 #
-OPTIM=-std=gnu99 -g
+OPTIM=
 
 #
 # Paths
@@ -81,7 +81,7 @@ INCL=-I${INCLUDE} @INC@
 #
 # Include path, Cflags...
 #
-CFLAGS= ${OPTIM}
+CFLAGS=@CFLAGS@ ${OPTIM}
 
 #
 # for saving old copies.
