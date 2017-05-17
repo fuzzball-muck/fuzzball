@@ -505,21 +505,6 @@ set_property_flags(dbref player, const char *pname, int flags)
     }
 }
 
-/* return type of property */
-static int
-get_property_type(dbref player, const char *pname)
-{
-    PropPtr p;
-
-    p = get_property(player, pname);
-
-    if (p) {
-	return (PropType(p));
-    } else {
-	return 0;
-    }
-}
-
 PropPtr
 copy_prop(dbref old)
 {

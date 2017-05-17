@@ -24,7 +24,7 @@
 
 #define ERROR_DIE_NOW -1
 
-void
+static void
 p_null(PRIM_PROTOTYPE)
 {
     return;
@@ -861,16 +861,6 @@ copyinst(struct inst *from, struct inst *to)
 }
 
 static void
-copyvars(vars * from, vars * to)
-{
-    assert(from && to);
-
-    for (int i = 0; i < MAX_VAR; i++) {
-	copyinst(&(*from)[i], &(*to)[i]);
-    }
-}
-
-static void
 calc_profile_timing(dbref prog, struct frame *fr)
 {
     assert(fr);
@@ -1220,7 +1210,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 	case PROG_LVAR_AT:
 	case PROG_LVAR_AT_CLEAR:
 	    {
-		struct inst *tmp;
+		struct inst *tmpvar;
 		struct localvars *lv;
 
 		if (atop >= STACK_SIZE)
@@ -1230,14 +1220,14 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 		    abort_loop("Scoped variable number out of range.", NULL, NULL);
 
 		lv = localvars_get(fr, program);
-		tmp = &(lv->lvars[pc->data.number]);
+		tmpvar = &(lv->lvars[pc->data.number]);
 
-		copyinst(tmp, arg + atop);
+		copyinst(tmpvar, arg + atop);
 
 		if (pc->type == PROG_LVAR_AT_CLEAR) {
-		    CLEAR(tmp);
-		    tmp->type = PROG_INTEGER;
-		    tmp->data.number = 0;
+		    CLEAR(tmpvar);
+		    tmpvar->type = PROG_INTEGER;
+		    tmpvar->data.number = 0;
 		}
 
 		pc++;
@@ -1270,22 +1260,22 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 	case PROG_SVAR_AT:
 	case PROG_SVAR_AT_CLEAR:
 	    {
-		struct inst *tmp;
+		struct inst *tmpvar;
 
 		if (atop >= STACK_SIZE)
 		    abort_loop("Stack overflow.", NULL, NULL);
 
-		tmp = scopedvar_get(fr, 0, pc->data.number);
+		tmpvar = scopedvar_get(fr, 0, pc->data.number);
 		if (!tmp)
 		    abort_loop("Scoped variable number out of range.", NULL, NULL);
 
-		copyinst(tmp, arg + atop);
+		copyinst(tmpvar, arg + atop);
 
 		if (pc->type == PROG_SVAR_AT_CLEAR) {
-		    CLEAR(tmp);
+		    CLEAR(tmpvar);
 
-		    tmp->type = PROG_INTEGER;
-		    tmp->data.number = 0;
+		    tmpvar->type = PROG_INTEGER;
+		    tmpvar->data.number = 0;
 		}
 
 		pc++;
@@ -1314,25 +1304,25 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 
 	case PROG_FUNCTION:
 	    {
-		int i = pc->data.mufproc->args;
-		if (atop < i)
+		int mufargs = pc->data.mufproc->args;
+		if (atop < mufargs)
 		    abort_loop("Stack Underflow.", NULL, NULL);
-		if (fr->trys.top && atop - fr->trys.st->depth < i)
+		if (fr->trys.top && atop - fr->trys.st->depth < mufargs)
 		    abort_loop("Stack protection fault.", NULL, NULL);
 		if (fr->skip_declare)
 		    fr->skip_declare = 0;
 		else
 		    scopedvar_addlevel(fr, pc, pc->data.mufproc->vars);
-		while (i-- > 0) {
-		    struct inst *tmp;
+		while (mufargs-- > 0) {
+		    struct inst *tmpvar;
 		    temp1 = arg + --atop;
-		    tmp = scopedvar_get(fr, 0, i);
-		    if (!tmp)
+		    tmpvar = scopedvar_get(fr, 0, mufargs);
+		    if (!tmpvar)
 			abort_loop_hard
 				("Internal error: Scoped variable number out of range in FUNCTION init.",
 				 temp1, NULL);
-		    CLEAR(tmp);
-		    copyinst(temp1, tmp);
+		    CLEAR(tmpvar);
+		    copyinst(temp1, tmpvar);
 		    CLEAR(temp1);
 		}
 		pc++;
@@ -1621,11 +1611,11 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 		reload(fr, atop, stop);
 
 		{
-		    int i, outcount;
+		    int k, outcount;
 		    int count = array_count(temp1->data.array);
 		    char **events = (char **) malloc(count * sizeof(char **));
-		    for (outcount = i = 0; i < count; i++) {
-			char *val = array_get_intkey_strval(temp1->data.array, i);
+		    for (outcount = k = 0; k < count; k++) {
+			char *val = array_get_intkey_strval(temp1->data.array, k);
 			if (val != NULL) {
 			    int found = 0;
 			    for (int j = 0; j < outcount; j++) {

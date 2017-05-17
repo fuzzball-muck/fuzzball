@@ -1,5 +1,6 @@
 #include "config.h"
 
+#include "commands.h"
 #include "db.h"
 #include "fbmath.h"
 #include "fbstrings.h"
@@ -155,7 +156,7 @@ delete_player(dbref who)
     int result;
     char buf[BUFFER_LEN];
     char namebuf[BUFFER_LEN];
-    dbref i = 0, found, ren;
+    dbref found, ren;
     int j;
 
 

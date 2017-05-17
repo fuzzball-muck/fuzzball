@@ -265,55 +265,6 @@ MD5hash(void *dest, const void *orig, int len)
 }
 
 /*
- * outbuf MUST be at least (((strlen(inbuf)+3)/4)*3)+1 chars long to read
- * the full set of base64 encoded data in the string.  More simply, make sure
- * your output buffer is at least 3/4ths the size of your input, plus 4 bytes.
- */
-static size_t
-Base64Decode(void *outbuf, size_t outbuflen, const char *inbuf)
-{
-    unsigned char *outb = (unsigned char *) outbuf;
-    const char *in = inbuf;
-    unsigned int acc = 0;
-    unsigned int val = 0;
-    size_t bytcnt = 0;
-    int bitcnt = 0;
-
-    while (*in || bitcnt) {
-	if (!*in || *in == '=') {
-	    val = 0;
-	} else if (*in >= 'A' && *in <= 'Z') {
-	    val = *in - 'A';
-	} else if (*in >= 'a' && *in <= 'z') {
-	    val = *in - 'a' + 26;
-	} else if (*in >= '0' && *in <= '9') {
-	    val = *in - '0' + 52;
-	} else if (*in == '+') {
-	    val = 62;
-	} else if (*in == '/') {
-	    val = 63;
-	} else {
-	    in++;
-	    continue;
-	}
-	acc = (acc << 6) | (val & 0x3f);
-	bitcnt += 6;
-	if (bitcnt >= 8) {
-	    if (bytcnt >= outbuflen) {
-		break;
-	    }
-	    bytcnt++;
-	    bitcnt -= 8;
-	    *outb++ = (acc >> bitcnt) & 0xff;
-	    acc &= ~(0xff << bitcnt);
-	}
-	if (*in)
-	    in++;
-    }
-    return bytcnt;
-}
-
-/*
  * outbuf MUST be at least (((inlen+2)/3)*4)+1 chars long.
  * More simply, make sure your output buffer is at least 4/3rds the size
  * of the input buffer, plus five bytes.

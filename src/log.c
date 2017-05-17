@@ -12,7 +12,7 @@
 /* cks: these are varargs routines. We are assuming ANSI C. We could at least
    USE ANSI C varargs features, no? Sigh. */
 
-void
+static void
 vlog2file(int prepend_time, const char *filename, char *format, va_list args)
 {
     FILE *fp;
@@ -81,7 +81,7 @@ void
 log_command(char *format, ...)
 log_function(tp_file_log_commands)
 
-void
+static void
 strip_evil_characters(char *badstring)
 {
     unsigned char *s = (unsigned char *) badstring;

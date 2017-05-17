@@ -1,6 +1,7 @@
 #include "config.h"
 
 #include "boolexp.h"
+#include "commands.h"
 #include "compile.h"
 #include "db.h"
 #include "edit.h"

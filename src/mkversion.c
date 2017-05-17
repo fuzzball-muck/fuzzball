@@ -54,9 +54,9 @@
 #define GIT_BLOB_CMD "git hash-object %s 2>&1"
 
 // Prototypes
-unsigned int getgeneration();
+unsigned int getgeneration(void);
 void getnow(char *timestr, size_t len);
-int test_git();
+int test_git(void);
 void print_hash_array(FILE * out);
 char *get_git_hash(const char *name, char *hash, size_t hash_len);
 char *get_sha1_hash(const char *name, char *hash, size_t hash_len);

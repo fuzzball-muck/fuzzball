@@ -144,7 +144,7 @@ new_object(void)
     return newobj;
 }
 
-dbref
+static dbref
 create_object(const char *name, dbref owner, object_flag_type flags)
 {
     dbref newobj = new_object();
@@ -286,7 +286,7 @@ putproperties(FILE * f, dbref obj)
     putstring(f, "*End*");
 }
 
-int
+static int
 db_write_object(FILE * f, dbref i)
 {
     struct object *o = DBFETCH(i);
@@ -707,7 +707,7 @@ db_read_object(FILE * f, dbref objno, int dtype)
     }
 }
 
-void
+static void
 autostart_progs(void)
 {
     struct line *tmp;

@@ -159,7 +159,7 @@ match_registered(struct match_data *md)
 	md->exact_match = match;
 }
 
-dbref
+static dbref
 parse_dbref(const char *s)
 {
     long x;
@@ -284,7 +284,7 @@ match_neighbor(struct match_data *md)
  * match_exits matches a list of exits, starting with 'first'.
  * It will match exits of players, rooms, or things.
  */
-void
+static void
 match_exits(dbref obj, struct match_data *md)
 {
     dbref exit, absolute, first;
@@ -418,7 +418,7 @@ match_exits(dbref obj, struct match_data *md)
  * match_invobj_actions
  * matches actions attached to objects in inventory
  */
-void
+static void
 match_invobj_actions(struct match_data *md)
 {
     dbref thing;
@@ -436,7 +436,7 @@ match_invobj_actions(struct match_data *md)
  * match_roomobj_actions
  * matches actions attached to objects in the room
  */
-void
+static void
 match_roomobj_actions(struct match_data *md)
 {
     dbref thing, loc;
@@ -456,7 +456,7 @@ match_roomobj_actions(struct match_data *md)
  * match_player_actions
  * matches actions attached to player
  */
-void
+static void
 match_player_actions(struct match_data *md)
 {
     switch (Typeof(md->match_from)) {
@@ -474,7 +474,7 @@ match_player_actions(struct match_data *md)
  * Matches exits and actions attached to player's current room.
  * Formerly 'match_exit'.
  */
-void
+static void
 match_room_exits(dbref loc, struct match_data *md)
 {
     switch (Typeof(loc)) {

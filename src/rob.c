@@ -1,5 +1,6 @@
 #include "config.h"
 
+#include "commands.h"
 #include "db.h"
 #include "interface.h"
 #include "match.h"

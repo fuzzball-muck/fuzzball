@@ -2,6 +2,7 @@
 
 #include "compile.h"
 #include "db.h"
+#include "debugger.h"
 #include "edit.h"
 #include "fbstrings.h"
 #include "game.h"
@@ -10,7 +11,7 @@
 #include "interp.h"
 #include "timequeue.h"
 
-int
+static int
 scopedvar_getnum(struct frame *fr, int level, const char *varname)
 {
     struct scopedvar_t *svinfo = NULL;
@@ -80,7 +81,6 @@ list_proglines(dbref player, dbref program, struct frame *fr, int start, int end
     return;
 }
 
-
 char *
 show_line_prims(dbref program, struct inst *pc, int maxprims, int markpc)
 {
@@ -138,8 +138,7 @@ show_line_prims(dbref program, struct inst *pc, int maxprims, int markpc)
     return buf;
 }
 
-
-struct inst *
+static struct inst *
 funcname_to_pc(dbref program, const char *name)
 {
     int siz;
@@ -156,8 +155,7 @@ funcname_to_pc(dbref program, const char *name)
     return (NULL);
 }
 
-
-struct inst *
+static struct inst *
 linenum_to_pc(dbref program, int whatline)
 {
     int siz;
@@ -173,8 +171,7 @@ linenum_to_pc(dbref program, int whatline)
     return (NULL);
 }
 
-
-char *
+static char *
 unparse_sysreturn(dbref * program, struct inst *pc)
 {
     static char buf[BUFFER_LEN];
@@ -196,8 +193,7 @@ unparse_sysreturn(dbref * program, struct inst *pc)
     return buf;
 }
 
-
-char *
+static char *
 unparse_breakpoint(struct frame *fr, int brk)
 {
     static char buf[BUFFER_LEN];
@@ -316,7 +312,7 @@ muf_backtrace(dbref player, dbref program, int count, struct frame *fr)
     notify_nolisten(player, "\033[1;33;40m*done*\033[0m", 1);
 }
 
-void
+static void
 list_program_functions(dbref player, dbref program, char *arg)
 {
     struct inst *ptr;

@@ -518,7 +518,7 @@ array_tree_next_node(array_tree * ptr, array_iter * key)
  *  Stack Array Handling Routines
  *****************************************************************/
 
-stk_array *
+static stk_array *
 new_array(void)
 {
     stk_array *nu;

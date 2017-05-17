@@ -39,7 +39,7 @@
  * Like strncpy, except it guarentees null termination of the result string.
  * It also has a more sensible argument ordering.
  */
-char * strcpyn(char *buf, size_t bufsize, const char *src) {
+static char *strcpyn(char *buf, size_t bufsize, const char *src) {
     size_t pos = 0;
     char *dest = buf;
 
@@ -72,7 +72,7 @@ static struct hostcache {
     struct hostcache **prev;
 } *hostcache_list = 0;
 
-void hostprune(void) {
+static void hostprune(void) {
     struct hostcache *ptr;
     struct hostcache *tmp;
     int i = HOST_CACHE_SIZE;
@@ -91,7 +91,7 @@ void hostprune(void) {
     }
 }
 
-void make_nonblocking(int s) {
+static void make_nonblocking(int s) {
 #if !defined(O_NONBLOCK) || defined(ULTRIX)
 # ifdef FNDELAY			/* SUN OS */
 #  define O_NONBLOCK FNDELAY
@@ -109,7 +109,7 @@ void make_nonblocking(int s) {
 }
 
 #ifdef USE_IPV6
-int ipcmp(struct in6_addr *a, struct in6_addr *b) {
+static int ipcmp(struct in6_addr *a, struct in6_addr *b) {
     int i = 128;
     char *A = (char *) a;
     char *B = (char *) b;
@@ -122,7 +122,7 @@ int ipcmp(struct in6_addr *a, struct in6_addr *b) {
     return i;
 }
 
-void hostdel_v6(struct in6_addr *ip) {
+static void hostdel_v6(struct in6_addr *ip) {
     for (struct hostcache *ptr = hostcache_list; ptr; ptr = ptr->next) {
 	if (!ipcmp(&(ptr->ipnum_v6), ip)) {
 	    if (ptr->next) {
@@ -135,7 +135,7 @@ void hostdel_v6(struct in6_addr *ip) {
     }
 }
 
-const char * hostfetch_v6(struct in6_addr *ip) {
+static const char * hostfetch_v6(struct in6_addr *ip) {
     for (struct hostcache *ptr = hostcache_list; ptr; ptr = ptr->next) {
 	if (!ipcmp(&(ptr->ipnum_v6), ip)) {
 	    if (time(NULL) - ptr->time > EXPIRE_TIME) {
@@ -160,7 +160,7 @@ const char * hostfetch_v6(struct in6_addr *ip) {
     return NULL;
 }
 
-void hostadd_v6(struct in6_addr *ip, const char *name) {
+static void hostadd_v6(struct in6_addr *ip, const char *name) {
     struct hostcache *ptr;
 
     MALLOC(ptr, struct hostcache, 1);
@@ -178,12 +178,12 @@ void hostadd_v6(struct in6_addr *ip, const char *name) {
     hostprune();
 }
 
-void hostadd_timestamp_v6(struct in6_addr *ip, const char *name) {
+static void hostadd_timestamp_v6(struct in6_addr *ip, const char *name) {
     hostadd_v6(ip, name);
     hostcache_list->time = time(NULL);
 }
 
-const char * get_username_v6(struct in6_addr *a, int prt, int myprt) {
+static const char * get_username_v6(struct in6_addr *a, int prt, int myprt) {
     int fd, len, result;
     char *ptr, *ptr2;
     static char buf[1024];
@@ -277,7 +277,7 @@ const char * get_username_v6(struct in6_addr *a, int prt, int myprt) {
 }
 
 /* addrout_v6 -- Translate address 'a' to text.  */
-const char * addrout_v6(struct in6_addr *a, unsigned short prt, unsigned short myprt) {
+static const char * addrout_v6(struct in6_addr *a, unsigned short prt, unsigned short myprt) {
     static char buf[128];
     char tmpbuf[128];
     const char *ptr, *ptr2;
@@ -323,7 +323,7 @@ const char * addrout_v6(struct in6_addr *a, unsigned short prt, unsigned short m
 }
 #endif
 
-void hostdel(long ip) {
+static void hostdel(long ip) {
     for (struct hostcache *ptr = hostcache_list; ptr; ptr = ptr->next) {
 	if (ptr->ipnum == ip) {
 	    if (ptr->next) {
@@ -336,7 +336,7 @@ void hostdel(long ip) {
     }
 }
 
-const char * hostfetch(long ip) {
+static const char * hostfetch(long ip) {
     for (struct hostcache *ptr = hostcache_list; ptr; ptr = ptr->next) {
 	if (ptr->ipnum == ip) {
 	    if (time(NULL) - ptr->time > EXPIRE_TIME) {
@@ -361,7 +361,7 @@ const char * hostfetch(long ip) {
     return NULL;
 }
 
-void hostadd(long ip, const char *name) {
+static void hostadd(long ip, const char *name) {
     struct hostcache *ptr;
 
     MALLOC(ptr, struct hostcache, 1);
@@ -381,7 +381,7 @@ void hostadd(long ip, const char *name) {
     hostprune();
 }
 
-void hostadd_timestamp(long ip, const char *name) {
+static void hostadd_timestamp(long ip, const char *name) {
     hostadd(ip, name);
     hostcache_list->time = time(NULL);
 }
@@ -440,7 +440,7 @@ void set_signals(void) {
     our_signal(SIGHUP, SIG_IGN);
 }
 
-const char * get_username(long a, int prt, int myprt) {
+static const char * get_username(long a, int prt, int myprt) {
     int fd, len, result;
     char *ptr, *ptr2;
     static char buf[1024];
@@ -534,8 +534,7 @@ const char * get_username(long a, int prt, int myprt) {
 }
 
 /* addrout -- Translate address 'a' to text.  */
-const char * addrout(long a, unsigned short prt, unsigned 
-short myprt) {
+static const char * addrout(long a, unsigned short prt, unsigned short myprt) {
     static char buf[128];
     char tmpbuf[128];
     const char *ptr, *ptr2;
@@ -586,7 +585,7 @@ static volatile short shutdown_was_requested = 0;
 static pthread_mutex_t input_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_mutex_t output_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-int do_resolve(void) {
+static int do_resolve(void) {
     int ip1, ip2, ip3, ip4;
     int prt, myprt;
     int doagain;
@@ -598,7 +597,6 @@ int do_resolve(void) {
     long fullip;
 
 #ifdef USE_IPV6
-    char ipv6addr[128];
     struct in6_addr fullip_v6;
 #endif
 
@@ -701,7 +699,7 @@ int do_resolve(void) {
     }
 }
 
-void * resolver_thread_root(void *threadid) {
+static void * resolver_thread_root(void *threadid) {
     do_resolve();
     pthread_exit(NULL);
 }

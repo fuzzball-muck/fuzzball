@@ -25,9 +25,6 @@ static struct mufevent_process {
     struct frame *fr;
 } *mufevent_processes;
 
-#define MUFEVENT_FIRST  -2
-#define MUFEVENT_LAST   -3
-
 /*
  * Frees up a mufevent_process once you are done with it.
  * This shouldn't be used outside this module.
@@ -110,16 +107,6 @@ muf_event_register_specific(dbref player, dbref prog, struct frame *fr, int even
 	ptr->next = newproc;
 	newproc->prev = ptr;
     }
-}
-
-/*
- * Called when a MUF program enters EVENT_WAIT, to register that
- * the program is ready to process any type of MUF events.
- */
-static void
-muf_event_register(dbref player, dbref prog, struct frame *fr)
-{
-    muf_event_register_specific(player, prog, fr, 0, NULL);
 }
 
 /*
@@ -525,7 +512,7 @@ muf_event_add(struct frame *fr, char *event, struct inst *val, int exclusive)
  * You will need to call muf_event_free() on the returned data when you
  * are done with it and wish to free it from memory.
  */
-struct mufevent *
+static struct mufevent *
 muf_event_pop_specific(struct frame *fr, int eventcount, char **events)
 {
     struct mufevent *tmp = NULL;

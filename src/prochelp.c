@@ -79,11 +79,11 @@ static replacement replacements[] = {
     { NULL, NULL }
 };
 
-const char *title = "";
-const char *author = "";
-const char *doccmd = "";
+static const char *title = "";
+static const char *author = "";
+static const char *doccmd = "";
 
-char *
+static char *
 strcpyn(char *buf, size_t bufsize, const char *src)
 {
     int pos = 0;
@@ -96,14 +96,14 @@ strcpyn(char *buf, size_t bufsize, const char *src)
     return buf;
 }
 
-void
+static void
 skip_whitespace(const char **parsebuf)
 {
     while (**parsebuf && isspace(**parsebuf))
         (*parsebuf)++;
 }
 
-char sect[256] = "";
+static char sect[256] = "";
 
 struct topiclist {
     struct topiclist *next;
@@ -112,10 +112,10 @@ struct topiclist {
     int printed;
 };
 
-struct topiclist *topichead;
-struct topiclist *secthead;
+static struct topiclist *topichead;
+static struct topiclist *secthead;
 
-void
+static void
 add_section(const char *str)
 {
     struct topiclist *ptr, *top;
@@ -137,7 +137,7 @@ add_section(const char *str)
     ptr->next = top;
 }
 
-void
+static void
 add_topic(const char *str)
 {
     struct topiclist *ptr, *top;
@@ -180,7 +180,7 @@ add_topic(const char *str)
     ptr->next = top;
 }
 
-char *
+static char *
 escape_html(char *buf, int buflen, const char *in)
 {
     char *out = buf;
@@ -206,7 +206,7 @@ escape_html(char *buf, int buflen, const char *in)
     return buf;
 }
 
-void
+static void
 print_section_topics(FILE * f, FILE * hf, const char *whichsect)
 {
     char sectname[256];
@@ -306,16 +306,13 @@ print_section_topics(FILE * f, FILE * hf, const char *whichsect)
     }
 }
 
-void
-print_sections(FILE * f, FILE * hf, int cols)
+static void
+print_sections(FILE * f, FILE * hf)
 {
-    struct topiclist *ptr;
-    struct topiclist *sptr;
     char sectname[256];
     char *osectptr;
     char *sectptr;
     char buf[256];
-    char buf2[256];
     char buf3[256];
     char buf4[256];
     char *currsect;
@@ -356,7 +353,7 @@ print_sections(FILE * f, FILE * hf, int cols)
     fprintf(f, " \nUse '%s <topicname>' to get more information on a topic.\n", doccmd);
 }
 
-void
+static void
 print_topics(FILE * f, FILE * hf)
 {
     char buf[256];
@@ -451,7 +448,7 @@ print_topics(FILE * f, FILE * hf)
     fprintf(f, " \nUse '%s <topicname>' to get more information on a topic.\n", doccmd);
 }
 
-int
+static int
 find_topics(FILE * infile)
 {
     char buf[4096];
@@ -520,8 +517,8 @@ find_topics(FILE * infile)
     return (longest);
 }
 
-void
-process_lines(FILE * infile, FILE * outfile, FILE * htmlfile, int cols)
+static void
+process_lines(FILE * infile, FILE * outfile, FILE * htmlfile)
 {
     FILE *docsfile;
     char *sectptr;
@@ -530,7 +527,7 @@ process_lines(FILE * infile, FILE * outfile, FILE * htmlfile, int cols)
     char buf3[4096];
     char buf4[4096];
     int nukenext = 0;
-    int topichead = 0;
+    int topichead_ = 0;
     int codeblock = 0;
     char *ptr;
     char *ptr2;
@@ -615,7 +612,7 @@ process_lines(FILE * infile, FILE * outfile, FILE * htmlfile, int cols)
 		    fprintf(htmlfile, HTML_CODEEND);
 		    codeblock = 0;
 		} else if (!strcmp(buf, "~~sectlist\n")) {
-		    print_sections(outfile, htmlfile, cols);
+		    print_sections(outfile, htmlfile);
 		} else if (!strcmp(buf, "~~secttopics\n")) {
 		    /* print_all_section_topics(outfile, htmlfile); */
 		} else if (!strcmp(buf, "~~index\n")) {
@@ -644,7 +641,7 @@ process_lines(FILE * infile, FILE * outfile, FILE * htmlfile, int cols)
 	    }
 	} else if (nukenext) {
 	    nukenext = 0;
-	    topichead = 1;
+	    topichead_ = 1;
 	    fprintf(outfile, "%s", buf);
 	    for (ptr = buf; *ptr && *ptr != '|' && *ptr != '\n'; ptr++) {
 		*ptr = tolower(*ptr);
@@ -654,8 +651,8 @@ process_lines(FILE * infile, FILE * outfile, FILE * htmlfile, int cols)
 	    fprintf(htmlfile, HTML_TOPICHEAD, buf3);
 	} else if (buf[0] == ' ') {
 	    nukenext = 0;
-	    if (topichead) {
-		topichead = 0;
+	    if (topichead_) {
+		topichead_ = 0;
 		fprintf(htmlfile, HTML_TOPICBODY);
 	    } else if (!codeblock) {
 		fprintf(htmlfile, HTML_PARAGRAPH);
@@ -683,7 +680,7 @@ process_lines(FILE * infile, FILE * outfile, FILE * htmlfile, int cols)
 		fprintf(htmlfile, "%s", buf3);
 	    }
 
-	    if (topichead) {
+	    if (topichead_) {
 		fprintf(htmlfile, HTML_TOPICHEAD_BREAK);
 	    }
 	}
@@ -739,10 +736,9 @@ main(int argc, char **argv)
 	return 1;
     }
 
-    cols = 78 / (find_topics(infile) + 1);
     fseek(infile, 0L, 0);
 
-    process_lines(infile, outfile, htmlfile, cols);
+    process_lines(infile, outfile, htmlfile);
 
     fclose(infile);
     fclose(outfile);

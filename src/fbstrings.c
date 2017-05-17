@@ -413,7 +413,7 @@ static int charset_count[] = { 96, 97, 0 };
 
 static int initialized_crypt = 0;
 
-void
+static void
 init_crypt(void)
 {
     for (int i = 0; i <= 255; i++)
@@ -845,7 +845,7 @@ ifloat(const char *s)
  * simply uses its own routines with non-standard but consistant naming.
  */
 
-char *
+static char *
 cstrchr(char *s, char c)
 {
     c = tolower(c);
@@ -857,7 +857,7 @@ cstrchr(char *s, char c)
 	return NULL;
 }
 
-char *
+static char *
 estrchr(char *s, char c, char e)
 {
     while (*s) {

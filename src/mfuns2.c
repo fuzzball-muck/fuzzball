@@ -378,8 +378,7 @@ mfn_fullname(MFUNARGS)
     return buf;
 }
 
-
-int
+static int
 countlitems(char *list, char *sep)
 {
     char *ptr;
@@ -401,12 +400,10 @@ countlitems(char *list, char *sep)
     return count;
 }
 
-
-
 /* buf is outbut buffer.  list is list to take item from.
  * line is list line to take. */
 
-char *
+static char *
 getlitem(char *buf, int buflen, char *list, char *sep, int line)
 {
     char *ptr, *ptr2;
@@ -808,8 +805,7 @@ mfn_filter(MFUNARGS)
     return buf;
 }
 
-
-int
+static int
 list_contains(char *word, int len, char *list)
 {
     char *w, *w2;
@@ -1508,7 +1504,7 @@ mfn_force(MFUNARGS)
     if (!tp_zombies && !(mesgtyp & MPI_ISBLESSED))
 	ABORT_MPI("FORCE", "Permission Denied.");
     if (!(mesgtyp & MPI_ISBLESSED)) {
-	const char *ptr = NAME(obj);
+	ptr = (char *)NAME(obj);
 	char objname[BUFFER_LEN], *ptr2;
 	dbref loc = LOCATION(obj);
 

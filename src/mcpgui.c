@@ -91,7 +91,6 @@ gui_pkg_callback(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
     } else if (!strcasecmp(msg->mesgname, "error")) {
 	const char *err = mcp_mesg_arg_getline(msg, "errcode", 0);
 	const char *text = mcp_mesg_arg_getline(msg, "errtext", 0);
-	const char *id = mcp_mesg_arg_getline(msg, "id", 0);
 
 	if (!err) {
 	    err = "";
@@ -664,7 +663,7 @@ GuiListDel(const char *dlogid, const char *id, int from, int to)
     return EGUINOSUPPORT;
 }
 
-int
+static int
 GuiMenuItem(const char *dlogid, const char *id, const char *type, const char *name,
 	    const char **args)
 {

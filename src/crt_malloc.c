@@ -456,7 +456,7 @@ block_find(const char *file, int line)
 
 /* {{{ CrT_timestr -- Return ascii timestring in static buffer.		*/
 
-const char *
+static const char *
 CrT_timestr(time_t when)
 {
     static char buf[20];

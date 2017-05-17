@@ -1,6 +1,7 @@
 #include "config.h"
 
 #include "boolexp.h"
+#include "commands.h"
 #include "db.h"
 #ifdef DISKBASE
 #include "diskprop.h"

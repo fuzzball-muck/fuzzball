@@ -202,10 +202,10 @@ struct publics {
 
 #define abort_loop_hard(S, C1, C2) \
 { \
-	int tmp = 0; \
-	if (fr) { tmp = fr->trys.top; fr->trys.top = 0; } \
+	int tmptop = 0; \
+	if (fr) { tmptop = fr->trys.top; fr->trys.top = 0; } \
 	do_abort_loop(player, program, (S), fr, pc, atop, stop, (C1), (C2)); \
-	if (fr) fr->trys.top = tmp; \
+	if (fr) fr->trys.top = tmptop; \
 	return 0; \
 }
 
@@ -354,8 +354,8 @@ int permissions(dbref player, dbref thing);
 struct forvars *pop_for(struct forvars *);
 struct tryvars *pop_try(struct tryvars *);
 void prog_clean(struct frame *fr);
-void purge_all_free_frames();
-void purge_free_frames();
+void purge_all_free_frames(void);
+void purge_free_frames(void);
 void purge_for_pool(void);
 void purge_try_pool(void);
 void push(struct inst *stack, int *top, int type, voidptr res);

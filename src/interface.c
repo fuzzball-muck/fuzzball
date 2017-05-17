@@ -1245,7 +1245,6 @@ static void
 queue_immediate_and_flush(struct descriptor_data *d, const char *msg)
 {
     char buf[BUFFER_LEN + 8];
-    int quote_len = 0;
 
     if (d->connected) {
 	if (FLAGS(d->player) & CHOWN_OK) {
@@ -1410,7 +1409,7 @@ shutdownsock(struct descriptor_data *d)
 # endif
 #endif
 
-void
+static void
 make_nonblocking(int s)
 {
 #ifdef WIN32
@@ -1644,7 +1643,7 @@ addrout_v6(int lport, struct in6_addr *a, unsigned short prt)
 }
 
 static struct descriptor_data *
-new_connection_v6(int port, int sock, int is_ssl)
+new_connection_v6(int port, int sock_, int is_ssl)
 {
     int newsock;
 
@@ -1653,7 +1652,7 @@ new_connection_v6(int port, int sock, int is_ssl)
     char hostname[128];
 
     addr_len = (socklen_t) sizeof(addr);
-    newsock = accept(sock, (struct sockaddr *) &addr, &addr_len);
+    newsock = accept(sock_, (struct sockaddr *) &addr, &addr_len);
     if (newsock < 0) {
 	return 0;
     } else {
@@ -1815,7 +1814,7 @@ static void listen_bound_sockets()
 }
 
 static struct descriptor_data *
-new_connection(int port, int sock, int is_ssl)
+new_connection(int port, int sock_, int is_ssl)
 {
     int newsock;
     struct sockaddr_in addr;
@@ -1823,7 +1822,7 @@ new_connection(int port, int sock, int is_ssl)
     char hostname[128];
 
     addr_len = (socklen_t) sizeof(addr);
-    newsock = accept(sock, (struct sockaddr *) &addr, &addr_len);
+    newsock = accept(sock_, (struct sockaddr *) &addr, &addr_len);
     if (newsock < 0) {
 	return 0;
     } else {

@@ -1,6 +1,7 @@
 #include "config.h"
 
 #include "array.h"
+#include "commands.h"
 #include "db.h"
 #include "defaults.h"
 #include "fbstrings.h"

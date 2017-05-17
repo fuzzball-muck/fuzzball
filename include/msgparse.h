@@ -55,7 +55,7 @@ dbref mesg_dbref_strict(int descr, dbref player, dbref what, dbref perms, char *
 void mesg_init(void);
 int new_mfunc(const char *funcname, const char *buf);
 int new_mvar(const char *varname, char *buf);
-void purge_mfns();
+void purge_mfns(void);
 int safeblessprop(dbref obj, dbref perms, char *buf, int mesgtyp, int set_p);
 const char *safegetprop(dbref player, dbref what, dbref perms, const char *inbuf, int mesgtyp, int *blessed);
 const char *safegetprop_strict(dbref player, dbref what, dbref perms, const char *inbuf, int mesgtyp, int *blessed);

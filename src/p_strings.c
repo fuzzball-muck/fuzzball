@@ -1034,7 +1034,6 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 cleanup_and_abort:
     array_free(nu);
     abort_interp(abort_message);
-    return;
 }
 
 void
