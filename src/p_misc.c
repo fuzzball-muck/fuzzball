@@ -32,7 +32,7 @@ prim_time(PRIM_PROTOTYPE)
 	struct tm *tm;
 
 	lt = time(NULL);
-	tm = MUCK_LOCALTIME(lt);
+	tm = localtime(&lt);
 
 	result = tm->tm_sec;
 	PushInt(result);
@@ -52,7 +52,7 @@ prim_date(PRIM_PROTOTYPE)
 	time_t lt;
 	struct tm *tm;
 	lt = time(NULL);
-	tm = MUCK_LOCALTIME(lt);
+	tm = localtime(&lt);
 
 	result = tm->tm_mday;
 	PushInt(result);
@@ -105,7 +105,7 @@ prim_timesplit(PRIM_PROTOTYPE)
 	abort_interp("Invalid argument");
     lt = (time_t) oper1->data.number;
 
-    time_tm = MUCK_LOCALTIME(lt);
+    time_tm = localtime(&lt);
 
     if (!time_tm)
         abort_interp("Out of range time argument");
@@ -145,7 +145,7 @@ prim_timefmt(PRIM_PROTOTYPE)
     if (oper2->type != PROG_INTEGER)
 	abort_interp("Invalid argument (2)");
     lt = (time_t) oper2->data.number;
-    time_tm = MUCK_LOCALTIME(lt);
+    time_tm = localtime(&lt);
     if (!time_tm)
         abort_interp("Out of range time argument");
     if (!strftime(buf, BUFFER_LEN, oper1->data.string->data, time_tm))

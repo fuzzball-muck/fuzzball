@@ -151,7 +151,7 @@ do_motd(dbref player, char *text)
     }
 
     lt = time(NULL);
-    strftime(buf, sizeof(buf), "%a %b %d %T %Z %Y", MUCK_LOCALTIME(lt));
+    strftime(buf, sizeof(buf), "%a %b %d %T %Z %Y", localtime(&lt));
     log2file(tp_file_motd, "%s", buf);
     add_motd_text_fmt(text);
     log2file(tp_file_motd, "%s %s", "- - - - - - - - - - - - - - - - - - -",

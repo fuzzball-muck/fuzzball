@@ -1496,7 +1496,7 @@ process_command(int descr, dbref player, const char *command)
     if (totaltime > (tp_cmd_log_threshold_msec / 1000.0)) {
         char tbuf[24];
         time_t st = (time_t)starttime.tv_sec;
-        strftime(tbuf, sizeof(tbuf), "%Y-%m-%dT%H:%M:%S", MUCK_LOCALTIME(st));
+        strftime(tbuf, sizeof(tbuf), "%Y-%m-%dT%H:%M:%S", localtime(&st));
         char *log_name = whowhere(player);
 	log2file(tp_file_log_cmd_times, "%s: (%.3f) %s: %s",
 		 tbuf, totaltime, log_name, command);

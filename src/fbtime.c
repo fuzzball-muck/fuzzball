@@ -55,7 +55,7 @@ get_tz_offset(void)
     time_t now;
 
     time(&now);
-    return (MUCK_LOCALTIME(now)->tm_gmtoff);
+    return localtime(&now)->tm_gmtoff;
 #elif defined(HAVE_DECL__TIMEZONE)
     /* CygWin uses _timezone instead of timezone. */
     return _timezone;
