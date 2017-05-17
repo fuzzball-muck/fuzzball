@@ -73,9 +73,6 @@
 /* Define to 1 if you have the `random' function. */
 #undef HAVE_RANDOM
 
-/* Define to 1 if you have the `snprintf' function. */
-#undef HAVE_SNPRINTF
-
 /* Define to 1 if you have the <stdarg.h> header file. */
 #undef HAVE_STDARG_H
 
@@ -136,9 +133,6 @@
 
 /* Define to 1 if you have the <varargs.h> header file. */
 #undef HAVE_VARARGS_H
-
-/* Define to 1 if you have the `vsnprintf' function. */
-#undef HAVE_VSNPRINTF
 
 /* Configures which LINT to use to evaluate the sources. */
 #undef LINT
