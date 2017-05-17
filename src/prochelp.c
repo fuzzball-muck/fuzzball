@@ -307,12 +307,15 @@ print_section_topics(FILE * f, FILE * hf, const char *whichsect)
 }
 
 static void
-print_sections(FILE * f, FILE * hf)
+print_sections(FILE * f, FILE * hf, int cols)
 {
+    struct topiclist *ptr;
+    struct topiclist *sptr;
     char sectname[256];
     char *osectptr;
     char *sectptr;
     char buf[256];
+    char buf2[256];
     char buf3[256];
     char buf4[256];
     char *currsect;
@@ -518,7 +521,7 @@ find_topics(FILE * infile)
 }
 
 static void
-process_lines(FILE * infile, FILE * outfile, FILE * htmlfile)
+process_lines(FILE * infile, FILE * outfile, FILE * htmlfile, int cols)
 {
     FILE *docsfile;
     char *sectptr;
@@ -527,7 +530,7 @@ process_lines(FILE * infile, FILE * outfile, FILE * htmlfile)
     char buf3[4096];
     char buf4[4096];
     int nukenext = 0;
-    int topichead_ = 0;
+    int topichead = 0;
     int codeblock = 0;
     char *ptr;
     char *ptr2;
@@ -612,7 +615,7 @@ process_lines(FILE * infile, FILE * outfile, FILE * htmlfile)
 		    fprintf(htmlfile, HTML_CODEEND);
 		    codeblock = 0;
 		} else if (!strcmp(buf, "~~sectlist\n")) {
-		    print_sections(outfile, htmlfile);
+		    print_sections(outfile, htmlfile, cols);
 		} else if (!strcmp(buf, "~~secttopics\n")) {
 		    /* print_all_section_topics(outfile, htmlfile); */
 		} else if (!strcmp(buf, "~~index\n")) {
@@ -641,7 +644,7 @@ process_lines(FILE * infile, FILE * outfile, FILE * htmlfile)
 	    }
 	} else if (nukenext) {
 	    nukenext = 0;
-	    topichead_ = 1;
+	    topichead = 1;
 	    fprintf(outfile, "%s", buf);
 	    for (ptr = buf; *ptr && *ptr != '|' && *ptr != '\n'; ptr++) {
 		*ptr = tolower(*ptr);
@@ -651,8 +654,8 @@ process_lines(FILE * infile, FILE * outfile, FILE * htmlfile)
 	    fprintf(htmlfile, HTML_TOPICHEAD, buf3);
 	} else if (buf[0] == ' ') {
 	    nukenext = 0;
-	    if (topichead_) {
-		topichead_ = 0;
+	    if (topichead) {
+		topichead = 0;
 		fprintf(htmlfile, HTML_TOPICBODY);
 	    } else if (!codeblock) {
 		fprintf(htmlfile, HTML_PARAGRAPH);
@@ -680,7 +683,7 @@ process_lines(FILE * infile, FILE * outfile, FILE * htmlfile)
 		fprintf(htmlfile, "%s", buf3);
 	    }
 
-	    if (topichead_) {
+	    if (topichead) {
 		fprintf(htmlfile, HTML_TOPICHEAD_BREAK);
 	    }
 	}
@@ -736,9 +739,10 @@ main(int argc, char **argv)
 	return 1;
     }
 
+    cols = 78 / (find_topics(infile) + 1);
     fseek(infile, 0L, 0);
 
-    process_lines(infile, outfile, htmlfile);
+    process_lines(infile, outfile, htmlfile, cols);
 
     fclose(infile);
     fclose(outfile);

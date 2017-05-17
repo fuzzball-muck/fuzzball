@@ -1,10 +1,10 @@
-                                    
-                                   by 
+                  MUCK Reference Manual for FBMuck 6.00
+                   by Revar Desmera <revar@belfry.com>
 
 You may get a listing of topics that you can get help on, either sorted
 Alphabetically or sorted by Category.  To get these lists, type:
-         alpha        or
-         category
+        help alpha        or
+        help category
 
 ~
 ~----------------------------------------------------------------------------
@@ -14,8 +14,15 @@ CATEGORY|CATEGORIES|TOPICS|SECTIONS
  
 You can get more help on the following topics:
  
+  Basics                                   (Basics)
+  Building Help                            (BuildHelp)
+  Object Flags                             (FlagHelp)
+  Object Properties                        (PropHelp)
+  MUF Programming                          (ProgCmds)
+  Wizardly Commands                        (WizCmds)
+  Miscellaneous                            (MiscHelp)
  
-Use ' <topicname>' to get more information on a topic.
+Use 'help <topicname>' to get more information on a topic.
 ~
 ~----------------------------------------------------------------------------
 ~
@@ -23,12 +30,123 @@ ALPHA|ALPHABETICAL|COMMANDS
                  Alphabetical List of Topics:
  
 You can get more help on the following topics:
+
+Symbols
+  @action            @armageddon        @attach            @bless
+  @boot              @chown             @chown_lock        @clone
+  @conlock           @contents          @create            @credits
+  @debug             @describe          @dig               @doing
+  @drop              @dump              @edit              @entrances
+  @examine           @fail              @find              @force
+  @force_lock        @hashes            @idescribe         @kill
+  @link              @linklock          @list              @lock
+  @mcpedit           @mcpprogram        @memory            @mpitops
+  @muftops           @name              @newpassword       @odrop
+  @oecho             @ofail             @open              @osuccess
+  @owned             @ownlock           @password          @pcreate
+  @pecho             @program           @propset           @ps
+  @readlock          @reconfiguressl    @recycle           @relink
+  @restart           @restrict          @sanchange         @sanfix
+  @sanity            @set               @shutdown          @stats
+  @success           @sweep             @teleport          @toad
+  @tops              @trace             @tune              @unbless
+  @uncompile         @unlink            @unlock            @usage
+  @version           @wall              
+
+A's
+  abode  
+
+B's
+  bogus    builder  
+
+C's
+  cheatsheet   chown_ok     control      costs        
+
+D's
+  dark       disembark  drop       drop-to    
+
+E's
+  examine  
+
+F's
+  failure  flags    
+
+G's
+  gender  get     give    go      goal    gripe   
+
+H's
+  haven  help   home   homes  
+
+I's
+  info       inventory  
+
+J's
+  jump_ok  
+
+K's
+  kill     kill_ok  killing  
+
+L's
+  link_ok  linking  look     
+
+M's
+  man     money   motd    mpi     mucker  
+
+N's
+  news  
+
+O's
+  objectmatching     overt              
+
+P's
+  page               pose               propdirs           propdirs-example
+  put                
+
+Q's
+  quell  quit   
+
+R's
+  rob      robbery  
+
+S's
+  say            score          sex            startingout    sticky
+  strings        substitutions  success        
+
+T's
+  timestamps   types        
+
+V's
+  vehicle  
+
+W's
+  whisper  who      wizard   
+
+X's
+  xforcible  
+
+Y's
+  yield  
+
+Z's
+  zombie  
  
-Use ' <topicname>' to get more information on a topic.
+Use 'help <topicname>' to get more information on a topic.
 ~
 ~
 ~
 ~----------------------------------------------------------------------------
+~
+~
+Basics|Basics
+Basics
+
+@doing       @password    disembark    drop         examine      get
+give         go           goal         gripe        help         home
+info         inventory    kill         look         money        motd
+mpi          news         page         pose         put          quit
+rob          robbery      say          score        startingout  whisper
+who          
+
 ~----------------------------------------------------------------------------
 ~
 ~
@@ -431,6 +549,25 @@ shows an error message instead.
 ~
 ~
 ~----------------------------------------------------------------------------
+~
+~
+Building Help|BuildHelp
+Building Help
+
+@action            @attach            @chown             @chown_lock
+@clone             @conlock           @contents          @create
+@describe          @dig               @drop              @entrances
+@fail              @find              @force_lock        @idescribe
+@link              @linklock          @lock              @name
+@odrop             @oecho             @ofail             @open
+@osuccess          @owned             @ownlock           @pecho
+@propset           @readlock          @recycle           @relink
+@set               @stats             @success           @sweep
+@teleport          @trace             @unlink            @unlock
+bogus              control            drop-to            failure
+homes              linking            objectmatching     substitutions
+success            timestamps         types              
+
 ~----------------------------------------------------------------------------
 ~
 ~
@@ -1171,6 +1308,15 @@ both players and things.  You must own the object to sweep it.
 ~
 ~
 ~----------------------------------------------------------------------------
+~
+~
+Object Flags|FlagHelp
+Object Flags
+
+abode      builder    chown_ok   dark       flags      haven      jump_ok
+kill_ok    killing    link_ok    mucker     overt      quell      sticky
+vehicle    wizard     xforcible  yield      zombie     
+
 ~----------------------------------------------------------------------------
 ~
 ~
@@ -1432,6 +1578,14 @@ within the debugger, via the 'help' command.
 ~
 ~
 ~----------------------------------------------------------------------------
+~
+~
+Object Properties|PropHelp
+Object Properties
+
+gender             propdirs           propdirs-example   sex
+strings            
+
 ~----------------------------------------------------------------------------
 ~
 ~
@@ -1689,6 +1843,14 @@ Objects have several standard strings:
 ~
 ~
 ~----------------------------------------------------------------------------
+~
+~
+MUF Programming|ProgCmds
+MUF Programming
+
+@edit        @kill        @list        @mcpedit     @mcpprogram  @program
+@ps          man          
+
 ~----------------------------------------------------------------------------
 ~
 ~
@@ -1775,6 +1937,20 @@ Also see: @EDIT, @PROGRAM and @MCPEDIT
 ~
 ~
 ~----------------------------------------------------------------------------
+~
+~
+Wizardly Commands|WizCmds
+Wizardly Commands
+
+@armageddon        @bless             @boot              @credits
+@debug             @dump              @examine           @force
+@hashes            @memory            @mpitops           @muftops
+@newpassword       @pcreate           @reconfiguressl    @restart
+@restrict          @sanchange         @sanfix            @sanity
+@shutdown          @toad              @tops              @tune
+@unbless           @uncompile         @usage             @version
+@wall              
+
 ~----------------------------------------------------------------------------
 ~
 ~
@@ -2148,6 +2324,13 @@ Also see: @SANITY and @SANCHANGE
 ~
 ~
 ~----------------------------------------------------------------------------
+~
+~
+Miscellaneous|MiscHelp
+Miscellaneous
+
+cheatsheet   costs        
+
 ~----------------------------------------------------------------------------
 ~
 ~

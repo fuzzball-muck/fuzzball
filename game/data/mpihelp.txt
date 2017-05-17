@@ -1,10 +1,10 @@
-                                    
-                                   by 
+                  MPI Reference Manual for FBMuck 6.00
+                   by Revar Desmera <revar@belfry.com>
 
 You may get a listing of topics that you can get help on, either sorted
 Alphabetically or sorted by Category.  To get these lists, type:
-         alpha        or
-         category
+        mpi alpha        or
+        mpi category
 
 ~
 ~----------------------------------------------------------------------------
@@ -14,8 +14,21 @@ CATEGORY|CATEGORIES|TOPICS|SECTIONS
  
 You can get more help on the following topics:
  
+  Definitions and Details                  (DefDets)
+  Time Functions                           (TimeFuncs)
+  Logical Functions                        (LogicFuncs)
+  Property Handling                        (PropFuncs)
+  String Functions                         (StringFuncs)
+  Math Functions                           (MathFuncs)
+  Looping Functions                        (Looping)
+  Database Related Functions               (DBFuncs)
+  Connection Related Functions             (ConnFuncs)
+  Variable Handling Functions              (VarFuncs)
+  List Handling Functions                  (ListFuncs)
+  Miscellaneous Functions                  (MiscFuncs)
+  Macros and Functions                     (Functions)
  
-Use ' <topicname>' to get more information on a topic.
+Use 'mpi <topicname>' to get more information on a topic.
 ~
 ~----------------------------------------------------------------------------
 ~
@@ -23,11 +36,97 @@ ALPHA|ALPHABETICAL|COMMANDS
                  Alphabetical List of Topics:
  
 You can get more help on the following topics:
+
+Symbols
+  &arg  &cmd  &how  
+
+A's
+  abs    add    and    attr   awake  
+
+B's
+  bless  
+
+C's
+  center     commas     comments   concat     contains   contents   controls
+  convsecs   convtime   count      created    
+
+D's
+  date         dbeq         debug        debugif      dec          default
+  definitions  delay        delprop      descr        dice         dist
+  div          
+
+E's
+  eq     eval   eval!  exec   exec!  exits  
+
+F's
+  filter     flags      fold       for        force      foreach    ftime
+  fullname   func       
+
+G's
+  ge  gt  
+
+H's
+  holds  
+
+I's
+  idle     if       inc      index    index!   instr    isdbref  isnum
+  istype   
+
+K's
+  kill  
+
+L's
+  lastused   lcommon    le         left       lexec      links      list
+  listprops  lit        lmember    loc        locked     lrand      lremove
+  lsort      lt         ltimestr   lunion     lunique    
+
+M's
+  macros     max        midstr     min        mklist     mod        modified
+  money      muckname   muf        mult       
+
+N's
+  name    ne      nearby  nl      not     null    
+
+O's
+  online  ontime  or      otell   owner   
+
+P's
+  parse      pronouns   prop       prop!      propdir    
+
+R's
+  rand    ref     revoke  right   
+
+S's
+  secs       select     set        sign       smatch     stimestr   store
+  strip      strlen     sublist    subst      subt       sysparm    
+
+T's
+  tell       testlock   time       timestr    timesub    tolower    toupper
+  type       tzoffset   
+
+U's
+  unbless    usecount   
+
+V's
+  v        version  
+
+W's
+  while  with   
+
+X's
+  xor  
  
-Use ' <topicname>' to get more information on a topic.
+Use 'mpi <topicname>' to get more information on a topic.
 ~
 ~
 ~----------------------------------------------------------------------------
+~
+~
+Definitions and Details|DefDets
+Definitions and Details
+
+comments     definitions  
+
 ~----------------------------------------------------------------------------
 ~
 ~
@@ -66,6 +165,14 @@ both considered false.  Any other value is considered true.
 ~
 ~
 ~----------------------------------------------------------------------------
+~
+~
+Time Functions|TimeFuncs
+Time Functions
+
+convsecs   convtime   date       delay      ftime      kill       ltimestr
+secs       stimestr   time       timestr    tzoffset   
+
 ~----------------------------------------------------------------------------
 ~
 ~
@@ -167,6 +274,14 @@ killed.  Usually 1.
 ~
 ~
 ~----------------------------------------------------------------------------
+~
+~
+Logical Functions|LogicFuncs
+Logical Functions
+
+and      default  eq       ge       gt       if       le       lt
+ne       not      or       xor      
+
 ~----------------------------------------------------------------------------
 ~
 ~
@@ -258,6 +373,15 @@ Otherwise, this returns false.
 ~
 ~
 ~----------------------------------------------------------------------------
+~
+~
+Property Handling|PropFuncs
+Property Handling
+
+bless      concat     delprop    exec       exec!      index      index!
+lexec      list       listprops  prop       prop!      propdir    rand
+select     store      timesub    unbless    
+
 ~----------------------------------------------------------------------------
 ~
 ~
@@ -508,6 +632,15 @@ Also see: propdir and smatch
 ~
 ~
 ~----------------------------------------------------------------------------
+~
+~
+String Functions|Strings|StringFuncs
+String Functions
+
+attr       center     eval       eval!      instr      left       lit
+midstr     nl         null       otell      pronouns   revoke     right
+smatch     strip      strlen     subst      tell       tolower    toupper
+
 ~----------------------------------------------------------------------------
 ~
 ~
@@ -725,6 +858,13 @@ commands probably just won't work.
 ~
 ~
 ~----------------------------------------------------------------------------
+~
+~
+Math Functions|Math|MathFuncs
+Math Functions
+
+abs   add   dec   dice  dist  div   inc   max   min   mod   mult  sign  subt
+
 ~----------------------------------------------------------------------------
 ~
 ~
@@ -840,6 +980,13 @@ distance between a pair of 3D points.
 ~
 ~
 ~----------------------------------------------------------------------------
+~
+~
+Looping Functions|Loops|Looping
+Looping Functions
+
+filter   fold     for      foreach  parse    while    
+
 ~----------------------------------------------------------------------------
 ~
 ~
@@ -926,6 +1073,16 @@ items delimited by that string, otherwise it assumes a carriage return.
 ~
 ~
 ~----------------------------------------------------------------------------
+~
+~
+Database Related Functions|Database|DBFuncs
+Database Related Functions
+
+contains   contents   controls   created    dbeq       exits      flags
+force      fullname   holds      istype     lastused   links      loc
+locked     modified   money      name       nearby     owner      ref
+testlock   type       usecount   
+
 ~----------------------------------------------------------------------------
 ~
 ~
@@ -1112,6 +1269,13 @@ this just sees if obj1 is within the locational environment of obj2.
 ~
 ~
 ~----------------------------------------------------------------------------
+~
+~
+Connection Related Functions|Connection|ConnFuncs
+Connection Related Functions
+
+awake   descr   idle    online  ontime  
+
 ~----------------------------------------------------------------------------
 ~
 ~
@@ -1154,6 +1318,13 @@ DESCR
 ~
 ~
 ~----------------------------------------------------------------------------
+~
+~
+Variable Handling Functions|Variable|Variables|Vars|Var|VarFuncs
+Variable Handling Functions
+
+&arg  &cmd  &how  set   v     with  
+
 ~----------------------------------------------------------------------------
 ~
 ~
@@ -1233,6 +1404,14 @@ scope of variables inside of {with:} commands:
 ~
 ~
 ~----------------------------------------------------------------------------
+~
+~
+List Handling Functions|List Handling|ListFuncs
+List Handling Functions
+
+commas   count    lcommon  lmember  lrand    lremove  lsort    lunion
+lunique  mklist   sublist  
+
 ~----------------------------------------------------------------------------
 ~
 ~
@@ -1349,6 +1528,14 @@ Harry."
 ~
 ~
 ~----------------------------------------------------------------------------
+~
+~
+Miscellaneous Functions|Miscellaneous|Misc|MiscFuncs
+Miscellaneous Functions
+
+debug      debugif    isdbref    isnum      muckname   muf        sysparm
+version    
+
 ~----------------------------------------------------------------------------
 ~
 ~
@@ -1413,6 +1600,13 @@ Also see: debug and if
 ~
 ~
 ~----------------------------------------------------------------------------
+~
+~
+Macros and Functions|Functions
+Macros and Functions
+
+func    macros  
+
 ~----------------------------------------------------------------------------
 ~
 ~
