@@ -1,6 +1,7 @@
 #include "config.h"
 
 #include "array.h"
+#include "commands.h"
 #include "db.h"
 #include "debugger.h"
 #include "fbstrings.h"
@@ -313,7 +314,7 @@ add_muf_read_event(int descr, dbref player, dbref prog, struct frame *fr)
 		     prog, fr, "READ", NULL, NULL);
 }
 
-int
+static int
 add_muf_tread_event(int descr, dbref player, dbref prog, struct frame *fr, int delay)
 {
     if (!fr) {
@@ -956,7 +957,8 @@ dequeue_prog_real(dbref program, int killmode, const char *file, const int line)
     }
 
     if (tqhead) {
-	for (timequeue tmp = tqhead, ptr = tqhead->next; ptr; tmp = ptr, ptr = ptr->next) {
+        ptr = tqhead->next;
+	for (timequeue tmp = tqhead; ptr; tmp = ptr, ptr = ptr->next) {
 	    DEBUGPRINT("dequeue_prog(2): ptr->called_prog=#%d, has_refs()=%d ",
 		       ptr->called_prog, has_refs(program, ptr));
 	    DEBUGPRINT("ptr->uid=#%d.\n", ptr->uid);

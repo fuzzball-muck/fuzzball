@@ -56,7 +56,7 @@ void our_signal(int signo, void (*sighandler) (int));
 #endif
 
 #ifdef HAVE_PSELECT
-int set_pselect_signal_mask = 0;
+static int set_pselect_signal_mask = 0;
 sigset_t pselect_signal_mask;
 #endif
 
@@ -247,8 +247,6 @@ bailout(int sig)
     volatile char *x = 0;
     *x = 1;
     exit(7);
-
-    return RETSIGVAL;
 }
 
 /*

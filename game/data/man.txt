@@ -1,10 +1,10 @@
-                  MUF Reference Manual for FBMuck 6.00
-                   by Revar Desmera <revar@belfry.com>
+                                    
+                                   by 
 
 You may get a listing of topics that you can get help on, either sorted
 Alphabetically or sorted by Category.  To get these lists, type:
-        man alpha        or
-        man category
+         alpha        or
+         category
 
 ~
 ~----------------------------------------------------------------------------
@@ -14,31 +14,8 @@ CATEGORY|CATEGORIES|TOPICS|SECTIONS
  
 You can get more help on the following topics:
  
-  Details and Definitions                  (DefDets)
-  Macros and Compiler Directives           (CompDefs)
-  Stack Manipulation Operators             (StackOps)
-  Variables and Handling Thereof           (VarHandling)
-  Logical Operators                        (LogicOps)
-  Execution Control Structures             (ExecStructs)
-  I/O Operators                            (IOOps)
-  Mathematical Operators                   (MathOps)
-  Floating Point Operators                 (FloatOps)
-  String Manipulation Operators            (StringOps)
-  Lock Manipulation Operators              (LockOps)
-  Array Manipulation Operators             (ArrayOps)
-  Property Manipulation Operators          (PropOps)
-  Database Related Operators               (DBOps)
-  Time Manipulation Operators              (TimeOps)
-  Process Management Operators             (ProcOps)
-  Connection Management Operators          (ConnOps)
-  Event Handling Operators                 (EventOps)
-  MCP Support Operators                    (MCPOps)
-  GUI Support Operators                    (GUIOps)
-  Exception Handling                       (Exceptions)
-  Debugging                                (Debug)
-  Miscellaneous                            (MiscOps)
  
-Use 'man <topicname>' to get more information on a topic.
+Use ' <topicname>' to get more information on a topic.
 ~
 ~----------------------------------------------------------------------------
 ~
@@ -46,205 +23,12 @@ ALPHA|ALPHABETICAL|COMMANDS
                  Alphabetical List of Topics:
  
 You can get more help on the following topics:
-
-Symbols
-  !              !=             $abort         $author        $cleardefs
-  $def           $define        $echo          $ifcancall     $ifdef
-  $iflib         $iflibver      $ifncancall    $ifndef        $ifnlib
-  $ifnlibver     $ifnver        $ifver         $include       $lib-version
-  $libdef        $note          $pragma        $pubdef        $undef
-  $version       %              '              *              +
-  ++             -              --             -rot           /
-  <              <=             =              >              >=
-  ?dup           @              \              __fuzzball__   __muckname
-  __version      {              }              }cat           }dict
-  }join          }list          }tell          
-
-A's
-  abort                     abs                       acos
-  addpennies                addprop                   address?
-  and                       ansi_midstr               ansi_strcut
-  ansi_strip                ansi_strlen               array?
-  array_appenditem          array_compare             array_count
-  array_cut                 array_delitem             array_delrange
-  array_diff                array_excludeval          array_explode
-  array_extract             array_filter_flags        array_filter_prop
-  array_findval             array_first               array_fmtstrings
-  array_get_ignorelist      array_get_propdirs        array_get_proplist
-  array_get_propvals        array_get_reflist         array_getitem
-  array_getrange            array_insertitem          array_insertrange
-  array_interpret           array_intersect           array_join
-  array_keys                array_last                array_make
-  array_make_dict           array_matchkey            array_matchval
-  array_ndiff               array_nested_del          array_nested_get
-  array_nested_set          array_next                array_nintersect
-  array_notify              array_notify_secure       array_nunion
-  array_prev                array_put_proplist        array_put_propvals
-  array_put_reflist         array_reverse             array_setitem
-  array_setrange            array_sort                array_sort_indexed
-  array_union               array_vals                arrive
-  asin                      atan                      atan2
-  atoi                      awake?                    
-
-B's
-  background   begin        bg_mode      bitand       bitor        bitshift
-  bitxor       blessed?     blessprop    break        breakpoints  
-
-C's
-  c_button           c_checkbox         c_combobox         c_datum
-  c_edit             c_frame            c_hrule            c_image
-  c_label            c_listbox          c_menu             c_multiedit
-  c_notebook         c_radiobtn         c_scale            c_spinner
-  c_vrule            call               caller             cancall?
-  ceil               checkargs          checkpassword      clear
-  clear_error        cmd                command            compilation
-  compile            compiled?          conboot            concount
-  condbref           condescr           conhost            conidle
-  connect            connotify          contents           contents_array
-  contime            continue           controls           conuser
-  copyobj            copyplayer         cos                ctoi
-
-D's
-  date               dbcmp              dbref              dbref?
-  dbtop              debug notation     debug_line         debug_off
-  debug_on           debugger           debugger_break     debugger_commands
-  depth              desc               descr              descr_array
-  descr_setuser      descrboot          descrbufsize       descrcon
-  descrdbref         descrflush         descrhost          descridle
-  descriptors        descrleastidle     descrmostidle      descrnotify
-  descrsecure?       descrtime          descruser          dictionary?
-  diff3              dist3d             drop               dup
-  dupn               
-
-E's
-  else               entrances_array    envprop            envpropstr
-  epsilon            error?             error_bit          error_name
-  error_num          error_str          event_count        event_exists
-  event_send         event_wait         event_waitfor      execute
-  exit               exit?              exits              exits_array
-  exp                explode            explode_array      ext-name-ok?
-
-F's
-  fabs               fail               fg_mode            findnext
-  firstdescr         flag?              flags              float
-  float?             floor              fmod               fmtstring
-  for                force              force_level        forcedby
-  forcedby_array     foreach            foreground         fork
-  frand              ftostr             ftostrc            fulldepth
-
-G's
-  gaussian           getlink            getlinks           getlinks_array
-  getlockstr         getpidinfo         getpids            getprop
-  getpropfval        getpropstr         getpropval         getseed
-  gmtoffset          gui-options        gui_available      gui_ctrl_command
-  gui_ctrl_create    gui_dlog_close     gui_dlog_create    gui_dlog_helper
-  gui_dlog_show      gui_dlog_simple    gui_dlog_tabbed    gui_value_get
-  gui_value_set      gui_values_get     
-
-I's
-  if           ignore_add   ignore_del   ignoring?    inf          instances
-  instr        instring     int          int?         interp       intostr
-  is_set?      ispid?       itoc         
-
-J's
-  jmp  
-
-K's
-  kill  
-
-L's
-  lastdescr      libraries      listeners      loc            localvar
-  location       lock?          locked?        log            log10
-  loop-example1  loop-example2  loop-example3  loops          lreverse
-  lvar           
-
-M's
-  match                     max_variable_count        mcp_bind
-  mcp_register              mcp_register_event        mcp_send
-  mcp_supports              md5hash                   me
-  midstr                    mlevel                    mode
-  modf                      movepennies               moveto
-  mucker levels             multitasking              
-
-N's
-  name               name-ok?           newexit            newobject
-  newpassword        newplayer          newprogram         newroom
-  next               nextdescr          nextentrance       nextowned
-  nextprop           nip                not                notify
-  notify_except      notify_exclude     notify_nolisten    notify_secure
-  number?            
-
-O's
-  objmem         odrop          ofail          ok?            online
-  online_array   or             osucc          over           owner
-
-P's
-  parselock          parsempi           parsempiblessed    parseprop
-  parsepropex        part_pmatch        pennies            pi
-  pick               pid                player?            pmatch
-  pname-ok?          pname_history      polar_to_xyz       pop
-  popn               pow                pr_mode            preempt
-  prettylock         prog               program?           program_getlines
-  program_setlines   pronoun_sub        propdir?           public
-  put                
-
-Q's
-  queue  
-
-R's
-  random             read               read_wants_blanks  recycle
-  reflist_add        reflist_del        reflist_find       regexp
-  regsplit           regsplit_noempty   regsub             remove_prop
-  repeat             reverse            rinstr             rinstring
-  rmatch             room?              rot                rotate
-  round              rsplit             
-
-S's
-  secure_sysvars     set                set_error          setdesc
-  setdrop            setfail            setlink            setlinks_array
-  setlockstr         setmode            setname            setodrop
-  setofail           setosucc           setown             setprop
-  setseed            setsucc            setsysparm         sha1hash
-  sign               sin                sleep              smatch
-  split              sqrt               srand              stats
-  stod               strcat             strcmp             strcut
-  strdecrypt         strencrypt         string?            stringcmp
-  stringpfx          strip              striplead          striptail
-  strlen             strncmp            strtof             subst
-  succ               supplicant         swap               sysparm
-  sysparm_array      systime            systime_precise    
-
-T's
-  tan          testlock     textattr     then         thing?       time
-  timefmt      timer_start  timer_stop   timesplit    timestamps   toadplayer
-  tokensplit   tolower      toupper      tread        trig         trigger
-  truename     try          tuck         
-
-U's
-  unblessprop  uncompile    unparselock  unparseobj   until        userlog
-
-V's
-  var        var!       variable   version    
-
-W's
-  watchpid   while      wizcall    
-
-X's
-  xor            xyz_to_polar   
  
-Use 'man <topicname>' to get more information on a topic.
+Use ' <topicname>' to get more information on a topic.
 ~
 ~
 ~
 ~----------------------------------------------------------------------------
-~
-~
-Details and Definitions|DefDets
-Details and Definitions
-
-arrive         compilation    connect        flags          libraries
-listeners      mucker levels  multitasking   
-
 ~----------------------------------------------------------------------------
 ~
 ~
@@ -473,22 +257,6 @@ you want, but they are run in alphabetic order.
 ~
 ~
 ~----------------------------------------------------------------------------
-~
-~
-Macros and Compiler Directives|Macros|Directives|CompDefs
-Macros and Compiler Directives
-
-$abort                    $author                   $cleardefs
-$def                      $define                   $echo
-$ifcancall                $ifdef                    $iflib
-$iflibver                 $ifncancall               $ifndef
-$ifnlib                   $ifnlibver                $ifnver
-$ifver                    $include                  $lib-version
-$libdef                   $note                     $pragma
-$pubdef                   $undef                    $version
-\                         __fuzzball__              __muckname
-__version                 max_variable_count        
-
 ~----------------------------------------------------------------------------
 ~
 ~
@@ -892,15 +660,6 @@ recursively.  It will call the actual addprop.
 ~
 ~
 ~----------------------------------------------------------------------------
-~
-~
-Stack Manipulation Operators|StackOps
-Stack Manipulation Operators
-
--rot       ?dup       depth      dup        dupn       fulldepth  lreverse
-nip        over       pick       pop        popn       put        reverse
-rot        rotate     swap       tuck       {          }          
-
 ~----------------------------------------------------------------------------
 ~
 ~
@@ -1083,16 +842,6 @@ Also see: {, }list, }dict, }tell and }join
 ~
 ~
 ~----------------------------------------------------------------------------
-~
-~
-Variables and Handling Thereof|VarHandling
-Variables and Handling Thereof
-
-!                  @                  cmd                command
-loc                localvar           lvar               me
-secure_sysvars     trigger            var                var!
-variable           
-
 ~----------------------------------------------------------------------------
 ~
 ~
@@ -1263,15 +1012,6 @@ correct values in one instruction.
 ~
 ~
 ~----------------------------------------------------------------------------
-~
-~
-Logical Operators|LogicOps
-Logical Operators
-
-!=           <            <=           =            >            >=
-address?     and          array?       dbref?       dictionary?  float?
-int?         lock?        not          or           string?      xor
-
 ~----------------------------------------------------------------------------
 ~
 ~
@@ -1430,17 +1170,6 @@ Also see: GETPROP, SETPROP, PARSELOCK, UNPARSELOCK, PRETTYLOCK and TESTLOCK
 ~
 ~
 ~----------------------------------------------------------------------------
-~
-~
-Execution Control Structures|ExecStructs
-Execution Control Structures
-
-'              begin          break          call           cancall?
-continue       else           execute        exit           for
-foreach        if             interp         jmp            loop-example1
-loop-example2  loop-example3  loops          public         repeat
-then           until          while          wizcall        
-
 ~----------------------------------------------------------------------------
 ~
 ~
@@ -1772,15 +1501,6 @@ Also see: PUBLIC, WIZCALL, CALL, $LIBDEF and $PUBDEF
 ~
 ~
 ~----------------------------------------------------------------------------
-~
-~
-I/O Operators|IOOps
-I/O Operators
-
-notify             notify_except      notify_exclude     notify_nolisten
-notify_secure      read               read_wants_blanks  tread
-userlog            
-
 ~----------------------------------------------------------------------------
 ~
 ~
@@ -1878,15 +1598,6 @@ value 'userlog_mlev' (defaults to 3) to write this log entry.
 ~
 ~
 ~----------------------------------------------------------------------------
-~
-~
-Mathematical Operators|MathOps
-Mathematical Operators
-
-%          *          +          ++         -          --         /
-abs        bitand     bitor      bitshift   bitxor     getseed    int
-random     setseed    sign       srand      
-
 ~----------------------------------------------------------------------------
 ~
 ~
@@ -2042,20 +1753,6 @@ Same as the C << operator.  If the second integer is negative, its like >>.
 ~
 ~
 ~----------------------------------------------------------------------------
-~
-~
-Floating Point Operators|FloatOps
-Floating Point Operators
-
-acos           asin           atan           atan2          ceil
-clear          clear_error    cos            diff3          dist3d
-epsilon        error?         error_bit      error_name     error_num
-error_str      exp            fabs           float          floor
-fmod           frand          ftostr         ftostrc        gaussian
-inf            is_set?        log            log10          modf
-pi             polar_to_xyz   pow            round          set_error
-sin            sqrt           strtof         tan            xyz_to_polar
-
 ~----------------------------------------------------------------------------
 ~
 ~
@@ -2378,25 +2075,6 @@ Also see: ERROR?
 ~
 ~
 ~----------------------------------------------------------------------------
-~
-~
-String Manipulation Operators|StringOps
-String Manipulation Operators
-
-ansi_midstr        ansi_strcut        ansi_strip         ansi_strlen
-array_fmtstrings   atoi               ctoi               explode
-explode_array      ext-name-ok?       fmtstring          instr
-instring           intostr            itoc               md5hash
-midstr             name-ok?           number?            pname-ok?
-pronoun_sub        regexp             regsplit           regsplit_noempty
-regsub             rinstr             rinstring          rsplit
-sha1hash           smatch             split              stod
-strcat             strcmp             strcut             strdecrypt
-strencrypt         stringcmp          stringpfx          strip
-striplead          striptail          strlen             strncmp
-subst              textattr           tokensplit         tolower
-toupper            
-
 ~----------------------------------------------------------------------------
 ~
 ~
@@ -3003,14 +2681,6 @@ returns the values:
 ~
 ~
 ~----------------------------------------------------------------------------
-~
-~
-Lock Manipulation Operators|LockOps
-Lock Manipulation Operators
-
-getlockstr   locked?      parselock    prettylock   setlockstr   supplicant
-testlock     unparselock  
-
 ~----------------------------------------------------------------------------
 ~
 ~
@@ -3081,28 +2751,6 @@ the object the lock is being tested against. Otherwise, returns #-1.
 ~
 ~
 ~----------------------------------------------------------------------------
-~
-~
-Array Manipulation Operators|ArrayOps
-Array Manipulation Operators
-
-array_appenditem          array_compare             array_count
-array_cut                 array_delitem             array_delrange
-array_diff                array_excludeval          array_explode
-array_extract             array_findval             array_first
-array_getitem             array_getrange            array_insertitem
-array_insertrange         array_interpret           array_intersect
-array_join                array_keys                array_last
-array_make                array_make_dict           array_matchkey
-array_matchval            array_ndiff               array_nested_del
-array_nested_get          array_nested_set          array_next
-array_nintersect          array_notify              array_notify_secure
-array_nunion              array_prev                array_reverse
-array_setitem             array_setrange            array_sort
-array_sort_indexed        array_union               array_vals
-}cat                      }dict                     }join
-}list                     }tell                     
-
 ~----------------------------------------------------------------------------
 ~
 ~
@@ -3582,22 +3230,6 @@ smatch wildcard pattern.
 ~
 ~
 ~----------------------------------------------------------------------------
-~
-~
-Property Manipulation Operators|PropOps
-Property Manipulation Operators
-
-addprop                   array_filter_flags        array_filter_prop
-array_get_propdirs        array_get_proplist        array_get_propvals
-array_get_reflist         array_put_proplist        array_put_propvals
-array_put_reflist         blessed?                  blessprop
-envprop                   envpropstr                getprop
-getpropfval               getpropstr                getpropval
-nextprop                  parsempi                  parsempiblessed
-parseprop                 parsepropex               propdir?
-reflist_add               reflist_del               reflist_find
-remove_prop               setprop                   unblessprop
-
 ~----------------------------------------------------------------------------
 ~
 ~
@@ -3881,39 +3513,6 @@ This primitives requires at least mucker level 3.
 ~
 ~
 ~----------------------------------------------------------------------------
-~
-~
-Database Related Operators|DBOps
-Database Related Operators
-
-addpennies                array_get_ignorelist      caller
-checkpassword             contents                  contents_array
-controls                  copyobj                   copyplayer
-dbcmp                     dbref                     dbtop
-desc                      drop                      entrances_array
-exit?                     exits                     exits_array
-fail                      findnext                  flag?
-getlink                   getlinks                  getlinks_array
-ignore_add                ignore_del                ignoring?
-location                  match                     mlevel
-movepennies               moveto                    name
-newexit                   newobject                 newpassword
-newplayer                 newprogram                newroom
-next                      nextentrance              nextowned
-objmem                    odrop                     ofail
-ok?                       osucc                     owner
-part_pmatch               pennies                   player?
-pmatch                    pname_history             prog
-program?                  recycle                   rmatch
-room?                     set                       setdesc
-setdrop                   setfail                   setlink
-setlinks_array            setname                   setodrop
-setofail                  setosucc                  setown
-setsucc                   setsysparm                stats
-succ                      sysparm                   sysparm_array
-thing?                    timestamps                toadplayer
-trig                      truename                  unparseobj
-
 ~----------------------------------------------------------------------------
 ~
 ~
@@ -4796,14 +4395,6 @@ This primitive requires at least Mucker Level 3.
 ~
 ~
 ~----------------------------------------------------------------------------
-~
-~
-Time Manipulation Operators|TimeOps
-Time Manipulation Operators
-
-date               gmtoffset          sleep              systime
-systime_precise    time               timefmt            timesplit
-
 ~----------------------------------------------------------------------------
 ~
 ~
@@ -4908,18 +4499,6 @@ may not thereafter use the READ primitive.
 ~
 ~
 ~----------------------------------------------------------------------------
-~
-~
-Process Management Operators|ProcOps
-Process Management Operators
-
-background         bg_mode            compile            compiled?
-fg_mode            foreground         fork               getpidinfo
-getpids            instances          ispid?             kill
-mode               pid                pr_mode            preempt
-program_getlines   program_setlines   queue              setmode
-uncompile          
-
 ~----------------------------------------------------------------------------
 ~
 ~
@@ -5154,20 +4733,6 @@ This primitive requires at least mucker level 4.
 ~
 ~
 ~----------------------------------------------------------------------------
-~
-~
-Connection Management Operators|ConnOps
-Connection Management Operators
-
-awake?             conboot            concount           condbref
-condescr           conhost            conidle            connotify
-contime            conuser            descr              descr_array
-descr_setuser      descrboot          descrbufsize       descrcon
-descrdbref         descrflush         descrhost          descridle
-descriptors        descrleastidle     descrmostidle      descrnotify
-descrsecure?       descrtime          descruser          firstdescr
-lastdescr          nextdescr          online             online_array
-
 ~----------------------------------------------------------------------------
 ~
 ~
@@ -5425,14 +4990,6 @@ Also note that \r in lines gets translated to CR LF byte pairs.
 ~
 ~
 ~----------------------------------------------------------------------------
-~
-~
-Event Handling Operators|EventOps
-Event Handling Operators
-
-event_count    event_exists   event_send     event_wait     event_waitfor
-timer_start    timer_stop     watchpid       
-
 ~----------------------------------------------------------------------------
 ~
 ~
@@ -5587,14 +5144,6 @@ event.  This primitive requires at least Mucker Level 3.
 ~
 ~
 ~----------------------------------------------------------------------------
-~
-~
-MCP Support Operators|MCPOps
-MCP Support Operators
-
-mcp_bind                  mcp_register              mcp_register_event
-mcp_send                  mcp_supports              
-
 ~----------------------------------------------------------------------------
 ~
 ~
@@ -5670,20 +5219,6 @@ getting sent.
 ~
 ~
 ~----------------------------------------------------------------------------
-~
-~
-GUI Support Operators|GUIOps
-GUI Support Operators
-
-c_button           c_checkbox         c_combobox         c_datum
-c_edit             c_frame            c_hrule            c_image
-c_label            c_listbox          c_menu             c_multiedit
-c_notebook         c_radiobtn         c_scale            c_spinner
-c_vrule            gui-options        gui_available      gui_ctrl_command
-gui_ctrl_create    gui_dlog_close     gui_dlog_create    gui_dlog_helper
-gui_dlog_show      gui_dlog_simple    gui_dlog_tabbed    gui_value_get
-gui_value_set      gui_values_get     
-
 ~----------------------------------------------------------------------------
 ~
 ~
@@ -6217,13 +5752,6 @@ Also see: GUI_CTRL_CREATE, GUI_DLOG_CREATE and GUI_OPTIONS
 ~
 ~
 ~----------------------------------------------------------------------------
-~
-~
-Exception Handling|Exceptions
-Exception Handling
-
-abort      checkargs  try        
-
 ~----------------------------------------------------------------------------
 ~
 ~
@@ -6369,14 +5897,6 @@ string.
 ~
 ~
 ~----------------------------------------------------------------------------
-~
-~
-Debugging|Debug
-Debugging
-
-breakpoints        debug notation     debug_line         debug_off
-debug_on           debugger           debugger_break     debugger_commands
-
 ~----------------------------------------------------------------------------
 ~
 ~
@@ -6516,14 +6036,6 @@ before the JMP or EXIT for each nexted FOR loop.
 ~
 ~
 ~----------------------------------------------------------------------------
-~
-~
-Miscellaneous|MiscOps
-Miscellaneous
-
-force              force_level        forcedby           forcedby_array
-version            
-
 ~----------------------------------------------------------------------------
 ~
 ~

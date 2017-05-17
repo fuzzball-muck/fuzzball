@@ -1268,7 +1268,7 @@ extract(void)
 	f = stdout;
     }
 
-    for (int i = 0; i < db_top; i++) {
+    for (i = 0; i < db_top; i++) {
 	if ((OWNER(i) == d) && (Typeof(i) != TYPE_GARBAGE)) {
 	    extract_object(f, i);
 	}			/* extract only objects owned by this player */

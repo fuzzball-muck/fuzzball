@@ -929,8 +929,7 @@ mfn_online(MFUNARGS)
     return buf;
 }
 
-
-int
+static int
 msg_compare(const char *s1, const char *s2)
 {
     if (*s1 && *s2 && number(s1) && number(s2)) {
@@ -1879,7 +1878,7 @@ mfn_tell(MFUNARGS)
     return argv[0];
 }
 
-int
+static int
 isancestor(dbref parent, dbref child)
 {
     while (child != NOTHING && child != parent) {

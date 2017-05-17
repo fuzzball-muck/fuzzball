@@ -470,7 +470,7 @@ mcp_package_deregister(const char *pkgname)
 /***                       ***************************************/
 /*****************************************************************/
 
-void
+static void
 mcp_basic_handler(McpFrame * mfr, McpMesg * mesg)
 {
     McpVer myminver = { 2, 1 };
@@ -556,7 +556,7 @@ mcp_basic_handler(McpFrame * mfr, McpMesg * mesg)
 /***                                 *****************************/
 /*****************************************************************/
 
-void
+static void
 mcp_negotiate_handler(McpFrame * mfr, McpMesg * mesg, McpVer version, void *context)
 {
     McpVer minver = { 0, 0 };

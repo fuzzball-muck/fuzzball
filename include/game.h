@@ -66,7 +66,7 @@ extern const char *compile_options;
 extern int force_level;
 extern FILE *input_file;
 
-void cleanup_game();
+void cleanup_game(void);
 void fork_and_dump(void);
 int init_game(const char *infile, const char *outfile);
 void panic(const char *);

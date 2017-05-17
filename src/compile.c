@@ -1,5 +1,6 @@
 #include "config.h"
 
+#include "commands.h"
 #include "compile.h"
 #include "db.h"
 #include "edit.h"
@@ -763,7 +764,7 @@ MaybeOptimizeVarsAt(COMPSTATE * cstat, struct INTERMEDIATE *first, int AtNo, int
     }
 }
 
-void
+static void
 RemoveNextIntermediate(COMPSTATE * cstat, struct INTERMEDIATE *curr)
 {
     struct INTERMEDIATE *tmp;
@@ -3828,8 +3829,6 @@ process_special(COMPSTATE * cstat, const char *token)
 	return 0;
     } else if (!strcasecmp(token, "VAR!")) {
 	if (cstat->curr_proc) {
-	    struct INTERMEDIATE *nu;
-
 	    tok = next_token(cstat);
 	    if (!tok)
 		abort_compile(cstat, "Unexpected end of program.");
@@ -3879,14 +3878,6 @@ get_primitive(const char *token)
     else {
 	return (hd->ival);
     }
-}
-
-static void
-append_intermediate_chain(struct INTERMEDIATE *chain, struct INTERMEDIATE *add)
-{
-    while (chain->next)
-	chain = chain->next;
-    chain->next = add;
 }
 
 static void

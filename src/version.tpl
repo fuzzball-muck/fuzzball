@@ -12,6 +12,7 @@
 
 #include "config.h"
 
+#include "commands.h"
 #include "game.h"
 #include "interface.h"
 

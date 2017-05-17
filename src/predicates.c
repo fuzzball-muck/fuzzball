@@ -217,7 +217,7 @@ exit_loop_check(dbref source, dbref dest)
    resulted in a consistent (ie: no loops) environment.
 */
 
-int
+static int
 location_loop_check(dbref source, dbref dest)
 {
     unsigned int level = 0;

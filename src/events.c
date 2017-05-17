@@ -4,6 +4,7 @@
 #ifdef DISKBASE
 #include "diskprop.h"
 #endif
+#include "events.h"
 #include "fbmath.h"
 #include "game.h"
 #include "interface.h"

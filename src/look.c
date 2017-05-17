@@ -1,6 +1,7 @@
 #include "config.h"
 
 #include "boolexp.h"
+#include "commands.h"
 #include "db.h"
 #include "dbsearch.h"
 #ifdef DISKBASE
@@ -1098,8 +1099,7 @@ checkflags(dbref what, struct flgchkdat check)
     return (1);
 }
 
-
-void
+static void
 display_objinfo(dbref player, dbref obj, int output_type)
 {
     char buf[BUFFER_LEN];

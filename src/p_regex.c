@@ -362,7 +362,7 @@ prim_regsub(PRIM_PROTOTYPE)
     PushString(buf);
 }
 
-void
+static void
 _prim_regsplit(PRIM_PROTOTYPE, int empty)
 {
     stk_array* nu_val = 0;
