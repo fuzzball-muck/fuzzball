@@ -460,9 +460,7 @@ static const char *
 CrT_timestr(time_t when)
 {
     static char buf[20];
-    struct tm *da_time;
-
-    da_time = MUCK_LOCALTIME(when);
+    struct tm *da_time = localtime(&when);
 
     snprintf(buf, sizeof(buf), "%02d%02d%02d%02d",
 	     da_time->tm_mday, da_time->tm_hour, da_time->tm_min, da_time->tm_sec);
@@ -550,7 +548,7 @@ CrT_summarize_to_file(const char *file, const char *comment)
     {
 	time_t lt = time(NULL);
 	char buf[30];
-	strftime(buf, sizeof(buf), "%a %b %d %T %Z %Y", MUCK_LOCALTIME(lt));
+	strftime(buf, sizeof(buf), "%a %b %d %T %Z %Y", localtime(&lt));
 	fprintf(summarize_fd, "%s\n", buf);
     }
 

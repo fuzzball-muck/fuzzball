@@ -573,15 +573,15 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
 
     /* Timestamps */
 
-    time_tm = MUCK_LOCALTIME(DBFETCH(thing)->ts_created);
+    time_tm = localtime(&(DBFETCH(thing)->ts_created));
     strftime(buf, BUFFER_LEN, "%a %b %e %T %Z %Y", time_tm);
     notifyf(player, "Created:  %s", buf);
 
-    time_tm = MUCK_LOCALTIME(DBFETCH(thing)->ts_modified);
+    time_tm = localtime(&(DBFETCH(thing)->ts_modified));
     strftime(buf, BUFFER_LEN, "%a %b %e %T %Z %Y", time_tm);
     notifyf(player, "Modified: %s", buf);
 
-    time_tm = MUCK_LOCALTIME(DBFETCH(thing)->ts_lastused);
+    time_tm = localtime(&(DBFETCH(thing)->ts_lastused));
     strftime(buf, BUFFER_LEN, "%a %b %e %T %Z %Y", time_tm);
     notifyf(player, "Lastused: %s", buf);
 

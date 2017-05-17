@@ -918,7 +918,7 @@ interp_err(dbref player, dbref program, struct inst *pc,
 		     NAME(program), program, pc ? pc->line : -1, msg1, msg2);
 
     lt = time(NULL);
-    strftime(tbuf, 32, "%c", MUCK_LOCALTIME(lt));
+    strftime(tbuf, 32, "%c", localtime(&lt));
 
     strip_ansi(buf2, buf);
     errcount = get_property_value(origprog, MUF_ERRCOUNT_PROP);

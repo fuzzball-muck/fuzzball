@@ -1481,7 +1481,13 @@ mfn_time(MFUNARGS)
 	lt -= get_tz_offset();
     }
 
-    strftime(buf, BUFFER_LEN - 1, "%T", MUCK_LOCALTIME(lt));
+    struct tm *tm = localtime(&lt);
+    if (tm) {
+	strftime(buf, BUFFER_LEN - 1, "%T", tm);
+    } else {
+	ABORT_MPI("TIME", "Out of range time argument.");
+    }
+
     return buf;
 }
 
@@ -1497,7 +1503,13 @@ mfn_date(MFUNARGS)
 	lt -= get_tz_offset();
     }
 
-    strftime(buf, BUFFER_LEN - 1, "%D", MUCK_LOCALTIME(lt));
+    struct tm *tm = localtime(&lt);
+    if (tm) {
+	strftime(buf, BUFFER_LEN - 1, "%D", tm);
+    } else {
+	ABORT_MPI("DATE", "Out of range time argument.");
+    }
+
     return buf;
 }
 
@@ -1522,7 +1534,7 @@ mfn_ftime(MFUNARGS)
 	lt -= get_tz_offset();
     }
 
-    struct tm *tm = MUCK_LOCALTIME(lt);
+    struct tm *tm = localtime(&lt);
     if (tm) {
         strftime(buf, BUFFER_LEN - 1, argv[0], tm);
     } else {
@@ -1739,7 +1751,7 @@ mfn_convsecs(MFUNARGS)
 
     lt = atol(argv[0]);
     
-    struct tm *tm = MUCK_LOCALTIME(lt);
+    struct tm *tm = localtime(&lt);
     if (tm) {
 	strftime(timebuf, sizeof(timebuf), "%a %b %d %T %Z %Y", tm);
     } else {
