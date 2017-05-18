@@ -247,7 +247,7 @@ get_concat_list(dbref player, dbref what, dbref perms, dbref obj, char *listname
     int tmpbless = 0;
 
     len = strlen(listname);
-    if (listname[len - 1] == NUMBER_TOKEN)
+    if (len > 0 && listname[len - 1] == NUMBER_TOKEN)
 	listname[len - 1] = 0;
     cnt = get_list_count(what, obj, perms, listname, mesgtyp, &tmpbless);
 
