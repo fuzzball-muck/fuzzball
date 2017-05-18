@@ -583,7 +583,7 @@ list_publics(int descr, dbref player, int arg[], int argc)
 	return;
     }
     program = (argc == 0) ? PLAYER_CURR_PROG(player) : arg[0];
-    if (Typeof(program) != TYPE_PROGRAM) {
+    if (!OkObj(program) || Typeof(program) != TYPE_PROGRAM) {
 	notify(player, "That isn't a program.");
 	return;
     }
