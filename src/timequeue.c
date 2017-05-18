@@ -1327,6 +1327,9 @@ listenqueue(int descr, dbref player, dbref where, dbref trigger, dbref what, dbr
     char exbuf[BUFFER_LEN];
     char *ptr2;
 
+    if (!OkObj(what))
+        return;
+
     if (!(FLAGS(what) & LISTENER) && !(FLAGS(OWNER(what)) & ZOMBIE))
 	return;
 
