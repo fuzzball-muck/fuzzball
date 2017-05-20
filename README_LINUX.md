@@ -37,7 +37,7 @@ git pull
 * See ```./configure --help```
  * Common options include ```--with-ssl```, ```--enable-ipv6```
  * If needed, specify SSL headers via ```--with-ssl=/path/to/dir```, or PCRE headers via ```--with-pcre=/path/to/dir```
-* When testing, use a different ```--prefix```, e.g. ```./configure --prefix="$HOME/fuzzball-test"``` (it may be helpful to use a shell variable like ```$PREFIX```)
+* When testing, use a different ```--prefix```, e.g. ```./configure --prefix="$HOME/fuzzball-test"```
 
 ### Build
 ```sh
