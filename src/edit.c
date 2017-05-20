@@ -987,7 +987,7 @@ do_list(int descr, dbref player, const char *name, char *linespec)
 	}
 	if (*linespec) {
 	    argc = 2;
-	    while (*linespec && !isdigit(*linespec))
+	    if (*linespec == '-')
 		linespec++;
 	    if (*linespec)
 		range[1] = atoi(linespec);
