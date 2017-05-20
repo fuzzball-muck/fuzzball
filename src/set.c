@@ -451,17 +451,37 @@ restricted(dbref player, dbref thing, object_flag_type flag)
 	/* You cannot quell or unquell another wizard. */
 	return (TrueWizard(thing) && (thing != player) && (Typeof(thing) == TYPE_PLAYER));
 #endif
+	/* The following three cases aren't used, as far as I can tell, but
+	 * for consistency's sake let's make sure they reflect the documented
+	 * behaviors: */
     case MUCKER:
+	/* Setting a program M2 is limited to players of at least M2. */
+	if (Typeof(thing) == TYPE_PROGRAM)
+	    return (MLevel(OWNER(player)) < 2);
+	/* Setting anything else M2 takes a wizard. */
+	return (!Wizard(OWNER(player)));
     case SMUCKER:
+	/* Setting a program M1 is limited to players of at least M1. */
+	if (Typeof(thing) == TYPE_PROGRAM)
+	    return (MLevel(OWNER(player)) < 1);
+	/* Setting anything else M1 takes a wizard. */
+	return (!Wizard(OWNER(player)));
     case (SMUCKER | MUCKER):
+	/* Setting a program M3 is limited to players of at least M3. */
+	if (Typeof(thing) == TYPE_PROGRAM)
+	    return (MLevel(OWNER(player)) < 3);
+	/* Setting anything else M3 takes a wizard. */
+	return (!Wizard(OWNER(player)));
     case BUILDER:
-	/* Would someone tell me why setting a program SMUCKER|MUCKER doesn't
-	 * go through here? -winged */
 	/* Setting a program Bound causes any function called therein to be
 	 * put in preempt mode, regardless of the mode it had before.
 	 * Since this is just a convenience for atomic-functionwriters,
 	 * why is it limited to only a Wizard? -winged */
-	/* Setting a player Builder is limited to a Wizard. */
+	/* That's a very good question! Let's limit it to players of at
+	 * least M2 instead. -aidanPB */
+	if (Typeof(thing) == TYPE_PROGRAM)
+	    return (MLevel(OWNER(player)) < 2);
+	/* Setting a player Builder or a room Bound is limited to a Wizard. */
 	return (!Wizard(OWNER(player)));
     case WIZARD:
 	/* To do anything with a Wizard flag requires a Wizard. */
