@@ -553,9 +553,11 @@ do_set(int descr, dbref player, const char *name, const char *flag)
 	    free((void *) x);
 	    return;
 	}
-	/* get rid of trailing spaces and slashes */
-	for (temp = pname - 1; temp >= type && isspace(*temp); temp--) ;
-	while (temp >= type && *temp == '/')
+	*pname = '\0';
+	char *p = (char *)type;
+	remove_ending_whitespace(&p);
+	temp = p + strlen(p);
+	while (temp >= type && *temp == PROPDIR_DELIMITER)
 	    temp--;
 	*(++temp) = '\0';
 
@@ -765,7 +767,7 @@ void
 do_propset(int descr, dbref player, const char *name, const char *prop)
 {
     dbref thing, ref;
-    char *p, *q;
+    char *p;
     char buf[BUFFER_LEN];
     char *type, *pname, *value;
     struct match_data md;
@@ -786,9 +788,7 @@ do_propset(int descr, dbref player, const char *name, const char *prop)
 	*p++ = '\0';
 
     if (*type) {
-	q = type + strlen(type) - 1;
-	while (q >= type && isspace(*q))
-	    *(q--) = '\0';
+	remove_ending_whitespace(&type);
     }
 
     pname = p;
@@ -800,10 +800,9 @@ do_propset(int descr, dbref player, const char *name, const char *prop)
 
     while (*pname == PROPDIR_DELIMITER || isspace(*pname))
 	pname++;
+
     if (*pname) {
-	q = pname + strlen(pname) - 1;
-	while (q >= pname && isspace(*q))
-	    *(q--) = '\0';
+        remove_ending_whitespace(&pname);
     }
 
     if (!*pname) {

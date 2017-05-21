@@ -37,9 +37,9 @@ do_open(int descr, dbref player, const char *direction, const char *linkto)
 	rname++;
     *qname = '\0';
 
-    while (((qname--) > buf2) && (isspace(*qname)))
-	*qname = '\0';
     qname = buf2;
+    remove_ending_whitespace(&qname);
+
     skip_whitespace((const char **)&rname);
 
     if ((loc = LOCATION(player)) == NOTHING)
@@ -296,9 +296,10 @@ do_dig(int descr, dbref player, const char *name, const char *pname)
     qname = rname;
     if (*rname)
 	*(rname++) = '\0';
-    while ((qname > buf) && (isspace(*qname)))
-	*(qname--) = '\0';
+
     qname = buf;
+    remove_ending_whitespace(&qname);
+
     skip_whitespace((const char **)&rname);
     rname = strcpyn(rbuf, sizeof(rbuf), rname);
     qname = strcpyn(qbuf, sizeof(qbuf), qname);
@@ -597,9 +598,7 @@ do_create(dbref player, char *name, char *acost)
     qname = rname;
     if (*rname)
 	*(rname++) = '\0';
-    while ((qname > buf2) && (isspace(*qname)))
-	*(qname--) = '\0';
-    qname = buf2;
+
     skip_whitespace((const char **)&rname);
 
     cost = atoi(qname);
@@ -702,9 +701,10 @@ do_action(int descr, dbref player, const char *action_name, const char *source_n
     qname = rname;
     if (*rname)
 	*(rname++) = '\0';
-    while ((qname > buf2) && (isspace(*qname)))
-	*(qname--) = '\0';
+
     qname = buf2;
+    remove_ending_whitespace(&qname);
+
     skip_whitespace((const char **)&rname);
 
     if (!*action_name || !*qname) {

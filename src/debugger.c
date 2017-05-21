@@ -514,11 +514,10 @@ muf_debugger(int descr, dbref player, dbref program, const char *text, struct fr
 
     skip_whitespace(&text);
     strcpyn(cmd, sizeof(cmd), text);
-    ptr = cmd + strlen(cmd);
-    if (ptr > cmd)
-	ptr--;
-    while (ptr >= cmd && isspace(*ptr))
-	*ptr-- = '\0';
+
+    ptr = cmd;
+    remove_ending_whitespace(&ptr);
+
     for (arg = cmd; *arg && !isspace(*arg); arg++) ;
     if (*arg)
 	*arg++ = '\0';

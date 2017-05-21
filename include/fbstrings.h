@@ -22,6 +22,7 @@ void prefix_message(char *Dest, const char *Src, const char *Prefix, int BufferL
 int prepend_string(char **before, char *start, const char *what);
 char *pronoun_substitute(int descr, dbref player, const char *str);
 char *ref2str(dbref obj, char *buf, size_t buflen);
+void remove_ending_whitespace(char **s);
 void skip_whitespace(const char **parsebuf);
 char *strcatn(char *buf, size_t bufsize, const char *src);
 char *strcpyn(char *buf, size_t bufsize, const char *src);

@@ -189,10 +189,10 @@ parse_boolexp_F(int descr, const char **parsebuf, dbref player, int dbloadp)
 	       && **parsebuf != AND_TOKEN && **parsebuf != OR_TOKEN && **parsebuf != ')') {
 	    *p++ = *(*parsebuf)++;
 	}
-	/* strip trailing whitespace */
 	*p-- = '\0';
-	while (p >= buf && isspace(*p))
-	    *p-- = '\0';
+
+	p = buf;
+	remove_ending_whitespace(&p);
 
 	/* check to see if this is a property expression */
 	if (index(buf, PROP_DELIMITER)) {
@@ -311,7 +311,7 @@ static struct boolexp *
 parse_boolprop(char *buf)
 {
     const char *type = alloc_string(buf);
-    const char *strval = index(type, PROP_DELIMITER);
+    char *strval = index(type, PROP_DELIMITER);
     const char *x;
     struct boolexp *b;
     PropPtr p;
@@ -330,19 +330,19 @@ parse_boolprop(char *buf)
 	free_boolnode(b);
 	return TRUE_BOOLEXP;
     }
-    /* get rid of trailing spaces */
-    for (temp = (char *)strval - 1; isspace(*temp); temp--) ;
-    temp++;
-    *temp = '\0';
+    *strval = '\0';
+
+    remove_ending_whitespace((char **)&type);
+
     strval++;
-    skip_whitespace(&strval);
+    skip_whitespace((const char **)&strval);
     if (!*strval) {
 	/* Oops!  CLEAN UP AND RETURN A TRUE */
 	free((void *) x);
 	free_boolnode(b);
 	return TRUE_BOOLEXP;
     }
-    /* get rid of trailing spaces */
+
     for (temp = (char *)strval; !isspace(*temp) && *temp; temp++) ;
     *temp = '\0';
 
