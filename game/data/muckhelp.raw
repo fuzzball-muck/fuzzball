@@ -1207,6 +1207,10 @@ multitasking mode that the process had before calling this program.  When
 the execution exits this program, the multitasking mode returns to what
 it was before the function was called.  This lets libraries of atomic
 functions be written.
+
+  This flag is also called BOUND when it is set on rooms. An exit attached to
+a thing or player and linked to a player or room will not work when the object
+to which it is attached is in a room set BOUND.
 ~
 ~
 CHOWN_OK|COLOR
