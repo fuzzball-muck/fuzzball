@@ -1162,3 +1162,12 @@ skip_whitespace(const char **parsebuf)
     while (**parsebuf && isspace(**parsebuf))
         (*parsebuf)++;
 }
+
+void
+remove_ending_whitespace(char **s)
+{
+    char *p = *s + strlen(*s) - 1;
+
+    while (p > *s && isspace(*p))
+	*(p--) = '\0';
+}

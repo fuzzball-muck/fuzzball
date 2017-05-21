@@ -731,11 +731,11 @@ tune_load_parms_from_file(FILE * f, dbref player, int cnt)
     while (!feof(f) && (cnt < 0 || cnt--)) {
 	fgets(buf, sizeof(buf), f);
 	if (*buf != '#') {
-	    p = c = index(buf, ARG_DELIMITER);
+	    c = index(buf, ARG_DELIMITER);
 	    if (c) {
 		*c++ = '\0';
-		while (p > buf && isspace(*(--p)))
-		    *p = '\0';
+		p = buf;
+		remove_ending_whitespace(&p);
 		skip_whitespace((const char **)&c);
 		for (p = c; *p && *p != '\n' && *p != '\r'; p++) ;
 		*p = '\0';

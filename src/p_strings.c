@@ -2050,9 +2050,8 @@ prim_striptail(PRIM_PROTOTYPE)
     if (oper1->type != PROG_STRING)
 	abort_interp("Not a string argument.");
     strcpyn(buf, sizeof(buf), DoNullInd(oper1->data.string));
-    result = strlen(buf);
-    while ((result-- > 0) && isspace(buf[result]))
-	buf[result] = '\0';
+    pname = buf;
+    remove_ending_whitespace(&pname);
     CLEAR(oper1);
     PushString(buf);
 }

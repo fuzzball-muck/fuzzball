@@ -562,13 +562,12 @@ process_command(int descr, dbref player, const char *command)
 	/* find end of arg1, start of arg2 */
 	for (arg2 = arg1; *arg2 && *arg2 != ARG_DELIMITER; arg2++) ;
 
-	/* truncate arg1 */
-	for (char *p = arg2 - 1; p >= arg1 && isspace(*p); p--)
-	    *p = '\0';
-
-	/* go past delimiter if present */
 	if (*arg2)
 	    *arg2++ = '\0';
+	
+	char *p = arg1;
+	remove_ending_whitespace(&p);
+	
 	skip_whitespace((const char **)&arg2);
 
 	switch (command[0]) {

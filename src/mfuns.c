@@ -822,9 +822,9 @@ mfn_strip(MFUNARGS)
 
     for (ptr = argv[0]; *ptr == ' '; ptr++) ;
     strcpyn(buf, buflen, ptr);
-    ptr = &buf[strlen(buf) - 1];
-    while (ptr >= buf && isspace(*ptr))
-	*(ptr--) = '\0';
+
+    ptr = buf;
+    remove_ending_whitespace(&ptr);
 
     return buf;
 }
