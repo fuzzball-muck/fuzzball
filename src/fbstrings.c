@@ -507,6 +507,10 @@ strdecrypt(const char *data, const char *key)
     if (!initialized_crypt)
 	init_crypt();
 
+    if (data[0] == '\0' || data[1] == '\0') {
+        return "";
+    }
+
     if ((data[0] - ' ') < 1 || (data[0] - ' ') > 2) {
 	return "";
     }
