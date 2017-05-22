@@ -1266,7 +1266,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 		    abort_loop("Stack overflow.", NULL, NULL);
 
 		tmpvar = scopedvar_get(fr, 0, pc->data.number);
-		if (!tmp)
+		if (!tmpvar)
 		    abort_loop("Scoped variable number out of range.", NULL, NULL);
 
 		copyinst(tmpvar, arg + atop);
