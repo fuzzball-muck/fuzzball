@@ -22,6 +22,7 @@
 #define strcasecmp	_stricmp
 #define strdup		_strdup
 #define strncasecmp	_strnicmp
+#define strtok_r	strtok_s
 #define tzname		_tzname
 #define unlink		_unlink
 #define vsnprintf(str, size, format, ...) \
