@@ -862,3 +862,182 @@ do_propset(int descr, dbref player, const char *name, const char *prop)
     }
     notify(player, "Property set.");
 }
+
+void
+do_register(int descr, dbref player, char *arg1, const char *arg2)
+{
+    dbref target, object;
+    struct match_data md;
+    char buf[BUFFER_LEN], unparse_buf[BUFFER_LEN];
+    char *propdir, *objectstr;
+    char *remaining = arg1;
+
+    target = GLOBAL_ENVIRONMENT;
+    propdir = REGISTRATION_PROPDIR;
+    objectstr = arg1;
+
+    if (string_prefix(arg1, "#me")) {
+	(void) strtok_r(arg1, " \t", &remaining);
+	target = player;
+	objectstr = remaining;
+    } else if (string_prefix(arg1, "#prop")) {
+	char *pattern, *targetstr;
+	int is_propqueue = 0;
+	static char *propqueues[] = {
+					ARRIVE_PROPQUEUE,
+					CONNECT_PROPQUEUE,
+					DEPART_PROPQUEUE,
+					DISCONNECT_PROPQUEUE,
+					LISTEN_PROPQUEUE,
+					LOOK_PROPQUEUE,
+					OARRIVE_PROPQUEUE,
+					OCONNECT_PROPQUEUE,
+					ODEPART_PROPQUEUE,
+					ODISCONNECT_PROPQUEUE,
+					WLISTEN_PROPQUEUE,
+					WOLISTEN_PROPQUEUE
+				    };
+
+	(void) strtok_r(arg1, " \t", &remaining);
+	pattern = strtok_r(remaining, " \t", &remaining);
+	objectstr = remaining;
+
+	if (pattern && *pattern == ':') {
+	    targetstr = "me";
+	    propdir = pattern + 1;
+	} else {
+	    targetstr = strtok_r(pattern, ":", &remaining);
+	    propdir = remaining;
+	}
+
+	if (propdir) {
+	    char *p = propdir + strlen(propdir) - 1;
+	    while (p > propdir && *p == PROPDIR_DELIMITER) *(p--) = '\0';
+
+	    for (int i = 0, n = ARRAYSIZE(propqueues); i < n; i++) {
+		if (!strcmp(propdir, propqueues[i])) {
+		    is_propqueue = 1;
+		    break;
+		}
+	    }
+	}
+
+	if (!propdir || !*propdir || !is_propqueue) {
+	    notifyf_nolisten(player, "You must specify a propqueue when using #prop. %s", propdir ? propdir : "");
+	    return;
+	}
+
+	init_match(descr, player, targetstr, NOTYPE, &md);
+
+	if (*targetstr == REGISTERED_TOKEN) {
+	    match_registered(&md);
+	} else {
+	    match_all_exits(&md);
+	    match_neighbor(&md);
+	    match_possession(&md);
+	    match_me(&md);
+	    match_here(&md);
+	    match_nil(&md);
+	}
+
+	if (Wizard(OWNER(player))) {
+	    match_absolute(&md);
+	    match_player(&md);
+	}
+	
+	if ((target = noisy_match_result(&md)) == NOTHING) {
+	    return;
+	}
+    }
+
+    if (!*arg2) {
+	PropPtr propadr, pptr;
+	char dir[BUFFER_LEN], propname[BUFFER_LEN], detail[BUFFER_LEN];
+	dbref detailref, invalidref = -50;
+
+	if (!objectstr || !*objectstr) {
+	    strcpyn(dir, sizeof(dir), propdir);
+	} else {
+	    snprintf(dir, sizeof(dir), "%s%c%s", propdir, PROPDIR_DELIMITER, objectstr);
+	}
+
+	unparse_object(player, target, unparse_buf, sizeof(unparse_buf));
+	notifyf_nolisten(player, "Registered objects on %s:", unparse_buf);
+
+	propadr = first_prop(target, dir, &pptr, propname, sizeof(propname));
+	while (propadr) {
+	    snprintf(buf, sizeof(buf), "%s%c%s", dir, PROPDIR_DELIMITER, propname);
+
+	    if (!Prop_System(buf) && (!Prop_Hidden(buf) || Wizard(OWNER(player)))) {
+		switch (PropType(propadr)) {
+		case PROP_DIRTYP:
+		    snprintf(detail, sizeof(detail), "/ (directory)");
+		    break;
+		case PROP_STRTYP:
+		    if (number(PropDataStr(propadr))) {
+			detailref = atoi(PropDataStr(propadr));
+		    } else {
+			detailref = invalidref;
+		    }
+		    break;
+		case PROP_INTTYP:
+		    detailref = PropDataVal(propadr);
+		    break;
+		case PROP_REFTYP:
+		    detailref = PropDataRef(propadr);
+		    break;
+		default:
+		    detailref = invalidref;
+		    break;
+		}
+
+		if (PropType(propadr) != PROP_DIRTYP) {
+		    unparse_object(player, detailref, unparse_buf, sizeof(unparse_buf));
+		    snprintf(detail, sizeof(detail), ": %s", unparse_buf);
+		}
+		
+		notifyf_nolisten(player, "  %s%s", propname, detail);
+	    }
+	    propadr = next_prop(pptr, propadr, propname, sizeof(propname));
+	}
+	notifyf_nolisten(player, "Done.");
+	return;
+    }
+
+    if (!objectstr) {
+	register_object(player, target, propdir, (char *)arg2, NOTHING);
+	return;
+    }
+
+    init_match(descr, player, objectstr, NOTYPE, &md);
+
+    if (*objectstr == REGISTERED_TOKEN) {
+	match_registered(&md);
+    } else {
+	match_all_exits(&md);
+	match_neighbor(&md);
+	match_possession(&md);
+	match_me(&md);
+	match_here(&md);
+	match_nil(&md);
+    }
+
+    if (Wizard(OWNER(player))) {
+	match_absolute(&md);
+	match_player(&md);
+    }
+	
+    if ((object = noisy_match_result(&md)) == NOTHING) {
+	return;
+    }
+
+    snprintf(buf, sizeof(buf), "%s%c%s", propdir, PROPDIR_DELIMITER, arg2);
+
+    if (!controls(player, target) || Prop_System(buf) ||
+	((Prop_SeeOnly(buf) || Prop_Hidden(buf)) && !Wizard(OWNER(player)))) {
+	notifyf_nolisten(player, "Permission denied. (You can't register an object there.)");
+	return;
+    }
+
+    register_object(player, target, propdir, (char *)arg2, object);
+}
