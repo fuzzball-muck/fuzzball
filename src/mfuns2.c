@@ -1553,12 +1553,14 @@ mfn_force(MFUNARGS)
 	if (lookup_player(objname) != NOTHING && Typeof(obj) != TYPE_PLAYER) {
 	    ABORT_MPI("FORCE", "Cannot force a thing named after a player. [2]");
 	}
+        objnode_push(&forcelist, player);
 	objnode_push(&forcelist, what);
 	force_level++;
 	if (*ptr)
 	    process_command(dbref_first_descr(obj), obj, ptr);
 	force_level--;
 	objnode_pop(&forcelist);
+        objnode_pop(&forcelist);
 	ptr = nxt;
     } while (ptr);
     *buf = '\0';
