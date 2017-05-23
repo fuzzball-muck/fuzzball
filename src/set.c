@@ -923,7 +923,7 @@ do_register(int descr, dbref player, char *arg1, const char *arg2)
 	}
 
 	if (!propdir || !*propdir || !is_propqueue) {
-	    notifyf_nolisten(player, "You must specify a propqueue when using #prop. %s", propdir ? propdir : "");
+	    notifyf_nolisten(player, "You must specify a propqueue when using #prop.");
 	    return;
 	}
 
