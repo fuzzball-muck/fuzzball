@@ -553,10 +553,7 @@ do_set(int descr, dbref player, const char *name, const char *flag)
 	    free((void *) x);
 	    return;
 	}
-	*pname = '\0';
-	char *p = (char *)type;
-	remove_ending_whitespace(&p);
-	temp = p + strlen(p);
+	for (temp = pname - 1; temp >= type && isspace(*temp); temp--) ;
 	while (temp >= type && *temp == PROPDIR_DELIMITER)
 	    temp--;
 	*(++temp) = '\0';
