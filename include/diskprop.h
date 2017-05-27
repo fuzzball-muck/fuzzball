@@ -1,3 +1,5 @@
+#include "config.h"
+
 #ifdef DISKBASE
 #ifndef _DISKPROP_H
 #define _DISKPROP_H
