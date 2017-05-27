@@ -1057,7 +1057,8 @@ process_command(int descr, dbref player, const char *command)
 		break;
 	    case 'r':
 	    case 'R':
-		/* @readlock, @recycle, @reconfiguressl, @relink, @restart, @restrict */
+		/* @readlock, @recycle, @reconfiguressl, @register, @relink,
+		   @restart, @restrict */
 		switch (command[3]) {
 		case 'a':
 		case 'A':
@@ -1079,6 +1080,12 @@ process_command(int descr, dbref player, const char *command)
 		    Matched("@recycle");
 		    NOGUEST("@recycle", player);
 		    do_recycle(descr, player, arg1);
+		    break;
+		case 'g':
+		case 'G':
+		    Matched("@register");
+		    NOGUEST("@register", player);
+		    do_register(descr, player, arg1, arg2);
 		    break;
 		case 'l':
 		case 'L':

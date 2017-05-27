@@ -1426,13 +1426,57 @@ link_exit_dry(int descr, dbref player, dbref exit, char *dest_name, dbref * dest
 }
 
 void
-register_object(dbref location, const char *propdir, char *name, dbref object)
+register_object(dbref player, dbref location, const char *propdir, char *name, dbref object)
 {
     PData mydat;
+    PropPtr p;
+    dbref prevobj = -50;
     char buf[BUFFER_LEN];
+    char unparse_buf[BUFFER_LEN], unparse_buf2[BUFFER_LEN];
+    char *strval;
 
     snprintf(buf, sizeof(buf), "%s/%s", propdir, name);
-    mydat.flags = PROP_REFTYP;
-    mydat.data.ref = object;
-    set_property(location, buf, &mydat, 0);
+
+    if ((p = get_property(location, buf))) {
+#ifdef DISKBASE
+	propfetch(location, p);
+#endif
+	switch (PropType(p)) {
+	case PROP_STRTYP:
+	    strval = PropDataStr(p);
+	    if (*strval == NUMBER_TOKEN) strval++;
+	    if (number(strval)) {
+		prevobj = atoi(strval);
+	    } else {
+		prevobj = AMBIGUOUS;
+	    }
+	    break;
+	case PROP_INTTYP:
+	    prevobj = PropDataVal(p);
+	    break;
+	case PROP_REFTYP:
+	    prevobj = PropDataRef(p);
+	    break;
+	default:
+	    break;
+        }
+	unparse_object(player, prevobj, unparse_buf, sizeof(unparse_buf));
+	notifyf_nolisten(player, "Used to be registered as %s: %s", buf, unparse_buf);
+    } else if (object == NOTHING) {
+	notifyf_nolisten(player, "Nothing to remove.");
+	return;
+    }
+
+    unparse_object(player, object, unparse_buf, sizeof(unparse_buf));
+    unparse_object(player, location, unparse_buf2, sizeof(unparse_buf2));
+
+    if (object == NOTHING) {
+	remove_property(location, buf, 0);
+	notifyf_nolisten(player, "Registry entry on %s removed.", unparse_buf2);
+    } else {
+	mydat.flags = PROP_REFTYP;
+	mydat.data.ref = object;
+	set_property(location, buf, &mydat, 0);
+	notifyf_nolisten(player, "Now registered as %s: %s on %s", buf, unparse_buf, unparse_buf2);
+    }
 }

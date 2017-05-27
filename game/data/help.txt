@@ -45,13 +45,13 @@ Symbols
   @oecho             @ofail             @open              @osuccess
   @owned             @ownlock           @password          @pcreate
   @pecho             @program           @propset           @ps
-  @readlock          @reconfiguressl    @recycle           @relink
-  @restart           @restrict          @sanchange         @sanfix
-  @sanity            @set               @shutdown          @stats
-  @success           @sweep             @teleport          @toad
-  @tops              @trace             @tune              @unbless
-  @uncompile         @unlink            @unlock            @usage
-  @version           @wall              
+  @readlock          @reconfiguressl    @recycle           @register
+  @relink            @restart           @restrict          @sanchange
+  @sanfix            @sanity            @set               @shutdown
+  @stats             @success           @sweep             @teleport
+  @toad              @tops              @trace             @tune
+  @unbless           @uncompile         @unlink            @unlock
+  @usage             @version           @wall              
 
 A's
   abode  
@@ -561,12 +561,12 @@ Building Help
 @link              @linklock          @lock              @name
 @odrop             @oecho             @ofail             @open
 @osuccess          @owned             @ownlock           @pecho
-@propset           @readlock          @recycle           @relink
-@set               @stats             @success           @sweep
-@teleport          @trace             @unlink            @unlock
-bogus              control            drop-to            failure
-homes              linking            objectmatching     substitutions
-success            timestamps         types              
+@propset           @readlock          @recycle           @register
+@relink            @set               @stats             @success
+@sweep             @teleport          @trace             @unlink
+@unlock            bogus              control            drop-to
+failure            homes              linking            objectmatching
+substitutions      success            timestamps         types
 
 ~----------------------------------------------------------------------------
 ~
@@ -1037,6 +1037,30 @@ command (see the help for @lock for more details).
 is a propdir, it removes all properties below <property> as well.
 If you wish to clear the value of a propdir without removing the
 properties below it, use '@propset <object> = integer:<property>:0'.
+~
+~
+@REGISTER
+
+  Lists registered objects, or manages existing object registrations, on
+the target object and propdir.
+
+The default target is "_reg" on #0, but can be changed with these prefixes:
+
+  #me
+	Sets target object to you.
+  #prop [<target>]:<propqueue>
+	Sets target object to <target>, and target propdir to <propqueue>.
+	<target> may be omitted to keep the default.
+
+Syntax:
+  @register [<prefix>]
+    Lists registrations in the target propdir on the target object.
+  @register [<prefix>] <subpropdir>
+    Lists registrations in <subpropdir> in the target propdir.
+  @register [<prefix>] <object> = <regname>
+    Registers <regname> to <object> in the target propdir.
+  @register [<prefix>] = <regname>
+    Removes registration of <regname> in the target propdir.
 ~
 ~
 @CHOWN

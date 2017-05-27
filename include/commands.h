@@ -60,6 +60,7 @@ void do_propset(int descr, dbref player, const char *name, const char *prop);
 void do_reconfigure_ssl(dbref player);
 #endif
 void do_recycle(int descr, dbref player, const char *name);
+void do_register(int descr, dbref player, char *arg1, const char *arg2);
 void do_relink(int descr, dbref player, const char *thing_name, const char *dest_name);
 void do_restart(dbref player);
 void do_restrict(dbref player, const char *arg);
