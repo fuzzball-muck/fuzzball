@@ -15,13 +15,16 @@ init:
     # Thanks to @jakoch and @ronaldbarendse
     # Modified to also include the build number, distinguishes rebuilds of the same commit
     # See comments on https://github.com/appveyor/ci/issues/691
+    #
+    # While it's possible to use 'Update-AppveyorBuild -Version' to change the build number, that
+    # breaks Github's "Details" link until the build completes.  Just change the build output.
     - ps: |
         if ($env:APPVEYOR_REPO_TAG -eq "true")
         {
             # Trim any starting 'v' from tags
-            Update-AppveyorBuild -Version "$($env:APPVEYOR_REPO_TAG_NAME.TrimStart("v"))-$env:APPVEYOR_BUILD_NUMBER"
+            $env:DEPLOY_IMAGE_NAME = "$($env:APPVEYOR_REPO_TAG_NAME.TrimStart("v"))-$env:APPVEYOR_BUILD_NUMBER"
         } else {
-            Update-AppveyorBuild -Version "dev-$($env:APPVEYOR_REPO_COMMIT.Substring(0, 8))-$env:APPVEYOR_BUILD_NUMBER"
+            $env:DEPLOY_IMAGE_NAME = "dev-$($env:APPVEYOR_REPO_COMMIT.Substring(0, 8))-$env:APPVEYOR_BUILD_NUMBER"
         }
 
 build_script:
@@ -44,7 +47,7 @@ build_script:
 
         # Package and store the build results
         # > File name of compressed output
-        $artifact_name = "fuzzball-win32-$env:APPVEYOR_BUILD_VERSION"
+        $artifact_name = "fuzzball-win32-$env:DEPLOY_IMAGE_NAME"
         # > Folder name stored inside compressed output
         #   Don't include "...-$env:APPVEYOR_BUILD_VERSION" as that's now part of the artifact name
         $artifact_root = "$env:APPVEYOR_BUILD_FOLDER/$artifact_name"
