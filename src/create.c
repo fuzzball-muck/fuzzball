@@ -85,8 +85,7 @@ do_open(int descr, dbref player, const char *direction, const char *linkto)
     }
 
     if (*rname) {
-        register_object(player, REGISTRATION_PROPDIR, rname, exit);
-        notifyf(player, "Registered as $%s", rname);
+        register_object(player, player, REGISTRATION_PROPDIR, rname, exit);
     }
 }
 
@@ -324,8 +323,7 @@ do_dig(int descr, dbref player, const char *name, const char *pname)
     }
 
     if (*rname) {
-        register_object(player, REGISTRATION_PROPDIR, rname, room);
-        notifyf(player, "Registered as $%s", rname);
+        register_object(player, player, REGISTRATION_PROPDIR, rname, room);
     }
 }
 
@@ -370,8 +368,7 @@ do_program(int descr, dbref player, const char *name, const char *rname)
 	notifyf(player, "Program %s created.", unparse_buf);
 
 	if (*rname) {
-	    register_object(player, REGISTRATION_PROPDIR, (char *)rname, program);
-	    notifyf(player, "Registered as $%s", rname);
+	    register_object(player, player, REGISTRATION_PROPDIR, (char *)rname, program);
 	}
     } else if (program == AMBIGUOUS) {
 	notify(player, AMBIGUOUS_MESSAGE);
@@ -573,8 +570,7 @@ do_clone(int descr, dbref player, const char *name, const char *rname)
     notifyf(player, "Object %s cloned as %s.", unparse_buf, unparse_buf2);
 
     if (*rname) {
-	register_object(player, REGISTRATION_PROPDIR, (char *)rname, clonedthing);
-	notifyf(player, "Registered as $%s", rname);
+	register_object(player, player, REGISTRATION_PROPDIR, (char *)rname, clonedthing);
     }
 }
 
@@ -629,8 +625,7 @@ do_create(dbref player, char *name, char *acost)
     notifyf(player, "Object %s created.", unparse_buf);
 
     if (*rname) {
-        register_object(player, REGISTRATION_PROPDIR, rname, thing);
-        notifyf(player, "Registered as $%s", rname);
+        register_object(player, player, REGISTRATION_PROPDIR, rname, thing);
     }
 }
 
@@ -733,8 +728,7 @@ do_action(int descr, dbref player, const char *action_name, const char *source_n
     }
 
     if (*rname) {
-        register_object(player, REGISTRATION_PROPDIR, rname, action);
-        notifyf(player, "Registered as $%s", rname);
+        register_object(player, player, REGISTRATION_PROPDIR, rname, action);
     }
 }
 

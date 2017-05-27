@@ -476,7 +476,7 @@ int ok_name(const char *name);
 void putref(FILE * f, dbref ref);
 void putproperties(FILE * f, dbref obj);
 void putstring(FILE * f, const char *s);
-void register_object(dbref location, const char *propdir, char *name, dbref object);
+void register_object(dbref player, dbref location, const char *propdir, char *name, dbref object);
 dbref remove_first(dbref first, dbref what);
 dbref reverse(dbref);
 void set_source(dbref player, dbref action, dbref source);

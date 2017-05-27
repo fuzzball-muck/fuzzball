@@ -1586,8 +1586,7 @@ do_mcpprogram(int descr, dbref player, const char *name, const char *rname)
         notifyf(player, "Program %s created.", unparse_buf);
 
         if (*rname) {
-            register_object(player, REGISTRATION_PROPDIR, (char *)rname, program);
-            notifyf(player, "Registered as $%s", rname);
+            register_object(player, player, REGISTRATION_PROPDIR, (char *)rname, program);
         }
     } else if (program == AMBIGUOUS) {
 	notify(player, AMBIGUOUS_MESSAGE);
