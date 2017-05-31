@@ -228,32 +228,45 @@ typedef int dbref;
  * Try and figure out what we are.
  */
 
-#if defined(linux) || defined(__linux__) || defined(LINUX)
+#ifdef __linux__
 # define SYSV
 #endif
 
-#ifdef sun
+#if defined(sun) || defined(__sun)
 # define SUN_OS
+# ifndef _POSIX_SOURCE
+#  define _POSIX_SOURCE
+# endif
 #endif
 
-#ifdef ultrix
+#if defined(ultrix) || defined(__ultrix) || defined(__ultrix__)
 # define ULTRIX
 #endif
 
 #ifdef _AIX
 # define AIX
 # define NO_MEMORY_COMMAND
+# include <sys/select.h>
 #endif
 
 /*
  * Windows compile environment.
  */
 #ifdef WIN32
-#undef SPAWN_HOST_RESOLVER
-#define NO_MEMORY_COMMAND
-#define NO_USAGE_COMMAND
-#define NOCOREDUMP
-#include "win32.h"
+# undef SPAWN_HOST_RESOLVER
+# define NO_MEMORY_COMMAND
+# define NO_USAGE_COMMAND
+# define NOCOREDUMP
+# include "win32.h"
+#else
+# include <arpa/inet.h>
+# include <netdb.h>
+# include <netinet/in.h>
+# include <netinet/tcp.h>
+# include <sys/file.h>
+# include <sys/ioctl.h>
+# include <sys/socket.h>
+# include <sys/wait.h>
 #endif
 
 #endif				/* _CONFIG_H */

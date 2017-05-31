@@ -1573,7 +1573,7 @@ mfn_convtime(MFUNARGS)
     otm.tm_min = mn;
     otm.tm_sec = sc;
     otm.tm_year = (yr >= 70) ? yr : (yr + 100);
-#ifdef SUNOS
+#ifdef SUN_OS
     snprintf(buf, BUFFER_LEN, "%ld", timelocal(&otm));
 #else
     snprintf(buf, BUFFER_LEN, "%lld", (long long) mktime(&otm));

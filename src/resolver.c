@@ -1,21 +1,10 @@
 #include "config.h"
 
-#ifdef SOLARIS
-#  ifndef _POSIX_SOURCE
-#    define _POSIX_SOURCE	/* Solaris needs this */ 
-#  endif
-#endif
-
-#include <arpa/inet.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <netdb.h>
-#include <netinet/in.h>
 #include <pthread.h>
 #include <signal.h>
 #include <string.h>
-#include <sys/ioctl.h>
-#include <sys/socket.h>
 
 #define NUM_THREADS 5
 
