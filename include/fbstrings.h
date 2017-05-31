@@ -34,6 +34,6 @@ char *string_substitute(const char *str, const char *oldstr, const char *newstr,
                         int maxlen);
 char *strip_ansi(char *buf, const char *input);
 char *strip_bad_ansi(char *buf, const char *input);
-char *stripspaces(char *buf, int buflen, char *in);
+char *stripspaces(char *s);
 int truestr(const char *buf);
 #endif				/* _FBSTRINGS_H */

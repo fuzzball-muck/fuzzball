@@ -2635,3 +2635,18 @@ prim_sha1hash(PRIM_PROTOTYPE)
     CLEAR(oper1);
     PushString(p);
 }
+
+void
+prim_strip(PRIM_PROTOTYPE)
+{				/* string -- string' */
+    CHECKOP(1);
+    oper1 = POP();
+    if (oper1->type != PROG_STRING)
+	abort_interp("Not a string argument.");
+    strcpyn(buf, sizeof(buf), DoNullInd(oper1->data.string));
+    pname = buf;
+    skip_whitespace((const char **)&pname);
+    remove_ending_whitespace(&pname);
+    CLEAR(oper1);
+    PushString(pname);
+}
