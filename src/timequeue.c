@@ -226,7 +226,7 @@ add_event(int event_typ, int subtyp, int dtime, int descr, dbref player, dbref l
 	    return (tqhead->eventnum);
 	}
     }
-    if (!(event_typ == TQ_MUF_TYP && subtyp == TQ_MUF_TREAD)) {
+    if (!(event_typ == TQ_MUF_TYP && (subtyp == TQ_MUF_TREAD || subtyp == TQ_MUF_TIMER))) {
 	if (process_count > tp_max_process_limit ||
 	    (mypids > tp_max_plyr_processes && !Wizard(OWNER(player)))) {
 	    if (fr) {
