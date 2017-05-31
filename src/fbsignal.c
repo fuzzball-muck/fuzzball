@@ -6,12 +6,6 @@
 #include "log.h"
 #include "tune.h"
 
-#ifdef SOLARIS
-#  ifndef _POSIX_SOURCE
-#    define _POSIX_SOURCE	/* Solaris needs this */
-#  endif
-#endif
-
 #ifndef WIN32
 #include <signal.h>
 #include <sys/wait.h>

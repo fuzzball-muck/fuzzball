@@ -26,12 +26,6 @@
 #include "timequeue.h"
 #include "tune.h"
 
-#ifndef WIN32
-#include <sys/file.h>
-#include <sys/ioctl.h>
-#include <sys/wait.h>
-#endif
-
 #include <fcntl.h>
 #include <sys/stat.h>
 
@@ -43,21 +37,6 @@
 #else
 extern int errno;
 #endif
-#endif
-
-#ifndef WIN32
-/* "do not include netinet6/in6.h directly, include netinet/in.h.  see RFC2553" */
-# include <sys/socket.h>
-# include <netinet/in.h>
-# include <netinet/tcp.h>
-# include <netdb.h>
-# include <arpa/inet.h>
-#else
-typedef int socklen_t;
-#endif
-
-#ifdef AIX
-# include <sys/select.h>
 #endif
 
 #ifdef USE_SSL

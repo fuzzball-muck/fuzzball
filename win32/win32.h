@@ -8,6 +8,7 @@
 #include <ws2tcpip.h>
 
 #define pid_t		int
+#define socklen_t	int
 #define ssize_t		long
 
 #define close(x)	closesocket(x)
