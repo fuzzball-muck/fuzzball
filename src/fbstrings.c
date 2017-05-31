@@ -1087,18 +1087,12 @@ cr2slash(char *buf, int buflen, const char *in)
 }
 
 char *
-stripspaces(char *buf, int buflen, char *in)
+stripspaces(char *s)
 {
-    char *ptr;
-
-    for (ptr = in; *ptr == ' '; ptr++) ;
-    strcpyn(buf, buflen, ptr);
-    if (!*buf)
-        return buf;
-    ptr = strlen(buf) + buf - 1;
-    while (*ptr == ' ' && ptr > buf)
-        *(ptr--) = '\0';
-    return buf;
+    char *ptr = s;
+    skip_whitespace((const char **)&ptr);
+    remove_ending_whitespace(&ptr);
+    return ptr;
 }
 
 

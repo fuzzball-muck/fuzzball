@@ -814,21 +814,11 @@ mfn_evalbang(MFUNARGS)
     return buf;
 }
 
-
 const char *
 mfn_strip(MFUNARGS)
 {
-    char *ptr;
-
-    for (ptr = argv[0]; *ptr == ' '; ptr++) ;
-    strcpyn(buf, buflen, ptr);
-
-    ptr = buf;
-    remove_ending_whitespace(&ptr);
-
-    return buf;
+    return stripspaces(argv[0]);
 }
-
 
 const char *
 mfn_mklist(MFUNARGS)

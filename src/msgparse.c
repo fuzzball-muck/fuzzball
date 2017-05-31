@@ -877,12 +877,7 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms,
 			}
 			if (mfun_list[s].stripp) {
 			    for (i = (varflag ? 1 : 0); i < argc; i++) {
-				stripspaces(buf, sizeof(buf), argv[i]);
-				/*
-				 * stripspaces() can only shorten a string.
-				 * The argv[i] buffer will therefore always
-				 * be large enough.
-				 */
+				strcpyn(buf, sizeof(buf), stripspaces(argv[i]));
 				strcpyn(argv[i], strlen(buf) + 1, buf);
 			    }
 			}

@@ -480,7 +480,6 @@ include_internal_defs(COMPSTATE * cstat)
     insert_intdef(cstat, "sorttype_nocase_descend", SORTTYPE_NOCASE_DESCEND);
     insert_intdef(cstat, "sorttype_shuffle", SORTTYPE_SHUFFLE);
     insert_def(cstat, "notify_except", "1 swap notify_exclude");
-    insert_def(cstat, "strip", "striplead striptail");
 
     /* Make defines for compatability to removed primitives */
     insert_def(cstat, "desc", "\"" MESGPROP_DESC "\" getpropstr");
