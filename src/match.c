@@ -114,7 +114,7 @@ find_registered_obj(dbref player, const char *name)
     skip_whitespace(&p);
     if (!*p)
 	return (NOTHING);
-    snprintf(buf, sizeof(buf), "_reg/%s", p);
+    snprintf(buf, sizeof(buf), "%s/%s", REGISTRATION_PROPDIR, p);
     ptr = envprop(&player, buf, 0);
     if (!ptr)
 	return NOTHING;

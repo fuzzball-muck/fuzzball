@@ -485,7 +485,7 @@ prim_blessprop(PRIM_PROTOTYPE)
 	int len = oper2->data.string->length;
 
 	tmpe = oper2->data.string->data;
-	while (*tmpe && *tmpe != '\r' && *tmpe != ':')
+	while (*tmpe && *tmpe != '\r' && *tmpe != PROP_DELIMITER)
 	    tmpe++;
 	if (*tmpe)
 	    abort_interp("Illegal propname");
@@ -526,7 +526,7 @@ prim_unblessprop(PRIM_PROTOTYPE)
 	int len = oper2->data.string->length;
 
 	tmpe = oper2->data.string->data;
-	while (*tmpe && *tmpe != '\r' && *tmpe != ':')
+	while (*tmpe && *tmpe != '\r' && *tmpe != PROP_DELIMITER)
 	    tmpe++;
 	if (*tmpe)
 	    abort_interp("Illegal propname");
@@ -577,7 +577,7 @@ prim_setprop(PRIM_PROTOTYPE)
 	int len = oper2->data.string->length;
 
 	tmpe = oper2->data.string->data;
-	while (*tmpe && *tmpe != '\r' && *tmpe != ':')
+	while (*tmpe && *tmpe != '\r' && *tmpe != PROP_DELIMITER)
 	    tmpe++;
 	if (*tmpe)
 	    abort_interp("Illegal propname");

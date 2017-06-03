@@ -547,7 +547,7 @@ msg_unparse_macro(dbref player, dbref what, dbref perms, char *name, int argc, c
     int blessed;
 
     strcpyn(buf, sizeof(buf), rest);
-    snprintf(buf2, sizeof(buf2), "_msgmacs/%s", name);
+    snprintf(buf2, sizeof(buf2), "%s/%s", MPI_MACROS_PROPDIR, name);
     obj = what;
     ptr = get_mfunc(name);
     if (!ptr || !*ptr)
