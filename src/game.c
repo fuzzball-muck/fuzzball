@@ -679,6 +679,8 @@ process_command(int descr, dbref player, const char *command)
 		    case 't':
 		    case 'T':
 			Matched("@contents");
+			NOGUEST("@contents", player);
+			BUILDERONLY("@contents", player);
 			do_contents(descr, player, arg1, arg2);
 			break;
 		    default:
@@ -767,6 +769,8 @@ process_command(int descr, dbref player, const char *command)
 		case 'n':
 		case 'N':
 		    Matched("@entrances");
+		    NOGUEST("@entrances", player);
+		    BUILDERONLY("@entrances", player);
 		    do_entrances(descr, player, arg1, arg2);
 		    break;
 		case 'x':
@@ -793,6 +797,8 @@ process_command(int descr, dbref player, const char *command)
 		case 'i':
 		case 'I':
 		    Matched("@find");
+		    NOGUEST("@find", player);
+		    BUILDERONLY("@find", player);
 		    do_find(player, arg1, arg2);
 		    break;
 		case 'l':
@@ -837,6 +843,8 @@ process_command(int descr, dbref player, const char *command)
 	    case 'K':
 		/* @kill */
 		Matched("@kill");
+	        NOGUEST("@kill", player);
+	        BUILDERONLY("@kill", player);
 		do_kill_process(descr, player, arg1);
 		break;
 	    case 'l':
@@ -861,6 +869,9 @@ process_command(int descr, dbref player, const char *command)
 			break;
 		    case 's':
 		    case 'S':
+			NOGUEST("@list", player);
+			PLAYERONLY("@list", player);
+			MUCKERONLY("@list", player);
 			Matched("@list");
 			do_list(descr, player, arg1, arg2);
 			break;
@@ -992,6 +1003,8 @@ process_command(int descr, dbref player, const char *command)
 		case 'W':
 		    if (string_prefix("@owned", command)) {
 			Matched("@owned");
+			NOGUEST("@owned", player);
+			BUILDERONLY("@owned", player);
 			do_owned(player, arg1, arg2);
 			break;
 		    } else {
@@ -1049,6 +1062,8 @@ process_command(int descr, dbref player, const char *command)
 		case 's':
 		case 'S':
 		    Matched("@ps");
+		    NOGUEST("@ps", player);
+		    BUILDERONLY("@ps", player);
 		    do_process_status(player);
 		    break;
 		default:
@@ -1166,6 +1181,8 @@ process_command(int descr, dbref player, const char *command)
 		case 'w':
 		case 'W':
 		    Matched("@sweep");
+		    NOGUEST("@sweep", player);
+		    BUILDERONLY("@sweep", player);
 		    do_sweep(descr, player, arg1);
 		    break;
 		default:
@@ -1178,6 +1195,7 @@ process_command(int descr, dbref player, const char *command)
 		switch (command[2]) {
 		case 'e':
 		case 'E':
+		    NOGUEST("@teleport", player);
 		    Matched("@teleport");
 		    do_teleport(descr, player, arg1, arg2);
 		    break;
@@ -1197,6 +1215,8 @@ process_command(int descr, dbref player, const char *command)
 		case 'r':
 		case 'R':
 		    Matched("@trace");
+		    NOGUEST("@trace", player);
+		    BUILDERONLY("@trace", player);
 		    do_trace(descr, player, arg1, atoi(arg2));
 		    break;
 		case 'u':
