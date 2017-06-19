@@ -4526,7 +4526,16 @@ main(int argc, char **argv)
     SSL_load_error_strings();
     OpenSSL_add_ssl_algorithms();
 
-    (void)reconfigure_ssl();
+    if (!reconfigure_ssl()) {
+	for (int i = 0; i < ssl_numsocks; i++) {
+	    close(ssl_sock[i]);
+	}
+# ifdef USE_IPV6
+	for (int i = 0; i < ssl_numsocks_v6; i++) {
+	    close(ssl_sock_v6[i]);
+	}
+# endif
+    }
 #endif
 
     if (!sanity_interactive && !db_conversion_flag) {
