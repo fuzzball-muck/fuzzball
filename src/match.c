@@ -92,7 +92,6 @@ match_player(struct match_data *md)
 
     if (*(md->match_name) == LOOKUP_TOKEN && payfor(OWNER(md->match_from), tp_lookup_cost)) {
 	p = md->match_name + 1;
-	skip_whitespace(&p);
 	if ((match = lookup_player(p)) != NOTHING) {
 	    md->exact_match = match;
 	}
@@ -111,7 +110,6 @@ find_registered_obj(dbref player, const char *name)
     if (*name != REGISTERED_TOKEN)
 	return (NOTHING);
     p = name + 1;
-    skip_whitespace(&p);
     if (!*p)
 	return (NOTHING);
     snprintf(buf, sizeof(buf), "%s/%s", REGISTRATION_PROPDIR, p);
@@ -162,22 +160,9 @@ match_registered(struct match_data *md)
 static dbref
 parse_dbref(const char *s)
 {
-    long x;
-
-    x = atol(s);
-    if (x > 0) {
-	return x;
-    } else if (x == 0) {
-	/* check for 0 */
-	for (const char *p = s; *p; p++) {
-	    if (*p == '0')
-		return 0;
-	    if (!isspace(*p))
-		break;
-	}
-    }
-    /* else x < 0 or s != 0 */
-    return NOTHING;
+    char *p;
+    long x = strtol(s, &p, 10);
+    return (p == s) ? NOTHING : x;
 }
 
 /* returns nnn if name = #nnn, else NOTHING */
@@ -186,7 +171,7 @@ absolute_name(struct match_data *md)
 {
     dbref match;
 
-    if (*(md->match_name) == NUMBER_TOKEN) {
+    if (*(md->match_name) == NUMBER_TOKEN && !isspace(*(md->match_name + 1))) {
 	match = parse_dbref((md->match_name) + 1);
 	if (!ObjExists(match)) {
 	    return NOTHING;
