@@ -111,52 +111,20 @@ typedef struct DlogData_t {
     void *context;
 } DlogData;
 
-const char *GuiHelper(int descr, const char *title, int pagecount,
-		      const char **pagenames, const char **pageids,
-		      Gui_CB callback, GuiErr_CB error_cb, void *context);
-int GuiButton(const char *dlogid, const char *pane, const char *id, const char *text,
-	      int width, int dismiss, int layout);
 int GuiClose(const char *id);
-int GuiCombo(const char *dlogid, const char *pane, const char *id, const char *text,
-	     const char *value, int width, int editable, int layout);
-int GuiEdit(const char *dlogid, const char *pane, const char *id, const char *text,
-	    const char *value, int width, int layout);
-int GuiFrame(const char *dlogid, const char *pane, const char *id, int layout);
 int GuiFree(const char *id);
-int GuiGroupBox(const char *dlogid, const char *pane, const char *id, const char *text,
-		int collapsible, int collapsed, int layout);
-int GuiHRule(const char *dlogid, const char *pane, const char *id, int height, int layout);
-int GuiListDel(const char *dlogid, const char *id, int from, int to);
-int GuiListInsert(const char *dlogid, const char *id, int after, int lines,
-		  const char **value);
-int GuiMenuCheckBtn(const char *dlogid, const char *id, const char *name, const char **args);
-int GuiMenuCmd(const char *dlogid, const char *id, const char *name);
-int GuiMulti(const char *dlogid, const char *pane, const char *id, const char *value,
-	     int width, int height, int fixed, int layout);
 int GuiSetVal(const char *dlogid, const char *id, int lines, const char **value);
 int GuiShow(const char *id);
 const char *GuiSimple(int descr, const char *title, Gui_CB callback,
 		      GuiErr_CB error_cb, void *context);
-int GuiSpinner(const char *dlogid, const char *pane, const char *id, const char *text,
-	       int value, int width, int min, int max, int layout);
 int GuiSupported(int descr);
-const char *GuiTabbed(int descr, const char *title, int pagecount,
-		      const char **pagenames, const char **pageids,
-		      Gui_CB callback, GuiErr_CB error_cb, void *context);
-int GuiText(const char *dlogid, const char *pane, const char *id, const char *value, int width,
-	    int layout);
 const char *GuiValueFirst(const char *dlogid);
 const char *GuiValueNext(const char *dlogid, const char *prev);
 McpVer GuiVersion(int descr);
-int GuiVRule(const char *dlogid, const char *pane, const char *id, int thickness, int layout);
 int gui_ctrl_make_l(const char *dlogid, const char *type, const char *pane, const char *id,
 		    const char *text, const char *value, int layout, ...);
-int gui_ctrl_make_v(const char *dlogid, const char *type, const char *pane, const char *id,
-		    const char *text, const char *value, int layout, const char **args);
 const char *gui_dlog_alloc(int descr, Gui_CB callback, GuiErr_CB error_cb, void *context);
 int gui_dlog_closeall_descr(int descr);
-int gui_dlog_freeall_descr(int descr);
-void *gui_dlog_get_context(const char *dlogid);
 int gui_dlog_get_descr(const char *dlogid);
 void gui_initialize(void);
 int gui_menu_item(const char *dlogid, const char *id, const char *type, const char *name,
