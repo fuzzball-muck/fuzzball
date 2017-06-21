@@ -1238,12 +1238,9 @@ do_trace(int descr, dbref player, const char *name, int depth)
     if ((thing = noisy_match_result(&md)) == NOTHING)
 	return;
 
-    for (dbref i = 0; (!depth || i < depth) && thing != NOTHING; i++) {
-	if (controls(player, thing) || can_link_to(player, NOTYPE, thing)) {
-            unparse_object(player, thing, unparse_buf, sizeof(unparse_buf));
-	    notify(player, unparse_buf);
-	} else
-	    notify(player, "**Missing**");
+    for (int i = 0; (!depth || i < depth) && thing != NOTHING; i++) {
+	unparse_object(player, thing, unparse_buf, sizeof(unparse_buf));
+	notify(player, unparse_buf);
 	thing = LOCATION(thing);
     }
     notify(player, "***End of List***");
