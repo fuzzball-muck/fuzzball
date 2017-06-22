@@ -986,10 +986,7 @@ do_recycle(int descr, dbref player, const char *name)
 			   "Permission denied. (You may not recycle an exit you don't own)");
 		    return;
 		}
-		if (!unset_source(player, thing)) {
-		    notify(player, "You can't do that to an exit in another room.");
-		    return;
-		}
+		unset_source(player, thing);
 		break;
 	    case TYPE_PLAYER:
 		notify(player, "You can't recycle a player!");

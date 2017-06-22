@@ -1194,53 +1194,21 @@ controls_link(dbref who, dbref what)
     }
 }
 
-/*
- * set_source()
- *
- * This routine sets the source of an action to the specified source.
- * It is called by do_action and do_attach.
- *
- */
 void
 set_source(dbref player, dbref action, dbref source)
 {
-    switch (Typeof(source)) {
-    case TYPE_ROOM:
-    case TYPE_THING:
-    case TYPE_PLAYER:
-        PUSH(action, EXITS(source));
-        break;
-    default:
-        notify(player, "Internal error: weird object type.");
-        log_status("PANIC: tried to source %d to %d: type: %d",
-                   action, source, Typeof(source));
-        return;
-    }
+    PUSH(action, EXITS(source));
+    LOCATION(action) = source;
     DBDIRTY(source);
-    DBSTORE(action, location, source);
-    return;
 }
 
-int
+void
 unset_source(dbref player, dbref action)
 {
-    dbref oldsrc;
-
-    if ((oldsrc = LOCATION(action)) == NOTHING) {
-        DBSTORE(LOCATION(player), exits, remove_first(EXITS(LOCATION(player)), action));
-    } else {
-        switch (Typeof(oldsrc)) {
-        case TYPE_PLAYER:
-        case TYPE_ROOM:
-        case TYPE_THING:
-            DBSTORE(oldsrc, exits, remove_first(EXITS(oldsrc), action));
-            break;
-        default:
-            log_status("PANIC: source of action #%d was type: %d.", action, Typeof(oldsrc));
-            return 0;
-        }
-    }
-    return 1;
+    dbref source = LOCATION(action);
+    EXITS(source) = remove_first(EXITS(source), action);
+    DBDIRTY(source);
+    DBDIRTY(action);
 }
 
 /* parse_linkable_dest()

@@ -772,11 +772,11 @@ do_attach(int descr, dbref player, const char *action_name, const char *source_n
 	|| Typeof(source) == TYPE_PROGRAM)
 	return;
 
-    if (!unset_source(player, action)) {
-	return;
-    }
+    unset_source(player, action);
     set_source(player, action, source);
+
     notify(player, "Action re-attached.");
+
     if (MLevRaw(action)) {
 	SetMLevel(action, 0);
 	notify(player, "Action priority Level reset to zero.");
