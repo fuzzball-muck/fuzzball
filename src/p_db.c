@@ -197,8 +197,7 @@ prim_moveto(PRIM_PROTOTYPE)
 	    if ((Typeof(dest) != TYPE_ROOM && Typeof(dest) != TYPE_THING &&
 		 Typeof(dest) != TYPE_PLAYER) || dest == HOME)
 		abort_interp("Bad destination object.");
-	    if (!unset_source(ProgUID, victim))
-		break;
+	    unset_source(ProgUID, victim);
 	    set_source(ProgUID, victim, dest);
 	    SetMLevel(victim, 0);
 	    break;
@@ -1375,8 +1374,7 @@ prim_recycle(PRIM_PROTOTYPE)
 	    abort_interp("Cannot recycle active program.");
 
     if (Typeof(result) == TYPE_EXIT)
-	if (!unset_source(player, result))
-	    return;
+	unset_source(player, result);
     CLEAR(oper1);
     recycle(fr->descr, player, result);
 }
