@@ -453,8 +453,7 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
     struct tm *time_tm;		/* used for timestamps */
 
     if (*name == '\0') {
-	if ((thing = LOCATION(player)) == NOTHING)
-	    return;
+	thing = LOCATION(player);
     } else {
 	/* look it up */
 	init_match(descr, player, name, NOTYPE, &md);

@@ -12,16 +12,11 @@
 void
 do_say(dbref player, const char *message)
 {
-    dbref loc;
     char buf[BUFFER_LEN];
 
-    if ((loc = LOCATION(player)) == NOTHING)
-	return;
-
-    /* notify everybody */
     notifyf(player, "You say, \"%s\"", message);
     snprintf(buf, sizeof(buf), "%s says, \"%s\"", NAME(player), message);
-    notify_except(CONTENTS(loc), player, buf, player);
+    notify_except(CONTENTS(LOCATION(player)), player, buf, player);
 }
 
 void
@@ -59,16 +54,11 @@ do_whisper(int descr, dbref player, const char *arg1, const char *arg2)
 void
 do_pose(dbref player, const char *message)
 {
-    dbref loc;
     char buf[BUFFER_LEN];
 
-    if ((loc = LOCATION(player)) == NOTHING)
-	return;
-
-    /* notify everybody */
     snprintf(buf, sizeof(buf), "%s%s%s", NAME(player),
 	    is_valid_pose_separator(*message) ? "" : " ", message);
-    notify_except(CONTENTS(loc), NOTHING, buf, player);
+    notify_except(CONTENTS(LOCATION(player)), NOTHING, buf, player);
 }
 
 void

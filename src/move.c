@@ -502,7 +502,8 @@ do_leave(int descr, dbref player)
     dbref loc, dest;
 
     loc = LOCATION(player);
-    if (loc == NOTHING || Typeof(loc) == TYPE_ROOM) {
+
+    if (Typeof(loc) == TYPE_ROOM) {
 	notify(player, "You can't go that way.");
 	return;
     }
@@ -623,8 +624,7 @@ do_drop(int descr, dbref player, const char *name, const char *obj)
     char buf[BUFFER_LEN];
     struct match_data md;
 
-    if ((loc = LOCATION(player)) == NOTHING)
-	return;
+    loc = LOCATION(player);
 
     init_match(descr, player, name, NOTYPE, &md);
     match_possession(&md);

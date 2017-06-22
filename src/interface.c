@@ -531,9 +531,6 @@ announce_connect(int descr, dbref player)
     struct match_data md;
     dbref exit;
 
-    if ((loc = LOCATION(player)) == NOTHING)
-	return;
-
     if ((!Dark(player)) && (!Dark(loc))) {
 	snprintf(buf, sizeof(buf), "%s has connected.", NAME(player));
 	notify_except(CONTENTS(loc), player, buf, player);
@@ -1301,9 +1298,6 @@ announce_disconnect(struct descriptor_data *d)
     dbref loc;
     char buf[BUFFER_LEN];
     int dcount;
-
-    if ((loc = LOCATION(player)) == NOTHING)
-	return;
 
     get_player_descrs(d->player, &dcount);
     if (dcount < 2 && dequeue_prog(player, 2))

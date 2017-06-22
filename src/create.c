@@ -42,8 +42,8 @@ do_open(int descr, dbref player, const char *direction, const char *linkto)
 
     skip_whitespace((const char **)&rname);
 
-    if ((loc = LOCATION(player)) == NOTHING)
-	return;
+    loc = LOCATION(player);
+
     if (!*direction) {
 	notify(player, "You must specify a direction or action name to open.");
 	return;
@@ -744,9 +744,6 @@ do_attach(int descr, dbref player, const char *action_name, const char *source_n
 {
     dbref action, source;
     struct match_data md;
-
-    if (LOCATION(player) == NOTHING)
-	return;
 
     if (!*action_name || !*source_name) {
 	notify(player, "You must specify an action name and a source object.");
