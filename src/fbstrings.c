@@ -1165,3 +1165,17 @@ remove_ending_whitespace(char **s)
     while (p > *s && isspace(*p))
 	*(p--) = '\0';
 }
+
+void
+tolower_string(char **s)
+{
+   for (char *p = *s; *p; p++)
+	*p = tolower(*p);
+}
+
+void
+toupper_string(char **s)
+{
+   for (char *p = *s; *p; p++)
+	*p = toupper(*p);
+}

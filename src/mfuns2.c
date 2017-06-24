@@ -1659,17 +1659,8 @@ mfn_lmember(MFUNARGS)
 const char *
 mfn_tolower(MFUNARGS)
 {
-    char *ptr = argv[0];
-    char *ptr2 = buf;
-
-    while (*ptr) {
-	if (isupper(*ptr)) {
-	    *ptr2++ = tolower(*ptr++);
-	} else {
-	    *ptr2++ = *ptr++;
-	}
-    }
-    *ptr2++ = '\0';
+    strcpyn(buf, buflen, argv[0]);
+    tolower_string(&buf);
     return buf;
 }
 
@@ -1677,17 +1668,8 @@ mfn_tolower(MFUNARGS)
 const char *
 mfn_toupper(MFUNARGS)
 {
-    char *ptr = argv[0];
-    char *ptr2 = buf;
-
-    while (*ptr) {
-	if (islower(*ptr)) {
-	    *ptr2++ = toupper(*ptr++);
-	} else {
-	    *ptr2++ = *ptr++;
-	}
-    }
-    *ptr2++ = '\0';
+    strcpyn(buf, buflen, argv[0]);
+    toupper_string(&buf);
     return buf;
 }
 
