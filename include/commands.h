@@ -78,7 +78,7 @@ void do_teleport(int descr, dbref player, const char *arg1, const char *arg2);
 void do_toad(int descr, dbref player, const char *name, const char *recip);
 void do_topprofs(dbref player, char *arg1);
 void do_trace(int descr, dbref player, const char *name, int depth);
-void do_tune(dbref player, char *parmname, char *parmval, int full_command_has_delimiter);
+void do_tune(dbref player, char *parmname, char *parmval);
 
 void do_unbless(int descr, dbref player, const char *target, const char *propname);
 void do_unlink(int descr, dbref player, const char *name);

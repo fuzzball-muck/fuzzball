@@ -1199,7 +1199,7 @@ process_command(int descr, dbref player, const char *command)
 		    Matched("@tune");
 		    WIZARDONLY("@tune", player);
 		    PLAYERONLY("@tune", player);
-		    do_tune(player, arg1, arg2, !!strchr(full_command, ARG_DELIMITER));
+		    do_tune(player, arg1, arg2);
 		    break;
 		default:
 		    goto bad;
