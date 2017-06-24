@@ -1955,8 +1955,8 @@ prim_toupper(PRIM_PROTOTYPE)
     } else {
 	buf[0] = '\0';
     }
-    for (ref = 0; buf[ref]; ref++)
-	buf[ref] = toupper(buf[ref]);
+    char *p = buf;
+    toupper_string(&p);
     CLEAR(oper1);
     PushString(buf);
 }
@@ -1973,8 +1973,8 @@ prim_tolower(PRIM_PROTOTYPE)
     } else {
 	buf[0] = '\0';
     }
-    for (ref = 0; buf[ref]; ref++)
-	buf[ref] = tolower(buf[ref]);
+    char *p = buf;
+    tolower_string(&p);
     CLEAR(oper1);
     PushString(buf);
 }

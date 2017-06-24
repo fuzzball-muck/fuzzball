@@ -35,5 +35,7 @@ char *string_substitute(const char *str, const char *oldstr, const char *newstr,
 char *strip_ansi(char *buf, const char *input);
 char *strip_bad_ansi(char *buf, const char *input);
 char *stripspaces(char *s);
+void tolower_string(char **s);
+void toupper_string(char **s);
 int truestr(const char *buf);
 #endif				/* _FBSTRINGS_H */
