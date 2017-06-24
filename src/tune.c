@@ -789,7 +789,7 @@ tune_load_parmsfile(dbref player)
 }
 
 void
-do_tune(dbref player, char *parmname, char *parmval, int full_command_has_delimiter)
+do_tune(dbref player, char *parmname, char *parmval)
 {
     char *oldvalue;
     int result;
@@ -797,7 +797,7 @@ do_tune(dbref player, char *parmname, char *parmval, int full_command_has_delimi
 
     /* If parmname exists, and either has parmvalue or the reset to default flag, try to set the
        value.  Otherwise, fall back to displaying it. */
-    if (*parmname && (full_command_has_delimiter || TP_HAS_FLAG_DEFAULT(parmname))) {
+    if (*parmname && (!!strchr(match_args, ARG_DELIMITER) || TP_HAS_FLAG_DEFAULT(parmname))) {
 	if (force_level) {
 	    notify(player, "You cannot force setting a @tune.");
 	    return;
