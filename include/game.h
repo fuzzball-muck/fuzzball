@@ -23,6 +23,7 @@
 
 #define ESCAPE_CHAR 27
 
+#define DEFINES_PROPDIR         "_defs"
 #define DETAILS_PROPDIR         "_details"
 #define MPI_MACROS_PROPDIR      "_msgmacs"
 #define PRONOUNS_PROPDIR        "_pronouns"

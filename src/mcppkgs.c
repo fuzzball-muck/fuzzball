@@ -106,7 +106,7 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 		return;
 	    }
 	    for (ptr = reference; *ptr; ptr++) {
-		if (*ptr == ':') {
+		if (*ptr == PROP_DELIMITER) {
 		    show_mcp_error(mfr, "simpleedit-set", "Bad property name.");
 		    return;
 		}
@@ -162,7 +162,7 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 		return;
 	    }
 	    for (ptr = reference; *ptr; ptr++) {
-		if (*ptr == ':') {
+		if (*ptr == PROP_DELIMITER) {
 		    show_mcp_error(mfr, "simpleedit-set", "Bad property name.");
 		    return;
 		}
