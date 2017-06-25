@@ -208,7 +208,7 @@ propdir_unloaded(PropPtr root, const char *path)
     if (!*n)
 	return NULL;
     while (*n) {
-	*o++ = '/';
+	*o++ = PROPDIR_DELIMITER;
 	l = o;
 	while (*n && *n != PROPDIR_DELIMITER)
 	    *o++ = *n++;

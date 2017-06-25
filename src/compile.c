@@ -450,10 +450,10 @@ include_defs(COMPSTATE * cstat, dbref i)
     const char *tmpptr;
     PropPtr j, pptr;
 
-    strcpyn(dirname, sizeof(dirname), "/_defs/");
+    snprintf(dirname, sizeof(dirname), "/%s/", DEFINES_PROPDIR);
     j = first_prop(i, dirname, &pptr, temp, sizeof(temp));
     while (j) {
-	strcpyn(dirname, sizeof(dirname), "/_defs/");
+	snprintf(dirname, sizeof(dirname), "/%s/", DEFINES_PROPDIR);
 	strcatn(dirname, sizeof(dirname), temp);
 	tmpptr = get_property_class(i, dirname);
 	if (tmpptr && *tmpptr)
@@ -2430,14 +2430,14 @@ do_directive(COMPSTATE * cstat, char *direct)
 	    v_abort_compile(cstat, "Unexpected end of file looking for $pubdef name.");
 
 	if (strcasecmp(tmpname, ":") &&
-	    (index(tmpname, '/') ||
-	     index(tmpname, ':') ||
+	    (index(tmpname, PROPDIR_DELIMITER) ||
+	     index(tmpname, PROP_DELIMITER) ||
 	     Prop_SeeOnly(tmpname) || Prop_Hidden(tmpname) || Prop_System(tmpname))) {
 	    free(tmpname);
 	    v_abort_compile(cstat, "Invalid $pubdef name.  No /, :, @ nor ~ are allowed.");
 	} else {
 	    if (!strcasecmp(tmpname, ":")) {
-		remove_property(cstat->program, "/_defs", 0);
+		remove_property(cstat->program, "/" DEFINES_PROPDIR, 0);
 	    } else {
 		const char *defstr = NULL;
 		char propname[BUFFER_LEN];
@@ -2450,13 +2450,13 @@ do_directive(COMPSTATE * cstat, char *direct)
 		    char *temppropstr = NULL;
 
 		    (void) *tmpname++;
-		    snprintf(propname, sizeof(propname), "/_defs/%s", tmpname);
+		    snprintf(propname, sizeof(propname), "%s/%s", DEFINES_PROPDIR, tmpname);
 		    temppropstr = (char *) get_property_class(cstat->program, propname);
 		    if (temppropstr) {
 			doitset = 0;
 		    }
 		} else {
-		    snprintf(propname, sizeof(propname), "/_defs/%s", tmpname);
+		    snprintf(propname, sizeof(propname), "/%s/%s", DEFINES_PROPDIR, tmpname);
 		}
 
 		if (doitset) {
@@ -2482,8 +2482,8 @@ do_directive(COMPSTATE * cstat, char *direct)
 	if (!tmpname)
 	    v_abort_compile(cstat, "Unexpected end of file looking for $libdef name.");
 
-	if (index(tmpname, '/') ||
-	    index(tmpname, ':') ||
+	if (index(tmpname, PROPDIR_DELIMITER) ||
+	    index(tmpname, PROP_DELIMITER) ||
 	    Prop_SeeOnly(tmpname) || Prop_Hidden(tmpname) || Prop_System(tmpname)) {
 	    free(tmpname);
 	    v_abort_compile(cstat, "Invalid $libdef name.  No /, :, @, nor ~ are allowed.");
@@ -2498,13 +2498,13 @@ do_directive(COMPSTATE * cstat, char *direct)
 		char *temppropstr = NULL;
 
 		(void) *tmpname++;
-		snprintf(propname, sizeof(propname), "/_defs/%s", tmpname);
+		snprintf(propname, sizeof(propname), "/%s/%s", DEFINES_PROPDIR,tmpname);
 		temppropstr = (char *) get_property_class(cstat->program, propname);
 		if (temppropstr) {
 		    doitset = 0;
 		}
 	    } else {
-		snprintf(propname, sizeof(propname), "/_defs/%s", tmpname);
+		snprintf(propname, sizeof(propname), "/%s/%s", DEFINES_PROPDIR, tmpname);
 	    }
 
 	    snprintf(defstr, sizeof(defstr), "#%i \"%s\" call", cstat->program, tmpname);
