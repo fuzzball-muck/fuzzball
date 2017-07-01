@@ -1337,10 +1337,22 @@ set_standard_property(int descr, dbref player, const char *objname,
 {
     dbref object;
 
-    if ((object = match_controlled(descr, player, objname)) != NOTHING) {
+    int set = !!strchr(match_args, ARG_DELIMITER);
+
+    if (!*objname) {
+	object = player;
+    } else {
+	object = match_controlled(descr, player, objname);
+    }
+
+    if (object != NOTHING) {
+	if (!set) {
+	    notifyf_nolisten(player, "%s: %s", proplabel, GETMESG(object, propname));
+	    return;	
+	}
+
 	SETMESG(object, propname, propvalue);
-	ts_modifyobject(object);
-	notifyf(player, "%s %s.", proplabel, propvalue && *propvalue ? "set" : "cleared");
+	notifyf_nolisten(player, "%s %s.", proplabel, propvalue && *propvalue ? "set" : "cleared");
     }
 }
 
@@ -1352,17 +1364,31 @@ set_standard_lock(int descr, dbref player, const char *objname,
     PData property;
     struct boolexp *key;
 
-    if ((object = match_controlled(descr, player, objname)) != NOTHING) {
+    int set = !!strchr(match_args, ARG_DELIMITER);
+
+    if (!*objname) {
+	object = player;
+    } else {
+	object = match_controlled(descr, player, objname);
+    }
+
+    if (object != NOTHING) {
+	if (!set) {
+	    notifyf_nolisten(player, "%s: %s", proplabel,
+		    unparse_boolexp(player, get_property_lock(object, propname), 1));
+	    return;	
+	}
+
 	if (!*keyvalue) {
 	    remove_property(object, propname, 0);
 	    ts_modifyobject(object);
-	    notifyf(player, "%s cleared.", proplabel);
+	    notifyf_nolisten(player, "%s cleared.", proplabel);
 	    return;
 	}
 
 	key = parse_boolexp(descr, player, keyvalue, 0);
 	if (key == TRUE_BOOLEXP) {
-	    notify(player, "I don't understand that key.");
+	    notifyf_nolisten(player, "I don't understand that key.");
 	    return;
 	}
 
@@ -1370,7 +1396,7 @@ set_standard_lock(int descr, dbref player, const char *objname,
 	property.data.lok = key;
 	set_property(object, propname, &property, 0);
 	ts_modifyobject(object);
-	notifyf(player, "%s set.", proplabel);
+	notifyf_nolisten(player, "%s set.", proplabel);
     }
 }
 

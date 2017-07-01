@@ -1041,3 +1041,25 @@ do_register(int descr, dbref player, char *arg1, const char *arg2)
 
     register_object(player, target, propdir, (char *)arg2, object);
 }
+
+void
+do_doing(int descr, dbref player, const char *name, const char *mesg)
+{
+    if (*name && strcasecmp(name, "me")) {
+	notifyf_nolisten(player, "This property can only be set on yourself.");
+	return;
+    }
+
+    set_standard_property(descr, player, name, MESGPROP_DOING, "Doing", mesg);
+}
+
+void
+do_unlock(int descr, dbref player, const char *name)
+{
+    dbref object;
+
+    if ((object = match_controlled(descr, player, name)) != NOTHING) {
+	CLEARLOCK(object);
+        notifyf_nolisten(player, "Unlocked.");
+    }
+}

@@ -1393,12 +1393,10 @@ setlockstr(int descr, dbref player, dbref thing, const char *keyname)
             return 0;
         } else {
             /* everything ok, do it */
-            ts_modifyobject(thing);
             SETLOCK(thing, key);
             return 1;
         }
     } else {
-        ts_modifyobject(thing);
         CLEARLOCK(thing);
         return 1;
     }

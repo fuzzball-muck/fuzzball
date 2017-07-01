@@ -69,12 +69,12 @@ extern char match_cmdname[BUFFER_LEN];
 #define GETOECHO(x)	GETMESG(x, MESGPROP_OECHO)
 #define GETPECHO(x)	GETMESG(x, MESGPROP_PECHO)
 
-#define SETMESG(x,y,z)    {add_property(x, y, z, 0);}
+#define SETMESG(x,y,z)    {add_property(x, y, z, 0);ts_modifyobject(x);}
 #define SETDESC(x,y)	SETMESG(x, MESGPROP_DESC, y)
 
 #define GETLOCK(x)    (get_property_lock(x, MESGPROP_LOCK))
-#define SETLOCK(x,y)  {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = y; set_property(x, MESGPROP_LOCK, &mydat, 0);}
-#define CLEARLOCK(x)  {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = TRUE_BOOLEXP; set_property(x, MESGPROP_LOCK, &mydat, 0); DBDIRTY(x);}
+#define SETLOCK(x,y)  {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = y; set_property(x, MESGPROP_LOCK, &mydat, 0); ts_modifyobject(x); }
+#define CLEARLOCK(x)  {PData mydat; mydat.flags = PROP_LOKTYP; mydat.data.lok = TRUE_BOOLEXP; set_property(x, MESGPROP_LOCK, &mydat, 0); DBDIRTY(x); ts_modifyobject(x);}
 
 #define GETVALUE(x)	get_property_value(x, MESGPROP_VALUE)
 #define SETVALUE(x,y)	add_property(x, MESGPROP_VALUE, NULL, y)

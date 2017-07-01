@@ -518,14 +518,12 @@ Also see: @DOING
 ~
 ~
 @DOING
-@DOING <object>=[<description>]
-  Let others see that you're currently doing something, e.g. as shown
-when typing WHO.  This may also be set for objects you control.
-  To use this command, a Wizard must enable the tunable 'who_doing'.
+@DOING [me][=[<text>]]
 
-  Example:
-    @doing me                        clear your message
-    @doing me=Sharing hugs to all    set your message
+  Shows your doing message, or sets it to <text>.  If <text> is not specified,
+the field is cleared.  This uses the property '_/do'.
+
+A doing message is shown when typing WHO.
 Also see: WHO
 ~
 ~
@@ -733,88 +731,103 @@ any player but still must include the password.
 ~
 ~
 @DESCRIBE|@DESC
-@DESCRIBE <object> [=<text>]
+@DESCRIBE [<object>][=[<text>]]
 
-  Sets the description field of <object> to <text>.  If <text> is not
-specified, the description field is cleared.  This is the same as
-'@set <object>=_/de:[text]' A description is what is seen when a
-player looks at something.
+  Shows <object>'s description, or sets it to <text>.  If <object> is not
+specified, it defaults to 'me'. If <text> is not specified, the field is
+cleared.  This uses the property '_/de'.
+
+A description is shown to a player looking at <object>.
+Also see: @IDESCRIBE
 ~
 ~
 @IDESCRIBE|@IDESC
-@IDESCRIBE <object> [=<text>]
+@IDESCRIBE [<object>][=[<text>]]
 
-  Sets the idescription field of <object> to <text>.  If <text> is
-not specified, the description field is cleared.  This is the same
-as '@set <object>=_/ide:[text]' An idescription is what is seen on
-the inside of a vehicle, when a player inside it looks around.
+  Shows <object>'s inside description, or sets it to <text>.  If <object> is
+not specified, it defaults to 'me'. If <text> is not specified, the field is
+cleared.  This uses the property '_/ide'.
+
+An inside description is shown to a player looking inside a vehicle <object>.
+Also see: @DESCRIBE
 ~
 ~
 @SUCCESS|@SUCC
-@SUCCESS <object> [=<message>]
+@SUCCESS [<object>][=[<text>]]
 
-  Sets the success message for <object>.  The message is displayed when
-a player successfully uses <object>.  Without a message argument, it
-clears the message. It can be abbreviated @succ.  <object> can be
-specified as <name> or #<number>, or as 'me' or 'here'.  This is the
-same as '@set <object>=_/sc:[text]'
+  Shows <object>'s success message, or sets it to <text>.  If <object> is not
+specified, it defaults to 'me'. If <text> is not specified, the field is
+cleared.  This uses the property '_/sc'.
+
+A success message is shown to a player who successfully uses <object>.
 Also see: @OSUCCESS
 ~
 ~
 @FAIL
-@FAIL <object> [=<message>]
+@FAIL [<object>][=[<text>]]
 
-  Sets the fail message for <object>.  The message is displayed when a
-player fails the lock check when trying to use <object>.  The <object>
-can be a thing, player, exit, or room, specified as <name> or #<number>
-or 'me' or 'here'.  Without a message argument, it clears the message.
-This is the same as '@set <object>=_/fl:[text]'
-Also see: @OFAIL and @DESC
+  Shows <object>'s failure message, or sets it to <text>.  If <object> is not
+specified, it defaults to 'me'. If <text> is not specified, the field is
+cleared.  This uses the property '_/fl'.
+
+A failure message is shown to a player who fails to use <object>.
+Also see: @OFAIL
 ~
 ~
 @DROP
-@DROP <object> [=<text>]
+@DROP [<object>][=[<text>]]
 
-  Sets the drop field of <object> to <text>.  If <text> is not specified,
-the drop field is cleared.  The drop message on an object is displayed when
-you drop it.  On an exit, it is displayed upon entering the destination
-room.  On a player it is displayed to whoever kills them.  On a room, it
-is displayed when an object is dropped there.  This is the same as
-'@set <object>=_/dr:[text]'
+  Shows <object>'s drop message, or sets it to <text>.  If <object> is not
+specified, it defaults to 'me'. If <text> is not specified, the field is
+cleared.  This uses the property '_/dr'.
+
+A drop message works differently depending on <object>'s type:
+
+ On a room, it is shown to a player who drops an object there.
+ On a thing, it is shown to a player who drops it.
+ On an exit, it is shown to a player arriving at its destination.
+ On a player, it is shown to a player who kills them.
+Also see: @ODROP
 ~
 ~
 @OSUCCESS|@OSUCC
-@OSUCCESS <object> [=<message>]
+@OSUCCESS [<object>][=[<text>]]
 
-  The @osuccess message, prefixed by the player's name, is shown to others
-when the player successfully uses <object>.  Without a message argument,
-it clears the @osuccess message. It can be abbreviated @osucc.  <object>
-can be specified as <name> or #<number>, or as 'me' or 'here'.  This is
-the same as '@set <object>=_/osc:[text]'
+  Shows <object>'s osuccess message, or sets it to <text>.  If <object> is not
+specified, it defaults to 'me'. If <text> is not specified, the field is
+cleared.  This uses the property '_/osc'.
+
+An osuccess message, prefixed by the player's name, is shown to others in the
+room when a player successfully uses <object>.
 Also see: @SUCCESS
 ~
 ~
 @OFAIL
-@OFAIL <object> [=<message>]
+@OFAIL [<object>][=[<text>]]
 
-  The @ofail message, prefixed by the player's name, is shown to others
-when the player fails to use <object>. Without a message argument, it
-clears the message. <object> can be specified as <name> or #<number>, or
-as 'me' or 'here'.  This is the same as: '@set <object>=_/ofl:[text]'.
+  Shows <object>'s ofailure message, or sets it to <text>.  If <object> is not
+specified, it defaults to 'me'. If <text> is not specified, the field is
+cleared.  This uses the property '_/ofl'.
+
+An ofailure message, prefixed by the player's name, is shown to others in the
+room when a player fails to use <object>.
 Also see: @FAIL
 ~
 ~
 @ODROP
-@ODROP <object> [=<text>]
+@ODROP [<object>][=[<text>]]
 
-  Sets the odrop field of <object> to <text>.  If <text> is not specified,
-the odrop field is cleared.  Odrop on an object is displayed prefixed
-by the player's name when s/he drops that object.  On an exit, it is
-displayed upon a player's arrival to the destination room (or the location
-of the destination player).  On a player, it is displayed after the
-`name killed victim!' message.  On a room, it is displayed when an object
-is dropped there, prefixed by the object's name.  This is the same as
-'@set <object>=_/odr:[text]'
+  Shows <object>'s odrop, or sets it to <text>.  If <object> is not
+specified, it defaults to 'me'. If <text> is not specified, the field is
+cleared.  This uses the property '_/odr'.
+
+An odrop message, prefixed by the activating player's name, is shown to others
+in the room. It works differently depending on <object>'s type:
+
+  On a room, it is shown when an object is dropped there.
+  On a thing, it is shown when a player drops it.
+  On an exit, it is shown when a player arrives at its destination.
+  On a player, it is shown when another player kills them.
 Also see: @DROP
 ~
 ~
@@ -937,13 +950,13 @@ room has left.
 ~
 ~
 @LOCK
-@LOCK <object>=<key>
+@LOCK [<object>][=[<key>]]
 
-  Locks <object> to a specific key(s). <object> can be specified as <name>
-or #<number>, or as 'me' or 'here'. Boolean expressions are allowed, using
-'&' (and), '|' (or), '!' (not), and parentheses ('(' and ')') for grouping.
-To lock to a player, prefix their name with '*' (ex. '*Igor').  A key may
-be a player, an object, or 'property:value'.
+  Shows <object>'s lock, or sets it to <key>.  If <object> is not specified,
+it defaults to 'me'. If <key> is not specified, the field is cleared.  This
+uses the property '_/lk'.
+
+A lock that is not passed prevents players from using <object>.
 
   Examples:
     @lock thingy=*Igor
@@ -1067,70 +1080,80 @@ Syntax:
 @CHOWN <object> [=<player>]
 
   Changes the ownership of <object> to <player>, or if no player is given,
-to yourself.  If the MUCK is compiled with PLAYER_CHOWN, all players are
-allowed to take possession of objects, rooms, and actions, provided the
-CHOWN_OK flag is set.  Mortals cannot take ownership of a room unless they
-are standing in it, and may not take ownership of an object unless they
-are holding it.  Wizards have absolute power over all ownership.
+to yourself.  Any player is allowed to take possession of objects, rooms, and
+actions, provided the CHOWN_OK flag is set.  Mortals cannot take ownership of
+a room unless they are standing in it, and may not take ownership of an object unless
+they are holding it.  Wizards have absolute power over all ownership.
+Also see: @CHLOCK
 ~
 ~
 @CHOWN_LOCK|@CHLOCK
-@CHLOCK <object>=<key>
-@CHOWN_LOCK <object>=<key>
+@CHLOCK [<object>][=[<key>]]
+@CHOWN_LOCK [<object>][=[<key>]]
 
-  @chown-locks <object> so that only players who pass the given <key> can
-@chown it.  Boolean expressions are allowed, using '&' (and), '|' (or),
-'!' (not), and parentheses ('(' and ')') for grouping.  To lock to a remote
-player, prefix their name with '*' (ex. '*Igor').  A key may be a player,
-an object, or 'property:value'.
+  Shows <object>'s chown lock, or sets it to <key>.  If <object> is not
+specified, it defaults to 'me'. If <key> is not specified, the field is
+cleared.  This uses the property '_/chlk'.
 
-  Examples:
-    @chlock here=*Igor
-    @chlock thingy=*Igor|*JohnDoe|me
-    @chlock here=!sex:neuter
-    @chlock here=me|((*Igor|*JohnDoe)&sex:male)&!_flight?:yes
-Also see: @LOCK, @CHOWN and CHOWN_OK
+A chown lock that is not passed prevents players from taking ownership of
+<object>.
+Also see: @CHOWN
 ~
 ~
 @FORCE_LOCK|@FLOCK
-@FLOCK <object>=<lock expression>
-@FORCE_LOCK <object>=<lock expression>
+@FLOCK [<object>][=[<key>]]
+@FORCE_LOCK [<object>][=[<key>]]
 
-  @force-locks <object> such that it may only be @forced when the given
-<lock expression> is true, provided that the XForcible flag is set.
-Also see: @LOCK and @FORCE
+  Shows <object>'s force lock, or sets it to <key>.  If <object> is not
+specified, it defaults to 'me'. If <key> is not specified, the field is
+cleared.  This uses the property '@/flk'.
+
+A force lock that is passed allows players to force <object>.
+Also see: @FORCE
 ~
 ~
 @CONLOCK
-@CONLOCK <object>=<lock expression>
+@CONLOCK [<object>][=[<key>]]
 
-  @conlocks <object> such that only those for whom <lock expression> is true
-may place things in or remove things from <object>. 
-Also see: @LOCK, GET and PUT
+  Shows <object>'s container lock, or sets it to <key>.  If <object> is not
+specified, it defaults to 'me'. If <key> is not specified, the field is
+cleared.  This uses the property '_/clk'.
+
+A container lock that is passed allows players to put things in <object>.
+Also see: GET and PUT
 ~
 ~
 @READLOCK
-@READLOCK <object>=<lock expression>
+@READLOCK [<object>][=[<key>]]
 
-  @readlocks <object> such that those who pass <lock expression> is true can
-bypass non-MUF read permissions for <object>.
-Also see: @LOCK
+  Shows <object>'s read lock, or sets it to <key>.  If <object> is not
+specified, it defaults to 'me'. If <key> is not specified, the field is
+cleared.  This uses the property '@/rlk'.
+
+A read lock that is passed allows players to bypass non-MUF read permissions
+for <object>.
 ~
 ~
 @OWNLOCK
-@OWNLOCK <object>=<lock expression>
+@OWNLOCK [<object>][=[<key>]]
 
-  @ownlocks <object> such that those who pass <lock expression> is true can
-bypass controls() permissions for <object>.
-Also see: @LOCK
+  Shows <object>'s ownership lock, or sets it to <key>.  If <object> is not
+specified, it defaults to 'me'. If <key> is not specified, the field is
+cleared.  This uses the property '@/olk'.
+
+An ownership lock that is passed allows players to bypass controller
+permissions for <object>.
 ~
 ~
 @LINKLOCK
-@LINKLOCK <object>=<lock expression>
+@LINKLOCK [<object>][=[<key>]]
 
-  @linklocks <object> such that only those for whom <lock expression> is true
-may link to <object>.
-Also see: @LOCK and @LINK
+  Shows <object>'s link lock, or sets it to <key>.  If <object> is not
+specified, it defaults to 'me'. If <key> is not specified, the field is
+cleared.  This uses the property '_/lklk'.
+
+A link lock that is not passed prevents players from linking to <object>.
+Also see: @LINK
 ~
 ~
 @TELEPORT
