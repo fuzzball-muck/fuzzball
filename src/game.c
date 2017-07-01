@@ -709,7 +709,7 @@ process_command(int descr, dbref player, const char *command)
 		    if (!tp_who_doing)
 			goto bad;
 		    NOGUEST("@doing", player);
-		    set_standard_property(descr, player, arg1, MESGPROP_DOING, "Doing", arg2);
+		    do_doing(descr, player, arg1, arg2);
 		    break;
 		case 'r':
 		case 'R':
@@ -1225,7 +1225,7 @@ process_command(int descr, dbref player, const char *command)
 		    } else if (string_prefix(command, "@unlo")) {
 			Matched("@unlock");
 			NOGUEST("@unlock", player);
-			set_standard_lock(descr, player, arg1, MESGPROP_LOCK, "Lock", "");
+			do_unlock(descr, player, arg1);
 		    } else if (string_prefix(command, "@uncom")) {
 			Matched("@uncompile");
 			WIZARDONLY("@uncompile", player);

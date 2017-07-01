@@ -18,6 +18,7 @@ void do_credits(dbref player);
 
 void do_debug(dbref player, const char *args);
 void do_dig(int descr, dbref player, const char *name, const char *pname);
+void do_doing(int descr, dbref player, const char *name, const char *mesg);
 void do_dump(dbref player, const char *newfile);
 
 void do_edit(int descr, dbref player, const char *name);
@@ -81,8 +82,9 @@ void do_trace(int descr, dbref player, const char *name, int depth);
 void do_tune(dbref player, char *parmname, char *parmval);
 
 void do_unbless(int descr, dbref player, const char *target, const char *propname);
-void do_unlink(int descr, dbref player, const char *name);
 void do_uncompile(dbref player);
+void do_unlink(int descr, dbref player, const char *name);
+void do_unlock(int descr, dbref player, const char *name);
 #ifndef NO_USAGE_COMMAND
 void do_usage(dbref player);
 #endif
@@ -90,14 +92,6 @@ void do_usage(dbref player);
 void do_version(dbref player);
 
 void do_wall(dbref player, const char *message);
-
-void set_standard_lock(int descr, dbref player, const char *objname,
-                              const char *propname, const char *proplabel,
-                              const char *keyvalue);
-void set_standard_property(int descr, dbref player, const char *objname,
-                                  const char *propname, const char *proplabel,
-                                  const char *propvalue);
-
 
 void do_drop(int descr, dbref player, const char *name, const char *obj);
 void do_examine(int descr, dbref player, const char *name, const char *dir);
