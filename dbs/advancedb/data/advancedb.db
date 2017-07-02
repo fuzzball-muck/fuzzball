@@ -1309,10 +1309,6 @@ con-recordhost.muf
 8
 1073749224
 *Props*
-.debug/errcount:3:1
-.debug/lastcrash:3:1073698773
-.debug/lastcrashtime:10:01/09/04 19:39:33
-.debug/lasterr:10:con-recordhost.muf(#90), line 5; GETPROPSTR: Permission denied.
 _/de:10:A scroll containing a spell called con-recordhost.muf
 *End*
 153
@@ -1496,13 +1492,30 @@ cmd-watchfor.muf
 22
 1073749224
 *Props*
-.debug/errcount:3:1
-.debug/lastcrash:3:1073698773
-.debug/lastcrashtime:10:01/09/04 19:39:33
-.debug/lasterr:10:cmd-watchfor.muf(#80), line 286; GETPROPVAL: Permission denied.
 _/de:10:A scroll containing a spell called cmd-watchfor.muf
 _defs/wf-announce:2:#80 "wf-announce" call
 _defs/wf-find-watched:2:#80 "wf-find-watched" call
+_help#:10:20
+_help#/1:10:watchfor: displays presence of players in your watchfor list
+_help#/10:10:wf #hide <names>  Hides your presence information from <names>.
+_help#/11:10:wf #hideall       Hides from everyone.
+_help#/12:10:wf #!hideall      Hides from no one (default).
+_help#/13:10:wf #show <names> "Unhides" from <names>, when set #hideall.
+_help#/14:10:wf #hide          Shows your current permission settings.
+_help#/15:10:                  People from whom you hide still see you in WHO, etc.
+_help#/16:10:                  Remove people from lists with "!<name>".
+_help#/17:10: 
+_help#/18:10:wf #idle  wf #!idle  Toggles players' idle times on "wf" display.
+_help#/19:10:wf #away  wf #!away  Toggles messages when players you watch go "away".
+_help#/20:10:                     #idle defaults off and #away defaults on.
+_help#/2:10: 
+_help#/3:10:wf          Displays your list's presence information.
+_help#/4:10:wf #on      Messages you with presence information as it happens.
+_help#/5:10:wf #off     Turns off messages; type wf to see presence.
+_help#/6:10:wf <name>   Adds <name> to your list; watches someone's presence.
+_help#/7:10:wf !<name>  Removes <name> from your list.
+_help#/8:10:wf #list    Lists the players whose presence you watch.
+_help#/9:10: 
 *End*
 153
 #79
@@ -1516,10 +1529,6 @@ cmd-@view.muf
 9
 1073749224
 *Props*
-.debug/errcount:3:2
-.debug/lastcrash:3:1073754023
-.debug/lastcrashtime:10:01/10/04 11:00:23
-.debug/lasterr:10:cmd-@view.muf(#79), line 5; FORCE: Cannot force god (1).
 _/de:10:A scroll containing a spell called cmd-@view
 *End*
 153
@@ -1953,10 +1962,6 @@ cmd-@objeditgui.muf
 2
 1073749224
 *Props*
-.debug/errcount:3:1
-.debug/lastcrash:3:1073751026
-.debug/lastcrashtime:10:01/10/04 10:10:26
-.debug/lasterr:10:lib-optionsgui.muf(#16), line 1354; CALL: PUBLIC or WIZCALL function not found. (2)
 _/de:10:A scroll containing a spell called cmd-@objeditgui.muf
 _author:10:Revar Desmera <revar@belfry.com>
 _version:10:1.003
@@ -1989,10 +1994,6 @@ cmd-@muf.muf
 4
 1073749224
 *Props*
-.debug/errcount:3:1
-.debug/lastcrash:3:1073539061
-.debug/lastcrashtime:10:01/07/04 23:17:41
-.debug/lasterr:10:cmd-@muf.muf(#55), line 54; NEWPROGRAM: Permission denied.  Requires Wizbit.
 _/de:10:A scroll containing a spell called cmd-@muf.muf
 _author:10:Natasha O'Brien <mufden@mufden.fuzzball.org>
 _help#:10:6
@@ -2055,10 +2056,6 @@ cmd-lsedit.muf
 32
 1073749224
 *Props*
-.debug/errcount:3:2
-.debug/lastcrash:3:1073534709
-.debug/lastcrashtime:10:01/07/04 22:05:09
-.debug/lasterr:10:lib-editor.muf(#6), line 299; CALL: PUBLIC or WIZCALL function not found. (2)
 _/de:10:A scroll containing a spell called cmd-lsedit
 _version:10:1.4
 *End*
@@ -2106,10 +2103,6 @@ cmd-laston.muf
 3
 1073749224
 *Props*
-.debug/errcount:3:1
-.debug/lastcrash:3:1073538341
-.debug/lastcrashtime:10:01/07/04 23:05:41
-.debug/lasterr:10:cmd-laston.muf(#49), line 37; GETPROPSTR: Permission denied.
 _/de:10:A scroll containing a spell called cmd-laston.muf
 _author:10:Natasha O'Brien <mufden@mufden.fuzzball.org>
 _help#:10:7
@@ -2189,9 +2182,6 @@ cmd-guitest.muf
 1
 1073749224
 *Props*
-.debug/errcount:3:61
-.debug/lastcrash:3:987454465
-.debug/lasterr:10:lib-gui(#4), line 631; GUI_DLOG_CLOSE: Internal error: GUI not available.
 _/de:10:A scroll containing a spell called cmd-guitest
 *End*
 153
@@ -2840,10 +2830,6 @@ lib-optionsgui.muf
 1
 1073749224
 *Props*
-.debug/errcount:3:1
-.debug/lastcrash:3:1073751026
-.debug/lastcrashtime:10:01/10/04 10:10:26
-.debug/lasterr:10:lib-optionsgui.muf(#16), line 1354; CALL: PUBLIC or WIZCALL function not found. (2)
 _/de:10:A scroll containing a spell called lib-optionsgui.muf
 _author:10:Revar Desmera <revar@belfry.com>
 _defs/GUI_OPTIONS_FREE:10:"$lib/optionsgui" match "gui_options_free" call
@@ -3165,10 +3151,6 @@ lib-editor.muf
 282
 1073751947
 *Props*
-.debug/errcount:3:2
-.debug/lastcrash:3:1073534709
-.debug/lastcrashtime:10:01/07/04 22:05:09
-.debug/lasterr:10:lib-editor.muf(#6), line 299; CALL: PUBLIC or WIZCALL function not found. (2)
 _/de:10:A scroll containing a spell called lib-editor.muf
 _author:10:foxen@belfry.com
 _defs/editor:10:"$lib/editor" match "EDITOR" call
