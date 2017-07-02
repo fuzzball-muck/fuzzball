@@ -557,7 +557,7 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
 	notifyf(player, "Odrop: %s", GETODROP(thing));
     }
 
-    if (tp_who_doing && GETDOING(thing)) {
+    if (GETDOING(thing)) {
 	notifyf(player, "Doing: %s", GETDOING(thing));
     }
     if (GETOECHO(thing)) {

@@ -330,10 +330,10 @@ dump_users(struct descriptor_data *e, char *user)
     char pbuf[64];
     char secchar = ' ';
 
-    wizard = e->connected && Wizard(e->player) && !tp_who_doing;
+    wizard = 0;
 
     while (*user && (isspace(*user) || *user == '*')) {
-	if (tp_who_doing && *user == '*' && e->connected && Wizard(e->player))
+	if (*user == '*' && e->connected && Wizard(e->player))
 	    wizard = 1;
 	user++;
     }
@@ -352,11 +352,7 @@ dump_users(struct descriptor_data *e, char *user)
     if (wizard) {
 	queue_ansi(e, "Player Name                Location     On For Idle   Host\r\n");
     } else {
-	if (tp_who_doing) {
-	    queue_ansi(e, "Player Name           On For Idle   Doing...\r\n");
-	} else {
-	    queue_ansi(e, "Player Name           On For Idle\r\n");
-	}
+	queue_ansi(e, "Player Name           On For Idle   Doing...\r\n");
     }
 
     d = descriptor_list;
@@ -399,30 +395,15 @@ dump_users(struct descriptor_data *e, char *user)
 			     ((FLAGS(d->player) & INTERACTIVE) ? '*' : ' '),
 			     secchar, d->hostname, d->username);
 	    } else {
-		if (tp_who_doing) {
-		    /* Modified to take into account tp_player_name_limit changes */
-		    snprintf(buf, sizeof(buf), "%-*s %10s %4s%c%c %.*s\r\n",
-			     tp_player_name_limit + 1,
-			     NAME(d->player),
-			     time_format_1(now - d->connected_at),
-			     time_format_2(now - d->last_time),
-			     ((FLAGS(d->player) & INTERACTIVE) ? '*' : ' '), secchar,
-			     /* Things must end on column 79. The required cols
-			      * (not counting player name, but counting forced
-			      * space after it) use up 20 columns.
-			      *
-			      * !! Don't forget to update this if that changes
-			      */
-			     (int) (79 - (tp_player_name_limit + 20)),
-			     GETDOING(d->player) ? GETDOING(d->player) : "");
-		} else {
-		    snprintf(buf, sizeof(buf), "%-*s %10s %4s%c%c\r\n",
-			     (int) (tp_player_name_limit + 1),
-			     NAME(d->player),
-			     time_format_1(now - d->connected_at),
-			     time_format_2(now - d->last_time),
-			     ((FLAGS(d->player) & INTERACTIVE) ? '*' : ' '), secchar);
-		}
+		/* Modified to take into account tp_player_name_limit changes */
+		snprintf(buf, sizeof(buf), "%-*s %10s %4s%c%c %.*s\r\n",
+			tp_player_name_limit + 1,
+			NAME(d->player),
+			time_format_1(now - d->connected_at),
+			time_format_2(now - d->last_time),
+			((FLAGS(d->player) & INTERACTIVE) ? '*' : ' '), secchar,
+			(int) (79 - (tp_player_name_limit + 20)),
+			GETDOING(d->player) ? GETDOING(d->player) : "");
 	    }
 	    queue_ansi(e, buf);
 	}

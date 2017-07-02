@@ -378,7 +378,6 @@ int tp_teleport_to_player;
 int tp_thing_darking;
 int tp_thing_movement;
 int tp_toad_recycle;
-int tp_who_doing;
 int tp_who_hides_dark;
 int tp_wiz_vehicles;
 int tp_verbose_clone;
@@ -497,8 +496,6 @@ struct tune_bool_entry tune_bool_list[] = {
      "Disallow WHO command from login screen and programs", "", 1, SECURE_WHO},
     {"WHO", "use_hostnames", &tp_hostnames, 0, MLEV_WIZARD,
      "Resolve IP addresses into hostnames", "", 1, HOSTNAMES},
-    {"WHO", "who_doing", &tp_who_doing, 0, MLEV_WIZARD,
-     "Show '_/do' property value in WHO lists", "", 1, WHO_DOING},
     {NULL, NULL, NULL, 0, 0, NULL, 0, 0, 0}
 };
 
