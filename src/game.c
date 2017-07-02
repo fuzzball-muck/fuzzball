@@ -706,8 +706,6 @@ process_command(int descr, dbref player, const char *command)
 		case 'o':
 		case 'O':
 		    Matched("@doing");
-		    if (!tp_who_doing)
-			goto bad;
 		    NOGUEST("@doing", player);
 		    do_doing(descr, player, arg1, arg2);
 		    break;
