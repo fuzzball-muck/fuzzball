@@ -20,8 +20,6 @@
 #include "timequeue.h"
 #include "tune.h"
 
-#include <stdarg.h>
-
 #define BEGINCOMMENT '('
 #define ENDCOMMENT ')'
 #define BEGINSTRING '"'

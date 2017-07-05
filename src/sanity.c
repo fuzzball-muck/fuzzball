@@ -14,8 +14,6 @@
 #include "props.h"
 #include "tune.h"
 
-#include <stdarg.h>
-
 #define SanFixed(ref, fixed) san_fixed_log((fixed), 1, (ref), -1)
 #define SanFixed2(ref, ref2, fixed) san_fixed_log((fixed), 1, (ref), (ref2))
 #define SanFixedRef(ref, fixed) san_fixed_log((fixed), 0, (ref), -1)

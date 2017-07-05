@@ -8,8 +8,6 @@
 #include "log.h"
 #include "tune.h"
 
-#include <stdarg.h>
-
 static void
 index_file(dbref player, const char *onwhat, const char *file)
 {

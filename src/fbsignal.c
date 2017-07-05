@@ -7,8 +7,6 @@
 #include "tune.h"
 
 #ifndef WIN32
-#include <signal.h>
-#include <sys/wait.h>
 
 /*
  * SunOS can't include signal.h and sys/signal.h, stupid broken OS.
@@ -364,10 +362,6 @@ sig_reap(int i)
 #endif
 
 #else				/* WIN32 */
-
-#include <wincon.h>
-#include <windows.h>
-#include <signal.h>
 
 #ifdef SPAWN_HOST_RESOLVER
 void
