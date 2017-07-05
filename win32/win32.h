@@ -4,10 +4,10 @@
 #include <direct.h>
 #include <process.h>
 #include <time.h>
-#include <wincon.h>
-#include <windows.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
+
+#include <windows.h>
 
 #define pid_t		int
 #define socklen_t	int
@@ -20,7 +20,7 @@
 #define inet_pton	InetPton
 #define pclose		_pclose
 #define popen		_popen
-#define read(fd, buf, count)
+#define read(fd, buf, count) \
 			recv(fd, (char *)buf, count, 0)
 #define snprintf(str, size, format, ...) \
 			_snprintf_s(str, size, _TRUNCATE, format, __VA_ARGS__)

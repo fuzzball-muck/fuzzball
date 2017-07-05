@@ -494,7 +494,7 @@ online(dbref player)
 static void
 announce_connect(int descr, dbref player)
 {
-    dbref loc;
+    dbref loc = LOCATION(player);
     char buf[BUFFER_LEN];
     struct match_data md;
     dbref exit;
@@ -1255,7 +1255,7 @@ static void
 announce_disconnect(struct descriptor_data *d)
 {
     dbref player = d->player;
-    dbref loc;
+    dbref loc = LOCATION(player);
     char buf[BUFFER_LEN];
     int dcount;
 

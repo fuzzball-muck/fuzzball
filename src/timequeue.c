@@ -884,7 +884,7 @@ get_pidinfo(int pid)
         CLEAR(&temp2);
 	array_set_strkey_intval(&nw, "INSTCNT", ptr->fr ? ptr->fr->instcnt : 0);
 	array_set_strkey_intval(&nw, "MLEVEL", 0);
-	array_set_strkey_intval(&nw, "NEXTRUN", ptr->when);
+	array_set_strkey_intval(&nw, "NEXTRUN", (int)ptr->when);
 	array_set_strkey_intval(&nw, "PID", ptr->eventnum);
 	array_set_strkey_refval(&nw, "PLAYER", ptr->uid);
 	array_set_strkey_intval(&nw, "STARTED", (int) (ptr->fr ? ptr->fr->started : 0));
