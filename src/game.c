@@ -19,15 +19,6 @@
 #include "props.h"
 #include "tune.h"
 
-#include <signal.h>
-
-#ifndef WIN32
-#include <sys/wait.h>
-#else
-#include <process.h>
-#include <windows.h>
-#endif
-
 #define Matched(string) { if(!string_prefix((string), command)) goto bad; }
 
 int force_level = 0;
@@ -290,17 +281,6 @@ dump_database(void)
     log_status("DUMPING: %s.#%d# (done)", dumpfile, epoch);
 }
 
-#ifdef WIN32
-/* TODO: This is not thread safe - disabled for now... */
-/*void fork_dump_thread(void *arg) {
-	forked_dump_process_flag = 1;
-	dump_database_internal();
-        global_dumper_pid = 0;
-	_endthread();
-}*/
-#endif
-
-
 /*
  * Named "fork_and_dump()" mostly for historical reasons...
  */
@@ -344,11 +324,6 @@ fork_and_dump(void)
     }
 # else				/* !WIN32 */
     dump_database_internal();
-    /* TODO: This is not thread safe - disabled for now... */
-    /*global_dumper_pid = (long) _beginthread(fork_dump_thread, 0, 0);
-       if (global_dumper_pid == -1L) {
-       wall_wizards("## Could not create thread for database dumping");
-       } */
 # endif
 #endif
 }

@@ -7,11 +7,6 @@
 #include "log.h"
 #include "tune.h"
 
-#include <stdarg.h>
-
-/* cks: these are varargs routines. We are assuming ANSI C. We could at least
-   USE ANSI C varargs features, no? Sigh. */
-
 static void
 vlog2file(int prepend_time, const char *filename, char *format, va_list args)
 {

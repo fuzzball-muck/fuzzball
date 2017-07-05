@@ -26,19 +26,6 @@
 #include "timequeue.h"
 #include "tune.h"
 
-#include <fcntl.h>
-#include <sys/stat.h>
-
-#if defined (HAVE_ERRNO_H)
-# include <errno.h>
-#else
-#if defined (HAVE_SYS_ERRNO_H)
-# include <sys/errno.h>
-#else
-extern int errno;
-#endif
-#endif
-
 #ifdef USE_SSL
 # include "interface_ssl.h"
 # ifdef HAVE_OPENSSL
@@ -1119,11 +1106,7 @@ socket_read(struct descriptor_data *d, void *buf, size_t count)
 #ifdef USE_SSL
     if (!d->ssl_session) {
 #endif
-#ifdef WIN32
-	return recv(d->descriptor, (char *) buf, count, 0);
-#else
 	return read(d->descriptor, buf, count);
-#endif
 #ifdef USE_SSL
     } else {
 	i = SSL_read(d->ssl_session, buf, count);
@@ -1170,11 +1153,7 @@ socket_write(struct descriptor_data * d, const void *buf, size_t count)
 #ifdef USE_SSL
     if (!d->ssl_session) {
 #endif
-#ifdef WIN32
-	return send(d->descriptor, (char *) buf, count, 0);
-#else
 	return write(d->descriptor, buf, count);
-#endif
 #ifdef USE_SSL
     } else {
 	i = SSL_write(d->ssl_session, buf, count);
@@ -2927,9 +2906,6 @@ notify_except(dbref first, dbref exception, const char *msg, dbref who)
  * Otherwise it trys to use sysconf() (POSIX.1) or getdtablesize()
  * to get what is avalible to you.
  */
-#ifdef HAVE_RESOURCE_H
-# include <sys/resource.h>
-#endif
 
 #if defined(RLIMIT_NOFILE) || defined(RLIMIT_OFILE)
 # define USE_RLIMIT

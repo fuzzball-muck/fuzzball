@@ -104,12 +104,6 @@
 #include "inst.h"
 #include "interface.h"
 
-#ifdef HAVE_MALLOC_H
-# include <malloc.h>
-#else
-# include <stdlib.h>
-#endif
-
 /* {{{ #defines you might want to configure.                            */
 
 /* Select whether to do debug checks also. */

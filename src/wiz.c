@@ -20,18 +20,6 @@
 #include "timequeue.h"
 #include "tune.h"
 
-#ifndef WIN32
-# include <sys/resource.h>
-#endif
-
-#ifndef MALLOC_PROFILING
-#  ifndef HAVE_MALLOC_H
-#    include <stdlib.h>
-#  else
-#    include <malloc.h>
-#  endif
-#endif
-
 void
 do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
 {

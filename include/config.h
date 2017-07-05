@@ -145,8 +145,13 @@
  * Include all the good standard headers here.
  */
 #include <ctype.h>
+#include <fcntl.h>
+#include <limits.h>
+#include <signal.h>
+#include <stdarg.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <sys/stat.h>
 #include <sys/types.h>
 
 typedef int dbref;
@@ -188,7 +193,7 @@ typedef int dbref;
 # define strchr		index
 # define strrchr	rindex
 # define memcpy(d, s, n) bcopy((s), (d), (n))
-/* no real way to map memset to bzero, unfortunatly. */
+/* no real way to map memset to bzero, unfortunately. */
 #endif				/* not STDC_HEADERS and not HAVE_STRING_H */
 
 #ifdef HAVE_RANDOM
@@ -213,11 +218,24 @@ typedef int dbref;
 # endif
 #endif
 
-/*
- * Include some of the useful local headers here.
- */
 #ifdef MALLOC_PROFILING
 # include "crt_malloc.h"
+#else
+# ifndef HAVE_MALLOC_H
+#   include <stdlib.h>
+# else
+#   include <malloc.h>
+# endif
+#endif
+
+#if defined (HAVE_ERRNO_H)
+# include <errno.h>
+#else
+# if defined (HAVE_SYS_ERRNO_H)
+#  include <sys/errno.h>
+# else
+extern int errno;
+# endif
 #endif
 
 /******************************************************************/
@@ -265,6 +283,7 @@ typedef int dbref;
 # include <netinet/tcp.h>
 # include <sys/file.h>
 # include <sys/ioctl.h>
+# include <sys/resource.h>
 # include <sys/socket.h>
 # include <sys/wait.h>
 #endif

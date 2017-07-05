@@ -7,8 +7,6 @@
 #include "inst.h"
 #include "interp.h"
 
-#include <limits.h>
-
 static struct inst *oper1, *oper2, *oper3, *oper4;
 static struct inst temp1, temp2, temp3;
 static int result, tmp;
