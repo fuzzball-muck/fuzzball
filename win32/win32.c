@@ -1,4 +1,5 @@
 #include <time.h>
+#include <windows.h>
 
 void sync(void) { return; }
 
