@@ -70,11 +70,6 @@ $ifdef channels
     $def int_listage 604800 
 $endif
  
-$ifndef __muckname=HLM
-    $def .tellgood "SHOUT: " swap strcat .tell
-    $def .tellbad .tellgood
-$endif
- 
 VAR TheLine
 VAR InLine
 VAR charge

@@ -263,12 +263,7 @@ lvar realtrig
   dup desc str-desc
   dup room?
   if
-$ifndef __version<Muck2.2fb4.5
-    (patch since LOCKED? goes too deep)
     me @ over locked?
-$else
-    0
-$endif
     if
       dup fail dup
       if
