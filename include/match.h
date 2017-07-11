@@ -11,10 +11,8 @@ struct match_data {
     int match_descr;		/* descriptor initiating the match */
     const char *match_name;	/* name to match */
     int preferred_type;		/* preferred type */
-    int longest_match;		/* longest matched string */
     int match_level;		/* the highest priority level so far */
     int block_equals;		/* block matching of same name exits */
-    int partial_exits;		/* if non-zero, allow exits to match partially */
 };
 
 dbref find_registered_obj(dbref player, const char *name);

@@ -27,10 +27,8 @@ init_match(int descr, dbref player, const char *name, int type, struct match_dat
     md->match_name = name;
     md->check_keys = 0;
     md->preferred_type = type;
-    md->longest_match = 0;
     md->match_level = 0;
     md->block_equals = 0;
-    md->partial_exits = (TYPE_EXIT == type);
 }
 
 void
@@ -275,6 +273,7 @@ match_exits(dbref obj, struct match_data *md)
     dbref exit, absolute, first;
     const char *exitname, *p;
     int exitprog, lev, partial;
+    size_t longest_match = 0;
 
     first = EXITS(obj);
 
@@ -301,7 +300,7 @@ match_exits(dbref obj, struct match_data *md)
 		    || Typeof((DBFETCH(exit)->sp.exit.dest)[i]) == TYPE_PROGRAM)
 		    exitprog = 1;
 	}
-	if (tp_enable_prefix && exitprog && md->partial_exits &&
+	if (tp_enable_prefix && exitprog && md->preferred_type == TYPE_EXIT &&
 	    (FLAGS(exit) & XFORCIBLE) && FLAGS(OWNER(exit)) & WIZARD) {
 	    partial = 1;
 	} else {
@@ -330,13 +329,13 @@ match_exits(dbref obj, struct match_data *md)
 		if (*exitname == '\0' || *exitname == EXIT_DELIMITER) {
 		    /* we got a match on this alias */
 		    if (lev >= md->match_level) {
-			if (strlen(md->match_name) - strlen(p) > (size_t) md->longest_match) {
+			if (strlen(md->match_name) - strlen(p) > longest_match) {
 			    if (lev > md->match_level) {
 				md->match_level = lev;
 				md->block_equals = 0;
 			    }
 			    md->exact_match = exit;
-			    md->longest_match = strlen(md->match_name) - strlen(p);
+			    longest_match = strlen(md->match_name) - strlen(p);
 			    if ((*p == ' ') || (partial && notnull)) {
 				strcpyn(match_args, sizeof(match_args),
 					(partial && notnull) ? p : (p + 1));
@@ -355,7 +354,7 @@ match_exits(dbref obj, struct match_data *md)
 					(char *) md->match_name);
 			    }
 			} else if ((strlen(md->match_name) - strlen(p) ==
-				    (size_t) md->longest_match) && !((lev == md->match_level)
+				    longest_match) && !((lev == md->match_level)
 								     && (md->block_equals))) {
 			    if (lev > md->match_level) {
 				md->exact_match = exit;
