@@ -1,9 +1,6 @@
 #ifndef _MATCH_H
 #define _MATCH_H
 
-#define NOMATCH_MESSAGE "I don't see that here."
-#define AMBIGUOUS_MESSAGE "I don't know which one you mean!"
-
 struct match_data {
     dbref exact_match;		/* holds result of exact match */
     int check_keys;		/* if non-zero, check for keys */
@@ -32,6 +29,8 @@ void match_everything(struct match_data *md);
 void match_here(struct match_data *md);
 void match_home(struct match_data *md);
 void match_nil(struct match_data *md);
+char *match_msg_ambiguous(const char *s, unsigned short types);
+char *match_msg_nomatch(const char *s, unsigned short types);
 void match_me(struct match_data *md);
 void match_neighbor(struct match_data *md);
 void match_player(struct match_data *md);
