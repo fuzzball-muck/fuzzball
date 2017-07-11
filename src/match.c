@@ -584,10 +584,10 @@ noisy_match_result(struct match_data * md)
 
     switch (match = match_result(md)) {
     case NOTHING:
-	notifyf_nolisten(md->match_who, NOMATCH_MESSAGE);
+	notifyf_nolisten(md->match_who, match_msg_nomatch(md->match_name, 0));
 	return NOTHING;
     case AMBIGUOUS:
-	notifyf_nolisten(md->match_who, AMBIGUOUS_MESSAGE);
+	notifyf_nolisten(md->match_who, match_msg_ambiguous(md->match_name, 0));
 	return NOTHING;
     default:
 	return match;
@@ -626,4 +626,20 @@ match_controlled(int descr, dbref player, const char *name)
     } else {
         return match;
     }
+}
+
+char *
+match_msg_nomatch(const char *s, unsigned short types)
+{
+    static char buf[BUFFER_LEN];
+    snprintf(buf, sizeof(buf), "I don't see '%s' here.", s);
+    return buf;
+}
+
+char *
+match_msg_ambiguous(const char *s, unsigned short types)
+{
+    static char buf[BUFFER_LEN];
+    snprintf(buf, sizeof(buf), "I don't know which '%s' you mean!", s);
+    return buf;
 }
