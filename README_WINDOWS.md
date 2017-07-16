@@ -10,14 +10,14 @@ Tools needed:
 
 ### Get source
 * First time
- * Open a Git Bash shell in the desired folder (*if Windows Explorer integration is active, right-click, ```Git Bash```*)
+  * Open a Git Bash shell in the desired folder (*if Windows Explorer integration is active, right-click, ```Git Bash```*)
 ```sh
 cd ~          # Or any other desired directory
 git clone     https://github.com/fuzzball-muck/fuzzball.git
 cd fuzzball
 ```
 * To update
- * Open a Git Bash shell
+  * Open a Git Bash shell
 ```sh
 cd ~/fuzzball  # Same path as above, plus the 'fuzzball' directory
 git pull
@@ -27,8 +27,8 @@ git pull
 ### Configure
 *Use the Windows command prompt instead of Git Bash*
 * Set up Visual Studio environment variables
- * Use ```Program Files``` instead of ```Program Files (x86)``` if on a 32-bit machine
- * Fuzzball does not currently support compiling as 64-bit
+  * Use ```Program Files``` instead of ```Program Files (x86)``` if on a 32-bit machine
+  * Fuzzball does not currently support compiling as 64-bit
 ```bat
 "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x86
 ```
