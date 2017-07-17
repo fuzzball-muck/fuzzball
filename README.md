@@ -15,13 +15,13 @@ Fuzzball also offers a built-in help system.  Connect, then type ```help``` for 
 
 ## Downloads
 * **Stable**
- * *Tested and supported, recommended for everyday usage*
- * **Linux**: download from [the Fuzzball homepage][web-home], follow the steps in [the Linux README][docs-buildsrc-lin], skipping *Get Source*
- * **Windows**: download from [the Fuzzball homepage][web-home], follow the steps under *Running* in [the Windows README](README_WINDOWS.md#running)
+  * *Tested and supported, recommended for everyday usage*
+  * **Linux**: download from [the Fuzzball homepage][web-home], follow the steps in [the Linux README][docs-buildsrc-lin], skipping *Get Source*
+  * **Windows**: download from [the Fuzzball homepage][web-home], follow the steps under *Running* in [the Windows README](README_WINDOWS.md#running)
 * **Development**
- * *Try out the latest features and help find issues, but if it breaks you get to keep all the pieces*
- * **Linux**: follow the steps in [the Linux README][docs-buildsrc-lin].
- * **Windows**: download a pre-built package from [the Appveyor build artifacts page](https://ci.appveyor.com/project/fuzzball-muck/fuzzball/branch/master/artifacts), follow the steps under *Running* in [the Windows README](README_WINDOWS.md#running).
+  * *Try out the latest features and help find issues, but if it breaks you get to keep all the pieces*
+  * **Linux**: follow the steps in [the Linux README][docs-buildsrc-lin].
+  * **Windows**: download a pre-built package from [the Appveyor build artifacts page](https://ci.appveyor.com/project/fuzzball-muck/fuzzball/branch/master/artifacts), follow the steps under *Running* in [the Windows README](README_WINDOWS.md#running).
 
 ### Building and Running from Source
 * [Linux README][docs-buildsrc-lin]
