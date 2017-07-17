@@ -28,10 +28,16 @@ do_rob(int descr, dbref player, const char *what)
 	return;
     }
 
+    if (thing == player) {
+	notify(player, "That seems unnecessary.");
+	return;
+    }
+
     if (Typeof(thing) != TYPE_PLAYER) {
 	notify(player, "Sorry, you can only rob other players.");
 	return;
     }
+
 
     if (GETVALUE(thing) < 1) {
 	notifyf(player, "%s has no %s.", NAME(thing), tp_pennies);
@@ -80,7 +86,7 @@ do_kill(int descr, dbref player, const char *what, int cost)
 	return;
     }
 
-    if (Typeof(victim) != TYPE_PLAYER) {
+    if (victim == player || Typeof(victim) != TYPE_PLAYER) {
 	notify(player, "Sorry, you can only kill other players.");
 	return;
     }
@@ -158,6 +164,11 @@ do_give(int descr, dbref player, const char *recipient, int amount)
     }
 
     if ((who = noisy_match_result(&md)) == NOTHING) {
+	return;
+    }
+
+    if (who == player) {
+	notify(player, "That seems unnecessary.");
 	return;
     }
 
