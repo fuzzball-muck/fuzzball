@@ -33,22 +33,15 @@ do_whisper(int descr, dbref player, const char *arg1, const char *arg2)
 	match_absolute(&md);
 	match_player(&md);
     }
-    switch (who = match_result(&md)) {
-    case NOTHING:
-	notify(player, "Whisper to whom?");
-	break;
-    case AMBIGUOUS:
-	notify(player, "I don't know who you mean!");
-	break;
-    default:
-	snprintf(buf, sizeof(buf), "%s whispers, \"%s\"", NAME(player), arg2);
-	if (!notify_from(player, who, buf)) {
-	    notifyf(player, "%s is not connected.", NAME(who));
-	    break;
-	}
-	notifyf(player, "You whisper, \"%s\" to %s.", arg2, NAME(who));
-	break;
+    if ((who = noisy_match_result(&md)) == NOTHING) {
+	return;
     }
+    snprintf(buf, sizeof(buf), "%s whispers, \"%s\"", NAME(player), arg2);
+    if (!notify_from(player, who, buf)) {
+	notifyf(player, "%s is not connected.", NAME(who));
+	return;
+    }
+    notifyf(player, "You whisper, \"%s\" to %s.", arg2, NAME(who));
 }
 
 void

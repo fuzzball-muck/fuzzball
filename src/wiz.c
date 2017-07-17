@@ -68,16 +68,11 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
 	match_neighbor(&md);
 	match_player(&md);
     }
-    destination = match_result(&md);
+    if ((destination = noisy_match_result(&md)) == NOTHING) {
+	return;
+    }
     unparse_object(player, victim, victim_name_buf, sizeof(victim_name_buf));
-    switch (destination) {
-    case NOTHING:
-	notify(player, "Send it where?");
-	break;
-    case AMBIGUOUS:
-	notify(player, "I don't know which destination you mean!");
-	break;
-    case HOME:
+    if (destination == HOME) {
 	switch (Typeof(victim)) {
 	case TYPE_PLAYER:
 	    destination = PLAYER_HOME(victim);
@@ -104,7 +99,7 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
 						 * switch anyway */
 	    break;
 	}
-    default:
+    } else {
 	switch (Typeof(victim)) {
 	case TYPE_PLAYER:
 	    if (!controls(player, victim) ||
@@ -198,7 +193,6 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
 	    notify(player, "You can't teleport that.");
 	    break;
 	}
-	break;
     }
     return;
 }

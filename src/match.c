@@ -631,7 +631,7 @@ char *
 match_msg_nomatch(const char *s, unsigned short types)
 {
     static char buf[BUFFER_LEN];
-    snprintf(buf, sizeof(buf), "I don't see '%s' here.", s);
+    snprintf(buf, sizeof(buf), "I don't understand '%s'.", s);
     return buf;
 }
 

@@ -476,21 +476,13 @@ do_move(int descr, dbref player, const char *direction, int lev)
 	init_match_check_keys(descr, player, direction, TYPE_EXIT, &md);
 	md.match_level = lev;
 	match_all_exits(&md);
-	switch (exit = match_result(&md)) {
-	case NOTHING:
-	    notify(player, "You can't go that way.");
-	    break;
-	case AMBIGUOUS:
-	    notify(player, "I don't know which way you mean!");
-	    break;
-	default:
-	    /* we got one */
-	    /* check to see if we got through */
-	    ts_useobject(exit);
-	    if (can_doit(descr, player, exit, "You can't go that way.")) {
-		trigger(descr, player, exit, 1);
-	    }
-	    break;
+	if ((exit = noisy_match_result(&md)) == NOTHING) {
+	    return;
+	}
+
+	ts_useobject(exit);
+	if (can_doit(descr, player, exit, "You can't go that way.")) {
+	    trigger(descr, player, exit, 1);
 	}
     }
 }
