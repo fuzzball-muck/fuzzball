@@ -1230,10 +1230,8 @@ parse_linkable_dest(int descr, dbref player, dbref exit, const char *dest_name)
     match_home(&md);
     match_nil(&md);
 
-    if ((dobj = match_result(&md)) == NOTHING || dobj == AMBIGUOUS) {
-        notifyf(player, "I couldn't find '%s'.", dest_name);
+    if ((dobj = noisy_match_result(&md)) == NOTHING) {
         return NOTHING;
-
     }
 
     if (!tp_teleport_to_player && Typeof(dobj) == TYPE_PLAYER) {
