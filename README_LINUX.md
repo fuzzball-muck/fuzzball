@@ -35,8 +35,8 @@ git pull
 ./configure --with-ssl --enable-ipv6 # Or choose your own options
 ```
 * See ```./configure --help```
- * Common options include ```--with-ssl```, ```--enable-ipv6```
- * If needed, specify SSL headers via ```--with-ssl=/path/to/dir```, or PCRE headers via ```--with-pcre=/path/to/dir```
+  * Common options include ```--with-ssl```, ```--enable-ipv6```
+  * If needed, specify SSL headers via ```--with-ssl=/path/to/dir```, or PCRE headers via ```--with-pcre=/path/to/dir```
 * When testing, use a different ```--prefix```, e.g. ```./configure --prefix="$HOME/fuzzball-test"```
 
 ### Build
