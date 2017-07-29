@@ -1225,7 +1225,6 @@ parse_linkable_dest(int descr, dbref player, dbref exit, const char *dest_name)
     struct match_data md;
 
     init_match(descr, player, dest_name, NOTYPE, &md);
-    match_absolute(&md);
     match_everything(&md);
     match_home(&md);
     match_nil(&md);

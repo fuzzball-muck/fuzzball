@@ -308,7 +308,6 @@ do_chown(int descr, dbref player, const char *name, const char *newowner)
     }
     init_match(descr, player, name, NOTYPE, &md);
     match_everything(&md);
-    match_absolute(&md);
     if ((thing = noisy_match_result(&md)) == NOTHING)
 	return;
 
@@ -831,7 +830,6 @@ do_propset(int descr, dbref player, const char *name, const char *prop)
 	set_property(thing, pname, &mydat, 0);
     } else if (string_prefix("dbref", type)) {
 	init_match(descr, player, value, NOTYPE, &md);
-	match_absolute(&md);
 	match_everything(&md);
 	if ((ref = noisy_match_result(&md)) == NOTHING)
 	    return;
