@@ -542,8 +542,8 @@ match_everything(struct match_data *md)
     match_me(md);
     match_here(md);
     match_registered(md);
+    match_absolute(md);
     if (Wizard(OWNER(md->match_from)) || Wizard(md->match_who)) {
-	match_absolute(md);
 	match_player(md);
     }
 }
@@ -615,7 +615,6 @@ match_controlled(int descr, dbref player, const char *name)
     struct match_data md;
 
     init_match(descr, player, name, NOTYPE, &md);
-    match_absolute(&md);
     match_everything(&md);
 
     match = noisy_match_result(&md);

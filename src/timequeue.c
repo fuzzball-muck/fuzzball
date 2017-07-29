@@ -1128,7 +1128,6 @@ do_kill_process(int descr, dbref player, const char *arg1)
 	} else {
 	    if (!number(arg1)) {
 		init_match(descr, player, arg1, NOTYPE, &md);
-		match_absolute(&md);
 		match_everything(&md);
 
 		if ((match = noisy_match_result(&md)) == NOTHING) {
