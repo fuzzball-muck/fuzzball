@@ -652,6 +652,12 @@ comments as if in comment_recurse mode, but will fall back to comment_strict
 mode if a comment fails to have balancing parens.
 ~
 ~
+$ENTRYPOINT
+$ENTRYPOINT <function name>
+
+  Sets the function used to start the program. Defaults to the last one.
+~
+~
 \|BACKSLASH
 Escaping Literal Tokens:
 
