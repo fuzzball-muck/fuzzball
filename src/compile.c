@@ -92,6 +92,7 @@ struct INTERMEDIATE {
 typedef struct COMPILE_STATE_T {
     struct CONTROL_STACK *control_stack;
     struct PROC_LIST *procs;
+    struct PROC_LIST *alt_entrypoint;
 
     int nowords;                /* number of words compiled */
     struct INTERMEDIATE *curr_word;     /* word being compiled */
@@ -1338,7 +1339,12 @@ set_start(COMPSTATE * cstat)
     PROGRAM_SET_SIZ(cstat->program, cstat->nowords);
 
     /* address instr no is resolved before this gets called. */
-    PROGRAM_SET_START(cstat->program, (PROGRAM_CODE(cstat->program) + cstat->procs->code->no));
+    
+    if (cstat->alt_entrypoint) {
+	PROGRAM_SET_START(cstat->program, (PROGRAM_CODE(cstat->program) + cstat->alt_entrypoint->code->no));
+    } else {
+	PROGRAM_SET_START(cstat->program, (PROGRAM_CODE(cstat->program) + cstat->procs->code->no));
+    }
 }
 
 /* Genericized Optimizer ideas:
@@ -1941,6 +1947,7 @@ do_compile(int descr, dbref player_in, dbref program_in, int force_err_display)
     cstat.descr = descr;
     cstat.control_stack = 0;
     cstat.procs = 0;
+    cstat.alt_entrypoint = 0;
     cstat.nowords = 0;
     cstat.curr_word = cstat.first_word = NULL;
     cstat.curr_proc = NULL;
@@ -2899,6 +2906,20 @@ do_directive(COMPSTATE * cstat, char *direct)
 			     cstat->lineno, cstat->next_char);
 	    advance_line(cstat);
 	}
+    } else if (!strcasecmp(temp, "entrypoint")) {
+	struct PROC_LIST *p;
+	char buf[BUFFER_LEN];
+	skip_whitespace(&cstat->next_char);
+	if (!*cstat->next_char || !(tmpptr = (char *) next_token_raw(cstat)))
+	    v_abort_compile(cstat, "$entrypoint - function name is required.");
+	for (p = cstat->procs; p; p = p->next)
+	    if (!strcasecmp(p->name, tmpptr))
+		break;
+	if (!p) {
+	    snprintf(buf, sizeof(buf), "$entrypoint - unrecognized function name '%s'.", tmpptr);
+	    v_abort_compile(cstat, buf);
+	}
+	cstat->alt_entrypoint = p;
     } else {
 	v_abort_compile(cstat, "Unrecognized compiler directive.");
     }

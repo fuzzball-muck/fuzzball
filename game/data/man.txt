@@ -49,16 +49,16 @@ You can get more help on the following topics:
 
 Symbols
   !              !=             $abort         $author        $cleardefs
-  $def           $define        $echo          $ifcancall     $ifdef
-  $iflib         $iflibver      $ifncancall    $ifndef        $ifnlib
-  $ifnlibver     $ifnver        $ifver         $include       $lib-version
-  $libdef        $note          $pragma        $pubdef        $undef
-  $version       %              '              *              +
-  ++             -              --             -rot           /
-  <              <=             =              >              >=
-  ?dup           @              \              __fuzzball__   __muckname
-  __version      {              }              }cat           }dict
-  }join          }list          }tell          
+  $def           $define        $echo          $entrypoint    $ifcancall
+  $ifdef         $iflib         $iflibver      $ifncancall    $ifndef
+  $ifnlib        $ifnlibver     $ifnver        $ifver         $include
+  $lib-version   $libdef        $note          $pragma        $pubdef
+  $undef         $version       %              '              *
+  +              ++             -              --             -rot
+  /              <              <=             =              >
+  >=             ?dup           @              \              __fuzzball__
+  __muckname     __version      {              }              }cat
+  }dict          }join          }list          }tell          
 
 A's
   abort                     abs                       acos
@@ -480,14 +480,14 @@ Macros and Compiler Directives
 
 $abort                    $author                   $cleardefs
 $def                      $define                   $echo
-$ifcancall                $ifdef                    $iflib
-$iflibver                 $ifncancall               $ifndef
-$ifnlib                   $ifnlibver                $ifnver
-$ifver                    $include                  $lib-version
-$libdef                   $note                     $pragma
-$pubdef                   $undef                    $version
-\                         __fuzzball__              __muckname
-__version                 max_variable_count        
+$entrypoint               $ifcancall                $ifdef
+$iflib                    $iflibver                 $ifncancall
+$ifndef                   $ifnlib                   $ifnlibver
+$ifnver                   $ifver                    $include
+$lib-version              $libdef                   $note
+$pragma                   $pubdef                   $undef
+$version                  \                         __fuzzball__
+__muckname                __version                 max_variable_count
 
 ~----------------------------------------------------------------------------
 ~
@@ -874,6 +874,12 @@ COMMENT_LOOSE
   This is the default comment style, where the compiler tries to compile
 comments as if in comment_recurse mode, but will fall back to comment_strict
 mode if a comment fails to have balancing parens.
+~
+~
+$ENTRYPOINT
+$ENTRYPOINT <function name>
+
+  Sets the function used to start the program. Defaults to the last one.
 ~
 ~
 \|BACKSLASH
@@ -4427,7 +4433,6 @@ Parameters available:
  (bool) periodic_program_purge    - Periodically free unused MUF programs
  (bool) secure_who                - Disallow WHO command from login screen and programs
  (bool) use_hostnames             - Resolve IP addresses into hostnames
- (bool) who_doing                 - Show '_/do' property value in WHO lists
 ~
 ~
 SYSPARM_ARRAY
