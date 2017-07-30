@@ -916,12 +916,7 @@ do_recycle(int descr, dbref player, const char *name)
     struct tune_ref_entry *tref = tune_ref_list;
 
     init_match(descr, player, name, TYPE_THING, &md);
-    match_all_exits(&md);
-    match_neighbor(&md);
-    match_possession(&md);
-    match_registered(&md);
-    match_here(&md);
-    match_absolute(&md);
+    match_everything(&md);
     if ((thing = noisy_match_result(&md)) != NOTHING) {
 #ifdef GOD_PRIV
 	if (tp_strict_god_priv && !God(player) && God(OWNER(thing))) {

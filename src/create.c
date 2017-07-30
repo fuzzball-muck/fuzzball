@@ -109,16 +109,8 @@ do_link(int descr, dbref player, const char *thing_name, const char *dest_name)
     int ndest;
 
     init_match(descr, player, thing_name, TYPE_EXIT, &md);
-    match_all_exits(&md);
-    match_neighbor(&md);
-    match_possession(&md);
-    match_me(&md);
-    match_here(&md);
-    match_absolute(&md);
-    match_registered(&md);
-    if (Wizard(OWNER(player))) {
-	match_player(&md);
-    }
+    match_everything(&md);
+
     if ((thing = noisy_match_result(&md)) == NOTHING)
 	return;
 
