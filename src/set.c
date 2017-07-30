@@ -93,20 +93,7 @@ _do_unlink(int descr, dbref player, const char *name, int quiet)
     struct match_data md;
 
     init_match(descr, player, name, TYPE_EXIT, &md);
-    match_all_exits(&md);
-    match_neighbor(&md);
-    match_possession(&md);
-    match_me(&md);
-    match_here(&md);
-    match_absolute(&md);
-    match_registered(&md);
-    if (Wizard(OWNER(player))) {
-        match_player(&md);
-    }
-
-    if ((exit = noisy_match_result(&md)) == NOTHING) {
-	return;
-    }
+    match_everything(&md);
 
     if (!controls(player, exit) && !controls_link(player, exit)) {
 	notify(player, "Permission denied. (You don't control the exit or its link)");
@@ -190,16 +177,8 @@ do_relink(int descr, dbref player, const char *thing_name, const char *dest_name
     int ndest;
 
     init_match(descr, player, thing_name, TYPE_EXIT, &md);
-    match_all_exits(&md);
-    match_neighbor(&md);
-    match_possession(&md);
-    match_me(&md);
-    match_here(&md);
-    match_absolute(&md);
-    match_registered(&md);
-    if (Wizard(OWNER(player))) {
-	match_player(&md);
-    }
+    match_everything(&md);
+
     if ((thing = noisy_match_result(&md)) == NOTHING)
 	return;
 

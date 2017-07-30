@@ -1228,12 +1228,8 @@ do_trace(int descr, dbref player, const char *name, int depth)
     char unparse_buf[BUFFER_LEN];
 
     init_match(descr, player, name, NOTYPE, &md);
-    match_absolute(&md);
-    match_here(&md);
-    match_me(&md);
-    match_neighbor(&md);
-    match_possession(&md);
-    match_registered(&md);
+    match_everything(&md);
+
     if ((thing = noisy_match_result(&md)) == NOTHING)
 	return;
 
@@ -1258,16 +1254,7 @@ do_entrances(int descr, dbref player, const char *name, const char *flags)
 	thing = LOCATION(player);
     } else {
 	init_match(descr, player, name, NOTYPE, &md);
-	match_all_exits(&md);
-	match_neighbor(&md);
-	match_possession(&md);
-	match_me(&md);
-	match_here(&md);
-	match_absolute(&md);
-	match_registered(&md);
-	if (Wizard(OWNER(player))) {
-	    match_player(&md);
-	}
+	match_everything(&md);
 
 	if ((thing = noisy_match_result(&md)) == NOTHING) {
 	    return;
@@ -1333,16 +1320,7 @@ do_contents(int descr, dbref player, const char *name, const char *flags)
 	thing = LOCATION(player);
     } else {
 	init_match(descr, player, name, NOTYPE, &md);
-	match_all_exits(&md);
-	match_neighbor(&md);
-	match_possession(&md);
-	match_me(&md);
-	match_here(&md);
-	match_absolute(&md);
-	match_registered(&md);
-	if (Wizard(OWNER(player))) {
-	    match_player(&md);
-	}
+	match_everything(&md);
 
 	if ((thing = noisy_match_result(&md)) == NOTHING) {
 	    return;
