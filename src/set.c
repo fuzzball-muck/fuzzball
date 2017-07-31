@@ -95,6 +95,10 @@ _do_unlink(int descr, dbref player, const char *name, int quiet)
     init_match(descr, player, name, TYPE_EXIT, &md);
     match_everything(&md);
 
+    if ((exit = noisy_match_result(&md)) == NOTHING) {		
+	return;		
+    }
+
     if (!controls(player, exit) && !controls_link(player, exit)) {
 	notify(player, "Permission denied. (You don't control the exit or its link)");
     } else {
