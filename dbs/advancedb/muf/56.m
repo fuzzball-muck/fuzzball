@@ -168,3 +168,6 @@ public mv-prop
     then .tell
   then
 ;
+
+$pubdef copy-prop "$global/mv-cp" match "cp-prop" call
+$pubdef move-prop "$global/mv-cp" match "mv-prop" call

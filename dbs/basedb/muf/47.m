@@ -77,12 +77,10 @@ lvar copy?
 : cp-prop ( d s d s -- i )
   1 copy? ! cp-mv-prop
 ;
-public cp-prop
 
 : mv-prop ( d s d s -- i )
   0 copy? ! cp-mv-prop
 ;
-public mv-prop
 
 : strip-slashes ( s -- s' )
   begin
@@ -168,3 +166,6 @@ public mv-prop
     then .tell
   then
 ;
+
+PUBLIC cp-prop $libdef cp-prop
+PUBLIC mv-prop $libdef mv-prop

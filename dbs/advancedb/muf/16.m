@@ -1325,20 +1325,17 @@ $def DEFAULT_CAPTION "Edit the following data and click on 'Done' or 'Apply' to 
     then
     opts_id @
 ;
-PUBLIC gui_options_generate
  
  
 : gui_options_value_set[ int:opts_id str:optname any:value -- ]
     opts_id @ optname @ "value" value @ optionsinfo_set_indexed
     ( FIXME: Must implement updating of dialogs. )
 ;
-PUBLIC gui_options_value_set
  
  
 : gui_options_free[ int:opts_id -- ]
     opts_id @ optionsinfo_del
 ;
-PUBLIC gui_options_free
  
  
 : gui_options_process[ int:dscr any:caller_ctx addr:save_cb str:title arr:optionsinfo -- ]
@@ -1358,10 +1355,9 @@ PUBLIC gui_options_free
         then
     then
 ;
-PUBLIC gui_options_process
+
  
- 
-$pubdef GUI_OPTIONS_GENERATE  "$lib/optionsgui" match "gui_options_generate" call
-$pubdef GUI_OPTIONS_VALUE_SET  "$lib/optionsgui" match "gui_options_value_set" call
-$pubdef GUI_OPTIONS_FREE  "$lib/optionsgui" match "gui_options_free" call
-$pubdef GUI_OPTIONS_PROCESS  "$lib/optionsgui" match "gui_options_process" call
+PUBLIC gui_options_generate $libdef GUI_OPTIONS_GENERATE
+PUBLIC gui_options_value_set $libdef GUI_OPTIONS_VALUE_SET
+PUBLIC gui_options_free $libdef GUI_OPTIONS_FREE
+PUBLIC gui_options_process $libdef GUI_OPTIONS_PROCESS

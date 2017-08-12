@@ -2661,7 +2661,7 @@ _defs/STRcenter:10:"%|*s" fmtstring
 _defs/STRchr:10:itoc dup not if pop "." then
 _defs/STRfillfield:10:"$lib/strings" match "fillfield" call
 _defs/STRleft:10:"%-*s" fmtstring
-_defs/STRparse:10:"$lib/strings" match "STRparse" call
+_defs/STRparse:10:#23 "STRparse" call
 _defs/STRright:10:"%*s" fmtstring
 _defs/STRrsplit:10:rsplit
 _defs/STRsinglespace:10:"$lib/strings" match "sms" call
@@ -2714,12 +2714,12 @@ _defs/REF-allrefs:10:array_get_reflist array_vals
 _defs/REF-array:10:array_get_reflist
 _defs/REF-array-set:10:array_put_reflist
 _defs/REF-delete:10:reflist_del
-_defs/REF-editlist:10:"$lib/reflist" match "REF-editlist" call
-_defs/REF-filter:10:"$lib/reflist" match "REF-filter" call
+_defs/REF-editlist:10:#21 "REF-editlist" call
+_defs/REF-filter:10:#21 "REF-filter" call
 _defs/REF-first:10:array_get_reflist dup if 0 [] else pop #-1 then
 _defs/REF-inlist?:10:reflist_find
-_defs/REF-list:10:"$lib/reflist" match "REF-list" call
-_defs/REF-next:10:"$lib/reflist" match "REF-next" call
+_defs/REF-list:10:#21 "REF-list" call
+_defs/REF-next:10:#21 "REF-next" call
 _docs:10:@list $lib/reflist=1-46
 _note:10:Standard "reflist" manipulation library, mostly for compatibility.
 *End*
@@ -2740,10 +2740,10 @@ _defs/.envprop:10:"$lib/props" match "envprop" call
 _defs/.envsearch:10:"$lib/props" match "envsearch" call
 _defs/.locate-prop:10:"$lib/props" match "locate-prop" call
 _defs/.setpropstr:10:"$lib/props" match "setpropstr" call
-_defs/envprop:10:"$lib/props" match "envprop" call
-_defs/envsearch:10:"$lib/props" match "envsearch" call
-_defs/locate-prop:10:"$lib/props" match "locate-prop" call
-_defs/setpropstr:10:"$lib/props" match "setpropstr" call
+_defs/envprop:10:#20 "envprop" call
+_defs/envsearch:10:#20 "envsearch" call
+_defs/locate-prop:10:#20 "locate-prop" call
+_defs/setpropstr:10:#20 "setpropstr" call
 _docs:10:@list $lib/props=1-20
 *End*
 153
@@ -2832,10 +2832,10 @@ lib-optionsgui.muf
 *Props*
 _/de:10:A scroll containing a spell called lib-optionsgui.muf
 _author:10:Revar Desmera <revar@belfry.com>
-_defs/GUI_OPTIONS_FREE:10:"$lib/optionsgui" match "gui_options_free" call
-_defs/GUI_OPTIONS_GENERATE:10:"$lib/optionsgui" match "gui_options_generate" call
-_defs/GUI_OPTIONS_PROCESS:10:"$lib/optionsgui" match "gui_options_process" call
-_defs/GUI_OPTIONS_VALUE_SET:10:"$lib/optionsgui" match "gui_options_value_set" call
+_defs/GUI_OPTIONS_FREE:10:#16 "gui_options_free" call
+_defs/GUI_OPTIONS_GENERATE:10:#16 "gui_options_generate" call
+_defs/GUI_OPTIONS_PROCESS:10:#16 "gui_options_process" call
+_defs/GUI_OPTIONS_VALUE_SET:10:#16 "gui_options_value_set" call
 _lib-version:10:1.101
 _note:10:Released under the LGPL.
 _version:10:1.103
@@ -2853,14 +2853,14 @@ lib-mpi.muf
 1073749224
 *Props*
 _/de:10:A scroll containing a spell called lib-mpi.muf
-_defs/parse_desc:10:"$lib/mpi" match "parse_desc" call
-_defs/parse_drop:10:"$lib/mpi" match "parse_drop" call
-_defs/parse_fail:10:"$lib/mpi" match "parse_fail" call
-_defs/parse_idesc:10:"$lib/mpi" match "parse_idesc" call
-_defs/parse_odrop:10:"$lib/mpi" match "parse_odrop" call
-_defs/parse_ofail:10:"$lib/mpi" match "parse_ofail" call
-_defs/parse_osucc:10:"$lib/mpi" match "parse_osucc" call
-_defs/parse_succ:10:"$lib/mpi" match "parse_succ" call
+_defs/parse_desc:10:#15 "parse_desc" call
+_defs/parse_drop:10:#15 "parse_drop" call
+_defs/parse_fail:10:#15 "parse_fail" call
+_defs/parse_idesc:10:#15 "parse_idesc" call
+_defs/parse_odrop:10:#15 "parse_odrop" call
+_defs/parse_ofail:10:#15 "parse_ofail" call
+_defs/parse_osucc:10:#15 "parse_osucc" call
+_defs/parse_succ:10:#15 "parse_succ" call
 _docs:10:@list $lib/mpi=1-14
 _version:10:1.0
 *End*
@@ -2877,17 +2877,17 @@ lib-mesg.muf
 1073754225
 *Props*
 _/de:10:A scroll containing a spell called lib-mesg
-_defs/MSG-append:10:"$lib/mesg" match "MSG-append" call
-_defs/MSG-count:10:"$lib/mesg" match "MSG-count" call
-_defs/MSG-create:10:"$lib/mesg" match "MSG-create" call
-_defs/MSG-delitem:10:"$lib/mesg" match "MSG-delitem" call
-_defs/MSG-destroy:10:"$lib/mesg" match "MSG-destroy" call
-_defs/MSG-info:10:"$lib/mesg" match "MSG-info" call
-_defs/MSG-insitem:10:"$lib/mesg" match "MSG-insitem" call
-_defs/MSG-item:10:"$lib/mesg" match "MSG-item" call
-_defs/MSG-message:10:"$lib/mesg" match "MSG-message" call
-_defs/MSG-setinfo:10:"$lib/mesg" match "MSG-setinfo" call
-_defs/MSG-setitem:10:"$lib/mesg" match "MSG-setitem" call
+_defs/MSG-append:10:#14 "MSG-append" call
+_defs/MSG-count:10:#14 "MSG-count" call
+_defs/MSG-create:10:#14 "MSG-create" call
+_defs/MSG-delitem:10:#14 "MSG-delitem" call
+_defs/MSG-destroy:10:#14 "MSG-destroy" call
+_defs/MSG-info:10:#14 "MSG-info" call
+_defs/MSG-insitem:10:#14 "MSG-insitem" call
+_defs/MSG-item:10:#14 "MSG-item" call
+_defs/MSG-message:10:#14 "MSG-message" call
+_defs/MSG-setinfo:10:#14 "MSG-setinfo" call
+_defs/MSG-setitem:10:#14 "MSG-setitem" call
 _docs:10:@list $lib/mesg=1-50
 _note:10:Library for manipulating message board style messages.
 *End*
@@ -2904,20 +2904,20 @@ lib-mesgbox.muf
 1073754225
 *Props*
 _/de:10:A scroll containing a spell called lib-mesgbox
-_defs/MBOX-append:10:"$lib/mesgbox" match "MBOX-append" call
-_defs/MBOX-badref?:10:"$lib/mesgbox" match "MBOX-badref?" call
-_defs/MBOX-count:10:"$lib/mesgbox" match "MBOX-count" call
-_defs/MBOX-create:10:"$lib/mesgbox" match "MBOX-create" call
-_defs/MBOX-delmesg:10:"$lib/mesgbox" match "MBOX-delmesg" call
-_defs/MBOX-destroy:10:"$lib/mesgbox" match "MBOX-destroy" call
-_defs/MBOX-insmesg:10:"$lib/mesgbox" match "MBOX-insmesg" call
-_defs/MBOX-message:10:"$lib/mesgbox" match "MBOX-message" call
-_defs/MBOX-msginfo:10:"$lib/mesgbox" match "MBOX-msginfo" call
-_defs/MBOX-num2ref:10:"$lib/mesgbox" match "MBOX-num2ref" call
-_defs/MBOX-ref2num:10:"$lib/mesgbox" match "MBOX-ref2num" call
-_defs/MBOX-ref2prop:10:"$lib/mesgbox" match "MBOX-ref2prop" call
-_defs/MBOX-setinfo:10:"$lib/mesgbox" match "MBOX-setinfo" call
-_defs/MBOX-setmesg:10:"$lib/mesgbox" match "MBOX-setmesg" call
+_defs/MBOX-append:10:#13 "MBOX-append" call
+_defs/MBOX-badref?:10:#13 "MBOX-badref?" call
+_defs/MBOX-count:10:#13 "MBOX-count" call
+_defs/MBOX-create:10:#13 "MBOX-create" call
+_defs/MBOX-delmesg:10:#13 "MBOX-delmesg" call
+_defs/MBOX-destroy:10:#13 "MBOX-destroy" call
+_defs/MBOX-insmesg:10:#13 "MBOX-insmesg" call
+_defs/MBOX-message:10:#13 "MBOX-message" call
+_defs/MBOX-msginfo:10:#13 "MBOX-msginfo" call
+_defs/MBOX-num2ref:10:#13 "MBOX-num2ref" call
+_defs/MBOX-ref2num:10:#13 "MBOX-ref2num" call
+_defs/MBOX-ref2prop:10:#13 "MBOX-ref2prop" call
+_defs/MBOX-setinfo:10:#13 "MBOX-setinfo" call
+_defs/MBOX-setmesg:10:#13 "MBOX-setmesg" call
 _docs:10:@list $lib/mesgbox=1-58
 _note:10:Library for manipulating message boards.
 _version:10:1.2
@@ -3019,23 +3019,23 @@ _defs/.lmgr-putbrange:10:"$lib/lmgr" match "lmgr-putbrange" call
 _defs/.lmgr-putelem:10:"$lib/lmgr" match "lmgr-putelem" call
 _defs/.lmgr-putrange:10:"$lib/lmgr" match "lmgr-putrange" call
 _defs/.lmgr-setcount:10:"$lib/lmgr" match "lmgr-setcount" call
-_defs/lmgr-clearelem:10:"$lib/lmgr" match "lmgr-clearelem" call
-_defs/lmgr-clearrange:10:"$lib/lmgr" match "lmgr-clearrange" call
-_defs/lmgr-deletelist:10:"$lib/lmgr" match "lmgr-deletelist" call
-_defs/lmgr-deleterange:10:"$lib/lmgr" match "lmgr-deleterange" call
-_defs/lmgr-extractrange:10:"$lib/lmgr" match "lmgr-extractrange" call
-_defs/lmgr-fullrange:10:"$lib/lmgr" match "lmgr-fullrange" call
-_defs/lmgr-getbrange:10:"$lib/lmgr" match "lmgr-getbrange" call
-_defs/lmgr-getcount:10:"$lib/lmgr" match "lmgr-getcount" call
-_defs/lmgr-getelem:10:"$lib/lmgr" match "lmgr-getelem" call
-_defs/lmgr-getlist:10:"$lib/lmgr" match "lmgr-getlist" call
-_defs/lmgr-getrange:10:"$lib/lmgr" match "lmgr-getrange" call
-_defs/lmgr-insertrange:10:"$lib/lmgr" match "lmgr-insertrange" call
-_defs/lmgr-moverange:10:"$lib/lmgr" match "lmgr-moverange" call
-_defs/lmgr-putbrange:10:"$lib/lmgr" match "lmgr-putbrange" call
-_defs/lmgr-putelem:10:"$lib/lmgr" match "lmgr-putelem" call
-_defs/lmgr-putrange:10:"$lib/lmgr" match "lmgr-putrange" call
-_defs/lmgr-setcount:10:"$lib/lmgr" match "lmgr-setcount" call
+_defs/lmgr-clearelem:10:#9 "lmgr-clearelem" call
+_defs/lmgr-clearrange:10:#9 "lmgr-clearrange" call
+_defs/lmgr-deletelist:10:#9 "lmgr-deletelist" call
+_defs/lmgr-deleterange:10:#9 "lmgr-deleterange" call
+_defs/lmgr-extractrange:10:#9 "lmgr-extractrange" call
+_defs/lmgr-fullrange:10:#9 "lmgr-fullrange" call
+_defs/lmgr-getbrange:10:#9 "lmgr-getbrange" call
+_defs/lmgr-getcount:10:#9 "lmgr-getcount" call
+_defs/lmgr-getelem:10:#9 "lmgr-getelem" call
+_defs/lmgr-getlist:10:#9 "lmgr-getlist" call
+_defs/lmgr-getrange:10:#9 "lmgr-getrange" call
+_defs/lmgr-insertrange:10:#9 "lmgr-insertrange" call
+_defs/lmgr-moverange:10:#9 "lmgr-moverange" call
+_defs/lmgr-putbrange:10:#9 "lmgr-putbrange" call
+_defs/lmgr-putelem:10:#9 "lmgr-putelem" call
+_defs/lmgr-putrange:10:#9 "lmgr-putrange" call
+_defs/lmgr-setcount:10:#9 "lmgr-setcount" call
 _docs:10:@list $lib/lmgr=1-50
 _lib-version:10:1.2
 *End*
@@ -3096,17 +3096,17 @@ lib-gui.muf
 *Props*
 _/de:10:A scroll containing a spell called lib-gui.muf
 _author:10:Revar Desmera <revar@belfry.com>
-_defs/EVENT_DEREGISTER:10:"$lib/gui" match "event_deregister"    call
-_defs/EVENT_REGISTER:10:"$lib/gui" match "event_register"      call
-_defs/EVENT_STATEDATA_SET:10:"$lib/gui" match "event_statedata_set" call
-_defs/EVENTS_REGISTERED:10:"$lib/gui" match "events_registered"   call
-_defs/GUI_DLOG_DEREGISTER:10:"$lib/gui" match "gui_dlog_deregister"    call
-_defs/GUI_DLOG_REGISTER:10:"$lib/gui" match "gui_dlog_register"      call
-_defs/GUI_DLOG_STATEDATA_SET:10:"$lib/gui" match "gui_dlog_statedata_set" call
-_defs/GUI_DLOGS_REGISTERED:10:"$lib/gui" match "gui_dlogs_registered"   call
-_defs/GUI_EVENT_PROCESS:10:"$lib/gui" match "gui_event_process" call
-_defs/GUI_GENERATE:10:"$lib/gui" match "gui_generate"      call
-_defs/GUI_MESSAGEBOX:10:"$lib/gui" match "gui_messagebox"    call
+_defs/EVENT_DEREGISTER:10:#7 "event_deregister"    call
+_defs/EVENT_REGISTER:10:#7 "event_register"      call
+_defs/EVENT_STATEDATA_SET:10:#7 "event_statedata_set" call
+_defs/EVENTS_REGISTERED:10:#7 "events_registered"   call
+_defs/GUI_DLOG_DEREGISTER:10:#7 "gui_dlog_deregister"    call
+_defs/GUI_DLOG_REGISTER:10:#7 "gui_dlog_register"      call
+_defs/GUI_DLOG_STATEDATA_SET:10:#7 "gui_dlog_statedata_set" call
+_defs/GUI_DLOGS_REGISTERED:10:#7 "gui_dlogs_registered"   call
+_defs/GUI_EVENT_PROCESS:10:#7 "gui_event_process" call
+_defs/GUI_GENERATE:10:#7 "gui_generate"      call
+_defs/GUI_MESSAGEBOX:10:#7 "gui_messagebox"    call
 _defs/{BUTTON:10:{ C_BUTTON
 _defs/{CHECKBOX:10:{ C_CHECKBOX
 _defs/{COMBOBOX:10:{ C_COMBOBOX
@@ -3153,11 +3153,11 @@ lib-editor.muf
 *Props*
 _/de:10:A scroll containing a spell called lib-editor.muf
 _author:10:foxen@belfry.com
-_defs/editor:10:"$lib/editor" match "EDITOR" call
-_defs/editorheader:10:"$lib/editor" match "EDITORheader" call
-_defs/editorloop:10:"$lib/editor" match "EDITORloop" call
-_defs/editorparse:10:"$lib/editor" match "EDITORparse" call
-_defs/EDITORprop:10:"$lib/editor" match "EDITORprop" call
+_defs/editor:10:#6 "EDITOR" call
+_defs/editorheader:10:#6 "EDITORheader" call
+_defs/editorloop:10:#6 "EDITORloop" call
+_defs/editorparse:10:#6 "EDITORparse" call
+_defs/EDITORprop:10:#6 "EDITORprop" call
 _docs:10:@list $lib/editor=2-57
 _lib-version:10:6.001
 _note:10:Provides lsedit functions to other programs.
@@ -3176,23 +3176,23 @@ lib-edit.muf
 1073749224
 *Props*
 _/de:10:A scroll containing a spell called lib-edit.muf
-_defs/EDITcenter:10:"$lib/edit" match "EDITcenter" call
-_defs/EDITcopy:10:"$lib/edit" match "EDITcopy" call
-_defs/EDITdisplay:10:"$lib/edit" match "EDITdisplay" call
-_defs/EDITfmt_rng:10:"$lib/edit" match "EDITfmt_rng" call
-_defs/EDITformat:10:"$lib/edit" match "EDITformat" call
-_defs/EDITindent:10:"$lib/edit" match "EDITindent" call
-_defs/EDITjoin:10:"$lib/edit" match "EDITjoin" call
-_defs/EDITjoin_rng:10:"$lib/edit" match "EDITjoin_rng" call
-_defs/EDITleft:10:"$lib/edit" match "EDITleft" call
-_defs/EDITlist:10:"$lib/edit" match "EDITlist" call
-_defs/EDITmove:10:"$lib/edit" match "EDITmove" call
-_defs/EDITreplace:10:"$lib/edit" match "EDITreplace" call
-_defs/EDITright:10:"$lib/edit" match "EDITright" call
-_defs/EDITsearch:10:"$lib/edit" match "EDITsearch" call
-_defs/EDITshuffle:10:"$lib/edit" match "EDITshuffle" call
-_defs/EDITsort:10:"$lib/edit" match "EDITsort" call
-_defs/EDITsplit:10:"$lib/edit" match "EDITsplit" call
+_defs/EDITcenter:10:#5 "EDITcenter" call
+_defs/EDITcopy:10:#5 "EDITcopy" call
+_defs/EDITdisplay:10:#5 "EDITdisplay" call
+_defs/EDITfmt_rng:10:#5 "EDITfmt_rng" call
+_defs/EDITformat:10:#5 "EDITformat" call
+_defs/EDITindent:10:#5 "EDITindent" call
+_defs/EDITjoin:10:#5 "EDITjoin" call
+_defs/EDITjoin_rng:10:#5 "EDITjoin_rng" call
+_defs/EDITleft:10:#5 "EDITleft" call
+_defs/EDITlist:10:#5 "EDITlist" call
+_defs/EDITmove:10:#5 "EDITmove" call
+_defs/EDITreplace:10:#5 "EDITreplace" call
+_defs/EDITright:10:#5 "EDITright" call
+_defs/EDITsearch:10:#5 "EDITsearch" call
+_defs/EDITshuffle:10:#5 "EDITshuffle" call
+_defs/EDITsort:10:#5 "EDITsort" call
+_defs/EDITsplit:10:#5 "EDITsplit" call
 _docs:10:@list $lib/edit=1-80
 *End*
 153
@@ -3231,19 +3231,19 @@ lib-bolding.muf
 *Props*
 _/de:10:A scroll containing a spell called lib-bolding.muf
 _author:10:Vash@Anime/Sarusa@FM
-_defs/BOLD-active-q:10: "$lib/bolding" match "BOLD-active-q" call
-_defs/BOLD-cmd-help:10: "$lib/bolding" match "BOLD-cmd-help" call
-_defs/BOLD-cmd-help2:10: "$lib/bolding" match "BOLD-cmd-help2" call
-_defs/BOLD-cmd-parse1:10: "$lib/bolding" match "BOLD-cmd-parse1" call
-_defs/BOLD-cmd-parse2:10: "$lib/bolding" match "BOLD-cmd-parse2" call
-_defs/BOLD-filter:10: "$lib/bolding" match "BOLD-filter" call
-_defs/BOLD-filter-test:10: "$lib/bolding" match "BOLD-filter-test" call
-_defs/BOLD-get-settings:10: "$lib/bolding" match "BOLD-get-settings" call
-_defs/BOLD-notify:10: "$lib/bolding" match "BOLD-notify" call
-_defs/BOLD-notify-list:10: "$lib/bolding" match "BOLD-notify-list" call
-_defs/BOLD-possible-q:10: "$lib/bolding" match "BOLD-possible-q" call
-_defs/BOLD-set-active:10: "$lib/bolding" match "BOLD-set-active" call
-_defs/BOLD-supported-q:10: "$lib/bolding" match "BOLD-supported-q" call
+_defs/BOLD-active-q:10: #3 "BOLD-active-q" call
+_defs/BOLD-cmd-help:10: #3 "BOLD-cmd-help" call
+_defs/BOLD-cmd-help2:10: #3 "BOLD-cmd-help2" call
+_defs/BOLD-cmd-parse1:10: #3 "BOLD-cmd-parse1" call
+_defs/BOLD-cmd-parse2:10: #3 "BOLD-cmd-parse2" call
+_defs/BOLD-filter:10: #3 "BOLD-filter" call
+_defs/BOLD-filter-test:10: #3 "BOLD-filter-test" call
+_defs/BOLD-get-settings:10: #3 "BOLD-get-settings" call
+_defs/BOLD-notify:10: #3 "BOLD-notify" call
+_defs/BOLD-notify-list:10: #3 "BOLD-notify-list" call
+_defs/BOLD-possible-q:10: #3 "BOLD-possible-q" call
+_defs/BOLD-set-active:10: #3 "BOLD-set-active" call
+_defs/BOLD-supported-q:10: #3 "BOLD-supported-q" call
 _docs:10:@list $lib/bolding=5-155
 _lib-version:10:1.04
 _note:10:Converts *bold*, /italic/, _underline_ to ANSI color.
@@ -3279,25 +3279,25 @@ _defs/Array_Replace:10:"$lib/arrays" match "ArrReplace" call
 _defs/Array_Right:10:"$lib/arrays" match "ArrRight" call
 _defs/Array_Search:10:"$lib/arrays" match "ArrSearch" call
 _defs/Array_Shuffle:10:"$lib/arrays" match "ArrShuffle" call
-_defs/ArrCenter:10:"$lib/arrays" match "ArrCenter" call
-_defs/ArrCommas:10:"$lib/arrays" match "ArrCommas" call
-_defs/ArrCopy:10:"$lib/arrays" match "ArrCopy" call
-_defs/ArrFilter:10:"$lib/arrays" match "ArrFilter" call
-_defs/ArrFormat:10:"$lib/arrays" match "ArrFormat" call
-_defs/ArrIndent:10:"$lib/arrays" match "ArrIndent" call
-_defs/ArrJoinRng:10:"$lib/arrays" match "ArrJoinRng" call
-_defs/ArrKey?:10:"$lib/arrays" match "ArrKey?" call
-_defs/ArrLeft:10:"$lib/arrays" match "ArrLeft" call
-_defs/ArrList:10:"$lib/arrays" match "ArrList" call
-_defs/ArrMove:10:"$lib/arrays" match "ArrMove" call
-_defs/ArrMPIparse:10:"$lib/arrays" match "ArrMPIparse" call
-_defs/ArrPlaceItem:10:"$lib/arrays" match "ArrPlaceItem" call
-_defs/ArrProcess:10:"$lib/arrays" match "ArrProcess" call
-_defs/ArrReplace:10:"$lib/arrays" match "ArrReplace" call
-_defs/ArrRight:10:"$lib/arrays" match "ArrRight" call
-_defs/ArrSearch:10:"$lib/arrays" match "ArrSearch" call
-_defs/ArrShuffle:10:"$lib/arrays" match "ArrShuffle" call
-_defs/ArrSort:10:"$lib/arrays" match "ArrSort" call
+_defs/ArrCenter:10:#2 "ArrCenter" call
+_defs/ArrCommas:10:#2 "ArrCommas" call
+_defs/ArrCopy:10:#2 "ArrCopy" call
+_defs/ArrFilter:10:#2 "ArrFilter" call
+_defs/ArrFormat:10:#2 "ArrFormat" call
+_defs/ArrIndent:10:#2 "ArrIndent" call
+_defs/ArrJoinRng:10:#2 "ArrJoinRng" call
+_defs/ArrKey?:10:#2 "ArrKey?" call
+_defs/ArrLeft:10:#2 "ArrLeft" call
+_defs/ArrList:10:#2 "ArrList" call
+_defs/ArrMove:10:#2 "ArrMove" call
+_defs/ArrMPIparse:10:#2 "ArrMPIparse" call
+_defs/ArrPlaceItem:10:#2 "ArrPlaceItem" call
+_defs/ArrProcess:10:#2 "ArrProcess" call
+_defs/ArrReplace:10:#2 "ArrReplace" call
+_defs/ArrRight:10:#2 "ArrRight" call
+_defs/ArrSearch:10:#2 "ArrSearch" call
+_defs/ArrShuffle:10:#2 "ArrShuffle" call
+_defs/ArrSort:10:#2 "ArrSort" call
 _docs:10:@list $lib/arrays=1-85
 _lib-version:10:1.1
 _note:10:Provides ProtoMUCK array compatibility functions.

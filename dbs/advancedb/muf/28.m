@@ -142,3 +142,16 @@ PUBLIC cmd-del
 PUBLIC rtn-array-filter
 PUBLIC rtn-notify-exclude
 PUBLIC rtn-ignores?
+
+$pubdef array_filter_ignorers ref_lib_ignore "rtn-array-filter" call
+$pubdef array_get_ignorers ignore-listify swap "*{%d}*" fmtstring array_filter_prop
+$pubdef cmd-ignore-add ref_lib_ignore "cmd-add" call
+$pubdef cmd-ignore-del ref_lib_ignore "cmd-del" call
+$pubdef ignore-add ignore-listify swap reflist_add
+$pubdef ignore-del ignore-listify swap reflist_del
+$pubdef ignore-list ignore-listify swap array_get_reflist array_vals
+$pubdef ignore-listify "_prefs/%s/ignore" fmtstring
+$pubdef ignores? ref_lib_ignore "rtn-ignores?" call
+$pubdef notify_except_ignorers 1 -3 rotate notify_exclude_ignorers
+$pubdef notify_exclude_ignorers ref_lib_ignore "rtn-notify-exclude" call
+$pubdef ref_lib_ignore #28

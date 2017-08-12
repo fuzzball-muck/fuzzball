@@ -173,12 +173,12 @@ $include $lib/match
     then
   repeat
 ;
-PUBLIC REF-add
-PUBLIC REF-delete
-PUBLIC REF-first
-PUBLIC REF-next
-PUBLIC REF-list
-PUBLIC REF-inlist?
-PUBLIC REF-allrefs
-PUBLIC REF-filter (address objref reflistname -- refx...ref1 refcount)
-PUBLIC REF-editlist  (players? objref reflistname -- )
+PUBLIC REF-add $libdef REF-add
+PUBLIC REF-delete $libdef REF-delete
+PUBLIC REF-first $libdef REF-first
+PUBLIC REF-next $libdef REF-next
+PUBLIC REF-list $libdef REF-list
+PUBLIC REF-inlist? $libdef REF-inlist?
+PUBLIC REF-allrefs $libdef REF-allrefs
+PUBLIC REF-filter $libdef REF-filter
+PUBLIC REF-editlist $libdef REF-editlist

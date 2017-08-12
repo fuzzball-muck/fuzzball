@@ -25,3 +25,16 @@
     ret @  ( str' )
 ;        
 PUBLIC rtn-ansify
+
+$pubdef ansi? "c" flag?
+$pubdef ansi_notify ref_lib-ansi-notify "rtn-ansify" call notify
+$pubdef ansi_notify-exclude rtn-ansify notify_exclude
+$pubdef ansi_notify_exclude rtn-ansify notify_exclude
+$pubdef ansi_otell rtn-ansify .otell
+$pubdef ansi_strcut swap rtn-ansify swap \ansi_strcut
+$pubdef ansi_strlen rtn-ansify \ansi_strlen
+$pubdef ansi_tell me @ swap ansi_notify
+$pubdef ansify_string ref_lib-ansi-notify "rtn-ansify" call
+$pubdef ref_lib-ansi-notify #25
+$pubdef rtn-ansify ref_lib-ansi-notify "rtn-ansify" call
+

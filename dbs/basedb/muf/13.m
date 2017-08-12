@@ -400,21 +400,21 @@ $define SRNGcopy    sr-copyrng    $enddef
     EDITjoin 1 4 rotate 4 rotate
     SRNGinsert
 ;
-PUBLIC EDITsearch
-PUBLIC EDITreplace
-PUBLIC EDITmove
-PUBLIC EDITcopy
-PUBLIC EDITlist
-PUBLIC EDITleft
-PUBLIC EDITcenter
-PUBLIC EDITright
-PUBLIC EDITindent
-PUBLIC EDITfmt_rng
-PUBLIC EDITjoin_rng
+PUBLIC EDITsearch $libdef EDITsearch
+PUBLIC EDITreplace $libdef EDITreplace
+PUBLIC EDITmove $libdef EDITmove
+PUBLIC EDITcopy $libdef EDITcopy
+PUBLIC EDITlist $libdef EDITlist
+PUBLIC EDITleft $libdef EDITleft
+PUBLIC EDITcenter $libdef EDITcenter
+PUBLIC EDITright $libdef EDITright
+PUBLIC EDITindent $libdef EDITindent
+PUBLIC EDITfmt_rng $libdef EDITfmt_rng
+PUBLIC EDITjoin_rng $libdef EDITjoin_rng
   
-PUBLIC EDITshuffle
-PUBLIC EDITsort
-PUBLIC EDITjoin
-PUBLIC EDITdisplay
-PUBLIC EDITsplit
-PUBLIC EDITformat
+PUBLIC EDITshuffle $libdef EDITshuffle
+PUBLIC EDITsort $libdef EDITsort
+PUBLIC EDITjoin $libdef EDITjoin
+PUBLIC EDITdisplay $libdef EDITdisplay
+PUBLIC EDITsplit $libdef EDITsplit
+PUBLIC EDITformat $libdef EDITformat

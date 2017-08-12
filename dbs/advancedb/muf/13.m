@@ -171,17 +171,17 @@ lvar n2r_cnt
     MBOX-count over < swap 1 < or
 ;
   
-PUBLIC MBOX-ref2prop
-PUBLIC MBOX-ref2num
-PUBLIC MBOX-num2ref
-PUBLIC MBOX-create
-PUBLIC MBOX-count
-PUBLIC MBOX-destroy
-PUBLIC MBOX-append
-PUBLIC MBOX-insmesg
-PUBLIC MBOX-delmesg
-PUBLIC MBOX-setmesg
-PUBLIC MBOX-msginfo
-PUBLIC MBOX-setinfo
-PUBLIC MBOX-message
-PUBLIC MBOX-badref?
+PUBLIC MBOX-ref2prop $libdef MBOX-ref2prop
+PUBLIC MBOX-ref2num $libdef MBOX-ref2num
+PUBLIC MBOX-num2ref $libdef MBOX-num2ref
+PUBLIC MBOX-create $libdef MBOX-create
+PUBLIC MBOX-count $libdef MBOX-count
+PUBLIC MBOX-destroy $libdef MBOX-destroy
+PUBLIC MBOX-append $libdef MBOX-append
+PUBLIC MBOX-insmesg $libdef MBOX-insmesg
+PUBLIC MBOX-delmesg $libdef MBOX-delmesg
+PUBLIC MBOX-setmesg $libdef MBOX-setmeg
+PUBLIC MBOX-msginfo $libdef MBOX-msginfo
+PUBLIC MBOX-setinfo $libdef MBOX-setinfo
+PUBLIC MBOX-message $libdef MBOX-message
+PUBLIC MBOX-badref? $libdef MBOX-badref?

@@ -177,3 +177,11 @@ PUBLIC match_controlled
 PUBLIC table_match
 PUBLIC std_table_match
 PUBLIC multi_rmatch
+
+$pubdef .controls "$lib/match" match "controls" call
+$pubdef .match_controlled "$lib/match" match "match_controlled" call
+$pubdef .match_rmatch "$lib/match" match "match_rmatch" call
+$pubdef .noisy_match "$lib/match" match "noisy_match" call
+$pubdef .noisy_pmatch "$lib/match" match "noisy_match" call
+$pubdef .std_table_match "$lib/match" match "std_table_match" call
+$pubdef .table_match "$lib/match" match "table_match" call

@@ -323,49 +323,27 @@
     rot pop
 ;
   
-public ArrCommas ( a -- s )
-public ArrLeft ( a @1 @2 icol schar -- a )
-public ArrRight ( a @1 @2 icol schar -- a )
-public ArrCenter ( a @1 @2 icol schar -- a )
-public ArrIndent ( a @1 @2 icol schar -- a )
-public ArrFormat ( a @1 @2 icol -- a )
-public ArrJoinRng ( a @1 @2 schar -- a )
-public ArrList ( d a @1 @2 iBolLineNum -- )
-public ArrSearch ( @ a ? -- i )
-public ArrCopy ( a @1 @2 @3 -- a )
-public ArrMove ( a @1 @2 @3 -- a )
-public ArrPlaceItem ( @ a ? -- a )
-public ArrShuffle ( a -- a )
-public ArrReplace ( a @1 @2 s1 s2 -- a )
-public ArrSort ( a i -- a )
-public ArrMPIparse ( d a @1 @2 s i -- a )
-public ArrKey? ( a @ -- i )
-  
-public ArrProcess ( dict:arr addr:func -- dict:result )
-public ArrFilter  ( dict:arr addr:func -- dict:result dict:remainder )
+PUBLIC ArrCommas $libdef ArrCommas
+PUBLIC ArrLeft $libdef ArrLeft
+PUBLIC ArrRight $libdef ArrRight
+PUBLIC ArrCenter $libdef ArrCenter
+PUBLIC ArrIndent $libdef ArrIndent
+PUBLIC ArrFormat $libdef ArrFormat
+PUBLIC ArrJoinRng $libdef ArrJoinRng
+PUBLIC ArrList $libdef ArrList
+PUBLIC ArrSearch $libdef ArrSearch
+PUBLIC ArrCopy $libdef ArrCopy
+PUBLIC ArrMove $libdef ArrMove
+PUBLIC ArrPlaceItem $libdef ArrPlaceItem
+PUBLIC ArrShuffle $libdef ArrShuffle
+PUBLIC ArrReplace $libdef ArrReplace
+PUBLIC ArrSort $libdef ArrSort
+PUBLIC ArrMPIparse $libdef ArrMPIParse
+PUBLIC ArrKey? $libdef ArrKey?
+PUBLIC ArrProcess $libdef ArrProcess
+PUBLIC ArrFilter $libdef ArrFilter
   
 $lib-version 1.1
-  
-$pubdef ArrCommas    "$lib/arrays" match "ArrCommas" call
-$pubdef ArrLeft      "$lib/arrays" match "ArrLeft" call
-$pubdef ArrRight     "$lib/arrays" match "ArrRight" call
-$pubdef ArrCenter    "$lib/arrays" match "ArrCenter" call
-$pubdef ArrIndent    "$lib/arrays" match "ArrIndent" call
-$pubdef ArrFormat    "$lib/arrays" match "ArrFormat" call
-$pubdef ArrJoinRng   "$lib/arrays" match "ArrJoinRng" call
-$pubdef ArrList      "$lib/arrays" match "ArrList" call
-$pubdef ArrSearch    "$lib/arrays" match "ArrSearch" call
-$pubdef ArrCopy      "$lib/arrays" match "ArrCopy" call
-$pubdef ArrMove      "$lib/arrays" match "ArrMove" call
-$pubdef ArrPlaceItem "$lib/arrays" match "ArrPlaceItem" call
-$pubdef ArrShuffle   "$lib/arrays" match "ArrShuffle" call
-$pubdef ArrReplace   "$lib/arrays" match "ArrReplace" call
-$pubdef ArrSort      "$lib/arrays" match "ArrSort" call
-$pubdef ArrMPIparse  "$lib/arrays" match "ArrMPIparse" call
-$pubdef ArrKey?      "$lib/arrays" match "ArrKey?" call
-  
-$pubdef ArrProcess   "$lib/arrays" match "ArrProcess" call
-$pubdef ArrFilter    "$lib/arrays" match "ArrFilter" call
   
 $pubdef Array_Commas    "$lib/arrays" match "ArrCommas" call
 $pubdef Array_Left      "$lib/arrays" match "ArrLeft" call

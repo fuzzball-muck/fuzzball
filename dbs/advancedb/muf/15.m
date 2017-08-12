@@ -20,11 +20,12 @@ PARSE_ODROP [d -- s]  Like ODROP, but parses embedded MPI and returns result.
 : parse_ofail "_/ofl" "(@Ofail)" 0 parseprop ;
 : parse_drop  "_/dr"  "(@Drop)"  1 parseprop ;
 : parse_odrop "_/odr" "(@Odrop)" 0 parseprop ;
-public parse_desc
-public parse_idesc
-public parse_succ
-public parse_osucc
-public parse_fail
-public parse_ofail
-public parse_drop
-public parse_odrop
+
+PUBLIC parse_desc $libdef parse_desc
+PUBLIC parse_idesc $libdef parse_idesc
+PUBLIC parse_succ $libdef parse_succ
+PUBLIC parse_osucc $libdef parse_osucc
+PUBLIC parse_fail $libdef parse_fail
+PUBLIC parse_ofail $libdef parse_ofail
+PUBLIC parse_drop $libdef parse_drop
+PUBLIC parse_odrop $Libdef parse_odrop

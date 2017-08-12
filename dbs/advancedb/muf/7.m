@@ -522,7 +522,6 @@ $note This is a MUF library to make it much simpler to create GUI dialogs.
         gui_generate_simple
     then
 ;
-PUBLIC gui_generate
  
 (--------------------------------------------------------------)
 ( Gui Dispatcher                                               )
@@ -569,8 +568,7 @@ lvar OtherStateData
         { "GUI." dlogid @ strcat handlers @ }dict GuiHandlers !
     then
 ;
-PUBLIC gui_dlog_register
- 
+
  
 : gui_dlog_deregister[ str:dlogid -- ]
     GuiHandlers @ if
@@ -588,7 +586,6 @@ PUBLIC gui_dlog_register
         { }dict GuiStateData !
     then
 ;
-PUBLIC gui_dlog_deregister
  
  
 : gui_dlogs_registered[ -- dict:GuiHandlers ]
@@ -598,7 +595,6 @@ PUBLIC gui_dlog_deregister
         { }dict dup GuiHandlers !
     then
 ;
-PUBLIC gui_dlogs_registered
  
  
 : gui_dlog_statedata_set[ str:dlogid any:data -- ]
@@ -610,7 +606,6 @@ PUBLIC gui_dlogs_registered
         { "GUI." dlogid @ strcat data @ }dict GuiStateData !
     then
 ;
-PUBLIC gui_dlog_statedata_set
  
  
 : event_register[ str:eventid addr:callback -- ]
@@ -620,7 +615,6 @@ PUBLIC gui_dlog_statedata_set
         { eventid @ callback @ }dict OtherHandlers !
     then
 ;
-PUBLIC event_register
  
  
 : event_deregister[ str:eventid -- ]
@@ -635,7 +629,6 @@ PUBLIC event_register
         { }dict OtherStateData !
     then
 ;
-PUBLIC event_deregister
  
  
 : events_registered[ -- dict:EventHandlers ]
@@ -645,7 +638,6 @@ PUBLIC event_deregister
         { }dict dup OtherHandlers !
     then
 ;
-PUBLIC events_registered
  
  
 : event_statedata_set[ str:eventid any:data -- ]
@@ -655,7 +647,6 @@ PUBLIC events_registered
         { eventid @ data @ }dict OtherStateData !
     then
 ;
-PUBLIC event_statedata_set
  
  
 : gui_event_process[ -- dict:Context str:Event ]
@@ -752,7 +743,6 @@ PUBLIC event_statedata_set
         then
     repeat
 ;
-PUBLIC gui_event_process
  
 : _gui_messagebox_cb[ int:dscr str:dlogid str:ctrlid str:event -- int:exit ]
     1
@@ -816,21 +806,20 @@ PUBLIC gui_event_process
     pop "id" []
     buttonmap @ swap array_getitem
 ;
-PUBLIC gui_messagebox
- 
-$pubdef GUI_DLOGS_REGISTERED   "$lib/gui" match "gui_dlogs_registered"   call
-$pubdef GUI_DLOG_REGISTER      "$lib/gui" match "gui_dlog_register"      call
-$pubdef GUI_DLOG_DEREGISTER    "$lib/gui" match "gui_dlog_deregister"    call
-$pubdef GUI_DLOG_STATEDATA_SET "$lib/gui" match "gui_dlog_statedata_set" call
- 
-$pubdef EVENTS_REGISTERED      "$lib/gui" match "events_registered"   call
-$pubdef EVENT_REGISTER         "$lib/gui" match "event_register"      call
-$pubdef EVENT_DEREGISTER       "$lib/gui" match "event_deregister"    call
-$pubdef EVENT_STATEDATA_SET    "$lib/gui" match "event_statedata_set" call
- 
-$pubdef GUI_GENERATE           "$lib/gui" match "gui_generate"      call
-$pubdef GUI_EVENT_PROCESS      "$lib/gui" match "gui_event_process" call
-$pubdef GUI_MESSAGEBOX         "$lib/gui" match "gui_messagebox"    call
+
+PUBLIC gui_generate $libdef gui_generate
+PUBLIC gui_event_process $libdef gui_event_process
+PUBLIC gui_messagebox $libdef gui_messagebox
+
+PUBLIC gui_dlogs_registered $libdef gui_dlogs_registered
+PUBLIC gui_dlog_register $libdef gui_dlog_register
+PUBLIC gui_dlog_deregister $libdef gui_dlog_deregister
+PUBLIC gui_dlog_statedata_set $libdef gui_dlog_statedata_set
+
+PUBLIC events_registered $libdef events_registered
+PUBLIC event_register $libdef event_register
+PUBLIC event_deregister $libdef event_deregister
+PUBLIC event_statedata_set $libdef event_statedata_set
  
 $pubdef {SIMPLE_DLOG  { D_SIMPLE
 $pubdef {TABBED_DLOG  { D_TABBED

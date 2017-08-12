@@ -156,3 +156,12 @@ public copyrange
 public deleterange
 public insertrange
 public filterrange
+
+$pubdef sr-catrng "$lib/stackrng" match "catranges" call
+$pubdef sr-copyrng "$lib/stackrng" match "copyrange" call
+$pubdef sr-deleterng "$lib/stackrng" match "deleterange" call
+$pubdef sr-extractrng "$lib/stackrng" match "extractrange" call
+$pubdef sr-filterrng "$lib/stackrng" match "filterrange" call
+$pubdef sr-insertrng "$lib/stackrng" match "insertrange" call
+$pubdef sr-poprng "$lib/stackrng" match "popoffn" call
+$pubdef sr-swaprng "$lib/stackrng" match "swapranges" call

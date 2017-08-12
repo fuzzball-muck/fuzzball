@@ -202,14 +202,14 @@ $endif
     1 -4 rotate LMGR-deleterange
 ;
   
-PUBLIC MSG-destroy
-PUBLIC MSG-create
-PUBLIC MSG-count
-PUBLIC MSG-info
-PUBLIC MSG-setinfo
-PUBLIC MSG-message
-PUBLIC MSG-item
-PUBLIC MSG-setitem
-PUBLIC MSG-insitem
-PUBLIC MSG-append
-PUBLIC MSG-delitem
+PUBLIC MSG-destroy $libdef MSG-destroy
+PUBLIC MSG-create $libdef MSG-create
+PUBLIC MSG-count $libdef MSG-count
+PUBLIC MSG-info $libdef MSG-info
+PUBLIC MSG-setinfo $libdef MSG-setinfo
+PUBLIC MSG-message $libdef MSG-message
+PUBLIC MSG-item $libdef MSG-item
+PUBLIC MSG-setitem $libdef MSG-setitem
+PUBLIC MSG-insitem $libdef MSG-insitem
+PUBLIC MSG-append $libdef MSG-append
+PUBLIC MSG-delitem $libdef MSG-delitem

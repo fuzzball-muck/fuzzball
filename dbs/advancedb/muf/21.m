@@ -145,7 +145,15 @@ $include $lib/match
 ;
   
   
-PUBLIC REF-next
-PUBLIC REF-list
-PUBLIC REF-filter (address objref reflistname -- refx...ref1 refcount)
-PUBLIC REF-editlist  (players? objref reflistname -- )
+PUBLIC REF-next $libdef REF-next
+PUBLIC REF-list $libdef REF-list
+PUBLIC REF-filter $libdef REF-filter
+PUBLIC REF-editlist $libdef REF-editlist
+
+$pubdef REF-add reflist_add
+$pubdef REF-allrefs array_get_reflist array_vals
+$pubdef REF-array array_get_reflist
+$pubdef REF-array-set array_put_reflist
+$pubdef REF-delete reflist_del
+$pubdef REF-first array_get_reflist dup if 0 [] else pop #-1 then
+$pubdef REF-inlist? reflist_find
