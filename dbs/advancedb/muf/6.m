@@ -626,7 +626,7 @@ lvar guisaved
     then
 ;
  
-PUBLIC EDITOR
-PUBLIC EDITORloop
-PUBLIC EDITORparse
-PUBLIC EDITORheader
+PUBLIC EDITOR $libdef EDITOR
+PUBLIC EDITORloop $libdef EDITORloop
+PUBLIC EDITORparse $libdef EDITORparse
+PUBLIC EDITORheader $libdef EDITORheader

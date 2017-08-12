@@ -990,5 +990,5 @@ lvar main_title
     then
     me @ "< Done. >" MENU_INSTRUCTION_COLOR notify
 ;
-PUBLIC menu_options_process
-$libdef MENU_OPTIONS_PROCESS
+
+PUBLIC menu_options_process $libdef menu_options_process

@@ -233,18 +233,10 @@ $include $lib/case
 ;
  
  
-public optmisc_equalvals?
-public optmisc_timespan2str
-public optmisc_objtype_normalize
-public optmisc_objtype_check
-public optmisc_dbref_option_list
-public optmisc_dbref_unparse
-public optmisc_dbref_parse
- 
-$libdef optmisc_equalvals?
-$libdef optmisc_timespan2str
-$libdef optmisc_objtype_normalize
-$libdef optmisc_objtype_check
-$libdef optmisc_dbref_option_list
-$libdef optmisc_dbref_unparse
-$libdef optmisc_dbref_parse
+PUBLIC optmisc_equalvals? $libdef optmisc_equalvals?
+PUBLIC optmisc_timespan2str $libdef optmisc_timespan2str
+PUBLIC optmisc_objtype_normalize $libdef optmisc_objtype_normalize
+PUBLIC optmisc_objtype_check $libdef optmisc_objtype_check
+PUBLIC optmisc_dbref_option_list $libdef optmisc_dbref_option_list
+PUBLIC optmisc_dbref_unparse $libdef optmisc_dbref_unparse
+PUBLIC optmisc_dbref_parse $libdef optmisc_dbref_parse

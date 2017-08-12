@@ -498,8 +498,8 @@ cmd-mv-cp
 792492628
 *Props*
 _/de:10:A scroll containing a spell called cmd-mv-cp
-_defs/copy-prop:10:"$global/mv-cp" match "cp-prop" call
-_defs/move-prop:10:"$global/mv-cp" match "mv-prop" call
+_defs/copy-prop:10:#47 "cp-prop" call
+_defs/move-prop:10:#47 "mv-prop" call
 *End*
 1
 #46
@@ -976,15 +976,15 @@ lib-reflist
 792490013
 *Props*
 _/de:10:A scroll containing a spell called lib-reflist
-_defs/REF-add:10:"$lib/reflist" match "REF-add" call
-_defs/REF-allrefs:10:"$lib/reflist" match "REF-allrefs" call
-_defs/REF-delete:10:"$lib/reflist" match "REF-delete" call
-_defs/REF-editlist:10:"$lib/reflist" match "REF-editlist" call
-_defs/REF-filter:10:"$lib/reflist" match "REF-filter" call
-_defs/REF-first:10:"$lib/reflist" match "REF-first" call
-_defs/REF-inlist?:10:"$lib/reflist" match "REF-inlist?" call
-_defs/REF-list:10:"$lib/reflist" match "REF-list" call
-_defs/REF-next:10:"$lib/reflist" match "REF-next" call
+_defs/REF-add:10:#18 "REF-add" call
+_defs/REF-allrefs:10:#18 "REF-allrefs" call
+_defs/REF-delete:10:#18 "REF-delete" call
+_defs/REF-editlist:10:#18 "REF-editlist" call
+_defs/REF-filter:10:#18 "REF-filter" call
+_defs/REF-first:10:#18 "REF-first" call
+_defs/REF-inlist?:10:#18 "REF-inlist?" call
+_defs/REF-list:10:#18 "REF-list" call
+_defs/REF-next:10:#18 "REF-next" call
 _docs:10:@list $lib/reflist=1-46
 *End*
 1
@@ -1000,20 +1000,20 @@ lib-mesgbox
 792489979
 *Props*
 _/de:10:A scroll containing a spell called lib-mesgbox
-_defs/MBOX-append:10:"$lib/mesgbox" match "MBOX-append" call
-_defs/MBOX-badref?:10:"$lib/mesgbox" match "MBOX-badref?" call
-_defs/MBOX-count:10:"$lib/mesgbox" match "MBOX-count" call
-_defs/MBOX-create:10:"$lib/mesgbox" match "MBOX-create" call
-_defs/MBOX-delmesg:10:"$lib/mesgbox" match "MBOX-delmesg" call
-_defs/MBOX-destroy:10:"$lib/mesgbox" match "MBOX-destroy" call
-_defs/MBOX-insmesg:10:"$lib/mesgbox" match "MBOX-insmesg" call
-_defs/MBOX-message:10:"$lib/mesgbox" match "MBOX-message" call
-_defs/MBOX-msginfo:10:"$lib/mesgbox" match "MBOX-msginfo" call
-_defs/MBOX-num2ref:10:"$lib/mesgbox" match "MBOX-num2ref" call
-_defs/MBOX-ref2num:10:"$lib/mesgbox" match "MBOX-ref2num" call
-_defs/MBOX-ref2prop:10:"$lib/mesgbox" match "MBOX-ref2prop" call
-_defs/MBOX-setinfo:10:"$lib/mesgbox" match "MBOX-setinfo" call
-_defs/MBOX-setmesg:10:"$lib/mesgbox" match "MBOX-setmesg" call
+_defs/MBOX-append:10:#17 "MBOX-append" call
+_defs/MBOX-badref?:10:#17 "MBOX-badref?" call
+_defs/MBOX-count:10:#17 "MBOX-count" call
+_defs/MBOX-create:10:#17 "MBOX-create" call
+_defs/MBOX-delmesg:10:#17 "MBOX-delmesg" call
+_defs/MBOX-destroy:10:#17 "MBOX-destroy" call
+_defs/MBOX-insmesg:10:#17 "MBOX-insmesg" call
+_defs/MBOX-message:10:#17 "MBOX-message" call
+_defs/MBOX-msginfo:10:#17 "MBOX-msginfo" call
+_defs/MBOX-num2ref:10:#17 "MBOX-num2ref" call
+_defs/MBOX-ref2num:10:#17 "MBOX-ref2num" call
+_defs/MBOX-ref2prop:10:#17 "MBOX-ref2prop" call
+_defs/MBOX-setinfo:10:#17 "MBOX-setinfo" call
+_defs/MBOX-setmesg:10:#17 "MBOX-setmesg" call
 _docs:10:@list $lib/mesgbox=1-58
 _version:10:1.2
 *End*
@@ -1030,17 +1030,17 @@ lib-mesg
 792489925
 *Props*
 _/de:10:A scroll containing a spell called lib-mesg
-_defs/MSG-append:10:"$lib/mesg" match "MSG-append" call
-_defs/MSG-count:10:"$lib/mesg" match "MSG-count" call
-_defs/MSG-create:10:"$lib/mesg" match "MSG-create" call
-_defs/MSG-delitem:10:"$lib/mesg" match "MSG-delitem" call
-_defs/MSG-destroy:10:"$lib/mesg" match "MSG-destroy" call
-_defs/MSG-info:10:"$lib/mesg" match "MSG-info" call
-_defs/MSG-insitem:10:"$lib/mesg" match "MSG-insitem" call
-_defs/MSG-item:10:"$lib/mesg" match "MSG-item" call
-_defs/MSG-message:10:"$lib/mesg" match "MSG-message" call
-_defs/MSG-setinfo:10:"$lib/mesg" match "MSG-setinfo" call
-_defs/MSG-setitem:10:"$lib/mesg" match "MSG-setitem" call
+_defs/MSG-append:10:#16 "MSG-append" call
+_defs/MSG-count:10:#16 "MSG-count" call
+_defs/MSG-create:10:#16 "MSG-create" call
+_defs/MSG-delitem:10:#16 "MSG-delitem" call
+_defs/MSG-destroy:10:#16 "MSG-destroy" call
+_defs/MSG-info:10:#16 "MSG-info" call
+_defs/MSG-insitem:10:#16 "MSG-insitem" call
+_defs/MSG-item:10:#16 "MSG-item" call
+_defs/MSG-message:10:#16 "MSG-message" call
+_defs/MSG-setinfo:10:#16 "MSG-setinfo" call
+_defs/MSG-setitem:10:#16 "MSG-setitem" call
 _docs:10:@list $lib/mesg=1-50
 *End*
 1
@@ -1078,10 +1078,10 @@ lib-editor
 792489726
 *Props*
 _/de:10:A scroll containing a spell called lib-editor
-_defs/editor:10:"$lib/editor" match "editor" call
-_defs/editorheader:10:"$lib/editor" match "editorheader" call
-_defs/editorloop:10:"$lib/editor" match "editorloop" call
-_defs/editorparse:10:"$lib/editor" match "editorparse" call
+_defs/editor:10:#14 "editor" call
+_defs/editorheader:10:#14 "editorheader" call
+_defs/editorloop:10:#14 "editorloop" call
+_defs/editorparse:10:#14 "editorparse" call
 _docs:10:@list $lib/editor=1-50
 *End*
 1
@@ -1097,23 +1097,23 @@ lib-edit
 792489686
 *Props*
 _/de:10:A scroll containing a spell called lib-edit
-_defs/EDITcenter:10:"$lib/edit" match "EDITcenter" call
-_defs/EDITcopy:10:"$lib/edit" match "EDITcopy" call
-_defs/EDITdisplay:10:"$lib/edit" match "EDITdisplay" call
-_defs/EDITfmt_rng:10:"$lib/edit" match "EDITfmt_rng" call
-_defs/EDITformat:10:"$lib/edit" match "EDITformat" call
-_defs/EDITindent:10:"$lib/edit" match "EDITindent" call
-_defs/EDITjoin:10:"$lib/edit" match "EDITjoin" call
-_defs/EDITjoin_rng:10:"$lib/edit" match "EDITjoin_rng" call
-_defs/EDITleft:10:"$lib/edit" match "EDITleft" call
-_defs/EDITlist:10:"$lib/edit" match "EDITlist" call
-_defs/EDITmove:10:"$lib/edit" match "EDITmove" call
-_defs/EDITreplace:10:"$lib/edit" match "EDITreplace" call
-_defs/EDITright:10:"$lib/edit" match "EDITright" call
-_defs/EDITsearch:10:"$lib/edit" match "EDITsearch" call
-_defs/EDITshuffle:10:"$lib/edit" match "EDITshuffle" call
-_defs/EDITsort:10:"$lib/edit" match "EDITsort" call
-_defs/EDITsplit:10:"$lib/edit" match "EDITsplit" call
+_defs/EDITcenter:10:#13 "EDITcenter" call
+_defs/EDITcopy:10:#13 "EDITcopy" call
+_defs/EDITdisplay:10:#13 "EDITdisplay" call
+_defs/EDITfmt_rng:10:#13 "EDITfmt_rng" call
+_defs/EDITformat:10:#13 "EDITformat" call
+_defs/EDITindent:10:#13 "EDITindent" call
+_defs/EDITjoin:10:#13 "EDITjoin" call
+_defs/EDITjoin_rng:10:#13 "EDITjoin_rng" call
+_defs/EDITleft:10:#13 "EDITleft" call
+_defs/EDITlist:10:#13 "EDITlist" call
+_defs/EDITmove:10:#13 "EDITmove" call
+_defs/EDITreplace:10:#13 "EDITreplace" call
+_defs/EDITright:10:#13 "EDITright" call
+_defs/EDITsearch:10:#13 "EDITsearch" call
+_defs/EDITshuffle:10:#13 "EDITshuffle" call
+_defs/EDITsort:10:#13 "EDITsort" call
+_defs/EDITsplit:10:#13 "EDITsplit" call
 _docs:10:@list $lib/edit=1-80
 *End*
 1
@@ -1146,23 +1146,23 @@ _defs/.lmgr-putbrange:10:"$lib/lmgr" match "lmgr-putbrange" call
 _defs/.lmgr-putelem:10:"$lib/lmgr" match "lmgr-putelem" call
 _defs/.lmgr-putrange:10:"$lib/lmgr" match "lmgr-putrange" call
 _defs/.lmgr-setcount:10:"$lib/lmgr" match "lmgr-setcount" call
-_defs/lmgr-clearelem:10:"$lib/lmgr" match "lmgr-clearelem" call
-_defs/lmgr-clearrange:10:"$lib/lmgr" match "lmgr-clearrange" call
-_defs/lmgr-deletelist:10:"$lib/lmgr" match "lmgr-deletelist" call
-_defs/lmgr-deleterange:10:"$lib/lmgr" match "lmgr-deleterange" call
-_defs/lmgr-extractrange:10:"$lib/lmgr" match "lmgr-extractrange" call
-_defs/lmgr-fullrange:10:"$lib/lmgr" match "lmgr-fullrange" call
-_defs/lmgr-getbrange:10:"$lib/lmgr" match "lmgr-getbrange" call
-_defs/lmgr-getcount:10:"$lib/lmgr" match "lmgr-getcount" call
-_defs/lmgr-getelem:10:"$lib/lmgr" match "lmgr-getelem" call
-_defs/lmgr-getlist:10:"$lib/lmgr" match "lmgr-getlist" call
-_defs/lmgr-getrange:10:"$lib/lmgr" match "lmgr-getrange" call
-_defs/lmgr-insertrange:10:"$lib/lmgr" match "lmgr-insertrange" call
-_defs/lmgr-moverange:10:"$lib/lmgr" match "lmgr-moverange" call
-_defs/lmgr-putbrange:10:"$lib/lmgr" match "lmgr-putbrange" call
-_defs/lmgr-putelem:10:"$lib/lmgr" match "lmgr-putelem" call
-_defs/lmgr-putrange:10:"$lib/lmgr" match "lmgr-putrange" call
-_defs/lmgr-setcount:10:"$lib/lmgr" match "lmgr-setcount" call
+_defs/lmgr-clearelem:10:#12 "lmgr-clearelem" call
+_defs/lmgr-clearrange:10:#12 "lmgr-clearrange" call
+_defs/lmgr-deletelist:10:#12 "lmgr-deletelist" call
+_defs/lmgr-deleterange:10:#12 "lmgr-deleterange" call
+_defs/lmgr-extractrange:10:#12 "lmgr-extractrange" call
+_defs/lmgr-fullrange:10:#12 "lmgr-fullrange" call
+_defs/lmgr-getbrange:10:#12 "lmgr-getbrange" call
+_defs/lmgr-getcount:10:#12 "lmgr-getcount" call
+defs/lmgr-getelem:10:#12 "lmgr-getelem" call
+_defs/lmgr-getlist:10:#12 "lmgr-getlist" call
+_defs/lmgr-getrange:10:#12 "lmgr-getrange" call
+_defs/lmgr-insertrange:10:#12 "lmgr-insertrange" call
+_defs/lmgr-moverange:10:#12 "lmgr-moverange" call
+_defs/lmgr-putbrange:10:#12 "lmgr-putbrange" call
+_defs/lmgr-putelem:10:#12 "lmgr-putelem" call
+_defs/lmgr-putrange:10:#12 "lmgr-putrange" call
+_defs/lmgr-setcount:10:#12 "lmgr-setcount" call
 _docs:10:@list $lib/lmgr=1-50
 _lib-version:10:1.2
 *End*
@@ -1183,10 +1183,10 @@ _defs/.envprop:10:"$lib/props" match "envprop" call
 _defs/.envsearch:10:"$lib/props" match "envsearch" call
 _defs/.locate-prop:10:"$lib/props" match "locate-prop" call
 _defs/.setpropstr:10:"$lib/props" match "setpropstr" call
-_defs/envprop:10:"$lib/props" match "envprop" call
-_defs/envsearch:10:"$lib/props" match "envsearch" call
-_defs/locate-prop:10:"$lib/props" match "locate-prop" call
-_defs/setpropstr:10:"$lib/props" match "setpropstr" call
+_defs/envprop:10:#11 "envprop" call
+_defs/envsearch:10:#11 match "envsearch" call
+_defs/locate-prop:10:#11 "locate-prop" call
+_defs/setpropstr:10:#11 "setpropstr" call
 _docs:10:@list $lib/props=1-20
 *End*
 1
@@ -1202,7 +1202,6 @@ lib-stackrng
 792489415
 *Props*
 _/de:10:A scroll containing a spell called lib-stackrng
-_defs/popn:10:"$lib/stackrng" match "popoffn" call
 _defs/sr-catrng:10:"$lib/stackrng" match "catranges" call
 _defs/sr-copyrng:10:"$lib/stackrng" match "copyrange" call
 _defs/sr-deleterng:10:"$lib/stackrng" match "deleterange" call
@@ -1241,13 +1240,13 @@ _defs/.split:10:"$lib/strings" match "split" call
 _defs/.strip:10:strip
 _defs/.stripspaces:10:strip
 _defs/.sts:10:striptail
-_defs/STRasc:10:"$lib/strings" match "STRasc" call
+_defs/STRasc:10:#9 "STRasc" call
 _defs/STRblank?:10:striplead not
 _defs/STRcenter:10:"$lib/strings" match "center" call
-_defs/STRchr:10:"$lib/strings" match "STRchr" call
+_defs/STRchr:10:#9 "STRchr" call
 _defs/STRfillfield:10:"$lib/strings" match "fillfield" call
 _defs/STRleft:10:"$lib/strings" match "left" call
-_defs/STRparse:10:"$lib/strings" match "STRparse" call
+_defs/STRparse:10:#9 "STRparse" call
 _defs/STRright:10:"$lib/strings" match "right" call
 _defs/STRrsplit:10:"$lib/strings" match "rsplit" call
 _defs/STRsinglespace:10:"$lib/strings" match "sms" call

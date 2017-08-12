@@ -717,3 +717,33 @@ public index-first                   public std-index-first
 public index-last                    public std-index-last
 public index-next                    public std-index-next
 public index-prev                    public std-index-prev
+
+$pubdef .index-add "$lib/index" match "index-add" call
+$pubdef .index-add-sort "$lib/index" match "index-add-sort" call
+$pubdef .index-delete "$lib/index" match "index-delete" call
+$pubdef .index-envmatch "$lib/index" match "index-envmatch" call
+$pubdef .index-first "$lib/index" match "index-first" call
+$pubdef .index-last "$lib/index" match "index-last" call
+$pubdef .index-match "$lib/index" match "index-match" call
+$pubdef .index-matchrange "$lib/index" match "index-matchrange" call
+$pubdef .index-next "$lib/index" match "index-next" call
+$pubdef .index-prev "$lib/index" match "index-prev" call
+$pubdef .index-remove "$lib/index" match "index-remove" call
+$pubdef .index-set "$lib/index" match "index-set" call
+$pubdef .index-value "$lib/index" match "index-value" call
+$pubdef .index-write "$lib/index" match "index-write" call
+
+$pubdef .std-index-add "$lib/index" match "index-add" call
+$pubdef .std-index-add-sort "$lib/index" match "index-add-sort" call
+$pubdef .std-index-delete "$lib/index" match "index-delete" call
+$pubdef .std-index-envmatch "$lib/index" match "index-envmatch" call
+$pubdef .std-index-first "$lib/index" match "index-first" call
+$pubdef .std-index-last "$lib/index" match "index-last" call
+$pubdef .std-index-match "$lib/index" match "index-match" call
+$pubdef .std-index-matchrange "$lib/index" match "index-matchrange" call
+$pubdef .std-index-next "$lib/index" match "index-next" call
+$pubdef .std-index-prev "$lib/index" match "index-prev" call
+$pubdef .std-index-remove "$lib/index" match "index-remove" call
+$pubdef .std-index-set "$lib/index" match "index-set" call
+$pubdef .std-index-value "$lib/index" match "index-value" call
+$pubdef .std-index-write "$lib/index" match "index-write" call

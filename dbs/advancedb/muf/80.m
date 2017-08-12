@@ -401,8 +401,6 @@ $endif
     then
 ;
  
-PUBLIC wf-announce
-PUBLIC wf-find-watched
-$libdef wf-announce
-$libdef wf-find-watched
+PUBLIC wf-announce $libdef wf-announce
+PUBLIC wf-find-watched $libdef wf-find-watched
  

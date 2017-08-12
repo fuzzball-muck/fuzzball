@@ -312,3 +312,16 @@ public str-desc
 public dbstr-desc
 public db-desc
 public cmd-look
+
+$pubdef .cmd-look "$lib/look" match "cmd-look" call
+$pubdef .contents-filter "$lib/look" match "contents-filter" call
+$pubdef .db-desc "$lib/look" match "db-desc" call
+$pubdef .dbstr-desc "$lib/look" match "dbstr-desc" call
+$pubdef .get-contents "$lib/look" match "get-contents" call
+$pubdef .list-contents "$lib/look" match "list-contents" call
+$pubdef .long-display "$lib/look" match "long-display" call
+$pubdef .safecall "$lib/look" match "safecall" call
+$pubdef .short-display "$lib/look" match "short-display" call
+$pubdef .short-list "$lib/look" match "short-list" call
+$pubdef .str-desc "$lib/look" match "str-desc" call
+$pubdef .unparse "$lib/look" match "unparse" call

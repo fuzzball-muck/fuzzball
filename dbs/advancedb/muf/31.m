@@ -95,12 +95,9 @@ $endif
     swap pop strcat
 ;
  
-PUBLIC ltimestr
-PUBLIC mtimestr
-PUBLIC stimestr
-PUBLIC rtimestr
-$libdef ltimestr
-$libdef mtimestr
-$libdef stimestr
-$libdef rtimestr
+PUBLIC ltimestr $libdef ltimestr
+PUBLIC mtimestr $libdef mtimestr
+PUBLIC stimestr $libdef stimestr
+PUBLIC rtimestr $libdef rtimestr
+
 $pubdef timestr mtimestr

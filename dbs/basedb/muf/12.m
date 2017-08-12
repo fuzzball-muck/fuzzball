@@ -354,20 +354,38 @@ $def ITEMNUMSEP "#/"   ( "" in old format )
 ;
   
   
-PUBLIC lmgr-getcount
-PUBLIC lmgr-setcount
-PUBLIC lmgr-getelem
-PUBLIC lmgr-putelem
-PUBLIC lmgr-clearelem
-PUBLIC lmgr-getrange
-PUBLIC lmgr-fullrange
-PUBLIC lmgr-getbrange
-PUBLIC lmgr-putrange
-PUBLIC lmgr-putbrange
-PUBLIC lmgr-clearrange
-PUBLIC lmgr-moverange
-PUBLIC lmgr-insertrange
-PUBLIC lmgr-deleterange
-PUBLIC lmgr-extractrange
-PUBLIC lmgr-deletelist
-PUBLIC lmgr-getlist
+PUBLIC lmgr-getcount $libdef lmgr-getcount 
+PUBLIC lmgr-setcount $libdef lmgr-setcount
+PUBLIC lmgr-getelem $libdef lmgr-getelem
+PUBLIC lmgr-putelem $libdef lmgr-putelem
+PUBLIC lmgr-clearelem $libdef lmgr-clearelem
+PUBLIC lmgr-getrange $libdef lmgr-getrange
+PUBLIC lmgr-fullrange $libdef lmgr-fullrange
+PUBLIC lmgr-getbrange $libdef lmgr-getbrange
+PUBLIC lmgr-putrange $libdef lmgr-putrange
+PUBLIC lmgr-putbrange $libdef lmgr-putbrange
+PUBLIC lmgr-clearrange $libdef lmgr-clearrange
+PUBLIC lmgr-moverange $libdef lmgr-moverange
+PUBLIC lmgr-insertrange $libdef lmgr-insertrange
+PUBLIC lmgr-deleterange $libdef lmgr-deleterange
+PUBLIC lmgr-extractrange $libdef lmgr-extractrange
+PUBLIC lmgr-deletelist $libdef lmgr-deletelist
+PUBLIC lmgr-getlist $libdef lmgr-getlist
+
+$pubdef .lmgr-clearelem "$lib/lmgr" match "lmgr-clearelem" call
+$pubdef .lmgr-clearrange "$lib/lmgr" match "lmgr-clearrange" call
+$pubdef .lmgr-deletelist "$lib/lmgr" match "lmgr-deletelist" call
+$pubdef .lmgr-deleterange "$lib/lmgr" match "lmgr-deleterange" call
+$pubdef .lmgr-extractrange "$lib/lmgr" match "lmgr-extractrange" call
+$pubdef .lmgr-fullrange "$lib/lmgr" match "lmgr-fullrange" call
+$pubdef .lmgr-getbrange "$lib/lmgr" match "lmgr-getbrange" call
+$pubdef .lmgr-getcount "$lib/lmgr" match "lmgr-getcount" call
+$pubdef .lmgr-getelem "$lib/lmgr" match "lmgr-getelem" call
+$pubdef .lmgr-getlist "$lib/lmgr" match "lmgr-getlist" call
+$pubdef .lmgr-getrange "$lib/lmgr" match "lmgr-getrange" call
+$pubdef .lmgr-insertrange "$lib/lmgr" match "lmgr-insertrange" call
+$pubdef .lmgr-moverange "$lib/lmgr" match "lmgr-moverange" call
+$pubdef .lmgr-putbrange "$lib/lmgr" match "lmgr-putbrange" call
+$pubdef .lmgr-putelem "$lib/lmgr" match "lmgr-putelem" call
+$pubdef .lmgr-putrange "$lib/lmgr" match "lmgr-putrange" call
+$pubdef .lmgr-setcount "$lib/lmgr" match "lmgr-setcount" call

@@ -484,35 +484,22 @@ $def colorend   "m"
  
  
 (These three will be renamed to ? instead of '-q' when compile bug fixed)
-PUBLIC BOLD-active-q
-PUBLIC BOLD-possible-q
-PUBLIC BOLD-supported-q
+PUBLIC BOLD-active-q $libdef BOLD-active-q
+PUBLIC BOLD-possible-q $libdef BOLD-possible-q
+PUBLIC BOLD-supported-q $libdef BOLD-supported-q
  
-PUBLIC BOLD-cmd-parse2
-PUBLIC BOLD-cmd-parse1
-PUBLIC BOLD-cmd-help2
-PUBLIC BOLD-cmd-help
-PUBLIC BOLD-filter
-PUBLIC BOLD-filter-test
-PUBLIC BOLD-get-settings
-PUBLIC BOLD-notify
-PUBLIC BOLD-notify-list
-PUBLIC BOLD-set-active
+PUBLIC BOLD-cmd-parse2 $libdef BOLD-cmd-parse2
+PUBLIC BOLD-cmd-parse1 $libdef BOLD-cmd-parse1
+PUBLIC BOLD-cmd-help2 $libdef BOLD-cmd-help2
+PUBLIC BOLD-cmd-help $libdef BOLD-cmd-help
+PUBLIC BOLD-filter $libdef BOLD-filter
+PUBLIC BOLD-filter-test $libdef BOLD-filter-test
+PUBLIC BOLD-get-settings $libdef BOLD-get-settings
+PUBLIC BOLD-notify $libdef BOLD-notify
+PUBLIC BOLD-notify-list $libdef BOLD-notify-list
+PUBLIC BOLD-set-active $libdef BOLD-set-active
  
 (
 @set $lib/bolding=_docs:@list $lib/bolding=1-137
-@set $lib/bolding=_defs/BOLD-active-q: "$lib/bolding" match "BOLD-active-q" call
-@set $lib/bolding=_defs/BOLD-cmd-parse2: "$lib/bolding" match "BOLD-cmd-parse2" call
-@set $lib/bolding=_defs/BOLD-cmd-parse1: "$lib/bolding" match "BOLD-cmd-parse1" call
-@set $lib/bolding=_defs/BOLD-cmd-help2: "$lib/bolding" match "BOLD-cmd-help2" call
-@set $lib/bolding=_defs/BOLD-cmd-help: "$lib/bolding" match "BOLD-cmd-help" call
-@set $lib/bolding=_defs/BOLD-filter: "$lib/bolding" match "BOLD-filter" call
-@set $lib/bolding=_defs/BOLD-filter-test: "$lib/bolding" match "BOLD-filter-test" call
-@set $lib/bolding=_defs/BOLD-get-settings: "$lib/bolding" match "BOLD-get-settings" call
-@set $lib/bolding=_defs/BOLD-notify: "$lib/bolding" match "BOLD-notify" call
-@set $lib/bolding=_defs/BOLD-notify-list: "$lib/bolding" match "BOLD-notify-list" call
-@set $lib/bolding=_defs/BOLD-possible-q: "$lib/bolding" match "BOLD-possible-q" call
-@set $lib/bolding=_defs/BOLD-set-active: "$lib/bolding" match "BOLD-set-active" call
-@set $lib/bolding=_defs/BOLD-supported-q: "$lib/bolding" match "BOLD-supported-q" call
 )
  

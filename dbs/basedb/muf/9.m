@@ -114,13 +114,43 @@ This routine is useful for parsing command line input:
 ;
     
   
-public split
-public rsplit
-public sms
-public fillfield
-public left
-public right
-public center
-public STRasc
-public STRchr
-public STRparse
+PUBLIC split
+PUBLIC rsplit
+PUBLIC sms
+PUBLIC fillfield
+PUBLIC left
+PUBLIC right
+PUBLIC center
+PUBLIC STRasc $libdef STRasc
+PUBLIC STRchr $libdef STRchr
+PUBLIC STRparse $libdef STRparse
+
+$pubdef .asc "$lib/strings" match "STRasc" call
+$pubdef .blank? striplead not
+$pubdef .center "$lib/strings" match "center" call
+$pubdef .chr "$lib/strings" match "STRchr" call
+$pubdef .command_parse "$lib/strings" match "STRparse" call
+$pubdef .fillfield "$lib/strings" match "fillfield" call
+$pubdef .left "$lib/strings" match "left" call
+$pubdef .right "$lib/strings" match "right" call
+$pubdef .rsplit "$lib/strings" match "rsplit" call
+$pubdef .singlespace "$lib/strings" match "sms" call
+$pubdef .sls striplead
+$pubdef .sms "$lib/strings" match "sms" call
+$pubdef .split "$lib/strings" match "split" call
+$pubdef .strip strip
+$pubdef .stripspaces strip
+$pubdef .sts striptail
+
+$pubdef STRblank? striplead not
+$pubdef STRcenter "$lib/strings" match "center" call
+$pubdef STRfillfield "$lib/strings" match "fillfield" call
+$pubdef STRleft "$lib/strings" match "left" call
+$pubdef STRright "$lib/strings" match "right" call
+$pubdef STRrsplit "$lib/strings" match "rsplit" call
+$pubdef STRsinglespace "$lib/strings" match "sms" call
+$pubdef STRsls striplead
+$pubdef STRsms "$lib/strings" match "sms" call
+$pubdef STRsplit "$lib/strings" match "split" call
+$pubdef STRstrip strip
+$pubdef STRsts striptail

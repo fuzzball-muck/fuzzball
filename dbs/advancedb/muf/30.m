@@ -94,10 +94,8 @@ $note Library for tabular output (whodoing, laston, whospecies, etc).
 ;
  
  
-PUBLIC table-process
-PUBLIC table-format
-PUBLIC table-table-sort
-$libdef table-process
-$libdef table-format
-$libdef table-table-sort
+PUBLIC table-process $libdef table-process
+PUBLIC table-format $libdef table-format
+PUBLIC table-table-sort $libdef table-table-sort
+
 $pubdef table-table "" table-table-sort

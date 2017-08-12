@@ -472,7 +472,7 @@ $include $lib/edit
     "" 1 ".i $" EDITORloop -6 rotate pop pop pop pop pop
 ;
   
-PUBLIC EDITOR
-PUBLIC EDITORloop
-PUBLIC EDITORparse
-PUBLIC EDITORheader
+PUBLIC EDITOR $libdef EDITOR
+PUBLIC EDITORloop $libdef EDITORloop
+PUBLIC EDITORparse $libdef EDITORparse
+PUBLIC EDITORheader $libdef EDITORheader

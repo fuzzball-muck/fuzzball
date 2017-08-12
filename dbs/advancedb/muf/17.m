@@ -146,24 +146,13 @@ lvar opts_info_topnum
     opts_grouporder_arr @ id @ array_delitem opts_grouporder_arr !
 ;
  
-public optionsinfo_get
-public optionsinfo_getgroups
-public optionsinfo_getgrouplabel
-public optionsinfo_get_group_opts
-public optionsinfo_set
-public optionsinfo_new
-public optioninfo_get
-public optioninfo_set
-public optionsinfo_set_indexed
-public optionsinfo_del
- 
-$libdef optionsinfo_get
-$libdef optionsinfo_getgroups
-$libdef optionsinfo_getgrouplabel
-$libdef optionsinfo_get_group_opts
-$libdef optionsinfo_set
-$libdef optionsinfo_new
-$libdef optioninfo_get
-$libdef optioninfo_set
-$libdef optionsinfo_set_indexed
-$libdef optionsinfo_del
+PUBLIC optionsinfo_get $libdef optionsinfo_get
+PUBLIC optionsinfo_getgroups $libdef optionsinfo_getgroups
+PUBLIC optionsinfo_getgrouplabel $libdef optionsinfo_getgrouplabel
+PUBLIC optionsinfo_get_group_opts $libdef optionsinfo_get_group_opts
+PUBLIC optionsinfo_set $libdef optionsinfo_set
+PUBLIC optionsinfo_new $libdef optionsinfo_new
+PUBLIC optioninfo_get $libdef optioninfo_get
+PUBLIC optioninfo_set $libdef optioninfo_set
+PUBLIC optionsinfo_set_indexed $libdef optionsinfo_set_indexed
+PUBLIC optionsinfo_del $libdef optionsinfo_del

@@ -71,7 +71,12 @@
     pop envsearch
 ;
   
-PUBLIC setpropstr
-PUBLIC envprop
-PUBLIC envsearch
-PUBLIC locate-prop
+PUBLIC setpropstr $libdef setpropstr
+PUBLIC envprop $libdef envprop
+PUBLIC envsearch $libdef envsearch
+PUBLIC locate-prop $libdef locate-prop
+
+$pubdef .envprop "$lib/props" match "envprop" call
+$pubdef .envsearch "$lib/props" match "envsearch" call
+$pubdef .locate-prop "$lib/props" match "locate-prop" call
+$pubdef .setpropstr "$lib/props" match "setpropstr" call
