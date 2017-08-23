@@ -770,7 +770,7 @@ prim_gui_dlog_close(PRIM_PROTOTYPE)
 void
 prim_gui_ctrl_create(PRIM_PROTOTYPE)
 {
-    int vallines = 0;
+    size_t vallines = 0;
     char **vallist = NULL;
     char *dlogid = NULL;
     char *ctrlid = NULL;
@@ -838,7 +838,7 @@ prim_gui_ctrl_create(PRIM_PROTOTYPE)
 	}
     }
 
-    vallines = mcp_mesg_arg_linecount(&msg, "value");
+    vallines = (size_t)mcp_mesg_arg_linecount(&msg, "value");
     valname = mcp_mesg_arg_getline(&msg, "valname", 0);
     if (!valname || !*valname) {
 	valname = ctrlid;
@@ -954,7 +954,7 @@ prim_gui_ctrl_command(PRIM_PROTOTYPE)
 void
 prim_gui_value_set(PRIM_PROTOTYPE)
 {
-    int count;
+    size_t count;
     char buf[BUFFER_LEN];
     char *name;
     char *dlogid;
@@ -992,7 +992,7 @@ prim_gui_value_set(PRIM_PROTOTYPE)
 	value = DoNullInd(oper3->data.string);
 	valarray[0] = strdup(value);
     } else {
-	count = array_count(oper3->data.array);
+	count = (size_t)array_count(oper3->data.array);
 	valarray = (char **) malloc(sizeof(char *) * count);
 
 	for (int i = 0; i < count; i++) {

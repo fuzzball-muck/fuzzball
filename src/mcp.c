@@ -181,7 +181,7 @@ mcp_intern_is_mesg_start(McpFrame * mfr, const char *in)
 
     if (strncasecmp(mesgname, MCP_INIT_PKG, 3)) {
 	for (McpPkg *pkg = mfr->packages; pkg; pkg = pkg->next) {
-	    int pkgnamelen = strlen(pkg->pkgname);
+	    size_t pkgnamelen = strlen(pkg->pkgname);
 
 	    if (!strncasecmp(pkg->pkgname, mesgname, pkgnamelen)) {
 		if (mesgname[pkgnamelen] == '\0' || mesgname[pkgnamelen] == '-') {
@@ -193,7 +193,7 @@ mcp_intern_is_mesg_start(McpFrame * mfr, const char *in)
 	}
     }
     if (!longlen) {
-	int neglen = strlen(MCP_NEGOTIATE_PKG);
+	size_t neglen = strlen(MCP_NEGOTIATE_PKG);
 
 	if (!strncasecmp(mesgname, MCP_NEGOTIATE_PKG, neglen)) {
 	    longlen = neglen;
@@ -503,22 +503,22 @@ mcp_basic_handler(McpFrame * mfr, McpMesg * mesg)
 	if (!ptr)
 	    return;
 	while (isdigit(*ptr))
-	    minver.vermajor = (minver.vermajor * 10) + (*ptr++ - '0');
+	    minver.vermajor = (unsigned short)((minver.vermajor * 10) + (*ptr++ - '0'));
 	if (*ptr++ != '.')
 	    return;
 	while (isdigit(*ptr))
-	    minver.verminor = (minver.verminor * 10) + (*ptr++ - '0');
+	    minver.verminor = (unsigned short)((minver.verminor * 10) + (*ptr++ - '0'));
 
 	ptr = mcp_mesg_arg_getline(mesg, "to", 0);
 	if (!ptr) {
 	    maxver = minver;
 	} else {
 	    while (isdigit(*ptr))
-		maxver.vermajor = (maxver.vermajor * 10) + (*ptr++ - '0');
+		maxver.vermajor = (unsigned short)((maxver.vermajor * 10) + (*ptr++ - '0'));
 	    if (*ptr++ != '.')
 		return;
 	    while (isdigit(*ptr))
-		maxver.verminor = (maxver.verminor * 10) + (*ptr++ - '0');
+		maxver.verminor = (unsigned short)((maxver.verminor * 10) + (*ptr++ - '0'));
 	}
 
 	mfr->version = mcp_version_select(myminver, mymaxver, minver, maxver);
@@ -572,22 +572,22 @@ mcp_negotiate_handler(McpFrame * mfr, McpMesg * mesg, McpVer version, void *cont
 	if (!ptr)
 	    return;
 	while (isdigit(*ptr))
-	    minver.vermajor = (minver.vermajor * 10) + (*ptr++ - '0');
+	    minver.vermajor = (unsigned short)((minver.vermajor * 10) + (*ptr++ - '0'));
 	if (*ptr++ != '.')
 	    return;
 	while (isdigit(*ptr))
-	    minver.verminor = (minver.verminor * 10) + (*ptr++ - '0');
+	    minver.verminor = (unsigned short)((minver.verminor * 10) + (*ptr++ - '0'));
 
 	ptr = mcp_mesg_arg_getline(mesg, "max-version", 0);
 	if (!ptr) {
 	    maxver = minver;
 	} else {
 	    while (isdigit(*ptr))
-		maxver.vermajor = (maxver.vermajor * 10) + (*ptr++ - '0');
+		maxver.vermajor = (unsigned short)((maxver.vermajor * 10) + (*ptr++ - '0'));
 	    if (*ptr++ != '.')
 		return;
 	    while (isdigit(*ptr))
-		maxver.verminor = (maxver.verminor * 10) + (*ptr++ - '0');
+		maxver.verminor = (unsigned short)((maxver.verminor * 10) + (*ptr++ - '0'));
 	}
 
 	mcp_frame_package_add(mfr, pkg, minver, maxver);
@@ -1291,20 +1291,20 @@ int
 mcp_mesg_arg_append(McpMesg * msg, const char *argname, const char *argval)
 {
     McpArg *ptr = msg->args;
-    int namelen = strlen(argname);
-    int vallen = argval ? strlen(argval) : 0;
+    size_t namelen = strlen(argname);
+    size_t vallen = argval ? strlen(argval) : 0;
 
     if (namelen > MAX_MCP_ARGNAME_LEN) {
 	return EMCP_ARGNAMELEN;
     }
-    if (vallen + msg->bytes > MAX_MCP_MESG_SIZE) {
+    if (vallen + (size_t)msg->bytes > MAX_MCP_MESG_SIZE) {
 	return EMCP_MESGSIZE;
     }
     while (ptr && strcasecmp(ptr->name, argname)) {
 	ptr = ptr->next;
     }
     if (!ptr) {
-	if (namelen + vallen + msg->bytes > MAX_MCP_MESG_SIZE) {
+	if (namelen + vallen + (size_t)msg->bytes > MAX_MCP_MESG_SIZE) {
 	    return EMCP_MESGSIZE;
 	}
 	ptr = (McpArg *) malloc(sizeof(McpArg));

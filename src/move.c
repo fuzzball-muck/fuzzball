@@ -973,7 +973,7 @@ do_recycle(int descr, dbref player, const char *name)
 			   "Permission denied. (You may not recycle an exit you don't own)");
 		    return;
 		}
-		unset_source(player, thing);
+		unset_source(thing);
 		break;
 	    case TYPE_PLAYER:
 		notify(player, "You can't recycle a player!");

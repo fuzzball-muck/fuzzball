@@ -285,7 +285,8 @@ mcppkg_help_request(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
     char buf[BUFFER_LEN];
     char topic[BUFFER_LEN];
     char *p;
-    int arglen, found;
+    size_t arglen;
+    int found;
     McpVer supp = mcp_frame_package_supported(mfr, "org-fuzzball-help");
     McpMesg omsg;
 

@@ -73,7 +73,7 @@ muf_event_process_free(struct mufevent_process *ptr)
  * responsible for freeing the original eventids list passed.
  */
 void
-muf_event_register_specific(dbref player, dbref prog, struct frame *fr, int eventcount,
+muf_event_register_specific(dbref player, dbref prog, struct frame *fr, size_t eventcount,
 			    char **eventids)
 {
     struct mufevent_process *newproc;

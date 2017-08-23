@@ -245,7 +245,7 @@ prim_fmtstring(PRIM_PROTOTYPE)
 				tbuf[i] = ' ';
 			}
 		    }
-		    if (strlen(tbuf) + result > BUFFER_LEN)
+		    if (strlen(tbuf) + (size_t)result > BUFFER_LEN)
 			abort_interp("Resultant string would overflow buffer.");
 		    buf[result] = '\0';
 		    strcatn(buf, sizeof(buf), tbuf);
@@ -316,7 +316,7 @@ prim_fmtstring(PRIM_PROTOTYPE)
 				tbuf[i] = ' ';
 			}
 		    }
-		    if (strlen(tbuf) + result > BUFFER_LEN)
+		    if (strlen(tbuf) + (size_t)result > BUFFER_LEN)
 			abort_interp("Resultant string would overflow buffer.");
 		    buf[result] = '\0';
 		    strcatn(buf, sizeof(buf), tbuf);
@@ -341,7 +341,7 @@ prim_fmtstring(PRIM_PROTOTYPE)
 				tbuf[i] = ' ';
 			}
 		    }
-		    if (strlen(tbuf) + result > BUFFER_LEN)
+		    if (strlen(tbuf) + (size_t)result > BUFFER_LEN)
 			abort_interp("Resultant string would overflow buffer.");
 		    buf[result] = '\0';
 		    strcatn(buf, sizeof(buf), tbuf);
@@ -376,7 +376,7 @@ prim_fmtstring(PRIM_PROTOTYPE)
 				tbuf[i] = ' ';
 			}
 		    }
-		    if (strlen(tbuf) + result > BUFFER_LEN)
+		    if (strlen(tbuf) + (size_t)result > BUFFER_LEN)
 			abort_interp("Resultant string would overflow buffer.");
 		    buf[result] = '\0';
 		    strcatn(buf, sizeof(buf), tbuf);
@@ -401,7 +401,7 @@ prim_fmtstring(PRIM_PROTOTYPE)
 				tbuf[i] = ' ';
 			}
 		    }
-		    if (strlen(tbuf) + result > BUFFER_LEN)
+		    if (strlen(tbuf) + (size_t)result > BUFFER_LEN)
 			abort_interp("Resultant string would overflow buffer.");
 		    buf[result] = '\0';
 		    strcatn(buf, sizeof(buf), tbuf);
@@ -429,7 +429,7 @@ prim_fmtstring(PRIM_PROTOTYPE)
 				tbuf[i] = ' ';
 			}
 		    }
-		    if (strlen(tbuf) + result > BUFFER_LEN)
+		    if (strlen(tbuf) + (size_t)result > BUFFER_LEN)
 			abort_interp("Resultant string would overflow buffer.");
 		    buf[result] = '\0';
 		    strcatn(buf, sizeof(buf), tbuf);
@@ -767,7 +767,7 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 					tbuf[i] = ' ';
 				}
 			    }
-			    if (strlen(tbuf) + result > BUFFER_LEN) {
+			    if (strlen(tbuf) + (size_t)result > BUFFER_LEN) {
 				abort_message ="Resultant string would overflow buffer.";
                                 goto cleanup_and_abort;
                             }
@@ -840,7 +840,7 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 					tbuf[i] = ' ';
 				}
 			    }
-			    if (strlen(tbuf) + result > BUFFER_LEN) {
+			    if (strlen(tbuf) + (size_t)result > BUFFER_LEN) {
 				abort_message = "Resultant string would overflow buffer.";
                                 goto cleanup_and_abort;
                             }
@@ -873,7 +873,7 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 					tbuf[i] = ' ';
 				}
 			    }
-			    if (strlen(tbuf) + result > BUFFER_LEN) {
+			    if (strlen(tbuf) + (size_t)result > BUFFER_LEN) {
 				abort_message = "Resultant string would overflow buffer.";
                                 goto cleanup_and_abort;
                             }
@@ -908,7 +908,7 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 					tbuf[i] = ' ';
 				}
 			    }
-			    if (strlen(tbuf) + result > BUFFER_LEN) {
+			    if (strlen(tbuf) + (size_t)result > BUFFER_LEN) {
                                 abort_message = "Resultant string would overflow buffer.";
                                 goto cleanup_and_abort;
                             }
@@ -938,7 +938,7 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 					tbuf[i] = ' ';
 				}
 			    }
-			    if (strlen(tbuf) + result > BUFFER_LEN) {
+			    if (strlen(tbuf) + (size_t)result > BUFFER_LEN) {
 				abort_message = "Resultant string would overflow buffer.";
                                 goto cleanup_and_abort;
                             }
@@ -970,7 +970,7 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 					tbuf[i] = ' ';
 				}
 			    }
-			    if (strlen(tbuf) + result > BUFFER_LEN) {
+			    if (strlen(tbuf) + (size_t)result > BUFFER_LEN) {
 				abort_message ="Resultant string would overflow buffer.";
                                 goto cleanup_and_abort;
                             }
@@ -1234,7 +1234,7 @@ prim_stod(PRIM_PROTOTYPE)
 void
 prim_midstr(PRIM_PROTOTYPE)
 {
-    int start, range;
+    size_t start, range;
 
     CHECKOP(3);
     oper1 = POP();
@@ -1257,11 +1257,11 @@ prim_midstr(PRIM_PROTOTYPE)
 	if (oper2->data.number > oper3->data.string->length) {
 	    result = 1;
 	} else {
-	    start = oper2->data.number - 1;
-	    if ((oper1->data.number + start) > oper3->data.string->length) {
+	    start = (size_t)oper2->data.number - 1;
+	    if (((size_t)oper1->data.number + start) > oper3->data.string->length) {
 		range = oper3->data.string->length - start;
 	    } else {
-		range = oper1->data.number;
+		range = (size_t)oper1->data.number;
 	    }
 	    bcopy(oper3->data.string->data + start, buf, range);
 	    buf[range] = '\0';
@@ -1343,7 +1343,7 @@ prim_strncmp(PRIM_PROTOTYPE)
 	result = 0;
     else
 	result = strncmp(DoNullInd(oper3->data.string),
-			 DoNullInd(oper2->data.string), oper1->data.number);
+			 DoNullInd(oper2->data.string), (size_t)oper1->data.number);
     CLEAR(oper1);
     CLEAR(oper2);
     CLEAR(oper3);
@@ -1376,7 +1376,7 @@ prim_strcut(PRIM_PROTOTYPE)
 	    PushString(buf);
 	    if (temp2.data.string->length > temp1.data.number) {
 		bcopy(temp2.data.string->data + temp1.data.number, buf,
-		      temp2.data.string->length - temp1.data.number + 1);
+		      temp2.data.string->length - (size_t)temp1.data.number + 1);
 		PushString(buf);
 	    } else {
 		PushNullStr;
@@ -1676,7 +1676,7 @@ prim_explode_array(PRIM_PROTOTYPE)
 
     {
 	const char *delimit = temp1.data.string->data;
-	int delimlen = temp1.data.string->length;
+	size_t delimlen = temp1.data.string->length;
 
 	nu = new_array_packed(0);
 	if (!temp2.data.string) {
@@ -2416,7 +2416,7 @@ prim_ansi_strcut(PRIM_PROTOTYPE)
     }
     *op = '\0';
     memcpy((void *) outbuf2, (const void *) ptr,
-	   oper1->data.string->length - (ptr - oper1->data.string->data) + 1);
+	   oper1->data.string->length - (size_t)(ptr - oper1->data.string->data) + 1);
 
     CLEAR(oper1);
     CLEAR(oper2);

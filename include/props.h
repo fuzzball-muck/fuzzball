@@ -75,13 +75,13 @@ typedef struct plist *PropPtr;
 
 #define PropName(x) ((x)->key)
 
-#define SetPFlags(x,y) {(x)->flags = ((x)->flags & PROP_TYPMASK) | (short)y;}
+#define SetPFlags(x,y) {(x)->flags = ((x)->flags & PROP_TYPMASK) | (unsigned short)y;}
 #define PropFlags(x) ((x)->flags & ~PROP_TYPMASK)
 
-#define SetPType(x,y) {(x)->flags = ((x)->flags & ~PROP_TYPMASK) | (short)y;}
+#define SetPType(x,y) {(x)->flags = ((x)->flags & ~PROP_TYPMASK) | (unsigned short)y;}
 #define PropType(x) ((x)->flags & PROP_TYPMASK)
 
-#define SetPFlagsRaw(x,y) {(x)->flags = (short)y;}
+#define SetPFlagsRaw(x,y) {(x)->flags = (unsigned short)y;}
 #define PropFlagsRaw(x) ((x)->flags)
 
 #define Prop_Blessed(obj,propname) (get_property_flags(obj, propname) & PROP_BLESSED)
@@ -125,9 +125,9 @@ void exec_or_notify_prop(int descr, dbref player, dbref thing, const char *propn
                                 const char *whatcalled);         
 PropPtr first_node(PropPtr p);
 PropPtr first_prop(dbref player, const char *dir, PropPtr * list, char *name,
-			  int maxlen);
+			  size_t maxlen);
 PropPtr first_prop_nofetch(dbref player, const char *dir, PropPtr * list, char *name,
-				  int maxlen);
+				  size_t maxlen);
 void free_propnode(PropPtr node);
 PropPtr get_property(dbref player, const char *type);
 const char *get_property_class(dbref player, const char *type);
@@ -144,10 +144,8 @@ int is_propdir(dbref player, const char *dir);
 PropPtr locate_prop(PropPtr l, char *path);
 PropPtr new_prop(PropPtr * l, char *path);
 PropPtr next_node(PropPtr p, char *c);
-PropPtr next_prop(PropPtr list, PropPtr prop, char *name, int maxlen);
-char *next_prop_name(dbref player, char *outbuf, int outbuflen, char *name);
-void parse_omessage(int descr, dbref player, dbref dest, dbref exit, const char *msg,
-                           const char *prefix, const char *whatcalled, int mpiflags);
+PropPtr next_prop(PropPtr list, PropPtr prop, char *name, size_t maxlen);
+char *next_prop_name(dbref player, char *outbuf, size_t outbuflen, char *name);
 void parse_oprop(int descr, dbref player, dbref dest, dbref exit, const char *propname,
                         const char *prefix, const char *whatcalled);
 PropPtr propdir_delete_elem(PropPtr root, char *path);

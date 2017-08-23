@@ -934,7 +934,7 @@ do_register(int descr, dbref player, char *arg1, const char *arg2)
     if (!*arg2) {
 	PropPtr propadr, pptr;
 	char dir[BUFFER_LEN], propname[BUFFER_LEN], detail[BUFFER_LEN];
-	dbref detailref, invalidref = -50;
+	dbref detailref = -50, invalidref = -50;
 
 	if (!objectstr || !*objectstr) {
 	    strcpyn(dir, sizeof(dir), propdir);

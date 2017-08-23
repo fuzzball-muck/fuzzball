@@ -640,7 +640,7 @@ mesg_init(void)
 }
 
 static int
-mesg_args(char *wbuf, int maxlen, char **argv, char ulv, char sep, char dlv, char quot,
+mesg_args(char *wbuf, size_t maxlen, char **argv, char ulv, char sep, char dlv, char quot,
 	  int maxargs)
 {
     int argc = 0;
@@ -673,8 +673,8 @@ mesg_args(char *wbuf, int maxlen, char **argv, char ulv, char sep, char dlv, cha
 		    free(argv[argc]);
 		    argv[argc] = NULL;
 		}
-		argv[argc] = (char *) malloc(((buf + r) - ptr) + 1);
-		strcpyn(argv[argc++], ((buf + r) - ptr) + 1, ptr);
+		argv[argc] = (char *) malloc((size_t)((buf + r) - ptr) + 1);
+		strcpyn(argv[argc++], (size_t)((buf + r) - ptr) + 1, ptr);
 		ptr = buf + r + 1;
 		break;
 	    }
@@ -686,8 +686,8 @@ mesg_args(char *wbuf, int maxlen, char **argv, char ulv, char sep, char dlv, cha
 		    free(argv[argc]);
 		    argv[argc] = NULL;
 		}
-		argv[argc] = (char *) malloc(((buf + r) - ptr) + 1);
-		strcpyn(argv[argc++], ((buf + r) - ptr) + 1, ptr);
+		argv[argc] = (char *) malloc((size_t)((buf + r) - ptr) + 1);
+		strcpyn(argv[argc++], (size_t)((buf + r) - ptr) + 1, ptr);
 		ptr = buf + r + 1;
 	    }
 	}
@@ -802,13 +802,13 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms,
 			} else {
 			    argc = mfun_list[s].maxargs;
 			    if (argc < 0) {
-				argc = mesg_args((wbuf + p + 1), (sizeof(wbuf) - p - 1),
+				argc = mesg_args((wbuf + p + 1), ((sizeof(wbuf) - (size_t)p) - 1),
 						 &argv[(varflag ? 1 : 0)],
 						 MFUN_LEADCHAR, MFUN_ARGSEP,
 						 MFUN_ARGEND, MFUN_LITCHAR,
 						 (-argc) + (varflag ? 1 : 0));
 			    } else {
-				argc = mesg_args((wbuf + p + 1), (sizeof(wbuf) - p - 1),
+				argc = mesg_args((wbuf + p + 1), ((sizeof(wbuf) - (size_t)p) - 1),
 						 &argv[(varflag ? 1 : 0)],
 						 MFUN_LEADCHAR, MFUN_ARGSEP,
 						 MFUN_ARGEND, MFUN_LITCHAR, (varflag ? 8 : 9));
@@ -1000,7 +1000,7 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms,
 			    p++;
 			} else {
 			    p++;
-			    argc = mesg_args(wbuf + p, (sizeof(wbuf) - p), argv, MFUN_LEADCHAR,
+			    argc = mesg_args(wbuf + p, sizeof(wbuf) - (size_t)p, argv, MFUN_LEADCHAR,
 					     MFUN_ARGSEP, MFUN_ARGEND, MFUN_LITCHAR, 9);
 			    if (argc == -1) {
 				char *zptr = get_mvar("how");
@@ -1069,7 +1069,7 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms,
 
 static char *
 do_parse_mesg_2(int descr, dbref player, dbref what, dbref perms,
-		const char *inbuf, const char *abuf, char *outbuf, int outbuflen, int mesgtyp)
+		const char *inbuf, const char *abuf, char *outbuf, size_t outbuflen, int mesgtyp)
 {
 
     char howvar[BUFFER_LEN];
@@ -1138,7 +1138,7 @@ do_parse_mesg(int descr, dbref player, dbref what, const char *inbuf, const char
 
 	/* Quickie additions to do rough per-object MPI profiling */
 	gettimeofday(&st, NULL);
-	tmp = do_parse_mesg_2(descr, player, what, what, inbuf, abuf, outbuf, outbuflen,
+	tmp = do_parse_mesg_2(descr, player, what, what, inbuf, abuf, outbuf, (size_t)outbuflen,
 			      mesgtyp);
 	gettimeofday(&et, NULL);
 	if (strcmp(tmp, inbuf)) {
@@ -1158,7 +1158,7 @@ do_parse_mesg(int descr, dbref player, dbref what, const char *inbuf, const char
 	}
 	return (tmp);
     } else {
-	strcpyn(outbuf, outbuflen, inbuf);
+	strcpyn(outbuf, (size_t)outbuflen, inbuf);
     }
     return outbuf;
 }
@@ -1172,5 +1172,5 @@ do_parse_prop(int descr, dbref player, dbref what, const char *propname, const c
 	return NULL;
     if (Prop_Blessed(what, propname))
 	mesgtyp |= MPI_ISBLESSED;
-    return do_parse_mesg(descr, player, what, propval, abuf, outbuf, outbuflen, mesgtyp);
+    return do_parse_mesg(descr, player, what, propval, abuf, outbuf, (size_t)outbuflen, mesgtyp);
 }

@@ -553,7 +553,7 @@ new_array_packed(int size)
     nu->type = ARRAY_PACKED;
     if (size < 1)
 	size = 1;
-    nu->data.packed = (array_data *) malloc(sizeof(array_data) * size);
+    nu->data.packed = (array_data *) malloc(sizeof(array_data) * (size_t)size);
     if (nu->data.packed == NULL) {
 	fprintf(stderr, "new_array_packed(): Out of Memory!");
 	abort();
@@ -604,7 +604,7 @@ array_decouple(stk_array * arr)
     switch (arr->type) {
     case ARRAY_PACKED:{
 	    nu->items = arr->items;
-	    nu->data.packed = (array_data *) malloc(sizeof(array_data) * arr->items);
+	    nu->data.packed = (array_data *) malloc(sizeof(array_data) * (size_t)arr->items);
 	    if (nu->data.packed == NULL) {
 		fprintf(stderr, "array_decouple(): Out of Memory!");
 		abort();
@@ -905,7 +905,7 @@ array_setitem(stk_array ** harr, array_iter * idx, array_data * item)
 		    arr = *harr = array_decouple(arr);
 		}
 		arr->data.packed = (array_data *)
-			realloc(arr->data.packed, sizeof(array_data) * (arr->items + 1));
+			realloc(arr->data.packed, sizeof(array_data) * (size_t)(arr->items + 1));
 		if (arr->data.packed == NULL) {
 		    fprintf(stderr, "array_setitem(): Out of Memory!");
 		    abort();
@@ -969,7 +969,7 @@ array_insertitem(stk_array ** harr, array_iter * idx, array_data * item)
 		arr = *harr = array_decouple(arr);
 	    }
 	    arr->data.packed = (array_data *)
-		    realloc(arr->data.packed, sizeof(array_data) * (arr->items + 1));
+		    realloc(arr->data.packed, sizeof(array_data) * (size_t)(arr->items + 1));
 	    if (arr->data.packed == NULL) {
 		fprintf(stderr, "array_insertitem(): Out of Memory!");
 		abort();
@@ -1233,7 +1233,7 @@ array_insertrange(stk_array ** harr, array_iter * start, stk_array * inarr)
 	    }
 	    arr->data.packed = (struct inst *)
 		    realloc(arr->data.packed,
-			    sizeof(array_data) * (arr->items + inarr->items));
+			    sizeof(array_data) * (size_t)(arr->items + inarr->items));
 	    if (arr->data.packed == NULL) {
 		fprintf(stderr, "array_insertrange: Out of Memory!");
 		abort();
@@ -1291,7 +1291,8 @@ array_delrange(stk_array ** harr, array_iter * start, array_iter * end)
 {
     stk_array *arr;
     array_data *itm;
-    int sidx, eidx, totsize;
+    int sidx, eidx;
+    size_t totsize;
     array_iter idx;
     array_iter didx;
 
@@ -1347,7 +1348,7 @@ array_delrange(stk_array ** harr, array_iter * start, array_iter * end)
 		didx.data.number++;
 	    }
 	    arr->items -= (eidx - sidx + 1);
-	    totsize = (arr->items) ? arr->items : 1;
+	    totsize = (size_t)((arr->items) ? arr->items : 1);
 	    arr->data.packed = (array_data *)
 		    realloc(arr->data.packed, sizeof(array_data) * totsize);
 	    if (arr->data.packed == NULL) {

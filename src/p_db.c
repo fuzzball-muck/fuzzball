@@ -197,8 +197,8 @@ prim_moveto(PRIM_PROTOTYPE)
 	    if ((Typeof(dest) != TYPE_ROOM && Typeof(dest) != TYPE_THING &&
 		 Typeof(dest) != TYPE_PLAYER) || dest == HOME)
 		abort_interp("Bad destination object.");
-	    unset_source(ProgUID, victim);
-	    set_source(ProgUID, victim, dest);
+	    unset_source(victim);
+	    set_source(victim, dest);
 	    SetMLevel(victim, 0);
 	    break;
 	case TYPE_ROOM:
@@ -660,7 +660,7 @@ prim_set(PRIM_PROTOTYPE)
 	else if (tp_enable_match_yield && string_prefix("yield", flag))
 	    tmp = YIELD;
 	else if (tp_enable_match_yield && string_prefix("overt", flag))
-	    tmp = OVERT;
+	    tmp = (int)OVERT;
     }
     if (!tmp)
 	abort_interp("Unrecognized flag.");
@@ -815,7 +815,7 @@ prim_flagp(PRIM_PROTOTYPE)
 	else if (tp_enable_match_yield && string_prefix("yield", flag))
 	    tmp = YIELD;
 	else if (tp_enable_match_yield && string_prefix("overt", flag))
-	    tmp = OVERT;
+	    tmp = (int)OVERT;
     }
     if (result) {
 	if ((!truwiz) && (tmp == WIZARD)) {
@@ -1374,7 +1374,7 @@ prim_recycle(PRIM_PROTOTYPE)
 	    abort_interp("Cannot recycle active program.");
 
     if (Typeof(result) == TYPE_EXIT)
-	unset_source(player, result);
+	unset_source(result);
     CLEAR(oper1);
     recycle(fr->descr, player, result);
 }
@@ -2086,12 +2086,12 @@ prim_getpidinfo(PRIM_PROTOTYPE)
 
 	if ((etime = time(NULL) - fr->started) > 0) {
 	    cpu = ((fr->totaltime.tv_sec +
-		    (fr->totaltime.tv_usec / 1000000.0f)) * 100.0f) / etime;
+		    (fr->totaltime.tv_usec / 1000000.0)) * 100.0) / etime;
 
-	    if (cpu > 100.0f)
-		cpu = 100.0f;
+	    if (cpu > 100.0)
+		cpu = 100.0;
 	} else
-	    cpu = 0.0f;
+	    cpu = 0.0;
 	array_set_strkey_strval(&nu, "CALLED_DATA", "");
 	array_set_strkey_refval(&nu, "CALLED_PROG", program);
 	array_set_strkey_fltval(&nu, "CPU", cpu);
@@ -2446,7 +2446,7 @@ void
 prim_setlinks_array(PRIM_PROTOTYPE)
 {
     array_iter idx;
-    int dest_count;
+    size_t dest_count;
     dbref what;
     stk_array *arr;
 
@@ -2469,7 +2469,7 @@ prim_setlinks_array(PRIM_PROTOTYPE)
     if ((mlev < 4) && !permissions(ProgUID, oper1->data.objref))
 	abort_interp("Permission denied. (1)");
 
-    if ((dest_count = array_count(oper2->data.array)) >= MAX_LINKS)
+    if ((dest_count = (size_t)array_count(oper2->data.array)) >= MAX_LINKS)
 	abort_interp("Too many destinations. (2)");
 
     if ((dest_count > 1) && (Typeof(oper1->data.objref) != TYPE_EXIT))
@@ -2563,7 +2563,7 @@ prim_setlinks_array(PRIM_PROTOTYPE)
 	    free((void *) DBFETCH(what)->sp.exit.dest);
     }
 
-    if (dest_count <= 0) {
+    if (dest_count == 0) {
 	switch (Typeof(what)) {
 	case TYPE_EXIT:
 	    DBSTORE(what, sp.exit.ndest, 0);

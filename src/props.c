@@ -139,7 +139,7 @@ PropPtr
 alloc_propnode(const char *name)
 {
     PropPtr new_node;
-    int nlen = strlen(name);
+    size_t nlen = strlen(name);
 
     new_node = (PropPtr) malloc(sizeof(struct plist) + nlen);
 

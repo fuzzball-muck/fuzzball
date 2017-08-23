@@ -23,8 +23,10 @@ alphanum_compare(const char *t1, const char *s2)
     const char *u1, *u2;
     register const char *s1 = t1;
 
-    while (*s1 && tolower(*s1) == tolower(*s2))
-	s1++, s2++;
+    while (*s1 && tolower(*s1) == tolower(*s2)) {
+	s1++;
+	s2++;
+    }
 
     /* if at a digit, compare number values instead of letters. */
     if (isdigit(*s1) && isdigit(*s2)) {
@@ -34,18 +36,28 @@ alphanum_compare(const char *t1, const char *s2)
 	cnt1 = cnt2 = 0;
 
 	/* back up before zeros */
-	if (s1 > t1 && *s2 == '0')
-	    s1--, s2--;		/* curr chars are diff */
-	while (s1 > t1 && *s1 == '0')
-	    s1--, s2--;		/* prev chars are same */
-	if (!isdigit(*s1))
-	    s1++, s2++;
+	if (s1 > t1 && *s2 == '0') {
+	    s1--;
+	    s2--;		/* curr chars are diff */
+	}
+	while (s1 > t1 && *s1 == '0') {
+	    s1--;
+	    s2--;		/* prev chars are same */
+	}
+	if (!isdigit(*s1)) {
+	    s1++;
+	    s2++;
+	}
 
 	/* calculate number values */
-	while (isdigit(*s1))
-	    cnt1++, n1 = (n1 * 10) + (*s1++ - '0');
-	while (isdigit(*s2))
-	    cnt2++, n2 = (n2 * 10) + (*s2++ - '0');
+	while (isdigit(*s1)) {
+	    cnt1++;
+	    n1 = (n1 * 10) + (*s1++ - '0');
+	}
+	while (isdigit(*s2)) {
+	    cnt2++;
+	    n2 = (n2 * 10) + (*s2++ - '0');
+	}
 
 	/* if more digits than int can handle... */
 	if (cnt1 > 8 || cnt2 > 8) {
@@ -94,8 +106,10 @@ exit_prefix(register const char *string, register const char *prefix)
 int
 string_prefix(register const char *string, register const char *prefix)
 {
-    while (*string && *prefix && tolower(*string) == tolower(*prefix))
-	string++, prefix++;
+    while (*string && *prefix && tolower(*string) == tolower(*prefix)) {
+	string++;
+	prefix++;
+    }
     return *prefix == '\0';
 }
 
@@ -242,17 +256,17 @@ pronoun_substitute(int descr, dbref player, const char *str)
 			temp_sub = self_sub;
 			self_sub = NAME(player);
 		    }
-		    if (((result - buf) + strlen(self_sub)) > (BUFFER_LEN - 2))
+		    if (((size_t)(result - buf) + strlen(self_sub)) > (BUFFER_LEN - 2))
 			return buf;
-		    strcatn(result, sizeof(buf) - (result - buf), self_sub);
+		    strcatn(result, sizeof(buf) - (size_t)(result - buf), self_sub);
 		    if (isupper(prn[1]) && islower(*result))
 			*result = toupper(*result);
 		    result += strlen(result);
 		    str++;
 		    if (temp_sub) {
-			if (((result - buf) + strlen(temp_sub + 2)) > (BUFFER_LEN - 2))
+			if (((size_t)(result - buf) + strlen(temp_sub + 2)) > (BUFFER_LEN - 2))
 			    return buf;
-			strcatn(result, sizeof(buf) - (result - buf), temp_sub + 2);
+			strcatn(result, sizeof(buf) - (size_t)(result - buf), temp_sub + 2);
 			result += strlen(result);
 		    }
 		} else if (sex == GENDER_UNASSIGNED) {
@@ -265,14 +279,14 @@ pronoun_substitute(int descr, dbref player, const char *str)
 		    case 'S':
 		    case 'r':
 		    case 'R':
-			strcatn(result, sizeof(buf) - (result - buf), NAME(player));
+			strcatn(result, sizeof(buf) - (size_t)(result - buf), NAME(player));
 			break;
 		    case 'a':
 		    case 'A':
 		    case 'p':
 		    case 'P':
-			strcatn(result, sizeof(buf) - (result - buf), NAME(player));
-			strcatn(result, sizeof(buf) - (result - buf), "'s");
+			strcatn(result, sizeof(buf) - (size_t)(result - buf), NAME(player));
+			strcatn(result, sizeof(buf) - (size_t)(result - buf), "'s");
 			break;
 		    default:
 			result[0] = *str;
@@ -281,7 +295,7 @@ pronoun_substitute(int descr, dbref player, const char *str)
 		    }
 		    str++;
 		    result += strlen(result);
-		    if ((result - buf) > (BUFFER_LEN - 2)) {
+		    if ((size_t)(result - buf) > (BUFFER_LEN - 2)) {
 			buf[BUFFER_LEN - 1] = '\0';
 			return buf;
 		    }
@@ -289,27 +303,27 @@ pronoun_substitute(int descr, dbref player, const char *str)
 		    switch (c) {
 		    case 'a':
 		    case 'A':
-			strcatn(result, sizeof(buf) - (result - buf), absolute[sex]);
+			strcatn(result, sizeof(buf) - (size_t)(result - buf), absolute[sex]);
 			break;
 		    case 's':
 		    case 'S':
-			strcatn(result, sizeof(buf) - (result - buf), subjective[sex]);
+			strcatn(result, sizeof(buf) - (size_t)(result - buf), subjective[sex]);
 			break;
 		    case 'p':
 		    case 'P':
-			strcatn(result, sizeof(buf) - (result - buf), possessive[sex]);
+			strcatn(result, sizeof(buf) - (size_t)(result - buf), possessive[sex]);
 			break;
 		    case 'o':
 		    case 'O':
-			strcatn(result, sizeof(buf) - (result - buf), objective[sex]);
+			strcatn(result, sizeof(buf) - (size_t)(result - buf), objective[sex]);
 			break;
 		    case 'r':
 		    case 'R':
-			strcatn(result, sizeof(buf) - (result - buf), reflexive[sex]);
+			strcatn(result, sizeof(buf) - (size_t)(result - buf), reflexive[sex]);
 			break;
 		    case 'n':
 		    case 'N':
-			strcatn(result, sizeof(buf) - (result - buf), NAME(player));
+			strcatn(result, sizeof(buf) - (size_t)(result - buf), NAME(player));
 			break;
 		    default:
 			*result = *str;
@@ -321,14 +335,14 @@ pronoun_substitute(int descr, dbref player, const char *str)
 		    }
 		    result += strlen(result);
 		    str++;
-		    if ((result - buf) > (BUFFER_LEN - 2)) {
+		    if ((size_t)(result - buf) > (BUFFER_LEN - 2)) {
 			buf[BUFFER_LEN - 1] = '\0';
 			return buf;
 		    }
 		}
 	    }
 	} else {
-	    if ((result - buf) > (BUFFER_LEN - 2)) {
+	    if ((size_t)(result - buf) > (BUFFER_LEN - 2)) {
 		buf[BUFFER_LEN - 1] = '\0';
 		return buf;
 	    }
@@ -464,7 +478,7 @@ strencrypt(const char *data, const char *key)
 	if (!*(++cp))
 	    cp = key;
 	result = (enarr[(unsigned char) *upt] - (32 - (CHARCOUNT - 96))) + count + seed;
-	*ups = enarr[(result % CHARCOUNT) + (32 - (CHARCOUNT - 96))];
+	*ups = (char)enarr[(result % CHARCOUNT) + (32 - (CHARCOUNT - 96))];
 	count = (((*upt) ^ count) + seed) & 0xff;
 	ups++;
     }
@@ -539,7 +553,7 @@ strdecrypt(const char *data, const char *key)
 	result = (enarr[(unsigned char) *upt] - (32 - (chrcnt - 96))) - (count + seed);
 	while (result < 0)
 	    result += chrcnt;
-	*ups = enarr[result + (32 - (chrcnt - 96))];
+	*ups = (char)enarr[result + (32 - (chrcnt - 96))];
 
 	count = (((*ups) ^ count) + seed) & 0xff;
 	ups++;
@@ -666,10 +680,10 @@ is_valid_pose_separator(char ch)
 }
 
 void
-prefix_message(char *Dest, const char *Src, const char *Prefix, int BufferLength,
+prefix_message(char *Dest, const char *Src, const char *Prefix, size_t BufferLength,
 	       int SuppressIfPresent)
 {
-    int PrefixLength = strlen(Prefix);
+    size_t PrefixLength = strlen(Prefix);
     int CheckForHangingEnter = 0;
 
     while ((BufferLength > PrefixLength) && (*Src != '\0')) {
@@ -1098,11 +1112,11 @@ stripspaces(char *s)
 
 char *
 string_substitute(const char *str, const char *oldstr, const char *newstr,
-                  char *buf, int maxlen)
+                  char *buf, size_t maxlen)
 {
     const char *ptr = str;
     char *ptr2 = buf;
-    int len = strlen(oldstr);
+    size_t len = strlen(oldstr);
     int clen = 0;
 
     if (len == 0) {

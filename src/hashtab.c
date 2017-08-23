@@ -17,7 +17,7 @@ hash(register const char *s, unsigned int hash_size)
     unsigned int hashval;
 
     for (hashval = 0; *s != '\0'; s++) {
-	hashval = (*s | 0x20) + 31 * hashval;
+	hashval = ((unsigned int)*s | 0x20) + 31 * hashval;
     }
     return hashval % hash_size;
 }

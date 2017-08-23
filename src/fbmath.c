@@ -3,10 +3,10 @@
 #include "fbmath.h"
 #include "inst.h"
 
-float
+double
 _int_f_rand(void)
 {
-    return (rand() / (float) RAND_MAX);
+    return (rand() / RAND_MAX);
 }
 
 int
@@ -182,7 +182,7 @@ xMD5Init(struct xMD5Context *ctx)
  * of bytes.
  */
 static void
-xMD5Update(struct xMD5Context *ctx, const byte * buf, int len)
+xMD5Update(struct xMD5Context *ctx, const byte * buf, size_t len)
 {
     word32 t;
 
@@ -255,7 +255,7 @@ xMD5Final(byte digest[16], struct xMD5Context *ctx)
 
 /* dest buffer MUST be at least 16 bytes long. */
 static void
-MD5hash(void *dest, const void *orig, int len)
+MD5hash(void *dest, const void *orig, size_t len)
 {
     struct xMD5Context context;
 
@@ -272,7 +272,7 @@ MD5hash(void *dest, const void *orig, int len)
 static void
 Base64Encode(char *outbuf, const void *inbuf, size_t inlen)
 {
-    const char b64[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    const unsigned char b64[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
     const unsigned char *inb = (unsigned char *) inbuf;
     unsigned char *out = NULL;
     size_t numb;
@@ -330,7 +330,7 @@ Base64Encode(char *outbuf, const void *inbuf, size_t inlen)
 }
 
 void
-MD5hex(void *dest, const void *orig, int len)
+MD5hex(void *dest, const void *orig, size_t len)
 {
     unsigned char tmp[16];
 
@@ -343,7 +343,7 @@ MD5hex(void *dest, const void *orig, int len)
 
 /* dest buffer MUST be at least 24 chars long. */
 void
-MD5base64(char *dest, const void *orig, int len)
+MD5base64(char *dest, const void *orig, size_t len)
 {
     void *tmp = (void *) malloc(16);
     MD5hash(tmp, orig, len);

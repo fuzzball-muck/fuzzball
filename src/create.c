@@ -75,7 +75,7 @@ do_open(int descr, dbref player, const char *direction, const char *linkto)
 	    } else {
 		ndest = link_exit(descr, player, exit, (char *) qname, good_dest);
 		DBFETCH(exit)->sp.exit.ndest = ndest;
-		DBFETCH(exit)->sp.exit.dest = (dbref *) malloc(sizeof(dbref) * ndest);
+		DBFETCH(exit)->sp.exit.dest = (dbref *) malloc(sizeof(dbref) * (size_t)ndest);
 		for (int i = 0; i < ndest; i++) {
 		    (DBFETCH(exit)->sp.exit.dest)[i] = good_dest[i];
 		}
@@ -171,7 +171,7 @@ do_link(int descr, dbref player, const char *thing_name, const char *dest_name)
 	if (DBFETCH(thing)->sp.exit.dest) {
 	    free(DBFETCH(thing)->sp.exit.dest);
 	}
-	DBFETCH(thing)->sp.exit.dest = (dbref *) malloc(sizeof(dbref) * ndest);
+	DBFETCH(thing)->sp.exit.dest = (dbref *) malloc(sizeof(dbref) * (size_t)ndest);
 	for (int i = 0; i < ndest; i++) {
 	    (DBFETCH(thing)->sp.exit.dest)[i] = good_dest[i];
 	}
@@ -761,8 +761,8 @@ do_attach(int descr, dbref player, const char *action_name, const char *source_n
 	|| Typeof(source) == TYPE_PROGRAM)
 	return;
 
-    unset_source(player, action);
-    set_source(player, action, source);
+    unset_source(action);
+    set_source(action, source);
 
     notify(player, "Action re-attached.");
 

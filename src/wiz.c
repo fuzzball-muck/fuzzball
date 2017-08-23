@@ -461,28 +461,38 @@ do_stats(dbref player, const char *name)
 
 		switch (Typeof(i)) {
 		case TYPE_ROOM:
-		    if (OWNER(i) == owner)
-			total++, rooms++;
+		    if (OWNER(i) == owner) {
+			total++;
+			rooms++;
+		    }
 		    break;
 
 		case TYPE_EXIT:
-		    if (OWNER(i) == owner)
-			total++, exits++;
+		    if (OWNER(i) == owner) {
+			total++;
+			exits++;
+		    }
 		    break;
 
 		case TYPE_THING:
-		    if (OWNER(i) == owner)
-			total++, things++;
+		    if (OWNER(i) == owner) {
+			total++;
+			things++;
+		    }
 		    break;
 
 		case TYPE_PLAYER:
-		    if (i == owner)
-			total++, players++;
+		    if (i == owner) {
+			total++;
+			players++;
+		    }
 		    break;
 
 		case TYPE_PROGRAM:
-		    if (OWNER(i) == owner)
-			total++, programs++;
+		    if (OWNER(i) == owner) {
+			total++;
+			programs++;
+		    }
 		    break;
 
 		}

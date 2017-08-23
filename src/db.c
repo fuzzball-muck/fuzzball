@@ -78,7 +78,7 @@ db_grow(dbref newtop)
 	db_top = newtop;
 	if (db) {
 	    if ((newdb = (struct object *)
-		 realloc((void *) db, db_top * sizeof(struct object))) == 0) {
+		 realloc((void *) db, (size_t)db_top * sizeof(struct object))) == 0) {
 		abort();
 	    }
 	    db = newdb;
@@ -87,7 +87,7 @@ db_grow(dbref newtop)
 	    int startsize = (newtop >= DB_INITIAL_SIZE) ? newtop : DB_INITIAL_SIZE;
 
 	    if ((db = (struct object *)
-		 malloc(startsize * sizeof(struct object))) == 0) {
+		 malloc((size_t)startsize * sizeof(struct object))) == 0) {
 		abort();
 	    }
 	}
@@ -161,7 +161,7 @@ create_action(dbref player, const char *name, dbref source)
 {
     dbref newact = create_object(name, player, TYPE_EXIT);
 
-    set_source(player, newact, source);
+    set_source(newact, source);
 
     DBFETCH(newact)->sp.exit.ndest = 0;
     DBFETCH(newact)->sp.exit.dest = NULL;
@@ -661,7 +661,7 @@ db_read_object(FILE * f, dbref objno, int dtype)
     case TYPE_EXIT:
 	o->sp.exit.ndest = prop_flag ? getref(f) : j;
 	if (o->sp.exit.ndest > 0)	/* only allocate space for linked exits */
-	    o->sp.exit.dest = (dbref *) malloc(sizeof(dbref) * (o->sp.exit.ndest));
+	    o->sp.exit.dest = (dbref *) malloc(sizeof(dbref) * (size_t)(o->sp.exit.ndest));
 	for (j = 0; j < o->sp.exit.ndest; j++) {
 	    (o->sp.exit.dest)[j] = getref(f);
 	}
@@ -994,7 +994,7 @@ size_object(dbref i, int load)
     byts += size_properties(i, load);
 
     if (Typeof(i) == TYPE_EXIT && DBFETCH(i)->sp.exit.dest) {
-        byts += sizeof(dbref) * DBFETCH(i)->sp.exit.ndest;
+        byts += sizeof(dbref) * (size_t)(DBFETCH(i)->sp.exit.ndest);
     } else if (Typeof(i) == TYPE_PLAYER && PLAYER_PASSWORD(i)) {
         byts += strlen(PLAYER_PASSWORD(i)) + 1;
     } else if (Typeof(i) == TYPE_PROGRAM) {
@@ -1195,7 +1195,7 @@ controls_link(dbref who, dbref what)
 }
 
 void
-set_source(dbref player, dbref action, dbref source)
+set_source(dbref action, dbref source)
 {
     PUSH(action, EXITS(source));
     LOCATION(action) = source;
@@ -1203,7 +1203,7 @@ set_source(dbref player, dbref action, dbref source)
 }
 
 void
-unset_source(dbref player, dbref action)
+unset_source(dbref action)
 {
     dbref source = LOCATION(action);
     EXITS(source) = remove_first(EXITS(source), action);

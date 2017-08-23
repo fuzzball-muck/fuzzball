@@ -15,7 +15,8 @@ index_file(dbref player, const char *onwhat, const char *file)
     char buf[BUFFER_LEN];
     char topic[BUFFER_LEN];
     char *p;
-    int arglen, found;
+    size_t arglen;
+    int found;
 
     *topic = '\0';
     strcpyn(topic, sizeof(topic), onwhat);
@@ -163,7 +164,7 @@ do_info(dbref player, const char *topic, const char *seg)
     char *buf;
     int f;
     int cols;
-    int buflen = 80;
+    size_t buflen = 80;
 
 #ifdef DIR_AVALIBLE
     DIR *df;

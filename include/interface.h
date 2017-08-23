@@ -68,7 +68,7 @@ typedef enum {
 #define TELOPT_STARTTLS	46
 
 struct text_block {
-    int nchars;
+    size_t nchars;
     struct text_block *nxt;
     char *start;
     char *buf;
@@ -191,7 +191,7 @@ char *puser(int c);
 #ifdef USE_SSL
 int reconfigure_ssl(void);
 #endif
-void queue_write(struct descriptor_data *, const char *, int);
+void queue_write(struct descriptor_data *, const char *, size_t);
 void san_main(void);
 int show_subfile(dbref player, const char *dir, const char *topic, const char *seg, int partial);
 #ifdef SPAWN_HOST_RESOLVER

@@ -129,14 +129,14 @@ prim_multiply(PRIM_PROTOTYPE)
                 abort_interp("Operation would result in overflow.");
             }
 
-            if (tmp * string->length > (BUFFER_LEN) - 1) {
+            if ((size_t)tmp * string->length > (BUFFER_LEN) - 1) {
                 abort_interp("Operation would result in overflow.");
             }
 
-            for (int i = 0; i < tmp; i++) {
+            for (size_t i = 0; i < tmp; i++) {
                 bcopy(DoNullInd(string), buf + i * string->length, string->length);
             }
-            buf[tmp * string->length] = 0;
+            buf[(size_t)tmp * string->length] = 0;
         } else {
             buf[0] = 0;
         }
@@ -303,7 +303,7 @@ prim_bitshift(PRIM_PROTOTYPE)
     } else if (shiftBy <= -maxShift) {
         result = oper2->data.number > 0 ? 0 : -1;
     } else if (shiftBy > 0) {
-	result = (unsigned) oper2->data.number << (unsigned) shiftBy;
+	result = (int) ((unsigned) oper2->data.number << (unsigned) shiftBy);
     } else if (shiftBy < 0) {
 	result = oper2->data.number >> (-shiftBy);
     } else {

@@ -332,7 +332,7 @@ extern const char *base_inst[];
 struct forvars *copy_fors(struct forvars *);
 struct tryvars *copy_trys(struct tryvars *);
 void copyinst(struct inst *from, struct inst *to);
-char *debug_inst(struct frame *, int, struct inst *, int, struct inst *, char *, int,
+char *debug_inst(struct frame *, int, struct inst *, int, struct inst *, char *, size_t,
                         int, dbref);
 void do_abort_interp(dbref player, const char *msg, struct inst *pc,
 			    struct inst *arg, int atop, struct frame *fr,
@@ -343,7 +343,7 @@ void do_abort_silent(void);
 int false_inst(struct inst *p);
 dbref find_mlev(dbref prog, struct frame *fr, int st);
 dbref find_uid(dbref player, struct frame *fr, int st, dbref program);
-char *insttotext(struct frame *, int, struct inst *, char *, int, int, dbref, int);
+char *insttotext(struct frame *, int, struct inst *, char *, size_t, int, dbref, int);
 struct frame *interp(int descr, dbref player, dbref location, dbref program,
                             dbref source, int nosleeping, int whichperms, int forced_pid);
 struct inst *interp_loop(dbref player, dbref program, struct frame *fr, int rettyp);

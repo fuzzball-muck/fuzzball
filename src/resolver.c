@@ -39,7 +39,9 @@ static char *strcpyn(char *buf, size_t bufsize, const char *src) {
     return buf;
 }
 
-int notify(int player, const char *msg) {		
+int notify(int player, const char *msg);
+int notify(int player, const char *msg) {
+    (void)player;
     return printf("%s\n", msg);		
 }
 
@@ -173,7 +175,8 @@ static void hostadd_timestamp_v6(struct in6_addr *ip, const char *name) {
 }
 
 static const char * get_username_v6(struct in6_addr *a, int prt, int myprt) {
-    int fd, len, result;
+    int fd, result;
+    socklen_t len;
     char *ptr, *ptr2;
     static char buf[1024];
     int lasterr;
@@ -430,7 +433,8 @@ void set_signals(void) {
 }
 
 static const char * get_username(long a, int prt, int myprt) {
-    int fd, len, result;
+    int fd, result;
+    socklen_t len;
     char *ptr, *ptr2;
     static char buf[1024];
     int lasterr;
