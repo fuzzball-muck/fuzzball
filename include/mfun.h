@@ -2,7 +2,7 @@
 #define _MFUN_H
 
 #define MFUNARGS int descr, dbref player, dbref what, dbref perms, int argc, \
-        char **argv, char *buf, int buflen, int mesgtyp
+        char **argv, char *buf, size_t buflen, int mesgtyp
 
 const char *mfn_abs(MFUNARGS);
 const char *mfn_add(MFUNARGS);

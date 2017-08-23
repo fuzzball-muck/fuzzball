@@ -61,14 +61,14 @@ typedef unsigned long word32;
 typedef unsigned char byte;
 #endif
 
-float _int_f_rand(void);
+double _int_f_rand(void);
 int arith_good(double test);
 int arith_type(short op1_type, short op2_type);
 int comp_t(short op_type);
 void delete_seed(void *buffer);
 void *init_seed(char *seed);
-void MD5base64(char *dest, const void *orig, int len);
-void MD5hex(void *dest, const void *orig, int len);
+void MD5base64(char *dest, const void *orig, size_t len);
+void MD5hex(void *dest, const void *orig, size_t len);
 int no_good(double test);
 word32 rnd(void *buffer);
 

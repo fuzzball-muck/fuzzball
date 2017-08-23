@@ -361,7 +361,7 @@ init_game(const char *infile, const char *outfile)
     db_free();
     init_primitives();		/* init muf compiler */
     mesg_init();		/* init mpi interpreter */
-    SRANDOM(getpid());		/* init random number generator */
+    SRANDOM((unsigned int)getpid());		/* init random number generator */
 
     /* ok, read the db in */
     log_status("LOADING: %s", infile);

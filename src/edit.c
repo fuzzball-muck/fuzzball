@@ -123,7 +123,7 @@ do_list_tree(struct macrotable *node, const char *first, const char *last,
 			NAME(node->implementor), node->definition);
 		buf[0] = '\0';
 	    } else {
-		int blen = strlen(buf);
+		size_t blen = strlen(buf);
 		snprintf(buf + blen, sizeof(buf) - blen, "%-16s", node->name);
 		buf[sizeof(buf) - 1] = '\0';
 		if (strlen(buf) > 70) {
@@ -720,7 +720,8 @@ editor(int descr, dbref player, const char *command)
 	j = 0;
 	while (*command && !isspace(*command)) {
 	    buf[j] = *command;
-	    command++, j++;
+	    command++;
+	    j++;
 	}
 
 	buf[j] = '\0';

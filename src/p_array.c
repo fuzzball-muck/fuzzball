@@ -847,7 +847,7 @@ prim_array_sort(PRIM_PROTOTYPE)
 {
     stk_array *arr;
     stk_array *nu;
-    int count;
+    size_t count;
     int (*comparator) (const void *, const void *);
     struct inst **tmparr = NULL;
 
@@ -864,7 +864,7 @@ prim_array_sort(PRIM_PROTOTYPE)
 	abort_interp("Expected integer argument to specify sort type. (2)");
 
     temp1.type = PROG_INTEGER;
-    count = array_count(arr);
+    count = (size_t)array_count(arr);
     nu = new_array_packed(count);
     tmparr = (struct inst **) malloc(count * sizeof(struct inst *));
 
@@ -905,7 +905,7 @@ prim_array_sort_indexed(PRIM_PROTOTYPE)
 {
     stk_array *arr;
     stk_array *nu;
-    int count;
+    size_t count;
     int (*comparator) (const void *, const void *);
     struct inst **tmparr = NULL;
 
@@ -928,7 +928,7 @@ prim_array_sort_indexed(PRIM_PROTOTYPE)
 	abort_interp("Index argument not an integer or string. (3)");
 
     temp1.type = PROG_INTEGER;
-    count = array_count(arr);
+    count = (size_t)array_count(arr);
     nu = new_array_packed(count);
     tmparr = (struct inst **) malloc(count * sizeof(struct inst *));
 
@@ -1370,7 +1370,7 @@ prim_array_put_proplist(PRIM_PROTOTYPE)
 	if (*fmtin == 'P') {
 	    if ((size_t) ((fmtout + dirlen) - propname) > sizeof(propname))
 		break;
-	    strcpyn(fmtout, sizeof(propname) - (fmtout - propname), dir);
+	    strcpyn(fmtout, sizeof(propname) - (size_t)(fmtout - propname), dir);
 	    fmtout = &fmtout[strlen(fmtout)];
 	} else {
 	    *fmtout++ = *fmtin;
@@ -1396,13 +1396,13 @@ prim_array_put_proplist(PRIM_PROTOTYPE)
 		if (*fmtin == 'N') {
 		    if ((size_t) ((fmtout + 18) - propname) > sizeof(propname))
 			break;
-		    snprintf(fmtout, sizeof(propname) - (fmtout - propname), "%d",
+		    snprintf(fmtout, sizeof(propname) - (size_t)(fmtout - propname), "%d",
 			     temp1.data.number + 1);
 		    fmtout = &fmtout[strlen(fmtout)];
 		} else if (*fmtin == 'P') {
 		    if ((size_t) ((fmtout + dirlen) - propname) > sizeof(propname))
 			break;
-		    strcpyn(fmtout, sizeof(propname) - (fmtout - propname), dir);
+		    strcpyn(fmtout, sizeof(propname) - (size_t)(fmtout - propname), dir);
 		    fmtout = &fmtout[strlen(fmtout)];
 		} else {
 		    *fmtout++ = *fmtin;
@@ -1452,12 +1452,12 @@ prim_array_put_proplist(PRIM_PROTOTYPE)
 	    if (*fmtin == 'N') {
 		if ((size_t) ((fmtout + 18) - propname) > sizeof(propname))
 		    break;
-		snprintf(fmtout, sizeof(propname) - (fmtout - propname), "%d", count + 1);
+		snprintf(fmtout, sizeof(propname) - (size_t)(fmtout - propname), "%d", count + 1);
 		fmtout = &fmtout[strlen(fmtout)];
 	    } else if (*fmtin == 'P') {
 		if ((size_t) ((fmtout + dirlen) - propname) > sizeof(propname))
 		    break;
-		strcpyn(fmtout, sizeof(propname) - (fmtout - propname), dir);
+		strcpyn(fmtout, sizeof(propname) - (size_t)(fmtout - propname), dir);
 		fmtout = &fmtout[strlen(fmtout)];
 	    } else {
 		*fmtout++ = *fmtin;
@@ -1591,7 +1591,7 @@ prim_array_put_reflist(PRIM_PROTOTYPE)
 
 	    if (*buf)
 		*out++ = ' ';
-	    strcpyn(out, sizeof(buf) - (out - buf), buf2);
+	    strcpyn(out, sizeof(buf) - (size_t)(out - buf), buf2);
 	    out += len;
 	} while (array_next(arr, &temp1));
     }
@@ -1892,13 +1892,13 @@ prim_array_join(PRIM_PROTOTYPE)
 	    tmplen = strlen(delim);
 	    if (tmplen > BUFFER_LEN - (ptr - outbuf) - 1)
 		abort_interp("Operation would result in overflow.");
-	    strcpyn(ptr, sizeof(outbuf) - (outbuf - ptr), delim);
+	    strcpyn(ptr, sizeof(outbuf) - (size_t)(outbuf - ptr), delim);
 	    ptr += tmplen;
 	}
 	tmplen = strlen(text);
 	if (tmplen > BUFFER_LEN - (ptr - outbuf) - 1)
 	    abort_interp("Operation would result in overflow.");
-	strcpyn(ptr, sizeof(outbuf) - (outbuf - ptr), text);
+	strcpyn(ptr, sizeof(outbuf) - (size_t)(outbuf - ptr), text);
 	ptr += tmplen;
 	done = !array_next(arr, &temp1);
     }
@@ -1989,7 +1989,7 @@ prim_array_interpret(PRIM_PROTOTYPE)
 	    outbuf[BUFFER_LEN - 1] = '\0';
 	    break;
 	} else {
-	    strcpyn(ptr, sizeof(outbuf) - (outbuf - ptr), text);
+	    strcpyn(ptr, sizeof(outbuf) - (size_t)(outbuf - ptr), text);
 	    ptr += tmplen;
 	}
 	done = !array_next(arr, &temp1);
@@ -2173,7 +2173,7 @@ prim_array_nested_set(PRIM_PROTOTYPE)
 	abort_interp("Argument not an array. (2)");
 
     idxarr = oper1->data.array;
-    idxcnt = array_count(idxarr);
+    idxcnt = (size_t)array_count(idxarr);
     if (idxcnt > sizeof(nest) / sizeof(struct inst))
 	abort_interp("Nesting would be too deep. (3)");
 
@@ -2247,7 +2247,7 @@ prim_array_nested_del(PRIM_PROTOTYPE)
 	abort_interp("Argument not an array. (1)");
 
     idxarr = oper1->data.array;
-    idxcnt = array_count(idxarr);
+    idxcnt = (size_t)array_count(idxarr);
     if (idxcnt > sizeof(nest) / sizeof(struct inst))
 	abort_interp("Nesting would be too deep. (2)");
 

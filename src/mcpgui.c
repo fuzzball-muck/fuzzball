@@ -47,7 +47,7 @@ gui_pkg_callback(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 	return;
     }
     if (!strcasecmp(msg->mesgname, "ctrl-value")) {
-	int valcount = mcp_mesg_arg_linecount(msg, "value");
+	size_t valcount = (size_t)mcp_mesg_arg_linecount(msg, "value");
 	const char **value;
 
 	if (!id || !*id) {
@@ -228,7 +228,7 @@ gui_value_set_local(const char *dlogid, const char *id, int lines, const char **
 	}
 	free(ptr->value);
     } else {
-	int ilen = strlen(id) + 1;
+	size_t ilen = strlen(id) + 1;
 	ptr = (DlogValue *) malloc(sizeof(DlogValue));
 	ptr->name = (char *) malloc(ilen);
 	strcpyn(ptr->name, ilen, id);
@@ -236,10 +236,10 @@ gui_value_set_local(const char *dlogid, const char *id, int lines, const char **
 	ddata->values = ptr;
     }
     ptr->lines = lines;
-    ptr->value = (char **) malloc(sizeof(char *) * lines);
+    ptr->value = (char **) malloc(sizeof(char *) * (size_t)lines);
 
     for (int i = 0; i < lines; i++) {
-	int vlen = strlen(value[i]) + 1;
+	size_t vlen = strlen(value[i]) + 1;
 	ptr->value[i] = (char *) malloc(vlen);
 	strcpyn(ptr->value[i], vlen, value[i]);
     }
@@ -260,7 +260,7 @@ gui_dlog_alloc(int descr, Gui_CB callback, GuiErr_CB error_cb, void *context)
 {
     char tmpid[32];
     DlogData *ptr;
-    int tlen;
+    size_t tlen;
 
     while (1) {
 	snprintf(tmpid, sizeof(tmpid), "%08lX", (unsigned long) RANDOM());
@@ -475,40 +475,6 @@ GuiSetVal(const char *dlogid, const char *id, int lines, const char **value)
 	mcp_frame_output_mesg(mfr, &msg);
 	mcp_mesg_clear(&msg);
 	gui_value_set_local(dlogid, id, lines, value);
-	return 0;
-    }
-    return EGUINOSUPPORT;
-}
-
-static int
-GuiMenuItem(const char *dlogid, const char *id, const char *type, const char *name,
-	    const char **args)
-{
-    McpMesg msg;
-    McpFrame *mfr;
-    int i;
-    int descr = gui_dlog_get_descr(dlogid);
-
-    mfr = descr_mcpframe(descr);
-    if (!mfr) {
-	return EGUINODLOG;
-    }
-    if (GuiSupported(descr)) {
-	mcp_mesg_init(&msg, GUI_PACKAGE, "menu-item");
-	mcp_mesg_arg_append(&msg, "dlogid", dlogid);
-	mcp_mesg_arg_append(&msg, "id", id);
-	mcp_mesg_arg_append(&msg, "name", name);
-	mcp_mesg_arg_append(&msg, "type", name);
-	i = 0;
-	while (args && args[i]) {
-	    const char *arg = args[i];
-	    const char *val = args[i + 1];
-
-	    mcp_mesg_arg_append(&msg, arg, val);
-	    i += 2;
-	}
-	mcp_frame_output_mesg(mfr, &msg);
-	mcp_mesg_clear(&msg);
 	return 0;
     }
     return EGUINOSUPPORT;

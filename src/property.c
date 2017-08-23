@@ -537,7 +537,7 @@ copy_properties_onto(dbref from, dbref to)
    property name into 'name'.  Returns NULL if the property list is empty
    or does not exist. */
 PropPtr
-first_prop_nofetch(dbref player, const char *dir, PropPtr * list, char *name, int maxlen)
+first_prop_nofetch(dbref player, const char *dir, PropPtr * list, char *name, size_t maxlen)
 {
     char buf[BUFFER_LEN];
     PropPtr p;
@@ -583,7 +583,7 @@ first_prop_nofetch(dbref player, const char *dir, PropPtr * list, char *name, in
  */
 
 PropPtr
-first_prop(dbref player, const char *dir, PropPtr * list, char *name, int maxlen)
+first_prop(dbref player, const char *dir, PropPtr * list, char *name, size_t maxlen)
 {
 
 #ifdef DISKBASE
@@ -600,7 +600,7 @@ first_prop(dbref player, const char *dir, PropPtr * list, char *name, int maxlen
  */
 
 PropPtr
-next_prop(PropPtr list, PropPtr prop, char *name, int maxlen)
+next_prop(PropPtr list, PropPtr prop, char *name, size_t maxlen)
 {
     PropPtr p = prop;
 
@@ -621,7 +621,7 @@ next_prop(PropPtr list, PropPtr prop, char *name, int maxlen)
  */
 
 char *
-next_prop_name(dbref player, char *outbuf, int outbuflen, char *name)
+next_prop_name(dbref player, char *outbuf, size_t outbuflen, char *name)
 {
     char *ptr;
     char buf[BUFFER_LEN];
@@ -658,7 +658,7 @@ next_prop_name(dbref player, char *outbuf, int outbuflen, char *name)
 	if (!ptr)
 	    ptr = outbuf;
 	*(ptr++) = PROPDIR_DELIMITER;
-	strcpyn(ptr, outbuflen - (ptr - outbuf), PropName(p));
+	strcpyn(ptr, outbuflen - (size_t)(ptr - outbuf), PropName(p));
     }
     return outbuf;
 }
@@ -1148,7 +1148,7 @@ reflist_add(dbref obj, const char *propname, dbref toadd)
     const char *temp;
     const char *list;
     int count = 0;
-    int charcount = 0;
+    size_t charcount = 0;
     char buf[BUFFER_LEN];
     char outbuf[BUFFER_LEN];
 
@@ -1168,7 +1168,7 @@ reflist_add(dbref obj, const char *propname, dbref toadd)
 		if (*temp == NUMBER_TOKEN) {
 		    pat = buf;
 		    count++;
-		    charcount = temp - list;
+		    charcount = (size_t)(temp - list);
 		} else if (pat) {
 		    if (!*pat) {
 			if (!*temp || *temp == ' ') {
@@ -1223,7 +1223,7 @@ reflist_del(dbref obj, const char *propname, dbref todel)
     const char *temp;
     const char *list;
     int count = 0;
-    int charcount = 0;
+    size_t charcount = 0;
     char buf[BUFFER_LEN];
     char outbuf[BUFFER_LEN];
 
@@ -1243,7 +1243,7 @@ reflist_del(dbref obj, const char *propname, dbref todel)
 		if (*temp == NUMBER_TOKEN) {
 		    pat = buf;
 		    count++;
-		    charcount = temp - list;
+		    charcount = (size_t)(temp - list);
 		} else if (pat) {
 		    if (!*pat) {
 			if (!*temp || *temp == ' ') {
@@ -1481,20 +1481,7 @@ exec_or_notify_prop(int descr, dbref player, dbref thing,
         exec_or_notify(descr, player, thing, message, whatcalled, mpiflags);
 }
 
-void
-parse_oprop(int descr, dbref player, dbref dest, dbref exit, const char *propname,
-            const char *prefix, const char *whatcalled)
-{
-    const char *msg = get_property_class(exit, propname);
-    int ival = 0;
-    if (Prop_Blessed(exit, propname))
-        ival |= MPI_ISBLESSED;
-
-    if (msg)
-        parse_omessage(descr, player, dest, exit, msg, prefix, whatcalled, ival);
-}
-
-void
+static void
 parse_omessage(int descr, dbref player, dbref dest, dbref exit, const char *msg,
                const char *prefix, const char *whatcalled, int mpiflags)
 {
@@ -1516,4 +1503,17 @@ parse_omessage(int descr, dbref player, dbref dest, dbref exit, const char *msg,
     prefix_message(buf, ptr, prefix, BUFFER_LEN, 1);
 
     notify_except(CONTENTS(dest), player, buf, player);
+}
+
+void
+parse_oprop(int descr, dbref player, dbref dest, dbref exit, const char *propname,
+            const char *prefix, const char *whatcalled)
+{
+    const char *msg = get_property_class(exit, propname);
+    int ival = 0;
+    if (Prop_Blessed(exit, propname))
+        ival |= MPI_ISBLESSED;
+
+    if (msg)
+        parse_omessage(descr, player, dest, exit, msg, prefix, whatcalled, ival);
 }

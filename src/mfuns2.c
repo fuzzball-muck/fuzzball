@@ -181,7 +181,7 @@ mfn_contents(MFUNARGS)
     int list_limit = MAX_MFUN_LIST_LEN;
     dbref obj = mesg_dbref_local(descr, player, what, perms, argv[0], mesgtyp);
     int typchk, ownroom;
-    int outlen, nextlen;
+    size_t outlen, nextlen;
 
     if (obj == AMBIGUOUS || obj == UNKNOWN || obj == NOTHING || obj == HOME)
 	ABORT_MPI("CONTENTS", "Match failed.");
@@ -237,7 +237,7 @@ mfn_contents(MFUNARGS)
 const char *
 mfn_exits(MFUNARGS)
 {
-    int outlen, nextlen;
+    size_t outlen, nextlen;
     char buf2[50];
     int list_limit = MAX_MFUN_LIST_LEN;
     dbref obj = mesg_dbref(descr, player, what, perms, argv[0], mesgtyp);
@@ -382,7 +382,7 @@ static int
 countlitems(char *list, char *sep)
 {
     char *ptr;
-    int seplen;
+    size_t seplen;
     int count = 1;
 
     if (!list || !*list)
@@ -404,11 +404,11 @@ countlitems(char *list, char *sep)
  * line is list line to take. */
 
 static char *
-getlitem(char *buf, int buflen, char *list, char *sep, int line)
+getlitem(char *buf, size_t buflen, char *list, char *sep, int line)
 {
     char *ptr, *ptr2;
     char tmpchr;
-    int seplen;
+    size_t seplen;
 
     seplen = strlen(sep);
     ptr = ptr2 = list;
@@ -583,7 +583,8 @@ mfn_fold(MFUNARGS)
     char tmp2[BUFFER_LEN];
     char *ptr, *ptr2;
     char *sepin = argv[4];
-    int seplen, v;
+    size_t seplen;
+    int v;
 
     ptr = MesgParse(argv[0], varname, sizeof(varname));
     CHECKRETURN(ptr, "FOLD", "arg 1");
@@ -692,7 +693,8 @@ mfn_foreach(MFUNARGS)
     char tmp[BUFFER_LEN];
     char *ptr, *ptr2, *dptr;
     char *sepin;
-    int seplen, v;
+    size_t seplen;
+    int v;
 
     ptr = MesgParse(argv[0], scratch, sizeof(scratch));
     CHECKRETURN(ptr, "FOREACH", "arg 1");
@@ -749,7 +751,8 @@ mfn_filter(MFUNARGS)
     char *ptr, *ptr2, *dptr;
     char *sepin = argv[3];
     char *sepbuf = argv[4];
-    int seplen, v;
+    size_t seplen;
+    int v;
     int outcount = 0;
 
     ptr = MesgParse(argv[0], scratch, sizeof(scratch));
@@ -806,7 +809,7 @@ mfn_filter(MFUNARGS)
 }
 
 static int
-list_contains(char *word, int len, char *list)
+list_contains(char *word, size_t len, char *list)
 {
     char *w, *w2;
 
@@ -828,7 +831,7 @@ mfn_lremove(MFUNARGS)
 {
     int iter_limit = MAX_MFUN_LIST_LEN;
     char *ptr, *ptr2, *endbuf;
-    int len;
+    size_t len;
     int firstResult = 1;
 
     ptr = argv[0];		/* the list we're removing from */
@@ -838,7 +841,7 @@ mfn_lremove(MFUNARGS)
 	/* Find the next word. */
 	for (ptr2 = ptr; *ptr2 && *ptr2 != '\r'; ptr2++) {
 	};
-	len = ptr2 - ptr;
+	len = (size_t)(ptr2 - ptr);
 
 	/* If the second list contains the string, continue. */
 	if (!list_contains(ptr, len, argv[1]) &&
@@ -923,7 +926,7 @@ mfn_lunion(MFUNARGS)
     int iter_limit = MAX_MFUN_LIST_LEN;
     char *ptr, *ptr2, *p;
     int len;
-    int outlen, nextlen;
+    size_t outlen, nextlen;
     int outcount = 0;
 
     *buf = '\0';
@@ -1077,7 +1080,7 @@ mfn_lunique(MFUNARGS)
     int iter_limit = MAX_MFUN_LIST_LEN;
     char *ptr, *ptr2, *p;
     int len;
-    int outlen, nextlen;
+    size_t outlen, nextlen;
     int outcount = 0;
 
     *buf = '\0';
@@ -1127,8 +1130,9 @@ mfn_parse(MFUNARGS)
     char *sepin = argv[3];
     char *sepbuf = argv[4];
     int outcount = 0;
-    int seplen, oseplen, v;
-    int outlen, nextlen;
+    size_t seplen, oseplen;
+    int v;
+    size_t outlen, nextlen;
 
     ptr = MesgParse(argv[0], buf2, sizeof(buf2));
     CHECKRETURN(ptr, "PARSE", "arg 1");
@@ -1727,7 +1731,7 @@ mfn_commas(MFUNARGS)
 		free_top_mvar();
 	    return buf;
 	}
-	strcatn(out, BUFFER_LEN - (out - buf), ptr);
+	strcatn(out, BUFFER_LEN - (size_t)(out - buf), ptr);
 	out += itemlen;
 	switch (count - i) {
 	case 0:
@@ -1741,7 +1745,7 @@ mfn_commas(MFUNARGS)
 		    free_top_mvar();
 		return buf;
 	    }
-	    strcatn(out, BUFFER_LEN - (out - buf), sepbuf);
+	    strcatn(out, BUFFER_LEN - (size_t)(out - buf), sepbuf);
 	    out += itemlen;
 	    break;
 	default:
@@ -1750,7 +1754,7 @@ mfn_commas(MFUNARGS)
 		    free_top_mvar();
 		return buf;
 	    }
-	    strcatn(out, BUFFER_LEN - (out - buf), ", ");
+	    strcatn(out, BUFFER_LEN - (size_t)(out - buf), ", ");
 	    out += strlen(out);
 	    break;
 	}

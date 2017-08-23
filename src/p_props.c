@@ -1145,7 +1145,7 @@ prim_parsepropex(PRIM_PROTOTYPE)
     array_iter idx;
     int mvarcnt = 0;
     char *buffers = NULL;
-    int novars;
+    size_t novars;
     int hashow = 0;
     int i;
     int len;
@@ -1193,7 +1193,7 @@ prim_parsepropex(PRIM_PROTOTYPE)
 
     mpi = get_property_class(oper1->data.objref, tname);
     vars = oper3->data.array;
-    novars = array_count(vars);
+    novars = (size_t)array_count(vars);
 
     if (check_mvar_overflow(novars))
 	abort_interp("Out of MPI variables. (3)");

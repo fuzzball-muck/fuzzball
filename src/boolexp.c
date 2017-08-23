@@ -416,10 +416,10 @@ static char *buftop;
 static void
 unparse_boolexp1(dbref player, struct boolexp *b, short outer_type, int fullname)
 {
-    if ((buftop - boolexp_buf) > (BUFFER_LEN / 2))
+    if ((size_t)(buftop - boolexp_buf) > (BUFFER_LEN / 2))
 	return;
     if (b == TRUE_BOOLEXP) {
-	strcpyn(buftop, sizeof(boolexp_buf) - (buftop - boolexp_buf), PROP_UNLOCKED_VAL);
+	strcpyn(buftop, sizeof(boolexp_buf) - (size_t)(buftop - boolexp_buf), PROP_UNLOCKED_VAL);
 	buftop += strlen(buftop);
     } else {
 	switch (b->type) {
@@ -453,20 +453,20 @@ unparse_boolexp1(dbref player, struct boolexp *b, short outer_type, int fullname
 	    if (fullname) {
                 char unparse_buf[BUFFER_LEN];
                 unparse_object(player, b->thing, unparse_buf, sizeof(unparse_buf));
-		strcpyn(buftop, sizeof(boolexp_buf) - (buftop - boolexp_buf),
+		strcpyn(buftop, sizeof(boolexp_buf) - (size_t)(buftop - boolexp_buf),
                         unparse_buf);
 	    } else {
-		snprintf(buftop, sizeof(boolexp_buf) - (buftop - boolexp_buf), "#%d",
+		snprintf(buftop, sizeof(boolexp_buf) - (size_t)(buftop - boolexp_buf), "#%d",
 			 b->thing);
 	    }
 	    buftop += strlen(buftop);
 	    break;
 	case BOOLEXP_PROP:
-	    strcpyn(buftop, sizeof(boolexp_buf) - (buftop - boolexp_buf),
+	    strcpyn(buftop, sizeof(boolexp_buf) - (size_t)(buftop - boolexp_buf),
 		    PropName(b->prop_check));
-	    strcatn(buftop, sizeof(boolexp_buf) - (buftop - boolexp_buf), ":");
+	    strcatn(buftop, sizeof(boolexp_buf) - (size_t)(buftop - boolexp_buf), ":");
 	    if (PropType(b->prop_check) == PROP_STRTYP)
-		strcatn(buftop, sizeof(boolexp_buf) - (buftop - boolexp_buf),
+		strcatn(buftop, sizeof(boolexp_buf) - (size_t)(buftop - boolexp_buf),
 			PropDataStr(b->prop_check));
 	    buftop += strlen(buftop);
 	    break;

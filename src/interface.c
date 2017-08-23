@@ -62,7 +62,7 @@ static struct in6_addr bind_ipv6_address;
 #endif
 static uint32_t bind_ipv4_address;
 
-static int numports = 0;
+static size_t numports = 0;
 static int numsocks = 0;
 static int max_descriptor = 0;
 static int listener_port[MAX_LISTEN_SOCKS];
@@ -72,7 +72,7 @@ static int numsocks_v6 = 0;
 static int sock_v6[MAX_LISTEN_SOCKS];
 #endif
 #ifdef USE_SSL
-static int ssl_numports = 0;
+static size_t ssl_numports = 0;
 static int ssl_numsocks = 0;
 static int ssl_listener_port[MAX_LISTEN_SOCKS];
 static int ssl_sock[MAX_LISTEN_SOCKS];
@@ -221,7 +221,7 @@ free_text_block(struct text_block *t)
 }
 
 static struct text_block *
-make_text_block(const char *s, int n)
+make_text_block(const char *s, size_t n)
 {
     struct text_block *p;
 
@@ -266,7 +266,7 @@ flush_queue(struct text_queue *q, int n, int add_flushed_message)
 }
 
 static void
-add_to_queue(struct text_queue *q, const char *b, int n)
+add_to_queue(struct text_queue *q, const char *b, size_t n)
 {
     struct text_block *p;
 
@@ -288,11 +288,11 @@ flush_output_queue(struct descriptor_data *d, int include_message, int size_limi
 }
 
 void
-queue_write(struct descriptor_data *d, const char *b, int n)
+queue_write(struct descriptor_data *d, const char *b, size_t n)
 {
     if (n == 0)
         return;
-    flush_output_queue(d, 1, tp_max_output - n);
+    flush_output_queue(d, 1, (size_t)tp_max_output - n);
     add_to_queue(&d->output, b, n);
     d->output_size += n;
     return;
@@ -617,13 +617,13 @@ welcome_user(struct descriptor_data *d)
 static void
 remember_player_descr(dbref player, int descr)
 {
-    int count = 0;
+    size_t count = 0;
     int *arr = NULL;
 
     if (Typeof(player) != TYPE_PLAYER)
 	return;
 
-    count = PLAYER_DESCRCOUNT(player);
+    count = (size_t)PLAYER_DESCRCOUNT(player);
     arr = PLAYER_DESCRS(player);
 
     if (!arr) {
@@ -642,19 +642,19 @@ remember_player_descr(dbref player, int descr)
 static void
 forget_player_descr(dbref player, int descr)
 {
-    int count = 0;
+    size_t count = 0;
     int *arr = NULL;
 
     if (Typeof(player) != TYPE_PLAYER)
 	return;
 
-    count = PLAYER_DESCRCOUNT(player);
+    count = (size_t)PLAYER_DESCRCOUNT(player);
     arr = PLAYER_DESCRS(player);
 
     if (!arr) {
 	count = 0;
     } else if (count > 1) {
-	int dest = 0;
+	size_t dest = 0;
 	for (int src = 0; src < count; src++) {
 	    if (arr[src] != descr) {
 		if (src != dest) {
@@ -1795,7 +1795,7 @@ static int
 process_input(struct descriptor_data *d)
 {
     char buf[MAX_COMMAND_LEN * 2];
-    int maxget = sizeof(buf);
+    size_t maxget = sizeof(buf);
     int got;
     char *p, *pend, *q, *qend;
 
@@ -1948,7 +1948,7 @@ process_input(struct descriptor_data *d)
 	    {
 		sendbuf[0] = TELNET_IAC;
 		sendbuf[1] = TELNET_DONT;
-		sendbuf[2] = *q;
+		sendbuf[2] = (unsigned char)*q;
 		sendbuf[3] = '\0';
                 queue_immediate_raw(d, (const char *)sendbuf);
 	    }
@@ -1959,7 +1959,7 @@ process_input(struct descriptor_data *d)
 	    unsigned char sendbuf[4];
 	    sendbuf[0] = TELNET_IAC;
 	    sendbuf[1] = TELNET_WONT;
-	    sendbuf[2] = *q;
+	    sendbuf[2] = (unsigned char)*q;
 	    sendbuf[3] = '\0';
             queue_immediate_raw(d, (const char *)sendbuf);
 	    d->telnet_state = TELNET_STATE_NORMAL;
@@ -1973,7 +1973,7 @@ process_input(struct descriptor_data *d)
 	    unsigned char sendbuf[4];
 	    sendbuf[0] = TELNET_IAC;
 	    sendbuf[1] = TELNET_WONT;
-	    sendbuf[2] = *q;
+	    sendbuf[2] = (unsigned char)*q;
 	    sendbuf[3] = '\0';
             queue_immediate_raw(d, (const char *)sendbuf);
 	    d->telnet_state = TELNET_STATE_NORMAL;
@@ -2984,7 +2984,7 @@ write_text_block(struct descriptor_data *d, struct text_block **qp)
     if (!cur)
         return 0;
 
-    count = socket_write(d, cur->start, cur->nchars);
+    count = socket_write(d, cur->start, (size_t)cur->nchars);
 
 #ifdef WIN32
     if (count < 0 || count == SOCKET_ERROR) {
@@ -3012,7 +3012,7 @@ write_text_block(struct descriptor_data *d, struct text_block **qp)
         free_text_block(cur);
         return 0;
     }
-    cur->nchars -= count;
+    cur->nchars -= (size_t)count;
     cur->start += count;
 #ifdef USE_SSL
     if (cur != d->pending_ssl_write.head) {
@@ -3747,7 +3747,7 @@ ignore_prime_cache(dbref Player)
 {
     const char *Txt = 0;
     dbref *List = 0;
-    int Count = 0;
+    size_t Count = 0;
     int i = 0;
 
     if (!tp_ignore_support)
@@ -4566,7 +4566,7 @@ main(int argc, char **argv)
 #ifndef WIN32
 	    char **argslist;
 	    char numbuf[32];
-	    int argcnt = numports + 2;
+	    size_t argcnt = numports + 2;
 	    int argnum = 1;
 
 #ifdef USE_SSL
@@ -4576,7 +4576,7 @@ main(int argc, char **argv)
 	    argslist = (char **) calloc(argcnt, sizeof(char *));
 
 	    for (int i = 0; i < numports; i++) {
-		int alen = strlen(numbuf) + 1;
+		size_t alen = strlen(numbuf) + 1;
 		snprintf(numbuf, sizeof(numbuf), "%d", listener_port[i]);
 		argslist[argnum] = (char *) malloc(alen);
 		strcpyn(argslist[argnum++], alen, numbuf);
@@ -4584,7 +4584,7 @@ main(int argc, char **argv)
 
 #ifdef USE_SSL
 	    for (int i = 0; i < ssl_numports; i++) {
-		int alen = strlen(numbuf) + 1;
+		size_t alen = strlen(numbuf) + 1;
 		snprintf(numbuf, sizeof(numbuf), "-sport %d", ssl_listener_port[i]);
 		argslist[argnum] = (char *) malloc(alen);
 		strcpyn(argslist[argnum++], alen, numbuf);

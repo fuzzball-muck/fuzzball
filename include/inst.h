@@ -20,7 +20,7 @@ struct line {
 
 struct shared_string {          /* for sharing strings in programs */
     int links;                  /* number of pointers to this struct */
-    int length;                 /* length of string data */
+    size_t length;              /* length of string data */
     char data[1];               /* shared string data */
 };
 
@@ -85,7 +85,7 @@ struct muf_proc_data {
 
 struct inst {                   /* instruction */
     short type;
-    short line;
+    int line;
     union {
         struct shared_string *string;   /* strings */
         struct boolexp *lock;   /* boolean lock expression */

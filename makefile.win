@@ -72,7 +72,6 @@ BASE_OBJ="$(INTDIR)\array.obj" \
 	"$(INTDIR)\game.obj" \
 	"$(INTDIR)\hashtab.obj" \
 	"$(INTDIR)\help.obj" \
-	"$(INTDIR)\inst.obj" \
 	"$(INTDIR)\interp.obj" \
 	"$(INTDIR)\log.obj" \
 	"$(INTDIR)\look.obj" \

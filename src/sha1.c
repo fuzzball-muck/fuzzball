@@ -173,8 +173,8 @@ hash2hex(uint8_t * hash, char *buffer, size_t buflen)
 	    break;
 	high = (hash[i] & 0xF0) >> 4;
 	low = hash[i] & 0x0F;
-	buffer[i * 2] = (high <= 9 ? high + 48 : high + 87);
-	buffer[i * 2 + 1] = (low <= 9 ? low + 48 : low + 87);
+	buffer[i * 2] = (char)(high <= 9 ? high + 48 : high + 87);
+	buffer[i * 2 + 1] = (char)(low <= 9 ? low + 48 : low + 87);
 	buffer[i * 2 + 2] = '\0';
     }
 }

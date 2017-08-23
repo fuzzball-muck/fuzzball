@@ -314,18 +314,6 @@ add_muf_read_event(int descr, dbref player, dbref prog, struct frame *fr)
 		     prog, fr, "READ", NULL, NULL);
 }
 
-static int
-add_muf_tread_event(int descr, dbref player, dbref prog, struct frame *fr, int delay)
-{
-    if (!fr) {
-	panic("add_muf_tread_event(): NULL frame passed !");
-    }
-
-    FLAGS(player) |= (INTERACTIVE | READMODE);
-    return add_event(TQ_MUF_TYP, TQ_MUF_TREAD, delay, descr, player, -1, fr->trig,
-		     prog, fr, "READ", NULL, NULL);
-}
-
 int
 add_muf_timer_event(int descr, dbref player, dbref prog, struct frame *fr, int delay, char *id)
 {

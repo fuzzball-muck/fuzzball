@@ -17,7 +17,7 @@ int is_valid_pose_separator(char ch);
 char *intostr(int i);
 int is_prop_prefix(const char *Property, const char *Prefix);
 int number(const char *s);
-void prefix_message(char *Dest, const char *Src, const char *Prefix, int BufferLength,
+void prefix_message(char *Dest, const char *Src, const char *Prefix, size_t BufferLength,
                            int SuppressIfPresent);
 int prepend_string(char **before, char *start, const char *what);
 char *pronoun_substitute(int descr, dbref player, const char *str);
@@ -31,7 +31,7 @@ const char *strdecrypt(const char *, const char *);
 const char *string_match(const char *src, const char *sub);
 int string_prefix(const char *string, const char *prefix);
 char *string_substitute(const char *str, const char *oldstr, const char *newstr, char *buf,
-                        int maxlen);
+                        size_t maxlen);
 char *strip_ansi(char *buf, const char *input);
 char *strip_bad_ansi(char *buf, const char *input);
 char *stripspaces(char *s);

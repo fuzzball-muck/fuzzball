@@ -479,10 +479,10 @@ void putstring(FILE * f, const char *s);
 void register_object(dbref player, dbref location, const char *propdir, char *name, dbref object);
 dbref remove_first(dbref first, dbref what);
 dbref reverse(dbref);
-void set_source(dbref player, dbref action, dbref source);
+void set_source(dbref action, dbref source);
 long size_object(dbref i, int load);
 const char *unparse_flags(dbref thing);
 void unparse_object(dbref player, dbref object, char *buffer, size_t size);
-void unset_source(dbref player, dbref action);
+void unset_source(dbref action);
 
 #endif				/* _DB_H */

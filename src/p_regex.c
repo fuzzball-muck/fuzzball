@@ -33,7 +33,7 @@ static muf_re muf_re_cache[MUF_RE_CACHE_ITEMS];
 static muf_re *
 muf_re_get(struct shared_string *pattern, int flags, const char **errmsg)
 {
-    int idx = (hash(DoNullInd(pattern), MUF_RE_CACHE_ITEMS) + flags) % MUF_RE_CACHE_ITEMS;
+    int idx = (hash(DoNullInd(pattern), MUF_RE_CACHE_ITEMS) + (unsigned int)flags) % MUF_RE_CACHE_ITEMS;
     muf_re *re = &muf_re_cache[idx];
     int erroff;
 

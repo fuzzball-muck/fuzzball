@@ -188,7 +188,7 @@ getgeneration()
 	*pos = '\0';
 
 	fclose(v);
-	return atoi(number) + 1;
+	return (unsigned int)atoi(number) + 1;
     }
 
     fclose(v);

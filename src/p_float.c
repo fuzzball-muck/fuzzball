@@ -554,10 +554,10 @@ void
 prim_gaussian(PRIM_PROTOTYPE)
 {
     /* We use these two statics to prevent lost work. */
-    float srca = 0.0, srcb = 0.0;
-    float resulta;
-    float radius = 1.0;
-    static float resultb;
+    double srca = 0.0, srcb = 0.0;
+    double resulta;
+    double radius = 1.0;
+    static double resultb;
     static char second_call = 0;
 
     CHECKOP(2);
@@ -578,12 +578,12 @@ prim_gaussian(PRIM_PROTOTYPE)
 	second_call = 0;
     } else {
 	while (radius >= 1.0) {
-	    srca = 2.0f * _int_f_rand() - 1.0f;
-	    srcb = 2.0f * _int_f_rand() - 1.0f;
+	    srca = 2.0 * _int_f_rand() - 1.0;
+	    srcb = 2.0 * _int_f_rand() - 1.0;
 	    radius = srca * srca + srcb * srcb;
 	}
 
-	radius = (float)sqrt((-2.0 * log(radius)) / radius);
+	radius = sqrt((-2.0 * log(radius)) / radius);
 	resulta = srca * radius;
 	resultb = srcb * radius;
 	second_call = 1;	/* Prime for next call in. */

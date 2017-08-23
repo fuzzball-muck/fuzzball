@@ -105,7 +105,7 @@ typedef struct COMPILE_STATE_T {
     /* Address resolution data.  Used to relink addresses after compile. */
     struct INTERMEDIATE **addrlist;     /* list of addresses to resolve */
     int *addroffsets;           /* list of offsets from instrs */
-    int addrmax;                /* size of current addrlist array */
+    size_t addrmax;                /* size of current addrlist array */
     int addrcount;              /* number of allocated addresses */
 
     /* variable names.  The index into cstat->variables give you what position
@@ -876,7 +876,7 @@ OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
 {
     int *Flags;
     int i;
-    int count = 0;
+    size_t count = 0;
     int old_instr_count = cstat->nowords;
     int AtNo = get_primitive("@");
     int BangNo = get_primitive("!");
@@ -1451,7 +1451,7 @@ copy_program(COMPSTATE * cstat)
     if (!cstat->first_word)
 	v_abort_compile(cstat, "Nothing to compile.");
 
-    code = (struct inst *) malloc(sizeof(struct inst) * (cstat->nowords + 1));
+    code = (struct inst *) malloc(sizeof(struct inst) * (size_t)(cstat->nowords + 1));
 
     i = 0;
     for (struct INTERMEDIATE *curr = cstat->first_word; curr; curr = curr->next) {
@@ -1487,7 +1487,7 @@ copy_program(COMPSTATE * cstat)
 	    if (varcnt) {
 		if (curr->in.data.mufproc->varnames) {
 		    code[i].data.mufproc->varnames =
-			    (const char **) calloc(varcnt, sizeof(char *));
+			    (const char **) calloc((size_t)varcnt, sizeof(char *));
 		    for (int j = 0; j < varcnt; j++) {
 			code[i].data.mufproc->varnames[j] =
 				strdup(curr->in.data.mufproc->varnames[j]);
@@ -2929,7 +2929,7 @@ static const char *
 next_token(COMPSTATE * cstat)
 {
     char *expansion, *temp;
-    int elen = 0;
+    size_t elen = 0;
 
     temp = (char *) next_token_raw(cstat);
     if (!temp)
@@ -2959,7 +2959,7 @@ next_token(COMPSTATE * cstat)
 	    free((void *) expansion);
 	    abort_compile(cstat, "Too many macro substitutions.");
 	} else {
-	    int templen = strlen(cstat->next_char) + strlen(expansion) + 21;
+	    size_t templen = strlen(cstat->next_char) + strlen(expansion) + 21;
 	    temp = (char *) malloc(templen);
 	    strcpyn(temp, templen, expansion);
 	    strcatn(temp, templen, cstat->next_char);
@@ -3104,7 +3104,7 @@ add_proc(COMPSTATE * cstat, const char *proc_name, struct INTERMEDIATE *place, i
 
 /* add if to control stack */
 static void
-add_control_structure(COMPSTATE * cstat, int typ, struct INTERMEDIATE *place)
+add_control_structure(COMPSTATE * cstat, short typ, struct INTERMEDIATE *place)
 {
     struct CONTROL_STACK *nu;
 
@@ -3359,7 +3359,7 @@ process_special(COMPSTATE * cstat, const char *token)
 	varcnt = cstat->curr_proc->in.data.mufproc->vars;
 	if (varcnt) {
 	    cstat->curr_proc->in.data.mufproc->varnames =
-		    (const char **) calloc(varcnt, sizeof(char *));
+		    (const char **) calloc((size_t)varcnt, sizeof(char *));
 	    for (int i = 0; i < varcnt; i++) {
 		cstat->curr_proc->in.data.mufproc->varnames[i] = cstat->scopedvars[i];
 		cstat->scopedvars[i] = 0;
@@ -3954,7 +3954,7 @@ size_prog(dbref prog)
 		for (long j = 0; j < varcnt; j++) {
 		    byts += strlen(c[i].data.mufproc->varnames[j]) + 1;
 		}
-		byts += sizeof(char **) * varcnt;
+		byts += sizeof(char **) * (size_t)varcnt;
 	    }
 	    byts += sizeof(struct muf_proc_data);
 	} else if (c[i].type == PROG_STRING && c[i].data.string) {

@@ -618,7 +618,7 @@ check_new_blocks(const char *file, int line)
 
 /* }}} */
 
-void
+static void
 CrT_check(const char *file, int line)
 {
     check_old_blocks(file, line);
@@ -879,7 +879,7 @@ struct shared_string *
 CrT_alloc_prog_string(const char *s, const char *file, int line)
 {
     struct shared_string *ss;
-    int length;
+    size_t length;
 
     if (s == NULL || *s == '\0')
 	return (NULL);

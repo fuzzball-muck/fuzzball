@@ -432,7 +432,7 @@ mfn_listprops(MFUNARGS)
 		    if (*buf != '\0') {
 			*endbuf++ = '\r';
 		    }
-		    strcpyn(endbuf, BUFFER_LEN - (endbuf - buf), ptr);
+		    strcpyn(endbuf, BUFFER_LEN - (size_t)(endbuf - buf), ptr);
 		    endbuf += entrylen;
 		}
 	    }
@@ -735,7 +735,7 @@ mfn_nl(MFUNARGS)
 const char *
 mfn_lit(MFUNARGS)
 {
-    int len, len2;
+    size_t len, len2;
 
     strcpyn(buf, buflen, argv[0]);
     len = strlen(buf);
@@ -759,7 +759,7 @@ mfn_lit(MFUNARGS)
 const char *
 mfn_eval(MFUNARGS)
 {
-    int len, len2;
+    size_t len, len2;
     char buf2[BUFFER_LEN];
     char *ptr;
 
@@ -789,7 +789,7 @@ mfn_eval(MFUNARGS)
 const char *
 mfn_evalbang(MFUNARGS)
 {
-    int len, len2;
+    size_t len, len2;
     char buf2[BUFFER_LEN];
     char *ptr;
 
@@ -1959,7 +1959,7 @@ mfn_right(MFUNARGS)
 	if (!*fptr)
 	    fptr = fillstr;
     }
-    strcpyn(ptr, buflen - (ptr - buf), argv[0]);
+    strcpyn(ptr, buflen - (size_t)(ptr - buf), argv[0]);
     return buf;
 }
 
@@ -2017,7 +2017,7 @@ mfn_center(MFUNARGS)
 	if (!*fptr)
 	    fptr = fillstr;
     }
-    strcpyn(ptr, buflen - (ptr - buf), argv[0]);
+    strcpyn(ptr, buflen - (size_t)(ptr - buf), argv[0]);
     for (i = strlen(buf), ptr = &buf[i], fptr = fillstr; i < len; i++) {
 	*ptr++ = *fptr++;
 	if (!*fptr)
