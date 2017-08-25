@@ -1944,7 +1944,7 @@ debug_inst(struct frame *fr, int lev, struct inst *pc, int pid, struct inst *sta
     /* We use this if-else structure to handle errors and such nicely. */
     /* We use length - 7 so we KNOW we'll have room for " ... ) " */
 
-    ptr = insttotext(fr, lev, pc, buf2, (size_t)length - 7, 30, program, 1);
+    ptr = insttotext(fr, lev, pc, buf2, length - 7, 30, program, 1);
     if (*ptr) {
         length -= prepend_string(&bend, bstart, ptr);
     } else {
@@ -1992,7 +1992,7 @@ debug_inst(struct frame *fr, int lev, struct inst *pc, int pid, struct inst *sta
    would have occured.
  */
 char *
-insttotext(struct frame *fr, int lev, struct inst *theinst, char *buffer, size_t buflen,
+insttotext(struct frame *fr, int lev, struct inst *theinst, char *buffer, int buflen,
 	   int strmax, dbref program, int expandarrs)
 {
     const char *ptr;
