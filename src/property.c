@@ -1420,13 +1420,10 @@ exec_or_notify(int descr, dbref player, dbref thing,
 
 	if (*(++p) == REGISTERED_TOKEN) {
 	    strcpyn(buf, sizeof(buf), p);
-	    p2 = buf;
-	    skip_whitespace(&p2);
+	    for (p2 = buf; *p && !isspace(*p); p++) ;
 	    if (*p)
 		p++;
-
-	    p3 = buf;
-	    skip_whitespace((const char **)&p3);
+	    for (p3 = buf; *p3 && !isspace(*p3); p3++) ;
 	    if (*p3)
 		*p3 = '\0';
 
@@ -1437,7 +1434,7 @@ exec_or_notify(int descr, dbref player, dbref thing,
 	    }
 	} else {
 	    i = atoi(p);
-	    skip_whitespace(&p);
+	    for (; *p && !isspace(*p); p++) ;
 	    if (*p)
 		p++;
 	}
