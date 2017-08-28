@@ -19,6 +19,8 @@
     returns #-1.
   
 )
+
+$doccmd @list $lib/props=1-20
   
 : setpropstr (dbref propname strval -- )
     dup not if

@@ -49,6 +49,8 @@
  LMGR-Getlist -- Get an entire list.
      <list-name> <dbref> LMGRgetlist
 )
+
+$doccmd @list $lib/lmgr=1-50
   
 (standard list writing format)
 $def COUNTSUFFIX "#"
@@ -370,6 +372,7 @@ PUBLIC lmgr-deleterange $libdef lmgr-deleterange
 PUBLIC lmgr-extractrange $libdef lmgr-extractrange
 PUBLIC lmgr-deletelist $libdef lmgr-deletelist
 PUBLIC lmgr-getlist $libdef lmgr-getlist
+
 $pubdef .lmgr-clearelem "$lib/lmgr" match "lmgr-clearelem" call
 $pubdef .lmgr-clearrange "$lib/lmgr" match "lmgr-clearrange" call
 $pubdef .lmgr-deletelist "$lib/lmgr" match "lmgr-deletelist" call

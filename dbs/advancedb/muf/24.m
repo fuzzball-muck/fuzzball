@@ -49,6 +49,7 @@ $author Natasha O'Brien <mufden@mufden.fuzzball.org>
 $version 1.1
 $lib-version 1.1
 $note Library for general #alias feature for multiple programs.
+$doccmd @list $lib/alias=1-47
  
 $include $lib/strings
 $pubdef prop_aliases "_prefs/alias/a%s"

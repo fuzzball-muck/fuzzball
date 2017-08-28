@@ -83,6 +83,8 @@
       passed = resulting array with each passing element.
       failed = resulting array with each failing element.
 *)
+
+$doccmd @list $lib/arrays=1-85
  
 : ArrCommas ( a -- s )
     dup array_count 2 > if

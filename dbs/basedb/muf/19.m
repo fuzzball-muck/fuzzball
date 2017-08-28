@@ -107,6 +107,8 @@
       This routine takes the name, and returns the one immediately
       previous to it in the index.
 )
+
+$doccmd @list $lib/index=1-109
  
 $include $lib/match
 $include $lib/stackrng
@@ -747,4 +749,3 @@ $pubdef .std-index-remove "$lib/index" match "index-remove" call
 $pubdef .std-index-set "$lib/index" match "index-set" call
 $pubdef .std-index-value "$lib/index" match "index-value" call
 $pubdef .std-index-write "$lib/index" match "index-write" call
-

@@ -74,7 +74,9 @@ between the top of the string range and the bottom parameter.
       Takes a range and formats it similarly to the way that the UNIX fmt
       command would, splitting long lines, and joining short ones.
 )
-  
+
+$doccmd @list $lib/edit=1-80  
+
 $include $lib/strings
 $include $lib/stackrng
 $define SRNGextract sr-extractrng $enddef

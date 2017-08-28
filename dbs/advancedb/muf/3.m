@@ -2,6 +2,7 @@ $lib-version    1.04
 $def LIBDATE    "Jul 29 2002"
 $def LIBNAME    "lib-cmdtable"
 $author                 Vash@Anime/Sarusa@FM
+$doccmd		@list $lib/bolding=5-155
 (
   -= SUMMARY =-
         This only works on FB6. You can check for it by:

@@ -48,6 +48,9 @@ endcase
 Enjoy!
         - Foxen
 )
+
+$doccmd @list $lib/case=1-50
+
 : main "" pop ;
 
 $pubdef case begin dup

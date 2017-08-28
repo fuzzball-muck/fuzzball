@@ -49,16 +49,16 @@ You can get more help on the following topics:
 
 Symbols
   !              !=             $abort         $author        $cleardefs
-  $def           $define        $echo          $entrypoint    $ifcancall
-  $ifdef         $iflib         $iflibver      $ifncancall    $ifndef
-  $ifnlib        $ifnlibver     $ifnver        $ifver         $include
-  $lib-version   $libdef        $note          $pragma        $pubdef
-  $undef         $version       %              '              *
-  +              ++             -              --             -rot
-  /              <              <=             =              >
-  >=             ?dup           @              \              __fuzzball__
-  __muckname     __version      {              }              }cat
-  }dict          }join          }list          }tell          
+  $def           $define        $doccmd        $echo          $entrypoint
+  $ifcancall     $ifdef         $iflib         $iflibver      $ifncancall
+  $ifndef        $ifnlib        $ifnlibver     $ifnver        $ifver
+  $include       $lib-version   $libdef        $note          $pragma
+  $pubdef        $undef         $version       %              '
+  *              +              ++             -              --
+  -rot           /              <              <=             =
+  >              >=             ?dup           @              \
+  __fuzzball__   __muckname     __version      {              }
+  }cat           }dict          }join          }list          }tell
 
 A's
   abort                     abs                       acos
@@ -479,15 +479,16 @@ Macros and Compiler Directives|Macros|Directives|CompDefs
 Macros and Compiler Directives
 
 $abort                    $author                   $cleardefs
-$def                      $define                   $echo
-$entrypoint               $ifcancall                $ifdef
-$iflib                    $iflibver                 $ifncancall
-$ifndef                   $ifnlib                   $ifnlibver
-$ifnver                   $ifver                    $include
-$lib-version              $libdef                   $note
-$pragma                   $pubdef                   $undef
-$version                  \                         __fuzzball__
-__muckname                __version                 max_variable_count
+$def                      $define                   $doccmd
+$echo                     $entrypoint               $ifcancall
+$ifdef                    $iflib                    $iflibver
+$ifncancall               $ifndef                   $ifnlib
+$ifnlibver                $ifnver                   $ifver
+$include                  $lib-version              $libdef
+$note                     $pragma                   $pubdef
+$undef                    $version                  \
+__fuzzball__              __muckname                __version
+max_variable_count        
 
 ~----------------------------------------------------------------------------
 ~
@@ -566,6 +567,13 @@ $NOTE
 $NOTE <rest_of_line>
 
   Sets the _note string property on the program to <rest_of_line>.
+~
+~
+$DOCCMD
+$DOCCMD <rest_of_line>
+
+  Sets the _docs string property on the program to <rest_of_line>.
+This property holds the command used to view documentation for the program.
 ~
 ~
 $DEFINE|$ENDDEF

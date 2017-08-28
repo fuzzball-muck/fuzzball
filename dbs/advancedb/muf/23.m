@@ -28,6 +28,7 @@ This routine is useful for parsing command line input:
   STRparse   [       str -- str1 str2 str3] " #X Y  y = Z"  ->  "X" "Y y" " Z"
 )
   
+$doccmd @list $lib/strings=1-29
   
 : sms ( str -- str')
   begin

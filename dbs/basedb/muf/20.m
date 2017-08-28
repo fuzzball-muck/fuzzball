@@ -56,6 +56,8 @@
        Does a match function, then calls db-desc with the results.  This
        will simulate the usual 'look' command.
 )
+
+$doccmd @list $lib/look=1-58
  
 $include $lib/strings
 $include $lib/match
@@ -169,6 +171,7 @@ lvar realtrig
 ;
  
 : short-list ( d... i -- s )
+  dup not if pop "" exit then
   dup 3 <
   if
     1 - dup 2 + rotate name over
@@ -324,4 +327,3 @@ $pubdef .short-display "$lib/look" match "short-display" call
 $pubdef .short-list "$lib/look" match "short-list" call
 $pubdef .str-desc "$lib/look" match "str-desc" call
 $pubdef .unparse "$lib/look" match "unparse" call
-

@@ -10,6 +10,7 @@
       Returns the absolute message number of a message referred to by the
       given reference number.  See MBOX-num2ref for an explanation of those
       terms.
+ 
     MBOX-num2ref  [msgnum base dbref -- refnum]
       Returns the reference number of the message that has the given absolute
       message number.  The reference number is the position number of the
@@ -18,6 +19,7 @@
       number of a message will never change.  If the message with the given
       message number no longer exists, then the reference to the first message
       after the given message number is returned.
+ 
     MBOX-create   [base dbref -- ]
       Creates a new message box with no messages in it.
   
@@ -46,7 +48,7 @@
       given message items and info string.
   
     MBOX-msginfo  [refnum base dbref -- infostr]
-      Returns the info string of the goven message number in the message box.
+      Returns the info string of the given message number in the message box.
   
     MBOX-setinfo  [refnum base dbref -- ]
       Sets the info string for the given message number in the message box.
@@ -56,6 +58,8 @@
       as a range of strings.
   
 )
+
+$doccmd @list $lib/mesgbox=1-58
   
 $include $lib/mesg
   
@@ -82,6 +86,7 @@ lvar n2r_cnt
     repeat
     pop pop pop 0
 ;
+ 
 : MBOX-ref2prop (refnum base dbref -- base' dbref)
     rot 3 pick 3 pick MBOX-ref2num intostr
     rot "/" strcat swap strcat swap

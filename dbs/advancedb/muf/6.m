@@ -40,6 +40,7 @@ EDITORheader takes and returns no arguments, but prints out a standard
 $version 6.002
 $lib-version 6.001
 $author foxen@belfry.com
+$doccmd @list $lib/editor=2-57
  
 $include $lib/strings
 $include $lib/gui

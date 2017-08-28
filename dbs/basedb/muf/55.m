@@ -1,6 +1,6 @@
 ( con-recordhost 1.0     records the last host you connected from )
 $def DISPLAY_MESG "## You last connected from %n"
-  
+ 
 : recordhost
    me @ "@/host" getpropstr
 $ifdef DISPLAY_MESG

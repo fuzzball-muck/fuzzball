@@ -4,8 +4,7 @@ $def DISPLAY_MESG "## You last connected from %n"
 : recordhost
    me @ "@/host" getpropstr
 $ifdef DISPLAY_MESG
-   dup
-   if DISPLAY_MESG over "%n" subst .tell then
+   dup if DISPLAY_MESG over "%n" subst .tell then
 $endif
    me @ "@/lasthost" rot 0 addprop
    me @ descriptors

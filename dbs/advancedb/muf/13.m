@@ -58,6 +58,8 @@
       as a range of strings.
   
 )
+
+$doccmd @list $lib/mesgbox=1-58
   
 $include $lib/mesg
   
@@ -75,12 +77,12 @@ lvar n2r_cnt
     rot n2r_num !
     over over MBOX-count n2r_cnt !
     1 begin
-	dup n2r_cnt @ <= while
-	dup 4 pick 4 pick MBOX-ref2num
-	n2r_num @ >= if
-	    rot rot pop pop exit
-	then
-	1 +
+        dup n2r_cnt @ <= while
+        dup 4 pick 4 pick MBOX-ref2num
+        n2r_num @ >= if
+            rot rot pop pop exit
+        then
+        1 +
     repeat
     pop pop pop 0
 ;

@@ -263,7 +263,7 @@ $author Revar Desmera <revar@belfry.com>
 $lib-version 6.003
 $version 6.003
 $note This is a MUF library to make it much simpler to create GUI dialogs.
- 
+$doccmd @list $lib/gui=1-260 
  
 : list_parse[ list:spec -- dict:args list:ctrls ]
     ""      var! key

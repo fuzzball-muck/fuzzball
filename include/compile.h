@@ -3,6 +3,16 @@
 
 #define free_prog(i) free_prog_real(i,__FILE__,__LINE__);
 
+#define MUF_AUTHOR_PROP		"_author"
+#define MUF_DOCCMD_PROP		"_docs"
+#define MUF_ERRCOUNT_PROP	".debug/errcount"
+#define MUF_LASTCRASH_PROP	".debug/lastcrash"
+#define MUF_LASTCRASHTIME_PROP	".debug/lastcrashtime"
+#define MUF_LASTERR_PROP	".debug/lasterr"
+#define MUF_LIB_VERSION_PROP	"_lib-version"
+#define MUF_NOTE_PROP		"_note"
+#define MUF_VERSION_PROP	"_version"
+
 extern int IN_FOR;
 extern int IN_FOREACH;
 extern int IN_FORITER;

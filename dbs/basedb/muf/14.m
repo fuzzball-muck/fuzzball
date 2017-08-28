@@ -36,6 +36,8 @@ EDITORparse takes and returns arguments identically to .sedit_loop,
 EDITORheader takes and returns no arguments, but prints out a standard
   message about you entering the editor.  EDITOR calls this automatically.
 )
+
+$doccmd @list $lib/editor=1-50
   
 $include $lib/strings
   

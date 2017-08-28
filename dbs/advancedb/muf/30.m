@@ -61,7 +61,7 @@ $author Natasha O'Brien <mufden@mufden.fuzzball.org>
 $version 1.1
 $lib-version 1.1
 $note Library for tabular output (whodoing, laston, whospecies, etc).
- 
+$doccmd @list $lib/table=1-51
  
 : table-process[ dict:processors list:data -- list:results ]
     data @ 0 array_make  ( arrData arrResults )

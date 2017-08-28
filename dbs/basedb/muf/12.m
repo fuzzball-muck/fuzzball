@@ -49,6 +49,8 @@
  LMGR-Getlist -- Get an entire list.
      <list-name> <dbref> LMGRgetlist
 )
+
+$doccmd @list $lib/lmgr=1-50
   
 (standard list writing format)
 $def COUNTSUFFIX "#"
@@ -352,7 +354,6 @@ $def ITEMNUMSEP "#/"   ( "" in old format )
   rot rot 1 rot rot
   LMGR-getrange
 ;
-  
   
 PUBLIC lmgr-getcount $libdef lmgr-getcount 
 PUBLIC lmgr-setcount $libdef lmgr-setcount

@@ -31,6 +31,7 @@ $author Natasha O'Brien <mufden@mufden.fuzzball.org>
 $version 1.001
 $lib-version 1.0
 $note A library for showing when and why players are away.
+$doccmd @list $lib/away=1-29
  
 $include $lib/strings
 $include $lib/timestr
