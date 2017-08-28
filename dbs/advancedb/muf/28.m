@@ -73,6 +73,7 @@ $author Natasha O'Brien <mufden@mufden.fuzzball.org>
 $version 1.003
 $lib-version 1.003
 $note Easily $includable, program specific #ignore function.
+$doccmd @list $lib/ignore=1-59
  
 $include $lib/reflist
 $include $lib/match

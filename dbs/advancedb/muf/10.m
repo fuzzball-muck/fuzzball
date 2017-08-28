@@ -56,6 +56,8 @@
        Does a match function, then calls db-desc with the results.  This
        will simulate the usual 'look' command.
 )
+
+$doccmd @list $lib/look=1-58
  
 $include $lib/strings
 $include $lib/match

@@ -35,7 +35,9 @@
      takes two ranges on the stack and swaps them.
   
 )
-  
+
+$doccmd @list $lib/stackrng=1-37  
+
 : catranges ( {rng1} {rng2} -- {rng} )
     dup 2 + rotate +
 ;

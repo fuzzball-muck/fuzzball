@@ -41,6 +41,8 @@
     where if it is true, the list only lets you add players to it.  Otherwise
     it lets you add regular objects to it.
 )
+
+$doccmd @list $lib/reflist=1-46
   
 $include $lib/strings
 $include $lib/props

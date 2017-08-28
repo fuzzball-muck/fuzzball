@@ -2601,6 +2601,12 @@ do_directive(COMPSTATE * cstat, char *direct)
 	skip_whitespace(&cstat->next_char);
 	add_property(cstat->program, MUF_AUTHOR_PROP, tmpname, 0);
 	advance_line(cstat);
+    } else if (!strcasecmp(temp, "doccmd")) {
+	skip_whitespace(&cstat->next_char);
+	tmpname = (char *) cstat->next_char;
+	skip_whitespace(&cstat->next_char);
+	add_property(cstat->program, MUF_DOCCMD_PROP, tmpname, 0);
+	advance_line(cstat);
     } else if (!strcasecmp(temp, "note")) {
 	skip_whitespace(&cstat->next_char);
 	tmpname = (char *) cstat->next_char;

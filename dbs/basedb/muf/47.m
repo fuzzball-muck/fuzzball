@@ -169,3 +169,6 @@ lvar copy?
 
 PUBLIC cp-prop $libdef cp-prop
 PUBLIC mv-prop $libdef mv-prop
+
+$pubdef copy-prop "$global/mv-cp" match "cp-prop" call
+$pubdef move-prop "$global/mv-cp" match "mv-prop" call

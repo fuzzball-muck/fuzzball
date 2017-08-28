@@ -326,6 +326,13 @@ $NOTE <rest_of_line>
   Sets the _note string property on the program to <rest_of_line>.
 ~
 ~
+$DOCCMD
+$DOCCMD <rest_of_line>
+
+  Sets the _docs string property on the program to <rest_of_line>.
+This property holds the command used to view documentation for the program.
+~
+~
 $DEFINE|$ENDDEF
 $DEFINE <defname> <definition> $enddef
 

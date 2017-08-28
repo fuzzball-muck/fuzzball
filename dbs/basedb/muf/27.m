@@ -84,6 +84,7 @@ $def LMGRdeleterange lmgr-deleterange
 .tell
 "<    To save changes to the list, and continue editing, use '.save'     >"
 .tell
+    read_wants_blanks
     over over LMGRgetlist
     "save" 1 ".i $" lsedit-loop
 ;

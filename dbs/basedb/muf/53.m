@@ -42,6 +42,7 @@
                                 "Somewhere on the Muck, %n has %v."
 )
   
+$doccmd @list $con/announce=1-42
   
 $include $lib/strings
 $include $lib/reflist

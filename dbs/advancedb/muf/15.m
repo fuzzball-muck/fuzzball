@@ -11,6 +11,8 @@ PARSE_OFAIL [d -- s]  Like OFAIL, but parses embedded MPI and returns result.
 PARSE_DROP  [d -- s]  Like DROP, but parses embedded MPI and returns result.
 PARSE_ODROP [d -- s]  Like ODROP, but parses embedded MPI and returns result.
 )
+
+$doccmd @list $lib/mpi=1-14
  
 : parse_desc  "_/de"  "(@Desc)"  1 parseprop ;
 : parse_idesc "_/ide" "(@Idesc)" 1 parseprop ;

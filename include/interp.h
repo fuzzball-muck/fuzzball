@@ -302,15 +302,6 @@ do { \
     } while (0)
 #endif
 
-#define MUF_AUTHOR_PROP         "_author"
-#define MUF_ERRCOUNT_PROP       ".debug/errcount"
-#define MUF_LASTCRASH_PROP      ".debug/lastcrash"
-#define MUF_LASTCRASHTIME_PROP  ".debug/lastcrashtime"
-#define MUF_LASTERR_PROP        ".debug/lasterr"
-#define MUF_LIB_VERSION_PROP    "_lib-version"
-#define MUF_NOTE_PROP           "_note"
-#define MUF_VERSION_PROP        "_version"
-
 #define PRIM_PROTOTYPE dbref player, dbref program, int mlev, \
                        struct inst *pc, struct inst *arg, int *top, \
                        struct frame *fr

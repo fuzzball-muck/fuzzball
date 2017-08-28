@@ -49,6 +49,8 @@ Message data type:
   Base#/X       Message Items
   Base#/i       Info String
 )
+
+$doccmd @list $lib/mesg=1-50
   
 ( $def the following if your muck uses the new style propdirized lists )
 ( ie:  listname#/1:line one    listename#/2:line two    etc. )

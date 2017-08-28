@@ -57,6 +57,8 @@
       matches if comp matches the beginning of the comparator exactly.
       ie:  a comp of "#h" would match a comparator {s1 - sn} of "#help".
 )
+
+$doccmd @list $lib/match=1-60
  
 $include $lib/stackrng
  
@@ -136,7 +138,7 @@ $include $lib/stackrng
 : std_table_match
   'table_compare table_match
 ;
-  
+ 
 : multi_rmatch-loop (i s d -- dn .. d1 n)
   dup not if pop pop exit then
   over over name swap
@@ -169,7 +171,7 @@ $include $lib/stackrng
   0 swap rot contents
   multi_rmatch-loop
 ;
-  
+ 
 PUBLIC noisy_match
 PUBLIC noisy_pmatch
 PUBLIC controls
