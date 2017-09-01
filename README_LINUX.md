@@ -10,7 +10,7 @@ Tools needed:
 
 For an Ubuntu system, apt-get install these packages
 ```sh
-make gcc        # Make tools, compiler
+build-essential # Make tools, compiler
 libpcre3-dev    # PCRE headers
 libssl-dev      # SSL library headers
 git             # Git revision control system
