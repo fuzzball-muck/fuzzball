@@ -2358,6 +2358,16 @@ next_token_raw(COMPSTATE * cstat)
 }
 
 /* handle compiler directives */
+
+static char *
+next_char_special(COMPSTATE *cstat)
+{
+    char _buf[BUFFER_LEN];
+    char progstr[BUFFER_LEN];
+    snprintf(progstr, sizeof(progstr), "#%d", cstat->program);
+    return string_substitute(cstat->next_char, "__PROG__", progstr, _buf, sizeof(_buf));
+}
+
 static void
 do_directive(COMPSTATE * cstat, char *direct)
 {
@@ -2446,12 +2456,12 @@ do_directive(COMPSTATE * cstat, char *direct)
 	    if (!strcasecmp(tmpname, ":")) {
 		remove_property(cstat->program, "/" DEFINES_PROPDIR, 0);
 	    } else {
-		const char *defstr = NULL;
+		char defstr[BUFFER_LEN];
 		char propname[BUFFER_LEN];
 		int doitset = 1;
 
 		skip_whitespace(&cstat->next_char);
-		defstr = cstat->next_char;
+		strcpyn(defstr, BUFFER_LEN, next_char_special(cstat));
 
 		if (*tmpname == BEGINESCAPE) {
 		    char *temppropstr = NULL;
@@ -2467,7 +2477,7 @@ do_directive(COMPSTATE * cstat, char *direct)
 		}
 
 		if (doitset) {
-		    if (defstr != NULL && *defstr) {
+		    if (*defstr) {
 			add_property(cstat->program, propname, defstr, 0);
 		    } else {
 			remove_property(cstat->program, propname, 0);
@@ -2603,7 +2613,8 @@ do_directive(COMPSTATE * cstat, char *direct)
 	advance_line(cstat);
     } else if (!strcasecmp(temp, "doccmd")) {
 	skip_whitespace(&cstat->next_char);
-	tmpname = (char *) cstat->next_char;
+//	tmpname = (char *) cstat->next_char;
+	tmpname = next_char_special(cstat);
 	skip_whitespace(&cstat->next_char);
 	add_property(cstat->program, MUF_DOCCMD_PROP, tmpname, 0);
 	advance_line(cstat);

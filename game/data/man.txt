@@ -57,8 +57,9 @@ Symbols
   *              +              ++             -              --
   -rot           /              <              <=             =
   >              >=             ?dup           @              \
-  __fuzzball__   __muckname     __version      {              }
-  }cat           }dict          }join          }list          }tell
+  __fuzzball__   __muckname     __prog__       __version      {
+  }              }cat           }dict          }join          }list
+  }tell          
 
 A's
   abort                     abs                       acos
@@ -487,8 +488,8 @@ $ifnlibver                $ifnver                   $ifver
 $include                  $lib-version              $libdef
 $note                     $pragma                   $pubdef
 $undef                    $version                  \
-__fuzzball__              __muckname                __version
-max_variable_count        
+__fuzzball__              __muckname                __prog__
+__version                 max_variable_count        
 
 ~----------------------------------------------------------------------------
 ~
@@ -525,6 +526,13 @@ in $ifdef/$ifndef comparisons.  The value of this will always start with
 'Muck2.2fb' for historical reasons, followed by the current fbmuck server
 version.  Ie: Muck2.2fb6.00 for the 6.00 fbmuck server.
 Also see: VERSION, $IFDEF, $DEFINE and $DEF
+~
+~
+__PROG__
+__PROG__
+
+  A compile-time token replaced with the dbref of the current program.
+Currently recognized within $doccmd and $pubdef directives.
 ~
 ~
 MAX_VARIABLE_COUNT
@@ -627,7 +635,7 @@ be set at compile time.
 $pubdef :                          Clears the _defs/ propdir on the program.
 $pubdef <defname>                  Clears the _defs/<defname> prop on the prog.
 $pubdef <defname> <rest_of_line>   Sets _defs/<defname> prop to <rest_of_line>.
-$pubdef \<defname> <rest_of_line>  Sets _def/<defname> if not already set.
+$pubdef \<defname> <rest_of_line>  Sets _defs/<defname> if not already set.
 
 For example:
     $pubdef tell me @ swap notify

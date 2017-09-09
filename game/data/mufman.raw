@@ -278,6 +278,13 @@ version.  Ie: Muck2.2fb6.00 for the 6.00 fbmuck server.
 ~~alsosee VERSION,$IFDEF,$DEFINE,$DEF
 ~
 ~
+__PROG__
+__PROG__
+
+  A compile-time token replaced with the dbref of the current program.
+Currently recognized within $doccmd and $pubdef directives.
+~
+~
 MAX_VARIABLE_COUNT
 MAX_VARIABLE_COUNT
 
@@ -389,7 +396,7 @@ be set at compile time.
 $pubdef :                          Clears the _defs/ propdir on the program.
 $pubdef <defname>                  Clears the _defs/<defname> prop on the prog.
 $pubdef <defname> <rest_of_line>   Sets _defs/<defname> prop to <rest_of_line>.
-$pubdef \<defname> <rest_of_line>  Sets _def/<defname> if not already set.
+$pubdef \<defname> <rest_of_line>  Sets _defs/<defname> if not already set.
 ~~endcode
 
 For example:
