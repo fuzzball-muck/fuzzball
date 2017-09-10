@@ -2800,14 +2800,14 @@ Also see: STRENCRYPT
 ~
 ~
 MD5HASH
-MD5HASH ( s -- )
+MD5HASH ( s -- s' )
 
   Calculates the MD5 hash of the given string.
 Also see: SHA1HASH
 ~
 ~
 SHA1HASH
-SHA1HASH ( s -- )
+SHA1HASH ( s -- s' )
 
   Calculates the SHA1 hash of the given string.
 Also see: MD5HASH
