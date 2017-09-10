@@ -2548,14 +2548,14 @@ the plaintext string s3.
 ~
 ~
 MD5HASH
-MD5HASH ( s -- )
+MD5HASH ( s -- s' )
 
   Calculates the MD5 hash of the given string.
 ~~alsosee SHA1HASH
 ~
 ~
 SHA1HASH
-SHA1HASH ( s -- )
+SHA1HASH ( s -- s' )
 
   Calculates the SHA1 hash of the given string.
 ~~alsosee MD5HASH
