@@ -981,7 +981,14 @@ do_register(int descr, dbref player, char *arg1, const char *arg2)
 		    snprintf(detail, sizeof(detail), ": %s", unparse_buf);
 		}
 		
-		notifyf_nolisten(player, "  %s%s", propname, detail);
+		if (!*objectstr) {
+		    notifyf_nolisten(player, "  %s%s", propname, detail);
+		} else {
+		    char *p = objectstr + strlen(objectstr) - 1;
+		    while (p > objectstr && *p == PROPDIR_DELIMITER) *(p--) = '\0';
+
+		    notifyf_nolisten(player, "  %s%c%s%s", objectstr, PROPDIR_DELIMITER, propname, detail);
+		}
 	    }
 	    propadr = next_prop(pptr, propadr, propname, sizeof(propname));
 	}
