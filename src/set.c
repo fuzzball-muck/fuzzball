@@ -925,7 +925,7 @@ do_register(int descr, dbref player, char *arg1, const char *arg2)
 	    match_absolute(&md);
 	    match_player(&md);
 	}
-	
+
 	if ((target = noisy_match_result(&md)) == NOTHING) {
 	    return;
 	}
@@ -996,7 +996,7 @@ do_register(int descr, dbref player, char *arg1, const char *arg2)
 	return;
     }
 
-    if (!objectstr) {
+    if (!*objectstr) {
 	register_object(player, target, propdir, (char *)arg2, NOTHING);
 	return;
     }
@@ -1018,7 +1018,7 @@ do_register(int descr, dbref player, char *arg1, const char *arg2)
 	match_absolute(&md);
 	match_player(&md);
     }
-	
+
     if ((object = noisy_match_result(&md)) == NOTHING) {
 	return;
     }

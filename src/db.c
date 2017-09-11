@@ -1402,7 +1402,7 @@ register_object(dbref player, dbref location, const char *propdir, char *name, d
 
     snprintf(buf, sizeof(buf), "%s/%s", propdir, name);
 
-    if ((p = get_property(location, buf))) {
+    if ((p = get_property(location, buf)) && !PropDir(p)) {
 #ifdef DISKBASE
 	propfetch(location, p);
 #endif
