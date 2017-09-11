@@ -947,6 +947,7 @@ do_register(int descr, dbref player, char *arg1, const char *arg2)
 
 	propadr = first_prop(target, dir, &pptr, propname, sizeof(propname));
 	while (propadr) {
+	    char *strval;
 	    snprintf(buf, sizeof(buf), "%s%c%s", dir, PROPDIR_DELIMITER, propname);
 
 	    if (!Prop_System(buf) && (!Prop_Hidden(buf) || Wizard(OWNER(player)))) {
@@ -955,8 +956,11 @@ do_register(int descr, dbref player, char *arg1, const char *arg2)
 		    snprintf(detail, sizeof(detail), "/ (directory)");
 		    break;
 		case PROP_STRTYP:
-		    if (number(PropDataStr(propadr))) {
-			detailref = atoi(PropDataStr(propadr));
+		    strval = PropDataStr(propadr);
+		    if (*strval == NUMBER_TOKEN && number(strval+1)) {
+			detailref = atoi(strval+1);
+		    } else if (number(strval)) {
+			detailref = atoi(strval);
 		    } else {
 			detailref = invalidref;
 		    }
