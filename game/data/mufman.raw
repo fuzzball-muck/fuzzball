@@ -1409,6 +1409,35 @@ each other as much as you want.
 ~~alsosee LOOPS
 ~
 ~
+CASE|DEFAULT|END|ENDCASE|WHEN
+Case statements
+
+  Inserver defines to achieve case statements. Allows:
+
+~~code
+<data> case
+  <test> when <effect> end
+  <test> when <effect> end
+  <test> when <effect> end
+  <test> when <effect> end
+  default <otherwise>  end
+endcase
+~~endcode
+ 
+This compiles to the following MUF code:
+
+~~code
+<data> begin
+  dup <test> if pop <effect> break then
+  dup <test> if pop <effect> break then
+  dup <test> if pop <effect> break then
+  dup <test> if pop <effect> break then
+  dup pop 1  if <otherwise>  break then
+  dup pop pop
+1 until
+~~endcode
+~
+~
 LOOPS
 Loops:
 

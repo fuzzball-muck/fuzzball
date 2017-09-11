@@ -529,6 +529,13 @@ include_internal_defs(COMPSTATE * cstat)
     insert_def(cstat, "array_union", "2 array_nunion");
     insert_def(cstat, "array_intersect", "2 array_nintersect");
 
+    /* Case support */
+    insert_def(cstat, "case", "begin dup");
+    insert_def(cstat, "when", "if pop");
+    insert_def(cstat, "end", "break then dup");
+    insert_def(cstat, "default", "pop 1 if");
+    insert_def(cstat, "endcase", "pop pop 1 until");
+
 #ifdef MCP_SUPPORT
     /* GUI dialog types */
     insert_def(cstat, "d_simple", "\"simple\"");

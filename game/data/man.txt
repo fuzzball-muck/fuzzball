@@ -97,13 +97,14 @@ C's
   c_label            c_listbox          c_menu             c_multiedit
   c_notebook         c_radiobtn         c_scale            c_spinner
   c_vrule            call               caller             cancall?
-  ceil               checkargs          checkpassword      clear
-  clear_error        cmd                command            compilation
-  compile            compiled?          conboot            concount
-  condbref           condescr           conhost            conidle
-  connect            connotify          contents           contents_array
-  contime            continue           controls           conuser
-  copyobj            copyplayer         cos                ctoi
+  case               ceil               checkargs          checkpassword
+  clear              clear_error        cmd                command
+  compilation        compile            compiled?          conboot
+  concount           condbref           condescr           conhost
+  conidle            connect            connotify          contents
+  contents_array     contime            continue           controls
+  conuser            copyobj            copyplayer         cos
+  ctoi               
 
 D's
   date               dbcmp              dbref              dbref?
@@ -1458,10 +1459,10 @@ Execution Control Structures|ExecStructs
 Execution Control Structures
 
 '              begin          break          call           cancall?
-continue       else           execute        exit           for
-foreach        if             interp         jmp            loop-example1
-loop-example2  loop-example3  loops          public         repeat
-then           until          while          wizcall        
+case           continue       else           execute        exit
+for            foreach        if             interp         jmp
+loop-example1  loop-example2  loop-example3  loops          public
+repeat         then           until          while          wizcall
 
 ~----------------------------------------------------------------------------
 ~
@@ -1646,6 +1647,31 @@ the UNTIL.
   Loops, TRY-CATCH-ENDCATCH's, and IF-ELSE-THEN's can all be nested in
 each other as much as you want.
 Also see: LOOPS
+~
+~
+CASE|DEFAULT|END|ENDCASE|WHEN
+Case statements
+
+  Inserver defines to achieve case statements. Allows:
+
+<data> case
+  <test> when <effect> end
+  <test> when <effect> end
+  <test> when <effect> end
+  <test> when <effect> end
+  default <otherwise>  end
+endcase
+ 
+This compiles to the following MUF code:
+
+<data> begin
+  dup <test> if pop <effect> break then
+  dup <test> if pop <effect> break then
+  dup <test> if pop <effect> break then
+  dup <test> if pop <effect> break then
+  dup pop 1  if <otherwise>  break then
+  dup pop pop
+1 until
 ~
 ~
 LOOPS
