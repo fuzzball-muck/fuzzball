@@ -933,7 +933,7 @@ do_recycle(int descr, dbref player, const char *name)
 	} else {
 	    while (tref->name) {
 		if (thing == *tref->ref) {
-		    notify(player, "That object cannot currently be @recyled.");
+		    notify(player, "That object cannot currently be @recycled.");
 		    return;
 		}
 		tref++;

@@ -185,8 +185,12 @@ typedef int dbref;
 /* Map BSD funcs to ANSI ones. */
 # define index		strchr
 # define rindex		strrchr
-# define bcopy(s, d, n) memcpy ((d), (s), (n))
-# define bzero(s, n) memset ((s), 0, (n))
+# ifndef bcopy
+#  define bcopy(s, d, n) memcpy ((d), (s), (n))
+# endif
+# ifndef bzero
+#  define bzero(s, n) memset ((s), 0, (n))
+# endif
 #else				/* not STDC_HEADERS and not HAVE_STRING_H */
 # include <strings.h>
 /* Map ANSI funcs to BSD ones. */
