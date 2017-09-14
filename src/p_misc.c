@@ -701,7 +701,7 @@ prim_setsysparm(PRIM_PROTOTYPE)
     oldvalue = strdup(tune_get_parmstring(oper2->data.string->data, security));
     newvalue = DoNullInd(oper1->data.string);
 
-    result = tune_setparm(parmname, newvalue, security);
+    result = tune_setparm(player, parmname, newvalue, security);
 
     /* Note: free(oldvalue) BEFORE calling abort_interp, or it will leak. */
     switch (result) {

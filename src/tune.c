@@ -10,6 +10,7 @@
 #include "inst.h"
 #include "interface.h"
 #include "interp.h"
+#include "match.h"
 #include "log.h"
 #include "tune.h"
 #include "tunelist.h"
@@ -497,7 +498,7 @@ tune_freeparms()
 #endif
 
 int
-tune_setparm(const char *parmname, const char *val, int mlev)
+tune_setparm(dbref player, const char *parmname, const char *val, int mlev)
 {
     struct tune_str_entry *tstr = tune_str_list;
     struct tune_time_entry *ttim = tune_time_list;
@@ -643,12 +644,12 @@ tune_setparm(const char *parmname, const char *val, int mlev)
 	    } else {
 		/* Specify a new value */
 		dbref obj;
-
-		if (*parmval != NUMBER_TOKEN)
+		struct match_data md;
+		init_match(NOTHING, player, parmval, NOTYPE, &md);
+		match_absolute(&md);
+		match_registered(&md);
+		if ((obj = match_result(&md)) == NOTHING)
 		    return TUNESET_SYNTAX;
-		if (!number(parmval + 1))
-		    return TUNESET_SYNTAX;
-		obj = (dbref) atoi(parmval + 1);
 		if (!ObjExists(obj))
 		    return TUNESET_SYNTAX;
 		if (tref->typ != NOTYPE && Typeof(obj) != tref->typ)
@@ -742,7 +743,7 @@ tune_load_parms_from_file(FILE * f, dbref player, int cnt)
 		p = buf;
 		skip_whitespace((const char **)&p);
 		if (*p) {
-		    result = tune_setparm(p, c, MLEV_GOD);
+		    result = tune_setparm((dbref)1, p, c, MLEV_GOD);
 		}
 		switch (result) {
 		case TUNESET_SUCCESS:
@@ -806,7 +807,7 @@ do_tune(dbref player, char *parmname, char *parmval)
 	/* Duplicate the string, otherwise the oldvalue pointer will be overridden to the new value
 	   when tune_setparm() is called. */
 	oldvalue = strdup(tune_get_parmstring(parmname, security));
-	result = tune_setparm(parmname, parmval, security);
+	result = tune_setparm(player, parmname, parmval, security);
 	switch (result) {
 	case TUNESET_SUCCESS:
 	case TUNESET_SUCCESS_DEFAULT:

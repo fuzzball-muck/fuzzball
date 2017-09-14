@@ -267,7 +267,7 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 		return;
 	    }
 	    content = mcp_mesg_arg_getline(msg, "content", 0);
-	    tune_setparm(reference, content, TUNE_MLEV(player));
+	    tune_setparm(player, reference, content, TUNE_MLEV(player));
 
 	} else if (!strcasecmp(category, "user")) {
 	} else {

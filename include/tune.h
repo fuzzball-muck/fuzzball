@@ -259,6 +259,6 @@ void tune_load_parms_defaults(void);
 void tune_load_parms_from_file(FILE * f, dbref player, int cnt);
 stk_array *tune_parms_array(const char *pattern, int mlev);
 void tune_save_parms_to_file(FILE * f);
-int tune_setparm(const char *parmname, const char *val, int security);
+int tune_setparm(dbref player, const char *parmname, const char *val, int security);
 
 #endif				/* _TUNE_H */
