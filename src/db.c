@@ -1402,7 +1402,7 @@ register_object(dbref player, dbref location, const char *propdir, char *name, d
 
     snprintf(buf, sizeof(buf), "%s/%s", propdir, name);
 
-    if ((p = get_property(location, buf)) && !PropDir(p)) {
+    if ((p = get_property(location, buf))) {
 #ifdef DISKBASE
 	propfetch(location, p);
 #endif
@@ -1425,8 +1425,11 @@ register_object(dbref player, dbref location, const char *propdir, char *name, d
 	default:
 	    break;
         }
-	unparse_object(player, prevobj, unparse_buf, sizeof(unparse_buf));
-	notifyf_nolisten(player, "Used to be registered as %s: %s", buf, unparse_buf);
+
+	if (prevobj != -50) {
+	    unparse_object(player, prevobj, unparse_buf, sizeof(unparse_buf));
+	    notifyf_nolisten(player, "Used to be registered as %s: %s", buf, unparse_buf);
+	}
     } else if (object == NOTHING) {
 	notifyf_nolisten(player, "Nothing to remove.");
 	return;

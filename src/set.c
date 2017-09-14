@@ -981,7 +981,7 @@ do_register(int descr, dbref player, char *arg1, const char *arg2)
 		    snprintf(detail, sizeof(detail), ": %s", unparse_buf);
 		}
 		
-		if (!*objectstr) {
+		if (!objectstr || !*objectstr) {
 		    notifyf_nolisten(player, "  %s%s", propname, detail);
 		} else {
 		    char *p = objectstr + strlen(objectstr) - 1;
@@ -996,7 +996,7 @@ do_register(int descr, dbref player, char *arg1, const char *arg2)
 	return;
     }
 
-    if (!*objectstr) {
+    if (!objectstr || !*objectstr) {
 	register_object(player, target, propdir, (char *)arg2, NOTHING);
 	return;
     }

@@ -505,7 +505,7 @@ include_internal_defs(COMPSTATE * cstat)
     /* Events */
     insert_def(cstat, "event_wait", "0 array_make event_waitfor");
     insert_def(cstat, "tread",
-	       "\"__tread\" timer_start { \"TIMER.__tread\" \"READ\" }list event_waitfor swap pop \"READ\" strcmp if \"\" 0 else read 1 \"__tread\" timer_stop then");
+	       "\"__tread\" timer_start { \"TIMER.__tread\" \"READ\" }list event_waitfor nip \"READ\" strcmp if \"\" 0 else read 1 \"__tread\" timer_stop then");
 
     /* MUF Error defines */
     insert_def(cstat, "err_divzero?", "0 is_set?");
