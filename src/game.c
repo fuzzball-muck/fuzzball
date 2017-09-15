@@ -1453,6 +1453,11 @@ process_command(int descr, dbref player, const char *command)
 		goto bad;
 	    }
 	    break;
+	case 'u':
+	case 'U':
+	    Matched("uptime");
+	    do_uptime(player);
+	    break;
 	case 'w':
 	case 'W':
 	    /* whisper */

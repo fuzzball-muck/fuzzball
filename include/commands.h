@@ -85,6 +85,7 @@ void do_unbless(int descr, dbref player, const char *target, const char *propnam
 void do_uncompile(dbref player);
 void do_unlink(int descr, dbref player, const char *name);
 void do_unlock(int descr, dbref player, const char *name);
+void do_uptime(dbref player);
 #ifndef NO_USAGE_COMMAND
 void do_usage(dbref player);
 #endif

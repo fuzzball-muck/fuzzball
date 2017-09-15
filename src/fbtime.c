@@ -145,3 +145,24 @@ timestr_full(long dtime)
 
     return buf;
 }
+
+const char *
+timestr_long(long dtime)
+{
+    static char buf[100];
+    const char *str[7] = { "year", "month", "week", "day", "hour", "minute", "second" };
+    int div[7] = { 31556736, 2621376, 604800, 86400, 3600, 60, 1 };
+
+    *buf = 0;
+
+    for (int i = 0; i < 7; i++) {
+	if (dtime >= div[i]) {
+	    if (*buf) snprintf(buf, sizeof(buf), "%s, ", buf);
+	    long temp = dtime / div[i];
+	    snprintf(buf, sizeof(buf), "%s%ld %s%s", buf, temp, str[i], temp != 1 ? "s" : "");
+	    dtime %= div[i];
+	}
+    }
+
+    return buf;
+}

@@ -13,6 +13,7 @@ int msec_diff(struct timeval now, struct timeval then);
 char *time_format_1(time_t dt);
 char *time_format_2(time_t dt);
 const char *timestr_full(long dtime);
+const char *timestr_long(long dtime);
 struct timeval timeval_sub(struct timeval now, struct timeval then);
 void ts_lastuseobject(dbref thing);
 void ts_modifyobject(dbref thing);
