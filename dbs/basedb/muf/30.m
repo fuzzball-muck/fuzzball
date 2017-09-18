@@ -1,10 +1,10 @@
 ( cmd-mv-cp
     cp [origobj][=prop],[destobj][=destprop]
       Copies prop from origobj to destobj, renaming it to destprop.
-
+ 
     mv [origobj][=prop],[destobj][=destprop]
       Moves prop from origobj to destobj, renaming it to destprop.
-
+ 
       Arguments in []s are optional.
       if origobj is omitted, it assumes a property on the user.
       if destobj is omitten, it assumes destobj is the same as origobj.
@@ -12,7 +12,7 @@
       if prop is omitted, it prompts for it.
       if both prop and origobj are omitted, it prompts for both.
       if both destobj and destprop are omitted, it prompts for them.
-
+ 
   CHANGES:
     9/99 Added checkperms [ s --  ] to allow the program to safely be
     set Wizard. cp and mv will copy or move ~ and @ props only if the
@@ -20,13 +20,13 @@
     9/99 Added a line at the beginning of main to catch dbref spoofing.
     -- Jessy
 )
-
-$include $lib/strings
-$include $lib/edit
+ 
+$doccmd @list __PROG__=!@1-22
+ 
 $include $lib/match
-
+ 
 lvar copy?
-
+ 
 : checkperms ( s --  )
   dup "@" stringpfx
   over "/@" instr
@@ -36,7 +36,7 @@ lvar copy?
     "Permission denied." .tell pid kill
   then
 ;
-
+ 
 : cp-mv-prop ( d s d s -- i )
   dup checkperms
   3 pick checkperms
@@ -73,15 +73,15 @@ lvar copy?
   copy? @ not if remove_prop else pop pop then
   1
 ;
-
+ 
 : cp-prop ( d s d s -- i )
   1 copy? ! cp-mv-prop
 ;
-
+ 
 : mv-prop ( d s d s -- i )
   0 copy? ! cp-mv-prop
 ;
-
+ 
 : strip-slashes ( s -- s' )
   begin
     dup while
@@ -90,15 +90,15 @@ lvar copy?
     pop
   repeat
 ;
-
+ 
 : parse-command ( s -- )
   "me" match me !
   command @ tolower
   "command @ = \"" over strcat "\"" strcat .tell
   "c" instr copy? !
-
+ 
   dup "#help" stringcmp not if
-    pop
+    pop {
     copy? @ if
       "cp origobj=prop,destobj=destprop"
       "  Copies prop from origobj to destobj, renaming it to destprop."
@@ -113,18 +113,18 @@ lvar copy?
     "  if prop is omitted, it asks the user for it."
     "  if both prop and origobj are omitted, it asks the user for both."
     "  if both destobj and destprop are omitted, it asks the user for them."
-    depth EDITdisplay exit
+    }tell exit
   then
-
-  "," .split .strip swap .strip
-  "=" .split .strip swap .strip
+ 
+  "," split strip swap strip
+  "=" split strip swap strip
   dup if
     .noisy_match
     dup not if pop exit then
   else
     over not if
       "Please enter the name of the original object."
-      .tell pop read .strip
+      .tell pop read strip
     then
     dup if
       .noisy_match
@@ -137,17 +137,17 @@ lvar copy?
     strip-slashes
     dup not while
     "Please enter the name of the original property." .tell
-    pop read .strip
+    pop read strip
   repeat
   swap
-  "=" .split .strip strip-slashes swap .strip
+  "=" split strip strip-slashes swap strip
   begin
     over over or not while
     pop pop
     "Please enter the name of the destination object." .tell
-    read .strip
+    read strip
     "Please enter the name of the destination property." .tell
-    read .strip
+    read strip
     strip-slashes swap
   repeat
   dup if
@@ -158,7 +158,7 @@ lvar copy?
   then
   swap
   dup not if pop over then
-
+ 
   (origdbref origpropname destdbref destpropname)
   cp-mv-prop if
     copy? @ if "Property copied."
@@ -166,9 +166,9 @@ lvar copy?
     then .tell
   then
 ;
-
-PUBLIC cp-prop $libdef cp-prop
-PUBLIC mv-prop $libdef mv-prop
-
-$pubdef copy-prop "$global/mv-cp" match "cp-prop" call
-$pubdef move-prop "$global/mv-cp" match "mv-prop" call
+ 
+public cp-prop
+public mv-prop
+ 
+$pubdef copy-prop __PROG__ "cp-prop" call
+$pubdef move-prop __PROG__ "mv-prop" call

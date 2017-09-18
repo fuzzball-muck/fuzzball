@@ -1,6 +1,9 @@
-$include $lib/props
+$version 1.2
+ 
 $include $lib/match
-$def maildir "_page/mail#"
+$include $lib/props
+ 
+$define maildir "_page/mail#" $enddef
   
 : mail-warn
   maildir me @ over .locate-prop

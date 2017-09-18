@@ -1,7 +1,7 @@
-$include $lib/strings
 $include $lib/match
+ 
 lvar check-obj-addr
-   
+  
 : check-next-loop (d -- )
    dup not if pop exit then
    dup exit? over thing? or
@@ -10,7 +10,7 @@ lvar check-obj-addr
    then
    next check-next-loop
 ;
-   
+ 
 : check-contents (d -- )
    contents check-next-loop
 ;
@@ -18,22 +18,22 @@ lvar check-obj-addr
 : check-exits (d -- )
    exits check-next-loop
 ;
-   
+ 
 : exec-err (d mtypestr warnstr -- )
    "On " 4 rotate unparseobj strcat
    ", in it's " strcat rot strcat
    ", " strcat swap strcat .tell
 ;
-   
+ 
 : can-linkto? (player object -- i)
    dup "link_ok" flag? if pop pop 1 exit then
    .controls
 ;
-   
+ 
 : check-exec (d mtype execstr -- )
    dup "@" 1 strncmp if pop pop pop exit then
    1 strcut swap pop
-   " " .split pop
+   " " split pop
    dup "$" 1 strncmp not if
       dup match ok? not if
          " is not a known registered program." strcat
@@ -67,22 +67,21 @@ lvar check-obj-addr
    then
    pop pop pop
 ;
-   
-   
+ 
 : missing-err ( d s -- )
    swap unparseobj
    " is missing an "
    strcat swap strcat
    " message." strcat .tell
 ;
-   
+ 
 : colon-err ( d s -- )
    swap unparseobj
    " has an unnecesary ':' at the start of its "
    strcat swap strcat
    " message." strcat .tell
 ;
-   
+ 
 : check-desc (d -- )
    dup desc not if
       "@description" missing-err
@@ -91,7 +90,7 @@ lvar check-obj-addr
       desc check-exec
    then
 ;
-   
+ 
 : check-succ (d -- )
    dup succ not if
       "@success" missing-err
@@ -100,7 +99,7 @@ lvar check-obj-addr
       succ check-exec
    then
 ;
-   
+ 
 : check-fail (d -- )
    dup fail not if
       "@fail" missing-err
@@ -109,7 +108,7 @@ lvar check-obj-addr
       fail check-exec
    then
 ;
-   
+ 
 : check-drop (d -- )
    dup drop not if
       "@drop" missing-err
@@ -118,7 +117,7 @@ lvar check-obj-addr
       drop check-exec
    then
 ;
-   
+ 
 : check-osucc (d -- )
    dup osucc not if
       "@osuccess" missing-err
@@ -129,7 +128,7 @@ lvar check-obj-addr
       then
    then
 ;
-   
+ 
 : check-ofail (d -- )
    dup ofail not if
       "@ofail" missing-err
@@ -140,7 +139,7 @@ lvar check-obj-addr
       then
    then
 ;
-   
+ 
 : check-odrop (d -- )
    dup odrop not if
       "@odrop" missing-err
@@ -151,13 +150,12 @@ lvar check-obj-addr
       then
    then
 ;
-   
-   
+ 
 $define islocked? (d -- i) getlockstr "*UNLOCKED*" stringcmp $enddef
    
 : islocked_always? (d -- i)
    getlockstr dup "#0" stringcmp not if pop 1 exit then
-   dup "#" STRsplit swap pop atoi
+   dup "#" split swap pop atoi
    "#" swap intostr strcat
    (lockstr "#dbref")
    dup "&!" over strcat strcat
@@ -166,7 +164,7 @@ $define islocked? (d -- i) getlockstr "*UNLOCKED*" stringcmp $enddef
    stringcmp not if 1 exit then
    0
 ;
-   
+ 
 : check-link ( d -- )
    dup getlink not if
       dup unparseobj " is unlinked." strcat .tell
@@ -189,7 +187,7 @@ $define islocked? (d -- i) getlockstr "*UNLOCKED*" stringcmp $enddef
    then
    pop
 ;
-         
+ 
 : check-room (d -- )
    dup check-desc
    dup islocked? if
@@ -205,7 +203,7 @@ $define islocked? (d -- i) getlockstr "*UNLOCKED*" stringcmp $enddef
    dup check-contents
    check-exits
 ;
-   
+ 
 : check-exit ( d -- )
    dup check-link
    dup check-desc
@@ -225,7 +223,7 @@ $define islocked? (d -- i) getlockstr "*UNLOCKED*" stringcmp $enddef
    then
    pop
 ;
-   
+ 
 : check-thing ( d -- )
    dup check-desc
    dup islocked_always? not if
@@ -240,7 +238,7 @@ $define islocked? (d -- i) getlockstr "*UNLOCKED*" stringcmp $enddef
    dup check-odrop
    check-exits
 ;
-   
+ 
 : check-player ( d -- )
    dup check-desc
    dup islocked_always? not if
@@ -254,11 +252,11 @@ $define islocked? (d -- i) getlockstr "*UNLOCKED*" stringcmp $enddef
    dup check-contents
    check-exits
 ;
-   
+ 
 : check-program ( d -- )
    check-desc
 ;
-   
+ 
 : check-obj (d -- )
    dup room?   if check-room   exit then
    dup exit?   if check-exit   exit then
@@ -266,10 +264,10 @@ $define islocked? (d -- i) getlockstr "*UNLOCKED*" stringcmp $enddef
    dup player? if check-player exit then
    check-program
 ;
-   
+ 
 : main
    'check-obj check-obj-addr !
-   .strip dup not if pop "here" then
+   strip dup not if pop "here" then
    .match_controlled
    dup #-3 dbcmp if pop me @ getlink then
    dup ok? not if pop exit then

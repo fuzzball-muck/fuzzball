@@ -1,14 +1,13 @@
-( CON-Announce 2.00 -- announces logins/logouts to interested players.
-  Also known as cmd-watchfor ver. 2.00
+( cmd-watchfor 2.03 -- announces logins/logouts to interested players.
   
   If you "@set me=_prefs/con_announce?:yes", then when any player listed
   by name in your "_prefs/con_announce_list" property logs in or out, you
   will be notified.  You will not be informed if the connecting player is
   in the same room as you, unless the room is set DARK;  it is assumed that
   you already know that they are connecting/disconnecting.
-  When a person logs in, they have a half minute grace period in which they
-  can rename themselves, or log back off, before it is announced that they
-  have logged on.  This is for privacy purposes.  Wizards are told of player
+  When a person logs in, they have a minute grace period in which they can
+  rename themselves, or log back off, before it is announced that they have
+  logged on.  This is for privacy purposes.  Wizards are told of player
   logins immediately, however.  This is for possible security reasons.
   
   Properties:
@@ -40,42 +39,42 @@
                                 %l subs to the players location for a wizard's
                                 format string.  The default format string is:
                                 "Somewhere on the Muck, %n has %v."
+----------
+Modified 05/28/97 by Nightwind
+- Added wf #clean to check for non-existant names and remove them if asked to
 )
-  
-$doccmd @list $con/announce=1-42
-  
-$include $lib/strings
-$include $lib/reflist
+(v2.00: created by Revar)
+(v2.01: 5/26/95 Donatello: Patched in exceptions to the hidefrom list. You now
+hide from Someone if Someone is in your hidefrom list and not in your exception
+list. The string #all makes sense only in the hidefrom list. Added by request.)
+(v2.02: 8/16/95 Ruffin: Make dark players not show or be announced. )
+(v2.03:  10/17/97 Ruffin: '=' is probably a mistype of 'wh' )
+ 
+$def LOOKUP_COST 0
+ 
 $include $lib/edit
-  
-$def grace_time 30 (seconds)
-  
+$include $lib/props
+$include $lib/strings
+ 
+$def grace_time 60 (seconds)
+ 
 $def announce_prop      "_prefs/con_announce?"
 $def announce_fmt_prop  "_prefs/con_announce_fmt"
 $def announce_list_prop "_prefs/con_announce_list"
 $def announce_once_prop "_prefs/con_announce_once"
 $def announce_hide_prop "_prefs/@con_announce_hide"
-  
+$def announce_show_prop "_prefs/@con_announce_show"
+ 
 $def logintime_prop     "@/AnnLITime"
-  
-  
+ 
 ( $def if you want players to see all connects/
   disconnects when no _prefs/con_announce_list is set.)
 $undef MORTAL_SEE_ALL
-  
-  
+ 
 lvar discon?
-  
+ 
 : yes-prop? (d s -- i)
     getpropstr "yes" stringcmp not
-;
-  
-: setproperty (d s s -- )
-    dup if
-        0 addprop
-    else
-        pop remove_prop
-    then
 ;
   
 : find-action ( -- s)
@@ -86,8 +85,7 @@ lvar discon?
         "reconnected"
     then
 ;
-  
-  
+ 
 : can_see_all? (dListowner -- seeall?)
     dup announce_list_prop getpropstr
     if pop 0 exit then
@@ -97,8 +95,7 @@ $else
     "wizard" flag?
 $endif
 ;
-  
-  
+ 
 : remove_listitem (sList sItem -- sList)
     " " swap strip strcat " " strcat
     " " rot strip strcat " " strcat swap
@@ -118,8 +115,7 @@ $endif
     then
     strip .sms
 ;
-  
-  
+ 
 : in_strlist? (sName sList -- bool)
     dup not if pop pop 0 exit then
     (sName sList)
@@ -128,14 +124,31 @@ $endif
     (sList sName)
     tolower instr
 ;
-  
-  
+ 
+: hiding? (d1 d2 -- i: Is D1 hiding from D2?)
+  dup "W" flag? if pop pop 0 exit then (Wizzes see all.)
+  over "d" flag? if pop pop 1 exit then (Ruffin - dark is hidden)
+  over announce_show_prop getpropstr  
+  over name over in_strlist?
+   "#" 4 pick intostr strcat rot in_strlist? or if
+    (Definitely not hiding.)
+    pop pop 0 exit
+  then
+  swap announce_hide_prop getpropstr
+  over name over in_strlist?
+  (dWho sList bInlist?)
+  "#all" 3 pick in_strlist? or
+  (dWho sList bInlist?)
+  "#" 4 rotate int intostr strcat rot in_strlist? or
+  (bInlists?)
+;
+ 
 (returns 0 if not in list, 1 if in list)
 : in_permlist? (dListowner sName -- inlist?)
     swap announce_list_prop getpropstr
     in_strlist?
 ;
-  
+ 
 : ref_in_permlist? (dListowner dWho -- inlist?)
     over "wizard" flag? if
         "#" swap int intostr
@@ -143,8 +156,7 @@ $endif
     else pop pop 0
     then
 ;
-  
-  
+ 
 : name_or_ref_in_hidelist? (dListowner dWho -- inlist?)
     dup "wizard" flag? if pop pop 0 exit then  (nowhere to hide from wizards!)
     swap announce_hide_prop getpropstr
@@ -156,20 +168,19 @@ $endif
     "#" 4 rotate int intostr strcat rot in_strlist? or
     (bInlists?)
 ;
-  
-  
+ 
 (returns 0 if not in list, 1 if in list)
 : in_templist? (dListowner sName -- inlist?)
     swap announce_once_prop getpropstr
     in_strlist?
 ;
-  
+ 
 : refconv (s -- s)   (name to refstr)
-    me @ "wizard" flag? not if me @ 1 addpennies then
-    dup .pmatch dup player?
+    me @ "W" flag? not me @ pennies 5000 < and if me @ LOOKUP_COST addpennies then
+    dup pmatch dup player?
     if name swap then pop
 ;
-  
+ 
 : convref (s -- s)   (refstr to name)
     dup "#" 1 strncmp if exit then
     dup "#all" stringcmp not if exit then
@@ -178,8 +189,7 @@ $endif
     else pop
     then
 ;
-  
-  
+ 
 : ref_or_name_in_strlist? (s sList -- bool)
     "ss" checkargs
     over "#" 1 strncmp not if
@@ -191,21 +201,20 @@ $endif
     then
     "i" checkargs
 ;
-  
-  
+ 
 : is-oncer? (d -- i)
     dup announce_once_prop getpropstr
     strip dup tolower " " swap over strcat strcat
     me @ name tolower " " swap over strcat strcat
     instr dup not if pop pop pop 0 exit then
     1 - strcut me @ name strlen 1 + strcut swap pop strcat
-    .sms strip announce_once_prop swap setproperty 1
+    .sms strip announce_once_prop swap setpropstr 1
 ;
-  
+ 
 : get-time ( -- s)
     "%X" systime timefmt
 ;
-  
+ 
 : do_format_subs (d -- s)
     dup announce_fmt_prop getpropstr  (get the announce format)
     dup not if pop "Somewhere on the muck, %n has %v." then
@@ -220,9 +229,9 @@ $endif
     then
     swap pop
 ;
-  
-  
+ 
 : announce (dowizzes? -- )
+    concount 350 > if pop exit then
     preempt
     concount begin
         dup while
@@ -232,7 +241,7 @@ $endif
         dup location me @ location dbcmp not (only ann. if !same room...)
         me @ location "dark" flag? or if  (...or room is set dark.)
             dup announce_prop yes-prop? if  (only announce to people listening)
-                me @ over name_or_ref_in_hidelist? not if
+                me @ over hiding? not if
                     dup me @ name in_permlist?
                     over me @ ref_in_permlist? or
                     over can_see_all? or
@@ -252,7 +261,7 @@ $endif
     pop
     background
 ;
-  
+ 
 : sort-stringwords (s -- s)
     strip .sms " " explode
     0 1 EDITsort
@@ -264,52 +273,76 @@ $endif
     repeat
     swap pop strip
 ;
-  
+ 
+: clean_list  ( -- )
+   me @ announce_list_prop getpropstr
+   .sms strip "" swap "" swap begin dup while
+      " " split swap dup pmatch if
+         rot " " strcat swap strcat swap
+      else
+         4 rotate " " strcat swap strcat -3 rotate
+      then
+   repeat pop
+   swap strip dup not if
+      pop pop ">> No bad names found." .tell exit
+   then
+   ">> Could not find the names '" swap strcat "' in your watchfor list."
+   strcat .tell
+   ">> Do you wish to remove these now?" .tell
+   read striplead tolower "y" 1 strncmp not if
+      me @ announce_list_prop rot .sms strip sort-stringwords setpropstr   
+      ">> Names removed." .tell
+   else
+      ">> Aborted." .tell pop
+   then
+;
+ 
 lvar shownheader
 : list-awake-watched
     0 shownheader !
     me @ announce_list_prop getpropstr
-    .sms strip " " explode
-    "" begin
-        over while
-        swap 1 - swap rot
-        dup "#" 1 strncmp
-        (**** Consider letting non-wizards list by dbref ****)
-        me @ "wizard" flag? not or
-        if
-            me @ "wizard" flag? not if me @ 1 addpennies then
-            dup .pmatch
-        else
-            1 strcut swap pop atoi
-            dup if
-                dbref dup player? if
-                    dup name swap
+    dup if
+        .sms strip " " explode
+        "" begin
+            over while
+            swap 1 - swap rot
+            dup "#" 1 strncmp
+            (**** Consider letting non-wizards list by dbref ****)
+            me @ "wizard" flag? not or
+            if
+            me @ "wizard" flag? not if me @ LOOKUP_COST addpennies then
+                dup pmatch
+            else
+                1 strcut swap pop atoi
+                dup if
+                    dbref dup player? if
+                        dup name swap
+                    else
+                        pop "Droogy" #-1
+                    then
                 else
                     pop "Droogy" #-1
                 then
-            else
-                pop "Droogy" #-1
             then
-        then
-        dup not if pop pop continue then
-        dup me @ name_or_ref_in_hidelist? if pop pop continue then
-        awake? not if pop continue then
-        "                  " strcat 18 strcut pop
-        shownheader @ not if
-            "Players online who you are watching for:" .tell
-            1 shownheader !
-        then
-        strcat dup strlen 60 > if .tell "" then
-    repeat
-    .tell pop
+            dup not if pop pop continue then
+            dup me @ hiding? if pop pop continue then
+            awake? not if pop continue then
+            "                  " strcat 18 strcut pop
+            shownheader @ not if
+                "Players online for whom you are watching:" .tell
+                1 shownheader !
+            then
+            strcat dup strlen 60 > if .tell "" then
+        repeat
+        .tell pop
+    then
     shownheader @ not if
-        "No one that you are watching for is online." .tell
+        "No one from your watch list is online." .tell
     else
         "Done." .tell
     then
 ;
-  
-  
+ 
 lvar edlist
 lvar listname
 lvar userefs
@@ -382,17 +415,16 @@ lvar userefs
     edlist @
     .sms strip sort-stringwords
 ;
-  
-  
+ 
 : do-help-list (sx...s1 x -- )
     begin
         dup while 1 -
         dup 2 + rotate
-        trigger @ name ";" .split pop
+        trigger @ name ";" split pop
         " " strcat swap strcat .tell
     repeat pop
 ;
-  
+ 
 : do-help
     "-- warns you when given players log in or out."
     1 do-help-list
@@ -405,7 +437,7 @@ lvar userefs
     "                  Lists all watched players currently online."
     "<player>          Adds the given player to your watch list."
     "!<player>         Removes the given player from your watch list."
-    "                  Lists the players temporarily being watched for."
+    "#temp             Lists the players temporarily being watched for."
     "#temp <plyr>      Adds the given player to the temporary watch list."
     "#temp !<plyr>     Removes the given player from the temp. watch list."
     "#hidefrom <plyr>  Prevents <plyr> from being told of your logins."
@@ -413,11 +445,37 @@ lvar userefs
     "#hidefrom #all    Lets no one be informed of your logins/logouts."
     "#hidefrom !#all   Lets people see your logins/logouts again."
     "#hidefrom         Lists who you are hiding from."
-    15 do-help-list
-"For more detailed information on this program, type '@view $con/announce'"
+    "#nohide <plyr>    Make an exception for <plyr> (useful when hiding from #all)."
+    "#nohide !<plyr>   Remove the exception for <plyr>."
+    "#clean            Checks for non-existant names in your watch list."
+    18 do-help-list
 .tell
 ;
-  
+ 
+: hide-from (s --: I want to hide from S.)
+  me @ announce_hide_prop getpropstr
+  swap "hidefrom" 1 edit-list
+  me @ announce_hide_prop rot .addpropstr
+;
+ 
+: unhide-from (s --: I want NOT to hide from S.)
+  me @ announce_show_prop getpropstr
+  swap "hidefrom-exception" 1 edit-list
+  me @ announce_show_prop rot .addpropstr
+;
+ 
+: list-hide (--: From whom am I hiding?)
+  me @ announce_hide_prop getpropstr
+  .sms strip sort-stringwords
+  dup not if pop "*no one*" then
+  "#all" over in_strlist? if pop "*everyone*" then
+  "Hiding from: " swap strcat .tell
+  me @ announce_show_prop getpropstr
+  .sms strip sort-stringwords
+  dup not if pop "*no one*" then
+  "Except: " swap strcat .tell
+;
+ 
 : main
     command @ "Queued Event." stringcmp not if
         "disconnect" stringcmp not discon? !
@@ -425,6 +483,7 @@ lvar userefs
         discon? @ if
             me @ logintime_prop getpropval systime swap -
             me @ logintime_prop remove_prop
+            concount 350 > if exit then
             grace_time < if exit then (If disconn. within grace time, ignore)
         else
             me @ logintime_prop "" systime addprop
@@ -436,6 +495,7 @@ lvar userefs
                 exit
             then
   
+            concount 350 > if exit then
             grace_time sleep
             me @ awake? not if exit then (if not logged on, ignore)
             me @ logintime_prop getpropval
@@ -444,8 +504,10 @@ lvar userefs
         then
         0 announce (announce to all others)
     else (run from action)  (Run away!  Aiiiiiigh!)
+   dup "=" instr if
+      pop "Don't include a '=' with 'wf'. Did you mean 'wh' (whisper)?" .tell exit then
         strip dup "#" 1 strncmp not if
-            " " .split swap
+            " " split swap
             dup "#list" stringcmp not if
                 pop pop me @ announce_list_prop getpropstr
                 .sms strip sort-stringwords
@@ -455,6 +517,9 @@ lvar userefs
             then
             dup "#help" stringcmp not if
                 pop pop do-help exit
+            then
+            dup "#clean" stringcmp not if
+                pop clean_list exit
             then
             dup "#off" stringcmp not if
                 pop me @ announce_prop remove_prop
@@ -467,24 +532,23 @@ lvar userefs
             dup "#hidefrom" stringcmp not
             over "#hide" stringcmp not or if
                 pop dup if
-                    me @ announce_hide_prop getpropstr
-                    swap "hidefrom" 1 edit-list
-                    me @ announce_hide_prop rot setproperty
-                    exit
+                    hide-from
                 else
-                    pop me @ announce_hide_prop getpropstr
-                    .sms strip sort-stringwords
-                    dup not if pop "*no one*" then
-                    "#all" over in_strlist? if pop "*everyone*" then
-                    "Hiding from: " swap strcat
-                    .tell exit
-                then
+                    pop list-hide
+                then exit
+            then
+            dup "#nohide" stringcmp not if
+                pop dup if
+                    unhide-from
+                else
+                    pop list-hide
+                then exit
             then
             dup "#temp" stringcmp not if
                 pop dup if
                     me @ announce_once_prop getpropstr
                     swap "temporary watchfor" 0 edit-list
-                    me @ announce_once_prop rot setproperty
+                    me @ announce_once_prop rot setpropstr
                     exit
                 else
                     pop me @ announce_once_prop getpropstr
@@ -498,11 +562,10 @@ lvar userefs
         dup if
             me @ announce_list_prop getpropstr
             swap "permanent watchfor" 0 edit-list
-            me @ announce_list_prop rot setproperty
+            me @ announce_list_prop rot setpropstr
         else
             pop list-awake-watched
             exit
         then
     then
 ;
-(Remember, the Weasel Patrol is on the job!)

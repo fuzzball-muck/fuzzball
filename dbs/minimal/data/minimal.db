@@ -1,7 +1,7 @@
 ***Foxen9 TinyMUCK DUMP Format***
 2
 1
-155
+154
 autolook_cmd=look
 cpennies=Pennies
 cpenny=Penny
@@ -156,7 +156,6 @@ registration=yes
 periodic_program_purge=yes
 secure_who=no
 use_hostnames=no
-who_doing=yes
 #1
 One
 0
@@ -184,14 +183,8 @@ Room Zero
 1
 1435685445
 *Props*
-_/de:2:You are in Room Zero.  It's very dark here.
+_/de:2:You are in Room Zero. It's very dark here.
 _/osc:2:is briefly visible through the mist.
-_sys/dumpinterval:3:14400
-_sys/lastdumptime:3:1456843742
-_sys/max_connects:3:1
-_sys/maxpennies:3:10000
-_sys/shutdowntime:3:1456843742
-_sys/startuptime:3:1456843723
 *End*
 -1
 -1

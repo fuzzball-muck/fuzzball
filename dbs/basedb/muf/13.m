@@ -1,422 +1,159 @@
-( Stack Based String Range Editing Routines
-start, end, pos, and dest are all with reference to the start of the range
-that is towards the bottom of the stack.  A 1 means the first item of the
-range; the item deepest in the stack.  offset is the number of stack items
-between the top of the string range and the bottom parameter.
+( DBref list manager -- REF
+  A reflist is a property on an object that contains a string with
+  a series of space and # delimited dbrefs in it.  ie:
+    reflist:#1234 #9364 #21 #6466 #37
+  A reflist only will contain one copy of any one dbref within it.
+  A reflist can be no longer than 4096 characters long.  Generally,
+    this means around 500+ refs.
   
-    EDITsearch  [            {rng} ... offset string start -- {rng} ... pos ]
-      Searches a range of strings for the first occurence of a substring. This
-      is case sensitive, and returns the line number of the first occurence
+  REF-add  [objref reflistname dbreftoadd -- ]
+    Adds a dbref to the dbreflist.  If the given dbref is already in
+    the reflist, it moves it to the end of the reflist.
   
-    EDITreplace [ {rng} ... offset oldstr newstr start end -- {rng'} ...    ]
-      Searches the range of strings for all occurences of a case sensitive
-      substring, and replaces them with new text.
+  REF-delete  [objref reflistname dbreftokill -- ]
+    Removes a dbref from the dbreflist.
   
-    EDITmove    [          {rng} ... offset dest start end -- {rng'} ...    ]
-      Moves text within a string range from one line to another location,
-      deleting the original.
+  REF-first [objref reflistname -- firstdbref]
+    Returns the first dbref in the reflist.
   
-    EDITcopy    [          {rng} ... offset dest start end -- {rng'} ...    ]
-      Copies text within a string range from one line to another, inserting it
-      in the new location.
+  REF-next  [objref reflistname currdbref -- nextdbref]
+    Returns the next dbref in the list after the one you give it.
+    Returns #-1 at the end of the list.
   
-    EDITlist    [         {rng} ... offset nums? start end -- {rng} ...     ]
-      Lists the given set of lines within a string range, with an int telling
-      it to prepending each line with a number and a colon.  Ie:
-      "8: line eight."
+  REF-inlist? [objref reflistname dbreftocheck -- inlist?]
+    Returns whether or not the given dbref is in the dbreflist.
   
-    EDITleft    [               {rng} ... offset start end -- {rng'} ...    ]
-      Left justify all the given lines within a string range.
+  REF-list  [objref reflistname -- liststr]
+    Returns a comma delimited string with the names of all the objects
+    in the given reflist.
   
-    EDITcenter  [          {rng} ... offset cols start end -- {rng'} ...    ]
-      Center justify all the given lines within a string range.
+  REF-allrefs [objref reflistname -- refx...ref1 refcount]
+    Returns a range on the stack containing all the refs in the list,
+    with the count of them on top.
   
-    EDITright   [          {rng} ... offset cols start end -- {rng'} ...    ]
-      Right justify all the given lines within a string range.
+  REF-array [objref reflistname -- listarray ]
+    Returns a list array, containing all the dbrefs in the list.
   
-    EDITindent  [          {rng} ... offset cols start end -- {rng'} ...    ]
-      Indents all the given lines in a string range by COLS spaces.  if COLS
-      is a negative integer, it undents by that many spaces.  It will never
-      undent past left justification.
+  REF-array-set [objref reflistname listarray -- ]
+    Sets the given reflist to the given list array of dbrefs.
   
-    EDITfmt_rng [          {rng} ... offset cols start end -- {rng'} ...    ]
-      Formats the given subrange in the string range to COLS columns.  This
-      is similar to the UNIX fmt command, in that it splits long lines and
-      joins short lines.  A line that contains only spaces is considered a
-      paragraph delimiter, and is not joined.
+  REF-filter [address objref reflistname -- refx...ref1 refcount]
+    Returns a range of dbrefs on the stack, filtered from the given reflist.
+    The filtering is done by a function that you pass the address of.  The
+    filter routine is [d -- i].  It takes a dbref and returns a boolean int.
+    If the integer is 0, the ref is not included in the returned list.  If
+    the integer is not 0, the it is in the returned list.
   
-    EDITjoin_rng [              {rng} ... offset start end -- {rng'} ...    ]
-      Joins all the given lines in the string range together, and returns the
-      string range that results.
-  
-  
-  
-    EDITshuffle [                                    {rng} -- {rng'}    ]
-      Take a range of items on the stack and randomize their order.
-  
-    EDITsort    [          {rng} ascending? CaseSensitive? -- {rng'}    ]
-      Alphabetically sorts strings with integers telling it whether to sort
-      in ascending or decending order, and if it should be case sensitive.
-  
-    EDITjoin    [                                    {rng} -- string    ]
-      Join a range of strings on the stack into one string.
-  
-    EDITdisplay [                                    {rng} --           ]
-      displays the range of strings on the stack to the user.
-  
-    EDITsplit   [     string splitchars rmargin wrapmargin -- {rng}     ]
-      splits a string up into several lines in a range.  The criterion
-      for where to split each line are as follows:  It splits at the last
-      split character it can find between the rmargin and the wrapmargin.
-      If it cannot find one, then it splits at the rmargin.
-  
-    EDITformat  [      {rng} splitchars rmargin wrapmargin -- {rng'}    ]
-      Takes a range and formats it similarly to the way that the UNIX fmt
-      command would, splitting long lines, and joining short ones.
+  REF-editlist  [players? objref reflistname -- ]  
+    Enters the user into an interactive editor that lets them add and remove
+    objects from the given reflist.  'players?' is an integer boolean value,
+    where if it is true, the list only lets you add players to it.  Otherwise
+    it lets you add regular objects to it.
 )
-
-$doccmd @list $lib/edit=1-80  
-
-$include $lib/strings
-$include $lib/stackrng
-$define SRNGextract sr-extractrng $enddef
-$define SRNGinsert  sr-insertrng  $enddef
-$define SRNGcopy    sr-copyrng    $enddef
-  
-  
-: EDITforeach ( {str_rng} ... offset 'function data start end -- {str_rng'} )
-              ( 'function must be addr of a [string data -- string] function)
-    5 pick 6 + pick dup 4 pick <
-    4 pick 4 pick > or if
-        pop pop pop pop pop pop exit
-    then
-    6 pick + 7 + 3 pick - dup 1 +
-    rotate 5 pick 7 pick execute
-    swap -1 * rotate
-    swap 1 + swap EDITforeach
-;
-  
-  
-  
-: EDITsearch  ( {rng} ... offset string start -- {rng} pos )
-    dup 4 pick 5 + pick > if pop pop pop 0 exit then
-    3 pick 5 + dup pick + over - pick 3 pick
-    instr if rot rot pop pop exit then
-    1 + EDITsearch
-;
-  
-  
-: EDITreplace ( {rng} ... offset oldstr newstr start end -- {rng'} )
-    over 6 pick 7 + pick > 3 pick 3 pick > or if
-        pop pop pop pop pop exit
-    then
-    5 pick 7 + dup pick + 3 pick - dup 1 + rotate
-    5 pick 7 pick subst swap -1 * rotate
-    swap 1 + swap EDITreplace
-;
-  
-  
-: EDITmove    ( {rng} ... offset dest start end -- {rng'} )
-    3 pick over > if
-        rot over 4 pick - 1 + - rot rot
-    else
-        3 pick 3 pick >= if pop pop pop pop exit then
-    then
-    over - 1 + swap 4 pick 2 + rot rot SRNGextract
-    ( {rng'} ... offset dest {subrng} )
-    dup 3 + rotate over 3 + rotate
-    ( {rng'} ... {rng2} offset dest )
-    SRNGinsert
-;
-  
-  
-: EDITcopy    ( {rng} ... offset dest start end -- {rng'} )
-    over - 1 + swap 4 pick 2 + rot rot SRNGcopy
-    dup 3 + rotate over 3 + rotate
-    SRNGinsert
-;
-  
-  
-(
-  Shell Sort
-  
-  This particular implementation is based on the version in
-  AHU's Data Structures and Algorithms, p.290
-  
-  Takes  [ x1 x2 x3 ... xn n asc? insens? -- x1' x2' x3' ... xn' n ]
-  
-  Requires tinyMUCK 2.2 or later
-  
-  Stolen directly from Gazer's code, with a few mods.
-  
-  Baseline version 1.0    04-Oct-90
-     Gazer   [dbriggs@nrao.edu]
-)
-  
-( These functions return a true flag when the data items )
-( should be swapped.  )
-  
-: EDITsortCaseInsensAsc  stringcmp 0 > ;
-: EDITsortCaseSensAsc    strcmp 0 > ;
-: EDITsortCaseInsensDesc stringcmp 0 < ;
-: EDITsortCaseSensDesc   strcmp 0 < ;
-  
-: EDITsortJLoop  ( <strings*n> n cmp inc i j -- <strings*n> n cmp inc i )
-    dup 0 <= if pop exit then     ( while j > 0 )
-    dup 5 + pick                  ( get A[j] )
-    over 5 pick + 6 + pick        ( get A[j+inc] )
-    6 pick execute if             ( do comparison )
-      dup 5 + pick                ( swap: get A[j] )
-      over 5 pick + 6 + pick      (   get A[j+inc] )
-      3 pick 6 + put              (   put into A[j] )
-      over 5 pick + 5 + put       (   put into A[j+inc] )
-      3 pick -                    ( j := j - inc )
-    else
-      pop exit then               ( break out if we don't swap )
-    EDITsortJLoop
-;
-  
-: EDITsortILoop  ( <strings*n> n cmp inc i -- <strings*n> n cmp inc)
-    dup 5 pick > if pop exit then ( for i := inc + 1 to n )
-    over over swap - EDITsortJLoop    (   j := i - inc )
-    1 + EDITsortILoop                 (   while j > 0 )
-;
-  
-: EDITsortIncLoop  ( <strings*n> n cmp inc --- <strings*n> n )
-    dup 0 <= if pop pop exit then ( while inc > 0)
-    dup 1 + EDITsortILoop             (   for i := inc + 1 to n )
-    2 / EDITsortIncLoop
-;
-  
-: EDITsort    ( {rng} ascending?  CaseSensitive? -- {rng'} )
-    if
-        if 'EDITsortCaseSensAsc
-        else 'EDITsortCaseSensDesc
-        then
-    else
-        if 'EDITsortCaseInsensAsc
-        else 'EDITsortCaseInsensDesc
-        then
-    then
-    over 2 / EDITsortIncLoop
-;
-  
-  
-: EDITjoin ( {rng} -- string )
-    dup 2 < if pop exit then
-    rot STRsts rot STRsls
-    over dup strlen 1 - strcut pop
-    ".!?" swap instr if "  " else " " then
-    swap strcat strcat swap
-    1 - EDITjoin
-;
-  
-  
-: EDITsplit-splitloop (string splitchars last -- string string)
-    over not if
-        swap pop
-        dup not if pop dup strlen then
-        strcut exit
-    then
-    swap 1 strcut rot rot 4 pick swap rinstr
-    over over < if swap then pop
-    EDITsplit-splitloop
-;
-  
-: EDITsplit-split (string splitchars rmargin wrapmargin --
-                   excess splitchars rmargin wrapmargin string)
-    4 rotate 3 pick strcut swap 3 pick strcut
-    (splitchars rmargin wrapmargin excess str wrap)
-    6 pick 0 EDITsplit-splitloop
-    rot rot strcat rot rot swap strcat 
-    (splitchars rmargin wrapmargin str excess)
-    -5 rotate
-;
-  
-: EDITsplit-loop ({rng} string splitchars rmargin wrapwargin -- {rng})
-    4 pick strlen 3 pick < if
-        pop pop pop
-        dup if swap 1 +
-        else pop
-        then exit
-    then
-    EDITsplit-split -6 rotate 5 rotate 1 + -5 rotate
-    EDITsplit-loop
-;
-  
-: EDITsplit   ( string splitchars rmargin wrapmargin -- {rng} )
-    0 -5 rotate EDITsplit-loop
-;
-  
-  
-: EDITformat-loop  ( {rng} splitchars rmargin wrapmargin {rng2} -- {rng'} )
-    dup 5 + pick not if
-        dup 3 + dup rotate pop dup rotate pop
-        dup rotate pop dup rotate pop pop exit
-    then
-    dup 4 + 1 1 SRNGextract pop
-    ( {rng} splitchars rmargin wrapmargin {rng2} string )
-    dup STRblank? not if
-        over 6 + dup pick swap dup pick swap 1 - pick
-        EDITsplit dup 2 + rotate + 1 - swap
-        ( {rng} splitchars rmargin wrapmargin {rng2} string )
-        over 6 + pick dup if
-            3 pick + 6 + pick
-            dup STRblank?
-        else pop "" 1
-        then
-        ( {rng} splitchars rmargin wrapmargin {rng2} string nocat? )
-        if pop swap 1 +
-        else 2 EDITjoin over 6 + pick 3 pick + 5 + put
-        then
-        ( {rng} splitchars rmargin wrapmargin {rng2} )
-    else
-        pop "  " swap 1 +
-    then
-    EDITformat-loop
-;
-  
-: EDITformat  ( {rng} splitchars rmargin wrapmargin -- {rng'} )
-    0 EDITformat-loop
-;
-  
-  
-: EDITfmt_rng ( {str_rng} ... offset cols start end -- {str_rng'} ... )
-    over - 1 + over swap
-    ({rng} ... off cols start start cnt )
-    5 pick 3 + swap rot SRNGextract
-    ({rng'} ... off cols start {srng})
-    "- " over 4 + rotate dup 20 - EDITformat
-    ({rng'} ... off start {srng})
-    dup 3 + rotate over 3 + rotate
-    SRNGinsert
-;
-  
-  
-: EDITshuffle-innerloop ( {rng} shuffles loop -- {rng'} )
-    dup not if pop exit then
-    4 rotate 4 pick            ( {rng} shuffles loop item cnt )
-    random 256 / swap %        ( {rng} shuffles loop item rnd )
-    4 + -1 * rotate            ( {rng} shuffles loop )
-    1 - EDITshuffle-innerloop
-;
-  
-: EDITshuffle-outerloop ( {rng} shuffles -- {rng'} )
-    dup not if pop exit then
-    over EDITshuffle-innerloop
-    1 - EDITshuffle-outerloop
-;
-  
-: EDITshuffle ( {rng} -- {rng'} )
-    8 EDITshuffle-outerloop
-;
-  
-  
-: EDITlist    ( {rng} ... offset nums? start end -- {rng} ... )
-    over over >
-    3 pick 6 pick 7 + pick > or if
-        pop pop pop pop exit
-    then
-    4 pick 6 + dup pick + 3 pick - pick
-    4 pick if
-        "  " 4 pick intostr strcat
-        dup strlen 3 - strcut
-        swap pop ": " strcat
-        swap strcat
-    then
-    dup not if pop " " then
-    me @ swap notify
-    swap 1 + swap EDITlist
-;
-    
-  
-  
-: EDITdisplay ( {str_rng} -- )
-    dup if
-        dup 1 + rotate me @ swap notify
-        1 - EDITdisplay exit
-    then pop
-;
-  
-  
-: EDITleft-func (string null -- string )
-    pop STRsls
-;
-  
-: EDITleft ( {strrng} ... offset start end -- {strrng'} ... )
-    'EDITleft-func "" -4 rotate -4 rotate EDITforeach
-;
-  
-  
-: EDITcenter-func (string cols -- string )
-    swap STRstrip dup strlen
-    dup 4 pick >= if
-        pop swap pop exit
-    then
-    rot swap - 2 /
-    "                                        "
-    dup strcat dup strcat
-    swap strcut pop swap strcat
-;
-  
-: EDITcenter ( {strrng} ... offset cols start end -- {strrng'} ... )
-    'EDITcenter-func -4 rotate EDITforeach
-;
-  
-  
-: EDITright-func (string cols -- string )
-    swap STRstrip dup strlen
-    dup 4 pick >= if
-        pop swap pop exit
-    then
-    rot swap -
-    "                                        "
-    dup strcat dup strcat
-    swap strcut pop swap strcat
-;
-  
-: EDITright ( {strrng} ... offset cols start end -- {strrng'} ... )
-    'EDITright-func -4 rotate EDITforeach
-;
-  
-  
-: EDITindent-func (str cols -- str)
-    swap dup strlen swap STRsls
-    dup strlen rot swap - rot +
-    dup 1 < if pop exit then
-    "                                        "
-    dup strcat dup strcat
-    swap strcut pop swap strcat
-;
-  
-: EDITindent ( {str_rng} ... offset cols start end -- {str_rng'} ... )
-    'EDITindent-func -4 rotate EDITforeach
-;
-  
  
-: EDITjoin_rng ( {str_rng} ... offset start end -- {str_rng'} ... )
-    over - 1 + over
-    ({rng} ... off start cnt start )
-    4 pick 2 + rot rot SRNGextract
-    ({rng'} ... off start {srng})
-    EDITjoin 1 4 rotate 4 rotate
-    SRNGinsert
+$doccmd @list __PROG__=1-52@
+ 
+$include $lib/look
+$include $lib/match
+$include $lib/props
+$include $lib/strings
+ 
+: REF-next (obj reflist currref -- nextref)
+  rot rot array_get_reflist
+  dup rot array_findval
+  0 []
+  over swap array_next
+  if [] else pop pop #-1 then
 ;
-PUBLIC EDITsearch $libdef EDITsearch
-PUBLIC EDITreplace $libdef EDITreplace
-PUBLIC EDITmove $libdef EDITmove
-PUBLIC EDITcopy $libdef EDITcopy
-PUBLIC EDITlist $libdef EDITlist
-PUBLIC EDITleft $libdef EDITleft
-PUBLIC EDITcenter $libdef EDITcenter
-PUBLIC EDITright $libdef EDITright
-PUBLIC EDITindent $libdef EDITindent
-PUBLIC EDITfmt_rng $libdef EDITfmt_rng
-PUBLIC EDITjoin_rng $libdef EDITjoin_rng
-  
-PUBLIC EDITshuffle $libdef EDITshuffle
-PUBLIC EDITsort $libdef EDITsort
-PUBLIC EDITjoin $libdef EDITjoin
-PUBLIC EDITdisplay $libdef EDITdisplay
-PUBLIC EDITsplit $libdef EDITsplit
-PUBLIC EDITformat $libdef EDITformat
+ 
+: REF-list  (objref reflistname -- liststr)
+  array_get_reflist
+  array_vals
+  .short-list
+;
+ 
+: REF-filter (a d s -- dx...d1 i)
+  array_get_reflist
+  0 array_make swap
+  foreach
+    swap pop
+    dup 4 pick execute if
+      array_appenditem
+    else pop
+    then
+  repeat
+  swap pop array_vals
+;
+ 
+: REF-editlist-help
+  if
+    "To add a player, enter their name.  To remove a player, enter their name"
+    "with a ! in front of it.  ie: '!guest'.  To display the list, enter '*'"
+    "on a line by itself.  To clear the list, enter '#clear'.  To finish"
+    "editing and exit, enter '.' on a line by itself.  Enter '#help' to see"
+    "these instructions again."
+    strcat strcat strcat strcat .tell
+  else
+    "To add an object, enter its name or dbref.  To remove an object, enter"
+    "its name or dbref with a ! in front of it.  ie: '!button'.  To display"
+    "the list, enter '*' on a line by itself.  To clear the list, enter"
+    "'#clear'.  To finish editing and exit, enter '.' on a line by itself."
+    "Enter '#help' to see these instructions again."
+    strcat strcat strcat strcat .tell
+  then
+;
+ 
+: REF-editlist  (players? objref reflistname -- )
+  3 pick REF-editlist-help
+  "The object list currently contains:" .tell
+  over over REF-list .tell
+  begin
+    read
+    dup "." strcmp not if
+      pop pop pop
+      "Done." .tell break
+    then
+    dup "#list" stringcmp not
+    over "*" strcmp not or if
+      pop "The object list currently contains:" .tell
+      over over REF-list .tell continue
+    then
+    dup "#clear" stringcmp not if
+      pop over over remove_prop
+      "Object list cleared." .tell continue
+    then
+    dup "#help" stringcmp not if
+      pop 3 pick REF-editlist-help
+      continue
+    then
+    dup "!" 1 strncmp not if
+      1 strcut swap pop 1
+    else 0
+    then
+    swap 5 pick if .noisy_pmatch else .noisy_match then
+    dup ok? not if pop pop continue then
+    4 pick 4 pick rot 4 rotate if
+      3 pick 3 pick 3 pick reflist_find if
+        reflist_del "Removed." .tell
+      else
+        pop pop pop
+        "Not in object list." .tell
+      then
+    else
+      reflist_add "Added." .tell
+    then
+  repeat
+;
+ 
+public REF-editlist     $libdef REF-editlist
+public REF-filter       $libdef REF-filter
+public REF-list         $libdef REF-list
+public REF-next         $libdef REF-next
+ 
+$pubdef REF-add         reflist_add
+$pubdef REF-allrefs     array_get_reflist array_vals
+$pubdef REF-array       array_get_reflist
+$pubdef REF-array-set   array_put_reflist
+$pubdef REF-delete      reflist_del
+$pubdef REF-first       array_get_reflist dup if 0 [] else pop #-1 then
+$pubdef REF-inlist?     reflist_find

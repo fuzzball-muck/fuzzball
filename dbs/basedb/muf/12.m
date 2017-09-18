@@ -1,392 +1,184 @@
-( ***** List Manager Object - LMGR *****  Version 1.2
+( **** Message Box Object -- MBOX- ****
+    MBOX-badref?  [refnum base dbref -- bad?]
+      Returns whether or not the given message number exists.
   
- LMGR-ClearElem -- Clears an element in the list -- does NOT delete
-     <elem#> <list-name> <dbref> LMGRclearelem
+    MBOX-ref2prop [refnum base dbref -- mbase dbref]
+      Returns the name and dbref of the specific message number in the given
+      message box.
   
- LMGR-GetElem -- Get an element of a list
-     <elem#> <list-name> <dbref> LMGRgetelem -- string
+    MBOX-ref2num  [refnum base dbref -- msgnum]
+      Returns the absolute message number of a message referred to by the
+      given reference number.  See MBOX-num2ref for an explanation of those
+      terms.
+ 
+    MBOX-num2ref  [msgnum base dbref -- refnum]
+      Returns the reference number of the message that has the given absolute
+      message number.  The reference number is the position number of the
+      message in the message list.  The absolute message number is the number
+      that the message was given when it was created.  The absolute reference
+      number of a message will never change.  If the message with the given
+      message number no longer exists, then the reference to the first message
+      after the given message number is returned.
+ 
+    MBOX-create   [base dbref -- ]
+      Creates a new message box with no messages in it.
   
- LMGR-PutElem -- Put an element into a list
-     <val> <elem#> <list-name> <dbref> LMGRputelem
+    MBOX-count    [base dbref -- count]
+      Returns the number of messages contained in the given message box.
   
- LMGR-GetRange -- Get a range of elements from a list
-     <count> <first-elem> <list-name> <dbref> LMGRgetrange -- {strrange}
-   returns the element values [strings] on the stack, with <count> on top
+    MBOX-destroy  [base dbref -- ]
+      Destroys the message box and all of it's contents.
   
- LMGR-FullRange -- Define entire list for getrange purposes
-     <list-name> <dbref> LMGRfullrange -- <num-elements> 1 <list-name> <dbref>
-   returns the parms on the stack, ready for LMGR-GetRange
+    MBOX-append   [{strrange} infostr base dbref -- refnum]
+      Creates a new message with the given message items and info string
+      and appends it at the end of the message box. Returns the message's
+      number.
   
- LMGR-GetBRange -- Get a range of elements from a list
-              Different from 'GetRange' in that the top element on the
-              stack is the first element from the range.
-     <count> <first-elem> <list-name> <dbref> LMGRgetbrange -- {bstrrange}
-   returns the element values [strings] on the stack, with <count> on top
+    MBOX-insmesg  [{strrange} infostr refnum base dbref -- refnum]
+      Creates a new message with the given message items and info string
+      and inserts it before the given message number in the message box.
+      Returns the message's number.
   
- LMGR-PutRange -- Put a range of elements into a list
-     <values> <count> <first-elem> <list-name> <dbref> LMGRputrange
+    MBOX-delmesg  [refnum base dbref -- ]
+      Delete the given message number in the message box.  It moves the
+      rest of the messages after it up in the message box.
   
- LMGR-ClearRange -- Clears a range of elements in the list -- does NOT delete
-     <count> <first-elem> <list-name> <dbref> LMGRclearrange
+    MBOX-setmesg  [{strrange} infostr refnum base dbref -- ]
+      Sets the given message number in the given message box to contain the
+      given message items and info string.
   
- LMGR-DeleteRange -- Delete a range of elements from the list, shifting the
-                later elements back to fill the gap.
-     <count> <first-elem> <list-name> <dbref> LMGRdeleterange
+    MBOX-msginfo  [refnum base dbref -- infostr]
+      Returns the info string of the given message number in the message box.
   
- LMGR-InsertRange -- Insert a range of elemnts into a list
-     <values> <count> <first-elem> <list-name> <dbref> LMGRinsertrange
+    MBOX-setinfo  [refnum base dbref -- ]
+      Sets the info string for the given message number in the message box.
   
- LMGR-MoveRange -- Move [copy] a range of elements inside a list
-     <dest> <count> <source> <list-name> <dbref> LMGRmoverange
-  
- LMGR-CopyRange -- Copy a range of elements from one list into another,
-              inserting into the new list
-     <dst> <cnt> <src> <src-lst> <src-ref> <dst-lst> <dst-ref> LMGRcopyrange
-  
- LMGR-DeleteList -- Delete an entire list.
-     <list-name> <dbref> LMGRdeletelist
-  
- LMGR-Getlist -- Get an entire list.
-     <list-name> <dbref> LMGRgetlist
+    MBOX-message  [refnum base dbref -- {strrange}]
+      Returns the contents of the given message number in the message box
+      as a range of strings.
 )
-
-$doccmd @list $lib/lmgr=1-50
-  
-(standard list writing format)
-$def COUNTSUFFIX "#"
-$def ITEMNUMSEP "#/"   ( "" in old format )
-  
-  
-: safeclear (d s -- )
-  over over propdir? if
-    over over "" -1 addprop
-    "" 0 addprop
-  else
-    remove_prop
-  then
-;
-  
-  
-: lmgr-getoldelem (elem list db -- str)
-  swap rot intostr strcat getpropstr
-;
-  
-: lmgr-getmidelem ( elem list db -- str )
-  swap "/" strcat rot intostr strcat getpropstr
-;
-  
-: lmgr-getnewelem ( elem list db -- str )
-  swap "#/" strcat rot intostr strcat getpropstr
-;
-  
-: lmgr-getelem (elem list db -- str)
-  "isd" checkargs
-  3 pick 3 pick 3 pick lmgr-getnewelem
-  dup if -4 rotate pop pop pop exit then
-  pop 3 pick 3 pick 3 pick lmgr-getmidelem
-  dup if -4 rotate pop pop pop exit then
-  pop lmgr-getoldelem
-;
-  
-  
-: lmgr-setcount ( count list db -- )
-  "isd" checkargs
-  swap COUNTSUFFIX strcat rot dup if
-    intostr 0 addprop
-  else
-    pop remove_prop
-  then
-;
-  
-: lmgr-getnewcount ( list db -- count )
-  swap "#" strcat getpropstr atoi
-;
-  
-: lmgr-getoldcount ( list db -- count )
-  swap "/#" strcat getpropstr atoi
-;
-  
-: lmgr-getnocount-loop ( item list db -- count )
-  3 pick 3 pick 3 pick lmgr-getelem
-  not if pop pop 1 - exit then
-  rot 1 + rot rot
-  lmgr-getnocount-loop
-;
-  
-: lmgr-getnocount ( list db -- count )
-  1 rot rot lmgr-getnocount-loop
-;
-  
-: lmgr-getcount (list db -- count)
-  "sd" checkargs
-  over over lmgr-getnewcount
-  dup if rot rot pop pop exit then
-  pop over over lmgr-getoldcount
-  dup if rot rot pop pop exit then
-  pop lmgr-getnocount
-;
-  
-  
-: lmgr-putelem ( str elem list db -- )
-  "sisd" checkargs
-  over over LMGR-GETCOUNT 4 pick < if
-    3 pick 3 pick 3 pick LMGR-SETCOUNT
-  then
-  swap ITEMNUMSEP strcat rot intostr strcat rot 0 addprop
-;
-  
-: lmgr-clearelem ( elem list db -- )
-  "isd" checkargs
-  dup 3 pick 5 pick intostr strcat remove_prop
-  dup 3 pick "/" strcat 5 pick intostr strcat remove_prop
-  swap "#/" strcat rot intostr strcat remove_prop
-;
-  
-  
-: lmgr-getrange_loop ( ... count count first name db -- elems... n )
-  4 rotate dup if
-( count first name db count )
-    1 - -4 rotate
-( count count-1 first name db )
-    rot dup 4 pick 4 pick LMGR-GETELEM
-( count count-1 name db first elem )
-    -6 rotate 1 + -3 rotate
-( elem count count-1 first+1 name db )
-    'lmgr-getrange_loop jmp
-( elem ... count )
-  else
-( ... count first name db 0 )
-    pop pop pop pop
-  then
-;
-  
-: lmgr-getrange ( count first name db -- elems... n )
-  "iisd" checkargs
-  4 pick -5 rotate lmgr-getrange_loop
+ 
+$doccmd @list __PROG__=!@1-59
+$version 1.2
+ 
+$include $lib/mesg
+ 
+: MBOX-count (base dbref -- count)
+    MSG-count
 ;
  
-: lmgr-fullrange ( list obj -- count start list obj )
-  "sd" checkargs
-  over over lmgr-getcount -3 rotate 1 -3 rotate
+: MBOX-ref2num (refnum base dbref -- mesgnum)
+    MSG-item atoi
 ;
-  
-: lmgr-getbrange_loop ( ... count count first name db -- elems... n )
-  4 rotate dup if
-( count first name db count )
-    1 - -4 rotate
-( count count-1 first name db )
-    rot 1 - dup 4 pick 4 pick LMGR-GETELEM
-( count count-1 name db first-1 elem )
-    -6 rotate -3 rotate
-( elem count count-1 first-1 name db )
-    'lmgr-getbrange_loop jmp
-( elem ... count )
-  else
-( ... count first name db 0 )
-    pop pop pop pop
-  then
+ 
+lvar n2r_num
+lvar n2r_cnt
+ 
+: MBOX-num2ref (mesgnum base dbref -- refnum)
+    rot n2r_num !
+    over over MBOX-count n2r_cnt !
+    1 begin
+        dup n2r_cnt @ <= while
+        dup 4 pick 4 pick MBOX-ref2num
+        n2r_num @ >= if
+            rot rot pop pop exit
+        then
+        1 +
+    repeat
+    pop pop pop 0
 ;
-  
-: lmgr-getbrange ( count first name db -- elems... n )
-  "iisd" checkargs
-  rot 4 pick dup -6 rotate + -3 rotate lmgr-getbrange_loop
+ 
+: MBOX-ref2prop (refnum base dbref -- base' dbref)
+    rot 3 pick 3 pick MBOX-ref2num intostr
+    rot "/" strcat swap strcat swap
 ;
-  
-  
-: lmgr-putrange_loop ( elems... count first name db which -- )
-  5 pick over over over = if
-( count first name db count count count )
-    pop pop pop pop pop pop pop
-( )
-  else
-( elems... count first name db which count which )
-    - 5 + rotate
-( elems... count first name db which elem )
-    over 6 pick + 5 pick 5 pick LMGR-PUTELEM
-( elems... count first name db which )
-    1 + 'lmgr-putrange_loop jmp
-( )
-  then
+ 
+: MBOX-delmesg (refnum base dbref -- )
+    3 pick 3 pick 3 pick MBOX-ref2prop
+    MSG-destroy MSG-delitem
 ;
-  
-: lmgr-putrange ( elems... count first name db -- )
-  "{s}isd" checkargs
-  0 lmgr-putrange_loop
+ 
+: MBOX-destroy-loop (base dbref cnt -- )
+    dup not if pop pop pop exit then
+    dup 4 pick 4 pick MBOX-delmesg
+    1 - MBOX-destroy-loop
 ;
-  
-: lmgr-putbrange ( elems... count first name db -- )
-  "{s}isd" checkargs
-  4 rotate dup if
-( elems... first name db count )
-    1 - -4 rotate
-( elems... count first name db )
-    5 rotate 4 pick 4 pick 4 pick LMGR-PUTELEM
-( elems... count first name db )
-    rot 1 + -3 rotate
-( elems... count first name db )
-    'lmgr-putbrange jmp
-( )
-  else
-( 0 first name db )
-    pop pop pop pop
-( )
-  then
+ 
+: MBOX-destroy (base dbref -- )  
+    over over over over MBOX-count
+    MBOX-destroy-loop
+    MSG-destroy
 ;
-  
-: lmgr-clearrange ( count first name db -- )
-  "iisd" checkargs
-  4 rotate dup if
-( first name db count )
-    1 - -4 rotate
-( count first name db )
-    rot dup 4 pick 4 pick LMGR-CLEARELEM
-( count name db first )
-    1 + -3 rotate
-( count first+1 name db )
-    'lmgr-clearrange jmp
-( )
-  else
-( first name db 0 )
-    pop pop pop pop
-( )
-  then
+ 
+: MBOX-create ( base dbref -- )
+    over over MBOX-destroy
+    0 "0" 4 rotate 4 rotate MSG-create
 ;
-  
-  
-: lmgr-moverange_loop ( dest count src name db inc -- )
-  5 rotate dup if
-( dest src name db inc count )
-    1 - -5 rotate
-( dest count-1 src name db inc )
-    4 rotate dup 5 pick 5 pick LMGR-GETELEM
-( dest count-1 name db inc src elem )
-    7 rotate swap over 7 pick 7 pick LMGR-PUTELEM
-( count-1 name db inc src dest )
-    3 pick + -6 rotate
-( dest+inc count-1 name db inc src )
-    over + -4 rotate
-( dest+inc count-1 src+inc name db inc )
-    'lmgr-moverange_loop jmp
-( )
-  else
-( dest src name db 0 inc )
-    pop pop pop pop pop pop
-( )
-  then
+ 
+: MBOX-append ({strrange} infostr base dbref -- refnum)
+    over over MSG-info
+    ({strrange} infostr base dbref next)
+    dup atoi 1 + intostr 4 pick 4 pick MSG-setinfo
+    ({strrange} infostr base dbref next)
+    3 pick 3 pick MSG-append
+    ({strrange} infostr base dbref)
+    over over MSG-count
+    ({strrange} infostr base dbref ref)
+    dup 6 pick 6 + -1 * rotate
+    (ref {strrange} infostr base dbref ref)
+    rot rot MBOX-ref2prop
+    (ref {strrange} infostr mbase dbref)
+    MSG-create
+    (ref)
 ;
-  
-: lmgr-moverange ( dest count src name db -- )
-  "iiisd" checkargs
-  5 rotate 4 rotate over over < if
-( count name db dest src )
-    -4 rotate -5 rotate 1
-( count name db dest src inc )
-  else
-( count name db dest src )
-    5 pick + 1 - -4 rotate
-( count src+count-1 name db dest )
-    5 pick + 1 - -5 rotate
-( dest+count-1 count src+count-1 name db )
-    -1
-( dest+count-1 count src+count-1 name db inc )
-  then
-( dest count src name db inc )
-  lmgr-moverange_loop
-( )
+ 
+: MBOX-insmesg ({strrange} infostr refnum base dbref -- refnum)
+    over over MSG-info
+    dup atoi 1 + intostr
+    4 pick 4 pick MSG-setinfo
+    ({strrange} infostr refnum base dbref next)
+    3 pick 3 pick MBOX-count
+    ({strrange} infostr refnum base dbref next cnt)
+    5 rotate over over > if swap then pop swap
+    ({strrange} infostr base dbref refnum next)
+    dup rot 5 pick 5 pick MSG-insitem
+    ({strrange} infostr base dbref next)
+    atoi rot rot MBOX-ref2prop
+    ({strrange} infostr mbase dbref)
+    MSG-create
 ;
-  
-: lmgr-insertrange ( elem-1 ... elem-n count first list db -- )
-  "{s}isd" checkargs
-  3 pick 5 pick over + swap
-( elem-1 ... elem-n count first list db first+count first )
-  4 pick 4 pick LMGR-GETCOUNT
-( elem-1 ... elem-n count first list db first+count first list-count )
-  over - 1 + swap
-( elem-1 ... elem-n count first list db first+count range-count first )
-  5 pick 5 pick LMGR-MOVERANGE
-( elem-1 ... elem-n count first list db )
-  LMGR-PUTRANGE
-( )
+ 
+: MBOX-setmesg ({strrange} infostr refnum base dbref -- )
+    MBOX-ref2prop MSG-create
 ;
-  
-: lmgr-deleterange ( count first list db -- )
-  "iisd" checkargs
-  over over LMGR-GETCOUNT
-( count first list db list-count )
-  4 pick 6 pick over +
-( count first list db list-count first first+count )
-  3 pick
-( count first list db list-count first first+count list-count )
-  over - 1 + swap
-( count first list db list-count first range-count first+count )
-  6 pick 6 pick LMGR-MOVERANGE
-( count first list db list-count )
-  5 rotate swap over - 1 +
-( first list db count delstart )
-  1 - 4 rotate 4 rotate 4 pick 4 pick 1 + 4 pick 4 pick LMGR-CLEARRANGE
-( first count delstart list db )
-  LMGR-SETCOUNT pop pop
-( )
+ 
+: MBOX-msginfo (refnum base dbref -- infostr)
+    MBOX-ref2prop MSG-info
 ;
-  
-  
-: lmgr-extractrange ( count first list db -- elem-1 ... elem-n n )
-  "iisd" checkargs
-  4 pick 4 pick 4 pick 4 pick LMGR-GETRANGE
-( count first list db elem-1 ... elem-n n )
-  dup 5 + rotate over 5 + rotate 3 pick 5 + rotate 4 pick 5 + rotate
-( elem-1 ... elem-n n count first list db )
-  LMGR-DELETERANGE
-( elem-1 ... elem-n n )
+ 
+: MBOX-setinfo (infostr refnum base dbref -- )
+    MBOX-ref2prop MSG-setinfo
 ;
-  
-  
-: LMGR-deletelist
-  "sd" checkargs
-  over over LMGR-getcount
-  1 4 rotate 4 rotate LMGR-deleterange
+ 
+: MBOX-message (refnum base dbref -- {strrange})
+    MBOX-ref2prop MSG-message
 ;
-  
-  
-: LMGR-getlist
-  "sd" checkargs
-  over over LMGR-getcount
-  rot rot 1 rot rot
-  LMGR-getrange
+ 
+: MBOX-badref? (refnum base dbref -- bad?)
+    MBOX-count over < swap 1 < or
 ;
-  
-PUBLIC lmgr-getcount $libdef lmgr-getcount 
-PUBLIC lmgr-setcount $libdef lmgr-setcount
-PUBLIC lmgr-getelem $libdef lmgr-getelem
-PUBLIC lmgr-putelem $libdef lmgr-putelem
-PUBLIC lmgr-clearelem $libdef lmgr-clearelem
-PUBLIC lmgr-getrange $libdef lmgr-getrange
-PUBLIC lmgr-fullrange $libdef lmgr-fullrange
-PUBLIC lmgr-getbrange $libdef lmgr-getbrange
-PUBLIC lmgr-putrange $libdef lmgr-putrange
-PUBLIC lmgr-putbrange $libdef lmgr-putbrange
-PUBLIC lmgr-clearrange $libdef lmgr-clearrange
-PUBLIC lmgr-moverange $libdef lmgr-moverange
-PUBLIC lmgr-insertrange $libdef lmgr-insertrange
-PUBLIC lmgr-deleterange $libdef lmgr-deleterange
-PUBLIC lmgr-extractrange $libdef lmgr-extractrange
-PUBLIC lmgr-deletelist $libdef lmgr-deletelist
-PUBLIC lmgr-getlist $libdef lmgr-getlist
-
-$pubdef .lmgr-clearelem "$lib/lmgr" match "lmgr-clearelem" call
-$pubdef .lmgr-clearrange "$lib/lmgr" match "lmgr-clearrange" call
-$pubdef .lmgr-deletelist "$lib/lmgr" match "lmgr-deletelist" call
-$pubdef .lmgr-deleterange "$lib/lmgr" match "lmgr-deleterange" call
-$pubdef .lmgr-extractrange "$lib/lmgr" match "lmgr-extractrange" call
-$pubdef .lmgr-fullrange "$lib/lmgr" match "lmgr-fullrange" call
-$pubdef .lmgr-getbrange "$lib/lmgr" match "lmgr-getbrange" call
-$pubdef .lmgr-getcount "$lib/lmgr" match "lmgr-getcount" call
-$pubdef .lmgr-getelem "$lib/lmgr" match "lmgr-getelem" call
-$pubdef .lmgr-getlist "$lib/lmgr" match "lmgr-getlist" call
-$pubdef .lmgr-getrange "$lib/lmgr" match "lmgr-getrange" call
-$pubdef .lmgr-insertrange "$lib/lmgr" match "lmgr-insertrange" call
-$pubdef .lmgr-moverange "$lib/lmgr" match "lmgr-moverange" call
-$pubdef .lmgr-putbrange "$lib/lmgr" match "lmgr-putbrange" call
-$pubdef .lmgr-putelem "$lib/lmgr" match "lmgr-putelem" call
-$pubdef .lmgr-putrange "$lib/lmgr" match "lmgr-putrange" call
-$pubdef .lmgr-setcount "$lib/lmgr" match "lmgr-setcount" call
+ 
+public MBOX-append      $libdef MBOX-append
+public MBOX-badref?     $libdef MBOX-badref?
+public MBOX-count       $libdef MBOX-count
+public MBOX-create      $libdef MBOX-create
+public MBOX-delmesg     $libdef MBOX-delmesg
+public MBOX-destroy     $libdef MBOX-destroy
+public MBOX-insmesg     $libdef MBOX-insmesg
+public MBOX-message     $libdef MBOX-message
+public MBOX-msginfo     $libdef MBOX-msginfo
+public MBOX-num2ref     $libdef MBOX-num2ref
+public MBOX-ref2num     $libdef MBOX-ref2num
+public MBOX-ref2prop    $libdef MBOX-ref2prop
+public MBOX-setinfo     $libdef MBOX-setinfo
+public MBOX-setmesg     $libdef MBOX-setmesg

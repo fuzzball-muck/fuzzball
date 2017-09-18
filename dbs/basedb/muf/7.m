@@ -57,8 +57,8 @@
       matches if comp matches the beginning of the comparator exactly.
       ie:  a comp of "#h" would match a comparator {s1 - sn} of "#help".
 )
-
-$doccmd @list $lib/match=1-60
+ 
+$doccmd @list __PROG__=!@1-59
  
 $include $lib/stackrng
  
@@ -71,21 +71,13 @@ $include $lib/stackrng
     me @ "I don't know which one you mean!" notify exit
   then
 ;
-  
-  
+ 
 : noisy_pmatch ( s -- d )
-  .pmatch dup not if
+  pmatch dup not if
     me @ "I don't recognize anyone by that name." notify
   then
 ;
-  
-  
-: controls (player object -- bool)
-  owner over dbcmp
-  swap "wizard" flag? or
-;
-  
-  
+ 
 : match_controlled (s -- d)
   noisy_match dup ok? if
     me @ over controls not if
@@ -160,7 +152,7 @@ $include $lib/stackrng
   if rot 1 + rot 3 pick then
   next multi_rmatch-loop
 ;
-  
+ 
 : multi_rmatch (d s -- dn .. d1 n)
   over over rmatch dup int 0 >= if
     dup thing? over program? or if
@@ -172,18 +164,17 @@ $include $lib/stackrng
   multi_rmatch-loop
 ;
  
-PUBLIC noisy_match
-PUBLIC noisy_pmatch
-PUBLIC controls
-PUBLIC match_controlled
-PUBLIC table_match
-PUBLIC std_table_match
-PUBLIC multi_rmatch
-
-$pubdef .controls "$lib/match" match "controls" call
-$pubdef .match_controlled "$lib/match" match "match_controlled" call
-$pubdef .match_rmatch "$lib/match" match "match_rmatch" call
-$pubdef .noisy_match "$lib/match" match "noisy_match" call
-$pubdef .noisy_pmatch "$lib/match" match "noisy_match" call
-$pubdef .std_table_match "$lib/match" match "std_table_match" call
-$pubdef .table_match "$lib/match" match "table_match" call
+public match_controlled
+public multi_rmatch
+public noisy_match
+public noisy_pmatch
+public std_table_match
+public table_match
+ 
+$pubdef .controls               controls
+$pubdef .match_controlled       __PROG__ "match_controlled" call
+$pubdef .multi_rmatch           __PROG__ "multi_rmatch" call
+$pubdef .noisy_match            __PROG__ "noisy_match" call
+$pubdef .noisy_pmatch           __PROG__ "noisy_pmatch" call
+$pubdef .std_table_match        __PROG__ "std_table_match" call
+$pubdef .table_match            __PROG__ "table_match" call

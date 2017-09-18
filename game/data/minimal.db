@@ -1,7 +1,7 @@
 ***Foxen9 TinyMUCK DUMP Format***
 2
 1
-122
+154
 autolook_cmd=look
 cpennies=Pennies
 cpenny=Penny
@@ -10,6 +10,33 @@ penny=penny
 dumpdone_mesg=## Save complete. ##
 dumping_mesg=## Pausing to save database. This may take a while. ##
 dumpwarn_mesg=## Game will pause to save the database in a few minutes. ##
+file_connection_help=data/connect-help.txt
+file_credits=data/credits.txt
+file_editor_help=data/edit-help.txt
+file_help=data/help.txt
+file_help_dir=data/help
+file_info_dir=data/info/
+file_log_cmd_times=logs/cmd-times
+file_log_commands=logs/commands
+file_log_gripes=logs/gripes
+file_log_malloc=logs/malloc
+file_log_muf_errors=logs/muf-errors
+file_log_programs=logs/programs
+file_log_sanfix=logs/sanfixed
+file_log_sanity=logs/sanity
+file_log_status=logs/status
+file_log_stderr=logs/fbmuck.err
+file_log_stdout=logs/fbmuck
+file_log_user=logs/user
+file_man=data/man.txt
+file_man_dir=data/man
+file_motd=data/motd.txt
+file_mpihelp=data/mpihelp.txt
+file_mpihelp_dir=data/mpihelp
+file_news=data/news.txt
+file_news_dir=data/news
+file_sysparms=data/parmfile.cfg
+file_welcome_screen=data/welcome.txt
 idle_boot_mesg=Autodisconnecting for inactivity.
 huh_mesg=Huh?  (Type "help" for help.)
 leave_mesg=Come back later!
@@ -32,6 +59,7 @@ dump_warntime=  0d  0:02:00
 idle_ping_time=  0d  0:00:55
 maxidle=  0d  2:00:00
 clean_interval=  0d  0:15:00
+player_name_limit=16
 exit_cost=1
 link_cost=1
 lookup_cost=0
@@ -52,6 +80,8 @@ addpennies_muf_mlev=2
 instr_slice=2000
 max_instr_count=20000
 max_ml4_preempt_count=0
+max_ml4_nested_interp_loop_count=0
+max_nested_interp_loop_count=16
 max_plyr_processes=32
 max_process_limit=400
 mcp_muf_mlev=3
@@ -78,16 +108,18 @@ enable_match_yield=no
 enable_prefix=no
 recognize_null_command=no
 verbose_clone=no
+verbose_examine=yes
 dark_sleepers=no
 exit_darking=yes
 thing_darking=yes
 who_hides_dark=yes
 compatible_priorities=yes
 realms_control=no
+toad_recycle=no
 diskbase_propvals=yes
 dbdump_warning=yes
 dumpdone_warning=yes
-%starttls_allow=no
+starttls_allow=no
 idleboot=yes
 idle_ping_enable=yes
 restrict_kill=yes
@@ -109,21 +141,21 @@ teleport_to_player=yes
 secure_teleport=no
 secure_thing_movement=no
 do_mpi_parsing=yes
-lazy_mpi_istype_perm=no
+consistent_lock_source=yes
 expanded_debug_trace=yes
 force_mlev1_name_notify=yes
 muf_comments_strict=yes
+muf_string_math=no
 optimize_muf=yes
 playermax=no
+quiet_moves=no
 lock_envcheck=no
-look_propqueues=no
 show_legacy_props=no
 registration=yes
 %server_cipher_preference=yes
 periodic_program_purge=yes
 secure_who=no
 use_hostnames=no
-who_doing=yes
 #1
 One
 0
@@ -151,14 +183,8 @@ Room Zero
 1
 1435685445
 *Props*
-_/de:2:You are in Room Zero.  It's very dark here.
+_/de:2:You are in Room Zero. It's very dark here.
 _/osc:2:is briefly visible through the mist.
-_sys/dumpinterval:3:14400
-_sys/lastdumptime:3:1456843742
-_sys/max_connects:3:1
-_sys/maxpennies:3:10000
-_sys/shutdowntime:3:1456843742
-_sys/startuptime:3:1456843723
 *End*
 -1
 -1

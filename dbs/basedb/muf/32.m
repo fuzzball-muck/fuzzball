@@ -1,68 +1,92 @@
-$include $lib/strings
-$include $lib/match
+: stimestr (i -- s)
+    dup 86400 > if
+        86400 / intostr "d" strcat 
+    else dup 3600 > if
+            3600 / intostr "h" strcat
+        else dup 60 > if
+                60 / intostr "m" strcat
+            else
+                intostr "s" strcat
+            then
+        then
+    then
+    "    " swap strcat
+    dup strlen 4 - strcut swap pop
+;
   
-: fetch
-  " from " .split .strip swap .strip swap
-  (itemS contS)
-  dup not if
-    pop trigger @ "_prefs/container" getpropstr
-    dup not if pop me @ "_prefs/container" getpropstr then
-    dup not if
-      me @ "Syntax:  fetch <object> from <container>" notify
-      me @ "  or:  fetch <object>   (with a _prefs/container set)"
-      notify exit
+: mtimestr (i -- s)
+    "" over 86400 > if
+        over 86400 / intostr "d " strcat strcat
+        swap 86400 % swap
     then
-  then
-  match dup #-2 dbcmp if
-    me @ "I don't know which container you mean." notify exit
-  then
-  dup not if
-    me @ "I don't see that container here." notify exit
-  then
-  dup me @ location dbcmp not
-  over location me @ dbcmp not and if
-    me @ "You must be carrying a container to remove something from it."
-    notify exit
-  then
-  (itemS contD)
-  dup rot dup "all" stringcmp not if pop "*" then .multi_rmatch
-  (contD itemDn ... itemD1 itemcountI)
-  dup not if
-    me @ "I don't see that item in the container." notify exit
-  then
-  (contD itemDn ... itemD1 itemcountI)
-  dup 2 + rotate
-  (itemDn ... itemD1 itemcountI contD)
-  begin
-    over while     (If all items handled, then exit)
-    swap 1 - swap  (decrement counter)
-    rot
-    dup thing? over program? or not if pop continue then
-    over room? if
-      me @ over locked? if
-        dup fail dup not if
-          pop "You can't pick " over name strcat " up." strcat
-        then .tell
-        dup ofail if
-          me @ name " " strcat over ofail strcat
-          me @ swap pronoun_sub
-          me @ location me @ rot notify_except
-        then
-        pop continue
-      else
-        dup succ dup not if pop "Taken." then .tell
-        dup osucc if
-          me @ name " " strcat over osucc strcat
-          me @ swap pronoun_sub
-          me @ location me @ rot notify_except
-        then
-      then
+    over 3600 / intostr
+    "00" swap strcat
+    dup strlen 2 - strcut
+    swap pop strcat ":" strcat
+    swap 3600 % 60 / intostr
+    "00" swap strcat
+    dup strlen 2 - strcut
+    swap pop strcat
+;
+ 
+: collate-entry (i -- s)
+    dup condbref name
+    over contime mtimestr
+    over strlen over strlen +
+    dup 19 < if
+        "                   " (19 spaces)
+        swap strcut swap pop
     else
-      "Fetching " over name strcat
-      " from " strcat 3 pick name strcat
-      "." strcat .tell
+        19 - rot dup strlen rot -
+        strcut pop swap ""
     then
-    (itemDn ... itemD2 itemcountI-- contD itemD1)
-    me @ moveto
-  repeat
+    swap strcat strcat
+    swap conidle stimestr strcat
+;
+ 
+: get-namelist  ( -- {s})
+    0 concount
+    begin
+        dup 0 > while
+        dup collate-entry
+        rot 1 + rot
+        1 -
+    repeat
+    pop
+;
+ 
+lvar col
+: show-namelist ({s} -- )
+    begin
+        dup 3 >= while
+        swap "   " strcat
+        over 3 / 3 pick 3 % 2 + 3 / +
+        dup col ! 2 +
+        rotate strcat "   " strcat
+        over 3 / 3 pick 3 % 1 +
+        3 / + col @ + 1 +
+        rotate strcat
+        .tell 3 -
+    repeat
+    dup if
+        ""
+        begin
+            over 0 > while
+            rot strcat "   " strcat
+            swap 1 - swap
+        repeat
+        .tell
+    then
+    pop
+;
+ 
+: show-who
+    preempt
+    "Name         OnTime Idle  " dup strcat
+    "Name         Ontime Idle" strcat .tell
+    get-namelist
+    show-namelist
+    concount intostr
+    " players are connected."
+    strcat .tell
 ;
