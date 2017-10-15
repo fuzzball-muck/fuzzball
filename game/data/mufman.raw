@@ -2747,11 +2747,11 @@ that matched the entire pattern, followed by the captured substrings that
 matched the various parenthesized subexpressions of the pattern.  The second
 contains, as element 0, a sublist containing the starting position and length
 of the substring that matched the entire pattern, followed by similar sublists
-for each captured parenthesized subexpression.  These indices are apropriate
+for each captured parenthesized subexpression.  These indices are appropriate
 for use with the MIDSTR primitive, and consider the first character of the
 string to be position 1.
 
-The "flag" argument may be 0, or a combination of the following:
+The "flags" argument may be 0, or a combination of the following:
 
 ~~code
     $def REG_ICASE    1   (Case insensitive match)
@@ -2766,7 +2766,7 @@ REGSUB ( str:text str:pattern str:substr int:flags -- str:result )
 replacing the match with substr.  substr may contain \digit to specify
 a submatch.  Uses PCRE style regular expression syntax.
 
-  The "Flag" argument may be a combination, or none of the following:
+The "flags" argument may be 0, or a combination of the following:
 
 ~~code
     $def REG_ICASE    1   (Case insensitive match)
@@ -2783,18 +2783,34 @@ use the following code:
 ~
 ~
 REGSPLIT
-REGSPLIT ( str:text str:pattern -- list:result )
+REGSPLIT ( str:text str:pattern int:flags -- list:result )
 
   Splits the text by the given regular expression pattern. Empty pieces will
 be returned for consecutive matches.
+ 
+The "flags" argument may be 0, or a combination of the following:
+
+~~code
+    $def REG_ICASE    1   (Case insensitive match)
+    $def REG_EXTENDED 4   (Allows PCRE comments, etc.  See PCRE docs.)
+~~endcode
+
 ~~alsosee REGSPLIT_NOEMPTY
 ~
 ~
 REGSPLIT_NOEMPTY
-REGSPLIT_NOEMPTY ( str:text str:pattern -- list:result )
+REGSPLIT_NOEMPTY ( str:text str:pattern int:flags -- list:result )
 
   Splits the text by the given regular expression pattern, into non-empty
 pieces.
+ 
+The "flags" argument may be 0, or a combination of the following:
+
+~~code
+    $def REG_ICASE    1   (Case insensitive match)
+    $def REG_EXTENDED 4   (Allows PCRE comments, etc.  See PCRE docs.)
+~~endcode
+
 ~~alsosee REGSPLIT
 ~
 ~

@@ -369,13 +369,15 @@ _prim_regsplit(PRIM_PROTOTYPE, int empty)
     int matches[MATCH_ARR_SIZE];
     muf_re *re;
     char *text, *textstart;
+    int flags = 0;
     int len;
     int matchcnt = 0, pos = 0;
     const char *errstr;
     struct inst val;
 
-    CHECKOP(2);
+    CHECKOP(3);
 
+    oper3 = POP(); /* int:Flags */
     oper2 = POP(); /* str:Pattern */
     oper1 = POP(); /* str:Text */
 
@@ -383,10 +385,17 @@ _prim_regsplit(PRIM_PROTOTYPE, int empty)
 	abort_interp("Non-string argument (1)");
     if (oper2->type != PROG_STRING)
 	abort_interp("Non-string argument (2)");
+    if (oper3->type != PROG_INTEGER)
+	abort_interp("Non-integer argument (3)");
     if (!oper2->data.string)
 	abort_interp("Empty string argument (2)");
 
-    if ((re = muf_re_get(oper2->data.string, 0, &errstr)) == NULL)
+    if (oper3->data.number & MUF_RE_ICASE)
+	flags |= PCRE_CASELESS;
+    if (oper3->data.number & MUF_RE_EXTENDED)
+	flags |= PCRE_EXTENDED;
+
+    if ((re = muf_re_get(oper2->data.string, flags, &errstr)) == NULL)
 	abort_interp(errstr);
 
     textstart = text = DoNullInd(oper1->data.string);
