@@ -1448,3 +1448,18 @@ register_object(dbref player, dbref location, const char *propdir, char *name, d
 	notifyf_nolisten(player, "Now registered as %s: %s on %s", buf, unparse_buf, unparse_buf2);
     }
 }
+
+int
+env_distance(dbref from, dbref to)
+{
+    int distance = 0;
+    dbref dest = getparent(to);
+
+    if (from == dest) return 0;
+
+    do {
+	distance++;
+    } while ((from = getparent(from)) != dest && from != NOTHING);
+
+    return distance;
+}

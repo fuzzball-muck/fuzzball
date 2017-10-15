@@ -459,6 +459,7 @@ void db_free(void);
 void db_free_object(dbref i);
 dbref db_read(FILE * f);
 dbref db_write(FILE * f);
+int env_distance(dbref from, dbref to);
 dbref getparent(dbref obj);
 void getproperties(FILE * f, dbref obj, const char *pdir);
 dbref getref(FILE * f);

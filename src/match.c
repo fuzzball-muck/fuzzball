@@ -81,6 +81,13 @@ choose_thing(int descr, dbref thing1, dbref thing2, struct match_data *md)
 	}
 	/* else fall through */
     }
+
+    int d1 = env_distance(md->match_from, thing1);
+    int d2 = env_distance(md->match_from, thing2);
+
+    if (d1 < d2) return thing1;
+    else if (d2 < d1) return thing2;
+
     return (RANDOM() % 2 ? thing1 : thing2);
 }
 
