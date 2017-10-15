@@ -248,6 +248,7 @@ tune_parms_array(const char *pattern, int mlev)
 		array_set_strkey_strval(&item, "group", tbool->group);
 		array_set_strkey_strval(&item, "name", tbool->name);
 		array_set_strkey_intval(&item, "value", *tbool->boolval ? 1 : 0);
+		array_set_strkey_intval(&item, "mlev", tbool->readmlev);
 		array_set_strkey_intval(&item, "readmlev", tbool->readmlev);
 		array_set_strkey_intval(&item, "writemlev", tbool->writemlev);
 		array_set_strkey_strval(&item, "label", tbool->label);
@@ -273,6 +274,7 @@ tune_parms_array(const char *pattern, int mlev)
 		array_set_strkey_strval(&item, "group", ttim->group);
 		array_set_strkey_strval(&item, "name", ttim->name);
 		array_set_strkey_intval(&item, "value", *ttim->tim);
+		array_set_strkey_intval(&item, "mlev", ttim->readmlev);
 		array_set_strkey_intval(&item, "readmlev", ttim->readmlev);
 		array_set_strkey_intval(&item, "writemlev", ttim->writemlev);
 		array_set_strkey_strval(&item, "label", ttim->label);
@@ -298,6 +300,7 @@ tune_parms_array(const char *pattern, int mlev)
 		array_set_strkey_strval(&item, "group", tval->group);
 		array_set_strkey_strval(&item, "name", tval->name);
 		array_set_strkey_intval(&item, "value", *tval->val);
+		array_set_strkey_intval(&item, "mlev", tval->readmlev);
 		array_set_strkey_intval(&item, "readmlev", tval->readmlev);
 		array_set_strkey_intval(&item, "writemlev", tval->writemlev);
 		array_set_strkey_strval(&item, "label", tval->label);
@@ -323,6 +326,7 @@ tune_parms_array(const char *pattern, int mlev)
 		array_set_strkey_strval(&item, "group", tref->group);
 		array_set_strkey_strval(&item, "name", tref->name);
 		array_set_strkey_refval(&item, "value", *tref->ref);
+		array_set_strkey_intval(&item, "mlev", tref->readmlev);
 		array_set_strkey_intval(&item, "readmlev", tref->readmlev);
 		array_set_strkey_intval(&item, "writemlev", tref->writemlev);
 		array_set_strkey_strval(&item, "label", tref->label);
@@ -375,6 +379,7 @@ tune_parms_array(const char *pattern, int mlev)
 		array_set_strkey_strval(&item, "group", tstr->group);
 		array_set_strkey_strval(&item, "name", tstr->name);
 		array_set_strkey_strval(&item, "value", *tstr->str);
+		array_set_strkey_intval(&item, "mlev", tstr->readmlev);
 		array_set_strkey_intval(&item, "readmlev", tstr->readmlev);
 		array_set_strkey_intval(&item, "writemlev", tstr->writemlev);
 		array_set_strkey_strval(&item, "label", tstr->label);
