@@ -331,15 +331,7 @@ fork_and_dump(void)
 static void
 ensure_support()
 {
-    char buf[BUFFER_LEN];
-
-    /* players need at least one pname_history entry */
-    for (dbref i = 0; i < db_top; i++) {
-	if (Typeof(i) == TYPE_PLAYER && !is_propdir(i, PNAME_HISTORY_PROPDIR)) {
-	    snprintf(buf, sizeof(buf), "%s/0", PNAME_HISTORY_PROPDIR);
-	    add_property(i, buf, NAME(i), 0);
-	}
-    }
+    /* for future use */
 }
 
 int

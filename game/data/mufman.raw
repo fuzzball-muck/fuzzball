@@ -4117,9 +4117,9 @@ This is the same as name if the MUCK doesn't use anoniminity.
 PNAME_HISTORY
 PNAME_HISTORY ( d -- a )
 
-  Returns a dictionary repesenting the times when the given player had a
-name change, including creation. If an associated time cannot be determined,
-that key is 0. Requires Wizbit.
+  Returns a dictionary representing the times in which the given player had a name
+change, limited by the sysparm pname_history_threshhold. If determinable, the
+"created_as" key holds the name at creation. Requires Wizbit.
 ~
 ~
 DESC

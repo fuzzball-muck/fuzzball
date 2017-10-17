@@ -171,6 +171,7 @@ int tp_dump_interval;
 int tp_dump_warntime;
 int tp_idle_ping_time;
 int tp_maxidle;
+int tp_pname_history_threshold;
 
 struct tune_time_entry tune_time_list[] = {
     {"Database", "aging_time", &tp_aging_time, 0, MLEV_WIZARD,
@@ -185,6 +186,8 @@ struct tune_time_entry tune_time_list[] = {
      "", 1, MAXIDLE},
     {"Tuning", "clean_interval", &tp_clean_interval, 0, MLEV_WIZARD,
      "Interval between memory/object cleanups", "", 1, CLEAN_INTERVAL},
+    {"Tuning", "pname_history_threshold", &tp_pname_history_threshold, 0, MLEV_WIZARD,
+     "Length of player name change history", "", 1, PNAME_HISTORY_THRESHOLD},
     {NULL, NULL, NULL, 0, 0, NULL, NULL, 0, 0}
 };
 

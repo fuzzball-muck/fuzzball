@@ -133,11 +133,14 @@ set_property(dbref player, const char *name, PData * dat, int sync)
 {
 #ifdef DISKBASE
     fetchprops(player, propdir_name(name));
-    set_property_nofetch(player, name, dat, sync);
-    dirtyprops(player);
-#else
-    set_property_nofetch(player, name, dat, sync);
 #endif
+
+    set_property_nofetch(player, name, dat, sync);
+
+#ifdef DISKBASE
+    dirtyprops(player);
+#endif
+
     DBDIRTY(player);
 }
 
@@ -276,6 +279,8 @@ remove_property(dbref player, const char *pname, int sync)
 #ifdef DISKBASE
     dirtyprops(player);
 #endif
+
+    DBDIRTY(player);
 }
 
 PropPtr

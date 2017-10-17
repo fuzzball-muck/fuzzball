@@ -93,6 +93,7 @@ extern int tp_dump_interval;
 extern int tp_dump_warntime;
 extern int tp_idle_ping_time;
 extern int tp_maxidle;
+extern int tp_pname_history_threshold;
 
 struct tune_time_entry {
     const char *group;

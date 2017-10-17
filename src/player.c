@@ -88,8 +88,9 @@ create_player(const char *name, const char *password)
     player = new_object();
 
     /* initialize everything */
-    set_player_name(player, name);
-    LOCATION(player) = tp_player_start;	/* home */
+    NAME(player) = alloc_string(name);
+    add_property(player, PLAYER_CREATED_AS_PROP, name, 0);
+    LOCATION(player) = tp_player_start;
     FLAGS(player) = TYPE_PLAYER;
     OWNER(player) = player;
     ALLOC_PLAYER_SP(player);
@@ -186,10 +187,7 @@ delete_player(dbref who)
 		    if (ren == found) {
 			free_hash(NAME(ren), player_list, PLAYER_HASH_SIZE);
 		    }
-		    if (NAME(ren)) {
-			free((void *) NAME(ren));
-		    }
-		    set_player_name(ren, namebuf);
+		    change_player_name(ren, namebuf);
 		    add_player(ren);
 		} else {
 		    add_player(i);
@@ -268,12 +266,31 @@ ok_password(const char *password)
 }
 
 void
-set_player_name(dbref player, const char *name)
+change_player_name(dbref player, const char *name)
 {
     char buf[BUFFER_LEN];
+    PropPtr propadr, pptr;
+    char propname[BUFFER_LEN];
+    time_t t, now = time(NULL), cutoff = now - tp_pname_history_threshold;
 
-    snprintf(buf, sizeof(buf), "%s/%d", PNAME_HISTORY_PROPDIR, (int) time((time_t *) NULL));
+
+    propadr = first_prop(player, PNAME_HISTORY_PROPDIR, &pptr, propname, sizeof(propname));
+    while (propadr) {
+	t = atoi(propname);
+	if (t > cutoff) break;
+	snprintf(buf, sizeof(buf), "%s/%d", PNAME_HISTORY_PROPDIR, (int)t);
+        propadr = next_prop(pptr, propadr, propname, sizeof(propname));
+	remove_property(player, buf, 0);
+    }
+
+    snprintf(buf, sizeof(buf), "%s/%d", PNAME_HISTORY_PROPDIR, (int)now);
     add_property(player, buf, name, 0);
+
+    if (NAME(player)) {
+     free((void *) NAME(player));
+    }
+
     NAME(player) = alloc_string(name);
     ts_modifyobject(player);
+
 }

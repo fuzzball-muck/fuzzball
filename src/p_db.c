@@ -430,12 +430,8 @@ prim_setname(PRIM_PROTOTYPE)
 	    /* everything ok, notify */
 	    log_status("NAME CHANGE (MUF): %s(#%d) to %s", NAME(ref), ref, b);
 	    delete_player(ref);
-	    if (NAME(ref)) {
-		free((void *) NAME(ref));
-	    }
-	    NAME(ref) = alloc_string(b);
+	    change_player_name(ref, b);
 	    add_player(ref);
-	    ts_modifyobject(ref);
 	} else {
 	    if (((Typeof(ref) == TYPE_THING) && !ok_ascii_thing(b)) ||
 		((Typeof(ref) != TYPE_THING) && !ok_ascii_other(b))) {

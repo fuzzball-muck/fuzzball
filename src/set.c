@@ -50,10 +50,7 @@ do_name(int descr, dbref player, const char *name, char *newname)
 	    /* everything ok, notify */
 	    log_status("NAME CHANGE: %s(#%d) to %s", NAME(thing), thing, newname);
 	    delete_player(thing);
-	    if (NAME(thing)) {
-		free((void *) NAME(thing));
-	    }
-	    set_player_name(thing, newname);
+	    change_player_name(thing, newname);
 	    add_player(thing);
 	    notify(player, "Name set.");
 	    return;
