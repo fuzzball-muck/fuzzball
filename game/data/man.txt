@@ -4554,7 +4554,7 @@ PNAME_HISTORY
 PNAME_HISTORY ( d -- a )
 
   Returns a dictionary representing the times in which the given player had a name
-change, limited by the sysparm pname_history_threshhold. If determinable, the
+change, limited by the sysparm pname_history_threshold. If determinable, the
 "created_as" key holds the name at creation. Requires Wizbit.
 ~
 ~
