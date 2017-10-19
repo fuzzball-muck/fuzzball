@@ -367,6 +367,7 @@ int tp_muf_string_math;
 int tp_optimize_muf;
 int tp_periodic_program_purge;
 int tp_playermax;
+int tp_pname_history_reporting;
 int tp_quiet_moves;
 int tp_realms_control;
 int tp_recognize_null_command;
@@ -495,6 +496,8 @@ struct tune_bool_entry tune_bool_list[] = {
      "Honor server cipher preference order over client's", "SSL", 1, SERVER_CIPHER_PREFERENCE},
     {"Tuning", "periodic_program_purge", &tp_periodic_program_purge, 0, MLEV_WIZARD,
      "Periodically free unused MUF programs", "", 1, PERIODIC_PROGRAM_PURGE},
+    {"Tuning", "pname_history_reporting", &tp_pname_history_reporting, 0, MLEV_WIZARD,
+     "Report player name change history", "", 1, PNAME_HISTORY_REPORTING},
     {"WHO", "secure_who", &tp_secure_who, 0, MLEV_WIZARD,
      "Disallow WHO command from login screen and programs", "", 1, SECURE_WHO},
     {"WHO", "use_hostnames", &tp_hostnames, 0, MLEV_WIZARD,

@@ -273,14 +273,15 @@ change_player_name(dbref player, const char *name)
     char propname[BUFFER_LEN];
     time_t t, now = time(NULL), cutoff = now - tp_pname_history_threshold;
 
-
-    propadr = first_prop(player, PNAME_HISTORY_PROPDIR, &pptr, propname, sizeof(propname));
-    while (propadr) {
-	t = atoi(propname);
-	if (t > cutoff) break;
-	snprintf(buf, sizeof(buf), "%s/%d", PNAME_HISTORY_PROPDIR, (int)t);
-        propadr = next_prop(pptr, propadr, propname, sizeof(propname));
-	remove_property(player, buf, 0);
+    if (tp_pname_history_threshold > 0) {
+	propadr = first_prop(player, PNAME_HISTORY_PROPDIR, &pptr, propname, sizeof(propname));
+	while (propadr) {
+	    t = atoi(propname);
+	    if (t > cutoff) break;
+	    snprintf(buf, sizeof(buf), "%s/%d", PNAME_HISTORY_PROPDIR, (int)t);
+            propadr = next_prop(pptr, propadr, propname, sizeof(propname));
+	    remove_property(player, buf, 0);
+	}
     }
 
     snprintf(buf, sizeof(buf), "%s/%d", PNAME_HISTORY_PROPDIR, (int)now);
@@ -292,5 +293,4 @@ change_player_name(dbref player, const char *name)
 
     NAME(player) = alloc_string(name);
     ts_modifyobject(player);
-
 }

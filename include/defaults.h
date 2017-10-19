@@ -61,6 +61,7 @@
 #define DUMP_WARNTIME TIME_MINUTE(2)	/* warning time before a dump */
 #define CLEAN_INTERVAL TIME_MINUTE(15)	/* time between unused obj purges */
 #define PNAME_HISTORY_THRESHOLD TIME_DAY(30) /* length of player name change history */
+#define PNAME_HISTORY_REPORTING 1	/* Report player name change history */
 
 /* Information needed for SSL */
 #define SSL_CERT_FILE "data/server.pem"	/* SSL certificate */

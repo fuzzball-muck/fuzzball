@@ -1,7 +1,7 @@
 ***Foxen9 TinyMUCK DUMP Format***
 2
 1
-154
+156
 autolook_cmd=look
 cpennies=Pennies
 cpenny=Penny
@@ -59,6 +59,7 @@ dump_warntime=  0d  0:02:00
 idle_ping_time=  0d  0:00:55
 maxidle=  0d  2:00:00
 clean_interval=  0d  0:15:00
+%pname_history_threshold= 30d  0:00:00
 player_name_limit=16
 exit_cost=1
 link_cost=1
@@ -154,6 +155,7 @@ show_legacy_props=no
 registration=yes
 %server_cipher_preference=yes
 periodic_program_purge=yes
+%pname_history_reporting=yes
 secure_who=no
 use_hostnames=no
 #1

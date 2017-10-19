@@ -4486,6 +4486,7 @@ Parameters available:
  (bool) registration              - Require new players to register manually
  (bool) server_cipher_preference  - Honor server cipher preference order over client's
  (bool) periodic_program_purge    - Periodically free unused MUF programs
+ (bool) pname_history_reporting   - Report player name change history
  (bool) secure_who                - Disallow WHO command from login screen and programs
  (bool) use_hostnames             - Resolve IP addresses into hostnames
 ~
@@ -4554,8 +4555,11 @@ PNAME_HISTORY
 PNAME_HISTORY ( d -- a )
 
   Returns a dictionary representing the times in which the given player had a name
-change, limited by the sysparm pname_history_threshold. If determinable, the
-"created_as" key holds the name at creation. Requires Wizbit.
+change. If determinable, the "created_as" key holds the name at creation. 
+
+The result of this wizbit-only primitive is affected by the following sysparms:
+  pname_history_reporting    - if no, the result is an empty dictionary.
+  pname_history_threshold    - amount of history to keep (0s = unlimited)
 ~
 ~
 DESC
