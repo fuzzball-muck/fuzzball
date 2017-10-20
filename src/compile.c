@@ -2944,6 +2944,18 @@ do_directive(COMPSTATE * cstat, char *direct)
 	    v_abort_compile(cstat, buf);
 	}
 	cstat->alt_entrypoint = p;
+    } else if (!strcasecmp(temp, "language")) {
+	char buf[BUFFER_LEN];
+	skip_whitespace(&cstat->next_char);
+	if (!*cstat->next_char || !(tmpptr = (char *) next_token_raw(cstat)))
+	    v_abort_compile(cstat, "$language - argument is required.");
+	if (!string(tmpptr)) {
+	    v_abort_compile(cstat, "$language - argument must be enclosed in double quotes.");
+	}
+	if (strcasecmp(tmpptr+1, "muf")) {
+	    snprintf(buf, sizeof(buf), "$language - '%s' is not implemented on this server.", tmpptr+1);
+	    v_abort_compile(cstat, buf);
+	}
     } else {
 	v_abort_compile(cstat, "Unrecognized compiler directive.");
     }

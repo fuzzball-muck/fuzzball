@@ -672,6 +672,12 @@ $ENTRYPOINT <function name>
   Sets the function used to start the program. Defaults to the last one.
 ~
 ~
+$LANGUAGE
+$LANGUAGE "<language name>"
+
+  Sets the language used to compile the program. "MUF" is currently supported.
+~
+~
 \|BACKSLASH
 Escaping Literal Tokens:
 

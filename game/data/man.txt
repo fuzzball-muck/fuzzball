@@ -52,14 +52,14 @@ Symbols
   $def           $define        $doccmd        $echo          $entrypoint
   $ifcancall     $ifdef         $iflib         $iflibver      $ifncancall
   $ifndef        $ifnlib        $ifnlibver     $ifnver        $ifver
-  $include       $lib-version   $libdef        $note          $pragma
-  $pubdef        $undef         $version       %              '
-  *              +              ++             -              --
-  -rot           /              <              <=             =
-  >              >=             ?dup           @              \
-  __fuzzball__   __muckname     __prog__       __version      {
-  }              }cat           }dict          }join          }list
-  }tell          
+  $include       $language      $lib-version   $libdef        $note
+  $pragma        $pubdef        $undef         $version       %
+  '              *              +              ++             -
+  --             -rot           /              <              <= 
+  =              >              >=             ?dup           @
+  \              __fuzzball__   __muckname     __prog__       __version
+  {              }              }cat           }dict          }join
+  }list          }tell          
 
 A's
   abort                     abs                       acos
@@ -486,11 +486,11 @@ $echo                     $entrypoint               $ifcancall
 $ifdef                    $iflib                    $iflibver
 $ifncancall               $ifndef                   $ifnlib
 $ifnlibver                $ifnver                   $ifver
-$include                  $lib-version              $libdef
-$note                     $pragma                   $pubdef
-$undef                    $version                  \
-__fuzzball__              __muckname                __prog__
-__version                 max_variable_count        
+$include                  $language                 $lib-version
+$libdef                   $note                     $pragma
+$pubdef                   $undef                    $version
+\                         __fuzzball__              __muckname
+__prog__                  __version                 max_variable_count
 
 ~----------------------------------------------------------------------------
 ~
@@ -897,6 +897,12 @@ $ENTRYPOINT
 $ENTRYPOINT <function name>
 
   Sets the function used to start the program. Defaults to the last one.
+~
+~
+$LANGUAGE
+$LANGUAGE "<language name>"
+
+  Sets the language used to compile the program. "MUF" is currently supported.
 ~
 ~
 \|BACKSLASH
