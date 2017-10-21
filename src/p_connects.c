@@ -61,7 +61,7 @@ prim_online_array(PRIM_PROTOTYPE)
     temp2.type = PROG_OBJECT;
     temp1.line = 0;
     temp2.line = 0;
-    nu = new_array_packed(result);
+    nu = new_array_packed(result, fr->pinning);
     for (int i = 0; i < result; i++) {
 	temp1.data.number = i;
 	temp2.data.number = pdbref(i + 1);
@@ -520,7 +520,7 @@ prim_descr_array(PRIM_PROTOTYPE)
     temp2.line = 0;
     if (ref == NOTHING) {
 	result = pcount();
-	newarr = new_array_packed(result);
+	newarr = new_array_packed(result, fr->pinning);
 	for (int i = 0; i < result; i++) {
 	    temp1.data.number = i;
 	    temp2.data.number = pdescr(i + 1);
@@ -528,7 +528,7 @@ prim_descr_array(PRIM_PROTOTYPE)
 	}
     } else {
 	darr = get_player_descrs(ref, &dcount);
-	newarr = new_array_packed(dcount);
+	newarr = new_array_packed(dcount, fr->pinning);
 	for (int di = 0; di < dcount; di++) {
 	    temp1.data.number = (dcount - 1) - di;
 	    temp2.data.number = darr[di];

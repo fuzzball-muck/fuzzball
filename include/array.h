@@ -34,12 +34,12 @@ int array_count(stk_array *arr);
 stk_array *array_decouple(stk_array *arr);
 int array_delitem(stk_array **harr, array_iter *item);
 int array_delrange(stk_array **harr, array_iter *start, array_iter *end);
-stk_array *array_demote_only(stk_array *arr, int threshold);
+stk_array *array_demote_only(stk_array *arr, int threshold, int pin);
 int array_first(stk_array *arr, array_iter *item);
 void array_free(stk_array *arr);
 char *array_get_intkey_strval(stk_array *arr, int key);
 array_data *array_getitem(stk_array *arr, array_iter *idx);
-stk_array *array_getrange(stk_array *arr, array_iter *start, array_iter *end);
+stk_array *array_getrange(stk_array *arr, array_iter *start, array_iter *end, int pin);
 int array_idxcmp_case(array_iter *a, array_iter *b, int case_sens);
 int array_insertitem(stk_array **arr, array_iter *idx, array_data *item);
 int array_insertrange(stk_array **arr, array_iter *start, stk_array *inarr);
@@ -59,7 +59,7 @@ int array_set_strkey_refval(stk_array **harr, const char *key, dbref val);
 int array_set_strkey_strval(stk_array **harr, const char *key, const char *val);
 int array_setitem(stk_array **arr, array_iter *idx, array_data *item);
 int array_setrange(stk_array **arr, array_iter *start, stk_array *inarr);
-stk_array *new_array_dictionary(void);
-stk_array *new_array_packed(int size);
+stk_array *new_array_dictionary(int pin);
+stk_array *new_array_packed(int size, int pin);
 
 #endif				/* _ARRAY_H */

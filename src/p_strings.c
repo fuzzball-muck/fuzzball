@@ -509,7 +509,7 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
     fmtstr = DoNullInd(oper2->data.string);
     slen = strlen(fmtstr);
 
-    nu = new_array_packed(0);
+    nu = new_array_packed(0, fr->pinning);
     if (array_first(arr, &temp1)) {
 	do {
 	    strcpyn(sstr, sizeof(sstr), fmtstr);
@@ -1678,7 +1678,7 @@ prim_explode_array(PRIM_PROTOTYPE)
 	const char *delimit = temp1.data.string->data;
 	size_t delimlen = temp1.data.string->length;
 
-	nu = new_array_packed(0);
+	nu = new_array_packed(0, fr->pinning);
 	if (!temp2.data.string) {
 	    lastPtr = "";
 	} else {

@@ -31,6 +31,35 @@ prim_dup(PRIM_PROTOTYPE)
 }
 
 void
+prim_shallow_copy(PRIM_PROTOTYPE)
+{
+    EXPECT_READ_STACK(1);
+    CHECKOFLOW(1);
+    if (arg[*top - 1].type != PROG_ARRAY) {
+	copyinst(&arg[*top - 1], &arg[*top]);
+	(*top)++;
+    } else {
+	stk_array *nu;
+	stk_array *arr = arg[*top - 1].data.array;
+	if (!arr) {
+	    nu = new_array_packed(0, fr->pinning);
+	} else {
+	    nu = array_decouple(arr);
+	}
+	PushArrayRaw(nu);
+    }
+}
+
+void
+prim_deep_copy(PRIM_PROTOTYPE)
+{
+    EXPECT_READ_STACK(1);
+    CHECKOFLOW(1);
+    deep_copyinst(&arg[*top - 1], &arg[*top], fr->pinning);
+    (*top)++;
+}
+
+void
 prim_pdup(PRIM_PROTOTYPE)
 {
     EXPECT_READ_STACK(1);

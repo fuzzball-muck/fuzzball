@@ -799,14 +799,14 @@ do_process_status(dbref player)
 }
 
 stk_array *
-get_pids(dbref ref)
+get_pids(dbref ref, int pin)
 {
     struct inst temp1, temp2;
     stk_array *nw;
     int count = 0;
 
     timequeue ptr = tqhead;
-    nw = new_array_packed(0);
+    nw = new_array_packed(0, pin);
     while (ptr) {
 	if (((ptr->typ != TQ_MPI_TYP) ? (ptr->called_prog == ref) : (ptr->trig == ref)) ||
 	    (ptr->uid == ref) || (ref < 0)) {
@@ -825,7 +825,7 @@ get_pids(dbref ref)
 }
 
 stk_array *
-get_pidinfo(int pid)
+get_pidinfo(int pid, int pin)
 {
     struct inst temp1, temp2;
     stk_array *nw;
@@ -834,7 +834,7 @@ get_pidinfo(int pid)
     double pcnt = 0.0;
 
     timequeue ptr = tqhead;
-    nw = new_array_dictionary();
+    nw = new_array_dictionary(pin);
     while (ptr) {
 	if (ptr->eventnum == pid) {
 	    if (ptr->typ != TQ_MUF_TYP || ptr->subtyp != TQ_MUF_TIMER) {
@@ -866,7 +866,7 @@ get_pidinfo(int pid)
         temp1.type = PROG_STRING;
         temp1.data.string = alloc_prog_string("FILTERS");
         temp2.type = PROG_ARRAY;
-        temp2.data.array = new_array_packed(0);
+        temp2.data.array = new_array_packed(0, pin);
         array_setitem(&nw, &temp1, &temp2);
         CLEAR(&temp1);
         CLEAR(&temp2);
@@ -897,7 +897,7 @@ get_pidinfo(int pid)
 		(ptr->typ == TQ_MUF_TYP) ? "MUF" :
                 (ptr->typ == TQ_MPI_TYP) ? "MPI" : "");
     } else {
-	nw = get_mufevent_pidinfo(nw, pid);
+	nw = get_mufevent_pidinfo(nw, pid, pin);
     }
     return nw;
 }

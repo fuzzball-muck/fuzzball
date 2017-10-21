@@ -67,23 +67,24 @@ A's
   and                       ansi_midstr               ansi_strcut
   ansi_strip                ansi_strlen               array?
   array_appenditem          array_compare             array_count
-  array_cut                 array_delitem             array_delrange
-  array_diff                array_excludeval          array_explode
-  array_extract             array_filter_flags        array_filter_prop
-  array_findval             array_first               array_fmtstrings
-  array_get_ignorelist      array_get_propdirs        array_get_proplist
-  array_get_propvals        array_get_reflist         array_getitem
-  array_getrange            array_insertitem          array_insertrange
-  array_interpret           array_intersect           array_join
-  array_keys                array_last                array_make
-  array_make_dict           array_matchkey            array_matchval
-  array_ndiff               array_nested_del          array_nested_get
-  array_nested_set          array_next                array_nintersect
-  array_notify              array_notify_secure       array_nunion
-  array_prev                array_put_proplist        array_put_propvals
-  array_put_reflist         array_reverse             array_setitem
-  array_setrange            array_sort                array_sort_indexed
-  array_union               array_vals                arrive
+  array_cut                 array_default_pinning     array_delitem
+  array_delrange            array_diff                array_excludeval
+  array_explode             array_extract             array_filter_flags
+  array_filter_prop         array_findval             array_first
+  array_fmtstrings          array_get_ignorelist      array_get_propdirs
+  array_get_proplist        array_get_propvals        array_get_reflist
+  array_getitem             array_getrange            array_insertitem
+  array_insertrange         array_interpret           array_intersect
+  array_join                array_keys                array_last
+  array_make                array_make_dict           array_matchkey
+  array_matchval            array_ndiff               array_nested_del
+  array_nested_get          array_nested_set          array_next
+  array_nintersect          array_notify              array_notify_secure
+  array_nunion              array_pin                 array_prev
+  array_put_proplist        array_put_propvals        array_put_reflist
+  array_reverse             array_setitem             array_setrange
+  array_sort                array_sort_indexed        array_union
+  array_unpin               array_vals                arrive
   asin                      atan                      atan2
   atoi                      awake?                    
 
@@ -110,13 +111,13 @@ D's
   date               dbcmp              dbref              dbref?
   dbtop              debug notation     debug_line         debug_off
   debug_on           debugger           debugger_break     debugger_commands
-  depth              desc               descr              descr_array
-  descr_setuser      descrboot          descrbufsize       descrcon
-  descrdbref         descrflush         descrhost          descridle
-  descriptors        descrleastidle     descrmostidle      descrnotify
-  descrsecure?       descrtime          descruser          dictionary?
-  diff3              dist3d             drop               dup
-  dupn               
+  deep_copy          depth              desc               descr
+  descr_array        descr_setuser      descrboot          descrbufsize
+  descrcon           descrdbref         descrflush         descrhost
+  descridle          descriptors        descrleastidle     descrmostidle
+  descrnotify        descrsecure?       descrtime          descruser
+  dictionary?        diff3              dist3d             drop
+  dup                dupn               
 
 E's
   else               entrances_array    envprop            envpropstr
@@ -207,14 +208,14 @@ S's
   setlockstr         setmode            setname            setodrop
   setofail           setosucc           setown             setprop
   setseed            setsucc            setsysparm         sha1hash
-  sign               sin                sleep              smatch
-  split              sqrt               srand              stats
-  stod               strcat             strcmp             strcut
-  strdecrypt         strencrypt         string?            stringcmp
-  stringpfx          strip              striplead          striptail
-  strlen             strncmp            strtof             subst
-  succ               supplicant         swap               sysparm
-  sysparm_array      systime            systime_precise    
+  shallow_copy       sign               sin                sleep
+  smatch             split              sqrt               srand
+  stats              stod               strcat             strcmp
+  strcut             strdecrypt         strencrypt         string?
+  stringcmp          stringpfx          strip              striplead
+  striptail          strlen             strncmp            strtof
+  subst              succ               supplicant         swap
+  sysparm            sysparm_array      systime            systime_precise
 
 T's
   tan          testlock     textattr     then         thing?       time
@@ -926,9 +927,11 @@ recursively.  It will call the actual addprop.
 Stack Manipulation Operators|StackOps
 Stack Manipulation Operators
 
--rot       ?dup       depth      dup        dupn       fulldepth  lreverse
-nip        over       pick       pop        popn       put        reverse
-rot        rotate     swap       tuck       {          }          
+-rot           ?dup           deep_copy      depth          dup
+dupn           fulldepth      lreverse       nip            over
+pick           pop            popn           put            reverse
+rot            rotate         shallow_copy   swap           tuck
+{              }              
 
 ~----------------------------------------------------------------------------
 ~
@@ -990,6 +993,22 @@ LDUP ( {?} -- {?} {?} )
 
   Duplicates a stackrange on top of the stack.
 Also see: DUP and DUPN
+~
+~
+SHALLOW_COPY
+SHALLOW_COPY ( x -- x x )
+
+  Duplicates the item at the top of the stack.  If it is an array, it makes
+a shallow copy of it that is decoupled from the original array.
+Also see: DUP, DUPN, LDUP and DEEP_COPY
+~
+~
+DEEP_COPY
+DEEP_COPY ( x -- x x )
+
+  Duplicates the item at the top of the stack.  If it is an array, it makes
+a deep copy of it that is decoupled from the original array.
+Also see: DUP, DUPN, LDUP and SHALLOW_COPY
 ~
 ~
 SWAP
@@ -3153,19 +3172,20 @@ Array Manipulation Operators|ArrayOps
 Array Manipulation Operators
 
 array_appenditem          array_compare             array_count
-array_cut                 array_delitem             array_delrange
-array_diff                array_excludeval          array_explode
-array_extract             array_findval             array_first
-array_getitem             array_getrange            array_insertitem
-array_insertrange         array_interpret           array_intersect
-array_join                array_keys                array_last
-array_make                array_make_dict           array_matchkey
-array_matchval            array_ndiff               array_nested_del
-array_nested_get          array_nested_set          array_next
-array_nintersect          array_notify              array_notify_secure
-array_nunion              array_prev                array_reverse
-array_setitem             array_setrange            array_sort
-array_sort_indexed        array_union               array_vals
+array_cut                 array_default_pinning     array_delitem
+array_delrange            array_diff                array_excludeval
+array_explode             array_extract             array_findval
+array_first               array_getitem             array_getrange
+array_insertitem          array_insertrange         array_interpret
+array_intersect           array_join                array_keys
+array_last                array_make                array_make_dict
+array_matchkey            array_matchval            array_ndiff
+array_nested_del          array_nested_get          array_nested_set
+array_next                array_nintersect          array_notify
+array_notify_secure       array_nunion              array_pin
+array_prev                array_reverse             array_setitem
+array_setrange            array_sort                array_sort_indexed
+array_union               array_unpin               array_vals
 }cat                      }dict                     }join
 }list                     }tell                     
 
@@ -3481,6 +3501,27 @@ items before the given index.  The second array will contain the given
 position and all items after it.  When used on a list array, both output
 arrays will be list arrays.  When used on dictionaries, both arrays will
 be dictionaries.
+~
+~
+ARRAY_PIN
+ARRAY_PIN ( arr -- arr' )
+
+  Given an array or dictionary, pins it such that changes to any dup'ed
+copy of that array on the stack will make changes to ALL copies.
+~
+~
+ARRAY_UNPIN
+ARRAY_UNPIN ( arr -- arr' )
+
+  Given an array or dictionary, unpins it such that changes to any dup'ed
+copy of that array on the stack will NOT change any other copy of that array.
+~
+~
+ARRAY_DEFAULT_PINNING
+ARRAY_DEFAULT_PINNING ( int -- )
+
+  Sets whether future arrays/dictionaries created in this process will be
+pinned by default.
 ~
 ~
 ARRAY_SORT|SORTTYPE_CASEINSENS|SORTTYPE_DESCENDING|SORTTYPE_SHUFFLE|SORTTYPE_CASE_ASCEND|SORTTYPE_NOCASE_ASCEND|SORTTYPE_CASE_DESCEND|SORTTYPE_NOCASE_DESCEND

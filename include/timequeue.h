@@ -24,8 +24,8 @@ int dequeue_timers(int procnum, char *timerid);
 void envpropqueue(int descr, dbref player, dbref where, dbref trigger, dbref what,
                          dbref xclude, const char *propname, const char *toparg, int mlev,
                          int mt);
-stk_array *get_pidinfo(int pid);
-stk_array *get_pids(dbref ref);
+stk_array *get_pidinfo(int pid, int pin);
+stk_array *get_pids(dbref ref, int pin);
 void handle_read_event(int descr, dbref player, const char *command);
 void listenqueue(int descr, dbref player, dbref where, dbref trigger, dbref what,
                         dbref xclude, const char *propname, const char *toparg, int mlev,

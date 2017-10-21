@@ -417,6 +417,7 @@ interp(int descr, dbref player, dbref location, dbref program,
     fr->instcnt = 0;
     fr->skip_declare = 0;
     fr->wantsblanks = 0;
+    fr->pinning = 0;
     fr->caller.top = 1;
     fr->caller.st[0] = source;
     fr->caller.st[1] = program;
@@ -857,6 +858,47 @@ copyinst(struct inst *from, struct inst *to)
 	}
 	break;
     }
+}
+
+void
+deep_copyinst(struct inst *in, struct inst *out, int pinned)
+{
+    stk_array *nu, *arr;
+    struct inst temp1;
+    if (in->type != PROG_ARRAY) {
+	copyinst(in, out);
+	return;
+    }
+
+    arr = in->data.array;
+    if (arr == NULL) {
+	copyinst(in, out);
+	return;
+    }
+
+    *out = *in;
+    switch (arr->type) {
+	case ARRAY_PACKED:{
+	    nu = new_array_packed(arr->items, pinned);
+	    for (int i = arr->items; i-- > 0;) {
+		deep_copyinst(&arr->data.packed[i], &nu->data.packed[i], pinned);
+	    }
+	}
+	case ARRAY_DICTIONARY:{
+	    array_iter idx;
+	    array_data *val;
+
+	    nu = new_array_dictionary(pinned);
+	    if (array_first(arr, &idx)) {
+		do {
+		    val = array_getitem(arr, &idx);
+		    deep_copyinst(&temp1, val, pinned);
+		    array_setitem(&nu, &idx, &temp1);
+		} while (array_next(arr, &idx));
+	    }
+	}
+    }
+    out->data.array = nu;
 }
 
 static void
@@ -1570,7 +1612,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 			}
 		    } else {
 			/* IN_CATCH_DETAILED */
-			stk_array *nu = new_array_dictionary();
+			stk_array *nu = new_array_dictionary(fr->pinning);
 			if (fr->errorstr) {
 			    array_set_strkey_strval(&nu, "error", fr->errorstr);
 			    free(fr->errorstr);

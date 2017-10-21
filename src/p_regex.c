@@ -134,8 +134,8 @@ prim_regexp(PRIM_PROTOTYPE)
 	    abort_interp(muf_re_error(matchcnt));
 	}
 
-	if (((nu_val = new_array_packed(0)) == NULL) ||
-	    ((nu_idx = new_array_packed(0)) == NULL)) {
+	if (((nu_val = new_array_packed(0, fr->pinning)) == NULL) ||
+	    ((nu_idx = new_array_packed(0, fr->pinning)) == NULL)) {
 	    if (nu_val != NULL)
 		array_free(nu_val);
 
@@ -145,8 +145,8 @@ prim_regexp(PRIM_PROTOTYPE)
 	    abort_interp("Out of memory");
 	}
     } else {
-	if (((nu_val = new_array_packed(matchcnt)) == NULL) ||
-	    ((nu_idx = new_array_packed(matchcnt)) == NULL)) {
+	if (((nu_val = new_array_packed(matchcnt, fr->pinning)) == NULL) ||
+	    ((nu_idx = new_array_packed(matchcnt, fr->pinning)) == NULL)) {
 	    if (nu_val != NULL)
 		array_free(nu_val);
 
@@ -177,7 +177,7 @@ prim_regexp(PRIM_PROTOTYPE)
 	    CLEAR(&idx);
 	    CLEAR(&val);
 
-	    if ((nu = new_array_packed(2)) == NULL) {
+	    if ((nu = new_array_packed(2, fr->pinning)) == NULL) {
 		array_free(nu_val);
 		array_free(nu_idx);
 
@@ -401,7 +401,7 @@ _prim_regsplit(PRIM_PROTOTYPE, int empty)
     textstart = text = DoNullInd(oper1->data.string);
     len = strlen(text);
 
-    if ((nu_val = new_array_packed(0)) == NULL) {
+    if ((nu_val = new_array_packed(0, fr->pinning)) == NULL) {
 	array_free(nu_val);
 	abort_interp("Out of memory");
     }

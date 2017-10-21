@@ -174,6 +174,7 @@ struct frame {
     struct mufwatchpidlist *waiters;
     struct mufwatchpidlist *waitees;
     union error_mask error;
+    short pinning;		/* Whether new arrays/dicts should be pinned by default. */
 #ifdef DEBUG
     int expect_pop;
     int actual_pop;
@@ -323,6 +324,7 @@ extern const char *base_inst[];
 struct forvars *copy_fors(struct forvars *);
 struct tryvars *copy_trys(struct tryvars *);
 void copyinst(struct inst *from, struct inst *to);
+void deep_copyinst(struct inst *from, struct inst *to, int pinned);
 char *debug_inst(struct frame *, int, struct inst *, int, struct inst *, char *, size_t,
                         int, dbref);
 void do_abort_interp(dbref player, const char *msg, struct inst *pc,

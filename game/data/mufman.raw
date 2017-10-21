@@ -753,6 +753,22 @@ LDUP ( {?} -- {?} {?} )
 ~~alsosee DUP,DUPN
 ~
 ~
+SHALLOW_COPY
+SHALLOW_COPY ( x -- x x )
+
+  Duplicates the item at the top of the stack.  If it is an array, it makes
+a shallow copy of it that is decoupled from the original array.
+~~alsosee DUP,DUPN,LDUP,DEEP_COPY
+~
+~
+DEEP_COPY
+DEEP_COPY ( x -- x x )
+
+  Duplicates the item at the top of the stack.  If it is an array, it makes
+a deep copy of it that is decoupled from the original array.
+~~alsosee DUP,DUPN,LDUP,SHALLOW_COPY
+~
+~
 SWAP
 SWAP ( x y -- y x )
 
@@ -3234,6 +3250,27 @@ items before the given index.  The second array will contain the given
 position and all items after it.  When used on a list array, both output
 arrays will be list arrays.  When used on dictionaries, both arrays will
 be dictionaries.
+~
+~
+ARRAY_PIN
+ARRAY_PIN ( arr -- arr' )
+
+  Given an array or dictionary, pins it such that changes to any dup'ed
+copy of that array on the stack will make changes to ALL copies.
+~
+~
+ARRAY_UNPIN
+ARRAY_UNPIN ( arr -- arr' )
+
+  Given an array or dictionary, unpins it such that changes to any dup'ed
+copy of that array on the stack will NOT change any other copy of that array.
+~
+~
+ARRAY_DEFAULT_PINNING
+ARRAY_DEFAULT_PINNING ( int -- )
+
+  Sets whether future arrays/dictionaries created in this process will be
+pinned by default.
 ~
 ~
 ARRAY_SORT|SORTTYPE_CASEINSENS|SORTTYPE_DESCENDING|SORTTYPE_SHUFFLE|SORTTYPE_CASE_ASCEND|SORTTYPE_NOCASE_ASCEND|SORTTYPE_CASE_DESCEND|SORTTYPE_NOCASE_DESCEND

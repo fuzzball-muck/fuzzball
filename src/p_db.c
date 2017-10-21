@@ -2044,7 +2044,7 @@ prim_getpids(PRIM_PROTOTYPE)
 	abort_interp("Permission denied.  Requires Mucker Level 3.");
     if (oper1->type != PROG_OBJECT)
 	abort_interp("Non-object argument (1)");
-    nw = get_pids(oper1->data.objref);
+    nw = get_pids(oper1->data.objref, fr->pinning);
 
     if (program == oper1->data.objref) {
 	struct inst temp;
@@ -2077,7 +2077,7 @@ prim_getpidinfo(PRIM_PROTOTYPE)
 	abort_interp("Permission denied.  Requires Mucker Level 3.");
 
     if (oper1->data.number == fr->pid) {
-	if ((nu = new_array_dictionary()) == NULL)
+	if ((nu = new_array_dictionary(fr->pinning)) == NULL)
 	    abort_interp("Out of memory");
 
 	if ((etime = time(NULL) - fr->started) > 0) {
@@ -2095,7 +2095,7 @@ prim_getpidinfo(PRIM_PROTOTYPE)
         temp1.type = PROG_STRING;
         temp1.data.string = alloc_prog_string("FILTERS");
         temp2.type = PROG_ARRAY;
-        temp2.data.array = new_array_packed(0);
+        temp2.data.array = new_array_packed(0, fr->pinning);
         array_setitem(&nu, &temp1, &temp2);
         CLEAR(&temp1);
         CLEAR(&temp2);
@@ -2109,7 +2109,7 @@ prim_getpidinfo(PRIM_PROTOTYPE)
 	array_set_strkey_refval(&nu, "TRIG", fr->trig);
 	array_set_strkey_strval(&nu, "TYPE", "MUF");
     } else
-	nu = get_pidinfo(oper1->data.number);
+	nu = get_pidinfo(oper1->data.number, fr->pinning);
 
     CLEAR(oper1);
     PushArrayRaw(nu);
@@ -2128,7 +2128,7 @@ prim_contents_array(PRIM_PROTOTYPE)
     ref = oper1->data.objref;
 
     if ((Typeof(ref) == TYPE_PROGRAM) || (Typeof(ref) == TYPE_EXIT)) {
-	PushArrayRaw(new_array_packed(0));
+	PushArrayRaw(new_array_packed(0, fr->pinning));
 	return;
     }
 
@@ -2137,7 +2137,7 @@ prim_contents_array(PRIM_PROTOTYPE)
     for (ref = CONTENTS(oper1->data.objref); ObjExists(ref); ref = NEXTOBJ(ref))
 	count++;
 
-    nw = new_array_packed(count);
+    nw = new_array_packed(count, fr->pinning);
 
     for (ref = CONTENTS(oper1->data.objref), count = 0; ObjExists(ref);
 	 ref = NEXTOBJ(ref))
@@ -2164,14 +2164,14 @@ prim_exits_array(PRIM_PROTOTYPE)
 	abort_interp("Permission denied.");
 
     if ((Typeof(ref) == TYPE_PROGRAM) || (Typeof(ref) == TYPE_EXIT)) {
-	PushArrayRaw(new_array_packed(0));
+	PushArrayRaw(new_array_packed(0, fr->pinning));
 	return;
     }
 
     for (ref = EXITS(oper1->data.objref); ObjExists(ref); ref = NEXTOBJ(ref))
 	count++;
 
-    nw = new_array_packed(count);
+    nw = new_array_packed(count, fr->pinning);
 
     for (ref = EXITS(oper1->data.objref), count = 0; ObjExists(ref);
 	 ref = NEXTOBJ(ref))
@@ -2183,9 +2183,9 @@ prim_exits_array(PRIM_PROTOTYPE)
 }
 
 static stk_array *
-array_getlinks(dbref obj)
+array_getlinks(dbref obj, int pinned)
 {
-    stk_array *nw = new_array_packed(0);
+    stk_array *nw = new_array_packed(0, pinned);
     int count = 0;
 
     if (ObjExists(obj)) {
@@ -2224,7 +2224,7 @@ prim_getlinks_array(PRIM_PROTOTYPE)
     CHECKREMOTE(oper1->data.objref);
 
     CLEAR(oper1);
-    PushArrayRaw(array_getlinks(ref));
+    PushArrayRaw(array_getlinks(ref, fr->pinning));
 }
 
 void
@@ -2240,7 +2240,7 @@ prim_entrances_array(PRIM_PROTOTYPE)
 	abort_interp("Invalid object dbref. (1)");
 
     ref = oper1->data.objref;
-    nw = new_array_packed(0);
+    nw = new_array_packed(0, fr->pinning);
 
     for (dbref i = 0; i < db_top; i++) {
 	switch (Typeof(i)) {
@@ -2336,7 +2336,7 @@ prim_program_getlines(PRIM_PROTOTYPE)
 	if (!curr) {
 	    /* alright, we have no data! */
 	    free_prog_text(first);
-	    PushArrayRaw(new_array_packed(0));
+	    PushArrayRaw(new_array_packed(0, fr->pinning));
 	    return;
 	}
 
@@ -2352,7 +2352,7 @@ prim_program_getlines(PRIM_PROTOTYPE)
 				   the end of the program, so we account for that. */
 	    count--;
 
-	ary = new_array_packed(count);
+	ary = new_array_packed(count, fr->pinning);
 
 	/*
 	 * so we count down from the number of lines we have, 
@@ -2658,7 +2658,7 @@ prim_pname_history(PRIM_PROTOTYPE)
     if (!valid_player(oper1))
 	abort_interp("Non-player argument (1).");
 
-    if ((nu = new_array_dictionary()) == NULL)
+    if ((nu = new_array_dictionary(fr->pinning)) == NULL)
 	abort_interp("Out of memory");
 
     ref = oper1->data.objref;
