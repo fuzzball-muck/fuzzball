@@ -1659,10 +1659,18 @@ READ_WANTS_BLANKS
 READ_WANTS_BLANKS ( -- )
 
   Tells the interpreter that this process wants to be able to receive blank
-lines from the READ primitive.  If this is not executed, the process will
-silently ignore blank ("") lines in READ.  This only needs to be done once
-per process, and isn't reversable.
-~~alsosee READ,TREAD
+lines from the READ primitive. This can be reversed with the READ_WANTS_NO_BLANKS
+primitive.
+~~alsosee READ,TREAD,READ_WANTS_NO_BLANKS
+~
+~
+READ_WANTS_NO_BLANKS
+READ_WANTS_NO_BLANKS ( -- )
+
+  Tells the interpreter that this process should ignore blank lines from
+the READ primitive. This is only necessary after a call to READ_WANTS_BLANKS has
+been made.
+~~alsosee READ,TREAD,READ_WANTS_BLANKS
 ~
 ~
 READ
@@ -1672,7 +1680,7 @@ READ ( -- s )
 program that is locked (as opposed to linked) to an object, as the
 lock will always fail and print the fail messages at read time.  It
 cannot be used in a program associated with a room object.
-~~alsosee READ_WANTS_BLANKS,TREAD
+~~alsosee READ_WANTS_BLANKS,READ_WANTS_NO_BLANKS,TREAD
 ~
 ~
 TREAD

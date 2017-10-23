@@ -1077,6 +1077,12 @@ prim_read_wants_blanks(PRIM_PROTOTYPE)
 }
 
 void
+prim_read_wants_no_blanks(PRIM_PROTOTYPE)
+{
+    fr->wantsblanks = 0;
+}
+
+void
 prim_debugger_break(PRIM_PROTOTYPE)
 {
     int i = 0;
