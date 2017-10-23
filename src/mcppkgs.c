@@ -278,6 +278,28 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 }
 
 void
+mcppkg_languages(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
+{
+    McpMesg omsg;
+    McpVer supp = mcp_frame_package_supported(mfr, "org-fuzzball-languages");
+
+    if (supp.verminor == 0 && supp.vermajor == 0) {
+	notify(mcpframe_to_user(mfr), "MCP: org-fuzzball-languages not supported.");
+	return;
+    }
+
+    if (!strcasecmp(msg->mesgname, "request")) {
+	mcp_mesg_init(&omsg, "org-fuzzball-languages", "supported");
+	mcp_mesg_arg_append(&omsg, "languages", "muf:7.0");
+	/* mcp_mesg_arg_append(&omsg, "languages", "muv:2.0"); */
+	mcp_frame_output_mesg(mfr, &omsg);
+	mcp_mesg_clear(&omsg);
+	return;
+    }
+}
+
+
+void
 mcppkg_help_request(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 {
     FILE *f;
