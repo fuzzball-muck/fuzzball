@@ -225,14 +225,14 @@ tune_save_parms_to_file(FILE * f)
 }
 
 stk_array *
-tune_parms_array(const char *pattern, int mlev)
+tune_parms_array(const char *pattern, int mlev, int pinned)
 {
     struct tune_str_entry *tstr = tune_str_list;
     struct tune_time_entry *ttim = tune_time_list;
     struct tune_val_entry *tval = tune_val_list;
     struct tune_ref_entry *tref = tune_ref_list;
     struct tune_bool_entry *tbool = tune_bool_list;
-    stk_array *nu = new_array_packed(0);
+    stk_array *nu = new_array_packed(0, pinned);
     struct inst temp1;
     char pat[BUFFER_LEN];
     char buf[BUFFER_LEN];
@@ -243,7 +243,7 @@ tune_parms_array(const char *pattern, int mlev)
 	if (tbool->readmlev <= mlev) {
 	    strcpyn(buf, sizeof(buf), tbool->name);
 	    if (!*pattern || equalstr(pat, buf)) {
-		stk_array *item = new_array_dictionary();
+		stk_array *item = new_array_dictionary(pinned);
 		array_set_strkey_strval(&item, "type", "boolean");
 		array_set_strkey_strval(&item, "group", tbool->group);
 		array_set_strkey_strval(&item, "name", tbool->name);
@@ -269,7 +269,7 @@ tune_parms_array(const char *pattern, int mlev)
 	if (ttim->readmlev <= mlev) {
 	    strcpyn(buf, sizeof(buf), ttim->name);
 	    if (!*pattern || equalstr(pat, buf)) {
-		stk_array *item = new_array_dictionary();
+		stk_array *item = new_array_dictionary(pinned);
 		array_set_strkey_strval(&item, "type", "timespan");
 		array_set_strkey_strval(&item, "group", ttim->group);
 		array_set_strkey_strval(&item, "name", ttim->name);
@@ -295,7 +295,7 @@ tune_parms_array(const char *pattern, int mlev)
 	if (tval->readmlev <= mlev) {
 	    strcpyn(buf, sizeof(buf), tval->name);
 	    if (!*pattern || equalstr(pat, buf)) {
-		stk_array *item = new_array_dictionary();
+		stk_array *item = new_array_dictionary(pinned);
 		array_set_strkey_strval(&item, "type", "integer");
 		array_set_strkey_strval(&item, "group", tval->group);
 		array_set_strkey_strval(&item, "name", tval->name);
@@ -321,7 +321,7 @@ tune_parms_array(const char *pattern, int mlev)
 	if (tref->readmlev <= mlev) {
 	    strcpyn(buf, sizeof(buf), tref->name);
 	    if (!*pattern || equalstr(pat, buf)) {
-		stk_array *item = new_array_dictionary();
+		stk_array *item = new_array_dictionary(pinned);
 		array_set_strkey_strval(&item, "type", "dbref");
 		array_set_strkey_strval(&item, "group", tref->group);
 		array_set_strkey_strval(&item, "name", tref->name);
@@ -374,7 +374,7 @@ tune_parms_array(const char *pattern, int mlev)
 	if (tstr->readmlev <= mlev) {
 	    strcpyn(buf, sizeof(buf), tstr->name);
 	    if (!*pattern || equalstr(pat, buf)) {
-		stk_array *item = new_array_dictionary();
+		stk_array *item = new_array_dictionary(pinned);
 		array_set_strkey_strval(&item, "type", "string");
 		array_set_strkey_strval(&item, "group", tstr->group);
 		array_set_strkey_strval(&item, "name", tstr->name);

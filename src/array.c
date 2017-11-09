@@ -519,7 +519,7 @@ array_tree_next_node(array_tree * ptr, array_iter * key)
  *****************************************************************/
 
 static stk_array *
-new_array(void)
+new_array(int pin)
 {
     stk_array *nu;
 
@@ -532,14 +532,14 @@ new_array(void)
     nu->links = 1;
     nu->type = ARRAY_UNDEFINED;
     nu->items = 0;
-    nu->pinned = 0;
+    nu->pinned = pin;
     nu->data.packed = NULL;
 
     return nu;
 }
 
 stk_array *
-new_array_packed(int size)
+new_array_packed(int size, int pin)
 {
     stk_array *nu;
 
@@ -547,7 +547,7 @@ new_array_packed(int size)
 	return NULL;
     }
 
-    nu = new_array();
+    nu = new_array(pin);
     assert(nu != NULL);		/* Redundant, but I'm coding defensively */
     nu->items = size;
     nu->type = ARRAY_PACKED;
@@ -567,11 +567,11 @@ new_array_packed(int size)
 }
 
 stk_array *
-new_array_dictionary(void)
+new_array_dictionary(int pin)
 {
     stk_array *nu;
 
-    nu = new_array();
+    nu = new_array(pin);
     assert(nu != NULL);		/* Redundant, but I'm coding defensively */
     nu->type = ARRAY_DICTIONARY;
     return nu;
@@ -597,12 +597,11 @@ array_decouple(stk_array * arr)
 	return NULL;
     }
 
-    nu = new_array();
+    nu = new_array(arr->pinned);
     assert(nu != NULL);		/* Redundant, but I'm coding defensively */
-    nu->pinned = arr->pinned;
     nu->type = arr->type;
     switch (arr->type) {
-    case ARRAY_PACKED:{
+	case ARRAY_PACKED:{
 	    nu->items = arr->items;
 	    nu->data.packed = (array_data *) malloc(sizeof(array_data) * (size_t)arr->items);
 	    if (nu->data.packed == NULL) {
@@ -615,7 +614,7 @@ array_decouple(stk_array * arr)
 	    return nu;
 	}
 
-    case ARRAY_DICTIONARY:{
+	case ARRAY_DICTIONARY:{
 	    array_iter idx;
 	    array_data *val;
 
@@ -629,8 +628,8 @@ array_decouple(stk_array * arr)
 	    return nu;
 	}
 
-    default:
-	break;
+	default:
+	    break;
     }
     return NULL;
 }
@@ -1026,7 +1025,7 @@ array_appenditem(stk_array ** harr, array_data * item)
 }
 
 stk_array *
-array_getrange(stk_array * arr, array_iter * start, array_iter * end)
+array_getrange(stk_array * arr, array_iter * start, array_iter * end, int pin)
 {
     stk_array *nu;
     array_data *tmp;
@@ -1069,7 +1068,7 @@ array_getrange(stk_array * arr, array_iter * start, array_iter * end)
 	    idx.data.number = sidx;
 	    didx.type = PROG_INTEGER;
 	    didx.data.number = 0;
-	    nu = new_array_packed(eidx - sidx + 1);
+	    nu = new_array_packed(eidx - sidx + 1, pin);
 	    while (idx.data.number <= eidx) {
 		tmp = array_getitem(arr, &idx);
 		if (!tmp)
@@ -1085,7 +1084,7 @@ array_getrange(stk_array * arr, array_iter * start, array_iter * end)
 	    array_tree *s;
 	    array_tree *e;
 
-	    nu = new_array_dictionary();
+	    nu = new_array_dictionary(pin);
 	    s = array_tree_find(arr->data.dict, start);
 	    if (!s) {
 		s = array_tree_next_node(arr->data.dict, start);
@@ -1424,7 +1423,7 @@ array_delitem(stk_array ** harr, array_iter * item)
 |*| (This allows the keys to be abused as sets.)
 \*/
 stk_array *
-array_demote_only(stk_array * arr, int threshold)
+array_demote_only(stk_array * arr, int threshold, int pin)
 {
     stk_array *demoted_array = NULL;
     int items_left = 0;
@@ -1439,7 +1438,7 @@ array_demote_only(stk_array * arr, int threshold)
 
     new_index.type = PROG_INTEGER;
     new_index.data.number = 0;
-    demoted_array = new_array_packed(0);
+    demoted_array = new_array_packed(0, pin);
     items_left = array_first(arr, &current_key);
     while (items_left) {
 	current_value = array_getitem(arr, &current_key);

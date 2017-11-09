@@ -4,7 +4,7 @@
 #include "array.h"
 
 stk_array *get_mufevent_pids(stk_array * nw, dbref ref);
-stk_array *get_mufevent_pidinfo(stk_array * nw, int pid);
+stk_array *get_mufevent_pidinfo(stk_array * nw, int pid, int pinned);
 void muf_event_add(struct frame *fr, char *event, struct inst *val, int exclusive);
 int muf_event_controls(dbref player, int pid);
 int muf_event_count(struct frame *fr);

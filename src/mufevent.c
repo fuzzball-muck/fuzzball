@@ -367,7 +367,7 @@ get_mufevent_pids(stk_array * nw, dbref ref)
 
 
 stk_array *
-get_mufevent_pidinfo(stk_array * nw, int pid)
+get_mufevent_pidinfo(stk_array * nw, int pid, int pinned)
 {
     struct inst temp1, temp2;
     stk_array *arr;
@@ -400,7 +400,7 @@ get_mufevent_pidinfo(stk_array * nw, int pid)
         array_set_strkey_intval(&nw, "DESCR", proc->fr->descr);
 	temp1.type = PROG_STRING;
 	temp1.data.string = alloc_prog_string("FILTERS");
-	arr = new_array_packed(0);
+	arr = new_array_packed(0, pinned);
 	for (int i = 0; i < proc->filtercount; i++) {
 	    array_set_intkey_strval(&arr, i, proc->filters[i]);
 	}

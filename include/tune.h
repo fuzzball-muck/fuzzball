@@ -259,7 +259,7 @@ void tune_freeparms(void);
 const char *tune_get_parmstring(const char *name, int mlev);
 void tune_load_parms_defaults(void);
 void tune_load_parms_from_file(FILE * f, dbref player, int cnt);
-stk_array *tune_parms_array(const char *pattern, int mlev);
+stk_array *tune_parms_array(const char *pattern, int mlev, int pinned);
 void tune_save_parms_to_file(FILE * f);
 int tune_setparm(dbref player, const char *parmname, const char *val, int security);
 

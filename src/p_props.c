@@ -964,7 +964,7 @@ prim_array_filter_prop(PRIM_PROTOTYPE)
 	tname[len] = '\0';
     }
 
-    nu = new_array_packed(0);
+    nu = new_array_packed(0, fr->pinning);
     arr = oper1->data.array;
     prop = tname;
     strcpyn(pattern, sizeof(pattern), DoNullInd(oper3->data.string));

@@ -755,7 +755,7 @@ prim_sysparm_array(PRIM_PROTOTYPE)
 
     if (oper1->type != PROG_STRING)
 	abort_interp("Expected a string smatch pattern.");
-    nu = tune_parms_array(DoNullInd(oper1->data.string), security);
+    nu = tune_parms_array(DoNullInd(oper1->data.string), security, fr->pinning);
 
     CLEAR(oper1);
     PushArrayRaw(nu);
@@ -846,7 +846,7 @@ prim_event_send(PRIM_PROTOTYPE)
 	destfr = timequeue_pid_frame(oper1->data.number);
 
     if (destfr) {
-	arr = new_array_dictionary();
+	arr = new_array_dictionary(fr->pinning);
 	array_set_strkey(&arr, "data", oper3);
 	array_set_strkey_intval(&arr, "caller_pid", fr->pid);
 	array_set_strkey_intval(&arr, "descr", fr->descr);
@@ -1001,11 +1001,11 @@ prim_forcedby_array(PRIM_PROTOTYPE)
 	abort_interp("Wizbit only primitive.");
 
     if (!forcelist) {
-	PushArrayRaw(new_array_packed(0));
+	PushArrayRaw(new_array_packed(0, fr->pinning));
 	return;
     }
 
-    nu = new_array_packed(force_level);
+    nu = new_array_packed(force_level, fr->pinning);
 
     for (objnode *tmp = forcelist; tmp; tmp = tmp->next) {
         array_set_intkey_refval(&nu, count++, tmp->data);
