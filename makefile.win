@@ -27,15 +27,27 @@ PACKAGE_DIR=.\win32
 OPENSSLDIR=e:\sandbox\openssl
 !ENDIF
 
+# Conan.io's packaging of OpenSSL removed the "...MD" suffix.  Try to detect that.
+# > Check the OPENSSLDIR first
+!IF EXIST("$(OPENSSLDIR)\lib\vc\libeay32MD.lib")
+LIB_SUFFIX="MD"
+# > Then check the PACKAGE_DIR
+!ELSEIF EXIST("$(PACKAGE_DIR)\lib\vc\libeay32MD.lib")
+LIB_SUFFIX="MD"
+!ELSE
+# Assume there's no "MD" suffix
+LIB_SUFFIX=""
+!ENDIF
+
 # Specify PACKAGE_DIR first so it takes priority, allowing easier overriding of any built-in binaries/libs
 CPP=cl.exe
 CPP_OPS=/nologo /EHsc /MT /W3 /O2 /c /D "WIN32" /D "FD_SETSIZE=4096" /D "_WINSOCK_DEPRECATED_NO_WARNINGS" /D "_CRT_SECURE_NO_DEPRECATE" /I"$(PACKAGE_DIR)\include" /I"$(WINDIR)" /I"$(INCDIR)" /I"$(OPENSSLDIR)\include" /Fd"$(INTDIR)\\"
 LINK32=link.exe
-LINK32_OPS=/NODEFAULTLIB:libc /LIBPATH:"$(PACKAGE_DIR)\lib\vc" /LIBPATH:".\win32" /LIBPATH:"$(OPENSSLDIR)\lib\vc" pcre.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ws2_32.lib libeay32MD.lib ssleay32MD.lib winmm.lib /nologo /subsystem:console /incremental:no /machine:I386
+LINK32_OPS=/NODEFAULTLIB:libc /LIBPATH:"$(PACKAGE_DIR)\lib\vc" /LIBPATH:".\win32" /LIBPATH:"$(OPENSSLDIR)\lib\vc" pcre.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ws2_32.lib libeay32$(LIB_SUFFIX).lib ssleay32$(LIB_SUFFIX).lib winmm.lib /nologo /subsystem:console /incremental:no /machine:I386
 
 # Enable These for debugging
 #CPP_OPS=/c /Od /D "_DEBUG" /Zi /EHsc /nologo /MTd /W3 /D "WIN32" /D "FD_SETSIZE=4096" /D "_WINSOCK_DEPRECATED_NO_WARNINGS" /D "_CRT_SECURE_NO_DEPRECATE" /I"$(PACKAGE_DIR)\include" /I"$(WINDIR)" /I"$(INCDIR)" /I"$(OPENSSLDIR)\include" /Fd"$(INTDIR)\\"
-#LINK32_OPS=/DEBUG /NODEFAULTLIB:libc /LIBPATH:"$(PACKAGE_DIR)\lib\vc" /LIBPATH:".\win32" /LIBPATH:"$(OPENSSLDIR)\lib\vc" pcre.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ws2_32.lib libeay32MD.lib ssleay32MD.lib winmm.lib /nologo /subsystem:console /incremental:no /machine:I386
+#LINK32_OPS=/DEBUG /NODEFAULTLIB:libc /LIBPATH:"$(PACKAGE_DIR)\lib\vc" /LIBPATH:".\win32" /LIBPATH:"$(OPENSSLDIR)\lib\vc" pcre.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ws2_32.lib libeay32$(LIB_SUFFIX).lib ssleay32$(LIB_SUFFIX).lib winmm.lib /nologo /subsystem:console /incremental:no /machine:I386
 
 
 ALL : "$(OUTDIR)\fbmuck.exe" "$(OUTDIR)\restart.exe"
