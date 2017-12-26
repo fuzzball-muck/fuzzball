@@ -99,100 +99,99 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
 						 * switch anyway */
 	    break;
 	}
-    } else {
-	switch (Typeof(victim)) {
-	case TYPE_PLAYER:
-	    if (!controls(player, victim) ||
-		!controls(player, destination) ||
-		!controls(player, LOCATION(victim)) ||
-		(Typeof(destination) == TYPE_THING
-		 && !controls(player, LOCATION(destination)))) {
-		notify(player,
-		       "Permission denied. (must control victim, dest, victim's loc, and dest's loc)");
-		break;
-	    }
-	    if (Typeof(destination) != TYPE_ROOM && Typeof(destination) != TYPE_THING) {
-		notify(player, "Bad destination.");
-		break;
-	    }
-	    if (!Wizard(victim) &&
-		(Typeof(destination) == TYPE_THING && !(FLAGS(destination) & VEHICLE))) {
-		notify(player, "Destination object is not a vehicle.");
-		break;
-	    }
-	    if (parent_loop_check(victim, destination)) {
-		notify(player, "Objects can't contain themselves.");
-		break;
-	    }
-	    notify(victim, "You feel a wrenching sensation...");
-            unparse_object(player, destination, destination_name_buf, sizeof(destination_name_buf));
-	    enter_room(descr, victim, destination, LOCATION(victim));
-	    notifyf(player, "%s teleported to %s.", victim_name_buf,
-                    destination_name_buf);
-	    break;
-	case TYPE_THING:
-	    if (parent_loop_check(victim, destination)) {
-		notify(player, "You can't make a container contain itself!");
-		break;
-	    }
-	case TYPE_PROGRAM:
-	    if (Typeof(destination) != TYPE_ROOM
-		&& Typeof(destination) != TYPE_PLAYER && Typeof(destination) != TYPE_THING) {
-		notify(player, "Bad destination.");
-		break;
-	    }
-	    if (!((controls(player, destination) ||
-		   can_link_to(player, NOTYPE, destination)) &&
-		  (controls(player, victim) || controls(player, LOCATION(victim))))) {
-		notify(player,
-		       "Permission denied. (must control dest and be able to link to it, or control dest's loc)");
-		break;
-	    }
-	    /* check for non-sticky dropto */
-	    if (Typeof(destination) == TYPE_ROOM
-		&& DBFETCH(destination)->sp.room.dropto != NOTHING
-		&& !(FLAGS(destination) & STICKY))
-		destination = DBFETCH(destination)->sp.room.dropto;
-	    if (tp_thing_movement && (Typeof(victim) == TYPE_THING)) {
-		if (FLAGS(victim) & ZOMBIE) {
-		    notify(victim, "You feel a wrenching sensation...");
-		}
-		enter_room(descr, victim, destination, LOCATION(victim));
-	    } else {
-		moveto(victim, destination);
-	    }
-            unparse_object(player, destination, destination_name_buf, sizeof(destination_name_buf));
-	    notifyf(player, "%s teleported to %s.", victim_name_buf,
-		    destination_name_buf);
-	    break;
-	case TYPE_ROOM:
-	    if (Typeof(destination) != TYPE_ROOM) {
-		notify(player, "Bad destination.");
-		break;
-	    }
-	    if (!controls(player, victim)
-		|| !can_link_to(player, NOTYPE, destination)
-		|| victim == GLOBAL_ENVIRONMENT) {
-		notify(player,
-		       "Permission denied. (Can't move #0, dest must be linkable, and must control victim)");
-		break;
-	    }
-	    if (parent_loop_check(victim, destination)) {
-		notify(player, "Parent would create a loop.");
-		break;
-	    }
-	    moveto(victim, destination);
-            unparse_object(player, destination, destination_name_buf, sizeof(destination_name_buf));
-	    notifyf(player, "Parent of %s set to %s.", victim_name_buf,
-		    destination_name_buf);
-	    break;
-	case TYPE_GARBAGE:
-	    notify(player, "That object is in a place where magic cannot reach it.");
-	    break;
-	default:
-	    notify(player, "You can't teleport that.");
-	    break;
-	}
+    }
+    switch (Typeof(victim)) {
+    case TYPE_PLAYER:
+        if (!controls(player, victim) ||
+            !controls(player, destination) ||
+            !controls(player, LOCATION(victim)) ||
+            (Typeof(destination) == TYPE_THING
+             && !controls(player, LOCATION(destination)))) {
+            notify(player,
+                   "Permission denied. (must control victim, dest, victim's loc, and dest's loc)");
+            break;
+        }
+        if (Typeof(destination) != TYPE_ROOM && Typeof(destination) != TYPE_THING) {
+            notify(player, "Bad destination.");
+            break;
+        }
+        if (!Wizard(victim) &&
+            (Typeof(destination) == TYPE_THING && !(FLAGS(destination) & VEHICLE))) {
+            notify(player, "Destination object is not a vehicle.");
+            break;
+        }
+        if (parent_loop_check(victim, destination)) {
+            notify(player, "Objects can't contain themselves.");
+            break;
+        }
+        notify(victim, "You feel a wrenching sensation...");
+        unparse_object(player, destination, destination_name_buf, sizeof(destination_name_buf));
+        enter_room(descr, victim, destination, LOCATION(victim));
+        notifyf(player, "%s teleported to %s.", victim_name_buf,
+                destination_name_buf);
+        break;
+    case TYPE_THING:
+        if (parent_loop_check(victim, destination)) {
+            notify(player, "You can't make a container contain itself!");
+            break;
+        }
+    case TYPE_PROGRAM:
+        if (Typeof(destination) != TYPE_ROOM
+            && Typeof(destination) != TYPE_PLAYER && Typeof(destination) != TYPE_THING) {
+            notify(player, "Bad destination.");
+            break;
+        }
+        if (!((controls(player, destination) ||
+               can_link_to(player, NOTYPE, destination)) &&
+              (controls(player, victim) || controls(player, LOCATION(victim))))) {
+            notify(player,
+                   "Permission denied. (must control dest and be able to link to it, or control dest's loc)");
+            break;
+        }
+        /* check for non-sticky dropto */
+        if (Typeof(destination) == TYPE_ROOM
+            && DBFETCH(destination)->sp.room.dropto != NOTHING
+            && !(FLAGS(destination) & STICKY))
+            destination = DBFETCH(destination)->sp.room.dropto;
+        if (tp_thing_movement && (Typeof(victim) == TYPE_THING)) {
+            if (FLAGS(victim) & ZOMBIE) {
+                notify(victim, "You feel a wrenching sensation...");
+            }
+            enter_room(descr, victim, destination, LOCATION(victim));
+        } else {
+            moveto(victim, destination);
+        }
+        unparse_object(player, destination, destination_name_buf, sizeof(destination_name_buf));
+        notifyf(player, "%s teleported to %s.", victim_name_buf,
+                destination_name_buf);
+        break;
+    case TYPE_ROOM:
+        if (Typeof(destination) != TYPE_ROOM) {
+            notify(player, "Bad destination.");
+            break;
+        }
+        if (!controls(player, victim)
+            || !can_link_to(player, NOTYPE, destination)
+            || victim == GLOBAL_ENVIRONMENT) {
+            notify(player,
+                   "Permission denied. (Can't move #0, dest must be linkable, and must control victim)");
+            break;
+        }
+        if (parent_loop_check(victim, destination)) {
+            notify(player, "Parent would create a loop.");
+            break;
+        }
+        moveto(victim, destination);
+        unparse_object(player, destination, destination_name_buf, sizeof(destination_name_buf));
+        notifyf(player, "Parent of %s set to %s.", victim_name_buf,
+                destination_name_buf);
+        break;
+    case TYPE_GARBAGE:
+        notify(player, "That object is in a place where magic cannot reach it.");
+        break;
+    default:
+        notify(player, "You can't teleport that.");
+        break;
     }
     return;
 }
