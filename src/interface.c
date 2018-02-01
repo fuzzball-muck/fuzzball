@@ -866,6 +866,11 @@ check_connect(struct descriptor_data *d, const char *msg)
 	    } else {
 		log_status("CONNECTED: %s(%d) on descriptor %d",
 			   NAME(player), player, d->descriptor);
+#ifdef USE_SSL
+		if (d->ssl_session) {
+		    log_status("Connected via %s", SSL_get_cipher_name(d->ssl_session));
+		}
+#endif
 		d->connected = 1;
 		d->connected_at = time(NULL);
 		d->player = player;
