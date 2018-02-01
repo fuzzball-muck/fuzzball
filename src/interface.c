@@ -2051,6 +2051,13 @@ configure_new_ssl_ctx(void)
        only clears timed out sessions every 256 connections.) */
     SSL_CTX_set_session_cache_mode(new_ssl_ctx, SSL_SESS_CACHE_OFF);
 
+#if defined(SSL_CTX_set_dh_auto)
+    if (ctx->config->dheparams == -1)
+	SSL_CTX_set_dh_auto(new_ssl_ctx, 1);
+    else if (ctx->config->dheparams == 1024)
+	SSL_CTX_set_dh_auto(new_ssl_ctx, 2);
+#endif
+
 #if defined(SSL_CTX_set_ecdh_auto)
     /* In OpenSSL >= 1.0.2, this exists; otherwise, fallback to the older
        API where we have to name a curve. */
