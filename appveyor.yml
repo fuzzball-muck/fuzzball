@@ -29,8 +29,8 @@ init:
 
 build_script:
     - ps: |
-        # Install Conan dependencies for 32-bit (x86)
-        conan install -s arch=x86
+        # Install Conan dependencies for 32-bit (x86) using the local directory's conanfile
+        conan install . --settings arch=x86
         # > For statically-linked OpenSSL, specify: -s compiler="Visual Studio" -s compiler.runtime=MT
         #   Then modify makefile.win to reference ..MT.lib instead.  Dynamic linking is preferred.
 
