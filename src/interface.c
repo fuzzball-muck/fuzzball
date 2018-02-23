@@ -2057,7 +2057,7 @@ configure_new_ssl_ctx(void)
     SSL_CTX_set_session_cache_mode(new_ssl_ctx, SSL_SESS_CACHE_OFF);
 
 #if defined(SSL_CTX_set_dh_auto)
-	SSL_CTX_set_dh_auto(new_ssl_ctx, 2);
+	SSL_CTX_set_dh_auto(new_ssl_ctx, 1);
 #endif
 
 #if defined(SSL_CTX_set_ecdh_auto)
