@@ -836,7 +836,6 @@ process_command(int descr, dbref player, const char *command)
 		    case 'S':
 			NOGUEST("@list", player);
 			PLAYERONLY("@list", player);
-			MUCKERONLY("@list", player);
 			Matched("@list");
 			do_list(descr, player, arg1, arg2);
 			break;
