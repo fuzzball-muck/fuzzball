@@ -73,6 +73,10 @@
  */
 #define SIGEMERG
 
+/* Exit codes for specific situations */
+#define RESTART_EXIT_CODE	0
+#define ARMAGEDDON_EXIT_CODE	1
+
 /************************************************************************
    Various Messages 
  

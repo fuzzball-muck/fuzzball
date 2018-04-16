@@ -3203,7 +3203,7 @@ do_armageddon(dbref player, const char *msg)
     kill_resolver();
 #endif
     unlink(PID_FILE);
-    exit(1);
+    exit(ARMAGEDDON_EXIT_CODE);
 }
 
 void
@@ -4617,5 +4617,9 @@ main(int argc, char **argv)
 	}
     }
 
-    exit(0);
+    if (restart_flag) {
+	exit(RESTART_EXIT_CODE);
+    } else {
+	exit(0);
+    }
 }
