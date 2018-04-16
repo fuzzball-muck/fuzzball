@@ -1842,7 +1842,10 @@ process_input(struct descriptor_data *d)
     pend = d->raw_input + MAX_COMMAND_LEN - 1;
     for (q = buf, qend = buf + got; q < qend; q++) {
 	if (*q == '\n') {
-	    d->last_time = time(NULL);
+	    if (!tp_recognize_null_command
+		|| strcasecmp(d->raw_input, NULL_COMMAND)) {
+		d->last_time = time(NULL);
+	    }
 	    *p = '\0';
 	    if (p >= d->raw_input)
 		save_command(d, d->raw_input);
