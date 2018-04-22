@@ -99,7 +99,7 @@ localvar_dupall(struct frame *fr, struct frame *oldfr)
 	int count = MAX_VAR;
 	*targ = (struct localvars *) malloc(sizeof(struct localvars));
 	while (count-- > 0)
-	    copyinst(&orig->lvars[count], &(*targ)->lvars[count]);
+	    deep_copyinst(&orig->lvars[count], &(*targ)->lvars[count], -1);
 	(*targ)->prog = orig->prog;
 	(*targ)->next = NULL;
 	(*targ)->prev = targ;
@@ -175,7 +175,7 @@ scopedvar_dupall(struct frame *fr, struct frame *oldfr)
 	newsv->varnames = cur->varnames;
 	newsv->next = NULL;
 	while (count-- > 0) {
-	    copyinst(&cur->vars[count], &newsv->vars[count]);
+	    deep_copyinst(&cur->vars[count], &newsv->vars[count], -1);
 	}
 	*prev = newsv;
 	prev = &newsv->next;
@@ -499,12 +499,16 @@ interp(int descr, dbref player, dbref location, dbref program,
     if (fr->cmd)
 	fr->cmd->links++;
 
+    array_init_active_list(&fr->array_active_list);
+    fr->prev_array_active_list = NULL;
+
     if (PROGRAM_CODE(program)) {
 	PROGRAM_INC_PROF_USES(program);
     }
     PROGRAM_INC_INSTANCES(program);
     push(fr->argument.st, &(fr->argument.top), PROG_STRING, *match_args ?
 	 MIPSCAST alloc_prog_string(match_args) : 0);
+
     return fr;
 }
 
@@ -530,8 +534,8 @@ copy_fors(struct forvars *forstack)
 	}
 
 	nu->didfirst = in->didfirst;
-	copyinst(&in->cur, &nu->cur);
-	copyinst(&in->end, &nu->end);
+	deep_copyinst(&in->cur, &nu->cur, -1);
+	deep_copyinst(&in->end, &nu->end, -1);
 	nu->step = in->step;
 	nu->next = NULL;
 
@@ -794,6 +798,7 @@ prog_clean(struct frame *fr)
     dequeue_timers(fr->pid, NULL);
 
     muf_event_purge(fr);
+    array_free_all_on_list(&fr->array_active_list);
     fr->next = free_frames_list;
     free_frames_list = fr;
     err = 0;
@@ -879,7 +884,7 @@ deep_copyinst(struct inst *in, struct inst *out, int pinned)
     *out = *in;
     switch (arr->type) {
 	case ARRAY_PACKED:{
-	    nu = new_array_packed(arr->items, pinned);
+	    nu = new_array_packed(arr->items, pinned == -1 ? arr->pinned : pinned);
 	    for (int i = arr->items; i-- > 0;) {
 		deep_copyinst(&arr->data.packed[i], &nu->data.packed[i], pinned);
 	    }
@@ -888,7 +893,7 @@ deep_copyinst(struct inst *in, struct inst *out, int pinned)
 	    array_iter idx;
 	    array_data *val;
 
-	    nu = new_array_dictionary(pinned);
+	    nu = new_array_dictionary(pinned == -1 ? arr->pinned : pinned);
 	    if (array_first(arr, &idx)) {
 		do {
 		    val = array_getitem(arr, &idx);
@@ -980,6 +985,23 @@ interp_err(dbref player, dbref program, struct inst *pc,
 }
 
 static void
+record_enter_interp(struct frame *fr) {
+    fr->level = ++interp_depth;
+    fr->prev_array_active_list = stk_array_active_list;
+    stk_array_active_list = &fr->array_active_list;
+}
+
+static void
+record_exit_interp(dbref program, struct frame *fr) {
+    --interp_depth;
+    if (stk_array_active_list == &fr->array_active_list) {
+        stk_array_active_list = fr->prev_array_active_list;
+        fr->prev_array_active_list = NULL;
+    }
+    calc_profile_timing(program, fr);
+}
+
+static void
 do_abort_loop(dbref player, dbref program, const char *msg,
 	      struct frame *fr, struct inst *pc, int atop, int stop,
 	      struct inst *clinst1, struct inst *clinst2)
@@ -1002,10 +1024,6 @@ do_abort_loop(dbref player, dbref program, const char *msg,
 	}
 	fr->errorprog = program;
 	err++;
-    } else {
-	if (pc) {
-	    calc_profile_timing(program, fr);
-	}
     }
     if (clinst1)
 	CLEAR(clinst1);
@@ -1023,7 +1041,7 @@ do_abort_loop(dbref player, dbref program, const char *msg,
 	} else {
 	    notify_nolisten(player, msg, 1);
 	}
-	interp_depth--;
+        record_exit_interp(program, fr);
 	prog_clean(fr);
 	PLAYER_SET_BLOCK(player, 0);
     }
@@ -1051,7 +1069,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
         ++nested_interp_loop_count;
     }
 
-    fr->level = ++interp_depth;	/* increment interp level */
+    record_enter_interp(fr);
 
     /* load everything into local stuff */
     pc = fr->pc;
@@ -1131,8 +1149,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 		add_muf_delay_event(0, fr->descr, player, NOTHING, NOTHING, program, fr,
 				    (fr->multitask ==
 				     FOREGROUND) ? "FOREGROUND" : "BACKGROUND");
-		interp_depth--;
-		calc_profile_timing(program, fr);
+                record_exit_interp(program, fr);
 		return NULL;
 	    }
 	}
@@ -1207,7 +1224,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 		fr->brkpt.dosyspop = 0;
 		PLAYER_SET_CURR_PROG(player, program);
 		PLAYER_SET_BLOCK(player, 0);
-		interp_depth--;
+                record_exit_interp(program, fr);
 		if (!fr->brkpt.showstack) {
 		    m = debug_inst(fr, 0, pc, fr->pid, arg, dbuf, sizeof(dbuf), atop, program);
 		    notify_nolisten(player, m, 1);
@@ -1218,7 +1235,6 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 		    m = show_line_prims(program, pc, 15, 1);
 		    notifyf_nolisten(player, "     %s", m);
 		}
-		calc_profile_timing(program, fr);
 		return NULL;
 	    }
 	    fr->brkpt.lastline = pc->line;
@@ -1676,8 +1692,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 
 		PLAYER_SET_BLOCK(player, (!fr->been_background));
 		CLEAR(temp1);
-		interp_depth--;
-		calc_profile_timing(program, fr);
+                record_exit_interp(program, fr);
 		return NULL;
 
 	    case IN_READ:
@@ -1691,8 +1706,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 		PLAYER_SET_CURR_PROG(player, program);
 		PLAYER_SET_BLOCK(player, 0);
 		add_muf_read_event(fr->descr, player, program, fr);
-		interp_depth--;
-		calc_profile_timing(program, fr);
+                record_exit_interp(program, fr);
 		return NULL;
 
 	    case IN_SLEEP:
@@ -1710,8 +1724,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 		add_muf_delay_event(temp1->data.number, fr->descr, player,
 				    NOTHING, NOTHING, program, fr, "SLEEPING");
 		PLAYER_SET_BLOCK(player, (!fr->been_background));
-		interp_depth--;
-		calc_profile_timing(program, fr);
+                record_exit_interp(program, fr);
 		return NULL;
 
 	    default:
@@ -1770,8 +1783,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 		reload(fr, atop, stop);
 		prog_clean(fr);
 		PLAYER_SET_BLOCK(player, 0);
-		interp_depth--;
-		calc_profile_timing(program, fr);
+                record_exit_interp(program, fr);
 		return NULL;
 	    }
 	}
@@ -1793,14 +1805,12 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 	}
 	reload(fr, atop, stop);
 	prog_clean(fr);
-	interp_depth--;
-	calc_profile_timing(program, fr);
+        record_exit_interp(program, fr);
 	return rv;
     }
     reload(fr, atop, stop);
     prog_clean(fr);
-    interp_depth--;
-    calc_profile_timing(program, fr);
+    record_exit_interp(program, fr);
     return NULL;
 }
 

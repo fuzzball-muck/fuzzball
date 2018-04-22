@@ -1,6 +1,7 @@
 #ifndef _INTERP_H
 #define _INTERP_H
 
+#include "array.h"
 #include "fbstrings.h"
 #include "inst.h"
 
@@ -180,6 +181,8 @@ struct frame {
     int actual_pop;
     int expect_push_to;
 #endif
+    stk_array_list array_active_list;
+    stk_array_list *prev_array_active_list;
 };
 
 struct publics {
