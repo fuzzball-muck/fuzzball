@@ -21,11 +21,11 @@ typedef struct array_tree_t {
 
 /* Linked list node structure for stk_arrays. This is used to track what stk_arrays are allocated
    to a MUF program and cleanup any extras due to circular references.
-   
+
    The linked list is circular --- a designated stk_array_list of these represents the head/tail of
    the list (next = head pointer, prev = tail pointer), and is not associated with any stk_array.
 
-   The others elements on the list (iterated by following the next pointers until one reaches the 
+   The others elements on the list (iterated by following the next pointers until one reaches the
    head/tail again) are members of stk_array, and offsetof() is used to access the overall stk_array.
  */
 typedef struct stk_array_list_t {

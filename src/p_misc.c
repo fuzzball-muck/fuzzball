@@ -424,7 +424,7 @@ prim_fork(PRIM_PROTOTYPE)
 
     result = add_muf_delay_event(0, fr->descr, player, NOTHING, NOTHING, program,
 				 tmpfr, "BACKGROUND");
-    
+
     stk_array_active_list = &fr->array_active_list;
 
     /* parent process gets the child's pid returned on the stack */

@@ -897,7 +897,7 @@ deep_copyinst(struct inst *in, struct inst *out, int pinned)
 	    if (array_first(arr, &idx)) {
 		do {
 		    val = array_getitem(arr, &idx);
-		    deep_copyinst(&temp1, val, pinned);
+		    deep_copyinst(val, &temp1, pinned);
 		    array_setitem(&nu, &idx, &temp1);
 		} while (array_next(arr, &idx));
 	    }

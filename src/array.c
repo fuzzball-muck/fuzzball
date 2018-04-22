@@ -1742,7 +1742,7 @@ array_init_active_list(stk_array_list *list) {
 void
 array_free_all_on_list(stk_array_list *list) {
     stk_array_list *cur_node;
-    
+
     cur_node = list->next;
     while (cur_node != list) {
         stk_array *arr = STK_ARRAY_FROM_LIST_NODE(cur_node);
