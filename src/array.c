@@ -8,6 +8,8 @@
 #include "inst.h"
 #include "interp.h"
 
+stk_array_list *stk_array_active_list;
+
 static int array_tree_compare(array_iter * a, array_iter * b, int case_sens);
 
 /*
@@ -534,6 +536,10 @@ new_array(int pin)
     nu->items = 0;
     nu->pinned = pin;
     nu->data.packed = NULL;
+    nu->list_node.prev = nu->list_node.next = NULL;
+    if (stk_array_active_list) {
+        array_maybe_place_on_list(stk_array_active_list, nu);
+    }
 
     return nu;
 }
@@ -663,6 +669,7 @@ array_free(stk_array * arr)
     arr->items = 0;
     arr->data.packed = NULL;
     arr->type = ARRAY_UNDEFINED;
+    array_remove_from_list(arr);
     free(arr);
 }
 
@@ -1708,3 +1715,62 @@ array_get_intkey_strval(stk_array * arr, int key)
     }
 }
 
+void
+array_maybe_place_on_list(stk_array_list *list, stk_array *arr) {
+    if (list && !arr->list_node.prev) {
+        arr->list_node.next = list->next;
+        arr->list_node.prev = list;
+        list->next->prev = &arr->list_node;
+        list->next = &arr->list_node;
+    }
+}
+
+void
+array_remove_from_list(stk_array *arr) {
+    if (arr->list_node.prev) {
+        arr->list_node.prev->next = arr->list_node.next;
+        arr->list_node.next->prev = arr->list_node.prev;
+        arr->list_node.prev = arr->list_node.next = 0;
+    }
+}
+
+void
+array_init_active_list(stk_array_list *list) {
+    list->next = list->prev = list;
+}
+
+void
+array_free_all_on_list(stk_array_list *list) {
+    stk_array_list *cur_node;
+
+    cur_node = list->next;
+    while (cur_node != list) {
+        stk_array *arr = STK_ARRAY_FROM_LIST_NODE(cur_node);
+        /* CLEARing the contents of this array might cause it to be free'd
+           if it has a circular reference. We want to prevent this from
+           happening until we have used the next pointer, so we increment
+           the link count here. */
+        arr->links++;
+        switch (arr->type) {
+        case ARRAY_PACKED:
+	    for (int i = arr->items; i-- > 0;) {
+		CLEAR(&arr->data.packed[i]);
+	    }
+            arr->items = 1;
+            arr->data.packed[0].type = PROG_INTEGER;
+            arr->data.packed[0].line = 0;
+            arr->data.packed[0].data.number = 0;
+            break;
+        case ARRAY_DICTIONARY:
+            array_tree_delete_all(arr->data.dict);
+            arr->data.dict = NULL;
+            break;
+        default:
+            assert(0 /* unknown array type */);
+        }
+        cur_node = cur_node->next;
+        /* Call array_free() to decrement the link count and free this array
+           if it has no more links. */
+        array_free(arr);
+    }
+}

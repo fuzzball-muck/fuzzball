@@ -327,13 +327,16 @@ prim_fork(PRIM_PROTOTYPE)
     tmpfr = (struct frame *) calloc(1, sizeof(struct frame));
     tmpfr->next = NULL;
 
+    array_init_active_list(&tmpfr->array_active_list);
+    stk_array_active_list = &tmpfr->array_active_list;
+
     tmpfr->system.top = fr->system.top;
     for (int i = 0; i < fr->system.top; i++)
 	tmpfr->system.st[i] = fr->system.st[i];
 
     tmpfr->argument.top = fr->argument.top;
     for (int i = 0; i < fr->argument.top; i++)
-	copyinst(&fr->argument.st[i], &tmpfr->argument.st[i]);
+	deep_copyinst(&fr->argument.st[i], &tmpfr->argument.st[i], -1);
 
     tmpfr->caller.top = fr->caller.top;
     for (int i = 0; i <= fr->caller.top; i++) {
@@ -349,7 +352,7 @@ prim_fork(PRIM_PROTOTYPE)
     tmpfr->fors.st = copy_fors(fr->fors.st);
 
     for (int i = 0; i < MAX_VAR; i++)
-	copyinst(&fr->variables[i], &tmpfr->variables[i]);
+	deep_copyinst(&fr->variables[i], &tmpfr->variables[i], -1);
 
     localvar_dupall(tmpfr, fr);
     scopedvar_dupall(tmpfr, fr);
@@ -421,6 +424,8 @@ prim_fork(PRIM_PROTOTYPE)
 
     result = add_muf_delay_event(0, fr->descr, player, NOTHING, NOTHING, program,
 				 tmpfr, "BACKGROUND");
+
+    stk_array_active_list = &fr->array_active_list;
 
     /* parent process gets the child's pid returned on the stack */
     if (!result)
@@ -846,8 +851,11 @@ prim_event_send(PRIM_PROTOTYPE)
 	destfr = timequeue_pid_frame(oper1->data.number);
 
     if (destfr) {
-	arr = new_array_dictionary(fr->pinning);
-	array_set_strkey(&arr, "data", oper3);
+        stk_array_active_list = &destfr->array_active_list;
+        struct inst data_copy;
+        deep_copyinst(oper3, &data_copy, destfr->pinning);
+	arr = new_array_dictionary(destfr->pinning);
+	array_set_strkey(&arr, "data", &data_copy);
 	array_set_strkey_intval(&arr, "caller_pid", fr->pid);
 	array_set_strkey_intval(&arr, "descr", fr->descr);
 	array_set_strkey_refval(&arr, "caller_prog", program);
@@ -861,7 +869,10 @@ prim_event_send(PRIM_PROTOTYPE)
 	snprintf(buf, sizeof(buf), "USER.%.32s", DoNullInd(oper2->data.string));
 	muf_event_add(destfr, buf, &temp1, 0);
 
+        stk_array_active_list = &fr->array_active_list;
+
 	CLEAR(&temp1);
+        CLEAR(&data_copy);
     }
 
     CLEAR(oper1);

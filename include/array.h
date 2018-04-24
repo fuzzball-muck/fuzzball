@@ -1,6 +1,7 @@
 #ifndef _ARRAY_H
 #define _ARRAY_H
 
+#include <stddef.h>  /* for offsetof() */
 #include "inst.h"
 
 #define ARRAY_UNDEFINED		0
@@ -18,6 +19,23 @@ typedef struct array_tree_t {
     short height;
 } array_tree;
 
+/* Linked list node structure for stk_arrays. This is used to track what stk_arrays are allocated
+   to a MUF program and cleanup any extras due to circular references.
+
+   The linked list is circular --- a designated stk_array_list of these represents the head/tail of
+   the list (next = head pointer, prev = tail pointer), and is not associated with any stk_array.
+
+   The others elements on the list (iterated by following the next pointers until one reaches the
+   head/tail again) are members of stk_array, and offsetof() is used to access the overall stk_array.
+ */
+typedef struct stk_array_list_t {
+    struct stk_array_list_t *next, *prev;
+} stk_array_list;
+
+/* The currently active stk_array_list to which to assign allocations.
+   If we were multithreaded, this would be thread-local */
+extern stk_array_list *stk_array_active_list;
+
 typedef struct stk_array_t {
     int links;			/* number of pointers  to array */
     int items;			/* number of items in array */
@@ -27,7 +45,11 @@ typedef struct stk_array_t {
 	array_data *packed;	/* pointer to packed array */
 	array_tree *dict;	/* pointer to dictionary AVL tree */
     } data;
+    stk_array_list list_node;   /* list array is on, typically of all allocated to a MUF program */
 } stk_array;
+
+#define STK_ARRAY_FROM_LIST_NODE(x) \
+    ((stk_array*) ((unsigned char*) (x) - offsetof(stk_array, list_node)))
 
 int array_appenditem(stk_array **arr, array_data *item);
 int array_count(stk_array *arr);
@@ -61,5 +83,15 @@ int array_setitem(stk_array **arr, array_iter *idx, array_data *item);
 int array_setrange(stk_array **arr, array_iter *start, stk_array *inarr);
 stk_array *new_array_dictionary(int pin);
 stk_array *new_array_packed(int size, int pin);
+
+/* place the array on a list of arrays of tracking allocations
+   unless it is already on one */
+void array_maybe_place_on_list(stk_array_list *list, stk_array *array);
+/* remove the array from any lists trackings its allocations */
+void array_remove_from_list(stk_array *array);
+
+void array_init_active_list(stk_array_list *list);
+
+void array_free_all_on_list(stk_array_list *list);
 
 #endif				/* _ARRAY_H */
