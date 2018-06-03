@@ -2207,7 +2207,7 @@ prim_textattr(PRIM_PROTOTYPE)
 			strcatn(buf, sizeof(buf), ANSI_BG_WHITE);
 		    } else {
 			abort_interp
-				("Unrecognized attribute tag.  Try one of reset, bold, dim, underline, reverse, black, red, yellow, green, cyan, blue, magenta, white, bg_black, bg_red, bg_yellow, bg_green, bg_cyan, bg_blue, bg_magenta, or bg_white.");
+				("Unrecognized attribute tag.  Try one of reset, bold, dim, italic, underline, flash, reverse, overstrike, black, red, green, yellow, blue, magenta, cyan, white, bg_black, bg_red, bg_green, bg_yellow, bg_blue, bg_magenta, bg_cyan, or bg_white.");
 		    }
 
 		    ptr2 = attr;
