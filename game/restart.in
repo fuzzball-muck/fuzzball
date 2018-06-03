@@ -118,14 +118,14 @@ if [ -r $DBOUT ]; then
 fi
 
 if [ ! -r $DBIN ]; then
-	echo "Hey\!  The "$DBIN" file has to exist and be readable to restart the server\!"
+	echo "Hey!  The $DBIN file has to exist and be readable to restart the server!"
 	echo "Restart attempt aborted."
 	exit
 fi
 
 end=`tail -1 $DBIN`
 if [ "x$end" != 'x***END OF DUMP***' ]; then
-	echo "WARNING\!  The "$DBIN" file is incomplete and therefore corrupt\!"
+	echo "WARNING!  The $DBIN file is incomplete and therefore corrupt!"
 	echo "Restart attempt aborted."
 	exit
 fi
