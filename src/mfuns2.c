@@ -1826,7 +1826,7 @@ mfn_attr(MFUNARGS)
 	} else if (!strcasecmp(argv[i], "")) {
 	} else {
 	    ABORT_MPI("ATTR",
-		      "Unrecognized ansi tag.  Try one of reset, bold, dim, italic, underline, reverse, overstrike, black, red, yellow, green, cyan, blue, magenta, white, bg_black, bg_red, bg_yellow, bg_green, bg_cyan, bg_blue, bg_magenta, or bg_white.");
+		      "Unrecognized ansi tag.  Try one of reset, bold, dim, italic, underline, flash, reverse, overstrike, black, red, green, yellow, blue, magenta, cyan, white, bg_black, bg_red, bg_green, bg_yellow, bg_blue, bg_magenta, bg_cyan, or bg_white.");
 	}
     }
     exlen = strlen(buf) + strlen(ANSI_RESET) + 1;
