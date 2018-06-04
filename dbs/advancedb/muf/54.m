@@ -1,7 +1,7 @@
 ( cmd-@mpi+ 1.2 by Natasha@HLM
  
   This program {C} 1998-2002 Natasha O'Brien, and is released under
-  the GNU General Public License. http://www.gnu.org/copyleft/gpl.html
+  the GNU General Public License. https://www.gnu.org/copyleft/gpl.html
   for the license agreement.
  
     __version history
