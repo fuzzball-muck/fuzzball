@@ -1,0 +1,1666 @@
+                  MPI Reference Manual for FBMuck 6.00
+                   by Revar Desmera <revar@belfry.com>
+
+You may get a listing of topics that you can get help on, either sorted
+Alphabetically or sorted by Category.  To get these lists, type:
+        mpi alpha        or
+        mpi category
+
+~
+~----------------------------------------------------------------------------
+~
+CATEGORY|CATEGORIES|TOPICS|SECTIONS
+                   List of Topics by Category:
+ 
+You can get more help on the following topics:
+ 
+  Definitions and Details                  (DefDets)
+  Time Functions                           (TimeFuncs)
+  Logical Functions                        (LogicFuncs)
+  Property Handling                        (PropFuncs)
+  String Functions                         (StringFuncs)
+  Math Functions                           (MathFuncs)
+  Looping Functions                        (Looping)
+  Database Related Functions               (DBFuncs)
+  Connection Related Functions             (ConnFuncs)
+  Variable Handling Functions              (VarFuncs)
+  List Handling Functions                  (ListFuncs)
+  Miscellaneous Functions                  (MiscFuncs)
+  Macros and Functions                     (Functions)
+ 
+Use 'mpi <topicname>' to get more information on a topic.
+~
+~----------------------------------------------------------------------------
+~
+ALPHA|ALPHABETICAL|COMMANDS
+                 Alphabetical List of Topics:
+ 
+You can get more help on the following topics:
+
+Symbols
+  &arg  &cmd  &how  
+
+A's
+  abs    add    and    attr   awake  
+
+B's
+  bless  
+
+C's
+  center     commas     comments   concat     contains   contents   controls
+  convsecs   convtime   count      created    
+
+D's
+  date         dbeq         debug        debugif      dec          default
+  definitions  delay        delprop      descr        dice         dist
+  div          
+
+E's
+  eq     eval   eval!  exec   exec!  exits  
+
+F's
+  filter     flags      fold       for        force      foreach    ftime
+  fullname   func       
+
+G's
+  ge  gt  
+
+H's
+  holds  
+
+I's
+  idle     if       inc      index    index!   instr    isdbref  isnum
+  istype   
+
+K's
+  kill  
+
+L's
+  lastused   lcommon    le         left       lexec      links      list
+  listprops  lit        lmember    loc        locked     lrand      lremove
+  lsort      lt         ltimestr   lunion     lunique    
+
+M's
+  macros     max        midstr     min        mklist     mod        modified
+  money      muckname   muf        mult       
+
+N's
+  name    ne      nearby  nl      not     null    
+
+O's
+  online  ontime  or      otell   owner   
+
+P's
+  parse      pronouns   prop       prop!      propdir    
+
+R's
+  rand    ref     revoke  right   
+
+S's
+  secs       select     set        sign       smatch     stimestr   store
+  strip      strlen     sublist    subst      subt       sysparm    
+
+T's
+  tell       testlock   time       timestr    timesub    tolower    toupper
+  type       tzoffset   
+
+U's
+  unbless    usecount   
+
+V's
+  v        version  
+
+W's
+  while  with   
+
+X's
+  xor  
+ 
+Use 'mpi <topicname>' to get more information on a topic.
+~
+~
+~----------------------------------------------------------------------------
+~
+~
+Definitions and Details|DefDets
+Definitions and Details
+
+comments     definitions  
+
+~----------------------------------------------------------------------------
+~
+~
+~
+COMMENTS
+Comments:
+  Only 26 levels of recursion are allowed, so funcs that deep return literally.
+In loops, a max of 256 iterations are allowed before they exit automatically.
+Lists have a maximum size of 256 lines, or 4096 characters, whichever is less.
+  
+  All matching will be done relative to the trigger object first, then relative
+to the triggering player, if nothing was matched in the first pass.
+  
+  The 'me' and 'here' keywords always are relative to the triggering player.
+The trigger object is referred to by 'this'.
+~
+~
+~
+DEFINITIONS
+Definitions:
+    A Trigger object is the object that the MPI script is evaluated from.
+  
+    A List is a string containing several individual substring items,
+seperated by carriage return characters.
+  
+    A property based list is a set of consecutively numbered properties that
+each contain one string in a list of strings.  Property based lists
+are often numbered like: listname1, listname2, listname3, listname4, &c.
+Another popular format is listname#/1, listname#/2, listname#/3, etc.
+MPI can read in either of those formats, and several more, for that
+matter.
+  
+    For logical constructs, a string value of "0", or a null string ("") are
+both considered false.  Any other value is considered true.
+~
+~
+~
+~----------------------------------------------------------------------------
+~
+~
+Time Functions|TimeFuncs
+Time Functions
+
+convsecs   convtime   date       delay      ftime      kill       ltimestr
+secs       stimestr   time       timestr    tzoffset   
+
+~----------------------------------------------------------------------------
+~
+~
+TZOFFSET
+{tzoffset}
+    Returns local time zone offset from GMT in seconds.
+~
+~
+TIME
+{time}
+{time:timezone}
+    Returns a time string in the 24hr form hh:mm:ss.  If the timezone
+argument is given, then it offsets the time returned by that number
+of hours.
+~
+~
+DATE
+{date}
+{date:timezone}
+    Returns a date string in the form mm/dd/yy.  If the timezone
+argument is given, then it offsets the date returned by that number
+of seconds.
+~
+~
+FTIME
+{ftime:format}
+{ftime:format,tz}
+{ftime:format,tz,secs}
+    Returns a time string in the format you specify.  See 'man timefmt' for
+the %subs that you can use in the format string.  If specified, tz is the
+number of seconds offset from GMT.  If specified, secs is the systime to
+use, instead of the current time.  {ftime:%x %X %Y,{tzoffset},0} will return
+the date and time for systime 0, for the local time zone of the server.
+~
+~
+TIMESTR
+{timestr:secs}
+    Given a time period in seconds, this will return a concise abbreviated
+string representation of how long that time was.  This might return a value
+like "9d 12:56" for 9 days, 12 hours, and 56 minutes.
+~
+~
+LTIMESTR
+{ltimestr:secs}
+    Given a time period, in seconds, this will return a string, including a
+breakdown of all the time units of that period.  For example, given a number
+of seconds, it might return:
+        3 years, 10 months, 4 weeks, 1 day, 18 hours, 40 mins, 21 secs
+~
+~
+STIMESTR
+{stimestr:secs}
+    Given a time period, in seconds, this will return the most significant
+time unit of that time period.  For example, a number of seconds, that is
+equivalent to 9 days, 23 hours, 10 minutes, and 52 seconds, will be have
+the value "9d" returned, as the abbreviated most significant time unit.
+~
+~
+SECS
+{secs}
+    Returns system time: the number of second since midnight 1/1/70 GMT
+~
+~
+CONVTIME
+{convtime:string}
+    Converts "HH:MM:SS Mo/Dy/Yr" format time string to systime seconds.
+~
+~
+CONVSECS
+{convsecs:systime}
+    Converts systime seconds into a readable time string.
+~
+~
+DELAY
+{delay:secs,expr}
+    Evaluates the given expression, then puts the result of that on the
+timequeue, to execute after the given number of seconds.  At that time,
+the string is evaluated again, and displayed to the user, or to the room,
+depending on whether it was run from a regular message such as @succ, or
+from an omessage such as @osucc.  Since the expression is evaluated both
+before and after being delayed, you need to put MPI code that is to run
+after the delay within a {lit:expr} command.  If a {delay} evaluation is
+a null string, then the notify or notify_except will not be done.  {delay}
+will return the process ID of the event it puts on the timequeue.
+~
+~
+KILL
+{kill:0}
+{kill:processID}
+    Kills a process on the timequeue, that was possibly created by {DELAY}.
+If the process ID it is given is 0, then it will kill all processes done by
+that trigger object.  If the process to be killed was not set off by that
+trigger, and was not set off by any object that the owner of the trigger
+owns, then this will error out with Permission denied.  If no process is
+found, this returns 0.  If a process was found, and the permissions were
+okay, then the process is killed, and {kill} returns the number of processes
+killed.  Usually 1.
+~
+~
+~
+~----------------------------------------------------------------------------
+~
+~
+Logical Functions|LogicFuncs
+Logical Functions
+
+and      default  eq       ge       gt       if       le       lt
+ne       not      or       xor      
+
+~----------------------------------------------------------------------------
+~
+~
+IF
+{if:check,true}
+{if:check,true,false}
+    This is a simple conditional command.  It evaluates the 'check'
+argument and if it is true, then it evaluates the 'true' argument and
+returns it's result.  If 'check' does not evaluate as true, then it will
+evaluate the 'false' argument, if there is one, and returns it's result.
+If there is no false argument, and 'check' evaluated false, then it
+returns a null string.  Example:
+    Your computer is {if:{eq:2,3},broken!,all right.}
+Also see: not, and, or, xor, eq, ne, lt, gt, le, le, default and dbeq
+~
+~
+DEFAULT
+{default:value1,value2}
+    Returns value2 if value1 is null or 0, otherwise returns value1.  Example:
+    You entered {default:{&arg},nothing}.
+~
+~
+EQ|EQUALS|==
+{eq:expr1,expr2}
+    If expr1 and expr2 evaluate out to the same value, then this returns
+true.  Otherwise, this returns false.  If both expressions evaluate out
+to numbers, then this compares them numerically.
+~
+~
+NE|NOTEQUALS|!=|<>
+{ne:expr1,expr2}
+    If expr1 and expr2 evaluate out to the same value, then this returns
+false.  Otherwise, this returns true.  If both expressions evaluate out
+to numbers, then this compares them numerically.
+~
+~
+GT|GREATERTHAN|>
+{gt:expr1,expr2}
+    Evaluates expr1 and expr2, then returns true if expr1 was larger.
+~
+~
+GE|>=
+{ge:expr1,expr2}
+    Evals expr1 and expr2, then returns true if expr1 was larger or equal.
+~
+~
+LT|LESSTHAN|<
+{lt:expr1,expr2}
+    Evaluates expr1 and expr2, then returns true if expr1 was smaller.
+~
+~
+LE|<=
+{le:expr1,expr2}
+    Evals expr1 and expr2, then returns true if expr1 was smaller or equal.
+~
+~
+NOT|!
+{not:expr}
+    Returns the logical NOT of expr.  If expr was true, this returns false.
+If expr was false, this returns true.
+~
+~
+OR
+{or:expr1,expr2...}
+    Returns true if expr1 or expr2 evaluate as true.  Otherwise, this
+returns false.  If expr1 was true, this doesn't bother to exaluate expr2,
+as it does C-style shortcutting.  If there are more than two arguments,
+then this will evaluate them until either one returns true, or until it
+has evaluated all the expressions.  This returns false only if all of the
+expressions return false.
+~
+~
+AND|&&
+{and:expr1,expr2...}
+    Returns true if expr1 and expr2 evaluate as true.  Otherwise, this
+returns false.  If expr1 was false, this doesn't bother to evaluate
+expr2, as it does C-style shortcutting.  If there are more than two
+arguments, then this will evaluate all of them until either one returns
+false, in which case this function returns false, or until it has evaluated
+all of the arguments.  This function returns true only if all the arguments
+evaluate as true.
+~
+~
+XOR|EXCLUSIVEOR
+{xor:expr1,expr2}
+    Returns true if expr1 or expr2 evaluate as true, but false if both do.
+Otherwise, this returns false.
+~
+~
+~
+~----------------------------------------------------------------------------
+~
+~
+Property Handling|PropFuncs
+Property Handling
+
+bless      concat     delprop    exec       exec!      index      index!
+lexec      list       listprops  prop       prop!      propdir    rand
+select     store      timesub    unbless    
+
+~----------------------------------------------------------------------------
+~
+~
+PROP
+{prop:propname}
+{prop:propname,obj}
+    Returns the literal string value of the given property.  If no object
+parameter is passed to it, it looks for the property somewhere down the
+environment from the trigger object.  Otherwise, it looks down the
+environment from the object specified.  If the property is not found,
+this returns an empty string.  If the property that it tries to access is
+read restricted and the owner of the trigger object does not own the
+object that the property is found on, then the MPI script stops with a
+Permission denied error.
+~
+~
+PROP!
+{prop!:propname}
+{prop!:propname,obj}
+    Returns the literal string value of the given property.  If no object
+parameter is passed to it, it looks for the property on the trigger.
+Otherwise, it looks for the property on the object specified.  If the
+property is not found, this returns an empty string.  If the property that
+it tries to access is read restricted and the owner of the trigger object
+does not own the object that the property is found on, then the MPI
+script stops with a Permission denied error.
+~
+~
+EXEC
+{exec:propname}
+{exec:propname,obj}
+    Returns the string value of the given property, after having
+evaluated any embedded MPI commands that it contained.  If no object
+parameter is passed to it, it looks for the property somewhere down the
+environment from the trigger object.  Otherwise, it looks down the
+environment from the object specified.  If the property is not found,
+this returns an empty string.  If the property that it tries to access is
+read restricted and the owner of the trigger object does not own the
+object that the property is found on, then the MPI script stops with a
+Permission denied error.
+~
+~
+EXEC!
+{exec!:propname}
+{exec!:propname,obj}
+    Returns the string value of the given property, after having
+evaluated any embedded MPI commands that it contained.  If no object
+parameter is passed to it, it looks for the property on the trigger.
+Otherwise, it looks for the property on the object specified.  If the
+property is not found, this returns an empty string.  If the property
+that it tries to access is read restricted and the owner of the trigger
+object does not own the object that the property is found on, then
+the MPI script stops with a Permission denied error.
+~
+~
+INDEX|{INDEX
+{index:propname}
+{index:propname,obj}
+    Returns the string value of the property whose name is stored in the
+given property.  This sounds confusing, but it's basically just the same
+as {exec:{prop:propname}}.  If no object parameter is passed to it, it
+looks for both the index property and the referenced property somewhere
+down the environment from the trigger object.  Otherwise, it looks down
+the environment from the object specified for both of them.  If either
+property is not found, this returns an empty string.  If the property
+that it tries to access is read restricted, and the owner of the trigger
+object does not own the object that the properties are found on, then
+the MPI script stops with a Permission denied error.  Any MPI code in
+the target property is evaluated and the result is returned.
+~
+~
+INDEX!
+{index!:propname}
+{index!:propname,obj}
+    Returns the string value of the property whose name is stored in the
+given property.  This sounds confusing, but it's basically just the same
+as {exec!:{prop!:propname}}.  If no object parameter is passed to it, it
+looks for both the index property and the referenced property on the trigger
+object.  Otherwise, it looks on the specified object for both of them.
+If either property is not found, this returns an empty string.  If the
+property that it tries to access is read restricted, and the owner of the
+trigger object does not own the object that the properties are found on,
+then the MPI script stops with a Permission denied error.  Any MPI code in
+the target property is evaluated and the result is returned.
+~
+~
+STORE
+{store:val,prop}
+{store:val,prop,obj}
+    Stores a string value in a given property.  If no obj parameter is
+given, then it stores the property on the trigger object.  Otherwise, it
+will store it on the given object.  If you specify a propname that is
+protected, you will get a Permission Denied error.  You are only allowed
+to store properties on objects controlled by the owner of the trigger
+object.  The trigger object is the object that triggered the evaluation of
+the MPI commands.  This function returns the string that is stored as the
+prop value.  If you store a null value in the property, then it will remove
+the property if it is not a propdir.  It will clear the value of the prop
+if it IS a propdir.
+~
+~
+DELPROP
+{delprop:propname}
+{delprop:propname,object}
+    This function will remove a property and all of it's subsidiary properties
+in the case that it is a propdir.  This will delete the property on the
+trigger object, unless an object argument is specified.  If one is, then it
+will delete the property on that given object.  This function returns a null
+string.  If you specify a propname that is protected, you will get an error
+of Permission Denied.  You are only allowed to delete properties from objects
+that are owned by the owner of the trigger object.
+~
+~
+BLESS
+{bless:propname}
+{bless:propname,object}
+    Blesses a property so that MPI executed from it will run with blessed
+permissions.  This command itself requires blessed permissions to run.
+~
+~
+UNBLESS
+{unbless:propname}
+{unbless:propname,object}
+    Removes the blessing of a property so that MPI executed from it will no
+longer run with blessed permissions.  This command itself requires blessed
+permissions to run.
+~
+~
+LIST
+{list:listname}
+{list:listname,obj}
+    Returns a string, containing a carriage-return delimited list of
+individual lines from a property based list.  A property based list is a
+series of properties that are consecutively numbered.  The server
+understands several different formats, and can also read in property
+lists in either the propnameX format, or the propname#/X format.  It does
+NOT evaluate the contents of the list for embedded MPI commands.  If no
+obj argument is supplied, then it looks for the list somewhere down the
+environment from the trigger object.  Otherwise, it looks for the list
+down the environment from the given object.
+~
+~
+CONCAT
+{concat:listname}
+{concat:listname,obj}
+    Returns a string, containing the concatenated lines of a property
+based list.  It concatenates the list semi-intelligently, putting a
+single space between lines normally, and two spaces between lines when
+the previous one ended with a period, exclamation mark, or question mark.
+A property based list is a series of properties that are consecutively
+numbered.  The server understands several different formats, and can also
+read in property lists in either the propnameX format, or the propname#/X
+format.  It does NOT evaluate the contents of the list for embedded MPI
+commands.  If no obj argument is supplied, then it looks for the list
+somewhere down the environment from the trigger object.  Otherwise, it
+looks for the list down the environment from the given object.
+~
+~
+LEXEC
+{lexec:listname}
+{lexec:listname,obj}
+    This takes a property based list, and concatenates all its lines
+together, stripping spaces from the beginning and end of each one.  It
+then evaluates the result for MPI commands, and returns the resulting
+string.  A property based list is a series of properties that are
+consecutively numbered.  The server understands several different
+formats, and can also read in property lists in either the propnameX
+format, or the propname#/X format.  If no obj argument is supplied, then
+it looks for the list somewhere down the environment from the trigger
+object.  Otherwise, it looks for the list down the environment from the
+given object.
+~
+~
+RAND
+{rand:listname}
+{rand:listname,obj}
+    Returns the value of a randomly picked list item from a property
+based list.  If no obj parameter is given, then it looks down the
+environment from the trigger object for the list.  Otherwise, it looks
+down the environment from the given object.  Any MPI code in the target
+property is evaluated and the result is returned.
+~
+~
+SELECT
+{select:value,listname}
+{select:value,listname,object}
+    Returns the value of a single list item from a sparse property list.
+The item chosen is the one who's line number is the largest one that is
+less than or equal to the given value.  If the list is missing any items,
+then {select} will return the item in the list with the highest line number
+that is less than or equal to the given value.  ie:  If the list has the
+following entries:
+    _junk#/1:one
+    _junk#/5:two
+    _junk#/16:three
+    _junk#/20:four
+Then {select:9,_junk} will return "two", {select:16,_junk} will return
+"three", and {select:25,_junk} will return "four".
+~
+~
+TIMESUB
+{timesub:period,offset,listname}
+{timesub:period,offset,listname,object}
+    This is sort of like {list}, except that it will only return one line
+of the given named property list.  The line it chooses depends on the
+time.  Any MPI code in the target line is evaluated and the result is
+returned.  The period is the length of time, in seconds, that it takes for
+{timesub} to cycle through the entire list.  The offset is the number of
+seconds to offset into the time period, if you actually need to synchronize
+the {timesub} with something.  The offset usually is just left at zero.
+If the object argument is not passed, it looks for the list on the trigger.
+What this all means, is that if you have, for example, a period of 3600
+(one hour), an offset of zero, and a property list that has six items in
+it, then {timesub} will return the first line of the property list during
+the first ten minutes of the hour, the second line during the next ten
+minutes, and so on, until it returns the last line during the last ten
+minutes of the hour.  Then it returns the first line for the beginning
+of the next hour.  Here's an example:
+    {timesub:86400,0,_sunmoon}
+This example will show different property list lines, depending on the
+time of day.  The period is 86400 seconds, which is one day.  If the
+property list has 24 items in it, then a different line will be returned
+for each hour of the day.
+~
+~
+PROPDIR
+{propdir:propname}
+{propdir:propname,object}
+    Returns true if the given property is a propdir, containing sub-props.
+Otherwise, this returns false.  If no object parameter is passed to it, it
+looks for the property on the trigger object.  Otherwise, it looks on the
+object specified.  If the property is not found, this returns false.
+~
+~
+LISTPROPS
+{listprops:propdir}
+{listprops:propdir,object}
+{listprops:propdir,object,pattern}
+    This function will return a list that contains the full names of all the
+sub-properties contained by the given propdir.  If not given, object defaults
+to the trigger object.  If a pattern is given, the sub-properties in the
+propdir are each compared against the smatch wildcard pattern, and only those
+that match are returned in the list.  This comparison is only done on the last
+part of the property name after the last /.
+
+Also see: propdir and smatch
+~
+~
+~
+~----------------------------------------------------------------------------
+~
+~
+String Functions|Strings|StringFuncs
+String Functions
+
+attr       center     eval       eval!      instr      left       lit
+midstr     nl         null       otell      pronouns   revoke     right
+smatch     strip      strlen     subst      tell       tolower    toupper
+
+~----------------------------------------------------------------------------
+~
+~
+~String functions generally don't strip spaces in their arguments.
+~
+~
+NL|\r
+{nl}  or  \r
+    Returns a carriage return character.  This can be used to seperate
+items in a list, or can split the string at that point, starting a new line.
+Example:  the string:
+    This is\ran example{nl}of using newlines.
+would print out like:
+    This is
+    an example
+    of using newlines.
+~
+~
+SUBST
+{subst:str,old,new}
+    Returns a copy of 'str' with all substring instances of 'old' replaced
+by the text specified by 'new'.  Basically just substitutes the new text
+for the old text in str.  example: {subst:Hello World!,l,r} would return
+"Herro Worrd!"
+~
+~
+STRLEN
+{strlen:string}
+    Returns an integer that is the number of character in string.
+~
+~
+SMATCH
+{smatch:str,pattern}
+    Matches 'str' against the wildcard pattern.  If there is a match,
+this returns true, or "1".  If it doesn't match, this returns a value
+of "0", or false.  In wildcard patterns, the following characters have
+the following meanings:
+    *               matches any number of any character.
+    ?               matches one character, of any type.
+    [abcde]         matches one char, if it is a, b, c, d, or e.
+    [a-z]           matches one char, if it is between a and z, inclusive.
+    [^abd-z]        matches one char is it is NOT a, b, or between d and z.
+    {word1|word2}   matches one word, if it is word1, or word2.
+    {^word1|word2}  matches one word, if it is NOT word1 or word2.
+    \               escapes any of the prev chars, making it not special.
+~
+~
+STRIP
+{strip:string}
+    Returns a copy of string with all the spaces stripped from the beginning
+and the end.
+~
+~
+TOLOWER
+{tolower:string}
+    Returns a copy of string, with all uppercase chars converted to lowercase.
+~
+~
+TOUPPER
+{toupper:string}
+    Returns a copy of string, with all lowercase chars converted to uppercase.
+~
+~
+RIGHT
+{right:string}
+{right:string,fieldwidth}
+{right:string,fieldwidth,padstring}
+    Takes a string and pads it to fit the given fieldwidth, with the string
+right justified.  If no padstring is given, it assumes that it will pad the
+string with spaces.  If no fieldwidth is given, it assumes that the field
+width is 78 characters.  Example:
+    {right:Hello,10,_.}
+would return the string "_._._Hello"
+~
+~
+LEFT
+{left:string}
+{left:string,fieldwidth}
+{left:string,fieldwidth,padstring}
+    Takes a string and pads it to fit the given fieldwidth, with the string
+left justified.  If no padstring is given, it assumes that it will pad the
+string with spaces.  If no fieldwidth is given, it assumes that the field
+width is 78 characters.  Example:
+    {left:Hello,10,_.}
+would return the string "Hello_._._"
+~
+~
+CENTER
+{center:string}
+{center:string,fieldwidth}
+{center:string,fieldwidth,padstring}
+    Takes a string and pads it to fit the given fieldwidth, with the string
+center justified.  If no padstring is given, it assumes that it will pad the
+string with spaces.  If no fieldwidth is given, it assumes that the field
+width is 78 characters.  Example:
+    {center:Hello,10,1234567890}
+would return the string "123Hello12"
+~
+~
+INSTR
+{instr:str1,str2}
+    Lists the position of the first substring within str1 that matches str2.
+If no such substring exists, then this returns a 0.
+~
+~
+MIDSTR
+{midstr:str,pos}
+{midstr:str,pos1,pos2}
+    Returns the substring that starts at pos1 within str.  If no pos2 is
+given, then the returned string is only the character at the given pos1
+position.  if a pos2 position is given, then it returns the substring
+beginning at pos1 and ending at pos2, inclusive.  If pos1 or pos2 are
+negative, then they represent the position that is that absolute number
+of characters from the end of the string.  The first character in str is
+1, and the last one can always be referenced by -1.  If a position would
+be before the beginning of the string, it is assumed to be at the
+beginning of the string.  If it would be beyond the end of the string, it
+is assumed to be at the last character. If the starting position is later
+in the string than the ending position, then the returned string has the
+characters in reverse order.  If either pos1 or pos2 are 0, then this
+returns a null string.  ("")
+~
+~
+LIT|LITERAL
+{lit:string}
+    Returns the literal string given as its parameter.  This means you can
+have things that look like MPI commands within it, and it will not evaluate
+them, but will rather just treat them as a string.
+~
+~
+EVAL
+{eval:string}
+    Sort of the exact opposite of {lit:}.  This takes a string, and
+evaluates it for MPI commands embedded within it.  This can be used on
+the output of {list:}, for example.  The evaluated mpi commands will
+be run unblessed.
+
+Also see: eval!
+~
+~
+EVAL!
+{eval!:string}
+    Sort of the exact opposite of {lit:}.  This takes a string, and
+evaluates it for MPI commands embedded within it.  This can be used on
+the output of {list:}, for example.  Unlike the {eval} command, the
+evaluated mpi commands will be run with the same blessings as the code
+that executed the {eval!}.
+Also see: eval and revoke
+~
+~
+REVOKE
+{revoke:commands}
+    Executes the enclosed commands with all blessing permissions revoked.
+This is good to wrap around {eval} statements that may execute user
+supplied code, to prevent security holes.
+~
+~
+NULL
+{null:expr...}
+    Returns a null string, no matter what the expressions within it return.
+This can take up to nine arguments, though you could pass the output of
+several commands as one argument.
+~
+~
+PRONOUNS
+{pronouns:string}
+{pronouns:string,object}
+    If passed one argument, evaluates the string and does pronoun substitution
+with regards to the using player.  If given two args, it does the pronoun
+substitution with regards to the given object.
+~
+~
+TELL
+{tell:string}
+{tell:string,player}
+    If passed only a string, tells the user that string.  If passed both
+a string, and a player dbref, it will tell the given player the message.
+This returns the message that was sent.  If the trigger isn't a room, or
+an exit on a room, and if the message doesn't already begin with the
+user's name, then the user's name will be prepended to the message.  The
+two exceptions to this are that if the messages is being sent to the
+owner of the trigger, or to the user, then the user's name will not be
+prepended.
+~
+~
+OTELL
+{otell:string}
+{otell:string,room}
+{otell:string,room,player}
+    This will tell the given string to all the players in the room, except
+for the given player.  If no room argument is given, it is assumed to be
+the room that the triggering player is in.  If no player is given, then it
+assumes that you want to skip sending the message to the triggering player.
+If you pass it a player of #-1, it will send the message to all the players
+in the room.  This returns the message that was sent.  If the trigger isn't
+a room, or an exit on a room, and if the message doesn't already begin with
+the user's name, then the user's name will be prepended to the message.
+~
+~
+ATTR
+{attr:attribute,string}
+{attr:attribute,attribute,string}
+{attr:attribute,...,attribute,string}
+    This will surround the given string with the neccesary ANSI escape codes
+to cause the text to display with the given attributes.  You may specify up
+to eight attributes, though this shouldn't ever be neccesary.  The supported
+attributes are:
+null, reset, bold, dim, italic, underline, flash, reverse, overstrike,
+black, red, green, yellow, blue, magenta, cyan, white,
+bg_black, bg_red, bg_green, bg_yellow, bg_blue, bg_magenta, bg_cyan, and bg_white.
+    Not all clients will display all these attributes, and those that do 
+won't always show them the same way.  Players who do not have their Color 
+flag set will not see the ANSI codes or colors at all.  Nesting {attr}
+commands probably just won't work.
+~
+~
+~
+~----------------------------------------------------------------------------
+~
+~
+Math Functions|Math|MathFuncs
+Math Functions
+
+abs   add   dec   dice  dist  div   inc   max   min   mod   mult  sign  subt
+
+~----------------------------------------------------------------------------
+~
+~
+~All math functions deal with integer numbers.
+~
+INC|INCREMENT
+{inc:var}
+{inc:var,val}
+    Increments the value of the given variable by one, returning the result.
+If a value argument is given, then it will add that value to the variable,
+instead of the value 1.
+~
+~
+DEC|DECREMENT
+{dec:var}
+{dec:var,val}
+    Decrements the value of the given variable by one, returning the result.
+If a value argument is given, then it will subtract that from the variable,
+instead of the value 1.
+~
+~
+ADD|ADDITION
+{add:expr1,expr2}
+{add:expr1,expr2,expr3...}
+    Returns the sum of the values of expr1 and expr2.  If more than two args
+are given, then this will add all the args together and return the result.
+~
+~
+SUBT|SUBTRACTION
+{subt:expr1,expr2}
+{subt:expr1,expr2,expr3...}
+    Returns the difference of the values expr1 and expr2.  If more than two
+args are given, all values are subtracted from the first value in sequence.
+For example: {subt:10,3,2,4} would be read as 10 - 3 - 2 - 4, and it would
+return a result of 1.
+~
+~
+MULT|MULTIPLY
+{mult:expr1,expr2}
+{mult:expr1,expr2,expr3...}
+    Returns the product of the values expr1 and expr2.  If more than two args
+are given, then they are all multiplied together to get the result.
+~
+~
+DIV|DIVIDE
+{div:expr1,expr2}
+{div:expr1,expr2,expr3...}
+    Returns the value of expr1 divided by expr2.  Division by zero will
+return zero.  If more than two arguments are given, then the first argument
+is divided by the second, and the result is divided by the third, etc, for
+all of the arguments.  For example:  {div:180,6,3,5} would be read like
+180 / 6 / 3 / 5, and a result of 2 would be returned.
+~
+~
+MOD|MODULO
+{mod:expr1,expr2}
+    Returns the leftover remainder of expr1 divided by expr2.  If more than
+two arguments are given, then the first arguments is modded by the second,
+then the result of that would be modded by the third, and so on and so forth.
+For example: {mod:91,20,3} would be read as 91 % 20 % 3, and a result of 2
+would be returned.
+~
+~
+DICE
+{dice:X}
+{dice:X,Y}
+{dice:X,Y,Z}
+    Given one parameter, picks a random number between 1 and X. (1dX)
+Given two parameters, it randomly generates Y numbers between 1 and X,
+and adds them together. (YdX) A third parameter, if given, is just added
+to this sum as a modifier. (YdX+Z)
+~
+~
+MIN|MINIMUM
+{min:expr1,expr2}
+    Returns the lesser of the values of expr1 and expr2.
+~
+~
+MAX|MAXIMUM
+{max:expr1,expr2}
+    Returns the greater of the values of expr1 and expr2.
+~
+~
+ABS|ABSOLUTE
+{abs:expr}
+    Returns the absolute value of expr.
+~
+~
+SIGN
+{sign:expr}
+    Returns -1 if expr is negative.  Returns 1 if expr is positive.
+If expr is 0, then it returns 0.
+~
+~
+DIST|DISTANCE
+{dist:x,y}              Returns distance from 0,0 that x,y is.
+{dist:x,y,z}            Returns distance from 0,0,0 that x,y,z is.
+{dist:x,y,x2,y2}        Returns distance between x,y and x2,y2.
+{dist:x,y,z,x2,y2,z2}   Returns distance between x,y,z and x2,y2,z2.
+    Given two arguments, this calculates the distance of a 2D point from
+the origin.  Given three arguments, this calculates the distance of a 3D
+point from the origin.  Given four arguments, this calculates the distance
+between a pair of 2D points.  Given six arguments, this calculates the
+distance between a pair of 3D points.
+~
+~
+~
+~
+~                  <continued in mpidocs2>
+~
+~
+~                  <continued from mpidocs>
+~
+~
+~----------------------------------------------------------------------------
+~
+~
+Looping Functions|Loops|Looping
+Looping Functions
+
+filter   fold     for      foreach  parse    while    
+
+~----------------------------------------------------------------------------
+~
+~
+FOR
+{for:varname,start,end,increment,command}
+    Acts as a counting loop, like BASIC's for loops.  The varname is the name
+of the variable that it will create and use to store the count value.  The
+start value will be the initial value of the variable, and the end value will
+be the value that the variable is working towards.  The increment is how much
+the variable will be incremented by in each loop.  The command will be eval-
+uated for each value of the variable between the beginning and ending values.
+For example:
+    {null:{for:i,10,1,-1,{tell:{&i}}}}
+will echo a countdown from ten to one, inclusive, to the user.
+~
+~
+WHILE
+{while:check,expr}
+    This is a looping structure.  It evaluates the 'check' argument, and
+if it evaluates true, then it evaluates the expr argument, and repeats
+the process.  If 'check' evaluates false, then the loop is exited.
+This returns the result of the last evaluation of expr.
+~
+~
+FOREACH
+{foreach:var,list,expr}
+{foreach:var,list,expr,sep}
+    This evaluates expr for each and every item in the given list.  On
+each evaluation, the temporary variable var will contain the value of the
+item under scrutiny.  var will only be defined for the duration of expr,
+and will be undefined after the {foreach} construct finishes.  If sep is
+given, then it uses that string as the item seperator in list, instead of
+the usual carriage return character.  sep can be multiple characters
+long.  This structure returns the result of the last evaluation of expr.
+Example:
+    {foreach:thing,{contents:here},{tell:{name:{&thing}}}}
+This will display the name of every object in the room, then it will return
+the name of the last object it displayed.
+~
+~
+FILTER
+{filter:var,list,expr}
+{filter:var,list,exp,sep}
+{filter:var,lst,exp,sep,s2}
+    This evaluates expr for each and every item in the given list.  On
+each evaluation, the temporary variable var will contain the value of the
+item under scrutiny.  This function returns a list containing all of the
+items from the input list, for which expr evaluated true.  var will only
+be defined for the duration of expr, and will be undefined after the
+{filter} construct finishes.  If sep is given, then it uses that string
+as the item seperator in the input list, instead of the usual carriage
+return character.  If s2 is defined, then it will use that string to
+seperate the items in the list it returns, instead of the normal carriage
+return.  sep and s2 can be multiple characters long.
+~
+~
+PARSE
+{parse:var,list,expr}
+{parse:var,list,expr,sep}
+{parse:var,list,expr,sep,s2}
+    This evaluates expr for each and every item in the given list.  On
+each evaluation, the temporary variable var will contain the value of the
+item under scrutiny.  This function returns a list containing the output
+of expr for each item within the list.  This lets you do direct translat-
+ion of a list of dbrefs, for example, into a list of names.  var will
+only be defined for the duration of expr, and will be undefined after the
+{filter} construct finishes.  If sep is given, then it uses that string
+as the item seperator in the input list, instead of the usual carriage
+return character.  If s2 is defined, then it will use that string to
+seperate the items in the list it returns, instead of the normal carriage
+return.  sep and s2 can be multiple characters long.
+~
+~
+FOLD
+{fold:var1,var2,list,expr}
+{fold:var1,var2,lst,expr,sep}
+    This takes a list and stores the first two items in var1 and var2, then
+evaluates expr.  The value returned by expr is then put in var1, and the next
+list item is put in var2.  Expr keeps being evaluated in this way until there
+are no more list items left.  This returns the last value returned by expr.
+If a sep argument is given, the input list is assumed to have its individual
+items delimited by that string, otherwise it assumes a carriage return.
+~
+~
+~
+~----------------------------------------------------------------------------
+~
+~
+Database Related Functions|Database|DBFuncs
+Database Related Functions
+
+contains   contents   controls   created    dbeq       exits      flags
+force      fullname   holds      istype     lastused   links      loc
+locked     modified   money      name       nearby     owner      ref
+testlock   type       usecount   
+
+~----------------------------------------------------------------------------
+~
+~
+REF
+{ref:obj}
+    Returns the dbref of the given object in the form #xxxx.  The object
+must be in the vicinity, or controlled by the owner of the trigger object.
+~
+~
+NAME
+{name:obj}
+    Returns the name of the given object.  If the object is an exit, the
+name returned is the first exit name it has before the first ';'.  The object
+must be in the vicinity, or controlled by the owner of the trigger object.
+~
+~
+FULLNAME
+{fullname:obj}
+    Returns the name of the given object.  In the case where the object
+is an exit, then the full name of the exit is given, including all the ;
+aliases.  The object must be in the immediate vicinity, or be controlled
+by the owner of the trigger object.
+~
+~
+OWNER
+{owner:obj}
+    Returns the owner of the given object.  The object must be in the
+vicinity, or be controlled by the trigger object's owner.
+~
+~
+LOC|LOCATION
+{loc:obj}
+    Returns the location of the given object.  The object must either be in
+the vicinity, or it must be controlled by the owner of the trigger object.
+~
+~
+FLAGS
+{flags:obj}
+    Returns a flaglist string from obj. ie: PM2J.  The object must either
+be in the vicinity, or it must be controlled by the owner of the trigger
+object.
+~
+~
+CREATED
+{created:obj}
+    Returns the time and date that obj was created.  The number returned is
+suitable for use with {convsecs}.
+~
+~
+MODIFIED
+{modified:obj}
+    Returns the time and date that obj was last modified.  The number returned
+is suitable for use with {convsecs}.
+~
+~
+LASTUSED
+{lastused:obj}
+    Returns the time and date that obj was last used.  The number returned is
+suitable for use with {convsecs}.
+~
+~
+USECOUNT
+{usecount:obj}
+    Returns the usage count that obj has incurred since it was created.
+~
+~
+CONTROLS
+{controls:obj}
+{controls:obj,player}
+    If one argument is given, then this returns true ("1") if the trigger
+object's owner controls the given object.  If two arguments are given, then
+it returns true if the given player controls the given object.  Otherwise,
+this returns false.  ("0")  Wizards control everything.
+~
+~
+NEARBY
+{nearby:obj}
+{nearby:obj,obj2}
+    If one argument is given, then this returns true ("1") if the given
+object is nearby to the trigger object.  If two arguments are given, then
+it returns true if the two objects are nearby one another.  Otherwise,
+this returns false. ("0")  Nearby is defined as: 1) The two objects are
+in the same location, or 2) One object contains the other, or 3) the two
+objects are in fact the same object.
+~
+~
+MONEY
+{money:obj}
+    This returns the value of an object of TYPE_THING, or returns how many
+pennies a player has.
+~
+~
+TYPE
+{type:obj}
+    Returns the type of an object.  The possible values are:  Bad, Room,
+Exit, Thing, Player, and Program.
+~
+~
+ISTYPE
+{istype:obj,typ}
+    Returns true if the given object if of the given type.  Valid types are:
+Bad, Room, Exit, Thing, Player, and Program.
+~
+~
+CONTENTS
+{contents:obj}
+{contents:obj,type}
+    Returns a list of the contents of the given object.  If a second
+argument is passed to it, it restricts the listing to only those objects
+that are of the given type.  Either the object must be nearby the trigger
+object, or else the owner of the trigger object must control the object.
+Otherwise this will error out with a Permission Denied error.  The valid
+object type values are Room, Thing, Exit, Player, Program, and Bad.
+HINT:  If you need to get a list of two types of objects from the room,
+just concatenate the lists from two calls to this function, with each
+object type you want.  ie:
+    {mklist:{contents:here,player},{contents:here,thing}}    or
+    {contents:here,player}{nl}{contents:here,thing}
+~
+~
+EXITS
+{exits:obj}
+    Returns a list of all the exits on the given object.  The owner of
+the trigger object has to control obj, or else this errors out with
+Permission Denied.  Programs and exits never have exits attached to them.
+~
+~
+LINKS
+{links:obj}
+    Returns the object reference of what the given object if linked to.
+Since exits can be meta-links, linked to multiple exits, if there is more
+than one link, then this function returns a list of all the destinations,
+seperated by carriage return characters.  (\r)
+~
+~
+FORCE
+{force:object,command}
+    Forces the given player or thing to do the given command.  The thing
+forced must be @flock'ed to the trigger object, or the trigger object's
+owner, and it must be set XFORCIBLE, or else this function will get a
+Permission Denied error.  This function returns a null string.  {Force}
+cannot force a thing-object to do something, if it is set Dark, is in a
+room set Zombie, or is owned by a player set Zombie.
+~
+~
+DBEQ|DBEQUALS
+{dbeq:obj1,obj2}
+    Returns true if obj1 and obj2 refer to the same object.  This does
+name matching, so {dbeq:*Wizard,#1} will return true if #1 is named Wizard.
+~
+~
+LOCKED
+{locked:player,obj}
+    Tests the _/lok (@lock) standard lock property on obj against the given
+player.  Returns true if the lock is locked against the player.
+~
+~
+TESTLOCK
+{testlock:obj,prop}
+{testlock:obj,prop,who}
+{testlock:obj,prop,who,def}
+    Tests the lock property 'prop', on 'obj' against the given player 'who'.
+If no 'who' argument is given, then it checks the lock against the using
+player.  If a def argument is given, then the lock will default to that
+value, if there is no lock property of the given name on the given object.
+Returns true if the lock is locked against the player.
+~
+~
+HOLDS
+{holds:obj1}
+{holds:obj1,obj2}
+    Returns true if the location of obj1 is obj2.  If no obj2 argument is
+given, then this will return true if the location of obj1 is the player.
+~
+~
+CONTAINS
+{contains:obj1}
+{contains:obj1,obj2}
+    Returns true if obj1 is within obj2, or within anything it contains, or
+within anything they contain.  If obj2 is not given, then it checks to see
+is obj1 is held by the player, or by anything they hold, etc.  Basically,
+this just sees if obj1 is within the locational environment of obj2.
+~
+~
+~
+~----------------------------------------------------------------------------
+~
+~
+Connection Related Functions|Connection|ConnFuncs
+Connection Related Functions
+
+awake   descr   idle    online  ontime  
+
+~----------------------------------------------------------------------------
+~
+~
+ONLINE
+{online}
+    Returns a list of players who are online.  This function can only be
+executed with blessed permissions.
+~
+~
+AWAKE
+{awake:player}
+    Returns how many times player is connected.  This means that it will
+returns 0 if the player is not connected.  If the given object is NOT a
+player, it will return 0.  If the given player is NOT local to the trigger,
+and is not the owner of the trigger, and this is not run with blessed perms,
+then this will return 0.  In all other cases, it will return a positive
+number, being how many times the given player is connected to the server.
+~
+~
+ONTIME
+{ontime:player}
+    Returns player online time in seconds.  If the given player is not
+connected, or is not a player object at all, then this will return -1.
+This returns the online time for the most recently connected connection,
+if there are multiple connects.
+~
+~
+IDLE
+{idle:player}
+    Returns player idle time in seconds.  If the given player is not
+connected, or is not a player object at all, then this will return -1.
+This returns the idle time for the most recently connected connection,
+if there are multiple connects.
+~
+~
+DESCR
+{descr}
+    Returns the descriptor number that invoked the MPI.
+~
+~
+~
+~----------------------------------------------------------------------------
+~
+~
+Variable Handling Functions|Variable|Variables|Vars|Var|VarFuncs
+Variable Handling Functions
+
+&arg  &cmd  &how  set   v     with  
+
+~----------------------------------------------------------------------------
+~
+~
+V|&|VARIABLE
+{&VAR}
+{v:VAR}
+    These are two ways of trying to do the same thing.  They return the
+value of the named variable VAR.  If there is no variable with the given
+name currently defined, then this gives an error stating as much.  Variables
+can be defined either with the {with:} function or within a looping command.
+~
+~
+~There are three standard variables that every MPI program can read:
+~
+&HOW|HOW
+{&how}  
+    The {&how} variable is a short string telling what ran the MPI command.
+It can have the values "(@desc)", "(@succ)", "(@osucc)", etc. for when it
+is run from an @desc, an @succ, an @osucc, or whatever.  It can also have
+the value "(@lock)" for when it is run from a lock test.
+~
+~
+&CMD|CMD
+{&cmd}
+    The {&cmd} variable contains the command name the user used, that
+caused the MPI to run.  This is generally the exit name that the player
+triggered.  For example, if the player typed 'east', and triggered the exit
+named 'east;e;out', which ran some MPI commands, the {&cmd} variable would
+have a value of "east".
+~
+~
+&ARG|ARG
+{&arg}
+    The {&arg} variable contains a string with the value of the command
+line arguments the user entered.  This is so that you can have stuff like
+MPI in the fail of an exit, and when the user triggers the exit, and has
+some extra text on the line they entered, other than the exitname, the
+MPI can take that extra stuff as arguments for use.  Note that you need
+to set an action HAVEN to get it to accept command line arguments.
+~
+~
+~Other MPI functions used to work with variables are:
+~
+SET
+{set:var,value}
+    This sets the value of the given named variable to the given value.
+If no variable with that given name is currently defined, then this gives
+an error message complaining about that.
+~
+~
+WITH
+{with:var,val,expr..}
+    This defines a new variable with the given name, and sets it's value
+to the given val.  Up to 7 expr's are allowed, but the only value
+returned to {with}'s caller, is the value returned by the evaluation of
+the last expr.  If there is already a variable of the same name, then
+this command will override that variable, for the duration of the {with:}
+command.  The new variable is only valid to use within the confines of
+the {with:} command, and it will go away after the command completes.
+This provides scoped variables quite effectively.  NOTE:  There can be no
+more than 32 variables defined at any one time, total.  This includes
+variables that are defined within macros, or properties or lists that are
+executed with {exec:} or {lexec:}.   Here's an example to illustrate the
+scope of variables inside of {with:} commands:
+
+    {prop:_mydesc}                           <- {&people} not defined.
+    {with:people,{contents:here,players},    <- Defining.  Not available yet.
+        {if:{count:{&people}},               <- It's usable now.
+            The players awake here are
+            {lit: }                          <- just puts in a space.
+            {commas:{&people},{lit: and },
+                who,{name:{&who}}            <- uses {&who} as temp var.
+            }                                <- {&who} no longer defined.
+        }
+    }                                        <- {&people} no longer defined.
+~
+~
+~
+~----------------------------------------------------------------------------
+~
+~
+List Handling Functions|List Handling|ListFuncs
+List Handling Functions
+
+commas   count    lcommon  lmember  lrand    lremove  lsort    lunion
+lunique  mklist   sublist  
+
+~----------------------------------------------------------------------------
+~
+~
+COUNT
+{count:list}
+{count:list,sep}
+    This counts the number of \r delimited items that are in the given list.
+This is effectively a list item count.  If the sep argument if given, then
+it counts the number of sep delimited substrings in list.  ie: The default
+sep is \r. (A carriage return.)
+~
+~
+MKLIST
+{mklist:value...}       Returns a list with all given values.
+    This returns a list with all the given values as list items, seperated
+by carriage returns.  ('\r's) Example:
+    {mklist:Tom,Dick,Harry}
+returns "Tom\rDick\rHarry".  Note:  A maximum of nine items can be passed to
+the {mklist} function.  If you need more, you can chain {mklist}s together.
+Example:
+    {mklist:{mklist:a,b,c,d,e,f,g,h,i},j,k,l,m,n,o,p}
+~
+~
+SUBLIST
+{sublist:list,pos1}
+{sublist:list,pos1,pos2}
+{sublist:list,pos1,pos2,sep}
+    Takes a list, and returns a subset of the list items within it.  The
+subset is all the list items between list item pos1, and list item pos2,
+inclusive.  If the pos2 argument is omitted, it assumes that pos2 is the
+same as pos1.  If pos2 is less than pos1, then all the list items between
+pos2 and pos1 are returned, in reversed order.  If pos1 or pos2 are negative,
+it counts that many list items back from the end of the list, so -1 is the
+last list item, and -5 would be the fifth from last list item.  The input
+list is assumed to be delimited by carriage returns (\r) unless the sep
+argument is given.
+~
+~
+LRAND
+{lrand:list}
+{lrand:list,seperator}
+    Returns a randomly picked stringlist item from the given list.  If the
+seperator argument is given, then it will assume that the stringlist has it's
+items delimited by the given seperator string, instead of by carriage returns.
+~
+~
+LUNIQUE
+{lunique:list}
+    Returns list with all duplicate items removed.
+~
+~
+LUNION
+{lunion:list1,list2}
+    Combines the contents of list1 and list2, removing any duplicates.
+~
+~
+LCOMMON
+{lcommon:list1,list2}
+    Creates a list containing every item that appears in BOTH list1 and
+list2.  Any duplicate items in the resulting list are removed.
+~
+~
+LREMOVE
+{lremove:list1,list2}
+    Returns the contents of list1, with any items that match an item in
+list2 removed.  The resulting list has all duplicate items removed.
+~
+~
+LMEMBER
+{lmember:list,item}
+{lmember:list,item,delimiter}
+    Returns 0 if the given item is NOT in the given list, otherwise, it
+returns the item's position in the list.  The first list item in the list
+would return 1, and the third would return 3, for example.  If the delimiter
+argument is given, then it treats the list as if it were delimited by that
+string, instead of by carriage returns. (\r's)
+Example:
+    {lmember:{mklist:a,b,c,d,e,f},d}
+would return 4.
+~
+~
+LSORT
+{lsort:list}
+{lsort:list,var1,var2,expr}
+    Returns the sorted contents of list.  If 4 arguments are given, then
+it evaluates expr with a pair of values, in var1 and var2.  If expr
+returns true, then it will swap the positions of the two values in the
+list.  It runs this comparison on every pair of items in the list, so it
+will be evaluated N*(N-1)/2 times, where N is the number of items in the
+list.  This method can also be used to randomize a list.  Example:
+    {lsort:{&list},v1,v2,{gt:{dice:100},50}}
+~
+~
+COMMAS
+{commas:list}
+{commas:list,lastsep}
+{commas:list,lastsep,var,expr}
+    Takes a list and returns a plain english comma delimited string with
+the items in it.  For example, {commas:{mklist:Tom,Dick,Harry}} will return
+"Tom, Dick and Harry".  If you specify the lastsep argument, you can replace
+the "and" with something else, such as "or" to get a result like "a, b or c".
+Note:  You need to be careful to include spaces around the "or" or else you
+might get a result like "a, borc".  Example:
+    {commas:{mklist:a,b,c}, or }
+If the var and expr arguments are passed, then for every item in the list,
+it will set the value of the given variable name (which it will declare)
+to the item, then evaluate expr, and use the result in the string it outputs.
+Example:
+    {commas:{contents:here},\, or ,v,{name:{&v}}}
+will return the name of every object in the room in a comma separated list,
+using ", or " as the final conjunction.  ie:  "Tom, Can of SPAM, Dick, or
+Harry."
+~
+~
+~
+~----------------------------------------------------------------------------
+~
+~
+Miscellaneous Functions|Miscellaneous|Misc|MiscFuncs
+Miscellaneous Functions
+
+debug      debugif    isdbref    isnum      muckname   muf        sysparm
+version    
+
+~----------------------------------------------------------------------------
+~
+~
+ISNUM
+{isnum:number}
+    Returns true if the string passed to it is a valid number.
+~
+~
+ISDBREF
+{isdbref:dbref}
+    Returns true if the string passed to it is a valid dbref.
+~
+~
+SYSPARM
+{sysparm:<system parameter>}
+    Returns the value of the given system parameter for authorized players.
+~
+~
+VERSION
+{version}
+    Returns the version string for the server.
+~
+~
+MUCKNAME
+{muckname}
+    Returns the muck name string.  For example, it might return: "FurryMUCK"
+~
+~
+MUF
+{muf:prog,arg}
+    Runs the given MUF prog with the string arg on the stack.  This returns
+the top stack value when the prog exits.  If the MPI code was run from a
+propqueue like _listen, or _connect, then {muf} cannot run a MUF program
+with a mucker level of less than 3 
+~
+~
+DEBUG
+{debug:expr}
+    This will show MPI debugging information for all the commands within the
+given expression.  This is useful for seeing why something isn't working.
+This returns the result of the evaluation of expr.
+
+Also see: debugif
+~
+~
+DEBUGIF
+{debugif:cond,expr}
+    This will evaluate the conditional cond, and, if the result is true,
+(not an empty string, and not 0), then this will show MPI debugging info
+for all the commands within the given expression.  If cond evaluated as
+false, then expr is evaluated without the debugging info being displayed.
+This is useful for Debugging code selectively.  This returns the result
+of the evaluation of expr.
+
+Example:
+    {parse:v,{contents:here},{debugif:{dbeq:{&v},me},{dostuff:{&v}}}}
+to only debug the running of the command {dostuff} when the argument will
+be the player who is running the MPI.
+
+Also see: debug and if
+~
+~
+~
+~----------------------------------------------------------------------------
+~
+~
+Macros and Functions|Functions
+Macros and Functions
+
+func    macros  
+
+~----------------------------------------------------------------------------
+~
+~
+MACROS
+Macros:
+    If the MPI interpreter comes across a function name that it does not
+recognize, it will look in the _msgmacs/ propdirs down the environment from
+the trigger object, for a property with the name of the function.  If it does
+find it there, then it takes the value of that property, and substitutes it
+in for the function as a macro.  The arguments to the function replace the
+{:1} through {:9} markers in the macro definition.  For example, if there were
+a property set on #0, defined as:
+    _msgmacs/div_rand:{add:{div:{:2},10},{dice:{:1}}}
+And you had some MPI code that looked like:
+    {div_rand:22,160}
+Then the macro would expand out to:
+    {add:{div:160,10},{dice:22}}
+After the macro argment substitution is complete, it is then evaluated.
+~
+~
+FUNC|FUNCTION
+{func:name,vars...,def}
+    This effectively defines a function in MPI, with the given name, that
+takes the given named variables.  The function is not immediately evaluated,
+so it needs to be invoked later, to do anything.  Here's an example:
+  
+    {func:sqr,val,{mult:{&val},{&val}}}
+  
+This defines the function 'sqr', that takes a single argument.  That
+argument is stored in the 'val' variable.  The function will multiply
+the value of the number passed to it, by itself, returning the result.
+It's invoked like:
+    {sqr:10}
+  
+Effectively, the above {func} declaration is the same as the following
+macro, and in fact, it's internally handled the same way:
+  
+    _msgmacs/sqr:{with:val,{:1},{mult:{&val},{&val}}}
+  
+You can define a function that takes more than one argument, but the maximum
+number of args you can pass to the function is seven.  Example of multiple
+arguments:
+  
+    {func:names,list,numsp,flagsp,
+        {parse:v,{&list},
+            {name:{&v}}
+            {if:{or:{&numsp},{&flagsp}},
+                {lit:(}
+                {if:{&numsp},{ref:{&v}}}
+                {if:{&flagsp},{flags:{&v}}}
+                {lit:)}
+            }
+        }
+    }
+    {names:{contents:here},1,1}
+

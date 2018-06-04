@@ -1,0 +1,2429 @@
+                  MUCK Reference Manual for FBMuck 6.00
+                   by Revar Desmera <revar@belfry.com>
+
+You may get a listing of topics that you can get help on, either sorted
+Alphabetically or sorted by Category.  To get these lists, type:
+        help alpha        or
+        help category
+
+~
+~----------------------------------------------------------------------------
+~
+CATEGORY|CATEGORIES|TOPICS|SECTIONS
+                   List of Topics by Category:
+ 
+You can get more help on the following topics:
+ 
+  Basics                                   (Basics)
+  Building Help                            (BuildHelp)
+  Object Flags                             (FlagHelp)
+  Object Properties                        (PropHelp)
+  MUF Programming                          (ProgCmds)
+  Wizardly Commands                        (WizCmds)
+  Miscellaneous                            (MiscHelp)
+ 
+Use 'help <topicname>' to get more information on a topic.
+~
+~----------------------------------------------------------------------------
+~
+ALPHA|ALPHABETICAL|COMMANDS
+                 Alphabetical List of Topics:
+ 
+You can get more help on the following topics:
+
+Symbols
+  @action            @armageddon        @attach            @bless
+  @boot              @chown             @chown_lock        @clone
+  @conlock           @contents          @create            @credits
+  @debug             @describe          @dig               @doing
+  @drop              @dump              @edit              @entrances
+  @examine           @fail              @find              @force
+  @force_lock        @hashes            @idescribe         @kill
+  @link              @linklock          @list              @lock
+  @mcpedit           @mcpprogram        @memory            @mpitops
+  @muftops           @name              @newpassword       @odrop
+  @oecho             @ofail             @open              @osuccess
+  @owned             @ownlock           @password          @pcreate
+  @pecho             @program           @propset           @ps
+  @readlock          @reconfiguressl    @recycle           @register
+  @relink            @restart           @restrict          @sanchange
+  @sanfix            @sanity            @set               @shutdown
+  @stats             @success           @sweep             @teleport
+  @toad              @tops              @trace             @tune
+  @unbless           @uncompile         @unlink            @unlock
+  @usage             @version           @wall              
+
+A's
+  abode  
+
+B's
+  bogus    builder  
+
+C's
+  cheatsheet   chown_ok     control      costs        
+
+D's
+  dark       disembark  drop       drop-to    
+
+E's
+  examine  
+
+F's
+  failure  flags    
+
+G's
+  gender  get     give    go      goal    gripe   
+
+H's
+  haven  help   home   homes  
+
+I's
+  info       inventory  
+
+J's
+  jump_ok  
+
+K's
+  kill     kill_ok  killing  
+
+L's
+  link_ok  linking  look     
+
+M's
+  man     money   motd    mpi     mucker  
+
+N's
+  news  
+
+O's
+  objectmatching     overt              
+
+P's
+  page               pose               propdirs           propdirs-example
+  put                
+
+Q's
+  quell  quit   
+
+R's
+  rob      robbery  
+
+S's
+  say            score          sex            startingout    sticky
+  strings        substitutions  success        
+
+T's
+  timestamps   types        
+
+V's
+  vehicle  
+
+W's
+  whisper  who      wizard   
+
+X's
+  xforcible  
+
+Y's
+  yield  
+
+Z's
+  zombie  
+ 
+Use 'help <topicname>' to get more information on a topic.
+~
+~
+~
+~----------------------------------------------------------------------------
+~
+~
+Basics|Basics
+Basics
+
+@doing       @password    disembark    drop         examine      get
+give         go           goal         gripe        help         home
+info         inventory    kill         look         money        motd
+mpi          news         page         pose         put          quit
+rob          robbery      say          score        startingout  whisper
+who          
+
+~----------------------------------------------------------------------------
+~
+~
+~
+~
+STARTINGOUT|STARTING_OUT|STARTING OUT
+The word 'me' refers to yourself. Some things to do when starting out:
+1) give yourself a description with "@describe me=<description>", then
+    look at yourself with "look me".
+2) prevent anyone else from robbing you with "@lock me=me".
+3) set your gender, if you wish it known, with "@set me=sex:male" or
+    "@set me=sex:female" (or "@set me=sex:neuter" to be an 'it').
+Also see: @DESC, LOOK, @LOCK, ROB, @SET and GENDER
+~
+~
+SAY
+"<message>
+SAY <message>
+
+  Says <message> out loud to everyone in the room.  If your name is Igor,
+and you typed '"Hello everyone!', you will see 'You say, "Hello everyone!"'
+and everyone else in the room will see 'Igor says, "Hello everyone!"'
+Also see: POSE, WHISPER and PAGE
+~
+~
+POSE
+:<message>
+POSE <message>
+
+  Poses a message to everyone in the room.  This is used for actions.  Ie:
+if your name was Igor, and you typed ':falls down.', everyone would see
+    Igor falls down.
+Also see: SAY, WHISPER and PAGE
+~
+~
+PAGE
+PAGE <player>
+PAGE <player>=<message>
+
+  In the first form, this tells a player that you are looking for them, like
+'You sense <pager> is looking for you in <location>.'
+
+  In the second form, with the <message>, the user receives a message like:
+'<pager> pages, "<message>" to you.'  Your location is not revealed in
+message pages.
+
+  If a player is set HAVEN, you cannot page them.  You will instead be told,
+'That player does not wish to be disturbed.'
+
+  Note: Most systems use a MUF program with a global 'page' action, which
+takes the place of the built-in 'page' command, and has more features.
+Usually, you can see the extra features of this MUF page program by using
+the command 'page #help'.
+Also see: SAY, POSE and WHISPER
+~
+~
+WHISPER
+WHISPER <player>=<message>
+
+  Whispers the message to the named person, if they are in the same room
+as you.  No one else can see the message.  Wizards can use the form
+'whisper *<player>=<message>' to whisper to players in other rooms.
+  Note: Most systems use a MUF program with a global 'whisper' action, which
+takes the place of the built-in 'whisper' command, and has more features.
+Also see: SAY, POSE and PAGE
+~
+~
+LOOK|READ
+LOOK <object>
+
+  Looks around at the current room, or at <object> if specified.
+For players, displays their description and inventory, for things,
+their description, and for rooms, their name, description, succ/fail
+message, and contents.  Also triggers osucc/ofail messages on rooms.
+Programs are triggered accordingly on desc/succ/fail fields.
+~
+~
+INVENTORY
+INVENTORY
+
+  Lists what you are carrying. This can usually be abbreviated to inv or i.
+~
+~
+GET|TAKE
+GET <object>
+GET <container>=<object>
+
+  Attempts to pick up <object> in the first form.  The lock on <object> is
+checked for a success (true), and the normal path of success/fail is then
+taken.  On success the object is placed in your inventory.
+  
+  In the second form, attempts to get <object> from the given <container>.
+The _/clk lock property on <container> is tested, and if it is true, then
+it checks to see if the standard _/lok lock property on <object> tests true.
+If both locks pass, then <object> is moved into the player's inventory.
+If there is no _/clk property on <container> it defaults to failing.
+The _/lok property, on <object>, on the other hand, defaults to passing.
+@succ/@fail messages are not displayed, when fetching something from a
+container.
+
+  TAKE can also be used instead of GET.
+Also see: SUCCESS, FAILURE, @LOCK, PUT and DROP
+~
+~
+PUT|THROW
+PUT <thing>=<container>
+
+  Attempts to put <thing> into the given <container>.  The _/clk lock
+property on <container> is tested, and if it is true, then it checks
+to see if the standard _/lok lock property on <thing> tests true.
+If both locks pass, then <thing> is moved from the player's inventory
+into the given container.  If there is no _/clk property on <container>
+it defaults to failing.  The _/lok property, on <thing>, on the other
+hand, defaults to passing.  @succ/@fail messages are not displayed,
+when putting something into a container.
+
+  You can also put programs in containers, much the same as you can with
+things.  Throw and put can be used instead of drop.
+Also see: @DROP, @ODROP, @LOCK, STICKY, DROP-TO, GET and DROP
+~
+~
+DROP
+DROP <thing>
+
+  Drops the <thing> if you are holding it.  It moves the thing to the room
+you are in, unless the thing's STICKY flag is set, or the room has a
+drop-to.
+
+  If the thing's STICKY flag is set, it will go home when dropped.
+
+  If the room's drop-to is set, and the room has it's STICKY flag set,
+then the thing will stick around in the room until all players have left.
+If the room is not set sticky, then the thing will be sent to the location
+given by the room's drop-to.
+
+  You can also drop programs, much like things, but they are not affected
+by room droptos or STICKY flags.
+
+  An '@drop' message can be set which will be shown to the player dropping
+the object, and an '@odrop' message can be set, which will be shown to the
+other players in the room.  Throw and put can be used instead of drop.
+Also see: @DROP, @ODROP, @LOCK, STICKY, DROP-TO, GET and PUT
+~
+~
+GO|GOTO|MOVE
+GO <direction>
+GO home
+MOVE <direction>
+MOVE home
+
+  Move the player in a specific direction.  'go home' is a special
+command that returns to you to your starting location.  'go' may be
+omitted by simply specifying a direction, and 'goto', 'move' are the
+same as 'go'.
+
+  Examples:
+    go home            teleport home, *leaving behind all possessions*
+                       (See 'help home')
+    goto kitchen       go to the exit called 'kitchen'
+    move up            move in the direction 'up', if it exists
+    north              move to the exit 'north', if it exists
+Also see: HOME
+~
+~
+HOME
+HOME
+
+  Sends you home, no matter where you are. You retain your pennies, but
+any objects you are carrying leave your inventory and return to their own
+homes. See HOMES.
+Also see: GO and HOMES
+~
+~
+GOAL
+Goal:
+
+  There is no ultimate goal to this game, except to have fun.  There are
+puzzles to solve, scenery to visit, and people to meet. There are no
+winners or losers, only fellow players. Enjoy.
+~
+~
+SCORE
+SCORE
+
+  Displays how many pennies you are carrying.  Pretty meaningless.
+~
+~
+MONEY
+Building and some other actions cost money.  How to get money:
+    1) Get pennies from the local bank.
+    2) Find pennies.
+    3) Get killed.
+    4) Be given money by another player.
+    5) Rob someone.
+Once you reach 10000 pennies, it becomes difficult to acquire
+more.  Wizards don't need money to do anything.
+Also see: COSTS
+~
+~
+GIVE
+GIVE <player|object>=<amount>
+
+  Gives <amount> pennies from your supply to <player>.  Mortals may only
+give positive amounts and may not cause a player to have more than 10000
+pennies.  Wizards do not affect their penny supplies by giving to others,
+and may also give pennies to objects, changing that object's value.
+~
+~
+ROB
+ROB <player>
+  Attempts to steal one penny from <player>. The only thing you can rob
+are pennies.
+Also see: ROBBERY
+~
+~
+ROBBERY
+Robbery:
+
+  When you rob someone, you succeed or fail to use them.  You can protect
+yourself from being robbed by entering "@lock me=me". If you lock yourself
+to yourself, you can rob yourself and set off your @success and @osuccess
+messages.
+Also see: ROB, SUCCESS, FAILURE and @LOCK
+~
+~
+KILL
+KILL <player> [=<cost>]
+
+  A successful kill sends the player home, sends all objects in the
+player's inventory to their respective homes.  The probability of
+killing the player is <cost> percent.  Spending 100 pennies always
+works except against Wizards who cannot be killed.  Players cannot
+be killed in rooms which have the HAVEN flag set.  On systems where
+the KILL_OK flag is used, you cannot kill someone unless both you
+and they are set Kill_OK.
+Also see: KILL_OK
+~
+~
+EXAMINE
+EXAMINE <object>[=proppattern]
+  
+  If you do not control <object>, it prints the owner of the object.
+  
+  If you control <object>, examine will give you a complete breakdown of
+all standard fields, flags, etc that are associated with the object.
+MPI in the the displayed fields will be shown raw, without executing it.
+  
+  If the optional proppattern field is supplied, then it instead lists
+out all the properties that matches the given wildcard pattern.  If the
+pattern ends with '/' then all the sub-properties in the matching propdirs
+will be listed.  If the pattern ends with **, then all sub-propdirs of
+the matching properties will be shown recursively.
+  
+  ex obj=/        list all root properties on obj.
+  ex obj=/**      list ALL properties on obj.
+  ex obj=foo/     list all properties in the foo propdir on obj.
+  ex obj=foo/**   list all props in the foo/ propdir, and all contained dirs.
+  ex obj=foo*bar  list root props whose name start with foo and end with bar.
+Also see: PROPDIRS and PROPDIRS-EXAMPLE
+~
+~
+HELP
+HELP
+HELP alpha
+HELP category
+HELP <subject>
+
+  With no arguments, this command shows a brief summary of basic
+commands for playing the game.  With <subject> specified, it shows
+detailed information on that topic.  Use 'help alpha' or
+'help category' to see an alphabetical or categorized list of topics,
+respectively.  Seeing as you are reading this, you probably already
+understand how this works.
+
+  Examples:
+    help               see the introductory information
+    help alpha         show an alphabetical list of topics
+    help category      show a categorized list of topics
+    help basics        read commands in the category 'Basics'
+Also see: INFO and MPI
+~
+~
+INFO
+INFO
+INFO <topic>
+INFO <topic>=<range>
+
+  See what information files are available or read information on a
+particular topic, optionally limiting to a specific set of lines.
+
+  Examples:
+    info                 list available information files
+    info muf-cheat       read the information file 'muf-cheat'
+    info muf-cheat=180   read line 180 from 'muf-cheat'
+    info muf-cheat=5-10  read lines 5-10 from 'muf-cheat'
+Also see: HELP and MPI
+~
+~
+MPI
+MPI
+MPI alpha
+MPI category
+MPI <subject>
+
+  With no arguments, this command shows a brief summary of MPI
+reference info.  With <subject> specified, it shows detailed
+information on that topic.  Use 'mpi alpha' or 'mpi category' to see an
+alphabetical or categorized list of topics, respectively.
+
+  Examples:
+    mpi                see the introductory information
+    mpi alpha          show an alphabetical list of topics
+    mpi category       show a categorized list of topics
+    mpi Looping        read commands in the category 'Looping'
+Also see: HELP and INFO
+~
+~
+MOTD
+MOTD
+MOTD clear
+MOTD <text>
+
+  See the current message of the day.
+  Wizards may clear the message with 'clear', or set a new message by
+typing it after the command.  If longer than 68 characters, the rest of
+the message is split at the nearest word into a new line.
+
+  Examples:
+    motd               print the message of the day
+    motd clear         clear the current message of the day
+    motd Fresh start!  set the message of the day to 'Fresh start!'
+Also see: NEWS
+~
+~
+NEWS
+NEWS [<topic>]
+
+  Displays the current news file for the game. Must be typed in full.  If a
+topic is given, then it displays the information on that specific topic.
+Also see: MOTD
+~
+~
+@PASSWORD
+@PASSWORD <old password>=<new password>
+
+  This changes your password.
+~
+~
+GRIPE
+GRIPE <message>
+
+  Sends <message> to the system maintainer.  Gripes are logged for
+later reference; also, if the system maintainer is connected he will
+receive the gripe real-time when the gripe is made.
+~
+~
+WHO
+WHO [<player>]
+
+  Must be in all capitals, and typed in full. Lists the name of every
+player currently logged in, and how long they have been inactive. If
+given a player name, it displays only the matching names and idle times.
+Wizards also get a display of the host the player is connected from.
+
+  Examples:
+    WHO                show all players online
+    WHO Az             show online players that start with 'Az'
+Also see: @DOING
+~
+~
+@DOING
+@DOING [me][=[<text>]]
+
+  Shows your doing message, or sets it to <text>.  If <text> is not specified,
+the field is cleared.  This uses the property '_/do'.
+
+A doing message is shown when typing WHO.
+Also see: WHO
+~
+~
+QUIT
+QUIT
+
+  Must be in all capitals, and typed in full. Logs out of your character
+and leaves the game. Your character remains at the location you are in when
+you log out, although it might be moved elsewhere while you are 'asleep.'
+~
+~
+DISEMBARK|LEAVE
+DISEMBARK
+LEAVE
+
+  Exit a vehicle, arriving at the destination.  If you can't leave, it
+shows an error message instead.
+~
+~
+~
+~
+~
+~----------------------------------------------------------------------------
+~
+~
+Building Help|BuildHelp
+Building Help
+
+@action            @attach            @chown             @chown_lock
+@clone             @conlock           @contents          @create
+@describe          @dig               @drop              @entrances
+@fail              @find              @force_lock        @idescribe
+@link              @linklock          @lock              @name
+@odrop             @oecho             @ofail             @open
+@osuccess          @owned             @ownlock           @pecho
+@propset           @readlock          @recycle           @register
+@relink            @set               @stats             @success
+@sweep             @teleport          @trace             @unlink
+@unlock            bogus              control            drop-to
+failure            homes              linking            objectmatching
+substitutions      success            timestamps         types
+
+~----------------------------------------------------------------------------
+~
+~
+~
+~
+TYPES
+Object Types:
+
+  There are 5 types of objects:
+Players are the objects users log in as; their avatars.
+Things are objects that can be carried, or that can sit about a room.
+Rooms are locations that contain players and things and linked exits.
+Exits are the means by which players move between rooms.
+Programs are player-written extensions to the game.
+
+  The first letter following an object's ID number indicates the type:
+P(layer), E(xit), F(orth program), or R(oom).  Otherwise it's a Thing.
+~
+~
+OBJECTMATCHING|OBJECT_MATCHING|OBJECT MATCHING
+Referring to Objects:
+
+  You can specify objects (things, players, exits, and rooms) by name if
+they're in your inventory or in the same room as you. You need only type
+enough letters of the name to be unambiguous. You can also specify objects
+anywhere by their DBRef, in the form #<dbrefnumber>. Players in other rooms
+may be specified in the form *<player name>. The keywords 'me' can be used
+for yourself, and 'here' for the room you're in.
+
+  Each object has an ID number (the 'dbref'), which appears after the
+name of the object, and is followed by any flags on the object; Ie:
+Foo(#3672PB) is a Player, named Foo, set BUILDER.  The number is a
+database reference, and is used to specify objects at a distance;
+Ie. 'examine #3672'. You will only see the ID number of objects you
+own, or which are set LINK_OK, ABODE, or CHOWN_OK. Wizards can see the
+numbers and flags on all objects.
+Also see: FLAGS, TYPES, ABODE, CHOWN_OK and LINK_OK
+~
+~
+CONTROL
+Control:
+
+There are 3 rules to controlling objects:
+  1) You control anything you own.
+  2) A wizard or God controls everything.
+  3) If Realms_Control is @tuned on in the server, then if a player owns an
+     environmental room, and that room has it's Wizard bit set, then the owner
+     of that environment room has control over anything contained in that env-
+     ironment room.  This includes things inside of rooms that are inside of
+     that environment room, and so forth.  Everything in that Wizbit environ-
+     ment can be controlled by the environment's owner. 
+  
+There are a few things to keep in mind, in relation to the above:
+  a) Anybody can @chown an unlinked exit to themselves, even if it is locked.
+     Builders should beware of this, lest their exits be linked or stolen.
+     Once the object has been chowned, then it will be controlled by the
+     owner, as per rule 1.
+  b) Players can @chown to themselves any exits which are linked to an object
+     they own.  Note Rule #1.
+  c) Players can @chown to themselves any exits which are attached to an object
+     that they own.  Note Rule #1.
+  d) If an object is set CHOWN_OK, anyone may "@chown <object>=me" and gain
+     ownership and control of the object. (see chown_ok)
+~
+~
+@CREATE
+@CREATE <object> [=<cost>[=<regname>]]
+
+  Creates a new object and places it in your inventory.  This costs at
+least ten pennies.  If <cost> is specified, you are charged that many
+pennies, and in return, the object is endowed with a value according
+to the formula: ((cost / 5) - 1).  Usually the maximum value of an
+object is 100 pennies, which would cost 505 pennies to create. If a
+<regname> is specified, then the _reg/<regname> property on the player
+is set to the dbref of the new object.  This lets players refer to
+the object as $<regname> (ie: $mybutton) in @locks, @sets, et cetera.
+Only a builder may use this command.
+Also see: @CLONE
+~
+~
+@CLONE
+@CLONE <object> [=<regname>]
+
+  Clones the given object, including name, location, flags, and
+properties.  You must have control of the object, you may not clone
+rooms, exits, etc, and cloning may cost pennies.  If successful, the
+command prints the identifier of the new object.  Only a Builder may
+use this command.
+
+  Example:
+    @clone some_object
+Also see: @CREATE
+~
+~
+@DIG
+@DIG <room> [=<parent> [=<regname>]]
+
+  Creates a new room, sets its parent, and gives it a personal registered
+name.  If no parent is given, it defaults to the first ABODE room down the
+environment tree from the current room.  If it fails to find one, it sets
+the parent to the global environment, which is typically room #0.  If no
+<regname> is given, then it doesn't register the object.  If one is given,
+then the object's dbref is recorded in the player's _reg/<regname> property,
+so that they can refer to the object later as $<regname>.  Digging a room
+costs 10 pennies, and you must be able to link to the parent room if
+specified.  Only a builder may use this command.
+~
+~
+@OPEN
+@OPEN <exit> [=<object> [; <object2>; ... <objectn> ] [=<regname>]]
+
+  Opens an exit in the current room, optionally attempting to link it
+simultaneously.  If a <regname> is specified, then the _reg/<regname>
+property on the player is set to the dbref of the new object.  This lets
+players refer to the object as $<regname> (ie: $mybutton) in @locks,
+@sets, etc.  Opening an exit costs a penny, and an extra penny to link
+it, and you must control the room where it is being opened.
+~
+~
+@ACTION
+@ACTION <name>=<source> [=<regname>]
+
+  Creates a new action and attaches it to the thing, room, or player
+specified.  If a <regname> is specified, then the _reg/<regname> property
+on the player is set to the dbref of the new object.  This lets players
+refer to the object as $<regname> (ie: $mybutton) in @locks, @sets, etc.
+You may only attach actions you control to things you control.  Creating
+an action costs 1 penny.  The action can then be linked with the command
+@LINK.
+~
+~
+BOGUS|PSEUDO
+Bogus Exits and Pseudo Commands:
+
+  Bogus commands can be made using exits.  For example, to make a 'sit'
+command, one could give the following commands:
+    @open sit
+	@link sit=here                   (because unlinked exits can be stolen)
+	@lock sit=me&!me                 (therefore always fails)
+	@fail sit=You sit on the chair.
+    @ofail sit=sits on the chair.
+Since nobody can go through it, it always fails. The @fail message is
+displayed to the player, and the @ofail message (preceded by the player's
+name) to everyone else.
+~
+~
+@RECYCLE
+@RECYCLE <object>
+
+  Destroy an object and remove all references to it within the database.
+The object is then added to a free list, and newly created objects are
+assigned from the pool of recycled objects first.  You *must* own the
+object being recycled, even wizards must use the @chown command to
+recycle someone else's belongings.
+~
+~
+@NAME
+@NAME  <object>=<name> [<password>]
+
+  Sets the name field of <object> to <name>.  A null <name> is illegal.
+You must supply <password> if renaming a player.  Wizards can rename
+any player but still must include the password.
+~
+~
+@DESCRIBE|@DESC
+@DESCRIBE [<object>][=[<text>]]
+
+  Shows <object>'s description, or sets it to <text>.  If <object> is not
+specified, it defaults to 'me'. If <text> is not specified, the field is
+cleared.  This uses the property '_/de'.
+
+A description is shown to a player looking at <object>.
+Also see: @IDESCRIBE
+~
+~
+@IDESCRIBE|@IDESC
+@IDESCRIBE [<object>][=[<text>]]
+
+  Shows <object>'s inside description, or sets it to <text>.  If <object> is
+not specified, it defaults to 'me'. If <text> is not specified, the field is
+cleared.  This uses the property '_/ide'.
+
+An inside description is shown to a player looking inside a vehicle <object>.
+Also see: @DESCRIBE
+~
+~
+@SUCCESS|@SUCC
+@SUCCESS [<object>][=[<text>]]
+
+  Shows <object>'s success message, or sets it to <text>.  If <object> is not
+specified, it defaults to 'me'. If <text> is not specified, the field is
+cleared.  This uses the property '_/sc'.
+
+A success message is shown to a player who successfully uses <object>.
+Also see: @OSUCCESS
+~
+~
+@FAIL
+@FAIL [<object>][=[<text>]]
+
+  Shows <object>'s failure message, or sets it to <text>.  If <object> is not
+specified, it defaults to 'me'. If <text> is not specified, the field is
+cleared.  This uses the property '_/fl'.
+
+A failure message is shown to a player who fails to use <object>.
+Also see: @OFAIL
+~
+~
+@DROP
+@DROP [<object>][=[<text>]]
+
+  Shows <object>'s drop message, or sets it to <text>.  If <object> is not
+specified, it defaults to 'me'. If <text> is not specified, the field is
+cleared.  This uses the property '_/dr'.
+
+A drop message works differently depending on <object>'s type:
+
+ On a room, it is shown to a player who drops an object there.
+ On a thing, it is shown to a player who drops it.
+ On an exit, it is shown to a player arriving at its destination.
+ On a player, it is shown to a player who kills them.
+Also see: @ODROP
+~
+~
+@OSUCCESS|@OSUCC
+@OSUCCESS [<object>][=[<text>]]
+
+  Shows <object>'s osuccess message, or sets it to <text>.  If <object> is not
+specified, it defaults to 'me'. If <text> is not specified, the field is
+cleared.  This uses the property '_/osc'.
+
+An osuccess message, prefixed by the player's name, is shown to others in the
+room when a player successfully uses <object>.
+Also see: @SUCCESS
+~
+~
+@OFAIL
+@OFAIL [<object>][=[<text>]]
+
+  Shows <object>'s ofailure message, or sets it to <text>.  If <object> is not
+specified, it defaults to 'me'. If <text> is not specified, the field is
+cleared.  This uses the property '_/ofl'.
+
+An ofailure message, prefixed by the player's name, is shown to others in the
+room when a player fails to use <object>.
+Also see: @FAIL
+~
+~
+@ODROP
+@ODROP [<object>][=[<text>]]
+
+  Shows <object>'s odrop, or sets it to <text>.  If <object> is not
+specified, it defaults to 'me'. If <text> is not specified, the field is
+cleared.  This uses the property '_/odr'.
+
+An odrop message, prefixed by the activating player's name, is shown to others
+in the room. It works differently depending on <object>'s type:
+
+  On a room, it is shown when an object is dropped there.
+  On a thing, it is shown when a player drops it.
+  On an exit, it is shown when a player arrives at its destination.
+  On a player, it is shown when another player kills them.
+Also see: @DROP
+~
+~
+SUBSTITUTIONS|PRONOUNS|PRONOUN_SUBST|PRONOUN SUBSTITUTION|%A|%S|%O|%P|%R|%N
+Pronoun Substitutions:
+
+  @osuccess, @ofail, and @odrop messages may contain %-substitutions,
+which evaluate to gender-specific pronouns if the player's 'sex' property
+is set. These substitutions are:
+    %a (absolute)       = Name's, his, hers, its.
+    %s (subjective)     = Name, he, she, it.
+    %o (objective)      = Name, him, her, it.
+    %p (possessive)     = Name's, his, her, its.
+    %r (reflexive)      = Name, himself, herself, itself.
+    %n (player's name)  = Name.
+Capitalized pronouns are also available with %A, %S, %O, %P, and %R.
+If you need a '%', use %%.
+  
+  The naturally supported genders are 'male', 'female', 'neuter', 'herm',
+and 'hermaphrodite', with the last two being equivalent, both using the
+sie/hir/hirself/hirs pronoun set.
+ 
+This set of supported genders can be extended either on an individual
+player, or globally by adding _pronouns/GENDER/%X properties on the
+player, or on #0 respectively.  For example, to add support on yourself
+for a 'stallion' gender, you would add five properties, one for each
+of the %a, %s, %o, %p, and %r pronouns, in the _pronouns/stallion/
+propdir.  Ie:
+    @set me=_pronouns/stallion/%a:his
+    @set me=_pronouns/stallion/%s:he
+    @set me=_pronouns/stallion/%o:him
+    @set me=_pronouns/stallion/%p:his
+    @set me=_pronouns/stallion/%r:himself
+
+If a shapeshifting player decided that they prefer a different subjective
+pronoun for themselve while they were in herm form, they could override it
+with something like:
+    @set me=_pronouns/herm/%s:shi
+This would only override the %s pronoun while their gender was 'herm',
+though, meaning that if they shapeshift to male, they only have to change
+their 'sex' property, and not tweak their pronouns as well.
+  
+If a player sets a %a, %s, %o, %p, or %r property on themselve, that value
+WILL be used, instead of any matching _pronouns/GENDER/%X property.  This
+lets players make quick temporary pronoun fixes, and is also available
+for legacy reasons.
+  
+Ex. '@ofail teapot=burns %p hand on the hot teapot.'
+Also see: GENDER
+~
+~
+@ATTACH
+@ATTACH <action>=<new source>
+
+  Removes the action from where it was and attaches it to the new source.
+You must control the action in question.
+~
+~
+LINKING
+Linking:
+
+  You can link to a room if you control it, or if it is set LINK_OK or ABODE.
+Being able to link means you can set the homes of objects or yourself to that
+room if it is set ABODE, and can set the destination of exits to that room if 
+it is LINK_OK. See LINK_OK, ABODE, and @LINK.
+~
+~
+@LINK
+@LINK <object1>=<object2> [; <object3>; ...  <objectn> ]
+
+  Links <object1> to <object2>, provided you control <object1>, and
+<object2> is either controlled by you or linkable.  Actions may be
+linked to more than one thing, specified in a list separated by
+semi-colons.
+Also see: @RELINK and @UNLINK
+~
+~
+@RELINK
+@RELINK <object1>=<object2> [; <object3>; ...  <objectn> ]
+
+  Unlinks <object1>, then links it to <object2>, provided you control
+<object1>, and <object2> is either controlled by you or linkable.
+Actions may be linked to more than one thing, specified in a list
+separated by semi-colons.
+Also see: @LINK and @UNLINK
+~
+~
+@UNLINK
+@UNLINK <exit>
+@UNLINK here
+
+  Removes the link on the exit in the specified direction, or removes the
+drop-to on the room. Unlinked exits may be picked up and dropped elsewhere.
+Be careful, anyone can relink an unlinked exit, becoming its new owner
+(but you will be reimbursed your 1 penny).
+Also see: @LINK and @RELINK
+~
+~
+HOMES
+Homes:
+
+  Every thing or player has a home. This is where things go when they
+are sent home, or things with the STICKY flag set go when dropped.
+Homes are set with the @link command.  A thing's home defaults to the
+room where it was created, if you control that room, or your home.
+You can link an exit to send players home (with their inventory) with
+    @link <exit>=home
+Drop-tos can also be set to 'home'. @teleport accepts home as an argument,
+so you can @teleport things (and players if you are a wizard) to their home.
+Also see: @TELEPORT, @LINK, STICKY and DROP-TOS
+~
+~
+DROP-TO
+Drop-to:
+
+  When the @link command is used on a room, it sets a drop-to location.  Any
+object dropped in the room (if it isn't STICKY) will go to that location. If
+the room is STICKY, the drop-to will be delayed until the last person in the
+room has left.
+~
+~
+@LOCK
+@LOCK [<object>][=[<key>]]
+
+  Shows <object>'s lock, or sets it to <key>.  If <object> is not specified,
+it defaults to 'me'. If <key> is not specified, the field is cleared.  This
+uses the property '_/lk'.
+
+A lock that is not passed prevents players from using <object>.
+
+  Examples:
+    @lock thingy=*Igor
+    @lock thingy=me|#1234
+    @lock here=me|Other Thingy
+    @lock west=sex:female
+    @lock east=((*Igor|*JohnDoe)&sex:male)
+~
+~
+@UNLOCK
+@UNLOCK <object>
+
+  Removes the lock on <object>.
+Also see: @LOCK
+~
+~
+SUCCESS
+Success:
+
+  You successfully use an object when you take it. You use an exit
+successfully when you go through it. You use a person successfully
+when you successfully rob them. You successfully use a room when you
+look around.
+Also see: STRINGS, @SUCCESS and @OSUCCESS
+~
+~
+FAILURE
+Failure:
+
+You fail to use a thing when you cannot take it (because it's lock fails).
+You fail to use an exit when you cannot go through it (because it's locked).
+You fail to use a person when you fail to rob them.
+You fail to use a room when you fail to look around (because it's locked).
+Also see: STRINGS, @FAIL and @OFAIL
+~
+~
+@SET
+@SET <object> = [!]<flag>
+@SET <object> = <property>:<string>
+@SET <object> = <property>:
+@SET <object> = :clear
+  
+  @set does one of three things on TinyMUCK, it can modify flags, add
+properties to an object, or remove properties from an object.
+  
+  Using the first format, you may set flags, which are:
+	ABODE (AUTOSTART)
+	BUILDER (BOUND)
+	CHOWN_OK (COLOR)
+	DARK (DEBUG)
+	HAVEN (HARDUID)
+	JUMP_OK
+	KILL_OK
+	LINK_OK
+	MUCKER
+	QUELL
+	STICKY (SETUID)
+	VEHICLE (VIEWABLE)
+	WIZARD
+	XFORCIBLE
+	ZOMBIE
+  You can also set the MUCKER (or Priority) Level of an object by using
+0, 1, 2, or 3 as the flag name.
+  
+  The second format sets <property> on <object> to <string>
+
+  The third format will remove <property> and any sub-properties under it.
+  
+  The fourth format removes all properties from an object.
+Also see: FLAGHELP
+~
+~
+@PROPSET
+@PROPSET <object>=<type>:<property>:<value> -or-
+@PROPSET <object>=erase:<property>
+  
+  @propset can set and clear properties from an object.
+  
+  If the first format above is specified, the @propset command sets
+<property> on <object> to <value>, where <value> is of type <type>.
+<type> can be one of 'string', 'integer', 'float, 'dbref', or 'lock'.
+A string can be any set of characters the MUCK recognizes.  An integer
+must be composed solely of numerals with the possible exception of
+a leading sign indicator (+ or -).  A float must be a valid floating
+point number.  A dbref must be of the form # followed by a positive
+integer, and it must be a valid dbref (i.e., the object must exist).
+A lock value must be a key that would be accepted by @lock or a similar
+command (see the help for @lock for more details).
+  
+  The second format removes <property> on object.  Note that if <property>
+is a propdir, it removes all properties below <property> as well.
+If you wish to clear the value of a propdir without removing the
+properties below it, use '@propset <object> = integer:<property>:0'.
+~
+~
+@REGISTER
+
+  Lists registered objects, or manages existing object registrations, on
+the target object and propdir.
+
+The default target is "_reg" on #0, but can be changed with these prefixes:
+
+  #me
+	Sets target object to you.
+  #prop [<target>]:<propqueue>
+	Sets target object to <target>, and target propdir to <propqueue>.
+	<target> may be omitted to keep the default.
+
+Syntax:
+  @register [<prefix>]
+    Lists registrations in the target propdir on the target object.
+  @register [<prefix>] <subpropdir>
+    Lists registrations in <subpropdir> in the target propdir.
+  @register [<prefix>] <object> = <regname>
+    Registers <regname> to <object> in the target propdir.
+  @register [<prefix>] = <regname>
+    Removes registration of <regname> in the target propdir.
+~
+~
+@CHOWN
+@CHOWN <object> [=<player>]
+
+  Changes the ownership of <object> to <player>, or if no player is given,
+to yourself.  Any player is allowed to take possession of objects, rooms, and
+actions, provided the CHOWN_OK flag is set.  Mortals cannot take ownership of
+a room unless they are standing in it, and may not take ownership of an object unless
+they are holding it.  Wizards have absolute power over all ownership.
+Also see: @CHLOCK
+~
+~
+@CHOWN_LOCK|@CHLOCK
+@CHLOCK [<object>][=[<key>]]
+@CHOWN_LOCK [<object>][=[<key>]]
+
+  Shows <object>'s chown lock, or sets it to <key>.  If <object> is not
+specified, it defaults to 'me'. If <key> is not specified, the field is
+cleared.  This uses the property '_/chlk'.
+
+A chown lock that is not passed prevents players from taking ownership of
+<object>.
+Also see: @CHOWN
+~
+~
+@FORCE_LOCK|@FLOCK
+@FLOCK [<object>][=[<key>]]
+@FORCE_LOCK [<object>][=[<key>]]
+
+  Shows <object>'s force lock, or sets it to <key>.  If <object> is not
+specified, it defaults to 'me'. If <key> is not specified, the field is
+cleared.  This uses the property '@/flk'.
+
+A force lock that is passed allows players to force <object>.
+Also see: @FORCE
+~
+~
+@CONLOCK
+@CONLOCK [<object>][=[<key>]]
+
+  Shows <object>'s container lock, or sets it to <key>.  If <object> is not
+specified, it defaults to 'me'. If <key> is not specified, the field is
+cleared.  This uses the property '_/clk'.
+
+A container lock that is passed allows players to put things in <object>.
+Also see: GET and PUT
+~
+~
+@READLOCK
+@READLOCK [<object>][=[<key>]]
+
+  Shows <object>'s read lock, or sets it to <key>.  If <object> is not
+specified, it defaults to 'me'. If <key> is not specified, the field is
+cleared.  This uses the property '@/rlk'.
+
+A read lock that is passed allows players to bypass non-MUF read permissions
+for <object>.
+~
+~
+@OWNLOCK
+@OWNLOCK [<object>][=[<key>]]
+
+  Shows <object>'s ownership lock, or sets it to <key>.  If <object> is not
+specified, it defaults to 'me'. If <key> is not specified, the field is
+cleared.  This uses the property '@/olk'.
+
+An ownership lock that is passed allows players to bypass controller
+permissions for <object>.
+~
+~
+@LINKLOCK
+@LINKLOCK [<object>][=[<key>]]
+
+  Shows <object>'s link lock, or sets it to <key>.  If <object> is not
+specified, it defaults to 'me'. If <key> is not specified, the field is
+cleared.  This uses the property '_/lklk'.
+
+A link lock that is not passed prevents players from linking to <object>.
+Also see: @LINK
+~
+~
+@TELEPORT
+@TELEPORT <arg1> [=<destination>]
+
+  Moves <arg1> to <destination>, if <destination> is not given, moves you
+to <arg1>.  Wizards may teleport anything to anywhere, provided it makes
+sense, and mortals are allowed to do two things: teleport rooms to change
+their parent fields, and they may teleport things to a room they can link
+to, provided they control either the thing or its location.
+~
+~
+@STATS
+@STATS [<player>]
+
+  For mortal players, returns the highest number in
+the database, which includes garbage that has been generated with
+@recycle.  For Wizards, gives this number as well as a breakdown of
+each type of object: rooms, exits, things, programs, players, and
+garbage.  Wizards may also specify <player> which returns a similar
+display limited to the possessions of <player>.
+~
+~
+TIMESTAMPS
+Timestamps:
+
+  Every object has a timestamp, which includes the time last used, the
+time last modified, the time the object was created, and the number
+of times that that object has been used by a player. They are shown by
+using EXAMINE. 'Usage' is defined as follows: Players-when they are
+connected, Rooms-when entered or 'look'd at, Exits-when invoked (by a
+'go' command) or 'look'd at, Things-when 'look'd at or 'take'n/'drop'd,
+Programs-when run by a player. Examining an object does not count as
+looking at them.
+~
+~
+@FIND
+@FIND [<name>] [= <flags/types> = [<output type>]]
+
+  Searches through the database for items that you control matching <name>.
+Players control only objects they own; wizards control all objects, so @find
+searches the entire database when they use it.  Because the command is
+computationally expensive, this costs 100 pennies.
+  
+  Flags or types can be specified, to specify that you only want to list
+objects that have that flag set, or that are of that type.  You can also
+specify to list objects that are NOT of that specific type, or that do
+NOT have that flag.  (A "!" before the modifier indicates that it is to
+be inverted.)
+  
+The flags that you can specify are:  (use the initial capitalized letter only)
+  Abode, Builder/Block, Chown_ok, Dark/Debug, Haven, Interactive, Jump_ok,
+  Kill_ok, Link_ok, Mucker, Quell, Sticky/Silent, Vehicle, Wizard, Xforcible,
+  and Zombie.
+  
+You can also specify Mucker Levels by the level number: 1, 2, 3, or 4.
+  
+The types that you can specify are: (use the capitalized letter only)
+  Exit, muF program, Garbage, Player, Room, and Thing.
+  
+There are a few other modifiers you can specify: (use only initial character)
+  Unlinked   will specify that you want to list only unlinked objects.
+  @          specifies to list objects longer than about 90 days old.
+  ~size      will match all objs whose current memory usage is greater than
+               or equal to size bytes.  This must be the last modifier in the
+               list of modifiers.
+  ^size      will match all objs whose total memory usage, when fully loaded,
+               is greater than size bytes.  To do this, it loads the entire
+               object into memory from disk.  This modifier is only available
+               to wizards.  For regular players, this acts like ~size.  This
+               must be the last modifier in the list of modifiers.
+  
+The output types that can be given are owners, links, size, count, & location.
+  (You use the whole name for output type, and you can use only one at a time.)
+  owners    lists who owns each object.
+  links     shows what each object is linked to, or *UNLINKED*, or, for exits
+              linked to multiple things, *METALINK*
+  size      displays how much memory is currently being used by an object.  If
+              this option is used with the ^ modifier, (see above) then this
+              will display the true full size of the object, and not just how
+              much is currently being used.
+  count     causes nothing to be shown but how many objects the @find/etc would
+              match.  ie:  it doesn't display any of the matched objects.
+  location  shows where the object is located at.
+  
+The matching on names is as follows:
+        Individual words can be matched as {word1|word2|...}
+        Individual characters can be matched as [abc...]
+        A ? matches any character.
+        A * matches any number of characters, including none.
+        Any of these special charcters can be matched by putting a \ before it.
+  
+Examples of use:
+    "@find north = EU = location" will find all of your unlinked exits named
+        "north" and print them along with their locations.
+    "@find {big|little} = R!L" finds all your rooms whose names contain "big"
+        or "little" and are not LINK_OK.
+    "@find w[ei]ll" will find everything you control whose name contains "will"
+        or "well."
+    "@find =E=links" will list all exits that you control, and display where
+        they are linked to.
+    "@find button==locations" will list all objects you control with 'button'
+        in the name, and it will display where thay are located at.
+    "@find =~2000=size" will list all your objects whose current memory usage
+        is 2000 bytes or more, and it will display their size.
+    "@find =^2000=size" will, for a wizard, find all objects in the db that are
+        2000 or more bytes in total size, when fully loaded, and it will show
+        their sizes.  Note that this will load all of each object into memory
+        to make the size determination.  On some systems this can take a while,
+        and on all systems this is an abuse to the diskbasing cache.  Only
+        Wizards may use this search feature.
+Also see: @OWNED, @ENTRANCES and @CONTENTS
+~
+~
+@OWNED
+@OWNED <name> [= <flags/types> = [<output type>]]
+
+  Searches through the database for items that <name> controls.
+  
+  For an explanation of the flags/types modifiers and the output types,
+see the help entry for @FIND.
+  
+Example:  @owned Revar=F!L3=location
+  Will list all Mucker Level 3 (3) programs (F) owned by revar, that are
+NOT set Link_OK (!L), and it will show the location of each one.
+  
+Note that only wizards can do an @owned on other people.
+Also see: @ENTRANCES, @FIND and @CONTENTS
+~
+~
+@CONTENTS
+@CONTENTS [<object>] [= <flags/types> = [<output type>]]
+
+  Searches the given object for items & exits that match the given flag string.
+  
+  For an explanation of the flags/types modifiers and the output types, see
+the help entry for @FIND.
+  
+Example:  @contents here=DE=owner
+  Will list all Dark Exits who's source is your current location, giving the
+owner of each one.
+Also see: @FIND, @OWNED and @ENTRANCES
+~
+~
+@ENTRANCES
+@ENTRANCES [<object>] [= <flags/types> = [<output type>]]
+
+  Searches through the database for items that you control linked to <object>.
+  
+  For an explanation of the flags/types modifiers and the output types, see
+the help entry for @FIND.
+  
+Example:  @entrances here=ED=location
+  Will list all Dark Exits that are linked to your current location,
+giving the location of each one.
+Also see: @FIND, @OWNED and @CONTENTS
+~
+~
+@TRACE
+@TRACE <object> [=<depth>]
+
+  Starts with <object> and traces all location fields, until the global-
+environment room is reached or the optional <depth> is specified.  This
+is generally useful for finding which rooms are parents in your heirarchy.
+If you cannot link to a particular location its name is replaced by stars
+(***).
+~
+~
+@OECHO
+@OECHO <vehicle object> = <echo prepend string>
+
+Sets a string to prepend to messages relayed to the interior of a vehicle
+in the vehicle's _/oecho property. Without a value, "Outside>" is prepended.
+Also see: VEHICLE
+~
+~
+@PECHO
+@PECHO <puppet object> = <echo prepend string>
+
+Sets a string to prepend to messages relayed from a puppet in the puppet's
+_/pecho property. By default, the puppet's name followed by ">" is prepended.
+Also see: ZOMBIE
+~
+~
+@SWEEP
+@SWEEP
+@SWEEP <object>
+
+  Perform a security sweep of some object, showing all listeners,
+both players and things.  You must own the object to sweep it.
+
+  Examples:
+    @sweep                 check the current room
+    @sweep me              check yourself
+    @sweep janitor_closet  check the object 'janitor_closet'
+~
+~
+~
+~
+~
+~----------------------------------------------------------------------------
+~
+~
+Object Flags|FlagHelp
+Object Flags
+
+abode      builder    chown_ok   dark       flags      haven      jump_ok
+kill_ok    killing    link_ok    mucker     overt      quell      sticky
+vehicle    wizard     xforcible  yield      zombie     
+
+~----------------------------------------------------------------------------
+~
+~
+~
+~
+ABODE
+@SET here=A
+
+  If a room is set ABODE, players can set their homes there,
+and can set the homes of objects there. (LINK_OK is now used only for exits,
+and ABODE is for players and objects.)
+  When set on a program, it means AUTOSTART.  This means that when the game
+is first started up, the program will automatically be run with a trigger
+of #-1 and a 'me @' of the owner of the program.  This is useful to restart
+processes that run in the background periodically.
+~
+~
+BUILDER
+@SET <thing>=B
+
+  Some mud restrict building commands to players whose builder flag is
+set.  The builder flag, BUILDER, is only meaningful for players. On such
+systems, only builders can @create, @dig, @link, @open, or take control of
+unlinked exits. Only a wizard can set this flag.
+
+  When BUILDER is set on a program, it is called "BOUND" and it causes any
+functions within the program to run in preempt mode, regardless of the
+multitasking mode that the process had before calling this program.  When
+the execution exits this program, the multitasking mode returns to what
+it was before the function was called.  This lets libraries of atomic
+functions be written.
+
+  This flag is also called BOUND when it is set on rooms. An exit attached to
+a thing or player and linked to a player or room will not work when the object
+to which it is attached is in a room set BOUND.
+~
+~
+CHOWN_OK|COLOR
+@SET here=C
+
+  When set on rooms, exit and things, the C flag indicates that any player
+may use the @chown command to claim ownership of the item. (see @chown)
+When the C flag is set on a player, this indicates that the player wishes
+to receive ANSI Color codes from the server.
+~
+~
+DARK
+@SET here=D
+
+  If a room is DARK, then when people besides the owner 'look' there, they only
+see things they own. If a thing or player is DARK, then "look" does not list
+that object in the room's Contents:. Players can set rooms they own dark, and
+may also set objects they own dark, but they cannot drop dark objects in rooms
+they don't control. Wizards can set players dark.
+When a program is set DARK, it is called DEBUG, and a running stack trace is
+printed out to any users of the program for each instruction executes.
+~
+~
+OVERT
+@set here=O
+
+  If the 'enable_match_yield' tune is turned on, two new flags which may
+only be used on rooms or things become usable.  These are YIELD and OVERT
+(Y and O).  If you set a room to 'Yield', exit matching will NOT continue
+up the environment chain.  The only exception to this are any exits on an
+area up the environment chain that has been set to be 'Overt'.  By setting
+a room both Yield and Bound, you can limit players to -only- those exits
+set on the room itself (assuming there are no Overt rooms further up the
+env chain).
+~
+~
+YIELD
+@set here=Y
+
+  If the 'enable_match_yield' tune is turned on, two new flags which may
+only be used on rooms or things become usable.  These are YIELD and OVERT
+(Y and O).  If you set a room to 'Yield', exit matching will NOT continue
+up the environment chain.  The only exception to this are any exits on an
+area up the environment chain that has been set to be 'Overt'.  By setting
+a room both Yield and Bound, you can limit players to -only- those exits
+set on the room itself (assuming there are no Overt rooms further up the
+env chain).
+~
+~
+FLAGS
+The flags are displayed as letters following an object's ID number.
+Flags are set with the @set command. The flags are: W(izard), S(ticky),
+L(ink_OK), D(ark), J(ump_OK), K(ill_OK), C(hown_OK), H(aven), A(bode),
+B(uilder), V(ehicle), Z(ombie), and The flags R(oom), E(xit), and
+P(layer) are also used.  Debug is the same flag as Dark, Silent as Sticky,
+Color as Chown_OK, and Bound as Builder.  F refers to a Muck Forth program.
+An M followed by a 1, 2, or 3 gives the Mucker Level.  (Priority Level for
+exits.) See TYPES, GENDER, and individual flag names.
+~
+~
+HAVEN
+@SET here=H
+
+  If a room is HAVEN, you cannot kill in that room. If a player is set
+HAVEN, he cannot be paged. (see page) HAVEN, when set on a program is
+called HARDUID, and causes that program to run with the permissions of
+the owner of the trigger, rather than with the permissions of the user
+of the program.  When this is set in conjunction with the STICKY (SETUID)
+flag on a program, and the program is owned by a wizard, then it will run
+with the effective mucker level and permissions of the calling program.
+If the caller was not a program, or the current program is NOT owned by
+a wizard, then it runs with SETUID permissions.
+~
+~
+JUMP_OK
+@SET here=J
+
+  The Jump_OK flag is used in several ways.  Unprivileged programs cannot
+use MOVETO on an object unless the player either controls the object, the
+room it's being moved from, and the room it's being moved to, or else they
+are set Jump_OK.  A player cannot use an action that is linked to another
+player unless the other player is set Jump_OK.  On some systems, where
+SECURE_TELEPORTing is set up, you cannot use an action to leave a room,
+unless the action is either attached to that room, or the room is JUMP_OK.
+~
+~
+KILL_OK
+@SET here=K
+
+  On systems where the KILL_OK flag is used, you cannot kill someone unless
+both you and they are set Kill_OK.
+~
+~
+KILLING
+Getting killed is no big deal. If you are killed, you return to your home,
+and all things you carry return to their homes. You also collect 50 pennies
+in insurance money (unless you have >= 10000 pennies). See KILL and MONEY.
+~
+~
+LINK_OK
+@SET here=L
+
+  If a room is LINK_OK, anyone can link exits to it (but still not from it).
+It has no meaning for people, things, or exits. See @LINK in the dictionary.
+A program that is link_ok can be called by any other program, and can be run
+from actions and propqueues not owned by the owner of the program.
+~
+~
+MUCKER|MUCKER LEVELS|NUCKER|0|1|2|3|ML0|ML1|ML2|ML3|PRIORITY LEVELS
+Mucker Levels:
+
+  The mucker level of a player or program specifies whether or not a player
+can make MUF programs, and what permissions they will have when the programs
+are run.  (See 'man mucker levels')  Only a wizard may set the mucker level
+of a player, and a normal player may only set the mucker level of programs
+they own to less than their current mucker level.  A program cannot be set
+to mucker level 0, since it doesn't mean anything.
+  
+  When the mucker level of an exit is set, is it called the exit's priority
+level.  The priority levels let you specify that certain exits are not
+overidable by local actions.  When an exit is searched for, in the
+matching routines, it will match like it used to, except that if it finds
+an exit, later in the search order, that has a higher priority level, it
+will choose that exit instead.
+  
+  You can set the priority level of an exit by setting its Mucker Level.
+(ie: @set exit=2)  A level of 0 is the lowest priority, and a level of 3
+is the highest priority.  Only a Wizard can set the priority level of an
+action or exit.
+  
+  When the server looks for the standard "connect", "disconnect", or "look"
+actions, it will ignore any actions with a priority Level of 0.  When an
+action is @attached to another object, @named to something else, or
+@unlinked, its Priority Level is reset to 0.
+  
+  If COMPATIBLE_PRIORITIES is #defined on your system, then exits that are
+on room or player objects will never act as if they have an effective
+priority level of less than 1.
+~
+~
+QUELL
+@SET here=Q
+
+  A wizard set QUELL is effectively a normal player with no wizardly powers.
+Programs that test to see if a player is wizard will get a false response
+from '"wizard" flag?' when the player is QUELLed.  Wiz-bitted programs
+will still act wizbitted whether or not the owner is QUELLED.
+~
+~
+STICKY|SILENT
+@SET here=S
+
+  If a thing is STICKY, it goes home when dropped (See HOMES). If a room is
+STICKY, its drop-to is delayed until the last person leaves (See DROP-TO).
+If a player is STICKY (SILENT), they don't see the dbrefs on things they
+own, and they do not see dark objects.  If an exit is linked to a Thing,
+and it is located on another Thing, then if the exit is not STICKY, the
+Thing the exit is located on will go home when the exit is triggered.  If
+a program is STICKY (SETUID) it runs with the permissions of the owner of
+the program, not the perms of the user.
+
+  A player can set themselves "SILENT" and not see all the dbrefs and dark
+objects that they own.  They won't see objects in a dark room either.
+They still control the objects though.  Silent is the same flag as STICKY.
+~
+~
+VEHICLE
+@SET <thing>=V
+
+  Objects of TYPE_THING, that have the VEHICLE flag set, can contain
+players.  To enter a vehicle, you can either use a MUF program to
+teleport you to it via MOVETO, you can get a wizard to @teleport you
+into it, or else you an use an action that is both attached and linked
+to the vehicle to enter it.  This means that you can only enter a vehicle
+from the same room that it is in, and you cannot use far links to enter
+it.  This prevents the use of vehicles to get around locks.  Inside the
+vehicle, you will see it's @idesc, instead of it's @desc, and you will
+not be shown it's @succ or @fail.  Objects dropped in a vehicle will not
+go away to the their homes, as a vehicle cannot have a dropto set in it.  
+Things with the VEHICLE flag set cannot enter rooms or use exits that
+have the VEHICLE flag set.  This allows a way to prevent vehicles from
+entering areas where it would be illogical for them to be.
+When VEHICLE is set on a program, it is called VIEWABLE, and enables the
+program to be @listed.
+~
+~
+WIZARD
+@SET <thing>=W
+
+  If a person is WIZARD, they are a wizard, unkillable, subject to fewer
+restrictions, and able to use wizard commands. It is only meaningful for
+players and programs. In general, WIZARDs can do anything using #<number>
+or *<player>.  Only player #1 can set and unset the WIZARD flag of other
+players if GOD_PRIV is used.
+~
+~
+XFORCIBLE|XPRESS
+@SET <thing>=X
+
+  A thing or player set XFORCIBLE can be forced by anything passing its
+force-lock. When the @tune enable_prefix is on, wizards may set this flag
+on any wizard-owned action to allow matching on the beginning of the user's
+command string, much like the builtin '"' and ':'. The flag is named XPRESS
+when used in this way.
+~
+~
+ZOMBIE
+@SET <thing>=Z
+
+  @force and the FORCE muf primitive can be used on objects of type
+THING, if they have the ZOMBIE flag set.  Objects act as if they
+have the permissions of their owner.  If an object is locked against
+a player, it will also be locked against anything that that player
+owns, that tries to test the lock.
+  
+ Things with the ZOMBIE flag set cannot enter rooms or use exits that
+have the ZOMBIE flag set.  This allows a way to prevent zombies from
+entering areas where they are not wanted.
+  
+ If you try to run a program that you control, that has its ZOMBIE flag
+set, it will drop you into the MUF debugger.  This lets you step line
+by line, or instruction by instruction through a muf program, setting
+breakpoints to stop at, and other nice things.  There is help available
+within the debugger, via the 'help' command.
+~
+~
+~
+~
+~
+~----------------------------------------------------------------------------
+~
+~
+Object Properties|PropHelp
+Object Properties
+
+gender             propdirs           propdirs-example   sex
+strings            
+
+~----------------------------------------------------------------------------
+~
+~
+~
+~
+PROPDIRS
+Properties are stored in AVL trees, and organized into directories of
+  properties.  This speeds things up, and keeps you from being spammed on
+  examines.  To examine the properties on an object, use 'ex <obj>=<propdir>'.
+  where to examine the base properties in an object, <propdir> would be '/'.
+  You can see the value of a single property with 'ex <object>=<propname>'.
+      Propdirs are a method of storing and organizing properties to speed
+    access and to provide a sort of built-in organization.  The basic idea
+    is to make something similar to a 'filesystem' for properties.  In this
+    analogy, each person would be a filesystem, with a root directory and
+    (theoretically) an infinite number of properties beneath that.
+      A property has been expanded with the idea that each property may now
+    contain a new property list -- the 'propdir'.  properties can both have
+    a value (either integer or string as before) _and_ contain other
+    properties.
+      The actual directory entries may ALSO contain data.  Propdirs' only
+    real 'visible' changes are in the names of properties -- '/' is used as
+    the property directory separator, and so will not appear in the names
+    of the properties when listed through 'examine' or MUF programs.
+      Property protections have also been expanded -- the . and _ may appear
+    either at the beginning of the property name or immediately following a
+    '/', and that property will have the appropriate protections.  For
+    example, the property '/mail/.inbox/mesg/#' would have the same
+    protections as '.mesg#' would now.
+    There are two ways to remove a property list:
+      * First, and most straight forward, is to remove the property that
+        contains it.  so, in the previous example, removing the property
+        '/mail/.inbox' would (recursively) remove all properties under
+        .inbox before removing .inbox itself.
+      * The second way is to remove all properties within the property list
+        yourself.  When the last property is removed, the parent property
+        (the one that contained the property list) is examined to see if
+        contains data.  If it does, then the property list only is
+        removed.  If the property doesn't contain data then it is removed
+        also.
+      Because of the first method of removing propdirs, the ability to have a
+    property list and value in the same property should be used sparingly.
+      If you try to access a property ending in '/', in MUF, it will give a
+    programmer error, except in NEXTPROP, in which it will give the name of
+    the first property in that propdir.
+      The last visible, non-MUF change that propdirs bring is that 'examine'
+    will no longer show properties _directly_.  Instead, where the properties
+    would normally be shown, it will say:
+        "[ Use 'examine <object>=/' to list root properties. ]"
+      Examine now can take an argument which is the property or propdir to
+    view.  If the property name given ends with a '/', all properties in
+    property directory will be listed, otherwise the single property named
+    will be shown.
+      Internally, a few things changed.  property lists are now stored as AVL
+    trees instead of straight lists, so there is a speed increase even if
+    propdirs are not directly used.  This also means properties are kept in
+    sorted order and will be displayed that way.
+      'addprop' will no longer allow a ":" in the property name.
+      To clear a propdir's value without deleting the proptree below it,
+    from MUF do a '"" 0 addprop' to it.
+      A property can *not* have both a string and integer stored at the same
+    time anymore.  The old property.c was lax and allowed this, even though
+    the integer value would be lost on dbload.
+    See also PROPDIRS-EXAMPLE.
+~
+~
+PROPDIRS-EXAMPLE|PROPS-EXAMPLE|PROPERTY-EXAMPLE|PROPERTIES-EXAMPLE
+Property and Propdir Usage Examples:
+  Lines indented only 2 spaces are what the user is typing.
+  Lines indented 6 spaces are what the MUCK is returning to the user.
+  Lines in []'s are comments on what's going on.
+  
+  [first, lets set up a bunch of properties]
+  @set me=first:a property.
+  @set me=second:another property.
+  @set me=first/one:A property in a propdir
+  @set me=first/two:Another property in a propdir
+  @set me=third/prime:three
+  
+  [Okay, now lets see what properties we have.  We use the examine command
+   to do that, with a second argument, to tell it what we want to list in
+   the way of properties.  In this case, since we want to list the base level
+   properties, we use '/'.]
+  
+  ex me=/
+      first/: (string) a property.
+      second: (string) another property.
+      third/: (no value)
+  
+  [Okay, it has a few properties with the first part of the names of the
+   properties that we set.  The /'s at the end of some of the property
+   names means that there are sub-properties that we can list.  When we
+   set a property like 'first/one', it's actually creating a sub-property
+   named 'one' beneath a property named 'first'.  If 'first' doesn't
+   already exist, then it will create that property.  Let's list what
+   sub-properties we created under 'first'.]
+  
+  ex me=first/
+      first/one: (string) A property in a propdir.
+      first/two: (string) Another property in a propdir.
+  
+  [Here we see the properties that we set as sub-properties under 'first'.
+   We examined for 'first/' to list the sub-properties.  The / at the end
+   of the name tells the game that we want it to list the sub-properties
+   of that property, and not that property's value itself.  Lets see what
+   value the property 'first' has, itself.  To do this we leave off the '/']
+  
+  ex me=first
+      first/: (string) a property.
+  
+  [Okay, lets say that we just want to see the value of the sub-property
+   named 'one', under the property 'first'.  We can list it as follows:]
+  
+  ex me=first/one
+      first/one: (string) A property in a propdir.
+  
+  [If the property or sub-property that you specify does not exist, it
+   will complain about it.]
+  
+  ex me=first/three
+      No property found.
+  
+  [if a property was created to contain a sub-property, but was never given
+   a value itself, it is listed as having no value.  It has sub-properties,
+   however.]
+  
+  ex me=third
+      third/: (no value)
+  
+  [Let's list those sub-properties.]
+  
+  ex me=third/
+      third/prime: (string) three
+  
+  [Okay, let's delete the sub-property 'prime', from under the property
+   'third'.  To do this, we act like we are setting the variable again,
+   except that we are giving it no value this time.]
+  
+  @set me=third/prime:
+  ex me=third/
+      No properties listed.
+  
+  [There.  It's gone.  Now let's list the bottom level properties again.]
+  
+  ex me=/
+      first/: (string) a property.
+      second: (string) another property.
+  
+  [Whoops!  The property 'third' is gone too!  This is because properties
+   with no values are automatically deleted when their last sub-property
+   is deleted.  Let's delete a subproperty from 'first', now.]
+  
+  @set me=first/one:
+  ex me=/
+      first/: (string) a property.
+      second: (string) another property.
+  
+  [The property 'first' still exists, with it's string value, and it still
+   has sub-properties.  Lets list those.]
+  
+  ex me=first/
+      first/two: (string) Another property in a propdir.
+  
+  [Here we see that the sub-property 'one' is gone, as we expected.  Let's
+   see what happens when you erase a property that has sub-properties.]
+  
+  @set me=first:
+  ex me=/
+      second: (string) another property.
+  
+  [The property 'first' is gone.]
+  
+  ex me=first/
+      No properties listed.
+  
+  [And the subproperty it had is gone too!  Let's remake the 'first' prop.]
+  
+  @set me=first:again, a property.
+  ex me=/
+      first: (string) again, a property.
+      second: (string) another property.
+  
+  [We have two properties again, and no sub-properties.  It should be
+   noted that sub-properties can have sub-sub-properties, and they can
+   contain even subbier properties, and so on and so forth.]
+  @set me=first/one:uno
+  @set me=first/one/example:dos
+  @set me=first/two/example:tres
+  @set me=first/one/example/cat:meow
+  ex me=first/
+      first/one/: (string) uno
+      first/two/: (no value)
+  ex me=first/one/
+      first/one/example/: (string) dos
+  ex me=first/one/example/
+      first/one/example/cat: (string) meow
+  
+  [There is a special case in examine to let us list ALL the properties and
+   sub-properties of a prop.  To use it, we just specify '**' as a propdir.
+   For example, to list all sub-properties and sub-sub-properties, etc.,
+   under 'first', you would do the following:]
+  
+  ex me=first/**
+      first/one/: (string) uno
+      first/one/example/: (string) dos
+      first/one/example/cat: (string) meow
+      first/two/: (no value)
+      first/two/example/: (string) tres
+      
+  [Let's delete all the properties on the object, now.  To do that, we
+   specify no property name or value when we use @set.  Nothing but a
+   colon.]
+  
+  @set me=:
+  ex me=/
+      No properties listed.
+  
+  [All gone!]
+  
+~
+~
+SEX
+@SET me=sex:unassigned|male|female|neuter
+
+  Default unassigned. If a player's sex is set, %-substitutions will use
+the appropriate pronoun for that player. Only meaningful for players and
+maybe Zombie things.
+Also see: SUBSTITUTIONS
+~
+~
+GENDER
+@SET me=sex:unassigned|male|female|neuter|herm|hermaphrodite
+
+  Default is unassigned. If a player's sex is set, %X substitutions
+will use the appropriate pronoun for that player in @osucc/@ofail/etc.
+Only meaningful for players.
+Also see: SUBSTITUTIONS
+~
+~
+STRINGS
+Objects have several standard strings:
+  1) a name.
+  2) a description.                             (stored in _/de property)
+  2) an inside description (for vehicles).      (stored in _/ide property)
+  3) a success message (seen by the player).    (stored in _/sc property)
+  4) a fail message (seen by the player).       (stored in _/fl property)
+  5) an osuccess message (seen by others).      (stored in _/osc property)
+  6) an ofail message (seen by others).         (stored in _/ofl property)
+  7) a drop message (seen by the player).       (stored in _/dr property)
+  8) an odrop message (seen by others).         (stored in _/ofl property)
+(see properties)
+~
+~
+~
+~
+~
+~----------------------------------------------------------------------------
+~
+~
+MUF Programming|ProgCmds
+MUF Programming
+
+@edit        @kill        @list        @mcpedit     @mcpprogram  @program
+@ps          man          
+
+~----------------------------------------------------------------------------
+~
+~
+~
+~
+MAN
+MAN [<subject>]
+
+  Displays the programmer's manual or a quick reference.
+~
+~
+@PS
+@PS
+
+  Lists the status of the currently running MUF program processes.
+This lists all processes for a Wizard.  Non-Wizards only see the muf
+processes that they can @kill.
+Also see: @KILL
+~
+~
+@KILL
+@KILL <processid>
+@KILL <playername>
+@KILL <programdbref>
+@KILL all
+
+  If passed a processid (a number without a '#' preceeding it), it will kill
+the given process, if the player controls it.  If passed a player name, it
+will kill all the processes controlled by that player.  If passed a program
+dbref, it will kill all processes that that program is running in.  If the
+argument passed is "all", and the player is a wizard, it will kill all
+processes on the timequeue.
+~
+~
+@LIST
+@LIST <program>  [=[!#@]*[line1][-line2]]
+
+  Lists lines in a program, provided you control it or it is VIEWABLE.
+Zero, one, or two line numbers may be specified, denoting the range of
+lines to list.  If no lines are given, the entire program is listed.
+
+  Additionally, a set of prefixes can be given to control the output:
+
+  !	Outputs system messages as MUF comments.
+  #	Lists program with line numbers, overriding current setting.
+  @	Lists program without line numbers, overriding current setting.
+~
+~
+@EDIT
+@EDIT <program>
+
+  Searches for a program and if a match is found, puts the player into
+edit mode.  Programs must be created with @PROGRAM or @MCPPROGRAM.
+Also see: @MCPPROGRAM, @PROGRAM and @MCPEDIT
+~
+~
+@PROGRAM
+@PROGRAM <program> [=<regname>]
+
+  Create a new program, or enter edit mode on an existing one. If a <regname>
+is specified, a new program is always created.
+Also see: @MCPPROGRAM, @EDIT and @MCPEDIT
+~
+~
+@MCPEDIT
+@MCPEDIT <program>
+
+  Searches for a program and if a match is found, pops up an editor window
+if the client supports the MCP edit package, otherwise puts the player into
+text edit mode.  Programs must be created with @PROGRAM or @MCPPROGRAM.
+Also see: @EDIT, @PROGRAM and @MCPPROGRAM
+~
+~
+@MCPPROGRAM
+@MCPPROGRAM <program> [=<regname>]
+
+  Create a new program, or enter edit mode on an existing one.  If a <regname>
+is specified, a new program is always created.  If the client supports the MCP
+edit package, an editor window will appear instead of using the text edit mode.
+Also see: @EDIT, @PROGRAM and @MCPEDIT
+~
+~
+~
+~
+~
+~----------------------------------------------------------------------------
+~
+~
+Wizardly Commands|WizCmds
+Wizardly Commands
+
+@armageddon        @bless             @boot              @credits
+@debug             @dump              @examine           @force
+@hashes            @memory            @mpitops           @muftops
+@newpassword       @pcreate           @reconfiguressl    @restart
+@restrict          @sanchange         @sanfix            @sanity
+@shutdown          @toad              @tops              @tune
+@unbless           @uncompile         @usage             @version
+@wall              
+
+~----------------------------------------------------------------------------
+~
+~
+~
+~
+@PCREATE
+@PCREATE <player>=<password>
+
+  Only wizards can use this command. This command creates a new player.
+It may only be used if REGISTRATION is enabled.
+~
+~
+@NEWPASSWORD
+@NEWPASSWORD <player> [=<password>]
+
+  Only wizards may use this command.  Changes <player>'s password,
+informing <player> that you changed it. Must be typed in full. If
+GOD_PRIV was defined, nobody can change god's password.
+~
+~
+@FORCE
+@FORCE <player|thing>=<command>
+
+  Causes the game to process <command> as if it were typed by <player|thing>.
+If the player or thing being forced is set Xforcible, and its @flock force
+lock is set, then anyone (or any zombie) that passed that lock can use @force
+on them.  Otherwise only a wizard can use @flock on them.
+
+  With the compile option GOD_PRIV, God cannot be forced by anything except
+God owned, wizbit programs.
+~
+~
+@BOOT
+@BOOT <player>
+
+  Disconnects a player from the game.  If a player is connected more than
+once it affects the most recent connection. Only a wizard may use this
+command.
+~
+~
+@TOAD
+@TOAD <player1> = <player2>
+
+  Only wizards may use this command.  Turns <player1> into a slimy toad,
+destroying their character.  All possessions of <player1> are @chowned to
+<player2>.  Must be typed in full.
+~
+~
+@BLESS
+@BLESS <obj>=<proppattern>
+  
+  This is a wizard-only command.
+  
+  Blesses all properties on <obj> that match the given <proppattern> wildcard
+pattern.  The wildcard pattern works similarly to how the examine patterns
+work.  ie:
+
+  @bless obj=/**      blesses ALL properties on obj.
+  @bless obj=foo/**   blesses all props in the foo/ propdir, and all propdirs
+                       under the foo/ propdir, recursively.
+  @bless obj=foo*bar  blesses all root props whose name start with foo and end
+                       with bar.
+
+ The @bless command will list all properties that it blesses.
+
+  Blessed properties can execute MPI code with elevated permissions, allowing
+scripts that can alter remote objects, and those objects not controlled by
+the trigger owner.  Blessed MPI can also use {force} on anyone.
+
+  Blessed _msgmacs properties don't execute with blessed permissions when they
+are referenced from other MPI code.  Instead, the bless bit on _msgmacs props
+indicates only that that macro is available to scripts up the environment,
+even if the script's trigger is not the same as the owner of the environment
+room the _msgmacs prop is on.
+~
+~
+@UNBLESS
+@UNBLESS <obj>=<proppattern>
+  
+  This is a wizard-only command.
+  
+  Unblesses all properties on <obj> that match the given <proppattern>
+wildcard pattern.  The wildcard pattern works similarly to how the examine
+patterns work.  Ie:
+
+  @unbless obj=/**      unblesses ALL properties on obj.
+  @unbless obj=foo/**   unblesses all props in the foo/ propdir, and all
+                         propdirs under the foo/ propdir, recursively.
+  @unbless obj=foo*bar  unblesses all root props whose name start with foo
+                         and end with bar.
+
+  The @unbless command will list all properties that it unblesses.
+
+  Blessed properties can execute MPI code with elevated permissions, allowing
+scripts that can alter remote objects, and those objects not controlled by
+the trigger owner.  Blessed MPI can also use {force} on anyone.
+
+  Blessed _msgmacs properties don't execute with blessed permissions when they
+are referenced from other MPI code.  Instead, the bless bit on _msgmacs props
+indicates only that that macro is available to scripts up the environment,
+even if the script's trigger is not the same as the owner of the environment
+room the _msgmacs prop is on.
+~
+~
+@WALL
+@WALL <message>
+
+  Only wizards may use this command. Shouts something to every
+player connected. Must be typed in full.
+~
+~
+@DUMP
+@DUMP [filename]
+
+  Only wizards may use this command. Saves the database from memory to disk.
+Automatically occurs every three hours, and when @shutdown is used. It does
+slow down the server, so only use if you fear a server crash is iminent.
+If a filename is given, it will save the db to that file, and save any
+subsequent dumps to it as well.
+~
+~
+@SHUTDOWN
+@SHUTDOWN
+
+  Shuts down the game.  Only wizards may use this command, and it
+must be typed in full.
+Also see: @RESTART and @ARMAGEDDON
+~
+~
+@RESTART
+@RESTART
+
+  Initiate a full shutdown and restart of the Muck server.  Only
+wizards may use this command.
+Also see: @SHUTDOWN and @ARMAGEDDON
+~
+~
+@ARMAGEDDON
+@ARMAGEDDON [<reason>]
+
+  Initiates an immediate emergency shutdown of the Muck server, and does
+NOT save the database out to disk.  Use this ONLY when you suspect the
+database has been corrupted, and it would be a BAD thing to save the
+database out to disk.  This is a wizard-only command.
+
+  Examples:
+    @armageddon                  force shutdown server
+    @armageddon World ending!    force shutdown with given reason
+Also see: @SHUTDOWN and @RESTART
+~
+~
+@RESTRICT
+@RESTRICT [on|off]
+
+  Manages restriction of logins, turning on or off maintenance wiz-only login
+mode.  With no args, @restrict will print out the current login restriction
+state.  With an argument of 'on', maintenance mode is turned on, and only
+wizards can log in.  With an argument of 'off', restricted login mode is turned
+off, and all players can log in.  NOTE: when the muck starts up in sanfix mode,
+with a corrupted database, it will be with @restricted logins.
+~
+~
+@UNCOMPILE
+@UNCOMPILE
+
+  Uncompiles all programs, removing them from memory.
+~
+~
+@RECONFIGURESSL
+@RECONFIGURESSL
+
+  Only wizards may use this command.  Attempt to reread SSL certificate files
+and reset SSL options from @tune settings.  If it fails (for example,
+the new certificate file is not usable), old settings will persist. Must be
+typed in full.
+~
+~
+@TUNE
+@TUNE
+@TUNE info
+@TUNE <param> [=<value>]
+@TUNE %<param>
+@TUNE info <param>
+@TUNE save
+@TUNE load
+
+  View and modify tunable parameters that configure how the server operates,
+provide help on a parameter, or load and save parameters independent of the
+database.
+
+  This is a wizard-only command.
+
+  Examples:
+    @tune              shows all parameters and their values
+    @tune info         shows all parameters, values, and brief descriptions
+    @tune foo          shows the value of foo
+    @tune foo=bar      sets the value of foo to bar
+    @tune %foo         resets foo to the default system value
+    @tune info foo     briefly describes foo
+    @tune save         save all parameters to configuration file
+    @tune load         load all parameters from configuration file
+
+  Some parameters may require a @RESTART or reload to apply.
+~
+~
+@CREDITS
+@CREDITS
+
+  Show a bit about those who contributed to the development of the
+muck server software, giving credit where credit is due.
+Also see: @HASHES and @VERSION
+~
+~
+@HASHES
+@HASHES [all|git|sha1]
+
+  Show hashes calculated for source files at compile time.  Git
+hashes are only available if Git was installed during compilation.
+
+  Examples:
+    @hashes all      show all available hashes
+    @hashes git      show only the Git hash (if available)
+    @hashes sha1     show only the SHA1 hash
+Also see: @CREDITS and @VERSION
+~
+~
+@VERSION
+@VERSION
+
+  Show the version information, build time, and compile options used.
+Also see: @CREDITS and @HASHES
+~
+~
+@DEBUG
+@DEBUG
+
+  Wizard only command that gives database usage stats for
+'diskbase'-style databases.  Only available if compiled with DISKBASE.
+More options will be added in the future.
+
+  Examples:
+    @debug display propcache    display database property cache
+Also see: @MEMORY, @MPITOPS, @MUFTOPS, @TOPS and @USAGE
+~
+~
+@TOPS
+@TOPS
+@TOPS <count>
+@TOPS reset
+
+  Show process usage and runtime statistics for both MUF and MPI
+programs.  Count controls the maximum rows of results shown.  If left
+blank, it uses the default of '10'.
+
+  This is a wizard-only command.
+
+  Examples:
+    @tops              show default amount of profiling statistics
+    @tops 5            show 5 rows of profiling statistics
+    @tops reset        reset all collected profiling statistics
+Also see: @DEBUG, @MEMORY, @MPITOPS, @MUFTOPS and @USAGE
+~
+~
+@MEMORY
+@MEMORY
+
+  Wizard only command that gives detailed memory stats for the muck
+server process.  If HAVE_MALLINFO is used, this command shows more
+information.
+Also see: @DEBUG, @MPITOPS, @MUFTOPS, @TOPS and @USAGE
+~
+~
+@MPITOPS
+@MPITOPS
+@MPITOPS <count>
+@MPITOPS reset
+
+  Show process usage and runtime statistics only for MPI programs.
+Count controls the maximum rows of results shown.  If left blank, it
+uses the default of '10'.
+
+  This is a wizard-only command.
+
+  Examples:
+    @mpitops           show default amount of profiling statistics
+    @mpitops 5         show 5 rows of profiling statistics
+    @mpitops reset     reset collected MPI profiling statistics
+Also see: @DEBUG, @MEMORY, @MUFTOPS, @TOPS and @USAGE
+~
+~
+@MUFTOPS
+@MUFTOPS
+@MUFTOPS <count>
+@MUFTOPS reset
+
+  Show process usage and runtime statistics only for MUF programs.
+Count controls the maximum rows of results shown.  If left blank, it
+uses the default of '10'.
+
+  This is a wizard-only command.
+
+  Examples:
+    @muftops           show default amount of profiling statistics
+    @muftops 5         show 5 rows of profiling statistics
+    @muftops reset     reset collected MUF profiling statistics
+Also see: @DEBUG, @MEMORY, @MPITOPS, @TOPS and @USAGE
+~
+~
+@USAGE
+@USAGE
+
+  Wizard only command that gives system resource usage stats for the
+muck server process.
+Also see: @DEBUG, @MEMORY, @MPITOPS, @MUFTOPS and @TOPS
+~
+~
+@EXAMINE
+@EXAMINE <object>
+
+  Print detailed information on the given object, including owner,
+location, home, referring objects, and more.  The information printed
+depends on what type the object is, e.g. thing, room, player, exit.
+  Only player #1 can examine if GOD_PRIV is used, otherwise, only
+Wizards may use this command.
+
+  Examples:
+    @examine           examine the current room
+    @examine #1        examine database object #1
+~
+~
+@SANITY
+@SANITY
+
+  Scan the entire database, verifying that all objects have valid data,
+such as names, exits, ownerships, and check for orphan objects.  Shows
+all problems, but does not make any changes.  Only player #1 can manage
+sanity if GOD_PRIV is used, otherwise, only Wizards may do so.
+Also see: @SANCHANGE and @SANFIX
+~
+~
+@SANCHANGE
+@SANCHANGE <dbref> <field> <object>
+
+  Manually change the field of an entry in the database, primarily to
+help with repairing a broken database.  Use with caution.  Only player
+#1 can manage sanity if GOD_PRIV is used, otherwise, only Wizards may
+do so.
+
+  Fields are:
+    exits              start of Exits list
+	contents           start of Contents list
+	next               next object in list
+	location           object's Location
+	home               object's Home
+	owner              object's Owner
+Also see: @SANITY and @SANFIX
+~
+~
+@SANFIX
+@SANFIX
+
+  As with @sanity, scan the entire database and verify all is sane,
+but also attempt to fix any problems found.  If sanity can not be
+restored, you may need to manually repair the database with other
+commands.  Only player #1 can manage sanity if GOD_PRIV is used,
+otherwise, only Wizards may do so.
+Also see: @SANITY and @SANCHANGE
+~
+~
+~
+~
+~
+~----------------------------------------------------------------------------
+~
+~
+Miscellaneous|MiscHelp
+Miscellaneous
+
+cheatsheet   costs        
+
+~----------------------------------------------------------------------------
+~
+~
+~
+~
+CHEATSHEET
+Muck Basics Cheatsheet:
+
+This is Fuzzball Muck, a user-extendible, multi-user chat system.
+
+Basic commands:
+  move/go <direction>
+  get/take <thing>; drop/throw <thing>
+  look; look <thing>; look <direction>
+  say <message>; "<message>
+  :<message> --- shows your name, with the message after it.  Used for actions.
+  whisper <player> = <message>
+  inventory
+  news
+  @describe me = <description>
+  @password <oldpassword>=<newpassword>
+  page <player> --- tell player that you are looking for them (cost no pennies)
+  page <player> = <message> --- gives the player the message long-distance
+  gripe <message> --- Complain to the management.
+  home --- go home
+
+For help on a specific command, type 'help <subject>'.
+For a list of subjects, try 'help category', or 'help alpha'.
+Remember, no matter how bad it gets, you can always go 'home' or QUIT.
+~
+~
+COSTS
+Costs:
+
+  Kill: 10p (or more, up to 100p).
+  @dig: 10p
+  @create: 10p (or more, up to 505p)
+    sacrifice value=(cost-5)/5
+  @find, @owned: 100p.
+  @link: 1p (if you didn't already own it, +1p to the previous owner).
+  @open: 1p (2p if linked at the same time).
+  
+Wizards don't need money to do anything.
+~
+~
