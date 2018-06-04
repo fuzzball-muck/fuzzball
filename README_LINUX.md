@@ -4,7 +4,7 @@ Building and Running Fuzzball on Linux
 
 ## Building
 Tools needed:
-* Make, a C compiler, [PCRE library](http://pcre.org/), and friends
+* Make, a C compiler, [PCRE library](https://pcre.org/), and friends
 * Optionally, an SSL library, e.g. [OpenSSL](https://openssl.org/)
 * Optionally, the Git revision control system
 
