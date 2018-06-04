@@ -2523,9 +2523,9 @@ series of comma separated attribute names.
 
 These are the attributes currently recognized:
 ~~code
-    reset    bold   dim       uline    flash   reverse
-    black    red    yellow    green    cyan    blue    magenta    white
-    bg_black bg_red bg_yellow bg_green bg_cyan bg_blue bg_magenta bg_white
+    reset bold dim italic uline flash reverse overstrike
+    black red green yellow blue magenta cyan white
+    bg_black bg_red bg_green bg_yellow bg_blue bg_magenta bg_cyan bg_white
 ~~endcode
 ~
 ~
