@@ -14,6 +14,7 @@ all:	Makefile
 	done
 
 install:	Makefile
+	make help
 	for d in ${subdirs}; do \
 		cd $${d} && ${MAKE} install; \
 	done
@@ -51,21 +52,35 @@ cert game/server.pem:
 
 clean:
 	if [ -d ${HTML_DOCS_DIR} ]; then ${RM} -r ${HTML_DOCS_DIR}; fi
+	if [ -f game/data/help.txt ]; then ${RM} game/data/help.txt; fi
+	if [ -f game/data/man.txt ]; then ${RM} game/data/man.txt; fi
+	if [ -f game/data/mpihelp.txt ]; then ${RM} game/data/mpihelp.txt; fi
+
 	for d in ${subdirs}; do \
 		cd $${d} && ${MAKE} clean; \
 	done
 
 cleaner:
+	if [ -d ${HTML_DOCS_DIR} ]; then ${RM} -r ${HTML_DOCS_DIR}; fi
+	if [ -f game/data/help.txt ]; then ${RM} game/data/help.txt; fi
+	if [ -f game/data/man.txt ]; then ${RM} game/data/man.txt; fi
+	if [ -f game/data/mpihelp.txt ]; then ${RM} game/data/mpihelp.txt; fi
+
 	${RM} Makefile config.status config.cache config.log game/restart
 	for d in ${subdirs}; do \
 		cd $${d} && ${MAKE} cleaner; \
 	done
 
 nuke:
+	if [ -d ${HTML_DOCS_DIR} ]; then ${RM} -r ${HTML_DOCS_DIR}; fi
+	if [ -f game/data/help.txt ]; then ${RM} game/data/help.txt; fi
+	if [ -f game/data/man.txt ]; then ${RM} game/data/man.txt; fi
+	if [ -f game/data/mpihelp.txt ]; then ${RM} game/data/mpihelp.txt; fi
+
+	${RM} Makefile config.status config.cache config.log game/restart
 	for d in ${subdirs}; do \
 		cd $${d} && ${MAKE} nuke; \
 	done
-	${RM} Makefile config.status config.cache config.log game/restart
 
 Makefile: Makefile.in
 	./config.status Makefile
