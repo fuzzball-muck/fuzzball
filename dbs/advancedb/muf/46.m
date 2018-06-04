@@ -32,7 +32,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
  
 For a copy of the GPL:
-     a> see: http://www.gnu.org/copyleft/gpl.html
+     a> see: https://www.gnu.org/copyleft/gpl.html
      b> write to: the Free Software Foundation, Inc., 
          59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
 )
