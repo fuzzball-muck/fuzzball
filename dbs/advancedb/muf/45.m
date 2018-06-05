@@ -2,10 +2,10 @@ $include $lib/gui
 $def tell descrcon swap connotify
 $def }join } array_make "" array_join
  
-$def URL1 "http://www.belfry.com/pics/revhead.gif"
-$def URL2 "http://www.belfry.com/pics/foxen.gif"
-$def URL3 "http://www.belfry.com/pics/revar_sm.gif"
-$def URL4 "http://www.belfry.com/pics/belfry.jpg"
+$def URL1 "https://www.belfry.com/pics/revhead.gif"
+$def URL2 "https://www.belfry.com/pics/foxen.gif"
+$def URL3 "https://www.belfry.com/pics/revar_sm.gif"
+$def URL4 "https://www.belfry.com/pics/belfry.jpg"
   
 : generic_handler[ dict:context str:dlogid str:ctrlid str:event -- int:exit ]
     dlogid @ GUI_VALUES_GET var! vals
