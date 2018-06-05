@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "config.h"
 #include "db.h"
 #include "tune.h"
 #include "tunelist.h"
@@ -531,13 +532,16 @@ process_lines(FILE * infile, FILE * outfile, FILE * htmlfile, int cols)
     int codeblock = 0;
     char *ptr;
     char *ptr2;
+    char temp[BUFFER_LEN];
 
     docsfile = stdout;
     escape_html(buf, sizeof(buf), title);
     escape_html(buf2, sizeof(buf2), author);
     fprintf(htmlfile, HTML_PAGE_HEAD, buf, buf, buf2);
 
-    fprintf(outfile, "%*s%s\n", (int) (36 - (strlen(title) / 2)), "", title);
+    snprintf(temp, sizeof(temp), "%s for %s", title, VERSION);
+
+    fprintf(outfile, "%*s%s\n", (int) (36 - (strlen(temp) / 2)), "", temp);
     fprintf(outfile, "%*sby %s\n\n", (int) (36 - ((strlen(author) + 3) / 2)), "", author);
     fprintf(outfile,
 	    "You may get a listing of topics that you can get help on, either sorted\n");
