@@ -68,7 +68,7 @@ $def }tell }list { me @ }list array_notify
         "URLs have the following format:   type://machine.name/path/file"
         "If I wanted to show that people can find an image of Revar on"
         "www.belfry.com, via the web, I'd just do:"
-        "    @image Revar=http://www.belfry.com/pics/revar-cw3.jpg"
+        "    @image Revar=https://www.belfry.com/pics/revar-cw3.jpg"
         "  "
         "Those of you who have used the web should find URLs familiar."
         }tell
@@ -140,10 +140,11 @@ $def }tell }list { me @ }list array_notify
         newurl @ "://" split strip swap strip
         dup "file" stringcmp
         over "http" stringcmp and
+        over "https" stringcmp and
         over "ftp" stringcmp and if
             pop pop
-            "Unknown URL service type.  The acceptable types are ftp, http, and file." .tell
-            "Example:  http://www.furry.com/pics/revar-cw3.jpg" .tell
+            "Unknown URL service type.  The acceptable types are ftp, http, https, and file." .tell
+            "Example: https://belfry.com/pics/revar-cw3.jpg" .tell
             exit
         then
         "://" strcat swap
