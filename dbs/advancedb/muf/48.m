@@ -144,7 +144,7 @@ $def }tell }list { me @ }list array_notify
         over "ftp" stringcmp and if
             pop pop
             "Unknown URL service type.  The acceptable types are ftp, http, https, and file." .tell
-            "Example: https://belfry.com/pics/revar-cw3.jpg" .tell
+            "Example: https://www.belfry.com/pics/revar-cw3.jpg" .tell
             exit
         then
         "://" strcat swap
