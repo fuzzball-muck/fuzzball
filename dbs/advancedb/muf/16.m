@@ -748,7 +748,7 @@ $def DEFAULT_CAPTION "Edit the following data and click on 'Done' or 'Apply' to 
                     "value" item @ "name" []
                 }CTRL
                 {IMAGE cnt @ "helpbtn_%03i" fmtstring
-                    "value"   "http://www.belfry.com/pics/info.gif"
+                    "value"   "https://www.belfry.com/pics/info.gif"
                     "width"   9
                     "height"  9
                     "sticky"  "w"
