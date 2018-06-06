@@ -13,38 +13,38 @@
 
 #define HRULE_TEXT "----------------------------------------------------------------------------"
 
-#define HTML_PAGE_HEAD     	"<html><head><title>%s</title></head>\n<body><div align=\"center\"><h1>%s</h1>\n<h3>by %s</h3></div>\n<ul><li><a href=\"#AlphaList\">Alphabetical List of Topics</a></li>\n<li><a href=\"#SectList\">List of Topics by Category</a></li></ul>\n"
-#define HTML_PAGE_FOOT     	"</body></html>\n"
+#define HTML_PAGE_HEAD     	"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">\n<html lang=\"en\">\n<head>\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\n<meta name=\"generator\" content=\"prochelp\">\n<title>%s</title>\n</head>\n<body>\n<h1>%s</h1>\n<address>by %s</address>\n<ul>\n<li><a href=\"#AlphaList\">Alphabetical List of Topics</a></li>\n<li><a href=\"#SectList\">List of Topics by Category</a></li>\n</ul>\n"
+#define HTML_PAGE_FOOT     	"</body>\n</html>\n"
 
-#define HTML_SECTION     	"<p><hr size=6>\n<h3><a name=\"%s\">%s</a></h3>\n"
-#define HTML_SECTLIST_HEAD  "<p><hr size=\"6\"><h3><a name=\"SectList\">List of Topics by Category</a></h3>\n<h4>You can get more help on the following topics:</h4>\n<ul>"
+#define HTML_SECTION     	"<h2 id=\"%s\">%s</h2>\n"
+#define HTML_SECTLIST_HEAD  "<h2 id=\"SectList\">List of Topics by Category</h2>\n<p>You can get more help on the following topics:</p>\n<ul>\n"
 #define HTML_SECTLIST_ENTRY "  <li><a href=\"#%s\">%s</a></li>\n"
 #define HTML_SECTLIST_FOOT  "</ul>\n\n"
 
-#define HTML_SECTIDX_BEGIN	"<blockquote><table border=0>\n  <tr>\n"
-#define HTML_SECTIDX_ENTRY	"    <td width=\"%d%%\"> &nbsp; <a href=\"#%s\">%s</a> &nbsp; </td>\n"
-#define HTML_SECTIDX_NEWROW	"  </tr>\n  <tr>\n"
-#define HTML_SECTIDX_END	"  </tr>\n</table></blockquote>\n\n"
+#define HTML_SECTIDX_BEGIN	"<ul>\n"
+#define HTML_SECTIDX_ENTRY	"    <li><a href=\"#%s\">%s</a></li>\n"
+#define HTML_SECTIDX_NEWROW	"<!-- HTML_SECTIDX_NEWROW -->\n"
+#define HTML_SECTIDX_END	"</ul>\n\n"
 
-#define HTML_INDEX_BEGIN	"<p><hr size=\"6\"><h3><a name=\"AlphaList\">Alphabetical List of Topics</a></h3>\n"
-#define HTML_IDXGROUP_BEGIN	"<h4>%s</h4><blockquote><table border=0>\n  <tr>\n"
-#define HTML_IDXGROUP_ENTRY	"    <td nowrap> &nbsp; <a href=\"#%s\">%s</a> &nbsp; </td>\n"
-#define HTML_IDXGROUP_NEWROW	"  </tr>\n  <tr>\n"
-#define HTML_IDXGROUP_END		"  </tr>\n</table></blockquote>\n\n"
+#define HTML_INDEX_BEGIN	"<h2 id=\"AlphaList\">Alphabetical List of Topics</h2>\n"
+#define HTML_IDXGROUP_BEGIN	"<h3>%s</h3>\n<ul>\n"
+#define HTML_IDXGROUP_ENTRY	"    <li><a href=\"#%s\">%s</a></li>\n"
+#define HTML_IDXGROUP_NEWROW	"<!-- HTML_IDXGROUP_NEWROW -->\n"
+#define HTML_IDXGROUP_END		"</ul>\n\n"
 #define HTML_INDEX_END		""
 
-#define HTML_TOPICHEAD		"<hr><h4><a name=\"%s\">"
+#define HTML_TOPICHEAD		"<h3 id=\"%s\">"
 #define HTML_TOPICHEAD_BREAK	"<br>\n"
-#define HTML_TOPICBODY		"</a></h4>\n"
-#define HTML_TOPICEND		"<p>\n"
+#define HTML_TOPICBODY		"</h3>\n"
+#define HTML_TOPICEND		"<!-- HTML_TOPICEND -->\n"
 #define HTML_PARAGRAPH		"<p>\n"
 
 #define HTML_CODEBEGIN		"<pre>\n"
 #define HTML_CODEEND		"</pre>\n"
 
-#define HTML_ALSOSEE_BEGIN      "<p><h5>Also see:\n"
+#define HTML_ALSOSEE_BEGIN      "<p>Also see:\n"
 #define HTML_ALSOSEE_ENTRY      "    <a href=\"#%s\">%s</a>"
-#define HTML_ALSOSEE_END        "\n</h5>\n"
+#define HTML_ALSOSEE_END        "\n</p>\n"
 
 // Token Replacement System
 // - replaces entire line with call to function
@@ -285,7 +285,7 @@ print_section_topics(FILE * f, FILE * hf, const char *whichsect)
 			hcol = 1;
 		    }
 		    escape_html(buf3, sizeof(buf3), ptr->topic);
-		    fprintf(hf, HTML_SECTIDX_ENTRY, (100 / cols), buf3, buf3);
+		    fprintf(hf, HTML_SECTIDX_ENTRY, buf3, buf3);
 		    if (cnt == cols) {
 			snprintf(buf2, sizeof(buf2), "%-.*s", width - 1, ptr->topic);
 		    } else {
