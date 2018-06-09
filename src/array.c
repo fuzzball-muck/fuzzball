@@ -12,6 +12,107 @@ stk_array_list *stk_array_active_list;
 
 static int array_tree_compare(array_iter * a, array_iter * b, int case_sens);
 
+typedef struct visited_set_bucket_t {
+    stk_array *value;
+    struct visited_set_bucket_t *next;
+} visited_set_bucket;
+
+typedef struct visited_set_t {
+    visited_set_bucket* buckets;
+    int num_buckets;
+    int num_elements;
+} visited_set;
+
+static unsigned int visited_set_hash(stk_array *value) {
+    return (unsigned long)value / 8;
+}
+
+static int visited_set_add_and_return_if_added(visited_set *set, stk_array *value);
+
+static void visited_set_empty(visited_set *set) {
+    set->buckets = 0;
+    set->num_buckets = 0;
+    set->num_elements = 0;
+}
+
+static void visited_set_rehash(visited_set *set, int new_size) {
+    visited_set new_set;
+    visited_set_empty(&new_set);
+    new_set.num_buckets = new_size;
+    for (int i = 0; i < set->num_buckets; ++i) {
+        visited_set_bucket *bucket = &set->buckets[i];
+        if (bucket->value) {
+            visited_set_add_and_return_if_added(&new_set, bucket->value);
+        }
+        if (bucket->next) {
+            int is_first = 1;
+            do {
+                visited_set_bucket *next_bucket = bucket->next;
+                if (!is_first)
+                    free(bucket);
+                is_first = 0;
+                bucket = next_bucket;
+                (void) visited_set_add_and_return_if_added(&new_set, bucket->value);
+            } while (bucket->next);
+            free(bucket);
+        }
+    }
+    *set = new_set;
+}
+
+static int visited_set_add_and_return_if_added(visited_set* set, stk_array *value) {
+    int was_found = 0;
+    visited_set_bucket *bucket;
+    if (!set->buckets) {
+        set->num_buckets = 15;
+        set->num_elements = 0;
+        set->buckets = calloc(set->num_buckets, sizeof(*set->buckets));
+        if (!set->buckets) {
+            perror("check_and_add_to_visited: out of memory!");
+            abort();
+        }
+    }
+    bucket = &set->buckets[visited_set_hash(value) % set->num_buckets];
+    while (bucket->value != value && bucket->next) {
+        bucket = bucket->next;
+    }
+    if (bucket->value == value) {
+        return 0;
+    } else {
+        bucket->next = malloc(sizeof(visited_set_bucket));
+        if (!bucket->next) {
+            perror("check_and_add_to_visited: out of memory!");
+            abort();
+        }
+        bucket->next->value = value;
+        bucket->next->next = NULL;
+        if (++set->num_elements > set->num_buckets * 3 / 4) {
+            visited_set_rehash(set, set->num_buckets * 2 + 1);
+        }
+        return 1;
+    }
+}
+
+static void visited_set_free(visited_set* set) {
+    for (int i = 0; i < set->num_buckets; ++i) {
+        visited_set_bucket *bucket = &set->buckets[i];
+        if (bucket->next) {
+            int is_first = 1;
+            do {
+                visited_set_bucket *next_bucket = bucket->next;
+                if (!is_first)
+                    free(bucket);
+                bucket = next_bucket;
+            } while (bucket->next);
+            free(bucket);
+        }
+    }
+    free(set->buckets);
+}
+
+static int
+array_tree_compare_internal(array_iter * a, array_iter * b, int case_sens, visited_set *visited_a, visited_set *visited_b);
+
 /*
 ** This function compares two arrays in struct insts (array_iter's).
 ** The arrays are compared in order until the first difference.
@@ -20,7 +121,7 @@ static int array_tree_compare(array_iter * a, array_iter * b, int case_sens);
 ** Comparison of keys and values is done by array_tree_compare().
 */
 static int
-array_tree_compare_arrays(array_iter * a, array_iter * b, int case_sens)
+array_tree_compare_arrays(array_iter * a, array_iter * b, int case_sens, visited_set *visited_a, visited_set *visited_b)
 {
     int more1, more2, res;
     array_iter idx1;
@@ -32,11 +133,20 @@ array_tree_compare_arrays(array_iter * a, array_iter * b, int case_sens)
     assert(b != NULL);
 
     if (a->type != PROG_ARRAY || b->type != PROG_ARRAY) {
-	return array_tree_compare(a, b, case_sens);
+	return array_tree_compare_internal(a, b, case_sens, visited_a, visited_b);
     }
 
     if (a->data.array == b->data.array) {
 	return 0;
+    }
+
+    if (!visited_set_add_and_return_if_added(visited_a, a->data.array) ||
+        !visited_set_add_and_return_if_added(visited_b, b->data.array)) {
+        if (a->data.array > b->data.array) {
+            return 1;
+        } else {
+            return -1;
+        }
     }
 
     more1 = array_first(a->data.array, &idx1);
@@ -45,11 +155,11 @@ array_tree_compare_arrays(array_iter * a, array_iter * b, int case_sens)
 	if (more1 && more2) {
 	    val1 = array_getitem(a->data.array, &idx1);
 	    val2 = array_getitem(b->data.array, &idx2);
-	    res = array_tree_compare(&idx1, &idx2, case_sens);
+	    res = array_tree_compare_internal(&idx1, &idx2, case_sens, visited_a, visited_b);
 	    if (res != 0) {
 		return res;
 	    }
-	    res = array_tree_compare(val1, val2, case_sens);
+	    res = array_tree_compare_internal(val1, val2, case_sens, visited_a, visited_b);
 	    if (res != 0) {
 		return res;
 	    }
@@ -74,7 +184,18 @@ array_tree_compare_arrays(array_iter * a, array_iter * b, int case_sens)
 ** Returns -1 is a < b.  Returns 1 is a > b.  Returns 0 if a == b.
 */
 static int
-array_tree_compare(array_iter * a, array_iter * b, int case_sens)
+array_tree_compare(array_iter * a, array_iter * b, int case_sens) {
+    visited_set visited_a, visited_b;
+    visited_set_empty(&visited_a);
+    visited_set_empty(&visited_b);
+    int result = array_tree_compare_internal(a, b, case_sens, &visited_a, &visited_b);
+    visited_set_free(&visited_a);
+    visited_set_free(&visited_b);
+    return result;
+}
+
+static int
+array_tree_compare_internal(array_iter * a, array_iter * b, int case_sens, visited_set *visited_a, visited_set *visited_b)
 {
     assert(a != NULL);
     assert(b != NULL);
@@ -120,7 +241,7 @@ array_tree_compare(array_iter * a, array_iter * b, int case_sens)
 	    return strcasecmp(astr, bstr);
 	}
     } else if (a->type == PROG_ARRAY) {
-	return array_tree_compare_arrays(a, b, case_sens);
+	return array_tree_compare_arrays(a, b, case_sens, visited_a, visited_b);
     } else if (a->type == PROG_LOCK) {
 	/*
 	 * In a perfect world, we'd compare the locks by element,
