@@ -51,7 +51,7 @@
     it lets you add regular objects to it.
 )
  
-$doccmd @list __PROG__=1-52@
+$doccmd @list __PROG__=!@1-52
  
 $include $lib/look
 $include $lib/match

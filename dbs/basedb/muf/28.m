@@ -10,8 +10,8 @@
 (          from changing @wizard or ~restricted props -- Jessy 7/00  )
 (                                                                    )
  
-$author Tygryss
 $doccmd @list __PROG__=!@1-12
+$author Tygryss
 $version 1.02
  
 : checkperms ( s --  )

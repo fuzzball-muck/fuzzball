@@ -37,7 +37,7 @@ EDITORheader takes and returns no arguments, but prints out a standard
   message about you entering the editor.  EDITOR calls this automatically.
 )
  
-$doccmd @list $lib/editor=1-50
+$doccmd @list __PROG__=!@1-38
  
 $include $lib/edit
 $include $lib/stackrng

@@ -50,7 +50,7 @@ Message data type:
   Base#/i       Info String
 )
  
-$doccmd @list __PROG__=!@1-50
+$doccmd @list __PROG__=!@1-51
  
 ( $def the following if your muck uses the new style propdirized lists )
 ( ie:  listname#/1:line one    listename#/2:line two    etc. )

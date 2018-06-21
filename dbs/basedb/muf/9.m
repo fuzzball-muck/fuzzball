@@ -107,8 +107,8 @@
       previous to it in the index.
 )
  
-$author ErmaFelna
 $doccmd @list __PROG__=!@1-108
+$author ErmaFelna
 $lib-version 1.2
  
 $include $lib/match
