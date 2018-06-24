@@ -122,18 +122,6 @@ extern char match_cmdname[BUFFER_LEN];
 #define YIELD	     0x40000000	/* Yield flag */
 #define OVERT        0x80000000	/* Overt flag */
 
-#define ABATE		ABODE
-#define AUTOSTART	ABODE
-#define BOUND		BUILDER
-#define COLOR		CHOWN_OK
-#define HARDUID		HAVEN
-#define HIDE		HAVEN
-#define SETUID		STICKY
-#define SILENT		STICKY
-#define VIEWABLE	VEHICLE
-#define XPRESS		XFORCIBLE
-#define ZMUF_DEBUGGER	ZOMBIE
-
 /* what flags to NOT dump to disk. */
 #define DUMP_MASK    (INTERACTIVE | OBJECT_CHANGED | LISTENER | READMODE | SANEBIT)
 
