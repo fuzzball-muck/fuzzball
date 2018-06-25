@@ -1722,6 +1722,19 @@ The program must be running at a mucker level at least equal to the @tune
 value 'userlog_mlev' (defaults to 3) to write this log entry.
 ~
 ~
+TELL
+TELL ( s -- )
+
+  Displays the message s to the player, triggering applicable listeners.
+~
+~
+OTELL
+OTELL ( s -- )
+
+  Displays the message s to all occupants of the player's location, except
+the player.  This primitive triggers applicable listeners.
+~
+~
 ~
 ~~section Mathematical Operators|MathOps
 ~

@@ -179,7 +179,8 @@ N's
 
 O's
   objmem         odrop          ofail          ok?            online
-  online_array   or             osucc          over           owner
+  online_array   or             osucc          otell          over
+  owner          
 
 P's
   parselock          parsempi           parsempiblessed    parseprop
@@ -220,10 +221,10 @@ S's
   sysparm            sysparm_array      systime            systime_precise
 
 T's
-  tan          testlock     textattr     then         thing?       time
-  timefmt      timer_start  timer_stop   timesplit    timestamps   toadplayer
-  tokensplit   tolower      toupper      tread        trig         trigger
-  truename     try          tuck         
+  tan          tell         testlock     textattr     then         thing?
+  time         timefmt      timer_start  timer_stop   timesplit    timestamps
+  toadplayer   tokensplit   tolower      toupper      tread        trig
+  trigger      truename     try          tuck         
 
 U's
   unblessprop  uncompile    unparselock  unparseobj   until        userlog
@@ -1853,9 +1854,9 @@ I/O Operators|IOOps
 I/O Operators
 
 notify                    notify_except             notify_exclude
-notify_nolisten           notify_secure             read
-read_wants_blanks         read_wants_no_blanks      tread
-userlog                   
+notify_nolisten           notify_secure             otell
+read                      read_wants_blanks         read_wants_no_blanks
+tell                      tread                     userlog
 
 ~----------------------------------------------------------------------------
 ~
@@ -1956,6 +1957,19 @@ formatted like:
 Winged(#4023) [newaction.muf(#666)] 06/11/02 03:09:31: <string>
 The program must be running at a mucker level at least equal to the @tune
 value 'userlog_mlev' (defaults to 3) to write this log entry.
+~
+~
+TELL
+TELL ( s -- )
+
+  Displays the message s to the player, triggering applicable listeners.
+~
+~
+OTELL
+OTELL ( s -- )
+
+  Displays the message s to all occupants of the player's location, except
+the player.  This primitive triggers applicable listeners.
 ~
 ~
 ~

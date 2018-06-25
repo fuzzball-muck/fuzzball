@@ -1477,6 +1477,25 @@ prim_notify(PRIM_PROTOTYPE)
 }
 
 void
+prim_tell(PRIM_PROTOTYPE)
+{
+    struct inst *oper1 = NULL;	/* prevents re-entrancy issues! */
+
+    CHECKOP(1);
+    oper1 = POP();
+
+    if (oper1->type != PROG_STRING)
+	abort_interp("Non-string argument (1)");
+
+    if (oper1->data.string) {
+	notify_listeners(player, program, player, LOCATION(player),
+		oper1->data.string->data, 1);
+    }
+
+    CLEAR(oper1);
+}
+
+void
 prim_notify_nolisten(PRIM_PROTOTYPE)
 {
     struct inst *oper1 = NULL;	/* prevents re-entrancy issues! */
@@ -1585,6 +1604,46 @@ prim_notify_exclude(PRIM_PROTOTYPE)
 	    }
 	}
     }
+}
+
+void
+prim_otell(PRIM_PROTOTYPE)
+{
+    struct inst *oper1 = NULL;	/* prevents re-entrancy issues! */
+
+    dbref what, where;
+
+    CHECKOP(1);
+    oper1 = POP();
+
+    if (oper1->type != PROG_STRING)
+	abort_interp("Non-string argument (1)");
+
+    if (tp_force_mlev1_name_notify && mlev < 2) {
+	prefix_message(buf, DoNullInd(oper1->data.string), NAME(player), BUFFER_LEN, 1);
+    } else
+	strcpyn(buf, sizeof(buf), DoNullInd(oper1->data.string));
+
+    where = LOCATION(player);
+    what = CONTENTS(where);
+
+    if (*buf) {
+	for (; what != NOTHING; what = NEXTOBJ(what)) {
+	    if (Typeof(what) != TYPE_ROOM && what != player) {
+		notify_listeners(player, program, what, where, buf, 0);
+	    }
+	}
+    }
+
+    if (tp_listeners) {
+	notify_listeners(player, program, where, where, buf, 0);
+	if (tp_listeners_env) {
+	    for (what = LOCATION(where); what != NOTHING; what = LOCATION(what)) {
+		notify_listeners(player, program, what, where, buf, 0);
+	    }
+	}
+    }
+    CLEAR(oper1);
 }
 
 void
