@@ -26,7 +26,7 @@ Definitions:
     A Trigger object is the object that the MPI script is evaluated from.
   
     A List is a string containing several individual substring items,
-seperated by carriage return characters.
+separated by carriage return characters.
   
     A property based list is a set of consecutively numbered properties that
 each contain one string in a list of strings.  Property based lists
@@ -140,8 +140,8 @@ IF
 {if:check,true,false}
     This is a simple conditional command.  It evaluates the 'check'
 argument and if it is true, then it evaluates the 'true' argument and
-returns it's result.  If 'check' does not evaluate as true, then it will
-evaluate the 'false' argument, if there is one, and returns it's result.
+returns its result.  If 'check' does not evaluate as true, then it will
+evaluate the 'false' argument, if there is one, and returns its result.
 If there is no false argument, and 'check' evaluated false, then it
 returns a null string.  Example:
 ~~code
@@ -326,7 +326,7 @@ if it IS a propdir.
 DELPROP
 {delprop:propname}
 {delprop:propname,object}
-    This function will remove a property and all of it's subsidiary properties
+    This function will remove a property and all of its subsidiary properties
 in the case that it is a propdir.  This will delete the property on the
 trigger object, unless an object argument is specified.  If one is, then it
 will delete the property on that given object.  This function returns a null
@@ -477,7 +477,7 @@ part of the property name after the last /.
 ~
 NL|\r
 {nl}  or  \r
-    Returns a carriage return character.  This can be used to seperate
+    Returns a carriage return character.  This can be used to separate
 items in a list, or can split the string at that point, starting a new line.
 Example:  the string:
 ~~code
@@ -838,7 +838,7 @@ FOREACH
 each evaluation, the temporary variable var will contain the value of the
 item under scrutiny.  var will only be defined for the duration of expr,
 and will be undefined after the {foreach} construct finishes.  If sep is
-given, then it uses that string as the item seperator in list, instead of
+given, then it uses that string as the item separator in list, instead of
 the usual carriage return character.  sep can be multiple characters
 long.  This structure returns the result of the last evaluation of expr.
 Example:
@@ -859,9 +859,9 @@ item under scrutiny.  This function returns a list containing all of the
 items from the input list, for which expr evaluated true.  var will only
 be defined for the duration of expr, and will be undefined after the
 {filter} construct finishes.  If sep is given, then it uses that string
-as the item seperator in the input list, instead of the usual carriage
+as the item separator in the input list, instead of the usual carriage
 return character.  If s2 is defined, then it will use that string to
-seperate the items in the list it returns, instead of the normal carriage
+separate the items in the list it returns, instead of the normal carriage
 return.  sep and s2 can be multiple characters long.
 ~
 ~
@@ -876,9 +876,9 @@ of expr for each item within the list.  This lets you do direct translat-
 ion of a list of dbrefs, for example, into a list of names.  var will
 only be defined for the duration of expr, and will be undefined after the
 {filter} construct finishes.  If sep is given, then it uses that string
-as the item seperator in the input list, instead of the usual carriage
+as the item separator in the input list, instead of the usual carriage
 return character.  If s2 is defined, then it will use that string to
-seperate the items in the list it returns, instead of the normal carriage
+separate the items in the list it returns, instead of the normal carriage
 return.  sep and s2 can be multiple characters long.
 ~
 ~
@@ -1024,7 +1024,7 @@ LINKS
     Returns the object reference of what the given object if linked to.
 Since exits can be meta-links, linked to multiple exits, if there is more
 than one link, then this function returns a list of all the destinations,
-seperated by carriage return characters.  (\r)
+separated by carriage return characters.  (\r)
 ~
 ~
 FORCE
@@ -1162,7 +1162,7 @@ an error message complaining about that.
 ~
 WITH
 {with:var,val,expr..}
-    This defines a new variable with the given name, and sets it's value
+    This defines a new variable with the given name, and sets its value
 to the given val.  Up to 7 expr's are allowed, but the only value
 returned to {with}'s caller, is the value returned by the evaluation of
 the last expr.  If there is already a variable of the same name, then
@@ -1200,7 +1200,7 @@ sep is \r. (A carriage return.)
 ~
 MKLIST
 {mklist:value...}       Returns a list with all given values.
-    This returns a list with all the given values as list items, seperated
+    This returns a list with all the given values as list items, separated
 by carriage returns.  ('\r's) Example:
 ~~code
     {mklist:Tom,Dick,Harry}
@@ -1230,10 +1230,10 @@ argument is given.
 ~
 LRAND
 {lrand:list}
-{lrand:list,seperator}
+{lrand:list,separator}
     Returns a randomly picked stringlist item from the given list.  If the
-seperator argument is given, then it will assume that the stringlist has it's
-items delimited by the given seperator string, instead of by carriage returns.
+separator argument is given, then it will assume that the stringlist has its
+items delimited by the given separator string, instead of by carriage returns.
 ~
 ~
 LUNIQUE

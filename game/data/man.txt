@@ -297,7 +297,7 @@ not listed by NEXTPROP with ML3 are listed with ML4.  Programs running
 ML4 do not even have instruction limits on PREEMPT mode programs.
   
   The MUCKER level permissions that a program runs at is the lesser of
-it's own MUCKER level and the MUCKER level of it's owner.  If it is
+its own MUCKER level and the MUCKER level of its owner.  If it is
 owned by a player who is MUCKER level 2, and it is MUCKER level 3,
 then it runs at Mucker level 2.  The one exception to this is programs
 owned by a Wizard player.  They run at Mucker level 2 if the program
@@ -970,7 +970,7 @@ Also see: DUP and LDUP
 ~
 ~
 ?DUP
-DUP ( x -- x x | x )
+?DUP ( x -- x x | x )
 
   Duplicates the item at the top of the stack if it does not resolve to false.
 Also see: DUP
@@ -1289,7 +1289,7 @@ will do the same thing (returning the user's dbref). User-defined variables
 are numbered sequentially starting at 4 by the compiler. Note that these
 variable numbers can be used even if variables have not been formally
 declared.  This command has been deprecated, and is not recommended to use.
-It's original purpose was to allow MUF to do small arrays.  Since MUF now
+Its original purpose was to allow MUF to do small arrays.  Since MUF now
 has an intrinsic array stack item type, this should no longer be used.
 Also see: @, !, VAR, ME, TRIGGER, LOC and COMMAND
 ~
@@ -5121,7 +5121,7 @@ PREEMPT ( -- )
 
   Prevents a program from being swapped out to do multitasking.  Needed in
 some cases to protect crucial data from being changed while it is being
-worked on.  A program will remain in preempt mode until it's execution is
+worked on.  A program will remain in preempt mode until its execution is
 completed.  Basically what this command does is to turn off multitasking,
 but then you have a limit on how many instructions you can run without
 needing either to pause with a SLEEP, or have a wizbit on the program.
@@ -5757,7 +5757,7 @@ These events can be read with EVENT_WAIT, and will have event ids starting
 with "MCP.", followed by the package and message names.  The event data
 will be a dictionary, containing "descr", "package", "message", and "args"
 elements.  The args element will have a dictionary of message arguments
-as it's value.  The minimum and maximum package versions supported are
+as its value.  The minimum and maximum package versions supported are
 represented as floating point numbers, with the minor version number being
 divided by 1000.  For example, an MCP package of version 1.1 is represented
 as 1.001, and a version of 1.23 is represented as 1.023.  This lets you
@@ -6622,7 +6622,7 @@ Instruction notation as given by DEBUG dumps and the MUF debugger:
     #dbref:         An object dbref. (As in #1 or #63516)
     "Text":         A string.  (As in "Wizard" or "Hello world!") If it is
                     followed by _, there is more in the string than shown.
-    [Lock]:         A lock in it's native structure. (As in [#0|!#0])
+    [Lock]:         A lock in its native structure. (As in [#0|!#0])
     VNUM:           Variable number NUM. (As in V0 or V10)
     LVNUM:          Local variable number NUM. (As in LV2 or LV5)
     SVNUM:          Scoped function variable number NUM. (As in SV2 or SV5)

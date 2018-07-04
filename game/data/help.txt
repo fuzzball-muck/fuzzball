@@ -277,7 +277,7 @@ drop-to.
 
   If the thing's STICKY flag is set, it will go home when dropped.
 
-  If the room's drop-to is set, and the room has it's STICKY flag set,
+  If the room's drop-to is set, and the room has its STICKY flag set,
 then the thing will stick around in the room until all players have left.
 If the room is not set sticky, then the thing will be sent to the location
 given by the room's drop-to.
@@ -612,7 +612,7 @@ There are 3 rules to controlling objects:
   1) You control anything you own.
   2) A wizard or God controls everything.
   3) If Realms_Control is @tuned on in the server, then if a player owns an
-     environmental room, and that room has it's Wizard bit set, then the owner
+     environmental room, and that room has its Wizard bit set, then the owner
      of that environment room has control over anything contained in that env-
      ironment room.  This includes things inside of rooms that are inside of
      that environment room, and so forth.  Everything in that Wizbit environ-
@@ -986,7 +986,7 @@ Also see: STRINGS, @SUCCESS and @OSUCCESS
 FAILURE
 Failure:
 
-You fail to use a thing when you cannot take it (because it's lock fails).
+You fail to use a thing when you cannot take it (because its lock fails).
 You fail to use an exit when you cannot go through it (because it's locked).
 You fail to use a person when you fail to rob them.
 You fail to use a room when you fail to look around (because it's locked).
@@ -1575,8 +1575,8 @@ into it, or else you an use an action that is both attached and linked
 to the vehicle to enter it.  This means that you can only enter a vehicle
 from the same room that it is in, and you cannot use far links to enter
 it.  This prevents the use of vehicles to get around locks.  Inside the
-vehicle, you will see it's @idesc, instead of it's @desc, and you will
-not be shown it's @succ or @fail.  Objects dropped in a vehicle will not
+vehicle, you will see its @idesc, instead of its @desc, and you will
+not be shown its @succ or @fail.  Objects dropped in a vehicle will not
 go away to the their homes, as a vehicle cannot have a dropto set in it.  
 Things with the VEHICLE flag set cannot enter rooms or use exits that
 have the VEHICLE flag set.  This allows a way to prevent vehicles from
@@ -1794,7 +1794,7 @@ Property and Propdir Usage Examples:
       first/: (string) a property.
       second: (string) another property.
   
-  [The property 'first' still exists, with it's string value, and it still
+  [The property 'first' still exists, with its string value, and it still
    has sub-properties.  Lets list those.]
   
   ex me=first/
