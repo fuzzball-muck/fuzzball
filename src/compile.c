@@ -889,6 +889,7 @@ OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
     int BangNo = get_primitive("!");
     int SwapNo = get_primitive("swap");
     int PopNo = get_primitive("pop");
+    int PopnNo = get_primitive("popn");
     int OverNo = get_primitive("over");
     int PickNo = get_primitive("pick");
     int NipNo = get_primitive("nip");
@@ -1312,6 +1313,39 @@ OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
 		}
 	    }
 	    /* = not  ==>  != */
+	    if (IntermediateIsPrimitive(curr, EqualsNo)) {
+		if (ContiguousIntermediates(Flags, curr->next, 1)) {
+		    if (IntermediateIsPrimitive(curr->next, NotNo)) {
+			curr->in.data.number = NotequalsNo;
+			RemoveNextIntermediate(cstat, curr);
+			advance = 0;
+			break;
+		    }
+		}
+	    }
+
+	    /* pop ... pop  ==>  (n) popn */
+
+	    struct INTERMEDIATE *tmp = curr;
+	    int pops = 0;
+
+	    while (IntermediateIsPrimitive(tmp, PopNo)) {
+		pops++;
+		tmp = tmp->next;
+	    }
+
+	    if (pops > 1) {
+		curr->in.type = PROG_INTEGER;
+		curr->in.data.number = pops;
+		curr->next->in.data.number = PopnNo;
+
+		curr = curr->next;
+		while (pops > 2) {
+		    RemoveNextIntermediate(cstat, curr);
+		    pops--;
+		}
+	    }
+
 	    if (IntermediateIsPrimitive(curr, EqualsNo)) {
 		if (ContiguousIntermediates(Flags, curr->next, 1)) {
 		    if (IntermediateIsPrimitive(curr->next, NotNo)) {
