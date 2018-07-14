@@ -90,7 +90,7 @@ alloc_timenode(int typ, int subtyp, time_t mytime, int descr, dbref player,
 	free_timenode_list = ptr->next;
 	free_timenode_count--;
     } else {
-	ptr = (timequeue) malloc(sizeof(struct timenode));
+	ptr = malloc(sizeof(struct timenode));
     }
     ptr->typ = typ;
     ptr->subtyp = subtyp;
@@ -101,7 +101,7 @@ alloc_timenode(int typ, int subtyp, time_t mytime, int descr, dbref player,
     ptr->descr = descr;
     ptr->fr = fr;
     ptr->called_prog = program;
-    ptr->called_data = (char *) strdup((char *) strdata);
+    ptr->called_data = strdup((char *) strdata);
     ptr->command = alloc_string(strcmd);
     ptr->str3 = alloc_string(str3);
     ptr->eventnum = (fr) ? fr->pid : top_pid++;
@@ -157,7 +157,7 @@ purge_timenode_free_pool(void)
 
     while (ptr) {
 	nxt = ptr->next;
-	free((void *) ptr);
+	free(ptr);
 	ptr = nxt;
     }
     free_timenode_count = 0;

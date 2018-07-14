@@ -636,7 +636,7 @@ CrT_malloc(size_t size, const char *file, int line)
 {
     Block b = block_find(file, line);
 
-    Header m = (Header) malloc(size + CRT_OVERHEAD_BYTES);
+    Header m = malloc(size + CRT_OVERHEAD_BYTES);
 
     if (!m) {
 	fprintf(stderr, "CrT_malloc(): Out of Memory!\n");
@@ -690,7 +690,7 @@ CrT_calloc(size_t num, size_t siz, const char *file, int line)
 {
     size_t size = siz * num;
     Block b = block_find(file, line);
-    Header m = (Header) calloc(size + CRT_OVERHEAD_BYTES, 1);
+    Header m = calloc(size + CRT_OVERHEAD_BYTES, 1);
 
     if (!m) {
 	fprintf(stderr, "CrT_calloc(): Out of Memory!\n");
@@ -769,7 +769,7 @@ CrT_realloc(void *p, size_t size, const char *file, int line)
     }
 #endif
 
-    m = (Header) realloc(m, size + CRT_OVERHEAD_BYTES);
+    m = realloc(m, size + CRT_OVERHEAD_BYTES);
 
     if (!m) {
 	fprintf(stderr, "CrT_realloc(): Out of Memory!\n");
@@ -865,7 +865,7 @@ CrT_alloc_string(const char *string, const char *file, int line)
     if (!string || !*string)
 	return 0;
 
-    if ((s = (char *) CrT_malloc(strlen(string) + 1, file, line)) == 0) {
+    if ((s = CrT_malloc(strlen(string) + 1, file, line)) == 0) {
 	abort();
     }
     strcpy(s, string);		/* Guaranteed enough space. */
@@ -885,8 +885,7 @@ CrT_alloc_prog_string(const char *s, const char *file, int line)
 	return (NULL);
 
     length = strlen(s);
-    if ((ss = (struct shared_string *)
-	 CrT_malloc(sizeof(struct shared_string) + length, file, line)) == NULL)
+    if ((ss = CrT_malloc(sizeof(struct shared_string) + length, file, line)) == NULL)
 	abort();
 
     ss->links = 1;
@@ -903,7 +902,7 @@ CrT_strdup(const char *s, const char *file, int line)
 {
     char *p;
 
-    p = (char *) CrT_malloc(1 + strlen(s), file, line);
+    p = CrT_malloc(1 + strlen(s), file, line);
     if (p)
 	strcpy(p, s);		/* Guaranteed enough space. */
     return (p);

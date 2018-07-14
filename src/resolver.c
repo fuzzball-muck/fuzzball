@@ -50,8 +50,6 @@ int notify(int player, const char *msg) {
                                        abort(); \
                                      } while (0)
 
-#define FREE(x) (free((void *) x))
-
 static struct hostcache {
 #ifdef USE_IPV6
     struct in6_addr ipnum_v6;
@@ -76,7 +74,7 @@ static void hostprune(void) {
 	*ptr->prev = NULL;
 	while (ptr) {
 	    tmp = ptr->next;
-	    FREE(ptr);
+	    free(ptr);
 	    ptr = tmp;
 	}
     }
@@ -120,7 +118,7 @@ static void hostdel_v6(struct in6_addr *ip) {
 		ptr->next->prev = ptr->prev;
 	    }
 	    *ptr->prev = ptr->next;
-	    FREE(ptr);
+	    free(ptr);
 	    return;
 	}
     }
@@ -322,7 +320,7 @@ static void hostdel(long ip) {
 		ptr->next->prev = ptr->prev;
 	    }
 	    *ptr->prev = ptr->next;
-	    FREE(ptr);
+	    free(ptr);
 	    return;
 	}
     }

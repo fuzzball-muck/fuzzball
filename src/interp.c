@@ -67,7 +67,7 @@ localvars_get(struct frame *fr, dbref prog)
     } else {
 	/* Create a new var frame. */
 	int count = MAX_VAR;
-	tmp = (struct localvars *) malloc(sizeof(struct localvars));
+	tmp = malloc(sizeof(struct localvars));
 	tmp->prog = prog;
 	while (count-- > 0) {
 	    tmp->lvars[count].type = PROG_INTEGER;
@@ -97,7 +97,7 @@ localvar_dupall(struct frame *fr, struct frame *oldfr)
 
     while (orig) {
 	int count = MAX_VAR;
-	*targ = (struct localvars *) malloc(sizeof(struct localvars));
+	*targ = malloc(sizeof(struct localvars));
 	while (count-- > 0)
 	    deep_copyinst(&orig->lvars[count], &(*targ)->lvars[count], -1);
 	(*targ)->prog = orig->prog;
@@ -126,7 +126,7 @@ localvar_freeall(struct frame *fr)
 	ptr->next = NULL;
 	ptr->prev = NULL;
 	ptr->prog = NOTHING;
-	free((void *) ptr);
+	free(ptr);
 	ptr = nxt;
     }
     fr->lvars = NULL;
@@ -142,7 +142,7 @@ scopedvar_addlevel(struct frame *fr, struct inst *pc, int count)
     struct scopedvar_t *tmp;
     size_t siz = sizeof(struct scopedvar_t) + (sizeof(struct inst) * ((size_t)count - 1));
 
-    tmp = (struct scopedvar_t *) malloc(siz);
+    tmp = malloc(siz);
     tmp->count = (size_t)count;
     tmp->varnames = pc->data.mufproc->varnames;
     tmp->next = fr->svars;
@@ -170,7 +170,7 @@ scopedvar_dupall(struct frame *fr, struct frame *oldfr)
 	count = (size_t)cur->count;
 	siz = sizeof(struct scopedvar_t) + (sizeof(struct inst) * (count - 1));
 
-	newsv = (struct scopedvar_t *) malloc(siz);
+	newsv = malloc(siz);
 	newsv->count = count;
 	newsv->varnames = cur->varnames;
 	newsv->next = NULL;
@@ -399,7 +399,7 @@ interp(int descr, dbref player, dbref location, dbref program,
 	fr = free_frames_list;
 	free_frames_list = fr->next;
     } else {
-	fr = (struct frame *) malloc(sizeof(struct frame));
+	fr = malloc(sizeof(struct frame));
     }
     fr->next = NULL;
     fr->pid = forced_pid ? forced_pid : top_pid++;
@@ -524,7 +524,7 @@ copy_fors(struct forvars *forstack)
 
     for (struct forvars *in = forstack; in; in = in->next) {
 	if (!for_pool) {
-	    nu = (struct forvars *) malloc(sizeof(struct forvars));
+	    nu = malloc(sizeof(struct forvars));
 	} else {
 	    nu = for_pool;
 	    if (*last_for == for_pool->next) {
@@ -555,7 +555,7 @@ push_for(struct forvars *forstack)
     struct forvars *nu;
 
     if (!for_pool) {
-	nu = (struct forvars *) malloc(sizeof(struct forvars));
+	nu = malloc(sizeof(struct forvars));
     } else {
 	nu = for_pool;
 	if (*last_for == for_pool->next) {
@@ -593,7 +593,7 @@ copy_trys(struct tryvars *trystack)
 
     for (struct tryvars *in = trystack; in; in = in->next) {
 	if (!try_pool) {
-	    nu = (struct tryvars *) malloc(sizeof(struct tryvars));
+	    nu = malloc(sizeof(struct tryvars));
 	} else {
 	    nu = try_pool;
 	    if (*last_try == try_pool->next) {
@@ -624,7 +624,7 @@ push_try(struct tryvars *trystack)
     struct tryvars *nu;
 
     if (!try_pool) {
-	nu = (struct tryvars *) malloc(sizeof(struct tryvars));
+	nu = malloc(sizeof(struct tryvars));
     } else {
 	nu = try_pool;
 	if (*last_try == try_pool->next) {
@@ -744,7 +744,7 @@ prog_clean(struct frame *fr)
 	CLEAR(&fr->variables[i]);
 
     if (fr->cmd && --fr->cmd->links == 0)
-	free((void *) fr->cmd);
+	free(fr->cmd);
 
     localvar_freeall(fr);
     scopedvar_freeall(fr);
@@ -833,11 +833,11 @@ copyinst(struct inst *from, struct inst *to)
     switch (from->type) {
     case PROG_FUNCTION:
 	if (from->data.mufproc) {
-	    to->data.mufproc = (struct muf_proc_data *) malloc(sizeof(struct muf_proc_data));
+	    to->data.mufproc = malloc(sizeof(struct muf_proc_data));
 	    to->data.mufproc->procname = strdup(from->data.mufproc->procname);
 	    to->data.mufproc->vars = varcnt = from->data.mufproc->vars;
 	    to->data.mufproc->args = from->data.mufproc->args;
-	    to->data.mufproc->varnames = (const char **) calloc((size_t)varcnt, sizeof(const char *));
+	    to->data.mufproc->varnames = calloc((size_t)varcnt, sizeof(const char *));
 	    for (int j = 0; j < varcnt; j++) {
 		to->data.mufproc->varnames[j] = strdup(from->data.mufproc->varnames[j]);
 	    }
@@ -1670,7 +1670,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 		{
 		    size_t k, outcount;
 		    size_t count = (size_t)array_count(temp1->data.array);
-		    char **events = (char **) malloc(count * sizeof(char **));
+		    char **events = malloc(count * sizeof(char **));
 		    for (outcount = k = 0; k < count; k++) {
 			char *val = array_get_intkey_strval(temp1->data.array, k);
 			if (val != NULL) {

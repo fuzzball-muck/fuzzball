@@ -184,7 +184,7 @@ do_info(dbref player, const char *topic, const char *seg)
 	}
     } else {
 #ifdef DIR_AVALIBLE
-	buf = (char *) calloc(1, buflen);
+	buf = calloc(1, buflen);
 	(void) strcpyn(buf, buflen, "    ");
 	f = 0;
 	cols = 0;
@@ -215,13 +215,13 @@ do_info(dbref player, const char *topic, const char *seg)
 	    notify(player, "No information files are available.");
 	free(buf);
 #elif WIN32
-	buf = (char *) calloc(1, buflen);
+	buf = calloc(1, buflen);
 	(void) strcpyn(buf, buflen, "    ");
 	f = 0;
 	cols = 0;
 
 	dirnamelen = strlen(tp_file_info_dir) + 4;
-	dirname = (char *) malloc(dirnamelen);
+	dirname = malloc(dirnamelen);
 	strcpyn(dirname, dirnamelen, tp_file_info_dir);
 	strcatn(dirname, dirnamelen, "*.*");
 	hFind = FindFirstFile(dirname, &finddata);

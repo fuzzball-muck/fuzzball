@@ -178,7 +178,7 @@ free_intermediate_node(struct INTERMEDIATE *wd)
 	}
 	free((void *) wd->in.data.mufproc);
     }
-    free((void *) wd);
+    free(wd);
 }
 
 static void
@@ -223,14 +223,14 @@ cleanup(COMPSTATE * cstat)
 	tempif = eef->next;
         if (eef->extra)
             free(eef->extra);
-	free((void *) eef);
+	free(eef);
     }
     cstat->control_stack = 0;
 
     for (struct PROC_LIST *p = cstat->procs; p; p = tempp) {
 	tempp = p->next;
 	free((void *) p->name);
-	free((void *) p);
+	free(p);
     }
     cstat->procs = 0;
 
@@ -324,10 +324,8 @@ get_address(COMPSTATE * cstat, struct INTERMEDIATE *dest, int offset)
     if (!cstat->addrlist) {
 	cstat->addrcount = 0;
 	cstat->addrmax = ADDRLIST_ALLOC_CHUNK_SIZE;
-	cstat->addrlist = (struct INTERMEDIATE **)
-		malloc(cstat->addrmax * sizeof(struct INTERMEDIATE *));
-	cstat->addroffsets = (int *)
-		malloc(cstat->addrmax * sizeof(int));
+	cstat->addrlist = malloc(cstat->addrmax * sizeof(struct INTERMEDIATE *));
+	cstat->addroffsets = malloc(cstat->addrmax * sizeof(int));
     }
 
     for (int i = 0; i < cstat->addrcount; i++)
@@ -430,7 +428,7 @@ insert_def(COMPSTATE * cstat, const char *defname, const char *deff)
     hash_data hd;
 
     (void) kill_def(cstat, defname);
-    hd.pval = (void *) strdup(deff);
+    hd.pval = strdup(deff);
     (void) add_hash(defname, hd, cstat->defhash, DEFHASHSIZE);
 }
 
@@ -920,7 +918,7 @@ OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
     for (struct INTERMEDIATE *curr = cstat->first_word; curr; curr = curr->next)
 	curr->no = count++;
 
-    if ((Flags = (int *) malloc(sizeof(int) * count)) == 0)
+    if ((Flags = malloc(sizeof(int) * count)) == 0)
 	return 0;
 
     memset(Flags, 0, sizeof(int) * count);
@@ -1471,7 +1469,7 @@ alloc_addr(COMPSTATE * cstat, int offset, struct inst *codestart)
 {
     struct prog_addr *nu;
 
-    nu = (struct prog_addr *) malloc(sizeof(struct prog_addr));
+    nu = malloc(sizeof(struct prog_addr));
 
     nu->links = 1;
     nu->progref = cstat->program;
@@ -1492,7 +1490,7 @@ copy_program(COMPSTATE * cstat)
     if (!cstat->first_word)
 	v_abort_compile(cstat, "Nothing to compile.");
 
-    code = (struct inst *) malloc(sizeof(struct inst) * (size_t)(cstat->nowords + 1));
+    code = malloc(sizeof(struct inst) * (size_t)(cstat->nowords + 1));
 
     i = 0;
     for (struct INTERMEDIATE *curr = cstat->first_word; curr; curr = curr->next) {
@@ -1520,18 +1518,15 @@ copy_program(COMPSTATE * cstat)
 		    alloc_prog_string(curr->in.data.string->data) : 0;
 	    break;
 	case PROG_FUNCTION:
-	    code[i].data.mufproc =
-		    (struct muf_proc_data *) malloc(sizeof(struct muf_proc_data));
+	    code[i].data.mufproc = malloc(sizeof(struct muf_proc_data));
 	    code[i].data.mufproc->procname = strdup(curr->in.data.mufproc->procname);
 	    code[i].data.mufproc->vars = varcnt = curr->in.data.mufproc->vars;
 	    code[i].data.mufproc->args = curr->in.data.mufproc->args;
 	    if (varcnt) {
 		if (curr->in.data.mufproc->varnames) {
-		    code[i].data.mufproc->varnames =
-			    (const char **) calloc((size_t)varcnt, sizeof(char *));
+		    code[i].data.mufproc->varnames = calloc((size_t)varcnt, sizeof(char *));
 		    for (int j = 0; j < varcnt; j++) {
-			code[i].data.mufproc->varnames[j] =
-				strdup(curr->in.data.mufproc->varnames[j]);
+			code[i].data.mufproc->varnames[j] = strdup(curr->in.data.mufproc->varnames[j]);
 		    }
 		} else {
 		    code[i].data.mufproc->varnames = NULL;
@@ -1567,7 +1562,7 @@ alloc_inst(void)
 {
     struct INTERMEDIATE *nu;
 
-    nu = (struct INTERMEDIATE *) malloc(sizeof(struct INTERMEDIATE));
+    nu = malloc(sizeof(struct INTERMEDIATE));
 
     nu->next = 0;
     nu->no = 0;
@@ -2828,7 +2823,7 @@ do_directive(COMPSTATE * cstat, char *direct)
 	    tmpptr = (char *) get_property_class(i, MUF_LIB_VERSION_PROP);
 	}
 	if (!tmpptr || !*tmpptr) {
-	    tmpptr = (char *) malloc(4 * sizeof(char));
+	    tmpptr = malloc(4 * sizeof(char));
 	    strcpyn(tmpptr, 4 * sizeof(char), "0.0");
 	    needFree = 1;
 	}
@@ -3017,7 +3012,7 @@ next_token(COMPSTATE * cstat)
 	if (temp[1]) {
 	    expansion = temp;
 	    elen = strlen(expansion);
-	    temp = (char *) malloc(elen);
+	    temp = malloc(elen);
 	    strcpyn(temp, elen, (expansion + 1));
 	    free(expansion);
 	}
@@ -3030,7 +3025,7 @@ next_token(COMPSTATE * cstat)
 	    abort_compile(cstat, "Too many macro substitutions.");
 	} else {
 	    size_t templen = strlen(cstat->next_char) + strlen(expansion) + 21;
-	    temp = (char *) malloc(templen);
+	    temp = malloc(templen);
 	    strcpyn(temp, templen, expansion);
 	    strcatn(temp, templen, cstat->next_char);
 	    free((void *) expansion);
@@ -3123,7 +3118,7 @@ pop_loop_exit(COMPSTATE * cstat)
     temp = parent->extra->place;
     tofree = parent->extra;
     parent->extra = parent->extra->extra;
-    free((void *) tofree);
+    free(tofree);
     return temp;
 }
 
@@ -3163,7 +3158,7 @@ add_proc(COMPSTATE * cstat, const char *proc_name, struct INTERMEDIATE *place, i
 {
     struct PROC_LIST *nu;
 
-    nu = (struct PROC_LIST *) malloc(sizeof(struct PROC_LIST));
+    nu = malloc(sizeof(struct PROC_LIST));
 
     nu->name = alloc_string(proc_name);
     nu->returntype = rettype;
@@ -3178,7 +3173,7 @@ add_control_structure(COMPSTATE * cstat, short typ, struct INTERMEDIATE *place)
 {
     struct CONTROL_STACK *nu;
 
-    nu = (struct CONTROL_STACK *) malloc(sizeof(struct CONTROL_STACK));
+    nu = malloc(sizeof(struct CONTROL_STACK));
 
     nu->place = place;
     nu->type = typ;
@@ -3203,7 +3198,7 @@ add_loop_exit(COMPSTATE * cstat, struct INTERMEDIATE *place)
     if (!loop)
 	return;
 
-    nu = (struct CONTROL_STACK *) malloc(sizeof(struct CONTROL_STACK));
+    nu = malloc(sizeof(struct CONTROL_STACK));
 
     nu->place = place;
     nu->type = CTYPE_WHILE;
@@ -3359,7 +3354,7 @@ process_special(COMPSTATE * cstat, const char *token)
 	nu->no = cstat->nowords++;
 	nu->in.type = PROG_FUNCTION;
 	nu->in.line = cstat->lineno;
-	nu->in.data.mufproc = (struct muf_proc_data *) malloc(sizeof(struct muf_proc_data));
+	nu->in.data.mufproc = malloc(sizeof(struct muf_proc_data));
 	nu->in.data.mufproc->procname = strdup(proc_name);
 	nu->in.data.mufproc->vars = 0;
 	nu->in.data.mufproc->args = 0;
@@ -3428,8 +3423,7 @@ process_special(COMPSTATE * cstat, const char *token)
 
 	varcnt = cstat->curr_proc->in.data.mufproc->vars;
 	if (varcnt) {
-	    cstat->curr_proc->in.data.mufproc->varnames =
-		    (const char **) calloc((size_t)varcnt, sizeof(char *));
+	    cstat->curr_proc->in.data.mufproc->varnames = calloc((size_t)varcnt, sizeof(char *));
 	    for (int i = 0; i < varcnt; i++) {
 		cstat->curr_proc->in.data.mufproc->varnames[i] = cstat->scopedvars[i];
 		cstat->scopedvars[i] = 0;
@@ -3859,10 +3853,10 @@ process_special(COMPSTATE * cstat, const char *token)
 	    abort_compile(cstat, "Subroutine unknown in PUBLIC or WIZCALL declaration.");
         }
 	if (!cstat->currpubs) {
-	    cstat->currpubs = (struct publics *) malloc(sizeof(struct publics));
+	    cstat->currpubs = malloc(sizeof(struct publics));
 
 	    cstat->currpubs->next = NULL;
-	    cstat->currpubs->subname = (char *) strdup(tok);
+	    cstat->currpubs->subname = strdup(tok);
 	    if (tok)
 		free((void *) tok);
 	    cstat->currpubs->addr.no = get_address(cstat, p->code, 0);
@@ -3877,11 +3871,11 @@ process_special(COMPSTATE * cstat, const char *token)
 		if (pub->next) {
 		    pub = pub->next;
 		} else {
-		    pub->next = (struct publics *) malloc(sizeof(struct publics));
+		    pub->next = malloc(sizeof(struct publics));
 
 		    pub = pub->next;
 		    pub->next = NULL;
-		    pub->subname = (char *) strdup(tok);
+		    pub->subname = strdup(tok);
 		    if (tok)
 			free((void *) tok);
 		    pub->addr.no = get_address(cstat, p->code, 0);

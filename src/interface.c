@@ -90,11 +90,9 @@ static struct descriptor_data *descr_lookup_table[FD_SETSIZE];
 #define isinput( q ) isprint( (q) & 127 )
 
 #define MALLOC(result, type, number) do {   \
-                                       if (!((result) = (type *) malloc ((number) * sizeof (type)))) \
+                                       if (!((result) = malloc ((number) * sizeof (type)))) \
                                        panic("Out of memory");                             \
                                      } while (0)
-
-#define FREE(x) (free((void *) x))
 
 static int no_detach_flag = 0;
 static char resolver_program[BUFFER_LEN];
@@ -216,8 +214,8 @@ has_output(struct descriptor_data *d)
 static void
 free_text_block(struct text_block *t)
 {
-    FREE(t->buf);
-    FREE((char *) t);
+    free((void *)t->buf);
+    free((void *)t);
 }
 
 static struct text_block *
@@ -627,11 +625,11 @@ remember_player_descr(dbref player, int descr)
     arr = PLAYER_DESCRS(player);
 
     if (!arr) {
-	arr = (int *) malloc(sizeof(int));
+	arr = malloc(sizeof(int));
 	arr[0] = descr;
 	count = 1;
     } else {
-	arr = (int *) realloc(arr, sizeof(int) * (count + 1));
+	arr = realloc(arr, sizeof(int) * (count + 1));
 	arr[count] = descr;
 	count++;
     }
@@ -665,10 +663,10 @@ forget_player_descr(dbref player, int descr)
 	}
 	if (dest != count) {
 	    count = dest;
-	    arr = (int *) realloc(arr, sizeof(int) * count);
+	    arr = realloc(arr, sizeof(int) * count);
 	}
     } else {
-	free((void *) arr);
+	free(arr);
 	arr = NULL;
 	count = 0;
     }
@@ -1251,7 +1249,7 @@ freeqs(struct descriptor_data *d)
     free_queue(&d->output);
     free_queue(&d->input);
     if (d->raw_input)
-	FREE(d->raw_input);
+	free(d->raw_input);
     d->raw_input = 0;
     d->raw_input_at = 0;
 }
@@ -1328,7 +1326,7 @@ shutdownsock(struct descriptor_data *d)
     if (d->ssl_session)
         SSL_free(d->ssl_session);
 #endif
-    FREE(d);
+    free(d);
     ndescriptors--;
     log_status("CONCOUNT: There are now %d open connections.", ndescriptors);
 }
@@ -2010,7 +2008,7 @@ process_input(struct descriptor_data *d)
     if (p > d->raw_input) {
 	d->raw_input_at = p;
     } else {
-	FREE(d->raw_input);
+	free(d->raw_input);
 	d->raw_input = 0;
 	d->raw_input_at = 0;
     }
@@ -2277,8 +2275,8 @@ resolve_hostnames()
 		*username++ = '\0';
 		for (struct descriptor_data *d = descriptor_list; d; d = d->next) {
 		    if (!strcmp(d->hostname, hostip) && !strcmp(d->username, port)) {
-			FREE(d->hostname);
-			FREE(d->username);
+			free((void *)d->hostname);
+			free((void *)d->username);
 			d->hostname = strdup(hostname);
 			d->username = strdup(username);
 		    }
@@ -3157,7 +3155,7 @@ close_sockets(const char *msg)
 #ifdef MCP_SUPPORT
 	mcp_frame_clear(&d->mcpframe);
 #endif
-	FREE(d);
+	free(d);
 	ndescriptors--;
     }
     update_desc_count_table();
@@ -3792,7 +3790,7 @@ ignore_prime_cache(dbref Player)
 	skip_whitespace(&Ptr);
     }
 
-    if ((List = (dbref *) malloc(sizeof(dbref) * Count)) == 0)
+    if ((List = malloc(sizeof(dbref) * Count)) == 0)
 	return 0;
 
     for (const char *Ptr = Txt; *Ptr;) {
@@ -4057,7 +4055,7 @@ show_subfile(dbref player, const char *dir, const char *topic, const char *seg, 
     *buf = 0;
 
     dirnamelen = strlen(dir) + 5;
-    dirname = (char *) malloc(dirnamelen);
+    dirname = malloc(dirnamelen);
     strcpyn(dirname, dirnamelen, dir);
     strcatn(dirname, dirnamelen, "/*.*");
     hFind = FindFirstFile(dirname, &finddata);
@@ -4585,12 +4583,12 @@ main(int argc, char **argv)
 	    argcnt += ssl_numports;
 #endif
 
-	    argslist = (char **) calloc(argcnt, sizeof(char *));
+	    argslist = calloc(argcnt, sizeof(char *));
 
 	    for (int i = 0; i < numports; i++) {
 		size_t alen = strlen(numbuf) + 1;
 		snprintf(numbuf, sizeof(numbuf), "%d", listener_port[i]);
-		argslist[argnum] = (char *) malloc(alen);
+		argslist[argnum] = malloc(alen);
 		strcpyn(argslist[argnum++], alen, numbuf);
 	    }
 
@@ -4598,7 +4596,7 @@ main(int argc, char **argv)
 	    for (int i = 0; i < ssl_numports; i++) {
 		size_t alen = strlen(numbuf) + 1;
 		snprintf(numbuf, sizeof(numbuf), "-sport %d", ssl_listener_port[i]);
-		argslist[argnum] = (char *) malloc(alen);
+		argslist[argnum] = malloc(alen);
 		strcpyn(argslist[argnum++], alen, numbuf);
 	    }
 #endif

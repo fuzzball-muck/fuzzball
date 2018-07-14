@@ -253,20 +253,20 @@ print_hash_array(FILE * out)
 	    filecount++;
 	    /* Copy over the array, if it exists */
 	    if (files) {
-		temp = (file_entry **) malloc(sizeof(file_entry *) * (filecount));
+		temp = malloc(sizeof(file_entry *) * (filecount));
 		memcpy(temp, files, (filecount - 1) * sizeof(file_entry *));
 		free(files);
 		files = temp;
 	    } else {
-		files = (file_entry **) malloc(sizeof(file_entry *) * (filecount));
+		files = malloc(sizeof(file_entry *) * (filecount));
 	    }
 
-	    files[filecount - 1] = (file_entry *) malloc(sizeof(file_entry));
+	    files[filecount - 1] = malloc(sizeof(file_entry));
 	    i = strlen(filename) + strlen(DIR_SOURCE) + strlen("/");
-	    files[filecount - 1]->filepath = (char *) malloc(sizeof(char) * (i + 1));
+	    files[filecount - 1]->filepath = malloc(sizeof(char) * (i + 1));
 	    snprintf(files[filecount - 1]->filepath, i + 1, "%s/%s", DIR_SOURCE, filename);
 	    i = strlen(filename);
-	    files[filecount - 1]->filename = (char *) malloc(sizeof(char) * (i + 1));
+	    files[filecount - 1]->filename = malloc(sizeof(char) * (i + 1));
 	    snprintf(files[filecount - 1]->filename, i + 1, "%s", filename);
 #ifdef WIN32
 	}
@@ -302,20 +302,20 @@ print_hash_array(FILE * out)
 	    filecount++;
 	    /* Copy over the array, if it exists */
 	    if (files) {
-		temp = (file_entry **) malloc(sizeof(file_entry *) * (filecount));
+		temp = malloc(sizeof(file_entry *) * (filecount));
 		memcpy(temp, files, (filecount - 1) * sizeof(file_entry *));
 		free(files);
 		files = temp;
 	    } else {
-		files = (file_entry **) malloc(sizeof(file_entry *) * (filecount));
+		files = malloc(sizeof(file_entry *) * (filecount));
 	    }
 
-	    files[filecount - 1] = (file_entry *) malloc(sizeof(file_entry));
+	    files[filecount - 1] = malloc(sizeof(file_entry));
 	    i = strlen(filename) + strlen(DIR_INCLUDE) + strlen("/");
-	    files[filecount - 1]->filepath = (char *) malloc(sizeof(char) * (i + 1));
+	    files[filecount - 1]->filepath = malloc(sizeof(char) * (i + 1));
 	    snprintf(files[filecount - 1]->filepath, i + 1, "%s/%s", DIR_INCLUDE, filename);
 	    i = strlen(filename);
-	    files[filecount - 1]->filename = (char *) malloc(sizeof(char) * (i + 1));
+	    files[filecount - 1]->filename = malloc(sizeof(char) * (i + 1));
 	    snprintf(files[filecount - 1]->filename, i + 1, "%s", filename);
 #ifdef WIN32
 	}

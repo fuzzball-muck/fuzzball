@@ -63,14 +63,14 @@ add_hash(register const char *name, hash_data data, hash_tab * table, unsigned i
 
     /* If not found, set up a new entry */
     if (hp == NULL) {
-	hp = (hash_entry *) malloc(sizeof(hash_entry));
+	hp = malloc(sizeof(hash_entry));
 	if (hp == NULL) {
 	    perror("add_hash: out of memory!");
 	    abort();		/* can't allocate new entry -- die */
 	}
 	hp->next = table[hashval];
 	table[hashval] = hp;
-	hp->name = (char *) strdup(name);	/* This might be wasteful. */
+	hp->name = strdup(name);	/* This might be wasteful. */
 	if (hp->name == NULL) {
 	    perror("add_hash: out of memory!");
 	    abort();		/* can't allocate new entry -- die */
@@ -96,7 +96,7 @@ free_hash(register const char *name, hash_tab * table, unsigned int size)
 	if (strcasecmp(name, hp->name) == 0) {
 	    *lp = hp->next;	/* got it.  fix the pointers */
 	    free((void *) hp->name);
-	    free((void *) hp);
+	    free(hp);
 	    return 0;
 	}
     }
@@ -116,7 +116,7 @@ kill_hash(hash_tab * table, unsigned int size, int freeptrs)
 	    if (freeptrs) {
 		free((void *) hp->dat.pval);
 	    }
-	    free((void *) hp);	/* we've freed it! */
+	    free(hp);
 	}
 	table[i] = NULL;
     }

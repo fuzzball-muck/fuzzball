@@ -208,7 +208,7 @@ mcp_intern_is_mesg_start(McpFrame * mfr, const char *in)
 	*subname++ = '\0';
     }
 
-    newmsg = (McpMesg *) malloc(sizeof(McpMesg));
+    newmsg = malloc(sizeof(McpMesg));
     mcp_mesg_init(newmsg, mesgname, subname);
     while (*in) {
 	if (!mcp_intern_is_keyval(newmsg, &in)) {
@@ -412,7 +412,7 @@ void
 mcp_package_register(const char *pkgname, McpVer minver, McpVer maxver, McpPkg_CB callback,
 		     void *context, ContextCleanup_CB cleanup)
 {
-    McpPkg *nu = (McpPkg *) malloc(sizeof(McpPkg));
+    McpPkg *nu = malloc(sizeof(McpPkg));
 
     nu->pkgname = strdup(pkgname);
     nu->minver = minver;
@@ -665,7 +665,7 @@ mcp_frame_init(McpFrame * mfr, connection_t con)
     mfr->messages = NULL;
     mfr->enabled = 0;
 
-    mfrl = (McpFrameList *) malloc(sizeof(McpFrameList));
+    mfrl = malloc(sizeof(McpFrameList));
     mfrl->mfr = mfr;
     mfrl->next = mcp_frame_list;
     mcp_frame_list = mfrl;
@@ -817,7 +817,7 @@ mcp_frame_package_add(McpFrame * mfr, const char *package, McpVer minver, McpVer
     mcp_frame_package_remove(mfr, package);
 
     selver = mcp_version_select(ptr->minver, ptr->maxver, minver, maxver);
-    nu = (McpPkg *) malloc(sizeof(McpPkg));
+    nu = malloc(sizeof(McpPkg));
     nu->pkgname = strdup(ptr->pkgname);
     nu->minver = selver;
     nu->maxver = selver;
@@ -1057,13 +1057,13 @@ mcp_frame_output_mesg(McpFrame * mfr, McpMesg * msg)
 		p = ap->value;
 		while (*p) {
 		    if (*p == '\n' || *p == '\r') {
-			McpArgPart *nu = (McpArgPart *) malloc(sizeof(McpArgPart));
+			McpArgPart *nu = malloc(sizeof(McpArgPart));
 
 			nu->next = ap->next;
 			ap->next = nu;
 			*p++ = '\0';
 			nu->value = strdup(p);
-			ap->value = (char *) realloc(ap->value, strlen(ap->value) + 1);
+			ap->value = realloc(ap->value, strlen(ap->value) + 1);
 			ap = nu;
 			p = nu->value;
 		    } else {
@@ -1306,8 +1306,8 @@ mcp_mesg_arg_append(McpMesg * msg, const char *argname, const char *argval)
 	if (namelen + vallen + (size_t)msg->bytes > MAX_MCP_MESG_SIZE) {
 	    return EMCP_MESGSIZE;
 	}
-	ptr = (McpArg *) malloc(sizeof(McpArg));
-	ptr->name = (char *) malloc(namelen + 1);
+	ptr = malloc(sizeof(McpArg));
+	ptr->name = malloc(namelen + 1);
 	strcpyn(ptr->name, namelen + 1, argname);
 	ptr->value = NULL;
 	ptr->last = NULL;
@@ -1332,9 +1332,9 @@ mcp_mesg_arg_append(McpMesg * msg, const char *argname, const char *argval)
     }
 
     if (argval) {
-	McpArgPart *nu = (McpArgPart *) malloc(sizeof(McpArgPart));
+	McpArgPart *nu = malloc(sizeof(McpArgPart));
 
-	nu->value = (char *) malloc(vallen + 1);
+	nu->value = malloc(vallen + 1);
 	strcpyn(nu->value, vallen + 1, argval);
 	nu->next = NULL;
 

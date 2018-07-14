@@ -345,7 +345,7 @@ MD5hex(void *dest, const void *orig, size_t len)
 void
 MD5base64(char *dest, const void *orig, size_t len)
 {
-    void *tmp = (void *) malloc(16);
+    void *tmp = malloc(16);
     MD5hash(tmp, orig, len);
     Base64Encode(dest, tmp, 16);
     free(tmp);
@@ -359,7 +359,7 @@ init_seed(char *seed)
     word32 *digest;
     int tbuf[8];
 
-    if (!(digest = (word32 *) malloc(sizeof(word32) * 4))) {
+    if (!(digest = malloc(sizeof(word32) * 4))) {
 	return (NULL);
     }
     if (!seed) {

@@ -866,7 +866,7 @@ prim_array_sort(PRIM_PROTOTYPE)
     temp1.type = PROG_INTEGER;
     count = (size_t)array_count(arr);
     nu = new_array_packed(count, fr->pinning);
-    tmparr = (struct inst **) malloc(count * sizeof(struct inst *));
+    tmparr = malloc(count * sizeof(struct inst *));
 
     for (int i = 0; i < count; i++) {
 	temp1.data.number = i;
@@ -930,7 +930,7 @@ prim_array_sort_indexed(PRIM_PROTOTYPE)
     temp1.type = PROG_INTEGER;
     count = (size_t)array_count(arr);
     nu = new_array_packed(count, fr->pinning);
-    tmparr = (struct inst **) malloc(count * sizeof(struct inst *));
+    tmparr = malloc(count * sizeof(struct inst *));
 
     for (int i = 0; i < count; i++) {
 	temp1.data.number = i;

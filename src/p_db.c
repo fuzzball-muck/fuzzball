@@ -1112,7 +1112,7 @@ prim_setlink(PRIM_PROTOTYPE)
 	case TYPE_EXIT:
 	    DBSTORE(ref, sp.exit.ndest, 0);
 	    if (DBFETCH(ref)->sp.exit.dest) {
-		free((void *) DBFETCH(ref)->sp.exit.dest);
+		free(DBFETCH(ref)->sp.exit.dest);
 		DBSTORE(ref, sp.exit.dest, NULL);
 	    }
 	    if (MLevRaw(ref))
@@ -1140,7 +1140,7 @@ prim_setlink(PRIM_PROTOTYPE)
 	    if (exit_loop_check(ref, oper1->data.objref))
 		abort_interp("Link would cause a loop.");
 	    DBFETCH(ref)->sp.exit.ndest = 1;
-	    DBFETCH(ref)->sp.exit.dest = (dbref *) malloc(sizeof(dbref));
+	    DBFETCH(ref)->sp.exit.dest = malloc(sizeof(dbref));
 	    (DBFETCH(ref)->sp.exit.dest)[0] = oper1->data.objref;
 	    DBDIRTY(ref);
 	    break;
@@ -2556,7 +2556,7 @@ prim_setlinks_array(PRIM_PROTOTYPE)
 	    SetMLevel(what, 0);
 
 	if (DBFETCH(what)->sp.exit.dest != NULL)
-	    free((void *) DBFETCH(what)->sp.exit.dest);
+	    free(DBFETCH(what)->sp.exit.dest);
     }
 
     if (dest_count == 0) {
@@ -2577,7 +2577,7 @@ prim_setlinks_array(PRIM_PROTOTYPE)
 	switch (Typeof(what)) {
 	case TYPE_EXIT:
 	    {
-		dbref *dests = (dbref *) malloc(sizeof(dbref) * dest_count);
+		dbref *dests = malloc(sizeof(dbref) * dest_count);
 
 		if (dests == NULL) {
 		    DBSTORE(what, sp.exit.ndest, 0);

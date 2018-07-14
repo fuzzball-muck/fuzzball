@@ -364,7 +364,7 @@ alloc_string(const char *string)
     if (!string || !*string)
 	return 0;
 
-    if ((s = (char *) malloc(strlen(string) + 1)) == 0) {
+    if ((s = malloc(strlen(string) + 1)) == 0) {
 	abort();
     }
     strcpy(s, string);		/* Guaranteed enough space. */

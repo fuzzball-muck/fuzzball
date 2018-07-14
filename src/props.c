@@ -141,7 +141,7 @@ alloc_propnode(const char *name)
     PropPtr new_node;
     size_t nlen = strlen(name);
 
-    new_node = (PropPtr) malloc(sizeof(struct plist) + nlen);
+    new_node = malloc(sizeof(struct plist) + nlen);
 
     if (!new_node) {
 	fprintf(stderr, "alloc_propnode(): Out of Memory!\n");

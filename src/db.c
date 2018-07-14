@@ -49,7 +49,7 @@ db_grow(dbref newtop)
 	    db_size = DB_INITIAL_SIZE;
 	    while (db_top > db_size)
 		db_size += 1000;
-	    if ((db = (struct object *) malloc(db_size * sizeof(struct object))) == 0) {
+	    if ((db = malloc(db_size * sizeof(struct object))) == 0) {
 		abort();
 	    }
 	}
@@ -58,8 +58,7 @@ db_grow(dbref newtop)
 	    /* make sure it's big enough */
 	    while (db_top > db_size)
 		db_size += 1000;
-	    if ((newdb = (struct object *) realloc((void *) db,
-						   db_size * sizeof(struct object))) == 0) {
+	    if ((newdb = realloc((void *) db, db_size * sizeof(struct object))) == 0) {
 		abort();
 	    }
 	    db = newdb;
@@ -86,8 +85,7 @@ db_grow(dbref newtop)
 	    /* make the initial one */
 	    int startsize = (newtop >= DB_INITIAL_SIZE) ? newtop : DB_INITIAL_SIZE;
 
-	    if ((db = (struct object *)
-		 malloc((size_t)startsize * sizeof(struct object))) == 0) {
+	    if ((db = malloc((size_t)startsize * sizeof(struct object))) == 0) {
 		abort();
 	    }
 	}
@@ -168,7 +166,7 @@ create_action(dbref player, const char *name, dbref source)
 
     if (tp_autolink_actions) {
 	DBFETCH(newact)->sp.exit.ndest = 1;
-	DBFETCH(newact)->sp.exit.dest = (dbref *) malloc(sizeof(dbref));
+	DBFETCH(newact)->sp.exit.dest = malloc(sizeof(dbref));
 	(DBFETCH(newact)->sp.exit.dest)[0] = NIL;
     }
 
@@ -544,7 +542,7 @@ db_free_object(dbref i)
 #endif
 
     if (Typeof(i) == TYPE_EXIT && o->sp.exit.dest) {
-	free((void *) o->sp.exit.dest);
+	free(o->sp.exit.dest);
     } else if (Typeof(i) == TYPE_PLAYER) {
 	if (PLAYER_PASSWORD(i)) {
 	    free((void *) PLAYER_PASSWORD(i));
@@ -570,7 +568,7 @@ db_free(void)
     if (db) {
 	for (dbref i = 0; i < db_top; i++)
 	    db_free_object(i);
-	free((void *) db);
+	free(db);
 	db = 0;
 	db_top = 0;
     }
@@ -661,7 +659,7 @@ db_read_object(FILE * f, dbref objno, int dtype)
     case TYPE_EXIT:
 	o->sp.exit.ndest = prop_flag ? getref(f) : j;
 	if (o->sp.exit.ndest > 0)	/* only allocate space for linked exits */
-	    o->sp.exit.dest = (dbref *) malloc(sizeof(dbref) * (size_t)(o->sp.exit.ndest));
+	    o->sp.exit.dest = malloc(sizeof(dbref) * (size_t)(o->sp.exit.ndest));
 	for (j = 0; j < o->sp.exit.ndest; j++) {
 	    (o->sp.exit.dest)[j] = getref(f);
 	}
@@ -806,7 +804,7 @@ objnode_push(objnode **head, dbref data)
 {
     objnode *tmp;
 
-    if (!(tmp = (objnode *)malloc(sizeof(objnode)))) {
+    if (!(tmp = malloc(sizeof(objnode)))) {
         fprintf(stderr, "objnode_push: out of memory\n");
         return;
     }
