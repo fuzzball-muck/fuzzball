@@ -55,7 +55,7 @@ gui_pkg_callback(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 	    return;
 	}
 
-	value = (const char **) malloc(sizeof(const char *) * valcount);
+	value = malloc(sizeof(const char *) * valcount);
 
 	for (int i = 0; i < valcount; i++) {
 	    value[i] = mcp_mesg_arg_getline(msg, "value", i);
@@ -229,18 +229,18 @@ gui_value_set_local(const char *dlogid, const char *id, int lines, const char **
 	free(ptr->value);
     } else {
 	size_t ilen = strlen(id) + 1;
-	ptr = (DlogValue *) malloc(sizeof(DlogValue));
-	ptr->name = (char *) malloc(ilen);
+	ptr = malloc(sizeof(DlogValue));
+	ptr->name = malloc(ilen);
 	strcpyn(ptr->name, ilen, id);
 	ptr->next = ddata->values;
 	ddata->values = ptr;
     }
     ptr->lines = lines;
-    ptr->value = (char **) malloc(sizeof(char *) * (size_t)lines);
+    ptr->value = malloc(sizeof(char *) * (size_t)lines);
 
     for (int i = 0; i < lines; i++) {
 	size_t vlen = strlen(value[i]) + 1;
-	ptr->value[i] = (char *) malloc(vlen);
+	ptr->value[i] = malloc(vlen);
 	strcpyn(ptr->value[i], vlen, value[i]);
     }
 }
@@ -268,9 +268,9 @@ gui_dlog_alloc(int descr, Gui_CB callback, GuiErr_CB error_cb, void *context)
 	    break;
 	}
     }
-    ptr = (DlogData *) malloc(sizeof(DlogData));
+    ptr = malloc(sizeof(DlogData));
     tlen = strlen(tmpid) + 1;
-    ptr->id = (char *) malloc(tlen);
+    ptr->id = malloc(tlen);
     strcpyn(ptr->id, tlen, tmpid);
     ptr->descr = descr;
     ptr->dismissed = 0;
@@ -602,7 +602,7 @@ gui_ctrl_make_l(const char *dlogid, const char *type, const char *pane, const ch
 void
 muf_dlog_add(struct frame *fr, const char *dlogid)
 {
-    struct dlogidlist *item = (struct dlogidlist *) malloc(sizeof(struct dlogidlist));
+    struct dlogidlist *item = malloc(sizeof(struct dlogidlist));
 
     strcpyn(item->dlogid, sizeof(item->dlogid), dlogid);
     item->next = fr->dlogids;

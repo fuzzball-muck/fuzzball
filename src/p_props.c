@@ -1241,7 +1241,7 @@ prim_parsepropex(PRIM_PROTOTYPE)
 	if (novars > 0) {
 	    mvarcnt = varc;
 
-	    if ((buffers = (char *) malloc(novars * BUFFER_LEN)) == NULL)
+	    if ((buffers = malloc(novars * BUFFER_LEN)) == NULL)
 		abort_interp("Out of memory.");
 
 	    if (array_first(vars, &idx)) {

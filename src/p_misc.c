@@ -324,7 +324,7 @@ prim_fork(PRIM_PROTOTYPE)
 
     fr->pc = pc;
 
-    tmpfr = (struct frame *) calloc(1, sizeof(struct frame));
+    tmpfr = calloc(1, sizeof(struct frame));
     tmpfr->next = NULL;
 
     array_init_active_list(&tmpfr->array_active_list);
@@ -359,7 +359,7 @@ prim_fork(PRIM_PROTOTYPE)
 
     tmpfr->error.is_flags = fr->error.is_flags;
     if (fr->rndbuf) {
-	tmpfr->rndbuf = (void *) malloc(sizeof(unsigned long) * 4);
+	tmpfr->rndbuf = malloc(sizeof(unsigned long) * 4);
 
 	if (tmpfr->rndbuf) {
 	    memcpy(tmpfr->rndbuf, fr->rndbuf, 16);
@@ -1056,14 +1056,14 @@ prim_watchpid(PRIM_PROTOTYPE)
 	}
 
 	if (!*cur) {
-	    *cur = (struct mufwatchpidlist *) malloc(sizeof(**cur));
+	    *cur = malloc(sizeof(**cur));
 	    if (!*cur) {
 		abort_interp("Internal memory error.\n");
 	    }
 	    (*cur)->next = 0;
 	    (*cur)->pid = fr->pid;
 
-	    waitee = (struct mufwatchpidlist *) malloc(sizeof(*waitee));
+	    waitee = malloc(sizeof(*waitee));
 	    if (!waitee) {
 		abort_interp("Internal memory error.\n");
 	    }

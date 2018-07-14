@@ -898,7 +898,7 @@ recycle(int descr, dbref player, dbref thing)
 
     db_free_object(thing);
     db_clear_object(thing);
-    NAME(thing) = (char *) strdup("<garbage>");
+    NAME(thing) = strdup("<garbage>");
     SETDESC(thing, "<recyclable>");
     FLAGS(thing) = TYPE_GARBAGE;
 

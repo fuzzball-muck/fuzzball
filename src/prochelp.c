@@ -123,10 +123,10 @@ add_section(const char *str)
 
     if (!str || !*str)
 	return;
-    top = (struct topiclist *) malloc(sizeof(struct topiclist));
+    top = malloc(sizeof(struct topiclist));
 
     top->topic = NULL;
-    top->section = (char *) strdup(sect);
+    top->section = strdup(sect);
     top->printed = 0;
     top->next = NULL;
 
@@ -155,10 +155,10 @@ add_topic(const char *str)
 	*s++ = tolower(*p);
     } while (*p++);
 
-    top = (struct topiclist *) malloc(sizeof(struct topiclist));
+    top = malloc(sizeof(struct topiclist));
 
-    top->topic = (char *) strdup(buf);
-    top->section = (char *) strdup(sect);
+    top->topic = strdup(buf);
+    top->section = strdup(sect);
     top->printed = 0;
 
     if (!topichead) {

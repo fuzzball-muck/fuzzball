@@ -483,7 +483,7 @@ new_mfunc(const char *funcname, const char *buf)
     if (funcc >= MPI_MAX_FUNCTIONS)
 	return 2;
     strcpyn(funcv[funcc].name, sizeof(funcv[funcc].name), funcname);
-    funcv[funcc++].buf = (char *) strdup(buf);
+    funcv[funcc++].buf = strdup(buf);
     return 0;
 }
 
@@ -673,7 +673,7 @@ mesg_args(char *wbuf, size_t maxlen, char **argv, char ulv, char sep, char dlv, 
 		    free(argv[argc]);
 		    argv[argc] = NULL;
 		}
-		argv[argc] = (char *) malloc((size_t)((buf + r) - ptr) + 1);
+		argv[argc] = malloc((size_t)((buf + r) - ptr) + 1);
 		strcpyn(argv[argc++], (size_t)((buf + r) - ptr) + 1, ptr);
 		ptr = buf + r + 1;
 		break;
@@ -686,7 +686,7 @@ mesg_args(char *wbuf, size_t maxlen, char **argv, char ulv, char sep, char dlv, 
 		    free(argv[argc]);
 		    argv[argc] = NULL;
 		}
-		argv[argc] = (char *) malloc((size_t)((buf + r) - ptr) + 1);
+		argv[argc] = malloc((size_t)((buf + r) - ptr) + 1);
 		strcpyn(argv[argc++], (size_t)((buf + r) - ptr) + 1, ptr);
 		ptr = buf + r + 1;
 	    }
@@ -898,7 +898,7 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms,
 				    outbuf[0] = '\0';
 				    return NULL;
 				}
-				argv[i] = (char *) realloc(argv[i], strlen(buf) + 1);
+				argv[i] = realloc(argv[i], strlen(buf) + 1);
 				strcpyn(argv[i], strlen(buf) + 1, buf);
 			    }
 			}

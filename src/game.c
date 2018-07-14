@@ -346,7 +346,7 @@ init_game(const char *infile, const char *outfile)
 	fclose(f);
     }
 
-    in_filename = (char *) strdup(infile);
+    in_filename = strdup(infile);
     if ((input_file = fopen(infile, "rb")) == NULL)
 	return -1;
 

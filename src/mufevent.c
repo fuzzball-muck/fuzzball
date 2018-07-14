@@ -79,7 +79,7 @@ muf_event_register_specific(dbref player, dbref prog, struct frame *fr, size_t e
     struct mufevent_process *newproc;
     struct mufevent_process *ptr;
 
-    newproc = (struct mufevent_process *) malloc(sizeof(struct mufevent_process));
+    newproc = malloc(sizeof(struct mufevent_process));
 
     newproc->prev = NULL;
     newproc->next = NULL;
@@ -89,7 +89,7 @@ muf_event_register_specific(dbref player, dbref prog, struct frame *fr, size_t e
     newproc->deleted = 0;
     newproc->filtercount = eventcount;
     if (eventcount > 0) {
-	newproc->filters = (char **) malloc(eventcount * sizeof(char **));
+	newproc->filters = malloc(eventcount * sizeof(char **));
 	for (int i = 0; i < eventcount; i++) {
 	    newproc->filters[i] = strdup(eventids[i]);
 	}
@@ -492,7 +492,7 @@ muf_event_add(struct frame *fr, char *event, struct inst *val, int exclusive)
 	return;
     }
 
-    newevent = (struct mufevent *) malloc(sizeof(struct mufevent));
+    newevent = malloc(sizeof(struct mufevent));
     newevent->event = strdup(event);
     copyinst(val, &newevent->data);
     newevent->next = NULL;

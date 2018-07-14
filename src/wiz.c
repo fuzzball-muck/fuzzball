@@ -828,7 +828,7 @@ do_muf_topprofs(dbref player, char *arg1)
 
     for (dbref i = db_top; i-- > 0;) {
 	if (Typeof(i) == TYPE_PROGRAM && PROGRAM_CODE(i)) {
-	    struct profnode *newnode = (struct profnode *) malloc(sizeof(struct profnode));
+	    struct profnode *newnode = malloc(sizeof(struct profnode));
 	    struct timeval tmpt = PROGRAM_PROFTIME(i);
 
 	    newnode->next = NULL;
@@ -925,7 +925,7 @@ do_mpi_topprofs(dbref player, char *arg1)
 
     for (dbref i = db_top; i-- > 0;) {
 	if (DBFETCH(i)->mpi_prof_use) {
-	    struct profnode *newnode = (struct profnode *) malloc(sizeof(struct profnode));
+	    struct profnode *newnode = malloc(sizeof(struct profnode));
 	    newnode->next = NULL;
 	    newnode->prog = i;
 	    newnode->proftime = DBFETCH(i)->mpi_proftime.tv_sec;
@@ -1029,7 +1029,7 @@ do_topprofs(dbref player, char *arg1)
 
     for (dbref i = db_top; i-- > 0;) {
 	if (DBFETCH(i)->mpi_prof_use) {
-	    struct profnode *newnode = (struct profnode *) malloc(sizeof(struct profnode));
+	    struct profnode *newnode = malloc(sizeof(struct profnode));
 	    newnode->next = NULL;
 	    newnode->prog = i;
 	    newnode->proftime = DBFETCH(i)->mpi_proftime.tv_sec;
@@ -1078,7 +1078,7 @@ do_topprofs(dbref player, char *arg1)
 	    }
 	}
 	if (Typeof(i) == TYPE_PROGRAM && PROGRAM_CODE(i)) {
-	    struct profnode *newnode = (struct profnode *) malloc(sizeof(struct profnode));
+	    struct profnode *newnode = malloc(sizeof(struct profnode));
 	    struct timeval tmpt = PROGRAM_PROFTIME(i);
 
 	    newnode->next = NULL;

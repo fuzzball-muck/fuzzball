@@ -75,7 +75,7 @@ do_open(int descr, dbref player, const char *direction, const char *linkto)
 	    } else {
 		ndest = link_exit(descr, player, exit, (char *) qname, good_dest);
 		DBFETCH(exit)->sp.exit.ndest = ndest;
-		DBFETCH(exit)->sp.exit.dest = (dbref *) malloc(sizeof(dbref) * (size_t)ndest);
+		DBFETCH(exit)->sp.exit.dest = malloc(sizeof(dbref) * (size_t)ndest);
 		for (int i = 0; i < ndest; i++) {
 		    (DBFETCH(exit)->sp.exit.dest)[i] = good_dest[i];
 		}
@@ -171,7 +171,7 @@ do_link(int descr, dbref player, const char *thing_name, const char *dest_name)
 	if (DBFETCH(thing)->sp.exit.dest) {
 	    free(DBFETCH(thing)->sp.exit.dest);
 	}
-	DBFETCH(thing)->sp.exit.dest = (dbref *) malloc(sizeof(dbref) * (size_t)ndest);
+	DBFETCH(thing)->sp.exit.dest = malloc(sizeof(dbref) * (size_t)ndest);
 	for (int i = 0; i < ndest; i++) {
 	    (DBFETCH(thing)->sp.exit.dest)[i] = good_dest[i];
 	}

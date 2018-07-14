@@ -19,7 +19,7 @@ free_line(struct line *l)
 {
     if (l->this_line)
 	free((void *) l->this_line);
-    free((void *) l);
+    free(l);
 }
 
 void
@@ -54,7 +54,7 @@ macro_expansion(struct macrotable *node, const char *match)
 static struct macrotable *
 new_macro(const char *name, const char *definition, dbref player)
 {
-    struct macrotable *newmacro = (struct macrotable *) malloc(sizeof(struct macrotable));
+    struct macrotable *newmacro = malloc(sizeof(struct macrotable));
     char buf[BUFFER_LEN];
     int i;
 
@@ -186,7 +186,7 @@ erase_node(struct macrotable *oldnode, struct macrotable *node,
 		free(node->name);
 	    if (node->definition)
 		free(node->definition);
-	    free((void *) node);
+	    free(node);
 	    return 1;
 	} else {
 	    oldnode->right = node->right;
@@ -196,7 +196,7 @@ erase_node(struct macrotable *oldnode, struct macrotable *node,
 		free(node->name);
 	    if (node->definition)
 		free(node->definition);
-	    free((void *) node);
+	    free(node);
 	    return 1;
 	}
     }
@@ -218,7 +218,7 @@ kill_macro(const char *macroname, dbref player, struct macrotable **mtop)
 	    free(macrotemp->name);
 	if (macrotemp->definition)
 	    free(macrotemp->definition);
-	free((void *) macrotemp);
+	free(macrotemp);
 	return (1);
     } else if (erase_node((*mtop), (*mtop), macroname, (*mtop)))
 	return (1);
@@ -835,7 +835,7 @@ get_new_line(void)
 {
     struct line *nu;
 
-    nu = (struct line *) malloc(sizeof(struct line));
+    nu = malloc(sizeof(struct line));
 
     if (!nu) {
 	fprintf(stderr, "get_new_line(): Out of memory!\n");

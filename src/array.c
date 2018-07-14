@@ -423,7 +423,7 @@ array_tree_alloc_node(array_iter * key)
     array_tree *new_node;
     assert(key != NULL);
 
-    new_node = (array_tree *) calloc(1, sizeof(array_tree));
+    new_node = calloc(1, sizeof(array_tree));
     if (!new_node) {
 	fprintf(stderr, "array_tree_alloc_node(): Out of Memory!\n");
 	abort();
@@ -646,7 +646,7 @@ new_array(int pin)
 {
     stk_array *nu;
 
-    nu = (stk_array *) malloc(sizeof(stk_array));
+    nu = malloc(sizeof(stk_array));
     assert(nu != NULL);
     if (nu == NULL) {
 	fprintf(stderr, "new_array(): Out of Memory!");
@@ -680,7 +680,7 @@ new_array_packed(int size, int pin)
     nu->type = ARRAY_PACKED;
     if (size < 1)
 	size = 1;
-    nu->data.packed = (array_data *) malloc(sizeof(array_data) * (size_t)size);
+    nu->data.packed = malloc(sizeof(array_data) * (size_t)size);
     if (nu->data.packed == NULL) {
 	fprintf(stderr, "new_array_packed(): Out of Memory!");
 	abort();
@@ -730,7 +730,7 @@ array_decouple(stk_array * arr)
     switch (arr->type) {
 	case ARRAY_PACKED:{
 	    nu->items = arr->items;
-	    nu->data.packed = (array_data *) malloc(sizeof(array_data) * (size_t)arr->items);
+	    nu->data.packed = malloc(sizeof(array_data) * (size_t)arr->items);
 	    if (nu->data.packed == NULL) {
 		fprintf(stderr, "array_decouple(): Out of Memory!");
 		abort();

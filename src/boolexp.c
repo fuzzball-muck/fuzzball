@@ -12,7 +12,7 @@
 static struct boolexp *
 alloc_boolnode(void)
 {
-    return ((struct boolexp *) malloc(sizeof(struct boolexp)));
+    return (malloc(sizeof(struct boolexp)));
 }
 
 static void
