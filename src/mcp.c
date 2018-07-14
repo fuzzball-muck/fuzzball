@@ -165,7 +165,7 @@ mcp_intern_is_mesg_start(McpFrame * mfr, const char *in)
     char authkey[128];
     char *subname = NULL;
     McpMesg *newmsg = NULL;
-    int longlen = 0;
+    size_t longlen = 0;
 
     if (!mcp_intern_is_ident(&in, mesgname, sizeof(mesgname)))
 	return 0;

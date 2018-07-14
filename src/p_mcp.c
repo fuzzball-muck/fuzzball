@@ -850,7 +850,7 @@ prim_gui_ctrl_create(PRIM_PROTOTYPE)
     }
     if (valname && vallines > 0) {
 	vallist = malloc(sizeof(char *) * vallines);
-	for (int i = 0; i < vallines; i++)
+	for (unsigned int i = 0; i < vallines; i++)
 	    vallist[i] = mcp_mesg_arg_getline(&msg, "value", i);
 	gui_value_set_local(dlogid, valname, vallines, (const char **) vallist);
 	free(vallist);
@@ -1000,7 +1000,7 @@ prim_gui_value_set(PRIM_PROTOTYPE)
 	count = (size_t)array_count(oper3->data.array);
 	valarray = malloc(sizeof(char *) * count);
 
-	for (int i = 0; i < count; i++) {
+	for (unsigned int i = 0; i < count; i++) {
 	    temp1.type = PROG_INTEGER;
 	    temp1.data.number = i;
 

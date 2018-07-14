@@ -57,7 +57,7 @@ gui_pkg_callback(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 
 	value = malloc(sizeof(const char *) * valcount);
 
-	for (int i = 0; i < valcount; i++) {
+	for (unsigned int i = 0; i < valcount; i++) {
 	    value[i] = mcp_mesg_arg_getline(msg, "value", i);
 	}
 	gui_value_set_local(dlogid, id, valcount, value);

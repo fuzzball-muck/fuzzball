@@ -1254,7 +1254,7 @@ prim_midstr(PRIM_PROTOTYPE)
     if (!oper3->data.string) {
 	result = 1;
     } else {
-	if (oper2->data.number > oper3->data.string->length) {
+	if ((size_t)oper2->data.number > oper3->data.string->length) {
 	    result = 1;
 	} else {
 	    start = (size_t)oper2->data.number - 1;
@@ -1366,7 +1366,7 @@ prim_strcut(PRIM_PROTOTYPE)
 	PushNullStr;
 	PushNullStr;
     } else {
-	if (temp1.data.number > temp2.data.string->length) {
+	if ((size_t)temp1.data.number > temp2.data.string->length) {
 	    temp2.data.string->links++;
 	    PushStrRaw(temp2.data.string);
 	    PushNullStr;
@@ -1374,7 +1374,7 @@ prim_strcut(PRIM_PROTOTYPE)
 	    bcopy(temp2.data.string->data, buf, temp1.data.number);
 	    buf[temp1.data.number] = '\0';
 	    PushString(buf);
-	    if (temp2.data.string->length > temp1.data.number) {
+	    if (temp2.data.string->length > (size_t)temp1.data.number) {
 		bcopy(temp2.data.string->data + temp1.data.number, buf,
 		      temp2.data.string->length - (size_t)temp1.data.number + 1);
 		PushString(buf);
@@ -2433,7 +2433,7 @@ prim_ansi_strcut(PRIM_PROTOTYPE)
 
     loc = 0;
 
-    if (oper2->data.number >= oper1->data.string->length) {
+    if ((size_t)oper2->data.number >= oper1->data.string->length) {
 	strcpyn(buf, sizeof(buf), oper1->data.string->data);
 	CLEAR(oper1);
 	CLEAR(oper2);
@@ -2532,7 +2532,7 @@ prim_ansi_midstr(PRIM_PROTOTYPE)
     start = oper2->data.number - 1;
     range = oper1->data.number;
 
-    if (!oper3->data.string || start > oper3->data.string->length || range == 0) {
+    if (!oper3->data.string || (size_t)start > oper3->data.string->length || range == 0) {
 	CLEAR(oper1);
 	CLEAR(oper2);
 	CLEAR(oper3);
