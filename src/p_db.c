@@ -2586,7 +2586,7 @@ prim_setlinks_array(PRIM_PROTOTYPE)
 		}
 
 		if (array_first(arr, &idx)) {
-		    int i = 0;
+		    unsigned int i = 0;
 
 		    do {
 			if (i < dest_count)

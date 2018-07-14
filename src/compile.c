@@ -106,7 +106,7 @@ typedef struct COMPILE_STATE_T {
     struct INTERMEDIATE **addrlist;     /* list of addresses to resolve */
     int *addroffsets;           /* list of offsets from instrs */
     size_t addrmax;                /* size of current addrlist array */
-    int addrcount;              /* number of allocated addresses */
+    unsigned int addrcount;              /* number of allocated addresses */
 
     /* variable names.  The index into cstat->variables give you what position
      * the variable holds.
@@ -880,7 +880,7 @@ static int
 OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
 {
     int *Flags;
-    int i;
+    unsigned int i;
     size_t count = 0;
     int old_instr_count = cstat->nowords;
     int AtNo = get_primitive("@");

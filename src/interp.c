@@ -1675,7 +1675,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 			char *val = array_get_intkey_strval(temp1->data.array, k);
 			if (val != NULL) {
 			    int found = 0;
-			    for (int j = 0; j < outcount; j++) {
+			    for (unsigned int j = 0; j < outcount; j++) {
 				if (!strcmp(events[j], val)) {
 				    found = 1;
 				    break;
@@ -2089,7 +2089,7 @@ insttotext(struct frame *fr, int lev, struct inst *theinst, char *buffer, int bu
 	}
 	/* we know we won't overflow, so don't set length */
 	snprintf(buffer, buflen, "\"%1.*s\"", (strmax - 1), theinst->data.string->data);
-	if (theinst->data.string->length > strmax)
+	if ((int)theinst->data.string->length > strmax)
 	    strcatn(buffer, buflen, "_");
 	break;
     case PROG_MARK:

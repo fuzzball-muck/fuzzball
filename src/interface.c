@@ -653,7 +653,7 @@ forget_player_descr(dbref player, int descr)
 	count = 0;
     } else if (count > 1) {
 	size_t dest = 0;
-	for (int src = 0; src < count; src++) {
+	for (unsigned int src = 0; src < count; src++) {
 	    if (arr[src] != descr) {
 		if (src != dest) {
 		    arr[dest] = arr[src];
@@ -2131,7 +2131,7 @@ static void
 bind_ssl_sockets(void)
 {
     if (ipv4_enabled) {
-	for (int i = 0; i < ssl_numports; i++) {
+	for (unsigned int i = 0; i < ssl_numports; i++) {
 	    ssl_sock[i] = make_socket(ssl_listener_port[i]);
 	    update_max_descriptor(ssl_sock[i]);
 	    ssl_numsocks++;
@@ -2139,7 +2139,7 @@ bind_ssl_sockets(void)
     }
 # ifdef USE_IPV6
     if (ipv6_enabled) {
-	for (int i = 0; i < ssl_numports; i++) {
+	for (unsigned int i = 0; i < ssl_numports; i++) {
 	    ssl_sock_v6[i] = make_socket_v6(ssl_listener_port[i]);
 	    update_max_descriptor(ssl_sock_v6[i]);
 	    ssl_numsocks_v6++;
@@ -4420,7 +4420,7 @@ main(int argc, char **argv)
  */
 
     if (ipv4_enabled) {
-	for (int i = 0; i < numports; i++) {
+	for (unsigned int i = 0; i < numports; i++) {
 	    sock[i] = make_socket(listener_port[i]);
 	    update_max_descriptor(sock[i]);
 	    numsocks++;
@@ -4428,7 +4428,7 @@ main(int argc, char **argv)
     }
 #ifdef USE_IPV6
     if (ipv6_enabled) {
-	for (int i = 0; i < numports; i++) {
+	for (unsigned int i = 0; i < numports; i++) {
 	    sock_v6[i] = make_socket_v6(listener_port[i]);
 	    update_max_descriptor(sock_v6[i]);
 	    numsocks_v6++;

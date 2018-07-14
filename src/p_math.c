@@ -125,7 +125,7 @@ prim_multiply(PRIM_PROTOTYPE)
 
         if (string && string->length > 0 && tmp > 0) {
             /* this check avoids integer overflow with tmp * length */
-            if (string->length > MAXINT / tmp) {
+            if (string->length > (size_t)(MAXINT / tmp)) {
                 abort_interp("Operation would result in overflow.");
             }
 
@@ -133,7 +133,7 @@ prim_multiply(PRIM_PROTOTYPE)
                 abort_interp("Operation would result in overflow.");
             }
 
-            for (size_t i = 0; i < tmp; i++) {
+            for (size_t i = 0; i < (size_t)tmp; i++) {
                 bcopy(DoNullInd(string), buf + i * string->length, string->length);
             }
             buf[(size_t)tmp * string->length] = 0;

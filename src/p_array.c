@@ -868,7 +868,7 @@ prim_array_sort(PRIM_PROTOTYPE)
     nu = new_array_packed(count, fr->pinning);
     tmparr = malloc(count * sizeof(struct inst *));
 
-    for (int i = 0; i < count; i++) {
+    for (unsigned int i = 0; i < count; i++) {
 	temp1.data.number = i;
 	tmparr[i] = array_getitem(arr, &temp1);
     }
@@ -889,7 +889,7 @@ prim_array_sort(PRIM_PROTOTYPE)
     /* WORK: if we go multithreaded, the mutex should be released here. */
     /*       Share this mutex with ARRAY_SORT_INDEXED. */
 
-    for (int i = 0; i < count; i++) {
+    for (unsigned int i = 0; i < count; i++) {
 	temp1.data.number = i;
 	array_setitem(&nu, &temp1, tmparr[i]);
     }
@@ -932,7 +932,7 @@ prim_array_sort_indexed(PRIM_PROTOTYPE)
     nu = new_array_packed(count, fr->pinning);
     tmparr = malloc(count * sizeof(struct inst *));
 
-    for (int i = 0; i < count; i++) {
+    for (unsigned int i = 0; i < count; i++) {
 	temp1.data.number = i;
 	tmparr[i] = array_getitem(arr, &temp1);
     }
@@ -953,7 +953,7 @@ prim_array_sort_indexed(PRIM_PROTOTYPE)
     /* WORK: if we go multithreaded, the mutex should be released here. */
     /*       Share this mutex with ARRAY_SORT. */
 
-    for (int i = 0; i < count; i++) {
+    for (unsigned int i = 0; i < count; i++) {
 	temp1.data.number = i;
 	array_setitem(&nu, &temp1, tmparr[i]);
     }

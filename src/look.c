@@ -721,7 +721,7 @@ do_uptime(dbref player)
     char buf[BUFFER_LEN];
     time_t startup = get_property_value(0, SYS_STARTUPTIME_PROP);
     strftime(buf, sizeof(buf), "%a %b %e %T %Z %Y", localtime(&startup));
-    notifyf(player, "Up %s since %s", timestr_long(time(NULL) - startup), buf);
+    notifyf(player, "Up %s since %s", timestr_long((time_t)(time(NULL) - startup)), buf);
 }
 
 void

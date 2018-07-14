@@ -1117,7 +1117,7 @@ string_substitute(const char *str, const char *oldstr, const char *newstr,
     const char *ptr = str;
     char *ptr2 = buf;
     size_t len = strlen(oldstr);
-    int clen = 0;
+    size_t clen = 0;
 
     if (len == 0) {
         strcpyn(buf, maxlen, str);
@@ -1125,7 +1125,7 @@ string_substitute(const char *str, const char *oldstr, const char *newstr,
     }
     while (*ptr && clen < (maxlen + 2)) {
         if (!strncmp(ptr, oldstr, len)) {
-            for (const char *ptr3 = newstr; ((ptr2 - buf) < (maxlen - 2)) && *ptr3;)
+            for (const char *ptr3 = newstr; ((ptr2 - buf) < (int)(maxlen - 2)) && *ptr3;)
                 *(ptr2++) = *(ptr3++);
             ptr += len;
             clen += len;
