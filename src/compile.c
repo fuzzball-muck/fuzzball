@@ -2189,6 +2189,8 @@ do_string(COMPSTATE * cstat)
 static int
 do_old_comment(COMPSTATE * cstat)
 {
+    if (!cstat->next_char) return 1;
+
     while (*cstat->next_char && *cstat->next_char != ENDCOMMENT)
 	cstat->next_char++;
     if (!(*cstat->next_char)) {

@@ -868,7 +868,7 @@ copyinst(struct inst *from, struct inst *to)
 void
 deep_copyinst(struct inst *in, struct inst *out, int pinned)
 {
-    stk_array *nu, *arr;
+    stk_array *nu = NULL, *arr;
     struct inst temp1;
     if (in->type != PROG_ARRAY) {
 	copyinst(in, out);

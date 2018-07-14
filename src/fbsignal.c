@@ -235,9 +235,6 @@ bailout(int sig)
 
     panic(message);
 
-    /* keep failing */
-    volatile char *x = 0;
-    *x = 1;
     exit(7);
 }
 

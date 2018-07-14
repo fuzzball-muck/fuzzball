@@ -258,9 +258,6 @@ panic(const char *message)
 
     sync();
 
-    volatile char *x = 0;
-    *x = 1;
-
 #ifdef NOCOREDUMP
     exit(136);
 #else				/* !NOCOREDUMP */
