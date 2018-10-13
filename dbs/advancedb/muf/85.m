@@ -11,9 +11,11 @@
     first when using name filter {eg "wd s"}.
   1.11, 27 March 2003: With #species, show species in normal color.
   1.2, 4 October 2003: Use $lib/wf to get watchfor list
+  1.3, 12 October 2018: Fix minor issue with rainbow color ending
+    up on some idle times. (Theo@HLM)
 )
 $author Natasha O'Brien <mufden@mufden.fuzzball.org>
-$version 1.2
+$version 1.3
 $note A tastefully colored WHO replacement for Fuzzball 6.
  
 $include $lib/strings
@@ -68,7 +70,7 @@ $endif
         dup case  ( intIdle intIdle )
             3600 >= when "\[[1;31m" end
              600 >= when "\[[1;33m" end
-              60 >= when ""         end
+              60 >= when "\[[0m"    end
             default pop  "\[[1;32m" end
         endcase  ( intIdle strColor )
 $iflib $lib/away
