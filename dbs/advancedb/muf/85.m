@@ -12,7 +12,7 @@
   1.11, 27 March 2003: With #species, show species in normal color.
   1.2, 4 October 2003: Use $lib/wf to get watchfor list
   1.3, 12 October 2018: Fix minor issue with rainbow color ending
-    up on some idle times. (Theo@HLM)
+    up on some idle times. {Theo@HLM}
 )
 $author Natasha O'Brien <mufden@mufden.fuzzball.org>
 $version 1.3
