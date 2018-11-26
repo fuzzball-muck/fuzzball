@@ -727,7 +727,7 @@ do_newpassword(dbref player, const char *name, const char *password)
 	notify(player, "Invalid password.");
 
 #ifdef GOD_PRIV
-    } else if (God(victim)) {
+    } else if (God(victim) && !God(player)) {
 	notify(player, "You can't change God's password!");
 	return;
     } else {
