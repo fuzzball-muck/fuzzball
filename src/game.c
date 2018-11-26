@@ -430,16 +430,31 @@ process_command(int descr, dbref player, const char *command)
 
     if ((tp_log_commands || Wizard(OWNER(player)))) {
         char *log_name = whowhere(player);
+	char log_cmd[BUFFER_LEN];
+
+	strcpy(log_cmd, command); /* OK */
+
+	if (string_prefix(log_cmd, "@password")) {
+	    snprintf(log_cmd, 16, "%.9s [***]", log_cmd);
+	} else if (string_prefix(log_cmd, "@newpassword")) {
+	    snprintf(log_cmd, 19, "%.12s [***]", log_cmd);
+	} else if (string_prefix(log_cmd, "@pcreate")) {
+            char *to_mask = strstr(log_cmd, "=");
+	    if (to_mask) {
+		strcpyn(to_mask+1, 6, "[***]");
+	    } 
+        }
+
 	if (!(FLAGS(player) & (INTERACTIVE | READMODE))) {
 	    if (!*command) {
                 free(log_name);
 		return;
 	    }
-	    log_command("%s: %s", log_name, command);
+	    log_command("%s: %s", log_name, log_cmd);
 	} else {
 	    if (tp_log_interactive) {
 		log_command("%s: %s%s", log_name,
-			    (FLAGS(player) & (READMODE)) ? "[READ] " : "[INTERP] ", command);
+			    (FLAGS(player) & (READMODE)) ? "[READ] " : "[INTERP] ", log_cmd);
 	    }
 	}
         free(log_name);
