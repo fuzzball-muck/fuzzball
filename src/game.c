@@ -432,9 +432,9 @@ process_command(int descr, dbref player, const char *command)
 	strcpy(log_cmd, command); /* OK */
 
 	if (string_prefix(log_cmd, "@password")) {
-	    snprintf(log_cmd, 16, "%.9s [***]", log_cmd);
+	    snprintf(log_cmd, 16, "%.9s [***]", command);
 	} else if (string_prefix(log_cmd, "@newpassword")) {
-	    snprintf(log_cmd, 19, "%.12s [***]", log_cmd);
+	    snprintf(log_cmd, 19, "%.12s [***]", command);
 	} else if (string_prefix(log_cmd, "@pcreate")) {
             char *to_mask = strstr(log_cmd, "=");
 	    if (to_mask) {
