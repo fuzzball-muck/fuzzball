@@ -79,36 +79,35 @@ index_file(dbref player, const char *onwhat, const char *file)
     }
 }
 
+static void
+do_helpfile(dbref player, const char *dir, const char *file, char *topic, char *segment)
+{
+    if (show_subfile(player, dir, topic, segment, 0))
+	return;
+    index_file(player, topic, file);
+}
+
 void
 do_man(dbref player, char *topic, char *seg)
 {
-    if (show_subfile(player, tp_file_man_dir, topic, seg, 0))
-	return;
-    index_file(player, topic, tp_file_man);
+    do_helpfile(player, tp_file_man_dir, tp_file_man, topic, seg);
 }
 
 void
 do_mpihelp(dbref player, char *topic, char *seg)
 {
-    if (show_subfile(player, tp_file_mpihelp_dir, topic, seg, 0))
-	return;
-    index_file(player, topic, tp_file_mpihelp);
-}
+    do_helpfile(player, tp_file_mpihelp_dir, tp_file_mpihelp, topic, seg);}
 
 void
 do_help(dbref player, char *topic, char *seg)
 {
-    if (show_subfile(player, tp_file_help_dir, topic, seg, 0))
-	return;
-    index_file(player, topic, tp_file_help);
+    do_helpfile(player, tp_file_help_dir, tp_file_help, topic, seg);
 }
 
 void
 do_news(dbref player, char *topic, char *seg)
 {
-    if (show_subfile(player, tp_file_news_dir, topic, seg, 0))
-	return;
-    index_file(player, topic, tp_file_news);
+    do_helpfile(player, tp_file_news_dir, tp_file_news, topic, seg);
 }
 
 static void
