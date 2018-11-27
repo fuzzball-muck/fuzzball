@@ -180,7 +180,6 @@ addobject_ringqueue(dbref obj, int mode)
 	DBFETCH(obj)->nextold = NOTHING;
 	DBFETCH(obj)->prevold = NOTHING;
 	return;
-	break;
     case PROPS_LOADED:
 	ref = &proploaded_Q;
 	break;
@@ -190,6 +189,8 @@ addobject_ringqueue(dbref obj, int mode)
     case PROPS_CHANGED:
 	ref = &propchanged_Q;
 	break;
+    default:
+	return;
     }
 
     if (ref->obj == NOTHING) {
