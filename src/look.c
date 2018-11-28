@@ -108,6 +108,8 @@ look_room(int descr, dbref player, dbref loc)
     char obj_num[20];
     char unparse_buf[BUFFER_LEN];
 
+    if (loc == NOTHING) return;
+
     /* tell him the name, and the number if he can link to it */
     unparse_object(player, loc, unparse_buf, sizeof(unparse_buf));
     notify(player, unparse_buf);
@@ -137,11 +139,7 @@ look_room(int descr, dbref player, dbref loc)
 void
 do_look_around(int descr, dbref player)
 {
-    dbref loc;
-
-    if ((loc = LOCATION(player)) == NOTHING)
-	return;
-    look_room(descr, player, loc);
+    look_room(descr, player, LOCATION(player));
 }
 
 void
@@ -149,14 +147,11 @@ do_look_at(int descr, dbref player, const char *name, const char *detail)
 {
     dbref thing;
     struct match_data md;
-    /* int res; */
     char buf[BUFFER_LEN];
     char obj_num[20];
 
     if (*name == '\0' || !strcasecmp(name, "here")) {
-	if ((thing = LOCATION(player)) != NOTHING) {
-	    look_room(descr, player, thing);
-	}
+	look_room(descr, player, LOCATION(player));
     } else {
 	/* look at a thing here */
 	init_match(descr, player, name, NOTYPE, &md);
