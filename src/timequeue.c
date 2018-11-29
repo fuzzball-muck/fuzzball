@@ -1285,7 +1285,7 @@ propqueue(int descr, dbref player, dbref where, dbref trigger, dbref what, dbref
     }
     strcpyn(buf, sizeof(buf), propname);
     if (is_propdir(what, buf)) {
-	strcatn(buf, sizeof(buf), "/");
+	strcatn(buf, sizeof(buf), (char[]){PROPDIR_DELIMITER,0});
 	while ((pname = next_prop_name(what, exbuf, sizeof(exbuf), buf))) {
 	    strcpyn(buf, sizeof(buf), pname);
 	    propqueue(descr, player, where, trigger, what, xclude, buf, toparg, mlev, mt);
@@ -1395,7 +1395,7 @@ listenqueue(int descr, dbref player, dbref where, dbref trigger, dbref what, dbr
     }
     strcpyn(buf, sizeof(buf), propname);
     if (is_propdir(what, buf)) {
-	strcatn(buf, sizeof(buf), "/");
+	strcatn(buf, sizeof(buf), (char[]){PROPDIR_DELIMITER,0});
 	while ((pname = next_prop_name(what, exbuf, sizeof(exbuf), buf))) {
 	    *buf = '\0';
 	    strcatn(buf, sizeof(buf), pname);

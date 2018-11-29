@@ -992,7 +992,7 @@ prim_array_get_propdirs(PRIM_PROTOTYPE)
     ref = oper1->data.objref;
     strcpyn(dir, sizeof(dir), DoNullInd(oper2->data.string));
     if (!*dir)
-	strcpyn(dir, sizeof(dir), "/");
+	strcpyn(dir, sizeof(dir), (char[]){PROPDIR_DELIMITER,0});
     len = strlen(dir) - 1;
     if (len > 0 && dir[len] == PROPDIR_DELIMITER)
 	dir[len] = '\0';
@@ -1052,7 +1052,7 @@ prim_array_get_propvals(PRIM_PROTOTYPE)
     ref = oper1->data.objref;
     strcpyn(dir, sizeof(dir), DoNullInd(oper2->data.string));
     if (!*dir)
-	strcpyn(dir, sizeof(dir), "/");
+	strcpyn(dir, sizeof(dir), (char[]){PROPDIR_DELIMITER,0});
 
     nu = new_array_dictionary(fr->pinning);
     propadr = first_prop(ref, dir, &pptr, propname, sizeof(propname));
@@ -1145,7 +1145,7 @@ prim_array_get_proplist(PRIM_PROTOTYPE)
     ref = oper1->data.objref;
     strcpyn(dir, sizeof(dir), DoNullInd(oper2->data.string));
     if (!*dir)
-	strcpyn(dir, sizeof(dir), "/");
+	strcpyn(dir, sizeof(dir), (char[]){PROPDIR_DELIMITER,0});
 
     snprintf(propname, sizeof(propname), "%s#", dir);
     maxcount = get_property_value(ref, propname);

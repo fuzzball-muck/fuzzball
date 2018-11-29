@@ -2484,15 +2484,18 @@ do_directive(COMPSTATE * cstat, char *direct)
 	if (!tmpname)
 	    v_abort_compile(cstat, "Unexpected end of file looking for $pubdef name.");
 
-	if (strcasecmp(tmpname, ":") &&
+	if (strcasecmp(tmpname, (char[]){PROP_DELIMITER,0}) &&
 	    (index(tmpname, PROPDIR_DELIMITER) ||
 	     index(tmpname, PROP_DELIMITER) ||
 	     Prop_SeeOnly(tmpname) || Prop_Hidden(tmpname) || Prop_System(tmpname))) {
+	    char buf[BUFFER_LEN];
 	    free(tmpname);
-	    v_abort_compile(cstat, "Invalid $pubdef name.  No /, :, @ nor ~ are allowed.");
+	    snprintf(buf, sizeof(buf), "Invalid $pubdef name.  No %c, %c, %c nor %c are allowed.",
+		    PROPDIR_DELIMITER, PROP_DELIMITER, PROP_HIDDEN, PROP_SEEONLY);
+	    v_abort_compile(cstat, buf);
 	} else {
 	    if (!strcasecmp(tmpname, ":")) {
-		remove_property(cstat->program, "/" DEFINES_PROPDIR, 0);
+		remove_property(cstat->program, DEFINES_PROPDIR, 0);
 	    } else {
 		char defstr[BUFFER_LEN];
 		char propname[BUFFER_LEN];
@@ -2540,8 +2543,11 @@ do_directive(COMPSTATE * cstat, char *direct)
 	if (index(tmpname, PROPDIR_DELIMITER) ||
 	    index(tmpname, PROP_DELIMITER) ||
 	    Prop_SeeOnly(tmpname) || Prop_Hidden(tmpname) || Prop_System(tmpname)) {
+	    char buf[BUFFER_LEN];
 	    free(tmpname);
-	    v_abort_compile(cstat, "Invalid $libdef name.  No /, :, @, nor ~ are allowed.");
+            snprintf(buf, sizeof(buf), "Invalid $libdef name.  No %c, %c, %c nor %c are allowed.",
+                    PROPDIR_DELIMITER, PROP_DELIMITER, PROP_HIDDEN, PROP_SEEONLY);
+            v_abort_compile(cstat, buf);
 	} else {
 	    char propname[BUFFER_LEN];
 	    char defstr[BUFFER_LEN];
@@ -2651,7 +2657,6 @@ do_directive(COMPSTATE * cstat, char *direct)
 	advance_line(cstat);
     } else if (!strcasecmp(temp, "doccmd")) {
 	skip_whitespace(&cstat->next_char);
-//	tmpname = (char *) cstat->next_char;
 	tmpname = next_char_special(cstat);
 	skip_whitespace(&cstat->next_char);
 	add_property(cstat->program, MUF_DOCCMD_PROP, tmpname, 0);

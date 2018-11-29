@@ -1157,7 +1157,7 @@ extract_props_rec(FILE * f, dbref obj, const char *dir, PropPtr p)
 static void
 extract_props(FILE * f, dbref obj)
 {
-    extract_props_rec(f, obj, "/", DBFETCH(obj)->properties);
+    extract_props_rec(f, obj, (char[]){PROPDIR_DELIMITER,0}, DBFETCH(obj)->properties);
 }
 
 static void

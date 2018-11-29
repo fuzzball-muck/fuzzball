@@ -48,7 +48,7 @@ fetch_propvals(dbref obj, const char *dir)
 	if (PropDir(p) || (PropFlags(p) & PROP_DIRUNLOADED)) {
 	    strcpyn(buf, sizeof(buf), dir);
 	    strcatn(buf, sizeof(buf), name);
-	    strcatn(buf, sizeof(buf), "/");
+	    strcatn(buf, sizeof(buf), (char[]){PROPDIR_DELIMITER,0});
 	    if (PropFlags(p) & PROP_DIRUNLOADED) {
 		SetPFlags(p, (PropFlags(p) & ~PROP_DIRUNLOADED));
 		getproperties(input_file, obj, buf);
@@ -68,14 +68,14 @@ putprops_copy(FILE * f, dbref obj)
     FILE *g;
 
     if (DBFETCH(obj)->propsmode != PROPS_UNLOADED) {
-	if (fetch_propvals(obj, "/")) {
+	if (fetch_propvals(obj, (char[]){PROPDIR_DELIMITER,0})) {
 	    fseek(f, 0L, 2);
 	}
 	putproperties(f, obj);
 	return;
     }
     if (db_conversion_flag) {
-	if (fetchprops_priority(obj, 1, NULL) || fetch_propvals(obj, "/")) {
+	if (fetchprops_priority(obj, 1, NULL) || fetch_propvals(obj, (char[]){PROPDIR_DELIMITER,0})) {
 	    fseek(f, 0L, 2);
 	}
 	putproperties(f, obj);
@@ -456,7 +456,7 @@ fetchprops_priority(dbref obj, int mode, const char *pdir)
 	/* but do update the queue position */
 	addobject_ringqueue(obj, DBFETCH(obj)->propsmode);
 	if (!pdir)
-	    pdir = "/";
+	    pdir = (char[]){PROPDIR_DELIMITER,0};
 	while ((s = propdir_unloaded(DBFETCH(obj)->properties, pdir))) {
 	    propcache_misses++;
 	    hitflag++;
@@ -477,7 +477,7 @@ fetchprops_priority(dbref obj, int mode, const char *pdir)
     housecleanprops();
 
     /* actually load in root properties */
-    getproperties(input_file, obj, "/");
+    getproperties(input_file, obj, (char[]){PROPDIR_DELIMITER,0});
 
     /* update fetch statistics */
     if (!mode)

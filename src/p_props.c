@@ -48,7 +48,7 @@ prop_write_perms(dbref player, dbref obj, const char *name, int mlev)
 	    if (!strcasecmp(name, tp_gender_prop))
 		return 0;
 	}
-	if (string_prefix(name, MPI_MACROS_PROPDIR "/"))
+	if (string_prefix(name, MPI_MACROS_PROPDIR))
 	    return 0;
     }
     if (mlev < 4) {

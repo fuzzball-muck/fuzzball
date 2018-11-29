@@ -675,7 +675,7 @@ size_properties(dbref player, int load)
 #ifdef DISKBASE
     if (load) {
 	fetchprops(player, NULL);
-	fetch_propvals(player, "/");
+	fetch_propvals(player, (char[]){PROPDIR_DELIMITER,0});
     }
 #endif
     return size_proplist(DBFETCH(player)->properties);
@@ -1112,7 +1112,7 @@ db_dump_props_rec(dbref obj, FILE * f, const char *dir, PropPtr p)
 void
 db_dump_props(FILE * f, dbref obj)
 {
-    db_dump_props_rec(obj, f, "/", DBFETCH(obj)->properties);
+    db_dump_props_rec(obj, f, (char[]){PROPDIR_DELIMITER,0}, DBFETCH(obj)->properties);
 }
 
 static void

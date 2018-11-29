@@ -64,7 +64,7 @@ safeputprop(dbref obj, dbref perms, char *buf, char *val, int mesgtyp)
 	    return 0;
 	if (Prop_SeeOnly(buf))
 	    return 0;
-	if (string_prefix(buf, MPI_MACROS_PROPDIR "/"))
+	if (string_prefix(buf, MPI_MACROS_PROPDIR))
 	    return 0;
     }
     if (val == NULL) {

@@ -464,7 +464,7 @@ unparse_boolexp1(dbref player, struct boolexp *b, short outer_type, int fullname
 	case BOOLEXP_PROP:
 	    strcpyn(buftop, sizeof(boolexp_buf) - (size_t)(buftop - boolexp_buf),
 		    PropName(b->prop_check));
-	    strcatn(buftop, sizeof(boolexp_buf) - (size_t)(buftop - boolexp_buf), ":");
+	    strcatn(buftop, sizeof(boolexp_buf) - (size_t)(buftop - boolexp_buf), (char[]){PROP_DELIMITER,0});
 	    if (PropType(b->prop_check) == PROP_STRTYP)
 		strcatn(buftop, sizeof(boolexp_buf) - (size_t)(buftop - boolexp_buf),
 			PropDataStr(b->prop_check));
