@@ -191,16 +191,6 @@ get_list_item(dbref player, dbref what, dbref perms, char *listname, int itemnum
 	listname[len - 1] = 0;
 
     snprintf(buf, sizeof(buf), "%.512s#/%d", listname, itemnum);
-    ptr = safegetprop(player, what, perms, buf, mesgtyp, blessed);
-    if (!ptr || *ptr)
-	return ptr;
-
-    snprintf(buf, sizeof(buf), "%.512s/%d", listname, itemnum);
-    ptr = safegetprop(player, what, perms, buf, mesgtyp, blessed);
-    if (!ptr || *ptr)
-	return ptr;
-
-    snprintf(buf, sizeof(buf), "%.512s%d", listname, itemnum);
     return (safegetprop(player, what, perms, buf, mesgtyp, blessed));
 }
 
