@@ -308,7 +308,7 @@ print_section_topics(FILE * f, FILE * hf, const char *whichsect)
 }
 
 static void
-print_sections(FILE * f, FILE * hf, int cols)
+print_sections(FILE * f, FILE * hf)
 {
     char sectname[256];
     char *osectptr;
@@ -519,7 +519,7 @@ find_topics(FILE * infile)
 }
 
 static void
-process_lines(FILE * infile, FILE * outfile, FILE * htmlfile, int cols)
+process_lines(FILE * infile, FILE * outfile, FILE * htmlfile)
 {
     FILE *docsfile;
     char *sectptr;
@@ -616,7 +616,7 @@ process_lines(FILE * infile, FILE * outfile, FILE * htmlfile, int cols)
 		    fprintf(htmlfile, HTML_CODEEND);
 		    codeblock = 0;
 		} else if (!strcmp(buf, "~~sectlist\n")) {
-		    print_sections(outfile, htmlfile, cols);
+		    print_sections(outfile, htmlfile);
 		} else if (!strcmp(buf, "~~secttopics\n")) {
 		    /* print_all_section_topics(outfile, htmlfile); */
 		} else if (!strcmp(buf, "~~index\n")) {
@@ -743,7 +743,7 @@ main(int argc, char **argv)
     cols = 78 / (find_topics(infile) + 1);
     fseek(infile, 0L, 0);
 
-    process_lines(infile, outfile, htmlfile, cols);
+    process_lines(infile, outfile, htmlfile);
 
     fclose(infile);
     fclose(outfile);
