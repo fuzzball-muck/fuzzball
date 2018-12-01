@@ -1841,8 +1841,13 @@ process_input(struct descriptor_data *d)
     for (q = buf, qend = buf + got; q < qend; q++) {
 	if (*q == '\n') {
 	    if (!tp_recognize_null_command
-		|| strncasecmp(d->raw_input, NULL_COMMAND, got-2)) {
+		|| strncasecmp(d->raw_input, NULL_COMMAND, got)
+		&& !(got-2 == strlen(NULL_COMMAND))) {
 		d->last_time = time(NULL);
+		log_status("COMMAND: %s", d->raw_input);
+		log_status("GOT BYTES: %i", got);
+		log_status("NULL LEN: %i", strlen(NULL_COMMAND));
+		log_status("MATCHES? %i", strncasecmp(d->raw_input, NULL_COMMAND, got-2));
 	    }
 	    *p = '\0';
 	    if (p >= d->raw_input)
