@@ -1841,7 +1841,7 @@ process_input(struct descriptor_data *d)
     for (q = buf, qend = buf + got; q < qend; q++) {
 	if (*q == '\n') {
 	    if (!tp_recognize_null_command
-		|| strcasecmp(d->raw_input, NULL_COMMAND)) {
+		|| strncasecmp(d->raw_input, NULL_COMMAND, strlen(NULL_COMMAND))) {
 		d->last_time = time(NULL);
 	    }
 	    *p = '\0';
