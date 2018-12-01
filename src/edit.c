@@ -567,7 +567,7 @@ val_and_head(dbref player, int arg[], int argc)
 static void
 do_list_publics(dbref player, dbref program)
 {
-    notify(player, "PUBLIC funtions:");
+    notify(player, "PUBLIC functions:");
     for (struct publics *ptr = PROGRAM_PUBS(program); ptr; ptr = ptr->next)
 	notify(player, ptr->subname);
 }
