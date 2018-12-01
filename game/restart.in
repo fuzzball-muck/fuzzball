@@ -146,6 +146,12 @@ if [ "x$*" != "x" ]; then
     PORTS=$*
 fi
 
+if
+test ! -d "$GAMEDIR/logs"
+then
+mkdir logs
+fi
+
 touch $RESTARTS_LOGFILE
 echo "`date +%Y-%m-%dT%H:%M:%S`: `who am i`" >> $RESTARTS_LOGFILE
 
