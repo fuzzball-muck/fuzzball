@@ -851,8 +851,8 @@ the name of the last object it displayed.
 ~
 FILTER
 {filter:var,list,expr}
-{filter:var,list,exp,sep}
-{filter:var,lst,exp,sep,s2}
+{filter:var,list,expr,sep}
+{filter:var,list,expr,sep,s2}
     This evaluates expr for each and every item in the given list.  On
 each evaluation, the temporary variable var will contain the value of the
 item under scrutiny.  This function returns a list containing all of the
@@ -884,7 +884,7 @@ return.  sep and s2 can be multiple characters long.
 ~
 FOLD
 {fold:var1,var2,list,expr}
-{fold:var1,var2,lst,expr,sep}
+{fold:var1,var2,list,expr,sep}
     This takes a list and stores the first two items in var1 and var2, then
 evaluates expr.  The value returned by expr is then put in var1, and the next
 list item is put in var2.  Expr keeps being evaluated in this way until there
