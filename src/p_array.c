@@ -2359,25 +2359,19 @@ prim_array_notify_secure(PRIM_PROTOTYPE)
     oper2 = POP();
     oper3 = POP();
 
-DEBUGPRINT("1");
     if (oper1->type != PROG_ARRAY)
 	abort_interp("Argument not an array of dbrefs. (3)");
-DEBUGPRINT("2");
     if (!array_is_homogenous(oper1->data.array, PROG_OBJECT))
 	abort_interp("Argument not an array of dbrefs. (3)");
-DEBUGPRINT("3");
     if (oper2->type != PROG_ARRAY)
 	abort_interp("Argument not an array of strings. (2)");
-DEBUGPRINT("4");
     if (!array_is_homogenous(oper2->data.array, PROG_STRING))
 	abort_interp("Argument not an array of strings. (2)");
-DEBUGPRINT("5");
     if (oper3->type != PROG_ARRAY)
 	abort_interp("Argument not an array of strings. (1)");
-DEBUGPRINT("6");
     if (!array_is_homogenous(oper3->data.array, PROG_STRING))
 	abort_interp("Argument not an array of strings. (1)");
-DEBUGPRINT("7");
+
     refarr = oper1->data.array;
     strarr = oper2->data.array;
     strarr2 = oper3->data.array;

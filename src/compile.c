@@ -305,19 +305,6 @@ do_abort_compile(COMPSTATE * cstat, const char *c)
     PROGRAM_SET_PROFTIME(cstat->program, 0, 0);
 }
 
-static void
-compiler_warning(COMPSTATE * cstat, char *text, ...)
-{
-    char buf[BUFFER_LEN];
-    va_list vl;
-
-    va_start(vl, text);
-    vsnprintf(buf, sizeof(buf), text, vl);
-    va_end(vl);
-
-    notify_nolisten(cstat->player, buf, 1);
-}
-
 static int
 get_address(COMPSTATE * cstat, struct INTERMEDIATE *dest, int offset)
 {
@@ -687,7 +674,6 @@ MaybeOptimizeVarsAt(COMPSTATE * cstat, struct INTERMEDIATE *first, int AtNo, int
 		}
 	    }
 	    break;
-
 	case PROG_LVAR_AT:
 	case PROG_LVAR_AT_CLEAR:
 	    if (lvarflag) {
@@ -697,7 +683,6 @@ MaybeOptimizeVarsAt(COMPSTATE * cstat, struct INTERMEDIATE *first, int AtNo, int
 		}
 	    }
 	    break;
-
 	case PROG_SVAR_AT:
 	case PROG_SVAR_AT_CLEAR:
 	    if (!lvarflag) {
@@ -707,7 +692,6 @@ MaybeOptimizeVarsAt(COMPSTATE * cstat, struct INTERMEDIATE *first, int AtNo, int
 		}
 	    }
 	    break;
-
 	case PROG_LVAR_BANG:
 	    if (lvarflag) {
 		if (first->in.data.number == curr->in.data.number) {
@@ -722,7 +706,6 @@ MaybeOptimizeVarsAt(COMPSTATE * cstat, struct INTERMEDIATE *first, int AtNo, int
 		}
 	    }
 	    break;
-
 	case PROG_SVAR_BANG:
 	    if (!lvarflag) {
 		if (first->in.data.number == curr->in.data.number) {
@@ -737,14 +720,12 @@ MaybeOptimizeVarsAt(COMPSTATE * cstat, struct INTERMEDIATE *first, int AtNo, int
 		}
 	    }
 	    break;
-
 	case PROG_EXEC:
 	    if (lvarflag) {
 		/* Don't try to optimize lvars over execs */
 		return;
 	    }
 	    break;
-
 	case PROG_IF:
 	case PROG_TRY:
 	case PROG_JMP:
@@ -759,7 +740,6 @@ MaybeOptimizeVarsAt(COMPSTATE * cstat, struct INTERMEDIATE *first, int AtNo, int
 	    if (ptr->no > farthest)
 		farthest = ptr->no;
 	    break;
-
 	case PROG_FUNCTION:
 	    /* Don't try to optimize over functions */
 	    return;
@@ -908,6 +888,8 @@ OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
     int DecrNo = get_primitive("--");
     int IncrNo = get_primitive("++");
     int NotequalsNo = get_primitive("!=");
+    int NotifyNo = get_primitive("notify");
+    int TellNo = get_primitive("tell");
 
     /* Code assumes everything is setup nicely, if not, bad things will happen */
 
@@ -945,6 +927,28 @@ OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
     for (struct INTERMEDIATE *curr = cstat->first_word; curr;) {
 	int advance = 1;
 	switch (curr->in.type) {
+	case PROG_VAR:
+	    /* me @ swap notify  ==>  tell */
+	    /* me @ s notify  ==>  s tell */
+	    if (curr->in.data.number == 0 &&
+		    IntermediateIsPrimitive(curr->next, AtNo)) {
+		if (ContiguousIntermediates(Flags, curr->next, 2)) {
+		    if (IntermediateIsPrimitive(curr->next->next->next, NotifyNo)) {
+			if (curr->next->next->in.type == PROG_STRING) {
+			    curr->next->next->next->in.data.number = TellNo;
+			    RemoveNextIntermediate(cstat, curr);
+			    RemoveIntermediate(cstat, curr);
+			} else if (IntermediateIsPrimitive(curr->next->next, SwapNo)) {
+			    curr->in.type = PROG_PRIMITIVE;
+			    curr->in.data.number = TellNo;
+			    RemoveNextIntermediate(cstat, curr);
+			    RemoveNextIntermediate(cstat, curr);
+			    RemoveNextIntermediate(cstat, curr);
+			}
+		    }
+		}
+	    }
+	    break;
 	case PROG_LVAR:
 	    /* lvar !  ==>  lvar! */
 	    /* lvar @  ==>  lvar@ */
@@ -967,7 +971,6 @@ OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
 		}
 	    }
 	    break;
-
 	case PROG_SVAR:
 	    /* svar !  ==>  svar! */
 	    /* svar @  ==>  svar@ */
@@ -990,7 +993,6 @@ OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
 		}
 	    }
 	    break;
-
 	case PROG_STRING:
 	    if (IntermediateIsString(curr, "")) {
 		if (ContiguousIntermediates(Flags, curr->next, 3)) {
@@ -1069,9 +1071,9 @@ OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
 				curr->next->next->flags |= INTMEDFLG_DIVBYZERO;
 
 				if (force_err_display) {
-				    compiler_warning(cstat,
-						     "Warning on line %i: Divide by zero",
-						     curr->next->next->in.line);
+				    notifyf(cstat->player,
+					    "Warning on line %i: Divide by zero",
+					    curr->next->next->in.line);
 				}
 			    }
                         } else if (
@@ -1081,9 +1083,9 @@ OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
 				curr->next->next->flags |= INTMEDFLG_OVERFLOW;
 
 				if (force_err_display) {
-				    compiler_warning(cstat,
-						     "Warning on line %i: Integer overflow",
-						     curr->next->next->in.line);
+				    notifyf(cstat->player,
+					    "Warning on line %i: Integer overflow",
+					    curr->next->next->in.line);
 				}
 			    }
 			} else {
@@ -1103,9 +1105,9 @@ OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
 				curr->next->next->flags |= INTMEDFLG_MODBYZERO;
 
 				if (force_err_display) {
-				    compiler_warning(cstat,
-						     "Warning on line %i: Modulus by zero",
-						     curr->next->next->in.line);
+				    notifyf(cstat->player,
+					    "Warning on line %i: Modulus by zero",
+					    curr->next->next->in.line);
 				}
 			    }
                         } else if (
@@ -1115,9 +1117,9 @@ OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
 				curr->next->next->flags |= INTMEDFLG_OVERFLOW;
 
 				if (force_err_display) {
-				    compiler_warning(cstat,
-						     "Warning on line %i: Integer overflow",
-						     curr->next->next->in.line);
+				    notifyf(cstat->player,
+					    "Warning on line %i: Integer overflow",
+					    curr->next->next->in.line);
 				}
 			    }
 			} else {
@@ -1323,7 +1325,6 @@ OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
 	    }
 
 	    /* pop ... pop  ==>  (n) popn */
-
 	    struct INTERMEDIATE *tmp = curr;
 	    int pops = 0;
 
@@ -1341,17 +1342,6 @@ OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
 		while (pops > 2) {
 		    RemoveNextIntermediate(cstat, curr);
 		    pops--;
-		}
-	    }
-
-	    if (IntermediateIsPrimitive(curr, EqualsNo)) {
-		if (ContiguousIntermediates(Flags, curr->next, 1)) {
-		    if (IntermediateIsPrimitive(curr->next, NotNo)) {
-			curr->in.data.number = NotequalsNo;
-			RemoveNextIntermediate(cstat, curr);
-			advance = 0;
-			break;
-		    }
 		}
 	    }
 	    break;
@@ -2257,9 +2247,9 @@ do_new_comment(COMPSTATE * cstat, int depth)
 	ptr++;
     }
     if (in_str) {
-	compiler_warning(cstat,
-			 "Warning on line %i: Unterminated string may indicate unterminated comment. Comment starts on line %i.",
-			 cstat->lineno, cstat->start_comment);
+	notifyf(cstat->player,
+		"Warning on line %i: Unterminated string may indicate unterminated comment. Comment starts on line %i.",
+		cstat->lineno, cstat->start_comment);
     }
     if (!(*cstat->next_char))
 	advance_line(cstat);
@@ -2953,17 +2943,17 @@ do_directive(COMPSTATE * cstat, char *direct)
 	    cstat->force_comment = 0;
 	} else {
 	    /* If the pragma is not recognized, it is ignored, with a warning. */
-	    compiler_warning(cstat,
-			     "Warning on line %i: Pragma %.64s unrecognized.  Ignoring.",
-			     cstat->lineno, tmpptr);
+	    notifyf(cstat->player,
+		    "Warning on line %i: Pragma %.64s unrecognized.  Ignoring.",
+		    cstat->lineno, tmpptr);
 	    while (*cstat->next_char)
 		cstat->next_char++;
 	}
 	free(tmpptr);
 	if (*cstat->next_char) {
-	    compiler_warning(cstat,
-			     "Warning on line %i: Ignoring extra pragma arguments: %.256s",
-			     cstat->lineno, cstat->next_char);
+	    notifyf(cstat->player,
+		    "Warning on line %i: Ignoring extra pragma arguments: %.256s",
+		    cstat->lineno, cstat->next_char);
 	    advance_line(cstat);
 	}
     } else if (!strcasecmp(temp, "entrypoint")) {
@@ -4046,15 +4036,12 @@ add_primitive(int val)
     hd.ival = val;
     if (add_hash(base_inst[val - 1], hd, primitive_list, COMP_HASH_SIZE) == NULL)
 	panic("Out of memory");
-    else
-	return;
 }
 
 void
 clear_primitives(void)
 {
     kill_hash(primitive_list, COMP_HASH_SIZE, 0);
-    return;
 }
 
 const char *base_inst[] = {

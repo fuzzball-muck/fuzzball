@@ -12,7 +12,7 @@ Editor commands:
     help		[h]	show this file
     numbers		[n]	toggle line numbers
     quit		[q]	quit the program editor
-    <dbref> view	[v]	list the program header
+    <dbref> view	[v]	list initial single-line comments
     cancel		[x]	quit the program editor without saving
   
 Macro library commands:
