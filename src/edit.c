@@ -557,7 +557,7 @@ val_and_head(dbref player, int arg[], int argc)
 	notify(player, "That isn't a program.");
 	return;
     }
-    if (!(controls(player, program) || Linkable(program))) {
+    if (!(controls(player, program) || (FLAGS(program) & VEHICLE))) {
 	notify(player, "That's not a public program.");
 	return;
     }
@@ -587,7 +587,7 @@ list_publics(int descr, dbref player, int arg[], int argc)
 	notify(player, "That isn't a program.");
 	return;
     }
-    if (!(controls(player, program) || Linkable(program))) {
+    if (!(controls(player, program) || (FLAGS(program) & VEHICLE))) {
 	notify(player, "That's not a public program.");
 	return;
     }
