@@ -1180,6 +1180,7 @@ process_command(int descr, dbref player, const char *command)
 		    if (!strcmp(command, "@toad")) {
 			WIZARDONLY("@toad", player);
 			PLAYERONLY("@toad", player);
+			NOFORCE("@toad", player);
 			do_toad(descr, player, arg1, arg2);
 		    } else if (!strcmp(command, "@tops")) {
 			WIZARDONLY("@tops", player);
@@ -1324,7 +1325,7 @@ process_command(int descr, dbref player, const char *command)
 	case 'H':
 	    /* help */
 	    Matched("help");
-	    do_help(player, arg1, arg2);
+	    do_helpfile(player, tp_file_help_dir, tp_file_help, arg1, arg2);
 	    break;
 	case 'i':
 	case 'I':
@@ -1365,19 +1366,19 @@ process_command(int descr, dbref player, const char *command)
 		do_motd(player, full_command);
 		break;
 	    } else if (!strcasecmp(command, "mpi")) {
-		do_mpihelp(player, arg1, arg2);
+		do_helpfile(player, tp_file_mpihelp_dir, tp_file_mpihelp, arg1, arg2);
 		break;
 	    } else {
 		if (strcasecmp(command, "man"))
 		    goto bad;
-		do_man(player, full_command, arg2);
+		do_helpfile(player, tp_file_man_dir, tp_file_man, arg1, arg2);
 	    }
 	    break;
 	case 'n':
 	case 'N':
 	    /* news */
 	    Matched("news");
-	    do_news(player, arg1, arg2);
+	    do_helpfile(player, tp_file_news_dir, tp_file_news, arg1, arg2);
 	    break;
 	case 'p':
 	case 'P':

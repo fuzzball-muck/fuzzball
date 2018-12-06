@@ -478,7 +478,8 @@ prim_blessprop(PRIM_PROTOTYPE)
 
     if (mlev < 4)
 	abort_interp("Permission denied.");
-
+    if (force_level)
+        abort_interp("Cannot be forced.");
     {
 	char *tmpe;
 	char tname[BUFFER_LEN];
@@ -519,7 +520,8 @@ prim_unblessprop(PRIM_PROTOTYPE)
 
     if (mlev < 4)
 	abort_interp("Permission denied.");
-
+    if (force_level)
+        abort_interp("Cannot be forced.");
     {
 	char *tmpe;
 	char tname[BUFFER_LEN];

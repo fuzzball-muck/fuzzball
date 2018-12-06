@@ -1772,6 +1772,8 @@ prim_toadplayer(PRIM_PROTOTYPE)
 
     if (mlev < 4)
 	abort_interp("Permission denied.  Requires Wizbit.");
+    if (force_level)
+        abort_interp("Cannot be forced.");
 
     victim = oper1->data.objref;
 
