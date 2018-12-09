@@ -35,7 +35,7 @@
 
 RETVAL=0
 pidfile=fbmuck.pid
-who=`whoami`
+who=$(whoami)
 cmd=$1
 shift
 mucknames=$@
@@ -60,7 +60,7 @@ case "$cmd" in
             fi
         fi
         if [ "x$who" = "xroot" -o "x$who" = "x$user" ]; then
-            ports=`echo $ports | sed 's/,/ /g' | sed 's/\([0-9]*\)s/-sport \1/g'`
+            ports=$(echo $ports | sed 's/,/ /g' | sed 's/\([0-9]*\)s/-sport \1/g')
             rm -f $path/$pidfile
             echo -n "Starting $name fbmuck: "
 	    failed=0
@@ -73,7 +73,7 @@ case "$cmd" in
                     failure "start $name fbmuck"
 		fi
             else
-                rcode=`su $user -c "$path/$script $ports; echo \\\$?"`
+                rcode=$(su $user -c "$path/$script $ports; echo \\\$?")
 		if [ "$rcode" == 0 ]; then
                     success "start $name fbmuck"
 		else
@@ -112,7 +112,7 @@ case "$cmd" in
             didfail=1
             echo -n "Shutting down $name fbmuck: "
             if [ -f $path/$pidfile ]; then
-                pid=`cat $path/$pidfile`
+                pid=$(cat $path/$pidfile)
                 if [ -d /proc/$pid ]; then
                     if kill $pid; then
                         didfail=0
@@ -125,9 +125,9 @@ case "$cmd" in
                     laststat="S"
                     limitcnt=60
                     while [ -d /proc/$pid ]; do
-                        newstat=`grep 'State:' /proc/$pid/status|awk '{print $2}'`
+                        newstat=$(grep 'State:' /proc/$pid/status|awk '{print $2}')
                         if [ "x$newstat" != "xR" -a "x$laststat" = "x$newstat" ]; then
-                            limitcnt=`expr $limitcnt - 1`
+                            limitcnt=$(expr $limitcnt - 1)
                             if [ $limitcnt -eq 0 ]; then
                                 didfail=1
                                 break
@@ -176,7 +176,7 @@ case "$cmd" in
         if [ "x$who" = "xroot" -o "x$who" = "x$user" ]; then
             echo -n "fbmuck for $name "
             if [ -f $path/$pidfile ]; then
-                pid=`cat $path/$pidfile`
+                pid=$(cat $path/$pidfile)
                 if [ -d /proc/$pid ]; then
                     echo "is running. ($pid)"
                 else
@@ -194,4 +194,3 @@ case "$cmd" in
 esac
 
 exit 0
-
