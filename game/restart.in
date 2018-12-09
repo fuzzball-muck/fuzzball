@@ -80,20 +80,20 @@ else
 fi
 
 cd $GAMEDIR
-# echo "Restarting at: `date`"
+# echo "Restarting at: $(date)"
 
 umask $UMASK
 
 # Maximize resource limits
-ulimit -n `ulimit -Hn` ;# let us use all descriptors our hardlimit allows.
-ulimit -t `ulimit -Ht` ;# let us use all CPU time our hardlimit allows.
+ulimit -n $(ulimit -Hn) ; # let us use all descriptors our hardlimit allows.
+ulimit -t $(ulimit -Ht) ; # let us use all CPU time our hardlimit allows.
 
 
 if [ -r $PIDFILE -a -s $PIDFILE ]; then
-	muckpid=`cat $PIDFILE`
+	muckpid=$(cat $PIDFILE)
 	if [ "x$muckpid" != "x" ]; then
-		serverexec=`basename $SERVER`
-		muck=`${PS} | grep "${serverexec}" | awk '{print $1}' | egrep "\\<${muckpid}\\>" | wc -l`
+		serverexec=$(basename $SERVER)
+		muck=$(${PS} | grep "${serverexec}" | awk '{print $1}' | egrep "\\<${muckpid}\\>" | wc -l)
 		if [ $muck -gt 0 ]; then
 			echo "This server is already running.  Restart aborted."
 			exit 0
@@ -104,11 +104,11 @@ fi
 
 PANICDB="${DBOUT}.PANIC"
 if [ -r $PANICDB ]; then
-    end=`tail -1 $PANICDB`
+    end=$(tail -1 $PANICDB)
     if [ "x$end" = "x***END OF DUMP***" ]; then
 		mv $PANICDB $DBOUT
     else
-		echo "Warning: PANIC dump failed on "`date` | mail `whoami`
+		echo "Warning: PANIC dump failed on "$(date) | mail $(whoami)
     fi
 fi
 
@@ -123,18 +123,18 @@ if [ ! -r $DBIN ]; then
 	exit
 fi
 
-end=`tail -1 $DBIN`
+end=$(tail -1 $DBIN)
 if [ "x$end" != 'x***END OF DUMP***' ]; then
 	echo "WARNING!  The $DBIN file is incomplete and therefore corrupt!"
 	echo "Restart attempt aborted."
 	exit
 fi
 
-dbsiz=`ls -1s $DBIN | awk '{print $1}'`
-diskfree=`df -k . | tail -1 | awk '{print $4}'`
+dbsiz=$(ls -1s $DBIN | awk '{print $1}')
+diskfree=$(df -k . | tail -1 | awk '{print $4}')
 
-diskneeded=`expr $dbsiz \* 3`
-spacediff=`expr $diskneeded - $diskfree`
+diskneeded=$(expr $dbsiz \* 3)
+spacediff=$(expr $diskneeded - $diskfree)
 
 if [ $diskfree -lt $diskneeded ]; then
     echo "WARNING: you have insufficient disk space."
@@ -153,8 +153,7 @@ mkdir logs
 fi
 
 touch $RESTARTS_LOGFILE
-echo "`date +%Y-%m-%dT%H:%M:%S`: `who am i`" >> $RESTARTS_LOGFILE
+echo "$(date +%Y-%m-%dT%H:%M:%S): $(who am i)" >> $RESTARTS_LOGFILE
 
-# echo "Server started at: `date`"
+# echo "Server started at: $(date)"
 $SERVER -gamedir $GAMEDIR -dbin $DBIN -dbout $DBOUT $PORTS
-
