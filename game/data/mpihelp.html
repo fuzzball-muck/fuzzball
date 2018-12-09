@@ -1,253 +1,446 @@
-                MPI Reference Manual for Muck2.2fb7.00b1
-                   by Revar Desmera <revar@belfry.com>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="generator" content="prochelp">
+<title>MPI Reference Manual</title>
+</head>
+<body>
+<h1>MPI Reference Manual</h1>
+<address>by Revar Desmera &lt;revar@belfry.com&gt;</address>
+<ul>
+<li><a href="#AlphaList">Alphabetical List of Topics</a></li>
+<li><a href="#SectList">List of Topics by Category</a></li>
+</ul>
+<h2 id="SectList">List of Topics by Category</h2>
+<p>You can get more help on the following topics:</p>
+<ul>
+  <li><a href="#DefDets">Definitions and Details</a></li>
+  <li><a href="#TimeFuncs">Time Functions</a></li>
+  <li><a href="#LogicFuncs">Logical Functions</a></li>
+  <li><a href="#PropFuncs">Property Handling</a></li>
+  <li><a href="#StringFuncs">String Functions</a></li>
+  <li><a href="#MathFuncs">Math Functions</a></li>
+  <li><a href="#Looping">Looping Functions</a></li>
+  <li><a href="#DBFuncs">Database Related Functions</a></li>
+  <li><a href="#ConnFuncs">Connection Related Functions</a></li>
+  <li><a href="#VarFuncs">Variable Handling Functions</a></li>
+  <li><a href="#ListFuncs">List Handling Functions</a></li>
+  <li><a href="#MiscFuncs">Miscellaneous Functions</a></li>
+  <li><a href="#Functions">Macros and Functions</a></li>
+</ul>
 
-You may get a listing of topics that you can get help on, either sorted
-Alphabetically or sorted by Category.  To get these lists, type:
-        mpi alpha        or
-        mpi category
+<h2 id="AlphaList">Alphabetical List of Topics</h2>
+<h3>Symbols</h3>
+<ul>
+    <li><a href="#&amp;arg">&amp;arg</a></li>
+    <li><a href="#&amp;cmd">&amp;cmd</a></li>
+    <li><a href="#&amp;how">&amp;how</a></li>
+</ul>
 
-~
-~----------------------------------------------------------------------------
-~
-CATEGORY|CATEGORIES|TOPICS|SECTIONS
-                   List of Topics by Category:
- 
-You can get more help on the following topics:
- 
-  Definitions and Details                  (DefDets)
-  Time Functions                           (TimeFuncs)
-  Logical Functions                        (LogicFuncs)
-  Property Handling                        (PropFuncs)
-  String Functions                         (StringFuncs)
-  Math Functions                           (MathFuncs)
-  Looping Functions                        (Looping)
-  Database Related Functions               (DBFuncs)
-  Connection Related Functions             (ConnFuncs)
-  Variable Handling Functions              (VarFuncs)
-  List Handling Functions                  (ListFuncs)
-  Miscellaneous Functions                  (MiscFuncs)
-  Macros and Functions                     (Functions)
- 
-Use 'mpi <topicname>' to get more information on a topic.
-~
-~----------------------------------------------------------------------------
-~
-ALPHA|ALPHABETICAL|COMMANDS
-                 Alphabetical List of Topics:
- 
-You can get more help on the following topics:
+<h3>A's</h3>
+<ul>
+    <li><a href="#abs">abs</a></li>
+    <li><a href="#add">add</a></li>
+    <li><a href="#and">and</a></li>
+    <li><a href="#attr">attr</a></li>
+    <li><a href="#awake">awake</a></li>
+</ul>
 
-Symbols
-  &arg  &cmd  &how  
+<h3>B's</h3>
+<ul>
+    <li><a href="#bless">bless</a></li>
+</ul>
 
-A's
-  abs    add    and    attr   awake  
+<h3>C's</h3>
+<ul>
+    <li><a href="#center">center</a></li>
+    <li><a href="#commas">commas</a></li>
+    <li><a href="#comments">comments</a></li>
+    <li><a href="#concat">concat</a></li>
+    <li><a href="#contains">contains</a></li>
+    <li><a href="#contents">contents</a></li>
+    <li><a href="#controls">controls</a></li>
+<!-- HTML_IDXGROUP_NEWROW -->
+    <li><a href="#convsecs">convsecs</a></li>
+    <li><a href="#convtime">convtime</a></li>
+    <li><a href="#count">count</a></li>
+    <li><a href="#created">created</a></li>
+</ul>
 
-B's
-  bless  
+<h3>D's</h3>
+<ul>
+    <li><a href="#date">date</a></li>
+    <li><a href="#dbeq">dbeq</a></li>
+    <li><a href="#debug">debug</a></li>
+    <li><a href="#debugif">debugif</a></li>
+    <li><a href="#dec">dec</a></li>
+    <li><a href="#default">default</a></li>
+<!-- HTML_IDXGROUP_NEWROW -->
+    <li><a href="#definitions">definitions</a></li>
+    <li><a href="#delay">delay</a></li>
+    <li><a href="#delprop">delprop</a></li>
+    <li><a href="#descr">descr</a></li>
+    <li><a href="#dice">dice</a></li>
+    <li><a href="#dist">dist</a></li>
+<!-- HTML_IDXGROUP_NEWROW -->
+    <li><a href="#div">div</a></li>
+</ul>
 
-C's
-  center     commas     comments   concat     contains   contents   controls
-  convsecs   convtime   count      created    
+<h3>E's</h3>
+<ul>
+    <li><a href="#eq">eq</a></li>
+    <li><a href="#eval">eval</a></li>
+    <li><a href="#eval!">eval!</a></li>
+    <li><a href="#exec">exec</a></li>
+    <li><a href="#exec!">exec!</a></li>
+    <li><a href="#exits">exits</a></li>
+</ul>
 
-D's
-  date         dbeq         debug        debugif      dec          default
-  definitions  delay        delprop      descr        dice         dist
-  div          
+<h3>F's</h3>
+<ul>
+    <li><a href="#filter">filter</a></li>
+    <li><a href="#flags">flags</a></li>
+    <li><a href="#fold">fold</a></li>
+    <li><a href="#for">for</a></li>
+    <li><a href="#force">force</a></li>
+    <li><a href="#foreach">foreach</a></li>
+    <li><a href="#ftime">ftime</a></li>
+<!-- HTML_IDXGROUP_NEWROW -->
+    <li><a href="#fullname">fullname</a></li>
+    <li><a href="#func">func</a></li>
+</ul>
 
-E's
-  eq     eval   eval!  exec   exec!  exits  
+<h3>G's</h3>
+<ul>
+    <li><a href="#ge">ge</a></li>
+    <li><a href="#gt">gt</a></li>
+</ul>
 
-F's
-  filter     flags      fold       for        force      foreach    ftime
-  fullname   func       
+<h3>H's</h3>
+<ul>
+    <li><a href="#holds">holds</a></li>
+</ul>
 
-G's
-  ge  gt  
+<h3>I's</h3>
+<ul>
+    <li><a href="#idle">idle</a></li>
+    <li><a href="#if">if</a></li>
+    <li><a href="#inc">inc</a></li>
+    <li><a href="#index">index</a></li>
+    <li><a href="#index!">index!</a></li>
+    <li><a href="#instr">instr</a></li>
+    <li><a href="#isdbref">isdbref</a></li>
+    <li><a href="#isnum">isnum</a></li>
+<!-- HTML_IDXGROUP_NEWROW -->
+    <li><a href="#istype">istype</a></li>
+</ul>
 
-H's
-  holds  
+<h3>K's</h3>
+<ul>
+    <li><a href="#kill">kill</a></li>
+</ul>
 
-I's
-  idle     if       inc      index    index!   instr    isdbref  isnum
-  istype   
+<h3>L's</h3>
+<ul>
+    <li><a href="#lastused">lastused</a></li>
+    <li><a href="#lcommon">lcommon</a></li>
+    <li><a href="#le">le</a></li>
+    <li><a href="#left">left</a></li>
+    <li><a href="#lexec">lexec</a></li>
+    <li><a href="#links">links</a></li>
+    <li><a href="#list">list</a></li>
+<!-- HTML_IDXGROUP_NEWROW -->
+    <li><a href="#listprops">listprops</a></li>
+    <li><a href="#lit">lit</a></li>
+    <li><a href="#lmember">lmember</a></li>
+    <li><a href="#loc">loc</a></li>
+    <li><a href="#locked">locked</a></li>
+    <li><a href="#lrand">lrand</a></li>
+    <li><a href="#lremove">lremove</a></li>
+<!-- HTML_IDXGROUP_NEWROW -->
+    <li><a href="#lsort">lsort</a></li>
+    <li><a href="#lt">lt</a></li>
+    <li><a href="#ltimestr">ltimestr</a></li>
+    <li><a href="#lunion">lunion</a></li>
+    <li><a href="#lunique">lunique</a></li>
+</ul>
 
-K's
-  kill  
+<h3>M's</h3>
+<ul>
+    <li><a href="#macros">macros</a></li>
+    <li><a href="#max">max</a></li>
+    <li><a href="#midstr">midstr</a></li>
+    <li><a href="#min">min</a></li>
+    <li><a href="#mklist">mklist</a></li>
+    <li><a href="#mod">mod</a></li>
+    <li><a href="#modified">modified</a></li>
+<!-- HTML_IDXGROUP_NEWROW -->
+    <li><a href="#money">money</a></li>
+    <li><a href="#muckname">muckname</a></li>
+    <li><a href="#muf">muf</a></li>
+    <li><a href="#mult">mult</a></li>
+</ul>
 
-L's
-  lastused   lcommon    le         left       lexec      links      list
-  listprops  lit        lmember    loc        locked     lrand      lremove
-  lsort      lt         ltimestr   lunion     lunique    
+<h3>N's</h3>
+<ul>
+    <li><a href="#name">name</a></li>
+    <li><a href="#ne">ne</a></li>
+    <li><a href="#nearby">nearby</a></li>
+    <li><a href="#nl">nl</a></li>
+    <li><a href="#not">not</a></li>
+    <li><a href="#null">null</a></li>
+</ul>
 
-M's
-  macros     max        midstr     min        mklist     mod        modified
-  money      muckname   muf        mult       
+<h3>O's</h3>
+<ul>
+    <li><a href="#online">online</a></li>
+    <li><a href="#ontime">ontime</a></li>
+    <li><a href="#or">or</a></li>
+    <li><a href="#otell">otell</a></li>
+    <li><a href="#owner">owner</a></li>
+</ul>
 
-N's
-  name    ne      nearby  nl      not     null    
+<h3>P's</h3>
+<ul>
+    <li><a href="#parse">parse</a></li>
+    <li><a href="#pronouns">pronouns</a></li>
+    <li><a href="#prop">prop</a></li>
+    <li><a href="#prop!">prop!</a></li>
+    <li><a href="#propdir">propdir</a></li>
+</ul>
 
-O's
-  online  ontime  or      otell   owner   
+<h3>R's</h3>
+<ul>
+    <li><a href="#rand">rand</a></li>
+    <li><a href="#ref">ref</a></li>
+    <li><a href="#revoke">revoke</a></li>
+    <li><a href="#right">right</a></li>
+</ul>
 
-P's
-  parse      pronouns   prop       prop!      propdir    
+<h3>S's</h3>
+<ul>
+    <li><a href="#secs">secs</a></li>
+    <li><a href="#select">select</a></li>
+    <li><a href="#set">set</a></li>
+    <li><a href="#sign">sign</a></li>
+    <li><a href="#smatch">smatch</a></li>
+    <li><a href="#stimestr">stimestr</a></li>
+    <li><a href="#store">store</a></li>
+<!-- HTML_IDXGROUP_NEWROW -->
+    <li><a href="#strip">strip</a></li>
+    <li><a href="#strlen">strlen</a></li>
+    <li><a href="#sublist">sublist</a></li>
+    <li><a href="#subst">subst</a></li>
+    <li><a href="#subt">subt</a></li>
+    <li><a href="#sysparm">sysparm</a></li>
+</ul>
 
-R's
-  rand    ref     revoke  right   
+<h3>T's</h3>
+<ul>
+    <li><a href="#tell">tell</a></li>
+    <li><a href="#testlock">testlock</a></li>
+    <li><a href="#time">time</a></li>
+    <li><a href="#timestr">timestr</a></li>
+    <li><a href="#timesub">timesub</a></li>
+    <li><a href="#tolower">tolower</a></li>
+    <li><a href="#toupper">toupper</a></li>
+<!-- HTML_IDXGROUP_NEWROW -->
+    <li><a href="#type">type</a></li>
+    <li><a href="#tzoffset">tzoffset</a></li>
+</ul>
 
-S's
-  secs       select     set        sign       smatch     stimestr   store
-  strip      strlen     sublist    subst      subt       sysparm    
+<h3>U's</h3>
+<ul>
+    <li><a href="#unbless">unbless</a></li>
+    <li><a href="#usecount">usecount</a></li>
+</ul>
 
-T's
-  tell       testlock   time       timestr    timesub    tolower    toupper
-  type       tzoffset   
+<h3>V's</h3>
+<ul>
+    <li><a href="#v">v</a></li>
+    <li><a href="#version">version</a></li>
+</ul>
 
-U's
-  unbless    usecount   
+<h3>W's</h3>
+<ul>
+    <li><a href="#while">while</a></li>
+    <li><a href="#with">with</a></li>
+</ul>
 
-V's
-  v        version  
+<h3>X's</h3>
+<ul>
+    <li><a href="#xor">xor</a></li>
+</ul>
 
-W's
-  while  with   
+<h2 id="DefDets">Definitions and Details</h2>
+<ul>
+    <li><a href="#comments">comments</a></li>
+    <li><a href="#definitions">definitions</a></li>
+</ul>
 
-X's
-  xor  
- 
-Use 'mpi <topicname>' to get more information on a topic.
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Definitions and Details|DefDets
-Definitions and Details
+<!-- HTML_TOPICEND -->
 
-comments     definitions  
-
-~----------------------------------------------------------------------------
-~
-~
-~
-COMMENTS
-Comments:
+<h3 id="comments">Comments:
+<br>
+</h3>
   Only 26 levels of recursion are allowed, so funcs that deep return literally.
 In loops, a max of 256 iterations are allowed before they exit automatically.
 Lists have a maximum size of 256 lines, or 4096 characters, whichever is less.
+<p>
   
+<p>
   All matching will be done relative to the trigger object first, then relative
 to the triggering player, if nothing was matched in the first pass.
+<p>
   
+<p>
   The 'me' and 'here' keywords always are relative to the triggering player.
 The trigger object is referred to by 'this'.
-~
-~
-~
-DEFINITIONS
-Definitions:
+<!-- HTML_TOPICEND -->
+
+
+
+<h3 id="definitions">Definitions:
+<br>
+</h3>
     A Trigger object is the object that the MPI script is evaluated from.
+<p>
   
+<p>
     A List is a string containing several individual substring items,
 separated by carriage return characters.
+<p>
   
+<p>
     A property based list is a set of consecutively numbered properties that
 each contain one string in a list of strings.  Property based lists
-are often numbered like: listname1, listname2, listname3, listname4, &c.
+are often numbered like: listname1, listname2, listname3, listname4, &amp;c.
 Another popular format is listname#/1, listname#/2, listname#/3, etc.
 MPI can read in either of those formats, and several more, for that
 matter.
+<p>
   
-    For logical constructs, a string value of "0", or a null string ("") are
+<p>
+    For logical constructs, a string value of &quot;0&quot;, or a null string (&quot;&quot;) are
 both considered false.  Any other value is considered true.
-~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Time Functions|TimeFuncs
-Time Functions
+<!-- HTML_TOPICEND -->
 
-convsecs   convtime   date       delay      ftime      kill       ltimestr
-secs       stimestr   time       timestr    tzoffset   
+<h2 id="TimeFuncs">Time Functions</h2>
+<ul>
+    <li><a href="#convsecs">convsecs</a></li>
+    <li><a href="#convtime">convtime</a></li>
+    <li><a href="#date">date</a></li>
+    <li><a href="#delay">delay</a></li>
+    <li><a href="#ftime">ftime</a></li>
+    <li><a href="#kill">kill</a></li>
+    <li><a href="#ltimestr">ltimestr</a></li>
+<!-- HTML_SECTIDX_NEWROW -->
+    <li><a href="#secs">secs</a></li>
+    <li><a href="#stimestr">stimestr</a></li>
+    <li><a href="#time">time</a></li>
+    <li><a href="#timestr">timestr</a></li>
+    <li><a href="#tzoffset">tzoffset</a></li>
+</ul>
 
-~----------------------------------------------------------------------------
-~
-~
-TZOFFSET
-{tzoffset}
+<h3 id="tzoffset">{tzoffset}
+<br>
+</h3>
     Returns local time zone offset from GMT in seconds.
-~
-~
-TIME
-{time}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="time">{time}
+<br>
 {time:timezone}
+<br>
+</h3>
     Returns a time string in the 24hr form hh:mm:ss.  If the timezone
 argument is given, then it offsets the time returned by that number
 of hours.
-~
-~
-DATE
-{date}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="date">{date}
+<br>
 {date:timezone}
+<br>
+</h3>
     Returns a date string in the form mm/dd/yy.  If the timezone
 argument is given, then it offsets the date returned by that number
 of seconds.
-~
-~
-FTIME
-{ftime:format}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="ftime">{ftime:format}
+<br>
 {ftime:format,tz}
+<br>
 {ftime:format,tz,secs}
+<br>
+</h3>
     Returns a time string in the format you specify.  See 'man timefmt' for
 the %subs that you can use in the format string.  If specified, tz is the
 number of seconds offset from GMT.  If specified, secs is the systime to
 use, instead of the current time.  {ftime:%x %X %Y,{tzoffset},0} will return
 the date and time for systime 0, for the local time zone of the server.
-~
-~
-TIMESTR
-{timestr:secs}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="timestr">{timestr:secs}
+<br>
+</h3>
     Given a time period in seconds, this will return a concise abbreviated
 string representation of how long that time was.  This might return a value
-like "9d 12:56" for 9 days, 12 hours, and 56 minutes.
-~
-~
-LTIMESTR
-{ltimestr:secs}
+like &quot;9d 12:56&quot; for 9 days, 12 hours, and 56 minutes.
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="ltimestr">{ltimestr:secs}
+<br>
+</h3>
     Given a time period, in seconds, this will return a string, including a
 breakdown of all the time units of that period.  For example, given a number
 of seconds, it might return:
+<p>
         3 years, 10 months, 4 weeks, 1 day, 18 hours, 40 mins, 21 secs
-~
-~
-STIMESTR
-{stimestr:secs}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="stimestr">{stimestr:secs}
+<br>
+</h3>
     Given a time period, in seconds, this will return the most significant
 time unit of that time period.  For example, a number of seconds, that is
 equivalent to 9 days, 23 hours, 10 minutes, and 52 seconds, will be have
-the value "9d" returned, as the abbreviated most significant time unit.
-~
-~
-SECS
-{secs}
+the value &quot;9d&quot; returned, as the abbreviated most significant time unit.
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="secs">{secs}
+<br>
+</h3>
     Returns system time: the number of second since midnight 1/1/70 GMT
-~
-~
-CONVTIME
-{convtime:string}
-    Converts "HH:MM:SS Mo/Dy/Yr" format time string to systime seconds.
-~
-~
-CONVSECS
-{convsecs:systime}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="convtime">{convtime:string}
+<br>
+</h3>
+    Converts &quot;HH:MM:SS Mo/Dy/Yr&quot; format time string to systime seconds.
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="convsecs">{convsecs:systime}
+<br>
+</h3>
     Converts systime seconds into a readable time string.
-~
-~
-DELAY
-{delay:secs,expr}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="delay">{delay:secs,expr}
+<br>
+</h3>
     Evaluates the given expression, then puts the result of that on the
 timequeue, to execute after the given number of seconds.  At that time,
 the string is evaluated again, and displayed to the user, or to the room,
@@ -257,11 +450,14 @@ before and after being delayed, you need to put MPI code that is to run
 after the delay within a {lit:expr} command.  If a {delay} evaluation is
 a null string, then the notify or notify_except will not be done.  {delay}
 will return the process ID of the event it puts on the timequeue.
-~
-~
-KILL
-{kill:0}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="kill">{kill:0}
+<br>
 {kill:processID}
+<br>
+</h3>
     Kills a process on the timequeue, that was possibly created by {DELAY}.
 If the process ID it is given is 0, then it will kill all processes done by
 that trigger object.  If the process to be killed was not set off by that
@@ -270,92 +466,135 @@ owns, then this will error out with Permission denied.  If no process is
 found, this returns 0.  If a process was found, and the permissions were
 okay, then the process is killed, and {kill} returns the number of processes
 killed.  Usually 1.
-~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Logical Functions|LogicFuncs
-Logical Functions
+<!-- HTML_TOPICEND -->
 
-and      default  eq       ge       gt       if       le       lt
-ne       not      or       xor      
+<h2 id="LogicFuncs">Logical Functions</h2>
+<ul>
+    <li><a href="#and">and</a></li>
+    <li><a href="#default">default</a></li>
+    <li><a href="#eq">eq</a></li>
+    <li><a href="#ge">ge</a></li>
+    <li><a href="#gt">gt</a></li>
+    <li><a href="#if">if</a></li>
+    <li><a href="#le">le</a></li>
+    <li><a href="#lt">lt</a></li>
+<!-- HTML_SECTIDX_NEWROW -->
+    <li><a href="#ne">ne</a></li>
+    <li><a href="#not">not</a></li>
+    <li><a href="#or">or</a></li>
+    <li><a href="#xor">xor</a></li>
+</ul>
 
-~----------------------------------------------------------------------------
-~
-~
-IF
-{if:check,true}
+<h3 id="if">{if:check,true}
+<br>
 {if:check,true,false}
+<br>
+</h3>
     This is a simple conditional command.  It evaluates the 'check'
 argument and if it is true, then it evaluates the 'true' argument and
 returns its result.  If 'check' does not evaluate as true, then it will
 evaluate the 'false' argument, if there is one, and returns its result.
 If there is no false argument, and 'check' evaluated false, then it
 returns a null string.  Example:
+<pre>
     Your computer is {if:{eq:2,3},broken!,all right.}
-Also see: not, and, or, xor, eq, ne, lt, gt, le, le, default and dbeq
-~
-~
-DEFAULT
-{default:value1,value2}
+</pre>
+<p>Also see:
+    <a href="#not">not</a>,
+    <a href="#and">and</a>,
+    <a href="#or">or</a>,
+    <a href="#xor">xor</a>,
+    <a href="#eq">eq</a>,
+    <a href="#ne">ne</a>,
+    <a href="#lt">lt</a>,
+    <a href="#gt">gt</a>,
+    <a href="#le">le</a>,
+    <a href="#le">le</a>,
+    <a href="#default">default</a> and
+    <a href="#dbeq">dbeq</a>
+</p>
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="default">{default:value1,value2}
+<br>
+</h3>
     Returns value2 if value1 is null or 0, otherwise returns value1.  Example:
-    You entered {default:{&arg},nothing}.
-~
-~
-EQ|EQUALS|==
-{eq:expr1,expr2}
+<pre>
+    You entered {default:{&amp;arg},nothing}.
+</pre>
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="eq">{eq:expr1,expr2}
+<br>
+</h3>
     If expr1 and expr2 evaluate out to the same value, then this returns
 true.  Otherwise, this returns false.  If both expressions evaluate out
 to numbers, then this compares them numerically.
-~
-~
-NE|NOTEQUALS|!=|<>
-{ne:expr1,expr2}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="ne">{ne:expr1,expr2}
+<br>
+</h3>
     If expr1 and expr2 evaluate out to the same value, then this returns
 false.  Otherwise, this returns true.  If both expressions evaluate out
 to numbers, then this compares them numerically.
-~
-~
-GT|GREATERTHAN|>
-{gt:expr1,expr2}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="gt">{gt:expr1,expr2}
+<br>
+</h3>
     Evaluates expr1 and expr2, then returns true if expr1 was larger.
-~
-~
-GE|>=
-{ge:expr1,expr2}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="ge">{ge:expr1,expr2}
+<br>
+</h3>
     Evals expr1 and expr2, then returns true if expr1 was larger or equal.
-~
-~
-LT|LESSTHAN|<
-{lt:expr1,expr2}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="lt">{lt:expr1,expr2}
+<br>
+</h3>
     Evaluates expr1 and expr2, then returns true if expr1 was smaller.
-~
-~
-LE|<=
-{le:expr1,expr2}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="le">{le:expr1,expr2}
+<br>
+</h3>
     Evals expr1 and expr2, then returns true if expr1 was smaller or equal.
-~
-~
-NOT|!
-{not:expr}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="not">{not:expr}
+<br>
+</h3>
     Returns the logical NOT of expr.  If expr was true, this returns false.
 If expr was false, this returns true.
-~
-~
-OR
-{or:expr1,expr2...}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="or">{or:expr1,expr2...}
+<br>
+</h3>
     Returns true if expr1 or expr2 evaluate as true.  Otherwise, this
 returns false.  If expr1 was true, this doesn't bother to exaluate expr2,
 as it does C-style shortcutting.  If there are more than two arguments,
 then this will evaluate them until either one returns true, or until it
 has evaluated all the expressions.  This returns false only if all of the
 expressions return false.
-~
-~
-AND|&&
-{and:expr1,expr2...}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="and">{and:expr1,expr2...}
+<br>
+</h3>
     Returns true if expr1 and expr2 evaluate as true.  Otherwise, this
 returns false.  If expr1 was false, this doesn't bother to evaluate
 expr2, as it does C-style shortcutting.  If there are more than two
@@ -363,31 +602,45 @@ arguments, then this will evaluate all of them until either one returns
 false, in which case this function returns false, or until it has evaluated
 all of the arguments.  This function returns true only if all the arguments
 evaluate as true.
-~
-~
-XOR|EXCLUSIVEOR
-{xor:expr1,expr2}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="xor">{xor:expr1,expr2}
+<br>
+</h3>
     Returns true if expr1 or expr2 evaluate as true, but false if both do.
 Otherwise, this returns false.
-~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Property Handling|PropFuncs
-Property Handling
+<!-- HTML_TOPICEND -->
 
-bless      concat     delprop    exec       exec!      index      index!
-lexec      list       listprops  prop       prop!      propdir    rand
-select     store      timesub    unbless    
+<h2 id="PropFuncs">Property Handling</h2>
+<ul>
+    <li><a href="#bless">bless</a></li>
+    <li><a href="#concat">concat</a></li>
+    <li><a href="#delprop">delprop</a></li>
+    <li><a href="#exec">exec</a></li>
+    <li><a href="#exec!">exec!</a></li>
+    <li><a href="#index">index</a></li>
+    <li><a href="#index!">index!</a></li>
+<!-- HTML_SECTIDX_NEWROW -->
+    <li><a href="#lexec">lexec</a></li>
+    <li><a href="#list">list</a></li>
+    <li><a href="#listprops">listprops</a></li>
+    <li><a href="#prop">prop</a></li>
+    <li><a href="#prop!">prop!</a></li>
+    <li><a href="#propdir">propdir</a></li>
+    <li><a href="#rand">rand</a></li>
+<!-- HTML_SECTIDX_NEWROW -->
+    <li><a href="#select">select</a></li>
+    <li><a href="#store">store</a></li>
+    <li><a href="#timesub">timesub</a></li>
+    <li><a href="#unbless">unbless</a></li>
+</ul>
 
-~----------------------------------------------------------------------------
-~
-~
-PROP
-{prop:propname}
+<h3 id="prop">{prop:propname}
+<br>
 {prop:propname,obj}
+<br>
+</h3>
     Returns the literal string value of the given property.  If no object
 parameter is passed to it, it looks for the property somewhere down the
 environment from the trigger object.  Otherwise, it looks down the
@@ -396,11 +649,14 @@ this returns an empty string.  If the property that it tries to access is
 read restricted and the owner of the trigger object does not own the
 object that the property is found on, then the MPI script stops with a
 Permission denied error.
-~
-~
-PROP!
-{prop!:propname}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="prop!">{prop!:propname}
+<br>
 {prop!:propname,obj}
+<br>
+</h3>
     Returns the literal string value of the given property.  If no object
 parameter is passed to it, it looks for the property on the trigger.
 Otherwise, it looks for the property on the object specified.  If the
@@ -408,11 +664,14 @@ property is not found, this returns an empty string.  If the property that
 it tries to access is read restricted and the owner of the trigger object
 does not own the object that the property is found on, then the MPI
 script stops with a Permission denied error.
-~
-~
-EXEC
-{exec:propname}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="exec">{exec:propname}
+<br>
 {exec:propname,obj}
+<br>
+</h3>
     Returns the string value of the given property, after having
 evaluated any embedded MPI commands that it contained.  If no object
 parameter is passed to it, it looks for the property somewhere down the
@@ -422,11 +681,14 @@ this returns an empty string.  If the property that it tries to access is
 read restricted and the owner of the trigger object does not own the
 object that the property is found on, then the MPI script stops with a
 Permission denied error.
-~
-~
-EXEC!
-{exec!:propname}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="exec!">{exec!:propname}
+<br>
 {exec!:propname,obj}
+<br>
+</h3>
     Returns the string value of the given property, after having
 evaluated any embedded MPI commands that it contained.  If no object
 parameter is passed to it, it looks for the property on the trigger.
@@ -435,11 +697,14 @@ property is not found, this returns an empty string.  If the property
 that it tries to access is read restricted and the owner of the trigger
 object does not own the object that the property is found on, then
 the MPI script stops with a Permission denied error.
-~
-~
-INDEX|{INDEX
-{index:propname}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="index">{index:propname}
+<br>
 {index:propname,obj}
+<br>
+</h3>
     Returns the string value of the property whose name is stored in the
 given property.  This sounds confusing, but it's basically just the same
 as {exec:{prop:propname}}.  If no object parameter is passed to it, it
@@ -451,11 +716,14 @@ that it tries to access is read restricted, and the owner of the trigger
 object does not own the object that the properties are found on, then
 the MPI script stops with a Permission denied error.  Any MPI code in
 the target property is evaluated and the result is returned.
-~
-~
-INDEX!
-{index!:propname}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="index!">{index!:propname}
+<br>
 {index!:propname,obj}
+<br>
+</h3>
     Returns the string value of the property whose name is stored in the
 given property.  This sounds confusing, but it's basically just the same
 as {exec!:{prop!:propname}}.  If no object parameter is passed to it, it
@@ -466,11 +734,14 @@ property that it tries to access is read restricted, and the owner of the
 trigger object does not own the object that the properties are found on,
 then the MPI script stops with a Permission denied error.  Any MPI code in
 the target property is evaluated and the result is returned.
-~
-~
-STORE
-{store:val,prop}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="store">{store:val,prop}
+<br>
 {store:val,prop,obj}
+<br>
+</h3>
     Stores a string value in a given property.  If no obj parameter is
 given, then it stores the property on the trigger object.  Otherwise, it
 will store it on the given object.  If you specify a propname that is
@@ -481,11 +752,14 @@ the MPI commands.  This function returns the string that is stored as the
 prop value.  If you store a null value in the property, then it will remove
 the property if it is not a propdir.  It will clear the value of the prop
 if it IS a propdir.
-~
-~
-DELPROP
-{delprop:propname}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="delprop">{delprop:propname}
+<br>
 {delprop:propname,object}
+<br>
+</h3>
     This function will remove a property and all of its subsidiary properties
 in the case that it is a propdir.  This will delete the property on the
 trigger object, unless an object argument is specified.  If one is, then it
@@ -493,26 +767,35 @@ will delete the property on that given object.  This function returns a null
 string.  If you specify a propname that is protected, you will get an error
 of Permission Denied.  You are only allowed to delete properties from objects
 that are owned by the owner of the trigger object.
-~
-~
-BLESS
-{bless:propname}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="bless">{bless:propname}
+<br>
 {bless:propname,object}
+<br>
+</h3>
     Blesses a property so that MPI executed from it will run with blessed
 permissions.  This command itself requires blessed permissions to run.
-~
-~
-UNBLESS
-{unbless:propname}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="unbless">{unbless:propname}
+<br>
 {unbless:propname,object}
+<br>
+</h3>
     Removes the blessing of a property so that MPI executed from it will no
 longer run with blessed permissions.  This command itself requires blessed
 permissions to run.
-~
-~
-LIST
-{list:listname}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="list">{list:listname}
+<br>
 {list:listname,obj}
+<br>
+</h3>
     Returns a string, containing a carriage-return delimited list of
 individual lines from a property based list.  A property based list is a
 series of properties that are consecutively numbered.  The server
@@ -522,11 +805,14 @@ NOT evaluate the contents of the list for embedded MPI commands.  If no
 obj argument is supplied, then it looks for the list somewhere down the
 environment from the trigger object.  Otherwise, it looks for the list
 down the environment from the given object.
-~
-~
-CONCAT
-{concat:listname}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="concat">{concat:listname}
+<br>
 {concat:listname,obj}
+<br>
+</h3>
     Returns a string, containing the concatenated lines of a property
 based list.  It concatenates the list semi-intelligently, putting a
 single space between lines normally, and two spaces between lines when
@@ -538,11 +824,14 @@ format.  It does NOT evaluate the contents of the list for embedded MPI
 commands.  If no obj argument is supplied, then it looks for the list
 somewhere down the environment from the trigger object.  Otherwise, it
 looks for the list down the environment from the given object.
-~
-~
-LEXEC
-{lexec:listname}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="lexec">{lexec:listname}
+<br>
 {lexec:listname,obj}
+<br>
+</h3>
     This takes a property based list, and concatenates all its lines
 together, stripping spaces from the beginning and end of each one.  It
 then evaluates the result for MPI commands, and returns the resulting
@@ -553,38 +842,49 @@ format, or the propname#/X format.  If no obj argument is supplied, then
 it looks for the list somewhere down the environment from the trigger
 object.  Otherwise, it looks for the list down the environment from the
 given object.
-~
-~
-RAND
-{rand:listname}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="rand">{rand:listname}
+<br>
 {rand:listname,obj}
+<br>
+</h3>
     Returns the value of a randomly picked list item from a property
 based list.  If no obj parameter is given, then it looks down the
 environment from the trigger object for the list.  Otherwise, it looks
 down the environment from the given object.  Any MPI code in the target
 property is evaluated and the result is returned.
-~
-~
-SELECT
-{select:value,listname}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="select">{select:value,listname}
+<br>
 {select:value,listname,object}
+<br>
+</h3>
     Returns the value of a single list item from a sparse property list.
 The item chosen is the one who's line number is the largest one that is
 less than or equal to the given value.  If the list is missing any items,
 then {select} will return the item in the list with the highest line number
 that is less than or equal to the given value.  ie:  If the list has the
 following entries:
+<pre>
     _junk#/1:one
     _junk#/5:two
     _junk#/16:three
     _junk#/20:four
-Then {select:9,_junk} will return "two", {select:16,_junk} will return
-"three", and {select:25,_junk} will return "four".
-~
-~
-TIMESUB
-{timesub:period,offset,listname}
+</pre>
+Then {select:9,_junk} will return &quot;two&quot;, {select:16,_junk} will return
+&quot;three&quot;, and {select:25,_junk} will return &quot;four&quot;.
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="timesub">{timesub:period,offset,listname}
+<br>
 {timesub:period,offset,listname,object}
+<br>
+</h3>
     This is sort of like {list}, except that it will only return one line
 of the given named property list.  The line it chooses depends on the
 time.  Any MPI code in the target line is evaluated and the result is
@@ -600,26 +900,34 @@ the first ten minutes of the hour, the second line during the next ten
 minutes, and so on, until it returns the last line during the last ten
 minutes of the hour.  Then it returns the first line for the beginning
 of the next hour.  Here's an example:
+<p>
     {timesub:86400,0,_sunmoon}
 This example will show different property list lines, depending on the
 time of day.  The period is 86400 seconds, which is one day.  If the
 property list has 24 items in it, then a different line will be returned
 for each hour of the day.
-~
-~
-PROPDIR
-{propdir:propname}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="propdir">{propdir:propname}
+<br>
 {propdir:propname,object}
+<br>
+</h3>
     Returns true if the given property is a propdir, containing sub-props.
 Otherwise, this returns false.  If no object parameter is passed to it, it
 looks for the property on the trigger object.  Otherwise, it looks on the
 object specified.  If the property is not found, this returns false.
-~
-~
-LISTPROPS
-{listprops:propdir}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="listprops">{listprops:propdir}
+<br>
 {listprops:propdir,object}
+<br>
 {listprops:propdir,object,pattern}
+<br>
+</h3>
     This function will return a list that contains the full names of all the
 sub-properties contained by the given propdir.  If not given, object defaults
 to the trigger object.  If a pattern is given, the sub-properties in the
@@ -627,57 +935,85 @@ propdir are each compared against the smatch wildcard pattern, and only those
 that match are returned in the list.  This comparison is only done on the last
 part of the property name after the last /.
 
-Also see: propdir and smatch
-~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-String Functions|Strings|StringFuncs
-String Functions
+<p>Also see:
+    <a href="#propdir">propdir</a> and
+    <a href="#smatch">smatch</a>
+</p>
+<!-- HTML_TOPICEND -->
 
-attr       center     eval       eval!      instr      left       lit
-midstr     nl         null       otell      pronouns   revoke     right
-smatch     strip      strlen     subst      tell       tolower    toupper
+<h2 id="StringFuncs">String Functions</h2>
+<ul>
+    <li><a href="#attr">attr</a></li>
+    <li><a href="#center">center</a></li>
+    <li><a href="#eval">eval</a></li>
+    <li><a href="#eval!">eval!</a></li>
+    <li><a href="#instr">instr</a></li>
+    <li><a href="#left">left</a></li>
+    <li><a href="#lit">lit</a></li>
+<!-- HTML_SECTIDX_NEWROW -->
+    <li><a href="#midstr">midstr</a></li>
+    <li><a href="#nl">nl</a></li>
+    <li><a href="#null">null</a></li>
+    <li><a href="#otell">otell</a></li>
+    <li><a href="#pronouns">pronouns</a></li>
+    <li><a href="#revoke">revoke</a></li>
+    <li><a href="#right">right</a></li>
+<!-- HTML_SECTIDX_NEWROW -->
+    <li><a href="#smatch">smatch</a></li>
+    <li><a href="#strip">strip</a></li>
+    <li><a href="#strlen">strlen</a></li>
+    <li><a href="#subst">subst</a></li>
+    <li><a href="#tell">tell</a></li>
+    <li><a href="#tolower">tolower</a></li>
+    <li><a href="#toupper">toupper</a></li>
+</ul>
 
-~----------------------------------------------------------------------------
-~
-~
-~String functions generally don't strip spaces in their arguments.
-~
-~
-NL|\r
-{nl}  or  \r
+String functions generally don't strip spaces in their arguments.
+
+
+<h3 id="nl">{nl}  or  \r
+<br>
+</h3>
     Returns a carriage return character.  This can be used to separate
 items in a list, or can split the string at that point, starting a new line.
 Example:  the string:
+<pre>
     This is\ran example{nl}of using newlines.
+</pre>
 would print out like:
+<pre>
     This is
     an example
     of using newlines.
-~
-~
-SUBST
-{subst:str,old,new}
+</pre>
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="subst">{subst:str,old,new}
+<br>
+</h3>
     Returns a copy of 'str' with all substring instances of 'old' replaced
 by the text specified by 'new'.  Basically just substitutes the new text
 for the old text in str.  example: {subst:Hello World!,l,r} would return
-"Herro Worrd!"
-~
-~
-STRLEN
-{strlen:string}
+&quot;Herro Worrd!&quot;
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="strlen">{strlen:string}
+<br>
+</h3>
     Returns an integer that is the number of character in string.
-~
-~
-SMATCH
-{smatch:str,pattern}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="smatch">{smatch:str,pattern}
+<br>
+</h3>
     Matches 'str' against the wildcard pattern.  If there is a match,
-this returns true, or "1".  If it doesn't match, this returns a value
-of "0", or false.  In wildcard patterns, the following characters have
+this returns true, or &quot;1&quot;.  If it doesn't match, this returns a value
+of &quot;0&quot;, or false.  In wildcard patterns, the following characters have
 the following meanings:
+<pre>
     *               matches any number of any character.
     ?               matches one character, of any type.
     [abcde]         matches one char, if it is a, b, c, d, or e.
@@ -686,69 +1022,99 @@ the following meanings:
     {word1|word2}   matches one word, if it is word1, or word2.
     {^word1|word2}  matches one word, if it is NOT word1 or word2.
     \               escapes any of the prev chars, making it not special.
-~
-~
-STRIP
-{strip:string}
+</pre>
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="strip">{strip:string}
+<br>
+</h3>
     Returns a copy of string with all the spaces stripped from the beginning
 and the end.
-~
-~
-TOLOWER
-{tolower:string}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="tolower">{tolower:string}
+<br>
+</h3>
     Returns a copy of string, with all uppercase chars converted to lowercase.
-~
-~
-TOUPPER
-{toupper:string}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="toupper">{toupper:string}
+<br>
+</h3>
     Returns a copy of string, with all lowercase chars converted to uppercase.
-~
-~
-RIGHT
-{right:string}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="right">{right:string}
+<br>
 {right:string,fieldwidth}
+<br>
 {right:string,fieldwidth,padstring}
+<br>
+</h3>
     Takes a string and pads it to fit the given fieldwidth, with the string
 right justified.  If no padstring is given, it assumes that it will pad the
 string with spaces.  If no fieldwidth is given, it assumes that the field
 width is 78 characters.  Example:
+<pre>
     {right:Hello,10,_.}
-would return the string "_._._Hello"
-~
-~
-LEFT
-{left:string}
+</pre>
+would return the string &quot;_._._Hello&quot;
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="left">{left:string}
+<br>
 {left:string,fieldwidth}
+<br>
 {left:string,fieldwidth,padstring}
+<br>
+</h3>
     Takes a string and pads it to fit the given fieldwidth, with the string
 left justified.  If no padstring is given, it assumes that it will pad the
 string with spaces.  If no fieldwidth is given, it assumes that the field
 width is 78 characters.  Example:
+<pre>
     {left:Hello,10,_.}
-would return the string "Hello_._._"
-~
-~
-CENTER
-{center:string}
+</pre>
+would return the string &quot;Hello_._._&quot;
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="center">{center:string}
+<br>
 {center:string,fieldwidth}
+<br>
 {center:string,fieldwidth,padstring}
+<br>
+</h3>
     Takes a string and pads it to fit the given fieldwidth, with the string
 center justified.  If no padstring is given, it assumes that it will pad the
 string with spaces.  If no fieldwidth is given, it assumes that the field
 width is 78 characters.  Example:
+<pre>
     {center:Hello,10,1234567890}
-would return the string "123Hello12"
-~
-~
-INSTR
-{instr:str1,str2}
+</pre>
+would return the string &quot;123Hello12&quot;
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="instr">{instr:str1,str2}
+<br>
+</h3>
     Lists the position of the first substring within str1 that matches str2.
 If no such substring exists, then this returns a 0.
-~
-~
-MIDSTR
-{midstr:str,pos}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="midstr">{midstr:str,pos}
+<br>
 {midstr:str,pos1,pos2}
+<br>
+</h3>
     Returns the substring that starts at pos1 within str.  If no pos2 is
 given, then the returned string is only the character at the given pos1
 position.  if a pos2 position is given, then it returns the substring
@@ -761,61 +1127,82 @@ beginning of the string.  If it would be beyond the end of the string, it
 is assumed to be at the last character. If the starting position is later
 in the string than the ending position, then the returned string has the
 characters in reverse order.  If either pos1 or pos2 are 0, then this
-returns a null string.  ("")
-~
-~
-LIT|LITERAL
-{lit:string}
+returns a null string.  (&quot;&quot;)
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="lit">{lit:string}
+<br>
+</h3>
     Returns the literal string given as its parameter.  This means you can
 have things that look like MPI commands within it, and it will not evaluate
 them, but will rather just treat them as a string.
-~
-~
-EVAL
-{eval:string}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="eval">{eval:string}
+<br>
+</h3>
     Sort of the exact opposite of {lit:}.  This takes a string, and
 evaluates it for MPI commands embedded within it.  This can be used on
 the output of {list:}, for example.  The evaluated mpi commands will
 be run unblessed.
 
-Also see: eval!
-~
-~
-EVAL!
-{eval!:string}
+<p>Also see:
+    <a href="#eval!">eval!</a>
+</p>
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="eval!">{eval!:string}
+<br>
+</h3>
     Sort of the exact opposite of {lit:}.  This takes a string, and
 evaluates it for MPI commands embedded within it.  This can be used on
 the output of {list:}, for example.  Unlike the {eval} command, the
 evaluated mpi commands will be run with the same blessings as the code
 that executed the {eval!}.
-Also see: eval and revoke
-~
-~
-REVOKE
-{revoke:commands}
+<p>Also see:
+    <a href="#eval">eval</a> and
+    <a href="#revoke">revoke</a>
+</p>
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="revoke">{revoke:commands}
+<br>
+</h3>
     Executes the enclosed commands with all blessing permissions revoked.
 This is good to wrap around {eval} statements that may execute user
 supplied code, to prevent security holes.
-~
-~
-NULL
-{null:expr...}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="null">{null:expr...}
+<br>
+</h3>
     Returns a null string, no matter what the expressions within it return.
 This can take up to nine arguments, though you could pass the output of
 several commands as one argument.
-~
-~
-PRONOUNS
-{pronouns:string}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="pronouns">{pronouns:string}
+<br>
 {pronouns:string,object}
+<br>
+</h3>
     If passed one argument, evaluates the string and does pronoun substitution
 with regards to the using player.  If given two args, it does the pronoun
 substitution with regards to the given object.
-~
-~
-TELL
-{tell:string}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="tell">{tell:string}
+<br>
 {tell:string,player}
+<br>
+</h3>
     If passed only a string, tells the user that string.  If passed both
 a string, and a player dbref, it will tell the given player the message.
 This returns the message that was sent.  If the trigger isn't a room, or
@@ -824,12 +1211,16 @@ user's name, then the user's name will be prepended to the message.  The
 two exceptions to this are that if the messages is being sent to the
 owner of the trigger, or to the user, then the user's name will not be
 prepended.
-~
-~
-OTELL
-{otell:string}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="otell">{otell:string}
+<br>
 {otell:string,room}
+<br>
 {otell:string,room,player}
+<br>
+</h3>
     This will tell the given string to all the players in the room, except
 for the given player.  If no room argument is given, it is assumed to be
 the room that the triggering player is in.  If no player is given, then it
@@ -838,12 +1229,16 @@ If you pass it a player of #-1, it will send the message to all the players
 in the room.  This returns the message that was sent.  If the trigger isn't
 a room, or an exit on a room, and if the message doesn't already begin with
 the user's name, then the user's name will be prepended to the message.
-~
-~
-ATTR
-{attr:attribute,string}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="attr">{attr:attribute,string}
+<br>
 {attr:attribute,attribute,string}
+<br>
 {attr:attribute,...,attribute,string}
+<br>
+</h3>
     This will surround the given string with the neccesary ANSI escape codes
 to cause the text to display with the given attributes.  You may specify up
 to eight attributes, though this shouldn't ever be neccesary.  The supported
@@ -851,141 +1246,182 @@ attributes are:
 null, reset, bold, dim, italic, underline, flash, reverse, overstrike,
 black, red, green, yellow, blue, magenta, cyan, white,
 bg_black, bg_red, bg_green, bg_yellow, bg_blue, bg_magenta, bg_cyan, and bg_white.
+<p>
     Not all clients will display all these attributes, and those that do 
 won't always show them the same way.  Players who do not have their Color 
 flag set will not see the ANSI codes or colors at all.  Nesting {attr}
 commands probably just won't work.
-~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Math Functions|Math|MathFuncs
-Math Functions
+<!-- HTML_TOPICEND -->
 
-abs   add   dec   dice  dist  div   inc   max   min   mod   mult  sign  subt
+<h2 id="MathFuncs">Math Functions</h2>
+<ul>
+    <li><a href="#abs">abs</a></li>
+    <li><a href="#add">add</a></li>
+    <li><a href="#dec">dec</a></li>
+    <li><a href="#dice">dice</a></li>
+    <li><a href="#dist">dist</a></li>
+    <li><a href="#div">div</a></li>
+    <li><a href="#inc">inc</a></li>
+    <li><a href="#max">max</a></li>
+    <li><a href="#min">min</a></li>
+    <li><a href="#mod">mod</a></li>
+    <li><a href="#mult">mult</a></li>
+    <li><a href="#sign">sign</a></li>
+    <li><a href="#subt">subt</a></li>
+</ul>
 
-~----------------------------------------------------------------------------
-~
-~
-~All math functions deal with integer numbers.
-~
-INC|INCREMENT
-{inc:var}
+All math functions deal with integer numbers.
+
+<h3 id="inc">{inc:var}
+<br>
 {inc:var,val}
+<br>
+</h3>
     Increments the value of the given variable by one, returning the result.
 If a value argument is given, then it will add that value to the variable,
 instead of the value 1.
-~
-~
-DEC|DECREMENT
-{dec:var}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="dec">{dec:var}
+<br>
 {dec:var,val}
+<br>
+</h3>
     Decrements the value of the given variable by one, returning the result.
 If a value argument is given, then it will subtract that from the variable,
 instead of the value 1.
-~
-~
-ADD|ADDITION
-{add:expr1,expr2}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="add">{add:expr1,expr2}
+<br>
 {add:expr1,expr2,expr3...}
+<br>
+</h3>
     Returns the sum of the values of expr1 and expr2.  If more than two args
 are given, then this will add all the args together and return the result.
-~
-~
-SUBT|SUBTRACTION
-{subt:expr1,expr2}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="subt">{subt:expr1,expr2}
+<br>
 {subt:expr1,expr2,expr3...}
+<br>
+</h3>
     Returns the difference of the values expr1 and expr2.  If more than two
 args are given, all values are subtracted from the first value in sequence.
 For example: {subt:10,3,2,4} would be read as 10 - 3 - 2 - 4, and it would
 return a result of 1.
-~
-~
-MULT|MULTIPLY
-{mult:expr1,expr2}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="mult">{mult:expr1,expr2}
+<br>
 {mult:expr1,expr2,expr3...}
+<br>
+</h3>
     Returns the product of the values expr1 and expr2.  If more than two args
 are given, then they are all multiplied together to get the result.
-~
-~
-DIV|DIVIDE
-{div:expr1,expr2}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="div">{div:expr1,expr2}
+<br>
 {div:expr1,expr2,expr3...}
+<br>
+</h3>
     Returns the value of expr1 divided by expr2.  Division by zero will
 return zero.  If more than two arguments are given, then the first argument
 is divided by the second, and the result is divided by the third, etc, for
 all of the arguments.  For example:  {div:180,6,3,5} would be read like
 180 / 6 / 3 / 5, and a result of 2 would be returned.
-~
-~
-MOD|MODULO
-{mod:expr1,expr2}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="mod">{mod:expr1,expr2}
+<br>
+</h3>
     Returns the leftover remainder of expr1 divided by expr2.  If more than
 two arguments are given, then the first arguments is modded by the second,
 then the result of that would be modded by the third, and so on and so forth.
 For example: {mod:91,20,3} would be read as 91 % 20 % 3, and a result of 2
 would be returned.
-~
-~
-DICE
-{dice:X}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="dice">{dice:X}
+<br>
 {dice:X,Y}
+<br>
 {dice:X,Y,Z}
+<br>
+</h3>
     Given one parameter, picks a random number between 1 and X. (1dX)
 Given two parameters, it randomly generates Y numbers between 1 and X,
 and adds them together. (YdX) A third parameter, if given, is just added
 to this sum as a modifier. (YdX+Z)
-~
-~
-MIN|MINIMUM
-{min:expr1,expr2}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="min">{min:expr1,expr2}
+<br>
+</h3>
     Returns the lesser of the values of expr1 and expr2.
-~
-~
-MAX|MAXIMUM
-{max:expr1,expr2}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="max">{max:expr1,expr2}
+<br>
+</h3>
     Returns the greater of the values of expr1 and expr2.
-~
-~
-ABS|ABSOLUTE
-{abs:expr}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="abs">{abs:expr}
+<br>
+</h3>
     Returns the absolute value of expr.
-~
-~
-SIGN
-{sign:expr}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="sign">{sign:expr}
+<br>
+</h3>
     Returns -1 if expr is negative.  Returns 1 if expr is positive.
 If expr is 0, then it returns 0.
-~
-~
-DIST|DISTANCE
-{dist:x,y}              Returns distance from 0,0 that x,y is.
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="dist">{dist:x,y}              Returns distance from 0,0 that x,y is.
+<br>
 {dist:x,y,z}            Returns distance from 0,0,0 that x,y,z is.
+<br>
 {dist:x,y,x2,y2}        Returns distance between x,y and x2,y2.
+<br>
 {dist:x,y,z,x2,y2,z2}   Returns distance between x,y,z and x2,y2,z2.
+<br>
+</h3>
     Given two arguments, this calculates the distance of a 2D point from
 the origin.  Given three arguments, this calculates the distance of a 3D
 point from the origin.  Given four arguments, this calculates the distance
 between a pair of 2D points.  Given six arguments, this calculates the
 distance between a pair of 3D points.
-~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Looping Functions|Loops|Looping
-Looping Functions
+<!-- HTML_TOPICEND -->
 
-filter   fold     for      foreach  parse    while    
+<h2 id="Looping">Looping Functions</h2>
+<ul>
+    <li><a href="#filter">filter</a></li>
+    <li><a href="#fold">fold</a></li>
+    <li><a href="#for">for</a></li>
+    <li><a href="#foreach">foreach</a></li>
+    <li><a href="#parse">parse</a></li>
+    <li><a href="#while">while</a></li>
+</ul>
 
-~----------------------------------------------------------------------------
-~
-~
-FOR
-{for:varname,start,end,increment,command}
+<h3 id="for">{for:varname,start,end,increment,command}
+<br>
+</h3>
     Acts as a counting loop, like BASIC's for loops.  The varname is the name
 of the variable that it will create and use to store the count value.  The
 start value will be the initial value of the variable, and the end value will
@@ -993,21 +1429,28 @@ be the value that the variable is working towards.  The increment is how much
 the variable will be incremented by in each loop.  The command will be eval-
 uated for each value of the variable between the beginning and ending values.
 For example:
-    {null:{for:i,10,1,-1,{tell:{&i}}}}
+<pre>
+    {null:{for:i,10,1,-1,{tell:{&amp;i}}}}
+</pre>
 will echo a countdown from ten to one, inclusive, to the user.
-~
-~
-WHILE
-{while:check,expr}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="while">{while:check,expr}
+<br>
+</h3>
     This is a looping structure.  It evaluates the 'check' argument, and
 if it evaluates true, then it evaluates the expr argument, and repeats
 the process.  If 'check' evaluates false, then the loop is exited.
 This returns the result of the last evaluation of expr.
-~
-~
-FOREACH
-{foreach:var,list,expr}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="foreach">{foreach:var,list,expr}
+<br>
 {foreach:var,list,expr,sep}
+<br>
+</h3>
     This evaluates expr for each and every item in the given list.  On
 each evaluation, the temporary variable var will contain the value of the
 item under scrutiny.  var will only be defined for the duration of expr,
@@ -1016,15 +1459,21 @@ given, then it uses that string as the item separator in list, instead of
 the usual carriage return character.  sep can be multiple characters
 long.  This structure returns the result of the last evaluation of expr.
 Example:
-    {foreach:thing,{contents:here},{tell:{name:{&thing}}}}
+<pre>
+    {foreach:thing,{contents:here},{tell:{name:{&amp;thing}}}}
+</pre>
 This will display the name of every object in the room, then it will return
 the name of the last object it displayed.
-~
-~
-FILTER
-{filter:var,list,expr}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="filter">{filter:var,list,expr}
+<br>
 {filter:var,list,expr,sep}
+<br>
 {filter:var,list,expr,sep,s2}
+<br>
+</h3>
     This evaluates expr for each and every item in the given list.  On
 each evaluation, the temporary variable var will contain the value of the
 item under scrutiny.  This function returns a list containing all of the
@@ -1035,12 +1484,16 @@ as the item separator in the input list, instead of the usual carriage
 return character.  If s2 is defined, then it will use that string to
 separate the items in the list it returns, instead of the normal carriage
 return.  sep and s2 can be multiple characters long.
-~
-~
-PARSE
-{parse:var,list,expr}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="parse">{parse:var,list,expr}
+<br>
 {parse:var,list,expr,sep}
+<br>
 {parse:var,list,expr,sep,s2}
+<br>
+</h3>
     This evaluates expr for each and every item in the given list.  On
 each evaluation, the temporary variable var will contain the value of the
 item under scrutiny.  This function returns a list containing the output
@@ -1052,138 +1505,191 @@ as the item separator in the input list, instead of the usual carriage
 return character.  If s2 is defined, then it will use that string to
 separate the items in the list it returns, instead of the normal carriage
 return.  sep and s2 can be multiple characters long.
-~
-~
-FOLD
-{fold:var1,var2,list,expr}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="fold">{fold:var1,var2,list,expr}
+<br>
 {fold:var1,var2,list,expr,sep}
+<br>
+</h3>
     This takes a list and stores the first two items in var1 and var2, then
 evaluates expr.  The value returned by expr is then put in var1, and the next
 list item is put in var2.  Expr keeps being evaluated in this way until there
 are no more list items left.  This returns the last value returned by expr.
 If a sep argument is given, the input list is assumed to have its individual
 items delimited by that string, otherwise it assumes a carriage return.
-~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Database Related Functions|Database|DBFuncs
-Database Related Functions
+<!-- HTML_TOPICEND -->
 
-contains   contents   controls   created    dbeq       exits      flags
-force      fullname   holds      istype     lastused   links      loc
-locked     modified   money      name       nearby     owner      ref
-testlock   type       usecount   
+<h2 id="DBFuncs">Database Related Functions</h2>
+<ul>
+    <li><a href="#contains">contains</a></li>
+    <li><a href="#contents">contents</a></li>
+    <li><a href="#controls">controls</a></li>
+    <li><a href="#created">created</a></li>
+    <li><a href="#dbeq">dbeq</a></li>
+    <li><a href="#exits">exits</a></li>
+    <li><a href="#flags">flags</a></li>
+<!-- HTML_SECTIDX_NEWROW -->
+    <li><a href="#force">force</a></li>
+    <li><a href="#fullname">fullname</a></li>
+    <li><a href="#holds">holds</a></li>
+    <li><a href="#istype">istype</a></li>
+    <li><a href="#lastused">lastused</a></li>
+    <li><a href="#links">links</a></li>
+    <li><a href="#loc">loc</a></li>
+<!-- HTML_SECTIDX_NEWROW -->
+    <li><a href="#locked">locked</a></li>
+    <li><a href="#modified">modified</a></li>
+    <li><a href="#money">money</a></li>
+    <li><a href="#name">name</a></li>
+    <li><a href="#nearby">nearby</a></li>
+    <li><a href="#owner">owner</a></li>
+    <li><a href="#ref">ref</a></li>
+<!-- HTML_SECTIDX_NEWROW -->
+    <li><a href="#testlock">testlock</a></li>
+    <li><a href="#type">type</a></li>
+    <li><a href="#usecount">usecount</a></li>
+</ul>
 
-~----------------------------------------------------------------------------
-~
-~
-REF
-{ref:obj}
+<h3 id="ref">{ref:obj}
+<br>
+</h3>
     Returns the dbref of the given object in the form #xxxx.  The object
 must be in the vicinity, or controlled by the owner of the trigger object.
-~
-~
-NAME
-{name:obj}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="name">{name:obj}
+<br>
+</h3>
     Returns the name of the given object.  If the object is an exit, the
 name returned is the first exit name it has before the first ';'.  The object
 must be in the vicinity, or controlled by the owner of the trigger object.
-~
-~
-FULLNAME
-{fullname:obj}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="fullname">{fullname:obj}
+<br>
+</h3>
     Returns the name of the given object.  In the case where the object
 is an exit, then the full name of the exit is given, including all the ;
 aliases.  The object must be in the immediate vicinity, or be controlled
 by the owner of the trigger object.
-~
-~
-OWNER
-{owner:obj}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="owner">{owner:obj}
+<br>
+</h3>
     Returns the owner of the given object.  The object must be in the
 vicinity, or be controlled by the trigger object's owner.
-~
-~
-LOC|LOCATION
-{loc:obj}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="loc">{loc:obj}
+<br>
+</h3>
     Returns the location of the given object.  The object must either be in
 the vicinity, or it must be controlled by the owner of the trigger object.
-~
-~
-FLAGS
-{flags:obj}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="flags">{flags:obj}
+<br>
+</h3>
     Returns a flaglist string from obj. ie: PM2J.  The object must either
 be in the vicinity, or it must be controlled by the owner of the trigger
 object.
-~
-~
-CREATED
-{created:obj}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="created">{created:obj}
+<br>
+</h3>
     Returns the time and date that obj was created.  The number returned is
 suitable for use with {convsecs}.
-~
-~
-MODIFIED
-{modified:obj}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="modified">{modified:obj}
+<br>
+</h3>
     Returns the time and date that obj was last modified.  The number returned
 is suitable for use with {convsecs}.
-~
-~
-LASTUSED
-{lastused:obj}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="lastused">{lastused:obj}
+<br>
+</h3>
     Returns the time and date that obj was last used.  The number returned is
 suitable for use with {convsecs}.
-~
-~
-USECOUNT
-{usecount:obj}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="usecount">{usecount:obj}
+<br>
+</h3>
     Returns the usage count that obj has incurred since it was created.
-~
-~
-CONTROLS
-{controls:obj}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="controls">{controls:obj}
+<br>
 {controls:obj,player}
-    If one argument is given, then this returns true ("1") if the trigger
+<br>
+</h3>
+    If one argument is given, then this returns true (&quot;1&quot;) if the trigger
 object's owner controls the given object.  If two arguments are given, then
 it returns true if the given player controls the given object.  Otherwise,
-this returns false.  ("0")  Wizards control everything.
-~
-~
-NEARBY
-{nearby:obj}
+this returns false.  (&quot;0&quot;)  Wizards control everything.
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="nearby">{nearby:obj}
+<br>
 {nearby:obj,obj2}
-    If one argument is given, then this returns true ("1") if the given
+<br>
+</h3>
+    If one argument is given, then this returns true (&quot;1&quot;) if the given
 object is nearby to the trigger object.  If two arguments are given, then
 it returns true if the two objects are nearby one another.  Otherwise,
-this returns false. ("0")  Nearby is defined as: 1) The two objects are
+this returns false. (&quot;0&quot;)  Nearby is defined as: 1) The two objects are
 in the same location, or 2) One object contains the other, or 3) the two
 objects are in fact the same object.
-~
-~
-MONEY
-{money:obj}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="money">{money:obj}
+<br>
+</h3>
     This returns the value of an object of TYPE_THING, or returns how many
 pennies a player has.
-~
-~
-TYPE
-{type:obj}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="type">{type:obj}
+<br>
+</h3>
     Returns the type of an object.  The possible values are:  Bad, Room,
 Exit, Thing, Player, and Program.
-~
-~
-ISTYPE
-{istype:obj,typ}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="istype">{istype:obj,typ}
+<br>
+</h3>
     Returns true if the given object if of the given type.  Valid types are:
 Bad, Room, Exit, Thing, Player, and Program.
-~
-~
-CONTENTS
-{contents:obj}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="contents">{contents:obj}
+<br>
 {contents:obj,type}
+<br>
+</h3>
     Returns a list of the contents of the given object.  If a second
 argument is passed to it, it restricts the listing to only those objects
 that are of the given type.  Either the object must be nearby the trigger
@@ -1193,184 +1699,222 @@ object type values are Room, Thing, Exit, Player, Program, and Bad.
 HINT:  If you need to get a list of two types of objects from the room,
 just concatenate the lists from two calls to this function, with each
 object type you want.  ie:
+<pre>
     {mklist:{contents:here,player},{contents:here,thing}}    or
     {contents:here,player}{nl}{contents:here,thing}
-~
-~
-EXITS
-{exits:obj}
+</pre>
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="exits">{exits:obj}
+<br>
+</h3>
     Returns a list of all the exits on the given object.  The owner of
 the trigger object has to control obj, or else this errors out with
 Permission Denied.  Programs and exits never have exits attached to them.
-~
-~
-LINKS
-{links:obj}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="links">{links:obj}
+<br>
+</h3>
     Returns the object reference of what the given object if linked to.
 Since exits can be meta-links, linked to multiple exits, if there is more
 than one link, then this function returns a list of all the destinations,
 separated by carriage return characters.  (\r)
-~
-~
-FORCE
-{force:object,command}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="force">{force:object,command}
+<br>
+</h3>
     Forces the given player or thing to do the given command.  The thing
 forced must be @flock'ed to the trigger object, or the trigger object's
 owner, and it must be set XFORCIBLE, or else this function will get a
 Permission Denied error.  This function returns a null string.  {Force}
 cannot force a thing-object to do something, if it is set Dark, is in a
 room set Zombie, or is owned by a player set Zombie.
-~
-~
-DBEQ|DBEQUALS
-{dbeq:obj1,obj2}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="dbeq">{dbeq:obj1,obj2}
+<br>
+</h3>
     Returns true if obj1 and obj2 refer to the same object.  This does
 name matching, so {dbeq:*Wizard,#1} will return true if #1 is named Wizard.
-~
-~
-LOCKED
-{locked:player,obj}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="locked">{locked:player,obj}
+<br>
+</h3>
     Tests the _/lok (@lock) standard lock property on obj against the given
 player.  Returns true if the lock is locked against the player.
-~
-~
-TESTLOCK
-{testlock:obj,prop}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="testlock">{testlock:obj,prop}
+<br>
 {testlock:obj,prop,who}
+<br>
 {testlock:obj,prop,who,def}
+<br>
+</h3>
     Tests the lock property 'prop', on 'obj' against the given player 'who'.
 If no 'who' argument is given, then it checks the lock against the using
 player.  If a def argument is given, then the lock will default to that
 value, if there is no lock property of the given name on the given object.
 Returns true if the lock is locked against the player.
-~
-~
-HOLDS
-{holds:obj1}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="holds">{holds:obj1}
+<br>
 {holds:obj1,obj2}
+<br>
+</h3>
     Returns true if the location of obj1 is obj2.  If no obj2 argument is
 given, then this will return true if the location of obj1 is the player.
-~
-~
-CONTAINS
-{contains:obj1}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="contains">{contains:obj1}
+<br>
 {contains:obj1,obj2}
+<br>
+</h3>
     Returns true if obj1 is within obj2, or within anything it contains, or
 within anything they contain.  If obj2 is not given, then it checks to see
 is obj1 is held by the player, or by anything they hold, etc.  Basically,
 this just sees if obj1 is within the locational environment of obj2.
-~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Connection Related Functions|Connection|ConnFuncs
-Connection Related Functions
+<!-- HTML_TOPICEND -->
 
-awake   descr   idle    online  ontime  
+<h2 id="ConnFuncs">Connection Related Functions</h2>
+<ul>
+    <li><a href="#awake">awake</a></li>
+    <li><a href="#descr">descr</a></li>
+    <li><a href="#idle">idle</a></li>
+    <li><a href="#online">online</a></li>
+    <li><a href="#ontime">ontime</a></li>
+</ul>
 
-~----------------------------------------------------------------------------
-~
-~
-ONLINE
-{online}
+<h3 id="online">{online}
+<br>
+</h3>
     Returns a list of players who are online.  This function can only be
 executed with blessed permissions.
-~
-~
-AWAKE
-{awake:player}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="awake">{awake:player}
+<br>
+</h3>
     Returns how many times player is connected.  This means that it will
 returns 0 if the player is not connected.  If the given object is NOT a
 player, it will return 0.  If the given player is NOT local to the trigger,
 and is not the owner of the trigger, and this is not run with blessed perms,
 then this will return 0.  In all other cases, it will return a positive
 number, being how many times the given player is connected to the server.
-~
-~
-ONTIME
-{ontime:player}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="ontime">{ontime:player}
+<br>
+</h3>
     Returns player online time in seconds.  If the given player is not
 connected, or is not a player object at all, then this will return -1.
 This returns the online time for the most recently connected connection,
 if there are multiple connects.
-~
-~
-IDLE
-{idle:player}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="idle">{idle:player}
+<br>
+</h3>
     Returns player idle time in seconds.  If the given player is not
 connected, or is not a player object at all, then this will return -1.
 This returns the idle time for the most recently connected connection,
 if there are multiple connects.
-~
-~
-DESCR
-{descr}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="descr">{descr}
+<br>
+</h3>
     Returns the descriptor number that invoked the MPI.
-~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Variable Handling Functions|Variable|Variables|Vars|Var|VarFuncs
-Variable Handling Functions
+<!-- HTML_TOPICEND -->
 
-&arg  &cmd  &how  set   v     with  
+<h2 id="VarFuncs">Variable Handling Functions</h2>
+<ul>
+    <li><a href="#&amp;arg">&amp;arg</a></li>
+    <li><a href="#&amp;cmd">&amp;cmd</a></li>
+    <li><a href="#&amp;how">&amp;how</a></li>
+    <li><a href="#set">set</a></li>
+    <li><a href="#v">v</a></li>
+    <li><a href="#with">with</a></li>
+</ul>
 
-~----------------------------------------------------------------------------
-~
-~
-V|&|VARIABLE
-{&VAR}
+<h3 id="v">{&amp;VAR}
+<br>
 {v:VAR}
+<br>
+</h3>
     These are two ways of trying to do the same thing.  They return the
 value of the named variable VAR.  If there is no variable with the given
 name currently defined, then this gives an error stating as much.  Variables
 can be defined either with the {with:} function or within a looping command.
-~
-~
-~There are three standard variables that every MPI program can read:
-~
-&HOW|HOW
-{&how}  
-    The {&how} variable is a short string telling what ran the MPI command.
-It can have the values "(@desc)", "(@succ)", "(@osucc)", etc. for when it
+<!-- HTML_TOPICEND -->
+
+
+There are three standard variables that every MPI program can read:
+
+<h3 id="&amp;how">{&amp;how}  
+<br>
+</h3>
+    The {&amp;how} variable is a short string telling what ran the MPI command.
+It can have the values &quot;(@desc)&quot;, &quot;(@succ)&quot;, &quot;(@osucc)&quot;, etc. for when it
 is run from an @desc, an @succ, an @osucc, or whatever.  It can also have
-the value "(@lock)" for when it is run from a lock test.
-~
-~
-&CMD|CMD
-{&cmd}
-    The {&cmd} variable contains the command name the user used, that
+the value &quot;(@lock)&quot; for when it is run from a lock test.
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="&amp;cmd">{&amp;cmd}
+<br>
+</h3>
+    The {&amp;cmd} variable contains the command name the user used, that
 caused the MPI to run.  This is generally the exit name that the player
 triggered.  For example, if the player typed 'east', and triggered the exit
-named 'east;e;out', which ran some MPI commands, the {&cmd} variable would
-have a value of "east".
-~
-~
-&ARG|ARG
-{&arg}
-    The {&arg} variable contains a string with the value of the command
+named 'east;e;out', which ran some MPI commands, the {&amp;cmd} variable would
+have a value of &quot;east&quot;.
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="&amp;arg">{&amp;arg}
+<br>
+</h3>
+    The {&amp;arg} variable contains a string with the value of the command
 line arguments the user entered.  This is so that you can have stuff like
 MPI in the fail of an exit, and when the user triggers the exit, and has
 some extra text on the line they entered, other than the exitname, the
 MPI can take that extra stuff as arguments for use.  Note that you need
 to set an action HAVEN to get it to accept command line arguments.
-~
-~
-~Other MPI functions used to work with variables are:
-~
-SET
-{set:var,value}
+<!-- HTML_TOPICEND -->
+
+
+Other MPI functions used to work with variables are:
+
+<h3 id="set">{set:var,value}
+<br>
+</h3>
     This sets the value of the given named variable to the given value.
 If no variable with that given name is currently defined, then this gives
 an error message complaining about that.
-~
-~
-WITH
-{with:var,val,expr..}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="with">{with:var,val,expr..}
+<br>
+</h3>
     This defines a new variable with the given name, and sets its value
 to the given val.  Up to 7 expr's are allowed, but the only value
 returned to {with}'s caller, is the value returned by the evaluation of
@@ -1384,55 +1928,72 @@ variables that are defined within macros, or properties or lists that are
 executed with {exec:} or {lexec:}.   Here's an example to illustrate the
 scope of variables inside of {with:} commands:
 
-    {prop:_mydesc}                           <- {&people} not defined.
-    {with:people,{contents:here,players},    <- Defining.  Not available yet.
-        {if:{count:{&people}},               <- It's usable now.
+<pre>
+    {prop:_mydesc}                           &lt;- {&amp;people} not defined.
+    {with:people,{contents:here,players},    &lt;- Defining.  Not available yet.
+        {if:{count:{&amp;people}},               &lt;- It's usable now.
             The players awake here are
-            {lit: }                          <- just puts in a space.
-            {commas:{&people},{lit: and },
-                who,{name:{&who}}            <- uses {&who} as temp var.
-            }                                <- {&who} no longer defined.
+            {lit: }                          &lt;- just puts in a space.
+            {commas:{&amp;people},{lit: and },
+                who,{name:{&amp;who}}            &lt;- uses {&amp;who} as temp var.
+            }                                &lt;- {&amp;who} no longer defined.
         }
-    }                                        <- {&people} no longer defined.
-~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-List Handling Functions|List Handling|ListFuncs
-List Handling Functions
+    }                                        &lt;- {&amp;people} no longer defined.
+</pre>
+<!-- HTML_TOPICEND -->
 
-commas   count    lcommon  lmember  lrand    lremove  lsort    lunion
-lunique  mklist   sublist  
+<h2 id="ListFuncs">List Handling Functions</h2>
+<ul>
+    <li><a href="#commas">commas</a></li>
+    <li><a href="#count">count</a></li>
+    <li><a href="#lcommon">lcommon</a></li>
+    <li><a href="#lmember">lmember</a></li>
+    <li><a href="#lrand">lrand</a></li>
+    <li><a href="#lremove">lremove</a></li>
+    <li><a href="#lsort">lsort</a></li>
+    <li><a href="#lunion">lunion</a></li>
+<!-- HTML_SECTIDX_NEWROW -->
+    <li><a href="#lunique">lunique</a></li>
+    <li><a href="#mklist">mklist</a></li>
+    <li><a href="#sublist">sublist</a></li>
+</ul>
 
-~----------------------------------------------------------------------------
-~
-~
-COUNT
-{count:list}
+<h3 id="count">{count:list}
+<br>
 {count:list,sep}
+<br>
+</h3>
     This counts the number of \r delimited items that are in the given list.
 This is effectively a list item count.  If the sep argument if given, then
 it counts the number of sep delimited substrings in list.  ie: The default
 sep is \r. (A carriage return.)
-~
-~
-MKLIST
-{mklist:value...}       Returns a list with all given values.
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="mklist">{mklist:value...}       Returns a list with all given values.
+<br>
+</h3>
     This returns a list with all the given values as list items, separated
 by carriage returns.  ('\r's) Example:
+<pre>
     {mklist:Tom,Dick,Harry}
-returns "Tom\rDick\rHarry".  Note:  A maximum of nine items can be passed to
+</pre>
+returns &quot;Tom\rDick\rHarry&quot;.  Note:  A maximum of nine items can be passed to
 the {mklist} function.  If you need more, you can chain {mklist}s together.
 Example:
+<pre>
     {mklist:{mklist:a,b,c,d,e,f,g,h,i},j,k,l,m,n,o,p}
-~
-~
-SUBLIST
-{sublist:list,pos1}
+</pre>
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="sublist">{sublist:list,pos1}
+<br>
 {sublist:list,pos1,pos2}
+<br>
 {sublist:list,pos1,pos2,sep}
+<br>
+</h3>
     Takes a list, and returns a subset of the list items within it.  The
 subset is all the list items between list item pos1, and list item pos2,
 inclusive.  If the pos2 argument is omitted, it assumes that pos2 is the
@@ -1442,141 +2003,187 @@ it counts that many list items back from the end of the list, so -1 is the
 last list item, and -5 would be the fifth from last list item.  The input
 list is assumed to be delimited by carriage returns (\r) unless the sep
 argument is given.
-~
-~
-LRAND
-{lrand:list}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="lrand">{lrand:list}
+<br>
 {lrand:list,separator}
+<br>
+</h3>
     Returns a randomly picked stringlist item from the given list.  If the
 separator argument is given, then it will assume that the stringlist has its
 items delimited by the given separator string, instead of by carriage returns.
-~
-~
-LUNIQUE
-{lunique:list}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="lunique">{lunique:list}
+<br>
+</h3>
     Returns list with all duplicate items removed.
-~
-~
-LUNION
-{lunion:list1,list2}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="lunion">{lunion:list1,list2}
+<br>
+</h3>
     Combines the contents of list1 and list2, removing any duplicates.
-~
-~
-LCOMMON
-{lcommon:list1,list2}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="lcommon">{lcommon:list1,list2}
+<br>
+</h3>
     Creates a list containing every item that appears in BOTH list1 and
 list2.  Any duplicate items in the resulting list are removed.
-~
-~
-LREMOVE
-{lremove:list1,list2}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="lremove">{lremove:list1,list2}
+<br>
+</h3>
     Returns the contents of list1, with any items that match an item in
 list2 removed.  The resulting list has all duplicate items removed.
-~
-~
-LMEMBER
-{lmember:list,item}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="lmember">{lmember:list,item}
+<br>
 {lmember:list,item,delimiter}
+<br>
+</h3>
     Returns 0 if the given item is NOT in the given list, otherwise, it
 returns the item's position in the list.  The first list item in the list
 would return 1, and the third would return 3, for example.  If the delimiter
 argument is given, then it treats the list as if it were delimited by that
 string, instead of by carriage returns. (\r's)
 Example:
+<pre>
     {lmember:{mklist:a,b,c,d,e,f},d}
+</pre>
 would return 4.
-~
-~
-LSORT
-{lsort:list}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="lsort">{lsort:list}
+<br>
 {lsort:list,var1,var2,expr}
+<br>
+</h3>
     Returns the sorted contents of list.  If 4 arguments are given, then
 it evaluates expr with a pair of values, in var1 and var2.  If expr
 returns true, then it will swap the positions of the two values in the
 list.  It runs this comparison on every pair of items in the list, so it
 will be evaluated N*(N-1)/2 times, where N is the number of items in the
 list.  This method can also be used to randomize a list.  Example:
-    {lsort:{&list},v1,v2,{gt:{dice:100},50}}
-~
-~
-COMMAS
-{commas:list}
+<pre>
+    {lsort:{&amp;list},v1,v2,{gt:{dice:100},50}}
+</pre>
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="commas">{commas:list}
+<br>
 {commas:list,lastsep}
+<br>
 {commas:list,lastsep,var,expr}
+<br>
+</h3>
     Takes a list and returns a plain english comma delimited string with
 the items in it.  For example, {commas:{mklist:Tom,Dick,Harry}} will return
-"Tom, Dick and Harry".  If you specify the lastsep argument, you can replace
-the "and" with something else, such as "or" to get a result like "a, b or c".
-Note:  You need to be careful to include spaces around the "or" or else you
-might get a result like "a, borc".  Example:
+&quot;Tom, Dick and Harry&quot;.  If you specify the lastsep argument, you can replace
+the &quot;and&quot; with something else, such as &quot;or&quot; to get a result like &quot;a, b or c&quot;.
+Note:  You need to be careful to include spaces around the &quot;or&quot; or else you
+might get a result like &quot;a, borc&quot;.  Example:
+<pre>
     {commas:{mklist:a,b,c}, or }
+</pre>
 If the var and expr arguments are passed, then for every item in the list,
 it will set the value of the given variable name (which it will declare)
 to the item, then evaluate expr, and use the result in the string it outputs.
 Example:
-    {commas:{contents:here},\, or ,v,{name:{&v}}}
+<pre>
+    {commas:{contents:here},\, or ,v,{name:{&amp;v}}}
+</pre>
 will return the name of every object in the room in a comma separated list,
-using ", or " as the final conjunction.  ie:  "Tom, Can of SPAM, Dick, or
-Harry."
-~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Miscellaneous Functions|Miscellaneous|Misc|MiscFuncs
-Miscellaneous Functions
+using &quot;, or &quot; as the final conjunction.  ie:  &quot;Tom, Can of SPAM, Dick, or
+Harry.&quot;
+<!-- HTML_TOPICEND -->
 
-debug      debugif    isdbref    isnum      muckname   muf        sysparm
-version    
+<h2 id="MiscFuncs">Miscellaneous Functions</h2>
+<ul>
+    <li><a href="#debug">debug</a></li>
+    <li><a href="#debugif">debugif</a></li>
+    <li><a href="#isdbref">isdbref</a></li>
+    <li><a href="#isnum">isnum</a></li>
+    <li><a href="#muckname">muckname</a></li>
+    <li><a href="#muf">muf</a></li>
+    <li><a href="#sysparm">sysparm</a></li>
+<!-- HTML_SECTIDX_NEWROW -->
+    <li><a href="#version">version</a></li>
+</ul>
 
-~----------------------------------------------------------------------------
-~
-~
-ISNUM
-{isnum:number}
+<h3 id="isnum">{isnum:number}
+<br>
+</h3>
     Returns true if the string passed to it is a valid number.
-~
-~
-ISDBREF
-{isdbref:dbref}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="isdbref">{isdbref:dbref}
+<br>
+</h3>
     Returns true if the string passed to it is a valid dbref.
-~
-~
-SYSPARM
-{sysparm:<system parameter>}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="sysparm">{sysparm:&lt;system parameter&gt;}
+<br>
+</h3>
     Returns the value of the given system parameter for authorized players.
-~
-~
-VERSION
-{version}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="version">{version}
+<br>
+</h3>
     Returns the version string for the server.
-~
-~
-MUCKNAME
-{muckname}
-    Returns the muck name string.  For example, it might return: "FurryMUCK"
-~
-~
-MUF
-{muf:prog,arg}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="muckname">{muckname}
+<br>
+</h3>
+    Returns the muck name string.  For example, it might return: &quot;FurryMUCK&quot;
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="muf">{muf:prog,arg}
+<br>
+</h3>
     Runs the given MUF prog with the string arg on the stack.  This returns
 the top stack value when the prog exits.  If the MPI code was run from a
 propqueue like _listen, or _connect, then {muf} cannot run a MUF program
 with a mucker level of less than 3 
-~
-~
-DEBUG
-{debug:expr}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="debug">{debug:expr}
+<br>
+</h3>
     This will show MPI debugging information for all the commands within the
 given expression.  This is useful for seeing why something isn't working.
 This returns the result of the evaluation of expr.
 
-Also see: debugif
-~
-~
-DEBUGIF
-{debugif:cond,expr}
+<p>Also see:
+    <a href="#debugif">debugif</a>
+</p>
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="debugif">{debugif:cond,expr}
+<br>
+</h3>
     This will evaluate the conditional cond, and, if the result is true,
 (not an empty string, and not 0), then this will show MPI debugging info
 for all the commands within the given expression.  If cond evaluated as
@@ -1585,27 +2192,27 @@ This is useful for Debugging code selectively.  This returns the result
 of the evaluation of expr.
 
 Example:
-    {parse:v,{contents:here},{debugif:{dbeq:{&v},me},{dostuff:{&v}}}}
+<pre>
+    {parse:v,{contents:here},{debugif:{dbeq:{&amp;v},me},{dostuff:{&amp;v}}}}
+</pre>
 to only debug the running of the command {dostuff} when the argument will
 be the player who is running the MPI.
 
-Also see: debug and if
-~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Macros and Functions|Functions
-Macros and Functions
+<p>Also see:
+    <a href="#debug">debug</a> and
+    <a href="#if">if</a>
+</p>
+<!-- HTML_TOPICEND -->
 
-func    macros  
+<h2 id="Functions">Macros and Functions</h2>
+<ul>
+    <li><a href="#func">func</a></li>
+    <li><a href="#macros">macros</a></li>
+</ul>
 
-~----------------------------------------------------------------------------
-~
-~
-MACROS
-Macros:
+<h3 id="macros">Macros:
+<br>
+</h3>
     If the MPI interpreter comes across a function name that it does not
 recognize, it will look in the _msgmacs/ propdirs down the environment from
 the trigger object, for a property with the name of the function.  If it does
@@ -1613,47 +2220,71 @@ find it there, then it takes the value of that property, and substitutes it
 in for the function as a macro.  The arguments to the function replace the
 {:1} through {:9} markers in the macro definition.  For example, if there were
 a property set on #0, defined as:
+<pre>
     _msgmacs/div_rand:{add:{div:{:2},10},{dice:{:1}}}
+</pre>
 And you had some MPI code that looked like:
+<pre>
     {div_rand:22,160}
+</pre>
 Then the macro would expand out to:
+<pre>
     {add:{div:160,10},{dice:22}}
+</pre>
 After the macro argment substitution is complete, it is then evaluated.
-~
-~
-FUNC|FUNCTION
-{func:name,vars...,def}
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="func">{func:name,vars...,def}
+<br>
+</h3>
     This effectively defines a function in MPI, with the given name, that
 takes the given named variables.  The function is not immediately evaluated,
 so it needs to be invoked later, to do anything.  Here's an example:
+<p>
   
-    {func:sqr,val,{mult:{&val},{&val}}}
+<pre>
+    {func:sqr,val,{mult:{&amp;val},{&amp;val}}}
+</pre>
+<p>
   
 This defines the function 'sqr', that takes a single argument.  That
 argument is stored in the 'val' variable.  The function will multiply
 the value of the number passed to it, by itself, returning the result.
 It's invoked like:
+<pre>
     {sqr:10}
+</pre>
+<p>
   
 Effectively, the above {func} declaration is the same as the following
 macro, and in fact, it's internally handled the same way:
+<p>
   
-    _msgmacs/sqr:{with:val,{:1},{mult:{&val},{&val}}}
+<pre>
+    _msgmacs/sqr:{with:val,{:1},{mult:{&amp;val},{&amp;val}}}
+</pre>
+<p>
   
 You can define a function that takes more than one argument, but the maximum
 number of args you can pass to the function is seven.  Example of multiple
 arguments:
+<p>
   
+<pre>
     {func:names,list,numsp,flagsp,
-        {parse:v,{&list},
-            {name:{&v}}
-            {if:{or:{&numsp},{&flagsp}},
+        {parse:v,{&amp;list},
+            {name:{&amp;v}}
+            {if:{or:{&amp;numsp},{&amp;flagsp}},
                 {lit:(}
-                {if:{&numsp},{ref:{&v}}}
-                {if:{&flagsp},{flags:{&v}}}
+                {if:{&amp;numsp},{ref:{&amp;v}}}
+                {if:{&amp;flagsp},{flags:{&amp;v}}}
                 {lit:)}
             }
         }
     }
     {names:{contents:here},1,1}
+</pre>
 
+</body>
+</html>

@@ -1,4 +1,3 @@
-~~file info/mpidocs
 ~~title MPI Reference Manual
 ~~author Revar Desmera <revar@belfry.com>
 ~~doccmd mpi
@@ -799,14 +798,6 @@ point from the origin.  Given four arguments, this calculates the distance
 between a pair of 2D points.  Given six arguments, this calculates the
 distance between a pair of 3D points.
 ~
-~
-~
-~
-~#                  <continued in mpidocs2>
-~
-~~file info/mpidocs2
-~
-~#                  <continued from mpidocs>
 ~~section Looping Functions|Loops|Looping
 FOR
 {for:varname,start,end,increment,command}

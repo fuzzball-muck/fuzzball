@@ -3,18 +3,12 @@
 subdirs=src
 RM=rm -f
 
-SSLTOP=@ssldir@
-
-HTML_DOCS_DIR=docs_html
-# Output directory for HTML source.  Relative to the current working directory.
-
 all:	Makefile
 	for d in ${subdirs}; do \
 		cd $${d} && ${MAKE} all; \
 	done
 
 install:	Makefile
-	make help
 	for d in ${subdirs}; do \
 		cd $${d} && ${MAKE} install; \
 	done
@@ -41,7 +35,7 @@ cert game/server.pem:
 			echo; \
 		else \
 			if [ ! -r ${HOME}/.rnd ]; then \
-				$(SSLTOP)/bin/openssl rand -rand /etc/hosts:/etc/passwd 0; \
+				openssl rand -rand /etc/hosts:/etc/passwd 0; \
 			fi; \
 			echo "Creating secure certificate. Please answer all the questions."; \
 			echo "The key and certificate will be stored in the game/data/server.pem file."; \
@@ -51,49 +45,21 @@ cert game/server.pem:
 	fi
 
 clean:
-	if [ -d ${HTML_DOCS_DIR} ]; then ${RM} -r ${HTML_DOCS_DIR}; fi
-	if [ -f game/data/help.txt ]; then ${RM} game/data/help.txt; fi
-	if [ -f game/data/man.txt ]; then ${RM} game/data/man.txt; fi
-	if [ -f game/data/mpihelp.txt ]; then ${RM} game/data/mpihelp.txt; fi
-
 	for d in ${subdirs}; do \
 		cd $${d} && ${MAKE} clean; \
 	done
 
-cleaner:
-	if [ -d ${HTML_DOCS_DIR} ]; then ${RM} -r ${HTML_DOCS_DIR}; fi
-	if [ -f game/data/help.txt ]; then ${RM} game/data/help.txt; fi
-	if [ -f game/data/man.txt ]; then ${RM} game/data/man.txt; fi
-	if [ -f game/data/mpihelp.txt ]; then ${RM} game/data/mpihelp.txt; fi
-
-	${RM} Makefile config.status config.cache config.log game/restart
-	for d in ${subdirs}; do \
-		cd $${d} && ${MAKE} cleaner; \
-	done
-
 nuke:
-	if [ -d ${HTML_DOCS_DIR} ]; then ${RM} -r ${HTML_DOCS_DIR}; fi
-	if [ -f game/data/help.txt ]; then ${RM} game/data/help.txt; fi
-	if [ -f game/data/man.txt ]; then ${RM} game/data/man.txt; fi
-	if [ -f game/data/mpihelp.txt ]; then ${RM} game/data/mpihelp.txt; fi
-
-	${RM} Makefile config.status config.cache config.log game/restart
 	for d in ${subdirs}; do \
 		cd $${d} && ${MAKE} nuke; \
 	done
+	${RM} Makefile config.status config.cache config.log game/restart
 
 Makefile: Makefile.in
 	./config.status Makefile
 	@echo Please re-run make, because the Makefile was re-generated.
 
 help:
-	mkdir -p ${HTML_DOCS_DIR}
-	cd src && make prochelp
-	cd game/data && ../../src/prochelp mpihelp.raw mpihelp.txt ../../${HTML_DOCS_DIR}/mpihelp.html
-	cd game/data && ../../src/prochelp mufman.raw man.txt ../../${HTML_DOCS_DIR}/mufman.html
-	cd game/data && ../../src/prochelp muckhelp.raw help.txt ../../${HTML_DOCS_DIR}/muckhelp.html
-
-# #######################################################################
-# #######################################################################
-
-# DO NOT DELETE THIS LINE -- make depend depends on it.
+	for d in ${subdirs}; do \
+		cd $${d} && ${MAKE} help; \
+	done
