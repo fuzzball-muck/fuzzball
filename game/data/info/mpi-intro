@@ -71,7 +71,7 @@ The open-brace { says that the text until the matching close-brace } is
 going to be an MPI command that the game should interpret.  The first
 word inside the braces, before the colon, is the name of the MPI command
 that you want it to run.  The rest, after the colon, are the arguments,
-seperated by commas.  MPI commands often take two or three arguments,
+separated by commas.  MPI commands often take two or three arguments,
 though some take many more, one, or none at all.  In fact, a lot of MPI
 commands can each take multiple different numbers of arguments, using
 default values for any arguments that aren't given.  If an MPI command
@@ -89,11 +89,11 @@ This runs the MPI command named "nl" with no arguments.
   
 If you want to pass a comma as part of an argument, you have to mark it
 to say that you really mean for the comma to get passed to the function,
-and that it isn't there to seperate arguments.  To mark it this way, you
+and that it isn't there to separate arguments.  To mark it this way, you
 put a backslash \ in front of it.  The backslash means that the next
 character following it has no special meaning, and that it is to be copied
 literally.  This makes a comma look like part of an argument, instead of
-like an argument seperator.  This is called 'escaping' a character.  You
+like an argument separator.  This is called 'escaping' a character.  You
 can also escape an open-brace { to keep it from trying to interpret the
 text after it as an MPI command.  Also, you can escape backslashes.  In
 fact, to include a backslash in text, you HAVE to escape it.  Almost any
@@ -114,7 +114,7 @@ that follows it, making the backslash copy into the argument literally.
 The close-brace has to be escaped, also, or else the game would think
 that you are trying to run the "store" command with only the argument
 "{Here\now".  The comma is escaped to say that it is part of the argument,
-and not an argument seperator.  The NEXT comma, however, is not escaped.
+and not an argument separator.  The NEXT comma, however, is not escaped.
 The game sees this and goes, "Aha!  A second argument follows!"  Then it
 gets to the last close brace }, and sees that it has gotten all the
 arguments.  At this point, it calls "store" with the two arguments that
@@ -236,8 +236,8 @@ An example of the use of {exec} is:
   
 This will load in a property list with the given listname, from the
 given object.  It loads the list as a single string, with each list
-item seperated from the next by a carriage return character.  These
-carriage return chars will each start a new line, seperating the text
+item separated from the next by a carriage return character.  These
+carriage return chars will each start a new line, separating the text
 into multple lines, when they are displayed to the user.  A property
 list is a set of numbered properties with string values.  For example,
 a set of properties named "list1", "list2", "list3", etc is a list named
@@ -252,10 +252,10 @@ is the same as for {prop}.
   
     {concat:listname,object}
   
-This is almost exactly like {list}, except that instead of seperating
-list items with carriage returns, it seperates them with spaces.  The
+This is almost exactly like {list}, except that instead of separating
+list items with carriage returns, it separates them with spaces.  The
 number of spaces depends on how the previous line ends.  If it ends in
-a period, question mark, or exclamation mark, it seperates the lines
+a period, question mark, or exclamation mark, it separates the lines
 with two spaces, otherwise, it uses only one.
   
   

@@ -451,7 +451,7 @@ mfn_sublist(MFUNARGS)
     strcpyn(sepbuf, sizeof(sepbuf), "\r");
     if (argc > 3) {
 	if (!*argv[3])
-	    ABORT_MPI("SUBLIST", "Can't use null seperator string.");
+	    ABORT_MPI("SUBLIST", "Can't use null separator string.");
 	strcpyn(sepbuf, sizeof(sepbuf), argv[3]);
     }
 
@@ -511,7 +511,7 @@ mfn_lrand(MFUNARGS)
     strcpyn(sepbuf, sizeof(sepbuf), "\r");
     if (argc > 1) {
 	if (!*argv[1])
-	    ABORT_MPI("LRAND", "Can't use null seperator string.");
+	    ABORT_MPI("LRAND", "Can't use null separator string.");
 	strcpyn(sepbuf, sizeof(sepbuf), argv[1]);
     }
 
@@ -532,7 +532,7 @@ mfn_count(MFUNARGS)
     strcpyn(buf, buflen, "\r");
     if (argc > 1) {
 	if (!*argv[1])
-	    ABORT_MPI("COUNT", "Can't use null seperator string.");
+	    ABORT_MPI("COUNT", "Can't use null separator string.");
 	strcpyn(buf, buflen, argv[1]);
     }
     snprintf(buf, BUFFER_LEN, "%d", countlitems(argv[0], buf));
@@ -606,7 +606,7 @@ mfn_fold(MFUNARGS)
 	ptr = MesgParse(sepin, sepinbuf, sizeof(sepinbuf));
 	CHECKRETURN(ptr, "FOLD", "arg 5");
 	if (!*ptr)
-	    ABORT_MPI("FOLD", "Can't use Null seperator string");
+	    ABORT_MPI("FOLD", "Can't use null separator string");
 	sepin = sepinbuf;
     } else {
 	sepin = sepinbuf;
@@ -711,7 +711,7 @@ mfn_foreach(MFUNARGS)
 	ptr = MesgParse(argv[3], scratch, sizeof(scratch));
 	CHECKRETURN(ptr, "FOREACH", "arg 4");
 	if (!*ptr)
-	    ABORT_MPI("FOREACH", "Can't use Null seperator string");
+	    ABORT_MPI("FOREACH", "Can't use null separator string");
 	sepin = ptr;
     } else {
 	sepin = scratch;
@@ -769,7 +769,7 @@ mfn_filter(MFUNARGS)
 	ptr = MesgParse(sepin, sepinbuf, sizeof(sepinbuf));
 	CHECKRETURN(ptr, "FILTER", "arg 4");
 	if (!*ptr)
-	    ABORT_MPI("FILTER", "Can't use Null seperator string");
+	    ABORT_MPI("FILTER", "Can't use null separator string");
 	sepin = sepinbuf;
     } else {
 	sepin = sepinbuf;
@@ -1149,7 +1149,7 @@ mfn_parse(MFUNARGS)
 	ptr = MesgParse(sepin, sepinbuf, sizeof(sepinbuf));
 	CHECKRETURN(ptr, "PARSE", "arg 4");
 	if (!*ptr)
-	    ABORT_MPI("PARSE", "Can't use Null seperator string");
+	    ABORT_MPI("PARSE", "Can't use null separator string");
 	sepin = sepinbuf;
     } else {
 	sepin = sepinbuf;

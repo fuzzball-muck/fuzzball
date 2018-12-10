@@ -13,11 +13,10 @@ EDITOR takes a bunch of strings on the stack, with a count on top, and
       {strs} count -- {strs'} count' exitcmdstr
  
 EDITORloop is more complex. it takes the strings and count [hereafter
-  to be referred to as a range], a string containing the space
-  seperated names of the commands it should return on [in addition to
-  abort and end], the position in the range that you want it to set the
-  insertion point at, and the command you want it to first execute
-  [usually ".i"].
+  to be referred to as a range], a string containing the space-separated
+  names of the commands it should return on [in addition to abort and end],
+  the position in the range that you want it to set the insertion point at,
+  and the command you want it to first execute [usually ".i"].
     It lets the user edit the range until the user enters a .command that
   you have listed in the mask, or until they enter .end, or .abort.
     It returns the new range, the mask, the insertion point that the user
