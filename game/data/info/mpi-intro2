@@ -273,11 +273,11 @@ list is.  =)  A string list is also NOT the same as the property lists we
 discussed back in the Introductory Guide to MPI.  However, I'll repeat some
 of our discussion from there.  I mentioned that the {list} command reads in
 the values of all the properties in a property list, and returns them as a
-single string, with each item seperated from the next by a carriage-return
+single string, with each item separated from the next by a carriage-return
 character.  THAT is a string list.
   
 To put it in the general form, a stringlist is a string containing one or
-more substrings, seperated by delimiter characters.  In the default case,
+more substrings, separated by delimiter characters.  In the default case,
 the delimiter character is the carriage-return character.
   
 So what are they good for, you ask?  Well, a bunch of MPI commands return
@@ -386,7 +386,7 @@ the 'Contents:' listing of a room look with just the following:
         }
     }
   
-Since each list item is seperated from the next by a carriage return, each
+Since each list item is separated from the next by a carriage return, each
 item's name will be shown to the user on a separate line.
   
   
@@ -401,7 +401,7 @@ The syntax is {commas:list,andtext} or {commas:list,andtext,var,expression}.
 The first syntax simply takes a stringlist, and puts it in the comma format.
 The second syntax lets you do a bit of processing on each list item before
 it is put in the comma formatted string.  The 'andtext' argument in both
-cases is the "and" or "or" text that you want in the comma seperated list.
+cases is the "and" or "or" text that you want in the comma-separated list.
 For example, it lets you make strings like "Tom, Dick and Harry", or else
 "Tom, Dick or Harry".
   
