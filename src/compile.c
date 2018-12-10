@@ -315,7 +315,7 @@ get_address(COMPSTATE * cstat, struct INTERMEDIATE *dest, int offset)
 	cstat->addroffsets = malloc(cstat->addrmax * sizeof(int));
     }
 
-    for (int i = 0; i < cstat->addrcount; i++)
+    for (unsigned int i = 0; i < cstat->addrcount; i++)
 	if (cstat->addrlist[i] == dest && cstat->addroffsets[i] == offset)
 	    return i;
 
@@ -757,7 +757,7 @@ RemoveNextIntermediate(COMPSTATE * cstat, struct INTERMEDIATE *curr)
     }
 
     tmp = curr->next;
-    for (int i = 0; i < cstat->addrcount; i++) {
+    for (unsigned int i = 0; i < cstat->addrcount; i++) {
 	if (cstat->addrlist[i] == tmp) {
 	    cstat->addrlist[i] = curr;
 	}
