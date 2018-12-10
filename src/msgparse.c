@@ -184,7 +184,6 @@ get_list_item(dbref player, dbref what, dbref perms, char *listname, int itemnum
 	      int *blessed)
 {
     char buf[BUFFER_LEN];
-    const char *ptr;
     int len = strlen(listname);
 
     if (len > 0 && listname[len - 1] == NUMBER_TOKEN)
