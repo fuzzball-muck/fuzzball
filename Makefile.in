@@ -2,6 +2,7 @@
 
 subdirs=src
 RM=rm -f
+MAKE=make
 
 all:	Makefile
 	for d in ${subdirs}; do \
@@ -14,7 +15,7 @@ install:	Makefile
 	done
 	@if grep "^#define HAVE_LIBSSL" include/autoconf.h > /dev/null; then \
 	if [ ! -f game/data/server.pem ]; then \
-	echo "You can use 'make cert' to generate a self-signed server certificate"; \
+	echo "You can use '${MAKE} cert' to generate a self-signed server certificate"; \
 	echo "for use in allowing secure encrypted SSL connections to your Muck."; \
 	echo " "; \
 	fi; \
@@ -30,7 +31,7 @@ cert game/server.pem:
 		echo; \
 		if [ -r game/data/server.pem ]; then \
 			echo "Will not overwrite game/data/server.pem"; \
-			echo "Remove that file and do 'make cert' again";\
+			echo "Remove that file and do '${MAKE} cert' again";\
 			echo "to create a new certificate."; \
 			echo; \
 		else \
@@ -53,11 +54,12 @@ nuke:
 	for d in ${subdirs}; do \
 		cd $${d} && ${MAKE} nuke; \
 	done
+	${RM} include/autoconf.h
 	${RM} Makefile config.status config.cache config.log game/restart
 
 Makefile: Makefile.in
 	./config.status Makefile
-	@echo Please re-run make, because the Makefile was re-generated.
+	@echo Please re-run ${MAKE}, because the Makefile was re-generated.
 
 help:
 	for d in ${subdirs}; do \
