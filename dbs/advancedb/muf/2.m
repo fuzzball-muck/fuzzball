@@ -17,7 +17,7 @@
  
   Functions:
     ArrCommas [ a -- s ]
-     - Takes an array of strings and returns a string with them seperated by commas.
+     - Takes an array of strings and returns a string with them separated by commas.
     ArrLeft [ a @1 @2 icol schar -- a ]
      - Aligns all text in the given range to the left in the number of
         columns and with the given char.
@@ -30,10 +30,10 @@
        given.
     ArrFormat [ a @1 @2 icol -- a ]
      - Formats the given range in the array to a specific number of columns; however, it will only
-       seperate the line at the last space before icol... that way it doesn't cut it off in the
+       separate the line at the last space before icol... that way it doesn't cut it off in the
        middle of any word.
     ArrJoinRng [ a @1 @2 schar -- a ]
-     - Joins a range of text.  schar is the seperating char.
+     - Joins a range of text.  schar is the separating char.
     ArrList [ d a @1 @2 iBolLineNum -- ]
      - List the contents of the range in the array; if iBolLineNum is not equal to 0 then
        it will display the line numbers as well. 'd' is the object that the list is displayed to.

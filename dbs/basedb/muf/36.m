@@ -15,12 +15,12 @@
     _prefs/con_announce?    If set "yes" on yourself, then you will be told
                               when people log in.
  
-    _prefs/con_announce_list    Contains a list of space seperated case-
-                                 insensitive names.  When one of these people
-                                 connects or disconnects, you will see a
-                                 message telling you so.  Wizards may also
-                                 use dbrefs in the form #1234 in place of
-                                 names.  If this property is not set, then
+    _prefs/con_announce_list    Contains a list of space-separated
+                                 case-insensitive names.  When one of these
+                                 people connects or disconnects, you will
+                                 see a message telling you so.  Wizards may
+                                 also use dbrefs in the form #1234 in place
+                                 of names.  If this property is not set, then
                                  you will not be informed when anyone logs
                                  in or out.  Wizards, however, are informed
                                  of ALL logins/logouts when this prop is not
