@@ -14,7 +14,7 @@ EDITOR takes a bunch of strings on the stack, with a count on top, and
  
 EDITORloop is more complex. it takes the strings and count [hereafter
   to be referred to as a range], a string containing the space
-  seperated names of the commands it should return on [in addition to
+  separated names of the commands it should return on [in addition to
   abort and end], the position in the range that you want it to set the
   insertion point at, and the command you want it to first execute
   [usually ".i"].
