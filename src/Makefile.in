@@ -54,6 +54,7 @@ CFLAGS=@CFLAGS@
 MV= mv -f
 CP= cp -f
 RM= rm -f
+RMDIR= rm -rf
 CHMOD= chmod
 MAKE= make
 
@@ -139,7 +140,8 @@ Makefile: Makefile.in
 	@echo Please re-run ${MAKE}, as the Makefile was re-generated.
 
 clean:
-	-${RM} ${OBJ} core version.o version.c mkversion.o mkversion.dSYM resolver.o prochelp.o ${TARGETS}
+	-${RM} ${OBJ} core version.o version.c mkversion.o resolver.o prochelp.o ${TARGETS}
+	-${RMDIR} mkversion.dSYM
 
 
 nuke: clean
