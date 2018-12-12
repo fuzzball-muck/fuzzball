@@ -46,22 +46,13 @@ ts_modifyobject(dbref thing)
 long
 get_tz_offset(void)
 {
-/*
- * SunOS don't seem to have timezone as a "extern long", but as
- * a structure. This makes it very hard (at best) to check for,
- * therefor I'm checking for tm_gmtoff. --WF
- */
-#ifdef HAVE_STRUCT_TM_TM_GMTOFF
-    time_t now;
-
-    time(&now);
-    return localtime(&now)->tm_gmtoff;
-#elif defined(HAVE_DECL__TIMEZONE)
-    /* CygWin uses _timezone instead of timezone. */
-    return _timezone;
+#ifdef HAVE_DECL__TIMEZONE
+	/* CygWin uses _timezone instead of timezone. */
+	return _timezone;
 #else
-    /* extern long timezone; */
-    return timezone;
+	tzset();
+	/* extern long timezone; */
+	return timezone * -1;
 #endif
 }
 
