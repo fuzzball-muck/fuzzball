@@ -29,7 +29,7 @@ AC_PROG_INSTALL
 dnl
 dnl Requires autoconf-archive project.
 dnl
-AX_CHECK_COMPILE_FLAG([-std=gnu99], [CFLAGS="$CFLAGS -std=gnu99"])
+AX_CHECK_COMPILE_FLAG([-std=c99], [CFLAGS="$CFLAGS -std=c99"])
 AX_CHECK_COMPILE_FLAG([-fwrapv], [CFLAGS="$CFLAGS -fwrapv"])
 
 dnl
