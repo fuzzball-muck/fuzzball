@@ -71,7 +71,7 @@ typedef struct file_entry {
 } file_entry;
 
 int
-main(int argc, char *argv[])
+main()
 {
     unsigned int generation = 0;
     FILE *ver, *tpl;

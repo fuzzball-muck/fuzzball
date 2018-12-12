@@ -918,7 +918,7 @@ dequeue_prog_real(dbref program, int killmode, const char *file, const int line)
     fprintf(stderr, "[debug] dequeue_prog(#%d, %d) called from %s:%d\n", program, killmode,
 	    file, line);
 #endif				/* DEBUG */
-    DEBUGPRINT("dequeue_prog: tqhead = %p\n", tqhead);
+    DEBUGPRINT("dequeue_prog: tqhead = %p\n", (void *)tqhead);
     while (tqhead) {
 	DEBUGPRINT("dequeue_prog: tqhead->called_prog = #%d, has_refs = %d ",
 		   tqhead->called_prog, has_refs(program, tqhead));

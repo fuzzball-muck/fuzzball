@@ -61,7 +61,6 @@ static void visited_set_rehash(visited_set *set, int new_size) {
 }
 
 static int visited_set_add_and_return_if_added(visited_set* set, stk_array *value) {
-    int was_found = 0;
     visited_set_bucket *bucket;
     if (!set->buckets) {
         set->num_buckets = 15;

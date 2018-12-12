@@ -22,9 +22,9 @@ struct pload_Q {
     int Qtype;
 };
 
-struct pload_Q propchanged_Q = { NOTHING, 0, PROPS_CHANGED };
-struct pload_Q proploaded_Q = { NOTHING, 0, PROPS_LOADED };
-struct pload_Q proppri_Q = { NOTHING, 0, PROPS_PRIORITY };
+static struct pload_Q propchanged_Q = { NOTHING, 0, PROPS_CHANGED };
+static struct pload_Q proploaded_Q = { NOTHING, 0, PROPS_LOADED };
+static struct pload_Q proppri_Q = { NOTHING, 0, PROPS_PRIORITY };
 
 long propcache_hits = 0L;
 long propcache_misses = 0L;
@@ -136,7 +136,6 @@ removeobj_ringqueue(dbref obj)
     switch (DBFETCH(obj)->propsmode) {
     case PROPS_UNLOADED:
 	return;
-	break;
     case PROPS_LOADED:
 	ref = &proploaded_Q;
 	break;

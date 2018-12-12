@@ -22,7 +22,7 @@ mfn_owner(MFUNARGS)
 {
     dbref obj;
 
-    obj = mesg_dbref_raw(descr, player, what, perms, argv[0]);
+    obj = mesg_dbref_raw(descr, player, what, argv[0]);
     if (obj == AMBIGUOUS || obj == NOTHING || obj == UNKNOWN)
 	ABORT_MPI("OWNER", "Failed match.");
     if (obj == PERMDENIED)
@@ -40,7 +40,7 @@ mfn_controls(MFUNARGS)
     dbref obj;
     dbref obj2;
 
-    obj = mesg_dbref_raw(descr, player, what, perms, argv[0]);
+    obj = mesg_dbref_raw(descr, player, what, argv[0]);
     if (obj == AMBIGUOUS || obj == NOTHING || obj == UNKNOWN)
 	ABORT_MPI("CONTROLS", "Match failed. (arg1)");
     if (obj == PERMDENIED)
@@ -48,7 +48,7 @@ mfn_controls(MFUNARGS)
     if (obj == HOME)
 	obj = PLAYER_HOME(player);
     if (argc > 1) {
-	obj2 = mesg_dbref_raw(descr, player, what, perms, argv[1]);
+	obj2 = mesg_dbref_raw(descr, player, what, argv[1]);
 	if (obj2 == AMBIGUOUS || obj2 == NOTHING || obj2 == UNKNOWN)
 	    ABORT_MPI("CONTROLS", "Match failed. (arg2)");
 	if (obj2 == PERMDENIED)
@@ -325,7 +325,7 @@ const char *
 mfn_name(MFUNARGS)
 {
     char *ptr;
-    dbref obj = mesg_dbref_raw(descr, player, what, perms, argv[0]);
+    dbref obj = mesg_dbref_raw(descr, player, what, argv[0]);
 
     if (obj == UNKNOWN)
 	ABORT_MPI("NAME", "Match failed.");
@@ -356,7 +356,7 @@ mfn_name(MFUNARGS)
 const char *
 mfn_fullname(MFUNARGS)
 {
-    dbref obj = mesg_dbref_raw(descr, player, what, perms, argv[0]);
+    dbref obj = mesg_dbref_raw(descr, player, what, argv[0]);
 
     if (obj == UNKNOWN)
 	ABORT_MPI("NAME", "Match failed.");
@@ -1436,7 +1436,7 @@ mfn_muf(MFUNARGS)
     char *ptr;
     struct inst *rv = NULL;
     struct frame *tmpfr;
-    dbref obj = mesg_dbref_raw(descr, player, what, perms, argv[0]);
+    dbref obj = mesg_dbref_raw(descr, player, what, argv[0]);
 
     if (obj == UNKNOWN)
 	ABORT_MPI("MUF", "Match failed.");
@@ -1495,7 +1495,7 @@ const char *
 mfn_force(MFUNARGS)
 {
     char *nxt, *ptr;
-    dbref obj = mesg_dbref_raw(descr, player, what, perms, argv[0]);
+    dbref obj = mesg_dbref_raw(descr, player, what, argv[0]);
 
     if (obj == AMBIGUOUS || obj == UNKNOWN || obj == NOTHING || obj == HOME)
 	ABORT_MPI("FORCE", "Failed match. (arg1)");

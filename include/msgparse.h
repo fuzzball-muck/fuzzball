@@ -38,7 +38,7 @@ extern int varc;
 
 int check_mvar_overflow(int count);
 int free_top_mvar(void);
-char *get_concat_list(dbref player, dbref what, dbref perms, dbref obj, char *listname,
+char *get_concat_list(dbref what, dbref perms, dbref obj, char *listname,
 		      char *buf, int maxchars, int mode, int mesgtyp, int *blessed);
 int get_list_count(dbref trig, dbref what, dbref perms, char *listname, int mesgtyp,
 		   int *blessed);
@@ -49,16 +49,16 @@ int isneighbor(dbref d1, dbref d2);
 dbref mesg_dbref(int descr, dbref player, dbref what, dbref perms, char *buf, int mesgtyp);
 dbref mesg_dbref_local(int descr, dbref player, dbref what, dbref perms, char *buf,
 		       int mesgtyp);
-dbref mesg_dbref_raw(int descr, dbref player, dbref what, dbref perms, const char *buf);
+dbref mesg_dbref_raw(int descr, dbref player, dbref what, const char *buf);
 dbref mesg_dbref_strict(int descr, dbref player, dbref what, dbref perms, char *buf,
 			int mesgtyp);
 void mesg_init(void);
 int new_mfunc(const char *funcname, const char *buf);
 int new_mvar(const char *varname, char *buf);
 void purge_mfns(void);
-int safeblessprop(dbref obj, dbref perms, char *buf, int mesgtyp, int set_p);
+int safeblessprop(dbref obj, char *buf, int mesgtyp, int set_p);
 const char *safegetprop(dbref player, dbref what, dbref perms, const char *inbuf, int mesgtyp, int *blessed);
 const char *safegetprop_strict(dbref player, dbref what, dbref perms, const char *inbuf, int mesgtyp, int *blessed);
-int safeputprop(dbref obj, dbref perms, char *buf, char *val, int mesgtyp);
+int safeputprop(dbref obj, char *buf, char *val, int mesgtyp);
 
 #endif				/* _MSGPARSE_H */

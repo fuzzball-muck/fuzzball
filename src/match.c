@@ -638,6 +638,7 @@ char *
 match_msg_nomatch(const char *s, unsigned short types)
 {
     static char buf[BUFFER_LEN];
+    (void)types;
     snprintf(buf, sizeof(buf), "I don't understand '%s'.", s);
     return buf;
 }
@@ -646,6 +647,7 @@ char *
 match_msg_ambiguous(const char *s, unsigned short types)
 {
     static char buf[BUFFER_LEN];
+    (void)types;
     snprintf(buf, sizeof(buf), "I don't know which '%s' you mean!", s);
     return buf;
 }

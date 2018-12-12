@@ -15,7 +15,7 @@
 time_t mpi_prof_start_time;
 
 int
-safeblessprop(dbref obj, dbref perms, char *buf, int mesgtyp, int set_p)
+safeblessprop(dbref obj, char *buf, int mesgtyp, int set_p)
 {
     if (!buf)
 	return 0;
@@ -42,7 +42,7 @@ safeblessprop(dbref obj, dbref perms, char *buf, int mesgtyp, int set_p)
 }
 
 int
-safeputprop(dbref obj, dbref perms, char *buf, char *val, int mesgtyp)
+safeputprop(dbref obj, char *buf, char *val, int mesgtyp)
 {
     if (!buf)
 	return 0;
@@ -226,7 +226,7 @@ get_list_count(dbref player, dbref obj, dbref perms, char *listname, int mesgtyp
 }
 
 char *
-get_concat_list(dbref player, dbref what, dbref perms, dbref obj, char *listname,
+get_concat_list(dbref what, dbref perms, dbref obj, char *listname,
 		char *buf, int maxchars, int mode, int mesgtyp, int *blessed)
 {
     int line_limit = MAX_MFUN_LIST_LEN;
@@ -338,7 +338,7 @@ mesg_local_perms(int descr, dbref player, dbref perms, dbref obj, int mesgtyp)
 }
 
 dbref
-mesg_dbref_raw(int descr, dbref player, dbref what, dbref perms, const char *buf)
+mesg_dbref_raw(int descr, dbref player, dbref what, const char *buf)
 {
     struct match_data md;
     dbref obj = UNKNOWN;
@@ -380,7 +380,7 @@ mesg_dbref_raw(int descr, dbref player, dbref what, dbref perms, const char *buf
 dbref
 mesg_dbref(int descr, dbref player, dbref what, dbref perms, char *buf, int mesgtyp)
 {
-    dbref obj = mesg_dbref_raw(descr, player, what, perms, buf);
+    dbref obj = mesg_dbref_raw(descr, player, what, buf);
 
     if (obj == UNKNOWN)
 	return obj;
@@ -393,7 +393,7 @@ mesg_dbref(int descr, dbref player, dbref what, dbref perms, char *buf, int mesg
 dbref
 mesg_dbref_strict(int descr, dbref player, dbref what, dbref perms, char *buf, int mesgtyp)
 {
-    dbref obj = mesg_dbref_raw(descr, player, what, perms, buf);
+    dbref obj = mesg_dbref_raw(descr, player, what, buf);
 
     if (obj == UNKNOWN)
 	return obj;
@@ -406,7 +406,7 @@ mesg_dbref_strict(int descr, dbref player, dbref what, dbref perms, char *buf, i
 dbref
 mesg_dbref_local(int descr, dbref player, dbref what, dbref perms, char *buf, int mesgtyp)
 {
-    dbref obj = mesg_dbref_raw(descr, player, what, perms, buf);
+    dbref obj = mesg_dbref_raw(descr, player, what, buf);
 
     if (obj == UNKNOWN)
 	return obj;

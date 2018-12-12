@@ -1114,7 +1114,7 @@ prim_rsplit(PRIM_PROTOTYPE)
 	    strcpyn(buf, sizeof(buf), oper2->data.string->data);
 	    temp = buf + (oper2->data.string->length - oper1->data.string->length);
 	    hold = NULL;
-	    while ((temp != (buf - 1)) && (!hold)) {
+	    while ((temp >= buf) && (!hold)) {
 		if (*temp == *(oper1->data.string->data))
 		    if (!strncmp(temp, oper1->data.string->data, oper1->data.string->length))
 			hold = temp;

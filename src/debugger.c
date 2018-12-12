@@ -283,18 +283,16 @@ muf_backtrace(dbref player, dbref program, int count, struct frame *fr)
 	    for (int k = 0; k < fntop->data.mufproc->args; k++) {
 		const char *nam = scopedvar_getname(fr, lev, k);
 		char *val;
-		const char *fmt;
 		if (!nam) {
 		    break;
 		}
 		varinst = scopedvar_get(fr, lev, k);
 		val = insttotext(fr, lev, varinst, buf3, sizeof(buf3), 30, program, 1);
 		if (k) {
-		    fmt = "\033[1m, %s=\033[0m%s";
+		    bufend += snprintf(bufend, buf2 - bufend - 18, "\033[1m, %s=\033[0m%s", nam, val);
 		} else {
-		    fmt = "\033[1m%s=\033[0m%s";
+		    bufend += snprintf(bufend, buf2 - bufend - 18, "\033[1m%s=\033[0m%s", nam, val);
 		}
-		bufend += snprintf(bufend, buf2 - bufend - 18, fmt, nam, val);
 	    }
 	    ptr = buf2;
 	}

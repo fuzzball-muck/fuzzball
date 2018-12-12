@@ -276,7 +276,7 @@ add_to_queue(struct text_queue *q, const char *b, size_t n)
 }
 
 static void
-flush_output_queue(struct descriptor_data *d, int include_message, int size_limit) {
+flush_output_queue(struct descriptor_data *d, int size_limit) {
     int space;
 
     space = size_limit - d->output_size;
@@ -290,7 +290,7 @@ queue_write(struct descriptor_data *d, const char *b, size_t n)
 {
     if (n == 0)
         return;
-    flush_output_queue(d, 1, (size_t)tp_max_output - n);
+    flush_output_queue(d, (size_t)tp_max_output - n);
     add_to_queue(&d->output, b, n);
     d->output_size += n;
     return;
@@ -1195,7 +1195,7 @@ queue_immediate_and_flush(struct descriptor_data *d, const char *msg)
 	strip_ansi(buf, msg);
     }
 
-    flush_output_queue(d, 0, 0);
+    flush_output_queue(d, 0);
 #ifdef MCP_SUPPORT
     if (d->mcpframe.enabled
         && !(strncmp(buf, MCP_MESG_PREFIX, 3) && strncmp(buf, MCP_QUOTE_PREFIX, 3))) {
