@@ -289,11 +289,13 @@ extern int errno;
 # include <netdb.h>
 # include <netinet/in.h>
 # include <netinet/tcp.h>
+# include <strings.h>
 # include <sys/file.h>
 # include <sys/ioctl.h>
 # include <sys/resource.h>
 # include <sys/socket.h>
 # include <sys/wait.h>
+# include <unistd.h>
 #endif
 
 #endif				/* _CONFIG_H */
