@@ -7,6 +7,7 @@ dnl
 AC_REVISION($Revision: 1.30 $)
 AC_PREREQ([2.69])
 AC_INIT([fbmuck],[7.00b1],[feedback@fuzzball.org])
+AC_CONFIG_AUX_DIR(auto)
 AC_CONFIG_HEADER([include/autoconf.h])
 
 echo " "
@@ -28,7 +29,7 @@ AC_PROG_INSTALL
 dnl
 dnl Requires autoconf-archive project.
 dnl
-AX_CHECK_COMPILE_FLAG([-std=c99], [CFLAGS="$CFLAGS -std=c99"])
+AX_CHECK_COMPILE_FLAG([-std=gnu99], [CFLAGS="$CFLAGS -std=gnu99"])
 AX_CHECK_COMPILE_FLAG([-fwrapv], [CFLAGS="$CFLAGS -fwrapv"])
 
 dnl
