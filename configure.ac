@@ -3,11 +3,10 @@ dnl Process this file with autoconf to produce a configure script.
 dnl
 dnl TinyMUCK fb5.x auto-config script writen by: Peter "WhiteFire" Torkelson
 dnl Rewritten for fb6.x by revar@belfry.com
-dnl
+dnl 
 AC_REVISION($Revision: 1.30 $)
-AC_PREREQ(2.59)
-AC_INIT(fbmuck, 7.00b1, [feedback@fuzzball.org])
-AC_CONFIG_AUX_DIR(auto)
+AC_PREREQ([2.69])
+AC_INIT([fbmuck],[7.00b1],[feedback@fuzzball.org])
 AC_CONFIG_HEADER([include/autoconf.h])
 
 echo " "
@@ -242,14 +241,10 @@ dnl Types and structures
 dnl
 AC_TYPE_PID_T
 AC_TYPE_SIZE_T
-AC_TYPE_SIGNAL
 AC_STRUCT_TM
 AC_STRUCT_TIMEZONE
 AC_CACHE_CHECK(for struct tm.tm_gmtoff, rb_cv_member_struct_tm_tm_gmtoff,
-  [AC_TRY_COMPILE([#include <time.h>],
-    [struct tm t; t.tm_gmtoff = 3600;],
-    [rb_cv_member_struct_tm_tm_gmtoff=yes],
-    [rb_cv_member_struct_tm_tm_gmtoff=no])])
+  [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <time.h>]], [[struct tm t; t.tm_gmtoff = 3600;]])],[rb_cv_member_struct_tm_tm_gmtoff=yes],[rb_cv_member_struct_tm_tm_gmtoff=no])])
 if test "$rb_cv_member_struct_tm_tm_gmtoff" = yes; then
   AC_DEFINE(HAVE_STRUCT_TM_TM_GMTOFF, [], [Define to 1 if 'tm_gmtoff' is a member of 'struct tm'.])
 fi
@@ -267,16 +262,20 @@ dnl
 dnl Compiler characteristics
 dnl
 AC_C_CONST
-AC_C_LONG_DOUBLE
+    AC_TYPE_LONG_DOUBLE_WIDER
+    ac_cv_c_long_double=$ac_cv_type_long_double_wider
+    if test $ac_cv_c_long_double = yes; then
+      AC_DEFINE([HAVE_LONG_DOUBLE],[1],[Define to 1 if the type `long double' works and has more range or
+	 precision than `double'.])
+    fi
+  
 
 AC_DEFUN([AC_C_LONG_LONG],
 [AC_CACHE_CHECK(for long long int, ac_cv_c_long_long,
 [if test "$GCC" = yes; then
     ac_cv_c_long_long=yes
  else
-    AC_TRY_COMPILE(,[long long int i;],
-       ac_cv_c_long_long=yes,
-       ac_cv_c_long_long=no)
+    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[long long int i;]])],[ac_cv_c_long_long=yes],[ac_cv_c_long_long=no])
  fi])
    if test $ac_cv_c_long_long = yes; then
      AC_DEFINE(HAVE_LONG_LONG, [], [Define to 1 if you have long long.])
@@ -298,11 +297,11 @@ AC_CONFIG_COMMANDS_PRE([DEFS=])
 
 dnl And in the end, there was no more.
 dnl
-AC_OUTPUT(
-	Makefile
+AC_CONFIG_FILES([Makefile
 	src/Makefile
 	game/restart
-)
+])
+AC_OUTPUT
 echo " "
 echo "You should review the options in include/config.h, and"
 echo "then type make to build your system."

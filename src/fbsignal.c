@@ -15,11 +15,6 @@
 # include <sys/signal.h>
 #endif
 
-#if defined(ULTRIX) || defined(_POSIX_VERSION)
-#undef RETSIGTYPE
-#define RETSIGTYPE void
-#endif
-
 #if !defined(SYSV) && !defined(_POSIX_VERSION) && !defined(ULTRIX)
 #define RETSIGVAL 0
 #else
@@ -30,15 +25,15 @@
  * Function prototypes
  */
 void set_signals(void);
-RETSIGTYPE bailout(int);
-RETSIGTYPE sig_dump_status(int i);
-RETSIGTYPE sig_shutdown(int i);
+void bailout(int);
+void sig_dump_status(int i);
+void sig_shutdown(int i);
 #ifdef SIGEMERG
-RETSIGTYPE sig_emerg(int i);
+void sig_emerg(int i);
 #endif
 
 #ifdef SPAWN_HOST_RESOLVER
-RETSIGTYPE sig_reap(int i);
+void sig_reap(int i);
 #endif
 
 #ifdef _POSIX_VERSION
@@ -223,7 +218,7 @@ set_signals(void)
 /*
  * BAIL!
  */
-RETSIGTYPE
+void
 bailout(int sig)
 {
     char message[1024];
@@ -241,7 +236,7 @@ bailout(int sig)
 /*
  * Spew WHO to file
  */
-RETSIGTYPE
+void
 sig_dump_status(int i)
 {
     dump_status();
@@ -249,7 +244,7 @@ sig_dump_status(int i)
 }
 
 #ifdef SIGEMERG
-RETSIGTYPE
+void
 sig_emerg(int i)
 {
     wall_and_flush
@@ -264,7 +259,7 @@ sig_emerg(int i)
 /*
  * Gracefully shut the server down.
  */
-RETSIGTYPE
+void
 sig_shutdown(int i)
 {
     log_status("SHUTDOWN: via SIGNAL");
@@ -278,7 +273,7 @@ sig_shutdown(int i)
  * Clean out Zombie Resolver Process.
  */
 
-RETSIGTYPE
+void
 sig_reap(int i)
 {
     /* If DISKBASE is not defined, then there are two types of
