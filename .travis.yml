@@ -1,3 +1,4 @@
+dist: xenial
 sudo: false
 addons:
   apt:
@@ -28,11 +29,13 @@ env:
 
 script:
   # Set up configure flags
-  - ./configure $FLAG_LINT $FLAG_IPV6 $FLAG_SSL
+  - ./configure --prefix="$PWD/fuzzpre" $FLAG_LINT $FLAG_IPV6 $FLAG_SSL
   # Clean up build directory
   - make clean
   # Make Fuzzball and all related code
   - make all
+  # Check whether install works
+  - make install
 
 # Currently, --enable-memprof and --enable-debug are ignored for that generates
 # 32 builds instead of 8.  If those need tested in the future, use the
