@@ -46,14 +46,8 @@ ts_modifyobject(dbref thing)
 long
 get_tz_offset(void)
 {
-#ifdef HAVE_DECL__TIMEZONE
-	/* CygWin uses _timezone instead of timezone. */
-	return _timezone;
-#else
 	tzset();
-	/* extern long timezone; */
 	return timezone * -1;
-#endif
 }
 
 char *
