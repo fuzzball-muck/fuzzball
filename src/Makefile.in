@@ -74,7 +74,7 @@ SRC= array.c boolexp.c compile.c create.c db.c debugger.c diskprop.c edit.c \
 	propdirs.c property.c props.c rob.c sanity.c set.c sha1.c speech.c \
 	timequeue.c tune.c wiz.c
 
-OBJ= $(SRC:.c=.o)
+OBJ= $(SRC:.c=.o) ${MALLOBJ}
 
 TARGETS= fbmuck fb-resolver prochelp mkversion
 OLDTARGETS = fbmuck~ fb-resolver~ prochelp~ mkversion~
@@ -119,7 +119,7 @@ fbmuck: $(INCLUDE)/defines.h ${P} ${OBJ} ${MALLOBJ} Makefile
 	./mkversion
 	${PRE} ${CC} ${CFLAGS} ${INCL} ${DEFS} -c version.c
 	if [ -f fbmuck ]; then ${MV} fbmuck fbmuck~ ; fi
-	${PRE} ${CC} ${CFLAGS} ${INCL} ${DEFS} -o fbmuck ${OBJ} ${MALLOBJ} version.o \
+	${PRE} ${CC} ${CFLAGS} ${INCL} ${DEFS} -o fbmuck ${OBJ} version.o \
 	  ${LIBR}
 
 fb-resolver: resolver.o ${MALLOBJ} Makefile

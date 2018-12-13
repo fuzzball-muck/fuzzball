@@ -5100,11 +5100,6 @@ if test "x$ac_cv_member_struct_tm_tm_gmtoff" = xyes; then :
 
 fi
 
-ac_fn_c_check_decl "$LINENO" "_timezone" "ac_cv_have_decl__timezone" "$ac_includes_default"
-if test "x$ac_cv_have_decl__timezone" = xyes; then :
-
-fi
-
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for an ANSI C-conforming const" >&5
 $as_echo_n "checking for an ANSI C-conforming const... " >&6; }

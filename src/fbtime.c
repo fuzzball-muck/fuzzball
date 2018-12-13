@@ -46,8 +46,13 @@ ts_modifyobject(dbref thing)
 long
 get_tz_offset(void)
 {
+#ifdef WIN32
+	_tzset();
+	return _timezone * -1;
+#else
 	tzset();
 	return timezone * -1;
+#endif
 }
 
 char *

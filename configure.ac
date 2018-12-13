@@ -257,7 +257,6 @@ AC_CHECK_MEMBER([struct mallinfo.treeoverhead])
 AC_CHECK_MEMBER([struct mallinfo.grain])
 AC_CHECK_MEMBER([struct mallinfo.allocated])
 AC_CHECK_MEMBER([struct tm.tm_gmtoff])
-AC_CHECK_DECL([_timezone])
 
 dnl
 dnl Compiler characteristics
