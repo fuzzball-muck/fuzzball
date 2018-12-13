@@ -84,10 +84,6 @@ cd $GAMEDIR
 
 umask $UMASK
 
-# Maximize resource limits
-ulimit -n $(ulimit -Hn) ; # let us use all descriptors our hardlimit allows.
-ulimit -t $(ulimit -Ht) ; # let us use all CPU time our hardlimit allows.
-
 
 if [ -r $PIDFILE -a -s $PIDFILE ]; then
 	muckpid=$(cat $PIDFILE)
