@@ -1,3 +1,4 @@
+dist: xenial
 sudo: false
 addons:
   apt:
@@ -33,6 +34,8 @@ script:
   - make clean
   # Make Fuzzball and all related code
   - make all
+  # Make helpfiles, see if prochelp runs or whether it segmentation faults
+  - make install
 
 # Currently, --enable-memprof and --enable-debug are ignored for that generates
 # 32 builds instead of 8.  If those need tested in the future, use the
