@@ -46,13 +46,20 @@ ts_modifyobject(dbref thing)
 long
 get_tz_offset(void)
 {
-#ifdef WIN32
-	_tzset();
-	return _timezone * -1;
-#else
-	tzset();
-	return timezone * -1;
-#endif
+	time_t now;
+
+	time(&now);
+
+	if (localtime(&now)->tm_wday == gmtime(&now)->tm_wday)
+		return (localtime(&now)->tm_hour - gmtime(&now)->tm_hour) * 3600 + (localtime(&now)->tm_min - gmtime(&now)->tm_min) * 60 + localtime(&now)->tm_sec - gmtime(&now)->tm_sec;
+
+	if ((localtime(&now)->tm_wday - gmtime(&now)->tm_wday == -1) || (localtime(&now)->tm_wday - gmtime(&now)->tm_wday == 1))
+		return (localtime(&now)->tm_wday - gmtime(&now)->tm_wday) * 86400 + (localtime(&now)->tm_hour - gmtime(&now)->tm_hour) * 3600 + (localtime(&now)->tm_min - gmtime(&now)->tm_min) * 60 + localtime(&now)->tm_sec - gmtime(&now)->tm_sec;
+
+	if ((localtime(&now)->tm_wday - gmtime(&now)->tm_wday == 6) || (localtime(&now)->tm_wday - gmtime(&now)->tm_wday == -6))
+		return (localtime(&now)->tm_wday - gmtime(&now)->tm_wday) * -14400 + (localtime(&now)->tm_hour - gmtime(&now)->tm_hour) * 3600 + (localtime(&now)->tm_min - gmtime(&now)->tm_min) * 60 + localtime(&now)->tm_sec - gmtime(&now)->tm_sec;
+
+	return 0;
 }
 
 char *
