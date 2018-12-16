@@ -169,18 +169,6 @@ if test "$sslenable" = "1"; then
 	AC_SUBST(INC)
 fi
 
-AC_ARG_WITH(lint,
-[  --with-lint[=lint_path]    use lint at lint_path, defaults to splint],
-[AC_DEFINE(LINT, [], [Configures which LINT to use to evaluate the sources.])
-if test "$withval" = yes; then
-  LINT=splint
-else
-  LINT=$withval
-fi
-AC_DEFINE(WITH_LINT, [], [Makefile is configured to run lint on sources.])
-AC_SUBST(LINT)
-])
-
 AC_ARG_ENABLE(memory-cleanup,
 [  --enable-memory-cleanup        free all memory on exit (for memory debugging tools)],
 [
@@ -210,18 +198,6 @@ if test "$enableval" = yes; then
 	AC_DEFINE(DEBUG, [], [Enable debugging assertions.])
 fi
 ])
-
-dnl
-dnl IPv6
-dnl
-AC_ARG_ENABLE(ipv6,
-    [  --enable-ipv6             enable IPv6-support],
-    [
-        if test $enable_ipv6 == "yes";
-        then
-	    AC_DEFINE(USE_IPV6,[], [Enable IPv6 support.])
-	fi
-    ])
 
 dnl
 dnl Header files

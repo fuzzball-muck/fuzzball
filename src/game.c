@@ -33,9 +33,6 @@ const char *compile_options =
 #ifdef GOD_PRIV
 	"GODPRIV "
 #endif
-#ifdef USE_IPV6
-	"IPV6 "
-#endif
 #ifdef MALLOC_PROFILING
 	"MEMPROF "
 #endif

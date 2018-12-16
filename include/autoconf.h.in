@@ -134,9 +134,6 @@
 /* Define to 1 if you have the <varargs.h> header file. */
 #undef HAVE_VARARGS_H
 
-/* Configures which LINT to use to evaluate the sources. */
-#undef LINT
-
 /* Enables memory usage profiling. */
 #undef MALLOC_PROFILING
 
@@ -181,12 +178,6 @@
 
 /* The value of the uname -a command. */
 #undef UNAME_VALUE
-
-/* Enable IPv6 support. */
-#undef USE_IPV6
-
-/* Makefile is configured to run lint on sources. */
-#undef WITH_LINT
 
 /* Define to empty if `const' does not conform to ANSI C. */
 #undef const

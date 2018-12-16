@@ -626,7 +626,6 @@ ac_subst_vars='LTLIBOBJS
 LIBOBJS
 EGREP
 GREP
-LINT
 ssldir
 INC
 pcredir
@@ -684,11 +683,9 @@ ac_user_opts='
 enable_option_checking
 with_pcre
 with_ssl
-with_lint
 enable_memory_cleanup
 enable_memprof
 enable_debug
-enable_ipv6
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1311,14 +1308,12 @@ Optional Features:
   --enable-memory-cleanup        free all memory on exit (for memory debugging tools)
   --enable-memprof           enable memory leak detection and profiling (slow)
   --enable-debug             enable developer assertions
-  --enable-ipv6             enable IPv6-support
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-pcre=DIR         location of installed PCRE libraries/include files
   --with-ssl=DIR          location of installed SSL libraries/include files
-  --with-lint=lint_path    use lint at lint_path, defaults to splint
 
 Some influential environment variables:
   CC          C compiler command
@@ -4253,25 +4248,6 @@ fi
 
 fi
 
-
-# Check whether --with-lint was given.
-if test "${with_lint+set}" = set; then :
-  withval=$with_lint;
-$as_echo "#define LINT /**/" >>confdefs.h
-
-if test "$withval" = yes; then
-  LINT=splint
-else
-  LINT=$withval
-fi
-
-$as_echo "#define WITH_LINT /**/" >>confdefs.h
-
-
-
-fi
-
-
 # Check whether --enable-memory-cleanup was given.
 if test "${enable_memory_cleanup+set}" = set; then :
   enableval=$enable_memory_cleanup;
@@ -4314,19 +4290,6 @@ if test "$enableval" = yes; then
 $as_echo "#define DEBUG /**/" >>confdefs.h
 
 fi
-
-fi
-
-
-# Check whether --enable-ipv6 was given.
-if test "${enable_ipv6+set}" = set; then :
-  enableval=$enable_ipv6;
-        if test $enable_ipv6 == "yes";
-        then
-
-$as_echo "#define USE_IPV6 /**/" >>confdefs.h
-
-	fi
 
 fi
 
