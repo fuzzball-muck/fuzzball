@@ -3,6 +3,8 @@
 
 #include "config.h"
 
+#undef strdup
+
 #define malloc(x)            CrT_malloc(           x,    __FILE__, __LINE__)
 #define calloc(x,y)          CrT_calloc(           x, y, __FILE__, __LINE__)
 #define realloc(x,y)         CrT_realloc(          x, y, __FILE__, __LINE__)

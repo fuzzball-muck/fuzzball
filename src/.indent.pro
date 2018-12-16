@@ -1,1 +1,0 @@
--kr -psl -ci8 -l95 -lc75 -npcs -ss
