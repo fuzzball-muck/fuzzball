@@ -226,14 +226,14 @@ typedef int dbref;
 # endif
 #endif
 
-#ifdef MALLOC_PROFILING
-# include "crt_malloc.h"
-#else
 # ifndef HAVE_MALLOC_H
 #   include <stdlib.h>
 # else
 #   include <malloc.h>
 # endif
+
+#ifdef MALLOC_PROFILING
+# include "crt_malloc.h"
 #endif
 
 #if defined (HAVE_ERRNO_H)
