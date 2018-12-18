@@ -4554,43 +4554,48 @@ TIMEFMT
 TIMEFMT (s i -- s)
 
   Takes a format string and a SYSTIME integer and returns a string formatted
-with the time.  The format string is ascii text with formatting commands:
+with the time.  The format string is ASCII text with formatting commands:
 
 ~~code
-  %% -- "%"
-  %+ -- The date and time in server date format.
-  %a -- abbreviated weekday name.
-  %A -- full weekday name.
-  %b -- abbreviated month name.
-  %B -- full month name.
-  %C -- "%x %X"
-  %c -- century number.
-  %D -- "%m/%d/%y"
-  %d -- month day, "01" - "31"
-  %e -- month day, " 1" - "31"
-  %h -- "%b"
-  %H -- hour, "00" - "23"
-  %I -- hour, "01" - "12"
-  %j -- year day, "001" - "366"
-  %k -- hour, " 0" - "23"
-  %l -- hour, " 1" - "12"
-  %M -- minute, "00" - "59"
-  %m -- month, "01" - "12"
-  %p -- "AM" or "PM"
-  %R -- "%H:%M"
-  %r -- "%I:%M:%S %p"
-  %S -- seconds, "00" - "59"
-  %T -- "%H:%M:%S"
-  %U -- week number of the year. "00" - "52"
-  %w -- week day number, "0" - "6"
-  %W -- week# of year, starting on a monday, "00" - "52"
-  %X -- preferred date representation for the current locale.
-  %x -- preferred time representation for the current locale.
-  %y -- year, "00" - "99"
-  %Y -- year, "1900" - "2155"
-  %z -- numeric time zone. (+hhmm)
-  %Z -- string time zone.  "GMT", "EDT", "PST", etc.
+  %a -- abbreviated weekday name
+  %A -- full weekday name
+  %b -- abbreviated month name
+  %B -- full month name
+  %c -- date and time (default: %a %b %e %T %Y)
+  %C -- year divided by 100 and truncated to an integer, as a decimal number (00-99)
+  %d -- day of the month as a decimal number (01-31)
+  %D -- %m/%d/%y
+  %e -- day of the month as a decimal number (1-31); a single digit is preceded by a space
+  %F -- %Y-%m-%d (ISO 8601 date)
+  %g -- last 2 digits of the ISO 8601 week-based year as a decimal number (00-99)
+  %G -- ISO 8601 week-based year as a decimal number
+  %h -- %b
+  %H -- hour (24-hour clock) as a decimal number (00-23)
+  %I -- hour (12-hour clock) as a decimal number (01-12)
+  %j -- day of the year as a decimal number (001-366)
+  %m -- month as a decimal number (01-12)
+  %M -- minute as a decimal number (00-59)
+  %n -- new-line character
+  %p -- AM or PM
+  %r -- 12-hour clock time (default: %I:%M:%S %p)
+  %R -- %H:%M
+  %S -- second as a decimal number (00-60)
+  %t -- horizontal-tab character
+  %T -- %H:%M:%S (ISO 8601 time)
+  %u -- ISO 8601 weekday as a decimal number (1-7), where Monday is 1
+  %U -- week number of the year (the first Sunday as the first day of week 1) as a decimal number (00-53)
+  %V -- ISO 8601 week number as a decimal number (01-53)
+  %w -- weekday as a decimal number (0-6), where Sunday is 0
+  %W -- week number of the year (the first Monday as the first day of week 1) as a decimal number (00-53)
+  %x -- date (default: %m/%d/%y)
+  %X -- time (default: %T)
+  %y -- last 2 digits of the year as a decimal number (00-99)
+  %Y -- year as a decimal number
+  %z -- offset from UTC in the ISO 8601 format, or by no characters if no time zone is determinable (example: -0500 for EST)
+  %Z -- time zone name or abbreviation, or by no characters if no time zone is determinable (examples: UTC, EDT, PST)
+  %% -- % (percent sign)
 ~~endcode
+  TIMEFMT processes format strings with the C function strftime().  The above list of conversion specifiers (formatting commands) is from the C (draft C17/C18) standard: some MUCKs may have more conversion specifiers available.
 ~~alsosee FMTSTRING
 ~
 ~
