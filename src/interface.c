@@ -1513,7 +1513,7 @@ make_socket_v6(int port)
     return s;
 }
 
-/*  addrout_v6 -- Translate IPV6 address 'a' from addr struct to text.		*/
+/* addrout_v6 -- Translate IPV6 address 'a' from addr struct to text. */
 static const char *
 addrout_v6(int lport, struct in6_addr *a, unsigned short prt)
 {
@@ -1525,17 +1525,19 @@ addrout_v6(int lport, struct in6_addr *a, unsigned short prt)
 
     prt = ntohs(prt);
 
-# ifndef SPAWN_HOST_RESOLVER
+#ifndef SPAWN_HOST_RESOLVER
     if (tp_hostnames) {
-	/* One day the nameserver Qwest uses decided to start */
-	/* doing halfminute lags, locking up the entire muck  */
-	/* that long on every connect.  This is intended to   */
-	/* prevent that, reduces average lag due to nameserver */
-	/* to 1 sec/call, simply by not calling nameserver if */
-	/* it's in a slow mood *grin*. If the nameserver lags */
-	/* consistently, a hostname cache ala OJ's tinymuck2.3 */
-	/* would make more sense:                             */
-	static int secs_lost = 0;
+	/*
+	 * One day the nameserver Qwest uses decided to start
+	 * doing halfminute lags, locking up the entire muck
+	 * that long on every connect.  This is intended to
+	 * prevent that, reduces average lag due to nameserver
+	 * to 1 sec/call, simply by not calling nameserver if
+	 * it's in a slow mood *grin*. If the nameserver lags
+	 * consistently, a hostname cache ala OJ's tinymuck2.3
+	 * would make more sense:
+	 */
+	static time_t secs_lost = 0;
 
 	if (secs_lost) {
 	    secs_lost--;
@@ -1555,15 +1557,15 @@ addrout_v6(int lport, struct in6_addr *a, unsigned short prt)
 	    }
 	}
     }
-# endif				/* SPAWN_HOST_RESOLVER */
+#endif		/* SPAWN_HOST_RESOLVER */
 
     inet_ntop(AF_INET6, a, ip6addr, 128);
-# ifdef SPAWN_HOST_RESOLVER
+#ifdef SPAWN_HOST_RESOLVER
     snprintf(buf, sizeof(buf), "%s(%u)%u\n", ip6addr, prt, lport);
     if (tp_hostnames) {
 	write(resolver_sock[1], buf, strlen(buf));
     }
-# endif
+#endif
     snprintf(buf, sizeof(buf), "%s(%u)\n", ip6addr, prt);
 
     return buf;
@@ -1594,7 +1596,7 @@ new_connection_v6(int port, int sock_, int is_ssl)
     }
 }
 
-/*  addrout -- Translate address 'a' from addr struct to text.		*/
+/* addrout -- Translate address 'a' from addr struct to text. */
 static const char *
 addrout(int lport, long a, unsigned short prt)
 {
@@ -1608,28 +1610,29 @@ addrout(int lport, long a, unsigned short prt)
 
 #ifndef SPAWN_HOST_RESOLVER
     if (tp_hostnames) {
-	/* One day the nameserver Qwest uses decided to start */
-	/* doing halfminute lags, locking up the entire muck  */
-	/* that long on every connect.  This is intended to   */
-	/* prevent that, reduces average lag due to nameserver */
-	/* to 1 sec/call, simply by not calling nameserver if */
-	/* it's in a slow mood *grin*. If the nameserver lags */
-	/* consistently, a hostname cache ala OJ's tinymuck2.3 */
-	/* would make more sense:                             */
-	static int secs_lost = 0;
+	/*
+	 * One day the nameserver Qwest uses decided to start
+	 * doing halfminute lags, locking up the entire muck
+	 * that long on every connect.  This is intended to
+	 * prevent that, reduces average lag due to nameserver
+	 * to 1 sec/call, simply by not calling nameserver if
+	 * it's in a slow mood *grin*. If the nameserver lags
+	 * consistently, a hostname cache ala OJ's tinymuck2.3
+	 * would make more sense:
+	 */
+	static time_t secs_lost = 0;
 
 	if (secs_lost) {
 	    secs_lost--;
 	} else {
 	    time_t gethost_start = time(NULL);
 
-	    struct hostent *he = gethostbyaddr(((char *) &addr),
-					       sizeof(addr), AF_INET);
+	    struct hostent *he = gethostbyaddr(((char *) &addr), sizeof(addr), AF_INET);
 	    time_t gethost_stop = time(NULL);
 	    time_t lag = gethost_stop - gethost_start;
 
 	    if (lag > 10) {
-		secs_lost = (int)lag;
+		secs_lost = lag;
 	    }
 	    if (he) {
 		snprintf(buf, sizeof(buf), "%s(%u)", he->h_name, prt);
@@ -1637,7 +1640,7 @@ addrout(int lport, long a, unsigned short prt)
 	    }
 	}
     }
-#endif				/* SPAWN_HOST_RESOLVER */
+#endif		/* SPAWN_HOST_RESOLVER */
 
     a = ntohl(a);
 
