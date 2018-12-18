@@ -205,9 +205,10 @@ FTIME
 {ftime:format,tz,secs}
     Returns a time string in the format you specify.  See 'man timefmt' for
 the %subs that you can use in the format string.  If specified, tz is the
-number of seconds offset from GMT.  If specified, secs is the systime to
-use, instead of the current time.  {ftime:%x %X %Y,{tzoffset},0} will return
+number of seconds offset from UTC.  If specified, secs is the systime to
+use, instead of the current time.  {ftime:%x %X,{tzoffset},0} will return
 the date and time for systime 0, for the local time zone of the server.
+ftime processes format strings with the C function strftime().
 ~
 ~
 TIMESTR
