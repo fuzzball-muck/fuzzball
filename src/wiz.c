@@ -771,7 +771,6 @@ do_usage(dbref player)
     struct rusage usage;
 #endif
 
-    notifyf(player, "Compiled on: %s", UNAME_VALUE);
     notifyf(player, "Process ID: %d", getpid());
     notifyf(player, "Max descriptors/process: %ld", max_open_files());
 

@@ -202,13 +202,11 @@ fi
 dnl
 dnl Header files
 dnl
-AC_HEADER_STDC
-AC_CHECK_HEADERS(malloc.h sys/resource.h sys/signal.h)
-AC_HEADER_TIME
-AC_CHECK_HEADERS(sys/time.h)
-AC_CHECK_HEADERS(varargs.h stdarg.h)
-AC_CHECK_HEADERS(errno.h sys/errno.h)
+AC_CHECK_HEADERS(sys/errno.h sys/resource.h sys/signal.h sys/time.h)
+AC_CHECK_HEADERS(errno.h malloc.h stdarg.h)
 AC_HEADER_DIRENT
+AC_HEADER_STDC
+AC_HEADER_TIME
 
 AC_CHECK_SIZEOF([long int])
 AC_CHECK_SIZEOF([int])
@@ -218,13 +216,6 @@ dnl Types and structures
 dnl
 AC_TYPE_PID_T
 AC_TYPE_SIZE_T
-AC_STRUCT_TM
-AC_STRUCT_TIMEZONE
-AC_CACHE_CHECK(for struct tm.tm_gmtoff, rb_cv_member_struct_tm_tm_gmtoff,
-  [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <time.h>]], [[struct tm t; t.tm_gmtoff = 3600;]])],[rb_cv_member_struct_tm_tm_gmtoff=yes],[rb_cv_member_struct_tm_tm_gmtoff=no])])
-if test "$rb_cv_member_struct_tm_tm_gmtoff" = yes; then
-  AC_DEFINE(HAVE_STRUCT_TM_TM_GMTOFF, [], [Define to 1 if 'tm_gmtoff' is a member of 'struct tm'.])
-fi
 
 AC_CHECK_FUNCS(mallinfo getrlimit getrusage random pselect)
 AC_CHECK_MEMBER([struct mallinfo.hblks])
@@ -233,37 +224,6 @@ AC_CHECK_MEMBER([struct mallinfo.treeoverhead])
 AC_CHECK_MEMBER([struct mallinfo.grain])
 AC_CHECK_MEMBER([struct mallinfo.allocated])
 AC_CHECK_MEMBER([struct tm.tm_gmtoff])
-
-dnl
-dnl Compiler characteristics
-dnl
-AC_C_CONST
-    AC_TYPE_LONG_DOUBLE_WIDER
-    ac_cv_c_long_double=$ac_cv_type_long_double_wider
-    if test $ac_cv_c_long_double = yes; then
-      AC_DEFINE([HAVE_LONG_DOUBLE],[1],[Define to 1 if the type `long double' works and has more range or
-	 precision than `double'.])
-    fi
-  
-
-AC_DEFUN([AC_C_LONG_LONG],
-[AC_CACHE_CHECK(for long long int, ac_cv_c_long_long,
-[if test "$GCC" = yes; then
-    ac_cv_c_long_long=yes
- else
-    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[long long int i;]])],[ac_cv_c_long_long=yes],[ac_cv_c_long_long=no])
- fi])
-   if test $ac_cv_c_long_long = yes; then
-     AC_DEFINE(HAVE_LONG_LONG, [], [Define to 1 if you have long long.])
-   fi
-])
-AC_C_LONG_LONG
-
-dnl
-dnl Uname -a, just because.
-dnl
-echo "checking value of uname -a"
-AC_DEFINE_UNQUOTED(UNAME_VALUE, "`uname -a`", [The value of the uname -a command.])
 
 dnl
 dnl Remove HAVE_CONFIG_H
