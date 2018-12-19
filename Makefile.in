@@ -55,7 +55,7 @@ nuke:
 		cd $${d} && ${MAKE} nuke; \
 	done
 	${RM} include/autoconf.h
-	${RM} Makefile config.status config.cache config.log game/restart
+	${RM} Makefile config.status config.cache config.log game/restart include/autoconf.h
 
 Makefile: Makefile.in
 	./config.status Makefile

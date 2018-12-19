@@ -2,8 +2,6 @@ dist: xenial
 addons:
   apt:
     packages:
-    # For lint
-    - splint
     # For OpenSSL support
     - libssl-dev
 
@@ -15,47 +13,22 @@ compiler:
 
 env:
   global:
-    # Always run lint
-    - FLAG_LINT="--with-lint"
   matrix:
-    # Test with/without SSL, and with/without IPv6
-    # Unfortunately Travis does not yet have a way to build a 2x2 matrix from environment variables
-    # https://stackoverflow.com/questions/22397300/travis-and-matrix-combinations
-    - FLAG_IPV6="--enable-ipv6"   FLAG_SSL="--with-ssl"
-    - FLAG_IPV6="--enable-ipv6"   FLAG_SSL=""
-    - FLAG_IPV6=""                FLAG_SSL="--with-ssl"
-    - FLAG_IPV6=""                FLAG_SSL=""
+    - FLAG_SSL="--with-ssl"  FLAG_MEMPROF="--enable-memprof"   FLAG_DEBUG="--enable-debug"
+    - FLAG_SSL=""            FLAG_MEMPROF="--enable-memprof"   FLAG_DEBUG="--enable-debug"
+    - FLAG_SSL="--with-ssl"  FLAG_MEMPROF="--enable-memprof"   FLAG_DEBUG=""
+    - FLAG_SSL=""            FLAG_MEMPROF="--enable-memprof"   FLAG_DEBUG=""
+    - FLAG_SSL="--with-ssl"  FLAG_MEMPROF=""                   FLAG_DEBUG="--enable-debug"
+    - FLAG_SSL=""            FLAG_MEMPROF=""                   FLAG_DEBUG="--enable-debug"
+    - FLAG_SSL="--with-ssl"  FLAG_MEMPROF=""                   FLAG_DEBUG=""
+    - FLAG_SSL=""            FLAG_MEMPROF=""                   FLAG_DEBUG=""
 
 script:
   # Set up configure flags
-  - ./configure --prefix="$PWD/fuzzpre" $FLAG_LINT $FLAG_IPV6 $FLAG_SSL
+  - ./configure --prefix="$PWD/fuzzpre" $FLAG_SSL $FLAG_MEMPROF $FLAG_DEBUG
   # Clean up build directory
   - make clean
   # Make Fuzzball and all related code
-  - make all
+  - make
   # Check whether install works
   - make install
-
-# Currently, --enable-memprof and --enable-debug are ignored for that generates
-# 32 builds instead of 8.  If those need tested in the future, use the
-# following matrix and script:
-#env:
-#  matrix:
-#    - FLAG_IPV6="--enable-ipv6"   FLAG_SSL="--with-ssl"  FLAG_MEMPROF="--enable-memprof"   FLAG_DEBUG="--enable-debug"
-#    - FLAG_IPV6="--enable-ipv6"   FLAG_SSL=""            FLAG_MEMPROF="--enable-memprof"   FLAG_DEBUG="--enable-debug"
-#    - FLAG_IPV6=""                FLAG_SSL="--with-ssl"  FLAG_MEMPROF="--enable-memprof"   FLAG_DEBUG="--enable-debug"
-#    - FLAG_IPV6=""                FLAG_SSL=""            FLAG_MEMPROF="--enable-memprof"   FLAG_DEBUG="--enable-debug"
-#    - FLAG_IPV6="--enable-ipv6"   FLAG_SSL="--with-ssl"  FLAG_MEMPROF="--enable-memprof"   FLAG_DEBUG=""
-#    - FLAG_IPV6="--enable-ipv6"   FLAG_SSL=""            FLAG_MEMPROF="--enable-memprof"   FLAG_DEBUG=""
-#    - FLAG_IPV6=""                FLAG_SSL="--with-ssl"  FLAG_MEMPROF="--enable-memprof"   FLAG_DEBUG=""
-#    - FLAG_IPV6=""                FLAG_SSL=""            FLAG_MEMPROF="--enable-memprof"   FLAG_DEBUG=""
-#    - FLAG_IPV6="--enable-ipv6"   FLAG_SSL="--with-ssl"  FLAG_MEMPROF=""                   FLAG_DEBUG="--enable-debug"
-#    - FLAG_IPV6="--enable-ipv6"   FLAG_SSL=""            FLAG_MEMPROF=""                   FLAG_DEBUG="--enable-debug"
-#    - FLAG_IPV6=""                FLAG_SSL="--with-ssl"  FLAG_MEMPROF=""                   FLAG_DEBUG="--enable-debug"
-#    - FLAG_IPV6=""                FLAG_SSL=""            FLAG_MEMPROF=""                   FLAG_DEBUG="--enable-debug"
-#    - FLAG_IPV6="--enable-ipv6"   FLAG_SSL="--with-ssl"  FLAG_MEMPROF=""                   FLAG_DEBUG=""
-#    - FLAG_IPV6="--enable-ipv6"   FLAG_SSL=""            FLAG_MEMPROF=""                   FLAG_DEBUG=""
-#    - FLAG_IPV6=""                FLAG_SSL="--with-ssl"  FLAG_MEMPROF=""                   FLAG_DEBUG=""
-#    - FLAG_IPV6=""                FLAG_SSL=""            FLAG_MEMPROF=""                   FLAG_DEBUG=""
-#script:
-#  - ./configure $FLAG_LINT $FLAG_IPV6 $FLAG_SSL $FLAG_MEMPROF $FLAG_DEBUG && make clean && make all

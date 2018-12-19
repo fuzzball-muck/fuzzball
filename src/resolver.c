@@ -51,9 +51,7 @@ int notify(int player, const char *msg) {
                                      } while (0)
 
 static struct hostcache {
-#ifdef USE_IPV6
     struct in6_addr ipnum_v6;
-#endif
     long ipnum;
     char name[128];
     time_t time;
@@ -97,7 +95,6 @@ static void make_nonblocking(int s) {
     }
 }
 
-#ifdef USE_IPV6
 static int ipcmp(struct in6_addr *a, struct in6_addr *b) {
     int i = 128;
     char *A = (char *) a;
@@ -311,7 +308,6 @@ static const char * addrout_v6(struct in6_addr *a, unsigned short prt, unsigned 
     }
     return buf;
 }
-#endif
 
 static void hostdel(long ip) {
     for (struct hostcache *ptr = hostcache_list; ptr; ptr = ptr->next) {
@@ -362,9 +358,7 @@ static void hostadd(long ip, const char *name) {
     }
     ptr->prev = &hostcache_list;
     hostcache_list = ptr;
-#ifdef USE_IPV6
     memset(&(ptr->ipnum_v6), 0, sizeof(struct in6_addr));
-#endif
     ptr->ipnum = ip;
     ptr->time = 0;
     strcpyn(ptr->name, sizeof(ptr->name), name);
@@ -587,9 +581,7 @@ static int do_resolve(void) {
     char *bufptr = NULL;
     long fullip;
 
-#ifdef USE_IPV6
     struct in6_addr fullip_v6;
-#endif
 
     for (;;) {
 	ip1 = ip2 = ip3 = ip4 = prt = myprt = -1;
@@ -635,8 +627,6 @@ static int do_resolve(void) {
             }
 	} while (doagain || !strcmp(buf, "\n"));
 
-	bufptr = NULL;
-#ifdef USE_IPV6
 	bufptr = strchr(buf, ':');
 	if (bufptr) {
 	    /* Is an IPv6 addr. */
@@ -655,7 +645,7 @@ static int do_resolve(void) {
 	    ptr = addrout_v6(&fullip_v6, prt, myprt);
 	    snprintf(outbuf, sizeof(outbuf), "%s(%d)|%s", buf, prt, ptr);
 	}
-#endif
+
 	if (!bufptr) {
 	    /* Is an IPv4 addr. */
 	    sscanf(buf, "%d.%d.%d.%d(%d)%d", &ip1, &ip2, &ip3, &ip4, &prt, &myprt);
