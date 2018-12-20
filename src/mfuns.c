@@ -1783,7 +1783,7 @@ mfn_tell(MFUNARGS)
     *buf = '\0';
     strcpyn(buf2, sizeof(buf2), argv[0]);
     for (char *ptr = buf2; (ptr != NULL) && *ptr != '\0'; ptr = ptr2) {
-	ptr2 = index(ptr, '\r');
+	ptr2 = strchr(ptr, '\r');
 	if (ptr2 != NULL) {
 	    *ptr2++ = '\0';
 	} else {
@@ -1834,7 +1834,7 @@ mfn_otell(MFUNARGS)
 	eobj = mesg_dbref_raw(descr, player, what, argv[2]);
     strcpyn(buf2, sizeof(buf2), argv[0]);
     for (char *ptr = buf2; *ptr; ptr = ptr2) {
-	ptr2 = index(ptr, '\r');
+	ptr2 = strchr(ptr, '\r');
 	if (ptr2) {
 	    *ptr2 = '\0';
 	} else {
