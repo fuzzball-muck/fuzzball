@@ -260,7 +260,7 @@ prim_force(PRIM_PROTOTYPE)
 	abort_interp("Object to force not a thing or player. (1)");
     if (0 == strcmp(DoNullInd(oper1->data.string), ""))
 	abort_interp("Empty command argument (2).");
-    if (index(oper1->data.string->data, '\r'))
+    if (strchr(oper1->data.string->data, '\r'))
 	abort_interp("Carriage returns not allowed in command string. (2).");
 #ifdef GOD_PRIV
     if (God(oper2->data.objref) && !God(OWNER(program)))
