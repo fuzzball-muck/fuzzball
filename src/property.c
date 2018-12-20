@@ -659,7 +659,7 @@ next_prop_name(dbref player, char *outbuf, size_t outbuflen, char *name)
 	    return NULL;
 	}
 	strcpyn(outbuf, outbuflen, name);
-	ptr = rindex(outbuf, PROPDIR_DELIMITER);
+	ptr = strrchr(outbuf, PROPDIR_DELIMITER);
 	if (!ptr)
 	    ptr = outbuf;
 	*(ptr++) = PROPDIR_DELIMITER;
