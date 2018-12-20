@@ -259,7 +259,7 @@ print_section_topics(FILE * f, FILE * hf, const char *whichsect)
 	    if (sectptr) {
 		*sectptr++ = '\0';
 		osectptr = sectptr;
-		sectptr = rindex(sectptr, '|');
+		sectptr = strrchr(sectptr, '|');
 		if (sectptr) {
 		    sectptr++;
 		}
@@ -334,7 +334,7 @@ print_sections(FILE * f, FILE * hf)
 	if (sectptr) {
 	    *sectptr++ = '\0';
 	    osectptr = sectptr;
-	    sectptr = rindex(sectptr, '|');
+	    sectptr = strrchr(sectptr, '|');
 	    if (sectptr) {
 		sectptr++;
 	    }
