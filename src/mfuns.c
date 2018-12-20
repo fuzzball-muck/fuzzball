@@ -418,7 +418,7 @@ mfn_listprops(MFUNARGS)
 	    if ((flag != 0) && (pattern != NULL)) {
 		char *nptr;
 
-		nptr = rindex(ptr, PROPDIR_DELIMITER);
+		nptr = strrchr(ptr, PROPDIR_DELIMITER);
 		if (nptr && *nptr) {
 		    strcpyn(patbuf, sizeof(patbuf), ++nptr);
 		    if (!equalstr(pattern, patbuf)) {
