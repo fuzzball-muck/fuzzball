@@ -811,7 +811,7 @@ muf_debugger(int descr, dbref player, dbref program, const char *text, struct fr
 	int startline, endline;
 
 	add_muf_read_event(descr, player, program, fr);
-	if ((ptr2 = (char *) index(arg, ','))) {
+	if ((ptr2 = (char *) strchr(arg, ','))) {
 	    *ptr2++ = '\0';
 	} else {
 	    ptr2 = "";

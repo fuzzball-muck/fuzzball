@@ -737,7 +737,7 @@ tune_load_parms_from_file(FILE * f, dbref player, int cnt)
     while (!feof(f) && (cnt < 0 || cnt--)) {
 	fgets(buf, sizeof(buf), f);
 	if (*buf != '#') {
-	    c = index(buf, ARG_DELIMITER);
+	    c = strchr(buf, ARG_DELIMITER);
 	    if (c) {
 		*c++ = '\0';
 		p = buf;
@@ -849,7 +849,7 @@ do_tune(dbref player, char *parmname, char *parmval)
     } else if (*parmname && string_prefix(parmname, TP_INFO_CMD)) {
 	/* Space-separated parameters are all in parmname.  Trim out the 'info' command and
 	   any extra spaces */
-	const char *p_trim = index(parmname, ' ');
+	const char *p_trim = strchr(parmname, ' ');
 	if (p_trim != NULL) {
 	    skip_whitespace(&p_trim);
 	    if (*p_trim) {

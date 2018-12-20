@@ -229,7 +229,7 @@ static const char * get_username_v6(struct in6_addr *a, int prt, int myprt) {
     if (result < 0)
 	goto bad2;
 
-    ptr = index(buf, ':');
+    ptr = strchr(buf, ':');
     if (!ptr)
 	goto bad2;
     ptr++;
@@ -238,10 +238,10 @@ static const char * get_username_v6(struct in6_addr *a, int prt, int myprt) {
     if (strncmp(ptr, "USERID", 6))
 	goto bad2;
 
-    ptr = index(ptr, ':');
+    ptr = strchr(ptr, ':');
     if (!ptr)
 	goto bad2;
-    ptr = index(ptr + 1, ':');
+    ptr = strchr(ptr + 1, ':');
     if (!ptr)
 	goto bad2;
     ptr++;
@@ -249,7 +249,7 @@ static const char * get_username_v6(struct in6_addr *a, int prt, int myprt) {
 
     shutdown(fd, 2);
     close(fd);
-    if ((ptr2 = index(ptr, '\r')))
+    if ((ptr2 = strchr(ptr, '\r')))
 	*ptr2 = '\0';
     if (!*ptr)
 	return (0);
@@ -484,7 +484,7 @@ static const char * get_username(long a, int prt, int myprt) {
     if (result < 0)
 	goto bad2;
 
-    ptr = index(buf, ':');
+    ptr = strchr(buf, ':');
     if (!ptr)
 	goto bad2;
     ptr++;
@@ -493,10 +493,10 @@ static const char * get_username(long a, int prt, int myprt) {
     if (strncmp(ptr, "USERID", 6))
 	goto bad2;
 
-    ptr = index(ptr, ':');
+    ptr = strchr(ptr, ':');
     if (!ptr)
 	goto bad2;
-    ptr = index(ptr + 1, ':');
+    ptr = strchr(ptr + 1, ':');
     if (!ptr)
 	goto bad2;
     ptr++;
@@ -504,7 +504,7 @@ static const char * get_username(long a, int prt, int myprt) {
 
     shutdown(fd, 2);
     close(fd);
-    if ((ptr2 = index(ptr, '\r')))
+    if ((ptr2 = strchr(ptr, '\r')))
 	*ptr2 = '\0';
     if (!*ptr)
 	return (0);

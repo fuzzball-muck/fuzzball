@@ -230,7 +230,7 @@ print_section_topics(FILE * f, FILE * hf, const char *whichsect)
 	    currsect = sptr->section;
 	    for (struct topiclist *ptr = topichead; ptr; ptr = ptr->next) {
 		if (!strcasecmp(currsect, ptr->section)) {
-		    divpos = index(ptr->topic, '|');
+		    divpos = strchr(ptr->topic, '|');
 		    if (!divpos) {
 			cnt = strlen(ptr->topic);
 		    } else {
@@ -255,11 +255,11 @@ print_section_topics(FILE * f, FILE * hf, const char *whichsect)
 	    hcol = 0;
 	    buf[0] = '\0';
 	    strcpyn(sectname, sizeof(sectname), currsect);
-	    sectptr = index(sectname, '|');
+	    sectptr = strchr(sectname, '|');
 	    if (sectptr) {
 		*sectptr++ = '\0';
 		osectptr = sectptr;
-		sectptr = rindex(sectptr, '|');
+		sectptr = strrchr(sectptr, '|');
 		if (sectptr) {
 		    sectptr++;
 		}
@@ -330,11 +330,11 @@ print_sections(FILE * f, FILE * hf)
 	currsect = sptr->section;
 	buf[0] = '\0';
 	strcpyn(sectname, sizeof(sectname), currsect);
-	sectptr = index(sectname, '|');
+	sectptr = strchr(sectname, '|');
 	if (sectptr) {
 	    *sectptr++ = '\0';
 	    osectptr = sectptr;
-	    sectptr = rindex(sectptr, '|');
+	    sectptr = strrchr(sectptr, '|');
 	    if (sectptr) {
 		sectptr++;
 	    }
@@ -384,7 +384,7 @@ print_topics(FILE * f, FILE * hf)
 	    firstletter = toupper(ptr->topic[0]);
 	    if (firstletter == alph || (!isalpha(alph) && !isalpha(firstletter))) {
 		cnt++;
-		divpos = index(ptr->topic, '|');
+		divpos = strchr(ptr->topic, '|');
 		if (!divpos) {
 		    len = strlen(ptr->topic);
 		} else {
@@ -567,7 +567,7 @@ process_lines(FILE * infile, FILE * outfile, FILE * htmlfile)
 			    "", author);
 		} else if (!strncmp(buf, "~~section ", 10)) {
 		    buf[strlen(buf) - 1] = '\0';
-		    sectptr = index(buf + 10, '|');
+		    sectptr = strchr(buf + 10, '|');
 		    if (sectptr) {
 			*sectptr = '\0';
 		    }
@@ -585,7 +585,7 @@ process_lines(FILE * infile, FILE * outfile, FILE * htmlfile)
 		    skip_whitespace((const char **)&ptr);
 		    while (ptr && *ptr) {
 			ptr2 = ptr;
-			ptr = index(ptr, ',');
+			ptr = strchr(ptr, ',');
 			if (ptr) {
 			    *ptr++ = '\0';
 			    skip_whitespace((const char **)&ptr);

@@ -488,7 +488,7 @@ getproperties(FILE * f, dbref obj, const char *pdir)
 	    /* fgets reads in \n too! */
 	    if (!strcmp(buf, "*End*\n"))
 		break;
-	    p = index(buf, PROP_DELIMITER);
+	    p = strchr(buf, PROP_DELIMITER);
 	    *(p++) = '\0';	/* Purrrrrrrrrr... */
 	    datalen = strlen(p);
 	    p[datalen - 1] = '\0';
@@ -1033,11 +1033,11 @@ ok_name(const char *name)
             && *name != LOOKUP_TOKEN
             && *name != REGISTERED_TOKEN
             && *name != NUMBER_TOKEN
-            && !index(name, ARG_DELIMITER)
-            && !index(name, AND_TOKEN)
-            && !index(name, OR_TOKEN)
-            && !index(name, '\r')
-            && !index(name, ESCAPE_CHAR)
+            && !strchr(name, ARG_DELIMITER)
+            && !strchr(name, AND_TOKEN)
+            && !strchr(name, OR_TOKEN)
+            && !strchr(name, '\r')
+            && !strchr(name, ESCAPE_CHAR)
             && strcasecmp(name, "me")
             && strcasecmp(name, "here")
             && strcasecmp(name, "home")

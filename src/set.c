@@ -183,7 +183,7 @@ do_relink(int descr, dbref player, const char *thing_name, const char *dest_name
     if ((thing = noisy_match_result(&md)) == NOTHING)
 	return;
 
-    if (Typeof(thing) != TYPE_EXIT && index(dest_name, EXIT_DELIMITER)) {
+    if (Typeof(thing) != TYPE_EXIT && strchr(dest_name, EXIT_DELIMITER)) {
 	notify(player, "Only actions and exits can be linked to multiple destinations.");
 	return;
     }
@@ -505,10 +505,10 @@ do_set(int descr, dbref player, const char *name, const char *flag)
 
     /* Now we check to see if it's a property reference */
     /* if this gets changed, please also modify boolexp.c */
-    if (index(flag, PROP_DELIMITER)) {
+    if (strchr(flag, PROP_DELIMITER)) {
 	/* copy the string so we can muck with it */
 	const char *type = alloc_string(flag);	/* type */
-	char *pname = (char *) index(type, PROP_DELIMITER);	/* propname */
+	char *pname = (char *) strchr(type, PROP_DELIMITER);	/* propname */
 	const char *x;		/* to preserve string location so we can free it */
 	char *temp;
 	int ival = 0;

@@ -39,7 +39,7 @@ set_property_nofetch(dbref player, const char *pname, PData * dat, int sync)
     w = strcpyn(buf, sizeof(buf), pname);
 
     /* truncate propnames with a ':' in them at the ':' */
-    n = index(buf, PROP_DELIMITER);
+    n = strchr(buf, PROP_DELIMITER);
     if (n)
 	*n = '\0';
     if (!*buf)
@@ -659,7 +659,7 @@ next_prop_name(dbref player, char *outbuf, size_t outbuflen, char *name)
 	    return NULL;
 	}
 	strcpyn(outbuf, outbuflen, name);
-	ptr = rindex(outbuf, PROPDIR_DELIMITER);
+	ptr = strrchr(outbuf, PROPDIR_DELIMITER);
 	if (!ptr)
 	    ptr = outbuf;
 	*(ptr++) = PROPDIR_DELIMITER;
@@ -831,7 +831,7 @@ db_get_single_prop(FILE * f, dbref obj, long pos, PropPtr pnode, const char *pdi
 	}
     }
 
-    flags = index(name, PROP_DELIMITER);
+    flags = strchr(name, PROP_DELIMITER);
     if (!flags) {
 	wall_wizards
 		("## WARNING! A corrupt property was found while trying to read it from disk.");
@@ -845,7 +845,7 @@ db_get_single_prop(FILE * f, dbref obj, long pos, PropPtr pnode, const char *pdi
     }
     *flags++ = '\0';
 
-    value = index(flags, PROP_DELIMITER);
+    value = strchr(flags, PROP_DELIMITER);
     if (!value) {
 	wall_wizards
 		("## WARNING! A corrupt property was found while trying to read it from disk.");
@@ -859,7 +859,7 @@ db_get_single_prop(FILE * f, dbref obj, long pos, PropPtr pnode, const char *pdi
     }
     *value++ = '\0';
 
-    p = index(value, '\n');
+    p = strchr(value, '\n');
     if (p) {
 	*p = '\0';
     }

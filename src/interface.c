@@ -581,7 +581,7 @@ welcome_user(struct descriptor_data *d)
             perror("spit_file: welcome.txt");
         } else {
             while (fgets(buf, sizeof(buf) - 3, f)) {
-                ptr = index(buf, '\n');
+                ptr = strchr(buf, '\n');
                 if (ptr && ptr > buf && *(ptr - 1) != '\r') {
                     *ptr++ = '\r';
                     *ptr++ = '\n';
@@ -1419,10 +1419,10 @@ initializesock(int s, const char *hostname, int is_ssl)
 #endif
 
     strcpyn(buf, sizeof(buf), hostname);
-    ptr = index(buf, ')');
+    ptr = strchr(buf, ')');
     if (ptr)
 	*ptr = '\0';
-    ptr = index(buf, '(');
+    ptr = strchr(buf, '(');
     *ptr++ = '\0';
     d->hostname = alloc_string(buf);
     d->username = alloc_string(ptr);
@@ -2240,22 +2240,22 @@ resolve_hostnames()
 	    dc++;
 	}
 	if (*ptr2) {
-	    ptr3 = index(ptr2, '|');
+	    ptr3 = strchr(ptr2, '|');
 	    if (!ptr3)
 		return;
 	    hostip = ptr2;
-	    port = index(ptr2, '(');
+	    port = strchr(ptr2, '(');
 	    if (!port)
 		return;
-	    tempptr = index(port, ')');
+	    tempptr = strchr(port, ')');
 	    if (!tempptr)
 		return;
 	    *tempptr = '\0';
 	    hostname = ptr3;
-	    username = index(ptr3, '(');
+	    username = strchr(ptr3, '(');
 	    if (!username)
 		return;
-	    tempptr = index(username, ')');
+	    tempptr = strchr(username, ')');
 	    if (!tempptr)
 		return;
 	    *tempptr = '\0';
@@ -4002,7 +4002,7 @@ show_subfile(dbref player, const char *dir, const char *topic, const char *seg, 
     if (!topic || !*topic)
 	return 0;
 
-    if ((*topic == '.') || (*topic == '~') || (index(topic, '/'))) {
+    if ((*topic == '.') || (*topic == '~') || (strchr(topic, '/'))) {
 	return 0;
     }
     if (strlen(topic) > 63)

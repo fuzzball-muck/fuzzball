@@ -21,7 +21,7 @@ propdir_new_elem(PropPtr * root, char *path)
 	path++;
     if (!*path)
 	return (NULL);
-    n = index(path, PROPDIR_DELIMITER);
+    n = strchr(path, PROPDIR_DELIMITER);
     while (n && *n == PROPDIR_DELIMITER)
 	*(n++) = '\0';
     if (n && *n) {
@@ -50,7 +50,7 @@ propdir_delete_elem(PropPtr root, char *path)
 	path++;
     if (!*path)
 	return (root);
-    n = index(path, PROPDIR_DELIMITER);
+    n = strchr(path, PROPDIR_DELIMITER);
     while (n && *n == PROPDIR_DELIMITER)
 	*(n++) = '\0';
     if (n && *n) {
@@ -91,7 +91,7 @@ propdir_get_elem(PropPtr root, char *path)
 	path++;
     if (!*path)
 	return (NULL);
-    n = index(path, PROPDIR_DELIMITER);
+    n = strchr(path, PROPDIR_DELIMITER);
     while (n && *n == PROPDIR_DELIMITER)
 	*(n++) = '\0';
     if (n && *n) {
@@ -148,7 +148,7 @@ propdir_next_elem(PropPtr root, char *path)
 	path++;
     if (!*path)
 	return (NULL);
-    n = index(path, PROPDIR_DELIMITER);
+    n = strchr(path, PROPDIR_DELIMITER);
     while (n && *n == PROPDIR_DELIMITER)
 	*(n++) = '\0';
     if (n && *n) {

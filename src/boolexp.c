@@ -195,7 +195,7 @@ parse_boolexp_F(int descr, const char **parsebuf, dbref player, int dbloadp)
 	remove_ending_whitespace(&p);
 
 	/* check to see if this is a property expression */
-	if (index(buf, PROP_DELIMITER)) {
+	if (strchr(buf, PROP_DELIMITER)) {
 	    if (!dbloadp) {
 		if (Prop_System(buf) || (!Wizard(OWNER(player)) && Prop_Hidden(buf))) {
 		    notify(player,
@@ -313,7 +313,7 @@ static struct boolexp *
 parse_boolprop(char *buf)
 {
     const char *type = alloc_string(buf);
-    char *strval = index(type, PROP_DELIMITER);
+    char *strval = strchr(type, PROP_DELIMITER);
     const char *x;
     struct boolexp *b;
     PropPtr p;
