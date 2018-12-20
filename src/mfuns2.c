@@ -345,7 +345,7 @@ mfn_name(MFUNARGS)
     }
     strcpyn(buf, buflen, NAME(obj));
     if (Typeof(obj) == TYPE_EXIT) {
-	ptr = index(buf, EXIT_DELIMITER);
+	ptr = strchr(buf, EXIT_DELIMITER);
 	if (ptr)
 	    *ptr = '\0';
     }
@@ -1545,7 +1545,7 @@ mfn_force(MFUNARGS)
 	const char *ptr2 = NAME(obj);
 	char objname[BUFFER_LEN], *ptr3;
 
-	nxt = index(ptr, '\r');
+	nxt = strchr(ptr, '\r');
 	if (nxt)
 	    *nxt++ = '\0';
 
