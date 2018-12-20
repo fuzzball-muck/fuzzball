@@ -2475,8 +2475,8 @@ do_directive(COMPSTATE * cstat, char *direct)
 	    v_abort_compile(cstat, "Unexpected end of file looking for $pubdef name.");
 
 	if (strcasecmp(tmpname, (char[]){PROP_DELIMITER,0}) &&
-	    (index(tmpname, PROPDIR_DELIMITER) ||
-	     index(tmpname, PROP_DELIMITER) ||
+	    (strchr(tmpname, PROPDIR_DELIMITER) ||
+	     strchr(tmpname, PROP_DELIMITER) ||
 	     Prop_SeeOnly(tmpname) || Prop_Hidden(tmpname) || Prop_System(tmpname))) {
 	    char buf[BUFFER_LEN];
 	    free(tmpname);
@@ -2530,8 +2530,8 @@ do_directive(COMPSTATE * cstat, char *direct)
 	if (!tmpname)
 	    v_abort_compile(cstat, "Unexpected end of file looking for $libdef name.");
 
-	if (index(tmpname, PROPDIR_DELIMITER) ||
-	    index(tmpname, PROP_DELIMITER) ||
+	if (strchr(tmpname, PROPDIR_DELIMITER) ||
+	    strchr(tmpname, PROP_DELIMITER) ||
 	    Prop_SeeOnly(tmpname) || Prop_Hidden(tmpname) || Prop_System(tmpname)) {
 	    char buf[BUFFER_LEN];
 	    free(tmpname);
@@ -3378,7 +3378,7 @@ process_special(COMPSTATE * cstat, const char *token)
 		} else if (!strcmp(varspec, "--")) {
 		    outflag = 1;
 		} else if (!outflag) {
-		    varname = index(varspec, ':');
+		    varname = strchr(varspec, ':');
 		    if (varname) {
 			varname++;
 		    } else {
