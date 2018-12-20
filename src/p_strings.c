@@ -2323,7 +2323,7 @@ prim_tokensplit(PRIM_PROTOTYPE)
     } else {
 	esc = '\0';
     }
-    escisdel = index(oper2->data.string->data, esc) != 0;
+    escisdel = strchr(oper2->data.string->data, esc) != 0;
     strcpyn(buf, sizeof(buf), DoNullInd(oper1->data.string));
     ptr = buf;
     out = outbuf;
