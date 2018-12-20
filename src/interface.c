@@ -1537,7 +1537,7 @@ addrout_v6(int lport, struct in6_addr *a, unsigned short prt)
        * consistently, a hostname cache ala OJ's tinymuck2.3
        * would make more sense:
        */
-	static int secs_lost = 0;
+	static time_t secs_lost = 0;
 
 	if (secs_lost) {
 	    secs_lost--;
@@ -1620,7 +1620,7 @@ addrout(int lport, long a, unsigned short prt)
        * consistently, a hostname cache ala OJ's tinymuck2.3
        * would make more sense:
        */
-	static int secs_lost = 0;
+	static time_t secs_lost = 0;
 
 	if (secs_lost) {
 	    secs_lost--;
