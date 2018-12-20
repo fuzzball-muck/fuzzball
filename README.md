@@ -1,4 +1,4 @@
-Fuzzball MUCK [![Linux Build Status](https://travis-ci.org/fuzzball-muck/fuzzball.svg?branch=master)](https://travis-ci.org/fuzzball-muck/fuzzball) [![Windows Build Status](https://ci.appveyor.com/api/projects/status/ktwrfcsjbv4xt3op/branch/master?svg=true)](https://ci.appveyor.com/project/fuzzball-muck/fuzzball/branch/master)
+Fuzzball MUCK [![Linux Build Status](https://travis-ci.org/fuzzball-muck/fuzzball.svg?branch=master)](https://travis-ci.org/fuzzball-muck/fuzzball) [![Windows Build Status](https://ci.appveyor.com/api/projects/status/ktwrfcsjbv4xt3op/branch/master?svg=true)](https://ci.appveyor.com/project/fuzzball-muck/fuzzball/branch/master) [![FreeBSD Build Status](https://api.cirrus-ci.com/github/fuzzball-muck/fuzzball.svg)](https://cirrus-ci.com/github/fuzzball-muck/fuzzball)
 ===============
 
 Fuzzball is a [MUCK][wiki-muck] server, an online text-based multi-user chat and roleplaying game.  Multiple people may join, set up characters, talk, and interact, exploring and building a common world.  Nearly every aspect of the game can be customized via [MPI-driven descriptions][help-mpi] and [MUF programs][help-muf].
