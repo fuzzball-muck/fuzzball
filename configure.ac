@@ -206,7 +206,6 @@ AC_CHECK_HEADERS(sys/errno.h sys/resource.h sys/signal.h sys/time.h)
 AC_CHECK_HEADERS(errno.h malloc.h stdarg.h)
 AC_HEADER_DIRENT
 AC_HEADER_STDC
-AC_HEADER_TIME
 
 AC_CHECK_SIZEOF([long int])
 AC_CHECK_SIZEOF([int])
