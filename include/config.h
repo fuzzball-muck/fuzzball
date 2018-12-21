@@ -216,6 +216,7 @@ typedef int dbref;
  * Time stuff.
  */
 #include <time.h>
+#include <sys/time.h>
 
 #ifndef HAVE_MALLOC_H
 #  include <stdlib.h>
