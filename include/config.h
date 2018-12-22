@@ -277,7 +277,6 @@ extern int errno;
 # include <netdb.h>
 # include <netinet/in.h>
 # include <netinet/tcp.h>
-# include <sys/file.h>
 # include <sys/ioctl.h>
 # include <sys/resource.h>
 # include <sys/socket.h>
