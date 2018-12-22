@@ -155,9 +155,11 @@
 #include <stdarg.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <time.h>
+#include <unistd.h>
 
 typedef int dbref;
 
@@ -171,12 +173,6 @@ typedef int dbref;
 #define DEBUGPRINT(...)
 #endif				/* DEBUG */
 
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#endif
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
-#endif
 
 /*
  * Which set of memory commands do we have here...
@@ -214,11 +210,6 @@ typedef int dbref;
 #endif
 
 
-#ifndef HAVE_MALLOC_H
-#  include <stdlib.h>
-# else
-#  include <malloc.h>
-#endif
 
 #ifdef MALLOC_PROFILING
 # include "crt_malloc.h"
