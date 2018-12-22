@@ -155,6 +155,7 @@
 #include <stdarg.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <time.h>
@@ -171,9 +172,6 @@ typedef int dbref;
 #define DEBUGPRINT(...)
 #endif				/* DEBUG */
 
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#endif
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
@@ -214,10 +212,8 @@ typedef int dbref;
 #endif
 
 
-#ifndef HAVE_MALLOC_H
-#  include <stdlib.h>
-# else
-#  include <malloc.h>
+#ifdef HAVE_MALLOC_H
+# include <malloc.h>
 #endif
 
 #ifdef MALLOC_PROFILING
