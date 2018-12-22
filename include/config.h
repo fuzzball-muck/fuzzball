@@ -157,6 +157,7 @@
 #include <stdio.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <time.h>
 
 typedef int dbref;
 
@@ -212,11 +213,6 @@ typedef int dbref;
 # define RANDOM()	rand()
 #endif
 
-/*
- * Time stuff.
- */
-#include <time.h>
-#include <sys/time.h>
 
 #ifndef HAVE_MALLOC_H
 #  include <stdlib.h>
@@ -285,6 +281,7 @@ extern int errno;
 # include <sys/ioctl.h>
 # include <sys/resource.h>
 # include <sys/socket.h>
+# include <sys/time.h>
 # include <sys/wait.h>
 #endif
 
