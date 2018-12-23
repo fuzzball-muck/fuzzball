@@ -53,10 +53,6 @@ static int con_players_curr = 0;	/* for playermax checks. */
 
 #define MAX_LISTEN_SOCKS 16
 
-/* Yes, both of these should start defaulted to disabled. */
-/* If both are still disabled after arg parsing, we'll enable one or both. */
-static int ipv4_enabled = 0;
-static int ipv6_enabled = 0;
 static struct in6_addr bind_ipv6_address;
 static uint32_t bind_ipv4_address;
 
@@ -143,7 +139,6 @@ show_program_usage(char *prog)
     fprintf(stderr, "        -wizonly         only allow wizards to login.\n");
     fprintf(stderr,
 	    "        -godpasswd PASS  reset God(#1)'s password to PASS.  Implies -convert\n");
-    fprintf(stderr, "        -ipv6            enable listening on ipv6 sockets.\n");
     fprintf(stderr, "        -bindv4 ADDRESS  set listening IP address for IPv4 sockets (default: all)\n");
     fprintf(stderr, "        -bindv6 ADDRESS  set listening IP address for IPv6 sockets (default: all)\n");
     fprintf(stderr, "        -nodetach        do not detach server process\n");
@@ -1714,30 +1709,23 @@ make_socket(int port)
 
 static void listen_bound_sockets()
 {
-    if(ipv4_enabled) {
-
-        for (int i = 0; i < numsocks; i++) {
-            listen(sock[i], 5);
-        }
-
-#ifdef USE_SSL
-        for (int i = 0; i < ssl_numsocks; i++) {
-            listen(ssl_sock[i], 5);
-        }
-#endif
+    for (int i = 0; i < numsocks; i++) {
+	listen(sock[i], 5);
     }
 
-    if(ipv6_enabled) {
-
-        for (int i = 0; i< numsocks_v6; i++) {
-            listen(sock_v6[i],5);
-        }
-#ifdef USE_SSL
-        for (int i = 0; i < ssl_numsocks_v6; i++) {
-            listen(ssl_sock_v6[i], 5);
-        }
-#endif
+    for (int i = 0; i< numsocks_v6; i++) {
+	listen(sock_v6[i],5);
     }
+
+#ifdef USE_SSL
+    for (int i = 0; i < ssl_numsocks; i++) {
+	listen(ssl_sock[i], 5);
+    }
+
+    for (int i = 0; i < ssl_numsocks_v6; i++) {
+	listen(ssl_sock_v6[i], 5);
+    }
+#endif
 }
 
 static struct descriptor_data *
@@ -2122,19 +2110,16 @@ configure_new_ssl_ctx(void)
 static void
 bind_ssl_sockets(void)
 {
-    if (ipv4_enabled) {
-	for (unsigned int i = 0; i < ssl_numports; i++) {
-	    ssl_sock[i] = make_socket(ssl_listener_port[i]);
-	    update_max_descriptor(ssl_sock[i]);
-	    ssl_numsocks++;
-	}
+    for (unsigned int i = 0; i < ssl_numports; i++) {
+	ssl_sock[i] = make_socket(ssl_listener_port[i]);
+	update_max_descriptor(ssl_sock[i]);
+	ssl_numsocks++;
     }
-    if (ipv6_enabled) {
-	for (unsigned int i = 0; i < ssl_numports; i++) {
-	    ssl_sock_v6[i] = make_socket_v6(ssl_listener_port[i]);
-	    update_max_descriptor(ssl_sock_v6[i]);
-	    ssl_numsocks_v6++;
-	}
+
+    for (unsigned int i = 0; i < ssl_numports; i++) {
+	ssl_sock_v6[i] = make_socket_v6(ssl_listener_port[i]);
+	update_max_descriptor(ssl_sock_v6[i]);
+	ssl_numsocks_v6++;
     }
 }
 
@@ -4151,10 +4136,6 @@ main(int argc, char **argv)
 		    show_program_usage(*argv);
 		}
 		outfile_name = argv[++i];
-	    } else if (!strcmp(argv[i], "-ipv4")) {
-		ipv4_enabled = 1;
-	    } else if (!strcmp(argv[i], "-ipv6")) {
-		ipv6_enabled = 1;
 	    } else if (!strcmp(argv[i], "-godpasswd")) {
 		if (i + 1 >= argc) {
 		    show_program_usage(*argv);
@@ -4253,11 +4234,6 @@ main(int argc, char **argv)
     }
     if (!infile_name || !outfile_name) {
 	show_program_usage(*argv);
-    }
-    if (!ipv4_enabled && !ipv6_enabled) {
-	/* No -ipv4 or -ipv6 flags given.  Default to enabling both. */
-	ipv4_enabled = 1;
-	ipv6_enabled = 1;
     }
 
 #ifdef DISKBASE
@@ -4377,19 +4353,16 @@ main(int argc, char **argv)
  * so MUD_ID is usually only useful in this circumstance.
  */
 
-    if (ipv4_enabled) {
-	for (unsigned int i = 0; i < numports; i++) {
-	    sock[i] = make_socket(listener_port[i]);
-	    update_max_descriptor(sock[i]);
-	    numsocks++;
-	}
+    for (unsigned int i = 0; i < numports; i++) {
+	sock[i] = make_socket(listener_port[i]);
+	update_max_descriptor(sock[i]);
+	numsocks++;
     }
-    if (ipv6_enabled) {
-	for (unsigned int i = 0; i < numports; i++) {
-	    sock_v6[i] = make_socket_v6(listener_port[i]);
-	    update_max_descriptor(sock_v6[i]);
-	    numsocks_v6++;
-	}
+
+    for (unsigned int i = 0; i < numports; i++) {
+	sock_v6[i] = make_socket_v6(listener_port[i]);
+	update_max_descriptor(sock_v6[i]);
+	numsocks_v6++;
     }
 
 #ifdef USE_SSL
