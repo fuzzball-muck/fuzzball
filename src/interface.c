@@ -213,7 +213,7 @@ make_text_block(const char *s, size_t n)
     MALLOC(p, struct text_block, 1);
     MALLOC(p->buf, char, n);
 
-    bcopy(s, p->buf, n);
+    memmove(p->buf, s, n);
     p->nchars = n;
     p->start = p->buf;
     p->nxt = 0;
@@ -1598,7 +1598,7 @@ addrout(int lport, long a, unsigned short prt)
     static char buf[128];
     struct in_addr addr;
 
-    bzero(&addr, sizeof(addr));
+    memset(&addr, 0, sizeof(addr));
     memcpy(&addr.s_addr, &a, sizeof(struct in_addr));
 
     prt = ntohs(prt);

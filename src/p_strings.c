@@ -1263,7 +1263,7 @@ prim_midstr(PRIM_PROTOTYPE)
 	    } else {
 		range = (size_t)oper1->data.number;
 	    }
-	    bcopy(oper3->data.string->data + start, buf, range);
+	    memmove(buf, oper3->data.string->data + start, range);
 	    buf[range] = '\0';
 	}
     }
@@ -1371,12 +1371,11 @@ prim_strcut(PRIM_PROTOTYPE)
 	    PushStrRaw(temp2.data.string);
 	    PushNullStr;
 	} else {
-	    bcopy(temp2.data.string->data, buf, temp1.data.number);
+	    memmove(buf, temp2.data.string->data, temp1.data.number);
 	    buf[temp1.data.number] = '\0';
 	    PushString(buf);
 	    if (temp2.data.string->length > (size_t)temp1.data.number) {
-		bcopy(temp2.data.string->data + temp1.data.number, buf,
-		      temp2.data.string->length - (size_t)temp1.data.number + 1);
+		memmove(buf, temp2.data.string->data + temp1.data.number, temp2.data.string->length - (size_t)temp1.data.number + 1);
 		PushString(buf);
 	    } else {
 		PushNullStr;
@@ -1423,9 +1422,8 @@ prim_strcat(PRIM_PROTOTYPE)
     } else if (oper1->data.string->length + oper2->data.string->length > (BUFFER_LEN) - 1) {
 	abort_interp("Operation would result in overflow.");
     } else {
-	bcopy(oper2->data.string->data, buf, oper2->data.string->length);
-	bcopy(oper1->data.string->data, buf + oper2->data.string->length,
-	      oper1->data.string->length + 1);
+	memmove(buf, oper2->data.string->data, oper2->data.string->length);
+	memmove(buf + oper2->data.string->length, oper1->data.string->data, oper1->data.string->length + 1);
 	string = alloc_prog_string(buf);
     }
     CLEAR(oper1);
@@ -1694,7 +1692,7 @@ prim_explode(PRIM_PROTOTYPE)
 	    return;
 	} else {
 	    result = 0;
-	    bcopy(temp2.data.string->data, buf, temp2.data.string->length + 1);
+	    memmove(buf, temp2.data.string->data, temp2.data.string->length + 1);
 	    for (int i = temp2.data.string->length - 1; i >= 0; i--) {
 		if (!strncmp(buf + i, delimit, temp1.data.string->length)) {
 		    buf[i] = '\0';
@@ -1795,7 +1793,7 @@ prim_subst(PRIM_PROTOTYPE)
 
 	buf[0] = '\0';
 	if (oper3->data.string) {
-	    bcopy(oper3->data.string->data, xbuf, oper3->data.string->length + 1);
+	    memmove(xbuf, oper3->data.string->data, oper3->data.string->length + 1);
 	    match = oper1->data.string->data;
 	    replacement = DoNullInd(oper2->data.string);
 	    k = *replacement ? oper2->data.string->length : 0;

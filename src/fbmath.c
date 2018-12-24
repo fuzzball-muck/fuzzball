@@ -194,11 +194,11 @@ xMD5Update(struct xMD5Context *ctx, const byte * buf, size_t len)
 
     t = 64 - (t & 0x3f);	/* Space available in ctx->in (at least 1) */
     if ((unsigned) t > (unsigned) len) {
-	bcopy(buf, (byte *) ctx->in + 64 - (unsigned) t, len);
+	memmove((byte *) ctx->in + 64 - (unsigned) t, buf, len);
 	return;
     }
     /* First chunk is an odd size */
-    bcopy(buf, (byte *) ctx->in + 64 - (unsigned) t, (unsigned) t);
+    memmove((byte *) ctx->in + 64 - (unsigned) t, buf, (unsigned) t);
     byteSwap(ctx->in, 16);
     xMD5Transform(ctx->buf, ctx->in);
     buf += (unsigned) t;
@@ -206,7 +206,7 @@ xMD5Update(struct xMD5Context *ctx, const byte * buf, size_t len)
 
     /* Process data in 64-byte chunks */
     while (len >= 64) {
-	bcopy(buf, (byte *) ctx->in, 64);
+	memmove((byte *) ctx->in, buf, 64);
 	byteSwap(ctx->in, 16);
 	xMD5Transform(ctx->buf, ctx->in);
 	buf += 64;
@@ -214,7 +214,7 @@ xMD5Update(struct xMD5Context *ctx, const byte * buf, size_t len)
     }
 
     /* Handle any remaining bytes of data. */
-    bcopy(buf, (byte *) ctx->in, len);
+    memmove((byte *) ctx->in, buf, len);
 }
 
 /*
@@ -234,13 +234,13 @@ xMD5Final(byte digest[16], struct xMD5Context *ctx)
     count = 56 - 1 - count;
 
     if (count < 0) {		/* Padding forces an extra block */
-	bzero(p, count + 8);
+	memset(p, 0, count + 8);
 	byteSwap(ctx->in, 16);
 	xMD5Transform(ctx->buf, ctx->in);
 	p = (byte *) ctx->in;
 	count = 56;
     }
-    bzero(p, count + 8);
+    memset(p, 0, count + 8);
     byteSwap(ctx->in, 14);
 
     /* Append length in bits and transform */
@@ -249,8 +249,8 @@ xMD5Final(byte digest[16], struct xMD5Context *ctx)
     xMD5Transform(ctx->buf, ctx->in);
 
     byteSwap(ctx->buf, 4);
-    bcopy((byte *) ctx->buf, digest, 16);
-    bzero((byte *) ctx, sizeof(ctx));
+    memmove(digest, (byte *) ctx->buf, 16);
+    memset((byte *) ctx, 0, sizeof(ctx));
 }
 
 /* dest buffer MUST be at least 16 bytes long. */
