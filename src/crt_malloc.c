@@ -890,7 +890,7 @@ CrT_alloc_prog_string(const char *s, const char *file, int line)
 
     ss->links = 1;
     ss->length = length;
-    bcopy(s, ss->data, ss->length + 1);
+    memmove(ss->data, s, ss->length + 1);
     return (ss);
 }
 
