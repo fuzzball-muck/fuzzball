@@ -213,7 +213,7 @@ make_text_block(const char *s, size_t n)
     MALLOC(p, struct text_block, 1);
     MALLOC(p->buf, char, n);
 
-    bcopy(s, p->buf, n);
+    memmove(p->buf, s, n);
     p->nchars = n;
     p->start = p->buf;
     p->nxt = 0;
