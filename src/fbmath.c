@@ -234,13 +234,13 @@ xMD5Final(byte digest[16], struct xMD5Context *ctx)
     count = 56 - 1 - count;
 
     if (count < 0) {		/* Padding forces an extra block */
-	bzero(p, count + 8);
+	memset(p, 0, count + 8);
 	byteSwap(ctx->in, 16);
 	xMD5Transform(ctx->buf, ctx->in);
 	p = (byte *) ctx->in;
 	count = 56;
     }
-    bzero(p, count + 8);
+    memset(p, 0, count + 8);
     byteSwap(ctx->in, 14);
 
     /* Append length in bits and transform */
@@ -250,7 +250,7 @@ xMD5Final(byte digest[16], struct xMD5Context *ctx)
 
     byteSwap(ctx->buf, 4);
     bcopy((byte *) ctx->buf, digest, 16);
-    bzero((byte *) ctx, sizeof(ctx));
+    memset((byte *) ctx, 0, sizeof(ctx));
 }
 
 /* dest buffer MUST be at least 16 bytes long. */
