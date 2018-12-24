@@ -99,7 +99,7 @@ db_clear_object(dbref i)
 {
     struct object *o = DBFETCH(i);
 
-    bzero(o, sizeof(struct object));
+    memset(o, 0, sizeof(struct object));
 
     NAME(i) = 0;
     ts_newobject(i);
