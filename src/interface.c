@@ -1598,7 +1598,7 @@ addrout(int lport, long a, unsigned short prt)
     static char buf[128];
     struct in_addr addr;
 
-    bzero(&addr, sizeof(addr));
+    memset(&addr, 0, sizeof(addr));
     memcpy(&addr.s_addr, &a, sizeof(struct in_addr));
 
     prt = ntohs(prt);
