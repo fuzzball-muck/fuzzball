@@ -156,6 +156,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <time.h>
@@ -176,33 +177,6 @@ typedef int dbref;
 # include <unistd.h>
 #endif
 
-/*
- * Which set of memory commands do we have here...
- */
-#if defined(STDC_HEADERS) || defined(HAVE_STRING_H)
-# include <string.h>
-/* An ANSI string.h and pre-ANSI memory.h might conflict.  */
-# if !defined(STDC_HEADERS) && defined(HAVE_MEMORY_H)
-#  include <memory.h>
-# endif				/* not STDC_HEADERS and HAVE_MEMORY_H */
-/* Map BSD funcs to ANSI ones. */
-# define index		strchr
-# define rindex		strrchr
-# ifndef bcopy
-#  define bcopy(s, d, n) memcpy ((d), (s), (n))
-# endif
-# ifndef bzero
-#  define bzero(s, n) memset ((s), 0, (n))
-# endif
-#else				/* not STDC_HEADERS and not HAVE_STRING_H */
-# include <strings.h>
-/* Map ANSI funcs to BSD ones. */
-# define strchr		index
-# define strrchr	rindex
-# define memcpy(d, s, n) bcopy((s), (d), (n))
-/* no real way to map memset to bzero, unfortunately. */
-#endif				/* not STDC_HEADERS and not HAVE_STRING_H */
-
 #ifdef HAVE_RANDOM
 # define SRANDOM(seed)	srandom((seed))
 # define RANDOM()	random()
@@ -210,7 +184,6 @@ typedef int dbref;
 # define SRANDOM(seed)	srand((seed))
 # define RANDOM()	rand()
 #endif
-
 
 #ifdef HAVE_MALLOC_H
 # include <malloc.h>
@@ -273,6 +246,7 @@ extern int errno;
 # include <netdb.h>
 # include <netinet/in.h>
 # include <netinet/tcp.h>
+# include <strings.h>
 # include <sys/ioctl.h>
 # include <sys/resource.h>
 # include <sys/socket.h>
