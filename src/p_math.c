@@ -32,9 +32,8 @@ prim_add(PRIM_PROTOTYPE)
 	} else if (oper1->data.string->length + oper2->data.string->length > (BUFFER_LEN) - 1) {
 	    abort_interp("Operation would result in overflow.");
 	} else {
-	    bcopy(oper2->data.string->data, buf, oper2->data.string->length);
-	    bcopy(oper1->data.string->data, buf + oper2->data.string->length,
-	            oper1->data.string->length + 1);
+	    memmove(buf, oper2->data.string->data, oper2->data.string->length);
+	    memmove(buf + oper2->data.string->length, oper1->data.string->data, oper1->data.string->length + 1);
 	    string = alloc_prog_string(buf);
 	}
 	CLEAR(oper1);
@@ -134,7 +133,7 @@ prim_multiply(PRIM_PROTOTYPE)
             }
 
             for (size_t i = 0; i < (size_t)tmp; i++) {
-                bcopy(DoNullInd(string), buf + i * string->length, string->length);
+                memmove(buf + i * string->length, DoNullInd(string), string->length);
             }
             buf[(size_t)tmp * string->length] = 0;
         } else {
