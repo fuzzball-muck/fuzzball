@@ -372,6 +372,7 @@ int tp_quiet_moves;
 int tp_realms_control;
 int tp_recognize_null_command;
 int tp_registration;
+int tp_replace_tab_with_space;
 int tp_restrict_kill;
 int tp_secure_who;
 int tp_secure_teleport;
@@ -401,6 +402,8 @@ struct tune_bool_entry tune_bool_list[] = {
      "Enable prefix actions", "", 1, ENABLE_PREFIX},
     {"Commands", "recognize_null_command", &tp_recognize_null_command, MLEV_WIZARD,
      MLEV_WIZARD, "Recognize null command", "", 1, RECOGNIZE_NULL_COMMAND},
+    {"Commands", "replace_tab_with_space", &tp_replace_tab_with_space, 0, MLEV_WIZARD,
+     "Change tab to space when processing input", "", 1, REPLACE_TAB_WITH_SPACE},
     {"Commands", "verbose_clone", &tp_verbose_clone, MLEV_WIZARD, MLEV_WIZARD,
      "Show more information when using @clone command", "", 1, VERBOSE_CLONE},
     {"Commands", "verbose_examine", &tp_verbose_examine, MLEV_WIZARD, MLEV_WIZARD,

@@ -4511,6 +4511,7 @@ Parameters available:
  (bool) enable_match_yield        - Enable yield/overt flags on rooms and things
  (bool) enable_prefix             - Enable prefix actions
  (bool) recognize_null_command    - Recognize null command
+ (bool) replace_tab_with_space    - Change tab to space when processing input
  (bool) verbose_clone             - Show more information when using @clone command
  (bool) verbose_examine           - Show more information when using examine command
  (bool) dark_sleepers             - Make sleeping players dark

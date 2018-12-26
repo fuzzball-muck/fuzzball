@@ -383,6 +383,9 @@
 /* Allow some math operators to work with string operands. */
 #define MUF_STRING_MATH 0
 
+/* Change tab to space when processing input. */
+#define REPLACE_TAB_WITH_SPACE 1
+
 /* System data and log files. */
 #define WELC_FILE "data/welcome.txt"		/* For the opening screen	*/
 #define MOTD_FILE "data/motd.txt"		/* For the message of the day	*/
