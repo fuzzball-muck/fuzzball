@@ -4,9 +4,6 @@
 #ifndef _MCP_H
 #define _MCP_H
 
-/* the type used to specify the connection */
-typedef void *connection_t;
-
 #define MCP_MESG_PREFIX		"#$#"
 #define MCP_QUOTE_PREFIX	"#$\""
 
@@ -92,7 +89,7 @@ typedef struct McpFrameList_t McpFrameList;
 void clean_mcpbinds(struct mcp_binding *mypub);
 McpFrame *descr_mcpframe(int c);
 void mcp_frame_clear(McpFrame * mfr);
-void mcp_frame_init(McpFrame * mfr, connection_t con);
+void mcp_frame_init(McpFrame * mfr, void * con);
 void mcp_frame_output_inband(McpFrame * mfr, const char *lineout);
 int mcp_frame_output_mesg(McpFrame * mfr, McpMesg * msg);
 int mcp_frame_package_add(McpFrame * mfr, const char *package, McpVer minver, McpVer maxver);

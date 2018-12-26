@@ -653,7 +653,7 @@ mcp_negotiation_start(McpFrame * mfr)
  *****************************************************************/
 
 void
-mcp_frame_init(McpFrame * mfr, connection_t con)
+mcp_frame_init(McpFrame * mfr, void * con)
 {
     McpFrameList *mfrl;
 

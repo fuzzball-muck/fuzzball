@@ -202,10 +202,8 @@ fi
 dnl
 dnl Header files
 dnl
-AC_CHECK_HEADERS(sys/errno.h sys/resource.h sys/signal.h sys/time.h)
-AC_CHECK_HEADERS(errno.h malloc.h stdarg.h)
+AC_CHECK_HEADERS(errno.h malloc.h sys/errno.h sys/resource.h sys/signal.h sys/time.h)
 AC_HEADER_DIRENT
-AC_HEADER_STDC
 
 AC_CHECK_SIZEOF([long int])
 AC_CHECK_SIZEOF([int])
@@ -222,7 +220,6 @@ AC_CHECK_MEMBER([struct mallinfo.keepcost])
 AC_CHECK_MEMBER([struct mallinfo.treeoverhead])
 AC_CHECK_MEMBER([struct mallinfo.grain])
 AC_CHECK_MEMBER([struct mallinfo.allocated])
-AC_CHECK_MEMBER([struct tm.tm_gmtoff])
 
 dnl
 dnl Remove HAVE_CONFIG_H

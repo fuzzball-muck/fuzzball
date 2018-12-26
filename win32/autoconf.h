@@ -35,9 +35,6 @@
 /* Define to 1 if you have the <malloc.h> header file. */
 #define HAVE_MALLOC_H 1
 
-/* Define to 1 if you have the <memory.h> header file. */
-#define HAVE_MEMORY_H 1
-
 /* Define to 1 if you have the <ndir.h> header file, and it defines `DIR'. */
 /* #undef HAVE_NDIR_H */
 
@@ -50,20 +47,8 @@
 /* Define to 1 if you have the `random' function. */
 /* #undef HAVE_RANDOM */
 
-/* Define to 1 if you have the <stdarg.h> header file. */
-#define HAVE_STDARG_H 1
-
 /* Define to 1 if you have the <stdint.h> header file. */
 /* #undef HAVE_STDINT_H */
-
-/* Define to 1 if you have the <stdlib.h> header file. */
-#define HAVE_STDLIB_H 1
-
-/* Define to 1 if you have the <strings.h> header file. */
-/* #undef HAVE_STRINGS_H */
-
-/* Define to 1 if you have the <string.h> header file. */
-#define HAVE_STRING_H 1
 
 /* Define to 1 if you have the <sys/dir.h> header file, and it defines `DIR'.
    */
@@ -123,9 +108,6 @@
 
 /* The size of a `long int', as computed by sizeof. */
 #define SIZEOF_LONG_INT 4
-
-/* Define to 1 if you have the ANSI C header files. */
-#define STDC_HEADERS 1
 
 /* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
 /* #undef TIME_WITH_SYS_TIME */

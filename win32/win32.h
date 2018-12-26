@@ -3,11 +3,8 @@
 
 #include <direct.h>
 #include <process.h>
-#include <time.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
-
-#include <windows.h>
 
 #define pid_t		int
 #define socklen_t	int

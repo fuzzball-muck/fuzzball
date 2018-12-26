@@ -4,8 +4,6 @@
 #ifndef _MCPGUI_H
 #define _MCPGUI_H
 
-#include <stdarg.h>
-
 /*
  * Error results.
  */
