@@ -77,7 +77,6 @@ SRC= array.c boolexp.c compile.c create.c db.c debugger.c diskprop.c edit.c \
 OBJ= $(SRC:.c=.o) ${MALLOBJ}
 
 TARGETS= fbmuck fb-resolver prochelp mkversion
-OLDTARGETS = fbmuck~ fb-resolver~ prochelp~ mkversion~
 HELPFILES= man.txt help.txt mpihelp.txt mpihelp.html mufman.html muckhelp.html
 
 .c.o:
@@ -146,4 +145,4 @@ clean:
 
 nuke: clean
 	-${RM} Makefile ${INCLUDE}/defines.h
-	-${RM} ${OLDTARGETS} *.bak *.orig
+	-${RM} *~ *.bak *.orig

@@ -101,8 +101,8 @@ S's
   strip      strlen     sublist    subst      subt       sysparm    
 
 T's
-  tell       testlock   time       timestr    timesub    tolower    toupper
-  type       tzoffset   
+  tab        tell       testlock   time       timestr    timesub    tolower
+  toupper    type       tzoffset   
 
 U's
   unbless    usecount   
@@ -642,7 +642,8 @@ String Functions
 
 attr       center     eval       eval!      instr      left       lit
 midstr     nl         null       otell      pronouns   revoke     right
-smatch     strip      strlen     subst      tell       tolower    toupper
+smatch     strip      strlen     subst      tab        tell       tolower
+toupper    
 
 ~----------------------------------------------------------------------------
 ~
@@ -660,6 +661,11 @@ would print out like:
     This is
     an example
     of using newlines.
+~
+~
+TAB
+{tab}
+    Returns a tab character.
 ~
 ~
 SUBST

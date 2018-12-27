@@ -4511,7 +4511,6 @@ Parameters available:
  (bool) enable_match_yield        - Enable yield/overt flags on rooms and things
  (bool) enable_prefix             - Enable prefix actions
  (bool) recognize_null_command    - Recognize null command
- (bool) replace_tab_with_space    - Change tab to space when processing input
  (bool) verbose_clone             - Show more information when using @clone command
  (bool) verbose_examine           - Show more information when using examine command
  (bool) dark_sleepers             - Make sleeping players dark
@@ -4535,13 +4534,14 @@ Parameters available:
  (bool) log_failed_commands       - Log unrecognized commands
  (bool) log_interactive           - Log text sent to MUF
  (bool) log_programs              - Log programs every time they are saved
+ (bool) autolink_actions          - Automatically link @actions to NIL
  (bool) allow_zombies             - Enable Zombie things to relay what they hear
  (bool) wiz_vehicles              - Only let Wizards set vehicle bits
  (bool) ignore_support            - Enable support for @ignoring players
  (bool) ignore_bidirectional      - Enable bidirectional @ignore
  (bool) m3_huh                    - Enable huh? to call an exit named "huh?" and set M3, with full command string
  (bool) strict_god_priv           - Only God can touch God's objects
- (bool) autolink_actions          - Automatically link @actions to NIL
+ (bool) tab_input_replaced_with_space - Change tab to space when processing input
  (bool) teleport_to_player        - Allow using exits linked to players
  (bool) secure_teleport           - Restrict actions to Jump_OK or controlled rooms
  (bool) secure_thing_movement     - Moving things act like player

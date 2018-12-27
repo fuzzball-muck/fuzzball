@@ -493,6 +493,11 @@ would print out like:
 ~~endcode
 ~
 ~
+TAB
+{tab}
+    Returns a tab character.
+~
+~
 SUBST
 {subst:str,old,new}
     Returns a copy of 'str' with all substring instances of 'old' replaced

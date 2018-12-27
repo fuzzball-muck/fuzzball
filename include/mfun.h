@@ -125,6 +125,7 @@ const char *mfn_sysparm(MFUNARGS);
 const char *mfn_sublist(MFUNARGS);
 const char *mfn_subst(MFUNARGS);
 const char *mfn_subt(MFUNARGS);
+const char *mfn_tab(MFUNARGS);
 const char *mfn_tell(MFUNARGS);
 const char *mfn_testlock(MFUNARGS);
 const char *mfn_time(MFUNARGS);
@@ -274,6 +275,7 @@ static struct mfun_dat mfun_list[] = {
     {"SUBLIST", mfn_sublist, 1, 0, 0, 1, 4},
     {"SUBST", mfn_subst, 1, 0, 0, 3, 3},
     {"SUBT", mfn_subt, 1, 0, 1, 2, 9},
+    {"TAB", mfn_tab, 0, 0, 0, 0, 0},
     {"TESTLOCK", mfn_testlock, 1, 0, 1, 2, 4},
     {"TELL", mfn_tell, 1, 0, 0, 1, 2},
     {"TIME", mfn_time, 1, 0, 1, 0, 1},

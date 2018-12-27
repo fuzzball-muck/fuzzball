@@ -1976,7 +1976,7 @@ process_input(struct descriptor_data *d)
 	    if (isinput(*q)) {
 		*p++ = *q;
 	    } else if (*q == '\t') {
-		*p++ = tp_replace_tab_with_space ? ' ' : *q;
+		*p++ = tp_tab_input_replaced_with_space ? ' ' : *q;
 	    } else if (*q == 8 || *q == 127) {
 		/* if BS or DEL, delete last character */
 		if (p > d->raw_input)

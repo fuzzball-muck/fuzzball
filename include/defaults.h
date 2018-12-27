@@ -384,7 +384,7 @@
 #define MUF_STRING_MATH 0
 
 /* Change tab to space when processing input. */
-#define REPLACE_TAB_WITH_SPACE 1
+#define TAB_INPUT_REPLACED_WITH_SPACE 1
 
 /* System data and log files. */
 #define WELC_FILE "data/welcome.txt"		/* For the opening screen	*/

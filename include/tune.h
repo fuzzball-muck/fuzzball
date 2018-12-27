@@ -223,7 +223,7 @@ extern int tp_quiet_moves;
 extern int tp_realms_control;
 extern int tp_recognize_null_command;
 extern int tp_registration;
-extern int tp_replace_tab_with_space;
+extern int tp_tab_input_replaced_with_space;
 extern int tp_restrict_kill;
 extern int tp_secure_teleport;
 extern int tp_secure_who;

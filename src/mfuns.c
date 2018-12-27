@@ -731,6 +731,11 @@ mfn_nl(MFUNARGS)
     return "\r";
 }
 
+const char *
+mfn_tab(MFUNARGS)
+{
+    return "\t";
+}
 
 const char *
 mfn_lit(MFUNARGS)
