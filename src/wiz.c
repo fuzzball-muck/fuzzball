@@ -6,7 +6,6 @@
 #ifdef DISKBASE
 #include "diskprop.h"
 #endif
-#include "edit.h"
 #include "fbstrings.h"
 #include "game.h"
 #include "interface.h"
@@ -17,7 +16,6 @@
 #include "player.h"
 #include "predicates.h"
 #include "props.h"
-#include "timequeue.h"
 #include "tune.h"
 
 void
@@ -648,71 +646,11 @@ do_toad(int descr, dbref player, const char *name, const char *recip)
 #endif
 	notify(player, "You can't turn a Wizard into a toad.");
     } else {
-	/* we're ok */
-	/* do it */
-	send_contents(descr, victim, HOME);
-	dequeue_prog(victim, 0);	/* Dequeue the programs that the player's running */
-	for (dbref stuff = 0; stuff < db_top; stuff++) {
-	    if (OWNER(stuff) == victim) {
-		switch (Typeof(stuff)) {
-		case TYPE_PROGRAM:
-		    dequeue_prog(stuff, 0);	/* dequeue player's progs */
-		    if (TrueWizard(recipient)) {
-			FLAGS(stuff) &= ~(ABODE | WIZARD);
-			SetMLevel(stuff, 1);
-		    }
-		case TYPE_ROOM:
-		case TYPE_THING:
-		case TYPE_EXIT:
-		    OWNER(stuff) = recipient;
-		    DBDIRTY(stuff);
-		    break;
-		}
-	    }
-	    if (Typeof(stuff) == TYPE_THING && THING_HOME(stuff) == victim) {
-		THING_SET_HOME(stuff, tp_lost_and_found);
-	    }
-	}
-
-	chown_macros(victim, recipient);
-
-	if (PLAYER_PASSWORD(victim)) {
-	    free((void *) PLAYER_PASSWORD(victim));
-	    PLAYER_SET_PASSWORD(victim, 0);
-	}
-
-	/* notify people */
 	notify(victim, "You have been turned into a toad.");
 	notifyf(player, "You turned %s into a toad!", NAME(victim));
 	log_status("TOADED: %s(%d) by %s(%d)", NAME(victim), victim, NAME(player), player);
-	/* reset name */
-	delete_player(victim);
-	snprintf(buf, sizeof(buf), "A slimy toad named %s", NAME(victim));
-	free((void *) NAME(victim));
-	NAME(victim) = alloc_string(buf);
-	DBDIRTY(victim);
 
-	boot_player_off(victim);	/* Disconnect the toad */
-
-	if (PLAYER_DESCRS(victim)) {
-	    free(PLAYER_DESCRS(victim));
-	    PLAYER_SET_DESCRS(victim, NULL);
-	    PLAYER_SET_DESCRCOUNT(victim, 0);
-	}
-
-	ignore_remove_from_all_players(victim);
-	ignore_flush_cache(victim);
-
-	FREE_PLAYER_SP(victim);
-	ALLOC_THING_SP(victim);
-	THING_SET_HOME(victim, PLAYER_HOME(player));
-
-	FLAGS(victim) = (FLAGS(victim) & ~TYPE_MASK) | TYPE_THING;
-	OWNER(victim) = player;	/* you get it */
-	if (tp_toad_recycle) {
-	    recycle(descr, player, victim);
-	}
-	SETVALUE(victim, 1);	/* don't let him keep his immense wealth */
+	toad_player(descr, player, victim, recipient);
     }
 }
 

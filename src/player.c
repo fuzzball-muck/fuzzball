@@ -2,14 +2,18 @@
 
 #include "commands.h"
 #include "db.h"
+#include "edit.h"
 #include "fbmath.h"
 #include "fbstrings.h"
 #include "fbtime.h"
 #include "game.h"
 #include "hashtab.h"
 #include "interface.h"
+#include "interp.h"
 #include "log.h"
+#include "move.h"
 #include "player.h"
+#include "timequeue.h"
 #include "tune.h"
 
 static hash_tab player_list[PLAYER_HASH_SIZE];
@@ -115,6 +119,72 @@ create_player(const char *name, const char *password)
     set_flags_from_tunestr(player, tp_pcreate_flags);
 
     return player;
+}
+
+void
+toad_player(int descr, dbref player, dbref victim, dbref recipient)
+{
+    char buf[BUFFER_LEN];
+
+    send_contents(descr, victim, HOME);
+    dequeue_prog(victim, 0);
+
+    for (dbref stuff = 0; stuff < db_top; stuff++) {
+        if (OWNER(stuff) == victim) {
+            switch (Typeof(stuff)) {
+            case TYPE_PROGRAM:
+                dequeue_prog(stuff, 0);
+                if (TrueWizard(recipient)) {
+                    FLAGS(stuff) &= ~(ABODE | WIZARD);
+                    SetMLevel(stuff, 1);
+                }
+            case TYPE_ROOM:
+            case TYPE_THING:
+            case TYPE_EXIT:
+                OWNER(stuff) = recipient;
+                DBDIRTY(stuff);
+                break;
+            }
+        }
+        if (Typeof(stuff) == TYPE_THING && THING_HOME(stuff) == victim) {
+            THING_SET_HOME(stuff, tp_lost_and_found);
+        }
+    }
+
+    chown_macros(victim, recipient);
+
+    if (PLAYER_PASSWORD(victim)) {
+        free((void *) PLAYER_PASSWORD(victim));
+        PLAYER_SET_PASSWORD(victim, 0);
+    }
+
+    delete_player(victim);
+    snprintf(buf, sizeof(buf), "A slimy toad named %s", NAME(victim));
+    free((void *) NAME(victim));
+    NAME(victim) = alloc_string(buf);
+    DBDIRTY(victim);
+
+    boot_player_off(victim);
+
+    if (PLAYER_DESCRS(victim)) {
+        free(PLAYER_DESCRS(victim));
+        PLAYER_SET_DESCRS(victim, NULL);
+        PLAYER_SET_DESCRCOUNT(victim, 0);
+    }
+
+    ignore_remove_from_all_players(victim);
+    ignore_flush_cache(victim);
+
+    FREE_PLAYER_SP(victim);
+    ALLOC_THING_SP(victim);
+    THING_SET_HOME(victim, PLAYER_HOME(player));
+
+    FLAGS(victim) = TYPE_THING;
+    OWNER(victim) = player;
+    if (tp_toad_recycle) {
+        recycle(descr, player, victim);
+    }
+    SETVALUE(victim, 1);
 }
 
 void

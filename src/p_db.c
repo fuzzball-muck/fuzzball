@@ -1766,6 +1766,8 @@ prim_toadplayer(PRIM_PROTOTYPE)
     dbref recipient;
     char buf[BUFFER_LEN];
 
+    struct tune_ref_entry *tref = tune_ref_list;
+
     CHECKOP(2);
     oper1 = POP();
     oper2 = POP();
@@ -1804,65 +1806,15 @@ prim_toadplayer(PRIM_PROTOTYPE)
 	abort_interp("You can't toad a wizard.");
     }
 
-    /* we're ok, do it */
-    send_contents(fr->descr, victim, HOME);
-    for (dbref stuff = 0; stuff < db_top; stuff++) {
-	if (OWNER(stuff) == victim) {
-	    switch (Typeof(stuff)) {
-	    case TYPE_PROGRAM:
-		dequeue_prog(stuff, 0);	/* dequeue player's progs */
-		FLAGS(stuff) &= ~(ABODE | WIZARD);
-		SetMLevel(stuff, 0);
-	    case TYPE_ROOM:
-	    case TYPE_THING:
-	    case TYPE_EXIT:
-		OWNER(stuff) = recipient;
-		DBDIRTY(stuff);
-		break;
-	    }
-	}
-	if (Typeof(stuff) == TYPE_THING && THING_HOME(stuff) == victim) {
-	    THING_SET_HOME(stuff, tp_player_start);
-	}
+    while (tref->name) {
+        if (victim == *tref->ref) {
+            abort_interp("That player cannot currently be @toaded.");
+        }
+        tref++;
     }
-
-    chown_macros(victim, recipient);
-
-    if (PLAYER_PASSWORD(victim)) {
-	free((void *) PLAYER_PASSWORD(victim));
-	PLAYER_SET_PASSWORD(victim, 0);
-    }
-    dequeue_prog(victim, 0);	/* dequeue progs that player's running */
 
     log_status("TOADED[MUF]: %s(%d) by %s(%d)", NAME(victim), victim, NAME(player), player);
-
-    delete_player(victim);
-    snprintf(buf, sizeof(buf), "A slimy toad named %s", NAME(victim));
-    free((void *) NAME(victim));
-    NAME(victim) = alloc_string(buf);
-    DBDIRTY(victim);
-    boot_player_off(victim);
-
-    if (PLAYER_DESCRS(victim)) {
-	free(PLAYER_DESCRS(victim));
-	PLAYER_SET_DESCRS(victim, NULL);
-	PLAYER_SET_DESCRCOUNT(victim, 0);
-    }
-
-    ignore_remove_from_all_players(victim);
-    ignore_flush_cache(victim);
-
-    FREE_PLAYER_SP(victim);
-    ALLOC_THING_SP(victim);
-    THING_SET_HOME(victim, PLAYER_HOME(recipient));
-
-    /* reset name */
-    FLAGS(victim) = (FLAGS(victim) & ~TYPE_MASK) | TYPE_THING;
-    OWNER(victim) = recipient;
-    if (tp_toad_recycle) {
-	recycle(fr->descr, player, victim);
-    }
-    SETVALUE(victim, 1);
+    toad_player(fr->descr, player, victim, recipient);
 
     CLEAR(oper1);
     CLEAR(oper2);
