@@ -1,7 +1,7 @@
 ***Foxen9 TinyMUCK DUMP Format***
 164
 1
-156
+157
 autolook_cmd=look
 cpennies=Pennies
 cpenny=Penny
@@ -137,6 +137,7 @@ ignore_support=yes
 ignore_bidirectional=yes
 m3_huh=no
 strict_god_priv=yes
+%tab_input_replaced_with_space=yes
 autolink_actions=no
 teleport_to_player=yes
 secure_teleport=no
@@ -429,8 +430,8 @@ time;date;uptime;nextsave;ns
 _/sc:10:\[[1mMUCK time:   {ftime:%r %e %B %Y}\[[0m\r\[[1mNext save:\[[0m   {ltimestr:{timetosave}}\r\[[1mMUCK uptime:\[[0m {ltimestr:{subt:{secs},{prop!:_sys/startuptime,#0}}}
 *End*
 1
-149
-153
+-4
+1
 #146
 wizards;wizzes;staff
 0
@@ -515,8 +516,8 @@ _help#/8:10:"whospec" or "ws".
 _help#/9:10: 
 *End*
 1
-149
-153
+-4
+1
 #141
 spoof
 0
@@ -561,8 +562,8 @@ quit
 _/sc:10:Oops! Did you mean 'QUIT' in all capital letters?
 *End*
 1
-149
-153
+-4
+1
 #138
 page;pag;pa;p
 0
@@ -1270,7 +1271,7 @@ cp;mv;propcp;propmv
 39
 153
 #92
-@register;@registe;@regist;@regis;@regi;@reg
+legacy_register
 0
 -1
 91
@@ -3344,6 +3345,7 @@ _connect/laston:5:88
 _connect/mailwarn:5:89
 _connect/nukedoingclear:5:41
 _disconnect/doingclear:5:41
+_disconnect/laston:5:88
 _msgmacs/timetosave:10:{subt:{add:{max:{prop:_sys/lastdumptime},{prop:_sys/startuptime}},{prop:_sys/dumpinterval}},{secs}}
 _prefs/ws/color/hers:10:\[[35m
 _prefs/ws/color/his:10:\[[36m
@@ -3361,7 +3363,6 @@ _reg/lib/ansi:5:25
 _reg/lib/arrays:5:2
 _reg/lib/away:5:26
 _reg/lib/bolding:5:3
-_reg/lib/case:5:4
 _reg/lib/edit:5:5
 _reg/lib/editor:5:6
 _reg/lib/gui:5:7
@@ -3389,7 +3390,6 @@ _reg/lock/player:5:150
 _reg/lock/truewizard:5:152
 _reg/lock/wizard:5:151
 _reg/mesgboard:5:44
-_reg/nothing:5:149
 _sys/dumpinterval:3:14400
 _sys/lastdumptime:3:1456840260
 _sys/max_connects:3:1

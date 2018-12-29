@@ -23,7 +23,6 @@ $version 4.0
 $author Riss, Natasha
 $note Public message channels for players and wizards.
  
-$include $lib/case
 $include $lib/reflist
 $include $lib/editor
  

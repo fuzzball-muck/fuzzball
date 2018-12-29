@@ -60,7 +60,6 @@
  
 $iflib $lib/away $include $lib/away $endif
 $include $lib/timestr
-$include $lib/case
  
 $def grace_time 60 (seconds)
  

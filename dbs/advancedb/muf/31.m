@@ -33,8 +33,6 @@ $note MUF versions of MPI's {stimestr}, {timestr}, and {ltimestr}.
     result @ ", " array_join  ( str )
 ;
  
-$iflib $lib/case
-$include $lib/case
 : rtimestr  ( int -- str }  Show a human-readable 'ago' message. Algorithm taken from SC-Track Roundup issue tracking Python software. )
     dup case  ( intSince )
         63072000 (730 days) >= when 31536000 (365 days) / "%i years ago"  fmtstring end
@@ -58,9 +56,6 @@ $include $lib/case
         default pop pop "Just now" end
     endcase  ( str )
 ;
-$else
-: rtimestr "rtimestr requires $lib/case" abort ;
-$endif
  
 : stimestr (i -- s}  from standard fbmuf 3who )
     dup 0 < if pop 0 then

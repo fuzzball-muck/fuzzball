@@ -74,7 +74,6 @@ $def ALLOW_CUSTOM_GENDERS 1 (change to 0 if custom genders not allowed )
  
 ( -------------------------------------------------------------------------- )
  
-$include $lib/case
 $include $lib/lmgr
 $include $lib/match
 $include $lib/optionsgui

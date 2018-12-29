@@ -3,7 +3,6 @@ $author Revar Desmera <revar@belfry.com>
 $version 1.010
 $note Released under the GNU LGPL.
  
-$include $lib/case
 $include $lib/optionsgui
  
  

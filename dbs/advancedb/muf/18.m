@@ -244,7 +244,6 @@ $def MENU_ITEM_COLOR         "bold" textattr
 $def MENU_INSTRUCTION_COLOR  "bold,yellow,bg_black" textattr
 $def MENU_ERROR_COLOR        "bold,red,bg_black" textattr
  
-$include $lib/case
 $include $lib/editor
 $include $lib/optionsinfo
 $include $lib/optionsmisc

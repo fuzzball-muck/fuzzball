@@ -16,8 +16,6 @@ $note Released under the LGPL.
     Docs go here.
 )
  
-$include $lib/case
- 
 ( ------------------------------------------------------------- )
  
  

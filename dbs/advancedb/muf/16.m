@@ -286,7 +286,6 @@ $note Released under the LGPL.
 )
  
  
-$include $lib/case
 $include $lib/gui
 $include $lib/optionsinfo
 $include $lib/optionsmisc

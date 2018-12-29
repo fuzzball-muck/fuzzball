@@ -20,7 +20,6 @@ $note A tastefully colored WHO replacement for Fuzzball 6.
  
 $include $lib/strings
 $include $lib/table
-$include $lib/case
 $include $lib/timestr
 $include $lib/wf
 $iflib $lib/away $include $lib/away $endif
