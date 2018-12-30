@@ -20,7 +20,7 @@ $include $lib/timestr
 $iflib $lib/alias $include $lib/alias $endif  ( Honor aliases issue417 Natasha@HLM 9 January 2003 )
  
 $def prop_wsobject "_prefs/ws/object"
-$def prop_wflist "_prefs/con_announce_list"
+$def prop_wflist "_prefs/wf/list"
 $def prop_def "_prefs/laston/def"
 $def prop_laston "@/last/on"
 $def prop_lastoff "@/last/off"
