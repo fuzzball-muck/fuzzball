@@ -51,7 +51,7 @@ can_see(dbref player, dbref thing, int can_see_loc)
     if (can_see_loc) {
         switch (Typeof(thing)) {
         case TYPE_PROGRAM:
-            return ((FLAGS(thing) & LINK_OK) || controls(player, thing));
+            return ((FLAGS(thing) & VEHICLE) || controls(player, thing));
         case TYPE_PLAYER:
             if (tp_dark_sleepers) {
                 return (!Dark(thing) && online(thing));

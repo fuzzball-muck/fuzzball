@@ -213,7 +213,7 @@ mfn_contents(MFUNARGS)
 	if ((typchk == NOTYPE || Typeof(obj) == typchk) &&
 	    (ownroom || controls(perms, obj) ||
 	     !((FLAGS(obj) & DARK) || (FLAGS(LOCATION(obj)) & DARK) ||
-	       (Typeof(obj) == TYPE_PROGRAM && !(FLAGS(obj) & LINK_OK)))) &&
+	       (Typeof(obj) == TYPE_PROGRAM && !(FLAGS(obj) & VEHICLE)))) &&
 	    !(Typeof(obj) == TYPE_ROOM && typchk != TYPE_ROOM)) {
 	    ref2str(obj, buf2, sizeof(buf2));
 	    nextlen = strlen(buf2);
