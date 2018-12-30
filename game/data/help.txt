@@ -115,6 +115,9 @@ S's
 T's
   timestamps   types        
 
+U's
+  uptime  
+
 V's
   vehicle  
 
@@ -144,8 +147,8 @@ Basics
 give         go           goal         gripe        help         home
 info         inventory    kill         look         money        motd
 mpi          news         page         pose         put          quit
-rob          robbery      say          score        startingout  whisper
-who          
+rob          robbery      say          score        startingout  uptime
+whisper      who          
 
 ~----------------------------------------------------------------------------
 ~
@@ -541,6 +544,12 @@ LEAVE
 
   Exit a vehicle, arriving at the destination.  If you can't leave, it
 shows an error message instead.
+~
+~
+UPTIME
+UPTIME
+
+  Displays the amount of time the server has been running.
 ~
 ~
 ~
@@ -2427,3 +2436,4 @@ Costs:
 Wizards don't need money to do anything.
 ~
 ~
+

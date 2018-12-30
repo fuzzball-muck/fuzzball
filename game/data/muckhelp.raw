@@ -415,6 +415,12 @@ LEAVE
 shows an error message instead.
 ~
 ~
+UPTIME
+UPTIME
+
+  Displays the amount of time the server has been running.
+~
+~
 ~
 ~~section Building Help|BuildHelp
 ~
@@ -2254,3 +2260,4 @@ Costs:
 Wizards don't need money to do anything.
 ~
 ~
+
