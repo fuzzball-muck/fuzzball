@@ -568,15 +568,15 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
     /* Timestamps */
 
     time_tm = localtime(&(DBFETCH(thing)->ts_created));
-    strftime(buf, BUFFER_LEN, "%a %b %e %T %Z %Y", time_tm);
+    strftime(buf, BUFFER_LEN, "%c %Z", time_tm);
     notifyf(player, "Created:  %s", buf);
 
     time_tm = localtime(&(DBFETCH(thing)->ts_modified));
-    strftime(buf, BUFFER_LEN, "%a %b %e %T %Z %Y", time_tm);
+    strftime(buf, BUFFER_LEN, "%c %Z", time_tm);
     notifyf(player, "Modified: %s", buf);
 
     time_tm = localtime(&(DBFETCH(thing)->ts_lastused));
-    strftime(buf, BUFFER_LEN, "%a %b %e %T %Z %Y", time_tm);
+    strftime(buf, BUFFER_LEN, "%c %Z", time_tm);
     notifyf(player, "Lastused: %s", buf);
 
     if (Typeof(thing) == TYPE_PROGRAM) {
@@ -715,7 +715,7 @@ do_uptime(dbref player)
 {
     char buf[BUFFER_LEN];
     time_t startup = get_property_value(0, SYS_STARTUPTIME_PROP);
-    strftime(buf, sizeof(buf), "%a %b %e %T %Z %Y", localtime(&startup));
+    strftime(buf, sizeof(buf), "%c %Z", localtime(&startup));
     notifyf(player, "Up %s since %s", timestr_long((long)(time(NULL) - startup)), buf);
 }
 
