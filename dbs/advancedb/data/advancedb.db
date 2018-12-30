@@ -427,7 +427,7 @@ time;date;uptime;nextsave;ns
 3
 1073750066
 *Props*
-_/sc:10:\[[1mMUCK time:   {ftime:%r %e %B %Y}\[[0m\r\[[1mNext save:\[[0m   {ltimestr:{timetosave}}\r\[[1mMUCK uptime:\[[0m {ltimestr:{subt:{secs},{prop!:_sys/startuptime,#0}}}
+_/sc:10:{attr:bold,MUCK time:} {ftime:%c}\r{attr:bold,Next save:} {ltimestr:{timetosave}}\r{attr:bold,MUCK uptime:} {ltimestr:{subt:{secs},{prop!:_sys/startuptime,#0}}}
 *End*
 1
 -4
