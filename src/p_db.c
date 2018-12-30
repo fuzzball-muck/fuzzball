@@ -1764,7 +1764,6 @@ prim_toadplayer(PRIM_PROTOTYPE)
 {
     dbref victim;
     dbref recipient;
-    char buf[BUFFER_LEN];
 
     struct tune_ref_entry *tref = tune_ref_list;
 

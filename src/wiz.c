@@ -596,7 +596,6 @@ do_toad(int descr, dbref player, const char *name, const char *recip)
 {
     dbref victim;
     dbref recipient;
-    char buf[BUFFER_LEN];
     struct tune_ref_entry *tref = tune_ref_list;
 
     if ((victim = lookup_player(name)) == NOTHING) {
