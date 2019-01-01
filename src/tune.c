@@ -926,9 +926,9 @@ set_flags_from_tunestr(dbref obj, const char *tunestr)
             /* f = WIZARD;     This is very bad to auto-set. */
         } else if (pcc == 'X') {
             f = XFORCIBLE;
-        } else if (pcc == 'Y') {
+        } else if (tp_enable_match_yield && pcc == 'Y') {
             f = YIELD;
-        } else if (pcc == 'O') {
+        } else if (tp_enable_match_yield && pcc == 'O') {
             f = OVERT;
         } else if (pcc == 'Z') {
             f = ZOMBIE;
