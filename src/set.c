@@ -860,21 +860,6 @@ do_register(int descr, dbref player, char *arg1, const char *arg2)
 	objectstr = remaining;
     } else if (string_prefix(arg1, "#prop")) {
 	char *pattern, *targetstr;
-	int is_propqueue = 0;
-	static char *propqueues[] = {
-					ARRIVE_PROPQUEUE,
-					CONNECT_PROPQUEUE,
-					DEPART_PROPQUEUE,
-					DISCONNECT_PROPQUEUE,
-					LISTEN_PROPQUEUE,
-					LOOK_PROPQUEUE,
-					OARRIVE_PROPQUEUE,
-					OCONNECT_PROPQUEUE,
-					ODEPART_PROPQUEUE,
-					ODISCONNECT_PROPQUEUE,
-					WLISTEN_PROPQUEUE,
-					WOLISTEN_PROPQUEUE
-				    };
 
 	(void) strtok_r(arg1, " \t", &remaining);
 	pattern = strtok_r(remaining, " \t", &remaining);
@@ -891,17 +876,10 @@ do_register(int descr, dbref player, char *arg1, const char *arg2)
 	if (propdir) {
 	    char *p = propdir + strlen(propdir) - 1;
 	    while (p > propdir && *p == PROPDIR_DELIMITER) *(p--) = '\0';
-
-	    for (int i = 0, n = ARRAYSIZE(propqueues); i < n; i++) {
-		if (!strcmp(propdir, propqueues[i])) {
-		    is_propqueue = 1;
-		    break;
-		}
-	    }
 	}
 
-	if (!propdir || !*propdir || !is_propqueue) {
-	    notifyf_nolisten(player, "You must specify a propqueue when using #prop.");
+	if (!propdir || !*propdir) {
+	    notifyf_nolisten(player, "You must specify a propdir when using #prop.");
 	    return;
 	}
 
