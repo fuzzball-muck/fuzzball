@@ -447,24 +447,12 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
     struct match_data md;
     struct tm *time_tm;		/* used for timestamps */
 
-    if (*name == '\0') {
+    if (*name == '\0' || !strcasecmp(name, "here")) {
 	thing = LOCATION(player);
     } else {
 	/* look it up */
 	init_match(descr, player, name, NOTYPE, &md);
-
-	match_all_exits(&md);
-	match_neighbor(&md);
-	match_possession(&md);
-	match_absolute(&md);
-	match_registered(&md);
-
-	/* only Wizards can examine other players */
-	if (Wizard(OWNER(player)))
-	    match_player(&md);
-
-	match_here(&md);
-	match_me(&md);
+	match_everything(&md);
 
 	/* get result */
 	if ((thing = noisy_match_result(&md)) == NOTHING)
@@ -1230,11 +1218,15 @@ do_trace(int descr, dbref player, const char *name, int depth)
     struct match_data md;
     char unparse_buf[BUFFER_LEN];
 
-    init_match(descr, player, name, NOTYPE, &md);
-    match_everything(&md);
+    if (*name == '\0' || !strcasecmp(name, "here")) {
+	thing = LOCATION(player);
+    } else {
+	init_match(descr, player, name, NOTYPE, &md);
+	match_everything(&md);
 
-    if ((thing = noisy_match_result(&md)) == NOTHING)
-	return;
+	if ((thing = noisy_match_result(&md)) == NOTHING)
+	    return;
+    }
 
     for (int i = 0; (!depth || i < depth) && thing != NOTHING; i++) {
 	unparse_object(player, thing, unparse_buf, sizeof(unparse_buf));
@@ -1253,7 +1245,7 @@ do_entrances(int descr, dbref player, const char *name, const char *flags)
     int total = 0;
     int output_type = init_checkflags(player, flags, &check);
 
-    if (*name == '\0') {
+    if (*name == '\0' || !strcasecmp(name, "here")) {
 	thing = LOCATION(player);
     } else {
 	init_match(descr, player, name, NOTYPE, &md);
@@ -1319,7 +1311,7 @@ do_contents(int descr, dbref player, const char *name, const char *flags)
     int total = 0;
     int output_type = init_checkflags(player, flags, &check);
 
-    if (*name == '\0') {
+    if (*name == '\0' || !strcasecmp(name, "here")) {
 	thing = LOCATION(player);
     } else {
 	init_match(descr, player, name, NOTYPE, &md);
@@ -1412,20 +1404,12 @@ do_sweep(int descr, dbref player, const char *name)
     char buf[BUFFER_LEN];
     char unparse_buf[BUFFER_LEN];
 
-    if (*name == '\0') {
+    if (*name == '\0' || !strcasecmp(name, "here")) {
 	thing = LOCATION(player);
     } else {
 	init_match(descr, player, name, NOTYPE, &md);
-	match_all_exits(&md);
-	match_neighbor(&md);
-	match_possession(&md);
-	match_me(&md);
-	match_here(&md);
-	match_absolute(&md);
-	match_registered(&md);
-	if (Wizard(OWNER(player))) {
-	    match_player(&md);
-	}
+	match_everything(&md);
+
 	if ((thing = noisy_match_result(&md)) == NOTHING) {
 	    return;
 	}
