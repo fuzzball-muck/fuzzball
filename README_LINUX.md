@@ -37,11 +37,11 @@ git pull
 * See ```./configure --help```
   * If needed, specify SSL headers via ```--with-ssl=/path/to/dir```, or PCRE headers via ```--with-pcre=/path/to/dir```
 * When testing, use a different ```--prefix```, e.g. ```./configure --prefix="$HOME/fuzzball-test"```
+* If using TLS, cat your certificate ```fullchain.pem``` and key ```privkey.pem``` into ```game/data/server.pem```, or later configure ```@tune ssl_cert_file``` and ```@tune ssl_key_file```
 
 ### Build
 ```sh
 make clean && make
-make cert                # Skip if SSL is not enabled, or you have your own certificate
 make install
 make install-sysv-inits  # Skip to not run at startup
 ```
