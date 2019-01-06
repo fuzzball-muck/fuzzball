@@ -26,7 +26,7 @@ exec_prefix=@exec_prefix@
 INSTALL_BINDIR=@bindir@
 INSTALL_SBINDIR=@sbindir@
 # Destination for helpfiles
-INSTALL_HELPDIR=@datadir@/fbmuck
+INSTALL_HELPDIR=@datadir@/doc/fbmuck
 
 # #######################################################################
 # 		Variables set by the configure script.
