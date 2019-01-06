@@ -61,8 +61,8 @@ mv "$PREFIX/game/data/basedb.db" "$PREFIX/game/data/std-db.db" # Rename database
 ```
 * Start Fuzzball
 ```sh
-/usr/share/fbmuck/restart-script
-# If using a custom prefix, $PREFIX/share/fbmuck/restart-script
+/usr/local/sbin/fbmuck/fb-restart
+# If using a custom prefix, $PREFIX/sbin/fbmuck/fb-restart
 ```
 
 [help-mink]: http://www.rdwarf.com/users/mink/muckman/
