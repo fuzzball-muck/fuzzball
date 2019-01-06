@@ -89,7 +89,7 @@ install: all
 	${INSTALL_PROGRAM} ${TARGETS} ${INSTALL_BINDIR}
 	${INSTALL} -d ${INSTALL_HELPDIR}
 	${MAKE} help
-	${INSTALL_SCRIPT} ../game/restart ${INSTALL_HELPDIR}/restart-script
+	${INSTALL_SCRIPT} ../game/restart ${INSTALL_SBINDIR}/fb-restart
 	@echo " "
 	@echo "You may run '${MAKE} install-sysv-inits' to install SysV style init scripts."
 	@echo " "
