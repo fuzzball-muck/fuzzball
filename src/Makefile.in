@@ -86,6 +86,7 @@ all: $(INCLUDE)/defines.h ${TARGETS}
 
 install: all
 	${INSTALL} -d ${INSTALL_BINDIR}
+	${INSTALL} -d ${INSTALL_SBINDIR}
 	${INSTALL_PROGRAM} ${TARGETS} ${INSTALL_BINDIR}
 	${INSTALL} -d ${INSTALL_HELPDIR}
 	${MAKE} help
