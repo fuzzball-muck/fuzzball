@@ -3972,7 +3972,7 @@ $as_echo "Not found" >&6; }
 		echo "Couldn't find your PCRE library installation dir."
 		echo "Use --with-pcre option to fix this problem"
 		echo
-		exit -1
+		exit 1
 	fi
 	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $pcredir" >&5
 $as_echo "$pcredir" >&6; }
@@ -4038,7 +4038,7 @@ else
 	echo "fbmuck requires the PCRE library to compile."
 	echo "Use --with-pcre option to fix this problem"
 	echo
-	exit -1
+	exit 1
 fi
 
 checkssldir() { :
@@ -4094,7 +4094,7 @@ $as_echo "Not found" >&6; }
     	echo "Couldn't find your SSL library installation dir."
     	echo "Use --with-ssl option to fix this problem, if you want ssl support"
     	echo
-	exit -1
+	exit 1
 	fi
 	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ssldir" >&5
 $as_echo "$ssldir" >&6; }
