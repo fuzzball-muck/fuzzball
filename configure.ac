@@ -86,7 +86,7 @@ if test "$pcreenable" = "1"; then
 		echo "Couldn't find your PCRE library installation dir."
 		echo "Use --with-pcre option to fix this problem"
 		echo
-		exit -1
+		exit 1
 	fi
 	AC_MSG_RESULT([$pcredir])
 	AC_SUBST(pcredir)
@@ -103,7 +103,7 @@ else
 	echo "fbmuck requires the PCRE library to compile."
 	echo "Use --with-pcre option to fix this problem"
 	echo
-	exit -1
+	exit 1
 fi
 
 checkssldir() { :
@@ -154,7 +154,7 @@ if test "$sslenable" = "1"; then
     	echo "Couldn't find your SSL library installation dir."
     	echo "Use --with-ssl option to fix this problem, if you want ssl support"
     	echo
-	exit -1
+	exit 1
 	fi
 	AC_MSG_RESULT([$ssldir])
 	AC_SUBST(ssldir)
