@@ -67,7 +67,7 @@
 #define SSL_CERT_FILE "data/server.pem"	/* SSL certificate */
 #define SSL_KEY_FILE "data/server.pem"	/* SSL private key */
 #define SSL_KEYFILE_PASSWD ""
-/* from https://wiki.mozilla.org/Security/Server_Side_TLS, "intermediate copmatability" */
+/* from https://wiki.mozilla.org/Security/Server_Side_TLS "intermediate compatibility" */
 #define SSL_CIPHER_PREFERENCE_LIST \
     "ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:" \
     "ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:" \
