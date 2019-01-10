@@ -15,9 +15,7 @@ install:	Makefile
 	done
 	@if grep "^#define HAVE_LIBSSL" include/autoconf.h > /dev/null; then \
 	if [ ! -f game/data/server.pem ]; then \
-	echo "You can use '${MAKE} cert' to generate a self-signed server certificate"; \
-	echo "for use in allowing secure encrypted SSL connections to your Muck."; \
-	echo " "; \
+	echo "You can use letsencrypt (with certbot, acme-client, acme.sh, or other clients) to get a free TLS certificate for use in enabling secure, encrypted connections to your MUCK."; \
 	fi; \
 	fi
 
@@ -25,25 +23,6 @@ install-sysv-inits:	Makefile
 	for d in ${subdirs}; do \
 		cd $${d} && ${MAKE} install-sysv-inits; \
 	done
-
-cert game/server.pem:
-	@if grep "^#define HAVE_LIBSSL" include/autoconf.h > /dev/null; then \
-		echo; \
-		if [ -r game/data/server.pem ]; then \
-			echo "Will not overwrite game/data/server.pem"; \
-			echo "Remove that file and do '${MAKE} cert' again";\
-			echo "to create a new certificate."; \
-			echo; \
-		else \
-			if [ ! -r ${HOME}/.rnd ]; then \
-				openssl rand -rand /etc/hosts:/etc/passwd 0; \
-			fi; \
-			echo "Creating secure certificate. Please answer all the questions."; \
-			echo "The key and certificate will be stored in the game/data/server.pem file."; \
-			echo; \
-			openssl req -x509 -nodes -out game/data/server.pem -keyout game/data/server.pem -config fuzzball.cnf -new -days 730; \
-		fi; \
-	fi
 
 clean:
 	for d in ${subdirs}; do \
