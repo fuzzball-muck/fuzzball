@@ -73,8 +73,6 @@ struct muf_proc_data {
 #define PROG_LVAR_AT_CLEAR 23   /* @ for local vars, with var clear optim */
 #define PROG_LVAR_BANG   24     /* ! shortcut for local vars */
 
-#define PROG_UNTYPED     253    /* MUV unknown var type */
-
 #define MAX_VAR         54      /* maximum number of variables including the
                                  * basic ME, LOC, TRIGGER, and COMMAND vars */
 #define RES_VAR          4      /* no of reserved variables */

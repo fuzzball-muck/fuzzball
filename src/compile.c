@@ -61,7 +61,6 @@ struct CONTROL_STACK {
 
 struct PROC_LIST {
     const char *name;
-    int returntype;
     struct INTERMEDIATE *code;
     struct PROC_LIST *next;
 };
@@ -112,11 +111,8 @@ typedef struct COMPILE_STATE_T {
      * the variable holds.
      */
     const char *variables[MAX_VAR];
-    int variabletypes[MAX_VAR];
     const char *localvars[MAX_VAR];
-    int localvartypes[MAX_VAR];
     const char *scopedvars[MAX_VAR];
-    int scopedvartypes[MAX_VAR];
 
     struct line *curr_line;     /* current line */
     int lineno;                 /* current line number */
@@ -1963,11 +1959,8 @@ do_compile(int descr, dbref player_in, dbref program_in, int force_err_display)
     cstat.addrmax = 0;
     for (int i = 0; i < MAX_VAR; i++) {
 	cstat.variables[i] = NULL;
-	cstat.variabletypes[i] = 0;
 	cstat.localvars[i] = NULL;
-	cstat.localvartypes[i] = 0;
 	cstat.scopedvars[i] = NULL;
-	cstat.scopedvartypes[i] = 0;
     }
     cstat.curr_line = PROGRAM_FIRST(program_in);
     cstat.lineno = 1;
@@ -1987,13 +1980,9 @@ do_compile(int descr, dbref player_in, dbref program_in, int force_err_display)
     init_defs(&cstat);
 
     cstat.variables[0] = "ME";
-    cstat.variabletypes[0] = PROG_OBJECT;
     cstat.variables[1] = "LOC";
-    cstat.variabletypes[1] = PROG_OBJECT;
     cstat.variables[2] = "TRIGGER";
-    cstat.variabletypes[2] = PROG_OBJECT;
     cstat.variables[3] = "COMMAND";
-    cstat.variabletypes[3] = PROG_STRING;
 
     /* free old stuff */
     (void) dequeue_prog(cstat.program, 1);
@@ -3018,7 +3007,7 @@ next_token(COMPSTATE * cstat)
 
 /* adds variable.  Return 0 if no space left */
 static int
-add_variable(COMPSTATE * cstat, const char *varname, int valtype)
+add_variable(COMPSTATE * cstat, const char *varname)
 {
     int i;
 
@@ -3030,14 +3019,13 @@ add_variable(COMPSTATE * cstat, const char *varname, int valtype)
 	return 0;
 
     cstat->variables[i] = alloc_string(varname);
-    cstat->variabletypes[i] = valtype;
     return i;
 }
 
 
-/* adds local variable.  Return 0 if no space left */
+/* adds local variable.  Return -1 if no space left */
 static int
-add_scopedvar(COMPSTATE * cstat, const char *varname, int valtype)
+add_scopedvar(COMPSTATE * cstat, const char *varname)
 {
     int i;
 
@@ -3049,14 +3037,13 @@ add_scopedvar(COMPSTATE * cstat, const char *varname, int valtype)
 	return -1;
 
     cstat->scopedvars[i] = alloc_string(varname);
-    cstat->scopedvartypes[i] = valtype;
     return i;
 }
 
 
-/* adds local variable.  Return 0 if no space left */
+/* adds local variable.  Return -1 if no space left */
 static int
-add_localvar(COMPSTATE * cstat, const char *varname, int valtype)
+add_localvar(COMPSTATE * cstat, const char *varname)
 {
     int i;
 
@@ -3068,7 +3055,6 @@ add_localvar(COMPSTATE * cstat, const char *varname, int valtype)
 	return -1;
 
     cstat->localvars[i] = alloc_string(varname);
-    cstat->localvartypes[i] = valtype;
     return i;
 }
 
@@ -3130,14 +3116,13 @@ resolve_loop_addrs(COMPSTATE * cstat, int where)
 
 /* add procedure to procedures list */
 static void
-add_proc(COMPSTATE * cstat, const char *proc_name, struct INTERMEDIATE *place, int rettype)
+add_proc(COMPSTATE * cstat, const char *proc_name, struct INTERMEDIATE *place)
 {
     struct PROC_LIST *nu;
 
     nu = malloc(sizeof(struct PROC_LIST));
 
     nu->name = alloc_string(proc_name);
-    nu->returntype = rettype;
     nu->code = place;
     nu->next = cstat->procs;
     cstat->procs = nu;
@@ -3364,7 +3349,7 @@ process_special(COMPSTATE * cstat, const char *token)
 			varname = varspec;
 		    }
 		    if (*varname) {
-			if (add_scopedvar(cstat, varname, PROG_UNTYPED) < 0) {
+			if (add_scopedvar(cstat, varname) < 0) {
                             free((void *) varspec);
                             free_intermediate_node(nu);
 			    abort_compile(cstat, "Variable limit exceeded.");
@@ -3380,7 +3365,7 @@ process_special(COMPSTATE * cstat, const char *token)
 	    } while (!argsdone);
 	}
 
-	add_proc(cstat, proc_name, nu, PROG_UNTYPED);
+	add_proc(cstat, proc_name, nu);
 
 	return nu;
     } else if (!strcasecmp(token, ";")) {
@@ -3866,7 +3851,7 @@ process_special(COMPSTATE * cstat, const char *token)
 	    tok = next_token(cstat);
 	    if (!tok)
 		abort_compile(cstat, "Unexpected end of program.");
-	    if (add_scopedvar(cstat, tok, PROG_UNTYPED) < 0) {
+	    if (add_scopedvar(cstat, tok) < 0) {
                 free((void *) tok);
 		abort_compile(cstat, "Variable limit exceeded.");
             }
@@ -3877,7 +3862,7 @@ process_special(COMPSTATE * cstat, const char *token)
 	    tok = next_token(cstat);
 	    if (!tok)
 		abort_compile(cstat, "Unexpected end of program.");
-	    if (!add_variable(cstat, tok, PROG_UNTYPED)) {
+	    if (!add_variable(cstat, tok)) {
                 free((void *) tok);
 		abort_compile(cstat, "Variable limit exceeded.");
             }
@@ -3890,7 +3875,7 @@ process_special(COMPSTATE * cstat, const char *token)
 	    tok = next_token(cstat);
 	    if (!tok)
 		abort_compile(cstat, "Unexpected end of program.");
-	    if (add_scopedvar(cstat, tok, PROG_UNTYPED) < 0) {
+	    if (add_scopedvar(cstat, tok) < 0) {
                 free((void *) tok);
 		abort_compile(cstat, "Variable limit exceeded.");
             }
@@ -3911,7 +3896,7 @@ process_special(COMPSTATE * cstat, const char *token)
 	if (cstat->curr_proc)
 	    abort_compile(cstat, "Local variable declared within procedure.");
 	tok = next_token(cstat);
-	if (!tok || (add_localvar(cstat, tok, PROG_UNTYPED) == -1)) {
+	if (!tok || (add_localvar(cstat, tok) == -1)) {
             free((void *) tok);
 	    abort_compile(cstat, "Local variable limit exceeded.");
         }
