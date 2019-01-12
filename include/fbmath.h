@@ -32,13 +32,6 @@
 #endif
 */
 
-#ifndef MAXINT
-#define MAXINT ~(1<<((sizeof(int)*8)-1))
-#endif
-#ifndef MININT
-#define MININT (1<<((sizeof(int)*8)-1))
-#endif
-
 #define MIN(p,q) ((p >= q) ? q : p)
 #define MAX(p,q) ((p >= q) ? p : q)
 
