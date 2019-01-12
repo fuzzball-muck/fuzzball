@@ -1073,7 +1073,7 @@ OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
 			    }
                         } else if (
                             curr->next->in.data.number == -1 &&
-                            curr->in.data.number == MININT) {
+                            curr->in.data.number == INT_MIN) {
 			    if (!(curr->next->next->flags & INTMEDFLG_OVERFLOW)) {
 				curr->next->next->flags |= INTMEDFLG_OVERFLOW;
 
@@ -1107,7 +1107,7 @@ OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
 			    }
                         } else if (
                             curr->next->in.data.number == -1 &&
-                            curr->in.data.number == MININT) {
+                            curr->in.data.number == INT_MIN) {
 			    if (!(curr->next->next->flags & INTMEDFLG_OVERFLOW)) {
 				curr->next->next->flags |= INTMEDFLG_OVERFLOW;
 
