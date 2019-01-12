@@ -124,7 +124,7 @@ prim_multiply(PRIM_PROTOTYPE)
 
         if (string && string->length > 0 && tmp > 0) {
             /* this check avoids integer overflow with tmp * length */
-            if (string->length > (size_t)(MAXINT / tmp)) {
+            if (string->length > (size_t)(INT_MAX / tmp)) {
                 abort_interp("Operation would result in overflow.");
             }
 
@@ -196,7 +196,7 @@ prim_divide(PRIM_PROTOTYPE)
 	    }
 	}
     } else {
-	if (oper1->data.number == -1 && oper2->data.number == MININT) {
+	if (oper1->data.number == -1 && oper2->data.number == INT_MIN) {
 	    result = 0;
 	    fr->error.error_flags.i_bounds = 1;
         } else if (oper1->data.number) {
@@ -224,7 +224,7 @@ prim_mod(PRIM_PROTOTYPE)
     if ((!arith_type(oper2->type, oper1->type)) || (oper1->type == PROG_FLOAT) ||
 	(oper2->type == PROG_FLOAT))
 	abort_interp("Invalid argument type.");
-    if (oper1->data.number == -1 && oper2->data.number == MININT) {
+    if (oper1->data.number == -1 && oper2->data.number == INT_MIN) {
         result = 1;
         fr->error.error_flags.i_bounds = 1;
     } else if (oper1->data.number)
