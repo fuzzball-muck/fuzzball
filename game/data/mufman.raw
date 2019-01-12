@@ -1853,9 +1853,8 @@ SRAND ( -- i )
 RANDOM
 RANDOM ( -- i )
 
-  Returns a random integer from 0 to the MAXINT of the system running the MUCK.
-In general this number is (2^31)-1 or 2,147,483,647 (2.1 billion).  This is
-based on the standard C random() function, so it's not very secure.
+  Returns a random integer from 0 to (2^31)-1, which is 2,147,483,647.
+This is based on the C random() function, so it's not very secure.
 ~~alsosee SETSEED,GETSEED,SRAND,FRAND,GAUSSIAN
 ~
 ~
