@@ -121,7 +121,7 @@ prim_ldup(PRIM_PROTOTYPE)
 
     result = arg[*top - 1].data.number;
 
-    if (result >= MAXINT)
+    if (result >= INT_MAX)
         abort_interp("Integer overflow.");
 
     if (result < 0)
