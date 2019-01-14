@@ -2105,9 +2105,8 @@ Also see: SETSEED and GETSEED
 RANDOM
 RANDOM ( -- i )
 
-  Returns a random integer from 0 to the MAXINT of the system running the MUCK.
-In general this number is (2^31)-1 or 2,147,483,647 (2.1 billion).  This is
-based on the standard C random() function, so it's not very secure.
+  Returns a random integer from 0 to (2^31)-1, which is 2,147,483,647.
+This is based on the C random() function, so it's not very secure.
 Also see: SETSEED, GETSEED, SRAND, FRAND and GAUSSIAN
 ~
 ~
@@ -6458,6 +6457,7 @@ to different argument types.  The tests are:
   F - program dbref.  (#-1, #-2 NOT allowed)
   i - integer.
   l - lock boolean expression.
+  n - floating point number.
   p - player dbref.  (#-1, #-2 allowed)
   P - player dbref.  (#-1, #-2 NOT allowed)
   r - room dbref.  (#-1, #-2 allowed)  (#-3 is a room)
@@ -6466,7 +6466,10 @@ to different argument types.  The tests are:
   S - non-null string.
   t - thing dbref.  (#-1, #-2 allowed)
   T - thing dbref.  (#-1, #-2 NOT allowed)
-  v - local or global variable.
+  v - variable.
+  x - dictionary.
+  y - array.  (dictionary allowed)
+  Y - array.  (dictionary NOT allowed)
   ? - any stack item type.
 
   Tests can be repeated multiple times by following the test with a number.

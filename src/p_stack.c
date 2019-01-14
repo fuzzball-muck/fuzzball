@@ -121,7 +121,7 @@ prim_ldup(PRIM_PROTOTYPE)
 
     result = arg[*top - 1].data.number;
 
-    if (result >= MAXINT)
+    if (result >= INT_MAX)
         abort_interp("Integer overflow.");
 
     if (result < 0)
@@ -707,6 +707,25 @@ prim_checkargs(PRIM_PROTOTYPE)
 		if (arg[stackpos].type != PROG_ADD)
 		    ABORT_CHECKARGS("Expected a function address.");
 		break;
+	    case 'x':
+                if (stackpos < 0)
+                    ABORT_CHECKARGS("Stack underflow.");
+		if (arg[stackpos].type != PROG_ARRAY ||
+			!arg[stackpos].data.array || 
+			arg[stackpos].data.array->type != ARRAY_DICTIONARY)
+		    ABORT_CHECKARGS("Expected a dictionary array.");
+		break;
+	    case 'y':
+	    case 'Y':
+                if (stackpos < 0)
+                    ABORT_CHECKARGS("Stack underflow.");
+		if (arg[stackpos].type != PROG_ARRAY)
+		    ABORT_CHECKARGS("Expected an array.");
+		if (buf[currpos] == 'Y' && arg[stackpos].data.array &&
+			arg[stackpos].data.array->type == ARRAY_DICTIONARY)
+		    ABORT_CHECKARGS("Expected a non-dictionary array.");
+
+		break;	
 	    case ' ':
 		/* this is meaningless space.  Ignore it. */
 		stackpos++;

@@ -12,7 +12,7 @@ _int_f_rand(void)
 int
 arith_good(double test)
 {
-    return ((test <= (double) (MAXINT)) && (test >= (double) (MININT)));
+    return ((test <= (double) (INT_MAX)) && (test >= (double) (INT_MIN)));
 }
 
 int

@@ -12,31 +12,12 @@
 # define NINF (-9.9E999)
 #endif
 
-#ifdef M_PI
-# define F_PI M_PI
-#else
-# define F_PI 3.141592653589793239
+#ifndef M_PI
+# define M_PI 3.14159265358979323846
 #endif
 
-#ifdef M_PI_2
-# define H_PI M_PI_2
-#else
-# define H_PI 1.5707963267949
-#endif
-
-/*
-#ifdef M_PI_4
-# define Q_PI M_PI_4
-#else
-# define Q_PI 0.7853981633974
-#endif
-*/
-
-#ifndef MAXINT
-#define MAXINT ~(1<<((sizeof(int)*8)-1))
-#endif
-#ifndef MININT
-#define MININT (1<<((sizeof(int)*8)-1))
+#ifndef M_PI_2
+# define M_PI_2 1.57079632679489661923
 #endif
 
 #define MIN(p,q) ((p >= q) ? q : p)

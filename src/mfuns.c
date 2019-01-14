@@ -1203,7 +1203,7 @@ mfn_div(MFUNARGS)
 
     for (int j = 1; j < argc; j++) {
 	k = atoi(argv[j]);
-	if (!k || (i == MININT && k == -1)) {
+	if (!k || (i == INT_MIN && k == -1)) {
 	    i = 0;
 	} else {
 	    i /= k;
@@ -1221,7 +1221,7 @@ mfn_mod(MFUNARGS)
 
     for (int j = 1; j < argc; j++) {
 	k = atoi(argv[j]);
-	if (!k || (i == MININT && k == -1)) {
+	if (!k || (i == INT_MIN && k == -1)) {
 	    i = 0;
 	} else {
 	    i %= k;

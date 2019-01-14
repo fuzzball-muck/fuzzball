@@ -7,6 +7,7 @@
 #endif
 #include "edit.h"
 #include "fbstrings.h"
+#include "fbmath.h"
 #include "fbtime.h"
 #include "game.h"
 #include "interface.h"
@@ -27,63 +28,19 @@ static int db_load_format = 0;
 #define DB_INITIAL_SIZE 10000
 #endif				/* DB_INITIAL_SIZE */
 
-#ifdef DB_DOUBLING
-
-dbref db_size = DB_INITIAL_SIZE;
-
-#endif				/* DB_DOUBLING */
-
 struct macrotable *macrotop;
 
-#ifdef DB_DOUBLING
-
 static void
 db_grow(dbref newtop)
 {
-    struct object *newdb;
-
-    if (newtop > db_top) {
-	db_top = newtop;
-	if (!db) {
-	    /* make the initial one */
-	    db_size = DB_INITIAL_SIZE;
-	    while (db_top > db_size)
-		db_size += 1000;
-	    if ((db = malloc(db_size * sizeof(struct object))) == 0) {
-		abort();
-	    }
-	}
-	/* maybe grow it */
-	if (db_top > db_size) {
-	    /* make sure it's big enough */
-	    while (db_top > db_size)
-		db_size += 1000;
-	    if ((newdb = realloc((void *) db, db_size * sizeof(struct object))) == 0) {
-		abort();
-	    }
-	    db = newdb;
-	}
-    }
-}
-
-#else				/* DB_DOUBLING */
-
-static void
-db_grow(dbref newtop)
-{
-    struct object *newdb;
-
     if (newtop > db_top) {
 	db_top = newtop;
 	if (db) {
-	    if ((newdb = (struct object *)
-		 realloc((void *) db, (size_t)db_top * sizeof(struct object))) == 0) {
+	    if ((db = realloc(db, (size_t)db_top * sizeof(struct object))) == 0) {
 		abort();
 	    }
-	    db = newdb;
 	} else {
-	    /* make the initial one */
-	    int startsize = (newtop >= DB_INITIAL_SIZE) ? newtop : DB_INITIAL_SIZE;
+	    int startsize = MAX(newtop, DB_INITIAL_SIZE);
 
 	    if ((db = malloc((size_t)startsize * sizeof(struct object))) == 0) {
 		abort();
@@ -91,8 +48,6 @@ db_grow(dbref newtop)
 	}
     }
 }
-
-#endif				/* DB_DOUBLING */
 
 void
 db_clear_object(dbref i)

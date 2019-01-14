@@ -79,7 +79,7 @@ void
 prim_pi(PRIM_PROTOTYPE)
 {
     CHECKOP(0);
-    fresult = F_PI;
+    fresult = M_PI;
     CHECKOFLOW(1);
     PushFloat(fresult);
 }
@@ -172,8 +172,8 @@ prim_tan(PRIM_PROTOTYPE)
     if (oper1->type != PROG_FLOAT)
 	abort_interp("Non-float argument. (1)");
     if (!no_good(oper1->data.fnumber)) {
-	fresult = fmod((oper1->data.fnumber - H_PI), F_PI);
-	if (fabs(fresult) > DBL_EPSILON && fabs(fresult - F_PI) > DBL_EPSILON) {
+	fresult = fmod((oper1->data.fnumber - M_PI_2), M_PI);
+	if (fabs(fresult) > DBL_EPSILON && fabs(fresult - M_PI) > DBL_EPSILON) {
 	    fresult = tan(oper1->data.fnumber);
 	} else {
 	    fresult = 0.0;
@@ -232,7 +232,7 @@ prim_atan(PRIM_PROTOTYPE)
     if (!no_good(oper1->data.fnumber)) {
 	fresult = atan(oper1->data.fnumber);
     } else {
-	fresult = H_PI;
+	fresult = M_PI_2;
     }
     CLEAR(oper1);
     PushFloat(fresult);

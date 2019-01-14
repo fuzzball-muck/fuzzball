@@ -615,11 +615,6 @@ do_create(dbref player, char *name, char *acost)
     }
 
     thing = create_thing(player, name, player); 
-notifyf(1, "qname: %s", qname);
-notifyf(1, "rname: %s", rname);
-notifyf(1, "acost: %s", acost);
-notifyf(1, "cost: %d", cost);
-notifyf(1, "endow: %d", OBJECT_ENDOWMENT(cost));
     SETVALUE(thing, MIN(OBJECT_ENDOWMENT(cost), tp_max_object_endowment));
 
     unparse_object(player, thing, unparse_buf, sizeof(unparse_buf));

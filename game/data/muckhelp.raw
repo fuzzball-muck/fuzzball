@@ -932,8 +932,8 @@ The default target is "_reg" on #0, but can be changed with these prefixes:
 ~~code
   #me
 	Sets target object to you.
-  #prop [<target>]:<propqueue>
-	Sets target object to <target>, and target propdir to <propqueue>.
+  #prop [<target>]:<propdir>
+	Sets target object to <target>, and target propdir to <propdir>.
 	<target> may be omitted to keep the default.
 ~~endcode
 
