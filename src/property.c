@@ -1519,3 +1519,29 @@ parse_oprop(int descr, dbref player, dbref dest, dbref exit, const char *propnam
     if (msg)
         parse_omessage(descr, player, dest, exit, msg, prefix, whatcalled, ival);
 }
+
+/*
+ * Note - This function is used by MUF primitives but not by the rest of
+ * the property 'library' here.  The preference with the underlying library
+ * seems to be to treat the PROP_DELIMITER as a null terminator rather than
+ * doing some more proper validation / error handling.
+ *
+ * This is a rather odd design choice, but perhaps a dangerous one to
+ * reverse at this time.  getprop / remove prop don't validate the prop
+ * name string at all and just assume setprop won't let something bad
+ * get past the goalie.
+ *
+ * ext-name-ok and other such string checks also check ok_ascii_other;
+ * props do no such checking, so theoretically you could get some weird
+ * characters in the propname.  Do we care?  I assume not!
+ */
+int
+is_valid_propname(const char* pname)
+{
+    char* tmpe = pname;
+
+    while (*tmpe && *tmpe != '\r' && *tmpe != PROP_DELIMITER)
+	    tmpe++;
+
+    return (*tmpe) == 0;
+}

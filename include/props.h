@@ -171,5 +171,6 @@ void set_property_nofetch(dbref player, const char *pname, PData * dat, int sync
 long size_properties(dbref player, int load);
 long size_proplist(PropPtr avl);
 void untouchprops_incremental(int limit);
+int is_valid_propname(const char* pname);
 
 #endif				/* _PROPS_H */
