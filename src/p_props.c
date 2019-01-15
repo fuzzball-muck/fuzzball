@@ -573,7 +573,6 @@ prim_setprop(PRIM_PROTOTYPE)
 	abort_interp("Permission denied.");
 
     {
-	char *tmpe;
 	char tname[BUFFER_LEN];
 	PData propdat;
 	int len = oper2->data.string->length;
