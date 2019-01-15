@@ -1538,10 +1538,8 @@ parse_oprop(int descr, dbref player, dbref dest, dbref exit, const char *propnam
 int
 is_valid_propname(const char* pname)
 {
-    char* tmpe = pname;
+    while (*pname && *pname != '\r' && *pname != PROP_DELIMITER)
+	    pname++;
 
-    while (*tmpe && *tmpe != '\r' && *tmpe != PROP_DELIMITER)
-	    tmpe++;
-
-    return (*tmpe) == 0;
+    return (*pname) == 0;
 }

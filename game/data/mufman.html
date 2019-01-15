@@ -610,9 +610,10 @@
 <!-- HTML_IDXGROUP_NEWROW -->
     <li><a href="#program_setlines">program_setlines</a></li>
     <li><a href="#pronoun_sub">pronoun_sub</a></li>
+    <li><a href="#prop-name-ok?">prop-name-ok?</a></li>
     <li><a href="#propdir?">propdir?</a></li>
-    <li><a href="#public">public</a></li>
 <!-- HTML_IDXGROUP_NEWROW -->
+    <li><a href="#public">public</a></li>
     <li><a href="#put">put</a></li>
 </ul>
 
@@ -4407,40 +4408,41 @@ identifier.
     <li><a href="#pname-ok?">pname-ok?</a></li>
 <!-- HTML_SECTIDX_NEWROW -->
     <li><a href="#pronoun_sub">pronoun_sub</a></li>
+    <li><a href="#prop-name-ok?">prop-name-ok?</a></li>
     <li><a href="#regexp">regexp</a></li>
     <li><a href="#regsplit">regsplit</a></li>
-    <li><a href="#regsplit_noempty">regsplit_noempty</a></li>
 <!-- HTML_SECTIDX_NEWROW -->
+    <li><a href="#regsplit_noempty">regsplit_noempty</a></li>
     <li><a href="#regsub">regsub</a></li>
     <li><a href="#rinstr">rinstr</a></li>
     <li><a href="#rinstring">rinstring</a></li>
-    <li><a href="#rsplit">rsplit</a></li>
 <!-- HTML_SECTIDX_NEWROW -->
+    <li><a href="#rsplit">rsplit</a></li>
     <li><a href="#sha1hash">sha1hash</a></li>
     <li><a href="#smatch">smatch</a></li>
     <li><a href="#split">split</a></li>
-    <li><a href="#stod">stod</a></li>
 <!-- HTML_SECTIDX_NEWROW -->
+    <li><a href="#stod">stod</a></li>
     <li><a href="#strcat">strcat</a></li>
     <li><a href="#strcmp">strcmp</a></li>
     <li><a href="#strcut">strcut</a></li>
-    <li><a href="#strdecrypt">strdecrypt</a></li>
 <!-- HTML_SECTIDX_NEWROW -->
+    <li><a href="#strdecrypt">strdecrypt</a></li>
     <li><a href="#strencrypt">strencrypt</a></li>
     <li><a href="#stringcmp">stringcmp</a></li>
     <li><a href="#stringpfx">stringpfx</a></li>
-    <li><a href="#strip">strip</a></li>
 <!-- HTML_SECTIDX_NEWROW -->
+    <li><a href="#strip">strip</a></li>
     <li><a href="#striplead">striplead</a></li>
     <li><a href="#striptail">striptail</a></li>
     <li><a href="#strlen">strlen</a></li>
-    <li><a href="#strncmp">strncmp</a></li>
 <!-- HTML_SECTIDX_NEWROW -->
+    <li><a href="#strncmp">strncmp</a></li>
     <li><a href="#subst">subst</a></li>
     <li><a href="#textattr">textattr</a></li>
     <li><a href="#tokensplit">tokensplit</a></li>
-    <li><a href="#tolower">tolower</a></li>
 <!-- HTML_SECTIDX_NEWROW -->
+    <li><a href="#tolower">tolower</a></li>
     <li><a href="#toupper">toupper</a></li>
 </ul>
 
@@ -5187,6 +5189,17 @@ restrictive rules for Things.
   Returns true if the given string would be okay as a player name.
 <p>Also see:
     <a href="#ext-name-ok?">EXT-NAME-OK?</a>
+</p>
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="prop-name-ok?">PROP-NAME-OK? (s -- i)
+<br>
+</h3>
+  Returns true if the given string is an acceptable property name that will
+not cause an error for SETPROP or any other property related primitive.
+<p>Also see:
+    <a href="#setprop">SETPROP</a>
 </p>
 <!-- HTML_TOPICEND -->
 

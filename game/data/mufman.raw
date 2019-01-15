@@ -2762,6 +2762,13 @@ PNAME-OK? (s -- i)
 ~~alsosee EXT-NAME-OK?
 ~
 ~
+PROP-NAME-OK?
+PROP-NAME-OK? (s -- i)
+  Returns true if the given string is an acceptable property name that will
+not cause an error for SETPROP or any other property related primitive.
+~~alsosee SETPROP
+~
+~
 EXT-NAME-OK?
 EXT-NAME-OK? ( str:Name ref:Obj -- int:Ok? )
 EXT-NAME-OK? ( str:Name str:Type -- int:Ok? )
