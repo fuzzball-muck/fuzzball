@@ -189,8 +189,8 @@ P's
   pname-ok?          pname_history      polar_to_xyz       pop
   popn               pow                pr_mode            preempt
   prettylock         prog               program?           program_getlines
-  program_setlines   pronoun_sub        propdir?           public
-  put                
+  program_setlines   pronoun_sub        prop-name-ok?      propdir?
+  public             put                
 
 Q's
   queue  
@@ -2485,14 +2485,14 @@ array_fmtstrings   atoi               ctoi               explode
 explode_array      ext-name-ok?       fmtstring          instr
 instring           intostr            itoc               md5hash
 midstr             name-ok?           number?            pname-ok?
-pronoun_sub        regexp             regsplit           regsplit_noempty
-regsub             rinstr             rinstring          rsplit
-sha1hash           smatch             split              stod
-strcat             strcmp             strcut             strdecrypt
-strencrypt         stringcmp          stringpfx          strip
-striplead          striptail          strlen             strncmp
-subst              textattr           tokensplit         tolower
-toupper            
+pronoun_sub        prop-name-ok?      regexp             regsplit
+regsplit_noempty   regsub             rinstr             rinstring
+rsplit             sha1hash           smatch             split
+stod               strcat             strcmp             strcut
+strdecrypt         strencrypt         stringcmp          stringpfx
+strip              striplead          striptail          strlen
+strncmp            subst              textattr           tokensplit
+tolower            toupper            
 
 ~----------------------------------------------------------------------------
 ~
@@ -3013,6 +3013,13 @@ PNAME-OK? (s -- i)
 
   Returns true if the given string would be okay as a player name.
 Also see: EXT-NAME-OK?
+~
+~
+PROP-NAME-OK?
+PROP-NAME-OK? (s -- i)
+  Returns true if the given string is an acceptable property name that will
+not cause an error for SETPROP or any other property related primitive.
+Also see: SETPROP
 ~
 ~
 EXT-NAME-OK?
