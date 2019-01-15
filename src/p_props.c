@@ -578,10 +578,7 @@ prim_setprop(PRIM_PROTOTYPE)
 	PData propdat;
 	int len = oper2->data.string->length;
 
-	tmpe = oper2->data.string->data;
-	while (*tmpe && *tmpe != '\r' && *tmpe != PROP_DELIMITER)
-	    tmpe++;
-	if (*tmpe)
+	if (!is_valid_propname(oper2->data.string->data))
 	    abort_interp("Illegal propname");
 
 	strcpyn(tname, sizeof(tname), oper2->data.string->data);
@@ -1337,4 +1334,22 @@ prim_parsepropex(PRIM_PROTOTYPE)
 
     PushArrayRaw(vars);
     PushString(str);
+}
+
+
+void
+prim_prop_name_okp(PRIM_PROTOTYPE)
+{
+    CHECKOP(1);
+    oper1 = POP();
+    if (oper1->type != PROG_STRING)
+        abort_interp("Property name string expected.");
+
+    if (!oper1->data.string)
+        abort_interp("Cannot be an empty string.");
+
+    result = is_valid_propname(oper1->data.string->data);
+    
+    CLEAR(oper1);
+    PushInt(result);
 }
