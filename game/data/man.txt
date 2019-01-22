@@ -213,12 +213,13 @@ S's
   setseed            setsucc            setsysparm         sha1hash
   shallow_copy       sign               sin                sleep
   smatch             split              sqrt               srand
-  stats              stod               strcat             strcmp
-  strcut             strdecrypt         strencrypt         string?
-  stringcmp          stringpfx          strip              striplead
-  striptail          strlen             strncmp            strtof
-  subst              succ               supplicant         swap
-  sysparm            sysparm_array      systime            systime_precise
+  stats              stats_array        stod               strcat
+  strcmp             strcut             strdecrypt         strencrypt
+  string?            stringcmp          stringpfx          strip
+  striplead          striptail          strlen             strncmp
+  strtof             subst              succ               supplicant
+  swap               sysparm            sysparm_array      systime
+  systime_precise    
 
 T's
   tan          tell         testlock     textattr     then         thing?
@@ -4048,9 +4049,10 @@ setdrop                   setfail                   setlink
 setlinks_array            setname                   setodrop
 setofail                  setosucc                  setown
 setsucc                   setsysparm                stats
-succ                      sysparm                   sysparm_array
-thing?                    timestamps                toadplayer
-trig                      truename                  unparseobj
+stats_array               succ                      sysparm
+sysparm_array             thing?                    timestamps
+toadplayer                trig                      truename
+unparseobj                
 
 ~----------------------------------------------------------------------------
 ~
@@ -4826,9 +4828,19 @@ STATS
 STATS ( d -- total rooms exits things programs players garbage )
 
   Returns the number of objects owned by 'd', or the total objects in
-the system if d == #-1. This is broken up into a total, rooms, exits,
+the system if d is #-1. This is broken up into a total, rooms, exits,
 things, programs, players, and garbage. This functions much as the
-@STAT command.
+@STATS command.
+(Needs Mucker Level 3)
+~
+~
+STATS_ARRAY
+STATS_ARRAY ( d -- a )
+
+  Returns, as an array, the number of objects owned by 'd', or the total
+objects in the system if d is #-1. This is broken up into a total, rooms, exits,
+things, programs, players, and garbage. This functions much as the
+@STATS command.
 (Needs Mucker Level 3)
 ~
 ~

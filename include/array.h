@@ -71,6 +71,7 @@ void array_mash(stk_array *arr_in, stk_array **mash, int value);
 int array_next(stk_array *arr, array_iter *item);
 int array_prev(stk_array *arr, array_iter *item);
 int array_set_intkey(stk_array **harr, int key, struct inst *val);
+int array_set_intkey_intval(stk_array **harr, int key, int val);
 int array_set_intkey_refval(stk_array **harr, int key, dbref val);
 int array_set_intkey_strval(stk_array **harr, int key, const char *val);
 void array_set_pinned(stk_array *arr, int pinned);

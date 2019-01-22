@@ -694,33 +694,35 @@
     <li><a href="#srand">srand</a></li>
 <!-- HTML_IDXGROUP_NEWROW -->
     <li><a href="#stats">stats</a></li>
+    <li><a href="#stats_array">stats_array</a></li>
     <li><a href="#stod">stod</a></li>
     <li><a href="#strcat">strcat</a></li>
-    <li><a href="#strcmp">strcmp</a></li>
 <!-- HTML_IDXGROUP_NEWROW -->
+    <li><a href="#strcmp">strcmp</a></li>
     <li><a href="#strcut">strcut</a></li>
     <li><a href="#strdecrypt">strdecrypt</a></li>
     <li><a href="#strencrypt">strencrypt</a></li>
-    <li><a href="#string?">string?</a></li>
 <!-- HTML_IDXGROUP_NEWROW -->
+    <li><a href="#string?">string?</a></li>
     <li><a href="#stringcmp">stringcmp</a></li>
     <li><a href="#stringpfx">stringpfx</a></li>
     <li><a href="#strip">strip</a></li>
-    <li><a href="#striplead">striplead</a></li>
 <!-- HTML_IDXGROUP_NEWROW -->
+    <li><a href="#striplead">striplead</a></li>
     <li><a href="#striptail">striptail</a></li>
     <li><a href="#strlen">strlen</a></li>
     <li><a href="#strncmp">strncmp</a></li>
-    <li><a href="#strtof">strtof</a></li>
 <!-- HTML_IDXGROUP_NEWROW -->
+    <li><a href="#strtof">strtof</a></li>
     <li><a href="#subst">subst</a></li>
     <li><a href="#succ">succ</a></li>
     <li><a href="#supplicant">supplicant</a></li>
-    <li><a href="#swap">swap</a></li>
 <!-- HTML_IDXGROUP_NEWROW -->
+    <li><a href="#swap">swap</a></li>
     <li><a href="#sysparm">sysparm</a></li>
     <li><a href="#sysparm_array">sysparm_array</a></li>
     <li><a href="#systime">systime</a></li>
+<!-- HTML_IDXGROUP_NEWROW -->
     <li><a href="#systime_precise">systime_precise</a></li>
 </ul>
 
@@ -6773,16 +6775,18 @@ This primitives requires at least mucker level 3.
     <li><a href="#setsysparm">setsysparm</a></li>
     <li><a href="#stats">stats</a></li>
 <!-- HTML_SECTIDX_NEWROW -->
+    <li><a href="#stats_array">stats_array</a></li>
     <li><a href="#succ">succ</a></li>
     <li><a href="#sysparm">sysparm</a></li>
-    <li><a href="#sysparm_array">sysparm_array</a></li>
 <!-- HTML_SECTIDX_NEWROW -->
+    <li><a href="#sysparm_array">sysparm_array</a></li>
     <li><a href="#thing?">thing?</a></li>
     <li><a href="#timestamps">timestamps</a></li>
-    <li><a href="#toadplayer">toadplayer</a></li>
 <!-- HTML_SECTIDX_NEWROW -->
+    <li><a href="#toadplayer">toadplayer</a></li>
     <li><a href="#trig">trig</a></li>
     <li><a href="#truename">truename</a></li>
+<!-- HTML_SECTIDX_NEWROW -->
     <li><a href="#unparseobj">unparseobj</a></li>
 </ul>
 
@@ -7918,9 +7922,22 @@ any object.
 <br>
 </h3>
   Returns the number of objects owned by 'd', or the total objects in
-the system if d == #-1. This is broken up into a total, rooms, exits,
+the system if d is #-1. This is broken up into a total, rooms, exits,
 things, programs, players, and garbage. This functions much as the
-@STAT command.
+@STATS command.
+(Needs Mucker Level 3)
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="stats_array">STATS_ARRAY ( d -- a )
+<br>
+
+<br>
+</h3>
+  Returns, as an array, the number of objects owned by 'd', or the total
+objects in the system if d is #-1. This is broken up into a total, rooms, exits,
+things, programs, players, and garbage. This functions much as the
+@STATS command.
 (Needs Mucker Level 3)
 <!-- HTML_TOPICEND -->
 
