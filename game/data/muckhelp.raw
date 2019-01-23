@@ -44,12 +44,11 @@ PAGE
 PAGE <player>
 PAGE <player>=<message>
 
-  In the first form, this tells a player that you are looking for them, like
-'You sense <pager> is looking for you in <location>.'
+  In the first form, this tells a player your location, like
+'You sense that <pager> is paging you from <location>.'
 
   In the second form, with the <message>, the user receives a message like:
-'<pager> pages, "<message>" to you.'  Your location is not revealed in
-message pages.
+'<pager> pages from <location>: "<message>"'
 
   If a player is set HAVEN, you cannot page them.  You will instead be told,
 'That player does not wish to be disturbed.'
