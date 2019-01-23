@@ -1877,7 +1877,7 @@ $endif
         dup 1 + rotate
         dup remember-pager
         "You sense that " me @ name strcat
-        " is looking for you in " strcat
+        " is paging you from " strcat
         me @ location name strcat
         over me @ location owner dbcmp if
           me @ location intostr
