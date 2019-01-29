@@ -3652,6 +3652,13 @@ those dbrefs who have a property specified by s1, set to a value that smatch
 matches s2.
 ~
 ~
+ARRAY_FILTER_LOCK
+ARRAY_FILTER_LOCK ([d] l -- [d'])
+
+  Takes a homogenous list array of dbrefs, and returns a list array with only
+those players and things who pass the given lock.
+~
+~
 ARRAY_FILTER_FLAGS
 ARRAY_FILTER_FLAGS ( list:dbrefs str:flags -- list:matchingdbrefs )
 

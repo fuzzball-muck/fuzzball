@@ -2342,6 +2342,41 @@ prim_array_filter_flags(PRIM_PROTOTYPE)
 }
 
 void
+prim_array_filter_lock(PRIM_PROTOTYPE)
+{
+    stk_array *nw, *arr;
+    struct inst *in;
+
+    CHECKOP(2);
+    oper2 = POP();		/* lock */
+    oper1 = POP();		/* arr:refs */
+
+    if (oper1->type != PROG_ARRAY)
+	abort_interp("Argument not an array. (1)");
+    if (!array_is_homogenous(oper1->data.array, PROG_OBJECT))
+	abort_interp("Argument not an array of dbrefs. (1)");
+    if (oper2->type != PROG_LOCK)
+	abort_interp("Argument not a lock. (2)");
+
+    arr = oper1->data.array;
+    nw = new_array_packed(0, fr->pinning);
+
+    if (array_first(arr, &temp1)) {
+	do {
+	    in = array_getitem(arr, &temp1);
+	    if (valid_object(in) &&
+		    eval_boolexp(fr->descr, in->data.objref, oper2->data.lock,
+		    tp_consistent_lock_source ? fr->trig : player))
+		array_appenditem(&nw, in);
+	} while (array_next(arr, &temp1));
+    }
+
+    CLEAR(oper1);
+    CLEAR(oper2);
+    PushArrayRaw(nw);
+}
+
+void
 prim_array_notify_secure(PRIM_PROTOTYPE)
 {
     stk_array *strarr, *strarr2, *refarr;

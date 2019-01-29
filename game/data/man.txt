@@ -70,23 +70,23 @@ A's
   array_cut                 array_default_pinning     array_delitem
   array_delrange            array_diff                array_excludeval
   array_explode             array_extract             array_filter_flags
-  array_filter_prop         array_findval             array_first
-  array_fmtstrings          array_get_ignorelist      array_get_propdirs
-  array_get_proplist        array_get_propvals        array_get_reflist
-  array_getitem             array_getrange            array_insertitem
-  array_insertrange         array_interpret           array_intersect
-  array_join                array_keys                array_last
-  array_make                array_make_dict           array_matchkey
-  array_matchval            array_ndiff               array_nested_del
-  array_nested_get          array_nested_set          array_next
-  array_nintersect          array_notify              array_notify_secure
-  array_nunion              array_pin                 array_prev
-  array_put_proplist        array_put_propvals        array_put_reflist
-  array_reverse             array_setitem             array_setrange
-  array_sort                array_sort_indexed        array_union
-  array_unpin               array_vals                arrive
-  asin                      atan                      atan2
-  atoi                      awake?                    
+  array_filter_lock         array_filter_prop         array_findval
+  array_first               array_fmtstrings          array_get_ignorelist
+  array_get_propdirs        array_get_proplist        array_get_propvals
+  array_get_reflist         array_getitem             array_getrange
+  array_insertitem          array_insertrange         array_interpret
+  array_intersect           array_join                array_keys
+  array_last                array_make                array_make_dict
+  array_matchkey            array_matchval            array_ndiff
+  array_nested_del          array_nested_get          array_nested_set
+  array_next                array_nintersect          array_notify
+  array_notify_secure       array_nunion              array_pin
+  array_prev                array_put_proplist        array_put_propvals
+  array_put_reflist         array_reverse             array_setitem
+  array_setrange            array_sort                array_sort_indexed
+  array_union               array_unpin               array_vals
+  arrive                    asin                      atan
+  atan2                     atoi                      awake?
 
 B's
   background   begin        bg_mode      bitand       bitor        bitshift
@@ -3726,16 +3726,17 @@ smatch wildcard pattern.
 Property Manipulation Operators|PropOps
 Property Manipulation Operators
 
-addprop                   array_filter_flags        array_filter_prop
-array_get_propdirs        array_get_proplist        array_get_propvals
-array_get_reflist         array_put_proplist        array_put_propvals
-array_put_reflist         blessed?                  blessprop
-envprop                   envpropstr                getprop
-getpropfval               getpropstr                getpropval
-nextprop                  parsempi                  parsempiblessed
-parseprop                 parsepropex               propdir?
-reflist_add               reflist_del               reflist_find
-remove_prop               setprop                   unblessprop
+addprop                   array_filter_flags        array_filter_lock
+array_filter_prop         array_get_propdirs        array_get_proplist
+array_get_propvals        array_get_reflist         array_put_proplist
+array_put_propvals        array_put_reflist         blessed?
+blessprop                 envprop                   envpropstr
+getprop                   getpropfval               getpropstr
+getpropval                nextprop                  parsempi
+parsempiblessed           parseprop                 parsepropex
+propdir?                  reflist_add               reflist_del
+reflist_find              remove_prop               setprop
+unblessprop               
 
 ~----------------------------------------------------------------------------
 ~
@@ -3912,6 +3913,13 @@ ARRAY_FILTER_PROP ([d] s1 s2 -- [d'])
   Takes a homogenous list array of dbrefs, and returns a list array with only
 those dbrefs who have a property specified by s1, set to a value that smatch
 matches s2.
+~
+~
+ARRAY_FILTER_LOCK
+ARRAY_FILTER_LOCK ([d] l -- [d'])
+
+  Takes a homogenous list array of dbrefs, and returns a list array with only
+those players and things who pass the given lock.
 ~
 ~
 ARRAY_FILTER_FLAGS
