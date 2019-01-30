@@ -144,6 +144,7 @@
  * Include all the good standard headers here.
  */
 #include <ctype.h>
+#include <errno.h>
 #include <fcntl.h>
 #include <limits.h>
 #include <signal.h>
@@ -187,16 +188,6 @@ typedef int dbref;
 #ifdef MALLOC_PROFILING
 # include "crt_malloc.h"
 #endif	
-
-#if defined (HAVE_ERRNO_H)
-# include <errno.h>
-#else
-# if defined (HAVE_SYS_ERRNO_H)
-#  include <sys/errno.h>
-# else
-extern int errno;
-# endif
-#endif
 
 /******************************************************************/
 /* System configuration stuff... Figure out who and what we are.  */
