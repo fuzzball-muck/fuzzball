@@ -202,7 +202,7 @@ fi
 dnl
 dnl Header files
 dnl
-AC_CHECK_HEADERS(errno.h malloc.h sys/resource.h sys/signal.h sys/time.h)
+AC_CHECK_HEADERS(malloc.h sys/resource.h sys/signal.h sys/time.h)
 AC_HEADER_DIRENT
 
 AC_CHECK_SIZEOF([long int])
