@@ -1550,12 +1550,8 @@ prim_findnext(PRIM_PROTOTYPE)
 	abort_interp("Expected string argument. (4)");
     if (oper3->type != PROG_STRING)
 	abort_interp("Expected string argument. (3)");
-    if (oper2->type != PROG_OBJECT)
-	abort_interp("Expected dbref argument. (2)");
-    if (!OkRef(oper2->data.objref))
-	abort_interp("Bad object. (2)");
-    if (oper2->data.objref != NOTHING && Typeof(oper2->data.objref) == TYPE_GARBAGE)
-	abort_interp("Garbage object. (2)");
+    if (!valid_player(oper2) && (oper2->data.objref != NOTHING))
+        abort_interp("Expected player argument. (2)");
     if (oper1->type != PROG_OBJECT)
 	abort_interp("Expected dbref argument. (1)");
     if (!OkRef(oper1->data.objref))
