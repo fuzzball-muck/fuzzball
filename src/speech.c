@@ -116,7 +116,7 @@ do_page(dbref player, const char *arg1, const char *arg2)
 	return;
     }
     if (blank(arg2))
-	snprintf(buf, sizeof(buf), "You sense that %s is looking for you in %s.",
+	snprintf(buf, sizeof(buf), "You sense that %s is paging you from %s.",
 		 NAME(player), NAME(LOCATION(player)));
     else
 	snprintf(buf, sizeof(buf), "%s pages from %s: \"%s\"", NAME(player),

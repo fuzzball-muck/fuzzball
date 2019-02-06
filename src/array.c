@@ -1792,6 +1792,25 @@ array_set_intkey_refval(stk_array ** harr, int key, dbref val)
 }
 
 int
+array_set_intkey_intval(stk_array ** harr, int key, int val)
+{
+    struct inst value;
+    int result;
+
+    assert(harr != NULL);
+    assert(*harr != NULL);
+
+    value.type = PROG_INTEGER;
+    value.data.number = val;
+
+    result = array_set_intkey(harr, key, &value);
+
+    CLEAR(&value);
+
+    return result;
+}
+
+int
 array_set_intkey_strval(stk_array ** harr, int key, const char *val)
 {
     struct inst value;

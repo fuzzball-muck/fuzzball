@@ -1168,6 +1168,7 @@ do_find(dbref player, const char *name, const char *flags)
 	notifyf(player, "You don't have enough %s.", tp_pennies);
     } else {
 	for (dbref i = 0; i < db_top; i++) {
+	    if (Typeof(i) == TYPE_GARBAGE) continue;
 	    if ((Wizard(OWNER(player)) || OWNER(i) == OWNER(player)) &&
 		checkflags(i, check) && NAME(i) && (!*name
 						    || equalstr(buf, (char *) NAME(i)))) {

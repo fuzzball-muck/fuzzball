@@ -227,8 +227,6 @@ pop exit
          over "@/sweepable?" getpropstr
          "yes" stringcmp and
       then
-      me @ #1026 dbcmp not and   (give Revar permissions.   Used only for
-                                  sweeping spammers out of public rooms.)
       me @ authorized? not and if
          pop "Permission denied."
          me @ swap notify exit

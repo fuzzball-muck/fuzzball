@@ -497,6 +497,64 @@ prim_stats(PRIM_PROTOTYPE)
 }
 
 void
+prim_stats_array(PRIM_PROTOTYPE)
+{
+    CHECKOP(1);
+    oper1 = POP();
+    if (mlev < 3)
+	abort_interp("Requires Mucker Level 3.");
+    if (!valid_player(oper1) && (oper1->data.objref != NOTHING))
+	abort_interp("non-player argument (1)");
+    ref = oper1->data.objref;
+    CLEAR(oper1);
+    nargs = 0;
+    int rooms = 0, exits = 0, things = 0, programs = 0, players = 0, garbage = 0;
+    stk_array *nu;
+    int count = 0;
+
+    for (dbref i = 0; i < db_top; i++) {
+	if (ref == NOTHING || OWNER(i) == ref) {
+	    switch (Typeof(i)) {
+	    case TYPE_ROOM:
+		rooms++;
+		break;
+	    case TYPE_EXIT:
+		exits++;
+		break;
+	    case TYPE_THING:
+		things++;
+		break;
+	    case TYPE_PROGRAM:
+		programs++;
+		break;
+	    case TYPE_PLAYER:
+		players++;
+		break;
+	    case TYPE_GARBAGE:
+		garbage++;
+		break;
+	    }
+	}
+    }
+
+    ref = rooms + exits + things + programs + players + garbage;
+
+    CHECKOFLOW(1);
+
+    nu = new_array_packed(0, fr->pinning);
+
+    array_set_intkey_intval(&nu, count++, garbage);
+    array_set_intkey_intval(&nu, count++, players);
+    array_set_intkey_intval(&nu, count++, programs);
+    array_set_intkey_intval(&nu, count++, things);
+    array_set_intkey_intval(&nu, count++, exits);
+    array_set_intkey_intval(&nu, count++, rooms);
+    array_set_intkey_intval(&nu, count++, rooms+exits+things+programs+players+garbage);
+
+    PushArrayRaw(nu);
+}
+
+void
 prim_abort(PRIM_PROTOTYPE)
 {
     CHECKOP(1);

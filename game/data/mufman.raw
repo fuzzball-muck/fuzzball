@@ -3652,6 +3652,13 @@ those dbrefs who have a property specified by s1, set to a value that smatch
 matches s2.
 ~
 ~
+ARRAY_FILTER_LOCK
+ARRAY_FILTER_LOCK ([d] l -- [d'])
+
+  Takes a homogenous list array of dbrefs, and returns a list array with only
+those players and things who pass the given lock.
+~
+~
 ARRAY_FILTER_FLAGS
 ARRAY_FILTER_FLAGS ( list:dbrefs str:flags -- list:matchingdbrefs )
 
@@ -4395,9 +4402,19 @@ STATS
 STATS ( d -- total rooms exits things programs players garbage )
 
   Returns the number of objects owned by 'd', or the total objects in
-the system if d == #-1. This is broken up into a total, rooms, exits,
+the system if d is #-1. This is broken up into a total, rooms, exits,
 things, programs, players, and garbage. This functions much as the
-@STAT command.
+@STATS command.
+(Needs Mucker Level 3)
+~
+~
+STATS_ARRAY
+STATS_ARRAY ( d -- a )
+
+  Returns, as an array, the number of objects owned by 'd', or the total
+objects in the system if d is #-1. This is broken up into a total, rooms, exits,
+things, programs, players, and garbage. This functions much as the
+@STATS command.
 (Needs Mucker Level 3)
 ~
 ~

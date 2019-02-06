@@ -44,12 +44,11 @@ PAGE
 PAGE <player>
 PAGE <player>=<message>
 
-  In the first form, this tells a player that you are looking for them, like
-'You sense <pager> is looking for you in <location>.'
+  In the first form, this tells a player your location, like
+'You sense that <pager> is paging you from <location>.'
 
   In the second form, with the <message>, the user receives a message like:
-'<pager> pages, "<message>" to you.'  Your location is not revealed in
-message pages.
+'<pager> pages from <location>: "<message>"'
 
   If a player is set HAVEN, you cannot page them.  You will instead be told,
 'That player does not wish to be disturbed.'
@@ -1086,7 +1085,7 @@ The flags that you can specify are:  (use the initial capitalized letter only)
 You can also specify Mucker Levels by the level number: 1, 2, 3, or 4.
   
 The types that you can specify are: (use the capitalized letter only)
-  Exit, muF program, Garbage, Player, Room, and Thing.
+  Exit, muF program, Player, Room, and Thing.
   
 There are a few other modifiers you can specify: (use only initial character)
   Unlinked   will specify that you want to list only unlinked objects.

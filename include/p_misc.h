@@ -47,6 +47,7 @@ void prim_debug_on(PRIM_PROTOTYPE);
 void prim_debug_off(PRIM_PROTOTYPE);
 void prim_debug_line(PRIM_PROTOTYPE);
 void prim_read_wants_no_blanks(PRIM_PROTOTYPE);
+void prim_stats_array(PRIM_PROTOTYPE);
 
 #define PRIMS_MISC_FUNCS prim_time, prim_date, prim_gmtoffset, \
     prim_systime, prim_timesplit, prim_timefmt, prim_userlog, \
@@ -59,7 +60,7 @@ void prim_read_wants_no_blanks(PRIM_PROTOTYPE);
     prim_forcedby_array, prim_watchpid, prim_read_wants_blanks, prim_sysparm_array, \
     prim_debugger_break, prim_ignoringp, prim_ignore_add, prim_ignore_del, \
     prim_debug_on, prim_debug_off, prim_debug_line, prim_systime_precise, \
-    prim_read_wants_no_blanks
+    prim_read_wants_no_blanks, prim_stats_array
 
 #define PRIMS_MISC_NAMES "TIME", "DATE", "GMTOFFSET", \
     "SYSTIME", "TIMESPLIT", "TIMEFMT", "USERLOG", \
@@ -72,6 +73,6 @@ void prim_read_wants_no_blanks(PRIM_PROTOTYPE);
     "FORCEDBY_ARRAY", "WATCHPID", "READ_WANTS_BLANKS", "SYSPARM_ARRAY", \
     "DEBUGGER_BREAK", "IGNORING?", "IGNORE_ADD", "IGNORE_DEL", \
     "DEBUG_ON", "DEBUG_OFF", "DEBUG_LINE", "SYSTIME_PRECISE", \
-    "READ_WANTS_NO_BLANKS"
+    "READ_WANTS_NO_BLANKS", "STATS_ARRAY"
 
 #endif				/* _P_MISC_H */

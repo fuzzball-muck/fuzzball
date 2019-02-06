@@ -925,7 +925,7 @@ do_register(int descr, dbref player, char *arg1, const char *arg2)
 	    char *strval;
 	    snprintf(buf, sizeof(buf), "%s%c%s", dir, PROPDIR_DELIMITER, propname);
 
-	    if (!Prop_System(buf) && (!Prop_Hidden(buf) || Wizard(OWNER(player)))) {
+	    if (!Prop_Hidden(buf) || Wizard(OWNER(player))) {
 		switch (PropType(propadr)) {
 		case PROP_DIRTYP:
 		    snprintf(detail, sizeof(detail), "/ (directory)");
@@ -1000,8 +1000,8 @@ do_register(int descr, dbref player, char *arg1, const char *arg2)
 
     snprintf(buf, sizeof(buf), "%s%c%s", propdir, PROPDIR_DELIMITER, arg2);
 
-    if (!controls(player, target) || Prop_System(buf) ||
-	((Prop_SeeOnly(buf) || Prop_Hidden(buf)) && !Wizard(OWNER(player)))) {
+    if ((!Wizard(OWNER(player)) && (target != OWNER(player) || 
+	    Prop_SeeOnly(buf) || Prop_Hidden(buf)))) {
 	notifyf_nolisten(player, "Permission denied. (You can't register an object there.)");
 	return;
     }

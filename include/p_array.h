@@ -59,6 +59,7 @@ void prim_array_nested_set(PRIM_PROTOTYPE);
 void prim_array_nested_del(PRIM_PROTOTYPE);
 
 void prim_array_filter_flags(PRIM_PROTOTYPE);
+void prim_array_filter_lock(PRIM_PROTOTYPE);
 void prim_array_notify_secure(PRIM_PROTOTYPE);
 
 #define PRIMS_ARRAY_FUNCS prim_array_make, prim_array_make_dict, \
@@ -79,7 +80,7 @@ void prim_array_notify_secure(PRIM_PROTOTYPE);
 	prim_array_pin, prim_array_unpin, prim_array_get_ignorelist, \
 	prim_array_nested_get, prim_array_nested_set, prim_array_nested_del, \
 	prim_array_filter_flags, prim_array_interpret, prim_array_notify_secure, \
-	prim_array_default_pinning
+	prim_array_default_pinning, prim_array_filter_lock
 
 #define PRIMS_ARRAY_NAMES "ARRAY_MAKE", "ARRAY_MAKE_DICT", \
         "ARRAY_EXPLODE", "ARRAY_VALS", "ARRAY_KEYS", \
@@ -99,6 +100,6 @@ void prim_array_notify_secure(PRIM_PROTOTYPE);
 	"ARRAY_PIN", "ARRAY_UNPIN", "ARRAY_GET_IGNORELIST", \
 	"ARRAY_NESTED_GET", "ARRAY_NESTED_SET", "ARRAY_NESTED_DEL", \
 	"ARRAY_FILTER_FLAGS", "ARRAY_INTERPRET", "ARRAY_NOTIFY_SECURE", \
-	"ARRAY_DEFAULT_PINNING"
+	"ARRAY_DEFAULT_PINNING", "ARRAY_FILTER_LOCK"
 
 #endif				/* _P_ARRAY_H */
