@@ -365,38 +365,6 @@ static void hostadd_timestamp(long ip, const char *name) {
 
 void set_signals(void);
 
-#ifdef _POSIX_VERSION
-void our_signal(int signo, void (*sighandler) (int));
-#else
-# define our_signal(s,f) signal((s),(f))
-#endif
-
-/*
- * our_signal(signo, sighandler)
- *
- * signo - Signal #, see defines in signal.h
- * sighandler - The handler function desired.
- *
- * Calls sigaction() to set a signal, if we are posix.
- */
-#ifdef _POSIX_VERSION
-void our_signal(int signo, void (*sighandler) (int)) {
-    struct sigaction act, oact;
-
-    act.sa_handler = sighandler;
-    sigemptyset(&act.sa_mask);
-    act.sa_flags = 0;
-
-    /* Restart long system calls if a signal is caught. */
-#ifdef SA_RESTART
-    act.sa_flags |= SA_RESTART;
-#endif
-
-    /* Make it so */
-    sigaction(signo, &act, &oact);
-}
-#endif /* _POSIX_VERSION */
-
 /*
  * set_signals()
  * set_sigs_intern(bail)
@@ -411,10 +379,10 @@ void our_signal(int signo, void (*sighandler) (int)) {
 
 void set_signals(void) {
     /* we don't care about SIGPIPE, we notice it in select() and write() */
-    our_signal(SIGPIPE, SIG_IGN);
+    signal(SIGPIPE, SIG_IGN);
 
     /* didn't manage to lose that control tty, did we? Ignore it anyway. */
-    our_signal(SIGHUP, SIG_IGN);
+    signal(SIGHUP, SIG_IGN);
 }
 
 static const char * get_username(long a, int prt, int myprt) {
