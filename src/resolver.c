@@ -8,13 +8,6 @@
 
 #define NUM_THREADS 5
 
-/*
- * SunOS can't include signal.h and sys/signal.h, stupid broken OS.
- */
-#if defined(HAVE_SYS_SIGNAL_H) && !defined(SUN_OS)
-# include <sys/signal.h>
-#endif
-
 /* number of hostnames cached in an LRU queue */
 #define HOST_CACHE_SIZE 8192
 
