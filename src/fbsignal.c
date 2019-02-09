@@ -8,13 +8,6 @@
 
 #ifndef WIN32
 
-/*
- * SunOS can't include signal.h and sys/signal.h, stupid broken OS.
- */
-#if defined(HAVE_SYS_SIGNAL_H) && !defined(SUN_OS)
-# include <sys/signal.h>
-#endif
-
 #if !defined(SYSV) && !defined(_POSIX_VERSION) && !defined(ULTRIX)
 #define RETSIGVAL 0
 #else
