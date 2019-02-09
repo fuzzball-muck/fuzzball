@@ -9,19 +9,6 @@
 #ifndef WIN32
 
 /*
- * SunOS can't include signal.h and sys/signal.h, stupid broken OS.
- */
-#if defined(HAVE_SYS_SIGNAL_H) && !defined(SUN_OS)
-# include <sys/signal.h>
-#endif
-
-#if !defined(SYSV) && !defined(_POSIX_VERSION) && !defined(ULTRIX)
-#define RETSIGVAL 0
-#else
-#define RETSIGVAL
-#endif
-
-/*
  * Function prototypes
  */
 void set_signals(void);
@@ -36,81 +23,46 @@ void sig_emerg(int i);
 void sig_reap(int i);
 #endif
 
-#ifdef _POSIX_VERSION
-void our_signal(int signo, void (*sighandler) (int));
-#else
-# define our_signal(s,f) signal((s),(f))
-#endif
-
 #ifdef HAVE_PSELECT
 static int set_pselect_signal_mask = 0;
 sigset_t pselect_signal_mask;
 #endif
 
-/*
- * our_signal(signo, sighandler)
- *
- * signo      - Signal #, see defines in signal.h
- * sighandler - The handler function desired.
- *
- * Calls sigaction() to set a signal, if we are posix.
- */
-#ifdef _POSIX_VERSION
-void
-our_signal(int signo, void (*sighandler) (int))
-{
-    struct sigaction act, oact;
-
-    act.sa_handler = sighandler;
-    sigemptyset(&act.sa_mask);
-    act.sa_flags = 0;
-
-    /* Restart long system calls if a signal is caught. */
-#ifdef SA_RESTART
-    act.sa_flags |= SA_RESTART;
-#endif
-
-    /* Make it so */
-    sigaction(signo, &act, &oact);
-}
-
-#endif				/* _POSIX_VERSION */
-
 void
 set_dumper_signals(void)
 {
-    our_signal(SIGPIPE, SIG_IGN);	/* Ignore Blocked Pipe */
-    our_signal(SIGHUP, SIG_IGN);	/* Ignore Terminal Hangup */
-    our_signal(SIGCHLD, SIG_IGN);	/* Ignore Child termination */
-    our_signal(SIGFPE, SIG_IGN);	/* Ignore FP exceptions */
-    our_signal(SIGUSR1, SIG_IGN);	/* Ignore SIGUSR1 */
-    our_signal(SIGUSR2, SIG_IGN);	/* Ignore SIGUSR2 */
-    our_signal(SIGINT, SIG_DFL);	/* Take Interrupt signal and die! */
-    our_signal(SIGTERM, SIG_DFL);	/* Take Terminate signal and die! */
-    our_signal(SIGSEGV, SIG_DFL);	/* Take Segfault and die! */
+    signal(SIGPIPE, SIG_IGN);	/* Ignore Blocked Pipe */
+    signal(SIGHUP, SIG_IGN);	/* Ignore Terminal Hangup */
+    signal(SIGCHLD, SIG_IGN);	/* Ignore Child termination */
+    signal(SIGFPE, SIG_IGN);	/* Ignore FP exceptions */
+    signal(SIGUSR1, SIG_IGN);	/* Ignore SIGUSR1 */
+    signal(SIGUSR2, SIG_IGN);	/* Ignore SIGUSR2 */
+    signal(SIGINT, SIG_DFL);	/* Take Interrupt signal and die! */
+    signal(SIGTERM, SIG_DFL);	/* Take Terminate signal and die! */
+    signal(SIGSEGV, SIG_DFL);	/* Take Segfault and die! */
 #ifdef SIGTRAP
-    our_signal(SIGTRAP, SIG_DFL);
+    signal(SIGTRAP, SIG_DFL);
 #endif
 #ifdef SIGIOT
-    our_signal(SIGIOT, SIG_DFL);
+    signal(SIGIOT, SIG_DFL);
 #endif
 #ifdef SIGEMT
-    our_signal(SIGEMT, SIG_DFL);
+    signal(SIGEMT, SIG_DFL);
 #endif
 #ifdef SIGBUS
-    our_signal(SIGBUS, SIG_DFL);
+    signal(SIGBUS, SIG_DFL);
 #endif
 #ifdef SIGSYS
-    our_signal(SIGSYS, SIG_DFL);
+    signal(SIGSYS, SIG_DFL);
 #endif
 #ifdef SIGXCPU
-    our_signal(SIGXCPU, SIG_IGN);	/* CPU usage limit exceeded */
+    signal(SIGXCPU, SIG_IGN);	/* CPU usage limit exceeded */
 #endif
 #ifdef SIGXFSZ
-    our_signal(SIGXFSZ, SIG_IGN);	/* Exceeded file size limit */
+    signal(SIGXFSZ, SIG_IGN);	/* Exceeded file size limit */
 #endif
 #ifdef SIGVTALRM
-    our_signal(SIGVTALRM, SIG_DFL);
+    signal(SIGVTALRM, SIG_DFL);
 #endif
 }
 
@@ -133,59 +85,59 @@ static void
 set_sigs_intern(int bail)
 {
     /* we don't care about SIGPIPE, we notice it in select() and write() */
-    our_signal(SIGPIPE, SET_IGN);
+    signal(SIGPIPE, SET_IGN);
 
     /* didn't manage to lose that control tty, did we? Ignore it anyway. */
-    our_signal(SIGHUP, SET_IGN);
+    signal(SIGHUP, SET_IGN);
 
 #ifdef SPAWN_HOST_RESOLVER
     /* resolver's exited. Better clean up the mess our child leaves */
-    our_signal(SIGCHLD, bail ? SIG_DFL : sig_reap);
+    signal(SIGCHLD, bail ? SIG_DFL : sig_reap);
 #endif
     /* standard termination signals */
-    our_signal(SIGINT, SET_BAIL);
-    our_signal(SIGTERM, SET_BAIL);
+    signal(SIGINT, SET_BAIL);
+    signal(SIGTERM, SET_BAIL);
 
     /* catch these because we might as well */
-/*  our_signal(SIGQUIT, SET_BAIL);  */
+/*  signal(SIGQUIT, SET_BAIL);  */
 #ifdef SIGTRAP
-    our_signal(SIGTRAP, SET_IGN);
+    signal(SIGTRAP, SET_IGN);
 #endif
 #ifdef SIGIOT
-    our_signal(SIGIOT, SET_BAIL);
+    signal(SIGIOT, SET_BAIL);
 #endif
 #ifdef SIGEMT
-    our_signal(SIGEMT, SET_BAIL);
+    signal(SIGEMT, SET_BAIL);
 #endif
 #ifdef SIGBUS
-    our_signal(SIGBUS, SET_BAIL);
+    signal(SIGBUS, SET_BAIL);
 #endif
 #ifdef SIGSYS
-    our_signal(SIGSYS, SET_BAIL);
+    signal(SIGSYS, SET_BAIL);
 #endif
-    our_signal(SIGFPE, SET_BAIL);
+    signal(SIGFPE, SET_BAIL);
 #if 0
-    our_signal(SIGSEGV, SET_BAIL);
+    signal(SIGSEGV, SET_BAIL);
 #endif
-    our_signal(SIGTERM, bail ? SET_BAIL : sig_shutdown);
+    signal(SIGTERM, bail ? SET_BAIL : sig_shutdown);
 #ifdef SIGXCPU
-    our_signal(SIGXCPU, SET_BAIL);
+    signal(SIGXCPU, SET_BAIL);
 #endif
 #ifdef SIGXFSZ
-    our_signal(SIGXFSZ, SET_BAIL);
+    signal(SIGXFSZ, SET_BAIL);
 #endif
 #ifdef SIGVTALRM
-    our_signal(SIGVTALRM, SET_BAIL);
+    signal(SIGVTALRM, SET_BAIL);
 #endif
 #ifdef SIGEMERG
     /* Clean shutdown signal (may be used with UPS software when power goes down...) */
-    our_signal(SIGUSR2, sig_emerg);
+    signal(SIGUSR2, sig_emerg);
 #else
-    our_signal(SIGUSR2, SET_BAIL);
+    signal(SIGUSR2, SET_BAIL);
 #endif
 
     /* status dumper (predates "WHO" command) */
-    our_signal(SIGUSR1, bail ? SIG_DFL : sig_dump_status);
+    signal(SIGUSR1, bail ? SIG_DFL : sig_dump_status);
 
 #ifdef HAVE_PSELECT
     if (!set_pselect_signal_mask) {
@@ -240,7 +192,6 @@ void
 sig_dump_status(int i)
 {
     dump_status();
-    return RETSIGVAL;
 }
 
 #ifdef SIGEMERG
@@ -252,7 +203,6 @@ sig_emerg(int i)
     dump_database();
     shutdown_flag = 1;
     restart_flag = 0;
-    return RETSIGVAL;
 }
 #endif
 
@@ -265,7 +215,6 @@ sig_shutdown(int i)
     log_status("SHUTDOWN: via SIGNAL");
     shutdown_flag = 1;
     restart_flag = 0;
-    return RETSIGVAL;
 }
 
 #ifdef SPAWN_HOST_RESOLVER
@@ -349,7 +298,6 @@ sig_reap(int i)
     if (need_to_spawn_resolver) {
         spawn_resolver();
     }
-    return RETSIGVAL;
 }
 #endif
 
