@@ -8,12 +8,6 @@
 
 #ifndef WIN32
 
-#if !defined(SYSV) && !defined(_POSIX_VERSION) && !defined(ULTRIX)
-#define RETSIGVAL 0
-#else
-#define RETSIGVAL
-#endif
-
 /*
  * Function prototypes
  */
@@ -233,7 +227,6 @@ void
 sig_dump_status(int i)
 {
     dump_status();
-    return RETSIGVAL;
 }
 
 #ifdef SIGEMERG
@@ -245,7 +238,6 @@ sig_emerg(int i)
     dump_database();
     shutdown_flag = 1;
     restart_flag = 0;
-    return RETSIGVAL;
 }
 #endif
 
@@ -258,7 +250,6 @@ sig_shutdown(int i)
     log_status("SHUTDOWN: via SIGNAL");
     shutdown_flag = 1;
     restart_flag = 0;
-    return RETSIGVAL;
 }
 
 #ifdef SPAWN_HOST_RESOLVER
@@ -342,7 +333,6 @@ sig_reap(int i)
     if (need_to_spawn_resolver) {
         spawn_resolver();
     }
-    return RETSIGVAL;
 }
 #endif
 
