@@ -80,12 +80,8 @@
  * is removed from the player as well.  This is regardless of the 'sync'
  * setting, and only happens for object type == Player
  *
- * You will typically want to run this with sync = 1.
- *
- * NOTE: The usage here of 'sync' may be a bug.  I have described this
- *       method as it functions but it would be more intuitive if
- *       sync worked the opposite way than how it does (i.e. only sync
- *       if sync == 1 instead of syncing when sync == 0).
+ * You will typically want to run this with sync = 1.  The original purpose
+ * around sync is to avoid a recursion problem.
  *
  * This version of set_property DOES NOT do diskbase -- you probably want
  * to use set_property instead.
@@ -237,13 +233,6 @@ set_property_nofetch(dbref player, const char *pname, PData * dat, int sync)
              */
             FLAGS(player) |= GUEST;
         } else if (!sync && strcasecmp(tp_gender_prop, LEGACY_GENDER_PROP)) {
-            /* @TODO: Is this a bug?  !sync?  Shouldn't it be 'if sync'?
-             *        Code review where remove_property* is used and
-             *        try to determine what behavior is actually expected.
-             *
-             *        update documentation accordingly.
-             */
-
             /* This code block sync's the tune'd gender property
              * with the legacy gender property if indicated to do so
              * by the parameters.
@@ -318,12 +307,8 @@ set_property_nofetch(dbref player, const char *pname, PData * dat, int sync)
  * is removed from the player as well.  This is regardless of the 'sync'
  * setting, and only happens for object type == Player
  *
- * You will typically want to run this with sync = 1.
- *
- * NOTE: The usage here of 'sync' may be a bug.  I have described this
- *       method as it functions but it would be more intuitive if
- *       sync worked the opposite way than how it does (i.e. only sync
- *       if sync == 1 instead of syncing when sync == 0).
+ * You will typically want to run this with sync = 1.  The original purpose
+ * around sync is to avoid a recursion problem.
  *
  * This version of set_property handles all the diskbase stuff.
  *
@@ -517,11 +502,6 @@ remove_property_list(dbref player, int all)
  *
  * @see remove_property
  *
- * NOTE: The usage here of 'sync' may be a bug.  I have described this
- *       method as it functions but it would be more intuitive if
- *       sync worked the opposite way than how it does (i.e. only sync
- *       if sync == 1 instead of syncing when sync == 0).
- *
  * @internal
  * @param player The object to operate on.
  * @param pname the property name to delete
@@ -548,13 +528,6 @@ remove_property_nofetch(dbref player, const char *pname, int sync)
             FLAGS(player) &= ~GUEST;
             DBDIRTY(player);
         } else if (!sync && strcasecmp(tp_gender_prop, LEGACY_GENDER_PROP)) {
-            /* @TODO: Is this a bug?  !sync?  Shouldn't it be 'if sync'?
-             *        Code review where remove_property* is used and
-             *        try to determine what behavior is actually expected.
-             *
-             *        update documentation accordingly.
-             */
-
             /* This code block sync's the tune'd gender property
              * with the legacy gender property if indicated to do so
              * by the parameters.
@@ -600,11 +573,6 @@ remove_property_nofetch(dbref player, const char *pname, int sync)
  *
  * You will typically want to run this with sync = 1.  This call handles
  * all the diskbase stuff.
- *
- * NOTE: The usage here of 'sync' may be a bug.  I have described this
- *       method as it functions but it would be more intuitive if
- *       sync worked the opposite way than how it does (i.e. only sync
- *       if sync == 1 instead of syncing when sync == 0).
  *
  * @param player The object to operate on.
  * @param pname the property name to delete

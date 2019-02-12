@@ -1043,11 +1043,6 @@ int reflist_find(dbref obj, const char *propname, dbref tofind);
  * You will typically want to run this with sync = 1.  This call handles
  * all the diskbase stuff.
  *
- * NOTE: The usage here of 'sync' may be a bug.  I have described this
- *       method as it functions but it would be more intuitive if
- *       sync worked the opposite way than how it does (i.e. only sync
- *       if sync == 1 instead of syncing when sync == 0).
- *
  * @param player The object to operate on.
  * @param pname the property name to delete
  * @param sync Do not sync gender props?  See description above.
@@ -1092,11 +1087,6 @@ void remove_property_list(dbref player, int all);
  * instead.
  *
  * @see remove_property
- *
- * NOTE: The usage here of 'sync' may be a bug.  I have described this
- *       method as it functions but it would be more intuitive if
- *       sync worked the opposite way than how it does (i.e. only sync
- *       if sync == 1 instead of syncing when sync == 0).
  *
  * @internal
  * @param player The object to operate on.
@@ -1213,12 +1203,8 @@ void set_standard_property(int descr, dbref player, const char *objname,
  * is removed from the player as well.  This is regardless of the 'sync'
  * setting, and only happens for object type == Player
  *
- * You will typically want to run this with sync = 1.
- *
- * NOTE: The usage here of 'sync' may be a bug.  I have described this
- *       method as it functions but it would be more intuitive if
- *       sync worked the opposite way than how it does (i.e. only sync
- *       if sync == 1 instead of syncing when sync == 0).
+ * You will typically want to run this with sync = 1.  The original purpose
+ * around sync is to avoid a recursion problem.
  *
  * This version of set_property handles all the diskbase stuff.
  *
@@ -1290,12 +1276,8 @@ void set_property_flags(dbref player, const char *pname, int flags);
  * is removed from the player as well.  This is regardless of the 'sync'
  * setting, and only happens for object type == Player
  *
- * You will typically want to run this with sync = 1.
- *
- * NOTE: The usage here of 'sync' may be a bug.  I have described this
- *       method as it functions but it would be more intuitive if
- *       sync worked the opposite way than how it does (i.e. only sync
- *       if sync == 1 instead of syncing when sync == 0).
+ * You will typically want to run this with sync = 1.  The original purpose
+ * around sync is to avoid a recursion problem.
  *
  * This version of set_property DOES NOT do diskbase -- you probably want
  * to use set_property instead.
