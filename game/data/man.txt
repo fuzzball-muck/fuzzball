@@ -1344,16 +1344,18 @@ Also see: <, <=, >=, =, !=, NOT, AND and OR
 ~
 ~
 =
-=  ( n1 n2 -- i )
+=  ( ?1 ?2 -- i )
 
-  Compares two numbers and returns 1 if n1 is equal to n2, and 0 otherwise.
+  Compares two numbers, dbrefs, or strings and returns 1 if ?1 is equal to ?2,
+and 0 otherwise.
 Also see: <, >, <=, >=, !=, NOT, AND and OR
 ~
 ~
 !=
-!=  ( n1 n2 -- i )
+!=  ( ?1 ?2 -- i )
 
-  Compares two numbers and returns 0 if n1 is equal to n2, and 1 otherwise.
+  Compares two numbers, dbrefs, or strings and returns 0 if ?1 is equal to ?2,
+and 1 otherwise.
 Also see: <, >, <=, >=, !=, NOT, AND and OR
 ~
 ~
@@ -1999,14 +2001,13 @@ INT ( x -- i )
 ~
 +
 + ( n1 n2 -- i )
-
   This adds two numbers, n1 + n2.  If both numbers are integers, an integer
 will be returned.  If one of them is a floating point number, then a float
 will be returned.  You can also use this on a dbref or a variable number,
 so long as the second argument is an integer.  In those cases, this will
 return a dbref or variable number, respectively.
 
-  With sysparm muf_string_math, also concatenates two strings.
+  Also concatenates two strings.
 ~
 ~
 -
@@ -2028,7 +2029,7 @@ then a float will be returned.  You can also use this on a dbref or a
 variable number, so long as the second argument is an integer.  In those
 cases, this will return a dbref or variable number, respectively.
 
-  With sysparm muf_string_math, also repeats a string given an integer argument.
+  Also repeats a string given an integer argument.
 ~
 ~
 /
@@ -4566,7 +4567,6 @@ Parameters available:
  (bool) expanded_debug_trace      - MUF debug trace shows array contents
  (bool) force_mlev1_name_notify   - MUF notify prepends username for ML1 programs
  (bool) muf_comments_strict       - MUF comments are strict and not recursive
- (bool) muf_string_math           - Allow some math operators to work with string operands
  (bool) optimize_muf              - Enable MUF bytecode optimizer
  (bool) playermax                 - Limit number of concurrent players allowed
  (bool) quiet_moves               - Suppress basic arrive and depart notifications

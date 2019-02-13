@@ -380,9 +380,6 @@
 /* Suppress basic arrive and depart notifications. */
 #define QUIET_MOVES 0
 
-/* Allow some math operators to work with string operands. */
-#define MUF_STRING_MATH 0
-
 /* Change tab to space when processing input. */
 #define TAB_INPUT_REPLACED_WITH_SPACE 1
 
