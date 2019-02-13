@@ -19,7 +19,7 @@ prim_add(PRIM_PROTOTYPE)
     oper1 = POP();
     oper2 = POP();
 
-    if (tp_muf_string_math && oper1->type == PROG_STRING && oper2->type == PROG_STRING) {
+    if (oper1->type == PROG_STRING && oper2->type == PROG_STRING) {
         struct shared_string *string;
 	if (!oper1->data.string && !oper2->data.string)
 	    string = NULL;
@@ -106,8 +106,8 @@ prim_multiply(PRIM_PROTOTYPE)
     oper1 = POP();
     oper2 = POP();
 
-    if (tp_muf_string_math && ((oper1->type == PROG_STRING && oper2->type == PROG_INTEGER) ||
-	(oper1->type == PROG_INTEGER && oper2->type == PROG_STRING))) {
+    if ((oper1->type == PROG_STRING && oper2->type == PROG_INTEGER) ||
+	(oper1->type == PROG_INTEGER && oper2->type == PROG_STRING)) {
         struct shared_string *string;
 
 	if (oper1->type == PROG_INTEGER) {
@@ -415,7 +415,7 @@ prim_equal(PRIM_PROTOTYPE)
     CHECKOP(2);
     oper1 = POP();
     oper2 = POP();
-    if (tp_muf_string_math && oper1->type == PROG_STRING && oper2->type == PROG_STRING) {
+    if (oper1->type == PROG_STRING && oper2->type == PROG_STRING) {
 	if (oper1->data.string == oper2->data.string) {
 	    result = 1;
 	} else {
@@ -806,7 +806,7 @@ prim_notequal(PRIM_PROTOTYPE)
     CHECKOP(2);
     oper1 = POP();
     oper2 = POP();
-    if (tp_muf_string_math && oper1->type == PROG_STRING && oper2->type == PROG_STRING) {
+    if (oper1->type == PROG_STRING && oper2->type == PROG_STRING) {
 	if (oper1->data.string == oper2->data.string) {
 	    result = 0;
 	} else {
