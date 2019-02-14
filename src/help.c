@@ -83,7 +83,7 @@ index_file(dbref player, const char *onwhat, const char *file)
 void
 do_helpfile(dbref player, const char *dir, const char *file, char *topic, char *segment)
 {
-    if ((!*topic || !*segment) && !!strchr(match_args, ARG_DELIMITER))
+    if ((!*topic || !*segment) && strchr(match_args, ARG_DELIMITER))
         topic = match_args;
 
     if (show_subfile(player, dir, topic, segment, 0))
