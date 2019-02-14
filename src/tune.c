@@ -803,7 +803,7 @@ do_tune(dbref player, char *parmname, char *parmval)
 
     /* If parmname exists, and either has parmvalue or the reset to default flag, try to set the
        value.  Otherwise, fall back to displaying it. */
-    if (*parmname && (!!strchr(match_args, ARG_DELIMITER) || TP_HAS_FLAG_DEFAULT(parmname))) {
+    if (*parmname && (strchr(match_args, ARG_DELIMITER) || TP_HAS_FLAG_DEFAULT(parmname))) {
 	if (force_level) {
 	    notify(player, "You cannot force setting a @tune.");
 	    return;
