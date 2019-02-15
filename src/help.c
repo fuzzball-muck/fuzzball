@@ -2,9 +2,9 @@
 
 #include "commands.h"
 #include "db.h"
-#include "game.h"
 #include "fbstrings.h"
 #include "fbtime.h"
+#include "game.h"
 #include "interface.h"
 #include "log.h"
 #include "tune.h"
