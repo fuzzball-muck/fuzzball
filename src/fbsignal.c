@@ -224,15 +224,16 @@ wall_status(char *s)
 void
 sig_reconfigure(int i)
 {
-    wall_status("Configuration reload requested remotely.");
-#ifdef USE_SSL
-    if (!reconfigure_ssl()) {
-        wall_status("Certificate reload failed!");
-    } else {
-        wall_status("Certificate reload was successful.");
-    }
-#endif
-    wall_status("Configuration reload complete.");
+	wall_status("Configuration reload requested remotely.");
+	#ifdef USE_SSL
+	if (reconfigure_ssl()) {
+		wall_status("Certificate reload was successful.");
+	} else {
+		wall_status("Certificate reload failed!");
+	}
+	#else
+	wall_status("This MUCK wasn't compiled to use TLS, so no certificate reload was attempted.");
+	#endif
 }
 
 /*
