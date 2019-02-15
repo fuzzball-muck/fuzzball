@@ -224,12 +224,16 @@ wall_status(char *s)
 void
 sig_reconfigure(int i)
 {
-    wall_status("Configuration reload requested remotely.");
-    if (!reconfigure_ssl()) {
-        wall_status("Certificate reload failed!");
-    } else {
-        wall_status("Certificate reload was successful.");
-    }
+	#ifdef USE_SSL
+	wall_status("Certificate reload requested remotely.");
+	if (reconfigure_ssl()) {
+		wall_status("Certificate reload was successful.");
+	} else {
+		wall_status("Certificate reload failed!");
+	}
+	#else
+	wall_status("TLS certificate reload requested, but this server wasn't compiled to use TLS.");
+	#endif
 }
 
 /*
