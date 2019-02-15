@@ -1,12 +1,9 @@
-/*
- * props.h
+/** @file props.h
  *
  * Header for common database property data along with function declarations
  * for most property primitives.
  *
- * This header file is part of the Fuzzball MUCK Project and is released
- * under the GNU Public License version 3 with certain exceptions.  Please
- * see LICENSE.md for full details.
+ * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
  */
 
 #ifndef _PROPS_H

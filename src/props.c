@@ -6,9 +6,7 @@
  * ... largely arbitrary.  I would say props.c appears to (mostly) have
  * "lower level" calls compared to property.c
  *
- * This source file is part of the Fuzzball MUCK Project and is released
- * under the GNU Public License version 3 with certain exceptions.  Please
- * see LICENSE.md for full details.
+ * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
  */
 
 
