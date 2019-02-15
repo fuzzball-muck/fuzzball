@@ -4,7 +4,6 @@
 #include "fbmath.h"
 #include "inst.h"
 #include "interp.h"
-#include "tune.h"
 
 static struct inst *oper1, *oper2, *oper3, *oper4;
 static int tmp, result;

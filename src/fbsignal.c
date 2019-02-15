@@ -225,11 +225,14 @@ void
 sig_reconfigure(int i)
 {
     wall_status("Configuration reload requested remotely.");
-    if (!reconfigure_ssl()) {
-        wall_status("Certificate reload failed!");
-    } else {
+#ifdef USE_SSL
+    if (reconfigure_ssl()) {
         wall_status("Certificate reload was successful.");
+    } else {
+        wall_status("Certificate reload failed!");
     }
+#endif
+    wall_status("Configuration reload complete.");
 }
 
 /*
