@@ -1,6 +1,7 @@
 #include "config.h"
 
 #include "fbsignal.h"
+#include "db.h"
 #include "game.h"
 #include "interface.h"
 #include "log.h"
@@ -15,6 +16,7 @@ void set_signals(void);
 void bailout(int);
 void sig_dump_status(int i);
 void sig_shutdown(int i);
+void sig_reconfigure(int i);
 #ifdef SIGEMERG
 void sig_emerg(int i);
 #endif
@@ -88,7 +90,7 @@ set_sigs_intern(int bail)
     signal(SIGPIPE, SET_IGN);
 
     /* didn't manage to lose that control tty, did we? Ignore it anyway. */
-    signal(SIGHUP, SET_IGN);
+    signal(SIGHUP, sig_reconfigure);
 
 #ifdef SPAWN_HOST_RESOLVER
     /* resolver's exited. Better clean up the mess our child leaves */
@@ -205,6 +207,33 @@ sig_emerg(int i)
     restart_flag = 0;
 }
 #endif
+
+static void
+wall_status(char *s)
+{
+    char buf[BUFFER_LEN];
+
+    log_status(s);
+    snprintf(buf, sizeof(buf), "## %s", s);
+    wall_wizards(buf);
+}
+
+/*
+ * Reload configuration.
+ */
+void
+sig_reconfigure(int i)
+{
+    wall_status("Configuration reload requested remotely.");
+#ifdef USE_SSL
+    if (reconfigure_ssl()) {
+        wall_status("Certificate reload was successful.");
+    } else {
+        wall_status("Certificate reload failed!");
+    }
+#endif
+    wall_status("Configuration reload complete.");
+}
 
 /*
  * Gracefully shut the server down.

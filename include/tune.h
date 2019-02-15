@@ -214,7 +214,6 @@ extern int tp_log_interactive;
 extern int tp_log_programs;
 extern int tp_m3_huh;
 extern int tp_muf_comments_strict;
-extern int tp_muf_string_math;
 extern int tp_optimize_muf;
 extern int tp_periodic_program_purge;
 extern int tp_playermax;
