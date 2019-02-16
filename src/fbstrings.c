@@ -1393,8 +1393,9 @@ ifloat(const char *s)
  * This is the fuzzball version of strchr
  *
  * Returns a pointer to the first occurance of 'c' in 's' or returns NULL.
- * The reasoning for this is that not all std libraries have the 'strchr' call.
- * I'm not sure I've ever seen a std lib that doesn't have strchr, but whatever
+ * The difference between this strchr and stdlib's is this one is
+ * CASE INSENSITIVE.  At least my libc doesn't have a case-insensitive
+ * strchr.
  *
  * @private
  * @param s the string to scan

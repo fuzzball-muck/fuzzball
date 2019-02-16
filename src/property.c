@@ -661,7 +661,7 @@ get_property(dbref player, const char *pname)
  * @param descr Integer descriptor of the caller.
  * @param player the DBREF of the player that has triggered the has_property
  *        check
- * @param what the object that triggered teh check
+ * @param what the object that triggered the check
  * @param pname The property name to check
  * @param strval the string value to check
  * @param value the integer value to check
