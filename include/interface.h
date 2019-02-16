@@ -45,7 +45,8 @@ typedef enum {
     TELNET_STATE_DO,
     TELNET_STATE_WONT,
     TELNET_STATE_DONT,
-    TELNET_STATE_SB
+    TELNET_STATE_SB,
+    TELNET_STATE_FORWARDING  // Non-standard telnet extension for gateway support.
 } telnet_states_t;
 
 #define TELNET_IAC	255
@@ -66,6 +67,7 @@ typedef enum {
 #define TELNET_SE	240
 
 #define TELOPT_STARTTLS	46
+#define TELOPT_FORWARDED  113 /* non-standard; for gateways */
 
 struct text_block {
     size_t nchars;
@@ -104,6 +106,12 @@ struct descriptor_data {
     telnet_states_t telnet_state;
     int telnet_sb_opt;
     int short_reads;
+
+    /* Fields related to ip-forwarding, to support websocket gateways  */
+    int forwarding_enabled;
+    char *forwarded_buffer;
+    int forwarded_size;
+
     time_t last_time;
     time_t connected_at;
     time_t last_pinged_at;
