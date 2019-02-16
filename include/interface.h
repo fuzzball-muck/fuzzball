@@ -45,7 +45,8 @@ typedef enum {
     TELNET_STATE_DO,
     TELNET_STATE_WONT,
     TELNET_STATE_DONT,
-    TELNET_STATE_SB
+    TELNET_STATE_SB,
+    TELNET_STATE_FORWARDING  // Non-standard telnet extension for gateway support.
 } telnet_states_t;
 
 #define TELNET_IAC	255
