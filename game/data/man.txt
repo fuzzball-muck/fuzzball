@@ -187,10 +187,10 @@ P's
   parsepropex        part_pmatch        pennies            pi
   pick               pid                player?            pmatch
   pname-ok?          pname_history      polar_to_xyz       pop
-  popn               pow                pr_mode            preempt
-  prettylock         prog               program?           program_getlines
-  program_setlines   pronoun_sub        prop-name-ok?      propdir?
-  public             put                
+  popn               pose-separator?    pow                pr_mode
+  preempt            prettylock         prog               program?
+  program_getlines   program_setlines   pronoun_sub        prop-name-ok?
+  propdir?           public             put                
 
 Q's
   queue  
@@ -2487,14 +2487,14 @@ array_fmtstrings   atoi               ctoi               explode
 explode_array      ext-name-ok?       fmtstring          instr
 instring           intostr            itoc               md5hash
 midstr             name-ok?           number?            pname-ok?
-pronoun_sub        prop-name-ok?      regexp             regsplit
-regsplit_noempty   regsub             rinstr             rinstring
-rsplit             sha1hash           smatch             split
-stod               strcat             strcmp             strcut
-strdecrypt         strencrypt         stringcmp          stringpfx
-strip              striplead          striptail          strlen
-strncmp            subst              textattr           tokensplit
-tolower            toupper            
+pose-separator?    pronoun_sub        prop-name-ok?      regexp
+regsplit           regsplit_noempty   regsub             rinstr
+rinstring          rsplit             sha1hash           smatch
+split              stod               strcat             strcmp
+strcut             strdecrypt         strencrypt         stringcmp
+stringpfx          strip              striplead          striptail
+strlen             strncmp            subst              textattr
+tokensplit         tolower            toupper            
 
 ~----------------------------------------------------------------------------
 ~
@@ -2838,6 +2838,13 @@ NUMBER? ( s -- i )
 
   Returns 1 if string on top of the stack contains a number. Otherwise
 returns 0.
+~
+~
+POSE-SEPARATOR?
+POSE-SEPARATOR? ( s -- i )
+
+  Returns 1 if the argument could be used as a pose without requiring a space.
+Otherwise returns 0.
 ~
 ~
 INTOSTR

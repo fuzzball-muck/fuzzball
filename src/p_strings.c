@@ -2707,3 +2707,18 @@ prim_strip(PRIM_PROTOTYPE)
     CLEAR(oper1);
     PushString(pname);
 }
+
+void
+prim_pose_separatorp(PRIM_PROTOTYPE)
+{
+    CHECKOP(1);
+    oper1 = POP();
+
+    if (oper1->type != PROG_STRING)
+	abort_interp("Not a string argument.");
+
+    result = is_valid_pose_separator((DoNullInd(oper1->data.string))[0]);
+
+    CLEAR(oper1);
+    PushInt(result);
+}

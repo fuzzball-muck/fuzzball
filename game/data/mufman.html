@@ -600,20 +600,21 @@
     <li><a href="#pop">pop</a></li>
 <!-- HTML_IDXGROUP_NEWROW -->
     <li><a href="#popn">popn</a></li>
+    <li><a href="#pose-separator?">pose-separator?</a></li>
     <li><a href="#pow">pow</a></li>
     <li><a href="#pr_mode">pr_mode</a></li>
-    <li><a href="#preempt">preempt</a></li>
 <!-- HTML_IDXGROUP_NEWROW -->
+    <li><a href="#preempt">preempt</a></li>
     <li><a href="#prettylock">prettylock</a></li>
     <li><a href="#prog">prog</a></li>
     <li><a href="#program?">program?</a></li>
-    <li><a href="#program_getlines">program_getlines</a></li>
 <!-- HTML_IDXGROUP_NEWROW -->
+    <li><a href="#program_getlines">program_getlines</a></li>
     <li><a href="#program_setlines">program_setlines</a></li>
     <li><a href="#pronoun_sub">pronoun_sub</a></li>
     <li><a href="#prop-name-ok?">prop-name-ok?</a></li>
-    <li><a href="#propdir?">propdir?</a></li>
 <!-- HTML_IDXGROUP_NEWROW -->
+    <li><a href="#propdir?">propdir?</a></li>
     <li><a href="#public">public</a></li>
     <li><a href="#put">put</a></li>
 </ul>
@@ -4410,41 +4411,42 @@ identifier.
     <li><a href="#number?">number?</a></li>
     <li><a href="#pname-ok?">pname-ok?</a></li>
 <!-- HTML_SECTIDX_NEWROW -->
+    <li><a href="#pose-separator?">pose-separator?</a></li>
     <li><a href="#pronoun_sub">pronoun_sub</a></li>
     <li><a href="#prop-name-ok?">prop-name-ok?</a></li>
     <li><a href="#regexp">regexp</a></li>
-    <li><a href="#regsplit">regsplit</a></li>
 <!-- HTML_SECTIDX_NEWROW -->
+    <li><a href="#regsplit">regsplit</a></li>
     <li><a href="#regsplit_noempty">regsplit_noempty</a></li>
     <li><a href="#regsub">regsub</a></li>
     <li><a href="#rinstr">rinstr</a></li>
-    <li><a href="#rinstring">rinstring</a></li>
 <!-- HTML_SECTIDX_NEWROW -->
+    <li><a href="#rinstring">rinstring</a></li>
     <li><a href="#rsplit">rsplit</a></li>
     <li><a href="#sha1hash">sha1hash</a></li>
     <li><a href="#smatch">smatch</a></li>
-    <li><a href="#split">split</a></li>
 <!-- HTML_SECTIDX_NEWROW -->
+    <li><a href="#split">split</a></li>
     <li><a href="#stod">stod</a></li>
     <li><a href="#strcat">strcat</a></li>
     <li><a href="#strcmp">strcmp</a></li>
-    <li><a href="#strcut">strcut</a></li>
 <!-- HTML_SECTIDX_NEWROW -->
+    <li><a href="#strcut">strcut</a></li>
     <li><a href="#strdecrypt">strdecrypt</a></li>
     <li><a href="#strencrypt">strencrypt</a></li>
     <li><a href="#stringcmp">stringcmp</a></li>
-    <li><a href="#stringpfx">stringpfx</a></li>
 <!-- HTML_SECTIDX_NEWROW -->
+    <li><a href="#stringpfx">stringpfx</a></li>
     <li><a href="#strip">strip</a></li>
     <li><a href="#striplead">striplead</a></li>
     <li><a href="#striptail">striptail</a></li>
-    <li><a href="#strlen">strlen</a></li>
 <!-- HTML_SECTIDX_NEWROW -->
+    <li><a href="#strlen">strlen</a></li>
     <li><a href="#strncmp">strncmp</a></li>
     <li><a href="#subst">subst</a></li>
     <li><a href="#textattr">textattr</a></li>
-    <li><a href="#tokensplit">tokensplit</a></li>
 <!-- HTML_SECTIDX_NEWROW -->
+    <li><a href="#tokensplit">tokensplit</a></li>
     <li><a href="#tolower">tolower</a></li>
     <li><a href="#toupper">toupper</a></li>
 </ul>
@@ -4939,6 +4941,16 @@ determining what section of the string to extract.
 </h3>
   Returns 1 if string on top of the stack contains a number. Otherwise
 returns 0.
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="pose-separator?">POSE-SEPARATOR? ( s -- i )
+<br>
+
+<br>
+</h3>
+  Returns 1 if the argument could be used as a pose without requiring a space.
+Otherwise returns 0.
 <!-- HTML_TOPICEND -->
 
 
