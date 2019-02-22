@@ -1300,36 +1300,6 @@ size_properties(dbref player, int load)
 
 /**
  * Checks to see if the property 'dir' is a propdir or not on the object
- * 'player'.  This does not do the diskbase calls; you should use
- * is_propdir normally.
- *
- * @TODO This call seems to be redundant; nothing except is_propdir uses it.
- *       Why not just fold this code into is_propdir?
- *
- * @internal
- * @param player DB of object to check
- * @param dir The property path to check.
- *
- * @return boolean - 1 if is propdir, otherwise 0 (including if prop does
- *         not exist.
- */
-static int
-is_propdir_nofetch(dbref player, const char *pname)
-{
-    PropPtr p;
-    char w[BUFFER_LEN];
-
-    strcpyn(w, sizeof(w), pname);
-    p = propdir_get_elem(DBFETCH(player)->properties, w);
-
-    if (!p)
-        return 0;
-
-    return (PropDir(p) != (PropPtr) NULL);
-}
-
-/**
- * Checks to see if the property 'dir' is a propdir or not on the object
  * 'player'
  *
  * @param player DB of object to check
@@ -1346,7 +1316,16 @@ is_propdir(dbref player, const char *pname)
     fetchprops(player, propdir_name(pname));
 #endif
 
-    return (is_propdir_nofetch(player, pname));
+    PropPtr p;
+    char w[BUFFER_LEN];
+
+    strcpyn(w, sizeof(w), pname);
+    p = propdir_get_elem(DBFETCH(player)->properties, w);
+
+    if (!p)
+        return 0;
+
+    return (PropDir(p) != (PropPtr) NULL);
 }
 
 /**
@@ -1410,15 +1389,7 @@ envpropstr(dbref * where, const char *propname)
     if (!temp)
         return NULL;
 
-    /* @TODO: This check appears to be superfluous ... envprop checks
-     * type, so this is just checking type a second time.
-     *
-     * I would just fix this but I promised just to comment this round :)
-     */
-    if (PropType(temp) == PROP_STRTYP)
-        return (PropDataStr(temp));
-
-    return NULL;
+    return (PropDataStr(temp));
 }
 
 /**
@@ -1805,15 +1776,11 @@ db_getprops(FILE * f, dbref obj, const char *pdir)
     while (db_get_single_prop(f, obj, 0L, (PropPtr) NULL, pdir)) ;
 }
 
-
 /**
  * Writes a single property to the disk.
  *
  * This is exclusively used in property.c and could be refactored so as
  * not to be exposed in this include file.
- *
- * @TODO: Remove from this header, there is no reason for this to be
- *        externally available.
  *
  * @param f The database file
  * @param dir The prop dir this prop is in.  This *is* actually used by
@@ -2564,9 +2531,6 @@ set_standard_lock(int descr, dbref player, const char *objname,
  * MUFs are run with PREEMPT and HARDUID.  Error conditions are notify'd
  * to the player.
  *
- * @TODO: The '@' symbol is a define in property.c called EXEC_SIGNAL which
- *        should probably be brought out to props.h instead.
- *
  * @param descr - integer descriptor to notify.
  * @param player - The DBREF of the calling player.
  * @param thing - The DBREF of the thing emitting the message.
@@ -2575,8 +2539,6 @@ set_standard_lock(int descr, dbref player, const char *objname,
  *                     MPI &how or the MUF command.  Such as "(@Desc)"
  * @param mpiflags - What MPI flags to use - MPI_ISPRIVATE is added.
  */
-#define EXEC_SIGNAL '@'         /* Symbol which tells us what we're looking at
-                                   is an execution order and not a message.    */
 void
 exec_or_notify(int descr, dbref player, dbref thing,
                const char *message, const char *whatcalled, int mpiflags)
@@ -2703,53 +2665,12 @@ exec_or_notify_prop(int descr, dbref player, dbref thing,
 
 /**
  * An "oprop" is something like an @OSuccess or @ODrop ... a message that
- * is prefixed with the player's name.  This takes a string, parses
- * pronouns and MPI, then emits the message to the room the triggering
- * player is in.
- *
- * This is equivalent to exec_or_notify which works for @Success, etc.
- * messages.
- *
- * @private
- * @param descr The descriptor of the person triggering
- * @param player The player DBREF that triggered the action.
- * @param dest The destination DBREF.
- * @param exit The exit DBREF that triggered the action.
- * @param msg The message to work with.
- * @param prefix What will be prefixed to this message before broadcast.
- *        This is pretty much always the player's name.  You do not need
- *        to include a trailing space.
- * @param whatcalled The &how / command verb, such as (@OSucc)
- * @param mpiflags The MPI flags for processing (usually to set BLESSED)
- */
-static void
-parse_omessage(int descr, dbref player, dbref dest, dbref exit, const char *msg,
-               const char *prefix, const char *whatcalled, int mpiflags)
-{
-    char buf[BUFFER_LEN];
-    char *ptr;
-
-    do_parse_mesg(descr, player, exit, msg, whatcalled, buf, sizeof(buf),
-                  MPI_ISPUBLIC | mpiflags);
-    ptr = pronoun_substitute(descr, player, buf);
-    if (!*ptr)
-        return;
-
-    prefix_message(buf, ptr, prefix, BUFFER_LEN, 1);
-    notify_except(CONTENTS(dest), player, buf, player);
-}
-
-/**
- * An "oprop" is something like an @OSuccess or @ODrop ... a message that
  * is prefixed with the player's name.  This loads the property, parses
  * pronouns and MPI, then emits the message to the room the triggering
  * player is in.
  *
  * This is equivalent to exec_or_notify which works for @Success, etc.
  * messages.
- *
- * @TODO We could collapse parse_omessage into this function; parse_omessage
- *       is only used by this call, so the separation is a little odd.
  *
  * @param descr The descriptor of the person triggering
  * @param player The player DBREF that triggered the action.
@@ -2771,8 +2692,19 @@ parse_oprop(int descr, dbref player, dbref dest, dbref exit, const char *propnam
     if (Prop_Blessed(exit, propname))
         ival |= MPI_ISBLESSED;
 
-    if (msg)
-        parse_omessage(descr, player, dest, exit, msg, prefix, whatcalled, ival);
+    if (msg) {
+        char buf[BUFFER_LEN];
+        char *ptr;
+
+        do_parse_mesg(descr, player, exit, msg, whatcalled, buf, sizeof(buf),
+                      MPI_ISPUBLIC | ival);
+        ptr = pronoun_substitute(descr, player, buf);
+        if (!*ptr)
+            return;
+
+        prefix_message(buf, ptr, prefix, BUFFER_LEN, 1);
+        notify_except(CONTENTS(dest), player, buf, player);
+    }
 }
 
 /**
