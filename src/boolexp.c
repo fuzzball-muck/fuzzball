@@ -20,12 +20,10 @@
 /**
  * Allocate a new boolexp struct
  *
- * @TODO: This be an inline
- *
  * @private
  * @return allocated memory for boolexp -- it is NOT zero'd out.
  */
-static struct boolexp *
+static inline struct boolexp *
 alloc_boolnode(void)
 {
     return (malloc(sizeof(struct boolexp)));
@@ -34,12 +32,10 @@ alloc_boolnode(void)
 /**
  * Free memory for a single boolexp node.  Does NOT recursively free children.
  *
- * @TODO: This be an inline.
- *
  * @private
  * @param ptr the node to free.
  */
-static void
+static inline void
 free_boolnode(struct boolexp *ptr)
 {
     free(ptr);
@@ -276,7 +272,6 @@ static struct boolexp *parse_boolexp_E(int descr, const char **parsebuf,
                                        dbref player, int dbloadp);
 /* See comment for this below at definition */
 static struct boolexp *parse_boolprop(char *buf);
-
 
 /**
  * Lowest level of the parse_boolexp family
@@ -610,33 +605,19 @@ parse_boolexp(int descr, dbref player, const char *buf, int dbloadp)
 static struct boolexp *
 parse_boolprop(char *buf)
 {
-    const char *type = alloc_string(buf);
+    char *type = alloc_string(buf);
     char *strval = strchr(type, PROP_DELIMITER);
-    const char *x;
+    char *x;
     struct boolexp *b;
     PropPtr p;
     char *temp;
 
     x = type;
-
-    /* Create our return value node
-     *
-     * @TODO: This could be moved down lower so our error conditions
-     * don't have to free this memory ... and honestly it might read
-     * a little cleaner because you can pack the whole node up in one
-     * spot.
-     */
-    b = alloc_boolnode();
-    b->type = BOOLEXP_PROP;
-    b->sub1 = b->sub2 = 0;
-    b->thing = NOTHING;
-    skip_whitespace(&type);
+    skip_whitespace((const char **)&type);
 
     /* This means there was no propname */
     if (*type == PROP_DELIMITER) {
-        /* Oops!  Clean up and return a TRUE */
-        free((void *) x);
-        free_boolnode(b);
+        free(x);
         return TRUE_BOOLEXP;
     }
 
@@ -652,9 +633,7 @@ parse_boolprop(char *buf)
 
     /* If there is no value, then we can't make a property node */
     if (!*strval) {
-        /* Oops!  CLEAN UP AND RETURN A TRUE */
-        free((void *) x);
-        free_boolnode(b);
+        free(x);
         return TRUE_BOOLEXP;
     }
 
@@ -664,16 +643,17 @@ parse_boolprop(char *buf)
     for (temp = (char *)strval; !isspace(*temp) && *temp; temp++) ;
     *temp = '\0';
 
-    /* Set up our propnode, finish setting up our boolnode, and then
-     * clean up our memory.
-     */
+    /* Set up our propnode and boolnode, and then clean up our memory. */
+    b = alloc_boolnode();
+    b->type = BOOLEXP_PROP;
+    b->sub1 = b->sub2 = 0;
+    b->thing = NOTHING;
     b->prop_check = p = alloc_propnode(type);
     SetPDataStr(p, alloc_string(strval));
     SetPType(p, PROP_STRTYP);
     free((void *) x);
     return b;
 }
-
 
 /**
  * Recursively compute the in-memory byte size of boolexp *b
@@ -729,29 +709,22 @@ void
 free_boolexp(struct boolexp *b)
 {
     if (b != TRUE_BOOLEXP) {
-        /* @TODO: This is silly minor, but the free_boolnode could be
-         * put outside the switch statement since its in all the
-         * statements.
-         */
         switch (b->type) {
             case BOOLEXP_AND:
             case BOOLEXP_OR:
                 free_boolexp(b->sub1);
                 free_boolexp(b->sub2);
-                free_boolnode(b);
                 break;
             case BOOLEXP_NOT:
                 free_boolexp(b->sub1);
-                free_boolnode(b);
                 break;
             case BOOLEXP_CONST:
-                free_boolnode(b);
                 break;
             case BOOLEXP_PROP:
                 free_propnode(b->prop_check);
-                free_boolnode(b);
                 break;
         }
+        free_boolnode(b);
     }
 }
 
@@ -907,7 +880,6 @@ test_lock(int descr, dbref player, dbref thing, const char *lockprop)
     lokptr = get_property_lock(thing, lockprop);
     return (eval_boolexp(descr, player, lokptr, thing));
 }
-
 
 /**
  * Test a lock - if the lock does not exist, return failure.
