@@ -1,3 +1,10 @@
+/** @file inst.h
+ *
+ * Header for various defines and data structures used by MUF programs.
+ *
+ * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
+ */
+
 #ifndef _INST_H
 #define _INST_H
 
@@ -97,4 +104,4 @@ struct inst {                   /* instruction */
     } data;
 };
 
-#endif				/* _INST_H */
+#endif          /* _INST_H */

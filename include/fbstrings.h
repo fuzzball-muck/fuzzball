@@ -594,4 +594,4 @@ void toupper_string(char **s);
  */
 int truestr(const char *buf);
 
-#endif				/* _FBSTRINGS_H */
+#endif   /* _FBSTRINGS_H */

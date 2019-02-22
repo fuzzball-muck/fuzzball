@@ -174,4 +174,4 @@ int test_lock_false_default(int descr, dbref player, dbref thing, const char *lo
  */ 
 const char *unparse_boolexp(dbref player, struct boolexp *b, int fullname);
 
-#endif				/* _BOOLEXP_H */
+#endif      /* _BOOLEXP_H */
