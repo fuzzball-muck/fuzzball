@@ -1285,7 +1285,7 @@ next_prop_name(dbref player, char *outbuf, size_t outbuflen, char *name)
  *
  * @return the size in bytes consumed by the object in memory.
  */
-long
+size_t
 size_properties(dbref player, int load)
 {
 #ifdef DISKBASE

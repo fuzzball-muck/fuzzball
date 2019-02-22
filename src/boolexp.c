@@ -658,13 +658,10 @@ parse_boolprop(char *buf)
 /**
  * Recursively compute the in-memory byte size of boolexp *b
  *
- * @TODO: This should probably return size_t, not that it matters for
- *        objects of this size really.
- *
  * @param b the boolexp to compute the size on
  * @return the size in bytes
  */
-long
+size_t
 size_boolexp(struct boolexp *b)
 {
     long result = 0L;

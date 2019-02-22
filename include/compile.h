@@ -25,7 +25,7 @@ void free_unused_programs(void);
 int get_primitive(const char *);
 void init_primitives(void);
 int primitive(const char *s);
-long size_prog(dbref prog);
+size_t size_prog(dbref prog);
 void uncompile_program(dbref i);
 
 #endif				/* _COMPILE_H */

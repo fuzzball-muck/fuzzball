@@ -682,7 +682,7 @@ copy_proplist(dbref obj, PropPtr * nu, PropPtr old)
  * @return the size of the loaded properties in memory -- this does NOT
  *         do any diskbase loading.
  */
-long
+size_t
 size_proplist(PropPtr avl)
 {
     long bytes = 0;

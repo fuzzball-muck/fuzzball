@@ -1300,12 +1300,12 @@ void set_property_nofetch(dbref player, const char *pname, PData * dat, int sync
  *
  * @return the size in bytes consumed by the object in memory.
  */
-long size_properties(dbref player, int load);
+size_t size_properties(dbref player, int load);
 
 /**
  * Calculates the size of the given property directory AVL list.  This
  * will iterate over the entire structure to give the entire size.  It
- * is the low level equivalent of size_properties
+ * is the low level equivalent of size_properties.
  *
  * @see size_properties
  *
@@ -1313,7 +1313,7 @@ long size_properties(dbref player, int load);
  * @return the size of the loaded properties in memory -- this does NOT
  *         do any diskbase loading.
  */
-long size_proplist(PropPtr avl);
+size_t size_proplist(PropPtr avl);
 
 /**
  * This function is a progressive iteration over the entire database,

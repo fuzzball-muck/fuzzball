@@ -469,7 +469,7 @@ void register_object(dbref player, dbref location, const char *propdir, char *na
 dbref remove_first(dbref first, dbref what);
 dbref reverse(dbref);
 void set_source(dbref action, dbref source);
-long size_object(dbref i, int load);
+size_t size_object(dbref i, int load);
 const char *unparse_flags(dbref thing);
 void unparse_object(dbref player, dbref object, char *buffer, size_t size);
 void unset_source(dbref action);

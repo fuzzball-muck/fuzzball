@@ -3960,7 +3960,7 @@ free_prog_real(dbref prog, const char *file, const int line)
     PROGRAM_SET_START(prog, 0);
 }
 
-long
+size_t
 size_prog(dbref prog)
 {
     struct inst *c;

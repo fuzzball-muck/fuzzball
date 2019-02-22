@@ -935,7 +935,7 @@ reverse(dbref list)
     return newlist;
 }
 
-long
+size_t
 size_object(dbref i, int load)
 {
     long byts;
@@ -955,7 +955,6 @@ size_object(dbref i, int load)
     }
     return byts;
 }
-
 
 static int
 ok_ascii_any(const char *name)
