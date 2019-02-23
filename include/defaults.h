@@ -5,7 +5,6 @@
 #define DUMPING_MESG    "## Pausing to save database. This may take a while. ##"
 #define DUMPDONE_MESG   "## Save complete. ##"
 
-
 /* Change this to the name of your muck.  ie: FurryMUCK, or Tapestries */
 #define MUCKNAME "TygryssMUCK"
 
@@ -14,6 +13,9 @@
 #define PENNIES "pennies"
 #define CPENNY "Penny"
 #define CPENNIES "Pennies"
+
+/* default description */
+#define DESCRIPTION_DEFAULT "You see nothing special."
 
 /* message seen when a player enters a line the server doesn't understand */
 #define HUH_MESSAGE "Huh?  (Type \"help\" for help.)"
@@ -117,7 +119,6 @@
 #define COMMANDS_PER_TIME 2	/* commands per time slice after burst  */
 #define COMMAND_TIME_MSEC 1000	/* time slice length in milliseconds    */
 
-
 /* Max %of db in unchanged objects allowed to be loaded.  Generally 5% */
 /* This is only needed if you defined DISKBASE in config.h */
 #define MAX_LOADED_OBJS 5
@@ -149,10 +150,8 @@
  */
 #define INSTR_SLICE 2000
 
-
 /* Max # of instrs in uninterruptable programs before timeout. */
 #define MPI_MAX_COMMANDS 2048
-
 
 /* PAUSE_MIN is the minimum time in milliseconds the server will pause
  * in select() between player input/output servicings.  Larger numbers
@@ -166,13 +165,7 @@
  */
 #define FREE_FRAMES_POOL 8
 
-
-
-
 #define PLAYER_START ((dbref) 0)	/* room number of player start location */
-
-
-
 
 /* Use gethostbyaddr() for hostnames in logs and the wizard WHO list. */
 #define HOSTNAMES 0

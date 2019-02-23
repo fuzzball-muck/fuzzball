@@ -4465,6 +4465,7 @@ Parameters available:
  (str)  file_sysparms             - System parameters
  (str)  file_welcome_screen       - Opening screen
  (str)  idle_boot_mesg            - Boot message given to users idling out
+ (str)  description_default       - Default description
  (str)  huh_mesg                  - Unrecognized command warning
  (str)  leave_mesg                - Logoff message for QUIT
  (str)  muckname                  - Name of the MUCK

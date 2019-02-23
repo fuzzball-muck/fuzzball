@@ -2585,7 +2585,6 @@ exec_or_notify(int descr, dbref player, dbref thing,
         /* If it wasn't a program, default to standard non-MPI parsed
          * notification or display the nothing-special message.
          *
-         * @TODO: Make 'You see nothing special.' configurable?
          * @TODO: Shouldn't this parse MPI?  Granted, this is a crazy
          *        edge case, and maybe its useful to have a route where
          *        MPI is not parsed.
@@ -2594,7 +2593,7 @@ exec_or_notify(int descr, dbref player, dbref thing,
             if (*p) {
                 notify(player, p);
             } else {
-                notify(player, "You see nothing special.");
+                notify(player, tp_description_default);
             }
         } else {
             struct frame *tmpfr;

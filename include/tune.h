@@ -22,6 +22,7 @@
 extern const char *tp_autolook_cmd;
 extern const char *tp_cpennies;
 extern const char *tp_cpenny;
+extern const char *tp_description_default;
 extern const char *tp_dumping_mesg;
 extern const char *tp_dumpdone_mesg;
 extern const char *tp_dumpwarn_mesg;

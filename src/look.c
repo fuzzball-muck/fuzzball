@@ -98,7 +98,7 @@ look_simple(int descr, dbref player, dbref thing)
 	exec_or_notify(descr, player, thing, GETDESC(thing), "(@Desc)",
 		       Prop_Blessed(thing, MESGPROP_DESC) ? MPI_ISBLESSED : 0);
     } else {
-	notify(player, "You see nothing special.");
+	notify(player, tp_description_default);
     }
 }
 
@@ -254,7 +254,7 @@ do_look_at(int descr, dbref player, const char *name, const char *detail)
 	    } else if (ambig_flag) {
 		notifyf_nolisten(player, match_msg_ambiguous(buf, 0));
 	    } else if (*detail) {
-		notify(player, "You see nothing special.");
+		notify(player, tp_description_default);
 	    } else {
 		notifyf_nolisten(player, match_msg_nomatch(buf, 0));
 	    }

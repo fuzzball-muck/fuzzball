@@ -12,6 +12,7 @@
 const char *tp_autolook_cmd;
 const char *tp_cpennies;
 const char *tp_cpenny;
+const char *tp_description_default;
 const char *tp_dumpdone_mesg;
 const char *tp_dumping_mesg;
 const char *tp_dumpwarn_mesg;
@@ -133,6 +134,7 @@ struct tune_str_entry tune_str_list[] = {
      "Opening screen", "", 0, 1, WELC_FILE},
     {"Idle Boot", "idle_boot_mesg", &tp_idle_mesg, 0, MLEV_WIZARD,
      "Boot message given to users idling out", "", 0, 1, IDLEBOOT_MESSAGE},
+    {"Misc", "description_default", &tp_description_default, 0, MLEV_WIZARD, "Default description", "", 0, 1, DESCRIPTION_DEFAULT},
     {"Misc", "huh_mesg", &tp_huh_mesg, 0, MLEV_WIZARD, "Unrecognized command warning", "", 0,
      1, HUH_MESSAGE},
     {"Misc", "leave_mesg", &tp_leave_mesg, 0, MLEV_WIZARD, "Logoff message for QUIT", "", 0, 1,
