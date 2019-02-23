@@ -3964,13 +3964,14 @@ size_t
 size_prog(dbref prog)
 {
     struct inst *c;
-    long varcnt, siz, byts = 0;
+    int varcnt, siz;
+    size_t byts = 0;
 
     c = PROGRAM_CODE(prog);
     if (!c)
 	return 0;
     siz = PROGRAM_SIZ(prog);
-    for (long i = 0L; i < siz; i++) {
+    for (int i = 0; i < siz; i++) {
 	byts += sizeof(*c);
 	if (c[i].type == PROG_FUNCTION) {
 	    byts += strlen(c[i].data.mufproc->procname) + 1;

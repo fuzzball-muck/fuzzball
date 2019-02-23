@@ -664,10 +664,10 @@ parse_boolprop(char *buf)
 size_t
 size_boolexp(struct boolexp *b)
 {
-    long result = 0L;
+    size_t result = 0;
 
     if (b == TRUE_BOOLEXP) {
-        return 0L;
+        return result;
     } else {
         result = sizeof(*b);
 

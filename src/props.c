@@ -642,7 +642,7 @@ copy_proplist(dbref obj, PropPtr * nu, PropPtr old)
 size_t
 size_proplist(PropPtr avl)
 {
-    long bytes = 0;
+    size_t bytes = 0;
 
     if (!avl)
         return 0;
