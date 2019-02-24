@@ -7,7 +7,7 @@ struct flgchkdat {
     int isnotroom;		/* not a room. */
     int isnotexit;		/* not an exit. */
     int isnotthing;		/* not type thing */
-    int isnotplayer;		/* not a player */
+    int isnotplayer;	/* not a player */
     int isnotprog;		/* not a program */
     int forlevel;		/* check for a mucker level? */
     int islevel;		/* if check FOR a mucker level, which level? */
@@ -23,7 +23,7 @@ struct flgchkdat {
     int isold;			/* if yes, check if old */
     int loadedsize;		/* check for propval-loaded size? */
     int issize;			/* list objs larger than size? */
-    int size;			/* what size to check against. No check if 0 */
+    size_t size;		/* what size to check against. No check if 0 */
 };
 
 int checkflags(dbref what, struct flgchkdat check);
