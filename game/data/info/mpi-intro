@@ -4,6 +4,7 @@
   
                          Written by Foxen,
                          October 12, 1993
+             and updated by others since then for fb7
   
   
   
@@ -99,9 +100,12 @@ text after it as an MPI command.  Also, you can escape backslashes.  In
 fact, to include a backslash in text, you HAVE to escape it.  Almost any
 character after a backslash will be copied literally.
   
-The only exception is \r which is replaced by a carriage return character.
+The only exceptions are \r which is replaced by a carriage return character,
+and \[ which is replaced by an escape character.
 A carriage return character tells the game to split the text into two lines
 at that place, when the text is displayed to the player.
+An escape character can be used as part of ANSI escape sequences, but
+you'll almost never need to do so when you can use the MPI command "attr".
   
 Example:
   
@@ -140,13 +144,14 @@ However, the \ still needs to be escaped like \\.  This is because backslashes
 still escape the character after them.  This lets you get a ` in your text
 by escaping it as \`.  For example:
   
-    This `is an {MPI} \` backquote.`
+    This `is an {MPI} \` backquote.`  This is also a \` backquote.
   
 will be parsed as
   
-    This is an {MPI} ` backquote.
+    This is an {MPI} ` backquote.  This is also a ` backquote.
   
 Where the {MPI} is literal text, and is NOT parsed as a command.
+To include a backquote in text, you MUST escape it.
   
   
 MPI commands can have MPI commands nested within them, so they can take
