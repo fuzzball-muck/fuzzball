@@ -584,7 +584,7 @@ PACKAGE_TARNAME='fbmuck'
 PACKAGE_VERSION='7.00b1.20190227a'
 PACKAGE_STRING='fbmuck 7.00b1.20190227a'
 PACKAGE_BUGREPORT='feedback@fuzzball.org'
-PACKAGE_URL=''
+PACKAGE_URL='https://www.fuzzball.org/'
 
 # Factoring default headers for most tests.
 ac_includes_default="\
@@ -1329,6 +1329,7 @@ Use these variables to override the choices made by `configure' or to help
 it to find libraries and programs with nonstandard names/locations.
 
 Report bugs to <feedback@fuzzball.org>.
+fbmuck home page: <https://www.fuzzball.org/>.
 _ACEOF
 ac_status=$?
 fi
@@ -5375,7 +5376,8 @@ $config_files
 Configuration headers:
 $config_headers
 
-Report bugs to <feedback@fuzzball.org>."
+Report bugs to <feedback@fuzzball.org>.
+fbmuck home page: <https://www.fuzzball.org/>."
 
 _ACEOF
 cat >>$CONFIG_STATUS <<_ACEOF || ac_write_fail=1
