@@ -60,10 +60,6 @@ build_script:
         cp -Recurse "$env:APPVEYOR_BUILD_FOLDER/game/*" "$artifact_root"
         # Copy compiled binaries and libraries
         cp -Recurse "$env:APPVEYOR_BUILD_FOLDER/build/*" "$artifact_root"
-        # Copy documentation
-        cp -Recurse "$env:APPVEYOR_BUILD_FOLDER/docs/*" "$artifact_root"
-        cp -Recurse "$env:APPVEYOR_BUILD_FOLDER/docs/*" "$artifact_root/game/data/"
-        mv "$artifact_root/game/data/mpi-intro" "$artifact_root/game/data/mpi-intro2" "$artifact_root/game/data/muf-tutorial" "$artifact_root/game/data/info/"
         if ((Test-Path "$artifact_root/fbmuck.exe") -And (Test-Path "$artifact_root/restart.exe")) {
             echo "Packaging release artifact..."
             7z a "$artifact_zip" "$artifact_root"
