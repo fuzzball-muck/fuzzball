@@ -24,10 +24,6 @@
 #include "win32.h"
 #endif
 
-/* Define if you want the timezone to show UTC. Windows doesn't do
-   abbreviations for timezone, so this is the only way to get it shortened. */
-#undef USE_UTC
-
 /* Maximum size of a line in the template and version files */
 #define LINE_SIZE 1024
 
