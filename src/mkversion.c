@@ -24,16 +24,11 @@
 #include "win32.h"
 #endif
 
-/* Define if you want the timezone to show UTC. Windows doesn't do
-   abbreviations for timezone, so this is the only way to get it shortened. */
-#undef USE_UTC
-
 /* Maximum size of a line in the template and version files */
 #define LINE_SIZE 1024
 
 /* Strings to search for in tpl/version */
 #define GENLINE "$generation"
-#define CRELINE "$creation"
 #define GITAVAIL "$gitavail"
 #define GENDEF  "#define generation"
 #define HASHARRAY "$hasharray"
@@ -55,7 +50,6 @@
 
 // Prototypes
 unsigned int getgeneration(void);
-void getnow(char *timestr, size_t len);
 int test_git(void);
 void print_hash_array(FILE * out);
 char *get_git_hash(const char *name, char *hash, size_t hash_len);
@@ -75,11 +69,10 @@ main()
 {
     unsigned int generation = 0;
     FILE *ver, *tpl;
-    char line[LINE_SIZE], creation[LINE_SIZE];
+    char line[LINE_SIZE];
     char *pos;
 
     generation = getgeneration();
-    getnow(creation, LINE_SIZE);
     git_available = test_git();
 
     /* Read this like it were linux with rb */
@@ -110,9 +103,6 @@ main()
 	if ((pos = strstr(line, GENLINE))) {
 	    *pos = '\0';
 	    fprintf(ver, "%s%d%s\n", line, generation, pos + strlen(GENLINE));
-	} else if ((pos = strstr(line, CRELINE))) {
-	    *pos = '\0';
-	    fprintf(ver, "%s%s%s\n", line, creation, pos + strlen(CRELINE));
 	} else if ((pos = strstr(line, HASHARRAY))) {
 	    print_hash_array(ver);
 	} else if ((pos = strstr(line, GITAVAIL))) {
@@ -126,34 +116,6 @@ main()
     fclose(tpl);
 
     return 0;
-}
-
-// Return a time in format of "Mon Apr 14 2008 at 12:01:17 EDT"
-void
-getnow(char *timestr, size_t len)
-{
-#ifdef WIN32
-    time_t t = time(NULL);
-    struct tm info;
-
-#ifdef USE_UTC
-    gmtime_s(&info, &t);
-    strftime(timestr, len, "%a %b %d %Y at %H:%M:%S UTC", &info);
-#else
-    localtime_s(&info, &t);
-    strftime(timestr, len, "%a %b %d %Y at %H:%M:%S %Z", &info);
-#endif
-#else				/* !WIN32 */
-    time_t t = time(NULL);
-    struct tm *info;
-#ifdef USE_UTC
-    info = gmtime(&t);
-    strftime(timestr, len, "%a %b %d %Y at %H:%M:%S UTC", info);
-#else
-    info = localtime(&t);
-    strftime(timestr, len, "%a %b %d %Y at %H:%M:%S %Z", info);
-#endif
-#endif
 }
 
 // Get the generation value from the existing cpp file.
