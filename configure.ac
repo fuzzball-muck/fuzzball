@@ -7,7 +7,7 @@ dnl
 AC_REVISION($Revision: 1.30 $)
 AC_PREREQ([2.69])
 dnl If this format for the version string ends up being used, bump the letter up for each commit on the same day.  Use UTC for the date.  If it's close to midnight and you're worrying about whether to change the date or bump the letter, just bump the letter.  Remove the date entirely for normal releases.
-AC_INIT([fbmuck],[7.00b1.20190227a],[feedback@fuzzball.org],[fbmuck],[https://www.fuzzball.org/])
+AC_INIT([fbmuck],[7.00b1.20190228a],[feedback@fuzzball.org],[fbmuck],[https://www.fuzzball.org/])
 AC_CONFIG_AUX_DIR(auto)
 AC_CONFIG_HEADER([include/autoconf.h])
 
