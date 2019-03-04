@@ -169,9 +169,7 @@ typedef int dbref;
 #define DEBUGPRINT(...)
 #endif				/* DEBUG */
 
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
-#endif
+#include <unistd.h>
 
 #ifdef HAVE_RANDOM
 # define SRANDOM(seed)	srandom((seed))
