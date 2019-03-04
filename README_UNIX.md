@@ -1,4 +1,4 @@
-Building and Running Fuzzball on Linux
+Building and Running Fuzzball on Unix
 ===============
 *For documentation and general help, see [the general README](README.md)*
 
