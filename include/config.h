@@ -169,10 +169,6 @@ typedef int dbref;
 #define DEBUGPRINT(...)
 #endif				/* DEBUG */
 
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
-#endif
-
 #ifdef HAVE_RANDOM
 # define SRANDOM(seed)	srandom((seed))
 # define RANDOM()	random()
@@ -238,6 +234,7 @@ typedef int dbref;
 # include <sys/socket.h>
 # include <sys/time.h>
 # include <sys/wait.h>
+# include <unistd.h>
 #endif
 
 #endif				/* _CONFIG_H */
