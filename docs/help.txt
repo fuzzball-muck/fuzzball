@@ -172,6 +172,7 @@ SAY <message>
   Says <message> out loud to everyone in the room.  If your name is Igor,
 and you typed 'say Hello everyone!', you will see 'You say, "Hello everyone!"'
 and everyone else in the room will see 'Igor says, "Hello everyone!"'
+There's also an abbreviated form of the 'say' command: '"Hello everyone!'
 Also see: POSE, WHISPER and PAGE
 ~
 ~
@@ -182,6 +183,7 @@ POSE <message>
   Poses a message to everyone in the room.  This is used for actions.  i.e.:
 if your name was Igor, and you typed 'pose falls down.', everyone would see
     Igor falls down.
+There's also an abbreviated form of the 'pose' command: ':falls down.'
 Also see: SAY, WHISPER and PAGE
 ~
 ~
