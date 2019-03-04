@@ -272,7 +272,7 @@
 /* chain when trying to match a player's exit or command request.  Turning */
 /* this on allows the 'Y'ield and 'O'vert flags to function on things or */
 /* rooms, changing the way in which command or exit names are found. */
-#define ENABLE_MATCH_YIELD 0
+#define ENABLE_MATCH_YIELD 1
 
 /* Enable or disable triggering of movement propqueues when any type of */
 /* object moves, not just objects set ZOMBIE or VEHICLE.  This can vastly */
