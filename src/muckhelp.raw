@@ -19,21 +19,21 @@ The word 'me' refers to yourself. Some things to do when starting out:
 ~
 ~
 SAY
-"<message>
 SAY <message>
+"<message>
 
   Says <message> out loud to everyone in the room.  If your name is Igor,
-and you typed '"Hello everyone!', you will see 'You say, "Hello everyone!"'
+and you typed 'say Hello everyone!', you will see 'You say, "Hello everyone!"'
 and everyone else in the room will see 'Igor says, "Hello everyone!"'
 ~~alsosee POSE,WHISPER,PAGE
 ~
 ~
 POSE
-:<message>
 POSE <message>
+:<message>
 
-  Poses a message to everyone in the room.  This is used for actions.  Ie:
-if your name was Igor, and you typed ':falls down.', everyone would see
+  Poses a message to everyone in the room.  This is used for actions.  i.e.:
+if your name was Igor, and you typed 'pose falls down.', everyone would see
 ~~code
     Igor falls down.
 ~~endcode
@@ -2220,7 +2220,7 @@ otherwise, only Wizards may do so.
 CHEATSHEET
 Muck Basics Cheatsheet:
 
-This is Fuzzball Muck, a user-extendible, multi-user chat system.
+This is Fuzzball Muck, a user-extensible, multi-user chat system.
 
 Basic commands:
 ~~code
@@ -2228,7 +2228,7 @@ Basic commands:
   get/take <thing>; drop/throw <thing>
   look; look <thing>; look <direction>
   say <message>; "<message>
-  :<message> --- shows your name, with the message after it.  Used for actions.
+  pose <message>; :<message> --- shows your name, with the message after it.  Used for actions.
   whisper <player> = <message>
   inventory
   news
