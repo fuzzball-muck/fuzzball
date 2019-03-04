@@ -83,7 +83,7 @@
 #define PACKAGE_NAME "fbmuck"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "fbmuck 7.00b1.20190227a"
+#define PACKAGE_STRING "fbmuck 7.00b1.20190304a"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "fbmuck"
@@ -92,7 +92,7 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "7.00b1.20190227a"
+#define PACKAGE_VERSION "7.00b1.20190304a"
 
 /* The size of a `int', as computed by sizeof. */
 #define SIZEOF_INT 4
