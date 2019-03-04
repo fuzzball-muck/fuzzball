@@ -2924,7 +2924,7 @@ notify_except(dbref first, dbref exception, const char *msg, dbref who)
  * define USE_RLIMIT in config.h to attempt it.
  *
  * Otherwise it trys to use sysconf() (POSIX.1) or getdtablesize()
- * to get what is avalible to you.
+ * to get what is available to you.
  */
 
 #if defined(RLIMIT_NOFILE) || defined(RLIMIT_OFILE)
@@ -4037,7 +4037,7 @@ show_subfile(dbref player, const char *dir, const char *topic, const char *seg, 
     char buf[256];
     struct stat st;
 
-#ifdef DIR_AVALIBLE
+#ifdef DIR_AVAILABLE
     DIR *df;
     struct dirent *dp;
 #endif
@@ -4060,7 +4060,7 @@ show_subfile(dbref player, const char *dir, const char *topic, const char *seg, 
 	return 0;
 
 
-#ifdef DIR_AVALIBLE
+#ifdef DIR_AVAILABLE
     /* TO DO: (1) exact match, or (2) partial match, but unique */
     *buf = 0;
 

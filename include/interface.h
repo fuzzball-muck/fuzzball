@@ -35,7 +35,7 @@
 #endif                          /* not (HAVE_DIRENT_H or _POSIX_VERSION) */
 
 #if defined(HAVE_DIRENT_H) || defined(_POSIX_VERSION) || defined(HAVE_SYS_NDIR_H) || defined(HAVE_SYS_DIR_H) || defined(HAVE_NDIR_H)
-# define DIR_AVALIBLE
+# define DIR_AVAILABLE
 #endif
 
 typedef enum {
