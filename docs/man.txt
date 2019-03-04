@@ -1,4 +1,4 @@
-           MUF Reference Manual for Muck2.2fb7.00b1.20190304a
+           MUF Reference Manual for Muck2.2fb7.00b1+master
                    by Revar Desmera <revar@belfry.com>
 
 You may get a listing of topics that you can get help on, either sorted
