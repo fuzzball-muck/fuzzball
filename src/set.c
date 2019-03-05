@@ -1222,6 +1222,15 @@ do_register(int descr, dbref player, char *arg1, const char *arg2)
         if ((target = noisy_match_result(&md)) == NOTHING) {
             return;
         }
+
+        /* match_controlled casts a much wider "match net" than
+         * we are casting here, so we'll do the controls check
+         * separately to preserve the limited match behavior.
+         */
+        if (!controls(player, target)) {
+            notifyf_nolisten(player, "Permission denied. (You don't control what was matched)");
+            return;
+        }
     }
 
     if (!*arg2) {
