@@ -1,3 +1,10 @@
+/** @file mcp.c
+ *
+ * Source code for handling MCP (MU* Control Protocol) events.
+ *
+ * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
+ */
+
 #include "config.h"
 
 #ifdef MCP_SUPPORT
@@ -12,12 +19,12 @@
 #include "mcp.h"
 #include "mcppkg.h"
 
-#define EMCP_SUCCESS             0      /* successful result */
-#define EMCP_NOMCP                      -1      /* MCP isn't supported on this connection. */
-#define EMCP_NOPACKAGE          -2      /* Package isn't supported for this connection. */
-#define EMCP_ARGCOUNT           -3      /* Too many arguments in mesg. */
-#define EMCP_ARGNAMELEN         -5      /* Arg name is too long. */
-#define EMCP_MESGSIZE           -6      /* Message is too large. */
+#define EMCP_SUCCESS        0   /* successful result */
+#define EMCP_NOMCP          -1  /* MCP isn't supported on this connection. */
+#define EMCP_NOPACKAGE      -2  /* Package isn't supported for this connection. */
+#define EMCP_ARGCOUNT       -3  /* Too many arguments in mesg. */
+#define EMCP_ARGNAMELEN     -5  /* Arg name is too long. */
+#define EMCP_MESGSIZE       -6  /* Message is too large. */
 
 #define MAX_MCP_ARGNAME_LEN    30       /* max length of argument name. */
 #define MAX_MCP_MESG_ARGS      30       /* max number of args per mesg. */
@@ -32,52 +39,137 @@ static McpFrameList *mcp_frame_list;
 /****************                *********************************/
 /*****************************************************************/
 
+/**
+ * Determine if the next series of characters in a buffer is an identifier
+ *
+ * Given a pointer to a pointer 'in', process whatever resides at 'in'
+ * and see if it is an identifier.  If the first character of 'in' is
+ * not alphabet character, this will return false and 'buf' will be unmodifier.
+ *
+ * Otherwise, we will advance 'in' forward and copy what we find into
+ * 'buf' until we either run out of buffer space (bufsize) or we reach
+ * a character that is not part of an identifier.  'in' will be advanced
+ * to the end of the identifier even if we run out of buffer.
+ *
+ * Identifiers may be alphanumeric, and can contain '_' or '-'.  The
+ * Identifier must start with either a letter or an _
+ *
+ * @private
+ * @param in a pointer to a pointer string buffer.  This will be modified
+ *           to advance the pointer to the character after the end of the
+ *           identifier if found.
+ * @param buf the buffer to put the identifier in
+ * @param buflen the length of 'buf'
+ * @return boolean, 1 if identifier is found and loaded into buf, 0 otherwise
+ */
 static int
 mcp_intern_is_ident(const char **in, char *buf, int buflen)
 {
     int origbuflen = buflen;
 
     if (!isalpha(**in) && **in != '_')
-	return 0;
+        return 0;
+
     while (isalpha(**in) || **in == '_' || isdigit(**in) || **in == '-') {
-	if (--buflen > 0) {
-	    *buf++ = **in;
-	}
-	(*in)++;
+        if (--buflen > 0) {
+            *buf++ = **in;
+        }
+
+        (*in)++;
     }
+
     if (origbuflen > 0)
-	*buf = '\0';
+        *buf = '\0';
+
     return 1;
 }
 
+/**
+ * Check to see if a given character is a "simple character".
+ *
+ * A simple character is defined as a printable character that is not
+ * space, *, :, backslash, or "
+ *
+ * This is used exclusively by mcp_intern_is_unquoted and is basically
+ * used to gather string data that is not 'special' and requiring quote
+ * processing.
+ *
+ * @private
+ * @param in the character to check
+ * @return boolean false if not simple character, true if is.
+ */
 static int
 mcp_intern_is_simplechar(char in)
 {
     if (in == '*' || in == ':' || in == '\\' || in == '"')
-	return 0;
+        return 0;
+
     if (!isprint(in) || in == ' ')
-	return 0;
+        return 0;
+
     return 1;
 }
 
+/**
+ * Detects and packs an unquoted string into 'buf' from 'in'
+ *
+ * Takes a pointer to a pointer, 'in', and copies string data into
+ * 'buf' until a delimiter character is found.  The delimiter character
+ * is defined as 'something that makes mcp_intern_is_simplechar return false'
+ * which is a whole set of things.
+ *
+ * @see mcp_intern_is_simplechar
+ *
+ * 'in' is advanced to the delimiter character, and 'buf' contains whatever
+ * string data is found up to 'buflen' as a limit.
+ *
+ * @private
+ * @param in pointer to pointer of input buffer
+ * @param buf the buffer to copy the result into
+ * @param buflen the length of buf
+ * @return boolean 0 if no unquoted string found, 1 if something was put in buf
+ */
 static int
 mcp_intern_is_unquoted(const char **in, char *buf, int buflen)
 {
     int origbuflen = buflen;
 
     if (!mcp_intern_is_simplechar(**in))
-	return 0;
+        return 0;
+
     while (mcp_intern_is_simplechar(**in)) {
-	if (--buflen > 0) {
-	    *buf++ = **in;
-	}
-	(*in)++;
+        if (--buflen > 0) {
+            *buf++ = **in;
+        }
+
+        (*in)++;
     }
+
     if (origbuflen > 0)
-	*buf = '\0';
+        *buf = '\0';
+
     return 1;
 }
 
+/**
+ * Detects and packs a quoted string into 'buf' from 'in'
+ *
+ * The initial character should be a ".  It will copy from the character
+ * after that initial " on to the character before the terminal " into
+ * 'buf' with a proper understanding of backslash escaped quotes.
+ *
+ * 'in' is advanced to the position immediately after the terminal "
+ *
+ * If there is no termianl ", or if the current position of 'in' is not
+ * a starting ", this returns 0 and in is left unchanged.
+ *
+ * @private
+ * @param in the pointer to pointer of the input buffer
+ * @param buf the buffer to write to
+ * @param buflen the size of buf
+ * @return boolean 1 if a quoted string is found and 'buf' is populated, 0
+ *         otherwise.
+ */
 static int
 mcp_intern_is_quoted(const char **in, char *buf, int buflen)
 {
@@ -85,31 +177,40 @@ mcp_intern_is_quoted(const char **in, char *buf, int buflen)
     const char *old = *in;
 
     if (**in != '"')
-	return 0;
+        return 0;
+
     (*in)++;
+
     while (**in) {
-	if (**in == '\\') {
-	    (*in)++;
-	    if (**in && --buflen > 0) {
-		*buf++ = **in;
-	    }
-	} else if (**in == '"') {
-	    break;
-	} else {
-	    if (--buflen > 0) {
-		*buf++ = **in;
-	    }
-	}
-	(*in)++;
+        if (**in == '\\') {
+            (*in)++;
+
+            if (**in && --buflen > 0) {
+                *buf++ = **in;
+            }
+        } else if (**in == '"') {
+            break;
+        } else {
+            if (--buflen > 0) {
+                *buf++ = **in;
+            }
+        }
+
+        (*in)++;
     }
+
+    /* No terminal " */
     if (**in != '"') {
-	*in = old;
-	return 0;
+        *in = old;
+        return 0;
     }
+
     (*in)++;
+
     if (origbuflen > 0) {
-	*buf = '\0';
+        *buf = '\0';
     }
+
     return 1;
 }
 
@@ -122,39 +223,48 @@ mcp_intern_is_keyval(McpMesg * msg, const char **in)
     int deferred = 0;
 
     if (!isspace(**in))
-	return 0;
+        return 0;
+
     skip_whitespace(in);
+
     if (!mcp_intern_is_ident(in, keyname, sizeof(keyname))) {
-	*in = old;
-	return 0;
+        *in = old;
+        return 0;
     }
+
     if (**in == '*') {
-	msg->incomplete = 1;
-	deferred = 1;
-	(*in)++;
+        msg->incomplete = 1;
+        deferred = 1;
+        (*in)++;
     }
+
     if (**in != ':') {
-	*in = old;
-	return 0;
+        *in = old;
+        return 0;
     }
+
     (*in)++;
+
     if (!isspace(**in)) {
-	*in = old;
-	return 0;
+        *in = old;
+        return 0;
     }
+
     skip_whitespace(in);
+
     if (!mcp_intern_is_unquoted(in, value, sizeof(value)) &&
-	!mcp_intern_is_quoted(in, value, sizeof(value))
-	    ) {
-	*in = old;
-	return 0;
+        !mcp_intern_is_quoted(in, value, sizeof(value))
+        ) {
+        *in = old;
+        return 0;
     }
 
     if (deferred) {
-	mcp_mesg_arg_append(msg, keyname, NULL);
+        mcp_mesg_arg_append(msg, keyname, NULL);
     } else {
-	mcp_mesg_arg_append(msg, keyname, value);
+        mcp_mesg_arg_append(msg, keyname, value);
     }
+
     return 1;
 }
 
@@ -1474,6 +1584,23 @@ mcp_version_select(McpVer min1, McpVer max1, McpVer min2, McpVer max2)
     }
 }
 
+/**
+ * The common underpinning of do_mcpedit and do_mcpprogram
+ *
+ * This initializes the MCP editing process with the appropriate MCP
+ * calls.  Basically, this does the common permission checking and then
+ * dumps the program to the client using MCP.  If MCP is not enabled in
+ * the client, it falls back to the standard editor.
+ *
+ * Saving the changes is done via other MCP calls.
+ *
+ * @see mcppkg_simpledit
+ *
+ * @private
+ * @param descr descriptor of the person doing the call
+ * @param player the person doing the call
+ * @param program the ref of the program to edit.
+ */
 static void
 mcpedit_program(int descr, dbref player, dbref program)
 {
@@ -1484,26 +1611,31 @@ mcpedit_program(int descr, dbref player, dbref program)
     McpVer supp;
 
     mfr = descr_mcpframe(descr);
+
+    /* If MCP is not initialized at all, fall back */
     if (!mfr) {
-	edit_program(player, program);
-	return;
+        edit_program(player, program);
+        return;
     }
 
+    /* See if simpleedit is supported, if not, fall back */
     supp = mcp_frame_package_supported(mfr, "dns-org-mud-moo-simpleedit");
 
     if (supp.verminor == 0 && supp.vermajor == 0) {
-	edit_program(player, program);
-	return;
+        edit_program(player, program);
+        return;
     }
 
+    /* Basic permission checking */
     if ((Typeof(program) != TYPE_PROGRAM) || !controls(player, program)) {
-	show_mcp_error(mfr, "edit program", "Permission denied!");
-	return;
+        show_mcp_error(mfr, "edit program", "Permission denied!");
+        return;
     }
+
     if (FLAGS(program) & INTERNAL) {
-	show_mcp_error(mfr, "edit program",
-		       "Sorry, this program is currently being edited by someone else.  Try again later.");
-	return;
+        show_mcp_error(mfr, "edit program",
+                       "Sorry, this program is currently being edited by someone else.  Try again later.");
+        return;
     }
 
     PROGRAM_SET_FIRST(program, read_program(program));
@@ -1512,13 +1644,17 @@ mcpedit_program(int descr, dbref player, dbref program)
 
     snprintf(refstr, sizeof(refstr), "%d.prog.", program);
     snprintf(namestr, sizeof(namestr), "a program named %s(%d)", NAME(program), program);
+
     mcp_mesg_init(&msg, "dns-org-mud-moo-simpleedit", "content");
     mcp_mesg_arg_append(&msg, "reference", refstr);
     mcp_mesg_arg_append(&msg, "type", "muf-code");
     mcp_mesg_arg_append(&msg, "name", namestr);
+
+    /* Dump the program text to the client for editing */
     for (struct line *curr = PROGRAM_FIRST(program); curr; curr = curr->next) {
-	mcp_mesg_arg_append(&msg, "content", DoNull(curr->this_line));
+        mcp_mesg_arg_append(&msg, "content", DoNull(curr->this_line));
     }
+
     mcp_frame_output_mesg(mfr, &msg);
     mcp_mesg_clear(&msg);
 
@@ -1526,6 +1662,23 @@ mcpedit_program(int descr, dbref player, dbref program)
     PROGRAM_SET_FIRST(program, NULL);
 }
 
+/**
+ * Implementation of @mcpedit command
+ *
+ * The MCP-enabled version of @edit.  The underlying call to the private
+ * function mcpedit_program does check permissions.  This is a wrapper to
+ * do object matching.  If MCP is not supported by the client, it enters
+ * the regular editor.
+ *
+ * This starts the MCP process and dumps the program text to the client,
+ * but there is a separate MCP call to save any changes.
+ *
+ * @see mcppkg_simpleedit
+ *
+ * @param descr the descriptor of the person doing the call
+ * @param player the player doing the call
+ * @param name the program to edit
+ */
 void
 do_mcpedit(int descr, dbref player, const char *name)
 {
@@ -1533,8 +1686,8 @@ do_mcpedit(int descr, dbref player, const char *name)
     struct match_data md;
 
     if (!*name) {
-	notify(player, "No program name given.");
-	return;
+        notify(player, "No program name given.");
+        return;
     }
 
     init_match(descr, player, name, TYPE_PROGRAM, &md);
@@ -1545,12 +1698,30 @@ do_mcpedit(int descr, dbref player, const char *name)
     match_absolute(&md);
 
     if ((program = noisy_match_result(&md)) == NOTHING) {
-	return;
+        return;
     }
 
     mcpedit_program(descr, player, program);
 }
 
+/**
+ * Implementation of @mcpprogram command
+ *
+ * The MCP-enabled version of @program.  It creates the program and then
+ * hands off to the private function mcpedit_program to start editing.
+ * It does NOT check to see if the user has a MUCKER bit, so do not rely
+ * on this for permission checking.
+ *
+ * This starts the MCP process and dumps the program text to the client,
+ * but there is a separate MCP call to save any changes.
+ *
+ * @see mcppkg_simpleedit
+ *
+ * @param descr the descriptor of the person doing the call
+ * @param player the player doing the call
+ * @param name the program to edit
+ * @param rname the registration name or "" for none.
+ */
 void
 do_mcpprogram(int descr, dbref player, const char *name, const char *rname)
 {
@@ -1559,8 +1730,8 @@ do_mcpprogram(int descr, dbref player, const char *name, const char *rname)
     char unparse_buf[BUFFER_LEN];
 
     if (!*name) {
-	notify(player, "No program name given.");
-	return;
+        notify(player, "No program name given.");
+        return;
     }
 
     init_match(descr, player, name, TYPE_PROGRAM, &md);
@@ -1571,16 +1742,29 @@ do_mcpprogram(int descr, dbref player, const char *name, const char *rname)
     match_absolute(&md);
 
     if (*rname || (program = match_result(&md)) == NOTHING) {
-	if (!ok_ascii_other(name)) {
-	    notify(player, "Program names are limited to 7-bit ASCII.");
-	    return;
-	}
-	if (!ok_name(name)) {
-	    notify(player, "That's a strange name for a program!");
-	    return;
-	}
+        /* @TODO Should these sanity checks be a part of create_program
+         *       instead?  A little scary to think we're creating programs
+         *       in two places (here and @program) but we're relying on
+         *       the sanity checks to be the same -- what if there is
+         *       a change to one and we forget to change the other?
+         *
+         *       We may want to consider moving all similar sanity checks
+         *       to the create_* functions -- a quick look suggests that
+         *       the create_* functions are "gullible" and accept whatever
+         *       is given to them.  This is really hazardous from an API
+         *       perspective.
+         */
+        if (!ok_ascii_other(name)) {
+            notify(player, "Program names are limited to 7-bit ASCII.");
+            return;
+        }
 
-	program = create_program(player, name);
+        if (!ok_name(name)) {
+            notify(player, "That's a strange name for a program!");
+            return;
+        }
+
+        program = create_program(player, name);
         unparse_object(player, program, unparse_buf, sizeof(unparse_buf));
         notifyf(player, "Program %s created.", unparse_buf);
 
@@ -1588,8 +1772,8 @@ do_mcpprogram(int descr, dbref player, const char *name, const char *rname)
             register_object(player, player, REGISTRATION_PROPDIR, (char *)rname, program);
         }
     } else if (program == AMBIGUOUS) {
-	notifyf_nolisten(player, match_msg_ambiguous(name, 0));
-	return;
+        notifyf_nolisten(player, match_msg_ambiguous(name, 0));
+        return;
     }
 
     mcpedit_program(descr, player, program);

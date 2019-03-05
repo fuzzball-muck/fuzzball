@@ -1,4 +1,4 @@
-/*
+/** @file property.c
  * property.c
  *
  * This, along with props.c and propdir.c, is the implementation for the

@@ -1,3 +1,10 @@
+/** @file edit.c
+ *
+ * Source code implementing the MUCK's code editing interface for MUF.
+ *
+ * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
+ */
+
 #include "config.h"
 
 #include "boolexp.h"
@@ -14,23 +21,36 @@
 #include "timequeue.h"
 #include "tune.h"
 
+/**
+ * Free the memory of a line structure, including its string data as applicable
+ *
+ * @private
+ * @param l the line structure to delete
+ */
 static void
 free_line(struct line *l)
 {
     if (l->this_line)
-	free((void *) l->this_line);
+        free((void *) l->this_line);
+
     free(l);
 }
 
+/**
+ * Frees an entire linked list of struct line's
+ *
+ * @private
+ * @param l the head of the list to delete
+ */
 void
 free_prog_text(struct line *l)
 {
     struct line *next;
 
     while (l) {
-	next = l->next;
-	free_line(l);
-	l = next;
+        next = l->next;
+        free_line(l);
+        l = next;
     }
 }
 
@@ -917,6 +937,31 @@ write_program(struct line *first, dbref i)
     fclose(f);
 }
 
+/**
+ * Implementation of the @list command
+ *
+ * This includes all permission checking around whether someone can
+ * list the program, and checking to make sure that 'name' is a program.
+ *
+ * linespec is surprisingly complex; you can have one of the following
+ * prefixes:
+ *
+ * ! - outputs system messages as comments.  This comments anything that
+ *     @list is injecting into the message stream, such as the line
+ *     count at the end.
+ *
+ * @ - List program without line numbers overriding default
+ *
+ * # - List program with line numbers, overriding default
+ *
+ * You can then have a single line, or a line range with a hyphen.
+ * By default the entire program is listed if no range is provided.
+ *
+ * @param descr the descriptor of the person doing the call
+ * @param player the player doing the call
+ * @param name the program to list
+ * @param linespec the arguments to list, as described above.
+ */
 void
 do_list(int descr, dbref player, const char *name, char *linespec)
 {
@@ -935,67 +980,80 @@ do_list(int descr, dbref player, const char *name, char *linespec)
     match_possession(&md);
     match_registered(&md);
     match_absolute(&md);
+
     if ((thing = noisy_match_result(&md)) == NOTHING)
-	return;
+        return;
+
     if (Typeof(thing) != TYPE_PROGRAM) {
-	notify(player, "You can't list anything but a program.");
-	return;
+        notify(player, "You can't list anything but a program.");
+        return;
     }
+
     if (!(controls(player, thing) || (FLAGS(thing) & VEHICLE))) {
-	notify(player,
-	       "Permission denied. (You don't control the program, and it's not set Viewable)");
-	return;
+        notify(player,
+               "Permission denied. (You don't control the program, and it's not set Viewable)");
+        return;
     }
 
     while (*linespec && (*linespec == '!' || *linespec == '#' || *linespec == '@')) {
-	prevflags = FLAGS(player);
-	switch (*linespec) {
-	case '!':
-	    comment_sysmsg = 1;
-	    break;
-	case '#':
-	    FLAGS(player) |= INTERNAL;
-	    break;
-	case '@':
-	    FLAGS(player) &= ~INTERNAL;
-	    break;
-	default:
-	    break;
-	}
-	(void) *linespec++;
+        prevflags = FLAGS(player);
+
+        switch (*linespec) {
+            case '!':
+                comment_sysmsg = 1;
+                break;
+            case '#':
+                FLAGS(player) |= INTERNAL;
+                break;
+            case '@':
+                FLAGS(player) &= ~INTERNAL;
+                break;
+            default:
+                break;
+        }
+
+        (void) *linespec++;
     }
 
     if (!*linespec) {
-	range[0] = 1;
-	range[1] = -1;
-	argc = 2;
+        range[0] = 1;
+        range[1] = -1;
+        argc = 2;
     } else {
-	q = (char *)(p = linespec);
-	while (*p) {
-	    while (*p && !isspace(*p))
-		*q++ = *p++;
-	    skip_whitespace(&p);
-	}
-	*q = '\0';
+        q = (char *)(p = linespec);
 
-	argc = 1;
-	if (isdigit(*linespec)) {
-	    range[0] = atoi(linespec);
-	    while (*linespec && isdigit(*linespec))
-		linespec++;
-	} else {
-	    range[0] = 1;
-	}
-	if (*linespec) {
-	    argc = 2;
-	    if (*linespec == '-')
-		linespec++;
-	    if (*linespec)
-		range[1] = atoi(linespec);
-	    else
-		range[1] = -1;
-	}
+        while (*p) {
+            while (*p && !isspace(*p))
+                *q++ = *p++;
+
+            skip_whitespace(&p);
+        }
+
+        *q = '\0';
+
+        argc = 1;
+        if (isdigit(*linespec)) {
+            range[0] = atoi(linespec);
+
+            while (*linespec && isdigit(*linespec))
+                linespec++;
+        } else {
+            range[0] = 1;
+        }
+
+        if (*linespec) {
+            argc = 2;
+
+            if (*linespec == '-')
+                linespec++;
+
+            if (*linespec)
+                range[1] = atoi(linespec);
+            else
+                range[1] = -1;
+        }
     }
+
     tmpline = PROGRAM_FIRST(thing);
     PROGRAM_SET_FIRST(thing, read_program(thing));
     list_program(player, thing, range, argc, comment_sysmsg);

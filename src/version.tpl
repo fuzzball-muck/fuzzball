@@ -1,4 +1,4 @@
-/*
+/** @file version.tpl
  * Copyright (c) 1991-2015 by Fuzzball Software
  * under the GNU Public License
  *
@@ -30,6 +30,13 @@ $hasharray
     {NULL, NULL, NULL}
 };
 
+/**
+ * Implementation of do_version
+ *
+ * Displays version information to player.
+ *
+ * @param player
+ */
 void
 do_version(dbref player)
 {
@@ -37,38 +44,55 @@ do_version(dbref player)
     notifyf(player, "Options: %s", compile_options);
 }
 
+/**
+ * Implementation of @hashes command
+ *
+ * This displays hash information for the files used to build the MUCK.
+ * The git hashes are only available if this was compiled from a GIT
+ * directory.
+ *
+ * @param player the player to display information for
+ * @param args what kind of hash to show -- all, git, or sha1
+ */
 void
 do_hashes(dbref player, char *args)
 {
+/*
+ * @TODO This is available to the general public which is ... honestly
+ *       information that they don't need.  Good security policy would
+ *       dictate the less a player knows about the inner guts (and thus
+ *       what vulnerabilities may be available) the better.  I'd recommend
+ *       making this wiz-only.
+ */
     hash_file_entry *entry;
     int b_git = 0, b_sha1 = 0;
     const char *filename;
 
     if (!args || !*args) {
 #ifdef GIT_AVAILABLE
-	notify(player, "usage: @hashes [all|git|sha1]");
+        notify(player, "usage: @hashes [all|git|sha1]");
 #else
-	notify(player, "usage: @hashes [all|sha1]");
+        notify(player, "usage: @hashes [all|sha1]");
 #endif
-	notify(player, "Show hashes calculated for source files at compile time");
-	notify(player, "");
-	notify(player, "all   - Show all available hashes");
+        notify(player, "Show hashes calculated for source files at compile time");
+        notify(player, "");
+        notify(player, "all   - Show all available hashes");
 #ifdef GIT_AVAILABLE
-	notify(player, "git   - Show only the git hash (if available)");
+        notify(player, "git   - Show only the git hash (if available)");
 #endif
-	notify(player, "sha1  - Show only the sha1 hash");
-	return;
+        notify(player, "sha1  - Show only the sha1 hash");
+        return;
     }
 
     /* What hashes to display? */
     if (!strcasecmp(args, "git")) {
-	b_git = 1;
+        b_git = 1;
     } else if (!strcasecmp(args, "sha1")) {
-	b_sha1 = 1;
+        b_sha1 = 1;
     } else {
-	b_sha1 = 1;
+        b_sha1 = 1;
 #ifdef GIT_AVAILABLE
-	b_git = 1;
+        b_git = 1;
 #endif
     }
 
@@ -76,18 +100,19 @@ do_hashes(dbref player, char *args)
     notify(player, "File            Hash");
 
     entry = hash_file_array;
+
     while (entry && entry->filename) {
-	filename = entry->filename;
+        filename = entry->filename;
 
-	if (b_sha1 && entry->sha1hash) {
-	    notifyf(player, "%-15s %s (sha1)", filename, entry->sha1hash);
-	    filename = "";
-	}
+        if (b_sha1 && entry->sha1hash) {
+            notifyf(player, "%-15s %s (sha1)", filename, entry->sha1hash);
+            filename = "";
+        }
 
-	if (b_git && entry->githash) {
-	    notifyf(player, "%-15s %s (git)", filename, entry->githash);
-	}
+        if (b_git && entry->githash) {
+            notifyf(player, "%-15s %s (git)", filename, entry->githash);
+        }
 
-	entry++;
+        entry++;
     }
 }

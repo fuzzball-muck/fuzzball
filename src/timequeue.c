@@ -1,3 +1,10 @@
+/** @file timequeue.c
+ *
+ * Source for handling timequeues.  Time queues are how programs are run
+ * on the MUCK, both MUF and MPI.
+ *
+ * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
+ */
 #include "config.h"
 
 #include "array.h"
@@ -704,6 +711,15 @@ has_refs(dbref program, timequeue ptr)
     return 0;
 }
 
+/**
+ * Implementation of the @ps command
+ *
+ * Shows running timequeue / process information to the given player.
+ * Permission checking is done; wizards can see all processes, but players
+ * can only see their own processes or processes running programs they own.
+ *
+ * @param player the player running the process list command
+ */
 void
 do_process_status(dbref player)
 {
@@ -722,78 +738,99 @@ do_process_status(dbref player)
     double pcnt;
     char *strfmt = "**%10s %4s %4s %6s %4s %7s %-10.10s %-12s %.512s";
 
-    notifyf_nolisten(player, strfmt, "PID", "Next", "Run", "KInst", "%CPU", "Prog#",
-		     "ProgName", "Player", "");
+    notifyf_nolisten(player, strfmt, "PID", "Next", "Run", "KInst", "%CPU",
+                     "Prog#", "ProgName", "Player", "");
 
     while (ptr) {
-	/* pid */
-	snprintf(pidstr, sizeof(pidstr), "%d", ptr->eventnum);
-	/* next due */
-	strcpyn(duestr, sizeof(duestr), ((ptr->when - rtime) > 0) ?
-		time_format_2((time_t) (ptr->when - rtime)) : "Due");
-	/* Run length */
-	strcpyn(runstr, sizeof(runstr), ptr->fr ?
-		time_format_2((time_t) (rtime - ptr->fr->started)) : "0s");
-	/* Thousand Instructions executed */
-	snprintf(inststr, sizeof(inststr), "%d", ptr->fr ? (ptr->fr->instcnt / 1000) : 0);
+        /* pid */
+        snprintf(pidstr, sizeof(pidstr), "%d", ptr->eventnum);
 
-	/* If it's actually a program, instead of MPI... */
-	/* we need to figure out how much CPU it's used */
-	if (ptr->fr) {
-	    etime = rtime - ptr->fr->started;
-	    if (etime > 0) {
-		pcnt = ptr->fr->totaltime.tv_sec;
-		pcnt += ptr->fr->totaltime.tv_usec / 1000000;
-		pcnt = pcnt * 100 / etime;
-		if (pcnt > 99.9) {
-		    pcnt = 99.9;
-		}
-	    } else {
-		pcnt = 0.0;
-	    }
-	} else {
-	    pcnt = 0.0;
-	}
-	snprintf(cpustr, sizeof(cpustr), "%4.1f", pcnt);
-	/* Get the dbref! */
-	if (ptr->fr) {
-	    /* if it's a program... */
-	    snprintf(progstr, sizeof(progstr), "#%d", ptr->fr->caller.st[1]);
-	    snprintf(prognamestr, sizeof(prognamestr), "%s", NAME(ptr->fr->caller.st[1]));
-	} else if (ptr->typ == TQ_MPI_TYP) {
-	    /* if it's MPI... */
-	    snprintf(progstr, sizeof(progstr), "#%d", ptr->trig);
-	    snprintf(prognamestr, sizeof(prognamestr), "%s", "");
-	} else {
-	    /* if it's anything else... */
-	    snprintf(progstr, sizeof(progstr), "#%d", ptr->called_prog);
-	    snprintf(prognamestr, sizeof(prognamestr), "%s", NAME(ptr->called_prog));
-	}
+        /* next due */
+        strcpyn(duestr, sizeof(duestr), ((ptr->when - rtime) > 0) ?
+            time_format_2((time_t) (ptr->when - rtime)) : "Due");
 
-	/* Now, the next due is based on if it's waiting on a READ */
-	if (ptr->typ == TQ_MUF_TYP && ptr->subtyp == TQ_MUF_READ) {
-	    strcpyn(duestr, sizeof(duestr), "--");
-	} else if (ptr->typ == TQ_MUF_TYP && ptr->subtyp == TQ_MUF_TIMER) {
-	    /* if it's a timer event, it gives the eventnum */
-	    snprintf(pidstr, sizeof(pidstr), "(%d)", ptr->eventnum);
-	} else if (ptr->typ == TQ_MPI_TYP) {
-	    /* and if it's MPI, undo most of the stuff we did
-	     * before, and set it up for mostly MPI stuff */
-	    strcpyn(runstr, sizeof(runstr), "--");
-	    strcpyn(inststr, sizeof(inststr), "MPI");
-	    strcpyn(cpustr, sizeof(cpustr), "--");
-	}
-	(void) snprintf(buf, sizeof(buf), strfmt, pidstr, duestr, runstr,
-			inststr, cpustr, progstr, prognamestr, NAME(ptr->uid),
-			DoNull(ptr->called_data));
-	if (Wizard(OWNER(player)) || ptr->uid == player) {
-	    notify_nolisten(player, buf, 1);
-	} else if (ptr->called_prog != NOTHING && OWNER(ptr->called_prog) == OWNER(player)) {
-	    notify_nolisten(player, buf, 1);
-	}
-	ptr = ptr->next;
-	count++;
+        /* Run length */
+        strcpyn(runstr, sizeof(runstr), ptr->fr ?
+            time_format_2((time_t) (rtime - ptr->fr->started)) : "0s");
+
+        /* Thousand Instructions executed */
+        snprintf(inststr, sizeof(inststr), "%d", ptr->fr ? (ptr->fr->instcnt / 1000) : 0);
+
+        /* If it's actually a program, instead of MPI... */
+        /* we need to figure out how much CPU it's used */
+        if (ptr->fr) {
+            etime = rtime - ptr->fr->started;
+
+            if (etime > 0) {
+                pcnt = ptr->fr->totaltime.tv_sec;
+                pcnt += ptr->fr->totaltime.tv_usec / 1000000;
+                pcnt = pcnt * 100 / etime;
+
+                if (pcnt > 99.9) {
+                    pcnt = 99.9;
+                }
+            } else {
+                pcnt = 0.0;
+            }
+        } else {
+            pcnt = 0.0;
+        }
+
+        snprintf(cpustr, sizeof(cpustr), "%4.1f", pcnt);
+
+        /* Get the dbref! */
+        if (ptr->fr) {
+            /* if it's a program... */
+            snprintf(progstr, sizeof(progstr), "#%d", ptr->fr->caller.st[1]);
+            snprintf(prognamestr, sizeof(prognamestr), "%s", NAME(ptr->fr->caller.st[1]));
+        } else if (ptr->typ == TQ_MPI_TYP) {
+            /* if it's MPI... */
+            snprintf(progstr, sizeof(progstr), "#%d", ptr->trig);
+            snprintf(prognamestr, sizeof(prognamestr), "%s", "");
+        } else {
+            /* if it's anything else... */
+            snprintf(progstr, sizeof(progstr), "#%d", ptr->called_prog);
+            snprintf(prognamestr, sizeof(prognamestr), "%s", NAME(ptr->called_prog));
+        }
+
+        /* Now, the next due is based on if it's waiting on a READ */
+        if (ptr->typ == TQ_MUF_TYP && ptr->subtyp == TQ_MUF_READ) {
+            strcpyn(duestr, sizeof(duestr), "--");
+        } else if (ptr->typ == TQ_MUF_TYP && ptr->subtyp == TQ_MUF_TIMER) {
+            /* if it's a timer event, it gives the eventnum */
+            snprintf(pidstr, sizeof(pidstr), "(%d)", ptr->eventnum);
+        } else if (ptr->typ == TQ_MPI_TYP) {
+            /* and if it's MPI, undo most of the stuff we did
+             * before, and set it up for mostly MPI stuff
+             */
+            strcpyn(runstr, sizeof(runstr), "--");
+            strcpyn(inststr, sizeof(inststr), "MPI");
+            strcpyn(cpustr, sizeof(cpustr), "--");
+        }
+
+        (void) snprintf(buf, sizeof(buf), strfmt, pidstr, duestr, runstr,
+                        inststr, cpustr, progstr, prognamestr, NAME(ptr->uid),
+                        DoNull(ptr->called_data));
+
+        /* @TODO So ... we do all this work, filling up these buffers, only
+         *       to discard all that stuff if these checks fail.
+         *
+         *       My suggestion: Change this while to a for loop that
+         *       does the ptr = ptr->next bit for us.  Then move these
+         *       checks to the top of the for loop; if the checks fail,
+         *       then 'continue'.  Otherwise, do all the buffer assemblies
+         *       then notify.
+         */
+        if (Wizard(OWNER(player)) || ptr->uid == player) {
+            notify_nolisten(player, buf, 1);
+        } else if (ptr->called_prog != NOTHING && OWNER(ptr->called_prog) == OWNER(player)) {
+            notify_nolisten(player, buf, 1);
+        }
+
+        ptr = ptr->next;
+        count++;
     }
+ 
     count += muf_event_list(player, strfmt);
     notifyf_nolisten(player, "%d events.", count);
 }
@@ -1084,6 +1121,24 @@ dequeue_timers(int pid, char *id)
     return deqflag;
 }
 
+/**
+ * Implementation of @kill command
+ *
+ * Kills a process or set of processes off the time queue.  "arg1" can
+ * be either a process ID, a player name to kill all of a player's processs,
+ * a program DBREF to kill all of a program's processes, or 'all' to kill
+ * everything.
+ *
+ * This command does do permission checks.
+ *
+ * @see dequeue_process
+ * @see free_timenode
+ * @see dequeue_prog
+ *
+ * @param descr the descriptor of the calling player
+ * @param player the player doing the call
+ * @param arg1 what to kill
+ */
 void
 do_kill_process(int descr, dbref player, const char *arg1)
 {
@@ -1094,70 +1149,84 @@ do_kill_process(int descr, dbref player, const char *arg1)
 
 
     if (*arg1 == '\0') {
-	notify_nolisten(player, "What event do you want to dequeue?", 1);
+        notify_nolisten(player, "What event do you want to dequeue?", 1);
+
+        /* @TODO: we could just 'return' here and not have this wrapped in
+         *        a giant if-else; would be slightly less cumbersome.
+         */
     } else {
-	if (!strcasecmp(arg1, "all")) {
-	    if (!Wizard(OWNER(player))) {
-		notify_nolisten(player, "Permission denied", 1);
-		return;
-	    }
-	    while (ptr) {
-		tmp = ptr;
-		tqhead = ptr = ptr->next;
-		free_timenode(tmp);
+        if (!strcasecmp(arg1, "all")) { /* Kill everything */
+            if (!Wizard(OWNER(player))) {
+                notify_nolisten(player, "Permission denied", 1);
+                return;
+            }
+
+            while (ptr) {
+                tmp = ptr;
+                tqhead = ptr = ptr->next;
+                free_timenode(tmp);
+
                 /* free_timenode can free other things on the list when cleaning up
                    timers for a backgrounded process */
                 ptr = tqhead;
-		process_count--;
-	    }
-	    tqhead = NULL;
-	    muf_event_dequeue(NOTHING, 0);
-	    notify_nolisten(player, "Time queue cleared.", 1);
-	} else {
-	    if (!number(arg1)) {
-		init_match(descr, player, arg1, NOTYPE, &md);
-		match_everything(&md);
+                process_count--;
+            }
 
-		if ((match = noisy_match_result(&md)) == NOTHING) {
-		    return;
-		}
+            tqhead = NULL;
+            muf_event_dequeue(NOTHING, 0);
+            notify_nolisten(player, "Time queue cleared.", 1);
+        } else {
+            if (!number(arg1)) { /* Kill based on an object */
+                init_match(descr, player, arg1, NOTYPE, &md);
+                match_everything(&md);
 
-		if (!OkObj(match)) {
-		    notify_nolisten(player, "I don't recognize that object.", 1);
-		    return;
-		}
-		if ((!Wizard(OWNER(player))) && (OWNER(match) != OWNER(player))) {
-		    notify_nolisten(player, "Permission denied.", 1);
-		    return;
-		}
-		count = dequeue_prog(match, 0);
-		if (!count) {
-		    notify_nolisten(player, "That program wasn't in the time queue.", 1);
-		    return;
-		}
-		if (count > 1) {
-		    notifyf_nolisten(player, "%d processes dequeued.", count);
-		} else {
-		    notify_nolisten(player, "Process dequeued.", 1);
-		}
-	    } else {
-		if ((count = atoi(arg1))) {
-		    if (!(control_process(player, count))) {
-			notify_nolisten(player, "Permission denied.", 1);
-			return;
-		    }
-		    if (!(dequeue_process(count))) {
-			notify_nolisten(player, "No such process!", 1);
-			return;
-		    }
-		    process_count--;
-		    notify_nolisten(player, "Process dequeued.", 1);
-		} else {
-		    notify_nolisten(player, "What process do you want to dequeue?", 1);
-		}
-	    }
-	}
+                if ((match = noisy_match_result(&md)) == NOTHING) {
+                    return;
+                }
+
+                if (!OkObj(match)) {
+                    notify_nolisten(player, "I don't recognize that object.", 1);
+                    return;
+                }
+
+                if ((!Wizard(OWNER(player))) && (OWNER(match) != OWNER(player))) {
+                    notify_nolisten(player, "Permission denied.", 1);
+                    return;
+                }
+
+                count = dequeue_prog(match, 0);
+
+                if (!count) {
+                    notify_nolisten(player, "That program wasn't in the time queue.", 1);
+                    return;
+                }
+
+                if (count > 1) {
+                    notifyf_nolisten(player, "%d processes dequeued.", count);
+                } else {
+                    notify_nolisten(player, "Process dequeued.", 1);
+                }
+            } else {
+                if ((count = atoi(arg1))) { /* Kill based on a PID */
+                    if (!(control_process(player, count))) {
+                        notify_nolisten(player, "Permission denied.", 1);
+                        return;
+                    }
+
+                    if (!(dequeue_process(count))) {
+                        notify_nolisten(player, "No such process!", 1);
+                        return;
+                    }
+
+                    process_count--;
+                    notify_nolisten(player, "Process dequeued.", 1);
+                } else {
+                    notify_nolisten(player, "What process do you want to dequeue?", 1);
+                }
+            }
+        }
     }
+
     return;
 }
 

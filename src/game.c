@@ -1,3 +1,12 @@
+/** @file game.c
+ *
+ * Source defining core game functionality, such as the dreaded huge switch
+ * statement.  It also defines some core functionality such as the @dump
+ * command.
+ *
+ * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
+ */
+
 #include "config.h"
 
 #include "commands.h"
@@ -57,6 +66,17 @@ static int forked_dump_process_flag = 0;
 FILE *input_file;
 static char *in_filename = NULL;
 
+/**
+ * Implementation of the @dump command
+ *
+ * This does NOT do any permission checking, except for a GOD_PRIV check
+ * if a newfile is provided.
+ *
+ * If newfile is provided, all future dumps will go to that new file
+ *
+ * @param player the player taking a dump
+ * @param newfile if provided, will use newfile as the dump target.  Can be ""
+ */
 void
 do_dump(dbref player, const char *newfile)
 {
@@ -64,65 +84,102 @@ do_dump(dbref player, const char *newfile)
 
 #ifndef DISKBASE
     if (global_dumper_pid != 0) {
-	notify(player, "Sorry, there is already a dump currently in progress.");
-	return;
+        notify(player, "Sorry, there is already a dump currently in progress.");
+        return;
     }
 #endif
-    if (*newfile
+
+    /* My modifications are supposed to be just documentation only, but
+     * the way this ifdef was structured was just too gross for me to
+     * leave.
+     */
 #ifdef GOD_PRIV
-	&& God(player)
-#endif				/* GOD_PRIV */
-	    ) {
-	if (dumpfile)
-	    free((void *) dumpfile);
-	dumpfile = alloc_string(newfile);
-	snprintf(buf, sizeof(buf), "Dumping to file %s...", dumpfile);
+    if (*newfile && God(player)) {
+#else
+    if (*newfile) {
+#endif      /* GOD_PRIV */
+        if (dumpfile)
+            free((void *) dumpfile);
+
+        dumpfile = alloc_string(newfile);
+        snprintf(buf, sizeof(buf), "Dumping to file %s...", dumpfile);
     } else {
-	snprintf(buf, sizeof(buf), "Dumping...");
+        snprintf(buf, sizeof(buf), "Dumping...");
     }
+
     notify(player, buf);
     dump_db_now();
 }
 
+/**
+ * Implementation of @shutdown command
+ *
+ * Permissions are checked and non-wizard players are logged.  This will
+ * trigger the MUCK to shut itself down  The implementation of this
+ * is in interface.c
+ *
+ * @param player the player trying to do the restart
+ */
 void
 do_shutdown(dbref player)
 {
     char unparse_buf[BUFFER_LEN];
     unparse_object(player, player, unparse_buf, sizeof(unparse_buf));
+
     if (Wizard(player) && Typeof(player) == TYPE_PLAYER) {
-	log_status("SHUTDOWN: by %s", unparse_buf);
-	shutdown_flag = 1;
-	restart_flag = 0;
+        log_status("SHUTDOWN: by %s", unparse_buf);
+        shutdown_flag = 1;
+        restart_flag = 0;
     } else {
-	notify(player, "Your delusions of grandeur have been duly noted.");
-	log_status("ILLEGAL SHUTDOWN: tried by %s", unparse_buf);
+        notify(player, "Your delusions of grandeur have been duly noted.");
+        log_status("ILLEGAL SHUTDOWN: tried by %s", unparse_buf);
     }
 }
 
 #ifdef USE_SSL
+/**
+ * Implementation of @reconfiguressl
+ *
+ * This is a simple wrapper around the reconfigure_ssl call.  This does
+ * not do any permission checking.
+ *
+ * @see reconfigure_ssl
+ *
+ * @param player the player doing the call
+ */
 void
 do_reconfigure_ssl(dbref player)
 {
     if (reconfigure_ssl()) {
-	notify(player, "Successfully reloaded SSL configuration.");
+        notify(player, "Successfully reloaded SSL configuration.");
     } else {
-	notify(player, "Failed to reconfigure SSL; check status log for info.");
+        notify(player, "Failed to reconfigure SSL; check status log for info.");
     }
 }
 #endif
 
+/**
+ * Implementation of the @restart command
+ *
+ * Permissions are checked and non-wizard players are logged.  This will
+ * trigger the MUCK to try and restart itself.  The implementation of this
+ * is in interface.c
+ *
+ * @param player the player trying to do the restart
+ */
 void
 do_restart(dbref player)
 {
     char unparse_buf[BUFFER_LEN];
     unparse_object(player, player, unparse_buf, sizeof(unparse_buf));
+
     if (Wizard(player) && Typeof(player) == TYPE_PLAYER) {
-	log_status("SHUTDOWN & RESTART: by %s", unparse_buf);
-	shutdown_flag = 1;
-	restart_flag = 1;
+        log_status("SHUTDOWN & RESTART: by %s", unparse_buf);
+        shutdown_flag = 1;
+        restart_flag = 1;
     } else {
-	notify(player, "Your delusions of grandeur have been duly noted.");
-	log_status("ILLEGAL RESTART: tried by %s", unparse_buf);
+        notify(player, "Your delusions of grandeur have been duly noted.");
+        log_status("ILLEGAL RESTART: tried by %s", unparse_buf);
     }
 }
 
@@ -384,18 +441,28 @@ cleanup_game()
 }
 #endif
 
+/**
+ * Implementation of @restrict command
+ *
+ * This does not do any permission checking.  Arg can be either "on" to
+ * turn on wiz-only mode, "off" to turn it off, or anything else (such
+ * as "" or a typo) to display current restriction status.
+ *
+ * @param player the player doing the call
+ * @param arg the argument as described above
+ */
 void
 do_restrict(dbref player, const char *arg)
 {
     if (!strcmp(arg, "on")) {
-	wizonly_mode = 1;
-	notify(player, "Login access is now restricted to wizards only.");
+        wizonly_mode = 1;
+        notify(player, "Login access is now restricted to wizards only.");
     } else if (!strcmp(arg, "off")) {
-	wizonly_mode = 0;
-	notify(player, "Login access is now unrestricted.");
+        wizonly_mode = 0;
+        notify(player, "Login access is now unrestricted.");
     } else {
-	notifyf(player, "Restricted connection mode is currently %s.",
-		wizonly_mode ? "on" : "off");
+        notifyf(player, "Restricted connection mode is currently %s.",
+                wizonly_mode ? "on" : "off");
     }
 }
 

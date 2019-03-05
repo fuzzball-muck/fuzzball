@@ -1,3 +1,11 @@
+/** @file array.c
+ *
+ * Source for the different array types used in Fuzzball.  This is primarily
+ * used for MUF primitives. 
+ *
+ * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
+ */
+
 #include "config.h"
 
 #include "array.h"

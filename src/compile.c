@@ -1,3 +1,10 @@
+/** @file compile.c
+ *
+ * Definition of the various functions that handles the MUF compiler.
+ *
+ * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
+ */
+
 #include "config.h"
 
 #include "commands.h"
@@ -603,14 +610,23 @@ uncompile_program(dbref i)
     PROGRAM_SET_START(i, NULL);
 }
 
+/**
+ * Implementation of @uncompile command
+ *
+ * Removes all compiled programs from memory.  Does not do permission
+ * checking.
+ *
+ * @param player the player to notify when the uncompile is done.
+ */
 void
 do_uncompile(dbref player)
 {
     for (dbref i = 0; i < db_top; i++) {
-	if (Typeof(i) == TYPE_PROGRAM) {
-	    uncompile_program(i);
-	}
+        if (Typeof(i) == TYPE_PROGRAM) {
+            uncompile_program(i);
+        }
     }
+
     notify_nolisten(player, "All programs decompiled.", 1);
 }
 

@@ -1,3 +1,11 @@
+/** @file player.c
+ *
+ * Implementation of a variety of player-specific operations, such as
+ * creating a player, setting password, etc.
+ *
+ * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
+ */
+
 #include "config.h"
 
 #include "commands.h"
@@ -187,17 +195,27 @@ toad_player(int descr, dbref player, dbref victim, dbref recipient)
     SETVALUE(victim, 1);
 }
 
+/**
+ * Implementation of @password command
+ *
+ * This changes the player's password after doing some validation checks.
+ * Old password must be valid and new password must not have spaces in it.
+ *
+ * @param player the player doing the password change
+ * @param old the player's old password
+ * @param newobj the player's new password.
+ */
 void
 do_password(dbref player, const char *old, const char *newobj)
 {
     if (!PLAYER_PASSWORD(player) || !check_password(player, old)) {
-	notify(player, "Sorry, old password did not match current password.");
+        notify(player, "Sorry, old password did not match current password.");
     } else if (!ok_password(newobj)) {
-	notify(player, "Bad new password (no spaces allowed).");
+        notify(player, "Bad new password (no spaces allowed).");
     } else {
-	set_password(player, newobj);
-	DBDIRTY(player);
-	notify(player, "Password changed.");
+        set_password(player, newobj);
+        DBDIRTY(player);
+        notify(player, "Password changed.");
     }
 }
 

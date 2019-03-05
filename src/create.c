@@ -1,3 +1,10 @@
+/** @file create.c
+ *
+ * Source defining primarily the creation commands (@action, etc.)
+ *
+ * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
+ */
+
 #include "config.h"
 
 #include "boolexp.h"
@@ -19,7 +26,21 @@
 #include "props.h"
 #include "tune.h"
 
-/* use this to create an exit */
+/**
+ * Implementation of @open command
+ *
+ * This creates an exit in the current room and optionally links it
+ * in one step.
+ *
+ * Supports registering if linkto has a = in it.  Exits are checked so
+ * that they are only 7-bit ASCII.  Does permission and money checking,
+ * but not builder bit checking.
+ *
+ * @param descr descriptor of person running command
+ * @param player the player running the command
+ * @param direction the exit name to make
+ * @param linkto what to link to
+ */
 void
 do_open(int descr, dbref player, const char *direction, const char *linkto)
 {
@@ -31,10 +52,14 @@ do_open(int descr, dbref player, const char *direction, const char *linkto)
     int ndest;
 
     strcpyn(buf2, sizeof(buf2), linkto);
+
     for (rname = buf2; (*rname && (*rname != ARG_DELIMITER)); rname++) ;
+
     qname = rname;
+
     if (*rname)
-	rname++;
+        rname++;
+
     *qname = '\0';
 
     qname = buf2;
@@ -45,43 +70,49 @@ do_open(int descr, dbref player, const char *direction, const char *linkto)
     loc = LOCATION(player);
 
     if (!*direction) {
-	notify(player, "You must specify a direction or action name to open.");
-	return;
+        notify(player, "You must specify a direction or action name to open.");
+        return;
     }
-    if (!ok_ascii_other(direction)) {
-	notify(player, "Exit names are limited to 7-bit ASCII.");
-	return;
-    }
-    if (!ok_name(direction)) {
-	notify(player, "That's a strange name for an exit!");
-	return;
-    }
-    if (!controls(player, loc)) {
-	notify(player, "Permission denied. (you don't control the location)");
-	return;
-    } else if (!payfor(player, tp_exit_cost)) {
-	notifyf(player, "Sorry, you don't have enough %s to open an exit.", tp_pennies);
-	return;
-    } else {
-	exit = create_action(player, direction, loc);
-	unparse_object(player, exit, unparse_buf, sizeof(unparse_buf));
-	notifyf(player, "Exit %s opened.", unparse_buf);
 
-	/* check second arg to see if we should do a link */
-	if (*qname != '\0') {
-	    notify(player, "Trying to link...");
-	    if (!payfor(player, tp_link_cost)) {
-		notifyf(player, "You don't have enough %s to link.", tp_pennies);
-	    } else {
-		ndest = link_exit(descr, player, exit, (char *) qname, good_dest);
-		DBFETCH(exit)->sp.exit.ndest = ndest;
-		DBFETCH(exit)->sp.exit.dest = malloc(sizeof(dbref) * (size_t)ndest);
-		for (int i = 0; i < ndest; i++) {
-		    (DBFETCH(exit)->sp.exit.dest)[i] = good_dest[i];
-		}
-		DBDIRTY(exit);
-	    }
-	}
+    if (!ok_ascii_other(direction)) {
+        notify(player, "Exit names are limited to 7-bit ASCII.");
+        return;
+    }
+
+    if (!ok_name(direction)) {
+        notify(player, "That's a strange name for an exit!");
+        return;
+    }
+
+    if (!controls(player, loc)) {
+        notify(player, "Permission denied. (you don't control the location)");
+        return;
+    } else if (!payfor(player, tp_exit_cost)) {
+        notifyf(player, "Sorry, you don't have enough %s to open an exit.", tp_pennies);
+        return;
+    } else {
+        exit = create_action(player, direction, loc);
+        unparse_object(player, exit, unparse_buf, sizeof(unparse_buf));
+        notifyf(player, "Exit %s opened.", unparse_buf);
+
+        /* check second arg to see if we should do a link */
+        if (*qname != '\0') {
+            notify(player, "Trying to link...");
+
+            if (!payfor(player, tp_link_cost)) {
+                notifyf(player, "You don't have enough %s to link.", tp_pennies);
+            } else {
+                ndest = link_exit(descr, player, exit, (char *) qname, good_dest);
+                DBFETCH(exit)->sp.exit.ndest = ndest;
+                DBFETCH(exit)->sp.exit.dest = malloc(sizeof(dbref) * (size_t)ndest);
+
+                for (int i = 0; i < ndest; i++) {
+                    (DBFETCH(exit)->sp.exit.dest)[i] = good_dest[i];
+                }
+
+                DBDIRTY(exit);
+            }
+        }
     }
 
     if (*rname) {
@@ -89,14 +120,21 @@ do_open(int descr, dbref player, const char *direction, const char *linkto)
     }
 }
 
-/* do_link
+/**
+ * Implementation of @link command.
  *
- * Use this to link to a room that you own.  It also sets home for
- * objects and things, and drop-to's for rooms.
- * It seizes ownership of an unlinked exit, and costs 1 penny
- * plus a penny transferred to the exit owner if they aren't you
+ * Use this to link to a room that you own.  It also sets home for objects and
+ * things, and drop-to's for rooms.  It seizes ownership of an unlinked exit,
+ * and costs 1 penny plus a penny transferred to the exit owner if they aren't
+ * you
  *
- * All destinations must either be owned by you, or be LINK_OK.
+ * All destinations must either be owned by you, or be LINK_OK.  This does
+ * check all permissions and, in fact, even the BUILDER bit.
+ *
+ * @param descr the descriptor of the calling user
+ * @param player the calling player
+ * @param thing_name the thing to link
+ * @param dest_name the destination to link to.
  */
 void
 do_link(int descr, dbref player, const char *thing_name, const char *dest_name)
@@ -112,7 +150,7 @@ do_link(int descr, dbref player, const char *thing_name, const char *dest_name)
     match_everything(&md);
 
     if ((thing = noisy_match_result(&md)) == NOTHING)
-	return;
+        return;
 
     if (Typeof(thing) != TYPE_EXIT && strchr(dest_name, EXIT_DELIMITER)) {
         notify(player, "Only actions and exits can be linked to multiple destinations.");
@@ -120,126 +158,155 @@ do_link(int descr, dbref player, const char *thing_name, const char *dest_name)
     }
 
     switch (Typeof(thing)) {
-    case TYPE_EXIT:
-	/* we're ok, check the usual stuff */
-	if (DBFETCH(thing)->sp.exit.ndest != 0) {
-	    if (controls(player, thing)) {
-		if ((DBFETCH(thing)->sp.exit.dest)[0] != NIL) {
-		    notify(player, "That exit is already linked.");
-		    return;
-		}
-	    } else {
-		notify(player, "Permission denied. (you don't control the exit to relink)");
-		return;
-	    }
-	}
-	/* handle costs */
-	if (OWNER(thing) == OWNER(player)) {
-	    if (!payfor(player, tp_link_cost)) {
-		notifyf(player, "It costs %d %s to link this exit.",
-			tp_link_cost, (tp_link_cost == 1) ? tp_penny : tp_pennies);
-		return;
-	    }
-	} else {
-	    if (!payfor(player, tp_link_cost + tp_exit_cost)) {
-		notifyf(player, "It costs %d %s to link this exit.",
-			(tp_link_cost + tp_exit_cost),
-			(tp_link_cost + tp_exit_cost == 1) ? tp_penny : tp_pennies);
-		return;
-	    } else if (!Builder(player)) {
-		notify(player, "Only authorized builders may seize exits.");
-		return;
-	    } else {
-		/* pay the owner for his loss */
-		dbref owner = OWNER(thing);
+        case TYPE_EXIT:
+            /* we're ok, check the usual stuff */
+            if (DBFETCH(thing)->sp.exit.ndest != 0) {
+                if (controls(player, thing)) {
+                    if ((DBFETCH(thing)->sp.exit.dest)[0] != NIL) {
+                        notify(player, "That exit is already linked.");
+                        return;
+                    }
+                } else {
+                    notify(player, "Permission denied. (you don't control the exit to relink)");
+                    return;
+                }
+            }
 
-		SETVALUE(owner, GETVALUE(owner) + tp_exit_cost);
-		DBDIRTY(owner);
-	    }
-	}
+            /* handle costs */
+            if (OWNER(thing) == OWNER(player)) {
+                if (!payfor(player, tp_link_cost)) {
+                    notifyf(player, "It costs %d %s to link this exit.",
+                    tp_link_cost, (tp_link_cost == 1) ? tp_penny : tp_pennies);
+                    return;
+                }
+            } else {
+                if (!payfor(player, tp_link_cost + tp_exit_cost)) {
+                    notifyf(player, "It costs %d %s to link this exit.",
+                            (tp_link_cost + tp_exit_cost),
+                            (tp_link_cost + tp_exit_cost == 1) ? tp_penny : tp_pennies);
+                    return;
+                } else if (!Builder(player)) {
+                    notify(player, "Only authorized builders may seize exits.");
+                    return;
+                } else {
+                    /* pay the owner for his loss */
+                    dbref owner = OWNER(thing);
 
-	/* link has been validated and paid for; do it */
-	OWNER(thing) = OWNER(player);
-	ndest = link_exit(descr, player, thing, (char *) dest_name, good_dest);
-	if (ndest == 0) {
-	    notify(player, "No destinations linked.");
-	    SETVALUE(player, GETVALUE(player) + tp_link_cost);
-	    DBDIRTY(player);
-	    break;
-	}
-	DBFETCH(thing)->sp.exit.ndest = ndest;
-	if (DBFETCH(thing)->sp.exit.dest) {
-	    free(DBFETCH(thing)->sp.exit.dest);
-	}
-	DBFETCH(thing)->sp.exit.dest = malloc(sizeof(dbref) * (size_t)ndest);
-	for (int i = 0; i < ndest; i++) {
-	    (DBFETCH(thing)->sp.exit.dest)[i] = good_dest[i];
-	}
-	break;
-    case TYPE_THING:
-    case TYPE_PLAYER:
-	init_match(descr, player, dest_name, TYPE_ROOM, &md);
-	match_neighbor(&md);
-	match_absolute(&md);
-	match_registered(&md);
-	match_me(&md);
-	match_here(&md);
-	if (Typeof(thing) == TYPE_THING)
-	    match_possession(&md);
-	if ((dest = noisy_match_result(&md)) == NOTHING)
-	    return;
-	if (!controls(player, thing)
-	    || !can_link_to(player, Typeof(thing), dest)) {
-	    notify(player,
-		   "Permission denied. (you don't control the thing, or you can't link to dest)");
-	    return;
-	}
-	if (parent_loop_check(thing, dest)) {
-	    notify(player, "That would cause a parent paradox.");
-	    return;
-	}
-	/* do the link */
-	if (Typeof(thing) == TYPE_THING) {
-	    THING_SET_HOME(thing, dest);
-	} else {
-	    PLAYER_SET_HOME(thing, dest);
-	}
-	notify(player, "Home set.");
-	break;
-    case TYPE_ROOM:		/* room dropto's */
-	init_match(descr, player, dest_name, TYPE_ROOM, &md);
-	match_neighbor(&md);
-	match_possession(&md);
-	match_registered(&md);
-	match_absolute(&md);
-	match_home(&md);
-	if ((dest = noisy_match_result(&md)) == NOTHING)
-	    break;
-	if (!controls(player, thing) || !can_link_to(player, Typeof(thing), dest)
-	    || (thing == dest)) {
-	    notify(player,
-		   "Permission denied. (you don't control the room, or can't link to the dropto)");
-	} else {
-	    DBFETCH(thing)->sp.room.dropto = dest;	/* dropto */
-	    notify(player, "Dropto set.");
-	}
-	break;
-    case TYPE_PROGRAM:
-	notify(player, "You can't link programs to things!");
-	break;
-    default:
-	notify(player, "Internal error: weird object type.");
-	log_status("PANIC: weird object: Typeof(%d) = %d", thing, Typeof(thing));
-	break;
+                    SETVALUE(owner, GETVALUE(owner) + tp_exit_cost);
+                    DBDIRTY(owner);
+                }
+            }
+
+            /* link has been validated and paid for; do it */
+            OWNER(thing) = OWNER(player);
+            ndest = link_exit(descr, player, thing, (char *) dest_name, good_dest);
+
+            if (ndest == 0) {
+                notify(player, "No destinations linked.");
+                SETVALUE(player, GETVALUE(player) + tp_link_cost);
+                DBDIRTY(player);
+                break;
+            }
+
+            DBFETCH(thing)->sp.exit.ndest = ndest;
+
+            if (DBFETCH(thing)->sp.exit.dest) {
+                free(DBFETCH(thing)->sp.exit.dest);
+            }
+
+            DBFETCH(thing)->sp.exit.dest = malloc(sizeof(dbref) * (size_t)ndest);
+
+            for (int i = 0; i < ndest; i++) {
+                (DBFETCH(thing)->sp.exit.dest)[i] = good_dest[i];
+            }
+
+            break;
+        case TYPE_THING:
+        case TYPE_PLAYER:
+            init_match(descr, player, dest_name, TYPE_ROOM, &md);
+            match_neighbor(&md);
+            match_absolute(&md);
+            match_registered(&md);
+            match_me(&md);
+            match_here(&md);
+
+            if (Typeof(thing) == TYPE_THING)
+                match_possession(&md);
+
+            if ((dest = noisy_match_result(&md)) == NOTHING)
+                return;
+
+            if (!controls(player, thing)
+                || !can_link_to(player, Typeof(thing), dest)) {
+                notify(player,
+                    "Permission denied. (you don't control the thing, or you can't link to dest)");
+                return;
+            }
+
+            if (parent_loop_check(thing, dest)) {
+                notify(player, "That would cause a parent paradox.");
+                return;
+            }
+
+            /* do the link */
+            if (Typeof(thing) == TYPE_THING) {
+                THING_SET_HOME(thing, dest);
+            } else {
+                PLAYER_SET_HOME(thing, dest);
+            }
+
+            notify(player, "Home set.");
+            break;
+        case TYPE_ROOM:     /* room dropto's */
+            init_match(descr, player, dest_name, TYPE_ROOM, &md);
+            match_neighbor(&md);
+            match_possession(&md);
+            match_registered(&md);
+            match_absolute(&md);
+            match_home(&md);
+
+            if ((dest = noisy_match_result(&md)) == NOTHING)
+                break;
+
+            if (!controls(player, thing) || !can_link_to(player, Typeof(thing), dest)
+                || (thing == dest)) {
+                notify(player,
+                    "Permission denied. (you don't control the room, or can't link to the dropto)");
+            } else {
+                DBFETCH(thing)->sp.room.dropto = dest;  /* dropto */
+                notify(player, "Dropto set.");
+            }
+
+            break;
+        case TYPE_PROGRAM:
+            notify(player, "You can't link programs to things!");
+            break;
+        default:
+            notify(player, "Internal error: weird object type.");
+            log_status("PANIC: weird object: Typeof(%d) = %d", thing, Typeof(thing));
+            break;
     }
+
     DBDIRTY(thing);
     return;
 }
 
-/*
- * do_dig
+/**
+ * Implementation of @dig
  *
- * Use this to create a room.
+ * Use this to create a room.  This does a lot of checks; rooms can only
+ * be 7-bit ASCII, and must pass ok_name.  It handles finding the parent,
+ * if no parent provided.  IF a parent is provided, it tries to link the
+ * parent and does appropriate permission checks.
+ *
+ * This does NOT check builder bit.
+ *
+ * It supports registrtration if pname has an = in it.
+ *
+ * @param descr the descriptor of the person making the call
+ * @param player the player doing the call
+ * @param name the name of the room to make
+ * @param pname the parent room and possibly registration info
  */
 void
 do_dig(int descr, dbref player, const char *name, const char *pname)
@@ -256,37 +323,53 @@ do_dig(int descr, dbref player, const char *name, const char *pname)
     struct match_data md;
 
     if (*name == '\0') {
-	notify(player, "You must specify a name for the room.");
-	return;
+        notify(player, "You must specify a name for the room.");
+        return;
     }
+
     if (!ok_ascii_other(name)) {
-	notify(player, "Room names are limited to 7-bit ASCII.");
-	return;
+        notify(player, "Room names are limited to 7-bit ASCII.");
+        return;
     }
+
     if (!ok_name(name)) {
-	notify(player, "That's a strange name for a room!");
-	return;
+        notify(player, "That's a strange name for a room!");
+        return;
     }
+
     if (!payfor(player, tp_room_cost)) {
-	notifyf(player, "Sorry, you don't have enough %s to dig a room.", tp_pennies);
-	return;
+        notifyf(player, "Sorry, you don't have enough %s to dig a room.", tp_pennies);
+        return;
     }
 
     newparent = LOCATION(LOCATION(player));
+
+    /**
+     * @TODO: Okay, so, this isn't the right place to put this TODO,
+     *        but I don't want to forget it.  This logic should be
+     *        put in the newroom MUF.  Maybe if you indicate a parent room
+     *        of #-1 it will use this logic?  An *extremely* common problem
+     *        is people who make @dig replacements, editrooms, and other such
+     *        tools screw up this logic.
+     */
     while ((newparent != NOTHING) && !(FLAGS(newparent) & ABODE))
-	newparent = LOCATION(newparent);
+        newparent = LOCATION(newparent);
+
     if (newparent == NOTHING)
-	newparent = tp_default_room_parent;
+        newparent = tp_default_room_parent;
 
     room = create_room(player, name, newparent);
     unparse_object(player, room, unparse_buf, sizeof(unparse_buf));
     notifyf(player, "Room %s created.", unparse_buf);
 
     strcpyn(buf, sizeof(buf), pname);
+
     for (rname = buf; (*rname && (*rname != ARG_DELIMITER)); rname++) ;
+
     qname = rname;
+
     if (*rname)
-	*(rname++) = '\0';
+        *(rname++) = '\0';
 
     qname = buf;
     remove_ending_whitespace(&qname);
@@ -296,22 +379,23 @@ do_dig(int descr, dbref player, const char *name, const char *pname)
     qname = strcpyn(qbuf, sizeof(qbuf), qname);
 
     if (*qname) {
-	notify(player, "Trying to set parent...");
-	init_match(descr, player, qname, TYPE_ROOM, &md);
-	match_absolute(&md);
-	match_registered(&md);
-	match_here(&md);
-	if ((parent = noisy_match_result(&md)) == NOTHING) {
-	    notify(player, "Parent set to default.");
-	} else {
-	    if (!can_link_to(player, Typeof(room), parent) || room == parent) {
-		notify(player, "Permission denied.  Parent set to default.");
-	    } else {
-		moveto(room, parent);
+        notify(player, "Trying to set parent...");
+        init_match(descr, player, qname, TYPE_ROOM, &md);
+        match_absolute(&md);
+        match_registered(&md);
+        match_here(&md);
+
+        if ((parent = noisy_match_result(&md)) == NOTHING) {
+            notify(player, "Parent set to default.");
+        } else {
+            if (!can_link_to(player, Typeof(room), parent) || room == parent) {
+                notify(player, "Permission denied.  Parent set to default.");
+            } else {
+                moveto(room, parent);
                 unparse_object(player, parent, unparse_buf, sizeof(unparse_buf));
-		notifyf(player, "Parent set to %s.", unparse_buf);
-	    }
-	}
+                notifyf(player, "Parent set to %s.", unparse_buf);
+            }
+        }
     }
 
     if (*rname) {
@@ -319,12 +403,21 @@ do_dig(int descr, dbref player, const char *name, const char *pname)
     }
 }
 
-/*
-  Use this to create a program.
-  First, find a program that matches that name.  If there's one,
-  then we put him into edit mode and do it.
-  Otherwise, we create a new object for him, and call it a program.
-  */
+/**
+ * Implementation of @program
+ *
+ * First, find a program that matches that name.  If there's one, then we 
+ * put the player into edit mode and do it.  Otherwise, we create a new object
+ * for the player, and call it a program.
+ *
+ * This does some minor checks -- makes sure the name is 7-bit ASCII and
+ * "ok_name", but it has no permission checks whatsoever.
+ *
+ * @param descr the descriptor of the programmer
+ * @param player the player trying to create the program
+ * @param name the name of the program
+ * @param rname the registration name, which may be "" if not registering.
+ */
 void
 do_program(int descr, dbref player, const char *name, const char *rname)
 {
@@ -332,9 +425,14 @@ do_program(int descr, dbref player, const char *name, const char *rname)
     struct match_data md;
     char unparse_buf[BUFFER_LEN];
 
+    /* @TODO: So if we decide to normalize how permissions are handled,
+     *        this definitely needs some normalization.  It has no checks
+     *        and relies entirely on the caller (the big switch statement)
+     */
+
     if (!*name) {
-	notify(player, "No program name given.");
-	return;
+        notify(player, "No program name given.");
+        return;
     }
 
     init_match(descr, player, name, TYPE_PROGRAM, &md);
@@ -345,31 +443,48 @@ do_program(int descr, dbref player, const char *name, const char *rname)
     match_absolute(&md);
 
     if (*rname || (program = match_result(&md)) == NOTHING) {
-	if (!ok_ascii_other(name)) {
-	    notify(player, "Program names are limited to 7-bit ASCII.");
-	    return;
-	}
+        if (!ok_ascii_other(name)) {
+            notify(player, "Program names are limited to 7-bit ASCII.");
+            return;
+        }
 
-	if (!ok_name(name)) {
-	    notify(player, "That's a strange name for a program!");
-	    return;
-	}
+        if (!ok_name(name)) {
+            notify(player, "That's a strange name for a program!");
+            return;
+        }
 
-	program = create_program(player, name);
+        program = create_program(player, name);
         unparse_object(player, program, unparse_buf, sizeof(unparse_buf));
-	notifyf(player, "Program %s created.", unparse_buf);
+        notifyf(player, "Program %s created.", unparse_buf);
 
-	if (*rname) {
-	    register_object(player, player, REGISTRATION_PROPDIR, (char *)rname, program);
-	}
+        if (*rname) {
+            register_object(player, player, REGISTRATION_PROPDIR, (char *)rname, program);
+        }
     } else if (program == AMBIGUOUS) {
-	notifyf_nolisten(player, match_msg_ambiguous(name, 0));
-	return;
+        notifyf_nolisten(player, match_msg_ambiguous(name, 0));
+        return;
     }
 
     edit_program(player, program);
 }
 
+
+/**
+ * This is the implementation of @edit
+ *
+ * This does not do any permission checking, however the underlying call
+ * (edit_program) does do some minimal checking to make sure the player
+ * controls the program being edited.
+ *
+ * This wrapper handles the matching of the program name then hands off
+ * to edit_program.
+ *
+ * @see edit_program
+ *
+ * @param descr this is descriptor of the player entering edit
+ * @param player the player doing the editing
+ * @param name the name of the program to edit.
+ */
 void
 do_edit(int descr, dbref player, const char *name)
 {
@@ -377,8 +492,8 @@ do_edit(int descr, dbref player, const char *name)
     struct match_data md;
 
     if (!*name) {
-	notify(player, "No program name given.");
-	return;
+        notify(player, "No program name given.");
+        return;
     }
 
     init_match(descr, player, name, TYPE_PROGRAM, &md);
@@ -389,14 +504,17 @@ do_edit(int descr, dbref player, const char *name)
     match_absolute(&md);
 
     if ((program = noisy_match_result(&md)) == NOTHING)
-	return;
+        return;
 
     edit_program(player, program);
 }
 
-/*
- * copy a single property, identified by its name, from one object to
+/**
+ * Copy a single property, identified by its name, from one object to
  * another. helper routine for copy_props (below).
+ *
+ * @TODO: Remove this call entirely.  See my notes for copy_props.  I'm
+ *        not going to bother fully documenting this call.
  */
 static void
 copy_one_prop(dbref source, dbref destination, char *propname)
@@ -413,35 +531,44 @@ copy_one_prop(dbref source, dbref destination, char *propname)
 #endif
 
     if (currprop) {
+        /* flags can be copied. */
+        newprop.flags = currprop->flags;
 
-	/* flags can be copied. */
-	newprop.flags = currprop->flags;
+        /* data, however, must be cloned if it's a lock. */
+        switch (PropType(currprop)) {
+            case PROP_STRTYP:
+            case PROP_INTTYP:
+            case PROP_FLTTYP:
+            case PROP_REFTYP:
+                newprop.data = currprop->data;
+                break;
+            case PROP_LOKTYP:
+                newprop.data.lok = copy_bool((currprop->data).lok);
+            case PROP_DIRTYP:
+                break;
+        }
 
-	/* data, however, must be cloned if it's a lock. */
-	switch (PropType(currprop)) {
-	case PROP_STRTYP:
-	case PROP_INTTYP:
-	case PROP_FLTTYP:
-	case PROP_REFTYP:
-	    newprop.data = currprop->data;
-	    break;
-	case PROP_LOKTYP:
-	    newprop.data.lok = copy_bool((currprop->data).lok);
-	case PROP_DIRTYP:
-	    break;
-	}
-
-	/* now hook the new property into the destination object. */
-	set_property(destination, propname, &newprop, 0);
+        /* now hook the new property into the destination object. */
+        set_property(destination, propname, &newprop, 0);
     }
 
     return;
 }
 
-/*
- * copy a property (sub)tree from one object to another one. this is a
- * helper routine used by do_clone, based loosely on listprops_wildcard from
- * look.c.
+/**
+ * Copy a property (sub)tree from one object to another one.
+ *
+ * This is a helper routine used by do_clone, based loosely on
+ * listprops_wildcard from look.c.
+ *
+ * @TODO: This is probably 100% redundant with the copy_prop call in
+ *        props.h ... the difference is this takes a 'dir' parameter for
+ *        recursion purposes.  However, the only consumer of this call always
+ *        uses "" which makes this identical to copy_prop
+ *
+ *        I'm not going to bother documenting this further because it
+ *        really should be removed.  Also remove copy_one_prop which exists
+ *        just to service this call and be redundant.
  */
 static void
 copy_props(dbref player, dbref source, dbref destination, const char *dir)
@@ -452,35 +579,42 @@ copy_props(dbref player, dbref source, dbref destination, const char *dir)
 
     /* loop through all properties in the current propdir */
     propadr = first_prop(source, (char *) dir, &pptr, propname, sizeof(propname));
+
     while (propadr) {
+        /* generate name for current property */
+        snprintf(buf, sizeof(buf), "%s%c%s", dir, PROPDIR_DELIMITER, propname);
 
-	/* generate name for current property */
-	snprintf(buf, sizeof(buf), "%s%c%s", dir, PROPDIR_DELIMITER, propname);
+        /* notify player */
+        if (tp_verbose_clone && Wizard(OWNER(player))) {
+            notifyf(player, "copying property %s", buf);
+        }
 
-	/* notify player */
-	if (tp_verbose_clone && Wizard(OWNER(player))) {
-	    notifyf(player, "copying property %s", buf);
-	}
+        /* copy this property */
+        copy_one_prop(source, destination, buf);
 
-	/* copy this property */
-	copy_one_prop(source, destination, buf);
+        /* recursively copy this property directory */
+        copy_props(player, source, destination, buf);
 
-	/* recursively copy this property directory */
-	copy_props(player, source, destination, buf);
-
-	/* find next property in current dir */
-	propadr = next_prop(pptr, propadr, propname, sizeof(propname));
-
+        /* find next property in current dir */
+        propadr = next_prop(pptr, propadr, propname, sizeof(propname));
     }
 
     /* chaos and disorder - our work here is done. */
     return;
 }
 
-/*
- * do_clone
+/**
+ * Use this to clone an object.  Implementation for the @clone command.
  *
- * Use this to clone an object.
+ * This does most of the permission checks, but does not check for player
+ * BUILDER bit.  Supports prop registration if rname is provided.  You
+ * have no control over the cloned object's name, it uses the name of
+ * the original object.
+ *
+ * @param descr the cloner's descriptor
+ * @param player the player doing the cloning
+ * @param name the object name to clone
+ * @param rname the registration name, or "" if not registering.
  */
 void
 do_clone(int descr, dbref player, const char *name, const char *rname)
@@ -494,8 +628,8 @@ do_clone(int descr, dbref player, const char *name, const char *rname)
     /* Perform sanity checks */
 
     if (*name == '\0') {
-	notify(player, "Clone what?");
-	return;
+        notify(player, "Clone what?");
+        return;
     }
 
     /* All OK so far, so try to find the thing that should be cloned. We
@@ -508,43 +642,43 @@ do_clone(int descr, dbref player, const char *name, const char *rname)
     match_absolute(&md);
 
     if ((thing = noisy_match_result(&md)) == NOTHING)
-	return;
+        return;
 
     /* Further sanity checks */
 
     /* things only. */
     if (Typeof(thing) != TYPE_THING) {
-	notify(player, "That is not a cloneable object.");
-	return;
+        notify(player, "That is not a cloneable object.");
+        return;
     }
 
     /* check the name again, just in case reserved name patterns have
        changed since the original object was created. */
     if (!ok_name(NAME(thing))) {
-	notify(player, "You cannot clone something with such a weird name!");
-	return;
+        notify(player, "You cannot clone something with such a weird name!");
+        return;
     }
 
     /* no stealing stuff. */
     if (!controls(player, thing)) {
-	notify(player, "Permission denied. (you can't clone this)");
-	return;
+        notify(player, "Permission denied. (you can't clone this)");
+        return;
     }
 
     /* there ain't no such lunch as a free thing. */
     cost = OBJECT_GETCOST(GETVALUE(thing));
     if (cost < tp_object_cost) {
-	cost = tp_object_cost;
+        cost = tp_object_cost;
     }
 
     if (!payfor(player, cost)) {
-	notifyf(player, "Sorry, you don't have enough %s.", tp_pennies);
-	return;
+        notifyf(player, "Sorry, you don't have enough %s.", tp_pennies);
+        return;
     }
 
     if (tp_verbose_clone) {
-	unparse_object(player, thing, unparse_buf, sizeof(unparse_buf));
-	notifyf(player, "Now cloning %s...", unparse_buf);
+        unparse_object(player, thing, unparse_buf, sizeof(unparse_buf));
+        notifyf(player, "Now cloning %s...", unparse_buf);
     }
 
     clonedthing = create_thing(player, NAME(thing), player);
@@ -562,14 +696,22 @@ do_clone(int descr, dbref player, const char *name, const char *rname)
     notifyf(player, "Object %s cloned as %s.", unparse_buf, unparse_buf2);
 
     if (*rname) {
-	register_object(player, player, REGISTRATION_PROPDIR, (char *)rname, clonedthing);
+        register_object(player, player, REGISTRATION_PROPDIR, (char *)rname, clonedthing);
     }
 }
 
-/*
- * do_create
+/**
+ * Implementation of @create
  *
- * Use this to create an object.
+ * Use this to create an object.  This does some checking; for instance,
+ * it makes sure the name is 7 bit ASCII and is ok_name.  Does NOT check
+ * builder bit.  Validates that the cost you want to set on the object
+ * is a valid amount.  Note that if acost has an = in it, it will have
+ * a registration done.
+ *
+ * @param player the player doing the create
+ * @param name the name of the object
+ * @param acost the cost you want to assign, or "" for default.
  */
 void
 do_create(dbref player, char *name, char *acost)
@@ -584,8 +726,10 @@ do_create(dbref player, char *name, char *acost)
     strcpyn(buf2, sizeof(buf2), acost);
     for (rname = buf2; (*rname && (*rname != ARG_DELIMITER)); rname++) ;
     qname = rname;
+
     if (*rname)
-	rname++;
+        rname++;
+
     *qname = '\0';
 
     qname = buf2;
@@ -594,24 +738,30 @@ do_create(dbref player, char *name, char *acost)
     skip_whitespace((const char **)&rname);
 
     cost = atoi(qname);
+
     if (*name == '\0') {
-	notify(player, "Create what?");
-	return;
+        notify(player, "Create what?");
+        return;
     } else if (!ok_ascii_thing(name)) {
-	notify(player, "Thing names are limited to 7-bit ASCII.");
-	return;
+        /* @TODO: Make ok_ascii_name? These checks are everywhere
+         *        where first it checks ASCII than checks ok_name.
+         *        We could even combine the null check.
+         */
+        notify(player, "Thing names are limited to 7-bit ASCII.");
+        return;
     } else if (!ok_name(name)) {
-	notify(player, "That's a strange name for a thing!");
-	return;
+        notify(player, "That's a strange name for a thing!");
+        return;
     } else if (cost < 0) {
-	notify(player, "You can't create an object for less than nothing!");
-	return;
+        notify(player, "You can't create an object for less than nothing!");
+        return;
     } else if (cost < tp_object_cost) {
-	cost = tp_object_cost;
+        cost = tp_object_cost;
     }
+
     if (!payfor(player, cost)) {
-	notifyf(player, "Sorry, you don't have enough %s.", tp_pennies);
-	return;
+        notifyf(player, "Sorry, you don't have enough %s.", tp_pennies);
+        return;
     }
 
     thing = create_thing(player, name, player); 
@@ -625,16 +775,22 @@ do_create(dbref player, char *name, char *acost)
     }
 }
 
-/*
- * parse_source()
+/**
+ * Parse the source string into a dbref and checks that it exists.
  *
- * This is a utility used by do_action and do_attach.  It parses
- * the source string into a dbref, and checks to see that it
- * exists.
+ * This is a utility used by do_action and do_attach.
+ *
+ * @see do_action
+ * @see do_attach
  *
  * The return value is the dbref of the source, or NOTHING if an
  * error occurs.
  *
+ * @private
+ * @param descr the descriptor of the caller
+ * @param player the dbref of the caller
+ * @param source_name the string to parse
+ * @return dbref of source, or NOTHING on error.
  */
 static dbref
 parse_source(int descr, dbref player, const char *source_name)
@@ -643,6 +799,7 @@ parse_source(int descr, dbref player, const char *source_name)
     struct match_data md;
 
     init_match(descr, player, source_name, NOTYPE, &md);
+
     /* source type can be any */
     match_neighbor(&md);
     match_me(&md);
@@ -653,34 +810,51 @@ parse_source(int descr, dbref player, const char *source_name)
     source = noisy_match_result(&md);
 
     if (source == NOTHING)
-	return NOTHING;
+        return NOTHING;
 
     /* You can only attach actions to things you control */
     if (!controls(player, source)) {
-	notify(player, "Permission denied. (you don't control the attachment point)");
-	return NOTHING;
+        notify(player, "Permission denied. (you don't control the attachment point)");
+        return NOTHING;
     }
+
     if (Typeof(source) == TYPE_EXIT) {
-	notify(player, "You can't attach an action to an action.");
-	return NOTHING;
+        notify(player, "You can't attach an action to an action.");
+        return NOTHING;
     }
+
     if (Typeof(source) == TYPE_PROGRAM) {
-	notify(player, "You can't attach an action to a program.");
-	return NOTHING;
+        notify(player, "You can't attach an action to a program.");
+        return NOTHING;
     }
+
     return source;
 }
 
-/*
- * do_action()
+/**
+ * This routine attaches a new existing action to a source object, if possible.
  *
- * This routine attaches a new existing action to a source object,
- * where possible.
- * The action will not do anything until it is LINKed.
+ * The action will not do anything until it is LINKed.  This is the 
+ * implementation of @action.
  *
+ * Action names must be 7-bit ASCII and pass ok_name.
+ *
+ * Calls create_action under the hood.  @see create_action
+ *
+ * Deducts money from player based on tuned configuration.  Supports
+ * registration name if source_name contains an = character in it.
+ * Supports autolink action if configured in tune.
+ *
+ * This does a lot of permission checking, but does not check for BUILDER.
+ *
+ * @param descr the descriptor
+ * @param player the player creating the action
+ * @param action_name the action name to make
+ * @param source_name the name of the thing to put the action on.
  */
 void
-do_action(int descr, dbref player, const char *action_name, const char *source_name)
+do_action(int descr, dbref player, const char *action_name,
+          const char *source_name)
 {
     dbref action, source;
     char buf2[BUFFER_LEN];
@@ -688,10 +862,12 @@ do_action(int descr, dbref player, const char *action_name, const char *source_n
     char *rname, *qname;
 
     strcpyn(buf2, sizeof(buf2), source_name);
+
     for (rname = buf2; (*rname && (*rname != ARG_DELIMITER)); rname++) ;
     qname = rname;
+
     if (*rname)
-	*(rname++) = '\0';
+        *(rname++) = '\0';
 
     qname = buf2;
     remove_ending_whitespace(&qname);
@@ -699,20 +875,22 @@ do_action(int descr, dbref player, const char *action_name, const char *source_n
     skip_whitespace((const char **)&rname);
 
     if (!*action_name || !*qname) {
-	notify(player, "You must specify an action name and a source object.");
-	return;
+        notify(player, "You must specify an action name and a source object.");
+        return;
     } else if (!ok_ascii_other(action_name)) {
-	notify(player, "Action names are limited to 7-bit ASCII.");
-	return;
+        notify(player, "Action names are limited to 7-bit ASCII.");
+        return;
     } else if (!ok_name(action_name)) {
-	notify(player, "That's a strange name for an action!");
-	return;
+        notify(player, "That's a strange name for an action!");
+        return;
     }
+
     if (((source = parse_source(descr, player, qname)) == NOTHING))
-	return;
+        return;
+
     if (!payfor(player, tp_exit_cost)) {
-	notifyf(player, "Sorry, you don't have enough %s to make an action.", tp_pennies);
-	return;
+        notifyf(player, "Sorry, you don't have enough %s to make an action.", tp_pennies);
+        return;
     }
 
     action = create_action(player, action_name, source);
@@ -720,7 +898,7 @@ do_action(int descr, dbref player, const char *action_name, const char *source_n
     notifyf(player, "Action %s created and attached.", unparse_buf);
 
     if (tp_autolink_actions) {
-	notify(player, "Linked to NIL.");
+        notify(player, "Linked to NIL.");
     }
 
     if (*rname) {
@@ -728,12 +906,20 @@ do_action(int descr, dbref player, const char *action_name, const char *source_n
     }
 }
 
-/*
- * do_attach()
- *
+/**
  * This routine attaches a previously existing action to a source object.
- * The action will not do anything unless it is LINKed.
+ * The action will not do anything unless it is LINKed.  This is the
+ * implementation of @attach
  *
+ * Does all the permission checking associated except for the builder bit.
+ * Will reset the priority level if there is is a priority set.
+ *
+ * Won't let you attach to a program or something that doesn't exist.
+ *
+ * @param descr the descriptor of the person running the command
+ * @param player the player doing the attaching.
+ * @param action_name the action we are operating on
+ * @param source_name what we are attaching to.
  */
 void
 do_attach(int descr, dbref player, const char *action_name, const char *source_name)
@@ -742,28 +928,30 @@ do_attach(int descr, dbref player, const char *action_name, const char *source_n
     struct match_data md;
 
     if (!*action_name || !*source_name) {
-	notify(player, "You must specify an action name and a source object.");
-	return;
+        notify(player, "You must specify an action name and a source object.");
+        return;
     }
+
     init_match(descr, player, action_name, TYPE_EXIT, &md);
     match_all_exits(&md);
     match_registered(&md);
     match_absolute(&md);
 
     if ((action = noisy_match_result(&md)) == NOTHING)
-	return;
+        return;
 
     if (Typeof(action) != TYPE_EXIT) {
-	notify(player, "That's not an action!");
-	return;
+        notify(player, "That's not an action!");
+        return;
     } else if (!controls(player, action)) {
-	notify(player,
-	       "Permission denied. (you don't control the action you're trying to reattach)");
-	return;
+        notify(player,
+               "Permission denied. (you don't control the action you're trying to reattach)");
+        return;
     }
+
     if (((source = parse_source(descr, player, source_name)) == NOTHING)
-	|| Typeof(source) == TYPE_PROGRAM)
-	return;
+        || Typeof(source) == TYPE_PROGRAM)
+        return;
 
     unset_source(action);
     set_source(action, source);
@@ -771,7 +959,7 @@ do_attach(int descr, dbref player, const char *action_name, const char *source_n
     notify(player, "Action re-attached.");
 
     if (MLevRaw(action)) {
-	SetMLevel(action, 0);
-	notify(player, "Action priority Level reset to zero.");
+        SetMLevel(action, 0);
+        notify(player, "Action priority Level reset to zero.");
     }
 }

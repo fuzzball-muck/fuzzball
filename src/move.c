@@ -1,3 +1,11 @@
+/** @file move.c
+ *
+ * Source for handling movement on the MUCK, such as moving a player from
+ * room to room.
+ *
+ * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
+ */
+
 #include "config.h"
 
 #include "boolexp.h"
@@ -449,6 +457,20 @@ trigger(int descr, dbref player, dbref exit, int pflag)
 	notify(player, "Done.");
 }
 
+/**
+ * Implementation of the move command
+ *
+ * The move command is kind of like the 'start' command in Windows or the
+ * 'open' command in Mac ... it makes the player go through an exit, which
+ * can be any exit that matches, even a MUF program.
+ *
+ * lev should usually be 0 - @see match_all_exits
+ *
+ * @param descr the descriptor of the moving player
+ * @param player the player moving
+ * @param direction the exit to search for
+ * @param lev the match level, passed to match_all_exits via match_data md
+ */
 void
 do_move(int descr, dbref player, const char *direction, int lev)
 {
@@ -458,36 +480,47 @@ do_move(int descr, dbref player, const char *direction, int lev)
     struct match_data md;
 
     if (tp_allow_home && !strcasecmp(direction, "home")) {
-	/* send him home */
-	/* but steal all his possessions */
-	if ((loc = LOCATION(player)) != NOTHING) {
-	    /* tell everybody else */
-	    snprintf(buf, sizeof(buf), "%s goes home.", NAME(player));
-	    notify_except(CONTENTS(loc), player, buf, player);
-	}
-	/* give the player the messages */
-	notify(player, "There's no place like home...");
-	notify(player, "There's no place like home...");
-	notify(player, "There's no place like home...");
-	notify(player, "You wake up back home, without your possessions.");
-	send_home(descr, player, 1);
-    } else {
-	/* find the exit */
-	init_match_check_keys(descr, player, direction, TYPE_EXIT, &md);
-	md.match_level = lev;
-	match_all_exits(&md);
-	if ((exit = noisy_match_result(&md)) == NOTHING) {
-	    return;
-	}
+        /* send him home */
+        /* but steal all his possessions */
+        if ((loc = LOCATION(player)) != NOTHING) {
+            /* tell everybody else */
+            snprintf(buf, sizeof(buf), "%s goes home.", NAME(player));
+            notify_except(CONTENTS(loc), player, buf, player);
+        }
 
-	ts_useobject(exit);
-	if (can_doit(descr, player, exit, "You can't go that way.")) {
-	    trigger(descr, player, exit, 1);
-	}
+        /* give the player the messages */
+        notify(player, "There's no place like home...");
+        notify(player, "There's no place like home...");
+        notify(player, "There's no place like home...");
+        notify(player, "You wake up back home, without your possessions.");
+        send_home(descr, player, 1);
+    } else {
+        /* find the exit */
+        init_match_check_keys(descr, player, direction, TYPE_EXIT, &md);
+        md.match_level = lev;
+        match_all_exits(&md);
+
+        if ((exit = noisy_match_result(&md)) == NOTHING) {
+            return;
+        }
+
+        ts_useobject(exit);
+
+        if (can_doit(descr, player, exit, "You can't go that way.")) {
+            trigger(descr, player, exit, 1);
+        }
     }
 }
 
-
+/**
+ * Implementation of the leave command
+ *
+ * This is for a player to leave a vehicle.  Does all the flag checking
+ * to make sure the player is able to leave.
+ *
+ * @param descr the descriptor of the leaving player
+ * @param player the player leaving
+ */
 void
 do_leave(int descr, dbref player)
 {
@@ -496,39 +529,54 @@ do_leave(int descr, dbref player)
     loc = LOCATION(player);
 
     if (Typeof(loc) == TYPE_ROOM) {
-	notify(player, "You can't go that way.");
-	return;
+        notify(player, "You can't go that way.");
+        return;
     }
 
     if (!(FLAGS(loc) & VEHICLE)) {
-	notify(player, "You can only exit vehicles.");
-	return;
+        notify(player, "You can only exit vehicles.");
+        return;
     }
 
     dest = LOCATION(loc);
+
     if (Typeof(dest) != TYPE_ROOM && Typeof(dest) != TYPE_THING) {
-	notify(player, "You can't exit a vehicle inside of a player.");
-	return;
+        notify(player, "You can't exit a vehicle inside of a player.");
+        return;
     }
 
-/*
- *  if (Typeof(dest) == TYPE_ROOM && !controls(player, dest)
- *          && !(FLAGS(dest) | JUMP_OK)) {
- *      notify(player, "You can't go that way.");
- *      return;
- *  }
- */
-
     if (parent_loop_check(player, dest)) {
-	notify(player, "You can't go that way.");
-	return;
+        notify(player, "You can't go that way.");
+        return;
     }
 
     notify(player, "You exit the vehicle.");
     enter_room(descr, player, dest, loc);
 }
 
-
+/**
+ * Implementation of get command
+ *
+ * This implements the 'get' command, including the ability to get
+ * objects from a container.
+ *
+ * This does all the necessary permission checking.  If 'obj' is
+ * provided, we will try to get 'what' out of container 'obj'.
+ *
+ * If 'obj' is empty, it will get it from the current room or get
+ * it by DBREF if you're a wizard.
+ *
+ * A lot of the permission and messaging handling is delegated to common
+ * calls could_doit and can_doit.
+ *
+ * @see could_doit
+ * @see can_doit
+ *
+ * @param descr the descriptor of the person getting
+ * @param player the person getting
+ * @param what what to pick up
+ * @param obj the container, if applicable, or ""
+ */
 void
 do_get(int descr, dbref player, const char *what, const char *obj)
 {
@@ -539,78 +587,134 @@ do_get(int descr, dbref player, const char *what, const char *obj)
     init_match_check_keys(descr, player, what, TYPE_THING, &md);
     match_neighbor(&md);
     match_possession(&md);
-    if (Wizard(OWNER(player)))
-	match_absolute(&md);	/* the wizard has long fingers */
 
+    if (Wizard(OWNER(player)))
+        match_absolute(&md);    /* the wizard has long fingers */
+
+    /* @TODO Refactor this if to just return immediately so the rest
+     *       of the code isn't in a giant if block.
+     */
     if ((thing = noisy_match_result(&md)) != NOTHING) {
-	cont = thing;
-	if (obj && *obj) {
-	    init_match_check_keys(descr, player, obj, TYPE_THING, &md);
-	    match_rmatch(cont, &md);
-	    if (Wizard(OWNER(player)))
-		match_absolute(&md);	/* the wizard has long fingers */
-	    if ((thing = noisy_match_result(&md)) == NOTHING) {
-		return;
-	    }
-	    if (Typeof(cont) == TYPE_PLAYER) {
-		notify(player, "You can't steal things from players.");
-		return;
-	    }
-	    if (!test_lock_false_default(descr, player, cont, MESGPROP_CONLOCK)) {
-		notify(player, "You can't open that container.");
-		return;
-	    }
-	}
-	if (Typeof(player) != TYPE_PLAYER) {
-	    if (LOCATION(thing) != NOTHING && Typeof(LOCATION(thing)) != TYPE_ROOM) {
-		if (OWNER(player) != OWNER(thing)) {
-		    notify(player, "Zombies aren't allowed to be thieves!");
-		    return;
-		}
-	    }
-	}
-	if (LOCATION(thing) == player) {
-	    notify(player, "You already have that!");
-	    return;
-	}
-	if (Typeof(cont) == TYPE_PLAYER) {
-	    notify(player, "You can't steal stuff from players.");
-	    return;
-	}
-	if (parent_loop_check(thing, player)) {
-	    notify(player, "You can't pick yourself up by your bootstraps!");
-	    return;
-	}
-	switch (Typeof(thing)) {
-	case TYPE_THING:
-	    ts_useobject(thing);
-	case TYPE_PROGRAM:
-	    if (obj && *obj) {
-		cando = could_doit(descr, player, thing);
-		if (!cando)
-		    notify(player, "You can't get that.");
-	    } else {
-		cando = can_doit(descr, player, thing, "You can't pick that up.");
-	    }
-	    if (cando) {
-		if (tp_thing_movement && (Typeof(thing) == TYPE_THING)) {
-		    enter_room(descr, thing, player, LOCATION(thing));
-		} else {
-		    moveto(thing, player);
-		}
-		notify(player, "Taken.");
-	    }
-	    break;
-	default:
-	    notify(player, "You can't take that!");
-	    break;
-	}
+        cont = thing;
+
+        /* Do we have a container ? */
+        if (obj && *obj) {
+            init_match_check_keys(descr, player, obj, TYPE_THING, &md);
+            match_rmatch(cont, &md);
+
+            if (Wizard(OWNER(player)))
+                match_absolute(&md);    /* the wizard has long fingers */
+
+            if ((thing = noisy_match_result(&md)) == NOTHING) {
+                return;
+            }
+
+            if (Typeof(cont) == TYPE_PLAYER) {
+                notify(player, "You can't steal things from players.");
+                return;
+            }
+
+            if (!test_lock_false_default(descr, player, cont, MESGPROP_CONLOCK)) {
+                notify(player, "You can't open that container.");
+                return;
+            }
+        }
+
+        /* Do some checking around zombies to make sure they aren't
+         * doing anything fishy (picking up something not in a room)
+         *
+         * I believe this means zombies can't take things from other
+         * people's containers.
+         */
+        if (Typeof(player) != TYPE_PLAYER) {
+            if (LOCATION(thing) != NOTHING && Typeof(LOCATION(thing)) != TYPE_ROOM) {
+                if (OWNER(player) != OWNER(thing)) {
+                    notify(player, "Zombies aren't allowed to be thieves!");
+                    return;
+                }
+            }
+        }
+
+        if (LOCATION(thing) == player) {
+            notify(player, "You already have that!");
+            return;
+        }
+
+        /* @TODO This check appears to be redundant with the one
+         *       in the if block.  Maybe remove the check in the if
+         *       block in order to be a catch-all?
+         */
+        if (Typeof(cont) == TYPE_PLAYER) {
+            notify(player, "You can't steal stuff from players.");
+            return;
+        }
+
+        if (parent_loop_check(thing, player)) {
+            notify(player, "You can't pick yourself up by your bootstraps!");
+            return;
+        }
+
+        switch (Typeof(thing)) {
+            case TYPE_THING:
+                ts_useobject(thing);
+            case TYPE_PROGRAM:
+                if (obj && *obj) {
+                    cando = could_doit(descr, player, thing);
+
+                    if (!cando)
+                        notify(player, "You can't get that.");
+                    } else {
+                        cando = can_doit(descr, player, thing,
+                                         "You can't pick that up.");
+                    }
+
+                    if (cando) {
+                        if (tp_thing_movement && (Typeof(thing) == TYPE_THING)) {
+                            enter_room(descr, thing, player, LOCATION(thing));
+                        } else {
+                            moveto(thing, player);
+                        }
+
+                        notify(player, "Taken.");
+                    }
+
+                    break;
+            default:
+                notify(player, "You can't take that!");
+                break;
+        }
     }
 }
 
+/**
+ * Implementation of drop, put, and throw commands
+ *
+ * All three commands are completley identical under the hood.  The
+ * only difference is their help files.
+ *
+ * The logic here is somewhat complicated as a result.  If just
+ * 'name' is provided, this command acts like drop and seeks to
+ * drop the given object in the caller's posession into the room.
+ *
+ * If 'obj' is also provided, then the 'throw'/'put' behavior is
+ * in play.
+ *
+ * For the put/throw logic, if the target object is not a room, it must
+ * have a container lock.  The lock is "@conlock" or "_/clk".  If there is
+ * no lock it will default to false.
+ *
+ * This handles all the nuances of dropping things, such as drop/odrop
+ * messages and room STICKY flags and drop-to's.
+ *
+ * @param descr the descriptor of the dropping player
+ * @param player the dropping player
+ * @param name the name of the object to drop
+ * @param obj "" if dropping to current room, target of throw/put otherwise
+ */
 void
 do_drop(int descr, dbref player, const char *name, const char *obj)
 {
+    /* @TODO "hand" should probably also be an alias for this command */
     dbref loc, cont;
     dbref thing;
     char buf[BUFFER_LEN];
@@ -620,89 +724,100 @@ do_drop(int descr, dbref player, const char *name, const char *obj)
 
     init_match(descr, player, name, NOTYPE, &md);
     match_possession(&md);
+
     if ((thing = noisy_match_result(&md)) == NOTHING)
-	return;
+        return;
 
     cont = loc;
+
     if (obj && *obj) {
-	init_match(descr, player, obj, NOTYPE, &md);
-	match_possession(&md);
-	match_neighbor(&md);
-	if (Wizard(OWNER(player)))
-	    match_absolute(&md);	/* the wizard has long fingers */
-	if ((cont = noisy_match_result(&md)) == NOTHING) {
-	    return;
-	}
+        init_match(descr, player, obj, NOTYPE, &md);
+        match_possession(&md);
+        match_neighbor(&md);
+
+        if (Wizard(OWNER(player)))
+            match_absolute(&md);    /* the wizard has long fingers */
+
+            if ((cont = noisy_match_result(&md)) == NOTHING) {
+                return;
+            }
     }
+
     switch (Typeof(thing)) {
-    case TYPE_THING:
-	ts_useobject(thing);
-    case TYPE_PROGRAM:
-	if (LOCATION(thing) != player) {
-	    /* Shouldn't ever happen. */
-	    notify(player, "You can't drop that.");
-	    break;
-	}
-	if (Typeof(cont) != TYPE_ROOM && Typeof(cont) != TYPE_PLAYER &&
-	    Typeof(cont) != TYPE_THING) {
-	    notify(player, "You can't put anything in that.");
-	    break;
-	}
-	if (Typeof(cont) != TYPE_ROOM &&
-	    !test_lock_false_default(descr, player, cont, MESGPROP_CONLOCK)) {
-	    notify(player, "You don't have permission to put something in that.");
-	    break;
-	}
-	if (parent_loop_check(thing, cont)) {
-	    notify(player, "You can't put something inside of itself.");
-	    break;
-	}
-	if (Typeof(cont) == TYPE_ROOM && (FLAGS(thing) & STICKY) &&
-	    Typeof(thing) == TYPE_THING) {
-	    send_home(descr, thing, 0);
-	} else {
-	    int immediate_dropto = (Typeof(cont) == TYPE_ROOM &&
-				    DBFETCH(cont)->sp.room.dropto != NOTHING
-				    && !(FLAGS(cont) & STICKY));
+        case TYPE_THING:
+            ts_useobject(thing);
+        case TYPE_PROGRAM:
+            if (LOCATION(thing) != player) {
+                /* Shouldn't ever happen. */
+                notify(player, "You can't drop that.");
+                break;
+            }
 
-	    if (tp_thing_movement && (Typeof(thing) == TYPE_THING)) {
-		enter_room(descr, thing,
-			   immediate_dropto ? DBFETCH(cont)->sp.room.dropto : cont, player);
-	    } else {
-		moveto(thing, immediate_dropto ? DBFETCH(cont)->sp.room.dropto : cont);
-	    }
-	}
-	if (Typeof(cont) == TYPE_THING) {
-	    notify(player, "Put away.");
-	    return;
-	} else if (Typeof(cont) == TYPE_PLAYER) {
-	    notifyf(cont, "%s hands you %s", NAME(player), NAME(thing));
-	    notifyf(player, "You hand %s to %s", NAME(thing), NAME(cont));
-	    return;
-	}
+            if (Typeof(cont) != TYPE_ROOM && Typeof(cont) != TYPE_PLAYER &&
+                Typeof(cont) != TYPE_THING) {
+                notify(player, "You can't put anything in that.");
+                break;
+            }
 
-	if (GETDROP(thing))
-	    exec_or_notify_prop(descr, player, thing, MESGPROP_DROP, "(@Drop)");
-	else
-	    notify(player, "Dropped.");
+            if (Typeof(cont) != TYPE_ROOM &&
+                !test_lock_false_default(descr, player, cont, MESGPROP_CONLOCK)) {
+                notify(player, "You don't have permission to put something in that.");
+                break;
+            }
 
-	if (GETDROP(loc))
-	    exec_or_notify_prop(descr, player, loc, MESGPROP_DROP, "(@Drop)");
+            if (parent_loop_check(thing, cont)) {
+                notify(player, "You can't put something inside of itself.");
+                break;
+            }
 
-	if (GETODROP(thing)) {
-	    parse_oprop(descr, player, loc, thing, MESGPROP_ODROP, NAME(player), "(@Odrop)");
-	} else {
-	    snprintf(buf, sizeof(buf), "%s drops %s.", NAME(player), NAME(thing));
-	    notify_except(CONTENTS(loc), player, buf, player);
-	}
+            if (Typeof(cont) == TYPE_ROOM && (FLAGS(thing) & STICKY) &&
+                Typeof(thing) == TYPE_THING) {
+                send_home(descr, thing, 0);
+            } else {
+                int immediate_dropto = (Typeof(cont) == TYPE_ROOM &&
+                                        DBFETCH(cont)->sp.room.dropto != NOTHING
+                                        && !(FLAGS(cont) & STICKY));
 
-	if (GETODROP(loc)) {
-	    parse_oprop(descr, player, loc, loc, MESGPROP_ODROP, NAME(thing), "(@Odrop)");
-	}
-	break;
-    default:
-	notify(player, "You can't drop that.");
-	break;
+                if (tp_thing_movement && (Typeof(thing) == TYPE_THING)) {
+                    enter_room(descr, thing,
+                               immediate_dropto ? DBFETCH(cont)->sp.room.dropto : cont, player);
+                } else {
+                    moveto(thing, immediate_dropto ? DBFETCH(cont)->sp.room.dropto : cont);
+                }
+            }
+
+            if (Typeof(cont) == TYPE_THING) {
+                notify(player, "Put away.");
+                return;
+            } else if (Typeof(cont) == TYPE_PLAYER) {
+                notifyf(cont, "%s hands you %s", NAME(player), NAME(thing));
+                notifyf(player, "You hand %s to %s", NAME(thing), NAME(cont));
+                return;
+            }
+
+            if (GETDROP(thing))
+                exec_or_notify_prop(descr, player, thing, MESGPROP_DROP, "(@Drop)");
+            else
+                notify(player, "Dropped.");
+
+            if (GETDROP(loc))
+                exec_or_notify_prop(descr, player, loc, MESGPROP_DROP, "(@Drop)");
+
+            if (GETODROP(thing)) {
+                parse_oprop(descr, player, loc, thing, MESGPROP_ODROP, NAME(player), "(@Odrop)");
+            } else {
+                snprintf(buf, sizeof(buf), "%s drops %s.", NAME(player), NAME(thing));
+                notify_except(CONTENTS(loc), player, buf, player);
+            }
+
+            if (GETODROP(loc)) {
+                parse_oprop(descr, player, loc, loc, MESGPROP_ODROP, NAME(thing), "(@Odrop)");
+            }
+
+            break;
+        default:
+            notify(player, "You can't drop that.");
+            break;
     }
 }
 
@@ -907,9 +1022,35 @@ recycle(int descr, dbref player, dbref thing)
     DBDIRTY(thing);
 }
 
+/**
+ * Implementation of @recycle command
+ *
+ * This is a wrapper around 'recycle', but it does a lot of additional
+ * permission checks.  For instance, in order to recycle an object or
+ * room, you must actually own it even if you a are a wizard.  This
+ * makes the requirement for a two-step '@chown' then '@recycle' if you
+ * wish to delete something as a wizard that you do not know.
+ *
+ * This is on purpose, I would imagine, to prevent accidents.
+ *
+ * @see recycle
+ *
+ * @param descr the descriptor of the person running the command
+ * @param player the player running the command
+ * @param name the object to recycle
+ */
 void
 do_recycle(int descr, dbref player, const char *name)
 {
+    /* TODO: Why is this in move.c?  Just about anything else would make
+     *       more sense.  I'd vote for db.c or create.c, the latter being
+     *       mildly ironic but where the majority of similar calls live.
+     *
+     *       This seems to be in move.c because 'recycle' is also in move.c
+     *       I haven't investigated why yet - may be because recycling a
+     *       room moves folks.  This could be moved regardless of where
+     *       'recycle' lives, though.
+     */
     dbref thing;
     char buf[BUFFER_LEN];
     struct match_data md;
@@ -917,92 +1058,105 @@ do_recycle(int descr, dbref player, const char *name)
 
     init_match(descr, player, name, TYPE_THING, &md);
     match_everything(&md);
+
     if ((thing = noisy_match_result(&md)) != NOTHING) {
 #ifdef GOD_PRIV
-	if (tp_strict_god_priv && !God(player) && God(OWNER(thing))) {
-	    notify(player, "Only God may reclaim God's property.");
-	    return;
-	}
+        if (tp_strict_god_priv && !God(player) && God(OWNER(thing))) {
+            notify(player, "Only God may reclaim God's property.");
+            return;
+        }
 #endif
-	if (!controls(player, thing)) {
-	    if (Wizard(OWNER(player)) && (Typeof(thing) == TYPE_GARBAGE))
-		notify(player, "That's already garbage!");
-	    else
-		notify(player,
-		       "Permission denied. (You don't control what you want to recycle)");
-	} else {
-	    while (tref->name) {
-		if (thing == *tref->ref) {
-		    notify(player, "That object cannot currently be @recycled.");
-		    return;
-		}
-		tref++;
-	    }
-	    switch (Typeof(thing)) {
-	    case TYPE_ROOM:
-		if (OWNER(thing) != OWNER(player)) {
-		    notify(player,
-			   "Permission denied. (You don't control the room you want to recycle)");
-		    return;
-		}
-		if (thing == GLOBAL_ENVIRONMENT) {
-		    notify(player,
-			   "If you want to do that, why don't you just delete the database instead?  Room #0 contains everything, and is needed for database sanity.");
-		    return;
-		}
-		break;
-	    case TYPE_THING:
-		if (OWNER(thing) != OWNER(player)) {
-		    notify(player,
-			   "Permission denied. (You can't recycle a thing you don't control)");
-		    return;
-		}
-		/* player may be a zombie or puppet */
-		if (thing == player) {
-		    snprintf(buf, sizeof(buf),
-			     "%.512s's owner commands it to kill itself.  It blinks a few times in shock, and says, \"But.. but.. WHY?\"  It suddenly clutches it's heart, grimacing with pain..  Staggers a few steps before falling to it's knees, then plops down on it's face.  *thud*  It kicks its legs a few times, with weakening force, as it suffers a seizure.  It's color slowly starts changing to purple, before it explodes with a fatal *POOF*!",
-			     NAME(thing));
-		    notify_except(CONTENTS(LOCATION(thing)), thing, buf, player);
-		    notify(OWNER(player), buf);
-		    notify(OWNER(player), "Now don't you feel guilty?");
-		}
-		break;
-	    case TYPE_EXIT:
-		if (OWNER(thing) != OWNER(player)) {
-		    notify(player,
-			   "Permission denied. (You may not recycle an exit you don't own)");
-		    return;
-		}
-		unset_source(thing);
-		break;
-	    case TYPE_PLAYER:
-		notify(player, "You can't recycle a player!");
-		return;
-	    case TYPE_PROGRAM:
-		if (OWNER(thing) != OWNER(player)) {
-		    notify(player,
-			   "Permission denied. (You can't recycle a program you don't own)");
-		    return;
-		}
-		SetMLevel(thing, 0);
-		if (PROGRAM_INSTANCES(thing)) {
-		    dequeue_prog(thing, 0);
-		}
-		/* FIXME: This is a workaround for bug #201633 */
-		if (PROGRAM_INSTANCES(thing)) {
-		    assert(0);	/* getting here is a bug - we already dequeued it. */
-		    notify(player, "Recycle failed: Program is still running.");
-		    return;
-		}
-		break;
-	    case TYPE_GARBAGE:
-		notify(player, "That's already garbage!");
-		return;
-	    }
-	    snprintf(buf, sizeof(buf), "Thank you for recycling %.512s (#%d).", NAME(thing),
-		     thing);
-	    recycle(descr, player, thing);
-	    notify(player, buf);
-	}
+        if (!controls(player, thing)) {
+            if (Wizard(OWNER(player)) && (Typeof(thing) == TYPE_GARBAGE))
+                notify(player, "That's already garbage!");
+            else
+                notify(player,
+                       "Permission denied. (You don't control what you want to recycle)");
+        } else {
+            while (tref->name) {
+                if (thing == *tref->ref) {
+                    notify(player, "That object cannot currently be @recycled.");
+                    return;
+                }
+
+                tref++;
+            }
+
+            switch (Typeof(thing)) {
+                case TYPE_ROOM:
+                    if (OWNER(thing) != OWNER(player)) {
+                        notify(player,
+                           "Permission denied. (You don't control the room you want to recycle)");
+                        return;
+                    }
+
+                    if (thing == GLOBAL_ENVIRONMENT) {
+                        notify(player,
+                               "If you want to do that, why don't you just delete the database instead?  Room #0 contains everything, and is needed for database sanity.");
+                        return;
+                    }
+
+                    break;
+                case TYPE_THING:
+                    if (OWNER(thing) != OWNER(player)) {
+                        notify(player,
+                               "Permission denied. (You can't recycle a thing you don't control)");
+                        return;
+                    }
+
+                    /* player may be a zombie or puppet */
+                    if (thing == player) {
+                        snprintf(buf, sizeof(buf),
+                                 "%.512s's owner commands it to kill itself.  It blinks a few times in shock, and says, \"But.. but.. WHY?\"  It suddenly clutches it's heart, grimacing with pain..  Staggers a few steps before falling to it's knees, then plops down on it's face.  *thud*  It kicks its legs a few times, with weakening force, as it suffers a seizure.  It's color slowly starts changing to purple, before it explodes with a fatal *POOF*!",
+                                 NAME(thing));
+                        notify_except(CONTENTS(LOCATION(thing)), thing, buf, player);
+                        notify(OWNER(player), buf);
+                        notify(OWNER(player), "Now don't you feel guilty?");
+                    }
+
+                    break;
+                case TYPE_EXIT:
+                    if (OWNER(thing) != OWNER(player)) {
+                        notify(player,
+                               "Permission denied. (You may not recycle an exit you don't own)");
+                        return;
+                    }
+
+                    unset_source(thing);
+                    break;
+                case TYPE_PLAYER:
+                    notify(player, "You can't recycle a player!");
+                    return;
+                case TYPE_PROGRAM:
+                    if (OWNER(thing) != OWNER(player)) {
+                        notify(player,
+                               "Permission denied. (You can't recycle a program you don't own)");
+                        return;
+                    }
+
+                    SetMLevel(thing, 0);
+
+                    if (PROGRAM_INSTANCES(thing)) {
+                        dequeue_prog(thing, 0);
+                    }
+
+                    /* FIXME: This is a workaround for bug #201633 */
+                    if (PROGRAM_INSTANCES(thing)) {
+                        assert(0);  /* getting here is a bug - we already dequeued it. */
+                        notify(player, "Recycle failed: Program is still running.");
+                        return;
+                    }
+
+                    break;
+                case TYPE_GARBAGE:
+                    notify(player, "That's already garbage!");
+                    return;
+            }
+
+            snprintf(buf, sizeof(buf), "Thank you for recycling %.512s (#%d).", NAME(thing),
+                     thing);
+            recycle(descr, player, thing);
+            notify(player, buf);
+        }
     }
 }
