@@ -32,7 +32,7 @@ struct flgchkdat {
     int isold;          /* if yes, check if old */
     int loadedsize;     /* check for propval-loaded size? */
     int issize;         /* list objs larger than size? */
-    int size;           /* what size to check against. No check if 0 */
+    size_t size;        /* what size to check against. No check if 0 */
 };
 
 /**

@@ -17,7 +17,6 @@
 #include "interface.h"
 
 #define generation "$generation"
-#define creation "$creation"
 $gitavail
 
 typedef struct hash_file_entry {
@@ -41,7 +40,7 @@ $hasharray
 void
 do_version(dbref player)
 {
-    notifyf(player, "Version: %s(%s) Compiled on: %s", VERSION, generation, creation);
+    notifyf(player, "Version: %s(%s)", VERSION, generation);
     notifyf(player, "Options: %s", compile_options);
 }
 

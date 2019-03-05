@@ -26,7 +26,8 @@ exec_prefix=@exec_prefix@
 INSTALL_BINDIR=@bindir@
 INSTALL_SBINDIR=@sbindir@
 # Destination for helpfiles
-INSTALL_HELPDIR=@datadir@/doc/fbmuck
+PACKAGE_TARNAME=@PACKAGE_TARNAME@
+INSTALL_HELPDIR=@docdir@
 
 # #######################################################################
 # 		Variables set by the configure script.
@@ -129,10 +130,13 @@ prochelp: prochelp.o Makefile
 	${PRE} ${CC} ${CFLAGS} ${INCL} ${DEFS} -o prochelp prochelp.o
 
 help: prochelp
-	cd ../game/data && ../../src/prochelp mpihelp.raw mpihelp.txt mpihelp.html > /dev/null
-	cd ../game/data && ../../src/prochelp mufman.raw man.txt mufman.html > /dev/null
-	cd ../game/data && ../../src/prochelp muckhelp.raw help.txt muckhelp.html > /dev/null
-	cd ../game/data && ${INSTALL_DATA} ${HELPFILES} ${INSTALL_HELPDIR}
+	cd ../docs && ../src/prochelp ../src/mpihelp.raw mpihelp.txt mpihelp.html > /dev/null
+	cd ../docs && ../src/prochelp ../src/mufman.raw man.txt mufman.html > /dev/null
+	cd ../docs && ../src/prochelp ../src/muckhelp.raw help.txt muckhelp.html > /dev/null
+	cd ../docs && ${INSTALL_DATA} help.txt man.txt mpihelp.txt ../game/data
+	${INSTALL} -d ../game/data/info
+	cd ../docs && ${INSTALL_DATA} mpi-intro mpi-intro2 muf-tutorial ../game/data/info
+	cd ../docs && ${INSTALL_DATA} ${HELPFILES} ${INSTALL_HELPDIR}
 
 Makefile: Makefile.in
 	cd .. && ./config.status

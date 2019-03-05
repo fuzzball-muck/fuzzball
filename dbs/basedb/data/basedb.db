@@ -1,12 +1,13 @@
 ***Foxen9 TinyMUCK DUMP Format***
 54
 1
-157
+158
 autolook_cmd=look
 cpennies=Pennies
 cpenny=Penny
 pennies=pennies
 penny=penny
+description_default=You see nothing special.
 dumpdone_mesg=## Save complete. ##
 dumping_mesg=## Pausing to save database. This may take a while. ##
 dumpwarn_mesg=## Game will pause to save the database in a few minutes. ##
@@ -105,7 +106,7 @@ toad_default_recipient=#1
 7bit_thing_names=yes
 7bit_other_names=no
 enable_home=yes
-enable_match_yield=no
+enable_match_yield=yes
 enable_prefix=no
 recognize_null_command=no
 verbose_clone=no

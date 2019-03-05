@@ -273,7 +273,7 @@ do_info(dbref player, const char *topic, const char *seg)
     int cols;
     size_t buflen = 80;
 
-#ifdef DIR_AVALIBLE
+#ifdef DIR_AVAILABLE
     DIR *df;
     struct dirent *dp;
 #endif
@@ -290,7 +290,7 @@ do_info(dbref player, const char *topic, const char *seg)
             notify(player, NO_INFO_MSG);
         }
     } else {
-#ifdef DIR_AVALIBLE
+#ifdef DIR_AVAILABLE
         buf = calloc(1, buflen);
         (void) strcpyn(buf, buflen, "    ");
         f = 0;
@@ -383,9 +383,9 @@ do_info(dbref player, const char *topic, const char *seg)
             notify(player, "There are no information files available.");
 
         free(buf);
-#else       /* !DIR_AVALIBLE && !WIN32 */
+#else           /* !DIR_AVAILABLE && !WIN32 */
         notify(player, "Index not available on this system.");
-#endif      /* !DIR_AVALIBLE && !WIN32 */
+#endif          /* !DIR_AVAILABLE && !WIN32 */
     }
 }
 

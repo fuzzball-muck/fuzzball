@@ -52,9 +52,9 @@ no_good(double test)
 	 (w += f(x,y,z) + in, w = (w<<s | w>>(32-s)) + x)
 
 struct xMD5Context {
-    word32 buf[4];
-    word32 bytes[2];
-    word32 in[16];
+    uint32_t buf[4];
+    uint32_t bytes[2];
+    uint32_t in[16];
 };
 
 /*
@@ -63,9 +63,9 @@ struct xMD5Context {
  * the data and converts bytes into longwords for this routine.
  */
 static void
-xMD5Transform(word32 buf[4], word32 const in[16])
+xMD5Transform(uint32_t buf[4], uint32_t const in[16])
 {
-    register word32 a, b, c, d;
+    register uint32_t a, b, c, d;
 
     a = buf[0];
     b = buf[1];
@@ -151,12 +151,12 @@ xMD5Transform(word32 buf[4], word32 const in[16])
  * MD5 spec.  Note: this code works regardless of the byte order.
  */
 static void
-byteSwap(word32 * buf, unsigned words)
+byteSwap(uint32_t * buf, unsigned words)
 {
-    byte *p = (byte *) buf;
+    uint8_t *p = (uint8_t *) buf;
 
     do {
-	*buf++ = (word32) ((unsigned) p[3] << 8 | p[2]) << 16 | ((unsigned) p[1] << 8 | p[0]);
+	*buf++ = (uint32_t) ((unsigned) p[3] << 8 | p[2]) << 16 | ((unsigned) p[1] << 8 | p[0]);
 	p += 4;
     } while (--words);
 }
@@ -182,9 +182,9 @@ xMD5Init(struct xMD5Context *ctx)
  * of bytes.
  */
 static void
-xMD5Update(struct xMD5Context *ctx, const byte * buf, size_t len)
+xMD5Update(struct xMD5Context *ctx, const uint8_t * buf, size_t len)
 {
-    word32 t;
+    uint32_t t;
 
     /* Update byte count */
 
@@ -194,11 +194,11 @@ xMD5Update(struct xMD5Context *ctx, const byte * buf, size_t len)
 
     t = 64 - (t & 0x3f);	/* Space available in ctx->in (at least 1) */
     if ((unsigned) t > (unsigned) len) {
-	memmove((byte *) ctx->in + 64 - (unsigned) t, buf, len);
+	memmove((uint8_t *) ctx->in + 64 - (unsigned) t, buf, len);
 	return;
     }
     /* First chunk is an odd size */
-    memmove((byte *) ctx->in + 64 - (unsigned) t, buf, (unsigned) t);
+    memmove((uint8_t *) ctx->in + 64 - (unsigned) t, buf, (unsigned) t);
     byteSwap(ctx->in, 16);
     xMD5Transform(ctx->buf, ctx->in);
     buf += (unsigned) t;
@@ -206,7 +206,7 @@ xMD5Update(struct xMD5Context *ctx, const byte * buf, size_t len)
 
     /* Process data in 64-byte chunks */
     while (len >= 64) {
-	memmove((byte *) ctx->in, buf, 64);
+	memmove((uint8_t *) ctx->in, buf, 64);
 	byteSwap(ctx->in, 16);
 	xMD5Transform(ctx->buf, ctx->in);
 	buf += 64;
@@ -214,7 +214,7 @@ xMD5Update(struct xMD5Context *ctx, const byte * buf, size_t len)
     }
 
     /* Handle any remaining bytes of data. */
-    memmove((byte *) ctx->in, buf, len);
+    memmove((uint8_t *) ctx->in, buf, len);
 }
 
 /*
@@ -222,10 +222,10 @@ xMD5Update(struct xMD5Context *ctx, const byte * buf, size_t len)
  * 1 0* (64-bit count of bits processed, MSB-first)
  */
 static void
-xMD5Final(byte digest[16], struct xMD5Context *ctx)
+xMD5Final(uint8_t digest[16], struct xMD5Context *ctx)
 {
     int count = (int) (ctx->bytes[0] & 0x3f);	/* Bytes in ctx->in */
-    byte *p = (byte *) ctx->in + count;	/* First unused byte */
+    uint8_t *p = (uint8_t *) ctx->in + count;	/* First unused byte */
 
     /* Set the first char of padding to 0x80.  There is always room. */
     *p++ = 0x80;
@@ -237,7 +237,7 @@ xMD5Final(byte digest[16], struct xMD5Context *ctx)
 	memset(p, 0, count + 8);
 	byteSwap(ctx->in, 16);
 	xMD5Transform(ctx->buf, ctx->in);
-	p = (byte *) ctx->in;
+	p = (uint8_t *) ctx->in;
 	count = 56;
     }
     memset(p, 0, count + 8);
@@ -249,8 +249,8 @@ xMD5Final(byte digest[16], struct xMD5Context *ctx)
     xMD5Transform(ctx->buf, ctx->in);
 
     byteSwap(ctx->buf, 4);
-    memmove(digest, (byte *) ctx->buf, 16);
-    memset((byte *) ctx, 0, sizeof(ctx));
+    memmove(digest, (uint8_t *) ctx->buf, 16);
+    memset((uint8_t *) ctx, 0, sizeof(ctx));
 }
 
 /* dest buffer MUST be at least 16 bytes long. */
@@ -260,8 +260,8 @@ MD5hash(void *dest, const void *orig, size_t len)
     struct xMD5Context context;
 
     xMD5Init(&context);
-    xMD5Update(&context, (const byte *) orig, len);
-    xMD5Final((byte *) dest, &context);
+    xMD5Update(&context, (const uint8_t *) orig, len);
+    xMD5Final((uint8_t *) dest, &context);
 }
 
 /*
@@ -356,10 +356,10 @@ MD5base64(char *dest, const void *orig, size_t len)
 void *
 init_seed(char *seed)
 {
-    word32 *digest;
+    uint32_t *digest;
     int tbuf[8];
 
-    if (!(digest = malloc(sizeof(word32) * 4))) {
+    if (!(digest = malloc(sizeof(uint32_t) * 4))) {
 	return (NULL);
     }
     if (!seed) {
@@ -381,10 +381,10 @@ delete_seed(void *buffer)
     free(buffer);
 }
 
-word32
+uint32_t
 rnd(void *buffer)
 {
-    word32 *digest = (word32 *) buffer;
+    uint32_t *digest = (uint32_t *) buffer;
 
     if (!digest)
 	return (0);

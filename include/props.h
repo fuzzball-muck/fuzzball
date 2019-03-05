@@ -77,6 +77,7 @@ typedef struct plist *PropPtr;
 /* You will never want to change these, or you will make your MUCK
  * incompatible with pretty much everything.
  */
+#define EXEC_SIGNAL '@'
 #define PROP_DELIMITER ':'
 #define PROPDIR_DELIMITER '/'
 
@@ -335,22 +336,6 @@ int db_get_single_prop(FILE * f, dbref obj, long pos, PropPtr pnode,
 void db_getprops(FILE * f, dbref obj, const char *pdir);
 
 /**
- * Writes a single property to the disk.
- *
- * This is exclusively used in property.c and could be refactored so as
- * not to be exposed in this include file.
- *
- * @TODO: Remove from this header, there is no reason for this to be
- *        externally available.
- *
- * @param f The database file
- * @param dir The prop dir this prop is in.  This *is* actually used by
- *            this method, but I am unsure if it is strictly necessary.
- * @param p The prop to save to the file.
- */
-void db_putprop(FILE * f, const char *dir, PropPtr p);
-
-/**
  * Delete a property from the given prop set, with the given property
  * name.  It removes it from the AVL of 'list'.  Does not save it to
  * the database right away.
@@ -447,9 +432,6 @@ const char *envpropstr(dbref * where, const char *propname);
  *
  * MUFs are run with PREEMPT and HARDUID.  Error conditions are notify'd
  * to the player.
- *
- * @TODO: The '@' symbol is a define in property.c called EXEC_SIGNAL which
- *        should probably be brought out to props.h instead.
  *
  * @param descr - integer descriptor to notify.
  * @param player - The DBREF of the calling player.
@@ -730,27 +712,27 @@ int has_property_strict(int descr, dbref player, dbref what, const char *type,
 int is_propdir(dbref player, const char *dir);
 
 /**
- * This finds a prop named 'path' in the AVL proplist 'l'.  It is basically
+ * This finds a prop named 'key' in the AVL proplist 'avl'.  It is basically
  * a primitive for looking up items in the AVLs.
  *
- * @param l the AVL to search
- * @param path the path to look up
+ * @param avl the AVL to search
+ * @param key the key to look up
  *
  * @return the found node, or NULL if not found.
  */
-PropPtr locate_prop(PropPtr l, char *path);
+PropPtr locate_prop(PropPtr avl, char *key);
 
 /**
  * This creates a new node in the AVL then returns the created node
- * so that you might populate it with data.  If the path already
+ * so that you might populate it with data.  If the key already
  * exists, then the existing node is returned.
  *
- * @param l the AVL to add a property to.
- * @param path the path to add to the AVL.
+ * @param avl the AVL to add a property to.
+ * @param key the key to add to the AVL.
  *
  * @return the newly created AVL node.
  */
-PropPtr new_prop(PropPtr * l, char *path);
+PropPtr new_prop(PropPtr *avl, char *key);
 
 /**
  * next_node locates and returns the next node in the AVL (prop directory)
@@ -1300,12 +1282,12 @@ void set_property_nofetch(dbref player, const char *pname, PData * dat, int sync
  *
  * @return the size in bytes consumed by the object in memory.
  */
-long size_properties(dbref player, int load);
+size_t size_properties(dbref player, int load);
 
 /**
  * Calculates the size of the given property directory AVL list.  This
  * will iterate over the entire structure to give the entire size.  It
- * is the low level equivalent of size_properties
+ * is the low level equivalent of size_properties.
  *
  * @see size_properties
  *
@@ -1313,7 +1295,7 @@ long size_properties(dbref player, int load);
  * @return the size of the loaded properties in memory -- this does NOT
  *         do any diskbase loading.
  */
-long size_proplist(PropPtr avl);
+size_t size_proplist(PropPtr avl);
 
 /**
  * This function is a progressive iteration over the entire database,

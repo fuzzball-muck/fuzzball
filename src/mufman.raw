@@ -1,260 +1,11 @@
-                MUF Reference Manual for Muck2.2fb7.00b1
-                   by Revar Desmera <revar@belfry.com>
-
-You may get a listing of topics that you can get help on, either sorted
-Alphabetically or sorted by Category.  To get these lists, type:
-        man alpha        or
-        man category
-
+~~title MUF Reference Manual
+~~author Revar Desmera <revar@belfry.com>
+~~doccmd man
+~~sectlist
+~~secttopics
+~~index
 ~
-~----------------------------------------------------------------------------
-~
-CATEGORY|CATEGORIES|TOPICS|SECTIONS
-                   List of Topics by Category:
- 
-You can get more help on the following topics:
- 
-  Details and Definitions                  (DefDets)
-  Macros and Compiler Directives           (CompDefs)
-  Stack Manipulation Operators             (StackOps)
-  Variables and Handling Thereof           (VarHandling)
-  Logical Operators                        (LogicOps)
-  Execution Control Structures             (ExecStructs)
-  I/O Operators                            (IOOps)
-  Mathematical Operators                   (MathOps)
-  Floating Point Operators                 (FloatOps)
-  String Manipulation Operators            (StringOps)
-  Lock Manipulation Operators              (LockOps)
-  Array Manipulation Operators             (ArrayOps)
-  Property Manipulation Operators          (PropOps)
-  Database Related Operators               (DBOps)
-  Time Manipulation Operators              (TimeOps)
-  Process Management Operators             (ProcOps)
-  Connection Management Operators          (ConnOps)
-  Event Handling Operators                 (EventOps)
-  MCP Support Operators                    (MCPOps)
-  GUI Support Operators                    (GUIOps)
-  Exception Handling                       (Exceptions)
-  Debugging                                (Debug)
-  Miscellaneous                            (MiscOps)
- 
-Use 'man <topicname>' to get more information on a topic.
-~
-~----------------------------------------------------------------------------
-~
-ALPHA|ALPHABETICAL|COMMANDS
-                 Alphabetical List of Topics:
- 
-You can get more help on the following topics:
-
-Symbols
-  !              !=             $abort         $author        $cleardefs
-  $def           $define        $doccmd        $echo          $entrypoint
-  $ifcancall     $ifdef         $iflib         $iflibver      $ifncancall
-  $ifndef        $ifnlib        $ifnlibver     $ifnver        $ifver
-  $include       $language      $lib-version   $libdef        $note
-  $pragma        $pubdef        $undef         $version       %
-  '              *              +              ++             -
-  --             -rot           /              <              <= 
-  =              >              >=             ?dup           @
-  \              __fuzzball__   __muckname     __prog__       __version
-  {              }              }cat           }dict          }join
-  }list          }tell          
-
-A's
-  abort                     abs                       acos
-  addpennies                addprop                   address?
-  and                       ansi_midstr               ansi_strcut
-  ansi_strip                ansi_strlen               array?
-  array_appenditem          array_compare             array_count
-  array_cut                 array_default_pinning     array_delitem
-  array_delrange            array_diff                array_excludeval
-  array_explode             array_extract             array_filter_flags
-  array_filter_lock         array_filter_prop         array_findval
-  array_first               array_fmtstrings          array_get_ignorelist
-  array_get_propdirs        array_get_proplist        array_get_propvals
-  array_get_reflist         array_getitem             array_getrange
-  array_insertitem          array_insertrange         array_interpret
-  array_intersect           array_join                array_keys
-  array_last                array_make                array_make_dict
-  array_matchkey            array_matchval            array_ndiff
-  array_nested_del          array_nested_get          array_nested_set
-  array_next                array_nintersect          array_notify
-  array_notify_secure       array_nunion              array_pin
-  array_prev                array_put_proplist        array_put_propvals
-  array_put_reflist         array_reverse             array_setitem
-  array_setrange            array_sort                array_sort_indexed
-  array_union               array_unpin               array_vals
-  arrive                    asin                      atan
-  atan2                     atoi                      awake?
-
-B's
-  background   begin        bg_mode      bitand       bitor        bitshift
-  bitxor       blessed?     blessprop    break        breakpoints  
-
-C's
-  c_button           c_checkbox         c_combobox         c_datum
-  c_edit             c_frame            c_hrule            c_image
-  c_label            c_listbox          c_menu             c_multiedit
-  c_notebook         c_radiobtn         c_scale            c_spinner
-  c_vrule            call               caller             cancall?
-  case               ceil               checkargs          checkpassword
-  clear              clear_error        cmd                command
-  compilation        compile            compiled?          conboot
-  concount           condbref           condescr           conhost
-  conidle            connect            connotify          contents
-  contents_array     contime            continue           controls
-  conuser            copyobj            copyplayer         cos
-  ctoi               
-
-D's
-  date               dbcmp              dbref              dbref?
-  dbtop              debug notation     debug_line         debug_off
-  debug_on           debugger           debugger_break     debugger_commands
-  deep_copy          depth              desc               descr
-  descr_array        descr_setuser      descrboot          descrbufsize
-  descrcon           descrdbref         descrflush         descrhost
-  descridle          descriptors        descrleastidle     descrmostidle
-  descrnotify        descrsecure?       descrtime          descruser
-  dictionary?        diff3              dist3d             drop
-  dup                dupn               
-
-E's
-  else               entrances_array    envprop            envpropstr
-  epsilon            error?             error_bit          error_name
-  error_num          error_str          event_count        event_exists
-  event_send         event_wait         event_waitfor      execute
-  exit               exit?              exits              exits_array
-  exp                explode            explode_array      ext-name-ok?
-
-F's
-  fabs               fail               fg_mode            findnext
-  firstdescr         flag?              flags              float
-  float?             floor              fmod               fmtstring
-  for                force              force_level        forcedby
-  forcedby_array     foreach            foreground         fork
-  frand              ftostr             ftostrc            fulldepth
-
-G's
-  gaussian           getlink            getlinks           getlinks_array
-  getlockstr         getpidinfo         getpids            getprop
-  getpropfval        getpropstr         getpropval         getseed
-  gmtoffset          gui-options        gui_available      gui_ctrl_command
-  gui_ctrl_create    gui_dlog_close     gui_dlog_create    gui_dlog_helper
-  gui_dlog_show      gui_dlog_simple    gui_dlog_tabbed    gui_value_get
-  gui_value_set      gui_values_get     
-
-I's
-  if           ignore_add   ignore_del   ignoring?    inf          instances
-  instr        instring     int          int?         interp       intostr
-  is_set?      ispid?       itoc         
-
-J's
-  jmp  
-
-K's
-  kill  
-
-L's
-  lastdescr      libraries      listeners      loc            localvar
-  location       lock?          locked?        log            log10
-  loop-example1  loop-example2  loop-example3  loops          lreverse
-  lvar           
-
-M's
-  match                     max_variable_count        mcp_bind
-  mcp_register              mcp_register_event        mcp_send
-  mcp_supports              md5hash                   me
-  midstr                    mlevel                    mode
-  modf                      movepennies               moveto
-  mucker levels             multitasking              
-
-N's
-  name               name-ok?           newexit            newobject
-  newpassword        newplayer          newprogram         newroom
-  next               nextdescr          nextentrance       nextowned
-  nextprop           nip                not                notify
-  notify_except      notify_exclude     notify_nolisten    notify_secure
-  number?            
-
-O's
-  objmem         odrop          ofail          ok?            online
-  online_array   or             osucc          otell          over
-  owner          
-
-P's
-  parselock          parsempi           parsempiblessed    parseprop
-  parsepropex        part_pmatch        pennies            pi
-  pick               pid                player?            pmatch
-  pname-ok?          pname_history      polar_to_xyz       pop
-  popn               pow                pr_mode            preempt
-  prettylock         prog               program?           program_getlines
-  program_setlines   pronoun_sub        prop-name-ok?      propdir?
-  public             put                
-
-Q's
-  queue  
-
-R's
-  random                    read                      read_wants_blanks
-  read_wants_no_blanks      recycle                   reflist_add
-  reflist_del               reflist_find              regexp
-  regsplit                  regsplit_noempty          regsub
-  remove_prop               repeat                    reverse
-  rinstr                    rinstring                 rmatch
-  room?                     rot                       rotate
-  round                     rsplit                    
-
-S's
-  secure_sysvars     set                set_error          setdesc
-  setdrop            setfail            setlink            setlinks_array
-  setlockstr         setmode            setname            setodrop
-  setofail           setosucc           setown             setprop
-  setseed            setsucc            setsysparm         sha1hash
-  shallow_copy       sign               sin                sleep
-  smatch             split              sqrt               srand
-  stats              stats_array        stod               strcat
-  strcmp             strcut             strdecrypt         strencrypt
-  string?            stringcmp          stringpfx          strip
-  striplead          striptail          strlen             strncmp
-  strtof             subst              succ               supplicant
-  swap               sysparm            sysparm_array      systime
-  systime_precise    
-
-T's
-  tan          tell         testlock     textattr     then         thing?
-  time         timefmt      timer_start  timer_stop   timesplit    timestamps
-  toadplayer   tokensplit   tolower      toupper      tread        trig
-  trigger      truename     try          tuck         
-
-U's
-  unblessprop  uncompile    unparselock  unparseobj   until        userlog
-
-V's
-  var        var!       variable   version    
-
-W's
-  watchpid   while      wizcall    
-
-X's
-  xor            xyz_to_polar   
- 
-Use 'man <topicname>' to get more information on a topic.
-~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Details and Definitions|DefDets
-Details and Definitions
-
-arrive         compilation    connect        flags          libraries
-listeners      mucker levels  multitasking   
-
-~----------------------------------------------------------------------------
-~
-~
+~~section Details and Definitions|DefDets
 ~
 ~
 MUCKER LEVELS|LEVELS|MUCKER1|MUCKER2|MUCKER3|MUCKER4
@@ -306,14 +57,18 @@ itself is not wizbit, and at Mucker level 4 if the program IS set wizbit.
   
   Mucker level is referred to in flags lists by M# where the # is the
 Mucker level.  Level zero objects don't show a flag for it.  Example:
+~~code
     Revar(#37PM3)
+~~endcode
   In verbose flags lists, Mucker levels greater than zero are shown
 by MUCKER# where # is the mucker level.
   
   To set a level on a player or program, use the level number as the
 flag name.  MUCKER is the same as 2, and !MUCKER is the same as 0.
 Example:
+~~code
     @set Revar=2
+~~endcode
   A player may set the MUCKER level on a program they own to any level
 lower than or equal to their own level, and a wizard may set a program
 or player to any MUCKER level.  When a program is created, it is
@@ -341,13 +96,14 @@ default to running in foreground mode.  QUEUEd program events, such as
 those set up by _listen, _connect, _disconnect, etc, and those QUEUEd by
 other programs default to running in background mode. (NOTE: these
 programs cannot be changed out of background mode)
-Also see: FOREGROUND, BACKGROUND, PREEMPT, FORK, QUEUE, KILL and SLEEP
+~~alsosee FOREGROUND,BACKGROUND,PREEMPT,FORK,QUEUE,KILL,SLEEP
 ~
 ~
 LIBRARIES
 Libraries:
 
 How to use a library:
+~~code
     1) Use "@register lib" to list what libraries exist.
     2) Use "@view $lib/<libraryname>" to list the docs on that library.
     3) When you've found the library and the function you want, then all
@@ -355,8 +111,10 @@ How to use a library:
         $include $lib/<libraryname>
         then just use the function name to invoke it later in your program
         and it will run as if it were a function in your program.
+~~endcode
 
 How to make a library:
+~~code
     1) Create a program with several useful generic subroutines.
     2) DOCUMENT those subroutines in a commented out header in the prog.
     3) @set <program>=_docs:<command to list those DOCS you made>
@@ -376,8 +134,10 @@ How to make a library:
     8) Globally register the program with the @register command with a
         prefix of "lib/".  ie: @reg lib-strings.muf=lib/strings
     9) You're done!
+~~endcode
 
 Currently standard libraries:
+~~code
     $lib/strings      Functions for manipulating strings.
     $lib/props        Routines for searching for properties, or setting them.
     $lib/lmgr         Standard list manager routines.
@@ -391,6 +151,7 @@ Currently standard libraries:
     $lib/index        Hashed linked list manager with partial key matching.
     $lib/gui          Routines to make MCP's GUI package easier to use.
     $lib/optionsgui   Given datums, auto-generates a GUI to edit them.
+~~endcode
 ~
 ~
 FLAGS|HARDUID|SETUID|AUTOSTART|BOUND
@@ -427,7 +188,7 @@ A program that is set WIZARD ignores almost all permissions checking.
 
 The Mucker Level of the program also has a great deal of influence on what
 a program can and cannot do.  See MUCKER LEVELS for more information.
-Also see: DEBUGGER
+~~alsosee DEBUGGER
 ~
 ~
 COMPILATION
@@ -477,29 +238,7 @@ you want, but they are run in alphabetic order.
 ~
 ~
 ~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Macros and Compiler Directives|Macros|Directives|CompDefs
-Macros and Compiler Directives
-
-$abort                    $author                   $cleardefs
-$def                      $define                   $doccmd
-$echo                     $entrypoint               $ifcancall
-$ifdef                    $iflib                    $iflibver
-$ifncancall               $ifndef                   $ifnlib
-$ifnlibver                $ifnver                   $ifver
-$include                  $language                 $lib-version
-$libdef                   $note                     $pragma
-$pubdef                   $undef                    $version
-\                         __fuzzball__              __muckname
-__prog__                  __version                 max_variable_count
-
-~----------------------------------------------------------------------------
-~
-~
+~~section Macros and Compiler Directives|Macros|Directives|CompDefs
 ~
 ~
 __FUZZBALL__
@@ -508,9 +247,11 @@ __FUZZBALL__
   A pre$defined macro that contains the value 1 on a FuzzBall Muck server.
 This is useful for server-type specific $ifdefs, when code needs to be
 different on, say, FuzzBall Mucks and ProtoMucks.  For example:
+~~code
     $ifdef __fuzzball__
         me @ "This is a FuzzBall Muck server.!" notify
     $endif
+~~endcode
 ~
 ~
 __MUCKNAME
@@ -518,9 +259,11 @@ __MUCKNAME
 
   A pre$defined macro that contains the name of the server's muckname @tune
 parameter value.  This is useful for muck specific $ifdefs.  For example:
+~~code
     $ifdef __muckname=FurryMUCK
         me @ "Helloooooo Furry!" notify
     $endif
+~~endcode
 ~
 ~
 __VERSION
@@ -531,7 +274,7 @@ the same string that the VERSION primitive returns.  This is mainly useful
 in $ifdef/$ifndef comparisons.  The value of this will always start with
 'Muck2.2fb' for historical reasons, followed by the current fbmuck server
 version.  Ie: Muck2.2fb6.00 for the 6.00 fbmuck server.
-Also see: VERSION, $IFDEF, $DEFINE and $DEF
+~~alsosee VERSION,$IFDEF,$DEFINE,$DEF
 ~
 ~
 __PROG__
@@ -554,11 +297,17 @@ $AUTHOR <rest_of_line>
 
   Sets the _author string property on the program to <rest_of_line>.
 The preferred format is an email address with name comment. ie:
+~~code
     $author Revar Desmera <revar@belfry.com>
+~~endcode
 To denote multiple authors, separate them with commas.  ie:
+~~code
     $author Revar Desmera <revar@belfry.com>, Foxen <foxen@belfry.com>
+~~endcode
 If you don't want to include your email address, just omit it.  ie:
+~~code
     $author Revar, Foxen
+~~endcode
 ~
 ~
 $VERSION
@@ -615,18 +364,22 @@ $INCLUDE <dbref>
 
   Sets a bunch of $defines from the properties in the /_defs/ propdir of the
 given program.  For example, if object #345 had the following properties:
+~~code
     /_defs/desc: "_/de" getpropstr
     /_defs/setpropstr: dup if 0 addprop else pop remove_prop then
     /_defs/setpropval: dup if "" swap addprop else pop remove_prop then
     /_defs/setprop: dup int? if setpropval else setpropstr then
+~~endcode
 then if a program contained '$include #345' in it, then all subsequent
 references to 'desc', 'setpropstr', 'setpropval', and 'setprop' would
 be expanded to the string values of their respective programs.  For example,
 'desc' would be replaced throughout the program with '"_/de" getpropstr'
 NOTE:  You cannot have a slash in a definition name.  ie: The property
+~~code
     _defs/a/b:foo
+~~endcode
 will NOT make a definition named a/b.
-Also see: $DEFINE, $DEF, $CLEARDEFS, $IFDEF, PUBLIC, WIZCALL, $PUBDEF and $LIBDEF
+~~alsosee $DEFINE,$DEF,$CLEARDEFS,$IFDEF,PUBLIC,WIZCALL,$PUBDEF,$LIBDEF
 ~
 ~
 $PUBDEF
@@ -638,16 +391,20 @@ $PUBDEF \<defname> <rest_of_line>
   By using this directive, the _defs/ directory on a MUF program can
 be set at compile time.
 
+~~code
 $pubdef :                          Clears the _defs/ propdir on the program.
 $pubdef <defname>                  Clears the _defs/<defname> prop on the prog.
 $pubdef <defname> <rest_of_line>   Sets _defs/<defname> prop to <rest_of_line>.
 $pubdef \<defname> <rest_of_line>  Sets _defs/<defname> if not already set.
+~~endcode
 
 For example:
+~~code
     $pubdef tell me @ swap notify
+~~endcode
 would put a property named '_defs/tell' on the program object, with the
 value 'me @ swap notify'.  Def names cannot have ':' nor '/' in them.
-Also see: $LIBDEF, PUBLIC, WIZCALL, CANCALL? and CALL
+~~alsosee $LIBDEF,PUBLIC,WIZCALL,CANCALL?,CALL
 ~
 ~
 $LIBDEF
@@ -656,10 +413,12 @@ $LIBDEF \<function>
 
   Sets up an _defs/ prop on the program to call the specified function.
 For example:
+~~code
     $libdef myfunc
+~~endcode
 would put a prop named '_defs/myfunc' on the program object, with the
 value '<this_programs_dbref> "myfunc" call'
-Also see: $PUBDEF, PUBLIC, WIZCALL, CANCALL? and CALL
+~~alsosee $PUBDEF,PUBLIC,WIZCALL,CANCALL?,CALL
 ~
 ~
 $CLEARDEFS
@@ -668,7 +427,7 @@ $CLEARDEFS [ALL]
   Ignores program _defs/ when compiling the program. Wizards programs can
 use '$cleardefs ALL' to also ignore #0 _defs/ when compiling. This does
 not affect macros, and internal _defs/ are always loaded no matter what.
-Also see: $DEFINE, $DEF and $UNDEF
+~~alsosee $DEFINE,$DEF,$UNDEF
 ~
 ~
 $IFDEF|$ELSE|$ENDIF
@@ -678,10 +437,12 @@ $IFDEF <condition> <compile if true> $else <compile if false> $endif
   This determines whether or not to compile optional sections of code,
 depending on the existence of or value of certain $defined names.
 The four accepted forms of the <condition> argument are:
+~~code
     DEFNAME        Is true if DEFNAME was $defined earlier, whatever the value.
     DEFNAME=VALUE  Is true if DEFNAME exists and its value equals VALUE.
     DEFNAME>VALUE  Is true if DEFNAME exists and is greater than VALUE.
     DEFNAME<VALUE  Is true if DEFNAME exists and is less than VALUE.
+~~endcode
 
   The semantics of greater than and less than is the same as that used by
 the strcmp string comparison command.  There must be no spaces between the
@@ -690,11 +451,14 @@ DEFNAME, comparator, and VALUE.  They must be run together as one word.
   There is no >= or <= comparator available, so to make such a comparison
 you need to use $ifndef with the opposite comparator.  Ie, to check if
 FOO is greater than or equal to 3, use:
+~~code
     $ifndef FOO<3
         BAR
     $enddef
+~~endcode
 
 Compiler directives are nestable also.  For examples:
+~~code
     $ifdef __version>Muck2.2fb3.5
         $def envprop .envprop
     $endif
@@ -705,7 +469,8 @@ Compiler directives are nestable also.  For examples:
             owner
         $endif
     $enddef
-Also see: $IFNDEF, $DEFINE, $DEF and $DEF
+~~endcode
+~~alsosee $IFNDEF,$DEFINE,$DEF,$DEF
 ~
 ~
 $IFNDEF
@@ -717,15 +482,17 @@ depending on the non-existence of or value of $defined names.  $ifndef is
 short for 'If NOT Defined' or 'If Not', so it compiles the first code
 branch (before the optional $else), only if the <condition> is false.
 The four accepted forms of the <condition> argument are:
+~~code
     DEFNAME        Is true if DEFNAME was $defined earlier, whatever the value.
     DEFNAME=VALUE  Is true if DEFNAME exists and its value equals VALUE.
     DEFNAME>VALUE  Is true if DEFNAME exists and is greater than VALUE.
     DEFNAME<VALUE  Is true if DEFNAME exists and is less than VALUE.
+~~endcode
 
 The semantics of greater than and less than is the same as that used by the
 strcmp string comparison command.  There must be no spaces between the
 DEFNAME, comparator, and VALUE.  They must be run together as one word.
-Also see: $IFDEF, $DEFINE, $DEF and $DEF
+~~alsosee $IFDEF,$DEFINE,$DEF,$DEF
 ~
 ~
 $IFVER
@@ -745,7 +512,7 @@ the program referenced by $regname or #dbref.
 is greater than or equal to the given <float>, using a floating point
 number comparison.  Otherwise, the <falsebranch>, if given, will be
 compiled.
-Also see: $IFNVER, $IFLIBVER, $IFDEF, $VERSION and $LIB-VERSION
+~~alsosee $IFNVER,$IFLIBVER,$IFDEF,$VERSION,$LIB-VERSION
 ~
 ~
 $IFNVER
@@ -764,7 +531,7 @@ the program referenced by $regname or #dbref.
   The <truebranch> will be compiled if the given program's $version
 is less than the given <float>, using a floating point number comparison.
 Otherwise, the <falsebranch>, if given, will be compiled.
-Also see: $IFVER, $IFLIBVER, $IFDEF, $VERSION and $LIB-VERSION
+~~alsosee $IFVER,$IFLIBVER,$IFDEF,$VERSION,$LIB-VERSION
 ~
 ~
 $IFLIBVER
@@ -784,7 +551,7 @@ of the program referenced by $regname or #dbref.
 is greater than or equal to the given <float>, using a floating point
 number comparison.  Otherwise, the <falsebranch>, if given, will be
 compiled.
-Also see: $IFNLIBVER, $IFNVER, $IFDEF, $VERSION and $LIB-VERSION
+~~alsosee $IFNLIBVER,$IFNVER,$IFDEF,$VERSION,$LIB-VERSION
 ~
 ~
 $IFNLIBVER
@@ -803,7 +570,7 @@ of the program referenced by $regname or #dbref.
   The <truebranch> will be compiled if the given program's $lib-version
 is less than the given <float>, using a floating point number comparison.
 Otherwise, the <falsebranch>, if given, will be compiled.
-Also see: $IFLIBVER, $IFVER, $IFDEF, $VERSION and $LIB-VERSION
+~~alsosee $IFLIBVER,$IFVER,$IFDEF,$VERSION,$LIB-VERSION
 ~
 ~
 $IFLIB
@@ -816,7 +583,7 @@ $IFLIB <dbref> <truebranch> $else <falsebranch> $endif
 depending on the existence of a given program.
   The <truebranch> will be compiled if the given object exists and is a
 program.  Otherwise, the <falsebranch>, if given, will be compiled.
-Also see: $IFNLIB, $IFLIBVER, $IFVER, $IFDEF, $VERSION and $LIB-VERSION
+~~alsosee $IFNLIB,$IFLIBVER,$IFVER,$IFDEF,$VERSION,$LIB-VERSION
 ~
 ~
 $IFNLIB
@@ -830,7 +597,7 @@ depending on the existence of a given program.
   The <truebranch> will be compiled if the given object does not exist, or
 if it is not a program.  Otherwise, the <falsebranch>, if given, will be
 compiled.
-Also see: $IFLIB, $IFLIBVER, $IFVER, $IFDEF, $VERSION and $LIB-VERSION
+~~alsosee $IFLIB,$IFLIBVER,$IFVER,$IFDEF,$VERSION,$LIB-VERSION
 ~
 ~
 $IFCANCALL
@@ -846,7 +613,7 @@ function on a given program.
 program, and has a given callable function (declared with PUBLIC or WIZCALL)
 that this compiling program has permission to call.  Otherwise, the
 <falsebranch>, if given, will be compiled.
-Also see: $IFNCANCALL, $IFLIB, $IFLIBVER, $IFVER, $IFDEF, $VERSION and $LIB-VERSION
+~~alsosee $IFNCANCALL,$IFLIB,$IFLIBVER,$IFVER,$IFDEF,$VERSION,$LIB-VERSION
 ~
 ~
 $IFNCANCALL
@@ -862,7 +629,7 @@ function on a given program.
 is not a program, or does not have a given callable function (declared with
 PUBLIC or WIZCALL) that this compiling program has permission to call.
 Otherwise, the <falsebranch>, if given, will be compiled.
-Also see: $IFCANCALL, $IFLIB, $IFLIBVER, $IFVER, $IFDEF, $VERSION and $LIB-VERSION
+~~alsosee $IFCANCALL,$IFLIB,$IFLIBVER,$IFVER,$IFDEF,$VERSION,$LIB-VERSION
 ~
 ~
 $ECHO
@@ -916,79 +683,65 @@ Escaping Literal Tokens:
   You can escape a token in MUF so that it will be interpreted literally.
 ie:  \.pmatch will try to compile '.pmatch' without expanding it as a
 macro.  This lets you make special things with $defines such as:
+~~code
     $define addprop over over or if \addprop else pop pop remove_prop $enddef
+~~endcode
 so that all the 'addprop's in the program will be expanded to the
 definition, but the 'addprop' in the definition will not try to expand
 recursively.  It will call the actual addprop.
 ~
 ~
 ~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Stack Manipulation Operators|StackOps
-Stack Manipulation Operators
-
--rot           ?dup           deep_copy      depth          dup
-dupn           fulldepth      lreverse       nip            over
-pick           pop            popn           put            reverse
-rot            rotate         shallow_copy   swap           tuck
-{              }              
-
-~----------------------------------------------------------------------------
-~
-~
+~~section Stack Manipulation Operators|StackOps
 ~
 ~
 POP
 POP ( x -- )
 
   Pops the top of the stack into oblivion.
-Also see: POPN
+~~alsosee POPN
 ~
 ~
 POPN
 POPN ( ?n..?1 i -- )
 
   Pops the top i stack items.
-Also see: POP
+~~alsosee POP
 ~
 ~
 DUP
 DUP ( x -- x x )
 
   Duplicates the item at the top of the stack.
-Also see: DUPN and LDUP
+~~alsosee DUPN,LDUP
 ~
 ~
 DUPN
 DUPN ( ?n..?1 i -- ?n..?1 ?n..?1 )
 
   Duplicates the top i stack items.
-Also see: DUP and LDUP
+~~alsosee DUP,LDUP
 ~
 ~
 ?DUP
 ?DUP ( x -- x x | x )
 
   Duplicates the item at the top of the stack if it does not resolve to false.
-Also see: DUP
+~~alsosee DUP
 ~
 ~
 NIP
 NIP ( x y -- y )
 
   Pops the second item off the stack.
-Also see: POP
+~~alsosee POP
 ~
 ~
 TUCK
 TUCK ( x y -- y x y )
 
   Duplicates y and places it under x.
-Also see: OVER
+~~alsosee OVER
 ~
 ~
 
@@ -996,7 +749,7 @@ LDUP
 LDUP ( {?} -- {?} {?} )
 
   Duplicates a stackrange on top of the stack.
-Also see: DUP and DUPN
+~~alsosee DUP,DUPN
 ~
 ~
 SHALLOW_COPY
@@ -1004,7 +757,7 @@ SHALLOW_COPY ( x -- x x )
 
   Duplicates the item at the top of the stack.  If it is an array, it makes
 a shallow copy of it that is decoupled from the original array.
-Also see: DUP, DUPN, LDUP and DEEP_COPY
+~~alsosee DUP,DUPN,LDUP,DEEP_COPY
 ~
 ~
 DEEP_COPY
@@ -1012,35 +765,35 @@ DEEP_COPY ( x -- x x )
 
   Duplicates the item at the top of the stack.  If it is an array, it makes
 a deep copy of it that is decoupled from the original array.
-Also see: DUP, DUPN, LDUP and SHALLOW_COPY
+~~alsosee DUP,DUPN,LDUP,SHALLOW_COPY
 ~
 ~
 SWAP
 SWAP ( x y -- y x )
 
   Takes objects x and y on the stack and reverses their order.
-Also see: PICK, OVER and DUP
+~~alsosee PICK,OVER,DUP
 ~
 ~
 OVER
 OVER ( x y -- x y x )
 
   Duplicates the second-to-top thing on the stack.  This is the same as 2 pick.
-Also see: PICK, SWAP and DUP
+~~alsosee PICK,SWAP,DUP
 ~
 ~
 ROT
 ROT ( x y z -- y z x )
 
   Rotates the top three things on the stack.  This is equivalent to 3 rotate.
-Also see: ROTATE, -ROT and SWAP
+~~alsosee ROTATE,-ROT,SWAP
 ~
 ~
 -ROT
 -ROT ( x y z -- z x y )
 
   Rotates the top three things on the stack, in reverse.  Equivalent to -3 rotate.
-Also see: ROTATE, ROT and SWAP
+~~alsosee ROTATE,ROT,SWAP
 ~
 ~
 ROTATE
@@ -1049,15 +802,23 @@ ROTATE ( ni ... n1 i -- n(i-1) ... n1 ni )
   Rotates the top i things on the stack.  Using a negative rotational
 value rotates backwards.
 Examples:
+~~code
     "a"  "b"  "c"  "d"  4  rotate
+~~endcode
 would leave
+~~code
     "b"  "c"  "d"  "a"
+~~endcode
 on the stack.
+~~code
     "a"  "b"  "c"  "d"  -4  rotate
+~~endcode
 would leave
+~~endcode
     "d"  "a"  "b"  "c"
+~~endcode
 on the stack.
-Also see: ROT and SWAP
+~~alsosee ROT,SWAP
 ~
 ~
 PICK
@@ -1065,7 +826,7 @@ PICK ( ni ... n1 i -- ni ... n1 ni )
 
   Takes the i'th thing from the top of the stack and pushes it on the top.
 1 pick is equivalent to dup, and 2 pick is equivalent to over.
-Also see: OVER and PUT
+~~alsosee OVER,PUT
 ~
 ~
 PUT
@@ -1074,10 +835,14 @@ PUT ( nx...n1 ni i -- nx...ni...n1 )
   Replaces the i'th item from the top of the stack with the value of ni.
 The command sequence '1 put' is equivalent to 'swap pop'.
 Example:
+~~code
     "a"  "b"  "c"  "d"  "e"  3  put
+~~endcode
 would return on the stack:
+~~code
     "a"  "e"  "c"  "d"
-Also see: PICK
+~~endcode
+~~alsosee PICK
 ~
 ~
 REVERSE
@@ -1085,10 +850,14 @@ REVERSE ( ?n..?1 i -- ?1..?n )
 
   Reverses the order of the top i items on the stack.
 Example:
+~~code
     "a"  "b"  "c"  "d"  "e"  4  reverse
+~~endcode
 would return on the stack:
+~~code
     "a"  "e"  "d"  "c"  "b"
-Also see: LREVERSE
+~~endcode
+~~alsosee LREVERSE
 ~
 ~
 LREVERSE
@@ -1096,30 +865,34 @@ LREVERSE ( ?n..?1 i -- ?1..?n i )
 
   Reverses the order of the top i stack items, leaving i.
 Example:
+~~code
     "a"  "b"  "c"  "d"  "e"  4  lreverse
+~~endcode
 would return on the stack:
+~~code
     "a"  "e"  "d"  "c"  "b"  4
-Also see: REVERSE
+~~endcode
+~~alsosee REVERSE
 ~
 ~
 DEPTH
 DEPTH ( -- i )
 
   Returns the number of unlocked items currently on the stack.
-Also see: FULLDEPTH
+~~alsosee FULLDEPTH
 ~
 ~
 FULLDEPTH
 FULLDEPTH ( -- i )
   Returns the number of items currently on the stack.
-Also see: DEPTH
+~~alsosee DEPTH
 ~
 ~
 {
 {  ( -- marker)
 
   Pushes a marker onto the stack, to be used with } or }list or }dict.
-Also see: }, }list, }dict, }tell and }join
+~~alsosee },}list,}dict,}tell,}join
 ~
 ~
 }
@@ -1128,26 +901,11 @@ Also see: }, }list, }dict, }tell and }join
   Finds the topmost marker in the stack, and counts how many stack items
 are between it and the top of the stack.  The marker is removed from the
 stack, and the count is pushed onto the stack.
-Also see: {, }list, }dict, }tell and }join
+~~alsosee {,}list,}dict,}tell,}join
 ~
 ~
 ~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Variables and Handling Thereof|VarHandling
-Variables and Handling Thereof
-
-!                  @                  cmd                command
-loc                localvar           lvar               me
-secure_sysvars     trigger            var                var!
-variable           
-
-~----------------------------------------------------------------------------
-~
-~
+~~section Variables and Handling Thereof|VarHandling
 ~
 ~
 ME
@@ -1158,9 +916,11 @@ player who invoked the program.  The value of this variable is not
 guaranteed to be secure, as another program could change the value of
 ME then call your program.  If you must be certain that the value of
 the ME variable is correct, use the commands:
+~~code
     "me" match me !
+~~endcode
 The ME global variable is the same variable as '0 variable'
-Also see: COMMAND, TRIGGER and LOC
+~~alsosee COMMAND,TRIGGER,LOC
 ~
 ~
 LOC
@@ -1171,9 +931,11 @@ location of the player who invoked the program.  The value of this
 variable is not guaranteed to be secure, as another program could change
 the value of LOC then call your program.  If you must be certain that
 the value of the LOC variable is correct, use the commands:
+~~code
     "me" match location loc !
+~~endcode
 The LOC global variable is the same variable as '1 variable'
-Also see: COMMAND, TRIGGER and ME
+~~alsosee COMMAND,TRIGGER,ME
 ~
 ~
 TRIGGER
@@ -1184,10 +946,12 @@ trigger object that invoked the process.  The value of this variable is
 not guaranteed to be secure, as another program could change the value of
 TRIGGER then call your program.  If you must be certain that the value of
 the TRIGGER variable is correct, use the commands:
+~~code
     trig trigger !
+~~endcode
 The TRIGGER global variable is the same variable as '2 variable'
 The value of TRIGGER will be #-1 for AUTOSTART programs,
-Also see: COMMAND, LOC and ME
+~~alsosee COMMAND,LOC,ME
 ~
 ~
 CMD
@@ -1195,7 +959,7 @@ CMD ( -- s )
 
   Returns the command the user invoked the program with, without its
 command line arguments.
-Also see: COMMAND and TRIG
+~~alsosee COMMAND,TRIG
 ~
 ~
 COMMAND
@@ -1208,7 +972,7 @@ if there was an exit named "abracadabra;foo bar;frozzboz" that was linked
 to the program, and the user typed in "foo bar baz", then the program
 would run with "baz" on the stack, and "foo bar" in the global COMMAND
 variable.  The COMMAND global variable is the same variable as '3 variable'
-Also see: TRIGGER, LOC and ME
+~~alsosee TRIGGER,LOC,ME
 ~
 ~
 VAR
@@ -1230,7 +994,7 @@ will also have been changed.  For this reason, this usage of VAR is
 deprecated and shoud NOT be used.  Use LVAR instead.  This usage is only
 kept around for backwards compatability with some old icky programs that
 used this feature to pass data between some programs.
-Also see: VAR!, LVAR, !, @, VARIABLE and LOCALVAR
+~~alsosee VAR!,LVAR,!,@,VARIABLE,LOCALVAR
 ~
 ~
 VAR!
@@ -1239,11 +1003,13 @@ VAR! <name>
   This must be used within a function.  It declares a function-scoped
 variable named <name> that then has its value set to the topmost stack
 item.  For example, the following program prints out "Hello World!":
+~~code
     : myfunction
         "Hello World!" var! foo
         me @ foo @ notify
     ;
-Also see: VAR, LVAR, !, @, VARIABLE and LOCALVAR
+~~endcode
+~~alsosee VAR,LVAR,!,@,VARIABLE,LOCALVAR
 ~
 ~
 LVAR
@@ -1259,21 +1025,21 @@ the value of this program-local variable, then returns to A, which then
 calls B again, the value of this variable will still have the value it was
 set to in the first call.  The value is NOT persistent between different
 processes.  This variable type is analogous to C's global variables.
-Also see: VAR, VAR!, !, @, VARIABLE and LOCALVAR
+~~alsosee VAR,VAR!,!,@,VARIABLE,LOCALVAR
 ~
 ~
 @
 @ ( v -- x )
 
   Retrieves variable v's value x.
-Also see: !, VARIABLE, VAR, LVAR, LOCALVAR and MISCELLANEOUS
+~~alsosee !,VARIABLE,VAR,LVAR,LOCALVAR,MISCELLANEOUS
 ~
 ~
 !
 ! ( x v -- )
 
   Sets variable v's value to x.
-Also see: @, VARIABLE, VAR, LVAR, LOCALVAR and MISCELLANEOUS
+~~alsosee @,VARIABLE,VAR,LVAR,LOCALVAR,MISCELLANEOUS
 ~
 ~
 VARIABLE
@@ -1283,16 +1049,20 @@ VARIABLE ( i -- v )
 variables, `me' corresponds to integer 0, `loc' to 1, `trigger' to 2,
 and 'command' to 3.
 Thus:
+~~code
     me @
+~~endcode
 and
+~~code
     0 variable @
+~~endcode
 will do the same thing (returning the user's dbref). User-defined variables
 are numbered sequentially starting at 4 by the compiler. Note that these
 variable numbers can be used even if variables have not been formally
 declared.  This command has been deprecated, and is not recommended to use.
 Its original purpose was to allow MUF to do small arrays.  Since MUF now
 has an intrinsic array stack item type, this should no longer be used.
-Also see: @, !, VAR, ME, TRIGGER, LOC and COMMAND
+~~alsosee @,!,VAR,ME,TRIGGER,LOC,COMMAND
 ~
 ~
 LOCALVAR
@@ -1301,7 +1071,7 @@ LOCALVAR (i -- l)
   Takes an integer and returns the respective program-local variable.
 Similar to the 'variable' primitive.  Use of this command is deprecated
 and is not recommended.  Use the array stack item type instead.
-Also see: VARIABLE, VAR, LVAR, @ and !
+~~alsosee VARIABLE,VAR,LVAR,@,!
 ~
 ~
 SECURE_SYSVARS
@@ -1312,35 +1082,21 @@ correct values in one instruction.
 ~
 ~
 ~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Logical Operators|LogicOps
-Logical Operators
-
-!=           <            <=           =            >            >=
-address?     and          array?       dbref?       dictionary?  float?
-int?         lock?        not          or           string?      xor
-
-~----------------------------------------------------------------------------
-~
-~
+~~section Logical Operators|LogicOps
 ~
 ~
 <
 <  ( n1 n2 -- i )
 
   Compares two numbers and returns 1 if n1 is less than n2, and 0 otherwise.
-Also see: >, <=, >=, =, !=, NOT, AND and OR
+~~alsosee >,<=,>=,=,!=,NOT,AND,OR
 ~
 ~
 >
 >  ( n1 n2 -- i )
 
   Compares two numbers and returns 1 if n1 is greater than n2, and 0 otherwise.
-Also see: <, <=, >=, =, !=, NOT, AND and OR
+~~alsosee <,<=,>=,=,!=,NOT,AND,OR
 ~
 ~
 =
@@ -1348,7 +1104,7 @@ Also see: <, <=, >=, =, !=, NOT, AND and OR
 
   Compares two numbers, dbrefs, or strings and returns 1 if ?1 is equal to ?2,
 and 0 otherwise.
-Also see: <, >, <=, >=, !=, NOT, AND and OR
+~~alsosee <,>,<=,>=,!=,NOT,AND,OR
 ~
 ~
 !=
@@ -1356,7 +1112,7 @@ Also see: <, >, <=, >=, !=, NOT, AND and OR
 
   Compares two numbers, dbrefs, or strings and returns 0 if ?1 is equal to ?2,
 and 1 otherwise.
-Also see: <, >, <=, >=, !=, NOT, AND and OR
+~~alsosee <,>,<=,>=,!=,NOT,AND,OR
 ~
 ~
 <= 
@@ -1364,7 +1120,7 @@ Also see: <, >, <=, >=, !=, NOT, AND and OR
 
   Compares two numbers and returns 1 if n1 is less than or equal to n2,
 and 0 otherwise.
-Also see: <, >, =, !=, >=, NOT, AND and OR
+~~alsosee <,>,=,!=,>=,NOT,AND,OR
 ~
 ~
 >=
@@ -1372,7 +1128,7 @@ Also see: <, >, =, !=, >=, NOT, AND and OR
 
   Compares two numbers and returns 1 if n1 is greater than or equal to n2,
 and 0 otherwise.
-Also see: <, >, <=, =, !=, NOT, AND and OR
+~~alsosee <,>,<=,=,!=,NOT,AND,OR
 ~
 ~
 NOT
@@ -1381,11 +1137,13 @@ NOT ( x -- i )
   Returns true (1) if the top stack item is considered false.  Returns
 false (0) otherwise.  The stack item can be of any type.  For the various
 types, here are their false values:
+~~code
     Integer      0
     Float        0.0
     DBRef        #-1
     String       ""
-Also see: AND, OR and XOR
+~~endcode
+~~alsosee AND,OR,XOR
 ~
 ~
 AND
@@ -1394,11 +1152,13 @@ AND ( x1 x2 -- i )
   Returns true (1) if both of the top two stack items are considered true.
 Returns false (0) otherwise.  The stack items can be of any type.  For the
 various types, here are their false values:
+~~code
     Integer      0
     Float        0.0
     DBRef        #-1
     String       ""
-Also see: NOT, OR and XOR
+~~endcode
+~~alsosee NOT,OR,XOR
 ~
 ~
 OR
@@ -1407,11 +1167,13 @@ OR ( x1 x2 -- i )
   Returns true (1) if either of the top two stack items are considered true.
 Returns false (0) otherwise.  The stack items can be of any type.  For the
 various types, here are their false values:
+~~code
     Integer      0
     Float        0.0
     DBRef        #-1
     String       ""
-Also see: NOT, AND and XOR
+~~endcode
+~~alsosee NOT,AND,XOR
 ~
 ~
 XOR
@@ -1420,11 +1182,13 @@ XOR ( x1 x2 -- i )
   Returns true (1) if either of the top two stack items are considered true,
 but NOT both of them.  Returns false (0) otherwise.  The stack items can be
 of any type.  For the various types, here are their false values:
+~~code
     Integer      0
     Float        0.0
     DBRef        #-1
     String       ""
-Also see: NOT, AND and OR
+~~endcode
+~~alsosee NOT,AND,OR
 ~
 ~
 STRING?
@@ -1456,7 +1220,7 @@ ARRAY? ( ? -- i )
 
   Tests if stack item is an array.  Returns i as 1 if so, 0 if
 otherwise.
-Also see: DICTIONARY?, INT?, DBREF?, ARRAY_MAKE_DICT and ARRAY_MAKE
+~~alsosee DICTIONARY?,INT?,DBREF?,ARRAY_MAKE_DICT,ARRAY_MAKE
 ~
 ~
 DICTIONARY?
@@ -1464,7 +1228,7 @@ DICTIONARY? ( ? -- i )
 
   Tests if stack item is an array of dictionary type.  Returns i as 1
 if so, 0 if otherwise.
-Also see: ARRAY?, INT?, DBREF?, ARRAY_MAKE_DICT and ARRAY_MAKE
+~~alsosee ARRAY?,INT?,DBREF?,ARRAY_MAKE_DICT,ARRAY_MAKE
 ~
 ~
 ADDRESS?
@@ -1477,27 +1241,11 @@ LOCK?
 LOCK? (? -- i)
 
   Returns true if the top stack item is a lock.
-Also see: GETPROP, SETPROP, PARSELOCK, UNPARSELOCK, PRETTYLOCK and TESTLOCK
+~~alsosee GETPROP,SETPROP,PARSELOCK,UNPARSELOCK,PRETTYLOCK,TESTLOCK
 ~
 ~
 ~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Execution Control Structures|ExecStructs
-Execution Control Structures
-
-'              begin          break          call           cancall?
-case           continue       else           execute        exit
-for            foreach        if             interp         jmp
-loop-example1  loop-example2  loop-example3  loops          public
-repeat         then           until          while          wizcall
-
-~----------------------------------------------------------------------------
-~
-~
+~~section Execution Control Structures|ExecStructs
 ~
 ~
 IF
@@ -1520,7 +1268,7 @@ IF (x -- ) ... ELSE ... THEN
 
   Begins an ELSE block in an IF-ELSE-THEN code block.  If the value
 tested by the IF is false, then this code block will be executed.
-Also see: IF and THEN
+~~alsosee IF,THEN
 ~
 ~
 THEN
@@ -1528,7 +1276,7 @@ IF (x -- ) ... THEN
 IF (x -- ) ... ELSE ... THEN
 
   Denotes the end of an IF-THEN or IF-ELSE-THEN code block.
-Also see: IF and ELSE
+~~alsosee IF,ELSE
 ~
 ~
 '
@@ -1546,7 +1294,7 @@ EXECUTE ( a -- ?? )
   Executes the function pointed to by the address a on the stack.
 This function does NOT need to be in the same program as the function
 that did the EXECUTE.
-Also see: '
+~~alsosee '
 ~
 ~
 JMP
@@ -1562,20 +1310,24 @@ in modern MUF code, as it is deprecated.  NOTE: Using JMP to jump into a
 different function can have problems, and is not recommended.
 
 Example of JMP as a tail-recursion optimization:
+~~code
     : countforever ( i -- )
         1 +
         dup intostr .tell
         'countforever jmp
     ;
+~~endcode
 
 A better ways to do the same thing with looping primitives would be:
+~~code
     : countforever ( i -- )
         begin
             1 +
             dup intostr .tell
         repeat
     ;
-Also see: ' and EXECUTE
+~~endcode
+~~alsosee ',EXECUTE
 ~
 ~
 CALL
@@ -1612,7 +1364,7 @@ BEGIN
 BEGIN ( -- )
 
   Marks the beginning of BEGIN-UNTIL or BEGIN-REPEAT loops.
-Also see: LOOPS
+~~alsosee LOOPS
 ~
 ~
 FOR
@@ -1623,7 +1375,7 @@ as the start index, i2 as the end index, and i3 as the step.  If i2 is less
 then i1, or if i3 is negative and i2 is greater then i1, the entire loop is
 skipped without executing.  If i3 is 0 the loop will run infinitely until
 some other condition causes an exit.
-Also see: LOOPS
+~~alsosee LOOPS
 ~
 ~
 FOREACH
@@ -1631,7 +1383,7 @@ FOREACH (a -- @ ? )
 
   Marks the beginning of an iterative FOREACH loop, stepping through every
 index/value pair in the array.
-Also see: LOOPS
+~~alsosee LOOPS
 ~
 ~
 WHILE
@@ -1641,7 +1393,7 @@ WHILE (i -- )
 to jump to the instruction after the UNTIL or REPEAT for the current
 loop.  If the value is true, however, execution falls through to the
 instruction after the WHILE.
-Also see: LOOPS
+~~alsosee LOOPS
 ~
 ~
 BREAK
@@ -1649,14 +1401,14 @@ BREAK ( -- )
 
   Breaks out of the innermost loop.  Jumps execution to the instruction
 after the UNTIL or REPEAT for the current loop.
-Also see: LOOPS
+~~alsosee LOOPS
 ~
 ~
 CONTINUE
 CONTINUE ( -- )
 
   Jumps execution to the beginning of the current loop.
-Also see: LOOPS
+~~alsosee LOOPS
 ~
 ~
 REPEAT
@@ -1664,7 +1416,7 @@ REPEAT ( -- )
 
   This marks the end of the current loop.  Execution jumps to the instruction
 after the matching BEGIN, FOREACH or FOR in a loop.
-Also see: LOOPS
+~~alsosee LOOPS
 ~
 ~
 UNTIL
@@ -1677,7 +1429,7 @@ the loop, and continues execution at the next instruction following
 the UNTIL.
   Loops, TRY-CATCH-ENDCATCH's, and IF-ELSE-THEN's can all be nested in
 each other as much as you want.
-Also see: LOOPS
+~~alsosee LOOPS
 ~
 ~
 CASE|DEFAULT|END|ENDCASE|WHEN
@@ -1685,6 +1437,7 @@ Case statements
 
   Inserver defines to achieve case statements. Allows:
 
+~~code
 <data> case
   <test> when <effect> end
   <test> when <effect> end
@@ -1692,9 +1445,11 @@ Case statements
   <test> when <effect> end
   default <otherwise>  end
 endcase
+~~endcode
  
 This compiles to the following MUF code:
 
+~~code
 <data> begin
   dup <test> if pop <effect> break then
   dup <test> if pop <effect> break then
@@ -1703,6 +1458,7 @@ This compiles to the following MUF code:
   dup pop 1  if <otherwise>  break then
   dup pop pop
 1 until
+~~endcode
 ~
 ~
 LOOPS
@@ -1727,50 +1483,61 @@ of its next iteration, after the BEGIN, FOR, or FOREACH.
 resuming after the matching REPEAT or UNTIL.
   Note: You can nest loops complexly, but WHILE, BREAK, and CONTINUE
 statements only refer to the innermost loop structure.
-Also see: LOOP-EXAMPLE1, LOOP-EXAMPLE2 and LOOP-EXAMPLE3
+~~alsosee LOOP-EXAMPLE1,LOOP-EXAMPLE2,LOOP-EXAMPLE3
 ~
 ~
 LOOP-EXAMPLE1
 Loop Examples 1:
 
 How to count from 1 to 10 using a BEGIN-REPEAT loop:
+~~code
     0 begin
         dup 10 < while
         1 +
         me @ over intostr notify
     repeat
+~~endcode
 
 How to count from 1 to 10 using a BEGIN-UNTIL loop:
+~~code
     0 begin
         1 +
         me @ over intostr notify
         dup 10 =
     until
+~~endcode
 
 How to count from 1 to 10 using a FOR-REPEAT loop:
+~~code
     1 10 1 for
         intostr me @ swap notify
     repeat
-Also see: LOOPS, LOOP-EXAMPLE2 and LOOP-EXAMPLE3
+~~endcode
+~~alsosee LOOPS,LOOP-EXAMPLE2,LOOP-EXAMPLE3
 ~
 ~
 LOOP-EXAMPLE2
 Loop Examples 2:
 
 Example of a FOR loop:
+~~code
     1 10 1 for
         me @ swap intostr notify
     repeat
+~~endcode
 
 Example of nested FOR loops:
+~~code
     1 5 1 for
         "" swap 1 -1 for
             intostr strcat
         repeat
         me @ swap notify
     repeat
+~~endcode
 
 Example of a complex (if pointless) FOR loop:
+~~code
     10 -10 -2 for
         me @ over intostr notify
         dup -5 > while
@@ -1778,8 +1545,10 @@ Example of a complex (if pointless) FOR loop:
         dup -3 = if pop break then
         not
     until
+~~endcode
 
 Example of a FOREACH loop:
+~~code
     {
         "index1" "value1"
         "index2" "value2"
@@ -1788,13 +1557,15 @@ Example of a FOREACH loop:
     foreach
         " = " swap strcat strcat me @ swap notify
     repeat
-Also see: LOOPS, LOOP-EXAMPLE1 and LOOP-EXAMPLE3
+~~endcode
+~~alsosee LOOPS,LOOP-EXAMPLE1,LOOP-EXAMPLE3
 ~
 ~
 LOOP-EXAMPLE3
 Loop Examples 3:
 
 Example of a complex loop structure:
+~~code
     101 begin                       (BEGIN the outer loop)
         dup while 1 -                 (This WHILE, ...)
         dup not if break then         (this BREAK, and..)
@@ -1812,7 +1583,8 @@ Example of a complex loop structure:
         dup intostr
         me @ swap notify
     dup 1 = until pop               (This UNTIL ends the outer loop)
-Also see: LOOPS, LOOP-EXAMPLE1 and LOOP-EXAMPLE2
+~~endcode
+~~alsosee LOOPS,LOOP-EXAMPLE1,LOOP-EXAMPLE2
 ~
 ~
 PUBLIC
@@ -1823,8 +1595,10 @@ programs.  This is a compile-time directive, not a run-time primitive.  To
 call a public function, put the dbref of the program on the stack, then put
 a string, containing the function name, on the stack, then use CALL.
 For example:
+~~code
     #888 "functionname" CALL
-Also see: WIZCALL, CANCALL?, CALL, $LIBDEF and $PUBDEF
+~~endcode
+~~alsosee WIZCALL,CANCALL?,CALL,$LIBDEF,$PUBDEF
 ~
 ~
 WIZCALL
@@ -1835,8 +1609,10 @@ as long as the calling program has wizbit permissions.  This is a compile-
 time directive, not a run-time primitive.  To call a public function, put
 the dbref of the program on the stack, then put a string, containing the
 function name, on the stack, then use CALL.  For example:
+~~code
     #888 "functionname" CALL
-Also see: PUBLIC, CANCALL?, CALL, $LIBDEF and $PUBDEF
+~~endcode
+~~alsosee PUBLIC,CANCALL?,CALL,$LIBDEF,$PUBDEF
 ~
 ~
 CANCALL?
@@ -1844,26 +1620,11 @@ CANCALL?  (d s -- i)
 
   Returns true if the given program has a public or wizcall function that the
 current program has permissions to call.  Returns false, otherwise.
-Also see: PUBLIC, WIZCALL, CALL, $LIBDEF and $PUBDEF
+~~alsosee PUBLIC,WIZCALL,CALL,$LIBDEF,$PUBDEF
 ~
 ~
 ~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-I/O Operators|IOOps
-I/O Operators
-
-notify                    notify_except             notify_exclude
-notify_nolisten           notify_secure             otell
-read                      read_wants_blanks         read_wants_no_blanks
-tell                      tread                     userlog
-
-~----------------------------------------------------------------------------
-~
-~
+~~section I/O Operators|IOOps
 ~
 ~
 NOTIFY
@@ -1917,7 +1678,7 @@ READ_WANTS_BLANKS ( -- )
   Tells the interpreter that this process wants to be able to receive blank
 lines from the READ primitive. This can be reversed with the READ_WANTS_NO_BLANKS
 primitive.
-Also see: READ, TREAD and READ_WANTS_NO_BLANKS
+~~alsosee READ,TREAD,READ_WANTS_NO_BLANKS
 ~
 ~
 READ_WANTS_NO_BLANKS
@@ -1926,7 +1687,7 @@ READ_WANTS_NO_BLANKS ( -- )
   Tells the interpreter that this process should ignore blank lines from
 the READ primitive. This is only necessary after a call to READ_WANTS_BLANKS has
 been made.
-Also see: READ, TREAD and READ_WANTS_BLANKS
+~~alsosee READ,TREAD,READ_WANTS_BLANKS
 ~
 ~
 READ
@@ -1936,7 +1697,7 @@ READ ( -- s )
 program that is locked (as opposed to linked) to an object, as the
 lock will always fail and print the fail messages at read time.  It
 cannot be used in a program associated with a room object.
-Also see: READ_WANTS_BLANKS, READ_WANTS_NO_BLANKS and TREAD
+~~alsosee READ_WANTS_BLANKS,READ_WANTS_NO_BLANKS,TREAD
 ~
 ~
 TREAD
@@ -1948,7 +1709,7 @@ false boolean, otherwise it returns a true boolean and the string value
 entered.  This is implemented as an in-server macro as follows:
     "__tread" timer_start { "TIMER.__tread" "READ" }list event_waitfor
     swap pop "READ" strcmp if "" 0 else read 1 "__tread" timer_stop then
-Also see: READ_WANTS_BLANKS and READ
+~~alsosee READ_WANTS_BLANKS,READ
 ~
 ~
 USERLOG
@@ -1976,21 +1737,7 @@ the player.  This primitive triggers applicable listeners.
 ~
 ~
 ~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Mathematical Operators|MathOps
-Mathematical Operators
-
-%          *          +          ++         -          --         /
-abs        bitand     bitor      bitshift   bitxor     getseed    int
-random     setseed    sign       srand      
-
-~----------------------------------------------------------------------------
-~
-~
+~~section Mathematical Operators|MathOps
 ~
 ~
 INT
@@ -2057,7 +1804,7 @@ use either the FMOD or MODF primitives.
   If given an integer, float, or dbref, adds 1 to it, and returns the result.
 If given a variable containing an integer, float, or dbref, adds 1 to the
 value stored in the variable, and returns nothing.
-Also see: --
+~~alsosee --
 ~
 ~
 --
@@ -2068,7 +1815,7 @@ Also see: --
 returns the result.  If given a variable containing an integer, float,
 or dbref, this subtracts 1 from the value stored in the variable, and
 returns nothing.
-Also see: ++
+~~alsosee ++
 ~
 ~
 ABS
@@ -2101,7 +1848,7 @@ SRAND
 SRAND ( -- i )
 
   Generates a seeded random number.
-Also see: SETSEED and GETSEED
+~~alsosee SETSEED,GETSEED
 ~
 ~
 RANDOM
@@ -2109,7 +1856,7 @@ RANDOM ( -- i )
 
   Returns a random integer from 0 to (2^31)-1, which is 2,147,483,647.
 This is based on the C random() function, so it's not very secure.
-Also see: SETSEED, GETSEED, SRAND, FRAND and GAUSSIAN
+~~alsosee SETSEED,GETSEED,SRAND,FRAND,GAUSSIAN
 ~
 ~
 BITOR
@@ -2138,26 +1885,7 @@ Same as the C << operator.  If the second integer is negative, its like >>.
 ~
 ~
 ~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Floating Point Operators|FloatOps
-Floating Point Operators
-
-acos           asin           atan           atan2          ceil
-clear          clear_error    cos            diff3          dist3d
-epsilon        error?         error_bit      error_name     error_num
-error_str      exp            fabs           float          floor
-fmod           frand          ftostr         ftostrc        gaussian
-inf            is_set?        log            log10          modf
-pi             polar_to_xyz   pow            round          set_error
-sin            sqrt           strtof         tan            xyz_to_polar
-
-~----------------------------------------------------------------------------
-~
-~
+~~section Floating Point Operators|FloatOps
 ~
 ~
 FLOAT
@@ -2177,7 +1905,7 @@ INF ( -- f )
 
   Returns the value of an Infinite result.  Most functions will not
 accept this value as a legal input.
-Also see: EPSILON and FLOAT
+~~alsosee EPSILON,FLOAT
 ~
 ~
 EPSILON
@@ -2187,12 +1915,16 @@ EPSILON ( -- flt:epsilon )
 in the internal representation for floating point numbers.  This is the
 precision error.  This is useful when comparing that two numbers are equal
 to within the precision of the system.  ie:
+~~code
     float1 @ float2 @ - fabs epsilon < if "Equivalent" then
+~~endcode
 
   When you are working with numbers that have exponent parts that may not be
 near e+00, you should do a relative comparison instead:
+~~code
     float1 @ float2 @ - float1 @ / fabs epsilon < if "Equivalent" then
-Also see: INF, FLOAT, FABS, -, /, @, <, IF and THEN
+~~endcode
+~~alsosee INF,FLOAT,FABS,-,/,@,<,IF,THEN
 ~
 ~
 FTOSTR
@@ -2202,7 +1934,7 @@ FTOSTR ( f -- s )
 removed from the end of the number, when no mantissa is shown.  FTOSTR can
 return either the xxx.yyy form or the x.yyyEzz form of a float, depending
 on which would give the shortest string length.
-Also see: FMTSTRING and FTOSTRC
+~~alsosee FMTSTRING,FTOSTRC
 ~
 ~
 FTOSTRC
@@ -2212,7 +1944,7 @@ FTOSTRC ( f -- s )
 from the initial decimal, if no mantissa is shown.  FTOSTRC can return either
 the xxx.yyy form or the x.yyyEzz form of a float, depending on which would
 give the shortest string length.
-Also see: FMTSTRING and FTOSTR
+~~alsosee FMTSTRING,FTOSTR
 ~
 ~
 STRTOF
@@ -2233,14 +1965,14 @@ CEIL
 CEIL ( f - f )
 
   Returns the next highest integer, as a floating point type.
-Also see: ROUND and FLOOR
+~~alsosee ROUND,FLOOR
 ~
 ~
 FLOOR
 FLOOR ( f -- f )
 
   Returns the next lowest integer number, as a floating point type.
-Also see: ROUND and CIEL
+~~alsosee ROUND,CIEL
 ~
 ~
 ROUND
@@ -2251,7 +1983,7 @@ number of places to the right of the decimal point.  ie: '1.111 1 round'
 would leave '1.1' on the stack, while '1.111 0 round' would leave '1.0'.
 Negative i values denote places to the left of the decimal place.  ie:
 '1234.56 -2 round' would return '1200.0' on the stack.
-Also see: FLOOR and CIEL
+~~alsosee FLOOR,CIEL
 ~
 ~
 FMOD
@@ -2373,7 +2105,7 @@ XYZ_TO_POLAR ( fx fy fz -- fr ft fp )
 (fr, ft, fp).  fr is the radius, ft is theta (the plane angle), and fp is phi
 (the elevation angle)  To do 2D X-Y to radius and angle conversion, simply use
 a Z coordinate (fz) of 0, and discard phi (fp).
-Also see: POLAR_TO_XYZ, DIST3D, SIN, COS and TAN
+~~alsosee POLAR_TO_XYZ,DIST3D,SIN,COS,TAN
 ~
 ~
 POLAR_TO_XYZ
@@ -2383,7 +2115,7 @@ POLAR_TO_XYZ ( fr ft fp -- fx fy fz )
 (fx, fy, fz).  fr is the radius, ft is theta (the plane angle), and fp is phi
 (the elevation angle)  To do 2D radius and angle to X-Y conversion, simply use
 a phi angle (fp) of 0, and discard Z (fz).
-Also see: XYZ_TO_POLAR, DIST3D, SIN, COS, TAN and ATAN2
+~~alsosee XYZ_TO_POLAR,DIST3D,SIN,COS,TAN,ATAN2
 ~
 ~
 FRAND
@@ -2404,14 +2136,14 @@ CLEAR
 CLEAR ( -- )
 
   Clears all error flags for floating point math operations.
-Also see: ERROR?.
+~~alsosee ERROR?.
 ~
 ~
 CLEAR_ERROR
 CLEAR_ERROR ( s|i -- i )
 
   Clears a specific error flag for floating point math operations.
-Also see: ERROR?.
+~~alsosee ERROR?.
 ~
 ~
 ERROR?
@@ -2423,18 +2155,20 @@ most cases, an error condition in a math operation will return a zero value
 or underflow condition).  It is possible to poll for error conditions after
 every math operation, or when a '0' result is found.
 The following is a list of the current Error Flags:
+~~code
     DIV_ZERO  - (0) Division by zero attempted.
     NAN       - (1) Result was not a number.
     IMAGINARY - (2) Result would be imaginary. 
     FBOUNDS   - (3) Floating-point inputs were out of range.
     IBOUNDS   - (4) Calculation resulted in an integer overflow or underflow.
+~~endcode
 ~
 ~
 ERROR_BIT
 ERROR_BIT ( s -- i )
 
   Returns the bit identifier for a given floating point error flag string name.
-Also see: ERROR?.
+~~alsosee ERROR?.
 ~
 ~
 ERROR_NAME
@@ -2442,63 +2176,39 @@ ERROR_NAME ( i -- s )
 
   Returns the string name for the error flag, given a floating point error
 identifier.
-Also see: ERROR?.
+~~alsosee ERROR?.
 ~
 ~
 ERROR_NUM
 ERROR_NUM ( -- i )
 
   Returns the total number of floating point error flag types.
-Also see: ERROR?.
+~~alsosee ERROR?.
 ~
 ~
 ERROR_STR
 ERROR_STR ( s|i -- s )
 
   Returns a user-readable error string, given a floating point error identifier.
-Also see: ERROR?.
+~~alsosee ERROR?.
 ~
 ~
 IS_SET?
 IS_SET? ( s|i - i )
 
   Checks if a specific floating point error flag is set.
-Also see: ERROR?
+~~alsosee ERROR?
 ~
 ~
 SET_ERROR
 SET_ERROR ( s|i -- i )
 
   Sets the specified error flag for floating point operations.
-Also see: ERROR?
+~~alsosee ERROR?
 ~
 ~
 ~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-String Manipulation Operators|StringOps
-String Manipulation Operators
-
-ansi_midstr        ansi_strcut        ansi_strip         ansi_strlen
-array_fmtstrings   atoi               ctoi               explode
-explode_array      ext-name-ok?       fmtstring          instr
-instring           intostr            itoc               md5hash
-midstr             name-ok?           number?            pname-ok?
-pronoun_sub        prop-name-ok?      regexp             regsplit
-regsplit_noempty   regsub             rinstr             rinstring
-rsplit             sha1hash           smatch             split
-stod               strcat             strcmp             strcut
-strdecrypt         strencrypt         stringcmp          stringpfx
-strip              striplead          striptail          strlen
-strncmp            subst              textattr           tokensplit
-tolower            toupper            
-
-~----------------------------------------------------------------------------
-~
-~
+~~section String Manipulation Operators|StringOps
 ~
 ~
 ATOI
@@ -2512,7 +2222,7 @@ CTOI
 CTOI ( s -- i )
 
   Converts the first character in s into its ASCII equivilent.
-Also see: ITOC.
+~~alsosee ITOC.
 ~
 ~
 STRLEN
@@ -2537,7 +2247,7 @@ character in the strings.  For example, "z" "a" strcmp returns 25.
 The reason it returns a 0 for a match, and the difference on a non-match,
 is to allow for nice things like string sorting functions.
 This primitive is case sensitive, unlike stringcmp.
-Also see: STRNCMP
+~~alsosee STRNCMP
 ~
 ~
 STRNCMP
@@ -2545,7 +2255,7 @@ STRNCMP ( s1 s2 i -- i' )
 
   Compares the first i characters in strings s1 and s2.
 Return value is like strcmp.
-Also see: STRINGCMP
+~~alsosee STRINGCMP
 ~
 ~
 STRINGCMP
@@ -2555,7 +2265,7 @@ STRINGCMP ( s1 s2 -- i )
 otherwise returns i as the difference between the first non-matching
 character in the strings.  For example, "z" "a" stringcmp returns 25.
 This function is not case sensitive, unlike strcmp.
-Also see: STRNCMP
+~~alsosee STRNCMP
 ~
 ~
 STRINGPFX
@@ -2570,7 +2280,7 @@ INSTR ( s s1 -- i )
 
   Returns the first occurrence of string s1 in string s, or 0 if s1 is
 not found.
-Also see: RINSTR and INSTRING
+~~alsosee RINSTR,INSTRING
 ~
 ~
 RINSTR
@@ -2578,16 +2288,20 @@ RINSTR ( s s1 -- i )
 
   Returns the last occurrence of string s1 in string s, or 0 if s1 is
 not found.  '"abcbcba" "bc" rinstr' returns 4.
-Also see: INSTR and RINSTRING
+~~alsosee INSTR,RINSTRING
 ~
 ~
 STRCUT
 STRCUT ( s i -- s1 s2 )
 
   Cuts string s after its i'th character.  For example,
+~~code
   "Foobar" 3 strcut
+~~endcode
 returns
+~~code
   "Foo" "bar"
+~~endcode
   If i is zero or greater than the length of s, returns a null string in
 the first or second position, respectively.
 ~
@@ -2607,14 +2321,14 @@ SPLIT ( s1 s2 -- s1' s2' )
 
   Splits string s1 at the first found instance of s2.  If there are no
 matches of s2 in s1, will return s1 and a null string.
-Also see: RSPLIT
+~~alsosee RSPLIT
 ~
 ~
 RSPLIT
 RSPLIT ( s1 s2 -- s1' s2' )
 
   Splits a string, as SPLIT, but splits on the last occurence of s2.
-Also see: SPLIT
+~~alsosee SPLIT
 ~
 ~
 EXPLODE
@@ -2623,14 +2337,18 @@ EXPLODE ( s1 s2 -- ... i )
   s2 is the delimiter string, and s1 is the target string, which will be
 fragmented, with i pushed on top of the stack as the number of strings
 s1 was broken into.  For instance:
+~~code
     "Hello world" " " explode
+~~endcode
 will result in
+~~code
     "world" "Hello" 2
+~~endcode
 on the stack.  (Note that if you read these items off in order, they
 will come out "Hello" first, then "world".)  For TinyMUCK 2.2, s2 may
 be any length.  But "" (null string) is not an acceptable string for
 parameter s2.
-Also see: EXPLODE_ARRAY
+~~alsosee EXPLODE_ARRAY
 ~
 ~
 EXPLODE_ARRAY
@@ -2639,13 +2357,17 @@ EXPLODE_ARRAY ( s1 s2 -- a )
   s2 is the delimiter string, and s1 is the target string.  s1 will be split
 up at each place where s2 is found in s1, and all the parts will be returned
 in a list array.  For instance:
+~~code
     "alpha, beta, gamma"  ", "  explode_array
+~~endcode
 will result in a list array that is identical to:
+~~code
     { "alpha" "beta" "gamma" }list
+~~endcode
 s2 cannot be a null string, but it can be of any non-zero length.  When s2
 is more than one character long, the delimiter is considered to be the
 entire s2 string.  The delimiters are removed from the results.
-Also see: EXPLODE
+~~alsosee EXPLODE
 ~
 ~
 SUBST
@@ -2653,9 +2375,13 @@ SUBST ( s1 s2 s3 -- s )
 
   s1 is the string to operate on, s2 is the string to change all occurrences
 of s3 into, and s is resultant string.  For example:
+~~code
     "HEY_YOU_THIS_IS" " " "_" subst
+~~endcode
 results in
+~~code
     "HEY YOU THIS IS"
+~~endcode
 s2 and s3 may be of any length.
 ~
 ~
@@ -2677,6 +2403,7 @@ literal '%' is needed in the string, a '%%' may be used.  The format of a
 substitution is as follows: '%[-,|][+, ][0][number][.number]type'
 Where 'number' is an integer value, and 'type' is one of the following
 identifiers:
+~~code
     i - integer argument
     s - string argument
     d - dbref number, in the form of #123
@@ -2689,6 +2416,7 @@ identifiers:
     ~ - default representation of any stack type
     ? - unknown type argument, will print a string stating what the
         variable type is
+~~endcode
 
   A '-' at the start of a format substitution indicates the field will be left
 justified.  A '|' at the start indicated the field will be centered.  A '+'
@@ -2699,7 +2427,7 @@ use a '*' in place of either the width or precision format fields, then
 that integer number will be obtained from the stack.  You may specify a
 negative fieldwidth to obtain left justification of that field.  You may
 not specify a negative precision.
-Also see: ARRAY_FMTSTRINGS
+~~alsosee ARRAY_FMTSTRINGS
 ~
 ~
 ARRAY_FMTSTRINGS
@@ -2715,6 +2443,7 @@ each format field.  You specify the key markers in each format
 subsititution by adding a '[KEY]' before the substitution type letter.
 For example, the code:
 
+~~code
     {
         {
             "username" "Johnny"
@@ -2731,11 +2460,14 @@ For example, the code:
     "%-16.15[username]s %3[count]i %5[object]d %4.2[4]g"
     array_fmtstrings
     { me @ }list array_notify
+~~endcode
 
 ... would show the following output to the user:
 
+~~code
     Johnny             4   #18 3.14
     Ghaladahsk_Fadj  123   #97 0.00
+~~endcode
 
   Note that if a key does not exist in an input dictionary, then that
 format field will be assumed to either be the appropriate false value for
@@ -2752,12 +2484,14 @@ field widths or precisions via '*'.
   Hint: If you want to use this format method on a single dictionary, you
 can do something like:
 
+~~code
     pid getpidinfo   (to give us a dictionary of data.)
     1 array_make     (to make a list with that as its single entry)
     "%-40[player]D %6[pid]i %[called_prog]D" 
     array_fmtstrings
     0 []             (to get the formatted result string.)
-Also see: FMTSTRING
+~~endcode
+~~alsosee FMTSTRING
 ~
 ~
 PRONOUN_SUB
@@ -2765,13 +2499,18 @@ PRONOUN_SUB ( d s -- s' )
 
   Takes database object d and substitutes string s according to o-message
 rules.  For example:
+~~code
   me @ "%N has lost %p marbles." pronoun_sub
+~~endcode
 would return:
+~~code
   "Igor has lost his marbles."
+~~endcode
 if the player's name was Igor and his sex were male.
 d does not have to be a player for the substitutions to work.
   
 The substitutions are:
+~~code
     %a/%A for absolute possessive (his/hers/its, His/Hers/Its)
     %s/%S for subjective pronouns (he/she/it, He/She/It)
     %o/%O for objective pronouns (him/her/it, Him/Her/It)
@@ -2779,6 +2518,7 @@ The substitutions are:
     %r/%R for reflexive pronouns (himself/herself/itself,
                                   Himself/Herself/Itself)
     %n/%N for the player's name.
+~~endcode
   
   if it comes across a %X substitution, where X is any character not listed
 in the above substitutions table, it will search down the environment tree
@@ -2794,9 +2534,11 @@ appropriate client.  The attributes are passed to TEXTATTR in s2 as a
 series of comma separated attribute names.
 
 These are the attributes currently recognized:
+~~code
     reset bold dim italic uline flash reverse overstrike
     black red green yellow blue magenta cyan white
     bg_black bg_red bg_green bg_yellow bg_blue bg_magenta bg_cyan bg_white
+~~endcode
 ~
 ~
 STOD
@@ -2840,6 +2582,13 @@ NUMBER? ( s -- i )
 returns 0.
 ~
 ~
+POSE-SEPARATOR?
+POSE-SEPARATOR? ( s -- i )
+
+  Returns 1 if the argument could be used as a pose without requiring a space.
+Otherwise returns 0.
+~
+~
 INTOSTR
 INTOSTR ( x -- s )
 
@@ -2851,7 +2600,7 @@ ITOC ( i -- s )
 
   Converts an integer i to its ASCII equivilent character, or a null
 if i is not a valid display character.
-Also see: CTOI
+~~alsosee CTOI
 ~
 ~
 STRENCRYPT
@@ -2865,7 +2614,7 @@ technique used here is pretty simple, so I highly doubt it breaks
 any laws to take it outside the USA.  By the same token, it probably
 shouldn't be trusted with any really important data.  I'm not an expert
 at cryptography, so this ain't DES.
-Also see: STRDECRYPT
+~~alsosee STRDECRYPT
 ~
 ~
 STRDECRYPT
@@ -2873,21 +2622,21 @@ STRDECRYPT ( s1 s2 -- s3 )
 
   Takes the encrypted string s1, and decrypts it, using the key s2, returning
 the plaintext string s3.
-Also see: STRENCRYPT
+~~alsosee STRENCRYPT
 ~
 ~
 MD5HASH
 MD5HASH ( s -- s' )
 
   Calculates the MD5 hash of the given string.
-Also see: SHA1HASH
+~~alsosee SHA1HASH
 ~
 ~
 SHA1HASH
 SHA1HASH ( s -- s' )
 
   Calculates the SHA1 hash of the given string.
-Also see: MD5HASH
+~~alsosee MD5HASH
 ~
 ~
 TOUPPER
@@ -2928,6 +2677,7 @@ SMATCH ( s s2 -- i )
 if the string fits the pattern.  This is case insensitive.  In the pattern
 string, the following special characters will do as follows:
 
+~~code
   *  A '?' matches any single character.
   
   *  A '*' matches any number of any characters.
@@ -2962,8 +2712,10 @@ string, the following special characters will do as follows:
   
   *  The '\' character will disable the special meaning of the character that
         follows it, matching it literally.
+~~endcode
   
 Example patterns:
+~~code
     "d*g" matches "dg", "dog", "doog", "dorfg", etc.
     "d?g" matches "dog", "dig" and "dug" but not "dg" or "drug".
     "M[rs]." matches "Mr." and "Ms."
@@ -2974,6 +2726,7 @@ Example patterns:
     "{Foxen|Lynx|Fier[ao]} *t[iy]ckle*\?"  Will match any string starting
       with 'Foxen', 'Lynx', 'Fiera', or 'Fiero', that contains either 'tickle'
       or 'tyckle' and ends with a '?'.
+~~endcode
 ~
 ~
 INSTRING
@@ -2981,7 +2734,7 @@ INSTRING ( s s1 -- i )
 
   Returns the first occurrence of string s1 in string s, or 0 if s1 is
 not found. Non-case sensitive.
-Also see: RINSTRING, INSTR and RINSTR
+~~alsosee RINSTRING,INSTR,RINSTR
 ~
 ~
 RINSTRING
@@ -2989,7 +2742,7 @@ RINSTRING ( s s1 -- i )
 
   Returns the last occurrence of string s1 in string s, or 0 if s1 is
 not found. Non-case sensitive.
-Also see: INSTRING, INSTR and RINSTR
+~~alsosee INSTRING,INSTR,RINSTR
 ~
 ~
 NAME-OK?
@@ -3007,21 +2760,21 @@ that name to the NEWOBJECT primitive, the call will fail due to the more
 restrictive rules for Things.
 
   Instead, use EXT-NAME-OK? which determines legal names for each object type.
-Also see: EXT-NAME-OK?
+~~alsosee EXT-NAME-OK?
 ~
 ~
 PNAME-OK?
 PNAME-OK? (s -- i)
 
   Returns true if the given string would be okay as a player name.
-Also see: EXT-NAME-OK?
+~~alsosee EXT-NAME-OK?
 ~
 ~
 PROP-NAME-OK?
 PROP-NAME-OK? (s -- i)
   Returns true if the given string is an acceptable property name that will
 not cause an error for SETPROP or any other property related primitive.
-Also see: SETPROP
+~~alsosee SETPROP
 ~
 ~
 EXT-NAME-OK?
@@ -3031,11 +2784,13 @@ EXT-NAME-OK? ( str:Name str:Type -- int:Ok? )
   Returns true if Name would be a legal name for an object depending on
 the object type. If Obj is the object you are going to SETNAME, then
 EXT-NAME-OK? will use the naming rules for that type of object.
+~~code
 If the object does not exist yet, you may specify a string Type:
         "exit" or "e"              "muf" or "program" or "f"
         "player" or "p"            "thing" or "t"
         "room" or "r"
 Type's case is ignored.
+~~endcode
 ~
 ~
 REGEXP
@@ -3054,8 +2809,10 @@ string to be position 1.
 
 The "flags" argument may be 0, or a combination of the following:
 
+~~code
     $def REG_ICASE    1   (Case insensitive match)
     $def REG_EXTENDED 4   (Allows PCRE comments, etc.  See PCRE docs.)
+~~endcode
 ~
 ~
 REGSUB
@@ -3067,14 +2824,18 @@ a submatch.  Uses PCRE style regular expression syntax.
 
 The "flags" argument may be 0, or a combination of the following:
 
+~~code
     $def REG_ICASE    1   (Case insensitive match)
     $def REG_ALL      2   (Substitute all matches, rather than just the first)
     $def REG_EXTENDED 4   (Allows PCRE comments, etc.  See PCRE docs.)
+~~endcode
 
   Ie: to replace all words in a string with 'yadda', ignoring case, you would
 use the following code:
 
+~~code
     "[a-z]+" "yadda" REG_ICASE REG_ALL + REGSUB
+~~endcode
 ~
 ~
 REGSPLIT
@@ -3085,10 +2846,12 @@ be returned for consecutive matches.
  
 The "flags" argument may be 0, or a combination of the following:
 
+~~code
     $def REG_ICASE    1   (Case insensitive match)
     $def REG_EXTENDED 4   (Allows PCRE comments, etc.  See PCRE docs.)
+~~endcode
 
-Also see: REGSPLIT_NOEMPTY
+~~alsosee REGSPLIT_NOEMPTY
 ~
 ~
 REGSPLIT_NOEMPTY
@@ -3099,10 +2862,12 @@ pieces.
  
 The "flags" argument may be 0, or a combination of the following:
 
+~~code
     $def REG_ICASE    1   (Case insensitive match)
     $def REG_EXTENDED 4   (Allows PCRE comments, etc.  See PCRE docs.)
+~~endcode
 
-Also see: REGSPLIT
+~~alsosee REGSPLIT
 ~
 ~
 TOKENSPLIT
@@ -3112,26 +2877,17 @@ TOKENSPLIT (strString strDelim strEscape -- strPre strPost strChar)
 strDelim, so long as it is not escaped by the character given in strEscape.  
 Returns the unescaped string before the found character, the raw string after
 that character, and the character that was found.  For example:
+~~code
     "ab//cd/'efg'hi//jk'lm"   "'"   "/"   TOKENSPLIT
+~~endcode
 returns the values:
+~~code
     "ab/cd'efg"   "hi//jk'lm"   "'"
+~~endcode
 ~
 ~
 ~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Lock Manipulation Operators|LockOps
-Lock Manipulation Operators
-
-getlockstr   locked?      parselock    prettylock   setlockstr   supplicant
-testlock     unparselock  
-
-~----------------------------------------------------------------------------
-~
-~
+~~section Lock Manipulation Operators|LockOps
 ~
 ~
 LOCKED?
@@ -3148,21 +2904,21 @@ PARSELOCK (s -- l)
 
   Parses a lock string into a lock.  If the parsing failed, then the lock
 returned will be a TRUE_BOOLEXP, which is logically false to an 'if' test.
-Also see: UNPARSELOCK, LOCK?, PRETTYLOCK, TESTLOCK, GETLOCKSTR, SETLOCKSTR and LOCKED?
+~~alsosee UNPARSELOCK,LOCK?,PRETTYLOCK,TESTLOCK,GETLOCKSTR,SETLOCKSTR,LOCKED?
 ~
 ~
 UNPARSELOCK
 UNPARSELOCK (l -- s)
 
   Unparses a lock into a string fit for program editing.
-Also see: LOCK?, PARSELOCK, PRETTYLOCK, TESTLOCK, GETLOCKSTR, SETLOCKSTR and LOCKED?
+~~alsosee LOCK?,PARSELOCK,PRETTYLOCK,TESTLOCK,GETLOCKSTR,SETLOCKSTR,LOCKED?
 ~
 ~
 PRETTYLOCK
 PRETTYLOCK (l -- s)
 
   Unparses a lock into a string fit for players to see.
-Also see: LOCK?, PARSELOCK, UNPARSELOCK, TESTLOCK, GETLOCKSTR, SETLOCKSTR and LOCKED?
+~~alsosee LOCK?,PARSELOCK,UNPARSELOCK,TESTLOCK,GETLOCKSTR,SETLOCKSTR,LOCKED?
 ~
 ~
 TESTLOCK
@@ -3170,7 +2926,7 @@ TESTLOCK (d l -- i)
 
   Tests the player dbref against the given lock.  If the test was successful,
 then this returns a 1.  If the test failed, then this returns a 0.
-Also see: LOCK?, PARSELOCK, UNPARSELOCK, PRETTYLOCK, GETLOCKSTR, SETLOCKSTR and LOCKED?
+~~alsosee LOCK?,PARSELOCK,UNPARSELOCK,PRETTYLOCK,GETLOCKSTR,SETLOCKSTR,LOCKED?
 ~
 ~
 SETLOCKSTR
@@ -3196,35 +2952,7 @@ the object the lock is being tested against. Otherwise, returns #-1.
 ~
 ~
 ~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Array Manipulation Operators|ArrayOps
-Array Manipulation Operators
-
-array_appenditem          array_compare             array_count
-array_cut                 array_default_pinning     array_delitem
-array_delrange            array_diff                array_excludeval
-array_explode             array_extract             array_findval
-array_first               array_getitem             array_getrange
-array_insertitem          array_insertrange         array_interpret
-array_intersect           array_join                array_keys
-array_last                array_make                array_make_dict
-array_matchkey            array_matchval            array_ndiff
-array_nested_del          array_nested_get          array_nested_set
-array_next                array_nintersect          array_notify
-array_notify_secure       array_nunion              array_pin
-array_prev                array_reverse             array_setitem
-array_setrange            array_sort                array_sort_indexed
-array_union               array_unpin               array_vals
-}cat                      }dict                     }join
-}list                     }tell                     
-
-~----------------------------------------------------------------------------
-~
-~
+~~section Array Manipulation Operators|ArrayOps
 ~
 ~
 ARRAY_MAKE
@@ -3279,7 +3007,7 @@ marker and notifies them to the 'me @' user.  This will throw an error
 if you try to send a non-string.  Each separate string will be send as a
 separate line to the user.  This is actually an inserver macro, defined to
 '} array_make me @ 1 array_make array_notify'.
-Also see: ARRAY_NOTIFY
+~~alsosee ARRAY_NOTIFY
 ~
 ~
 ARRAY_JOIN
@@ -3288,9 +3016,11 @@ ARRAY_JOIN ([s] s -- s)
   Takes a list array and a delimiter string, and returns a single string
 that is the concatenation of all the items in the list array, with the
 delimiter string in between.  For example:
+~~code
     { "one" 2 "three" 3.14159 }list "... " array_join
+~~endcode
 will result in a single string: "one... 2... three... 3.14159"
-Also see: }JOIN, ARRAY_INTERPRET and }CAT
+~~alsosee }JOIN,ARRAY_INTERPRET,}CAT
 ~
 ~
 ARRAY_INTERPRET
@@ -3299,9 +3029,11 @@ ARRAY_INTERPRET ([s] -- s)
   Takes a list array and and returns a single string that is the concatenation
 of all the items in the list array, with dbrefs translated to the name of
 their respective objects.  For example:
+~~code
     { #1 " " 2 " three " 3.14159 }list array_join
+~~endcode
 will result in a single string like: "Wizard 2 three 3.14159"
-Also see: ARRAY_JOIN, }CAT and }JOIN
+~~alsosee ARRAY_JOIN,}CAT,}JOIN
 ~
 ~
 }JOIN
@@ -3311,7 +3043,7 @@ Also see: ARRAY_JOIN, }CAT and }JOIN
 marker and concatenates them into a string based on the default reresentat-
 ion of each stack item type.  Dbrefs will be shown as #REF numbers.  This
 actually is an inserver macro, defined to '} array_make "" array_join'.
-Also see: ARRAY_JOIN, }CAT and ARRAY_INTERPRET
+~~alsosee ARRAY_JOIN,}CAT,ARRAY_INTERPRET
 ~
 ~
 }CAT
@@ -3322,7 +3054,7 @@ marker and concatenates them into a string based on the default reresentat-
 ion of each stack item type.  Dbrefs will be translated to the name of the
 object that they reference.  This primitive is actually an inserver macro,
 defined to '} array_make array_interpret'.
-Also see: ARRAY_JOIN, }JOIN and ARRAY_INTERPRET
+~~alsosee ARRAY_JOIN,}JOIN,ARRAY_INTERPRET
 ~
 ~
 ARRAY_COUNT
@@ -3395,13 +3127,17 @@ ARRAY_NESTED_GET ( a1 a2 -- ? )
   Takes a nested array a1, and a list of array indexes a2, and recursively
 fetches nested sub-array values.  Returns 0 if the item doesn't exist.
 Example:
+~~code
     arr1 @ { "foo" 2 "bar" }list array_nested_get
+~~endcode
 is roughly equivalent to
+~~code
     arr1 @ "foo" [] dup if
         2 [] dup if
             "bar" []
         then
     then
+~~endcode
 ~
 ~
 ARRAY_NESTED_SET
@@ -3410,10 +3146,13 @@ ARRAY_NESTED_SET ( ? a a2 -- a' )
   Sets the nested array entry in a, specified by the list of array indexes
 in a2, to the given value, creating new sub-arrays if needed.
 Example:
+~~code
     { }dict
     "qux" swap { "foo" "bar" "baz" }list array_nested_set
     4 swap { "foo" 2 "clam" }list array_nested_set
+~~endcode
 would return the same array as
+~~code
     {
         "foo" {
             "bar" {
@@ -3424,6 +3163,7 @@ would return the same array as
             }dict
         }dict
     }dict
+~~endcode
 ~
 ~
 ARRAY_NESTED_DEL
@@ -3431,6 +3171,7 @@ ARRAY_NESTED_DEL ( a a2 -- a' )
 
   Deletes the nested array entry in a, specified by the list of array
 indexes in a2.  Example:
+~~code
     {
         "foo" {
             "bar" {
@@ -3442,7 +3183,9 @@ indexes in a2.  Example:
         }dict
     }dict
     { "foo" 2 }list array_nested_del
+~~endcode
 would return the same array as
+~~code
     {
         "foo" {
             "bar" {
@@ -3450,6 +3193,7 @@ would return the same array as
             }dict
         }dict
     }dict
+~~endcode
 ~
 ~
 ARRAY_EXTRACT
@@ -3480,21 +3224,27 @@ ARRAY_EXPLODE
 ARRAY_EXPLODE ( a -- {@ ?} )
 
   Explodes an array into a stackrange of its index/value pairs.  Example:
+~~code
     "index0" "value0" "index1" "value1" 2
+~~endcode
 ~
 ~
 ARRAY_KEYS
 ARRAY_KEYS ( a -- {@} )
 
   Returns the keys of an array in a stackrange.  Example:
+~~code
     "index0" "index1" 2 
+~~endcode
 ~
 ~
 ARRAY_VALS
 ARRAY_VALS ( a -- {?} )
 
   Returns the values of an array in a stackrange.  Example:
+~~code
     "value0" "value1" 2
+~~endcode
 ~
 ~
 ARRAY_FIRST
@@ -3571,16 +3321,20 @@ an undefined consistent order.
 that the sorting should be case sensitive and in ascending order.  You
 can change either of those by using one or more of the following inserver
 $defines BITORed or added together:
+~~code
   $def SORTTYPE_CASEINSENS 1   (Sort is to be case insensitive.)
   $def SORTTYPE_DESCENDING 2   (Sort is to be in reversed order.)
   $def SORTTYPE_SHUFFLE    4   (Randomize list completely.)
+~~endcode
 
   The above sort types can be added or bitor'ed together to get the
 following inserver $defines as listed below.
+~~code
   $def SORTTYPE_CASE_ASCEND    0 (Case sensitive and ascending order.)
   $def SORTTYPE_NOCASE_ASCEND  SORTTYPE_CASEINSENS
   $def SORTTYPE_CASE_DESCEND   SORTTYPE_DESCENDING
   $def SORTTYPE_NOCASE_DESCEND SORTTYPE_CASEINSENS SORTTYPE_DESCENDING +
+~~endcode
 ~
 ~
 ARRAY_SORT_INDEXED
@@ -3589,26 +3343,30 @@ ARRAY_SORT_INDEXED (arrData intSortType idxIndex -- arrSorted)
   This takes a list array of arrays, and will sort them, based on the
 value of an indexed value in each subarray, based on the given sort
 type.  For example:
+~~code
     {
         { "name" "One"     "num" 1 }dict
         { "name" "Two"     "num" 2 }dict
         { "name" "Three"   "num" 3 }dict
     }list
     SORTTYPE_DESCENDING "num" ARRAY_SORT_INDEXED
+~~endcode
 ...would return an array of dictionaries, sorted in descending order by the
 value of their "num" entries.  ie, the same as:
+~~code
     {
         { "name" "Three"   "num" 3 }dict
         { "name" "Two"     "num" 2 }dict
         { "name" "One"     "num" 1 }dict
     }list
+~~endcode
   This can be used with an array of list arrays, just like with an array of
 dictionaries.  For list arrays, you just use an integer for the index.
 NOTE: arrays that don't have an item matching the given index, will be
 sorted as lesser than arrays that do.
 
 See ARRAY_SORT for more information on sort ordering.
-Also see: ARRAY_SORT
+~~alsosee ARRAY_SORT
 ~
 ~
 ARRAY_UNION
@@ -3677,7 +3435,9 @@ ARRAY_FINDVAL (a1 ? -- a2)
   Returns a list array containing the keys of every element in the array
 a1 whose values match the given value.  For example:
 
+~~code
     { #5 #10 #15 #10 #20 }list #10 array_findval
+~~endcode
 
 will return a list containing 1 and 3, being the keys (indexes) of the
 matching items.
@@ -3688,13 +3448,19 @@ ARRAY_EXCLUDEVAL (a1 ? -- a2)
 
   Returns a list array containing the keys of every element in the array
 a1 whose values did NOT match the given value.  For example:
+~~code
     { #5 #10 #15 #10 #20 }list #10 array_excludeval
+~~endcode
 will return a list containing 0, 2 and 4, being the keys (indexes) of the
 items that didn't match.  If you want the values, use ARRAY_DIFF or
 ARRAY_EXTRACT.  Ie:
+~~code
     { #5 #10 #15 #10 #20 }list { #10 }list array_diff
+~~endcode
 or
+~~code
     { #5 #10 #15 #10 #20 }list dup #10 array_excludeval array_extract
+~~endcode
 which will both return a list containing #5, #15, and #20.  The main
 difference between these two methods is that ARRAY_DIFF will remove any
 duplicate values in the remaining items, and the ordering of the resulting
@@ -3719,29 +3485,7 @@ smatch wildcard pattern.
 ~
 ~
 ~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Property Manipulation Operators|PropOps
-Property Manipulation Operators
-
-addprop                   array_filter_flags        array_filter_lock
-array_filter_prop         array_get_propdirs        array_get_proplist
-array_get_propvals        array_get_reflist         array_put_proplist
-array_put_propvals        array_put_reflist         blessed?
-blessprop                 envprop                   envpropstr
-getprop                   getpropfval               getpropstr
-getpropval                nextprop                  parsempi
-parsempiblessed           parseprop                 parsepropex
-propdir?                  reflist_add               reflist_del
-reflist_find              remove_prop               setprop
-unblessprop               
-
-~----------------------------------------------------------------------------
-~
-~
+~~section Property Manipulation Operators|PropOps
 ~
 ~
 GETPROP
@@ -3752,7 +3496,7 @@ This can return a lock, a string, a dbref, or an integer, depending
 on the type of the property.  Permissions are the same as those for
 GETPROPSTR.  This primitive returns 0 if no such property exists, of
 if it is a valueless propdir.
-Also see: SETPROP, ADDPROP, REMOVE_PROP, GETPROPSTR, GETPROPVAL, INT?, DBREF?, STRING? and LOCK?
+~~alsosee SETPROP,ADDPROP,REMOVE_PROP,GETPROPSTR,GETPROPVAL,INT?,DBREF?,STRING?,LOCK?
 ~
 ~
 GETPROPSTR
@@ -3783,7 +3527,7 @@ environment tree from that object for a property with the given name.  If
 the property isn't found, it returns #-1 and 0.  If the property is found,
 it will return the dbref of the object it was found on, and the value it
 contained.
-Also see: ENVPROPSTR
+~~alsosee ENVPROPSTR
 ~
 ~
 ENVPROPSTR
@@ -3794,7 +3538,7 @@ environment tree from that object for a property with the given name.  If
 the property isn't found, it returns #-1 and a null string.  If the
 property is found, it will return the dbref of the object it was found on,
 and the string value it contained.
-Also see: ENVPROP
+~~alsosee ENVPROP
 ~
 ~
 ADDPROP
@@ -3814,7 +3558,7 @@ SETPROP (d s ? -- )
 
   Stores a lock, dbref, integer, or string into the named property on the
 given object.  Permissions are the same as for ADDPROP.
-Also see: ADDPROP, REMOVE_PROP, GETPROPSTR and GETPROPVAL
+~~alsosee ADDPROP,REMOVE_PROP,GETPROPSTR,GETPROPVAL
 ~
 ~
 REMOVE_PROP
@@ -4026,46 +3770,7 @@ This primitives requires at least mucker level 3.
 ~
 ~
 ~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Database Related Operators|DBOps
-Database Related Operators
-
-addpennies                array_get_ignorelist      caller
-checkpassword             contents                  contents_array
-controls                  copyobj                   copyplayer
-dbcmp                     dbref                     dbtop
-desc                      drop                      entrances_array
-exit?                     exits                     exits_array
-fail                      findnext                  flag?
-getlink                   getlinks                  getlinks_array
-ignore_add                ignore_del                ignoring?
-location                  match                     mlevel
-movepennies               moveto                    name
-newexit                   newobject                 newpassword
-newplayer                 newprogram                newroom
-next                      nextentrance              nextowned
-objmem                    odrop                     ofail
-ok?                       osucc                     owner
-part_pmatch               pennies                   player?
-pmatch                    pname_history             prog
-program?                  recycle                   rmatch
-room?                     set                       setdesc
-setdrop                   setfail                   setlink
-setlinks_array            setname                   setodrop
-setofail                  setosucc                  setown
-setsucc                   setsysparm                stats
-stats_array               succ                      sysparm
-sysparm_array             thing?                    timestamps
-toadplayer                trig                      truename
-unparseobj                
-
-~----------------------------------------------------------------------------
-~
-~
+~~section Database Related Operators|DBOps
 ~
 ~
 DBREF
@@ -4142,6 +3847,7 @@ MOVETO ( d1 d2 -- )
 
   Moves object d1 to object d2.
   MOVETO is affected by the following rules:
+~~code
     a) If the object being moved is !JUMP_OK and is it being moved by someone
       other than the object's owner, then the moveto fails.
     b) If the object being moved is a person and either the source or
@@ -4150,6 +3856,7 @@ MOVETO ( d1 d2 -- )
     c) If the object being moved is not a player, is owned by the owner of
       either the source or destination rooms, and either room where the
       ownership matches is !JUMP_OK, the moveto fails.
+~~endcode
   The moveto succeeds under any other circumstances.  MOVETO rules follow the
 permissions of the current effective userid.  MOVETO will run programs in
 the @desc and @succ/@fail of a room when moving a player.
@@ -4202,7 +3909,7 @@ by that same player.  When no more objects are left owned by that player,
 #-1 is returned.  The order of the objects is not guarenteed, but when used
 correctly, each object owned by that player will be returned exactly once.
 The player object itself will NOT be returned.
-Also see: NEXT
+~~alsosee NEXT
 ~
 ~
 FINDNEXT
@@ -4233,12 +3940,14 @@ search criteria, then #-1 is returned.  Otherwise, the next matching
 object is returned.
 
 This primitive is used like this:
+~~code
     #-1 begin
         me @ "*.muf" "F" FINDNEXT
         dup while
         dup unparseobj .tell
     repeat
-Also see: NEXT and NEXTOWNED
+~~endcode
+~~alsosee NEXT,NEXTOWNED
 ~
 ~
 NEXTENTRANCE
@@ -4338,7 +4047,7 @@ SET ( d s -- )
   Sets flag s to object d.  Currently settable things are: abode, chown,
 dark, haven, jump, link, sticky.  Boolean operations (e.g. `!abode')
 work as expected.
-Also see: SETNAME, SETDESC and FLAG?
+~~alsosee SETNAME,SETDESC,FLAG?
 ~
 ~
 FLAG?
@@ -4354,7 +4063,7 @@ a program's READ, or if they are in the MUF editor.
 The "Truewizard" flag will check for a W flag with or without the QUELL set.
 The "Mucker" flag returns the most significant bit of the mucker level and
 the "Nucker" flag returns the least significant bit. (Use MLEVEL instead.)
-Also see: SET and MLEVEL
+~~alsosee SET,MLEVEL
 ~
 ~
 MLEVEL
@@ -4362,7 +4071,7 @@ MLEVEL (d -- i)
 
   returns the mucker (or priority) level of the given object. If #-1 is
 passed, this returns the effective mucker level of the current program.
-Also see: MUCKER LEVELS
+~~alsosee MUCKER LEVELS
 ~
 ~
 OK?
@@ -4370,7 +4079,7 @@ OK? ( x -- i )
 
   Takes x and returns 1 if x is a type dbref, as well as 0 or above,
 below the top of the database, and is not an object of type garbage.
-Also see: EXIT?, PLAYER?, PROGRAM? and THING?
+~~alsosee EXIT?,PLAYER?,PROGRAM?,THING?
 ~
 ~
 PLAYER?
@@ -4378,7 +4087,7 @@ PLAYER? ( d -- i )
 
   Returns 1 if object d is a player object, otherwise returns 0.
 If the dbref is that of an invalid object, it will return 0.
-Also see: PROGRAM?, ROOM?, THING?, EXIT? and OK?
+~~alsosee PROGRAM?,ROOM?,THING?,EXIT?,OK?
 ~
 ~
 ROOM?
@@ -4386,21 +4095,21 @@ ROOM? ( d -- i )
 
   Returns 1 if object d is a room, otherwise returns 0.  If the dbref is that
 of an invalid object, it will return 0.  A dbref of #-3 (HOME) returns 1.
-Also see: PLAYER?, PROGRAM?, THING?, EXIT? and OK?
+~~alsosee PLAYER?,PROGRAM?,THING?,EXIT?,OK?
 ~
 ~
 THING?
 THING? ( d -- i )
 
   Returns i as 1 if object d is a thing, otherwise returns i as 0.
-Also see: PLAYER?, PROGRAM?, ROOM?, EXIT? and OK?
+~~alsosee PLAYER?,PROGRAM?,ROOM?,EXIT?,OK?
 ~
 ~
 EXIT?
 EXIT? ( d -- i )
 
   Returns 1 if object d is an exit object, 0 if otherwise.
-Also see: PLAYER?, PROGRAM?, ROOM?, THING? and OK?
+~~alsosee PLAYER?,PROGRAM?,ROOM?,THING?,OK?
 ~
 ~
 PROGRAM?
@@ -4408,7 +4117,7 @@ PROGRAM? ( d -- i )
 
   Returns 1 if object d is a program, otherwise returns 0.
 If the dbref is that of an invalid object, it will return 0.
-Also see: PLAYER?, ROOM?, THING?, EXIT? and OK?
+~~alsosee PLAYER?,ROOM?,THING?,EXIT?,OK?
 ~
 ~
 SYSPARM
@@ -4422,162 +4131,9 @@ Checking an invalid parameter or a parameter requiring higher permissions
 than the program has will return an empty string.
 
 Parameters available:
- (str)  autolook_cmd              - Room entry look command
- (str)  cpennies                  - Currency name, capitalized, plural
- (str)  cpenny                    - Currency name, capitalized
- (str)  pennies                   - Currency name, plural
- (str)  penny                     - Currency name
- (str)  dumpdone_mesg             - Database dump finished message
- (str)  dumping_mesg              - Database dump started message
- (str)  dumpwarn_mesg             - Database dump warning message
- (str)  file_connection_help      - 'help' before login
- (str)  file_credits              - Acknowledgements
- (str)  file_editor_help          - Editor help
- (str)  file_help                 - 'help' main content
- (str)  file_help_dir             - 'help' topic directory
- (str)  file_info_dir             - 'info' topic directory
- (str)  file_log_cmd_times        - Command times
- (str)  file_log_commands         - Player commands
- (str)  file_log_gripes           - Player gripes
- (str)  file_log_malloc           - Memory allocations
- (str)  file_log_muf_errors       - MUF compile errors and warnings
- (str)  file_log_programs         - Text of changed programs
- (str)  file_log_sanfix           - Database fixes
- (str)  file_log_sanity           - Database corruption and errors
- (str)  file_log_status           - System errors and stats
- (str)  file_log_stderr           - Server error redirect
- (str)  file_log_stdout           - Server output redirect
- (str)  file_log_user             - MUF-writable messages
- (str)  file_man                  - 'man' main content
- (str)  file_man_dir              - 'man' topic directory
- (str)  file_motd                 - Message of the day
- (str)  file_mpihelp              - 'mpi' main content
- (str)  file_mpihelp_dir          - 'mpi' topic directory
- (str)  file_news                 - 'news' main content
- (str)  file_news_dir             - 'news' topic directory
- (str)  file_sysparms             - System parameters
- (str)  file_welcome_screen       - Opening screen
- (str)  idle_boot_mesg            - Boot message given to users idling out
- (str)  huh_mesg                  - Unrecognized command warning
- (str)  leave_mesg                - Logoff message for QUIT
- (str)  muckname                  - Name of the MUCK
- (str)  playermax_bootmesg        - Max. players connection error message
- (str)  playermax_warnmesg        - Max. players connection login warning
- (str)  gender_prop               - Property name used for pronoun substitutions
- (str)  register_mesg             - Login registration denied message
- (str)  ssl_cert_file             - Path to SSL certificate .pem
- (str)  ssl_key_file              - Path to SSL private key .pem
- (str)  ssl_keyfile_passwd        - Password for SSL private key file
- (str)  ssl_cipher_preference_list - Allowed OpenSSL cipher list
- (str)  ssl_min_protocol_version  - Min. allowed SSL protocol version for clients
- (str)  pcreate_flags             - Initial flags for newly created players
- (str)  reserved_names            - String-match list of reserved names
- (str)  reserved_player_names     - String-match list of reserved player names
- (time) aging_time                - When to considered an object old and unused
- (time) dump_interval             - Interval between dumps
- (time) dump_warntime             - Interval between warning and dump
- (time) idle_ping_time            - Server side keepalive time in seconds
- (time) maxidle                   - Maximum idle time before booting
- (time) clean_interval            - Interval between memory/object cleanups
- (time) pname_history_threshold   - Length of player name change history
- (int)  player_name_limit         - Limit on player name length
- (int)  exit_cost                 - Cost to create an exit
- (int)  link_cost                 - Cost to link an exit
- (int)  lookup_cost               - Cost to lookup a player name
- (int)  max_object_endowment      - Max. value of an object
- (int)  object_cost               - Cost to create an object
- (int)  room_cost                 - Cost to create a room
- (int)  max_pennies               - Max. pennies a player can own
- (int)  penny_rate                - Avg. moves between finding currency
- (int)  start_pennies             - Player starting currency count
- (int)  kill_base_cost            - Cost to guarantee kill
- (int)  kill_bonus                - Bonus given to a killed player
- (int)  kill_min_cost             - Min. cost to do a kill
- (int)  listen_mlev               - Mucker Level required for Listener programs
- (int)  cmd_log_threshold_msec    - Log commands that take longer than X millisecs
- (int)  max_force_level           - Max. number of forces processed within a command
- (int)  mpi_max_commands          - Max. number of uninterruptable MPI commands
- (int)  addpennies_muf_mlev       - Mucker Level required to create/destroy pennies
- (int)  instr_slice               - Max. uninterrupted instructions per timeslice
- (int)  max_instr_count           - Max. MUF instruction run length for ML1
- (int)  max_ml4_preempt_count     - Max. MUF preempt instruction run length for ML4, (0 = no limit)
- (int)  max_ml4_nested_interp_loop_count - Max. MUF preempt interp loop nesting level for ML4 (0 = no limit)
- (int)  max_nested_interp_loop_count - Max. MUF preempt interp loop nesting level
- (int)  max_plyr_processes        - Concurrent processes allowed per player
- (int)  max_process_limit         - Total concurrent processes allowed on system
- (int)  mcp_muf_mlev              - Mucker Level required to use MCP
- (int)  movepennies_muf_mlev      - Mucker Level required to move pennies non-destructively
- (int)  pennies_muf_mlev          - Mucker Level required to read the value of pennies, settings above 1 disable {money}
- (int)  process_timer_limit       - Max. timers per process
- (int)  userlog_mlev              - Mucker Level required to write to userlog
- (int)  playermax_limit           - Max. player connections allowed
- (int)  command_burst_size        - Max. commands per burst before limiter engages
- (int)  command_time_msec         - Millisecs per spam limiter time period
- (int)  commands_per_time         - Commands allowed per time period during limit
- (int)  max_output                - Max. output buffer size
- (int)  free_frames_pool          - Size of allocated MUF process frame pool
- (int)  max_loaded_objs           - Max. percent of proploaded database objects
- (int)  pause_min                 - Min. millisecs between MUF input/output timeslices
- (ref)  default_room_parent       - Place to parent new rooms to
- (ref)  lost_and_found            - Place for things without a home
- (ref)  player_start              - Home where new players start
- (ref)  toad_default_recipient    - Default owner for @toaded player's things
- (bool) 7bit_thing_names          - Limit thing names to 7-bit characters
- (bool) 7bit_other_names          - Limit exit/room/muf names to 7-bit characters
- (bool) enable_home               - Enable 'home' command
- (bool) enable_match_yield        - Enable yield/overt flags on rooms and things
- (bool) enable_prefix             - Enable prefix actions
- (bool) recognize_null_command    - Recognize null command
- (bool) verbose_clone             - Show more information when using @clone command
- (bool) verbose_examine           - Show more information when using examine command
- (bool) dark_sleepers             - Make sleeping players dark
- (bool) exit_darking              - Allow players to set exits dark
- (bool) thing_darking             - Allow players to set things dark
- (bool) who_hides_dark            - Hide dark players from WHO list
- (bool) compatible_priorities     - Use legacy exit priority levels on things
- (bool) realms_control            - Enable support for realm wizzes
- (bool) toad_recycle              - Recycle newly-created toads
- (bool) diskbase_propvals         - Enable property value diskbasing (req. restart)
- (bool) dbdump_warning            - Enable warnings for upcoming database dumps
- (bool) dumpdone_warning          - Notify when database dump complete
- (bool) starttls_allow            - Enable TELNET STARTTLS encryption on plaintext port
- (bool) idleboot                  - Enable booting of idle players
- (bool) idle_ping_enable          - Enable server side keepalive pings
- (bool) restrict_kill             - Restrict kill command to players set Kill_OK
- (bool) allow_listeners           - Allow programs to listen to player output
- (bool) allow_listeners_env       - Allow listeners down environment
- (bool) allow_listeners_obj       - Allow objects to be listeners
- (bool) log_commands              - Log player commands
- (bool) log_failed_commands       - Log unrecognized commands
- (bool) log_interactive           - Log text sent to MUF
- (bool) log_programs              - Log programs every time they are saved
- (bool) autolink_actions          - Automatically link @actions to NIL
- (bool) allow_zombies             - Enable Zombie things to relay what they hear
- (bool) wiz_vehicles              - Only let Wizards set vehicle bits
- (bool) ignore_support            - Enable support for @ignoring players
- (bool) ignore_bidirectional      - Enable bidirectional @ignore
- (bool) m3_huh                    - Enable huh? to call an exit named "huh?" and set M3, with full command string
- (bool) strict_god_priv           - Only God can touch God's objects
- (bool) tab_input_replaced_with_space - Change tab to space when processing input
- (bool) teleport_to_player        - Allow using exits linked to players
- (bool) secure_teleport           - Restrict actions to Jump_OK or controlled rooms
- (bool) secure_thing_movement     - Moving things act like player
- (bool) do_mpi_parsing            - Parse MPI strings in messages
- (bool) consistent_lock_source    - Maintain trigger as lock source in TESTLOCK
- (bool) expanded_debug_trace      - MUF debug trace shows array contents
- (bool) force_mlev1_name_notify   - MUF notify prepends username for ML1 programs
- (bool) muf_comments_strict       - MUF comments are strict and not recursive
- (bool) optimize_muf              - Enable MUF bytecode optimizer
- (bool) playermax                 - Limit number of concurrent players allowed
- (bool) quiet_moves               - Suppress basic arrive and depart notifications
- (bool) lock_envcheck             - Locks check environment for properties
- (bool) show_legacy_props         - Examining objects lists legacy props
- (bool) registration              - Require new players to register manually
- (bool) server_cipher_preference  - Honor server cipher preference order over client's
- (bool) periodic_program_purge    - Periodically free unused MUF programs
- (bool) pname_history_reporting   - Report player name change history
- (bool) secure_who                - Disallow WHO command from login screen and programs
- (bool) use_hostnames             - Resolve IP addresses into hostnames
+~~code
+%%SYSPARM_LIST%%
+~~endcode
 ~
 ~
 SYSPARM_ARRAY
@@ -4589,6 +4145,7 @@ about each sysparm.  This will only return items for which your program has
 permission to read the data.
 
 Each dictionary contains the following data, keyed with these strings:
+~~code
     "type"      One of "string", "integer", "timespan", "dbref", or "boolean".
     "group"     The logical group that this parameter belongs to.
     "name"      The name of the @tune setting.
@@ -4605,7 +4162,8 @@ If a given entry is of the "dbref" type, it will also have the extra field:
     "objtype"   The type of object the dbref is restricted to.  Can be one of
                 the strings "player", "thing", "room", "exit", "program",
                 "garbage", or "any".
-Also see: SETSYSPARM and SYSPARM
+~~endcode
+~~alsosee SETSYSPARM, SYSPARM
 ~
 ~
 SETSYSPARM
@@ -4614,7 +4172,7 @@ SETSYSPARM ( s1 s2 -- )
   Assigns the @tunable parameter s1 a value given by s2.  s2 must contain a
 legal value for s1.  If s1 is prefixed with '%', reset s1 to default
 instead, ignoring the value of s2.  (wizbit only)
-Also see: SYSPARM and SYSPARM_ARRAY
+~~alsosee SYSPARM, SYSPARM_ARRAY
 ~
 ~
 NAME
@@ -4630,7 +4188,7 @@ SETNAME  ( d s -- )
 names of objects that are owned by the effective user of the program,
 or any object if the program is Wizard.  The name of a player can never
 be set, since that would normally require a password.
-Also see: SET, NAME, SETDESC and EXT-NAME-OK?
+~~alsosee SET,NAME,SETDESC,EXT-NAME-OK?
 ~
 ~
 TRUENAME
@@ -4647,8 +4205,10 @@ PNAME_HISTORY ( d -- a )
 change. If determinable, the "created_as" key holds the name at creation. 
 
 The result of this wizbit-only primitive is affected by the following sysparms:
+~~code
   pname_history_reporting    - if no, the result is an empty dictionary.
   pname_history_threshold    - amount of history to keep (0s = unlimited)
+~~endcode
 ~
 ~
 DESC
@@ -4665,8 +4225,10 @@ If the program is Mucker Level 1 or 2, then it may only set this property
 on objects that are owned by the player that the program is running with
 the permissions of.  This is actually a $define that uses addprop.  This
 is identical to:
+~~code
     $define setdesc  "_/de"  swap 0 addprop $enddef
-Also see: DESC, SUCC, FAIL, DROP, OSUCC, OFAIL, ODROP, ADDPROP and GETPROPSTR
+~~endcode
+~~alsosee DESC,SUCC,FAIL,DROP,OSUCC,OFAIL,ODROP,ADDPROP,GETPROPSTR
 ~
 ~
 SUCC
@@ -4683,8 +4245,10 @@ If the program is Mucker Level 1 or 2, then it may only set this property
 on objects that are owned by the player that the program is running with
 the permissions of.  This is actually a $define that uses addprop.  This
 is identical to:
+~~code
     $define setsucc  "_/sc" swap 0 addprop $enddef
-Also see: DESC, SUCC, FAIL, DROP, OSUCC, OFAIL, ODROP, ADDPROP and GETPROPSTR
+~~endcode
+~~alsosee DESC,SUCC,FAIL,DROP,OSUCC,OFAIL,ODROP,ADDPROP,GETPROPSTR
 ~
 ~
 FAIL
@@ -4701,8 +4265,10 @@ If the program is Mucker Level 1 or 2, then it may only set this property
 on objects that are owned by the player that the program is running with
 the permissions of.  This is actually a $define that uses addprop.  This
 is identical to:
+~~code
     $define setfail  "_/fl" swap 0 addprop $enddef
-Also see: DESC, SUCC, FAIL, DROP, OSUCC, OFAIL, ODROP, ADDPROP and GETPROPSTR
+~~endcode
+~~alsosee DESC,SUCC,FAIL,DROP,OSUCC,OFAIL,ODROP,ADDPROP,GETPROPSTR
 ~
 ~
 DROP
@@ -4719,8 +4285,10 @@ If the program is Mucker Level 1 or 2, then it may only set this property
 on objects that are owned by the player that the program is running with
 the permissions of.  This is actually a $define that uses addprop.  This
 is identical to:
+~~code
     $define setdrop  "_/dr" swap 0 addprop $enddef
-Also see: DESC, SUCC, FAIL, DROP, OSUCC, OFAIL, ODROP, ADDPROP and GETPROPSTR
+~~endcode
+~~alsosee DESC,SUCC,FAIL,DROP,OSUCC,OFAIL,ODROP,ADDPROP,GETPROPSTR
 ~
 ~
 OSUCC
@@ -4737,8 +4305,10 @@ If the program is Mucker Level 1 or 2, then it may only set this property
 on objects that are owned by the player that the program is running with
 the permissions of.  This is actually a $define that uses addprop.  This
 is identical to:
+~~code
     $define setosucc  "_/osc" swap 0 addprop $enddef
-Also see: DESC, SUCC, FAIL, DROP, OSUCC, OFAIL, ODROP, ADDPROP and GETPROPSTR
+~~endcode
+~~alsosee DESC,SUCC,FAIL,DROP,OSUCC,OFAIL,ODROP,ADDPROP,GETPROPSTR
 ~
 ~
 OFAIL
@@ -4755,8 +4325,10 @@ If the program is Mucker Level 1 or 2, then it may only set this property
 on objects that are owned by the player that the program is running with
 the permissions of.  This is actually a $define that uses addprop.  This
 is identical to:
+~~code
     $define setofail  "_/ofl" swap 0 addprop $enddef
-Also see: DESC, SUCC, FAIL, DROP, OSUCC, OFAIL, ODROP, ADDPROP and GETPROPSTR
+~~endcode
+~~alsosee DESC,SUCC,FAIL,DROP,OSUCC,OFAIL,ODROP,ADDPROP,GETPROPSTR
 ~
 ~
 ODROP
@@ -4773,8 +4345,10 @@ If the program is Mucker Level 1 or 2, then it may only set this property
 on objects that are owned by the player that the program is running with
 the permissions of.  This is actually a $define that uses addprop.  This
 is identical to:
+~~code
     $define setodrop  "_/odr" swap 0 addprop $enddef
-Also see: DESC, SUCC, FAIL, DROP, OSUCC, OFAIL, ODROP, ADDPROP and GETPROPSTR
+~~endcode
+~~alsosee DESC,SUCC,FAIL,DROP,OSUCC,OFAIL,ODROP,ADDPROP,GETPROPSTR
 ~
 ~
 GETLINK
@@ -4957,20 +4531,7 @@ This primitive requires at least Mucker Level 3.
 ~
 ~
 ~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Time Manipulation Operators|TimeOps
-Time Manipulation Operators
-
-date               gmtoffset          sleep              systime
-systime_precise    time               timefmt            timesplit
-
-~----------------------------------------------------------------------------
-~
-~
+~~section Time Manipulation Operators|TimeOps
 ~
 ~
 TIME
@@ -4993,7 +4554,7 @@ SYSTIME ( -- i )
   Returns the number of seconds from Jan 1, 1970 GMT. This is compatible with
 the system timestamps and may be broken down into useful values through
 'timesplit'.
-Also see: SYSTIME_PRECISE, TIMESPLIT and TIMESTAMPS
+~~alsosee SYSTIME_PRECISE,TIMESPLIT,TIMESTAMPS
 ~
 ~
 SYSTIME_PRECISE
@@ -5001,7 +4562,7 @@ SYSTIME_PRECISE ( -- f )
 
   Returns the number of seconds from Jan 1, 1970 GMT as a floating point
 number, with microsecond accuracy.
-Also see: SYSTIME
+~~alsosee SYSTIME
 ~
 ~
 GMTOFFSET
@@ -5026,6 +4587,7 @@ TIMEFMT (s i -- s)
   Takes a format string and a SYSTIME integer and returns a string formatted
 with the time.  The format string is ASCII text with formatting commands:
 
+~~code
   %a -- abbreviated weekday name
   %A -- full weekday name
   %b -- abbreviated month name
@@ -5070,10 +4632,11 @@ with the time.  The format string is ASCII text with formatting commands:
   %Z -- time zone name or abbreviation, or by no characters if no time zone
         is determinable (examples: UTC, EDT, PST)
   %% -- % (percent sign)
+~~endcode
   TIMEFMT processes format strings with the C function strftime().  The above
 list of conversion specifiers (formatting commands) is from the C (draft
 C17/C18) standard: some MUCKs may have more conversion specifiers available.
-Also see: FMTSTRING
+~~alsosee FMTSTRING
 ~
 ~
 SLEEP
@@ -5085,24 +4648,7 @@ may not thereafter use the READ primitive.
 ~
 ~
 ~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Process Management Operators|ProcOps
-Process Management Operators
-
-background         bg_mode            compile            compiled?
-fg_mode            foreground         fork               getpidinfo
-getpids            instances          ispid?             kill
-mode               pid                pr_mode            preempt
-program_getlines   program_setlines   queue              setmode
-uncompile          
-
-~----------------------------------------------------------------------------
-~
-~
+~~section Process Management Operators|ProcOps
 ~
 ~
 MODE
@@ -5112,7 +4658,7 @@ MODE ( -- i)
 BOUND bits on programs.  The integer this returns will be the same as
 one of those defined by the standard $defines bg_mode, fg_mode, and
 pr_mode, being background, foreground, and preempt mode, respectively.
-Also see: PR_MODE, FG_MODE, BG_MODE and SETMODE
+~~alsosee PR_MODE,FG_MODE,BG_MODE,SETMODE
 ~
 ~
 SETMODE
@@ -5123,7 +4669,7 @@ uses will be the same as one of those defined by the standard $defines
 bg_mode, fg_mode, and pr_mode, being background, foreground, and preempt
 mode, respectively.  Programs set BOUND will run PREEMPT, ignoring this
 mode.
-Also see: PR_MODE, FG_MODE, BG_MODE and MODE
+~~alsosee PR_MODE,FG_MODE,BG_MODE,MODE
 ~
 ~
 PR_MODE
@@ -5134,7 +4680,7 @@ SETMODE to show what mode the program is running in, or to set what mode
 it will run in.  For example, MODE returns an integer on the stack, that
 you can compare against PR_MODE, FG_MODE, or BG_MODE, to determine what
 mode the program is in.  PR_MODE is preempt mode, and is defined as 0.
-Also see: PREEMPT, MULTITASKING, PR_MODE, MODE and SETMODE
+~~alsosee PREEMPT,MULTITASKING,PR_MODE,MODE,SETMODE
 ~
 ~
 FG_MODE
@@ -5145,7 +4691,7 @@ SETMODE to show what mode the program is running in, or to set what mode
 it will run in.  For example, MODE returns an integer on the stack, that
 you can compare against PR_MODE, FG_MODE, or BG_MODE, to determine what
 mode the program is in.  FG_MODE is foreground mode, and is defined as 1.
-Also see: FOREGROUND, MULTITASKING, PR_MODE, MODE and SETMODE
+~~alsosee FOREGROUND,MULTITASKING,PR_MODE,MODE,SETMODE
 ~
 ~
 BG_MODE
@@ -5156,7 +4702,7 @@ SETMODE to show what mode the program is running in, or to set what mode
 it will run in.  For example, MODE returns an integer on the stack, that
 you can compare against PR_MODE, FG_MODE, or BG_MODE, to determine what
 mode the program is in.  BG_MODE is background mode, and is defined as 2.
-Also see: BACKGROUND, MULTITASKING, PR_MODE, MODE and SETMODE
+~~alsosee BACKGROUND,MULTITASKING,PR_MODE,MODE,SETMODE
 ~
 ~
 PREEMPT
@@ -5168,7 +4714,7 @@ worked on.  A program will remain in preempt mode until its execution is
 completed.  Basically what this command does is to turn off multitasking,
 but then you have a limit on how many instructions you can run without
 needing either to pause with a SLEEP, or have a wizbit on the program.
-Also see: MULTITASKING and MODE
+~~alsosee MULTITASKING,MODE
 ~
 ~
 FOREGROUND
@@ -5181,7 +4727,7 @@ will be blocking any input from the user of the program until the program
 finishes.  You cannot foreground a program once it is running in the
 background. A program will stay in foreground mode until it finishes
 running or until you change the mode.
-Also see: MULTITASKING and MODE
+~~alsosee MULTITASKING,MODE
 ~
 ~
 BACKGROUND
@@ -5193,7 +4739,7 @@ other things while waiting for the program to finish.  You cannot use
 the READ command in a background program.  Once a program is put into
 background mode, you cannot set it into foreground or preempt mode.
 A program will remain in the background until it finishes execution.
-Also see: MULTITASKING and MODE
+~~alsosee MULTITASKING,MODE
 ~
 ~
 QUEUE
@@ -5204,7 +4750,7 @@ will execute the given program with the given string as the only string on
 the stack, after a delay of the given number of second.  Returns  the pid
 of the queued process, or 0 if the timequeue was full.
 (Requires Mucker Level 3)
-Also see: SLEEP, FORK, KILL, ISPID? and GETPIDINFO
+~~alsosee SLEEP,FORK,KILL,ISPID?,GETPIDINFO
 ~
 ~
 FORK
@@ -5215,7 +4761,7 @@ running program.  It returns the pid of the child process to the parent
 process, and returns a 0 to the child.  If the timequeue was full, then
 it returns a -1 to the parent process, and there is no child process.
 (Requires Mucker Level 3)
-Also see: QUEUE, KILL, ISPID? and GETPIDINFO
+~~alsosee QUEUE,KILL,ISPID?,GETPIDINFO
 ~
 ~
 KILL
@@ -5224,14 +4770,14 @@ KILL (i -- i)
   Attempts to kill the process referred to by the given process ID.
 Returns 1 if the process existed, and 0 if it didn't.
 Must own the process if under Mucker Level 3.
-Also see: QUEUE, FORK, KILL, ISPID? and GETPIDINFO
+~~alsosee QUEUE,FORK,KILL,ISPID?,GETPIDINFO
 ~
 ~
 PID
 PID ( -- i)
 
   Returns the process ID of the program that is currently running.
-Also see: ISPID?, GETPIDS and GETPIDINFO
+~~alsosee ISPID?,GETPIDS,GETPIDINFO
 ~
 ~
 ISPID?
@@ -5241,7 +4787,7 @@ ISPID? (i -- i)
 timequeue.  It returns 1 if it is, and 0 if it is not.  ispid? will also
 return 1 if the given process id is that of the currently running program.
 This primitive requires at least mucker level 3.
-Also see: GETPIDINFO, GETPIDS and PID
+~~alsosee GETPIDINFO,GETPIDS,PID
 ~
 ~
 GETPIDS
@@ -5253,7 +4799,7 @@ If obj is a player dbref, this will return a list of all the PIDs assigned to
 that player.  If obj is a trigger dbref, it will return all the active PIDs
 associated with that trigger.   And finally, if obj is #-1, then all active
 PIDs will be included in the array that gets returned.
-Also see: GETPIDINFO, ISPID? and PID
+~~alsosee GETPIDINFO,ISPID?,PID
 ~
 ~
 GETPIDINFO
@@ -5261,6 +4807,7 @@ GETPIDINFO ( int:pid -- dict:info )
 
   Given a valid active PID, returns a dictionary with information about
 that process. The information returned is:
+~~code
     CALLED_DATA - The string the program was queued with, if any
     CALLED_PROG - The program dbref# of the process' current call level.
     CPU         - The amount of CPU time used up by the process.
@@ -5275,9 +4822,10 @@ that process. The information returned is:
     SUBTYPE     - Additional information about the process.
     TRIG        - The trigger that called that process.
     TYPE        - What type of process it is. MUF/MPI.
+~~endcode
 
 Requires Mucker level 3 to check a pid other than current.
-Also see: GETPIDS
+~~alsosee GETPIDS
 ~
 ~
 INSTANCES
@@ -5331,26 +4879,7 @@ This primitive requires at least mucker level 4.
 ~
 ~
 ~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Connection Management Operators|ConnOps
-Connection Management Operators
-
-awake?             conboot            concount           condbref
-condescr           conhost            conidle            connotify
-contime            conuser            descr              descr_array
-descr_setuser      descrboot          descrbufsize       descrcon
-descrdbref         descrflush         descrhost          descridle
-descriptors        descrleastidle     descrmostidle      descrnotify
-descrsecure?       descrtime          descruser          firstdescr
-lastdescr          nextdescr          online             online_array
-
-~----------------------------------------------------------------------------
-~
-~
+~~section Connection Management Operators|ConnOps
 ~
 ~
 DESCR
@@ -5448,7 +4977,7 @@ DESCRCON (i -- i)
   Takes a descriptor and returns the associated connection number,
 or 0 if no match was found.
 (Requires Mucker Level 3)
-Also see: DESCRIPTORS and CONDESCR
+~~alsosee DESCRIPTORS,CONDESCR
 ~
 ~
 DESCRDBREF
@@ -5563,7 +5092,7 @@ DESCRIPTORS (d -- ix...i1 i)
 associated with that dbref (or all for #-1) with their count on top.
 Descriptors are numbers that always stay the same for a connection, while
 a connection# is the relative position in the WHO list of a connection.
-Also see: DESCRCON and CONDESCR
+~~alsosee DESCRCON,CONDESCR
 ~
 ~
 DESCR_ARRAY
@@ -5577,7 +5106,7 @@ sequence 'descriptors array_make', but doesn't overflow the stack if too
 many descriptors are available.  Descriptors are numbers that always stay
 the same for a connection, while a connection# is the relative position
 in the WHO list of a connection.
-Also see: DESCRIPTORS, DESCRCON and CONDESCR
+~~alsosee DESCRIPTORS,DESCRCON,CONDESCR
 ~
 ~
 DESCR_SETUSER
@@ -5602,20 +5131,7 @@ Also note that \r in lines gets translated to CR LF byte pairs.
 ~
 ~
 ~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Event Handling Operators|EventOps
-Event Handling Operators
-
-event_count    event_exists   event_send     event_wait     event_waitfor
-timer_start    timer_stop     watchpid       
-
-~----------------------------------------------------------------------------
-~
-~
+~~section Event Handling Operators|EventOps
 ~
 ~
 EVENT_COUNT
@@ -5661,6 +5177,7 @@ processed at, due to system delays.
 the dlogID of the dialog that generated the event.  The context for GUI
 events is a dictionary contains the following keys:
 
+~~code
 descr      Holds the descriptor that generated the event.
 dlogid     Holds the DlogID of the dialog that generated the event.
 id         Holds the ID of the control that generated the event.
@@ -5668,11 +5185,13 @@ dismissed  Holds 1 if the dialog was dismissed, 0 otherwise.
 event      Holds the type of gui event.  ie: buttonpress, menuselect.
 values     Holds the dictionary of control values, keyed by control name.
 data       Holds array of extra gui-event specific data.
+~~endcode
 
   User events have eventID strings that are created by prepending "USER." to
 the eventID given to the EVENT_SEND muf primitive.  The context for User
 events is a dictionary containing the following keys:
 
+~~code
 caller_pid   Holds the integer Process ID of the sending program.
 caller_prog  Holds the dbref of the sending program.
 data         Holds the stack item sent by the EVENT_SEND primitive.
@@ -5681,6 +5200,7 @@ trigger      Holds the trigger dbref that initiated the calling program.
 player       Holds the player dbref that ran the calling program.
 prog_uid     Holds the dbref of the player whose permissions the caller
                program is running as.
+~~endcode
 
   MCP events have eventID strings formatted like "MCP.packagename-mesgname"
 where 'packagename' is the name of the MCP package being invoked, and
@@ -5689,16 +5209,20 @@ where 'packagename' is the name of the MCP package being invoked, and
 
   Some example MCP eventIDs are:
 
+~~code
     MCP.com-belfry-image       Where pkg is 'com-belfry-image' & mesg is ''
     MCP.com-belfry-image-view  Where pkg is 'com-belfry-image' & mesg is 'view'
+~~endcode
 
 The context for MCP events is a dictionary containing the following keys:
 
+~~code
     descr     Holds the integer descriptor of the sending connection.
     package   Holds the string package name the MCP mesg is sent for.
     message   Holds the string message name within that package.
     args      Holds a dictionary, containing the message arguments.
                 Each mesg arg has an array list of strings as a value.
+~~endcode
 
   Read events have eventID strings of just "READ".  The context of Read events
 is the integer descriptor of the first waiting line to be READ.  To get the
@@ -5764,20 +5288,7 @@ event.  This primitive requires at least Mucker Level 3.
 ~
 ~
 ~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-MCP Support Operators|MCPOps
-MCP Support Operators
-
-mcp_bind                  mcp_register              mcp_register_event
-mcp_send                  mcp_supports              
-
-~----------------------------------------------------------------------------
-~
-~
+~~section MCP Support Operators|MCPOps
 ~
 ~
 MCP_REGISTER
@@ -5847,26 +5358,7 @@ getting sent.
 ~
 ~
 ~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-GUI Support Operators|GUIOps
-GUI Support Operators
-
-c_button           c_checkbox         c_combobox         c_datum
-c_edit             c_frame            c_hrule            c_image
-c_label            c_listbox          c_menu             c_multiedit
-c_notebook         c_radiobtn         c_scale            c_spinner
-c_vrule            gui-options        gui_available      gui_ctrl_command
-gui_ctrl_create    gui_dlog_close     gui_dlog_create    gui_dlog_helper
-gui_dlog_show      gui_dlog_simple    gui_dlog_tabbed    gui_value_get
-gui_value_set      gui_values_get     
-
-~----------------------------------------------------------------------------
-~
-~
+~~section GUI Support Operators|GUIOps
 ~
 ~
 GUI_AVAILABLE
@@ -5897,6 +5389,7 @@ hidden and not shown to the user until it has been displayed with the
 GUI_DLOG_SHOW command.
 
   Supported optional args are:
+~~code
     names      list of user-viewable pane names for D_TABBED & D_HELPER dlogs.
     panes      list of pane ids for D_TABBED and D_HELPER dialogs.
     width      requested width of dialog in pixels.
@@ -5906,6 +5399,7 @@ GUI_DLOG_SHOW command.
     minheight  minimum height of window in pixels.
     maxwidth   maximum width of window in pixels.
     maxheight  maximum height of window in pixels.
+~~endcode
 ~
 ~
 GUI_DLOG_SIMPLE
@@ -6028,6 +5522,7 @@ The dictionary contains the arguments for the given command.
 
 At the time of this writing, the following commands are supported:
 
+~~code
 "insert" Inserts text or list items into the given control.
         Takes the following arguments:
         "values" list of values or text to insert.
@@ -6057,6 +5552,7 @@ At the time of this writing, the following commands are supported:
 "cursor" Moves the cursor of the given control.
         Takes the following arguments:
         "position" The item or character to move the cursor to or before.
+~~endcode
 ~
 ~
 GUI-OPTIONS|GUI_OPTIONS|GUIOPTIONS
@@ -6066,6 +5562,7 @@ MCP GUI Options:
 in dialog.  These options are common to almost all control types.  They
 are as follows:
 
+~~code
     value     Holds the value of the control.
     valname   Specifies the name used with GUI_VALUE_GET/SET, to refer to the
             value for this control.  Multiple controls can share the same
@@ -6114,6 +5611,7 @@ are as follows:
             in the bottom of the pane.
     toppad    Number of pixels padding to add above this control.
     leftpad   Number of pixels padding to add to the left of this control.
+~~endcode
 ~
 ~
 C_DATUM
@@ -6124,7 +5622,7 @@ to create a Datum control in a GUI dialog.  The Datum control is a non-
 visible control that just holds a value.  It's useful for keeping program
 state information.
 The control has no control-specific options.
-Also see: GUI_CTRL_CREATE, GUI_DLOG_CREATE and GUI_OPTIONS
+~~alsosee GUI_CTRL_CREATE,GUI_DLOG_CREATE,GUI_OPTIONS
 ~
 ~
 C_MENU
@@ -6135,11 +5633,13 @@ to create a menu control in a GUI dialog.  The menu control is a pull-down
 menu that a user can select commands from.  It can contain labels, hrules,
 buttons, checkboxes, radiobuttons, and other menus.
 The control options specific to this type of control are:
+~~code
     text    The text to display as the user-visible name of this menu. For
             example: "Settings", "Help", etc.
     pane    The id of the menu in which to place this menu as a cascading
             menu.  If specified as "", then this is a toplevel menu.
-Also see: GUI_CTRL_CREATE and GUI_DLOG_CREATE
+~~endcode
+~~alsosee GUI_CTRL_CREATE,GUI_DLOG_CREATE
 ~
 ~
 C_LABEL
@@ -6149,11 +5649,13 @@ C_LABEL ( -- s )
 to create a text label control in a GUI dialog.  The label control is just
 a text label, nothing more.
 The control options specific to this type of control are:
+~~code
     value    Contains the text to be displayed.
     justify  Which way to justify the text, if word wrapped.  Can be one of
             left, right, or center.
     maxwidth The max width in pixels for the label, before it word wraps.
-Also see: GUI_CTRL_CREATE, GUI_DLOG_CREATE and GUI_OPTIONS
+~~endcode
+~~alsosee GUI_CTRL_CREATE,GUI_DLOG_CREATE,GUI_OPTIONS
 ~
 ~
 C_IMAGE
@@ -6163,10 +5665,12 @@ C_IMAGE ( -- s )
 to create an image control in a GUI dialog.  The image control is a picture
 whose image is loaded from a URL.
 The control options specific to this type of control are:
+~~code
     value    Holds the url of the image to be displayed.
     width    The width of the image in pixels.  This is required.
     height   The height of the image in pixels.  This is required.
-Also see: GUI_CTRL_CREATE, GUI_DLOG_CREATE and GUI_OPTIONS
+~~endcode
+~~alsosee GUI_CTRL_CREATE,GUI_DLOG_CREATE,GUI_OPTIONS
 ~
 ~
 C_HRULE
@@ -6176,8 +5680,10 @@ C_HRULE ( -- s )
 to create a Horizontal Rule control in a GUI dialog.
 The hrule control is just a horizontal line, nothing more.
 The control options specific to this type of control are:
+~~code
     height   Number of pixels of vertical thickness of the horizontal line.
-Also see: GUI_CTRL_CREATE, GUI_DLOG_CREATE and GUI_OPTIONS
+~~endcode
+~~alsosee GUI_CTRL_CREATE,GUI_DLOG_CREATE,GUI_OPTIONS
 ~
 ~
 C_VRULE
@@ -6188,7 +5694,7 @@ to create a Vertical Rule control in a GUI dialog.
 The vrule control is just a vertical line, nothing more.
 The control options specific to this type of control are:
     width    Number of pixels of horizontal thickness of the vertical line.
-Also see: GUI_CTRL_CREATE, GUI_DLOG_CREATE and GUI_OPTIONS
+~~alsosee GUI_CTRL_CREATE,GUI_DLOG_CREATE,GUI_OPTIONS
 ~
 ~
 C_BUTTON
@@ -6198,11 +5704,13 @@ C_BUTTON ( -- s )
 to create a Button control in a GUI dialog.
 The Button control is a simple button the user can press.
 The control options specific to this type of control are:
+~~code
     text     The text label that will show on the button face.
     width    Number of characters text the button should be able to hold.
     dismiss  If 1, the dialog will be dismissed when this button is pressed.
             Defaults to 1.
-Also see: GUI_CTRL_CREATE, GUI_DLOG_CREATE and GUI_OPTIONS
+~~endcode
+~~alsosee GUI_CTRL_CREATE,GUI_DLOG_CREATE,GUI_OPTIONS
 ~
 ~
 C_CHECKBOX
@@ -6212,12 +5720,14 @@ C_CHECKBOX ( -- s )
 to create a CheckBox control in a GUI dialog.
 The CheckBox control is used for indicating simple "on/off" boolean settings.
 The control options specific to this type of control are:
+~~code
     text     The text label that will show to the right of the checkbox.
     onvalue  The value this control should have when checked.
     offvalue The value this control should have when not checked.
     value    The current state/value of the control.  This should match either
             the value of the "onvalue" or "offvalue" argument.
-Also see: GUI_CTRL_CREATE, GUI_DLOG_CREATE and GUI_OPTIONS
+~~endcode
+~~alsosee GUI_CTRL_CREATE,GUI_DLOG_CREATE,GUI_OPTIONS
 ~
 ~
 C_RADIOBTN
@@ -6227,6 +5737,7 @@ C_RADIOBTN ( -- s )
 to create a radio button control in a GUI dialog.
 The radio button control is used for selecting one of a number of options.
 The control options specific to this type of control are:
+~~code
     text     The text label that will show to the right of the radio button.
     valname  The name used to refer to the value of this radio button group.
             A radio button group is defined as radio buttons that share the
@@ -6234,7 +5745,8 @@ The control options specific to this type of control are:
     selvalue The value of this radio button group, when this is selected.
     value    The current state/value of the radio button group.  This should
             match one of the selvalues of a radio button in this group.
-Also see: GUI_CTRL_CREATE, GUI_DLOG_CREATE and GUI_OPTIONS
+~~endcode
+~~alsosee GUI_CTRL_CREATE,GUI_DLOG_CREATE,GUI_OPTIONS
 ~
 ~
 C_EDIT
@@ -6244,6 +5756,7 @@ C_EDIT ( -- s )
 to create a single-line text Edit control in a GUI dialog.
 The Edit control is used for single-line text string editing.
 The control options specific to this type of control are:
+~~code
     text     The text label that will show to the left of the control.
             Defaults to "" (no label).  If there is a label, then this
             control will be split across two columns, with the label in
@@ -6255,7 +5768,8 @@ The control options specific to this type of control are:
     height   Number of lines high this control will be.  Defaults to 1.
             If this is greater than 1, then text will wrap as you type it,
             but you still won't be able to insert carriage returns.
-Also see: GUI_CTRL_CREATE, GUI_DLOG_CREATE and GUI_OPTIONS
+~~endcode
+~~alsosee GUI_CTRL_CREATE,GUI_DLOG_CREATE,GUI_OPTIONS
 ~
 ~
 C_MULTIEDIT
@@ -6265,12 +5779,14 @@ C_MULTIEDIT ( -- s )
 to create a Multi-line text Edit control in a GUI dialog.
 The MultiEdit control is used for multi-line text string editing.
 The control options specific to this type of control are:
+~~code
     value    The current contents/value of the control.
     width    Number of average character widths wide this control should be.
             Defaults to 40 characters wide.
     height   Number of lines high this control will be.  Defaults to 1.
     font     Specifies whether the font used is "fixed" or "proportional".
-Also see: GUI_CTRL_CREATE, GUI_DLOG_CREATE and GUI_OPTIONS
+~~endcode
+~~alsosee GUI_CTRL_CREATE,GUI_DLOG_CREATE,GUI_OPTIONS
 ~
 ~
 C_COMBOBOX
@@ -6281,6 +5797,7 @@ to create a Win95 style combobox with a pulldown menu of options.
 The ComboBox control is used for selecting from multiple standard options
 in a compact form factor.  Optionally the user can enter arbitrary data.
 The control options specific to this type of control are:
+~~code
     text     The text label that will show to the left of the control.
             Defaults to "" (no label).  If there is a label, then this
             control will be split across two columns, with the label in
@@ -6294,7 +5811,8 @@ The control options specific to this type of control are:
             user can only pick a value from the combobox pulldown menu.
             Defaults to 0
     sorted   Causes the contents of the pulldown menu to be auto-sorted.
-Also see: GUI_CTRL_CREATE, GUI_DLOG_CREATE and GUI_OPTIONS
+~~endcode
+~~alsosee GUI_CTRL_CREATE,GUI_DLOG_CREATE,GUI_OPTIONS
 ~
 ~
 C_LISTBOX
@@ -6304,6 +5822,7 @@ C_LISTBOX ( -- s )
 to create a ListBox control in a GUI dialog.  The ListBox control is used
 for selecting one or more entries from a list of options.
 The control options specific to this type of control are:
+~~code
     value    The list of the currently selected list items, given as a list
             of integers that refer to list positions.  0 is the first item.
     font     Specifies whether the font used is "fixed" or "proportional".
@@ -6314,7 +5833,8 @@ The control options specific to this type of control are:
     selectmode  One of "single", "multiple", or "extended".  Specifies how
             list item selection is performed, and whether more than one item
             can be selected at a time.
-Also see: GUI_CTRL_CREATE, GUI_DLOG_CREATE and GUI_OPTIONS
+~~endcode
+~~alsosee GUI_CTRL_CREATE,GUI_DLOG_CREATE,GUI_OPTIONS
 ~
 ~
 C_SPINNER
@@ -6325,13 +5845,15 @@ to create a Spinner control in a GUI dialog.  The Spinner control is used
 for setting an integer value, that can be incremented and decremented via
 up and down buttons.
 The control options specific to this type of control are:
+~~code
     value    The current integer value of the control.
     text     If given, makes a label with the given text next to the spinner.
     minval   The minimum integer value that this control can be set to.
     maxval   The maximum integer value that this control can be set to.
     width    Number of digits that this control should be able to hold.
             Defaults to 12 digits.
-Also see: GUI_CTRL_CREATE, GUI_DLOG_CREATE and GUI_OPTIONS
+~~endcode
+~~alsosee GUI_CTRL_CREATE,GUI_DLOG_CREATE,GUI_OPTIONS
 ~
 ~
 C_SCALE
@@ -6341,6 +5863,7 @@ C_SCALE ( -- s )
 to create a Scale control in a GUI dialog.  The Scale control is used for
 setting a floating point value, that can be changed by moving a slider.
 The control options specific to this type of control are:
+~~code
     value      The current floating point value of the control.
     text       If given, makes a label with the given text next to the scale.
     minval     The minimum value that this control can be set to.
@@ -6355,7 +5878,8 @@ The control options specific to this type of control are:
             Defaults to 100 pixels.
     width      The length of the short axis of the scale, in pixels.
             Defaults to 15 pixels.
-Also see: GUI_CTRL_CREATE, GUI_DLOG_CREATE and GUI_OPTIONS
+~~endcode
+~~alsosee GUI_CTRL_CREATE,GUI_DLOG_CREATE,GUI_OPTIONS
 ~
 ~
 C_FRAME
@@ -6367,11 +5891,13 @@ contain and organize other controls.  Frames can be either invisible
 containers that just organize the positions of other controls, or they
 can be visible groupboxes with borders and labels.
 The control options specific to this type of control are:
+~~code
     text        If set, the frame, as a groupbox, will have the given label.
     visible     If set to 1, causes a border to be drawn around the frame.
     collapsible This, is set to 1, allows the group box to be collapsed.
     collapsed   If the frame is collapsible, this sets the state to collapsed.
-Also see: GUI_CTRL_CREATE, GUI_DLOG_CREATE and GUI_OPTIONS
+~~endcode
+~~alsosee GUI_CTRL_CREATE,GUI_DLOG_CREATE,GUI_OPTIONS
 ~
 ~
 C_NOTEBOOK
@@ -6382,6 +5908,7 @@ create a tabbed notebook control in a GUI dialog.  Tabbed notebook controls
 are used to contain and organize other controls in multiple pages that the
 user can select between.
 The control options specific to this type of control are:
+~~code
     panes       The list of pane ids to create.  Those are used by other
                 controls, when you wish to specify which pane the control
                 is in.
@@ -6390,23 +5917,12 @@ The control options specific to this type of control are:
                 should be for the second name, etc.
     width       The minimum width of the notebook's client area, in pixels.
     height      The minimum height of the notebook's client area, in pixels.
-Also see: GUI_CTRL_CREATE, GUI_DLOG_CREATE and GUI_OPTIONS
+~~endcode
+~~alsosee GUI_CTRL_CREATE,GUI_DLOG_CREATE,GUI_OPTIONS
 ~
 ~
 ~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Exception Handling|Exceptions
-Exception Handling
-
-abort      checkargs  try        
-
-~----------------------------------------------------------------------------
-~
-~
+~~section Exception Handling|Exceptions
 ~
 ~
 TRY|CATCH|CATCH_DETAILED|ENDCATCH|EXCEPTION|EXCEPTIONS|EXCEPTION HANDLING
@@ -6437,15 +5953,18 @@ stack, instead of a string.  This dictionary holds much more detailed
 information about the thrown exception.  The following dictionary entries
 are currently supported:
 
+~~code
     "error"    The error message string, like what CATCH returns.
     "instr"    The name string of the instruction which threw the error.
     "line"     The integer program line number where the error was thrown.
     "program"  The dbref of the program in which the error was thrown.
+~~endcode
 
   The ABORT primitive may be used to throw an arbitrary error anywhere.
 If you need to re-propagate an error, you can use ABORT.
 
 Example code:
+~~code
     : get_a_prop ( d s -- s )
         2 TRY
             getpropstr
@@ -6454,6 +5973,7 @@ Example code:
             ""
         ENDCATCH
     ;
+~~endcode
 ~
 ~
 ABORT
@@ -6475,6 +5995,7 @@ the running program with an appropriate Program Error Message.  The
 expression is formed from single character argument tests that refer
 to different argument types.  The tests are:
 
+~~code
   a - function address.
   d - dbref.  (#-1, #-2, #-3 are okay)
   D - valid, non-garbage dbref.  (#-1, #-2 NOT allowed.  #-3 is okay)
@@ -6498,6 +6019,7 @@ to different argument types.  The tests are:
   y - array.  (dictionary allowed)
   Y - array.  (dictionary NOT allowed)
   ? - any stack item type.
+~~endcode
 
   Tests can be repeated multiple times by following the test with a number.
 ie: '"i12" checkargs' would test the stack for 12 integers.
@@ -6550,20 +6072,7 @@ string.
 ~
 ~
 ~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Debugging|Debug
-Debugging
-
-breakpoints        debug notation     debug_line         debug_off
-debug_on           debugger           debugger_break     debugger_commands
-
-~----------------------------------------------------------------------------
-~
-~
+~~section Debugging|Debug
 ~
 ~
 DEBUG_ON
@@ -6609,12 +6118,13 @@ stack is displayed, as well as a dump of the current line.  If execution
 is at the beginning of the line, the actual line of source will be
 displayed, otherwise the compiled instructions will be displayed with the
 current instruction marked by surrounding braces.
-Also see: DEBUGGER-COMMANDS, BREAKPOINTS and NOTATION
+~~alsosee DEBUGGER-COMMANDS,BREAKPOINTS,NOTATION
 ~
 ~
 DEBUGGER_COMMANDS
 Debugger commands:
 
+~~code
   cont            continues execution until a breakpoint is hit.
   finish          completes execution of current function.
   step [NUM]      executes one (or NUM, 1) lines of muf.
@@ -6642,7 +6152,8 @@ Debugger commands:
   pop             pops top data item off the stack.
   help            displays this help screen.
   quit            stop execution here.
-Also see: DEBUGGER, BREAKPOINTS and NOTATION
+~~endcode
+~~alsosee DEBUGGER,BREAKPOINTS,NOTATION
 ~
 ~
 BREAKPOINTS
@@ -6664,6 +6175,7 @@ either 'continue', 'finish', or while in a word called when 'next' or
 DEBUG NOTATION
 Instruction notation as given by DEBUG dumps and the MUF debugger:
 
+~~code
     PRIMITIVE:      A call to that primitive. (As in POP or ROTATE)
     NUM:            An integer. (As in 5 or -154)
     #dbref:         An object dbref. (As in #1 or #63516)
@@ -6687,6 +6199,7 @@ Instruction notation as given by DEBUG dumps and the MUF debugger:
     ???<file:line>: An instruction that has been freed.  If you see this please
                     report it to the current server code maintainer.
                     (As in ???<p_db.c:1042>)
+~~endcode
 
 Some tokens are just used as placeholders, and disappear as soon as the MUF
 is compiled.  These are BEGIN, and THEN.  In addition, FOR loops will
@@ -6697,41 +6210,28 @@ before the JMP or EXIT for each nexted FOR loop.
 ~
 ~
 ~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Miscellaneous|MiscOps
-Miscellaneous
-
-force              force_level        forcedby           forcedby_array
-version            
-
-~----------------------------------------------------------------------------
-~
-~
+~~section Miscellaneous|MiscOps
 ~
 ~
 VERSION
 VERSION ( -- s)
 
   Returns the version of this code in a string. "Muck2.2fb5.55", currently.
-Also see: __VERSION
+~~alsosee __VERSION
 ~
 ~
 FORCE
 FORCE (d s -- )
 
   Forces player d to do action s as if they were @forced.  (wizbit only)
-Also see: FORCE_LEVEL and FORCEDBY
+~~alsosee FORCE_LEVEL, FORCEDBY
 ~
 ~
 FORCE_LEVEL
 FORCE_LEVEL ( -- i)
 
   Returns non-zero if the code we are running was triggered by an @force.
-Also see: FORCE and FORCEDBY
+~~alsosee FORCE, FORCEDBY
 ~
 ~
 FORCEDBY
@@ -6739,7 +6239,7 @@ FORCEDBY ( -- d)
 
   Returns the dbref of the most recent object forcing the code to run, or
   #-1 if none. (Wizbit only)
-Also see: FORCE, FORCE_LEVEL and FORCEDBY_ARRAY
+~~alsosee FORCE, FORCE_LEVEL, FORCEDBY_ARRAY
 ~
 ~
 FORCEDBY_ARRAY
@@ -6747,6 +6247,6 @@ FORCEDBY_ARRAY ( -- a)
 
   Returns an array containg the dbrefs of all objects forcing the code to run,
   most recent first. (Wizbit only)
-Also see: FORCE, FORCE_LEVEL and FORCEDBY
+~~alsosee FORCE, FORCE_LEVEL, FORCEDBY
 ~
 ~

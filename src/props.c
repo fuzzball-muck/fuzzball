@@ -21,37 +21,6 @@
 #include "game.h"
 #include "props.h"
 
-
-/**
- * This finds a prop named 'key' in the AVL proplist 'l'.  It is basically
- * a primitive for looking up items in the AVLs.
- *
- * @private
- * @param key the path to look up
- * @param avl the AVL to search
- *
- * @return the found node, or NULL if not found.
- */
-static PropPtr
-find(char *key, PropPtr avl)
-{
-    int cmpval;
-
-    while (avl) {
-        cmpval = strcasecmp(key, PropName(avl));
-
-        if (cmpval > 0) {
-            avl = avl->right;
-        } else if (cmpval < 0) {
-            avl = avl->left;
-        } else {
-            break;
-        }
-    }
-
-    return avl;
-}
-
 /**
  * Returns the AVL 'height' of a given node
  *
@@ -326,49 +295,6 @@ clear_propnode(PropPtr p)
 }
 
 /**
- * This creates a new node in the AVL then returns the created node
- * so that you might populate it with data.  If the path already
- * exists, then the existing node is returned.
- *
- * @private
- * @param key the path to add to the AVL.
- * @param avl the AVL to add a property to.
- *
- * @return the newly created AVL node.
- */
-static PropPtr
-insert(char *key, PropPtr * avl)
-{
-    PropPtr ret;
-    register PropPtr p = *avl;
-    register int cmp;
-    static short balancep;
-
-    if (p) {
-        cmp = strcasecmp(key, PropName(p));
-
-        if (cmp > 0) {
-            ret = insert(key, &(p->right));
-        } else if (cmp < 0) {
-            ret = insert(key, &(p->left));
-        } else {
-            balancep = 0;
-            return (p);
-        }
-
-        if (balancep) {
-            *avl = balance_node(p);
-        }
-
-        return ret;
-    } else {
-        p = *avl = alloc_propnode(key);
-        balancep = 1;
-        return (p);
-    }
-}
-
-/**
  * Get the 'maximum' AVL node, with the search starting at 'avl'.  This
  * basically finds the right-mode node.
  *
@@ -485,43 +411,74 @@ delete_proplist(PropPtr p)
 
 
 /**
- * This finds a prop named 'path' in the AVL proplist 'l'.  It is basically
+ * This finds a prop named 'key' in the AVL proplist 'avl'.  It is basically
  * a primitive for looking up items in the AVLs.
  *
- * @TODO I don't know why this is just 'find' with the arguments flipped.
- *       While I understand not wanting to 'globally' expose 'find',
- *       why don't we just put the find code here and refactor to use
- *       locate_prop everywhere?
- *
- * @param l the AVL to search
- * @param path the path to look up
+ * @param avl the AVL to search
+ * @param key the key to look up
  *
  * @return the found node, or NULL if not found.
  */
 PropPtr
-locate_prop(PropPtr list, char *name)
+locate_prop(PropPtr avl, char *key)
 {
-    return find(name, list);
+    int cmpval;
+
+    while (avl) {
+        cmpval = strcasecmp(key, PropName(avl));
+
+        if (cmpval > 0) {
+            avl = avl->right;
+        } else if (cmpval < 0) {
+            avl = avl->left;
+        } else {
+            break;
+        }
+    }
+
+    return avl;
 }
 
 /**
  * This creates a new node in the AVL then returns the created node
- * so that you might populate it with data.  If the path already
+ * so that you might populate it with data.  If the key already
  * exists, then the existing node is returned.
  *
- * @TODO: Like locate_prop, this function is kind of a pointless layer.
- *        We could relocate the 'insert' code here just to make this
- *        slightly simpler.
- *
- * @param l the AVL to add a property to.
- * @param path the path to add to the AVL.
+ * @param avl the AVL to add a property to.
+ * @param key the key to add to the AVL.
  *
  * @return the newly created AVL node.
  */
 PropPtr
-new_prop(PropPtr * list, char *name)
+new_prop(PropPtr *avl, char *key)
 {
-    return insert(name, list);
+    PropPtr ret;
+    register PropPtr p = *avl;
+    register int cmp;
+    static short balancep;
+
+    if (p) {
+        cmp = strcasecmp(key, PropName(p));
+
+        if (cmp > 0) {
+            ret = new_prop(&(p->right), key);
+        } else if (cmp < 0) {
+            ret = new_prop(&(p->left), key);
+        } else {
+            balancep = 0;
+            return (p);
+        }
+
+        if (balancep) {
+            *avl = balance_node(p);
+        }
+
+        return ret;
+    } else {
+        p = *avl = alloc_propnode(key);
+        balancep = 1;
+        return (p);
+    }
 }
 
 /**
@@ -682,10 +639,10 @@ copy_proplist(dbref obj, PropPtr * nu, PropPtr old)
  * @return the size of the loaded properties in memory -- this does NOT
  *         do any diskbase loading.
  */
-long
+size_t
 size_proplist(PropPtr avl)
 {
-    long bytes = 0;
+    size_t bytes = 0;
 
     if (!avl)
         return 0;

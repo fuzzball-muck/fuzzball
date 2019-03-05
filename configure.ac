@@ -6,7 +6,13 @@ dnl Rewritten for fb6.x by revar@belfry.com
 dnl 
 AC_REVISION($Revision: 1.30 $)
 AC_PREREQ([2.69])
-AC_INIT([fbmuck],[7.00b1],[feedback@fuzzball.org])
+dnl Version numbers work like this:
+dnl 9.03, 9.03+master, 9.04-master, 9.04
+dnl Release version numbers should only exist for a SINGLE commit, the same commit that gets tagged for release.
+dnl Version number changes should always be their own commit, with no functional changes in the same commit.
+dnl This means the last 9.04-master commit, the only 9.04 commit, and first 9.04+master commit are functionally the same:
+dnl this is because it's just two commits in a row changing nothing but the version number.
+AC_INIT([fbmuck],[7.00b1+master],[feedback@fuzzball.org],[fbmuck],[https://www.fuzzball.org/])
 AC_CONFIG_AUX_DIR(auto)
 AC_CONFIG_HEADER([include/autoconf.h])
 
@@ -21,9 +27,6 @@ echo " "
 dnl
 dnl Find the compiler first.
 dnl
-AC_PROG_CC
-AC_PROG_CC_STDC
-AC_PROG_CPP
 AC_PROG_INSTALL
 
 dnl
@@ -35,8 +38,6 @@ AX_CHECK_COMPILE_FLAG([-fwrapv], [CFLAGS="$CFLAGS -fwrapv"])
 dnl
 dnl Libraries
 dnl
-AC_CHECK_LIB(m, cos)
-AC_CHECK_LIB(socket, shutdown)
 
 checkpcredir() { :
     if test -f "$1/include/pcre/pcre.h"; then

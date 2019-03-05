@@ -1,158 +1,11 @@
-                MUCK Reference Manual for Muck2.2fb7.00b1
-                   by Revar Desmera <revar@belfry.com>
-
-You may get a listing of topics that you can get help on, either sorted
-Alphabetically or sorted by Category.  To get these lists, type:
-        help alpha        or
-        help category
-
+~~title MUCK Reference Manual
+~~author Revar Desmera <revar@belfry.com>
+~~doccmd help
+~~sectlist
+~~secttopics
+~~index
 ~
-~----------------------------------------------------------------------------
-~
-CATEGORY|CATEGORIES|TOPICS|SECTIONS
-                   List of Topics by Category:
- 
-You can get more help on the following topics:
- 
-  Basics                                   (Basics)
-  Building Help                            (BuildHelp)
-  Object Flags                             (FlagHelp)
-  Object Properties                        (PropHelp)
-  MUF Programming                          (ProgCmds)
-  Wizardly Commands                        (WizCmds)
-  Miscellaneous                            (MiscHelp)
- 
-Use 'help <topicname>' to get more information on a topic.
-~
-~----------------------------------------------------------------------------
-~
-ALPHA|ALPHABETICAL|COMMANDS
-                 Alphabetical List of Topics:
- 
-You can get more help on the following topics:
-
-Symbols
-  @action            @armageddon        @attach            @bless
-  @boot              @chown             @chown_lock        @clone
-  @conlock           @contents          @create            @credits
-  @debug             @describe          @dig               @doing
-  @drop              @dump              @edit              @entrances
-  @examine           @fail              @find              @force
-  @force_lock        @hashes            @idescribe         @kill
-  @link              @linklock          @list              @lock
-  @mcpedit           @mcpprogram        @memory            @mpitops
-  @muftops           @name              @newpassword       @odrop
-  @oecho             @ofail             @open              @osuccess
-  @owned             @ownlock           @password          @pcreate
-  @pecho             @program           @propset           @ps
-  @readlock          @reconfiguressl    @recycle           @register
-  @relink            @restart           @restrict          @sanchange
-  @sanfix            @sanity            @set               @shutdown
-  @stats             @success           @sweep             @teleport
-  @toad              @tops              @trace             @tune
-  @unbless           @uncompile         @unlink            @unlock
-  @usage             @version           @wall              
-
-A's
-  abode  
-
-B's
-  bogus    builder  
-
-C's
-  cheatsheet   chown_ok     control      costs        
-
-D's
-  dark       disembark  drop       drop-to    
-
-E's
-  examine  
-
-F's
-  failure  flags    
-
-G's
-  gender  get     give    go      goal    gripe   
-
-H's
-  haven  help   home   homes  
-
-I's
-  info       inventory  
-
-J's
-  jump_ok  
-
-K's
-  kill     kill_ok  killing  
-
-L's
-  link_ok  linking  look     
-
-M's
-  man     money   motd    mpi     mucker  
-
-N's
-  news  
-
-O's
-  objectmatching     overt              
-
-P's
-  page               pose               propdirs           propdirs-example
-  put                
-
-Q's
-  quell  quit   
-
-R's
-  rob      robbery  
-
-S's
-  say            score          sex            startingout    sticky
-  strings        substitutions  success        
-
-T's
-  timestamps   types        
-
-U's
-  uptime  
-
-V's
-  vehicle  
-
-W's
-  whisper  who      wizard   
-
-X's
-  xforcible  
-
-Y's
-  yield  
-
-Z's
-  zombie  
- 
-Use 'help <topicname>' to get more information on a topic.
-~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Basics|Basics
-Basics
-
-@doing       @password    disembark    drop         examine      get
-give         go           goal         gripe        help         home
-info         inventory    kill         look         money        motd
-mpi          news         page         pose         put          quit
-rob          robbery      say          score        startingout  uptime
-whisper      who          
-
-~----------------------------------------------------------------------------
-~
-~
+~~section Basics|Basics
 ~
 ~
 STARTINGOUT|STARTING_OUT|STARTING OUT
@@ -162,27 +15,31 @@ The word 'me' refers to yourself. Some things to do when starting out:
 2) prevent anyone else from robbing you with "@lock me=me".
 3) set your gender, if you wish it known, with "@set me=sex:male" or
     "@set me=sex:female" (or "@set me=sex:neuter" to be an 'it').
-Also see: @DESC, LOOK, @LOCK, ROB, @SET and GENDER
+~~alsosee @DESC,LOOK,@LOCK,ROB,@SET,GENDER
 ~
 ~
 SAY
-"<message>
 SAY <message>
+"<message>
 
   Says <message> out loud to everyone in the room.  If your name is Igor,
-and you typed '"Hello everyone!', you will see 'You say, "Hello everyone!"'
+and you typed 'say Hello everyone!', you will see 'You say, "Hello everyone!"'
 and everyone else in the room will see 'Igor says, "Hello everyone!"'
-Also see: POSE, WHISPER and PAGE
+There's also an abbreviated form of the 'say' command: '"Hello everyone!'
+~~alsosee POSE,WHISPER,PAGE
 ~
 ~
 POSE
-:<message>
 POSE <message>
+:<message>
 
-  Poses a message to everyone in the room.  This is used for actions.  Ie:
-if your name was Igor, and you typed ':falls down.', everyone would see
+  Poses a message to everyone in the room.  This is used for actions.  i.e.:
+if your name was Igor, and you typed 'pose falls down.', everyone would see
+~~code
     Igor falls down.
-Also see: SAY, WHISPER and PAGE
+~~endcode
+There's also an abbreviated form of the 'pose' command: ':falls down.'
+~~alsosee SAY,WHISPER,PAGE
 ~
 ~
 PAGE
@@ -202,7 +59,7 @@ PAGE <player>=<message>
 takes the place of the built-in 'page' command, and has more features.
 Usually, you can see the extra features of this MUF page program by using
 the command 'page #help'.
-Also see: SAY, POSE and WHISPER
+~~alsosee SAY,POSE,WHISPER
 ~
 ~
 WHISPER
@@ -213,7 +70,7 @@ as you.  No one else can see the message.  Wizards can use the form
 'whisper *<player>=<message>' to whisper to players in other rooms.
   Note: Most systems use a MUF program with a global 'whisper' action, which
 takes the place of the built-in 'whisper' command, and has more features.
-Also see: SAY, POSE and PAGE
+~~alsosee SAY,POSE,PAGE
 ~
 ~
 LOOK|READ
@@ -250,7 +107,7 @@ The _/lok property, on <object>, on the other hand, defaults to passing.
 container.
 
   TAKE can also be used instead of GET.
-Also see: SUCCESS, FAILURE, @LOCK, PUT and DROP
+~~alsosee SUCCESS,FAILURE,@LOCK,PUT,DROP
 ~
 ~
 PUT|THROW
@@ -267,7 +124,7 @@ when putting something into a container.
 
   You can also put programs in containers, much the same as you can with
 things.  Throw and put can be used instead of drop.
-Also see: @DROP, @ODROP, @LOCK, STICKY, DROP-TO, GET and DROP
+~~alsosee @DROP,@ODROP,@LOCK,STICKY,DROP-TO,GET,DROP
 ~
 ~
 DROP
@@ -290,7 +147,7 @@ by room droptos or STICKY flags.
   An '@drop' message can be set which will be shown to the player dropping
 the object, and an '@odrop' message can be set, which will be shown to the
 other players in the room.  Throw and put can be used instead of drop.
-Also see: @DROP, @ODROP, @LOCK, STICKY, DROP-TO, GET and PUT
+~~alsosee @DROP,@ODROP,@LOCK,STICKY,DROP-TO,GET,PUT
 ~
 ~
 GO|GOTO|MOVE
@@ -305,12 +162,14 @@ omitted by simply specifying a direction, and 'goto', 'move' are the
 same as 'go'.
 
   Examples:
+~~code
     go home            teleport home, *leaving behind all possessions*
                        (See 'help home')
     goto kitchen       go to the exit called 'kitchen'
     move up            move in the direction 'up', if it exists
     north              move to the exit 'north', if it exists
-Also see: HOME
+~~endcode
+~~alsosee HOME
 ~
 ~
 HOME
@@ -319,7 +178,7 @@ HOME
   Sends you home, no matter where you are. You retain your pennies, but
 any objects you are carrying leave your inventory and return to their own
 homes. See HOMES.
-Also see: GO and HOMES
+~~alsosee GO,HOMES
 ~
 ~
 GOAL
@@ -345,7 +204,7 @@ Building and some other actions cost money.  How to get money:
     5) Rob someone.
 Once you reach 10000 pennies, it becomes difficult to acquire
 more.  Wizards don't need money to do anything.
-Also see: COSTS
+~~alsosee COSTS
 ~
 ~
 GIVE
@@ -361,7 +220,7 @@ ROB
 ROB <player>
   Attempts to steal one penny from <player>. The only thing you can rob
 are pennies.
-Also see: ROBBERY
+~~alsosee ROBBERY
 ~
 ~
 ROBBERY
@@ -371,7 +230,7 @@ Robbery:
 yourself from being robbed by entering "@lock me=me". If you lock yourself
 to yourself, you can rob yourself and set off your @success and @osuccess
 messages.
-Also see: ROB, SUCCESS, FAILURE and @LOCK
+~~alsosee ROB,SUCCESS,FAILURE,@LOCK
 ~
 ~
 KILL
@@ -384,7 +243,7 @@ works except against Wizards who cannot be killed.  Players cannot
 be killed in rooms which have the HAVEN flag set.  On systems where
 the KILL_OK flag is used, you cannot kill someone unless both you
 and they are set Kill_OK.
-Also see: KILL_OK
+~~alsosee KILL_OK
 ~
 ~
 EXAMINE
@@ -402,12 +261,14 @@ pattern ends with '/' then all the sub-properties in the matching propdirs
 will be listed.  If the pattern ends with **, then all sub-propdirs of
 the matching properties will be shown recursively.
   
+~~code
   ex obj=/        list all root properties on obj.
   ex obj=/**      list ALL properties on obj.
   ex obj=foo/     list all properties in the foo propdir on obj.
   ex obj=foo/**   list all props in the foo/ propdir, and all contained dirs.
   ex obj=foo*bar  list root props whose name start with foo and end with bar.
-Also see: PROPDIRS and PROPDIRS-EXAMPLE
+~~endcode
+~~alsosee PROPDIRS,PROPDIRS-EXAMPLE
 ~
 ~
 HELP
@@ -424,11 +285,13 @@ respectively.  Seeing as you are reading this, you probably already
 understand how this works.
 
   Examples:
+~~code
     help               see the introductory information
     help alpha         show an alphabetical list of topics
     help category      show a categorized list of topics
     help basics        read commands in the category 'Basics'
-Also see: INFO and MPI
+~~endcode
+~~alsosee INFO,MPI
 ~
 ~
 INFO
@@ -440,11 +303,13 @@ INFO <topic>=<range>
 particular topic, optionally limiting to a specific set of lines.
 
   Examples:
+~~code
     info                 list available information files
     info muf-cheat       read the information file 'muf-cheat'
     info muf-cheat=180   read line 180 from 'muf-cheat'
     info muf-cheat=5-10  read lines 5-10 from 'muf-cheat'
-Also see: HELP and MPI
+~~endcode
+~~alsosee HELP,MPI
 ~
 ~
 MPI
@@ -459,11 +324,13 @@ information on that topic.  Use 'mpi alpha' or 'mpi category' to see an
 alphabetical or categorized list of topics, respectively.
 
   Examples:
+~~code
     mpi                see the introductory information
     mpi alpha          show an alphabetical list of topics
     mpi category       show a categorized list of topics
     mpi Looping        read commands in the category 'Looping'
-Also see: HELP and INFO
+~~endcode
+~~alsosee HELP,INFO
 ~
 ~
 MOTD
@@ -477,10 +344,12 @@ typing it after the command.  If longer than 68 characters, the rest of
 the message is split at the nearest word into a new line.
 
   Examples:
+~~code
     motd               print the message of the day
     motd clear         clear the current message of the day
     motd Fresh start!  set the message of the day to 'Fresh start!'
-Also see: NEWS
+~~endcode
+~~alsosee NEWS
 ~
 ~
 NEWS
@@ -488,7 +357,7 @@ NEWS [<topic>]
 
   Displays the current news file for the game. Must be typed in full.  If a
 topic is given, then it displays the information on that specific topic.
-Also see: MOTD
+~~alsosee MOTD
 ~
 ~
 @PASSWORD
@@ -514,9 +383,11 @@ given a player name, it displays only the matching names and idle times.
 Wizards also get a display of the host the player is connected from.
 
   Examples:
+~~code
     WHO                show all players online
     WHO Az             show online players that start with 'Az'
-Also see: @DOING
+~~endcode
+~~alsosee @DOING
 ~
 ~
 @DOING
@@ -526,7 +397,7 @@ Also see: @DOING
 the field is cleared.  This uses the property '_/do'.
 
 A doing message is shown when typing WHO.
-Also see: WHO
+~~alsosee WHO
 ~
 ~
 QUIT
@@ -552,31 +423,7 @@ UPTIME
 ~
 ~
 ~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Building Help|BuildHelp
-Building Help
-
-@action            @attach            @chown             @chown_lock
-@clone             @conlock           @contents          @create
-@describe          @dig               @drop              @entrances
-@fail              @find              @force_lock        @idescribe
-@link              @linklock          @lock              @name
-@odrop             @oecho             @ofail             @open
-@osuccess          @owned             @ownlock           @pecho
-@propset           @readlock          @recycle           @register
-@relink            @set               @stats             @success
-@sweep             @teleport          @trace             @unlink
-@unlock            bogus              control            drop-to
-failure            homes              linking            objectmatching
-substitutions      success            timestamps         types
-
-~----------------------------------------------------------------------------
-~
-~
+~~section Building Help|BuildHelp
 ~
 ~
 TYPES
@@ -610,13 +457,14 @@ database reference, and is used to specify objects at a distance;
 Ie. 'examine #3672'. You will only see the ID number of objects you
 own, or which are set LINK_OK, ABODE, or CHOWN_OK. Wizards can see the
 numbers and flags on all objects.
-Also see: FLAGS, TYPES, ABODE, CHOWN_OK and LINK_OK
+~~alsosee FLAGS,TYPES,ABODE,CHOWN_OK,LINK_OK
 ~
 ~
 CONTROL
 Control:
 
 There are 3 rules to controlling objects:
+~~code
   1) You control anything you own.
   2) A wizard or God controls everything.
   3) If Realms_Control is @tuned on in the server, then if a player owns an
@@ -625,8 +473,10 @@ There are 3 rules to controlling objects:
      ironment room.  This includes things inside of rooms that are inside of
      that environment room, and so forth.  Everything in that Wizbit environ-
      ment can be controlled by the environment's owner. 
+~~endcode
   
 There are a few things to keep in mind, in relation to the above:
+~~code
   a) Anybody can @chown an unlinked exit to themselves, even if it is locked.
      Builders should beware of this, lest their exits be linked or stolen.
      Once the object has been chowned, then it will be controlled by the
@@ -637,6 +487,7 @@ There are a few things to keep in mind, in relation to the above:
      that they own.  Note Rule #1.
   d) If an object is set CHOWN_OK, anyone may "@chown <object>=me" and gain
      ownership and control of the object. (see chown_ok)
+~~endcode
 ~
 ~
 @CREATE
@@ -651,7 +502,7 @@ object is 100 pennies, which would cost 505 pennies to create. If a
 is set to the dbref of the new object.  This lets players refer to
 the object as $<regname> (ie: $mybutton) in @locks, @sets, et cetera.
 Only a builder may use this command.
-Also see: @CLONE
+~~alsosee @CLONE
 ~
 ~
 @CLONE
@@ -664,8 +515,10 @@ command prints the identifier of the new object.  Only a Builder may
 use this command.
 
   Example:
+~~code
     @clone some_object
-Also see: @CREATE
+~~endcode
+~~alsosee @CREATE
 ~
 ~
 @DIG
@@ -710,11 +563,13 @@ Bogus Exits and Pseudo Commands:
 
   Bogus commands can be made using exits.  For example, to make a 'sit'
 command, one could give the following commands:
+~~code
     @open sit
 	@link sit=here                   (because unlinked exits can be stolen)
 	@lock sit=me&!me                 (therefore always fails)
 	@fail sit=You sit on the chair.
     @ofail sit=sits on the chair.
+~~endcode
 Since nobody can go through it, it always fails. The @fail message is
 displayed to the player, and the @ofail message (preceded by the player's
 name) to everyone else.
@@ -746,7 +601,7 @@ specified, it defaults to 'me'. If <text> is not specified, the field is
 cleared.  This uses the property '_/de'.
 
 A description is shown to a player looking at <object>.
-Also see: @IDESCRIBE
+~~alsosee @IDESCRIBE
 ~
 ~
 @IDESCRIBE|@IDESC
@@ -757,7 +612,7 @@ not specified, it defaults to 'me'. If <text> is not specified, the field is
 cleared.  This uses the property '_/ide'.
 
 An inside description is shown to a player looking inside a vehicle <object>.
-Also see: @DESCRIBE
+~~alsosee @DESCRIBE
 ~
 ~
 @SUCCESS|@SUCC
@@ -768,7 +623,7 @@ specified, it defaults to 'me'. If <text> is not specified, the field is
 cleared.  This uses the property '_/sc'.
 
 A success message is shown to a player who successfully uses <object>.
-Also see: @OSUCCESS
+~~alsosee @OSUCCESS
 ~
 ~
 @FAIL
@@ -779,7 +634,7 @@ specified, it defaults to 'me'. If <text> is not specified, the field is
 cleared.  This uses the property '_/fl'.
 
 A failure message is shown to a player who fails to use <object>.
-Also see: @OFAIL
+~~alsosee @OFAIL
 ~
 ~
 @DROP
@@ -795,7 +650,7 @@ A drop message works differently depending on <object>'s type:
  On a thing, it is shown to a player who drops it.
  On an exit, it is shown to a player arriving at its destination.
  On a player, it is shown to a player who kills them.
-Also see: @ODROP
+~~alsosee @ODROP
 ~
 ~
 @OSUCCESS|@OSUCC
@@ -807,7 +662,7 @@ cleared.  This uses the property '_/osc'.
 
 An osuccess message, prefixed by the player's name, is shown to others in the
 room when a player successfully uses <object>.
-Also see: @SUCCESS
+~~alsosee @SUCCESS
 ~
 ~
 @OFAIL
@@ -819,7 +674,7 @@ cleared.  This uses the property '_/ofl'.
 
 An ofailure message, prefixed by the player's name, is shown to others in the
 room when a player fails to use <object>.
-Also see: @FAIL
+~~alsosee @FAIL
 ~
 ~
 @ODROP
@@ -836,7 +691,7 @@ in the room. It works differently depending on <object>'s type:
   On a thing, it is shown when a player drops it.
   On an exit, it is shown when a player arrives at its destination.
   On a player, it is shown when another player kills them.
-Also see: @DROP
+~~alsosee @DROP
 ~
 ~
 SUBSTITUTIONS|PRONOUNS|PRONOUN_SUBST|PRONOUN SUBSTITUTION|%A|%S|%O|%P|%R|%N
@@ -845,12 +700,14 @@ Pronoun Substitutions:
   @osuccess, @ofail, and @odrop messages may contain %-substitutions,
 which evaluate to gender-specific pronouns if the player's 'sex' property
 is set. These substitutions are:
+~~code
     %a (absolute)       = Name's, his, hers, its.
     %s (subjective)     = Name, he, she, it.
     %o (objective)      = Name, him, her, it.
     %p (possessive)     = Name's, his, her, its.
     %r (reflexive)      = Name, himself, herself, itself.
     %n (player's name)  = Name.
+~~endcode
 Capitalized pronouns are also available with %A, %S, %O, %P, and %R.
 If you need a '%', use %%.
   
@@ -864,11 +721,13 @@ player, or on #0 respectively.  For example, to add support on yourself
 for a 'stallion' gender, you would add five properties, one for each
 of the %a, %s, %o, %p, and %r pronouns, in the _pronouns/stallion/
 propdir.  Ie:
+~~code
     @set me=_pronouns/stallion/%a:his
     @set me=_pronouns/stallion/%s:he
     @set me=_pronouns/stallion/%o:him
     @set me=_pronouns/stallion/%p:his
     @set me=_pronouns/stallion/%r:himself
+~~endcode
 
 If a shapeshifting player decided that they prefer a different subjective
 pronoun for themselve while they were in herm form, they could override it
@@ -884,7 +743,7 @@ lets players make quick temporary pronoun fixes, and is also available
 for legacy reasons.
   
 Ex. '@ofail teapot=burns %p hand on the hot teapot.'
-Also see: GENDER
+~~alsosee GENDER
 ~
 ~
 @ATTACH
@@ -910,7 +769,7 @@ it is LINK_OK. See LINK_OK, ABODE, and @LINK.
 <object2> is either controlled by you or linkable.  Actions may be
 linked to more than one thing, specified in a list separated by
 semi-colons.
-Also see: @RELINK and @UNLINK
+~~alsosee @RELINK,@UNLINK
 ~
 ~
 @RELINK
@@ -920,7 +779,7 @@ Also see: @RELINK and @UNLINK
 <object1>, and <object2> is either controlled by you or linkable.
 Actions may be linked to more than one thing, specified in a list
 separated by semi-colons.
-Also see: @LINK and @UNLINK
+~~alsosee @LINK,@UNLINK
 ~
 ~
 @UNLINK
@@ -931,7 +790,7 @@ Also see: @LINK and @UNLINK
 drop-to on the room. Unlinked exits may be picked up and dropped elsewhere.
 Be careful, anyone can relink an unlinked exit, becoming its new owner
 (but you will be reimbursed your 1 penny).
-Also see: @LINK and @RELINK
+~~alsosee @LINK,@RELINK
 ~
 ~
 HOMES
@@ -942,10 +801,12 @@ are sent home, or things with the STICKY flag set go when dropped.
 Homes are set with the @link command.  A thing's home defaults to the
 room where it was created, if you control that room, or your home.
 You can link an exit to send players home (with their inventory) with
+~~code
     @link <exit>=home
+~~endcode
 Drop-tos can also be set to 'home'. @teleport accepts home as an argument,
 so you can @teleport things (and players if you are a wizard) to their home.
-Also see: @TELEPORT, @LINK, STICKY and DROP-TOS
+~~alsosee @TELEPORT,@LINK,STICKY,DROP-TOS
 ~
 ~
 DROP-TO
@@ -967,18 +828,20 @@ uses the property '_/lk'.
 A lock that is not passed prevents players from using <object>.
 
   Examples:
+~~code
     @lock thingy=*Igor
     @lock thingy=me|#1234
     @lock here=me|Other Thingy
     @lock west=sex:female
     @lock east=((*Igor|*JohnDoe)&sex:male)
+~~endcode
 ~
 ~
 @UNLOCK
 @UNLOCK <object>
 
   Removes the lock on <object>.
-Also see: @LOCK
+~~alsosee @LOCK
 ~
 ~
 SUCCESS
@@ -988,7 +851,7 @@ Success:
 successfully when you go through it. You use a person successfully
 when you successfully rob them. You successfully use a room when you
 look around.
-Also see: STRINGS, @SUCCESS and @OSUCCESS
+~~alsosee STRINGS,@SUCCESS,@OSUCCESS
 ~
 ~
 FAILURE
@@ -998,7 +861,7 @@ You fail to use a thing when you cannot take it (because its lock fails).
 You fail to use an exit when you cannot go through it (because it's locked).
 You fail to use a person when you fail to rob them.
 You fail to use a room when you fail to look around (because it's locked).
-Also see: STRINGS, @FAIL and @OFAIL
+~~alsosee STRINGS,@FAIL,@OFAIL
 ~
 ~
 @SET
@@ -1034,7 +897,7 @@ properties to an object, or remove properties from an object.
   The third format will remove <property> and any sub-properties under it.
   
   The fourth format removes all properties from an object.
-Also see: FLAGHELP
+~~alsosee FLAGHELP
 ~
 ~
 @PROPSET
@@ -1067,13 +930,16 @@ the target object and propdir.
 
 The default target is "_reg" on #0, but can be changed with these prefixes:
 
+~~code
   #me
 	Sets target object to you.
   #prop [<target>]:<propdir>
 	Sets target object to <target>, and target propdir to <propdir>.
 	<target> may be omitted to keep the default.
+~~endcode
 
 Syntax:
+~~code
   @register [<prefix>]
     Lists registrations in the target propdir on the target object.
   @register [<prefix>] <subpropdir>
@@ -1082,6 +948,7 @@ Syntax:
     Registers <regname> to <object> in the target propdir.
   @register [<prefix>] = <regname>
     Removes registration of <regname> in the target propdir.
+~~endcode
 ~
 ~
 @CHOWN
@@ -1092,7 +959,7 @@ to yourself.  Any player is allowed to take possession of objects, rooms, and
 actions, provided the CHOWN_OK flag is set.  Mortals cannot take ownership of
 a room unless they are standing in it, and may not take ownership of an object unless
 they are holding it.  Wizards have absolute power over all ownership.
-Also see: @CHLOCK
+~~alsosee @CHLOCK
 ~
 ~
 @CHOWN_LOCK|@CHLOCK
@@ -1105,7 +972,7 @@ cleared.  This uses the property '_/chlk'.
 
 A chown lock that is not passed prevents players from taking ownership of
 <object>.
-Also see: @CHOWN
+~~alsosee @CHOWN
 ~
 ~
 @FORCE_LOCK|@FLOCK
@@ -1117,7 +984,7 @@ specified, it defaults to 'me'. If <key> is not specified, the field is
 cleared.  This uses the property '@/flk'.
 
 A force lock that is passed allows players to force <object>.
-Also see: @FORCE
+~~alsosee @FORCE
 ~
 ~
 @CONLOCK
@@ -1128,7 +995,7 @@ specified, it defaults to 'me'. If <key> is not specified, the field is
 cleared.  This uses the property '_/clk'.
 
 A container lock that is passed allows players to put things in <object>.
-Also see: GET and PUT
+~~alsosee GET,PUT
 ~
 ~
 @READLOCK
@@ -1161,7 +1028,7 @@ specified, it defaults to 'me'. If <key> is not specified, the field is
 cleared.  This uses the property '_/lklk'.
 
 A link lock that is not passed prevents players from linking to <object>.
-Also see: @LINK
+~~alsosee @LINK
 ~
 ~
 @TELEPORT
@@ -1255,6 +1122,7 @@ The matching on names is as follows:
         Any of these special charcters can be matched by putting a \ before it.
   
 Examples of use:
+~~code
     "@find north = EU = location" will find all of your unlinked exits named
         "north" and print them along with their locations.
     "@find {big|little} = R!L" finds all your rooms whose names contain "big"
@@ -1273,7 +1141,8 @@ Examples of use:
         to make the size determination.  On some systems this can take a while,
         and on all systems this is an abuse to the diskbasing cache.  Only
         Wizards may use this search feature.
-Also see: @OWNED, @ENTRANCES and @CONTENTS
+~~endcode
+~~alsosee @OWNED,@ENTRANCES,@CONTENTS
 ~
 ~
 @OWNED
@@ -1289,7 +1158,7 @@ Example:  @owned Revar=F!L3=location
 NOT set Link_OK (!L), and it will show the location of each one.
   
 Note that only wizards can do an @owned on other people.
-Also see: @ENTRANCES, @FIND and @CONTENTS
+~~alsosee @ENTRANCES,@FIND,@CONTENTS
 ~
 ~
 @CONTENTS
@@ -1303,7 +1172,7 @@ the help entry for @FIND.
 Example:  @contents here=DE=owner
   Will list all Dark Exits who's source is your current location, giving the
 owner of each one.
-Also see: @FIND, @OWNED and @ENTRANCES
+~~alsosee @FIND,@OWNED,@ENTRANCES
 ~
 ~
 @ENTRANCES
@@ -1317,7 +1186,7 @@ the help entry for @FIND.
 Example:  @entrances here=ED=location
   Will list all Dark Exits that are linked to your current location,
 giving the location of each one.
-Also see: @FIND, @OWNED and @CONTENTS
+~~alsosee @FIND,@OWNED,@CONTENTS
 ~
 ~
 @TRACE
@@ -1335,7 +1204,7 @@ If you cannot link to a particular location its name is replaced by stars
 
 Sets a string to prepend to messages relayed to the interior of a vehicle
 in the vehicle's _/oecho property. Without a value, "Outside>" is prepended.
-Also see: VEHICLE
+~~alsosee VEHICLE
 ~
 ~
 @PECHO
@@ -1343,7 +1212,7 @@ Also see: VEHICLE
 
 Sets a string to prepend to messages relayed from a puppet in the puppet's
 _/pecho property. By default, the puppet's name followed by ">" is prepended.
-Also see: ZOMBIE
+~~alsosee ZOMBIE
 ~
 ~
 @SWEEP
@@ -1354,27 +1223,15 @@ Also see: ZOMBIE
 both players and things.  You must own the object to sweep it.
 
   Examples:
+~~code
     @sweep                 check the current room
     @sweep me              check yourself
     @sweep janitor_closet  check the object 'janitor_closet'
+~~endcode
 ~
 ~
 ~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Object Flags|FlagHelp
-Object Flags
-
-abode      builder    chown_ok   dark       flags      haven      jump_ok
-kill_ok    killing    link_ok    mucker     overt      quell      sticky
-vehicle    wizard     xforcible  yield      zombie     
-
-~----------------------------------------------------------------------------
-~
-~
+~~section Object Flags|FlagHelp
 ~
 ~
 ABODE
@@ -1634,20 +1491,7 @@ within the debugger, via the 'help' command.
 ~
 ~
 ~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Object Properties|PropHelp
-Object Properties
-
-gender             propdirs           propdirs-example   sex
-strings            
-
-~----------------------------------------------------------------------------
-~
-~
+~~section Object Properties|PropHelp
 ~
 ~
 PROPDIRS
@@ -1872,7 +1716,7 @@ SEX
   Default unassigned. If a player's sex is set, %-substitutions will use
 the appropriate pronoun for that player. Only meaningful for players and
 maybe Zombie things.
-Also see: SUBSTITUTIONS
+~~alsosee SUBSTITUTIONS
 ~
 ~
 GENDER
@@ -1881,7 +1725,7 @@ GENDER
   Default is unassigned. If a player's sex is set, %X substitutions
 will use the appropriate pronoun for that player in @osucc/@ofail/etc.
 Only meaningful for players.
-Also see: SUBSTITUTIONS
+~~alsosee SUBSTITUTIONS
 ~
 ~
 STRINGS
@@ -1899,20 +1743,7 @@ Objects have several standard strings:
 ~
 ~
 ~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-MUF Programming|ProgCmds
-MUF Programming
-
-@edit        @kill        @list        @mcpedit     @mcpprogram  @program
-@ps          man          
-
-~----------------------------------------------------------------------------
-~
-~
+~~section MUF Programming|ProgCmds
 ~
 ~
 MAN
@@ -1927,7 +1758,7 @@ MAN [<subject>]
   Lists the status of the currently running MUF program processes.
 This lists all processes for a Wizard.  Non-Wizards only see the muf
 processes that they can @kill.
-Also see: @KILL
+~~alsosee @KILL
 ~
 ~
 @KILL
@@ -1953,9 +1784,11 @@ lines to list.  If no lines are given, the entire program is listed.
 
   Additionally, a set of prefixes can be given to control the output:
 
+~~code
   !	Outputs system messages as MUF comments.
   #	Lists program with line numbers, overriding current setting.
   @	Lists program without line numbers, overriding current setting.
+~~endcode
 ~
 ~
 @EDIT
@@ -1963,7 +1796,7 @@ lines to list.  If no lines are given, the entire program is listed.
 
   Searches for a program and if a match is found, puts the player into
 edit mode.  Programs must be created with @PROGRAM or @MCPPROGRAM.
-Also see: @MCPPROGRAM, @PROGRAM and @MCPEDIT
+~~alsosee @MCPPROGRAM,@PROGRAM,@MCPEDIT
 ~
 ~
 @PROGRAM
@@ -1971,7 +1804,7 @@ Also see: @MCPPROGRAM, @PROGRAM and @MCPEDIT
 
   Create a new program, or enter edit mode on an existing one. If a <regname>
 is specified, a new program is always created.
-Also see: @MCPPROGRAM, @EDIT and @MCPEDIT
+~~alsosee @MCPPROGRAM,@EDIT,@MCPEDIT
 ~
 ~
 @MCPEDIT
@@ -1980,7 +1813,7 @@ Also see: @MCPPROGRAM, @EDIT and @MCPEDIT
   Searches for a program and if a match is found, pops up an editor window
 if the client supports the MCP edit package, otherwise puts the player into
 text edit mode.  Programs must be created with @PROGRAM or @MCPPROGRAM.
-Also see: @EDIT, @PROGRAM and @MCPPROGRAM
+~~alsosee @EDIT,@PROGRAM,@MCPPROGRAM
 ~
 ~
 @MCPPROGRAM
@@ -1989,30 +1822,11 @@ Also see: @EDIT, @PROGRAM and @MCPPROGRAM
   Create a new program, or enter edit mode on an existing one.  If a <regname>
 is specified, a new program is always created.  If the client supports the MCP
 edit package, an editor window will appear instead of using the text edit mode.
-Also see: @EDIT, @PROGRAM and @MCPEDIT
+~~alsosee @EDIT,@PROGRAM,@MCPEDIT
 ~
 ~
 ~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Wizardly Commands|WizCmds
-Wizardly Commands
-
-@armageddon        @bless             @boot              @credits
-@debug             @dump              @examine           @force
-@hashes            @memory            @mpitops           @muftops
-@newpassword       @pcreate           @reconfiguressl    @restart
-@restrict          @sanchange         @sanfix            @sanity
-@shutdown          @toad              @tops              @tune
-@unbless           @uncompile         @usage             @version
-@wall              
-
-~----------------------------------------------------------------------------
-~
-~
+~~section Wizardly Commands|WizCmds
 ~
 ~
 @PCREATE
@@ -2067,11 +1881,13 @@ destroying their character.  All possessions of <player1> are @chowned to
 pattern.  The wildcard pattern works similarly to how the examine patterns
 work.  ie:
 
+~~code
   @bless obj=/**      blesses ALL properties on obj.
   @bless obj=foo/**   blesses all props in the foo/ propdir, and all propdirs
                        under the foo/ propdir, recursively.
   @bless obj=foo*bar  blesses all root props whose name start with foo and end
                        with bar.
+~~endcode
 
  The @bless command will list all properties that it blesses.
 
@@ -2095,11 +1911,13 @@ room the _msgmacs prop is on.
 wildcard pattern.  The wildcard pattern works similarly to how the examine
 patterns work.  Ie:
 
+~~code
   @unbless obj=/**      unblesses ALL properties on obj.
   @unbless obj=foo/**   unblesses all props in the foo/ propdir, and all
                          propdirs under the foo/ propdir, recursively.
   @unbless obj=foo*bar  unblesses all root props whose name start with foo
                          and end with bar.
+~~endcode
 
   The @unbless command will list all properties that it unblesses.
 
@@ -2136,7 +1954,7 @@ subsequent dumps to it as well.
 
   Shuts down the game.  Only wizards may use this command, and it
 must be typed in full.
-Also see: @RESTART and @ARMAGEDDON
+~~alsosee @RESTART,@ARMAGEDDON
 ~
 ~
 @RESTART
@@ -2144,7 +1962,7 @@ Also see: @RESTART and @ARMAGEDDON
 
   Initiate a full shutdown and restart of the Muck server.  Only
 wizards may use this command.
-Also see: @SHUTDOWN and @ARMAGEDDON
+~~alsosee @SHUTDOWN,@ARMAGEDDON
 ~
 ~
 @ARMAGEDDON
@@ -2156,9 +1974,11 @@ database has been corrupted, and it would be a BAD thing to save the
 database out to disk.  This is a wizard-only command.
 
   Examples:
+~~code
     @armageddon                  force shutdown server
     @armageddon World ending!    force shutdown with given reason
-Also see: @SHUTDOWN and @RESTART
+~~endcode
+~~alsosee @SHUTDOWN,@RESTART
 ~
 ~
 @RESTRICT
@@ -2203,6 +2023,7 @@ database.
   This is a wizard-only command.
 
   Examples:
+~~code
     @tune              shows all parameters and their values
     @tune info         shows all parameters, values, and brief descriptions
     @tune foo          shows the value of foo
@@ -2211,6 +2032,7 @@ database.
     @tune info foo     briefly describes foo
     @tune save         save all parameters to configuration file
     @tune load         load all parameters from configuration file
+~~endcode
 
   Some parameters may require a @RESTART or reload to apply.
 ~
@@ -2220,7 +2042,7 @@ database.
 
   Show a bit about those who contributed to the development of the
 muck server software, giving credit where credit is due.
-Also see: @HASHES and @VERSION
+~~alsosee @HASHES,@VERSION
 ~
 ~
 @HASHES
@@ -2230,17 +2052,19 @@ Also see: @HASHES and @VERSION
 hashes are only available if Git was installed during compilation.
 
   Examples:
+~~code
     @hashes all      show all available hashes
     @hashes git      show only the Git hash (if available)
     @hashes sha1     show only the SHA1 hash
-Also see: @CREDITS and @VERSION
+~~endcode
+~~alsosee @CREDITS,@VERSION
 ~
 ~
 @VERSION
 @VERSION
 
   Show the version information, build time, and compile options used.
-Also see: @CREDITS and @HASHES
+~~alsosee @CREDITS,@HASHES
 ~
 ~
 @DEBUG
@@ -2251,8 +2075,10 @@ Also see: @CREDITS and @HASHES
 More options will be added in the future.
 
   Examples:
+~~code
     @debug display propcache    display database property cache
-Also see: @MEMORY, @MPITOPS, @MUFTOPS, @TOPS and @USAGE
+~~endcode
+~~alsosee @MEMORY,@MPITOPS,@MUFTOPS,@TOPS,@USAGE
 ~
 ~
 @TOPS
@@ -2267,10 +2093,12 @@ blank, it uses the default of '10'.
   This is a wizard-only command.
 
   Examples:
+~~code
     @tops              show default amount of profiling statistics
     @tops 5            show 5 rows of profiling statistics
     @tops reset        reset all collected profiling statistics
-Also see: @DEBUG, @MEMORY, @MPITOPS, @MUFTOPS and @USAGE
+~~endcode
+~~alsosee @DEBUG,@MEMORY,@MPITOPS,@MUFTOPS,@USAGE
 ~
 ~
 @MEMORY
@@ -2279,7 +2107,7 @@ Also see: @DEBUG, @MEMORY, @MPITOPS, @MUFTOPS and @USAGE
   Wizard only command that gives detailed memory stats for the muck
 server process.  If HAVE_MALLINFO is used, this command shows more
 information.
-Also see: @DEBUG, @MPITOPS, @MUFTOPS, @TOPS and @USAGE
+~~alsosee @DEBUG,@MPITOPS,@MUFTOPS,@TOPS,@USAGE
 ~
 ~
 @MPITOPS
@@ -2294,10 +2122,12 @@ uses the default of '10'.
   This is a wizard-only command.
 
   Examples:
+~~code
     @mpitops           show default amount of profiling statistics
     @mpitops 5         show 5 rows of profiling statistics
     @mpitops reset     reset collected MPI profiling statistics
-Also see: @DEBUG, @MEMORY, @MUFTOPS, @TOPS and @USAGE
+~~endcode
+~~alsosee @DEBUG,@MEMORY,@MUFTOPS,@TOPS,@USAGE
 ~
 ~
 @MUFTOPS
@@ -2312,10 +2142,12 @@ uses the default of '10'.
   This is a wizard-only command.
 
   Examples:
+~~code
     @muftops           show default amount of profiling statistics
     @muftops 5         show 5 rows of profiling statistics
     @muftops reset     reset collected MUF profiling statistics
-Also see: @DEBUG, @MEMORY, @MPITOPS, @TOPS and @USAGE
+~~endcode
+~~alsosee @DEBUG,@MEMORY,@MPITOPS,@TOPS,@USAGE
 ~
 ~
 @USAGE
@@ -2323,7 +2155,7 @@ Also see: @DEBUG, @MEMORY, @MPITOPS, @TOPS and @USAGE
 
   Wizard only command that gives system resource usage stats for the
 muck server process.
-Also see: @DEBUG, @MEMORY, @MPITOPS, @MUFTOPS and @TOPS
+~~alsosee @DEBUG,@MEMORY,@MPITOPS,@MUFTOPS,@TOPS
 ~
 ~
 @EXAMINE
@@ -2336,8 +2168,10 @@ depends on what type the object is, e.g. thing, room, player, exit.
 Wizards may use this command.
 
   Examples:
+~~code
     @examine           examine the current room
     @examine #1        examine database object #1
+~~endcode
 ~
 ~
 @SANITY
@@ -2347,7 +2181,7 @@ Wizards may use this command.
 such as names, exits, ownerships, and check for orphan objects.  Shows
 all problems, but does not make any changes.  Only player #1 can manage
 sanity if GOD_PRIV is used, otherwise, only Wizards may do so.
-Also see: @SANCHANGE and @SANFIX
+~~alsosee @SANCHANGE,@SANFIX
 ~
 ~
 @SANCHANGE
@@ -2359,13 +2193,15 @@ help with repairing a broken database.  Use with caution.  Only player
 do so.
 
   Fields are:
+~~code
     exits              start of Exits list
 	contents           start of Contents list
 	next               next object in list
 	location           object's Location
 	home               object's Home
 	owner              object's Owner
-Also see: @SANITY and @SANFIX
+~~endcode
+~~alsosee @SANITY,@SANFIX
 ~
 ~
 @SANFIX
@@ -2376,36 +2212,25 @@ but also attempt to fix any problems found.  If sanity can not be
 restored, you may need to manually repair the database with other
 commands.  Only player #1 can manage sanity if GOD_PRIV is used,
 otherwise, only Wizards may do so.
-Also see: @SANITY and @SANCHANGE
+~~alsosee @SANITY,@SANCHANGE
 ~
 ~
 ~
-~
-~
-~----------------------------------------------------------------------------
-~
-~
-Miscellaneous|MiscHelp
-Miscellaneous
-
-cheatsheet   costs        
-
-~----------------------------------------------------------------------------
-~
-~
+~~section Miscellaneous|MiscHelp
 ~
 ~
 CHEATSHEET
 Muck Basics Cheatsheet:
 
-This is Fuzzball Muck, a user-extendible, multi-user chat system.
+This is Fuzzball Muck, a user-extensible, multi-user chat system.
 
 Basic commands:
+~~code
   move/go <direction>
   get/take <thing>; drop/throw <thing>
   look; look <thing>; look <direction>
   say <message>; "<message>
-  :<message> --- shows your name, with the message after it.  Used for actions.
+  pose <message>; :<message> --- shows your name, with the message after it.  Used for actions.
   whisper <player> = <message>
   inventory
   news
@@ -2415,6 +2240,7 @@ Basic commands:
   page <player> = <message> --- gives the player the message long-distance
   gripe <message> --- Complain to the management.
   home --- go home
+~~endcode
 
 For help on a specific command, type 'help <subject>'.
 For a list of subjects, try 'help category', or 'help alpha'.

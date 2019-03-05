@@ -117,7 +117,7 @@ struct boolexp *parse_boolexp(int descr, dbref player, const char *string, int d
  * @param b the boolexp to compute the size on
  * @return the size in bytes
  */
-long size_boolexp(struct boolexp *b);
+size_t size_boolexp(struct boolexp *b);
 
 /**
  * Test a lock - shortcut for a prop load and eval_boolexp

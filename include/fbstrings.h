@@ -191,8 +191,6 @@ int ifloat(const char *s);
  * So, this means :'s pose will show up as MyName's Pose instead of
  * MyName 's pose with an awkward space.
  *
- * @TODO Make this a MUF primitive, this might be a useful one.
- *
  * @param ch character to check
  * @return boolean as described above.
  */
