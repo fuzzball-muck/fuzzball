@@ -1,4 +1,4 @@
-           MUCK Reference Manual for Muck2.2fb7.00b1+master
+            MUCK Reference Manual for Muck2.2fb7.00b1+master
                    by Revar Desmera <revar@belfry.com>
 
 You may get a listing of topics that you can get help on, either sorted
@@ -166,22 +166,24 @@ Also see: @DESC, LOOK, @LOCK, ROB, @SET and GENDER
 ~
 ~
 SAY
-"<message>
 SAY <message>
+"<message>
 
   Says <message> out loud to everyone in the room.  If your name is Igor,
-and you typed '"Hello everyone!', you will see 'You say, "Hello everyone!"'
+and you typed 'say Hello everyone!', you will see 'You say, "Hello everyone!"'
 and everyone else in the room will see 'Igor says, "Hello everyone!"'
+There's also an abbreviated form of the 'say' command: '"Hello everyone!'
 Also see: POSE, WHISPER and PAGE
 ~
 ~
 POSE
-:<message>
 POSE <message>
+:<message>
 
-  Poses a message to everyone in the room.  This is used for actions.  Ie:
-if your name was Igor, and you typed ':falls down.', everyone would see
+  Poses a message to everyone in the room.  This is used for actions.  i.e.:
+if your name was Igor, and you typed 'pose falls down.', everyone would see
     Igor falls down.
+There's also an abbreviated form of the 'pose' command: ':falls down.'
 Also see: SAY, WHISPER and PAGE
 ~
 ~
@@ -2398,14 +2400,14 @@ cheatsheet   costs
 CHEATSHEET
 Muck Basics Cheatsheet:
 
-This is Fuzzball Muck, a user-extendible, multi-user chat system.
+This is Fuzzball Muck, a user-extensible, multi-user chat system.
 
 Basic commands:
   move/go <direction>
   get/take <thing>; drop/throw <thing>
   look; look <thing>; look <direction>
   say <message>; "<message>
-  :<message> --- shows your name, with the message after it.  Used for actions.
+  pose <message>; :<message> --- shows your name, with the message after it.  Used for actions.
   whisper <player> = <message>
   inventory
   news
