@@ -1,6 +1,10 @@
 /** @file array.h
  *
+<<<<<<< HEAD
  * Header for the different array types used in Fuzzball.  This is primarily
+=======
+ * Header the different array types used in Fuzzball.  This is primarily
+>>>>>>> ec04f059af2d5e6d17767c5ae237949d11096f63
  * used for MUF primitives. 
  *
  * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
