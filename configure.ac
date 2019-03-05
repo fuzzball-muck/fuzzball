@@ -27,9 +27,6 @@ echo " "
 dnl
 dnl Find the compiler first.
 dnl
-AC_PROG_CC
-AC_PROG_CC_STDC
-AC_PROG_CPP
 AC_PROG_INSTALL
 
 dnl
@@ -41,8 +38,6 @@ AX_CHECK_COMPILE_FLAG([-fwrapv], [CFLAGS="$CFLAGS -fwrapv"])
 dnl
 dnl Libraries
 dnl
-AC_CHECK_LIB(m, cos)
-AC_CHECK_LIB(socket, shutdown)
 
 checkpcredir() { :
     if test -f "$1/include/pcre/pcre.h"; then
