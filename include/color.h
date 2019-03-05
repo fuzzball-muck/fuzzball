@@ -1,3 +1,10 @@
+/** @file color.h
+ *
+ * Header for defining ANSI color attributes and codes.
+ *
+ * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
+ */
+
 #ifndef _COLOR_H
 #define _COLOR_H
 
@@ -31,4 +38,4 @@
 #define ANSI_BG_CYAN    "\033[46m"
 #define ANSI_BG_WHITE   "\033[47m"
 
-#endif				/* _COLOR_H */
+#endif      /* _COLOR_H */

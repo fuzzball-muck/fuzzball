@@ -1,3 +1,12 @@
+/** @file interface.c
+ *
+ * This source has a wide range of different calls in it which (mostly)
+ * have to do with the interface between players and the game but has some
+ * random other stuff too.
+ *
+ * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
+ */
+
 #include "config.h"
 
 #include "commands.h"
@@ -3206,6 +3215,25 @@ close_sockets(const char *msg)
 #endif
 }
 
+/**
+ * Handles the @armageddon command, which hopefully you'll never have to use
+ *
+ * This closes all player connections, kills the host resolver if applicable,
+ * deletes the PID file, then exits with the ARMAGEDDON_EXIT_CODE.
+ *
+ * The intention of this is to not save the database to avoid corruption.
+ *
+ * It will always broadcast a message saying:
+ *
+ * \r\nImmediate shutdown initiated by {name}\r\n
+ *
+ * 'msg', if provided, will be appended after this message.
+ *
+ * Only wizards can use this command and player permissions are checked.
+ *
+ * @param player the player attempting to do the armageddon call.
+ * @param msg the message to append to the default message, or NULL if you wish
+ */
 void
 do_armageddon(dbref player, const char *msg)
 {
@@ -3214,13 +3242,17 @@ do_armageddon(dbref player, const char *msg)
     if (!Wizard(player) || Typeof(player) != TYPE_PLAYER) {
         char unparse_buf[BUFFER_LEN];
         unparse_object(player, player, unparse_buf, sizeof(unparse_buf));
-	notify(player, "Sorry, but you don't look like the god of War to me.");
-	log_status("ILLEGAL ARMAGEDDON: tried by %s", unparse_buf);
-	return;
+
+        notify(player, "Sorry, but you don't look like the god of War to me.");
+        log_status("ILLEGAL ARMAGEDDON: tried by %s", unparse_buf);
+        return;
     }
+
     snprintf(buf, sizeof(buf), "\r\nImmediate shutdown initiated by %s.\r\n", NAME(player));
+
     if (msg && *msg)
-	strcatn(buf, sizeof(buf), msg);
+        strcatn(buf, sizeof(buf), msg);
+
     log_status("ARMAGEDDON initiated by %s(%d): %s", NAME(player), player, msg);
     fprintf(stderr, "ARMAGEDDON initiated by %s(%d): %s\n", NAME(player), player, msg);
     close_sockets(buf);
