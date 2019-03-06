@@ -188,12 +188,6 @@ Room Zero
 *Props*
 _/de:2:You are in Room Zero. It's very dark here.
 _/osc:2:is briefly visible through the mist.
-_sys/dumpinterval:3:14400
-_sys/lastdumptime:3:1551890386
-_sys/max_connects:3:1
-_sys/maxpennies:3:10000
-_sys/shutdowntime:3:1551890386
-_sys/startuptime:3:1551890371
 *End*
 -1
 -1
