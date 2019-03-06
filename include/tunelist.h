@@ -41,7 +41,6 @@ const char *tp_file_mpihelp_dir;
 const char *tp_file_motd;
 const char *tp_file_news;
 const char *tp_file_news_dir;
-const char *tp_file_sysparms;
 const char *tp_file_welcome_screen;
 const char *tp_gender_prop;
 const char *tp_huh_mesg;
@@ -128,8 +127,6 @@ struct tune_str_entry tune_str_list[] = {
      "'news' main content", "", 0, 1, NEWS_FILE},
     {"Files", "file_news_dir", &tp_file_news_dir, MLEV_WIZARD, MLEV_GOD,
      "'news' topic directory", "", 0, 1, NEWS_DIR},
-    {"Files", "file_sysparms", &tp_file_sysparms, MLEV_WIZARD, MLEV_GOD,
-     "System parameters", "", 0, 1, PARM_FILE},
     {"Files", "file_welcome_screen", &tp_file_welcome_screen, MLEV_WIZARD, MLEV_GOD,
      "Opening screen", "", 0, 1, WELC_FILE},
     {"Idle Boot", "idle_boot_mesg", &tp_idle_mesg, 0, MLEV_WIZARD,

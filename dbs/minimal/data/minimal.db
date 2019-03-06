@@ -1,7 +1,7 @@
 ***Foxen9 TinyMUCK DUMP Format***
 2
 1
-157
+156
 %autolook_cmd=look
 %cpennies=Pennies
 %cpenny=Penny
@@ -35,7 +35,6 @@
 %file_mpihelp_dir=data/mpihelp
 %file_news=data/news.txt
 %file_news_dir=data/news
-%file_sysparms=data/parmfile.cfg
 %file_welcome_screen=data/welcome.txt
 %idle_boot_mesg=Autodisconnecting for inactivity.
 %description_default=You see nothing special.

@@ -2013,12 +2013,9 @@ typed in full.
 @TUNE <param> [=<value>]
 @TUNE %<param>
 @TUNE info <param>
-@TUNE save
-@TUNE load
 
   View and modify tunable parameters that configure how the server operates,
-provide help on a parameter, or load and save parameters independent of the
-database.
+or provide help on a specific parameter.
 
   This is a wizard-only command.
 
@@ -2030,8 +2027,6 @@ database.
     @tune foo=bar      sets the value of foo to bar
     @tune %foo         resets foo to the default system value
     @tune info foo     briefly describes foo
-    @tune save         save all parameters to configuration file
-    @tune load         load all parameters from configuration file
 ~~endcode
 
   Some parameters may require a @RESTART or reload to apply.

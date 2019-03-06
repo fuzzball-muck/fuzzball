@@ -381,7 +381,6 @@
 #define MOTD_FILE "data/motd.txt"		/* For the message of the day	*/
 #define CREDITS_FILE "data/credits.txt"		/* For acknowledgements		*/
 #define CONHELP_FILE "data/connect-help.txt"	/* For 'help' before login	*/
-#define PARM_FILE "data/parmfile.cfg"		/* For system parameters	*/
 #define HELP_FILE "data/help.txt"		/* For the 'help' command	*/
 #define HELP_DIR  "data/help"			/* For 'help' subtopic files	*/
 #define NEWS_FILE "data/news.txt"		/* For the 'news' command	*/

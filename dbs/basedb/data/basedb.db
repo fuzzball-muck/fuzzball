@@ -1,7 +1,7 @@
 ***Foxen9 TinyMUCK DUMP Format***
 54
 1
-158
+156
 autolook_cmd=look
 cpennies=Pennies
 cpenny=Penny
@@ -36,7 +36,6 @@ file_mpihelp=data/mpihelp.txt
 file_mpihelp_dir=data/mpihelp
 file_news=data/news.txt
 file_news_dir=data/news
-file_sysparms=data/parmfile.cfg
 file_welcome_screen=data/welcome.txt
 idle_boot_mesg=Autodisconnecting for inactivity.
 huh_mesg=Huh?  (Type "help" for help.)
@@ -148,7 +147,6 @@ consistent_lock_source=yes
 expanded_debug_trace=yes
 force_mlev1_name_notify=yes
 muf_comments_strict=yes
-muf_string_math=no
 optimize_muf=yes
 playermax=no
 quiet_moves=no

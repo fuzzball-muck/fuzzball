@@ -4462,7 +4462,6 @@ Parameters available:
  (str)  file_mpihelp_dir          - 'mpi' topic directory
  (str)  file_news                 - 'news' main content
  (str)  file_news_dir             - 'news' topic directory
- (str)  file_sysparms             - System parameters
  (str)  file_welcome_screen       - Opening screen
  (str)  idle_boot_mesg            - Boot message given to users idling out
  (str)  description_default       - Default description
