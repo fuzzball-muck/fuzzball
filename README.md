@@ -10,6 +10,7 @@ Fuzzball is a [MUCK][wiki-muck] server, an online text-based multi-user chat and
 * [MUF reference][help-muf]
 * [MINK - The Muck Information Kiosk][help-mink]
 * [Fuzzball website][web-home]
+* [A live version of the docs on GitHub](https://fuzzball-muck.github.io/fuzzball/)
 
 Fuzzball also offers a built-in help system.  Connect, then type ```help``` for guidance.
 
