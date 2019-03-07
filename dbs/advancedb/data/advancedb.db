@@ -1,8 +1,163 @@
 ***Foxen9 TinyMUCK DUMP Format***
 164
 1
-1
+156
+%autolook_cmd=look
+%cpennies=Pennies
+%cpenny=Penny
+%pennies=pennies
+%penny=penny
+%dumpdone_mesg=## Save complete. ##
+%dumping_mesg=## Pausing to save database. This may take a while. ##
+%dumpwarn_mesg=## Game will pause to save the database in a few minutes. ##
+%file_connection_help=data/connect-help.txt
+%file_credits=data/credits.txt
+%file_editor_help=data/edit-help.txt
+%file_help=data/help.txt
+%file_help_dir=data/help
+%file_info_dir=data/info/
+%file_log_cmd_times=logs/cmd-times
+%file_log_commands=logs/commands
+%file_log_gripes=logs/gripes
+%file_log_malloc=logs/malloc
+%file_log_muf_errors=logs/muf-errors
+%file_log_programs=logs/programs
+%file_log_sanfix=logs/sanfixed
+%file_log_sanity=logs/sanity
+%file_log_status=logs/status
+%file_log_stderr=logs/fbmuck.err
+%file_log_stdout=logs/fbmuck
+%file_log_user=logs/user
+%file_man=data/man.txt
+%file_man_dir=data/man
+%file_motd=data/motd.txt
+%file_mpihelp=data/mpihelp.txt
+%file_mpihelp_dir=data/mpihelp
+%file_news=data/news.txt
+%file_news_dir=data/news
+%file_welcome_screen=data/welcome.txt
+%idle_boot_mesg=Autodisconnecting for inactivity.
+%description_default=You see nothing special.
+%huh_mesg=Huh?  (Type "help" for help.)
+%leave_mesg=Come back later!
+%muckname=TygryssMUCK
+%playermax_bootmesg=Sorry, but there are too many players online.  Please try reconnecting in a few minutes.
+%playermax_warnmesg=You likely won't be able to connect right now, since too many players are online.
+%gender_prop=sex
+%register_mesg=Sorry, you can get a character by e-mailing XXXX@machine.net.address with a charname and password.
+%ssl_cert_file=data/server.pem
+%ssl_key_file=data/server.pem
+%ssl_keyfile_passwd=
+%ssl_cipher_preference_list=ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:AES:CAMELLIA:DES-CBC3-SHA:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!aECDH:!EDH-DSS-DES-CBC3-SHA:!EDH-RSA-DES-CBC3-SHA:!KRB5-DES-CBC3-SHA
 %ssl_min_protocol_version=None
+%pcreate_flags=B
+%reserved_names=
+%reserved_player_names=
+%aging_time= 90d  0:00:00
+%dump_interval=  0d  4:00:00
+%dump_warntime=  0d  0:02:00
+%idle_ping_time=  0d  0:00:55
+%maxidle=  0d  2:00:00
+%clean_interval=  0d  0:15:00
+%pname_history_threshold= 30d  0:00:00
+%player_name_limit=16
+%exit_cost=1
+%link_cost=1
+%lookup_cost=0
+%max_object_endowment=100
+%object_cost=10
+%room_cost=10
+%max_pennies=10000
+%penny_rate=8
+%start_pennies=50
+%kill_base_cost=100
+%kill_bonus=50
+%kill_min_cost=10
+%listen_mlev=3
+%cmd_log_threshold_msec=1000
+%max_force_level=1
+%mpi_max_commands=2048
+%addpennies_muf_mlev=2
+%instr_slice=2000
+%max_instr_count=20000
+%max_ml4_preempt_count=0
+%max_ml4_nested_interp_loop_count=0
+%max_nested_interp_loop_count=16
+%max_plyr_processes=32
+%max_process_limit=400
+%mcp_muf_mlev=3
+%movepennies_muf_mlev=2
+%pennies_muf_mlev=1
+%process_timer_limit=4
+%userlog_mlev=3
+%playermax_limit=56
+%command_burst_size=500
+%command_time_msec=1000
+%commands_per_time=2
+%max_output=131071
+%free_frames_pool=8
+%max_loaded_objs=5
+%pause_min=0
+%default_room_parent=#0
+%lost_and_found=#0
+%player_start=#0
+%toad_default_recipient=#1
+%7bit_thing_names=yes
+%7bit_other_names=no
+%enable_home=yes
+%enable_match_yield=yes
+%enable_prefix=no
+%recognize_null_command=no
+%verbose_clone=no
+%verbose_examine=yes
+%dark_sleepers=no
+%exit_darking=yes
+%thing_darking=yes
+%who_hides_dark=yes
+%compatible_priorities=yes
+%realms_control=no
+%toad_recycle=no
+%diskbase_propvals=yes
+%dbdump_warning=yes
+%dumpdone_warning=yes
+%starttls_allow=no
+%idleboot=yes
+%idle_ping_enable=yes
+%restrict_kill=yes
+%allow_listeners=yes
+%allow_listeners_env=yes
+%allow_listeners_obj=yes
+%log_commands=yes
+%log_failed_commands=no
+%log_interactive=yes
+%log_programs=yes
+%autolink_actions=no
+%allow_zombies=yes
+%wiz_vehicles=no
+%ignore_support=yes
+%ignore_bidirectional=yes
+%m3_huh=no
+%strict_god_priv=yes
+%tab_input_replaced_with_space=yes
+%teleport_to_player=yes
+%secure_teleport=no
+%secure_thing_movement=no
+%do_mpi_parsing=yes
+%consistent_lock_source=yes
+%expanded_debug_trace=yes
+%force_mlev1_name_notify=yes
+%muf_comments_strict=yes
+%optimize_muf=yes
+%playermax=no
+%quiet_moves=no
+%lock_envcheck=no
+%show_legacy_props=no
+%registration=yes
+%server_cipher_preference=yes
+%periodic_program_purge=yes
+%pname_history_reporting=yes
+%secure_who=no
+%use_hostnames=no
 #163
 read;write;protect;editmsg;editmesg;protect;erase
 162
@@ -693,8 +848,8 @@ say;sa
 119
 2
 1073539723
-1073540354
-4
+1551918204
+5
 1073749224
 *Props*
 *End*
@@ -1151,8 +1306,8 @@ con-recordhost.muf
 101
 18087988
 1073530911
-1456840251
-8
+1551918201
+9
 1073749224
 *Props*
 _/de:10:A scroll containing a spell called con-recordhost.muf
@@ -1165,8 +1320,8 @@ con-mailwarn.muf
 90
 18087972
 1073530899
-1456840251
-8
+1551918201
+9
 1073749224
 *Props*
 _/de:10:A scroll containing a spell called con-mailwarn.muf
@@ -1179,8 +1334,8 @@ con-laston.muf
 89
 18087988
 1073530891
-1456840251
-8
+1551918201
+9
 1073749224
 *Props*
 _/de:10:A scroll containing a spell called con-laston.muf
@@ -1193,8 +1348,8 @@ con-bootme.muf
 88
 17825828
 1073530863
-1456840251
-8
+1551918201
+9
 1073749224
 *Props*
 _/de:10:A scroll containing a spell called con-bootme.muf
@@ -1334,8 +1489,8 @@ cmd-watchfor.muf
 81
 18087988
 1073530629
-1456840251
-22
+1551918201
+24
 1073749224
 *Props*
 _/de:10:A scroll containing a spell called cmd-watchfor.muf
@@ -1353,8 +1508,8 @@ _help#/16:10:                  Remove people from lists with "!<name>".
 _help#/17:10: 
 _help#/18:10:wf #idle  wf #!idle  Toggles players' idle times on "wf" display.
 _help#/19:10:wf #away  wf #!away  Toggles messages when players you watch go "away".
-_help#/20:10:                     #idle defaults off and #away defaults on.
 _help#/2:10: 
+_help#/20:10:                     #idle defaults off and #away defaults on.
 _help#/3:10:wf          Displays your list's presence information.
 _help#/4:10:wf #on      Messages you with presence information as it happens.
 _help#/5:10:wf #off     Turns off messages; type wf to see presence.
@@ -1603,8 +1758,8 @@ cmd-say.muf
 68
 18087972
 1073530629
-1073540354
-4
+1551918204
+5
 1073749224
 *Props*
 _/de:10:A scroll containing a spell called cmd-say.muf
@@ -2080,8 +2235,8 @@ cmd-@doing.muf
 42
 18087988
 1073530629
-1456840251
-16
+1551918201
+17
 1073749224
 *Props*
 _/de:10:A scroll containing a spell called cmd-@doing
@@ -2480,43 +2635,43 @@ lib-strings.muf
 24
 18087972
 1073502873
-1164851472
-183
+1551918204
+184
 1073754225
 *Props*
 _/de:10:A scroll containing a spell called stringslib
-_defs/.asc:10:ctoi
-_defs/.blank?:10:striplead not
-_defs/.center:10:"%|*s" fmtstring
-_defs/.chr:10:itoc dup not if pop "." then
-_defs/.command_parse:10:"$lib/strings" match "STRparse" call
-_defs/.fillfield:10:"$lib/strings" match "fillfield" call
-_defs/.left:10:"%-*s" fmtstring
-_defs/.right:10:"%*s" fmtstring
-_defs/.rsplit:10:rsplit
-_defs/.singlespace:10:"$lib/strings" match "sms" call
-_defs/.sls:10:striplead
-_defs/.sms:10:"$lib/strings" match "sms" call
-_defs/.split:10:split
-_defs/.strip:10:strip
-_defs/.stripspaces:10:strip
-_defs/.sts:10:striptail
-_defs/STRasc:10:ctoi
-_defs/STRblank?:10:striplead not
-_defs/STRcenter:10:"%|*s" fmtstring
-_defs/STRchr:10:itoc dup not if pop "." then
-_defs/STRfillfield:10:"$lib/strings" match "fillfield" call
-_defs/STRleft:10:"%-*s" fmtstring
-_defs/STRparse:10:#23 "STRparse" call
-_defs/STRright:10:"%*s" fmtstring
-_defs/STRrsplit:10:rsplit
-_defs/STRsinglespace:10:"$lib/strings" match "sms" call
-_defs/STRsls:10:striplead
-_defs/STRsms:10:"$lib/strings" match "sms" call
-_defs/STRsplit:10:split
-_defs/STRstrip:10:strip
-_defs/STRsts:10:striptail
-_docs:10:@list $lib/strings=1-29
+_defs/.asc:2:ctoi
+_defs/.blank?:2:striplead not
+_defs/.center:2:"%|*s" fmtstring
+_defs/.chr:2:itoc dup not if pop "." then
+_defs/.command_parse:2:"$lib/strings" match "STRparse" call
+_defs/.fillfield:2:"$lib/strings" match "fillfield" call
+_defs/.left:2:"%-*s" fmtstring
+_defs/.right:2:"%*s" fmtstring
+_defs/.rsplit:2:rsplit
+_defs/.singlespace:2:"$lib/strings" match "sms" call
+_defs/.sls:2:striplead
+_defs/.sms:2:"$lib/strings" match "sms" call
+_defs/.split:2:split
+_defs/.strip:2:strip
+_defs/.stripspaces:2:strip
+_defs/.sts:2:striptail
+_defs/STRasc:2:ctoi
+_defs/STRblank?:2:striplead not
+_defs/STRcenter:2:"%|*s" fmtstring
+_defs/STRchr:2:itoc dup not if pop "." then
+_defs/STRfillfield:2:"$lib/strings" match "fillfield" call
+_defs/STRleft:2:"%-*s" fmtstring
+_defs/STRparse:2:#23 "STRparse" call
+_defs/STRright:2:"%*s" fmtstring
+_defs/STRrsplit:2:rsplit
+_defs/STRsinglespace:2:"$lib/strings" match "sms" call
+_defs/STRsls:2:striplead
+_defs/STRsms:2:"$lib/strings" match "sms" call
+_defs/STRsplit:2:split
+_defs/STRstrip:2:strip
+_defs/STRsts:2:striptail
+_docs:2:@list $lib/strings=1-29
 _note:10:Standard string manipulation library, mostly for compatibility.
 *End*
 153
@@ -2577,20 +2732,20 @@ lib-props.muf
 21
 17105700
 1073501307
-1456840251
-12
+1551918201
+13
 1073749224
 *Props*
 _/de:10:A scroll containing a spell called lib-stackrng.muf
-_defs/.envprop:10:"$lib/props" match "envprop" call
-_defs/.envsearch:10:"$lib/props" match "envsearch" call
-_defs/.locate-prop:10:"$lib/props" match "locate-prop" call
-_defs/.setpropstr:10:"$lib/props" match "setpropstr" call
-_defs/envprop:10:#20 "envprop" call
-_defs/envsearch:10:#20 "envsearch" call
-_defs/locate-prop:10:#20 "locate-prop" call
-_defs/setpropstr:10:#20 "setpropstr" call
-_docs:10:@list $lib/props=1-20
+_defs/.envprop:2:"$lib/props" match "envprop" call
+_defs/.envsearch:2:"$lib/props" match "envsearch" call
+_defs/.locate-prop:2:"$lib/props" match "locate-prop" call
+_defs/.setpropstr:2:"$lib/props" match "setpropstr" call
+_defs/envprop:2:#20 "envprop" call
+_defs/envsearch:2:#20 "envsearch" call
+_defs/locate-prop:2:#20 "locate-prop" call
+_defs/setpropstr:2:#20 "setpropstr" call
+_docs:2:@list $lib/props=1-20
 *End*
 153
 #19
@@ -3156,11 +3311,16 @@ One
 154
 1171
 1073500921
-1456840260
-21
-1456840251
+1551918206
+22
+1551918201
 *Props*
+@/host:2:::1
+@/last/on:2:1551918201
+@/last/on#:3:1
+@/last/on#/1:2:1551918201
 @/value:3:3
+@/watchfor_grace:3:1551918261
 _/de:10:You see Number One.
 status:10:WIZ
 *End*
@@ -3174,8 +3334,8 @@ Room Zero
 -1
 0
 1073500921
-1456840251
-34
+1551918201
+35
 1073756262
 *Props*
 _/de:10:You are in Room Zero. It's very dark here.
@@ -3235,11 +3395,11 @@ _reg/lock/truewizard:5:152
 _reg/lock/wizard:5:151
 _reg/mesgboard:5:44
 _sys/dumpinterval:3:14400
-_sys/lastdumptime:3:1456840260
+_sys/lastdumptime:3:1551918206
 _sys/max_connects:3:1
 _sys/maxpennies:3:10000
-_sys/shutdowntime:3:1456840260
-_sys/startuptime:3:1456840247
+_sys/shutdowntime:3:1551918206
+_sys/startuptime:3:1551918194
 day:3:12426
 *End*
 -1
