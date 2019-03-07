@@ -593,39 +593,6 @@ void do_inventory(dbref player);
  */
 
 /**
- * Implementation of the kill command
- *
- * Defined in rob.c
- *
- * Rivalling 'rob' for most questionable command on the MUCK, this
- * command's sole purpose seems to be to cause newbie admins hassle until
- * they figure out how to turn it off.
- *
- * There is a shocking amount of logic around this command -- tune parameters,
- * its own flag, etc -- all for something incredibly pointless.  Anyway,
- * value judgements aside, this is how it works.
- *
- * Attempts to kill player 'what' for 'cost' which must be at least
- * tp_kill_min_cost amount.  The room must not be HAVEN, and the
- * players involved must be set KILL_OK if tp_restrict_kill is true.
- *
- * A random number between 0 and tp_kill_base_cost is selected, and if
- * cost is greater than that number, the target is killed.
- *
- * Killing someone results in some bland messaging and the killed person
- * being sent home.  The victim is paid tp_kill_bonus unless they are
- * already at tp_max_pennies or above.
- *
- * Drop and odrop messages are run on the victim on a successful kill.
- *
- * @param descr the descriptor of the killer
- * @param player the killer
- * @param what the target of killer's ire
- * @param cost how much the killer is willing to spend on this attempt.
- */
-void do_kill(int descr, dbref player, const char *what, int cost);
-
-/**
  * Implementation of @kill command
  *
  * Defined in timequeue.c
@@ -1217,24 +1184,6 @@ void do_restart(dbref player);
  */
 void do_restrict(dbref player, const char *arg);
 
-/**
- * Implementation of 'rob' command
- *
- * Defined in rob.c
- *
- * Steal pennies from a player if they don't have their lock set up
- * properly.  This is one of the most dubious commands in the MUCK.
- *
- * Uses can_doit for lock and messaging handling.
- *
- * @see can_doit
- *
- * @param descr the descriptor of the robber
- * @param player the robber
- * @param what the target of the robber's kleptomania.
- */
-void do_rob(int descr, dbref player, const char *what);
-
 /*
  * S
  */
@@ -1330,7 +1279,7 @@ void do_say(dbref player, const char *message);
 /**
  * Implementation of score command
  *
- * Defined in look.c
+ * Defined in pennies.c
  *
  * Which is how you see how many "pennies" you have.
  *

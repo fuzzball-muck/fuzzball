@@ -1031,20 +1031,6 @@ do_uptime(dbref player)
 }
 
 /**
- * Implementation of score command
- *
- * Which is how you see how many "pennies" you have.
- *
- * @param player the player doing the call
- */
-void
-do_score(dbref player)
-{
-    notifyf(player, "You have %d %s.", GETVALUE(player),
-            GETVALUE(player) == 1 ? tp_penny : tp_pennies);
-}
-
-/**
  * Implementation of inventory command
  *
  * It is important to note that this is different from the look_contents

@@ -196,9 +196,7 @@
 
 <h3>K's</h3>
 <ul>
-    <li><a href="#kill">kill</a></li>
     <li><a href="#kill_ok">kill_ok</a></li>
-    <li><a href="#killing">killing</a></li>
 </ul>
 
 <h3>L's</h3>
@@ -242,12 +240,6 @@
 <ul>
     <li><a href="#quell">quell</a></li>
     <li><a href="#quit">quit</a></li>
-</ul>
-
-<h3>R's</h3>
-<ul>
-    <li><a href="#rob">rob</a></li>
-    <li><a href="#robbery">robbery</a></li>
 </ul>
 
 <h3>S's</h3>
@@ -321,25 +313,21 @@
 <!-- HTML_SECTIDX_NEWROW -->
     <li><a href="#info">info</a></li>
     <li><a href="#inventory">inventory</a></li>
-    <li><a href="#kill">kill</a></li>
     <li><a href="#look">look</a></li>
     <li><a href="#money">money</a></li>
     <li><a href="#motd">motd</a></li>
-<!-- HTML_SECTIDX_NEWROW -->
     <li><a href="#mpi">mpi</a></li>
+<!-- HTML_SECTIDX_NEWROW -->
     <li><a href="#news">news</a></li>
     <li><a href="#page">page</a></li>
     <li><a href="#pose">pose</a></li>
     <li><a href="#put">put</a></li>
     <li><a href="#quit">quit</a></li>
-<!-- HTML_SECTIDX_NEWROW -->
-    <li><a href="#rob">rob</a></li>
-    <li><a href="#robbery">robbery</a></li>
     <li><a href="#say">say</a></li>
+<!-- HTML_SECTIDX_NEWROW -->
     <li><a href="#score">score</a></li>
     <li><a href="#startingout">startingout</a></li>
     <li><a href="#uptime">uptime</a></li>
-<!-- HTML_SECTIDX_NEWROW -->
     <li><a href="#whisper">whisper</a></li>
     <li><a href="#who">who</a></li>
 </ul>
@@ -675,53 +663,6 @@ more.  Wizards don't need money to do anything.
 give positive amounts and may not cause a player to have more than 10000
 pennies.  Wizards do not affect their penny supplies by giving to others,
 and may also give pennies to objects, changing that object's value.
-<!-- HTML_TOPICEND -->
-
-
-<h3 id="rob">ROB &lt;player&gt;
-<br>
-</h3>
-  Attempts to steal one penny from &lt;player&gt;. The only thing you can rob
-are pennies.
-<p>Also see:
-    <a href="#robbery">ROBBERY</a>
-</p>
-<!-- HTML_TOPICEND -->
-
-
-<h3 id="robbery">Robbery:
-<br>
-
-<br>
-</h3>
-  When you rob someone, you succeed or fail to use them.  You can protect
-yourself from being robbed by entering &quot;@lock me=me&quot;. If you lock yourself
-to yourself, you can rob yourself and set off your @success and @osuccess
-messages.
-<p>Also see:
-    <a href="#rob">ROB</a>,
-    <a href="#success">SUCCESS</a>,
-    <a href="#failure">FAILURE</a> and
-    <a href="#@lock">@LOCK</a>
-</p>
-<!-- HTML_TOPICEND -->
-
-
-<h3 id="kill">KILL &lt;player&gt; [=&lt;cost&gt;]
-<br>
-
-<br>
-</h3>
-  A successful kill sends the player home, sends all objects in the
-player's inventory to their respective homes.  The probability of
-killing the player is &lt;cost&gt; percent.  Spending 100 pennies always
-works except against Wizards who cannot be killed.  Players cannot
-be killed in rooms which have the HAVEN flag set.  On systems where
-the KILL_OK flag is used, you cannot kill someone unless both you
-and they are set Kill_OK.
-<p>Also see:
-    <a href="#kill_ok">KILL_OK</a>
-</p>
 <!-- HTML_TOPICEND -->
 
 
@@ -2207,14 +2148,13 @@ both players and things.  You must own the object to sweep it.
     <li><a href="#jump_ok">jump_ok</a></li>
 <!-- HTML_SECTIDX_NEWROW -->
     <li><a href="#kill_ok">kill_ok</a></li>
-    <li><a href="#killing">killing</a></li>
     <li><a href="#link_ok">link_ok</a></li>
     <li><a href="#mucker">mucker</a></li>
     <li><a href="#overt">overt</a></li>
     <li><a href="#quell">quell</a></li>
     <li><a href="#sticky">sticky</a></li>
-<!-- HTML_SECTIDX_NEWROW -->
     <li><a href="#vehicle">vehicle</a></li>
+<!-- HTML_SECTIDX_NEWROW -->
     <li><a href="#wizard">wizard</a></li>
     <li><a href="#xforcible">xforcible</a></li>
     <li><a href="#yield">yield</a></li>
@@ -2379,17 +2319,7 @@ unless the action is either attached to that room, or the room is JUMP_OK.
 
 <br>
 </h3>
-  On systems where the KILL_OK flag is used, you cannot kill someone unless
-both you and they are set Kill_OK.
-<!-- HTML_TOPICEND -->
-
-
-<h3 id="killing">Getting killed is no big deal. If you are killed, you return to your home,
-<br>
-and all things you carry return to their homes. You also collect 50 pennies
-<br>
-in insurance money (unless you have &gt;= 10000 pennies). See KILL and MONEY.
-<br>
+  On systems where the KILL_OK flag is used, it may restrict combat.
 <!-- HTML_TOPICEND -->
 
 

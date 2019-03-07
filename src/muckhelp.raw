@@ -216,36 +216,6 @@ pennies.  Wizards do not affect their penny supplies by giving to others,
 and may also give pennies to objects, changing that object's value.
 ~
 ~
-ROB
-ROB <player>
-  Attempts to steal one penny from <player>. The only thing you can rob
-are pennies.
-~~alsosee ROBBERY
-~
-~
-ROBBERY
-Robbery:
-
-  When you rob someone, you succeed or fail to use them.  You can protect
-yourself from being robbed by entering "@lock me=me". If you lock yourself
-to yourself, you can rob yourself and set off your @success and @osuccess
-messages.
-~~alsosee ROB,SUCCESS,FAILURE,@LOCK
-~
-~
-KILL
-KILL <player> [=<cost>]
-
-  A successful kill sends the player home, sends all objects in the
-player's inventory to their respective homes.  The probability of
-killing the player is <cost> percent.  Spending 100 pennies always
-works except against Wizards who cannot be killed.  Players cannot
-be killed in rooms which have the HAVEN flag set.  On systems where
-the KILL_OK flag is used, you cannot kill someone unless both you
-and they are set Kill_OK.
-~~alsosee KILL_OK
-~
-~
 EXAMINE
 EXAMINE <object>[=proppattern]
   
@@ -1353,14 +1323,7 @@ unless the action is either attached to that room, or the room is JUMP_OK.
 KILL_OK
 @SET here=K
 
-  On systems where the KILL_OK flag is used, you cannot kill someone unless
-both you and they are set Kill_OK.
-~
-~
-KILLING
-Getting killed is no big deal. If you are killed, you return to your home,
-and all things you carry return to their homes. You also collect 50 pennies
-in insurance money (unless you have >= 10000 pennies). See KILL and MONEY.
+  On systems where the KILL_OK flag is used, it may restrict combat.
 ~
 ~
 LINK_OK
