@@ -653,9 +653,9 @@ prim_set(PRIM_PROTOTYPE)
 	    tmp = VEHICLE;
 	else if (string_prefix("quell", flag))
 	    tmp = QUELL;
-	else if (tp_enable_match_yield && string_prefix("yield", flag))
+	else if (string_prefix("yield", flag))
 	    tmp = YIELD;
-	else if (tp_enable_match_yield && string_prefix("overt", flag))
+	else if (string_prefix("overt", flag))
 	    tmp = (int)OVERT;
     }
     if (!tmp)
@@ -808,9 +808,9 @@ prim_flagp(PRIM_PROTOTYPE)
 	    tmp = VEHICLE;
 	else if (string_prefix("quell", flag))
 	    tmp = QUELL;
-	else if (tp_enable_match_yield && string_prefix("yield", flag))
+	else if (string_prefix("yield", flag))
 	    tmp = YIELD;
-	else if (tp_enable_match_yield && string_prefix("overt", flag))
+	else if (string_prefix("overt", flag))
 	    tmp = (int)OVERT;
     }
     if (result) {

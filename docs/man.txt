@@ -4532,7 +4532,6 @@ Parameters available:
  (bool) 7bit_thing_names          - Limit thing names to 7-bit characters
  (bool) 7bit_other_names          - Limit exit/room/muf names to 7-bit characters
  (bool) enable_home               - Enable 'home' command
- (bool) enable_match_yield        - Enable yield/overt flags on rooms and things
  (bool) enable_prefix             - Enable prefix actions
  (bool) recognize_null_command    - Recognize null command
  (bool) verbose_clone             - Show more information when using @clone command

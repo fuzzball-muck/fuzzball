@@ -556,13 +556,10 @@ flag_description(dbref thing)
             strcatn(buf, sizeof(buf),
                 (Typeof(thing) == TYPE_PROGRAM) ? " VIEWABLE" : " VEHICLE");
 
-        /* @TODO: These two guys could be in a common if-block for
-         *        tp_enable_match_yield for a minor optimization
-         */
-        if (tp_enable_match_yield && FLAGS(thing) & YIELD)
+        if (FLAGS(thing) & YIELD)
             strcatn(buf, sizeof(buf), " YIELD");
 
-        if (tp_enable_match_yield && FLAGS(thing) & OVERT)
+        if (FLAGS(thing) & OVERT)
             strcatn(buf, sizeof(buf), " OVERT");
 
         if (FLAGS(thing) & XFORCIBLE) {
@@ -1352,13 +1349,10 @@ init_checkflags(dbref player, const char *flags, struct flgchkdat *check)
 
                 break;
             case 'O':
-                if (tp_enable_match_yield) {
-                    if (mode)
-                        check->clearflags |= OVERT;
-                    else
-                        check->setflags |= OVERT;
-
-                }
+                if (mode)
+                    check->clearflags |= OVERT;
+                else
+                    check->setflags |= OVERT;
 
                 break;
             case 'Q':
@@ -1383,12 +1377,10 @@ init_checkflags(dbref player, const char *flags, struct flgchkdat *check)
 
                 break;
             case 'Y':
-                if (tp_enable_match_yield) {
-                    if (mode)
-                        check->clearflags |= YIELD;
-                    else
-                        check->setflags |= YIELD;
-                }
+                if (mode)
+                    check->clearflags |= YIELD;
+                else
+                    check->setflags |= YIELD;
 
                 break;
             case 'Z':

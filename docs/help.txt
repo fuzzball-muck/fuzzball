@@ -1401,12 +1401,10 @@ printed out to any users of the program for each instruction executes.
 OVERT
 @set here=O
 
-  If the 'enable_match_yield' tune is turned on, two new flags which may
-only be used on rooms or things become usable.  These are YIELD and OVERT
-(Y and O).  If you set a room to 'Yield', exit matching will NOT continue
-up the environment chain.  The only exception to this are any exits on an
-area up the environment chain that has been set to be 'Overt'.  By setting
-a room both Yield and Bound, you can limit players to -only- those exits
+  If you set a room to 'Yield', exit matching will NOT continue up the
+environment chain.  The only exception to this are any exits on an area
+up the environment chain that has been set to be 'Overt'.  By setting a
+room both Yield and Bound, you can limit players to -only- those exits
 set on the room itself (assuming there are no Overt rooms further up the
 env chain).
 ~
@@ -1414,12 +1412,10 @@ env chain).
 YIELD
 @set here=Y
 
-  If the 'enable_match_yield' tune is turned on, two new flags which may
-only be used on rooms or things become usable.  These are YIELD and OVERT
-(Y and O).  If you set a room to 'Yield', exit matching will NOT continue
-up the environment chain.  The only exception to this are any exits on an
-area up the environment chain that has been set to be 'Overt'.  By setting
-a room both Yield and Bound, you can limit players to -only- those exits
+  If you set a room to 'Yield', exit matching will NOT continue up the
+environment chain.  The only exception to this are any exits on an area
+up the environment chain that has been set to be 'Overt'.  By setting a
+room both Yield and Bound, you can limit players to -only- those exits
 set on the room itself (assuming there are no Overt rooms further up the
 env chain).
 ~

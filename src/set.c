@@ -940,11 +940,9 @@ do_set(int descr, dbref player, const char *name, const char *flag)
     } else if ((string_prefix("ABODE", p)) ||
                (string_prefix("AUTOSTART", p)) || (string_prefix("ABATE", p))) {
         f = ABODE;
-    } else if (string_prefix("YIELD", p) && tp_enable_match_yield &&
-               (Typeof(thing) == TYPE_ROOM || Typeof(thing) == TYPE_THING)) {
+    } else if (string_prefix("YIELD", p)) {
         f = YIELD;
-    } else if (string_prefix("OVERT", p) && tp_enable_match_yield &&
-               (Typeof(thing) == TYPE_ROOM || Typeof(thing) == TYPE_THING)) {
+    } else if (string_prefix("OVERT", p)) {
         f = OVERT;
     } else {
         notify(player, "I don't recognize that flag.");

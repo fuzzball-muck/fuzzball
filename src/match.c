@@ -535,7 +535,7 @@ match_all_exits(struct match_data *md)
 	if (!limit--)
 	    break;
 	/* Does this room have env-chain exit blocking enabled? */
-	if (!blocking && tp_enable_match_yield && FLAGS(loc) & YIELD) {
+	if (!blocking && FLAGS(loc) & YIELD) {
 	    blocking = 1;
 	}
     }

@@ -342,7 +342,6 @@ int tp_dbdump_warning;
 int tp_diskbase_propvals;
 int tp_do_mpi_parsing;
 int tp_dumpdone_warning;
-int tp_enable_match_yield;
 int tp_enable_prefix;
 int tp_exit_darking;
 int tp_expanded_debug;
@@ -394,8 +393,6 @@ struct tune_bool_entry tune_bool_list[] = {
      "Limit exit/room/muf names to 7-bit characters", "", 1, ASCII_OTHER_NAMES},
     {"Commands", "enable_home", &tp_allow_home, MLEV_WIZARD, MLEV_WIZARD,
      "Enable 'home' command", "", 1, ALLOW_HOME},
-    {"Commands", "enable_match_yield", &tp_enable_match_yield, MLEV_WIZARD, MLEV_WIZARD,
-     "Enable yield/overt flags on rooms and things", "", 1, ENABLE_MATCH_YIELD},
     {"Commands", "enable_prefix", &tp_enable_prefix, MLEV_WIZARD, MLEV_WIZARD,
      "Enable prefix actions", "", 1, ENABLE_PREFIX},
     {"Commands", "recognize_null_command", &tp_recognize_null_command, MLEV_WIZARD,

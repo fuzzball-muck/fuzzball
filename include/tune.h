@@ -226,7 +226,6 @@ extern int tp_dbdump_warning;
 extern int tp_diskbase_propvals;
 extern int tp_do_mpi_parsing;
 extern int tp_dumpdone_warning;
-extern int tp_enable_match_yield;
 extern int tp_enable_prefix;
 extern int tp_exit_darking;
 extern int tp_expanded_debug;
