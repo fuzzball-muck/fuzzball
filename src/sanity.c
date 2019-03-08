@@ -658,10 +658,10 @@ check_exits_list(dbref player, dbref obj)
                 violate(player, obj,
                     "is the containing object, and has the loop in its exits chain");
             } else if (!OkObj(i)) {
-                violate(player, obj, "has an invalid object in it's exits list");
+                violate(player, obj, "has an invalid object in its exits list");
             } else {
                 if (Typeof(i) != TYPE_EXIT) {
-                    violate(player, obj, "has a non-exit in it's exits list");
+                    violate(player, obj, "has a non-exit in its exits list");
                 }
 
                 if (LOCATION(i) != obj) {
@@ -736,7 +736,7 @@ check_object(dbref player, dbref obj)
          */
         if (!OkObj(LOCATION(obj)) && !(obj == GLOBAL_ENVIRONMENT &&
             LOCATION(obj) == NOTHING)) {
-            violate(player, obj, "has an invalid object as it's location");
+            violate(player, obj, "has an invalid object as its location");
         }
     }
 
@@ -1206,7 +1206,7 @@ fix_thing(dbref obj)
 
     if (!OkObj(i) || (Typeof(i) != TYPE_ROOM && Typeof(i) != TYPE_THING &&
         Typeof(i) != TYPE_PLAYER)) {
-        SanFixed2(obj, OWNER(obj), "Setting the home on %s to %s, it's owner");
+        SanFixed2(obj, OWNER(obj), "Setting the home on %s to %s, its owner");
         THING_SET_HOME(obj, OWNER(obj));
         DBDIRTY(obj);
     }
