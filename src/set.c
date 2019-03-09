@@ -118,7 +118,7 @@ do_name(int descr, dbref player, const char *name, char *newname)
  * dropto will be removed.  If this is a thing, its home will be reset
  * to its owner.  If this is a player, its home will be reset to player start.
  *
- * If quiet is 1, only errors will be displayed and no other messaging.
+ * If quiet is true, only errors will be displayed and no other messaging.
  * Otherwise, full messaging as expected with @unlink will be used.
  *
  * This does do permission checking.
@@ -130,7 +130,7 @@ do_name(int descr, dbref player, const char *name, char *newname)
  * @param quiet boolean if true, only display errors.
  */
 static void
-_do_unlink(int descr, dbref player, const char *name, int quiet)
+_do_unlink(int descr, dbref player, const char *name, bool quiet)
 {
     dbref exit;
     struct match_data md;
@@ -243,7 +243,7 @@ do_unlink(int descr, dbref player, const char *name)
      *       We should probably at least declare this as an inline.
      */
     /* do a regular, non-quiet unlink. */
-    _do_unlink(descr, player, name, 0);
+    _do_unlink(descr, player, name, false);
 }
 
 /*
@@ -254,7 +254,7 @@ do_unlink(int descr, dbref player, const char *name)
 static void
 do_unlink_quiet(int descr, dbref player, const char *name)
 {
-    _do_unlink(descr, player, name, 1);
+    _do_unlink(descr, player, name, true);
 }
 
 /**
