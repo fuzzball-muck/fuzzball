@@ -103,11 +103,6 @@ do_name(int descr, dbref player, const char *name, char *newname)
         NAME(thing) = alloc_string(newname);
         notify(player, "Name set.");
         DBDIRTY(thing);
-
-        if (Typeof(thing) == TYPE_EXIT && MLevRaw(thing)) {
-            SetMLevel(thing, 0);
-            notify(player, "Action priority Level reset to zero.");
-        }
     }
 }
 

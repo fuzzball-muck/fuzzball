@@ -445,9 +445,6 @@ prim_setname(PRIM_PROTOTYPE)
 	    }
 	    NAME(ref) = alloc_string(b);
 	    ts_modifyobject(ref);
-	    if (MLevRaw(ref)) {
-		SetMLevel(ref, 0);
-	    }
 	}
     }
     CLEAR(oper1);
