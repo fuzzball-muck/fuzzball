@@ -318,6 +318,9 @@
 /* max. amount of queued output in bytes, before you get <output flushed> */
 #define MAX_OUTPUT 131071
 
+/* Flags that new programs will be created with. */
+#define NEW_PROGRAM_FLAGS ""
+
 /* Flags that new players will be created with. */
 #define PCREATE_FLAGS "B"
 

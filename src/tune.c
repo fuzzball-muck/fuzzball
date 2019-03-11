@@ -1173,10 +1173,10 @@ do_tune(dbref player, char *parmname, char *parmval)
  * This takes an object and a string of flags, and sets them on the object
  *
  * The tunestr can have the following characters in it.  Each corresponds
- * to a flag.  Unknown flags are ignored.  'W' (wizard) cannot be set and
+ * to a flag.  Unknown flags are ignored.  '0' and 'W' cannot be set and
  * will be ignored.
  *
- * 0 1 2 3 A B C D G H J K L M Q S V X Y O Z
+ * 1 2 3 A B C D G H J K L M O Q S V X Y Z
  *
  * Each corresponds to the first letter of the flag in question, with the
  * numbers being MUCKER levels.
@@ -1196,7 +1196,7 @@ set_flags_from_tunestr(dbref obj, const char *tunestr)
         if (pcc == '\0' || pcc == '\n' || pcc == '\r') {
             break;
         } else if (pcc == '0') {
-            SetMLevel(obj, 0);
+            /* SetMLevel(obj, 0); * This flag is ignored. */
         } else if (pcc == '1') {
             SetMLevel(obj, 1);
         } else if (pcc == '2') {
@@ -1223,6 +1223,8 @@ set_flags_from_tunestr(dbref obj, const char *tunestr)
             f = LINK_OK;
         } else if (pcc == 'M') {
             SetMLevel(obj, 2);
+        } else if (pcc == 'O') {
+            f = OVERT;
         } else if (pcc == 'Q') {
             f = QUELL;
         } else if (pcc == 'S') {
@@ -1230,13 +1232,11 @@ set_flags_from_tunestr(dbref obj, const char *tunestr)
         } else if (pcc == 'V') {
             f = VEHICLE;
         } else if (pcc == 'W') {
-            /* f = WIZARD;     This is very bad to auto-set. */
+            /* f = WIZARD;        * This is very bad to auto-set. */
         } else if (pcc == 'X') {
             f = XFORCIBLE;
         } else if (pcc == 'Y') {
             f = YIELD;
-        } else if (pcc == 'O') {
-            f = OVERT;
         } else if (pcc == 'Z') {
             f = ZOMBIE;
         }

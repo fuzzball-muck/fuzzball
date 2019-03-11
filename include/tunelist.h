@@ -47,6 +47,7 @@ const char *tp_huh_mesg;
 const char *tp_idle_mesg;
 const char *tp_leave_mesg;
 const char *tp_muckname;
+const char *tp_new_program_flags;
 const char *tp_pcreate_flags;
 const char *tp_pennies;
 const char *tp_penny;
@@ -155,6 +156,8 @@ struct tune_str_entry tune_str_list[] = {
      "Allowed OpenSSL cipher list", "SSL", 0, 1, SSL_CIPHER_PREFERENCE_LIST},
     {"SSL", "ssl_min_protocol_version", &tp_ssl_min_protocol_version, MLEV_GOD, MLEV_GOD,
      "Min. allowed SSL protocol version for clients", "SSL", 0, 1, SSL_MIN_PROTOCOL_VERSION},
+    {"Database", "new_program_flags", &tp_new_program_flags, 0, MLEV_WIZARD,
+     "Initial flags for newly created programs", "", 1, 1, NEW_PROGRAM_FLAGS},
     {"Database", "pcreate_flags", &tp_pcreate_flags, 0, MLEV_WIZARD,
      "Initial flags for newly created players", "", 1, 1, PCREATE_FLAGS},
     {"Database", "reserved_names", &tp_reserved_names, 0, MLEV_WIZARD,

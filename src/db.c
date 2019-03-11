@@ -138,12 +138,6 @@ create_program(dbref player, const char *name)
     snprintf(buf, sizeof(buf), "A scroll containing a spell called %s", name);
     SETDESC(newprog, buf);
     LOCATION(newprog) = player;
-    jj = MLevel(player);
-    if (jj < 1)
-	jj = 2;
-    if (jj > 3)
-        jj = 3;
-    SetMLevel(newprog, jj);
 
     ALLOC_PROGRAM_SP(newprog);
     PROGRAM_SET_FIRST(newprog, NULL);
@@ -164,6 +158,12 @@ create_program(dbref player, const char *name)
     PUSH(newprog, CONTENTS(player));
     DBDIRTY(newprog);
     DBDIRTY(player);
+
+    set_flags_from_tunestr(newprog, tp_new_program_flags);
+
+    jj = MLevel(newprog);
+    if (jj == 0 || jj > MLevel(player))
+        SetMLevel(newprog, MLevel(player));
 
     return newprog;
 }

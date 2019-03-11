@@ -77,6 +77,7 @@ extern const char *tp_huh_mesg;
 extern const char *tp_idle_mesg;
 extern const char *tp_leave_mesg;
 extern const char *tp_muckname;
+extern const char *tp_new_program_flags;
 extern const char *tp_pcreate_flags;
 extern const char *tp_pennies;
 extern const char *tp_penny;
