@@ -131,9 +131,9 @@ enter_room(int descr, dbref player, dbref loc, dbref exit)
 	if (donelook < 8) {
 	    donelook++;
 	    if (can_move(descr, player, tp_autolook_cmd, 1)) {
-		do_move(descr, player, tp_autolook_cmd, 1);
+                do_move(descr, player, tp_autolook_cmd, 1);
 	    } else {
-		do_look_around(descr, player);
+                look_room(descr, player, LOCATION(player));
 	    }
 	    donelook--;
 	} else {

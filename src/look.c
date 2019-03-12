@@ -178,7 +178,7 @@ look_simple(int descr, dbref player, dbref thing)
  * @param player the looking person
  * @param loc the location to look at.
  */
-static void
+void
 look_room(int descr, dbref player, dbref loc)
 {
     char obj_num[20];
@@ -227,28 +227,6 @@ look_room(int descr, dbref player, dbref loc)
     look_contents(player, loc, "Contents:");
     snprintf(obj_num, sizeof(obj_num), "#%d", loc);
     envpropqueue(descr, player, loc, player, loc, NOTHING, LOOK_PROPQUEUE, obj_num, 1, 1);
-}
-
-/**
- * Look around the room
- *
- * This is called by movement or any time the user is looking around but
- * not triggered by a command.
- *
- * This is a pretty stupid little wrapper around look_room.
- *
- * @TODO Either make this an inline, or promote look_room to an exposed
- *       call and just use it.  There are only 2 places where this method
- *       is used (move.c and interface.c) so I would recommend getting rid
- *       of this call and just using look_room.
- *
- * @param descr the descriptor to inform
- * @param player the player to inform
- */
-void
-do_look_around(int descr, dbref player)
-{
-    look_room(descr, player, LOCATION(player));
 }
 
 /**
@@ -469,6 +447,7 @@ static const char *
 flag_description(dbref thing)
 {
     static char buf[BUFFER_LEN];
+    int jj;
 
     strcpyn(buf, sizeof(buf), "Type: ");
 
@@ -506,20 +485,23 @@ flag_description(dbref thing)
         if (FLAGS(thing) & QUELL)
             strcatn(buf, sizeof(buf), " QUELL");
 
-        /* @TODO: A lot of these have "snarly" if statements like this,
-         *        where you have a primary if statement and then 
-         *        the inline if format -- sometimes long chains of
-         *        inline-if.  It is very hard to read.  I would recommend
-         *        breaking these into proper sub-if's kind of like XFORCE
-         *        does.
-         */
-        if (FLAGS(thing) & STICKY)
-            strcatn(buf, sizeof(buf), (Typeof(thing) == TYPE_PROGRAM) ? " SETUID" :
-                    (Typeof(thing) == TYPE_PLAYER) ? " SILENT" : " STICKY");
+        if (FLAGS(thing) & STICKY) {
+            if (Typeof(thing) == TYPE_PROGRAM) {
+                strcatn(buf, sizeof(buf), " SETUID");
+            } else if (Typeof(thing) == TYPE_PLAYER) {
+                strcatn(buf, sizeof(buf), " SILENT");
+            } else {
+                strcatn(buf, sizeof(buf), " STICKY");
+            }
+        }
 
-        if (FLAGS(thing) & DARK)
-            strcatn(buf, sizeof(buf),
-                    (Typeof(thing) != TYPE_PROGRAM) ? " DARK" : " DEBUGGING");
+        if (FLAGS(thing) & DARK) {
+            if (Typeof(thing) == TYPE_PROGRAM) {
+                strcatn(buf, sizeof(buf), " DEBUG");
+            } else {
+                strcatn(buf, sizeof(buf), " DARK");
+            }
+        }
 
         if (FLAGS(thing) & LINK_OK)
             strcatn(buf, sizeof(buf), " LINK_OK");
@@ -527,34 +509,37 @@ flag_description(dbref thing)
         if (FLAGS(thing) & KILL_OK)
             strcatn(buf, sizeof(buf), " KILL_OK");
 
-        if (MLevRaw(thing)) {
+        if ((jj = MLevRaw(thing))) {
             strcatn(buf, sizeof(buf), " MUCKER");
+            strcatn(buf, sizeof(buf), (char[]){jj+48,0});	 
+        }
 
-            switch (MLevRaw(thing)) {
-                case 1:
-                    strcatn(buf, sizeof(buf), "1");
-                    break;
-                case 2:
-                    strcatn(buf, sizeof(buf), "2");
-                    break;
-                case 3:
-                    strcatn(buf, sizeof(buf), "3");
-                    break;
+        if (FLAGS(thing) & BUILDER) {
+            if (Typeof(thing) == TYPE_PROGRAM) {
+                strcatn(buf, sizeof(buf), " BOUND");
+            } else {
+                strcatn(buf, sizeof(buf), " BUILDER");
             }
         }
 
-        if (FLAGS(thing) & BUILDER)
-            strcatn(buf, sizeof(buf), (Typeof(thing) == TYPE_PROGRAM) ? " BOUND" : " BUILDER");
-
-        if (FLAGS(thing) & CHOWN_OK)
-            strcatn(buf, sizeof(buf), (Typeof(thing) == TYPE_PLAYER) ? " COLOR" : " CHOWN_OK");
+        if (FLAGS(thing) & CHOWN_OK) {
+            if (Typeof(thing) == TYPE_PLAYER) {
+                strcatn(buf, sizeof(buf), " COLOR");
+            } else {
+                strcatn(buf, sizeof(buf), " CHOWN_OK");
+            }
+        }
 
         if (FLAGS(thing) & JUMP_OK)
             strcatn(buf, sizeof(buf), " JUMP_OK");
 
-        if (FLAGS(thing) & VEHICLE)
-            strcatn(buf, sizeof(buf),
-                (Typeof(thing) == TYPE_PROGRAM) ? " VIEWABLE" : " VEHICLE");
+        if (FLAGS(thing) & VEHICLE) {
+            if (Typeof(thing) == TYPE_PROGRAM) {
+                strcatn(buf, sizeof(buf), " VIEWABLE");
+            } else {
+                strcatn(buf, sizeof(buf), " VEHICLE");
+            }
+        }
 
         if (FLAGS(thing) & YIELD)
             strcatn(buf, sizeof(buf), " YIELD");
@@ -573,21 +558,33 @@ flag_description(dbref thing)
         if (FLAGS(thing) & ZOMBIE)
             strcatn(buf, sizeof(buf), " ZOMBIE");
 
-        if (FLAGS(thing) & GUEST)
-            strcatn(buf, sizeof(buf),
-                    (Typeof(thing) == TYPE_PROGRAM || Typeof(thing) == TYPE_EXIT || Typeof(thing) == TYPE_ROOM) ?
-                     " NOGUEST" : " GUEST");
+        if (FLAGS(thing) & GUEST) {
+            if (Typeof(thing) == TYPE_PLAYER || Typeof(thing) == TYPE_THING) {
+                strcatn(buf, sizeof(buf), " GUEST");
+            } else {
+                strcatn(buf, sizeof(buf), " NOGUEST");
+            }
+        }
 
-        if (FLAGS(thing) & HAVEN)
-            strcatn(buf, sizeof(buf),
-                    (Typeof(thing) !=
-                     TYPE_PROGRAM) ? ((Typeof(thing) ==
-                     TYPE_THING) ? " HIDE" : " HAVEN") : " HARDUID");
+        if (FLAGS(thing) & HAVEN) {
+            if (Typeof(thing) == TYPE_PROGRAM) {
+                strcatn(buf, sizeof(buf), " HARDUID");
+            } else if (Typeof(thing) == TYPE_THING) {
+                strcatn(buf, sizeof(buf), " HIDE");
+            } else {
+                strcatn(buf, sizeof(buf), " HAVEN");
+            }
+        }
 
-        if (FLAGS(thing) & ABODE)
-            strcatn(buf, sizeof(buf),
-                    (Typeof(thing) != TYPE_PROGRAM) ? (Typeof(thing) !=
-                     TYPE_EXIT ? " ABODE" : " ABATE") : " AUTOSTART");
+        if (FLAGS(thing) & ABODE) {
+            if (Typeof(thing) == TYPE_PROGRAM) {
+                strcatn(buf, sizeof(buf), " AUTOSTART");
+            } else if (Typeof(thing) == TYPE_EXIT) {
+                strcatn(buf, sizeof(buf), " ABATE");
+            } else {
+                strcatn(buf, sizeof(buf), " ABODE");
+            }
+        }
     }
 
     return buf;
@@ -1121,37 +1118,7 @@ init_checkflags(dbref player, const char *flags, struct flgchkdat *check)
         output_type = 0;
     }
 
-    /* @TODO Replace all this mess with:
-     *       memset(check, 0, sizeof(struct flgchkdat))
-     *
-     *       There is absolutely no reason to have this as a bunch of
-     *       individual assginments.
-     */
-    check->fortype = 0;
-    check->istype = 0;
-    check->isnotroom = 0;
-    check->isnotexit = 0;
-    check->isnotthing = 0;
-    check->isnotplayer = 0;
-    check->isnotprog = 0;
-    check->setflags = 0;
-    check->clearflags = 0;
-
-    check->forlevel = 0;
-    check->islevel = 0;
-    check->isnotzero = 0;
-    check->isnotone = 0;
-    check->isnottwo = 0;
-    check->isnotthree = 0;
-
-    check->forlink = 0;
-    check->islinked = 0;
-    check->forold = 0;
-    check->isold = 0;
-
-    check->loadedsize = 0;
-    check->issize = 0;
-    check->size = 0;
+    memset(check, 0, sizeof(struct flgchkdat));
 
     /* Flags are processed in a loop.  Most flags except size are just
      * a single character.  Size must come last because it is a weirdo.
