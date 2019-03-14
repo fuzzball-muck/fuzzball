@@ -454,7 +454,7 @@ FOO is greater than or equal to 3, use:
 ~~code
     $ifndef FOO<3
         BAR
-    $enddef
+    $endif
 ~~endcode
 
 Compiler directives are nestable also.  For examples:
@@ -470,7 +470,7 @@ Compiler directives are nestable also.  For examples:
         $endif
     $enddef
 ~~endcode
-~~alsosee $IFNDEF,$DEFINE,$DEF,$DEF
+~~alsosee $IFNDEF,$DEFINE,$DEF
 ~
 ~
 $IFNDEF

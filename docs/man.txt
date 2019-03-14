@@ -692,7 +692,7 @@ you need to use $ifndef with the opposite comparator.  Ie, to check if
 FOO is greater than or equal to 3, use:
     $ifndef FOO<3
         BAR
-    $enddef
+    $endif
 
 Compiler directives are nestable also.  For examples:
     $ifdef __version>Muck2.2fb3.5
@@ -705,7 +705,7 @@ Compiler directives are nestable also.  For examples:
             owner
         $endif
     $enddef
-Also see: $IFNDEF, $DEFINE, $DEF and $DEF
+Also see: $IFNDEF, $DEFINE and $DEF
 ~
 ~
 $IFNDEF
