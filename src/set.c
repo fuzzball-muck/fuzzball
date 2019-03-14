@@ -241,17 +241,6 @@ do_unlink(int descr, dbref player, const char *name)
     _do_unlink(descr, player, name, false);
 }
 
-/*
- * @TODO This function is stupid.  It is used in exactly one place elsewhere
- *       in this file.  Remove it and replace its one usage with the
- *       _do_unlink call directly.
- */
-static void
-do_unlink_quiet(int descr, dbref player, const char *name)
-{
-    _do_unlink(descr, player, name, true);
-}
-
 /**
  * Implementation of @relink command
  *
@@ -388,7 +377,7 @@ do_relink(int descr, dbref player, const char *thing_name,
             return;
     }
 
-    do_unlink_quiet(descr, player, thing_name);
+    _do_unlink(descr, player, thing_name, true);
     notify(player, "Attempting to relink...");
     do_link(descr, player, thing_name, dest_name);
 }
