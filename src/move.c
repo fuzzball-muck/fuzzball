@@ -1029,7 +1029,7 @@ recycle(int descr, dbref player, dbref thing)
  * permission checks.  For instance, in order to recycle an object or
  * room, you must actually own it even if you a are a wizard.  This
  * makes the requirement for a two-step '@chown' then '@recycle' if you
- * wish to delete something as a wizard that you do not know.
+ * wish to delete something as a wizard that you do not own.
  *
  * This is on purpose, I would imagine, to prevent accidents.
  *
@@ -1140,7 +1140,14 @@ do_recycle(int descr, dbref player, const char *name)
                         dequeue_prog(thing, 0);
                     }
 
-                    /* FIXME: This is a workaround for bug #201633 */
+                    /*
+                     * @TODO This is a workaround for bug #201633
+                     *
+                     * This bug predates sourceforge and is from a system
+                     * long gone.  MUCKs aren't dying left and right due
+                     * to this, so I'm inclined to remove this code block
+                     * now.
+                     */
                     if (PROGRAM_INSTANCES(thing)) {
                         assert(0);  /* getting here is a bug - we already dequeued it. */
                         notify(player, "Recycle failed: Program is still running.");

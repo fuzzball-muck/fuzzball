@@ -29,7 +29,7 @@
 /* If specified, remove the reset to default flag by incrementing past it */
 #define TP_CLEAR_FLAG_DEFAULT(param) if (TP_HAS_FLAG_DEFAULT(param)) { param++; }
 
-/* These externs are defined defined in tunelist.h
+/* These externs are defined in tunelist.h
  *
  * They contain the values associated with each tune variable, as a short
  * cut for C code that wants quick and easy access to the variables.

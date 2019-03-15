@@ -513,7 +513,7 @@ do_chown(int descr, dbref player, const char *name, const char *newowner)
  * @param player the player we are checking permissions for
  * @param thing the thing we want to set the flag on
  * @param flag the flag we wish to set.
- * @return boolean - 1 if restricted from setting flag, 0 if okay to set.
+ * @return boolean 1 if restricted from setting flag, 0 if okay to set.
  */
 static int
 restricted(dbref player, dbref thing, object_flag_type flag)
@@ -1132,7 +1132,7 @@ do_propset(int descr, dbref player, const char *name, const char *prop)
  * is no object name, then the registration target is cleared.  Otherwise,
  * object is registered to the given name.
  *
- * See help @register on the MUCK for a more consise explanation :)
+ * See help @register on the MUCK for a more consice explanation :)
  *
  * This does permission checking.
  *
