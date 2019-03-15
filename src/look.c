@@ -763,7 +763,7 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
                      (int) (BUFFER_LEN - strlen(NAME(OWNER(thing))) - 35),
                      unparse_buf, NAME(OWNER(thing)));
             unparse_object(player, LOCATION(thing), unparse_buf, sizeof(unparse_buf));
-                           strcatn(buf, sizeof(buf), unparse_buf);
+            strcatn(buf, sizeof(buf), unparse_buf);
             break;
         case TYPE_THING:
             snprintf(buf, sizeof(buf), "%.*s  Owner: %s  Value: %d",

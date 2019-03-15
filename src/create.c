@@ -176,7 +176,7 @@ do_link(int descr, dbref player, const char *thing_name, const char *dest_name)
             if (OWNER(thing) == OWNER(player)) {
                 if (!payfor(player, tp_link_cost)) {
                     notifyf(player, "It costs %d %s to link this exit.",
-                    tp_link_cost, (tp_link_cost == 1) ? tp_penny : tp_pennies);
+                            tp_link_cost, (tp_link_cost == 1) ? tp_penny : tp_pennies);
                     return;
                 }
             } else {

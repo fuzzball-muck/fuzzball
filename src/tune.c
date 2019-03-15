@@ -94,7 +94,7 @@ tune_display_parms(dbref player, char *name, int mlev, int show_extended)
     TP_CLEAR_FLAG_DEFAULT(name);
 
     /* @TODO I'll complain about this here but it applies all over the
-     *       place.  There is a lot of repetative code because we are using
+     *       place.  There is a lot of repetitive code because we are using
      *       5 nearly identical structures.  Why not use one structure with
      *       a union, then just iterate over it once?  Its a pretty big
      *       change and it would affect how the entries are displayed,

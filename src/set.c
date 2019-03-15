@@ -118,7 +118,7 @@ do_name(int descr, dbref player, const char *name, char *newname)
  * dropto will be removed.  If this is a thing, its home will be reset
  * to its owner.  If this is a player, its home will be reset to player start.
  *
- * If quiet is 1, only errors will be displayed and no other messaging.
+ * If quiet is true, only errors will be displayed and no other messaging.
  * Otherwise, full messaging as expected with @unlink will be used.
  *
  * This does do permission checking.
@@ -529,7 +529,7 @@ do_chown(int descr, dbref player, const char *name, const char *newowner)
  * @param player the player we are checking permissions for
  * @param thing the thing we want to set the flag on
  * @param flag the flag we wish to set.
- * @return boolean - 1 if restricted from setting flag, 0 if okay to set.
+ * @return boolean 1 if restricted from setting flag, 0 if okay to set.
  */
 static int
 restricted(dbref player, dbref thing, object_flag_type flag)
@@ -1150,7 +1150,7 @@ do_propset(int descr, dbref player, const char *name, const char *prop)
  * is no object name, then the registration target is cleared.  Otherwise,
  * object is registered to the given name.
  *
- * See help @register on the MUCK for a more consise explanation :)
+ * See help @register on the MUCK for a more consice explanation :)
  *
  * This does permission checking.
  *

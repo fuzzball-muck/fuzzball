@@ -1,6 +1,7 @@
 /** @file mcp.c
  *
- * Source code for handling MCP (MU* Control Protocol) events.
+ * Source code for handling MCP (MUD Client Protocol) events.
+ * Specification is here: https://www.moo.mud.org/mcp/
  *
  * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
  */
@@ -44,7 +45,7 @@ static McpFrameList *mcp_frame_list;
  *
  * Given a pointer to a pointer 'in', process whatever resides at 'in'
  * and see if it is an identifier.  If the first character of 'in' is
- * not alphabet character, this will return false and 'buf' will be unmodifier.
+ * not alphabet character, this will return false and 'buf' will be unmodified.
  *
  * Otherwise, we will advance 'in' forward and copy what we find into
  * 'buf' until we either run out of buffer space (bufsize) or we reach
@@ -160,7 +161,7 @@ mcp_intern_is_unquoted(const char **in, char *buf, int buflen)
  *
  * 'in' is advanced to the position immediately after the terminal "
  *
- * If there is no termianl ", or if the current position of 'in' is not
+ * If there is no terminal ", or if the current position of 'in' is not
  * a starting ", this returns 0 and in is left unchanged.
  *
  * @private

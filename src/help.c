@@ -214,7 +214,7 @@ add_motd_text_fmt(const char *text)
  * If the player is a wizard, 'text' can either be the string "clear"
  * to delete the MOTD, or the text you want to put in the MOTD file.
  *
- * Time is automatically added to teh start of the entry, and a dashed
+ * Time is automatically added to the start of the entry, and a dashed
  * line added to the end.  Dashed line will be written to the file
  * if cleared.
  *

@@ -74,7 +74,7 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
          *        not.
          *
          *        It seems like should either be offering a set of
-         *        differnt types of matches which are aggregations of these,
+         *        different types of matches which are aggregations of these,
          *        more granular match types or maybe a call where the
          *        match_* calls are flags instead of a series of longform
          *        calls.  This just seems repetitive and not very user
@@ -82,7 +82,7 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
          *
          *        If we do a change like that, these styles of call
          *        live elsewhere and should change as well; though
-         *        in most places they are not quite so blatantly repetative.
+         *        in most places they are not quite so blatantly repetitive.
          */
         init_match(descr, player, arg1, NOTYPE, &md);
         match_neighbor(&md);
@@ -697,6 +697,7 @@ do_stats(dbref player, const char *name)
                         }
 
                         break;
+
                     case TYPE_EXIT:
                         if (OWNER(i) == owner) {
                             total++;
@@ -704,6 +705,7 @@ do_stats(dbref player, const char *name)
                         }
 
                         break;
+
                     case TYPE_THING:
                         if (OWNER(i) == owner) {
                             total++;
@@ -711,6 +713,7 @@ do_stats(dbref player, const char *name)
                         }
 
                         break;
+
                     case TYPE_PLAYER:
                         if (i == owner) {
                             total++;
@@ -718,6 +721,7 @@ do_stats(dbref player, const char *name)
                         }
 
                         break;
+
                     case TYPE_PROGRAM:
                         if (OWNER(i) == owner) {
                             total++;
@@ -747,22 +751,27 @@ do_stats(dbref player, const char *name)
                         total++;
                         rooms++;
                         break;
+
                     case TYPE_EXIT:
                         total++;
                         exits++;
                         break;
+
                     case TYPE_THING:
                         total++;
                         things++;
                         break;
+
                     case TYPE_PLAYER:
                         total++;
                         players++;
                         break;
+
                     case TYPE_PROGRAM:
                         total++;
                         programs++;
                         break;
+
                     case TYPE_GARBAGE:
                         total++;
                         garbage++;
@@ -813,7 +822,7 @@ do_boot(dbref player, const char *name)
      *        @bless also have that same check.
      *
      *        This should be done consistently.  I think it should probably
-     *        be in the functions themselves like do_bless or do_argmageddon
+     *        be in the functions themselves like do_bless or do_armageddon
      *
      *        The only problem with that approach is it makes for a lot
      *        of duplicate code.  So perhaps we should use the WIZARDONLY
@@ -989,7 +998,7 @@ do_newpassword(dbref player, const char *name, const char *password)
  * Implements the @pcreate command
  *
  * Creates a player.  This is an incredibly thin wrapper around create_player;
- * in fact, this doesn no permission checks or any other kind of check.
+ * in fact, this does no permission checks or any other kind of check.
  *
  * @see create_player
  *
