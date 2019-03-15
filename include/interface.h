@@ -146,23 +146,6 @@ void boot_player_off(dbref player);
 int dbref_first_descr(dbref c);
 struct descriptor_data *descrdata_by_descr(int i);
 
-/**
- * Look around the room
- *
- * This is called by movement or any time the user is looking around but
- * not triggered by a command.
- *
- * This is a pretty stupid little wrapper around look_room.
- *
- * @TODO Either make this an inline, or promote look_room to an exposed
- *       call and just use it.  There are only 2 places where this method
- *       is used (move.c and interface.c) so I would recommend getting rid
- *       of this call and just using look_room.
- *
- * @param descr the descriptor to inform
- * @param player the player to inform
- */
-void do_look_around(int descr, dbref player);
 void dump_database(void);
 void dump_status(void);
 void emergency_shutdown(void);
@@ -174,6 +157,7 @@ void ignore_remove_from_all_players(dbref Player);
 void ignore_remove_player(dbref Player, dbref Who);
 int index_descr(int c);
 int least_idle_player_descr(dbref who);
+void look_room(int descr, dbref player, dbref loc);
 long max_open_files(void);
 int most_idle_player_descr(dbref who);
 int notify(dbref player, const char *msg);

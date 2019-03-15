@@ -692,7 +692,7 @@ you need to use $ifndef with the opposite comparator.  Ie, to check if
 FOO is greater than or equal to 3, use:
     $ifndef FOO<3
         BAR
-    $enddef
+    $endif
 
 Compiler directives are nestable also.  For examples:
     $ifdef __version>Muck2.2fb3.5
@@ -705,7 +705,7 @@ Compiler directives are nestable also.  For examples:
             owner
         $endif
     $enddef
-Also see: $IFNDEF, $DEFINE, $DEF and $DEF
+Also see: $IFNDEF, $DEFINE and $DEF
 ~
 ~
 $IFNDEF
@@ -4462,7 +4462,6 @@ Parameters available:
  (str)  file_mpihelp_dir          - 'mpi' topic directory
  (str)  file_news                 - 'news' main content
  (str)  file_news_dir             - 'news' topic directory
- (str)  file_sysparms             - System parameters
  (str)  file_welcome_screen       - Opening screen
  (str)  idle_boot_mesg            - Boot message given to users idling out
  (str)  description_default       - Default description
@@ -4478,6 +4477,7 @@ Parameters available:
  (str)  ssl_keyfile_passwd        - Password for SSL private key file
  (str)  ssl_cipher_preference_list - Allowed OpenSSL cipher list
  (str)  ssl_min_protocol_version  - Min. allowed SSL protocol version for clients
+ (str)  new_program_flags         - Initial flags for newly created programs
  (str)  pcreate_flags             - Initial flags for newly created players
  (str)  reserved_names            - String-match list of reserved names
  (str)  reserved_player_names     - String-match list of reserved player names
@@ -4533,7 +4533,6 @@ Parameters available:
  (bool) 7bit_thing_names          - Limit thing names to 7-bit characters
  (bool) 7bit_other_names          - Limit exit/room/muf names to 7-bit characters
  (bool) enable_home               - Enable 'home' command
- (bool) enable_match_yield        - Enable yield/overt flags on rooms and things
  (bool) enable_prefix             - Enable prefix actions
  (bool) recognize_null_command    - Recognize null command
  (bool) verbose_clone             - Show more information when using @clone command

@@ -108,12 +108,12 @@ BASE_OBJ="$(INTDIR)\array.obj" \
 	"$(INTDIR)\p_regex.obj" \
 	"$(INTDIR)\p_stack.obj" \
 	"$(INTDIR)\p_strings.obj" \
+	"$(INTDIR)\pennies.obj" \
 	"$(INTDIR)\player.obj" \
 	"$(INTDIR)\predicates.obj" \
 	"$(INTDIR)\propdirs.obj" \
 	"$(INTDIR)\property.obj" \
 	"$(INTDIR)\props.obj" \
-	"$(INTDIR)\rob.obj" \
 	"$(INTDIR)\sanity.obj" \
 	"$(INTDIR)\set.obj" \
 	"$(INTDIR)\sha1.obj" \

@@ -71,8 +71,8 @@ SRC= array.c boolexp.c compile.c create.c db.c debugger.c diskprop.c edit.c \
 	interface.c interface_ssl.c interp.c log.c look.c match.c mcp.c mcpgui.c \
 	mcppkgs.c mfuns.c mfuns2.c move.c msgparse.c mufevent.c p_array.c \
 	p_connects.c p_db.c p_error.c p_float.c p_math.c p_mcp.c p_misc.c \
-	p_props.c p_regex.c p_stack.c p_strings.c player.c predicates.c \
-	propdirs.c property.c props.c rob.c sanity.c set.c sha1.c speech.c \
+	p_props.c p_regex.c p_stack.c p_strings.c pennies.c player.c predicates.c \
+	propdirs.c property.c props.c sanity.c set.c sha1.c speech.c \
 	timequeue.c tune.c wiz.c
 
 OBJ= $(SRC:.c=.o) ${MALLOBJ}

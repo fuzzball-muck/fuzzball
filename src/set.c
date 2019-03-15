@@ -103,11 +103,6 @@ do_name(int descr, dbref player, const char *name, char *newname)
         NAME(thing) = alloc_string(newname);
         notify(player, "Name set.");
         DBDIRTY(thing);
-
-        if (Typeof(thing) == TYPE_EXIT && MLevRaw(thing)) {
-            SetMLevel(thing, 0);
-            notify(player, "Action priority Level reset to zero.");
-        }
     }
 }
 
@@ -130,7 +125,7 @@ do_name(int descr, dbref player, const char *name, char *newname)
  * @param quiet boolean if true, only display errors.
  */
 static void
-_do_unlink(int descr, dbref player, const char *name, int quiet)
+_do_unlink(int descr, dbref player, const char *name, bool quiet)
 {
     dbref exit;
     struct match_data md;
@@ -243,18 +238,7 @@ do_unlink(int descr, dbref player, const char *name)
      *       We should probably at least declare this as an inline.
      */
     /* do a regular, non-quiet unlink. */
-    _do_unlink(descr, player, name, 0);
-}
-
-/*
- * @TODO This function is stupid.  It is used in exactly one place elsewhere
- *       in this file.  Remove it and replace its one usage with the
- *       _do_unlink call directly.
- */
-static void
-do_unlink_quiet(int descr, dbref player, const char *name)
-{
-    _do_unlink(descr, player, name, 1);
+    _do_unlink(descr, player, name, false);
 }
 
 /**
@@ -393,7 +377,7 @@ do_relink(int descr, dbref player, const char *thing_name,
             return;
     }
 
-    do_unlink_quiet(descr, player, thing_name);
+    _do_unlink(descr, player, thing_name, true);
     notify(player, "Attempting to relink...");
     do_link(descr, player, thing_name, dest_name);
 }
@@ -940,11 +924,9 @@ do_set(int descr, dbref player, const char *name, const char *flag)
     } else if ((string_prefix("ABODE", p)) ||
                (string_prefix("AUTOSTART", p)) || (string_prefix("ABATE", p))) {
         f = ABODE;
-    } else if (string_prefix("YIELD", p) && tp_enable_match_yield &&
-               (Typeof(thing) == TYPE_ROOM || Typeof(thing) == TYPE_THING)) {
+    } else if (string_prefix("YIELD", p)) {
         f = YIELD;
-    } else if (string_prefix("OVERT", p) && tp_enable_match_yield &&
-               (Typeof(thing) == TYPE_ROOM || Typeof(thing) == TYPE_THING)) {
+    } else if (string_prefix("OVERT", p)) {
         f = OVERT;
     } else {
         notify(player, "I don't recognize that flag.");

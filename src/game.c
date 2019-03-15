@@ -1402,12 +1402,6 @@ process_command(int descr, dbref player, const char *command)
 		do_info(player, arg1, arg2);
 	    }
 	    break;
-	case 'k':
-	case 'K':
-	    /* kill */
-	    Matched("kill");
-	    do_kill(descr, player, arg1, atoi(arg2));
-	    break;
 	case 'l':
 	case 'L':
 	    /* leave, look */
@@ -1475,11 +1469,6 @@ process_command(int descr, dbref player, const char *command)
 	    case 'E':
 		Matched("read");	/* undocumented alias for look */
 		do_look_at(descr, player, arg1, arg2);
-		break;
-	    case 'o':
-	    case 'O':
-		Matched("rob");
-		do_rob(descr, player, arg1);
 		break;
 	    default:
 		goto bad;

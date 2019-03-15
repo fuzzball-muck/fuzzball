@@ -41,13 +41,13 @@ const char *tp_file_mpihelp_dir;
 const char *tp_file_motd;
 const char *tp_file_news;
 const char *tp_file_news_dir;
-const char *tp_file_sysparms;
 const char *tp_file_welcome_screen;
 const char *tp_gender_prop;
 const char *tp_huh_mesg;
 const char *tp_idle_mesg;
 const char *tp_leave_mesg;
 const char *tp_muckname;
+const char *tp_new_program_flags;
 const char *tp_pcreate_flags;
 const char *tp_pennies;
 const char *tp_penny;
@@ -128,8 +128,6 @@ struct tune_str_entry tune_str_list[] = {
      "'news' main content", "", 0, 1, NEWS_FILE},
     {"Files", "file_news_dir", &tp_file_news_dir, MLEV_WIZARD, MLEV_GOD,
      "'news' topic directory", "", 0, 1, NEWS_DIR},
-    {"Files", "file_sysparms", &tp_file_sysparms, MLEV_WIZARD, MLEV_GOD,
-     "System parameters", "", 0, 1, PARM_FILE},
     {"Files", "file_welcome_screen", &tp_file_welcome_screen, MLEV_WIZARD, MLEV_GOD,
      "Opening screen", "", 0, 1, WELC_FILE},
     {"Idle Boot", "idle_boot_mesg", &tp_idle_mesg, 0, MLEV_WIZARD,
@@ -158,6 +156,8 @@ struct tune_str_entry tune_str_list[] = {
      "Allowed OpenSSL cipher list", "SSL", 0, 1, SSL_CIPHER_PREFERENCE_LIST},
     {"SSL", "ssl_min_protocol_version", &tp_ssl_min_protocol_version, MLEV_GOD, MLEV_GOD,
      "Min. allowed SSL protocol version for clients", "SSL", 0, 1, SSL_MIN_PROTOCOL_VERSION},
+    {"Database", "new_program_flags", &tp_new_program_flags, 0, MLEV_WIZARD,
+     "Initial flags for newly created programs", "", 1, 1, NEW_PROGRAM_FLAGS},
     {"Database", "pcreate_flags", &tp_pcreate_flags, 0, MLEV_WIZARD,
      "Initial flags for newly created players", "", 1, 1, PCREATE_FLAGS},
     {"Database", "reserved_names", &tp_reserved_names, 0, MLEV_WIZARD,
@@ -345,7 +345,6 @@ int tp_dbdump_warning;
 int tp_diskbase_propvals;
 int tp_do_mpi_parsing;
 int tp_dumpdone_warning;
-int tp_enable_match_yield;
 int tp_enable_prefix;
 int tp_exit_darking;
 int tp_expanded_debug;
@@ -397,8 +396,6 @@ struct tune_bool_entry tune_bool_list[] = {
      "Limit exit/room/muf names to 7-bit characters", "", 1, ASCII_OTHER_NAMES},
     {"Commands", "enable_home", &tp_allow_home, MLEV_WIZARD, MLEV_WIZARD,
      "Enable 'home' command", "", 1, ALLOW_HOME},
-    {"Commands", "enable_match_yield", &tp_enable_match_yield, MLEV_WIZARD, MLEV_WIZARD,
-     "Enable yield/overt flags on rooms and things", "", 1, ENABLE_MATCH_YIELD},
     {"Commands", "enable_prefix", &tp_enable_prefix, MLEV_WIZARD, MLEV_WIZARD,
      "Enable prefix actions", "", 1, ENABLE_PREFIX},
     {"Commands", "recognize_null_command", &tp_recognize_null_command, MLEV_WIZARD,

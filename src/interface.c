@@ -526,7 +526,7 @@ announce_connect(int descr, dbref player)
     if (can_move(descr, player, tp_autolook_cmd, 1)) {
 	do_move(descr, player, tp_autolook_cmd, 1);
     } else {
-	do_look_around(descr, player);
+        look_room(descr, player, LOCATION(player));
     }
 
 

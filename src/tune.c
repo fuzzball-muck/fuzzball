@@ -28,11 +28,9 @@
     notifyf(player, "%-27s %.4096s", tune_entry->group, tune_entry->label); \
 }
 
-/* NOTE:  Do NOT use these values as the name of a parameter.  Reserve them as a preprocessor define so
+/* NOTE:  Do NOT use this value as the name of a parameter.  Reserve it as a preprocessor define so
    it's a bit easier to change if needed.  If changed, don't forget to update the help files, too! */
 #define TP_INFO_CMD "info"
-#define TP_LOAD_CMD "load"
-#define TP_SAVE_CMD "save"
 
 /**
  * Count all available tune parameters.
@@ -537,35 +535,6 @@ tune_parms_array(const char *pattern, int mlev, int pinned)
     }
 
     return nu;
-}
-
-/**
- * Save the parameters to a file which is ironically configured with parameters
- *
- * The file name comes from 'tp_file_sysparms'.  Tries to open the file
- * and will log if it cannot; returns 0 on failure, 1 on success.
- *
- * @see tune_save_parms_to_file
- *
- * @private
- * @returns boolean true on successful file creation.
- */
-static int
-tune_save_parmsfile(void)
-{
-    FILE *f;
-
-    f = fopen(tp_file_sysparms, "wb");
-
-    if (!f) {
-        log_status("Couldn't open file %s!", tp_file_sysparms);
-        return 0;
-    }
-
-    tune_save_parms_to_file(f);
-
-    fclose(f);
-    return 1;
 }
 
 /**
@@ -1090,37 +1059,6 @@ tune_load_parms_from_file(FILE * f, dbref player, int cnt)
 }
 
 /**
- * Load a parameter file
- *
- * This is the reciprocal function of tune_save_parmsfile and works
- * in a similar fashion.  The file name comes from 'tp_file_sysparms'
- * parameter.  Under the hood, it uses tune_load_parms_from_file
- *
- * @see tune_save_parmsfile
- * @see tune_load_parms_from_file
- *
- * @private
- * @param player the player to be notified during load process or NOTHING
- */
-static int
-tune_load_parmsfile(dbref player)
-{
-    FILE *f;
-
-    f = fopen(tp_file_sysparms, "rb");
-
-    if (!f) {
-        log_status("Couldn't open file %s!", tp_file_sysparms);
-        return 0;
-    }
-
-    tune_load_parms_from_file(f, player, -1);
-
-    fclose(f);
-    return 1;
-}
-
-/**
  * Implementation of @tune command
  *
  * This does a lot of different things based on if 'parmname' and
@@ -1226,18 +1164,6 @@ do_tune(dbref player, char *parmname, char *parmval)
             /* Show expanded information on all parameters */
             tune_display_parms(player, "", security, 1);
         }
-    } else if (*parmname && !strcasecmp(parmname, TP_SAVE_CMD)) {
-        if (tune_save_parmsfile()) {
-            notify(player, "Saved parameters to configuration file.");
-        } else {
-            notify(player, "Unable to save to configuration file.");
-        }
-    } else if (*parmname && !strcasecmp(parmname, TP_LOAD_CMD)) {
-        if (tune_load_parmsfile(player)) {
-            notify(player, "Restored parameters from configuration file.");
-        } else {
-            notify(player, "Unable to load from configuration file.");
-        }
     } else {
         tune_display_parms(player, parmname, security, 0);
     }
@@ -1247,10 +1173,10 @@ do_tune(dbref player, char *parmname, char *parmval)
  * This takes an object and a string of flags, and sets them on the object
  *
  * The tunestr can have the following characters in it.  Each corresponds
- * to a flag.  Unknown flags are ignored.  'W' (wizard) cannot be set and
+ * to a flag.  Unknown flags are ignored.  '0' and 'W' cannot be set and
  * will be ignored.
  *
- * 0 1 2 3 A B C D G H J K L M Q S V X Y O Z
+ * 1 2 3 A B C D G H J K L M O Q S V X Y Z
  *
  * Each corresponds to the first letter of the flag in question, with the
  * numbers being MUCKER levels.
@@ -1270,7 +1196,7 @@ set_flags_from_tunestr(dbref obj, const char *tunestr)
         if (pcc == '\0' || pcc == '\n' || pcc == '\r') {
             break;
         } else if (pcc == '0') {
-            SetMLevel(obj, 0);
+            /* SetMLevel(obj, 0); * This flag is ignored. */
         } else if (pcc == '1') {
             SetMLevel(obj, 1);
         } else if (pcc == '2') {
@@ -1297,6 +1223,8 @@ set_flags_from_tunestr(dbref obj, const char *tunestr)
             f = LINK_OK;
         } else if (pcc == 'M') {
             SetMLevel(obj, 2);
+        } else if (pcc == 'O') {
+            f = OVERT;
         } else if (pcc == 'Q') {
             f = QUELL;
         } else if (pcc == 'S') {
@@ -1304,13 +1232,11 @@ set_flags_from_tunestr(dbref obj, const char *tunestr)
         } else if (pcc == 'V') {
             f = VEHICLE;
         } else if (pcc == 'W') {
-            /* f = WIZARD;     This is very bad to auto-set. */
+            /* f = WIZARD;        * This is very bad to auto-set. */
         } else if (pcc == 'X') {
             f = XFORCIBLE;
-        } else if (tp_enable_match_yield && pcc == 'Y') {
+        } else if (pcc == 'Y') {
             f = YIELD;
-        } else if (tp_enable_match_yield && pcc == 'O') {
-            f = OVERT;
         } else if (pcc == 'Z') {
             f = ZOMBIE;
         }

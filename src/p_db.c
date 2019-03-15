@@ -445,9 +445,6 @@ prim_setname(PRIM_PROTOTYPE)
 	    }
 	    NAME(ref) = alloc_string(b);
 	    ts_modifyobject(ref);
-	    if (MLevRaw(ref)) {
-		SetMLevel(ref, 0);
-	    }
 	}
     }
     CLEAR(oper1);
@@ -653,9 +650,9 @@ prim_set(PRIM_PROTOTYPE)
 	    tmp = VEHICLE;
 	else if (string_prefix("quell", flag))
 	    tmp = QUELL;
-	else if (tp_enable_match_yield && string_prefix("yield", flag))
+	else if (string_prefix("yield", flag))
 	    tmp = YIELD;
-	else if (tp_enable_match_yield && string_prefix("overt", flag))
+	else if (string_prefix("overt", flag))
 	    tmp = (int)OVERT;
     }
     if (!tmp)
@@ -808,9 +805,9 @@ prim_flagp(PRIM_PROTOTYPE)
 	    tmp = VEHICLE;
 	else if (string_prefix("quell", flag))
 	    tmp = QUELL;
-	else if (tp_enable_match_yield && string_prefix("yield", flag))
+	else if (string_prefix("yield", flag))
 	    tmp = YIELD;
-	else if (tp_enable_match_yield && string_prefix("overt", flag))
+	else if (string_prefix("overt", flag))
 	    tmp = (int)OVERT;
     }
     if (result) {
