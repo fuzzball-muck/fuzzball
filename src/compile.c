@@ -2528,8 +2528,8 @@ object_word(COMPSTATE * cstat, const char *token)
 /**
  * Determine if a given token is a 'special' keyword
  *
- * Special keywords aren't primtives; they are basically reserved words
- * or control structure such as :, ;, IF, ELSE, etc.
+ * Special keywords aren't primitives; they are basically reserved words
+ * or control structures such as :, ;, IF, ELSE, etc.
  *
  * @private
  * @param token the token to check
