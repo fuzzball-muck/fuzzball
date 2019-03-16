@@ -1103,8 +1103,8 @@ MaybeOptimizeVarsAt(COMPSTATE * cstat, struct INTERMEDIATE *first, int AtNo,
 /**
  * Remove the next intermediate after 'curr' in the linked list.
  *
- * This also shifts all the addresses in addrlist down and free's
- * the memory of the removed item in the linekd list.  The
+ * This also shifts all the addresses in addrlist down and frees
+ * the memory of the removed item in the linked list.  The
  * number of words book-keeping is also updated.
  *
  * The offset lists aren't updated which is a little fishy to me,
