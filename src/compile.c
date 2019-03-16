@@ -951,9 +951,9 @@ free_unused_programs()
  * There are many cases where the optimization can't happen; by my
  * estimation it looks like the optimization is pretty rare.  The
  * reasoning by each skip is fairly well documented within the code
- * and doesn't really bare repeating here.
+ * and doesn't really bear repeating here.
  *
- * The compile state structure will be potnetially modified by this call.
+ * The compile state structure will be potentially modified by this call.
  *
  * @private
  * @param cstat the compile state structure
