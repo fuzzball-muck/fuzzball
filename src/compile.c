@@ -4761,7 +4761,7 @@ prealloc_inst(COMPSTATE * cstat)
         cstat->nextinst = nu;
     } else {
         for (ptr = cstat->nextinst; ptr->next; ptr = ptr->next) ;
-            ptr->next = nu;
+        ptr->next = nu;
     }
 
     nu->no = cstat->nowords;
