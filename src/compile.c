@@ -3107,7 +3107,7 @@ do_old_comment(COMPSTATE * cstat)
  * The "new" comment parser, supporting recursive comments.
  *
  * I believe this means that you can have comments inside comments,
- * (which is nice because you can do things like this).  However,
+ * (which is nice because you can (do things) like this).  However,
  * it appears that comments aren't documented (as far as I can tell)
  * in 'man'.
  *
