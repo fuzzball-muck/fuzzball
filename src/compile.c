@@ -2104,7 +2104,7 @@ alloc_inst(void)
 /**
  * Create a new instruction, or return an already available one.
  *
- * A list of pre-allocateed instructions is kept, so we use those first.
+ * A list of pre-allocated instructions is kept, so we use those first.
  * When expended, we will allocate new instructions.
  *
  * @private
