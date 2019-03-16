@@ -5589,7 +5589,7 @@ get_primitive(const char *token)
  * free_unused_programs, uncompile_program, and various internal compiler
  * calls.
  *
- * @see free_unsued_programs
+ * @see free_unused_programs
  * @see uncompile_program
  *
  * This frees all the memory associated with a given dbref's in-memory
