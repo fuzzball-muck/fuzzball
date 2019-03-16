@@ -2829,7 +2829,7 @@ do_compile(int descr, dbref player_in, dbref program_in, int force_err_display)
      * This is where the program "text" comes from.  This is loaded when
      * the program is loaded by db.c
      *
-     * Grep for PROGRAM_SET_FIRST in db.c if you are curious.  Under the
+     * grep for PROGRAM_SET_FIRST in db.c if you are curious.  Under the
      * hood it uses read_program
      *
      * @see read_program
