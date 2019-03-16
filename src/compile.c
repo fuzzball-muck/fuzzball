@@ -548,7 +548,7 @@ fixpubs(struct publics *mypubs, struct inst *offset)
 }
 
 /**
- * Get the size, in byts, of all the public structures in the linked list
+ * Get the size, in bytes, of all the public structures in the linked list
  *
  * @private
  * @param mypubs the head of the list
