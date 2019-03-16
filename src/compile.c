@@ -5743,7 +5743,7 @@ clear_primitives(void)
  * @var the array that has all of our primitive names.
  *
  * @TODO Move this to the top of the file?  This is kind of buried here.
- *       Of course, typically one adds primtiives to one of the #define'd
+ *       Of course, typically one adds primitives to one of the #define'd
  *       names so it doesn't matter TOO much ... but I think it would be
  *       more tidy in a prominent place.
  */
