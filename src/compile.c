@@ -1213,7 +1213,7 @@ RemoveIntermediate(COMPSTATE * cstat, struct INTERMEDIATE *curr)
  *
  * This means two things:
  *
- * * That there are 'count' INTERMEDIATES left in the list, starting with
+ * * That there are 'count' INTERMEDIATEs left in the list, starting with
  *   'ptr'
  *
  * * That none of the 'count' intermediates starting with 'ptr' are
