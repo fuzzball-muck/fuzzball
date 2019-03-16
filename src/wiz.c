@@ -695,7 +695,6 @@ do_stats(dbref player, const char *name)
                             total++;
                             rooms++;
                         }
-
                         break;
 
                     case TYPE_EXIT:
@@ -703,7 +702,6 @@ do_stats(dbref player, const char *name)
                             total++;
                             exits++;
                         }
-
                         break;
 
                     case TYPE_THING:
@@ -711,7 +709,6 @@ do_stats(dbref player, const char *name)
                             total++;
                             things++;
                         }
-
                         break;
 
                     case TYPE_PLAYER:
@@ -719,7 +716,6 @@ do_stats(dbref player, const char *name)
                             total++;
                             players++;
                         }
-
                         break;
 
                     case TYPE_PROGRAM:
@@ -727,7 +723,6 @@ do_stats(dbref player, const char *name)
                             total++;
                             programs++;
                         }
-
                         break;
                 }
             }
