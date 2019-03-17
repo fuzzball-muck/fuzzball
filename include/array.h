@@ -19,7 +19,7 @@
 typedef struct inst array_data;
 typedef struct inst array_iter;
 
-/* Arrays are implemented as AVL trees much like propertry directories */
+/* Arrays are implemented as AVL trees much like property directories */
 typedef struct array_tree_t {
     struct array_tree_t *left;      /* The left child node  */
     struct array_tree_t *right;     /* The right child node */
