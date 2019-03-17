@@ -38,6 +38,7 @@
 #include "mcpgui.h"
 #endif
 #include "mpi.h"
+#include "msgparse.h"
 #include "mufevent.h"
 #include "player.h"
 #include "predicates.h"
