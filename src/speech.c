@@ -5,6 +5,8 @@
  * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
  */
 
+#include <stdio.h>
+
 #include "config.h"
 
 #include "commands.h"
