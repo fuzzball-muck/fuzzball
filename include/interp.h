@@ -117,7 +117,6 @@ struct mufwatchpidlist {
     int pid;
 };
 
-int dequeue_prog_real(dbref, int, const char *, const int);
 #define dequeue_prog(x,i) dequeue_prog_real(x,i,__FILE__,__LINE__)
 
 #define STD_REGUID 0
