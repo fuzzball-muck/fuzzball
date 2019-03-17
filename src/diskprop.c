@@ -1,3 +1,5 @@
+#include "config.h"
+
 #ifdef DISKBASE
 #include "db.h"
 #include "diskprop.h"
