@@ -5,6 +5,8 @@
 #include <string.h>
 #include <time.h>
 
+#include "config.h"
+
 #include "fbmath.h"
 #include "inst.h"
 
