@@ -26,6 +26,7 @@
 #include "events.h"
 #include "fbsignal.h"
 #include "fbstrings.h"
+#include "fbtime.h"
 #include "game.h"
 #include "interface.h"
 #include "log.h"
