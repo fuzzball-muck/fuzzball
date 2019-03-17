@@ -2,6 +2,7 @@
 #define _EDIT_H
 
 #include "config.h"
+#include "inst.h"
 
 struct macrotable {
     char *name;
