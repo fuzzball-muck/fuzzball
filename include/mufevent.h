@@ -1,7 +1,11 @@
 #ifndef _MUFEVENT_H
 #define _MUFEVENT_H
 
+#include <stddef.h>
+
 #include "array.h"
+#include "config.h"
+#include "inst.h"
 #include "interp.h"
 
 stk_array *get_mufevent_pids(stk_array * nw, dbref ref);
