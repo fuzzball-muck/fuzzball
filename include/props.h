@@ -9,6 +9,8 @@
 #ifndef _PROPS_H
 #define _PROPS_H
 
+#include "config.h"
+
 /*
  * Property data union to support all available property types.
  *

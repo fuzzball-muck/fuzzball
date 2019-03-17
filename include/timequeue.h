@@ -20,6 +20,7 @@ int add_muf_queue_event(int descr, dbref player, dbref loc, dbref trig, dbref pr
 int control_process(dbref player, int procnum);
 int dequeue_process(int procnum);
 int dequeue_prog_real(dbref, int, const char *, const int);
+#define dequeue_prog(x,i) dequeue_prog_real(x,i,__FILE__,__LINE__)
 int dequeue_timers(int procnum, char *timerid);
 void envpropqueue(int descr, dbref player, dbref where, dbref trigger, dbref what,
                          dbref xclude, const char *propname, const char *toparg, int mlev,
