@@ -6,13 +6,15 @@
  * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
  */
 
+#include <stdio.h>
+#include <string.h>
+
 #include "config.h"
 
 #include "boolexp.h"
 #include "commands.h"
 #include "db.h"
 #include "edit.h"
-#include "fbstrings.h"
 #include "fbtime.h"
 #include "game.h"
 #include "interface.h"
