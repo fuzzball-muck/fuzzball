@@ -1,6 +1,10 @@
 #ifndef _TUNELIST_H
 #define _TUNELIST_H
 
+#include <stddef.h>
+
+#include "config.h"
+#include "db.h"
 #include "defaults.h"
 #include "fbtime.h"
 #include "game.h"
