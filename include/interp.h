@@ -1,11 +1,18 @@
 #ifndef _INTERP_H
 #define _INTERP_H
 
+#include <stddef.h>
+#include <time.h>
+
 #include "array.h"
+#include "config.h"
 #include "fbstrings.h"
 #include "inst.h"
 
-/* Some icky machine/compiler #defines. --jim */
+/*
+ * Some icky machine/compiler #defines. --jim
+ * I think we can get rid of them though.  TODO!  --mainecoon
+ */
 #ifdef MIPS
 typedef char *voidptr;
 
