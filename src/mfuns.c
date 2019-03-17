@@ -9,6 +9,7 @@
 #include "config.h"
 
 #include "db.h"
+#include "fbmath.h"
 #include "fbstrings.h"
 #include "fbtime.h"
 #include "game.h"
