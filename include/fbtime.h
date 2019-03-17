@@ -1,6 +1,8 @@
 #ifndef _FBTIME_H
 #define _FBTIME_H
 
+#include <time.h>
+
 #include "config.h"
 
 #define TIME_MINUTE(x)  (60 * (x))			/* 60 seconds */
