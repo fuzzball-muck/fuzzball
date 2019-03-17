@@ -6,11 +6,17 @@
  * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
  */
 
+#include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "config.h"
 
 #include "db.h"
 #include "fbstrings.h"
 #include "game.h"
+#include "inst.h"
 #include "mpi.h"
 #include "props.h"
 #include "tune.h"
