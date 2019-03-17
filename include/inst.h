@@ -8,7 +8,10 @@
 #ifndef _INST_H
 #define _INST_H
 
+#include <stddef.h>
+
 #include "boolexp.h"
+#include "config.h"
 
 #define IN_JMP        1
 #define IN_READ       2
