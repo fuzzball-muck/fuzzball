@@ -18,6 +18,7 @@
 #include "compile.h"
 #include "db.h"
 #include "edit.h"
+#include "fbmath.h"
 #include "fbstrings.h"
 #include "game.h"
 #include "hashtab.h"
