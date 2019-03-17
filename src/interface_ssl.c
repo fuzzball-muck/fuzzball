@@ -1,5 +1,3 @@
-#include "config.h"
-
 #ifdef USE_SSL
 
 #include "interface_ssl.h"
