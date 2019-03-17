@@ -3250,7 +3250,7 @@ is_preprocessor_conditional(const char *tmpptr)
  *
  * 'Depth' is a funny thing here.  It isn't really used the same as depth
  * in, say, do_new_comment where it is the recursion depth.  What it really
- * means is, are we doing is controlling if we use the recursive comment
+ * means is, All we are doing is controlling if we use the recursive comment
  * code or not.  It is, in fact, really kind of superfluous because
  * it is set according to the binary value of cstat->force_comment which
  * is also used in this call.
@@ -4783,7 +4783,7 @@ prealloc_inst(COMPSTATE * cstat)
  * are basically primitives, but from a compiler perspective are special
  * constructs.
  *
- * This includes procedure definitions (: and ;), and all the different
+ * This includes procedure definitions (':' and ';'), and all the different
  * loop/branch constructs (IF, BEGIN, WHILE, etc.)
  *
  * The original documentation had the following note regarding branches:
