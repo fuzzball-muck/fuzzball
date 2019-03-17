@@ -1,6 +1,7 @@
 #ifndef _LOG_H
 #define _LOG_H
 
+#include "config.h"
 #include "inst.h"
 
 void log2file(const char *myfilename, char *format, ...);
