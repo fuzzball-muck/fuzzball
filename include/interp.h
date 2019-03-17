@@ -4,7 +4,6 @@
 #include "array.h"
 #include "fbstrings.h"
 #include "inst.h"
-#include "timequeue.h"
 
 /* Some icky machine/compiler #defines. --jim */
 #ifdef MIPS
