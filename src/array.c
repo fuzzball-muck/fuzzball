@@ -6,7 +6,6 @@
  * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
  */
 
-#include <assert.h>
 #include <float.h>
 #include <math.h>
 #include <stdio.h>
