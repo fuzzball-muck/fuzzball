@@ -7,6 +7,7 @@
 
 #include "db.h"
 #include "fbmath.h"
+#include "fbstrings.h"
 #include "inst.h"
 #include "interp.h"
 
