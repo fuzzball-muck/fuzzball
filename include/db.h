@@ -1,6 +1,9 @@
 #ifndef _DB_H
 #define _DB_H
 
+#include <stdio.h>
+#include <time.h>
+
 #include "config.h"
 
 #define DB_VERSION_STRING "***Foxen9 TinyMUCK DUMP Format***"

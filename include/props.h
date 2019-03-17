@@ -9,6 +9,8 @@
 #ifndef _PROPS_H
 #define _PROPS_H
 
+#include <stdio.h>
+
 #include "config.h"
 
 /*

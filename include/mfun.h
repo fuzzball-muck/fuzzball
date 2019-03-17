@@ -1,6 +1,10 @@
 #ifndef _MFUN_H
 #define _MFUN_H
 
+#include <stddef.h>
+
+#include "config.h"
+
 #define MFUNARGS int descr, dbref player, dbref what, dbref perms, int argc, \
         char **argv, char *buf, size_t buflen, int mesgtyp
 

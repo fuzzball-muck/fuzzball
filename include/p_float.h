@@ -1,6 +1,8 @@
 #ifndef _P_FLOAT_H
 #define _P_FLOAT_H
 
+#include "interp.h"
+
 void prim_ceil(PRIM_PROTOTYPE);
 void prim_floor(PRIM_PROTOTYPE);
 void prim_float(PRIM_PROTOTYPE);

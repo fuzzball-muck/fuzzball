@@ -1,6 +1,8 @@
 #ifndef _EDIT_H
 #define _EDIT_H
 
+#include <stdio.h>
+
 #include "config.h"
 #include "inst.h"
 

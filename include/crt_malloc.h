@@ -12,6 +12,8 @@
 #ifndef _CRT_MALLOC_H
 #define _CRT_MALLOC_H
 
+#include <stddef.h>
+
 #include "config.h"
 
 /* This is a define for some compilers */

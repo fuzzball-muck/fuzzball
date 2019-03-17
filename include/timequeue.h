@@ -1,7 +1,10 @@
 #ifndef _TIMEQUEUE_H
 #define _TIMEQUEUE_H
 
+#include <time.h>
+
 #include "array.h"
+#include "config.h"
 #include "interp.h"
 
 int add_mpi_event(int delay, int descr, dbref player, dbref loc, dbref trig,

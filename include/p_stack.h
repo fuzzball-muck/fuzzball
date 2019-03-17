@@ -1,6 +1,8 @@
 #ifndef _P_STACK_H
 #define _P_STACK_H
 
+#include "interp.h"
+
 void prim_pop(PRIM_PROTOTYPE);	/*     ? --              */
 void prim_dup(PRIM_PROTOTYPE);	/*     ? -- ? ?          */
 void prim_pdup(PRIM_PROTOTYPE);	/*     a -- a a | ?	 */

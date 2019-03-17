@@ -9,6 +9,9 @@
 #ifndef _BOOLEXP_H
 #define _BOOLEXP_H
 
+#include <stddef.h>
+
+#include "config.h"
 #include "props.h"
 
 /* These are the different elements of a boolean expression */

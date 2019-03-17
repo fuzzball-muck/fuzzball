@@ -1,6 +1,8 @@
 #ifndef _P_REGEX_H
 #define _P_REGEX_H
 
+#include "interp.h"
+
 #define MUF_RE_ICASE	1
 #define MUF_RE_ALL	2
 #define MUF_RE_EXTENDED	4

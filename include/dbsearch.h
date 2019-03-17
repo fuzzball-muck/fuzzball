@@ -10,6 +10,10 @@
 #ifndef _DBSEARCH_H
 #define _DBSEARCH_H
 
+#include <stddef.h>
+
+#include "config.h"
+
 struct flgchkdat {
     int fortype;        /* check FOR a type? */
     int istype;         /* If check FOR a type, which one? */

@@ -1,6 +1,8 @@
 #ifndef _P_MISC_H
 #define _P_MISC_H
 
+#include "interp.h"
+
 void prim_time(PRIM_PROTOTYPE);
 void prim_date(PRIM_PROTOTYPE);
 void prim_gmtoffset(PRIM_PROTOTYPE);

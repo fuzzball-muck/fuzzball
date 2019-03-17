@@ -4,6 +4,8 @@
 #ifndef _P_MCP_H
 #define _P_MCP_H
 
+#include "interp.h"
+
 void prim_mcp_register(PRIM_PROTOTYPE);
 void prim_mcp_register_event(PRIM_PROTOTYPE);
 void prim_mcp_bind(PRIM_PROTOTYPE);

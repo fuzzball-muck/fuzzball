@@ -1,20 +1,22 @@
 #ifndef _MATCH_H
 #define _MATCH_H
 
+#include "config.h"
+
 struct match_data {
-    dbref exact_match;		/* holds result of exact match */
-    int check_keys;		/* if non-zero, check for keys */
-    dbref last_match;		/* holds result of last match */
-    int match_count;		/* holds total number of inexact matches */
-    dbref match_who;		/* player used for me, here, and messages */
-    dbref match_from;		/* object which is being matched around */
-    int match_descr;		/* descriptor initiating the match */
-    const char *match_name;	/* name to match */
-    int preferred_type;		/* preferred type */
-    int longest_match;		/* longest matched string */
-    int match_level;		/* the highest priority level so far */
-    int block_equals;		/* block matching of same name exits */
-    int partial_exits;		/* if non-zero, allow exits to match partially */
+	dbref exact_match;       /* holds result of exact match */
+	int check_keys;          /* if non-zero, check for keys */
+	dbref last_match;        /* holds result of last match */
+	int match_count;         /* holds total number of inexact matches */
+	dbref match_who;         /* player used for me, here, and messages */
+	dbref match_from;        /* object which is being matched around */
+	int match_descr;         /* descriptor initiating the match */
+	const char *match_name;  /* name to match */
+	int preferred_type;      /* preferred type */
+	int longest_match;       /* longest matched string */
+	int match_level;         /* the highest priority level so far */
+	int block_equals;        /* block matching of same name exits */
+	int partial_exits;       /* if non-zero, allow exits to match partially */
 };
 
 dbref find_registered_obj(dbref player, const char *name);

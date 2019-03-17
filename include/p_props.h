@@ -1,6 +1,8 @@
 #ifndef _P_PROPS_H
 #define _P_PROPS_H
 
+#include "interp.h"
+
 int prop_read_perms(dbref player, dbref obj, const char *name, int mlev);
 int prop_write_perms(dbref player, dbref obj, const char *name, int mlev);
 
