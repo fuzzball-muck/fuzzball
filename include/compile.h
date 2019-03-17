@@ -8,6 +8,8 @@
 #ifndef _COMPILE_H
 #define _COMPILE_H
 
+#include <stddef.h>
+
 #include "config.h"
 
 /*
