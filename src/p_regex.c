@@ -1,7 +1,13 @@
+#include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "config.h"
 
 #include "array.h"
 #include "db.h"
+#include "fbstrings.h"
 #include "hashtab.h"
 #include "inst.h"
 #include "interp.h"

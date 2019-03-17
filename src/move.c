@@ -6,6 +6,9 @@
  * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
  */
 
+#include <stdio.h>
+#include <string.h>
+
 #include "config.h"
 
 #include "boolexp.h"

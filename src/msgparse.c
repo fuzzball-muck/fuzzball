@@ -1,5 +1,12 @@
+#include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
 #include "config.h"
 
+#include "boolexp.h"
 #include "db.h"
 #include "fbstrings.h"
 #include "game.h"

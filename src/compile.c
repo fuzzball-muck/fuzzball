@@ -5,6 +5,13 @@
  * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
  */
 
+#include <ctype.h>
+#include <limits.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
 #include "config.h"
 
 #include "commands.h"

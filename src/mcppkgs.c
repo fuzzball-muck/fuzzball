@@ -1,10 +1,17 @@
 #include "config.h"
 
 #ifdef MCP_SUPPORT
+
+#include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "compile.h"
 #include "db.h"
 #include "edit.h"
 #include "fbstrings.h"
+#include "inst.h"
 #include "interface.h"
 #include "log.h"
 #include "mcp.h"

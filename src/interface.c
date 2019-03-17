@@ -7,8 +7,19 @@
  * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
  */
 
+#include <ctype.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <time.h>
+
 #include "config.h"
 
+#include "autoconf.h"
 #include "commands.h"
 #include "db.h"
 #include "defines.h"
