@@ -1,6 +1,8 @@
 #ifndef _P_MATH_H
 #define _P_MATH_H
 
+#include "interp.h"
+
 void prim_add(PRIM_PROTOTYPE);
 void prim_subtract(PRIM_PROTOTYPE);
 void prim_multiply(PRIM_PROTOTYPE);
