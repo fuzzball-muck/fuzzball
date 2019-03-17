@@ -548,7 +548,7 @@ fixpubs(struct publics *mypubs, struct inst *offset)
 }
 
 /**
- * Get the size, in byts, of all the public structures in the linked list
+ * Get the size, in bytes, of all the public structures in the linked list
  *
  * @private
  * @param mypubs the head of the list
@@ -951,9 +951,9 @@ free_unused_programs()
  * There are many cases where the optimization can't happen; by my
  * estimation it looks like the optimization is pretty rare.  The
  * reasoning by each skip is fairly well documented within the code
- * and doesn't really bare repeating here.
+ * and doesn't really bear repeating here.
  *
- * The compile state structure will be potnetially modified by this call.
+ * The compile state structure will be potentially modified by this call.
  *
  * @private
  * @param cstat the compile state structure
@@ -1103,8 +1103,8 @@ MaybeOptimizeVarsAt(COMPSTATE * cstat, struct INTERMEDIATE *first, int AtNo,
 /**
  * Remove the next intermediate after 'curr' in the linked list.
  *
- * This also shifts all the addresses in addrlist down and free's
- * the memory of the removed item in the linekd list.  The
+ * This also shifts all the addresses in addrlist down and frees
+ * the memory of the removed item in the linked list.  The
  * number of words book-keeping is also updated.
  *
  * The offset lists aren't updated which is a little fishy to me,
@@ -1213,7 +1213,7 @@ RemoveIntermediate(COMPSTATE * cstat, struct INTERMEDIATE *curr)
  *
  * This means two things:
  *
- * * That there are 'count' INTERMEDIATES left in the list, starting with
+ * * That there are 'count' INTERMEDIATEs left in the list, starting with
  *   'ptr'
  *
  * * That none of the 'count' intermediates starting with 'ptr' are
@@ -2104,7 +2104,7 @@ alloc_inst(void)
 /**
  * Create a new instruction, or return an already available one.
  *
- * A list of pre-allocateed instructions is kept, so we use those first.
+ * A list of pre-allocated instructions is kept, so we use those first.
  * When expended, we will allocate new instructions.
  *
  * @private
@@ -2528,8 +2528,8 @@ object_word(COMPSTATE * cstat, const char *token)
 /**
  * Determine if a given token is a 'special' keyword
  *
- * Special keywords aren't primtives; they are basically reserved words
- * or control structure such as :, ;, IF, ELSE, etc.
+ * Special keywords aren't primitives; they are basically reserved words
+ * or control structures such as :, ;, IF, ELSE, etc.
  *
  * @private
  * @param token the token to check
@@ -2829,7 +2829,7 @@ do_compile(int descr, dbref player_in, dbref program_in, int force_err_display)
      * This is where the program "text" comes from.  This is loaded when
      * the program is loaded by db.c
      *
-     * Grep for PROGRAM_SET_FIRST in db.c if you are curious.  Under the
+     * grep for PROGRAM_SET_FIRST in db.c if you are curious.  Under the
      * hood it uses read_program
      *
      * @see read_program
@@ -3107,7 +3107,7 @@ do_old_comment(COMPSTATE * cstat)
  * The "new" comment parser, supporting recursive comments.
  *
  * I believe this means that you can have comments inside comments,
- * (which is nice because you can do things like this).  However,
+ * (which is nice because you can (do things) like this).  However,
  * it appears that comments aren't documented (as far as I can tell)
  * in 'man'.
  *
@@ -4761,7 +4761,7 @@ prealloc_inst(COMPSTATE * cstat)
         cstat->nextinst = nu;
     } else {
         for (ptr = cstat->nextinst; ptr->next; ptr = ptr->next) ;
-            ptr->next = nu;
+        ptr->next = nu;
     }
 
     nu->no = cstat->nowords;
@@ -5589,7 +5589,7 @@ get_primitive(const char *token)
  * free_unused_programs, uncompile_program, and various internal compiler
  * calls.
  *
- * @see free_unsued_programs
+ * @see free_unused_programs
  * @see uncompile_program
  *
  * This frees all the memory associated with a given dbref's in-memory
@@ -5743,7 +5743,7 @@ clear_primitives(void)
  * @var the array that has all of our primitive names.
  *
  * @TODO Move this to the top of the file?  This is kind of buried here.
- *       Of course, typically one adds primtiives to one of the #define'd
+ *       Of course, typically one adds primitives to one of the #define'd
  *       names so it doesn't matter TOO much ... but I think it would be
  *       more tidy in a prominent place.
  */
