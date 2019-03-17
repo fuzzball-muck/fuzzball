@@ -1,3 +1,5 @@
+#include <stddef.h>
+
 #include "config.h"
 
 #include "array.h"
