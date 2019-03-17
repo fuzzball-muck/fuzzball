@@ -1132,7 +1132,7 @@ do_propset(int descr, dbref player, const char *name, const char *prop)
  * is no object name, then the registration target is cleared.  Otherwise,
  * object is registered to the given name.
  *
- * See help @register on the MUCK for a more consice explanation :)
+ * See help @register on the MUCK for a more concice explanation :)
  *
  * This does permission checking.
  *

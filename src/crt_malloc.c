@@ -1,13 +1,10 @@
-/* {{{ crt_malloc.c -- CrT's own silly malloc wrappers for debugging.	*/
-
-/* This file is formatted for use with folding.el for emacs, sort	*/
-/* of an outline-mode for programmers, ftp-able from elisp archives	*/
-/* such as tut.cis.ohio-state.edu (128.146.8.52).  If you don't use	*/
-/* folding-mode and/or emacs, you may want to prepare a table of	*/
-/* contents for this file by doing "grep '{{{' thisfile.c".		*/
-
-/* Can be used to generate malloc statistic listing looking like:
-
+/** @file crt_malloc.c
+ *
+ * crt_malloc.c -- CrT's own silly malloc wrappers for debugging.
+ *
+ * To enable this, MALLOC_PROFILING must be defined.
+ *
+ * Can be used to generate malloc statistic listing looking like:
 
          File Line CurBlks CurBytes MaxBlks MaxBytes MxByTime TotBlks TotBytes
 ------------- ---- ------- -------- ------- -------- -------- ------- --------
@@ -69,7 +66,7 @@
  * 
  * 'CurBlks' is number of ram blocks currently in existence
  *      created by that call;
-         File Line CurBlks CurBytes MaxBlks MaxBytes MxByTime TotBlks TotBytes
+ *       File Line CurBlks CurBytes MaxBlks MaxBytes MxByTime TotBlks TotBytes
  * 'CurBytes' is number of ram bytes current in existence
  *      created by that call;
  * 'TotBlks' is total number of ram blocks ever created by that call;
@@ -91,12 +88,6 @@
  * Together, the above two options can DOUBLE FUZZBALL'S RAM CONSUMPTION.
  */
 
-/* }}} */
-
-/* {{{ Header stuff							*/
-
-/* {{{ #includes							*/
-
 #include "config.h"
 
 #ifdef MALLOC_PROFILING
@@ -104,190 +95,214 @@
 #include "inst.h"
 #include "interface.h"
 
-/* {{{ #defines you might want to configure.                            */
+/* #defines you might want to configure. */
 
-/* Select whether to do debug checks also. */
-/* These checks eat an additional 8 bytes  */
-/* per allocated block, but can be some    */
-/* help in tracking down obscure memory    */
-/* trashing pointer bugs.                  */
-/* #define MALLOC_PROFILING_EXTRA                  */
+/*
+ * Select whether to do debug checks also.  These checks eat an additional 8
+ * bytes per allocated block, but can be some help in tracking down obscure
+ * memory trashing pointer bugs.
+ */
+/* #define MALLOC_PROFILING_EXTRA          */
 
-/* When debugging is selected, we check the */
-/* last CRT_NEW_TO_CHECK blocks allocated   */
-/* each time we are called, on the theory   */
-/* that they are the most likely to have    */
-/* been trashed by buggy code:              */
+/*
+ * When debugging is selected, we check the last CRT_NEW_TO_CHECK blocks
+ * allocated each time we are called, on the theory that they are the most
+ * likely to have been trashed by buggy code:
+ */
 #ifndef CRT_NEW_TO_CHECK
 #define CRT_NEW_TO_CHECK (128)  /* Make it a nonzero power of two.  */
 #endif
 
-/* When debugging is selected we also check */
-/* CRT_OLD_TO_CHECK blocks on the used-ram  */
-/* cycling through all allocated blocks in  */
-/* time:                                    */
+/*
+ * When debugging is selected we also check CRT_OLD_TO_CHECK blocks on the
+ * used-ram cycling through all allocated blocks in time:
+ */
 #ifndef CRT_OLD_TO_CHECK
 #define CRT_OLD_TO_CHECK (128)
 #endif
 
-/* When MALLOC_PROFILING_EXTRA is true, we add the  */
-/* following value to the end of block, so  */
-/* we can later check to see if it got      */
-/* overwritten by something:                */
+/*
+ * When MALLOC_PROFILING_EXTRA is true, we add the following value to the
+ * end of block, so we can later check to see if it got overwritten by
+ * something:
+ */
 #ifndef CRT_MAGIC
 #define CRT_MAGIC ((char)231)
 #endif
-/* Something we write into the magic byte  */
-/* of a block just before free()ing it, so */
-/* as to maybe diagnose repeated free()s:  */
+
+/*
+ * Something we write into the magic byte of a block just before free()ing it,
+ * so as to maybe diagnose repeated free()s:
+ */
 #ifndef CRT_FREE_MAGIC
 #define CRT_FREE_MAGIC ((char)~CRT_MAGIC)
 #endif
 
-/* }}} */
-/* {{{ block_list, a list of all malloc/free/etc calls in host program. */
-
-/* Central data structure: a blocklist with one entry  */
-/* for each textually distinct [mc]alloc() call:       */
-
+/*
+ * block_list, a list of all malloc/free/etc calls in host program.
+ *
+ * Central data structure: a blocklist with one entry for each textually
+ * distinct [mc]alloc() call:
+ */
 struct CrT_block_rec {
-    const char *file;
-    int line;
+    const char *file;       /* File name where call is sourced  */
+    int line;               /* Line where call is sourced       */
 
-    long tot_bytes_alloc;
-    long tot_allocs_done;
-    long live_blocks;
-    long live_bytes;
-    long max_blocks;
-    long max_bytes;
-    time_t max_bytes_time;
+    long tot_bytes_alloc;   /* Total number of bytes allocated  */
+    long tot_allocs_done;   /* Total number of blocks allocated */
+    long live_blocks;       /* Currently live blocks            */
+    long live_bytes;        /* Currently live bytes             */
+    long max_blocks;        /* Maximum blocks                   */
+    long max_bytes;         /* Maximum bytes                    */
+    time_t max_bytes_time;  /* Maximum bytes by time            */
 
-    struct CrT_block_rec *next;
+    struct CrT_block_rec *next; /* Linked list implementation   */
 };
 typedef struct CrT_block_rec A_Block;
 typedef struct CrT_block_rec *Block;
 
+/**
+ * @private
+ * @var the master list of allocated blocks
+ */
 static Block block_list = NULL;
 
-/* }}} */
-/* {{{ Header, a header we add to each block allocated:                 */
+/* Header, a header we add to each block allocated */
 
 struct CrT_header_rec {
-    Block b;
-    size_t size;
+    Block b;                        /* Pointer to block information record */
+    size_t size;                    /* Size of the memory block            */
 #ifdef MALLOC_PROFILING_EXTRA
+    /*
+     * There is a concept of a "root" linked list which is used to keep
+     * track of all memory allocations.  This linked list is used for that
+     * root list -- and is only used when MALLOC_PROFILING_EXTRA is on.
+     */
     struct CrT_header_rec *next;
     struct CrT_header_rec *prev;
-    char *end;
+    char *end;                      /* Pointer to end of memory block      */
 #endif
 };
+
 typedef struct CrT_header_rec A_Header;
 typedef struct CrT_header_rec *Header;
 
-/* }}} */
-
-/* {{{ Globals supporting debug functionality.				*/
+/* Globals supporting debug functionality. */
 
 #ifdef MALLOC_PROFILING_EXTRA
+
+/**
+ * @private
+ * @var the root block's header information for the memory allocation linked
+ *      list
+ */
 static A_Block Root_Owner = {
 
-    __FILE__,			/* file */
-    __LINE__,			/* line */
+    __FILE__,       /* file */
+    __LINE__,       /* line */
 
-    0,				/* tot_bytes_alloc */
-    0,				/* tot_allocs_done */
-    0,				/* live_blocks     */
-    0,				/* live_bytes      */
-    0,				/* max_blocks      */
-    0,				/* max_bytes       */
-    0,				/* max_bytes_time  */
+    0,              /* tot_bytes_alloc */
+    0,              /* tot_allocs_done */
+    0,              /* live_blocks     */
+    0,              /* live_bytes      */
+    0,              /* max_blocks      */
+    0,              /* max_bytes       */
+    0,              /* max_bytes_time  */
 
-    NULL			/* next            */
+    NULL            /* next            */
 };
 
+/**
+ * @private
+ * @var the 'end' field in a header has to be a memory location, so this
+ *      is used for that memory location to fill that requirement.
+ */
 static char root_end = CRT_MAGIC;
 
+/**
+ * @private
+ * @var our linked list master header for tracking all memory blocks
+ */
 static A_Header root = {
-    &Root_Owner,		/* b    */
-    0,				/* size */
-    &root,			/* next */
-    &root,			/* prev */
-    &root_end,			/* end  */
+    &Root_Owner,    /* b    */
+    0,              /* size */
+    &root,          /* next */
+    &root,          /* prev */
+    &root_end,      /* end  */
 };
 
-/* Clockhand that we run circularly around  */
-/* allocated-block list, looking for probs: */
+/**
+ * @private
+ * @var Clockhand that we run circularly around allocated-block list,
+ *      looking for problems:
+ */
 static Header rover = &root;
 
+
+/*
+ * @TODO These multi-line defines are gross.  Replace them with
+ *       inline functions.
+ */
 /* Macro to insert block m into 'root' linklist: */
 #undef  INSERT
-#define INSERT(m) {			\
-    root. next->prev =  (m);		\
-   (m)        ->next =  root.next;	\
-   (m)        ->prev = &root;		\
-    root.       next =  (m);		\
+#define INSERT(m) {                 \
+    root. next->prev =  (m);        \
+   (m)        ->next =  root.next;  \
+   (m)        ->prev = &root;       \
+    root.       next =  (m);        \
     }
 
 /* Macro to remove block m from 'root' linklist: */
 #undef  REMOVE
-#define REMOVE(m) {			\
-   (m)->next->prev = (m)->prev;		\
-   (m)->prev->next = (m)->next;		\
+#define REMOVE(m) {                 \
+   (m)->next->prev = (m)->prev;     \
+   (m)->prev->next = (m)->next;     \
     }
 
-/* An array tracking last CRT_NEW_TO_CHECK blocks touched: */
+/**
+ * @private
+ * @var An array tracking last CRT_NEW_TO_CHECK blocks touched
+ */
 static Header just_touched[CRT_NEW_TO_CHECK] = {
-    /* I can't think of an elegant way of generating the */
-    /* right number of initializers automatically via    */
-    /* cpp :( so:                                        */
-    &root, &root, &root, &root,
-    &root, &root, &root, &root,
-    &root, &root, &root, &root,
-    &root, &root, &root, &root,
-    &root, &root, &root, &root,
-    &root, &root, &root, &root,
-    &root, &root, &root, &root,
-    &root, &root, &root, &root,
+    /*
+     * I can't think of an elegant way of generating the right number of
+     * initializers automatically via cpp :( so:
+     */
+    &root, &root, &root, &root, &root, &root, &root, &root,
+    &root, &root, &root, &root, &root, &root, &root, &root,
+    &root, &root, &root, &root, &root, &root, &root, &root,
+    &root, &root, &root, &root, &root, &root, &root, &root,
 
-    &root, &root, &root, &root,
-    &root, &root, &root, &root,
-    &root, &root, &root, &root,
-    &root, &root, &root, &root,
-    &root, &root, &root, &root,
-    &root, &root, &root, &root,
-    &root, &root, &root, &root,
-    &root, &root, &root, &root,
+    &root, &root, &root, &root, &root, &root, &root, &root,
+    &root, &root, &root, &root, &root, &root, &root, &root,
+    &root, &root, &root, &root, &root, &root, &root, &root,
+    &root, &root, &root, &root, &root, &root, &root, &root,
 
-    &root, &root, &root, &root,
-    &root, &root, &root, &root,
-    &root, &root, &root, &root,
-    &root, &root, &root, &root,
-    &root, &root, &root, &root,
-    &root, &root, &root, &root,
-    &root, &root, &root, &root,
-    &root, &root, &root, &root,
+    &root, &root, &root, &root, &root, &root, &root, &root,
+    &root, &root, &root, &root, &root, &root, &root, &root,
+    &root, &root, &root, &root, &root, &root, &root, &root,
+    &root, &root, &root, &root, &root, &root, &root, &root,
 
-    &root, &root, &root, &root,
-    &root, &root, &root, &root,
-    &root, &root, &root, &root,
-    &root, &root, &root, &root,
-    &root, &root, &root, &root,
-    &root, &root, &root, &root,
-    &root, &root, &root, &root,
-    &root, &root, &root, &root,
-
+    &root, &root, &root, &root, &root, &root, &root, &root,
+    &root, &root, &root, &root, &root, &root, &root, &root,
+    &root, &root, &root, &root, &root, &root, &root, &root,
+    &root, &root, &root, &root, &root, &root, &root, &root,
 };
 
-static int next_touched = 0;	/* Always indexes above. */
+/**
+ * @private
+ * @var keep track of the index in just_touched
+ */
+static int next_touched = 0;
 
 #endif
 
-/* }}} */
-/* {{{ Random internal macro stuff					*/
+/* Random internal macro stuff */
 
-/* Undefine the macros which make the rest */
-/* of the system call our wrappers instead */
-/* of calling malloc &Co directly:	   */
+/*
+ * Undefine the macros which make the rest of the system call our wrappers
+ * instead of calling malloc &Co directly:
+ */
 #undef malloc
 #undef calloc
 #undef realloc
@@ -300,44 +315,68 @@ static int next_touched = 0;	/* Always indexes above. */
 #define CRT_OVERHEAD_BYTES (sizeof(A_Header)   )
 #endif
 
-/* }}} */
+/*
+ * Some functions to implement a simple block_list merge-sort.
+ *
+ * Currently, sorts on live_bytes field.
+ */
 
-/* }}} */
-
-/* {{{ sorting -- Some fns to implement a simple block_list merge-sort. */
-
-/* Currently, sorts on live_bytes field. */
-
-/* {{{ block_count -- Count number of blocks in a blocklist.		*/
-
+/**
+ * Count number of blocks in a blocklist
+ *
+ * @private
+ * @param b the block to generate a count for
+ * @return the count of blocks in the blocklist
+ */
 static int
 block_count(Block b)
 {
     int i;
 
     for (i = 0; b; b = b->next)
-	++i;
+        ++i;
+
     return i;
 }
 
-/* }}} */
-/* {{{ blocks_nth -- Return nth block in a blocklist.			*/
-
+/**
+ * Return nth block in a blocklist.
+ *
+ * The first block is 0. This does NOT check to see if the 'n' overruns
+ * our list (in other words, 'n' is greater than the number of items in
+ * the list).  The way this is used at present, an overrun will never
+ * happen.
+ *
+ * @private
+ * @param b the block list to retrieve from
+ * @param n the block number to retreive
+ * @return the block we requested
+ */
 static Block
-blocks_nth(			/* Return nth block in list, first is #0. */
-	      Block b, int n)
+blocks_nth(Block b, int n)
 {
     for (int i = 0; i < n; b = b->next)
-	++i;
+        ++i;
+
     return b;
 }
 
-/* }}} */
-/* {{{ blocks_split -- Split blocklist 'b' into two lists, return 2nd. 	*/
-
+/**
+ * Split blocklist 'b' into two lists, return 2nd list
+ *
+ * No checking is done to make sure 'n' is a valid position in the list.
+ * However, how this call is used currently will not cause errors; however
+ * any future users should be aware of this.
+ *
+ * @see blocks_nth
+ *
+ * @private
+ * @param b the blocklist to split
+ * @param n the place to split the list
+ * @return the newly split second list
+ */
 static Block
-blocks_split(Block b, int n	/* Nth block becomes first in 2nd list. */
-	)
+blocks_split(Block b, int n)
 {
     Block tail = blocks_nth(b, n - 1);
     Block head = tail->next;
@@ -346,35 +385,44 @@ blocks_split(Block b, int n	/* Nth block becomes first in 2nd list. */
     return head;
 }
 
-/* }}} */
-/* {{{ blocks_merge -- Merge two sorted lists into one sorted list. 	*/
-
+/**
+ * Merge two sorted lists into one sorted list.
+ *
+ * This merges the lists, sorting by live_bytes in ascending order.
+ * The linked lists b0 and b1 are mutated by this call; b0 and b1 will
+ * point to valid memory locations but their list positions could be
+ * different.
+ *
+ * @private
+ * @param b0 the first blocklist to merge
+ * @param b1 the second blocklist to merge
+ * @return the merged blocklist
+ */
 static Block
-blocks_merge(			/* Merge two sorted lists into one. */
-		Block b0, Block b1)
+blocks_merge(Block b0, Block b1)
 {
     A_Block head;
     Block tail = &head;
 
     while (b0 || b1) {
-	Block nxt;
+        Block nxt;
 
-	if (!b1) {
-	    nxt = b0;
-	    b0 = b0->next;
-	} else if (!b0) {
-	    nxt = b1;
-	    b1 = b1->next;
-	} else if (b0->live_bytes < b1->live_bytes) {
-	    nxt = b0;
-	    b0 = b0->next;
-	} else {
-	    nxt = b1;
-	    b1 = b1->next;
-	}
+        if (!b1) {
+            nxt = b0;
+            b0 = b0->next;
+        } else if (!b0) {
+            nxt = b1;
+            b1 = b1->next;
+        } else if (b0->live_bytes < b1->live_bytes) {
+            nxt = b0;
+            b0 = b0->next;
+        } else {
+            nxt = b1;
+            b1 = b1->next;
+        }
 
-	tail->next = nxt;
-	tail = nxt;
+        tail->next = nxt;
+        tail = nxt;
     }
 
     tail->next = NULL;
@@ -382,36 +430,56 @@ blocks_merge(			/* Merge two sorted lists into one. */
     return head.next;
 }
 
-/* }}} */
-/* {{{ blocks_merge -- Sort blocklist on 'live_bytes'.		 	*/
-
+/**
+ * Sort blocklist on 'live_bytes' (ascending)
+ *
+ * @see blocks_merge
+ *
+ * Note that 'b1' will likely be mutated by this call unless there is only
+ * a single item or if it is already sorted.  You should use the returned
+ * value instead rather than continue to us what you pass into this function.
+ *
+ * @private
+ * @param b1 the blocklist to sort
+ * @return the sorted blocklist
+ */
 static Block
-blocks_sort(			/* Sort 'b1' on 'live_bytes'. */
-	       Block b1)
+blocks_sort(Block b1)
 {
     int len = block_count(b1);
 
     if (len < 2)
-	return b1;
+        return b1;
 
     {
-	Block b2 = blocks_split(b1, len / 2);
+        Block b2 = blocks_split(b1, len / 2);
 
-	return blocks_merge(blocks_sort(b1), blocks_sort(b2)
-		);
+        return blocks_merge(blocks_sort(b1), blocks_sort(b2));
     }
 }
 
-/* }}} */
-
-/* }}} */
-
-/* {{{ blocks_alloc -- Alloc block for given file/line.			*/
-
+/**
+ * Alloc block for given file and line
+ *
+ * This is meant to be used with __FILE__ and __LINE__.  The 'file' string
+ * is NOT copied so that memory must not be free'd.  If you use __FILE__,
+ * this will work fine since that string is a constant.
+ *
+ * @private
+ * @param file the file we are allocating a block for.
+ * @param line the line we are allocating the block for.
+ * @return the allocated block
+ */
 static Block
 block_alloc(const char *file, int line)
 {
     Block b = malloc(sizeof(A_Block));
+
+    /*
+     * @TODO Recommend we do a memset(b, 0, sizeof(A_Block)), then
+     *       set file, line, and ->next.  It is more efficient and
+     *       makes sure the whole structure is properly nulled out.
+     */
 
     b->file = file;
     b->line = line;
@@ -428,28 +496,44 @@ block_alloc(const char *file, int line)
     return b;
 }
 
-/* }}} */
-/* {{{ blocks_find -- Find block for file/line, maybe creating.		*/
-
+/**
+ * Find block for file/line, creating the block if it doesn't already exist
+ *
+ * @private
+ * @param file the file to find a block for
+ * @param line the line to find a block for
+ * @return the found block, or a new block for the file/line
+ */
 static Block
 block_find(const char *file, int line)
 {
+    /*
+     * @TODO This is super inefficient.  We're scanning a giant dumpster of
+     *       lines and files.  This could be done a lot better.  However,
+     *       this code probably isn't worth improving
+     */
     for (Block b = block_list; b; b = b->next) {
-	if (b->line == line && !strcmp(b->file, file)
-		) {
-	    return b;
-	}
+        if (b->line == line && !strcmp(b->file, file)) {
+            return b;
+        }
     }
+
     return block_alloc(file, line);
 }
 
-/* }}} */
+/* Report generation functions: */
 
-/* Report generation functions:						*/
-/* {{{ CrT_summarize -- Summarize ram usage statistics.			*/
 
-/* {{{ CrT_timestr -- Return ascii timestring in static buffer.		*/
-
+/**
+ * Return ascii time string in static buffer
+ *
+ * You should not free the memory returned by this.  And of course, this is
+ * not threadsafe and theoretically the buffer can mutate on you.
+ *
+ * @private
+ * @param when the time stamp to generate a time string for.
+ * @return a time string in a static buffer.
+ */
 static const char *
 CrT_timestr(time_t when)
 {
@@ -457,17 +541,31 @@ CrT_timestr(time_t when)
     struct tm *da_time = localtime(&when);
 
     snprintf(buf, sizeof(buf), "%02d%02d%02d%02d",
-	     da_time->tm_mday, da_time->tm_hour, da_time->tm_min, da_time->tm_sec);
+             da_time->tm_mday, da_time->tm_hour, da_time->tm_min,
+             da_time->tm_sec);
     return buf;
 }
 
-/* }}} */
-
+/**
+ * @private
+ * @var a global to keep track of the player to send summary information to.
+ *      We use this because of the funky callback system; there's no good way
+ *      to pass this around as-written.
+ */
 static dbref summarize_player;
 
+/**
+ * Summarize ram usage statistics.
+ *
+ * Takes a callback function that takes a character string.  Each line of
+ * the summary is fed to the callback which can be used to do the proper
+ * display of the said line.
+ *
+ * @private
+ * @param fn the callback, which should take a single string parameter.
+ */
 static void
-summarize(void (*fn) (char *)
-	)
+summarize(void (*fn) (char *))
 {
     int sum_blks = 0;
     int sum_byts = 0;
@@ -480,39 +578,57 @@ summarize(void (*fn) (char *)
 
 #undef  X
 #define X(t) (*fn)(t);
+
     X("         File Line CurBlks CurBytes MaxBlks MaxBytes MxByTime TotBlks TotBytes");
     X("------------- ---- ------- -------- ------- -------- -------- ------- --------")
 
-	    for (Block b = block_list; b; b = b->next) {
+    for (Block b = block_list; b; b = b->next) {
+        sum_blks += b->live_blocks;
+        sum_byts += b->live_bytes;
 
-	sum_blks += b->live_blocks;
-	sum_byts += b->live_bytes;
+        sum_totblks += b->tot_allocs_done;
+        sum_totbyts += b->tot_bytes_alloc;
 
-	sum_totblks += b->tot_allocs_done;
-	sum_totbyts += b->tot_bytes_alloc;
-
-	snprintf(buf, sizeof(buf),
-		 "%13s%5d:%7ld %8ld %7ld %8ld %8s %7ld %8ld",
-		 b->file,
-		 b->line,
-		 b->live_blocks,
-		 b->live_bytes,
-		 b->max_blocks,
-		 b->max_bytes,
-		 CrT_timestr(b->max_bytes_time), b->tot_allocs_done, b->tot_bytes_alloc);
-	X(buf);
+        snprintf(buf, sizeof(buf),
+                 "%13s%5d:%7ld %8ld %7ld %8ld %8s %7ld %8ld",
+                 b->file,
+                 b->line,
+                 b->live_blocks,
+                 b->live_bytes,
+                 b->max_blocks,
+                 b->max_bytes,
+                 CrT_timestr(b->max_bytes_time),
+                 b->tot_allocs_done,
+                 b->tot_bytes_alloc);
+        X(buf);
     }
+
     snprintf(buf, sizeof(buf), " Cumulative totals:%7d %8d                           %7d %8d",
-	     sum_blks, sum_byts, sum_totblks, sum_totbyts);
+             sum_blks, sum_byts, sum_totblks, sum_totbyts);
     X(buf);
 }
 
+/**
+ * This is a callback for summarize to notify the 'summarize_player' dbref
+ *
+ * Uses the summarize_player global
+ *
+ * @see summarize
+ *
+ * @private
+ * @param t the string to notify the player
+ */
 static void
 summarize_notify(char *t)
 {
     notify(summarize_player, t);
 }
 
+/**
+ * Send memory profile summary to a given player
+ *
+ * @param player the dbref of the player to notify
+ */
 void
 CrT_summarize(dbref player)
 {
@@ -520,30 +636,51 @@ CrT_summarize(dbref player)
     summarize(summarize_notify);
 }
 
-/* }}} */
-/* {{{ CrT_summarize_to_file -- Summarize ram usage in given logfile.	*/
-
+/**
+ * @private
+ * @var global for keeping track of the file handle between calls of the
+ *      callback.  This is not passed into summarize_to_file because of
+ *      how the callback works..
+ */
 static FILE *summarize_fd;
 
+/**
+ * Send a string to our summary file.  This is callback for summarize
+ *
+ * @see summarize
+ *
+ * @private
+ * @param t the string to send to the file.
+ */
 static void
 summarize_to_file(char *t)
 {
     fprintf(summarize_fd, "%s\n", t);
 }
 
+/**
+ * Summarize ram usage and write it to a file
+ *
+ * @private
+ * @param file the file name to write to.
+ * @param comment a comment to put at the top of the file, or NULL for none.
+ */
 void
 CrT_summarize_to_file(const char *file, const char *comment)
 {
     if ((summarize_fd = fopen(file, "ab")) == 0)
-	return;
+        return;
+
     if (comment && *comment) {
-	fprintf(summarize_fd, "%s\n", comment);
+        fprintf(summarize_fd, "%s\n", comment);
     }
+
     {
-	time_t lt = time(NULL);
-	char buf[30];
-	strftime(buf, sizeof(buf), "%a %b %d %T %Z %Y", localtime(&lt));
-	fprintf(summarize_fd, "%s\n", buf);
+        time_t lt = time(NULL);
+        char buf[30];
+
+        strftime(buf, sizeof(buf), "%a %b %d %T %Z %Y", localtime(&lt));
+        fprintf(summarize_fd, "%s\n", buf);
     }
 
     summarize(summarize_to_file);
@@ -551,73 +688,129 @@ CrT_summarize_to_file(const char *file, const char *comment)
     fclose(summarize_fd);
 }
 
-/* }}} */
-
 #ifdef MALLOC_PROFILING_EXTRA
 
 /* Debug support functions: */
-/* {{{ CrT_check -- abort if we can find any trashed malloc blocks.	*/
 
-/* {{{ crash -- coredump with diagnostic.				*/
-
+/**
+ * This is the second stage of "crash", that does the actual abort
+ *
+ * Apparently the reason for this function is it is easier to read
+ * from dbx 'where' command.  I guess it is easier to make a break
+ * point here?
+ *
+ * This calls abort() to exit the program.
+ *
+ * @private
+ * @param err the error message
+ *
+ * @TODO Just get rid of this and move abort to crash - you can set a
+ *       breakpoint on crash easy enough.
+ */
 static void
 crash2(char *err)
 {
     abort();
 }
 
+/**
+ * Crashes the server and generates a mesage that isn't displayed anywhere
+ *
+ * @TODO maybe this should display this message somewhere?
+ *
+ * @private
+ * @param err the error message which isn't displayed.
+ * @param m the header for the faulty block.
+ * @param file the file where the fault happened.
+ * @param line the line where the fault happened.
+ */
 static void
 crash(char *err, Header m, const char *file, int line)
 {
     char buf[256];
 
-    snprintf(buf, sizeof(buf), "Err found at %s:%d in block from %s:%d", file, line,
-	     m->b->file, m->b->line);
-    crash2(buf);		/* Makes above easy to read from dbx 'where'.   */
+    snprintf(buf, sizeof(buf), "Err found at %s:%d in block from %s:%d", file,
+             line, m->b->file, m->b->line);
+    /*
+     * The original reason for this to hand off to crash2 to do the
+     * abort is because it is "easier to find in dbx".  I'm not sure
+     * why you wouldn't put a break point here on 'crash' with whatever
+     * debugger, and with no further explanation from the original author
+     * available, I say just put the 'abort' here and get rid of crash2.
+     *
+     * @TODO change this to abort() and remove crash2
+     */
+    crash2(buf);
 }
 
-/* }}} */
-/* {{{ check_block							*/
-
+/**
+ * Check the valididty of a given block
+ *
+ * @private
+ * @param m the block to check
+ * @param file the file that originated this check
+ * @param line the line that originated this check
+ */
 static void
 check_block(Header m, const char *file, int line)
 {
     if (*m->end != CRT_MAGIC)
-	crash("Bottom overwritten", m, file, line);
+        crash("Bottom overwritten", m, file, line);
+
     if (m->next->prev != m)
-	crash("next->prev != m", m, file, line);
+        crash("next->prev != m", m, file, line);
+
     if (m->prev->next != m)
-	crash("prev->next != m", m, file, line);
+        crash("prev->next != m", m, file, line);
 }
 
-/* }}} */
-/* {{{ check_old_blocks							*/
-
+/**
+ * This checks 'old' blocks looking for integrity issues
+ *
+ * It uses the 'rover' global to keep track of where we left off.
+ * We check CRT_OLD_TO_CHECK entries at a time.
+ *
+ * @private
+ * @param file the file that instigated the check
+ * @param line the line that instigated the check
+ */
 static void
 check_old_blocks(const char *file, int line)
 {
     int i = CRT_OLD_TO_CHECK;
 
     while (i-- > 0) {
-	check_block(rover, file, line);
-	rover = rover->next;
+        check_block(rover, file, line);
+        rover = rover->next;
     }
 }
 
-/* }}} */
-/* {{{ check_new_blocks							*/
-
+/**
+ * This checks 'new' blocks looking for integrity issues.
+ *
+ * These are recently touched blocks.  We will check CRT_NEW_TO_CHECK
+ * entries at a time.
+ *
+ * @private
+ * @param file the file that instigated the check
+ * @param line the line that instigated the check
+ */
 static void
 check_new_blocks(const char *file, int line)
 {
     int i = CRT_NEW_TO_CHECK;
 
     while (i-- > 0)
-	check_block(just_touched[i], file, line);
+        check_block(just_touched[i], file, line);
 }
 
-/* }}} */
-
+/**
+ * Abort the program if we can find any trashed malloc blocks.
+ *
+ * @private
+ * @param file the file that instigated the check
+ * @param line the line that instigated the check
+ */
 static void
 CrT_check(const char *file, int line)
 {
@@ -625,12 +818,23 @@ CrT_check(const char *file, int line)
     check_new_blocks(file, line);
 }
 
-/* }}} */
-#endif				/* MALLOC_PROFILING_EXTRA */
+#endif /* MALLOC_PROFILING_EXTRA */
 
 /* The actual wrappers for malloc/calloc/realloc/free: */
-/* {{{ CrT_malloc							*/
 
+/**
+ * This is the wrapper for malloc.
+ *
+ * It works just like malloc except it takes a file and line argument pair
+ * in order to track where the call came from.  __FILE__ and __LINE__ should
+ * be used.  The memory passed into 'file' must not be deleted; a copy is
+ * not made.
+ *
+ * @param size the size of the memory block to allocate
+ * @param file the file the originated this request
+ * @param line the line that originaed this request
+ * @return allocated and tracked memory block
+ */
 void *
 CrT_malloc(size_t size, const char *file, int line)
 {
@@ -639,14 +843,12 @@ CrT_malloc(size_t size, const char *file, int line)
     Header m = malloc(size + CRT_OVERHEAD_BYTES);
 
     if (!m) {
-	fprintf(stderr, "CrT_malloc(): Out of Memory!\n");
-	abort();
+        fprintf(stderr, "CrT_malloc(): Out of Memory!\n");
+        abort();
     }
 
     m->b = b;
     m->size = size;
-
-
 
 #ifdef MALLOC_PROFILING_EXTRA
     /* Look around for trashed ram blocks: */
@@ -666,25 +868,35 @@ CrT_malloc(size_t size, const char *file, int line)
 
 #endif
 
-
     b->tot_bytes_alloc += size;
     b->tot_allocs_done++;
     b->live_blocks++;
     b->live_bytes += size;
 
     if (b->live_bytes > b->max_bytes) {
-	b->max_bytes = b->live_bytes;
-	b->max_bytes_time = time(NULL);
+        b->max_bytes = b->live_bytes;
+        b->max_bytes_time = time(NULL);
     }
+
     if (b->live_blocks > b->max_blocks)
-	b->max_blocks = b->live_blocks;
+        b->max_blocks = b->live_blocks;
 
     return (void *) (m + 1);
 }
 
-/* }}} */
-/* {{{ CrT_calloc							*/
-
+/**
+ * This is the wrapper for calloc
+ *
+ * It works just like calloc, except it takes a file and line for tracking
+ * purposes.  File should usually be __FILE__ and line __LINE__.  The
+ * memory for 'file' is not copied and therefore must not be deallocated.
+ *
+ * @param num the number of elements to allocate
+ * @param siz the size of the elements to allocate
+ * @param file the originating file
+ * @param line the originating line
+ * @return allocated and tracked memory block
+ */
 void *
 CrT_calloc(size_t num, size_t siz, const char *file, int line)
 {
@@ -693,14 +905,12 @@ CrT_calloc(size_t num, size_t siz, const char *file, int line)
     Header m = calloc(size + CRT_OVERHEAD_BYTES, 1);
 
     if (!m) {
-	fprintf(stderr, "CrT_calloc(): Out of Memory!\n");
-	abort();
+        fprintf(stderr, "CrT_calloc(): Out of Memory!\n");
+        abort();
     }
 
     m->b = b;
     m->size = size;
-
-
 
 #ifdef MALLOC_PROFILING_EXTRA
 
@@ -721,26 +931,35 @@ CrT_calloc(size_t num, size_t siz, const char *file, int line)
 
 #endif
 
-
-
     b->tot_bytes_alloc += size;
     b->tot_allocs_done++;
     b->live_blocks++;
     b->live_bytes += size;
 
     if (b->live_bytes > b->max_bytes) {
-	b->max_bytes = b->live_bytes;
-	b->max_bytes_time = time(NULL);
+        b->max_bytes = b->live_bytes;
+        b->max_bytes_time = time(NULL);
     }
+
     if (b->live_blocks > b->max_blocks)
-	b->max_blocks = b->live_blocks;
+        b->max_blocks = b->live_blocks;
 
     return (void *) (m + 1);
 }
 
-/* }}} */
-/* {{{ CrT_realloc							*/
-
+/**
+ * This is the wrapper for realloc
+ *
+ * It works just like realloc, except it takes a file and line for tracking
+ * purposes.  File should usually be __FILE__ and line __LINE__.  The
+ * memory for 'file' is not copied and therefore must not be deallocated.
+ *
+ * @param p the memory block to resize
+ * @param size the new size
+ * @param file the originating file
+ * @param line the originating line
+ * @return allocated and tracked memory block
+ */
 void *
 CrT_realloc(void *p, size_t size, const char *file, int line)
 {
@@ -751,29 +970,32 @@ CrT_realloc(void *p, size_t size, const char *file, int line)
     /* Look around for trashed ram blocks: */
     check_block(m, __FILE__, __LINE__);
     CrT_check(file, line);
+
     /* Don't clobber 'rover': */
     if (rover == m) {
-	rover = rover->next;
+        rover = rover->next;
     }
+
     /* Remove m from linklist of allocated blocks: */
     REMOVE(m);
+
     /* Remove m from just_touched[], if present: */
     {
-	int i = CRT_NEW_TO_CHECK;
+        int i = CRT_NEW_TO_CHECK;
 
-	while (i-- > 0) {
-	    if (just_touched[i] == m) {
-		just_touched[i] = &root;
-	    }
-	}
+        while (i-- > 0) {
+            if (just_touched[i] == m) {
+                just_touched[i] = &root;
+            }
+        }
     }
 #endif
 
     m = realloc(m, size + CRT_OVERHEAD_BYTES);
 
     if (!m) {
-	fprintf(stderr, "CrT_realloc(): Out of Memory!\n");
-	abort();
+        fprintf(stderr, "CrT_realloc(): Out of Memory!\n");
+        abort();
     }
 
     b->live_bytes -= m->size;
@@ -797,19 +1019,26 @@ CrT_realloc(void *p, size_t size, const char *file, int line)
 
 #endif
 
-
-
     if (b->live_bytes > b->max_bytes) {
-	b->max_bytes = b->live_bytes;
-	b->max_bytes_time = time(NULL);
+        b->max_bytes = b->live_bytes;
+        b->max_bytes_time = time(NULL);
     }
 
     return (void *) (m + 1);
 }
 
-/* }}} */
-/* {{{ CrT_free								*/
 
+/**
+ * This is the wrapper for free
+ *
+ * It works just like free, except it takes a file and line for tracking
+ * purposes.  File should usually be __FILE__ and line __LINE__.  The
+ * memory for 'file' is not copied and therefore must not be deallocated.
+ *
+ * @param p the memory block to free
+ * @param file the originating file
+ * @param line the originating line
+ */
 void
 CrT_free(void *p, const char *file, int line)
 {
@@ -819,29 +1048,34 @@ CrT_free(void *p, const char *file, int line)
 #ifdef MALLOC_PROFILING_EXTRA
     /* Look around for trashed ram blocks: */
     if (*m->end == CRT_FREE_MAGIC)
-	crash("Duplicate free()", m, file, line);
+        crash("Duplicate free()", m, file, line);
 
     check_block(m, __FILE__, __LINE__);
     CrT_check(file, line);
+
     /* Don't clobber 'rover': */
     if (rover == m) {
-	rover = rover->next;
+        rover = rover->next;
     }
+
     /* Remove m from linklist of allocated blocks: */
     REMOVE(m);
+
     /* Remove m from just_touched[], if present: */
     {
-	int i = CRT_NEW_TO_CHECK;
+        int i = CRT_NEW_TO_CHECK;
 
-	while (i-- > 0) {
-	    if (just_touched[i] == m) {
-		just_touched[i] = &root;
-	    }
-	}
+        while (i-- > 0) {
+            if (just_touched[i] == m) {
+                just_touched[i] = &root;
+            }
+        }
     }
-    /* Mark m so as to give some chance of */
-    /* diagnosing repeat free()s of same   */
-    /* block:                              */
+
+    /*
+     * Mark m so as to give some chance of diagnosing repeat free()s of same
+     * block:
+     */
     *m->end = CRT_FREE_MAGIC;
 #endif
 
@@ -853,40 +1087,89 @@ CrT_free(void *p, const char *file, int line)
 
 /* }}} */
 
-/* Some convenience functions:						*/
-/* {{{ CrT_alloc_string							*/
+/* Some convenience functions: */
 
+/**
+ * This is the wrapper for alloc_string
+ *
+ * It works just like alloc_string, except it takes a file and line for tracking
+ * purposes.  File should usually be __FILE__ and line __LINE__.  The
+ * memory for 'file' is not copied and therefore must not be deallocated.
+ *
+ * @param string the string to copy
+ * @param file the originating file
+ * @param line the originating line
+ * @return a copy of 'string'
+ */
 char *
 CrT_alloc_string(const char *string, const char *file, int line)
 {
     char *s;
 
+    /*
+     * @TODO This is copy/paste code from fbstring.c and is thus very
+     *       brittle.  fbstring.c recommends changing alloc_string to use
+     *       strdup which will invalidate this code here.
+     *
+     *       The reason this code is copied is because for file/line, we
+     *       want the file/line of the code doing the alloc_string ...
+     *       the file/line of the malloc() that alloc_string does is not
+     *       useful information.
+     *
+     *       Thus, the answer (I guess) is to comment in alloc_string in
+     *       fbstrings.c that you need to change this method too.
+     */
+
     /* NULL, "" -> NULL */
     if (!string || !*string)
-	return 0;
+        return 0;
 
     if ((s = CrT_malloc(strlen(string) + 1, file, line)) == 0) {
-	abort();
+        abort();
     }
-    strcpy(s, string);		/* Guaranteed enough space. */
+
+    strcpy(s, string);  /* Guaranteed enough space. */
     return s;
 }
 
-/* }}} */
-/* {{{ CrT_alloc_prog_string							*/
-
+/**
+ * This is the wrapper for alloc_prog_string
+ *
+ * It works just like alloc_prog_string, except it takes a file and line for
+ * tracking purposes.  File should usually be __FILE__ and line __LINE__.  The
+ * memory for 'file' is not copied and therefore must not be deallocated.
+ *
+ * @param s the string to copy
+ * @param file the originating file
+ * @param line the originating line
+ * @return a copy of 's' wrapped in a shared_string struct
+ */
 struct shared_string *
 CrT_alloc_prog_string(const char *s, const char *file, int line)
 {
+    /*
+     * @TODO This is copy/paste code from fbstring.c and is thus very
+     *       brittle.
+     *
+     *       The reason this code is copied is because for file/line, we
+     *       want the file/line of the code doing the alloc_prog_string ...
+     *       the file/line of the malloc() that alloc_prog_string does is not
+     *       useful information.
+     *
+     *       Thus, the answer (I guess) is to comment in alloc_prog_string in
+     *       fbstrings.c that you need to change this method too.
+     */
+
     struct shared_string *ss;
     size_t length;
 
     if (s == NULL || *s == '\0')
-	return (NULL);
+        return (NULL);
 
     length = strlen(s);
+
     if ((ss = CrT_malloc(sizeof(struct shared_string) + length, file, line)) == NULL)
-	abort();
+        abort();
 
     ss->links = 1;
     ss->length = length;
@@ -894,31 +1177,29 @@ CrT_alloc_prog_string(const char *s, const char *file, int line)
     return (ss);
 }
 
-/* }}} */
-/* {{{ CrT_strdup							*/
-
+/**
+ * This is the wrapper for strdup
+ *
+ * It works just like strdup, except it takes a file and line for
+ * tracking purposes.  File should usually be __FILE__ and line __LINE__.  The
+ * memory for 'file' is not copied and therefore must not be deallocated.
+ *
+ * @param s the string to copy
+ * @param file the originating file
+ * @param line the originating line
+ * @return a copy of 's'
+ */
 char *
 CrT_strdup(const char *s, const char *file, int line)
 {
     char *p;
 
     p = CrT_malloc(1 + strlen(s), file, line);
+
     if (p)
-	strcpy(p, s);		/* Guaranteed enough space. */
+        strcpy(p, s);   /* Guaranteed enough space. */
+
     return (p);
 }
 
-/* }}} */
-
-#endif				/* MALLOC_PROFILING */
-
-/* {{{ File variables							*/
-/*
-
-Local variables:
-case-fold-search: nil
-folded-file: t
-fold-fold-on-startup: nil
-End:
-*/
-/* }}} */
+#endif /* MALLOC_PROFILING */
