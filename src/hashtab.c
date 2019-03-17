@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "config.h"
+
+#include "fbstrings.h"
 #include "hashtab.h"
 
 /* hash:  compute hash value for a string
