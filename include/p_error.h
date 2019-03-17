@@ -1,6 +1,8 @@
 #ifndef _P_ERROR_H
 #define _P_ERROR_H
 
+#include "interp.h"
+
 void prim_clear(PRIM_PROTOTYPE);
 void prim_clear_error(PRIM_PROTOTYPE);
 void prim_set_error(PRIM_PROTOTYPE);
