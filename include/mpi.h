@@ -1,6 +1,8 @@
 #ifndef _MPI_H
 #define _MPI_H
 
+#include "config.h"
+
 #define MPI_ISPUBLIC	0x00	/* never test for this one */
 #define MPI_ISPRIVATE	0x01
 #define MPI_ISLISTENER	0x02
