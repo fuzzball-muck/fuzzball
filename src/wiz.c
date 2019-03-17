@@ -5,6 +5,12 @@
  * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
  */
 
+#include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
 #include "config.h"
 
 #include "boolexp.h"
@@ -695,7 +701,6 @@ do_stats(dbref player, const char *name)
                             total++;
                             rooms++;
                         }
-
                         break;
 
                     case TYPE_EXIT:
@@ -703,7 +708,6 @@ do_stats(dbref player, const char *name)
                             total++;
                             exits++;
                         }
-
                         break;
 
                     case TYPE_THING:
@@ -711,7 +715,6 @@ do_stats(dbref player, const char *name)
                             total++;
                             things++;
                         }
-
                         break;
 
                     case TYPE_PLAYER:
@@ -719,7 +722,6 @@ do_stats(dbref player, const char *name)
                             total++;
                             players++;
                         }
-
                         break;
 
                     case TYPE_PROGRAM:
@@ -727,7 +729,6 @@ do_stats(dbref player, const char *name)
                             total++;
                             programs++;
                         }
-
                         break;
                 }
             }

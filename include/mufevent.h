@@ -2,6 +2,7 @@
 #define _MUFEVENT_H
 
 #include "array.h"
+#include "interp.h"
 
 stk_array *get_mufevent_pids(stk_array * nw, dbref ref);
 stk_array *get_mufevent_pidinfo(stk_array * nw, int pid, int pinned);

@@ -4,6 +4,9 @@
 #ifndef _MCPGUI_H
 #define _MCPGUI_H
 
+#include "interp.h"
+#include "mcp.h"
+
 /*
  * Error results.
  */

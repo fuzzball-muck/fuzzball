@@ -6,6 +6,9 @@
  * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
  */
 
+#include <stdio.h>
+#include <string.h>
+
 #include "config.h"
 
 #include "boolexp.h"
@@ -1144,9 +1147,9 @@ do_recycle(int descr, dbref player, const char *name)
                      * @TODO This is a workaround for bug #201633
                      *
                      * This bug predates sourceforge and is from a system
-                     * long gone.  MUCKs aren't dying left and right due
-                     * to this, so I'm inclined to remove this code block
-                     * now.
+                     * long gone: hence, we don't know what the bug is.
+		     * Modern tracking of this bug is here:
+		     * https://github.com/fuzzball-muck/fuzzball/issues/364
                      */
                     if (PROGRAM_INSTANCES(thing)) {
                         assert(0);  /* getting here is a bug - we already dequeued it. */

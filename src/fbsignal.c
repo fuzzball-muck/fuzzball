@@ -1,5 +1,11 @@
+#include <errno.h>
+#include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "config.h"
 
+#include "autoconf.h"
 #include "fbsignal.h"
 #include "db.h"
 #include "game.h"

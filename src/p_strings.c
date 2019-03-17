@@ -1,5 +1,12 @@
+#include <ctype.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "config.h"
 
+#include "array.h"
 #include "boolexp.h"
 #include "color.h"
 #include "db.h"

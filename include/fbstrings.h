@@ -9,6 +9,9 @@
 #ifndef _FBSTRINGS_H
 #define _FBSTRINGS_H
 
+#include <stddef.h>
+#include "config.h"
+
 /**
  * Turn 's' into an empty string if it is NULL.
  *

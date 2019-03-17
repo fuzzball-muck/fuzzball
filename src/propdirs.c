@@ -8,6 +8,8 @@
  * see LICENSE.md for full details.
  */
 
+#include <string.h>
+
 #include "config.h"
 
 #include "db.h"

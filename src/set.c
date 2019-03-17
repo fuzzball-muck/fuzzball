@@ -5,6 +5,12 @@
  * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
  */
 
+#include <ctype.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "config.h"
 
 #include "boolexp.h"
@@ -1132,7 +1138,7 @@ do_propset(int descr, dbref player, const char *name, const char *prop)
  * is no object name, then the registration target is cleared.  Otherwise,
  * object is registered to the given name.
  *
- * See help @register on the MUCK for a more concice explanation :)
+ * See help @register on the MUCK for a more concise explanation :)
  *
  * This does permission checking.
  *

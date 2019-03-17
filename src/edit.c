@@ -5,8 +5,14 @@
  * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
  */
 
+#include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "config.h"
 
+#include "array.h"
 #include "boolexp.h"
 #include "commands.h"
 #include "compile.h"

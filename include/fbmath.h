@@ -3,6 +3,7 @@
 
 #include <float.h>
 #include <math.h>
+#include <stddef.h>
 #include <stdint.h>
 
 #if defined(HUGE_VAL)

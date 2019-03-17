@@ -1,6 +1,9 @@
 #ifndef _MSGPARSE_H
 #define _MSGPARSE_H
 
+#include <time.h>
+#include "config.h"
+
 #define MAX_MFUN_NAME_LEN 16
 #define MAX_MFUN_LIST_LEN 512
 #define MPI_MAX_VARIABLES 32

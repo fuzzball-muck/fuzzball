@@ -6,6 +6,12 @@
  * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
  */
 
+#include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
 #include "config.h"
 
 #include "commands.h"
@@ -21,6 +27,7 @@
 #include "log.h"
 #include "move.h"
 #include "player.h"
+#include "props.h"
 #include "timequeue.h"
 #include "tune.h"
 
