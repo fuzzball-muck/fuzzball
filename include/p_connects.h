@@ -1,6 +1,8 @@
 #ifndef _P_CONNECTS_H
 #define _P_CONNECTS_H
 
+#include "interp.h"
+
 void prim_awakep(PRIM_PROTOTYPE);
 void prim_online(PRIM_PROTOTYPE);
 void prim_online_array(PRIM_PROTOTYPE);
