@@ -10,6 +10,7 @@
 #define _ARRAY_H
 
 #include <stddef.h>  /* for offsetof() */
+#include "config.h"
 #include "inst.h"
 
 #define ARRAY_UNDEFINED     0   /* No type yet                            */
