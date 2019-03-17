@@ -1,6 +1,8 @@
 #ifndef _P_DB_H
 #define _P_DB_H
 
+#include "interp.h"
+
 void prim_addpennies(PRIM_PROTOTYPE);
 void prim_moveto(PRIM_PROTOTYPE);
 void prim_pennies(PRIM_PROTOTYPE);
