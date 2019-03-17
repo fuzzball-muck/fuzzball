@@ -1,6 +1,8 @@
 #ifndef _EDIT_H
 #define _EDIT_H
 
+#include "config.h"
+
 struct macrotable {
     char *name;
     char *definition;
