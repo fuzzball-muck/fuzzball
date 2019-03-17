@@ -8,6 +8,7 @@
 #include "defaults.h"
 #include "fbtime.h"
 #include "game.h"
+#include "tune.h"
 
 /* Specify the same default values in the pointer and in the lists of tune_*_entry.
    Default values here will be used if the tunable isn't found, default values in the lists of tune_*_entry
