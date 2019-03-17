@@ -8,6 +8,8 @@
 #ifndef _COMPILE_H
 #define _COMPILE_H
 
+#include "config.h"
+
 /*
  * @TODO free_prog_real is a static in compile.c
  *       It is inappropriate for a define that uses it to be in a public
