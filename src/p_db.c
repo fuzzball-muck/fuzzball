@@ -1,5 +1,10 @@
+#include <ctype.h>
+#include <stdlib.h>
+#include <time.h>
+
 #include "config.h"
 
+#include "array.h"
 #include "boolexp.h"
 #include "compile.h"
 #include "db.h"
