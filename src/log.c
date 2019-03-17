@@ -7,6 +7,7 @@
 #include "config.h"
 
 #include "db.h"
+#include "fbtime.h"
 #include "fbstrings.h"
 #include "inst.h"
 #include "log.h"
