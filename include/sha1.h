@@ -1,6 +1,7 @@
 #ifndef _SHA1_H_
 #define _SHA1_H_
 
+#include <stddef.h>
 /* Just in case the including file doesn't use stdint for uint8_t */
 #include <stdint.h>
 #include <sys/types.h>
