@@ -1,6 +1,8 @@
 #ifndef _P_ARRAY_H
 #define _P_ARRAY_H
 
+#include "interp.h"
+
 void prim_array_make(PRIM_PROTOTYPE);
 void prim_array_make_dict(PRIM_PROTOTYPE);
 void prim_array_explode(PRIM_PROTOTYPE);
