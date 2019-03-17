@@ -5,6 +5,7 @@
 #include "config.h"
 
 #include "db.h"
+#include "fbstrings.h"
 #include "fbtime.h"
 
 void
