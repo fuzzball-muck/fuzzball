@@ -11,6 +11,7 @@
 #include "game.h"
 #include "interface.h"
 #include "log.h"
+#include "tune.h"
 
 #ifndef WIN32
 
