@@ -1,6 +1,10 @@
 #ifndef _INTERFACE_H
 #define _INTERFACE_H
 
+#include <stddef.h>
+#include <time.h>
+
+#include "autoconf.h"
 #include "config.h"
 
 #ifdef MCP_SUPPORT
