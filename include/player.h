@@ -1,6 +1,8 @@
 #ifndef _PLAYER_H
 #define _PLAYER_H
 
+#include "config.h"
+
 void add_player(dbref who);
 int check_password(dbref player, const char *password);
 void change_player_name(dbref player, const char *name);
