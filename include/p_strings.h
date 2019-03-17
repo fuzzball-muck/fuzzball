@@ -1,6 +1,8 @@
 #ifndef _P_STRINGS_H
 #define _P_STRINGS_H
 
+#include "interp.h"
+
 void prim_fmtstring(PRIM_PROTOTYPE);
 void prim_split(PRIM_PROTOTYPE);
 void prim_rsplit(PRIM_PROTOTYPE);
