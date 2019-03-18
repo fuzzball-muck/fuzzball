@@ -12,6 +12,7 @@
 #include "fbmath.h"
 #include "fbstrings.h"
 #include "game.h"
+#include "inst.h"
 #include "interp.h"
 #include "interface.h"
 #include "mfun.h"
