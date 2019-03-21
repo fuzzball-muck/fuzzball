@@ -404,33 +404,6 @@ db_write_header(FILE * f)
     tune_save_parms_to_file(f);
 }
 
-/* Foxen9 DB format (brief notes)
- * - feel free to relocate, reword, or change format of these docs.
- *
- * (header)
- * string: "***Foxen9 TinyMUCK DUMP Format***"
- * number: # of objects in db
- * number: unused value included for backward compatibility
- * number: # of sysparms
- * repeat: for each sysparm
- * string: - "(sysparm)=(val)"
- * repeat: for each object (o), highest id first
- * dbref : - id of (o) prefixed with pound sign: "#xxxx"
- * string: - object name
- * number: - id of (o)'s location
- * number: - id of first object in (o)'s contents list, or -1 (NOTHING)
- * number: - id of first object in (o)'s "next" list, or -1 (NOTHING)
- * bitfld: - number representation of all non-internal flags for (o)
- * number: - timestamp of (o)'s creation
- * number: - timestamp of (o)'s last use
- * number: - count of uses of (o)
- * number: - timestamp of (o)'s last modification
- * string: - "*Props*"
- * repeat: - for each property of (o)
- * string: -- (path):(type):(val)
- * string: - "*End*"
- */
-
 dbref
 db_write(FILE * f)
 {
