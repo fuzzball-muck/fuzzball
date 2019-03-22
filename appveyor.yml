@@ -58,6 +58,8 @@ build_script:
         mkdir "$artifact_root"
         # Copy game data
         cp -Recurse "$env:APPVEYOR_BUILD_FOLDER/game/*" "$artifact_root"
+        # Copy starter databases
+        cp -Recurse "$env:APPVEYOR_BUILD_FOLDER/dbs/*" "$artifact_root"
         # Copy compiled binaries and libraries
         cp -Recurse "$env:APPVEYOR_BUILD_FOLDER/build/*" "$artifact_root"
         if ((Test-Path "$artifact_root/fbmuck.exe") -And (Test-Path "$artifact_root/restart.exe")) {
