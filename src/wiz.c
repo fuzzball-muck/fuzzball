@@ -11,6 +11,7 @@
 #include <string.h>
 #include <time.h>
 
+#include "autoconf.h"
 #include "config.h"
 
 #include "boolexp.h"
