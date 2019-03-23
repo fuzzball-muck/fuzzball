@@ -47,7 +47,7 @@
 #define BEGINESCAPE '\\'
 
 /* Maximum number of macro substitutions allowed on a single line */
-#define SUBSTITUTIONS 20 
+#define SUBSTITUTIONS 20
 
 /*
  * Parameters for add_control_structure to support different branch/loop
@@ -72,6 +72,21 @@
 #define v_abort_compile(ST,C) { do_abort_compile(ST,C); return; }
 
 static hash_tab primitive_list[COMP_HASH_SIZE];
+
+/**
+ * @var the array that has all of our primitive names.
+ */
+const char *base_inst[] = {
+    "JMP", "READ", "SLEEP", "CALL", "EXECUTE", "EXIT", "EVENT_WAITFOR",
+    "CATCH", "CATCH_DETAILED", PRIMS_CONNECTS_NAMES, PRIMS_DB_NAMES,
+    PRIMS_MATH_NAMES, PRIMS_MISC_NAMES, PRIMS_PROPS_NAMES, PRIMS_STACK_NAMES,
+    PRIMS_STRINGS_NAMES, PRIMS_ARRAY_NAMES, PRIMS_FLOAT_NAMES,
+    PRIMS_ERROR_NAMES,
+#ifdef MCP_SUPPORT
+    PRIMS_MCP_NAMES,
+#endif
+    PRIMS_REGEX_NAMES, PRIMS_INTERNAL_NAMES
+};
 
 /* This keeps track of nested control structures */
 struct CONTROL_STACK {
@@ -295,23 +310,6 @@ free_addresses(COMPSTATE * cstat)
 }
 
 /**
- * Deletes the defhash hash from a COMPSTATE
- *
- * @TODO This should either be an inline, or removed -- its used in just
- *       two places so removing it would be pretty simple.  I'm in favor
- *       of removing this function due to those 2 locations being pretty
- *       favorable to relocating kill_hash.
- *
- * @private
- * @param cstat the structure to delete the hash from
- */
-static void
-purge_defs(COMPSTATE * cstat)
-{
-    kill_hash(cstat->defhash, DEFHASHSIZE, 1);
-}
-
-/**
  * Cleanup a COMPSTATE structure, freeing all memory used by it.
  *
  * @private
@@ -345,7 +343,7 @@ cleanup(COMPSTATE * cstat)
 
     cstat->procs = 0;
 
-    purge_defs(cstat);
+    kill_hash(cstat->defhash, DEFHASHSIZE, 1);
     free_addresses(cstat);
 
     for (int i = RES_VAR; i < MAX_VAR && cstat->variables[i]; i++) {
@@ -561,11 +559,10 @@ fixpubs(struct publics *mypubs, struct inst *offset)
  * @param mypubs the head of the list
  * @return integer size of mypubs list
  */
-static int
+static size_t
 size_pubs(struct publics *mypubs)
 {
-    /* @TODO should return size_t, bytes should also be size_t */
-    int bytes = 0;
+    size_t bytes = 0;
 
     while (mypubs) {
         bytes += sizeof(*mypubs);
@@ -1172,46 +1169,14 @@ RemoveIntermediate(COMPSTATE * cstat, struct INTERMEDIATE *curr)
         return;
     }
 
-    /*
-     *  @TODO This whole thing can be replaced with a memcpy.  However,
-     *       that complicates the deletion of the next node which must
-     *       be done with RemoveNextNode because we would be overwriting
-     *       ->next as part of this, and RemoveNextNode relies on ->next
-     *
-     *       A compromise would be just to remove the 'switch' portion
-     *       with a memcpy as that should work to copy union data over
-     *       without having to parse out the type.
-     */
-    curr->no = curr->next->no;
     curr->in.line = curr->next->in.line;
     curr->in.type = curr->next->in.type;
 
-    switch (curr->in.type) {
-        case PROG_STRING:
-            curr->in.data.string = curr->next->in.data.string;
-            break;
-        case PROG_FLOAT:
-            curr->in.data.fnumber = curr->next->in.data.fnumber;
-            break;
-        case PROG_FUNCTION:
-            curr->in.data.mufproc = curr->next->in.data.mufproc;
-            break;
-        case PROG_ADD:
-            curr->in.data.addr = curr->next->in.data.addr;
-            break;
-        case PROG_IF:
-        case PROG_TRY:
-        case PROG_JMP:
-        case PROG_EXEC:
-            curr->in.data.call = curr->next->in.data.call;
-            break;
-        default:
-            curr->in.data.number = curr->next->in.data.number;
-            break;
-    }
+    memcpy(&(curr->in.data), &(curr->next->in.data), sizeof(curr->in.data));
 
     curr->next->in.type = PROG_INTEGER;
     curr->next->in.data.number = 0;
+
     RemoveNextIntermediate(cstat, curr);
 }
 
@@ -1864,7 +1829,6 @@ set_start(COMPSTATE * cstat)
     PROGRAM_SET_SIZ(cstat->program, cstat->nowords);
 
     /* address instr no is resolved before this gets called. */
-    
     if (cstat->alt_entrypoint) {
         PROGRAM_SET_START(cstat->program,
                           (PROGRAM_CODE(cstat->program)
@@ -2080,35 +2044,6 @@ copy_program(COMPSTATE * cstat)
 }
 
 /**
- * Allocate and initialize INTERMEDIATE data linked structure.
- *
- * @private
- * @return An empty head node, suitable for use.
- */
-static struct INTERMEDIATE *
-alloc_inst(void)
-{
-    struct INTERMEDIATE *nu;
-
-    nu = malloc(sizeof(struct INTERMEDIATE));
-
-    /*
-     * @TODO Use memset 0 instead of this.  Or use calloc instead of malloc!
-     *       This function is used in exactly two places; perhaps replace
-     *       those call to this function with a calloc and get rid
-     *       of this altogether?
-     */
-    nu->next = 0;
-    nu->no = 0;
-    nu->line = 0;
-    nu->flags = 0;
-    nu->in.type = 0;
-    nu->in.line = 0;
-    nu->in.data.number = 0;
-    return nu;
-}
-
-/**
  * Create a new instruction, or return an already available one.
  *
  * A list of pre-allocated instructions is kept, so we use those first.
@@ -2123,32 +2058,13 @@ new_inst(COMPSTATE * cstat)
 {
     struct INTERMEDIATE *nu;
 
-    /*
-     * @TODO: The way this is structured is actually really confusing and
-     *        it took me a couple reads to see this is just poorly constructed
-     *        and not a bug.
-     *
-     *        Recommend it go something like this:
-     *
-     *        if (!cstat->nextinst) {
-     *            nu = calloc(1, sizeof(struct INTERMEDIATE));
-     *        } else {
-     *            nu = cstat->nextinst;
-     *            cstat->nextinst = nu->next;
-     *            nu->next = NULL;
-     *        }
-     *
-     *        nu->flags ... // This line and then return remain the same
-     */
-
-    nu = cstat->nextinst;
-
-    if (!nu) {
-        nu = alloc_inst();
+    if (!cstat->nextinst) {
+        nu = calloc(1, sizeof(struct INTERMEDIATE));
+    } else {
+        nu = cstat->nextinst;
+        cstat->nextinst = nu->next;
+        nu->next = NULL;
     }
-
-    cstat->nextinst = nu->next;
-    nu->next = NULL;
 
     nu->flags |= (cstat->nested_trys > 0) ? INTMEDFLG_INTRY : 0;
 
@@ -2613,14 +2529,7 @@ quoted(COMPSTATE * cstat, const char *token)
 static int
 object(const char *token)
 {
-    /*
-     * @TODO Just return value of the if statement, rather than doing
-     *       an if just to return binary values (like quoted above)
-     */
-    if (*token == NUMBER_TOKEN && number(token + 1))
-        return 1;
-    else
-        return 0;
+    return (*token == NUMBER_TOKEN && number(token + 1));
 }
 
 /**
@@ -3021,11 +2930,7 @@ advance_line(COMPSTATE * cstat)
 static const char *
 do_string(COMPSTATE * cstat)
 {
-    /* @TODO This doesn't need to be static because we're copying the string
-     *       at the end.  I mean, I guess it doesn't hurt to be static, but
-     *       its weird.
-     */
-    static char buf[BUFFER_LEN];
+    char buf[BUFFER_LEN];
     int i = 0, quoted = 0;
 
     buf[i] = *cstat->next_char;
@@ -3402,6 +3307,7 @@ next_token_raw(COMPSTATE * cstat)
         }
 
         cstat->start_comment = 0;
+
         return next_token_raw(cstat);
     }
 
@@ -3435,12 +3341,7 @@ next_token_raw(COMPSTATE * cstat)
 static char *
 next_char_special(COMPSTATE *cstat)
 {
-    /*
-     * @TODO This looks like a bug - _buf should probably be a static
-     *       I'm not sure how this is working!  string_substitute does not
-     *       allocate memory.
-     */
-    char _buf[BUFFER_LEN];
+    static char _buf[BUFFER_LEN];
     char progstr[BUFFER_LEN];
     snprintf(progstr, sizeof(progstr), "#%d", cstat->program);
     return string_substitute(cstat->next_char, "__PROG__", progstr, _buf, sizeof(_buf));
@@ -3587,7 +3488,7 @@ do_directive(COMPSTATE * cstat, char *direct)
     } else if (!strcasecmp(temp, "cleardefs")) {
         char nextToken[BUFFER_LEN];
 
-        purge_defs(cstat);  /* Get rid of all defs first. */
+        kill_hash(cstat->defhash, DEFHASHSIZE, 1); /* Get rid of all defs first. */
         include_internal_defs(cstat);   /* Always include internal defs. */
         skip_whitespace(&cstat->next_char);
         strcpyn(nextToken, sizeof(nextToken), cstat->next_char);
@@ -4166,7 +4067,7 @@ do_directive(COMPSTATE * cstat, char *direct)
 
         if (!*cstat->next_char || !(tmpptr = (char *) next_token_raw(cstat)))
             v_abort_compile(cstat, "Pragma requires at least one argument.");
-        
+
         if (!strcasecmp(tmpptr, "comment_strict")) {
             /* Do non-recursive comments (old style) */
             cstat->force_comment = 1;
@@ -4428,45 +4329,6 @@ pop_loop_exit(COMPSTATE * cstat)
 }
 
 /**
- * checks if topmost loop stack item is of type type1
- *
- * This is exclusively used to detect FOR loops by resolve_loop_addrs
- * I'm not sure why this is a separate function.
- *
- * @TODO Just combine this little bit of code into resolve_loop_addrs,
- *       so we have 1 medium sized function instead of 2 little functions?
- *
- * This returns 0 if the type doesn't match, or the control stack is empty.
- * Otherwise, it returns the INTERMEDIATE associated with the place in the
- * CONTROL_STACK.
- *
- * @private
- * @param cstat our compile state structure
- * @param type1 the type to look for
- * @return either 0 if not found, or the INTERMEDIATE associated with the
- *         topmost control structure on CONTROL_STACK
- */
-static struct INTERMEDIATE *
-innermost_control_place(COMPSTATE * cstat, int type1)
-{
-    /*
-     * If you refactor this function, this variable isn't even needed.
-     * Just use cstat->control_stack
-     */
-    struct CONTROL_STACK *ctrl;
-
-    ctrl = cstat->control_stack;
-
-    if (!ctrl)
-        return 0;
-
-    if (ctrl->type != type1)
-        return 0;
-
-    return ctrl->place;
-}
-
-/**
  * Function of slightly unknown purpose related to nested loops
  *
  * The purpose of this seems to be to resolve the 'target' locations of
@@ -4487,9 +4349,10 @@ resolve_loop_addrs(COMPSTATE * cstat, int where)
     while ((eef = pop_loop_exit(cstat)))
         eef->in.data.number = where;
 
-    eef = innermost_control_place(cstat, CTYPE_FOR);
+    if (!cstat->control_stack || cstat->control_stack->type != CTYPE_FOR)
+        return;
 
-    if (eef) {
+    if ((eef = cstat->control_stack->place)) {
         eef->next->in.data.number = where;
     }
 }
@@ -4643,10 +4506,7 @@ count_trys_inside_loop(COMPSTATE * cstat)
     struct CONTROL_STACK *loop;
     int count = 0;
 
-    /* @TODO Nitpick, but this would be a little tidier as a for loop */
-    loop = cstat->control_stack;
-
-    while (loop) {
+    for (loop = cstat->control_stack; loop; loop = loop->next) {
         if (loop->type == CTYPE_FOR || loop->type == CTYPE_BEGIN) {
             break;
         }
@@ -4654,8 +4514,6 @@ count_trys_inside_loop(COMPSTATE * cstat)
         if (loop->type == CTYPE_TRY) {
             count++;
         }
-
-        loop = loop->next;
     }
 
     return count;
@@ -4745,31 +4603,11 @@ prealloc_inst(COMPSTATE * cstat)
     if (cstat->nextinst)
         return NULL;
 
-    nu = alloc_inst();
+    nu = calloc(1, sizeof(struct INTERMEDIATE));
 
     nu->flags |= (cstat->nested_trys > 0) ? INTMEDFLG_INTRY : 0;
 
-    /*
-     * @TODO This 'if' statement makes no sense.  So we enter the
-     *       function, and if cstat->nextinst != NULL we return.
-     *
-     *       Then we do alloc_inst, which doesn't touch cstat->nextinst
-     *       and never can because we don't pass it cstat.
-     *
-     *       Then we check if cstat->nextinst == NULL and set it, or
-     *       else do something else -- but cstat->nextinst is ALWAYS
-     *       NULL when you get to this part.
-     *
-     *       Therefore, remove the whole if/else and just leave
-     *       cstat->nextinst = nu;
-     */
-
-    if (!cstat->nextinst) {
-        cstat->nextinst = nu;
-    } else {
-        for (ptr = cstat->nextinst; ptr->next; ptr = ptr->next) ;
-        ptr->next = nu;
-    }
+    cstat->nextinst = nu;
 
     nu->no = cstat->nowords;
 
@@ -5714,30 +5552,6 @@ size_prog(dbref prog)
 }
 
 /**
- * Add a primitive to the hash
- *
- * The primitives come from the base_inst array that has the string names of
- * all the primitives.
- *
- * @TODO This is only used by init_primitives which wraps this function
- *       in a loop.  That seems really kind of silly to me -- just
- *       relocate this little block of code to init_primitives and save
- *       the add/tear-down of a bunch of stack frames?
- *
- * @private
- * @param the index into the base_inst array of the primitive to add.
- */
-static void
-add_primitive(int val)
-{
-    hash_data hd;
-
-    hd.ival = val;
-    if (add_hash(base_inst[val - 1], hd, primitive_list, COMP_HASH_SIZE) == NULL)
-        panic("Out of memory");
-}
-
-/**
  * Free the memory used by the primitive hash
  */
 void
@@ -5745,26 +5559,6 @@ clear_primitives(void)
 {
     kill_hash(primitive_list, COMP_HASH_SIZE, 0);
 }
-
-/**
- * @var the array that has all of our primitive names.
- *
- * @TODO Move this to the top of the file?  This is kind of buried here.
- *       Of course, typically one adds primitives to one of the #define'd
- *       names so it doesn't matter TOO much ... but I think it would be
- *       more tidy in a prominent place.
- */
-const char *base_inst[] = {
-    "JMP", "READ", "SLEEP", "CALL", "EXECUTE", "EXIT", "EVENT_WAITFOR",
-    "CATCH", "CATCH_DETAILED", PRIMS_CONNECTS_NAMES, PRIMS_DB_NAMES,
-    PRIMS_MATH_NAMES, PRIMS_MISC_NAMES, PRIMS_PROPS_NAMES, PRIMS_STACK_NAMES,
-    PRIMS_STRINGS_NAMES, PRIMS_ARRAY_NAMES, PRIMS_FLOAT_NAMES,
-    PRIMS_ERROR_NAMES,
-#ifdef MCP_SUPPORT
-    PRIMS_MCP_NAMES,
-#endif
-    PRIMS_REGEX_NAMES, PRIMS_INTERNAL_NAMES
-};
 
 /**
  * Initialize the hash of primitives
@@ -5787,7 +5581,11 @@ init_primitives(void)
     prim_count = ARRAYSIZE(base_inst);
 
     for (int i = 1; i <= prim_count; i++) {
-        add_primitive(i);
+        hash_data hd;
+        hd.ival = i;
+
+        if (add_hash(base_inst[i - 1], hd, primitive_list, COMP_HASH_SIZE) == NULL)
+            panic("Out of memory");
     }
 
     IN_FORPOP = get_primitive(" FORPOP");
