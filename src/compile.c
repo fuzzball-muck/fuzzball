@@ -4597,7 +4597,7 @@ pop_control_structure(COMPSTATE * cstat, int type1, int type2)
 static struct INTERMEDIATE *
 prealloc_inst(COMPSTATE * cstat)
 {
-    struct INTERMEDIATE *ptr, *nu;
+    struct INTERMEDIATE *nu;
 
     /* only allocate at most one extra instr */
     if (cstat->nextinst)
