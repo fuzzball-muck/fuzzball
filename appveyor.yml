@@ -60,8 +60,9 @@ build_script:
         cp -Recurse "$env:APPVEYOR_BUILD_FOLDER/game/*" "$artifact_root"
         # Copy starter database folder
         cp -Recurse "$env:APPVEYOR_BUILD_FOLDER/dbs" "$artifact_root"
-        # Copy documentation folder
-        cp -Recurse "$env:APPVEYOR_BUILD_FOLDER/docs" "$artifact_root"
+        # Copy documentation folders
+        cp "$env:APPVEYOR_BUILD_FOLDER/docs" "$artifact_root"
+        cp -Recurse "$env:APPVEYOR_BUILD_FOLDER/docs/info" "$artifact_root/data"
         # Copy source and include folder
         cp -Recurse "$env:APPVEYOR_BUILD_FOLDER/src" "$artifact_root"
         cp -Recurse "$env:APPVEYOR_BUILD_FOLDER/include" "$artifact_root"
