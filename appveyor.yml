@@ -61,8 +61,11 @@ build_script:
         # Copy starter database folder
         cp -Recurse "$env:APPVEYOR_BUILD_FOLDER/dbs" "$artifact_root"
         # Copy documentation folders
-        cp "$env:APPVEYOR_BUILD_FOLDER/docs" "$artifact_root"
-        cp -Recurse "$env:APPVEYOR_BUILD_FOLDER/docs/info" "$artifact_root/data"
+        cp -Recurse "$env:APPVEYOR_BUILD_FOLDER/docs" "$artifact_root"
+        md "$artifact_root/data/info"
+        cp "$env:APPVEYOR_BUILD_FOLDER/docs/mpi-intro" "$artifact_root/data/info"
+        cp "$env:APPVEYOR_BUILD_FOLDER/docs/mpi-intro2" "$artifact_root/data/info"
+        cp "$env:APPVEYOR_BUILD_FOLDER/docs/muf-tutorial" "$artifact_root/data/info"
         # Copy source and include folder
         cp -Recurse "$env:APPVEYOR_BUILD_FOLDER/src" "$artifact_root"
         cp -Recurse "$env:APPVEYOR_BUILD_FOLDER/include" "$artifact_root"
