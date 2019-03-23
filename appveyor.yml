@@ -66,7 +66,7 @@ build_script:
         cp -Recurse "$env:APPVEYOR_BUILD_FOLDER/src" "$artifact_root"
         cp -Recurse "$env:APPVEYOR_BUILD_FOLDER/include" "$artifact_root"
         # Copy text help files to data folder
-        cp "$artifact_root/docs/*.txt" "data/"
+        cp "$artifact_root/docs/*.txt" "$artifact_root/data/"
         # Copy compiled binaries and libraries
         cp -Recurse "$env:APPVEYOR_BUILD_FOLDER/build/*" "$artifact_root"
         if ((Test-Path "$artifact_root/fbmuck.exe") -And (Test-Path "$artifact_root/restart.exe")) {
