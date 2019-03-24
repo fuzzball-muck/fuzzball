@@ -1,7 +1,7 @@
 [requires]
 # Use compatible versions of OpenSSL accoding to semantic versioning.
 # See: https://docs.conan.io/en/latest/mastering/version_ranges.html
-OpenSSL/[~=1.0.2q]@conan/stable
+OpenSSL/[~=1.0.2r]@conan/stable
 
 
 [options]
