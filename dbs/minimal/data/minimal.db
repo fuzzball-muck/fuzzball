@@ -1,7 +1,7 @@
 ***Foxen9 TinyMUCK DUMP Format***
 2
 1
-156
+155
 %autolook_cmd=look
 %cpennies=Pennies
 %cpenny=Penny
@@ -146,7 +146,6 @@
 %consistent_lock_source=yes
 %expanded_debug_trace=yes
 %force_mlev1_name_notify=yes
-%muf_comments_strict=yes
 %optimize_muf=yes
 %playermax=no
 %quiet_moves=no

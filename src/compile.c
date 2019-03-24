@@ -160,7 +160,6 @@ typedef struct COMPILE_STATE_T {
     struct line *curr_line;     /* current line */
     int lineno;                 /* current line number */
     int start_comment;          /* Line last comment started at */
-    int force_comment;          /* Only attempt certain compile. */
     const char *next_char;      /* next char * */
     dbref player, program;      /* player and program for this compile */
 
@@ -2753,7 +2752,6 @@ do_compile(int descr, dbref player_in, dbref program_in, int force_err_display)
     cstat.curr_line = PROGRAM_FIRST(program_in);
     cstat.lineno = 1;
     cstat.start_comment = 0;
-    cstat.force_comment = tp_muf_comments_strict ? 1 : 0;
     cstat.next_char = NULL;
 
     if (cstat.curr_line)
@@ -2973,50 +2971,7 @@ do_string(COMPSTATE * cstat)
 }
 
 /**
- * This is the "old style" comment parser
- *
- * If cstat->force_comment == 0, or if do_new_comment has an error, this
- * code is used by do_comment.  force_comment is set to tp_muf_comments_strict
- *
- * It very simply chugs along until it finds a ) and handles he comment.
- * It doesn't handle recursive comments ( like (this) )
- *
- * @see do_comment
- * @see do_new_comment
- *
- * @private
- * @param cstat our compile state object
- * @return integer - 0 on success, 1 on error
- */
-static int
-do_old_comment(COMPSTATE * cstat)
-{
-    if (!cstat->next_char)
-        return 1;
-
-    while (*cstat->next_char && *cstat->next_char != ENDCOMMENT)
-        cstat->next_char++;
-
-    if (!(*cstat->next_char)) {
-        advance_line(cstat);
-
-        if (!cstat->curr_line) {
-            return 1;
-        }
-
-        return do_old_comment(cstat);
-    } else {
-        cstat->next_char++;
-
-        if (!(*cstat->next_char))
-            advance_line(cstat);
-    }
-
-    return 0;
-}
-
-/**
- * The "new" comment parser, supporting recursive comments.
+ * The comment parser, supporting recursive comments.
  *
  * I believe this means that you can have comments inside comments,
  * (which is nice because you can (do things) like this).  However,
@@ -3041,7 +2996,7 @@ do_old_comment(COMPSTATE * cstat)
  * @return integer status, as described above
  */
 static int
-do_new_comment(COMPSTATE * cstat, int depth)
+do_comment(COMPSTATE * cstat, int depth)
 {
     int retval = 0;
     int in_str = 0;
@@ -3051,7 +3006,7 @@ do_new_comment(COMPSTATE * cstat, int depth)
     if (!*cstat->next_char || *cstat->next_char != BEGINCOMMENT)
         return 2;
 
-    if (depth >= 7 /*arbitrary */ )
+    if (depth >= 7 /* arbitrary */ )
         return 3;
 
     cstat->next_char++;     /* Advance past BEGINCOMMENT */
@@ -3066,7 +3021,7 @@ do_new_comment(COMPSTATE * cstat, int depth)
                 }
             } while (!(*cstat->next_char));
         } else if (*cstat->next_char == BEGINCOMMENT) {
-            retval = do_new_comment(cstat, depth + 1);
+            retval = do_comment(cstat, depth + 1);
 
             if (retval) {
                 return retval;
@@ -3151,115 +3106,6 @@ is_preprocessor_conditional(const char *tmpptr)
 }
 
 /**
- * This implements the skipping of comments in the code by the compiler.
- *
- * 'Depth' is a funny thing here.  It isn't really used the same as depth
- * in, say, do_new_comment where it is the recursion depth.  What it really
- * means is, All we are doing is controlling if we use the recursive comment
- * code or not.  It is, in fact, really kind of superfluous because
- * it is set according to the binary value of cstat->force_comment which
- * is also used in this call.
- *
- * @TODO Remove 'depth' from the calling signature and use
- *       !cstat->force_comment in the two relevant if statements instead.
- *
- * Basically, force_comment and depth should either both be true or both
- * be false, otherwise this code doesn't work "properly".
- *
- * The "do_new_comment" code is used for parsing recursive comments, otherwise
- * the "do_old_comment" code is used.
- *
- * @see do_new_comment
- * @see do_old_comment
- *
- * @private
- * @param cstat compile state structure
- * @param depth boolean that should be the same as cstat->force_comment
- */
-static void
-do_comment(COMPSTATE * cstat, int depth)
-{
-    unsigned int next_char = 0; /* Save state if needed. */
-    int lineno = 0;
-    struct line *curr_line = NULL;
-    int macrosubs = 0;
-    int retval = 0;
-
-    /*
-     * @TODO depth and cstat->force_comment are always the same.  Put the
-     *       contents of this 'if' into the next 'if' because the extra
-     *       check is completely unnecessary.
-     */
-    if (!depth && !cstat->force_comment) {
-        next_char = cstat->line_copy ? cstat->next_char - cstat->line_copy : 0;
-        macrosubs = cstat->macrosubs;
-        lineno = cstat->lineno;
-        curr_line = cstat->curr_line;
-    }
-
-    if (!depth) {
-        if ((retval = do_new_comment(cstat, 0))) {
-            /*
-             * @TODO Remove this if.  If we got to this part of the code,
-             *       cstat->force_comment is *always* 0
-             *
-             *       I don't understand why this falls back to the old
-             *       parser if force_comment = 0, it would seem to make
-             *       more sense to error here.
-             *
-             *       But frankly this whole function is written strange
-             *       so I don't really understand the logic behind any
-             *       of this structure.
-             *
-             *       Its clear to me that "depth" was supposed to mean
-             *       something else but it wound up de-facto being a
-             *       boolean clone of cstat->force_comment.  Because
-             *       there is no original documentation, the original
-             *       thought process is lost or at least limited to the
-             *       original programmer.
-             */
-            if (cstat->force_comment) {
-                switch (retval) {
-                    case 1:
-                        v_abort_compile(cstat, "Unterminated comment.");
-                    case 2:
-                        v_abort_compile(cstat, "Expected comment.");
-                    case 3:
-                        v_abort_compile(cstat, "Comments nested too deep (more than 7 levels).");
-                }
-
-                return;
-            } else {
-                /* Set back up, drop through for retry. */
-                if (cstat->line_copy) {
-                    free((void *) cstat->line_copy);
-                    cstat->line_copy = NULL;
-                }
-
-                cstat->curr_line = curr_line;
-                cstat->macrosubs = macrosubs;
-                cstat->lineno = lineno;
-
-                if (cstat->curr_line) {
-                    cstat->next_char = (cstat->line_copy =
-                                       alloc_string(cstat->curr_line->this_line))
-                                       + next_char;
-                } else {
-                    cstat->next_char = (cstat->line_copy = NULL);
-                }
-            }
-        } else {
-            /* Comment hunt worked, new-style. */
-            return;
-        }
-    }
-
-    if (do_old_comment(cstat)) {
-        v_abort_compile(cstat, "Unterminated comment.");
-    }
-}
-
-/**
  * Skips comments, grabs strings, returns NULL when no more tokens to grab.
  *
  * This is perhaps the heart of the compile process. It finds the next
@@ -3300,12 +3146,14 @@ next_token_raw(COMPSTATE * cstat)
     if (*cstat->next_char == BEGINCOMMENT) {
         cstat->start_comment = cstat->lineno;
 
-        if (cstat->force_comment == 1) {
-            do_comment(cstat, -1);
-        } else {
-            do_comment(cstat, 0);
+        switch (do_comment(cstat, 0)) {
+        case 1:
+            abort_compile(cstat, "Unterminated comment.");
+        case 2:
+            abort_compile(cstat, "Expected comment.");
+        case 3:
+            abort_compile(cstat, "Comments nested too deep (more than 7 levels).");
         }
-
         cstat->start_comment = 0;
 
         return next_token_raw(cstat);
@@ -4068,18 +3916,10 @@ do_directive(COMPSTATE * cstat, char *direct)
         if (!*cstat->next_char || !(tmpptr = (char *) next_token_raw(cstat)))
             v_abort_compile(cstat, "Pragma requires at least one argument.");
 
-        if (!strcasecmp(tmpptr, "comment_strict")) {
-            /* Do non-recursive comments (old style) */
-            cstat->force_comment = 1;
-        } else if (!strcasecmp(tmpptr, "comment_recurse")) {
-            /* Do recursive comments ((new) style) */
-            cstat->force_comment = 2;
-        } else if (!strcasecmp(tmpptr, "comment_loose")) {
-            /* Try to compile with recursive and non-recursive comments
-               doing recursive first, then strict on a comment-based
-               compile error.  Only throw an error if both fail.  This is
-               the default mode. */
-            cstat->force_comment = 0;
+        if (false) {
+	    /**
+             * @TODO Implement future $pragmas on program_specific struct.
+             **/
         } else {
             /* If the pragma is not recognized, it is ignored, with a warning. */
             notifyf(cstat->player,
