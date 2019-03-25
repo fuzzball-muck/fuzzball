@@ -135,7 +135,7 @@ help: prochelp
 	cd ../docs && ../src/prochelp ../src/muckhelp.raw help.txt muckhelp.html > /dev/null
 	cd ../docs && ${INSTALL_DATA} help.txt man.txt mpihelp.txt ../game/data
 	${INSTALL} -d ../game/data/info
-	cd ../docs && ${INSTALL_DATA} mpi-intro mpi-intro2 muf-tutorial ../game/data/info
+	cd ../docs && ${INSTALL_DATA} mpi-intro mpi-intro2 muf-tutorial changesfb7 ../game/data/info
 	cd ../docs && ${INSTALL_DATA} ${HELPFILES} ${INSTALL_HELPDIR}
 
 Makefile: Makefile.in
