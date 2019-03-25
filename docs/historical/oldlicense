@@ -1,0 +1,168 @@
+Once upon a time, TinyMUD was released and Copyright (c) 1989 by David Applegate, James Aspnes, and Bennet Yee under an unusual and unique licence nearly identical to fb5.68/include/copyright.h
+This license was kept, with minor modifications, even to the final releases of fb5.  Additional licensing stipulations were added by Dr. Cat and ChupChup, found in fb5.68/src/copyright.c and fb5.68/docs/COPYING respectively.
+Sometime during fb6, Revar (foxen, Garth Minette, Fuzzball Software) changed the license to all his code to the GPLv2 (with OpenSSL exception).  He kept the other licensing available because he knew he didn't hold copyright over all of Fuzzball's code.  However, the GPL is likely incompatible with TinyMUD's/fb5's unique license.  This is because the TinyMUD license has an advertising clause (much like the GPL-incompatible 4-clause BSD license) and also asks users to notify the original authors of their changes and uses of TinyMUD.  If the GPL and the TinyMUD license are incompatible, Revar's license change was illegal.
+Sometime in fb7's alpha or beta stages, the non-GPL licensing information was removed (illegally, if any code still under that license remained) and the GPL bumped up to GPLv3 with OpenSSL exception.
+I (maine coon) have written this document to bring the old license information back, and to describe the history of Fuzzball's licensing.  My personal hope is for the GPL-licensed code to be re-licensed under an open-source license compatible with the old licenses.
+
+The mentioned files are printed below:
+
+fb5.68/include/copyright.h
+/* $Header: /home/foxen/CR/FB/include/RCS/copyright.h,v 1.1 1996/06/17 17:29:45 foxen Exp foxen $
+ * $Log: copyright.h,v $
+ * Revision 1.1  1996/06/17 17:29:45  foxen
+ * Initial revision
+ *
+ * Revision 5.12  1994/01/06  03:18:09  foxen
+ * Version 5.12
+ *
+ * Revision 5.1  1993/12/17  00:35:54  foxen
+ * initial revision.
+ *
+ * Revision 1.2  90/07/19  23:08:47  casie
+ * Removed comment log from top.
+ * 
+ * 
+ */
+/* -*-C-*-
+
+Copyright (c) 1989, 1990 by David Applegate, James Aspnes, Timothy Freeman,
+			    Bennet Yee, and Na Choon Piaw (lachesis).
+
+This material was developed by the above-mentioned authors.
+Permission to copy this software, to redistribute it, and to use it
+for any purpose is granted, subject to the following restrictions and
+understandings.
+
+1. Any copy made of this software must include this copyright notice
+in full.
+
+2. Users of this software agree to make their best efforts (a) to
+return to the above-mentioned authors any improvements or extensions
+that they make, so that these may be included in future releases; and
+(b) to inform the authors of noteworthy uses of this software.
+
+3. All materials developed as a consequence of the use of this
+software shall duly acknowledge such use, in accordance with the usual
+standards of acknowledging credit in academic research.
+
+4. The authors have made no warrantee or representation that the
+operation of this software will be error-free, and the authors are
+under no obligation to provide any services, by way of maintenance,
+update, or otherwise.
+
+5. In conjunction with products arising from the use of this material,
+there shall be no use of the names of the authors, of Carnegie-Mellon
+University, nor of any adaptation thereof in any advertising,
+promotional, or sales literature without prior written consent from
+the authors, Carnegie-Mellon University and Bell Communications Research
+in each case. */
+
+fb5.68/src/copyright.c
+/* $Header: /home/foxen/CR/FB/src/RCS/copyright.c,v 1.2 1996/06/12 04:14:08 foxen Exp $
+ * $Log: copyright.c,v $
+ * Revision 1.2  1996/06/12 04:14:08  foxen
+ * Updated copyright notice.
+ *
+ * Revision 1.1  1996/06/12 02:14:49  foxen
+ * Initial revision
+ *
+ * Revision 5.3  1994/03/14  12:20:58  foxen
+ * Fb5.20 release checkpoint.
+ *
+ * Revision 5.2  1994/01/18  20:52:20  foxen
+ * Version 5.15 release.
+ *
+ * Revision 5.1  1993/12/17  00:07:33  foxen
+ * initial revision.
+ *
+ * Revision 1.1  90/07/23  14:54:25  casie
+ * Initial revision
+ *
+ * Revision 1.2  90/07/19  23:08:47  casie
+ * Removed comment log from top.
+ *
+ *
+ */
+/* -*-C-*-
+
+Copyright (c) 1989-1996 by David Applegate, James Aspnes, Timothy Freeman,
+                            Bennet Yee, Na Choon Piaw (lachesis), and
+			    Garth Minette (Foxen/Revar).
+
+This material was developed by the above-mentioned authors.
+Permission to copy this software, to redistribute it, and to use it
+for any purpose is granted, subject to the following restrictions and
+understandings.
+
+1. Any copy made of this software must include this copyright notice
+in full.
+
+2. Users of this software agree to make their best efforts (a) to
+return to the above-mentioned authors any improvements or extensions
+that they make, so that these may be included in future releases; and
+(b) to inform the authors of noteworthy uses of this software.
+
+3. All materials developed as a consequence of the use of this
+software shall duly acknowledge such use, in accordance with the usual
+standards of acknowledging credit in academic research.
+
+4. The authors have made no warrantee or representation that the
+operation of this software will be error-free, and the authors are
+under no obligation to provide any services, by way of maintenance,
+update, or otherwise.
+
+5. In conjunction with products arising from the use of this material,
+there shall be no use of the names of the authors, of Carnegie-Mellon
+University, nor of any adaptation thereof in any advertising,
+promotional, or sales literature without prior written consent from
+the authors, Carnegie-Mellon University and Bell Communications Research
+in each case. */
+
+
+/* Parts of this code, in particular the dictionary based compression code,
+  are copyright by Dr. Cat, 1995, and are NOT covered by the above copyright
+  statement.  Dr. Cat has given permission for the code to be used in the
+  FB distribution of the TinyMUCK server. */
+
+fb5.68/docs/COPYING
+TinyMUCK 2.2, being a deriviative work of TinyMUD 1.5.2 and TinyMUCK
+1.1 is subject to all conditions listed in "copyright.h"
+
+In addition, I, named ChupChup throughout this work, request that you
+follow the following conditions:
+
+1. Should you make a substantial addition to this work and choose to
+distribute it, please inform me first.  If that is not possible, in
+your distribution, you should either:
+
+	a) Not use the name TinyMUCK as the program, and note and
+	acknowledge it's deriviative nature.
+
+	b) Use the name TinyMUCK and it's version number, but append
+	a suffix to distinguish it from the original.
+
+2. You should distribute the source with the binaries (if binaries are
+provided), and update the documentation to reflect the changes you
+made.  If you are unable to do the latter, you must state the changes
+in some way evident to the user when either running the software or
+when unpacking the archive.
+
+3. Inform me of any note-worthy uses of this software.
+
+Any text file with seperate copying permissions specifications will
+have these specifications overridden by those unless the files have
+not been written by me, the author.
+
+The author may be reached at
+
+	rearl@belch.berkeley.edu
+
+ChupChup
+Robert Earl
+
+
+----------------------
+
+Furthermore, the authors of the 2.2fb mods agrees with the above.
+The main supporting author of the 2.2fb mods may be reached at:
+	foxen@netcom.com
