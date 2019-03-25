@@ -1,0 +1,230 @@
+2.2fb
+  
+New primitives:
+  LVAR <varname>   This declares a variable as a local variable, that is local
+    to a specific program.  If another program calls this program, the values
+    of the local variables will not be changed in the calling program, even if
+    the called program changes them.
+  
+  SETLINK   (d d -- )   Takes an exit dbref and a destination dbref and sets
+                         the exit link to that destination.  Note that if the
+                         exit is already linked, it must be unlinked by doing
+                         a setlink with #-1 as a destination.
+  
+  SETOWN    (d d -- )   Sets the ownership of the first object to the player
+                         given in the second dbref. (wizbit only)
+  
+  NEWROOM   (d s -- d)  Takes dbref of the location, and the name in a string.
+                          Returns the dbref of the room created.  Owner is
+                          runner of the program. (wizbit only)
+  
+  NEWOBJECT (d s -- d)  Takes location and name and returns new thing's dbref.
+                          (wizbit only)
+  
+  NEWEXIT   (d s -- d)  Takes location and name and returns new exit's dbref.
+                          (wizbit only)
+  
+  AWAKE?    (d -- i)    Returns whether the given player (dbref) is connected.
+                         It returns how many times they are connected.
+  
+  ONLINE    ( -- d d ... d i) Returns the dbrefs of all the players logged in,
+                         with the count of them on the top of the stack.
+  
+  CONCOUNT  ( -- i)     Returns how many connections to the server there are.
+  
+  CONDBREF  (i -- d)    Returns the dbref of the player connected to this
+                         connection.
+  
+  CONTIME   (i -- i)    Returns how many seconds the given connection has been
+                         connected to the server.
+  
+  CONIDLE   (i -- i)    Returns how many seconds the connection has been idle.
+  
+  CONHOST   (i -- s)    Returns the hostname of the connection. (wizbit only)
+  
+  INT?      (? -- i)    Tells whether the top stack item is an integer.
+  
+  STRING?   (? -- i)    Tells whether the top stack item is a string.
+  
+  DBREF?    (? -- i)    Tells whether the top stack item is a dbref.
+  
+  NEXTPROP  (d s -- s)  This takes a dbref and a string that is the name of a
+                         property and returns the next property name on that
+                         dbref, or returns a null string if that was the last.
+                         To *start* the search, give it a propdir, or a blank
+                         string. For example, '#10 "/" NEXTPROP'  or 
+                         '#28 "/letters/" NEXTPROP'   A blank string is the
+                         same as "/". (wizbit only)
+  
+  PROPDIR?  (d s -- i)  Takes a dbref and a property name, and returns whether
+                         that property is a propdir that contains other props.
+  
+  SYSTIME   ( -- i)     Returns the number of seconds since 1/1/79 00:00 GMT
+  
+  TIMEFMT   (s i -- s)  Takes a format string and a SYSTIME integer and returns
+                         a string formatted with the time.  The format string
+                         is ascii text with formatting commands:
+               %a -- abbreviated weekday name
+               %A -- full weekday name
+               %b -- abbreviated month name
+               %B -- full month name
+               %c -- "an appropriate date and time representation"
+               %d -- day of the month as a decimal number (01-31)
+               %H -- the hour of the 24-hour clock (00-23)
+               %I -- the hour of the 12-hour clock (01-12)
+               %j -- the day of the year as a decimal number (001-366)
+               %m -- the month as a decimal number (01-12)
+               %M -- the minute as a decimal number (00-59)
+               %p -- AM or PM
+               %S -- the second as a decimal number (00-59)
+               %U -- The week number of the year as a decimal number (00-52)
+               %w -- The weekday as a decimal number (0-6, Sunday = 0)
+               %W -- The week number of the year [starting w' monday] (00-52)
+               %x -- "An appropriate date representation"
+               %X -- "An appropriate time representation"
+               %y -- the last two digits of the year (00-99)
+               %Y -- all four digits of the year
+               %% -- A % character
+ 
+  TIMESPLIT (i -- i i i i i i i i)  Takes a systime integer, and splits it up
+                         into second, minute, hour, dayofmonth, month, year,
+                         dayofweek, and dayofyear.  1 == sunday for dayofweek.
+                         Dayofyear is a number from 1 to 366.
+  
+  DBTOP     ( -- d)     Returns the dbref of the first object beyond the top
+                          object of the database.
+  
+  DEPTH     ( -- i)     Returns how many items are on the stack.
+  
+  BITOR     (i i -- i)  Does a logical bitwise or.
+  
+  BITXOR    (i i -- i)  Does a logical bitwise exclusive or.
+  
+  BITAND    (i i -- i)  Does a logical bitwise and.
+  
+  BITSHIFT  (i i -- i)  Shifts the first integer by the second integer's
+                          number of bit positions.  Same as the C << operator.
+                          If the second integer is negative, its like >>.
+  
+  QUEUE     (i d s -- ) Takes a time in seconds, a program's dbref, and a
+                          parameter string.  It will execute the given program
+                          with the given string as the only string on the
+                          stack, after a delay of the given number of second.
+                          (wizbit only)
+  
+  VERSION   ( -- s)     Returns the version of this code in a string.
+                          "Muck 2.2fb" and "Muck 2.2fb2" are the current
+                          possible values.
+  
+  PROG      ( -- d)     Returns the dbref of the currently running program.
+  
+  TRIG      ( -- d)     Returns the dbref of the original trigger.
+  
+  CALLER    ( -- d)     Returns the dbref of the program that called this one,
+                          or the dbref of the trigger, if this wasn't called
+                          by a program.
+  
+  LOCALVAR  (i -- l)    Takes an integer and returns the respective local
+                          variable.  Similar to the 'variable' primitive.
+  
+Added an instruction limit abort if a program is not wizbit
+Actions not on a room will only take you to the destination if, for both the
+  destination and the source, you either own them, or they are set JUMP_OK.
+You can use 'news <topic>' now to list the files named 'game/data/news.txt.*'
+You can also use 'info' to list the files in 'game/data/info/' and view then
+  with 'info <filename>'.  The topic is case sensitive.
+A wizard set QUELL is effectively a normal player with no wizardly powers.
+  Programs that test to see if a player is wizard will get a false response
+  from '"wizard" flag?' when the player is QUELLed.  Wiz-bitted programs
+  will still act wizbitted whether or not the owner is QUELLED.
+A player can set themselves "SILENT" and not see all the dbrefs and dark
+  objects that they own.  They won't see objects in a dark room either.
+  They still control the objects though.
+A player can set themselves "TERSE" and not get the description and contents
+  of the rooms they pass through listed to them.
+If no parent is given for a room it will default to the parent of the
+  current room instead of #0.
+Properties are now stored in AVL trees, and organized into directories of
+  properties.  This speeds things up, and keeps you from being spammed on
+  examines.  To examine the properties on an object, use 'ex <obj>=<propdir>'.
+  where to examine the base properties in an object, <propdir> would be '/'.
+  You can see the value of a single property with 'ex <object>=<propname>'.
+      Propdirs are a method of storing and organizing properties to speed
+    access and to provide a sort of built-in organization.  The basic idea
+    is to make something similar to a 'filesystem' for properties.  In this
+    analogy, each person would be a filesystem, with a root directory and
+    (theoretically) an infinite number of properties beneath that.
+      A property has been expanded with the idea that each property may now
+    contain a new property list -- the 'propdir'.  properties can both have
+    a value (either integer or string as before) _and_ contain other
+    properties.
+      The actual directory entries may ALSO contain data.  Propdirs' only
+    real 'visible' changes are in the names of properties -- '/' is used as
+    the property directory separator, and so will not appear in the names
+    of the properties when listed through 'examine' or MUF programs.
+      Property protections have also been expanded -- the . and _ may appear
+    either at the beginning of the property name or immediately following a
+    '/', and that property will have the appropriate protections.  For
+    example, the property '/mail/.inbox/mesg/#' would have the same
+    protections as '.mesg#' would now.
+    There are two ways to remove a property list:
+      * First, and most straight forward, is to remove the property that
+        contains it.  so, in the previous example, removing the property
+        '/mail/.inbox' would (recursively) remove all properties under
+        .inbox before removing .inbox itself.
+      * The second way is to remove all properties within the property list
+        yourself.  When the last property is removed, the parent property
+        (the one that contained the property list) is examined to see if
+        contains data.  If it does, then the property list only is
+        removed.  If the property doesn't contain data then it is removed
+        also.
+      Because of the first method of removing propdirs, the ability to have a
+    property list and value in the same property should be used sparingly.
+      If you try to access a property ending in '/', in MUF, it will give a
+    programmer error, except in NEXTPROP, in which it will give the name of
+    the first property in that propdir.
+      The last visible, non-MUF change that propdirs bring is that 'examine'
+    will no longer show properties _directly_.  Instead, where the properties
+    would normally be shown, it will say:
+        "[ Use 'examine <object>=/' to list root properties. ]"
+      Examine now can take an argument which is the property or propdir to
+    view.  If the property name given ends with a '/', all properties in
+    property directory will be listed, otherwise the single property named
+    will be shown.
+      Internally, a few things changed.  property lists are now stored as AVL
+    trees instead of straight lists, so there is a speed increase even if
+    propdirs are not directly used.  This also means properties are kept in
+    sorted order and will be displayed that way.
+      'addprop' will no longer allow a ":" in the property name.
+      To clear a propdir's value without deleting the proptree below it,
+    from MUF do a '"" 0 addprop' to it.
+      A property can *not* have both a string and integer stored at the same
+    time anymore.  The old property.c was lax and allowed this, even though
+    the integer value would be lost on dbload.
+  
+When a player connects to the server, the server basically does an:
+  "@force <player>='connect'".  On player disconnection, it @forces a
+  'disconnect'.  It will only @force a connect when you log in your first
+  connection, and @force a disconnect when your last connection is
+  terminated.
+  
+@queue will list all the time queue events waiting to run.  @dequeue
+  will let you either delete a queue event by event number, delete all
+  events running a specific program or run by a specific player,  or
+  clear the entire queue with '@deq all'
+@dequeue will only let you remove events on programs you own, or any
+  event if you are a wizard.  @queue will only list events on programs
+  you own, or all events, if you are a wizard.
+If a program is running, it will delay execution of queue events until
+  after the program finishes, or executes a READ or SLEEP command.
+QUEUE events cannot use the READ primitive.  They are writeonly.
+When a QUEUEd program executes, it does so with UID of the player who
+  was running the program that QUEUEd it, a loc @ of #-1, and a trigger @
+  of #-1.
+  
+On dbload, if a program is set ABODE (AUTOSTART), *AND* it is owned by
+  a wizard, then it will be placed in the timequeue with a delay of 0 and
+  a string parm of "Startup"
+  
+Any wizard can do an @pcreate, even when GOD_PRIVS is defined.
+  

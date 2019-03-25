@@ -1,0 +1,1436 @@
+2.2fb5.55
+Changed sanity checking to make it much faster.
+Changed finding of orphaned objects to make it less spammy and more useful.
+Added @sanfix to auto-repair corrupted databases as best as possible.
+Added -sanfix command line option to netmuck, to do a @sanfix at startup time.
+Changed {eq} and {ne} to make them not strip spaces before comparing.
+Added debugging code to help find incorrect freeing of program strings, and
+  related problems.
+Fixed some bugs with RECYCLE, DESCR_SETUSER, and a couple other muf primitives
+  to prevent the double freeing of muf program strings.
+
+
+
+2.2fb5.54
+Fixed a bug where explicitly using the JMP MUF primitive would error out.
+
+
+
+2.2fb5.53
+*
+* NOTE! THIS VERSION FIXES A MAJOR SECURITY HOLE THAT EXISTS IN ALL EARLIER
+*  VERSIONS OF FBMUCK, AND IN THE TINYMUCK 2.2 CODE IT WAS DERIVED FROM.
+*
+Added handling for {&var:first,last,sep} to allow getting list items from a
+  variable.  Acts exactly like {sublist:{&var},first,last,sep}.  Fewer args
+  are also allowed, such as {&var:2} to get the second list item from {&var}.
+  One useful variant of all this is {&arg:2,-1,=} to get everything after ths
+  first '=' that was given on the command line.
+Fixed a bug with MPI matching macros down the environment from trigger owner.
+Fixed a crasher bug in sanity checking with invalid object references.
+Fixed a logic bug in {sublist} that made {sublist:a***b,2,4,*} return "b"
+  instead of "**b".
+Changed the numbering of instruction types so all integer types are together
+  and all pointer types are together.
+Removed the internal primitives IN_IF and IN_PROGRAM.
+Added PROG_IF, PROG_EXEC and PROG_JMP internal instruction types for handling
+  of if then, loops, and function execution.  These types are displayed in
+  dumps as IF->address, EXEC->address and JMP->address.
+Changed storge of addresses to include dbref.
+Changed MUF system callstack to store dbrefs.
+Fixed the single line primitive dump in the MUF debugger so that if the end
+  of the line isn't shown, it will display a ... at the end instead of
+  displaying just ..., as well as changed it so it would display the whole
+  line if possible, and would only display 1 function, if there is more then
+  1 function on a line.
+Changed the MUF interpreter so if an EXECUTE goes to another program, it is
+  treated like a CALL to the function in that program, saving variables and
+  changing the active permissions to match that of the called program, and
+  CALLs to the current program are treated like an EXECUTE to the program.
+  JMPs to other programs will result in a MUF backtrace, erroring out.
+Fixed a bug with finding the program UID on programs set HAVEN and STICKY.
+  If the inherited level was M1, the program would NOT inherit the UID of the
+  calling program.
+Fixed a bug that the instances of a program was never decremented.  This
+  would result in programs never being freed, and POSSIBLY corruption if a
+  program is freed because the instances count wrapped around.
+Added the dbref of the current program to the DEBUG dump.
+The MUF debugger will now go to the proper program for source listings if
+  the current function was called in an EXECUTE from another program.
+Function addresses in argument stack backtraces are now displayed as
+  '#dbref'function if the address points to another program.
+Changed the wizard only mode and player limits to allow any truewizard to
+  connect instead of just any wizard.  (ie: ignore QUELL bit for connects)
+Fixed bug in INTERP primitive that might have caused a crash on return of an
+  address.
+Fixed crasher bug if a program was dequeued by dbref (IE compiled) and was
+  running, but in a call to another program.
+Fixed MUF memory leak in CALL and possible leaks in EXECUTE, JMP, & SLEEP.
+Fixed MPI {dist} function to accept 2 arguments like it is supposed to.
+Fixed a bug that crashed the server on @shutdown, when DELTADUMPS was not
+  defined, but DISKBASING was.
+Fixed a hanging bug in sanity, if an object's next field pointed to itself.
+Changed permissions on the KILL MUF primitive to bring them more in line
+  with the permissions for {kill} and @kill.
+
+
+
+2.2fb5.52
+Changed prochelp.c to improve Indexing by Section for html and helpfiles.
+Changed mpihelp docs to use improved indexing scheme.
+Restricted @examine to usage by God only.
+Fixed a security hole that allowed all Wizards to see player passwords.
+  (Including the GOD password.)
+
+
+
+2.2fb5.51
+Fixed a crasher bug with using MUD_ID in params.h
+Fixed a few error messages in sanity checking.
+Fixed @sanchange for changing the home field on an object.
+Added ability for @sanchange to edit object ownership.
+Fixed bug with sanity gagging on recycled objects.
+Fixed bug with 'help', 'mpi', 'man', and 'news' not giving default text.
+Changed @examine to give data on recycled objects too.
+Fixed some small compile warnings that show up with gcc -Wall. (up to edit.c)
+Fixed a crasher bug caused by double-freeing of public functions when a muf
+  program gets multiple errors trying to compile.
+WARNING: Some pre2.0.x versions of the Linux kernel appear to have a bug with
+  closing the stderr output stream.  Do NOT use the DETACH #define option with
+  these kernels.
+
+
+
+2.2fb5.50
+Fixed a typo in 'man primitives'.
+Fixed some errors regarding timezones in the time section of the MPI docs.
+Fixed permissions in the muf COPYOBJ primitive, to give permission denied
+  when trying to copy an object you don't own, with perms of less than M3.
+Changed 'man', 'mpi', and 'help' help commands to require exact topic matches,
+  to provent preblems of matching topic ABCD, when looking for topic AB.
+Added {LISTPROPS:propdirname,object,pattern} to MPI.  This function will return
+  a list of the full names of the properties that are contained in tha given
+  propdir, on the given object.  The object, if not given, defaults to the
+  trigger object.  If a pattern is given, the sub-properties in the propdir
+  are each compared against the smatch wildcard pattern, and only those that
+  match are returned.  This comparison is only done on the last part of the
+  property name after the last /.
+Added {PROPDIR:propname,obj} to MPI.  If the given property on the given obj
+  is a propdir, containing sub-properties, then this returns true.  Otherwise
+  it returns false.  Object will default to the trigger object, if not given.
+Updated documentation for MPI.
+Changed restart script to let the user define the port for the server to use,
+  in the script itself.  This can be overridden on the command line.
+Added ability for quoting text in MPI with backquotes (`) so that it gets
+  translated literally.  Backquotes can be put inside pairs of backquotes
+  simply by escaping them with a backslash.  To quote something, put `s
+  around it.  ie:  {delay:5,`The delay was {subt:{secs},`{secs}`} long.`}
+  NOTE: The ` handling is done BEFORE command handling, so `s in {lit:}s
+  will need to be escaped with backslashes to be returned as part of the
+  literal string.
+Added automatic sanity checking to the server on startup.  Running netmuck
+  with the command line option -nosanity will disable this.  If you want to
+  check sanity interactively like the old sanity program did, run netmuck
+  with the command line option -insanity. (interactive sanity)  If the server
+  determines that the database does not pass the sanity checks, then the
+  game is started up in Wizard Only mode, allowing only Wizards to log in.
+Added @sanity command, to allow wizards to check database sanity.
+Added @examine command, to allow Wizards to view the underlying database
+  structure information for an object.
+Added @sanchange command, to allow GOD (and only GOD) to edit the underlying
+  structure of the database.  The syntax is '@sanrepair #DBREF FIELD #OBJREF'
+  where DBREF is the object whose FIELD is being edited, and OBJREF is the
+  object reference value to which FIELD is being set.  The valid FIELDs for
+  this command are: exits, contents, next, location, and home.
+Added @restrict command, to allow wizards to restrict login access to wizards
+  only.  The syntax of this command is '@restrict on' or '@restrict off', to
+  turn on and off the wizard-only login restriction.
+
+
+
+2.2fb5.49
+Fixed a crasher bug with uncompressing strings longer than BUFFER_LEN.
+Fixed a crasher bug with the MUF prim EXPLODE double-freeing a string.
+Fixed a hanging bug with incorrectly handling various READ errors.
+Fixed a near infinite loop with recycling a room that retrieves you.
+Fixed a minor bug, to not display compiler errors if player is in READ.
+Fixed a small compile warning in prim_interp().
+Added a wizard-warning for when the playername hashtable appears to be bad,
+  and automatically rebuilds it from scratch if it is.
+Changed the TESTLOCK muf primitive to not error out with puppets.
+Changed the $echo MUF directive to echo the rest of the text on the line,
+  instead of just the next token as it was previously incorrectly doing.
+Changed MUF to increment the integer value of the property .debug/errcount
+  whenever a muf program crashes.  This is done on both the program that
+  the muf interpreter crashed in, and on the program that the user initially
+  called.  This can give you an idea of how often your programs are crashing.
+Changed MUF to store a muf program error message in the string property
+  .debug/lasterr, on both the program the interpreter crashed in, and on the
+  program that the user initially called.  This can tell you how users last
+  managed to crash your programs.
+Changed MUF to store the time as a systime integer in the property named
+  .debug/lastcrash, whenever a muf program crashes.  This is done on both
+  the program the interpreter errored out in, and on the program the user
+  initially called.  This is useful to know when a muf program of yours
+  last got an error.
+
+
+
+2.2fb5.48
+Fixed a hanging/crashing bug after exiting the MUF debugger.
+Fixed a bug to not save out READMODE flags to databases on disk.
+Fixed crasher bug with INTERP muf primitive.
+Fixed a bug in STRENCRYPT/STRDECRYPT muf primitives.
+
+
+
+2.2fb5.47
+Fixed timestamps in logfiles.  (For want of an s, the time was lost.)
+Fixed notify_except for echoing messages in vehicles.
+Fixed portability problem in topwords.  Use POSIX strchr() instead of index().
+Added {created:obj}, {modified:obj}, {lastused:obj}, and {usecount:obj} MPI
+  primitives to allow getting timestamp info on an object.
+Fixed some bugs with resolver not working under various operating systems.
+Fixed possible crasher bug with DESCR_SETUSER muf primitive.
+Fixed configure script for Linux slackware 3.0 libraries oddness.
+Added server ability to automatically boot idle players.  You can turn this
+  on with the IDLEBOOT boolean @tune parameter, and set the maximum allowed
+  idle time with the MAXIDLE time @tune parameter.  Wizards are never booted.
+  If a player gets booted, the message they see is the IDLEBOOT_MESG @tune
+  string.  (Thanks, Fre'ta!)
+Changed MOVETO muf primitive to allow moving of actions, if program is wizbit.
+Removed USERNAME from all but GOD (#1)'s WHO list, to address privacy concerns.
+Added wizbit CONUSER (i -- s) muf primitive for programs that absolutely must
+  have the username.  (Ie: user banning programs.)
+Changed CONHOST muf prim to only return the hostname, and no username.
+Added CHECKPASSWORD (d s -- i) wizbit primitive.  Checks if player d's password
+  is the same as string s, and if so, returns 1, otherwise, returns 0.
+Changed @ps output to list the trigger object for MPI delayed events.
+Fixed a crasher bug caused by forcing commands on players in read mode.
+Changed MUF READ handling to make READs become events on the @ps process list.
+Fixed bugs that would have allowed messages to be echoed into VEHICLEs that
+  were set DARK, and into VEHICLEs that were in rooms set VEHICLE.
+Fixed bug that caused messages not to be echoed into the interior of VEHICLEs
+  at all.
+Fixed bug in MOVETO that allowed unprivileged players to teleport into vehicles
+  that were not in the same room as the player.
+Fixed bug that allowed players to @teleport themselves into VEHICLEs located
+  in rooms they did not control.
+Fixed bug that allowed players to @teleport themselves into objects that were
+  not set VEHICLE.
+Objects can now be used as the dropto for rooms, or as the home for other
+  objects.  The object being linked to must be set ABODE if not owned by the
+  player.
+Added @credits command to list the hidden credits info that was always in FB.
+Changed {fox} to return YARF!.
+Added {debugif:condition,statement}. If condition evals true, use debug mode
+  when evaluating statement.  Otherwise eval statement in regular mode.
+Added several checks to trap failed memory allocations.  Prints msg to stderr.
+Added ABATE alias for ABODE flag on exits.  An exit with the ABATE flag
+  is a lower priority then one without the ABATE flag, making it lower
+  then the M0 exit priority.
+Changed MPI permissions so MPI with Wizard permissions can set any property.
+Fixed DELPROP error reporting in MPI.
+Fixed bug that padded all strings echoed from vehicles to the maximum
+  buffer length.
+Fixed bug that would cause the player_start to be set to #0 when loaded
+  from the database file.
+Added _sys/max_connects property on #0, to let programs get the max_players
+  info that is displayed in the standard WHO list.
+Fixed recursion bug with MUF errors in _listen propqueues
+Added a maximum players connect limit.  This is @tunable with the following:
+  @tune playermax=y         To limit how many players can connect.
+  @tune playermax_limit     To set the max number of connects.
+  @tune playermax_warnmesg  Mesg shown at connect screen, if #connects > max
+  @tune playermax_bootmesg  Mesg shown when denying connect, if #connects > max
+  Wizards can always connect.  The warning message lets players know when they
+  first connect if they likely won't be able to connect.  Wizards can ignore
+  that.  When the player sends the connect string, it checks if the player is
+  a wizard.  If not, it sends them the boot message, and disconnects them.
+
+
+
+2.2fb5.46
+Changed logout sequence to (hopefully) prevent showing text after the 'bye'
+  message, when you log out using QUIT.
+Substantially rewrote the restart script to hopefully be safer and allow
+  fewer lost databases due to multiple restart attempts.  Also added some
+  comments to it to make it easier for most users to modify appropriately.
+Added messages to optimdb to make it more verbose, to prevent panicking
+  users when it takes a long time on big databases.
+Fixed unterminated string error with {foreach} with empty list.
+Removed permissions check in ISPID? to make it available for ML1 programs.
+Fixed {lsort}'s variable handling for dynamic sorts.
+Fixed hanging bug caused by @recyling a room while in it.
+Fixed some problems in the muf manual man.txt file, and updated it some.
+
+
+
+2.2fb5.45
+Fixed a bug with how registered names interacted with the new compression code.
+Changed how the welcome.txt banner page is displayed at login, to add carriage
+  returns to lines that only end in line feeds.
+Fixed configure script to handle @'s in the results of 'uname -a'.
+Fixed an infinite loop bug with @recycling a room you're in while someone is
+  using a 'ride' program to follow you.
+Changed logging functions to give the time in HH:MM:SS MM/DD/YY format.
+Fixed unterminated result from {for} when boundries would cause no execution.
+Fixed ADDPROP to clear property values when passed a null string and a 0 for
+  values.  If the property is not a propdir, it also gets removed.
+Fixed {ref} to always return value passed if passed a raw dbref.  ie: {ref:#8}
+Updated the README packaged with the server.
+Added new shell script named 'optimdb' that re-optimizes the compression of
+  a database, saving the optimized db out to another file.  The usage is:
+        optimdb db-infile db-outfile
+
+
+
+2.2fb5.44
+Fixed a problem with spontaneous shutdowns under Linux, when a connection
+  dies just as the server tries to accept the connection.  Now the error is
+  logged to stderr, and the server just continues on like it never happened.
+Changed {dice} to limit the number of dice to 8888, to prevent the server
+  from hanging on huge numbers of dice to roll.
+Added timestamps to the commands log.
+Fixed dump warnings to much more accurately warn of monolithic dumps.
+Changed db format to store @tune parameters.  '@tune save' and '@tune load'
+  still save to and load from the parmsfile.cfg file.  Parameters in the DB
+  override the parameters in the parmsfile.cfg, but you can read in the
+  parmsfile.cfg with '@tune load'.  When the database is dumped to disk,
+  in a monolithic dump, the @tune parameters are saved at the beginning of
+  the DB.
+Changed the KILL muf primitive to allow ML1 and 2 programs to kill themselves.
+Changed dbref unparsing so player dbrefs no longer show to the owner of that
+  player's home room.
+Changed the compression algorithm to a dictionary based compression scheme.
+  It gets better compression than the old bigraph compression.  The database
+  format was changed to hold the dictionary for this as well as the @tune stuff
+  mentioned above.  Old databases wil be converted to the new format automatic-
+  ally.  NOTE: THE COMPRESSION CODE IS COPYRIGHT 1995 BY FELORIN, AKA DR. CAT,
+  AND IS USED IN FB BY SPECIFIC PERMISSION.  NOTE: these changes should reduce
+  the size of large databases, but will likely increase the size of small DBs,
+  compared to bigraph compression, due to the addition of the dictionary to
+  the db.
+Changed main netmuck program launching argument format such that it can accept
+  -option arguments anywhere in it's command line.  There are now two -options
+  available.  -convert will cause netmuck to read the input database, then
+  immediately save the db to the output database and shut down, without ever
+  starting up muf programs or allowing connections.  -decompress causes netmuck
+  to save the output databases it writes into an uncompressed format. Example:
+  "netmuck -convert -decompress infile.db outfile.db" will convert the db in
+  infile.db to the most current database format, with no compression.
+Added 'topwords' program that will find the 4096 most common words in a db.
+  topwords is a filter.  You pipe the uncompressed db into it and it returns
+  the 4096 optimized dictionary words.  If you have a small database, it is
+  best to simply use the game/data/wordlist.txt file provided with this re-
+  lease.  If you have a large db, decompress a copy of it and run it through
+  topwords, take the output words, and store them in the wordlist.txt file
+  (after backing up the old one) then use netmuck with the -convert option
+  to convert the uncompressed db into a db with the new compression using the
+  optimized wordslist.
+
+
+
+2.2fb5.43
+Fixed a bug with the fb5.42 fix to SETLINK.  Wizbit programs will be able to
+  use SETLINK with impunity now.
+Changed unparse_object() so that players see the dbrefs of objects that they
+  could @unlink.  This is so that @contents and @entrances provide useful
+  information.
+Fixed a logic problem with @chown.  NOTE: IMPORTANT SECURITY FIX!!!!!!!
+Changed @chown to let players @chown an exit to themselves if they own the
+  object it is attached to, or an object it is linked to.
+Fixed a security hole where puppets and vehicles could be used as MPI bugs.
+Fixed a compiling error when SPAWN_HOST_RESOLVER is undefined.
+
+
+
+2.2fb5.42
+Fixed a portability bug with strencrypt referring to random(), not RANDOM().
+Fixed a corrupting bug in deltas loading.  (Thanks, Lynx!)
+Fixed setlink to always have permissions for wizbit.
+Changed the get command to keep puppets from picking up stuff in a player.
+Changed permissions, so players do NOT control exits linked or attached to
+  something they own, unless they own the exit itself.
+Changed @unlink, so you CAN unlink things, player, exits, room, etc.  that
+  are linked to something you own.
+Changed @chown, so you can chown unlinked exits to yourself.  This is useful
+  if you want to remove an exit attached to your room, that you don't own.
+  You can @unlink it first, then @chown it to yourself, then @recycle it.
+Fixed @unlink, @unlock, and @uncompile to correctly match their command names.
+Fixed a crashing off-by-one buffer over-run error in the MPI parser.  This fix
+  should solve all the reports of server crashes due to overly large lists.
+
+
+
+2.2fb5.41
+Patched process_commands to set the command @ variable for commands such as
+  'home', '@teleport', etc that can indirectly run MUF.
+Fixed a crashing bug and db array underflow bug in the exit matching routines,
+  for matches initiated from room #0, with other unusual memory conditions.
+Messages heard by a zombie are now displayed to their owner prepended with the
+  string contents of the _/pecho property on the zombie.  If no such string
+  property exists on the puppet, then the default is the name of the zombie
+  with a > at the end.  This message is parsed for MPI.
+Messages echoed into the interior of a vehicle are now prepended by the string
+  contents of the _/oecho property on the vehicle.  If no such property exists,
+  the default prepending string will be 'outside>'.  The _/oecho message is
+  parsed for MPI.
+Added @OECHO and @PECHO commands, for setting the _/oecho and _/pecho props.
+Made {nearby} be able to work with remote objects, just as long as at least one
+  of the objects is local to either the player or the trigger.
+Fixed argument count checks to {lsort}
+Fixed argument ordering of {fold} to match the documentation.
+Added STRENCRYPT (s1 s2 -- s3) which takes string s1, and encrypts it using the
+  key s2, returning the encrypted string s3.
+Added STRDECRYPT (s1 s2 -- s3) which takes the encrypted string s1, and decrypts
+  it using the key s2, returning the plaintext string s3.
+Fixed a crashing bug with subpropdirs in _defs/ propdirs when compiling.
+Fixed a hanging bug caused by an infinite parent loop.  Now @link and the MUF
+  SETLINK primitive will error out if you try to home a vehicle object to
+  a player or thing that is contained by the vehicle.
+Updated sanity program with some fixes from Lynx.
+Fixed some bugs in the matching routines with patches from darkfox.
+Fixed Sanity to not complain about things homed to things.
+
+
+
+2.2fb5.40
+Fixed some portability problems with compiling the resolver under Solaris.
+Fixed some bugs with the hostname resolver dying on reading negative port nums.
+  (So don't pass it negative port nums, you silly server!  Use unsigned short!)
+Cleaned up some stuff to make fb compile a bit cleaner under Next.  Still ugly.
+
+
+
+2.2fb5.39
+Changed logout/DESCR_SETUSER code to possibly fix a crasher/hanging bug.
+Fixed a bug with {kill} not just returning 0 for non-existent processes.
+Fixed possible crasher bugs with debugger.c functions returning pointers to
+  buffers that are not declared static.
+Added the SPAWN_HOST_RESOLVER #define, to let you compile the server to spawn
+  a second process, when it starts up, that will do hostname (and username, via
+  identd) resolution.  This means that the server will not pause while trying
+  to resolve a machine's hostname, but the hostname for connections is updated
+  as soon as the resolver process can figure out the connection's hostname.
+  (and username, if identd is available on their site.)
+Updated the Makefile to compile the resolver binary.
+NOTE:  You MUST place the 'resolver' executable in the working directory that
+  you run the netmuck program from.
+Fixed bug where non-existent command names starting with 'd', wouldn't give
+  the 'Huh?' error message.
+
+
+
+2.2fb5.38
+Fixed a crasher bug with wildcard patterns ending in a single '\'.
+Fixed a bug with RECYCLE refusing to recycle a room, if it is the trigger obj.
+Added some stuff to MPI, MUF, and help documentation.
+
+
+
+2.2fb5.37
+Added the 'disembark' alias for the 'leave' command, used to exit vehicles.
+Fixed a crashing bug again (I hope) with lock props to recycled objects, and
+  propval diskbasing.
+Fixed a bug where non-found protected props will error out down the environ.
+Fixed possible crasher bugs in {parse} and {lunion}.
+Optimized {parse}, {lunion}, and {lunique} functions.
+Optimized {exits} and {contents} functions.
+Changed {tell} to not prepend a > before messages to either the owner of the
+  object whose permissions are being used, or to the triggering player.
+Changed spit_file() and index_file() in help.c, to print two spaces on a blank
+  line, so blank lines get displayed to a user in the help, info, etc commands.
+Fixed a bug with exit priorities matching.  It no longer randomly chooses
+  between exits of lower priority, and those of higher priority that are
+  further down the environment.
+Changed Z flag effects so exits set Z don't show/exec @succ/@fails for Zombies.
+Fixed a crashing bug with {lrand:{null}}.
+Fixed a crasher bug with '$define foo $enddef'
+Fixed a crasher bug when strlen(playername) + strlen(message) > BUFFER_LEN
+  in parse_omessage().
+
+
+
+2.2fb5.36
+Made significant changes to MPI to disassociate permissions from the trigger.
+  This should make 'this' always be the object {exec}ed or {lexec}ed.
+Added INTERP (d d2 s -- ?) MUF prim that takes a program dbref to run, the
+  trigger to use, and the top stack item string.  It runs the MUF program with
+  the given trigger (with the given string on top of the stack) and returns
+  the top stack item that the MUF program exits with.
+
+
+
+2.2fb5.35
+Fixed that damn {force} bug.  (This time for sure!)
+Fixed a crashing bug with diskbased lock propvals pointing at recycled objs.
+
+
+
+2.2fb5.34
+Changed sanity substantially to allow manual editing of a db, to correct
+  database corruption.  THIS IS A VERY DANGEROUS TOOL.  DO NOT USE EXCEPT TO
+  CHECK THE DB'S SANITY, UNLESS YOU REALLY UNDERSTAND THE INTERNALS OF THE
+  DATABASE.  (Thanks, Whitefire!)
+Fixed {lmember} to prevent hanging the server on a null list delimiter.
+Fixed {isnum?} to return false for null strings.
+Added code to abort the server if it gets an error during dbdump.  This keeps
+  the deltas files from being erased when the disk fills during dbdump.
+Changed {select} to accept negative values without crashing.  Negative vals
+  only look at that negative list item value, and don't seek for nearby vals.
+Changed permissions of {lexec} so that the mpi code in the given list will
+  execute with the permissions and trigger of the calling code, if the list
+  is not a _list, %list, .list, or ~list.
+Changed permissions of {exec} and {exec!} so that the mpi code in the given
+  property will execute with the permissions and trigger of the calling code,
+  if the property is not a _prop, %prop, .prop, or ~prop.
+Changed {force} to translate lists sent to its command arg, to be translated
+  as multiple commands to force.
+Changed MUF's FORCE primitive to refuse to force a line with \r's in it.
+Fixed {with} so the variable value doesn't reset between arguments.
+Updated the mpi documentation for mpihelp, and the info/mpidocs* files.
+Edited the documentation order of the MPI functions in the mpihelp file,
+  to fix some matching problems.  ie: 'mpi ne' returning info on {nearby},
+  instead of on {ne}
+
+
+
+2.2fb5.33
+Fixed {lrand}'s portability problems with random().
+Fixed crashing bugs with AWAKE? and DESCR_SETUSER getting bad dbrefs.
+Fixed bug with DESCRIPTORS giving incorrect errors.
+Fixed {strip} to work on output of other functions.
+
+
+
+2.2fb5.32
+Added REGISTRATION_MESG @tune option to let you specify the message seen by
+  someone who tries to create a new player object at the login screen.
+Added LEAVE_MESG @tune option to let you specify the message seen when a
+  player logs off.
+Added HUH_MESG @tune option to specify the 'Huh?' message when a player
+  enters a command the server doesn't understand.
+Added {kill:processID} to kill a process on the timequeue.  If the process ID
+  it is given is 0, then it will kill all processes ({delay}s) done by that
+  trigger object.  If the process to be killed was not set off by that trigger,
+  and was not set off by any object that the owner of the trigger owns, then
+  this will error out with Permission denied.  If no process is found, this
+  returns 0.  If a process was found, and the permissions were okay, then the
+  process is killed, and {kill} returns the number of processes killed.
+  Usually one.
+Added {for:varname,start,end,increment,command} to act as a for loop.  For
+  example: {null:{for:i,1,10,1,{tell:{&i}}}} will echo a count from one to ten,
+  inclusive, to the user.
+Changed {add}, {subt}, {mult}, {div} and {mod} to accept multiple arguments.
+  {add} and {mult} are obvious.  All args are added or multiplied together.
+  {subt}, {div}, and {mod} all take the first arg, then perform their operation
+  with the rest of the arguments in order.  ie: {subt:10,3,4,2} would take ten,
+  and subtract three from it, then subtract four from the result, then take two
+  more away from the result of that, and return 1.  ie: 10 - 3 - 4 - 2 = 1.
+Make the pennies that zombies find be credited to the zombie's owner.
+Changed {or} and {and} to let them take up to nine arguments.  They will return
+  true if, respectively, any of the args are true, or all of them are true.
+Fixed a bug with {while} with it returning garbage on a failed first iteration,
+Added {delprop:propname[,object]} to delete a prop and subsidiary propdirs.
+Changed {inc} and {dec} to accept a second argument to specify how much to add
+  to or subtract from the variable.
+Added {lrand:list[,seperator]} function to return a random stringlist item.
+Split out mfunlist.h from msgparse.c, to make it easier to add functions.
+Changed all the propfetching functions in MPI to return integer and dbref vals
+  for properties, if they are not string properties.
+Added {prop!} {index!} and {exec!} to MPI, to look for props only on specified
+  object, and not down the environment.
+Fixed a crashing bug where the AWAKE? prim accepted invalid dbrefs.
+Changed @find/@owned/@contents/@entrances to check both modified and lastused
+  times when determining if an object is old and unused.
+Changed @find, @owned, @contents, and @entrances to now have two new search
+  options, and a new display option:
+    @find =~2000=size
+  will list all objs in the db whose current memory usage exceeds 2000 bytes.
+  This will also display the size after the name and flags of the object.
+    @find =^2000=size
+  will list all objects whose total size exceeds 2000 bytes.  Note that this
+  option will load all of each object into memory to make the size determin-
+  ation.  On some systems this can take a while, and on all systems this is
+  an abuse to the diskbasing cache.  Only Wizards may use this search feature.
+
+
+
+2.2fb5.31
+Reset MPI recursion limit to 26 levels, since 31 levels seems to crash fb.
+Fixed idiotic crashing bug with untouchprops_rec dereferencing NULL.
+
+
+
+2.2fb5.30
+Fixed bug with losing programs in editor due to periodic program purging.
+  (Thank you Cynbe!)
+Changed {count} to make it not strip spaces in it's arguments.
+Changed MPI parser so that commands that strip arg spaces do so before parsing
+  the MPI that is in the arguments.  This lets you use {lit} to return a space
+  to an MPI function that normally strips spaces.
+Fixed a bug where timestamps on false exits didn't get updated.
+Fixed an infinite loop bug with LOCK_ENVCHECK.
+Fixed Mystique's crashing bug with {force} and @flocks to programs.
+Added logging of @TUNE changes to the status log.
+Changed @unlink to reset thing and player homes to defaults.
+Put in a couple patches to hopefully prevent random program lossage.
+Fixed bug where text was output after the disconnect message for a player.
+Fixed two crashing bugs with @toading of a deltadumped player.
+Changed the db_read routine to allow for reading deltas seperately from db.
+Changed sanity to accept an optional seperate deltasfile argument.
+
+
+
+2.2fb5.29
+Fixed a crashing bug with propval diskbasing.  Maybe.
+Fixed wizzed object MPI permissions.
+Fixed {force} and @force to allow forcing of uncontrolled objects if they
+  are @flocked to the forcer.
+
+
+
+2.2fb5.28
+Made examine list the value of the Force-lock, dangit.
+Fixed a couple bugs with the DISKBASE_PROPVALS code. (IMPORTANT FIX)
+
+
+
+2.2fb5.27
+Fixed a bug in {timesub} where it tried to return the zeroth list item.
+Fixed a bug in {tell} where it wouldn't prepend username like it should.
+Changed {tell} and {otell} to make then treat multiline strings passed
+  to them with {nl}'s in them, act like each line was seperately {tell}ed
+  or {otell}ed, respectively.
+Made MPI debug and error messages not echo to ~listeners, etc.
+Made MUF debug and error messages not echo to ~listeners, etc.
+Closed extraordinarily BAD security bug with puppets @forcing their owner.
+Changed MPI to check permissions by ownership, not by controls().
+Changed MPI to make rooms nearby only if you or the trigger are IN them.
+Added the @flock command (force-lock) that says who an object can be forced
+  by.  If an object has no @flock, then it is assumed that the object will
+  not be forcible by ANYONE. (except wizards, of course)  The @flock is stored
+  in the @/flk property on the object.  @flock is used just like @lock.
+Added the XFORCIBLE flag, that says that an object is forcible by whoever
+  or whatever the object is force-locked to.  An object has to have both
+  it's XFORCIBLE flag set and it's force-lock (@flock) set before it can
+  be forced by @force or {force}.  BTW:  The X in XFORCIBLE stands for
+  eXternally FORCIBLE.
+Changed {force} to require that the forced player or puppet must have their
+  XFORCIBLE flag set, and that the object be @flocked (force-locked) to the
+  MPI trigger object.
+Changed @force to require that the forced player or puppet must have their
+  XFORCIBLE flag set, and that the object be @flocked (force-locked) to the
+  forcing player.  Wizards can still force anyone.
+Changed {contents} to list full contents of an object controlled by trigger.
+Added the DISKBASE_PROPVALS @tune option.  When it's set to yes, then the
+  server does not load the values of string and lock properties until they
+  are actually needed.  This increases the number of hits to the disk, and
+  slows the server down a bit, but it also takes up less memory.
+
+
+
+2.2fb5.26
+fixed a bug with the offset field of {timesub} using the period value.
+Updated the MPI manuals and intro files.
+Included patches for compiling with IRIX.
+Fixed a bug with postparsing of MPI.
+Made some minor permissions changed with some MPI primitives.
+Changed MPI to allow passing of the argument 'home' to certain routines.
+
+
+
+2.2fb5.25
+Fixed bug with duplicate custom zombie wake-up messages.
+Changed {set} to not parse MPI in its output as well as its arguments.
+Fixed bug with toading players who have things homed to them.
+Fixed bug with echoing to players with the Vehicle flag set.
+Added listing of maximum players connected since startup, to WHO.
+Added the LOCK_ENVCHECK @tune option.  When set to yes, locks will check
+  down the environment, when looking for properties.
+Fixed a crashing bug with a static var in a recursive compile.c function.
+Fixed muf's SET primitive to work with Zombie.  (hopefully)
+Changed MPI so funcs won't return object names instead of dbrefs.
+Changed {name} to return the name for any object in the db.
+Changed the NEW* creation prims to set ownership to the UID of the program.
+Fixed the @set object=:clear bug.  (Finally.  For real this time.)
+Changed 'make clean' to make it not remove the makefile.  Use the 
+  'make clobber' command if you really want it to do that.
+Changed the Makefile to compile sanity without all the san_*.c files.
+
+
+
+2.2fb5.24
+Fixed bugs in {left} and {center}.
+Fixed compile bug with prototyping for {left} {right} and {center}
+Added code to abort the server if process_output() gets a null descriptor.
+Added Nonblocking patch for ULTRIX systems.  (Look Ma, no lockups!)
+Reduced the object struct size by 4 bytes.
+Fixed LOCKED? (d d -- i) prim to work on testing against zombies.
+
+
+
+2.2fb5.23
+Fixed MPI {func} bug.  (I think.)
+Fixed man and help for Ultrix.  (stat() on "" should return NULL, dangit!)
+Fixed the compatibility mods to work with both SunOS & Solaris.
+Added MPI {center:str,fieldwidth,padstr} func for centering strings.
+Added MPI {right:str,fieldwidth,padstr} func for right justifying strings.
+Added MPI {left:str,fieldwidth,padstr} func for left justifying strings.
+Renamed the _look/ propqueue to _lookq/ to stop a bunch of propdir conflicts.
+  Most sites already are using the _look/ propdir for local look programs.
+
+
+
+2.2fb5.22
+Fixed bug with compiling/editing programs that have null lines.
+Fixed the _detail/ code, and made the property names work like exit names.
+Fixed a somewhat bad memory leak, with unfreed props in deleted propdirs.
+Fixed bug with '@set obj=:clear' not clearing all props on object.
+Added the _look/ propqueue hooks, run when something is looked at.
+Added boolean @tune parm, look_propqueues, to allow _look/ propqueue use.
+  @tune this to 'no' to disallow _look/ propqueues on your muck.
+Added the GNU auto-configuration code.  Use 'configure', then 'make'
+  to compile now.
+
+
+
+2.2fb5.21
+Fixed bug that prevented debugging of called programs like libraries.
+Fixed bug with muf debugger's "where" command giving incorrect information.
+Fixed minor bug that kept FB from compiling on several systems.
+
+
+
+2.2fb5.20
+Modified MALLOC_PROFILING code to list max bytes used for each line.
+Fixed a compiler bug on freeing from the middle of a string on escaped words.
+Added preliminary POSIX and SYSeVil portability mods.
+
+
+
+2.2fb5.19
+Fixed possible infinite loop with a muf program failing compile when it is
+  a listener program, printing out an error message, and triggering itself
+  to try to recompile again.  etc etc.
+Made bugfix to loading deltas, that would corrupt the garbage chain.
+Made @set ignore trailing spaces on a property name.
+
+
+
+2.2fb5.18
+Fixed some stuff in fb5.17 that make compiling and running netmuck hard.
+Fixed a bad crashing bug with deletion of non-existent properties.
+Fixed compile bug with NO_MEMORY_COMMAND in do_memory();
+
+
+
+2.2fb5.17
+Make several various bugfixes for compiling without DISKBASE defined.
+Fixed a few various bugs with MPI and other stuff.
+Changed property struct to store the propname in the structure, instead of
+ using a pointer to a separate propname.
+Added code to allow profiling of what is using up how much memory.
+Added DESCR_SETUSER ( i d s -- i ) primitive.  Used to reconnect a descriptor
+  to a different dbref.  It first disconnects from the old dbref, then connects
+  to the new one as if the connection typed QUIT, then logged into the new
+  character.  It takes the descriptor number, the dbref to connect to, and the
+  password string for the new player dbref.  If the password given doesn't
+  match the player's password, then it gives a permission denied error.  This
+  returns a 1 if successful, or a 0 if the given descriptor was not found.
+Made bugfix for running of propqueue _departs before player is disconnected.
+ 
+
+
+2.2fb5.16
+Fixed bug with setting properties with names that start with a colon.
+Added ENVPROP (d s -- ?) primitive.  Like ENVPROPSTR, but reads all proptypes.
+Changed ENVPROPSTR and GETPROPSTR to return string representations of dbref and
+  lock property types.
+Fixed crasher bug with free()ing of old @tune strings, on changing them.
+Changed SETOWN prim to check for @chlock Chown_OK locking.
+@sweep now lists dark players too.
+All MPI and MUF propqueue stuff (_depart, _arrive, _connect, etc) except for
+ the _listen, ~listen and ~olisten propqueues, will be run immediately, instead
+ of being put on the timequeue in mass when you move about, connect, or other-
+ wise trigger them.
+
+
+
+2.2fb5.15
+Put code in {muf} to stop {muf}-PARSEPROP loops after 18 levels.
+Now allow a wizard to list the gripe file via 'gripe' with no args.
+Made bugfix to parseprop to make it re-entrant.
+Removed USE_SINGLE_*FILE defines, since they aren't needed anymore.
+Changed help, mpi, man, and news to show files with the given topic name, in
+  the appropriate subdirectory, if they exist, instead of the given topic in
+  the single helpfiles.  ie:  'help foo' will look to see if there is a file
+  named 'foo' in the 'help' directory.  If there is, it will display it.  If
+  not, it will look in the 'help.txt' file for a topic of 'foo'.
+
+
+
+2.2fb5.14
+Fixed bug with strings in $define-$endef constructs, AGAIN.
+Removed extra fclose() from macroload(), that caused LINUX to crash.
+Removed setvbuf() calls to speed loads and saves back up.
+@descriptions, @succs, etc will now parse MPI in args to @programs they run.
+Changed @tune to allow setting a string parm to a null value, using "-".
+Added @doing command, and a who_doing @tune option, for @doing in WHO.
+  The @doing command sets the _/do property that is displayed in the WHO list.
+Added @chlock command to let you set a lock as to who can @chown something.
+  This sets the _/chlk lock property.
+Added @conlock command to let you set who is allowed to use a container.
+  This sets the _/clk lock property that is used by get and put.
+Changed the examine command to list @conlock, @chlock, and @doing settings.
+
+
+
+2.2fb5.12
+Fixed a bug with escaped quotes in strings in $define-$endef constructs.
+Fixed a bug with trying to list partial files via the 'info' command.
+Fixed a bug with doing an @ps when an MPI event is queued.
+Fixed bug with MPI parsing of '{{{'.
+Added the 'mpi_max_commands' @tune parm, to set max# of mpi instrs to run.
+Updated mpihelp.txt help file.
+Added an @memory command to list current malloc()ed heap memory usage stats.
+
+
+
+2.2fb5.11
+Fixed a bug with QUIT that caused an infloop, and unfreed descriptors.
+The _listen propqueue will only run MUF progs, now, using the same old rules.
+The _olisten propqueue was removed.  It didn't serve a purpose, not doing MPI.
+The ~listen propqueue was added, which can run either MUF or MPI.
+The ~olisten propqueue was also added, which can run either MUF or MPI.
+The _arrive and _oarrive propqueues now run before _listen, ~listen, or
+  ~olisten propqueues that are triggered by the @succ or @osucc message on
+  an action.
+The _depart and _odepart propqueues now run before _listen, ~listen, or
+  ~olisten propqueues that are triggered by the @drop or @odrop message on
+  an action.
+Fixed a bug where the muf lock prims were clearing extra stack items.
+Added a SYSPARM (s -- s) muf prim, to get an @tune system parameter setting.
+Fixed a bug in PART_PMATCH where it just plain didn't work.
+
+
+
+2.2fb5.10
+Fixed bug in killing pid 0.  (shouldn't ever do that) (Thanks, darkfox!)
+Fixed bug that allowed locational paradox with a vehicle.
+Changed first timeslice of a muf program to 4x regular timeslice.
+Added @restart command to shut down, then exec the restart script.
+Changed internals of timequeue.
+Changed Command @ for _listen queued MUF programs to "(_Listen)"
+Changed MPI listener code to store the heard string in {&arg}
+
+Moved a LOT of compiletime defines and options from config.h and params.h
+ into the new @tune runtime tunable parameters command.  The defaults for
+ these parameters are stored in the 'defaults.h' file.
+ Use '@tune' to list all the runtime options, or '@tune <pattern>' to list
+ only those options whose name matches the pattern.  '@tune <parm>=<value>'
+ will set the given parameter to the given value, if legal.  '@tune load'
+ will load the parameters from the 'data/parmfile.cfg' file, and '@tune save'
+ will save the current parameters out to that file.  Parameters are auto-
+ matically loaded from that file at server startup, and are automatically
+ saved to that file at server shutdown.
+
+
+
+2.2fb5.01
+Removed floating point math from MPI, for efficiency reasons.
+Fixed bug with @contents giving a not found error message twice.
+Fixed crashing bug with @set object=:clear
+Fixed bug with MPI parsing args in a way that mismatched the function run.
+Fixed bug with MPI misparsing of macros.
+Added {select:value,propname,dbref} MPI function.
+Added {timesub:period,offset,listname,dbref} MPI function.
+
+
+
+2.2fb5.0
+Fixed:
+  Fixed a crashing bug with removing all properties on an object.
+
+  Fixed copyobj data loss bug introduces a few beta versions back.
+
+  Fixed RMATCH to check for valid dbrefs passed to it.
+
+  Pair of bugs in announce.c that made it work less than optimally.
+  
+  Bug in nextprop where it wasn't clearing the propname returned on a fail.
+  
+  Bug where @succ, @fail, @drop, or @desc program would nuke the command
+    line argument and command @ of a prog run from the link of an exit.
+  
+  SETLINK prim now checks linkability perms by perms of effective UID instead
+    of the player.  This means SETUID programs can link exits to things the
+    owner of the program controls.
+  
+  Bug where \ was not escaping primitives from substitutions.
+  
+  Multiple bugs in the restart script.
+  
+  Bug in init_checkflags() that made @contents give incorrect results.
+  
+  Bug in could_doit that allowed players to use personal links to !JUMP_OK
+    players.
+  
+  Bug allowing players to look at registered objects from afar.
+  
+  Bug with invalid _listener warning message going off at wrong times.
+  
+  Crashing bug where strlen(propname) + strlen(propstring) > BUFFER_LEN
+  
+  Bug where you could do @ and ! with variables of negative numbers.
+  
+  Nasty crashing bug with corrupted parent pointers in avl propdir structures.
+  
+  Bug where it tried to compress strings in @desc, @succ, @fail, &c. commands
+    when COMPRESS was not #defined.  The db should initially load slightly
+    faster when COMPRESS *is* defined, also.
+  
+  
+Updated:
+  The help.txt (help command) file has been cleaned up and updated a great
+    deal, though there remains some updating still to do.
+  
+  The man.txt (the MUF manual) file has been updated to correspond with the
+    current state of MUF as of fb5.0beta22.
+  
+  There is now an 'info muf-tutorial' manual, made by Scotfox, in the
+    'game/data/info' directory.
+  
+  
+Added:
+  Made puppets announce to the room when their owner connects or disconnects.
+    The default puppet connect message can be overridden with a _/pcon string
+    property, and the disconnect message by a _/pdcon string property, set on
+    the puppet itself.
+
+  Added the @sweep command to list objects in the room that can hear you.
+
+  Added a new memory manager for systems that have LARGE process sizes.
+    balloc() is tuned to reduce overhead and fragmentation of memory on
+    databases that tend to take up more than 16 megabytes of process size.
+
+  Added the push, pop, exec, and prim commands to the debugger.
+
+  A muf Debugger.  If you try to run a program that you control, that has its
+    ZOMBIE flag set, it will drop you into the MUF debugger.  This lets you
+    step line by line, or instruction by instruction through a muf program,
+    setting breakpoints to stop at, and other nice things.  There is help
+    available within the debugger, via the 'help' command.
+
+  @armageddon lets a wizard shut down the server immediately, without saving
+    the database.  This can take an optional argument, explaining the shutdown
+    in the form of '@armageddon message'.
+  
+  @idescribe lets you set what things look like from the inside.  This sets
+    the _/ide property on the object.  Syntax is "@idesc <obj>=<inside desc>"
+  
+  The muf property lists read in by {list} and {concat} in MPI can be any one
+    of nine list formats, including the listname#/1 style and the listname1
+    style formats.  The server automatically determines the list type and
+    reads the list in properly.
+  
+  The MPI parser is now installed.  This is too large a subject to cover here,
+    so there will be a new file put in the info directory that explains it.
+    This is a major change.  It adds a lot of MUSH-type stuff to MUCK.
+    However, it is *not* MUSH.  It's something derived from several of the
+    popular MUF description extension programs.  Only much, much more powerful.
+    Example:  To list the awake player in the room in the room's @succ, just
+    set the @succ of the room to:
+      Awake players: {filter:{contents:here},1,{awake:{1}},{nl},\, }
+  
+  There is now a #define option for RWHO that lets you connect your fb muck
+    to an RWHO server.  Read the RWHO docs in the docs folder for more info.
+  
+  $defines for bg_mode, fg_mode, and pr_mode, for use with the new MODE and
+    SETMODE primitives.  fg_mode is defined as an integer denoting foreground
+    mode, bg_mode denotes background mode, and pr_mode denotes preempt mode.
+  
+  The @contents command will list all objects and exits in the given object
+    that match a flags check similar to the ones in @find, @owned, and
+    @entrances.  The syntax is '@contents <object>[=<flags>[=<format>]]'
+    where <object> is the object to list the items from, <flags> is a flag
+    string that everything in the object is checked against, and <format> is
+    the format that the list will be displayed in.  See @find, @owned, and
+    @entrances for more details
+  
+  There is a new #define in params.h, PCREATE_FLAGS, where you can specify
+    what flag bits get set as the default when a player is @pcreated.
+  
+  The @dlt command will let a wizard force a delta-dump.
+  
+  There is now a #define option, DELTADUMPS, that will make the database save
+    out in a delta dump format.  That is, only the changed objects are written
+    out to the end of a temporary deltas-file, updating it, instead of the
+    entire db being written out in a monolithic dump.  When the deltas-file
+    grows to about the same number of objects as the input file, it does the
+    old monolithic dump to resynchronize the db file.  @dump and @shutdown
+    also do the monolithic dump to resynch the db.  Delta dumps are MUCH
+    faster than old style dumps.  To create a loadable db from a deltas-file
+    and the initial input db, simply append the data/deltas-file file to the
+    end of a copy of the input file, and load it up.  This is also handled
+    automatically by the restart script.
+  
+  
+Changed:
+  Omessages (@odrop, @osucc, etc) that start with an apostrophe, a comma,
+    a dash, or a space, will not put in the space between the name and the
+    message when they are displayed.
+
+  MPI scripts now cannot call MUF programs with less than Mucker Level 3,
+    if the MPI was triggered by a listener.  If the MPI was NOT run from a
+    listener, then it can call MUF all it wants.
+
+  MPI cannot run {delay} commands if the MPI code was run by a lock, or from
+    a _listen propqueue.
+
+  MPI cannot run {tell} or {otell} commands from a _listen propqueue if
+    the trigger object is not a room.
+
+  You now use '@set <object>=:clear' to clear all properties from an object.
+
+  Only players who do not have their Zombie bit set can @force puppets, hear
+    puppet echoes, or set Zombie bits on things.  Also, listeners owned by a
+    player who is set Zombie will not work.  Only a Wizard may set or clear
+    a Zombie bit on a player.
+
+  @teleport will let players teleport themselves between rooms they own.  Also,
+    Realm wizards will be able to @teleport players in their realm between any
+    two rooms within their realm.
+
+  When you do a 'look <name>' it will first check to see if there is an object
+    by that name in the room.  If there is, it does a normal look at that
+    object.  If there is not, then it looks in the _details/ propdir on the
+    room, for a property that <name> is a prefix of.  If it finds more than
+    one such property, it gives the standard ambiguous message.  If only one
+    detail was matched, and it is a string property, then it's value is disp-
+    layed.  Otherwise, the standard no-match message is given.
+    'look <object>=<detail>' also works, for details set on players, things,
+    and programs.
+
+  When an object of TYPE_THING is set HAVEN, you don't see it's contents when
+    you look at it.  This is to implement open and closed pouches.
+
+  The debugger can now push local and global variables onto the stack via the
+    'push' command, and the 'print' command was added to display the value of
+    global and local variables, referenced only by number.
+
+  An @created thing will now have it's home set to the player, if the room
+    the player is in is not controlled by them.
+
+  The 'sex' property is now considered to have the same permissions as
+    _props or %props.
+
+  Puppets will not relay text or be @forcible, if they are set DARK.
+
+  _arrive, _oarrive, _depart, and _odepart propqueues on the player will
+    now also be triggered as the player moves about.  They used to only
+    be triggered on the room, and down the environment.
+
+  Changed the definition of the Zombie Flag (as talked about further
+    down).  Any object can now be @forced by it's owner, so long as it is
+    not in a room set Zombie.  Also, things cannot be @forced to use
+    exits set Zombie.  The Zombie flag, on objects of TYPE_THING, the
+    zombie flag merely means that any text that thing sees or hears will
+    be relayed to it's owner.  A puppet will not relay text from a room
+    set Zombie, though.  The restrictions for rooms and exits set Zombie
+    do not apply to puppets owned and controlled by wizards.
+
+  Renamed 'O' for Old in @find checks to '@', to free up the O flag.
+
+  Objects of TYPE_THING that have the ZOMBIE bit set on them, will broadcast
+    what they hear to their owner, a la puppets.
+
+  ML3 programs can now read and write to both .props and _props.  @props and
+    ~props are still wizbit only.
+
+  The MOVETO primitive can now reattach exits to new sources.
+
+  ML1 programs now can no longer list dark things in a room's inventory,
+    unless the perms the program runs under controls the object.
+
+  ML0 programs, or programs owned by ML0 players, now cannot be run, and
+    error out with Permission Denied, when an attempt to run them is made.
+
+  Changed database storage format to store the db size at the beginning of
+    the db, and to save out the contents of objects all together in clumps.
+    This might help improve problems with memory paging on large systems,
+    and speed property fetches in some circumstances.
+
+  Added 'l' as a possible stack item type, for CHECKARGS.  This corresponds
+    to stack items that are lock boolean expressions.
+
+  Altered the MUF debugger to have it list source code lines.
+
+  Panic dumps, due to crashes, now also dump out the macrofile, to the
+    muf/macros.PANIC file.
+
+  Examine now lets you use wildcards to specify which properties to
+    list.  As a special case, if you end a wildcard search string with a
+    /**, then it will list all the properties within the matched propdir,
+    and recursively list all the sub-propdir properties, as well.
+  
+  When you try to get something from, or put something into a container,
+    it checks the container object for an _/clk lock property, and eval-
+    uates it.  If the player does not pass the _/clk lock check, then
+    they are not allowed to get anything from or put anything into that
+    object.  This also has the side effect that a player can set their
+    _/clk property to a lock that specifies who can hand things to them.
+    If the container object does not have a _/clk lock property, then it
+    is assumed that the container is locked, and no-one may use it.
+  
+  Properties can now hold locks and dbrefs in addition to the standard
+    strings and integers.  This necessitates a database format change.
+  
+  Locks have been moved into _/lok properties.
+  
+  'get container=object' now lets you get things from containers.  This
+    checks to make sure that neither the container or the object is
+    locked against you before it fetches the object to you.  'get object'
+    still works fine for picking up objects that are in the room.
+  
+  'put object=container' lets you put an object in a container.  The
+    container must not be locked against you, or else it will refuse to
+    put the object in it.  If the container is a player, you can hand the
+    object to that player.  ie: 'put camera=mike' hands the camera object
+    to the player named mike.  The default container is the room, so
+    'put camera' is the exact same as 'drop camera'.
+  
+  Every 15 minutes, the db is swept for proploaded objects that are unused,
+    and for programs that are compiled but haven't been used in a while.
+    These properties and programs are cleared out of memory, and will not
+    be reloaded until they are next needed.  The length of time that must
+    pass before an object can be considered unused is defined in params.h
+    by the CLEAN_INTERVAL #define.  This interval is also how long it is
+    between these periodic cleanings of memory.
+  
+  If a player is @toaded, any programs owned by them are stripped of
+    AUTOSTART bits, and are dequeued from the time queue.  This is
+    because when a player is toaded, by default all their objects,
+    including programs, are @chowned to #1.
+  
+  All shutdowns now have short messages explaining why the server shut
+    down.  ie: if the server crashed, or if a wizard shut the server down.
+  
+  If an exit is set HAVEN, then it can take a command line argument for
+    its MPI scripts.  ie:  if an action named 'test' is set haven, then
+    if a player typed 'test this', the argument 'this' would be put in
+    the MPI 'arg' variable for each MPI script triggered by that action.
+  
+  Expanded listeners so that everything that uses notify, or notify_except,
+    will send messages to _listeners.
+  
+  _listener propqueues can now be restricted to listen only for certain
+    messages.  To do this, precede the prog number or MPI script in the
+    _listen propqueue property with an smatch string and an equals sign.
+    Example:  @set object=_listen/1:*says*{Hello|Hi|Yo}*=&{lexec:greeting}
+    This would restrict the listener to only lines that match the smatch
+    pattern "*says*{Hello|Hi|Yo}*", and on those lines that did match it,
+    it would run the MPI script {lexec:greetings}.  If you need an equals
+    sign in the smatch pattern, you can escape it with a \.
+  
+  "@set object=propname: propval" no longer strips spaces from between the
+    property delimiter (the colon) and the property value.  This lets you
+    set properties to string values starting with spaces.
+  
+  "@set object=propname:^intval" lets you set the integer value of a property
+    to the value of the given intval.
+  
+  @force and the FORCE primitive can now be used on objects of TYPE_THING,
+    if they have the ZOMBIE flag set.  Objects act as if they have the
+    permissions of their owner.  If an object is locked against a player,
+    it will also be locked against any thing that that player owns, that
+    tries to test the lock.
+  
+  Things with the ZOMBIE flag set cannot enter rooms or use exits that
+    have the ZOMBIE flag set.  This allows a way to prevent zombies
+    from entering areas where they are not wanted.
+  
+  The PROPDIR? prim can now be used by anyone of Mucker Level 2 or above.
+  
+  Objects of TYPE_THING, that have the VEHICLE flag set, can now contain
+    players.  To enter a vehicle, you can either use a MUF program to
+    teleport you to it via MOVETO, you can get a wizard to @teleport you
+    into it, or else you an use an action that is both attached and
+    linked to the vehicle to enter it.  This means that you can only
+    enter a vehicle from the same room that it is in, and you cannot use
+    far links to enter it.  This prevents the use of vehicles to get
+    around locks.  Inside the vehicle, you will see it's @idesc, instead
+    of it's @desc, and you will not be shown it's @succ or @fail.
+    Objects dropped in a vehicle will not go away to the their homes, as
+    a vehicle cannot have a dropto set in it.
+  
+  Things with the VEHICLE flag set cannot enter rooms or use exits that
+    have the VEHICLE flag set.  This allows a way to prevent vehicles
+    from entering areas where it would be illogical for them to be.
+  
+  There is now a LISTEN_MLEV #define in config.h that lets you set the
+    minimum mucker level that can be run from a _listen propqueue.
+  
+  _listen propqueues will no longer give a message if the program they
+    point to is not a valid program to run.
+  
+  Timequeue now also has a limit on the number of processes allowed to a
+    single player.  This parameter is #definable in params.h with the
+    MAX_PLYR_PROCESSES define.  Wizards can have as many processes as
+    they need.  The total process limit is still in effect, though it
+    has been raised.  The personal process limit for players is normally
+    set around 16.
+  
+  Propqueues can now run MPI scripts, if the value of the property in the
+    propqueue starts with a '&'.  If so, then it is evaluated as an MPI
+    script, starting at the next character, and the output is sent to the
+    triggering player.  Example:
+      @set here=_connect:&{delay:5,The scavengers scatter as you wake up.}
+    Would tell you that message, five seconds after you connect.
+    This works for _connect, _disconnect, _arrive, and _depart.
+  
+  Locks to properties will now check against smatch patterns, meaning that
+    you can do things like '@lock object=species:{Fox|cat}*' to let anyone
+    through with a species property set to "fox", "foxtaur", "cat", etc.
+  
+  Locks to properties will run the string value of the property it tries
+    to check, through the MPI parser, before it checks the returned value
+    against the expected value.  This means that you can make MPI scripts
+    for locks.  Example:
+      @lock west=_MyMPIScript:1
+      @set west=_MyMPIScript:{lt:{count:{contents:{links:this},Player}},10}
+    This would make it where a player would not be able to go through the
+    'west' exit unless there were less than 10 players in the room that west
+    is linked to.
+  
+  Locks to properties will now also check the object the lock is on for a
+    property.  Meaning that if you '@lock object=foo:bar' and you have a
+    property on the same object named "foo" that is set to a value of "bar",
+    then the lock will evaluate true.
+  
+  Altered matching routines to allow matching from a remote object for MPI.
+    This shouldn't have any visible changes outside of MPI functions.
+  
+  envpropstr(), and all that depends on it, including the ENVPROPSTR prim,
+    and pronoun_substitute(), will now look on the object given first, then
+    on each ROOM object down the environment.  The change is that it no
+    longer will look at the player carrying the item, etc.  Just ROOMs.
+  
+  notify() will now split a line, if it contains \r's, sending each part
+    separately, appended with \r\n.
+  
+  The FOREGROUND primitive has been replaced by the in-server $define of
+    "fg_mode setmode".  The BACKGROUND primitive has been replaced by the
+    in-server $define of "bg_mode setmode".  The PREEMPT primitive has
+    been replaced by the in-server $define of "pr_mode setmode".
+  
+  When a program compiles, it now automatically $includes #0, and the owner of
+    the program, so a player can make a bunch of personal standard $defines.
+  
+  Vastly rewrote the property handling routines to split it into four modules
+    that handled one aspect of the properties, each.  propdirs.c handles the
+    propdirs structure, props.c handles the lowest level property structure,
+    property.c handles the high-level interface for the rest of the program,
+    and diskprops.c handles fetching props from disk when needed and purging
+    excess props from memory.  Because of this redesign, 4 bytes were shaved
+    off of the original property structure, and an extra information node per
+    propdir was eliminated.  This will probably translate into a 100 byte per
+    object memory savings.
+  
+  Added a #define option, REALMS_CONTROL, that changes the way that controls()
+    works, so that if there is a room set wizbit, then the owner of that room
+    controls all items within that room's environment.  The object owners, and
+    the wizards still control the objects, as well.  When this define is set,
+    a room set Wizbit cannot be @chowned, except by a true wizard.
+  
+  Made database dumps more efficient (hopefully) when DISKBASE is defined.
+  
+  The 'sanity' and 'reconstruct' programs now take the file(s) to operate on
+    as command line arguments, instead of through stdin/stdout.  This means
+    that they will work whether or not the DISKBASE #define is set.  Their
+    syntaxes are:
+        reconstruct infile outfile
+        sanity infile
+  
+  If a room is set BLOCK (Builder), then only actions on the room, or in
+    the environment may be used to leave the room.  Also, actions linked to
+    players in the room will not work.  Only a wizard may set a room BLOCK
+    at this point.
+  
+  Added a check for 'O' in the flags fields of @owned, @find, etc.  If you
+    specify this flag, it will match for objects that have not been used for
+    longer than 90 days.  This figure is alterable with the AGING_TIME #define
+    in params.h
+  
+  Altered the output format of @stats, and gave it more useful info for wizzes.
+  
+  The SETLINK primitive can now link to #-3. (HOME)
+  
+  When a player is not in INTERACTIVE mode, and they do a WHO, if there is
+    an @WHO action with an exit priority of 1 or more in the environment,
+    then it is triggered.  This lets special WHO programs be written for
+    things like @doing messages, etc.
+  
+  If SECURE_WHO is defined in config.h, then players will not be able to use
+    the WHO command when they are not connected to a player yet, or when they
+    are in interactive mode.  This prevents the possibility of using these
+    modes to bypass a global @who program.
+  
+  %props are now protected like _props to protect %n, %p, %s, etc props from
+    being changed by people who shouldn't be able to.
+  
+  The GRIPE command will now inform all unquelled wizards online when a
+    gripe is made.  Also, gripes with no messages are now ignored by the
+    server.
+  
+  The COMMAND variable in MUF will now give values that are specific for
+    when the program is run from an @message.  The possible values, in this
+    situation, are (@Desc) (@Succ) (@Fail) and (@Drop)
+  
+  When the server is started up, the _sys/dumpinterval property on #0 is set
+    to the #defined integer value of DUMP_INTERVAL.
+  
+  When the server is started up, the _sys/maxpennies property on #0 is set
+    to the #defined integer value of MAX_PENNIES.
+  
+  When the server is started up, and the database has finished loading, the
+    _sys/startuptime property on #0 is set to the integer SYSTIME value.
+  
+  Just before the server is shut down, except in the case of a PANIC dump,
+    the _sys/shutdowntime property on #0 is set to the integer SYSTIME value.
+  
+  When the database is dumped, except in the case of a PANIC dump, the
+    _sys/lastdumptime property on #0 is set to the integer SYSTIME value.
+  
+  Using ADDPROP to set a property to a null string and a 0 value will clear
+    the values on a propdir, and will REMOVE_PROP non-propdir properties.
+  
+  When using raw telnet, backspace and delete characters will delete the
+    previously typed character.  This is a simple mod, and will make many
+    poor backspaceless players happy.
+  
+  Exits can now have priority levels to let you specify that certain exits
+    are not overridable by local actions.  When an exit is searched for, in
+    the matching routines, it will match like it used to, except that if
+    it finds an exit, later in the search order, that has a higher priority
+    level, it will choose that exit instead.  You can set the priority level
+    of an exit by setting its Mucker Level. (ie: @set exit=2)  A level of 0
+    is the lowest priority, and a level of 3 is the highest priority.  When
+    the server looks for the standard "connect", "disconnect", or "look"
+    actions, it will ignore any actions with a priority Level of 0.  Only a
+    Wizard can set the Priority Level of an exit or action.  When an action
+    is @attached to another object, @named to something else, or @unlinked,
+    its Priority Level is reset to 0.
+  
+  If COMPATIBLE_PRIORITIES is #defined in config.h, then exits that are
+    on room or player objects will never act as if they have an effective
+    priority level of less than 1.
+  
+  Removed the MORTAL_DARKING #define and replaced it with the EXIT_DARKING
+    and THING_DARKING #define options.  If both are #defined, they act just
+    like MORTAL_DARKING used to.  Individually, you can specify whether
+    non-wizards can @set objects of TYPE_THING, or objects of TYPE_EXIT
+    DARK.
+  
+  Changed all the "look" forces in the server to use a slightly better
+    method of making a player look around.  This was done in preparation
+    for the exit priority Level security mods.  A nice side effect of
+    this is that commands will no longer occur before the initial room
+    "look" when a player wanders into the room.
+  
+  ISPID? will now return true for 'pid ispid?'
+  
+  KILL will now stop the current process when you do 'pid kill'
+  
+  The interpreter will now allow up to 8 levels of programs that are run
+    as a consequence of MOVETO, LOCKED?, and FORCE.  ie: a program can
+    MOVETO a player to a room that has a program in the @desc that checks
+    a lock with LOCKED?, which which runs a program that FORCEs the player
+    to do something.  This now works up to eight levels deep.  It used to
+    only work to two levels deep.
+  
+  
+Primitives:
+  CONTROLS (d d -- i) Takes a player dbref and an object dbref, and returns
+                       true if the player has control over the given object.
+
+  GETPROP (d s -- ?)  Gets the value of a given property, and puts it on the
+                        stack.  This can return a lock, a string, a dbref, or
+                        an integer, depending on the type of the property.
+                        Permissions are the same as those for GETPROPSTR.
+                        This primitive returns 0 if no such property exists,
+                        of if it is a valueless propdir.
+  
+  SETPROP (d s ? -- ) Stores a lock, dbref, integer, or string into the named
+                        property on the given object.  Perms are the same as
+                        for ADDPROP.
+  
+  PARSELOCK (s -- l)  Parses a lock string into a lock.
+  
+  UNPARSELOCK (l -- s)  Unparses a lock into a string fit for program editing.
+  
+  PRETTYLOCK (l -- s)  Unparses a lock into a string fit for players to see.
+  
+  TESTLOCK (l d -- i)  Tests the player against the given lock.
+  
+  LOCK? (? -- i)  Returns true if the top stack item is a lock.
+  
+  PARSEPROP (d s s i -- s) Returns the string output of the MPI Parser, given
+                            an object, a property name to parse, an input
+                            string for the {&cmd} variable, and an integer
+                            that should either be 1, for when you want {delay}
+                            messages to be sent to the player only, and 0, when
+                            you want the rest of the players in the room to
+                            get the omessages. NOTE: for security reasons,
+                            you cannot use PARSEPROP on an object you don't
+                            control, if the property is not a _prop or a ~prop.
+                            The exception to this is if the muf program is at
+                            least Mucker Level 3.  Then parsing of normal props
+                            is allowed.  If the muf program is wizbit, it can
+                            also parse @props and .props.
+  
+  ADDRESS? (? -- i)  Returns true if the top stack item is a function address.
+  
+  MODE ( -- i)      Returns an integer denoting the current multitasking
+                     mode.  This ignores BLOCKing bits on programs.  The
+                     integer this returns will be the same as one of
+                     those defined by the standard $defines bg_mode,
+                     fg_mode, and pr_mode, being background, foreground,
+                     and preempt mode, respectively.
+  
+  SETMODE (i -- )   Sets the current multitasking mode to the given
+                     mode.  The integer this uses will be the same as one
+                     of those defined by the standard $defines bg_mode,
+                     fg_mode, and pr_mode, being background, foreground,
+                     and preempt mode, respectively.  Programs set BLOCK
+                     will run PREEMPT, ignoring this mode.
+  
+  MLEVEL (d -- i)   Returns the Mucker (or Priority) Level of the given object.
+  
+  DATE   ( -- i i i)  Returns the monthday, month, and year.  ie:  if it were
+                       February 6, 1992, date would return 6 2 1992 as three
+                       integers on the stack.
+  
+  GMTOFFSET ( -- i)   Returns the machine's offset from GMT in seconds.
+  
+  STRINGPFX (s s2 -- i)  Returns 1 if s2 is a prefix of s.  Case insensitive.
+                          Returns 0 if s2 is NOT a prefix of s.
+  
+  PART_PMATCH (s -- d)  Takes a player name, or the first part of the name,
+                         and matches it against the names of the players who
+                         are currently online.  If the given string is a
+                         prefix of the name of a player who is online, then
+                         their dbref is returned.  If two players could be
+                         matched by the given string, it returns a #-2.  If
+                         None of the players online match, then it returns
+                         a #-1.
+  
+  NEXTDESCR (i -- i)  Takes a descriptor number, and returns the next connected
+                        descriptor number.  To get the first descriptor number,
+                        use '1 condescr'.  Between these, you can step through
+                        the descriptors list.  If you try to use nextdescr on
+                        an invalid descriptor, it will return 0.  If you have
+                        reached the end of the descriptor list, it returns 0.
+                        (requires Mucker Level 3.)
+  
