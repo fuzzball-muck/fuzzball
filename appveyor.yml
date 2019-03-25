@@ -66,6 +66,7 @@ build_script:
         cp "$env:APPVEYOR_BUILD_FOLDER/docs/mpi-intro" "$artifact_root/data/info"
         cp "$env:APPVEYOR_BUILD_FOLDER/docs/mpi-intro2" "$artifact_root/data/info"
         cp "$env:APPVEYOR_BUILD_FOLDER/docs/muf-tutorial" "$artifact_root/data/info"
+        cp "$env:APPVEYOR_BUILD_FOLDER/docs/changesfb7" "$artifact_root/data/info"
         # Copy source and include folder
         cp -Recurse "$env:APPVEYOR_BUILD_FOLDER/src" "$artifact_root"
         cp -Recurse "$env:APPVEYOR_BUILD_FOLDER/include" "$artifact_root"
