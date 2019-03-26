@@ -56,8 +56,22 @@ build_script:
 
         echo "Preparing release artifact..."
         mkdir "$artifact_root"
-        # Copy game data
+        # Copy contents of game folder
         cp -Recurse "$env:APPVEYOR_BUILD_FOLDER/game/*" "$artifact_root"
+        # Copy starter database folder
+        cp -Recurse "$env:APPVEYOR_BUILD_FOLDER/dbs" "$artifact_root"
+        # Copy documentation folders
+        cp -Recurse "$env:APPVEYOR_BUILD_FOLDER/docs" "$artifact_root"
+        md "$artifact_root/data/info"
+        cp "$env:APPVEYOR_BUILD_FOLDER/docs/mpi-intro" "$artifact_root/data/info"
+        cp "$env:APPVEYOR_BUILD_FOLDER/docs/mpi-intro2" "$artifact_root/data/info"
+        cp "$env:APPVEYOR_BUILD_FOLDER/docs/muf-tutorial" "$artifact_root/data/info"
+        cp "$env:APPVEYOR_BUILD_FOLDER/docs/changesfb7" "$artifact_root/data/info"
+        # Copy source and include folder
+        cp -Recurse "$env:APPVEYOR_BUILD_FOLDER/src" "$artifact_root"
+        cp -Recurse "$env:APPVEYOR_BUILD_FOLDER/include" "$artifact_root"
+        # Copy text help files to data folder
+        cp "$artifact_root/docs/*.txt" "$artifact_root/data/"
         # Copy compiled binaries and libraries
         cp -Recurse "$env:APPVEYOR_BUILD_FOLDER/build/*" "$artifact_root"
         if ((Test-Path "$artifact_root/fbmuck.exe") -And (Test-Path "$artifact_root/restart.exe")) {

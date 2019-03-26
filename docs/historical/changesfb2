@@ -1,0 +1,241 @@
+2.2fb2.3
+Changes:
+  Multitasking has been changed in the way it is done.  There are now 3 modes
+  that a program can be in when running:  foreground, background, and preempt.
+  A program running in the foreground lets other users and programs have
+  timeslices (ie multitasking), but blocks input from the program user.
+  Background mode allows the user to also go on and do other things and issue
+  other commands, but will not allow the program to do READs.
+  Preempt mode means that the program runs to completion without multitasking,
+  taking full control of the interpreter and not letting other users or progs
+  have timeslices, but imposes an instruction count limit unless the program
+  is a wizard program.
+  Programs run by @locks, @descs, @succs, @fails, and @drops default to the
+  preempt mode when they run.  Programs run by actions linked to them default
+  to running in foreground mode.  QUEUEd program events, such as those set up
+  by _listen, _connect, _disconnect, etc, and those QUEUEd by other programs
+  default to running in background mode. (NOTE: these programs cannot be
+  changed out of background mode)
+  
+  The info command was cleaned up a bit, and should look better now.
+  
+Primitives:
+  FOREGROUND ( -- )  To turn on multitasking, you can issue a foreground
+                      command.  While a program is in foreground mode, the
+                      server will be multitasking and handling multiple
+                      programs at once, and input from other users, but it
+                      will be blocking any input from the user of the program
+                      until the program finishes.  You cannot foreground a
+                      program once it is running in the background. A program
+                      will stay in foreground mode until it finishes running
+                      or until you change the mode.
+  BACKGROUND ( -- )  Another way to turn on multitasking is to use the
+                      background command.  Programs in the background let
+                      the program user go on and be able to do other things
+                      while waiting for the program to finish.  You cannot
+                      use the READ command in a background program.  Once a
+                      program is put into background mode, you cannot set
+                      it into foreground or preempt mode.  A program will
+                      remain in the background until it finishes execution.
+  PREEMPT    ( -- )  This is slightly different now.  A program will remain
+                      in preempt mode now even if a READ or a SLEEP has
+                      occurred.  Basically what this command does is to turn
+                      off multitasking, but then you have a limit on how many
+                      instructions you can run without needing a wizbit on
+                      the program.
+Bugfixes:
+  Fixed a problem with wizards being given pennies back on a @recycle.
+  A couple old bugs from MUCK 2.2 vanilla in pronoun_sub were fixed.
+  
+Features added:
+  Program registration added:  If you refer to a program in @link, @open,
+    @prog, @edit, or @set, with the syntax "$progname" then it will look
+    for a property named "_progreg/progname" in #0 containing an integer
+    value (not a string) that represents the dbref of the program.  If it
+    exists, then the command will match the program.  Also, if you @desc,
+    @succ, @drop, or @fail an object to start with "@$progname" then it
+    will run that program, similar to an "@1234" @desc/@succ/etc.
+    Examples of using progregs outside of MUF:
+      @edit $puzzle-reset
+      @link do-reset = $puzzle-reset
+      @desc me = @$longdesc %list[mydesc]
+      @succ west = @$gen-exit-messages
+      @set $puzzle-reset = DEBUG
+    Programs and macros can easily be made to manage the registered programs
+    list.  A useful macro would be:
+      def progmatch "_progreg/" swap strcat getpropval dbref
+    That would be used in good coding style like:
+      lvar stringlib (the local variable for the string library)
+      : init ( -- ) "lib-strings" .progmatch stringlib ! ;
+      : strlib (s -- ???) stringlib @ swap call ;
+      : do-strip (s -- s') "stripspaces" strlib ;
+      : main ( -- ) init (do stuff) do-strip (etc) ;
+    If this style is kept consistent, and a standard library set is created,
+    then code would be be "snap-in" between different servers using 2.2fb2.3
+    or better.
+  
+  
+  
+2.2fb2.2
+Primitives added:
+  CONBOOT   (i -- )    Takes a connection number and disconnects that
+                        connection from the server.  Basically @boot for
+                        a specific connection. (wizbit only)
+  CONNOTIFY (i s -- )  Sends a string to a specific connection to the
+                        server.  (wizbit only)
+  FORCE     (d s -- )  Forces player d to do action s as if they were
+                        @forced.  (wizbit only)
+  RECYCLE   (d -- )    Recycles the given object d.  Will not recycle
+                        players, the global environment, the player
+                        starting room, or any currently running program.
+  PREEMPT   ( -- )     Prevents a program from being swapped out to do
+                        multitasking.  Needed in some cases to protect
+                        crutial data from being changed while it is being
+                        worked on.  This needs to be re-invoked after
+                        every READ or SLEEP command.
+  
+Made ONLINE, and CONDBREF not require a wizbit.
+  
+In the editor, you can do '<prognum> publics' to list all the public
+  functions of that program.  This has the same restrictions as 'view'
+  does in the editor.  The program must be either controlled by you, or
+  Link_OK.
+  
+Programs are now compiled when they are run or called instead of when
+  the databate is loaded.  They are compiled with the uid of the owner
+  of the program.
+  
+If a program has the HAVEN flag set on it (HARDUID) then it runs with
+  the uid and permissions of the owner of the trigger of the program.
+  If the program is a timequeue event (with trigger of #-1), then it
+  will run with the permissions and uid of the program owner as in SETUID.
+  
+Added _connect and _disconnect:
+  A room or player may have a "_connect" property set that contains the
+  dbref of a progran to run when a player connects.  The program must be
+  either link_ok or must be owned by the player connecting.  When the
+  program is run, the string on the stack will be "Connect", the "loc @"
+  will be the location of the connecting player, the "me @" will be the
+  connecting player, and the "trigger @" (and "trig") will be #-1.  All
+  programs referred to by _connect properties on the player, and on rooms
+  down the environment tree from the player, will be QUEUEd up to run.
+  When a player desconnects, programs referred to by _disconnect properties
+  will be run in a similar manner.
+  (connect and disconnect _actions_ are still implemented.)
+  
+  @dequeue will now let you remove all events run by a specific player
+  or of a specific program with the syntax:  @dequeue #xxx   Where xxx
+  is the dbref of the program or player.
+  
+  All the timequeue events of a program are now dequeued when the program
+  is recompiled or @recycled.  This prevents the bug which would otherwise
+  crash the MUCK server.
+  
+  The interpreter has been modified to handle multitasking.  This means
+  that multiple MUF programs can be running at once, and players can also
+  do things while long programs run.  There are a few exceptions here...
+  Programs that are run by locks will run to completion, taking all the
+  CPU time of the interpreter until they finish.  The same goes for
+  programs run by @desc, @succ, @fail, and @drop messages, which should
+  not be interrupted for other programs to run.
+  
+  Moving into a room, through a MUF moveto, or an exit, will @force a
+  'look' instead of doing an inserver standard look.  When you connect,
+  it also @forces a 'look'.  This means that you can make a look program
+  to have absolute say over what will be seen in the room.
+  
+  You can now check the Interactive flag on a player in MUF to see if
+  they are in READ mode or @edit'ing.
+  
+  @props can only be seen in examine by a wizard.  Only a wiz may @set them.
+  ~props can be seen in examines as normal, but only a wizard may @set them.
+    These two are similar to _props and .props in that property names
+    that start with a @ or a ~ are special protected properties in the
+    way described above, and that if any property in a property name path
+    starts with one of them, the property you are trying to access will
+    have the same permissions as well.  ie:  /stats/~combat/sword/hit
+    would have the same restrictions as ~attack. Warning, @set me=:
+    will still remove all properties on you, including @props and ~props.
+    Both of these property types can be changed by programs without
+    restrictions.  If you need to make a property that cannot be changed
+    by the object owner, and that can only be read by a wizard program,
+    you could do something like name it:  /.stats/~combat/sword/hit
+  
+  '@set <object>=:abc' will no longer clear all the props on an object.
+  
+  
+  
+2.2fb2.1
+Added Listeners:
+  A room or object may have a "_listen" property set that contains the
+  dbref of a program to run whenever a notify_except is done in that
+  room or in the room that contains the object.  The program must
+  either be link_ok or must be owned by the owner of the object
+  containing the "_listen" property.  When the program is run, the
+  parameter string will be the notify_except message, "loc @" will be
+  the room where the notify_except was given, and "trigger @" or "trig"
+  will be the object with the "_listen" property.  A "_listen" program
+  may also be run by placing the "_listen" property in the environment
+  of a room or set of rooms.
+  
+  Autostart programs now have the location NOTHING (#-1) rather than
+  the location of the owner of the program.
+  
+  
+  
+2.2fb2
+New primitives:
+  PUBLIC <functionname>  Declares a function to be public for execution by
+    other programs.  This is a compile-time directive, not a run-time
+    primitive.  To call a public function, put the dbref of the program on the
+    stack, then put a string, containing the function name, on the stack, then
+    use CALL.  ie:  #888 "functionname" CALL
+  
+  LOCKED? (d d -- )   object, player -- locked?
+  SLEEP   (i -- )     makes the program pause here for 'i' seconds.
+  BEGIN   ( -- )      Marks the beginning of begin-until or begin-while-repeat
+                        loops.
+  UNTIL   (i -- )     If the value on top of the stack is false, then it jumps
+                        back to executing the instruction afer the last BEGIN.
+                        (BEGIN-UNTIL, BEGIN-WHILE-REPEAT, and IF-ELSE-THEN's
+                        can all be nested as much as you want.)  If the value
+                        is true, it exits the loop, and executes the next
+                        instruction, following the UNTIL.
+  WHILE   (i -- )     In a BEGIN-WHILE-REPEAT loop, it will exit the loop, and
+                        resume execution after the REPEAT instruction, if it
+                        is passed a false value.  If it is passed a true
+                        value, it will continue execution with the next
+                        instruction after the WHILE.
+  REPEAT  ( -- )      Jumps execution to the instruction after the BEGIN in a
+                        BEGIN-WHILE-REPEAT loop.
+  
+: sample-begin-until-loop
+  0 begin
+    1 +
+    me @ over intostr notify
+    dup 10 =
+  until
+;
+  
+: sample-begin-while-repeat-loop
+  0 begin
+    dup 10 < while
+    1 +
+    me @ over intostr notify
+  repeat
+;
+  
+Made the interpreter re-entrant.
+Made the QUEUE'd events run with the same uid as the QUEUEing program.
+  me @ works now.  trigger @ and trig will be #-1 still, however.
+When a program crashed, it tells you in which program, and on what line the
+  crash happened.  Debug will tell you what line each instruction is on.
+MOVETO will now run programs in the @desc and @succ/@fail of a room when
+  moving a player.
+The WHO list will now prepends an asterisk ('*') in front of the names of
+  people who are in the editor or in interactive mode.
+You can now link objects to players, given that they are either you, or
+  link_OK, or that you are a wizard.  This means that you could do a 'home'
+  and keep all your objects, if they are homed to you.
+  
+  

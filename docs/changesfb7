@@ -1,0 +1,359 @@
+7.00b2
+20XX-MM-DD
+Lets fill this out before beta 2 is tagged for release
+TODO: possibly further un-markdown-ify this file to improve readability.  Interestingly enough, what little I (maine coon) have already done shows that some markdown hasn't been correctly used, thus causing the rendered release pages on GitHub to not look as intended.
+
+
+7.00b1
+2017-12-16
+## Miscellaneous
+- Refactored numerous sections of server code to be more developer-friendly.
+- Fixed a significant number of memory leaks and potential crash situations.
+
+## System parameters
+
+### New
+- file_log_malloc. Log file for memory allocations. Defaults to "log/malloc".
+- pname_history_reporting. If no, PNAME_HISTORY returns an empty dictionary. Defaults to yes.
+- pname_history_threshold. Timespan of player name history to keep, "0s" is unlimited. Defaults to 30 days.
+
+### Removed
+- who_doing. Now always on.
+
+## Commands
+
+### New
+- `@register`. Replaces popular softcoded command.
+- uptime. Displays time since server reboot.
+
+### Changed
+- `@contents`, `@entrances`, `@find`, `@kill`, `@owned`, `@ps`, `@sweep`, `@trace`. Now NOGUEST, BUILDER-ONLY.
+- `@examine`. Now allows object matching.
+- `@list`. Added prefix options to control line number listing. Now NOGUEST,  PLAYER-ONLY.
+- `@sanchange`, `@sanfix`. Can no longer be FORCEd.
+- `@teleport`. Now NOGUEST.
+- `@tune`. Now allows $reg-matching.
+
+### Additional syntax for setting standard locks/properties
+@desc
+	shows player's description
+@desc [object]
+	shows [object]'s description
+@desc [object] =
+	removes [object]'s description
+@desc =
+	removes player's description
+@desc [object]=[text]
+	sets [object]'s description to [text]
+@desc = [text]
+	sets player's description to [text]
+
+### Matching
+- Standard match messages now display the unmatched string.
+- Many more commands now use standard match messages.
+- Logic now prefers matching on objects that are more "local" to the player.
+
+## MUF 
+
+### New
+- $DOCCMD. Populates the _docs property of the program.
+- $LANGUAGE. Sets compilation language.
+- __PROG__. A compile-time token that is replaced by the dbref of the current program. Currently recognized in $DOCCMD and $PUBDEF directives.
+- CASE, DEFAULT, END, ENDCASE, WHEN. Promoted from popular library to in-server $defines.
+- READ_WANTS_NO_BLANKS. Turns off READ_WANTS_BLANKS setting.
+
+### Array pinning
+
+When an array is pinned, changes to any dup'ed copy on the stack will make changes to ALL copies. New (or recently-exposed) primitives that support this feature include ARRAY_DEFAULT_PINNING, ARRAY_PIN, ARRAY_UNPIN, DEEP_COPY, and SHALLOW_COPY.
+
+### Changed
+- GETPIDINFO. Returned dictionary now contains an "mlevel" key.
+- MLEVEL. If the argument is #-1, returns the current program's effective MUCKER level.
+- PNAME_HISTORY. Now keeps a limited history, and player name at creation is tracked with the "created_as" property.
+- REGSPLIT[_NOEMPTY]. Now requires a third "flags" argument, as other regex primitives do.
+- STRIP. Promoted from in-server $define to primitive.
+- SYSPARM_ARRAY. Returned dictionary now contains the previous "mlev" key - copy of "readmlev".
+
+## MPI
+
+### Changed
+- {date}, {time}. Now aborts when the time value cannot be resolved.
+
+## MCP
+
+### New Packages
+- org-fuzzball-languages. Returns list of supported languages.
+
+
+7.00a3
+2017-04-01
+## Miscellaneous
+- Refactored numerous sections of server code to be more developer-friendly.
+- Fixed a significant number of memory leaks and potential crash situations.
+
+## System parameters
+
+### New
+- muf_string_math. Previously compile-time #define STRINGMATH, defaulting to no. In addition to modifying the "=" MUF primitive to check string equality, the primitives "+" and "*" can now add and multiply strings.
+- player_name_limit. Previously compile-time #define PLAYER_NAME_LIMIT, defaulting to 16. Limits player name length.
+- verbose_examine. Previously compile-time #define VERBOSE_EXAMINE, defaulting to yes. Shows flag descriptions in examine command output.
+
+### Changed
+- file_ parameters are now readable by #1 only.
+
+## Commands
+
+### New
+- @readlock. Enables bypassing of non-MUF read permissions.
+- @ownlock. Enables bypassing of "controls" checks.
+
+### Changed
+- @debug. Absorbed @dbginfo as "@debug display propcache". Wizard only.
+- @sweep. Now can report any exit, not just one linked to a program.
+- @clone, @mcpprogram, @progam. Now can assign to a $regname.
+
+## MUF Primitives
+
+### New
+- -ROT ( x y z -- z x y ). Rotates the top three things on the stack, in reverse.
+- NIP ( x y -- y ). Pops the second item off the stack.
+- TUCK ( x y -- y x y ). Duplicates y and places it under x.
+- ?DUP ( x -- x x | x ). Duplicates the item at the top of the stack if it does not resolve to false.
+- PNAME_HISTORY ( d -- a ).   Returns a dictionary repesenting the times when the given player had a name change, including creation.  If an associated time cannot be determined, that key is 0.  Requires Wizbit.
+
+### Changed
+- NEXT_PROP_NAME. Now returns a slash-prefixed property when given the empty string as an argument.
+- STOD. Now more consistently returns #-1 for non-numbers.
+
+### Optimizations, mostly from ProtoMUCK.
+- [ "" strcmp 0 = ] or [ "" stringcmp 0 = ] => [ not ]
+- [ 1 pick ] => [ dup ]
+- [ 2 pick ] => [ over ]
+- [ 3 rotate ] => [ rot ]
+- [ 2 rotate ] or [ -2 rotate ] => [ swap ]
+- [ 1 rotate ] or [ 0 rotate ] or [ -1 rotate ] => (nothing)
+- [ rot rot ] => [ -rot ]
+- [ -rot -rot ] => [ rot ]
+- [ swap pop ] => [ nip ]
+
+## Server
+- Added "-nodetach" option, replacing compile-time #define DETACH (which is now defaulted).
+- Added "-bindv4 [address]" option, setting the listening address for IPv4 sockets - defaulting to all.
+- Added "-bindv6 [address]" option, setting the listening address for IPv6 sockets - defaulting to all.
+- Added "-resolver [path]" option, setting the path to the resolver program.
+- Incorporated rudimentary token replacement into in-server documentation system, allowing dynamic entry creation (see "man sysparm").
+- Disabled bypassing the automatic look command by setting a "connect" action STICKY.
+
+
+7.00a2
+2016-09-30
+## System Parameters
+
+### New @tunes
+-   file_connection_help - 'help' before login
+-   file_credits - acknowledgements
+-   file_editor_help - editor help
+-   file_help - 'help' main content
+-   file_help_dir - 'help' topic directory
+-   file_info_dir - 'info' topic directory
+-   file_log_cmd_times - command times
+-   file_log_commands - player commands
+-   file_log_gripes - player gripes
+-   file_log_muf_errors - MUF compile errors and warnings
+-   file_log_programs - text of changed programs
+-   file_log_sanity - databased corruption and errors
+-   file_log_status - system errors and stats
+-   file_log_stderr - server error redirect
+-   file_log_stdout - server output redirect
+-   file_log_user - MUF-writable messages
+-   file_man - 'man' main content
+-   file_man_dir - 'man' topic directory
+-   file_motd - Message of the day
+-   file_mpihelp - 'mpi' main content
+-   file_mpihelp_dir - 'mpi' topic directory
+-   file_news - 'news' main content
+-   file_news_dir - 'news' topic directory
+-   file_parameters - system parameters
+-   file_welcome_screen - opening screen
+-   quiet_moves - suppress basic arrive and depart notifications. Defaults to no.
+-   toad_recycle - recycle newly-created toads. Defaults to no.
+
+### Removed, but incorporated into main functionality
+-   look_propqueues
+-   sync_legacy_props
+
+## Server
+
+### New
+-   @linklock - locks an object for link authorization.
+-   GUEST flag - signifies player is a guest, synchronizing with legacy prop ~/isguest.
+-   "welcome" proplist on #0 - overrides the welcome screen when available.
+
+### Changed
+
+### 
+-   examine - now only shows key values that are not _UNLOCKED_.
+
+### Removed
+-   OUTPUTPREFIX and OUTPUTSUFFIX interface commands.
+
+## MUF Primitives
+
+### New
+-   & - alias for BITAND.
+-   | - alias for BITOR.
+-   << - alias for BITSHIFT.
+-   ** - alias for POW.
+-   != - binary inequality. Also optimizes from "= not".
+-   ARRAY_NOTIFY_SECURE - notifies separate arrays for secure and nonsecure descriptors. Triggers listener propqueues for nonsecure descriptors.
+-   FORCEDBY - returns the dbref of the most recent object forcing the code, or #-1
+-   FORCEDBY_ARRAY - returns all dbrefs forcing the code in an array, most recent first.
+-   MD5HASH - calculates the MD5 hash of the given string.
+-   NOTIFY_SECURE - notifies separate strings for secure and nonsecure descriptors. Triggers listener propqueues for nonsecure descriptors.
+-   PARSEMPI - returns the output of the MPI parser, using a given MPI string.
+-   PARSEMPI_BLESSED - returns the output of blessed execution of the MPI parser, using a given MPI string.
+-   REGSPLIT - splits text by the given regular expression pattern, returning empty pieces if necessary.
+-   REGSPLIT_NOEMPTY - splits text by the given regular expression pattern, suppressing any empty pieces.
+-   SHA1HASH - calculates the SHA1 hash of the given string.
+
+### Changed
+-   ^ - now an alias for BITXOR
+-   SYSPARM_ARRAY - now includes a "nullable" entry in returned dictionaries
+
+### Fixed
+-   EXT-NAME-OK? - argument order now matches documentation.
+
+## Administration
+-   Configure process now aborts when failing to discover PCRE or (if enabled) SSL.
+-   Regressions database is now included, for feature testing.
+-   "fb-base" database is now retired.
+-   Many log files now have ISO8601 timestamps at beginning of lines.
+-   Restart script now looks in the "game" directory for database files.
+
+
+7.00a1
+2016-04-01
+## System Parameters
+
+### New @tunes
+-   autolink_actions - Automatically link @actions to NIL. Defaults to no.
+-   consistent_lock_source - Maintain trigger as lock source in TESTLOCK. Defaults to yes.
+-   gender_prop - Property name used for pronoun substituton. Defaults to "sex".
+-   lost_and_found - Place for things without a home. Defaults to #0.
+-   show_legacy_props - Examining objects lists legacy props. Defaults to no.
+-   server_cipher_preference - Honor server cipher preference over client's. Defaults to yes.
+-   ssl_cert_file - Path to SSL certificate .pem. Defaults to "data/server.pem".
+-   ssl_cipher_preference_list - Allowed OpenSSL cipher list. Defaults to a standard list.
+-   ssl_key_file - Path to SSL private key .pem. Defaults to "data/server.pem".
+-   ssl_min_protocol_version - Minimum allowed SSL protocol version for clients. Defaults to "None".
+-   sync_legacy_props - Setting properties also sets associated legacy props. Defaults to no.
+-   toad_default_recipient - Default owner for @toaded player's things. Defaults to #1.
+
+### Enhanced Structure
+-   Write permissions - some @tunes are can only be written (or read) by #1. These currently are:
+	-   ssl_cert_file
+	-   ssl_cipher_preference_list
+	-   ssl_key_file
+	-   ssl_keyfile_passwd
+	-   ssl_min_protocol_version
+-   Nullable string values - some @tunes can be set (or reset) to blank. These currently are:
+	-   dumpdone_mesg
+	-   dumping_msg
+	-   dumpwarn_mesg
+	-   pcreate_flags
+	-   reserved_names
+	-   reserved_player_names
+	-   ssl_keyfile_passwd
+-   Active - some @tunes can be listed as inactive based on compile-time options. These currently are:
+	-   diskbase_propvals, max_loaded_objs - DISKBASE
+	-   mcp_muf_mlev - MCP_SUPPORT
+	-   ssl_* and server_cipher_preference - USE_SSL
+
+## Server
+
+### New
+-   @hashes - a reimagined @showextver that shows the SHA1 hash and (if available) the git hash of each source file
+-   @reconfiguressl - attempts to reread SSL certificate files and reset SSL options
+-   help (connect screen) - sends the file "data/connect-help.txt" to the user
+
+### Changed
+-   @credits - now sends the file "data/credits.txt" to the user
+-   @dbginfo, @memory, @usage - now available if the associated compile-time option is enabled
+-   @tune - now includes the following syntax:
+	-   "@tune %parm" - resets parm to the default system value
+	-   "@tune info [parm]" - shows parameters, values, and brief descriptions [for parm]
+-   @version - now includes a second line listing compile-time options
+
+### Removed
+-   Support for databases earlier than Foxen8.
+-   fb-announce, fb-olddecompress, fb-topwords, optimdb
+-   Delta dumps, including @delta/@dlt commands and related @tunes.
+
+## Objects
+
+### New
+-   NIL support - @actions can now be @linked to NIL, as a do-nothing destination.
+
+### Changed
+-   @lock etc. - non-wizards can no longer use a restricted property in a lock
+-   @mcpprogram, @program - now can match objects by dbref
+-   @recycle, @toad - can no longer act on any object referred to by a @tune
+-   @teleport - now responds with the object and destination teleported
+-   @toad - now removes all flags from the victim, and assigns their macros to the recipient
+
+### Fixed
+-   @mcpprogram, @open, @program - now respect the server's current naming conventions
+
+## Properties
+
+### New
+-   Legacy properties - properties that can be automatically synchronized with their modern versions.
+
+### Changed
+-   Player guest property - changed to ~/isguest from @/isguest
+
+### Removed
+-   @tunes proplist_counter_fmt, proplist_entry_fmt, and proplist_int_counter
+
+## MPI Functions
+
+### New
+-   {descr} - returns the associated descriptor
+-   {sysparm} - returns the value of the given system parameter, if authorized
+
+### Changed
+-   {ltimestr} - now can approximate years and months
+-   {testlock} - now requires that its "who" argument is a player or thing
+
+### Fixed
+-   {date}, {ftime}, {time} - corrected offset handling
+
+## MUF Primitives
+
+### New
+-   ^ - an alias for POW
+-   CMD - returns the command the user invoked the program with, without its arguments
+-   ENTRANCES_ARRAY - returns a list array containing every object linked to the given object
+-   FULLDEPTH - returns the number of items currently on the stack (see DEPTH)
+-   NOTIFY_NOLISTEN - tells player a message without triggering listen queues
+-   SECURE_SYSVARS - sets the variables "me", "loc", "trigger" and "command" to their correct values
+-   SUPPLICANT - if a lock is being evaluated, returns the object the lock is being tested against. Otherwise, returns #-1
+-   inserver defines for IDESC, SETIDESC, OECHO, SETOECHO, PECHO and SETPECHO
+
+### Changed
+-   DEPTH - now returns the number of unlocked items on the stack
+-   INTOSTR - now only works with integers, floats, dbrefs, and variables
+-   RECYCLE, TOADPLAYER - no longer can act on any object referred to by a @tune
+-   SYSPARM_ARRAY - now includes "readmlev", "writemlev", "active" and "default"
+-   TOADPLAYER - now exists regardless of compile-time options
+
+### Fixed
+-   INTOSTR - behaves with a value resolving to -2147483648
+-   NEWOBJECT, NEWROOM - properly tracks object creation quota
+-   STRINGPFX - returns 1 when its arguments are the same shared_string (same fix for = when STRINGMATH is #defined)
+-   STRTOF - works properly with strings containing an integer
+
+### Editor
+-   Cancel - "x" command quits without saving
+-   Macro creation - new macros staring with a digit or period are invalid
+-   Macro listing - display includes macros outside a-z range
