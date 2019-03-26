@@ -38,11 +38,8 @@ do_give(int descr, dbref player, const char *recipient, int amount)
     struct match_data md;
 
 
-    if (amount < 0 && !Wizard(OWNER(player))) {
-        notify(player, "Try using the \"rob\" command.");
-        return;
-    } else if (amount == 0) {
-        notifyf(player, "You must specify a positive number of %s.", tp_pennies);
+    if (amount == 0 || (amount < 0 && !Wizard(OWNER(player)))) {
+        notifyf(player, "You must specify a valid number of %s.", tp_pennies);
         return;
     }
 
