@@ -501,7 +501,7 @@ status;stat
 4
 1073749224
 *Props*
-_/sc:10:{if:{eq:#help,{&arg}},{list:_help},{null:{store:{midstr:{&arg},1,4},status,me}{tell:{if:{eq:,{&arg}},Cleared status setting.,Set status to "{midstr:{&arg},1,4}".}}}}
+_/sc:4106:{if:{eq:#help,{&arg}},{list:_help},{null:{store:{midstr:{&arg},1,4},status,me}{tell:{if:{eq:,{&arg}},Cleared status setting.,Set status to "{midstr:{&arg},1,4}".}}}}
 _help#:10:9
 _help#/1:10: 
 _help#/2:10:Usage:
