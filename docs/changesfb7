@@ -357,3 +357,4 @@ When an array is pinned, changes to any dup'ed copy on the stack will make chang
 -   Cancel - "x" command quits without saving
 -   Macro creation - new macros staring with a digit or period are invalid
 -   Macro listing - display includes macros outside a-z range
+
