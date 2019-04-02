@@ -2,6 +2,8 @@
 
 #ifdef USE_SSL
 
+#include <string.h>
+
 #include "interface_ssl.h"
 #include "log.h"
 
