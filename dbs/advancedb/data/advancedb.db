@@ -497,9 +497,9 @@ status;stat
 141
 2
 1073635051
-1554235923
-5
-1554236183
+1554243106
+7
+1554243161
 *Props*
 _/sc:4106:{if:{eq:#help,{&arg}},{list:_help},{null:{store:{midstr:{&arg},1,4},status,me}{tell:{if:{eq:,{&arg}},Cleared status setting.,Set status to "{midstr:{&arg},1,4}".}}}}
 _help#:2:11
@@ -513,7 +513,7 @@ _help#/5:2:
 _help#/6:2:Your status is the text displayed to the left of your username on
 _help#/7:2:"whospec" or "ws".
 _help#/8:2:Some MUCKs color the following statuses specially, in "ws":
-_help#/9:2:IC, OOC, WIZ
+_help#/9:2:IC, OOC
 *End*
 1
 -4
@@ -714,8 +714,8 @@ whospecies;whospec;ws
 128
 2
 1073632762
-1554235935
-18
+1554243096
+20
 1073749224
 *Props*
 *End*
@@ -1074,8 +1074,8 @@ lsedit;listedit;lsedi;lsed;lse
 104
 2
 1073534644
-1554235944
-37
+1554243150
+39
 1073749224
 *Props*
 *End*
@@ -1307,8 +1307,8 @@ con-recordhost.muf
 101
 18087988
 1073530911
-1554236227
-11
+1554243218
+13
 1073749224
 *Props*
 _/de:10:A scroll containing a spell called con-recordhost.muf
@@ -1321,8 +1321,8 @@ con-mailwarn.muf
 90
 18087972
 1073530899
-1554236227
-11
+1554243218
+13
 1073749224
 *Props*
 _/de:10:A scroll containing a spell called con-mailwarn.muf
@@ -1335,8 +1335,8 @@ con-laston.muf
 89
 18087988
 1073530891
-1554236227
-11
+1554243218
+13
 1073749224
 *Props*
 _/de:10:A scroll containing a spell called con-laston.muf
@@ -1349,8 +1349,8 @@ con-bootme.muf
 88
 17825828
 1073530863
-1554236227
-11
+1554243218
+13
 1073749224
 *Props*
 _/de:10:A scroll containing a spell called con-bootme.muf
@@ -1363,9 +1363,9 @@ cmd-whospecies.muf
 87
 18087972
 1073530629
-1554235935
-18
-1554235885
+1554243096
+19
+1554243243
 *Props*
 _/de:10:A scroll containing a spell called cmd-whospecies.muf
 _author:2:Natasha O'Brien <mufden@mufden.fuzzball.org>
@@ -1397,7 +1397,6 @@ _help#/9:2:
 _note:2:Whospecies redux for Fuzzball 6 with customizable output.
 _stat2color/IC:10:\[[32m
 _stat2color/OOC:10:\[[33m
-_stat2color/WIZ:10:\[[36m
 _version:2:1.0
 *End*
 153
@@ -1493,8 +1492,8 @@ cmd-watchfor.muf
 81
 18087988
 1073530629
-1554236227
-29
+1554243218
+34
 1073749224
 *Props*
 _/de:10:A scroll containing a spell called cmd-watchfor.muf
@@ -2057,8 +2056,8 @@ cmd-lsedit.muf
 53
 18087972
 1073530629
-1554235944
-38
+1554243150
+40
 1073749224
 *Props*
 _/de:10:A scroll containing a spell called cmd-lsedit
@@ -2239,8 +2238,8 @@ cmd-@doing.muf
 42
 18087988
 1073530629
-1554236227
-19
+1554243218
+21
 1073749224
 *Props*
 _/de:10:A scroll containing a spell called cmd-@doing
@@ -2639,8 +2638,8 @@ lib-strings.muf
 24
 18087972
 1073502873
-1554236183
-221
+1554243161
+230
 1073754225
 *Props*
 _/de:10:A scroll containing a spell called stringslib
@@ -2686,8 +2685,8 @@ lib-stackrng.muf
 23
 18087972
 1073502869
-1554235950
-118
+1554243147
+119
 1073753432
 *Props*
 _/de:10:A scroll containing a spell called lib-stackrng.muf
@@ -2736,8 +2735,8 @@ lib-props.muf
 21
 17105700
 1073501307
-1554236227
-15
+1554243218
+17
 1073749224
 *Props*
 _/de:10:A scroll containing a spell called lib-stackrng.muf
@@ -3002,8 +3001,8 @@ lib-lmgr.muf
 10
 18154276
 1073501226
-1554236183
-177
+1554243161
+184
 1073749224
 *Props*
 _/de:10:A scroll containing a spell called lib-lmgr
@@ -3152,8 +3151,8 @@ lib-editor.muf
 7
 18087972
 1073501210
-1554236183
-333
+1554243161
+341
 1073751947
 *Props*
 _/de:10:A scroll containing a spell called lib-editor.muf
@@ -3176,8 +3175,8 @@ lib-edit.muf
 6
 18087972
 1073501205
-1554236162
-57
+1554243155
+62
 1073749224
 *Props*
 _/de:10:A scroll containing a spell called lib-edit.muf
@@ -3315,19 +3314,21 @@ One
 154
 1171
 1073500921
-1554236229
-24
-1554236227
+1554243269
+26
+1554243218
 *Props*
 @/host:2:::1
-@/last/on:2:1554236227
-@/last/on#:3:3
+@/last/on:2:1554243218
+@/last/on#:3:5
 @/last/on#/1:2:1551918201
 @/last/on#/2:2:1554235593
 @/last/on#/3:2:1554236227
+@/last/on#/4:2:1554243070
+@/last/on#/5:2:1554243218
 @/lasthost:2:::1
 @/value:3:3
-@/watchfor_grace:3:1554236287
+@/watchfor_grace:3:1554243278
 _/de:10:You see Number One.
 status:10:WIZ
 *End*
@@ -3341,8 +3342,8 @@ Room Zero
 -1
 -2147483648
 1073500921
-1554236227
-37
+1554243218
+39
 1073756262
 *Props*
 _/de:10:You are in Room Zero. It's very dark here.
@@ -3402,11 +3403,11 @@ _reg/lock/truewizard:5:152
 _reg/lock/wizard:5:151
 _reg/mesgboard:5:44
 _sys/dumpinterval:3:14400
-_sys/lastdumptime:3:1554236229
+_sys/lastdumptime:3:1554243269
 _sys/max_connects:3:1
 _sys/maxpennies:3:10000
-_sys/shutdowntime:3:1554236229
-_sys/startuptime:3:1554236222
+_sys/shutdowntime:3:1554243269
+_sys/startuptime:3:1554243206
 day:3:12426
 *End*
 -1
