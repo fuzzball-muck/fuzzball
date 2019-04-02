@@ -215,7 +215,7 @@ dnl
 AC_TYPE_PID_T
 AC_TYPE_SIZE_T
 
-AC_CHECK_FUNCS(mallinfo getrlimit getrusage random pselect)
+AC_CHECK_FUNCS(mallinfo getrlimit getrusage arc4random_uniform pselect)
 AC_CHECK_MEMBER([struct mallinfo.hblks])
 AC_CHECK_MEMBER([struct mallinfo.keepcost])
 AC_CHECK_MEMBER([struct mallinfo.treeoverhead])

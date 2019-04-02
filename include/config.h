@@ -150,7 +150,8 @@
 
 /*
  * Include all the good standard headers here.
- * Not anymore!  TODO: move the stdlib.h include to fbmuck.h
+ * Not anymore!
+ * TODO: figure out what to do with the RANDOM() ifdef and stdlib.h
  * TODO: figure out how to resolve conflict when string.h and crt_malloc.h are included in "wrong" order
  */
 #include <stdlib.h>
@@ -168,9 +169,9 @@ typedef int dbref;
 #define DEBUGPRINT(...)
 #endif				/* DEBUG */
 
-#ifdef HAVE_RANDOM
-# define SRANDOM(seed)	srandom((seed))
-# define RANDOM()	random()
+#ifdef HAVE_ARC4RANDOM_UNIFORM
+# define SRANDOM(seed)	srand((seed))
+# define RANDOM()	arc4random_uniform((unsigned)RAND_MAX + 1)
 #else
 # define SRANDOM(seed)	srand((seed))
 # define RANDOM()	rand()
