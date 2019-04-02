@@ -169,9 +169,9 @@ typedef int dbref;
 #define DEBUGPRINT(...)
 #endif				/* DEBUG */
 
-#ifdef HAVE_RANDOM
-# define SRANDOM(seed)	srandom((seed))
-# define RANDOM()	random()
+#ifdef HAVE_ARC4RANDOM_UNIFORM
+# define SRANDOM(seed)	srand((seed))
+# define RANDOM()	arc4random_uniform((unsigned)RAND_MAX + 1)
 #else
 # define SRANDOM(seed)	srand((seed))
 # define RANDOM()	rand()
