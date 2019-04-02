@@ -497,21 +497,23 @@ status;stat
 141
 2
 1073635051
-1073635517
-4
-1073749224
+1554235923
+5
+1554236183
 *Props*
 _/sc:4106:{if:{eq:#help,{&arg}},{list:_help},{null:{store:{midstr:{&arg},1,4},status,me}{tell:{if:{eq:,{&arg}},Cleared status setting.,Set status to "{midstr:{&arg},1,4}".}}}}
-_help#:10:9
-_help#/1:10: 
-_help#/2:10:Usage:
-_help#/3:10:  status <text>    -- Set your status (up to 4 chars)
-_help#/4:10:  status           -- Clear your status
-_help#/5:10:  status #help     -- Three guesses.
-_help#/6:10: 
-_help#/7:10:Your status is the text displayed to the left of your username on
-_help#/8:10:"whospec" or "ws".
-_help#/9:10: 
+_help#:2:11
+_help#/1:2:Usage:
+_help#/10:2: 
+_help#/11:2:"status cool" is equivalent to "@set me=status:cool"
+_help#/2:2:  status <text>    -- Set your status (up to 4 chars)
+_help#/3:2:  status           -- Clear your status
+_help#/4:2:  status #help     -- Three guesses.
+_help#/5:2: 
+_help#/6:2:Your status is the text displayed to the left of your username on
+_help#/7:2:"whospec" or "ws".
+_help#/8:2:Some MUCKs color the following statuses specially, in "ws":
+_help#/9:2:IC, OOC, WIZ
 *End*
 1
 -4
@@ -712,8 +714,8 @@ whospecies;whospec;ws
 128
 2
 1073632762
-1073756302
-17
+1554235935
+18
 1073749224
 *Props*
 *End*
@@ -1072,8 +1074,8 @@ lsedit;listedit;lsedi;lsed;lse
 104
 2
 1073534644
-1073755431
-32
+1554235944
+37
 1073749224
 *Props*
 *End*
@@ -1305,8 +1307,8 @@ con-recordhost.muf
 101
 18087988
 1073530911
-1551918201
-9
+1554236227
+11
 1073749224
 *Props*
 _/de:10:A scroll containing a spell called con-recordhost.muf
@@ -1319,8 +1321,8 @@ con-mailwarn.muf
 90
 18087972
 1073530899
-1551918201
-9
+1554236227
+11
 1073749224
 *Props*
 _/de:10:A scroll containing a spell called con-mailwarn.muf
@@ -1333,8 +1335,8 @@ con-laston.muf
 89
 18087988
 1073530891
-1551918201
-9
+1554236227
+11
 1073749224
 *Props*
 _/de:10:A scroll containing a spell called con-laston.muf
@@ -1347,8 +1349,8 @@ con-bootme.muf
 88
 17825828
 1073530863
-1551918201
-9
+1554236227
+11
 1073749224
 *Props*
 _/de:10:A scroll containing a spell called con-bootme.muf
@@ -1361,39 +1363,42 @@ cmd-whospecies.muf
 87
 18087972
 1073530629
-1073756302
-17
-1073749224
+1554235935
+18
+1554235885
 *Props*
 _/de:10:A scroll containing a spell called cmd-whospecies.muf
-_author:10:Natasha O'Brien <mufden@mufden.fuzzball.org>
-_help#:10:21
-_help#/1:10:ws
-_help#/10:10:  #object       Disable display of your data in ws #far lists.
-_help#/11:10:  #doing        Enable display of players' @doings.
-_help#/12:10:  #bright       Disable display of sleepers with dimmer ANSI colors.
-_help#/13:10:  #idle <secs>  Display idle times only if more than <secs> seconds.
-_help#/14:10: 
-_help#/15:10:The first three options can also be turned off with, for example, 'ws 
-_help#/16:10:#!object'.
-_help#/17:10: 
-_help#/18:10:Players are listed in order of their arrival in the room by default. #sort 
-_help#/19:10:will order them by the given criterion. You can also '@set 
-_help#/2:10:ws #far <name> [<name>...]
-_help#/20:10:me=_prefs/ws/sort:<criterion>' to sort by <criterion> when no #sort is 
-_help#/21:10:specified; use 'ws #sort none' to list in the normal order of arrival.
-_help#/3:10:ws #sort [none|name|idle|sex|species|status]
-_help#/4:10: 
-_help#/5:10:Lists the people in the room, their genders, and species. The 'status' 
-_help#/6:10:command can set your Status field; see 'status #help'. If someone's ws #far 
-_help#/7:10:shows "redacted," they have used the #object option to hide that data. ws 
-_help#/8:10:also has several customization options:
-_help#/9:10: 
-_note:10:Whospecies redux for Fuzzball 6 with customizable output.
+_author:2:Natasha O'Brien <mufden@mufden.fuzzball.org>
+_help#:2:24
+_help#/1:2:ws
+_help#/10:2:  #object       Disable display of your data in ws #far lists.
+_help#/11:2:  #doing        Enable display of players' @doings.
+_help#/12:2:  #bright       Disable display of sleepers with dimmer ANSI colors.
+_help#/13:2:  #idle <secs>  Display idle times only if more than <secs> seconds.
+_help#/14:2: 
+_help#/15:2:The first three options can also be turned off with, for example, 'ws 
+_help#/16:2:#!object'.
+_help#/17:2: 
+_help#/18:2:Players are listed in order of their arrival in the room by default. #sort 
+_help#/19:2:will order them by the given criterion. You can also '@set 
+_help#/2:2:ws #far <name> [<name>...]
+_help#/20:2:me=_prefs/ws/sort:<criterion>' to sort by <criterion> when no #sort is 
+_help#/21:2:specified; use 'ws #sort none' to list in the normal order of arrival.
+_help#/22:2: 
+_help#/23:2:You can set your species with @set me=species:<species>
+_help#/24:2:For example: @set me=species:armadillo
+_help#/3:2:ws #sort [none|name|idle|sex|species|status]
+_help#/4:2: 
+_help#/5:2:Lists the people in the room, their genders, and species. The 'status' 
+_help#/6:2:command can set your Status field; see 'status #help'. If someone's ws #far 
+_help#/7:2:shows "redacted," they have used the #object option to hide that data. ws 
+_help#/8:2:also has several customization options:
+_help#/9:2: 
+_note:2:Whospecies redux for Fuzzball 6 with customizable output.
 _stat2color/IC:10:\[[32m
 _stat2color/OOC:10:\[[33m
 _stat2color/WIZ:10:\[[36m
-_version:10:1.0
+_version:2:1.0
 *End*
 153
 #85
@@ -1488,8 +1493,8 @@ cmd-watchfor.muf
 81
 18087988
 1073530629
-1551918201
-24
+1554236227
+29
 1073749224
 *Props*
 _/de:10:A scroll containing a spell called cmd-watchfor.muf
@@ -2052,8 +2057,8 @@ cmd-lsedit.muf
 53
 18087972
 1073530629
-1073755431
-32
+1554235944
+38
 1073749224
 *Props*
 _/de:10:A scroll containing a spell called cmd-lsedit
@@ -2234,8 +2239,8 @@ cmd-@doing.muf
 42
 18087988
 1073530629
-1551918201
-17
+1554236227
+19
 1073749224
 *Props*
 _/de:10:A scroll containing a spell called cmd-@doing
@@ -2634,8 +2639,8 @@ lib-strings.muf
 24
 18087972
 1073502873
-1551918204
-184
+1554236183
+221
 1073754225
 *Props*
 _/de:10:A scroll containing a spell called stringslib
@@ -2681,20 +2686,20 @@ lib-stackrng.muf
 23
 18087972
 1073502869
-1073755432
-109
+1554235950
+118
 1073753432
 *Props*
 _/de:10:A scroll containing a spell called lib-stackrng.muf
-_defs/sr-catrng:10:"$lib/stackrng" match "catranges" call
-_defs/sr-copyrng:10:"$lib/stackrng" match "copyrange" call
-_defs/sr-deleterng:10:"$lib/stackrng" match "deleterange" call
-_defs/sr-extractrng:10:"$lib/stackrng" match "extractrange" call
-_defs/sr-filterrng:10:"$lib/stackrng" match "filterrange" call
-_defs/sr-insertrng:10:"$lib/stackrng" match "insertrange" call
-_defs/sr-poprng:10:"$lib/stackrng" match "popoffn" call
-_defs/sr-swaprng:10:"$lib/stackrng" match "swapranges" call
-_docs:10:@list $lib/stackrng=1-37
+_defs/sr-catrng:2:"$lib/stackrng" match "catranges" call
+_defs/sr-copyrng:2:"$lib/stackrng" match "copyrange" call
+_defs/sr-deleterng:2:"$lib/stackrng" match "deleterange" call
+_defs/sr-extractrng:2:"$lib/stackrng" match "extractrange" call
+_defs/sr-filterrng:2:"$lib/stackrng" match "filterrange" call
+_defs/sr-insertrng:2:"$lib/stackrng" match "insertrange" call
+_defs/sr-poprng:2:"$lib/stackrng" match "popoffn" call
+_defs/sr-swaprng:2:"$lib/stackrng" match "swapranges" call
+_docs:2:@list $lib/stackrng=1-37  
 *End*
 153
 #21
@@ -2731,8 +2736,8 @@ lib-props.muf
 21
 17105700
 1073501307
-1551918201
-13
+1554236227
+15
 1073749224
 *Props*
 _/de:10:A scroll containing a spell called lib-stackrng.muf
@@ -2997,46 +3002,46 @@ lib-lmgr.muf
 10
 18154276
 1073501226
-1073755432
-163
+1554236183
+177
 1073749224
 *Props*
 _/de:10:A scroll containing a spell called lib-lmgr
-_defs/.lmgr-clearelem:10:"$lib/lmgr" match "lmgr-clearelem" call
-_defs/.lmgr-clearrange:10:"$lib/lmgr" match "lmgr-clearrange" call
-_defs/.lmgr-deletelist:10:"$lib/lmgr" match "lmgr-deletelist" call
-_defs/.lmgr-deleterange:10:"$lib/lmgr" match "lmgr-deleterange" call
-_defs/.lmgr-extractrange:10:"$lib/lmgr" match "lmgr-extractrange" call
-_defs/.lmgr-fullrange:10:"$lib/lmgr" match "lmgr-fullrange" call
-_defs/.lmgr-getbrange:10:"$lib/lmgr" match "lmgr-getbrange" call
-_defs/.lmgr-getcount:10:"$lib/lmgr" match "lmgr-getcount" call
-_defs/.lmgr-getelem:10:"$lib/lmgr" match "lmgr-getelem" call
-_defs/.lmgr-getlist:10:"$lib/lmgr" match "lmgr-getlist" call
-_defs/.lmgr-getrange:10:"$lib/lmgr" match "lmgr-getrange" call
-_defs/.lmgr-insertrange:10:"$lib/lmgr" match "lmgr-insertrange" call
-_defs/.lmgr-moverange:10:"$lib/lmgr" match "lmgr-moverange" call
-_defs/.lmgr-putbrange:10:"$lib/lmgr" match "lmgr-putbrange" call
-_defs/.lmgr-putelem:10:"$lib/lmgr" match "lmgr-putelem" call
-_defs/.lmgr-putrange:10:"$lib/lmgr" match "lmgr-putrange" call
-_defs/.lmgr-setcount:10:"$lib/lmgr" match "lmgr-setcount" call
-_defs/lmgr-clearelem:10:#9 "lmgr-clearelem" call
-_defs/lmgr-clearrange:10:#9 "lmgr-clearrange" call
-_defs/lmgr-deletelist:10:#9 "lmgr-deletelist" call
-_defs/lmgr-deleterange:10:#9 "lmgr-deleterange" call
-_defs/lmgr-extractrange:10:#9 "lmgr-extractrange" call
-_defs/lmgr-fullrange:10:#9 "lmgr-fullrange" call
-_defs/lmgr-getbrange:10:#9 "lmgr-getbrange" call
-_defs/lmgr-getcount:10:#9 "lmgr-getcount" call
-_defs/lmgr-getelem:10:#9 "lmgr-getelem" call
-_defs/lmgr-getlist:10:#9 "lmgr-getlist" call
-_defs/lmgr-getrange:10:#9 "lmgr-getrange" call
-_defs/lmgr-insertrange:10:#9 "lmgr-insertrange" call
-_defs/lmgr-moverange:10:#9 "lmgr-moverange" call
-_defs/lmgr-putbrange:10:#9 "lmgr-putbrange" call
-_defs/lmgr-putelem:10:#9 "lmgr-putelem" call
-_defs/lmgr-putrange:10:#9 "lmgr-putrange" call
-_defs/lmgr-setcount:10:#9 "lmgr-setcount" call
-_docs:10:@list $lib/lmgr=1-50
+_defs/.lmgr-clearelem:2:"$lib/lmgr" match "lmgr-clearelem" call
+_defs/.lmgr-clearrange:2:"$lib/lmgr" match "lmgr-clearrange" call
+_defs/.lmgr-deletelist:2:"$lib/lmgr" match "lmgr-deletelist" call
+_defs/.lmgr-deleterange:2:"$lib/lmgr" match "lmgr-deleterange" call
+_defs/.lmgr-extractrange:2:"$lib/lmgr" match "lmgr-extractrange" call
+_defs/.lmgr-fullrange:2:"$lib/lmgr" match "lmgr-fullrange" call
+_defs/.lmgr-getbrange:2:"$lib/lmgr" match "lmgr-getbrange" call
+_defs/.lmgr-getcount:2:"$lib/lmgr" match "lmgr-getcount" call
+_defs/.lmgr-getelem:2:"$lib/lmgr" match "lmgr-getelem" call
+_defs/.lmgr-getlist:2:"$lib/lmgr" match "lmgr-getlist" call
+_defs/.lmgr-getrange:2:"$lib/lmgr" match "lmgr-getrange" call
+_defs/.lmgr-insertrange:2:"$lib/lmgr" match "lmgr-insertrange" call
+_defs/.lmgr-moverange:2:"$lib/lmgr" match "lmgr-moverange" call
+_defs/.lmgr-putbrange:2:"$lib/lmgr" match "lmgr-putbrange" call
+_defs/.lmgr-putelem:2:"$lib/lmgr" match "lmgr-putelem" call
+_defs/.lmgr-putrange:2:"$lib/lmgr" match "lmgr-putrange" call
+_defs/.lmgr-setcount:2:"$lib/lmgr" match "lmgr-setcount" call
+_defs/lmgr-clearelem:2:#9 "lmgr-clearelem" call
+_defs/lmgr-clearrange:2:#9 "lmgr-clearrange" call
+_defs/lmgr-deletelist:2:#9 "lmgr-deletelist" call
+_defs/lmgr-deleterange:2:#9 "lmgr-deleterange" call
+_defs/lmgr-extractrange:2:#9 "lmgr-extractrange" call
+_defs/lmgr-fullrange:2:#9 "lmgr-fullrange" call
+_defs/lmgr-getbrange:2:#9 "lmgr-getbrange" call
+_defs/lmgr-getcount:2:#9 "lmgr-getcount" call
+_defs/lmgr-getelem:2:#9 "lmgr-getelem" call
+_defs/lmgr-getlist:2:#9 "lmgr-getlist" call
+_defs/lmgr-getrange:2:#9 "lmgr-getrange" call
+_defs/lmgr-insertrange:2:#9 "lmgr-insertrange" call
+_defs/lmgr-moverange:2:#9 "lmgr-moverange" call
+_defs/lmgr-putbrange:2:#9 "lmgr-putbrange" call
+_defs/lmgr-putelem:2:#9 "lmgr-putelem" call
+_defs/lmgr-putrange:2:#9 "lmgr-putrange" call
+_defs/lmgr-setcount:2:#9 "lmgr-setcount" call
+_docs:2:@list $lib/lmgr=1-50
 _lib-version:10:1.2
 *End*
 153
@@ -3147,21 +3152,21 @@ lib-editor.muf
 7
 18087972
 1073501210
-1073755432
-282
+1554236183
+333
 1073751947
 *Props*
 _/de:10:A scroll containing a spell called lib-editor.muf
-_author:10:foxen@belfry.com
-_defs/editor:10:#6 "EDITOR" call
-_defs/editorheader:10:#6 "EDITORheader" call
-_defs/editorloop:10:#6 "EDITORloop" call
-_defs/editorparse:10:#6 "EDITORparse" call
+_author:2:foxen@belfry.com
+_defs/editor:2:#6 "EDITOR" call
+_defs/editorheader:2:#6 "EDITORheader" call
+_defs/editorloop:2:#6 "EDITORloop" call
+_defs/editorparse:2:#6 "EDITORparse" call
 _defs/EDITORprop:10:#6 "EDITORprop" call
-_docs:10:@list $lib/editor=2-57
-_lib-version:10:6.001
+_docs:2:@list $lib/editor=2-57
+_lib-version:2:6.001
 _note:10:Provides lsedit functions to other programs.
-_version:10:6.002
+_version:2:6.002
 *End*
 153
 #5
@@ -3171,29 +3176,29 @@ lib-edit.muf
 6
 18087972
 1073501205
-1073755432
-31
+1554236162
+57
 1073749224
 *Props*
 _/de:10:A scroll containing a spell called lib-edit.muf
-_defs/EDITcenter:10:#5 "EDITcenter" call
-_defs/EDITcopy:10:#5 "EDITcopy" call
-_defs/EDITdisplay:10:#5 "EDITdisplay" call
-_defs/EDITfmt_rng:10:#5 "EDITfmt_rng" call
-_defs/EDITformat:10:#5 "EDITformat" call
-_defs/EDITindent:10:#5 "EDITindent" call
-_defs/EDITjoin:10:#5 "EDITjoin" call
-_defs/EDITjoin_rng:10:#5 "EDITjoin_rng" call
-_defs/EDITleft:10:#5 "EDITleft" call
-_defs/EDITlist:10:#5 "EDITlist" call
-_defs/EDITmove:10:#5 "EDITmove" call
-_defs/EDITreplace:10:#5 "EDITreplace" call
-_defs/EDITright:10:#5 "EDITright" call
-_defs/EDITsearch:10:#5 "EDITsearch" call
-_defs/EDITshuffle:10:#5 "EDITshuffle" call
-_defs/EDITsort:10:#5 "EDITsort" call
-_defs/EDITsplit:10:#5 "EDITsplit" call
-_docs:10:@list $lib/edit=1-80
+_defs/EDITcenter:2:#5 "EDITcenter" call
+_defs/EDITcopy:2:#5 "EDITcopy" call
+_defs/EDITdisplay:2:#5 "EDITdisplay" call
+_defs/EDITfmt_rng:2:#5 "EDITfmt_rng" call
+_defs/EDITformat:2:#5 "EDITformat" call
+_defs/EDITindent:2:#5 "EDITindent" call
+_defs/EDITjoin:2:#5 "EDITjoin" call
+_defs/EDITjoin_rng:2:#5 "EDITjoin_rng" call
+_defs/EDITleft:2:#5 "EDITleft" call
+_defs/EDITlist:2:#5 "EDITlist" call
+_defs/EDITmove:2:#5 "EDITmove" call
+_defs/EDITreplace:2:#5 "EDITreplace" call
+_defs/EDITright:2:#5 "EDITright" call
+_defs/EDITsearch:2:#5 "EDITsearch" call
+_defs/EDITshuffle:2:#5 "EDITshuffle" call
+_defs/EDITsort:2:#5 "EDITsort" call
+_defs/EDITsplit:2:#5 "EDITsplit" call
+_docs:2:@list $lib/edit=1-80
 *End*
 153
 #4
@@ -3310,16 +3315,19 @@ One
 154
 1171
 1073500921
-1551918206
-22
-1551918201
+1554236229
+24
+1554236227
 *Props*
 @/host:2:::1
-@/last/on:2:1551918201
-@/last/on#:3:1
+@/last/on:2:1554236227
+@/last/on#:3:3
 @/last/on#/1:2:1551918201
+@/last/on#/2:2:1554235593
+@/last/on#/3:2:1554236227
+@/lasthost:2:::1
 @/value:3:3
-@/watchfor_grace:3:1551918261
+@/watchfor_grace:3:1554236287
 _/de:10:You see Number One.
 status:10:WIZ
 *End*
@@ -3333,8 +3341,8 @@ Room Zero
 -1
 -2147483648
 1073500921
-1551918201
-35
+1554236227
+37
 1073756262
 *Props*
 _/de:10:You are in Room Zero. It's very dark here.
@@ -3394,11 +3402,11 @@ _reg/lock/truewizard:5:152
 _reg/lock/wizard:5:151
 _reg/mesgboard:5:44
 _sys/dumpinterval:3:14400
-_sys/lastdumptime:3:1551918206
+_sys/lastdumptime:3:1554236229
 _sys/max_connects:3:1
 _sys/maxpennies:3:10000
-_sys/shutdowntime:3:1551918206
-_sys/startuptime:3:1551918194
+_sys/shutdowntime:3:1554236229
+_sys/startuptime:3:1554236222
 day:3:12426
 *End*
 -1

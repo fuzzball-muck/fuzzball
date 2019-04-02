@@ -39,7 +39,7 @@
                  string if the player is asleep or less than two minutes idle.
           %[n]s  The player's name. If the player is asleep or idle, it
                  also includes an "[asleep]" or "[2m idle]" tag after.
-      %[doing]s  The player's @doing, if e has one. Shown as the value of the
+      %[doing]s  The player's @doing, if he has one. Shown as the value of the
                  _prefs/ws/doing prop from up the environment, with "<my
                  pretty doing>" replaced by the user's @doing setting.
      %[status]s  The values of these properties.

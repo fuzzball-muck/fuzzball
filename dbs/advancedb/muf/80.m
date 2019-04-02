@@ -6,10 +6,10 @@
   message about it. Connection messages will be suppressed if players are
   in the same room {if it's not set Dark}, as it's assumed you can tell.
  
-  When a player connects, e has a grace period {default 30 seconds} before
-  notification is sent. During this time e can change eir name, enable
+  When a player connects, he has a grace period {default 30 seconds} before
+  notification is sent. During this time he can change his name, enable
   suppression, or disconnect to prevent display of the connection to
-  folks subscribed to eir presence.
+  folks subscribed to his presence.
  
   Properties
   _prefs/wf/on?      If "no", you will not receive presence messages.
@@ -256,7 +256,7 @@ $endif
 : add-except   prop_showlist "exception" 1 editlist ;
 : del-except   prop_showlist "exception" 0 editlist ;
  
-: list-hide ( -- }  Shows the user everyone from whom e is hiding {or isn't, if hiding from everyone}. )
+: list-hide ( -- }  Shows the user everyone from whom he is hiding {or isn't, if hiding from everyone}. )
     me @ prop_hide? getpropstr .yes? if
         me @ prop_showlist array_get_reflist  ( arr )
         dup if  ( arr )
@@ -285,7 +285,7 @@ $endif
     me @ prop_grace getpropval systime > if exit then  (  } Grace must be a time in case program halts before it can clear the prop. )
  
     discon? @ not if  (  )
-        ( Notify user of people in *eir* list online. )
+        ( Notify user of people in *his* list online. )
         fork not if  (  )
             me @ prop_list getpropstr if
                 list-watched
