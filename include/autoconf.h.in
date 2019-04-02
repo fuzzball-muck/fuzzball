@@ -1,16 +1,10 @@
-/** @file autoconf.h.in
- *
- * include/autoconf.h.in.  Generated from configure.ac by autoheader.
- * This header may get mangled up by configure - but I'll try to format it
- * nice for now at least.  These are the defines set by 'configure'.
- *
- * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
- */
+/* include/autoconf.h.in.  Generated from configure.ac by autoheader.  */
 
 /* Enable debugging assertions. */
 #undef DEBUG
 
-/* Define to 1 if you have the <dirent.h> header file, and it defines `DIR'. */
+/* Define to 1 if you have the <dirent.h> header file, and it defines `DIR'.
+   */
 #undef HAVE_DIRENT_H
 
 /* Define to 1 if you have the `getrlimit' function. */
@@ -24,9 +18,6 @@
 
 /* Define to 1 if you have the `crypto' library (-lcrypto). */
 #undef HAVE_LIBCRYPTO
-
-/* Define to 1 if you have the `m' library (-lm). */
-#undef HAVE_LIBM
 
 /* Define to 1 if you have the `pcre' library (-lpcre). */
 #undef HAVE_LIBPCRE
