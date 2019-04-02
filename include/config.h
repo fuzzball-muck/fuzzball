@@ -150,21 +150,9 @@
 
 /*
  * Include all the good standard headers here.
+ * Not anymore!  TODO: move the stdlib.h include to fbmuck.h
  */
-#include <ctype.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <limits.h>
-#include <signal.h>
-#include <stdarg.h>
-#include <stdbool.h>
-#include <stdint.h>
-#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <time.h>
 
 typedef int dbref;
 
