@@ -123,7 +123,7 @@ fbmuck: $(INCLUDE)/defines.h ${P} ${OBJ} ${MALLOBJ} Makefile
 	${PRE} ${CC} ${CFLAGS} ${INCL} ${DEFS} -o fbmuck ${OBJ} version.o -lm ${LIBR}
 
 fb-resolver: resolver.o ${MALLOBJ} Makefile
-	${PRE} ${CC} ${CFLAGS} ${INCL} ${DEFS} -o fb-resolver resolver.o ${MALLOBJ} -lm ${LIBR} -lpthread
+	${PRE} ${CC} ${CFLAGS} ${INCL} ${DEFS} -o fb-resolver resolver.o ${MALLOBJ} -lm -lpthread ${LIBR}
 
 prochelp: prochelp.o Makefile
 	${PRE} ${CC} ${CFLAGS} ${INCL} ${DEFS} -o prochelp prochelp.o
