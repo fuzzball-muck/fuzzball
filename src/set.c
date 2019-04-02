@@ -438,6 +438,10 @@ do_chown(int descr, dbref player, const char *name, const char *newowner)
     }
 
 #ifdef GOD_PRIV
+    if (Wizard(OWNER(player)) && !God(player) && God(OWNER(thing))) {
+        notify(player, "You can't take possession of that.");
+        return;
+    }
     if (Wizard(OWNER(player)) && !God(player) && God(owner)) {
         notify(player, "God doesn't need an offering or sacrifice.");
         return;
