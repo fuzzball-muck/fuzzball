@@ -120,11 +120,10 @@ fbmuck: $(INCLUDE)/defines.h ${P} ${OBJ} ${MALLOBJ} Makefile
 	./mkversion
 	${PRE} ${CC} ${CFLAGS} ${INCL} ${DEFS} -c version.c
 	if [ -f fbmuck ]; then ${MV} fbmuck fbmuck~ ; fi
-	${PRE} ${CC} ${CFLAGS} ${INCL} ${DEFS} -o fbmuck ${OBJ} version.o \
-	  ${LIBR}
+	${PRE} ${CC} ${CFLAGS} ${INCL} ${DEFS} -o fbmuck ${OBJ} version.o -lm ${LIBR}
 
 fb-resolver: resolver.o ${MALLOBJ} Makefile
-	${PRE} ${CC} ${CFLAGS} ${INCL} ${DEFS} -o fb-resolver resolver.o ${MALLOBJ} ${LIBR} -lpthread
+	${PRE} ${CC} ${CFLAGS} ${INCL} ${DEFS} -o fb-resolver resolver.o ${MALLOBJ} -lm ${LIBR} -lpthread
 
 prochelp: prochelp.o Makefile
 	${PRE} ${CC} ${CFLAGS} ${INCL} ${DEFS} -o prochelp prochelp.o
