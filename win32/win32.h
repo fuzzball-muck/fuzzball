@@ -19,16 +19,12 @@
 #define popen		_popen
 #define read(fd, buf, count) \
 			recv(fd, (char *)buf, count, 0)
-#define snprintf(str, size, format, ...) \
-			_snprintf_s(str, size, _TRUNCATE, format, __VA_ARGS__)
 #define strcasecmp	_stricmp
 #define strdup		_strdup
 #define strncasecmp	_strnicmp
 #define strtok_r	strtok_s
 #define tzname		_tzname
 #define unlink		_unlink
-#define vsnprintf(str, size, format, ...) \
-			_vsnprintf_s(str, size, _TRUNCATE, format, __VA_ARGS__)
 #define write(fd, buf, count) \
 			send(fd, (char *)buf, count, 0)
 
