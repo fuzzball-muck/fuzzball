@@ -151,8 +151,10 @@
 /*
  * Include all the good standard headers here.
  * Not anymore!  TODO: move the stdlib.h include to fbmuck.h
+ * TODO: figure out how to resolve conflict when string.h and crt_malloc.h are included in "wrong" order
  */
 #include <stdlib.h>
+#include <string.h>
 
 typedef int dbref;
 
