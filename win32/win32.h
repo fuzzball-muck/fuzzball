@@ -19,8 +19,6 @@
 #define popen		_popen
 #define read(fd, buf, count) \
 			recv(fd, (char *)buf, count, 0)
-#define snprintf(str, size, format, ...) \
-			_snprintf_s(str, size, _TRUNCATE, format, __VA_ARGS__)
 #define strcasecmp	_stricmp
 #define strdup		_strdup
 #define strncasecmp	_strnicmp
