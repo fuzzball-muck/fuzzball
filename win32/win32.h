@@ -27,8 +27,6 @@
 #define strtok_r	strtok_s
 #define tzname		_tzname
 #define unlink		_unlink
-#define vsnprintf(str, size, format, ...) \
-			_vsnprintf_s(str, size, _TRUNCATE, format, __VA_ARGS__)
 #define write(fd, buf, count) \
 			send(fd, (char *)buf, count, 0)
 
