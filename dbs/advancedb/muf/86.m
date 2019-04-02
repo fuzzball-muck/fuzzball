@@ -298,7 +298,6 @@ $endif
  
     prog "_stat2color/IC"  "\[[32m" setprop
     prog "_stat2color/OOC" "\[[33m" setprop
-    prog "_stat2color/WIZ" "\[[36m" setprop
  
     #0 "_prefs/ws/color/his"  "\[[36m" setprop
     #0 "_prefs/ws/color/hers" "\[[35m" setprop
