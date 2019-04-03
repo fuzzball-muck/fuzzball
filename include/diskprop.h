@@ -1,8 +1,8 @@
 #include "config.h"
 
 #ifdef DISKBASE
-#ifndef _DISKPROP_H
-#define _DISKPROP_H
+#ifndef DISKPROP_H
+#define DISKPROP_H
 
 #include "props.h"
 
@@ -20,5 +20,5 @@ void skipproperties(FILE * f, dbref obj);
 void unloadprops_with_prejudice(dbref obj);
 void undirtyprops(dbref obj);
 
-#endif				/* _DISKPROP_H */
+#endif /* !DISKPROP_H */
 #endif
