@@ -93,7 +93,7 @@ $define .tellme me @ swap notify $enddef
    then
    "EXIT" swap pop
 ;
-: when  ( The main body... )
+: main
    dup "" strcmp .nif
       me @ location intostr "#" swap strcat
    then parse-dbref dup .nif
