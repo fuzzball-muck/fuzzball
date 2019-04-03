@@ -1209,7 +1209,6 @@ Room Zero
 1505753723
 *Props*
 _/de:2:You are in Room Zero.  It's very dark here.
-_/osc:2:is briefly visible through the mist.
 _connect/announce:5:36
 _connect/census:5:38
 _connect/lasthost:5:41

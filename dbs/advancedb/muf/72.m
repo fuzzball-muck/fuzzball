@@ -922,6 +922,7 @@ $enddef
     then
 ;
 : spoof-main ( s -- )
+    dup not if pop exit then
     "\r" explode
     begin dup while            ( stringn ... string2 string1 n )
         swap spoof             ( stringn ... string2 n )

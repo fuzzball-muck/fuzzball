@@ -6,7 +6,7 @@
   if they wish.
  
   There are three line formats: header, line, and footer. See "man
-  fmtstring" for directions on how to write line formats. Refresh6 actually
+  fmtstring" for directions on how to write line formats. This program actually
   uses array_fmtstrings, so each variable has a namein brackets between the
   % and the type character. In "header" and "footer", the variables are:
  
@@ -282,7 +282,7 @@ $endif
  
  
     me @ prog controls not if
-        "You must be a wizard or own the Refresh6 program object to #setup." .tell
+        "You must be a wizard or own the program object to #setup." .tell
         exit
     then  (  )
  

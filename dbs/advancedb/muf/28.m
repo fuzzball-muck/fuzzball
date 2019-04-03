@@ -118,7 +118,7 @@ $include $lib/ignore
     var! program var! mesg  ( dbRoom dbN..db1 intN )
     array_make over  ( dbRoom arrDb dbRoom )
  
-    (dup mesg @ notify  ( dbRoom arrDb dbRoom )
+    (dup mesg @ notify  { dbRoom arrDb dbRoom )
  
     contents_array  ( dbRoom arrDb arrContents )
     dup me @ program @ rtn-array-filter  ( dbRoom arrDb arrContents arrOkContents )

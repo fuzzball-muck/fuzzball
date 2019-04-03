@@ -1361,7 +1361,7 @@ cmd-whospecies.muf
 153
 -1
 87
-18087972
+18087988
 1073530629
 1554243096
 19
@@ -3347,7 +3347,6 @@ Room Zero
 1073756262
 *Props*
 _/de:10:You are in Room Zero. It's very dark here.
-_/osc:10:is briefly visible through the mist.
 _arrive/banish:5:36
 _arrive/ride:5:65
 _connect/announce:5:80
