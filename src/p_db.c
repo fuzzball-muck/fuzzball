@@ -143,7 +143,7 @@ prim_moveto(PRIM_PROTOTYPE)
 	    if (Typeof(dest) != TYPE_ROOM &&
 		!(Typeof(dest) == TYPE_THING && (FLAGS(dest) & VEHICLE)))
 		abort_interp("Bad destination.");
-	    /* Check permissions */
+        case TYPE_THING:
 	    if (parent_loop_check(victim, dest))
 		abort_interp("Things can't contain themselves.");
 	    if ((mlev < 3)) {
@@ -159,11 +159,12 @@ prim_moveto(PRIM_PROTOTYPE)
 		abort_interp("Destination doesn't accept guests.");
 
 	    }
-	    enter_room(fr->descr, victim, dest, program);
-	    break;
-	case TYPE_THING:
-	    if (parent_loop_check(victim, dest))
-		abort_interp("A thing cannot contain itself.");
+
+            if (Typeof(victim) == TYPE_PLAYER) {
+                enter_room(fr->descr, victim, dest, program);
+	        break;
+            }
+
 	    if (mlev < 3 && (FLAGS(victim) & VEHICLE) &&
 		(FLAGS(dest) & VEHICLE) && Typeof(dest) != TYPE_THING)
 		abort_interp("Destination doesn't accept vehicles.");
