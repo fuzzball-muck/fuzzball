@@ -11,6 +11,7 @@
 #include <stddef.h>
 
 #include "config.h"
+#include "fbmuck.h"
 
 /*
  * @TODO free_prog_real is a static in compile.c

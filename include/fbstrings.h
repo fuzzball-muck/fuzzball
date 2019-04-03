@@ -10,7 +10,9 @@
 #define _FBSTRINGS_H
 
 #include <stddef.h>
+
 #include "config.h"
+#include "fbmuck.h"
 
 /**
  * Turn 's' into an empty string if it is NULL.

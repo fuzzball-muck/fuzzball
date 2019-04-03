@@ -10,6 +10,7 @@
 #define _COMMANDS_H
 
 #include "config.h"
+#include "fbmuck.h"
 
 /*
  * This file is grouped alphabetically just to make it slightly easier to find

@@ -12,6 +12,7 @@
 #include <time.h>
 
 #include "config.h"
+#include "fbmuck.h"
 
 /* This is used to identify the database dump file */
 #define DB_VERSION_STRING "***Foxen9 TinyMUCK DUMP Format***"
