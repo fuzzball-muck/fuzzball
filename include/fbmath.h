@@ -36,4 +36,4 @@ void MD5hex(void *dest, const void *orig, size_t len);
 int no_good(double test);
 uint32_t rnd(void *buffer);
 
-#endif				/* !FBMATH_H */
+#endif /* !FBMATH_H */
