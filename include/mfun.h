@@ -1,5 +1,5 @@
-#ifndef _MFUN_H
-#define _MFUN_H
+#ifndef MFUN_H
+#define MFUN_H
 
 #include <stddef.h>
 
@@ -301,4 +301,4 @@ static struct mfun_dat mfun_list[] = {
     {NULL, NULL, 0, 0, 0, 0, 0}	/* Ends the mfun list */
 };
 
-#endif				/* _MFUN_H */
+#endif /* !MFUN_H */
