@@ -1,7 +1,7 @@
 ***Foxen9 TinyMUCK DUMP Format***
 164
 1
-156
+155
 %autolook_cmd=look
 %cpennies=Pennies
 %cpenny=Penny
@@ -123,7 +123,6 @@
 %starttls_allow=no
 %idleboot=yes
 %idle_ping_enable=yes
-%restrict_kill=yes
 %allow_listeners=yes
 %allow_listeners_env=yes
 %allow_listeners_obj=yes

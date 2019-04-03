@@ -378,7 +378,6 @@ int tp_realms_control;
 int tp_recognize_null_command;
 int tp_registration;
 int tp_tab_input_replaced_with_space;
-int tp_restrict_kill;
 int tp_secure_who;
 int tp_secure_teleport;
 int tp_show_legacy_props;
@@ -435,8 +434,6 @@ struct tune_bool_entry tune_bool_list[] = {
      "", 1, IDLEBOOT},
     {"Idle Boot", "idle_ping_enable", &tp_idle_ping_enable, 0, MLEV_WIZARD,
      "Enable server side keepalive pings", "", 1, IDLE_PING_ENABLE},
-    {"Killing", "restrict_kill", &tp_restrict_kill, 0, MLEV_WIZARD,
-     "Restrict kill command to players set Kill_OK", "", 1, RESTRICT_KILL},
     {"Listeners", "allow_listeners", &tp_listeners, 0, MLEV_WIZARD,
      "Allow programs to listen to player output", "", 1, LISTENERS},
     {"Listeners", "allow_listeners_env", &tp_listeners_env, 0, MLEV_WIZARD,
