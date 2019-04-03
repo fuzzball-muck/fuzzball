@@ -1,5 +1,5 @@
-#ifndef _MOVE_H
-#define _MOVE_H
+#ifndef MOVE_H
+#define MOVE_H
 
 #include "config.h"
 
@@ -9,4 +9,4 @@ void send_contents(int descr, dbref loc, dbref dest);
 void send_home(int descr, dbref thing, int homepuppet);
 void recycle(int descr, dbref player, dbref thing);
 
-#endif				/* _MOVE_H */
+#endif /* !MOVE_H */

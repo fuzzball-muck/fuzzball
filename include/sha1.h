@@ -1,5 +1,5 @@
-#ifndef _SHA1_H_
-#define _SHA1_H_
+#ifndef SHA1_H
+#define SHA1_H
 
 #include <stddef.h>
 /* Just in case the including file doesn't use stdint for uint8_t */
@@ -25,4 +25,4 @@ void sha1_write(sha1nfo * s, const char *data, size_t len);
 uint8_t *sha1_result(sha1nfo * s);
 void hash2hex(uint8_t * hash, char *buffer, size_t buflen);
 
-#endif
+#endif /* !SHA1_H */

@@ -1,5 +1,5 @@
-#ifndef _LOG_H
-#define _LOG_H
+#ifndef LOG_H
+#define LOG_H
 
 #include "config.h"
 #include "inst.h"
@@ -15,5 +15,4 @@ void log_status(char *format, ...);
 void log_user(dbref player, dbref program, char *logmessage);
 char *whowhere(dbref player);
 
-#endif				/* _LOG_H */
-
+#endif /* !LOG_H */

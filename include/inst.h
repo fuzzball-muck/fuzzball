@@ -5,8 +5,8 @@
  * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
  */
 
-#ifndef _INST_H
-#define _INST_H
+#ifndef INST_H
+#define INST_H
 
 #include <stddef.h>
 
@@ -107,4 +107,4 @@ struct inst {                   /* instruction */
     } data;
 };
 
-#endif          /* _INST_H */
+#endif /* !INST_H */

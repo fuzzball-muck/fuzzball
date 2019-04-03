@@ -1,5 +1,5 @@
-#ifndef _P_PROPS_H
-#define _P_PROPS_H
+#ifndef P_PROPS_H
+#define P_PROPS_H
 
 #include "interp.h"
 
@@ -44,5 +44,4 @@ void prim_prop_name_okp(PRIM_PROTOTYPE);
 	"REFLIST_FIND", "REFLIST_ADD", "REFLIST_DEL", "BLESSED?", \
 	"PARSEPROPEX", "PARSEMPI", "PARSEMPIBLESSED", "PROP-NAME-OK?"
 
-#endif				/* _P_PROPS_H */
-
+#endif /* !P_PROPS_H */

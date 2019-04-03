@@ -1,5 +1,5 @@
-#ifndef _INTERFACE_H
-#define _INTERFACE_H
+#ifndef INTERFACE_H
+#define INTERFACE_H
 
 #include <stddef.h>
 #include <time.h>
@@ -215,4 +215,4 @@ void spit_file(dbref player, const char *filename);
 void wall_and_flush(const char *msg);
 void wall_wizards(const char *msg);
 
-#endif				/* _INTERFACE_H */
+#endif /* !INTERFACE_H */

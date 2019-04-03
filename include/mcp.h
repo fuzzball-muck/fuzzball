@@ -1,8 +1,8 @@
 #include "config.h"
 
 #ifdef MCP_SUPPORT
-#ifndef _MCP_H
-#define _MCP_H
+#ifndef MCP_H
+#define MCP_H
 
 #define MCP_MESG_PREFIX		"#$#"
 #define MCP_QUOTE_PREFIX	"#$\""
@@ -114,5 +114,5 @@ void mcp_package_register(const char *pkgname, McpVer minver, McpVer maxver,
 int mcp_version_compare(McpVer v1, McpVer v2);
 McpVer mcp_version_select(McpVer min1, McpVer max1, McpVer min2, McpVer max2);
 
-#endif				/* _MCP_H */
-#endif
+#endif /* !MCP_H */
+#endif /* MCP_SUPPORT */

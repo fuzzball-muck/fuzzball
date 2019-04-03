@@ -1,5 +1,5 @@
-#ifndef _P_MATH_H
-#define _P_MATH_H
+#ifndef P_MATH_H
+#define P_MATH_H
 
 #include "interp.h"
 
@@ -45,4 +45,4 @@ void prim_notequal(PRIM_PROTOTYPE);
      "SETSEED", "XOR", "GETSEED", "++", "--", "ABS", "SIGN",   \
      "!=", "&", "|", "^", "<<"
 
-#endif				/* _P_MATH_H */
+#endif /* !P_MATH_H */

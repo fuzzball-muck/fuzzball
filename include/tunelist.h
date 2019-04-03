@@ -1,5 +1,5 @@
-#ifndef _TUNELIST_H
-#define _TUNELIST_H
+#ifndef TUNELIST_H
+#define TUNELIST_H
 
 #include <stddef.h>
 
@@ -506,4 +506,4 @@ struct tune_bool_entry tune_bool_list[] = {
     {NULL, NULL, NULL, 0, 0, NULL, 0, 0, 0}
 };
 
-#endif				/* _TUNELIST_H */
+#endif /* !TUNELIST_H */

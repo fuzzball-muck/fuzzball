@@ -6,8 +6,8 @@
  * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
  */
 
-#ifndef _TUNE_H
-#define _TUNE_H
+#ifndef TUNE_H
+#define TUNE_H
 
 #include <stdio.h>
 
@@ -469,4 +469,4 @@ void tune_save_parms_to_file(FILE * f);
  */
 int tune_setparm(dbref player, const char *parmname, const char *val, int security);
 
-#endif  /* _TUNE_H */
+#endif /* !TUNE_H */

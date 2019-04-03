@@ -1,5 +1,5 @@
-#ifndef _P_REGEX_H
-#define _P_REGEX_H
+#ifndef P_REGEX_H
+#define P_REGEX_H
 
 #include "interp.h"
 
@@ -17,4 +17,4 @@ void prim_regsplit_noempty(PRIM_PROTOTYPE);
 
 #define PRIMS_REGEX_NAMES "REGEXP", "REGSUB", "REGSPLIT", "REGSPLIT_NOEMPTY"
 
-#endif				/* _P_REGEX_H */
+#endif /* !P_REGEX_H */

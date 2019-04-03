@@ -1,5 +1,5 @@
-#ifndef _GAME_H
-#define _GAME_H
+#ifndef GAME_H
+#define GAME_H
 
 #include <stdio.h>
 
@@ -79,4 +79,4 @@ int init_game(const char *infile, const char *outfile);
 void panic(const char *);
 void process_command(int descr, dbref player, const char *command);
 
-#endif				/* _GAME_H */
+#endif /* !GAME_H */

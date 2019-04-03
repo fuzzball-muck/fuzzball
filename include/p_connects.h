@@ -1,5 +1,5 @@
-#ifndef _P_CONNECTS_H
-#define _P_CONNECTS_H
+#ifndef P_CONNECTS_H
+#define P_CONNECTS_H
 
 #include "interp.h"
 
@@ -56,4 +56,4 @@ void prim_descr_bufsize(PRIM_PROTOTYPE);
 	"DESCRLEASTIDLE", "DESCRMOSTIDLE", "DESCRSECURE?",        \
 	"DESCRBUFSIZE"
 
-#endif				/* _P_CONNECTS_H */
+#endif /* !P_CONNECTS_H */

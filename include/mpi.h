@@ -1,5 +1,5 @@
-#ifndef _MPI_H
-#define _MPI_H
+#ifndef MPI_H
+#define MPI_H
 
 #include "config.h"
 
@@ -20,4 +20,4 @@ char *do_parse_mesg(int descr, dbref player, dbref what, const char *inbuf,
 char *do_parse_prop(int descr, dbref player, dbref what, const char *propname,
 			   const char *abuf, char *outbuf, int buflen, int mesgtyp);
 
-#endif				/* _MPI_H */
+#endif /* !MPI_H */

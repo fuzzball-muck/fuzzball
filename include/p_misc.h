@@ -1,5 +1,5 @@
-#ifndef _P_MISC_H
-#define _P_MISC_H
+#ifndef P_MISC_H
+#define P_MISC_H
 
 #include "interp.h"
 
@@ -77,4 +77,4 @@ void prim_stats_array(PRIM_PROTOTYPE);
     "DEBUG_ON", "DEBUG_OFF", "DEBUG_LINE", "SYSTIME_PRECISE", \
     "READ_WANTS_NO_BLANKS", "STATS_ARRAY"
 
-#endif				/* _P_MISC_H */
+#endif /* !P_MISC_H */

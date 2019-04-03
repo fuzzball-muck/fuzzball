@@ -1,5 +1,5 @@
-#ifndef _FBTIME_H
-#define _FBTIME_H
+#ifndef FBTIME_H
+#define FBTIME_H
 
 #include <time.h>
 
@@ -22,4 +22,4 @@ void ts_modifyobject(dbref thing);
 void ts_newobject(dbref thing);
 void ts_useobject(dbref thing);
 
-#endif				/* _FBTIME_H */
+#endif /* !FBTIME_H */
