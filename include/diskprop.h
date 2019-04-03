@@ -21,4 +21,4 @@ void unloadprops_with_prejudice(dbref obj);
 void undirtyprops(dbref obj);
 
 #endif /* !DISKPROP_H */
-#endif
+#endif /* DISKBASE */
