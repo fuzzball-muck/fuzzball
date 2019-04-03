@@ -12,6 +12,7 @@
 #include <stdio.h>
 
 #include "config.h"
+#include "fbmuck.h"
 
 /*
  * Property data union to support all available property types.
