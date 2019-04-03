@@ -248,6 +248,7 @@ extern int tp_log_failed_commands;
 extern int tp_log_interactive;
 extern int tp_log_programs;
 extern int tp_m3_huh;
+extern int tp_mpi_continue_after_logout;
 extern int tp_optimize_muf;
 extern int tp_periodic_program_purge;
 extern int tp_playermax;

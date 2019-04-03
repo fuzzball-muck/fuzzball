@@ -293,6 +293,9 @@
 /* only possibly more bizzarre. The users will probably love it. */
 #define DO_MPI_PARSING 1
 
+/* Continue executing MPI after logout. */
+#define MPI_CONTINUE_AFTER_LOGOUT 0
+
 /* Only allow killing people with the Kill_OK bit. */
 #define RESTRICT_KILL 1
 

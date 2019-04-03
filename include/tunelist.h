@@ -368,6 +368,7 @@ int tp_log_failed_commands;
 int tp_log_interactive;
 int tp_log_programs;
 int tp_m3_huh;
+int tp_mpi_continue_after_logout;
 int tp_optimize_muf;
 int tp_periodic_program_purge;
 int tp_playermax;
@@ -475,6 +476,8 @@ struct tune_bool_entry tune_bool_list[] = {
      "Moving things act like player", "", 1, SECURE_THING_MOVEMENT},
     {"MPI", "do_mpi_parsing", &tp_do_mpi_parsing, 0, MLEV_WIZARD,
      "Parse MPI strings in messages", "", 1, DO_MPI_PARSING},
+    {"MPI", "mpi_continue_after_logout", &tp_mpi_continue_after_logout, 0, MLEV_WIZARD,
+     "Continue executing MPI after logout", "", 1, MPI_CONTINUE_AFTER_LOGOUT},
     {"MUF", "consistent_lock_source", &tp_consistent_lock_source, 0, MLEV_WIZARD,
      "Maintain trigger as lock source in TESTLOCK", "", 1, CONSISTENT_LOCK_SOURCE},
     {"MUF", "expanded_debug_trace", &tp_expanded_debug, 0, MLEV_WIZARD,
