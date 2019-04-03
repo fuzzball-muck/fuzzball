@@ -1,5 +1,5 @@
-#ifndef _DEFAULTS_H
-#define _DEFAULTS_H
+#ifndef DEFAULTS_H
+#define DEFAULTS_H
 
 #define DUMPWARN_MESG   "## Game will pause to save the database in a few minutes. ##"
 #define DUMPING_MESG    "## Pausing to save database. This may take a while. ##"
@@ -409,4 +409,4 @@
 #define LOG_FILE "logs/fbmuck"			/* Log stdout to ...		*/
 #define LOG_ERR_FILE "logs/fbmuck.err"		/* Log stderr to ...	*/
 
-#endif				/* _DEFAULTS_H */
+#endif /* !DEFAULTS_H */
