@@ -1,5 +1,5 @@
-#ifndef _PREDICATES_H
-#define _PREDICATES_H
+#ifndef PREDICATES_H
+#define PREDICATES_H
 
 #include "config.h"
 #include "db.h"
@@ -12,4 +12,4 @@ int could_doit(int descr, dbref player, dbref thing);
 int exit_loop_check(dbref source, dbref dest);
 int parent_loop_check(dbref source, dbref dest);
 
-#endif				/* _PREDICATES_H */
+#endif /* !PREDICATES_H */
