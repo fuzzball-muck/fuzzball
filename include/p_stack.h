@@ -1,5 +1,5 @@
-#ifndef _P_STACK_H
-#define _P_STACK_H
+#ifndef P_STACK_H
+#define P_STACK_H
 
 #include "interp.h"
 
@@ -83,4 +83,4 @@ void prim_trypop(PRIM_PROTOTYPE);	/* -- */
 
 #define PRIMS_INTERNAL_NAMES " FORITER", " FORPOP", " TRYPOP"
 
-#endif				/* _P_STACK_H */
+#endif /* !P_STACK_H */
