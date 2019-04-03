@@ -6,8 +6,8 @@
  * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
  */
 
-#ifndef _ARRAY_H
-#define _ARRAY_H
+#ifndef ARRAY_H
+#define ARRAY_H
 
 #include <stddef.h>  /* for offsetof() */
 #include "config.h"
@@ -596,4 +596,4 @@ void array_init_active_list(stk_array_list *list);
  */
 void array_free_all_on_list(stk_array_list *list);
 
-#endif      /* _ARRAY_H */
+#endif /* !ARRAY_H */
