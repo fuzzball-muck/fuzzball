@@ -5,8 +5,8 @@
  * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
  */
 
-#ifndef _DB_H
-#define _DB_H
+#ifndef DB_H
+#define DB_H
 
 #include <stdio.h>
 #include <time.h>
@@ -1029,4 +1029,4 @@ void unparse_object(dbref player, dbref object, char *buffer, size_t size);
  */
 void unset_source(dbref action);
 
-#endif /* _DB_H */
+#endif /* !DB_H */
