@@ -1,5 +1,5 @@
-#ifndef _PLAYER_H
-#define _PLAYER_H
+#ifndef PLAYER_H
+#define PLAYER_H
 
 #include "config.h"
 
@@ -17,4 +17,4 @@ void toad_player(int descr, dbref player, dbref victim, dbref recipient);
 void set_password(dbref player, const char *password);
 void set_password_raw(dbref player, const char *password);
 
-#endif				/* _PLAYER_H */
+#endif /* !PLAYER_H */
