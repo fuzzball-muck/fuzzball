@@ -893,7 +893,11 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
 			    if (oper3->type != PROG_OBJECT) {
 				abort_message = "Format specified object not found.";
                                 goto cleanup_and_abort;
-                            } 
+                            }
+			    if (!valid_object(oper3) && oper3->data.objref != NOTHING) {
+                                abort_message = "Format specified object not found.";
+                                goto cleanup_and_abort;
+                            }
 			    ref = oper3->data.objref;
 			    CHECKREMOTE(ref);
 			    if (ref != NOTHING && NAME(ref)) {
