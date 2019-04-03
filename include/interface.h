@@ -6,6 +6,7 @@
 
 #include "autoconf.h"
 #include "config.h"
+#include "fbmuck.h"
 
 #ifdef MCP_SUPPORT
 #include "mcp.h"
