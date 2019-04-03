@@ -1,5 +1,5 @@
-#ifndef _MSGPARSE_H
-#define _MSGPARSE_H
+#ifndef MSGPARSE_H
+#define MSGPARSE_H
 
 #include <time.h>
 #include "config.h"
@@ -64,4 +64,4 @@ const char *safegetprop(dbref player, dbref what, dbref perms, const char *inbuf
 const char *safegetprop_strict(dbref player, dbref what, dbref perms, const char *inbuf, int mesgtyp, int *blessed);
 int safeputprop(dbref obj, char *buf, char *val, int mesgtyp);
 
-#endif				/* _MSGPARSE_H */
+#endif /* !MSGPARSE_H */
