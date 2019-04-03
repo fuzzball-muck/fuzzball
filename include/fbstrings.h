@@ -6,8 +6,8 @@
  * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
  */
 
-#ifndef _FBSTRINGS_H
-#define _FBSTRINGS_H
+#ifndef FBSTRINGS_H
+#define FBSTRINGS_H
 
 #include <stddef.h>
 
@@ -597,4 +597,4 @@ void toupper_string(char **s);
  */
 int truestr(const char *buf);
 
-#endif   /* _FBSTRINGS_H */
+#endif /* !FBSTRINGS_H */
