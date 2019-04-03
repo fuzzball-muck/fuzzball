@@ -157,8 +157,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef int dbref;
-
 #ifdef DEBUG
 # undef NDEBUG
 #include <assert.h>
