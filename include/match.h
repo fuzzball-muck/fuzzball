@@ -1,5 +1,5 @@
-#ifndef _MATCH_H
-#define _MATCH_H
+#ifndef MATCH_H
+#define MATCH_H
 
 #include "config.h"
 
@@ -42,4 +42,4 @@ dbref match_result(struct match_data *md);
 void match_rmatch(dbref, struct match_data *md);
 dbref noisy_match_result(struct match_data *md);
 
-#endif				/* _MATCH_H */
+#endif /* !MATCH_H */
