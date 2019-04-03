@@ -1,5 +1,5 @@
-#ifndef _TIMEQUEUE_H
-#define _TIMEQUEUE_H
+#ifndef TIMEQUEUE_H
+#define TIMEQUEUE_H
 
 #include <time.h>
 
@@ -45,4 +45,4 @@ int read_event_notify(int descr, dbref player, const char *cmd);
 int scan_instances(dbref program);
 struct frame *timequeue_pid_frame(int pid);
 
-#endif				/* _TIMEQUEUE_H */
+#endif /* !TIMEQUEUE_H */
