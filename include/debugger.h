@@ -6,8 +6,8 @@
  * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
  */
 
-#ifndef _DEBUGGER_H
-#define _DEBUGGER_H
+#ifndef DEBUGGER_H
+#define DEBUGGER_H
 
 #include "config.h"
 
@@ -79,4 +79,4 @@ int muf_debugger(int descr, dbref player, dbref program, const char *text, struc
  */
 char *show_line_prims(dbref program, struct inst *pc, int maxprims, int markpc);
 
-#endif /* _DEBUGGER_H */
+#endif /* !DEBUGGER_H */
