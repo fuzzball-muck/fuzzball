@@ -10,8 +10,8 @@
  * Most of the goodies that used to be here are now in @tune.
  */
 
-#ifndef _CONFIG_H
-#define _CONFIG_H
+#ifndef CONFIG_H
+#define CONFIG_H
 
 #include "autoconf.h"
 
@@ -235,4 +235,4 @@
 # include <unistd.h>
 #endif
 
-#endif				/* _CONFIG_H */
+#endif /* !CONFIG_H */
