@@ -1,5 +1,5 @@
-#ifndef _EDIT_H
-#define _EDIT_H
+#ifndef EDIT_H
+#define EDIT_H
 
 #include <stdio.h>
 
@@ -47,4 +47,4 @@ struct line *read_program(dbref i);
 void write_program(struct line *first, dbref i);
 
 
-#endif				/* _EDIT_H */
+#endif /* !EDIT_H */
