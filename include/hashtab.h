@@ -1,5 +1,5 @@
-#ifndef _HASHTAB_H
-#define _HASHTAB_H
+#ifndef HASHTAB_H
+#define HASHTAB_H
 
 #include "config.h"
 
@@ -31,4 +31,4 @@ int free_hash(const char *name, hash_tab * table, unsigned size);
 unsigned int hash(const char *s, unsigned int hash_size);
 void kill_hash(hash_tab * table, unsigned size, int freeptrs);
 
-#endif				/* _HASHTAB_H */
+#endif /* !HASHTAB_H */
