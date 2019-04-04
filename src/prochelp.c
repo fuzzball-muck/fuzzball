@@ -8,9 +8,6 @@
 #include "tune.h"
 #include "tunelist.h"
 
-#undef malloc
-#undef strdup
-
 #define HRULE_TEXT "----------------------------------------------------------------------------"
 
 #define HTML_PAGE_HEAD     	"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">\n<html lang=\"en\">\n<head>\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\n<meta name=\"generator\" content=\"prochelp\">\n<title>%s</title>\n</head>\n<body>\n<h1>%s</h1>\n<address>by %s</address>\n<ul>\n<li><a href=\"#AlphaList\">Alphabetical List of Topics</a></li>\n<li><a href=\"#SectList\">List of Topics by Category</a></li>\n</ul>\n"
