@@ -4550,7 +4550,6 @@ Parameters available:
  (bool) starttls_allow            - Enable TELNET STARTTLS encryption on plaintext port
  (bool) idleboot                  - Enable booting of idle players
  (bool) idle_ping_enable          - Enable server side keepalive pings
- (bool) restrict_kill             - Restrict kill command to players set Kill_OK
  (bool) allow_listeners           - Allow programs to listen to player output
  (bool) allow_listeners_env       - Allow listeners down environment
  (bool) allow_listeners_obj       - Allow objects to be listeners

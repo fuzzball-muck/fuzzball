@@ -749,7 +749,7 @@ db_write(FILE * f)
         FLAGS(i) &= ~OBJECT_CHANGED;    /* clear changed flag */
     }
 
-    fseek(f, 0L, 2);
+    fseek(f, 0L, SEEK_END);
     putstring(f, "***END OF DUMP***");
 
     fflush(f);
@@ -788,7 +788,7 @@ getproperties(FILE * f, dbref obj, const char *pdir)
         return;
 
     /* seek to the proper file position. */
-    fseek(f, DBFETCH(obj)->propsfpos, 0);
+    fseek(f, DBFETCH(obj)->propsfpos, SEEK_SET);
 #endif
 
     /* get rid of first line */

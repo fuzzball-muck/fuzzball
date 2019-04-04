@@ -23,15 +23,12 @@
 
 #define HTML_SECTIDX_BEGIN	"<ul>\n"
 #define HTML_SECTIDX_ENTRY	"    <li><a href=\"#%s\">%s</a></li>\n"
-#define HTML_SECTIDX_NEWROW	"<!-- HTML_SECTIDX_NEWROW -->\n"
 #define HTML_SECTIDX_END	"</ul>\n\n"
 
 #define HTML_INDEX_BEGIN	"<h2 id=\"AlphaList\">Alphabetical List of Topics</h2>\n"
 #define HTML_IDXGROUP_BEGIN	"<h3>%s</h3>\n<ul>\n"
 #define HTML_IDXGROUP_ENTRY	"    <li><a href=\"#%s\">%s</a></li>\n"
-#define HTML_IDXGROUP_NEWROW	"<!-- HTML_IDXGROUP_NEWROW -->\n"
 #define HTML_IDXGROUP_END		"</ul>\n\n"
-#define HTML_INDEX_END		""
 
 #define HTML_TOPICHEAD		"<h3 id=\"%s\">"
 #define HTML_TOPICHEAD_BREAK	"<br>\n"
@@ -219,7 +216,6 @@ print_section_topics(FILE * f, FILE * hf, const char *whichsect)
     char buf3[256];
     int cnt;
     int width;
-    int hcol;
     int cols;
     int longest;
     char *currsect;
@@ -252,7 +248,6 @@ print_section_topics(FILE * f, FILE * hf, const char *whichsect)
 	if (!strncasecmp(whichsect, sptr->section, strlen(whichsect))) {
 	    currsect = sptr->section;
 	    cnt = 0;
-	    hcol = 0;
 	    buf[0] = '\0';
 	    strcpyn(sectname, sizeof(sectname), currsect);
 	    sectptr = strchr(sectname, '|');
@@ -279,11 +274,6 @@ print_section_topics(FILE * f, FILE * hf, const char *whichsect)
 		if (!strcasecmp(currsect, ptr->section)) {
 		    ptr->printed++;
 		    cnt++;
-		    hcol++;
-		    if (hcol > cols) {
-			fprintf(hf, HTML_SECTIDX_NEWROW);
-			hcol = 1;
-		    }
 		    escape_html(buf3, sizeof(buf3), ptr->topic);
 		    fprintf(hf, HTML_SECTIDX_ENTRY, buf3, buf3);
 		    if (cnt == cols) {
@@ -364,7 +354,6 @@ print_topics(FILE * f, FILE * hf)
     char *divpos;
     int cnt = 0;
     int width;
-    int hcol = 0;
     int cols;
     int len;
     int longest;
@@ -414,16 +403,10 @@ print_topics(FILE * f, FILE * hf)
 	    fprintf(hf, HTML_IDXGROUP_BEGIN, buf);
 	    buf[0] = '\0';
 	    cnt = 0;
-	    hcol = 0;
 	    for (struct topiclist *ptr = topichead; ptr; ptr = ptr->next) {
 		firstletter = toupper(ptr->topic[0]);
 		if (firstletter == alph || (!isalpha(alph) && !isalpha(firstletter))) {
 		    cnt++;
-		    hcol++;
-		    if (hcol > cols) {
-			fprintf(hf, HTML_IDXGROUP_NEWROW);
-			hcol = 1;
-		    }
 		    escape_html(buf3, sizeof(buf3), ptr->topic);
 		    fprintf(hf, HTML_IDXGROUP_ENTRY, /*(100 / cols), */ buf3, buf3);
 		    if (cnt == cols) {
@@ -445,7 +428,6 @@ print_topics(FILE * f, FILE * hf)
 	    fprintf(hf, HTML_IDXGROUP_END);
 	}
     }
-    fprintf(hf, "%s", HTML_INDEX_END);
     fprintf(f, " \nUse '%s <topicname>' to get more information on a topic.\n", doccmd);
 }
 
@@ -741,7 +723,7 @@ main(int argc, char **argv)
     }
 
     cols = 78 / (find_topics(infile) + 1);
-    fseek(infile, 0L, 0);
+    fseek(infile, 0L, SEEK_SET);
 
     process_lines(infile, outfile, htmlfile);
 

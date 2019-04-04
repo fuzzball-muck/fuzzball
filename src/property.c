@@ -1530,7 +1530,7 @@ db_get_single_prop(FILE * f, dbref obj, long pos, PropPtr pnode, const char *pdi
      * this given property.
      */
     if (pos) {
-        fseek(f, pos, 0);
+        fseek(f, pos, SEEK_SET);
     } else if (do_diskbase_propvals) {
         tpos = ftell(f);
     }
@@ -1888,7 +1888,7 @@ db_dump_props_rec(dbref obj, FILE * f, const char *dir, PropPtr p)
     }
 
     if (propfetch(obj, p)) {
-        fseek(f, 0L, 2);
+        fseek(f, 0L, SEEK_END);
     }
 #endif
 
