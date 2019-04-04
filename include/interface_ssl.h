@@ -112,7 +112,7 @@ static const ssl_logging_t ssl_logging_stream = SSL_LOGGING_DEBUG;
 static const ssl_logging_t ssl_logging_connect = SSL_LOGGING_WARN;
 // SSL logging level for socket reads/writes
 static const ssl_logging_t ssl_logging_stream = SSL_LOGGING_NONE;
-#endif // DEBUG_SSL_LOG_ALL
+#endif /* DEBUG_SSL_LOG_ALL */
 
 // SSL protocol management
 int ssl_protocol_from_string(const char *);
