@@ -5,7 +5,7 @@
 #include "interface_ssl.h"
 #include "log.h"
 
-/*
+/**
  * Converts an SSL protocol version string to a version number
  *
  * Inspired by 'set_protocol_version' and 'protocol_from_string' in
@@ -26,7 +26,7 @@ ssl_protocol_from_string(const char *value)
 	return -1;
 }
 
-/*
+/**
  * Sets the minimum SSL protocol version given a version string
  *
  * If None, no change will be made to the SSL context.  If version string is invalid or unsupported
@@ -101,7 +101,7 @@ set_ssl_ctx_min_version(SSL_CTX * ssl_ctx, const char *min_version)
 	}
 }
 
-/*
+/**
  * Checks for the last SSL error, if any, recording it to the log
  *
  * If log_all is set to 0, this ignores any usually irrelevant error conditions to avoid spamming
