@@ -1,5 +1,5 @@
-#ifndef _P_DB_H
-#define _P_DB_H
+#ifndef P_DB_H
+#define P_DB_H
 
 #include "interp.h"
 
@@ -103,4 +103,4 @@ void prim_toadplayer(PRIM_PROTOTYPE);
     "SETLINKS_ARRAY", "TOADPLAYER", "SUPPLICANT",	   \
     "PNAME_HISTORY"
 
-#endif				/* _P_DB_H */
+#endif /* !P_DB_H */

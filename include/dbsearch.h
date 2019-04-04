@@ -7,8 +7,8 @@
  * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
  */
 
-#ifndef _DBSEARCH_H
-#define _DBSEARCH_H
+#ifndef DBSEARCH_H
+#define DBSEARCH_H
 
 #include <stddef.h>
 
@@ -90,4 +90,4 @@ int checkflags(dbref what, struct flgchkdat check);
  */
 int init_checkflags(dbref player, const char *flags, struct flgchkdat *check);
 
-#endif      /* _DBSEARCH_H */
+#endif /* !DBSEARCH_H */

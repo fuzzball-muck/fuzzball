@@ -6,10 +6,11 @@
  * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
  */
 
-#ifndef _COMMANDS_H
-#define _COMMANDS_H
+#ifndef COMMANDS_H
+#define COMMANDS_H
 
 #include "config.h"
+#include "fbmuck.h"
 
 /*
  * This file is grouped alphabetically just to make it slightly easier to find
@@ -1642,4 +1643,4 @@ void do_wall(dbref player, const char *message);
 void do_whisper(int descr, dbref player, const char *arg1, const char *arg2);
 
 
-#endif      /* _COMMANDS_H */
+#endif /* !COMMANDS_H */

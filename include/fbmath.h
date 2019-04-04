@@ -1,5 +1,5 @@
-#ifndef _FBMATH_H
-#define _FBMATH_H
+#ifndef FBMATH_H
+#define FBMATH_H
 
 #include <float.h>
 #include <math.h>
@@ -36,4 +36,4 @@ void MD5hex(void *dest, const void *orig, size_t len);
 int no_good(double test);
 uint32_t rnd(void *buffer);
 
-#endif				/* _FBMATH_H */
+#endif /* !FBMATH_H */

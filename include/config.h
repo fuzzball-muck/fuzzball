@@ -10,8 +10,8 @@
  * Most of the goodies that used to be here are now in @tune.
  */
 
-#ifndef _CONFIG_H
-#define _CONFIG_H
+#ifndef CONFIG_H
+#define CONFIG_H
 
 #include "autoconf.h"
 
@@ -150,23 +150,12 @@
 
 /*
  * Include all the good standard headers here.
+ * Not anymore!
+ * TODO: figure out what to do with the RANDOM() ifdef and stdlib.h
+ * TODO: figure out how to resolve conflict when string.h and crt_malloc.h are included in "wrong" order
  */
-#include <ctype.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <limits.h>
-#include <signal.h>
-#include <stdarg.h>
-#include <stdbool.h>
-#include <stdint.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <time.h>
-
-typedef int dbref;
 
 #ifdef DEBUG
 # undef NDEBUG
@@ -178,9 +167,9 @@ typedef int dbref;
 #define DEBUGPRINT(...)
 #endif				/* DEBUG */
 
-#ifdef HAVE_RANDOM
-# define SRANDOM(seed)	srandom((seed))
-# define RANDOM()	random()
+#ifdef HAVE_ARC4RANDOM_UNIFORM
+# define SRANDOM(seed)	srand((seed))
+# define RANDOM()	arc4random_uniform((unsigned)RAND_MAX + 1)
 #else
 # define SRANDOM(seed)	srand((seed))
 # define RANDOM()	rand()
@@ -246,4 +235,4 @@ typedef int dbref;
 # include <unistd.h>
 #endif
 
-#endif				/* _CONFIG_H */
+#endif /* !CONFIG_H */

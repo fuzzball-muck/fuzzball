@@ -1,5 +1,5 @@
-#ifndef _INTERP_H
-#define _INTERP_H
+#ifndef INTERP_H
+#define INTERP_H
 
 #include <stddef.h>
 #include <time.h>
@@ -381,4 +381,4 @@ int valid_player(struct inst *oper);
 #include "p_mcp.h"
 #include "p_strings.h"
 #include "p_regex.h"
-#endif				/* _INTERP_H */
+#endif /* !INTERP_H */

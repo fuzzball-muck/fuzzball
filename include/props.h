@@ -6,12 +6,13 @@
  * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
  */
 
-#ifndef _PROPS_H
-#define _PROPS_H
+#ifndef PROPS_H
+#define PROPS_H
 
 #include <stdio.h>
 
 #include "config.h"
+#include "fbmuck.h"
 
 /*
  * Property data union to support all available property types.
@@ -1342,4 +1343,4 @@ void untouchprops_incremental(int limit);
  */
 int is_valid_propname(const char* pname);
 
-#endif				/* _PROPS_H */
+#endif /* !PROPS_H */

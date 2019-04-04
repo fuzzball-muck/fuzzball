@@ -1,5 +1,5 @@
-#ifndef _P_ERROR_H
-#define _P_ERROR_H
+#ifndef P_ERROR_H
+#define P_ERROR_H
 
 #include "interp.h"
 
@@ -20,4 +20,4 @@ void prim_error_num(PRIM_PROTOTYPE);
 #define PRIMS_ERROR_NAMES "CLEAR","CLEAR_ERROR","ERROR?","SET_ERROR",     \
         "IS_SET?","ERROR_STR","ERROR_NAME","ERROR_BIT","ERROR_NUM"
 
-#endif				/* _P_ERROR_H */
+#endif /* !P_ERROR_H */

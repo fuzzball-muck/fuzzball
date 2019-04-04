@@ -1,5 +1,5 @@
-#ifndef _P_STRINGS_H
-#define _P_STRINGS_H
+#ifndef P_STRINGS_H
+#define P_STRINGS_H
 
 #include "interp.h"
 
@@ -80,4 +80,4 @@ void prim_pose_separatorp(PRIM_PROTOTYPE);
 	"INSTRING", "RINSTRING", "MD5HASH", "SHA1HASH", "STRIP",   \
 	"TELL", "OTELL", "POSE-SEPARATOR?"
 
-#endif				/* _P_STRINGS_H */
+#endif /* !P_STRINGS_H */

@@ -5,13 +5,14 @@
  * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
  */
 
-#ifndef _DB_H
-#define _DB_H
+#ifndef DB_H
+#define DB_H
 
 #include <stdio.h>
 #include <time.h>
 
 #include "config.h"
+#include "fbmuck.h"
 
 /* This is used to identify the database dump file */
 #define DB_VERSION_STRING "***Foxen9 TinyMUCK DUMP Format***"
@@ -1028,4 +1029,4 @@ void unparse_object(dbref player, dbref object, char *buffer, size_t size);
  */
 void unset_source(dbref action);
 
-#endif /* _DB_H */
+#endif /* !DB_H */

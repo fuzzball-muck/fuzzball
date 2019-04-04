@@ -1,8 +1,8 @@
 #include "config.h"
 
 #ifdef MCP_SUPPORT
-#ifndef _P_MCP_H
-#define _P_MCP_H
+#ifndef P_MCP_H
+#define P_MCP_H
 
 #include "interp.h"
 
@@ -35,5 +35,5 @@ void prim_gui_ctrl_command(PRIM_PROTOTYPE);
 		"GUI_VALUE_SET", "GUI_CTRL_CREATE", "GUI_CTRL_COMMAND", \
 		"GUI_DLOG_CREATE", "MCP_REGISTER_EVENT"
 
-#endif				/* _P_MCP_H */
-#endif
+#endif /* !P_MCP_H */
+#endif /* MCP_SUPPORT */

@@ -6,8 +6,8 @@
  * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
  */
 
-#ifndef _BOOLEXP_H
-#define _BOOLEXP_H
+#ifndef BOOLEXP_H
+#define BOOLEXP_H
 
 #include <stddef.h>
 
@@ -177,4 +177,4 @@ int test_lock_false_default(int descr, dbref player, dbref thing, const char *lo
  */ 
 const char *unparse_boolexp(dbref player, struct boolexp *b, int fullname);
 
-#endif      /* _BOOLEXP_H */
+#endif /* !BOOLEXP_H */

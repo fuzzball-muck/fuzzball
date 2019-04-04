@@ -1,5 +1,5 @@
-#ifndef _MUFEVENT_H
-#define _MUFEVENT_H
+#ifndef MUFEVENT_H
+#define MUFEVENT_H
 
 #include <stddef.h>
 
@@ -24,4 +24,4 @@ int muf_event_read_notify(int descr, dbref player, const char *cmd);
 void muf_event_register_specific(dbref player, dbref prog, struct frame *fr, size_t eventcount,
 				 char **eventids);
 
-#endif				/* _MUFEVENT_H */
+#endif /* !MUFEVENT_H */

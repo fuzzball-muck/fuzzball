@@ -6,7 +6,7 @@
   if they wish.
  
   There are three line formats: header, line, and footer. See "man
-  fmtstring" for directions on how to write line formats. Refresh6 actually
+  fmtstring" for directions on how to write line formats. This program actually
   uses array_fmtstrings, so each variable has a namein brackets between the
   % and the type character. In "header" and "footer", the variables are:
  
@@ -39,7 +39,7 @@
                  string if the player is asleep or less than two minutes idle.
           %[n]s  The player's name. If the player is asleep or idle, it
                  also includes an "[asleep]" or "[2m idle]" tag after.
-      %[doing]s  The player's @doing, if e has one. Shown as the value of the
+      %[doing]s  The player's @doing, if he has one. Shown as the value of the
                  _prefs/ws/doing prop from up the environment, with "<my
                  pretty doing>" replaced by the user's @doing setting.
      %[status]s  The values of these properties.
@@ -282,7 +282,7 @@ $endif
  
  
     me @ prog controls not if
-        "You must be a wizard or own the Refresh6 program object to #setup." .tell
+        "You must be a wizard or own the program object to #setup." .tell
         exit
     then  (  )
  
@@ -298,7 +298,6 @@ $endif
  
     prog "_stat2color/IC"  "\[[32m" setprop
     prog "_stat2color/OOC" "\[[33m" setprop
-    prog "_stat2color/WIZ" "\[[36m" setprop
  
     #0 "_prefs/ws/color/his"  "\[[36m" setprop
     #0 "_prefs/ws/color/hers" "\[[35m" setprop

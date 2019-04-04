@@ -41,8 +41,8 @@
 /* Did the user specify debugging assertions? */
 /* #undef DEBUG */
 
-/* Define to 1 if you have the `random' function. */
-/* #undef HAVE_RANDOM */
+/* Define to 1 if you have the `arc4random_uniform' function. */
+/* #undef HAVE_ARC4RANDOM_UNIFORM */
 
 /* Define to 1 if you have the <stdint.h> header file. */
 /* #undef HAVE_STDINT_H */

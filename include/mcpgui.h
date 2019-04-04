@@ -1,8 +1,8 @@
 #include "config.h"
 
 #ifdef MCP_SUPPORT
-#ifndef _MCPGUI_H
-#define _MCPGUI_H
+#ifndef MCPGUI_H
+#define MCPGUI_H
 
 #include "interp.h"
 #include "mcp.h"
@@ -137,5 +137,5 @@ void muf_dlog_add(struct frame *fr, const char *dlogid);
 void muf_dlog_purge(struct frame *fr);
 void muf_dlog_remove(struct frame *fr, const char *dlogid);
 
-#endif				/* _MCPGUI_H */
-#endif
+#endif /* !MCPGUI_H */
+#endif /* MCP_SUPPORT */

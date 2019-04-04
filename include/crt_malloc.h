@@ -9,12 +9,13 @@
  *
  * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
  */
-#ifndef _CRT_MALLOC_H
-#define _CRT_MALLOC_H
+#ifndef CRT_MALLOC_H
+#define CRT_MALLOC_H
 
 #include <stddef.h>
 
 #include "config.h"
+#include "fbmuck.h"
 
 /* This is a define for some compilers */
 #undef strdup
@@ -144,4 +145,4 @@ void CrT_summarize(dbref player);
  */
 void CrT_summarize_to_file(const char *file, const char *comment);
 
-#endif /* _CRT_MALLOC_H */
+#endif /* !CRT_MALLOC_H */

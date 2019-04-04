@@ -5,12 +5,13 @@
  * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
  */
 
-#ifndef _COMPILE_H
-#define _COMPILE_H
+#ifndef COMPILE_H
+#define COMPILE_H
 
 #include <stddef.h>
 
 #include "config.h"
+#include "fbmuck.h"
 
 /*
  * @TODO free_prog_real is a static in compile.c
@@ -155,4 +156,4 @@ size_t size_prog(dbref prog);
  */
 void uncompile_program(dbref i);
 
-#endif /* _COMPILE_H */
+#endif /* !COMPILE_H */

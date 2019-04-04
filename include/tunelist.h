@@ -1,5 +1,5 @@
-#ifndef _TUNELIST_H
-#define _TUNELIST_H
+#ifndef TUNELIST_H
+#define TUNELIST_H
 
 #include <stddef.h>
 
@@ -368,6 +368,7 @@ int tp_log_failed_commands;
 int tp_log_interactive;
 int tp_log_programs;
 int tp_m3_huh;
+int tp_mpi_continue_after_logout;
 int tp_optimize_muf;
 int tp_periodic_program_purge;
 int tp_playermax;
@@ -377,7 +378,6 @@ int tp_realms_control;
 int tp_recognize_null_command;
 int tp_registration;
 int tp_tab_input_replaced_with_space;
-int tp_restrict_kill;
 int tp_secure_who;
 int tp_secure_teleport;
 int tp_show_legacy_props;
@@ -434,8 +434,6 @@ struct tune_bool_entry tune_bool_list[] = {
      "", 1, IDLEBOOT},
     {"Idle Boot", "idle_ping_enable", &tp_idle_ping_enable, 0, MLEV_WIZARD,
      "Enable server side keepalive pings", "", 1, IDLE_PING_ENABLE},
-    {"Killing", "restrict_kill", &tp_restrict_kill, 0, MLEV_WIZARD,
-     "Restrict kill command to players set Kill_OK", "", 1, RESTRICT_KILL},
     {"Listeners", "allow_listeners", &tp_listeners, 0, MLEV_WIZARD,
      "Allow programs to listen to player output", "", 1, LISTENERS},
     {"Listeners", "allow_listeners_env", &tp_listeners_env, 0, MLEV_WIZARD,
@@ -475,6 +473,8 @@ struct tune_bool_entry tune_bool_list[] = {
      "Moving things act like player", "", 1, SECURE_THING_MOVEMENT},
     {"MPI", "do_mpi_parsing", &tp_do_mpi_parsing, 0, MLEV_WIZARD,
      "Parse MPI strings in messages", "", 1, DO_MPI_PARSING},
+    {"MPI", "mpi_continue_after_logout", &tp_mpi_continue_after_logout, 0, MLEV_WIZARD,
+     "Continue executing MPI after logout", "", 1, MPI_CONTINUE_AFTER_LOGOUT},
     {"MUF", "consistent_lock_source", &tp_consistent_lock_source, 0, MLEV_WIZARD,
      "Maintain trigger as lock source in TESTLOCK", "", 1, CONSISTENT_LOCK_SOURCE},
     {"MUF", "expanded_debug_trace", &tp_expanded_debug, 0, MLEV_WIZARD,
@@ -506,4 +506,4 @@ struct tune_bool_entry tune_bool_list[] = {
     {NULL, NULL, NULL, 0, 0, NULL, 0, 0, 0}
 };
 
-#endif				/* _TUNELIST_H */
+#endif /* !TUNELIST_H */

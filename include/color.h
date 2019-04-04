@@ -5,8 +5,8 @@
  * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
  */
 
-#ifndef _COLOR_H
-#define _COLOR_H
+#ifndef COLOR_H
+#define COLOR_H
 
 /* ANSI attributes and color codes */
 
@@ -38,4 +38,4 @@
 #define ANSI_BG_CYAN    "\033[46m"
 #define ANSI_BG_WHITE   "\033[47m"
 
-#endif      /* _COLOR_H */
+#endif /* !COLOR_H */

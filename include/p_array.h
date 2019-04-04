@@ -1,5 +1,5 @@
-#ifndef _P_ARRAY_H
-#define _P_ARRAY_H
+#ifndef P_ARRAY_H
+#define P_ARRAY_H
 
 #include "interp.h"
 
@@ -104,4 +104,4 @@ void prim_array_notify_secure(PRIM_PROTOTYPE);
 	"ARRAY_FILTER_FLAGS", "ARRAY_INTERPRET", "ARRAY_NOTIFY_SECURE", \
 	"ARRAY_DEFAULT_PINNING", "ARRAY_FILTER_LOCK"
 
-#endif				/* _P_ARRAY_H */
+#endif /* !P_ARRAY_H */

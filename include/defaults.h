@@ -1,5 +1,5 @@
-#ifndef _DEFAULTS_H
-#define _DEFAULTS_H
+#ifndef DEFAULTS_H
+#define DEFAULTS_H
 
 #define DUMPWARN_MESG   "## Game will pause to save the database in a few minutes. ##"
 #define DUMPING_MESG    "## Pausing to save database. This may take a while. ##"
@@ -293,6 +293,9 @@
 /* only possibly more bizzarre. The users will probably love it. */
 #define DO_MPI_PARSING 1
 
+/* Continue executing MPI after logout. */
+#define MPI_CONTINUE_AFTER_LOGOUT 0
+
 /* Only allow killing people with the Kill_OK bit. */
 #define RESTRICT_KILL 1
 
@@ -409,4 +412,4 @@
 #define LOG_FILE "logs/fbmuck"			/* Log stdout to ...		*/
 #define LOG_ERR_FILE "logs/fbmuck.err"		/* Log stderr to ...	*/
 
-#endif				/* _DEFAULTS_H */
+#endif /* !DEFAULTS_H */

@@ -1,5 +1,5 @@
-#ifndef _P_FLOAT_H
-#define _P_FLOAT_H
+#ifndef P_FLOAT_H
+#define P_FLOAT_H
 
 #include "interp.h"
 
@@ -49,4 +49,4 @@ void prim_diff3(PRIM_PROTOTYPE);
 	"PI", "INF", "ROUND", "DIST3D", "XYZ_TO_POLAR",     \
 	"POLAR_TO_XYZ", "DIFF3", "EPSILON", "FTOSTRC", "**"
 
-#endif				/* _P_FLOAT_H */
+#endif /* !P_FLOAT_H */

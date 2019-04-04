@@ -6,8 +6,8 @@
  * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
  */
 
-#ifndef _TUNE_H
-#define _TUNE_H
+#ifndef TUNE_H
+#define TUNE_H
 
 #include <stdio.h>
 
@@ -248,6 +248,7 @@ extern int tp_log_failed_commands;
 extern int tp_log_interactive;
 extern int tp_log_programs;
 extern int tp_m3_huh;
+extern int tp_mpi_continue_after_logout;
 extern int tp_optimize_muf;
 extern int tp_periodic_program_purge;
 extern int tp_playermax;
@@ -257,7 +258,6 @@ extern int tp_realms_control;
 extern int tp_recognize_null_command;
 extern int tp_registration;
 extern int tp_tab_input_replaced_with_space;
-extern int tp_restrict_kill;
 extern int tp_secure_teleport;
 extern int tp_secure_who;
 extern int tp_show_legacy_props;
@@ -294,10 +294,10 @@ extern struct tune_bool_entry tune_bool_list[];
  * This takes an object and a string of flags, and sets them on the object
  *
  * The tunestr can have the following characters in it.  Each corresponds
- * to a flag.  Unknown flags are ignored.  'W' (wizard) cannot be set and
+ * to a flag.  Unknown flags are ignored.  '0' and 'W' cannot be set and
  * will be ignored.
  *
- * 0 1 2 3 A B C D G H J K L M Q S V X Y O Z
+ * 1 2 3 A B C D G H J K L M O Q S V X Y Z
  *
  * Each corresponds to the first letter of the flag in question, with the
  * numbers being MUCKER levels.
@@ -469,4 +469,4 @@ void tune_save_parms_to_file(FILE * f);
  */
 int tune_setparm(dbref player, const char *parmname, const char *val, int security);
 
-#endif  /* _TUNE_H */
+#endif /* !TUNE_H */

@@ -970,7 +970,7 @@ dequeue_prog_real(dbref program, int killmode, const char *file, const int line)
 	    break;
 	}
 	if (killmode == 2) {
-	    if (tqhead->fr && tqhead->fr->multitask == BACKGROUND) {
+	    if ((tp_mpi_continue_after_logout && tqhead->typ == TQ_MPI_TYP) || (tqhead->fr && tqhead->fr->multitask == BACKGROUND)) {
 		break;
 	    }
 	} else if (killmode == 1) {
@@ -996,7 +996,7 @@ dequeue_prog_real(dbref program, int killmode, const char *file, const int line)
 		continue;
 	    }
 	    if (killmode == 2) {
-		if (ptr->fr && ptr->fr->multitask == BACKGROUND) {
+		if ((tp_mpi_continue_after_logout && ptr->typ == TQ_MPI_TYP) || (ptr->fr && ptr->fr->multitask == BACKGROUND)) {
 		    continue;
 		}
 	    } else if (killmode == 1) {
