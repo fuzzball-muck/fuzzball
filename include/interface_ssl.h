@@ -71,13 +71,13 @@
 // List of protocols supported at compile-time, used for error messages
 #define SSL_KNOWN_PROTOCOLS FB_SSL3_NAME FB_TLS1_NAME FB_TLS1_1_NAME FB_TLS1_2_NAME
 
-/// A single SSL protocol version
+// A single SSL protocol version
 struct ssl_protocol_version {
 	const char *name;
 	int version;
 };
 
-/// Valid SSL protocol versions
+// Valid SSL protocol versions
 static const struct ssl_protocol_version SSL_PROTOCOLS[] = {
 	{"None", 0},
 	{"SSLv3", FB_SSL3_VERSION},
@@ -89,7 +89,7 @@ static const struct ssl_protocol_version SSL_PROTOCOLS[] = {
 static const size_t SSL_PROTOCOLS_SIZE = (sizeof(SSL_PROTOCOLS) / sizeof(SSL_PROTOCOLS[0]));
 // End of lookup table
 
-/// SSL logging levels
+// SSL logging levels
 typedef enum {
 	SSL_LOGGING_NONE,
 	SSL_LOGGING_ERROR,
@@ -103,14 +103,14 @@ typedef enum {
  * TODO: This should be configurable at runtime, e.g. with an '@debug set ssl_logging' command.
  */
 #ifdef DEBUG_SSL_LOG_ALL
-/// SSL logging level for connection handling
+// SSL logging level for connection handling
 static const ssl_logging_t ssl_logging_connect = SSL_LOGGING_DEBUG;
-/// SSL logging level for socket reads/writes
+// SSL logging level for socket reads/writes
 static const ssl_logging_t ssl_logging_stream = SSL_LOGGING_DEBUG;
 #else
-/// SSL logging level for connection handling
+// SSL logging level for connection handling
 static const ssl_logging_t ssl_logging_connect = SSL_LOGGING_WARN;
-/// SSL logging level for socket reads/writes
+// SSL logging level for socket reads/writes
 static const ssl_logging_t ssl_logging_stream = SSL_LOGGING_NONE;
 #endif // DEBUG_SSL_LOG_ALL
 
