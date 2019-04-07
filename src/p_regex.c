@@ -48,7 +48,7 @@ muf_re_get(struct shared_string *pattern, int flags, const char **errmsg)
 	    pcre_free(re->re);
 
 	    if (re->pattern && (--re->pattern->links == 0))
-		free((void *) re->pattern);
+		free(re->pattern);
 	} else
 	    return re;
     }
@@ -142,22 +142,16 @@ prim_regexp(PRIM_PROTOTYPE)
 
 	if (((nu_val = new_array_packed(0, fr->pinning)) == NULL) ||
 	    ((nu_idx = new_array_packed(0, fr->pinning)) == NULL)) {
-	    if (nu_val != NULL)
-		array_free(nu_val);
-
-	    if (nu_idx != NULL)
-		array_free(nu_idx);
+            array_free(nu_val);
+            array_free(nu_idx);
 
 	    abort_interp("Out of memory");
 	}
     } else {
 	if (((nu_val = new_array_packed(matchcnt, fr->pinning)) == NULL) ||
 	    ((nu_idx = new_array_packed(matchcnt, fr->pinning)) == NULL)) {
-	    if (nu_val != NULL)
-		array_free(nu_val);
-
-	    if (nu_idx != NULL)
-		array_free(nu_idx);
+            array_free(nu_val);
+            array_free(nu_idx);
 
 	    abort_interp("Out of memory");
 	}

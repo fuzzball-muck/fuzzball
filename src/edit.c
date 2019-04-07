@@ -36,9 +36,7 @@
 static void
 free_line(struct line *l)
 {
-    if (l->this_line)
-        free((void *) l->this_line);
-
+    free((void *) l->this_line);
     free(l);
 }
 
@@ -186,10 +184,8 @@ purge_macro_tree(struct macrotable *node)
 	return;
     purge_macro_tree(node->left);
     purge_macro_tree(node->right);
-    if (node->name)
-	free(node->name);
-    if (node->definition)
-	free(node->definition);
+    free(node->name);
+    free(node->definition);
     free(node);
 }
 
@@ -208,20 +204,16 @@ erase_node(struct macrotable *oldnode, struct macrotable *node,
 	    oldnode->left = node->left;
 	    if (node->right)
 		grow_macro_tree(mtop, node->right);
-	    if (node->name)
-		free(node->name);
-	    if (node->definition)
-		free(node->definition);
+            free(node->name);
+            free(node->definition);
 	    free(node);
 	    return 1;
 	} else {
 	    oldnode->right = node->right;
 	    if (node->left)
 		grow_macro_tree(mtop, node->left);
-	    if (node->name)
-		free(node->name);
-	    if (node->definition)
-		free(node->definition);
+            free(node->name);
+            free(node->definition);
 	    free(node);
 	    return 1;
 	}
@@ -240,10 +232,8 @@ kill_macro(const char *macroname, dbref player, struct macrotable **mtop)
 	*mtop = whichway ? (*mtop)->left : (*mtop)->right;
 	if ((*mtop) && (whichway ? macrotemp->right : macrotemp->left))
 	    grow_macro_tree((*mtop), whichway ? macrotemp->right : macrotemp->left);
-	if (macrotemp->name)
-	    free(macrotemp->name);
-	if (macrotemp->definition)
-	    free(macrotemp->definition);
+        free(macrotemp->name);
+        free(macrotemp->definition);
 	free(macrotemp);
 	return (1);
     } else if (erase_node((*mtop), (*mtop), macroname, (*mtop)))
@@ -769,8 +759,7 @@ editor(int descr, dbref player, const char *command)
 		}
 	    }
 	    for (; i >= 0; i--) {
-		if (word[i])
-		    free((void *) word[i]);
+                free((void *) word[i]);
 	    }
 	    return;
 	}
@@ -778,8 +767,7 @@ editor(int descr, dbref player, const char *command)
 	if (arg[i] < 0) {
 	    notify(player, "Negative arguments not allowed!");
 	    for (; i >= 0; i--) {
-		if (word[i])
-		    free((void *) word[i]);
+                free((void *) word[i]);
 	    }
 	    return;
 	}
@@ -851,8 +839,7 @@ editor(int descr, dbref player, const char *command)
 	}
     }
     for (; i >= 0; i--) {
-	if (word[i])
-	    free((void *) word[i]);
+        free((void *) word[i]);
     }
 }
 

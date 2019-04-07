@@ -105,9 +105,7 @@ do_dump(dbref player, const char *newfile)
 #else
     if (*newfile) {
 #endif      /* GOD_PRIV */
-        if (dumpfile)
-            free((void *) dumpfile);
-
+        free((void *) dumpfile);
         dumpfile = alloc_string(newfile);
         snprintf(buf, sizeof(buf), "Dumping to file %s...", dumpfile);
     } else {
@@ -217,7 +215,7 @@ dump_database_internal(void)
 	    perror(tmpfile);
 
 #ifdef DISKBASE
-	free((void *) in_filename);
+	free(in_filename);
 	in_filename = strdup(dumpfile);
 	if ((input_file = fopen(in_filename, "rb")) == NULL)
 	    perror(dumpfile);
@@ -424,8 +422,7 @@ init_game(const char *infile, const char *outfile)
     ensure_support();
 
     /* set up dumper */
-    if (dumpfile)
-	free((void *) dumpfile);
+    free((void *) dumpfile);
     dumpfile = alloc_string(outfile);
 
     if (!db_conversion_flag) {
@@ -442,9 +439,8 @@ init_game(const char *infile, const char *outfile)
 void
 cleanup_game()
 {
-    if (dumpfile)
-        free((void *) dumpfile);
-    free((void *) in_filename);
+    free((void *) dumpfile);
+    free(in_filename);
 }
 #endif
 

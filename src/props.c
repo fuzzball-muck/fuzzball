@@ -250,7 +250,7 @@ free_propnode(PropPtr p)
 {
     if (!(PropFlags(p) & PROP_ISUNLOADED)) {
         if (PropType(p) == PROP_STRTYP)
-            free((void *) PropDataStr(p));
+            free(PropDataStr(p));
 
         if (PropType(p) == PROP_LOKTYP)
             free_boolexp(PropDataLok(p));
@@ -284,7 +284,7 @@ clear_propnode(PropPtr p)
 {
     if (!(PropFlags(p) & PROP_ISUNLOADED)) {
         if (PropType(p) == PROP_STRTYP) {
-            free((void *) PropDataStr(p));
+            free(PropDataStr(p));
             PropDataStr(p) = NULL;
         }
 

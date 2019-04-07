@@ -222,8 +222,8 @@ has_output(struct descriptor_data *d)
 static void
 free_text_block(struct text_block *t)
 {
-    free((void *)t->buf);
-    free((void *)t);
+    free(t->buf);
+    free(t);
 }
 
 static struct text_block *
@@ -1271,8 +1271,7 @@ freeqs(struct descriptor_data *d)
     free_queue(&d->priority_output);
     free_queue(&d->output);
     free_queue(&d->input);
-    if (d->raw_input)
-	free(d->raw_input);
+    free(d->raw_input);
     d->raw_input = 0;
     d->raw_input_at = 0;
 }
@@ -1338,12 +1337,9 @@ shutdownsock(struct descriptor_data *d)
     *d->prev = d->next;
     if (d->next)
 	d->next->prev = d->prev;
-    if (d->hostname)
-	free((void *) d->hostname);
-    if (d->username)
-	free((void *) d->username);
-	if (d->forwarded_buffer)
-	free((void *)d->forwarded_buffer);
+    free((void *) d->hostname);
+    free((void *) d->username);
+    free(d->forwarded_buffer);
 #ifdef MCP_SUPPORT
     mcp_frame_clear(&d->mcpframe);
 #endif
@@ -3198,10 +3194,8 @@ close_sockets(const char *msg)
 	*d->prev = d->next;
 	if (d->next)
 	    d->next->prev = d->prev;
-	if (d->hostname)
-	    free((void *) d->hostname);
-	if (d->username)
-	    free((void *) d->username);
+        free((void *) d->hostname);
+        free((void *) d->username);
 #ifdef MCP_SUPPORT
 	mcp_frame_clear(&d->mcpframe);
 #endif
@@ -3956,12 +3950,9 @@ ignore_flush_cache(dbref Player)
     if (!ObjExists(Player) || Typeof(Player) != TYPE_PLAYER)
 	return;
 
-    if (PLAYER_IGNORE_CACHE(Player)) {
-	free(PLAYER_IGNORE_CACHE(Player));
-	PLAYER_SET_IGNORE_CACHE(Player, NULL);
-	PLAYER_SET_IGNORE_COUNT(Player, 0);
-    }
-
+    free(PLAYER_IGNORE_CACHE(Player));
+    PLAYER_SET_IGNORE_CACHE(Player, NULL);
+    PLAYER_SET_IGNORE_COUNT(Player, 0);
     PLAYER_SET_IGNORE_LAST(Player, NOTHING);
 }
 
@@ -3974,12 +3965,9 @@ ignore_flush_all_cache(void)
 
     for (dbref i = 0; i < db_top; i++) {
 	if (Typeof(i) == TYPE_PLAYER) {
-	    if (PLAYER_IGNORE_CACHE(i)) {
-		free(PLAYER_IGNORE_CACHE(i));
-		PLAYER_SET_IGNORE_CACHE(i, NULL);
-		PLAYER_SET_IGNORE_COUNT(i, 0);
-	    }
-
+            free(PLAYER_IGNORE_CACHE(i));
+            PLAYER_SET_IGNORE_CACHE(i, NULL);
+            PLAYER_SET_IGNORE_COUNT(i, 0);
 	    PLAYER_SET_IGNORE_LAST(i, NOTHING);
 	}
     }

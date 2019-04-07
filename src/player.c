@@ -89,8 +89,7 @@ set_password(dbref player, const char *password)
 	processed = md5buf;
     }
 
-    if (PLAYER_PASSWORD(player))
-	free((void *) PLAYER_PASSWORD(player));
+    free((void *) PLAYER_PASSWORD(player));
 
     set_password_raw(player, alloc_string(processed));
 }
@@ -168,10 +167,8 @@ toad_player(int descr, dbref player, dbref victim, dbref recipient)
 
     chown_macros(victim, recipient);
 
-    if (PLAYER_PASSWORD(victim)) {
-        free((void *) PLAYER_PASSWORD(victim));
-        PLAYER_SET_PASSWORD(victim, 0);
-    }
+    free((void *) PLAYER_PASSWORD(victim));
+    PLAYER_SET_PASSWORD(victim, 0);
 
     delete_player(victim);
     snprintf(buf, sizeof(buf), "A slimy toad named %s", NAME(victim));
@@ -181,11 +178,9 @@ toad_player(int descr, dbref player, dbref victim, dbref recipient)
 
     boot_player_off(victim);
 
-    if (PLAYER_DESCRS(victim)) {
-        free(PLAYER_DESCRS(victim));
-        PLAYER_SET_DESCRS(victim, NULL);
-        PLAYER_SET_DESCRCOUNT(victim, 0);
-    }
+    free(PLAYER_DESCRS(victim));
+    PLAYER_SET_DESCRS(victim, NULL);
+    PLAYER_SET_DESCRCOUNT(victim, 0);
 
     ignore_remove_from_all_players(victim);
     ignore_flush_cache(victim);
@@ -382,9 +377,7 @@ change_player_name(dbref player, const char *name)
     snprintf(buf, sizeof(buf), "%s/%d", PNAME_HISTORY_PROPDIR, (int)now);
     add_property(player, buf, name, 0);
 
-    if (NAME(player)) {
-     free((void *) NAME(player));
-    }
+    free((void *) NAME(player));
 
     NAME(player) = alloc_string(name);
     ts_modifyobject(player);

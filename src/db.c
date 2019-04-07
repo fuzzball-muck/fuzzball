@@ -882,8 +882,7 @@ db_free_object(dbref i)
 
     o = DBFETCH(i);
 
-    if (NAME(i))
-        free((void *) NAME(i));
+    free((void *) NAME(i));
 
 #ifdef DISKBASE
     unloadprops_with_prejudice(i);
@@ -893,18 +892,13 @@ db_free_object(dbref i)
     }
 #endif
 
-    if (Typeof(i) == TYPE_EXIT && o->sp.exit.dest) {
+    if (Typeof(i) == TYPE_EXIT) {
         free(o->sp.exit.dest);
     } else if (Typeof(i) == TYPE_PLAYER) {
-        if (PLAYER_PASSWORD(i)) {
-            free((void *) PLAYER_PASSWORD(i));
-        }
-
-        if (PLAYER_DESCRS(i)) {
-            free(PLAYER_DESCRS(i));
-            PLAYER_SET_DESCRS(i, NULL);
-            PLAYER_SET_DESCRCOUNT(i, 0);
-        }
+        free((void *) PLAYER_PASSWORD(i));
+        free(PLAYER_DESCRS(i));
+        PLAYER_SET_DESCRS(i, NULL);
+        PLAYER_SET_DESCRCOUNT(i, 0);
 
         ignore_flush_cache(i);
     }
@@ -1219,14 +1213,12 @@ db_read(FILE * f)
                 } else {
                     free((void *) special);
                     special = getstring(f);
-
-                    if (special)
-                        free((void *) special);
-
+                    free((void *) special);
                     rewind(f);
-                    free((void *) getstring(f));
+                    free(getstring(f));
                     getref(f);
                     getref(f);
+
                     tune_load_parms_from_file(f, NOTHING, getref(f));
 
                     for (dbref j = 0; j < db_top; j++) {

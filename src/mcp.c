@@ -553,8 +553,7 @@ mcp_package_deregister(const char *pkgname)
 	mcp_PackageList = ptr->next;
 	if (ptr->cleanup)
 	    ptr->cleanup(ptr->context);
-	if (ptr->pkgname)
-	    free(ptr->pkgname);
+        free(ptr->pkgname);
 	free(ptr);
 	ptr = mcp_PackageList;
     }
@@ -568,8 +567,7 @@ mcp_package_deregister(const char *pkgname)
 	    prev->next = ptr->next;
 	    if (ptr->cleanup)
 		ptr->cleanup(ptr->context);
-	    if (ptr->pkgname)
-		free(ptr->pkgname);
+            free(ptr->pkgname);
 	    free(ptr);
 	    ptr = prev->next;
 	} else {
@@ -802,14 +800,12 @@ mcp_frame_clear(McpFrame * mfr)
     McpFrameList *mfrl = mcp_frame_list;
     McpFrameList *prev;
 
-    if (mfr->authkey) {
-	free(mfr->authkey);
-	mfr->authkey = NULL;
-    }
+    free(mfr->authkey);
+    mfr->authkey = NULL;
+
     while (tmp) {
 	mfr->packages = tmp->next;
-	if (tmp->pkgname)
-	    free(tmp->pkgname);
+        free(tmp->pkgname);
 	free(tmp);
 	tmp = mfr->packages;
     }
@@ -969,8 +965,7 @@ mcp_frame_package_remove(McpFrame * mfr, const char *package)
     while (mfr->packages && !strcasecmp(mfr->packages->pkgname, package)) {
 	tmp = mfr->packages;
 	mfr->packages = tmp->next;
-	if (tmp->pkgname)
-	    free(tmp->pkgname);
+        free(tmp->pkgname);
 	free(tmp);
     }
 
@@ -979,8 +974,7 @@ mcp_frame_package_remove(McpFrame * mfr, const char *package)
 	if (!strcasecmp(prev->next->pkgname, package)) {
 	    tmp = prev->next;
 	    prev->next = tmp->next;
-	    if (tmp->pkgname)
-		free(tmp->pkgname);
+            free(tmp->pkgname);
 	    free(tmp);
 	} else {
 	    prev = prev->next;
@@ -1302,25 +1296,20 @@ mcp_mesg_init(McpMesg * msg, const char *package, const char *mesgname)
 void
 mcp_mesg_clear(McpMesg * msg)
 {
-    if (msg->package)
-	free(msg->package);
-    if (msg->mesgname)
-	free(msg->mesgname);
-    if (msg->datatag)
-	free(msg->datatag);
+    free(msg->package);
+    free(msg->mesgname);
+    free(msg->datatag);
 
     while (msg->args) {
 	McpArg *tmp = msg->args;
 
 	msg->args = tmp->next;
-	if (tmp->name)
-	    free(tmp->name);
+        free(tmp->name);
 	while (tmp->value) {
 	    McpArgPart *ptr2 = tmp->value;
 
 	    tmp->value = tmp->value->next;
-	    if (ptr2->value)
-		free(ptr2->value);
+            free(ptr2->value);
 	    free(ptr2);
 	}
 	free(tmp);

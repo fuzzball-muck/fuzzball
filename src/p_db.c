@@ -446,9 +446,7 @@ prim_setname(PRIM_PROTOTYPE)
 	    if (!ok_name(b)) {
 		abort_interp("Invalid name.");
 	    }
-	    if (NAME(ref)) {
-		free((void *) NAME(ref));
-	    }
+            free((void *) NAME(ref));
 	    NAME(ref) = alloc_string(b);
 	    ts_modifyobject(ref);
 	}
@@ -1114,10 +1112,8 @@ prim_setlink(PRIM_PROTOTYPE)
 	switch (Typeof(ref)) {
 	case TYPE_EXIT:
 	    DBSTORE(ref, sp.exit.ndest, 0);
-	    if (DBFETCH(ref)->sp.exit.dest) {
-		free(DBFETCH(ref)->sp.exit.dest);
-		DBSTORE(ref, sp.exit.dest, NULL);
-	    }
+            free(DBFETCH(ref)->sp.exit.dest);
+            DBSTORE(ref, sp.exit.dest, NULL);
 	    if (MLevRaw(ref))
 		SetMLevel(ref, 0);
 	    break;
@@ -2507,8 +2503,7 @@ prim_setlinks_array(PRIM_PROTOTYPE)
 	if (MLevRaw(what))
 	    SetMLevel(what, 0);
 
-	if (DBFETCH(what)->sp.exit.dest != NULL)
-	    free(DBFETCH(what)->sp.exit.dest);
+        free(DBFETCH(what)->sp.exit.dest);
     }
 
     if (dest_count == 0) {

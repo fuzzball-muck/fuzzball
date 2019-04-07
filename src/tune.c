@@ -675,7 +675,7 @@ tune_freeparms()
 
     while (tstr->name) {
         if (!tstr->isdefault) {
-            free((char *) *tstr->str);
+            free((void *) *tstr->str);
         }
 
         tstr++;
@@ -745,7 +745,7 @@ tune_setparm(dbref player, const char *parmname, const char *val, int mlev)
             if (reset_default) {
                 /* Reset to default value */
                 if (!tstr->isdefault)
-                    free((char *) *tstr->str);
+                    free((void *) *tstr->str);
 
                 tstr->isdefault = 1;
                 *tstr->str = tstr->defaultstr;
@@ -756,7 +756,7 @@ tune_setparm(dbref player, const char *parmname, const char *val, int mlev)
                     return TUNESET_BADVAL;
 
                 if (!tstr->isdefault)
-                    free((char *) *tstr->str);
+                    free((void *) *tstr->str);
 
                 tstr->isdefault = 0;
                 *tstr->str = strdup(parmval);
@@ -957,7 +957,7 @@ tune_load_parms_defaults()
 {
     for (struct tune_str_entry *tstr = tune_str_list; tstr->name; tstr++) {
         if (!tstr->isdefault) {
-            free((char *)*tstr->str);
+            free((void *) *tstr->str);
         }
 
         tstr->isdefault = 1;

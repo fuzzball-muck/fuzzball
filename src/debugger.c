@@ -842,8 +842,7 @@ muf_debugger(int descr, dbref player, dbref program, const char *text, struct fr
     if (!*cmd && fr->brkpt.lastcmd) {
         strcpyn(cmd, sizeof(cmd), fr->brkpt.lastcmd);
     } else {
-        if (fr->brkpt.lastcmd)
-            free(fr->brkpt.lastcmd);
+        free(fr->brkpt.lastcmd);
 
         if (*cmd)
             fr->brkpt.lastcmd = strdup(cmd);

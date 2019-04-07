@@ -665,10 +665,8 @@ mesg_args(char *wbuf, size_t maxlen, char **argv, char ulv, char sep, char dlv, 
 	    lev--;
 	    if (lev < 0) {
 		buf[r] = '\0';
-		if (argv[argc]) {
-		    free(argv[argc]);
-		    argv[argc] = NULL;
-		}
+                free(argv[argc]);
+                argv[argc] = NULL;
 		argv[argc] = malloc((size_t)((buf + r) - ptr) + 1);
 		strcpyn(argv[argc++], (size_t)((buf + r) - ptr) + 1, ptr);
 		ptr = buf + r + 1;
@@ -678,10 +676,8 @@ mesg_args(char *wbuf, size_t maxlen, char **argv, char ulv, char sep, char dlv, 
 	} else if (!litflag && lev < 1 && buf[r] == sep) {
 	    if (argc < maxargs - 1) {
 		buf[r] = '\0';
-		if (argv[argc]) {
-		    free(argv[argc]);
-		    argv[argc] = NULL;
-		}
+                free(argv[argc]);
+                argv[argc] = NULL;
 		argv[argc] = malloc((size_t)((buf + r) - ptr) + 1);
 		strcpyn(argv[argc++], (size_t)((buf + r) - ptr) + 1, ptr);
 		ptr = buf + r + 1;
@@ -826,18 +822,15 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms,
 			    char *zptr;
 
 			    zptr = get_mvar(cmdbuf + 1);
-			    if (argv[0]) {
-				free(argv[0]);
-				argv[0] = NULL;
-			    }
+                            free(argv[0]);
+                            argv[0] = NULL;
+
 			    if (!zptr) {
 				zptr = get_mvar("how");
 				notifyf_nolisten(player, "%s %c%s%c: Unrecognized variable.", zptr,
 					 MFUN_LEADCHAR, cmdbuf, MFUN_ARGEND);
 				for (i = 0; i < argc; i++) {
-				    if (argv[i + (varflag ? 1 : 0)]) {
-					free(argv[i + (varflag ? 1 : 0)]);
-				    }
+                                   free(argv[i + (varflag ? 1 : 0)]);
 				}
 				mesg_rec_cnt--;
 				outbuf[0] = '\0';

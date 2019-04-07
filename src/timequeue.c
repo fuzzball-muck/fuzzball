@@ -129,12 +129,9 @@ free_timenode(timequeue ptr)
 	return;
     }
 
-    if (ptr->command)
-	free(ptr->command);
-    if (ptr->called_data)
-	free(ptr->called_data);
-    if (ptr->str3)
-	free(ptr->str3);
+    free(ptr->command);
+    free(ptr->called_data);
+    free(ptr->str3);
     if (ptr->fr) {
 	DEBUGPRINT("free_timenode: ptr->type = MUF? %d  ptr->subtyp = MUF_TIMER? %d\n",
 		   (ptr->typ == TQ_MUF_TYP), (ptr->subtyp == TQ_MUF_TIMER));

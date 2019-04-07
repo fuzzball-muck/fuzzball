@@ -101,9 +101,7 @@ do_name(int descr, dbref player, const char *name, char *newname)
         }
 
         /* everything ok, change the name */
-        if (NAME(thing)) {
-            free((void *) NAME(thing));
-        }
+        free((void *) NAME(thing));
 
         ts_modifyobject(thing);
         NAME(thing) = alloc_string(newname);
@@ -162,10 +160,8 @@ _do_unlink(int descr, dbref player, const char *name, bool quiet)
                 ts_modifyobject(exit);
                 DBSTORE(exit, sp.exit.ndest, 0);
 
-                if (DBFETCH(exit)->sp.exit.dest) {
-                    free((void *) DBFETCH(exit)->sp.exit.dest);
-                    DBSTORE(exit, sp.exit.dest, NULL);
-                }
+                free(DBFETCH(exit)->sp.exit.dest);
+                DBSTORE(exit, sp.exit.dest, NULL);
 
                 if (!quiet)
                     notify(player, "Unlinked.");
