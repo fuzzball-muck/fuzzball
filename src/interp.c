@@ -296,7 +296,7 @@ RCLEAR(struct inst *oper, char *file, int line)
 		for (int j = 0; j < varcnt; j++) {
 		    free((void *) oper->data.mufproc->varnames[j]);
 		}
-		free(oper->data.mufproc->varnames);
+		free((void *)oper->data.mufproc->varnames);
 	    }
 	    free(oper->data.mufproc);
 	}

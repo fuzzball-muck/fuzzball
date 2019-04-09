@@ -257,7 +257,7 @@ free_intermediate_node(struct INTERMEDIATE *wd)
                 free((void *) wd->in.data.mufproc->varnames[j]);
             }
 
-            free(wd->in.data.mufproc->varnames);
+            free((void *) wd->in.data.mufproc->varnames);
         }
 
         free(wd->in.data.mufproc);
