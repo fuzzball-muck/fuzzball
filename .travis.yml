@@ -27,7 +27,7 @@ script:
   # Set up configure flags
   - ./configure --prefix="$PWD/fuzzpre" $FLAG_SSL $FLAG_MEMPROF $FLAG_DEBUG
   # Speed up CI builds
-  - printf '/CFLAGS=/s/-g//\ns/-O2//\nw\nq\n' | ed -s src/Makefile
+  - printf '/CFLAGS=/s/-g//\ns/-O2/-D_XOPEN_SOURCE=700/\ns/gnu99/c99/\nw\nq\n' | ed -s src/Makefile
   # Clean up build directory
   - make clean
   # Make Fuzzball and all related code
