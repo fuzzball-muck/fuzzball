@@ -28,6 +28,11 @@
 #include "tune.h"
 
 /**
+ * @var the MUF macro table.
+ */
+struct macrotable *macrotop;
+
+/**
  * Free the memory of a line structure, including its string data as applicable
  *
  * @private

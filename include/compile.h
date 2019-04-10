@@ -13,13 +13,6 @@
 #include "config.h"
 #include "fbmuck.h"
 
-/*
- * @TODO free_prog_real is a static in compile.c
- *       It is inappropriate for a define that uses it to be in a public
- *       header -- move to compile.c
- */
-#define free_prog(i) free_prog_real(i,__FILE__,__LINE__);
-
 #define MUF_AUTHOR_PROP         "_author"
 #define MUF_DOCCMD_PROP         "_docs"
 #define MUF_ERRCOUNT_PROP       ".debug/errcount"

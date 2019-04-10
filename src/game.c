@@ -873,6 +873,7 @@ process_command(int descr, dbref player, const char *command)
 	    case 'H':
 		/* @hashes */
 		Matched("@hashes");
+                WIZARDONLY("@hashes", player);
 		do_hashes(player, arg1);
 		break;
 	    case 'i':

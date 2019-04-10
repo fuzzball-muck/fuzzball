@@ -71,6 +71,7 @@
 
 #define abort_compile(ST,C) { do_abort_compile(ST,C); return 0; }
 #define v_abort_compile(ST,C) { do_abort_compile(ST,C); return; }
+#define free_prog(i) free_prog_real(i,__FILE__,__LINE__);
 
 static hash_tab primitive_list[COMP_HASH_SIZE];
 

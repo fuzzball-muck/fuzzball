@@ -771,31 +771,6 @@ push_arg(dbref player, struct frame *fr, const char *arg)
 }
 
 /**
- * @private
- * @var This little array is used for the 'prim' debug command to store and
- *      execute a one-off primtives.
- *
- * @TODO There's no reason for this to be global -- bring it into
- *       muf_debugger
- */
-static struct inst primset[5];
-
-/**
- * @private
- * @var This is used in support of the 'prim' debug command to store and
- *      execute a one-off primitive.
- *
- * @TODO There's no reason for this to be global -- bring it into
- *       muf_debugger
- */ 
-static struct muf_proc_data temp_muf_proc_data = {
-    "__Temp_Debugger_Proc",
-    0,
-    0,
-    NULL
-};
-
-/**
  * Implementation of the MUF debugger
  *
  * This implements the command parsing for the MUF debugger.  It also clears
@@ -822,6 +797,13 @@ muf_debugger(int descr, dbref player, dbref program, const char *text, struct fr
     char *ptr, *ptr2, *arg;
     struct inst *pinst;
     int i, j, cnt;
+    static struct inst primset[5];
+    static struct muf_proc_data temp_muf_proc_data = {
+        "__Temp_Debugger_Proc",
+        0,
+        0,
+        NULL
+    };
 
     /*
      * Basic massaging of the input - clearing spaces, finding the

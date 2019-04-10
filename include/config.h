@@ -85,6 +85,12 @@
 #define RESTART_EXIT_CODE	0
 #define ARMAGEDDON_EXIT_CODE	1
 
+/* Database and server limits */
+#define MAX_COMMAND_LEN 2048    /* max process_command arg length */
+#define MAX_LINKS 50            /* max destinations for an exit */
+#define MAX_PARENT_DEPTH 256    /* max parenting depth allowed */
+
+#define BUFFER_LEN ((MAX_COMMAND_LEN)*4)
 /************************************************************************
    Various Messages 
  

@@ -64,16 +64,6 @@ static int db_load_format = 0;
 #endif /* DB_INITIAL_SIZE */
 
 /**
- * @var the MUF macro table.  Which is defined here even though it isn't
- *      used anywhere in this file.
- *
- * @TODO Move this to a more appropriate file.  edit.h is where this is
- *       extern'd so edit.c would be a smarter place.  edit.c is also the
- *       primary consumer of this, so it makes a lot of sense there.
- */
-struct macrotable *macrotop;
-
-/**
  * Grow the DB to a new size.
  *
  * 'newtop' will be the number of elements in the DB.  This won't let you
@@ -255,25 +245,7 @@ create_program(dbref player, const char *name)
 
     ALLOC_PROGRAM_SP(newprog);
 
-    /*
-     * @TODO This is a really dumb way to do this.  Replace all these
-     *       calls with:
-     *       memset(PROGRAM_SP(newprog), 0, sizeof(PROGRAM_SP(newprog)))
-     */
-    PROGRAM_SET_FIRST(newprog, NULL);
-    PROGRAM_SET_CURR_LINE(newprog, 0);
-    PROGRAM_SET_SIZ(newprog, 0);
-    PROGRAM_SET_CODE(newprog, NULL);
-    PROGRAM_SET_START(newprog, NULL);
-    PROGRAM_SET_PUBS(newprog, NULL);
-#ifdef MCP_SUPPORT
-    PROGRAM_SET_MCPBINDS(newprog, NULL);
-#endif
-    PROGRAM_SET_PROFTIME(newprog, 0, 0);
-    PROGRAM_SET_PROFSTART(newprog, 0);
-    PROGRAM_SET_PROF_USES(newprog, 0);
-    PROGRAM_SET_INSTANCES(newprog, 0);
-    PROGRAM_SET_INSTANCES_IN_PRIMITIVE(newprog, 0);
+    memset(PROGRAM_SP(newprog), 0, sizeof(*(PROGRAM_SP(newprog))));
 
     /* Add the program to the player's contents */
     PUSH(newprog, CONTENTS(player));
@@ -464,9 +436,8 @@ putproperties(FILE * f, dbref obj)
  * @private
  * @param f the file handle
  * @param i the object dbref to write to the file handle
- * @return 0 - this always returns 0.  Errors cause the program to abort()
  */
-static int
+static void
 db_write_object(FILE * f, dbref i)
 {
     struct object *o = DBFETCH(i);
@@ -537,13 +508,6 @@ db_write_object(FILE * f, dbref i)
             putref(f, OWNER(i));
             break;
     }
-
-    /*
-     * @TODO Remoe the return value -- it is meaningless.  Make sure to
-     *       update the docblock!  Make sure nothing relies on the return
-     *       value.
-     */
-    return 0;
 }
 
 /**
@@ -573,19 +537,6 @@ dbref
 getref(FILE * f)
 {
     static char buf[BUFFER_LEN];
-    int peekch;
-
-    /*
-     * Compiled in with or without timestamps, Sep 1, 1990 by Fuzzy, added to
-     * Muck by Kinomon.  Thanks Kino!
-     *
-     * @TODO While I appreciate Kino's hard work, do we need this check
-     *       anymore?  Seems like this kind of thing should be based off
-     *       DB version handle rather than checked for on every ref load.
-     */
-    if ((peekch = do_peek(f)) == NUMBER_TOKEN || peekch == '*') {
-        return (0);
-    }
 
     fgets(buf, sizeof(buf), f);
     return atol(buf);
@@ -951,25 +902,14 @@ db_free(void)
  * @private
  * @param f the file handle
  * @param objno the object ref we are loading
- * @param dtype the database version.  If this is 0, we return immediately.
  */
 static void
-db_read_object(FILE * f, dbref objno, int dtype)
+db_read_object(FILE * f, dbref objno)
 {
     int tmp, c, prop_flag = 0;
     int j = 0;
     const char *password;
     struct object *o;
-
-    /*
-     * @TODO This check is irrelevant.  We won't load the DB at all
-     *       if the version comes up as 0 so we will never get to this
-     *       if statement if it is false.  May as well take this out and
-     *       even remove 'dtype' from the calling signature.  Remember to
-     *       update the docblock.
-     */
-    if (dtype == 0)
-        return;
 
     db_clear_object(objno);
 
@@ -1201,7 +1141,7 @@ db_read(FILE * f)
     for (int i = 0; ; i++) {
         switch (c) {
             case NUMBER_TOKEN:
-                db_read_object(f, getref(f), db_load_format);
+                db_read_object(f, getref(f));
                 break;
 
             case '*':
