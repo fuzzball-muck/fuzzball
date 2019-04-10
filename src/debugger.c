@@ -13,6 +13,7 @@
 
 #include "config.h"
 
+#include "commands.h"
 #include "compile.h"
 #include "db.h"
 #include "debugger.h"
@@ -23,6 +24,7 @@
 #include "interface.h"
 #include "interp.h"
 #include "timequeue.h"
+#include "tune.h"
 
 /**
  * Resolve a (scoped or local-to-function) variable name to a variable number
@@ -1320,61 +1322,7 @@ muf_debugger(int descr, dbref player, dbref program, const char *text, struct fr
 
         return 0;
     } else if (!strcasecmp(cmd, "help")) {
-        /*
-         * @TODO This is a mess and duplicated by 'man debugger_commands'
-         *       Why not just call man debugger_commands?
-         *
-         *       Also, certain other MAN pages refer to debugger_commands
-         *       as debugger-commands (see man debugger's "also see" list)
-         *       which is incorrect.
-         */
-        notify_nolisten(player,
-                        "cont            continues execution until a breakpoint is hit.", 1);
-        notify_nolisten(player, "finish          completes execution of current function.", 1);
-        notify_nolisten(player, "step [NUM]      executes one (or NUM, 1) lines of muf.", 1);
-        notify_nolisten(player, "stepi [NUM]     executes one (or NUM, 1) muf instructions.",
-                        1);
-        notify_nolisten(player, "next [NUM]      like step, except skips CALL and EXECUTE.",
-                        1);
-        notify_nolisten(player, "nexti [NUM]     like stepi, except skips CALL and EXECUTE.",
-                        1);
-        notify_nolisten(player, "break LINE#     sets breakpoint at given LINE number.", 1);
-        notify_nolisten(player, "break FUNCNAME  sets breakpoint at start of given function.",
-                        1);
-        notify_nolisten(player, "breaks          lists all currently set breakpoints.", 1);
-        notify_nolisten(player,
-                        "delete NUM      deletes breakpoint by NUM, as listed by 'breaks'", 1);
-        notify_nolisten(player,
-                        "where [LEVS]    displays function call backtrace of up to num levels deep.",
-                        1);
-        notify_nolisten(player, "stack [NUM]     shows the top num items on the stack.", 1);
-        notify_nolisten(player,
-                        "print v#        displays the value of given global variable #.", 1);
-        notify_nolisten(player,
-                        "print lv#       displays the value of given local variable #.", 1);
-        notify_nolisten(player, "trace [on|off]  turns on/off debug stack tracing.", 1);
-        notify_nolisten(player, "list [L1,[L2]]  lists source code of given line range.", 1);
-        notify_nolisten(player, "list FUNCNAME   lists source code of given function.", 1);
-        notify_nolisten(player, "listi [L1,[L2]] lists instructions in given line range.", 1);
-        notify_nolisten(player, "listi FUNCNAME  lists instructions in given function.", 1);
-        notify_nolisten(player, "words           lists all function word names in program.",
-                        1);
-        notify_nolisten(player,
-                        "words PATTERN   lists all function word names that match PATTERN.",
-                        1);
-        notify_nolisten(player,
-                        "exec FUNCNAME   calls given function with the current stack data.",
-                        1);
-        notify_nolisten(player,
-                        "prim PRIMITIVE  executes given primitive with current stack data.",
-                        1);
-        notify_nolisten(player,
-                        "push DATA       pushes an int, dbref, var, or string onto the stack.",
-                        1);
-        notify_nolisten(player, "pop             pops top data item off the stack.", 1);
-        notify_nolisten(player, "help            displays this help screen.", 1);
-        notify_nolisten(player, "quit            stop execution here.", 1);
-        add_muf_read_event(descr, player, program, fr);
+        do_helpfile(player, tp_file_man_dir, tp_file_man, "debugger_commands", "");
 
         return 0;
     } else {

@@ -6118,7 +6118,7 @@ stack is displayed, as well as a dump of the current line.  If execution
 is at the beginning of the line, the actual line of source will be
 displayed, otherwise the compiled instructions will be displayed with the
 current instruction marked by surrounding braces.
-~~alsosee DEBUGGER-COMMANDS,BREAKPOINTS,NOTATION
+~~alsosee DEBUGGER_COMMANDS,BREAKPOINTS,NOTATION
 ~
 ~
 DEBUGGER_COMMANDS

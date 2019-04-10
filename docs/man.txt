@@ -6615,7 +6615,7 @@ stack is displayed, as well as a dump of the current line.  If execution
 is at the beginning of the line, the actual line of source will be
 displayed, otherwise the compiled instructions will be displayed with the
 current instruction marked by surrounding braces.
-Also see: DEBUGGER-COMMANDS, BREAKPOINTS and NOTATION
+Also see: DEBUGGER_COMMANDS, BREAKPOINTS and NOTATION
 ~
 ~
 DEBUGGER_COMMANDS
