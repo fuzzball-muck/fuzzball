@@ -57,13 +57,6 @@ do_version(dbref player)
 void
 do_hashes(dbref player, char *args)
 {
-/*
- * @TODO This is available to the general public which is ... honestly
- *       information that they don't need.  Good security policy would
- *       dictate the less a player knows about the inner guts (and thus
- *       what vulnerabilities may be available) the better.  I'd recommend
- *       making this wiz-only.
- */
     hash_file_entry *entry;
     int b_git = 0, b_sha1 = 0;
     const char *filename;

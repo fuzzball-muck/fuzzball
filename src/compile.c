@@ -71,6 +71,7 @@
 
 #define abort_compile(ST,C) { do_abort_compile(ST,C); return 0; }
 #define v_abort_compile(ST,C) { do_abort_compile(ST,C); return; }
+#define free_prog(i) free_prog_real(i,__FILE__,__LINE__);
 
 static hash_tab primitive_list[COMP_HASH_SIZE];
 
@@ -245,12 +246,11 @@ free_intermediate_node(struct INTERMEDIATE *wd)
     int varcnt;
 
     if (wd->in.type == PROG_STRING) {
-        if (wd->in.data.string)
-            free((void *) wd->in.data.string);
+            free(wd->in.data.string);
     }
 
     if (wd->in.type == PROG_FUNCTION) {
-        free((void *) wd->in.data.mufproc->procname);
+        free(wd->in.data.mufproc->procname);
         varcnt = wd->in.data.mufproc->vars;
 
         if (wd->in.data.mufproc->varnames) {
@@ -261,7 +261,7 @@ free_intermediate_node(struct INTERMEDIATE *wd)
             free((void *) wd->in.data.mufproc->varnames);
         }
 
-        free((void *) wd->in.data.mufproc);
+        free(wd->in.data.mufproc);
     }
 
     free(wd);
@@ -300,13 +300,10 @@ free_addresses(COMPSTATE * cstat)
     cstat->addrcount = 0;
     cstat->addrmax = 0;
 
-    if (cstat->addrlist)
-        free(cstat->addrlist);
-
-    if (cstat->addroffsets)
-        free(cstat->addroffsets);
-
+    free(cstat->addrlist);
     cstat->addrlist = NULL;
+
+    free(cstat->addroffsets);
 }
 
 /**
@@ -327,9 +324,7 @@ cleanup(COMPSTATE * cstat)
     for (struct CONTROL_STACK *eef = cstat->control_stack; eef; eef = tempif) {
         tempif = eef->next;
 
-        if (eef->extra)
-            free(eef->extra);
-
+        free(eef->extra);
         free(eef);
     }
 
@@ -389,11 +384,9 @@ do_abort_compile(COMPSTATE * cstat, const char *c)
         snprintf(_buf, sizeof(_buf), "Error in line %d: %s", cstat->lineno, c);
     }
 
-    if (cstat->line_copy) {
-        free((void *) cstat->line_copy);
-        cstat->line_copy = NULL;
-        cstat->next_char = NULL;
-    }
+    free(cstat->line_copy);
+    cstat->line_copy = NULL;
+    cstat->next_char = NULL;
 
     /*
      * Determine how to display the compile error to the user, based
@@ -1465,8 +1458,7 @@ OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
                             if (IntermediateIsInteger(curr->next->next, 0)) {
                                 if (IntermediateIsPrimitive(curr->next->next->next,
                                     EqualsNo)) {
-                                    if (curr->in.data.string)
-                                        free((void *) curr->in.data.string);
+                                    free(curr->in.data.string);
 
                                     curr->in.type = PROG_PRIMITIVE;
                                     curr->in.data.number = NotNo;
@@ -1484,8 +1476,7 @@ OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
                             if (IntermediateIsInteger(curr->next->next, 0)) {
                                 if (IntermediateIsPrimitive(curr->next->next->next,
                                     EqualsNo)) {
-                                    if (curr->in.data.string)
-                                        free((void *) curr->in.data.string);
+                                    free(curr->in.data.string);
 
                                     curr->in.type = PROG_PRIMITIVE;
                                     curr->in.data.number = NotNo;
@@ -2896,10 +2887,8 @@ advance_line(COMPSTATE * cstat)
     cstat->lineno++;
     cstat->macrosubs = 0;
 
-    if (cstat->line_copy) {
-        free((void *) cstat->line_copy);
-        cstat->line_copy = NULL;
-    }
+    free(cstat->line_copy);
+    cstat->line_copy = NULL;
 
     if (cstat->curr_line)
         cstat->next_char = (cstat->line_copy = alloc_string(cstat->curr_line->this_line));
@@ -3605,8 +3594,7 @@ do_directive(COMPSTATE * cstat, char *direct)
         if (i == -2) {
             j = (!tmpptr);
 
-            if (tmpptr)
-                free(tmpptr);
+            free(tmpptr);
         } else {
             if (!tmpptr) {
                 j = 1;
@@ -3668,9 +3656,7 @@ do_directive(COMPSTATE * cstat, char *direct)
         tmpname = (char *) next_token_raw(cstat);
 
         if (!tmpname || !*tmpname) {
-            if (tmpptr) {
-                free(tmpptr);
-            }
+            free(tmpptr);
 
             v_abort_compile(cstat, "I don't understand what function you want to check for.");
         }
@@ -4031,19 +4017,15 @@ next_token(COMPSTATE * cstat)
         free(temp);
 
         if (++cstat->macrosubs > SUBSTITUTIONS) {
-            free((void *) expansion);
+            free(expansion);
             abort_compile(cstat, "Too many macro substitutions.");
         } else {
             size_t templen = strlen(cstat->next_char) + strlen(expansion) + 21;
             temp = malloc(templen);
             strcpyn(temp, templen, expansion);
             strcatn(temp, templen, cstat->next_char);
-            free((void *) expansion);
-
-            if (cstat->line_copy) {
-                free((void *) cstat->line_copy);
-            }
-
+            free(expansion);
+            free(cstat->line_copy);
             cstat->next_char = cstat->line_copy = temp;
             return next_token(cstat);
         }
@@ -4533,8 +4515,7 @@ process_special(COMPSTATE * cstat, const char *token)
 
         strcpyn(buf, sizeof(buf), proc_name);
 
-        if (proc_name)
-            free((void *) proc_name);
+        free((void *) proc_name);
 
         proc_name = buf;
 
@@ -5139,8 +5120,7 @@ process_special(COMPSTATE * cstat, const char *token)
             cstat->currpubs->next = NULL;
             cstat->currpubs->subname = strdup(tok);
 
-            if (tok)
-                free((void *) tok);
+            free((void *) tok);
 
             cstat->currpubs->addr.no = get_address(cstat, p->code, 0);
             cstat->currpubs->mlev = wizflag ? 4 : 1;
@@ -5160,8 +5140,7 @@ process_special(COMPSTATE * cstat, const char *token)
                     pub->next = NULL;
                     pub->subname = strdup(tok);
 
-                    if (tok)
-                        free((void *) tok);
+                    free((void *) tok);
 
                     pub->addr.no = get_address(cstat, p->code, 0);
                     pub->mlev = wizflag ? 4 : 1;
@@ -5183,8 +5162,7 @@ process_special(COMPSTATE * cstat, const char *token)
                 abort_compile(cstat, "Variable limit exceeded.");
             }
 
-            if (tok)
-                free((void *) tok);
+            free((void *) tok);
 
             cstat->curr_proc->in.data.mufproc->vars++;
         } else {
@@ -5198,8 +5176,7 @@ process_special(COMPSTATE * cstat, const char *token)
                 abort_compile(cstat, "Variable limit exceeded.");
             }
 
-            if (tok)
-                free((void *) tok);
+            free((void *) tok);
         }
 
         return 0;
@@ -5215,8 +5192,7 @@ process_special(COMPSTATE * cstat, const char *token)
                 abort_compile(cstat, "Variable limit exceeded.");
             }
 
-            if (tok)
-                free((void *) tok);
+            free((void *) tok);
 
             nu = new_inst(cstat);
             nu->no = cstat->nowords++;
@@ -5239,8 +5215,7 @@ process_special(COMPSTATE * cstat, const char *token)
             abort_compile(cstat, "Local variable limit exceeded.");
         }
 
-        if (tok)
-            free((void *) tok);
+        free((void *) tok);
 
         return 0;
     } else {
@@ -5333,7 +5308,7 @@ free_prog_real(dbref prog, const char *file, const int line)
             }
         }
 
-        free((void *) c);
+        free(c);
     }
 
     PROGRAM_SET_CODE(prog, 0);

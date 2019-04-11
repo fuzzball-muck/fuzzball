@@ -778,36 +778,29 @@ prim_setsysparm(PRIM_PROTOTYPE)
     case TUNESET_SUCCESS:
 	log_status("TUNED (MUF): %s(%d) tuned %s from '%s' to '%s'",
 		   NAME(player), player, parmname, oldvalue, newvalue);
-	if (oldvalue)
-	    free(oldvalue);
+        free(oldvalue);
 	break;
     case TUNESET_SUCCESS_DEFAULT:
 	/* No need to show the flag in output */
 	TP_CLEAR_FLAG_DEFAULT(parmname);
 	log_status("TUNED (MUF): %s(%d) tuned %s from '%s' to default",
 		   NAME(player), player, parmname, oldvalue);
-	if (oldvalue)
-	    free(oldvalue);
+        free(oldvalue);
 	break;
     case TUNESET_UNKNOWN:
-	if (oldvalue)
-	    free(oldvalue);
+        free(oldvalue);
 	abort_interp("Unknown parameter. (1)");
     case TUNESET_SYNTAX:
-	if (oldvalue)
-	    free(oldvalue);
+        free(oldvalue);
 	abort_interp("Bad parameter syntax. (2)");
     case TUNESET_BADVAL:
-	if (oldvalue)
-	    free(oldvalue);
+        free(oldvalue);
 	abort_interp("Bad parameter value. (2)");
     case TUNESET_DENIED:
-	if (oldvalue)
-	    free(oldvalue);
+        free(oldvalue);
 	abort_interp("Permission denied. (1)");
     default:
-	if (oldvalue)
-	    free(oldvalue);
+        free(oldvalue);
 	break;
     }
     CLEAR(oper1);

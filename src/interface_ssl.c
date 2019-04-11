@@ -5,15 +5,15 @@
 #include "interface_ssl.h"
 #include "log.h"
 
-///
-/// Converts an SSL protocol version string to a version number
-///
-/// Inspired by 'set_protocol_version' and 'protocol_from_string' in
-/// https://github.com/openssl/openssl/blob/OpenSSL_1_1_0-stable/test/ssltest_old.c
-///
-/// @param[in] value Name of SSL protocol version
-/// @returns   Version number if found, SSL_UNSUPPORTED_PROTOCOL if unsupported, or -1 if not found
-///
+/**
+ * Converts an SSL protocol version string to a version number
+ *
+ * Inspired by 'set_protocol_version' and 'protocol_from_string' in
+ * https://github.com/openssl/openssl/blob/OpenSSL_1_1_0-stable/test/ssltest_old.c
+ *
+ * @param[in] value Name of SSL protocol version
+ * @returns   Version number if found, SSL_UNSUPPORTED_PROTOCOL if unsupported, or -1 if not found
+ */
 int
 ssl_protocol_from_string(const char *value)
 {
@@ -26,16 +26,16 @@ ssl_protocol_from_string(const char *value)
 	return -1;
 }
 
-///
-/// Sets the minimum SSL protocol version given a version string
-///
-/// If None, no change will be made to the SSL context.  If version string is invalid or unsupported
-/// in this build (see SSL_PROTOCOLS), an error is logged to offer guidance on fixing the problem.
-///
-/// @param[in,out] ssl_ctx      SSL context
-/// @param[in]     min_version  Name of minimum required SSL protocol version, or "None"
-/// @returns       1 if successful, otherwise 0
-///
+/**
+ * Sets the minimum SSL protocol version given a version string
+ *
+ * If None, no change will be made to the SSL context.  If version string is invalid or unsupported
+ * in this build (see SSL_PROTOCOLS), an error is logged to offer guidance on fixing the problem.
+ *
+ * @param[in,out] ssl_ctx      SSL context
+ * @param[in]     min_version  Name of minimum required SSL protocol version, or "None"
+ * @returns       1 if successful, otherwise 0
+ */
 int
 set_ssl_ctx_min_version(SSL_CTX * ssl_ctx, const char *min_version)
 {
@@ -64,14 +64,18 @@ set_ssl_ctx_min_version(SSL_CTX * ssl_ctx, const char *min_version)
 		log_status("Requiring SSL protocol version '%s' or higher for encrypted connections",
 		           min_version);
 #if defined(SSL_CTX_set_min_proto_version)
-		// Added in OpenSSL >= 1.1.0
-		// See: https://www.openssl.org/docs/man1.1.0/ssl/SSL_CTX_set_min_proto_version.html
+		/*
+		 * Added in OpenSSL >= 1.1.0
+		 * See: https://www.openssl.org/docs/man1.1.0/ssl/SSL_CTX_set_min_proto_version.html
+		 */
 		return SSL_CTX_set_min_proto_version(ssl_ctx, min_version_num);
 #elif defined(SSL_CTX_set_options)
-		// Easy way not implemented, manually turn off protocols to match the minimum version.
-		// FB_*_VERSION macros are guaranteed to be defined regardless of OpenSSL version,
-		// either as a real version or SSL_UNSUPPORTED_PROTOCOL, which will never be greater
-		// than min_version_num.
+		/*
+		 * Easy way not implemented, manually turn off protocols to match the minimum version.
+		 * FB_*_VERSION macros are guaranteed to be defined regardless of OpenSSL version,
+		 * either as a real version or SSL_UNSUPPORTED_PROTOCOL, which will never be greater
+		 * than min_version_num.
+		 */
 		if (min_version_num > FB_SSL3_VERSION)
 			SSL_CTX_set_options(ssl_ctx, SSL_OP_NO_SSLv3);
 		if (min_version_num > FB_TLS1_VERSION)
@@ -80,12 +84,13 @@ set_ssl_ctx_min_version(SSL_CTX * ssl_ctx, const char *min_version)
 			SSL_CTX_set_options(ssl_ctx, SSL_OP_NO_TLSv1_1);
 		if (min_version_num > FB_TLS1_2_VERSION)
 			SSL_CTX_set_options(ssl_ctx, SSL_OP_NO_TLSv1_2);
-		// No need to add newer versions as OpenSSL >= 1.1.0 supports the much-nicer
-		// SSL_CTX_set_min_proto_version - see above
+		// No need to add newer versions as OpenSSL >= 1.1.0 supports the much-nicer SSL_CTX_set_min_proto_version - see above
 		return 1;
 #else
-		// A minimum version was requested, but the SSL library doesn't support specifying that.
-		// Error out with some advice.
+		/*
+		 * A minimum version was requested, but the SSL library doesn't support specifying that.
+		 * Error out with some advice.
+		 */
 		log_status("ERROR: specifying ssl_min_protocol_version is not supported by the SSL "
 		           "library used in this build.  Set to 'None', or maybe use OpenSSL?");
 		fprintf(stderr,
@@ -96,23 +101,25 @@ set_ssl_ctx_min_version(SSL_CTX * ssl_ctx, const char *min_version)
 	}
 }
 
-///
-/// Checks for the last SSL error, if any, recording it to the log
-///
-/// If log_all is set to 0, this ignores any usually irrelevant error conditions to avoid spamming
-/// the log, only handling a small subset.
-///
-/// @param[in,out] d          Connection descriptor data
-/// @param[in]     ret_value  Return value from SSL function call
-/// @param[in]     log_level  Amount of logging to do according to ssl_logging_t
-/// @returns       SSL_ERROR_NONE if successful or unknown, otherwise value from SSL_get_error()
-///
+/**
+ * Checks for the last SSL error, if any, recording it to the log
+ *
+ * If log_all is set to 0, this ignores any usually irrelevant error conditions to avoid spamming
+ * the log, only handling a small subset.
+ *
+ * @param[in,out] d          Connection descriptor data
+ * @param[in]     ret_value  Return value from SSL function call
+ * @param[in]     log_level  Amount of logging to do according to ssl_logging_t
+ * @returns       SSL_ERROR_NONE if successful or unknown, otherwise value from SSL_get_error()
+ */
 int
 ssl_check_error(struct descriptor_data *d, const int ret_value, const ssl_logging_t log_level)
 {
-	// Errors require a valid SSL structure, and errors only occur when ret_value is not 1.
-	// Bail out early if these conditions aren't met.
-	// See https://www.openssl.org/docs/man1.1.0/ssl/SSL_accept.html
+	/*
+	 * Errors require a valid SSL structure, and errors only occur when ret_value is not 1.
+	 * Bail out early if these conditions aren't met.
+	 * See https://www.openssl.org/docs/man1.1.0/ssl/SSL_accept.html
+	 */
 	if (!d->ssl_session || ret_value == 1) {
 		return SSL_ERROR_NONE;
 	}
@@ -125,14 +132,15 @@ ssl_check_error(struct descriptor_data *d, const int ret_value, const ssl_loggin
 #ifdef HAVE_OPENSSL
 		// OpenSSL has support for getting the error reason string...
 		const char *reason_str_buf = ERR_reason_error_string(ERR_get_error());
-		// Use the specific error message if available, or fall back to a generic error if not
-		// available (assumptions could mislead an unwary sysadmin).
+		/*
+		 * Use the specific error message if available, or fall back to a generic error if not available
+		 * (assumptions could mislead an unwary sysadmin)
+		 */
 		if (reason_str_buf == NULL) {
 			reason_str_buf = "unknown reason";
 		}
 #else
-		// ...but other SSL libraries might not, so assume an unknown error.  Remove this check if
-		// not actually needed.
+		// ...but other SSL libraries might not, so assume an unknown error.  Remove this check if not actually needed.
 		const char *reason_str_buf = "unknown reason";
 #endif
 
@@ -145,9 +153,11 @@ ssl_check_error(struct descriptor_data *d, const int ret_value, const ssl_loggin
 		case SSL_ERROR_SSL:
 			if (log_level < SSL_LOGGING_ERROR)
 				break;
-			// These are logged even when SSL protocol considers it intentional.  This allows
-			// tracking when clients connect that don't support the latest protocols
-			// (e.g. when SSLv3 is disabled).
+			/*
+			 * These are logged even when SSL protocol considers it intentional.  This allows
+			 * tracking when clients connect that don't support the latest protocols
+			 * (e.g. when SSLv3 is disabled).
+			 */
 			log_status("SSL: Error negotiating encrypted connection (%s, SSL_ERROR_SSL)"
 			           " on descriptor %d from %s(%s)",
 			           reason_str_buf, d->descriptor, d->hostname, d->username);
@@ -158,12 +168,14 @@ ssl_check_error(struct descriptor_data *d, const int ret_value, const ssl_loggin
 			log_status("SSL: Error with input/output of connection (%s, SSL_ERROR_SYSCALL)"
 			           " on descriptor %d from %s(%s)",
 			           reason_str_buf, d->descriptor, d->hostname, d->username);
-			// The original log_ssl_error function called this instead...
-			//   log_status("SSL %s: sock %d, Error SSL_ERROR_SYSCALL: %s", text, descr,
-			//   strerror(errno));
-			// However, errno is specific to interface.c, and might be redundant now that
-			// reason_str exists.  If it's actually needed, just modify this function, passing it
-			// in here.
+			/*
+			 * The original log_ssl_error function called this instead...
+			 *   log_status("SSL %s: sock %d, Error SSL_ERROR_SYSCALL: %s", text, descr,
+			 *   strerror(errno));
+			 * However, errno is specific to interface.c, and might be redundant now that
+			 * reason_str exists.  If it's actually needed, just modify this function, passing it
+			 * in here.
+			 */
 			break;
 		case SSL_ERROR_ZERO_RETURN:
 			if (log_level < SSL_LOGGING_ERROR)
@@ -224,4 +236,4 @@ ssl_check_error(struct descriptor_data *d, const int ret_value, const ssl_loggin
 	return ssl_error_value;
 }
 
-#endif				// USE_SSL
+#endif /* USE_SSL */

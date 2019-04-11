@@ -163,12 +163,11 @@ putprops_copy(FILE * f, dbref obj)
 {
     char buf[BUFFER_LEN * 3];
     char *ptr;
-    FILE *g;
 
     /* If the props are loaded, save them */
     if (DBFETCH(obj)->propsmode != PROPS_UNLOADED) {
         if (fetch_propvals(obj, (char[]){PROPDIR_DELIMITER,0})) {
-            fseek(f, 0L, 2);
+            fseek(f, 0L, SEEK_END);
         }
 
         putproperties(f, obj);
@@ -182,12 +181,7 @@ putprops_copy(FILE * f, dbref obj)
     if (db_conversion_flag) {
         if (fetchprops_priority(obj, 1, NULL)
             || fetch_propvals(obj, (char[]){PROPDIR_DELIMITER,0})) {
-            /*
-             * @TODO fseek should use a constant instead of this random
-             *       '2' value.  2 is SEEK_END.  The constant is more
-             *       readable and standard.
-             */
-            fseek(f, 0L, 2);
+            fseek(f, 0L, SEEK_END);
         }
 
         putproperties(f, obj);
@@ -199,24 +193,17 @@ putprops_copy(FILE * f, dbref obj)
      * to the output.
      */
 
-    /*
-     * @TODO Personally I think this 'g' variable just obfuscates what is
-     *       going on and makes it harder to read.  None of these lines of
-     *       code will get overly long just by using input_file everywhere.
-     *       (tanabi)
-     */
-    g = input_file;
     putstring(f, "*Props*");
 
     if (DBFETCH(obj)->propsfpos) {
-        fseek(g, DBFETCH(obj)->propsfpos, 0);
-        ptr = fgets(buf, sizeof(buf), g);
+        fseek(input_file, DBFETCH(obj)->propsfpos, SEEK_SET);
+        ptr = fgets(buf, sizeof(buf), input_file);
 
         if (!ptr)
             abort();
 
         for (;;) {
-            ptr = fgets(buf, sizeof(buf), g);
+            ptr = fgets(buf, sizeof(buf), input_file);
 
             if (!ptr)
                 abort();

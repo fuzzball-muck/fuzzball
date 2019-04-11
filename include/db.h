@@ -19,16 +19,6 @@
 
 #define GLOBAL_ENVIRONMENT ((dbref) 0)  /* parent of all rooms (always #0) */
 
-/*
- * @TODO These defines probably belong somewhere else (config.h maybe?)
- *       They seem pretty config-y.  Especially BUFFER_LEN.
- */
-#define MAX_COMMAND_LEN 2048    /* max process_command arg length */
-#define MAX_LINKS 50            /* max destinations for an exit */
-#define MAX_PARENT_DEPTH 256    /* max parenting depth allowed */
-
-#define BUFFER_LEN ((MAX_COMMAND_LEN)*4)
-
 extern char match_args[BUFFER_LEN];
 extern char match_cmdname[BUFFER_LEN];
 

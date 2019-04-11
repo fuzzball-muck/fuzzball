@@ -58,10 +58,8 @@ muf_event_process_free(struct mufevent_process *ptr)
     ptr->prog = NOTHING;
     if (ptr->filters) {
 	for (int i = 0; i < ptr->filtercount; i++) {
-	    if (ptr->filters[i]) {
-		free(ptr->filters[i]);
-		ptr->filters[i] = NULL;
-	    }
+            free(ptr->filters[i]);
+            ptr->filters[i] = NULL;
 	}
 	free(ptr->filters);
 	ptr->filters = NULL;

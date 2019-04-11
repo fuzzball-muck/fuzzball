@@ -66,7 +66,7 @@ gui_pkg_callback(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 	    value[i] = mcp_mesg_arg_getline(msg, "value", i);
 	}
 	gui_value_set_local(dlogid, id, valcount, value);
-	free((char **) value);
+	free((void **) value);
 
     } else if (!strcasecmp(msg->mesgname, "ctrl-event")) {
 	const char *evt = mcp_mesg_arg_getline(msg, "event", 0);

@@ -118,7 +118,7 @@ kill_hash(hash_tab * table, unsigned int size, int freeptrs)
 	    np = hp->next;	/* Don't dereference the pointer after */
 	    free((void *) hp->name);
 	    if (freeptrs) {
-		free((void *) hp->dat.pval);
+		free(hp->dat.pval);
 	    }
 	    free(hp);
 	}

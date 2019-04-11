@@ -20,6 +20,7 @@
 
 #ifndef WIN32
 #include <dirent.h>
+#include <strings.h>
 #else
 #include "win32.h"
 #endif

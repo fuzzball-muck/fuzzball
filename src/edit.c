@@ -28,6 +28,11 @@
 #include "tune.h"
 
 /**
+ * @var the MUF macro table.
+ */
+struct macrotable *macrotop;
+
+/**
  * Free the memory of a line structure, including its string data as applicable
  *
  * @private
@@ -36,9 +41,7 @@
 static void
 free_line(struct line *l)
 {
-    if (l->this_line)
-        free((void *) l->this_line);
-
+    free((void *) l->this_line);
     free(l);
 }
 
@@ -361,12 +364,8 @@ purge_macro_tree(struct macrotable *node)
     purge_macro_tree(node->left);
     purge_macro_tree(node->right);
 
-    if (node->name)
-        free(node->name);
-
-    if (node->definition)
-        free(node->definition);
-
+    free(node->name);
+    free(node->definition);
     free(node);
 }
 
@@ -412,12 +411,8 @@ erase_node(struct macrotable *oldnode, struct macrotable *node,
             if (node->right)
                 grow_macro_tree(mtop, node->right);
 
-            if (node->name)
-                free(node->name);
-
-            if (node->definition)
-                free(node->definition);
-
+            free(node->name);
+            free(node->definition);
             free(node);
             return 1;
         } else {
@@ -426,12 +421,8 @@ erase_node(struct macrotable *oldnode, struct macrotable *node,
             if (node->left)
                 grow_macro_tree(mtop, node->left);
 
-            if (node->name)
-                free(node->name);
-
-            if (node->definition)
-                free(node->definition);
-
+            free(node->name);
+            free(node->definition);
             free(node);
             return 1;
         }
@@ -475,13 +466,8 @@ kill_macro(const char *macroname, dbref player, struct macrotable **mtop)
 
         if ((*mtop) && (whichway ? macrotemp->right : macrotemp->left))
             grow_macro_tree((*mtop), whichway ? macrotemp->right : macrotemp->left);
-
-        if (macrotemp->name)
-            free(macrotemp->name);
-
-        if (macrotemp->definition)
-            free(macrotemp->definition);
-
+        free(macrotemp->name);
+        free(macrotemp->definition);
         free(macrotemp);
         return (1);
     } else if (erase_node((*mtop), (*mtop), macroname, (*mtop)))
@@ -1235,24 +1221,13 @@ editor(int descr, dbref player, const char *command)
         }
 
         buf[j] = '\0';
-
-        /*
-         * Copy the buffer segment.  We will clean up the elements
-         * in word before exiting.
-         */
         word[i] = alloc_string(buf);
 
-        /* Create a macro if applicable */
         if ((i == 1) && !strcasecmp(word[0], "def")) {
-            if (word[1] &&
-                (word[1][0] == '.'
-                 || (word[1][0] >= '0' && word[1][0] <= '9'))) {
+            if (word[1]
+                && (word[1][0] == '.'
+                    || (word[1][0] >= '0' && word[1][0] <= '9'))) {
                 notify(player, "Invalid macro name.");
-
-                /*
-                 * @TODO MEMORY LEAK!  'word' contents is not
-                 *       free'd
-                 */
                 return;
             }
 
@@ -1270,8 +1245,7 @@ editor(int descr, dbref player, const char *command)
             }
 
             for (; i >= 0; i--) {
-                if (word[i])
-                    free((void *) word[i]);
+                free((void *) word[i]);
             }
 
             return;
@@ -1279,13 +1253,11 @@ editor(int descr, dbref player, const char *command)
 
         arg[i] = atoi(buf);
 
-        /* Arguments are always numbers */
         if (arg[i] < 0) {
             notify(player, "Negative arguments not allowed!");
 
             for (; i >= 0; i--) {
-                if (word[i])
-                    free((void *) word[i]);
+                free((void *) word[i]);
             }
 
             return;
@@ -1381,8 +1353,7 @@ editor(int descr, dbref player, const char *command)
     }
 
     for (; i >= 0; i--) {
-        if (word[i])
-            free((void *) word[i]);
+        free((void *) word[i]);
     }
 }
 

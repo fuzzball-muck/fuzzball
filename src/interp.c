@@ -286,19 +286,19 @@ RCLEAR(struct inst *oper, char *file, int line)
 	break;
     case PROG_STRING:
 	if (oper->data.string && --oper->data.string->links == 0)
-	    free((void *) oper->data.string);
+	    free(oper->data.string);
 	break;
     case PROG_FUNCTION:
 	if (oper->data.mufproc) {
-	    free((void *) oper->data.mufproc->procname);
+	    free(oper->data.mufproc->procname);
 	    varcnt = oper->data.mufproc->vars;
 	    if (oper->data.mufproc->varnames) {
 		for (int j = 0; j < varcnt; j++) {
 		    free((void *) oper->data.mufproc->varnames[j]);
 		}
-		free((void *) oper->data.mufproc->varnames);
+		free((void *)oper->data.mufproc->varnames);
 	    }
-	    free((void *) oper->data.mufproc);
+	    free(oper->data.mufproc);
 	}
 	break;
     case PROG_ARRAY:
@@ -789,12 +789,11 @@ prog_clean(struct frame *fr)
 
     fr->argument.top = 0;
     fr->pc = 0;
-    if (fr->brkpt.lastcmd)
-	free(fr->brkpt.lastcmd);
-    if (fr->brkpt.proglines) {
-	free_prog_text(fr->brkpt.proglines);
-	fr->brkpt.proglines = NULL;
-    }
+
+    free(fr->brkpt.lastcmd);
+    free_prog_text(fr->brkpt.proglines);
+
+    fr->brkpt.proglines = NULL;
 
     if (fr->rndbuf)
 	delete_seed(fr->rndbuf);
@@ -1627,11 +1626,10 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 			} else {
 			    arg[atop].type = PROG_STRING;
 			    arg[atop++].data.string = NULL;
-			}
-			if (fr->errorinst) {
-			    free(fr->errorinst);
-			    fr->errorinst = NULL;
-			}
+		        }
+
+                        free(fr->errorinst);
+                        fr->errorinst = NULL;
 		    } else {
 			/* IN_CATCH_DETAILED */
 			stk_array *nu = new_array_dictionary(fr->pinning);

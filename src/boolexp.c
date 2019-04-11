@@ -657,7 +657,7 @@ parse_boolprop(char *buf)
     b->prop_check = p = alloc_propnode(type);
     SetPDataStr(p, alloc_string(strval));
     SetPType(p, PROP_STRTYP);
-    free((void *) x);
+    free(x);
     return b;
 }
 
