@@ -1039,7 +1039,7 @@ do_pcreate(dbref player, const char *user, const char *password)
 void
 do_usage(dbref player)
 {
-    int psize;
+    long psize;
 #ifdef HAVE_GETRUSAGE
     struct rusage usage;
 #endif
@@ -1048,7 +1048,7 @@ do_usage(dbref player)
     notifyf(player, "Max descriptors/process: %ld", max_open_files());
 
 #ifdef HAVE_GETRUSAGE
-    psize = getpagesize();
+    psize = sysconf(_SC_PAGESIZE);
     getrusage(RUSAGE_SELF, &usage);
 
     notifyf(player, "Performed %d input servicings.", usage.ru_inblock);
@@ -1063,7 +1063,7 @@ do_usage(dbref player)
     notifyf(player, "Involuntarily context switched %d times.", usage.ru_nivcsw);
     notifyf(player, "User time used: %d sec.", usage.ru_utime.tv_sec);
     notifyf(player, "System time used: %d sec.", usage.ru_stime.tv_sec);
-    notifyf(player, "Pagesize for this machine: %d", psize);
+    notifyf(player, "Pagesize for this machine: %ld", psize);
     notifyf(player, "Maximum resident memory: %ldk",
             (long) (usage.ru_maxrss * (psize / 1024)));
     notifyf(player, "Integral resident memory: %ldk",
