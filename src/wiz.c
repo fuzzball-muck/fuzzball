@@ -1061,8 +1061,8 @@ do_usage(dbref player)
     notifyf(player, "Swapped out of main memory %d times.", usage.ru_nswap);
     notifyf(player, "Voluntarily context switched %d times.", usage.ru_nvcsw);
     notifyf(player, "Involuntarily context switched %d times.", usage.ru_nivcsw);
-    notifyf(player, "User time used: %d sec.", usage.ru_utime.tv_sec);
-    notifyf(player, "System time used: %d sec.", usage.ru_stime.tv_sec);
+    notifyf(player, "User time used: %ld sec.", usage.ru_utime.tv_sec);
+    notifyf(player, "System time used: %ld sec.", usage.ru_stime.tv_sec);
     notifyf(player, "Pagesize for this machine: %ld", psize);
     notifyf(player, "Maximum resident memory: %ldk",
             (long) (usage.ru_maxrss * (psize / 1024)));
