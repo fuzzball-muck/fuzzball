@@ -1,3 +1,10 @@
+/** @file events.c
+ *
+ * Implementation for functions that handle periodic events on the MUCK.
+ *
+ * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
+ */
+
 #include <time.h>
 
 #include "config.h"
@@ -19,32 +26,61 @@
  * Dump the database every so often.
  ****************************************************************/
 
+/**
+ * @private
+ * @var last database dump time
+ */
 static time_t last_dump_time = 0L;
+
+/**
+ * @private
+ * @var boolean has a dump warning been displayed for the upcoming dump?
+ */
 static int dump_warned = 0;
 
+/**
+ * Calculate next dump time
+ *
+ * This is based off the tp_dump_interval.
+ *
+ * If dump warnings are enabled (tp_dbdump_warning) and a warning has not
+ * been displayed yet, then the tp_dump_warntime will be subtracted from
+ * the calculated next dump time to trigger the warning.
+ *
+ * @private
+ * @return the calculated time until dump or 0 if the dump should be now.
+ */
 static time_t
 next_dump_time(void)
 {
     time_t currtime = (time_t) time((time_t *) NULL);
 
     if (!last_dump_time)
-	last_dump_time = (time_t) time((time_t *) NULL);
+        last_dump_time = (time_t) time((time_t *) NULL);
 
     if (tp_dbdump_warning && !dump_warned) {
-	if (((last_dump_time + tp_dump_interval) - tp_dump_warntime)
-	    < currtime) {
-	    return (0L);
-	} else {
-	    return (last_dump_time + tp_dump_interval - tp_dump_warntime - currtime);
-	}
+        if (((last_dump_time + tp_dump_interval) - tp_dump_warntime)
+            < currtime) {
+            return (0L);
+        } else {
+            return (last_dump_time + tp_dump_interval
+                    - tp_dump_warntime - currtime);
+        }
     }
 
     if ((last_dump_time + tp_dump_interval) < currtime)
-	return (0L);
+        return (0L);
 
     return (last_dump_time + tp_dump_interval - currtime);
 }
 
+/**
+ * Display dump warning, if dump warnings are enabled (tp_dbdump_warning)
+ *
+ * tp_dumpwarn_mesg is the message.
+ *
+ * @private
+ */
 static void
 dump_warning(void)
 {
@@ -53,37 +89,66 @@ dump_warning(void)
     }
 }
 
+/**
+ * Checks if its time to take a dump, among other things.
+ *
+ * If its time to dump, we also:
+ *
+ *   * set a last dumped at property
+ *   * free unused programs (@see free_unused_programs) if enabled
+ *   * purge_for_pool and purge_try_pool
+ *     (@see purge_for_pool @see purge_try_pool)
+ *
+ * The actual dump is fork_and_dump ... @see fork_and_dump
+ *
+ * @private
+ */
 static void
 check_dump_time(void)
 {
     time_t currtime = (time_t) time((time_t *) NULL);
 
     if (!last_dump_time)
-	last_dump_time = (time_t) time((time_t *) NULL);
+        last_dump_time = (time_t) time((time_t *) NULL);
+
+    /*
+     * @TODO There is a lot of overlap here in calculating times
+     *       with next_dump_time -- this function should use
+     *       next_dump_time instead of having copy-paste versions of
+     *       all the code in next_dump_time
+     */
 
     if (!dump_warned) {
-	if (((last_dump_time + tp_dump_interval) - tp_dump_warntime)
-	    < currtime) {
-	    dump_warning();
-	    dump_warned = 1;
-	}
+        if (((last_dump_time + tp_dump_interval) - tp_dump_warntime)
+            < currtime) {
+            dump_warning();
+            dump_warned = 1;
+        }
     }
 
     if ((last_dump_time + tp_dump_interval) < currtime) {
-	last_dump_time = currtime;
-	add_property((dbref) 0, SYS_LASTDUMPTIME_PROP, NULL, (int) currtime);
+        last_dump_time = currtime;
+        add_property((dbref) 0, SYS_LASTDUMPTIME_PROP, NULL, (int) currtime);
 
-	if (tp_periodic_program_purge)
-	    free_unused_programs();
-	purge_for_pool();
-	purge_try_pool();
+        if (tp_periodic_program_purge)
+            free_unused_programs();
 
-	fork_and_dump();
+        purge_for_pool();
+        purge_try_pool();
 
-	dump_warned = 0;
+        fork_and_dump();
+
+        dump_warned = 0;
     }
 }
 
+/**
+ * Do a database dump now
+ *
+ * This doesn't do any of the purges that the periodic dump does, but
+ * it does set the last dump time property.  It also sets the last
+ * dump time to now.
+ */
 void
 dump_db_now(void)
 {
@@ -99,37 +164,72 @@ dump_db_now(void)
  * Periodic cleanups *
  *********************/
 
+/**
+ * @private
+ * @var last cleanup time for cleaning up the for pool and 
+ */
 static time_t last_clean_time = 0L;
 
+/**
+ * Calculate the next time to run cleanup based on tp_clean_interval.
+ *
+ * @return the time until the next cleanup or 0 if it should be run now
+ */
 static time_t
 next_clean_time(void)
 {
     time_t currtime = (time_t) time((time_t *) NULL);
 
     if (!last_clean_time)
-	last_clean_time = (time_t) time((time_t *) NULL);
+        last_clean_time = (time_t) time((time_t *) NULL);
 
     if ((last_clean_time + tp_clean_interval) < currtime)
-	return (0L);
+        return (0L);
 
     return (last_clean_time + tp_clean_interval - currtime);
 }
 
+/**
+ * Checks cleanup time and performs cleanup if needed
+ *
+ * Most of this stuff is done at the period DB dump time.  This is
+ * separate so it can be run more often for machines with memory
+ * constraints.
+ *
+ *   - purge_for_pool @see purge_for_pool
+ *   - free_unused_programs (if tp_period_program_purge)
+ *     @see free_unused_programs
+ *   - dispose_all_oldprops (if DISKBASE) @see dispose_all_oldprops
+ *
+ * @private
+ */
 static void
 check_clean_time(void)
 {
     time_t currtime = (time_t) time((time_t *) NULL);
 
+    /*
+     * @TODO Total overlap with next_clean_time -- use that to
+     * calculate if we need to clean or not.
+     */
     if (!last_clean_time)
-	last_clean_time = (time_t) time((time_t *) NULL);
+        last_clean_time = (time_t) time((time_t *) NULL);
 
     if ((last_clean_time + tp_clean_interval) < currtime) {
-	last_clean_time = currtime;
-	purge_for_pool();
-	if (tp_periodic_program_purge)
-	    free_unused_programs();
+        last_clean_time = currtime;
+        purge_for_pool();
+
+        /*
+         * @TODO purge_try_pool() as well?  That is done at dump time but
+         *       but not here.  Not sure how much it matters.  Update
+         *       the header if you fix this.
+         */
+
+        if (tp_periodic_program_purge)
+            free_unused_programs();
+
 #ifdef DISKBASE
-	dispose_all_oldprops();
+        dispose_all_oldprops();
 #endif
     }
 }
@@ -138,6 +238,14 @@ check_clean_time(void)
  *  general handling for timed events like dbdumps, timequeues, etc.
  **********************************************************************/
 
+/**
+ * Calculate the time until a MUCK event will happen
+ *
+ * Could be an event, a dump, or a cleanup.  Whichever comes next
+ * will determine which time is returned.
+ *
+ * @return the time until the next MUCK event
+ */
 time_t
 next_muckevent_time(void)
 {
@@ -150,6 +258,16 @@ next_muckevent_time(void)
     return (nexttime);
 }
 
+/**
+ * Runs muckevents
+ *
+ * This will run timequeue events, dumps, and cleanups.  While it tries
+ * each function, the functions will only do something if something is
+ * ready to happen.  This is safe to run whenever, but next_muckevent_time
+ * will return the time until this will actually do something.
+ *
+ * @see next_muckevent_time
+ */
 void
 next_muckevent(void)
 {
@@ -157,4 +275,3 @@ next_muckevent(void)
     check_dump_time();
     check_clean_time();
 }
-
