@@ -11,6 +11,7 @@
 #include "compile.h"
 #include "db.h"
 #include "edit.h"
+#include "fbmath.h"
 #include "fbstrings.h"
 #include "fbtime.h"
 #include "game.h"
@@ -366,14 +367,7 @@ prim_fork(PRIM_PROTOTYPE)
 
     tmpfr->error.is_flags = fr->error.is_flags;
     if (fr->rndbuf) {
-        /*
-         * @TODO Would make more sense to just use init_seed here
-         */
-	tmpfr->rndbuf = malloc(sizeof(unsigned long) * 4);
-
-	if (tmpfr->rndbuf) {
-	    memcpy(tmpfr->rndbuf, fr->rndbuf, 16);
-	}
+	tmpfr->rndbuf = init_seed(fr->rndbuf);
     } else {
 	tmpfr->rndbuf = NULL;
     }

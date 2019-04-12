@@ -539,21 +539,6 @@ init_seed(char *seed)
 }
 
 /**
- * Deletes a seed buffer.
- *
- * @TODO This function is a little silly.  It is used in 2 places.
- *       Suggest we remove it and just free the seed directly in
- *       those 2 places.
- *
- * @param buffer the seed buffer to free
- */
-void
-delete_seed(void *buffer)
-{
-    free(buffer);
-}
-
-/**
  * Do a seeded random number generation
  *
  * This is done by taking the given buffer (which would usually be the

@@ -550,7 +550,7 @@ prim_setseed(PRIM_PROTOTYPE)
     if (!(oper1->type == PROG_STRING))
 	abort_interp("Invalid argument type.");
     if (fr->rndbuf) {
-	delete_seed(fr->rndbuf);
+	free(fr->rndbuf);
 	fr->rndbuf = NULL;
     }
     if (!oper1->data.string) {

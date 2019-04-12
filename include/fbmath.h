@@ -76,17 +76,6 @@ int arith_type(short op1_type, short op2_type);
 int comp_t(short op_type);
 
 /**
- * Deletes a seed buffer.
- *
- * @TODO This function is a little silly.  It is used in 2 places.
- *       Suggest we remove it and just free the seed directly in
- *       those 2 places.
- *
- * @param buffer the seed buffer to free
- */
-void delete_seed(void *buffer);
-
-/**
  * Initialize a random number seed buffer
  *
  * Each struct frame has its own random number seed, which is a buffer
