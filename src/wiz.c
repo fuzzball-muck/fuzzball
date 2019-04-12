@@ -1039,8 +1039,8 @@ do_pcreate(dbref player, const char *user, const char *password)
 void
 do_usage(dbref player)
 {
-    long psize;
 #ifdef HAVE_GETRUSAGE
+    long psize;
     struct rusage usage;
 #endif
 
@@ -1068,9 +1068,9 @@ do_usage(dbref player)
             (long) (usage.ru_maxrss * (psize / 1024)));
     notifyf(player, "Integral resident memory: %ldk",
             (long) (usage.ru_idrss * (psize / 1024)));
-#endif      /* HAVE_GETRUSAGE */
+#endif /* HAVE_GETRUSAGE */
 }
-#endif      /* NO_USAGE_COMMAND */
+#endif /* !NO_USAGE_COMMAND */
 
 /**
  * @TODO: These "topprofs" calls are almost all copy/paste.  I've noted in
