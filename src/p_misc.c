@@ -366,6 +366,9 @@ prim_fork(PRIM_PROTOTYPE)
 
     tmpfr->error.is_flags = fr->error.is_flags;
     if (fr->rndbuf) {
+        /*
+         * @TODO Would make more sense to just use init_seed here
+         */
 	tmpfr->rndbuf = malloc(sizeof(unsigned long) * 4);
 
 	if (tmpfr->rndbuf) {

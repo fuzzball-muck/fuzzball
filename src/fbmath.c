@@ -1,3 +1,11 @@
+/** @file fbmath.c
+ *
+ * Source for the different math operations in Fuzzball.  This is mostly
+ * used in support of MUF.
+ *
+ * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
+ */
+
 #include <limits.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -10,18 +18,44 @@
 #include "fbmath.h"
 #include "inst.h"
 
+/**
+ * Generate a random floating point number
+ *
+ * The number will be between 0 and 1
+ *
+ * @return random floating point number
+ */
 double
 _int_f_rand(void)
 {
-    return (rand() / RAND_MAX);
+    return ((double)rand() / (double)RAND_MAX);
 }
 
+/**
+ * Check to see if 'test' is within valid bounds
+ *
+ * If this returns false, then floating point i_bounds error flag should
+ * be set.
+ *
+ * @param the value to test
+ * @return boolean true if test is within bounds, false otherwise
+ */
 int
 arith_good(double test)
 {
     return ((test <= (double) (INT_MAX)) && (test >= (double) (INT_MIN)));
 }
 
+/**
+ * Make sure basic mathematical operations are valid between types.
+ *
+ * The types should be the 'type' field of struct inst, and is for checking
+ * if operations like addition, subtraction, etc. are possible.
+ *
+ * @param op1_type the first type operand
+ * @param op2_type the second type operand
+ * @return boolean true if operations are possible, false if not
+ */
 int
 arith_type(short op1_type, short op2_type)
 {
@@ -34,17 +68,43 @@ arith_type(short op1_type, short op2_type)
             || (op1_type == PROG_INTEGER && op2_type == PROG_FLOAT));
 }
 
+/**
+ * Are comparative operations allowed for the given struct inst type?
+ *
+ * Returns true if comparison operations such as greater than, less than,
+ * etc. are allowed for a given type.
+ *
+ * @param op_type the struct inst type field to check
+ * @return boolean true if comparison operations are allowed, false otherwise
+ */
 int
 comp_t(short op_type)
 {
-    return (op_type == PROG_INTEGER || op_type == PROG_FLOAT || op_type == PROG_OBJECT);
+    return (op_type == PROG_INTEGER || op_type == PROG_FLOAT 
+            || op_type == PROG_OBJECT);
 }
 
+/**
+ * Check to see if 'test' is a valid double and not INF or NINF.
+ *
+ * @param test the double to test
+ * @return boolean true if good, false if not
+ */
 int
 no_good(double test)
 {
     return test == INF || test == NINF;
 }
+
+/**************************************************************************
+ *
+ * MD5 AND BASE64 IMPLEMENTATIONS
+ *
+ * Please note that a minimal effort was put into documenting these
+ * functions; they were probably copied originally from reference code
+ * bases and are very common non-fuzzball-specific implementations.
+ *
+ **************************************************************************/
 
 /* The four core functions - F1 is optimized somewhat */
 
@@ -56,18 +116,25 @@ no_good(double test)
 
 /* This is the central step in the MD5 algorithm. */
 #define MD5STEP(f,w,x,y,z,in,s) \
-	 (w += f(x,y,z) + in, w = (w<<s | w>>(32-s)) + x)
+               (w += f(x,y,z) + in, w = (w<<s | w>>(32-s)) + x)
 
+/* Context for keeping track of an MD5 calculation */
 struct xMD5Context {
     uint32_t buf[4];
     uint32_t bytes[2];
     uint32_t in[16];
 };
 
-/*
+/**
+ * Do an MD5 Transformation
+ *
  * The core of the MD5 algorithm, this alters an existing MD5 hash to
  * reflect the addition of 16 longwords of new data.  MD5Update blocks
  * the data and converts bytes into longwords for this routine.
+ *
+ * @private
+ * @param buf transformation buffer
+ * @param in input values
  */
 static void
 xMD5Transform(uint32_t buf[4], uint32_t const in[16])
@@ -153,9 +220,15 @@ xMD5Transform(uint32_t buf[4], uint32_t const in[16])
     buf[3] += d;
 }
 
-/*
+/**
+ * MD5 Byte Swap for endian-ness
+ *
  * Shuffle the bytes into little-endian order within words, as per the
  * MD5 spec.  Note: this code works regardless of the byte order.
+ *
+ * @private
+ * @param buf the buffer to transform
+ * @param words the number of words to transform
  */
 static void
 byteSwap(uint32_t * buf, unsigned words)
@@ -163,14 +236,19 @@ byteSwap(uint32_t * buf, unsigned words)
     uint8_t *p = (uint8_t *) buf;
 
     do {
-	*buf++ = (uint32_t) ((unsigned) p[3] << 8 | p[2]) << 16 | ((unsigned) p[1] << 8 | p[0]);
-	p += 4;
+        *buf++ = (uint32_t) ((unsigned) p[3] << 8 | p[2]) << 16 | ((unsigned) p[1] << 8 | p[0]);
+        p += 4;
     } while (--words);
 }
 
-/*
+/**
+ * Initialize MD5 Context
+ *
  * Start MD5 accumulation.  Set bit count to 0 and buffer to mysterious
  * initialization constants.
+ *
+ * @private
+ * @param ctx the context to initialize
  */
 static void
 xMD5Init(struct xMD5Context *ctx)
@@ -184,9 +262,13 @@ xMD5Init(struct xMD5Context *ctx)
     ctx->bytes[1] = 0;
 }
 
-/*
- * Update context to reflect the concatenation of another buffer full
- * of bytes.
+/**
+ * Update context to reflect the concatenation of another buffer full of bytes.
+ *
+ * @private
+ * @param ctx the context to work on
+ * @param buf the input buffer
+ * @param len the size of the input buffer
  */
 static void
 xMD5Update(struct xMD5Context *ctx, const uint8_t * buf, size_t len)
@@ -196,14 +278,17 @@ xMD5Update(struct xMD5Context *ctx, const uint8_t * buf, size_t len)
     /* Update byte count */
 
     t = ctx->bytes[0];
-    if ((ctx->bytes[0] = t + len) < t)
-	ctx->bytes[1]++;	/* Carry from low to high */
 
-    t = 64 - (t & 0x3f);	/* Space available in ctx->in (at least 1) */
+    if ((ctx->bytes[0] = t + len) < t)
+        ctx->bytes[1]++;    /* Carry from low to high */
+
+    t = 64 - (t & 0x3f);    /* Space available in ctx->in (at least 1) */
+
     if ((unsigned) t > (unsigned) len) {
-	memmove((uint8_t *) ctx->in + 64 - (unsigned) t, buf, len);
-	return;
+        memmove((uint8_t *) ctx->in + 64 - (unsigned) t, buf, len);
+        return;
     }
+
     /* First chunk is an odd size */
     memmove((uint8_t *) ctx->in + 64 - (unsigned) t, buf, (unsigned) t);
     byteSwap(ctx->in, 16);
@@ -213,26 +298,32 @@ xMD5Update(struct xMD5Context *ctx, const uint8_t * buf, size_t len)
 
     /* Process data in 64-byte chunks */
     while (len >= 64) {
-	memmove((uint8_t *) ctx->in, buf, 64);
-	byteSwap(ctx->in, 16);
-	xMD5Transform(ctx->buf, ctx->in);
-	buf += 64;
-	len -= 64;
+        memmove((uint8_t *) ctx->in, buf, 64);
+        byteSwap(ctx->in, 16);
+        xMD5Transform(ctx->buf, ctx->in);
+        buf += 64;
+        len -= 64;
     }
 
     /* Handle any remaining bytes of data. */
     memmove((uint8_t *) ctx->in, buf, len);
 }
 
-/*
+/**
+ * Finalize an MD5 digest
+ *
  * Final wrapup - pad to 64-byte boundary with the bit pattern 
  * 1 0* (64-bit count of bits processed, MSB-first)
+ *
+ * @private
+ * @param digest the resulting MD5 digest
+ * @param ctx the MD5 context
  */
 static void
 xMD5Final(uint8_t digest[16], struct xMD5Context *ctx)
 {
-    int count = (int) (ctx->bytes[0] & 0x3f);	/* Bytes in ctx->in */
-    uint8_t *p = (uint8_t *) ctx->in + count;	/* First unused byte */
+    int count = (int) (ctx->bytes[0] & 0x3f);   /* Bytes in ctx->in */
+    uint8_t *p = (uint8_t *) ctx->in + count;   /* First unused byte */
 
     /* Set the first char of padding to 0x80.  There is always room. */
     *p++ = 0x80;
@@ -240,13 +331,14 @@ xMD5Final(uint8_t digest[16], struct xMD5Context *ctx)
     /* Bytes of padding needed to make 56 bytes (-8..55) */
     count = 56 - 1 - count;
 
-    if (count < 0) {		/* Padding forces an extra block */
-	memset(p, 0, count + 8);
-	byteSwap(ctx->in, 16);
-	xMD5Transform(ctx->buf, ctx->in);
-	p = (uint8_t *) ctx->in;
-	count = 56;
+    if (count < 0) {    /* Padding forces an extra block */
+        memset(p, 0, count + 8);
+        byteSwap(ctx->in, 16);
+        xMD5Transform(ctx->buf, ctx->in);
+        p = (uint8_t *) ctx->in;
+        count = 56;
     }
+
     memset(p, 0, count + 8);
     byteSwap(ctx->in, 14);
 
@@ -260,7 +352,16 @@ xMD5Final(uint8_t digest[16], struct xMD5Context *ctx)
     memset((uint8_t *) ctx, 0, sizeof(ctx));
 }
 
-/* dest buffer MUST be at least 16 bytes long. */
+/**
+ * Perform an MD5 hash
+ *
+ * dest buffer MUST be at least 16 bytes long.
+ *
+ * @private
+ * @param dest the destination buffer - must be at least 16 bytes
+ * @param orig the original value to hash
+ * @param len the length of the original value
+ */
 static void
 MD5hash(void *dest, const void *orig, size_t len)
 {
@@ -271,10 +372,18 @@ MD5hash(void *dest, const void *orig, size_t len)
     xMD5Final((uint8_t *) dest, &context);
 }
 
-/*
+/**
+ * Do a base 64 encoding
+ *
  * outbuf MUST be at least (((inlen+2)/3)*4)+1 chars long.
+ *
  * More simply, make sure your output buffer is at least 4/3rds the size
  * of the input buffer, plus five bytes.
+ *
+ * @private
+ * @param outbuf the output buffer which must be sized as noted above
+ * @param inbuf the input buffer
+ * @param inlen the length of the input buffer
  */
 static void
 Base64Encode(char *outbuf, const void *inbuf, size_t inlen)
@@ -287,55 +396,76 @@ Base64Encode(char *outbuf, const void *inbuf, size_t inlen)
     size_t i;
 
     numb = inlen;
-    if (numb > 0) {
-	unsigned int acc = 0;
-	out = (unsigned char *) outbuf;
-	for (i = 0; i < numb; i++) {
-	    if (i % 3 == 0) {
-		acc = inb[i];
-	    } else if (i % 3 == 1) {
-		acc <<= 8;
-		acc |= inb[i];
-	    } else {
-		acc <<= 8;
-		acc |= inb[i];
 
-		*out++ = b64[(acc >> 18) & 0x3f];
-		*out++ = b64[(acc >> 12) & 0x3f];
-		*out++ = b64[(acc >> 6) & 0x3f];
-		*out++ = b64[acc & 0x3f];
-	    }
-	}
-	if (i % 3 == 0) {
-	    endcnt = 0;
-	} else if (i % 3 == 1) {
-	    endcnt = 2;
-	} else {
-	    endcnt = 1;
-	}
-	for (; i % 3; i++) {
-	    acc <<= 8;
-	}
-	if (endcnt > 0) {
-	    *out++ = b64[(acc >> 18) & 0x3f];
-	    *out++ = b64[(acc >> 12) & 0x3f];
-	    if (endcnt < 2)
-		*out++ = b64[(acc >> 6) & 0x3f];
-	    if (endcnt < 1)
-		*out++ = b64[acc & 0x3f];
-	    while (endcnt-- > 0)
-		*out++ = '=';
-	}
+    if (numb > 0) {
+        unsigned int acc = 0;
+        out = (unsigned char *) outbuf;
+
+        for (i = 0; i < numb; i++) {
+            if (i % 3 == 0) {
+                acc = inb[i];
+            } else if (i % 3 == 1) {
+                acc <<= 8;
+                acc |= inb[i];
+            } else {
+                acc <<= 8;
+                acc |= inb[i];
+
+                *out++ = b64[(acc >> 18) & 0x3f];
+                *out++ = b64[(acc >> 12) & 0x3f];
+                *out++ = b64[(acc >> 6) & 0x3f];
+                *out++ = b64[acc & 0x3f];
+            }
+        }
+
+        if (i % 3 == 0) {
+            endcnt = 0;
+        } else if (i % 3 == 1) {
+            endcnt = 2;
+        } else {
+            endcnt = 1;
+        }
+
+        for (; i % 3; i++) {
+            acc <<= 8;
+        }
+
+        if (endcnt > 0) {
+            *out++ = b64[(acc >> 18) & 0x3f];
+            *out++ = b64[(acc >> 12) & 0x3f];
+
+            if (endcnt < 2)
+                *out++ = b64[(acc >> 6) & 0x3f];
+
+            if (endcnt < 1)
+                *out++ = b64[acc & 0x3f];
+
+            while (endcnt-- > 0)
+                *out++ = '=';
+        }
     }
+
     *out++ = '\0';
 
     out = (unsigned char *) outbuf;
+
     while (*out) {
-	if (*out++ > 127)
-	    abort();
+        if (*out++ > 127)
+            abort();
     }
 }
 
+/**
+ * Generate an MD5 as a hex string
+ *
+ * If my math is correct, the 'dest' buffer must be at least 31 characters
+ * in size.  Looks like where this is used in the codebase, the buffer is 33
+ * characters in size, so that is probably the safer number.
+ *
+ * @param dest the destination buffer
+ * @param orig the original data to MD5
+ * @param len the length of orig
+ */
 void
 MD5hex(void *dest, const void *orig, size_t len)
 {
@@ -344,11 +474,19 @@ MD5hex(void *dest, const void *orig, size_t len)
     MD5hash(tmp, orig, len);
 
     for (int i = 0; i < 16; i++) {
-	snprintf((char *)dest + (i*2), 255, "%.2x", tmp[i]);
+        snprintf((char *)dest + (i*2), 255, "%.2x", tmp[i]);
     }
 }
 
-/* dest buffer MUST be at least 24 chars long. */
+/**
+ * Generate an MD5 Base64 string
+ *
+ * dest buffer MUST be at least 24 chars long.
+ *
+ * @param dest the destination buffer - at least 24 characters in length
+ * @param orig the original value to generate an MD5 sum for
+ * @param len the length of orig
+ */
 void
 MD5base64(char *dest, const void *orig, size_t len)
 {
@@ -358,8 +496,23 @@ MD5base64(char *dest, const void *orig, size_t len)
     free(tmp);
 }
 
-/* Create the initial buffer for the given connection and dump some semi-
-   random string into it to start.  If seed is zero, seed off the clock. */
+/**
+ * Initialize a random number seed buffer
+ *
+ * Each struct frame has its own random number seed, which is a buffer
+ * of 4 uint32_t's
+ *
+ * If seed is NULL, we will use the system clock to generate our seed.
+ * Otherwise, 16 bytes worth of 'seed' will be copied into our seed buffer.
+ *
+ * Thus, seed must be at least 16 bytes long if provided.
+ *
+ * Memory is allocated by this function; the caller is responsible for
+ * freeing it at some point.
+ *
+ * @param seed the seed string which is either 16+ bytes or NULL
+ * @return a newly allocated seed buffer
+ */
 void *
 init_seed(char *seed)
 {
@@ -367,34 +520,60 @@ init_seed(char *seed)
     int tbuf[8];
 
     if (!(digest = malloc(sizeof(uint32_t) * 4))) {
-	return (NULL);
+        return (NULL);
     }
+
     if (!seed) {
-	/* No fixed seed given... make something up */
-	srand((unsigned int) time(NULL));
-	for (int loop = 0; loop < 8; loop++)
-	    tbuf[loop] = rand();
-	memcpy(digest, tbuf, 16);
+        /* No fixed seed given... make something up */
+        srand((unsigned int) time(NULL));
+
+        for (int loop = 0; loop < 8; loop++)
+            tbuf[loop] = rand();
+
+        memcpy(digest, tbuf, 16);
     } else {
-	memcpy(digest, seed, 16);
+        memcpy(digest, seed, 16);
     }
+
     return ((void *) digest);
 }
 
-/* Deletes a buffer. */
+/**
+ * Deletes a seed buffer.
+ *
+ * @TODO This function is a little silly.  It is used in 2 places.
+ *       Suggest we remove it and just free the seed directly in
+ *       those 2 places.
+ *
+ * @param buffer the seed buffer to free
+ */
 void
 delete_seed(void *buffer)
 {
     free(buffer);
 }
 
+/**
+ * Do a seeded random number generation
+ *
+ * This is done by taking the given buffer (which would usually be the
+ * frame's rndbuf) and doing an MD5 hash on it, returning the first
+ * integer value of the resultant hash.
+ *
+ * The computed hash is stored in 'buffer', so that a subsequent call
+ * hashes the hash, thus ensuring some degree of randomness.
+ *
+ * @param buffer the seed buffer
+ * @return the random integer value
+ */
 uint32_t
 rnd(void *buffer)
 {
     uint32_t *digest = (uint32_t *) buffer;
 
     if (!digest)
-	return (0);
+        return (0);
+
     MD5hash(digest, digest, sizeof(digest));
     return (digest[0]);
 }
