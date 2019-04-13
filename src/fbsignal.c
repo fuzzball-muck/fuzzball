@@ -276,7 +276,7 @@ sig_emerg(int i)
      * @TODO This should probably log_status as well ?
      */
     wall_and_flush
-	    ("\nEmergency signal received ! (power failure ?)\nThe database will be saved.\n");
+        ("\nEmergency signal received ! (power failure ?)\nThe database will be saved.\n");
     dump_database();
     shutdown_flag = 1;
     restart_flag = 0;
