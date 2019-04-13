@@ -796,7 +796,7 @@ prog_clean(struct frame *fr)
     fr->brkpt.proglines = NULL;
 
     if (fr->rndbuf)
-	delete_seed(fr->rndbuf);
+	free(fr->rndbuf);
 #ifdef MCP_SUPPORT
     muf_dlog_purge(fr);
 #endif

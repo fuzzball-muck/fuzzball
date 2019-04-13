@@ -1039,8 +1039,8 @@ do_pcreate(dbref player, const char *user, const char *password)
 void
 do_usage(dbref player)
 {
-    int psize;
 #ifdef HAVE_GETRUSAGE
+    long psize;
     struct rusage usage;
 #endif
 
@@ -1048,7 +1048,7 @@ do_usage(dbref player)
     notifyf(player, "Max descriptors/process: %ld", max_open_files());
 
 #ifdef HAVE_GETRUSAGE
-    psize = getpagesize();
+    psize = sysconf(_SC_PAGESIZE);
     getrusage(RUSAGE_SELF, &usage);
 
     notifyf(player, "Performed %d input servicings.", usage.ru_inblock);
@@ -1061,16 +1061,16 @@ do_usage(dbref player)
     notifyf(player, "Swapped out of main memory %d times.", usage.ru_nswap);
     notifyf(player, "Voluntarily context switched %d times.", usage.ru_nvcsw);
     notifyf(player, "Involuntarily context switched %d times.", usage.ru_nivcsw);
-    notifyf(player, "User time used: %d sec.", usage.ru_utime.tv_sec);
-    notifyf(player, "System time used: %d sec.", usage.ru_stime.tv_sec);
-    notifyf(player, "Pagesize for this machine: %d", psize);
+    notifyf(player, "User time used: %ld sec and %ld usec.", usage.ru_utime.tv_sec, usage.ru_utime.tv_usec);
+    notifyf(player, "System time used: %ld sec and %ld usec.", usage.ru_stime.tv_sec, usage.ru_stime.tv_usec);
+    notifyf(player, "Pagesize for this machine: %ld", psize);
     notifyf(player, "Maximum resident memory: %ldk",
             (long) (usage.ru_maxrss * (psize / 1024)));
     notifyf(player, "Integral resident memory: %ldk",
             (long) (usage.ru_idrss * (psize / 1024)));
-#endif      /* HAVE_GETRUSAGE */
+#endif /* HAVE_GETRUSAGE */
 }
-#endif      /* NO_USAGE_COMMAND */
+#endif /* !NO_USAGE_COMMAND */
 
 /**
  * @TODO: These "topprofs" calls are almost all copy/paste.  I've noted in
