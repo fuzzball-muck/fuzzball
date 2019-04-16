@@ -13,10 +13,6 @@
 
 #include "config.h"
 
-#define TIME_MINUTE(x)  (60 * (x))                  /* 60 seconds */
-#define TIME_HOUR(x)    ((x) * (TIME_MINUTE(60)))   /* 60 minutes */
-#define TIME_DAY(x)     ((x) * (TIME_HOUR(24)))     /* 24 hours   */
-
 /**
  * Get the machine's offset from Greenwich Mean Time in seconds.
  *
