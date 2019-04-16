@@ -26,8 +26,11 @@
 /*  Idleboot message.  */
 #define IDLEBOOT_MESSAGE "Autodisconnecting for inactivity."
 
-/*  How long someone can idle for.  */
-#define MAXIDLE TIME_HOUR(2)
+/*
+ * How long someone can idle for.
+ * 7200 seconds = 2 hours
+ */
+#define MAXIDLE 7200
 
 /*  Boot idle players?  */
 #define IDLEBOOT 1
@@ -58,11 +61,12 @@
 #define AUTOLOOK_CMD "look"
 
 /* various times */
-#define AGING_TIME TIME_DAY(90)	/* Unused time before obj shows as old. */
-#define DUMP_INTERVAL TIME_HOUR(4)	/* time between dumps */
-#define DUMP_WARNTIME TIME_MINUTE(2)	/* warning time before a dump */
-#define CLEAN_INTERVAL TIME_MINUTE(15)	/* time between unused obj purges */
-#define PNAME_HISTORY_THRESHOLD TIME_DAY(30) /* length of player name change history */
+#define AGING_TIME              7776000 /* Unused time before obj shows as old.  7776000 seconds = 90 days */
+#define DUMP_INTERVAL           14400   /* time between dumps: 14400 seconds = 4 hours */
+#define DUMP_WARNTIME           120     /* warning time before a dump: 120 seconds = 2 minutes */
+#define CLEAN_INTERVAL          900     /* time between unused obj purges: 900 seconds = 15 minutes */
+#define PNAME_HISTORY_THRESHOLD 2592000 /* length of player name change history: 2592000 seconds = 30 days */
+
 #define PNAME_HISTORY_REPORTING 1	/* Report player name change history */
 
 /* Information needed for SSL */
