@@ -165,7 +165,7 @@ toad_player(int descr, dbref player, dbref victim, dbref recipient)
         }
     }
 
-    chown_macros(victim, recipient);
+    chown_macros(macrotop, victim, recipient);
 
     free((void *) PLAYER_PASSWORD(victim));
     PLAYER_SET_PASSWORD(victim, 0);

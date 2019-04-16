@@ -63,53 +63,32 @@ free_prog_text(struct line *l)
 }
 
 /**
- * Recursively locates a macro with a given name in the table 'node'
+ * Locates a macro with a given name in the macrotable.
  *
  * Returns the macro definition or NULL if not found.
  *
  * Returns the macro definition or NULL if not found.  The returned memory
  * belongs to the caller -- remember to free it!
  *
- * @param node the head of the macro table
  * @param match the string name to find, case insensitive
  * @return the macro definition or NULL if not found.
  */
 char *
-macro_expansion(struct macrotable *node, const char *match)
+macro_expansion(const char *match)
 {
-    if (!node)
-        return NULL;
-    else {
-        /*
-         * @TODO This is weird, the author cared enough about performance
-         *       to mark value as a register just to pass 2 if statements,
-         *       but didn't care so much as to avoid unnecessary recursion.
-         *
-         *       Using a 'register' in a recursive call probably isn't as
-         *       awesome as the original author thought.
-         *
-         *       Recommend this be refactored as a loop.  That will be
-         *       potentially more performant (less stack frames, register
-         *       variable actually helps) and more stable.  Theoretically,
-         *       with enough macro's, you can smash your stack.  Granted,
-         *       you would probably need thousands of macros, but this is
-         *       another way a MUCKER bit can crash the MUCK.
-         *
-         *       The loop would just wrap the existing 'if' statements and
-         *       travel left if <, right if >
-         *
-         *       Make sure to remove 'recursive' from the doc block both
-         *       here and in the .h file if you fix this :)
-         */
+    struct macrotable *node = macrotop;
+
+    while (node) {
         register int value = strcasecmp(match, node->name);
 
         if (value < 0)
-            return macro_expansion(node->left, match);
+            node = node->left;
         else if (value > 0)
-            return macro_expansion(node->right, match);
+            node = node->right;
         else
             return alloc_string(node->definition);
     }
+    return NULL;
 }
 
 /**
@@ -145,7 +124,7 @@ new_macro(const char *name, const char *definition, dbref player)
 }
 
 /**
- * Recursively grow the macro tree, adding a new node to it.
+ * Grow the macro tree, adding a new node to it.
  *
  * @private
  * @param node the top node of the macro tree
@@ -155,39 +134,31 @@ new_macro(const char *name, const char *definition, dbref player)
 static int
 grow_macro_tree(struct macrotable *node, struct macrotable *newmacro)
 {
-    register int value = strcmp(newmacro->name, node->name);
+    while (node) {
+        register int value = strcasecmp(newmacro->name, node->name);
 
-    /*
-     * @TODO Again, for safety sake, I recommend a loop instead of
-     *       recursion.  Recursion would allow a MUCKER to potentially
-     *       crash the MUCK via a stack attack.
-     *
-     *       Might even be cleaner, too, and makes better use of that
-     *       register :)
-     */
-
-    if (!value)
-        return 0;
-    else if (value < 0) {
-        if (node->left)
-            return grow_macro_tree(node->left, newmacro);
+        if (!value)
+            return 0;
+        else if (value < 0) {
+            if (node->left)
+                node = node->left;
+            else {
+                node->left = newmacro;
+                return 1;
+            }
+        } else if (node->right)
+            node = node->right;
         else {
-            node->left = newmacro;
+            node->right = newmacro;
             return 1;
         }
-    } else if (node->right)
-        return grow_macro_tree(node->right, newmacro);
-    else {
-        node->right = newmacro;
-        return 1;
     }
+
+    return 0;
 }
 
 /**
  * Insert a new macro into the macro table
- *
- * Replaces the pointer that 'node' points to with the new node if
- * 'node' is NULL, otherwise grows the macro table starting with 'node'.
  *
  * @see grow_macro_tree
  *
@@ -195,22 +166,22 @@ grow_macro_tree(struct macrotable *node, struct macrotable *newmacro)
  * @param macroname the name of the macro to create
  * @param macrodef the macro definition
  * @param player the player creating the macro
- * @param node you probably want a pointer to the head of the macro table
  * @return boolean true if node was added, false if node was already there
  */
 static int
 insert_macro(const char *macroname, const char *macrodef,
-             dbref player, struct macrotable **node)
+             dbref player)
 {
     struct macrotable *newmacro;
 
     newmacro = new_macro(macroname, macrodef, player);
 
-    if (!(*node)) {
-        *node = newmacro;
+    if (!macrotop) {
+        macrotop = newmacro;
         return 1;
-    } else
-        return (grow_macro_tree((*node), newmacro));
+    }
+
+    return grow_macro_tree(macrotop, newmacro);
 }
 
 /**
@@ -219,9 +190,6 @@ insert_macro(const char *macroname, const char *macrodef,
  * This has some complex logic around showing a range of macros;
  * there must be a first and last.  To list all macros, pass first
  * "\001" and last "\377" (yes, that's how its done, not exactly obvious)
- *
- * 'length' is a severe misnomer; it is actually a boolean value though the
- * name implies it is some sort of string length value.
  *
  * It is true to see definitions with one macro per output line.
  * If 'length' is false, then the lines are cut off at 70 characters and just
@@ -233,12 +201,12 @@ insert_macro(const char *macroname, const char *macrodef,
  * @param node the head node
  * @param first the starting string - we will not show macros "less" than this
  * @param last the end string - we will not show macros "greater" than this
- * @param length boolean true for long form, false for abridged form
+ * @param full boolean true for long form, false for abridged form
  * @param player the player requesting the listing
  */
 static void
 do_list_tree(struct macrotable *node, const char *first, const char *last,
-             int length, dbref player)
+             int full, dbref player)
 {
     static char buf[BUFFER_LEN];
 
@@ -261,11 +229,11 @@ do_list_tree(struct macrotable *node, const char *first, const char *last,
         return;
     else {
         if (strncmp(node->name, first, strlen(first)) >= 0)
-            do_list_tree(node->left, first, last, length, player);
+            do_list_tree(node->left, first, last, full, player);
 
-        if ((strncmp(node->name, first, strlen(first)) >= 0) &&
-            (strncmp(node->name, last, strlen(last)) <= 0)) {
-            if (length) {
+        if (strncmp(node->name, first, strlen(first)) >= 0 &&
+            strncmp(node->name, last, strlen(last)) <= 0) {
+            if (full) {
                 notifyf(player, "%-16s %-16s  %s", node->name,
                 NAME(node->implementor), node->definition);
                 buf[0] = '\0';
@@ -282,9 +250,9 @@ do_list_tree(struct macrotable *node, const char *first, const char *last,
         }
 
         if (strncmp(last, node->name, strlen(last)) >= 0)
-            do_list_tree(node->right, first, last, length, player);
+            do_list_tree(node->right, first, last, full, player);
 
-        if ((node == macrotop) && !length) {
+        if (node == macrotop && !full) {
             notify(player, buf);
             buf[0] = '\0';
         }
@@ -293,10 +261,6 @@ do_list_tree(struct macrotable *node, const char *first, const char *last,
 
 /**
  * Implementation of list macros, for both full and abridged listing
- *
- * Note that "length" is a serious misnomer; it is a binary and not
- * a string length.  'full' would be a better variable name.
- * do_list_tree has the same weird naming issue.
  *
  * @see do_list_tree
  *
@@ -325,12 +289,12 @@ do_list_tree(struct macrotable *node, const char *first, const char *last,
  * @param length a boolean value, true for full mode, false for abridged
  */
 static void
-list_macros(char *word[], int k, dbref player, int length)
+list_macros(char *word[], int k, dbref player, int full)
 {
     if (!k--) {
-        do_list_tree(macrotop, "\001", "\377", length, player);
+        do_list_tree(macrotop, "\001", "\377", full, player);
     } else {
-        do_list_tree(macrotop, word[0], word[k], length, player);
+        do_list_tree(macrotop, word[0], word[k], full, player);
     }
 
     notify(player, "End of list.");
@@ -340,24 +304,11 @@ list_macros(char *word[], int k, dbref player, int length)
 /**
  * Recursively free memory associated with the macro table
  *
- * @private
  * @param node the macrotable node to free
  */
-static void
+void
 purge_macro_tree(struct macrotable *node)
 {
-    /*
-     * Note: other recursive methods have been called out as good idea
-     *       for replacement to avoid attack vectors.  In this case,
-     *       I would recommend leaving this as-is.  It is more elegant
-     *       than a loop based solution, and this is only used when the
-     *       MUCK is shutting down if MEMORY_CLEANUP is defined.
-     *
-     *       The risk is really low and you can't kill a running MUCK
-     *       with this.  The stack overflow crash would happen after
-     *       the DB dump is done, and if the crash is even noticed,
-     *       the admin can remediate the macro file if they want.
-     */
     if (!node)
         return;
 
@@ -380,52 +331,38 @@ purge_macro_tree(struct macrotable *node)
  * @param oldnode pointer to parent of this node
  * @param node the current node to search
  * @param killname the macro to delete
- * @param mtop the top of the macro table tree
  * @return boolean true if a node was deleted, false if not found
  */
 static int
 erase_node(struct macrotable *oldnode, struct macrotable *node,
-           const char *killname, struct macrotable *mtop)
+           const char *killname)
 {
-    /*
-     * Doing two strcmp's on the same strings is really dumb.  Don't
-     * do it like that.
-     */
     if (!node)
         return 0;
-    else if (strcmp(killname, node->name) < 0)
-        return erase_node(node, node->left, killname, mtop);
-    else if (strcmp(killname, node->name))
-        return erase_node(node, node->right, killname, mtop);
+
+    int value = strcmp(killname, node->name);
+
+    if (value < 0)
+        return erase_node(node, node->left, killname);
+    else if (value > 0)
+        return erase_node(node, node->right, killname);
     else {
-        /*
-         * The majority of this code is duplicated.  Seems like the
-         * free statements could be pulled out above the 'if' statement
-         * so they are common, and then do the node shifting within the
-         * if. (oldnode->left / oldnode->right assignment and grow_macro_tree
-         * bit)
-         */
         if (node == oldnode->left) {
             oldnode->left = node->left;
 
             if (node->right)
-                grow_macro_tree(mtop, node->right);
-
-            free(node->name);
-            free(node->definition);
-            free(node);
-            return 1;
+                grow_macro_tree(macrotop, node->right);
         } else {
             oldnode->right = node->right;
 
             if (node->left)
-                grow_macro_tree(mtop, node->left);
-
-            free(node->name);
-            free(node->definition);
-            free(node);
-            return 1;
+                grow_macro_tree(macrotop, node->left);
         }
+
+        free(node->name);
+        free(node->definition);
+        free(node);
+        return 1;
     }
 }
 
@@ -450,52 +387,31 @@ erase_node(struct macrotable *oldnode, struct macrotable *node,
  * @private
  * @param macroname the macro to delete
  * @param player not really used
- * @param mtop pointer to the pointer that is the top of the macro table.
  * @return boolean true if something was deleted, false it not found.
  */
 static int
-kill_macro(const char *macroname, dbref player, struct macrotable **mtop)
+kill_macro(const char *macroname, dbref player)
 {
-    if (!(*mtop) || player == NOTHING) {
-        return (0);
-    } else if (!strcasecmp(macroname, (*mtop)->name)) {
-        struct macrotable *macrotemp = (*mtop);
-        int whichway = ((*mtop)->left) ? 1 : 0;
+    if (!macrotop || player == NOTHING)
+        return 0;
 
-        *mtop = whichway ? (*mtop)->left : (*mtop)->right;
+    if (!strcasecmp(macroname, macrotop->name)) {
+        struct macrotable *macrotemp = macrotop;
+        int whichway = macrotop->left ? 1 : 0;
 
-        if ((*mtop) && (whichway ? macrotemp->right : macrotemp->left))
-            grow_macro_tree((*mtop), whichway ? macrotemp->right : macrotemp->left);
+        macrotop = whichway ? macrotop->left : macrotop->right;
+
+        if (macrotop && (whichway ? macrotemp->right : macrotemp->left))
+            grow_macro_tree(macrotop, whichway ? macrotemp->right : macrotemp->left);
+
         free(macrotemp->name);
         free(macrotemp->definition);
         free(macrotemp);
-        return (1);
-    } else if (erase_node((*mtop), (*mtop), macroname, (*mtop)))
-        return (1);
-    else
-        return (0);
-}
+        return 1;
+    }
 
-#ifdef MEMORY_CLEANUP
-/*
- * @TODO this function is stupid.  macrotop is a global.  Promote
- *       purge_macro_tree to edit.h, don't bother with this #ifdef
- *       (as it turns out, there is no ifdef in the declaration, so
- *       which technically works as long as nothing tries to call
- *       the function but is bad practice IMO), and modify interface.c
- *       (the only place this is used) to use:
- *       purge_macro_tree(macrotop)
- *
- *       Doing it this way only makes sense if macrotop wasn't global.
- *       Remember to remove @private from the docblock when you promote
- *       purge_macro_tree :)
- */
-void
-free_old_macros(void)
-{
-    purge_macro_tree(macrotop);
+    return erase_node(macrotop, macrotop, macroname);
 }
-#endif
 
 /**
  * Recursively changes ownership (implementor) of macros
@@ -504,40 +420,22 @@ free_old_macros(void)
  * called if a player is toaded, so it is safe to leave this recursive
  * and cannot be used as an attack vector.
  *
- * @private
  * @param node the node we are working on
  * @param from the source player
  * @param to the destination player
  */
-static void
-chown_macros_rec(struct macrotable *node, dbref from, dbref to)
+void
+chown_macros(struct macrotable *node, dbref from, dbref to)
 {
     if (!node)
         return;
 
-    chown_macros_rec(node->left, from, to);
+    chown_macros(node->left, from, to);
 
     if (node->implementor == from)
         node->implementor = to;
 
-    chown_macros_rec(node->right, from, to);
-}
-
-/**
- * A wrapper around chown_macros_rec to hide the recursiveness
- *
- * @TODO This really isn't necessary; macrotop is a global, so just
- *       rename chown_macros_rec to chown_macros and then change
- *       the *one* place this is used (player.c) to pass macrotop
- *       in.
- *
- *       Set the doc-block for chown_macros_rec to not-private and
- *       update the edit.h file.
- */
-void
-chown_macros(dbref from, dbref to)
-{
-    chown_macros_rec(macrotop, from, to);
+    chown_macros(node->right, from, to);
 }
 
 /**
@@ -988,19 +886,6 @@ val_and_head(dbref player, int arg[], int argc)
     do_list_header(player, program);
 }
 
-/*
- * @TODO This function is stupid.  It is used in exactly one place.
- *       Just copy these lines in list_publics.  I don't know why this
- *       was done this way.
- */
-static void
-do_list_publics(dbref player, dbref program)
-{
-    notify(player, "PUBLIC functions:");
-    for (struct publics *ptr = PROGRAM_PUBS(program); ptr; ptr = ptr->next)
-        notify(player, ptr->subname);
-}
-
 /**
  * List publics on a program
  *
@@ -1059,7 +944,9 @@ list_publics(int descr, dbref player, int arg[], int argc)
         }
     }
 
-    do_list_publics(player, program);
+    notify(player, "PUBLIC functions:");
+    for (struct publics *ptr = PROGRAM_PUBS(program); ptr; ptr = ptr->next)
+        notify(player, ptr->subname);
 }
 
 /**
@@ -1240,7 +1127,7 @@ editor(int descr, dbref player, const char *command)
             if (!word[2])
                 notify(player, "Invalid definition syntax.");
             else {
-                if (insert_macro(word[1], word[2], player, &macrotop)) {
+                if (insert_macro(word[1], word[2], player)) {
                     notify(player, "Entry created.");
                 } else {
                     notify(player, "That macro already exists!");
@@ -1284,7 +1171,7 @@ editor(int descr, dbref player, const char *command)
                 if (!Wizard(player)) {
                     notify(player, "I'm sorry Dave, but I can't let you do that.");
                 } else {
-                    if (kill_macro(word[0], player, &macrotop))
+                    if (kill_macro(word[0], player))
                         notify(player, "Macro entry deleted.");
                     else
                         notify(player, "Macro to delete not found.");
@@ -1377,12 +1264,8 @@ get_new_line(void)
         abort();
     }
 
-    /*
-     * @TODO Better to use memset(nu, 0, sizeof(struct line));
-     */
-    nu->this_line = NULL;
-    nu->next = NULL;
-    nu->prev = NULL;
+    memset(nu, 0, sizeof(struct line));
+
     return nu;
 }
 
@@ -1703,96 +1586,6 @@ file_line(FILE * f)
 }
 
 /**
- * Turn a linked list of macros into a proper tree.
- *
- * For whatever reason, macros are loaded from a file into what is
- * more or less a flat linked list, and then "folded" into a tree.
- *
- * I'm not sure why we don't just use 'insert_macro' ... there is
- * unlikely to be enough macros to be a problem and macroload is
- * only called once.  Why have 2 ways to add macros?
- *
- * @TODO Remove this and have macroload/macrochain just use insert_macro
- *
- * @private
- * @param center the center node of the macro table
- */
-static void
-foldtree(struct macrotable *center)
-{
-    int count = 0;
-    struct macrotable *nextcent = center;
-
-    for (; nextcent; nextcent = nextcent->left)
-        count++;
-
-    if (count > 1) {
-        for (nextcent = center, count /= 2; count--; nextcent = nextcent->left) ;
-
-        if (center->left)
-            center->left->right = NULL;
-
-        center->left = nextcent;
-        foldtree(center->left);
-    }
-
-    for (count = 0, nextcent = center; nextcent; nextcent = nextcent->right)
-        count++;
-
-    if (count > 1) {
-        for (nextcent = center, count /= 2; count--; nextcent = nextcent->right) ;
-
-        if (center->right)
-            center->right->left = NULL;
-
-        foldtree(center->right);
-    }
-}
-
-/**
- * Load macros into a linked list
- *
- * @TODO For whatever dumb reason, we load the macros into a linked list,
- *       then turn it into a tree.  This needs to get refactored to
- *       just use insert_macro so we don't need to do this ridiculous
- *       linked list then tree-fold.
- *
- *       For additional dumb reasons, this is *recursive* which is
- *       just counterintuitive.  Never recurse when a loop will do the
- *       job easier and more efficiently.
- *
- * @private
- * @param lastnode the node to start loading into
- * @param f the file handle to load from
- * @return number of macros loaded
- */
-static int
-macrochain(struct macrotable *lastnode, FILE * f)
-{
-    char *line, *line2;
-    struct macrotable *newmacro;
-
-    if (!(line = file_line(f)))
-        return 0;
-
-    line2 = file_line(f);
-
-    newmacro = (struct macrotable *) new_macro(line, line2, getref(f));
-    free(line);
-    free(line2);
-
-    if (!macrotop)
-        macrotop = (struct macrotable *) newmacro;
-    else {
-        newmacro->left = lastnode;
-
-        if (lastnode)
-            lastnode->right = newmacro;
-    }
-    return (1 + macrochain(newmacro, f));
-}
-
-/**
  * Load the macros from a file
  *
  * The file format is described in the save function.
@@ -1804,13 +1597,12 @@ macrochain(struct macrotable *lastnode, FILE * f)
 void
 macroload(FILE * f)
 {
-    int count = 0;
+    char *line;
 
-    macrotop = NULL;
-    count = macrochain(macrotop, f);
-    for (count /= 2; count--; macrotop = macrotop->right) ;
-    foldtree(macrotop);
-    return;
+    while ((line = file_line(f))) {
+        (void)insert_macro(line, file_line(f), getref(f));
+        free(line);
+    }
 }
 
 /**

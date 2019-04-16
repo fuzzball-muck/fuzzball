@@ -592,7 +592,7 @@ expand_def(COMPSTATE * cstat, const char *defname)
      */
     if (!exp) {
         if (*defname == BEGINMACRO) {
-            return (macro_expansion(macrotop, &defname[1]));
+            return (macro_expansion(&defname[1]));
         } else {
             return (NULL);
         }

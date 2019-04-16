@@ -4577,7 +4577,7 @@ main(int argc, char **argv)
 
 #ifdef MEMORY_CLEANUP
 	db_free();
-	free_old_macros();
+	purge_macro_tree(macrotop);
 	purge_all_free_frames();
 	purge_timenode_free_pool();
 	purge_for_pool();

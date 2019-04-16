@@ -49,8 +49,18 @@ struct macrotable {
  */
 extern struct macrotable *macrotop;
 
-/* Intentionally not documented - change recommended in source code */
-void chown_macros(dbref from, dbref to);
+/**
+ * Recursively changes ownership (implementor) of macros
+ *
+ * This is the uxnderpinning of 'chown_macros'.  Please note this is only
+ * called if a player is toaded, so it is safe to leave this recursive
+ * and cannot be used as an attack vector.
+ *
+ * @param node the node we are working on
+ * @param from the source player
+ * @param to the destination player
+ */
+void chown_macros(struct macrotable *node, dbref from, dbref to);
 
 /**
  * Starts editing a program
@@ -64,11 +74,12 @@ void chown_macros(dbref from, dbref to);
  */
 void edit_program(dbref player, dbref program);
 
-/*
- * This function intentionally not documented due to recommended
- * removal.
+/**
+ * Recursively free memory associated with the macro table
+ *
+ * @param node the macrotable node to free
  */
-void free_old_macros(void);
+void purge_macro_tree(struct macrotable *node);
 
 /**
  * Frees an entire linked list of struct line's
@@ -123,16 +134,15 @@ void interactive(int descr, dbref player, const char *command);
 void list_program(dbref player, dbref program, int *oarg, int argc, int comment_sysmsg);
 
 /**
- * Recursively locates a macro with a given name in the table 'node'
+ * Locates a macro with a given name in the macrotable.
  *
  * Returns the macro definition or NULL if not found.  The returned memory
  * belongs to the caller -- remember to free it!
  *
- * @param node the head of the macro table
  * @param match the string name to find, case insensitive
  * @return the macro definition or NULL if not found.
  */
-char *macro_expansion(struct macrotable *node, const char *match);
+char *macro_expansion(const char *match);
 
 /**
  * Recursively dump MUF macros to a file handle
