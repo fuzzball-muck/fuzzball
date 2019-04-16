@@ -325,7 +325,7 @@ do_list_tree(struct macrotable *node, const char *first, const char *last,
  * @param length a boolean value, true for full mode, false for abridged
  */
 static void
-list_macros(const char *word[], int k, dbref player, int length)
+list_macros(char *word[], int k, dbref player, int length)
 {
     if (!k--) {
         do_list_tree(macrotop, "\001", "\377", length, player);
@@ -1198,7 +1198,7 @@ editor(int descr, dbref player, const char *command)
     dbref program;
     int arg[MAX_ARG + 1];
     char buf[BUFFER_LEN];
-    const char *word[MAX_ARG + 1];
+    char *word[MAX_ARG + 1];
     int i, j;   /* loop variables */
 
     program = PLAYER_CURR_PROG(player);
@@ -1228,6 +1228,9 @@ editor(int descr, dbref player, const char *command)
                 && (word[1][0] == '.'
                     || (word[1][0] >= '0' && word[1][0] <= '9'))) {
                 notify(player, "Invalid macro name.");
+                for (; i >= 0; i--) {
+                    free(word[i]);
+                }
                 return;
             }
 
@@ -1245,7 +1248,7 @@ editor(int descr, dbref player, const char *command)
             }
 
             for (; i >= 0; i--) {
-                free((void *) word[i]);
+                free(word[i]);
             }
 
             return;
@@ -1257,7 +1260,7 @@ editor(int descr, dbref player, const char *command)
             notify(player, "Negative arguments not allowed!");
 
             for (; i >= 0; i--) {
-                free((void *) word[i]);
+                free(word[i]);
             }
 
             return;
@@ -1353,7 +1356,7 @@ editor(int descr, dbref player, const char *command)
     }
 
     for (; i >= 0; i--) {
-        free((void *) word[i]);
+        free(word[i]);
     }
 }
 
