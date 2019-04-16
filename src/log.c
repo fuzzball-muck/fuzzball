@@ -91,9 +91,9 @@ strip_evil_characters(char *badstring)
 	return;
 
     for (; *s; ++s) {
-	*s &= 0x7f;		/* No high ascii */
+	*s &= '\177';		/* No high ascii */
 
-	if (*s == 0x1b)
+	if (*s == '\033')
 	    *s = '[';		/* No escape (Aieeee!) */
 
 	if (!isprint(*s))
