@@ -1597,11 +1597,27 @@ file_line(FILE * f)
 void
 macroload(FILE * f)
 {
-    char *line;
+    char *line, *code;
+    dbref ref;
 
     while ((line = file_line(f))) {
-        (void)insert_macro(line, file_line(f), getref(f));
+        /*
+         * SO!  As it turns out, C compilers are not required to execute
+         * your function parameters in any particular order.  Thus,
+         * if you do a simple line such as:
+         *
+         * (void)insert_macro(line, file_line(f), getref(f));
+         *
+         * you will actually get different results on different compilers.
+         * We found this out the hard way :)  This may look clunky but
+         * it is safe.
+         */
+        code = file_line(f);
+        ref = getref(f);
+
+        (void)insert_macro(line, code, ref);
         free(line);
+        free(code);
     }
 }
 
