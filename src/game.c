@@ -1391,10 +1391,14 @@ process_command(int descr, dbref player, const char *command)
 	    break;
 	case 'h':
 	case 'H':
-	    /* help */
-	    Matched("help");
-	    do_helpfile(player, tp_file_help_dir, tp_file_help, arg1, arg2);
-	    break;
+	    /* hand, help */
+            if (!strcasecmp(command, "hand")) {
+                do_drop(descr, player, arg1, arg2);
+            } else {
+	        Matched("help");
+	        do_helpfile(player, tp_file_help_dir, tp_file_help, arg1, arg2);
+	    }
+            break;
 	case 'i':
 	case 'I':
 	    /* inventory, info */
