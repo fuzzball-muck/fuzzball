@@ -734,7 +734,6 @@ do_process_status(dbref player)
     char progstr[128];
     char prognamestr[128];
     int count = 0;
-    timequeue ptr = tqhead;
     time_t rtime = time((time_t *) NULL);
     time_t etime;
     double pcnt;
@@ -743,7 +742,12 @@ do_process_status(dbref player)
     notifyf_nolisten(player, strfmt, "PID", "Next", "Run", "KInst", "%CPU",
                      "Prog#", "ProgName", "Player", "");
 
-    while (ptr) {
+    for (timequeue ptr = tqhead; ptr; ptr = ptr->next) {
+        if (!Wizard(OWNER(player)) && ptr->uid != player &&
+            (ptr->called_prog == NOTHING || OWNER(ptr->called_prog) != OWNER(player))) {
+            continue;
+        }
+
         /* pid */
         snprintf(pidstr, sizeof(pidstr), "%d", ptr->eventnum);
 
@@ -814,22 +818,7 @@ do_process_status(dbref player)
                         inststr, cpustr, progstr, prognamestr, NAME(ptr->uid),
                         DoNull(ptr->called_data));
 
-        /* @TODO So ... we do all this work, filling up these buffers, only
-         *       to discard all that stuff if these checks fail.
-         *
-         *       My suggestion: Change this while to a for loop that
-         *       does the ptr = ptr->next bit for us.  Then move these
-         *       checks to the top of the for loop; if the checks fail,
-         *       then 'continue'.  Otherwise, do all the buffer assemblies
-         *       then notify.
-         */
-        if (Wizard(OWNER(player)) || ptr->uid == player) {
-            notify_nolisten(player, buf, 1);
-        } else if (ptr->called_prog != NOTHING && OWNER(ptr->called_prog) == OWNER(player)) {
-            notify_nolisten(player, buf, 1);
-        }
-
-        ptr = ptr->next;
+        notify_nolisten(player, buf, 1);
         count++;
     }
  
@@ -1152,84 +1141,79 @@ do_kill_process(int descr, dbref player, const char *arg1)
 
     if (*arg1 == '\0') {
         notify_nolisten(player, "What event do you want to dequeue?", 1);
+        return;
+    }
 
-        /* @TODO: we could just 'return' here and not have this wrapped in
-         *        a giant if-else; would be slightly less cumbersome.
-         */
+    if (!strcasecmp(arg1, "all")) { /* Kill everything */
+        if (!Wizard(OWNER(player))) {
+            notify_nolisten(player, "Permission denied", 1);
+            return;
+        }
+
+        while (ptr) {
+            tmp = ptr;
+            tqhead = ptr = ptr->next;
+            free_timenode(tmp);
+ 
+            /* free_timenode can free other things on the list when cleaning up
+               timers for a backgrounded process */
+            ptr = tqhead;
+            process_count--;
+        }
+
+        tqhead = NULL;
+        muf_event_dequeue(NOTHING, 0);
+        notify_nolisten(player, "Time queue cleared.", 1);
     } else {
-        if (!strcasecmp(arg1, "all")) { /* Kill everything */
-            if (!Wizard(OWNER(player))) {
-                notify_nolisten(player, "Permission denied", 1);
+        if (!number(arg1)) { /* Kill based on an object */
+            init_match(descr, player, arg1, NOTYPE, &md);
+            match_everything(&md);
+
+            if ((match = noisy_match_result(&md)) == NOTHING) {
                 return;
             }
 
-            while (ptr) {
-                tmp = ptr;
-                tqhead = ptr = ptr->next;
-                free_timenode(tmp);
-
-                /* free_timenode can free other things on the list when cleaning up
-                   timers for a backgrounded process */
-                ptr = tqhead;
-                process_count--;
+            if (!OkObj(match)) {
+                notify_nolisten(player, "I don't recognize that object.", 1);
+                return;
             }
 
-            tqhead = NULL;
-            muf_event_dequeue(NOTHING, 0);
-            notify_nolisten(player, "Time queue cleared.", 1);
+            if ((!Wizard(OWNER(player))) && (OWNER(match) != OWNER(player))) {
+                notify_nolisten(player, "Permission denied.", 1);
+                return;
+            }
+
+            count = dequeue_prog(match, 0);
+
+            if (!count) {
+                notify_nolisten(player, "That program wasn't in the time queue.", 1);
+                return;
+            }
+
+            if (count > 1) {
+                notifyf_nolisten(player, "%d processes dequeued.", count);
+            } else {
+                notify_nolisten(player, "Process dequeued.", 1);
+            }
         } else {
-            if (!number(arg1)) { /* Kill based on an object */
-                init_match(descr, player, arg1, NOTYPE, &md);
-                match_everything(&md);
-
-                if ((match = noisy_match_result(&md)) == NOTHING) {
-                    return;
-                }
-
-                if (!OkObj(match)) {
-                    notify_nolisten(player, "I don't recognize that object.", 1);
-                    return;
-                }
-
-                if ((!Wizard(OWNER(player))) && (OWNER(match) != OWNER(player))) {
+            if ((count = atoi(arg1))) { /* Kill based on a PID */
+                if (!(control_process(player, count))) {
                     notify_nolisten(player, "Permission denied.", 1);
                     return;
                 }
 
-                count = dequeue_prog(match, 0);
-
-                if (!count) {
-                    notify_nolisten(player, "That program wasn't in the time queue.", 1);
+                if (!(dequeue_process(count))) {
+                    notify_nolisten(player, "No such process!", 1);
                     return;
                 }
 
-                if (count > 1) {
-                    notifyf_nolisten(player, "%d processes dequeued.", count);
-                } else {
-                    notify_nolisten(player, "Process dequeued.", 1);
-                }
+                process_count--;
+                notify_nolisten(player, "Process dequeued.", 1);
             } else {
-                if ((count = atoi(arg1))) { /* Kill based on a PID */
-                    if (!(control_process(player, count))) {
-                        notify_nolisten(player, "Permission denied.", 1);
-                        return;
-                    }
-
-                    if (!(dequeue_process(count))) {
-                        notify_nolisten(player, "No such process!", 1);
-                        return;
-                    }
-
-                    process_count--;
-                    notify_nolisten(player, "Process dequeued.", 1);
-                } else {
-                    notify_nolisten(player, "What process do you want to dequeue?", 1);
-                }
+                notify_nolisten(player, "What process do you want to dequeue?", 1);
             }
         }
     }
-
-    return;
 }
 
 int
