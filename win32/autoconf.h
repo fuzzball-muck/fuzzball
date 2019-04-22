@@ -55,14 +55,8 @@
    */
 /* #undef HAVE_SYS_NDIR_H */
 
-/* Define to 1 if you have the <sys/resource.h> header file. */
-#define HAVE_SYS_RESOURCE_H 1
-
 /* Define to 1 if you have the <sys/stat.h> header file. */
 #define HAVE_SYS_STAT_H 1
-
-/* Define to 1 if you have the <sys/time.h> header file. */
-/* #undef HAVE_SYS_TIME_H */
 
 /* Define to 1 if you have the <sys/types.h> header file. */
 #define HAVE_SYS_TYPES_H 1
@@ -93,12 +87,6 @@
 
 /* Define to the version of this package. */
 #define PACKAGE_VERSION "7.00b1+master"
-
-/* The size of a `int', as computed by sizeof. */
-#define SIZEOF_INT 4
-
-/* The size of a `long int', as computed by sizeof. */
-#define SIZEOF_LONG_INT 4
 
 /* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
 /* #undef TIME_WITH_SYS_TIME */
