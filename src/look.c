@@ -246,7 +246,7 @@ look_room(int descr, dbref player, dbref loc)
  * Otherwise, match and look.  This does have a concept of look-traps
  * (prop-based pseudo-objects) which are checked if either nothing
  * is found (looktrap searched for on current room) or if the 'detail'
- * paramter is searched.  Look trap props are under DETAILS_PROPDIR,
+ * parameter is searched.  Look trap props are under DETAILS_PROPDIR,
  * which is usually _details.
  *
  * Look-traps support exit-style aliasing and will run MPI or @-style
