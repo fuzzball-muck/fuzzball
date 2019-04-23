@@ -107,10 +107,10 @@ The _/lok property, on <object>, on the other hand, defaults to passing.
 container.
 
   TAKE can also be used instead of GET.
-~~alsosee SUCCESS,FAILURE,@LOCK,PUT,DROP
+~~alsosee SUCCESS,FAILURE,@LOCK,PUT,DROP,HAND
 ~
 ~
-PUT|THROW
+PUT|THROW|HAND
 PUT <thing>=<container>
 
   Attempts to put <thing> into the given <container>.  The _/clk lock
@@ -123,7 +123,7 @@ hand, defaults to passing.  @succ/@fail messages are not displayed,
 when putting something into a container.
 
   You can also put programs in containers, much the same as you can with
-things.  Throw and put can be used instead of drop.
+things.  Throw, put, and hand can be used instead of drop.
 ~~alsosee @DROP,@ODROP,@LOCK,STICKY,DROP-TO,GET,DROP
 ~
 ~
@@ -146,7 +146,7 @@ by room droptos or STICKY flags.
 
   An '@drop' message can be set which will be shown to the player dropping
 the object, and an '@odrop' message can be set, which will be shown to the
-other players in the room.  Throw and put can be used instead of drop.
+other players in the room.  Throw, put, and hand can be used instead of drop.
 ~~alsosee @DROP,@ODROP,@LOCK,STICKY,DROP-TO,GET,PUT
 ~
 ~

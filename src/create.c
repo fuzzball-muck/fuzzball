@@ -28,6 +28,7 @@
 #include "predicates.h"
 #include "player.h"
 #include "props.h"
+#include "timequeue.h"
 #include "tune.h"
 
 /**
@@ -962,5 +963,142 @@ do_attach(int descr, dbref player, const char *action_name, const char *source_n
     if (MLevRaw(action)) {
         SetMLevel(action, 0);
         notify(player, "Action priority Level reset to zero.");
+    }
+}
+
+/**
+ * Implementation of @recycle command
+ *
+ * This is a wrapper around 'recycle', but it does a lot of additional
+ * permission checks.  For instance, in order to recycle an object or
+ * room, you must actually own it even if you a are a wizard.  This
+ * makes the requirement for a two-step '@chown' then '@recycle' if you
+ * wish to delete something as a wizard that you do not own.
+ *
+ * This is on purpose, I would imagine, to prevent accidents.
+ *
+ * @see recycle
+ *
+ * @param descr the descriptor of the person running the command
+ * @param player the player running the command
+ * @param name the object to recycle
+ */
+void
+do_recycle(int descr, dbref player, const char *name)
+{
+    dbref thing;
+    char buf[BUFFER_LEN];
+    struct match_data md;
+    struct tune_ref_entry *tref = tune_ref_list;
+
+    init_match(descr, player, name, TYPE_THING, &md);
+    match_everything(&md);
+
+    if ((thing = noisy_match_result(&md)) != NOTHING) {
+#ifdef GOD_PRIV
+        if (tp_strict_god_priv && !God(player) && God(OWNER(thing))) {
+            notify(player, "Only God may reclaim God's property.");
+            return;
+        }
+#endif
+        if (!controls(player, thing)) {
+            if (Wizard(OWNER(player)) && (Typeof(thing) == TYPE_GARBAGE))
+                notify(player, "That's already garbage!");
+            else
+                notify(player,
+                       "Permission denied. (You don't control what you want to recycle)");
+        } else {
+            while (tref->name) {
+                if (thing == *tref->ref) {
+                    notify(player, "That object cannot currently be @recycled.");
+                    return;
+                }
+
+                tref++;
+            }
+
+            switch (Typeof(thing)) {
+                case TYPE_ROOM:
+                    if (OWNER(thing) != OWNER(player)) {
+                        notify(player,
+                           "Permission denied. (You don't control the room you want to recycle)");
+                        return;
+                    }
+
+                    if (thing == GLOBAL_ENVIRONMENT) {
+                        notify(player,
+                               "If you want to do that, why don't you just delete the database instead?  Room #0 contains everything, and is needed for database sanity.");
+                        return;
+                    }
+
+                    break;
+                case TYPE_THING:
+                    if (OWNER(thing) != OWNER(player)) {
+                        notify(player,
+                               "Permission denied. (You can't recycle a thing you don't control)");
+                        return;
+                    }
+
+                    /* player may be a zombie or puppet */
+                    if (thing == player) {
+                        snprintf(buf, sizeof(buf),
+                                 "%.512s's owner commands it to kill itself.  It blinks a few times in shock, and says, \"But.. but.. WHY?\"  It suddenly clutches it's heart, grimacing with pain..  Staggers a few steps before falling to it's knees, then plops down on it's face.  *thud*  It kicks its legs a few times, with weakening force, as it suffers a seizure.  It's color slowly starts changing to purple, before it explodes with a fatal *POOF*!",
+                                 NAME(thing));
+                        notify_except(CONTENTS(LOCATION(thing)), thing, buf, player);
+                        notify(OWNER(player), buf);
+                        notify(OWNER(player), "Now don't you feel guilty?");
+                    }
+
+                    break;
+                case TYPE_EXIT:
+                    if (OWNER(thing) != OWNER(player)) {
+                        notify(player,
+                               "Permission denied. (You may not recycle an exit you don't own)");
+                        return;
+                    }
+
+                    unset_source(thing);
+                    break;
+                case TYPE_PLAYER:
+                    notify(player, "You can't recycle a player!");
+                    return;
+                case TYPE_PROGRAM:
+                    if (OWNER(thing) != OWNER(player)) {
+                        notify(player,
+                               "Permission denied. (You can't recycle a program you don't own)");
+                        return;
+                    }
+
+                    SetMLevel(thing, 0);
+
+                    if (PROGRAM_INSTANCES(thing)) {
+                        dequeue_prog(thing, 0);
+                    }
+
+                    /*
+                     * @TODO This is a workaround for bug #201633
+                     *
+                     * This bug predates sourceforge and is from a system
+                     * long gone: hence, we don't know what the bug is.
+		     * Modern tracking of this bug is here:
+		     * https://github.com/fuzzball-muck/fuzzball/issues/364
+                     */
+                    if (PROGRAM_INSTANCES(thing)) {
+                        assert(0);  /* getting here is a bug - we already dequeued it. */
+                        notify(player, "Recycle failed: Program is still running.");
+                        return;
+                    }
+
+                    break;
+                case TYPE_GARBAGE:
+                    notify(player, "That's already garbage!");
+                    return;
+            }
+
+            snprintf(buf, sizeof(buf), "Thank you for recycling %.512s (#%d).", NAME(thing),
+                     thing);
+            recycle(descr, player, thing);
+            notify(player, buf);
+        }
     }
 }

@@ -59,21 +59,21 @@
 #define MPI_MACROS_PROPDIR      "_msgmacs"  /* MPI Macro prop dir           */
 #define PRONOUNS_PROPDIR        "_pronouns" /* Pronoun prop dir             */
 #define REGISTRATION_PROPDIR    "_reg"      /* Registration propdir         */
-#define SYSTEM_PROPDIR_NOREAD	"@__sys__"  /* For ignore and name history  */
-#define SYSTEM_PROPDIR_PROTECT1	"_/sys"     /* For no idle ping prop        */
-#define SYSTEM_PROPDIR_PROTECT2	"_sys"      /* For a bunch of system props  */
+#define SYSTEM_PROPDIR_NOREAD   "@__sys__"  /* For ignore and name history  */
+#define SYSTEM_PROPDIR_PROTECT1 "_/sys"     /* For no idle ping prop        */
+#define SYSTEM_PROPDIR_PROTECT2 "_sys"      /* For a bunch of system props  */
 
 /* Property directory to track player name history */
-#define PNAME_HISTORY_PROPDIR	SYSTEM_PROPDIR_NOREAD "/name"
+#define PNAME_HISTORY_PROPDIR   SYSTEM_PROPDIR_NOREAD "/name"
 
 /* Player original name */
-#define PLAYER_CREATED_AS_PROP	PNAME_HISTORY_PROPDIR "/created_as"
+#define PLAYER_CREATED_AS_PROP  PNAME_HISTORY_PROPDIR "/created_as"
 
 /* Ignore props */
-#define IGNORE_PROP		SYSTEM_PROPDIR_NOREAD "/ignore/def"
+#define IGNORE_PROP     SYSTEM_PROPDIR_NOREAD "/ignore/def"
 
 /* Turn off idle ping for this player if set - value doesn't matter */
-#define NO_IDLE_PING_PROP	SYSTEM_PROPDIR_PROTECT1 "/no_idle_ping"
+#define NO_IDLE_PING_PROP   SYSTEM_PROPDIR_PROTECT1 "/no_idle_ping"
 
 /*
  * Various book-keeping props that are set on #0
@@ -81,12 +81,12 @@
  * Dump interval, last dump time, maximum number of people that
  * have connected, maximum pennies, shutdown time, and startup time.
  */
-#define SYS_DUMPINTERVAL_PROP	SYSTEM_PROPDIR_PROTECT2 "/dumpinterval"
-#define SYS_LASTDUMPTIME_PROP	SYSTEM_PROPDIR_PROTECT2 "/lastdumptime"
-#define SYS_MAX_CONNECTS_PROP	SYSTEM_PROPDIR_PROTECT2 "/max_connects"
-#define SYS_MAXPENNIES_PROP	SYSTEM_PROPDIR_PROTECT2 "/maxpennies"
-#define SYS_SHUTDOWNTIME_PROP	SYSTEM_PROPDIR_PROTECT2 "/shutdowntime"
-#define SYS_STARTUPTIME_PROP	SYSTEM_PROPDIR_PROTECT2 "/startuptime"
+#define SYS_DUMPINTERVAL_PROP   SYSTEM_PROPDIR_PROTECT2 "/dumpinterval"
+#define SYS_LASTDUMPTIME_PROP   SYSTEM_PROPDIR_PROTECT2 "/lastdumptime"
+#define SYS_MAX_CONNECTS_PROP   SYSTEM_PROPDIR_PROTECT2 "/max_connects"
+#define SYS_MAXPENNIES_PROP     SYSTEM_PROPDIR_PROTECT2 "/maxpennies"
+#define SYS_SHUTDOWNTIME_PROP   SYSTEM_PROPDIR_PROTECT2 "/shutdowntime"
+#define SYS_STARTUPTIME_PROP    SYSTEM_PROPDIR_PROTECT2 "/startuptime"
 
 /*
  * So this is a little bit of a misnomer.  It's really a "NO_TOAD_PROP"

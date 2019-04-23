@@ -203,11 +203,8 @@ fi
 dnl
 dnl Header files
 dnl
-AC_CHECK_HEADERS(malloc.h sys/resource.h sys/time.h)
+AC_CHECK_HEADERS(malloc.h)
 AC_HEADER_DIRENT
-
-AC_CHECK_SIZEOF([long int])
-AC_CHECK_SIZEOF([int])
 
 dnl
 dnl Types and structures

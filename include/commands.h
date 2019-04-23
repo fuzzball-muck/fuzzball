@@ -1085,7 +1085,7 @@ void do_reconfigure_ssl(dbref player);
 /**
  * Implementation of @recycle command
  *
- * Defined (inexplicably) in move.c
+ * Defined in create.c
  *
  * This is a wrapper around 'recycle', but it does a lot of additional
  * permission checks.  For instance, in order to recycle an object or

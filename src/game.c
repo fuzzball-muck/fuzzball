@@ -64,30 +64,30 @@ int force_level = 0;
  */
 const char *compile_options =
 #ifdef DEBUG
-	"DEBUG "
+    "DEBUG "
 #endif
 #ifdef DISKBASE
-	"DISKBASE "
+    "DISKBASE "
 #endif
 #ifdef GOD_PRIV
-	"GODPRIV "
+    "GODPRIV "
 #endif
 #ifdef MALLOC_PROFILING
-	"MEMPROF "
+    "MEMPROF "
 #endif
 #ifdef MEMORY_CLEANUP
-        "MEMCLEANUP "
+    "MEMCLEANUP "
 #endif
 #ifdef MCP_SUPPORT
-	"MCP "
+    "MCP "
 #endif
 #ifdef SPAWN_HOST_RESOLVER
-	"RESOLVER "
+    "RESOLVER "
 #endif
 #ifdef HAVE_LIBSSL
-	"SSL "
+    "SSL "
 #endif
-	"";
+    "";
 
 /**
  * @private
@@ -260,7 +260,7 @@ dump_database_internal(void)
     FILE *f;
 
     snprintf(tmpfile, sizeof(tmpfile), "%s.#%d#", dumpfile, epoch - 1);
-    (void) unlink(tmpfile);	/* nuke our predecessor */
+    (void) unlink(tmpfile); /* nuke our predecessor */
 
     snprintf(tmpfile, sizeof(tmpfile), "%s.#%d#", dumpfile, epoch);
 
@@ -273,7 +273,7 @@ dump_database_internal(void)
 #endif
 
 #ifdef WIN32
-        (void) unlink(dumpfile);    /* Delete old file before rename */
+        (void) unlink(dumpfile); /* Delete old file before rename */
 #endif
 
         if (rename(tmpfile, dumpfile) < 0)
@@ -738,7 +738,8 @@ process_command(int descr, dbref player, const char *command)
     /* ... then do NOT run actions, but run the command they specify. */
     if (!(TrueWizard(OWNER(player)) && (*command == OVERRIDE_TOKEN))) {
         if (can_move(descr, player, command, 0)) {
-            do_move(descr, player, command, 0);	/* command is exact match for exit */
+            /* command is exact match for exit */
+            do_move(descr, player, command, 0);
             *match_args = 0;
             *match_cmdname = 0;
         } else {
@@ -757,7 +758,8 @@ process_command(int descr, dbref player, const char *command)
                 }
 
                 if (can_move(descr, player, command, 0)) {
-                    do_move(descr, player, command, 0);	/* command is exact match for exit */
+                    /* command is exact match for exit */
+                    do_move(descr, player, command, 0);
                     *match_args = 0;
                     *match_cmdname = 0;
                 } else {
@@ -884,7 +886,7 @@ process_command(int descr, dbref player, const char *command)
                                     case 'L':
                                         Matched("@chlock");
                                         NOGUEST("@chlock", player);
-                                		set_standard_lock(descr, player, arg1,
+                                        set_standard_lock(descr, player, arg1,
                                                           MESGPROP_CHLOCK,
                                                           "Chown Lock", arg2);
                                         break;
@@ -1133,7 +1135,7 @@ process_command(int descr, dbref player, const char *command)
                     case 'K':
                         /* @kill */
                         Matched("@kill");
-            	        NOGUEST("@kill", player);
+                        NOGUEST("@kill", player);
                         BUILDERONLY("@kill", player);
                         do_kill_process(descr, player, arg1);
                         break;
@@ -1684,7 +1686,6 @@ process_command(int descr, dbref player, const char *command)
                 }
 
                 break;
-
             case 'e':
             case 'E':
                 /* examine */
@@ -1701,7 +1702,6 @@ process_command(int descr, dbref player, const char *command)
                         Matched("get");
                         do_get(descr, player, arg1, arg2);
                         break;
-
                     case 'i':
                     case 'I':
                         Matched("give");
@@ -1727,12 +1727,17 @@ process_command(int descr, dbref player, const char *command)
                 }
 
                 break;
-
             case 'h':
             case 'H':
-                /* help */
-                Matched("help");
-                do_helpfile(player, tp_file_help_dir, tp_file_help, arg1, arg2);
+                /* hand, help */
+                if (!strcasecmp(command, "hand")) {
+                    do_drop(descr, player, arg1, arg2);
+                } else {
+                    Matched("help");
+                    do_helpfile(player, tp_file_help_dir, tp_file_help, arg1,
+                                arg2);
+                }
+
                 break;
 
             case 'i':
@@ -1778,7 +1783,8 @@ process_command(int descr, dbref player, const char *command)
                     if (strcasecmp(command, "man"))
                         goto bad;
 
-                    do_helpfile(player, tp_file_man_dir, tp_file_man, arg1, arg2);
+                    do_helpfile(player, tp_file_man_dir, tp_file_man, arg1,
+                                arg2);
                 }
 
                 break;
@@ -1817,7 +1823,6 @@ process_command(int descr, dbref player, const char *command)
                 }
 
                 break;
-
             case 'r':
             case 'R':
                 /* read, rob */
@@ -1827,7 +1832,6 @@ process_command(int descr, dbref player, const char *command)
                         Matched("read"); /* undocumented alias for look */
                         do_look_at(descr, player, arg1, arg2);
                         break;
-
                     default:
                         goto bad;
                 }
@@ -1851,7 +1855,7 @@ process_command(int descr, dbref player, const char *command)
                         break;
 
                     default:
-                        goto bad;
+                    goto bad;
                 }
 
                 break;
@@ -1893,6 +1897,7 @@ process_command(int descr, dbref player, const char *command)
 
             default:
                 bad:
+
                 if (tp_m3_huh != 0) {
                     char hbuf[BUFFER_LEN];
                     snprintf(hbuf, BUFFER_LEN, "HUH? %s", command);
