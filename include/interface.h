@@ -150,18 +150,6 @@ int boot_off(dbref player);
 void boot_player_off(dbref player);
 int dbref_first_descr(dbref c);
 struct descriptor_data *descrdata_by_descr(int i);
-
-/**
- * Perform a database dump without forking.
- *
- * This is used in cases such as when shutting down the MUCK or whenever
- * you want everything to wait for the database to save.
- *
- * @TODO This is defined in game.c ... interface.c (which uses dump_database)
- *       includes game.h ... shouldn't this be in game.h?  Move it there
- *       unless there's some reason not to.
- */
-void dump_database(void);
 void dump_status(void);
 void emergency_shutdown(void);
 int *get_player_descrs(dbref player, int *count);

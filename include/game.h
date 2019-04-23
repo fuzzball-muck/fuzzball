@@ -150,10 +150,19 @@ extern FILE *input_file;
  *
  * This is only available if MEMORY_CLEANUP is defined.
  *
- * @TODO The definition of this is wrapped in #ifdef MEMORY_CLEANUP ... the
- *       declaration should be as well.
  */
+#ifdef MEMORY_CLEANUP
 void cleanup_game(void);
+#endif
+
+/**
+ * Perform a database dump without forking.
+ *
+ * This is used in cases such as when shutting down the MUCK or whenever
+ * you want everything to wait for the database to save.
+ *
+ */
+void dump_database(void);
 
 /**
  * Perform a dump operation, forking a new process if it is supported

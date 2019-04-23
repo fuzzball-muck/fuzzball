@@ -354,65 +354,18 @@ panic(const char *message)
     }
 #endif
 
-    /*
-     * @TODO There's a lot of copypaste code.  The current structure
-     *       is:
-     *
-     * if fail to write dump
-     *    exit block
-     * else
-     *    dump
-     *
-     * if fail to write macros
-     *    copy/paste of exit block
-     * else
-     *    dump
-     *
-     * copy/paste of exit block
-     *
-     * So the exit block is copied 3 times.  The purpose of this
-     * is to not dump the macro file if the db dump fails; however,
-     * why do we care?  Let's always try to dump both.
-     *
-     * Let's do this:
-     *
-     * if succeeds to write dump
-     *    dump
-     * else
-     *    perror message
-     *
-     * if succeeds to write macros
-     *    dump
-     * else
-     *    perror message
-     *
-     * exit block
-     *
-     * Isn't that cleaner?
-     */
-
     /* dump panic file */
     snprintf(panicfile, sizeof(panicfile), "%s.PANIC", dumpfile);
 
-    if ((f = fopen(panicfile, "wb")) == NULL) {
-        perror("CANNOT OPEN PANIC FILE, YOU LOSE");
-        sync();
-
-#ifdef NOCOREDUMP
-        exit(135);
-#else /* !NOCOREDUMP */
-# ifdef SIGIOT
-        signal(SIGIOT, SIG_DFL);
-# endif
-        abort();
-#endif /* NOCOREDUMP */
-    } else {
+    if ((f = fopen(panicfile, "wb")) != NULL) {
         log_status("DUMPING: %s", panicfile);
         fprintf(stderr, "DUMPING: %s\n", panicfile);
         db_write(f);
         fclose(f);
         log_status("DUMPING: %s (done)", panicfile);
         fprintf(stderr, "DUMPING: %s (done)\n", panicfile);
+    } else {
+        perror("CANNOT OPEN PANIC FILE, YOU LOSE");
     }
 
     /* Write out the macros */
@@ -423,21 +376,12 @@ panic(const char *message)
         fclose(f);
     } else {
         perror("CANNOT OPEN MACRO PANIC FILE, YOU LOSE");
-        sync();
-#ifdef NOCOREDUMP
-        exit(135);
-#else /* !NOCOREDUMP */
-#ifdef SIGIOT
-        signal(SIGIOT, SIG_DFL);
-#endif
-        abort();
-#endif /* NOCOREDUMP */
     }
 
-    sync();
 
+    sync();
 #ifdef NOCOREDUMP
-    exit(136);
+    exit(135);
 #else /* !NOCOREDUMP */
 #ifdef SIGIOT
     signal(SIGIOT, SIG_DFL);
@@ -521,16 +465,6 @@ fork_and_dump(void)
 #endif
 }
 
-/*
- * @TODO Remove this.  A function "for future use" with no explanation?
- *       Yeah, nope.
- */
-static void
-ensure_support()
-{
-    /* for future use */
-}
-
 /**
  * Initialize the game
  *
@@ -580,8 +514,6 @@ init_game(const char *infile, const char *outfile)
 
     log_status("LOADING: %s (done)", infile);
     fprintf(stderr, "LOADING: %s (done)\n", infile);
-
-    ensure_support();
 
     /* set up dumper */
     free((void *) dumpfile);
