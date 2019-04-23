@@ -211,7 +211,7 @@ msec_diff(struct timeval now, struct timeval then)
 }
 
 /**
- * Add x milliseconds to timeval 't' and return an updatd struct timeval
+ * Add x milliseconds to timeval 't' and return an updated struct timeval
  *
  * @param t the timeval with the starting time value
  * @param x the number of milliseconds to add

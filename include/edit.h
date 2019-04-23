@@ -52,7 +52,7 @@ extern struct macrotable *macrotop;
 /**
  * Recursively changes ownership (implementor) of macros
  *
- * This is the uxnderpinning of 'chown_macros'.  Please note this is only
+ * This is the underpinning of 'chown_macros'.  Please note this is only
  * called if a player is toaded, so it is safe to leave this recursive
  * and cannot be used as an attack vector.
  *
