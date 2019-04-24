@@ -516,20 +516,6 @@ void do_gripe(dbref player, const char *message);
  */
 
 /**
- * Implementation of @hashes command
- *
- * Defined in version.tpl
- *
- * This displays hash information for the files used to build the MUCK.
- * The git hashes are only available if this was compiled from a GIT
- * directory.
- *
- * @param player the player to display information for
- * @param args what kind of hash to show -- all, git, or sha1
- */
-void do_hashes(dbref player, char *args);
-
-/**
  * Implementation of mpi, help, man, and news
  *
  * Defined in help.c
@@ -1598,7 +1584,7 @@ void do_usage(dbref player);
 /**
  * Implementation of do_version
  *
- * Defined in version.tpl
+ * Defined in help.c
  *
  * Displays version information to player.
  *

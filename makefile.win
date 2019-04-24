@@ -56,14 +56,10 @@ CLEAN :
 	-@erase "$(INTDIR)\*.obj"
 	-@erase "$(INTDIR)\*.idb"
 	-@erase "$(INTDIR)\*.exe"
-     -@erase "$(SRCDIR)\mkversion.exe"
      -@erase "$(OUTDIR)\restart.exe"
      -@erase "$(OUTDIR)\fbmuck.exe"
 
 # Object files
-MKVERSION_OBJ="$(INTDIR)\mkversion.obj"\
-      "$(INTDIR)\sha1.obj"
-
 RESTART_OBJ="$(INTDIR)\restart.obj"
 
 MALLOC_OBJ="$(INTDIR)\crt_malloc.obj"
@@ -125,8 +121,6 @@ BASE_OBJ="$(INTDIR)\array.obj" \
 
 INTERFACE_OBJ="$(INTDIR)\interface.obj" "$(INTDIR)\interface_ssl.obj"
 
-VERSION_OBJ="$(INTDIR)\version.obj"
-
 RESOLVER_OBJ="$(INTDIR)\resolver.obj"
 
 # Directories
@@ -152,18 +146,6 @@ RESOLVER_OBJ="$(INTDIR)\resolver.obj"
 {$(WINDIR)}.c{$(INTDIR)}.obj::
    $(CPP) @<<
    $(CPP_OPS) /Fo"$(INTDIR)\\" $<
-<<
-
-# how to build version.c
-"$(SRCDIR)\version.c" : "$(SRCDIR)\mkversion.exe" "$(SRCDIR)\version.tpl" $(BASE_OBJ) $(INTERFACE_OBJ) $(MALLOC_OBJ)
-   cd $(SRCDIR)
-   mkversion
-   cd ..
-
-# mkversion for building version.c
-"$(SRCDIR)\mkversion.exe" : "$(INTDIR)" $(MKVERSION_OBJ)
-  $(LINK32) @<<
-    $(LINK32_OPS) /out:"$(SRCDIR)\mkversion.exe" $(MKVERSION_OBJ)
 <<
 
 # fbmuck main executable

@@ -52,7 +52,6 @@
     <li><a href="#@find">@find</a></li>
     <li><a href="#@force">@force</a></li>
     <li><a href="#@force_lock">@force_lock</a></li>
-    <li><a href="#@hashes">@hashes</a></li>
     <li><a href="#@idescribe">@idescribe</a></li>
     <li><a href="#@kill">@kill</a></li>
     <li><a href="#@link">@link</a></li>
@@ -3086,7 +3085,6 @@ edit package, an editor window will appear instead of using the text edit mode.
     <li><a href="#@dump">@dump</a></li>
     <li><a href="#@examine">@examine</a></li>
     <li><a href="#@force">@force</a></li>
-    <li><a href="#@hashes">@hashes</a></li>
     <li><a href="#@memory">@memory</a></li>
     <li><a href="#@mpitops">@mpitops</a></li>
     <li><a href="#@muftops">@muftops</a></li>
@@ -3398,29 +3396,6 @@ or provide help on a specific parameter.
   Show a bit about those who contributed to the development of the
 muck server software, giving credit where credit is due.
 <p>Also see:
-    <a href="#@hashes">@HASHES</a> and
-    <a href="#@version">@VERSION</a>
-</p>
-<!-- HTML_TOPICEND -->
-
-
-<h3 id="@hashes">@HASHES [all|git|sha1]
-<br>
-
-<br>
-</h3>
-  Show hashes calculated for source files at compile time.  Git
-hashes are only available if Git was installed during compilation.
-
-<p>
-  Examples:
-<pre>
-    @hashes all      show all available hashes
-    @hashes git      show only the Git hash (if available)
-    @hashes sha1     show only the SHA1 hash
-</pre>
-<p>Also see:
-    <a href="#@credits">@CREDITS</a> and
     <a href="#@version">@VERSION</a>
 </p>
 <!-- HTML_TOPICEND -->
@@ -3433,8 +3408,7 @@ hashes are only available if Git was installed during compilation.
 </h3>
   Show the version information, build time, and compile options used.
 <p>Also see:
-    <a href="#@credits">@CREDITS</a> and
-    <a href="#@hashes">@HASHES</a>
+    <a href="#@credits">@CREDITS</a>
 </p>
 <!-- HTML_TOPICEND -->
 

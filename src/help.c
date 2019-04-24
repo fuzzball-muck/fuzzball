@@ -409,3 +409,17 @@ do_credits(dbref player)
 {
     spit_file(player, tp_file_credits);
 }
+
+/**
+ * Implementation of do_version
+ *
+ * Displays version information to player.
+ *
+ * @param player
+ */
+void
+do_version(dbref player)
+{
+    notifyf(player, "Version: %s", VERSION);
+    notifyf(player, "Options: %s", compile_options);
+}

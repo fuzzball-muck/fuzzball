@@ -38,20 +38,20 @@ Symbols
   @debug             @describe          @dig               @doing
   @drop              @dump              @edit              @entrances
   @examine           @fail              @find              @force
-  @force_lock        @hashes            @idescribe         @kill
-  @link              @linklock          @list              @lock
-  @mcpedit           @mcpprogram        @memory            @mpitops
-  @muftops           @name              @newpassword       @odrop
-  @oecho             @ofail             @open              @osuccess
-  @owned             @ownlock           @password          @pcreate
-  @pecho             @program           @propset           @ps
-  @readlock          @reconfiguressl    @recycle           @register
-  @relink            @restart           @restrict          @sanchange
-  @sanfix            @sanity            @set               @shutdown
-  @stats             @success           @sweep             @teleport
-  @toad              @tops              @trace             @tune
-  @unbless           @uncompile         @unlink            @unlock
-  @usage             @version           @wall              
+  @force_lock        @idescribe         @kill              @link
+  @linklock          @list              @lock              @mcpedit
+  @mcpprogram        @memory            @mpitops           @muftops
+  @name              @newpassword       @odrop             @oecho
+  @ofail             @open              @osuccess          @owned
+  @ownlock           @password          @pcreate           @pecho
+  @program           @propset           @ps                @readlock
+  @reconfiguressl    @recycle           @register          @relink
+  @restart           @restrict          @sanchange         @sanfix
+  @sanity            @set               @shutdown          @stats
+  @success           @sweep             @teleport          @toad
+  @tops              @trace             @tune              @unbless
+  @uncompile         @unlink            @unlock            @usage
+  @version           @wall              
 
 A's
   abode  
@@ -1960,12 +1960,11 @@ Wizardly Commands
 
 @armageddon        @bless             @boot              @credits
 @debug             @dump              @examine           @force
-@hashes            @memory            @mpitops           @muftops
-@newpassword       @pcreate           @reconfiguressl    @restart
-@restrict          @sanchange         @sanfix            @sanity
-@shutdown          @toad              @tops              @tune
-@unbless           @uncompile         @usage             @version
-@wall              
+@memory            @mpitops           @muftops           @newpassword
+@pcreate           @reconfiguressl    @restart           @restrict
+@sanchange         @sanfix            @sanity            @shutdown
+@toad              @tops              @tune              @unbless
+@uncompile         @usage             @version           @wall
 
 ~----------------------------------------------------------------------------
 ~
@@ -2172,27 +2171,14 @@ or provide help on a specific parameter.
 
   Show a bit about those who contributed to the development of the
 muck server software, giving credit where credit is due.
-Also see: @HASHES and @VERSION
-~
-~
-@HASHES
-@HASHES [all|git|sha1]
-
-  Show hashes calculated for source files at compile time.  Git
-hashes are only available if Git was installed during compilation.
-
-  Examples:
-    @hashes all      show all available hashes
-    @hashes git      show only the Git hash (if available)
-    @hashes sha1     show only the SHA1 hash
-Also see: @CREDITS and @VERSION
+Also see: @VERSION
 ~
 ~
 @VERSION
 @VERSION
 
   Show the version information, build time, and compile options used.
-Also see: @CREDITS and @HASHES
+Also see: @CREDITS
 ~
 ~
 @DEBUG
