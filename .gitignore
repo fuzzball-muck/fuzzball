@@ -54,3 +54,9 @@ winsrc
 
 # Temporary backup files
 *~
+
+# Python virtual environments
+venv
+
+# Password file
+pw-file.txt

@@ -152,8 +152,6 @@ int boot_off(dbref player);
 void boot_player_off(dbref player);
 int dbref_first_descr(dbref c);
 struct descriptor_data *descrdata_by_descr(int i);
-
-void dump_database(void);
 void dump_status(void);
 void emergency_shutdown(void);
 int *get_player_descrs(dbref player, int *count);
