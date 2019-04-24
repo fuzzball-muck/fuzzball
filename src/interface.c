@@ -326,16 +326,19 @@ queue_ansi(struct descriptor_data *d, const char *msg)
     return strlen(buf);
 }
 
+#ifdef IP_FORWARDING
 static int
-is_local_connection(struct descriptor_data *d) {
-    /* Treat anything coming from 127.0.0.1 or localhost as local */
-    /* n.b. that this is potentially broken for ipv6 */
-    if (!strcmp(d->hostname, "127.0.0.1") ||
-        !strcmp(d->hostname, "localhost"))
-        return 1;
-    else
-        return 0;
+is_local_connection(struct descriptor_data *d)
+{
+     /* Treat anything coming from 127.0.0.1 or localhost as local */
+     /* n.b. that this is potentially broken for ipv6 */
+     if (!strcmp(d->hostname, "127.0.0.1") ||
+         !strcmp(d->hostname, "localhost"))
+         return 1;
+     else
+         return 0;
 }
+#endif
 
 static void
 dump_users(struct descriptor_data *e, char *user)
@@ -383,7 +386,11 @@ dump_users(struct descriptor_data *e, char *user)
 
 #ifdef USE_SSL
         /* Secure means using SSL or coming from localhost or being forwarded. */
-        if (d->ssl_session || d->forwarding_enabled || is_local_connection(d))
+        if (d->ssl_session
+#ifdef IP_FORWARDING
+           || d->forwarding_enabled || is_local_connection(d)
+#endif
+           )
             secchar = '@';
         else
             secchar = ' ';
@@ -1339,7 +1346,9 @@ shutdownsock(struct descriptor_data *d)
 	d->next->prev = d->prev;
     free((void *) d->hostname);
     free((void *) d->username);
+#ifdef IP_FORWARDING
     free(d->forwarded_buffer);
+#endif
 #ifdef MCP_SUPPORT
     mcp_frame_clear(&d->mcpframe);
 #endif
@@ -1440,10 +1449,12 @@ initializesock(int s, const char *hostname, int is_ssl)
     d->telnet_sb_opt = 0;
     d->short_reads = 0;
     
+#ifdef IP_FORWARDING
     // Gateway logic
     d->forwarding_enabled = 0;
     MALLOC(d->forwarded_buffer, char, 128);
     d->forwarded_size = 0;
+#endif
 
     d->quota = tp_command_burst_size;
     d->last_time = d->connected_at;
@@ -1938,6 +1949,7 @@ process_input(struct descriptor_data *d)
 		}
 #endif
 
+#ifdef IP_FORWARDING
         // Gateway support.
         // Copy over the new hostname.
         if (d->telnet_sb_opt == TELOPT_FORWARDED) {
@@ -1949,7 +1961,7 @@ process_input(struct descriptor_data *d)
             d->forwarded_size = 0;
         }
         d->telnet_sb_opt = 0;
-
+#endif
         d->telnet_state = TELNET_STATE_NORMAL;
         break;
 	    case TELNET_IAC:	/* IAC a second time */
@@ -1983,6 +1995,7 @@ process_input(struct descriptor_data *d)
                 process_output(d);
 	    } else
 #endif
+#ifdef IP_FORWARDING
         // If we get a request to do IP forwarding agree to it, 
         // but only for the localhost.
         if (*q == TELOPT_FORWARDED) {
@@ -1996,7 +2009,7 @@ process_input(struct descriptor_data *d)
             if (is_local_connection(d))
                 d->forwarding_enabled = 1;
         } else
-
+#endif
 		/* Otherwise, we don't negotiate: send back DONT option */
 	    {
 		sendbuf[0] = TELNET_IAC;
@@ -2033,13 +2046,17 @@ process_input(struct descriptor_data *d)
 	    d->telnet_enabled = 1;
 	} else if (d->telnet_state == TELNET_STATE_SB) {
         d->telnet_sb_opt = *((unsigned char *) q);
+#ifdef IP_FORWARDING
         /* Check if this is a forwarded hostname from a gateway */
         if (d->telnet_sb_opt == TELOPT_FORWARDED && d->forwarding_enabled) {
             d->telnet_state = TELNET_STATE_FORWARDING;
         } else {
+#endif
             /* TODO: Start remembering other subnegotiation data. */
             d->telnet_state = TELNET_STATE_NORMAL;
+#ifdef IP_FORWARDING
         }
+
     } else if (d->telnet_state == TELNET_STATE_FORWARDING) {
         if (*((unsigned char *)q) == TELNET_IAC) {
             d->telnet_state = TELNET_STATE_IAC;
@@ -2047,6 +2064,7 @@ process_input(struct descriptor_data *d)
             if (d->forwarded_size < 127)
                 d->forwarded_buffer[d->forwarded_size++] = *q;
         }
+#endif
 	} else if (*((unsigned char *) q) == TELNET_IAC) {
 	    /* Got TELNET IAC, store for next byte */
 	    d->telnet_state = TELNET_STATE_IAC;
@@ -3740,11 +3758,13 @@ pdescrsecure(int c)
     struct descriptor_data *d;
 
     d = descrdata_by_descr(c);
+# ifdef IP_FORWARDING
     // Consider local connections to always be secure.
     // This code assumes forwarded is only supported from
     // the localhost.
     if (d && (d->forwarding_enabled || is_local_connection(d)))
-    return 1;
+        return 1;
+# endif
     if (d && d->ssl_session)
 	return 1;
     else

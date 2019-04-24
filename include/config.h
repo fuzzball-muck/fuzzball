@@ -62,6 +62,20 @@
 #define SPAWN_HOST_RESOLVER
 
 /*
+ * This is similar to the X-Forwarded-For request header in HTTP.
+ * The purpose is to provide administrators running a FORWARDED
+ * aware proxy or webclient accurate hostnames in WHO*.
+ * 
+ * A client must indicate their desire to use this option with
+ * IAC WILL FORWARDED and receive a IAC DO FORWARDED in response,
+ * after which they may at any time send a sequence like:
+ * IAB SB FORWARDED IAC SE.
+ *
+ * This is only supported for gateways running on the localhost.
+ */
+#define IP_FORWARDING
+
+/*
  * This is a fairly interesting one -- if there's no DISKBASING, and thus
  * the saves are fork()ed off into the background, then then the child
  * may cause I/O contention with the parent (the interactive, player-

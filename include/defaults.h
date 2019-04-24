@@ -113,11 +113,6 @@
 #define PENNY_RATE 8		/* 1/chance of getting a penny per room */
 #define START_PENNIES 50	/* # of pennies a player's created with */
 
-/* costs of kill command */
-#define KILL_BASE_COST 100	/* prob = expenditure/KILL_BASE_COST    */
-#define KILL_MIN_COST 10	/* minimum amount needed to kill        */
-#define KILL_BONUS 50		/* amount of "insurance" paid to victim */
-
 /* player spam input limiters */
 #define COMMAND_BURST_SIZE 500	/* commands allowed per user in a burst */
 #define COMMANDS_PER_TIME 2	/* commands per time slice after burst  */
@@ -172,7 +167,7 @@
 #define PLAYER_START ((dbref) 0)	/* room number of player start location */
 
 /* Use gethostbyaddr() for hostnames in logs and the wizard WHO list. */
-#define HOSTNAMES 0
+#define HOSTNAMES 1
 
 /* Server support of @doing (reads the _/do prop on WHOs) */
 #define WHO_DOING 1

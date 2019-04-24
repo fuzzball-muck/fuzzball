@@ -206,9 +206,6 @@ int tp_commands_per_time;
 int tp_exit_cost;
 int tp_free_frames_pool;
 int tp_instr_slice;
-int tp_kill_base_cost;
-int tp_kill_bonus;
-int tp_kill_min_cost;
 int tp_link_cost;
 int tp_listen_mlev;
 int tp_lookup_cost;
@@ -258,12 +255,6 @@ struct tune_val_entry tune_val_list[] = {
      "Avg. moves between finding currency", "", 1, PENNY_RATE},
     {"Currency", "start_pennies", &tp_start_pennies, 0, MLEV_WIZARD,
      "Player starting currency count", "", 1, START_PENNIES},
-    {"Killing", "kill_base_cost", &tp_kill_base_cost, 0, MLEV_WIZARD, "Cost to guarantee kill",
-     "", 1, KILL_BASE_COST},
-    {"Killing", "kill_bonus", &tp_kill_bonus, 0, MLEV_WIZARD, "Bonus given to a killed player",
-     "", 1, KILL_BONUS},
-    {"Killing", "kill_min_cost", &tp_kill_min_cost, 0, MLEV_WIZARD, "Min. cost to do a kill",
-     "", 1, KILL_MIN_COST},
     {"Listeners", "listen_mlev", &tp_listen_mlev, 0, MLEV_WIZARD,
      "Mucker Level required for Listener programs", "", 1, LISTEN_MLEV},
     {"Logging", "cmd_log_threshold_msec", &tp_cmd_log_threshold_msec, 0, MLEV_WIZARD,
