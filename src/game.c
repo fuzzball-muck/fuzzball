@@ -72,6 +72,9 @@ const char *compile_options =
 #ifdef GOD_PRIV
     "GODPRIV "
 #endif
+#ifdef IP_FORWARDING
+    "IPFWD "
+#endif
 #ifdef MALLOC_PROFILING
     "MEMPROF "
 #endif

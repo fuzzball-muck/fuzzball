@@ -73,7 +73,7 @@
  *
  * This is only supported for gateways running on the localhost.
  */
-#define IP_FORWARDING
+#undef IP_FORWARDING
 
 /*
  * This is a fairly interesting one -- if there's no DISKBASING, and thus
