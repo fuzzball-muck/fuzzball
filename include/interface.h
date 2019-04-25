@@ -1,3 +1,12 @@
+/** @file interface.h
+ *
+ * This header has a wide range of different calls in it which (mostly)
+ * have to do with the interface between players and the game but has some
+ * random other stuff too.
+ *
+ * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
+ */
+
 #ifndef INTERFACE_H
 #define INTERFACE_H
 
