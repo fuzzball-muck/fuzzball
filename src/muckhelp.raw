@@ -1996,29 +1996,14 @@ or provide help on a specific parameter.
 
   Show a bit about those who contributed to the development of the
 muck server software, giving credit where credit is due.
-~~alsosee @HASHES,@VERSION
-~
-~
-@HASHES
-@HASHES [all|git|sha1]
-
-  Show hashes calculated for source files at compile time.  Git
-hashes are only available if Git was installed during compilation.
-
-  Examples:
-~~code
-    @hashes all      show all available hashes
-    @hashes git      show only the Git hash (if available)
-    @hashes sha1     show only the SHA1 hash
-~~endcode
-~~alsosee @CREDITS,@VERSION
+~~alsosee @VERSION
 ~
 ~
 @VERSION
 @VERSION
 
   Show the version information, build time, and compile options used.
-~~alsosee @CREDITS,@HASHES
+~~alsosee @CREDITS
 ~
 ~
 @DEBUG

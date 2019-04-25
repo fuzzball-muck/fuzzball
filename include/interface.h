@@ -121,10 +121,12 @@ struct descriptor_data {
     int telnet_sb_opt;
     int short_reads;
 
+#ifdef IP_FORWARDING
     /* Fields related to ip-forwarding, to support websocket gateways  */
     int forwarding_enabled;
     char *forwarded_buffer;
     int forwarded_size;
+#endif
 
     time_t last_time;
     time_t connected_at;

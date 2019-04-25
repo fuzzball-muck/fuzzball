@@ -4498,9 +4498,6 @@ Parameters available:
  (int)  max_pennies               - Max. pennies a player can own
  (int)  penny_rate                - Avg. moves between finding currency
  (int)  start_pennies             - Player starting currency count
- (int)  kill_base_cost            - Cost to guarantee kill
- (int)  kill_bonus                - Bonus given to a killed player
- (int)  kill_min_cost             - Min. cost to do a kill
  (int)  listen_mlev               - Mucker Level required for Listener programs
  (int)  cmd_log_threshold_msec    - Log commands that take longer than X millisecs
  (int)  max_force_level           - Max. number of forces processed within a command

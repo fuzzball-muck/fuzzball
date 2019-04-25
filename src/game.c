@@ -72,6 +72,9 @@ const char *compile_options =
 #ifdef GOD_PRIV
     "GODPRIV "
 #endif
+#ifdef IP_FORWARDING
+    "IPFWD "
+#endif
 #ifdef MALLOC_PROFILING
     "MEMPROF "
 #endif
@@ -1043,14 +1046,6 @@ process_command(int descr, dbref player, const char *command)
                                 goto bad;
                         }
 
-                        break;
-
-                    case 'h':
-                    case 'H':
-                        /* @hashes */
-                        Matched("@hashes");
-                        WIZARDONLY("@hashes", player);
-                        do_hashes(player, arg1);
                         break;
 
                     case 'i':

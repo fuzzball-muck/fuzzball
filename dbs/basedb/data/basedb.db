@@ -1,7 +1,7 @@
 ***Foxen9 TinyMUCK DUMP Format***
 54
 1
-155
+152
 %autolook_cmd=look
 %cpennies=Pennies
 %cpenny=Penny
@@ -71,9 +71,6 @@
 %max_pennies=10000
 %penny_rate=8
 %start_pennies=50
-%kill_base_cost=100
-%kill_bonus=50
-%kill_min_cost=10
 %listen_mlev=3
 %cmd_log_threshold_msec=1000
 %max_force_level=1
@@ -156,7 +153,7 @@
 %periodic_program_purge=yes
 %pname_history_reporting=yes
 %secure_who=no
-%use_hostnames=no
+%use_hostnames=yes
 #53
 Belt Pouch
 1
