@@ -186,7 +186,7 @@ static const char * get_username_v6(struct in6_addr *a, in_port_t prt, in_port_t
 	len = sizeof(addr);
 	addr.sin6_family = AF_INET6;
 	memcpy(&addr.sin6_addr.s6_addr, a, sizeof(struct in6_addr));
-	addr.sin6_port = htons((short) 113);
+	addr.sin6_port = htons(113);
 
 	do {
 		result = connect(fd, (struct sockaddr *) &addr, len);
@@ -409,7 +409,7 @@ static const char * get_username(in_addr_t a, in_port_t prt, in_port_t myprt) {
 	len = sizeof(addr);
 	addr.sin_family = AF_INET;
 	addr.sin_addr.s_addr = a;
-	addr.sin_port = htons((short) 113);
+	addr.sin_port = htons(113);
 
 	do {
 		result = connect(fd, (struct sockaddr *) &addr, len);
