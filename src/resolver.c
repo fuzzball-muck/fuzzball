@@ -2,6 +2,7 @@
 
 #include <errno.h>
 #include <fcntl.h>
+#include <inttypes.h>
 #include <pthread.h>
 #include <signal.h>
 #include <stdio.h>
@@ -165,7 +166,7 @@ static void hostadd_timestamp_v6(struct in6_addr *ip, const char *name) {
     hostcache_list->time = time(NULL);
 }
 
-static const char * get_username_v6(struct in6_addr *a, int prt, int myprt) {
+static const char * get_username_v6(struct in6_addr *a, in_port_t prt, in_port_t myprt) {
     int fd, result;
     socklen_t len;
     char *ptr, *ptr2;
@@ -200,7 +201,7 @@ static const char * get_username_v6(struct in6_addr *a, int prt, int myprt) {
 	goto bad;
     }
 
-    snprintf(buf, sizeof(buf), "%d,%d\n", prt, myprt);
+    snprintf(buf, sizeof(buf), "%" PRIu16 ",%" PRIu16 "\n", prt, myprt);
     do {
 	result = write(fd, buf, strlen(buf));
 	lasterr = errno;
@@ -260,7 +261,7 @@ static const char * get_username_v6(struct in6_addr *a, int prt, int myprt) {
 }
 
 /* addrout_v6 -- Translate address 'a' to text.  */
-static const char * addrout_v6(struct in6_addr *a, unsigned short prt, unsigned short myprt) {
+static const char * addrout_v6(struct in6_addr *a, in_port_t prt, in_port_t myprt) {
     static char buf[128];
     char tmpbuf[128];
     const char *ptr, *ptr2;
@@ -276,7 +277,7 @@ static const char * addrout_v6(struct in6_addr *a, unsigned short prt, unsigned 
 	if (ptr2) {
 	    snprintf(buf, sizeof(buf), "%s(%s)", ptr, ptr2);
 	} else {
-	    snprintf(buf, sizeof(buf), "%s(%d)", ptr, prt);
+	    snprintf(buf, sizeof(buf), "%s(%" PRIu16 ")", ptr, prt);
 	}
 	return buf;
     }
@@ -289,7 +290,7 @@ static const char * addrout_v6(struct in6_addr *a, unsigned short prt, unsigned 
 	if (ptr) {
 	    snprintf(buf, sizeof(buf), "%s(%s)", tmpbuf, ptr);
 	} else {
-	    snprintf(buf, sizeof(buf), "%s(%d)", tmpbuf, prt);
+	    snprintf(buf, sizeof(buf), "%s(%" PRIu16 ")", tmpbuf, prt);
 	}
 	return buf;
     }
@@ -300,7 +301,7 @@ static const char * addrout_v6(struct in6_addr *a, unsigned short prt, unsigned 
     if (ptr) {
 	snprintf(buf, sizeof(buf), "%s(%s)", tmpbuf, ptr);
     } else {
-	snprintf(buf, sizeof(buf), "%s(%d)", tmpbuf, prt);
+	snprintf(buf, sizeof(buf), "%s(%" PRIu16 ")", tmpbuf, prt);
     }
     return buf;
 }
@@ -388,7 +389,7 @@ void set_signals(void) {
     signal(SIGHUP, SIG_IGN);
 }
 
-static const char * get_username(long a, int prt, int myprt) {
+static const char * get_username(long a, in_port_t prt, in_port_t myprt) {
     int fd, result;
     socklen_t len;
     char *ptr, *ptr2;
@@ -423,7 +424,7 @@ static const char * get_username(long a, int prt, int myprt) {
 	goto bad;
     }
 
-    snprintf(buf, sizeof(buf), "%d,%d\n", prt, myprt);
+    snprintf(buf, sizeof(buf), "%" PRIu16 ",%" PRIu16 "\n", prt, myprt);
     do {
 	result = write(fd, buf, strlen(buf));
 	lasterr = errno;
@@ -483,7 +484,7 @@ static const char * get_username(long a, int prt, int myprt) {
 }
 
 /* addrout -- Translate address 'a' to text.  */
-static const char * addrout(long a, unsigned short prt, unsigned short myprt) {
+static const char * addrout(in_addr_t a, in_port_t prt, in_port_t myprt) {
     static char buf[128];
     char tmpbuf[128];
     const char *ptr, *ptr2;
@@ -498,7 +499,7 @@ static const char * addrout(long a, unsigned short prt, unsigned short myprt) {
 	if (ptr2) {
 	    snprintf(buf, sizeof(buf), "%s(%s)", ptr, ptr2);
 	} else {
-	    snprintf(buf, sizeof(buf), "%s(%d)", ptr, prt);
+	    snprintf(buf, sizeof(buf), "%s(%" PRIu16 ")", ptr, prt);
 	}
 	return buf;
     }
@@ -511,7 +512,7 @@ static const char * addrout(long a, unsigned short prt, unsigned short myprt) {
 	if (ptr) {
 	    snprintf(buf, sizeof(buf), "%s(%s)", tmpbuf, ptr);
 	} else {
-	    snprintf(buf, sizeof(buf), "%s(%d)", tmpbuf, prt);
+	    snprintf(buf, sizeof(buf), "%s(%" PRIu16 ")", tmpbuf, prt);
 	}
 	return buf;
     }
@@ -525,7 +526,7 @@ static const char * addrout(long a, unsigned short prt, unsigned short myprt) {
     if (ptr) {
 	snprintf(buf, sizeof(buf), "%s(%s)", tmpbuf, ptr);
     } else {
-	snprintf(buf, sizeof(buf), "%s(%d)", tmpbuf, prt);
+	snprintf(buf, sizeof(buf), "%s(%" PRIu16 ")", tmpbuf, prt);
     }
     return buf;
 }
@@ -536,14 +537,14 @@ static pthread_mutex_t output_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 static int do_resolve(void) {
     int ip1, ip2, ip3, ip4;
-    int prt, myprt;
+    in_port_t prt, myprt;
     int doagain;
     char *result;
     const char *ptr;
     char buf[1024];
     char outbuf[1024];
     char *bufptr = NULL;
-    long fullip;
+    in_addr_t fullip;
 
     struct in6_addr fullip_v6;
 
@@ -598,7 +599,7 @@ static int do_resolve(void) {
 	    if (!bufptr) {
 		continue;
 	    }
-	    sscanf(bufptr, "(%d)%d", &prt, &myprt);
+	    sscanf(bufptr, "(%" SCNu16 ")%" SCNu16, &prt, &myprt);
 	    *bufptr = '\0';
 	    if (myprt > 65535 || myprt < 0) {
 		continue;
@@ -607,12 +608,12 @@ static int do_resolve(void) {
 		continue;
 	    }
 	    ptr = addrout_v6(&fullip_v6, prt, myprt);
-	    snprintf(outbuf, sizeof(outbuf), "%s(%d)|%s", buf, prt, ptr);
+	    snprintf(outbuf, sizeof(outbuf), "%s(%" PRIu16 ")|%s", buf, prt, ptr);
 	}
 
 	if (!bufptr) {
 	    /* Is an IPv4 addr. */
-	    sscanf(buf, "%d.%d.%d.%d(%d)%d", &ip1, &ip2, &ip3, &ip4, &prt, &myprt);
+	    sscanf(buf, "%d.%d.%d.%d(%" SCNu16 ")%" SCNu16, &ip1, &ip2, &ip3, &ip4, &prt, &myprt);
 	    if (ip1 < 0 || ip2 < 0 || ip3 < 0 || ip4 < 0 || prt < 0) {
 		continue;
 	    }
@@ -627,7 +628,7 @@ static int do_resolve(void) {
 	    fullip = htonl(fullip);
 
 	    ptr = addrout(fullip, prt, myprt);
-	    snprintf(outbuf, sizeof(outbuf), "%d.%d.%d.%d(%d)|%s", ip1, ip2, ip3, ip4, prt,
+	    snprintf(outbuf, sizeof(outbuf), "%d.%d.%d.%d(%" PRIu16 ")|%s", ip1, ip2, ip3, ip4, prt,
 		     ptr);
 	}
 
