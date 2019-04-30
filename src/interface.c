@@ -10,6 +10,7 @@
 #include <ctype.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <inttypes.h>
 #include <stdarg.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -56,11 +57,14 @@
 # endif
 #endif
 
-static const char *connect_fail =
-	"Either that player does not exist, or has a different password.\r\n";
+#ifdef WIN32
+typedef uint32_t in_addr_t;
+typedef uint16_t in_port_t;
+#endif
 
-static const char *create_fail =
-	"Either there is already a player with that name, or that name is illegal.\r\n";
+static const char *connect_fail = "Either that player does not exist, or has a different password.\r\n";
+
+static const char *create_fail = "Either there is already a player with that name, or that name is illegal.\r\n";
 
 static const char *flushed_message = "<Output Flushed>\r\n";
 static const char *shutdown_message = "\r\nGoing down - Bye\r\n";
@@ -69,8 +73,8 @@ static int resolver_sock[2];
 
 struct descriptor_data *descriptor_list = NULL;
 
-static int con_players_max = 0;	/* one of Cynbe's good ideas. */
-static int con_players_curr = 0;	/* for playermax checks. */
+static int con_players_max = 0; /* one of Cynbe's good ideas. */
+static int con_players_curr = 0; /* for playermax checks. */
 
 #define MAX_LISTEN_SOCKS 16
 
@@ -1499,311 +1503,311 @@ initializesock(int s, const char *hostname, int is_ssl)
 static int
 make_socket_v6(int port)
 {
-    int s;
-    int opt;
-    struct sockaddr_in6 server;
+	int s;
+	int opt;
+	struct sockaddr_in6 server;
 
-    s = socket(AF_INET6, SOCK_STREAM, 0);
+	s = socket(AF_INET6, SOCK_STREAM, 0);
 
-    if (s < 0) {
-	perror("creating stream socket");
-	exit(3);
-    }
+	if (s < 0) {
+		perror("creating stream socket");
+		exit(3);
+	}
 
-    opt = 1;
-    if (setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (char *) &opt, sizeof(opt)) < 0) {
-	perror("setsockopt(SO_REUSEADDR)");
-	exit(1);
-    }
+	opt = 1;
+	if (setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (char *) &opt, sizeof(opt)) < 0) {
+		perror("setsockopt(SO_REUSEADDR)");
+		exit(1);
+	}
 
-    opt = 1;
-    if (setsockopt(s, SOL_SOCKET, SO_KEEPALIVE, (char *) &opt, sizeof(opt)) < 0) {
-	perror("setsockopt(SO_KEEPALIVE)");
-	exit(1);
-    }
+	opt = 1;
+	if (setsockopt(s, SOL_SOCKET, SO_KEEPALIVE, (char *) &opt, sizeof(opt)) < 0) {
+		perror("setsockopt(SO_KEEPALIVE)");
+		exit(1);
+	}
 
-    opt = 1;
-    if (setsockopt(s, IPPROTO_IPV6, IPV6_V6ONLY, (char *) &opt, sizeof(opt)) < 0) {
-	perror("setsockopt(IPV6_V6ONLY");
-	exit(1);
-    }
+	opt = 1;
+	if (setsockopt(s, IPPROTO_IPV6, IPV6_V6ONLY, (char *) &opt, sizeof(opt)) < 0) {
+		perror("setsockopt(IPV6_V6ONLY");
+		exit(1);
+	}
 
-    /*
-       opt = 240;
-       if (setsockopt(s, SOL_TCP, TCP_KEEPIDLE, (char *) &opt, sizeof(opt)) < 0) {
-       perror("setsockopt");
-       exit(1);
-       }
-     */
+	/*
+	opt = 240;
+	if (setsockopt(s, SOL_TCP, TCP_KEEPIDLE, (char *) &opt, sizeof(opt)) < 0) {
+		perror("setsockopt");
+		exit(1);
+	}
+	*/
 
-    memset((char *) &server, 0, sizeof(server));
-    /* server.sin6_len = sizeof(server); */
-    server.sin6_family = AF_INET6;
-    server.sin6_addr = bind_ipv6_address;
-    server.sin6_port = htons(port);
+	memset((char *) &server, 0, sizeof(server));
+	/* server.sin6_len = sizeof(server); */
+	server.sin6_family = AF_INET6;
+	server.sin6_addr = bind_ipv6_address;
+	server.sin6_port = htons(port);
 
-    if (bind(s, (struct sockaddr *) &server, sizeof(server))) {
-	perror("binding stream socket");
-	close(s);
-	exit(4);
-    }
+	if (bind(s, (struct sockaddr *) &server, sizeof(server))) {
+		perror("binding stream socket");
+		close(s);
+		exit(4);
+	}
 
-    make_cloexec(s);
+	make_cloexec(s);
 
-    /* We separate the binding of the socket and the listening on the socket */
-    /* to support binding to privileged ports, then dropping privileges */
-    /* before listening.  Listening now happens in listen_bound_sockets(), */
-    /* called during shovechars().  This function is now called before the */
-    /* checks for MUD_GID and MUD_ID in main(). */
-    /*    listen(s, 5);	*/
-    return s;
+	/*
+	 * We separate the binding of the socket and the listening on the socket
+	 * to support binding to privileged ports, then dropping privileges
+	 * before listening.  Listening now happens in listen_bound_sockets(),
+	 * called during shovechars().  This function is now called before the
+	 * checks for MUD_GID and MUD_ID in main().
+	 */
+	/* listen(s, 5); */
+	return s;
 }
 
 /* addrout_v6 -- Translate IPV6 address 'a' from addr struct to text. */
 static const char *
-addrout_v6(int lport, struct in6_addr *a, unsigned short prt)
+addrout_v6(in_port_t lport, struct in6_addr *a, in_port_t prt)
 {
-    static char buf[128];
-    char ip6addr[128];
+	static char buf[128];
+	char ip6addr[128];
 
-    struct in6_addr addr;
-    memcpy(&addr.s6_addr, a, sizeof(struct in6_addr));
+	struct in6_addr addr;
+	memcpy(&addr.s6_addr, a, sizeof(struct in6_addr));
 
-    prt = ntohs(prt);
+	prt = ntohs(prt);
 
 #ifndef SPAWN_HOST_RESOLVER
-    if (tp_hostnames) {
-      /*
-       * One day the nameserver Qwest uses decided to start
-       * doing halfminute lags, locking up the entire muck
-       * that long on every connect.  This is intended to
-       * prevent that, reduces average lag due to nameserver
-       * to 1 sec/call, simply by not calling nameserver if
-       * it's in a slow mood *grin*. If the nameserver lags
-       * consistently, a hostname cache ala OJ's tinymuck2.3
-       * would make more sense:
-       */
-	static time_t secs_lost = 0;
+	if (tp_hostnames) {
+		/*
+		 * One day the nameserver Qwest uses decided to start
+		 * doing halfminute lags, locking up the entire muck
+		 * that long on every connect.  This is intended to
+		 * prevent that, reduces average lag due to nameserver
+		 * to 1 sec/call, simply by not calling nameserver if
+		 * it's in a slow mood *grin*. If the nameserver lags
+		 * consistently, a hostname cache ala OJ's tinymuck2.3
+		 * would make more sense:
+		 */
+		static time_t secs_lost = 0;
 
-	if (secs_lost) {
-	    secs_lost--;
-	} else {
-	    time_t gethost_start = time(NULL);
+		if (secs_lost) {
+			secs_lost--;
+		} else {
+			time_t gethost_start = time(NULL);
 
-	    struct hostent *he = gethostbyaddr(((char *) &addr), sizeof(addr), AF_INET6);
-	    time_t gethost_stop = time(NULL);
-	    time_t lag = gethost_stop - gethost_start;
+			struct hostent *he = gethostbyaddr(((char *) &addr), sizeof(addr), AF_INET6);
+			time_t gethost_stop = time(NULL);
+			time_t lag = gethost_stop - gethost_start;
 
-	    if (lag > 10) {
-		secs_lost = lag;
-	    }
-	    if (he) {
-		snprintf(buf, sizeof(buf), "%s(%u)", he->h_name, prt);
-		return buf;
-	    }
+			if (lag > 10) {
+				secs_lost = lag;
+			}
+			if (he) {
+				snprintf(buf, sizeof(buf), "%s(%" PRIu16 ")", he->h_name, prt);
+				return buf;
+			}
+		}
 	}
-    }
-#endif			/* SPAWN_HOST_RESOLVER */
+#endif /* !SPAWN_HOST_RESOLVER */
 
-    inet_ntop(AF_INET6, a, ip6addr, 128);
+	inet_ntop(AF_INET6, a, ip6addr, 128);
 #ifdef SPAWN_HOST_RESOLVER
-    snprintf(buf, sizeof(buf), "%s(%u)%u\n", ip6addr, prt, lport);
-    if (tp_hostnames) {
-	write(resolver_sock[1], buf, strlen(buf));
-    }
+	snprintf(buf, sizeof(buf), "%s(%" PRIu16 ")%" PRIu16 "\n", ip6addr, prt, lport);
+	if (tp_hostnames) {
+		write(resolver_sock[1], buf, strlen(buf));
+	}
 #endif
-    snprintf(buf, sizeof(buf), "%s(%u)\n", ip6addr, prt);
+	snprintf(buf, sizeof(buf), "%s(%" PRIu16 ")\n", ip6addr, prt);
 
-    return buf;
+	return buf;
 }
 
 static struct descriptor_data *
-new_connection_v6(int port, int sock_, int is_ssl)
+new_connection_v6(in_port_t port, int sock_, int is_ssl)
 {
-    int newsock;
+	int newsock;
 
-    struct sockaddr_in6 addr;
-    socklen_t addr_len;
-    char hostname[128];
+	struct sockaddr_in6 addr;
+	socklen_t addr_len;
+	char hostname[128];
 
-    addr_len = (socklen_t) sizeof(addr);
-    newsock = accept(sock_, (struct sockaddr *) &addr, &addr_len);
-    if (newsock < 0) {
-	return 0;
-    } else {
-# ifdef F_SETFD
-	fcntl(newsock, F_SETFD, 1);
-# endif
-	strcpyn(hostname, sizeof(hostname),
-		addrout_v6(port, &(addr.sin6_addr), addr.sin6_port));
-	log_status("ACCEPT: %s on descriptor %d", hostname, newsock);
-	log_status("CONCOUNT: There are now %d open connections.", ++ndescriptors);
-	return initializesock(newsock, hostname, is_ssl);
-    }
+	addr_len = (socklen_t) sizeof(addr);
+	newsock = accept(sock_, (struct sockaddr *) &addr, &addr_len);
+	if (newsock < 0) {
+		return 0;
+	} else {
+#ifdef F_SETFD
+		fcntl(newsock, F_SETFD, 1);
+#endif
+		strcpyn(hostname, sizeof(hostname), addrout_v6(port, &(addr.sin6_addr), addr.sin6_port));
+		log_status("ACCEPT: %s on descriptor %d", hostname, newsock);
+		log_status("CONCOUNT: There are now %d open connections.", ++ndescriptors);
+		return initializesock(newsock, hostname, is_ssl);
+	}
 }
 
 /* addrout -- Translate address 'a' from addr struct to text. */
 static const char *
-addrout(int lport, long a, unsigned short prt)
+addrout(in_port_t lport, in_addr_t a, in_port_t prt)
 {
-    static char buf[128];
-    struct in_addr addr;
+	static char buf[128];
+	struct in_addr addr;
 
-    memset(&addr, 0, sizeof(addr));
-    memcpy(&addr.s_addr, &a, sizeof(struct in_addr));
+	memset(&addr, 0, sizeof(addr));
+	memcpy(&addr.s_addr, &a, sizeof(struct in_addr));
 
-    prt = ntohs(prt);
+	prt = ntohs(prt);
 
 #ifndef SPAWN_HOST_RESOLVER
-    if (tp_hostnames) {
-      /*
-       * One day the nameserver Qwest uses decided to start
-       * doing halfminute lags, locking up the entire muck
-       * that long on every connect.  This is intended to
-       * prevent that, reduces average lag due to nameserver
-       * to 1 sec/call, simply by not calling nameserver if
-       * it's in a slow mood *grin*. If the nameserver lags
-       * consistently, a hostname cache ala OJ's tinymuck2.3
-       * would make more sense:
-       */
-	static time_t secs_lost = 0;
+	if (tp_hostnames) {
+		/*
+		 * One day the nameserver Qwest uses decided to start
+		 * doing halfminute lags, locking up the entire muck
+		 * that long on every connect.  This is intended to
+		 * prevent that, reduces average lag due to nameserver
+		 * to 1 sec/call, simply by not calling nameserver if
+		 * it's in a slow mood *grin*. If the nameserver lags
+		 * consistently, a hostname cache ala OJ's tinymuck2.3
+		 * would make more sense:
+		 */
+		static time_t secs_lost = 0;
 
-	if (secs_lost) {
-	    secs_lost--;
-	} else {
-	    time_t gethost_start = time(NULL);
+		if (secs_lost) {
+			secs_lost--;
+		} else {
+			time_t gethost_start = time(NULL);
 
-	    struct hostent *he = gethostbyaddr(((char *) &addr), sizeof(addr), AF_INET);
-	    time_t gethost_stop = time(NULL);
-	    time_t lag = gethost_stop - gethost_start;
+			struct hostent *he = gethostbyaddr(((char *) &addr), sizeof(addr), AF_INET);
+			time_t gethost_stop = time(NULL);
+			time_t lag = gethost_stop - gethost_start;
 
-	    if (lag > 10) {
-		secs_lost = lag;
-	    }
-	    if (he) {
-		snprintf(buf, sizeof(buf), "%s(%u)", he->h_name, prt);
-		return buf;
-	    }
+			if (lag > 10) {
+				secs_lost = lag;
+			}
+			if (he) {
+				snprintf(buf, sizeof(buf), "%s(%" PRIu16 ")", he->h_name, prt);
+				return buf;
+			}
+		}
 	}
-    }
-#endif			/* SPAWN_HOST_RESOLVER */
+#endif /* !SPAWN_HOST_RESOLVER */
 
-    a = ntohl(a);
+	a = ntohl(a);
 
 #ifdef SPAWN_HOST_RESOLVER
-    snprintf(buf, sizeof(buf), "%ld.%ld.%ld.%ld(%u)%u\n",
-	     (a >> 24) & 0xff, (a >> 16) & 0xff, (a >> 8) & 0xff, a & 0xff, prt, lport);
-    if (tp_hostnames) {
-	write(resolver_sock[1], buf, strlen(buf));
-    }
+	snprintf(buf, sizeof(buf), "%" PRIu32 ".%" PRIu32 ".%" PRIu32 ".%" PRIu32 "(%" PRIu16 ")%" PRIu16 "\n", (a >> 24) & 0xff, (a >> 16) & 0xff, (a >> 8) & 0xff, a & 0xff, prt, lport);
+	if (tp_hostnames) {
+		write(resolver_sock[1], buf, strlen(buf));
+	}
 #endif
 
-    snprintf(buf, sizeof(buf), "%ld.%ld.%ld.%ld(%u)",
-	     (a >> 24) & 0xff, (a >> 16) & 0xff, (a >> 8) & 0xff, a & 0xff, prt);
-    return buf;
+	snprintf(buf, sizeof(buf), "%" PRIu32 ".%" PRIu32 ".%" PRIu32 ".%" PRIu32 "(%" PRIu16 ")", (a >> 24) & 0xff, (a >> 16) & 0xff, (a >> 8) & 0xff, a & 0xff, prt);
+	return buf;
 }
 
 static int
 make_socket(int port)
 {
-    int s;
-    int opt;
-    struct sockaddr_in server;
+	int s;
+	int opt;
+	struct sockaddr_in server;
 
-    s = socket(AF_INET, SOCK_STREAM, 0);
+	s = socket(AF_INET, SOCK_STREAM, 0);
 
-    if (s < 0) {
-	perror("creating stream socket");
-	exit(3);
-    }
+	if (s < 0) {
+		perror("creating stream socket");
+		exit(3);
+	}
 
-    opt = 1;
-    if (setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (char *) &opt, sizeof(opt)) < 0) {
-	perror("setsockopt");
-	exit(1);
-    }
+	opt = 1;
+	if (setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (char *) &opt, sizeof(opt)) < 0) {
+		perror("setsockopt");
+		exit(1);
+	}
 
-    opt = 1;
-    if (setsockopt(s, SOL_SOCKET, SO_KEEPALIVE, (char *) &opt, sizeof(opt)) < 0) {
-	perror("setsockopt");
-	exit(1);
-    }
+	opt = 1;
+	if (setsockopt(s, SOL_SOCKET, SO_KEEPALIVE, (char *) &opt, sizeof(opt)) < 0) {
+		perror("setsockopt");
+		exit(1);
+	}
 
-    /*
-       opt = 240;
-       if (setsockopt(s, SOL_TCP, TCP_KEEPIDLE, (char *) &opt, sizeof(opt)) < 0) {
-       perror("setsockopt");
-       exit(1);
-       }
-     */
+	/*
+	opt = 240;
+	if (setsockopt(s, SOL_TCP, TCP_KEEPIDLE, (char *) &opt, sizeof(opt)) < 0) {
+		perror("setsockopt");
+		exit(1);
+	}
+	*/
 
-    server.sin_family = AF_INET;
-    server.sin_addr.s_addr = bind_ipv4_address;
-    server.sin_port = htons(port);
+	server.sin_family = AF_INET;
+	server.sin_addr.s_addr = bind_ipv4_address;
+	server.sin_port = htons(port);
 
-    if (bind(s, (struct sockaddr *) &server, sizeof(server))) {
-	perror("binding stream socket");
-	close(s);
-	exit(4);
-    }
+	if (bind(s, (struct sockaddr *) &server, sizeof(server))) {
+		perror("binding stream socket");
+		close(s);
+		exit(4);
+	}
 
-    make_cloexec(s);
+	make_cloexec(s);
 
-    /* We separate the binding of the socket and the listening on the socket */
-    /* to support binding to privileged ports, then dropping privileges */
-    /* before listening.  Listening now happens in listen_bound_sockets(), */
-    /* called during shovechars().  This function is now called before the */
-    /* checks for MUD_GID and MUD_ID in main(). */
-    /*    listen(s, 5);	*/
-    return s;
+	/*
+	 * We separate the binding of the socket and the listening on the socket
+	 * to support binding to privileged ports, then dropping privileges
+	 * before listening.  Listening now happens in listen_bound_sockets(),
+	 * called during shovechars().  This function is now called before the
+	 * checks for MUD_GID and MUD_ID in main().
+	 */
+	/* listen(s, 5); */
+	return s;
 }
 
 static void listen_bound_sockets()
 {
-    for (int i = 0; i < numsocks; i++) {
-	listen(sock[i], 5);
-    }
+	for (int i = 0; i < numsocks; i++) {
+		listen(sock[i], 5);
+	}
 
-    for (int i = 0; i< numsocks_v6; i++) {
-	listen(sock_v6[i],5);
-    }
+	for (int i = 0; i< numsocks_v6; i++) {
+		listen(sock_v6[i],5);
+	}
 
 #ifdef USE_SSL
-    for (int i = 0; i < ssl_numsocks; i++) {
-	listen(ssl_sock[i], 5);
-    }
+	for (int i = 0; i < ssl_numsocks; i++) {
+		listen(ssl_sock[i], 5);
+	}
 
-    for (int i = 0; i < ssl_numsocks_v6; i++) {
-	listen(ssl_sock_v6[i], 5);
-    }
+	for (int i = 0; i < ssl_numsocks_v6; i++) {
+		listen(ssl_sock_v6[i], 5);
+	}
 #endif
 }
 
 static struct descriptor_data *
-new_connection(int port, int sock_, int is_ssl)
+new_connection(in_port_t port, int sock_, int is_ssl)
 {
-    int newsock;
-    struct sockaddr_in addr;
-    socklen_t addr_len;
-    char hostname[128];
+	int newsock;
+	struct sockaddr_in addr;
+	socklen_t addr_len;
+	char hostname[128];
 
-    addr_len = (socklen_t) sizeof(addr);
-    newsock = accept(sock_, (struct sockaddr *) &addr, &addr_len);
-    if (newsock < 0) {
-	return 0;
-    } else {
+	addr_len = (socklen_t) sizeof(addr);
+	newsock = accept(sock_, (struct sockaddr *) &addr, &addr_len);
+	if (newsock < 0) {
+		return 0;
+	} else {
 #ifdef F_SETFD
-	fcntl(newsock, F_SETFD, 1);
+		fcntl(newsock, F_SETFD, 1);
 #endif
-	strcpyn(hostname, sizeof(hostname),
-		addrout(port, addr.sin_addr.s_addr, addr.sin_port));
-	log_status("ACCEPT: %s on descriptor %d", hostname, newsock);
-	log_status("CONCOUNT: There are now %d open connections.", ++ndescriptors);
-	return initializesock(newsock, hostname, is_ssl);
-    }
+		strcpyn(hostname, sizeof(hostname), addrout(port, addr.sin_addr.s_addr, addr.sin_port));
+		log_status("ACCEPT: %s on descriptor %d", hostname, newsock);
+		log_status("CONCOUNT: There are now %d open connections.", ++ndescriptors);
+		return initializesock(newsock, hostname, is_ssl);
+	}
 }
 
-/* sends keppalive; depends on process_output to set booted if connection is dead */
+/* sends keepalive; depends on process_output to set booted if connection is dead */
 static void 
 send_keepalive(struct descriptor_data *d)
 {
