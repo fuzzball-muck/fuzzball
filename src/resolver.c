@@ -389,7 +389,7 @@ void set_signals(void) {
     signal(SIGHUP, SIG_IGN);
 }
 
-static const char * get_username(long a, in_port_t prt, in_port_t myprt) {
+static const char * get_username(in_addr_t a, in_port_t prt, in_port_t myprt) {
     int fd, result;
     socklen_t len;
     char *ptr, *ptr2;
@@ -518,7 +518,7 @@ static const char * addrout(in_addr_t a, in_port_t prt, in_port_t myprt) {
     }
 
     a = ntohl(a);
-    snprintf(tmpbuf, sizeof(tmpbuf), "%ld.%ld.%ld.%ld",
+    snprintf(tmpbuf, sizeof(tmpbuf), "%" PRIu32 ".%" PRIu32 ".%" PRIu32 ".%" PRIu32,
 	     (a >> 24) & 0xff, (a >> 16) & 0xff, (a >> 8) & 0xff, a & 0xff);
     hostadd_timestamp(a, tmpbuf);
     ptr = get_username(htonl(a), prt, myprt);
