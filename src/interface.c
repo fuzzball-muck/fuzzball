@@ -57,6 +57,11 @@
 # endif
 #endif
 
+#ifdef WIN32
+typedef uint32_t in_addr_t;
+typedef uint16_t in_port_t;
+#endif
+
 static const char *connect_fail =
 	"Either that player does not exist, or has a different password.\r\n";
 
