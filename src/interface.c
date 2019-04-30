@@ -1561,7 +1561,7 @@ make_socket_v6(int port)
 
 /* addrout_v6 -- Translate IPV6 address 'a' from addr struct to text. */
 static const char *
-addrout_v6(int lport, struct in6_addr *a, unsigned short prt)
+addrout_v6(in_port_t lport, struct in6_addr *a, in_port_t prt)
 {
     static char buf[128];
     char ip6addr[128];
@@ -1598,7 +1598,7 @@ addrout_v6(int lport, struct in6_addr *a, unsigned short prt)
 		secs_lost = lag;
 	    }
 	    if (he) {
-		snprintf(buf, sizeof(buf), "%s(%u)", he->h_name, prt);
+		snprintf(buf, sizeof(buf), "%s(%" PRIu16 ")", he->h_name, prt);
 		return buf;
 	    }
 	}
@@ -1607,18 +1607,18 @@ addrout_v6(int lport, struct in6_addr *a, unsigned short prt)
 
     inet_ntop(AF_INET6, a, ip6addr, 128);
 #ifdef SPAWN_HOST_RESOLVER
-    snprintf(buf, sizeof(buf), "%s(%u)%u\n", ip6addr, prt, lport);
+    snprintf(buf, sizeof(buf), "%s(%" PRIu16 ")%" PRIu16 "\n", ip6addr, prt, lport);
     if (tp_hostnames) {
 	write(resolver_sock[1], buf, strlen(buf));
     }
 #endif
-    snprintf(buf, sizeof(buf), "%s(%u)\n", ip6addr, prt);
+    snprintf(buf, sizeof(buf), "%s(%" PRIu16 ")\n", ip6addr, prt);
 
     return buf;
 }
 
 static struct descriptor_data *
-new_connection_v6(int port, int sock_, int is_ssl)
+new_connection_v6(in_port_t port, int sock_, int is_ssl)
 {
     int newsock;
 
@@ -1644,7 +1644,7 @@ new_connection_v6(int port, int sock_, int is_ssl)
 
 /* addrout -- Translate address 'a' from addr struct to text. */
 static const char *
-addrout(int lport, long a, unsigned short prt)
+addrout(in_port_t lport, in_addr_t a, in_port_t prt)
 {
     static char buf[128];
     struct in_addr addr;
@@ -1681,7 +1681,7 @@ addrout(int lport, long a, unsigned short prt)
 		secs_lost = lag;
 	    }
 	    if (he) {
-		snprintf(buf, sizeof(buf), "%s(%u)", he->h_name, prt);
+		snprintf(buf, sizeof(buf), "%s(%" PRIu16 ")", he->h_name, prt);
 		return buf;
 	    }
 	}
@@ -1691,14 +1691,14 @@ addrout(int lport, long a, unsigned short prt)
     a = ntohl(a);
 
 #ifdef SPAWN_HOST_RESOLVER
-    snprintf(buf, sizeof(buf), "%ld.%ld.%ld.%ld(%u)%u\n",
+    snprintf(buf, sizeof(buf), "%" PRIu32 ".%" PRIu32 ".%" PRIu32 ".%" PRIu32 "(%" PRIu16 ")%" PRIu16 "\n",
 	     (a >> 24) & 0xff, (a >> 16) & 0xff, (a >> 8) & 0xff, a & 0xff, prt, lport);
     if (tp_hostnames) {
 	write(resolver_sock[1], buf, strlen(buf));
     }
 #endif
 
-    snprintf(buf, sizeof(buf), "%ld.%ld.%ld.%ld(%u)",
+    snprintf(buf, sizeof(buf), "%" PRIu32 ".%" PRIu32 ".%" PRIu32 ".%" PRIu32 "(%" PRIu16 ")",
 	     (a >> 24) & 0xff, (a >> 16) & 0xff, (a >> 8) & 0xff, a & 0xff, prt);
     return buf;
 }
@@ -1780,7 +1780,7 @@ static void listen_bound_sockets()
 }
 
 static struct descriptor_data *
-new_connection(int port, int sock_, int is_ssl)
+new_connection(in_port_t port, int sock_, int is_ssl)
 {
     int newsock;
     struct sockaddr_in addr;
