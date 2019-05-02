@@ -663,7 +663,7 @@ int main(int argc, char **argv) {
 		int rc = pthread_create(&threads[i], NULL, resolver_thread_root, (void *) i);
 		if (rc) {
 			printf("ERROR; return code from pthread_create() is %d\n", rc);
-			exit(-1);
+			exit(2);
 		}
 	}
 	for (long i = 0; i < NUM_THREADS; i++) {
