@@ -92,7 +92,7 @@ if [ -r $PIDFILE -a -s $PIDFILE ]; then
 		muck=$(${PS} | grep "${serverexec}" | awk '{print $1}' | egrep "\\<${muckpid}\\>" | wc -l)
 		if [ $muck -gt 0 ]; then
 			echo "This server is already running.  Restart aborted."
-			exit 0
+			exit 1
 		fi
 	fi
 fi
@@ -116,14 +116,14 @@ fi
 if [ ! -r $DBIN ]; then
 	echo "Hey!  The $DBIN file has to exist and be readable to restart the server!"
 	echo "Restart attempt aborted."
-	exit
+	exit 2
 fi
 
 end=$(tail -1 $DBIN)
 if [ "x$end" != 'x***END OF DUMP***' ]; then
 	echo "WARNING!  The $DBIN file is incomplete and therefore corrupt!"
 	echo "Restart attempt aborted."
-	exit
+	exit 3
 fi
 
 dbsiz=$(ls -1s $DBIN | awk '{print $1}')
