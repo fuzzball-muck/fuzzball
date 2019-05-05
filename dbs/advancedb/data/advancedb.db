@@ -330,15 +330,24 @@ Keeper
 -1
 1835539
 1073700862
-1073700862
-0
-1073749482
+1557079385
+1
+1557079385
 *Props*
+@/doingpid:3:17
+@/host:2:localhost
+@/last/off:2:1557079385
+@/last/off#:3:1
+@/last/off#/1:2:1557079385
+@/last/on:2:1557079362
+@/last/on#:3:1
+@/last/on#/1:2:1557079362
 @/value:3:50
+@/watchfor_grace:3:1557079422
 *End*
 0
 -1
-2C02DPyPioReG8Je4IIAzw==
+Jnpzz47H82+5hpno/2C3hA==
 #152
 lock-truewizard?
 153
@@ -1304,8 +1313,8 @@ con-recordhost.muf
 101
 18087988
 1073530911
-1554243218
-13
+1557079391
+16
 1073749224
 *Props*
 _/de:10:A scroll containing a spell called con-recordhost.muf
@@ -1318,8 +1327,8 @@ con-mailwarn.muf
 90
 18087972
 1073530899
-1554243218
-13
+1557079391
+16
 1073749224
 *Props*
 _/de:10:A scroll containing a spell called con-mailwarn.muf
@@ -1332,8 +1341,8 @@ con-laston.muf
 89
 18087988
 1073530891
-1554243218
-13
+1557079391
+18
 1073749224
 *Props*
 _/de:10:A scroll containing a spell called con-laston.muf
@@ -1346,8 +1355,8 @@ con-bootme.muf
 88
 17825828
 1073530863
-1554243218
-13
+1557079391
+16
 1073749224
 *Props*
 _/de:10:A scroll containing a spell called con-bootme.muf
@@ -1489,8 +1498,8 @@ cmd-watchfor.muf
 81
 18087988
 1073530629
-1554243218
-34
+1557079391
+41
 1073749224
 *Props*
 _/de:10:A scroll containing a spell called cmd-watchfor.muf
@@ -2235,8 +2244,8 @@ cmd-@doing.muf
 42
 18087988
 1073530629
-1554243218
-21
+1557079391
+26
 1073749224
 *Props*
 _/de:10:A scroll containing a spell called cmd-@doing
@@ -2732,8 +2741,8 @@ lib-props.muf
 21
 17105700
 1073501307
-1554243218
-17
+1557079391
+20
 1073749224
 *Props*
 _/de:10:A scroll containing a spell called lib-stackrng.muf
@@ -3311,21 +3320,26 @@ One
 154
 1171
 1073500921
-1554243269
-26
-1554243218
+1557079394
+28
+1557079391
 *Props*
-@/host:2:::1
-@/last/on:2:1554243218
-@/last/on#:3:5
+@/host:2:localhost
+@/last/off:2:1557079355
+@/last/off#:3:1
+@/last/off#/1:2:1557079355
+@/last/on:2:1557079391
+@/last/on#:3:7
 @/last/on#/1:2:1551918201
 @/last/on#/2:2:1554235593
 @/last/on#/3:2:1554236227
 @/last/on#/4:2:1554243070
 @/last/on#/5:2:1554243218
-@/lasthost:2:::1
+@/last/on#/6:2:1557079176
+@/last/on#/7:2:1557079391
+@/lasthost:2:localhost
 @/value:3:3
-@/watchfor_grace:3:1554243278
+@/watchfor_grace:3:1557079451
 _/de:10:You see Number One.
 status:10:WIZ
 *End*
@@ -3339,8 +3353,8 @@ Room Zero
 -1
 -2147483648
 1073500921
-1554243218
-39
+1557079391
+42
 1073756262
 *Props*
 _/de:10:You are in Room Zero. It's very dark here.
@@ -3399,11 +3413,11 @@ _reg/lock/truewizard:5:152
 _reg/lock/wizard:5:151
 _reg/mesgboard:5:44
 _sys/dumpinterval:3:14400
-_sys/lastdumptime:3:1554243269
+_sys/lastdumptime:3:1557079394
 _sys/max_connects:3:1
 _sys/maxpennies:3:10000
-_sys/shutdowntime:3:1554243269
-_sys/startuptime:3:1554243206
+_sys/shutdowntime:3:1557079394
+_sys/startuptime:3:1557079166
 day:3:12426
 *End*
 -1
