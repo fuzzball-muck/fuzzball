@@ -1,11 +1,12 @@
 This is a version of base.db remade with Fuzzball 6 programs. I have included
 many programs that were not in the original base.db.
 
-* The database contains two players, One and Keeper. You should change One's
-  password immediately:
+* The database contains two players, One and Keeper. One's password is potrzebie. Keeper's password is yamabiko.
+  You should change their passwords immediately:
 
     connect #1 potrzebie
-    @password potrzebie=<some new password>
+    @password potrzebie=<One's new password>
+    @newpassword Keeper=<Keeper's new password>
 
   Only One can perform some functions like setting and removing players'
   Wizard flags. Keep its password safe!
