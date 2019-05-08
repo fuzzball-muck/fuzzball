@@ -986,83 +986,53 @@ db_read_object(FILE * f, dbref objno)
      * to different object types.
      */
     switch (FLAGS(objno) & TYPE_MASK) {
-        case TYPE_THING:
-            ALLOC_THING_SP(objno);
-            THING_SET_HOME(objno, prop_flag ? getref(f) : j);
-            o->exits = getref(f);
-            OWNER(objno) = getref(f);
-            break;
+    case TYPE_THING:
+        ALLOC_THING_SP(objno);
+        THING_SET_HOME(objno, prop_flag ? getref(f) : j);
+        o->exits = getref(f);
+        OWNER(objno) = getref(f);
+        break;
 
-        case TYPE_ROOM:
-            o->sp.room.dropto = prop_flag ? getref(f) : j;
-            o->exits = getref(f);
-            OWNER(objno) = getref(f);
-            break;
+    case TYPE_ROOM:
+        o->sp.room.dropto = prop_flag ? getref(f) : j;
+        o->exits = getref(f);
+        OWNER(objno) = getref(f);
+        break;
 
-        case TYPE_EXIT:
-            o->sp.exit.ndest = prop_flag ? getref(f) : j;
+    case TYPE_EXIT:
+        o->sp.exit.ndest = prop_flag ? getref(f) : j;
 
-            /* only allocate space for linked exits */
-            if (o->sp.exit.ndest > 0)
-                o->sp.exit.dest = malloc(sizeof(dbref) * (size_t)(o->sp.exit.ndest));
+        /* only allocate space for linked exits */
+        if (o->sp.exit.ndest > 0)
+            o->sp.exit.dest = malloc(sizeof(dbref) * (size_t)(o->sp.exit.ndest));
 
-            for (j = 0; j < o->sp.exit.ndest; j++) {
-                (o->sp.exit.dest)[j] = getref(f);
-            }
+        for (j = 0; j < o->sp.exit.ndest; j++) {
+            (o->sp.exit.dest)[j] = getref(f);
+        }
 
-            OWNER(objno) = getref(f);
-            break;
+        OWNER(objno) = getref(f);
+        break;
 
-        case TYPE_PLAYER:
-            /*
-             * @TODO we should do a memset(PLAYER_SP(objno), 0, ...)
-             *       then set the things that need to be set so we
-             *       can get rid of all the 0 assignments.  Remember that
-             *       NOTHING is not the same as 0.
-             */
-            ALLOC_PLAYER_SP(objno);
-            PLAYER_SET_HOME(objno, prop_flag ? getref(f) : j);
-            o->exits = getref(f);
-            password = getstring(f);
-            set_password_raw(objno, password);
-            PLAYER_SET_CURR_PROG(objno, NOTHING);
-            PLAYER_SET_INSERT_MODE(objno, 0);
-            PLAYER_SET_DESCRS(objno, NULL);
-            PLAYER_SET_DESCRCOUNT(objno, 0);
-            PLAYER_SET_IGNORE_CACHE(objno, NULL);
-            PLAYER_SET_IGNORE_COUNT(objno, 0);
-            PLAYER_SET_IGNORE_LAST(objno, NOTHING);
-            OWNER(objno) = objno;
-            add_player(objno);
-            break;
+    case TYPE_PLAYER:
+        ALLOC_PLAYER_SP(objno);
+        PLAYER_SET_HOME(objno, prop_flag ? getref(f) : j);
+        o->exits = getref(f);
+        password = getstring(f);
+        set_password_raw(objno, password);
+        PLAYER_SET_CURR_PROG(objno, NOTHING);
+        PLAYER_SET_IGNORE_LAST(objno, NOTHING);
+        OWNER(objno) = objno;
+        add_player(objno);
+        break;
 
-        case TYPE_PROGRAM:
-            /*
-             * @TODO we should do a memset(PROGRAM_SP(objno), 0, ...)
-             *       then set the things that need to be set so we
-             *       can get rid of all the 0 assignments.
-             */
-            ALLOC_PROGRAM_SP(objno);
-            OWNER(objno) = prop_flag ? getref(f) : j;
-            FLAGS(objno) &= ~INTERNAL;
-            PROGRAM_SET_CURR_LINE(objno, 0);
-            PROGRAM_SET_FIRST(objno, 0);
-            PROGRAM_SET_CODE(objno, 0);
-            PROGRAM_SET_SIZ(objno, 0);
-            PROGRAM_SET_START(objno, 0);
-            PROGRAM_SET_PUBS(objno, 0);
-#ifdef MCP_SUPPORT
-            PROGRAM_SET_MCPBINDS(objno, 0);
-#endif
-            PROGRAM_SET_PROFTIME(objno, 0, 0);
-            PROGRAM_SET_PROFSTART(objno, 0);
-            PROGRAM_SET_PROF_USES(objno, 0);
-            PROGRAM_SET_INSTANCES(objno, 0);
-            PROGRAM_SET_INSTANCES_IN_PRIMITIVE(objno, 0);
-            break;
+    case TYPE_PROGRAM:
+        ALLOC_PROGRAM_SP(objno);
+        OWNER(objno) = prop_flag ? getref(f) : j;
+        FLAGS(objno) &= ~INTERNAL;
+        break;
 
-        case TYPE_GARBAGE:
-            break;
+    case TYPE_GARBAGE:
+        break;
     }
 }
 
@@ -1115,8 +1085,7 @@ dbref
 db_read(FILE * f)
 {
     dbref grow;
-    const char *special;
-    char c;
+    char *special;
 
     /* Parse the header */
     db_load_format = db_read_header(f, &grow);
@@ -1128,56 +1097,28 @@ db_read(FILE * f)
     /* This sizes the DB to fit all the objects to load */
     db_grow(grow);
 
-    /* @TODO this for loop should probably have a condition of i < db_top
-     *       because technically if there are more records than the DB
-     *       expects, it will segfault.  This is a very unlikely case but
-     *       it is technically possible and preventing it is easy.
-     *
-     *       Add a return -1 after the for loop, because in that case, we
-     *       would have an error condition.
-     */
-
-    c = getc(f);    /* get next char */
-    for (int i = 0; ; i++) {
-        switch (c) {
-            case NUMBER_TOKEN:
-                db_read_object(f, getref(f));
-                break;
-
-            case '*':
-                special = getstring(f);
-
-                if (strcmp(special, "**END OF DUMP***")) {
-                    free((void *) special);
-                    return -1;
-                } else {
-                    free((void *) special);
-                    special = getstring(f);
-                    free((void *) special);
-                    rewind(f);
-                    free(getstring(f));
-                    getref(f);
-                    getref(f);
-
-                    tune_load_parms_from_file(f, NOTHING, getref(f));
-
-                    for (dbref j = 0; j < db_top; j++) {
-                        if (Typeof(j) == TYPE_GARBAGE) {
-                            NEXTOBJ(j) = recyclable;
-                            recyclable = j;
-                        }
-                    }
-
-                    autostart_progs();
-                    return db_top;
-                }
-
-            default:
-                return -1;
-        }
-
-        c = getc(f);
+    for (int i = 0; i < db_top; i++) {
+        if (getc(f) != NUMBER_TOKEN) return -1;
+        db_read_object(f, getref(f));
     }
+
+    special = getstring(f);
+    if (strcmp(special, "***END OF DUMP***")) {
+        free(special);
+        return -1;
+    }
+
+    free(special);
+
+    for (dbref j = 0; j < db_top; j++) {
+        if (Typeof(j) == TYPE_GARBAGE) {
+            NEXTOBJ(j) = recyclable;
+            recyclable = j;
+        }
+    }
+
+    autostart_progs();
+    return db_top;
 }
 
 /**
@@ -1217,13 +1158,7 @@ objnode_push(objnode **head, dbref data)
 
     if (!(tmp = malloc(sizeof(objnode)))) {
         fprintf(stderr, "objnode_push: out of memory\n");
-
-        /*
-         * @TODO We usually abort() in these cases.  Not aborting or
-         *       returning an error is kind of deceptive.  This is
-         *       kind of a nitpick, but an abort() seems wiser here.
-         */
-        return;
+        abort();
     }
 
     tmp->data = data;
@@ -1821,60 +1756,27 @@ controls(dbref who, dbref what)
 int
 controls_link(dbref who, dbref what)
 {
-    /*
-     * @TODO All the cases in this do a really dumb control structure:
-     *
-     *       if (controls ...)
-     *           return 1
-     *
-     *       return 0
-     *
-     *       Just do return controls(...) instead.
-     */
-
     switch (Typeof(what)) {
-        case TYPE_EXIT:
-            {
-                int i = DBFETCH(what)->sp.exit.ndest;
+    case TYPE_EXIT: 
+        for (int i = 0, n = DBFETCH(what)->sp.exit.ndest; i < n; i++) {
+            if (controls(who, DBFETCH(what)->sp.exit.dest[i]))
+                return 1;
+        }
 
-                while (i > 0) {
-                    if (controls(who, DBFETCH(what)->sp.exit.dest[--i]))
-                        return 1;
-                }
+        return (who == OWNER(LOCATION(what)));
 
-                if (who == OWNER(LOCATION(what)))
-                    return 1;
+    case TYPE_ROOM:
+        return (controls(who, DBFETCH(what)->sp.room.dropto));
 
-                return 0;
-            }
+    case TYPE_PLAYER:
+        return (controls(who, PLAYER_HOME(what)));
 
-        case TYPE_ROOM:
-            {
-                if (controls(who, DBFETCH(what)->sp.room.dropto))
-                   return 1;
+    case TYPE_THING:
+        return (controls(who, THING_HOME(what)));
 
-                return 0;
-            } 
-
-        case TYPE_PLAYER:
-            {
-                if (controls(who, PLAYER_HOME(what)))
-                    return 1;
-
-                return 0;
-            }
-
-        case TYPE_THING:
-            {
-                if (controls(who, THING_HOME(what)))
-                    return 1;
-
-                return 0;
-            }
-
-        case TYPE_PROGRAM:
-        default:
-           return 0;
+    case TYPE_PROGRAM:
+    default:
+        return 0;
     }
 }
 
