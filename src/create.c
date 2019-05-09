@@ -656,8 +656,8 @@ do_clone(int descr, dbref player, const char *name, const char *rname)
 
     /* check the name again, just in case reserved name patterns have
        changed since the original object was created. */
-    if (!ok_name(NAME(thing))) {
-        notify(player, "You cannot clone something with such a weird name!");
+    if (!ok_ascii_thing(NAME(thing)) || !ok_name(NAME(thing))) {
+        notify(player, "You cannot clone an object with this name.");
         return;
     }
 

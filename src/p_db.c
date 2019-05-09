@@ -571,7 +571,7 @@ prim_copyobj(PRIM_PROTOTYPE)
 	abort_interp("Invalid object type.");
     if ((mlev < 3) && !permissions(ProgUID, ref))
 	abort_interp("Permission denied.");
-    if (!ok_name(NAME(oper1->data.objref)))
+    if (!ok_ascii_thing(NAME(oper1->data.objref)) || !ok_name(NAME(oper1->data.objref)))
 	abort_interp("Invalid name.");
     fr->already_created++;
     {
