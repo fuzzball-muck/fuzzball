@@ -49,65 +49,70 @@ do_name(int descr, dbref player, const char *name, char *newname)
     char *password;
 
     /* match_controlled checks if the player controls the matched thing */
-    if ((thing = match_controlled(descr, player, name)) != NOTHING) {
-        /* check for bad name */
-        if (*newname == '\0') {
-            notify(player, "Give it what new name?");
-            return;
-        }
+    if ((thing = match_controlled(descr, player, name)) == NOTHING)
+        return;
 
-        /* check for renaming a player */
-        if (Typeof(thing) == TYPE_PLAYER) {
-            /* split off password */
-            for (password = newname; *password && !isspace(*password); password++) ;
-
-            if (*password) {
-                *password++ = '\0';     /* terminate name */
-                skip_whitespace((const char **)&password);
-            }
-
-            /* check for null password */
-            if (!*password) {
-                notify(player, "You must specify a password to change a player name.");
-                notify(player, "E.g.: name player = newname password");
-                return;
-            } else if (!check_password(thing, password)) {
-                notify(player, "Incorrect password.");
-                return;
-            } else if (strcasecmp(newname, NAME(thing))
-                       && !ok_player_name(newname)) {
-                notify(player, "You can't give a player that name.");
-                return;
-            }
-
-            /* everything ok, notify */
-            log_status("NAME CHANGE: %s(#%d) to %s", NAME(thing), thing, newname);
-            delete_player(thing);
-            change_player_name(thing, newname);
-            add_player(thing);
-            notify(player, "Name set.");
-            return;
-        } else {
-            if (((Typeof(thing) == TYPE_THING) && !ok_ascii_thing(newname)) ||
-                ((Typeof(thing) != TYPE_THING) && !ok_ascii_other(newname))) {
-                notify(player, "Invalid 8-bit name.");
-                return;
-            }
-
-            if (!ok_name(newname)) {
-                notify(player, "That is not a reasonable name.");
-                return;
-            }
-        }
-
-        /* everything ok, change the name */
-        free((void *) NAME(thing));
-
-        ts_modifyobject(thing);
-        NAME(thing) = alloc_string(newname);
-        notify(player, "Name set.");
-        DBDIRTY(thing);
+    /* check for bad name */
+    if (*newname == '\0') {
+        notify(player, "Give it what new name?");
+        return;
     }
+
+    /* check for renaming a player */
+    if (Typeof(thing) == TYPE_PLAYER) {
+        /* split off password */
+        for (password = newname; *password && !isspace(*password); password++) ;
+
+        if (*password) {
+            *password++ = '\0';     /* terminate name */
+            skip_whitespace((const char **)&password);
+        }
+
+        /* check for null password */
+        if (!*password) {
+            notify(player, "You must specify a password to change a player name.");
+            notify(player, "E.g.: name player = newname password");
+            return;
+        }
+
+        if (!check_password(thing, password)) {
+            notify(player, "Incorrect password.");
+            return;
+        }
+
+        if (strcasecmp(newname, NAME(thing))
+                   && !ok_player_name(newname)) {
+            notify(player, "You can't give a player that name.");
+            return;
+        }
+
+        /* everything ok, notify */
+        log_status("NAME CHANGE: %s(#%d) to %s", NAME(thing), thing, newname);
+        delete_player(thing);
+        change_player_name(thing, newname);
+        add_player(thing);
+        notify(player, "Name set.");
+        return;
+    } else {
+        if (((Typeof(thing) == TYPE_THING) && !ok_ascii_thing(newname)) ||
+            ((Typeof(thing) != TYPE_THING) && !ok_ascii_other(newname))) {
+            notify(player, "Invalid 8-bit name.");
+            return;
+        }
+
+        if (!ok_name(newname)) {
+            notify(player, "That is not a reasonable name.");
+            return;
+        }
+    }
+
+    /* everything ok, change the name */
+    free((void *) NAME(thing));
+
+    ts_modifyobject(thing);
+    NAME(thing) = alloc_string(newname);
+    notify(player, "Name set.");
+    DBDIRTY(thing);
 }
 
 /**
@@ -143,9 +148,8 @@ _do_unlink(int descr, dbref player, const char *name, bool quiet)
     init_match(descr, player, name, TYPE_EXIT, &md);
     match_everything(&md);
 
-    if ((exit = noisy_match_result(&md)) == NOTHING) {
+    if ((exit = noisy_match_result(&md)) == NOTHING)
         return;
-    }
 
     if (!controls(player, exit) && !controls_link(player, exit)) {
         notify(player, "Permission denied. (You don't control the exit or its link)");
