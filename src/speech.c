@@ -172,9 +172,7 @@ do_gripe(dbref player, const char *message)
  * Implementation of page command
  *
  * This is the very basic page that comes with the MUCK.  First off,
- * it costs the 'tp_lookup_cost' to page.  It takes this money before
- * checking to see if the target player exists or is haven which is
- * a little rude but nobody uses the built-in page anyway.
+ * it costs the 'tp_lookup_cost' to page.
  *
  * Supports HAVEN check on target.  Does not support multiple page targets.
  * Also supports a blank arg2 (blank message) which results in page sending
@@ -190,11 +188,6 @@ do_page(dbref player, const char *arg1, const char *arg2)
     char buf[BUFFER_LEN];
     dbref target;
 
-    if (!payfor(player, tp_lookup_cost)) {
-        notifyf(player, "You don't have enough %s.", tp_pennies);
-        return;
-    }
-
     if ((target = lookup_player(arg1)) == NOTHING) {
         notify(player, "I don't recognize that name.");
         return;
@@ -202,6 +195,11 @@ do_page(dbref player, const char *arg1, const char *arg2)
 
     if (FLAGS(target) & HAVEN) {
         notify(player, "That player does not wish to be disturbed.");
+        return;
+    }
+
+    if (!payfor(player, tp_lookup_cost)) {
+        notifyf(player, "You don't have enough %s.", tp_pennies);
         return;
     }
 
