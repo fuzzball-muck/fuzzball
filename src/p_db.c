@@ -429,7 +429,7 @@ prim_setname(PRIM_PROTOTYPE)
 		abort_interp("Player namechange requires password.");
 	    } else if (!check_password(ref, password)) {
 		abort_interp("Incorrect password.");
-	    } else if (strcasecmp(b, NAME(ref)) && !ok_player_name(b)) {
+	    } else if (strcasecmp(b, NAME(ref)) && !ok_object_name(b, TYPE_PLAYER)) {
 		abort_interp("You can't give a player that name.");
 	    }
 
@@ -439,11 +439,7 @@ prim_setname(PRIM_PROTOTYPE)
 	    change_player_name(ref, b);
 	    add_player(ref);
 	} else {
-	    if (((Typeof(ref) == TYPE_THING) && !ok_ascii_thing(b)) ||
-		((Typeof(ref) != TYPE_THING) && !ok_ascii_other(b))) {
-		abort_interp("Invalid 8-bit name.");
-	    }
-	    if (!ok_name(b)) {
+            if (!ok_object_name(b, Typeof(ref))) {
 		abort_interp("Invalid name.");
 	    }
             free((void *) NAME(ref));
@@ -571,7 +567,7 @@ prim_copyobj(PRIM_PROTOTYPE)
 	abort_interp("Invalid object type.");
     if ((mlev < 3) && !permissions(ProgUID, ref))
 	abort_interp("Permission denied.");
-    if (!ok_ascii_thing(NAME(oper1->data.objref)) || !ok_name(NAME(oper1->data.objref)))
+    if (!ok_object_name(NAME(oper1->data.objref), TYPE_THING))
 	abort_interp("Invalid name.");
     fr->already_created++;
     {
@@ -1233,7 +1229,7 @@ prim_newobject(PRIM_PROTOTYPE)
     {
 	const char *b = DoNullInd(oper1->data.string);
 
-	if (!ok_ascii_thing(b) || !ok_name(b))
+	if (!ok_object_name(b, TYPE_THING))
 	    abort_interp("Invalid name. (2)");
 
 	ref = create_thing(ProgUID, b, oper2->data.objref);
@@ -1264,7 +1260,7 @@ prim_newroom(PRIM_PROTOTYPE)
     {
 	const char *b = DoNullInd(oper1->data.string);
 
-	if (!ok_ascii_other(b) || !ok_name(b))
+	if (!ok_object_name(b, TYPE_ROOM))
 	    abort_interp("Invalid name. (2)");
 
 	ref = create_room(ProgUID, b, ref);
@@ -1296,7 +1292,7 @@ prim_newexit(PRIM_PROTOTYPE)
     {
 	const char *b = DoNullInd(oper1->data.string);
 
-	if (!ok_ascii_other(b) || !ok_name(b))
+	if (!ok_object_name(b, TYPE_EXIT))
 	    abort_interp("Invalid name. (2)");
 
 	ref = create_action(ProgUID, oper1->data.string->data, oper2->data.objref);
@@ -1682,13 +1678,10 @@ prim_newplayer(PRIM_PROTOTYPE)
     name = oper2->data.string->data;
     password = oper1->data.string->data;
 
-    if (!ok_player_name(name))
-	abort_interp("Invalid player name. (2)");
-    if (!ok_password(password))
-	abort_interp("Invalid password. (1)");
-
-    /* else he doesn't already exist, create him */
     newplayer = create_player(name, password);
+
+    if (newplayer == NOTHING)
+        abort_interp("Create failed.");
 
     log_status("PCREATED[MUF]: %s(%d) by %s(%d)",
 	       NAME(newplayer), (int) newplayer, NAME(player), (int) player);
@@ -1727,13 +1720,10 @@ prim_copyplayer(PRIM_PROTOTYPE)
     name = oper2->data.string->data;
     password = oper1->data.string->data;
 
-    if (!ok_player_name(name))
-	abort_interp("Invalid player name. (2)");
-    if (!ok_password(password))
-	abort_interp("Invalid password. (2)");
-
-    /* else he doesn't already exist, create him */
     newplayer = create_player(name, password);
+
+    if (newplayer == NOTHING)
+        abort_interp("Create failed.");
 
     /* initialize everything */
     FLAGS(newplayer) = FLAGS(ref);
@@ -1918,7 +1908,7 @@ prim_newprogram(PRIM_PROTOTYPE)
 	abort_interp("Permission denied.  Requires Wizbit.");
     if (oper1->type != PROG_STRING || !oper1->data.string)
 	abort_interp("Expected non-empty string argument.");
-    if (!ok_ascii_other(oper1->data.string->data) || !ok_name(oper1->data.string->data))
+    if (!ok_object_name(oper1->data.string->data, TYPE_PROGRAM))
 	abort_interp("Invalid name (2)");
 
     newprog = create_program(ProgUID, oper1->data.string->data);

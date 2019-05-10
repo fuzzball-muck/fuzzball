@@ -29,7 +29,7 @@
  * The action will not do anything until it is LINKed.  This is the 
  * implementation of @action.
  *
- * Action names must be 7-bit ASCII and pass ok_name.
+ * Action names must pass ok_object_name.
  *
  * Calls create_action under the hood.  @see create_action
  *
@@ -193,10 +193,9 @@ void do_contents(int descr, dbref player, const char *name, const char *flags);
  * The definition of this is in create.c
  *
  * Use this to create an object.  This does some checking; for instance,
- * it makes sure the name is 7 bit ASCII and is ok_name.  Does NOT check
- * builder bit.  Validates that the cost you want to set on the object
- * is a valid amount.  Note that if acost has an = in it, it will have
- * a registration done.
+ * the name must pass ok_object_name.  Does NOT check builder bit.
+ * Validates that the cost you want to set on the object is a valid amount.
+ * Note that if acost has an = in it, it will have a registration done.
  *
  * @param player the player doing the create
  * @param name the name of the object
@@ -243,10 +242,10 @@ void do_debug(dbref player, const char *args);
  *
  * This is in create.c
  *
- * Use this to create a room.  This does a lot of checks; rooms can only
- * be 7-bit ASCII, and must pass ok_name.  It handles finding the parent,
- * if no parent provided.  IF a parent is provided, it tries to link the
- * parent and does appropriate permission checks.
+ * Use this to create a room.  This does a lot of checks; rooms must pass
+ * ok_object_name.  It handles finding the parent, if no parent is
+ * provided.  Otherwise, it tries to link the parent and does appropriate
+ * permission checks.
  *
  * This does NOT check builder bit.
  *
@@ -1015,8 +1014,7 @@ void do_process_status(dbref player);
  * put the player into edit mode and do it.  Otherwise, we create a new object
  * for the player, and call it a program.
  *
- * This does some minor checks -- makes sure the name is 7-bit ASCII and
- * "ok_name", but it has no permission checks whatsoever.
+ * The name must pass ok_object_name, but no permissions checks are done.
  *
  * @param descr the descriptor of the programmer
  * @param player the player trying to create the program

@@ -81,7 +81,7 @@ do_name(int descr, dbref player, const char *name, char *newname)
         }
 
         if (strcasecmp(newname, NAME(thing))
-                   && !ok_player_name(newname)) {
+                   && !ok_object_name(newname, TYPE_PLAYER)) {
             notify(player, "You can't give a player that name.");
             return;
         }
@@ -94,13 +94,7 @@ do_name(int descr, dbref player, const char *name, char *newname)
         notify(player, "Name set.");
         return;
     } else {
-        if (((Typeof(thing) == TYPE_THING) && !ok_ascii_thing(newname)) ||
-            ((Typeof(thing) != TYPE_THING) && !ok_ascii_other(newname))) {
-            notify(player, "Invalid 8-bit name.");
-            return;
-        }
-
-        if (!ok_name(newname)) {
+        if (!ok_object_name(newname, Typeof(thing))) {
             notify(player, "That is not a reasonable name.");
             return;
         }

@@ -11,7 +11,6 @@ dbref create_player(const char *name, const char *password);
 void delete_player(dbref who);
 dbref lookup_player(const char *name);
 int ok_password(const char *password);
-int ok_player_name(const char *name);
 int payfor(dbref who, int cost);
 void toad_player(int descr, dbref player, dbref victim, dbref recipient);
 void set_password(dbref player, const char *password);
