@@ -102,7 +102,7 @@ struct tune_str_entry tune_str_list[] = {
     {"Files", "file_log_gripes", &tp_file_log_gripes, MLEV_WIZARD, MLEV_GOD,
      "Player gripes", "", 0, 1, LOG_GRIPE},
     {"Files", "file_log_malloc", &tp_file_log_malloc, MLEV_WIZARD, MLEV_GOD,
-     "Memory allocations", "", 0, 1, LOG_MALLOC},
+     "Memory allocations", "MEMPROF", 0, 1, LOG_MALLOC},
     {"Files", "file_log_muf_errors", &tp_file_log_muf_errors, MLEV_WIZARD, MLEV_GOD,
      "MUF compile errors and warnings", "", 0, 1, LOG_MUF},
     {"Files", "file_log_programs", &tp_file_log_programs, MLEV_WIZARD, MLEV_GOD,
