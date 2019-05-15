@@ -493,7 +493,7 @@ struct tune_bool_entry tune_bool_list[] = {
     {"WHO", "secure_who", &tp_secure_who, 0, MLEV_WIZARD,
      "Disallow WHO command from login screen and programs", "", 1, SECURE_WHO},
     {"WHO", "use_hostnames", &tp_hostnames, 0, MLEV_WIZARD,
-     "Resolve IP addresses into hostnames", "", 1, HOSTNAMES},
+     "Resolve IP addresses into hostnames", "RESOLVER", 1, HOSTNAMES},
     {NULL, NULL, NULL, 0, 0, NULL, 0, 0, 0}
 };
 
