@@ -484,7 +484,7 @@ struct tune_bool_entry tune_bool_list[] = {
      "Examining objects lists legacy props", "", 1, SHOW_LEGACY_PROPS},
     {"Registration", "registration", &tp_registration, 0, MLEV_WIZARD,
      "Require new players to register manually", "", 1, REGISTRATION},
-    {"SSL", "server_cipher_preference", &tp_cipher_server_preference, MLEV_WIZARD, MLEV_WIZARD,
+    {"SSL", "server_cipher_preference", &tp_cipher_server_preference, MLEV_GOD, MLEV_GOD,
      "Honor server cipher preference order over client's", "SSL", 1, SERVER_CIPHER_PREFERENCE},
     {"Tuning", "periodic_program_purge", &tp_periodic_program_purge, 0, MLEV_WIZARD,
      "Periodically free unused MUF programs", "", 1, PERIODIC_PROGRAM_PURGE},
