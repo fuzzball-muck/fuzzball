@@ -2845,10 +2845,10 @@ make_socket_v6(int port)
 static const char *
 addrout_v6(in_port_t lport, struct in6_addr *a, in_port_t prt)
 {
-	static char buf[128];
-	char ip6addr[128];
+    static char buf[128];
+    char ip6addr[128];
 
-	struct in6_addr addr;
+    struct in6_addr addr;
     memcpy(&addr.s6_addr, a, sizeof(struct in6_addr));
 
     prt = ntohs(prt);
