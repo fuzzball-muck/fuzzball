@@ -2179,8 +2179,6 @@ hack_it_up(void)
  * This is the main function for the sanity interactive editor.
  *
  * When the MUCK is running, you won't be able to access this.
- *
- * @private
  */
 void
 san_main(void)
