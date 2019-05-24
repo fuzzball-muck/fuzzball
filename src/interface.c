@@ -293,23 +293,6 @@ static struct descriptor_data *descr_lookup_table[FD_SETSIZE];
 #define isinput( q ) isprint( (q) & 127 )
 
 /**
- * Wrapper for malloc that causes a panic if we cannot allocate
- *
- * @TODO Remove the use of this.  While I understand why this is here,
- *       personally, I find this confusing and it looks like it is only
- *       used in 5 places ... so let's use regular malloc + if, please.
- *       (tanabi)
- *
- * @param result the variable to put the allocated memory into
- * @param type the type we are allocating
- * @param number the number of 'type's we are allocating.
- */
-#define MALLOC(result, type, number) do {   \
-                                       if (!((result) = malloc ((number) * sizeof (type)))) \
-                                       panic("Out of memory");                             \
-                                     } while (0)
-
-/**
  * @private
  * @var If true, do not detach the MUCK as a daemon.
  */
@@ -571,57 +554,17 @@ make_text_block(const char *s, size_t n)
 {
     struct text_block *p;
 
-    /*
-     * @TODO Remove these MALLOC calls and just use malloc like normal.
-     */
-    MALLOC(p, struct text_block, 1);
-    MALLOC(p->buf, char, n);
+    if (!(p = malloc(sizeof(struct text_block))))
+        panic("make_text_block: Out of memory");
+
+    if (!(p->buf = malloc(n * sizeof(char))))
+        panic("make_text_block: Out of memory");
 
     memmove(p->buf, s, n);
     p->nchars = n;
     p->start = p->buf;
     p->nxt = 0;
     return p;
-}
-
-/*
- * @TODO This function is used in exactly one place: flush_output_queue
- *       Therefore, let's just move this code into flush_output_queue
- *
- *       The 'add_flushed_message' parameter is irrelevant because it is
- *       always 1.
- */
-static int
-flush_queue(struct text_queue *q, int n, int add_flushed_message)
-{
-    struct text_block *p;
-    int really_flushed = 0;
-
-    if (add_flushed_message) {
-        n += strlen(flushed_message);
-    }
-
-    while (n > 0 && (p = q->head)) {
-        n -= p->nchars;
-        really_flushed += p->nchars;
-        q->head = p->nxt;
-        q->lines--;
-        free_text_block(p);
-    }
-
-    if (add_flushed_message) {
-        p = make_text_block(flushed_message, strlen(flushed_message));
-        p->nxt = q->head;
-        q->head = p;
-        q->lines++;
-
-        if (!p->nxt)
-            q->tail = &p->nxt;
-
-        really_flushed -= p->nchars;
-    }
-
-    return really_flushed;
 }
 
 /**
@@ -655,13 +598,35 @@ add_to_queue(struct text_queue *q, const char *b, size_t n)
  * @param size_limit the number of blocks to limit to
  */
 static void
-flush_output_queue(struct descriptor_data *d, int size_limit) {
-    int space;
+flush_output_queue(struct descriptor_data *d, int size_limit)
+{
+    int space = d->output_size - size_limit;
 
-    space = size_limit - d->output_size;
+    if (space > 0) {
+        struct text_block *p;
+        struct text_queue *q = &d->output;
+        int n = space + strlen(flushed_message);
+        int really_flushed = 0;
 
-    if (space < 0) {
-        d->output_size -= flush_queue(&d->output, -space, 1);
+        while (n > 0 && (p = q->head)) {
+            n -= p->nchars;
+            really_flushed += p->nchars;
+            q->head = p->nxt;
+            q->lines--;
+            free_text_block(p);
+        }
+
+        p = make_text_block(flushed_message, strlen(flushed_message));
+        p->nxt = q->head;
+        q->head = p;
+        q->lines++;
+
+        if (!p->nxt)
+            q->tail = &p->nxt;
+
+        really_flushed -= p->nchars;
+
+        d->output_size -= really_flushed;
     }
 }
 
@@ -1235,6 +1200,7 @@ welcome_user(struct descriptor_data *d)
     FILE *f;
     char *ptr;
     char buf[BUFFER_LEN];
+
     int welcome_proplist = 0;
 
     /*
@@ -2625,56 +2591,30 @@ initializesock(int s, const char *hostname, int is_ssl)
     struct descriptor_data *d;
     char buf[128], *ptr;
 
-    MALLOC(d, struct descriptor_data, 1);
+    if (!(d = malloc(sizeof(struct descriptor_data))))
+        panic("initializesock: Out of memory");
 
-    /*
-     * @TODO the majority of this can be replaced with memset(d, 0, sizeof)
-     *       then set the things that need to be set afterwards.  It should
-     *       cut this function down to a fraction of its current size.
-     */
+    memset(d, 0, sizeof(struct descriptor_data));
 
     d->descriptor = s;
 
 #ifdef USE_SSL
-    d->ssl_session = NULL;
-    d->pending_ssl_write.lines = 0;
-    d->pending_ssl_write.head = 0;
     d->pending_ssl_write.tail = &d->pending_ssl_write.head;
 #endif
 
-    d->connected = 0;
-    d->booted = 0;
-    d->block_writes = 0;
-    d->is_starttls = 0;
-    d->player = -1;
-    d->con_number = 0;
+    d->player = NOTHING;
     d->connected_at = time(NULL);
 
     make_nonblocking(s);
     make_cloexec(s);
 
-    d->output_size = 0;
-    d->priority_output.lines = 0;
-    d->priority_output.head = 0;
     d->priority_output.tail = &d->priority_output.head;
-    d->output.lines = 0;
-    d->output.head = 0;
     d->output.tail = &d->output.head;
-    d->input.lines = 0;
-    d->input.head = 0;
     d->input.tail = &d->input.head;
-    d->raw_input = 0;
-    d->raw_input_at = 0;
-    d->telnet_enabled = 0;
-    d->telnet_state = TELNET_STATE_NORMAL;
-    d->telnet_sb_opt = 0;
-    d->short_reads = 0;
     
 #ifdef IP_FORWARDING
-    // Gateway logic
-    d->forwarding_enabled = 0;
-    MALLOC(d->forwarded_buffer, char, 128);
-    d->forwarded_size = 0;
+    if (!(d->forwarded_buffer = malloc(128 * sizeof(char))))
+        panic("initializesock: Out of memory");
 #endif
 
     d->quota = tp_command_burst_size;
@@ -3232,7 +3172,9 @@ process_input(struct descriptor_data *d)
      * MAX_COMMAND_LEN in size.
      */
     if (!d->raw_input) {
-        MALLOC(d->raw_input, char, MAX_COMMAND_LEN);
+        if (!(d->raw_input = malloc(MAX_COMMAND_LEN * sizeof(char))))
+            panic("process_input: Out of memory");
+
         d->raw_input_at = d->raw_input;
     }
 
@@ -3723,7 +3665,6 @@ configure_new_ssl_ctx(void)
             ssl_status_ok = 0;
         }
     }
-
 
     /*
      * @TODO These two if's (and possibly others) can be reduced to a

@@ -42,11 +42,6 @@ int notify(int player, const char *msg) {
     return printf("%s\n", msg);		
 }
 
-#define MALLOC(result, type, number) do { \
-                                       if (!((result) = (type *) malloc ((number) * sizeof (type)))) \
-                                       abort(); \
-                                     } while (0)
-
 static struct hostcache {
     struct in6_addr ipnum_v6;
     long ipnum;
@@ -146,7 +141,8 @@ static const char * hostfetch_v6(struct in6_addr *ip) {
 static void hostadd_v6(struct in6_addr *ip, const char *name) {
     struct hostcache *ptr;
 
-    MALLOC(ptr, struct hostcache, 1);
+    if (!(ptr = malloc(sizeof(struct hostcache))))
+        abort();
 
     ptr->next = hostcache_list;
     if (ptr->next) {
@@ -347,7 +343,8 @@ static const char * hostfetch(long ip) {
 static void hostadd(long ip, const char *name) {
     struct hostcache *ptr;
 
-    MALLOC(ptr, struct hostcache, 1);
+    if (!(ptr = malloc(sizeof(struct hostcache))))
+        abort();
 
     ptr->next = hostcache_list;
     if (ptr->next) {
