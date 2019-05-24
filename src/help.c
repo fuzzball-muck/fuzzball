@@ -234,7 +234,7 @@ do_motd(dbref player, char *text)
     char buf[BUFFER_LEN];
 
     if (!*text || !Wizard(OWNER(player))) {
-        spit_file(player, tp_file_motd);
+        spit_file_segment(player, tp_file_motd, "");
         return;
     }
 
@@ -407,7 +407,7 @@ do_info(dbref player, const char *topic, const char *seg)
 void
 do_credits(dbref player)
 {
-    spit_file(player, tp_file_credits);
+    spit_file_segment(player, tp_file_credits, "");
 }
 
 /**

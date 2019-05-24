@@ -451,7 +451,7 @@ interp(int descr, dbref player, dbref location, dbref program,
     fr->argument.top = 0;
     fr->pc = PROGRAM_START(program);
     fr->writeonly = ((source == -1) || (Typeof(source) == TYPE_ROOM) ||
-		     ((Typeof(source) == TYPE_PLAYER) && (!online(source))) ||
+		     ((Typeof(source) == TYPE_PLAYER) && (!PLAYER_DESCRCOUNT(source))) ||
 		     (FLAGS(player) & READMODE));
     fr->level = 0;
     fr->error.is_flags = 0;

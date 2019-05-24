@@ -1245,7 +1245,7 @@ mfn_awake(MFUNARGS)
 	return ("0");
     }
 
-    snprintf(buf, BUFFER_LEN, "%d", online(obj));
+    snprintf(buf, BUFFER_LEN, "%d", PLAYER_DESCRCOUNT(obj));
     return (buf);
 }
 

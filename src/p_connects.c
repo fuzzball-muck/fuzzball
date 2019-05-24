@@ -27,7 +27,7 @@ prim_awakep(PRIM_PROTOTYPE)
 	ref = OWNER(ref);
     if (Typeof(ref) != TYPE_PLAYER)
 	abort_interp("invalid argument.");
-    result = online(ref);
+    result = PLAYER_DESCRCOUNT(ref);
     CLEAR(oper1);
     PushInt(result);
 }
@@ -622,7 +622,7 @@ prim_firstdescr(PRIM_PROTOTYPE)
     } else {
 	if (Typeof(ref) != TYPE_PLAYER)
 	    abort_interp("invalid argument");
-	if (online(ref)) {
+	if (PLAYER_DESCRCOUNT(ref)) {
 	    darr = get_player_descrs(ref, &dcount);
 	    result = index_descr(darr[dcount - 1]);
 	} else {
@@ -655,7 +655,7 @@ prim_lastdescr(PRIM_PROTOTYPE)
     } else {
 	if (Typeof(ref) != TYPE_PLAYER)
 	    abort_interp("invalid argument");
-	if (online(ref)) {
+	if (PLAYER_DESCRCOUNT(ref)) {
 	    darr = get_player_descrs(ref, &dcount);
 	    result = index_descr(darr[0]);
 	} else {

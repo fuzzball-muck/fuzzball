@@ -21,7 +21,7 @@
 #endif
 #include "fbmath.h"
 #include "fbstrings.h"
-#include "game.h"
+#include "interface.h"
 #include "props.h"
 
 /**

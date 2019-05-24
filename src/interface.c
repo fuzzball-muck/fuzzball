@@ -11,6 +11,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <inttypes.h>
+#include <signal.h>
 #include <stdarg.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -1012,8 +1013,8 @@ parse_connect(const char *msg, char *command, char *user, char *pass)
 /**
  * Dump a text file to the given descriptor
  *
- * This is extremely similar to spit_file, except spit_file does a lot
- * of "extra stuff" and takes a player parameter instead of a descriptor.
+ * This is extremely similar to spit_file_segment, except spit_file_degment
+ * does a lot of "extra stuff" and takes a player parameter instead of a descriptor.
  *
  * This code seems very duplicate as a result, but the calling patterns
  * are very different -- this is more for "unconnected" or rather folks
@@ -1096,33 +1097,6 @@ announce_puppets(dbref player, const char *msg, const char *prop)
 }
 
 /**
- * Return number of descriptors that player has open
- *
- * This will be 0 if the player is offline, but the number returned
- * is significant to some callers so it isn't just a binary.  Some
- * callers use it as a binary, some callers legitimately want the result.
- *
- * @param player the player to check
- * @return number of active descriptors the player has open
- */
-int
-online(dbref player)
-{
-    /*
-     * @TODO This is just a wrapper around a globally available
-     *       define, which makes this call kind of stupid.  I would
-     *       recommend just removing all uses of online(...) with
-     *       PLAYER_DESCRCOUNT directly rather than have this little
-     *       obfuscator function.
-     *
-     *       Personally, I think that makes it a little more clear what
-     *       this call is actually doing, because it would be easy to
-     *       assume this is a simple boolean otherwise.
-     */
-    return PLAYER_DESCRCOUNT(player);
-}
-
-/**
  * Announces a player connection, with associated 'business logic'
  *
  * If the player is dark, or in a dark location, no announcement is made.
@@ -1154,7 +1128,7 @@ announce_connect(int descr, dbref player)
 
     exit = NOTHING;
 
-    if (online(player) == 1) {
+    if (PLAYER_DESCRCOUNT(player) == 1) {
         /* match for connect */
         init_match(descr, player, "connect", TYPE_EXIT, &md);
         md.match_level = 1;
@@ -1179,7 +1153,7 @@ announce_connect(int descr, dbref player)
     if (exit != NOTHING)
         do_move(descr, player, "connect", 1);
 
-    if (online(player) == 1) {
+    if (PLAYER_DESCRCOUNT(player) == 1) {
         announce_puppets(player, "wakes up.", MESGPROP_PCON);
     }
 
@@ -1693,12 +1667,11 @@ forget_descriptor(struct descriptor_data *d)
  *
  * @see gethash_descr
  *
- * @private
  * @param c the descriptor to lookup
  * @return the descriptor_data corresponding to c or NULL if not found
  */
-static struct descriptor_data *
-lookup_descriptor(int c)
+struct descriptor_data *
+descrdata_by_descr(int c)
 {
 #ifdef WIN32
     if (c < 0)
@@ -1901,7 +1874,7 @@ check_connect(struct descriptor_data *d, const char *msg)
 
                     /* cks: someone has to initialize this somewhere. */
                     PLAYER_SET_BLOCK(d->player, 0);
-                    spit_file(player, tp_file_motd);
+                    spit_file_segment(player, tp_file_motd, "");
                     announce_connect(d->descriptor, player);
                     con_players_curr++;
                 }
@@ -2454,7 +2427,7 @@ announce_disconnect(struct descriptor_data *d)
     }
 
     /* trigger local disconnect action */
-    if (online(player) == 1) {
+    if (PLAYER_DESCRCOUNT(player) == 1) {
         if (can_move(d->descriptor, player, "disconnect", 1)) {
             do_move(d->descriptor, player, "disconnect", 1);
         }
@@ -2933,12 +2906,7 @@ new_connection_v6(in_port_t port, int sock_, int is_ssl)
         return 0;
     } else {
 #ifdef F_SETFD
-        /*
-         * @TODO This '1' is FD_CLOEXEC ... we should use FD_CLOEXEC
-         *       instead of '1' just in case its different on other
-         *       systems.
-         */
-        fcntl(newsock, F_SETFD, 1);
+        fcntl(newsock, F_SETFD, FD_CLOEXEC);
 #endif
         strcpyn(hostname, sizeof(hostname), addrout_v6(port, &(addr.sin6_addr), addr.sin6_port));
         log_status("ACCEPT: %s on descriptor %d", hostname, newsock);
@@ -3789,39 +3757,12 @@ configure_new_ssl_ctx(void)
      */
     if (ssl_status_ok) {
         SSL_CTX_set_mode(new_ssl_ctx, SSL_MODE_AUTO_RETRY);
-    }
-
-    /*
-     * @TODO This can be an else to the above rather than a separate
-     *       if check :P
-     */
-    if (!ssl_status_ok) {
+    } else {
         SSL_CTX_free(new_ssl_ctx);
         new_ssl_ctx = NULL;
     }
 
     return new_ssl_ctx;
-}
-
-/*
- * @TODO Put this code into the one place this function is called.
- *       Its sort of pointlessly its own function, probably to make
- *       a define block smaller -- but the split up is just confusing.
- */
-static void
-bind_ssl_sockets(void)
-{
-    for (unsigned int i = 0; i < ssl_numports; i++) {
-        ssl_sock[i] = make_socket(ssl_listener_port[i]);
-        update_max_descriptor(ssl_sock[i]);
-        ssl_numsocks++;
-    }
-
-    for (unsigned int i = 0; i < ssl_numports; i++) {
-        ssl_sock_v6[i] = make_socket_v6(ssl_listener_port[i]);
-        update_max_descriptor(ssl_sock_v6[i]);
-        ssl_numsocks_v6++;
-    }
 }
 
 /**
@@ -4740,20 +4681,6 @@ notify_from_echo(dbref from, dbref player, const char *msg, int isprivate)
 }
 
 /**
- * Send a notification from one player to another.
- *
- * This is a wrapper around notify_from_echo that defaults isprivate to true.
- *
- * @TODO Remove this call -- it looks like it is only used in 3 places in
- *       speech.c.  Almost everything uses notify_from_echo directly.
- */
-int
-notify_from(dbref from, dbref player, const char *msg)
-{
-    return notify_from_echo(from, player, msg, 1);
-}
-
-/**
  * Send a notification to a player, from the player.
  *
  * This is for system messages in response to a player's actions for the
@@ -5414,28 +5341,77 @@ do_armageddon(dbref player, const char *msg)
     exit(ARMAGEDDON_EXIT_CODE);
 }
 
+
 /**
- * Does some parts of the emergency "panic" shutdown"
+ * "Panic" the MUCK, which shuts it down with a message.
  *
- * @TODO This function is a total misnomer -- it only does a very tiny
- *       fraction of the shutdown -- and is only called in one
- *       place (panic in game.c) and this function exists because
- *       close_sockets and kill_resolver are both statics.
+ * The database is dumped to 'dumpfile' with a '.PANIC' suffix, unless
+ * we can't write it.  Macros are similarly dumped with a '.PANIC' suffix
+ * unless it cannot be written.
  *
- *       Looks like 'panic' doesn't use any calls that are specific to
- *       game.c ... so I recommend moving panic(...) to here and just
- *       putting these couple of lines of code in panic(...) rather
- *       than have this stupid little misnomer function.
+ * If NOCOREDUMP is defined, we will exit with code 135.  Otherwise, we
+ * will call abort() which should produce a core dump.
+ *
+ * @param message the message to show in the log
  */
 void
-emergency_shutdown(void)
+panic(const char *message)
 {
-    close_sockets("\r\nEmergency shutdown due to server crash.");
+    char panicfile[2048];
+    FILE *f;
+
+    log_status("PANIC: %s", message);
+    fprintf(stderr, "PANIC: %s\n", message);
+
+    /* shut down interface */
+    if (!forked_dump_process_flag) {
+        close_sockets("\r\nEmergency shutdown due to server crash.");
 
 #ifdef SPAWN_HOST_RESOLVER
-    kill_resolver();
+        kill_resolver();
+#endif
+    }
+
+#ifdef SPAWN_HOST_RESOLVER
+    if (global_resolver_pid != 0) {
+        (void) kill(global_resolver_pid, SIGKILL);
+    }
 #endif
 
+    /* dump panic file */
+    snprintf(panicfile, sizeof(panicfile), "%s.PANIC", dumpfile);
+
+    if ((f = fopen(panicfile, "wb")) != NULL) {
+        log_status("DUMPING: %s", panicfile);
+        fprintf(stderr, "DUMPING: %s\n", panicfile);
+        db_write(f);
+        fclose(f);
+        log_status("DUMPING: %s (done)", panicfile);
+        fprintf(stderr, "DUMPING: %s (done)\n", panicfile);
+    } else {
+        perror("CANNOT OPEN PANIC FILE, YOU LOSE");
+    }
+
+    /* Write out the macros */
+    snprintf(panicfile, sizeof(panicfile), "%s.PANIC", MACRO_FILE);
+
+    if ((f = fopen(panicfile, "wb")) != NULL) {
+        macrodump(macrotop, f);
+        fclose(f);
+    } else {
+        perror("CANNOT OPEN MACRO PANIC FILE, YOU LOSE");
+    }
+
+
+    sync();
+#ifdef NOCOREDUMP
+    exit(135);
+#else /* !NOCOREDUMP */
+#ifdef SIGIOT
+    signal(SIGIOT, SIG_DFL);
+#endif
+    abort();
+#endif /* NOCOREDUMP */
 }
 
 #ifdef MUD_ID
@@ -5528,17 +5504,6 @@ get_player_descrs(dbref player, int *count)
         *count = 0;
         return NULL;
     }
-}
-
-/*
- * @TODO .... da fuck?
- *       lookup_descriptor is ONLY used here.  *ONLY* used here.
- *       Rename lookup_descriptor to descrdata_by_descr.  Done.
- */
-struct descriptor_data *
-descrdata_by_descr(int i)
-{
-    return lookup_descriptor(i);
 }
 
 /**
@@ -6582,38 +6547,6 @@ ignore_flush_cache(dbref Player)
 }
 
 /**
- * Iterate over the entire DB and delete all player ignore caches
- *
- * @private
- */
-static void
-ignore_flush_all_cache(void)
-{
-    /* Don't touch the database if it's not been loaded yet... */
-    if (db == 0)
-        return;
-
-    for (dbref i = 0; i < db_top; i++) {
-        /*
-         * @TODO while it would be very slightly less efficient (an
-         *       ObjExists check added to each object), this little if
-         *       statement could be replaced with a call to ignore_flush_cache
-         *       to centralize the memory free-ing logic.
-         *
-         *       This only gets called when a player gets toaded, so I
-         *       think the cleanliness is worth a very slight performance
-         *       impact.
-         */
-        if (Typeof(i) == TYPE_PLAYER) {
-            free(PLAYER_IGNORE_CACHE(i));
-            PLAYER_SET_IGNORE_CACHE(i, NULL);
-            PLAYER_SET_IGNORE_COUNT(i, 0);
-            PLAYER_SET_IGNORE_LAST(i, NOTHING);
-        }
-    }
-}
-
-/**
  * Add 'Who' to 'Player's ignore list
  *
  * Does nothing if tp_ignore_support is false or Player/Who is invald.
@@ -6688,12 +6621,28 @@ ignore_remove_from_all_players(dbref Player)
         if (Typeof(i) == TYPE_PLAYER)
             reflist_del(i, IGNORE_PROP, Player);
 
-    /*
-     * @TODO Move the code for ignore_flush_all_cache into here.  It is
-     *       only used here and is a relatively small piece of code that
-     *       is otherwise fairly useless.
-     */
-    ignore_flush_all_cache();
+    /* Don't touch the database if it's not been loaded yet... */
+    if (db == 0)
+        return;
+
+    for (dbref i = 0; i < db_top; i++) {
+        /*
+         * @TODO while it would be very slightly less efficient (an
+         *       ObjExists check added to each object), this little if
+         *       statement could be replaced with a call to ignore_flush_cache
+         *       to centralize the memory free-ing logic.
+         *
+         *       This only gets called when a player gets toaded, so I
+         *       think the cleanliness is worth a very slight performance
+         *       impact.
+         */
+        if (Typeof(i) == TYPE_PLAYER) {
+            free(PLAYER_IGNORE_CACHE(i));
+            PLAYER_SET_IGNORE_CACHE(i, NULL);
+            PLAYER_SET_IGNORE_COUNT(i, 0);
+            PLAYER_SET_IGNORE_LAST(i, NOTHING);
+        }
+    }
 }
 
 /**
@@ -6705,12 +6654,11 @@ ignore_remove_from_all_players(dbref Player)
  * If the file is missing, it outputs an error and outputs the message
  * to stderr.  There's no restriction on file paths.
  *
- * @private
  * @param player the player to send the file to
  * @param filename the file to send to the player
  * @param seg this can be an empty string or a line number range
  */
-static void
+void
 spit_file_segment(dbref player, const char *filename, const char *seg)
 {
     FILE *f;
@@ -6745,7 +6693,7 @@ spit_file_segment(dbref player, const char *filename, const char *seg)
          * @TODO perhaps this should go to the log as well
          */
         notifyf(player, "Sorry, %s is missing.  Management has been notified.", filename);
-        fputs("spit_file:", stderr);
+        fputs("spit_file_segment:", stderr);
         perror(filename);
     } else {
         while (fgets(buf, sizeof buf, f)) {
@@ -6871,16 +6819,6 @@ show_subfile(dbref player, const char *dir, const char *topic, const char *seg,
         spit_file_segment(player, buf, seg);
         return 1;
     }
-}
-
-/*
- * @TODO Recommend we remove this function and just replace it with
- *       spit_file_segment in the handful of places we call this.
- */
-void
-spit_file(dbref player, const char *filename)
-{
-    spit_file_segment(player, filename, "");
 }
 
 /**
@@ -7227,7 +7165,17 @@ main(int argc, char **argv)
     }
 
 #ifdef USE_SSL
-    bind_ssl_sockets();
+    for (unsigned int i = 0; i < ssl_numports; i++) {
+        ssl_sock[i] = make_socket(ssl_listener_port[i]);
+        update_max_descriptor(ssl_sock[i]);
+        ssl_numsocks++;
+    }
+
+    for (unsigned int i = 0; i < ssl_numports; i++) {
+        ssl_sock_v6[i] = make_socket_v6(ssl_listener_port[i]);
+        update_max_descriptor(ssl_sock_v6[i]);
+        ssl_numsocks_v6++;
+    }
 #endif
 
     /*

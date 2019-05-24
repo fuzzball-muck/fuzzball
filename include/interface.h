@@ -279,10 +279,18 @@ struct descriptor_data *descrdata_by_descr(int i);
 void dump_status(void);
 
 /**
- * Intentionally undocumented -- recommended for removal.  See
- * TODO in interface.c
+ * "Panic" the MUCK, which shuts it down with a message.
+ *
+ * The database is dumped to 'dumpfile' with a '.PANIC' suffix, unless
+ * we can't write it.  Macros are similarly dumped with a '.PANIC' suffix
+ * unless it cannot be written.
+ *
+ * If NOCOREDUMP is defined, we will exit with code 135.  Otherwise, we
+ * will call abort() which should produce a core dump.
+ *
+ * @param message the message to show in the log
  */
-void emergency_shutdown(void);
+void panic(const char *message);
 
 /**
  * Get an array of all the given player dbref's descriptors.
@@ -476,16 +484,6 @@ void notify_except(dbref first, dbref exception, const char *msg, dbref who);
 int notify_filtered(dbref from, dbref player, const char *msg, int ispriv);
 
 /**
- * Send a notification from one player to another.
- *
- * This is a wrapper around notify_from_echo that defaults isprivate to true.
- *
- * @TODO Remove this call -- it looks like it is only used in 3 places in
- *       speech.c.  Almost everything uses notify_from_echo directly.
- */
-int notify_from(dbref from, dbref player, const char *msg);
-
-/**
  * This is used by basically all the different notification routines.
  *
  * Sends a message to a player or thing, handing vehicle oecho, listen
@@ -580,18 +578,6 @@ void notifyf(dbref player, char *format, ...);
  * @param ... as many arguments as necessary.
  */
 void notifyf_nolisten(dbref player, char *format, ...);
-
-/**
- * Return number of descriptors that player has open
- *
- * This will be 0 if the player is offline, but the number returned
- * is significant to some callers so it isn't just a binary.  Some
- * callers use it as a binary, some callers legitimately want the result.
- *
- * @param player the player to check
- * @return number of active descriptors the player has open
- */
-int online(dbref player);
 
 /**
  * Partial pmatch searches for 'name' amongst the currently online players
@@ -929,11 +915,20 @@ int show_subfile(dbref player, const char *dir, const char *topic, const char *s
 void spawn_resolver(void);
 #endif
 
-/*
- * @TODO Recommend we remove this function and just replace it with
- *       spit_file_segment in the handful of places we call this.
+/**
+ * Output a file to a player, optionally using a segment.
+ *
+ * Segments are line numbers.  Either a single line number or
+ * a range of line numbers.
+ *
+ * If the file is missing, it outputs an error and outputs the message
+ * to stderr.  There's no restriction on file paths.
+ *
+ * @param player the player to send the file to
+ * @param filename the file to send to the player
+ * @param seg this can be an empty string or a line number range
  */
-void spit_file(dbref player, const char *filename);
+void spit_file_segment(dbref player, const char *filename, const char *seg);
 
 /**
  * Send a message to everyone online and flush the output immediately.

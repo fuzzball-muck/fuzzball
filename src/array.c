@@ -18,8 +18,8 @@
 #include "boolexp.h"
 #include "fbmath.h"
 #include "fbstrings.h"
-#include "game.h"
 #include "inst.h"
+#include "interface.h"
 #include "interp.h"
 
 /* This keeps track of all active arrays but its not clear to me exactly

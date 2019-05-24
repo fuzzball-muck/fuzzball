@@ -1217,7 +1217,7 @@ editor(int descr, dbref player, const char *command)
                 break;
 
             case EDITOR_HELP_COMMAND:
-                spit_file(player, tp_file_editor_help);
+                spit_file_segment(player, tp_file_editor_help, "");
                 break;
 
             case VIEW_COMMAND:
