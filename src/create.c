@@ -74,18 +74,8 @@ do_open(int descr, dbref player, const char *direction, const char *linkto)
 
     loc = LOCATION(player);
 
-    if (!*direction) {
-        notify(player, "You must specify a direction or action name to open.");
-        return;
-    }
-
-    if (!ok_ascii_other(direction)) {
-        notify(player, "Exit names are limited to 7-bit ASCII.");
-        return;
-    }
-
-    if (!ok_name(direction)) {
-        notify(player, "That's a strange name for an exit!");
+    if (!ok_object_name(direction, TYPE_EXIT)) {
+        notify(player, "Please specify a valid name for this exit.");
         return;
     }
 
@@ -296,10 +286,10 @@ do_link(int descr, dbref player, const char *thing_name, const char *dest_name)
 /**
  * Implementation of @dig
  *
- * Use this to create a room.  This does a lot of checks; rooms can only
- * be 7-bit ASCII, and must pass ok_name.  It handles finding the parent,
- * if no parent provided.  IF a parent is provided, it tries to link the
- * parent and does appropriate permission checks.
+ * Use this to create a room.  This does a lot of checks; rooms must pass
+ * ok_object_name.  It handles finding the parent, if no parent is
+ * provided.  Otherwise, it tries to link the parent and does appropriate
+ * permission checks.
  *
  * This does NOT check builder bit.
  *
@@ -324,18 +314,8 @@ do_dig(int descr, dbref player, const char *name, const char *pname)
     char *qname;
     struct match_data md;
 
-    if (*name == '\0') {
-        notify(player, "You must specify a name for the room.");
-        return;
-    }
-
-    if (!ok_ascii_other(name)) {
-        notify(player, "Room names are limited to 7-bit ASCII.");
-        return;
-    }
-
-    if (!ok_name(name)) {
-        notify(player, "That's a strange name for a room!");
+    if (!ok_object_name(name, TYPE_ROOM)) {
+        notify(player, "Please specify a valid name for this room.");
         return;
     }
 
@@ -412,8 +392,7 @@ do_dig(int descr, dbref player, const char *name, const char *pname)
  * put the player into edit mode and do it.  Otherwise, we create a new object
  * for the player, and call it a program.
  *
- * This does some minor checks -- makes sure the name is 7-bit ASCII and
- * "ok_name", but it has no permission checks whatsoever.
+ * The name must pass ok_object_name, but no permissions checks are done.
  *
  * @param descr the descriptor of the programmer
  * @param player the player trying to create the program
@@ -432,8 +411,8 @@ do_program(int descr, dbref player, const char *name, const char *rname)
      *        and relies entirely on the caller (the big switch statement)
      */
 
-    if (!*name) {
-        notify(player, "No program name given.");
+    if (!ok_object_name(name, TYPE_PROGRAM)) {
+        notify(player, "Please specify a valid name for this program.");
         return;
     }
 
@@ -445,16 +424,6 @@ do_program(int descr, dbref player, const char *name, const char *rname)
     match_absolute(&md);
 
     if (*rname || (program = match_result(&md)) == NOTHING) {
-        if (!ok_ascii_other(name)) {
-            notify(player, "Program names are limited to 7-bit ASCII.");
-            return;
-        }
-
-        if (!ok_name(name)) {
-            notify(player, "That's a strange name for a program!");
-            return;
-        }
-
         program = create_program(player, name);
         unparse_object(player, program, unparse_buf, sizeof(unparse_buf));
         notifyf(player, "Program %s created.", unparse_buf);
@@ -654,10 +623,10 @@ do_clone(int descr, dbref player, const char *name, const char *rname)
         return;
     }
 
-    /* check the name again, just in case reserved name patterns have
-       changed since the original object was created. */
-    if (!ok_name(NAME(thing))) {
-        notify(player, "You cannot clone something with such a weird name!");
+    /* check the name again, just in case rules have changed since the
+       original object was created. */
+    if (!ok_object_name(NAME(thing), TYPE_THING)) {
+        notify(player, "You cannot clone an object with this name.");
         return;
     }
 
@@ -706,10 +675,9 @@ do_clone(int descr, dbref player, const char *name, const char *rname)
  * Implementation of @create
  *
  * Use this to create an object.  This does some checking; for instance,
- * it makes sure the name is 7 bit ASCII and is ok_name.  Does NOT check
- * builder bit.  Validates that the cost you want to set on the object
- * is a valid amount.  Note that if acost has an = in it, it will have
- * a registration done.
+ * the name must pass ok_object_name.  Does NOT check builder bit.
+ * Validates that the cost you want to set on the object is a valid amount.
+ * Note that if acost has an = in it, it will have a registration done.
  *
  * @param player the player doing the create
  * @param name the name of the object
@@ -741,23 +709,17 @@ do_create(dbref player, char *name, char *acost)
 
     cost = atoi(qname);
 
-    if (*name == '\0') {
-        notify(player, "Create what?");
+    if (!ok_object_name(name, TYPE_THING)) {
+        notify(player, "Please specify a valid name for this thing.");
         return;
-    } else if (!ok_ascii_thing(name)) {
-        /* @TODO: Make ok_ascii_name? These checks are everywhere
-         *        where first it checks ASCII than checks ok_name.
-         *        We could even combine the null check.
-         */
-        notify(player, "Thing names are limited to 7-bit ASCII.");
-        return;
-    } else if (!ok_name(name)) {
-        notify(player, "That's a strange name for a thing!");
-        return;
-    } else if (cost < 0) {
+    }
+
+    if (cost < 0) {
         notify(player, "You can't create an object for less than nothing!");
         return;
-    } else if (cost < tp_object_cost) {
+    }
+
+    if (cost < tp_object_cost) {
         cost = tp_object_cost;
     }
 
@@ -839,7 +801,7 @@ parse_source(int descr, dbref player, const char *source_name)
  * The action will not do anything until it is LINKed.  This is the 
  * implementation of @action.
  *
- * Action names must be 7-bit ASCII and pass ok_name.
+ * Action names must pass ok_object_name.
  *
  * Calls create_action under the hood.  @see create_action
  *
@@ -876,14 +838,13 @@ do_action(int descr, dbref player, const char *action_name,
 
     skip_whitespace((const char **)&rname);
 
-    if (!*action_name || !*qname) {
-        notify(player, "You must specify an action name and a source object.");
+    if (!ok_object_name(action_name, TYPE_EXIT)) {
+        notify(player, "Please specify a valid name for this action.");
         return;
-    } else if (!ok_ascii_other(action_name)) {
-        notify(player, "Action names are limited to 7-bit ASCII.");
-        return;
-    } else if (!ok_name(action_name)) {
-        notify(player, "That's a strange name for an action!");
+    }
+
+    if (!*qname) {
+        notify(player, "You must specify a source object.");
         return;
     }
 
@@ -994,111 +955,112 @@ do_recycle(int descr, dbref player, const char *name)
     init_match(descr, player, name, TYPE_THING, &md);
     match_everything(&md);
 
-    if ((thing = noisy_match_result(&md)) != NOTHING) {
+    if ((thing = noisy_match_result(&md)) == NOTHING)
+        return;
+
 #ifdef GOD_PRIV
-        if (tp_strict_god_priv && !God(player) && God(OWNER(thing))) {
-            notify(player, "Only God may reclaim God's property.");
-            return;
-        }
+    if (tp_strict_god_priv && !God(player) && God(OWNER(thing))) {
+        notify(player, "Only God may reclaim God's property.");
+        return;
+    }
 #endif
-        if (!controls(player, thing)) {
-            if (Wizard(OWNER(player)) && (Typeof(thing) == TYPE_GARBAGE))
-                notify(player, "That's already garbage!");
-            else
-                notify(player,
-                       "Permission denied. (You don't control what you want to recycle)");
-        } else {
-            while (tref->name) {
-                if (thing == *tref->ref) {
-                    notify(player, "That object cannot currently be @recycled.");
+    if (!controls(player, thing)) {
+        if (Wizard(OWNER(player)) && (Typeof(thing) == TYPE_GARBAGE))
+            notify(player, "That's already garbage!");
+        else
+            notify(player,
+                   "Permission denied. (You don't control what you want to recycle)");
+    } else {
+        while (tref->name) {
+            if (thing == *tref->ref) {
+                notify(player, "That object cannot currently be @recycled.");
+                return;
+            }
+
+            tref++;
+        }
+
+        switch (Typeof(thing)) {
+            case TYPE_ROOM:
+                if (OWNER(thing) != OWNER(player)) {
+                    notify(player,
+                           "Permission denied. (You don't control the room you want to recycle)");
                     return;
                 }
 
-                tref++;
-            }
-
-            switch (Typeof(thing)) {
-                case TYPE_ROOM:
-                    if (OWNER(thing) != OWNER(player)) {
-                        notify(player,
-                           "Permission denied. (You don't control the room you want to recycle)");
-                        return;
-                    }
-
-                    if (thing == GLOBAL_ENVIRONMENT) {
-                        notify(player,
-                               "If you want to do that, why don't you just delete the database instead?  Room #0 contains everything, and is needed for database sanity.");
-                        return;
-                    }
-
-                    break;
-                case TYPE_THING:
-                    if (OWNER(thing) != OWNER(player)) {
-                        notify(player,
-                               "Permission denied. (You can't recycle a thing you don't control)");
-                        return;
-                    }
-
-                    /* player may be a zombie or puppet */
-                    if (thing == player) {
-                        snprintf(buf, sizeof(buf),
-                                 "%.512s's owner commands it to kill itself.  It blinks a few times in shock, and says, \"But.. but.. WHY?\"  It suddenly clutches it's heart, grimacing with pain..  Staggers a few steps before falling to it's knees, then plops down on it's face.  *thud*  It kicks its legs a few times, with weakening force, as it suffers a seizure.  It's color slowly starts changing to purple, before it explodes with a fatal *POOF*!",
-                                 NAME(thing));
-                        notify_except(CONTENTS(LOCATION(thing)), thing, buf, player);
-                        notify(OWNER(player), buf);
-                        notify(OWNER(player), "Now don't you feel guilty?");
-                    }
-
-                    break;
-                case TYPE_EXIT:
-                    if (OWNER(thing) != OWNER(player)) {
-                        notify(player,
-                               "Permission denied. (You may not recycle an exit you don't own)");
-                        return;
-                    }
-
-                    unset_source(thing);
-                    break;
-                case TYPE_PLAYER:
-                    notify(player, "You can't recycle a player!");
+                if (thing == GLOBAL_ENVIRONMENT) {
+                    notify(player,
+                           "If you want to do that, why don't you just delete the database instead?  Room #0 contains everything, and is needed for database sanity.");
                     return;
-                case TYPE_PROGRAM:
-                    if (OWNER(thing) != OWNER(player)) {
-                        notify(player,
-                               "Permission denied. (You can't recycle a program you don't own)");
-                        return;
-                    }
+                }
 
-                    SetMLevel(thing, 0);
+                break;
+            case TYPE_THING:
+                if (OWNER(thing) != OWNER(player)) {
+                    notify(player,
+                           "Permission denied. (You can't recycle a thing you don't control)");
+                    return;
+                }
 
-                    if (PROGRAM_INSTANCES(thing)) {
+                /* player may be a zombie or puppet */
+                if (thing == player) {
+                    snprintf(buf, sizeof(buf),
+                             "%.512s's owner commands it to kill itself.  It blinks a few times in shock, and says, \"But.. but.. WHY?\"  It suddenly clutches it's heart, grimacing with pain..  Staggers a few steps before falling to it's knees, then plops down on it's face.  *thud*  It kicks its legs a few times, with weakening force, as it suffers a seizure.  It's color slowly starts changing to purple, before it explodes with a fatal *POOF*!",
+                             NAME(thing));
+                    notify_except(CONTENTS(LOCATION(thing)), thing, buf, player);
+                    notify(OWNER(player), buf);
+                    notify(OWNER(player), "Now don't you feel guilty?");
+                }
+
+                break;
+            case TYPE_EXIT:
+                if (OWNER(thing) != OWNER(player)) {
+                    notify(player,
+                           "Permission denied. (You may not recycle an exit you don't own)");
+                    return;
+                }
+
+                unset_source(thing);
+                break;
+            case TYPE_PLAYER:
+                notify(player, "You can't recycle a player!");
+                return;
+            case TYPE_PROGRAM:
+                if (OWNER(thing) != OWNER(player)) {
+                    notify(player,
+                           "Permission denied. (You can't recycle a program you don't own)");
+                    return;
+                }
+
+                SetMLevel(thing, 0);
+
+                if (PROGRAM_INSTANCES(thing)) {
                         dequeue_prog(thing, 0);
-                    }
+                }
 
-                    /*
-                     * @TODO This is a workaround for bug #201633
-                     *
-                     * This bug predates sourceforge and is from a system
-                     * long gone: hence, we don't know what the bug is.
-		     * Modern tracking of this bug is here:
-		     * https://github.com/fuzzball-muck/fuzzball/issues/364
-                     */
-                    if (PROGRAM_INSTANCES(thing)) {
-                        assert(0);  /* getting here is a bug - we already dequeued it. */
-                        notify(player, "Recycle failed: Program is still running.");
-                        return;
-                    }
-
-                    break;
-                case TYPE_GARBAGE:
-                    notify(player, "That's already garbage!");
+                /*
+                 * @TODO This is a workaround for bug #201633
+                 *
+                 * This bug predates sourceforge and is from a system
+                 * long gone: hence, we don't know what the bug is.
+                 * Modern tracking of this bug is here:
+                 * https://github.com/fuzzball-muck/fuzzball/issues/364
+                 */
+                if (PROGRAM_INSTANCES(thing)) {
+                    assert(0);  /* getting here is a bug - we already dequeued it. */
+                    notify(player, "Recycle failed: Program is still running.");
                     return;
-            }
+                }
 
-            snprintf(buf, sizeof(buf), "Thank you for recycling %.512s (#%d).", NAME(thing),
-                     thing);
-            recycle(descr, player, thing);
-            notify(player, buf);
+                break;
+            case TYPE_GARBAGE:
+                notify(player, "That's already garbage!");
+                return;
         }
+
+        snprintf(buf, sizeof(buf), "Thank you for recycling %.512s (#%d).", NAME(thing),
+                 thing);
+        recycle(descr, player, thing);
+        notify(player, buf);
     }
 }

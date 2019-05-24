@@ -944,7 +944,7 @@ prim_pname_okp(PRIM_PROTOTYPE)
 	abort_interp("Player name string expected.");
     if (!oper1->data.string)
 	abort_interp("Cannot be an empty string.");
-    result = ok_player_name(oper1->data.string->data);
+    result = ok_object_name(oper1->data.string->data, TYPE_PLAYER);
     CLEAR(oper1);
     PushInt(result);
 }
@@ -958,7 +958,9 @@ prim_name_okp(PRIM_PROTOTYPE)
 	abort_interp("Object name string expected.");
     if (!oper1->data.string)
 	abort_interp("Cannot be an empty string.");
-    result = ok_ascii_other(oper1->data.string->data) && ok_name(oper1->data.string->data);
+
+    /* deprecated NAME-OK? historically checks 7bit_other_names */
+    result = ok_object_name(oper1->data.string->data, TYPE_EXIT);
     CLEAR(oper1);
     PushInt(result);
 }
@@ -966,10 +968,6 @@ prim_name_okp(PRIM_PROTOTYPE)
 void
 prim_ext_name_okp(PRIM_PROTOTYPE)
 {
-    /* These are function pointers */
-    int (*ok1) (const char *) = NULL;
-    int (*ok2) (const char *) = NULL;
-
     CHECKOP(2);
     oper2 = POP();
     oper1 = POP();
@@ -986,49 +984,27 @@ prim_ext_name_okp(PRIM_PROTOTYPE)
 	for (ref = 0; buf[ref]; ref++)
 	    buf[ref] = tolower(buf[ref]);
 	if (!strcmp(buf, "e") || !strcmp(buf, "exit")) {
-	    ok1 = ok_ascii_other;
-	    ok2 = ok_name;
+            result = ok_object_name(oper1->data.string->data, TYPE_EXIT);
 	} else if (!strcmp(buf, "r") || !strcmp(buf, "room")) {
-	    ok1 = ok_ascii_other;
-	    ok2 = ok_name;
+            result = ok_object_name(oper1->data.string->data, TYPE_ROOM);
 	} else if (!strcmp(buf, "t") || !strcmp(buf, "thing")) {
-	    ok1 = ok_ascii_thing;
-	    ok2 = ok_name;
+            result = ok_object_name(oper1->data.string->data, TYPE_THING);
 	} else if (!strcmp(buf, "p") || !strcmp(buf, "player")) {
-	    ok1 = ok_player_name;
+            result = ok_object_name(oper1->data.string->data, TYPE_PLAYER);
 	} else if (!strcmp(buf, "f") || !strcmp(buf, "muf")
 		   || !strcmp(buf, "program")) {
-	    ok1 = ok_ascii_other;
-	    ok2 = ok_name;
+            result = ok_object_name(oper1->data.string->data, TYPE_PROGRAM);
 	} else {
 	    abort_interp("String must be a valid object type (2).");
 	}
     } else if (oper2->type == PROG_OBJECT) {
 	if (!valid_object(oper2))
 	    abort_interp("Invalid argument (2).");
-	switch (Typeof(oper2->data.objref)) {
-	case TYPE_EXIT:
-	case TYPE_ROOM:
-	case TYPE_PROGRAM:
-	    ok1 = ok_ascii_other;
-	    ok2 = ok_name;
-	    break;
-	case TYPE_THING:
-	    ok1 = ok_ascii_thing;
-	    ok2 = ok_name;
-	    break;
-	case TYPE_PLAYER:
-	    ok1 = ok_player_name;
-	    break;
-	}
-
+        result = ok_object_name(oper1->data.string->data, Typeof(oper2->data.objref));
     } else {
 	abort_interp("Dbref or object type name expected (2).");
     }
 
-    result = ok1 && ok1(oper1->data.string->data);
-    if (ok2 && result)
-	result = ok2(oper1->data.string->data);
     CLEAR(oper1);
     CLEAR(oper2);
     PushInt(result);

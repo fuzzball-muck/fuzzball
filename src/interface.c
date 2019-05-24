@@ -10,6 +10,7 @@
 #include <ctype.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <inttypes.h>
 #include <stdarg.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -75,6 +76,12 @@ static const char *connect_fail =
  */
 static const char *create_fail =
     "Either there is already a player with that name, or that name is illegal.\r\n";
+
+#ifdef WIN32
+typedef uint32_t in_addr_t;
+typedef uint16_t in_port_t;
+#endif
+
 
 /**
  * @private
@@ -2762,6 +2769,7 @@ make_socket_v6(int port)
     int opt;
     struct sockaddr_in6 server;
 
+    /* Create the socket */
     s = socket(AF_INET6, SOCK_STREAM, 0);
 
     if (s < 0) {
@@ -2769,6 +2777,7 @@ make_socket_v6(int port)
         exit(3);
     }
 
+    /* Set all the different socket options */
     opt = 1;
 
     if (setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (char *) &opt, sizeof(opt)) < 0) {
@@ -2790,13 +2799,13 @@ make_socket_v6(int port)
         exit(1);
     }
 
-
+    /* Blank out the server structure */
     memset((char *) &server, 0, sizeof(server));
-
     server.sin6_family = AF_INET6;
     server.sin6_addr = bind_ipv6_address;
     server.sin6_port = htons(port);
 
+    /* Bind it */
     if (bind(s, (struct sockaddr *) &server, sizeof(server))) {
         perror("binding stream socket");
         close(s);
@@ -2834,12 +2843,12 @@ make_socket_v6(int port)
  * @return pointer to static buffer with host name or address in string form
  */
 static const char *
-addrout_v6(int lport, struct in6_addr *a, unsigned short prt)
+addrout_v6(in_port_t lport, struct in6_addr *a, in_port_t prt)
 {
-    static char buf[128];
-    char ip6addr[128];
+	static char buf[128];
+	char ip6addr[128];
 
-    struct in6_addr addr;
+	struct in6_addr addr;
     memcpy(&addr.s6_addr, a, sizeof(struct in6_addr));
 
     prt = ntohs(prt);
@@ -2873,24 +2882,24 @@ addrout_v6(int lport, struct in6_addr *a, unsigned short prt)
             }
 
             if (he) {
-                snprintf(buf, sizeof(buf), "%s(%u)", he->h_name, prt);
+                snprintf(buf, sizeof(buf), "%s(%" PRIu16 ")", he->h_name, prt);
                 return buf;
             }
         }
     }
-#endif /* SPAWN_HOST_RESOLVER */
+#endif /* !SPAWN_HOST_RESOLVER */
 
     inet_ntop(AF_INET6, a, ip6addr, 128);
 
 #ifdef SPAWN_HOST_RESOLVER
-    snprintf(buf, sizeof(buf), "%s(%u)%u\n", ip6addr, prt, lport);
+    snprintf(buf, sizeof(buf), "%s(%" PRIu16 ")%" PRIu16 "\n", ip6addr, prt,
+             lport);
 
     if (tp_hostnames) {
         write(resolver_sock[1], buf, strlen(buf));
     }
 #endif
-
-    snprintf(buf, sizeof(buf), "%s(%u)\n", ip6addr, prt);
+    snprintf(buf, sizeof(buf), "%s(%" PRIu16 ")\n", ip6addr, prt);
 
     return buf;
 }
@@ -2909,7 +2918,7 @@ addrout_v6(int lport, struct in6_addr *a, unsigned short prt)
  * @return either a descriptor_data structure or NULL if nothing to accept
  */
 static struct descriptor_data *
-new_connection_v6(int port, int sock_, int is_ssl)
+new_connection_v6(in_port_t port, int sock_, int is_ssl)
 {
     int newsock;
 
@@ -2923,16 +2932,15 @@ new_connection_v6(int port, int sock_, int is_ssl)
     if (newsock < 0) {
         return 0;
     } else {
-# ifdef F_SETFD
+#ifdef F_SETFD
         /*
          * @TODO This '1' is FD_CLOEXEC ... we should use FD_CLOEXEC
          *       instead of '1' just in case its different on other
          *       systems.
          */
         fcntl(newsock, F_SETFD, 1);
-# endif
-        strcpyn(hostname, sizeof(hostname),
-                addrout_v6(port, &(addr.sin6_addr), addr.sin6_port));
+#endif
+        strcpyn(hostname, sizeof(hostname), addrout_v6(port, &(addr.sin6_addr), addr.sin6_port));
         log_status("ACCEPT: %s on descriptor %d", hostname, newsock);
         log_status("CONCOUNT: There are now %d open connections.", ++ndescriptors);
         return initializesock(newsock, hostname, is_ssl);
@@ -2965,7 +2973,7 @@ new_connection_v6(int port, int sock_, int is_ssl)
  * @return pointer to static buffer with host name or address in string form
  */
 static const char *
-addrout(int lport, long a, unsigned short prt)
+addrout(in_port_t lport, in_addr_t a, in_port_t prt)
 {
     static char buf[128];
     struct in_addr addr;
@@ -3004,28 +3012,28 @@ addrout(int lport, long a, unsigned short prt)
             }
 
             if (he) {
-                snprintf(buf, sizeof(buf), "%s(%u)", he->h_name, prt);
+                snprintf(buf, sizeof(buf), "%s(%" PRIu16 ")", he->h_name, prt);
                 return buf;
             }
         }
     }
-#endif /* SPAWN_HOST_RESOLVER */
+#endif /* !SPAWN_HOST_RESOLVER */
 
     a = ntohl(a);
 
 #ifdef SPAWN_HOST_RESOLVER
-    snprintf(buf, sizeof(buf), "%ld.%ld.%ld.%ld(%u)%u\n",
-             (a >> 24) & 0xff, (a >> 16) & 0xff, (a >> 8) & 0xff, a & 0xff,
-             prt, lport);
+    snprintf(buf, sizeof(buf), "%" PRIu32 ".%" PRIu32 ".%" PRIu32 ".%" PRIu32
+             "(%" PRIu16 ")%" PRIu16 "\n", (a >> 24) & 0xff, (a >> 16) & 0xff,
+             (a >> 8) & 0xff, a & 0xff, prt, lport);
 
     if (tp_hostnames) {
         write(resolver_sock[1], buf, strlen(buf));
     }
 #endif
 
-    snprintf(buf, sizeof(buf), "%ld.%ld.%ld.%ld(%u)",
-             (a >> 24) & 0xff, (a >> 16) & 0xff, (a >> 8) & 0xff, a & 0xff,
-             prt);
+    snprintf(buf, sizeof(buf), "%" PRIu32 ".%" PRIu32 ".%" PRIu32 ".%" PRIu32
+             "(%" PRIu16 ")", (a >> 24) & 0xff, (a >> 16) & 0xff,
+             (a >> 8) & 0xff, a & 0xff, prt);
     return buf;
 }
 
@@ -3056,14 +3064,12 @@ make_socket(int port)
     }
 
     opt = 1;
-
     if (setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (char *) &opt, sizeof(opt)) < 0) {
         perror("setsockopt");
         exit(1);
     }
 
     opt = 1;
-
     if (setsockopt(s, SOL_SOCKET, SO_KEEPALIVE, (char *) &opt, sizeof(opt)) < 0) {
         perror("setsockopt");
         exit(1);
@@ -3134,7 +3140,7 @@ static void listen_bound_sockets()
  * @return either a descriptor_data structure or NULL if nothing to accept
  */
 static struct descriptor_data *
-new_connection(int port, int sock_, int is_ssl)
+new_connection(in_port_t port, int sock_, int is_ssl)
 {
     int newsock;
     struct sockaddr_in addr;
@@ -4915,27 +4921,27 @@ notify_except(dbref first, dbref exception, const char *msg, dbref who)
 {
     dbref room, srch;
 
-    if (first != NOTHING) {
-        srch = room = LOCATION(first);
+    if (first == NOTHING)
+        return;
 
-        if (tp_listeners) {
-            notify_from_echo(who, srch, msg, 0);
+    srch = room = LOCATION(first);
 
-            if (tp_listeners_env) {
-                srch = LOCATION(srch);
+    if (tp_listeners) {
+        notify_from_echo(who, srch, msg, 0);
 
-                while (srch != NOTHING) {
-                    notify_from_echo(who, srch, msg, 0);
-                    srch = getparent(srch);
-                }
+        if (tp_listeners_env) {
+            srch = LOCATION(srch);
+            while (srch != NOTHING) {
+                notify_from_echo(who, srch, msg, 0);
+                srch = getparent(srch);
             }
         }
+    }
 
-        DOLIST(first, first) {
-            if ((Typeof(first) != TYPE_ROOM) && (first != exception)) {
-                /* don't want excepted player or child rooms to hear */
-                notify_from_echo(who, first, msg, 0);
-            }
+    DOLIST(first, first) {
+        if ((Typeof(first) != TYPE_ROOM) && (first != exception)) {
+            /* don't want excepted player or child rooms to hear */
+            notify_from_echo(who, first, msg, 0);
         }
     }
 }

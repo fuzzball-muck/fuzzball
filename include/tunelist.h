@@ -102,7 +102,7 @@ struct tune_str_entry tune_str_list[] = {
     {"Files", "file_log_gripes", &tp_file_log_gripes, MLEV_WIZARD, MLEV_GOD,
      "Player gripes", "", 0, 1, LOG_GRIPE},
     {"Files", "file_log_malloc", &tp_file_log_malloc, MLEV_WIZARD, MLEV_GOD,
-     "Memory allocations", "", 0, 1, LOG_MALLOC},
+     "Memory allocations", "MEMPROF", 0, 1, LOG_MALLOC},
     {"Files", "file_log_muf_errors", &tp_file_log_muf_errors, MLEV_WIZARD, MLEV_GOD,
      "MUF compile errors and warnings", "", 0, 1, LOG_MUF},
     {"Files", "file_log_programs", &tp_file_log_programs, MLEV_WIZARD, MLEV_GOD,
@@ -484,7 +484,7 @@ struct tune_bool_entry tune_bool_list[] = {
      "Examining objects lists legacy props", "", 1, SHOW_LEGACY_PROPS},
     {"Registration", "registration", &tp_registration, 0, MLEV_WIZARD,
      "Require new players to register manually", "", 1, REGISTRATION},
-    {"SSL", "server_cipher_preference", &tp_cipher_server_preference, MLEV_WIZARD, MLEV_WIZARD,
+    {"SSL", "server_cipher_preference", &tp_cipher_server_preference, MLEV_GOD, MLEV_GOD,
      "Honor server cipher preference order over client's", "SSL", 1, SERVER_CIPHER_PREFERENCE},
     {"Tuning", "periodic_program_purge", &tp_periodic_program_purge, 0, MLEV_WIZARD,
      "Periodically free unused MUF programs", "", 1, PERIODIC_PROGRAM_PURGE},
@@ -493,7 +493,7 @@ struct tune_bool_entry tune_bool_list[] = {
     {"WHO", "secure_who", &tp_secure_who, 0, MLEV_WIZARD,
      "Disallow WHO command from login screen and programs", "", 1, SECURE_WHO},
     {"WHO", "use_hostnames", &tp_hostnames, 0, MLEV_WIZARD,
-     "Resolve IP addresses into hostnames", "", 1, HOSTNAMES},
+     "Resolve IP addresses into hostnames", "RESOLVER", 1, HOSTNAMES},
     {NULL, NULL, NULL, 0, 0, NULL, 0, 0, 0}
 };
 

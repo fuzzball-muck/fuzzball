@@ -8,6 +8,7 @@
 #ifndef DB_H
 #define DB_H
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <time.h>
 
@@ -808,49 +809,23 @@ void objnode_push(objnode **head, dbref data);
 void objnode_pop(objnode **head);
 
 /**
- * Checks to see if 'name' is okay for anything that is not a Thing.
- *
- * This uses the tune parameter tp_7bit_other_names to see if we should
- * limit the name to 7 bit ASCII (values < 128)
- *
- * This does not check for low bytes -- control characters and such.
- *
- * @param name the name to check
- * @return boolean true if name passes the check, false otherwise
- */
-int ok_ascii_other(const char *name);
-
-/**
- * Checks to see if 'name' is okay for a Thing
- *
- * This uses the tune parameter tp_7bit_thing_names to see if we should
- * limit the name to 7 bit ASCII (values < 128)
- *
- * This does not check for low bytes -- control characters and such.
- *
- * @param name the name to check
- * @return boolean true if name passes the check, false otherwise
- */
-int ok_ascii_thing(const char *name);
-
-/**
- * Validates that the given name doesn't contain any reserved characters
+ * Validates that the name is appropriate for the given object type.
  *
  * * Names cannot start with !, *, #, or $
  * * Names cannot contain the characters =, &, |, or carriage return/escape.
  * * The name cannot be the strings 'me', 'here', or 'home'
  * * The name cannot match 'tp_reserved_names'
+ * * Players must pass ok_player_name.
+ * * Things must pass ok_ascii_any if 7bit_thing_names is on.
+ * * All other objects must pass ok_ascii_any if 7bit_other_names is on.
  *
- * This does not check for the acceptance of non-7bit ASCII names.
- * You should also use ok_ascii_thing or ok_ascii_other
- *
- * @see ok_ascii_thing
- * @see ok_ascii_other
+ * @see ok_ascii_any
+ * @see ok_player_name
  *
  * @param name the name to check
  * @return boolean true if name passes the check, false otherwise
  */
-int ok_name(const char *name);
+bool ok_object_name(const char *name, object_flag_type type);
 
 /**
  * Write a ref to the given file handle

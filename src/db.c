@@ -5,6 +5,7 @@
  * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
  */
 
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -986,83 +987,53 @@ db_read_object(FILE * f, dbref objno)
      * to different object types.
      */
     switch (FLAGS(objno) & TYPE_MASK) {
-        case TYPE_THING:
-            ALLOC_THING_SP(objno);
-            THING_SET_HOME(objno, prop_flag ? getref(f) : j);
-            o->exits = getref(f);
-            OWNER(objno) = getref(f);
-            break;
+    case TYPE_THING:
+        ALLOC_THING_SP(objno);
+        THING_SET_HOME(objno, prop_flag ? getref(f) : j);
+        o->exits = getref(f);
+        OWNER(objno) = getref(f);
+        break;
 
-        case TYPE_ROOM:
-            o->sp.room.dropto = prop_flag ? getref(f) : j;
-            o->exits = getref(f);
-            OWNER(objno) = getref(f);
-            break;
+    case TYPE_ROOM:
+        o->sp.room.dropto = prop_flag ? getref(f) : j;
+        o->exits = getref(f);
+        OWNER(objno) = getref(f);
+        break;
 
-        case TYPE_EXIT:
-            o->sp.exit.ndest = prop_flag ? getref(f) : j;
+    case TYPE_EXIT:
+        o->sp.exit.ndest = prop_flag ? getref(f) : j;
 
-            /* only allocate space for linked exits */
-            if (o->sp.exit.ndest > 0)
-                o->sp.exit.dest = malloc(sizeof(dbref) * (size_t)(o->sp.exit.ndest));
+        /* only allocate space for linked exits */
+        if (o->sp.exit.ndest > 0)
+            o->sp.exit.dest = malloc(sizeof(dbref) * (size_t)(o->sp.exit.ndest));
 
-            for (j = 0; j < o->sp.exit.ndest; j++) {
-                (o->sp.exit.dest)[j] = getref(f);
-            }
+        for (j = 0; j < o->sp.exit.ndest; j++) {
+            (o->sp.exit.dest)[j] = getref(f);
+        }
 
-            OWNER(objno) = getref(f);
-            break;
+        OWNER(objno) = getref(f);
+        break;
 
-        case TYPE_PLAYER:
-            /*
-             * @TODO we should do a memset(PLAYER_SP(objno), 0, ...)
-             *       then set the things that need to be set so we
-             *       can get rid of all the 0 assignments.  Remember that
-             *       NOTHING is not the same as 0.
-             */
-            ALLOC_PLAYER_SP(objno);
-            PLAYER_SET_HOME(objno, prop_flag ? getref(f) : j);
-            o->exits = getref(f);
-            password = getstring(f);
-            set_password_raw(objno, password);
-            PLAYER_SET_CURR_PROG(objno, NOTHING);
-            PLAYER_SET_INSERT_MODE(objno, 0);
-            PLAYER_SET_DESCRS(objno, NULL);
-            PLAYER_SET_DESCRCOUNT(objno, 0);
-            PLAYER_SET_IGNORE_CACHE(objno, NULL);
-            PLAYER_SET_IGNORE_COUNT(objno, 0);
-            PLAYER_SET_IGNORE_LAST(objno, NOTHING);
-            OWNER(objno) = objno;
-            add_player(objno);
-            break;
+    case TYPE_PLAYER:
+        ALLOC_PLAYER_SP(objno);
+        PLAYER_SET_HOME(objno, prop_flag ? getref(f) : j);
+        o->exits = getref(f);
+        password = getstring(f);
+        set_password_raw(objno, password);
+        PLAYER_SET_CURR_PROG(objno, NOTHING);
+        PLAYER_SET_IGNORE_LAST(objno, NOTHING);
+        OWNER(objno) = objno;
+        add_player(objno);
+        break;
 
-        case TYPE_PROGRAM:
-            /*
-             * @TODO we should do a memset(PROGRAM_SP(objno), 0, ...)
-             *       then set the things that need to be set so we
-             *       can get rid of all the 0 assignments.
-             */
-            ALLOC_PROGRAM_SP(objno);
-            OWNER(objno) = prop_flag ? getref(f) : j;
-            FLAGS(objno) &= ~INTERNAL;
-            PROGRAM_SET_CURR_LINE(objno, 0);
-            PROGRAM_SET_FIRST(objno, 0);
-            PROGRAM_SET_CODE(objno, 0);
-            PROGRAM_SET_SIZ(objno, 0);
-            PROGRAM_SET_START(objno, 0);
-            PROGRAM_SET_PUBS(objno, 0);
-#ifdef MCP_SUPPORT
-            PROGRAM_SET_MCPBINDS(objno, 0);
-#endif
-            PROGRAM_SET_PROFTIME(objno, 0, 0);
-            PROGRAM_SET_PROFSTART(objno, 0);
-            PROGRAM_SET_PROF_USES(objno, 0);
-            PROGRAM_SET_INSTANCES(objno, 0);
-            PROGRAM_SET_INSTANCES_IN_PRIMITIVE(objno, 0);
-            break;
+    case TYPE_PROGRAM:
+        ALLOC_PROGRAM_SP(objno);
+        OWNER(objno) = prop_flag ? getref(f) : j;
+        FLAGS(objno) &= ~INTERNAL;
+        break;
 
-        case TYPE_GARBAGE:
-            break;
+    case TYPE_GARBAGE:
+        break;
     }
 }
 
@@ -1115,8 +1086,7 @@ dbref
 db_read(FILE * f)
 {
     dbref grow;
-    const char *special;
-    char c;
+    char *special;
 
     /* Parse the header */
     db_load_format = db_read_header(f, &grow);
@@ -1128,56 +1098,28 @@ db_read(FILE * f)
     /* This sizes the DB to fit all the objects to load */
     db_grow(grow);
 
-    /* @TODO this for loop should probably have a condition of i < db_top
-     *       because technically if there are more records than the DB
-     *       expects, it will segfault.  This is a very unlikely case but
-     *       it is technically possible and preventing it is easy.
-     *
-     *       Add a return -1 after the for loop, because in that case, we
-     *       would have an error condition.
-     */
-
-    c = getc(f);    /* get next char */
-    for (int i = 0; ; i++) {
-        switch (c) {
-            case NUMBER_TOKEN:
-                db_read_object(f, getref(f));
-                break;
-
-            case '*':
-                special = getstring(f);
-
-                if (strcmp(special, "**END OF DUMP***")) {
-                    free((void *) special);
-                    return -1;
-                } else {
-                    free((void *) special);
-                    special = getstring(f);
-                    free((void *) special);
-                    rewind(f);
-                    free(getstring(f));
-                    getref(f);
-                    getref(f);
-
-                    tune_load_parms_from_file(f, NOTHING, getref(f));
-
-                    for (dbref j = 0; j < db_top; j++) {
-                        if (Typeof(j) == TYPE_GARBAGE) {
-                            NEXTOBJ(j) = recyclable;
-                            recyclable = j;
-                        }
-                    }
-
-                    autostart_progs();
-                    return db_top;
-                }
-
-            default:
-                return -1;
-        }
-
-        c = getc(f);
+    for (int i = 0; i < db_top; i++) {
+        if (getc(f) != NUMBER_TOKEN) return -1;
+        db_read_object(f, getref(f));
     }
+
+    special = getstring(f);
+    if (strcmp(special, "***END OF DUMP***")) {
+        free(special);
+        return -1;
+    }
+
+    free(special);
+
+    for (dbref j = 0; j < db_top; j++) {
+        if (Typeof(j) == TYPE_GARBAGE) {
+            NEXTOBJ(j) = recyclable;
+            recyclable = j;
+        }
+    }
+
+    autostart_progs();
+    return db_top;
 }
 
 /**
@@ -1217,13 +1159,7 @@ objnode_push(objnode **head, dbref data)
 
     if (!(tmp = malloc(sizeof(objnode)))) {
         fprintf(stderr, "objnode_push: out of memory\n");
-
-        /*
-         * @TODO We usually abort() in these cases.  Not aborting or
-         *       returning an error is kind of deceptive.  This is
-         *       kind of a nitpick, but an abort() seems wiser here.
-         */
-        return;
+        abort();
     }
 
     tmp->data = data;
@@ -1562,6 +1498,44 @@ size_object(dbref i, int load)
 }
 
 /**
+ * Validates the player name, as a helper function for ok_object_name.
+ *
+ * * Names cannot contain nonprintable or space characters.
+ * * Names cannot contain the characters (, ), single-quote, or comma.
+ * * The name cannot match an existing player.
+ * * The name cannot match 'tp_reserved_player_names'
+ *
+ * This is called from ok_object_name, which also checks acceptance of
+ * non-7bit ASCII names.
+ *
+ * @param name the name to check
+ * @return boolean true if name passes the check, false otherwise
+ */
+static bool
+ok_player_name(const char *name)
+{
+    if (strlen(name) > (unsigned int)tp_player_name_limit)
+        return 0;
+
+    for (const char *scan = name; *scan; scan++) {
+        if (!(isprint(*scan)
+              && !isspace(*scan))
+            && *scan != '(' && *scan != ')' && *scan != '\'' && *scan != ',') {
+            /* was isgraph(*scan) */
+            return 0;
+        }
+    }
+
+    /* Check the name isn't reserved */
+    if (*tp_reserved_player_names
+        && equalstr((char *) tp_reserved_player_names, (char *)name))
+        return 0;
+
+    /* lookup name to avoid conflicts */
+    return (lookup_player(name) == NOTHING);
+}
+
+/**
  * Checks to see if 'name' only consists of basic 7-bit ASCII characters.
  *
  * This is specifically ASCII characters of value 127 or less.
@@ -1572,7 +1546,7 @@ size_object(dbref i, int load)
  * @param name the string to iterate over
  * @return boolean true if the check passes, false if the check fails.
  */
-static int
+static bool
 ok_ascii_any(const char *name)
 {
     for (const unsigned char *scan = (const unsigned char *) name; *scan; ++scan) {
@@ -1583,87 +1557,60 @@ ok_ascii_any(const char *name)
 }
 
 /**
- * Checks to see if 'name' is okay for a Thing
- *
- * This uses the tune parameter tp_7bit_thing_names to see if we should
- * limit the name to 7 bit ASCII (values < 128)
- *
- * This does not check for low bytes -- control characters and such.
- *
- * @param name the name to check
- * @return boolean true if name passes the check, false otherwise
- */
-int
-ok_ascii_thing(const char *name)
-{
-    return !tp_7bit_thing_names || ok_ascii_any(name);
-}
-
-/**
- * Checks to see if 'name' is okay for anything that is not a Thing.
- *
- * This uses the tune parameter tp_7bit_other_names to see if we should
- * limit the name to 7 bit ASCII (values < 128)
- *
- * This does not check for low bytes -- control characters and such.
- *
- * @param name the name to check
- * @return boolean true if name passes the check, false otherwise
- */
-int
-ok_ascii_other(const char *name)
-{
-    return !tp_7bit_other_names || ok_ascii_any(name);
-}
-
-/**
- * Validates that the given name doesn't contain any reserved characters
+ * Validates that the name is appropriate for the given object type.
  *
  * * Names cannot start with !, *, #, or $
  * * Names cannot contain the characters =, &, |, or carriage return/escape.
  * * The name cannot be the strings 'me', 'here', or 'home'
  * * The name cannot match 'tp_reserved_names'
+ * * Players must pass ok_player_name.
+ * * Things must pass ok_ascii_any if 7bit_thing_names is on.
+ * * All other objects must pass ok_ascii_any if 7bit_other_names is on.
  *
- * This does not check for the acceptance of non-7bit ASCII names.
- * You should also use ok_ascii_thing or ok_ascii_other
- *
- * @see ok_ascii_thing
- * @see ok_ascii_other
+ * @see ok_ascii_any
+ * @see ok_player_name
  *
  * @param name the name to check
  * @return boolean true if name passes the check, false otherwise
  */
-int
-ok_name(const char *name)
+bool
+ok_object_name(const char *name, object_flag_type type)
 {
-    /*
-     * @TODO It looks like typically 'ok_ascii_*' is checked first and then
-     *       this is check is done.  The purpose seems to be to make an
-     *       error message for 7 bit name violations vs. names invalid
-     *       due to problems with the name.
-     *
-     *       However, that seems like it is easy to mess name checks up.
-     *       The programmer must remember to do both kinds of checks.
-     *       We should review and see if it makes more sense to combine
-     *       ok_ascii_* with ok_name.
-     */
-    return (name
-            && *name
-            && *name != NOT_TOKEN
-            && *name != LOOKUP_TOKEN
-            && *name != REGISTERED_TOKEN
-            && *name != NUMBER_TOKEN
-            && !strchr(name, ARG_DELIMITER)
-            && !strchr(name, AND_TOKEN)
-            && !strchr(name, OR_TOKEN)
-            && !strchr(name, '\r')
-            && !strchr(name, ESCAPE_CHAR)
-            && strcasecmp(name, "me")
-            && strcasecmp(name, "here")
-            && strcasecmp(name, "home")
-            && (!*tp_reserved_names ||
-                !equalstr((char *) tp_reserved_names, (char *) name)
-            ));
+    if (!name
+        || !*name
+        || *name == NOT_TOKEN
+        || *name == LOOKUP_TOKEN
+        || *name == REGISTERED_TOKEN
+        || *name == NUMBER_TOKEN
+        || strchr(name, ARG_DELIMITER)
+        || strchr(name, AND_TOKEN)
+        || strchr(name, OR_TOKEN)
+        || strchr(name, '\r')
+        || strchr(name, ESCAPE_CHAR)
+        || !strcasecmp(name, "me")
+        || !strcasecmp(name, "here")
+        || !strcasecmp(name, "home")
+        || (*tp_reserved_names && equalstr((char *) tp_reserved_names, (char *)name)
+        ))
+        return false;
+
+    switch (type) {
+    case TYPE_ROOM:
+    case TYPE_EXIT:
+    case TYPE_PROGRAM:
+        return !tp_7bit_other_names || ok_ascii_any(name);
+
+    case TYPE_THING:
+        return !tp_7bit_thing_names || ok_ascii_any(name);
+
+    case TYPE_PLAYER:
+        return ok_player_name(name);
+
+    case TYPE_GARBAGE:
+        return false;
+    }
+
+    return false;
 }
 
 /**
@@ -1821,60 +1768,27 @@ controls(dbref who, dbref what)
 int
 controls_link(dbref who, dbref what)
 {
-    /*
-     * @TODO All the cases in this do a really dumb control structure:
-     *
-     *       if (controls ...)
-     *           return 1
-     *
-     *       return 0
-     *
-     *       Just do return controls(...) instead.
-     */
-
     switch (Typeof(what)) {
-        case TYPE_EXIT:
-            {
-                int i = DBFETCH(what)->sp.exit.ndest;
+    case TYPE_EXIT: 
+        for (int i = 0, n = DBFETCH(what)->sp.exit.ndest; i < n; i++) {
+            if (controls(who, DBFETCH(what)->sp.exit.dest[i]))
+                return 1;
+        }
 
-                while (i > 0) {
-                    if (controls(who, DBFETCH(what)->sp.exit.dest[--i]))
-                        return 1;
-                }
+        return (who == OWNER(LOCATION(what)));
 
-                if (who == OWNER(LOCATION(what)))
-                    return 1;
+    case TYPE_ROOM:
+        return (controls(who, DBFETCH(what)->sp.room.dropto));
 
-                return 0;
-            }
+    case TYPE_PLAYER:
+        return (controls(who, PLAYER_HOME(what)));
 
-        case TYPE_ROOM:
-            {
-                if (controls(who, DBFETCH(what)->sp.room.dropto))
-                   return 1;
+    case TYPE_THING:
+        return (controls(who, THING_HOME(what)));
 
-                return 0;
-            } 
-
-        case TYPE_PLAYER:
-            {
-                if (controls(who, PLAYER_HOME(what)))
-                    return 1;
-
-                return 0;
-            }
-
-        case TYPE_THING:
-            {
-                if (controls(who, THING_HOME(what)))
-                    return 1;
-
-                return 0;
-            }
-
-        case TYPE_PROGRAM:
-        default:
-           return 0;
+    case TYPE_PROGRAM:
+    default:
+        return 0;
     }
 }
 

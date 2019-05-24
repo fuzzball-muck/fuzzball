@@ -99,7 +99,7 @@ create_player(const char *name, const char *password)
 {
     dbref player;
 
-    if (!ok_player_name(name) || !ok_password(password))
+    if (!ok_object_name(name, TYPE_PLAYER) || !ok_password(password))
 	return NOTHING;
 
     /* else he doesn't already exist, create him */
@@ -310,30 +310,6 @@ payfor(dbref who, int cost)
     } else {
         return 0;
     }
-}
-
-int
-ok_player_name(const char *name)
-{
-    if (!ok_name(name) || strlen(name) > (unsigned int)tp_player_name_limit)
-        return 0;
-
-    for (const char *scan = name; *scan; scan++) {
-        if (!(isprint(*scan)
-              && !isspace(*scan))
-            && *scan != '(' && *scan != ')' && *scan != '\'' && *scan != ',') {
-            /* was isgraph(*scan) */
-            return 0;
-        }
-    }
-
-    /* Check the name isn't reserved */
-    if (*tp_reserved_player_names
-        && equalstr((char *) tp_reserved_player_names, (char *) name))
-        return 0;
-
-    /* lookup name to avoid conflicts */
-    return (lookup_player(name) == NOTHING);
 }
 
 int
