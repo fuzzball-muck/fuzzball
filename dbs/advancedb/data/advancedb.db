@@ -160,10 +160,10 @@ read;write;protect;editmsg;editmesg;protect;erase
 -1
 -1
 2
-1073748819
-1073754849
-2
-1073754849
+0
+0
+0
+0
 *Props*
 msgs#/i:2:0
 *End*
@@ -176,10 +176,10 @@ Bulletin board
 -1
 159
 1
-1073748779
-1073754851
-3
-1073754851
+0
+0
+0
+0
 *Props*
 @/value:3:1
 _/de:2:@$mesgboard recent
@@ -195,10 +195,10 @@ south;cave;in;entrance;enter;s
 -1
 -1
 2
-1073748681
-1073748681
 0
-1073749224
+0
+0
+0
 *Props*
 _/de:2:You see the entrance of a dark cave to the south.  It's a familiar place, as it is where you first awoke in this world.
 _/odr:2:blocks the light for a moment as %s enters the cave.
@@ -214,10 +214,10 @@ out;light;exit;ahead;northwest;west;nw;w;north;n
 -1
 -1
 2
-1073748412
-1073748480
-1
-1073749224
+0
+0
+0
+0
 *Props*
 _/de:2:You look towards the light and see that it is reflecting off the rocks around a turn in the cavern. There's probably an exit that way.
 _/odr:2:stumbles out of the cave, blinking athe light.
@@ -233,10 +233,10 @@ The Heartstone
 -1
 -1
 1
-1073702261
-1073748709
-1
-1073749224
+0
+0
+0
+0
 *Props*
 @/value:3:1
 _/de:2:The Heartstone is a single large ruby orb, flawless and pure, sitting upon a dark obsidian pedestal.  Perhaps its deep red color is what gives rise to its name. Or perhaps it's the faint pulsing glow deep within it... or are you merely imagining that? The legends of it say that it embodies the spiritual heart of the land. Perhaps there are many reasons why it is so christened. Undeniably, it carries the weight of countless years within it.
@@ -252,10 +252,10 @@ A small clearing in the wilderness
 162
 -1
 2048
-1073702182
-1073756239
-7
-1073749428
+0
+0
+0
+0
 *Props*
 _/de:2:Pine and spruce trees populate the thick forest around a small natural clearing, birds chirping and twittering among them. To the south yawns the entrance to the cave of awakenings. In the center of the clearing stands an obsidian column, jutting from the ground typically waist high, with a brilliant, translucent red stone capping it. To one side, contrary to the pristine wilderness, a bulletin board made of redwood welcomes you, looking for all the world like a national park relic. However, you see no trails leading from the clearing. For whom is this place?
 *End*
@@ -268,10 +268,10 @@ Cave of Awakening
 -1
 -1
 2112
-1073702147
-1073749449
-3
-1073749433
+0
+0
+0
+0
 *Props*
 _/de:2:It's very dark in here, but you can faintly see a light ahead. Maybe that's the way out.
 *End*
@@ -284,10 +284,10 @@ Outdoor Environment Room
 158
 155
 131072
-1073702107
-1073756239
-7
-1073749224
+0
+0
+0
+0
 *Props*
 *End*
 -1
@@ -299,10 +299,10 @@ Indoor Environment Room
 157
 -1
 131072
-1073702063
-1073702063
 0
-1073749224
+0
+0
+0
 *Props*
 *End*
 -1
@@ -314,10 +314,10 @@ Null Environment Room
 156
 153
 131072
-1073702054
-1073756239
-4
-1073749224
+0
+0
+0
+0
 *Props*
 *End*
 -1
@@ -329,10 +329,10 @@ Keeper
 29
 -1
 1835539
-1073700862
-1073700862
 0
-1073749482
+0
+0
+0
 *Props*
 @/value:3:50
 *End*
@@ -344,11 +344,11 @@ lock-truewizard?
 153
 -1
 -1
-18087972
-1073635617
-1073635617
+18087940
 0
-1073749224
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called lock-truewizard?
 *End*
@@ -358,11 +358,11 @@ lock-wizard?
 153
 -1
 152
-18087972
-1073635567
-1073635567
+18087940
 0
-1073749224
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called lock-wizard?
 *End*
@@ -372,11 +372,11 @@ lock-player
 153
 -1
 151
-18087972
-1073635540
-1073635540
+18087940
 0
-1073749224
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called lock-player
 *End*
@@ -386,11 +386,11 @@ lock-nothing
 153
 -1
 150
-18087972
-1073635411
-1073750097
-8
-1073749224
+18087940
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called lock-nothing
 *End*
@@ -400,11 +400,11 @@ mit-license
 153
 -1
 149
-18087972
-1073635333
-1073635333
+18087940
 0
-1073753798
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called mit-license
 _author:2:Massachusetts Institute of Technology
@@ -417,10 +417,10 @@ time;date;uptime;nextsave;ns
 -1
 146
 2
-1073635309
-1073750097
-3
-1073750066
+0
+0
+0
+0
 *Props*
 _/sc:2:{attr:bold,MUCK time:} {ftime:%c %Z}\r{attr:bold,Next save:} {ltimestr:{timetosave}}\r{attr:bold,MUCK uptime:} {ltimestr:{subt:{secs},{prop!:_sys/startuptime,#0}}}
 *End*
@@ -433,10 +433,10 @@ wizards;wizzes;staff
 -1
 145
 2
-1073635113
-1073755435
-5
-1073749224
+0
+0
+0
+0
 *Props*
 *End*
 1
@@ -448,10 +448,10 @@ who
 -1
 144
 2
-1073635095
-1073635095
 0
-1073749224
+0
+0
+0
 *Props*
 *End*
 1
@@ -463,10 +463,10 @@ whisper;whispe;whisp;whis;whi;wh;w
 -1
 143
 2
-1073635082
-1164851461
-5
-1073749224
+0
+0
+0
+0
 *Props*
 *End*
 1
@@ -478,10 +478,10 @@ sweep
 -1
 142
 2
-1073635063
-1073635063
 0
-1073749224
+0
+0
+0
 *Props*
 *End*
 1
@@ -493,10 +493,10 @@ status;stat
 -1
 141
 2
-1073635051
-1554243106
-7
-1554243161
+0
+0
+0
+0
 *Props*
 _/sc:4098:{if:{eq:#help,{&arg}},{list:_help},{null:{store:{midstr:{&arg},1,4},status,me}{tell:{if:{eq:,{&arg}},Cleared status setting.,Set status to "{midstr:{&arg},1,4}".}}}}
 _help#:2:11
@@ -521,10 +521,10 @@ spoof
 -1
 140
 2
-1073635041
-1073635041
 0
-1073749224
+0
+0
+0
 *Props*
 *End*
 1
@@ -536,10 +536,10 @@ RIDE;handup;carry;hopon;hopoff;dismount;carrywho;cwho;ridewho;rwho;rideend;rend;
 -1
 139
 2
-1073635029
-1073636835
-1
-1073749224
+0
+0
+0
+0
 *Props*
 *End*
 1
@@ -551,10 +551,10 @@ quit
 -1
 138
 2
-1073634866
-1073634866
 0
-1073749224
+0
+0
+0
 *Props*
 _/sc:2:Oops! Did you mean 'QUIT' in all capital letters?
 *End*
@@ -567,10 +567,10 @@ page;pag;pa;p
 -1
 137
 2
-1073634847
-1073636426
-8
-1073749224
+0
+0
+0
+0
 *Props*
 _page/formats/f-page:2:You page, "%m" to %n.
 _page/formats/f-pose:2:You page-pose, "%i %m" to %n
@@ -590,10 +590,10 @@ hand;qhand;throw;qthrow
 -1
 136
 2
-1073634823
-1073635835
-3
-1073749224
+0
+0
+0
+0
 *Props*
 *End*
 1
@@ -605,10 +605,10 @@ guitest
 -1
 135
 2
-1073634810
-1073634816
-1
-1073749224
+0
+0
+0
+0
 *Props*
 *End*
 1
@@ -620,10 +620,10 @@ gohome
 -1
 134
 1310722
-1073634707
-1073634707
 0
-1073749224
+0
+0
+0
 *Props*
 *End*
 1
@@ -635,10 +635,10 @@ edit
 -1
 133
 2
-1073634699
-1073634699
 0
-1073749224
+0
+0
+0
 *Props*
 *End*
 1
@@ -650,10 +650,10 @@ change
 -1
 132
 2
-1073634692
-1073634692
 0
-1073749224
+0
+0
+0
 *Props*
 *End*
 1
@@ -665,10 +665,10 @@ change
 -1
 131
 2
-1073634683
-1073636845
-3
-1073749224
+0
+0
+0
+0
 *Props*
 *End*
 1
@@ -680,10 +680,10 @@ change
 -1
 130
 2
-1073634666
-1073749943
-1
-1073749224
+0
+0
+0
+0
 *Props*
 *End*
 1
@@ -695,10 +695,10 @@ change
 -1
 129
 2
-1073634651
-1073634651
 0
-1073749224
+0
+0
+0
 *Props*
 *End*
 1
@@ -710,10 +710,10 @@ whospecies;whospec;ws
 -1
 128
 2
-1073632762
-1554243096
-20
-1073749224
+0
+0
+0
+0
 *Props*
 *End*
 1
@@ -725,10 +725,10 @@ watchfor;wf
 -1
 127
 2
-1073632632
-1164851468
-1
-1073749224
+0
+0
+0
+0
 *Props*
 *End*
 1
@@ -740,10 +740,10 @@ whodoing;wd;@WHO
 -1
 126
 2
-1073632620
-1164851472
-6
-1073749224
+0
+0
+0
+0
 *Props*
 *End*
 1
@@ -755,10 +755,10 @@ userlist
 -1
 125
 2
-1073631763
-1073750171
-3
-1073749224
+0
+0
+0
+0
 *Props*
 *End*
 1
@@ -770,10 +770,10 @@ userlist
 -1
 124
 2
-1073631696
-1073756252
-302
-1073749224
+0
+0
+0
+0
 *Props*
 *End*
 1
@@ -785,10 +785,10 @@ spam
 -1
 123
 2
-1073631178
-1073752306
-6
-1073749224
+0
+0
+0
+0
 *Props*
 *End*
 1
@@ -800,10 +800,10 @@ smell;feel;taste
 -1
 122
 2
-1073540704
-1073540708
-1
-1073749224
+0
+0
+0
+0
 *Props*
 *End*
 1
@@ -815,10 +815,10 @@ smell;feel;taste
 -1
 121
 2
-1073540517
-1073751420
-11
-1073749224
+0
+0
+0
+0
 *Props*
 *End*
 1
@@ -830,10 +830,10 @@ smell;feel;taste
 -1
 120
 134217730
-1073539733
-1073539733
 0
-1073749224
+0
+0
+0
 *Props*
 *End*
 1
@@ -845,10 +845,10 @@ say;sa
 -1
 119
 2
-1073539723
-1551918204
-5
-1073749224
+0
+0
+0
+0
 *Props*
 *End*
 1
@@ -860,10 +860,10 @@ run;galumf
 -1
 118
 2
-1073539640
-1073539673
-1
-1073749224
+0
+0
+0
+0
 *Props*
 *End*
 1
@@ -875,10 +875,10 @@ programs;plib;proglib
 -1
 117
 2
-1073539402
-1073754779
-16
-1073749224
+0
+0
+0
+0
 *Props*
 *End*
 1
@@ -890,10 +890,10 @@ pose;pos;po;delimiter;/me
 -1
 116
 2
-1073539217
-1073631221
-8
-1073749224
+0
+0
+0
+0
 *Props*
 *End*
 1
@@ -905,10 +905,10 @@ pose;pos;po;delimiter;/me
 -1
 115
 2
-1073539048
-1073754995
-4
-1073749224
+0
+0
+0
+0
 *Props*
 *End*
 1
@@ -920,10 +920,10 @@ pose;pos;po;delimiter;/me
 -1
 114
 2
-1073538929
-1073750606
-60
-1073749224
+0
+0
+0
+0
 *Props*
 *End*
 1
@@ -935,10 +935,10 @@ meetme;meet;mjoin;msummon;mcancel;mdecline
 -1
 113
 2
-1073538797
-1073538809
-4
-1073749224
+0
+0
+0
+0
 *Props*
 *End*
 1
@@ -950,10 +950,10 @@ list
 -1
 112
 2
-1073538397
-1073538420
-3
-1073749224
+0
+0
+0
+0
 *Props*
 *End*
 1
@@ -965,10 +965,10 @@ laston;last
 -1
 111
 2
-1073538094
-1073538353
-3
-1073749224
+0
+0
+0
+0
 *Props*
 *End*
 1
@@ -980,10 +980,10 @@ ignore;unignore
 -1
 110
 2
-1073537811
-1073537831
-3
-1073749224
+0
+0
+0
+0
 *Props*
 *End*
 1
@@ -995,10 +995,10 @@ reconnect
 -1
 109
 2
-1073537678
-1073537758
-4
-1073749224
+0
+0
+0
+0
 *Props*
 *End*
 1
@@ -1010,10 +1010,10 @@ reconnect
 -1
 108
 2
-1073537348
-1073537348
 0
-1073749224
+0
+0
+0
 *Props*
 *End*
 1
@@ -1025,10 +1025,10 @@ banish;unbanish;haven;unhaven
 -1
 107
 2
-1073535881
-1073536463
-3
-1073749224
+0
+0
+0
+0
 *Props*
 *End*
 1
@@ -1040,10 +1040,10 @@ away;back
 -1
 106
 2
-1073535393
-1073535393
 0
-1073749224
+0
+0
+0
 *Props*
 *End*
 1
@@ -1055,10 +1055,10 @@ alias
 -1
 105
 2
-1073535388
-1073750732
-7
-1073749224
+0
+0
+0
+0
 *Props*
 *End*
 1
@@ -1070,10 +1070,10 @@ lsedit;listedit;lsedi;lsed;lse
 -1
 104
 2
-1073534644
-1554243150
-39
-1073749224
+0
+0
+0
+0
 *Props*
 *End*
 1
@@ -1085,10 +1085,10 @@ ansi;color
 -1
 103
 2
-1073534613
-1073632944
-10
-1073749224
+0
+0
+0
+0
 *Props*
 *End*
 1
@@ -1100,10 +1100,10 @@ ansi;color
 -1
 102
 2
-1073534285
-1073534285
 0
-1073749224
+0
+0
+0
 *Props*
 *End*
 1
@@ -1115,10 +1115,10 @@ WhereAre;wa
 -1
 100
 2
-1073534249
-1164851465
-2
-1073749224
+0
+0
+0
+0
 *Props*
 _/de:2:wa #help for info.
 *End*
@@ -1131,10 +1131,10 @@ cmd-whereare.muf
 -1
 148
 18087988
-1073534238
-1164851465
-2
-1073749224
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-newwa
 _author:2:Revar Desmera <revar@belfry.com>
@@ -1148,10 +1148,10 @@ _version:2:6.03
 -1
 99
 2
-1073534217
-1073754022
-6
-1073749224
+0
+0
+0
+0
 *Props*
 _/de:2:@$desc %list[desc]
 desc#:2:3
@@ -1168,10 +1168,10 @@ desc#/3:2:Purpose: if a _docs string exists on the program, will display it (sho
 -1
 98
 2
-1073531936
-1073531936
 0
-1073749224
+0
+0
+0
 *Props*
 *End*
 1
@@ -1183,10 +1183,10 @@ desc#/3:2:Purpose: if a _docs string exists on the program, will display it (sho
 -1
 97
 2
-1073531930
-1073531930
 0
-1073749224
+0
+0
+0
 *Props*
 *End*
 1
@@ -1198,10 +1198,10 @@ desc#/3:2:Purpose: if a _docs string exists on the program, will display it (sho
 -1
 96
 2
-1073531692
-1073751024
-2
-1073749224
+0
+0
+0
+0
 *Props*
 *End*
 1
@@ -1213,10 +1213,10 @@ cp;mv;propcp;propmv
 -1
 95
 2
-1073531637
-1073531637
 0
-1073749224
+0
+0
+0
 *Props*
 *End*
 1
@@ -1228,10 +1228,10 @@ cp;mv;propcp;propmv
 -1
 94
 2
-1073531588
-1073531588
 0
-1073749224
+0
+0
+0
 *Props*
 *End*
 1
@@ -1243,10 +1243,10 @@ cp;mv;propcp;propmv
 -1
 93
 2
-1073531483
-1073531483
 0
-1073749224
+0
+0
+0
 *Props*
 *End*
 1
@@ -1258,10 +1258,10 @@ cp;mv;propcp;propmv
 -1
 92
 2
-1073531429
-1073531429
 0
-1073749224
+0
+0
+0
 *Props*
 *End*
 1
@@ -1273,10 +1273,10 @@ legacy_register
 -1
 91
 2
-1073531073
-1073753518
-27
-1073749224
+0
+0
+0
+0
 *Props*
 *End*
 1
@@ -1288,10 +1288,10 @@ legacy_register
 -1
 -1
 2
-1073530978
-1164851470
-1
-1073749224
+0
+0
+0
+0
 *Props*
 *End*
 1
@@ -1303,10 +1303,10 @@ con-recordhost.muf
 -1
 101
 18087988
-1073530911
-1554243218
-13
-1073749224
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called con-recordhost.muf
 *End*
@@ -1316,11 +1316,11 @@ con-mailwarn.muf
 153
 -1
 90
-18087972
-1073530899
-1554243218
-13
-1073749224
+18087940
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called con-mailwarn.muf
 *End*
@@ -1331,10 +1331,10 @@ con-laston.muf
 -1
 89
 18087988
-1073530891
-1554243218
-13
-1073749224
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called con-laston.muf
 *End*
@@ -1344,11 +1344,11 @@ con-bootme.muf
 153
 -1
 88
-17825828
-1073530863
-1554243218
-13
-1073749224
+17825796
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called con-bootme.muf
 *End*
@@ -1359,10 +1359,10 @@ cmd-whospecies.muf
 -1
 87
 18087988
-1073530629
-1554243096
-19
-1554243243
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-whospecies.muf
 _author:2:Natasha O'Brien <mufden@mufden.fuzzball.org>
@@ -1402,11 +1402,11 @@ cmd-whodoing.muf
 153
 -1
 86
-18087972
-1073530629
-1164851472
-6
-1073749224
+18087940
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-whodoing.muf
 _author:2:Natasha O'Brien <mufden@mufden.fuzzball.org>
@@ -1431,11 +1431,11 @@ cmd-who.muf
 153
 -1
 85
-18087972
-1073530629
-1073530629
+18087940
 0
-1073749224
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-who.muf
 *End*
@@ -1445,11 +1445,11 @@ cmd-whisper.muf
 153
 -1
 84
-18087972
-1073530629
-1164851461
-3
-1073749224
+18087940
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-whisper.muf
 *End*
@@ -1459,11 +1459,11 @@ cmd-@when.muf
 153
 -1
 83
-17039396
-1073530629
-1073530629
+17039364
 0
-1073749224
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-who
 *End*
@@ -1473,11 +1473,11 @@ cmd-whereare.muf
 153
 -1
 82
-18087972
-1073530629
-1073530629
+18087940
 0
-1073749224
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-whereare.muf
 *End*
@@ -1488,10 +1488,10 @@ cmd-watchfor.muf
 -1
 81
 18087988
-1073530629
-1554243218
-34
-1073749224
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-watchfor.muf
 _defs/wf-announce:2:#80 "wf-announce" call
@@ -1525,10 +1525,10 @@ cmd-@view.muf
 -1
 80
 18087988
-1073530629
-1073754023
-9
-1073749224
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-@view
 *End*
@@ -1539,10 +1539,10 @@ cmd-userlist.muf
 -1
 79
 18087988
-1073530629
-1073750171
-3
-1073749224
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-userlist.muf
 _author:2:Natasha O'Brien <mufden@mufden.fuzzball.org>
@@ -1564,10 +1564,10 @@ cmd-@tunegui.muf
 -1
 78
 18087988
-1073530629
-1073530629
 0
-1073749224
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-@tunegui.muf
 _author:2:Revar Desmera <revar@belfry.com>
@@ -1580,11 +1580,11 @@ cmd-@teleport.muf
 153
 -1
 77
-17039396
-1073530629
-1073756252
-108
-1073749224
+17039364
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-@teleport.muf
 _author:2:Natasha O'Brien <mufden@mufden.fuzzball.org>
@@ -1606,11 +1606,11 @@ cmd-sweep.muf
 153
 -1
 76
-18087972
-1073530629
-1073530629
+18087940
 0
-1073749224
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-sweep.muf
 *End*
@@ -1620,11 +1620,11 @@ cmd-@stats.muf
 153
 -1
 75
-18087972
-1073530629
-1073636845
-2
-1073749224
+18087940
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-@stats.muf
 *End*
@@ -1634,11 +1634,11 @@ cmd-staff.muf
 153
 -1
 74
-18087972
-1073530629
-1073755435
-5
-1073755432
+18087940
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-staff.muf
 _help#:2:6
@@ -1655,11 +1655,11 @@ cmd-spoof.muf
 153
 -1
 73
-18087972
-1073530629
-1073530629
+18087940
 0
-1073749224
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-spoof.muf
 *End*
@@ -1669,11 +1669,11 @@ cmd-spam.muf
 153
 -1
 72
-17039396
-1073530629
-1073752306
-5
-1073749224
+17039364
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-spam.muf
 _help#:2:6
@@ -1690,11 +1690,11 @@ cmd-smell.muf
 153
 -1
 71
-18087972
-1073530629
-1073540708
-1
-1073749224
+18087940
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-smell.muf
 _author:2:Natasha O'Brien <mufden@mufden.fuzzball.org>
@@ -1724,11 +1724,11 @@ cmd-@sizer.muf
 153
 -1
 70
-18087972
-1073530629
-1073530629
+18087940
 0
-1073749224
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-@sizer.muf
 *End*
@@ -1739,10 +1739,10 @@ cmd-shout40.muf
 -1
 69
 18087988
-1073530629
-1073751420
-10
-1073751396
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-shout40.muf
 _author:2:Riss, Natasha
@@ -1756,11 +1756,11 @@ cmd-say.muf
 153
 -1
 68
-18087972
-1073530629
-1551918204
-5
-1073749224
+18087940
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-say.muf
 _help#:2:12
@@ -1783,11 +1783,11 @@ cmd-run.muf
 153
 -1
 67
-18087972
-1073530629
-1073539673
-1
-1073749224
+18087940
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-run.muf
 _help#:2:21
@@ -1819,11 +1819,11 @@ cmd-ride-main.muf
 153
 -1
 66
-18087972
-1073530629
-1073756252
-1
-1073749224
+18087940
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-ride-main.muf
 *End*
@@ -1833,11 +1833,11 @@ cmd-ride-com.muf
 153
 -1
 65
-18087972
-1073530629
-1073636835
-1
-1073749224
+18087940
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-ride-com.muf
 *End*
@@ -1847,11 +1847,11 @@ cmd-@register.muf
 153
 -1
 64
-18087972
-1073530629
-1073753518
-27
-1073749224
+18087940
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-@register.muf
 *End*
@@ -1862,10 +1862,10 @@ cmd-@purge.muf
 -1
 63
 18087988
-1073530629
-1073530629
 0
-1073749224
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-@purge.muf
 *End*
@@ -1875,11 +1875,11 @@ cmd-programs.muf
 153
 -1
 62
-18087972
-1073530629
-1073754779
-16
-1073749224
+18087940
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-programs.muf
 *End*
@@ -1889,11 +1889,11 @@ cmd-pose.muf
 153
 -1
 61
-18087972
-1073530629
-1073631221
-8
-1073749224
+18087940
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-pose.muf
 _author:2:Natasha O'Brien <mufden@mufden.fuzzball.org>
@@ -1929,10 +1929,10 @@ cmd-page.muf
 -1
 60
 18087988
-1073530629
-1073636426
-7
-1073749224
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-page.muf
 day:3:12426
@@ -1943,11 +1943,11 @@ cmd-optguitest.muf
 153
 -1
 59
-18087972
-1073530629
-1073530629
+18087940
 0
-1073749224
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-optguitest.muf
 *End*
@@ -1958,10 +1958,10 @@ cmd-@objeditgui.muf
 -1
 58
 18087988
-1073530629
-1073751024
-2
-1073749224
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-@objeditgui.muf
 _author:2:Revar Desmera <revar@belfry.com>
@@ -1973,11 +1973,11 @@ cmd-mv-cp.muf
 153
 -1
 57
-18087972
-1073530629
-1073530629
+18087940
 0
-1073749224
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-mv-cp
 _defs/copy-prop:2:"$global/mv-cp" match "cp-prop" call
@@ -1990,10 +1990,10 @@ cmd-@muf.muf
 -1
 56
 18087988
-1073530629
-1073754995
-4
-1073749224
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-@muf.muf
 _author:2:Natasha O'Brien <mufden@mufden.fuzzball.org>
@@ -2013,11 +2013,11 @@ cmd-@mpi+.muf
 153
 -1
 55
-18087972
-1073530629
-1073750606
-59
-1073749224
+18087940
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-@mpi+.muf
 *End*
@@ -2027,11 +2027,11 @@ cmd-meetme.muf
 153
 -1
 54
-18087972
-1073530629
-1073538809
-4
-1073749224
+18087940
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-meetme.muf
 _help#:2:9
@@ -2051,11 +2051,11 @@ cmd-lsedit.muf
 153
 -1
 53
-18087972
-1073530629
-1554243150
-40
-1073749224
+18087940
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-lsedit
 _version:2:1.4
@@ -2066,11 +2066,11 @@ cmd-lookat.muf
 153
 -1
 52
-18087972
-1073530629
-1073530629
+18087940
 0
-1073749224
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-lookat.muf
 *End*
@@ -2080,11 +2080,11 @@ cmd-list.muf
 153
 -1
 51
-18087972
-1073530629
-1073538420
-3
-1073749224
+18087940
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-list.muf
 _help#:2:3
@@ -2099,10 +2099,10 @@ cmd-laston.muf
 -1
 50
 18087988
-1073530629
-1073538353
-3
-1073749224
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-laston.muf
 _author:2:Natasha O'Brien <mufden@mufden.fuzzball.org>
@@ -2123,11 +2123,11 @@ cmd-@image.muf
 153
 -1
 49
-18087972
-1073530629
-1073530629
+18087940
 0
-1073749224
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-@image.muf
 *End*
@@ -2137,11 +2137,11 @@ cmd-ignore.muf
 153
 -1
 48
-18087972
-1073530629
-1073537831
-3
-1073749224
+18087940
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-ignore.muf
 _author:2:Natasha O'Brien <mufden@mufden.fuzzball.org>
@@ -2163,11 +2163,11 @@ cmd-hand.muf
 153
 -1
 47
-18087972
-1073530629
-1073635835
-2
-1073749224
+18087940
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-hand.muf
 *End*
@@ -2178,10 +2178,10 @@ cmd-guitest.muf
 -1
 46
 18087988
-1073530629
-1073634816
-1
-1073749224
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-guitest
 *End*
@@ -2191,11 +2191,11 @@ gen-mesgboard.muf
 153
 -1
 45
-18087972
-1073530629
-1073754851
-4
-1073749224
+18087940
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-gripe.muf
 *End*
@@ -2206,10 +2206,10 @@ cmd-@exits.muf
 -1
 44
 18087988
-1073530629
-1073749943
-1
-1073749224
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-@exits
 *End*
@@ -2220,10 +2220,10 @@ cmd-edit.muf
 -1
 43
 18087988
-1073530629
-1073530629
 0
-1073749224
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-edit.muf
 *End*
@@ -2234,10 +2234,10 @@ cmd-@doing.muf
 -1
 42
 18087988
-1073530629
-1554243218
-21
-1073749224
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-@doing
 _version:2:1.2
@@ -2249,10 +2249,10 @@ cmd-reconnect.muf
 -1
 41
 18087988
-1073530629
-1073537758
-4
-1073749224
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-createplayer.muf
 _help#:2:5
@@ -2269,10 +2269,10 @@ cmd-@check.muf
 -1
 40
 18087988
-1073530629
-1073530629
 0
-1073749224
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-@check.muf
 *End*
@@ -2283,10 +2283,10 @@ cmd-change.muf
 -1
 39
 18087988
-1073530629
-1073530629
 0
-1073749224
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-change
 *End*
@@ -2297,10 +2297,10 @@ cmd-@bootme.muf
 -1
 38
 18087988
-1073530629
-1073530629
 0
-1073749224
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-@bootme.muf
 *End*
@@ -2310,11 +2310,11 @@ cmd-banish.muf
 153
 -1
 37
-18087972
-1073530629
-1073756252
-3
-1073749224
+18087940
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-banish.muf
 _help#:2:9
@@ -2334,11 +2334,11 @@ cmd-ansi.muf
 153
 -1
 36
-18087972
-1073530629
-1073632944
-10
-1073749224
+18087940
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-ansi.muf
 _msg/off#:2:5
@@ -2361,11 +2361,11 @@ cmd-bbsgui.muf
 153
 -1
 35
-18087972
-1073530629
-1073530629
+18087940
 0
-1073749224
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-bbsgui.muf
 *End*
@@ -2376,10 +2376,10 @@ cmd-@archive.muf
 -1
 34
 18087988
-1073530629
-1073530629
 0
-1073749224
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-@archive.muf
 *End*
@@ -2390,10 +2390,10 @@ cmd-3who.muf
 -1
 33
 18087988
-1073530629
-1164851470
-1
-1073749224
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-3who.muf
 *End*
@@ -2404,10 +2404,10 @@ lib-timestr.muf
 -1
 32
 17825828
-1073518551
-1164851472
-18
-1073749224
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called lib-timestr.muf
 _author:2:Natasha O'Brien <mufden@mufden.fuzzball.org>, Revar
@@ -2427,10 +2427,10 @@ lib-table.muf
 -1
 31
 18153764
-1073518546
-1164851472
-26
-1073749224
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called lib-table.muf
 _author:2:Natasha O'Brien <mufden@mufden.fuzzball.org>
@@ -2449,11 +2449,11 @@ game-chess.muf
 153
 -1
 2
-18087972
-1073754532
-1073754532
+18087940
 0
-1073754777
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called game-chess.muf
 _author:2:Revar
@@ -2466,10 +2466,10 @@ lib-ignore.muf
 -1
 30
 18087972
-1073518532
-1164851461
-18
-1073749224
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called lib-ignore.muf
 _author:2:Natasha O'Brien <mufden@mufden.fuzzball.org>
@@ -2497,10 +2497,10 @@ lib-glowansi-notify.muf
 -1
 28
 18153764
-1073518526
-1073518526
 0
-1073753877
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called lib-glowansi-notify.muf
 _author:2:Natasha
@@ -2513,10 +2513,10 @@ lib-away.muf
 -1
 27
 18087972
-1073518520
-1073518520
 0
-1073753749
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called lib-away.muf
 _author:2:Natasha O'Brien <mufden@mufden.fuzzball.org>
@@ -2568,10 +2568,10 @@ lib-ansi-notify.muf
 -1
 26
 18153764
-1073518513
-1073518513
 0
-1073753698
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called lib-ansi-notify.muf
 _author:2:Natasha
@@ -2595,10 +2595,10 @@ lib-alias.muf
 -1
 25
 18087972
-1073518485
-1164851461
-15
-1073753654
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-@archive.muf
 _author:2:Natasha O'Brien <mufden@mufden.fuzzball.org>
@@ -2634,10 +2634,10 @@ lib-strings.muf
 -1
 24
 18087972
-1073502873
-1554243161
-230
-1073754225
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called stringslib
 _defs/.asc:2:ctoi
@@ -2681,10 +2681,10 @@ lib-stackrng.muf
 -1
 23
 18087972
-1073502869
-1554243147
-119
-1073753432
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called lib-stackrng.muf
 _defs/sr-catrng:2:"$lib/stackrng" match "catranges" call
@@ -2704,10 +2704,10 @@ lib-reflist.muf
 -1
 22
 17105700
-1073501312
-1073536460
-2
-1073754225
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called lib-strings.muf
 _defs/REF-add:2:reflist_add
@@ -2731,10 +2731,10 @@ lib-props.muf
 -1
 21
 17105700
-1073501307
-1554243218
-17
-1073749224
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called lib-stackrng.muf
 _defs/.envprop:2:"$lib/props" match "envprop" call
@@ -2754,10 +2754,10 @@ lib-optionsmisc.muf
 -1
 20
 18087988
-1073501295
-1073501295
 0
-1073749224
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called lib-props.muf
 _author:2:Revar Desmera <revar@belfry.com>
@@ -2779,10 +2779,10 @@ lib-optionsmenu.muf
 -1
 19
 18087988
-1073501285
-1073501285
 0
-1073749224
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called lib-optionsmenu.muf
 _author:2:Revar Desmera <revar@belfry.com>
@@ -2798,10 +2798,10 @@ lib-optionsinfo.muf
 -1
 18
 18087988
-1073501266
-1073501266
 0
-1073749224
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called lib-optionsinfo.muf
 _author:2:Revar Desmera <revar@belfry.com>
@@ -2826,10 +2826,10 @@ lib-optionsgui.muf
 -1
 17
 18087988
-1073501260
-1073751024
-1
-1073749224
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called lib-optionsgui.muf
 _author:2:Revar Desmera <revar@belfry.com>
@@ -2848,10 +2848,10 @@ lib-mpi.muf
 -1
 16
 18087988
-1073501251
-1073501251
 0
-1073749224
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called lib-mpi.muf
 _defs/parse_desc:2:#15 "parse_desc" call
@@ -2872,10 +2872,10 @@ lib-mesg.muf
 -1
 15
 18087972
-1073501247
-1073754851
-20
-1073754225
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called lib-mesg
 _defs/MSG-append:2:#14 "MSG-append" call
@@ -2899,10 +2899,10 @@ lib-mesgbox.muf
 -1
 14
 18087972
-1073501243
-1073754851
-12
-1073754225
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called lib-mesgbox
 _defs/MBOX-append:2:#13 "MBOX-append" call
@@ -2930,10 +2930,10 @@ paperduck
 -1
 13
 1
-1073507354
-1073507354
 0
-1073749224
+0
+0
+0
 *Props*
 @/value:3:1
 _/de:2:An origami duck. Its paper is glossy so it can float.
@@ -2947,10 +2947,10 @@ lib-match.muf
 -1
 12
 18087972
-1073501238
-1073751024
-8
-1073749224
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called lib-match
 _defs/.controls:2:"$lib/match" match "controls" call
@@ -2969,10 +2969,10 @@ lib-look.muf
 -1
 11
 17105188
-1073501230
-1073536460
-2
-1073749224
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called lib-look.muf
 _defs/.cmd-look:2:"$lib/look" match "cmd-look" call
@@ -2997,10 +2997,10 @@ lib-lmgr.muf
 -1
 10
 18154276
-1073501226
-1554243161
-184
-1073749224
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called lib-lmgr
 _defs/.lmgr-clearelem:2:"$lib/lmgr" match "lmgr-clearelem" call
@@ -3047,10 +3047,10 @@ lib-index.muf
 -1
 9
 18087972
-1073501221
-1073501221
 0
-1073749224
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called lib-index
 _defs/.index-add:2:"$lib/index" match "index-add" call
@@ -3090,10 +3090,10 @@ lib-gui.muf
 -1
 8
 18153764
-1073501215
-1073501215
 0
-1073752002
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called lib-gui.muf
 _author:2:Revar Desmera <revar@belfry.com>
@@ -3147,10 +3147,10 @@ lib-editor.muf
 -1
 7
 18087972
-1073501210
-1554243161
-341
-1073751947
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called lib-editor.muf
 _author:2:foxen@belfry.com
@@ -3171,10 +3171,10 @@ lib-edit.muf
 -1
 6
 18087972
-1073501205
-1554243155
-62
-1073749224
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called lib-edit.muf
 _defs/EDITcenter:2:#5 "EDITcenter" call
@@ -3203,10 +3203,10 @@ lib-case.muf
 -1
 5
 16777252
-1073501200
-1073501200
 0
-1073751912
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called lib-case.muf
 _author:2:Foxen, Fringe
@@ -3225,10 +3225,10 @@ lib-bolding.muf
 -1
 4
 18087972
-1073501194
-1073501194
 0
-1073751803
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called lib-bolding.muf
 _author:2:Vash@Anime/Sarusa@FM
@@ -3256,10 +3256,10 @@ lib-arrays.muf
 -1
 3
 18087972
-1073501189
-1073501189
 0
-1073751650
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called lib-arrays.muf
 _author:2:Moose
@@ -3309,11 +3309,11 @@ One
 0
 -1
 154
-1171
-1073500921
-1554243269
-26
-1554243218
+1043
+0
+0
+0
+0
 *Props*
 @/host:2:::1
 @/last/on:2:1554243218
@@ -3338,10 +3338,10 @@ Room Zero
 1
 -1
 -2147483648
-1073500921
-1554243218
-39
-1073756262
+0
+0
+0
+0
 *Props*
 _/de:2:You are in Room Zero. It's very dark here.
 _arrive/banish:5:36
