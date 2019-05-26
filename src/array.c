@@ -31,7 +31,7 @@
 stk_array_list *stk_array_active_list;
 
 /* See the definition for full comment */
-static int array_tree_compare(array_iter * a, array_iter * b, int case_sens);
+int array_tree_compare(array_iter * a, array_iter * b, int case_sens);
 
 /* The buckets themselves */
 typedef struct visited_set_bucket_t {
@@ -322,7 +322,7 @@ array_tree_compare_arrays(array_iter * a, array_iter * b, int case_sens, visited
  * @param case_sens Case sensitive compare for strings?
  * @return similar to strcmp; 0 is equal, negative is A < B, positive is A > B
  */
-static int
+int
 array_tree_compare(array_iter * a, array_iter * b, int case_sens) {
     visited_set visited_a, visited_b;
     visited_set_empty(&visited_a);
@@ -689,31 +689,6 @@ array_tree_alloc_node(array_iter * key)
 }
 
 /**
- * Free memory for a single node, assuming left and right are already NULL
- *
- * Note that this can potentially kill the program because it uses
- * assert to validate left and right are NULL.
- *
- * @TODO: I find the purpose of having this separate from array_tree_delete_all
- *        to be somewhat odd and potentially error prone since this call is
- *        particularly unforgiving.  Perhaps combine these so there's nly
- *        one memory-free-ing thing?  This is more important if we make a
- *        generic AVL library.
- *
- * @private
- * @param p the node to free
- */
-static void
-array_tree_free_node(array_tree * p)
-{
-    assert(p->left == NULL);
-    assert(p->right == NULL);
-    CLEAR(&(p->key));
-    CLEAR(&(p->data));
-    free(p);
-}
-
-/**
  * Insert a new node into the AVL tree
  *
  * Note that this uses a static variable to keep track if we need to balance
@@ -765,24 +740,24 @@ array_tree_insert(array_tree ** avl, array_iter * key)
 }
 
 /**
- * Get the last node in the tree
+ * Get the last node in the tree.
  *
- * @TODO: Why?  This is identical to array_tree_last_node except this one
- *        uses recursion and that one uses a loop.
+ * The last node is the rightmost one.
  *
  * @private
- * @param avl the tree to traverse
- * @return the last node in the tree
+ * @param list the array to scan
+ * @return pointer to 'last node'
  */
 static array_tree *
-array_tree_getmax(array_tree * avl)
+array_tree_last_node(array_tree * list)
 {
-    assert(avl != NULL);
+    if (!list)
+        return NULL;
 
-    if (avl && avl->right)
-        return array_tree_getmax(avl->right);
+    while (list->right)
+        list = list->right;
 
-    return avl;
+    return (list);
 }
 
 /**
@@ -832,7 +807,7 @@ array_tree_remove_node(array_iter * key, array_tree ** root)
             /* Otherwise, recurse into the left to find the node to
              * bring up to the current position.
              */
-            tmp = array_tree_remove_node(&((array_tree_getmax(avl->left))->key),
+            tmp = array_tree_remove_node(&((array_tree_last_node(avl->left))->key),
                                          &(avl->left));
             if (!tmp) {    /* this shouldn't be possible. */
                 panic("array_tree_remove_node() returned NULL !");
@@ -877,8 +852,11 @@ array_tree_delete(array_iter * key, array_tree * avl)
 
     save = array_tree_remove_node(key, &avl);
 
-    if (save)
-        array_tree_free_node(save);
+    if ((save = array_tree_remove_node(key, &avl))) {
+        CLEAR(&(save->key));
+        CLEAR(&(save->data));
+        free(save);
+    }
 
     return avl;
 }
@@ -899,7 +877,9 @@ array_tree_delete_all(array_tree * p)
     p->left = NULL;
     array_tree_delete_all(p->right);
     p->right = NULL;
-    array_tree_free_node(p);
+    CLEAR(&(p->key));
+    CLEAR(&(p->data));
+    free(p);
 }
 
 /**
@@ -919,27 +899,6 @@ array_tree_first_node(array_tree * list)
 
     while (list->left)
         list = list->left;
-
-    return (list);
-}
-
-/**
- * Get the last node in the tree.
- *
- * The last node is the rightmost one.
- *
- * @private
- * @param list the array to scan
- * @return pointer to 'last node'
- */
-static array_tree *
-array_tree_last_node(array_tree * list)
-{
-    if (!list)
-        return NULL;
-
-    while (list->right)
-        list = list->right;
 
     return (list);
 }
@@ -1065,7 +1024,10 @@ array_tree_next_node(array_tree * ptr, array_iter * key)
  * the caller must fix that right away), and adds it to the active
  * array list if the active array list is not NULL.
  *
- * @see array_set_pinned
+ * Pin is a boolean.  If true, any changes made to one copy of the
+ * array will be applied to all dup'd versions of that array.  Basically,
+ * turning pinning on makes the arrays share a reference, unpinning them
+ * (setting it to 0) will cause the array to copy-on-change.
  *
  * @param pin boolean set pinning - see array_set_pinned for definition
  * @return newly allocated and initialized array structure
@@ -1100,9 +1062,7 @@ new_array(int pin)
 /**
  * Allocate a new packed (sequential numeric index) array
  *
- * @see array_set_pinned
- *
- * @param pin Boolean - if true, array will be pinned.  See array_set_pinned
+ * @param pin Boolean - if true, array will be pinned.
  * @return a new packed array
  */
 stk_array *
@@ -1141,9 +1101,7 @@ new_array_packed(int size, int pin)
 /**
  * Allocate a new dictionary array
  *
- * @see array_set_pinned
- *
- * @param pin Boolean - if true, array will be pinned.  See array_set_pinned
+ * @param pin Boolean - if true, array will be pinned.
  * @return a new dictionary array
  */
 stk_array *
@@ -1155,32 +1113,6 @@ new_array_dictionary(int pin)
     assert(nu != NULL);     /* Redundant, but I'm coding defensively */
     nu->type = ARRAY_DICTIONARY;
     return nu;
-}
-
-/**
- * Set 'pinned' value for the given array.
- *
- * Pinned is a boolean.  If true, any changes made to one copy of the
- * array will be applied to all dup'd versions of that array.  Basically,
- * turning pinning on makes the arrays share a reference, unpinning them
- * (setting it to 0) will cause the array to copy-on-change.
- *
- * Pinning is off by default.
- *
- * @param array to impact
- * @param pinned boolean - true if pinned, false if not
- */
-void
-array_set_pinned(stk_array * arr, int pinned)
-{
-    /* Since this is a no-op if it's not actually an array,
-     * should it ever be called with a NULL arr?
-     */
-    /* @TODO: assert + if statement makes no sense, one or the other please */
-    assert(arr != NULL);
-    if (arr != NULL) {
-        arr->pinned = pinned;
-    }
 }
 
 /**
@@ -1316,35 +1248,6 @@ array_count(stk_array * arr)
     }
 
     return arr->items;
-}
-
-/**
- * Perform a comparison between two arrays.
- *
- * The nuances of the comparison are a little complicated:
- *
- * If they are both either floats or ints, compare to see which is greater.
- * If they are both strings, compare string values with given case sensitivity.
- * If not, but they are both the same type, compare their values logicly.
- * If not, then compare based on an arbitrary ordering of types.
- *
- * This is a thin wrapper around array_tree_compare.  So thin, in fact,
- * that it has no particular point ?
- *
- * @TODO: remove this call with its misleading name and make array_tree_compare
- *        public-facing.
- *
- * @param a The first node to look at
- * @param b the node to compare it to
- * @param case_sens Case sensitive compare for strings?
- * @return similar to strcmp; 0 is equal, negative is A < B, positive is A > B
- */
-int
-array_idxcmp_case(array_iter * a, array_iter * b, int case_sens)
-{
-    assert(a != NULL);
-    assert(b != NULL);
-    return array_tree_compare(a, b, case_sens);
 }
 
 /**
@@ -2203,17 +2106,11 @@ array_insertrange(stk_array ** harr, array_iter * start, stk_array * inarr)
 
             /* Copy inarr into the space made. */
             
-            /* @TODO: Is this if condition even possible to be NULL?  At this
-             *        point we should have already verified there is stuff in
-             *        inarr, so this should always return true.
-             */
-            if (array_first(inarr, &idx)) {
-                do {
+            do {
                     itm = array_getitem(inarr, &idx);
                     copyinst(itm, &arr->data.packed[start->data.number]);
                     start->data.number++;
-                } while (array_next(inarr, &idx));
-            }
+            } while (array_next(inarr, &idx));
 
             arr->items += inarr->items;
 
@@ -2573,7 +2470,6 @@ array_is_homogenous(stk_array * arr, int typ)
 {
     array_iter idx;
     array_data *dat;
-    int failedflag = 0;
 
     assert(arr != NULL);
 
@@ -2582,12 +2478,12 @@ array_is_homogenous(stk_array * arr, int typ)
             dat = array_getitem(arr, &idx);
 
             if (dat->type != typ) {
-                failedflag = 1; /* @TODO: just return?  why keep iterating? */
+                return 0;
             }
         } while (array_next(arr, &idx));
     }
 
-    return (!failedflag);
+    return 1;
 }
 
 /**

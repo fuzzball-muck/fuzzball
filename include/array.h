@@ -222,7 +222,7 @@ array_data *array_getitem(stk_array *arr, array_iter *idx);
 stk_array *array_getrange(stk_array *arr, array_iter *start, array_iter *end, int pin);
 
 /**
- * Perform a comparison between two arrays.
+ * Perform a comparison between two nodes.
  *
  * The nuances of the comparison are a little complicated:
  *
@@ -231,18 +231,13 @@ stk_array *array_getrange(stk_array *arr, array_iter *start, array_iter *end, in
  * If not, but they are both the same type, compare their values logicly.
  * If not, then compare based on an arbitrary ordering of types.
  *
- * This is a thin wrapper around array_tree_compare.  So thin, in fact,
- * that it has no particular point ?
- *
- * @TODO: remove this call with its misleading name and make array_tree_compare
- *        public-facing.
- *
+ * @private
  * @param a The first node to look at
  * @param b the node to compare it to
  * @param case_sens Case sensitive compare for strings?
  * @return similar to strcmp; 0 is equal, negative is A < B, positive is A > B
  */
-int array_idxcmp_case(array_iter *a, array_iter *b, int case_sens);
+int array_tree_compare(array_iter * a, array_iter * b, int case_sens);
 
 /**
  * Insert an item into the given array at the given index.
@@ -409,21 +404,6 @@ int array_set_intkey_refval(stk_array **harr, int key, dbref val);
  *         items in array after value set.
  */
 int array_set_intkey_strval(stk_array **harr, int key, const char *val);
-
-/**
- * Set 'pinned' value for the given array.
- *
- * Pinned is a boolean.  If true, any changes made to one copy of the
- * array will be applied to all dup'd versions of that array.  Basically,
- * turning pinning on makes the arrays share a reference, unpinning them
- * (setting it to 0) will cause the array to copy-on-change.
- *
- * Pinning is off by default.
- *
- * @param array to impact
- * @param pinned boolean - true if pinned, false if not
- */
-void array_set_pinned(stk_array *arr, int pinned);
 
 /**
  * For a given array and string key, set value 'val'.
