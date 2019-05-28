@@ -225,7 +225,7 @@ _do_unlink(int descr, dbref player, const char *name, bool quiet)
  * @param player the calling player
  * @param name the name of the thing to unlink
  */
-inline void
+void
 do_unlink(int descr, dbref player, const char *name)
 {
     /* do a regular, non-quiet unlink. */
