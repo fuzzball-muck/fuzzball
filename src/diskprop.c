@@ -846,16 +846,9 @@ fetchprops_priority(dbref obj, int mode, const char *pdir)
  * @param obj the object to fetch properties for
  * @param pdir the prop directory to load, or NULL for "/"
  */
-void
+inline void
 fetchprops(dbref obj, const char *pdir)
 {
-    /*
-     * @TODO Not a fan of the one-line methods; however in this case
-     *       it isn't easily avoided because the priority switch is
-     *       actually used (albiet incredibly rarely).
-     *
-     *       Turn 'fetchprops' into an inline at least?
-     */
     fetchprops_priority(obj, 0, pdir);
 }
 

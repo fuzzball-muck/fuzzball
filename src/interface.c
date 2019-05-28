@@ -431,12 +431,9 @@ show_program_usage(char *prog)
  * @private
  * @param descr the newly added descriptor to consider as the new maximum
  */
-static void
+static inline void
 update_max_descriptor(int descr)
 {
-    /*
-     * @TODO: make this an inline function
-     */
     if (descr >= max_descriptor) {
         max_descriptor = descr + 1;
     }
@@ -523,12 +520,9 @@ has_output(struct descriptor_data *d)
  * @private
  * @param t the block to free
  */
-static void
+static inline void
 free_text_block(struct text_block *t)
 {
-    /*
-     * @TODO Make this an inline
-     */
     free(t->buf);
     free(t);
 }
@@ -4637,12 +4631,9 @@ notify_from_echo(dbref from, dbref player, const char *msg, int isprivate)
  * @param msg the message to send to the player
  * @return the return value from notify_from_echo
  */
-int
+inline int
 notify(dbref player, const char *msg)
 {
-    /*
-     * @TODO: change this into an inline
-     */
     return notify_from_echo(player, player, msg, 1);
 }
 
@@ -6457,12 +6448,9 @@ ignore_is_ignoring_sub(dbref Player, dbref Who)
  * @param Who the player to check to see if being ignored.
  * @return boolean true if Player is ignoring Who
  */
-int
+inline int
 ignore_is_ignoring(dbref Player, dbref Who)
 {
-    /*
-     * @TODO change this to an inline function.
-     */
     return ignore_is_ignoring_sub(Player, Who) || (tp_ignore_bidirectional
                                   && ignore_is_ignoring_sub(Who, Player));
 }
@@ -7139,7 +7127,9 @@ main(int argc, char **argv)
 #ifdef MCP_SUPPORT
     /* Initialize MCP and some packages. */
     mcp_initialize();
+log_status("mcp init over");
     gui_initialize();
+log_status("gui init over");
 #endif
 
     sel_prof_start_time = time(NULL); /* Set useful starting time */
