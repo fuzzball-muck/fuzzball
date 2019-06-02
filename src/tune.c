@@ -470,7 +470,7 @@ tune_setparm(dbref player, const char *parmname, const char *val, int mlev)
             case TP_TYPE_TIMESPAN: {
                 int result = tune_timespan_seconds(parmval);
 
-                if (result == -1)
+                if (result < 0)
                     return TUNESET_SYNTAX;
 
                 *tent->currentval.t = result;
