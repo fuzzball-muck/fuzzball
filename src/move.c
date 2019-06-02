@@ -252,7 +252,7 @@ send_contents(int descr, dbref loc, dbref dest)
 	    moveto(first, loc);
 	} else {
 	    where = FLAGS(first) & STICKY ? HOME : dest;
-	    if (tp_thing_movement && (Typeof(first) == TYPE_THING)) {
+	    if (tp_secure_thing_movement && (Typeof(first) == TYPE_THING)) {
 		enter_room(descr, first,
 			   parent_loop_check(first, where) ? loc : where, LOCATION(first));
 	    } else {
@@ -278,7 +278,7 @@ send_home(int descr, dbref thing, int puppethome)
     case TYPE_THING:
 	if (puppethome)
 	    send_contents(descr, thing, HOME);
-	if (tp_thing_movement || (FLAGS(thing) & (ZOMBIE | LISTENER))) {
+	if (tp_secure_thing_movement || (FLAGS(thing) & (ZOMBIE | LISTENER))) {
 	    enter_room(descr, thing, PLAYER_HOME(thing), LOCATION(thing));
 	    break;
 	}
@@ -389,7 +389,7 @@ trigger(int descr, dbref player, dbref exit, int pflag)
 			    notify(player, "That would cause a paradox.");
 			    break;
 			}
-			if (tp_thing_movement) {
+			if (tp_secure_thing_movement) {
 			    enter_room(descr, dest, LOCATION(LOCATION(exit)), exit);
 			} else {
 			    moveto(dest, LOCATION(LOCATION(exit)));
@@ -403,7 +403,7 @@ trigger(int descr, dbref player, dbref exit, int pflag)
 			    notify(player, "That would cause a paradox.");
 			    break;
 			}
-			if (tp_thing_movement) {
+			if (tp_secure_thing_movement) {
 			    enter_room(descr, dest, LOCATION(exit), exit);
 			} else {
 			    moveto(dest, LOCATION(exit));
@@ -482,7 +482,7 @@ do_move(int descr, dbref player, const char *direction, int lev)
     char buf[BUFFER_LEN];
     struct match_data md;
 
-    if (tp_allow_home && !strcasecmp(direction, "home")) {
+    if (tp_enable_home && !strcasecmp(direction, "home")) {
         /* send him home */
         /* but steal all his possessions */
         if ((loc = LOCATION(player)) != NOTHING) {
@@ -663,7 +663,7 @@ do_get(int descr, dbref player, const char *what, const char *obj)
                 }
 
                 if (cando) {
-                    if (tp_thing_movement && (Typeof(thing) == TYPE_THING)) {
+                    if (tp_secure_thing_movement && (Typeof(thing) == TYPE_THING)) {
                         enter_room(descr, thing, player, LOCATION(thing));
                     } else {
                         moveto(thing, player);
@@ -770,7 +770,7 @@ do_drop(int descr, dbref player, const char *name, const char *obj)
                                         DBFETCH(cont)->sp.room.dropto != NOTHING
                                         && !(FLAGS(cont) & STICKY));
 
-                if (tp_thing_movement && (Typeof(thing) == TYPE_THING)) {
+                if (tp_secure_thing_movement && (Typeof(thing) == TYPE_THING)) {
                     enter_room(descr, thing,
                                immediate_dropto ? DBFETCH(cont)->sp.room.dropto : cont, player);
                 } else {
@@ -983,7 +983,7 @@ recycle(int descr, dbref player, dbref thing)
     while ((looplimit-- > 0) && ((first = CONTENTS(thing)) != NOTHING)) {
 	if (Typeof(first) == TYPE_PLAYER ||
 	    (Typeof(first) == TYPE_THING &&
-	     (FLAGS(first) & (ZOMBIE | VEHICLE) || tp_thing_movement))
+	     (FLAGS(first) & (ZOMBIE | VEHICLE) || tp_secure_thing_movement))
 		) {
 	    enter_room(descr, first, HOME, LOCATION(thing));
 	    /* If the room is set to drag players back, there'll be no

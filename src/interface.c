@@ -2293,7 +2293,7 @@ static void
 idleboot_user(struct descriptor_data *d)
 {
     char buf[BUFFER_LEN];
-    snprintf(buf, sizeof(buf), "\r\n%s\r\n\r\n", tp_idle_mesg);
+    snprintf(buf, sizeof(buf), "\r\n%s\r\n\r\n", tp_idle_boot_mesg);
     queue_immediate_and_flush(d, buf);
     d->booted = 1;
 }
@@ -2761,7 +2761,7 @@ addrout_v6(in_port_t lport, struct in6_addr *a, in_port_t prt)
     prt = ntohs(prt);
 
 #ifndef SPAWN_HOST_RESOLVER
-    if (tp_hostnames) {
+    if (tp_use_hostnames) {
         /*
          * One day the nameserver Qwest uses decided to start
          * doing halfminute lags, locking up the entire muck
@@ -2802,7 +2802,7 @@ addrout_v6(in_port_t lport, struct in6_addr *a, in_port_t prt)
     snprintf(buf, sizeof(buf), "%s(%" PRIu16 ")%" PRIu16 "\n", ip6addr, prt,
              lport);
 
-    if (tp_hostnames) {
+    if (tp_use_hostnames) {
         write(resolver_sock[1], buf, strlen(buf));
     }
 #endif
@@ -2886,7 +2886,7 @@ addrout(in_port_t lport, in_addr_t a, in_port_t prt)
     prt = ntohs(prt);
 
 #ifndef SPAWN_HOST_RESOLVER
-    if (tp_hostnames) {
+    if (tp_use_hostnames) {
         /*
          * One day the nameserver Qwest uses decided to start
          * doing halfminute lags, locking up the entire muck
@@ -2928,7 +2928,7 @@ addrout(in_port_t lport, in_addr_t a, in_port_t prt)
              "(%" PRIu16 ")%" PRIu16 "\n", (a >> 24) & 0xff, (a >> 16) & 0xff,
              (a >> 8) & 0xff, a & 0xff, prt, lport);
 
-    if (tp_hostnames) {
+    if (tp_use_hostnames) {
         write(resolver_sock[1], buf, strlen(buf));
     }
 #endif
@@ -3629,7 +3629,7 @@ configure_new_ssl_ctx(void)
 
     SSL_CTX_set_cipher_list(new_ssl_ctx, tp_ssl_cipher_preference_list);
 
-    if (tp_cipher_server_preference) {
+    if (tp_server_cipher_preference) {
         SSL_CTX_set_options(new_ssl_ctx, SSL_OP_CIPHER_SERVER_PREFERENCE);
     }
 
@@ -4422,7 +4422,7 @@ notify_nolisten(dbref player, const char *msg, int isprivate)
          *       outside the loop because I do not think the player
          *       descriptor list can change during the run of this call.
          *
-         *       Secondly, if the player is a zombie and tp_zombies is
+         *       Secondly, if the player is a zombie and tp_allow_zombies is
          *       false, then nothing will happen -- and we just looped
          *       over all this stuff for fun.
          *
@@ -4431,13 +4431,13 @@ notify_nolisten(dbref player, const char *msg, int isprivate)
          *
          *       isZombie = Typeof(player) == TYPE_THING, FLAGS & ZOMBIE,
          *       and all that other good stuff that's in the second if
-         *       statement after if(tp_zombies)
+         *       statement after if(tp_allow_zombies)
          *
-         *       Then, if darr == 0 && !isZombie || isZombie && !tp_zombies,
+         *       Then, if darr == 0 && !isZombie || isZombie && !tp_allow_zombies,
          *       then return -- these cases we will do nothing.
          *
          *       Otherwise, loop.  if isZombie, run the stuff within the
-         *       if statement after if (tp_zombies).  Else, loop over the
+         *       if statement after if (tp_allow_zombies).  Else, loop over the
          *       descriptors and queue it up as-written.
          *
          *       That cleans it up and makes this way more efficient.
@@ -4451,7 +4451,7 @@ notify_nolisten(dbref player, const char *msg, int isprivate)
                 retval++;
         }
 
-        if (tp_zombies) {
+        if (tp_allow_zombies) {
             if ((Typeof(player) == TYPE_THING) && (FLAGS(player) & ZOMBIE) &&
                 !(FLAGS(OWNER(player)) & ZOMBIE) &&
                 (!(FLAGS(player) & DARK) || Wizard(OWNER(player)))) {
@@ -4565,8 +4565,8 @@ notify_from_echo(dbref from, dbref player, const char *msg, int isprivate)
 {
     const char *ptr = msg;
 
-    if (tp_listeners) {
-        if (tp_listeners_obj || Typeof(player) == TYPE_ROOM) {
+    if (tp_allow_listeners) {
+        if (tp_allow_listeners_obj || Typeof(player) == TYPE_ROOM) {
             listenqueue(-1, from, LOCATION(from), player, player, NOTHING,
                         LISTEN_PROPQUEUE, ptr, tp_listen_mlev, 1, 0);
             listenqueue(-1, from, LOCATION(from), player, player, NOTHING,
@@ -4716,7 +4716,7 @@ notify_listeners(dbref who, dbref xprog, dbref obj, dbref room,
     if (obj == NOTHING)
         return;
 
-    if (tp_listeners && (tp_listeners_obj || Typeof(obj) == TYPE_ROOM)) {
+    if (tp_allow_listeners && (tp_allow_listeners_obj || Typeof(obj) == TYPE_ROOM)) {
         listenqueue(-1, who, room, obj, obj, xprog, LISTEN_PROPQUEUE, msg,
                     tp_listen_mlev, 1, 0);
         listenqueue(-1, who, room, obj, obj, xprog, WLISTEN_PROPQUEUE, msg,
@@ -4726,14 +4726,14 @@ notify_listeners(dbref who, dbref xprog, dbref obj, dbref room,
     }
 
     /*
-     * @TODO I think this is wrong.  tp_zombies shouldn't block vehicles.
+     * @TODO I think this is wrong.  tp_allow_zombies shouldn't block vehicles.
      *       isprivate is probably used improperly as well here.  I'd just
      *       take this outer if off and add a TYPE_THING check to the inner
      *       if.  I think notify_filtered (or one of its children) handles
-     *       tp_zombies + isprivate so none of that is of concern to us here.
+     *       tp_allow_zombies + isprivate so none of that is of concern to us here.
      *       (tanabi)
      */
-    if (tp_zombies && Typeof(obj) == TYPE_THING && !isprivate) {
+    if (tp_allow_zombies && Typeof(obj) == TYPE_THING && !isprivate) {
         if (FLAGS(obj) & VEHICLE) {
             if (LOCATION(who) == LOCATION(obj)) {
                 char pbuf[BUFFER_LEN];
@@ -4785,10 +4785,10 @@ notify_except(dbref first, dbref exception, const char *msg, dbref who)
 
     srch = room = LOCATION(first);
 
-    if (tp_listeners) {
+    if (tp_allow_listeners) {
         notify_from_echo(who, srch, msg, 0);
 
-        if (tp_listeners_env) {
+        if (tp_allow_listeners_env) {
             srch = LOCATION(srch);
             while (srch != NOTHING) {
                 notify_from_echo(who, srch, msg, 0);

@@ -1648,8 +1648,8 @@ getparent_logic(dbref obj)
 /**
  * Get the parent for a given object
  *
- * This logic is weirdly complicated.  If tp_thing_movement is true, which
- * is to say, moving things is set to act like a player is moving, then
+ * This logic is weirdly complicated.  If tp_secure_thing_movement is true,
+ * which is to say, moving things is set to act like a player is moving, then
  * this simply returns the location of the object.
  *
  * Otherwise, we iterate.  The complexity is around vehicle things;
@@ -1668,7 +1668,7 @@ getparent(dbref obj)
 {
     dbref ptr, oldptr;
 
-    if (tp_thing_movement) {
+    if (tp_secure_thing_movement) {
         obj = LOCATION(obj);
     } else {
         ptr = getparent_logic(obj);

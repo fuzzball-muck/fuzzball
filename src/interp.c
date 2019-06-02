@@ -2110,7 +2110,7 @@ insttotext(struct frame *fr, int lev, struct inst *theinst, char *buffer, int bu
 		*buffer = '\0';
 	    break;
 	}
-	if (tp_expanded_debug && expandarrs) {
+	if (tp_expanded_debug_trace && expandarrs) {
 	    length = snprintf(buffer, buflen, "%d{", theinst->data.array->items);
 
 	    if (length >= buflen || length == -1) {

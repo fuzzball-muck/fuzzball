@@ -1512,7 +1512,7 @@ mfn_force(MFUNARGS)
 	ABORT_MPI("FORCE", "Bad object reference. (arg1)");
     if (!*argv[1])
 	ABORT_MPI("FORCE", "Null command string. (arg2)");
-    if (!tp_zombies && !(mesgtyp & MPI_ISBLESSED))
+    if (!tp_allow_zombies && !(mesgtyp & MPI_ISBLESSED))
 	ABORT_MPI("FORCE", "Permission Denied.");
     if (!(mesgtyp & MPI_ISBLESSED)) {
 	ptr = (char *)NAME(obj);

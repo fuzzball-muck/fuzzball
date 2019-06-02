@@ -16,7 +16,7 @@
 #include "array.h"
 #include "commands.h"
 #include "db.h"
-#include "defaults.h"
+#include "fbmuck.h"
 #include "fbstrings.h"
 #include "fbtime.h"
 #include "game.h"
@@ -28,14 +28,13 @@
 #include "tune.h"
 #include "tunelist.h"
 
-#define TP_SEND_ENTRY_INFO(tune_entry) \
-{ \
-    notifyf(player, "%-27s %.4096s", tune_entry->group, tune_entry->label); \
-}
-
 /* NOTE:  Do NOT use this value as the name of a parameter.  Reserve it as a preprocessor define so
    it's a bit easier to change if needed.  If changed, don't forget to update the help files, too! */
 #define TP_INFO_CMD "info"
+
+const char *str_objecttype[] = {
+    "room", "thing", "exit", "player", "program", "garbage", "any"
+};
 
 /**
  * Count all available tune parameters.
@@ -48,11 +47,77 @@
 int
 tune_count_parms(void)
 {
-    /* @TODO See the todo under tune_display_parms for details. This
-     *       gets very simple if we homogenize the structs.
-     */
-    return ARRAYSIZE(tune_str_list) + ARRAYSIZE(tune_time_list) + ARRAYSIZE(tune_val_list)
-         + ARRAYSIZE(tune_ref_list) + ARRAYSIZE(tune_bool_list) - 5;
+    return ARRAYSIZE(tune_list) - 1;
+}
+
+static int
+tune_timespan_seconds(const char *value)
+{
+    int days, hrs, mins, secs;
+    int result = sscanf(value, "%dd %2d:%2d:%2d", &days, &hrs, &mins, &secs);
+    
+    if (result == 4) {
+      return (days * 86400) + (3600 * hrs) + (60 * mins) + secs;
+    }
+
+    int total = 0, subtotal = 0;
+
+    for (int i = 0, n = strlen(value); i < n; i++) {
+        if (isdigit(value[i])) {
+            subtotal = (subtotal*10) + (value[i]-48);
+        } else {
+            switch (tolower(value[i])) {
+            case 'd':
+                total += (subtotal * 86400);
+                break;
+            case 'h':
+                total += (subtotal * 3600);
+                break;
+            case 'm':
+                total += (subtotal * 60);
+                break;
+            case 's':
+                total += subtotal;
+                break;
+            default:
+                return -1;
+            }
+
+            subtotal = 0;
+        }
+     }
+
+     return (total == 0) ? -1 : total;
+}
+
+static const char *
+tune_entry_value(dbref player, struct tune_entry *tent)
+{
+    static char buf[BUFFER_LEN];
+
+    switch (tent->type) {
+    case TP_TYPE_STRING:
+        strcpyn(buf, sizeof(buf), *tent->currentval.s);
+        break;
+    case TP_TYPE_TIMESPAN:
+    strcpyn(buf, sizeof(buf), timestr_full(*tent->currentval.t));
+        break;
+    case TP_TYPE_INTEGER:
+        snprintf(buf, sizeof(buf), "%d", *tent->currentval.n);
+        break;
+    case TP_TYPE_DBREF:
+        if (player == NOTHING) {
+            snprintf(buf, sizeof(buf), "#%d", *tent->currentval.d);
+        } else {            
+            unparse_object(player, *tent->currentval.d, buf, sizeof(buf));
+        }
+        break;
+    case TP_TYPE_BOOLEAN:
+        snprintf(buf, sizeof(buf), "%s", *tent->currentval.b == true ? "yes" : "no");
+        break;
+    }
+
+    return buf;
 }
 
 /**
@@ -79,150 +144,32 @@ tune_count_parms(void)
 static void
 tune_display_parms(dbref player, char *name, int mlev, int show_extended)
 {
-    char buf[BUFFER_LEN + 50];
-    struct tune_str_entry *tstr = tune_str_list;
-    struct tune_time_entry *ttim = tune_time_list;
-    struct tune_val_entry *tval = tune_val_list;
-    struct tune_ref_entry *tref = tune_ref_list;
-    struct tune_bool_entry *tbool = tune_bool_list;
+    char buf[BUFFER_LEN];
 
     /* Show a helpful message at the end if nothing was found */
     int parms_found = 0;
 
-    if (name == NULL) {
-        return;
-    }
+    if (!name) return;
 
     /* Treat default parameters as normal */
     TP_CLEAR_FLAG_DEFAULT(name);
 
-    /* @TODO I'll complain about this here but it applies all over the
-     *       place.  There is a lot of repetitive code because we are using
-     *       5 nearly identical structures.  Why not use one structure with
-     *       a union, then just iterate over it once?  Its a pretty big
-     *       change and it would affect how the entries are displayed,
-     *       but we can sort the @tune variables on load to match the
-     *       current order if we care.
-     *
-     *       I will note places where changes would need to be made if
-     *       we do this, but it greatly simplifies the code at the cost
-     *       of a very slightly higher memory use.
-     */
-    while (tstr->name) {
-        if (tstr->readmlev > mlev) {
-            tstr++;
-            continue;
-        }
+    for (struct tune_entry *tent = tune_list; tent->name; tent++) {
+        if (tent->readmlev <= mlev) {
+            if (!*name || equalstr(name, (char *)tent->name)) {
+                strcpyn(buf, sizeof(buf), tune_entry_value(player, tent));
 
-        strcpyn(buf, sizeof(buf), tstr->name);
+                notifyf(player, "%-6s %-20s = %.4096s%s%s",
+                        str_tunetype[tent->type], tent->name, buf,
+                        MOD_ENABLED(tent->module) ? "" : " [inactive]",
+                        (tent->isdefault) ? " [default]" : "");
 
-        if (!*name || equalstr(name, buf)) {
-            notifyf(player, "(str)  %-20s = %.4096s%s%s",
-                    tstr->name, *tstr->str, MOD_ENABLED(tstr->module) ? "" : " [inactive]",
-                    (tstr->isdefault) ? " [default]" : "");
+                if (show_extended)
+                    notifyf(player, "%-27s %.4096s", tent->group, tent->label);
 
-            if (show_extended)
-                TP_SEND_ENTRY_INFO(tstr);
-
-            if (!parms_found)
                 parms_found = 1;
+            }
         }
-
-        tstr++;
-    }
-
-    while (ttim->name) {
-        if (ttim->readmlev > mlev) {
-            ttim++;
-            continue;
-        }
-
-        strcpyn(buf, sizeof(buf), ttim->name);
-
-        if (!*name || equalstr(name, buf)) {
-            notifyf(player, "(time) %-20s = %s%s%s",
-                    ttim->name, timestr_full(*ttim->tim),
-                    MOD_ENABLED(ttim->module) ? "" : " [inactive]",
-                    (ttim->isdefault) ? " [default]" : "");
-            if (show_extended)
-                TP_SEND_ENTRY_INFO(ttim);
-
-            if (!parms_found)
-                parms_found = 1;
-        }
-
-        ttim++;
-    }
-
-    while (tval->name) {
-        if (tval->readmlev > mlev) {
-            tval++;
-            continue;
-        }
-
-        strcpyn(buf, sizeof(buf), tval->name);
-
-        if (!*name || equalstr(name, buf)) {
-            notifyf(player, "(int)  %-20s = %d%s%s",
-                    tval->name, *tval->val, MOD_ENABLED(tval->module) ? "" : " [inactive]",
-                    (tval->isdefault) ? " [default]" : "");
-
-            if (show_extended)
-                TP_SEND_ENTRY_INFO(tval);
-
-            if (!parms_found)
-                parms_found = 1;
-        }
-
-        tval++;
-    }
-
-    while (tref->name) {
-        if (tref->readmlev > mlev) {
-            tref++;
-            continue;
-        }
-
-        strcpyn(buf, sizeof(buf), tref->name);
-
-        if (!*name || equalstr(name, buf)) {
-            char unparse_buf[BUFFER_LEN];
-            unparse_object(player, *tref->ref, unparse_buf, sizeof(unparse_buf));
-            notifyf(player, "(ref)  %-20s = %s%s%s",
-                    tref->name, unparse_buf,
-                    MOD_ENABLED(tref->module) ? "" : " [inactive]",
-                    (tref->isdefault) ? " [default]" : "");
-
-            if (show_extended)
-                TP_SEND_ENTRY_INFO(tref);
-
-            if (!parms_found)
-                parms_found = 1;
-        }
-
-        tref++;
-    }
-
-    while (tbool->name) {
-        if (tbool->readmlev > mlev) {
-            tbool++;
-            continue;
-        }
-
-        strcpyn(buf, sizeof(buf), tbool->name);
-        if (!*name || equalstr(name, buf)) {
-            notifyf(player, "(bool) %-20s = %s%s%s",
-                    tbool->name, ((*tbool->boolval) ? "yes" : "no"),
-                    MOD_ENABLED(tbool->module) ? "" : " [inactive]",
-                    (tbool->isdefault) ? " [default]" : "");
-            if (show_extended)
-                TP_SEND_ENTRY_INFO(tbool);
-
-            if (!parms_found)
-                parms_found = 1;
-        }
-
-        tbool++;
     }
 
     if (!parms_found)
@@ -254,63 +201,16 @@ tune_display_parms(dbref player, char *name, int mlev, int show_extended)
 void
 tune_save_parms_to_file(FILE * f)
 {
-    struct tune_str_entry *tstr = tune_str_list;
-    struct tune_time_entry *ttim = tune_time_list;
-    struct tune_val_entry *tval = tune_val_list;
-    struct tune_ref_entry *tref = tune_ref_list;
-    struct tune_bool_entry *tbool = tune_bool_list;
+    char buf[BUFFER_LEN];
 
-    /* @TODO This gets very simplified if we use a uniform structure. */
+    for (struct tune_entry *tent = tune_list; tent->name; tent++) {
+        strcpyn(buf, sizeof(buf), tune_entry_value(NOTHING, tent));
 
-    while (tstr->name) {
-        if (tstr->isdefault) {
-            fprintf(f, "%c%s=%.4096s\n", TP_FLAG_DEFAULT, tstr->name, *tstr->str);
-        } else {
-            fprintf(f, "%s=%.4096s\n", tstr->name, *tstr->str);
-        }
+        if (tent->isdefault)
+            fprintf(f, "%c%s=%s\n", TP_FLAG_DEFAULT, tent->name, buf);
+        else
+            fprintf(f, "%s=%s\n", tent->name, buf);
 
-        tstr++;
-    }
-
-    while (ttim->name) {
-        if (ttim->isdefault) {
-            fprintf(f, "%c%s=%s\n", TP_FLAG_DEFAULT, ttim->name, timestr_full(*ttim->tim));
-        } else {
-            fprintf(f, "%s=%s\n", ttim->name, timestr_full(*ttim->tim));
-        }
-
-        ttim++;
-    }
-
-    while (tval->name) {
-        if (tval->isdefault) {
-            fprintf(f, "%c%s=%d\n", TP_FLAG_DEFAULT, tval->name, *tval->val);
-        } else {
-            fprintf(f, "%s=%d\n", tval->name, *tval->val);
-        }
-
-        tval++;
-    }
-
-    while (tref->name) {
-        if (tref->isdefault) {
-            fprintf(f, "%c%s=#%d\n", TP_FLAG_DEFAULT, tref->name, *tref->ref);
-        } else {
-            fprintf(f, "%s=#%d\n", tref->name, *tref->ref);
-        }
-
-        tref++;
-    }
-
-    while (tbool->name) {
-        if (tbool->isdefault) {
-            fprintf(f, "%c%s=%s\n", TP_FLAG_DEFAULT, tbool->name,
-                    (*tbool->boolval) ? "yes" : "no");
-        } else {
-            fprintf(f, "%s=%s\n", tbool->name, (*tbool->boolval) ? "yes" : "no");
-        }
-
-        tbool++;
     }
 }
 
@@ -355,12 +255,8 @@ tune_save_parms_to_file(FILE * f)
 stk_array *
 tune_parms_array(const char *pattern, int mlev, int pinned)
 {
-    struct tune_str_entry *tstr = tune_str_list;
-    struct tune_time_entry *ttim = tune_time_list;
-    struct tune_val_entry *tval = tune_val_list;
-    struct tune_ref_entry *tref = tune_ref_list;
-    struct tune_bool_entry *tbool = tune_bool_list;
     stk_array *nu = new_array_packed(0, pinned);
+
     struct inst temp1;
     char pat[BUFFER_LEN];
     char buf[BUFFER_LEN];
@@ -368,137 +264,48 @@ tune_parms_array(const char *pattern, int mlev, int pinned)
 
     strcpyn(pat, sizeof(pat), pattern);
 
-    /* @TODO This is even more code that gets cleaner and simpler if we
-     *       go to a uniform structure.
-     */
-
-    while (tbool->name) {
-        if (tbool->readmlev <= mlev) {
-            strcpyn(buf, sizeof(buf), tbool->name);
-
-            if (!*pattern || equalstr(pat, buf)) {
+    for (struct tune_entry *tent = tune_list; tent->name; tent++) {
+        if (tent->readmlev <= mlev) {
+            if (!*pattern || equalstr(pat, (char *)tent->name)) {
                 stk_array *item = new_array_dictionary(pinned);
-                array_set_strkey_strval(&item, "type", "boolean");
-                array_set_strkey_strval(&item, "group", tbool->group);
-                array_set_strkey_strval(&item, "name", tbool->name);
-                array_set_strkey_intval(&item, "value", *tbool->boolval ? 1 : 0);
-                array_set_strkey_intval(&item, "mlev", tbool->readmlev);
-                array_set_strkey_intval(&item, "readmlev", tbool->readmlev);
-                array_set_strkey_intval(&item, "writemlev", tbool->writemlev);
-                array_set_strkey_strval(&item, "label", tbool->label);
-                array_set_strkey_intval(&item, "nullable", 0);
-                array_set_strkey_intval(&item, "active", MOD_ENABLED(tbool->module));
-                array_set_strkey_intval(&item, "default", tbool->isdefault);
+                array_set_strkey_strval(&item, "group", tent->group);
+                array_set_strkey_strval(&item, "name", tent->name);
+                array_set_strkey_intval(&item, "mlev", tent->readmlev);
+                array_set_strkey_intval(&item, "readmlev", tent->readmlev);
+                array_set_strkey_intval(&item, "writemlev", tent->writemlev);
+                array_set_strkey_strval(&item, "label", tent->label);
+                array_set_strkey_intval(&item, "nullable", tent->isnullable);
+                array_set_strkey_intval(&item, "active", MOD_ENABLED(tent->module));
+                array_set_strkey_intval(&item, "default", tent->isdefault);
 
-                temp1.type = PROG_ARRAY;
-                temp1.data.array = item;
-                array_set_intkey(&nu, i++, &temp1);
-                CLEAR(&temp1);
-            }
-        }
+                switch (tent->type) {
+                case TP_TYPE_STRING:
+                    array_set_strkey_strval(&item, "type", "string");
+                    array_set_strkey_strval(&item, "value", *tent->currentval.s);
+                    break;
+                case TP_TYPE_TIMESPAN:
+                    array_set_strkey_strval(&item, "type", "timespan");
+                    array_set_strkey_intval(&item, "value", *tent->currentval.t);
+                    break;
+                case TP_TYPE_INTEGER:
+                    array_set_strkey_strval(&item, "type", "integer");
+                    array_set_strkey_intval(&item, "value", *tent->currentval.n);
+                    break;
+                case TP_TYPE_DBREF:
+                    array_set_strkey_strval(&item, "type", "dbref");
 
-        tbool++;
-    }
-
-    while (ttim->name) {
-        if (ttim->readmlev <= mlev) {
-            strcpyn(buf, sizeof(buf), ttim->name);
-
-            if (!*pattern || equalstr(pat, buf)) {
-                stk_array *item = new_array_dictionary(pinned);
-                array_set_strkey_strval(&item, "type", "timespan");
-                array_set_strkey_strval(&item, "group", ttim->group);
-                array_set_strkey_strval(&item, "name", ttim->name);
-                array_set_strkey_intval(&item, "value", *ttim->tim);
-                array_set_strkey_intval(&item, "mlev", ttim->readmlev);
-                array_set_strkey_intval(&item, "readmlev", ttim->readmlev);
-                array_set_strkey_intval(&item, "writemlev", ttim->writemlev);
-                array_set_strkey_strval(&item, "label", ttim->label);
-                array_set_strkey_intval(&item, "nullable", 0);
-                array_set_strkey_intval(&item, "active", MOD_ENABLED(ttim->module));
-                array_set_strkey_intval(&item, "default", ttim->isdefault);
-
-                temp1.type = PROG_ARRAY;
-                temp1.data.array = item;
-                array_set_intkey(&nu, i++, &temp1);
-                CLEAR(&temp1);
-            }
-        }
-
-        ttim++;
-    }
-
-    while (tval->name) {
-        if (tval->readmlev <= mlev) {
-            strcpyn(buf, sizeof(buf), tval->name);
-
-            if (!*pattern || equalstr(pat, buf)) {
-                stk_array *item = new_array_dictionary(pinned);
-                array_set_strkey_strval(&item, "type", "integer");
-                array_set_strkey_strval(&item, "group", tval->group);
-                array_set_strkey_strval(&item, "name", tval->name);
-                array_set_strkey_intval(&item, "value", *tval->val);
-                array_set_strkey_intval(&item, "mlev", tval->readmlev);
-                array_set_strkey_intval(&item, "readmlev", tval->readmlev);
-                array_set_strkey_intval(&item, "writemlev", tval->writemlev);
-                array_set_strkey_strval(&item, "label", tval->label);
-                array_set_strkey_intval(&item, "nullable", 0);
-                array_set_strkey_intval(&item, "active", MOD_ENABLED(tval->module));
-                array_set_strkey_intval(&item, "default", tval->isdefault);
-
-                temp1.type = PROG_ARRAY;
-                temp1.data.array = item;
-                array_set_intkey(&nu, i++, &temp1);
-                CLEAR(&temp1);
-            }
-        }
-
-        tval++;
-    }
-
-    while (tref->name) {
-        if (tref->readmlev <= mlev) {
-            strcpyn(buf, sizeof(buf), tref->name);
-
-            if (!*pattern || equalstr(pat, buf)) {
-                stk_array *item = new_array_dictionary(pinned);
-                array_set_strkey_strval(&item, "type", "dbref");
-                array_set_strkey_strval(&item, "group", tref->group);
-                array_set_strkey_strval(&item, "name", tref->name);
-                array_set_strkey_refval(&item, "value", *tref->ref);
-                array_set_strkey_intval(&item, "mlev", tref->readmlev);
-                array_set_strkey_intval(&item, "readmlev", tref->readmlev);
-                array_set_strkey_intval(&item, "writemlev", tref->writemlev);
-                array_set_strkey_strval(&item, "label", tref->label);
-                array_set_strkey_intval(&item, "nullable", 0);
-                array_set_strkey_intval(&item, "active", MOD_ENABLED(tref->module));
-                array_set_strkey_intval(&item, "default", tref->isdefault);
-
-                switch (tref->typ) {
-                    case NOTYPE:
-                        array_set_strkey_strval(&item, "objtype", "any");
-                        break;
-                    case TYPE_PLAYER:
-                        array_set_strkey_strval(&item, "objtype", "player");
-                        break;
-                    case TYPE_THING:
-                        array_set_strkey_strval(&item, "objtype", "thing");
-                        break;
-                    case TYPE_ROOM:
-                        array_set_strkey_strval(&item, "objtype", "room");
-                        break;
-                    case TYPE_EXIT:
-                        array_set_strkey_strval(&item, "objtype", "exit");
-                        break;
-                    case TYPE_PROGRAM:
-                        array_set_strkey_strval(&item, "objtype", "program");
-                        break;
-                    case TYPE_GARBAGE:
-                        array_set_strkey_strval(&item, "objtype", "garbage");
-                        break;
-                    default:
+                    if (tent->type > NOTYPE) {
                         array_set_strkey_strval(&item, "objtype", "unknown");
-                        break;
+                    } else {
+                        array_set_strkey_strval(&item, "objtype", str_objecttype[tent->objecttype]);
+                    }
+
+                    array_set_strkey_refval(&item, "value", *tent->currentval.d);
+                    break;
+                case TP_TYPE_BOOLEAN:
+                    array_set_strkey_strval(&item, "type", "boolean");
+                    array_set_strkey_intval(&item, "value", *tent->currentval.b);
+                    break;
                 }
 
                 temp1.type = PROG_ARRAY;
@@ -507,36 +314,6 @@ tune_parms_array(const char *pattern, int mlev, int pinned)
                 CLEAR(&temp1);
             }
         }
-
-        tref++;
-    }
-
-    while (tstr->name) {
-        if (tstr->readmlev <= mlev) {
-            strcpyn(buf, sizeof(buf), tstr->name);
-
-            if (!*pattern || equalstr(pat, buf)) {
-                stk_array *item = new_array_dictionary(pinned);
-                array_set_strkey_strval(&item, "type", "string");
-                array_set_strkey_strval(&item, "group", tstr->group);
-                array_set_strkey_strval(&item, "name", tstr->name);
-                array_set_strkey_strval(&item, "value", *tstr->str);
-                array_set_strkey_intval(&item, "mlev", tstr->readmlev);
-                array_set_strkey_intval(&item, "readmlev", tstr->readmlev);
-                array_set_strkey_intval(&item, "writemlev", tstr->writemlev);
-                array_set_strkey_strval(&item, "label", tstr->label);
-                array_set_strkey_intval(&item, "nullable", tstr->isnullable);
-                array_set_strkey_intval(&item, "active", MOD_ENABLED(tstr->module));
-                array_set_strkey_intval(&item, "default", tstr->isdefault);
-
-                temp1.type = PROG_ARRAY;
-                temp1.data.array = item;
-                array_set_intkey(&nu, i++, &temp1);
-                CLEAR(&temp1);
-            }
-        }
-
-        tstr++;
     }
 
     return nu;
@@ -566,100 +343,24 @@ tune_parms_array(const char *pattern, int mlev, int pinned)
 const char *
 tune_get_parmstring(const char *name, int mlev)
 {
-    static char buf[BUFFER_LEN + 50];
-    struct tune_str_entry *tstr = tune_str_list;
-    struct tune_time_entry *ttim = tune_time_list;
-    struct tune_val_entry *tval = tune_val_list;
-    struct tune_ref_entry *tref = tune_ref_list;
-    struct tune_bool_entry *tbool = tune_bool_list;
+    static char buf[BUFFER_LEN];
 
     /* Treat default parameters as normal */
     TP_CLEAR_FLAG_DEFAULT(name);
 
-    if (!name) {
-        strcpyn(buf, sizeof(buf), "");
-        return (buf);
-    }
+    if (!name) return "";
 
-    /* @TODO This gets somewhat more simple if we use a unified struct. */
+    for (struct tune_entry *tent = tune_list; tent->name; tent++) {
+        if (!strcasecmp(name, tent->name)) {
+            strcpyn(buf, sizeof(buf), tune_entry_value(NOTHING, tent));
 
-    while (tstr->name) {
-        if (!strcasecmp(name, tstr->name)) {
-            if (tstr->readmlev > mlev)
-                return "";
-
-            return (*tstr->str);
+            return (tent->readmlev > mlev) ? "" : buf;
         }
-
-        tstr++;
-    }
-
-    while (ttim->name) {
-        if (!strcasecmp(name, ttim->name)) {
-            if (ttim->readmlev > mlev)
-                return "";
-
-            snprintf(buf, sizeof(buf), "%d", *ttim->tim);
-            return (buf);
-        }
-
-        ttim++;
-    }
-
-    while (tval->name) {
-        if (!strcasecmp(name, tval->name)) {
-            if (tval->readmlev > mlev)
-                return "";
-
-            snprintf(buf, sizeof(buf), "%d", *tval->val);
-            return (buf);
-        }
-
-        tval++;
-    }
-
-    while (tref->name) {
-        if (!strcasecmp(name, tref->name)) {
-            if (tref->readmlev > mlev)
-                return "";
-
-            snprintf(buf, sizeof(buf), "#%d", *tref->ref);
-            return (buf);
-        }
-
-        tref++;
-    }
-
-    while (tbool->name) {
-        if (!strcasecmp(name, tbool->name)) {
-            if (tbool->readmlev > mlev)
-                return "";
-
-            snprintf(buf, sizeof(buf), "%s", ((*tbool->boolval) ? "yes" : "no"));
-            return (buf);
-        }
-
-        tbool++;
     }
 
     /* Parameter was not found.  Return null string. */
-    strcpyn(buf, sizeof(buf), "");
-    return (buf);
+    return "";
 }
-
-/* @TODO Bug found: the definition of this function is surrounded by
- *       an ifdef MEMORY_CLEANUP, but the declaration is not.  This
- *       should cause a compile error if MEMORY_CLEANUP is not defined,
- *       or at least a warning.
- *
- *       I would recommend removing the #ifdef here altogether since
- *       the only place this is used (interface.c) has the ifdef already.
- *       Defining this will cause no harm if its not used.
- *
- *       Alternatively, because this is a void, the ifdef could be moved
- *       inside to make this a no-op when MEMORY_CLEANUP is not defined.
- */
-#ifdef MEMORY_CLEANUP
 
 /**
  * Free all tune parameters
@@ -671,17 +372,12 @@ tune_get_parmstring(const char *name, int mlev)
 void
 tune_freeparms()
 {
-    struct tune_str_entry *tstr = tune_str_list;
-
-    while (tstr->name) {
-        if (!tstr->isdefault) {
-            free((void *) *tstr->str);
+    for (struct tune_entry *tent = tune_list; tent->name; tent++) {
+        if (tent->type == TP_TYPE_STRING && !tent->isdefault) {
+            free((void *)*tent->currentval.s);
         }
-
-        tstr++;
     }
 }
-#endif
 
 /**
  * Sets a tune parameter and handles all the intricaties therein
@@ -707,12 +403,6 @@ tune_freeparms()
 int
 tune_setparm(dbref player, const char *parmname, const char *val, int mlev)
 {
-    struct tune_str_entry *tstr = tune_str_list;
-    struct tune_time_entry *ttim = tune_time_list;
-    struct tune_val_entry *tval = tune_val_list;
-    struct tune_ref_entry *tref = tune_ref_list;
-    struct tune_bool_entry *tbool = tune_bool_list;
-
     char buf[BUFFER_LEN];
     char *parmval;
     strcpyn(buf, sizeof(buf), val);
@@ -733,210 +423,98 @@ tune_setparm(dbref player, const char *parmname, const char *val, int mlev)
     if (!parmname)
         return TUNESET_UNKNOWN;
 
-    /* @TODO This is another place that will see massive simplification
-     *       with a unified struct.
-     */
-
-    while (tstr->name) {
-        if (!strcasecmp(parmname, tstr->name)) {
-            if (tstr->writemlev > mlev)
+    for (struct tune_entry *tent = tune_list; tent->name; tent++) {
+        if (!strcasecmp(parmname, tent->name)) {
+            if (tent->writemlev > mlev)
                 return TUNESET_DENIED;
 
             if (reset_default) {
                 /* Reset to default value */
-                if (!tstr->isdefault)
-                    free((void *) *tstr->str);
+                if (tent->type == TP_TYPE_STRING && !tent->isdefault)
+                    free((void *)*tent->currentval.s);
 
-                tstr->isdefault = 1;
-                *tstr->str = tstr->defaultstr;
-                return TUNESET_SUCCESS_DEFAULT;
-            } else {
-                /* Specify a new value */
-                if (!tstr->isnullable && !*parmval)
-                    return TUNESET_BADVAL;
+                tent->isdefault = 1;
 
-                if (!tstr->isdefault)
-                    free((void *) *tstr->str);
-
-                tstr->isdefault = 0;
-                *tstr->str = strdup(parmval);
-                return TUNESET_SUCCESS;
-            }
-        }
-
-        tstr++;
-    }
-
-    while (ttim->name) {
-        if (!strcasecmp(parmname, ttim->name)) {
-            if (ttim->writemlev > mlev)
-                return TUNESET_DENIED;
-
-            if (reset_default) {
-                /* Reset to default value */
-                ttim->isdefault = 1;
-                *ttim->tim = ttim->defaulttim;
-                return TUNESET_SUCCESS_DEFAULT;
-            } else {
-                /* Specify a new value */
-                int days, hrs, mins, secs, result;
-                char *end;
-
-                days = hrs = mins = secs = 0;
-                end = parmval + strlen(parmval) - 1;
-
-                switch (*end) {
-                    case 's':
-                    case 'S':
-                        *end = '\0';
-
-                        if (!number(parmval))
-                            return TUNESET_SYNTAX;
-
-                        secs = atoi(parmval);
-
-                        break;
-                    case 'm':
-                    case 'M':
-                        *end = '\0';
-
-                        if (!number(parmval))
-                            return TUNESET_SYNTAX;
-
-                        mins = atoi(parmval);
-
-                        break;
-                    case 'h':
-                    case 'H':
-                        *end = '\0';
-
-                        if (!number(parmval))
-                            return TUNESET_SYNTAX;
-
-                        hrs = atoi(parmval);
-
-                        break;
-                    case 'd':
-                    case 'D':
-                        *end = '\0';
-
-                        if (!number(parmval))
-                            return TUNESET_SYNTAX;
-
-                        days = atoi(parmval);
-
-                        break;
-                    default:
-                        result = sscanf(parmval, "%dd %2d:%2d:%2d", &days, &hrs, &mins, &secs);
-
-                        if (result != 4)
-                            return TUNESET_SYNTAX;
-
-                        break;
+                switch (tent->type) {
+                case TP_TYPE_STRING:
+                    *tent->currentval.s = tent->defaultval.s;
+                    break;
+                case TP_TYPE_TIMESPAN:
+                    *tent->currentval.t = tent->defaultval.t;
+                    break;
+                case TP_TYPE_INTEGER:
+                    *tent->currentval.n = tent->defaultval.n;
+                    break;
+                case TP_TYPE_DBREF:
+                    *tent->currentval.d = tent->defaultval.d;
+                    break;
+                case TP_TYPE_BOOLEAN:
+                    *tent->currentval.b = tent->defaultval.b;
+                    break;
                 }
 
-                /* New value success, clear default flag */
-                ttim->isdefault = 0;
-                *ttim->tim = (days * 86400) + (3600 * hrs) + (60 * mins) + secs;
-                return TUNESET_SUCCESS;
-            }
-        }
-
-        ttim++;
-    }
-
-    while (tval->name) {
-        if (!strcasecmp(parmname, tval->name)) {
-            if (tval->writemlev > mlev)
-                return TUNESET_DENIED;
-
-            if (reset_default) {
-                /* Reset to default value */
-                tval->isdefault = 1;
-                *tval->val = tval->defaultval;
-
                 return TUNESET_SUCCESS_DEFAULT;
-            } else {
-                /* Specify a new value */
+            }
+
+            /* Specify a new value */
+            if (!tent->isnullable && !*parmval)
+                return TUNESET_BADVAL;
+
+            if (tent->type == TP_TYPE_STRING && !tent->isdefault)
+                free((void *)*tent->currentval.s);
+
+            switch (tent->type) {
+            case TP_TYPE_STRING:
+                *tent->currentval.s = strdup(parmval);
+                break;
+            case TP_TYPE_TIMESPAN: {
+                int result = tune_timespan_seconds(parmval);
+
+                if (result == -1)
+                    return TUNESET_SYNTAX;
+
+                *tent->currentval.t = result;
+                break; }
+            case TP_TYPE_INTEGER:
                 if (!number(parmval))
                     return TUNESET_SYNTAX;
 
-                /* New value success, clear default flag */
-                tval->isdefault = 0;
-                *tval->val = atoi(parmval);
-                return TUNESET_SUCCESS;
-            }
-        }
-
-        tval++;
-    }
-
-    while (tref->name) {
-        if (!strcasecmp(parmname, tref->name)) {
-            if (tref->writemlev > mlev)
-                return TUNESET_DENIED;
-
-            if (reset_default) {
-                /* Reset to default value */
-                tref->isdefault = 1;
-                *tref->ref = tref->defaultref;
-                return TUNESET_SUCCESS_DEFAULT;
-            } else {
-                /* Specify a new value */
+                *tent->currentval.n = atoi(parmval);
+                break;
+            case TP_TYPE_DBREF: {
                 dbref obj;
                 struct match_data md;
 
                 init_match(NOTHING, player, parmval, NOTYPE, &md);
                 match_absolute(&md);
                 match_registered(&md);
+                match_player(&md);
+                match_me(&md);
+                match_here(&md);
 
                 if ((obj = match_result(&md)) == NOTHING)
                     return TUNESET_SYNTAX;
-
                 if (!ObjExists(obj))
                     return TUNESET_SYNTAX;
-
-                if (tref->typ != NOTYPE && Typeof(obj) != tref->typ)
+                if (tent->type != NOTYPE && Typeof(obj) != tent->objecttype)
                     return TUNESET_BADVAL;
 
-                /* New value success, clear default flag */
-                tref->isdefault = 0;
-                *tref->ref = obj;
-
-                return TUNESET_SUCCESS;
-            }
-        }
-
-        tref++;
-    }
-
-    while (tbool->name) {
-        if (!strcasecmp(parmname, tbool->name)) {
-            if (tbool->writemlev > mlev)
-                return TUNESET_DENIED;
-
-            if (reset_default) {
-                /* Reset to default value */
-                tbool->isdefault = 1;
-                *tbool->boolval = tbool->defaultbool;
-                return TUNESET_SUCCESS_DEFAULT;
-            } else {
-                /* Specify a new value */
-                if (*parmval == 'y' || *parmval == 'Y') {
-                    tbool->isdefault = 0;
-                    *tbool->boolval = 1;
-                } else if (*parmval == 'n' || *parmval == 'N') {
-                    tbool->isdefault = 0;
-                    *tbool->boolval = 0;
+                *tent->currentval.d = obj;
+                break; }
+            case TP_TYPE_BOOLEAN:
+                if (*parmval == 'y' || *parmval == 'Y' || *parmval == '1') {
+                    *tent->currentval.b = 1;
+                } else if (*parmval == 'n' || *parmval == 'N' || *parmval == '0') {
+                    *tent->currentval.b = 0;
                 } else {
                     return TUNESET_SYNTAX;
                 }
-
-                return TUNESET_SUCCESS;
+                break;
             }
-        }
 
-        tbool++;
+            tent->isdefault = 0;
+            return TUNESET_SUCCESS;
+        }
     }
 
     return TUNESET_UNKNOWN;
@@ -955,33 +533,30 @@ tune_setparm(dbref player, const char *parmname, const char *val, int mlev)
 void
 tune_load_parms_defaults()
 {
-    for (struct tune_str_entry *tstr = tune_str_list; tstr->name; tstr++) {
-        if (!tstr->isdefault) {
-            free((void *) *tstr->str);
+    for (struct tune_entry *tent = tune_list; tent->name; tent++) {
+        if (tent->currentval.s && !tent->isdefault) {
+            free((void *)*tent->currentval.s);
         }
 
-        tstr->isdefault = 1;
-        *tstr->str = tstr->defaultstr;
-    }
+        tent->isdefault = 1;
 
-    for (struct tune_time_entry *ttim = tune_time_list; ttim->name; ttim++) {
-        ttim->isdefault = 1;
-        *ttim->tim = ttim->defaulttim;
-    }
-
-    for (struct tune_val_entry *tval = tune_val_list; tval->name; tval++) {
-        tval->isdefault = 1;
-        *tval->val = tval->defaultval;
-    }
-
-    for (struct tune_ref_entry *tref = tune_ref_list; tref->name; tref++) {
-        tref->isdefault = 1;
-        *tref->ref = tref->defaultref;
-    }
-
-    for (struct tune_bool_entry *tbool = tune_bool_list; tbool->name; tbool++) {
-        tbool->isdefault = 1;
-        *tbool->boolval = tbool->defaultbool;
+        switch (tent->type) {
+        case TP_TYPE_STRING:
+            *tent->currentval.s = tent->defaultval.s;
+            break;
+        case TP_TYPE_TIMESPAN:
+            *tent->currentval.t = tent->defaultval.t;
+            break;
+        case TP_TYPE_INTEGER:
+            *tent->currentval.n = tent->defaultval.n;
+            break;
+        case TP_TYPE_DBREF:
+            *tent->currentval.d = tent->defaultval.d;
+            break;
+        case TP_TYPE_BOOLEAN:
+            *tent->currentval.b = tent->defaultval.b;
+            break;
+        }
     }
 }
 

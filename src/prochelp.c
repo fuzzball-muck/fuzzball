@@ -55,26 +55,14 @@ typedef struct {
 static void
 man_sysparm_list(FILE *f)
 {
-    for (struct tune_str_entry *tstr = tune_str_list; tstr->name; tstr++) {
-	fprintf(f, " (str)  %-25s - %s\n", tstr->name, tstr->label);
-    }
-    for (struct tune_time_entry *ttim = tune_time_list; ttim->name; ttim++) {
-	fprintf(f, " (time) %-25s - %s\n", ttim->name, ttim->label);
-    }
-    for (struct tune_val_entry *tval = tune_val_list; tval->name; tval++) {
-	fprintf(f, " (int)  %-25s - %s\n", tval->name, tval->label);
-    }
-    for (struct tune_ref_entry *tref = tune_ref_list; tref->name; tref++) {
-	fprintf(f, " (ref)  %-25s - %s\n", tref->name, tref->label);
-    }
-    for (struct tune_bool_entry *tbool = tune_bool_list; tbool->name; tbool++) {
-	fprintf(f, " (bool) %-25s - %s\n", tbool->name, tbool->label);
+    for (struct tune_entry *tent = tune_list; tent->name; tent++) {
+	fprintf(f, " %-6s %-25s - %s\n", str_tunetype[tent->type], tent->name, tent->label);
     }
 }
 
 static replacement replacements[] = {
     { "%%SYSPARM_LIST%%", man_sysparm_list },
-    { NULL, NULL }
+    { 0 }
 };
 
 static const char *title = "";

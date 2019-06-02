@@ -4429,14 +4429,42 @@ Checking an invalid parameter or a parameter requiring higher permissions
 than the program has will return an empty string.
 
 Parameters available:
+ (bool) 7bit_other_names          - Limit exit/room/muf names to 7-bit characters
+ (bool) 7bit_thing_names          - Limit thing names to 7-bit characters
+ (int)  addpennies_muf_mlev       - Mucker Level required to create/destroy pennies
+ (time) aging_time                - When to considered an object old and unused
+ (bool) allow_listeners           - Allow programs to listen to player output
+ (bool) allow_listeners_env       - Allow listeners down environment
+ (bool) allow_listeners_obj       - Allow objects to be listeners
+ (bool) allow_zombies             - Enable Zombie things to relay what they hear
+ (bool) autolink_actions          - Automatically link @actions to NIL
  (str)  autolook_cmd              - Room entry look command
+ (time) clean_interval            - Interval between memory/object cleanups
+ (int)  cmd_log_threshold_msec    - Log commands that take longer than X millisecs
+ (int)  command_burst_size        - Max. commands per burst before limiter engages
+ (int)  command_time_msec         - Millisecs per spam limiter time period
+ (int)  commands_per_time         - Commands allowed per time period during limit
+ (bool) compatible_priorities     - Use legacy exit priority levels on things
+ (bool) consistent_lock_source    - Maintain trigger as lock source in TESTLOCK
  (str)  cpennies                  - Currency name, capitalized, plural
  (str)  cpenny                    - Currency name, capitalized
- (str)  pennies                   - Currency name, plural
- (str)  penny                     - Currency name
+ (bool) dark_sleepers             - Make sleeping players dark
+ (bool) dbdump_warning            - Enable warnings for upcoming database dumps
+ (ref)  default_room_parent       - Place to parent new rooms to
+ (str)  description_default       - Default description
+ (bool) diskbase_propvals         - Enable property value diskbasing (req. restart)
+ (bool) do_mpi_parsing            - Parse MPI strings in messages
+ (time) dump_interval             - Interval between dumps
+ (time) dump_warntime             - Interval between warning and dump
  (str)  dumpdone_mesg             - Database dump finished message
+ (bool) dumpdone_warning          - Notify when database dump complete
  (str)  dumping_mesg              - Database dump started message
- (str)  dumpwarn_mesg             - Database dump warning message
+ (str)  dumpwarn_mesg             - Database dump finished message
+ (bool) enable_home               - Enable 'home' command
+ (bool) enable_prefix             - Enable prefix actions
+ (int)  exit_cost                 - Cost to create an exit
+ (bool) exit_darking              - Allow players to set exits dark
+ (bool) expanded_debug_trace      - MUF debug trace shows array contents
  (str)  file_connection_help      - 'help' before login
  (str)  file_credits              - Acknowledgements
  (str)  file_editor_help          - Editor help
@@ -4463,124 +4491,96 @@ Parameters available:
  (str)  file_news                 - 'news' main content
  (str)  file_news_dir             - 'news' topic directory
  (str)  file_welcome_screen       - Opening screen
- (str)  idle_boot_mesg            - Boot message given to users idling out
- (str)  description_default       - Default description
- (str)  huh_mesg                  - Unrecognized command warning
- (str)  leave_mesg                - Logoff message for QUIT
- (str)  muckname                  - Name of the MUCK
- (str)  playermax_bootmesg        - Max. players connection error message
- (str)  playermax_warnmesg        - Max. players connection login warning
- (str)  gender_prop               - Property name used for pronoun substitutions
- (str)  register_mesg             - Login registration denied message
- (str)  ssl_cert_file             - Path to SSL certificate .pem
- (str)  ssl_key_file              - Path to SSL private key .pem
- (str)  ssl_keyfile_passwd        - Password for SSL private key file
- (str)  ssl_cipher_preference_list - Allowed OpenSSL cipher list
- (str)  ssl_min_protocol_version  - Min. allowed SSL protocol version for clients
- (str)  new_program_flags         - Initial flags for newly created programs
- (str)  pcreate_flags             - Initial flags for newly created players
- (str)  reserved_names            - String-match list of reserved names
- (str)  reserved_player_names     - String-match list of reserved player names
- (time) aging_time                - When to considered an object old and unused
- (time) dump_interval             - Interval between dumps
- (time) dump_warntime             - Interval between warning and dump
- (time) idle_ping_time            - Server side keepalive time in seconds
- (time) maxidle                   - Maximum idle time before booting
- (time) clean_interval            - Interval between memory/object cleanups
- (time) pname_history_threshold   - Length of player name change history
- (int)  player_name_limit         - Limit on player name length
- (int)  exit_cost                 - Cost to create an exit
- (int)  link_cost                 - Cost to link an exit
- (int)  lookup_cost               - Cost to lookup a player name
- (int)  max_object_endowment      - Max. value of an object
- (int)  object_cost               - Cost to create an object
- (int)  room_cost                 - Cost to create a room
- (int)  max_pennies               - Max. pennies a player can own
- (int)  penny_rate                - Avg. moves between finding currency
- (int)  start_pennies             - Player starting currency count
- (int)  listen_mlev               - Mucker Level required for Listener programs
- (int)  cmd_log_threshold_msec    - Log commands that take longer than X millisecs
- (int)  max_force_level           - Max. number of forces processed within a command
- (int)  mpi_max_commands          - Max. number of uninterruptable MPI commands
- (int)  addpennies_muf_mlev       - Mucker Level required to create/destroy pennies
- (int)  instr_slice               - Max. uninterrupted instructions per timeslice
- (int)  max_instr_count           - Max. MUF instruction run length for ML1
- (int)  max_ml4_preempt_count     - Max. MUF preempt instruction run length for ML4, (0 = no limit)
- (int)  max_ml4_nested_interp_loop_count - Max. MUF preempt interp loop nesting level for ML4 (0 = no limit)
- (int)  max_nested_interp_loop_count - Max. MUF preempt interp loop nesting level
- (int)  max_plyr_processes        - Concurrent processes allowed per player
- (int)  max_process_limit         - Total concurrent processes allowed on system
- (int)  mcp_muf_mlev              - Mucker Level required to use MCP
- (int)  movepennies_muf_mlev      - Mucker Level required to move pennies non-destructively
- (int)  pennies_muf_mlev          - Mucker Level required to read the value of pennies, settings above 1 disable {money}
- (int)  process_timer_limit       - Max. timers per process
- (int)  userlog_mlev              - Mucker Level required to write to userlog
- (int)  playermax_limit           - Max. player connections allowed
- (int)  command_burst_size        - Max. commands per burst before limiter engages
- (int)  command_time_msec         - Millisecs per spam limiter time period
- (int)  commands_per_time         - Commands allowed per time period during limit
- (int)  max_output                - Max. output buffer size
+ (bool) force_mlev1_name_notify   - MUF notify prepends username for ML1 programs
  (int)  free_frames_pool          - Size of allocated MUF process frame pool
- (int)  max_loaded_objs           - Max. percent of proploaded database objects
- (int)  pause_min                 - Min. millisecs between MUF input/output timeslices
- (ref)  default_room_parent       - Place to parent new rooms to
- (ref)  lost_and_found            - Place for things without a home
- (ref)  player_start              - Home where new players start
- (ref)  toad_default_recipient    - Default owner for @toaded player's things
- (bool) 7bit_thing_names          - Limit thing names to 7-bit characters
- (bool) 7bit_other_names          - Limit exit/room/muf names to 7-bit characters
- (bool) enable_home               - Enable 'home' command
- (bool) enable_prefix             - Enable prefix actions
- (bool) recognize_null_command    - Recognize null command
- (bool) verbose_clone             - Show more information when using @clone command
- (bool) verbose_examine           - Show more information when using examine command
- (bool) dark_sleepers             - Make sleeping players dark
- (bool) exit_darking              - Allow players to set exits dark
- (bool) thing_darking             - Allow players to set things dark
- (bool) who_hides_dark            - Hide dark players from WHO list
- (bool) compatible_priorities     - Use legacy exit priority levels on things
- (bool) realms_control            - Enable support for realm wizzes
- (bool) toad_recycle              - Recycle newly-created toads
- (bool) diskbase_propvals         - Enable property value diskbasing (req. restart)
- (bool) dbdump_warning            - Enable warnings for upcoming database dumps
- (bool) dumpdone_warning          - Notify when database dump complete
- (bool) starttls_allow            - Enable TELNET STARTTLS encryption on plaintext port
- (bool) idleboot                  - Enable booting of idle players
+ (str)  gender_prop               - Property name used for pronoun substitutions
+ (str)  huh_mesg                  - Unrecognized command warning
+ (str)  idle_boot_mesg            - Boot message given to users idling out
  (bool) idle_ping_enable          - Enable server side keepalive pings
- (bool) allow_listeners           - Allow programs to listen to player output
- (bool) allow_listeners_env       - Allow listeners down environment
- (bool) allow_listeners_obj       - Allow objects to be listeners
+ (time) idle_ping_time            - Server side keepalive time in seconds
+ (bool) idleboot                  - Enable booting of idle players
+ (bool) ignore_bidirectional      - Enable bidirectional ignore
+ (bool) ignore_support            - Enable support for @ignoring players
+ (int)  instr_slice               - Max. uninterrupted instructions per timeslice
+ (str)  leave_mesg                - Logoff message for QUIT
+ (int)  link_cost                 - Cost to link an exit
+ (int)  listen_mlev               - Mucker Level required for Listener programs
+ (bool) lock_envcheck             - Locks check environment for properties
  (bool) log_commands              - Log player commands
  (bool) log_failed_commands       - Log unrecognized commands
  (bool) log_interactive           - Log text sent to MUF
  (bool) log_programs              - Log programs every time they are saved
- (bool) autolink_actions          - Automatically link @actions to NIL
- (bool) allow_zombies             - Enable Zombie things to relay what they hear
- (bool) wiz_vehicles              - Only let Wizards set vehicle bits
- (bool) ignore_support            - Enable support for @ignoring players
- (bool) ignore_bidirectional      - Enable bidirectional @ignore
+ (int)  lookup_cost               - Cost to lookup a player name
+ (ref)  lost_and_found            - Place for things without a home
  (bool) m3_huh                    - Enable huh? to call an exit named "huh?" and set M3, with full command string
+ (int)  max_force_level           - Max. number of forces processed within a command
+ (int)  max_instr_count           - Max. MUF instruction run length for ML1
+ (int)  max_loaded_objs           - Max. percent of proploaded database objects
+ (int)  max_ml4_nested_interp_loop_count - Max. MUF preempt interp loop nesting level for ML4 (0 = no limit)
+ (int)  max_ml4_preempt_count     - Max. MUF preempt instruction run length for ML4, (0 = no limit)
+ (int)  max_nested_interp_loop_count - Max. MUF preempt interp loop nesting level
+ (int)  max_object_endowment      - Max. value of an object
+ (int)  max_output                - Max. output buffer size
+ (int)  max_pennies               - Max. pennies a player can own
+ (int)  max_plyr_processes        - Concurrent processes allowed per player
+ (int)  max_process_limit         - Total concurrent processes allowed on system
+ (time) maxidle                   - Maximum idle time before booting
+ (int)  mcp_muf_mlev              - Mucker Level required to use MCP
+ (int)  movepennies_muf_mlev      - Mucker Level required to move pennies non-destructively
+ (bool) mpi_continue_after_logout - Continue executing MPI after logout
+ (int)  mpi_max_commands          - Max. number of uninterruptable MPI commands
+ (str)  muckname                  - Name of the MUCK
+ (str)  new_program_flags         - Initial flags for newly created programs
+ (int)  object_cost               - Cost to create an object
+ (bool) optimize_muf              - Enable MUF bytecode optimizer
+ (int)  pause_min                 - Min. millisecs between MUF input/output timeslices
+ (str)  pcreate_flags             - Initial flags for newly created players
+ (str)  pennies                   - Currency name, plural
+ (int)  pennies_muf_mlev          - Mucker Level required to read the value of pennies, settings above 1 disable {money}
+ (str)  penny                     - Currency name
+ (int)  penny_rate                - Avg. moves between finding currency
+ (bool) periodic_program_purge    - Periodically free unused MUF programs
+ (int)  player_name_limit         - Limit on player name length
+ (ref)  player_start              - Home where new players start
+ (bool) playermax                 - Limit number of concurrent players allowed
+ (str)  playermax_bootmesg        - Max. players connection error message
+ (int)  playermax_limit           - Max. player connections allowed
+ (str)  playermax_warnmesg        - Max. players connection login warning
+ (bool) pname_history_reporting   - Report player name change history
+ (time) pname_history_threshold   - Length of player name change history
+ (int)  process_timer_limit       - Max. timers per process
+ (bool) quiet_moves               - Suppress basic arrive and depart notifications
+ (bool) realms_control            - Enable support for realm wizzes
+ (bool) recognize_null_command    - Recognize null command
+ (str)  register_mesg             - Login registration denied message
+ (bool) registration              - Require new players to register manually
+ (str)  reserved_names            - String-match list of reserved names
+ (str)  reserved_player_names     - String-match list of reserved player names
+ (int)  room_cost                 - Cost to create an room
+ (bool) secure_teleport           - Restrict actions to Jump_OK or controlled rooms
+ (bool) secure_thing_movement     - Moving things act like player
+ (bool) secure_who                - Disallow WHO command from login screen and programs
+ (bool) server_cipher_preference  - Honor server cipher preference order over client's
+ (bool) show_legacy_props         - Examining objects lists legacy props
+ (str)  ssl_cert_file             - Path to SSL certificate .pem
+ (str)  ssl_cipher_preference_list - Allowed OpenSSL cipher list
+ (str)  ssl_key_file              - Path to SSL private key .pem
+ (str)  ssl_keyfile_passwd        - Password for SSL private key file
+ (str)  ssl_min_protocol_version  - Min. allowed SSL protocol version for clients
+ (int)  start_pennies             - Player starting currency count
+ (bool) starttls_allow            - Enable TELNET STARTTLS encryption on plaintext port
  (bool) strict_god_priv           - Only God can touch God's objects
  (bool) tab_input_replaced_with_space - Change tab to space when processing input
  (bool) teleport_to_player        - Allow using exits linked to players
- (bool) secure_teleport           - Restrict actions to Jump_OK or controlled rooms
- (bool) secure_thing_movement     - Moving things act like player
- (bool) do_mpi_parsing            - Parse MPI strings in messages
- (bool) mpi_continue_after_logout - Continue executing MPI after logout
- (bool) consistent_lock_source    - Maintain trigger as lock source in TESTLOCK
- (bool) expanded_debug_trace      - MUF debug trace shows array contents
- (bool) force_mlev1_name_notify   - MUF notify prepends username for ML1 programs
- (bool) optimize_muf              - Enable MUF bytecode optimizer
- (bool) playermax                 - Limit number of concurrent players allowed
- (bool) quiet_moves               - Suppress basic arrive and depart notifications
- (bool) lock_envcheck             - Locks check environment for properties
- (bool) show_legacy_props         - Examining objects lists legacy props
- (bool) registration              - Require new players to register manually
- (bool) server_cipher_preference  - Honor server cipher preference order over client's
- (bool) periodic_program_purge    - Periodically free unused MUF programs
- (bool) pname_history_reporting   - Report player name change history
- (bool) secure_who                - Disallow WHO command from login screen and programs
+ (bool) thing_darking             - Allow players to set things dark
+ (ref)  toad_default_recipient    - Default owner for @toaded player's things
+ (bool) toad_recycle              - Recycle newly-created toads
  (bool) use_hostnames             - Resolve IP addresses into hostnames
+ (int)  userlog_mlev              - Mucker Level required to write to userlog
+ (bool) verbose_clone             - Show more information when using @clone command
+ (bool) verbose_examine           - Show more information when using examine command
+ (bool) who_hides_dark            - Hide dark players from WHO list
+ (bool) wiz_vehicles              - Only let Wizards set vehicle bits
 ~
 ~
 SYSPARM_ARRAY

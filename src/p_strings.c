@@ -1599,14 +1599,14 @@ prim_notify_exclude(PRIM_PROTOTYPE)
 	    }
 	}
 
-	if (tp_listeners) {
+	if (tp_allow_listeners) {
 	    for (tmp = 0, i = count; i-- > 0;) {
 		if (excluded[i] == where)
 		    tmp = 1;
 	    }
 	    if (!tmp)
 		notify_listeners(player, program, where, where, buf, 0);
-	    if (tp_listeners_env && !tmp) {
+	    if (tp_allow_listeners_env && !tmp) {
 		what = LOCATION(where);
 		for (; what != NOTHING; what = LOCATION(what))
 		    notify_listeners(player, program, what, where, buf, 0);
@@ -1644,9 +1644,9 @@ prim_otell(PRIM_PROTOTYPE)
 	}
     }
 
-    if (tp_listeners) {
+    if (tp_allow_listeners) {
 	notify_listeners(player, program, where, where, buf, 0);
-	if (tp_listeners_env) {
+	if (tp_allow_listeners_env) {
 	    for (what = LOCATION(where); what != NOTHING; what = LOCATION(what)) {
 		notify_listeners(player, program, what, where, buf, 0);
 	    }
@@ -2637,7 +2637,7 @@ prim_notify_secure(PRIM_PROTOTYPE)
 	}
     }
 
-    if (tp_listeners && tp_listeners_obj) {
+    if (tp_allow_listeners && tp_allow_listeners_obj) {
 	listenqueue(-1, player, LOCATION(ref), ref, ref, program, LISTEN_PROPQUEUE,
 		    oper1->data.string->data, tp_listen_mlev, 1, 0);
 	listenqueue(-1, player, LOCATION(ref), ref, ref, program, WLISTEN_PROPQUEUE,
