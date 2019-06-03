@@ -35,8 +35,8 @@ void listenqueue(int descr, dbref player, dbref where, dbref trigger, dbref what
                         dbref xclude, const char *propname, const char *toparg, int mlev,
                         int mt, int mpi_p);
 int in_timequeue(int pid);
-time_t next_event_time(void);
-void next_timequeue_event(void);
+time_t next_event_time(time_t now);
+void next_timequeue_event(time_t now);
 void propqueue(int descr, dbref player, dbref where, dbref trigger, dbref what,
                       dbref xclude, const char *propname, const char *toparg, int mlev,
                       int mt);

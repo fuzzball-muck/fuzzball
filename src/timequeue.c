@@ -528,19 +528,16 @@ handle_read_event(int descr, dbref player, const char *command)
 }
 
 void
-next_timequeue_event(void)
+next_timequeue_event(time_t now)
 {
     struct frame *tmpfr;
     int tmpbl, tmpfg;
     timequeue lastevent, event;
     int maxruns = 0;
     int forced_pid = 0;
-    time_t rtime;
-
-    time(&rtime);
 
     lastevent = tqhead;
-    while ((lastevent) && (rtime >= lastevent->when) && (maxruns < 10)) {
+    while ((lastevent) && (now >= lastevent->when) && (maxruns < 10)) {
 	lastevent = lastevent->next;
 	maxruns++;
     }
@@ -669,20 +666,18 @@ timequeue_pid_frame(int pid)
 }
 
 time_t
-next_event_time(void)
+next_event_time(time_t now)
 {
-    time_t rtime = time((time_t *) NULL);
-
     if (tqhead) {
 	if (tqhead->when == -1) {
 	    return (-1L);
-	} else if (rtime >= tqhead->when) {
-	    return (0L);
+	} else if (now >= tqhead->when) {
+	    return 0L;
 	} else {
-	    return ((time_t) (tqhead->when - rtime));
+	    return ((time_t) (tqhead->when - now));
 	}
     }
-    return (-1L);
+    return -1L;
 }
 
 /* Checks the MUF timequeue for address references on the stack or */
