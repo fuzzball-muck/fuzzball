@@ -4639,6 +4639,12 @@ C17/C18) standard: some MUCKs may have more conversion specifiers available.
 ~~alsosee FMTSTRING
 ~
 ~
+CONVTIME
+CONVTIME (s -- i) 
+
+  Converts "HH:MM:SS Mo/Dy/Yr" format time string to systime seconds.
+~
+~
 SLEEP
 SLEEP (i -- )
 

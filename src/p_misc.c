@@ -165,6 +165,24 @@ prim_timefmt(PRIM_PROTOTYPE)
 }
 
 void
+prim_convtime(PRIM_PROTOTYPE)
+{
+    char *error = 0;
+
+    CHECKOP(1);
+    oper1 = POP();
+    if (oper1->type != PROG_STRING)
+        abort_interp("Invalid argument");
+
+    time_t seconds = time_string_to_seconds(oper1->data.string->data, &error);
+
+    if (error)
+        abort_interp(error);
+
+    PushInt(seconds);
+}
+
+void
 prim_userlog(PRIM_PROTOTYPE)
 {
     CHECKOP(1);

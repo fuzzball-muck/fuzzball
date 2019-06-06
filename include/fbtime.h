@@ -163,4 +163,13 @@ void ts_newobject(dbref thing);
  */
 void ts_useobject(dbref thing);
 
+/**
+ * Convert time string from "HH:MM:SS Mo/Dy/Yr" format to a number of seconds.
+ *
+ * @param string the string to convert
+ * @parm[out] error the error message, if any
+ * @return the time in seconds
+ */
+time_t time_string_to_seconds(char *string, char **error);
+
 #endif /* !FBTIME_H */

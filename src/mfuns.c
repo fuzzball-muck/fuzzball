@@ -1546,44 +1546,20 @@ mfn_ftime(MFUNARGS)
     return buf;
 }
 
-
 const char *
 mfn_convtime(MFUNARGS)
 {
-    struct tm otm;
-    int mo, dy, yr, hr, mn, sc;
+    char *error = 0;
 
-    yr = 70;
-    mo = dy = 1;
-    hr = mn = sc = 0;
-    if (sscanf(argv[0], "%d:%d:%d %d/%d/%d", &hr, &mn, &sc, &mo, &dy, &yr) != 6)
-	ABORT_MPI("CONVTIME", "Needs HH:MM:SS MO/DY/YR time string format.");
-    if (hr < 0 || hr > 23)
-	ABORT_MPI("CONVTIME", "Bad Hour");
-    if (mn < 0 || mn > 59)
-	ABORT_MPI("CONVTIME", "Bad Minute");
-    if (sc < 0 || sc > 59)
-	ABORT_MPI("CONVTIME", "Bad Second");
-    if (yr < 0 || yr > 99)
-	ABORT_MPI("CONVTIME", "Bad Year");
-    if (mo < 1 || mo > 12)
-	ABORT_MPI("CONVTIME", "Bad Month");
-    if (dy < 1 || dy > 31)
-	ABORT_MPI("CONVTIME", "Bad Day");
-    otm.tm_mon = mo - 1;
-    otm.tm_mday = dy;
-    otm.tm_hour = hr;
-    otm.tm_min = mn;
-    otm.tm_sec = sc;
-    otm.tm_year = (yr >= 70) ? yr : (yr + 100);
-#ifdef SUN_OS
-    snprintf(buf, BUFFER_LEN, "%ld", timelocal(&otm));
-#else
-    snprintf(buf, BUFFER_LEN, "%lld", (long long) mktime(&otm));
-#endif
+    time_t seconds = time_string_to_seconds(argv[0], &error);
+
+    if (error)
+        ABORT_MPI("CONVTIME", error);
+
+    snprintf(buf, BUFFER_LEN, "%lld", (long long)seconds);
+    
     return buf;
 }
-
 
 const char *
 mfn_ltimestr(MFUNARGS)

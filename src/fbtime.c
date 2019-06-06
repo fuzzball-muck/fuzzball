@@ -330,3 +330,43 @@ timestr_long(long dtime)
 
     return buf;
 }
+
+/**
+ * Convert time string from "HH:MM:SS Mo/Dy/Yr" format to a number of seconds.
+ *
+ * @param string the string to convert
+ * @parm[out] error the error message, if any
+ * @return the time in seconds
+ */
+time_t
+time_string_to_seconds(char *string, char **error)
+{
+    struct tm otm;
+    int mo = 1, dy = 1, yr = 70, hr = 0, mn = 0, sc = 0;
+
+    *error = 0;
+
+    if (sscanf(string, "%d:%d:%d %d/%d/%d", &hr, &mn, &sc, &mo, &dy, &yr) != 6)
+        *error = "Needs HH:MM:SS MO/DY/YR time string format.";
+    else if (hr < 0 || hr > 23)
+        *error = "Bad Hour";
+    else if (mn < 0 || mn > 59)
+        *error = "Bad Minute";
+    else if (sc < 0 || sc > 59)
+        *error = "Bad Second";
+    else if (mo < 1 || mo > 12)
+        *error = "Bad Month";
+    else if (dy < 1 || dy > 31)
+        *error = "Bad Day";
+    else if (yr < 0 || yr > 99)
+        *error = "Bad Year";
+
+    otm.tm_mon = mo - 1;
+    otm.tm_mday = dy;
+    otm.tm_hour = hr;
+    otm.tm_min = mn;
+    otm.tm_sec = sc;
+    otm.tm_year = (yr >= 70) ? yr : (yr + 100);
+
+    return mktime(&otm);
+}

@@ -104,8 +104,8 @@ C's
   concount           condbref           condescr           conhost
   conidle            connect            connotify          contents
   contents_array     contime            continue           controls
-  conuser            copyobj            copyplayer         cos
-  ctoi               
+  conuser            convtime           copyobj            copyplayer
+  cos                ctoi               
 
 D's
   date               dbcmp              dbref              dbref?
@@ -4968,8 +4968,9 @@ This primitive requires at least Mucker Level 3.
 Time Manipulation Operators|TimeOps
 Time Manipulation Operators
 
-date               gmtoffset          sleep              systime
-systime_precise    time               timefmt            timesplit
+convtime           date               gmtoffset          sleep
+systime            systime_precise    time               timefmt
+timesplit          
 
 ~----------------------------------------------------------------------------
 ~
@@ -5077,6 +5078,12 @@ with the time.  The format string is ASCII text with formatting commands:
 list of conversion specifiers (formatting commands) is from the C (draft
 C17/C18) standard: some MUCKs may have more conversion specifiers available.
 Also see: FMTSTRING
+~
+~
+CONVTIME
+CONVTIME (s -- i) 
+
+  Converts "HH:MM:SS Mo/Dy/Yr" format time string to systime seconds.
 ~
 ~
 SLEEP
