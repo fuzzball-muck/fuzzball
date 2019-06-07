@@ -30,9 +30,11 @@ int         tp_command_burst_size;
 int         tp_command_time_msec;
 int         tp_commands_per_time;
 bool        tp_compatible_priorities;
+const char *tp_connect_fail_mesg;
 bool        tp_consistent_lock_source;
 const char *tp_cpennies;
 const char *tp_cpenny;
+const char *tp_create_fail_mesg;
 bool        tp_dark_sleepers;
 bool        tp_dbdump_warning;
 dbref       tp_default_room_parent;
@@ -216,6 +218,9 @@ struct tune_entry tune_list[] = {
     { "compatible_priorities", "Use legacy exit priority levels on things", "Database", "", TP_TYPE_BOOLEAN,
         .defaultval.b=true,
         .currentval.b=&tp_compatible_priorities, 0, MLEV_WIZARD, true },
+    { "connect_fail_mesg", "Failed player connect message", "Connecting", "", TP_TYPE_STRING,
+        .defaultval.s="Either that player does not exist, or has a different password.",
+        .currentval.s=&tp_connect_fail_mesg, 0, MLEV_WIZARD, true, true },
     { "consistent_lock_source", "Maintain trigger as lock source in TESTLOCK", "MUF", "", TP_TYPE_BOOLEAN,
         .defaultval.b=true,
         .currentval.b=&tp_consistent_lock_source, 0, MLEV_WIZARD, true },
@@ -225,6 +230,9 @@ struct tune_entry tune_list[] = {
     { "cpenny", "Currency name, capitalized", "Currency", "", TP_TYPE_STRING,
         .defaultval.s="Penny",
         .currentval.s=&tp_cpenny, 0, MLEV_WIZARD, true },
+    { "create_fail_mesg", "Failed player create message", "Connecting", "", TP_TYPE_STRING,
+        .defaultval.s="Either there is already a player with that name, or that name is illegal.",
+        .currentval.s=&tp_create_fail_mesg, 0, MLEV_WIZARD, true, true },
     { "dark_sleepers", "Make sleeping players dark", "Dark", "", TP_TYPE_BOOLEAN,
         .defaultval.b=false,
         .currentval.b=&tp_dark_sleepers, 0, MLEV_WIZARD, true },
@@ -507,16 +515,16 @@ struct tune_entry tune_list[] = {
     { "player_start", "Home where new players start", "Database", "", TP_TYPE_DBREF,
         .defaultval.d=GLOBAL_ENVIRONMENT,
         .currentval.d=&tp_player_start, 0, MLEV_WIZARD, true, false, TYPE_ROOM },
-    { "playermax", "Limit number of concurrent players allowed", "Player Max", "", TP_TYPE_BOOLEAN,
+    { "playermax", "Limit number of concurrent players allowed", "Connecting", "", TP_TYPE_BOOLEAN,
         .defaultval.b=false,
         .currentval.b=&tp_playermax, 0, MLEV_WIZARD, true },
-    { "playermax_bootmesg", "Max. players connection error message", "Player Max", "", TP_TYPE_STRING,
+    { "playermax_bootmesg", "Max. players connection error message", "Connecting", "", TP_TYPE_STRING,
         .defaultval.s="Sorry, but there are too many players online.  Please try reconnecting in a few minutes.",
         .currentval.s=&tp_playermax_bootmesg, 0, MLEV_WIZARD, true },
-    { "playermax_limit", "Max. player connections allowed", "Player Max", "", TP_TYPE_INTEGER,
+    { "playermax_limit", "Max. player connections allowed", "Connecting", "", TP_TYPE_INTEGER,
         .defaultval.n=56,
         .currentval.n=&tp_playermax_limit, 0, MLEV_WIZARD, true },
-    { "playermax_warnmesg", "Max. players connection login warning", "Player Max", "", TP_TYPE_STRING,
+    { "playermax_warnmesg", "Max. players connection login warning", "Connecting", "", TP_TYPE_STRING,
         .defaultval.s="You likely won't be able to connect right now, since too many players are online.",
         .currentval.s=&tp_playermax_warnmesg, 0, MLEV_WIZARD, true },
     { "pname_history_reporting", "Report player name change history", "Tuning", "", TP_TYPE_BOOLEAN,
@@ -537,10 +545,10 @@ struct tune_entry tune_list[] = {
     { "recognize_null_command", "Recognize null command", "Commands", "", TP_TYPE_BOOLEAN,
         .defaultval.b=false,
         .currentval.b=&tp_recognize_null_command, MLEV_WIZARD, MLEV_WIZARD, true },
-    { "register_mesg", "Login registration denied message", "Registration", "", TP_TYPE_STRING,
+    { "register_mesg", "Login registration denied message", "Connecting", "", TP_TYPE_STRING,
         .defaultval.s="Sorry, you can get a character by e-mailing XXXX@machine.net.address with a charname and password.",
         .currentval.s=&tp_register_mesg, 0, MLEV_WIZARD, true },
-    { "registration", "Require new players to register manually", "Registration", "", TP_TYPE_BOOLEAN,
+    { "registration", "Require new players to register manually", "Connecting", "", TP_TYPE_BOOLEAN,
         .defaultval.b=true,
         .currentval.b=&tp_registration, 0, MLEV_WIZARD, true },
     { "reserved_names", "String-match list of reserved names", "Database", "", TP_TYPE_STRING,

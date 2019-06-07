@@ -4445,9 +4445,11 @@ Parameters available:
  (int)  command_time_msec         - Millisecs per spam limiter time period
  (int)  commands_per_time         - Commands allowed per time period during limit
  (bool) compatible_priorities     - Use legacy exit priority levels on things
+ (str)  connect_fail_mesg         - Failed player connect message
  (bool) consistent_lock_source    - Maintain trigger as lock source in TESTLOCK
  (str)  cpennies                  - Currency name, capitalized, plural
  (str)  cpenny                    - Currency name, capitalized
+ (str)  create_fail_mesg          - Failed player create message
  (bool) dark_sleepers             - Make sleeping players dark
  (bool) dbdump_warning            - Enable warnings for upcoming database dumps
  (ref)  default_room_parent       - Place to parent new rooms to

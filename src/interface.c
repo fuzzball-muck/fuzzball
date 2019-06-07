@@ -58,26 +58,6 @@
 # endif
 #endif
 
-/*
- * @TODO Low priority ... but these messages could easily be @tune
- *       variables.  It would be a very primitive way to support
- *       translation for instance :)
- */
-
-/**
- * @private
- * @var Constant message for failed 'connect' command.
- */
-static const char *connect_fail =
-    "Either that player does not exist, or has a different password.\r\n";
-
-/**
- * @private
- * @var Constant message for failed 'create' command.
- */
-static const char *create_fail =
-    "Either there is already a player with that name, or that name is illegal.\r\n";
-
 #ifdef WIN32
 typedef uint32_t in_addr_t;
 typedef uint16_t in_port_t;
@@ -1748,7 +1728,8 @@ check_connect(struct descriptor_data *d, const char *msg)
         player = connect_player(user, password);
 
         if (player == NOTHING) {
-            queue_ansi(d, connect_fail);
+            queue_ansi(d, tp_connect_fail_mesg);
+            queue_write(d, "\r\n", 2);
             log_status("FAILED CONNECT %s on descriptor %d", user,
                        d->descriptor);
         } else {
@@ -1819,7 +1800,8 @@ check_connect(struct descriptor_data *d, const char *msg)
                 player = create_player(user, password);
 
                 if (player == NOTHING) {
-                    queue_ansi(d, create_fail);
+                    queue_ansi(d, tp_create_fail_mesg);
+                    queue_write(d, "\r\n", 2);
                     log_status("FAILED CREATE %s on descriptor %d", user,
                                d->descriptor);
                 } else {
