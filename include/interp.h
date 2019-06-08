@@ -1,3 +1,11 @@
+/** @file interp.h
+ *
+ * Header that supports the MUF interpreter.  This has a lot of #defines,
+ * data structures, and functions that support MUF interpretation.
+ *
+ * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
+ */
+
 #ifndef INTERP_H
 #define INTERP_H
 
@@ -12,6 +20,8 @@
 /*
  * Some icky machine/compiler #defines. --jim
  * I think we can get rid of them though.  TODO!  --mainecoon
+ *
+ * @TODO Get rid of these or move 'em to one of the config files
  */
 #ifdef MIPS
 typedef char *voidptr;
@@ -21,7 +31,7 @@ typedef char *voidptr;
 typedef void *voidptr;
 
 #define MIPSCAST
-#endif
+#endif /* !MIPS */
 
 void RCLEAR(struct inst *oper, char *file, int line);
 
@@ -32,37 +42,60 @@ void RCLEAR(struct inst *oper, char *file, int line);
 
 typedef struct inst vars[MAX_VAR];
 
+/*
+ * This structure keeps track of 'for' and 'foreach' structures to
+ * support keeping track of the iteration variable, supporting
+ * nested fors.
+ */
 struct forvars {
-    int didfirst;
-    struct inst cur;
-    struct inst end;
-    int step;
-    struct forvars *next;
+    int didfirst;       /* Boolean, initally false.  Done first iteration? */
+    struct inst cur;    /* Current loop value                              */
+    struct inst end;    /* The target end value                            */
+    int step;           /* The step increment                              */
+    struct forvars *next;   /* Linked list support for nesting             */
 };
 
+/*
+ * This structure keeps track of try/catch blocks to support nesting and
+ * to keep track of various try related issues.
+ */
 struct tryvars {
-    int depth;
-    int call_level;
-    int for_count;
-    struct inst *addr;
-    struct tryvars *next;
+    int depth;              /* The stack lock depth of the try block       */
+    int call_level;         /* The system stack top at the TRY             */
+    int for_count;          /* How many for loops are in this try          */
+    struct inst *addr;      /* Pointer to program counter instruction data */
+    struct tryvars *next;   /* Linked list support for nested try's        */
 };
 
+/*
+ * A program's "argument stack" which is the MUF stack from the developer's
+ * perspective.
+ */
 struct stack {
-    int top;
-    struct inst st[STACK_SIZE];
+    int top;                    /* Top index number in stack */
+    struct inst st[STACK_SIZE]; /* The stack itself          */
 };
 
+/*
+ * A program's "system stack" which is used to track program execution
+ * such as function calls.
+ */
 struct sysstack {
-    int top;
-    struct stack_addr st[STACK_SIZE];
+    int top;                            /* Top index number in stack */
+    struct stack_addr st[STACK_SIZE];   /* The stack itself          */
 };
 
+/*
+ * The call stack is the stack of programs that have been CALL'd
+ */
 struct callstack {
     int top;
     dbref st[STACK_SIZE];
 };
 
+/*
+ * Keep track of local variables for each program
+ */
 struct localvars {
     struct localvars *next;
     struct localvars **prev;
@@ -70,152 +103,217 @@ struct localvars {
     vars lvars;
 };
 
+/*
+ * Stack to keep track of variables in for loop.  There's one entry for
+ * each level of for.
+ */
 struct forstack {
-    int top;
-    struct forvars *st;
+    int top;                /* Count of how many levels of for's we have */
+    struct forvars *st;     /* The linked list that is the stack         */
 };
 
+/*
+ * Stack to keep track of try/catch block nesting
+ */
 struct trystack {
-    int top;
-    struct tryvars *st;
+    int top;                /* Count of how many levels of try's we have */
+    struct tryvars *st;     /* The linked list that is the stack         */
 };
 
+/* Maximum debug break points allowed */
 #define MAX_BREAKS 16
+
+/*
+ * Note: the :1 here is to indicate bit fields.  This is a way to make these
+ * unsigned fields act like booleans, thus taking less space.
+ *
+ * This keeps track of MUF debugger operational 'stuff'.
+ */
 struct debuggerdata {
-    unsigned debugging:1;	/* if set, this frame is being debugged */
-    unsigned force_debugging:1;	/* if set, debugger is active, even if not set Z */
-    unsigned bypass:1;		/* if set, bypass breakpoint on starting instr */
-    unsigned isread:1;		/* if set, the prog is trying to do a read */
-    unsigned showstack:1;	/* if set, show stack debug line, each inst. */
-    unsigned dosyspop:1;	/* if set, fix up system stack before returning. */
-    int lastlisted;		/* last listed line */
-    char *lastcmd;		/* last executed debugger command */
-    short breaknum;		/* the breakpoint that was just caught on */
+    unsigned debugging:1;       /* if set, this frame is being debugged */
+    unsigned force_debugging:1; /* if set, debugger is active, even if not Z */
+    unsigned bypass:1;          /* if set, bypass breakpoint on starting instr */
+    unsigned isread:1;          /* if set, the prog is trying to do a read */
+    unsigned showstack:1;       /* if set, show stack debug line, each inst. */
+    unsigned dosyspop:1;        /* if set, fix up system stack before return. */
+    int lastlisted;             /* last listed line */
+    char *lastcmd;              /* last executed debugger command */
+    short breaknum;             /* the breakpoint that was just caught on */
 
-    dbref lastproglisted;	/* What program's text was last loaded to list? */
-    struct line *proglines;	/* The actual program text last loaded to list. */
+    dbref lastproglisted;       /* What program's text was last loaded to list? */
+    struct line *proglines;     /* The actual program text last loaded to list. */
 
-    short count;		/* how many breakpoints are currently set */
-    short temp[MAX_BREAKS];	/* is this a temp breakpoint? */
-    short level[MAX_BREAKS];	/* level breakpnts.  If -1, no check. */
-    struct inst *lastpc;	/* Last inst interped.  For inst changes. */
-    struct inst *pc[MAX_BREAKS];	/* pc breakpoint.  If null, no check. */
-    int pccount[MAX_BREAKS];	/* how many insts to interp.  -2 for inf. */
-    int lastline;		/* Last line interped.  For line changes. */
-    int line[MAX_BREAKS];	/* line breakpts.  -1 no check. */
-    int linecount[MAX_BREAKS];	/* how many lines to interp.  -2 for inf. */
-    dbref prog[MAX_BREAKS];	/* program that breakpoint is in. */
+    short count;                /* how many breakpoints are currently set */
+    short temp[MAX_BREAKS];     /* is this a temp breakpoint? */
+    short level[MAX_BREAKS];    /* level breakpnts.  If -1, no check. */
+    struct inst *lastpc;        /* Last inst interped.  For inst changes. */
+    struct inst *pc[MAX_BREAKS];    /* pc breakpoint.  If null, no check. */
+    int pccount[MAX_BREAKS];    /* how many insts to interp.  -2 for inf. */
+    int lastline;               /* Last line interped.  For line changes. */
+    int line[MAX_BREAKS];       /* line breakpts.  -1 no check. */
+    int linecount[MAX_BREAKS];  /* how many lines to interp.  -2 for inf. */
+    dbref prog[MAX_BREAKS];     /* program that breakpoint is in. */
 };
 
+/*
+ * For tracking variables within a function scope.  These scopes form a
+ * stack, hence the linked list.
+ */
 struct scopedvar_t {
-    int count;
-    const char **varnames;
-    struct scopedvar_t *next;
-    struct inst vars[1];
+    int count;                  /* Keep count of how many variables we have */
+    const char **varnames;      /* The names of each variable in an array   */
+    struct scopedvar_t *next;   /* Linked list of scoped vars               */
+    struct inst vars[1];        /* The variables in this scope              */
 };
 
+/*
+ * This is used by MCP-GUI.  It associates with "DLog Data" which seems
+ * to be like a session ID for MCP-GUI.
+ */
 struct dlogidlist {
-    struct dlogidlist *next;
-    char dlogid[32];
+    struct dlogidlist *next;    /* The linked list of dlogidlist items */
+    char dlogid[32];            /* This particular dlogid entry        */
 };
 
+/*
+ * This is used to implement WATCHPID which triggers events based on
+ * process exiting.
+ */
 struct mufwatchpidlist {
-    struct mufwatchpidlist *next;
-    int pid;
+    struct mufwatchpidlist *next;   /* Linked list implementation */
+    int pid;                        /* The PID watched/watching   */
 };
 
-#define STD_REGUID 0
-#define STD_SETUID 1
-#define STD_HARDUID 2
+/*
+ * These appear to be used by the interpreter to determine what UID
+ * settings to used.  In the DB these are implemented as flags.
+ */
+#define STD_REGUID  0   /* Regular UID settings     */
+#define STD_SETUID  1   /* Use UID of program owner */
+#define STD_HARDUID 2   /* Use UID of trigger owner */
 
+/*
+ * This is for having MUFs work with floating point error conditions.
+ */
 union error_mask {
     struct {
-        unsigned int div_zero:1;        /* Divide by zero */
-        unsigned int nan:1;     /* Result would not be a number */
-        unsigned int imaginary:1;       /* Result would be imaginary */
-        unsigned int f_bounds:1;        /* Float boundary error */
-        unsigned int i_bounds:1;        /* Integer boundary error */
+        unsigned int div_zero:1;    /* Divide by zero */
+        unsigned int nan:1;         /* Result would not be a number */
+        unsigned int imaginary:1;   /* Result would be imaginary */
+        unsigned int f_bounds:1;    /* Float boundary error */
+        unsigned int i_bounds:1;    /* Integer boundary error */
     } error_flags;
+
     int is_flags;
 };
 
-/* frame data structure necessary for executing programs */
+/* Frame data structure necessary for executing programs */
 struct frame {
-    struct frame *next;
-    struct sysstack system;	/* system stack */
-    struct stack argument;	/* argument stack */
+    struct frame *next;         /* Linked list implementation */
+    struct sysstack system;     /* system stack */
+    struct stack argument;      /* argument stack */
     struct callstack caller;	/* caller prog stack */
-    struct forstack fors;	/* for loop stack */
-    struct trystack trys;	/* try block stack */
-    struct localvars *lvars;	/* local variables */
-    vars variables;		/* global variables */
-    struct inst *pc;		/* next executing instruction */
-    short writeonly;		/* This program should not do reads */
-    short multitask;		/* This program's multitasking mode */
-    short timercount;		/* How many timers currently exist. */
-    short level;		/* prevent interp call loops */
-    int perms;			/* permissions restrictions on program */
-    short already_created;	/* this prog already created an object */
-    short been_background;	/* this prog has run in the background */
-    short skip_declare;		/* tells interp to skip next scoped var decl */
-    short wantsblanks;		/* specifies program will accept blank READs */
-    dbref trig;			/* triggering object */
-    dbref supplicant;		/* object for lock evaluation */
-    struct shared_string *cmd;	/* Original command passed to the program, vars[3] */
-    time_t started;		/* When this program started. */
-    int instcnt;		/* How many instructions have run. */
-    int pid;			/* what is the process id? */
-    char *errorstr;		/* the error string thrown */
-    char *errorinst;		/* the instruction name that threw an error */
-    dbref errorprog;		/* the program that threw an error */
-    int errorline;		/* the program line that threw an error */
-    int descr;			/* what is the descriptor that started this? */
-    void *rndbuf;		/* buffer for seedable random */
-    struct scopedvar_t *svars;	/* Variables with function scoping. */
-    struct debuggerdata brkpt;	/* info the debugger needs */
-    struct timeval proftime;	/* profiling timing code */
-    struct timeval totaltime;	/* profiling timing code */
-    struct mufevent *events;	/* MUF event list. */
-    struct dlogidlist *dlogids;	/* List of dlogids this frame uses. */
-    struct mufwatchpidlist *waiters;
-    struct mufwatchpidlist *waitees;
-    union error_mask error;
-    short pinning;		/* Whether new arrays/dicts should be pinned by default. */
+    struct forstack fors;       /* for loop stack */
+    struct trystack trys;       /* try block stack */
+    struct localvars *lvars;    /* local variables */
+    vars variables;             /* global variables */
+    struct inst *pc;            /* next executing instruction */
+    short writeonly;            /* This program should not do reads */
+    short multitask;            /* This program's multitasking mode */
+    short timercount;           /* How many timers currently exist. */
+    short level;                /* prevent interp call loops */
+    int perms;                  /* permissions restrictions on program */
+    short already_created;      /* this prog already created an object */
+    short been_background;      /* this prog has run in the background */
+    short skip_declare;         /* tells interp to skip next scoped var decl */
+    short wantsblanks;          /* specifies program will accept blank READs */
+    dbref trig;                 /* triggering object */
+    dbref supplicant;           /* object for lock evaluation */
+    struct shared_string *cmd;  /* Original command passed to the program, vars[3] */
+    time_t started;             /* When this program started. */
+    int instcnt;                /* How many instructions have run. */
+    int pid;                    /* what is the process id? */
+    char *errorstr;             /* the error string thrown */
+    char *errorinst;            /* the instruction name that threw an error */
+    dbref errorprog;            /* the program that threw an error */
+    int errorline;              /* the program line that threw an error */
+    int descr;                  /* what is the descriptor that started this? */
+    void *rndbuf;               /* buffer for seedable random */
+    struct scopedvar_t *svars;  /* Variables with function scoping. */
+    struct debuggerdata brkpt;  /* info the debugger needs */
+    struct timeval proftime;    /* profiling timing code */
+    struct timeval totaltime;   /* profiling timing code */
+    struct mufevent *events;    /* MUF event list. */
+    struct dlogidlist *dlogids; /* List of dlogids this frame uses. */
+    struct mufwatchpidlist *waiters;    /* MUFs waiting for a pid */
+    struct mufwatchpidlist *waitees;    /* MUFs being waited for  */
+    union error_mask error;     /* Floating point error mask */
+    short pinning;              /* Are arrays/dicts are be pinned by default? */
 #ifdef DEBUG
-    int expect_pop;
-    int actual_pop;
-    int expect_push_to;
+    int expect_pop;             /* Used to track expected number of POPs */
+    int actual_pop;             /* Actual number of pops */
+    int expect_push_to;         /* Expected number of push to's */
 #endif
-    stk_array_list array_active_list;
-    stk_array_list *prev_array_active_list;
+    stk_array_list array_active_list;       /* Active array list */
+    stk_array_list *prev_array_active_list; /* Previous active list */
 };
 
+/*
+ * Structure to keep track of public functions (basically library functions)
+ */
 struct publics {
-    char *subname;
-    int mlev;
+    char *subname;          /* Subroutine for this public */
+    int mlev;               /* This is either 4 or 1.  4 for wizard MUF */
+
     union {
-        struct inst *ptr;
-        int no;
+        struct inst *ptr;   /* A pointer to the entrypoint instruction */
+        int no;             /* Index into instruction array */
     } addr;
-    struct publics *next;
+
+    struct publics *next;   /* Next item on the linked list */
 };
 
+/*
+ * @TODO abort_loop and abort_loop_hard should be relocated to interp.c
+ *       because they wrap do_abort_loop which is a static in interp.c
+ */
+
+/**
+ * Handles an abort / exception in the interpreter loop, supporting try/catch
+ *
+ * This will either issue a 'break' or it will return 0
+ *
+ * @private
+ * @param S the message for aborting
+ * @param C1 instruction to clear or NULL
+ * @param C2 instruction to clear or NULL
+ */
 #define abort_loop(S, C1, C2) \
 { \
-	do_abort_loop(player, program, (S), fr, pc, atop, stop, (C1), (C2)); \
-	if (fr && fr->trys.top) \
-		break; \
-	else \
-		return 0; \
+    do_abort_loop(player, program, (S), fr, pc, atop, stop, (C1), (C2)); \
+    if (fr && fr->trys.top) \
+        break; \
+    else \
+        return 0; \
 }
 
+/**
+ * Handles an abort / exception in the interpreter loop, ignoring try/catch
+ *
+ * This will cause the function to return 0
+ *
+ * @private
+ * @param S the message for aborting
+ * @param C1 instruction to clear or NULL
+ * @param C2 instruction to clear or NULL
+ */
 #define abort_loop_hard(S, C1, C2) \
 { \
-	int tmptop = 0; \
-	if (fr) { tmptop = fr->trys.top; fr->trys.top = 0; } \
-	do_abort_loop(player, program, (S), fr, pc, atop, stop, (C1), (C2)); \
-	if (fr) fr->trys.top = tmptop; \
-	return 0; \
+    int tmptop = 0; \
+    if (fr) { tmptop = fr->trys.top; fr->trys.top = 0; } \
+    do_abort_loop(player, program, (S), fr, pc, atop, stop, (C1), (C2)); \
+    if (fr) fr->trys.top = tmptop; \
+    return 0; \
 }
 
 #ifdef DEBUG

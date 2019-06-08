@@ -1,42 +1,53 @@
+/** @file interface_ssl.h
+ *
+ * This file contains the declarations for the interface to the SSL library.
+ *
+ * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
+ */
+
 #ifndef INTERFACE_SSL_H
 #define INTERFACE_SSL_H
 
-// Needed for USE_SSL
+/* Needed for USE_SSL */
 #include "config.h"
 
 #ifdef USE_SSL
 
-// Needed for descriptor structure
+/* Needed for descriptor structure */
 #include "interface.h"
 
 # ifdef HAVE_OPENSSL
 #  include <openssl/ssl.h>
-// For nicer error messages
 #  include <openssl/err.h>
 # else
 #  include <ssl.h>
-// TODO: check if other SSL libraries provide this functionality
 # endif
 
-// Backwards-compatibility for valid SSL protocol versions that are not supported.
+/*
+ * Backwards-compatibility for valid SSL protocol versions that are
+ * not supported.
+ */
 #define SSL_UNSUPPORTED_PROTOCOL -2
 
 /*
  * Build a lookup table to convert protocol version string to integer
  *
- * Unfortunately OpenSSL lacks an easy way of pragmatically determining what protocols are
- * supported at runtime.  Thus, build a reference table according to compile-time constants.
- * Unavailable protocols are marked with SSL_UNSUPPORTED_PROTOCOL.
+ * Unfortunately OpenSSL lacks an easy way of pragmatically determining what
+ * protocols are supported at runtime.  Thus, build a reference table
+ * according to compile-time constants.  Unavailable protocols are marked with
+ * SSL_UNSUPPORTED_PROTOCOL.
  *
  * See 'set_protocol_version' and 'protocol_from_string' in
  * https://github.com/openssl/openssl/blob/OpenSSL_1_1_0-stable/test/ssltest_old.c
  *
- * To further complicate matters, OpenSSL plans to remove support for older SSL versions over time.
- * Fuzzball needs to provide a fallback to make sure existing setups specifying removed protocol
- * versions will get a useful error message pointing to the problem, instead of entirely failing to
+ * To further complicate matters, OpenSSL plans to remove support for older SSL
+ * versions over time.  Fuzzball needs to provide a fallback to make sure
+ * existing setups specifying removed protocol versions will get a useful
+ * error message pointing to the problem, instead of entirely failing to
  * compile.
  *
- * FB_PROTOCOL_VERSION  Copy OpenSSL's PROTOCOL_VERSION if defined, otherwise SSL_UNSUPPORTED_PROTOCOL
+ * FB_PROTOCOL_VERSION  Copy OpenSSL's PROTOCOL_VERSION if defined, otherwise
+ *                      SSL_UNSUPPORTED_PROTOCOL
  * FB_PROTOCOL_NAME     Friendly name for error messages, blank if not available
  */
 #ifdef SSL3_VERSION
@@ -68,56 +79,107 @@
 # define FB_TLS1_2_NAME ""
 #endif
 
-// List of protocols supported at compile-time, used for error messages
+/* List of protocols supported at compile-time, used for error messages */
 #define SSL_KNOWN_PROTOCOLS FB_SSL3_NAME FB_TLS1_NAME FB_TLS1_1_NAME FB_TLS1_2_NAME
 
-// A single SSL protocol version
+/* A single SSL protocol version */
 struct ssl_protocol_version {
-	const char *name;
-	int version;
+    const char *name;
+    int version;
 };
 
-// Valid SSL protocol versions
+/* Valid SSL protocol versions */
 static const struct ssl_protocol_version SSL_PROTOCOLS[] = {
-	{"None", 0},
-	{"SSLv3", FB_SSL3_VERSION},
-	{"TLSv1", FB_TLS1_VERSION},
-	{"TLSv1.1", FB_TLS1_1_VERSION},
-	{"TLSv1.2", FB_TLS1_2_VERSION}
+    {"None", 0},
+    {"SSLv3", FB_SSL3_VERSION},
+    {"TLSv1", FB_TLS1_VERSION},
+    {"TLSv1.1", FB_TLS1_1_VERSION},
+    {"TLSv1.2", FB_TLS1_2_VERSION}
 };
 
 static const size_t SSL_PROTOCOLS_SIZE = (sizeof(SSL_PROTOCOLS) / sizeof(SSL_PROTOCOLS[0]));
-// End of lookup table
 
-// SSL logging levels
+/* SSL logging levels */
 typedef enum {
-	SSL_LOGGING_NONE,
-	SSL_LOGGING_ERROR,
-	SSL_LOGGING_WARN,
-	SSL_LOGGING_DEBUG
+    SSL_LOGGING_NONE,
+    SSL_LOGGING_ERROR,
+    SSL_LOGGING_WARN,
+    SSL_LOGGING_DEBUG
 } ssl_logging_t;
 
 
 /*
  * Check if config.h specifies to log all SSL errors
- * TODO: This should be configurable at runtime, e.g. with an '@debug set ssl_logging' command.
+ * @TODO: This should be configurable at runtime, e.g. with an '@debug set
+ *        ssl_logging' command.
+ *
+ *        Further @TODO: static variables should *never* be in a header.
+ *        Move this to interface_ssl.c
  */
 #ifdef DEBUG_SSL_LOG_ALL
-// SSL logging level for connection handling
+/**
+ * @private
+ * @var SSL logging level for connection handling
+ */
 static const ssl_logging_t ssl_logging_connect = SSL_LOGGING_DEBUG;
-// SSL logging level for socket reads/writes
+
+/**
+ * @private
+ * @var SSL logging level for socket reads/writes
+ */
 static const ssl_logging_t ssl_logging_stream = SSL_LOGGING_DEBUG;
+
 #else
-// SSL logging level for connection handling
+/**
+ * @private
+ * @var SSL logging level for connection handling
+ */
 static const ssl_logging_t ssl_logging_connect = SSL_LOGGING_WARN;
-// SSL logging level for socket reads/writes
+
+/**
+ * @private
+ * @var SSL logging level for socket reads/writes
+ */
 static const ssl_logging_t ssl_logging_stream = SSL_LOGGING_NONE;
 #endif /* DEBUG_SSL_LOG_ALL */
 
-// SSL protocol management
+/**
+ * Converts an SSL protocol version string to a version number
+ *
+ * Inspired by 'set_protocol_version' and 'protocol_from_string' in
+ * https://github.com/openssl/openssl/blob/OpenSSL_1_1_0-stable/test/ssltest_old.c
+ *
+ * @param value Name of SSL protocol version
+ * @returns Version number if found, SSL_UNSUPPORTED_PROTOCOL if unsupported,
+ *          or -1 if not found
+ */
 int ssl_protocol_from_string(const char *);
+
+/**
+ * Sets the minimum SSL protocol version given a version string
+ *
+ * If None, no change will be made to the SSL context.  If version string is
+ * invalid or unsupported in this build (see SSL_PROTOCOLS), an error is
+ * logged to offer guidance on fixing the problem.
+ *
+ * @param ssl_ctx      SSL context
+ * @param min_version  Name of minimum required SSL protocol version, or "None"
+ * @returns boolean true if successful, false otherwise
+ */
 int set_ssl_ctx_min_version(SSL_CTX *, const char *);
 
+/**
+ * Checks for the last SSL error, if any, recording it to the log
+ *
+ * If log_all is set to 0, this ignores any usually irrelevant error
+ * conditions to avoid spamming the log, only handling a small subset.
+ *
+ * @param d          Connection descriptor data
+ * @param ret_value  Return value from SSL function call
+ * @param log_level  Amount of logging to do according to ssl_logging_t
+ * @returns SSL_ERROR_NONE if successful or unknown, otherwise value from
+ *          SSL_get_error()
+ */
 int ssl_check_error(struct descriptor_data *, const int, const ssl_logging_t);
 
 /*

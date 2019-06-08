@@ -1,3 +1,11 @@
+/** @file interp.c
+ *
+ * Source file that supports the MUF interpreter.  This has a lot of the
+ * fundamentals for the whole MUF system.
+ *
+ * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
