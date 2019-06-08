@@ -358,15 +358,24 @@ time_string_to_seconds(char *string, char **error)
         *error = "Bad Month";
     else if (dy < 1 || dy > 31)
         *error = "Bad Day";
-    else if (yr < 0 || yr > 99)
+    else if (yr < 0 || (yr > 99 && yr < 1900))
         *error = "Bad Year";
+
+    /*
+     * mktime doesn't support years less than 1900, but I want to make sure
+     * we support 4 digit years.
+     */
+    if (yr >= 1900)
+        yr -= 1900;
+    else if (yr < 70)
+        yr += 100;
 
     otm.tm_mon = mo - 1;
     otm.tm_mday = dy;
     otm.tm_hour = hr;
     otm.tm_min = mn;
     otm.tm_sec = sc;
-    otm.tm_year = (yr >= 70) ? yr : (yr + 100);
+    otm.tm_year = yr;
 
     return mktime(&otm);
 }
