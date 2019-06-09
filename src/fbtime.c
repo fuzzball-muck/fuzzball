@@ -339,6 +339,7 @@ timestr_long(long dtime)
  * @parm[out] error the error message, if any
  * @return the time in seconds
  */
+#ifndef WIN32
 time_t
 time_string_to_seconds(char *string, char *format, char **error)
 {
@@ -349,3 +350,4 @@ time_string_to_seconds(char *string, char *format, char **error)
 
     return mktime(&otm);
 }
+#endif

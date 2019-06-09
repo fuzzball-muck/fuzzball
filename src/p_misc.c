@@ -169,7 +169,7 @@ prim_convtime(PRIM_PROTOTYPE)
 {
 #ifdef WIN32
     abort_interp("not currently available on this platform");
-#endif
+#else
     char *error = 0;
 
     CHECKOP(1);
@@ -184,6 +184,7 @@ prim_convtime(PRIM_PROTOTYPE)
         abort_interp(error);
 
     PushInt(seconds);
+#endif
 }
 
 void
@@ -191,7 +192,7 @@ prim_fmttime(PRIM_PROTOTYPE)
 {
 #ifdef WIN32
     abort_interp("not currently available on this platform");
-#endif
+#else
     char *error = 0;
 
     CHECKOP(2);
@@ -209,6 +210,7 @@ prim_fmttime(PRIM_PROTOTYPE)
         abort_interp(error);
 
     PushInt(seconds);
+#endif
 }
 
 void

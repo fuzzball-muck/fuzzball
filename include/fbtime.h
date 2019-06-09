@@ -171,6 +171,7 @@ void ts_useobject(dbref thing);
  * @parm[out] error the error message, if any
  * @return the time in seconds
  */
+#ifndef WIN32
 time_t time_string_to_seconds(char *string, char *format, char **error);
-
+#endif
 #endif /* !FBTIME_H */

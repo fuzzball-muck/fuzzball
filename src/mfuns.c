@@ -1551,7 +1551,7 @@ mfn_convtime(MFUNARGS)
 {
 #ifdef WIN32
     ABORT_MPI("CONVTIME", "not currently available on this platform");
-#endif
+#else
     char *error = 0;
 
     time_t seconds = time_string_to_seconds(argv[0], "%T%t%D", &error);
@@ -1562,6 +1562,7 @@ mfn_convtime(MFUNARGS)
     snprintf(buf, BUFFER_LEN, "%lld", (long long)seconds);
     
     return buf;
+#endif
 }
 
 const char *
