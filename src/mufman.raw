@@ -4636,13 +4636,21 @@ with the time.  The format string is ASCII text with formatting commands:
   TIMEFMT processes format strings with the C function strftime().  The above
 list of conversion specifiers (formatting commands) is from the C (draft
 C17/C18) standard: some MUCKs may have more conversion specifiers available.
-~~alsosee FMTSTRING
+~~alsosee FMTSTRING,FMTTIME
 ~
 ~
 CONVTIME
 CONVTIME (s -- i) 
 
-  Converts "HH:MM:SS Mo/Dy/Yr" format time string to systime seconds.
+  Converts time string from "HH:MM:SS MO/DY/YR" format to systime seconds.
+~
+~
+FMTTIME
+FMTTIME (s1 s2 -- i) 
+
+  Converts time string s1 from the format given by s2 to systime seconds.
+~~alsosee TIMEFMT
+
 ~
 ~
 SLEEP

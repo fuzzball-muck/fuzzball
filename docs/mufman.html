@@ -334,6 +334,7 @@
     <li><a href="#floor">floor</a></li>
     <li><a href="#fmod">fmod</a></li>
     <li><a href="#fmtstring">fmtstring</a></li>
+    <li><a href="#fmttime">fmttime</a></li>
     <li><a href="#for">for</a></li>
     <li><a href="#force">force</a></li>
     <li><a href="#force_level">force_level</a></li>
@@ -7893,6 +7894,7 @@ This primitive requires at least Mucker Level 3.
 <ul>
     <li><a href="#convtime">convtime</a></li>
     <li><a href="#date">date</a></li>
+    <li><a href="#fmttime">fmttime</a></li>
     <li><a href="#gmtoffset">gmtoffset</a></li>
     <li><a href="#sleep">sleep</a></li>
     <li><a href="#systime">systime</a></li>
@@ -8034,7 +8036,8 @@ with the time.  The format string is ASCII text with formatting commands:
 list of conversion specifiers (formatting commands) is from the C (draft
 C17/C18) standard: some MUCKs may have more conversion specifiers available.
 <p>Also see:
-    <a href="#fmtstring">FMTSTRING</a>
+    <a href="#fmtstring">FMTSTRING</a> and
+    <a href="#fmttime">FMTTIME</a>
 </p>
 <!-- HTML_TOPICEND -->
 
@@ -8044,7 +8047,20 @@ C17/C18) standard: some MUCKs may have more conversion specifiers available.
 
 <br>
 </h3>
-  Converts &quot;HH:MM:SS Mo/Dy/Yr&quot; format time string to systime seconds.
+  Converts time string from &quot;HH:MM:SS MO/DY/YR&quot; format to systime seconds.
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="fmttime">FMTTIME (s1 s2 -- i) 
+<br>
+
+<br>
+</h3>
+  Converts time string s1 from the format given by s2 to systime seconds.
+<p>Also see:
+    <a href="#timefmt">TIMEFMT</a>
+</p>
+
 <!-- HTML_TOPICEND -->
 
 

@@ -10,6 +10,7 @@ void prim_systime(PRIM_PROTOTYPE);
 void prim_systime_precise(PRIM_PROTOTYPE);
 void prim_timesplit(PRIM_PROTOTYPE);
 void prim_timefmt(PRIM_PROTOTYPE);
+void prim_fmttime(PRIM_PROTOTYPE);
 void prim_convtime(PRIM_PROTOTYPE);
 void prim_userlog(PRIM_PROTOTYPE);
 void prim_queue(PRIM_PROTOTYPE);
@@ -53,9 +54,9 @@ void prim_read_wants_no_blanks(PRIM_PROTOTYPE);
 void prim_stats_array(PRIM_PROTOTYPE);
 
 #define PRIMS_MISC_FUNCS prim_time, prim_date, prim_gmtoffset, \
-    prim_systime, prim_timesplit, prim_timefmt, prim_convtime, prim_userlog, \
-    prim_queue, prim_kill, prim_force, prim_timestamps, prim_fork, \
-    prim_pid, prim_stats, prim_abort, prim_ispidp, prim_parselock, \
+    prim_systime, prim_timesplit, prim_timefmt, prim_fmttime, prim_convtime, \
+    prim_userlog, prim_queue, prim_kill, prim_force, prim_timestamps, \
+    prim_fork, prim_pid, prim_stats, prim_abort, prim_ispidp, prim_parselock, \
     prim_unparselock, prim_prettylock, prim_testlock, prim_sysparm, \
     prim_cancallp, prim_setsysparm, prim_timer_start, prim_timer_stop, \
     prim_event_count, prim_event_exists, prim_event_send, prim_pname_okp, \
@@ -66,7 +67,7 @@ void prim_stats_array(PRIM_PROTOTYPE);
     prim_read_wants_no_blanks, prim_stats_array
 
 #define PRIMS_MISC_NAMES "TIME", "DATE", "GMTOFFSET", \
-    "SYSTIME", "TIMESPLIT", "TIMEFMT", "CONVTIME", "USERLOG", \
+    "SYSTIME", "TIMESPLIT", "TIMEFMT", "FMTTIME", "CONVTIME", "USERLOG", \
     "QUEUE", "KILL", "FORCE", "TIMESTAMPS", "FORK", \
     "PID", "STATS", "ABORT", "ISPID?", "PARSELOCK", \
     "UNPARSELOCK", "PRETTYLOCK", "TESTLOCK", "SYSPARM", \

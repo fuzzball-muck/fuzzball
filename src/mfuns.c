@@ -1551,7 +1551,7 @@ mfn_convtime(MFUNARGS)
 {
     char *error = 0;
 
-    time_t seconds = time_string_to_seconds(argv[0], &error);
+    time_t seconds = time_string_to_seconds(argv[0], "%T%t%D", &error);
 
     if (error)
         ABORT_MPI("CONVTIME", error);

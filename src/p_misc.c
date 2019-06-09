@@ -172,9 +172,32 @@ prim_convtime(PRIM_PROTOTYPE)
     CHECKOP(1);
     oper1 = POP();
     if (oper1->type != PROG_STRING)
-        abort_interp("Invalid argument");
+        abort_interp("Invalid time string");
 
-    time_t seconds = time_string_to_seconds(oper1->data.string->data, &error);
+    time_t seconds = time_string_to_seconds(oper1->data.string->data, "%T%t%D",
+            &error);
+
+    if (error)
+        abort_interp(error);
+
+    PushInt(seconds);
+}
+
+void
+prim_fmttime(PRIM_PROTOTYPE)
+{
+    char *error = 0;
+
+    CHECKOP(2);
+    oper1 = POP();
+    oper2 = POP();
+    if (oper1->type != PROG_STRING)
+        abort_interp("Invalid format string");
+    if (oper2->type != PROG_STRING)
+        abort_interp("Invalid time string");
+
+    time_t seconds = time_string_to_seconds(oper2->data.string->data,
+            oper1->data.string->data, &error);
 
     if (error)
         abort_interp(error);

@@ -131,9 +131,10 @@ F's
   fabs               fail               fg_mode            findnext
   firstdescr         flag?              flags              float
   float?             floor              fmod               fmtstring
-  for                force              force_level        forcedby
-  forcedby_array     foreach            foreground         fork
-  frand              ftostr             ftostrc            fulldepth
+  fmttime            for                force              force_level
+  forcedby           forcedby_array     foreach            foreground
+  fork               frand              ftostr             ftostrc
+  fulldepth          
 
 G's
   gaussian           getlink            getlinks           getlinks_array
@@ -4970,9 +4971,9 @@ This primitive requires at least Mucker Level 3.
 Time Manipulation Operators|TimeOps
 Time Manipulation Operators
 
-convtime           date               gmtoffset          sleep
-systime            systime_precise    time               timefmt
-timesplit          
+convtime           date               fmttime            gmtoffset
+sleep              systime            systime_precise    time
+timefmt            timesplit          
 
 ~----------------------------------------------------------------------------
 ~
@@ -5079,13 +5080,21 @@ with the time.  The format string is ASCII text with formatting commands:
   TIMEFMT processes format strings with the C function strftime().  The above
 list of conversion specifiers (formatting commands) is from the C (draft
 C17/C18) standard: some MUCKs may have more conversion specifiers available.
-Also see: FMTSTRING
+Also see: FMTSTRING and FMTTIME
 ~
 ~
 CONVTIME
 CONVTIME (s -- i) 
 
-  Converts "HH:MM:SS Mo/Dy/Yr" format time string to systime seconds.
+  Converts time string from "HH:MM:SS MO/DY/YR" format to systime seconds.
+~
+~
+FMTTIME
+FMTTIME (s1 s2 -- i) 
+
+  Converts time string s1 from the format given by s2 to systime seconds.
+Also see: TIMEFMT
+
 ~
 ~
 SLEEP
