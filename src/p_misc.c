@@ -167,6 +167,9 @@ prim_timefmt(PRIM_PROTOTYPE)
 void
 prim_convtime(PRIM_PROTOTYPE)
 {
+#ifdef WIN32
+    abort_interp("not currently available on this platform");
+#endif
     char *error = 0;
 
     CHECKOP(1);
@@ -186,6 +189,9 @@ prim_convtime(PRIM_PROTOTYPE)
 void
 prim_fmttime(PRIM_PROTOTYPE)
 {
+#ifdef WIN32
+    abort_interp("not currently available on this platform");
+#endif
     char *error = 0;
 
     CHECKOP(2);

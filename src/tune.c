@@ -259,7 +259,6 @@ tune_parms_array(const char *pattern, int mlev, int pinned)
 
     struct inst temp1;
     char pat[BUFFER_LEN];
-    char buf[BUFFER_LEN];
     int i = 0;
 
     strcpyn(pat, sizeof(pat), pattern);

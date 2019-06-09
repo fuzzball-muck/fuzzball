@@ -81,9 +81,9 @@ next_dump_time(time_t now)
 static void
 check_dump_time(time_t now)
 {
-    int nexttime = next_dump_time(now);
+    time_t nexttime = next_dump_time(now);
 
-    if (tp_dbdump_warning && !dump_warned && nexttime <= tp_dump_warntime) {
+    if (tp_dbdump_warning && !dump_warned && nexttime <= (time_t)tp_dump_warntime) {
         wall_and_flush(tp_dumpwarn_mesg);
         dump_warned = 1;
     }
