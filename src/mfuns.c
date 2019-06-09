@@ -1550,7 +1550,7 @@ const char *
 mfn_convtime(MFUNARGS)
 {
 #ifdef WIN32
-    ABORT_MPI("CONVTIME", "not currently available on this platform");
+    ABORT_MPI("CONVTIME", CURRENTLY_UNAVAILABLE);
 #else
     char *error = 0;
 
