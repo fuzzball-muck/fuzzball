@@ -20,6 +20,7 @@
 /**
  * Replacement for strptime on Windows.
  */
+#undef noexcept
 #include <iomanip>
 #include <sstream>
 
