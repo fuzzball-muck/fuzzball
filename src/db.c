@@ -649,7 +649,17 @@ db_read_header(FILE * f, int *grow)
 
     getref(f);      /* ignore dbflags value */
 
-    tune_load_parms_from_file(f, NOTHING, getref(f));
+    /**
+     * Delay sysparm processing until the end. At this point,
+     * setting dbref values will fail since there are no objects.
+     * Future database formats should not have this weirdness.
+     */
+
+    char buf[BUFFER_LEN];
+
+    for (int i = 0, n = getref(f); i < n; i++) {
+        fgets(buf, sizeof(buf), f);
+    }
 
     return load_format;
 }
@@ -1110,6 +1120,17 @@ db_read(FILE * f)
     }
 
     free(special);
+
+    /**
+     * Go back and read the sysparms.
+     **/
+
+    fseek(f, 0L, SEEK_SET);
+
+    free(getstring(f));
+    getref(f);
+    getref(f);
+    tune_load_parms_from_file(f, NOTHING, getref(f));
 
     for (dbref j = 0; j < db_top; j++) {
         if (Typeof(j) == TYPE_GARBAGE) {

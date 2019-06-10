@@ -7109,9 +7109,7 @@ main(int argc, char **argv)
 #ifdef MCP_SUPPORT
     /* Initialize MCP and some packages. */
     mcp_initialize();
-log_status("mcp init over");
     gui_initialize();
-log_status("gui init over");
 #endif
 
     sel_prof_start_time = time(NULL); /* Set useful starting time */
