@@ -925,143 +925,240 @@ get_pidinfo(int pid, int pin)
     return nw;
 }
 
-/*
- * killmode values:
+/**
+ * The implementation for the dequeue_prog define, killing processes
+ *
+ * dequeue_prog automatically injects the 'file' and 'line' parameters
+ * based on compile constants.
+ *
+ * This kills a process running on the MUCK.  Kill mode can be one of the
+ * following:
+ *
  *     0: kill all matching processes, MUF or MPI
  *     1: kill all matching MUF processes
  *     2: kill all matching foreground MUF processes
+ *
+ * file and line are used for debug purposes and should be the file/line
+ * that called the function.  It is recommended you use dequeue_prog instead
+ * of this call directly so you don't have to worry about those details.
+ *
+ * @param program the program dbref to kill
+ * @param killmode the kill mode, which can be a value noted above
+ * @param file the calling file
+ * @param line the calling line
+ * @return count of processes killed by this call.
  */
 int
 dequeue_prog_real(dbref program, int killmode, const char *file, const int line)
 {
-    int count = 0, ocount;
-    timequeue ptr;
+    int count = 0;
+    timequeue ptr, prev
 
 #ifdef DEBUG
     fprintf(stderr, "[debug] dequeue_prog(#%d, %d) called from %s:%d\n", program, killmode,
-	    file, line);
-#endif				/* DEBUG */
+            file, line);
+#endif /* DEBUG */
     DEBUGPRINT("dequeue_prog: tqhead = %p\n", (void *)tqhead);
-    while (tqhead) {
-	DEBUGPRINT("dequeue_prog: tqhead->called_prog = #%d, has_refs = %d ",
-		   tqhead->called_prog, has_refs(program, tqhead));
-	DEBUGPRINT("tqhead->uid = #%d\n", tqhead->uid);
-	if (tqhead->called_prog != program && !has_refs(program, tqhead)
-	    && tqhead->uid != program) {
-	    break;
-	}
-	if (killmode == 2) {
-	    if ((tp_mpi_continue_after_logout && tqhead->typ == TQ_MPI_TYP) || (tqhead->fr && tqhead->fr->multitask == BACKGROUND)) {
-		break;
-	    }
-	} else if (killmode == 1) {
-	    if (!tqhead->fr) {
-		DEBUGPRINT("dequeue_prog: killmode 1, no frame\n");
-		break;
-	    }
-	}
-	ptr = tqhead;
-	tqhead = tqhead->next;
-	free_timenode(ptr);
-	process_count--;
-	count++;
+
+    /*
+     * This has to be done first before we can do anything else.
+     *
+     * If we do it last (as was happening before), it is akin to killing
+     * processes then doing the cleanup after and it makes pointer hell.
+     *
+     * I don't fully understand the interplay (yet) but the muf_event_queue
+     * seems to be like a subqueue of the timequeue and for some reason
+     * contributes to the process count but relies on other processes at
+     * the same time. (tanabi)
+     */
+    DEBUGPRINT("dequeue_prog(3): about to muf_event_dequeue(#%d, %d)\n",
+               program, killmode);
+    count = muf_event_dequeue(program, killmode);
+    process_count -= count;
+
+    prev = NULL;
+    ptr = tqhead;
+
+    while(ptr) {
+        DEBUGPRINT("dequeue_prog: ptr->called_prog = #%d, has_refs = %d ",
+                   ptr->called_prog, has_refs(program, ptr));
+        DEBUGPRINT("ptr->uid = #%d\n", ptr->uid);
+
+        /* This isn't the program we're looking for, move on. */
+        if (ptr->called_prog != program && !has_refs(program, ptr)
+            && ptr->uid != program) {
+            prev = ptr;
+            ptr = ptr->next;
+            continue;
+        }
+
+        if (killmode == 2) {
+            /* Kill only foreground MUF */
+            if ((tp_mpi_continue_after_logout && ptr->typ == TQ_MPI_TYP)
+                || (ptr->fr && ptr->fr->multitask == BACKGROUND)) {
+                prev = ptr;
+                ptr = ptr->next;
+                continue;
+            }
+        } else if (killmode == 1) {
+            /* Kill only MUF */
+            if (!ptr->fr) {
+                DEBUGPRINT("dequeue_prog: killmode 1, no frame\n");
+                prev = ptr;
+                ptr = ptr->next;
+                continue;
+            }
+        }
+
+        /*
+         * If prev is NULL, we're still at the head of the list, so the
+         * logic has to be slightly different.
+         */
+        if (prev) {
+            prev->next = ptr->next;
+            free_timenode(ptr);
+            ptr = prev->next;
+        } else {
+            tqhead = ptr->next;
+            free_timenode(ptr);
+            ptr = tqhead;
+        }
+
+        /* Common book-keeping */
+        process_count--;
+        count++;
     }
 
-    if (tqhead) {
-        ptr = tqhead->next;
-	for (timequeue tmp = tqhead; ptr; tmp = ptr, ptr = ptr->next) {
-	    DEBUGPRINT("dequeue_prog(2): ptr->called_prog=#%d, has_refs()=%d ",
-		       ptr->called_prog, has_refs(program, ptr));
-	    DEBUGPRINT("ptr->uid=#%d.\n", ptr->uid);
-	    if (ptr->called_prog != program && !has_refs(program, ptr) && ptr->uid != program) {
-		continue;
-	    }
-	    if (killmode == 2) {
-		if ((tp_mpi_continue_after_logout && ptr->typ == TQ_MPI_TYP) || (ptr->fr && ptr->fr->multitask == BACKGROUND)) {
-		    continue;
-		}
-	    } else if (killmode == 1) {
-		if (!ptr->fr) {
-		    DEBUGPRINT("dequeue_prog(2): killmode 1, no frame.\n");
-		    continue;
-		}
-	    }
-	    tmp->next = ptr->next;
-	    free_timenode(ptr);
-	    process_count--;
-	    count++;
-	    ptr = tmp;
-	}
+/*
+ * @TODO: So this is a weird difference between \@kill and here.
+ *
+ *        First off, muf_event_dequeue has to happen before the \@kills
+ *        because otherwise things go brain dead.  You're basically killing
+ *        the process before cleaning it up.
+ *
+ *        BUT ... for some reason, we do this funny 'ocount' check and
+ *        then iterate and prog_clean tqhead's frame.  We don't do this
+ *        in \@kill (dequeue_process).
+ *
+ *        The question is ... do we NEED to do this?  I don't really
+ *        understand enough of the interplay between the muf_event_queue
+ *        and the timequeue to really know.  I think the consequence here
+ *        is a memory leak if something is dequeued when it has a muf
+ *        event and its the only thing on the stack.
+ *
+ *        Can we use valgrind to test this?  Do we research it?  Do we
+ *        leave it alone because it seems to work?  Do we use a script to
+ *        bomb the MUCK with EVENT_WAIT process compiles to try and
+ *        see if memory usage goes through the roof?
+ *
+ *        Anyway, I feel like this needs to be called out as something that
+ *        gets futher investigation.  (tanabi)
+ */
+/*
+    DEBUGPRINT("dequeue_prog(3): about to muf_event_dequeue(#%d, %d)\n",
+               program, killmode);
+    ocount = count;
+    eventcount = muf_event_dequeue(program, killmode);
+    process_count -= eventcount;
+    count += eventcount;
 
-	DEBUGPRINT("dequeue_prog(3): about to muf_event_dequeue(#%d, %d)\n", program,
-		   killmode);
-	ocount = count;
-	count += muf_event_dequeue(program, killmode);
-	if (ocount < count && tqhead->fr)
-	    prog_clean(tqhead->fr);
-	for (ptr = tqhead; ptr; ptr = ptr->next) {
-	    if (ptr->typ == TQ_MUF_TYP && (ptr->subtyp == TQ_MUF_READ ||
-					   ptr->subtyp == TQ_MUF_TREAD)) {
-		FLAGS(ptr->uid) |= (INTERACTIVE | READMODE);
-	    }
-	}
+    if (ocount < count && tqhead->fr)
+        prog_clean(tqhead->fr);
+ */
+
+    /*
+     * This is some book-keeping to make sure if a user is in a READ that
+     * they are properly flagged.  I guess a killed program could knock
+     * these flags off a user and we need to put them back if they're still
+     * in a READ state?  Just an educated guess. (tanabi)
+     */
+    for (ptr = tqhead; ptr; ptr = ptr->next) {
+        if (ptr->typ == TQ_MUF_TYP && (ptr->subtyp == TQ_MUF_READ ||
+            ptr->subtyp == TQ_MUF_TREAD)) {
+            FLAGS(ptr->uid) |= (INTERACTIVE | READMODE);
+        }
     }
-    /* and just to make sure we got them all... otherwise, we need
-     * to rethink what we're doing here. */
-    /* assert(PROGRAM_INSTANCES(program) == 0); */
+
+    /*
+     * And just to make sure we got them all... otherwise, we need
+     * to rethink what we're doing here.
+     */
 #ifdef DEBUG
     /* KLUDGE by premchai21 */
     if (Typeof(program) == TYPE_PROGRAM)
-	fprintf(stderr, "[debug] dequeue_prog: %d instances of #%d\n",
-		PROGRAM_INSTANCES(program), program);
+        fprintf(stderr, "[debug] dequeue_prog: %d instances of #%d\n",
+                PROGRAM_INSTANCES(program), program);
 #endif
     return (count);
 }
 
+/**
+ * Dequeue a process based on PID -- this is the underpinning of \@kill
+ *
+ * This does all the necessary cleanup of the process, including events,
+ * and then returns boolean if it was killed or not.
+ *
+ * @param pid the PID to kill
+ * @return boolean true if killed, false if not
+ */
 int
 dequeue_process(int pid)
 {
     timequeue tmp, ptr;
-    int deqflag = 0;
+    int deqflag = 0; /* Used to indicate if we decremented process count */
 
     if (!pid)
-	return 0;
+        return 0;
 
+    /*
+     * Kill related events first -- this must be done before killing the
+     * process.
+     */
     if (muf_event_dequeue_pid(pid)) {
-	process_count--;
-	deqflag = 1;
+        process_count--;
+        deqflag = 1;
     }
 
+    /* Loop and find items to kill */
     tmp = ptr = tqhead;
     while (ptr) {
-	if (pid == ptr->eventnum) {
-	    if (tmp == ptr) {
-		tqhead = tmp = tmp->next;
-		free_timenode(ptr);
-		ptr = tmp;
-	    } else {
-		tmp->next = ptr->next;
-		free_timenode(ptr);
-		ptr = tmp->next;
-	    }
-	    process_count--;
-	    deqflag = 1;
-	} else {
-	    tmp = ptr;
-	    ptr = ptr->next;
-	}
+        if (pid == ptr->eventnum) {
+            if (tmp == ptr) {
+                tqhead = tmp = tmp->next;
+                free_timenode(ptr);
+                ptr = tmp;
+            } else {
+                tmp->next = ptr->next;
+                free_timenode(ptr);
+                ptr = tmp->next;
+            }
+
+            process_count--;
+            deqflag = 1;
+        } else {
+            tmp = ptr;
+            ptr = ptr->next;
+        }
     }
 
+    /* If we didn't delete anything, there's nothing further to do */
     if (!deqflag) {
-	return 0;
+        return 0;
     }
 
+    /*
+     * This is some book-keeping to make sure if a user is in a READ that
+     * they are properly flagged.  I guess a killed program could knock
+     * these flags off a user and we need to put them back if they're still
+     * in a READ state?  Just an educated guess. (tanabi)
+     */
     for (ptr = tqhead; ptr; ptr = ptr->next) {
-	if (ptr->typ == TQ_MUF_TYP && (ptr->subtyp == TQ_MUF_READ ||
-				       ptr->subtyp == TQ_MUF_TREAD)) {
-	    FLAGS(ptr->uid) |= (INTERACTIVE | READMODE);
-	}
+        if (ptr->typ == TQ_MUF_TYP && (ptr->subtyp == TQ_MUF_READ ||
+            ptr->subtyp == TQ_MUF_TREAD)) {
+            FLAGS(ptr->uid) |= (INTERACTIVE | READMODE);
+        }
     }
+
     return 1;
 }
 
