@@ -952,7 +952,7 @@ int
 dequeue_prog_real(dbref program, int killmode, const char *file, const int line)
 {
     int count = 0;
-    timequeue ptr, prev
+    timequeue ptr, prev;
 
 #ifdef DEBUG
     fprintf(stderr, "[debug] dequeue_prog(#%d, %d) called from %s:%d\n", program, killmode,
