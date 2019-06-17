@@ -2865,13 +2865,16 @@ do_compile(int descr, dbref player_in, dbref program_in, int force_err_display)
     /* Set PROGRAM_INSTANCES to zero (cuz they don't get set elsewhere) */
     PROGRAM_SET_INSTANCES(cstat.program, 0);
 
-    /* restart AUTOSTART program. */
-    if ((FLAGS(cstat.program) & ABODE) && TrueWizard(OWNER(cstat.program)))
-        add_muf_queue_event(-1, OWNER(cstat.program), NOTHING, NOTHING,
-                            cstat.program, "Startup", "Queued Event.", 0);
-
     if (force_err_display)
         notify_nolisten(cstat.player, "Program compiled successfully.", 1);
+
+    /* restart AUTOSTART program. */
+    if ((FLAGS(cstat.program) & ABODE) && TrueWizard(OWNER(cstat.program))) {
+        add_muf_queue_event(-1, OWNER(cstat.program), NOTHING, NOTHING,
+                            cstat.program, "Startup", "Queued Event.", 0);
+        notify_nolisten(cstat.player, "Program autostarted.", 1);
+    }
+
 }
 
 /**
