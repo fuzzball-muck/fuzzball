@@ -92,7 +92,7 @@ muf_event_register_specific(dbref player, dbref prog, struct frame *fr, size_t e
     newproc->deleted = 0;
     newproc->filtercount = (short)eventcount;
     if (eventcount > 0) {
-	newproc->filters = malloc(eventcount * sizeof(char **));
+	newproc->filters = malloc(eventcount * sizeof(char *));
 	for (unsigned int i = 0; i < eventcount; i++) {
 	    newproc->filters[i] = strdup(eventids[i]);
 	}

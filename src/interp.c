@@ -1674,7 +1674,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 		{
 		    size_t k, outcount;
 		    size_t count = (size_t)array_count(temp1->data.array);
-		    char **events = malloc(count * sizeof(char **));
+		    char **events = malloc(count * sizeof(char *));
 		    for (outcount = k = 0; k < count; k++) {
 			char *val = array_get_intkey_strval(temp1->data.array, k);
 			if (val != NULL) {

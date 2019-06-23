@@ -710,7 +710,7 @@ main(int argc, char **argv)
 	return 1;
     }
 
-    cols = 78 / (find_topics(infile) + 1);
+    find_topics(infile);
     fseek(infile, 0L, SEEK_SET);
 
     process_lines(infile, outfile, htmlfile);

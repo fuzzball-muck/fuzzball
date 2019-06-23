@@ -850,8 +850,6 @@ array_tree_delete(array_iter * key, array_tree * avl)
     assert(key != NULL);
     assert(avl != NULL);
 
-    save = array_tree_remove_node(key, &avl);
-
     if ((save = array_tree_remove_node(key, &avl))) {
         CLEAR(&(save->key));
         CLEAR(&(save->data));
