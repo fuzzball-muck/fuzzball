@@ -1,13 +1,15 @@
 ***Foxen9 TinyMUCK DUMP Format***
 2
 1
-153
+155
 %autolook_cmd=look
 %cpennies=Pennies
 %cpenny=Penny
 %pennies=pennies
 %penny=penny
-%dumpdone_mesg=## Save complete. ##
+%connect_fail_mesg=Either that player does not exist, or has a different password.
+%create_fail_mesg=Either there is already a player with that name, or that name is illegal.
+%dark_sleepers=no%dumpdone_mesg=## Save complete. ##
 %dumping_mesg=## Pausing to save database. This may take a while. ##
 %dumpwarn_mesg=## Game will pause to save the database in a few minutes. ##
 %file_connection_help=data/connect-help.txt
