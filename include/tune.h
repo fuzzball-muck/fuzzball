@@ -176,6 +176,7 @@ extern int         tp_movepennies_muf_mlev;
 extern bool        tp_mpi_continue_after_logout;
 extern int         tp_mpi_max_commands;
 extern const char *tp_muckname;
+extern bool        tp_muf_comments_strict;
 extern const char *tp_new_program_flags;
 extern int         tp_object_cost;
 extern bool        tp_optimize_muf;

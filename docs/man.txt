@@ -4533,6 +4533,7 @@ Parameters available:
  (bool) mpi_continue_after_logout - Continue executing MPI after logout
  (int)  mpi_max_commands          - Max. number of uninterruptable MPI commands
  (str)  muckname                  - Name of the MUCK
+ (str)  muf_comments_strict       - MUF comments are strict and not recursive
  (str)  new_program_flags         - Initial flags for newly created programs
  (int)  object_cost               - Cost to create an object
  (bool) optimize_muf              - Enable MUF bytecode optimizer
