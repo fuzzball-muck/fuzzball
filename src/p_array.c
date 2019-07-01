@@ -1387,8 +1387,14 @@ prim_array_put_proplist(PRIM_PROTOTYPE)
     if (!prop_write_perms(ProgUID, ref, propname, mlev))
 	abort_interp("Permission denied while trying to set protected property.");
 
-    propdat.flags = PROP_INTTYP;
-    propdat.data.val = array_count(arr);
+    if (array_is_homogenous(arr, PROG_STRING)) {
+        propdat.flags = PROP_STRTYP;
+        snprintf(buf, sizeof(buf), "%d", array_count(arr));
+        propdat.data.str = buf;
+    } else {
+        propdat.flags = PROP_INTTYP;
+        propdat.data.val = array_count(arr);
+    }
     set_property(ref, propname, &propdat, 0);
 
     if (array_first(arr, &temp1)) {
