@@ -480,7 +480,7 @@ struct tune_entry tune_list[] = {
     { "muckname", "Name of the MUCK", "Misc", "", TP_TYPE_STRING,
         .defaultval.s="TygryssMUCK",
         .currentval.s=&tp_muckname, 0, MLEV_WIZARD, true },
-    { "muf_comments_strict", "MUF comments are strict and not recursive", "MUF", "", TP_TYPE_STRING,
+    { "muf_comments_strict", "MUF comments are strict and not recursive", "MUF", "", TP_TYPE_BOOLEAN,
         .defaultval.b=true,
         .currentval.b=&tp_muf_comments_strict, 0, MLEV_WIZARD, true },
     { "new_program_flags", "Initial flags for newly created programs", "Database", "", TP_TYPE_STRING,
