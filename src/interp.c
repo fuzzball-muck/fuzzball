@@ -893,6 +893,7 @@ deep_copyinst(struct inst *in, struct inst *out, int pinned)
 	    for (int i = arr->items; i-- > 0;) {
 		deep_copyinst(&arr->data.packed[i], &nu->data.packed[i], pinned);
 	    }
+            break;
 	}
 	case ARRAY_DICTIONARY:{
 	    array_iter idx;
@@ -906,6 +907,7 @@ deep_copyinst(struct inst *in, struct inst *out, int pinned)
 		    array_setitem(&nu, &idx, &temp1);
 		} while (array_next(arr, &idx));
 	    }
+            break;
 	}
     }
     out->data.array = nu;
