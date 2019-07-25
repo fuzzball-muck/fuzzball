@@ -2103,7 +2103,7 @@ array_insertrange(stk_array ** harr, array_iter * start, stk_array * inarr)
             }
 
             /* Copy inarr into the space made. */
-            
+            idx.data.number = 0;
             do {
                     itm = array_getitem(inarr, &idx);
                     copyinst(itm, &arr->data.packed[start->data.number]);
