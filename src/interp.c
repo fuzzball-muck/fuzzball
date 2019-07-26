@@ -1400,13 +1400,6 @@ deep_copyinst(struct inst *in, struct inst *out, int pinned)
             break;
         }
 
-        /*
-         * @TODO This looks like a bug here.  I should think we would need
-         *       a 'break' statement here, because otherwise 'nu' will
-         *       always be a dictionary and we'll leak a new_array_packed
-         *       each time this is called with an array packed.
-         */
-
         case ARRAY_DICTIONARY:{
             array_iter idx;
             array_data *val;
