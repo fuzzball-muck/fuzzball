@@ -190,7 +190,7 @@ prim_moveto(PRIM_PROTOTYPE)
 		}
 	    }
 	    if (Typeof(victim) == TYPE_THING &&
-		(tp_thing_movement || (FLAGS(victim) & ZOMBIE))) {
+		(tp_secure_thing_movement || (FLAGS(victim) & ZOMBIE))) {
 		enter_room(fr->descr, victim, dest, program);
 	    } else {
 		moveto(victim, dest);
@@ -208,7 +208,7 @@ prim_moveto(PRIM_PROTOTYPE)
 	    SetMLevel(victim, 0);
 	    break;
 	case TYPE_ROOM:
-	    if (!tp_thing_movement && Typeof(dest) != TYPE_ROOM)
+	    if (!tp_secure_thing_movement && Typeof(dest) != TYPE_ROOM)
 		abort_interp("Bad destination.");
 	    if (victim == GLOBAL_ENVIRONMENT)
 		abort_interp("Permission denied.");
@@ -1334,8 +1334,6 @@ void
 prim_recycle(PRIM_PROTOTYPE)
 {
     /* d -- */
-    struct tune_ref_entry *tref = tune_ref_list;
-
     CHECKOP(1);
     oper1 = POP();		/* object dbref to recycle */
     if (oper1->type != PROG_OBJECT)
@@ -1350,11 +1348,10 @@ prim_recycle(PRIM_PROTOTYPE)
     if (Typeof(result) == TYPE_PLAYER)
 	abort_interp("Cannot recycle a player.");
 
-    while (tref->name) {
-	if (result == *tref->ref) {
+    for (struct tune_entry *tent = tune_list; tent->name; tent++) {
+	if (tent->type == TP_TYPE_DBREF && result == *tent->currentval.d) {
 	    abort_interp("Cannot currently recycle that object.");
 	}
-	tref++;
     }
 
     if (result == program)
@@ -1750,8 +1747,6 @@ prim_toadplayer(PRIM_PROTOTYPE)
     dbref victim;
     dbref recipient;
 
-    struct tune_ref_entry *tref = tune_ref_list;
-
     CHECKOP(2);
     oper1 = POP();
     oper2 = POP();
@@ -1790,11 +1785,10 @@ prim_toadplayer(PRIM_PROTOTYPE)
 	abort_interp("You can't toad a wizard.");
     }
 
-    while (tref->name) {
-        if (victim == *tref->ref) {
+    for (struct tune_entry *tent = tune_list; tent->name; tent++) {
+	if (tent->type == TP_TYPE_DBREF && result == *tent->currentval.d) {
             abort_interp("That player cannot currently be @toaded.");
-        }
-        tref++;
+	}
     }
 
     log_status("TOADED[MUF]: %s(%d) by %s(%d)", NAME(victim), victim, NAME(player), player);

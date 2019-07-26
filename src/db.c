@@ -649,7 +649,17 @@ db_read_header(FILE * f, int *grow)
 
     getref(f);      /* ignore dbflags value */
 
-    tune_load_parms_from_file(f, NOTHING, getref(f));
+    /**
+     * Delay sysparm processing until the end. At this point,
+     * setting dbref values will fail since there are no objects.
+     * Future database formats should not have this weirdness.
+     */
+
+    char buf[BUFFER_LEN];
+
+    for (int i = 0, n = getref(f); i < n; i++) {
+        fgets(buf, sizeof(buf), f);
+    }
 
     return load_format;
 }
@@ -1110,6 +1120,17 @@ db_read(FILE * f)
     }
 
     free(special);
+
+    /**
+     * Go back and read the sysparms.
+     **/
+
+    fseek(f, 0L, SEEK_SET);
+
+    free(getstring(f));
+    getref(f);
+    getref(f);
+    tune_load_parms_from_file(f, NOTHING, getref(f));
 
     for (dbref j = 0; j < db_top; j++) {
         if (Typeof(j) == TYPE_GARBAGE) {
@@ -1648,8 +1669,8 @@ getparent_logic(dbref obj)
 /**
  * Get the parent for a given object
  *
- * This logic is weirdly complicated.  If tp_thing_movement is true, which
- * is to say, moving things is set to act like a player is moving, then
+ * This logic is weirdly complicated.  If tp_secure_thing_movement is true,
+ * which is to say, moving things is set to act like a player is moving, then
  * this simply returns the location of the object.
  *
  * Otherwise, we iterate.  The complexity is around vehicle things;
@@ -1668,7 +1689,7 @@ getparent(dbref obj)
 {
     dbref ptr, oldptr;
 
-    if (tp_thing_movement) {
+    if (tp_secure_thing_movement) {
         obj = LOCATION(obj);
     } else {
         ptr = getparent_logic(obj);

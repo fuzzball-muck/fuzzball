@@ -1,12 +1,14 @@
 ***Foxen9 TinyMUCK DUMP Format***
 54
 1
-152
+155
 %autolook_cmd=look
 %cpennies=Pennies
 %cpenny=Penny
 %pennies=pennies
 %penny=penny
+%connect_fail_mesg=Either that player does not exist, or has a different password.
+%create_fail_mesg=Either there is already a player with that name, or that name is illegal.
 %dumpdone_mesg=## Save complete. ##
 %dumping_mesg=## Pausing to save database. This may take a while. ##
 %dumpwarn_mesg=## Game will pause to save the database in a few minutes. ##
@@ -138,14 +140,15 @@
 %teleport_to_player=yes
 %secure_teleport=no
 %secure_thing_movement=no
+%quiet_moves=no
 %do_mpi_parsing=yes
 %mpi_continue_after_logout=no
 %consistent_lock_source=yes
 %expanded_debug_trace=yes
 %force_mlev1_name_notify=yes
+%muf_comments_strict=yes
 %optimize_muf=yes
 %playermax=no
-%quiet_moves=no
 %lock_envcheck=no
 %show_legacy_props=no
 %registration=yes
@@ -160,10 +163,10 @@ Belt Pouch
 42
 -1
 1
-1505754075
-1505754075
 0
-1505754075
+0
+0
+0
 *Props*
 @/value:3:1
 _/chlk:4:#1
@@ -178,10 +181,10 @@ in;cave;entrance;enter;south;s
 -1
 -1
 2
-1505754074
-1505754074
 0
-1505754075
+0
+0
+0
 *Props*
 _/de:2:You see the entrance of a dark cave to the south. It's a familiar place, as it is where you first awoke in this world.
 _/odr:2:blocks the light for a moment as %s enters the cave.
@@ -197,10 +200,10 @@ out;light;exit;ahead;northwest;west;nw;w;north;n
 -1
 -1
 2
-1505754073
-1505754073
 0
-1505754074
+0
+0
+0
 *Props*
 _/de:2:You look towards the light and see that it is reflecting off the rocks around a turn in the cavern. There's probably an exit that way.
 _/odr:2:stumbles out of the cave, blinking at the light.
@@ -216,10 +219,10 @@ read;write;protect;editmsg;editmesg;protect;erase
 -1
 -1
 2
-1505754073
-1505754073
 0
-1505754073
+0
+0
+0
 *Props*
 *End*
 1
@@ -231,10 +234,10 @@ Bulletin Board
 -1
 48
 1
-1505754073
-1505754073
 0
-1505754073
+0
+0
+0
 *Props*
 @/value:3:1
 _/de:2:@$mesgboard recent
@@ -248,10 +251,10 @@ The HeartStone
 -1
 -1
 1
-1505754072
-1505754072
 0
-1505754073
+0
+0
+0
 *Props*
 @/value:3:1
 _/de:2:The HeartStone is a single large ruby orb, flawless and pure, sitting upon a dark obsidian pedestal. Perhaps its deep red color is what gives rise to its name. Or perhaps it's the faint pulsing glow deep within it... or are you merely imagining that? The legends of it say that it embodies the spiritual heart of the land. Perhaps there are many reasons why it is so christened. Undeniably, though, it carries the weight of countless years within it.
@@ -267,10 +270,10 @@ A small clearing in the Wilderness
 49
 -1
 0
-1505754072
-1505754072
 0
-1505754072
+0
+0
+0
 *Props*
 _/de:2:Pine and spruce trees thickly populate the forest around a small natural clearing, with birds chirping and twittering among them. To the south lies the entrance to the Cave of Awakening. In the center of the clearing is a large obsidian column, jutting from the ground, with a brilliant translucent red stone capping it. To one side, contrary to the pristine wilderness about, is a redwood bulletin board, looking for all the world like a relic from a national park. Oddly, though, you see no trails leading from the clearing. Who is this place for?
 *End*
@@ -283,10 +286,10 @@ Cave of Awakening
 1
 -1
 64
-1505754072
-1551917735
-2
-1505754072
+0
+0
+0
+0
 *Props*
 _/de:2:It's very dark in here, but you can faintly see a light ahead. Maybe that's the way out.
 *End*
@@ -299,10 +302,10 @@ Indoors Environment Room
 46
 44
 0
-1505754072
-1551917735
-2
-1505754072
+0
+0
+0
+0
 *Props*
 *End*
 -1
@@ -314,10 +317,10 @@ Outdoors Environment Room
 47
 -1
 0
-1505754071
-1505754071
 0
-1505754071
+0
+0
+0
 *Props*
 *End*
 -1
@@ -329,10 +332,10 @@ Null Environment Room
 45
 -1
 0
-1505754071
-1551917735
-2
-1505754071
+0
+0
+0
+0
 *Props*
 *End*
 -1
@@ -344,10 +347,10 @@ gen-mesgboard-base
 -1
 41
 18087956
-1505754018
-1505754018
 0
-1505754071
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called gen-mesgboard-base
 _version:2:2.7
@@ -359,10 +362,10 @@ con-recordhost
 -1
 38
 18087956
-1505754015
-1551917735
-1
-1505754018
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called con-recordhost
 *End*
@@ -373,10 +376,10 @@ con-mailwarn
 -1
 18
 18087940
-1505754011
-1551917735
-1
-1505754015
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called con-mailwarn
 _version:2:1.2
@@ -388,10 +391,10 @@ census
 -1
 37
 2
-1505754011
-1505754011
 0
-1505754011
+0
+0
+0
 *Props*
 *End*
 1
@@ -403,10 +406,10 @@ con-census
 -1
 36
 18219028
-1505753993
-1551917735
-2
-1551917735
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called con-census
 _day/19/03/06:3:1
@@ -420,10 +423,10 @@ watchfor;wf
 -1
 35
 2
-1505753993
-1505753993
 0
-1505753993
+0
+0
+0
 *Props*
 *End*
 1
@@ -435,10 +438,10 @@ cmd-watchfor-base
 -1
 34
 18087956
-1505753935
-1551917735
-2
-1505753993
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-watchfor-base
 *End*
@@ -449,10 +452,10 @@ sweep;swee
 -1
 33
 2
-1505753934
-1505753934
 0
-1505753934
+0
+0
+0
 *Props*
 *End*
 1
@@ -464,10 +467,10 @@ cmd-sweep
 -1
 32
 18087956
-1505753907
-1505753907
 0
-1505753934
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-sweep
 _docs:2:@list #34=!@1-19
@@ -479,10 +482,10 @@ _docs:2:@list #34=!@1-19
 -1
 31
 2
-1505753907
-1505753907
 0
-1505753907
+0
+0
+0
 *Props*
 *End*
 1
@@ -494,10 +497,10 @@ cmd-3who
 -1
 30
 18087956
-1505753897
-1505753897
 0
-1505753907
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-3who
 *End*
@@ -508,10 +511,10 @@ cp;mv;propcp;propmv
 -1
 29
 2
-1505753896
-1505753896
 0
-1505753896
+0
+0
+0
 *Props*
 *End*
 1
@@ -523,10 +526,10 @@ cmd-mv-cp
 -1
 28
 18087988
-1505753878
-1505753878
 0
-1505753896
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-mv-cp
 _defs/copy-prop:2:#30 "cp-prop" call
@@ -540,10 +543,10 @@ edit
 -1
 27
 2
-1505753877
-1505753877
 0
-1505753877
+0
+0
+0
 *Props*
 *End*
 1
@@ -554,11 +557,11 @@ cmd-edit
 53
 -1
 26
-1310740
-1505753865
-1505753865
+18087956
 0
-1505753877
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-edit
 _author:2:Tygryss
@@ -572,10 +575,10 @@ change
 -1
 25
 2
-1505753864
-1505753864
 0
-1505753864
+0
+0
+0
 *Props*
 *End*
 1
@@ -587,10 +590,10 @@ cmd-change
 -1
 24
 18087956
-1505753845
-1505753845
 0
-1505753864
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-change
 _author:2:Tygryss
@@ -604,10 +607,10 @@ _version:2:1.02
 -1
 23
 2
-1505753845
-1505753845
 0
-1505753845
+0
+0
+0
 *Props*
 *End*
 1
@@ -618,11 +621,11 @@ cmd-@check
 53
 -1
 22
-1310740
-1505753817
-1505753817
+18087956
 0
-1505753845
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-@check
 *End*
@@ -633,10 +636,10 @@ _/de:2:A scroll containing a spell called cmd-@check
 -1
 21
 2
-1505753816
-1505753816
 0
-1505753816
+0
+0
+0
 *Props*
 *End*
 1
@@ -648,10 +651,10 @@ cmd-@archive
 -1
 20
 18087956
-1505753770
-1505753770
 0
-1505753816
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-@archive
 *End*
@@ -662,10 +665,10 @@ whisper;whispe;whisp;whis;whi;wh;w
 -1
 19
 2
-1505753770
-1505753770
 0
-1505753770
+0
+0
+0
 *Props*
 *End*
 1
@@ -677,10 +680,10 @@ cmd-whisper-base
 -1
 40
 18087940
-1505753729
-1505753729
 0
-1505753770
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-whisper-base
 *End*
@@ -691,10 +694,10 @@ put;replace;stuff
 -1
 17
 2
-1505753729
-1505754078
-28
-1505753729
+0
+0
+0
+0
 *Props*
 *End*
 1
@@ -705,11 +708,11 @@ cmd-put
 53
 -1
 16
-1310740
-1505753724
-1505754078
-28
-1505753729
+18087956
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-put
 *End*
@@ -720,10 +723,10 @@ page;pag;pa;p
 -1
 15
 2
-1505753723
-1505753723
-1
-1505753723
+0
+0
+0
+0
 *Props*
 _page/formats/opage:2:%n pages, "%m" to %t.
 _page/formats/opose:2:In a page-pose to %t, %n %m
@@ -739,10 +742,10 @@ cmd-page-base
 -1
 14
 18087956
-1505753462
-1505753723
-1
-1505753723
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-page-base
 _version:2:3.01
@@ -755,10 +758,10 @@ fetch;retrieve;grab
 -1
 -1
 2
-1505753461
-1505753461
 0
-1505753461
+0
+0
+0
 *Props*
 *End*
 1
@@ -770,10 +773,10 @@ cmd-fetch
 -1
 13
 18087956
-1505753454
-1505753454
 0
-1505753461
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called cmd-fetch
 *End*
@@ -784,10 +787,10 @@ lib-reflist
 -1
 12
 17105700
-1505753436
-1505753436
 0
-1505753453
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called lib-reflist
 _defs/REF-add:2:reflist_add
@@ -810,10 +813,10 @@ lib-mesgbox
 -1
 11
 18154276
-1505753416
-1505753416
 0
-1505753436
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called lib-mesgbox
 _defs/MBOX-append:2:#12 "MBOX-append" call
@@ -840,10 +843,10 @@ lib-editor-base
 -1
 10
 18087972
-1505753369
-1505753369
 0
-1505753416
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called lib-editor-base
 _defs/EDITOR:2:#11 "EDITOR" call
@@ -859,10 +862,10 @@ lib-look
 -1
 9
 17105188
-1505753334
-1505753334
 0
-1505753369
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called lib-look
 _defs/.cmd-look:2:#10 "cmd-look" call
@@ -887,10 +890,10 @@ lib-index
 -1
 8
 18153764
-1505753258
-1505753258
 0
-1505753334
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called lib-index
 _author:2:ErmaFelna
@@ -931,10 +934,10 @@ lib-mesg
 -1
 7
 18154276
-1505753235
-1505753235
 0
-1505753258
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called lib-mesg
 _defs/MSG-append:2:#8 "MSG-append" call
@@ -957,10 +960,10 @@ lib-match
 -1
 6
 18153764
-1505753215
-1505754078
-28
-1505753235
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called lib-match
 _defs/.controls:2:controls
@@ -979,10 +982,10 @@ lib-edit
 -1
 5
 18087972
-1505753179
-1505753179
 0
-1505753215
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called lib-edit
 _defs/EDITcenter:2:#6 "EDITcenter" call
@@ -1011,10 +1014,10 @@ lib-strings
 -1
 4
 17105188
-1505753168
-1505753168
 0
-1505753179
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called lib-strings
 _defs/.asc:2:ctoi
@@ -1057,20 +1060,12 @@ lib-stackrng
 -1
 3
 18153764
-1505753150
-1505753150
 0
-1505753168
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called lib-stackrng
-_defs/sr-catrng:2:#4 "catranges" call
-_defs/sr-copyrng:2:#4 "copyrange" call
-_defs/sr-deleterng:2:#4 "deleterange" call
-_defs/sr-extractrng:2:#4 "extractrange" call
-_defs/sr-filterrng:2:#4 "filterrange" call
-_defs/sr-insertrng:2:#4 "insertrange" call
-_defs/sr-poprng:2:popn
-_defs/sr-swaprng:2:#4 "swapranges" call
 _defs/SRNGcat:2:#4 "catranges" call
 _defs/SRNGcopy:2:#4 "copyrange" call
 _defs/SRNGdelete:2:#4 "deleterange" call
@@ -1079,6 +1074,14 @@ _defs/SRNGfilter:2:#4 "filterrange" call
 _defs/SRNGinsert:2:#4 "insertrange" call
 _defs/SRNGpop:2:popn
 _defs/SRNGswap:2:#4 "swapranges" call
+_defs/sr-catrng:2:#4 "catranges" call
+_defs/sr-copyrng:2:#4 "copyrange" call
+_defs/sr-deleterng:2:#4 "deleterange" call
+_defs/sr-extractrng:2:#4 "extractrange" call
+_defs/sr-filterrng:2:#4 "filterrange" call
+_defs/sr-insertrng:2:#4 "insertrange" call
+_defs/sr-poprng:2:popn
+_defs/sr-swaprng:2:#4 "swapranges" call
 _docs:2:@list #4=!@1-37
 *End*
 1
@@ -1088,10 +1091,10 @@ lib-props
 -1
 2
 18153764
-1505753140
-1551917735
-6
-1505753150
+0
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called lib-props
 _defs/.addpropstr:2:#3 "setpropstr" call
@@ -1112,10 +1115,10 @@ lib-lmgr
 -1
 -1
 18154276
-1505753098
-1505753098
 0
-1505753140
+0
+0
+0
 *Props*
 _/de:2:A scroll containing a spell called lib-lmgr
 _defs/.lmgr-clearelem:2:#2 "lmgr-clearelem" call
@@ -1135,6 +1138,22 @@ _defs/.lmgr-putbrange:2:#2 "lmgr-putbrange" call
 _defs/.lmgr-putelem:2:#2 "lmgr-putelem" call
 _defs/.lmgr-putrange:2:#2 "lmgr-putrange" call
 _defs/.lmgr-setcount:2:#2 "lmgr-setcount" call
+_defs/LMGRclearrange:2:#2 "lmgr-clearrange" call
+_defs/LMGRdeletelist:2:#2 "lmgr-deletelist" call
+_defs/LMGRdeleterange:2:#2 "lmgr-deleterange" call
+_defs/LMGRextractrange:2:#2 "lmgr-extractrange" call
+_defs/LMGRfullrange:2:#2 "lmgr-fullrange" call
+_defs/LMGRgetbrange:2:#2 "lmgr-getbrange" call
+_defs/LMGRgetcount:2:#2 "lmgr-getcount" call
+_defs/LMGRgetelem:2:#2 "lmgr-getelem" call
+_defs/LMGRgetlist:2:#2 "lmgr-getlist" call
+_defs/LMGRgetrange:2:#2 "lmgr-getrange" call
+_defs/LMGRinsertrange:2:#2 "lmgr-insertrange" call
+_defs/LMGRmoverange:2:#2 "lmgr-moverange" call
+_defs/LMGRputbrange:2:#2 "lmgr-putbrange" call
+_defs/LMGRputelem:2:#2 "lmgr-putelem" call
+_defs/LMGRputrange:2:#2 "lmgr-putrange" call
+_defs/LMGRsetcount:2:#2 "lmgr-setcount" call
 _defs/lmgr-clearelem:2:#2 "lmgr-clearelem" call
 _defs/lmgr-clearrange:2:#2 "lmgr-clearrange" call
 _defs/lmgr-deletelist:2:#2 "lmgr-deletelist" call
@@ -1152,22 +1171,6 @@ _defs/lmgr-putbrange:2:#2 "lmgr-putbrange" call
 _defs/lmgr-putelem:2:#2 "lmgr-putelem" call
 _defs/lmgr-putrange:2:#2 "lmgr-putrange" call
 _defs/lmgr-setcount:2:#2 "lmgr-setcount" call
-_defs/LMGRclearrange:2:#2 "lmgr-clearrange" call
-_defs/LMGRdeletelist:2:#2 "lmgr-deletelist" call
-_defs/LMGRdeleterange:2:#2 "lmgr-deleterange" call
-_defs/LMGRextractrange:2:#2 "lmgr-extractrange" call
-_defs/LMGRfullrange:2:#2 "lmgr-fullrange" call
-_defs/LMGRgetbrange:2:#2 "lmgr-getbrange" call
-_defs/LMGRgetcount:2:#2 "lmgr-getcount" call
-_defs/LMGRgetelem:2:#2 "lmgr-getelem" call
-_defs/LMGRgetlist:2:#2 "lmgr-getlist" call
-_defs/LMGRgetrange:2:#2 "lmgr-getrange" call
-_defs/LMGRinsertrange:2:#2 "lmgr-insertrange" call
-_defs/LMGRmoverange:2:#2 "lmgr-moverange" call
-_defs/LMGRputbrange:2:#2 "lmgr-putbrange" call
-_defs/LMGRputelem:2:#2 "lmgr-putelem" call
-_defs/LMGRputrange:2:#2 "lmgr-putrange" call
-_defs/LMGRsetcount:2:#2 "lmgr-setcount" call
 _docs:2:@list #2=!@1-51
 _lib-version:2:1.2
 *End*
@@ -1178,10 +1181,10 @@ One
 53
 -1
 1310739
-1435685445
-1551917760
-3
-1551917735
+0
+0
+0
+0
 *Props*
 @/AnnLITime:3:1551917735
 @/host:2:::1
@@ -1200,10 +1203,10 @@ Room Zero
 43
 -1
 0
-1435685445
-1551917735
-4
-1505753723
+0
+0
+0
+0
 *Props*
 _/de:2:You are in Room Zero.  It's very dark here.
 _connect/announce:5:36

@@ -11,6 +11,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <inttypes.h>
+#include <signal.h>
 #include <stdarg.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -56,26 +57,6 @@
 #  include <ssl.h>
 # endif
 #endif
-
-/*
- * @TODO Low priority ... but these messages could easily be @tune
- *       variables.  It would be a very primitive way to support
- *       translation for instance :)
- */
-
-/**
- * @private
- * @var Constant message for failed 'connect' command.
- */
-static const char *connect_fail =
-    "Either that player does not exist, or has a different password.\r\n";
-
-/**
- * @private
- * @var Constant message for failed 'create' command.
- */
-static const char *create_fail =
-    "Either there is already a player with that name, or that name is illegal.\r\n";
 
 #ifdef WIN32
 typedef uint32_t in_addr_t;
@@ -292,23 +273,6 @@ static struct descriptor_data *descr_lookup_table[FD_SETSIZE];
 #define isinput( q ) isprint( (q) & 127 )
 
 /**
- * Wrapper for malloc that causes a panic if we cannot allocate
- *
- * @TODO Remove the use of this.  While I understand why this is here,
- *       personally, I find this confusing and it looks like it is only
- *       used in 5 places ... so let's use regular malloc + if, please.
- *       (tanabi)
- *
- * @param result the variable to put the allocated memory into
- * @param type the type we are allocating
- * @param number the number of 'type's we are allocating.
- */
-#define MALLOC(result, type, number) do {   \
-                                       if (!((result) = malloc ((number) * sizeof (type)))) \
-                                       panic("Out of memory");                             \
-                                     } while (0)
-
-/**
  * @private
  * @var If true, do not detach the MUCK as a daemon.
  */
@@ -447,12 +411,9 @@ show_program_usage(char *prog)
  * @private
  * @param descr the newly added descriptor to consider as the new maximum
  */
-static void
+static inline void
 update_max_descriptor(int descr)
 {
-    /*
-     * @TODO: make this an inline function
-     */
     if (descr >= max_descriptor) {
         max_descriptor = descr + 1;
     }
@@ -539,12 +500,9 @@ has_output(struct descriptor_data *d)
  * @private
  * @param t the block to free
  */
-static void
+static inline void
 free_text_block(struct text_block *t)
 {
-    /*
-     * @TODO Make this an inline
-     */
     free(t->buf);
     free(t);
 }
@@ -570,57 +528,17 @@ make_text_block(const char *s, size_t n)
 {
     struct text_block *p;
 
-    /*
-     * @TODO Remove these MALLOC calls and just use malloc like normal.
-     */
-    MALLOC(p, struct text_block, 1);
-    MALLOC(p->buf, char, n);
+    if (!(p = malloc(sizeof(struct text_block))))
+        panic("make_text_block: Out of memory");
+
+    if (!(p->buf = malloc(n * sizeof(char))))
+        panic("make_text_block: Out of memory");
 
     memmove(p->buf, s, n);
     p->nchars = n;
     p->start = p->buf;
     p->nxt = 0;
     return p;
-}
-
-/*
- * @TODO This function is used in exactly one place: flush_output_queue
- *       Therefore, let's just move this code into flush_output_queue
- *
- *       The 'add_flushed_message' parameter is irrelevant because it is
- *       always 1.
- */
-static int
-flush_queue(struct text_queue *q, int n, int add_flushed_message)
-{
-    struct text_block *p;
-    int really_flushed = 0;
-
-    if (add_flushed_message) {
-        n += strlen(flushed_message);
-    }
-
-    while (n > 0 && (p = q->head)) {
-        n -= p->nchars;
-        really_flushed += p->nchars;
-        q->head = p->nxt;
-        q->lines--;
-        free_text_block(p);
-    }
-
-    if (add_flushed_message) {
-        p = make_text_block(flushed_message, strlen(flushed_message));
-        p->nxt = q->head;
-        q->head = p;
-        q->lines++;
-
-        if (!p->nxt)
-            q->tail = &p->nxt;
-
-        really_flushed -= p->nchars;
-    }
-
-    return really_flushed;
 }
 
 /**
@@ -654,13 +572,35 @@ add_to_queue(struct text_queue *q, const char *b, size_t n)
  * @param size_limit the number of blocks to limit to
  */
 static void
-flush_output_queue(struct descriptor_data *d, int size_limit) {
-    int space;
+flush_output_queue(struct descriptor_data *d, int size_limit)
+{
+    int space = d->output_size - size_limit;
 
-    space = size_limit - d->output_size;
+    if (space > 0) {
+        struct text_block *p;
+        struct text_queue *q = &d->output;
+        int n = space + strlen(flushed_message);
+        int really_flushed = 0;
 
-    if (space < 0) {
-        d->output_size -= flush_queue(&d->output, -space, 1);
+        while (n > 0 && (p = q->head)) {
+            n -= p->nchars;
+            really_flushed += p->nchars;
+            q->head = p->nxt;
+            q->lines--;
+            free_text_block(p);
+        }
+
+        p = make_text_block(flushed_message, strlen(flushed_message));
+        p->nxt = q->head;
+        q->head = p;
+        q->lines++;
+
+        if (!p->nxt)
+            q->tail = &p->nxt;
+
+        really_flushed -= p->nchars;
+
+        d->output_size -= really_flushed;
     }
 }
 
@@ -1012,8 +952,8 @@ parse_connect(const char *msg, char *command, char *user, char *pass)
 /**
  * Dump a text file to the given descriptor
  *
- * This is extremely similar to spit_file, except spit_file does a lot
- * of "extra stuff" and takes a player parameter instead of a descriptor.
+ * This is extremely similar to spit_file_segment, except spit_file_degment
+ * does a lot of "extra stuff" and takes a player parameter instead of a descriptor.
  *
  * This code seems very duplicate as a result, but the calling patterns
  * are very different -- this is more for "unconnected" or rather folks
@@ -1096,33 +1036,6 @@ announce_puppets(dbref player, const char *msg, const char *prop)
 }
 
 /**
- * Return number of descriptors that player has open
- *
- * This will be 0 if the player is offline, but the number returned
- * is significant to some callers so it isn't just a binary.  Some
- * callers use it as a binary, some callers legitimately want the result.
- *
- * @param player the player to check
- * @return number of active descriptors the player has open
- */
-int
-online(dbref player)
-{
-    /*
-     * @TODO This is just a wrapper around a globally available
-     *       define, which makes this call kind of stupid.  I would
-     *       recommend just removing all uses of online(...) with
-     *       PLAYER_DESCRCOUNT directly rather than have this little
-     *       obfuscator function.
-     *
-     *       Personally, I think that makes it a little more clear what
-     *       this call is actually doing, because it would be easy to
-     *       assume this is a simple boolean otherwise.
-     */
-    return PLAYER_DESCRCOUNT(player);
-}
-
-/**
  * Announces a player connection, with associated 'business logic'
  *
  * If the player is dark, or in a dark location, no announcement is made.
@@ -1154,7 +1067,7 @@ announce_connect(int descr, dbref player)
 
     exit = NOTHING;
 
-    if (online(player) == 1) {
+    if (PLAYER_DESCRCOUNT(player) == 1) {
         /* match for connect */
         init_match(descr, player, "connect", TYPE_EXIT, &md);
         md.match_level = 1;
@@ -1179,7 +1092,7 @@ announce_connect(int descr, dbref player)
     if (exit != NOTHING)
         do_move(descr, player, "connect", 1);
 
-    if (online(player) == 1) {
+    if (PLAYER_DESCRCOUNT(player) == 1) {
         announce_puppets(player, "wakes up.", MESGPROP_PCON);
     }
 
@@ -1261,6 +1174,7 @@ welcome_user(struct descriptor_data *d)
     FILE *f;
     char *ptr;
     char buf[BUFFER_LEN];
+
     int welcome_proplist = 0;
 
     /*
@@ -1693,12 +1607,11 @@ forget_descriptor(struct descriptor_data *d)
  *
  * @see gethash_descr
  *
- * @private
  * @param c the descriptor to lookup
  * @return the descriptor_data corresponding to c or NULL if not found
  */
-static struct descriptor_data *
-lookup_descriptor(int c)
+struct descriptor_data *
+descrdata_by_descr(int c)
 {
 #ifdef WIN32
     if (c < 0)
@@ -1815,7 +1728,8 @@ check_connect(struct descriptor_data *d, const char *msg)
         player = connect_player(user, password);
 
         if (player == NOTHING) {
-            queue_ansi(d, connect_fail);
+            queue_ansi(d, tp_connect_fail_mesg);
+            queue_write(d, "\r\n", 2);
             log_status("FAILED CONNECT %s on descriptor %d", user,
                        d->descriptor);
         } else {
@@ -1886,7 +1800,8 @@ check_connect(struct descriptor_data *d, const char *msg)
                 player = create_player(user, password);
 
                 if (player == NOTHING) {
-                    queue_ansi(d, create_fail);
+                    queue_ansi(d, tp_create_fail_mesg);
+                    queue_write(d, "\r\n", 2);
                     log_status("FAILED CREATE %s on descriptor %d", user,
                                d->descriptor);
                 } else {
@@ -1901,7 +1816,7 @@ check_connect(struct descriptor_data *d, const char *msg)
 
                     /* cks: someone has to initialize this somewhere. */
                     PLAYER_SET_BLOCK(d->player, 0);
-                    spit_file(player, tp_file_motd);
+                    spit_file_segment(player, tp_file_motd, "");
                     announce_connect(d->descriptor, player);
                     con_players_curr++;
                 }
@@ -2360,7 +2275,7 @@ static void
 idleboot_user(struct descriptor_data *d)
 {
     char buf[BUFFER_LEN];
-    snprintf(buf, sizeof(buf), "\r\n%s\r\n\r\n", tp_idle_mesg);
+    snprintf(buf, sizeof(buf), "\r\n%s\r\n\r\n", tp_idle_boot_mesg);
     queue_immediate_and_flush(d, buf);
     d->booted = 1;
 }
@@ -2454,7 +2369,7 @@ announce_disconnect(struct descriptor_data *d)
     }
 
     /* trigger local disconnect action */
-    if (online(player) == 1) {
+    if (PLAYER_DESCRCOUNT(player) == 1) {
         if (can_move(d->descriptor, player, "disconnect", 1)) {
             do_move(d->descriptor, player, "disconnect", 1);
         }
@@ -2652,56 +2567,30 @@ initializesock(int s, const char *hostname, int is_ssl)
     struct descriptor_data *d;
     char buf[128], *ptr;
 
-    MALLOC(d, struct descriptor_data, 1);
+    if (!(d = malloc(sizeof(struct descriptor_data))))
+        panic("initializesock: Out of memory");
 
-    /*
-     * @TODO the majority of this can be replaced with memset(d, 0, sizeof)
-     *       then set the things that need to be set afterwards.  It should
-     *       cut this function down to a fraction of its current size.
-     */
+    memset(d, 0, sizeof(struct descriptor_data));
 
     d->descriptor = s;
 
 #ifdef USE_SSL
-    d->ssl_session = NULL;
-    d->pending_ssl_write.lines = 0;
-    d->pending_ssl_write.head = 0;
     d->pending_ssl_write.tail = &d->pending_ssl_write.head;
 #endif
 
-    d->connected = 0;
-    d->booted = 0;
-    d->block_writes = 0;
-    d->is_starttls = 0;
-    d->player = -1;
-    d->con_number = 0;
+    d->player = NOTHING;
     d->connected_at = time(NULL);
 
     make_nonblocking(s);
     make_cloexec(s);
 
-    d->output_size = 0;
-    d->priority_output.lines = 0;
-    d->priority_output.head = 0;
     d->priority_output.tail = &d->priority_output.head;
-    d->output.lines = 0;
-    d->output.head = 0;
     d->output.tail = &d->output.head;
-    d->input.lines = 0;
-    d->input.head = 0;
     d->input.tail = &d->input.head;
-    d->raw_input = 0;
-    d->raw_input_at = 0;
-    d->telnet_enabled = 0;
-    d->telnet_state = TELNET_STATE_NORMAL;
-    d->telnet_sb_opt = 0;
-    d->short_reads = 0;
     
 #ifdef IP_FORWARDING
-    // Gateway logic
-    d->forwarding_enabled = 0;
-    MALLOC(d->forwarded_buffer, char, 128);
-    d->forwarded_size = 0;
+    if (!(d->forwarded_buffer = malloc(128 * sizeof(char))))
+        panic("initializesock: Out of memory");
 #endif
 
     d->quota = tp_command_burst_size;
@@ -2854,7 +2743,7 @@ addrout_v6(in_port_t lport, struct in6_addr *a, in_port_t prt)
     prt = ntohs(prt);
 
 #ifndef SPAWN_HOST_RESOLVER
-    if (tp_hostnames) {
+    if (tp_use_hostnames) {
         /*
          * One day the nameserver Qwest uses decided to start
          * doing halfminute lags, locking up the entire muck
@@ -2895,7 +2784,7 @@ addrout_v6(in_port_t lport, struct in6_addr *a, in_port_t prt)
     snprintf(buf, sizeof(buf), "%s(%" PRIu16 ")%" PRIu16 "\n", ip6addr, prt,
              lport);
 
-    if (tp_hostnames) {
+    if (tp_use_hostnames) {
         write(resolver_sock[1], buf, strlen(buf));
     }
 #endif
@@ -2933,12 +2822,7 @@ new_connection_v6(in_port_t port, int sock_, int is_ssl)
         return 0;
     } else {
 #ifdef F_SETFD
-        /*
-         * @TODO This '1' is FD_CLOEXEC ... we should use FD_CLOEXEC
-         *       instead of '1' just in case its different on other
-         *       systems.
-         */
-        fcntl(newsock, F_SETFD, 1);
+        fcntl(newsock, F_SETFD, FD_CLOEXEC);
 #endif
         strcpyn(hostname, sizeof(hostname), addrout_v6(port, &(addr.sin6_addr), addr.sin6_port));
         log_status("ACCEPT: %s on descriptor %d", hostname, newsock);
@@ -2984,7 +2868,7 @@ addrout(in_port_t lport, in_addr_t a, in_port_t prt)
     prt = ntohs(prt);
 
 #ifndef SPAWN_HOST_RESOLVER
-    if (tp_hostnames) {
+    if (tp_use_hostnames) {
         /*
          * One day the nameserver Qwest uses decided to start
          * doing halfminute lags, locking up the entire muck
@@ -3026,7 +2910,7 @@ addrout(in_port_t lport, in_addr_t a, in_port_t prt)
              "(%" PRIu16 ")%" PRIu16 "\n", (a >> 24) & 0xff, (a >> 16) & 0xff,
              (a >> 8) & 0xff, a & 0xff, prt, lport);
 
-    if (tp_hostnames) {
+    if (tp_use_hostnames) {
         write(resolver_sock[1], buf, strlen(buf));
     }
 #endif
@@ -3264,7 +3148,9 @@ process_input(struct descriptor_data *d)
      * MAX_COMMAND_LEN in size.
      */
     if (!d->raw_input) {
-        MALLOC(d->raw_input, char, MAX_COMMAND_LEN);
+        if (!(d->raw_input = malloc(MAX_COMMAND_LEN * sizeof(char))))
+            panic("process_input: Out of memory");
+
         d->raw_input_at = d->raw_input;
     }
 
@@ -3725,7 +3611,7 @@ configure_new_ssl_ctx(void)
 
     SSL_CTX_set_cipher_list(new_ssl_ctx, tp_ssl_cipher_preference_list);
 
-    if (tp_cipher_server_preference) {
+    if (tp_server_cipher_preference) {
         SSL_CTX_set_options(new_ssl_ctx, SSL_OP_CIPHER_SERVER_PREFERENCE);
     }
 
@@ -3755,7 +3641,6 @@ configure_new_ssl_ctx(void)
             ssl_status_ok = 0;
         }
     }
-
 
     /*
      * @TODO These two if's (and possibly others) can be reduced to a
@@ -3789,39 +3674,12 @@ configure_new_ssl_ctx(void)
      */
     if (ssl_status_ok) {
         SSL_CTX_set_mode(new_ssl_ctx, SSL_MODE_AUTO_RETRY);
-    }
-
-    /*
-     * @TODO This can be an else to the above rather than a separate
-     *       if check :P
-     */
-    if (!ssl_status_ok) {
+    } else {
         SSL_CTX_free(new_ssl_ctx);
         new_ssl_ctx = NULL;
     }
 
     return new_ssl_ctx;
-}
-
-/*
- * @TODO Put this code into the one place this function is called.
- *       Its sort of pointlessly its own function, probably to make
- *       a define block smaller -- but the split up is just confusing.
- */
-static void
-bind_ssl_sockets(void)
-{
-    for (unsigned int i = 0; i < ssl_numports; i++) {
-        ssl_sock[i] = make_socket(ssl_listener_port[i]);
-        update_max_descriptor(ssl_sock[i]);
-        ssl_numsocks++;
-    }
-
-    for (unsigned int i = 0; i < ssl_numports; i++) {
-        ssl_sock_v6[i] = make_socket_v6(ssl_listener_port[i]);
-        update_max_descriptor(ssl_sock_v6[i]);
-        ssl_numsocks_v6++;
-    }
 }
 
 /**
@@ -4546,7 +4404,7 @@ notify_nolisten(dbref player, const char *msg, int isprivate)
          *       outside the loop because I do not think the player
          *       descriptor list can change during the run of this call.
          *
-         *       Secondly, if the player is a zombie and tp_zombies is
+         *       Secondly, if the player is a zombie and tp_allow_zombies is
          *       false, then nothing will happen -- and we just looped
          *       over all this stuff for fun.
          *
@@ -4555,13 +4413,13 @@ notify_nolisten(dbref player, const char *msg, int isprivate)
          *
          *       isZombie = Typeof(player) == TYPE_THING, FLAGS & ZOMBIE,
          *       and all that other good stuff that's in the second if
-         *       statement after if(tp_zombies)
+         *       statement after if(tp_allow_zombies)
          *
-         *       Then, if darr == 0 && !isZombie || isZombie && !tp_zombies,
+         *       Then, if darr == 0 && !isZombie || isZombie && !tp_allow_zombies,
          *       then return -- these cases we will do nothing.
          *
          *       Otherwise, loop.  if isZombie, run the stuff within the
-         *       if statement after if (tp_zombies).  Else, loop over the
+         *       if statement after if (tp_allow_zombies).  Else, loop over the
          *       descriptors and queue it up as-written.
          *
          *       That cleans it up and makes this way more efficient.
@@ -4575,7 +4433,7 @@ notify_nolisten(dbref player, const char *msg, int isprivate)
                 retval++;
         }
 
-        if (tp_zombies) {
+        if (tp_allow_zombies) {
             if ((Typeof(player) == TYPE_THING) && (FLAGS(player) & ZOMBIE) &&
                 !(FLAGS(OWNER(player)) & ZOMBIE) &&
                 (!(FLAGS(player) & DARK) || Wizard(OWNER(player)))) {
@@ -4689,8 +4547,8 @@ notify_from_echo(dbref from, dbref player, const char *msg, int isprivate)
 {
     const char *ptr = msg;
 
-    if (tp_listeners) {
-        if (tp_listeners_obj || Typeof(player) == TYPE_ROOM) {
+    if (tp_allow_listeners) {
+        if (tp_allow_listeners_obj || Typeof(player) == TYPE_ROOM) {
             listenqueue(-1, from, LOCATION(from), player, player, NOTHING,
                         LISTEN_PROPQUEUE, ptr, tp_listen_mlev, 1, 0);
             listenqueue(-1, from, LOCATION(from), player, player, NOTHING,
@@ -4740,20 +4598,6 @@ notify_from_echo(dbref from, dbref player, const char *msg, int isprivate)
 }
 
 /**
- * Send a notification from one player to another.
- *
- * This is a wrapper around notify_from_echo that defaults isprivate to true.
- *
- * @TODO Remove this call -- it looks like it is only used in 3 places in
- *       speech.c.  Almost everything uses notify_from_echo directly.
- */
-int
-notify_from(dbref from, dbref player, const char *msg)
-{
-    return notify_from_echo(from, player, msg, 1);
-}
-
-/**
  * Send a notification to a player, from the player.
  *
  * This is for system messages in response to a player's actions for the
@@ -4769,12 +4613,9 @@ notify_from(dbref from, dbref player, const char *msg)
  * @param msg the message to send to the player
  * @return the return value from notify_from_echo
  */
-int
+inline int
 notify(dbref player, const char *msg)
 {
-    /*
-     * @TODO: change this into an inline
-     */
     return notify_from_echo(player, player, msg, 1);
 }
 
@@ -4857,7 +4698,7 @@ notify_listeners(dbref who, dbref xprog, dbref obj, dbref room,
     if (obj == NOTHING)
         return;
 
-    if (tp_listeners && (tp_listeners_obj || Typeof(obj) == TYPE_ROOM)) {
+    if (tp_allow_listeners && (tp_allow_listeners_obj || Typeof(obj) == TYPE_ROOM)) {
         listenqueue(-1, who, room, obj, obj, xprog, LISTEN_PROPQUEUE, msg,
                     tp_listen_mlev, 1, 0);
         listenqueue(-1, who, room, obj, obj, xprog, WLISTEN_PROPQUEUE, msg,
@@ -4867,14 +4708,14 @@ notify_listeners(dbref who, dbref xprog, dbref obj, dbref room,
     }
 
     /*
-     * @TODO I think this is wrong.  tp_zombies shouldn't block vehicles.
+     * @TODO I think this is wrong.  tp_allow_zombies shouldn't block vehicles.
      *       isprivate is probably used improperly as well here.  I'd just
      *       take this outer if off and add a TYPE_THING check to the inner
      *       if.  I think notify_filtered (or one of its children) handles
-     *       tp_zombies + isprivate so none of that is of concern to us here.
+     *       tp_allow_zombies + isprivate so none of that is of concern to us here.
      *       (tanabi)
      */
-    if (tp_zombies && Typeof(obj) == TYPE_THING && !isprivate) {
+    if (tp_allow_zombies && Typeof(obj) == TYPE_THING && !isprivate) {
         if (FLAGS(obj) & VEHICLE) {
             if (LOCATION(who) == LOCATION(obj)) {
                 char pbuf[BUFFER_LEN];
@@ -4926,10 +4767,10 @@ notify_except(dbref first, dbref exception, const char *msg, dbref who)
 
     srch = room = LOCATION(first);
 
-    if (tp_listeners) {
+    if (tp_allow_listeners) {
         notify_from_echo(who, srch, msg, 0);
 
-        if (tp_listeners_env) {
+        if (tp_allow_listeners_env) {
             srch = LOCATION(srch);
             while (srch != NOTHING) {
                 notify_from_echo(who, srch, msg, 0);
@@ -5414,28 +5255,77 @@ do_armageddon(dbref player, const char *msg)
     exit(ARMAGEDDON_EXIT_CODE);
 }
 
+
 /**
- * Does some parts of the emergency "panic" shutdown"
+ * "Panic" the MUCK, which shuts it down with a message.
  *
- * @TODO This function is a total misnomer -- it only does a very tiny
- *       fraction of the shutdown -- and is only called in one
- *       place (panic in game.c) and this function exists because
- *       close_sockets and kill_resolver are both statics.
+ * The database is dumped to 'dumpfile' with a '.PANIC' suffix, unless
+ * we can't write it.  Macros are similarly dumped with a '.PANIC' suffix
+ * unless it cannot be written.
  *
- *       Looks like 'panic' doesn't use any calls that are specific to
- *       game.c ... so I recommend moving panic(...) to here and just
- *       putting these couple of lines of code in panic(...) rather
- *       than have this stupid little misnomer function.
+ * If NOCOREDUMP is defined, we will exit with code 135.  Otherwise, we
+ * will call abort() which should produce a core dump.
+ *
+ * @param message the message to show in the log
  */
 void
-emergency_shutdown(void)
+panic(const char *message)
 {
-    close_sockets("\r\nEmergency shutdown due to server crash.");
+    char panicfile[2048];
+    FILE *f;
+
+    log_status("PANIC: %s", message);
+    fprintf(stderr, "PANIC: %s\n", message);
+
+    /* shut down interface */
+    if (!forked_dump_process_flag) {
+        close_sockets("\r\nEmergency shutdown due to server crash.");
 
 #ifdef SPAWN_HOST_RESOLVER
-    kill_resolver();
+        kill_resolver();
+#endif
+    }
+
+#ifdef SPAWN_HOST_RESOLVER
+    if (global_resolver_pid != 0) {
+        (void) kill(global_resolver_pid, SIGKILL);
+    }
 #endif
 
+    /* dump panic file */
+    snprintf(panicfile, sizeof(panicfile), "%s.PANIC", dumpfile);
+
+    if ((f = fopen(panicfile, "wb")) != NULL) {
+        log_status("DUMPING: %s", panicfile);
+        fprintf(stderr, "DUMPING: %s\n", panicfile);
+        db_write(f);
+        fclose(f);
+        log_status("DUMPING: %s (done)", panicfile);
+        fprintf(stderr, "DUMPING: %s (done)\n", panicfile);
+    } else {
+        perror("CANNOT OPEN PANIC FILE, YOU LOSE");
+    }
+
+    /* Write out the macros */
+    snprintf(panicfile, sizeof(panicfile), "%s.PANIC", MACRO_FILE);
+
+    if ((f = fopen(panicfile, "wb")) != NULL) {
+        macrodump(macrotop, f);
+        fclose(f);
+    } else {
+        perror("CANNOT OPEN MACRO PANIC FILE, YOU LOSE");
+    }
+
+
+    sync();
+#ifdef NOCOREDUMP
+    exit(135);
+#else /* !NOCOREDUMP */
+#ifdef SIGIOT
+    signal(SIGIOT, SIG_DFL);
+#endif
+    abort();
+#endif /* NOCOREDUMP */
 }
 
 #ifdef MUD_ID
@@ -5528,17 +5418,6 @@ get_player_descrs(dbref player, int *count)
         *count = 0;
         return NULL;
     }
-}
-
-/*
- * @TODO .... da fuck?
- *       lookup_descriptor is ONLY used here.  *ONLY* used here.
- *       Rename lookup_descriptor to descrdata_by_descr.  Done.
- */
-struct descriptor_data *
-descrdata_by_descr(int i)
-{
-    return lookup_descriptor(i);
 }
 
 /**
@@ -6551,12 +6430,9 @@ ignore_is_ignoring_sub(dbref Player, dbref Who)
  * @param Who the player to check to see if being ignored.
  * @return boolean true if Player is ignoring Who
  */
-int
+inline int
 ignore_is_ignoring(dbref Player, dbref Who)
 {
-    /*
-     * @TODO change this to an inline function.
-     */
     return ignore_is_ignoring_sub(Player, Who) || (tp_ignore_bidirectional
                                   && ignore_is_ignoring_sub(Who, Player));
 }
@@ -6579,38 +6455,6 @@ ignore_flush_cache(dbref Player)
     PLAYER_SET_IGNORE_CACHE(Player, NULL);
     PLAYER_SET_IGNORE_COUNT(Player, 0);
     PLAYER_SET_IGNORE_LAST(Player, NOTHING);
-}
-
-/**
- * Iterate over the entire DB and delete all player ignore caches
- *
- * @private
- */
-static void
-ignore_flush_all_cache(void)
-{
-    /* Don't touch the database if it's not been loaded yet... */
-    if (db == 0)
-        return;
-
-    for (dbref i = 0; i < db_top; i++) {
-        /*
-         * @TODO while it would be very slightly less efficient (an
-         *       ObjExists check added to each object), this little if
-         *       statement could be replaced with a call to ignore_flush_cache
-         *       to centralize the memory free-ing logic.
-         *
-         *       This only gets called when a player gets toaded, so I
-         *       think the cleanliness is worth a very slight performance
-         *       impact.
-         */
-        if (Typeof(i) == TYPE_PLAYER) {
-            free(PLAYER_IGNORE_CACHE(i));
-            PLAYER_SET_IGNORE_CACHE(i, NULL);
-            PLAYER_SET_IGNORE_COUNT(i, 0);
-            PLAYER_SET_IGNORE_LAST(i, NOTHING);
-        }
-    }
 }
 
 /**
@@ -6688,12 +6532,28 @@ ignore_remove_from_all_players(dbref Player)
         if (Typeof(i) == TYPE_PLAYER)
             reflist_del(i, IGNORE_PROP, Player);
 
-    /*
-     * @TODO Move the code for ignore_flush_all_cache into here.  It is
-     *       only used here and is a relatively small piece of code that
-     *       is otherwise fairly useless.
-     */
-    ignore_flush_all_cache();
+    /* Don't touch the database if it's not been loaded yet... */
+    if (db == 0)
+        return;
+
+    for (dbref i = 0; i < db_top; i++) {
+        /*
+         * @TODO while it would be very slightly less efficient (an
+         *       ObjExists check added to each object), this little if
+         *       statement could be replaced with a call to ignore_flush_cache
+         *       to centralize the memory free-ing logic.
+         *
+         *       This only gets called when a player gets toaded, so I
+         *       think the cleanliness is worth a very slight performance
+         *       impact.
+         */
+        if (Typeof(i) == TYPE_PLAYER) {
+            free(PLAYER_IGNORE_CACHE(i));
+            PLAYER_SET_IGNORE_CACHE(i, NULL);
+            PLAYER_SET_IGNORE_COUNT(i, 0);
+            PLAYER_SET_IGNORE_LAST(i, NOTHING);
+        }
+    }
 }
 
 /**
@@ -6705,12 +6565,11 @@ ignore_remove_from_all_players(dbref Player)
  * If the file is missing, it outputs an error and outputs the message
  * to stderr.  There's no restriction on file paths.
  *
- * @private
  * @param player the player to send the file to
  * @param filename the file to send to the player
  * @param seg this can be an empty string or a line number range
  */
-static void
+void
 spit_file_segment(dbref player, const char *filename, const char *seg)
 {
     FILE *f;
@@ -6745,7 +6604,7 @@ spit_file_segment(dbref player, const char *filename, const char *seg)
          * @TODO perhaps this should go to the log as well
          */
         notifyf(player, "Sorry, %s is missing.  Management has been notified.", filename);
-        fputs("spit_file:", stderr);
+        fputs("spit_file_segment:", stderr);
         perror(filename);
     } else {
         while (fgets(buf, sizeof buf, f)) {
@@ -6871,16 +6730,6 @@ show_subfile(dbref player, const char *dir, const char *topic, const char *seg,
         spit_file_segment(player, buf, seg);
         return 1;
     }
-}
-
-/*
- * @TODO Recommend we remove this function and just replace it with
- *       spit_file_segment in the handful of places we call this.
- */
-void
-spit_file(dbref player, const char *filename)
-{
-    spit_file_segment(player, filename, "");
 }
 
 /**
@@ -7227,7 +7076,17 @@ main(int argc, char **argv)
     }
 
 #ifdef USE_SSL
-    bind_ssl_sockets();
+    for (unsigned int i = 0; i < ssl_numports; i++) {
+        ssl_sock[i] = make_socket(ssl_listener_port[i]);
+        update_max_descriptor(ssl_sock[i]);
+        ssl_numsocks++;
+    }
+
+    for (unsigned int i = 0; i < ssl_numports; i++) {
+        ssl_sock_v6[i] = make_socket_v6(ssl_listener_port[i]);
+        update_max_descriptor(ssl_sock_v6[i]);
+        ssl_numsocks_v6++;
+    }
 #endif
 
     /*

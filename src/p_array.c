@@ -838,7 +838,7 @@ sortcomp_generic(const void *x, const void *y)
 	    return 1;
 	}
     }
-    return (array_idxcmp_case(a, b, (sortflag_caseinsens ? 0 : 1)));
+    return (array_tree_compare(a, b, (sortflag_caseinsens ? 0 : 1)));
 }
 
 static int
@@ -1387,8 +1387,14 @@ prim_array_put_proplist(PRIM_PROTOTYPE)
     if (!prop_write_perms(ProgUID, ref, propname, mlev))
 	abort_interp("Permission denied while trying to set protected property.");
 
-    propdat.flags = PROP_INTTYP;
-    propdat.data.val = array_count(arr);
+    if (array_is_homogenous(arr, PROG_STRING)) {
+        propdat.flags = PROP_STRTYP;
+        snprintf(buf, sizeof(buf), "%d", array_count(arr));
+        propdat.data.str = buf;
+    } else {
+        propdat.flags = PROP_INTTYP;
+        propdat.data.val = array_count(arr);
+    }
     set_property(ref, propname, &propdat, 0);
 
     if (array_first(arr, &temp1)) {
@@ -1629,7 +1635,7 @@ prim_array_findval(PRIM_PROTOTYPE)
     if (array_first(arr, &temp1)) {
 	do {
 	    in = array_getitem(arr, &temp1);
-	    if (!array_idxcmp_case(in, oper2, 0)) {
+	    if (!array_tree_compare(in, oper2, 0)) {
 		array_appenditem(&nu, &temp1);
 	    }
 	} while (array_next(arr, &temp1));
@@ -1671,13 +1677,13 @@ prim_array_compare(PRIM_PROTOTYPE)
 	result = 1;
     } else {
 	do {
-	    result = array_idxcmp_case(&temp1, &temp2, 0);
+	    result = array_tree_compare(&temp1, &temp2, 0);
 	    if (result)
 		break;
 
 	    val1 = array_getitem(arr1, &temp1);
 	    val2 = array_getitem(arr2, &temp2);
-	    result = array_idxcmp_case(val1, val2, 0);
+	    result = array_tree_compare(val1, val2, 0);
 	    if (result)
 		break;
 
@@ -1824,7 +1830,7 @@ prim_array_excludeval(PRIM_PROTOTYPE)
     if (array_first(arr, &temp1)) {
 	do {
 	    in = array_getitem(arr, &temp1);
-	    if (array_idxcmp_case(in, oper2, 0)) {
+	    if (array_tree_compare(in, oper2, 0)) {
 		array_appenditem(&nu, &temp1);
 	    }
 	} while (array_next(arr, &temp1));
@@ -2024,7 +2030,7 @@ prim_array_pin(PRIM_PROTOTYPE)
 	arr->links++;
 	nu = arr;
     }
-    array_set_pinned(nu, 1);
+    nu->pinned = 1;
 
     CLEAR(oper1);
     PushArrayRaw(nu);
@@ -2043,7 +2049,7 @@ prim_array_unpin(PRIM_PROTOTYPE)
     arr = oper1->data.array;
     if (arr) {
 	arr->links++;
-	array_set_pinned(arr, 0);
+	arr->pinned = 0;
     }
 
     CLEAR(oper1);

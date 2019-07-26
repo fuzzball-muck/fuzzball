@@ -103,7 +103,7 @@ SECS
 ~
 CONVTIME
 {convtime:string}
-    Converts "HH:MM:SS Mo/Dy/Yr" format time string to systime seconds.
+    Converts time string from "HH:MM:SS MO/DY/YR" format to systime seconds.
 ~
 ~
 CONVSECS

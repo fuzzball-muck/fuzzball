@@ -239,25 +239,33 @@ static A_Header root = {
 static Header rover = &root;
 
 
-/*
- * @TODO These multi-line defines are gross.  Replace them with
- *       inline functions.
+/**
+ * Insert a block into 'root' linklist
+ *
+ * @private
+ * @param m the block to insert
  */
-/* Macro to insert block m into 'root' linklist: */
-#undef  INSERT
-#define INSERT(m) {                 \
-    root. next->prev =  (m);        \
-   (m)        ->next =  root.next;  \
-   (m)        ->prev = &root;       \
-    root.       next =  (m);        \
-    }
+static inline void
+insert_block(Header m)
+{
+    root.next->prev = m;
+    m->next =  root.next;
+    m->prev = &root;
+    root. next = m;
+}
 
-/* Macro to remove block m from 'root' linklist: */
-#undef  REMOVE
-#define REMOVE(m) {                 \
-   (m)->next->prev = (m)->prev;     \
-   (m)->prev->next = (m)->next;     \
-    }
+/**
+ * Remove a block from 'root' linklist
+ *
+ * @private
+ * @param m the block to remove
+ */
+static inline void
+remove_block(Header m)
+{
+    m->next->prev = m->prev;
+    m->prev->next = m->next;
+}
 
 /**
  * @private
@@ -473,26 +481,12 @@ blocks_sort(Block b1)
 static Block
 block_alloc(const char *file, int line)
 {
-    Block b = malloc(sizeof(A_Block));
-
-    /*
-     * @TODO Recommend we do a memset(b, 0, sizeof(A_Block)), then
-     *       set file, line, and ->next.  It is more efficient and
-     *       makes sure the whole structure is properly nulled out.
-     */
+    Block b = calloc(1, sizeof(A_Block));
 
     b->file = file;
     b->line = line;
-
-    b->tot_bytes_alloc = 0;
-    b->tot_allocs_done = 0;
-    b->live_blocks = 0;
-    b->live_bytes = 0;
-    b->max_blocks = 0;
-    b->max_bytes = 0;
-
     b->next = block_list;
-    block_list = b;
+
     return b;
 }
 
@@ -693,30 +687,7 @@ CrT_summarize_to_file(const char *file, const char *comment)
 /* Debug support functions: */
 
 /**
- * This is the second stage of "crash", that does the actual abort
- *
- * Apparently the reason for this function is it is easier to read
- * from dbx 'where' command.  I guess it is easier to make a break
- * point here?
- *
- * This calls abort() to exit the program.
- *
- * @private
- * @param err the error message
- *
- * @TODO Just get rid of this and move abort to crash - you can set a
- *       breakpoint on crash easy enough.
- */
-static void
-crash2(char *err)
-{
-    abort();
-}
-
-/**
  * Crashes the server and generates a mesage that isn't displayed anywhere
- *
- * @TODO maybe this should display this message somewhere?
  *
  * @private
  * @param err the error message which isn't displayed.
@@ -731,16 +702,8 @@ crash(char *err, Header m, const char *file, int line)
 
     snprintf(buf, sizeof(buf), "Err found at %s:%d in block from %s:%d", file,
              line, m->b->file, m->b->line);
-    /*
-     * The original reason for this to hand off to crash2 to do the
-     * abort is because it is "easier to find in dbx".  I'm not sure
-     * why you wouldn't put a break point here on 'crash' with whatever
-     * debugger, and with no further explanation from the original author
-     * available, I say just put the 'abort' here and get rid of crash2.
-     *
-     * @TODO change this to abort() and remove crash2
-     */
-    crash2(buf);
+
+    panic(buf);
 }
 
 /**
@@ -861,7 +824,7 @@ CrT_malloc(size_t size, const char *file, int line)
     *m->end = CRT_MAGIC;
 
     /* Thread m into linklist of allocated blocks: */
-    INSERT(m);
+    insert_block(m);
 
     /* Remember we've touched 'm' recently: */
     just_touched[++next_touched & (CRT_NEW_TO_CHECK - 1)] = m;
@@ -924,7 +887,7 @@ CrT_calloc(size_t num, size_t siz, const char *file, int line)
     *m->end = CRT_MAGIC;
 
     /* Thread m into linklist of allocated blocks: */
-    INSERT(m);
+    insert_block(m);
 
     /* Remember we've touched 'm' recently: */
     just_touched[++next_touched & (CRT_NEW_TO_CHECK - 1)] = m;
@@ -977,7 +940,7 @@ CrT_realloc(void *p, size_t size, const char *file, int line)
     }
 
     /* Remove m from linklist of allocated blocks: */
-    REMOVE(m);
+    remove_block(m);
 
     /* Remove m from just_touched[], if present: */
     {
@@ -1012,7 +975,7 @@ CrT_realloc(void *p, size_t size, const char *file, int line)
     *m->end = CRT_MAGIC;
 
     /* Thread m into linklist of allocated blocks: */
-    INSERT(m);
+    insert_block(m);
 
     /* Remember we've touched 'm' recently: */
     just_touched[++next_touched & (CRT_NEW_TO_CHECK - 1)] = m;
@@ -1059,7 +1022,7 @@ CrT_free(void *p, const char *file, int line)
     }
 
     /* Remove m from linklist of allocated blocks: */
-    REMOVE(m);
+    remove_block(m);
 
     /* Remove m from just_touched[], if present: */
     {

@@ -3494,7 +3494,7 @@ GETPROP (d s -- ?)
   Gets the value of a given property, and puts it on the stack.
 This can return a lock, a string, a dbref, or an integer, depending
 on the type of the property.  Permissions are the same as those for
-GETPROPSTR.  This primitive returns 0 if no such property exists, of
+GETPROPSTR.  This primitive returns 0 if no such property exists, or
 if it is a valueless propdir.
 ~~alsosee SETPROP,ADDPROP,REMOVE_PROP,GETPROPSTR,GETPROPVAL,INT?,DBREF?,STRING?,LOCK?
 ~
@@ -4636,7 +4636,21 @@ with the time.  The format string is ASCII text with formatting commands:
   TIMEFMT processes format strings with the C function strftime().  The above
 list of conversion specifiers (formatting commands) is from the C (draft
 C17/C18) standard: some MUCKs may have more conversion specifiers available.
-~~alsosee FMTSTRING
+~~alsosee FMTSTRING,FMTTIME
+~
+~
+CONVTIME
+CONVTIME (s -- i) 
+
+  Converts time string from "HH:MM:SS MO/DY/YR" format to systime seconds.
+~
+~
+FMTTIME
+FMTTIME (s1 s2 -- i) 
+
+  Converts time string s1 from the format given by s2 to systime seconds.
+~~alsosee TIMEFMT
+
 ~
 ~
 SLEEP

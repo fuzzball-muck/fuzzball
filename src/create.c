@@ -950,7 +950,6 @@ do_recycle(int descr, dbref player, const char *name)
     dbref thing;
     char buf[BUFFER_LEN];
     struct match_data md;
-    struct tune_ref_entry *tref = tune_ref_list;
 
     init_match(descr, player, name, TYPE_THING, &md);
     match_everything(&md);
@@ -971,13 +970,11 @@ do_recycle(int descr, dbref player, const char *name)
             notify(player,
                    "Permission denied. (You don't control what you want to recycle)");
     } else {
-        while (tref->name) {
-            if (thing == *tref->ref) {
+        for (struct tune_entry *tent = tune_list; tent->name; tent++) {
+            if (tent->type == TP_TYPE_DBREF && thing == *tent->currentval.d) {
                 notify(player, "That object cannot currently be @recycled.");
                 return;
             }
-
-            tref++;
         }
 
         switch (Typeof(thing)) {

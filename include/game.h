@@ -135,10 +135,22 @@
 extern const char *compile_options;
 
 /**
+ * @var the dump file path
+ */
+extern const char *dumpfile;
+
+/**
  * @var a variable to keep track of the force level.  This is incremented
  *      when a 'force' command is used to avoid recursive forcing.
  */
 extern int force_level;
+
+/**
+ * @var boolean value - if true, we are the dump child process.  This is
+ *      set immediately after the fork and should be false for the parent
+ *      (actual MUCK) process.
+ */
+extern int forked_dump_process_flag;
 
 /**
  * @var file handle for the input database file
@@ -194,20 +206,6 @@ void fork_and_dump(void);
  * @return returns 0 on success, -1 on any error condition
  */
 int init_game(const char *infile, const char *outfile);
-
-/**
- * "Panic" the MUCK, which shuts it down with a message.
- *
- * The database is dumped to 'dumpfile' with a '.PANIC' suffix, unless
- * we can't write it.  Macros are similarly dumped with a '.PANIC' suffix
- * unless it cannot be written.
- *
- * If NOCOREDUMP is defined, we will exit with code 135.  Otherwise, we
- * will call abort() which should produce a core dump.
- *
- * @param message the message to show in the log
- */
-void panic(const char *message);
 
 /**
  * Process command input from a given user

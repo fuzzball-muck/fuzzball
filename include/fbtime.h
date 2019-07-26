@@ -163,4 +163,15 @@ void ts_newobject(dbref thing);
  */
 void ts_useobject(dbref thing);
 
+/**
+ * Convert time string with given format to a number of seconds.
+ *
+ * @param string the string to convert
+ * @param format the string's format
+ * @parm[out] error the error message, if any
+ * @return the time in seconds
+ */
+#ifndef WIN32
+time_t time_string_to_seconds(char *string, char *format, char **error);
+#endif
 #endif /* !FBTIME_H */

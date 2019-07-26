@@ -398,6 +398,13 @@ struct player_specific {
 #define ARRAYSIZE(a)    (sizeof(a) / sizeof(a[0]))
 #endif
 
+/* system parameter types */
+#define TP_TYPE_STRING   0
+#define TP_TYPE_TIMESPAN 1
+#define TP_TYPE_INTEGER  2
+#define TP_TYPE_DBREF    3
+#define TP_TYPE_BOOLEAN  4
+
 /* union of type-specific fields */
 
 union specific {        /* I've been railroaded! */

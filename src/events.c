@@ -43,50 +43,20 @@ static int dump_warned = 0;
  *
  * This is based off the tp_dump_interval.
  *
- * If dump warnings are enabled (tp_dbdump_warning) and a warning has not
- * been displayed yet, then the tp_dump_warntime will be subtracted from
- * the calculated next dump time to trigger the warning.
- *
- * @private
+ * @param now the time used as current
  * @return the calculated time until dump or 0 if the dump should be now.
+ * @private
  */
 static time_t
-next_dump_time(void)
+next_dump_time(time_t now)
 {
-    time_t currtime = (time_t) time((time_t *) NULL);
-
     if (!last_dump_time)
-        last_dump_time = (time_t) time((time_t *) NULL);
+        last_dump_time = now;
 
-    if (tp_dbdump_warning && !dump_warned) {
-        if (((last_dump_time + tp_dump_interval) - tp_dump_warntime)
-            < currtime) {
-            return (0L);
-        } else {
-            return (last_dump_time + tp_dump_interval
-                    - tp_dump_warntime - currtime);
-        }
-    }
+    if ((last_dump_time + tp_dump_interval) < now)
+        return 0L;
 
-    if ((last_dump_time + tp_dump_interval) < currtime)
-        return (0L);
-
-    return (last_dump_time + tp_dump_interval - currtime);
-}
-
-/**
- * Display dump warning, if dump warnings are enabled (tp_dbdump_warning)
- *
- * tp_dumpwarn_mesg is the message.
- *
- * @private
- */
-static void
-dump_warning(void)
-{
-    if (tp_dbdump_warning) {
-        wall_and_flush(tp_dumpwarn_mesg);
-    }
+    return (last_dump_time + tp_dump_interval - now);
 }
 
 /**
@@ -99,45 +69,35 @@ dump_warning(void)
  *   * purge_for_pool and purge_try_pool
  *     (@see purge_for_pool @see purge_try_pool)
  *
+ * If dump warnings are enabled (tp_dbdump_warning) and a warning has not
+ * been displayed yet, then the dump warning message will be walled at the
+ * appropriate time.
+ *
  * The actual dump is fork_and_dump ... @see fork_and_dump
  *
+ * @param now the time used as current
  * @private
  */
 static void
-check_dump_time(void)
+check_dump_time(time_t now)
 {
-    time_t currtime = (time_t) time((time_t *) NULL);
+    time_t nexttime = next_dump_time(now);
 
-    if (!last_dump_time)
-        last_dump_time = (time_t) time((time_t *) NULL);
-
-    /*
-     * @TODO There is a lot of overlap here in calculating times
-     *       with next_dump_time -- this function should use
-     *       next_dump_time instead of having copy-paste versions of
-     *       all the code in next_dump_time
-     */
-
-    if (!dump_warned) {
-        if (((last_dump_time + tp_dump_interval) - tp_dump_warntime)
-            < currtime) {
-            dump_warning();
-            dump_warned = 1;
-        }
+    if (tp_dbdump_warning && !dump_warned && nexttime <= (time_t)tp_dump_warntime) {
+        wall_and_flush(tp_dumpwarn_mesg);
+        dump_warned = 1;
     }
 
-    if ((last_dump_time + tp_dump_interval) < currtime) {
-        last_dump_time = currtime;
-        add_property((dbref) 0, SYS_LASTDUMPTIME_PROP, NULL, (int) currtime);
+    if (next_dump_time(now) == 0L) {
+        last_dump_time = now;
+        purge_for_pool();
+        purge_try_pool();
 
         if (tp_periodic_program_purge)
             free_unused_programs();
 
-        purge_for_pool();
-        purge_try_pool();
-
+        add_property((dbref) 0, SYS_LASTDUMPTIME_PROP, NULL, (int)now);
         fork_and_dump();
-
         dump_warned = 0;
     }
 }
@@ -150,13 +110,13 @@ check_dump_time(void)
  * dump time to now.
  */
 void
-dump_db_now(void)
+dump_db_now()
 {
     time_t currtime = (time_t) time((time_t *) NULL);
 
     add_property((dbref) 0, SYS_LASTDUMPTIME_PROP, NULL, (int) currtime);
-    fork_and_dump();
     last_dump_time = currtime;
+    fork_and_dump();
     dump_warned = 0;
 }
 
@@ -173,20 +133,19 @@ static time_t last_clean_time = 0L;
 /**
  * Calculate the next time to run cleanup based on tp_clean_interval.
  *
+ * @param now the time used as current
  * @return the time until the next cleanup or 0 if it should be run now
  */
 static time_t
-next_clean_time(void)
+next_clean_time(time_t now)
 {
-    time_t currtime = (time_t) time((time_t *) NULL);
-
     if (!last_clean_time)
-        last_clean_time = (time_t) time((time_t *) NULL);
+        last_clean_time = now;
 
-    if ((last_clean_time + tp_clean_interval) < currtime)
-        return (0L);
+    if ((last_clean_time + tp_clean_interval) < now)
+        return 0L;
 
-    return (last_clean_time + tp_clean_interval - currtime);
+    return (last_clean_time + tp_clean_interval - now);
 }
 
 /**
@@ -197,33 +156,21 @@ next_clean_time(void)
  * constraints.
  *
  *   - purge_for_pool @see purge_for_pool
- *   - free_unused_programs (if tp_period_program_purge)
+ *   - purge_try_pool @see purge_try_pool
+ *   - free_unused_programs (if tp_periodic_program_purge)
  *     @see free_unused_programs
  *   - dispose_all_oldprops (if DISKBASE) @see dispose_all_oldprops
  *
+ * @param now the time used as current
  * @private
  */
 static void
-check_clean_time(void)
+check_clean_time(time_t now)
 {
-    time_t currtime = (time_t) time((time_t *) NULL);
-
-    /*
-     * @TODO Total overlap with next_clean_time -- use that to
-     * calculate if we need to clean or not.
-     */
-    if (!last_clean_time)
-        last_clean_time = (time_t) time((time_t *) NULL);
-
-    if ((last_clean_time + tp_clean_interval) < currtime) {
-        last_clean_time = currtime;
+    if (next_clean_time(now) == 0L) {
+        last_clean_time = now;
         purge_for_pool();
-
-        /*
-         * @TODO purge_try_pool() as well?  That is done at dump time but
-         *       but not here.  Not sure how much it matters.  Update
-         *       the header if you fix this.
-         */
+        purge_try_pool();
 
         if (tp_periodic_program_purge)
             free_unused_programs();
@@ -247,15 +194,16 @@ check_clean_time(void)
  * @return the time until the next MUCK event
  */
 time_t
-next_muckevent_time(void)
+next_muckevent_time()
 {
     time_t nexttime = 1000L;
+    time_t now = (time_t) time((time_t *) NULL);
 
-    nexttime = MIN(next_event_time(), nexttime);
-    nexttime = MIN(next_dump_time(), nexttime);
-    nexttime = MIN(next_clean_time(), nexttime);
+    nexttime = MIN(next_event_time(now), nexttime);
+    nexttime = MIN(next_dump_time(now), nexttime);
+    nexttime = MIN(next_clean_time(now), nexttime);
 
-    return (nexttime);
+    return nexttime;
 }
 
 /**
@@ -269,9 +217,11 @@ next_muckevent_time(void)
  * @see next_muckevent_time
  */
 void
-next_muckevent(void)
+next_muckevent()
 {
-    next_timequeue_event();
-    check_dump_time();
-    check_clean_time();
+    time_t now = (time_t) time((time_t *) NULL);
+
+    next_timequeue_event(now);
+    check_dump_time(now);
+    check_clean_time(now);
 }

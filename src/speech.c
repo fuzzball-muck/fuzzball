@@ -73,7 +73,7 @@ do_whisper(int descr, dbref player, const char *arg1, const char *arg2)
 
     snprintf(buf, sizeof(buf), "%s whispers, \"%s\"", NAME(player), arg2);
 
-    if (!notify_from(player, who, buf)) {
+    if (!notify_from_echo(player, who, buf, 1)) {
         notifyf(player, "%s is not connected.", NAME(who));
         return;
     }
@@ -126,7 +126,7 @@ do_wall(dbref player, const char *message)
         dnext = d->next;
 
         if (d->connected) {
-            notify_from(player, d->player, buf);
+            notify_from_echo(player, d->player, buf, 1);
         }
     }
 }
@@ -150,7 +150,7 @@ do_gripe(dbref player, const char *message)
 
     if (!message || !*message) {
         if (Wizard(player)) {
-            spit_file(player, tp_file_log_gripes);
+            spit_file_segment(player, tp_file_log_gripes, "");
         } else {
             notify(player, "If you wish to gripe, use 'gripe <message>'.");
         }
@@ -210,7 +210,7 @@ do_page(dbref player, const char *arg1, const char *arg2)
         snprintf(buf, sizeof(buf), "%s pages from %s: \"%s\"", NAME(player),
                  NAME(LOCATION(player)), arg2);
 
-    if (notify_from(player, target, buf))
+    if (notify_from_echo(player, target, buf, 1))
         notify(player, "Your message has been sent.");
     else {
         notifyf(player, "%s is not connected.", NAME(target));

@@ -32,7 +32,6 @@
 #include "props.h"
 #include "tune.h"
 
-
 /**
  * Implementation of the @teleport command
  *
@@ -252,7 +251,7 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
                 && !(FLAGS(destination) & STICKY))
                 destination = DBFETCH(destination)->sp.room.dropto;
 
-            if (tp_thing_movement && (Typeof(victim) == TYPE_THING)) {
+            if (tp_secure_thing_movement && (Typeof(victim) == TYPE_THING)) {
                 if (FLAGS(victim) & ZOMBIE) {
                     notify(victim, "You feel a wrenching sensation...");
                 }
@@ -526,7 +525,7 @@ do_force(int descr, dbref player, const char *what, char *command)
         return;
     }
 
-    if (!tp_zombies && (!Wizard(player) || Typeof(player) != TYPE_PLAYER)) {
+    if (!tp_allow_zombies && (!Wizard(player) || Typeof(player) != TYPE_PLAYER)) {
         notify(player, "Zombies are not enabled here.");
         return;
 
@@ -887,7 +886,6 @@ do_toad(int descr, dbref player, const char *name, const char *recip)
 {
     dbref victim;
     dbref recipient;
-    struct tune_ref_entry *tref = tune_ref_list;
 
     if ((victim = lookup_player(name)) == NOTHING) {
         notify(player, "That player does not exist.");
@@ -915,13 +913,11 @@ do_toad(int descr, dbref player, const char *name, const char *recip)
         return;
     }
 
-    while (tref->name) {
-        if (victim == *tref->ref) {
+    for (struct tune_entry *tent = tune_list; tent->name; tent++) {
+        if (tent->type == TP_TYPE_DBREF && victim == *tent->currentval.d) {
             notify(player, "That player cannot currently be @toaded.");
             return;
         }
-
-        tref++;
     }
 
     if (!*recip) {

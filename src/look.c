@@ -90,7 +90,7 @@ can_see(dbref player, dbref thing, int can_see_loc)
                 return ((FLAGS(thing) & VEHICLE) || controls(player, thing));
             case TYPE_PLAYER:
                 if (tp_dark_sleepers) {
-                    return (!Dark(thing) && online(thing));
+                    return (!Dark(thing) && PLAYER_DESCRCOUNT(thing));
                 }
             default:
                 return (!Dark(thing) || (controls(player, thing) && !(FLAGS(player) & STICKY)));
@@ -2030,10 +2030,10 @@ do_sweep(int descr, dbref player, const char *name)
                  * pick up dark players.  So this isn't much of a security
                  * sweep really.
                  */
-                if (!Dark(thing) || online(ref)) {
+                if (!Dark(thing) || PLAYER_DESCRCOUNT(ref)) {
                     unparse_object(player, ref, unparse_buf, sizeof unparse_buf);
                     notifyf(player, "  %s is a %splayer.", unparse_buf,
-                            online(ref) ? "" : "sleeping ");
+                            PLAYER_DESCRCOUNT(ref) ? "" : "sleeping ");
                 }
 
                 break;
@@ -2048,7 +2048,7 @@ do_sweep(int descr, dbref player, const char *name)
                     if (FLAGS(ref) & ZOMBIE) {
                         tellflag = 1;
 
-                        if (!online(OWNER(ref))) {
+                        if (!PLAYER_DESCRCOUNT(OWNER(ref))) {
                             tellflag = 0;
                             strcatn(buf, sizeof(buf), " sleeping");
                         }

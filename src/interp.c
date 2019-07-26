@@ -721,7 +721,7 @@ interp(int descr, dbref player, dbref location, dbref program,
     fr->argument.top = 0;
     fr->pc = PROGRAM_START(program);
     fr->writeonly = ((source == -1) || (Typeof(source) == TYPE_ROOM) ||
-                     ((Typeof(source) == TYPE_PLAYER) && (!online(source))) ||
+		     ((Typeof(source) == TYPE_PLAYER) && (!PLAYER_DESCRCOUNT(source))) ||
                      (FLAGS(player) & READMODE));
     fr->level = 0;
     fr->error.is_flags = 0;
@@ -1397,6 +1397,7 @@ deep_copyinst(struct inst *in, struct inst *out, int pinned)
                 deep_copyinst(&arr->data.packed[i], &nu->data.packed[i],
                               pinned);
             }
+            break;
         }
 
         /*
@@ -1419,6 +1420,7 @@ deep_copyinst(struct inst *in, struct inst *out, int pinned)
                     array_setitem(&nu, &idx, &temp1);
                 } while (array_next(arr, &idx));
             }
+            break;
         }
     }
 
@@ -3166,7 +3168,7 @@ insttotext(struct frame *fr, int lev, struct inst *theinst, char *buffer,
                 break;
             }
 
-            if (tp_expanded_debug && expandarrs) {
+            if (tp_expanded_debug_trace && expandarrs) {
                 length = snprintf(buffer, buflen, "%d{",
                                   theinst->data.array->items);
 

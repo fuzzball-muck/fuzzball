@@ -228,15 +228,6 @@ _do_unlink(int descr, dbref player, const char *name, bool quiet)
 void
 do_unlink(int descr, dbref player, const char *name)
 {
-    /* @TODO Unfortunately this call probably has to remain as-is; there
-     *       is a common unlink underpinning that requires this boolean
-     *       parameter for quiet.  If we were keeping the collosal switch
-     *       statement, I'd say get rid of this call and just pass quiet=0
-     *       in the switch.  However, since we're looking to move away from
-     *       that, our functions need to maintain a consistent structure.
-     *
-     *       We should probably at least declare this as an inline.
-     */
     /* do a regular, non-quiet unlink. */
     _do_unlink(descr, player, name, false);
 }

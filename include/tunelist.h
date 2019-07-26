@@ -1,26 +1,57 @@
 #ifndef TUNELIST_H
 #define TUNELIST_H
 
-#include <stddef.h>
+#include <stdbool.h>
+#include <stdio.h>
 
-#include "config.h"
-#include "db.h"
-#include "defaults.h"
-#include "fbtime.h"
-#include "game.h"
-#include "tune.h"
+#include "fbmuck.h"
+
+const char *str_tunetype[] = {
+    "(str)", "(time)", "(int)", "(ref)", "(bool)"
+};
 
 /* Specify the same default values in the pointer and in the lists of tune_*_entry.
    Default values here will be used if the tunable isn't found, default values in the lists of tune_*_entry
    are used when resetting to default via '%tunable_name'. */
 
+bool        tp_7bit_other_names;
+bool        tp_7bit_thing_names;
+int         tp_addpennies_muf_mlev;
+int         tp_aging_time;
+bool        tp_allow_listeners;
+bool        tp_allow_listeners_env;
+bool        tp_allow_listeners_obj;
+bool        tp_allow_zombies;
+bool        tp_autolink_actions;
 const char *tp_autolook_cmd;
+int         tp_clean_interval;
+int         tp_cmd_log_threshold_msec;
+int         tp_command_burst_size;
+int         tp_command_time_msec;
+int         tp_commands_per_time;
+bool        tp_compatible_priorities;
+const char *tp_connect_fail_mesg;
+bool        tp_consistent_lock_source;
 const char *tp_cpennies;
 const char *tp_cpenny;
+const char *tp_create_fail_mesg;
+bool        tp_dark_sleepers;
+bool        tp_dbdump_warning;
+dbref       tp_default_room_parent;
 const char *tp_description_default;
+bool        tp_diskbase_propvals;
+bool        tp_do_mpi_parsing;
+int         tp_dump_interval;
+int         tp_dump_warntime;
 const char *tp_dumpdone_mesg;
+bool        tp_dumpdone_warning;
 const char *tp_dumping_mesg;
 const char *tp_dumpwarn_mesg;
+bool        tp_enable_home;
+bool        tp_enable_prefix;
+int         tp_exit_cost;
+bool        tp_exit_darking;
+bool        tp_expanded_debug_trace;
 const char *tp_file_connection_help;
 const char *tp_file_credits;
 const char *tp_file_editor_help;
@@ -41,460 +72,571 @@ const char *tp_file_log_stdout;
 const char *tp_file_log_user;
 const char *tp_file_man;
 const char *tp_file_man_dir;
+const char *tp_file_motd;
 const char *tp_file_mpihelp;
 const char *tp_file_mpihelp_dir;
-const char *tp_file_motd;
 const char *tp_file_news;
 const char *tp_file_news_dir;
 const char *tp_file_welcome_screen;
+bool        tp_force_mlev1_name_notify;
+int         tp_free_frames_pool;
 const char *tp_gender_prop;
 const char *tp_huh_mesg;
-const char *tp_idle_mesg;
+const char *tp_idle_boot_mesg;
+bool        tp_idle_ping_enable;
+int         tp_idle_ping_time;
+bool        tp_idleboot;
+bool        tp_ignore_bidirectional;
+bool        tp_ignore_support;
+int         tp_instr_slice;
 const char *tp_leave_mesg;
+int         tp_link_cost;
+int         tp_listen_mlev;
+bool        tp_lock_envcheck;
+bool        tp_log_commands;
+bool        tp_log_failed_commands;
+bool        tp_log_interactive;
+bool        tp_log_programs;
+int         tp_lookup_cost;
+dbref       tp_lost_and_found;
+bool        tp_m3_huh;
+int         tp_max_force_level;
+int         tp_max_instr_count;
+int         tp_max_loaded_objs;
+int         tp_max_ml4_nested_interp_loop_count;
+int         tp_max_ml4_preempt_count;
+int         tp_max_nested_interp_loop_count;
+int         tp_max_object_endowment;
+int         tp_max_output;
+int         tp_max_pennies;
+int         tp_max_plyr_processes;
+int         tp_max_process_limit;
+int         tp_maxidle;
+int         tp_mcp_muf_mlev;
+int         tp_movepennies_muf_mlev;
+bool        tp_mpi_continue_after_logout;
+int         tp_mpi_max_commands;
 const char *tp_muckname;
+bool        tp_muf_comments_strict;
 const char *tp_new_program_flags;
+int         tp_object_cost;
+bool        tp_optimize_muf;
+int         tp_pause_min;
 const char *tp_pcreate_flags;
 const char *tp_pennies;
+int         tp_pennies_muf_mlev;
 const char *tp_penny;
+int         tp_penny_rate;
+bool        tp_periodic_program_purge;
+int         tp_player_name_limit;
+dbref       tp_player_start;
+bool        tp_playermax;
 const char *tp_playermax_bootmesg;
+int         tp_playermax_limit;
 const char *tp_playermax_warnmesg;
+bool        tp_pname_history_reporting;
+int         tp_pname_history_threshold;
+int         tp_process_timer_limit;
+bool        tp_quiet_moves;
+bool        tp_realms_control;
+bool        tp_recognize_null_command;
 const char *tp_register_mesg;
+bool        tp_registration;
 const char *tp_reserved_names;
 const char *tp_reserved_player_names;
+int         tp_room_cost;
+bool        tp_secure_teleport;
+bool        tp_secure_thing_movement;
+bool        tp_secure_who;
+bool        tp_server_cipher_preference;
+bool        tp_show_legacy_props;
 const char *tp_ssl_cert_file;
+const char *tp_ssl_cipher_preference_list;
 const char *tp_ssl_key_file;
 const char *tp_ssl_keyfile_passwd;
-const char *tp_ssl_cipher_preference_list;
 const char *tp_ssl_min_protocol_version;
+int         tp_start_pennies;
+bool        tp_starttls_allow;
+bool        tp_strict_god_priv;
+bool        tp_tab_input_replaced_with_space;
+bool        tp_teleport_to_player;
+bool        tp_thing_darking;
+dbref       tp_toad_default_recipient;
+bool        tp_toad_recycle;
+bool        tp_use_hostnames;
+int         tp_userlog_mlev;
+bool        tp_verbose_clone;
+bool        tp_verbose_examine;
+bool        tp_who_hides_dark;
+bool        tp_wiz_vehicles;
 
-struct tune_str_entry tune_str_list[] = {
-    {"Commands", "autolook_cmd", &tp_autolook_cmd, 0, MLEV_WIZARD, "Room entry look command",
-     "", 0, 1, AUTOLOOK_CMD},
-    {"Currency", "cpennies", &tp_cpennies, 0, MLEV_WIZARD,
-     "Currency name, capitalized, plural", "", 0, 1, CPENNIES},
-    {"Currency", "cpenny", &tp_cpenny, 0, MLEV_WIZARD, "Currency name, capitalized", "", 0, 1,
-     CPENNY},
-    {"Currency", "pennies", &tp_pennies, 0, MLEV_WIZARD, "Currency name, plural", "", 0, 1,
-     PENNIES},
-    {"Currency", "penny", &tp_penny, 0, MLEV_WIZARD, "Currency name", "", 0, 1, PENNY},
-    {"DB Dumps", "dumpdone_mesg", &tp_dumpdone_mesg, 0, MLEV_WIZARD,
-     "Database dump finished message", "", 1, 1, DUMPDONE_MESG},
-    {"DB Dumps", "dumping_mesg", &tp_dumping_mesg, 0, MLEV_WIZARD,
-     "Database dump started message", "", 1, 1, DUMPING_MESG},
-    {"DB Dumps", "dumpwarn_mesg", &tp_dumpwarn_mesg, 0, MLEV_WIZARD,
-     "Database dump warning message", "", 1, 1, DUMPWARN_MESG},
-    {"Files", "file_connection_help", &tp_file_connection_help, MLEV_WIZARD, MLEV_GOD,
-     "'help' before login", "", 0, 1, CONHELP_FILE},
-    {"Files", "file_credits", &tp_file_credits, MLEV_WIZARD, MLEV_GOD,
-     "Acknowledgements", "", 0, 1, CREDITS_FILE},
-    {"Files", "file_editor_help", &tp_file_editor_help, MLEV_WIZARD, MLEV_GOD,
-     "Editor help", "", 0, 1, EDITOR_HELP_FILE},
-    {"Files", "file_help", &tp_file_help, MLEV_WIZARD, MLEV_GOD,
-     "'help' main content", "", 0, 1, HELP_FILE},
-    {"Files", "file_help_dir", &tp_file_help_dir, MLEV_WIZARD, MLEV_GOD,
-     "'help' topic directory", "", 0, 1, HELP_DIR},
-    {"Files", "file_info_dir", &tp_file_info_dir, MLEV_WIZARD, MLEV_GOD,
-     "'info' topic directory", "", 0, 1, INFO_DIR},
-    {"Files", "file_log_cmd_times", &tp_file_log_cmd_times, MLEV_WIZARD, MLEV_GOD,
-     "Command times", "", 0, 1, LOG_CMD_TIMES},
-    {"Files", "file_log_commands", &tp_file_log_commands, MLEV_WIZARD, MLEV_GOD,
-     "Player commands", "", 0, 1, COMMAND_LOG},
-    {"Files", "file_log_gripes", &tp_file_log_gripes, MLEV_WIZARD, MLEV_GOD,
-     "Player gripes", "", 0, 1, LOG_GRIPE},
-    {"Files", "file_log_malloc", &tp_file_log_malloc, MLEV_WIZARD, MLEV_GOD,
-     "Memory allocations", "MEMPROF", 0, 1, LOG_MALLOC},
-    {"Files", "file_log_muf_errors", &tp_file_log_muf_errors, MLEV_WIZARD, MLEV_GOD,
-     "MUF compile errors and warnings", "", 0, 1, LOG_MUF},
-    {"Files", "file_log_programs", &tp_file_log_programs, MLEV_WIZARD, MLEV_GOD,
-     "Text of changed programs", "", 0, 1, PROGRAM_LOG},
-    {"Files", "file_log_sanfix", &tp_file_log_sanfix, MLEV_WIZARD, MLEV_GOD,
-     "Database fixes", "", 0, 1, LOG_SANFIX},
-    {"Files", "file_log_sanity", &tp_file_log_sanity, MLEV_WIZARD, MLEV_GOD,
-     "Database corruption and errors", "", 0, 1, LOG_SANITY},
-    {"Files", "file_log_status", &tp_file_log_status, MLEV_WIZARD, MLEV_GOD,
-     "System errors and stats", "", 0, 1, LOG_STATUS},
-    {"Files", "file_log_stderr", &tp_file_log_stderr, MLEV_WIZARD, MLEV_GOD,
-     "Server error redirect", "", 0, 1, LOG_ERR_FILE},
-    {"Files", "file_log_stdout", &tp_file_log_stdout, MLEV_WIZARD, MLEV_GOD,
-     "Server output redirect", "", 0, 1, LOG_FILE},
-    {"Files", "file_log_user", &tp_file_log_user, MLEV_WIZARD, MLEV_GOD,
-     "MUF-writable messages", "", 0, 1, USER_LOG},
-    {"Files", "file_man", &tp_file_man, MLEV_WIZARD, MLEV_GOD,
-     "'man' main content", "", 0, 1, MAN_FILE},
-    {"Files", "file_man_dir", &tp_file_man_dir, MLEV_WIZARD, MLEV_GOD,
-     "'man' topic directory", "", 0, 1, MAN_DIR},
-    {"Files", "file_motd", &tp_file_motd, MLEV_WIZARD, MLEV_GOD,
-     "Message of the day", "", 0, 1, MOTD_FILE},
-    {"Files", "file_mpihelp", &tp_file_mpihelp, MLEV_WIZARD, MLEV_GOD,
-     "'mpi' main content", "", 0, 1, MPI_FILE},
-    {"Files", "file_mpihelp_dir", &tp_file_mpihelp_dir, MLEV_WIZARD, MLEV_GOD,
-     "'mpi' topic directory", "", 0, 1, MPI_DIR},
-    {"Files", "file_news", &tp_file_news, MLEV_WIZARD, MLEV_GOD,
-     "'news' main content", "", 0, 1, NEWS_FILE},
-    {"Files", "file_news_dir", &tp_file_news_dir, MLEV_WIZARD, MLEV_GOD,
-     "'news' topic directory", "", 0, 1, NEWS_DIR},
-    {"Files", "file_welcome_screen", &tp_file_welcome_screen, MLEV_WIZARD, MLEV_GOD,
-     "Opening screen", "", 0, 1, WELC_FILE},
-    {"Idle Boot", "idle_boot_mesg", &tp_idle_mesg, 0, MLEV_WIZARD,
-     "Boot message given to users idling out", "", 0, 1, IDLEBOOT_MESSAGE},
-    {"Misc", "description_default", &tp_description_default, 0, MLEV_WIZARD, "Default description", "", 0, 1, DESCRIPTION_DEFAULT},
-    {"Misc", "huh_mesg", &tp_huh_mesg, 0, MLEV_WIZARD, "Unrecognized command warning", "", 0,
-     1, HUH_MESSAGE},
-    {"Misc", "leave_mesg", &tp_leave_mesg, 0, MLEV_WIZARD, "Logoff message for QUIT", "", 0, 1,
-     LEAVE_MESSAGE},
-    {"Misc", "muckname", &tp_muckname, 0, MLEV_WIZARD, "Name of the MUCK", "", 0, 1, MUCKNAME},
-    {"Player Max", "playermax_bootmesg", &tp_playermax_bootmesg, 0, MLEV_WIZARD,
-     "Max. players connection error message", "", 0, 1, PLAYERMAX_BOOTMESG},
-    {"Player Max", "playermax_warnmesg", &tp_playermax_warnmesg, 0, MLEV_WIZARD,
-     "Max. players connection login warning", "", 0, 1, PLAYERMAX_WARNMESG},
-    {"Properties", "gender_prop", &tp_gender_prop, 0, MLEV_WIZARD,
-     "Property name used for pronoun substitutions", "", 0, 1, LEGACY_GENDER_PROP},
-    {"Registration", "register_mesg", &tp_register_mesg, 0, MLEV_WIZARD,
-     "Login registration denied message", "", 0, 1, REG_MSG},
-    {"SSL", "ssl_cert_file", &tp_ssl_cert_file, MLEV_GOD, MLEV_GOD,
-     "Path to SSL certificate .pem", "SSL", 0, 1, SSL_CERT_FILE},
-    {"SSL", "ssl_key_file", &tp_ssl_key_file, MLEV_GOD, MLEV_GOD,
-     "Path to SSL private key .pem", "SSL", 0, 1, SSL_KEY_FILE},
-    {"SSL", "ssl_keyfile_passwd", &tp_ssl_keyfile_passwd, MLEV_GOD, MLEV_GOD,
-     "Password for SSL private key file", "SSL", 1, 1, SSL_KEYFILE_PASSWD},
-    {"SSL", "ssl_cipher_preference_list", &tp_ssl_cipher_preference_list, MLEV_GOD, MLEV_GOD,
-     "Allowed OpenSSL cipher list", "SSL", 0, 1, SSL_CIPHER_PREFERENCE_LIST},
-    {"SSL", "ssl_min_protocol_version", &tp_ssl_min_protocol_version, MLEV_GOD, MLEV_GOD,
-     "Min. allowed SSL protocol version for clients", "SSL", 0, 1, SSL_MIN_PROTOCOL_VERSION},
-    {"Database", "new_program_flags", &tp_new_program_flags, 0, MLEV_WIZARD,
-     "Initial flags for newly created programs", "", 1, 1, NEW_PROGRAM_FLAGS},
-    {"Database", "pcreate_flags", &tp_pcreate_flags, 0, MLEV_WIZARD,
-     "Initial flags for newly created players", "", 1, 1, PCREATE_FLAGS},
-    {"Database", "reserved_names", &tp_reserved_names, 0, MLEV_WIZARD,
-     "String-match list of reserved names", "", 1, 1, RESERVED_NAMES},
-    {"Database", "reserved_player_names", &tp_reserved_player_names, 0, MLEV_WIZARD,
-     "String-match list of reserved player names", "", 1, 1, RESERVED_PLAYER_NAMES},
-    {NULL, NULL, NULL, 0, 0, NULL, NULL, 0, 0, NULL}
-};
-
-int tp_aging_time;
-int tp_clean_interval;
-int tp_dump_interval;
-int tp_dump_warntime;
-int tp_idle_ping_time;
-int tp_maxidle;
-int tp_pname_history_threshold;
-
-struct tune_time_entry tune_time_list[] = {
-    {"Database", "aging_time", &tp_aging_time, 0, MLEV_WIZARD,
-     "When to considered an object old and unused", "", 1, AGING_TIME},
-    {"DB Dumps", "dump_interval", &tp_dump_interval, 0, MLEV_WIZARD, "Interval between dumps",
-     "", 1, DUMP_INTERVAL},
-    {"DB Dumps", "dump_warntime", &tp_dump_warntime, 0, MLEV_WIZARD,
-     "Interval between warning and dump", "", 1, DUMP_WARNTIME},
-    {"Idle Boot", "idle_ping_time", &tp_idle_ping_time, 0, MLEV_WIZARD,
-     "Server side keepalive time in seconds", "", 1, IDLE_PING_TIME},
-    {"Idle Boot", "maxidle", &tp_maxidle, 0, MLEV_WIZARD, "Maximum idle time before booting",
-     "", 1, MAXIDLE},
-    {"Tuning", "clean_interval", &tp_clean_interval, 0, MLEV_WIZARD,
-     "Interval between memory/object cleanups", "", 1, CLEAN_INTERVAL},
-    {"Tuning", "pname_history_threshold", &tp_pname_history_threshold, 0, MLEV_WIZARD,
-     "Length of player name change history", "", 1, PNAME_HISTORY_THRESHOLD},
-    {NULL, NULL, NULL, 0, 0, NULL, NULL, 0, 0}
-};
-
-int tp_addpennies_muf_mlev;
-int tp_cmd_log_threshold_msec;
-int tp_command_burst_size;
-int tp_command_time_msec;
-int tp_commands_per_time;
-int tp_exit_cost;
-int tp_free_frames_pool;
-int tp_instr_slice;
-int tp_link_cost;
-int tp_listen_mlev;
-int tp_lookup_cost;
-int tp_max_force_level;
-int tp_max_instr_count;
-int tp_max_loaded_objs;
-int tp_max_ml4_preempt_count;
-int tp_max_ml4_nested_interp_loop_count;
-int tp_max_nested_interp_loop_count;
-int tp_max_object_endowment;
-int tp_max_output;
-int tp_max_pennies;
-int tp_max_plyr_processes;
-int tp_max_process_limit;
-int tp_mcp_muf_mlev;
-int tp_mpi_max_commands;
-int tp_movepennies_muf_mlev;
-int tp_object_cost;
-int tp_pause_min;
-int tp_pennies_muf_mlev;
-int tp_penny_rate;
-int tp_playermax_limit;
-int tp_player_name_limit;
-int tp_process_timer_limit;
-int tp_room_cost;
-int tp_start_pennies;
-int tp_userlog_mlev;
-
-struct tune_val_entry tune_val_list[] = {
-    {"Commands", "player_name_limit", &tp_player_name_limit, 0, MLEV_WIZARD, "Limit on player name length", "", 1,
-     PLAYER_NAME_LIMIT},
-    {"Costs", "exit_cost", &tp_exit_cost, 0, MLEV_WIZARD, "Cost to create an exit", "", 1,		 
-     EXIT_COST},
-    {"Costs", "link_cost", &tp_link_cost, 0, MLEV_WIZARD, "Cost to link an exit", "", 1,
-     LINK_COST},
-    {"Costs", "lookup_cost", &tp_lookup_cost, 0, MLEV_WIZARD, "Cost to lookup a player name",
-     "", 1, LOOKUP_COST},
-    {"Costs", "max_object_endowment", &tp_max_object_endowment, 0, MLEV_WIZARD,
-     "Max. value of an object", "", 1, MAX_OBJECT_ENDOWMENT},
-    {"Costs", "object_cost", &tp_object_cost, 0, MLEV_WIZARD, "Cost to create an object", "",
-     1, OBJECT_COST},
-    {"Costs", "room_cost", &tp_room_cost, 0, MLEV_WIZARD, "Cost to create a room", "", 1,
-     ROOM_COST},
-    {"Currency", "max_pennies", &tp_max_pennies, 0, MLEV_WIZARD,
-     "Max. pennies a player can own", "", 1, MAX_PENNIES},
-    {"Currency", "penny_rate", &tp_penny_rate, 0, MLEV_WIZARD,
-     "Avg. moves between finding currency", "", 1, PENNY_RATE},
-    {"Currency", "start_pennies", &tp_start_pennies, 0, MLEV_WIZARD,
-     "Player starting currency count", "", 1, START_PENNIES},
-    {"Listeners", "listen_mlev", &tp_listen_mlev, 0, MLEV_WIZARD,
-     "Mucker Level required for Listener programs", "", 1, LISTEN_MLEV},
-    {"Logging", "cmd_log_threshold_msec", &tp_cmd_log_threshold_msec, 0, MLEV_WIZARD,
-     "Log commands that take longer than X millisecs", "", 1, CMD_LOG_THRESHOLD_MSEC},
-    {"Misc", "max_force_level", &tp_max_force_level, MLEV_GOD, MLEV_GOD,
-     "Max. number of forces processed within a command", "", 1, MAX_FORCE_LEVEL},
-    {"MPI", "mpi_max_commands", &tp_mpi_max_commands, 0, MLEV_WIZARD,
-     "Max. number of uninterruptable MPI commands", "", 1, MPI_MAX_COMMANDS},
-    {"MUF", "addpennies_muf_mlev", &tp_addpennies_muf_mlev, 0, MLEV_WIZARD,
-     "Mucker Level required to create/destroy pennies", "", 1, ADDPENNIES_MUF_MLEV},
-    {"MUF", "instr_slice", &tp_instr_slice, 0, MLEV_WIZARD,
-     "Max. uninterrupted instructions per timeslice", "", 1, INSTR_SLICE},
-    {"MUF", "max_instr_count", &tp_max_instr_count, 0, MLEV_WIZARD,
-     "Max. MUF instruction run length for ML1", "", 1, MAX_INSTR_COUNT},
-    {"MUF", "max_ml4_preempt_count", &tp_max_ml4_preempt_count, 0, MLEV_WIZARD,
-     "Max. MUF preempt instruction run length for ML4, (0 = no limit)", "", 1,
-     MAX_ML4_PREEMPT_COUNT},
-    {"MUF", "max_ml4_nested_interp_loop_count", &tp_max_ml4_nested_interp_loop_count, 0, MLEV_WIZARD,
-     "Max. MUF preempt interp loop nesting level for ML4 (0 = no limit)", "", 1,
-     MAX_ML4_NESTED_INTERP_LOOP_COUNT},
-    {"MUF", "max_nested_interp_loop_count", &tp_max_nested_interp_loop_count, 0, MLEV_WIZARD,
-     "Max. MUF preempt interp loop nesting level", "", 1,
-     MAX_NESTED_INTERP_LOOP_COUNT},
-    {"MUF", "max_plyr_processes", &tp_max_plyr_processes, 0, MLEV_WIZARD,
-     "Concurrent processes allowed per player", "", 1, MAX_PLYR_PROCESSES},
-    {"MUF", "max_process_limit", &tp_max_process_limit, 0, MLEV_WIZARD,
-     "Total concurrent processes allowed on system", "", 1, MAX_PROCESS_LIMIT},
-    {"MUF", "mcp_muf_mlev", &tp_mcp_muf_mlev, 0, MLEV_WIZARD,
-     "Mucker Level required to use MCP", "MCP", 1, MCP_MUF_MLEV},
-    {"MUF", "movepennies_muf_mlev", &tp_movepennies_muf_mlev, 0, MLEV_WIZARD,
-     "Mucker Level required to move pennies non-destructively", "", 1, MOVEPENNIES_MUF_MLEV},
-    {"MUF", "pennies_muf_mlev", &tp_pennies_muf_mlev, 0, MLEV_WIZARD,
-     "Mucker Level required to read the value of pennies, settings above 1 disable {money}",
-     "", 1, PENNIES_MUF_MLEV},
-    {"MUF", "process_timer_limit", &tp_process_timer_limit, 0, MLEV_WIZARD,
-     "Max. timers per process", "", 1, PROCESS_TIMER_LIMIT},
-    {"MUF", "userlog_mlev", &tp_userlog_mlev, 0, MLEV_WIZARD,
-     "Mucker Level required to write to userlog", "", 1, USERLOG_MLEV},
-    {"Player Max", "playermax_limit", &tp_playermax_limit, 0, MLEV_WIZARD,
-     "Max. player connections allowed", "", 1, PLAYERMAX_LIMIT},
-    {"Spam Limits", "command_burst_size", &tp_command_burst_size, 0, MLEV_WIZARD,
-     "Max. commands per burst before limiter engages", "", 1, COMMAND_BURST_SIZE},
-    {"Spam Limits", "command_time_msec", &tp_command_time_msec, 0, MLEV_WIZARD,
-     "Millisecs per spam limiter time period", "", 1, COMMAND_TIME_MSEC},
-    {"Spam Limits", "commands_per_time", &tp_commands_per_time, 0, MLEV_WIZARD,
-     "Commands allowed per time period during limit", "", 1, COMMANDS_PER_TIME},
-    {"Spam Limits", "max_output", &tp_max_output, 0, MLEV_WIZARD, "Max. output buffer size",
-     "", 1, MAX_OUTPUT},
-    {"Tuning", "free_frames_pool", &tp_free_frames_pool, 0, MLEV_WIZARD,
-     "Size of allocated MUF process frame pool", "", 1, FREE_FRAMES_POOL},
-    {"Tuning", "max_loaded_objs", &tp_max_loaded_objs, 0, MLEV_WIZARD,
-     "Max. percent of proploaded database objects", "DISKBASE", 1, MAX_LOADED_OBJS},
-    {"Tuning", "pause_min", &tp_pause_min, 0, MLEV_WIZARD,
-     "Min. millisecs between MUF input/output timeslices", "", 1, PAUSE_MIN},
-    {NULL, NULL, NULL, 0, 0, NULL, NULL, 0, 0}
-};
-
-dbref tp_default_room_parent;
-dbref tp_lost_and_found;
-dbref tp_player_start;
-dbref tp_toad_default_recipient;
-
-struct tune_ref_entry tune_ref_list[] = {
-    {"Database", "default_room_parent", TYPE_ROOM, &tp_default_room_parent, 0, MLEV_WIZARD,
-     "Place to parent new rooms to", "", 1, GLOBAL_ENVIRONMENT},
-    {"Database", "lost_and_found", TYPE_ROOM, &tp_lost_and_found, 0, MLEV_WIZARD,
-     "Place for things without a home", "", 1, LOST_AND_FOUND},
-    {"Database", "player_start", TYPE_ROOM, &tp_player_start, 0, MLEV_WIZARD,
-     "Home where new players start", "", 1, PLAYER_START},
-    {"Database", "toad_default_recipient", TYPE_PLAYER, &tp_toad_default_recipient, 0,
-     MLEV_WIZARD, "Default owner for @toaded player's things", "", 1, TOAD_DEFAULT_RECIPIENT},
-    {NULL, NULL, 0, NULL, 0, 0, NULL, NULL, 0, NOTHING}
-};
-
-int tp_7bit_other_names;
-int tp_7bit_thing_names;
-int tp_allow_home;
-int tp_autolink_actions;
-int tp_cipher_server_preference;
-int tp_compatible_priorities;
-int tp_consistent_lock_source;
-int tp_dark_sleepers;
-int tp_dbdump_warning;
-int tp_diskbase_propvals;
-int tp_do_mpi_parsing;
-int tp_dumpdone_warning;
-int tp_enable_prefix;
-int tp_exit_darking;
-int tp_expanded_debug;
-int tp_force_mlev1_name_notify;
-int tp_hostnames;
-int tp_idleboot;
-int tp_idle_ping_enable;
-int tp_ignore_bidirectional;
-int tp_ignore_support;
-int tp_listeners;
-int tp_listeners_env;
-int tp_listeners_obj;
-int tp_lock_envcheck;
-int tp_log_commands;
-int tp_log_failed_commands;
-int tp_log_interactive;
-int tp_log_programs;
-int tp_m3_huh;
-int tp_mpi_continue_after_logout;
-int tp_optimize_muf;
-int tp_periodic_program_purge;
-int tp_playermax;
-int tp_pname_history_reporting;
-int tp_quiet_moves;
-int tp_realms_control;
-int tp_recognize_null_command;
-int tp_registration;
-int tp_tab_input_replaced_with_space;
-int tp_secure_who;
-int tp_secure_teleport;
-int tp_show_legacy_props;
-int tp_starttls_allow;
-int tp_strict_god_priv;
-int tp_teleport_to_player;
-int tp_thing_darking;
-int tp_thing_movement;
-int tp_toad_recycle;
-int tp_who_hides_dark;
-int tp_wiz_vehicles;
-int tp_verbose_clone;
-int tp_verbose_examine;
-int tp_zombies;
-
-struct tune_bool_entry tune_bool_list[] = {
-    {"Charset", "7bit_thing_names", &tp_7bit_thing_names, MLEV_WIZARD, MLEV_WIZARD,
-     "Limit thing names to 7-bit characters", "", 1, ASCII_THING_NAMES},
-    {"Charset", "7bit_other_names", &tp_7bit_other_names, MLEV_WIZARD, MLEV_WIZARD,
-     "Limit exit/room/muf names to 7-bit characters", "", 1, ASCII_OTHER_NAMES},
-    {"Commands", "enable_home", &tp_allow_home, MLEV_WIZARD, MLEV_WIZARD,
-     "Enable 'home' command", "", 1, ALLOW_HOME},
-    {"Commands", "enable_prefix", &tp_enable_prefix, MLEV_WIZARD, MLEV_WIZARD,
-     "Enable prefix actions", "", 1, ENABLE_PREFIX},
-    {"Commands", "recognize_null_command", &tp_recognize_null_command, MLEV_WIZARD,
-     MLEV_WIZARD, "Recognize null command", "", 1, RECOGNIZE_NULL_COMMAND},
-    {"Commands", "verbose_clone", &tp_verbose_clone, MLEV_WIZARD, MLEV_WIZARD,
-     "Show more information when using @clone command", "", 1, VERBOSE_CLONE},
-    {"Commands", "verbose_examine", &tp_verbose_examine, MLEV_WIZARD, MLEV_WIZARD,
-     "Show more information when using examine command", "", 1, VERBOSE_EXAMINE},
-    {"Dark", "dark_sleepers", &tp_dark_sleepers, 0, MLEV_WIZARD, "Make sleeping players dark",
-     "", 1, DARK_SLEEPERS},
-    {"Dark", "exit_darking", &tp_exit_darking, 0, MLEV_WIZARD,
-     "Allow players to set exits dark", "", 1, EXIT_DARKING},
-    {"Dark", "thing_darking", &tp_thing_darking, 0, MLEV_WIZARD,
-     "Allow players to set things dark", "", 1, THING_DARKING},
-    {"Dark", "who_hides_dark", &tp_who_hides_dark, MLEV_WIZARD, MLEV_WIZARD,
-     "Hide dark players from WHO list", "", 1, WHO_HIDES_DARK},
-    {"Database", "compatible_priorities", &tp_compatible_priorities, 0, MLEV_WIZARD,
-     "Use legacy exit priority levels on things", "", 1, COMPATIBLE_PRIORITIES},
-    {"Database", "realms_control", &tp_realms_control, 0, MLEV_WIZARD,
-     "Enable support for realm wizzes", "", 1, REALMS_CONTROL},
-    {"Database", "toad_recycle", &tp_toad_recycle, 0, MLEV_WIZARD,
-     "Recycle newly-created toads", "", 1, TOAD_RECYCLE},
-    {"DB Dumps", "diskbase_propvals", &tp_diskbase_propvals, 0, MLEV_WIZARD,
-     "Enable property value diskbasing (req. restart)", "DISKBASE", 1, DISKBASE_PROPVALS},
-    {"DB Dumps", "dbdump_warning", &tp_dbdump_warning, 0, MLEV_WIZARD,
-     "Enable warnings for upcoming database dumps", "", 1, DBDUMP_WARNING},
-    {"DB Dumps", "dumpdone_warning", &tp_dumpdone_warning, 0, MLEV_WIZARD,
-     "Notify when database dump complete", "", 1, DUMPDONE_WARNING},
-    {"Encryption", "starttls_allow", &tp_starttls_allow, MLEV_MASTER, MLEV_WIZARD,
-     "Enable TELNET STARTTLS encryption on plaintext port", "", 1, STARTTLS_ALLOW},
-    {"Idle Boot", "idleboot", &tp_idleboot, 0, MLEV_WIZARD, "Enable booting of idle players",
-     "", 1, IDLEBOOT},
-    {"Idle Boot", "idle_ping_enable", &tp_idle_ping_enable, 0, MLEV_WIZARD,
-     "Enable server side keepalive pings", "", 1, IDLE_PING_ENABLE},
-    {"Listeners", "allow_listeners", &tp_listeners, 0, MLEV_WIZARD,
-     "Allow programs to listen to player output", "", 1, LISTENERS},
-    {"Listeners", "allow_listeners_env", &tp_listeners_env, 0, MLEV_WIZARD,
-     "Allow listeners down environment", "", 1, LISTENERS_ENV},
-    {"Listeners", "allow_listeners_obj", &tp_listeners_obj, 0, MLEV_WIZARD,
-     "Allow objects to be listeners", "", 1, LISTENERS_OBJ},
-    {"Logging", "log_commands", &tp_log_commands, MLEV_WIZARD, MLEV_WIZARD,
-     "Log player commands", "", 1, LOG_COMMANDS},
-    {"Logging", "log_failed_commands", &tp_log_failed_commands, MLEV_WIZARD, MLEV_WIZARD,
-     "Log unrecognized commands", "", 1, LOG_FAILED_COMMANDS},
-    {"Logging", "log_interactive", &tp_log_interactive, MLEV_WIZARD, MLEV_WIZARD,
-     "Log text sent to MUF", "", 1, LOG_INTERACTIVE},
-    {"Logging", "log_programs", &tp_log_programs, MLEV_WIZARD, MLEV_WIZARD,
-     "Log programs every time they are saved", "", 1, LOG_PROGRAMS},
-    {"Misc", "autolink_actions", &tp_autolink_actions, 0, MLEV_WIZARD,
-     "Automatically link @actions to NIL", "", 1, AUTOLINK_ACTIONS},
-    {"Misc", "allow_zombies", &tp_zombies, 0, MLEV_WIZARD,
-     "Enable Zombie things to relay what they hear", "", 1, ZOMBIES},
-    {"Misc", "wiz_vehicles", &tp_wiz_vehicles, 0, MLEV_WIZARD,
-     "Only let Wizards set vehicle bits", "", 1, WIZ_VEHICLES},
-    {"Misc", "ignore_support", &tp_ignore_support, MLEV_MASTER, MLEV_WIZARD,
-     "Enable support for @ignoring players", "", 1, IGNORE_SUPPORT},
-    {"Misc", "ignore_bidirectional", &tp_ignore_bidirectional, MLEV_MASTER, MLEV_WIZARD,
-     "Enable bidirectional @ignore", "", 1, IGNORE_BIDIRECTIONAL},
-    {"Misc", "m3_huh", &tp_m3_huh, MLEV_MASTER, MLEV_WIZARD,
-     "Enable huh? to call an exit named \"huh?\" and set M3, with full command string", "", 1,
-     M3_HUH},
-    {"Misc", "strict_god_priv", &tp_strict_god_priv, MLEV_GOD, MLEV_GOD,
-     "Only God can touch God's objects", "GODPRIV", 1, STRICT_GOD_PRIV},
-    {"Misc", "tab_input_replaced_with_space", &tp_tab_input_replaced_with_space, 0, MLEV_WIZARD,
-     "Change tab to space when processing input", "", 1, TAB_INPUT_REPLACED_WITH_SPACE},
-    {"Movement", "teleport_to_player", &tp_teleport_to_player, 0, MLEV_WIZARD,
-     "Allow using exits linked to players", "", 1, TELEPORT_TO_PLAYER},
-    {"Movement", "secure_teleport", &tp_secure_teleport, 0, MLEV_WIZARD,
-     "Restrict actions to Jump_OK or controlled rooms", "", 1, SECURE_TELEPORT},
-    {"Movement", "secure_thing_movement", &tp_thing_movement, MLEV_WIZARD, MLEV_WIZARD,
-     "Moving things act like player", "", 1, SECURE_THING_MOVEMENT},
-    {"MPI", "do_mpi_parsing", &tp_do_mpi_parsing, 0, MLEV_WIZARD,
-     "Parse MPI strings in messages", "", 1, DO_MPI_PARSING},
-    {"MPI", "mpi_continue_after_logout", &tp_mpi_continue_after_logout, 0, MLEV_WIZARD,
-     "Continue executing MPI after logout", "", 1, MPI_CONTINUE_AFTER_LOGOUT},
-    {"MUF", "consistent_lock_source", &tp_consistent_lock_source, 0, MLEV_WIZARD,
-     "Maintain trigger as lock source in TESTLOCK", "", 1, CONSISTENT_LOCK_SOURCE},
-    {"MUF", "expanded_debug_trace", &tp_expanded_debug, 0, MLEV_WIZARD,
-     "MUF debug trace shows array contents", "", 1, EXPANDED_DEBUG_TRACE},
-    {"MUF", "force_mlev1_name_notify", &tp_force_mlev1_name_notify, 0, MLEV_WIZARD,
-     "MUF notify prepends username for ML1 programs", "", 1, FORCE_MLEV1_NAME_NOTIFY},
-    {"MUF", "optimize_muf", &tp_optimize_muf, 0, MLEV_WIZARD, "Enable MUF bytecode optimizer",
-     "", 1, OPTIMIZE_MUF},
-    {"Player Max", "playermax", &tp_playermax, 0, MLEV_WIZARD,
-     "Limit number of concurrent players allowed", "", 1, PLAYERMAX},
-    {"Movement", "quiet_moves", &tp_quiet_moves, 0, MLEV_WIZARD,
-     "Suppress basic arrive and depart notifications", "", 1, QUIET_MOVES},
-    {"Properties", "lock_envcheck", &tp_lock_envcheck, 0, MLEV_WIZARD,
-     "Locks check environment for properties", "", 1, LOCK_ENVCHECK},
-    {"Properties", "show_legacy_props", &tp_show_legacy_props, 0, MLEV_WIZARD,
-     "Examining objects lists legacy props", "", 1, SHOW_LEGACY_PROPS},
-    {"Registration", "registration", &tp_registration, 0, MLEV_WIZARD,
-     "Require new players to register manually", "", 1, REGISTRATION},
-    {"SSL", "server_cipher_preference", &tp_cipher_server_preference, MLEV_GOD, MLEV_GOD,
-     "Honor server cipher preference order over client's", "SSL", 1, SERVER_CIPHER_PREFERENCE},
-    {"Tuning", "periodic_program_purge", &tp_periodic_program_purge, 0, MLEV_WIZARD,
-     "Periodically free unused MUF programs", "", 1, PERIODIC_PROGRAM_PURGE},
-    {"Tuning", "pname_history_reporting", &tp_pname_history_reporting, 0, MLEV_WIZARD,
-     "Report player name change history", "", 1, PNAME_HISTORY_REPORTING},
-    {"WHO", "secure_who", &tp_secure_who, 0, MLEV_WIZARD,
-     "Disallow WHO command from login screen and programs", "", 1, SECURE_WHO},
-    {"WHO", "use_hostnames", &tp_hostnames, 0, MLEV_WIZARD,
-     "Resolve IP addresses into hostnames", "RESOLVER", 1, HOSTNAMES},
-    {NULL, NULL, NULL, 0, 0, NULL, 0, 0, 0}
+struct tune_entry tune_list[] = {
+    { "7bit_other_names", "Limit exit/room/muf names to 7-bit characters", "Charset", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=false,
+        .currentval.b=&tp_7bit_other_names, MLEV_WIZARD, MLEV_WIZARD, true },
+    { "7bit_thing_names", "Limit thing names to 7-bit characters", "Charset", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=true,
+        .currentval.b=&tp_7bit_thing_names, MLEV_WIZARD, MLEV_WIZARD, true },
+    { "addpennies_muf_mlev", "Mucker Level required to create/destroy pennies", "MUF", "", TP_TYPE_INTEGER,
+        .defaultval.n=2,
+        .currentval.n=&tp_addpennies_muf_mlev, 0, MLEV_WIZARD, true },
+    { "aging_time", "When to considered an object old and unused", "Database", "", TP_TYPE_TIMESPAN,
+        .defaultval.t=7776000,
+        .currentval.t=&tp_aging_time, 0, MLEV_WIZARD, true },
+    { "allow_listeners", "Allow programs to listen to player output", "Listeners", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=true,
+        .currentval.b=&tp_allow_listeners, 0, MLEV_WIZARD, true },
+    { "allow_listeners_env", "Allow listeners down environment", "Listeners", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=true,
+        .currentval.b=&tp_allow_listeners_env, 0, MLEV_WIZARD, true },
+    { "allow_listeners_obj", "Allow objects to be listeners", "Listeners", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=true,
+        .currentval.b=&tp_allow_listeners_obj, 0, MLEV_WIZARD, true },
+    { "allow_zombies", "Enable Zombie things to relay what they hear", "Misc", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=true,
+        .currentval.b=&tp_allow_zombies, 0, MLEV_WIZARD, true },
+    { "autolink_actions", "Automatically link @actions to NIL", "Misc", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=false,
+        .currentval.b=&tp_autolink_actions, 0, MLEV_WIZARD, true },
+    { "autolook_cmd", "Room entry look command", "Commands", "", TP_TYPE_STRING,
+        .defaultval.s="look",
+        .currentval.s=&tp_autolook_cmd, 0, MLEV_WIZARD, true },
+    { "clean_interval", "Interval between memory/object cleanups", "Tuning", "", TP_TYPE_TIMESPAN,
+        .defaultval.t=900,
+        .currentval.t=&tp_clean_interval, 0, MLEV_WIZARD, true },
+    { "cmd_log_threshold_msec", "Log commands that take longer than X millisecs", "Logging", "", TP_TYPE_INTEGER,
+        .defaultval.n=1000,
+        .currentval.n=&tp_cmd_log_threshold_msec, 0, MLEV_WIZARD, true },
+    { "command_burst_size", "Max. commands per burst before limiter engages", "Spam Limits", "", TP_TYPE_INTEGER,
+        .defaultval.n=500,
+        .currentval.n=&tp_command_burst_size, 0, MLEV_WIZARD, true },
+    { "command_time_msec", "Millisecs per spam limiter time period", "Spam Limits", "", TP_TYPE_INTEGER,
+        .defaultval.n=1000,
+        .currentval.n=&tp_command_time_msec, 0, MLEV_WIZARD, true },
+    { "commands_per_time", "Commands allowed per time period during limit", "Spam Limits", "", TP_TYPE_INTEGER,
+        .defaultval.n=2,
+        .currentval.n=&tp_commands_per_time, 0, MLEV_WIZARD, true },
+    { "compatible_priorities", "Use legacy exit priority levels on things", "Database", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=true,
+        .currentval.b=&tp_compatible_priorities, 0, MLEV_WIZARD, true },
+    { "connect_fail_mesg", "Failed player connect message", "Connecting", "", TP_TYPE_STRING,
+        .defaultval.s="Either that player does not exist, or has a different password.",
+        .currentval.s=&tp_connect_fail_mesg, 0, MLEV_WIZARD, true, true },
+    { "consistent_lock_source", "Maintain trigger as lock source in TESTLOCK", "MUF", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=true,
+        .currentval.b=&tp_consistent_lock_source, 0, MLEV_WIZARD, true },
+    { "cpennies", "Currency name, capitalized, plural", "Currency", "", TP_TYPE_STRING,
+        .defaultval.s="Pennies",
+        .currentval.s=&tp_cpennies, 0, MLEV_WIZARD, true },
+    { "cpenny", "Currency name, capitalized", "Currency", "", TP_TYPE_STRING,
+        .defaultval.s="Penny",
+        .currentval.s=&tp_cpenny, 0, MLEV_WIZARD, true },
+    { "create_fail_mesg", "Failed player create message", "Connecting", "", TP_TYPE_STRING,
+        .defaultval.s="Either there is already a player with that name, or that name is illegal.",
+        .currentval.s=&tp_create_fail_mesg, 0, MLEV_WIZARD, true, true },
+    { "dark_sleepers", "Make sleeping players dark", "Dark", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=false,
+        .currentval.b=&tp_dark_sleepers, 0, MLEV_WIZARD, true },
+    { "dbdump_warning", "Enable warnings for upcoming database dumps", "DB Dumps", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=true,
+        .currentval.b=&tp_dbdump_warning, 0, MLEV_WIZARD, true },
+    { "default_room_parent", "Place to parent new rooms to", "Database", "", TP_TYPE_DBREF,
+        .defaultval.d=GLOBAL_ENVIRONMENT,
+        .currentval.d=&tp_default_room_parent, 0, MLEV_WIZARD, true, false, TYPE_ROOM },
+    { "description_default", "Default description", "Misc", "", TP_TYPE_STRING,
+        .defaultval.s="You see nothing special.",
+        .currentval.s=&tp_description_default, 0, MLEV_WIZARD, true },
+    { "diskbase_propvals", "Enable property value diskbasing (req. restart)", "DB Dumps", "DISKBASE", TP_TYPE_BOOLEAN,
+        .defaultval.b=true,
+        .currentval.b=&tp_diskbase_propvals, 0, MLEV_WIZARD, true },
+    { "do_mpi_parsing", "Parse MPI strings in messages", "MPI", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=true,
+        .currentval.b=&tp_do_mpi_parsing, 0, MLEV_WIZARD, true },
+    { "dump_interval", "Interval between dumps", "DB Dumps", "", TP_TYPE_TIMESPAN,
+        .defaultval.t=14400,
+        .currentval.t=&tp_dump_interval, 0, MLEV_WIZARD, true },
+    { "dump_warntime", "Interval between warning and dump", "DB Dumps", "", TP_TYPE_TIMESPAN,
+        .defaultval.t=120,
+        .currentval.t=&tp_dump_warntime, 0, MLEV_WIZARD, true },
+    { "dumpdone_mesg", "Database dump finished message", "DB Dumps", "", TP_TYPE_STRING,
+        .defaultval.s="## Save complete. ##",
+        .currentval.s=&tp_dumpdone_mesg, 0, MLEV_WIZARD, true, true },
+    { "dumpdone_warning", "Notify when database dump complete", "DB Dumps", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=true,
+        .currentval.b=&tp_dumpdone_warning, 0, MLEV_WIZARD, true },
+    { "dumping_mesg", "Database dump started message", "DB Dumps", "", TP_TYPE_STRING,
+        .defaultval.s="## Pausing to save database. This may take a while. ##",
+        .currentval.s=&tp_dumping_mesg, 0, MLEV_WIZARD, true, true },
+    { "dumpwarn_mesg", "Database dump finished message", "DB Dumps", "", TP_TYPE_STRING,
+        .defaultval.s="## Game will pause to save the database in a few minutes. ##",
+        .currentval.s=&tp_dumpwarn_mesg, 0, MLEV_WIZARD, true, true },
+    { "enable_home", "Enable 'home' command", "Commands", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=true,
+        .currentval.b=&tp_enable_home, MLEV_WIZARD, MLEV_WIZARD, true },
+    { "enable_prefix", "Enable prefix actions", "Commands", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=false,
+        .currentval.b=&tp_enable_prefix, MLEV_WIZARD, MLEV_WIZARD, true },
+    { "exit_cost", "Cost to create an exit", "Costs", "", TP_TYPE_INTEGER,
+        .defaultval.n=1,
+        .currentval.n=&tp_exit_cost, 0, MLEV_WIZARD, true },
+    { "exit_darking", "Allow players to set exits dark", "Dark", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=true,
+        .currentval.b=&tp_exit_darking, 0, MLEV_WIZARD, true },
+    { "expanded_debug_trace", "MUF debug trace shows array contents", "MUF", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=true,
+        .currentval.b=&tp_expanded_debug_trace, 0, MLEV_WIZARD, true },
+    { "file_connection_help", "'help' before login", "Files", "", TP_TYPE_STRING,
+        .defaultval.s="data/connect-help.txt",
+        .currentval.s=&tp_file_connection_help, MLEV_WIZARD, MLEV_GOD, true },
+    { "file_credits", "Acknowledgements", "Files", "", TP_TYPE_STRING,
+        .defaultval.s="data/credits.txt",
+        .currentval.s=&tp_file_credits, MLEV_WIZARD, MLEV_GOD, true },
+    { "file_editor_help", "Editor help", "Files", "", TP_TYPE_STRING,
+        .defaultval.s="data/edit-help.txt",
+        .currentval.s=&tp_file_editor_help, MLEV_WIZARD, MLEV_GOD, true },
+    { "file_help", "'help' main content", "Files", "", TP_TYPE_STRING,
+        .defaultval.s="data/help.txt",
+        .currentval.s=&tp_file_help, MLEV_WIZARD, MLEV_GOD, true },
+    { "file_help_dir", "'help' topic directory", "Files", "", TP_TYPE_STRING,
+        .defaultval.s="data/help",
+        .currentval.s=&tp_file_help_dir, MLEV_WIZARD, MLEV_GOD, true },
+    { "file_info_dir", "'info' topic directory", "Files", "", TP_TYPE_STRING,
+        .defaultval.s="data/info/",
+        .currentval.s=&tp_file_info_dir, MLEV_WIZARD, MLEV_GOD, true },
+    { "file_log_cmd_times", "Command times", "Files", "", TP_TYPE_STRING,
+        .defaultval.s="logs/cmd-times",
+        .currentval.s=&tp_file_log_cmd_times, MLEV_WIZARD, MLEV_GOD, true },
+    { "file_log_commands", "Player commands", "Files", "", TP_TYPE_STRING,
+        .defaultval.s="logs/commands",
+        .currentval.s=&tp_file_log_commands, MLEV_WIZARD, MLEV_GOD, true },
+    { "file_log_gripes", "Player gripes", "Files", "", TP_TYPE_STRING,
+        .defaultval.s="logs/gripes",
+        .currentval.s=&tp_file_log_gripes, MLEV_WIZARD, MLEV_GOD, true },
+    { "file_log_malloc", "Memory allocations", "Files", "MEMPROF", TP_TYPE_STRING,
+        .defaultval.s="logs/malloc",
+        .currentval.s=&tp_file_log_malloc, MLEV_WIZARD, MLEV_GOD, true },
+    { "file_log_muf_errors", "MUF compile errors and warnings", "Files", "", TP_TYPE_STRING,
+        .defaultval.s="logs/muf-errors",
+        .currentval.s=&tp_file_log_muf_errors, MLEV_WIZARD, MLEV_GOD, true },
+    { "file_log_programs", "Text of changed programs", "Files", "", TP_TYPE_STRING,
+        .defaultval.s="logs/programs",
+        .currentval.s=&tp_file_log_programs, MLEV_WIZARD, MLEV_GOD, true },
+    { "file_log_sanfix", "Database fixes", "Files", "", TP_TYPE_STRING,
+        .defaultval.s="logs/sanfixed",
+        .currentval.s=&tp_file_log_sanfix, MLEV_WIZARD, MLEV_GOD, true },
+    { "file_log_sanity", "Database corruption and errors", "Files", "", TP_TYPE_STRING,
+        .defaultval.s="logs/sanity",
+        .currentval.s=&tp_file_log_sanity, MLEV_WIZARD, MLEV_GOD, true },
+    { "file_log_status", "System errors and stats", "Files", "", TP_TYPE_STRING,
+        .defaultval.s="logs/status",
+        .currentval.s=&tp_file_log_status, MLEV_WIZARD, MLEV_GOD, true },
+    { "file_log_stderr", "Server error redirect", "Files", "", TP_TYPE_STRING,
+        .defaultval.s="logs/fbmuck.err",
+        .currentval.s=&tp_file_log_stderr, MLEV_WIZARD, MLEV_GOD, true },
+    { "file_log_stdout", "Server output redirect", "Files", "", TP_TYPE_STRING,
+        .defaultval.s="logs/fbmuck",
+        .currentval.s=&tp_file_log_stdout, MLEV_WIZARD, MLEV_GOD, true },
+    { "file_log_user", "MUF-writable messages", "Files", "", TP_TYPE_STRING,
+        .defaultval.s="logs/user",
+        .currentval.s=&tp_file_log_user, MLEV_WIZARD, MLEV_GOD, true },
+    { "file_man", "'man' main content", "Files", "", TP_TYPE_STRING,
+        .defaultval.s="data/man.txt",
+        .currentval.s=&tp_file_man, MLEV_WIZARD, MLEV_GOD, true },
+    { "file_man_dir", "'man' topic directory", "Files", "", TP_TYPE_STRING,
+        .defaultval.s="data/man",
+        .currentval.s=&tp_file_man_dir, MLEV_WIZARD, MLEV_GOD, true },
+    { "file_motd", "Message of the day", "Files", "", TP_TYPE_STRING,
+        .defaultval.s="data/motd.txt",
+        .currentval.s=&tp_file_motd, MLEV_WIZARD, MLEV_GOD, true },
+    { "file_mpihelp", "'mpi' main content", "Files", "", TP_TYPE_STRING,
+        .defaultval.s="data/mpihelp.txt",
+        .currentval.s=&tp_file_mpihelp, MLEV_WIZARD, MLEV_GOD, true },
+    { "file_mpihelp_dir", "'mpi' topic directory", "Files", "", TP_TYPE_STRING,
+        .defaultval.s="data/mpihelp",
+        .currentval.s=&tp_file_mpihelp_dir, MLEV_WIZARD, MLEV_GOD, true },
+    { "file_news", "'news' main content", "Files", "", TP_TYPE_STRING,
+        .defaultval.s="data/news.txt",
+        .currentval.s=&tp_file_news, MLEV_WIZARD, MLEV_GOD, true },
+    { "file_news_dir", "'news' topic directory", "Files", "", TP_TYPE_STRING,
+        .defaultval.s="data/news",
+        .currentval.s=&tp_file_news_dir, MLEV_WIZARD, MLEV_GOD, true },
+    { "file_welcome_screen", "Opening screen", "Files", "", TP_TYPE_STRING,
+        .defaultval.s="data/welcome.txt",
+        .currentval.s=&tp_file_welcome_screen, MLEV_WIZARD, MLEV_GOD, true },
+    { "force_mlev1_name_notify", "MUF notify prepends username for ML1 programs", "MUF", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=true,
+        .currentval.b=&tp_force_mlev1_name_notify, 0, MLEV_WIZARD, true },
+    { "free_frames_pool", "Size of allocated MUF process frame pool", "Tuning", "", TP_TYPE_INTEGER,
+        .defaultval.n=8,
+        .currentval.n=&tp_free_frames_pool, 0, MLEV_WIZARD, true },
+    { "gender_prop", "Property name used for pronoun substitutions", "Properties", "", TP_TYPE_STRING,
+        .defaultval.s="sex",
+        .currentval.s=&tp_gender_prop, 0, MLEV_WIZARD, true },
+    { "huh_mesg", "Unrecognized command warning", "Misc", "", TP_TYPE_STRING,
+        .defaultval.s="Huh?  (Type \"help\" for help.)",
+        .currentval.s=&tp_huh_mesg, 0, MLEV_WIZARD, true },
+    { "idle_boot_mesg", "Boot message given to users idling out", "Idle Boot", "", TP_TYPE_STRING,
+        .defaultval.s="Autodisconnecting for inactivity.",
+        .currentval.s=&tp_idle_boot_mesg, 0, MLEV_WIZARD, true },
+    { "idle_ping_enable", "Enable server side keepalive pings", "Idle Boot", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=true,
+        .currentval.b=&tp_idle_ping_enable, 0, MLEV_WIZARD, true },
+    { "idle_ping_time", "Server side keepalive time in seconds", "Idle Boot", "", TP_TYPE_TIMESPAN,
+        .defaultval.t=55,
+        .currentval.t=&tp_idle_ping_time, 0, MLEV_WIZARD, true },
+    { "idleboot", "Enable booting of idle players", "Idle Boot", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=true,
+        .currentval.b=&tp_idleboot, 0, MLEV_WIZARD, true },
+    { "ignore_bidirectional", "Enable bidirectional ignore", "Misc", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=true,
+        .currentval.b=&tp_ignore_bidirectional, MLEV_MASTER, MLEV_WIZARD, true },
+    { "ignore_support", "Enable support for @ignoring players", "Misc", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=true,
+        .currentval.b=&tp_ignore_support, MLEV_MASTER, MLEV_WIZARD, true },
+    { "instr_slice", "Max. uninterrupted instructions per timeslice", "MUF", "", TP_TYPE_INTEGER,
+        .defaultval.n=2000,
+        .currentval.n=&tp_instr_slice, 0, MLEV_WIZARD, true },
+    { "leave_mesg", "Logoff message for QUIT", "Misc", "", TP_TYPE_STRING,
+        .defaultval.s="Come back later!",
+        .currentval.s=&tp_leave_mesg, 0, MLEV_WIZARD, true },
+    { "link_cost", "Cost to link an exit", "Costs", "", TP_TYPE_INTEGER,
+        .defaultval.n=1,
+        .currentval.n=&tp_link_cost, 0, MLEV_WIZARD, true },
+    { "listen_mlev", "Mucker Level required for Listener programs", "Listeners", "", TP_TYPE_INTEGER,
+        .defaultval.n=3,
+        .currentval.n=&tp_listen_mlev, 0, MLEV_WIZARD, true },
+    { "lock_envcheck", "Locks check environment for properties", "Properties", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=false,
+        .currentval.b=&tp_lock_envcheck, 0, MLEV_WIZARD, true },
+    { "log_commands", "Log player commands", "Logging", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=true,
+        .currentval.b=&tp_log_commands, MLEV_WIZARD, MLEV_WIZARD, true },
+    { "log_failed_commands", "Log unrecognized commands", "Logging", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=false,
+        .currentval.b=&tp_log_failed_commands, MLEV_WIZARD, MLEV_WIZARD, true },
+    { "log_interactive", "Log text sent to MUF", "Logging", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=true,
+        .currentval.b=&tp_log_interactive, MLEV_WIZARD, MLEV_WIZARD, true },
+    { "log_programs", "Log programs every time they are saved", "Logging", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=true,
+        .currentval.b=&tp_log_programs, MLEV_WIZARD, MLEV_WIZARD, true },
+    { "lookup_cost", "Cost to lookup a player name", "Costs", "", TP_TYPE_INTEGER,
+        .defaultval.n=0,
+        .currentval.n=&tp_lookup_cost, 0, MLEV_WIZARD, true },
+    { "lost_and_found", "Place for things without a home", "Database", "", TP_TYPE_DBREF,
+        .defaultval.d=GLOBAL_ENVIRONMENT,
+        .currentval.d=&tp_lost_and_found, 0, MLEV_WIZARD, true, false, TYPE_ROOM },
+    { "m3_huh", "Enable huh? to call an exit named \"huh?\" and set M3, with full command string", "Misc", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=false,
+        .currentval.b=&tp_m3_huh, MLEV_MASTER, MLEV_WIZARD, true },
+    { "max_force_level", "Max. number of forces processed within a command", "Misc", "", TP_TYPE_INTEGER,
+        .defaultval.n=1,
+        .currentval.n=&tp_max_force_level, MLEV_GOD, MLEV_GOD, true },
+    { "max_instr_count", "Max. MUF instruction run length for ML1", "MUF", "", TP_TYPE_INTEGER,
+        .defaultval.n=20000,
+        .currentval.n=&tp_max_instr_count, 0, MLEV_WIZARD, true, true },
+    { "max_loaded_objs", "Max. percent of proploaded database objects", "Tuning", "DISKBASE", TP_TYPE_INTEGER,
+        .defaultval.n=5,
+        .currentval.n=&tp_max_loaded_objs, 0, MLEV_WIZARD, true },
+    { "max_ml4_nested_interp_loop_count", "Max. MUF preempt interp loop nesting level for ML4 (0 = no limit)", "MUF", "", TP_TYPE_INTEGER,
+        .defaultval.n=0,
+        .currentval.n=&tp_max_ml4_nested_interp_loop_count, 0, MLEV_WIZARD, true },
+    { "max_ml4_preempt_count", "Max. MUF preempt instruction run length for ML4, (0 = no limit)", "MUF", "", TP_TYPE_INTEGER,
+        .defaultval.n=0,
+        .currentval.n=&tp_max_ml4_preempt_count, 0, MLEV_WIZARD, true },
+    { "max_nested_interp_loop_count", "Max. MUF preempt interp loop nesting level", "MUF", "", TP_TYPE_INTEGER,
+        .defaultval.n=16,
+        .currentval.n=&tp_max_nested_interp_loop_count, 0, MLEV_WIZARD, true },
+    { "max_object_endowment", "Max. value of an object", "Costs", "", TP_TYPE_INTEGER,
+        .defaultval.n=100,
+        .currentval.n=&tp_max_object_endowment, 0, MLEV_WIZARD, true },
+    { "max_output", "Max. output buffer size", "Spam Limits", "", TP_TYPE_INTEGER,
+        .defaultval.n=131071,
+        .currentval.n=&tp_max_output, 0, MLEV_WIZARD, true },
+    { "max_pennies", "Max. pennies a player can own", "Currency", "", TP_TYPE_INTEGER,
+        .defaultval.n=10000,
+        .currentval.n=&tp_max_pennies, 0, MLEV_WIZARD, true },
+    { "max_plyr_processes", "Concurrent processes allowed per player", "MUF", "", TP_TYPE_INTEGER,
+        .defaultval.n=32,
+        .currentval.n=&tp_max_plyr_processes, 0, MLEV_WIZARD, true },
+    { "max_process_limit", "Total concurrent processes allowed on system", "MUF", "", TP_TYPE_INTEGER,
+        .defaultval.n=400,
+        .currentval.n=&tp_max_process_limit, 0, MLEV_WIZARD, true },
+    { "maxidle", "Maximum idle time before booting", "Idle Boot", "", TP_TYPE_TIMESPAN,
+        .defaultval.t=7200,
+        .currentval.t=&tp_maxidle, 0, MLEV_WIZARD, true },
+    { "mcp_muf_mlev", "Mucker Level required to use MCP", "MUF", "MCP", TP_TYPE_INTEGER,
+        .defaultval.n=3,
+        .currentval.n=&tp_mcp_muf_mlev, 0, MLEV_WIZARD, true },
+    { "movepennies_muf_mlev", "Mucker Level required to move pennies non-destructively", "MUF", "", TP_TYPE_INTEGER,
+        .defaultval.n=2,
+        .currentval.n=&tp_movepennies_muf_mlev, 0, MLEV_WIZARD, true },
+    { "mpi_continue_after_logout", "Continue executing MPI after logout", "MPI", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=false,
+        .currentval.b=&tp_mpi_continue_after_logout, 0, MLEV_WIZARD, true },
+    { "mpi_max_commands", "Max. number of uninterruptable MPI commands", "MPI", "", TP_TYPE_INTEGER,
+        .defaultval.n=2048,
+        .currentval.n=&tp_mpi_max_commands, 0, MLEV_WIZARD, true },
+    { "muckname", "Name of the MUCK", "Misc", "", TP_TYPE_STRING,
+        .defaultval.s="TygryssMUCK",
+        .currentval.s=&tp_muckname, 0, MLEV_WIZARD, true },
+    { "muf_comments_strict", "MUF comments are strict and not recursive", "MUF", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=true,
+        .currentval.b=&tp_muf_comments_strict, 0, MLEV_WIZARD, true },
+    { "new_program_flags", "Initial flags for newly created programs", "Database", "", TP_TYPE_STRING,
+        .defaultval.s="",
+        .currentval.s=&tp_new_program_flags, 0, MLEV_WIZARD, true, true },
+    { "object_cost", "Cost to create an object", "Costs", "", TP_TYPE_INTEGER,
+        .defaultval.n=10,
+        .currentval.n=&tp_object_cost, 0, MLEV_WIZARD, true },
+    { "optimize_muf", "Enable MUF bytecode optimizer", "MUF", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=true,
+        .currentval.b=&tp_optimize_muf, 0, MLEV_WIZARD, true },
+    { "pause_min", "Min. millisecs between MUF input/output timeslices", "Tuning", "", TP_TYPE_INTEGER,
+        .defaultval.n=0,
+        .currentval.n=&tp_pause_min, 0, MLEV_WIZARD, true },
+    { "pcreate_flags", "Initial flags for newly created players", "Database", "", TP_TYPE_STRING,
+        .defaultval.s="B",
+        .currentval.s=&tp_pcreate_flags, 0, MLEV_WIZARD, true, true },
+    { "pennies", "Currency name, plural", "Currency", "", TP_TYPE_STRING,
+        .defaultval.s="pennies",
+        .currentval.s=&tp_pennies, 0, MLEV_WIZARD, true },
+    { "pennies_muf_mlev", "Mucker Level required to read the value of pennies, settings above 1 disable {money}", "MUF", "", TP_TYPE_INTEGER,
+        .defaultval.n=1,
+        .currentval.n=&tp_pennies_muf_mlev, 0, MLEV_WIZARD, true },
+    { "penny", "Currency name", "Currency", "", TP_TYPE_STRING,
+        .defaultval.s="penny",
+        .currentval.s=&tp_penny, 0, MLEV_WIZARD, true },
+    { "penny_rate", "Avg. moves between finding currency", "Currency", "", TP_TYPE_INTEGER,
+        .defaultval.n=8,
+        .currentval.n=&tp_penny_rate, 0, MLEV_WIZARD, true },
+    { "periodic_program_purge", "Periodically free unused MUF programs", "Tuning", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=true,
+        .currentval.b=&tp_periodic_program_purge, 0, MLEV_WIZARD, true },
+    { "player_name_limit", "Limit on player name length", "Commands", "", TP_TYPE_INTEGER,
+        .defaultval.n=16,
+        .currentval.n=&tp_player_name_limit, 0, MLEV_WIZARD, true },
+    { "player_start", "Home where new players start", "Database", "", TP_TYPE_DBREF,
+        .defaultval.d=GLOBAL_ENVIRONMENT,
+        .currentval.d=&tp_player_start, 0, MLEV_WIZARD, true, false, TYPE_ROOM },
+    { "playermax", "Limit number of concurrent players allowed", "Connecting", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=false,
+        .currentval.b=&tp_playermax, 0, MLEV_WIZARD, true },
+    { "playermax_bootmesg", "Max. players connection error message", "Connecting", "", TP_TYPE_STRING,
+        .defaultval.s="Sorry, but there are too many players online.  Please try reconnecting in a few minutes.",
+        .currentval.s=&tp_playermax_bootmesg, 0, MLEV_WIZARD, true },
+    { "playermax_limit", "Max. player connections allowed", "Connecting", "", TP_TYPE_INTEGER,
+        .defaultval.n=56,
+        .currentval.n=&tp_playermax_limit, 0, MLEV_WIZARD, true },
+    { "playermax_warnmesg", "Max. players connection login warning", "Connecting", "", TP_TYPE_STRING,
+        .defaultval.s="You likely won't be able to connect right now, since too many players are online.",
+        .currentval.s=&tp_playermax_warnmesg, 0, MLEV_WIZARD, true },
+    { "pname_history_reporting", "Report player name change history", "Tuning", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=true,
+        .currentval.b=&tp_pname_history_reporting, 0, MLEV_WIZARD, true },
+    { "pname_history_threshold", "Length of player name change history", "Tuning", "", TP_TYPE_TIMESPAN,
+        .defaultval.t=2592000,
+        .currentval.t=&tp_pname_history_threshold, 0, MLEV_WIZARD, true },
+    { "process_timer_limit", "Max. timers per process", "MUF", "", TP_TYPE_INTEGER,
+        .defaultval.n=4,
+        .currentval.n=&tp_process_timer_limit, 0, MLEV_WIZARD, true },
+    { "quiet_moves", "Suppress basic arrive and depart notifications", "Movement", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=false,
+        .currentval.b=&tp_quiet_moves, 0, MLEV_WIZARD, true },
+    { "realms_control", "Enable support for realm wizzes", "Database", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=false,
+        .currentval.b=&tp_realms_control, 0, MLEV_WIZARD, true },
+    { "recognize_null_command", "Recognize null command", "Commands", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=false,
+        .currentval.b=&tp_recognize_null_command, MLEV_WIZARD, MLEV_WIZARD, true },
+    { "register_mesg", "Login registration denied message", "Connecting", "", TP_TYPE_STRING,
+        .defaultval.s="Sorry, you can get a character by e-mailing XXXX@machine.net.address with a charname and password.",
+        .currentval.s=&tp_register_mesg, 0, MLEV_WIZARD, true },
+    { "registration", "Require new players to register manually", "Connecting", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=true,
+        .currentval.b=&tp_registration, 0, MLEV_WIZARD, true },
+    { "reserved_names", "String-match list of reserved names", "Database", "", TP_TYPE_STRING,
+        .defaultval.s="",
+        .currentval.s=&tp_reserved_names, 0, MLEV_WIZARD, true, true },
+    { "reserved_player_names", "String-match list of reserved player names", "Database", "", TP_TYPE_STRING,
+        .defaultval.s="",
+        .currentval.s=&tp_reserved_player_names, 0, MLEV_WIZARD, true, true },
+    { "room_cost", "Cost to create an room", "Costs", "", TP_TYPE_INTEGER,
+        .defaultval.n=10,
+        .currentval.n=&tp_room_cost, 0, MLEV_WIZARD, true },
+    { "secure_teleport", "Restrict actions to Jump_OK or controlled rooms", "Movement", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=false,
+        .currentval.b=&tp_secure_teleport, 0, MLEV_WIZARD, true },
+    { "secure_thing_movement", "Moving things act like player", "Movement", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=false,
+        .currentval.b=&tp_secure_thing_movement, MLEV_WIZARD, MLEV_WIZARD, true },
+    { "secure_who", "Disallow WHO command from login screen and programs", "WHO", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=false,
+        .currentval.b=&tp_secure_who, 0, MLEV_WIZARD, true },
+    { "server_cipher_preference", "Honor server cipher preference order over client's", "SSL", "SSL", TP_TYPE_BOOLEAN,
+        .defaultval.b=true,
+        .currentval.b=&tp_server_cipher_preference, MLEV_GOD, MLEV_GOD, true },
+    { "show_legacy_props", "Examining objects lists legacy props", "Properties", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=false,
+        .currentval.b=&tp_show_legacy_props, 0, MLEV_WIZARD, true },
+    { "ssl_cert_file", "Path to SSL certificate .pem", "SSL", "SSL", TP_TYPE_STRING,
+        .defaultval.s="data/server.pem",
+        .currentval.s=&tp_ssl_cert_file, MLEV_GOD, MLEV_GOD, true },
+    { "ssl_cipher_preference_list", "Allowed OpenSSL cipher list", "SSL", "SSL", TP_TYPE_STRING,
+        .defaultval.s="ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:AES:CAMELLIA:DES-CBC3-SHA:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!aECDH:!EDH-DSS-DES-CBC3-SHA:!EDH-RSA-DES-CBC3-SHA:!KRB5-DES-CBC3-SHA",
+        .currentval.s=&tp_ssl_cipher_preference_list, MLEV_GOD, MLEV_GOD, true },
+    { "ssl_key_file", "Path to SSL private key .pem", "SSL", "SSL", TP_TYPE_STRING,
+        .defaultval.s="data/server.pem",
+        .currentval.s=&tp_ssl_key_file, MLEV_GOD, MLEV_GOD, true },
+    { "ssl_keyfile_passwd", "Password for SSL private key file", "SSL", "SSL", TP_TYPE_STRING,
+        .defaultval.s="",
+        .currentval.s=&tp_ssl_keyfile_passwd, MLEV_GOD, MLEV_GOD, true, true },
+    { "ssl_min_protocol_version", "Min. allowed SSL protocol version for clients", "SSL", "SSL", TP_TYPE_STRING,
+        .defaultval.s="None",
+        .currentval.s=&tp_ssl_min_protocol_version, MLEV_GOD, MLEV_GOD, true },
+    { "start_pennies", "Player starting currency count", "Currency", "", TP_TYPE_INTEGER,
+        .defaultval.n=50,
+        .currentval.n=&tp_start_pennies, 0, MLEV_WIZARD, true },
+    { "starttls_allow", "Enable TELNET STARTTLS encryption on plaintext port", "Encryption", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=false,
+        .currentval.b=&tp_starttls_allow, MLEV_MASTER, MLEV_WIZARD, true },
+    { "strict_god_priv", "Only God can touch God's objects", "Misc", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=true,
+        .currentval.b=&tp_strict_god_priv, MLEV_GOD, MLEV_GOD, true },
+    { "tab_input_replaced_with_space", "Change tab to space when processing input", "Misc", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=true,
+        .currentval.b=&tp_tab_input_replaced_with_space, 0, MLEV_WIZARD, true },
+    { "teleport_to_player", "Allow using exits linked to players", "Movement", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=true,
+        .currentval.b=&tp_teleport_to_player, 0, MLEV_WIZARD, true },
+    { "thing_darking", "Allow players to set things dark", "Dark", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=true,
+        .currentval.b=&tp_thing_darking, 0, MLEV_WIZARD, true },
+    { "toad_default_recipient", "Default owner for @toaded player's things", "Database", "", TP_TYPE_DBREF,
+        .defaultval.d=GOD,
+        .currentval.d=&tp_toad_default_recipient, 0, MLEV_WIZARD, true, false, TYPE_PLAYER },
+    { "toad_recycle", "Recycle newly-created toads", "Database", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=false,
+        .currentval.b=&tp_toad_recycle, 0, MLEV_WIZARD, true },
+    { "use_hostnames", "Resolve IP addresses into hostnames", "WHO", "RESOLVER", TP_TYPE_BOOLEAN,
+        .defaultval.b=true,
+        .currentval.b=&tp_use_hostnames, 0, MLEV_WIZARD, true },
+    { "userlog_mlev", "Mucker Level required to write to userlog", "MUF", "", TP_TYPE_INTEGER,
+        .defaultval.n=3,
+        .currentval.n=&tp_userlog_mlev, 0, MLEV_WIZARD, true },
+    { "verbose_clone", "Show more information when using @clone command", "Commands", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=false,
+        .currentval.b=&tp_verbose_clone, MLEV_WIZARD, MLEV_WIZARD, true },
+    { "verbose_examine", "Show more information when using examine command", "Commands", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=true,
+        .currentval.b=&tp_verbose_examine, MLEV_WIZARD, MLEV_WIZARD, true },
+    { "who_hides_dark", "Hide dark players from WHO list", "Dark", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=true,
+        .currentval.b=&tp_who_hides_dark, MLEV_WIZARD, MLEV_WIZARD, true },
+    { "wiz_vehicles", "Only let Wizards set vehicle bits", "Misc", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=false,
+        .currentval.b=&tp_wiz_vehicles, 0, MLEV_WIZARD, true },
+    { 0 }
 };
 
 #endif /* !TUNELIST_H */
