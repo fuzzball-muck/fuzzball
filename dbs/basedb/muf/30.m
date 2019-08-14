@@ -21,7 +21,7 @@
     -- Jessy
     6/2019 Fixed it so prop type is preserved on copy/move, generally
     modernized the code around prop handling as it has a lot of FB4
-    and FB5 era weirdness. (tanabi)
+    and FB5 era weirdness. [tanabi]
 )
  
 $doccmd @list __PROG__=!@1-22
