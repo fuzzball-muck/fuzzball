@@ -220,6 +220,31 @@ mcp_intern_is_quoted(const char **in, char *buf, int buflen)
     return 1;
 }
 
+/**
+ * Processes 'in' to see if it points to a key-value pair
+ *
+ * Given the MCP message 'msg' and a pointer to a pointer containing
+ * the input buffer, process it to see if there is a key-value pair
+ * in it.
+ *
+ * If there is, the pointer to pointer 'in' will be advanced past the
+ * key value pair, and the key/value will be added to msg's arguments.
+ *
+ * If the key/value pair is a multi-line variable, then a stub is put
+ * in the argument list with a value of NULL.  Otherwise, the value is
+ * put in.
+ *
+ * @see mcp_mesg_arg_append
+ *
+ * If it turns out that 'in' isn't a key value pair, or has a syntax
+ * error, the pointer 'in' is reset to wherever it was when the function
+ * started and then 0 is returned.  Otherwise, 1 is returned.
+ *
+ * @private
+ * @param msg the MCP message to process
+ * @param in pointer to input string
+ * @return boolean true if we found a key/value pair, false otherwise
+ */
 static int
 mcp_intern_is_keyval(McpMesg * msg, const char **in)
 {
@@ -274,6 +299,29 @@ mcp_intern_is_keyval(McpMesg * msg, const char **in)
     return 1;
 }
 
+/**
+ * Determine if we have the start of a message and potentially dispatch
+ *
+ * This will take a message in the 'in' buf and determine if it is the
+ * start of an MCP message.
+ *
+ * If it is not, this returns false.
+ *
+ * If the message is found, and valid, one of two things may happen.
+ * If the message is complete, we will do the callback.
+ *
+ * @see mcp_frame_package_docallback
+ *
+ * If the message is not complete (multi-line) then we'll flag it as incomplete
+ * and try to finish it.
+ *
+ * In either of those cases, this will return true.
+ *
+ * @private
+ * @param mfr the MCP frame
+ * @param in the input character buffer
+ * @return boolean true if message was handled, false if not.
+ */
 static int
 mcp_intern_is_mesg_start(McpFrame * mfr, const char *in)
 {
@@ -284,74 +332,97 @@ mcp_intern_is_mesg_start(McpFrame * mfr, const char *in)
     size_t longlen = 0;
 
     if (!mcp_intern_is_ident(&in, mesgname, sizeof(mesgname)))
-	return 0;
+        return 0;
+
     if (strcasecmp(mesgname, MCP_INIT_PKG)) {
-	if (!isspace(*in))
-	    return 0;
-	skip_whitespace(&in);
-	if (!mcp_intern_is_unquoted(&in, authkey, sizeof(authkey)))
-	    return 0;
-	if (strcmp(authkey, mfr->authkey))
-	    return 0;
+        if (!isspace(*in))
+            return 0;
+
+        skip_whitespace(&in);
+
+        if (!mcp_intern_is_unquoted(&in, authkey, sizeof(authkey)))
+            return 0;
+
+        if (strcmp(authkey, mfr->authkey))
+            return 0;
     }
 
     if (strncasecmp(mesgname, MCP_INIT_PKG, 3)) {
-	for (McpPkg *pkg = mfr->packages; pkg; pkg = pkg->next) {
-	    size_t pkgnamelen = strlen(pkg->pkgname);
+        for (McpPkg *pkg = mfr->packages; pkg; pkg = pkg->next) {
+            size_t pkgnamelen = strlen(pkg->pkgname);
 
-	    if (!strncasecmp(pkg->pkgname, mesgname, pkgnamelen)) {
-		if (mesgname[pkgnamelen] == '\0' || mesgname[pkgnamelen] == '-') {
-		    if (pkgnamelen > longlen) {
-			longlen = pkgnamelen;
-		    }
-		}
-	    }
-	}
+            if (!strncasecmp(pkg->pkgname, mesgname, pkgnamelen)) {
+                if (mesgname[pkgnamelen] == '\0'
+                    || mesgname[pkgnamelen] == '-') {
+                    if (pkgnamelen > longlen) {
+                        longlen = pkgnamelen;
+                    }
+                }
+            }
+        }
     }
+
     if (!longlen) {
-	size_t neglen = strlen(MCP_NEGOTIATE_PKG);
+        size_t neglen = strlen(MCP_NEGOTIATE_PKG);
 
-	if (!strncasecmp(mesgname, MCP_NEGOTIATE_PKG, neglen)) {
-	    longlen = neglen;
-	} else if (!strcasecmp(mesgname, MCP_INIT_PKG)) {
-	    longlen = strlen(mesgname);
-	} else {
-	    return 0;
-	}
+        if (!strncasecmp(mesgname, MCP_NEGOTIATE_PKG, neglen)) {
+            longlen = neglen;
+        } else if (!strcasecmp(mesgname, MCP_INIT_PKG)) {
+            longlen = strlen(mesgname);
+        } else {
+            return 0;
+        }
     }
+
     subname = mesgname + longlen;
+
     if (*subname) {
-	*subname++ = '\0';
+        *subname++ = '\0';
     }
 
     newmsg = malloc(sizeof(McpMesg));
     mcp_mesg_init(newmsg, mesgname, subname);
+
     while (*in) {
-	if (!mcp_intern_is_keyval(newmsg, &in)) {
-	    mcp_mesg_clear(newmsg);
-	    free(newmsg);
-	    return 0;
-	}
+        if (!mcp_intern_is_keyval(newmsg, &in)) {
+            mcp_mesg_clear(newmsg);
+            free(newmsg);
+            return 0;
+        }
     }
 
     /* Okay, we've recieved a valid message. */
     if (newmsg->incomplete) {
-	/* It's incomplete.  Remember it to finish later. */
-	const char *msgdt = mcp_mesg_arg_getline(newmsg, MCP_DATATAG, 0);
+        /* It's incomplete.  Remember it to finish later. */
+        const char *msgdt = mcp_mesg_arg_getline(newmsg, MCP_DATATAG, 0);
 
-	newmsg->datatag = strdup(msgdt);
-	mcp_mesg_arg_remove(newmsg, MCP_DATATAG);
-	newmsg->next = mfr->messages;
-	mfr->messages = newmsg;
+        newmsg->datatag = strdup(msgdt);
+        mcp_mesg_arg_remove(newmsg, MCP_DATATAG);
+        newmsg->next = mfr->messages;
+        mfr->messages = newmsg;
     } else {
-	/* It's complete.  Execute the callback function for this package. */
-	mcp_frame_package_docallback(mfr, newmsg);
-	mcp_mesg_clear(newmsg);
-	free(newmsg);
+        /* It's complete.  Execute the callback function for this package. */
+        mcp_frame_package_docallback(mfr, newmsg);
+        mcp_mesg_clear(newmsg);
+        free(newmsg);
     }
+
     return 1;
 }
 
+/**
+ * Is this a continued message?  (i.e. multiline message body)
+ *
+ * This checks to see if 'in' has a continued multiline message.
+ * Returns true if it does, and adds to the message in 'mfr'.
+ *
+ * @see mcp_mesg_arg_append
+ *
+ * @private
+ * @param mfr the frame we are working with
+ * @param in the input buffer to check
+ * @return boolean true if we found a message, false if not.
+ */
 static int
 mcp_intern_is_mesg_cont(McpFrame * mfr, const char *in)
 {
@@ -360,38 +431,66 @@ mcp_intern_is_mesg_cont(McpFrame * mfr, const char *in)
     McpMesg *ptr;
 
     if (*in != '*') {
-	return 0;
+        return 0;
     }
+
     in++;
+
     if (!isspace(*in))
-	return 0;
+        return 0;
+
     skip_whitespace(&in);
+
     if (!mcp_intern_is_unquoted(&in, datatag, sizeof(datatag)))
-	return 0;
+        return 0;
+
     if (!isspace(*in))
-	return 0;
+        return 0;
+
     skip_whitespace(&in);
+
     if (!mcp_intern_is_ident(&in, keyname, sizeof(keyname)))
-	return 0;
+        return 0;
+
     if (*in != ':')
-	return 0;
+        return 0;
+
     in++;
+
     if (!isspace(*in))
-	return 0;
+        return 0;
+
     in++;
 
     for (ptr = mfr->messages; ptr; ptr = ptr->next) {
-	if (!strcmp(datatag, ptr->datatag)) {
-	    mcp_mesg_arg_append(ptr, keyname, in);
-	    break;
-	}
+        if (!strcmp(datatag, ptr->datatag)) {
+            mcp_mesg_arg_append(ptr, keyname, in);
+            break;
+        }
     }
+
     if (!ptr) {
-	return 0;
+        return 0;
     }
+
     return 1;
 }
 
+/**
+ * Is this the end of a multi-line message?
+ *
+ * If the end of a multi-line message is detected, the callback is
+ * done and this returns true.
+ *
+ * @see mcp_frame_package_docallback
+ *
+ * If a multi-line message end is not found, this returns false.
+ *
+ * @private
+ * @param mfr our frame
+ * @param in the string buffer to check for the terminal message
+ * @return boolean true if we've found and processed an end message.
+ */
 static int
 mcp_intern_is_mesg_end(McpFrame * mfr, const char *in)
 {
@@ -399,26 +498,35 @@ mcp_intern_is_mesg_end(McpFrame * mfr, const char *in)
     McpMesg *ptr, **prev;
 
     if (*in != ':') {
-	return 0;
+        return 0;
     }
+
     in++;
+
     if (!isspace(*in))
-	return 0;
+        return 0;
+
     skip_whitespace(&in);
+
     if (!mcp_intern_is_unquoted(&in, datatag, sizeof(datatag)))
-	return 0;
+        return 0;
+
     if (*in)
-	return 0;
+        return 0;
+
     prev = &mfr->messages;
+
     for (ptr = mfr->messages; ptr; ptr = ptr->next, prev = &ptr->next) {
-	if (!strcmp(datatag, ptr->datatag)) {
-	    *prev = ptr->next;
-	    break;
-	}
+        if (!strcmp(datatag, ptr->datatag)) {
+            *prev = ptr->next;
+            break;
+        }
     }
+
     if (!ptr) {
-	return 0;
+        return 0;
     }
+
     ptr->incomplete = 0;
     mcp_frame_package_docallback(mfr, ptr);
     mcp_mesg_clear(ptr);
@@ -427,71 +535,146 @@ mcp_intern_is_mesg_end(McpFrame * mfr, const char *in)
     return 1;
 }
 
+/**
+ * Process MCP messages in 'in'
+ *
+ * Returns true if a message was found and processed.  False if not.
+ *
+ * @private
+ * @param mfr the frame we are working with
+ * @param in the input buffer to scan over
+ * @return boolean true if we processed a message, false if not
+ */
 static int
 mcp_internal_parse(McpFrame * mfr, const char *in)
 {
     if (mcp_intern_is_mesg_cont(mfr, in))
-	return 1;
+        return 1;
+
     if (mcp_intern_is_mesg_end(mfr, in))
-	return 1;
+        return 1;
+
     if (mcp_intern_is_mesg_start(mfr, in))
-	return 1;
+        return 1;
+
     return 0;
 }
 
+/**
+ * Clean up an MCP binding structure, freeing all related memory
+ *
+ * @param mypub the structure to clean up
+ */
 void
 clean_mcpbinds(struct mcp_binding *mypub)
 {
     struct mcp_binding *tmppub;
 
     while (mypub) {
-	tmppub = mypub->next;
-	free(mypub->pkgname);
-	free(mypub->msgname);
-	free(mypub);
-	mypub = tmppub;
+        tmppub = mypub->next;
+        free(mypub->pkgname);
+        free(mypub->msgname);
+        free(mypub);
+        mypub = tmppub;
     }
 }
 
+/**
+ * Send some text to a given MCP Frame
+ *
+ * The send is not immediate, it is queued to the descriptor with queue_write
+ *
+ * @see queue_write
+ *
+ * @private
+ * @param mfr the frame we're transmitting to
+ * @param text the message to send
+ */
 static void
 SendText(McpFrame * mfr, const char *text)
 {
     queue_write((struct descriptor_data *) mfr->descriptor, text, strlen(text));
 }
 
+/**
+ * Flushes the output queue associated with the frame mfr
+ *
+ * @private
+ * @param mfr the frame who's output queue we are flushing
+ */
 static void
 FlushText(McpFrame * mfr)
 {
     struct descriptor_data *d = (struct descriptor_data *) mfr->descriptor;
+
     if (d)
         process_output(d);
 }
 
+/**
+ * Get the descriptor associated with an MCP frame
+ *
+ * @param ptr the frame to get the descriptor from
+ * @return the descriptor, which may be 0 if there is none
+ */
 int
 mcpframe_to_descr(McpFrame * ptr)
 {
+    /*
+     * @TODO Make this a #define instead ?  This is kind of a silly function
+     */
     return ((struct descriptor_data *) ptr->descriptor)->descriptor;
 }
 
+/**
+ * Get the player reference associated with an MCP frame
+ *
+ * @param ptr the frame to get the descriptor from
+ * @return the player dbref, which may be NOTHING is there is none.
+ */
 int
 mcpframe_to_user(McpFrame * ptr)
 {
+    /*
+     * @TODO Make this a #define instead ?  This is kind of a silly function
+     */
     return ((struct descriptor_data *) ptr->descriptor)->player;
 }
 
+/**
+ * Get an McpFrame from a given descriptor number
+ *
+ * @param c the descriptor number
+ * @return the associated MCP frame or NULL if 'c' was not found.
+ */
 McpFrame *
 descr_mcpframe(int c)
 {
     struct descriptor_data *d;
 
     d = descrdata_by_descr(c);
+
     if (d) {
-	return &d->mcpframe;
+        return &d->mcpframe;
     }
+
     return NULL;
 }
 
-/* Used internally to escape and quote argument values. */
+/**
+ * Used internally to escape and quote argument values.
+ *
+ * The string 'in' has all " and \ symbols escaped with \, into
+ * the target 'buf'.  If bufsize is less than 3, this won't work.
+ * The quoting will continue up to bufsize-3 ... anything past that
+ * point will be truncated.
+ *
+ * @private
+ * @param buf the output buffer
+ * @param bufsize the output buffer size
+ * @param in the input string to escape
+ * @return length of string in 'buf', which may be 0
+ */
 static int
 msgarg_escape(char *buf, int bufsize, const char *in)
 {
@@ -499,18 +682,22 @@ msgarg_escape(char *buf, int bufsize, const char *in)
     int len = 0;
 
     if (bufsize < 3) {
-	return 0;
+        return 0;
     }
+
     *out++ = '"';
     len++;
+
     while (*in && len < bufsize - 3) {
-	if (*in == '"' || *in == '\\') {
-	    *out++ = '\\';
-	    len++;
-	}
-	*out++ = *in++;
-	len++;
+        if (*in == '"' || *in == '\\') {
+            *out++ = '\\';
+            len++;
+        }
+
+        *out++ = *in++;
+        len++;
     }
+
     *out++ = '"';
     *out = '\0';
     len++;
@@ -524,9 +711,28 @@ msgarg_escape(char *buf, int bufsize, const char *in)
 /***                          ************************************/
 /*****************************************************************/
 
+/**
+ * Register a new MCP package
+ *
+ * Takes a package name, version information, a callback, a context, and
+ * a cleanup callback and registers the package for use.
+ *
+ * The cleanup callback is to clean up 'context'.  Both context and cleanup
+ * can be NULL if they are not needed.  The context is just some data available
+ * to the callback -- right now it is used mostly by MUF registered MCP
+ * calls, and is the pointer to the MUF function to call.
+ *
+ * @param pkgname the MCP package name
+ * @param minver the minimum version
+ * @param maxver the maximum version
+ * @param callback the callback that is called when the package is run
+ * @param context data which is accessible to the callback
+ * @param cleanup a callback to clean up context
+ */
 void
-mcp_package_register(const char *pkgname, McpVer minver, McpVer maxver, McpPkg_CB callback,
-		     void *context, ContextCleanup_CB cleanup)
+mcp_package_register(const char *pkgname, McpVer minver, McpVer maxver,
+                     McpPkg_CB callback, void *context,
+                     ContextCleanup_CB cleanup)
 {
     McpPkg *nu = malloc(sizeof(McpPkg));
 
@@ -543,38 +749,64 @@ mcp_package_register(const char *pkgname, McpVer minver, McpVer maxver, McpPkg_C
     mcp_frame_package_renegotiate(pkgname);
 }
 
+/**
+ * Deregister and cleanup the given package
+ *
+ * This cleans up the memory around the package, and will run the cleanup
+ * callback if it was set.  After it is done, a package renegotiation is
+ * done.
+ *
+ * @see mcp_frame_package_renegotiate
+ *
+ * @param pkgname the package name to deregister
+ */
 void
 mcp_package_deregister(const char *pkgname)
 {
     McpPkg *ptr = mcp_PackageList;
     McpPkg *prev = NULL;
 
+    /*
+     * This matches if pkgname is the head of the mcp_PackageList
+     */
     while (ptr && !strcasecmp(ptr->pkgname, pkgname)) {
-	mcp_PackageList = ptr->next;
-	if (ptr->cleanup)
-	    ptr->cleanup(ptr->context);
+        mcp_PackageList = ptr->next;
+
+        if (ptr->cleanup)
+            ptr->cleanup(ptr->context);
+
         free(ptr->pkgname);
-	free(ptr);
-	ptr = mcp_PackageList;
+        free(ptr);
+        ptr = mcp_PackageList;
     }
 
+    /*
+     * And this handles if pkgname is something in the list other than
+     * the head.
+     */
     prev = mcp_PackageList;
+
     if (ptr)
-	ptr = ptr->next;
+        ptr = ptr->next;
 
     while (ptr) {
-	if (!strcasecmp(pkgname, ptr->pkgname)) {
-	    prev->next = ptr->next;
-	    if (ptr->cleanup)
-		ptr->cleanup(ptr->context);
+        if (!strcasecmp(pkgname, ptr->pkgname)) {
+            prev->next = ptr->next;
+
+            if (ptr->cleanup)
+                ptr->cleanup(ptr->context);
+
             free(ptr->pkgname);
-	    free(ptr);
-	    ptr = prev->next;
-	} else {
-	    prev = ptr;
-	    ptr = ptr->next;
-	}
+
+            free(ptr);
+            ptr = prev->next;
+        } else {
+            prev = ptr;
+            ptr = ptr->next;
+        }
     }
+
+    /* Send the renegotiation message */
     mcp_frame_package_renegotiate(pkgname);
 }
 
@@ -596,71 +828,88 @@ mcp_basic_handler(McpFrame * mfr, McpMesg * mesg)
     const char *auth;
 
     if (!*mesg->mesgname) {
-	auth = mcp_mesg_arg_getline(mesg, "authentication-key", 0);
-	if (auth) {
-	    mfr->authkey = strdup(auth);
-	} else {
-	    McpMesg reply;
-	    char authval[128];
+        auth = mcp_mesg_arg_getline(mesg, "authentication-key", 0);
 
-	    mcp_mesg_init(&reply, MCP_INIT_PKG, "");
-	    mcp_mesg_arg_append(&reply, "version", "2.1");
-	    mcp_mesg_arg_append(&reply, "to", "2.1");
-	    snprintf(authval, sizeof(authval), "%.8lX", (unsigned long) (RANDOM() ^ RANDOM()));
-	    mcp_mesg_arg_append(&reply, "authentication-key", authval);
-	    mfr->authkey = strdup(authval);
-	    mcp_frame_output_mesg(mfr, &reply);
-	    mcp_mesg_clear(&reply);
-	}
+        if (auth) {
+            mfr->authkey = strdup(auth);
+        } else {
+            McpMesg reply;
+            char authval[128];
 
-	ptr = mcp_mesg_arg_getline(mesg, "version", 0);
-	if (!ptr)
-	    return;
-	while (isdigit(*ptr))
-	    minver.vermajor = (unsigned short)((minver.vermajor * 10) + (*ptr++ - '0'));
-	if (*ptr++ != '.')
-	    return;
-	while (isdigit(*ptr))
-	    minver.verminor = (unsigned short)((minver.verminor * 10) + (*ptr++ - '0'));
+            mcp_mesg_init(&reply, MCP_INIT_PKG, "");
+            mcp_mesg_arg_append(&reply, "version", "2.1");
+            mcp_mesg_arg_append(&reply, "to", "2.1");
+            snprintf(authval, sizeof(authval), "%.8lX",
+                     (unsigned long) (RANDOM() ^ RANDOM()));
+            mcp_mesg_arg_append(&reply, "authentication-key", authval);
+            mfr->authkey = strdup(authval);
+            mcp_frame_output_mesg(mfr, &reply);
+            mcp_mesg_clear(&reply);
+        }
 
-	ptr = mcp_mesg_arg_getline(mesg, "to", 0);
-	if (!ptr) {
-	    maxver = minver;
-	} else {
-	    while (isdigit(*ptr))
-		maxver.vermajor = (unsigned short)((maxver.vermajor * 10) + (*ptr++ - '0'));
-	    if (*ptr++ != '.')
-		return;
-	    while (isdigit(*ptr))
-		maxver.verminor = (unsigned short)((maxver.verminor * 10) + (*ptr++ - '0'));
-	}
+        ptr = mcp_mesg_arg_getline(mesg, "version", 0);
 
-	mfr->version = mcp_version_select(myminver, mymaxver, minver, maxver);
-	if (mcp_version_compare(mfr->version, nullver)) {
-	    McpMesg cando;
-	    char verbuf[32];
-	    McpPkg *p = mcp_PackageList;
+        if (!ptr)
+            return;
 
-	    mfr->enabled = 1;
-	    while (p) {
-		if (strcasecmp(p->pkgname, MCP_INIT_PKG)) {
-		    mcp_mesg_init(&cando, MCP_NEGOTIATE_PKG, "can");
-		    mcp_mesg_arg_append(&cando, "package", p->pkgname);
-		    snprintf(verbuf, sizeof(verbuf), "%d.%d", p->minver.vermajor,
-			     p->minver.verminor);
-		    mcp_mesg_arg_append(&cando, "min-version", verbuf);
-		    snprintf(verbuf, sizeof(verbuf), "%d.%d", p->maxver.vermajor,
-			     p->maxver.verminor);
-		    mcp_mesg_arg_append(&cando, "max-version", verbuf);
-		    mcp_frame_output_mesg(mfr, &cando);
-		    mcp_mesg_clear(&cando);
-		}
-		p = p->next;
-	    }
-	    mcp_mesg_init(&cando, MCP_NEGOTIATE_PKG, "end");
-	    mcp_frame_output_mesg(mfr, &cando);
-	    mcp_mesg_clear(&cando);
-	}
+        while (isdigit(*ptr))
+            minver.vermajor = (unsigned short)((minver.vermajor * 10)
+                              + (*ptr++ - '0'));
+
+        if (*ptr++ != '.')
+            return;
+
+        while (isdigit(*ptr))
+            minver.verminor = (unsigned short)((minver.verminor * 10)
+                              + (*ptr++ - '0'));
+
+        ptr = mcp_mesg_arg_getline(mesg, "to", 0);
+
+        if (!ptr) {
+            maxver = minver;
+        } else {
+            while (isdigit(*ptr))
+                maxver.vermajor = (unsigned short)((maxver.vermajor * 10)
+                                  + (*ptr++ - '0'));
+
+            if (*ptr++ != '.')
+                return;
+
+            while (isdigit(*ptr))
+                maxver.verminor = (unsigned short)((maxver.verminor * 10)
+                                  + (*ptr++ - '0'));
+        }
+
+        mfr->version = mcp_version_select(myminver, mymaxver, minver, maxver);
+
+        if (mcp_version_compare(mfr->version, nullver)) {
+            McpMesg cando;
+            char verbuf[32];
+            McpPkg *p = mcp_PackageList;
+
+            mfr->enabled = 1;
+
+            while (p) {
+                if (strcasecmp(p->pkgname, MCP_INIT_PKG)) {
+                    mcp_mesg_init(&cando, MCP_NEGOTIATE_PKG, "can");
+                    mcp_mesg_arg_append(&cando, "package", p->pkgname);
+                    snprintf(verbuf, sizeof(verbuf), "%d.%d",
+                             p->minver.vermajor, p->minver.verminor);
+                    mcp_mesg_arg_append(&cando, "min-version", verbuf);
+                    snprintf(verbuf, sizeof(verbuf), "%d.%d",
+                             p->maxver.vermajor, p->maxver.verminor);
+                    mcp_mesg_arg_append(&cando, "max-version", verbuf);
+                    mcp_frame_output_mesg(mfr, &cando);
+                    mcp_mesg_clear(&cando);
+                }
+
+                p = p->next;
+            }
+
+            mcp_mesg_init(&cando, MCP_NEGOTIATE_PKG, "end");
+            mcp_frame_output_mesg(mfr, &cando);
+            mcp_mesg_clear(&cando);
+        }
     }
 }
 
