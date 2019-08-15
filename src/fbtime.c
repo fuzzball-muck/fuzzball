@@ -6,9 +6,13 @@
  * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
  */
 
+/* To suppress compiler warning re strptime */
+#define _XOPEN_SOURCE
+
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include <ctype.h>
 
 #include "config.h"
 
@@ -334,6 +338,9 @@ timestr_long(long dtime)
 /**
  * Convert time string with given format to a number of seconds.
  *
+ * If the 'format' string is "%T%t%D" then we will do some hackery to force
+ * %D to handle 4 digit or 2 digit years.
+ *
  * @param string the string to convert
  * @param format the string's format
  * @parm[out] error the error message, if any
@@ -345,9 +352,62 @@ time_string_to_seconds(char *string, char *format, char **error)
 {
     struct tm otm;
 
+    if (!strcmp(format, "%T%t%D")) {
+        char *finder;
+        int  year_digits = 0;
+
+        /* Find the space block */
+        for (finder = string; *finder != '\0' && !isspace(*finder); finder++);
+
+        /* If it's null, this is an invalid date. */
+        if (*finder == '\0') {
+            goto timeformat_err;
+        }
+
+        /* Skip spaces */
+        for ( ; *finder != '\0' && isspace(*finder); finder++);
+
+        if (*finder == '\0') {
+            goto timeformat_err;
+        }
+
+        /* Find year */
+        for ( ; *finder != '\0' && *finder != '/'; finder++); /* month */
+
+        if (*finder == '\0') {
+            goto timeformat_err;
+        }
+
+        finder++; /* Advance it off the / */
+
+        for ( ; *finder != '\0' && *finder != '/'; finder++); /* day */
+
+        if (*finder == '\0') {
+            goto timeformat_err;
+        }
+
+        finder++; /* Advance it off the / */
+
+        for ( ; *finder != '\0' && isdigit(*finder); finder++, year_digits++);
+
+        if(year_digits == 4) {
+            /* do 4 digit year */
+            format = "%T%t%m/%d/%Y";
+        }
+    }
+
     if (!strptime(string, format, &otm))
-        *error = "Time string does not match expected format.";
+        goto timeformat_err;
 
     return mktime(&otm);
+
+    /*
+     * I don't like using goto ... but this is the classic example of when it
+     * is acceptable.  It's basically a faux try-catch block as all the errors
+     * will be the same here.
+     */
+timeformat_err:
+    *error = "Time string does not match expected format.";
+    return 0;
 }
 #endif
