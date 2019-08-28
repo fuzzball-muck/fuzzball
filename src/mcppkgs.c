@@ -32,7 +32,7 @@ show_mcp_error(McpFrame * mfr, char *topic, char *text)
 	mcp_frame_output_mesg(mfr, &msg);
 	mcp_mesg_clear(&msg);
     } else {
-	notify(mcpframe_to_user(mfr), text);
+	notify(MCPFRAME_PLAYER(mfr), text);
     }
 }
 
@@ -70,8 +70,8 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 	reference = mcp_mesg_arg_getline(msg, "reference", 0);
 	valtype = mcp_mesg_arg_getline(msg, "type", 0);
 	lines = mcp_mesg_arg_linecount(msg, "content");
-	player = mcpframe_to_user(mfr);
-	descr = mcpframe_to_descr(mfr);
+	player = MCPFRAME_PLAYER(mfr);
+	descr = MCPFRAME_DESCR(mfr);
 
 	/* extract object number.  -1 for none.  */
 	if (isdigit(*reference)) {
@@ -291,7 +291,7 @@ mcppkg_languages(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
     McpVer supp = mcp_frame_package_supported(mfr, "org-fuzzball-languages");
 
     if (supp.verminor == 0 && supp.vermajor == 0) {
-	notify(mcpframe_to_user(mfr), "MCP: org-fuzzball-languages not supported.");
+	notify(MCPFRAME_PLAYER(mfr), "MCP: org-fuzzball-languages not supported.");
 	return;
     }
 
@@ -320,7 +320,7 @@ mcppkg_help_request(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
     McpMesg omsg;
 
     if (supp.verminor == 0 && supp.vermajor == 0) {
-	notify(mcpframe_to_user(mfr), "MCP: org-fuzzball-help not supported.");
+	notify(MCPFRAME_PLAYER(mfr), "MCP: org-fuzzball-help not supported.");
 	return;
     }
 

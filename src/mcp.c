@@ -246,7 +246,7 @@ mcp_intern_is_quoted(const char **in, char *buf, int buflen)
  * @return boolean true if we found a key/value pair, false otherwise
  */
 static int
-mcp_intern_is_keyval(McpMesg * msg, const char **in)
+mcp_intern_is_keyval(McpMesg *msg, const char **in)
 {
     char keyname[128];
     char value[BUFFER_LEN];
@@ -323,7 +323,7 @@ mcp_intern_is_keyval(McpMesg * msg, const char **in)
  * @return boolean true if message was handled, false if not.
  */
 static int
-mcp_intern_is_mesg_start(McpFrame * mfr, const char *in)
+mcp_intern_is_mesg_start(McpFrame *mfr, const char *in)
 {
     char mesgname[128];
     char authkey[128];
@@ -424,7 +424,7 @@ mcp_intern_is_mesg_start(McpFrame * mfr, const char *in)
  * @return boolean true if we found a message, false if not.
  */
 static int
-mcp_intern_is_mesg_cont(McpFrame * mfr, const char *in)
+mcp_intern_is_mesg_cont(McpFrame *mfr, const char *in)
 {
     char datatag[128];
     char keyname[128];
@@ -492,7 +492,7 @@ mcp_intern_is_mesg_cont(McpFrame * mfr, const char *in)
  * @return boolean true if we've found and processed an end message.
  */
 static int
-mcp_intern_is_mesg_end(McpFrame * mfr, const char *in)
+mcp_intern_is_mesg_end(McpFrame *mfr, const char *in)
 {
     char datatag[128];
     McpMesg *ptr, **prev;
@@ -546,7 +546,7 @@ mcp_intern_is_mesg_end(McpFrame * mfr, const char *in)
  * @return boolean true if we processed a message, false if not
  */
 static int
-mcp_internal_parse(McpFrame * mfr, const char *in)
+mcp_internal_parse(McpFrame *mfr, const char *in)
 {
     if (mcp_intern_is_mesg_cont(mfr, in))
         return 1;
@@ -591,7 +591,7 @@ clean_mcpbinds(struct mcp_binding *mypub)
  * @param text the message to send
  */
 static void
-SendText(McpFrame * mfr, const char *text)
+SendText(McpFrame *mfr, const char *text)
 {
     queue_write((struct descriptor_data *) mfr->descriptor, text, strlen(text));
 }
@@ -603,42 +603,12 @@ SendText(McpFrame * mfr, const char *text)
  * @param mfr the frame who's output queue we are flushing
  */
 static void
-FlushText(McpFrame * mfr)
+FlushText(McpFrame *mfr)
 {
     struct descriptor_data *d = (struct descriptor_data *) mfr->descriptor;
 
     if (d)
         process_output(d);
-}
-
-/**
- * Get the descriptor associated with an MCP frame
- *
- * @param ptr the frame to get the descriptor from
- * @return the descriptor, which may be 0 if there is none
- */
-int
-mcpframe_to_descr(McpFrame * ptr)
-{
-    /*
-     * @TODO Make this a #define instead ?  This is kind of a silly function
-     */
-    return ((struct descriptor_data *) ptr->descriptor)->descriptor;
-}
-
-/**
- * Get the player reference associated with an MCP frame
- *
- * @param ptr the frame to get the descriptor from
- * @return the player dbref, which may be NOTHING is there is none.
- */
-int
-mcpframe_to_user(McpFrame * ptr)
-{
-    /*
-     * @TODO Make this a #define instead ?  This is kind of a silly function
-     */
-    return ((struct descriptor_data *) ptr->descriptor)->player;
 }
 
 /**
@@ -826,7 +796,7 @@ mcp_package_deregister(const char *pkgname)
  * @param mesg the message we are processing
  */
 static void
-mcp_basic_handler(McpFrame * mfr, McpMesg * mesg)
+mcp_basic_handler(McpFrame *mfr, McpMesg *mesg)
 {
     McpVer myminver = { 2, 1 };
     McpVer mymaxver = { 2, 1 };
@@ -943,7 +913,7 @@ mcp_basic_handler(McpFrame * mfr, McpMesg * mesg)
  * @param context not used
  */
 static void
-mcp_negotiate_handler(McpFrame * mfr, McpMesg * mesg, McpVer version,
+mcp_negotiate_handler(McpFrame *mfr, McpMesg *mesg, McpVer version,
                       void *context)
 {
     McpVer minver = { 0, 0 };
@@ -991,13 +961,9 @@ mcp_negotiate_handler(McpFrame * mfr, McpMesg * mesg, McpVer version,
         }
 
         mcp_frame_package_add(mfr, pkg, minver, maxver);
-    } else if (!strcmp(mesg->mesgname, "end")) {
-        /*
-         * TODO: Remove this else block.  We can make a comment that
-         *       there is an "end" message, but this doesn't do anything.
-         */
-        /* nothing to do for end of package negotiations. */
     }
+
+    /* nothing to do for end of package negotiations ("end" message). */
 }
 
 /*****************************************************************/
@@ -1049,7 +1015,7 @@ mcp_initialize(void)
  * @param mfr our MCP Frame
  */
 void
-mcp_negotiation_start(McpFrame * mfr)
+mcp_negotiation_start(McpFrame *mfr)
 {
     McpMesg reply;
 
@@ -1072,21 +1038,12 @@ mcp_negotiation_start(McpFrame * mfr)
  * @param con this will go in mfr->descriptor
  */
 void
-mcp_frame_init(McpFrame * mfr, void * con)
+mcp_frame_init(McpFrame *mfr, void *con)
 {
     McpFrameList *mfrl;
 
-    /*
-     * @TODO Replace all these = 0's and = NULL's with an
-     *       memset(mfr, 0, sizeof(McpFrame))
-     */
+    memset(mfr, 0, sizeof(McpFrame));
     mfr->descriptor = con;
-    mfr->version.verminor = 0;
-    mfr->version.vermajor = 0;
-    mfr->authkey = NULL;
-    mfr->packages = NULL;
-    mfr->messages = NULL;
-    mfr->enabled = 0;
 
     mfrl = malloc(sizeof(McpFrameList));
     mfrl->mfr = mfr;
@@ -1105,7 +1062,7 @@ mcp_frame_init(McpFrame * mfr, void * con)
  * @param mfr the McpFrame to clear
  */
 void
-mcp_frame_clear(McpFrame * mfr)
+mcp_frame_clear(McpFrame *mfr)
 {
     McpPkg *tmp = mfr->packages;
     McpMesg *tmp2 = mfr->messages;
@@ -1236,7 +1193,7 @@ mcp_frame_package_renegotiate(const char *package)
  * @return integer code as described above
  */
 int
-mcp_frame_package_add(McpFrame * mfr, const char *package, McpVer minver,
+mcp_frame_package_add(McpFrame *mfr, const char *package, McpVer minver,
                       McpVer maxver)
 {
     McpPkg *nu;
@@ -1298,7 +1255,7 @@ mcp_frame_package_add(McpFrame * mfr, const char *package, McpVer minver,
  * @param package the name of the package to remove.
  */
 void
-mcp_frame_package_remove(McpFrame * mfr, const char *package)
+mcp_frame_package_remove(McpFrame *mfr, const char *package)
 {
     McpPkg *tmp;
     McpPkg *prev;
@@ -1335,7 +1292,7 @@ mcp_frame_package_remove(McpFrame * mfr, const char *package)
  * @return McpVer structure if found, or {0, 0} if not found.
  */
 McpVer
-mcp_frame_package_supported(McpFrame * mfr, const char *package)
+mcp_frame_package_supported(McpFrame *mfr, const char *package)
 {
     McpPkg *ptr;
     McpVer errver = { 0, 0 };
@@ -1375,7 +1332,7 @@ mcp_frame_package_supported(McpFrame * mfr, const char *package)
  * @return integer return parameters as described above.
  */
 int
-mcp_frame_package_docallback(McpFrame * mfr, McpMesg * msg)
+mcp_frame_package_docallback(McpFrame *mfr, McpMesg *msg)
 {
     McpPkg *ptr = NULL;
 
@@ -1423,7 +1380,7 @@ mcp_frame_package_docallback(McpFrame * mfr, McpMesg * msg)
  * @return boolean true if the line as in-band data, false if out-of-band MCP
  */
 int
-mcp_frame_process_input(McpFrame * mfr, const char *linein, char *outbuf,
+mcp_frame_process_input(McpFrame *mfr, const char *linein, char *outbuf,
                         int bufsize)
 {
     if (!strncasecmp(linein, MCP_MESG_PREFIX, 3)) {
@@ -1464,7 +1421,7 @@ mcp_frame_process_input(McpFrame * mfr, const char *linein, char *outbuf,
  * @param lineout the line of output to send
  */
 void
-mcp_frame_output_inband(McpFrame * mfr, const char *lineout)
+mcp_frame_output_inband(McpFrame *mfr, const char *lineout)
 {
     if (!mfr->enabled ||
         (strncmp(lineout, MCP_MESG_PREFIX, 3)
@@ -1491,7 +1448,7 @@ mcp_frame_output_inband(McpFrame * mfr, const char *lineout)
  * @return integer with one of the above codes.
  */
 int
-mcp_frame_output_mesg(McpFrame * mfr, McpMesg * msg)
+mcp_frame_output_mesg(McpFrame *mfr, McpMesg *msg)
 {
     char outbuf[BUFFER_LEN * 2];
     int bufrem = sizeof(outbuf);
@@ -1668,19 +1625,11 @@ mcp_frame_output_mesg(McpFrame * mfr, McpMesg * msg)
  * @param mesgname the name of the message
  */
 void
-mcp_mesg_init(McpMesg * msg, const char *package, const char *mesgname)
+mcp_mesg_init(McpMesg *msg, const char *package, const char *mesgname)
 {
-    /*
-     * @TODO do a memset(msg, 0, sizeof(msg)) then get rid of the null
-     *       assignments.
-     */
+    memset(msg, 0, sizeof(McpMesg));
     msg->package = strdup(package);
     msg->mesgname = strdup(mesgname);
-    msg->datatag = NULL;
-    msg->args = NULL;
-    msg->incomplete = 0;
-    msg->bytes = 0;
-    msg->next = NULL;
 }
 
 /**
@@ -1695,7 +1644,7 @@ mcp_mesg_init(McpMesg * msg, const char *package, const char *mesgname)
  * @param msg the message to free up
  */
 void
-mcp_mesg_clear(McpMesg * msg)
+mcp_mesg_clear(McpMesg *msg)
 {
     free(msg->package);
     free(msg->mesgname);
@@ -1736,7 +1685,7 @@ mcp_mesg_clear(McpMesg * msg)
  * @param name the name of the argument to look up the line count for
  */
 int
-mcp_mesg_arg_linecount(McpMesg * msg, const char *name)
+mcp_mesg_arg_linecount(McpMesg *msg, const char *name)
 {
     McpArg *ptr = msg->args;
     int cnt = 0;
@@ -1769,7 +1718,7 @@ mcp_mesg_arg_linecount(McpMesg * msg, const char *name)
  * @return either the line string, or NULL
  */
 char *
-mcp_mesg_arg_getline(McpMesg * msg, const char *argname, int linenum)
+mcp_mesg_arg_getline(McpMesg *msg, const char *argname, int linenum)
 {
     McpArg *ptr = msg->args;
 
@@ -1811,7 +1760,7 @@ mcp_mesg_arg_getline(McpMesg * msg, const char *argname, int linenum)
  * @return an integer constant as described above
  */
 int
-mcp_mesg_arg_append(McpMesg * msg, const char *argname, const char *argval)
+mcp_mesg_arg_append(McpMesg *msg, const char *argname, const char *argval)
 {
     McpArg *ptr = msg->args;
     size_t namelen = strlen(argname);
@@ -1894,7 +1843,7 @@ mcp_mesg_arg_append(McpMesg * msg, const char *argname, const char *argval)
  * @param argname the argument to remove
  */
 void
-mcp_mesg_arg_remove(McpMesg * msg, const char *argname)
+mcp_mesg_arg_remove(McpMesg *msg, const char *argname)
 {
     McpArg *ptr = msg->args;
     McpArg *prev = NULL;

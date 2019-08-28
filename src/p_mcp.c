@@ -53,8 +53,8 @@ muf_mcp_callback(McpFrame * mfr, McpMesg * mesg, McpVer version, void *context)
     dbref user;
     int descr;
 
-    descr = mcpframe_to_descr(mfr);
-    user = mcpframe_to_user(mfr);
+    descr = MCPFRAME_DESCR(mfr);
+    user = MCPFRAME_PLAYER(mfr);
 
     for (ptr = PROGRAM_MCPBINDS(obj); ptr; ptr = ptr->next) {
 	if (ptr->pkgname && ptr->msgname) {
@@ -129,7 +129,7 @@ muf_mcp_event_callback(McpFrame * mfr, McpMesg * mesg, McpVer version, void *con
     struct mcpevent_context *mec = (struct mcpevent_context *) context;
     int destpid = mec->pid;
     struct frame *destfr = timequeue_pid_frame(destpid);
-    int descr = mcpframe_to_descr(mfr);
+    int descr = MCPFRAME_DESCR(mfr);
     char *pkgname = mesg->package;
     char *msgname = mesg->mesgname;
 

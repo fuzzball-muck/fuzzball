@@ -7,7 +7,6 @@
  */
 
 #include "config.h"
-
 #ifdef MCP_SUPPORT
 #ifndef MCP_H
 #define MCP_H
@@ -70,8 +69,8 @@ typedef struct McpMesg_T {
 struct McpFrame_T;
 
 /* Type definition for MCP callback function */
-typedef void (*McpPkg_CB) (struct McpFrame_T * mfr,
-			   McpMesg * mesg, McpVer version, void *context);
+typedef void (*McpPkg_CB) (struct McpFrame_T *mfr,
+			   McpMesg *mesg, McpVer version, void *context);
 
 /* Type definition for MCP context cleanup callback function */
 typedef void (*ContextCleanup_CB) (void *context);
@@ -104,6 +103,11 @@ struct McpFrameList_t {
 
 typedef struct McpFrameList_t McpFrameList;
 
+#include "interface.h"
+
+#define MCPFRAME_DESCR(mfr) (((struct descriptor_data *)mfr->descriptor)->descriptor)
+#define MCPFRAME_PLAYER(mfr) (((struct descriptor_data *)mfr->descriptor)->player)
+
 /**
  * Clean up an MCP binding structure, freeing all related memory
  *
@@ -129,7 +133,7 @@ McpFrame *descr_mcpframe(int c);
  *
  * @param mfr the McpFrame to clear
  */
-void mcp_frame_clear(McpFrame * mfr);
+void mcp_frame_clear(McpFrame *mfr);
 
 /**
  * Initializes an McpFrame for a new connection.
@@ -140,7 +144,7 @@ void mcp_frame_clear(McpFrame * mfr);
  * @param mfr the allocated McpFrame
  * @param con this will go in mfr->descriptor
  */
-void mcp_frame_init(McpFrame * mfr, void * con);
+void mcp_frame_init(McpFrame *mfr, void *con);
 
 /**
  * Sends a string to the given connection, using MCP escaping if needed
@@ -152,7 +156,7 @@ void mcp_frame_init(McpFrame * mfr, void * con);
  * @param mfr the frame we are working with
  * @param lineout the line of output to send
  */
-void mcp_frame_output_inband(McpFrame * mfr, const char *lineout);
+void mcp_frame_output_inband(McpFrame *mfr, const char *lineout);
 
 /**
  * Sends an MCP message to the given connection.
@@ -168,7 +172,7 @@ void mcp_frame_output_inband(McpFrame * mfr, const char *lineout);
  * @param msg the message to send
  * @return integer with one of the above codes.
  */
-int mcp_frame_output_mesg(McpFrame * mfr, McpMesg * msg);
+int mcp_frame_output_mesg(McpFrame *mfr, McpMesg *msg);
 
 /**
  * Attempt to register a package for this connection.
@@ -183,7 +187,7 @@ int mcp_frame_output_mesg(McpFrame * mfr, McpMesg * msg);
  * @param maxver the maximum version
  * @return integer code as described above
  */
-int mcp_frame_package_add(McpFrame * mfr, const char *package, McpVer minver, McpVer maxver);
+int mcp_frame_package_add(McpFrame *mfr, const char *package, McpVer minver, McpVer maxver);
 
 /**
  * Executes the callback function for the given message.
@@ -202,7 +206,7 @@ int mcp_frame_package_add(McpFrame * mfr, const char *package, McpVer minver, Mc
  * @param msg the message
  * @return integer return parameters as described above.
  */
-int mcp_frame_package_docallback(McpFrame * mfr, McpMesg * msg);
+int mcp_frame_package_docallback(McpFrame *mfr, McpMesg *msg);
 
 /**
  * Removes a package from the list of supported packages for this McpFrame.
@@ -213,7 +217,7 @@ int mcp_frame_package_docallback(McpFrame * mfr, McpMesg * msg);
  * @param mfr the frame to remove the package from
  * @param package the name of the package to remove.
  */
-void mcp_frame_package_remove(McpFrame * mfr, const char *package);
+void mcp_frame_package_remove(McpFrame *mfr, const char *package);
 
 /**
  * Indicates a package change or removal, and renegotiate
@@ -234,7 +238,7 @@ void mcp_frame_package_renegotiate(const char *package);
  * @param package the name of the package to look for
  * @return McpVer structure if found, or {0, 0} if not found.
  */
-McpVer mcp_frame_package_supported(McpFrame * mfr, const char *package);
+McpVer mcp_frame_package_supported(McpFrame *mfr, const char *package);
 
 /**
  * Check a line of input for MCP commands.
@@ -250,7 +254,7 @@ McpVer mcp_frame_package_supported(McpFrame * mfr, const char *package);
  * @param bufsize the size of outbuf
  * @return boolean true if the line as in-band data, false if out-of-band MCP
  */
-int mcp_frame_process_input(McpFrame * mfr, const char *linein, char *outbuf, int bufsize);
+int mcp_frame_process_input(McpFrame *mfr, const char *linein, char *outbuf, int bufsize);
 
 /**
  * Appends to the list value of the named arg in the given mesg.
@@ -267,7 +271,7 @@ int mcp_frame_process_input(McpFrame * mfr, const char *linein, char *outbuf, in
  * @param argval the value to add to the argument
  * @return an integer constant as described above
  */
-int mcp_mesg_arg_append(McpMesg * msg, const char *argname, const char *argval);
+int mcp_mesg_arg_append(McpMesg *msg, const char *argname, const char *argval);
 
 /**
  * Gets the value of a named argument in the given message.
@@ -280,7 +284,7 @@ int mcp_mesg_arg_append(McpMesg * msg, const char *argname, const char *argval);
  * @param linenum the line number to fetch, starting with 0
  * @return either the line string, or NULL
  */
-char *mcp_mesg_arg_getline(McpMesg * msg, const char *argname, int linenum);
+char *mcp_mesg_arg_getline(McpMesg *msg, const char *argname, int linenum);
 
 /**
  * Returns the count of the number of lines in the given arg of the message.
@@ -290,7 +294,7 @@ char *mcp_mesg_arg_getline(McpMesg * msg, const char *argname, int linenum);
  * @param msg the message to look up line count for
  * @param name the name of the argument to look up the line count for
  */
-int mcp_mesg_arg_linecount(McpMesg * msg, const char *name);
+int mcp_mesg_arg_linecount(McpMesg *msg, const char *name);
 
 /**
  * Removes the named argument from the given message.
@@ -298,7 +302,7 @@ int mcp_mesg_arg_linecount(McpMesg * msg, const char *name);
  * @param msg the message to alter
  * @param argname the argument to remove
  */
-void mcp_mesg_arg_remove(McpMesg * msg, const char *argname);
+void mcp_mesg_arg_remove(McpMesg *msg, const char *argname);
 
 /**
  * Clear the given MCP message.
@@ -311,7 +315,7 @@ void mcp_mesg_arg_remove(McpMesg * msg, const char *argname);
  *
  * @param msg the message to free up
  */
-void mcp_mesg_clear(McpMesg * msg);
+void mcp_mesg_clear(McpMesg *msg);
 
 /**
  * Initializes an MCP message.
@@ -325,23 +329,7 @@ void mcp_mesg_clear(McpMesg * msg);
  * @param package the package the message will belong to
  * @param mesgname the name of the message
  */
-void mcp_mesg_init(McpMesg * msg, const char *package, const char *mesgname);
-
-/**
- * Get the descriptor associated with an MCP frame
- *
- * @param ptr the frame to get the descriptor from
- * @return the descriptor, which may be 0 if there is none
- */
-int mcpframe_to_descr(McpFrame * ptr);
-
-/**
- * Get the player reference associated with an MCP frame
- *
- * @param ptr the frame to get the descriptor from
- * @return the player dbref, which may be NOTHING is there is none.
- */
-int mcpframe_to_user(McpFrame * ptr);
+void mcp_mesg_init(McpMesg *msg, const char *package, const char *mesgname);
 
 /**
  * Initialize MCP
@@ -364,7 +352,7 @@ void mcp_initialize(void);
  *
  * @param mfr our MCP Frame
  */
-void mcp_negotiation_start(McpFrame * mfr);
+void mcp_negotiation_start(McpFrame *mfr);
 
 /**
  * Deregister and cleanup the given package
