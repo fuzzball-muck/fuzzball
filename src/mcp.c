@@ -816,6 +816,15 @@ mcp_package_deregister(const char *pkgname)
 /***                       ***************************************/
 /*****************************************************************/
 
+/**
+ * Handles MCP_INIT_PACKAGE -- basically protocol initialization
+ *
+ * Does nothing if the message is invalid.
+ *
+ * @private
+ * @param mfr the MCP frame
+ * @param mesg the message we are processing
+ */
 static void
 mcp_basic_handler(McpFrame * mfr, McpMesg * mesg)
 {
@@ -828,6 +837,7 @@ mcp_basic_handler(McpFrame * mfr, McpMesg * mesg)
     const char *auth;
 
     if (!*mesg->mesgname) {
+        /* Figure out authentication key */
         auth = mcp_mesg_arg_getline(mesg, "authentication-key", 0);
 
         if (auth) {
@@ -847,6 +857,7 @@ mcp_basic_handler(McpFrame * mfr, McpMesg * mesg)
             mcp_mesg_clear(&reply);
         }
 
+        /* Figure out desired version */
         ptr = mcp_mesg_arg_getline(mesg, "version", 0);
 
         if (!ptr)
@@ -919,8 +930,21 @@ mcp_basic_handler(McpFrame * mfr, McpMesg * mesg)
 /***                                 *****************************/
 /*****************************************************************/
 
+/**
+ * Handle the MCP negotiate package and associated messages
+ *
+ * The only message that really does anything here is 'can', it will
+ * add the packages you support to the mfr frame.
+ *
+ * @private
+ * @param mfr the frame we are working with
+ * @param mesg the message we are processing
+ * @param version our MCP version, ignored
+ * @param context not used
+ */
 static void
-mcp_negotiate_handler(McpFrame * mfr, McpMesg * mesg, McpVer version, void *context)
+mcp_negotiate_handler(McpFrame * mfr, McpMesg * mesg, McpVer version,
+                      void *context)
 {
     McpVer minver = { 0, 0 };
     McpVer maxver = { 0, 0 };
@@ -928,34 +952,51 @@ mcp_negotiate_handler(McpFrame * mfr, McpMesg * mesg, McpVer version, void *cont
     const char *pkg;
 
     if (!strcmp(mesg->mesgname, "can")) {
-	pkg = mcp_mesg_arg_getline(mesg, "package", 0);
-	if (!pkg)
-	    return;
-	ptr = mcp_mesg_arg_getline(mesg, "min-version", 0);
-	if (!ptr)
-	    return;
-	while (isdigit(*ptr))
-	    minver.vermajor = (unsigned short)((minver.vermajor * 10) + (*ptr++ - '0'));
-	if (*ptr++ != '.')
-	    return;
-	while (isdigit(*ptr))
-	    minver.verminor = (unsigned short)((minver.verminor * 10) + (*ptr++ - '0'));
+        pkg = mcp_mesg_arg_getline(mesg, "package", 0);
 
-	ptr = mcp_mesg_arg_getline(mesg, "max-version", 0);
-	if (!ptr) {
-	    maxver = minver;
-	} else {
-	    while (isdigit(*ptr))
-		maxver.vermajor = (unsigned short)((maxver.vermajor * 10) + (*ptr++ - '0'));
-	    if (*ptr++ != '.')
-		return;
-	    while (isdigit(*ptr))
-		maxver.verminor = (unsigned short)((maxver.verminor * 10) + (*ptr++ - '0'));
-	}
+        if (!pkg)
+            return;
 
-	mcp_frame_package_add(mfr, pkg, minver, maxver);
+        ptr = mcp_mesg_arg_getline(mesg, "min-version", 0);
+
+        if (!ptr)
+            return;
+
+        while (isdigit(*ptr))
+            minver.vermajor = (unsigned short)((minver.vermajor * 10)
+                                               + (*ptr++ - '0'));
+
+        if (*ptr++ != '.')
+            return;
+
+        while (isdigit(*ptr))
+            minver.verminor = (unsigned short)((minver.verminor * 10)
+                                               + (*ptr++ - '0'));
+
+        ptr = mcp_mesg_arg_getline(mesg, "max-version", 0);
+
+        if (!ptr) {
+            maxver = minver;
+        } else {
+            while (isdigit(*ptr))
+                maxver.vermajor = (unsigned short)((maxver.vermajor * 10)
+                                                   + (*ptr++ - '0'));
+
+            if (*ptr++ != '.')
+                return;
+
+            while (isdigit(*ptr))
+                maxver.verminor = (unsigned short)((maxver.verminor * 10)
+                                                   + (*ptr++ - '0'));
+        }
+
+        mcp_frame_package_add(mfr, pkg, minver, maxver);
     } else if (!strcmp(mesg->mesgname, "end")) {
-	/* nothing to do for end of package negotiations. */
+        /*
+         * TODO: Remove this else block.  We can make a comment that
+         *       there is an "end" message, but this doesn't do anything.
+         */
+        /* nothing to do for end of package negotiations. */
     }
 }
 
@@ -965,12 +1006,19 @@ mcp_negotiate_handler(McpFrame * mfr, McpMesg * mesg, McpVer version, void *cont
 /***                    ******************************************/
 /*****************************************************************/
 
-/*****************************************************************
- *
- *   Initializes MCP globally at startup time.
- *
- *****************************************************************/
 
+/**
+ * Initialize MCP globall at startup time.
+ *
+ * Loads up the default MCP packages, which includes*
+ *
+ * - negotiate
+ * - org-fuzzball-help
+ * - org-fuzzball-notify
+ * - org-fuzzball-simpleedit
+ * - org-fuzzball-languages
+ * - dns-org-mud-moo-simpleedit
+ */
 void
 mcp_initialize(void)
 {
@@ -979,20 +1027,27 @@ mcp_initialize(void)
 
     /* McpVer twoone = {2,1}; */
 
-    mcp_package_register(MCP_NEGOTIATE_PKG, oneoh, twooh, mcp_negotiate_handler, NULL, NULL);
-    mcp_package_register("org-fuzzball-help", oneoh, oneoh, mcppkg_help_request, NULL, NULL);
-    mcp_package_register("org-fuzzball-notify", oneoh, oneoh, mcppkg_simpleedit, NULL, NULL);
-    mcp_package_register("org-fuzzball-simpleedit", oneoh, oneoh, mcppkg_simpleedit, NULL, NULL);
-    mcp_package_register("org-fuzzball-languages", oneoh, oneoh, mcppkg_languages, NULL, NULL);
-    mcp_package_register("dns-org-mud-moo-simpleedit", oneoh, oneoh, mcppkg_simpleedit, NULL, NULL);
+    mcp_package_register(MCP_NEGOTIATE_PKG, oneoh, twooh,
+                         mcp_negotiate_handler, NULL, NULL);
+    mcp_package_register("org-fuzzball-help", oneoh, oneoh,
+                         mcppkg_help_request, NULL, NULL);
+    mcp_package_register("org-fuzzball-notify", oneoh, oneoh,
+                         mcppkg_simpleedit, NULL, NULL);
+    mcp_package_register("org-fuzzball-simpleedit", oneoh, oneoh,
+                         mcppkg_simpleedit, NULL, NULL);
+    mcp_package_register("org-fuzzball-languages", oneoh, oneoh,
+                         mcppkg_languages, NULL, NULL);
+    mcp_package_register("dns-org-mud-moo-simpleedit", oneoh, oneoh,
+                         mcppkg_simpleedit, NULL, NULL);
 }
 
-/*****************************************************************
+/**
+ * Starts MCP negotiations, if any are to be had.
  *
- *   Starts MCP negotiations, if any are to be had.
+ * This displays the package init message when a user connects for instance.
  *
- *****************************************************************/
-
+ * @param mfr our MCP Frame
+ */
 void
 mcp_negotiation_start(McpFrame * mfr)
 {
@@ -1007,19 +1062,24 @@ mcp_negotiation_start(McpFrame * mfr)
     mfr->enabled = 0;
 }
 
-/*****************************************************************
+/**
+ * Initializes an McpFrame for a new connection.
  *
- *   Initializes an McpFrame for a new connection.
- *   You MUST call this to initialize a new McpFrame.
- *   The caller is responsible for the allocation of the McpFrame.
+ * You MUST call this to initialize a new McpFrame.  The caller is responsible
+ * for the allocation of the McpFrame.
  *
- *****************************************************************/
-
+ * @param mfr the allocated McpFrame
+ * @param con this will go in mfr->descriptor
+ */
 void
 mcp_frame_init(McpFrame * mfr, void * con)
 {
     McpFrameList *mfrl;
 
+    /*
+     * @TODO Replace all these = 0's and = NULL's with an
+     *       memset(mfr, 0, sizeof(McpFrame))
+     */
     mfr->descriptor = con;
     mfr->version.verminor = 0;
     mfr->version.vermajor = 0;
@@ -1034,13 +1094,16 @@ mcp_frame_init(McpFrame * mfr, void * con)
     mcp_frame_list = mfrl;
 }
 
-/*****************************************************************
+/**
+ * Cleans up an McpFrame for a closing connection.
  *
- *   Cleans up an McpFrame for a closing connection.
- *   You MUST call this when you are done using an McpFrame.
+ * You MUST call this when you are done using an McpFrame.
  *
- *****************************************************************/
-
+ * Does not free the 'mfr' itself, just everything associated with it,
+ * including removing it from the mcp_frame_list
+ *
+ * @param mfr the McpFrame to clear
+ */
 void
 mcp_frame_clear(McpFrame * mfr)
 {
@@ -1049,52 +1112,61 @@ mcp_frame_clear(McpFrame * mfr)
     McpFrameList *mfrl = mcp_frame_list;
     McpFrameList *prev;
 
+    /* Clean up auth key */
     free(mfr->authkey);
     mfr->authkey = NULL;
 
+    /* Clean up packages */
     while (tmp) {
-	mfr->packages = tmp->next;
+        mfr->packages = tmp->next;
         free(tmp->pkgname);
-	free(tmp);
-	tmp = mfr->packages;
-    }
-    while (tmp2) {
-	mfr->messages = tmp2->next;
-	mcp_mesg_clear(tmp2);
-	free(tmp2);
-	tmp2 = mfr->messages;
+        free(tmp);
+        tmp = mfr->packages;
     }
 
+    /* Clean up message s*/
+    while (tmp2) {
+        mfr->messages = tmp2->next;
+        mcp_mesg_clear(tmp2);
+        free(tmp2);
+        tmp2 = mfr->messages;
+    }
+
+    /* Clean up items at the head of the frame list */
     while (mfrl && mfrl->mfr == mfr) {
-	mcp_frame_list = mfrl->next;
-	free(mfrl);
-	mfrl = mcp_frame_list;
+        mcp_frame_list = mfrl->next;
+        free(mfrl);
+        mfrl = mcp_frame_list;
     }
+
     if (!mcp_frame_list) {
-	return;
+        return;
     }
+
     prev = mcp_frame_list;
     mfrl = prev->next;
+
+    /* Clean up items in the rest of the frame list */
     while (mfrl) {
-	if (mfrl->mfr == mfr) {
-	    prev->next = mfrl->next;
-	    free(mfrl);
-	    mfrl = prev->next;
-	} else {
-	    prev = mfrl;
-	    mfrl = mfrl->next;
-	}
+        if (mfrl->mfr == mfr) {
+            prev->next = mfrl->next;
+            free(mfrl);
+            mfrl = prev->next;
+        } else {
+            prev = mfrl;
+            mfrl = mfrl->next;
+        }
     }
 }
 
-/*****************************************************************
+/**
+ * Indicates a package change or removal, and renegotiate
  *
- *   Removes a package from the list of supported packages
- *   for all McpFrames, and initiates renegotiation of that
- *   package.
+ * This removes the package from all McpFrames and renegotiates the ones
+ * that need it.  If the package is removed, it will have max/min version 0.
  *
- *****************************************************************/
-
+ * @param package the package to renegotiate 
+ */
 void
 mcp_frame_package_renegotiate(const char *package)
 {
@@ -1106,77 +1178,92 @@ mcp_frame_package_renegotiate(const char *package)
     McpPkg *p;
 
     p = mcp_PackageList;
+
+    /* Find the package in the list */
     while (p) {
-	if (!strcasecmp(p->pkgname, package)) {
-	    break;
-	}
-	p = p->next;
+        if (!strcasecmp(p->pkgname, package)) {
+            break;
+        }
+
+        p = p->next;
     }
 
-    if (!p) {
-	mcp_mesg_init(&cando, MCP_NEGOTIATE_PKG, "can");
-	mcp_mesg_arg_append(&cando, "package", package);
-	mcp_mesg_arg_append(&cando, "min-version", "0.0");
-	mcp_mesg_arg_append(&cando, "max-version", "0.0");
-    } else {
-	mcp_mesg_init(&cando, MCP_NEGOTIATE_PKG, "can");
-	mcp_mesg_arg_append(&cando, "package", p->pkgname);
-	snprintf(verbuf, sizeof(verbuf), "%d.%d", p->minver.vermajor, p->minver.verminor);
-	mcp_mesg_arg_append(&cando, "min-version", verbuf);
-	snprintf(verbuf, sizeof(verbuf), "%d.%d", p->maxver.vermajor, p->maxver.verminor);
-	mcp_mesg_arg_append(&cando, "max-version", verbuf);
+    if (!p) { /* This means we deleted the package */
+        mcp_mesg_init(&cando, MCP_NEGOTIATE_PKG, "can");
+        mcp_mesg_arg_append(&cando, "package", package);
+        mcp_mesg_arg_append(&cando, "min-version", "0.0");
+        mcp_mesg_arg_append(&cando, "max-version", "0.0");
+    } else { /* This means the version potentially changed */
+        mcp_mesg_init(&cando, MCP_NEGOTIATE_PKG, "can");
+        mcp_mesg_arg_append(&cando, "package", p->pkgname);
+        snprintf(verbuf, sizeof(verbuf), "%d.%d", p->minver.vermajor,
+                 p->minver.verminor);
+        mcp_mesg_arg_append(&cando, "min-version", verbuf);
+        snprintf(verbuf, sizeof(verbuf), "%d.%d", p->maxver.vermajor,
+                 p->maxver.verminor);
+        mcp_mesg_arg_append(&cando, "max-version", verbuf);
     }
 
+    /* Go through the frame list and remove the package as needed */
     while (mfrl) {
-	mfr = mfrl->mfr;
-	if (mfr->enabled) {
-	    if (mcp_version_compare(mfr->version, nullver) > 0) {
-		mcp_frame_package_remove(mfr, package);
-		mcp_frame_output_mesg(mfr, &cando);
-	    }
-	}
-	mfrl = mfrl->next;
-    }
-    mcp_mesg_clear(&cando);
+        mfr = mfrl->mfr;
 
-    /*
-       mcp_mesg_init(&cando, MCP_NEGOTIATE_PKG, "end");
-       mcp_frame_output_mesg(mfr, &cando);
-       mcp_mesg_clear(&cando);
-     */
+        if (mfr->enabled) {
+            /* If the version is out of bounds, we'll remove the package */
+            if (mcp_version_compare(mfr->version, nullver) > 0) {
+                mcp_frame_package_remove(mfr, package);
+                mcp_frame_output_mesg(mfr, &cando);
+            }
+        }
+
+        mfrl = mfrl->next;
+    }
+
+    mcp_mesg_clear(&cando);
 }
 
-/*****************************************************************
+/**
+ * Attempt to register a package for this connection.
  *
- *   Attempt to register a package for this connection.
- *   Returns EMCP_SUCCESS if the package was deemed supported.
- *   Returns EMCP_NOMCP if MCP is not supported on this connection.
- *   Returns EMCP_NOPACKAGE if the package versions didn't overlap.
+ * Returns EMCP_SUCCESS if the package was deemed supported.
+ * Returns EMCP_NOMCP if MCP is not supported on this connection.
+ * Returns EMCP_NOPACKAGE if the package versions didn't overlap.
  *
- *****************************************************************/
-
+ * @param mfr the MCP Frame
+ * @param package the package name to add
+ * @param minver the minimum version
+ * @param maxver the maximum version
+ * @return integer code as described above
+ */
 int
-mcp_frame_package_add(McpFrame * mfr, const char *package, McpVer minver, McpVer maxver)
+mcp_frame_package_add(McpFrame * mfr, const char *package, McpVer minver,
+                      McpVer maxver)
 {
     McpPkg *nu;
     McpPkg *ptr;
     McpVer selver;
 
+    /* If the frame hasn't been initialized, no MCP */
     if (!mfr->enabled) {
-	return EMCP_NOMCP;
+        return EMCP_NOMCP;
     }
 
+    /* Find the package */
     for (ptr = mcp_PackageList; ptr; ptr = ptr->next) {
-	if (!strcasecmp(ptr->pkgname, package)) {
-	    break;
-	}
-    }
-    if (!ptr) {
-	return EMCP_NOPACKAGE;
+        if (!strcasecmp(ptr->pkgname, package)) {
+            break;
+        }
     }
 
+    /* Package didn't exist */
+    if (!ptr) {
+        return EMCP_NOPACKAGE;
+    }
+
+    /* Remove it, if it is already on the frame */
     mcp_frame_package_remove(mfr, package);
 
+    /* Add it to the frame */
     selver = mcp_version_select(ptr->minver, ptr->maxver, minver, maxver);
     nu = malloc(sizeof(McpPkg));
     nu->pkgname = strdup(ptr->pkgname);
@@ -1187,24 +1274,29 @@ mcp_frame_package_add(McpFrame * mfr, const char *package, McpVer minver, McpVer
     nu->next = NULL;
 
     if (!mfr->packages) {
-	mfr->packages = nu;
+        mfr->packages = nu;
     } else {
-	McpPkg *lastpkg = mfr->packages;
+        McpPkg *lastpkg = mfr->packages;
 
-	while (lastpkg->next)
-	    lastpkg = lastpkg->next;
-	lastpkg->next = nu;
+        while (lastpkg->next)
+            lastpkg = lastpkg->next;
+
+        lastpkg->next = nu;
     }
+
+    /* Success! */
     return EMCP_SUCCESS;
 }
 
-/*****************************************************************
+/**
+ * Removes a package from the list of supported packages for this McpFrame.
  *
- *   Removes a package from the list of supported packages
- *   for this McpFrame.
+ * Does exactly what it says it does!  Does nothing if the package is not
+ * associated with the frame.
  *
- *****************************************************************/
-
+ * @param mfr the frame to remove the package from
+ * @param package the name of the package to remove.
+ */
 void
 mcp_frame_package_remove(McpFrame * mfr, const char *package)
 {
@@ -1212,32 +1304,36 @@ mcp_frame_package_remove(McpFrame * mfr, const char *package)
     McpPkg *prev;
 
     while (mfr->packages && !strcasecmp(mfr->packages->pkgname, package)) {
-	tmp = mfr->packages;
-	mfr->packages = tmp->next;
+        tmp = mfr->packages;
+
+        mfr->packages = tmp->next;
         free(tmp->pkgname);
-	free(tmp);
+        free(tmp);
     }
 
     prev = mfr->packages;
+
     while (prev && prev->next) {
-	if (!strcasecmp(prev->next->pkgname, package)) {
-	    tmp = prev->next;
-	    prev->next = tmp->next;
+        if (!strcasecmp(prev->next->pkgname, package)) {
+            tmp = prev->next;
+            prev->next = tmp->next;
             free(tmp->pkgname);
-	    free(tmp);
-	} else {
-	    prev = prev->next;
-	}
+            free(tmp);
+        } else {
+            prev = prev->next;
+        }
     }
 }
 
-/*****************************************************************
+/**
+ * Returns the supported version of the given package.
  *
- *   Returns the supported version of the given package.
- *   Returns {0,0} if the package is not supported.
+ * Returns {0,0} if the package is not supported.
  *
- *****************************************************************/
-
+ * @param mfr the frame to check
+ * @param package the name of the package to look for
+ * @return McpVer structure if found, or {0, 0} if not found.
+ */
 McpVer
 mcp_frame_package_supported(McpFrame * mfr, const char *package)
 {
@@ -1245,129 +1341,155 @@ mcp_frame_package_supported(McpFrame * mfr, const char *package)
     McpVer errver = { 0, 0 };
 
     if (!mfr->enabled) {
-	return errver;
+        return errver;
     }
 
     for (ptr = mfr->packages; ptr; ptr = ptr->next) {
-	if (!strcasecmp(ptr->pkgname, package)) {
-	    break;
-	}
+        if (!strcasecmp(ptr->pkgname, package)) {
+            break;
+        }
     }
+
     if (!ptr) {
-	return errver;
+        return errver;
     }
 
     return (ptr->minver);
 }
 
-/*****************************************************************
+/**
+ * Executes the callback function for the given message.
  *
- *   Executes the callback function for the given message.
- *   Returns EMCP_SUCCESS if the call completed successfully.
- *   Returns EMCP_NOMCP if MCP is not supported for that connection.
- *   Returns EMCP_NOPACKAGE if the package is not supported.
+ * If msg->package matches MCP_INIT_PKG, we'll run the init package.
+ * @see mcp_basic_handler
  *
- *****************************************************************/
-
+ * Otherwise, it tries to run the package's callback with the given
+ * message.
+ *
+ * Returns EMCP_SUCCESS if the call completed successfully.
+ * Returns EMCP_NOMCP if MCP is not supported for that connection.
+ * Returns EMCP_NOPACKAGE if the package is not supported.
+ *
+ * @param mfr the frame we are working on
+ * @param msg the message
+ * @return integer return parameters as described above.
+ */
 int
 mcp_frame_package_docallback(McpFrame * mfr, McpMesg * msg)
 {
     McpPkg *ptr = NULL;
 
     if (!strcasecmp(msg->package, MCP_INIT_PKG)) {
-	mcp_basic_handler(mfr, msg);
+        mcp_basic_handler(mfr, msg);
     } else {
-	if (!mfr->enabled) {
-	    return EMCP_NOMCP;
-	}
+        if (!mfr->enabled) {
+            return EMCP_NOMCP;
+        }
 
-	for (ptr = mfr->packages; ptr; ptr = ptr->next) {
-	    if (!strcasecmp(ptr->pkgname, msg->package)) {
-		break;
-	    }
-	}
-	if (!ptr) {
-	    if (!strcasecmp(msg->package, MCP_NEGOTIATE_PKG)) {
-		McpVer twooh = { 2, 0 };
+        for (ptr = mfr->packages; ptr; ptr = ptr->next) {
+            if (!strcasecmp(ptr->pkgname, msg->package)) {
+                break;
+            }
+        }
 
-		mcp_negotiate_handler(mfr, msg, twooh, NULL);
-	    } else {
-		return EMCP_NOPACKAGE;
-	    }
-	} else {
-	    ptr->callback(mfr, msg, ptr->maxver, ptr->context);
-	}
+        if (!ptr) {
+            if (!strcasecmp(msg->package, MCP_NEGOTIATE_PKG)) {
+                McpVer twooh = { 2, 0 };
+
+                mcp_negotiate_handler(mfr, msg, twooh, NULL);
+            } else {
+                return EMCP_NOPACKAGE;
+            }
+        } else {
+            ptr->callback(mfr, msg, ptr->maxver, ptr->context);
+        }
     }
+
     return EMCP_SUCCESS;
 }
 
-/*****************************************************************
+/**
+ * Check a line of input for MCP commands.
  *
- *   Check a line of input for MCP commands.
- *   Returns 0 if the line was an out-of-band MCP message.
- *   Returns 1 if the line was in-band data.
- *     outbuf will contain the in-band data on return, if any.
+ * Returns 0 if the line was an out-of-band MCP message.
+ * Returns 1 if the line was in-band data.
  *
- *****************************************************************/
-
+ * outbuf will contain the in-band data on return, if any.
+ *
+ * @param mfr the frame to work with
+ * @param linein the line to check for messages
+ * @param outbuf the output buffer for in-band data
+ * @param bufsize the size of outbuf
+ * @return boolean true if the line as in-band data, false if out-of-band MCP
+ */
 int
-mcp_frame_process_input(McpFrame * mfr, const char *linein, char *outbuf, int bufsize)
+mcp_frame_process_input(McpFrame * mfr, const char *linein, char *outbuf,
+                        int bufsize)
 {
     if (!strncasecmp(linein, MCP_MESG_PREFIX, 3)) {
-	/* treat it as an out-of-band message, and parse it. */
-	if (mfr->enabled || !strncasecmp(MCP_INIT_MESG, linein + 3, 4)) {
-	    if (!mcp_internal_parse(mfr, linein + 3)) {
-		strncpy(outbuf, linein, bufsize);
-		outbuf[bufsize - 1] = '\0';
-		return 1;
-	    }
-	    return 0;
-	} else {
-	    strncpy(outbuf, linein, bufsize);
-	    outbuf[bufsize - 1] = '\0';
-	    return 1;
-	}
+        /* treat it as an out-of-band message, and parse it. */
+        if (mfr->enabled || !strncasecmp(MCP_INIT_MESG, linein + 3, 4)) {
+            if (!mcp_internal_parse(mfr, linein + 3)) {
+                strncpy(outbuf, linein, bufsize);
+                outbuf[bufsize - 1] = '\0';
+                return 1;
+            }
+
+            return 0;
+        } else {
+            strncpy(outbuf, linein, bufsize);
+            outbuf[bufsize - 1] = '\0';
+            return 1;
+        }
     } else if (mfr->enabled && !strncasecmp(linein, MCP_QUOTE_PREFIX, 3)) {
-	/* It's quoted in-band data.  Strip the quoting. */
-	strncpy(outbuf, linein + 3, bufsize);
+        /* It's quoted in-band data.  Strip the quoting. */
+        strncpy(outbuf, linein + 3, bufsize);
     } else {
-	/* It's in-band data.  Return it raw. */
-	strncpy(outbuf, linein, bufsize);
+        /* It's in-band data.  Return it raw. */
+        strncpy(outbuf, linein, bufsize);
     }
+
     outbuf[bufsize - 1] = '\0';
     return 1;
 }
 
-/*****************************************************************
+/**
+ * Sends a string to the given connection, using MCP escaping if needed
+ * (and supported).
  *
- *   Sends a string to the given connection, using MCP escaping
- *     if needed and supported.
+ * If the frame isn't enabled, or the message is already quoted, it won't
+ * be quoted further.
  *
- *****************************************************************/
-
+ * @param mfr the frame we are working with
+ * @param lineout the line of output to send
+ */
 void
 mcp_frame_output_inband(McpFrame * mfr, const char *lineout)
 {
     if (!mfr->enabled ||
-	(strncmp(lineout, MCP_MESG_PREFIX, 3) && strncmp(lineout, MCP_QUOTE_PREFIX, 3))
-	    ) {
-	SendText(mfr, lineout);
+        (strncmp(lineout, MCP_MESG_PREFIX, 3)
+         && strncmp(lineout, MCP_QUOTE_PREFIX, 3))) {
+        SendText(mfr, lineout);
     } else {
-	SendText(mfr, MCP_QUOTE_PREFIX);
-	SendText(mfr, lineout);
+        SendText(mfr, MCP_QUOTE_PREFIX);
+        SendText(mfr, lineout);
     }
-    /* SendText(mfr, "\r\n"); */
 }
 
-/*****************************************************************
+/**
+ * Sends an MCP message to the given connection.
  *
- *   Sends an MCP message to the given connection.
- *   Returns EMCP_SUCCESS if successful.
- *   Returns EMCP_NOMCP if MCP isn't supported on this connection.
- *   Returns EMCP_NOPACKAGE if this connection doesn't support the needed package.
+ * Returns EMCP_SUCCESS if successful.
+ * Returns EMCP_NOMCP if MCP isn't supported on this connection.
+ * Returns EMCP_NOPACKAGE if this connection doesn't support the needed package.
  *
- *****************************************************************/
-
+ * This automatically handles the multiline / data tag stuff if any of the
+ * parameters need multi-line.
+ *
+ * @param mfr the frame to send the message to
+ * @param msg the message to send
+ * @return integer with one of the above codes.
+ */
 int
 mcp_frame_output_mesg(McpFrame * mfr, McpMesg * msg)
 {
@@ -1381,96 +1503,110 @@ mcp_frame_output_mesg(McpFrame * mfr, McpMesg * msg)
     int flushcount = 8;
 
     if (!mfr->enabled && strcasecmp(msg->package, MCP_INIT_PKG)) {
-	return EMCP_NOMCP;
+        return EMCP_NOMCP;
     }
 
     /* Create the message name from the package and message subnames */
     if (msg->mesgname && *msg->mesgname) {
-	snprintf(mesgname, sizeof(mesgname), "%s-%s", msg->package, msg->mesgname);
+        snprintf(mesgname, sizeof(mesgname), "%s-%s", msg->package,
+                 msg->mesgname);
     } else {
-	snprintf(mesgname, sizeof(mesgname), "%s", msg->package);
+        snprintf(mesgname, sizeof(mesgname), "%s", msg->package);
     }
 
     strcpyn(outbuf, sizeof(outbuf), MCP_MESG_PREFIX);
     strcatn(outbuf, sizeof(outbuf), mesgname);
+
     if (strcasecmp(mesgname, MCP_INIT_PKG)) {
-	McpVer nullver = { 0, 0 };
+        McpVer nullver = { 0, 0 };
 
-	strcatn(outbuf, sizeof(outbuf), " ");
-	strcatn(outbuf, sizeof(outbuf), mfr->authkey);
-	if (strcasecmp(msg->package, MCP_NEGOTIATE_PKG)) {
-	    McpVer ver = mcp_frame_package_supported(mfr, msg->package);
+        strcatn(outbuf, sizeof(outbuf), " ");
+        strcatn(outbuf, sizeof(outbuf), mfr->authkey);
 
-	    if (!mcp_version_compare(ver, nullver)) {
-		return EMCP_NOPACKAGE;
-	    }
-	}
+        if (strcasecmp(msg->package, MCP_NEGOTIATE_PKG)) {
+            McpVer ver = mcp_frame_package_supported(mfr, msg->package);
+
+            if (!mcp_version_compare(ver, nullver)) {
+                return EMCP_NOPACKAGE;
+            }
+        }
     }
 
-    /* If the argument lines contain newlines, split them into separate lines. */
+    /*
+     * If the argument lines contain newlines, split them into separate lines.
+     */
     for (McpArg *anarg = msg->args; anarg; anarg = anarg->next) {
-	if (anarg->value) {
-	    McpArgPart *ap = anarg->value;
+        if (anarg->value) {
+            McpArgPart *ap = anarg->value;
 
-	    while (ap) {
-		p = ap->value;
-		while (*p) {
-		    if (*p == '\n' || *p == '\r') {
-			McpArgPart *nu = malloc(sizeof(McpArgPart));
+            while (ap) {
+                p = ap->value;
 
-			nu->next = ap->next;
-			ap->next = nu;
-			*p++ = '\0';
-			nu->value = strdup(p);
-			ap->value = realloc(ap->value, strlen(ap->value) + 1);
-			ap = nu;
-			p = nu->value;
-		    } else {
-			p++;
-		    }
-		}
-		ap = ap->next;
-	    }
-	}
+                while (*p) {
+                    if (*p == '\n' || *p == '\r') {
+                        McpArgPart *nu = malloc(sizeof(McpArgPart));
+
+                        nu->next = ap->next;
+                        ap->next = nu;
+                        *p++ = '\0';
+                        nu->value = strdup(p);
+                        ap->value = realloc(ap->value, strlen(ap->value) + 1);
+                        ap = nu;
+                        p = nu->value;
+                    } else {
+                        p++;
+                    }
+                }
+
+                ap = ap->next;
+            }
+        }
     }
 
     /* Build the initial message string */
     out = outbuf;
     bufrem = outbuf + sizeof(outbuf) - out;
+
     for (McpArg *anarg = msg->args; anarg; anarg = anarg->next) {
-	out += strlen(out);
-	bufrem = outbuf + sizeof(outbuf) - out;
-	if (!anarg->value) {
-	    anarg->was_shown = 1;
-	    snprintf(out, bufrem, " %s: %s", anarg->name, MCP_ARG_EMPTY);
-	    out += strlen(out);
-	    bufrem = outbuf + sizeof(outbuf) - out;
-	} else {
-	    int totlen = strlen(anarg->value->value) + strlen(anarg->name) + 5;
+        out += strlen(out);
+        bufrem = outbuf + sizeof(outbuf) - out;
 
-	    if (anarg->value->next || totlen > ((BUFFER_LEN - (out - outbuf)) / 2)) {
-		/* Value is multi-line or too long.  Send on separate line(s). */
-		mlineflag = 1;
-		anarg->was_shown = 0;
-		snprintf(out, bufrem, " %s*: %s", anarg->name, MCP_ARG_EMPTY);
-	    } else {
-		anarg->was_shown = 1;
-		snprintf(out, bufrem, " %s: ", anarg->name);
-		out += strlen(out);
-		bufrem = outbuf + sizeof(outbuf) - out;
+        if (!anarg->value) {
+            anarg->was_shown = 1;
+            snprintf(out, bufrem, " %s: %s", anarg->name, MCP_ARG_EMPTY);
+            out += strlen(out);
+            bufrem = outbuf + sizeof(outbuf) - out;
+        } else {
+            int totlen = strlen(anarg->value->value) + strlen(anarg->name) + 5;
 
-		msgarg_escape(out, bufrem, anarg->value->value);
-		out += strlen(out);
-	    }
-	    out += strlen(out);
-	    bufrem = outbuf + sizeof(outbuf) - out;
-	}
+            if (anarg->value->next
+                || totlen > ((BUFFER_LEN - (out - outbuf)) / 2)) {
+                /*
+                 * Value is multi-line or too long.  Send on separate line(s).
+                 */
+                mlineflag = 1;
+                anarg->was_shown = 0;
+                snprintf(out, bufrem, " %s*: %s", anarg->name, MCP_ARG_EMPTY);
+            } else {
+                anarg->was_shown = 1;
+                snprintf(out, bufrem, " %s: ", anarg->name);
+                out += strlen(out);
+                bufrem = outbuf + sizeof(outbuf) - out;
+
+                msgarg_escape(out, bufrem, anarg->value->value);
+                out += strlen(out);
+            }
+
+            out += strlen(out);
+            bufrem = outbuf + sizeof(outbuf) - out;
+        }
     }
 
     /* If the message is multi-line, make sure it has a _data-tag field. */
     if (mlineflag) {
-	snprintf(datatag, sizeof(datatag), "%.8lX", (unsigned long) (RANDOM() ^ RANDOM()));
-	snprintf(out, bufrem, " %s: %s", MCP_DATATAG, datatag);
+        snprintf(datatag, sizeof(datatag), "%.8lX",
+                 (unsigned long) (RANDOM() ^ RANDOM()));
+        snprintf(out, bufrem, " %s: %s", MCP_DATATAG, datatag);
     }
 
     /* Send the initial line. */
@@ -1478,31 +1614,36 @@ mcp_frame_output_mesg(McpFrame * mfr, McpMesg * msg)
     SendText(mfr, "\r\n");
 
     if (mlineflag) {
-	/* Start sending arguments whose values weren't already sent. */
-	/* This is usually just multi-line argument values. */
-	for (McpArg *anarg = msg->args; anarg; anarg = anarg->next) {
-	    if (!anarg->was_shown) {
-		McpArgPart *ap = anarg->value;
+        /*
+         * Start sending arguments whose values weren't already sent.
+         * This is usually just multi-line argument values.
+         */
+        for (McpArg *anarg = msg->args; anarg; anarg = anarg->next) {
+            if (!anarg->was_shown) {
+                McpArgPart *ap = anarg->value;
 
-		while (ap) {
-		    *outbuf = '\0';
-		    snprintf(outbuf, sizeof(outbuf), "%s* %s %s: %s", MCP_MESG_PREFIX, datatag,
-			     anarg->name, ap->value);
-		    SendText(mfr, outbuf);
-		    SendText(mfr, "\r\n");
-		    if (!--flushcount) {
-			FlushText(mfr);
-			flushcount = 8;
-		    }
-		    ap = ap->next;
-		}
-	    }
-	}
+                while (ap) {
+                    *outbuf = '\0';
+                    snprintf(outbuf, sizeof(outbuf), "%s* %s %s: %s",
+                             MCP_MESG_PREFIX, datatag,
+                             anarg->name, ap->value);
+                    SendText(mfr, outbuf);
+                    SendText(mfr, "\r\n");
 
-	/* Let the other side know we're done sending multi-line arg vals. */
-	snprintf(outbuf, sizeof(outbuf), "%s: %s", MCP_MESG_PREFIX, datatag);
-	SendText(mfr, outbuf);
-	SendText(mfr, "\r\n");
+                    if (!--flushcount) {
+                        FlushText(mfr);
+                        flushcount = 8;
+                    }
+
+                    ap = ap->next;
+                }
+            }
+        }
+
+        /* Let the other side know we're done sending multi-line arg vals. */
+        snprintf(outbuf, sizeof(outbuf), "%s: %s", MCP_MESG_PREFIX, datatag);
+        SendText(mfr, outbuf);
+        SendText(mfr, "\r\n");
     }
 
     return EMCP_SUCCESS;
@@ -1514,17 +1655,25 @@ mcp_frame_output_mesg(McpFrame * mfr, McpMesg * msg)
 /***                   *******************************************/
 /*****************************************************************/
 
-/*****************************************************************
+/**
+ * Initializes an MCP message.
  *
- *   Initializes an MCP message.
- *   You MUST initialize a message before using it.
- *   You MUST also mcp_mesg_clear() a mesg once you are done using it.
+ * You MUST initialize a message before using it.
+ * You MUST also mcp_mesg_clear() a mesg once you are done using it.
  *
- *****************************************************************/
-
+ * 'package' and 'mesgname' will be copied.
+ *
+ * @param msg the message to initialize
+ * @param package the package the message will belong to
+ * @param mesgname the name of the message
+ */
 void
 mcp_mesg_init(McpMesg * msg, const char *package, const char *mesgname)
 {
+    /*
+     * @TODO do a memset(msg, 0, sizeof(msg)) then get rid of the null
+     *       assignments.
+     */
     msg->package = strdup(package);
     msg->mesgname = strdup(mesgname);
     msg->datatag = NULL;
@@ -1534,14 +1683,17 @@ mcp_mesg_init(McpMesg * msg, const char *package, const char *mesgname)
     msg->next = NULL;
 }
 
-/*****************************************************************
+/**
+ * Clear the given MCP message.
  *
- *   Clear the given MCP message.
- *   You MUST clear every message after you are done using it, to
- *     free the memory used by the message.
+ * You MUST clear every message after you are done using it, to
+ * free the memory used by the message.
  *
- *****************************************************************/
-
+ * The message 'msg' is not freed and can be reused, after doing
+ * mcp_mesg_init of course.  @see mcp_mesg_init
+ *
+ * @param msg the message to free up
+ */
 void
 mcp_mesg_clear(McpMesg * msg)
 {
@@ -1550,19 +1702,22 @@ mcp_mesg_clear(McpMesg * msg)
     free(msg->datatag);
 
     while (msg->args) {
-	McpArg *tmp = msg->args;
+        McpArg *tmp = msg->args;
 
-	msg->args = tmp->next;
+        msg->args = tmp->next;
         free(tmp->name);
-	while (tmp->value) {
-	    McpArgPart *ptr2 = tmp->value;
 
-	    tmp->value = tmp->value->next;
+        while (tmp->value) {
+            McpArgPart *ptr2 = tmp->value;
+
+            tmp->value = tmp->value->next;
             free(ptr2->value);
-	    free(ptr2);
-	}
-	free(tmp);
+            free(ptr2);
+        }
+
+        free(tmp);
     }
+
     msg->bytes = 0;
 }
 
@@ -1572,13 +1727,14 @@ mcp_mesg_clear(McpMesg * msg)
 /***                  ********************************************/
 /*****************************************************************/
 
-/*****************************************************************
+/**
+ * Returns the count of the number of lines in the given arg of the message.
  *
- *   Returns the count of the number of lines in the given arg of
- *   the given message.
+ * If 'name' doesn't exist, this will just return 0
  *
- *****************************************************************/
-
+ * @param msg the message to look up line count for
+ * @param name the name of the argument to look up the line count for
+ */
 int
 mcp_mesg_arg_linecount(McpMesg * msg, const char *name)
 {
@@ -1586,60 +1742,74 @@ mcp_mesg_arg_linecount(McpMesg * msg, const char *name)
     int cnt = 0;
 
     while (ptr && strcasecmp(ptr->name, name)) {
-	ptr = ptr->next;
+        ptr = ptr->next;
     }
-    if (ptr) {
-	McpArgPart *ptr2 = ptr->value;
 
-	while (ptr2) {
-	    ptr2 = ptr2->next;
-	    cnt++;
-	}
+    if (ptr) {
+        McpArgPart *ptr2 = ptr->value;
+
+        while (ptr2) {
+            ptr2 = ptr2->next;
+            cnt++;
+        }
     }
+
     return cnt;
 }
 
-/*****************************************************************
+/**
+ * Gets the value of a named argument in the given message.
  *
- *   Gets the value of a named argument in the given message.
+ * If 'linenum' is out of bounds, or 'argname' doesn't exist, this will
+ * return NULL.
  *
- *****************************************************************/
-
+ * @param msg the message to get a line for
+ * @param argname the argument name to look up
+ * @param linenum the line number to fetch, starting with 0
+ * @return either the line string, or NULL
+ */
 char *
 mcp_mesg_arg_getline(McpMesg * msg, const char *argname, int linenum)
 {
     McpArg *ptr = msg->args;
 
     while (ptr && strcasecmp(ptr->name, argname)) {
-	ptr = ptr->next;
+        ptr = ptr->next;
     }
-    if (ptr) {
-	McpArgPart *ptr2 = ptr->value;
 
-	while (linenum > 0 && ptr2) {
-	    ptr2 = ptr2->next;
-	    linenum--;
-	}
-	if (ptr2) {
-	    return (ptr2->value);
-	}
-	return NULL;
+    if (ptr) {
+        McpArgPart *ptr2 = ptr->value;
+
+        while (linenum > 0 && ptr2) {
+            ptr2 = ptr2->next;
+            linenum--;
+        }
+
+        if (ptr2) {
+            return (ptr2->value);
+        }
+
+        return NULL;
     }
+
     return NULL;
 }
 
-/*****************************************************************
+/**
+ * Appends to the list value of the named arg in the given mesg.
  *
- *   Appends to the list value of the named arg in the given mesg.
- *   If that named argument doesn't exist yet, it will be created.
- *   This is used to construct arguments that have lists as values.
- *   Returns the success state of the call.  EMCP_SUCCESS if the
- *   call was successful.  EMCP_ARGCOUNT if this would make too
- *   many arguments in the message.  EMCP_ARGLENGTH is this would
- *   cause an argument to exceed the max allowed number of lines.
+ * If that named argument doesn't exist yet, it will be created.
+ * This is used to construct arguments that have lists as values.
+ * Returns the success state of the call.  EMCP_SUCCESS if the
+ * call was successful.  EMCP_ARGCOUNT if this would make too
+ * many arguments in the message.  EMCP_ARGLENGTH is this would
+ * cause an argument to exceed the max allowed number of lines.
  *
- *****************************************************************/
-
+ * @param msg the msg to append an argument to
+ * @param argname the argument to append
+ * @param argval the value to add to the argument
+ * @return an integer constant as described above
+ */
 int
 mcp_mesg_arg_append(McpMesg * msg, const char *argname, const char *argval)
 {
@@ -1648,125 +1818,154 @@ mcp_mesg_arg_append(McpMesg * msg, const char *argname, const char *argval)
     size_t vallen = argval ? strlen(argval) : 0;
 
     if (namelen > MAX_MCP_ARGNAME_LEN) {
-	return EMCP_ARGNAMELEN;
+        return EMCP_ARGNAMELEN;
     }
+
     if (vallen + (size_t)msg->bytes > MAX_MCP_MESG_SIZE) {
-	return EMCP_MESGSIZE;
+        return EMCP_MESGSIZE;
     }
+
     while (ptr && strcasecmp(ptr->name, argname)) {
-	ptr = ptr->next;
+        ptr = ptr->next;
     }
+
+    /* Create the argument if it doesn't exist yet. */
     if (!ptr) {
-	if (namelen + vallen + (size_t)msg->bytes > MAX_MCP_MESG_SIZE) {
-	    return EMCP_MESGSIZE;
-	}
-	ptr = malloc(sizeof(McpArg));
-	ptr->name = malloc(namelen + 1);
-	strcpyn(ptr->name, namelen + 1, argname);
-	ptr->value = NULL;
-	ptr->last = NULL;
-	ptr->next = NULL;
-	if (!msg->args) {
-	    msg->args = ptr;
-	} else {
-	    int limit = MAX_MCP_MESG_ARGS;
-	    McpArg *lastarg = msg->args;
+        if (namelen + vallen + (size_t)msg->bytes > MAX_MCP_MESG_SIZE) {
+            return EMCP_MESGSIZE;
+        }
 
-	    while (lastarg->next) {
-		if (limit-- <= 0) {
-		    free(ptr->name);
-		    free(ptr);
-		    return EMCP_ARGCOUNT;
-		}
-		lastarg = lastarg->next;
-	    }
-	    lastarg->next = ptr;
-	}
-	msg->bytes += sizeof(McpArg) + namelen + 1;
+        ptr = malloc(sizeof(McpArg));
+        ptr->name = malloc(namelen + 1);
+        strcpyn(ptr->name, namelen + 1, argname);
+        ptr->value = NULL;
+        ptr->last = NULL;
+        ptr->next = NULL;
+
+        if (!msg->args) {
+            msg->args = ptr;
+        } else {
+            int limit = MAX_MCP_MESG_ARGS;
+            McpArg *lastarg = msg->args;
+
+            while (lastarg->next) {
+                if (limit-- <= 0) {
+                    free(ptr->name);
+                    free(ptr);
+                    return EMCP_ARGCOUNT;
+                }
+
+                lastarg = lastarg->next;
+            }
+
+            lastarg->next = ptr;
+        }
+
+        msg->bytes += sizeof(McpArg) + namelen + 1;
     }
 
+    /* Set the argument value */
     if (argval) {
-	McpArgPart *nu = malloc(sizeof(McpArgPart));
+        McpArgPart *nu = malloc(sizeof(McpArgPart));
 
-	nu->value = malloc(vallen + 1);
-	strcpyn(nu->value, vallen + 1, argval);
-	nu->next = NULL;
+        nu->value = malloc(vallen + 1);
+        strcpyn(nu->value, vallen + 1, argval);
+        nu->next = NULL;
 
-	if (!ptr->last) {
-	    ptr->value = ptr->last = nu;
-	} else {
-	    ptr->last->next = nu;
-	    ptr->last = nu;
-	}
-	msg->bytes += sizeof(McpArgPart) + vallen + 1;
+        if (!ptr->last) {
+            ptr->value = ptr->last = nu;
+        } else {
+            ptr->last->next = nu;
+            ptr->last = nu;
+        }
+
+        msg->bytes += sizeof(McpArgPart) + vallen + 1;
     }
+
     ptr->was_shown = 0;
+
     return EMCP_SUCCESS;
 }
 
-/*****************************************************************
+/**
+ * Removes the named argument from the given message.
  *
- *   Removes the named argument from the given message.
- *
- *****************************************************************/
-
+ * @param msg the message to alter
+ * @param argname the argument to remove
+ */
 void
 mcp_mesg_arg_remove(McpMesg * msg, const char *argname)
 {
     McpArg *ptr = msg->args;
     McpArg *prev = NULL;
 
+    /*
+     * This is to delete the argument if it is at the head
+     * of the args list.
+     */
     while (ptr && !strcasecmp(ptr->name, argname)) {
-	msg->args = ptr->next;
-	msg->bytes -= sizeof(McpArg);
-	if (ptr->name) {
-	    msg->bytes -= strlen(ptr->name) + 1;
-	    free(ptr->name);
-	}
-	while (ptr->value) {
-	    McpArgPart *ptr2 = ptr->value;
+        msg->args = ptr->next;
+        msg->bytes -= sizeof(McpArg);
 
-	    ptr->value = ptr->value->next;
-	    msg->bytes -= sizeof(McpArgPart);
-	    if (ptr2->value) {
-		msg->bytes -= strlen(ptr2->value) + 1;
-		free(ptr2->value);
-	    }
-	    free(ptr2);
-	}
-	free(ptr);
-	ptr = msg->args;
+        if (ptr->name) {
+            msg->bytes -= strlen(ptr->name) + 1;
+            free(ptr->name);
+        }
+
+        while (ptr->value) {
+            McpArgPart *ptr2 = ptr->value;
+
+            ptr->value = ptr->value->next;
+            msg->bytes -= sizeof(McpArgPart);
+
+            if (ptr2->value) {
+                msg->bytes -= strlen(ptr2->value) + 1;
+                free(ptr2->value);
+            }
+
+            free(ptr2);
+        }
+
+        free(ptr);
+        ptr = msg->args;
     }
 
     prev = msg->args;
+
     if (ptr)
-	ptr = ptr->next;
+        ptr = ptr->next;
 
+    /* This deletes any entries if they are after the head of the list. */
     while (ptr) {
-	if (!strcasecmp(argname, ptr->name)) {
-	    prev->next = ptr->next;
-	    msg->bytes -= sizeof(McpArg);
-	    if (ptr->name) {
-		msg->bytes -= strlen(ptr->name) + 1;
-		free(ptr->name);
-	    }
-	    while (ptr->value) {
-		McpArgPart *ptr2 = ptr->value;
+        if (!strcasecmp(argname, ptr->name)) {
+            prev->next = ptr->next;
+            msg->bytes -= sizeof(McpArg);
 
-		ptr->value = ptr->value->next;
-		msg->bytes -= sizeof(McpArgPart);
-		if (ptr2->value) {
-		    msg->bytes -= strlen(ptr2->value) + 1;
-		    free(ptr2->value);
-		}
-		free(ptr2);
-	    }
-	    free(ptr);
-	    ptr = prev->next;
-	} else {
-	    prev = ptr;
-	    ptr = ptr->next;
-	}
+            if (ptr->name) {
+                msg->bytes -= strlen(ptr->name) + 1;
+                free(ptr->name);
+            }
+
+            while (ptr->value) {
+                McpArgPart *ptr2 = ptr->value;
+
+                ptr->value = ptr->value->next;
+                msg->bytes -= sizeof(McpArgPart);
+
+                if (ptr2->value) {
+                    msg->bytes -= strlen(ptr2->value) + 1;
+                    free(ptr2->value);
+                }
+
+                free(ptr2);
+            }
+
+            free(ptr);
+            ptr = prev->next;
+        } else {
+            prev = ptr;
+            ptr = ptr->next;
+        }
     }
 }
 
@@ -1776,55 +1975,69 @@ mcp_mesg_arg_remove(McpMesg * msg, const char *argname)
 /***                 *********************************************/
 /*****************************************************************/
 
-/*****************************************************************
+/**
+ * Compares two McpVer structs.
  *
- *   Compares two McpVer structs.
- *   Results are similar to strcmp():
- *     Returns negative if v1 <  v2
- *     Returns 0 (zero) if v1 == v2
- *     Returns positive if v1 >  v2
+ * Results are similar to strcmp():
  *
- *****************************************************************/
-
+ * * Returns negative if v1 <  v2
+ * * Returns 0 (zero) if v1 == v2
+ * * Returns positive if v1 >  v2
+ *
+ * @param v1 the first operand to compare
+ * @param v2 the second operand to compare
+ * @return comparison integer value as described above.
+ */
 int
 mcp_version_compare(McpVer v1, McpVer v2)
 {
     if (v1.vermajor != v2.vermajor) {
-	return (v1.vermajor - v2.vermajor);
+        return (v1.vermajor - v2.vermajor);
     }
+
     return (v1.verminor - v2.verminor);
 }
 
-/*****************************************************************
+/**
+ * Pick the highest common version number for two packages.
  *
- *   Given the min and max package versions supported by a client
- *     and server, this will return the highest version that is
- *     supported by both.
- *   Returns a McpVer of {0, 0} if there is no version overlap.
+ * Given the min and max package versions supported by a client
+ * and server, this will return the highest version that is
+ * supported by both.
  *
- *****************************************************************/
-
+ * Returns a McpVer of {0, 0} if there is no version overlap.
+ *
+ * @param min1 the minimum version of the first package.
+ * @param max1 the maximum version of the first package.
+ * @param min2 the minimum version of the second package.
+ * @param max2 the maximum version of the second package.
+ * @return either McpVer {0, 0} if no version, otherwise the overlapped version
+ */
 McpVer
 mcp_version_select(McpVer min1, McpVer max1, McpVer min2, McpVer max2)
 {
     McpVer result = { 0, 0 };
 
     if (mcp_version_compare(min1, max1) > 0) {
-	return result;
+        return result;
     }
+
     if (mcp_version_compare(min2, max2) > 0) {
-	return result;
+        return result;
     }
+
     if (mcp_version_compare(min1, max2) > 0) {
-	return result;
+        return result;
     }
+
     if (mcp_version_compare(min2, max1) > 0) {
-	return result;
+        return result;
     }
+
     if (mcp_version_compare(max1, max2) > 0) {
-	return max2;
+        return max2;
     } else {
-	return max1;
+        return max1;
     }
 }
 
