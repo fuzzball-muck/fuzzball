@@ -11,9 +11,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "config.h"
-
-#ifdef MCP_SUPPORT
 #include "commands.h"
 #include "db.h"
 #include "edit.h"
@@ -2175,4 +2172,3 @@ do_mcpprogram(int descr, dbref player, const char *name, const char *rname)
 
     mcpedit_program(descr, player, program);
 }
-#endif

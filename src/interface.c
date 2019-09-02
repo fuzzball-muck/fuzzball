@@ -36,8 +36,8 @@
 #include "interp.h"
 #include "log.h"
 #include "match.h"
-#ifdef MCP_SUPPORT
 #include "mcp.h"
+#ifdef MCPGUI_SUPPORT
 #include "mcpgui.h"
 #endif
 #include "mpi.h"
@@ -670,11 +670,7 @@ queue_ansi(struct descriptor_data *d, const char *msg)
         strip_ansi(buf, msg);
     }
 
-#ifdef MCP_SUPPORT
     mcp_frame_output_inband(&d->mcpframe, buf);
-#else
-    queue_write(d, buf, strlen(buf));
-#endif
 
     return strlen(buf);
 }
@@ -1862,14 +1858,10 @@ do_command(struct descriptor_data *d, char *command)
     char buf[BUFFER_LEN];
     char cmdbuf[BUFFER_LEN];
 
-#ifdef MCP_SUPPORT
     if (!mcp_frame_process_input(&d->mcpframe, command, cmdbuf, sizeof(cmdbuf))) {
         d->quota++;
         return 1;
     }
-#else
-    strcpy(cmdbuf, command);
-#endif
 
     command = cmdbuf;
 
@@ -1946,7 +1938,6 @@ is_interface_command(const char *cmd)
 {
     const char *tmp = cmd;
 
-#ifdef MCP_SUPPORT
     if (!strncmp(tmp, MCP_QUOTE_PREFIX, 3)) {
         /* dequote MCP quoting. */
         tmp += 3;
@@ -1954,7 +1945,6 @@ is_interface_command(const char *cmd)
 
     if (!strncmp(cmd, MCP_MESG_PREFIX, 3)) /* MCP mesg. */
         return 1;
-#endif
 
     if (!strcasecmp(tmp, BREAK_COMMAND))
         return 1;
@@ -1998,12 +1988,10 @@ process_commands(void)
                     && !is_interface_command(t->start)) {
                     char *tmp = t->start;
 
-#ifdef MCP_SUPPORT
                     if (!strncmp(tmp, MCP_QUOTE_PREFIX, 3)) {
                         /* Un-escape MCP escaped lines */
                         tmp += 3;
                     }
-#endif
 
                     /*
                      * WORK: send player's foreground/preempt programs an
@@ -2032,12 +2020,10 @@ process_commands(void)
                         free_text_block(t);
                     }
                 } else {
-#ifdef MCP_SUPPORT
                     if (strncmp(t->start, MCP_MESG_PREFIX, 3)) {
                         /* Not an MCP mesg, so count this against quota. */
                         d->quota--;
                     }
-#endif
 
                     nprocessed++;
 
@@ -2240,12 +2226,10 @@ queue_immediate_and_flush(struct descriptor_data *d, const char *msg)
 
     flush_output_queue(d, 0);
 
-#ifdef MCP_SUPPORT
     if (d->mcpframe.enabled
         && !(strncmp(buf, MCP_MESG_PREFIX, 3) && strncmp(buf, MCP_QUOTE_PREFIX, 3))) {
         queue_immediate_raw(d, MCP_QUOTE_PREFIX);
     }
-#endif
 
     queue_immediate_raw(d, (const char *) buf);
     process_output(d);
@@ -2377,7 +2361,7 @@ announce_disconnect(struct descriptor_data *d)
         announce_puppets(player, "falls asleep.", MESGPROP_PDCON);
     }
 
-#ifdef MCP_SUPPORT
+#ifdef MCPGUI_SUPPORT
     gui_dlog_closeall_descr(d->descriptor);
 #endif
 
@@ -2453,9 +2437,7 @@ shutdownsock(struct descriptor_data *d)
     free(d->forwarded_buffer);
 #endif
 
-#ifdef MCP_SUPPORT
     mcp_frame_clear(&d->mcpframe);
-#endif
 
 #ifdef USE_SSL
     if (d->ssl_session)
@@ -2597,9 +2579,7 @@ initializesock(int s, const char *hostname, int is_ssl)
     d->last_time = d->connected_at;
     d->last_pinged_at = d->connected_at;
 
-#ifdef MCP_SUPPORT
     mcp_frame_init(&d->mcpframe, d);
-#endif
 
     strcpyn(buf, sizeof(buf), hostname);
     ptr = strchr(buf, ')');
@@ -2631,9 +2611,7 @@ initializesock(int s, const char *hostname, int is_ssl)
     }
 #endif
 
-#ifdef MCP_SUPPORT
     mcp_negotiation_start(&d->mcpframe);
-#endif
 
     welcome_user(d);
     return d;
@@ -5173,9 +5151,7 @@ close_sockets(const char *msg)
         free((void *) d->hostname);
         free((void *) d->username);
 
-#ifdef MCP_SUPPORT
         mcp_frame_clear(&d->mcpframe);
-#endif
 
         free(d);
         ndescriptors--;
@@ -7106,9 +7082,9 @@ main(int argc, char **argv)
     }
 #endif /* MUD_ID */
 
-#ifdef MCP_SUPPORT
     /* Initialize MCP and some packages. */
     mcp_initialize();
+#ifdef MCPGUI_SUPPORT
     gui_initialize();
 #endif
 

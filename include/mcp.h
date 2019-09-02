@@ -6,8 +6,6 @@
  * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
  */
 
-#include "config.h"
-#ifdef MCP_SUPPORT
 #ifndef MCP_H
 #define MCP_H
 
@@ -422,4 +420,3 @@ int mcp_version_compare(McpVer v1, McpVer v2);
 McpVer mcp_version_select(McpVer min1, McpVer max1, McpVer min2, McpVer max2);
 
 #endif /* !MCP_H */
-#endif /* MCP_SUPPORT */

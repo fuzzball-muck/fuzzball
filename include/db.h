@@ -14,6 +14,7 @@
 
 #include "config.h"
 #include "fbmuck.h"
+#include "mcp.h"
 
 /* This is used to identify the database dump file */
 #define DB_VERSION_STRING "***Foxen9 TinyMUCK DUMP Format***"
@@ -22,10 +23,6 @@
 
 extern char match_args[BUFFER_LEN];
 extern char match_cmdname[BUFFER_LEN];
-
-#ifdef MCP_SUPPORT
-#include "mcp.h"
-#endif
 
 #define DBFETCH(x)  (db + (x))
 #define DBDIRTY(x)  {db[x].flags |= OBJECT_CHANGED;}
@@ -296,9 +293,7 @@ struct program_specific {
     struct inst *start;         /* place to start executing */
     struct line *first;         /* first line */
     struct publics *pubs;       /* public subroutine addresses */
-#ifdef MCP_SUPPORT
     struct mcp_binding *mcpbinds;   /* MCP message bindings. */
-#endif
     struct timeval proftime;    /* profiling time spent in this program. */
     time_t profstart;           /* time when profiling started for this prog */
     unsigned int profuses;      /* #calls to this program while profiling */
@@ -337,11 +332,8 @@ struct program_specific {
 #define PROGRAM_SET_PROFTIME(x,y,z) (PROGRAM_SP(x)->proftime.tv_usec = z, PROGRAM_SP(x)->proftime.tv_sec = y)
 #define PROGRAM_SET_PROFSTART(x,y)  (PROGRAM_SP(x)->profstart = y)
 #define PROGRAM_SET_PROF_USES(x,y)  (PROGRAM_SP(x)->profuses = y)
-
-#ifdef MCP_SUPPORT
 #define PROGRAM_MCPBINDS(x)         (PROGRAM_SP(x)->mcpbinds)
 #define PROGRAM_SET_MCPBINDS(x,y)   (PROGRAM_SP(x)->mcpbinds = y)
-#endif
 
 /*
  * Players an things share the same _specific structure at this time.

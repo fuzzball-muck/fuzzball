@@ -700,7 +700,6 @@ void do_look_at(int descr, dbref player, const char *name, const char *detail);
  * M
  */
 
-#ifdef MCP_SUPPORT
 /**
  * Implementation of @mcpedit command
  *
@@ -743,7 +742,6 @@ void do_mcpedit(int descr, dbref player, const char *name);
  * @param rname the registration name or "" for none.
  */
 void do_mcpprogram(int descr, dbref player, const char *name, const char *rname);
-#endif
 
 #ifndef NO_MEMORY_COMMAND
 /**

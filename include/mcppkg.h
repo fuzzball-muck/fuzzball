@@ -1,6 +1,3 @@
-#include "config.h"
-
-#ifdef MCP_SUPPORT
 #ifndef MCPPKG_H
 #define MCPPKG_H
 
@@ -12,4 +9,3 @@ void mcppkg_help_request(McpFrame * mfr, McpMesg * msg, McpVer ver, void *contex
 void show_mcp_error(McpFrame * mfr, char *topic, char *text);
 
 #endif /* !MCPPKG_H */
-#endif /* MCP_SUPPORT */

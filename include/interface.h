@@ -16,10 +16,7 @@
 #include "autoconf.h"
 #include "config.h"
 #include "fbmuck.h"
-
-#ifdef MCP_SUPPORT
 #include "mcp.h"
-#endif
 
 /* For the SSL* type. */
 #ifdef USE_SSL
@@ -153,9 +150,7 @@ struct descriptor_data {
     int quota;                      /* Command burst quota                 */
     struct descriptor_data *next;   /* Linked list of descriptors          */
     struct descriptor_data **prev;  /* Double linked list                  */
-#ifdef MCP_SUPPORT
     McpFrame mcpframe;              /* MCP Frame information               */
-#endif
 };
 
 /**

@@ -27,7 +27,7 @@
 #include "interface.h"
 #include "interp.h"
 #include "log.h"
-#ifdef MCP_SUPPORT
+#ifdef MCPGUI_SUPPORT
 #include "mcpgui.h"
 #endif
 #include "mufevent.h"
@@ -75,8 +75,9 @@ static void (*prim_func[]) (PRIM_PROTOTYPE) = {
             PRIMS_ARRAY_FUNCS,
             PRIMS_FLOAT_FUNCS,
             PRIMS_ERROR_FUNCS,
-#ifdef MCP_SUPPORT
             PRIMS_MCP_FUNCS,
+#ifdef MCPGUI_SUPPORT
+            PRIMS_MCPGUI_FUNCS,
 #endif
             PRIMS_REGEX_FUNCS,
             PRIMS_INTERNAL_FUNCS,
@@ -1224,7 +1225,7 @@ prog_clean(struct frame *fr)
     if (fr->rndbuf)
         free(fr->rndbuf);
 
-#ifdef MCP_SUPPORT
+#ifdef MCPGUI_SUPPORT
     muf_dlog_purge(fr);
 #endif
 

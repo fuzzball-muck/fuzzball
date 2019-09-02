@@ -81,8 +81,8 @@ const char *compile_options =
 #ifdef MEMORY_CLEANUP
     "MEMCLEANUP "
 #endif
-#ifdef MCP_SUPPORT
-    "MCP "
+#ifdef MCPGUI_SUPPORT
+    "MCPGUI "
 #endif
 #ifdef SPAWN_HOST_RESOLVER
     "RESOLVER "
@@ -1054,7 +1054,6 @@ process_command(int descr, dbref player, const char *command)
                     case 'M':
                         /* @mcpedit, @mcpprogram, @memory, @mpitops, @muftops */
                         switch (command[2]) {
-#ifdef MCP_SUPPORT
                             case 'c':
                             case 'C':
                                 if (string_prefix("@mcpedit", command)) {
@@ -1072,7 +1071,6 @@ process_command(int descr, dbref player, const char *command)
                                     do_mcpprogram(descr, player, arg1, arg2);
                                     break;
                                 }
-#endif
 #ifndef NO_MEMORY_COMMAND
                             case 'e':
                             case 'E':

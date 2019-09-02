@@ -28,9 +28,7 @@
 #include "interp.h"
 #include "log.h"
 #include "match.h"
-#ifdef MCP_SUPPORT
 #include "mcp.h"
-#endif
 #include "props.h"
 #include "timequeue.h"
 #include "tune.h"
@@ -83,9 +81,9 @@ const char *base_inst[] = {
     "CATCH", "CATCH_DETAILED", PRIMS_CONNECTS_NAMES, PRIMS_DB_NAMES,
     PRIMS_MATH_NAMES, PRIMS_MISC_NAMES, PRIMS_PROPS_NAMES, PRIMS_STACK_NAMES,
     PRIMS_STRINGS_NAMES, PRIMS_ARRAY_NAMES, PRIMS_FLOAT_NAMES,
-    PRIMS_ERROR_NAMES,
-#ifdef MCP_SUPPORT
-    PRIMS_MCP_NAMES,
+    PRIMS_ERROR_NAMES, PRIMS_MCP_NAMES,
+#ifdef MCPGUI_SUPPORT
+    PRIMS_MCPGUI_NAMES,
 #endif
     PRIMS_REGEX_NAMES, PRIMS_INTERNAL_NAMES
 };
@@ -433,10 +431,8 @@ do_abort_compile(COMPSTATE * cstat, const char *c)
     free_prog(cstat->program);
     cleanpubs(PROGRAM_PUBS(cstat->program));
     PROGRAM_SET_PUBS(cstat->program, NULL);
-#ifdef MCP_SUPPORT
     clean_mcpbinds(PROGRAM_MCPBINDS(cstat->program));
     PROGRAM_SET_MCPBINDS(cstat->program, NULL);
-#endif
     PROGRAM_SET_PROFTIME(cstat->program, 0, 0);
 }
 
@@ -778,7 +774,7 @@ include_internal_defs(COMPSTATE * cstat)
     insert_def(cstat, "default", "pop 1 if");
     insert_def(cstat, "endcase", "pop pop 1 until");
 
-#ifdef MCP_SUPPORT
+#ifdef MCPGUI_SUPPORT
     /* GUI dialog types */
     insert_def(cstat, "d_simple", "\"simple\"");
     insert_def(cstat, "d_tabbed", "\"tabbed\"");
@@ -872,10 +868,8 @@ uncompile_program(dbref i)
     free_prog(i);
     cleanpubs(PROGRAM_PUBS(i));
     PROGRAM_SET_PUBS(i, NULL);
-#ifdef MCP_SUPPORT
     clean_mcpbinds(PROGRAM_MCPBINDS(i));
     PROGRAM_SET_MCPBINDS(i, NULL);
-#endif
     PROGRAM_SET_PROFTIME(i, 0, 0);
     PROGRAM_SET_CODE(i, NULL);
     PROGRAM_SET_SIZ(i, 0);
@@ -2771,11 +2765,8 @@ do_compile(int descr, dbref player_in, dbref program_in, int force_err_display)
     free_prog(cstat.program);
     cleanpubs(PROGRAM_PUBS(cstat.program));
     PROGRAM_SET_PUBS(cstat.program, NULL);
-
-#ifdef MCP_SUPPORT
     clean_mcpbinds(PROGRAM_MCPBINDS(cstat.program));
     PROGRAM_SET_MCPBINDS(cstat.program, NULL);
-#endif
 
     PROGRAM_SET_PROFTIME(cstat.program, 0, 0);
     PROGRAM_SET_PROFSTART(cstat.program, time(NULL));

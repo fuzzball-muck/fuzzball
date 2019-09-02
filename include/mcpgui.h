@@ -1,6 +1,6 @@
 #include "config.h"
 
-#ifdef MCP_SUPPORT
+#ifdef MCPGUI_SUPPORT
 #ifndef MCPGUI_H
 #define MCPGUI_H
 
@@ -138,4 +138,4 @@ void muf_dlog_purge(struct frame *fr);
 void muf_dlog_remove(struct frame *fr, const char *dlogid);
 
 #endif /* !MCPGUI_H */
-#endif /* MCP_SUPPORT */
+#endif /* MCPGUI_SUPPORT */

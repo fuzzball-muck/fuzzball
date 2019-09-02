@@ -149,8 +149,8 @@
 /* if do_memory() in wiz.c gives you problems compiling, define this */
 #undef NO_MEMORY_COMMAND
 
-/* Enable functionality conforming to MUD Client Protocol (MCP). */
-#define MCP_SUPPORT
+/* Enable MCP-GUI functionality. */
+#define MCPGUI_SUPPORT
 
 /* Turn this on when you want MUD to set from root to some user_id */
 /* #define MUD_ID "MUCK" */

@@ -1,7 +1,3 @@
-#include "config.h"
-
-#ifdef MCP_SUPPORT
-
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -431,4 +427,3 @@ mcppkg_help_request(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 	}
     }
 }
-#endif

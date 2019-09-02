@@ -1156,6 +1156,7 @@ int valid_player(struct inst *oper);
 #include "p_props.h"
 #include "p_stack.h"
 #include "p_mcp.h"
+#include "p_mcpgui.h"
 #include "p_strings.h"
 #include "p_regex.h"
 #endif /* !INTERP_H */

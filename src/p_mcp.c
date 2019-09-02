@@ -4,7 +4,6 @@
 
 #include "config.h"
 
-#ifdef MCP_SUPPORT
 #include "array.h"
 #include "db.h"
 #include "fbstrings.h"
@@ -523,6 +522,7 @@ prim_mcp_send(PRIM_PROTOTYPE)
     CLEAR(oper2);
 }
 
+#ifdef MCPGUI_SUPPORT
 static void
 fbgui_muf_event_cb(GUI_EVENT_CB_ARGS)
 {
@@ -1159,4 +1159,4 @@ prim_gui_value_get(PRIM_PROTOTYPE)
     CLEAR(oper2);
     PushArrayRaw(nu);
 }
-#endif
+#endif /* MCPGUI_SUPPORT */
