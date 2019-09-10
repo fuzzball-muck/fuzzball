@@ -1792,7 +1792,7 @@ db_getprops(FILE * f, dbref obj, const char *pdir)
  *            this method, but I am unsure if it is strictly necessary.
  * @param p The prop to save to the file.
  */
-void
+static void
 db_putprop(FILE * f, const char *dir, PropPtr p)
 {
     char buf[BUFFER_LEN * 2];

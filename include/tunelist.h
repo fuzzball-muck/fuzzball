@@ -6,6 +6,7 @@
 
 #include "fbmuck.h"
 
+extern const char *str_tunetype[];
 const char *str_tunetype[] = {
     "(str)", "(time)", "(int)", "(ref)", "(bool)"
 };

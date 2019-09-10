@@ -3256,7 +3256,7 @@ if test "$pcreenable" = "1"; then
 	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for PCRE directory" >&5
 $as_echo_n "checking for PCRE directory... " >&6; }
 	if test -z "$pcredir"; then
-		for maindir in ~ /usr/local /usr/pkg /sw /opt/local /opt /usr
+		for maindir in ~ /usr/local /usr/local/opt /usr/pkg /sw /opt/local /opt /usr
 		do
 			for dir in $maindir $maindir/pcre
 			do
@@ -3368,7 +3368,7 @@ $as_echo_n "checking for SSL directory... " >&6; }
         	checkssldir "$withval"
 		else
 			sslenable=1
-			for maindir in ~ /usr/local /usr/pkg /var/ssl /sw /opt/local /opt /usr
+			for maindir in ~ /usr/local /usr/local/opt /usr/pkg /sw /opt/local /opt /usr /var/ssl
 			do
 				for dir in $maindir $maindir/openssl $maindir/ssl
 				do

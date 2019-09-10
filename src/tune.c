@@ -32,7 +32,7 @@
    it's a bit easier to change if needed.  If changed, don't forget to update the help files, too! */
 #define TP_INFO_CMD "info"
 
-const char *str_objecttype[] = {
+static const char *str_objecttype[] = {
     "room", "thing", "exit", "player", "program", "garbage", "any"
 };
 

@@ -184,7 +184,7 @@ extern int         tp_pause_min;
 extern const char *tp_pcreate_flags;
 extern const char *tp_pennies;
 extern int         tp_pennies_muf_mlev;
-const char *tp_penny;
+extern const char *tp_penny;
 extern int         tp_penny_rate;
 extern bool        tp_periodic_program_purge;
 extern int         tp_player_name_limit;

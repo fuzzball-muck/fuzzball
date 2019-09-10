@@ -73,7 +73,7 @@ AC_ARG_WITH(pcre,
 if test "$pcreenable" = "1"; then
 	AC_MSG_CHECKING([for PCRE directory])
 	if test -z "$pcredir"; then
-		for maindir in ~ /usr/local /usr/pkg /sw /opt/local /opt /usr
+		for maindir in ~ /usr/local /usr/local/opt /usr/pkg /sw /opt/local /opt /usr
 		do
 			for dir in $maindir $maindir/pcre
 			do
@@ -133,7 +133,7 @@ AC_ARG_WITH(ssl,
         	checkssldir "$withval"
 		else
 			sslenable=1
-			for maindir in ~ /usr/local /usr/pkg /var/ssl /sw /opt/local /opt /usr
+			for maindir in ~ /usr/local /usr/local/opt /usr/pkg /sw /opt/local /opt /usr /var/ssl
 			do
 				for dir in $maindir $maindir/openssl $maindir/ssl
 				do
