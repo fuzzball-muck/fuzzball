@@ -473,7 +473,7 @@ prim_fork(PRIM_PROTOTYPE)
 
     /* child process gets a 0 returned on the stack */
     result = 0;
-    push(tmpfr->argument.st, &(tmpfr->argument.top), PROG_INTEGER, MIPSCAST & result);
+    push(tmpfr->argument.st, &(tmpfr->argument.top), PROG_INTEGER, &result);
 
     result = add_muf_delay_event(0, fr->descr, player, NOTHING, NOTHING, program,
 				 tmpfr, "BACKGROUND");

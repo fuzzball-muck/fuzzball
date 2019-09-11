@@ -655,7 +655,7 @@ muf_event_process(void)
 		    copyinst(&ev->data, &(proc->fr->argument.st[proc->fr->argument.top]));
 		    proc->fr->argument.top++;
 		    push(proc->fr->argument.st, &(proc->fr->argument.top),
-			 PROG_STRING, MIPSCAST alloc_prog_string(ev->event));
+			 PROG_STRING, alloc_prog_string(ev->event));
 
 		    interp_loop(proc->player, proc->prog, proc->fr, 0);
 

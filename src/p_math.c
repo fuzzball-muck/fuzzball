@@ -67,9 +67,9 @@ prim_add(PRIM_PROTOTYPE)
     CLEAR(oper1);
     CLEAR(oper2);
     if (tmp == PROG_FLOAT)
-	push(arg, top, tmp, MIPSCAST & fresult);
+	push(arg, top, tmp, &fresult);
     else
-	push(arg, top, tmp, MIPSCAST & result);
+	push(arg, top, tmp, &result);
 }
 
 void
@@ -99,9 +99,9 @@ prim_subtract(PRIM_PROTOTYPE)
     CLEAR(oper1);
     CLEAR(oper2);
     if (tmp == PROG_FLOAT)
-	push(arg, top, tmp, MIPSCAST & fresult);
+	push(arg, top, tmp, &fresult);
     else
-	push(arg, top, tmp, MIPSCAST & result);
+	push(arg, top, tmp, &result);
 }
 
 void
@@ -171,9 +171,9 @@ prim_multiply(PRIM_PROTOTYPE)
     CLEAR(oper1);
     CLEAR(oper2);
     if (tmp == PROG_FLOAT)
-	push(arg, top, tmp, MIPSCAST & fresult);
+	push(arg, top, tmp, &fresult);
     else
-	push(arg, top, tmp, MIPSCAST & result);
+	push(arg, top, tmp, &result);
 }
 
 void
@@ -215,9 +215,9 @@ prim_divide(PRIM_PROTOTYPE)
     CLEAR(oper1);
     CLEAR(oper2);
     if (tmp == PROG_FLOAT)
-	push(arg, top, tmp, MIPSCAST & fresult);
+	push(arg, top, tmp, &fresult);
     else
-	push(arg, top, tmp, MIPSCAST & result);
+	push(arg, top, tmp, &result);
 }
 
 void
@@ -239,7 +239,7 @@ prim_mod(PRIM_PROTOTYPE)
     tmp = oper2->type;
     CLEAR(oper1);
     CLEAR(oper2);
-    push(arg, top, tmp, MIPSCAST & result);
+    push(arg, top, tmp, &result);
 }
 
 void

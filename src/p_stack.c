@@ -236,7 +236,7 @@ prim_var(PRIM_PROTOTYPE)
 	abort_interp("Non-integer argument.");
     result = oper1->data.number;
     CLEAR(oper1);
-    push(arg, top, PROG_VAR, MIPSCAST & result);
+    push(arg, top, PROG_VAR, &result);
 }
 
 void
@@ -248,7 +248,7 @@ prim_localvar(PRIM_PROTOTYPE)
 	abort_interp("Non-integer argument.");
     result = oper1->data.number;
     CLEAR(oper1);
-    push(arg, top, PROG_LVAR, MIPSCAST & result);
+    push(arg, top, PROG_LVAR, &result);
 }
 
 void
@@ -903,9 +903,9 @@ prim_interp(PRIM_PROTOTYPE)
 
     if (rv) {
 	if (rv->type < PROG_STRING) {
-	    push(arg, top, rv->type, MIPSCAST(&rv->data.number));
+	    push(arg, top, rv->type, &rv->data.number);
 	} else {
-	    push(arg, top, rv->type, MIPSCAST(rv->data.string));
+	    push(arg, top, rv->type, rv->data.string);
 	}
     } else {
 	PushNullStr;

@@ -207,10 +207,6 @@
 /* System configuration stuff... Figure out who and what we are.  */
 /******************************************************************/
 
-/*
- * Try and figure out what we are.
- */
-
 #ifdef __linux__
 # define SYSV
 #endif

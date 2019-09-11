@@ -17,22 +17,6 @@
 #include "fbstrings.h"
 #include "inst.h"
 
-/*
- * Some icky machine/compiler #defines. --jim
- * I think we can get rid of them though.  TODO!  --mainecoon
- *
- * @TODO Get rid of these or move 'em to one of the config files
- */
-#ifdef MIPS
-typedef char *voidptr;
-
-#define MIPSCAST (char *)
-#else
-typedef void *voidptr;
-
-#define MIPSCAST
-#endif /* !MIPS */
-
 /**
  * This is used to free memory for the given instruction.
  *
@@ -319,50 +303,6 @@ struct publics {
     struct publics *next;   /* Next item on the linked list */
 };
 
-/*
- * @TODO abort_loop and abort_loop_hard should be relocated to interp.c
- *       because they wrap do_abort_loop which is a static in interp.c
- */
-
-/**
- * Handles an abort / exception in the interpreter loop, supporting try/catch
- *
- * This will either issue a 'break' if we are in a try/catch, or it will
- * return 0
- *
- * @private
- * @param S the message for aborting
- * @param C1 instruction to clear or NULL
- * @param C2 instruction to clear or NULL
- */
-#define abort_loop(S, C1, C2) \
-{ \
-    do_abort_loop(player, program, (S), fr, pc, atop, stop, (C1), (C2)); \
-    if (fr && fr->trys.top) \
-        break; \
-    else \
-        return 0; \
-}
-
-/**
- * Handles an abort / exception in the interpreter loop, ignoring try/catch
- *
- * This will cause the function to return 0 regardless of try/catch.
- *
- * @private
- * @param S the message for aborting
- * @param C1 instruction to clear or NULL
- * @param C2 instruction to clear or NULL
- */
-#define abort_loop_hard(S, C1, C2) \
-{ \
-    int tmptop = 0; \
-    if (fr) { tmptop = fr->trys.top; fr->trys.top = 0; } \
-    do_abort_loop(player, program, (S), fr, pc, atop, stop, (C1), (C2)); \
-    if (fr) fr->trys.top = tmptop; \
-    return 0; \
-}
-
 #ifdef DEBUG
 /**
  * If DEBUG is set, we'll do a little extra tracking of the pop.
@@ -407,17 +347,15 @@ struct publics {
  *
  * @see abort_interp
  *
- * @TODO Why the do .. while(0) ? why not just curly brackets?
- *
  * @param N integer number of arguments to check for
  */
 #define EXPECT_READ_STACK(N) \
-do { \
+{ \
     int depth = (N); \
     if (*top < depth) { \
         abort_interp("Stack underflow."); \
     } \
-} while (0)
+}
 
 /**
  * This automates a check to make sure there are at least N items on the stack
@@ -426,8 +364,6 @@ do { \
  * are going to alter the top N items on the stack.
  *
  * @see abort_interp
- *
- * @TODO Why the do .. while(0) ? why not just curly brackets?
  *
  * @param N integer number of arguments to push on the stack.
  */
@@ -521,7 +457,7 @@ do { \
  *
  * @param x a dbref to push onto the stack.
  */
-#define PushObject(x)   push(arg, top, PROG_OBJECT, MIPSCAST &x)
+#define PushObject(x)   push(arg, top, PROG_OBJECT, &x)
 
 /**
  * Push an integer 'x' onto the stack
@@ -530,7 +466,7 @@ do { \
  *
  * @param x a integer to push onto the stack.
  */
-#define PushInt(x)      push(arg, top, PROG_INTEGER, MIPSCAST &x)
+#define PushInt(x)      push(arg, top, PROG_INTEGER, &x)
 
 /**
  * Push a float 'x' onto the stack
@@ -539,7 +475,7 @@ do { \
  *
  * @param x a float to push onto the stack.
  */
-#define PushFloat(x)    push(arg, top, PROG_FLOAT, MIPSCAST &x)
+#define PushFloat(x)    push(arg, top, PROG_FLOAT, &x)
 
 /**
  * Push a parsed lock 'x' onto the stack
@@ -548,14 +484,14 @@ do { \
  *
  * @param x a lock to push onto the stack.
  */
-#define PushLock(x)     push(arg, top, PROG_LOCK, MIPSCAST copy_bool(x))
+#define PushLock(x)     push(arg, top, PROG_LOCK, copy_bool(x))
 
 /**
  * Push a maker onto the stack
  *
  * Assumes 'arg' and 'top' are defined.
  */
-#define PushMark()      push(arg, top, PROG_MARK, MIPSCAST 0)
+#define PushMark()      push(arg, top, PROG_MARK, 0)
 
 /**
  * Push a string 'x' WITHOUT COPYING IT onto the stack
@@ -564,7 +500,7 @@ do { \
  *
  * @param x a string to push onto the stack.
  */
-#define PushStrRaw(x)   push(arg, top, PROG_STRING, MIPSCAST x)
+#define PushStrRaw(x)   push(arg, top, PROG_STRING, x)
 
 /**
  * COPIES and pushes a string 'x' onto the stack
@@ -587,7 +523,7 @@ do { \
  *
  * @param x the array to push onto the stack
  */
-#define PushArrayRaw(x) push(arg, top, PROG_ARRAY, MIPSCAST x)
+#define PushArrayRaw(x) push(arg, top, PROG_ARRAY, x)
 
 /**
  * Copies and pushes an instruction 'x' onto the stack.
@@ -1056,7 +992,7 @@ void purge_try_pool(void);
  * @param type the type, PROG_FLOAT, PROG_STRING, etc.
  * @param res the value to push
  */
-void push(struct inst *stack, int *top, int type, voidptr res);
+void push(struct inst *stack, int *top, int type, void *res);
 
 /**
  * 'Push' an empty forvars struct into forstack and return it.

@@ -678,12 +678,12 @@ push_arg(dbref player, struct frame *fr, const char *arg)
     if (number(arg)) {
         /* push a number */
         num = atoi(arg);
-        push(fr->argument.st, &fr->argument.top, PROG_INTEGER, MIPSCAST & num);
+        push(fr->argument.st, &fr->argument.top, PROG_INTEGER, &num);
         notify_nolisten(player, "Integer pushed.", 1);
     } else if (ifloat(arg)) {
         /* push a float */
         inum = atof(arg);
-        push(fr->argument.st, &fr->argument.top, PROG_FLOAT, MIPSCAST & inum);
+        push(fr->argument.st, &fr->argument.top, PROG_FLOAT, &inum);
         notify_nolisten(player, "Float pushed.", 1);
     } else if (*arg == NUMBER_TOKEN) {
         /* push a dbref */
@@ -693,7 +693,7 @@ push_arg(dbref player, struct frame *fr, const char *arg)
         }
 
         num = atoi(arg + 1);
-        push(fr->argument.st, &fr->argument.top, PROG_OBJECT, MIPSCAST & num);
+        push(fr->argument.st, &fr->argument.top, PROG_OBJECT, &num);
         notify_nolisten(player, "Dbref pushed.", 1);
     } else if (*arg == '"') {
         /* push a string */
@@ -715,7 +715,7 @@ push_arg(dbref player, struct frame *fr, const char *arg)
         }
 
         *ptr = '\0';
-        push(fr->argument.st, &fr->argument.top, PROG_STRING, MIPSCAST alloc_prog_string(buf));
+        push(fr->argument.st, &fr->argument.top, PROG_STRING, alloc_prog_string(buf));
         notify_nolisten(player, "String pushed.", 1);
     } else {
         /*
@@ -760,13 +760,13 @@ push_arg(dbref player, struct frame *fr, const char *arg)
         }
 
         if (lflag) {
-            push(fr->argument.st, &fr->argument.top, PROG_LVAR, MIPSCAST & num);
+            push(fr->argument.st, &fr->argument.top, PROG_LVAR, &num);
             notify_nolisten(player, "Local variable pushed.", 1);
         } else if (sflag) {
-            push(fr->argument.st, &fr->argument.top, PROG_SVAR, MIPSCAST & num);
+            push(fr->argument.st, &fr->argument.top, PROG_SVAR, &num);
             notify_nolisten(player, "Scoped variable pushed.", 1);
         } else {
-            push(fr->argument.st, &fr->argument.top, PROG_VAR, MIPSCAST & num);
+            push(fr->argument.st, &fr->argument.top, PROG_VAR, &num);
             notify_nolisten(player, "Global variable pushed.", 1);
         }
     }

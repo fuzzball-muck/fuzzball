@@ -307,12 +307,10 @@ scopedvar_poplevel(struct frame *fr)
  * Normally, I'm opposed to these little single line functions.  But this
  * is a mirror to localvar_freeall so we'll keep it for consistency.
  *
- * @TODO Make this an inline
- *
  * @private
  * @param fr the frame to free scoped variables from.
  */
-static void
+static inline void
 scopedvar_freeall(struct frame *fr)
 {
     while (scopedvar_poplevel(fr)) ;
@@ -673,85 +671,30 @@ interp(int descr, dbref player, dbref location, dbref program,
         fr = malloc(sizeof(struct frame));
     }
 
-    /*
-     * @TODO It would be way safer to memset(fr, 0, sizeof(struct frame))
-     *       especially since we re-use frames.  We could then get rid
-     *       of most of these things that do whatever = 0;
-     */
-    fr->next = NULL;
+    memset(fr, 0, sizeof(struct frame));
     fr->pid = forced_pid ? forced_pid : top_pid++;
     fr->descr = descr;
     fr->supplicant = NOTHING;
     fr->multitask = nosleeps;
     fr->perms = whichperms;
-    fr->already_created = 0;
     fr->been_background = (nosleeps == 2);
     fr->trig = source;
     fr->cmd = (!*match_cmdname) ? 0 : alloc_prog_string(match_cmdname);
-    fr->events = NULL;
-    fr->timercount = 0;
     fr->started = time(NULL);
-    fr->instcnt = 0;
-    fr->skip_declare = 0;
-    fr->wantsblanks = 0;
-    fr->pinning = 0;
     fr->caller.top = 1;
     fr->caller.st[0] = source;
     fr->caller.st[1] = program;
 
     fr->system.top = 1;
-    fr->system.st[0].progref = 0;
-    fr->system.st[0].offset = 0;
 
-    fr->waitees = NULL;
-    fr->waiters = NULL;
-
-    fr->fors.top = 0;
-    fr->fors.st = NULL;
-    fr->trys.top = 0;
-    fr->trys.st = NULL;
-
-    fr->errorstr = NULL;
-    fr->errorinst = NULL;
     fr->errorprog = NOTHING;
-    fr->errorline = 0;
-
-    fr->rndbuf = NULL;
-    fr->dlogids = NULL;
-
-    fr->argument.top = 0;
     fr->pc = PROGRAM_START(program);
     fr->writeonly = ((source == -1) || (Typeof(source) == TYPE_ROOM) ||
 		     ((Typeof(source) == TYPE_PLAYER) && (!PLAYER_DESCRCOUNT(source))) ||
                      (FLAGS(player) & READMODE));
-    fr->level = 0;
-    fr->error.is_flags = 0;
 
-    /* set basic local variables */
-
-    fr->svars = NULL;
-    fr->lvars = NULL;
-
-    for (int i = 0; i < MAX_VAR; i++) {
-        fr->variables[i].type = PROG_INTEGER;
-        fr->variables[i].data.number = 0;
-    }
-
-    fr->brkpt.force_debugging = 0;
-    fr->brkpt.debugging = 0;
-    fr->brkpt.bypass = 0;
-    fr->brkpt.isread = 0;
-    fr->brkpt.showstack = 0;
-    fr->brkpt.dosyspop = 0;
-    fr->brkpt.lastline = 0;
-    fr->brkpt.lastpc = 0;
-    fr->brkpt.lastlisted = 0;
-    fr->brkpt.lastcmd = NULL;
     fr->brkpt.breaknum = -1;
-
     fr->brkpt.lastproglisted = NOTHING;
-    fr->brkpt.proglines = NULL;
-
     fr->brkpt.count = 1;
     fr->brkpt.temp[0] = 1;
     fr->brkpt.level[0] = -1;
@@ -761,10 +704,10 @@ interp(int descr, dbref player, dbref location, dbref program,
     fr->brkpt.pccount[0] = -2;
     fr->brkpt.prog[0] = program;
 
-    fr->proftime.tv_sec = 0;
-    fr->proftime.tv_usec = 0;
-    fr->totaltime.tv_sec = 0;
-    fr->totaltime.tv_usec = 0;
+    for (int i = 0; i < MAX_VAR; i++) {
+        fr->variables[i].type = PROG_INTEGER;
+        fr->variables[i].data.number = 0;
+    }
 
     fr->variables[0].type = PROG_OBJECT;
     fr->variables[0].data.objref = player;
@@ -787,7 +730,7 @@ interp(int descr, dbref player, dbref location, dbref program,
 
     PROGRAM_INC_INSTANCES(program);
     push(fr->argument.st, &(fr->argument.top), PROG_STRING, *match_args ?
-         MIPSCAST alloc_prog_string(match_args) : 0);
+         alloc_prog_string(match_args) : 0);
 
     return fr;
 }
@@ -798,16 +741,6 @@ interp(int descr, dbref player, dbref location, dbref program,
  *      aborting.
  */
 static int err;
-
-/**
- * @var As far as I can tell, this is set to 0 and never used anywhere.
- *      There is a similar already_created that is part of the frame struct,
- *      and I suspect this used to be used by something but no longer is.
- *      (tanabi)
- *
- * @TODO Get rid of this after verifying it has no use.
- */
-static int already_created;
 
 /**
  * Make a copy of a given stack of forvars structures
@@ -885,12 +818,7 @@ push_for(struct forvars *forstack)
         for_pool = nu->next;
     }
 
-    /*
-     * @TODO I would do a memset(nu, 0, sizeof(struct forvars) here for
-     *       sanity sake.  This is only used in one place, has never been
-     *       a problem, and arguably the memset is a waste of CPU cycles.
-     *       But that's how I would do it!  (tanabi)
-     */
+    memset(nu, 0, sizeof(struct forvars));
     nu->next = forstack;
     return nu;
 }
@@ -1553,30 +1481,6 @@ interp_err(dbref player, dbref program, struct inst *pc,
 }
 
 /**
- * Do book-keeping associated with entering interpreter loop.
- *
- * @TODO: This is only called one place, and is 3 lines of code with no
- *        branching or complexity.  Why is this its own function?  It just
- *        obfuscates what is going on and gives a minor performance hit for
- *        fun.  Let's just move this code into interp_loop.
- */
-static void
-record_enter_interp(struct frame *fr) {
-    /*
-     * Increase frame level, while also incrementing the interpreter depth
-     * count.
-     *
-     * Frame level is quite similar to nested_interp_loop_count and is used
-     * to prevent runaway situations.
-     */
-    fr->level = ++interp_depth;
-
-    /* Update active lists */
-    fr->prev_array_active_list = stk_array_active_list;
-    stk_array_active_list = &fr->array_active_list;
-}
-
-/**
  * Do book-keeping associated with leaving the interpreter loop
  *
  * This is called by several different points in the interp_oop
@@ -1686,6 +1590,45 @@ do_abort_loop(dbref player, dbref program, const char *msg,
 }
 
 /**
+ * Handles an abort / exception in the interpreter loop, supporting try/catch
+ *
+ * This will either issue a 'break' if we are in a try/catch, or it will
+ * return 0
+ *
+ * @private
+ * @param S the message for aborting
+ * @param C1 instruction to clear or NULL
+ * @param C2 instruction to clear or NULL
+ */
+#define abort_loop(S, C1, C2) \
+{ \
+    do_abort_loop(player, program, (S), fr, pc, atop, stop, (C1), (C2)); \
+    if (fr && fr->trys.top) \
+        break; \
+    else \
+        return 0; \
+}
+
+/**
+ * Handles an abort / exception in the interpreter loop, ignoring try/catch
+ *
+ * This will cause the function to return 0 regardless of try/catch.
+ *
+ * @private
+ * @param S the message for aborting
+ * @param C1 instruction to clear or NULL
+ * @param C2 instruction to clear or NULL
+ */
+#define abort_loop_hard(S, C1, C2) \
+{ \
+    int tmptop = 0; \
+    if (fr) { tmptop = fr->trys.top; fr->trys.top = 0; } \
+    do_abort_loop(player, program, (S), fr, pc, atop, stop, (C1), (C2)); \
+    if (fr) fr->trys.top = tmptop; \
+    return 0; \
+}
+
+/**
  * The MUF interpreter loop - run a program until it completes or yields
  *
  * This is where the magic happens.  There's a lot of nuances here that are
@@ -1732,7 +1675,18 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
         ++nested_interp_loop_count;
     }
 
-    record_enter_interp(fr);
+    /*
+     * Increase frame level, while also incrementing the interpreter depth
+     * count.
+     *
+     * Frame level is quite similar to nested_interp_loop_count and is used
+     * to prevent runaway situations.
+     */
+    fr->level = ++interp_depth;
+
+    /* Update active lists */
+    fr->prev_array_active_list = stk_array_active_list;
+    stk_array_active_list = &fr->array_active_list;
 
     /* load everything into local stuff */
     pc = fr->pc;
@@ -1741,7 +1695,6 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
     arg = fr->argument.st;
     sys = fr->system.st;
     writeonly = fr->writeonly;
-    already_created = 0;
     fr->brkpt.isread = 0;
 
     /* Try to compile it if we need to */
@@ -2686,7 +2639,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
  * @param res the value to push
  */
 void
-push(struct inst *stack, int *top, int type, voidptr res)
+push(struct inst *stack, int *top, int type, void *res)
 {
     stack[*top].type = type;
 
