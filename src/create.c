@@ -198,7 +198,8 @@ do_link(int descr, dbref player, const char *thing_name, const char *dest_name)
 
             if (ndest == 0) {
                 notify(player, "No destinations linked.");
-                SETVALUE(player, GETVALUE(player) + tp_link_cost);
+                if(!Wizard(OWNER(thing)))
+                    SETVALUE(player, GETVALUE(player) + tp_link_cost);
                 DBDIRTY(player);
                 break;
             }
