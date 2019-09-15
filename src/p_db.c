@@ -98,8 +98,8 @@ prim_addpennies(PRIM_PROTOTYPE)
 	if (mlev < 4)
 	    abort_interp("Permission denied.");
 	result = GETVALUE(ref) + oper1->data.number;
-	if (result < 1)
-	    abort_interp("Result must be positive.");
+	if (result < 0)
+	    abort_interp("Result must not be negative.");
 	SETVALUE(ref, (GETVALUE(ref) + oper1->data.number));
 	DBDIRTY(ref);
     } else {

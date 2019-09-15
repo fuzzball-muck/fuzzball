@@ -325,7 +325,7 @@ create_thing(dbref player, const char *name, dbref location)
     PUSH(newthing, CONTENTS(location));
 
     EXITS(newthing) = NOTHING;
-    SETVALUE(newthing, 1);
+    SETVALUE(newthing, 0);
 
     ALLOC_THING_SP(newthing);
 
