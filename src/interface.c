@@ -3639,7 +3639,7 @@ configure_new_ssl_ctx(void)
     }
 
     if (ssl_status_ok) {
-        if (!set_ssl_ctx_min_version(new_ssl_ctx, tp_ssl_min_protocol_version)) {
+        if (!set_ssl_ctx_versions(new_ssl_ctx, tp_ssl_min_protocol_version)) {
             log_status("Could not set minimum SSL protocol version.");
             fprintf(stderr, "Could not set minimum SSL protocol version.\n");
             ssl_status_ok = 0;

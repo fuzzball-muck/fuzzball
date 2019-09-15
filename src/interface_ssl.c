@@ -35,20 +35,37 @@ ssl_protocol_from_string(const char *value)
 }
 
 /**
- * Sets the minimum SSL protocol version given a version string
+ * Sets the minimum and maximum SSL protocol version given a version string
  *
  * If None, no change will be made to the SSL context.  If version string is
  * invalid or unsupported in this build (see SSL_PROTOCOLS), an error is
  * logged to offer guidance on fixing the problem.
+ *
+ * This will also set the maximum SSL protocol version to 1.2 if FORCE_TLS12
+ * is set.
  *
  * @param ssl_ctx      SSL context
  * @param min_version  Name of minimum required SSL protocol version, or "None"
  * @returns boolean true if successful, false otherwise
  */
 int
-set_ssl_ctx_min_version(SSL_CTX * ssl_ctx, const char *min_version)
+set_ssl_ctx_versions(SSL_CTX * ssl_ctx, const char *min_version)
 {
     int min_version_num = ssl_protocol_from_string(min_version);
+
+#ifdef FORCE_TLS12
+    if (min_version_num > TLS1_2_VERSION) {
+        min_version_num = TLS1_2_VERSION;
+    }
+#   if defined(SSL_CTX_set_max_proto_version)
+        /*
+         * This probably does the same thing as the above if statement, but
+         * I would rather be slightly redundant and certain than leave
+         * things to chance. (tanabi)
+         */
+        SSL_CTX_set_max_proto_version(ssl_ctx, TLS1_2_VERSION);
+#   endif
+#endif
 
     switch (min_version_num) {
         case 0:
@@ -97,8 +114,11 @@ set_ssl_ctx_min_version(SSL_CTX * ssl_ctx, const char *min_version)
         if (min_version_num > FB_TLS1_1_VERSION)
             SSL_CTX_set_options(ssl_ctx, SSL_OP_NO_TLSv1_1);
 
+#ifndef FORCE_TLS12
+        /* We never want to turn this off if we are forcing TLS 1.2 */
         if (min_version_num > FB_TLS1_2_VERSION)
             SSL_CTX_set_options(ssl_ctx, SSL_OP_NO_TLSv1_2);
+#endif
 
         /*
          * No need to add newer versions as OpenSSL >= 1.1.0 supports the
