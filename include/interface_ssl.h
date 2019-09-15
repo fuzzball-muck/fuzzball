@@ -156,17 +156,20 @@ static const ssl_logging_t ssl_logging_stream = SSL_LOGGING_NONE;
 int ssl_protocol_from_string(const char *);
 
 /**
- * Sets the minimum SSL protocol version given a version string
+ * Sets the minimum and maximum SSL protocol version given a version string
  *
  * If None, no change will be made to the SSL context.  If version string is
  * invalid or unsupported in this build (see SSL_PROTOCOLS), an error is
  * logged to offer guidance on fixing the problem.
  *
+ * This will also set the maximum SSL protocol version to 1.2 if FORCE_TLS12
+ * is set.
+ *
  * @param ssl_ctx      SSL context
  * @param min_version  Name of minimum required SSL protocol version, or "None"
  * @returns boolean true if successful, false otherwise
  */
-int set_ssl_ctx_min_version(SSL_CTX *, const char *);
+int set_ssl_ctx_versions(SSL_CTX *, const char *);
 
 /**
  * Checks for the last SSL error, if any, recording it to the log
