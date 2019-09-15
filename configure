@@ -686,6 +686,7 @@ with_ssl
 enable_memory_cleanup
 enable_memprof
 enable_debug
+enable_force_tls12
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1308,6 +1309,7 @@ Optional Features:
   --enable-memory-cleanup        free all memory on exit (for memory debugging tools)
   --enable-memprof           enable memory leak detection and profiling (slow)
   --enable-debug             enable developer assertions
+  --enable-force-tls12              force TLS 1.2
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -3541,6 +3543,18 @@ if test "${enable_debug+set}" = set; then :
 if test "$enableval" = yes; then
 
 $as_echo "#define DEBUG /**/" >>confdefs.h
+
+fi
+
+fi
+
+
+# Check whether --enable-force-tls12 was given.
+if test "${enable_force_tls12+set}" = set; then :
+  enableval=$enable_force_tls12;
+if test "$enableval" = yes; then
+
+$as_echo "#define FORCE_TLS12 /**/" >>confdefs.h
 
 fi
 

@@ -200,6 +200,14 @@ if test "$enableval" = yes; then
 fi
 ])
 
+AC_ARG_ENABLE(force-tls12,
+[  --enable-force-tls12              force TLS 1.2],
+[
+if test "$enableval" = yes; then
+	AC_DEFINE(FORCE_TLS12, [], [Force TLS 1.2.])
+fi
+])
+
 dnl
 dnl Header files
 dnl
