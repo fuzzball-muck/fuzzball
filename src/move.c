@@ -27,6 +27,7 @@
 #include "props.h"
 #include "timequeue.h"
 #include "tune.h"
+#include "fbmath.h"
 
 static int donelook = 0;
 
@@ -852,7 +853,7 @@ recycle(int descr, dbref player, dbref thing)
 	break;
     case TYPE_THING:
 	if (!Wizard(OWNER(thing)))
-	    SETVALUE(OWNER(thing), GETVALUE(OWNER(thing)) + GETVALUE(thing));
+	    SETVALUE(OWNER(thing), GETVALUE(OWNER(thing)) + MAX(0,GETVALUE(thing)));
 	DBDIRTY(OWNER(thing));
 	for (first = EXITS(thing); first != NOTHING; first = rest) {
 	    rest = NEXTOBJ(first);
