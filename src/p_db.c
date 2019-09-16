@@ -97,9 +97,6 @@ prim_addpennies(PRIM_PROTOTYPE)
     } else if (Typeof(ref) == TYPE_THING) {
 	if (mlev < 4)
 	    abort_interp("Permission denied.");
-	result = GETVALUE(ref) + oper1->data.number;
-	if (result < 0)
-	    abort_interp("Result must not be negative.");
 	SETVALUE(ref, (GETVALUE(ref) + oper1->data.number));
 	DBDIRTY(ref);
     } else {
