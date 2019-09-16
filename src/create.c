@@ -198,7 +198,8 @@ do_link(int descr, dbref player, const char *thing_name, const char *dest_name)
 
             if (ndest == 0) {
                 notify(player, "No destinations linked.");
-                SETVALUE(player, GETVALUE(player) + tp_link_cost);
+                if(!Wizard(OWNER(thing)))
+                    SETVALUE(player, GETVALUE(player) + tp_link_cost);
                 DBDIRTY(player);
                 break;
             }
@@ -657,7 +658,7 @@ do_clone(int descr, dbref player, const char *name, const char *rname)
     /* copy all properties */
     copy_props(player, thing, clonedthing, "");
 
-    SETVALUE(clonedthing, MIN(GETVALUE(thing), tp_max_object_endowment));
+    SETVALUE(clonedthing, MAX(0,MIN(GETVALUE(thing), tp_max_object_endowment)));
 
     /* FIXME: should we clone attached actions? */
     EXITS(clonedthing) = NOTHING;
@@ -729,7 +730,7 @@ do_create(dbref player, char *name, char *acost)
     }
 
     thing = create_thing(player, name, player); 
-    SETVALUE(thing, MIN(OBJECT_ENDOWMENT(cost), tp_max_object_endowment));
+    SETVALUE(thing, MAX(0,MIN(OBJECT_ENDOWMENT(cost), tp_max_object_endowment)));
 
     unparse_object(player, thing, unparse_buf, sizeof(unparse_buf));
     notifyf(player, "Object %s created.", unparse_buf);
