@@ -175,21 +175,21 @@ do_link(int descr, dbref player, const char *thing_name, const char *dest_name)
                     return;
                 }
             } else {
+                if (!Builder(player)) {
+                    notify(player, "Only authorized builders may seize exits.");
+                    return;
+                }
                 if (!payfor(player, tp_link_cost + tp_exit_cost)) {
                     notifyf(player, "It costs %d %s to link this exit.",
                             (tp_link_cost + tp_exit_cost),
                             (tp_link_cost + tp_exit_cost == 1) ? tp_penny : tp_pennies);
                     return;
-                } else if (!Builder(player)) {
-                    notify(player, "Only authorized builders may seize exits.");
-                    return;
-                } else {
-                    /* pay the owner for his loss */
-                    dbref owner = OWNER(thing);
-
-                    SETVALUE(owner, GETVALUE(owner) + tp_exit_cost);
-                    DBDIRTY(owner);
                 }
+                /* pay the owner for his loss */
+                dbref owner = OWNER(thing);
+
+                SETVALUE(owner, GETVALUE(owner) + tp_exit_cost);
+                DBDIRTY(owner);
             }
 
             /* link has been validated and paid for; do it */
