@@ -447,7 +447,7 @@ do_chown(int descr, dbref player, const char *name, const char *newowner)
 	    notify(player, "Only authorized builders may seize exits.");
 	    return;
 	}
-	if (!payfor(player, tp_link_cost + tp_exit_cost)) {
+	if (!payfor(player, tp_exit_cost)) {
 	    notifyf(player, "It costs %d %s to seize this exit.",
 		    tp_exit_cost,
 		    (tp_exit_cost == 1) ? tp_penny : tp_pennies);
