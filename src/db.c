@@ -2152,6 +2152,11 @@ register_object(dbref player, dbref location, const char *propdir, char *name,
     char unparse_buf[BUFFER_LEN], unparse_buf2[BUFFER_LEN];
     char *strval;
 
+    if (!is_valid_propname(name)) {
+        notifyf_nolisten(player, "Registry name '%s' is not valid", name);
+        return;
+    }
+
     snprintf(buf, sizeof(buf), "%s/%s", propdir, name);
 
     if ((p = get_property(location, buf))) {
