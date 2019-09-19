@@ -1889,7 +1889,7 @@ parse_linkable_dest(int descr, dbref player, dbref exit, const char *dest_name)
         return NOTHING;
     }
 
-    if (!tp_teleport_to_player && Typeof(dobj) == TYPE_PLAYER) {
+    if (dobj != NIL && !tp_teleport_to_player && Typeof(dobj) == TYPE_PLAYER) {
         char unparse_buf[BUFFER_LEN];
         unparse_object(player, dobj, unparse_buf, sizeof(unparse_buf));
         notifyf(player, "You can't link to players.  Destination %s ignored.",
