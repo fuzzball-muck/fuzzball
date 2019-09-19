@@ -190,6 +190,8 @@ do_link(int descr, dbref player, const char *thing_name, const char *dest_name)
 
                 SETVALUE(owner, GETVALUE(owner) + tp_exit_cost);
                 DBDIRTY(owner);
+
+                notifyf_nolisten(player, "Claiming unlinked exits: %s", DEPRECATED_FEATURE);
             }
 
             /* link has been validated and paid for; do it */

@@ -15,6 +15,7 @@
 
 #include "config.h"
 
+#define DEPRECATED_FEATURE "This feature will be removed in the next version of Fuzzball."
 /**
  * Define to see if a module is enabled which is to say if the string
  * "module" is in the string "compile_options" using strstr.  This is a

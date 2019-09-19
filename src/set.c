@@ -300,6 +300,7 @@ do_relink(int descr, dbref player, const char *thing_name,
                     notify(player, "Only authorized builders may seize exits.");
                     return;
                 }
+                notifyf_nolisten(player, "Claiming unlinked exits: %s", DEPRECATED_FEATURE);
             }
 
             /* be anal: each and every new links destination has
@@ -456,6 +457,8 @@ do_chown(int descr, dbref player, const char *name, const char *newowner)
 	/* pay the owner for his loss */
 	SETVALUE(OWNER(thing), GETVALUE(OWNER(thing)) + tp_exit_cost);
 	DBDIRTY(OWNER(thing));
+
+        notifyf_nolisten(player, "Claiming unlinked exits: %s", DEPRECATED_FEATURE);
     }
 
     if (tp_realms_control && !Wizard(OWNER(player)) && TrueWizard(thing) &&
