@@ -2410,7 +2410,7 @@ prim_setlinks_array(PRIM_PROTOTYPE)
 	    array_data *val = array_getitem(arr, &idx);
 	    dbref where = val->data.objref;
 
-	    if ((where != HOME) && !valid_object(val)) {
+	    if ((where != HOME) && (where != NIL) && !valid_object(val)) {
 		CLEAR(&idx);
 		abort_interp("Invalid object. (2)");
 	    }
@@ -2422,6 +2422,9 @@ prim_setlinks_array(PRIM_PROTOTYPE)
 
 	    switch (Typeof(what)) {
 	    case TYPE_EXIT:
+                if (where == NIL)
+                    break;
+
 		switch (Typeof(where)) {
 		case TYPE_PLAYER:
 		case TYPE_ROOM:
