@@ -1611,6 +1611,7 @@ ok_object_name(const char *name, object_flag_type type)
         || !strcasecmp(name, "me")
         || !strcasecmp(name, "here")
         || !strcasecmp(name, "home")
+        || !strcasecmp(name, "nil")
         || (*tp_reserved_names && equalstr((char *) tp_reserved_names, (char *)name)
         ))
         return false;
