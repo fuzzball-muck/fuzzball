@@ -572,6 +572,8 @@ prim_copyobj(PRIM_PROTOTYPE)
 	newobj = new_object();
 	*DBFETCH(newobj) = *DBFETCH(ref);
 	copyobj(player, ref, newobj);
+        if (mlev < 3)
+          SETVALUE(newobj, 0);
 	CLEAR(oper1);
 	PushObject(newobj);
     }
