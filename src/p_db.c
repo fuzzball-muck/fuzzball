@@ -41,7 +41,7 @@ copyobj(dbref player, dbref old, dbref nu)
     NAME(nu) = alloc_string(NAME(old));
     if (Typeof(old) == TYPE_THING) {
 	ALLOC_THING_SP(nu);
-	THING_SET_HOME(nu, player);
+	THING_SET_HOME(nu, THING_HOME(old));
     }
     newp->properties = copy_prop(old);
     newp->exits = NOTHING;
