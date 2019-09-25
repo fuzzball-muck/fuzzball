@@ -41,8 +41,7 @@ copyobj(dbref player, dbref old, dbref nu)
     NAME(nu) = alloc_string(NAME(old));
     if (Typeof(old) == TYPE_THING) {
 	ALLOC_THING_SP(nu);
-	THING_SET_HOME(nu, player);
-	SETVALUE(nu, 1);
+	THING_SET_HOME(nu, THING_HOME(old));
     }
     newp->properties = copy_prop(old);
     newp->exits = NOTHING;
@@ -573,6 +572,8 @@ prim_copyobj(PRIM_PROTOTYPE)
 	newobj = new_object();
 	*DBFETCH(newobj) = *DBFETCH(ref);
 	copyobj(player, ref, newobj);
+        if (mlev < 3)
+          SETVALUE(newobj, 0);
 	CLEAR(oper1);
 	PushObject(newobj);
     }
