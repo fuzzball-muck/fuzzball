@@ -819,7 +819,11 @@ match_all_exits(struct match_data *md)
     strcpyn(match_cmdname, sizeof(match_cmdname), "\0");
 
     if ((loc = LOCATION(md->match_from)) != NOTHING)
+    {
+        if (FLAGS(loc) & YIELD)
+            blocking = 1;
         match_room_exits(loc, md);
+    }
 
     if (md->exact_match != NOTHING)
         md->block_equals = 1;
