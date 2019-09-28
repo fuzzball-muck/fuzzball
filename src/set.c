@@ -458,7 +458,9 @@ do_chown(int descr, dbref player, const char *name, const char *newowner)
 	SETVALUE(OWNER(thing), GETVALUE(OWNER(thing)) + tp_exit_cost);
 	DBDIRTY(OWNER(thing));
 
-        notifyf_nolisten(player, "Claiming unlinked exits: %s", DEPRECATED_FEATURE);
+        if (!Wizard(player)) {
+            notifyf_nolisten(player, "Claiming unlinked exits: %s", DEPRECATED_FEATURE);
+        }
     }
 
     if (tp_realms_control && !Wizard(OWNER(player)) && TrueWizard(thing) &&
