@@ -1886,7 +1886,8 @@ do_command(struct descriptor_data *d, char *command)
         return 0;
     } else if (tp_recognize_null_command && !strcasecmp(command, NULL_COMMAND)) {
         return 1;
-    } else if ((!strncmp(command, WHO_COMMAND, sizeof(WHO_COMMAND) - 1)) ||
+    } else if ((!tp_cmd_only_overrides &&
+               (!strncmp(command, WHO_COMMAND, sizeof(WHO_COMMAND) - 1))) ||
                (*command == OVERRIDE_TOKEN &&
                (!strncmp(command + 1, WHO_COMMAND, sizeof(WHO_COMMAND) - 1))
               )) {
