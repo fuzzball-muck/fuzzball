@@ -85,6 +85,7 @@ extern bool        tp_autolink_actions;
 extern const char *tp_autolook_cmd;
 extern int         tp_clean_interval;
 extern int         tp_cmd_log_threshold_msec;
+extern bool        tp_cmd_only_overrides;
 extern int         tp_command_burst_size;
 extern int         tp_command_time_msec;
 extern int         tp_commands_per_time;

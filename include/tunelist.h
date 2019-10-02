@@ -27,6 +27,7 @@ bool        tp_autolink_actions;
 const char *tp_autolook_cmd;
 int         tp_clean_interval;
 int         tp_cmd_log_threshold_msec;
+bool        tp_cmd_only_overrides;
 int         tp_command_burst_size;
 int         tp_command_time_msec;
 int         tp_commands_per_time;
@@ -208,6 +209,9 @@ struct tune_entry tune_list[] = {
     { "cmd_log_threshold_msec", "Log commands that take longer than X millisecs", "Logging", "", TP_TYPE_INTEGER,
         .defaultval.n=1000,
         .currentval.n=&tp_cmd_log_threshold_msec, 0, MLEV_WIZARD, true },
+    { "cmd_only_overrides", "Disable all built-in commands except wizard !overrides", "Commands", "", TP_TYPE_BOOLEAN,
+        .defaultval.b=false,
+        .currentval.b=&tp_cmd_only_overrides, 0, MLEV_WIZARD, true },
     { "command_burst_size", "Max. commands per burst before limiter engages", "Spam Limits", "", TP_TYPE_INTEGER,
         .defaultval.n=500,
         .currentval.n=&tp_command_burst_size, 0, MLEV_WIZARD, true },

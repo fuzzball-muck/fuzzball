@@ -4442,6 +4442,7 @@ Parameters available:
  (str)  autolook_cmd              - Room entry look command
  (time) clean_interval            - Interval between memory/object cleanups
  (int)  cmd_log_threshold_msec    - Log commands that take longer than X millisecs
+ (bool) cmd_only_overrides        - Disable all built-in commands except wizard !overrides
  (int)  command_burst_size        - Max. commands per burst before limiter engages
  (int)  command_time_msec         - Millisecs per spam limiter time period
  (int)  commands_per_time         - Commands allowed per time period during limit

@@ -300,6 +300,7 @@ do_relink(int descr, dbref player, const char *thing_name,
                     notify(player, "Only authorized builders may seize exits.");
                     return;
                 }
+                notifyf_nolisten(player, "Claiming unlinked exits: %s", DEPRECATED_FEATURE);
             }
 
             /* be anal: each and every new links destination has
@@ -438,6 +439,27 @@ do_chown(int descr, dbref player, const char *name, const char *newowner)
                 notify(player, "You can't take possession of that.");
                 return;
             }
+        }
+    }
+
+    /* handle costs */
+    if (owner == player && Typeof(thing) == TYPE_EXIT && OWNER(thing) != OWNER(player)) {
+	if (!Builder(player)) {
+	    notify(player, "Only authorized builders may seize exits.");
+	    return;
+	}
+	if (!payfor(player, tp_exit_cost)) {
+	    notifyf(player, "It costs %d %s to seize this exit.",
+		    tp_exit_cost,
+		    (tp_exit_cost == 1) ? tp_penny : tp_pennies);
+	    return;
+	}
+	/* pay the owner for his loss */
+	SETVALUE(OWNER(thing), GETVALUE(OWNER(thing)) + tp_exit_cost);
+	DBDIRTY(OWNER(thing));
+
+        if (!Wizard(player)) {
+            notifyf_nolisten(player, "Claiming unlinked exits: %s", DEPRECATED_FEATURE);
         }
     }
 

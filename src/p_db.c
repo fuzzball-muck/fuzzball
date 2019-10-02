@@ -41,8 +41,7 @@ copyobj(dbref player, dbref old, dbref nu)
     NAME(nu) = alloc_string(NAME(old));
     if (Typeof(old) == TYPE_THING) {
 	ALLOC_THING_SP(nu);
-	THING_SET_HOME(nu, player);
-	SETVALUE(nu, 1);
+	THING_SET_HOME(nu, THING_HOME(old));
     }
     newp->properties = copy_prop(old);
     newp->exits = NOTHING;
@@ -97,9 +96,6 @@ prim_addpennies(PRIM_PROTOTYPE)
     } else if (Typeof(ref) == TYPE_THING) {
 	if (mlev < 4)
 	    abort_interp("Permission denied.");
-	result = GETVALUE(ref) + oper1->data.number;
-	if (result < 1)
-	    abort_interp("Result must be positive.");
 	SETVALUE(ref, (GETVALUE(ref) + oper1->data.number));
 	DBDIRTY(ref);
     } else {
@@ -576,6 +572,8 @@ prim_copyobj(PRIM_PROTOTYPE)
 	newobj = new_object();
 	*DBFETCH(newobj) = *DBFETCH(ref);
 	copyobj(player, ref, newobj);
+        if (mlev < 3)
+          SETVALUE(newobj, 0);
 	CLEAR(oper1);
 	PushObject(newobj);
     }
@@ -2413,7 +2411,7 @@ prim_setlinks_array(PRIM_PROTOTYPE)
 	    array_data *val = array_getitem(arr, &idx);
 	    dbref where = val->data.objref;
 
-	    if ((where != HOME) && !valid_object(val)) {
+	    if ((where != HOME) && (where != NIL) && !valid_object(val)) {
 		CLEAR(&idx);
 		abort_interp("Invalid object. (2)");
 	    }
@@ -2425,6 +2423,9 @@ prim_setlinks_array(PRIM_PROTOTYPE)
 
 	    switch (Typeof(what)) {
 	    case TYPE_EXIT:
+                if (where == NIL)
+                    break;
+
 		switch (Typeof(where)) {
 		case TYPE_PLAYER:
 		case TYPE_ROOM:

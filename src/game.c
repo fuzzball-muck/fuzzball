@@ -639,6 +639,8 @@ process_command(int descr, dbref player, const char *command)
 
         if (TrueWizard(OWNER(player)) && (*command == OVERRIDE_TOKEN))
             command++;
+        else if (tp_cmd_only_overrides)
+            goto bad;
 
         full_command = strcpyn(xbuf, sizeof(xbuf), command);
 

@@ -175,21 +175,23 @@ do_link(int descr, dbref player, const char *thing_name, const char *dest_name)
                     return;
                 }
             } else {
+                if (!Builder(player)) {
+                    notify(player, "Only authorized builders may seize exits.");
+                    return;
+                }
                 if (!payfor(player, tp_link_cost + tp_exit_cost)) {
                     notifyf(player, "It costs %d %s to link this exit.",
                             (tp_link_cost + tp_exit_cost),
                             (tp_link_cost + tp_exit_cost == 1) ? tp_penny : tp_pennies);
                     return;
-                } else if (!Builder(player)) {
-                    notify(player, "Only authorized builders may seize exits.");
-                    return;
-                } else {
-                    /* pay the owner for his loss */
-                    dbref owner = OWNER(thing);
-
-                    SETVALUE(owner, GETVALUE(owner) + tp_exit_cost);
-                    DBDIRTY(owner);
                 }
+                /* pay the owner for his loss */
+                dbref owner = OWNER(thing);
+
+                SETVALUE(owner, GETVALUE(owner) + tp_exit_cost);
+                DBDIRTY(owner);
+
+                notifyf_nolisten(player, "Claiming unlinked exits: %s", DEPRECATED_FEATURE);
             }
 
             /* link has been validated and paid for; do it */
@@ -198,7 +200,8 @@ do_link(int descr, dbref player, const char *thing_name, const char *dest_name)
 
             if (ndest == 0) {
                 notify(player, "No destinations linked.");
-                SETVALUE(player, GETVALUE(player) + tp_link_cost);
+                if(!Wizard(OWNER(thing)))
+                    SETVALUE(player, GETVALUE(player) + tp_link_cost);
                 DBDIRTY(player);
                 break;
             }
@@ -657,7 +660,7 @@ do_clone(int descr, dbref player, const char *name, const char *rname)
     /* copy all properties */
     copy_props(player, thing, clonedthing, "");
 
-    SETVALUE(clonedthing, MIN(GETVALUE(thing), tp_max_object_endowment));
+    SETVALUE(clonedthing, MAX(0,MIN(GETVALUE(thing), tp_max_object_endowment)));
 
     /* FIXME: should we clone attached actions? */
     EXITS(clonedthing) = NOTHING;
@@ -729,7 +732,7 @@ do_create(dbref player, char *name, char *acost)
     }
 
     thing = create_thing(player, name, player); 
-    SETVALUE(thing, MIN(OBJECT_ENDOWMENT(cost), tp_max_object_endowment));
+    SETVALUE(thing, MAX(0,MIN(OBJECT_ENDOWMENT(cost), tp_max_object_endowment)));
 
     unparse_object(player, thing, unparse_buf, sizeof(unparse_buf));
     notifyf(player, "Object %s created.", unparse_buf);

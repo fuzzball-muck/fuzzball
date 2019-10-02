@@ -325,7 +325,7 @@ create_thing(dbref player, const char *name, dbref location)
     PUSH(newthing, CONTENTS(location));
 
     EXITS(newthing) = NOTHING;
-    SETVALUE(newthing, 1);
+    SETVALUE(newthing, 0);
 
     ALLOC_THING_SP(newthing);
 
@@ -1611,6 +1611,7 @@ ok_object_name(const char *name, object_flag_type type)
         || !strcasecmp(name, "me")
         || !strcasecmp(name, "here")
         || !strcasecmp(name, "home")
+        || !strcasecmp(name, "nil")
         || (*tp_reserved_names && equalstr((char *) tp_reserved_names, (char *)name)
         ))
         return false;
@@ -1889,7 +1890,7 @@ parse_linkable_dest(int descr, dbref player, dbref exit, const char *dest_name)
         return NOTHING;
     }
 
-    if (!tp_teleport_to_player && Typeof(dobj) == TYPE_PLAYER) {
+    if (dobj != NIL && !tp_teleport_to_player && Typeof(dobj) == TYPE_PLAYER) {
         char unparse_buf[BUFFER_LEN];
         unparse_object(player, dobj, unparse_buf, sizeof(unparse_buf));
         notifyf(player, "You can't link to players.  Destination %s ignored.",
@@ -2151,6 +2152,11 @@ register_object(dbref player, dbref location, const char *propdir, char *name,
     char buf[BUFFER_LEN];
     char unparse_buf[BUFFER_LEN], unparse_buf2[BUFFER_LEN];
     char *strval;
+
+    if (!is_valid_propname(name)) {
+        notifyf_nolisten(player, "Registry name '%s' is not valid", name);
+        return;
+    }
 
     snprintf(buf, sizeof(buf), "%s/%s", propdir, name);
 
