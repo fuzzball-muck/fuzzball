@@ -76,7 +76,53 @@ const char *mfn_add(MFUNARGS);
  * @return string parsed results
  */
 const char *mfn_and(MFUNARGS);
+
+/**
+ * MPI function that adds ANSI attributes to a string
+ *
+ * This takes a variable number of arguments, with a minimum of two.
+ * The last argument will be the string.  The arguments preceeding the last
+ * one are attributs which will be prefixed to the string.  The string will
+ * always have have a RESET after it to clear all attributes.
+ *
+ * The attributs can be the following strings:
+ *
+ * bold, dim, italic, uline, underline, flash, reverse, ostrike, overstrike,
+ * black, red, yellow, green, cyan, blue, magenta, white, bg_black,
+ * bg_red, bg_yellow, bg_green, bg_cyan, bg_blue, bg_magenta, bg_white
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_attr(MFUNARGS);
+
+/**
+ * MPI function that does returns connection count for the given player
+ *
+ * If arg0 isn't a player, this returns 0, which is the same as if the
+ * a player is not connected.
+ *
+ * @see string_substitute
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_awake(MFUNARGS);
 
 /**
@@ -122,6 +168,30 @@ const char *mfn_bless(MFUNARGS);
  * @return string parsed results
  */
 const char *mfn_center(MFUNARGS);
+
+/**
+ * MPI function that turns a list into a comma delimited string
+ *
+ * arg0 is a list.  By default, it will make a string that looks like:
+ *
+ * Item1, Item2, and Item3
+ *
+ * You can control the "and" by providing arg1 as a subtitution.  arg2
+ * and arg3 may be provided in order to evaluate an expression for each
+ * item.  The item will be placed in the variable named arg2 and the
+ * expression arg3 will be run.
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_commas(MFUNARGS);
 
 /**
@@ -167,7 +237,56 @@ const char *mfn_concat(MFUNARGS);
  * @return string parsed results
  */
 const char *mfn_contains(MFUNARGS);
+
+/**
+ * MPI function that returns an optionally filtered contents list
+ *
+ * Returns the contents as a \r delimited list of refs.  Player refs
+ * appear to be *Name whereas everything else is a dbref.
+ *
+ * @see ref2str
+ *
+ * arg0 is the object to get contents for, and arg1 is an optional
+ * type specifier which can be "room", "exit", "player", "program",
+ * or "thing".
+ *
+ * There are a number of constraints here; MAX_MFUN_LIST_LEN is the
+ * maximum contents items that can be returned, and the entire list
+ * of contents must fit in BUFFER_LEN space.  Also if player name length
+ * is 50 characters or longer, it will get truncated, but that seems like
+ * an unlikely situation.  If your MUCK allows that, you probably have
+ * bigger problems.
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_contents(MFUNARGS);
+
+/**
+ * MPI function that returns 1 if player controls arg0, 0 otherwise
+ *
+ * You can also provide arg1 as an alternate player to check control
+ * permissions for, though the default is the calling player.
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_controls(MFUNARGS);
 
 /**
@@ -207,6 +326,24 @@ const char *mfn_convsecs(MFUNARGS);
  * @return string parsed results
  */
 const char *mfn_convtime(MFUNARGS);
+
+/**
+ * MPI function that counts number of items in list arg0
+ *
+ * arg0 is a string containing a delimited list.  arg1 is a
+ * delimiter/separator string and defaults to \r
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_count(MFUNARGS);
 
 /**
@@ -265,7 +402,46 @@ const char *mfn_date(MFUNARGS);
  * @return string parsed results
  */
 const char *mfn_dbeq(MFUNARGS);
+
+/**
+ * MPI function that runs code in debug mode
+ *
+ * arg0 will be run with MPI_ISDEBUG flag set.
+ *
+ * @see mesg_parse
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_debug(MFUNARGS);
+
+/**
+ * MPI function that runs code in debug mode if the conditional returns true
+ *
+ * arg0 is the conditional expression.  If true, arg1 will be run with the
+ * MPI_ISDEBUG flag set.  Otherwise, it will be run normally.
+ *
+ * @see mesg_parse
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_debugif(MFUNARGS);
 
 /**
@@ -305,6 +481,27 @@ const char *mfn_dec(MFUNARGS);
  * @return string parsed results
  */
 const char *mfn_default(MFUNARGS);
+
+/**
+ * MPI function that puts some MPI on the timequeue to run after a bit
+ *
+ * arg0 is the number of seconds to wait before execution.  arg1 is an
+ * expression; the result of that expression is what is put on the timequeue,
+ * so it will probably need to be your code in a {lit:...} block.
+ *
+ * It will return the process ID.
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_delay(MFUNARGS);
 
 /**
@@ -430,6 +627,24 @@ const char *mfn_div(MFUNARGS);
  * @return string parsed results
  */
 const char *mfn_eq(MFUNARGS);
+
+/**
+ * MPI function that escapes a string in back-tick quotes
+ *
+ * This surrounds arg0 in backticks (`) and escapes any back-ticks that
+ * are in the string using backslash.  It will also escape backslashes.
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_escape(MFUNARGS);
 
 /**
@@ -510,7 +725,67 @@ const char *mfn_exec(MFUNARGS);
  * @return string parsed results
  */
 const char *mfn_execbang(MFUNARGS);
+
+/**
+ * MPI function that returns a list of exits associatd with arg0
+ *
+ * Returns the exits as a \r delimited list of refs.  Player refs
+ * appear to be *Name whereas everything else is a dbref.
+ *
+ * @see ref2str
+ *
+ * There are a number of constraints here; MAX_MFUN_LIST_LEN is the
+ * maximum contents items that can be returned, and the entire list
+ * of contents must fit in BUFFER_LEN space.  Also if player name length
+ * is 50 characters or longer, it will get truncated, but that seems like
+ * an unlikely situation.  If your MUCK allows that, you probably have
+ * bigger problems.
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_exits(MFUNARGS);
+
+/**
+ * MPI function that runs an expression against every item in a list and filters
+ *
+ * This operates in a variable context similar to {with}
+ *
+ * @see mfn_with
+ * @see mfn_foreach
+ *
+ * This is similar to {foreach} except it returns a list and is more
+ * for morphing a list rather than simply iterating over that list.
+ * The return list will only have items where the list expression returned
+ * true.
+ *
+ * Each item of the list is put in the variable named arg0, with the list
+ * being in arg1, and the expression to run against each line in the list
+ * being arg2.  An optional separator is in arg3, which defaults to \r
+ *
+ * arg4 can be provided to make the returned list use a different seperator
+ * (arg4) than the source list.  If arg4 is left off, it will use the same
+ * separator as the source list.
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_filter(MFUNARGS);
 
 /**
@@ -530,10 +805,132 @@ const char *mfn_filter(MFUNARGS);
  * @return string parsed results
  */
 const char *mfn_flags(MFUNARGS);
+
+/**
+ * MPI function that takes a list, and evaluates a an expression with variables
+ *
+ * Arguments arg0 and arg1 are variable names; they will be populated with
+ * the first two items of the list provided in arg3.  arg4 is the expression
+ * to run.  It is run as a variable context -- similar to {with} as you can
+ * see @see mfn_with
+ *
+ * arg5 is optional and is the separator string.  It defaults to \r
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_fold(MFUNARGS);
+
+/**
+ * MPI function that does a for loop
+ *
+ * This operates in a variable context similar to {with}
+ *
+ * @see mfn_with
+ *
+ * arg0 is the variable name to use.  arg1 is the start value, and
+ * arg2 is the end value.  arg3 is the increment amount.  arg4 is
+ * the command to run each iteration.
+ *
+ * Note that this only works with numeric increments that are stored
+ * in the variable named arg0
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_for(MFUNARGS);
+
+/**
+ * MPI function that forces an object
+ *
+ * arg0 is the object to force, and arg1 is the command to run.
+ *
+ * arg1 can be a list of commands, in which case each command will be run
+ * in turn.
+ *
+ * This obeys the maxiumum force recursion setting (tp_max_force_level)
+ *
+ * There are many permission restrictions here.  For instance, objects must
+ * be XFORCABLE and force-locked to the caller (or the property must be
+ * blessed).  Objects with the same names as players cannot be forced.
+ * tp_allow_zombies, if false, will disable this feature.
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_force(MFUNARGS);
+
+/**
+ * MPI function that does a foreach loop
+ *
+ * This operates in a variable context similar to {with}
+ *
+ * @see mfn_with
+ * @see mfn_for
+ *
+ * This iterates over every item in a list, storing that list item
+ * in a variable that is available to the executed code.
+ *
+ * arg0 is the variable name to use.  arg1 is the list to iterate over.
+ * arg2 is the expression to run for each iteration of the loop.  arg3
+ * is an optional seperator string that defaults to \r
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_foreach(MFUNARGS);
+
+/**
+ * MPI function that displays a message
+ *
+ * This should probably just be removed.
+ *
+ * TODO: remove this call ?  It does nothing and isn't even a particularly
+ *       interesting easter egg.  I'd rather have the bytes back personally.
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_fox(MFUNARGS);
 
 /**
@@ -555,6 +952,24 @@ const char *mfn_fox(MFUNARGS);
  * @return string parsed results
  */
 const char *mfn_ftime(MFUNARGS);
+
+/**
+ * MPI function that returns the name of arg0
+ *
+ * The name is left intact in case of exits.  Otherwise this is identical
+ * to {name}.
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_fullname(MFUNARGS);
 
 /**
@@ -654,6 +1069,25 @@ const char *mfn_holds(MFUNARGS);
  * @return string parsed results
  */
 const char *mfn_idle(MFUNARGS);
+
+/**
+ * MPI function to implement an if/else statement
+ *
+ * The first argument is the check statement.  If true, it runs the
+ * second argument.  If false, it runs the optional third option if it
+ * is provided.
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_if(MFUNARGS);
 
 /**
@@ -722,6 +1156,25 @@ const char *mfn_index(MFUNARGS);
  * @return string parsed results
  */
 const char *mfn_indexbang(MFUNARGS);
+
+/**
+ * MPI function that finds a substring
+ *
+ * arg0 is the string to search and arg1 is the string to search for.
+ * Returns the first position of the substring found, or 0 if not found.
+ * 1 would be the first position.
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_instr(MFUNARGS);
 
 /**
@@ -764,7 +1217,44 @@ const char *mfn_isdbref(MFUNARGS);
  * @return string parsed results
  */
 const char *mfn_isnum(MFUNARGS);
+
+/**
+ * MPI function that returns true if arg0 is of type arg1
+ *
+ * arg1 can be "Room", "Player", "Exit", "Thing", "Program", or "Bad"
+ *
+ * arg0 should be something that resolves into an object.
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_istype(MFUNARGS);
+
+/**
+ * MPI function that kills a process on the timequeue
+ *
+ * arg0 is either 0 to kill all processes done by the trigger, or a PID
+ * of a specific process.  Returns number of processes killed.
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_kill(MFUNARGS);
 
 /**
@@ -784,6 +1274,26 @@ const char *mfn_kill(MFUNARGS);
  * @return string parsed results
  */
 const char *mfn_lastused(MFUNARGS);
+
+/**
+ * MPI function that returns a list with list items common to arg0 and arg1
+ *
+ * All list items that are in both arg0 and arg1 will be returned in a
+ * list.  Any duplicates are removed.
+ *
+ * This will iterate up to MAX_MFUN_LIST_LEN times.
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_lcommon(MFUNARGS);
 
 /**
@@ -851,6 +1361,24 @@ const char *mfn_left(MFUNARGS);
  * @return string parsed results
  */
 const char *mfn_lexec(MFUNARGS);
+
+/**
+ * MPI function that returns the ref of whatever arg0 is linked to
+ *
+ * For multi-linked exits, this may be a \r delimited list.  For invalid
+ * things or unlinked things, this may be #-1
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_links(MFUNARGS);
 
 /**
@@ -916,6 +1444,26 @@ const char *mfn_listprops(MFUNARGS);
  * @return string parsed results
  */
 const char *mfn_lit(MFUNARGS);
+
+/**
+ * MPI function that finds anitem in a list
+ *
+ * arg0 is the list to search, arg1 is the item to find.  Optionally, arg2
+ * is a delimiter string.
+ *
+ * This starts with item '1' rather than item 0 when returning results.
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_lmember(MFUNARGS);
 
 /**
@@ -933,10 +1481,92 @@ const char *mfn_lmember(MFUNARGS);
  * @return string parsed results
  */
 const char *mfn_loc(MFUNARGS);
+
+/**
+ * MPI function that tests the lock of arg1 against arg0
+ *
+ * Returns 1 if locked, 0 if not locked.
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_locked(MFUNARGS);
-const char *mfn_log(MFUNARGS);
+
+/**
+ * MPI function that returns a random item from list arg0
+ *
+ * arg0 is a string containing a delimited list.  arg1 is a
+ * delimiter/separator string and defaults to \r
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_lrand(MFUNARGS);
+
+/**
+ * MPI function that filters one list by another list
+ *
+ * The list in arg0 has any rows that match a row in arg1 removed and the
+ * result is returned.
+ *
+ * This will iterate up to MAX_MFUN_LIST_LEN times.
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_lremove(MFUNARGS);
+
+/**
+ * MPI function that returns a sorted version of arg0
+ *
+ * The list is provided in arg0.  If no other arguments are provided,
+ * then this function will be used to sort the items: @see alphanum_compare
+ *
+ * Otherwise, one can define a custom sorter.  arg1 and arg2 are variable
+ * names, and arg3 is the expression.  Compare arg1 and arg2, and return
+ * true if arg1 and arg2 should be swapped, false otherwise.  This is
+ * different from the usual positive/negative/zero sort callback message
+ * used by C and most languages.
+ *
+ * Returns the sorted list.
+ *
+ * This will iterate up to MAX_MFUN_LIST_LEN times.
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_lsort(MFUNARGS);
 
 /**
@@ -977,7 +1607,44 @@ const char *mfn_lt(MFUNARGS);
  * @return string parsed results
  */
 const char *mfn_ltimestr(MFUNARGS);
+
+/**
+ * MPI function that returns a list that is arg0 and arg1 combined.
+ *
+ * The returned list will have all items from arg0 and arg1, with duplicates
+ * removed.
+ *
+ * This will iterate up to MAX_MFUN_LIST_LEN times.
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_lunion(MFUNARGS);
+
+/**
+ * MPI function that returns a version of arg0 with all duplicate rows removed
+ *
+ * This will iterate up to MAX_MFUN_LIST_LEN times.
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_lunique(MFUNARGS);
 
 /**
@@ -1000,6 +1667,27 @@ const char *mfn_lunique(MFUNARGS);
  * @return string parsed results
  */
 const char *mfn_max(MFUNARGS);
+
+/**
+ * MPI function that returns a substring
+ *
+ * Takes a string in arg0.  Arg1 is the start position to get a substring.
+ * Arg2, if provided, will be the last character to fetch otherwise it will
+ * fetch until the end of string.
+ *
+ * The argments can be negative to start from the end of the string instead.
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_midstr(MFUNARGS);
 
 /**
@@ -1112,6 +1800,24 @@ const char *mfn_money(MFUNARGS);
  * @return string parsed results
  */
 const char *mfn_muckname(MFUNARGS);
+
+/**
+ * MPI function that runs a MUF
+ *
+ * arg0 is the MUF to run, arg1 is what will be put on the stack.
+ * If the trigger was from a propqueue, the MUF must be at least MUCKER3.
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_muf(MFUNARGS);
 
 
@@ -1133,6 +1839,24 @@ const char *mfn_muf(MFUNARGS);
  * @return string parsed results
  */
 const char *mfn_mult(MFUNARGS);
+
+/**
+ * MPI function that returns the name of arg0
+ *
+ * Exit names are truncated at the first sign of a ';' so that it looks
+ * pretty.  Use {fullname} to get the entire name of an object.
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_name(MFUNARGS);
 
 /**
@@ -1324,7 +2048,55 @@ const char *mfn_or(MFUNARGS);
  * @return string parsed results
  */
 const char *mfn_otell(MFUNARGS);
+
+/**
+ * MPI function that returns the ref of the player that owns arg0
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_owner(MFUNARGS);
+
+/**
+ * MPI function that runs an expression against every item in a list
+ *
+ * This operates in a variable context similar to {with}
+ *
+ * @see mfn_with
+ * @see mfn_foreach
+ *
+ * This is similar to {foreach} except it returns a list and is more
+ * for morphing a list rather than simply iterating over that list.
+ * The resulting list consists of the return values of the expression
+ * in arg2 against the list items in arg1.
+ *
+ * Each item of the list is put in the variable named arg0, with the list
+ * being in arg1, and the expression to run against each line in the list
+ * being arg2.  An optional separator is in arg3, which defaults to \r
+ *
+ * arg4 can be provided to make the returned list use a different seperator
+ * (arg4) than the source list.  If arg4 is left off, it will use the same
+ * separator as the source list.
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_parse(MFUNARGS);
 
 /**
@@ -1430,7 +2202,46 @@ const char *mfn_propdir(MFUNARGS);
  * @return string parsed results
  */
 const char *mfn_rand(MFUNARGS);
+
+
+/**
+ * MPI function that returns the reference of arg0 as a #dbref
+ *
+ * This will always be a #dbref and doesn't return *Playername like
+ * some calls (such as contents).  It is a great way to normlaize things
+ * to a ref.
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_ref(MFUNARGS);
+
+/**
+ * MPI function that runs code with no blessing set
+ *
+ * arg0 will be run "unblessed" even if the MPI is currently blessed.
+ *
+ * @see mesg_parse
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_revoke(MFUNARGS);
 
 /**
@@ -1496,6 +2307,25 @@ const char *mfn_secs(MFUNARGS);
  * @return string parsed results
  */
 const char *mfn_select(MFUNARGS);
+
+/**
+ * MPI function that set the contents of a variable arg0 to arg1
+ *
+ * Variable must be defined first in the current context, which is
+ * done with {with} or with certain functions that support variables
+ * such as some of the loops.
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_set(MFUNARGS);
 
 /**
@@ -1516,6 +2346,25 @@ const char *mfn_set(MFUNARGS);
  * @return string parsed results
  */
 const char *mfn_sign(MFUNARGS);
+
+/**
+ * MPI function that does a regex match of pattern arg1 against string arg0
+ *
+ * Just a thin wrapper around equalstr
+ *
+ * @see equalstr
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_smatch(MFUNARGS);
 
 /**
@@ -1574,6 +2423,23 @@ const char *mfn_store(MFUNARGS);
  * @return string parsed results
  */
 const char *mfn_strip(MFUNARGS);
+
+/**
+ * MPI function that returns the length of string arg0
+ *
+ * Just a thin wrapper around strlen
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_strlen(MFUNARGS);
 
 /**
@@ -1598,8 +2464,72 @@ const char *mfn_strlen(MFUNARGS);
  * @return string parsed results
  */
 const char *mfn_sysparm(MFUNARGS);
+
+/**
+ * MPI function that returns a subset of list arg0
+ *
+ * arg0 is a string containing a delimited list.  arg1 is the starting
+ * element to get a subset of, with 0 being the first one.
+ *
+ * arg2 is optional and is the last item on the list; it defaults to the
+ * same value as arg1, and can be less than arg1 to get elements in the
+ * reverse direction.
+ *
+ * arg3 is a delimiter/separator string and defaults to \r
+ *
+ * As an "undocumented feature" if only arg0 is passed, then the list is
+ * just copied as-is.  This is not in the MPI docs.
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_sublist(MFUNARGS);
+
+/**
+ * MPI function that does a string substitution
+ *
+ * Substitutes all instances of arg1 with arg2 in arg0
+ *
+ * @see string_substitute
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_subst(MFUNARGS);
+
+/**
+ * MPI function that numerically subtracts up all the arguments
+ *
+ * Loops over all the arguments, runs atoi(...) on each argument, and
+ * subtracts them "from left to right".  Returns the result.
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_subt(MFUNARGS);
 
 /**
@@ -1648,6 +2578,30 @@ const char *mfn_tab(MFUNARGS);
  * @return string parsed results
  */
 const char *mfn_tell(MFUNARGS);
+
+/**
+ * MPI function that tests a lock property
+ *
+ * At a minimum needs arg0 to be an object, and arg1 to be a lock property
+ * to check.  If arg2 is not provided, the lock will be checked against the
+ * calling player.  If arg3 is provided, that will be the default value of
+ * the lock is the property doesn't exist, otherwise the return value will
+ * be 0 (unlocked) if the property doesn't exist.  arg3 can be anything and
+ * is not restricted to being 1 or 0.
+ *
+ * Returns 1 if locked, 0 if not locked.
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_testlock(MFUNARGS);
 
 /**
@@ -1670,6 +2624,25 @@ const char *mfn_testlock(MFUNARGS);
  * @return string parsed results
  */
 const char *mfn_time(MFUNARGS);
+
+/**
+ * MPI function that times (and displays timing of) some MPI code
+ *
+ * When arg0 completes, a timing message is displayed.
+ *
+ * @see mesg_parse
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_timing(MFUNARGS);
 
 /**
@@ -1715,8 +2688,56 @@ const char *mfn_timestr(MFUNARGS);
  * @return string parsed results
  */
 const char *mfn_timesub(MFUNARGS);
+
+/**
+ * MPI function that lowercases arg0
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_tolower(MFUNARGS);
+
+/**
+ * MPI function that uppercases arg0
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_toupper(MFUNARGS);
+
+/**
+ * MPI function that does returns a text description of the object arg0
+ *
+ * Returns "Room", "Player", "Exit", "Thing", "Program", or "Bad" based
+ * on the object type.
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_type(MFUNARGS);
 
 /**
@@ -1755,7 +2776,39 @@ const char *mfn_tzoffset(MFUNARGS);
  * @return string parsed results
  */
 const char *mfn_unbless(MFUNARGS);
+
+/**
+ * MPI function to return the object use count
+ *
+ * arg0 is the object
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_usecount(MFUNARGS);
+
+/**
+ * MPI function that returns the contents of a variable arg0
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_v(MFUNARGS);
 
 /**
@@ -1794,6 +2847,41 @@ const char *mfn_version(MFUNARGS);
  * @return string parsed results
  */
 const char *mfn_while(MFUNARGS);
+
+/**
+ * MPI function that defines a variable context
+ *
+ * MPI is kind of weird and variables run within a context in the
+ * format of: {with:var_name, var_value, code to run...}
+ *
+ * These contexts can be nested for multiple variables.  You can't define
+ * a variable outside of a context, and you can't set/read a variable
+ * outside a context either.
+ *
+ * There are other "contexts" out there, for instance certain loops and
+ * function structures.
+ *
+ * arg0 is the name of the variable.  arg1 is the initial value of the
+ * variable.  arg2 is the code to run, with the created variable available
+ * in that code block.  All parameters are required.
+ *
+ * Probably needless to say, but I will say anyway, the variable is deleted
+ * when this function exits.
+ *
+ * @see new_mvar
+ * @see free_top_mvar
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
 const char *mfn_with(MFUNARGS);
 
 /**
@@ -1887,7 +2975,7 @@ static struct mfun_dat mfun_list[] = {
     {"FOX", mfn_fox, 0, 0, 0, 0, 0},
     {"FTIME", mfn_ftime, 1, 0, 0, 1, 3},
     {"FULLNAME", mfn_fullname, 1, 0, 1, 1, 1},
-    {"FUNC", mfn_func, 0, 0, 1, 2, 9},	/* define a function */
+    {"FUNC", mfn_func, 0, 0, 1, 2, 9},  /* define a function */
     {"GE", mfn_ge, 1, 0, 1, 2, 2},
     {"GT", mfn_gt, 1, 0, 1, 2, 2},
     {"HOLDS", mfn_holds, 1, 0, 1, 1, 2},
@@ -1902,7 +2990,7 @@ static struct mfun_dat mfun_list[] = {
     {"ISTYPE", mfn_istype, 1, 0, 1, 2, 2},
     {"KILL", mfn_kill, 1, 0, 1, 1, 1},
     {"LASTUSED", mfn_lastused, 1, 0, 1, 1, 1},
-    {"LCOMMON", mfn_lcommon, 1, 0, 0, 2, 2},	/* items in both 1 & 2 */
+    {"LCOMMON", mfn_lcommon, 1, 0, 0, 2, 2},    /* items in both 1 & 2 */
     {"LE", mfn_le, 1, 0, 1, 2, 2},
     {"LEFT", mfn_left, 1, 0, 0, 1, 3},
     {"LEXEC", mfn_lexec, 1, 0, 1, 1, 2},
@@ -1913,13 +3001,13 @@ static struct mfun_dat mfun_list[] = {
     {"LMEMBER", mfn_lmember, 1, 0, 0, 2, 3},
     {"LOC", mfn_loc, 1, 0, 1, 1, 1},
     {"LOCKED", mfn_locked, 1, 0, 1, 2, 2},
-    {"LRAND", mfn_lrand, 1, 0, 0, 1, 2},	/* returns random list item */
-    {"LREMOVE", mfn_lremove, 1, 0, 0, 2, 2},	/* items in 1 not in 2 */
-    {"LSORT", mfn_lsort, 0, 0, 0, 1, 4},	/* sort list items */
+    {"LRAND", mfn_lrand, 1, 0, 0, 1, 2},    /* returns random list item */
+    {"LREMOVE", mfn_lremove, 1, 0, 0, 2, 2},    /* items in 1 not in 2 */
+    {"LSORT", mfn_lsort, 0, 0, 0, 1, 4},    /* sort list items */
     {"LT", mfn_lt, 1, 0, 1, 2, 2},
     {"LTIMESTR", mfn_ltimestr, 1, 0, 1, 1, 1},
-    {"LUNION", mfn_lunion, 1, 0, 0, 2, 2},	/* items from both */
-    {"LUNIQUE", mfn_lunique, 1, 0, 0, 1, 1},	/* make items unique */
+    {"LUNION", mfn_lunion, 1, 0, 0, 2, 2},  /* items from both */
+    {"LUNIQUE", mfn_lunique, 1, 0, 0, 1, 1},    /* make items unique */
     {"MAX", mfn_max, 1, 0, 1, 2, 2},
     {"MIDSTR", mfn_midstr, 1, 0, 0, 2, 3},
     {"MIN", mfn_min, 1, 0, 1, 2, 2},
@@ -1976,13 +3064,13 @@ static struct mfun_dat mfun_list[] = {
     {"TZOFFSET", mfn_tzoffset, 0, 0, 0, 0, 0},
     {"UNBLESS", mfn_unbless, 1, 0, 1, 1, 2},
     {"USECOUNT", mfn_usecount, 1, 0, 1, 1, 1},
-    {"V", mfn_v, 1, 0, 1, 1, 1},	/* variable value */
+    {"V", mfn_v, 1, 0, 1, 1, 1},    /* variable value */
     {"VERSION", mfn_version, 0, 0, 0, 0, 0},
     {"WHILE", mfn_while, 0, 0, 0, 2, 2},
-    {"WITH", mfn_with, 0, 0, 0, 3, 9},	/* declares var & val */
-    {"XOR", mfn_xor, 1, 0, 1, 2, 2},	/* logical XOR */
+    {"WITH", mfn_with, 0, 0, 0, 3, 9},  /* declares var & val */
+    {"XOR", mfn_xor, 1, 0, 1, 2, 2},    /* logical XOR */
 
-    {NULL, NULL, 0, 0, 0, 0, 0}	/* Ends the mfun list */
+    {NULL, NULL, 0, 0, 0, 0, 0} /* Ends the mfun list */
 };
 
 #endif /* !MFUN_H */

@@ -1246,7 +1246,7 @@ mfn_rand(MFUNARGS)
 
     ptr = get_list_item(what, obj, perms, (char *) pname,
                         (((RANDOM() / 256) % num) + 1),
-			mesgtyp, &blessed);
+                        mesgtyp, &blessed);
 
     if (!ptr)
         ABORT_MPI("RAND", "Failed list read.");
