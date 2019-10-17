@@ -3492,6 +3492,8 @@ do_directive(COMPSTATE * cstat, char *direct)
         if (!tmpname)
             v_abort_compile(cstat, "Unexpected end of file looking for $def name.");
 
+        skip_whitespace(&cstat->next_char);
+
         (void) insert_def(cstat, tmpname, cstat->next_char);
 
         while (*cstat->next_char)
