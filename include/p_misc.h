@@ -35,8 +35,6 @@ void prim_timer_stop(PRIM_PROTOTYPE);
 void prim_event_count(PRIM_PROTOTYPE);
 void prim_event_exists(PRIM_PROTOTYPE);
 void prim_event_send(PRIM_PROTOTYPE);
-void prim_pname_okp(PRIM_PROTOTYPE);
-void prim_name_okp(PRIM_PROTOTYPE);
 void prim_ext_name_okp(PRIM_PROTOTYPE);
 void prim_force_level(PRIM_PROTOTYPE);
 void prim_forcedby(PRIM_PROTOTYPE);
@@ -59,24 +57,22 @@ void prim_stats_array(PRIM_PROTOTYPE);
     prim_fork, prim_pid, prim_stats, prim_abort, prim_ispidp, prim_parselock, \
     prim_unparselock, prim_prettylock, prim_testlock, prim_sysparm, \
     prim_cancallp, prim_setsysparm, prim_timer_start, prim_timer_stop, \
-    prim_event_count, prim_event_exists, prim_event_send, prim_pname_okp, \
-    prim_name_okp, prim_ext_name_okp, prim_force_level, prim_forcedby, \
-    prim_forcedby_array, prim_watchpid, prim_read_wants_blanks, prim_sysparm_array, \
-    prim_debugger_break, prim_ignoringp, prim_ignore_add, prim_ignore_del, \
-    prim_debug_on, prim_debug_off, prim_debug_line, prim_systime_precise, \
+    prim_event_count, prim_event_exists, prim_event_send, prim_ext_name_okp, \
+    prim_force_level, prim_forcedby, prim_forcedby_array, prim_watchpid, \
+    prim_read_wants_blanks, prim_sysparm_array, prim_debugger_break, \
+    prim_ignoringp, prim_ignore_add, prim_ignore_del, prim_debug_on, \
+    prim_debug_off, prim_debug_line, prim_systime_precise, \
     prim_read_wants_no_blanks, prim_stats_array
 
 #define PRIMS_MISC_NAMES "TIME", "DATE", "GMTOFFSET", \
     "SYSTIME", "TIMESPLIT", "TIMEFMT", "FMTTIME", "CONVTIME", "USERLOG", \
-    "QUEUE", "KILL", "FORCE", "TIMESTAMPS", "FORK", \
-    "PID", "STATS", "ABORT", "ISPID?", "PARSELOCK", \
-    "UNPARSELOCK", "PRETTYLOCK", "TESTLOCK", "SYSPARM", \
-    "CANCALL?",	"SETSYSPARM", "TIMER_START", "TIMER_STOP", \
-    "EVENT_COUNT", "EVENT_EXISTS", "EVENT_SEND", "PNAME-OK?", \
-    "NAME-OK?", "EXT-NAME-OK?", "FORCE_LEVEL", "FORCEDBY", \
+    "QUEUE", "KILL", "FORCE", "TIMESTAMPS", "FORK", "PID", "STATS", "ABORT", \
+    "ISPID?", "PARSELOCK", "UNPARSELOCK", "PRETTYLOCK", "TESTLOCK", "SYSPARM", \
+    "CANCALL?",	"SETSYSPARM", "TIMER_START", "TIMER_STOP", "EVENT_COUNT", \
+    "EVENT_EXISTS", "EVENT_SEND", "EXT-NAME-OK?", "FORCE_LEVEL", "FORCEDBY", \
     "FORCEDBY_ARRAY", "WATCHPID", "READ_WANTS_BLANKS", "SYSPARM_ARRAY", \
-    "DEBUGGER_BREAK", "IGNORING?", "IGNORE_ADD", "IGNORE_DEL", \
-    "DEBUG_ON", "DEBUG_OFF", "DEBUG_LINE", "SYSTIME_PRECISE", \
-    "READ_WANTS_NO_BLANKS", "STATS_ARRAY"
+    "DEBUGGER_BREAK", "IGNORING?", "IGNORE_ADD", "IGNORE_DEL", "DEBUG_ON", \
+    "DEBUG_OFF", "DEBUG_LINE", "SYSTIME_PRECISE", "READ_WANTS_NO_BLANKS", \
+    "STATS_ARRAY"
 
 #endif /* !P_MISC_H */

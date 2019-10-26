@@ -985,36 +985,6 @@ prim_event_send(PRIM_PROTOTYPE)
 }
 
 void
-prim_pname_okp(PRIM_PROTOTYPE)
-{
-    CHECKOP(1);
-    oper1 = POP();
-    if (oper1->type != PROG_STRING)
-	abort_interp("Player name string expected.");
-    if (!oper1->data.string)
-	abort_interp("Cannot be an empty string.");
-    result = ok_object_name(oper1->data.string->data, TYPE_PLAYER);
-    CLEAR(oper1);
-    PushInt(result);
-}
-
-void
-prim_name_okp(PRIM_PROTOTYPE)
-{
-    CHECKOP(1);
-    oper1 = POP();
-    if (oper1->type != PROG_STRING)
-	abort_interp("Object name string expected.");
-    if (!oper1->data.string)
-	abort_interp("Cannot be an empty string.");
-
-    /* deprecated NAME-OK? historically checks 7bit_other_names */
-    result = ok_object_name(oper1->data.string->data, TYPE_EXIT);
-    CLEAR(oper1);
-    PushInt(result);
-}
-
-void
 prim_ext_name_okp(PRIM_PROTOTYPE)
 {
     CHECKOP(2);

@@ -2748,18 +2748,9 @@ not found. Non-case sensitive.
 NAME-OK?
 NAME-OK? (s -- i)
 
-  DEPRECATED: Returns true if the given string would be okay as a general
-object's name.
+  Returns true if the given string would be okay as a general object name.
 
-  This function remains for backwards compatability, but due to changes in the
-server it cannot be guaranteed any longer that it will always return the
-correct answer. If muck settings allow 8-bit names in general but not 8-bit
-Thing names, and you pass a name that contains 8-bit chars, NAME-OK? will
-return true since the name would be okay for some objects. If you then pass
-that name to the NEWOBJECT primitive, the call will fail due to the more
-restrictive rules for Things.
-
-  Instead, use EXT-NAME-OK? which determines legal names for each object type.
+  This is deprecated, and internally defined as: "exit" ext-name-ok?
 ~~alsosee EXT-NAME-OK?
 ~
 ~
@@ -2767,6 +2758,8 @@ PNAME-OK?
 PNAME-OK? (s -- i)
 
   Returns true if the given string would be okay as a player name.
+
+  This is deprecated, and internally defined as: "player" ext-name-ok?
 ~~alsosee EXT-NAME-OK?
 ~
 ~
@@ -3810,8 +3803,9 @@ DBCMP ( d1 d2 -- i )
 
   Performs comparison of database objects d1 and d2. If they are the
 same object, then i is 1, otherwise i is 0.
-Use of this primitive is deprecated, as dbrefs may be compared with
-the standard comparison functions (< <= > >= =).
+
+  This is deprecated, and internally defined as: =
+~~alsosee =
 ~
 ~
 UNPARSEOBJ
@@ -4194,9 +4188,10 @@ be set, since that would normally require a password.
 TRUENAME
 TRUENAME ( d -- s )
 
-  Takes object d and returns its true name string field.
-This is the same as name if the MUCK doesn't use anoniminity.
-~
+  Takes object d and returns its name string field.
+
+  This is deprecated, and internally defined as: name
+~~alsosee NAME
 ~
 PNAME_HISTORY
 PNAME_HISTORY ( d -- a )

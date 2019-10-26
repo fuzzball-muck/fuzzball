@@ -814,8 +814,10 @@ include_internal_defs(COMPSTATE * cstat)
     insert_intdef(cstat, "reg_extended", MUF_RE_EXTENDED);
 
     /* Deprecations */
-    insert_def(cstat, "truename", "name");
     insert_def(cstat, "dbcmp", "=");
+    insert_def(cstat, "name-ok?", "\"exit\" ext-name-ok?");
+    insert_def(cstat, "pname-ok?", "\"player\" ext-name-ok?");
+    insert_def(cstat, "truename", "name");
     insert_intdef(cstat, "bg_mode", BACKGROUND);
     insert_intdef(cstat, "fg_mode", FOREGROUND);
     insert_intdef(cstat, "pr_mode", PREEMPT);

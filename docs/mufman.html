@@ -5009,20 +5009,10 @@ not found. Non-case sensitive.
 
 <br>
 </h3>
-  DEPRECATED: Returns true if the given string would be okay as a general
-object's name.
+  Returns true if the given string would be okay as a general object name.
 
 <p>
-  This function remains for backwards compatability, but due to changes in the
-server it cannot be guaranteed any longer that it will always return the
-correct answer. If muck settings allow 8-bit names in general but not 8-bit
-Thing names, and you pass a name that contains 8-bit chars, NAME-OK? will
-return true since the name would be okay for some objects. If you then pass
-that name to the NEWOBJECT primitive, the call will fail due to the more
-restrictive rules for Things.
-
-<p>
-  Instead, use EXT-NAME-OK? which determines legal names for each object type.
+  This is deprecated, and internally defined as: &quot;exit&quot; ext-name-ok?
 <p>Also see:
     <a href="#ext-name-ok?">EXT-NAME-OK?</a>
 </p>
@@ -5035,6 +5025,9 @@ restrictive rules for Things.
 <br>
 </h3>
   Returns true if the given string would be okay as a player name.
+
+<p>
+  This is deprecated, and internally defined as: &quot;player&quot; ext-name-ok?
 <p>Also see:
     <a href="#ext-name-ok?">EXT-NAME-OK?</a>
 </p>
@@ -6650,8 +6643,12 @@ trigger, if this wasn't called by a program.
 </h3>
   Performs comparison of database objects d1 and d2. If they are the
 same object, then i is 1, otherwise i is 0.
-Use of this primitive is deprecated, as dbrefs may be compared with
-the standard comparison functions (&lt; &lt;= &gt; &gt;= =).
+
+<p>
+  This is deprecated, and internally defined as: =
+<p>Also see:
+    <a href="#=">=</a>
+</p>
 <!-- HTML_TOPICEND -->
 
 
@@ -7370,10 +7367,14 @@ be set, since that would normally require a password.
 
 <br>
 </h3>
-  Takes object d and returns its true name string field.
-This is the same as name if the MUCK doesn't use anoniminity.
-<!-- HTML_TOPICEND -->
+  Takes object d and returns its name string field.
 
+<p>
+  This is deprecated, and internally defined as: name
+<p>Also see:
+    <a href="#name">NAME</a>
+</p>
+<!-- HTML_TOPICEND -->
 
 <h3 id="pname_history">PNAME_HISTORY ( d -- a )
 <br>
