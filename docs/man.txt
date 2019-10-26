@@ -2488,14 +2488,14 @@ array_fmtstrings   atoi               ctoi               explode
 explode_array      ext-name-ok?       fmtstring          instr
 instring           intostr            itoc               md5hash
 midstr             name-ok?           number?            pname-ok?
-pose-separator?    pronoun_sub        prop-name-ok?      regexp
-regsplit           regsplit_noempty   regsub             rinstr
-rinstring          rsplit             sha1hash           smatch
-split              stod               strcat             strcmp
-strcut             strdecrypt         strencrypt         stringcmp
-stringpfx          strip              striplead          striptail
-strlen             strncmp            subst              textattr
-tokensplit         tolower            toupper            
+pose-separator?    pronoun_sub        regexp             regsplit
+regsplit_noempty   regsub             rinstr             rinstring
+rsplit             sha1hash           smatch             split
+stod               strcat             strcmp             strcut
+strdecrypt         strencrypt         stringcmp          stringpfx
+strip              striplead          striptail          strlen
+strncmp            subst              textattr           tokensplit
+tolower            toupper            
 
 ~----------------------------------------------------------------------------
 ~
@@ -3016,13 +3016,6 @@ PNAME-OK? (s -- i)
 
   This is deprecated, and internally defined as: "player" ext-name-ok?
 Also see: EXT-NAME-OK?
-~
-~
-PROP-NAME-OK?
-PROP-NAME-OK? (s -- i)
-  Returns true if the given string is an acceptable property name that will
-not cause an error for SETPROP or any other property related primitive.
-Also see: SETPROP
 ~
 ~
 EXT-NAME-OK?
@@ -3736,9 +3729,9 @@ blessprop                 envprop                   envpropstr
 getprop                   getpropfval               getpropstr
 getpropval                nextprop                  parsempi
 parsempiblessed           parseprop                 parsepropex
-propdir?                  reflist_add               reflist_del
-reflist_find              remove_prop               setprop
-unblessprop               
+prop-name-ok?             propdir?                  reflist_add
+reflist_del               reflist_find              remove_prop
+setprop                   unblessprop               
 
 ~----------------------------------------------------------------------------
 ~
@@ -4024,6 +4017,13 @@ be sent to the rest of the players in the room.  This prim is most useful for
 passing values between MPI and MUF, rather than having to resort to formatting
 the data into the {&how} variable, or the return value.
 This primitives requires at least mucker level 3.
+~
+~
+PROP-NAME-OK?
+PROP-NAME-OK? (s -- i)
+  Returns true if the given string is an acceptable property name that will
+not cause an error for SETPROP or any other property related primitive.
+Also see: SETPROP
 ~
 ~
 ~
@@ -4337,9 +4337,7 @@ NEWPASSWORD ( d s -- )
 SET
 SET ( d s -- )
 
-  Sets flag s to object d.  Currently settable things are: abode, chown,
-dark, haven, jump, link, sticky.  Boolean operations (e.g. `!abode')
-work as expected.
+  Sets flag s to object d.  Recognizes negation (e.g. `!abode').
 Also see: SETNAME, SETDESC and FLAG?
 ~
 ~
@@ -4348,7 +4346,7 @@ FLAG? ( d s -- i )
 
   Reads the flag of object d, specified by s, and returns its state: 1 =
 on; 0 = off.  The ! token may be used before the name of a flag to negate
-the check and check for the absense of the flag.  Different flags may be
+the check and check for the absence of the flag.  Different flags may be
 supported in different installations.  flag? returns 0 for unsupported or
 unrecognized flags.
   You can check the "interactive" flag to see if a player is currently in

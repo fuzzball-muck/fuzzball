@@ -2763,13 +2763,6 @@ PNAME-OK? (s -- i)
 ~~alsosee EXT-NAME-OK?
 ~
 ~
-PROP-NAME-OK?
-PROP-NAME-OK? (s -- i)
-  Returns true if the given string is an acceptable property name that will
-not cause an error for SETPROP or any other property related primitive.
-~~alsosee SETPROP
-~
-~
 EXT-NAME-OK?
 EXT-NAME-OK? ( str:Name ref:Obj -- int:Ok? )
 EXT-NAME-OK? ( str:Name str:Type -- int:Ok? )
@@ -3762,6 +3755,13 @@ the data into the {&how} variable, or the return value.
 This primitives requires at least mucker level 3.
 ~
 ~
+PROP-NAME-OK?
+PROP-NAME-OK? (s -- i)
+  Returns true if the given string is an acceptable property name that will
+not cause an error for SETPROP or any other property related primitive.
+~~alsosee SETPROP
+~
+~
 ~
 ~~section Database Related Operators|DBOps
 ~
@@ -4038,9 +4038,7 @@ NEWPASSWORD ( d s -- )
 SET
 SET ( d s -- )
 
-  Sets flag s to object d.  Currently settable things are: abode, chown,
-dark, haven, jump, link, sticky.  Boolean operations (e.g. `!abode')
-work as expected.
+  Sets flag s to object d.  Recognizes negation (e.g. `!abode').
 ~~alsosee SETNAME,SETDESC,FLAG?
 ~
 ~
@@ -4049,7 +4047,7 @@ FLAG? ( d s -- i )
 
   Reads the flag of object d, specified by s, and returns its state: 1 =
 on; 0 = off.  The ! token may be used before the name of a flag to negate
-the check and check for the absense of the flag.  Different flags may be
+the check and check for the absence of the flag.  Different flags may be
 supported in different installations.  flag? returns 0 for unsupported or
 unrecognized flags.
   You can check the "interactive" flag to see if a player is currently in

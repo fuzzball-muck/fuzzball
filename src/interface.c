@@ -6141,6 +6141,9 @@ partial_pmatch(const char *name)
     struct descriptor_data *d;
     dbref last = NOTHING;
 
+    if (!name || !*name)
+        return AMBIGUOUS;
+
     d = descriptor_list;
     while (d) {
         if (d->connected && (last != d->player)

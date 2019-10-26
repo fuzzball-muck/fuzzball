@@ -28,6 +28,8 @@ static char buf[BUFFER_LEN];
 int
 prop_read_perms(dbref player, dbref obj, const char *name, int mlev)
 {
+    if (!*name)
+        return 0;
     if (Prop_System(name))
 	return 0;
     if ((mlev < 3) && Prop_Private(name) && !permissions(player, obj))
@@ -40,6 +42,8 @@ prop_read_perms(dbref player, dbref obj, const char *name, int mlev)
 int
 prop_write_perms(dbref player, dbref obj, const char *name, int mlev)
 {
+    if (!*name)
+        return 0;
     if (Prop_System(name))
 	return 0;
 
@@ -72,23 +76,23 @@ prim_getpropval(PRIM_PROTOTYPE)
     oper2 = POP();
     if (oper1->type != PROG_STRING)
 	abort_interp("Non-string argument (2)");
-    if (!oper1->data.string)
-	abort_interp("Empty string argument (2)");
     if (!valid_object(oper2))
 	abort_interp("Non-object argument (1)");
     CHECKREMOTE(oper2->data.objref);
 
-    if (!prop_read_perms(ProgUID, oper2->data.objref, oper1->data.string->data, mlev))
+    char type[BUFFER_LEN];
+    strcpyn(type, sizeof(type), DoNullInd(oper1->data.string));
+
+    if (!prop_read_perms(ProgUID, oper2->data.objref, type, mlev))
 	abort_interp("Permission denied.");
 
     {
-	char type[BUFFER_LEN];
-	int len = oper1->data.string->length;
+	int len = oper1->data.string ? oper1->data.string->length : 0;
 
-	strcpyn(type, sizeof(type), oper1->data.string->data);
 	while (len-- > 0 && type[len] == PROPDIR_DELIMITER) {
 	    type[len] = '\0';
 	}
+
 	result = get_property_value(oper2->data.objref, type);
 
 	/* if (Typeof(oper2->data.objref) != TYPE_PLAYER)
@@ -109,20 +113,19 @@ prim_getpropfval(PRIM_PROTOTYPE)
     oper2 = POP();
     if (oper1->type != PROG_STRING)
 	abort_interp("Non-string argument (2)");
-    if (!oper1->data.string)
-	abort_interp("Empty string argument (2)");
     if (!valid_object(oper2))
 	abort_interp("Non-object argument (1)");
     CHECKREMOTE(oper2->data.objref);
 
-    if (!prop_read_perms(ProgUID, oper2->data.objref, oper1->data.string->data, mlev))
-	abort_interp("Permission denied.");
+    char type[BUFFER_LEN];
+    strcpyn(type, sizeof(type), DoNullInd(oper1->data.string));
+
+    if (!prop_read_perms(ProgUID, oper2->data.objref, type, mlev))
+        abort_interp("Permission denied.");
 
     {
-	char type[BUFFER_LEN];
-	int len = oper1->data.string->length;
+        int len = oper1->data.string ? oper1->data.string->length : 0;
 
-	strcpyn(type, sizeof(type), oper1->data.string->data);
 	while (len-- > 0 && type[len] == PROPDIR_DELIMITER) {
 	    type[len] = '\0';
 	}
@@ -148,19 +151,19 @@ prim_getprop(PRIM_PROTOTYPE)
     oper2 = POP();
     if (oper1->type != PROG_STRING)
 	abort_interp("Non-string argument (2)");
-    if (!oper1->data.string)
-	abort_interp("Empty string argument (2)");
     if (!valid_object(oper2))
 	abort_interp("Non-object argument (1)");
     CHECKREMOTE(oper2->data.objref);
+
+    char type[BUFFER_LEN];
+    strcpyn(type, sizeof(type), DoNullInd(oper1->data.string));
+
+    if (!prop_read_perms(ProgUID, oper2->data.objref, type, mlev))
+        abort_interp("Permission denied.");
+
     {
-	char type[BUFFER_LEN];
-	int len = oper1->data.string->length;
+	int len = oper1->data.string ? oper1->data.string->length : 0;
 
-	if (!prop_read_perms(ProgUID, oper2->data.objref, oper1->data.string->data, mlev))
-	    abort_interp("Permission denied.");
-
-	strcpyn(type, sizeof(type), oper1->data.string->data);
 	while (len-- > 0 && type[len] == PROPDIR_DELIMITER) {
 	    type[len] = '\0';
 	}
@@ -220,20 +223,17 @@ prim_getpropstr(PRIM_PROTOTYPE)
     oper2 = POP();
     if (oper1->type != PROG_STRING)
 	abort_interp("Non-string argument (2)");
-    if (!oper1->data.string)
-	abort_interp("Empty string argument (2)");
     if (!valid_object(oper2))
 	abort_interp("Non-object argument (1)");
     CHECKREMOTE(oper2->data.objref);
+
+    char type[BUFFER_LEN];
+    strcpyn(type, sizeof(type), DoNullInd(oper1->data.string));
+
     {
-	char type[BUFFER_LEN];
+        int len = oper1->data.string ? oper1->data.string->length : 0;
 	PropPtr ptr;
-	int len = oper1->data.string->length;
 
-	if (!prop_read_perms(ProgUID, oper2->data.objref, oper1->data.string->data, mlev))
-	    abort_interp("Permission denied.");
-
-	strcpyn(type, sizeof(type), oper1->data.string->data);
 	while (len-- > 0 && type[len] == PROPDIR_DELIMITER) {
 	    type[len] = '\0';
 	}
@@ -328,8 +328,6 @@ prim_envprop(PRIM_PROTOTYPE)
     oper2 = POP();
     if (oper1->type != PROG_STRING)
 	abort_interp("Non-string argument (2)");
-    if (!oper1->data.string)
-	abort_interp("Empty string argument (2)");
     if (!valid_object(oper2))
 	abort_interp("Non-object argument (1)");
     CHECKREMOTE(oper2->data.objref);
@@ -337,9 +335,9 @@ prim_envprop(PRIM_PROTOTYPE)
 	char tname[BUFFER_LEN];
 	dbref what;
 	PropPtr ptr;
-	int len = oper1->data.string->length;
+	int len = oper1->data.string ? oper1->data.string->length : 0;
 
-	strcpyn(tname, sizeof(tname), oper1->data.string->data);
+	strcpyn(tname, sizeof(tname), DoNullInd(oper1->data.string));
 	while (len-- > 0 && tname[len] == PROPDIR_DELIMITER) {
 	    tname[len] = '\0';
 	}
@@ -401,8 +399,6 @@ prim_envpropstr(PRIM_PROTOTYPE)
     oper2 = POP();
     if (oper1->type != PROG_STRING)
 	abort_interp("Non-string argument (2)");
-    if (!oper1->data.string)
-	abort_interp("Empty string argument (2)");
     if (!valid_object(oper2))
 	abort_interp("Non-object argument (1)");
     CHECKREMOTE(oper2->data.objref);
@@ -411,9 +407,9 @@ prim_envpropstr(PRIM_PROTOTYPE)
 	dbref what;
 	PropPtr ptr;
 	const char *temp;
-	int len = oper1->data.string->length;
+	int len = oper1->data.string ? oper1->data.string->length : 0;
 
-	strcpyn(tname, sizeof(tname), oper1->data.string->data);
+	strcpyn(tname, sizeof(tname), DoNullInd(oper1->data.string));
 	while (len-- > 0 && tname[len] == PROPDIR_DELIMITER) {
 	    tname[len] = '\0';
 	}
@@ -474,8 +470,6 @@ prim_blessprop(PRIM_PROTOTYPE)
     oper1 = POP();
     if (oper2->type != PROG_STRING)
 	abort_interp("Non-string argument (2)");
-    if (!oper2->data.string)
-	abort_interp("Empty string argument (2)");
     if (!valid_object(oper1))
 	abort_interp("Non-object argument (1)");
     CHECKREMOTE(oper1->data.objref);
@@ -487,15 +481,15 @@ prim_blessprop(PRIM_PROTOTYPE)
     {
 	char *tmpe;
 	char tname[BUFFER_LEN];
-	int len = oper2->data.string->length;
+	int len = oper2->data.string ? oper2->data.string->length : 0;
 
-	tmpe = oper2->data.string->data;
+	tmpe = DoNullInd(oper2->data.string);
 	while (*tmpe && *tmpe != '\r' && *tmpe != PROP_DELIMITER)
 	    tmpe++;
 	if (*tmpe)
 	    abort_interp("Illegal propname");
 
-	strcpyn(tname, sizeof(tname), oper2->data.string->data);
+	strcpyn(tname, sizeof(tname), DoNullInd(oper2->data.string));
 	while (len-- > 0 && tname[len] == PROPDIR_DELIMITER) {
 	    tname[len] = '\0';
 	}
@@ -516,8 +510,6 @@ prim_unblessprop(PRIM_PROTOTYPE)
     oper1 = POP();
     if (oper2->type != PROG_STRING)
 	abort_interp("Non-string argument (2)");
-    if (!oper2->data.string)
-	abort_interp("Empty string argument (2)");
     if (!valid_object(oper1))
 	abort_interp("Non-object argument (1)");
     CHECKREMOTE(oper1->data.objref);
@@ -529,15 +521,15 @@ prim_unblessprop(PRIM_PROTOTYPE)
     {
 	char *tmpe;
 	char tname[BUFFER_LEN];
-	int len = oper2->data.string->length;
+	int len = oper2->data.string ? oper2->data.string->length : 0;
 
-	tmpe = oper2->data.string->data;
+	tmpe = DoNullInd(oper2->data.string);
 	while (*tmpe && *tmpe != '\r' && *tmpe != PROP_DELIMITER)
 	    tmpe++;
 	if (*tmpe)
 	    abort_interp("Illegal propname");
 
-	strcpyn(tname, sizeof(tname), oper2->data.string->data);
+	strcpyn(tname, sizeof(tname), DoNullInd(oper2->data.string));
 	while (len-- > 0 && tname[len] == PROPDIR_DELIMITER) {
 	    tname[len] = '\0';
 	}
@@ -564,8 +556,6 @@ prim_setprop(PRIM_PROTOTYPE)
 	abort_interp("Invalid argument type (3)");
     if (oper2->type != PROG_STRING)
 	abort_interp("Non-string argument (2)");
-    if (!oper2->data.string)
-	abort_interp("Empty string argument (2)");
     if (!valid_object(oper3))
 	abort_interp("Non-object argument (1)");
     CHECKREMOTE(oper3->data.objref);
@@ -573,18 +563,19 @@ prim_setprop(PRIM_PROTOTYPE)
     if ((mlev < 2) && (!permissions(ProgUID, oper3->data.objref)))
 	abort_interp("Permission denied.");
 
-    if (!prop_write_perms(ProgUID, oper3->data.objref, oper2->data.string->data, mlev))
+    char tname[BUFFER_LEN];
+    strcpyn(tname, sizeof(tname), DoNullInd(oper2->data.string));
+    
+    if (!prop_write_perms(ProgUID, oper3->data.objref, tname, mlev))
 	abort_interp("Permission denied.");
 
     {
-	char tname[BUFFER_LEN];
 	PData propdat;
-	int len = oper2->data.string->length;
+	int len = oper2->data.string ? oper2->data.string->length : 0;
 
-	if (!is_valid_propname(oper2->data.string->data))
+	if (!is_valid_propname(tname))
 	    abort_interp("Illegal propname");
 
-	strcpyn(tname, sizeof(tname), oper2->data.string->data);
 	while (len-- > 0 && tname[len] == PROPDIR_DELIMITER) {
 	    tname[len] = '\0';
 	}
@@ -592,7 +583,7 @@ prim_setprop(PRIM_PROTOTYPE)
 	switch (oper1->type) {
 	case PROG_STRING:
 	    propdat.flags = PROP_STRTYP;
-	    propdat.data.str = oper1->data.string ? oper1->data.string->data : 0;
+	    propdat.data.str = DoNullInd(oper1->data.string);
 	    break;
 	case PROG_INTEGER:
 	    propdat.flags = PROP_INTTYP;
@@ -634,8 +625,6 @@ prim_addprop(PRIM_PROTOTYPE)
 	abort_interp("Non-string argument (3)");
     if (oper3->type != PROG_STRING)
 	abort_interp("Non-string argument (2)");
-    if (!oper3->data.string)
-	abort_interp("Empty string argument (2)");
     if (!valid_object(oper4))
 	abort_interp("Non-object argument (1)");
     CHECKREMOTE(oper4->data.objref);
@@ -643,23 +632,24 @@ prim_addprop(PRIM_PROTOTYPE)
     if ((mlev < 2) && (!permissions(ProgUID, oper4->data.objref)))
 	abort_interp("Permission denied.");
 
-    if (!prop_write_perms(ProgUID, oper4->data.objref, oper3->data.string->data, mlev))
+    char tname[BUFFER_LEN];
+    strcpyn(tname, sizeof(tname), DoNullInd(oper3->data.string));
+
+    if (!prop_write_perms(ProgUID, oper4->data.objref, tname, mlev))
 	abort_interp("Permission denied.");
 
     {
 	const char *temp;
 	char *tmpe;
-	char tname[BUFFER_LEN];
-	int len = oper3->data.string->length;
+	int len = oper3->data.string ? oper3->data.string->length : 0;
 
-	temp = (oper2->data.string ? oper2->data.string->data : 0);
-	tmpe = oper3->data.string->data;
+	temp = DoNullInd(oper2->data.string);
+	tmpe = tname;
 	while (*tmpe && *tmpe != '\r')
 	    tmpe++;
 	if (*tmpe)
 	    abort_interp("CRs not allowed in propname");
 
-	strcpyn(tname, sizeof(tname), oper3->data.string->data);
 	while (len-- > 0 && tname[len] == PROPDIR_DELIMITER) {
 	    tname[len] = '\0';
 	}
@@ -888,24 +878,22 @@ prim_parseprop(PRIM_PROTOTYPE)
 	abort_interp("String expected. (3)");
     if (oper1->type != PROG_STRING)
 	abort_interp("String expected. (2)");
-    if (!oper1->data.string)
-	abort_interp("Empty string argument (2)");
     if (oper4->type != PROG_INTEGER)
 	abort_interp("Integer expected. (4)");
     if (oper4->data.number < 0 || oper4->data.number > 1)
 	abort_interp("Integer of 0 or 1 expected. (4)");
     CHECKREMOTE(oper3->data.objref);
     {
-	int len = oper1->data.string->length;
+	strcpyn(type, sizeof(type), DoNullInd(oper1->data.string));
+	int len = oper1->data.string ? oper1->data.string->length : 0;
 
-	if (!prop_read_perms(ProgUID, oper3->data.objref, oper1->data.string->data, mlev))
+	if (!prop_read_perms(ProgUID, oper3->data.objref, type, mlev))
 	    abort_interp("Permission denied.");
 
 	if (mlev < 3 && !permissions(player, oper3->data.objref) &&
-	    prop_write_perms(ProgUID, oper3->data.objref, oper1->data.string->data, mlev))
+	    prop_write_perms(ProgUID, oper3->data.objref, type, mlev))
 	    abort_interp("Permission denied.");
 
-	strcpyn(type, sizeof(type), oper1->data.string->data);
 	while (len-- > 0 && type[len] == PROPDIR_DELIMITER) {
 	    type[len] = '\0';
 	}
@@ -1039,15 +1027,16 @@ prim_reflist_find(PRIM_PROTOTYPE)
 	abort_interp("Non-object argument (1)");
     if (oper2->type != PROG_STRING)
 	abort_interp("Non-string argument (2)");
-    if (!oper2->data.string)
-	abort_interp("Empty string argument (2)");
     if (oper3->type != PROG_OBJECT)
 	abort_interp("Non-object argument (3)");
-    if (!prop_read_perms(ProgUID, oper1->data.objref, oper2->data.string->data, mlev))
+
+    char *b = DoNullInd(oper2->data.string);
+
+    if (!prop_read_perms(ProgUID, oper1->data.objref, b, mlev))
 	abort_interp("Permission denied.");
     CHECKREMOTE(oper1->data.objref);
 
-    result = reflist_find(oper1->data.objref, oper2->data.string->data, oper3->data.objref);
+    result = reflist_find(oper1->data.objref, b, oper3->data.objref);
 
     CLEAR(oper1);
     CLEAR(oper2);
@@ -1066,15 +1055,16 @@ prim_reflist_add(PRIM_PROTOTYPE)
 	abort_interp("Non-object argument (1)");
     if (oper2->type != PROG_STRING)
 	abort_interp("Non-string argument (2)");
-    if (!oper2->data.string)
-	abort_interp("Empty string argument (2)");
     if (oper3->type != PROG_OBJECT)
 	abort_interp("Non-object argument (3)");
-    if (!prop_write_perms(ProgUID, oper1->data.objref, oper2->data.string->data, mlev))
+
+    char *b = DoNullInd(oper2->data.string);
+
+    if (!prop_write_perms(ProgUID, oper1->data.objref, b, mlev))
 	abort_interp("Permission denied.");
     CHECKREMOTE(oper1->data.objref);
 
-    reflist_add(oper1->data.objref, oper2->data.string->data, oper3->data.objref);
+    reflist_add(oper1->data.objref, b, oper3->data.objref);
 
     CLEAR(oper1);
     CLEAR(oper2);
@@ -1092,15 +1082,16 @@ prim_reflist_del(PRIM_PROTOTYPE)
 	abort_interp("Non-object argument (1)");
     if (oper2->type != PROG_STRING)
 	abort_interp("Non-string argument (2)");
-    if (!oper2->data.string)
-	abort_interp("Empty string argument (2)");
     if (oper3->type != PROG_OBJECT)
 	abort_interp("Non-object argument (3)");
-    if (!prop_write_perms(ProgUID, oper1->data.objref, oper2->data.string->data, mlev))
+
+    char *b = DoNullInd(oper2->data.string);
+
+    if (!prop_write_perms(ProgUID, oper1->data.objref, b, mlev))
 	abort_interp("Permission denied.");
     CHECKREMOTE(oper1->data.objref);
 
-    reflist_del(oper1->data.objref, oper2->data.string->data, oper3->data.objref);
+    reflist_del(oper1->data.objref, b, oper3->data.objref);
 
     CLEAR(oper1);
     CLEAR(oper2);
@@ -1177,18 +1168,17 @@ prim_parsepropex(PRIM_PROTOTYPE)
 
     if (!valid_object(oper1))
 	abort_interp("Invalid object. (1)");
-    if (!oper2->data.string)
-	abort_interp("Empty string argument. (2)");
     if ((oper4->data.number != 0) && (oper4->data.number != 1))
 	abort_interp("Integer of 0 or 1 expected. (4)");
 
     CHECKREMOTE(oper1->data.objref);
 
-    if (!prop_read_perms(ProgUID, oper1->data.objref, oper2->data.string->data, mlev))
+    strcpyn(tname, sizeof(tname), DoNullInd(oper2->data.string));
+    len = oper2->data.string ? oper2->data.string->length : 0;
+
+    if (!prop_read_perms(ProgUID, oper1->data.objref, tname, mlev))
 	abort_interp("Permission denied.");
 
-    len = oper2->data.string->length;
-    strcpyn(tname, sizeof(tname), oper2->data.string->data);
     while (len-- > 0 && tname[len] == PROPDIR_DELIMITER) {
 	tname[len] = '\0';
     }
@@ -1295,7 +1285,7 @@ prim_parsepropex(PRIM_PROTOTYPE)
 	if (oper4->data.number)
 	    result |= MPI_ISPRIVATE;
 
-	if (Prop_Blessed(oper1->data.objref, oper2->data.string->data))
+	if (Prop_Blessed(oper1->data.objref, tname))
 	    result |= MPI_ISBLESSED;
 
 	if (hashow)
@@ -1348,10 +1338,7 @@ prim_prop_name_okp(PRIM_PROTOTYPE)
     if (oper1->type != PROG_STRING)
         abort_interp("Property name string expected.");
 
-    if (!oper1->data.string)
-        abort_interp("Cannot be an empty string.");
-
-    result = is_valid_propname(oper1->data.string->data);
+    result = is_valid_propname(DoNullInd(oper1->data.string));
     
     CLEAR(oper1);
     PushInt(result);

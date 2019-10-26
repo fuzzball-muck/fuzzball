@@ -456,10 +456,8 @@ prim_pmatch(PRIM_PROTOTYPE)
     oper1 = POP();
     if (oper1->type != PROG_STRING)
 	abort_interp("Non-string argument.");
-    if (!oper1->data.string)
-	abort_interp("Empty string argument.");
 
-    strip_ansi(buf, oper1->data.string->data);
+    strip_ansi(buf, DoNullInd(oper1->data.string));
 
     if (!strcasecmp(buf, "me")) {
 	ref = player;
@@ -481,15 +479,13 @@ prim_match(PRIM_PROTOTYPE)
     oper1 = POP();
     if (oper1->type != PROG_STRING)
 	abort_interp("Non-string argument.");
-    if (!oper1->data.string)
-	abort_interp("Empty string argument.");
     {
 	char tmppp[BUFFER_LEN];
 	struct match_data md;
 
 	(void) strcpyn(buf, sizeof(buf), match_args);
 	(void) strcpyn(tmppp, sizeof(tmppp), match_cmdname);
-	strip_ansi(buf2, oper1->data.string->data);
+	strip_ansi(buf2, DoNullInd(oper1->data.string));
 	init_match(fr->descr, player, buf2, NOTYPE, &md);
 	if (buf2[0] == REGISTERED_TOKEN) {
 	    match_registered(&md);
@@ -587,21 +583,21 @@ prim_set(PRIM_PROTOTYPE)
     oper2 = POP();
     if (oper1->type != PROG_STRING)
 	abort_interp("Invalid argument type (2)");
-    if (!(oper1->data.string))
-	abort_interp("Empty string argument (2)");
     if (!valid_object(oper2))
 	abort_interp("Invalid object.");
     ref = oper2->data.objref;
     CHECKREMOTE(ref);
     tmp = 0;
-    result = (*oper1->data.string->data == '!');
     {
-	char *flag = oper1->data.string->data;
+	char *flag = DoNullInd(oper1->data.string);
+	result = (*flag == '!');
 
 	if (result)
 	    flag++;
 
-	if (string_prefix("dark", flag)
+	if (!*flag)
+	    tmp = 0;
+	else if (string_prefix("dark", flag)
 	    || string_prefix("debug", flag))
 	    tmp = DARK;
 	else if (string_prefix("abode", flag)
@@ -653,6 +649,7 @@ prim_set(PRIM_PROTOTYPE)
 	else if (string_prefix("overt", flag))
 	    tmp = (int)OVERT;
     }
+
     if (!tmp)
 	abort_interp("Unrecognized flag.");
     if ((mlev < 4) && !permissions(ProgUID, ref))
@@ -737,8 +734,6 @@ prim_flagp(PRIM_PROTOTYPE)
     oper2 = POP();
     if (oper1->type != PROG_STRING)
 	abort_interp("Invalid argument type (2)");
-    if (!(oper1->data.string))
-	abort_interp("Empty string argument (2)");
     if (!valid_object(oper2))
 	abort_interp("Invalid object.");
     ref = oper2->data.objref;
@@ -746,7 +741,7 @@ prim_flagp(PRIM_PROTOTYPE)
     tmp = 0;
     result = 0;
     {
-	char *flag = oper1->data.string->data;
+	char *flag = DoNullInd(oper1->data.string);
 
 	while (*flag == '!') {
 	    flag++;
@@ -1436,11 +1431,9 @@ prim_part_pmatch(PRIM_PROTOTYPE)
     oper1 = POP();
     if (oper1->type != PROG_STRING)
 	abort_interp("Non-string argument.");
-    if (!oper1->data.string)
-	abort_interp("Empty string argument.");
     if (mlev < 3)
 	abort_interp("Permission denied.  Requires Mucker Level 3.");
-    ref = partial_pmatch(oper1->data.string->data);
+    ref = partial_pmatch(DoNullInd(oper1->data.string));
     CLEAR(oper1);
     PushObject(ref);
 }
@@ -1663,15 +1656,11 @@ prim_newplayer(PRIM_PROTOTYPE)
 	abort_interp("Permission denied.  Requires Wizbit.");
     if (oper1->type != PROG_STRING)
 	abort_interp("Non-string argument. (1)");
-    if (!oper1->data.string)
-	abort_interp("Empty string argument. (1)");
     if (oper2->type != PROG_STRING)
 	abort_interp("Non-string argument. (2)");
-    if (!oper2->data.string)
-	abort_interp("Empty string argument. (2)");
 
-    name = oper2->data.string->data;
-    password = oper1->data.string->data;
+    name = DoNullInd(oper2->data.string);
+    password = DoNullInd(oper1->data.string);
 
     newplayer = create_player(name, password);
 
@@ -1701,19 +1690,15 @@ prim_copyplayer(PRIM_PROTOTYPE)
 	abort_interp("Permission denied.  Requires Wizbit.");
     if (oper1->type != PROG_STRING)
 	abort_interp("Non-string argument. (3)");
-    if (!oper1->data.string)
-	abort_interp("Empty string argument. (3)");
     if (oper2->type != PROG_STRING)
 	abort_interp("Non-string argument. (2)");
-    if (!oper2->data.string)
-	abort_interp("Empty string argument. (2)");
     ref = oper3->data.objref;
     if ((ref != NOTHING && !valid_player(oper3)) || ref == NOTHING)
 	abort_interp("Player dbref expected. (1)");
     CHECKREMOTE(ref);
 
-    name = oper2->data.string->data;
-    password = oper1->data.string->data;
+    name = DoNullInd(oper2->data.string);
+    password = DoNullInd(oper1->data.string);
 
     newplayer = create_player(name, password);
 
@@ -1898,12 +1883,15 @@ prim_newprogram(PRIM_PROTOTYPE)
 
     if (mlev < 4)
 	abort_interp("Permission denied.  Requires Wizbit.");
-    if (oper1->type != PROG_STRING || !oper1->data.string)
-	abort_interp("Expected non-empty string argument.");
-    if (!ok_object_name(oper1->data.string->data, TYPE_PROGRAM))
+    if (oper1->type != PROG_STRING)
+       abort_interp("Expected string argument.");
+
+    char *b = DoNullInd(oper1->data.string);
+
+    if (!ok_object_name(b, TYPE_PROGRAM))
 	abort_interp("Invalid name (2)");
 
-    newprog = create_program(ProgUID, oper1->data.string->data);
+    newprog = create_program(ProgUID, b);
 
     CLEAR(oper1);
 

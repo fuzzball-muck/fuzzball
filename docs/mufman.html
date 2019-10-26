@@ -4253,7 +4253,6 @@ identifier.
     <li><a href="#pname-ok?">pname-ok?</a></li>
     <li><a href="#pose-separator?">pose-separator?</a></li>
     <li><a href="#pronoun_sub">pronoun_sub</a></li>
-    <li><a href="#prop-name-ok?">prop-name-ok?</a></li>
     <li><a href="#regexp">regexp</a></li>
     <li><a href="#regsplit">regsplit</a></li>
     <li><a href="#regsplit_noempty">regsplit_noempty</a></li>
@@ -5030,17 +5029,6 @@ not found. Non-case sensitive.
   This is deprecated, and internally defined as: &quot;player&quot; ext-name-ok?
 <p>Also see:
     <a href="#ext-name-ok?">EXT-NAME-OK?</a>
-</p>
-<!-- HTML_TOPICEND -->
-
-
-<h3 id="prop-name-ok?">PROP-NAME-OK? (s -- i)
-<br>
-</h3>
-  Returns true if the given string is an acceptable property name that will
-not cause an error for SETPROP or any other property related primitive.
-<p>Also see:
-    <a href="#setprop">SETPROP</a>
 </p>
 <!-- HTML_TOPICEND -->
 
@@ -6096,6 +6084,7 @@ smatch wildcard pattern.
     <li><a href="#parsempiblessed">parsempiblessed</a></li>
     <li><a href="#parseprop">parseprop</a></li>
     <li><a href="#parsepropex">parsepropex</a></li>
+    <li><a href="#prop-name-ok?">prop-name-ok?</a></li>
     <li><a href="#propdir?">propdir?</a></li>
     <li><a href="#reflist_add">reflist_add</a></li>
     <li><a href="#reflist_del">reflist_del</a></li>
@@ -6497,6 +6486,17 @@ be sent to the rest of the players in the room.  This prim is most useful for
 passing values between MPI and MUF, rather than having to resort to formatting
 the data into the {&amp;how} variable, or the return value.
 This primitives requires at least mucker level 3.
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="prop-name-ok?">PROP-NAME-OK? (s -- i)
+<br>
+</h3>
+  Returns true if the given string is an acceptable property name that will
+not cause an error for SETPROP or any other property related primitive.
+<p>Also see:
+    <a href="#setprop">SETPROP</a>
+</p>
 <!-- HTML_TOPICEND -->
 
 
@@ -6964,9 +6964,7 @@ Wizbit only.
 
 <br>
 </h3>
-  Sets flag s to object d.  Currently settable things are: abode, chown,
-dark, haven, jump, link, sticky.  Boolean operations (e.g. `!abode')
-work as expected.
+  Sets flag s to object d.  Recognizes negation (e.g. `!abode').
 <p>Also see:
     <a href="#setname">SETNAME</a>,
     <a href="#setdesc">SETDESC</a> and
@@ -6982,7 +6980,7 @@ work as expected.
 </h3>
   Reads the flag of object d, specified by s, and returns its state: 1 =
 on; 0 = off.  The ! token may be used before the name of a flag to negate
-the check and check for the absense of the flag.  Different flags may be
+the check and check for the absence of the flag.  Different flags may be
 supported in different installations.  flag? returns 0 for unsupported or
 unrecognized flags.
 <p>

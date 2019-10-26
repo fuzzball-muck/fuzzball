@@ -993,33 +993,31 @@ prim_ext_name_okp(PRIM_PROTOTYPE)
 
     if (oper1->type != PROG_STRING)
 	abort_interp("Object name string expected (1).");
-    if (!oper1->data.string)
-	abort_interp("Cannot be an empty string (1).");
+
+    char *b = DoNullInd(oper1->data.string);
 
     if (oper2->type == PROG_STRING) {
-	if (!oper2->data.string)
-	    abort_interp("Cannot be an empty string (2).");
-	strcpyn(buf, sizeof(buf), oper2->data.string->data);
+	strcpyn(buf, sizeof(buf), DoNullInd(oper2->data.string));
 	for (ref = 0; buf[ref]; ref++)
 	    buf[ref] = tolower(buf[ref]);
 	if (!strcmp(buf, "e") || !strcmp(buf, "exit")) {
-            result = ok_object_name(oper1->data.string->data, TYPE_EXIT);
+            result = ok_object_name(b, TYPE_EXIT);
 	} else if (!strcmp(buf, "r") || !strcmp(buf, "room")) {
-            result = ok_object_name(oper1->data.string->data, TYPE_ROOM);
+            result = ok_object_name(b, TYPE_ROOM);
 	} else if (!strcmp(buf, "t") || !strcmp(buf, "thing")) {
-            result = ok_object_name(oper1->data.string->data, TYPE_THING);
+            result = ok_object_name(b, TYPE_THING);
 	} else if (!strcmp(buf, "p") || !strcmp(buf, "player")) {
-            result = ok_object_name(oper1->data.string->data, TYPE_PLAYER);
+            result = ok_object_name(b, TYPE_PLAYER);
 	} else if (!strcmp(buf, "f") || !strcmp(buf, "muf")
 		   || !strcmp(buf, "program")) {
-            result = ok_object_name(oper1->data.string->data, TYPE_PROGRAM);
+            result = ok_object_name(b, TYPE_PROGRAM);
 	} else {
 	    abort_interp("String must be a valid object type (2).");
 	}
     } else if (oper2->type == PROG_OBJECT) {
 	if (!valid_object(oper2))
 	    abort_interp("Invalid argument (2).");
-        result = ok_object_name(oper1->data.string->data, Typeof(oper2->data.objref));
+        result = ok_object_name(b, Typeof(oper2->data.objref));
     } else {
 	abort_interp("Dbref or object type name expected (2).");
     }
