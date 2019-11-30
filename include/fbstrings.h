@@ -41,14 +41,11 @@ struct shared_string *alloc_prog_string(const char *);
  * Create a copy of the given string.  If the string is NULL or empty,
  * return NULL.
  *
- * This will abort() if malloc fails.  The string is copied so the caller
- * still 'owns' the orignal string memory after calling this.
+ * The string is copied so the caller still 'owns' the orignal string
+ * memory after calling this.
  *
  * Note that if MALLOC_PROFILING is defined, the version of this call in
  * fbstrings.h is not used.
- *
- * @TODO This is almost identical to strdup except the empty string behavior;
- *       it could easily be refactored to just use strdup.
  *
  * @param string The string to copy
  * @return a copy of the string

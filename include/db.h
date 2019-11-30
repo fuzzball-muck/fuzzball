@@ -210,33 +210,6 @@ extern char match_cmdname[BUFFER_LEN];
 # define TUNE_MLEV(player)      MLevel(player)
 #endif
 
-/*
- * MUF interp's 'nosleeps' parameter options for different program states.
- *
- * @TODO Not sure why these are in db.h and not interp.h ?  Maybe there is
- *       a dependency reason, but, this seems like a random spot for it.
- */
-
-/**
- * @var pre-empt means the MUF will run til its over, not letting anything
- *      else timeshare with it.  This comes with it certain limitations to
- *      make sure the MUCK doesn't get locked up by a program.
- */
-#define PREEMPT 0
-
-/**
- * @var run the MUF in the foreground, which allows it to run READ commands
- */
-#define FOREGROUND 1
-
-/**
- * @var run the MUF in the background, which means it cannot run READ
- * commands.  Some things can only run in the background, like propqueue
- * programs.
- */
-#define BACKGROUND 2
-
-
 #define BUILDERONLY(_cmd,x) \
     if(!Builder(x)) {   \
         notifyf_nolisten(x, "Only builders are allowed to %s.\r", _cmd); \

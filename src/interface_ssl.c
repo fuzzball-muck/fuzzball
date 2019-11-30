@@ -12,6 +12,38 @@
 #include "interface_ssl.h"
 #include "log.h"
 
+/*
+ * Check if config.h specifies to log all SSL errors
+ * @TODO: This should be configurable at runtime, e.g. with an '@debug set
+ *        ssl_logging' command.
+ */
+#ifdef DEBUG_SSL_LOG_ALL
+/**
+ * @private
+ * @var SSL logging level for connection handling
+ */
+const ssl_logging_t ssl_logging_connect = SSL_LOGGING_DEBUG;
+
+/**
+ * @private
+ * @var SSL logging level for socket reads/writes
+ */
+const ssl_logging_t ssl_logging_stream = SSL_LOGGING_DEBUG;
+
+#else
+/**
+ * @private
+ * @var SSL logging level for connection handling
+ */
+const ssl_logging_t ssl_logging_connect = SSL_LOGGING_WARN;
+
+/**
+ * @private
+ * @var SSL logging level for socket reads/writes
+ */
+const ssl_logging_t ssl_logging_stream = SSL_LOGGING_NONE;
+#endif /* DEBUG_SSL_LOG_ALL */
+
 /**
  * Converts an SSL protocol version string to a version number
  *

@@ -111,7 +111,6 @@ static int con_players_curr = 0;
  */
 #define MAX_LISTEN_SOCKS 16
 
-
 /**
  * @private
  * @var The IPv6 IP address to bind to.  This will default to in6addr_any,

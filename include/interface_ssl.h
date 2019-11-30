@@ -108,40 +108,17 @@ typedef enum {
 } ssl_logging_t;
 
 
-/*
- * Check if config.h specifies to log all SSL errors
- * @TODO: This should be configurable at runtime, e.g. with an '@debug set
- *        ssl_logging' command.
- *
- *        Further @TODO: static variables should *never* be in a header.
- *        Move this to interface_ssl.c
- */
-#ifdef DEBUG_SSL_LOG_ALL
 /**
  * @private
  * @var SSL logging level for connection handling
  */
-static const ssl_logging_t ssl_logging_connect = SSL_LOGGING_DEBUG;
+extern const ssl_logging_t ssl_logging_connect;
 
 /**
  * @private
  * @var SSL logging level for socket reads/writes
  */
-static const ssl_logging_t ssl_logging_stream = SSL_LOGGING_DEBUG;
-
-#else
-/**
- * @private
- * @var SSL logging level for connection handling
- */
-static const ssl_logging_t ssl_logging_connect = SSL_LOGGING_WARN;
-
-/**
- * @private
- * @var SSL logging level for socket reads/writes
- */
-static const ssl_logging_t ssl_logging_stream = SSL_LOGGING_NONE;
-#endif /* DEBUG_SSL_LOG_ALL */
+extern const ssl_logging_t ssl_logging_stream;
 
 /**
  * Converts an SSL protocol version string to a version number

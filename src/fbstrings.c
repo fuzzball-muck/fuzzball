@@ -550,28 +550,16 @@ pronoun_substitute(int descr, dbref player, const char *str)
  * Note that if MALLOC_PROFILING is defined, the version of this call in
  * fbstrings.h is not used.
  *
- * @TODO This is almost identical to strdup except the empty string behavior;
- *       it could easily be refactored to just use strdup. with a little if
- *       statement to return NULL if empty string.
- *
  * @param string The string to copy
  * @return a copy of the string
  */
 char *
 alloc_string(const char *string)
 {
-    char *s;
-
-    /* NULL, "" -> NULL */
     if (!string || !*string)
         return 0;
 
-    if ((s = malloc(strlen(string) + 1)) == 0) {
-        abort();
-    }
-
-    strcpy(s, string);        /* Guaranteed enough space. */
-    return s;
+    return strdup(string);
 }
 
 /**
@@ -624,37 +612,9 @@ alloc_prog_string(const char *s)
 char *
 intostr(int i)
 {
-    /* @TODO: This could be refactored into 2 lines of code.  I'm not sure
-     * why fuzzball made their own version of this instead of using standard
-     * C (snprintf for instance). I guess this is arguably faster than
-     * snprintf ?  We do use this call a lot.  Could do a little performance
-     * test to see if that's true.
-     */
-
     static char num[16];
-    int j, k;
-    char *ptr2;
-
-    k = i;
-    ptr2 = num + 14;
-    num[15] = '\0';
-
-    if (i < 0)
-        i = -i;
-
-    while (i) {
-        j = i % 10;
-        *ptr2-- = '0' + j;
-        i /= 10;
-    }
-
-    if (!k)
-        *ptr2-- = '0';
-
-    if (k < 0)
-        *ptr2-- = '-';
-
-    return (++ptr2);
+    snprintf(num, sizeof(num), "%d", i);
+    return num;
 }
 
 /*

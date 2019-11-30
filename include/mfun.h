@@ -913,27 +913,6 @@ const char *mfn_force(MFUNARGS);
 const char *mfn_foreach(MFUNARGS);
 
 /**
- * MPI function that displays a message
- *
- * This should probably just be removed.
- *
- * TODO: remove this call ?  It does nothing and isn't even a particularly
- *       interesting easter egg.  I'd rather have the bytes back personally.
- *
- * @param descr the descriptor of the caller
- * @param player the ref of the calling player
- * @param what the dbref of the trigger
- * @param perms the dbref for permission consideration
- * @param argc the number of arguments
- * @param argv the array of strings for arguments
- * @param buf the working buffer
- * @param buflen the size of the buffer
- * @param mesgtyp the type of the message
- * @return string parsed results
- */
-const char *mfn_fox(MFUNARGS);
-
-/**
  * MPI function that returns a time string with the specified format
  *
  * Takes a format string that is the same as MUF's 'timefmt' (which
@@ -2972,7 +2951,6 @@ static struct mfun_dat mfun_list[] = {
     {"FOR", mfn_for, 0, 0, 0, 5, 5},
     {"FORCE", mfn_force, 1, 0, 1, 2, 2},
     {"FOREACH", mfn_foreach, 0, 0, 0, 3, 4},
-    {"FOX", mfn_fox, 0, 0, 0, 0, 0},
     {"FTIME", mfn_ftime, 1, 0, 0, 1, 3},
     {"FULLNAME", mfn_fullname, 1, 0, 1, 1, 1},
     {"FUNC", mfn_func, 0, 0, 1, 2, 9},  /* define a function */

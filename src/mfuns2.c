@@ -2386,33 +2386,6 @@ mfn_istype(MFUNARGS)
     }
 }
 
-
-/**
- * MPI function that displays a message
- *
- * This should probably just be removed.
- *
- * TODO: remove this call ?  It does nothing and isn't even a particularly
- *       interesting easter egg.  I'd rather have the bytes back personally.
- *
- * @param descr the descriptor of the caller
- * @param player the ref of the calling player
- * @param what the dbref of the trigger
- * @param perms the dbref for permission consideration
- * @param argc the number of arguments
- * @param argv the array of strings for arguments
- * @param buf the working buffer
- * @param buflen the size of the buffer
- * @param mesgtyp the type of the message
- * @return string parsed results
- */
-const char *
-mfn_fox(MFUNARGS)
-{
-    return "You found the easter egg!";
-}
-
-
 /**
  * MPI function that runs code in debug mode if the conditional returns true
  *

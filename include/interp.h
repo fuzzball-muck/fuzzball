@@ -215,6 +215,28 @@ struct mufwatchpidlist {
 };
 
 /*
+ * MUF interp's 'nosleeps' parameter options for different program states.
+ */
+
+/**
+ * @var pre-empt means the MUF will run til its over, not letting anything
+ *      else timeshare with it.  This comes with it certain limitations to
+ *      make sure the MUCK doesn't get locked up by a program.
+ */
+#define PREEMPT 0
+
+/**
+ * @var run the MUF in the foreground, which allows it to run READ commands
+ */
+#define FOREGROUND 1
+
+/**
+ * @var run the MUF in the background, which means it cannot run READ
+ * commands.  Some things can only run in the background, like propqueue
+ * programs.
+ */
+#define BACKGROUND 2
+/*
  * These appear to be used by the interpreter to determine what UID
  * settings to used.  In the DB these are implemented as flags.
  */
