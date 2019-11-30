@@ -26,7 +26,7 @@
 #include "log.h"
 #include "match.h"
 #include "move.h"
-#include "msgparse.h"
+#include "mpi.h"
 #include "player.h"
 #include "predicates.h"
 #include "props.h"

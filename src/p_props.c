@@ -15,7 +15,6 @@
 #include "game.h"
 #include "inst.h"
 #include "interp.h"
-#include "msgparse.h"
 #include "mpi.h"
 #include "props.h"
 #include "tune.h"

@@ -1,4 +1,4 @@
-/** @file move.c
+/** @file msgparse.c
  *
  * Implementation for handling MPI message processing.
  *
@@ -22,7 +22,6 @@
 #include "match.h"
 #include "mfun.h"
 #include "mpi.h"
-#include "msgparse.h"
 #include "props.h"
 #include "tune.h"
 
@@ -58,14 +57,8 @@ safeblessprop(dbref obj, char *buf, int mesgtyp, int set_p)
     if (!*buf)
         return 0;
 
-    /*
-     * TODO: use is_valid_propname instead
-     */
-
-    /* disallow CR's and :'s in prop names. */
-    for (char *ptr = buf; *ptr; ptr++)
-        if (*ptr == '\r' || *ptr == PROP_DELIMITER)
-            return 0;
+    if (!is_valid_propname(buf))
+        return 0;
 
     if (!(mesgtyp & MPI_ISBLESSED)) {
         return 0;
@@ -113,9 +106,8 @@ safeputprop(dbref obj, char *buf, char *val, int mesgtyp)
     if (!*buf)
         return 0;
 
-    /*
-     * TODO: use is_valid_propname instead
-     */
+    if (!is_valid_propname(buf))
+        return 0;
 
     /* disallow CR's and :'s in prop names. */
     for (char *ptr = buf; *ptr; ptr++)
@@ -1045,10 +1037,10 @@ free_mfuncs(int downto)
  * @param perms the object to base permissions off of
  * @param name the macro to find
  * @param mesgtyp the mesgtyp from the MPI call containg blessed perms
- * @return boolean true if 'name' is a macro, false if it isn't
+ * @return const char * the macro's value if it exists, otherwise NULL
  */
-static int
-msg_is_macro(dbref player, dbref what, dbref perms, const char *name,
+static const char *
+msg_macro_val(dbref player, dbref what, dbref perms, const char *name,
              int mesgtyp)
 {
     const char *ptr;
@@ -1057,7 +1049,7 @@ msg_is_macro(dbref player, dbref what, dbref perms, const char *name,
     int blessed;
 
     if (!*name)
-        return 0;
+        return NULL;
 
     snprintf(buf2, sizeof(buf2), "%s/%s", MPI_MACROS_PROPDIR, name);
     obj = what;
@@ -1075,9 +1067,9 @@ msg_is_macro(dbref player, dbref what, dbref perms, const char *name,
         ptr = safegetprop_strict(player, 0, perms, buf2, mesgtyp, &blessed);
 
     if (!ptr || !*ptr)
-        return 0;
+        return NULL;
 
-    return 1;
+    return ptr;
 }
 
 /**
@@ -1097,7 +1089,6 @@ msg_is_macro(dbref player, dbref what, dbref perms, const char *name,
  * @param rest we will inject the unparsed function here
  * @param maxchars the maximum size that can be put in 'rest'
  * @param mesgtyp the mesgtyp from the MPI call containg blessed perms
- * @return boolean true if 'name' is a macro, false if it isn't
  */
 static void
 msg_unparse_macro(dbref player, dbref what, dbref perms, char *name, int argc,
@@ -1111,27 +1102,9 @@ msg_unparse_macro(dbref player, dbref what, dbref perms, char *name, int argc,
     int i, p = 0;
     int blessed;
 
-    /*
-     * TODO: This code (these attempts to load 'ptr') are 100% duplicated with
-     *       msg_is_macro ... and this call is always done after msg_is_macro
-     *       Can msg_is_macro simply return what it finds for ptr or NULL,
-     *       then we can re-use it here?
-     */
     strcpyn(buf, sizeof(buf), rest);
-    snprintf(buf2, sizeof(buf2), "%s/%s", MPI_MACROS_PROPDIR, name);
-    obj = what;
-    ptr = get_mfunc(name);
 
-    if (!ptr || !*ptr)
-        ptr = safegetprop_strict(player, OWNER(obj), perms, buf2, mesgtyp,
-                                 &blessed);
-
-    if (!ptr || !*ptr)
-        ptr = safegetprop_limited(player, obj, OWNER(obj), perms, buf2,
-                                  mesgtyp, &blessed);
-
-    if (!ptr || !*ptr)
-        ptr = safegetprop_strict(player, 0, perms, buf2, mesgtyp, &blessed);
+    ptr = msg_macro_val(player, what, perms, name, mesgtyp);
 
     while (ptr && *ptr && p < (maxchars - 1)) {
         if (*ptr == '\\') {
@@ -1373,8 +1346,9 @@ static int mesg_instr_cnt = 0;
 /**
  * Parse an MPI message
  *
- * MPI can only recurse 25 deep.  This is hard coded.  Only BUFFER_LEN of
- * 'inbuf' will be processed even if inbuf is longer than BUFFER_LEN.
+ * MPI is limited to recursing fewer than MPI_RECURSION_LIMIT times.
+ * Only BUFFER_LEN of 'inbuf' will be processed even if inbuf is longer
+ * than BUFFER_LEN.
  *
  * @param descr the descriptor of the user running the parser
  * @param player the player running the parser
@@ -1407,12 +1381,7 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf,
 
     mesg_rec_cnt++;
 
-    /*
-     * TODO: Don't hardcode a limit.  Make this at least a define, if not
-     *       a tp_ parameter.  Update function docs here and in include file
-     *       if you fix this todo.
-     */
-    if (mesg_rec_cnt > 26) {
+    if (mesg_rec_cnt > MPI_RECURSION_LIMIT) {
         char *zptr = get_mvar("how");
         notifyf_nolisten(player, "%s Recursion limit exceeded.", zptr);
         mesg_rec_cnt--;
@@ -1815,7 +1784,7 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf,
                             strcatn(dbuf, sizeof(dbuf), "`");
                             notify_nolisten(player, dbuf, 1);
                         }
-                    } else if (msg_is_macro(player, what, perms, cmdbuf,
+                    } else if (msg_macro_val(player, what, perms, cmdbuf,
                                             mesgtyp)) {
                         /* Is it a macro?  If so, let's run it */
                         for (i = 0; i < argc; i++) {

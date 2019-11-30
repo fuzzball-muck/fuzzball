@@ -25,7 +25,6 @@
 #include "interface.h"
 #include "mfun.h"
 #include "mpi.h"
-#include "msgparse.h"
 #include "player.h"
 #include "predicates.h"
 #include "props.h"
