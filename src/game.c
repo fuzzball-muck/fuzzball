@@ -1406,13 +1406,22 @@ process_command(int descr, dbref player, const char *command)
 
                     case 't':
                     case 'T':
-                        /* @teleport, @toad, @trace, @tune */
+                        /* @teledump, @teleport, @toad, @trace, @tune */
                         switch (command[2]) {
                             case 'e':
                             case 'E':
-                                NOGUEST("@teleport", player);
-                                Matched("@teleport");
-                                do_teleport(descr, player, arg1, arg2);
+                                /* Teledump is exact match only */
+                                if (!strcmp(command, "@teledump")) {
+                                    WIZARDONLY("@teledump", player);
+                                    PLAYERONLY("@teledump", player);
+                                    NOFORCE("@teledump", player);
+                                    do_teledump(descr, player);
+                                } else {
+                                    NOGUEST("@teleport", player);
+                                    Matched("@teleport");
+                                    do_teleport(descr, player, arg1, arg2);
+                                }
+
                                 break;
 
                             case 'o':
