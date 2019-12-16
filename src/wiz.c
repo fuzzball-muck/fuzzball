@@ -1611,3 +1611,240 @@ do_debug(dbref player, const char *args)
     }
 }
 
+/**
+ * @var constant used for base64 encoding - this is the character set
+ */
+static const unsigned char base64_table[65] =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+/**
+ * Implementation of a base64 encoder for the purpose of dumping DBs to a user
+ *
+ * This is taken from:
+ *
+ * https://web.mit.edu/freebsd/head/contrib/wpa/src/utils/
+ *
+ * and is Copyright (c) 2005-2011, Jouni Malinen <j@w1.fi>
+ *
+ * It is used under the terms of the BSD license.
+ *
+ * @private
+ * @param src the data to encode
+ * @param len the length of the data to be encoded
+ * @param out the buffer to use
+ * @param out_size the size of the buffer
+ * @return size of the generated b64 string (not including null)
+ */
+static size_t
+base64_encode(const unsigned char *src, size_t len, 
+              unsigned char *out, size_t out_size)
+{
+    unsigned char *pos;
+    const unsigned char *end, *in;
+    size_t olen;
+    int line_len;
+
+    olen = len * 4 / 3 + 4; /* 3-byte blocks to 4-byte */
+    olen += olen / 72; /* line feeds */
+    olen++; /* nul termination */
+
+    if ((olen < len) || (olen > out_size))
+        return 0; /* integer overflow */
+
+    end = src + len;
+    in = src;
+    pos = out;
+    line_len = 0;
+
+    while (end - in >= 3) {
+        *pos++ = base64_table[in[0] >> 2];
+        *pos++ = base64_table[((in[0] & 0x03) << 4) | (in[1] >> 4)];
+        *pos++ = base64_table[((in[1] & 0x0f) << 2) | (in[2] >> 6)];
+        *pos++ = base64_table[in[2] & 0x3f];
+        in += 3;
+        line_len += 4;
+
+        if (line_len >= 72) {
+            *pos++ = '\n';
+            line_len = 0;
+        }
+    }
+
+    if (end - in) {
+        *pos++ = base64_table[in[0] >> 2];
+
+        if (end - in == 1) {
+            *pos++ = base64_table[(in[0] & 0x03) << 4];
+            *pos++ = '=';
+        } else {
+            *pos++ = base64_table[((in[0] & 0x03) << 4) |
+                                  (in[1] >> 4)];
+            *pos++ = base64_table[(in[1] & 0x0f) << 2];
+        }
+
+        *pos++ = '=';
+        line_len += 4;
+    }
+
+    if (line_len)
+        *pos++ = '\n';
+
+    *pos = '\0';
+
+    return (pos - out);
+}
+
+/**
+ * Base 64 encode the contents of a file and send it over a descriptor in
+ * such a way that it won't get truncated by the MUCK.
+ *
+ * The output buffer will be flushed before the file is sent and then
+ * after.
+ *
+ * Note that, basically for buffer simplicity sake, we base 64 encode each
+ * line of the files we send individually.  As such, we need a dividing
+ * character to split these lines up so python can base 64 decode each line
+ * at a time.  * is the delimiter character.  Read the teledump-extract.py
+ * file for a better understanding of how this works.
+ *
+ * @private
+ * @param descr the descriptor data structure
+ * @param in the file handled to read from
+ */
+static void
+base64_send(struct descriptor_data* descr, FILE* in)
+{
+    int                     sent = 0, limit = 0, b64_len = 0;
+    char                    buf[BUFFER_LEN+1];
+
+    /*
+     * This is more than base64 needs, but is a simple calculation and
+     * better to have too much headroom than too little.
+     */
+    char                    base64_buf[BUFFER_LEN*2];
+
+    /*
+     * Calculate the maximum we can have in queue, so we know when to flush.
+     * Make sure we have some headroom here, too, so no accidents.
+     */
+    limit = tp_max_output - BUFFER_LEN;
+
+    /* Make sure there's nothing in our buffer */
+    process_output(descr);
+
+    while (fgets(buf, BUFFER_LEN, in)) {
+        b64_len = base64_encode(buf, strlen(buf), base64_buf,
+                                sizeof(base64_buf));
+
+        /* Add a * as a separator so we know each line */
+        base64_buf[b64_len] = '*';
+        b64_len++;
+        base64_buf[b64_len] = '\0';
+
+
+        if (sent + b64_len > limit) {
+            process_output(descr);
+            sent = 0;
+        }        
+
+        queue_write(descr, base64_buf, b64_len);
+        sent += b64_len;
+    }
+
+    process_output(descr);
+}
+
+/**
+ * Implementation of @teledump command
+ *
+ * @teledump does a base64 encoded dump of the entire database and the
+ * associated macros and MUF in a fashion that can be consumed by an unpacker
+ * script (a python unpacker will be provided as part of this).
+ *
+ * It is a way to preserve the vital data of a MUCK but it does not
+ * send over irrelevant files.
+ *
+ * For simplicity sake, it dumps the DB on disk, so @dump before running
+ * this command to get the latest.
+ *
+ * @param descr the player's descriptor
+ * @param player the player doing the teledump
+ */
+void
+do_teledump(int descr, dbref player)
+{
+    struct descriptor_data* d;
+    FILE*                   in;
+    char                    buf[BUFFER_LEN];
+
+    /*
+     * This is needed so we can run process_output and make sure we don't
+     * truncate output as we work.
+     */
+    d = descrdata_by_descr(descr);
+
+    /* Clear out anything in the player's descriptor */
+    process_output(d);
+
+    in = fopen(dumpfile, "r");
+
+    /* This file won't exist if there hasn't been a dump yet. */
+    if (!in) {
+        notify(player, "The database hasn't been dumped yet.  Please use "
+                       "@dump first.");
+        return;
+    }
+
+    /* Give a notification banner -- send DB first */
+    queue_write(d, "*** DB DUMP ***\r\n", 17);
+
+    base64_send(d, in);
+    fclose(in);
+
+    /* DB dump end marker */
+    queue_write(d, "*** DB DUMP END ***\r\n", 21);
+
+    /* Macros start marker */
+    queue_write(d, "*** MACRO START ***\r\n", 21);
+
+    in = fopen(MACRO_FILE, "r");
+
+    /* I'm not sure if MACRO_FILE always exists */
+    if (in) {
+        base64_send(d, in);
+        fclose(in);
+    }
+
+    /* Macros end marker */
+    queue_write(d, "*** MACRO END ***\r\n", 19);
+
+    /*
+     * Send over the MUFs
+     *
+     * I died a little inside writing this loop, but I think this is the
+     * only way to find all the programs on the MUCK.
+     */
+    for (dbref i = 0; i < db_top; i++) {
+        if (Typeof(i) != TYPE_PROGRAM) {
+            continue;
+        }
+
+        /* Start message */
+        snprintf(buf, sizeof(buf), "*** MUF %d ***\r\n", i);
+        queue_write(d, buf, strlen(buf));
+
+        /* Find the file */
+        snprintf(buf, sizeof(buf), "muf/%d.m", i);
+        in = fopen(buf, "r");
+
+        if (in) {
+            base64_send(d, in);
+            fclose(in);
+        }
+
+        /* End message */
+        queue_write(d, "*** MUF END ***\r\n", 17);
+    }
+
+    queue_write(d, "*** FINISHED ***\r\n", 18);
+}

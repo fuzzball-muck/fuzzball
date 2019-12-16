@@ -1351,6 +1351,27 @@ void do_sweep(int descr, dbref player, const char *name);
  */
 
 /**
+ * Implementation of @teledump command
+ *
+ * The definition resides in wiz.c
+ *
+ * @teledump does a base64 encoded dump of the entire database and the
+ * associated macros and MUF in a fashion that can be consumed by an unpacker
+ * script (a python unpacker will be provided as part of this).
+ *
+ * It is a way to preserve the vital data of a MUCK but it does not
+ * send over irrelevant files.
+ *
+ * For simplicity sake, it dumps the DB on disk, so @dump before running
+ * this command to get the latest.
+ *
+ * @param descr the player's descriptor
+ * @param player the player doing the teledump
+ */
+void
+do_teledump(int descr, dbref player);
+
+/**
  * Implementation of the @teleport command
  *
  * The definition resides in wiz.c
