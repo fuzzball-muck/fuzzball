@@ -7,8 +7,6 @@
 # a 'muf.outputfilename' directory.  If it already exists, files in there
 # will probably get overwritten.
 #
-# You need to install the base64io module for this to work.
-#
 
 import base64
 import os
