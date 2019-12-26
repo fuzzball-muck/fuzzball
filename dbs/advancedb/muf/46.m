@@ -18,6 +18,8 @@ v 1.5hlm  26 January 2003  Natasha@HLM
     Try getting messages from object first.
     Let throw throw to someone not in the room, with attendant message handling.
     Use names, not %Ns in parse.
+v 1.6 25 December 2019 HopeIslandCoder@HIM
+    Fix blank hand messages if default props are not set.
 --- Distrubution Information ------------------------
 Copyright {C} Charles "Wog" Reiss <car@cs.brown.edu>
  
@@ -46,18 +48,29 @@ var throw?
 var quiet?
 var verb
  
-: getmessage[ str:prop -- str ] ( Check for objects' messages too Natasha@HLM 26 January 2003 )
+: getmessage ( s -- str ) ( Check for objects' messages too
+                            Natasha@HLM 26 January 2003
+
+                            And handle empty prop case -HopeIslandCoder
+                           )
+    command @ "_prefs/hand/%s/%s" fmtstring var! prop
+    
     object @ prop @ getpropstr dup if exit then pop
     me @     prop @ getpropstr dup if exit then pop
     prog     prop @ getpropstr  ( str )
-;
- 
-: parse ( string -- result )
+    
+    ( Do a reasonable default if there's no string at this point )
+    dup strlen not if
+      pop
+      "[m]N " command @ strcat "s [o] to [t]N." strcat
+    then
+    
     dup "[m]N" instring not if "[m]N " swap strcat then  ( Prepend thrower's name if not present. )
     "%" "[t]" subst target @ name "%N" subst target @ swap pronoun_sub  ( Replace %N with real name Natasha@HLM 26 January 2003 )
     "%" "[m]" subst me @     name "%N" subst me @     swap pronoun_sub  ( Replace %N with real name Natasha@HLM 26 January 2003 )
     object @ name "[o]" subst
 ;
+ 
 : handOk? ( p -- i )
     handOkProp getpropstr .no? not  ( Inverse permissions }  Natasha@HLM 13 June 2002 )
 ;
@@ -107,7 +120,6 @@ var verb
     1
 ;
  
-$def GETMSG command @ "_prefs/hand/%s/%s" fmtstring getmessage parse
 : doHand ( -- )
     command @ "throw" instr throw? ! ( Throwing something? Natasha@HLM 26 January 2003 )
     checkPrems not if exit then 
@@ -116,11 +128,11 @@ $def GETMSG command @ "_prefs/hand/%s/%s" fmtstring getmessage parse
  
     ( User's message. )
     throw? @ quiet? @ or if
-        "from" GETMSG
+        "from" getmessage
         throw? @ quiet? @ not and if .alltell else .tell then
     then
     ( Recipient's message. )
-    "to" GETMSG
+    "to" getmessage
     quiet? @ if
         target @ swap notify
     else
