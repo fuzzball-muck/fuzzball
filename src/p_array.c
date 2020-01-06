@@ -1,3 +1,10 @@
+/** @file p_array.c
+ *
+ * Implementation of Array Operations for MUF
+ *
+ * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
+ */
+
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -21,12 +28,64 @@
 #include "timequeue.h"
 #include "tune.h"
 
+/*
+ * TODO: These globals really probably shouldn't be globals.  I can only guess
+ *       this is either some kind of primitive code re-use because all the
+ *       functions use them, or it's some kind of an optimization to avoid
+ *       local variables.  But it kills the thread safety and (IMO) makes the
+ *       code harder to read/follow.
+ */
+
+/**
+ * @private
+ * @var used to store the parameters passed into the primitives
+ *      This seems to be used for conveinance, but makes this probably
+ *      not threadsafe.
+ */
 static struct inst *oper1, *oper2, *oper3, *oper4;
+
+/**
+ * @private
+ * @var these are used all over ... not sure why these aren't local variables
+ *      This makes things very not threadsafe.
+ */
 static struct inst temp1, temp2;
+
+/**
+ * @private
+ * @var to store the result which is not a local variable for some reason
+ *      This makes things very not threadsafe.
+ */
 static int result;
+
+/**
+ * @private
+ * @var I don't really have any rationale for this one :)  Just makes things
+ *      not threadsafe for fun.
+ */
 static dbref ref;
+
+/**
+ * @private
+ * @var This breaks thread safety for fun.
+ */
 static char buf[BUFFER_LEN];
 
+/**
+ * Implementtion of MUF ARRAY_MAKE
+ *
+ * Create a "packed" (list) array from a variable number of items on the
+ * stack.  The topmost stack item is the count of items to add to the
+ * array.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_make(PRIM_PROTOTYPE)
 {
@@ -34,31 +93,52 @@ prim_array_make(PRIM_PROTOTYPE)
 
     CHECKOP(1);
     oper1 = POP();
+
     if (oper1->type != PROG_INTEGER)
-	abort_interp("Invalid item count.");
+        abort_interp("Invalid item count.");
+
     result = oper1->data.number;
+
     if (result < 0)
-	abort_interp("Item count must be non-negative.");
+        abort_interp("Item count must be non-negative.");
+
     CLEAR(oper1);
     nargs = 0;
 
     if (*top < result)
-	abort_interp("Stack underflow.");
+        abort_interp("Stack underflow.");
 
     temp1.type = PROG_INTEGER;
     temp1.line = 0;
     nu = new_array_packed(result, fr->pinning);
+
     for (int i = result; i-- > 0;) {
-	temp1.data.number = i;
-	CHECKOP(1);
-	oper1 = POP();
-	array_setitem(&nu, &temp1, oper1);
-	CLEAR(oper1);
+        temp1.data.number = i;
+        CHECKOP(1);
+        oper1 = POP();
+        array_setitem(&nu, &temp1, oper1);
+        CLEAR(oper1);
     }
 
     PushArrayRaw(nu);
 }
 
+/**
+ * Implementtion of MUF ARRAY_MAKE_DICT
+ *
+ * Create a dictionary array from a variable number of key/values on the
+ * stack.  The topmost item on the stack is the number of key/value pairs
+ * (so the actual number of items that will be consumed from the stack is
+ * 2 times this number).
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_make_dict(PRIM_PROTOTYPE)
 {
@@ -66,34 +146,56 @@ prim_array_make_dict(PRIM_PROTOTYPE)
 
     CHECKOP(1);
     oper1 = POP();
+
     if (oper1->type != PROG_INTEGER)
-	abort_interp("Invalid item count.");
+        abort_interp("Invalid item count.");
+
     result = oper1->data.number;
+
     if (result < 0)
-	abort_interp("Item count must be positive.");
+        abort_interp("Item count must be positive.");
+
     CLEAR(oper1);
     nargs = 0;
 
     if (*top < (2 * result))
-	abort_interp("Stack underflow.");
+        abort_interp("Stack underflow.");
 
     nu = new_array_dictionary(fr->pinning);
+
     for (int i = result; i-- > 0;) {
-	CHECKOP(2);
-	oper1 = POP();		/* val */
-	oper2 = POP();		/* key */
-	if (oper2->type != PROG_INTEGER && oper2->type != PROG_STRING) {
-	    array_free(nu);
-	    abort_interp("Keys must be integers or strings.");
-	}
-	array_setitem(&nu, oper2, oper1);
-	CLEAR(oper1);
-	CLEAR(oper2);
+        CHECKOP(2);
+        oper1 = POP();  /* val */
+        oper2 = POP();  /* key */
+
+        if (oper2->type != PROG_INTEGER && oper2->type != PROG_STRING) {
+            array_free(nu);
+            abort_interp("Keys must be integers or strings.");
+        }
+
+        array_setitem(&nu, oper2, oper1);
+        CLEAR(oper1);
+        CLEAR(oper2);
     }
 
     PushArrayRaw(nu);
 }
 
+/**
+ * Implementtion of MUF ARRAY_EXPLODE
+ *
+ * Explodes the array into a "stack range", meaning, key/value pairs
+ * followed by a count of pairs (which is half of the total number of
+ * stack entries) on the top of the stack.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_explode(PRIM_PROTOTYPE)
 {
@@ -101,8 +203,9 @@ prim_array_explode(PRIM_PROTOTYPE)
 
     CHECKOP(1);
     oper1 = POP();
+
     if (oper1->type != PROG_ARRAY)
-	abort_interp("Argument not an array.");
+        abort_interp("Argument not an array.");
 
     result = array_count(oper1->data.array);
     CHECKOFLOW(((2 * result) + 1));
@@ -112,18 +215,32 @@ prim_array_explode(PRIM_PROTOTYPE)
     CLEAR(oper1);
 
     if (array_first(arr, &temp1)) {
-	do {
-	    copyinst(&temp1, &arg[((*top)++)]);
-	    oper2 = array_getitem(arr, &temp1);
-	    copyinst(oper2, &arg[((*top)++)]);
-	    oper2 = NULL;
-	} while (array_next(arr, &temp1));
+        do {
+            copyinst(&temp1, &arg[((*top)++)]);
+            oper2 = array_getitem(arr, &temp1);
+            copyinst(oper2, &arg[((*top)++)]);
+            oper2 = NULL;
+        } while (array_next(arr, &temp1));
     }
 
     CLEAR(&temp2);
     PushInt(result);
 }
 
+/**
+ * Implementtion of MUF ARRAY_VALS
+ *
+ * Extracts all the values of the array onto the stack, with a total count
+ * of extracted items at the top of the stack.  Keys are ignored.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_vals(PRIM_PROTOTYPE)
 {
@@ -131,8 +248,10 @@ prim_array_vals(PRIM_PROTOTYPE)
 
     CHECKOP(1);
     oper1 = POP();
+
     if (oper1->type != PROG_ARRAY)
-	abort_interp("Argument not an array.");
+        abort_interp("Argument not an array.");
+
     copyinst(oper1, &temp2);
     arr = temp2.data.array;
     result = array_count(arr);
@@ -140,17 +259,31 @@ prim_array_vals(PRIM_PROTOTYPE)
     CLEAR(oper1);
 
     if (array_first(arr, &temp1)) {
-	do {
-	    oper2 = array_getitem(arr, &temp1);
-	    copyinst(oper2, &arg[((*top)++)]);
-	    oper2 = NULL;
-	} while (array_next(arr, &temp1));
+        do {
+            oper2 = array_getitem(arr, &temp1);
+            copyinst(oper2, &arg[((*top)++)]);
+            oper2 = NULL;
+        } while (array_next(arr, &temp1));
     }
 
     CLEAR(&temp2);
     PushInt(result);
 }
 
+/**
+ * Implementtion of MUF ARRAY_KEYS
+ *
+ * Extracts all the keys of the array onto the stack, with a total count
+ * of extracted items at the top of the stack.  Values are ignored.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_keys(PRIM_PROTOTYPE)
 {
@@ -158,8 +291,10 @@ prim_array_keys(PRIM_PROTOTYPE)
 
     CHECKOP(1);
     oper1 = POP();
+
     if (oper1->type != PROG_ARRAY)
-	abort_interp("Argument not an array.");
+        abort_interp("Argument not an array.");
+
     copyinst(oper1, &temp2);
     arr = temp2.data.array;
     result = array_count(arr);
@@ -167,35 +302,65 @@ prim_array_keys(PRIM_PROTOTYPE)
     CLEAR(oper1);
 
     if (array_first(arr, &temp1)) {
-	do {
-	    copyinst(&temp1, &arg[((*top)++)]);
-	} while (array_next(arr, &temp1));
+        do {
+            copyinst(&temp1, &arg[((*top)++)]);
+        } while (array_next(arr, &temp1));
     }
 
     CLEAR(&temp2);
     PushInt(result);
 }
 
+/**
+ * Implementtion of MUF ARRAY_COUNT
+ *
+ * Consumes an array and pushes its count onto the stack.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_count(PRIM_PROTOTYPE)
 {
     CHECKOP(1);
     oper1 = POP();
+
     if (oper1->type != PROG_ARRAY)
-	abort_interp("Argument not an array.");
+        abort_interp("Argument not an array.");
+
     result = array_count(oper1->data.array);
 
     CLEAR(oper1);
     PushInt(result);
 }
 
+/**
+ * Implementtion of MUF ARRAY_FIRST
+ *
+ * Consumes an array and pushes its first index onto the stack, and a boolean
+ * which is false if there are no items in the array.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_first(PRIM_PROTOTYPE)
 {
     CHECKOP(1);
-    oper1 = POP();		/* arr  Array */
+    oper1 = POP();  /* arr  Array */
+
     if (oper1->type != PROG_ARRAY)
-	abort_interp("Argument not an array.");
+        abort_interp("Argument not an array.");
 
     temp1.type = PROG_INTEGER;
     temp1.data.number = 0;
@@ -204,22 +369,39 @@ prim_array_first(PRIM_PROTOTYPE)
     CLEAR(oper1);
     nargs = 0;
     CHECKOFLOW(2);
+
     if (result) {
-	copyinst(&temp1, &arg[((*top)++)]);
+        copyinst(&temp1, &arg[((*top)++)]);
     } else {
-	result = 0;
-	PushInt(result);
+        result = 0;
+        PushInt(result);
     }
+
     PushInt(result);
 }
 
+/**
+ * Implementtion of MUF ARRAY_LAST
+ *
+ * Consumes an array and pushes its last index onto the stack, and a boolean
+ * which is false if there are no items in the array.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_last(PRIM_PROTOTYPE)
 {
     CHECKOP(1);
-    oper1 = POP();		/* arr  Array */
+    oper1 = POP();  /* arr  Array */
+
     if (oper1->type != PROG_ARRAY)
-	abort_interp("Argument not an array.");
+        abort_interp("Argument not an array.");
 
     temp1.type = PROG_INTEGER;
     temp1.data.number = 0;
@@ -228,25 +410,43 @@ prim_array_last(PRIM_PROTOTYPE)
     CLEAR(oper1);
     nargs = 0;
     CHECKOFLOW(2);
+
     if (result) {
-	copyinst(&temp1, &arg[((*top)++)]);
+        copyinst(&temp1, &arg[((*top)++)]);
     } else {
-	result = 0;
-	PushInt(result);
+        result = 0;
+        PushInt(result);
     }
+
     PushInt(result);
 }
 
+/**
+ * Implementtion of MUF ARRAY_PREV
+ *
+ * Consumes an array and index, and pushes the previous index onto the stack,
+ * and a boolean which is false if there are no previous item.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_prev(PRIM_PROTOTYPE)
 {
     CHECKOP(2);
-    oper1 = POP();		/* ???  previous index */
-    oper2 = POP();		/* arr  Array */
+    oper1 = POP();  /* ???  previous index */
+    oper2 = POP();  /* arr  Array */
+
     if (oper1->type != PROG_INTEGER && oper1->type != PROG_STRING)
-	abort_interp("Argument not an integer or string. (2)");
+        abort_interp("Argument not an integer or string. (2)");
+
     if (oper2->type != PROG_ARRAY)
-	abort_interp("Argument not an array.(1)");
+        abort_interp("Argument not an array.(1)");
 
     copyinst(oper1, &temp1);
     result = array_prev(oper2->data.array, &temp1);
@@ -257,26 +457,43 @@ prim_array_prev(PRIM_PROTOTYPE)
     CHECKOFLOW(2);
 
     if (result) {
-	copyinst(&temp1, &arg[((*top)++)]);
-	CLEAR(&temp1);
+        copyinst(&temp1, &arg[((*top)++)]);
+        CLEAR(&temp1);
     } else {
-	result = 0;
-	PushInt(result);
+        result = 0;
+        PushInt(result);
     }
+
     PushInt(result);
 }
 
+/**
+ * Implementtion of MUF ARRAY_NEXT
+ *
+ * Consumes an array and index, and pushes the next index onto the stack,
+ * and a boolean which is false if there are no next item.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_next(PRIM_PROTOTYPE)
 {
 
     CHECKOP(2);
-    oper1 = POP();		/* ???  previous index */
-    oper2 = POP();		/* arr  Array */
+    oper1 = POP();  /* ???  previous index */
+    oper2 = POP();  /* arr  Array */
+
     if (oper1->type != PROG_INTEGER && oper1->type != PROG_STRING)
-	abort_interp("Argument not an integer or string. (2)");
+        abort_interp("Argument not an integer or string. (2)");
+
     if (oper2->type != PROG_ARRAY)
-	abort_interp("Argument not an array.(1)");
+        abort_interp("Argument not an array.(1)");
 
     copyinst(oper1, &temp1);
     result = array_next(oper2->data.array, &temp1);
@@ -285,15 +502,32 @@ prim_array_next(PRIM_PROTOTYPE)
     CLEAR(oper2);
 
     if (result) {
-	copyinst(&temp1, &arg[((*top)++)]);
-	CLEAR(&temp1);
+        copyinst(&temp1, &arg[((*top)++)]);
+        CLEAR(&temp1);
     } else {
-	result = 0;
-	PushInt(result);
+        result = 0;
+        PushInt(result);
     }
+
     PushInt(result);
 }
 
+/**
+ * Implementtion of MUF ARRAY_GETITEM
+ *
+ * Consumes an array and index, and returns the item there or 0 if nothing
+ * in the index.
+ *
+ * @see array_getitem
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_getitem(PRIM_PROTOTYPE)
 {
@@ -301,20 +535,23 @@ prim_array_getitem(PRIM_PROTOTYPE)
     struct inst temp;
 
     CHECKOP(2);
-    oper1 = POP();		/* ???  index */
-    oper2 = POP();		/* arr  Array */
+    oper1 = POP();  /* ???  index */
+    oper2 = POP();  /* arr  Array */
+
     if (oper1->type != PROG_INTEGER && oper1->type != PROG_STRING)
-	abort_interp("Argument not an integer or string. (2)");
+        abort_interp("Argument not an integer or string. (2)");
+
     if (oper2->type != PROG_ARRAY)
-	abort_interp("Argument not an array. (1)");
+        abort_interp("Argument not an array. (1)");
+
     in = array_getitem(oper2->data.array, oper1);
 
     /* copy data to a temp inst before clearing the containing array */
     if (in) {
-	copyinst(in, &temp);
+        copyinst(in, &temp);
     } else {
-	temp.type = PROG_INTEGER;
-	temp.data.number = 0;
+        temp.type = PROG_INTEGER;
+        temp.data.number = 0;
     }
 
     CLEAR(oper1);
@@ -325,24 +562,43 @@ prim_array_getitem(PRIM_PROTOTYPE)
     CLEAR(&temp);
 }
 
+/**
+ * Implementtion of MUF ARRAY_SETITEM
+ *
+ * Consumes any kind of stack data, an array, and an index and returns
+ * an array with the stack data set to 'index', overwriting whatever may
+ * already be there.
+ *
+ * @see array_setitem
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_setitem(PRIM_PROTOTYPE)
 {
     stk_array *nu;
 
     CHECKOP(3);
-    oper1 = POP();		/* ???  index to store at */
-    oper2 = POP();		/* arr  Array to store in */
-    oper3 = POP();		/* ???  item to store     */
+    oper1 = POP();  /* ???  index to store at */
+    oper2 = POP();  /* arr  Array to store in */
+    oper3 = POP();  /* ???  item to store     */
 
     if (oper1->type != PROG_INTEGER && oper1->type != PROG_STRING)
-	abort_interp("Argument not an integer or string. (3)");
+        abort_interp("Argument not an integer or string. (3)");
+
     if (oper2->type != PROG_ARRAY)
-	abort_interp("Argument not an array. (2)");
+        abort_interp("Argument not an array. (2)");
 
     result = array_setitem(&oper2->data.array, oper1, oper3);
+
     if (result < 0)
-	abort_interp("Index out of array bounds. (3)");
+        abort_interp("Index out of array bounds. (3)");
 
     nu = oper2->data.array;
     oper2->data.array = NULL;
@@ -354,23 +610,41 @@ prim_array_setitem(PRIM_PROTOTYPE)
     PushArrayRaw(nu);
 }
 
+/**
+ * Implementtion of MUF ARRAY_SETITEM
+ *
+ * Consumes any kind of stack item and a list array and returns the list
+ * array with the item appended on it.
+ *
+ * @see array_appenditem
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_appenditem(PRIM_PROTOTYPE)
 {
     stk_array *nu;
 
     CHECKOP(2);
-    oper2 = POP();		/* arr  Array to store in */
-    oper1 = POP();		/* ???  item to store     */
+    oper2 = POP();  /* arr  Array to store in */
+    oper1 = POP();  /* ???  item to store     */
 
     if (oper2->type != PROG_ARRAY)
-	abort_interp("Argument not an array. (2)");
+        abort_interp("Argument not an array. (2)");
+
     if (oper2->data.array && oper2->data.array->type != ARRAY_PACKED)
-	abort_interp("Argument must be a list type array. (2)");
+        abort_interp("Argument must be a list type array. (2)");
 
     result = array_appenditem(&oper2->data.array, oper1);
+
     if (result == -1)
-	abort_interp("Internal Error!");
+        abort_interp("Internal Error!");
 
     nu = oper2->data.array;
     oper2->data.array = NULL;
@@ -381,23 +655,45 @@ prim_array_appenditem(PRIM_PROTOTYPE)
     PushArrayRaw(nu);
 }
 
+/**
+ * Implementtion of MUF ARRAY_INSERTITEM
+ *
+ * Consumes any kind of stack data, an array, and an index and returns
+ * an array with the stack data set to 'index'.
+ *
+ * There is functionally very little (no?) difference between this and
+ * ARRAY_SETITEM
+ *
+ * @see array_insertitem
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_insertitem(PRIM_PROTOTYPE)
 {
     stk_array *nu;
 
     CHECKOP(3);
-    oper1 = POP();		/* ???  index to store at */
-    oper2 = POP();		/* arr  Array to store in */
-    oper3 = POP();		/* ???  item to store     */
+    oper1 = POP();  /* ???  index to store at */
+    oper2 = POP();  /* arr  Array to store in */
+    oper3 = POP();  /* ???  item to store     */
+
     if (oper1->type != PROG_INTEGER && oper1->type != PROG_STRING)
-	abort_interp("Argument not an integer or string. (3)");
+        abort_interp("Argument not an integer or string. (3)");
+
     if (oper2->type != PROG_ARRAY)
-	abort_interp("Argument not an array. (2)");
+        abort_interp("Argument not an array. (2)");
 
     result = array_insertitem(&oper2->data.array, oper1, oper3);
+
     if (result < 0)
-	abort_interp("Index out of array bounds. (3)");
+        abort_interp("Index out of array bounds. (3)");
 
     nu = oper2->data.array;
     oper2->data.array = NULL;
@@ -409,25 +705,45 @@ prim_array_insertitem(PRIM_PROTOTYPE)
     PushArrayRaw(nu);
 }
 
+/**
+ * Implementtion of MUF ARRAY_GETRANGE
+ *
+ * Consumes an array and a start/end index, and puts an array on the stack
+ * which is the range of items from start to end (inclusive)
+ *
+ * @see array_getrange
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_getrange(PRIM_PROTOTYPE)
 {
     stk_array *nu;
 
     CHECKOP(3);
-    oper1 = POP();		/* int  range end item */
-    oper2 = POP();		/* int  range start item */
-    oper3 = POP();		/* arr  Array   */
+    oper1 = POP();  /* int  range end item */
+    oper2 = POP();  /* int  range start item */
+    oper3 = POP();  /* arr  Array   */
+
     if (oper1->type != PROG_INTEGER && oper1->type != PROG_STRING)
-	abort_interp("Argument not an integer or string. (3)");
+        abort_interp("Argument not an integer or string. (3)");
+
     if (oper2->type != PROG_INTEGER && oper2->type != PROG_STRING)
-	abort_interp("Argument not an integer or string. (2)");
+        abort_interp("Argument not an integer or string. (2)");
+
     if (oper3->type != PROG_ARRAY)
-	abort_interp("Argument not an array. (1)");
+        abort_interp("Argument not an array. (1)");
 
     nu = array_getrange(oper3->data.array, oper2, oper1, fr->pinning);
+
     if (!nu)
-	nu = new_array_packed(0, fr->pinning);
+        nu = new_array_packed(0, fr->pinning);
 
     CLEAR(oper1);
     CLEAR(oper2);
@@ -436,25 +752,46 @@ prim_array_getrange(PRIM_PROTOTYPE)
     PushArrayRaw(nu);
 }
 
+/**
+ * Implementtion of MUF ARRAY_SETRANGE
+ *
+ * Consumes an array, an index, and a second array.  Sets items from the
+ * second array into the first array starting with the given index.  Puts
+ * the resulting array onto the stack.
+ *
+ * @see array_getrange
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_setrange(PRIM_PROTOTYPE)
 {
     stk_array *nu;
 
     CHECKOP(3);
-    oper1 = POP();		/* arr  array to insert */
-    oper2 = POP();		/* ???  starting pos for lists */
-    oper3 = POP();		/* arr  Array   */
+    oper1 = POP();  /* arr  array to insert */
+    oper2 = POP();  /* ???  starting pos for lists */
+    oper3 = POP();  /* arr  Array   */
+
     if (oper1->type != PROG_ARRAY)
-	abort_interp("Argument not an array. (3)");
+        abort_interp("Argument not an array. (3)");
+
     if (oper2->type != PROG_INTEGER && oper2->type != PROG_STRING)
-	abort_interp("Argument not an integer or string. (2)");
+        abort_interp("Argument not an integer or string. (2)");
+
     if (oper3->type != PROG_ARRAY)
-	abort_interp("Argument not an array. (1)");
+        abort_interp("Argument not an array. (1)");
 
     result = array_setrange(&oper3->data.array, oper2, oper1->data.array);
+
     if (result < 0)
-	abort_interp("Index out of array bounds. (2)");
+        abort_interp("Index out of array bounds. (2)");
 
     nu = oper3->data.array;
     oper3->data.array = NULL;
@@ -466,25 +803,46 @@ prim_array_setrange(PRIM_PROTOTYPE)
     PushArrayRaw(nu);
 }
 
+/**
+ * Implementtion of MUF ARRAY_INSERTRANGE
+ *
+ * Consumes an array, an index, and a second array.  Inserts items from the
+ * second array into the first array starting with the given index.  Puts
+ * the resulting array onto the stack.
+ *
+ * @see array_insertrange
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_insertrange(PRIM_PROTOTYPE)
 {
     stk_array *nu;
 
     CHECKOP(3);
-    oper1 = POP();		/* arr  array to insert */
-    oper2 = POP();		/* ???  starting pos for lists */
-    oper3 = POP();		/* arr  Array   */
+    oper1 = POP();  /* arr  array to insert */
+    oper2 = POP();  /* ???  starting pos for lists */
+    oper3 = POP();  /* arr  Array   */
+
     if (oper1->type != PROG_ARRAY)
-	abort_interp("Argument not an array. (3)");
+        abort_interp("Argument not an array. (3)");
+
     if (oper2->type != PROG_INTEGER && oper2->type != PROG_STRING)
-	abort_interp("Argument not an integer or string. (2)");
+        abort_interp("Argument not an integer or string. (2)");
+
     if (oper3->type != PROG_ARRAY)
-	abort_interp("Argument not an array. (1)");
+        abort_interp("Argument not an array. (1)");
 
     result = array_insertrange(&oper3->data.array, oper2, oper1->data.array);
+
     if (result < 0)
-	abort_interp("Index out of array bounds. (2)");
+        abort_interp("Index out of array bounds. (2)");
 
     nu = oper3->data.array;
     oper3->data.array = NULL;
@@ -496,22 +854,41 @@ prim_array_insertrange(PRIM_PROTOTYPE)
     PushArrayRaw(nu);
 }
 
+/**
+ * Implementtion of MUF ARRAY_DELITEM
+ *
+ * Consumes an array and an index, and returns an array with that item
+ * deleted
+ *
+ * @see array_delitem
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_delitem(PRIM_PROTOTYPE)
 {
     stk_array *nu;
 
     CHECKOP(2);
-    oper1 = POP();		/* int  item to delete */
-    oper2 = POP();		/* arr  Array   */
+    oper1 = POP();  /* int  item to delete */
+    oper2 = POP();  /* arr  Array   */
+
     if (oper1->type != PROG_INTEGER && oper1->type != PROG_STRING)
-	abort_interp("Argument not an integer or string. (2)");
+        abort_interp("Argument not an integer or string. (2)");
+
     if (oper2->type != PROG_ARRAY)
-	abort_interp("Argument not an array. (1)");
+        abort_interp("Argument not an array. (1)");
 
     result = array_delitem(&oper2->data.array, oper1);
+
     if (result < 0)
-	abort_interp("Bad array index specified.");
+        abort_interp("Bad array index specified.");
 
     nu = oper2->data.array;
     oper2->data.array = NULL;
@@ -522,25 +899,45 @@ prim_array_delitem(PRIM_PROTOTYPE)
     PushArrayRaw(nu);
 }
 
+/**
+ * Implementtion of MUF ARRAY_DELRANGE
+ *
+ * Consumes an array and two indexes, and deletes all items between the
+ * two, inclusive.
+ *
+ * @see array_delrange
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_delrange(PRIM_PROTOTYPE)
 {
     stk_array *nu;
 
     CHECKOP(3);
-    oper1 = POP();		/* int  range end item */
-    oper2 = POP();		/* int  range start item */
-    oper3 = POP();		/* arr  Array   */
+    oper1 = POP();  /* int  range end item */
+    oper2 = POP();  /* int  range start item */
+    oper3 = POP();  /* arr  Array   */
+
     if (oper1->type != PROG_INTEGER && oper1->type != PROG_STRING)
-	abort_interp("Argument not an integer or string. (3)");
+        abort_interp("Argument not an integer or string. (3)");
+
     if (oper2->type != PROG_INTEGER && oper2->type != PROG_STRING)
-	abort_interp("Argument not an integer or string. (2)");
+        abort_interp("Argument not an integer or string. (2)");
+
     if (oper3->type != PROG_ARRAY)
-	abort_interp("Argument not an array. (1)");
+        abort_interp("Argument not an array. (1)");
 
     result = array_delrange(&oper3->data.array, oper2, oper1);
+
     if (result < 0)
-	abort_interp("Bad array range specified.");
+        abort_interp("Bad array range specified.");
 
     nu = oper3->data.array;
     oper3->data.array = NULL;
@@ -552,6 +949,23 @@ prim_array_delrange(PRIM_PROTOTYPE)
     PushArrayRaw(nu);
 }
 
+/**
+ * Implementtion of MUF ARRAY_CUT
+ *
+ * Consumes an array and an index. Returns two arrays, which is the original
+ * array cut at the given position.  The second array includes the index
+ * indicated, and the first array has all the items before it.
+ *
+ * @see array_delrange
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_cut(PRIM_PROTOTYPE)
 {
@@ -562,38 +976,43 @@ prim_array_cut(PRIM_PROTOTYPE)
     struct inst tempe;
 
     CHECKOP(2);
-    oper2 = POP();		/* int  position */
-    oper1 = POP();		/* arr  Array   */
+    oper2 = POP();  /* int  position */
+    oper1 = POP();  /* arr  Array   */
+
     if (oper2->type != PROG_INTEGER && oper2->type != PROG_STRING)
-	abort_interp("Argument not an integer or string. (2)");
+        abort_interp("Argument not an integer or string. (2)");
+
     if (oper1->type != PROG_ARRAY)
-	abort_interp("Argument not an array. (1)");
+        abort_interp("Argument not an array. (1)");
 
     temps.type = PROG_INTEGER;
     temps.data.number = 0;
     result = array_first(oper1->data.array, &temps);
 
     if (result) {
-	copyinst(oper2, &tempc);
-	result = array_prev(oper1->data.array, &tempc);
-	if (result) {
-	    nu1 = array_getrange(oper1->data.array, &temps, &tempc, fr->pinning);
-	    CLEAR(&tempc);
-	}
+        copyinst(oper2, &tempc);
+        result = array_prev(oper1->data.array, &tempc);
 
-	result = array_last(oper1->data.array, &tempe);
-	if (result) {
-	    nu2 = array_getrange(oper1->data.array, oper2, &tempe, fr->pinning);
-	    CLEAR(&tempe);
-	}
+        if (result) {
+            nu1 = array_getrange(oper1->data.array, &temps, &tempc, fr->pinning);
+            CLEAR(&tempc);
+        }
 
-	CLEAR(&temps);
+        result = array_last(oper1->data.array, &tempe);
+
+        if (result) {
+            nu2 = array_getrange(oper1->data.array, oper2, &tempe, fr->pinning);
+            CLEAR(&tempe);
+        }
+
+        CLEAR(&temps);
     }
 
     if (!nu1)
-	nu1 = new_array_packed(0, fr->pinning);
+        nu1 = new_array_packed(0, fr->pinning);
+
     if (!nu2)
-	nu2 = new_array_packed(0, fr->pinning);
+        nu2 = new_array_packed(0, fr->pinning);
 
     CLEAR(oper1);
     CLEAR(oper2);
@@ -610,33 +1029,41 @@ prim_array_n_union(PRIM_PROTOTYPE)
 
     CHECKOP(1);
     oper1 = POP();
+
     if (oper1->type != PROG_INTEGER)
-	abort_interp("Invalid item count.");
+        abort_interp("Invalid item count.");
+
     result = oper1->data.number;
+
     if (result < 0)
-	abort_interp("Item count must be positive.");
+        abort_interp("Item count must be positive.");
+
     CLEAR(oper1);
     nargs = 0;
 
     if (*top < result)
-	abort_interp("Stack underflow.");
+        abort_interp("Stack underflow.");
 
     if (result > 0) {
-	new_mash = new_array_dictionary(fr->pinning);
-	for (int num_arrays = 0; num_arrays < result; num_arrays++) {
-	    CHECKOP(1);
-	    oper1 = POP();
-	    if (oper1->type != PROG_ARRAY) {
-		array_free(new_mash);
-		abort_interp("Argument not an array.");
-	    }
-	    array_mash(oper1->data.array, &new_mash, 1);
-	    CLEAR(oper1);
-	}
-	new_union = array_demote_only(new_mash, 1, fr->pinning);
-	array_free(new_mash);
+        new_mash = new_array_dictionary(fr->pinning);
+
+        for (int num_arrays = 0; num_arrays < result; num_arrays++) {
+            CHECKOP(1);
+            oper1 = POP();
+
+            if (oper1->type != PROG_ARRAY) {
+                array_free(new_mash);
+                abort_interp("Argument not an array.");
+            }
+
+            array_mash(oper1->data.array, &new_mash, 1);
+            CLEAR(oper1);
+        }
+
+        new_union = array_demote_only(new_mash, 1, fr->pinning);
+        array_free(new_mash);
     } else {
-	new_union = new_array_packed(0, fr->pinning);
+        new_union = new_array_packed(0, fr->pinning);
     }
 
     PushArrayRaw(new_union);
@@ -650,32 +1077,40 @@ prim_array_n_intersection(PRIM_PROTOTYPE)
 
     CHECKOP(1);
     oper1 = POP();
+
     if (oper1->type != PROG_INTEGER)
-	abort_interp("Invalid item count.");
+        abort_interp("Invalid item count.");
+
     result = oper1->data.number;
+
     if (result < 0)
-	abort_interp("Item count must be positive.");
+        abort_interp("Item count must be positive.");
+
     CLEAR(oper1);
     nargs = 0;
 
     EXPECT_POP_STACK(result);
 
     if (result > 0) {
-	new_mash = new_array_dictionary(fr->pinning);
-	for (int num_arrays = 0; num_arrays < result; num_arrays++) {
-	    oper1 = POP();
-	    if (oper1->type != PROG_ARRAY) {
-		array_free(new_mash);
+        new_mash = new_array_dictionary(fr->pinning);
+
+        for (int num_arrays = 0; num_arrays < result; num_arrays++) {
+            oper1 = POP();
+
+            if (oper1->type != PROG_ARRAY) {
+                array_free(new_mash);
                 CLEAR(oper1);
-		abort_interp("Argument not an array.");
-	    }
-	    array_mash(oper1->data.array, &new_mash, 1);
-	    CLEAR(oper1);
-	}
-	new_union = array_demote_only(new_mash, result, fr->pinning);
-	array_free(new_mash);
+                abort_interp("Argument not an array.");
+            }
+
+            array_mash(oper1->data.array, &new_mash, 1);
+            CLEAR(oper1);
+        }
+
+        new_union = array_demote_only(new_mash, result, fr->pinning);
+        array_free(new_mash);
     } else {
-	new_union = new_array_packed(0, fr->pinning);
+        new_union = new_array_packed(0, fr->pinning);
     }
 
     PushArrayRaw(new_union);
@@ -689,41 +1124,50 @@ prim_array_n_difference(PRIM_PROTOTYPE)
 
     CHECKOP(1);
     oper1 = POP();
+
     if (oper1->type != PROG_INTEGER)
-	abort_interp("Invalid item count.");
+        abort_interp("Invalid item count.");
+
     result = oper1->data.number;
+
     if (result < 0)
-	abort_interp("Item count must be positive.");
+        abort_interp("Item count must be positive.");
+
     CLEAR(oper1);
     nargs = 0;
 
     EXPECT_POP_STACK(result);
 
     if (result > 0) {
-	new_mash = new_array_dictionary(fr->pinning);
+        new_mash = new_array_dictionary(fr->pinning);
 
-	oper1 = POP();
-	if (oper1->type != PROG_ARRAY) {
-	    array_free(new_mash);
+        oper1 = POP();
+
+        if (oper1->type != PROG_ARRAY) {
+            array_free(new_mash);
             CLEAR(oper1);
-	    abort_interp("Argument not an array.");
-	}
-	array_mash(oper1->data.array, &new_mash, 1);
-	CLEAR(oper1);
+            abort_interp("Argument not an array.");
+        }
 
-	for (int num_arrays = 1; num_arrays < result; num_arrays++) {
-	    oper1 = POP();
-	    if (oper1->type != PROG_ARRAY) {
-		array_free(new_mash);
-		abort_interp("Argument not an array.");
-	    }
-	    array_mash(oper1->data.array, &new_mash, -1);
-	    CLEAR(oper1);
-	}
-	new_union = array_demote_only(new_mash, 1, fr->pinning);
-	array_free(new_mash);
+        array_mash(oper1->data.array, &new_mash, 1);
+        CLEAR(oper1);
+
+        for (int num_arrays = 1; num_arrays < result; num_arrays++) {
+            oper1 = POP();
+
+            if (oper1->type != PROG_ARRAY) {
+                array_free(new_mash);
+                abort_interp("Argument not an array.");
+            }
+
+            array_mash(oper1->data.array, &new_mash, -1);
+            CLEAR(oper1);
+        }
+
+        new_union = array_demote_only(new_mash, 1, fr->pinning);
+        array_free(new_mash);
     } else {
-	new_union = new_array_packed(0, fr->pinning);
+        new_union = new_array_packed(0, fr->pinning);
     }
 
     PushArrayRaw(new_union);
@@ -740,40 +1184,46 @@ prim_array_notify(PRIM_PROTOTYPE)
     CHECKOP(2);
     oper2 = POP();
     oper1 = POP();
+
     if (oper1->type != PROG_ARRAY)
-	abort_interp("Argument not an array of strings. (1)");
+        abort_interp("Argument not an array of strings. (1)");
+
     if (!array_is_homogenous(oper1->data.array, PROG_STRING))
-	abort_interp("Argument not an array of strings. (1)");
+        abort_interp("Argument not an array of strings. (1)");
+
     if (oper2->type != PROG_ARRAY)
-	abort_interp("Argument not an array of dbrefs. (2)");
+        abort_interp("Argument not an array of dbrefs. (2)");
+
     if (!array_is_homogenous(oper2->data.array, PROG_OBJECT))
-	abort_interp("Argument not an array of dbrefs. (2)");
+        abort_interp("Argument not an array of dbrefs. (2)");
+
     strarr = oper1->data.array;
     refarr = oper2->data.array;
 
     if (array_first(strarr, &temp2)) {
-	do {
-	    oper4 = array_getitem(strarr, &temp2);
-	    if (tp_force_mlev1_name_notify && mlev < 2) {
-		prefix_message(buf, DoNullInd(oper4->data.string), NAME(player), BUFFER_LEN,
-			       1);
-	    } else {
-		/* TODO: Is there really a reason to make a copy? */
-		strcpyn(buf, sizeof(buf), DoNullInd(oper4->data.string));
-	    }
+        do {
+            oper4 = array_getitem(strarr, &temp2);
 
-	    if (array_first(refarr, &temp1)) {
-		do {
-		    oper3 = array_getitem(refarr, &temp1);
+            if (tp_force_mlev1_name_notify && mlev < 2) {
+                prefix_message(buf, DoNullInd(oper4->data.string), NAME(player),
+                               BUFFER_LEN, 1);
+            } else {
+                strcpyn(buf, sizeof(buf), DoNullInd(oper4->data.string));
+            }
 
-		    notify_listeners(player, program, oper3->data.objref,
-				     LOCATION(oper3->data.objref), buf, 1);
+            if (array_first(refarr, &temp1)) {
+                do {
+                    oper3 = array_getitem(refarr, &temp1);
 
-		    oper3 = NULL;
-		} while (array_next(refarr, &temp1));
-	    }
-	    oper4 = NULL;
-	} while (array_next(strarr, &temp2));
+                    notify_listeners(player, program, oper3->data.objref,
+                                     LOCATION(oper3->data.objref), buf, 1);
+
+                    oper3 = NULL;
+                } while (array_next(refarr, &temp1));
+            }
+
+            oper4 = NULL;
+        } while (array_next(strarr, &temp2));
     }
 
     CLEAR(oper1);
@@ -787,22 +1237,26 @@ prim_array_reverse(PRIM_PROTOTYPE)
     stk_array *nu;
 
     CHECKOP(1);
-    oper1 = POP();		/* arr  Array   */
+    oper1 = POP();  /* arr  Array   */
+
     if (oper1->type != PROG_ARRAY)
-	abort_interp("Argument not an array.");
+        abort_interp("Argument not an array.");
+
     arr = oper1->data.array;
+
     if (arr->type != ARRAY_PACKED)
-	abort_interp("Argument must be a list type array.");
+        abort_interp("Argument must be a list type array.");
 
     result = array_count(arr);
     nu = new_array_packed(result, fr->pinning);
 
     temp1.type = PROG_INTEGER;
     temp2.type = PROG_INTEGER;
+
     for (int i = 0; i < result; i++) {
-	temp1.data.number = i;
-	temp2.data.number = (result - i) - 1;
-	array_setitem(&nu, &temp1, array_getitem(arr, &temp2));
+        temp1.data.number = i;
+        temp2.data.number = (result - i) - 1;
+        array_setitem(&nu, &temp1, array_getitem(arr, &temp2));
     }
 
     CLEAR(oper1);
@@ -820,24 +1274,27 @@ sortcomp_generic(const void *x, const void *y)
     struct inst *b;
 
     if (!sortflag_descending) {
-	a = *(struct inst **) x;
-	b = *(struct inst **) y;
+        a = *(struct inst **) x;
+        b = *(struct inst **) y;
     } else {
-	a = *(struct inst **) y;
-	b = *(struct inst **) x;
+        a = *(struct inst **) y;
+        b = *(struct inst **) x;
     }
+
     if (sortflag_index) {
-	/* This should only be set if comparators are all arrays. */
-	a = array_getitem(a->data.array, sortflag_index);
-	b = array_getitem(b->data.array, sortflag_index);
-	if (!a && !b) {
-	    return 0;
-	} else if (!a) {
-	    return -1;
-	} else if (!b) {
-	    return 1;
-	}
+        /* This should only be set if comparators are all arrays. */
+        a = array_getitem(a->data.array, sortflag_index);
+        b = array_getitem(b->data.array, sortflag_index);
+
+        if (!a && !b) {
+            return 0;
+        } else if (!a) {
+            return -1;
+        } else if (!b) {
+            return 1;
+        }
     }
+
     return (array_tree_compare(a, b, (sortflag_caseinsens ? 0 : 1)));
 }
 
@@ -857,16 +1314,19 @@ prim_array_sort(PRIM_PROTOTYPE)
     struct inst **tmparr = NULL;
 
     CHECKOP(2);
-    oper2 = POP();		/* int  sort_type   */
-    oper1 = POP();		/* arr  Array   */
+    oper2 = POP();  /* int  sort_type   */
+    oper1 = POP();  /* arr  Array   */
+
     if (oper1->type != PROG_ARRAY)
-	abort_interp("Argument not an array. (1)");
+        abort_interp("Argument not an array. (1)");
+
     arr = oper1->data.array;
+
     if (arr->type != ARRAY_PACKED)
-	abort_interp("Argument must be a list type array. (1)");
+        abort_interp("Argument must be a list type array. (1)");
 
     if (oper2->type != PROG_INTEGER)
-	abort_interp("Expected integer argument to specify sort type. (2)");
+        abort_interp("Expected integer argument to specify sort type. (2)");
 
     temp1.type = PROG_INTEGER;
     count = (size_t)array_count(arr);
@@ -874,8 +1334,8 @@ prim_array_sort(PRIM_PROTOTYPE)
     tmparr = malloc(count * sizeof(struct inst *));
 
     for (unsigned int i = 0; i < count; i++) {
-	temp1.data.number = i;
-	tmparr[i] = array_getitem(arr, &temp1);
+        temp1.data.number = i;
+        tmparr[i] = array_getitem(arr, &temp1);
     }
 
     /* WORK: if we go multithreaded, we'll need to lock a mutex here. */
@@ -885,9 +1345,9 @@ prim_array_sort(PRIM_PROTOTYPE)
     sortflag_index = NULL;
 
     if ((oper2->data.number & SORTTYPE_SHUFFLE)) {
-	comparator = sortcomp_shuffle;
+        comparator = sortcomp_shuffle;
     } else {
-	comparator = sortcomp_generic;
+        comparator = sortcomp_generic;
     }
 
     qsort(tmparr, count, sizeof(struct inst *), comparator);
@@ -895,9 +1355,10 @@ prim_array_sort(PRIM_PROTOTYPE)
     /*       Share this mutex with ARRAY_SORT_INDEXED. */
 
     for (unsigned int i = 0; i < count; i++) {
-	temp1.data.number = i;
-	array_setitem(&nu, &temp1, tmparr[i]);
+        temp1.data.number = i;
+        array_setitem(&nu, &temp1, tmparr[i]);
     }
+
     free(tmparr);
 
     CLEAR(oper1);
@@ -915,22 +1376,26 @@ prim_array_sort_indexed(PRIM_PROTOTYPE)
     struct inst **tmparr = NULL;
 
     CHECKOP(3);
-    oper3 = POP();		/* idx  index_key   */
-    oper2 = POP();		/* int  sort_type   */
-    oper1 = POP();		/* arr  Array   */
+    oper3 = POP();  /* idx  index_key   */
+    oper2 = POP();  /* int  sort_type   */
+    oper1 = POP();  /* arr  Array   */
+
     if (oper1->type != PROG_ARRAY)
-	abort_interp("Argument not an array. (1)");
+        abort_interp("Argument not an array. (1)");
+
     arr = oper1->data.array;
+
     if (arr->type != ARRAY_PACKED)
-	abort_interp("Argument must be a list type array. (1)");
+        abort_interp("Argument must be a list type array. (1)");
+
     if (!array_is_homogenous(arr, PROG_ARRAY))
-	abort_interp("Argument must be a list array of arrays. (1)");
+        abort_interp("Argument must be a list array of arrays. (1)");
 
     if (oper2->type != PROG_INTEGER)
-	abort_interp("Expected integer argument to specify sort type. (2)");
+        abort_interp("Expected integer argument to specify sort type. (2)");
 
     if (oper3->type != PROG_INTEGER && oper3->type != PROG_STRING)
-	abort_interp("Index argument not an integer or string. (3)");
+        abort_interp("Index argument not an integer or string. (3)");
 
     temp1.type = PROG_INTEGER;
     count = (size_t)array_count(arr);
@@ -938,8 +1403,8 @@ prim_array_sort_indexed(PRIM_PROTOTYPE)
     tmparr = malloc(count * sizeof(struct inst *));
 
     for (unsigned int i = 0; i < count; i++) {
-	temp1.data.number = i;
-	tmparr[i] = array_getitem(arr, &temp1);
+        temp1.data.number = i;
+        tmparr[i] = array_getitem(arr, &temp1);
     }
 
     /* WORK: if we go multithreaded, we'll need to lock a mutex here. */
@@ -949,9 +1414,9 @@ prim_array_sort_indexed(PRIM_PROTOTYPE)
     sortflag_index = oper3;
 
     if ((oper2->data.number & SORTTYPE_SHUFFLE)) {
-	comparator = sortcomp_shuffle;
+        comparator = sortcomp_shuffle;
     } else {
-	comparator = sortcomp_generic;
+        comparator = sortcomp_generic;
     }
 
     qsort(tmparr, count, sizeof(struct inst *), comparator);
@@ -959,9 +1424,10 @@ prim_array_sort_indexed(PRIM_PROTOTYPE)
     /*       Share this mutex with ARRAY_SORT. */
 
     for (unsigned int i = 0; i < count; i++) {
-	temp1.data.number = i;
-	array_setitem(&nu, &temp1, tmparr[i]);
+        temp1.data.number = i;
+        array_setitem(&nu, &temp1, tmparr[i]);
     }
+
     free(tmparr);
 
     CLEAR(oper1);
