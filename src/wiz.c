@@ -237,7 +237,7 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
             }
 
             if (!((controls(player, destination) ||
-                can_link_to(player, NOTYPE, destination)) &&
+                can_teleport_to(player, destination)) &&
                 (controls(player, victim) ||
                  controls(player, LOCATION(victim))))) {
                 notify(player,
@@ -272,7 +272,7 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
             }
 
             if (!controls(player, victim)
-                || !can_link_to(player, NOTYPE, destination)
+                || !can_teleport_to(player, destination)
                 || victim == GLOBAL_ENVIRONMENT) {
                 notify(player,
                        "Permission denied. (Can't move #0, dest must be linkable, and must control victim)");

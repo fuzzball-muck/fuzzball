@@ -922,7 +922,7 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
 
             /* print location if player can link to it */
             if (LOCATION(thing) != NOTHING && (controls(player, LOCATION(thing))
-                || can_link_to(player, NOTYPE, LOCATION(thing)))) {
+                || can_see_flags(player, LOCATION(thing)))) {
                 unparse_object(player, LOCATION(thing), unparse_buf, sizeof(unparse_buf));
                 notifyf(player, "Location: %s", unparse_buf);
             }
@@ -947,7 +947,7 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
 
             /* print location if player can link to it */
             if (LOCATION(thing) != NOTHING && (controls(player, LOCATION(thing))
-                || can_link_to(player, NOTYPE, LOCATION(thing)))) {
+                || can_see_flags(player, LOCATION(thing)))) {
                 unparse_object(player, LOCATION(thing), unparse_buf, sizeof(unparse_buf));
                 notifyf(player, "Location: %s", unparse_buf);
             }
@@ -1002,7 +1002,7 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
 
             /* print location if player can link to it */
             if (LOCATION(thing) != NOTHING && (controls(player, LOCATION(thing))
-                || can_link_to(player, NOTYPE, LOCATION(thing)))) {
+                || can_see_flags(player, LOCATION(thing)))) {
                 unparse_object(player, LOCATION(thing), unparse_buf, sizeof(unparse_buf));
                 notifyf(player, "Location: %s", unparse_buf);
             }

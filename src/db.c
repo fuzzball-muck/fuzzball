@@ -1324,7 +1324,7 @@ unparse_flags(dbref thing)
  *
  * * player == NOTHING
  * * or player does not have STICKY flag AND:
- *   * 'loc' is linkable - @see can_link_to
+ *   * 'loc' has flags that can be seen - @see can_see_flags
  *   * or 'loc' is not a player and 'player' controls 'loc'
  *   * or 'loc' is CHOWN_OK
  *
@@ -1364,7 +1364,7 @@ unparse_object(dbref player, dbref loc, char *buffer, size_t size)
             }
 
             if ((player == NOTHING) || (!(FLAGS(player) & STICKY) &&
-                (can_link_to(player, NOTYPE, loc) ||
+                (can_see_flags(player, loc) ||
                 ((Typeof(loc) != TYPE_PLAYER) &&
                 (controls_link(player, loc)
                 || (FLAGS(loc) & CHOWN_OK)))))) {

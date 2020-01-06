@@ -16,39 +16,46 @@ can_link_to(dbref who, object_flag_type what_type, dbref where)
 	return 1;
 
     /* Exits can be linked to NIL */
-    if (where == NIL && what_type == TYPE_EXIT)
+    if (what_type == TYPE_EXIT && where == NIL)
 	return 1;
 
-    /* Can't link to an invalid dbref */
-    if (!ObjExists(where))
+    /* Can't link to an invalid or recycled dbref */
+    if (!OkObj(where))
 	return 0;
 
-    switch (what_type) {
-    case TYPE_EXIT:
-	/* If the target is LINK_OK, then any exit may be linked
-	 * there.  Otherwise, only someone who controls the
-	 * target may link there. */
-	return (controls(who, where) || ((FLAGS(where) & LINK_OK) && test_lock(NOTHING, who, where, MESGPROP_LINKLOCK)));
-    case TYPE_PLAYER:
-	/* Players may only be linked to rooms, that are either
-	 * controlled by the player or set either L or A. */
-	return (Typeof(where) == TYPE_ROOM && (controls(who, where) || (Linkable(where) && test_lock(NOTHING, who, where, MESGPROP_LINKLOCK))));
-    case TYPE_ROOM:
-	/* Rooms may be linked to rooms or things (this sets their
-	 * dropto location).  Target must be controlled, or be L or A. */
-	return ((Typeof(where) == TYPE_ROOM || Typeof(where) == TYPE_THING)
-		&& (controls(who, where) || (Linkable(where) && test_lock(NOTHING, who, where, MESGPROP_LINKLOCK))));
-    case TYPE_THING:
-	/* Things may be linked to rooms, players, or other things (this
-	 * sets the thing's home).  Target must be controlled, or be L or A. */
-	return ((Typeof(where) == TYPE_ROOM || Typeof(where) == TYPE_PLAYER ||
-		 Typeof(where) == TYPE_THING) && (controls(who, where) || (Linkable(where) && test_lock(NOTHING, who, where, MESGPROP_LINKLOCK))));
-    case NOTYPE:
-	return (controls(who, where) || (test_lock(NOTHING, who, where, MESGPROP_LINKLOCK) &&
-		((FLAGS(where) & LINK_OK) || (Typeof(where) != TYPE_THING && (FLAGS(where) & ABODE)))));
-    default:
-	return 0;
-    }
+    /* Players can only be linked to rooms */
+    if (what_type == TYPE_PLAYER && Typeof(where) != TYPE_ROOM)
+        return 0;
+
+    /* Rooms can only be linked to things or other rooms */
+    if (what_type == TYPE_ROOM
+        && Typeof(where) != TYPE_THING && Typeof(where) != TYPE_ROOM)
+        return 0;
+ 
+    /* Things cannot be linked to exits or programs */
+    if (what_type == TYPE_THING
+        && (Typeof(where) == TYPE_EXIT || Typeof(where) == TYPE_PROGRAM))
+        return 0;
+
+    /* Programs cannot be linked */
+    if (what_type == TYPE_PROGRAM)
+        return 0;
+
+    /* Target must be controlled or publicly linkable with its linklock passed */ 
+    return controls(who, where) || (Linkable(where) && test_lock(NOTHING, who, where, MESGPROP_LINKLOCK));
+}
+
+int
+can_teleport_to(dbref who, dbref where)
+{
+    return (controls(who, where) || (test_lock(NOTHING, who, where, MESGPROP_LINKLOCK) &&
+        ((FLAGS(where) & LINK_OK) || (Typeof(where) != TYPE_THING && (FLAGS(where) & ABODE)))));
+}
+
+int
+can_see_flags(dbref who, dbref where)
+{
+    return can_teleport_to(who, where);
 }
 
 /* This checks to see if what can be linked to something else by who. */

@@ -218,7 +218,7 @@ prim_moveto(PRIM_PROTOTYPE)
 		dest = GLOBAL_ENVIRONMENT;
 	    } else {
 		if ((mlev < 3) && (!permissions(ProgUID, victim)
-				   || !can_link_to(ProgUID, NOTYPE, dest)))
+				   || !can_teleport_to(ProgUID, dest)))
 		    abort_interp("Permission denied.");
 		if (parent_loop_check(victim, dest)) {
 		    abort_interp("Parent room would create a loop.");
