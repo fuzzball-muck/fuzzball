@@ -1726,11 +1726,18 @@ base64_send(struct descriptor_data* descr, FILE* in)
     /*
      * Calculate the maximum we can have in queue, so we know when to flush.
      * Make sure we have some headroom here, too, so no accidents.
+     *
+     * Update: This is no longer necessary since I introduced queue_write_max
+     * which allows one to bypass the output buffer truncation "feature".
+     *
+     * However, this still gives us a guideline to chunk the output and try
+     * not to be excessively greedy with resources, so we'll keep the logic
+     * as-is.
      */
-    limit = tp_max_output - BUFFER_LEN;
+    limit = tp_max_output - ((BUFFER_LEN*2) + 1);
 
     /* Make sure there's nothing in our buffer */
-    process_output(descr);
+    process_all_output(10, 1000, descr);
 
     while (fgets(buf, BUFFER_LEN, in)) {
         b64_len = base64_encode(buf, strlen(buf), base64_buf,
@@ -1743,15 +1750,15 @@ base64_send(struct descriptor_data* descr, FILE* in)
 
 
         if (sent + b64_len > limit) {
-            process_output(descr);
+            process_all_output(10, 1000, descr);
             sent = 0;
         }        
 
-        queue_write(descr, base64_buf, b64_len);
+        queue_write_max(descr, base64_buf, b64_len, 0);
         sent += b64_len;
     }
 
-    process_output(descr);
+    process_all_output(10, 1000, descr);
 }
 
 /**
@@ -1784,7 +1791,7 @@ do_teledump(int descr, dbref player)
     d = descrdata_by_descr(descr);
 
     /* Clear out anything in the player's descriptor */
-    process_output(d);
+    process_all_output(10, 1000, d);
 
     in = fopen(dumpfile, "r");
 
@@ -1796,16 +1803,16 @@ do_teledump(int descr, dbref player)
     }
 
     /* Give a notification banner -- send DB first */
-    queue_write(d, "*** DB DUMP ***\r\n", 17);
+    queue_write_max(d, "*** DB DUMP ***\r\n", 17, 0);
 
     base64_send(d, in);
     fclose(in);
 
     /* DB dump end marker */
-    queue_write(d, "*** DB DUMP END ***\r\n", 21);
+    queue_write_max(d, "*** DB DUMP END ***\r\n", 21, 0);
 
     /* Macros start marker */
-    queue_write(d, "*** MACRO START ***\r\n", 21);
+    queue_write_max(d, "*** MACRO START ***\r\n", 21, 0);
 
     in = fopen(MACRO_FILE, "r");
 
@@ -1816,7 +1823,7 @@ do_teledump(int descr, dbref player)
     }
 
     /* Macros end marker */
-    queue_write(d, "*** MACRO END ***\r\n", 19);
+    queue_write_max(d, "*** MACRO END ***\r\n", 19, 0);
 
     /*
      * Send over the MUFs
@@ -1831,7 +1838,7 @@ do_teledump(int descr, dbref player)
 
         /* Start message */
         snprintf(buf, sizeof(buf), "*** MUF %d ***\r\n", i);
-        queue_write(d, buf, strlen(buf));
+        queue_write_max(d, buf, strlen(buf), 0);
 
         /* Find the file */
         snprintf(buf, sizeof(buf), "muf/%d.m", i);
@@ -1843,8 +1850,9 @@ do_teledump(int descr, dbref player)
         }
 
         /* End message */
-        queue_write(d, "*** MUF END ***\r\n", 17);
+        queue_write_max(d, "*** MUF END ***\r\n", 17, 0);
     }
 
-    queue_write(d, "*** FINISHED ***\r\n", 18);
+    queue_write_max(d, "*** FINISHED ***\r\n", 18, 0);
+    process_all_output(10, 1000, d);
 }
