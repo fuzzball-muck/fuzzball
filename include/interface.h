@@ -914,7 +914,7 @@ void queue_write_max(struct descriptor_data *d, const char *b, size_t n,
  * If 'n' is 0, this returns immediately.
  *
  * This was changed to be a #define after adding queue_write_max, as this
- * is just a thin wrappera round queue_write_max.
+ * is just a thin wrapper around queue_write_max.
  *
  * @see queue_write_max
  *
