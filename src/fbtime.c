@@ -411,3 +411,25 @@ timeformat_err:
     return 0;
 }
 #endif
+
+/**
+ * Sleep for a certain number of useconds
+ *
+ * Some POSIX implementations have usleep, some POSIX implementations have
+ * nanosleep, all implementations have 'select', so this uses 'select' under
+ * the hood to schedule the sleep period.  Should be compatible with Windows
+ * as well.
+ *
+ * You will probably sleep for slightly longer than you ask for.
+ *
+ * @param useconds number of useconds to sleep
+ */
+void fb_usleep(unsigned int useconds)
+{
+    struct timeval tv;
+
+    tv.tv_sec = 0;
+    tv.tv_usec = useconds;
+
+    select(0, NULL, NULL, NULL, &tv);
+}
