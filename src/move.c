@@ -56,18 +56,9 @@ maybe_dropto(int descr, dbref loc, dbref dropto)
 
     /* check for players */
     DOLIST(thing, CONTENTS(loc)) {
-        /*
-         * Make zombies act like players for dropto processing.
-         *
-         * TODO: If a MUCK has zombies disabled, you can still set an
-         *       object ZOMBIE and it will block items from being swept
-         *       to the dropto location.  This should probably have an
-         *       && tp_allow_zombies (or whatever the tp_ flag is called)
-         *       to make zombies just be like regular objects if they are
-         *       disabled.
-         */
         if (Typeof(thing) == TYPE_PLAYER ||
-            (Typeof(thing) == TYPE_THING && FLAGS(thing) & ZOMBIE))
+            (tp_allow_zombies && Typeof(thing) == TYPE_THING &&
+            FLAGS(thing) & ZOMBIE))
             return;
     }
 
@@ -240,27 +231,14 @@ enter_room(int descr, dbref player, dbref loc, dbref exit)
         }
     }
 
-    /*
-     * TODO: This should probably happen inside a old != loc block
-     *       as this seems like a good way to cheat the system and
-     *       dbenoy wouldn't like that :)
-     */
-    if (tp_penny_rate != 0) {
-        /*
-         * Check for pennies
-         *
-         * You don't get pennies from places you control.
-         *
-         * TODO: Just add tp_penny_rate to this long if statement, beecause
-         *       it is already a long if statement.  No need to nest it.
-         */
-        if (!controls(player, loc)
-            && GETVALUE(OWNER(player)) <= tp_max_pennies
-            && RANDOM() % tp_penny_rate == 0) {
-            notifyf(player, "You found one %s!", tp_penny);
-            SETVALUE(OWNER(player), GETVALUE(OWNER(player)) + 1);
-            DBDIRTY(OWNER(player));
-        }
+    if (loc != old
+        && tp_penny_rate != 0
+        && !controls(player, loc)
+        && GETVALUE(OWNER(player)) <= tp_max_pennies
+        && RANDOM() % tp_penny_rate == 0) {
+        notifyf(player, "You found one %s!", tp_penny);
+        SETVALUE(OWNER(player), GETVALUE(OWNER(player)) + 1);
+        DBDIRTY(OWNER(player));
     }
 
     /*
@@ -1130,38 +1108,17 @@ recycle(int descr, dbref player, dbref thing)
     /* dequeue any MUF or MPI events for the given object */
     dequeue_prog(thing, 0);
 
+    int cost = MAX(0, GETVALUE(thing));
+
     switch (Typeof(thing)) {
-        /*
-         * TODO: ROOM and THING are almost the same, with the difference
-         *       being the SETVALUE amount and rooms doing a notification.
-         *       This logic could easily be combined like:
-         *
-         * let cost default to GETVALUE(thing) then ...
-         *
-         * case TYPE_ROOM: cost = tp_room_cost; notify_except(...)
-         * case TYPE_THING: the rest of the logic
-         */
         case TYPE_ROOM:
-            if (!Wizard(OWNER(thing)))
-                SETVALUE(OWNER(thing), GETVALUE(OWNER(thing)) + tp_room_cost);
-
-            DBDIRTY(OWNER(thing));
-
-            for (first = EXITS(thing); first != NOTHING; first = rest) {
-                rest = NEXTOBJ(first);
-
-                if (LOCATION(first) == NOTHING || LOCATION(first) == thing)
-                    recycle(descr, player, first);
-            }
-
+            cost = tp_room_cost;
             notify_except(CONTENTS(thing), NOTHING,
                           "You feel a wrenching sensation...", player);
-            break;
-
+            /* fallthrough */
         case TYPE_THING:
             if (!Wizard(OWNER(thing)))
-                SETVALUE(OWNER(thing),
-                         GETVALUE(OWNER(thing)) + MAX(0,GETVALUE(thing)));
+                SETVALUE(OWNER(thing), GETVALUE(OWNER(thing)) + cost);
 
             DBDIRTY(OWNER(thing));
 
@@ -1171,9 +1128,7 @@ recycle(int descr, dbref player, dbref thing)
                 if (LOCATION(first) == NOTHING || LOCATION(first) == thing)
                     recycle(descr, player, first);
             }
-
             break;
-
         case TYPE_EXIT:
             if (!Wizard(OWNER(thing)))
                 SETVALUE(OWNER(thing), GETVALUE(OWNER(thing)) + tp_exit_cost);

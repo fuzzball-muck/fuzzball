@@ -154,7 +154,7 @@ can_doit(int descr, dbref player, dbref thing, const char *default_fail_msg)
     if ((loc = LOCATION(player)) == NOTHING)
 	return 0;
 
-    if (!Wizard(OWNER(player)) && Typeof(player) == TYPE_THING && (FLAGS(thing) & ZOMBIE)) {
+    if (!Wizard(OWNER(player)) && tp_allow_zombies && Typeof(player) == TYPE_THING && (FLAGS(thing) & ZOMBIE)) {
 	notify(player, "Sorry, but zombies can't do that.");
 	return 0;
     }
