@@ -17,6 +17,7 @@
 #include "config.h"
 #include "fbmuck.h"
 #include "mcp.h"
+#include "tune.h"
 
 /* For the SSL* type. */
 #ifdef USE_SSL
@@ -800,15 +801,46 @@ void pnotify(int c, char *outstr);
 int pontime(int c);
 
 /**
+ * Process output, retrying to try and push through data that would block
+ *
+ * Before diving into what this does, a little explanation is needed.
+ * If process_output encounters an error, it 'short circuits' and returns
+ * right away without processing any more output on the descriptor.
+ *
+ * The error can be all kinds of things, but the most usual when transmitting
+ * a large volume of data is EWOULDBLOCK because we're pushing more out than
+ * the operating system can handle.
+ *
+ * This call attempts to push out all data on the queue, in such a way that
+ * we will keep re-calling process_output until everything is actually written.
+ * We will try 'iterations' number of iterations with a sleep of 'useconds'
+ * between iterations.  Which means the MUCK can hang for up to:
+ * iterations * useconds number of useconds.
+ *
+ * @param iterations the number of iterations to attempt the process_output
+ * @param useconds the number of useconds to sleep between iterations
+ * @param d the descriptor structure who's queues we should write out
+ * @return boolean true if we processed everything, false if not.
+ */
+int process_all_output(unsigned int iterations, unsigned int useconds,
+                       struct descriptor_data *d);
+
+/**
  * Process output, writing out all the queues for a given descriptor.
  *
  * If d is NULL or d->descriptor not set, it will panic the server.
  * Pending SSL writes and priority output is always written.  If
  * d->block_writes is true, then d->output is not written.
  *
+ * This will return true if all the output was successfully processed,
+ * false if there was an error (usually 'writing would cause blocking'
+ * error) that prevented it from finishing processing.  It's up to the
+ * caller to try again if desired.
+ *
  * @param d the descriptor structure who's queues we should write out
+ * @return boolean true if output was fully processed, boolean false if not
  */
-void process_output(struct descriptor_data *d);
+int process_output(struct descriptor_data *d);
 
 /**
  * Set descriptor 'c' to become user 'who'
@@ -851,6 +883,23 @@ int reconfigure_ssl(void);
 #endif
 
 /**
+ * Write a message to the output queue, optionally ignoring maximum queue size
+ *
+ * Please note that combining this with 'queue_write' will result in
+ * your output being truncated; use this only when you're doing low-level
+ * big-byte transfer stuff.
+ *
+ * If 'n' is 0, this returns immediately.
+ *
+ * @param d the descriptor_data to queue output to
+ * @param b pointer to some bytes to queue up
+ * @param n the number of bytes to allocate then copy from 'b'
+ * @param max the amount to pass to flush_output_queue, or 0 to not flush
+ */
+void queue_write_max(struct descriptor_data *d, const char *b, size_t n,
+                     size_t max);
+
+/**
  * Write a message to the output queue, respecting the maximum queue size
  *
  * tp_max_output determines the maximum number of items that can be in
@@ -864,11 +913,17 @@ int reconfigure_ssl(void);
  *
  * If 'n' is 0, this returns immediately.
  *
+ * This was changed to be a #define after adding queue_write_max, as this
+ * is just a thin wrapper around queue_write_max.
+ *
+ * @see queue_write_max
+ *
  * @param d the descriptor_data to queue output to
  * @param b pointer to some bytes to queue up
  * @param n the number of bytes to allocate then copy from 'b'
  */
-void queue_write(struct descriptor_data *, const char *, size_t);
+#define queue_write(d, b, n)   (queue_write_max(d, b, n, \
+                                (size_t)tp_max_output - n))
 
 /**
  * This is the main function for the sanity interactive editor.
