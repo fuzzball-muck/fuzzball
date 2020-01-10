@@ -2856,7 +2856,7 @@ mfn_force(MFUNARGS)
         }
 
         objnode_push(&forcelist, player);
-        objnode_push(&forcelist, what);
+        if (player != what) objnode_push(&forcelist, what);
         force_level++;
 
         if (*ptr)
@@ -2864,7 +2864,7 @@ mfn_force(MFUNARGS)
 
         force_level--;
         objnode_pop(&forcelist);
-        objnode_pop(&forcelist);
+        if (player != what) objnode_pop(&forcelist);
         ptr = nxt;
     } while (ptr);
 

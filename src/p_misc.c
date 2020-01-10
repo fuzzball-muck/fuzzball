@@ -324,13 +324,13 @@ prim_force(PRIM_PROTOTYPE)
 	abort_interp("Cannot force god (1).");
 #endif
     objnode_push(&forcelist, player);
-    objnode_push(&forcelist, program);
+    if (player != program) objnode_push(&forcelist, program);
     force_level++;
     process_command(dbref_first_descr(oper2->data.objref), oper2->data.objref,
 		    oper1->data.string->data);
     force_level--;
     objnode_pop(&forcelist);
-    objnode_pop(&forcelist);
+    if (player != program) objnode_pop(&forcelist);
 
     for (int i = 1; i <= fr->caller.top; i++) {
 	if (Typeof(fr->caller.st[i]) != TYPE_PROGRAM) {

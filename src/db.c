@@ -1191,19 +1191,22 @@ objnode_push(objnode **head, dbref data)
 /**
  * Pop a dbref off the objnode list.
  *
- * If head is NULL, nothing happens.  Removes the node and frees the
- * memory but does not return the pop'd dbref.
+ * If head is NULL, nothing happens.  Removes the node, frees the memory,
+ * and returns the pop'd dbref.
  *
  * @param head pointer to pointer of list to pop from.
  */
-void objnode_pop(objnode **head)
+dbref
+objnode_pop(objnode **head)
 {
     if (!*head)
-        return;
+        return NOTHING;
 
     objnode *tmp = *head;
+    dbref ref = tmp->data;
     *head = tmp->next;
     free(tmp);
+    return ref; 
 }
 
 /**
