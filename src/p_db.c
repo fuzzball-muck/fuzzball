@@ -1057,31 +1057,39 @@ prim_getlinks(PRIM_PROTOTYPE)
 static int
 prog_can_link_to(int mlev, dbref who, object_flag_type what_type, dbref where)
 {
+    /* Can always link to HOME */
     if (where == HOME)
 	return 1;
-    if (where == NIL && what_type == TYPE_EXIT)
+
+    /* Exits can be linked to NIL */
+    if (what_type == TYPE_EXIT && where == NIL)
 	return 1;
-    if (!ObjExists(where))
+
+    /* Can't link to an invalid or recycled dbref */
+    if (!OkObj(where))
 	return 0;
 
-    switch (what_type) {
-    case TYPE_EXIT:
-	return (mlev > 3 || permissions(who, where) || ((FLAGS(where) & LINK_OK) && test_lock(NOTHING, who, where, MESGPROP_LINKLOCK)));
-    case TYPE_PLAYER:
-	return (Typeof(where) == TYPE_ROOM && (mlev > 3 || permissions(who, where)
-					       || (Linkable(where) && test_lock(NOTHING, who, where, MESGPROP_LINKLOCK))));
-    case TYPE_ROOM:
-	return ((Typeof(where) == TYPE_ROOM || Typeof(where) == TYPE_THING)
-		&& (mlev > 3 || permissions(who, where) || (Linkable(where) && test_lock(NOTHING, who, where, MESGPROP_LINKLOCK))));
-    case TYPE_THING:
-	return ((Typeof(where) == TYPE_ROOM || Typeof(where) == TYPE_PLAYER
-		 || Typeof(where) == TYPE_THING)
-		&& (mlev > 3 || permissions(who, where) || (Linkable(where) && test_lock(NOTHING, who, where, MESGPROP_LINKLOCK))));
-    case NOTYPE:
-        return (mlev > 3 || permissions(who, where) || (test_lock(NOTHING, who, where, MESGPROP_LINKLOCK) &&
-                ((FLAGS(where) & LINK_OK) || (Typeof(where) != TYPE_THING && (FLAGS(where) & ABODE)))));
-    }
-    return 0;
+    /* Players can only be linked to rooms */
+    if (what_type == TYPE_PLAYER && Typeof(where) != TYPE_ROOM)
+        return 0;
+
+    /* Rooms can only be linked to things or other rooms */
+    if (what_type == TYPE_ROOM
+        && Typeof(where) != TYPE_THING && Typeof(where) != TYPE_ROOM)
+        return 0;
+ 
+    /* Things cannot be linked to exits or programs */
+    if (what_type == TYPE_THING
+        && (Typeof(where) == TYPE_EXIT || Typeof(where) == TYPE_PROGRAM))
+        return 0;
+
+    /* Programs cannot be linked */
+    if (what_type == TYPE_PROGRAM)
+        return 0;
+
+    /* Effective mucker level must be 3 or more, player must have permission,
+       and target must be publicly linkable with its linklock passed */ 
+    return mlev > 3 || permissions(who, where) || (Linkable(where) && test_lock(NOTHING, who, where, MESGPROP_LINKLOCK));
 }
 
 void
