@@ -427,14 +427,14 @@ do_look_at(int descr, dbref player, const char *name, const char *detail)
                 exec_or_notify(descr, player, thing, PropDataStr(lastmatch), "(@detail)",
                                (PropFlags(lastmatch) & PROP_BLESSED) ? MPI_ISBLESSED : 0);
             } else if (ambig_flag) {
-                notifyf_nolisten(player, match_msg_ambiguous(buf, 0));
+                notifyf_nolisten(player, match_msg_ambiguous(buf));
             } else if (*detail) {
                 notify(player, tp_description_default);
             } else {
-                notifyf_nolisten(player, match_msg_nomatch(buf, 0));
+                notifyf_nolisten(player, match_msg_nomatch(buf));
             }
         } else {
-            notifyf_nolisten(player, match_msg_ambiguous(detail, 0));
+            notifyf_nolisten(player, match_msg_ambiguous(detail));
         }
     }
 }

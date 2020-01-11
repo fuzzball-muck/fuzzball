@@ -322,28 +322,6 @@ match_registered(struct match_data *md)
 }
 
 /**
- * Parse a string into a dbref or NOTHING if it can't resolve it.
- *
- * Does not handle leading #; this just wraps strtol and does the error
- * check.  atoi cannot be used because there is no difference between 0 and
- * an error.
- *
- * @TODO This is literally used in only one place.  Relocate this into
- *       absolute_name which is a way more useful function anyway.
- *
- * @private
- * @param s the string to try and convert
- * @return a dbref or NOTHING if the conversion failed.
- */
-static dbref
-parse_dbref(const char *s)
-{
-    char *p;
-    long x = strtol(s, &p, 10);
-    return (p == s) ? NOTHING : x;
-}
-
-/**
  * Returns a dbref of the match_name is in the format of #12345
  *
  * Returns NOTHING if the string isn't in the right format, or if ths
@@ -360,16 +338,20 @@ absolute_name(struct match_data *md)
     dbref match;
 
     if (*(md->match_name) == NUMBER_TOKEN && !isspace(*(md->match_name + 1))) {
-        match = parse_dbref((md->match_name) + 1);
+        const char *s = md->match_name + 1;
+        char *p;
+        long x = strtol(s, &p, 10);
+
+        match = (p == s) ? NOTHING : x;
 
         if (!ObjExists(match)) {
             return NOTHING;
-        } else {
-            return match;
         }
-    } else {
-        return NOTHING;
+
+        return match;
     }
+
+    return NOTHING;
 }
 
 /**
@@ -990,12 +972,12 @@ noisy_match_result(struct match_data * md)
     switch (match = match_result(md)) {
         case NOTHING:
             notifyf_nolisten(md->match_who,
-                             match_msg_nomatch(md->match_name, 0));
+                             match_msg_nomatch(md->match_name));
             return NOTHING;
 
         case AMBIGUOUS:
             notifyf_nolisten(md->match_who,
-                             match_msg_ambiguous(md->match_name, 0));
+                             match_msg_ambiguous(md->match_name));
             return NOTHING;
 
         default:
@@ -1075,18 +1057,13 @@ match_controlled(int descr, dbref player, const char *name)
  * if you aren't careful.
  *
  * @param s the search string that failed
- * @param types the unused parameter that Wyld warned me about (tanabi)
  * @return pointer to static buffer containing 'I don't understand' string.
  */
 char *
-match_msg_nomatch(const char *s, unsigned short types)
+match_msg_nomatch(const char *s)
 {
     static char buf[BUFFER_LEN];
 
-    /*
-     * @TODO Unused variable removal!
-     */
-    (void)types;
     snprintf(buf, sizeof(buf), "I don't understand '%s'.", s);
     return buf;
 }
@@ -1099,17 +1076,12 @@ match_msg_nomatch(const char *s, unsigned short types)
  * if you aren't careful.
  *
  * @param s the search string that failed
- * @param types the unused parameter that Wyld warned me about (tanabi)
  * @return pointer to static buffer containing 'which do you mean?' string.
  */
 char *
-match_msg_ambiguous(const char *s, unsigned short types)
+match_msg_ambiguous(const char *s)
 {
     static char buf[BUFFER_LEN];
-    /*
-     * @TODO Unused variable removal!
-     */
-    (void)types;
     snprintf(buf, sizeof(buf), "I don't know which '%s' you mean!", s);
     return buf;
 }

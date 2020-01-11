@@ -212,10 +212,9 @@ void match_nil(struct match_data *md);
  * if you aren't careful.
  *
  * @param s the search string that failed
- * @param types the unused parameter that Wyld warned me about (tanabi)
  * @return pointer to static buffer containing 'which do you mean?' string.
  */
-char *match_msg_ambiguous(const char *s, unsigned short types);
+char *match_msg_ambiguous(const char *s);
 
 /**
  * Generate a standard 'couldn't find object' message.
@@ -225,10 +224,9 @@ char *match_msg_ambiguous(const char *s, unsigned short types);
  * if you aren't careful.
  *
  * @param s the search string that failed
- * @param types the unused parameter that Wyld warned me about (tanabi)
  * @return pointer to static buffer containing 'I don't understand' string.
  */
-char *match_msg_nomatch(const char *s, unsigned short types);
+char *match_msg_nomatch(const char *s);
 
 /**
  * Matches the word 'me', case insensitive, and resolves it to match_who

@@ -2166,7 +2166,7 @@ do_mcpprogram(int descr, dbref player, const char *name, const char *rname)
             register_object(player, player, REGISTRATION_PROPDIR, (char *)rname, program);
         }
     } else if (program == AMBIGUOUS) {
-        notifyf_nolisten(player, match_msg_ambiguous(name, 0));
+        notifyf_nolisten(player, match_msg_ambiguous(name));
         return;
     }
 
