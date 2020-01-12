@@ -1021,6 +1021,22 @@ prim_array_cut(PRIM_PROTOTYPE)
     PushArrayRaw(nu2);
 }
 
+/**
+ * Implementtion of MUF ARRAY_NUNION
+ *
+ * Returns a list array containing the union of values of all
+ * the given arrays in a stackrange.  If a value is found in any of the
+ * arrays, then it will be in the resultant list, though duplicates and
+ * keys will be discarded.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_n_union(PRIM_PROTOTYPE)
 {
@@ -1069,6 +1085,22 @@ prim_array_n_union(PRIM_PROTOTYPE)
     PushArrayRaw(new_union);
 }
 
+/**
+ * Implementtion of MUF ARRAY_NINTERSECT
+ *
+ * Returns a list array containing the intersction of values of all
+ * the given arrays in a stackrange.  If a value is found in all of the
+ * arrays, then it will be in the resultant list, though duplicates and
+ * keys will be discarded.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_n_intersection(PRIM_PROTOTYPE)
 {
@@ -1116,6 +1148,21 @@ prim_array_n_intersection(PRIM_PROTOTYPE)
     PushArrayRaw(new_union);
 }
 
+/**
+ * Implementtion of MUF ARRAY_NDIFF
+ *
+ * Returns a list array containing the difference of values of all
+ * the given arrays in a stackrange.  It returns all values from the
+ * topmost array that weren't found in any of the other arrays.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_n_difference(PRIM_PROTOTYPE)
 {
@@ -1173,6 +1220,21 @@ prim_array_n_difference(PRIM_PROTOTYPE)
     PushArrayRaw(new_union);
 }
 
+/**
+ * Implementtion of MUF ARRAY_NOTIFY
+ *
+ * Consumes two arrays on the stack.  The lower array must be a list of
+ * strings and the top array is the list of dbrefs.  All messages in the
+ * first list are sent to all people in the second list.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_notify(PRIM_PROTOTYPE)
 {
@@ -1230,6 +1292,19 @@ prim_array_notify(PRIM_PROTOTYPE)
     CLEAR(oper2);
 }
 
+/**
+ * Implementtion of MUF ARRAY_REVERSE
+ *
+ * Takes a list array and reverses the order of the elements in it.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_reverse(PRIM_PROTOTYPE)
 {
@@ -1263,10 +1338,47 @@ prim_array_reverse(PRIM_PROTOTYPE)
     PushArrayRaw(nu);
 }
 
+/**
+ * @private
+ * @var Variable to keep track of if we are sorting case insensitively.
+ *      This is NOT threadsafe
+ */
 static int sortflag_caseinsens = 0;
+
+/**
+ * @private
+ * @var Variable to keep track of if we are sorting in descending order
+ *      This is NOT threadsafe
+ */
 static int sortflag_descending = 0;
+
+/**
+ * @private
+ * @var Variable to keep track of if we are doing an indexed stort, this is
+ *      the index we are using.
+ *      This is NOT threadsafe
+ */
 static struct inst *sortflag_index = NULL;
 
+/**
+ * This is the shared guts of the sort routines to compare two stack items
+ *
+ * This is passed into qsort, which is why the calling signature is weird.
+ * x and y are pointers to struct inst, and this returns -1, 0, or 1 based
+ * on if x is less than y, equal to y, or greater than y respectively.
+ *
+ * This is mostly a thin wrapper around array_tree_compare with some extra
+ * logic around it for the case of doing key-based comparisons (if
+ * sortflag_index is set).  If sortflag_index is set, then we will fall
+ * into that logic instead.
+ *
+ * @see array_tree_compare
+ *
+ * @private
+ * @param x a pointer to a pointer to a struct inst
+ * @param y a pointer to a pointer to a struct inst
+ * @return integer either -1 if x < y, 0 if x == y, 1 if x > y
+ */
 static int
 sortcomp_generic(const void *x, const void *y)
 {
@@ -1298,12 +1410,43 @@ sortcomp_generic(const void *x, const void *y)
     return (array_tree_compare(a, b, (sortflag_caseinsens ? 0 : 1)));
 }
 
+/**
+ * This is to handle the case of a 'shuffle' sort which does randomization.
+ *
+ * This is passed into qsort, which is why the calling signature is weird.
+ * x and y are pointers to struct inst, and this returns a random value that
+ * is valid for sorting.
+ *
+ * @private
+ * @param x a pointer to a pointer to a struct inst
+ * @param y a pointer to a pointer to a struct inst
+ * @return integer random sort result
+ */
 static int
 sortcomp_shuffle(const void *x, const void *y)
 {
     return (((RANDOM() >> 8) % 5) - 2);
 }
 
+/**
+ * Implementtion of MUF ARRAY_SORT
+ *
+ * Takes an array to sort and an integer sort type, which can be one
+ * of the following (bit OR'd together)
+ *
+ * 0 - case sensitive and ascending
+ * 1 - SORTTYPE_CASEINSENS - Case insensitive sort
+ * 2 - SORTTYPE_DESCENDING - Sort in reversed order
+ * 4 - SORTTYPE_SHUFFLE - Sort randomly
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_sort(PRIM_PROTOTYPE)
 {
@@ -1338,8 +1481,19 @@ prim_array_sort(PRIM_PROTOTYPE)
         tmparr[i] = array_getitem(arr, &temp1);
     }
 
-    /* WORK: if we go multithreaded, we'll need to lock a mutex here. */
-    /*       Share this mutex with ARRAY_SORT_INDEXED. */
+    /*
+     * There was a note here about mutexes -- that note was actually wrong.
+     * Super wrong.  We'd be holding a mutex while the array sorts which is
+     * really a bad idea.  The solution is to not use these global variables.
+     *
+     * The problem is we're using qsort, and so we are using globals to pass
+     * into qsort.
+     *
+     * TODO: change this to use qsort_r -- this provides a third
+     *       "data" argument that can be used to pass arbitrary arguments
+     *       in.  We can pass in a struct that has these flags and get rid
+     *       of the stupid globals.
+     */
     sortflag_caseinsens = (oper2->data.number & SORTTYPE_CASEINSENS) ? 1 : 0;
     sortflag_descending = (oper2->data.number & SORTTYPE_DESCENDING) ? 1 : 0;
     sortflag_index = NULL;
@@ -1351,8 +1505,6 @@ prim_array_sort(PRIM_PROTOTYPE)
     }
 
     qsort(tmparr, count, sizeof(struct inst *), comparator);
-    /* WORK: if we go multithreaded, the mutex should be released here. */
-    /*       Share this mutex with ARRAY_SORT_INDEXED. */
 
     for (unsigned int i = 0; i < count; i++) {
         temp1.data.number = i;
@@ -1366,6 +1518,26 @@ prim_array_sort(PRIM_PROTOTYPE)
     PushArrayRaw(nu);
 }
 
+/**
+ * Implementtion of MUF ARRAY_SORT_INDEXED
+ *
+ * Takes an array of arrays to sort, a sort type, and a key/index to sort
+ * by.  Sorts arrays within the 'parent' array using the value of the key
+ * or index provided.  Only works if that key contains an integer.
+ *
+ * 0 - case sensitive and ascending
+ * 1 - SORTTYPE_CASEINSENS - Case insensitive sort
+ * 2 - SORTTYPE_DESCENDING - Sort in reversed order
+ * 4 - SORTTYPE_SHUFFLE - Sort randomly
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_sort_indexed(PRIM_PROTOTYPE)
 {
@@ -1407,8 +1579,19 @@ prim_array_sort_indexed(PRIM_PROTOTYPE)
         tmparr[i] = array_getitem(arr, &temp1);
     }
 
-    /* WORK: if we go multithreaded, we'll need to lock a mutex here. */
-    /*       Share this mutex with ARRAY_SORT. */
+    /*
+     * There was a note here about mutexes -- that note was actually wrong.
+     * Super wrong.  We'd be holding a mutex while the array sorts which is
+     * really a bad idea.  The solution is to not use these global variables.
+     *
+     * The problem is we're using qsort, and so we are using globals to pass
+     * into qsort.
+     *
+     * TODO: change this to use qsort_r -- this provides a third
+     *       "data" argument that can be used to pass arbitrary arguments
+     *       in.  We can pass in a struct that has these flags and get rid
+     *       of the stupid globals.
+     */
     sortflag_caseinsens = (oper2->data.number & SORTTYPE_CASEINSENS) ? 1 : 0;
     sortflag_descending = (oper2->data.number & SORTTYPE_DESCENDING) ? 1 : 0;
     sortflag_index = oper3;
@@ -1420,8 +1603,6 @@ prim_array_sort_indexed(PRIM_PROTOTYPE)
     }
 
     qsort(tmparr, count, sizeof(struct inst *), comparator);
-    /* WORK: if we go multithreaded, the mutex should be released here. */
-    /*       Share this mutex with ARRAY_SORT. */
 
     for (unsigned int i = 0; i < count; i++) {
         temp1.data.number = i;
@@ -1451,44 +1632,56 @@ prim_array_get_propdirs(PRIM_PROTOTYPE)
     CHECKOP(2);
     oper2 = POP();
     oper1 = POP();
+
     if (mlev < 3)
-	abort_interp("Permission denied.");
+        abort_interp("Permission denied.");
+
     if (oper1->type != PROG_OBJECT)
-	abort_interp("Dbref required. (1)");
+        abort_interp("Dbref required. (1)");
+
     if (!valid_object(oper1))
-	abort_interp("Invalid dbref. (1)");
+        abort_interp("Invalid dbref. (1)");
+
     if (oper2->type != PROG_STRING)
-	abort_interp("String required. (2)");
+        abort_interp("String required. (2)");
 
     ref = oper1->data.objref;
     strcpyn(dir, sizeof(dir), DoNullInd(oper2->data.string));
+
     if (!*dir)
-	strcpyn(dir, sizeof(dir), (char[]){PROPDIR_DELIMITER,0});
+        strcpyn(dir, sizeof(dir), (char[]){PROPDIR_DELIMITER,0});
+
     len = strlen(dir) - 1;
+
     if (len > 0 && dir[len] == PROPDIR_DELIMITER)
-	dir[len] = '\0';
+        dir[len] = '\0';
 
     nu = new_array_packed(0, fr->pinning);
     propadr = first_prop(ref, dir, &pptr, propname, sizeof(propname));
-    while (propadr) {
-	snprintf(buf, sizeof(buf), "%s%c%s", dir, PROPDIR_DELIMITER, propname);
-	if (prop_read_perms(ProgUID, ref, buf, mlev)) {
-	    prptr = get_property(ref, buf);
-	    if (prptr) {
-#ifdef DISKBASE
-		propfetch(ref, prptr);
-#endif
-		if (PropDir(prptr)) {
-		    if (count >= 511) {
-			array_free(nu);
-			abort_interp("Too many propdirs to put in an array!");
-		    }
 
-		    array_set_intkey_strval(&nu, count++, propname);
-		}
-	    }
-	}
-	propadr = next_prop(pptr, propadr, propname, sizeof(propname));
+    while (propadr) {
+        snprintf(buf, sizeof(buf), "%s%c%s", dir, PROPDIR_DELIMITER, propname);
+
+        if (prop_read_perms(ProgUID, ref, buf, mlev)) {
+            prptr = get_property(ref, buf);
+
+            if (prptr) {
+#ifdef DISKBASE
+                propfetch(ref, prptr);
+#endif
+
+                if (PropDir(prptr)) {
+                    if (count >= 511) {
+                        array_free(nu);
+                        abort_interp("Too many propdirs to put in an array!");
+                    }
+
+                    array_set_intkey_strval(&nu, count++, propname);
+                }
+            }
+        }
+
+        propadr = next_prop(pptr, propadr, propname, sizeof(propname));
     }
 
     CLEAR(oper1);
@@ -1511,79 +1704,97 @@ prim_array_get_propvals(PRIM_PROTOTYPE)
     CHECKOP(2);
     oper2 = POP();
     oper1 = POP();
+
     if (mlev < 3)
-	abort_interp("Permission denied.");
+        abort_interp("Permission denied.");
+
     if (oper1->type != PROG_OBJECT)
-	abort_interp("Dbref required. (1)");
+        abort_interp("Dbref required. (1)");
+
     if (!valid_object(oper1))
-	abort_interp("Invalid dbref. (1)");
+        abort_interp("Invalid dbref. (1)");
+
     if (oper2->type != PROG_STRING)
-	abort_interp("String required. (2)");
+        abort_interp("String required. (2)");
 
     ref = oper1->data.objref;
     strcpyn(dir, sizeof(dir), DoNullInd(oper2->data.string));
+
     if (!*dir)
-	strcpyn(dir, sizeof(dir), (char[]){PROPDIR_DELIMITER,0});
+        strcpyn(dir, sizeof(dir), (char[]){PROPDIR_DELIMITER,0});
 
     nu = new_array_dictionary(fr->pinning);
     propadr = first_prop(ref, dir, &pptr, propname, sizeof(propname));
+
     while (propadr) {
-	snprintf(buf, sizeof(buf), "%s%c%s", dir, PROPDIR_DELIMITER, propname);
-	if (prop_read_perms(ProgUID, ref, buf, mlev)) {
-	    prptr = get_property(ref, buf);
-	    if (prptr) {
-		int goodflag = 1;
+        snprintf(buf, sizeof(buf), "%s%c%s", dir, PROPDIR_DELIMITER, propname);
+
+        if (prop_read_perms(ProgUID, ref, buf, mlev)) {
+            prptr = get_property(ref, buf);
+
+            if (prptr) {
+                int goodflag = 1;
 
 #ifdef DISKBASE
-		propfetch(ref, prptr);
+                propfetch(ref, prptr);
 #endif
-		switch (PropType(prptr)) {
-		case PROP_STRTYP:
-		    temp2.type = PROG_STRING;
-		    temp2.data.string = alloc_prog_string(PropDataStr(prptr));
-		    break;
-		case PROP_LOKTYP:
-		    temp2.type = PROG_LOCK;
-		    if (PropFlags(prptr) & PROP_ISUNLOADED) {
-			temp2.data.lock = TRUE_BOOLEXP;
-		    } else {
-			temp2.data.lock = PropDataLok(prptr);
-			if (temp2.data.lock != TRUE_BOOLEXP) {
-			    temp2.data.lock = copy_bool(temp2.data.lock);
-			}
-		    }
-		    break;
-		case PROP_REFTYP:
-		    temp2.type = PROG_OBJECT;
-		    temp2.data.number = PropDataRef(prptr);
-		    break;
-		case PROP_INTTYP:
-		    temp2.type = PROG_INTEGER;
-		    temp2.data.number = PropDataVal(prptr);
-		    break;
-		case PROP_FLTTYP:
-		    temp2.type = PROG_FLOAT;
-		    temp2.data.fnumber = PropDataFVal(prptr);
-		    break;
-		default:
-		    goodflag = 0;
-		    break;
-		}
+                switch (PropType(prptr)) {
+                    case PROP_STRTYP:
+                        temp2.type = PROG_STRING;
+                        temp2.data.string = alloc_prog_string(PropDataStr(prptr));
+                        break;
 
-		if (goodflag) {
-		    if (count++ >= 511) {
-			array_free(nu);
-			abort_interp("Too many properties to put in an array!");
-		    }
-		    temp1.type = PROG_STRING;
-		    temp1.data.string = alloc_prog_string(propname);
-		    array_setitem(&nu, &temp1, &temp2);
-		    CLEAR(&temp1);
-		    CLEAR(&temp2);
-		}
-	    }
-	}
-	propadr = next_prop(pptr, propadr, propname, sizeof(propname));
+                    case PROP_LOKTYP:
+                        temp2.type = PROG_LOCK;
+
+                        if (PropFlags(prptr) & PROP_ISUNLOADED) {
+                            temp2.data.lock = TRUE_BOOLEXP;
+                        } else {
+                            temp2.data.lock = PropDataLok(prptr);
+
+                            if (temp2.data.lock != TRUE_BOOLEXP) {
+                                temp2.data.lock = copy_bool(temp2.data.lock);
+                            }
+                        }
+
+                        break;
+
+                    case PROP_REFTYP:
+                        temp2.type = PROG_OBJECT;
+                        temp2.data.number = PropDataRef(prptr);
+                        break;
+
+                    case PROP_INTTYP:
+                        temp2.type = PROG_INTEGER;
+                        temp2.data.number = PropDataVal(prptr);
+                        break;
+
+                    case PROP_FLTTYP:
+                        temp2.type = PROG_FLOAT;
+                        temp2.data.fnumber = PropDataFVal(prptr);
+                        break;
+
+                    default:
+                        goodflag = 0;
+                        break;
+                }
+
+                if (goodflag) {
+                    if (count++ >= 511) {
+                        array_free(nu);
+                        abort_interp("Too many properties to put in an array!");
+                    }
+
+                    temp1.type = PROG_STRING;
+                    temp1.data.string = alloc_prog_string(propname);
+                    array_setitem(&nu, &temp1, &temp2);
+                    CLEAR(&temp1);
+                    CLEAR(&temp2);
+                }
+            }
+        }
+
+        propadr = next_prop(pptr, propadr, propname, sizeof(propname));
     }
 
     CLEAR(oper1);
@@ -1606,108 +1817,134 @@ prim_array_get_proplist(PRIM_PROTOTYPE)
     CHECKOP(2);
     oper2 = POP();
     oper1 = POP();
+
     if (oper1->type != PROG_OBJECT)
-	abort_interp("Dbref required. (1)");
+        abort_interp("Dbref required. (1)");
+
     if (!valid_object(oper1))
-	abort_interp("Invalid dbref. (1)");
+        abort_interp("Invalid dbref. (1)");
+
     if (oper2->type != PROG_STRING)
-	abort_interp("String required. (2)");
+        abort_interp("String required. (2)");
 
     ref = oper1->data.objref;
     strcpyn(dir, sizeof(dir), DoNullInd(oper2->data.string));
+
     if (!*dir)
-	strcpyn(dir, sizeof(dir), (char[]){PROPDIR_DELIMITER,0});
+        strcpyn(dir, sizeof(dir), (char[]){PROPDIR_DELIMITER,0});
 
     snprintf(propname, sizeof(propname), "%s#", dir);
     maxcount = get_property_value(ref, propname);
+
     if (!maxcount) {
-	strval = get_property_class(ref, propname);
-	if (strval) {
-	    if (strval && number(strval)) {
-		maxcount = atoi(strval);
-	    }
-	}
-	if (!maxcount) {
-	    snprintf(propname, sizeof(propname), "%s%c#", dir, PROPDIR_DELIMITER);
-	    maxcount = get_property_value(ref, propname);
-	    if (!maxcount) {
-		strval = get_property_class(ref, propname);
-		if (strval && number(strval)) {
-		    maxcount = atoi(strval);
-		}
-	    }
-	}
+        strval = get_property_class(ref, propname);
+
+        if (strval) {
+            if (strval && number(strval)) {
+                maxcount = atoi(strval);
+            }
+        }
+
+        if (!maxcount) {
+            snprintf(propname, sizeof(propname), "%s%c#", dir,
+                     PROPDIR_DELIMITER);
+            maxcount = get_property_value(ref, propname);
+
+            if (!maxcount) {
+                strval = get_property_class(ref, propname);
+
+                if (strval && number(strval)) {
+                    maxcount = atoi(strval);
+                }
+            }
+        }
     }
 
     nu = new_array_packed(0, fr->pinning);
+
     while (maxcount > 0) {
-	snprintf(propname, sizeof(propname), "%s#%c%d", dir, PROPDIR_DELIMITER, count);
-	prptr = get_property(ref, propname);
-	if (!prptr) {
-	    snprintf(propname, sizeof(propname), "%s%c%d", dir, PROPDIR_DELIMITER, count);
-	    prptr = get_property(ref, propname);
-	    if (!prptr) {
-		snprintf(propname, sizeof(propname), "%s%d", dir, count);
-		prptr = get_property(ref, propname);
-	    }
-	}
-	if (maxcount > 1023) {
-	    maxcount = 1023;
-	}
-	if (maxcount) {
-	    if (count > maxcount)
-		break;
-	} else if (!prptr) {
-	    break;
-	}
-	if (prop_read_perms(ProgUID, ref, propname, mlev)) {
-	    if (!prptr) {
-		temp2.type = PROG_INTEGER;
-		temp2.data.number = 0;
-	    } else {
+        snprintf(propname, sizeof(propname), "%s#%c%d", dir, PROPDIR_DELIMITER, count);
+        prptr = get_property(ref, propname);
+
+        if (!prptr) {
+            snprintf(propname, sizeof(propname), "%s%c%d", dir, PROPDIR_DELIMITER, count);
+            prptr = get_property(ref, propname);
+
+            if (!prptr) {
+                snprintf(propname, sizeof(propname), "%s%d", dir, count);
+                prptr = get_property(ref, propname);
+            }
+        }
+
+        if (maxcount > 1023) {
+            maxcount = 1023;
+        }
+
+        if (maxcount) {
+            if (count > maxcount)
+                break;
+        } else if (!prptr) {
+            break;
+        }
+
+        if (prop_read_perms(ProgUID, ref, propname, mlev)) {
+            if (!prptr) {
+                temp2.type = PROG_INTEGER;
+                temp2.data.number = 0;
+            } else {
 #ifdef DISKBASE
-		propfetch(ref, prptr);
+                propfetch(ref, prptr);
 #endif
-		switch (PropType(prptr)) {
-		case PROP_STRTYP:
-		    temp2.type = PROG_STRING;
-		    temp2.data.string = alloc_prog_string(PropDataStr(prptr));
-		    break;
-		case PROP_LOKTYP:
-		    temp2.type = PROG_LOCK;
-		    if (PropFlags(prptr) & PROP_ISUNLOADED) {
-			temp2.data.lock = TRUE_BOOLEXP;
-		    } else {
-			temp2.data.lock = PropDataLok(prptr);
-			if (temp2.data.lock != TRUE_BOOLEXP) {
-			    temp2.data.lock = copy_bool(temp2.data.lock);
-			}
-		    }
-		    break;
-		case PROP_REFTYP:
-		    temp2.type = PROG_OBJECT;
-		    temp2.data.number = PropDataRef(prptr);
-		    break;
-		case PROP_INTTYP:
-		    temp2.type = PROG_INTEGER;
-		    temp2.data.number = PropDataVal(prptr);
-		    break;
-		case PROP_FLTTYP:
-		    temp2.type = PROG_FLOAT;
-		    temp2.data.fnumber = PropDataFVal(prptr);
-		    break;
-		default:
-		    temp2.type = PROG_INTEGER;
-		    temp2.data.number = 0;
-		    break;
-		}
-	    }
-	    array_appenditem(&nu, &temp2);
-	    CLEAR(&temp2);
-	} else {
-	    break;
-	}
-	count++;
+                switch (PropType(prptr)) {
+                    case PROP_STRTYP:
+                        temp2.type = PROG_STRING;
+                        temp2.data.string = alloc_prog_string(PropDataStr(prptr));
+                        break;
+
+                    case PROP_LOKTYP:
+                        temp2.type = PROG_LOCK;
+
+                        if (PropFlags(prptr) & PROP_ISUNLOADED) {
+                            temp2.data.lock = TRUE_BOOLEXP;
+                        } else {
+                            temp2.data.lock = PropDataLok(prptr);
+
+                            if (temp2.data.lock != TRUE_BOOLEXP) {
+                                temp2.data.lock = copy_bool(temp2.data.lock);
+                            }
+                        }
+
+                        break;
+
+                    case PROP_REFTYP:
+                        temp2.type = PROG_OBJECT;
+                        temp2.data.number = PropDataRef(prptr);
+                        break;
+
+                    case PROP_INTTYP:
+                        temp2.type = PROG_INTEGER;
+                        temp2.data.number = PropDataVal(prptr);
+                        break;
+
+                    case PROP_FLTTYP:
+                        temp2.type = PROG_FLOAT;
+                        temp2.data.fnumber = PropDataFVal(prptr);
+                        break;
+
+                    default:
+                        temp2.type = PROG_INTEGER;
+                        temp2.data.number = 0;
+                        break;
+                }
+            }
+
+            array_appenditem(&nu, &temp2);
+            CLEAR(&temp2);
+        } else {
+            break;
+        }
+
+        count++;
     }
 
     CLEAR(oper1);
@@ -1728,73 +1965,91 @@ prim_array_put_propvals(PRIM_PROTOTYPE)
     oper3 = POP();
     oper2 = POP();
     oper1 = POP();
+
     if (oper1->type != PROG_OBJECT)
-	abort_interp("Dbref required. (1)");
+        abort_interp("Dbref required. (1)");
+
     if (!valid_object(oper1))
-	abort_interp("Invalid dbref. (1)");
+        abort_interp("Invalid dbref. (1)");
+
     if (oper2->type != PROG_STRING)
-	abort_interp("String required. (2)");
+        abort_interp("String required. (2)");
+
     if (oper3->type != PROG_ARRAY)
-	abort_interp("Array required. (3)");
+        abort_interp("Array required. (3)");
 
     ref = oper1->data.objref;
     strcpyn(dir, sizeof(dir), DoNullInd(oper2->data.string));
     arr = oper3->data.array;
 
     if (array_first(arr, &temp1)) {
-	do {
-	    oper4 = array_getitem(arr, &temp1);
-	    switch (temp1.type) {
-	    case PROG_STRING:
-		snprintf(propname, sizeof(propname), "%s%c%s", dir, PROPDIR_DELIMITER,
-			 DoNullInd(temp1.data.string));
-		break;
-	    case PROG_INTEGER:
-		snprintf(propname, sizeof(propname), "%s%c%d", dir, PROPDIR_DELIMITER,
-			 temp1.data.number);
-		break;
-	    case PROG_FLOAT:
-		snprintf(propname, sizeof(propname), "%s%c%.15g", dir, PROPDIR_DELIMITER,
-			 temp1.data.fnumber);
-		if (!strchr(propname, '.') && !strchr(propname, 'n') && !strchr(propname, 'e')) {
-		    strcatn(propname, sizeof(propname), ".0");
-		}
-		break;
-	    default:
-		*propname = '\0';
-	    }
+        do {
+            oper4 = array_getitem(arr, &temp1);
 
-	    if (!prop_write_perms(ProgUID, ref, propname, mlev))
-		abort_interp("Permission denied while trying to set protected property.");
+            switch (temp1.type) {
+                case PROG_STRING:
+                    snprintf(propname, sizeof(propname), "%s%c%s", dir,
+                             PROPDIR_DELIMITER, DoNullInd(temp1.data.string));
+                    break;
 
-	    switch (oper4->type) {
-	    case PROG_STRING:
-		propdat.flags = PROP_STRTYP;
-		propdat.data.str = oper4->data.string ? oper4->data.string->data : 0;
-		break;
-	    case PROG_INTEGER:
-		propdat.flags = PROP_INTTYP;
-		propdat.data.val = oper4->data.number;
-		break;
-	    case PROG_FLOAT:
-		propdat.flags = PROP_FLTTYP;
-		propdat.data.fval = oper4->data.fnumber;
-		break;
-	    case PROG_OBJECT:
-		propdat.flags = PROP_REFTYP;
-		propdat.data.ref = oper4->data.objref;
-		break;
-	    case PROG_LOCK:
-		propdat.flags = PROP_LOKTYP;
-		propdat.data.lok = copy_bool(oper4->data.lock);
-		break;
-	    default:
-		*propname = '\0';
-	    }
-	    if (*propname) {
-		set_property(ref, propname, &propdat, 0);
-	    }
-	} while (array_next(arr, &temp1));
+                case PROG_INTEGER:
+                    snprintf(propname, sizeof(propname), "%s%c%d", dir,
+                             PROPDIR_DELIMITER, temp1.data.number);
+                    break;
+
+                case PROG_FLOAT:
+                    snprintf(propname, sizeof(propname), "%s%c%.15g", dir,
+                             PROPDIR_DELIMITER, temp1.data.fnumber);
+
+                    if (!strchr(propname, '.') && !strchr(propname, 'n')
+                        && !strchr(propname, 'e')) {
+                        strcatn(propname, sizeof(propname), ".0");
+                    }
+
+                    break;
+
+                default:
+                    *propname = '\0';
+            }
+
+            if (!prop_write_perms(ProgUID, ref, propname, mlev))
+                abort_interp("Permission denied while trying to set "
+                             "protected property.");
+
+            switch (oper4->type) {
+                case PROG_STRING:
+                    propdat.flags = PROP_STRTYP;
+                    propdat.data.str = oper4->data.string ? oper4->data.string->data : 0;
+                    break;
+
+                case PROG_INTEGER:
+                    propdat.flags = PROP_INTTYP;
+                    propdat.data.val = oper4->data.number;
+                    break;
+
+                case PROG_FLOAT:
+                    propdat.flags = PROP_FLTTYP;
+                    propdat.data.fval = oper4->data.fnumber;
+                    break;
+
+                case PROG_OBJECT:
+                    propdat.flags = PROP_REFTYP;
+                    propdat.data.ref = oper4->data.objref;
+                    break;
+
+                case PROG_LOCK:
+                    propdat.flags = PROP_LOKTYP;
+                    propdat.data.lok = copy_bool(oper4->data.lock);
+                    break;
+
+                default:
+                    *propname = '\0';
+            }
+
+            if (*propname) {
+                set_property(ref, propname, &propdat, 0);
+            }
+        } while (array_next(arr, &temp1));
     }
 
     CLEAR(oper1);

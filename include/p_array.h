@@ -345,7 +345,48 @@ void prim_array_matchval(PRIM_PROTOTYPE);
 void prim_array_matchkey(PRIM_PROTOTYPE);
 void prim_array_extract(PRIM_PROTOTYPE);
 void prim_array_excludeval(PRIM_PROTOTYPE);
+
+/**
+ * Implementtion of MUF ARRAY_SORT
+ *
+ * Takes an array to sort and an integer sort type, which can be one
+ * of the following (bit OR'd together)
+ *
+ * 0 - case sensitive and ascending
+ * 1 - SORTTYPE_CASEINSENS - Case insensitive sort
+ * 2 - SORTTYPE_DESCENDING - Sort in reversed order
+ * 4 - SORTTYPE_SHUFFLE - Sort randomly
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void prim_array_sort(PRIM_PROTOTYPE);
+
+/**
+ * Implementtion of MUF ARRAY_SORT_INDEXED
+ *
+ * Takes an array of arrays to sort, a sort type, and a key/index to sort
+ * by.  Sorts arrays within the 'parent' array using the value of the key
+ * or index provided.  Only works if that key contains an integer.
+ *
+ * 0 - case sensitive and ascending
+ * 1 - SORTTYPE_CASEINSENS - Case insensitive sort
+ * 2 - SORTTYPE_DESCENDING - Sort in reversed order
+ * 4 - SORTTYPE_SHUFFLE - Sort randomly
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void prim_array_sort_indexed(PRIM_PROTOTYPE);
 void prim_array_join(PRIM_PROTOTYPE);
 void prim_array_interpret(PRIM_PROTOTYPE);
@@ -369,11 +410,89 @@ void prim_array_interpret(PRIM_PROTOTYPE);
  */
 void prim_array_cut(PRIM_PROTOTYPE);
 
+/**
+ * Implementtion of MUF ARRAY_NUNION
+ *
+ * Returns a list array containing the union of values of all
+ * the given arrays in a stackrange.  If a value is found in any of the
+ * arrays, then it will be in the resultant list, though duplicates and
+ * keys will be discarded.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void prim_array_n_union(PRIM_PROTOTYPE);
+
+/**
+ * Implementtion of MUF ARRAY_NINTERSECT
+ *
+ * Returns a list array containing the intersction of values of all
+ * the given arrays in a stackrange.  If a value is found in all of the
+ * arrays, then it will be in the resultant list, though duplicates and
+ * keys will be discarded.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void prim_array_n_intersection(PRIM_PROTOTYPE);
+
+/**
+ * Implementtion of MUF ARRAY_NDIFF
+ *
+ * Returns a list array containing the difference of values of all
+ * the given arrays in a stackrange.  It returns all values from the
+ * topmost array that weren't found in any of the other arrays.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void prim_array_n_difference(PRIM_PROTOTYPE);
 
+/**
+ * Implementtion of MUF ARRAY_NOTIFY
+ *
+ * Consumes two arrays on the stack.  The lower array must be a list of
+ * strings and the top array is the list of dbrefs.  All messages in the
+ * first list are sent to all people in the second list.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void prim_array_notify(PRIM_PROTOTYPE);
+
+/**
+ * Implementtion of MUF ARRAY_REVERSE
+ *
+ * Takes a list array and reverses the order of the elements in it.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void prim_array_reverse(PRIM_PROTOTYPE);
 
 void prim_array_get_propdirs(PRIM_PROTOTYPE);
