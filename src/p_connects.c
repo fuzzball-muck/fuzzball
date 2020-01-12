@@ -39,7 +39,6 @@ void
 prim_awakep(PRIM_PROTOTYPE)
 {
     CHECKOP(1);
-
     oper1 = POP();
 
     if (!valid_object(oper1))
@@ -56,6 +55,7 @@ prim_awakep(PRIM_PROTOTYPE)
     result = PLAYER_DESCRCOUNT(ref);
 
     CLEAR(oper1);
+
     PushInt(result);
 }
 
@@ -98,6 +98,7 @@ prim_online(PRIM_PROTOTYPE)
     }
 
     result = pcount();
+
     PushInt(result);
 }
 
@@ -177,6 +178,7 @@ prim_concount(PRIM_PROTOTYPE)
     result = pcount();
 
     CHECKOFLOW(1);
+
     PushInt(result);
 }
 
@@ -203,7 +205,6 @@ prim_descr(PRIM_PROTOTYPE)
     result = fr->descr;
 
     CHECKOFLOW(1);
-
     PushInt(result);
 }
 
@@ -228,7 +229,6 @@ prim_condbref(PRIM_PROTOTYPE)
 {
     /* int -- dbref */
     CHECKOP(1);
-
     oper1 = POP();
 
     if (mlev < 3)
@@ -252,6 +252,7 @@ prim_condbref(PRIM_PROTOTYPE)
     
     CHECKOFLOW(1);
     CLEAR(oper1);
+
     PushObject(result);
 }
 
@@ -276,7 +277,6 @@ prim_descr_dbref(PRIM_PROTOTYPE)
 {
     /* int -- dbref */
     CHECKOP(1);
-
     oper1 = POP();
 
     if (mlev < 3)
@@ -295,6 +295,7 @@ prim_descr_dbref(PRIM_PROTOTYPE)
 
     CHECKOFLOW(1);
     CLEAR(oper1);
+
     PushObject(result);
 }
 
@@ -318,7 +319,6 @@ prim_conidle(PRIM_PROTOTYPE)
 {
     /* int -- int */
     CHECKOP(1);
-
     oper1 = POP();
 
     if (mlev < 3)
@@ -336,6 +336,7 @@ prim_conidle(PRIM_PROTOTYPE)
 
     CHECKOFLOW(1);
     CLEAR(oper1);
+
     PushInt(result);
 }
 
@@ -359,7 +360,6 @@ prim_descr_idle(PRIM_PROTOTYPE)
 {
     /* int -- int */
     CHECKOP(1);
-
     oper1 = POP();
 
     if (mlev < 3)
@@ -375,6 +375,7 @@ prim_descr_idle(PRIM_PROTOTYPE)
 
     CHECKOFLOW(1);
     CLEAR(oper1);
+
     PushInt(result);
 }
 
@@ -398,7 +399,6 @@ prim_descr_least_idle(PRIM_PROTOTYPE)
 {
     /* obj -- int */
     CHECKOP(1);
-
     oper1 = POP();
 
     if (mlev < 3)
@@ -423,6 +423,7 @@ prim_descr_least_idle(PRIM_PROTOTYPE)
 
     CHECKOFLOW(1);
     CLEAR(oper1);
+
     PushInt(result);
 }
 
@@ -446,7 +447,6 @@ prim_descr_most_idle(PRIM_PROTOTYPE)
 {
     /* obj -- int */
     CHECKOP(1);
-
     oper1 = POP();
 
     if (mlev < 3)
@@ -471,6 +471,7 @@ prim_descr_most_idle(PRIM_PROTOTYPE)
 
     CHECKOFLOW(1);
     CLEAR(oper1);
+
     PushInt(result);
 }
 
@@ -495,7 +496,6 @@ prim_contime(PRIM_PROTOTYPE)
 {
     /* int -- int */
     CHECKOP(1);
-
     oper1 = POP();
 
     if (mlev < 3)
@@ -513,6 +513,7 @@ prim_contime(PRIM_PROTOTYPE)
 
     CHECKOFLOW(1);
     CLEAR(oper1);
+
     PushInt(result);
 }
 
@@ -537,7 +538,6 @@ prim_descr_time(PRIM_PROTOTYPE)
 {
     /* int -- int */
     CHECKOP(1);
-
     oper1 = POP();
 
     if (mlev < 3)
@@ -553,6 +553,7 @@ prim_descr_time(PRIM_PROTOTYPE)
 
     CHECKOFLOW(1);
     CLEAR(oper1);
+
     PushInt(result);
 }
 
@@ -579,7 +580,6 @@ prim_conhost(PRIM_PROTOTYPE)
     char *pname;
 
     CHECKOP(1);
-
     oper1 = POP();
 
     if (mlev < 4)
@@ -597,6 +597,7 @@ prim_conhost(PRIM_PROTOTYPE)
 
     CHECKOFLOW(1);
     CLEAR(oper1);
+
     PushString(pname);
 }
 
@@ -623,7 +624,6 @@ prim_descr_host(PRIM_PROTOTYPE)
     char *pname;
 
     CHECKOP(1);
-
     oper1 = POP();
 
     if (mlev < 4)
@@ -641,6 +641,7 @@ prim_descr_host(PRIM_PROTOTYPE)
 
     CHECKOFLOW(1);
     CLEAR(oper1);
+
     PushString(pname);
 }
 
@@ -667,7 +668,6 @@ prim_conuser(PRIM_PROTOTYPE)
     char *pname;
 
     CHECKOP(1);
-
     oper1 = POP();
 
     if (mlev < 4)
@@ -685,6 +685,7 @@ prim_conuser(PRIM_PROTOTYPE)
 
     CHECKOFLOW(1);
     CLEAR(oper1);
+
     PushString(pname);
 }
 
@@ -711,7 +712,6 @@ prim_descr_user(PRIM_PROTOTYPE)
     char *pname;
 
     CHECKOP(1);
-
     oper1 = POP();
 
     if (mlev < 4)
@@ -729,6 +729,7 @@ prim_descr_user(PRIM_PROTOTYPE)
 
     CHECKOFLOW(1);
     CLEAR(oper1);
+
     PushString(pname);
 }
 
@@ -752,7 +753,6 @@ prim_conboot(PRIM_PROTOTYPE)
 {
     /* int --  */
     CHECKOP(1);
-
     oper1 = POP();
 
     if (mlev < 4)
@@ -791,7 +791,6 @@ prim_descr_boot(PRIM_PROTOTYPE)
 {
     /* int --  */
     CHECKOP(1);
-
     oper1 = POP();
 
     if (mlev < 4)
@@ -830,7 +829,6 @@ prim_connotify(PRIM_PROTOTYPE)
     /* int string --  */
 
     CHECKOP(2);
-
     oper2 = POP();              /* string */
     oper1 = POP();              /* int */
 
@@ -876,7 +874,6 @@ prim_descr_notify(PRIM_PROTOTYPE)
 {
     /* int string --  */
     CHECKOP(2);
-
     oper2 = POP();              /* string */
     oper1 = POP();              /* int */
 
@@ -919,7 +916,6 @@ prim_condescr(PRIM_PROTOTYPE)
 {
     /* int -- int */
     CHECKOP(1);
-
     oper1 = POP();
 
     if (mlev < 3)
@@ -936,6 +932,7 @@ prim_condescr(PRIM_PROTOTYPE)
     result = pdescr(result);
 
     CLEAR(oper1);
+
     PushInt(result);
 }
 
@@ -959,7 +956,6 @@ prim_descrcon(PRIM_PROTOTYPE)
 {
     /* int -- int */
     CHECKOP(1);
-
     oper1 = POP();
 
     if (mlev < 3)
@@ -979,6 +975,7 @@ prim_descrcon(PRIM_PROTOTYPE)
      **/
 
     CLEAR(oper1);
+
     PushInt(result);
 }
 
@@ -1008,7 +1005,6 @@ prim_nextdescr(PRIM_PROTOTYPE)
      */
     /* int -- int */
     CHECKOP(1);
-
     oper1 = POP();
 
     if (mlev < 3)
@@ -1024,6 +1020,7 @@ prim_nextdescr(PRIM_PROTOTYPE)
     result = pnextdescr(result);
 
     CLEAR(oper1);
+
     PushInt(result);
 }
 
@@ -1054,7 +1051,6 @@ prim_descriptors(PRIM_PROTOTYPE)
     int dcount;
 
     CHECKOP(1);
-
     oper1 = POP();
 
     if (mlev < 3)
@@ -1134,7 +1130,6 @@ prim_descr_array(PRIM_PROTOTYPE)
     int dcount;
 
     CHECKOP(1);
-
     oper1 = POP();
 
     if (mlev < 3)
@@ -1167,7 +1162,6 @@ prim_descr_array(PRIM_PROTOTYPE)
 
     if (ref == NOTHING) {
         result = pcount();
-
         newarr = new_array_packed(result, fr->pinning);
 
         for (int i = 0; i < result; i++) {
@@ -1213,7 +1207,6 @@ prim_descr_setuser(PRIM_PROTOTYPE)
     char *ptr;
 
     CHECKOP(3);
-
     oper3 = POP();
     oper2 = POP();
     oper1 = POP();
@@ -1289,7 +1282,6 @@ void
 prim_descrflush(PRIM_PROTOTYPE)
 {
     CHECKOP(1);
-
     oper1 = POP();
 
     if (mlev < 3)
@@ -1305,6 +1297,7 @@ prim_descrflush(PRIM_PROTOTYPE)
      **/
 
     CLEAR(oper1);
+
     result = pdescrflush(tmp);
 }
 
@@ -1337,7 +1330,6 @@ prim_firstdescr(PRIM_PROTOTYPE)
     CHECKOP(1);
 
     oper1 = POP();
-
     if (mlev < 3)
         abort_interp("Requires Mucker Level 3.");
 
@@ -1351,12 +1343,10 @@ prim_firstdescr(PRIM_PROTOTYPE)
 
     if (ref == NOTHING) {
         result = pfirstdescr();
-
     } else {
         /**
          * @TODO This seems to be a redundant check.
          */
-
         if (Typeof(ref) != TYPE_PLAYER)
             abort_interp("invalid argument");
 
@@ -1370,6 +1360,7 @@ prim_firstdescr(PRIM_PROTOTYPE)
 
     CHECKOFLOW(1);
     CLEAR(oper1);
+
     PushInt(result);
 }
 
@@ -1400,7 +1391,6 @@ prim_lastdescr(PRIM_PROTOTYPE)
     int dcount;
 
     CHECKOP(1);
-
     oper1 = POP();
 
     if (mlev < 3)
@@ -1433,6 +1423,7 @@ prim_lastdescr(PRIM_PROTOTYPE)
 
     CHECKOFLOW(1);
     CLEAR(oper1);
+
     PushInt(result);
 }
 
@@ -1457,7 +1448,6 @@ prim_descr_securep(PRIM_PROTOTYPE)
     /* descr -> bool */
 
     CHECKOP(1);
-
     oper1 = POP();
 
     if (mlev < 3)
@@ -1498,7 +1488,6 @@ prim_descr_bufsize(PRIM_PROTOTYPE)
 {
     /* int -- int */
     CHECKOP(1);
-
     oper1 = POP();
 
     if (mlev < 3)
@@ -1514,5 +1503,6 @@ prim_descr_bufsize(PRIM_PROTOTYPE)
 
     CHECKOFLOW(1);
     CLEAR(oper1);
+
     PushInt(result);
 }
