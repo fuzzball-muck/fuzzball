@@ -211,16 +211,15 @@ S's
   setdrop            setfail            setlink            setlinks_array
   setlockstr         setmode            setname            setodrop
   setofail           setosucc           setown             setprop
-  setseed            setsucc            setsysparm         sha1hash
-  shallow_copy       sign               sin                sleep
-  smatch             split              sqrt               srand
-  stats              stats_array        stod               strcat
-  strcmp             strcut             strdecrypt         strencrypt
-  string?            stringcmp          stringpfx          strip
-  striplead          striptail          strlen             strncmp
-  strtof             subst              succ               supplicant
-  swap               sysparm            sysparm_array      systime
-  systime_precise    
+  setseed            setsucc            setsysparm         shallow_copy
+  sign               sin                sleep              smatch
+  split              sqrt               srand              stats
+  stats_array        stod               strcat             strcmp
+  strcut             strdecrypt         strencrypt         string?
+  stringcmp          stringpfx          strip              striplead
+  striptail          strlen             strncmp            strtof
+  subst              succ               supplicant         swap
+  sysparm            sysparm_array      systime            systime_precise
 
 T's
   tan          tell         testlock     textattr     then         thing?
@@ -2490,12 +2489,12 @@ instring           intostr            itoc               md5hash
 midstr             name-ok?           number?            pname-ok?
 pose-separator?    pronoun_sub        regexp             regsplit
 regsplit_noempty   regsub             rinstr             rinstring
-rsplit             sha1hash           smatch             split
-stod               strcat             strcmp             strcut
-strdecrypt         strencrypt         stringcmp          stringpfx
-strip              striplead          striptail          strlen
-strncmp            subst              textattr           tokensplit
-tolower            toupper            
+rsplit             smatch             split              stod
+strcat             strcmp             strcut             strdecrypt
+strencrypt         stringcmp          stringpfx          strip
+striplead          striptail          strlen             strncmp
+subst              textattr           tokensplit         tolower
+toupper            
 
 ~----------------------------------------------------------------------------
 ~
@@ -2888,14 +2887,6 @@ MD5HASH
 MD5HASH ( s -- s' )
 
   Calculates the MD5 hash of the given string.
-Also see: SHA1HASH
-~
-~
-SHA1HASH
-SHA1HASH ( s -- s' )
-
-  Calculates the SHA1 hash of the given string.
-Also see: MD5HASH
 ~
 ~
 TOUPPER
