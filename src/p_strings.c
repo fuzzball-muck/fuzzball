@@ -16,7 +16,6 @@
 #include "inst.h"
 #include "interface.h"
 #include "interp.h"
-#include "sha1.h"
 #include "timequeue.h"
 #include "tune.h"
 
@@ -2672,34 +2671,6 @@ prim_md5hash(PRIM_PROTOTYPE)
 
     p = hash;
 
-    CLEAR(oper1);
-    PushString(p);
-}
-
-void
-prim_sha1hash(PRIM_PROTOTYPE)
-{
-    char hash[41];
-    const char *p;
-
-    CHECKOP(1);
-    oper1 = POP();
-
-    if (oper1->type != PROG_STRING)
-	abort_interp("Not a string argument. (1)");
-
-    p = DoNullInd(oper1->data.string);
-
-    sha1nfo info;
-    sha1_init(&info);
-    while (*p) {
-	sha1_writebyte(&info, (uint8_t)*p);
-	p++;
-    }
-
-    hash2hex(sha1_result(&info), hash, sizeof(hash));
-
-    p = hash;
     CLEAR(oper1);
     PushString(p);
 }

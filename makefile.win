@@ -112,7 +112,6 @@ BASE_OBJ="$(INTDIR)\array.obj" \
 	"$(INTDIR)\props.obj" \
 	"$(INTDIR)\sanity.obj" \
 	"$(INTDIR)\set.obj" \
-	"$(INTDIR)\sha1.obj" \
 	"$(INTDIR)\speech.obj" \
 	"$(INTDIR)\timequeue.obj" \
 	"$(INTDIR)\tune.obj" \
