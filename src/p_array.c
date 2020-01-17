@@ -72,7 +72,7 @@ static dbref ref;
 static char buf[BUFFER_LEN];
 
 /**
- * Implementtion of MUF ARRAY_MAKE
+ * Implementation of MUF ARRAY_MAKE
  *
  * Create a "packed" (list) array from a variable number of items on the
  * stack.  The topmost stack item is the count of items to add to the
@@ -124,7 +124,7 @@ prim_array_make(PRIM_PROTOTYPE)
 }
 
 /**
- * Implementtion of MUF ARRAY_MAKE_DICT
+ * Implementation of MUF ARRAY_MAKE_DICT
  *
  * Create a dictionary array from a variable number of key/values on the
  * stack.  The topmost item on the stack is the number of key/value pairs
@@ -182,7 +182,7 @@ prim_array_make_dict(PRIM_PROTOTYPE)
 }
 
 /**
- * Implementtion of MUF ARRAY_EXPLODE
+ * Implementation of MUF ARRAY_EXPLODE
  *
  * Explodes the array into a "stack range", meaning, key/value pairs
  * followed by a count of pairs (which is half of the total number of
@@ -228,7 +228,7 @@ prim_array_explode(PRIM_PROTOTYPE)
 }
 
 /**
- * Implementtion of MUF ARRAY_VALS
+ * Implementation of MUF ARRAY_VALS
  *
  * Extracts all the values of the array onto the stack, with a total count
  * of extracted items at the top of the stack.  Keys are ignored.
@@ -271,7 +271,7 @@ prim_array_vals(PRIM_PROTOTYPE)
 }
 
 /**
- * Implementtion of MUF ARRAY_KEYS
+ * Implementation of MUF ARRAY_KEYS
  *
  * Extracts all the keys of the array onto the stack, with a total count
  * of extracted items at the top of the stack.  Values are ignored.
@@ -312,7 +312,7 @@ prim_array_keys(PRIM_PROTOTYPE)
 }
 
 /**
- * Implementtion of MUF ARRAY_COUNT
+ * Implementation of MUF ARRAY_COUNT
  *
  * Consumes an array and pushes its count onto the stack.
  *
@@ -340,7 +340,7 @@ prim_array_count(PRIM_PROTOTYPE)
 }
 
 /**
- * Implementtion of MUF ARRAY_FIRST
+ * Implementation of MUF ARRAY_FIRST
  *
  * Consumes an array and pushes its first index onto the stack, and a boolean
  * which is false if there are no items in the array.
@@ -381,7 +381,7 @@ prim_array_first(PRIM_PROTOTYPE)
 }
 
 /**
- * Implementtion of MUF ARRAY_LAST
+ * Implementation of MUF ARRAY_LAST
  *
  * Consumes an array and pushes its last index onto the stack, and a boolean
  * which is false if there are no items in the array.
@@ -422,7 +422,7 @@ prim_array_last(PRIM_PROTOTYPE)
 }
 
 /**
- * Implementtion of MUF ARRAY_PREV
+ * Implementation of MUF ARRAY_PREV
  *
  * Consumes an array and index, and pushes the previous index onto the stack,
  * and a boolean which is false if there are no previous item.
@@ -468,7 +468,7 @@ prim_array_prev(PRIM_PROTOTYPE)
 }
 
 /**
- * Implementtion of MUF ARRAY_NEXT
+ * Implementation of MUF ARRAY_NEXT
  *
  * Consumes an array and index, and pushes the next index onto the stack,
  * and a boolean which is false if there are no next item.
@@ -513,7 +513,7 @@ prim_array_next(PRIM_PROTOTYPE)
 }
 
 /**
- * Implementtion of MUF ARRAY_GETITEM
+ * Implementation of MUF ARRAY_GETITEM
  *
  * Consumes an array and index, and returns the item there or 0 if nothing
  * in the index.
@@ -563,7 +563,7 @@ prim_array_getitem(PRIM_PROTOTYPE)
 }
 
 /**
- * Implementtion of MUF ARRAY_SETITEM
+ * Implementation of MUF ARRAY_SETITEM
  *
  * Consumes any kind of stack data, an array, and an index and returns
  * an array with the stack data set to 'index', overwriting whatever may
@@ -611,7 +611,7 @@ prim_array_setitem(PRIM_PROTOTYPE)
 }
 
 /**
- * Implementtion of MUF ARRAY_SETITEM
+ * Implementation of MUF ARRAY_SETITEM
  *
  * Consumes any kind of stack item and a list array and returns the list
  * array with the item appended on it.
@@ -656,7 +656,7 @@ prim_array_appenditem(PRIM_PROTOTYPE)
 }
 
 /**
- * Implementtion of MUF ARRAY_INSERTITEM
+ * Implementation of MUF ARRAY_INSERTITEM
  *
  * Consumes any kind of stack data, an array, and an index and returns
  * an array with the stack data set to 'index'.
@@ -706,7 +706,7 @@ prim_array_insertitem(PRIM_PROTOTYPE)
 }
 
 /**
- * Implementtion of MUF ARRAY_GETRANGE
+ * Implementation of MUF ARRAY_GETRANGE
  *
  * Consumes an array and a start/end index, and puts an array on the stack
  * which is the range of items from start to end (inclusive)
@@ -753,7 +753,7 @@ prim_array_getrange(PRIM_PROTOTYPE)
 }
 
 /**
- * Implementtion of MUF ARRAY_SETRANGE
+ * Implementation of MUF ARRAY_SETRANGE
  *
  * Consumes an array, an index, and a second array.  Sets items from the
  * second array into the first array starting with the given index.  Puts
@@ -804,7 +804,7 @@ prim_array_setrange(PRIM_PROTOTYPE)
 }
 
 /**
- * Implementtion of MUF ARRAY_INSERTRANGE
+ * Implementation of MUF ARRAY_INSERTRANGE
  *
  * Consumes an array, an index, and a second array.  Inserts items from the
  * second array into the first array starting with the given index.  Puts
@@ -855,7 +855,7 @@ prim_array_insertrange(PRIM_PROTOTYPE)
 }
 
 /**
- * Implementtion of MUF ARRAY_DELITEM
+ * Implementation of MUF ARRAY_DELITEM
  *
  * Consumes an array and an index, and returns an array with that item
  * deleted
@@ -900,7 +900,7 @@ prim_array_delitem(PRIM_PROTOTYPE)
 }
 
 /**
- * Implementtion of MUF ARRAY_DELRANGE
+ * Implementation of MUF ARRAY_DELRANGE
  *
  * Consumes an array and two indexes, and deletes all items between the
  * two, inclusive.
@@ -950,7 +950,7 @@ prim_array_delrange(PRIM_PROTOTYPE)
 }
 
 /**
- * Implementtion of MUF ARRAY_CUT
+ * Implementation of MUF ARRAY_CUT
  *
  * Consumes an array and an index. Returns two arrays, which is the original
  * array cut at the given position.  The second array includes the index
@@ -1022,7 +1022,7 @@ prim_array_cut(PRIM_PROTOTYPE)
 }
 
 /**
- * Implementtion of MUF ARRAY_NUNION
+ * Implementation of MUF ARRAY_NUNION
  *
  * Returns a list array containing the union of values of all
  * the given arrays in a stackrange.  If a value is found in any of the
@@ -1086,7 +1086,7 @@ prim_array_n_union(PRIM_PROTOTYPE)
 }
 
 /**
- * Implementtion of MUF ARRAY_NINTERSECT
+ * Implementation of MUF ARRAY_NINTERSECT
  *
  * Returns a list array containing the intersction of values of all
  * the given arrays in a stackrange.  If a value is found in all of the
@@ -1149,7 +1149,7 @@ prim_array_n_intersection(PRIM_PROTOTYPE)
 }
 
 /**
- * Implementtion of MUF ARRAY_NDIFF
+ * Implementation of MUF ARRAY_NDIFF
  *
  * Returns a list array containing the difference of values of all
  * the given arrays in a stackrange.  It returns all values from the
@@ -1221,7 +1221,7 @@ prim_array_n_difference(PRIM_PROTOTYPE)
 }
 
 /**
- * Implementtion of MUF ARRAY_NOTIFY
+ * Implementation of MUF ARRAY_NOTIFY
  *
  * Consumes two arrays on the stack.  The lower array must be a list of
  * strings and the top array is the list of dbrefs.  All messages in the
@@ -1293,7 +1293,7 @@ prim_array_notify(PRIM_PROTOTYPE)
 }
 
 /**
- * Implementtion of MUF ARRAY_REVERSE
+ * Implementation of MUF ARRAY_REVERSE
  *
  * Takes a list array and reverses the order of the elements in it.
  *
@@ -1429,7 +1429,7 @@ sortcomp_shuffle(const void *x, const void *y)
 }
 
 /**
- * Implementtion of MUF ARRAY_SORT
+ * Implementation of MUF ARRAY_SORT
  *
  * Takes an array to sort and an integer sort type, which can be one
  * of the following (bit OR'd together)
@@ -1519,7 +1519,7 @@ prim_array_sort(PRIM_PROTOTYPE)
 }
 
 /**
- * Implementtion of MUF ARRAY_SORT_INDEXED
+ * Implementation of MUF ARRAY_SORT_INDEXED
  *
  * Takes an array of arrays to sort, a sort type, and a key/index to sort
  * by.  Sorts arrays within the 'parent' array using the value of the key
@@ -1617,6 +1617,26 @@ prim_array_sort_indexed(PRIM_PROTOTYPE)
     PushArrayRaw(nu);
 }
 
+/**
+ * Implementation of MUF ARRAY_GET_PROPDIRS
+ *
+ * Consomes a dbref and a string containing a propdir, and puts a list array
+ * containing all the sub-propdirs contained within that directory.  Any
+ * prop-dirs not visible due to permission will not be seen.  MUCKER level 3
+ * required.
+ *
+ * Only up to 511 elements can be put in the array before this aborts.
+ *
+ * @see prop_read_perms
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_get_propdirs(PRIM_PROTOTYPE)
 {
@@ -1666,11 +1686,44 @@ prim_array_get_propdirs(PRIM_PROTOTYPE)
             prptr = get_property(ref, buf);
 
             if (prptr) {
+                /*
+                 * TODO: Okay ... so propfetch
+                 *
+                 *       This is a pretty low level kind of call, that
+                 *       requires intimate knowledge of the DB "driver".
+                 *
+                 *       Shouldn't this be handled in a lower level like
+                 *       PropDir?  Or maybe make the define more clever...
+                 *
+                 *       I'm not sure, I just feel like this doesn't
+                 *       belong here.  This is a widespread issue so maybe
+                 *       should be an issue instead.
+                 */
 #ifdef DISKBASE
                 propfetch(ref, prptr);
 #endif
 
                 if (PropDir(prptr)) {
+                    /*
+                     * TODO: This hard-coded limit kind of sucks in a lot of
+                     *       ways.  The only reason this limit is here is to
+                     *       prevent someone from gobbling up all the server
+                     *       memory or causing a performance drag.
+                     *
+                     *       I'm of the opinion such limitations should be
+                     *       in the hands of MUCK owners rather than us
+                     *       making arbitrary choices -- there are times where
+                     *       I have chosen to use the outdated iterator
+                     *       approach (nextprop, etc.) over using the array
+                     *       funcs because I was not 100% sure there would be
+                     *       less than 512 props and I didn't want to paint
+                     *       myself into a corner.
+                     *
+                     *       Thus, I think this should be a tune param.
+                     *       Similar calls (like array_get_propval, etc.)
+                     *       can share the tune param.  At LEAST make it
+                     *       a #define so people can tweak it.
+                     */
                     if (count >= 511) {
                         array_free(nu);
                         abort_interp("Too many propdirs to put in an array!");
@@ -1690,6 +1743,26 @@ prim_array_get_propdirs(PRIM_PROTOTYPE)
     PushArrayRaw(nu);
 }
 
+/**
+ * Implementation of MUF ARRAY_GET_PROPVALS
+ *
+ * Consomes a dbref and a string containing a propdir, and puts a dictionary
+ * containing a ma of prop names to prop values.  Subpropdirs with no value
+ * associated with them are left out.  Any prop-dirs not visible due to
+ * permission will not be seen.  MUCKER level 3 required.
+ *
+ * Only up to 511 properties can go into an array before this aborts.
+ *
+ * @see prop_read_perms
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_get_propvals(PRIM_PROTOTYPE)
 {
@@ -1738,6 +1811,26 @@ prim_array_get_propvals(PRIM_PROTOTYPE)
 #ifdef DISKBASE
                 propfetch(ref, prptr);
 #endif
+
+                /*
+                 * TODO: a grep switch *.c | grep PropType will reveal this
+                 *       switch statement is done all over the place.
+                 *
+                 *       Some cases, this may be unavoidable, however I
+                 *       really feel like I have seen very similar code to
+                 *       this elsewhere .... not sure where though.
+                 *
+                 *       Is this something we can address with C++?  Properties
+                 *       can be a bit more intelligent and maybe centralize
+                 *       this kind of logic so we can automatically copy this
+                 *       kind of thing out.
+                 *
+                 *       I'm not sure :)  I feel like there's something to
+                 *       improve here but it may need more than just my brain
+                 *       churning on it.
+                 *
+                 *       - tanabi
+                 */
                 switch (PropType(prptr)) {
                     case PROP_STRTYP:
                         temp2.type = PROG_STRING;
@@ -1780,6 +1873,26 @@ prim_array_get_propvals(PRIM_PROTOTYPE)
                 }
 
                 if (goodflag) {
+                    /*
+                     * TODO: This hard-coded limit kind of sucks in a lot of
+                     *       ways.  The only reason this limit is here is to
+                     *       prevent someone from gobbling up all the server
+                     *       memory or causing a performance drag.
+                     *
+                     *       I'm of the opinion such limitations should be
+                     *       in the hands of MUCK owners rather than us
+                     *       making arbitrary choices -- there are times where
+                     *       I have chosen to use the outdated iterator
+                     *       approach (nextprop, etc.) over using the array
+                     *       funcs because I was not 100% sure there would be
+                     *       less than 512 props and I didn't want to paint
+                     *       myself into a corner.
+                     *
+                     *       Thus, I think this should be a tune param.
+                     *       Similar calls (like array_get_propdirs, etc.)
+                     *       can share the tune param.  At LEAST make it
+                     *       a #define so people can tweak it.
+                     */
                     if (count++ >= 511) {
                         array_free(nu);
                         abort_interp("Too many properties to put in an array!");
@@ -1802,6 +1915,30 @@ prim_array_get_propvals(PRIM_PROTOTYPE)
     PushArrayRaw(nu);
 }
 
+/**
+ * Implementation of MUF ARRAY_GET_PROPLIST
+ *
+ * Consumes a dbref and a property name
+ *
+ * This reads a "prop list" which is a propdir of the format:
+ *
+ * "propname#/X", "propname/X", or "propnameX"
+ *
+ * Where X is some number and the propdir itself contains the number of
+ * elements in the array.  The prop list is loaded into an array and put on
+ * the stack.
+ *
+ * If the number of props reported is greater than 1023, then this is
+ * (silently, without error) limited to 1023 list items.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_get_proplist(PRIM_PROTOTYPE)
 {
@@ -1833,6 +1970,13 @@ prim_array_get_proplist(PRIM_PROTOTYPE)
     if (!*dir)
         strcpyn(dir, sizeof(dir), (char[]){PROPDIR_DELIMITER,0});
 
+    /*
+     * TODO: I believe we have a list loader which handles the majority
+     *       of this -- check MPI's {list} macro which does almost the same
+     *       thing here.  If we don't have a list loader function (I'm 99%
+     *       sure we do) we should try and make these to calls use the
+     *       same underpinnings.
+     */
     snprintf(propname, sizeof(propname), "%s#", dir);
     maxcount = get_property_value(ref, propname);
 
@@ -1860,6 +2004,44 @@ prim_array_get_proplist(PRIM_PROTOTYPE)
         }
     }
 
+    /*
+     * TODO: for some reason, we are... IN A LOOP.... checking if
+     *       maxcount > 1023 *and* checking property permissions on a propdir
+     *       where only the base property name (i.e. the contents of 'dir')
+     *       has any bearing on the permissions as the rest of the prop path
+     *       will be a number which never has a bearing on prop perms.
+     *
+     *       Firstly, let's check *here* if maxcount > 1023 ... and while we're
+     *       at it, let's make that a tune or a #define.  Maybe share the
+     *       settings with ARRAY_GET_PROPDIRS, etc.  See the todo's in those
+     *       calls.
+     *
+     *       Secondly, the man page falsely advertise the maximum as 511.
+     *       I think, at some point, someone came across the problem I noted
+     *       in the todo's and had a list to read greater than 511 ... and
+     *       changed the code but not the man page :)
+     *
+     *       Thirdly, this call silently doesn't display extra items but the
+     *       other similar calls throw an error if there are too many items.
+     *       I think throwing an error makes more sense rather than just making
+     *       it appear broken :)  So I would highly recommend we do that and
+     *       make this consistent with the others.  This COULD break existing
+     *       programs ... BUT those programs were already broken and just
+     *       silently not working right, so I think that's actually a good
+     *       breakage :)
+     *
+     *       When we fix this, don't forget to update MAN pages and the
+     *       doc blocks in both .c and the .h file for all these hard coded
+     *       calls.
+     *
+     *       Anyway, back to the original issues -- also move the perm
+     *       check out here.  Because, correct me if I'm wrong, but if
+     *       say: "some/prop/list#" passes perm check... then every numbered
+     *       prop under it will pass as well ("some/prop/list#/1" etc.)
+     *       so we can just check it here before going into the loop and
+     *       save some CPU cycles.
+     */
+
     nu = new_array_packed(0, fr->pinning);
 
     while (maxcount > 0) {
@@ -1876,6 +2058,9 @@ prim_array_get_proplist(PRIM_PROTOTYPE)
             }
         }
 
+        /*
+         * @TODO: see above, move this check
+         */
         if (maxcount > 1023) {
             maxcount = 1023;
         }
@@ -1887,6 +2072,7 @@ prim_array_get_proplist(PRIM_PROTOTYPE)
             break;
         }
 
+        /* @TODO: see above, move this outer if statement */
         if (prop_read_perms(ProgUID, ref, propname, mlev)) {
             if (!prptr) {
                 temp2.type = PROG_INTEGER;
@@ -1895,6 +2081,12 @@ prim_array_get_proplist(PRIM_PROTOTYPE)
 #ifdef DISKBASE
                 propfetch(ref, prptr);
 #endif
+                /*
+                 * TODO: This block is almost a copy/paste of the block
+                 *       from ARRAY_GET_PROPVALS which is, in turn, very
+                 *       similar to MPI's LIST ... can we marge this logic?
+                 */
+
                 switch (PropType(prptr)) {
                     case PROP_STRTYP:
                         temp2.type = PROG_STRING;
@@ -1952,6 +2144,22 @@ prim_array_get_proplist(PRIM_PROTOTYPE)
     PushArrayRaw(nu);
 }
 
+/**
+ * Implementation of MUF ARRAY_PUT_PROPVALS
+ *
+ * Consumes a dbref and a dictionary.  Uses the dictionary keys as prop names
+ * and sets those props to the corresponding values.  Permissions are respected.
+ *
+ * @see prop_write_perms
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_put_propvals(PRIM_PROTOTYPE)
 {
@@ -2016,6 +2224,12 @@ prim_array_put_propvals(PRIM_PROTOTYPE)
                 abort_interp("Permission denied while trying to set "
                              "protected property.");
 
+            /*
+             * TODO: I think this is also really commonly copied and pasted,
+             *       but it somewhat harder to grep for.  Another good
+             *       candidate for something to consider in C++, with
+             *       operator overloading between types perhaps.
+             */
             switch (oper4->type) {
                 case PROG_STRING:
                     propdat.flags = PROP_STRTYP;
@@ -2057,6 +2271,32 @@ prim_array_put_propvals(PRIM_PROTOTYPE)
     CLEAR(oper3);
 }
 
+/**
+ * Implementation of MUF ARRAY_PUT_PROPLIST
+ *
+ * Consumes a dbref and a property name, and a list array
+ *
+ * This writes a "prop list" which is a propdir of the format:
+ *
+ * "propname#/X"
+ *
+ * Where X is some number and the propdir itself contains the number of
+ * elements in the array.  The prop list is populated with the contents
+ * of the provided array.
+ *
+ * Note that while ARRAY_GET_PROPLIST can read multiple list formats, we
+ * can only write back one of them.  The '#' is added so you better not
+ * put it on there or you'll get double #'s and then various things won't
+ * work right.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_put_proplist(PRIM_PROTOTYPE)
 {
@@ -2074,39 +2314,90 @@ prim_array_put_proplist(PRIM_PROTOTYPE)
     oper3 = POP();
     oper2 = POP();
     oper1 = POP();
+
     if (oper1->type != PROG_OBJECT)
-	abort_interp("Dbref required. (1)");
+        abort_interp("Dbref required. (1)");
+
     if (!valid_object(oper1))
-	abort_interp("Invalid dbref. (1)");
+        abort_interp("Invalid dbref. (1)");
+
     if (oper2->type != PROG_STRING)
-	abort_interp("String required. (2)");
+        abort_interp("String required. (2)");
+
     if (oper3->type != PROG_ARRAY)
-	abort_interp("Array required. (3)");
+        abort_interp("Array required. (3)");
+
     if (oper3->data.array && oper3->data.array->type != ARRAY_PACKED)
-	abort_interp("Argument must be a list type array. (3)");
+        abort_interp("Argument must be a list type array. (3)");
 
     ref = oper1->data.objref;
     strcpyn(dir, sizeof(dir), DoNullInd(oper2->data.string));
     arr = oper3->data.array;
 
+    /*
+     * TODO: This code makes absolutely no sense with this "fmtin" stuff.
+     *       It also isn't checking for out of bounds conditions, I believe
+     *       this could potentially crash the server but only in a very
+     *       malicious case.
+     *
+     *       Anyway, at first, I thought maybe this block was doing something
+     *       smart like not appending a "#" at the end of the array name if
+     *       it isn't already there -- NOPE, all this fmtin nonsense does is
+     *       strcat a "# on to the end of the string no matter what.  That's
+     *       it.  Just done in the most confusing, weird way possible.
+     *
+     *       I would modify this code thusly:
+     *
+     *       dirlen = strlen(dir);
+     *
+     *       if (dirlen >= sizeof(dir)-3) {
+     *           crash -- we need at least 3 characters for #/1, etc.
+     *       }
+     *
+     *       if (dir[dirlen-1] != '#') { -- only add hash if needed
+     *           strncat(dir, "#", sizeof(dir)); -- handles buffer overflow case
+     *           dirlen++;
+     *       }
+     *
+     *       Get rid of propname and fmtin.  We've still got use for fmtout.
+     *
+     *       The man page should be updated to advise people to not have a /
+     *       at the end of the prop name, and to not have a # at the end of
+     *       the prop name, as it is getting added whether you want it or not.
+     *
+     *       If you fix this, update the docblock + header file
+     */
+
     dirlen = strlen(dir);
     fmtout = propname;
     fmtin = "P#";
+
     while (*fmtin) {
-	if (*fmtin == 'P') {
-	    if ((size_t) ((fmtout + dirlen) - propname) > sizeof(propname))
-		break;
-	    strcpyn(fmtout, sizeof(propname) - (size_t)(fmtout - propname), dir);
-	    fmtout = &fmtout[strlen(fmtout)];
-	} else {
-	    *fmtout++ = *fmtin;
-	}
-	fmtin++;
+        if (*fmtin == 'P') {
+            if ((size_t) ((fmtout + dirlen) - propname) > sizeof(propname))
+                break;
+
+            strcpyn(fmtout, sizeof(propname) - (size_t)(fmtout - propname), dir);
+            fmtout = &fmtout[strlen(fmtout)];
+        } else {
+            *fmtout++ = *fmtin;
+        }
+
+        fmtin++;
     }
+
     *fmtout++ = '\0';
 
+    /* This is the end of the block that doesn't make sense per the TODO above
+     *
+     * Just to make it clear.  If you fix the bad block, take this comment
+     * out too please :)
+     */
+
     if (!prop_write_perms(ProgUID, ref, propname, mlev))
-	abort_interp("Permission denied while trying to set protected property.");
+        abort_interp(
+            "Permission denied while trying to set protected property."
+        );
 
     if (array_is_homogenous(arr, PROG_STRING)) {
         propdat.flags = PROP_STRTYP;
@@ -2116,92 +2407,170 @@ prim_array_put_proplist(PRIM_PROTOTYPE)
         propdat.flags = PROP_INTTYP;
         propdat.data.val = array_count(arr);
     }
+
     set_property(ref, propname, &propdat, 0);
 
     if (array_first(arr, &temp1)) {
-	do {
-	    oper4 = array_getitem(arr, &temp1);
+        do {
+            oper4 = array_getitem(arr, &temp1);
 
-	    fmtout = propname;
-	    fmtin = "P#/N";
-	    while (*fmtin) {
-		if (*fmtin == 'N') {
-		    if ((size_t) ((fmtout + 18) - propname) > sizeof(propname))
-			break;
-		    snprintf(fmtout, sizeof(propname) - (size_t)(fmtout - propname), "%d",
-			     temp1.data.number + 1);
-		    fmtout = &fmtout[strlen(fmtout)];
-		} else if (*fmtin == 'P') {
-		    if ((size_t) ((fmtout + dirlen) - propname) > sizeof(propname))
-			break;
-		    strcpyn(fmtout, sizeof(propname) - (size_t)(fmtout - propname), dir);
-		    fmtout = &fmtout[strlen(fmtout)];
-		} else {
-		    *fmtout++ = *fmtin;
-		}
-		fmtin++;
-	    }
-	    *fmtout++ = '\0';
+            /*
+             * TODO: More fmtout / fmtin crap.
+             *
+             *       At first I thought they were doing something clever
+             *       (re-using the first part of the 'propname' and only
+             *        modifying the end with the number) but no, not they're
+             *       not ...
+             *
+             *       Recommendation:
+             *
+             *       BEFORE LOOP: (i.e. above the 'do {' line) set up thusly:
+             *
+             *       fmtout = &dir[dirlen];
+             *
+             *       THEN HERE, REPLACING THE CODE BELOW:
+             *
+             *       snprintf(fmtout, sizeof(dir) - (size_t)(fmtout - dir),
+             *                "/%d", temp1.data.number + 1)
+             *
+             *       TADA ... we reuse the base path instead of copying it,
+             *       and we reduce like 20 line sof code to 1 :)  And we fix
+             *       the ## problem while we're at it!
+             */
+            fmtout = propname;
+            fmtin = "P#/N";
 
-	    if (!prop_write_perms(ProgUID, ref, propname, mlev))
-		abort_interp("Permission denied while trying to set protected property.");
+            while (*fmtin) {
+                if (*fmtin == 'N') {
+                    if ((size_t) ((fmtout + 18) - propname) > sizeof(propname))
+                        break;
 
-	    switch (oper4->type) {
-	    case PROG_STRING:
-		propdat.flags = PROP_STRTYP;
-		propdat.data.str = oper4->data.string ? oper4->data.string->data : 0;
-		break;
-	    case PROG_INTEGER:
-		propdat.flags = PROP_INTTYP;
-		propdat.data.val = oper4->data.number;
-		break;
-	    case PROG_FLOAT:
-		propdat.flags = PROP_FLTTYP;
-		propdat.data.fval = oper4->data.fnumber;
-		break;
-	    case PROG_OBJECT:
-		propdat.flags = PROP_REFTYP;
-		propdat.data.ref = oper4->data.objref;
-		break;
-	    case PROG_LOCK:
-		propdat.flags = PROP_LOKTYP;
-		propdat.data.lok = copy_bool(oper4->data.lock);
-		break;
-	    default:
-		propdat.flags = PROP_INTTYP;
-		propdat.data.val = 0;
-	    }
-	    set_property(ref, propname, &propdat, 0);
-	} while (array_next(arr, &temp1));
+                    snprintf(fmtout,
+                             sizeof(propname) - (size_t)(fmtout - propname),
+                             "%d", temp1.data.number + 1
+                    );
+                    fmtout = &fmtout[strlen(fmtout)];
+                } else if (*fmtin == 'P') {
+                    if ((size_t)
+                        ((fmtout + dirlen) - propname) > sizeof(propname))
+                        break;
+
+                    strcpyn(fmtout,
+                            sizeof(propname) - (size_t)(fmtout - propname),
+                            dir
+                    );
+                    fmtout = &fmtout[strlen(fmtout)];
+                } else {
+                    *fmtout++ = *fmtin;
+                }
+
+                fmtin++;
+            }
+
+            *fmtout++ = '\0';
+
+            /*
+             * END of bad block mentioned in above todo.  When fixed, please
+             * remove this comment.
+             */
+
+            if (!prop_write_perms(ProgUID, ref, propname, mlev))
+                abort_interp(
+                    "Permission denied while trying to set protected property."
+                );
+
+            /*
+             * TODO: This is basically the same block as array_put_propvals
+             *       We should re-use code or solve this with C++ magic.
+             */
+            switch (oper4->type) {
+                case PROG_STRING:
+                    propdat.flags = PROP_STRTYP;
+                    propdat.data.str = oper4->data.string ?
+                                       oper4->data.string->data : 0;
+                    break;
+
+                case PROG_INTEGER:
+                    propdat.flags = PROP_INTTYP;
+                    propdat.data.val = oper4->data.number;
+                    break;
+
+                case PROG_FLOAT:
+                    propdat.flags = PROP_FLTTYP;
+                    propdat.data.fval = oper4->data.fnumber;
+                    break;
+
+                case PROG_OBJECT:
+                    propdat.flags = PROP_REFTYP;
+                    propdat.data.ref = oper4->data.objref;
+                    break;
+
+                case PROG_LOCK:
+                    propdat.flags = PROP_LOKTYP;
+                    propdat.data.lok = copy_bool(oper4->data.lock);
+                    break;
+
+                default:
+                    propdat.flags = PROP_INTTYP;
+                    propdat.data.val = 0;
+            }
+
+            set_property(ref, propname, &propdat, 0);
+        } while (array_next(arr, &temp1));
     }
 
     count = temp1.data.number;
+
+    /*
+     * Now we're going to delete EXTRA lines.
+     *
+     * This will delete the lines whatever the count on 'dir' is... so
+     * if the count on 'dir' is 5 but you have 10 lines in the list, we
+     * will delete all 10.
+     *
+     * TODO: That's somewhat weird behavior, maybe we should iterate on
+     *       the (original) list count rather than deleting until we have no
+     *       more lines to delete?
+     */
     for (;;) {
-	count++;
-	fmtout = propname;
-	fmtin = "P#/N";
-	while (*fmtin) {
-	    if (*fmtin == 'N') {
-		if ((size_t) ((fmtout + 18) - propname) > sizeof(propname))
-		    break;
-		snprintf(fmtout, sizeof(propname) - (size_t)(fmtout - propname), "%d", count + 1);
-		fmtout = &fmtout[strlen(fmtout)];
-	    } else if (*fmtin == 'P') {
-		if ((size_t) ((fmtout + dirlen) - propname) > sizeof(propname))
-		    break;
-		strcpyn(fmtout, sizeof(propname) - (size_t)(fmtout - propname), dir);
-		fmtout = &fmtout[strlen(fmtout)];
-	    } else {
-		*fmtout++ = *fmtin;
-	    }
-	    fmtin++;
-	}
-	*fmtout++ = '\0';
-	if (get_property(ref, propname)) {
-	    remove_property(ref, propname, 0);
-	} else {
-	    break;
-	}
+        count++;
+
+        /*
+         * TODO: Replace this fmtin/fmtout crap with my solution from above.
+         */
+        fmtout = propname;
+        fmtin = "P#/N";
+
+        while (*fmtin) {
+            if (*fmtin == 'N') {
+                if ((size_t) ((fmtout + 18) - propname) > sizeof(propname))
+                    break;
+
+                snprintf(fmtout, sizeof(propname) - (size_t)(fmtout - propname),
+                         "%d", count + 1);
+
+                fmtout = &fmtout[strlen(fmtout)];
+            } else if (*fmtin == 'P') {
+                if ((size_t) ((fmtout + dirlen) - propname) > sizeof(propname))
+                    break;
+
+                strcpyn(fmtout, sizeof(propname) - (size_t)(fmtout - propname),
+                        dir);
+                fmtout = &fmtout[strlen(fmtout)];
+            } else {
+                *fmtout++ = *fmtin;
+            }
+
+            fmtin++;
+        }
+
+        *fmtout++ = '\0';
+
+        if (get_property(ref, propname)) {
+            remove_property(ref, propname, 0);
+        } else {
+            break;
+        }
     }
 
     CLEAR(oper1);
@@ -2209,6 +2578,22 @@ prim_array_put_proplist(PRIM_PROTOTYPE)
     CLEAR(oper3);
 }
 
+/**
+ * Implementation of MUF ARRAY_GET_REFLIST
+ *
+ * Consumes a dbref and a property name, and returns a list of dbrefs.
+ *
+ * This works on a "ref list" which is a space delimited string of dbrefs
+ * with the leading hash sign.  For example, "#1 #2 #3"
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_get_reflist(PRIM_PROTOTYPE)
 {
@@ -2221,48 +2606,57 @@ prim_array_get_reflist(PRIM_PROTOTYPE)
     CHECKOP(2);
     oper2 = POP();
     oper1 = POP();
+
     if (oper1->type != PROG_OBJECT)
-	abort_interp("Dbref required. (1)");
+        abort_interp("Dbref required. (1)");
+
     if (!valid_object(oper1))
-	abort_interp("Invalid dbref. (1)");
+        abort_interp("Invalid dbref. (1)");
+
     if (oper2->type != PROG_STRING)
-	abort_interp("String required. (2)");
+        abort_interp("String required. (2)");
+
     if (!oper2->data.string)
-	abort_interp("Non-null string required. (2)");
+        abort_interp("Non-null string required. (2)");
 
     ref = oper1->data.objref;
     strcpyn(dir, sizeof(dir), oper2->data.string->data);
 
     if (!prop_read_perms(ProgUID, ref, dir, mlev))
-	abort_interp("Permission denied.");
+        abort_interp("Permission denied.");
 
     nu = new_array_packed(0, fr->pinning);
     rawstr = get_property_class(ref, dir);
 
     if (rawstr) {
-	skip_whitespace(&rawstr);
-	while (*rawstr) {
-	    if (*rawstr == NUMBER_TOKEN)
-		rawstr++;
-	    if (!isdigit(*rawstr) && (*rawstr != '-'))
-		break;
-	    result = atoi(rawstr);
-	    while (*rawstr && !isspace(*rawstr))
-		rawstr++;
-	    skip_whitespace(&rawstr);
+        skip_whitespace(&rawstr);
 
-	    temp1.type = PROG_INTEGER;
-	    temp1.data.number = count;
+        while (*rawstr) {
+            if (*rawstr == NUMBER_TOKEN)
+                rawstr++;
 
-	    temp2.type = PROG_OBJECT;
-	    temp2.data.number = result;
+            if (!isdigit(*rawstr) && (*rawstr != '-'))
+                break;
 
-	    array_setitem(&nu, &temp1, &temp2);
-	    count++;
+            result = atoi(rawstr);
 
-	    CLEAR(&temp1);
-	    CLEAR(&temp2);
-	}
+            while (*rawstr && !isspace(*rawstr))
+                rawstr++;
+
+            skip_whitespace(&rawstr);
+
+            temp1.type = PROG_INTEGER;
+            temp1.data.number = count;
+
+            temp2.type = PROG_OBJECT;
+            temp2.data.number = result;
+
+            array_setitem(&nu, &temp1, &temp2);
+            count++;
+
+            CLEAR(&temp1);
+            CLEAR(&temp2);
+        }
     }
 
     CLEAR(oper1);
@@ -2270,6 +2664,28 @@ prim_array_get_reflist(PRIM_PROTOTYPE)
     PushArrayRaw(nu);
 }
 
+/**
+ * Implementation of MUF ARRAY_PUT_REFLIST
+ *
+ * Consumes a dbref, a property name, and a list array of dbrefs.
+ *
+ * This stores the dbrefs in a reflist which is space delimited string of
+ * refs that start with #.  It is functionally equivalent to:
+ *
+ * #target_db "target/prop" { #1 #2 #3 }list " " array_join setprop
+ *
+ * In fact, if we were inclined to do so, this could easily be converted
+ * to a compiler macro, though there are probably more downsides to that
+ * than upsides so it is not recommended.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_put_reflist(PRIM_PROTOTYPE)
 {
@@ -2285,20 +2701,27 @@ prim_array_put_reflist(PRIM_PROTOTYPE)
     oper3 = POP();
     oper2 = POP();
     oper1 = POP();
+
     if (oper1->type != PROG_OBJECT)
-	abort_interp("Dbref required. (1)");
+        abort_interp("Dbref required. (1)");
+
     if (!valid_object(oper1))
-	abort_interp("Invalid dbref. (1)");
+        abort_interp("Invalid dbref. (1)");
+
     if (oper2->type != PROG_STRING)
-	abort_interp("String required. (2)");
+        abort_interp("String required. (2)");
+
     if (!oper2->data.string)
-	abort_interp("Non-null string required. (2)");
+        abort_interp("Non-null string required. (2)");
+
     if (oper3->type != PROG_ARRAY)
-	abort_interp("Argument must be a list array of dbrefs. (3)");
+        abort_interp("Argument must be a list array of dbrefs. (3)");
+
     if (oper3->data.array && oper3->data.array->type != ARRAY_PACKED)
-	abort_interp("Argument must be a list array of dbrefs. (3)");
+        abort_interp("Argument must be a list array of dbrefs. (3)");
+
     if (!array_is_homogenous(oper3->data.array, PROG_OBJECT))
-	abort_interp("Argument must be a list array of dbrefs. (3)");
+        abort_interp("Argument must be a list array of dbrefs. (3)");
 
     ref = oper1->data.objref;
     strcpyn(dir, sizeof(dir), DoNullInd(oper2->data.string));
@@ -2306,26 +2729,31 @@ prim_array_put_reflist(PRIM_PROTOTYPE)
     buf[0] = '\0';
 
     if (!prop_write_perms(ProgUID, ref, dir, mlev))
-	abort_interp("Permission denied.");
+        abort_interp("Permission denied.");
 
     out = buf;
+
     if (array_first(arr, &temp1)) {
-	do {
-	    oper4 = array_getitem(arr, &temp1);
-	    len = snprintf(buf2, sizeof(buf2), "#%d", oper4->data.objref);
-	    if (len == -1) {
-		buf2[sizeof(buf2) - 1] = '\0';
-		len = sizeof(buf2) - 1;
-	    }
+        do {
+            oper4 = array_getitem(arr, &temp1);
+            len = snprintf(buf2, sizeof(buf2), "#%d", oper4->data.objref);
 
-	    if (out + len - buf >= BUFFER_LEN - 3)
-		abort_interp("Operation would result in string length overflow.");
+            if (len == -1) {
+                buf2[sizeof(buf2) - 1] = '\0';
+                len = sizeof(buf2) - 1;
+            }
 
-	    if (*buf)
-		*out++ = ' ';
-	    strcpyn(out, sizeof(buf) - (size_t)(out - buf), buf2);
-	    out += len;
-	} while (array_next(arr, &temp1));
+            if (out + len - buf >= BUFFER_LEN - 3)
+                abort_interp(
+                    "Operation would result in string length overflow."
+                );
+
+            if (*buf)
+                *out++ = ' ';
+
+            strcpyn(out, sizeof(buf) - (size_t)(out - buf), buf2);
+            out += len;
+        } while (array_next(arr, &temp1));
     }
 
     remove_property(ref, dir, 0);
@@ -2338,6 +2766,20 @@ prim_array_put_reflist(PRIM_PROTOTYPE)
     CLEAR(oper3);
 }
 
+/**
+ * Implementation of MUF ARRAY_FINDVAL
+ *
+ * Consumes an array and a value to search for.  Returns an array that
+ * contains the keys of every element in the array that matches.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_findval(PRIM_PROTOTYPE)
 {
@@ -2346,20 +2788,23 @@ prim_array_findval(PRIM_PROTOTYPE)
     stk_array *nu;
 
     CHECKOP(2);
-    oper2 = POP();		/* ???  index */
-    oper1 = POP();		/* arr  Array */
+    oper2 = POP();  /* ???  index */
+    oper1 = POP();  /* arr  Array */
+
     if (oper1->type != PROG_ARRAY)
-	abort_interp("Argument not an array. (1)");
+        abort_interp("Argument not an array. (1)");
 
     nu = new_array_packed(0, fr->pinning);
     arr = oper1->data.array;
+
     if (array_first(arr, &temp1)) {
-	do {
-	    in = array_getitem(arr, &temp1);
-	    if (!array_tree_compare(in, oper2, 0)) {
-		array_appenditem(&nu, &temp1);
-	    }
-	} while (array_next(arr, &temp1));
+        do {
+            in = array_getitem(arr, &temp1);
+
+            if (!array_tree_compare(in, oper2, 0)) {
+                array_appenditem(&nu, &temp1);
+            }
+        } while (array_next(arr, &temp1));
     }
 
     CLEAR(oper2);
@@ -2368,6 +2813,27 @@ prim_array_findval(PRIM_PROTOTYPE)
     PushArrayRaw(nu);
 }
 
+/**
+ * Implementation of MUF ARRAY_COMPARE
+ *
+ * Consumes two arrays and puts an integer on the stack.  The integer
+ * is positive if the first is considered greater than the second,
+ * negative if the first is less than the second, or 0 if they are the
+ * same.
+ *
+ * The greater than/less than comparison is of arguable value, according to
+ * the man page.
+ *
+ * @see array_tree_compare
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_compare(PRIM_PROTOTYPE)
 {
@@ -2378,12 +2844,14 @@ prim_array_compare(PRIM_PROTOTYPE)
     int res1, res2;
 
     CHECKOP(2);
-    oper2 = POP();		/* arr  Array */
-    oper1 = POP();		/* arr  Array */
+    oper2 = POP();  /* arr  Array */
+    oper1 = POP();  /* arr  Array */
+
     if (oper1->type != PROG_ARRAY)
-	abort_interp("Argument not an array. (1)");
+        abort_interp("Argument not an array. (1)");
+
     if (oper2->type != PROG_ARRAY)
-	abort_interp("Argument not an array. (2)");
+        abort_interp("Argument not an array. (2)");
 
     arr1 = oper1->data.array;
     arr2 = oper2->data.array;
@@ -2391,34 +2859,36 @@ prim_array_compare(PRIM_PROTOTYPE)
     res2 = array_first(arr2, &temp2);
 
     if (!res1 && !res2) {
-	result = 0;
+        result = 0;
     } else if (!res1) {
-	result = -1;
+        result = -1;
     } else if (!res2) {
-	result = 1;
+        result = 1;
     } else {
-	do {
-	    result = array_tree_compare(&temp1, &temp2, 0);
-	    if (result)
-		break;
+        do {
+            result = array_tree_compare(&temp1, &temp2, 0);
 
-	    val1 = array_getitem(arr1, &temp1);
-	    val2 = array_getitem(arr2, &temp2);
-	    result = array_tree_compare(val1, val2, 0);
-	    if (result)
-		break;
+            if (result)
+                break;
 
-	    res1 = array_next(arr1, &temp1);
-	    res2 = array_next(arr2, &temp2);
-	} while (res1 && res2);
+            val1 = array_getitem(arr1, &temp1);
+            val2 = array_getitem(arr2, &temp2);
+            result = array_tree_compare(val1, val2, 0);
 
-	if (!res1 && !res2) {
-	    result = 0;
-	} else if (!res1) {
-	    result = -1;
-	} else if (!res2) {
-	    result = 1;
-	}
+            if (result)
+                break;
+
+            res1 = array_next(arr1, &temp1);
+            res2 = array_next(arr2, &temp2);
+        } while (res1 && res2);
+
+        if (!res1 && !res2) {
+            result = 0;
+        } else if (!res1) {
+            result = -1;
+        } else if (!res2) {
+            result = 1;
+        }
     }
 
     CLEAR(oper2);
@@ -2427,6 +2897,26 @@ prim_array_compare(PRIM_PROTOTYPE)
     PushInt(result);
 }
 
+/**
+ * Implementation of MUF ARRAY_MATCHKEY
+ *
+ * Consumes an array of strings and a string, and then returns an array of
+ * strings.
+ *
+ * The returned array with contain all they key-value pairs where the key
+ * from the source array matched the pattern given.  The pattern is processed
+ * using "smatch" rules.
+ *
+ * @see equalstr
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_matchkey(PRIM_PROTOTYPE)
 {
@@ -2435,24 +2925,28 @@ prim_array_matchkey(PRIM_PROTOTYPE)
     stk_array *nu;
 
     CHECKOP(2);
-    oper2 = POP();		/* str  pattern */
-    oper1 = POP();		/* arr  Array */
+    oper2 = POP();  /* str  pattern */
+    oper1 = POP();  /* arr  Array */
+
     if (oper1->type != PROG_ARRAY)
-	abort_interp("Argument not an array. (1)");
+        abort_interp("Argument not an array. (1)");
+
     if (oper2->type != PROG_STRING)
-	abort_interp("Argument not a string pattern. (2)");
+        abort_interp("Argument not a string pattern. (2)");
 
     nu = new_array_dictionary(fr->pinning);
     arr = oper1->data.array;
+
     if (array_first(arr, &temp1)) {
-	do {
-	    if (temp1.type == PROG_STRING) {
-		if (equalstr(DoNullInd(oper2->data.string), DoNullInd(temp1.data.string))) {
-		    in = array_getitem(arr, &temp1);
-		    array_setitem(&nu, &temp1, in);
-		}
-	    }
-	} while (array_next(arr, &temp1));
+        do {
+            if (temp1.type == PROG_STRING) {
+                if (equalstr(DoNullInd(oper2->data.string),
+                             DoNullInd(temp1.data.string))) {
+                    in = array_getitem(arr, &temp1);
+                    array_setitem(&nu, &temp1, in);
+                }
+            }
+        } while (array_next(arr, &temp1));
     }
 
     CLEAR(oper2);
@@ -2461,6 +2955,26 @@ prim_array_matchkey(PRIM_PROTOTYPE)
     PushArrayRaw(nu);
 }
 
+/**
+ * Implementation of MUF ARRAY_MATCHVAL
+ *
+ * Consumes an array of strings and a string, and then returns an array of
+ * strings.
+ *
+ * The returned array with contain all they key-value pairs where the value
+ * from the source array matched the pattern given.  The pattern is processed
+ * using "smatch" rules.
+ *
+ * @see equalstr
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_matchval(PRIM_PROTOTYPE)
 {
@@ -2469,24 +2983,29 @@ prim_array_matchval(PRIM_PROTOTYPE)
     stk_array *nu;
 
     CHECKOP(2);
-    oper2 = POP();		/* str  pattern */
-    oper1 = POP();		/* arr  Array */
+    oper2 = POP();  /* str  pattern */
+    oper1 = POP();  /* arr  Array */
+
     if (oper1->type != PROG_ARRAY)
-	abort_interp("Argument not an array. (1)");
+        abort_interp("Argument not an array. (1)");
+
     if (oper2->type != PROG_STRING)
-	abort_interp("Argument not a string pattern. (2)");
+        abort_interp("Argument not a string pattern. (2)");
 
     nu = new_array_dictionary(fr->pinning);
     arr = oper1->data.array;
+
     if (array_first(arr, &temp1)) {
-	do {
-	    in = array_getitem(arr, &temp1);
-	    if (in->type == PROG_STRING) {
-		if (equalstr(DoNullInd(oper2->data.string), DoNullInd(in->data.string))) {
-		    array_setitem(&nu, &temp1, in);
-		}
-	    }
-	} while (array_next(arr, &temp1));
+        do {
+            in = array_getitem(arr, &temp1);
+
+            if (in->type == PROG_STRING) {
+                if (equalstr(DoNullInd(oper2->data.string),
+                             DoNullInd(in->data.string))) {
+                    array_setitem(&nu, &temp1, in);
+                }
+            }
+        } while (array_next(arr, &temp1));
     }
 
     CLEAR(oper2);
@@ -2495,6 +3014,22 @@ prim_array_matchval(PRIM_PROTOTYPE)
     PushArrayRaw(nu);
 }
 
+/**
+ * Implementation of MUF ARRAY_EXTRACT
+ *
+ * Consumes two arrays; a source array and an array of indexes.
+ *
+ * Returns a dictionary array with the key-value pairs belonging to items
+ * in the index array.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_extract(PRIM_PROTOTYPE)
 {
@@ -2505,26 +3040,31 @@ prim_array_extract(PRIM_PROTOTYPE)
     stk_array *nu;
 
     CHECKOP(2);
-    oper2 = POP();		/* arr  indexes */
-    oper1 = POP();		/* arr  Array */
+    oper2 = POP();  /* arr  indexes */
+    oper1 = POP();  /* arr  Array */
+
     if (oper1->type != PROG_ARRAY)
-	abort_interp("Argument not an array. (1)");
+        abort_interp("Argument not an array. (1)");
+
     if (oper2->type != PROG_ARRAY)
-	abort_interp("Argument not an array. (2)");
+        abort_interp("Argument not an array. (2)");
 
     nu = new_array_dictionary(fr->pinning);
     arr = oper1->data.array;
     karr = oper2->data.array;
+
     if (array_first(karr, &temp1)) {
-	do {
-	    key = array_getitem(karr, &temp1);
-	    if (key) {
-		in = array_getitem(arr, key);
-		if (in) {
-		    array_setitem(&nu, key, in);
-		}
-	    }
-	} while (array_next(karr, &temp1));
+        do {
+            key = array_getitem(karr, &temp1);
+
+            if (key) {
+                in = array_getitem(arr, key);
+
+                if (in) {
+                    array_setitem(&nu, key, in);
+                }
+            }
+        } while (array_next(karr, &temp1));
     }
 
     CLEAR(oper2);
@@ -2533,6 +3073,24 @@ prim_array_extract(PRIM_PROTOTYPE)
     PushArrayRaw(nu);
 }
 
+/**
+ * Implementation of MUF ARRAY_EXCLUDEVAL
+ *
+ * Consumes a list array and a value of any type.  Puts a list array on
+ * the stack that includes all items in the list that did NOT match the
+ * provided value.
+ *
+ * Ordering and duplicates will be preserved (wheras ARRAY_DIFF will remove
+ * duplicates and the items will be sorted)
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_excludeval(PRIM_PROTOTYPE)
 {
@@ -2541,20 +3099,23 @@ prim_array_excludeval(PRIM_PROTOTYPE)
     stk_array *nu;
 
     CHECKOP(2);
-    oper2 = POP();		/* ???  index */
-    oper1 = POP();		/* arr  Array */
+    oper2 = POP();  /* ???  index */
+    oper1 = POP();  /* arr  Array */
+
     if (oper1->type != PROG_ARRAY)
-	abort_interp("Argument not an array. (1)");
+        abort_interp("Argument not an array. (1)");
 
     nu = new_array_packed(0, fr->pinning);
     arr = oper1->data.array;
+
     if (array_first(arr, &temp1)) {
-	do {
-	    in = array_getitem(arr, &temp1);
-	    if (array_tree_compare(in, oper2, 0)) {
-		array_appenditem(&nu, &temp1);
-	    }
-	} while (array_next(arr, &temp1));
+        do {
+            in = array_getitem(arr, &temp1);
+
+            if (array_tree_compare(in, oper2, 0)) {
+                array_appenditem(&nu, &temp1);
+            }
+        } while (array_next(arr, &temp1));
     }
 
     CLEAR(oper2);
@@ -2563,6 +3124,21 @@ prim_array_excludeval(PRIM_PROTOTYPE)
     PushArrayRaw(nu);
 }
 
+/**
+ * Implementation of MUF ARRAY_JOIN
+ *
+ * Consumes a list array and a delimiter string, and returns a string that
+ * is all the elements of the array concatenated by the delimiter.  Non
+ * string items will be converted to strings in a reasonably smart way.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_join(PRIM_PROTOTYPE)
 {
@@ -2577,12 +3153,14 @@ prim_array_join(PRIM_PROTOTYPE)
     int first_item;
 
     CHECKOP(2);
-    oper2 = POP();		/* str  joinstr */
-    oper1 = POP();		/* arr  Array */
+    oper2 = POP();    /* str  joinstr */
+    oper1 = POP();    /* arr  Array */
+
     if (oper1->type != PROG_ARRAY)
-	abort_interp("Argument not an array. (1)");
+        abort_interp("Argument not an array. (1)");
+
     if (oper2->type != PROG_STRING)
-	abort_interp("Argument not a string pattern. (2)");
+        abort_interp("Argument not a string pattern. (2)");
 
     arr = oper1->data.array;
     delim = DoNullInd(oper2->data.string);
@@ -2590,49 +3168,64 @@ prim_array_join(PRIM_PROTOTYPE)
     *outbuf = '\0';
     first_item = 1;
     done = !array_first(arr, &temp1);
+
     while (!done) {
-	in = array_getitem(arr, &temp1);
-	switch (in->type) {
-	case PROG_STRING:
-	    text = DoNullInd(in->data.string);
-	    break;
-	case PROG_INTEGER:
-	    snprintf(buf, sizeof(buf), "%d", in->data.number);
-	    text = buf;
-	    break;
-	case PROG_OBJECT:
-	    snprintf(buf, sizeof(buf), "#%d", in->data.number);
-	    text = buf;
-	    break;
-	case PROG_FLOAT:
-	    snprintf(buf, sizeof(buf), "%.15g", in->data.fnumber);
-	    if (!strchr(buf, '.') && !strchr(buf, 'n') && !strchr(buf, 'e')) {
-		strcatn(buf, sizeof(buf), ".0");
-	    }
-	    text = buf;
-	    break;
-	case PROG_LOCK:
-	    text = unparse_boolexp(ProgUID, in->data.lock, 1);
-	    break;
-	default:
-	    text = "<UNSUPPORTED>";
-	    break;
-	}
-	if (first_item) {
-	    first_item = 0;
-	} else {
-	    tmplen = strlen(delim);
-	    if (tmplen > BUFFER_LEN - (ptr - outbuf) - 1)
-		abort_interp("Operation would result in overflow.");
-	    strcpyn(ptr, sizeof(outbuf) - (size_t)(outbuf - ptr), delim);
-	    ptr += tmplen;
-	}
-	tmplen = strlen(text);
-	if (tmplen > BUFFER_LEN - (ptr - outbuf) - 1)
-	    abort_interp("Operation would result in overflow.");
-	strcpyn(ptr, sizeof(outbuf) - (size_t)(outbuf - ptr), text);
-	ptr += tmplen;
-	done = !array_next(arr, &temp1);
+        in = array_getitem(arr, &temp1);
+
+        switch (in->type) {
+            case PROG_STRING:
+                text = DoNullInd(in->data.string);
+                break;
+
+            case PROG_INTEGER:
+                snprintf(buf, sizeof(buf), "%d", in->data.number);
+                text = buf;
+                break;
+
+            case PROG_OBJECT:
+                snprintf(buf, sizeof(buf), "#%d", in->data.number);
+                text = buf;
+                break;
+
+            case PROG_FLOAT:
+                snprintf(buf, sizeof(buf), "%.15g", in->data.fnumber);
+
+                if (!strchr(buf, '.') && !strchr(buf, 'n') && !strchr(buf, 'e')) {
+                    strcatn(buf, sizeof(buf), ".0");
+                }
+
+                text = buf;
+                break;
+
+            case PROG_LOCK:
+                text = unparse_boolexp(ProgUID, in->data.lock, 1);
+                break;
+
+            default:
+                text = "<UNSUPPORTED>";
+                break;
+        }
+
+        if (first_item) {
+            first_item = 0;
+        } else {
+            tmplen = strlen(delim);
+
+            if (tmplen > BUFFER_LEN - (ptr - outbuf) - 1)
+                abort_interp("Operation would result in overflow.");
+
+            strcpyn(ptr, sizeof(outbuf) - (size_t)(outbuf - ptr), delim);
+            ptr += tmplen;
+        }
+
+        tmplen = strlen(text);
+
+        if (tmplen > BUFFER_LEN - (ptr - outbuf) - 1)
+            abort_interp("Operation would result in overflow.");
+
+        strcpyn(ptr, sizeof(outbuf) - (size_t)(outbuf - ptr), text);
+        ptr += tmplen;
+        done = !array_next(arr, &temp1);
     }
 
     CLEAR(oper2);
@@ -2641,6 +3234,23 @@ prim_array_join(PRIM_PROTOTYPE)
     PushString(outbuf);
 }
 
+/**
+ * Implementation of MUF ARRAY_INTERPRET
+ *
+ * Consumes a list array and concatenates all the items together as a string,
+ * returning it -- it is a bit like ARRAY_JOIN with an empty string separator.
+ *
+ * But it's got a twist -- any DBREFs (TYPE_OBJECT) items in the list will
+ * be converted to their object name.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_interpret(PRIM_PROTOTYPE)
 {
@@ -2650,87 +3260,132 @@ prim_array_interpret(PRIM_PROTOTYPE)
     char *ptr;
     const char *text;
 
-    /* char *delim; */
+    /*
+     * TODO: The code overlap with array_join is astounding.  These two calls
+     *       should share a common underpinning that uses an extra argument
+     *       to determine if we are interpreting or not, then this duplication
+     *       is reduced to an 'if' statement in the case PROJ_OBJECT block.
+     *
+     *       This function, and array_join, would then become thin wrappers
+     *       that I usually advocate against, but in this case, it just makes
+     *       sense.
+     */
+
     int tmplen;
     int done;
 
     CHECKOP(1);
-    oper1 = POP();		/* arr  Array */
+    oper1 = POP();  /* arr  Array */
+
     if (oper1->type != PROG_ARRAY)
-	abort_interp("Argument not an array. (1)");
+        abort_interp("Argument not an array. (1)");
 
     arr = oper1->data.array;
     ptr = outbuf;
     *outbuf = '\0';
     done = !array_first(arr, &temp1);
+
     while (!done) {
-	in = array_getitem(arr, &temp1);
-	switch (in->type) {
-	case PROG_STRING:
-	    text = DoNullInd(in->data.string);
-	    break;
-	case PROG_INTEGER:
-	    snprintf(buf, sizeof(buf), "%d", in->data.number);
-	    text = buf;
-	    break;
-	case PROG_OBJECT:
-	    if (in->data.objref == NOTHING) {
-		text = "*NOTHING*";
-		break;
-	    }
-	    if (in->data.objref == AMBIGUOUS) {
-		text = "*AMBIGUOUS*";
-		break;
-	    }
-	    if (in->data.objref == HOME) {
-		text = "*HOME*";
-		break;
-	    }
-	    if (in->data.objref == NIL) {
-		text = "*NIL*";
-		break;
-	    }
-	    if (in->data.number < NIL) {
-		text = "*INVALID*";
-		break;
-	    }
-	    if (in->data.number >= db_top) {
-		text = "*INVALID*";
-		break;
-	    }
-	    snprintf(buf, sizeof(buf), "%s", NAME(in->data.number));
-	    text = buf;
-	    break;
-	case PROG_FLOAT:
-	    snprintf(buf, sizeof(buf), "%.15g", in->data.fnumber);
-	    if (!strchr(buf, '.') && !strchr(buf, 'n') && !strchr(buf, 'e')) {
-		strcatn(buf, sizeof(buf), ".0");
-	    }
-	    text = buf;
-	    break;
-	case PROG_LOCK:
-	    text = unparse_boolexp(ProgUID, in->data.lock, 1);
-	    break;
-	default:
-	    text = "<UNSUPPORTED>";
-	    break;
-	}
-	tmplen = strlen(text);
-	if (tmplen > BUFFER_LEN - (ptr - outbuf) - 1) {
-	    strncpy(ptr, text, BUFFER_LEN - (ptr - outbuf) - 1);
-	    outbuf[BUFFER_LEN - 1] = '\0';
-	    break;
-	} else {
-	    strcpyn(ptr, sizeof(outbuf) - (size_t)(outbuf - ptr), text);
-	    ptr += tmplen;
-	}
-	done = !array_next(arr, &temp1);
+        in = array_getitem(arr, &temp1);
+
+        switch (in->type) {
+            case PROG_STRING:
+                text = DoNullInd(in->data.string);
+                break;
+
+            case PROG_INTEGER:
+                snprintf(buf, sizeof(buf), "%d", in->data.number);
+                text = buf;
+                break;
+
+            case PROG_OBJECT:
+                if (in->data.objref == NOTHING) {
+                    text = "*NOTHING*";
+                    break;
+                }
+
+                if (in->data.objref == AMBIGUOUS) {
+                    text = "*AMBIGUOUS*";
+                    break;
+                }
+
+                if (in->data.objref == HOME) {
+                    text = "*HOME*";
+                    break;
+                }
+
+                if (in->data.objref == NIL) {
+                    text = "*NIL*";
+                    break;
+                }
+
+                if (in->data.number < NIL) {
+                    text = "*INVALID*";
+                    break;
+                }
+
+                if (in->data.number >= db_top) {
+                    text = "*INVALID*";
+                    break;
+                }
+
+                snprintf(buf, sizeof(buf), "%s", NAME(in->data.number));
+                text = buf;
+                break;
+
+            case PROG_FLOAT:
+                snprintf(buf, sizeof(buf), "%.15g", in->data.fnumber);
+
+                if (!strchr(buf, '.') && !strchr(buf, 'n') && !strchr(buf, 'e')) {
+                    strcatn(buf, sizeof(buf), ".0");
+                }
+
+                text = buf;
+                break;
+
+            case PROG_LOCK:
+                text = unparse_boolexp(ProgUID, in->data.lock, 1);
+                break;
+
+            default:
+                text = "<UNSUPPORTED>";
+                break;
+        }
+
+        tmplen = strlen(text);
+
+        if (tmplen > BUFFER_LEN - (ptr - outbuf) - 1) {
+            strncpy(ptr, text, BUFFER_LEN - (ptr - outbuf) - 1);
+            outbuf[BUFFER_LEN - 1] = '\0';
+            break;
+        } else {
+            strcpyn(ptr, sizeof(outbuf) - (size_t)(outbuf - ptr), text);
+            ptr += tmplen;
+        }
+
+        done = !array_next(arr, &temp1);
     }
 
     CLEAR(oper1);
     PushString(outbuf);
 }
 
+/**
+ * Implementation of MUF ARRAY_PIN
+ *
+ * Takes an array and sets its pinned bit, putting it back/leaving it on the
+ * stack.
+ *
+ * If the array is already pinned, this makes a *copy* that will be pinned.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_pin(PRIM_PROTOTYPE)
 {
@@ -2738,56 +3393,124 @@ prim_array_pin(PRIM_PROTOTYPE)
     stk_array *nu;
 
     CHECKOP(1);
-    oper1 = POP();		/* arr  Array */
+    oper1 = POP();  /* arr  Array */
+
     if (oper1->type != PROG_ARRAY)
-	abort_interp("Argument not an array.");
+        abort_interp("Argument not an array.");
 
     arr = oper1->data.array;
+
+    /*
+     * TODO: It's not clear in the man page, but pinning a pinned array
+     *       will actually make a copy of the original array which
+     *       kind of violates the idea of pinning and could be unintended.
+     */
     if (!arr) {
-	nu = new_array_packed(0, fr->pinning);
+        nu = new_array_packed(0, fr->pinning);
     } else if (arr->links > 1) {
-	nu = array_decouple(arr);
+        nu = array_decouple(arr);
     } else {
-	arr->links++;
-	nu = arr;
+        arr->links++;
+        nu = arr;
     }
+
     nu->pinned = 1;
 
     CLEAR(oper1);
     PushArrayRaw(nu);
 }
 
+/**
+ * Implementation of MUF ARRAY_UNPIN
+ *
+ * Takes an array and removes its pinned bit, putting it back/leaving it on the
+ * stack.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_unpin(PRIM_PROTOTYPE)
 {
     stk_array *arr;
 
     CHECKOP(1);
-    oper1 = POP();		/* arr  Array */
+    oper1 = POP();  /* arr  Array */
+
     if (oper1->type != PROG_ARRAY)
-	abort_interp("Argument not an array.");
+        abort_interp("Argument not an array.");
 
     arr = oper1->data.array;
+
     if (arr) {
-	arr->links++;
-	arr->pinned = 0;
+        /*
+         * So this is a minor curiousity, worthy of comment.  So, when
+         * an array is pinned = 0 and links > 1, when an operation is done
+         * on the array, links is decremented and the array is decoupled.
+         *
+         * You can see that in, say, array_setitem
+         *
+         * I'm not ... entirely sure why we're incrementing links here,
+         * though I guess it can't hurt anything. (tanabi)
+         */
+        arr->links++;
+        arr->pinned = 0;
     }
 
     CLEAR(oper1);
     PushArrayRaw(arr);
 }
 
+/**
+ * Implementation of MUF ARRAY_DEFAULT_PINNING
+ *
+ * Consumes an integer (treated as boolean), returns nothing.
+ *
+ * Sets whether or not future arrays or dictionaries will be set pinned
+ * by default.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_default_pinning(PRIM_PROTOTYPE)
 {
     CHECKOP(1);
-    oper1 = POP();		/* int  New default pinning boolean val */
+    oper1 = POP();  /* int  New default pinning boolean val */
+
     if (oper1->type != PROG_INTEGER)
-	abort_interp("Argument not an integer.");
+        abort_interp("Argument not an integer.");
+
     fr->pinning = false_inst(oper1)? 0 : 1;
     CLEAR(oper1);
 }
 
+/**
+ * Implementation of MUF ARRAY_GET_IGNORELIST
+ *
+ * Consumes a DBREF of a player and returns a list-array of dbrefs
+ *
+ * The array contains the refs of players that the given player is
+ * ignoring.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_get_ignorelist(PRIM_PROTOTYPE)
 {
@@ -2799,11 +3522,13 @@ prim_array_get_ignorelist(PRIM_PROTOTYPE)
     oper1 = POP();
 
     if (oper1->type != PROG_OBJECT)
-	abort_interp("Dbref required.");
+        abort_interp("Dbref required.");
+
     if (!valid_object(oper1))
-	abort_interp("Invalid dbref.");
+        abort_interp("Invalid dbref.");
+
     if (mlev < 3)
-	abort_interp("Permission denied.");
+        abort_interp("Permission denied.");
 
     ref = OWNER(oper1->data.objref);
 
@@ -2812,38 +3537,60 @@ prim_array_get_ignorelist(PRIM_PROTOTYPE)
     nu = new_array_packed(0, fr->pinning);
 
     if (tp_ignore_support) {
-	rawstr = get_property_class(ref, IGNORE_PROP);
+        rawstr = get_property_class(ref, IGNORE_PROP);
 
-	if (rawstr) {
-	    skip_whitespace(&rawstr);
-	    while (*rawstr) {
-		if (*rawstr == NUMBER_TOKEN)
-		    rawstr++;
-		if (!isdigit(*rawstr))
-		    break;
-		result = atoi(rawstr);
-		while (*rawstr && !isspace(*rawstr))
-		    rawstr++;
-		skip_whitespace(&rawstr);
+        if (rawstr) {
+            skip_whitespace(&rawstr);
 
-		temp1.type = PROG_INTEGER;
-		temp1.data.number = count;
+            while (*rawstr) {
+                if (*rawstr == NUMBER_TOKEN)
+                    rawstr++;
 
-		temp2.type = PROG_OBJECT;
-		temp2.data.number = result;
+                if (!isdigit(*rawstr))
+                    break;
 
-		array_setitem(&nu, &temp1, &temp2);
-		count++;
+                result = atoi(rawstr);
 
-		CLEAR(&temp1);
-		CLEAR(&temp2);
-	    }
-	}
+                while (*rawstr && !isspace(*rawstr))
+                    rawstr++;
+
+                skip_whitespace(&rawstr);
+
+                temp1.type = PROG_INTEGER;
+                temp1.data.number = count;
+
+                temp2.type = PROG_OBJECT;
+                temp2.data.number = result;
+
+                array_setitem(&nu, &temp1, &temp2);
+                count++;
+
+                CLEAR(&temp1);
+                CLEAR(&temp2);
+            }
+        }
     }
 
     PushArrayRaw(nu);
 }
 
+/**
+ * Implementation of MUF ARRAY_NESTED_GET
+ *
+ * Consumes two arrays, and puts a result value on the stack.
+ *
+ * This is the MUF way of doing "multi dimensional" arrays.  The first
+ * parameter is the array of arrays.  The second parameter is a list array
+ * of indexes to traverse.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_nested_get(PRIM_PROTOTYPE)
 {
@@ -2854,35 +3601,42 @@ prim_array_nested_get(PRIM_PROTOTYPE)
     int idxcnt;
 
     CHECKOP(2);
-    oper1 = POP();		/* arr  IndexList */
-    oper2 = POP();		/* arr  Array */
+    oper1 = POP();  /* arr  IndexList */
+    oper2 = POP();  /* arr  Array */
+
     if (oper1->type != PROG_ARRAY)
-	abort_interp("Argument not an array of indexes. (2)");
+        abort_interp("Argument not an array of indexes. (2)");
+
     if (!oper1->data.array || oper1->data.array->type == ARRAY_DICTIONARY)
-	abort_interp("Argument not an array of indexes. (2)");
+        abort_interp("Argument not an array of indexes. (2)");
+
     if (oper2->type != PROG_ARRAY)
-	abort_interp("Argument not an array. (1)");
+        abort_interp("Argument not an array. (1)");
 
     idxarr = oper1->data.array;
     idxcnt = array_count(idxarr);
     dat = oper2;
+
     for (int i = 0; dat && i < idxcnt; i++) {
-	temp1.type = PROG_INTEGER;
-	temp1.data.number = i;
-	idx = array_getitem(idxarr, &temp1);
-	if (idx->type != PROG_INTEGER && idx->type != PROG_STRING)
-	    abort_interp("Argument not an array of indexes. (2)");
-	if (dat->type != PROG_ARRAY)
-	    abort_interp("Mid-level nested item was not an array. (1)");
-	dat = array_getitem(dat->data.array, idx);
+        temp1.type = PROG_INTEGER;
+        temp1.data.number = i;
+        idx = array_getitem(idxarr, &temp1);
+
+        if (idx->type != PROG_INTEGER && idx->type != PROG_STRING)
+            abort_interp("Argument not an array of indexes. (2)");
+
+        if (dat->type != PROG_ARRAY)
+            abort_interp("Mid-level nested item was not an array. (1)");
+
+        dat = array_getitem(dat->data.array, idx);
     }
 
     /* copy data to a temp inst before clearing the containing array */
     if (dat) {
-	copyinst(dat, &temp);
+        copyinst(dat, &temp);
     } else {
-	temp.type = PROG_INTEGER;
-	temp.data.number = 0;
+        temp.type = PROG_INTEGER;
+        temp.data.number = 0;
     }
 
     CLEAR(oper1);
@@ -2893,6 +3647,24 @@ prim_array_nested_get(PRIM_PROTOTYPE)
     CLEAR(&temp);
 }
 
+/**
+ * Implementation of MUF ARRAY_NESTED_SET
+ *
+ * Consumes a value and two arrays, and puts the altered array on the stack.
+ *
+ * This is the MUF way of doing "multi dimensional" arrays.  The first
+ * parameter is the value to set.  The second parameter is the array
+ * of arrays to set the value on.  The third parameter is a list array
+ * of indexes to traverse.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_nested_set(PRIM_PROTOTYPE)
 {
@@ -2905,59 +3677,71 @@ prim_array_nested_set(PRIM_PROTOTYPE)
     size_t idxcnt;
 
     CHECKOP(3);
-    oper1 = POP();		/* arr  IndexList */
-    oper2 = POP();		/* arr  Array */
-    oper3 = POP();		/* ???  Value */
+    oper1 = POP();  /* arr  IndexList */
+    oper2 = POP();  /* arr  Array */
+    oper3 = POP();  /* ???  Value */
+
     if (oper1->type != PROG_ARRAY)
-	abort_interp("Argument not an array of indexes. (3)");
+        abort_interp("Argument not an array of indexes. (3)");
+
     if (!oper1->data.array || oper1->data.array->type == ARRAY_DICTIONARY)
-	abort_interp("Argument not an array of indexes. (3)");
+        abort_interp("Argument not an array of indexes. (3)");
+
     if (oper2->type != PROG_ARRAY)
-	abort_interp("Argument not an array. (2)");
+        abort_interp("Argument not an array. (2)");
 
     idxarr = oper1->data.array;
     idxcnt = (size_t)array_count(idxarr);
+
     if (idxcnt > sizeof(nest) / sizeof(struct inst))
-	abort_interp("Nesting would be too deep. (3)");
+        abort_interp("Nesting would be too deep. (3)");
 
     if (idxcnt == 0) {
-	copyinst(oper2, &nest[0]);
+        copyinst(oper2, &nest[0]);
     } else {
-	dat = oper2;
-	for (size_t i = 0; i < idxcnt; i++) {
-	    copyinst(dat, &nest[i]);
-	    temp.type = PROG_INTEGER;
-	    temp.data.number = i;
-	    idx = array_getitem(idxarr, &temp);
-	    if (idx->type != PROG_INTEGER && idx->type != PROG_STRING)
-		abort_interp("Argument not an array of indexes. (3)");
-	    if (i < idxcnt - 1) {
-		dat = array_getitem(nest[i].data.array, idx);
-		if (dat) {
-		    if (dat->type != PROG_ARRAY)
-			abort_interp("Mid-level nested item was not an array. (2)");
-		} else {
-		    if (idx->type == PROG_INTEGER && idx->data.number == 0) {
-			arr = new_array_packed(1, fr->pinning);
-		    } else {
-			arr = new_array_dictionary(fr->pinning);
-		    }
-		    arr->links = 0;
-		    temp.type = PROG_ARRAY;
-		    temp.data.array = arr;
-		    dat = &temp;
-		}
-	    }
-	}
+        dat = oper2;
 
-	array_setitem(&nest[idxcnt - 1].data.array, idx, oper3);
-	for (size_t i = idxcnt - 1; i-- > 0;) {
-	    temp.type = PROG_INTEGER;
-	    temp.data.number = i;
-	    idx = array_getitem(idxarr, &temp);
-	    array_setitem(&nest[i].data.array, idx, &nest[i + 1]);
-	    CLEAR(&nest[i + 1]);
-	}
+        for (size_t i = 0; i < idxcnt; i++) {
+            copyinst(dat, &nest[i]);
+            temp.type = PROG_INTEGER;
+            temp.data.number = i;
+            idx = array_getitem(idxarr, &temp);
+
+            if (idx->type != PROG_INTEGER && idx->type != PROG_STRING)
+                abort_interp("Argument not an array of indexes. (3)");
+
+            if (i < idxcnt - 1) {
+                dat = array_getitem(nest[i].data.array, idx);
+
+                if (dat) {
+                    if (dat->type != PROG_ARRAY)
+                        abort_interp(
+                            "Mid-level nested item was not an array. (2)"
+                        );
+                } else {
+                    if (idx->type == PROG_INTEGER && idx->data.number == 0) {
+                        arr = new_array_packed(1, fr->pinning);
+                    } else {
+                        arr = new_array_dictionary(fr->pinning);
+                    }
+
+                    arr->links = 0;
+                    temp.type = PROG_ARRAY;
+                    temp.data.array = arr;
+                    dat = &temp;
+                }
+            }
+        }
+
+        array_setitem(&nest[idxcnt - 1].data.array, idx, oper3);
+
+        for (size_t i = idxcnt - 1; i-- > 0;) {
+            temp.type = PROG_INTEGER;
+            temp.data.number = i;
+            idx = array_getitem(idxarr, &temp);
+            array_setitem(&nest[i].data.array, idx, &nest[i + 1]);
+            CLEAR(&nest[i + 1]);
+        }
     }
 
     CLEAR(oper1);
@@ -2969,6 +3753,24 @@ prim_array_nested_set(PRIM_PROTOTYPE)
     CLEAR(&nest[0]);
 }
 
+/**
+ * Implementation of MUF ARRAY_NESTED_DEL
+ *
+ * Consumes two arrays, and then puts the resulting modified array on the
+ * stack.
+ *
+ * This is the MUF way of doing "multi dimensional" arrays.  The first
+ * parameter is the array of arrays.  The second parameter is a list array
+ * of indexes to traverse.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_nested_del(PRIM_PROTOTYPE)
 {
@@ -2980,53 +3782,65 @@ prim_array_nested_del(PRIM_PROTOTYPE)
     size_t idxcnt;
 
     CHECKOP(2);
-    oper1 = POP();		/* arr  IndexList */
-    oper2 = POP();		/* arr  Array */
+    oper1 = POP();  /* arr  IndexList */
+    oper2 = POP();  /* arr  Array */
+
     if (oper1->type != PROG_ARRAY)
-	abort_interp("Argument not an array of indexes. (2)");
+        abort_interp("Argument not an array of indexes. (2)");
+
     if (!oper1->data.array || oper1->data.array->type == ARRAY_DICTIONARY)
-	abort_interp("Argument not an array of indexes. (2)");
+        abort_interp("Argument not an array of indexes. (2)");
+
     if (oper2->type != PROG_ARRAY)
-	abort_interp("Argument not an array. (1)");
+        abort_interp("Argument not an array. (1)");
 
     idxarr = oper1->data.array;
     idxcnt = (size_t)array_count(idxarr);
+
     if (idxcnt > sizeof(nest) / sizeof(struct inst))
-	abort_interp("Nesting would be too deep. (2)");
+        abort_interp("Nesting would be too deep. (2)");
 
     if (idxcnt == 0) {
-	copyinst(oper2, &nest[0]);
+        copyinst(oper2, &nest[0]);
     } else {
-	int doneearly = 0;
-	dat = oper2;
-	for (size_t i = 0; i < idxcnt; i++) {
-	    copyinst(dat, &nest[i]);
-	    temp.type = PROG_INTEGER;
-	    temp.data.number = i;
-	    idx = array_getitem(idxarr, &temp);
-	    if (idx->type != PROG_INTEGER && idx->type != PROG_STRING)
-		abort_interp("Argument not an array of indexes. (2)");
-	    if (i < idxcnt - 1) {
-		dat = array_getitem(nest[i].data.array, idx);
-		if (dat) {
-		    if (dat->type != PROG_ARRAY)
-			abort_interp("Mid-level nested item was not an array. (1)");
-		} else {
-		    doneearly = 1;
-		    break;
-		}
-	    }
-	}
-	if (!doneearly) {
-	    array_delitem(&nest[idxcnt - 1].data.array, idx);
-	    for (size_t i = idxcnt - 1; i-- > 0;) {
-		temp.type = PROG_INTEGER;
-		temp.data.number = i;
-		idx = array_getitem(idxarr, &temp);
-		array_setitem(&nest[i].data.array, idx, &nest[i + 1]);
-		CLEAR(&nest[i + 1]);
-	    }
-	}
+        int doneearly = 0;
+        dat = oper2;
+
+        for (size_t i = 0; i < idxcnt; i++) {
+            copyinst(dat, &nest[i]);
+            temp.type = PROG_INTEGER;
+            temp.data.number = i;
+            idx = array_getitem(idxarr, &temp);
+
+            if (idx->type != PROG_INTEGER && idx->type != PROG_STRING)
+                abort_interp("Argument not an array of indexes. (2)");
+
+            if (i < idxcnt - 1) {
+                dat = array_getitem(nest[i].data.array, idx);
+
+                if (dat) {
+                    if (dat->type != PROG_ARRAY)
+                        abort_interp(
+                            "Mid-level nested item was not an array. (1)"
+                        );
+                } else {
+                    doneearly = 1;
+                    break;
+                }
+            }
+        }
+
+        if (!doneearly) {
+            array_delitem(&nest[idxcnt - 1].data.array, idx);
+
+            for (size_t i = idxcnt - 1; i-- > 0;) {
+                temp.type = PROG_INTEGER;
+                temp.data.number = i;
+                idx = array_getitem(idxarr, &temp);
+                array_setitem(&nest[i].data.array, idx, &nest[i + 1]);
+                CLEAR(&nest[i + 1]);
+            }
+        }
     }
 
     CLEAR(oper1);
@@ -3037,6 +3851,23 @@ prim_array_nested_del(PRIM_PROTOTYPE)
     CLEAR(&nest[0]);
 }
 
+
+/**
+ * Implementation of MUF ARRAY_FILTER_FLAGS
+ *
+ * Consumes a list of dbrefs (PROG_OBJECT) and a string of flags, and
+ * pushes a list array of dbrefs back onto the stack.
+ *
+ * Every object on the list is filtered by the flags.  @see checkflags
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_filter_flags(PRIM_PROTOTYPE)
 {
@@ -3045,15 +3876,17 @@ prim_array_filter_flags(PRIM_PROTOTYPE)
     struct inst *in;
 
     CHECKOP(2);
-    oper2 = POP();		/* str:flags */
-    oper1 = POP();		/* arr:refs */
+    oper2 = POP();  /* str:flags */
+    oper1 = POP();  /* arr:refs */
 
     if (oper1->type != PROG_ARRAY)
-	abort_interp("Argument not an array. (1)");
+        abort_interp("Argument not an array. (1)");
+
     if (!array_is_homogenous(oper1->data.array, PROG_OBJECT))
-	abort_interp("Argument not an array of dbrefs. (1)");
+        abort_interp("Argument not an array of dbrefs. (1)");
+
     if (oper2->type != PROG_STRING || !oper2->data.string)
-	abort_interp("Argument not a non-null string. (2)");
+        abort_interp("Argument not a non-null string. (2)");
 
     arr = oper1->data.array;
     nw = new_array_packed(0, fr->pinning);
@@ -3061,11 +3894,12 @@ prim_array_filter_flags(PRIM_PROTOTYPE)
     init_checkflags(player, DoNullInd(oper2->data.string), &check);
 
     if (array_first(arr, &temp1)) {
-	do {
-	    in = array_getitem(arr, &temp1);
-	    if (valid_object(in) && checkflags(in->data.objref, check))
-		array_appenditem(&nw, in);
-	} while (array_next(arr, &temp1));
+        do {
+            in = array_getitem(arr, &temp1);
+
+            if (valid_object(in) && checkflags(in->data.objref, check))
+                array_appenditem(&nw, in);
+        } while (array_next(arr, &temp1));
     }
 
     CLEAR(oper1);
@@ -3073,6 +3907,22 @@ prim_array_filter_flags(PRIM_PROTOTYPE)
     PushArrayRaw(nw);
 }
 
+/**
+ * Implementation of MUF ARRAY_FILTER_LOCK
+ *
+ * Consumes a list of dbrefs (PROG_OBJECT) and a parsed lock, and
+ * pushes a list array of dbrefs back onto the stack.
+ *
+ * Every object on the list is filtered by the lock.  @see eval_boolexp
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_filter_lock(PRIM_PROTOTYPE)
 {
@@ -3080,27 +3930,30 @@ prim_array_filter_lock(PRIM_PROTOTYPE)
     struct inst *in;
 
     CHECKOP(2);
-    oper2 = POP();		/* lock */
-    oper1 = POP();		/* arr:refs */
+    oper2 = POP();  /* lock */
+    oper1 = POP();  /* arr:refs */
 
     if (oper1->type != PROG_ARRAY)
-	abort_interp("Argument not an array. (1)");
+        abort_interp("Argument not an array. (1)");
+
     if (!array_is_homogenous(oper1->data.array, PROG_OBJECT))
-	abort_interp("Argument not an array of dbrefs. (1)");
+        abort_interp("Argument not an array of dbrefs. (1)");
+
     if (oper2->type != PROG_LOCK)
-	abort_interp("Argument not a lock. (2)");
+        abort_interp("Argument not a lock. (2)");
 
     arr = oper1->data.array;
     nw = new_array_packed(0, fr->pinning);
 
     if (array_first(arr, &temp1)) {
-	do {
-	    in = array_getitem(arr, &temp1);
-	    if (valid_object(in) &&
-		    eval_boolexp(fr->descr, in->data.objref, oper2->data.lock,
-		    tp_consistent_lock_source ? fr->trig : player))
-		array_appenditem(&nw, in);
-	} while (array_next(arr, &temp1));
+        do {
+            in = array_getitem(arr, &temp1);
+
+            if (valid_object(in) &&
+                eval_boolexp(fr->descr, in->data.objref, oper2->data.lock,
+                tp_consistent_lock_source ? fr->trig : player))
+                array_appenditem(&nw, in);
+        } while (array_next(arr, &temp1));
     }
 
     CLEAR(oper1);
@@ -3108,18 +3961,37 @@ prim_array_filter_lock(PRIM_PROTOTYPE)
     PushArrayRaw(nw);
 }
 
+/**
+ * Implementation of MUF ARRAY_NOTIFY_SECURE
+ *
+ * Consumes 3 list arrays.  The first array is list of messages to send
+ * over insecure descriptors.  The second array is a list of messages to
+ * send over secure descriptors.  The third array is a list of dbrefs
+ * (PROJ_OBJECT) to send these messages to.
+ *
+ * Listen props are only run with the secure message.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_array_notify_secure(PRIM_PROTOTYPE)
 {
     stk_array *strarr, *strarr2, *refarr;
-    struct inst *oper1 = NULL, *oper2 = NULL, *oper3 = NULL, *oper4 = NULL, *oper5 = NULL;
+    struct inst *oper1 = NULL, *oper2 = NULL, *oper3 = NULL,
+                *oper4 = NULL, *oper5 = NULL;
     struct inst temp2, temp3;
 
     int *darr;
     int dcount;
 
     if (mlev < 3)
-	abort_interp("Mucker level 3 primitive.");
+        abort_interp("Mucker level 3 primitive.");
 
     CHECKOP(3);
     oper1 = POP();
@@ -3127,60 +3999,68 @@ prim_array_notify_secure(PRIM_PROTOTYPE)
     oper3 = POP();
 
     if (oper1->type != PROG_ARRAY)
-	abort_interp("Argument not an array of dbrefs. (3)");
+        abort_interp("Argument not an array of dbrefs. (3)");
+
     if (!array_is_homogenous(oper1->data.array, PROG_OBJECT))
-	abort_interp("Argument not an array of dbrefs. (3)");
+        abort_interp("Argument not an array of dbrefs. (3)");
+
     if (oper2->type != PROG_ARRAY)
-	abort_interp("Argument not an array of strings. (2)");
+        abort_interp("Argument not an array of strings. (2)");
+
     if (!array_is_homogenous(oper2->data.array, PROG_STRING))
-	abort_interp("Argument not an array of strings. (2)");
+        abort_interp("Argument not an array of strings. (2)");
+
     if (oper3->type != PROG_ARRAY)
-	abort_interp("Argument not an array of strings. (1)");
+        abort_interp("Argument not an array of strings. (1)");
+
     if (!array_is_homogenous(oper3->data.array, PROG_STRING))
-	abort_interp("Argument not an array of strings. (1)");
+        abort_interp("Argument not an array of strings. (1)");
 
     refarr = oper1->data.array;
     strarr = oper2->data.array;
     strarr2 = oper3->data.array;
 
     if (array_first(refarr, &temp3)) {
-	do {
-	    oper5 = array_getitem(refarr, &temp3);
-	    ref = oper5->data.objref;
+        do {
+            oper5 = array_getitem(refarr, &temp3);
+            ref = oper5->data.objref;
 
-	    darr = get_player_descrs(ref, &dcount);
+            darr = get_player_descrs(ref, &dcount);
 
-	    for (int di = 0; di < dcount; di++) {
-		if (pdescrsecure(darr[di])) {
-		    if (array_first(strarr, &temp2)) {
-			do {
-			    oper4 = array_getitem(strarr, &temp2);
-			    pdescrnotify(darr[di], oper4->data.string->data);
-			    oper4 = NULL;
-			} while (array_next(strarr, &temp2));
-		    }
-		} else {
-		    if (array_first(strarr2, &temp2)) {
-			do {
-			    oper4 = array_getitem(strarr2, &temp2);
-			    pdescrnotify(darr[di], oper4->data.string->data);
+            for (int di = 0; di < dcount; di++) {
+                if (pdescrsecure(darr[di])) {
+                    if (array_first(strarr, &temp2)) {
+                        do {
+                            oper4 = array_getitem(strarr, &temp2);
+                            pdescrnotify(darr[di], oper4->data.string->data);
+                            oper4 = NULL;
+                        } while (array_next(strarr, &temp2));
+                    }
+                } else {
+                    if (array_first(strarr2, &temp2)) {
+                        do {
+                            oper4 = array_getitem(strarr2, &temp2);
+                            pdescrnotify(darr[di], oper4->data.string->data);
 
-			    listenqueue(-1, player, LOCATION(ref), ref, ref, program,
-					LISTEN_PROPQUEUE, oper4->data.string->data, tp_listen_mlev, 1,
-					0);
-			    listenqueue(-1, player, LOCATION(ref), ref, ref, program,
-					WLISTEN_PROPQUEUE, oper4->data.string->data, tp_listen_mlev, 1,
-					1);
-			    listenqueue(-1, player, LOCATION(ref), ref, ref, program,
-					WOLISTEN_PROPQUEUE, oper4->data.string->data, tp_listen_mlev,
-					0, 1);
+                            listenqueue(-1, player, LOCATION(ref), ref, ref,
+                                        program, LISTEN_PROPQUEUE,
+                                        oper4->data.string->data,
+                                        tp_listen_mlev, 1, 0);
+                            listenqueue(-1, player, LOCATION(ref), ref, ref,
+                                        program, WLISTEN_PROPQUEUE,
+                                        oper4->data.string->data,
+                                        tp_listen_mlev, 1, 1);
+                            listenqueue(-1, player, LOCATION(ref), ref, ref,
+                                        program, WOLISTEN_PROPQUEUE,
+                                        oper4->data.string->data,
+                                        tp_listen_mlev, 0, 1);
 
-			    oper4 = NULL;
-			} while (array_next(strarr2, &temp2));
-		    }
-		}
-	    }
-	} while (array_next(refarr, &temp3));
+                            oper4 = NULL;
+                        } while (array_next(strarr2, &temp2));
+                    }
+                }
+            }
+        } while (array_next(refarr, &temp3));
     }
 
     CLEAR(oper1);
