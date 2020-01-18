@@ -3677,7 +3677,7 @@ a1 whose values did NOT match the given value.  For example:
 will return a list containing 0, 2 and 4, being the keys (indexes) of the
 items that didn't match.  If you want the values, use ARRAY_DIFF or
 ARRAY_EXTRACT.  Ie:
-    { #5 #10 #15 #10 #20 }list { #10 }list array_diff
+    { #10 }list { #5 #10 #15 #10 #20 }list array_diff
 or
     { #5 #10 #15 #10 #20 }list dup #10 array_excludeval array_extract
 which will both return a list containing #5, #15, and #20.  The main
