@@ -1740,7 +1740,8 @@ base64_send(struct descriptor_data* descr, FILE* in)
     process_all_output(10, 1000, descr);
 
     while (fgets(buf, BUFFER_LEN, in)) {
-        b64_len = base64_encode(buf, strlen(buf), base64_buf,
+        b64_len = base64_encode((unsigned char *)buf, strlen(buf),
+                                (unsigned char *)base64_buf,
                                 sizeof(base64_buf));
 
         /* Add a * as a separator so we know each line */
@@ -1782,7 +1783,7 @@ do_teledump(int descr, dbref player)
 {
     struct descriptor_data* d;
     FILE*                   in;
-    char                    buf[BUFFER_LEN];
+    char           buf[BUFFER_LEN];
 
     /*
      * This is needed so we can run process_output and make sure we don't
