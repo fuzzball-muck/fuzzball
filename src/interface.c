@@ -2340,24 +2340,42 @@ announce_disconnect(struct descriptor_data *d)
     char buf[BUFFER_LEN];
     int dcount;
 
+    /*
+     * If location is NOTHING, then the player was likely deleted and we do
+     * not need to notify.
+     */
+
     get_player_descrs(d->player, &dcount);
 
-    if (dcount < 2 && dequeue_prog(player, 2))
+    if ((loc != NOTHING) && dcount < 2 && dequeue_prog(player, 2))
         notify(player, "Foreground program aborted.");
 
-    if ((!Dark(player)) && (!Dark(loc))) {
+    if ((loc != NOTHING) && (!Dark(player)) && (!Dark(loc))) {
         snprintf(buf, sizeof(buf), "%s has disconnected.", NAME(player));
         notify_except(CONTENTS(loc), player, buf, player);
     }
 
     /* trigger local disconnect action */
-    if (PLAYER_DESCRCOUNT(player) == 1) {
+    if ((loc != NOTHING) && (PLAYER_DESCRCOUNT(player) == 1)) {
         if (can_move(d->descriptor, player, "disconnect", 1)) {
             do_move(d->descriptor, player, "disconnect", 1);
         }
 
         announce_puppets(player, "falls asleep.", MESGPROP_PDCON);
     }
+
+    /*
+     * TODO
+     * So the following code from here to update_player_count_table has
+     * nothing to do with announcement and everything to do with connection
+     * book-keeping.  This is the wrong place to have it.
+     *
+     * If we move this elsewhere (maybe to the caller of this function? not
+     * sure ...) then we can simplify the if statements here, and simply
+     * check if loc != NOTHING then return at the top of the function.  This
+     * little chunk of misplaced stuff is why we can't go with the simple
+     * solution.
+     */
 
 #ifdef MCPGUI_SUPPORT
     gui_dlog_closeall_descr(d->descriptor);
@@ -2382,15 +2400,17 @@ announce_disconnect(struct descriptor_data *d)
      *       nobody ever noticed it worked differently.  We may want to
      *       consider make it consistent.
      */
-    envpropqueue(d->descriptor, player,
-                 LOCATION(player), NOTHING, player, NOTHING,
-                 DISCONNECT_PROPQUEUE, "Disconnect", 1, 1);
-    envpropqueue(d->descriptor, player,
-                 LOCATION(player), NOTHING, player, NOTHING,
-                 ODISCONNECT_PROPQUEUE, "Odisconnect", 1, 0);
+    if (loc != NOTHING) {
+        envpropqueue(d->descriptor, player,
+                     LOCATION(player), NOTHING, player, NOTHING,
+                     DISCONNECT_PROPQUEUE, "Disconnect", 1, 1);
+        envpropqueue(d->descriptor, player,
+                     LOCATION(player), NOTHING, player, NOTHING,
+                     ODISCONNECT_PROPQUEUE, "Odisconnect", 1, 0);
 
-    ts_lastuseobject(player);
-    DBDIRTY(player);
+        ts_lastuseobject(player);
+        DBDIRTY(player);
+    }
 }
 
 /**
