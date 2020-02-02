@@ -16,8 +16,28 @@
 #include "log.h"
 #include "player.h"
 
+/*
+ * TODO: These globals really probably shouldn't be globals.  I can only guess
+ *       this is either some kind of primitive code re-use because all the
+ *       functions use them, or it's some kind of an optimization to avoid
+ *       local variables.  But it kills the thread safety and (IMO) makes the
+ *       code harder to read/follow.
+ */
+
+/**
+ * @private
+ * @var used to store the parameters passed into the primitives
+ *      This seems to be used for conveinance, but makes this probably
+ *      not threadsafe.
+ */
 static struct inst *oper1, *oper2, *oper3, *oper4;
 static struct inst temp1, temp2;
+
+/**
+ * @private
+ * @var to store the result which is not a local variable for some reason
+ *      This makes things very not threadsafe.
+ */
 static int tmp, result;
 static dbref ref;
 
@@ -185,7 +205,7 @@ prim_concount(PRIM_PROTOTYPE)
 /**
  * Implementation of MUF DESCR
  *
- * Returns the descriptor number that started the program. This will be -1
+ * Returns the descriptor number that started the program.  This will be -1
  * if it was invoked during a listener event or when the MUCK started up.
  *
  * @param player the player running the MUF program
@@ -983,7 +1003,7 @@ prim_descrcon(PRIM_PROTOTYPE)
  * Implementation of MUF NEXTDESCR
  *
  * Consumes a descriptor number and returns the next descriptor number that
- * is connected to the game beyond the welcome screen. This value will be 0
+ * is connected to the game beyond the welcome screen.  This value will be 0
  * if there are no more descriptors or the input is invalid.
  *
  * @see pnextdescr
@@ -1001,7 +1021,7 @@ prim_nextdescr(PRIM_PROTOTYPE)
 {
     /**
      * @TODO This may be the only connection primitive that skips connections
-     *       that are on the welcome screen. Is this expected?
+     *       that are on the welcome screen.  Is this expected?
      */
     /* int -- int */
     CHECKOP(1);
@@ -1305,7 +1325,7 @@ prim_descrflush(PRIM_PROTOTYPE)
  * Implementation of MUF FIRSTDESCR
  *
  * Consumes a dbref and returns the first descriptor number associated with
- * that player, or all players if the input is NOTHING. The return value will
+ * that player, or all players if the input is NOTHING.  The return value will
  * be 0 if there are no descriptors available in the context.
  *
  * @see pfirstdescr
@@ -1368,7 +1388,7 @@ prim_firstdescr(PRIM_PROTOTYPE)
  * Implementation of MUF LASTDESCR
  *
  * Consumes a dbref and returns the last descriptor number associated with
- * that player, or all players if the input is NOTHING. The return value will
+ * that player, or all players if the input is NOTHING.  The return value will
  * be 0 if there are no descriptors available in the context.
  *
  * @see plastdescr
