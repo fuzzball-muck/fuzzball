@@ -311,7 +311,7 @@ prim_descr_dbref(PRIM_PROTOTYPE)
      * @TODO Should CONDBREF/DESCRDBREF behave the same with invalid numbers?
      */
     if (result < 0)
-        result = NOTHING;
+	result = NOTHING;
 
     CHECKOFLOW(1);
     CLEAR(oper1);
@@ -1190,7 +1190,7 @@ prim_descr_array(PRIM_PROTOTYPE)
 
             array_setitem(&newarr, &temp1, &temp2);
         }
-    } else {
+
         darr = get_player_descrs(ref, &dcount);
         newarr = new_array_packed(dcount, fr->pinning);
 
@@ -1475,6 +1475,10 @@ prim_descr_securep(PRIM_PROTOTYPE)
 
     if (oper1->type != PROG_INTEGER)
         abort_interp("Integer descriptor number expected.");
+
+    /**
+     * @TODO Should this abort on an invalid number?
+     **/
 
     /**
      * @TODO Should this abort on an invalid number?
