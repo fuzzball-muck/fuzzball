@@ -3005,7 +3005,7 @@ prim_newplayer(PRIM_PROTOTYPE)
         abort_interp("Create failed.");
 
     log_status("PCREATED[MUF]: %s(%d) by %s(%d)",
-            NAME(newplayer), (int) wnewplayer, NAME(player), (int) player);
+            NAME(newplayer), (int) newplayer, NAME(player), (int) player);
 
     CLEAR(oper1);
     CLEAR(oper2);
