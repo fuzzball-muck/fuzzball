@@ -425,7 +425,8 @@ prim_userlog(PRIM_PROTOTYPE)
         abort_interp("Permission Denied (mlev < tp_userlog_mlev)");
 
     /**
-     * @TODO buf = DoNullInd(oper1->data.string);
+     * @TODO Would this work in place of this construct?
+     *           buf = DoNullInd(oper1->data.string);
      */
     if (oper1->data.string) {
         snprintf(buf, BUFFER_LEN, "%s", oper1->data.string->data);
@@ -903,18 +904,23 @@ prim_stats(PRIM_PROTOTYPE)
                     case TYPE_ROOM:
                         rooms++;
                         break;
+
                     case TYPE_EXIT:
                         exits++;
                         break;
+
                     case TYPE_THING:
                         things++;
                         break;
+
                     case TYPE_PLAYER:
                         players++;
                         break;
+
                     case TYPE_PROGRAM:
                         programs++;
                         break;
+
                     case TYPE_GARBAGE:
                         garbage++;
                         break;
@@ -982,18 +988,23 @@ prim_stats_array(PRIM_PROTOTYPE)
                 case TYPE_ROOM:
                     rooms++;
                     break;
+
                 case TYPE_EXIT:
                     exits++;
                     break;
+
                 case TYPE_THING:
                     things++;
                     break;
+
                 case TYPE_PROGRAM:
                     programs++;
                     break;
+
                 case TYPE_PLAYER:
                     players++;
                     break;
+
                 case TYPE_GARBAGE:
                     garbage++;
                     break;
@@ -1434,6 +1445,7 @@ prim_setsysparm(PRIM_PROTOTYPE)
                     NAME(player), player, parmname, oldvalue, newvalue);
             free(oldvalue);
             break;
+
         case TUNESET_SUCCESS_DEFAULT:
             /* No need to show the flag in output */
             TP_CLEAR_FLAG_DEFAULT(parmname);
@@ -1441,18 +1453,23 @@ prim_setsysparm(PRIM_PROTOTYPE)
                     NAME(player), player, parmname, oldvalue);
             free(oldvalue);
              break;
+
         case TUNESET_UNKNOWN:
             free(oldvalue);
             abort_interp("Unknown parameter. (1)");
+
         case TUNESET_SYNTAX:
             free(oldvalue);
             abort_interp("Bad parameter syntax. (2)");
+
         case TUNESET_BADVAL:
             free(oldvalue);
             abort_interp("Bad parameter value. (2)");
+
         case TUNESET_DENIED:
             free(oldvalue);
             abort_interp("Permission denied. (1)");
+
         default:
             free(oldvalue);
             break;
