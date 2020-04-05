@@ -388,6 +388,28 @@ void mcp_package_register(const char *pkgname, McpVer minver, McpVer maxver,
                           ContextCleanup_CB cleanup);
 
 /**
+ * Send some text to a given MCP Frame
+ *
+ * The send is not immediate, it is queued to the descriptor with queue_write
+ *
+ * @see queue_write
+ * 
+ * @param mfr the frame we're transmitting to
+ * @param text the message to send
+ */
+void mcp_send_text(McpFrame *mfr, const char *text);
+
+
+/**
+ * Flushes the output queue associated with the frame mfr
+ *
+ * @param mfr the frame who's output queue we are flushing
+ */
+void mcp_flush_text(McpFrame *mfr);
+
+
+
+/**
  * Compares two McpVer structs.
  *
  * Results are similar to strcmp():
