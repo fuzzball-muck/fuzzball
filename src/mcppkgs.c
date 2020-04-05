@@ -182,7 +182,7 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
             }
 
             if (Prop_System(reference)
-                || !OkRef(player)
+                || !ObjExists(player)
                 || (!Wizard(player) && (Prop_SeeOnly(reference)
                 || Prop_Hidden(reference)))) {
                 show_mcp_error(mfr, "simpleedit-set", "Permission denied.");
@@ -261,7 +261,7 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
             }
 
             if (Prop_System(reference)
-                || !OkRef(player)
+                || !ObjExists(player)
                 || (!Wizard(player) && (Prop_SeeOnly(reference)
                 || Prop_Hidden(reference)))) {
                 show_mcp_error(mfr, "simpleedit-set", "Permission denied.");
@@ -311,7 +311,7 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
                 return;
             }
 
-            if (!OkRef(player) || !Mucker(player)) {
+            if (!ObjExists(player) || !Mucker(player)) {
                 show_mcp_error(mfr, "simpleedit-set", "Permission denied.");
                 return;
             }
@@ -366,7 +366,7 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
             DBDIRTY(obj);
         } else if (!strcasecmp(category, "sysparm")) {
             /* Edit tune parameters */
-            if (!OkRef(player) || !Wizard(player)) {
+            if (!ObjExists(player) || !Wizard(player)) {
                 show_mcp_error(mfr, "simpleedit-set", "Permission denied.");
                 return;
             }

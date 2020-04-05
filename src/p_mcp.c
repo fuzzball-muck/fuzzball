@@ -120,7 +120,7 @@ muf_mcp_callback(McpFrame * mfr, McpMesg * mesg, McpVer version, void *context)
     descr = MCPFRAME_DESCR(mfr);
     user = MCPFRAME_PLAYER(mfr);
 
-    if (!OkRef(user)) {
+    if (!ObjExists(user)) {
         /*
          * I'm not sure if this is possible, but unchecked players have
          * caused segfaults in the MCP system so we'll be safe.
