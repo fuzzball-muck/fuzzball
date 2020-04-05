@@ -182,6 +182,7 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
             }
 
             if (Prop_System(reference)
+                || !OkRef(player)
                 || (!Wizard(player) && (Prop_SeeOnly(reference)
                 || Prop_Hidden(reference)))) {
                 show_mcp_error(mfr, "simpleedit-set", "Permission denied.");
@@ -260,6 +261,7 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
             }
 
             if (Prop_System(reference)
+                || !OkRef(player)
                 || (!Wizard(player) && (Prop_SeeOnly(reference)
                 || Prop_Hidden(reference)))) {
                 show_mcp_error(mfr, "simpleedit-set", "Permission denied.");
@@ -309,7 +311,7 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
                 return;
             }
 
-            if (!Mucker(player)) {
+            if (!OkRef(player) || !Mucker(player)) {
                 show_mcp_error(mfr, "simpleedit-set", "Permission denied.");
                 return;
             }
@@ -345,6 +347,7 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
                 curr = new_line;
             }
 
+            /* Player ref should be fine by now */
             unparse_object(player, obj, unparse_buf, sizeof(unparse_buf));
             log_status("PROGRAM SAVED: %s by %s(%d)",
                        unparse_buf, NAME(player), player);
@@ -363,7 +366,7 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
             DBDIRTY(obj);
         } else if (!strcasecmp(category, "sysparm")) {
             /* Edit tune parameters */
-            if (!Wizard(player)) {
+            if (!OkRef(player) || !Wizard(player)) {
                 show_mcp_error(mfr, "simpleedit-set", "Permission denied.");
                 return;
             }
