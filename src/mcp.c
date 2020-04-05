@@ -393,6 +393,11 @@ mcp_intern_is_mesg_start(McpFrame *mfr, const char *in)
         /* It's incomplete.  Remember it to finish later. */
         const char *msgdt = mcp_mesg_arg_getline(newmsg, MCP_DATATAG, 0);
 
+        /* Avoid attack vector */
+        if (!msgdt) {
+            msgdt = "";
+        }
+
         newmsg->datatag = strdup(msgdt);
         mcp_mesg_arg_remove(newmsg, MCP_DATATAG);
         newmsg->next = mfr->messages;

@@ -99,6 +99,15 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
         player = MCPFRAME_PLAYER(mfr);
         descr = MCPFRAME_DESCR(mfr);
 
+        /* Check for nulls to avoid attack vector */
+        if (!reference) {
+            reference = "";
+        }
+
+        if (!valtype) {
+            valtype = "";
+        }
+
         /* extract object number.  -1 for none.  */
         if (isdigit(*reference)) {
             obj = 0;
@@ -181,6 +190,11 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
                 for (int line = 0; line < lines; line++) {
                     content = mcp_mesg_arg_getline(msg, "content", line);
 
+                    /* Avoid attack vector */
+                    if (!content) {
+                        content = "";
+                    }
+
                     if (line > 0) {
                         if (left >= 1) {
                             strcatn(buf, sizeof(buf), "\r");
@@ -210,6 +224,12 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
                 }
 
                 content = mcp_mesg_arg_getline(msg, "content", 0);
+
+                /* Avoid attack vector */
+                if (!content) {
+                    content = "";
+                }
+
                 add_property(obj, reference, NULL, atoi(content));
             }
         } else if (!strcasecmp(category, "proplist")) {
@@ -346,6 +366,12 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
             }
 
             content = mcp_mesg_arg_getline(msg, "content", 0);
+
+            /* Avoid attack vector */
+            if (!content) {
+                content = " ";
+            }
+
             tune_setparm(player, reference, content, TUNE_MLEV(player));
         } else if (!strcasecmp(category, "user")) {
             /*
@@ -426,6 +452,15 @@ mcppkg_help_request(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 
         onwhat = mcp_mesg_arg_getline(msg, "topic", 0);
         valtype = mcp_mesg_arg_getline(msg, "type", 0);
+
+        /* Avoid attack vector */
+        if (!onwhat) {
+            onwhat = "";
+        }
+
+        if (!valtype) {
+            valtype = "";
+        }
 
         *topic = '\0';
         strcpyn(topic, sizeof(topic), onwhat);
