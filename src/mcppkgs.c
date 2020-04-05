@@ -46,7 +46,15 @@ show_mcp_error(McpFrame * mfr, char *topic, char *text)
         mcp_frame_output_mesg(mfr, &msg);
         mcp_mesg_clear(&msg);
     } else {
-        notify(MCPFRAME_PLAYER(mfr), text);
+        /*
+         * This used to be a notify which would cause segfaults when the
+         * error happens on the login screen.  I don't think changing
+         * this to SendText (which is what notify uses under the hood, and
+         * how MCP authenticate works) will hurt anything.
+         */
+        mcp_send_text(mfr, text);
+        mcp_send_text(mfr, "\r\n");
+        mcp_flush_text(mfr);
     }
 }
 
@@ -402,7 +410,7 @@ mcppkg_languages(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
     McpVer supp = mcp_frame_package_supported(mfr, "org-fuzzball-languages");
 
     if (supp.verminor == 0 && supp.vermajor == 0) {
-        notify(MCPFRAME_PLAYER(mfr), "MCP: org-fuzzball-languages not supported.");
+        mcp_send_text(mfr, "MCP: org-fuzzball-languages not supported.");
         return;
     }
 
@@ -442,7 +450,7 @@ mcppkg_help_request(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
     McpMesg omsg;
 
     if (supp.verminor == 0 && supp.vermajor == 0) {
-        notify(MCPFRAME_PLAYER(mfr), "MCP: org-fuzzball-help not supported.");
+        mcp_send_text(mfr, "MCP: org-fuzzball-help not supported.");
         return;
     }
 
