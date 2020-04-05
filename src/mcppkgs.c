@@ -84,6 +84,8 @@ show_mcp_error(McpFrame * mfr, char *topic, char *text)
 void
 mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 {
+    MCP_REQUIRE_LOGIN(mfr);
+
     /*
      * @TODO This entire function is in an 'if' statement ... shouldn't
      *       it be an if (strcasecmp(...) { return } then have the rest of
@@ -182,7 +184,6 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
             }
 
             if (Prop_System(reference)
-                || !ObjExists(player)
                 || (!Wizard(player) && (Prop_SeeOnly(reference)
                 || Prop_Hidden(reference)))) {
                 show_mcp_error(mfr, "simpleedit-set", "Permission denied.");
@@ -261,7 +262,6 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
             }
 
             if (Prop_System(reference)
-                || !ObjExists(player)
                 || (!Wizard(player) && (Prop_SeeOnly(reference)
                 || Prop_Hidden(reference)))) {
                 show_mcp_error(mfr, "simpleedit-set", "Permission denied.");
@@ -291,7 +291,8 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
                 }
             } else if (!strcasecmp(valtype, "string") ||
                        !strcasecmp(valtype, "integer")) {
-                show_mcp_error(mfr, "simpleedit-set", "Bad value type for proplist.");
+                show_mcp_error(mfr, "simpleedit-set",
+                               "Bad value type for proplist.");
                 return;
             }
         } else if (!strcasecmp(category, "prog")) {
@@ -311,7 +312,7 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
                 return;
             }
 
-            if (!ObjExists(player) || !Mucker(player)) {
+            if (!Mucker(player)) {
                 show_mcp_error(mfr, "simpleedit-set", "Permission denied.");
                 return;
             }
@@ -366,7 +367,7 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
             DBDIRTY(obj);
         } else if (!strcasecmp(category, "sysparm")) {
             /* Edit tune parameters */
-            if (!ObjExists(player) || !Wizard(player)) {
+            if (!Wizard(player)) {
                 show_mcp_error(mfr, "simpleedit-set", "Permission denied.");
                 return;
             }
@@ -419,6 +420,12 @@ mcppkg_languages(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 
     if (!strcasecmp(msg->mesgname, "request")) {
         mcp_mesg_init(&omsg, "org-fuzzball-languages", "supported");
+
+        /*
+         * TODO: Shouldn't this constant MUF version be in some define?
+         *       Are we really at "version 7" or is this out of date?
+         *       Or is this just the same as the MUCK version?
+         */
         mcp_mesg_arg_append(&omsg, "languages", "muf:7.0");
         mcp_frame_output_mesg(mfr, &omsg);
         mcp_mesg_clear(&omsg);

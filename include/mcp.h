@@ -107,6 +107,20 @@ typedef struct McpFrameList_t McpFrameList;
 #define MCPFRAME_PLAYER(mfr) (((struct descriptor_data *)mfr->descriptor)->player)
 
 /**
+ * Require the user to be logged into use this MCP call.
+ *
+ * Displays a simple error if they are not logged in.
+ *
+ * @param MPI frame structure
+ */
+#define MCP_REQUIRE_LOGIN(mfr) { \
+    if (!ObjExists(((struct descriptor_data *)mfr->descriptor)->player)) { \
+        mcp_send_text(mfr, "Must be logged in\r\n"); \
+        return; \
+    } }
+
+
+/**
  * Clean up an MCP binding structure, freeing all related memory
  *
  * @param mypub the structure to clean up
