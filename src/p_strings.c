@@ -2358,6 +2358,20 @@ prim_notify_nolisten(PRIM_PROTOTYPE)
     CLEAR(oper2);
 }
 
+/**
+ * Implementation of MUF NOTIFY_EXCLUDE
+ *
+ * Takes a room ref and stack range of dbrefs (dbrefs then integer count),
+ * and finally a string to send to that room except for the given refs.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_notify_exclude(PRIM_PROTOTYPE)
 {
@@ -2459,6 +2473,20 @@ prim_notify_exclude(PRIM_PROTOTYPE)
     }
 }
 
+/**
+ * Implementation of MUF OTELL
+ *
+ * Consumes a string and broadcasts it to the current room, except for
+ * the calling player.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_otell(PRIM_PROTOTYPE)
 {
@@ -2503,6 +2531,19 @@ prim_otell(PRIM_PROTOTYPE)
     CLEAR(oper1);
 }
 
+/**
+ * Implementation of MUF INTOSTR
+ *
+ * Converts whatever is on the stack to a string.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_intostr(PRIM_PROTOTYPE)
 {
@@ -2529,6 +2570,20 @@ prim_intostr(PRIM_PROTOTYPE)
     PushString(ptr);
 }
 
+/**
+ * Implementation of MUF EXPLODE
+ *
+ * Consumes two strings, splitting the first by the second, and making
+ * a stack range of string pieces.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_explode(PRIM_PROTOTYPE)
 {
@@ -2583,6 +2638,20 @@ prim_explode(PRIM_PROTOTYPE)
     PushInt(result);
 }
 
+/**
+ * Implementation of MUF EXPLODE_ARRAY
+ *
+ * Consumes two strings, splitting the first by the second, and making
+ * a list array of string components.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_explode_array(PRIM_PROTOTYPE)
 {
@@ -2648,6 +2717,20 @@ prim_explode_array(PRIM_PROTOTYPE)
     PushArrayRaw(nu);
 }
 
+/**
+ * Implementation of MUF SUBST
+ *
+ * Consumes three strings.  The subject, the string to find, and the string
+ * to substitute it with.  Returns the first string with substitutions made.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_subst(PRIM_PROTOTYPE)
 {
@@ -2708,6 +2791,20 @@ prim_subst(PRIM_PROTOTYPE)
     PushString(buf);
 }
 
+/**
+ * Implementation of MUF INSTR
+ *
+ * Consumes two strings and returns an integer representing the first
+ * position the second string is found in the first string.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_instr(PRIM_PROTOTYPE)
 {
@@ -2746,6 +2843,20 @@ prim_instr(PRIM_PROTOTYPE)
     PushInt(result);
 }
 
+/**
+ * Implementation of MUF RINSTR
+ *
+ * Consumes two strings and returns an integer representing the last
+ * position the second string is found in the first string.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_rinstr(PRIM_PROTOTYPE)
 {
@@ -2788,6 +2899,21 @@ prim_rinstr(PRIM_PROTOTYPE)
     PushInt(result);
 }
 
+/**
+ * Implementation of MUF INSTRING
+ *
+ * Consumes two strings and returns an integer representing the first
+ * position the second string is found in the first string.  This is
+ * case insensitive.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_instring(PRIM_PROTOTYPE)
 {
@@ -2842,6 +2968,21 @@ prim_instring(PRIM_PROTOTYPE)
     PushInt(result);
 }
 
+/**
+ * Implementation of MUF RINSTRING
+ *
+ * Consumes two strings and returns an integer representing the last
+ * position the second string is found in the first string.  This is
+ * case insensitive.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_rinstring(PRIM_PROTOTYPE)
 {
@@ -2898,6 +3039,20 @@ prim_rinstring(PRIM_PROTOTYPE)
     PushInt(result);
 }
 
+/**
+ * Implementation of MUF PRONOUN_SUB
+ *
+ * Takes a ref and a string to do pronoun substitutions in.  This is a thin
+ * wrapper around pronoun_substitute.  @see pronoun_substitute
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_pronoun_sub(PRIM_PROTOTYPE)
 {
@@ -2914,7 +3069,7 @@ prim_pronoun_sub(PRIM_PROTOTYPE)
     if (oper1->data.string) {
         strcpyn(buf, sizeof(buf),
                 pronoun_substitute(fr->descr, oper2->data.objref,
-						     oper1->data.string->data));
+                                   oper1->data.string->data));
     } else {
         buf[0] = '\0';
     }
@@ -2924,6 +3079,20 @@ prim_pronoun_sub(PRIM_PROTOTYPE)
     PushString(buf);
 }
 
+/**
+ * Implementation of MUF TOUPPER
+ *
+ * Consumes a string and puts an all-upper-case version of it back on the
+ * stack.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_toupper(PRIM_PROTOTYPE)
 {
@@ -2945,6 +3114,20 @@ prim_toupper(PRIM_PROTOTYPE)
     PushString(buf);
 }
 
+/**
+ * Implementation of MUF TOLOWER
+ *
+ * Consumes a string and puts an all-lower-case version of it back on the
+ * stack.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_tolower(PRIM_PROTOTYPE)
 {
@@ -2966,6 +3149,22 @@ prim_tolower(PRIM_PROTOTYPE)
     PushString(buf);
 }
 
+/**
+ * Implementation of MUF UNPARSEOBJ
+ *
+ * Consumes a dbref and puts a string on the stack.  The string is the name
+ * with the ref and flags appended to it like "One(#1PW)"
+ *
+ * @see unparse_flags
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_unparseobj(PRIM_PROTOTYPE)
 {
@@ -2995,7 +3194,7 @@ prim_unparseobj(PRIM_PROTOTYPE)
                 if (!ObjExists(result))
                     snprintf(buf, sizeof(buf), "*INVALID*");
                 else
-                	snprintf(buf, sizeof(buf), "%s(#%d%s)", NAME(result),
+                    snprintf(buf, sizeof(buf), "%s(#%d%s)", NAME(result),
                              result, unparse_flags(result));
         }
 
@@ -3004,6 +3203,23 @@ prim_unparseobj(PRIM_PROTOTYPE)
     }
 }
 
+/**
+ * Implementation of MUF SMATCH
+ *
+ * Consumes two strings; a string and a match pattern.  Returns boolean
+ * true if the string matches the patterns.  Uses Fuzzball's home brew
+ * patterns.
+ *
+ * @see equalstr
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_smatch(PRIM_PROTOTYPE)
 {
@@ -3024,6 +3240,19 @@ prim_smatch(PRIM_PROTOTYPE)
     PushInt(result);
 }
 
+/**
+ * Implementation of MUF STRIPLEAD
+ *
+ * Consumes a string and returns that string with leading strings stripped.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_striplead(PRIM_PROTOTYPE)
 {
@@ -3041,6 +3270,19 @@ prim_striplead(PRIM_PROTOTYPE)
     PushString(pname);
 }
 
+/**
+ * Implementation of MUF STRIPTAIL
+ *
+ * Consumes a string and returns that string with ending strings stripped.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_striptail(PRIM_PROTOTYPE)
 {
@@ -3058,6 +3300,20 @@ prim_striptail(PRIM_PROTOTYPE)
     PushString(buf);
 }
 
+/**
+ * Implementation of MUF STRINGPFX
+ *
+ * Consumes two strings.  Returns boolean true if the second string is a
+ * prefix of the first string.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_stringpfx(PRIM_PROTOTYPE)
 {
@@ -3080,6 +3336,22 @@ prim_stringpfx(PRIM_PROTOTYPE)
     PushInt(result);
 }
 
+/**
+ * Implementation of MUF STRENCRYPT
+ *
+ * Consumes two strings; a string and an encryption key.  Returns
+ * encryped string.
+ *
+ * @see strencrypt
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_strencrypt(PRIM_PROTOTYPE)
 {
@@ -3103,6 +3375,22 @@ prim_strencrypt(PRIM_PROTOTYPE)
     PushString(ptr);
 }
 
+/**
+ * Implementation of MUF STRDECRYPT
+ *
+ * Consumes two strings; a string and an encryption key.  Returns
+ * decryped string.
+ *
+ * @see strencrypt
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_strdecrypt(PRIM_PROTOTYPE)
 {
@@ -3126,6 +3414,23 @@ prim_strdecrypt(PRIM_PROTOTYPE)
     PushString(ptr);
 }
 
+/**
+ * Implementation of MUF TEXTATTR
+ *
+ * Consumes two strings; a plain text string and as tring containing
+ * ANSI attributs.  Returns a string with the proper attributes.  The
+ * ANSI attributes are strings, comma separated.  Look at the man
+ * page to see the list of attributes, it will be more up to date
+ * than this comment.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_textattr(PRIM_PROTOTYPE)
 {
@@ -3265,6 +3570,25 @@ prim_textattr(PRIM_PROTOTYPE)
     PushString(buf);
 }
 
+/**
+ * Implementation of MUF TOKENSPLIT
+ *
+ * Consumes three strings; a string to split, the delimiter, and an
+ * escape character.  Instead of splitting on the whole delimiter string,
+ * any single character in the delimiter string can be used for a split.
+ *
+ * Returns the unescaped string before the found character, the raw
+ * string (escaped) after that character, and the character that
+ * was found.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_tokensplit(PRIM_PROTOTYPE)
 {
@@ -3346,6 +3670,20 @@ prim_tokensplit(PRIM_PROTOTYPE)
     }
 }
 
+/**
+ * Implementation of MUF ANSI_STRLEN
+ *
+ * Consumes a string and returns its length after stripping all ANSI escapes
+ * within it.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_ansi_strlen(PRIM_PROTOTYPE)
 {
@@ -3394,6 +3732,25 @@ prim_ansi_strlen(PRIM_PROTOTYPE)
     PushInt(i);
 }
 
+/**
+ * Implementation of MUF ANSI_STRCUT
+ *
+ * Consumes a string and an integer, and splits the string at the
+ * integer number of characters.  Pushes two strings on the stack.
+ * The first string will be empty if the integer is 0, and the second
+ * string will be empty if the integer is greater than the source string's
+ * length.
+ *
+ * This version differs from prim_strcut in that it ignores ANSI escapes.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_ansi_strcut(PRIM_PROTOTYPE)
 {
@@ -3484,6 +3841,21 @@ prim_ansi_strcut(PRIM_PROTOTYPE)
     }
 }
 
+/**
+ * Implementation of MUF ANSI_STRIP
+ *
+ * Consumes a string and returns a string with all ANSI escapes removed.
+ *
+ * @see strip_ansi
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_ansi_strip(PRIM_PROTOTYPE)
 {
@@ -3504,6 +3876,24 @@ prim_ansi_strip(PRIM_PROTOTYPE)
     PushString(buf);
 }
 
+
+/**
+ * Implementation of MUF ANSI_MIDSTR
+ *
+ * Consumes a string and two integers.  Returns a substring starting
+ * with the first integer and with a length of the second string.
+ *
+ * The difference between this and prim_midstr is this one ignores
+ * ANSI escapes.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_ansi_midstr(PRIM_PROTOTYPE)
 {
@@ -3605,6 +3995,22 @@ prim_ansi_midstr(PRIM_PROTOTYPE)
     PushString(buf);
 }
 
+/**
+ * Implementation of MUF NOTIFY_SECURE
+ *
+ * Takes a ref and two strings.  The first string is sent over the ref's
+ * secure descriptors, and the second string is sent over the ref's
+ * insecure descriptors.  Listen prop queues are only triggered with the
+ * second string.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_notify_secure(PRIM_PROTOTYPE)
 {
@@ -3657,6 +4063,20 @@ prim_notify_secure(PRIM_PROTOTYPE)
     CLEAR(oper3);
 }
 
+/**
+ * Implementation of MUF MD5HASH
+ *
+ * Consumes a string and returns a string containing the hash of the
+ * provided string.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_md5hash(PRIM_PROTOTYPE)
 {
@@ -3682,6 +4102,20 @@ prim_md5hash(PRIM_PROTOTYPE)
     PushString(p);
 }
 
+/**
+ * Implementation of MUF STRIP
+ *
+ * Consumes a string and returns the string without any leading or
+ * trailing whitespace.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_strip(PRIM_PROTOTYPE)
 {
@@ -3700,6 +4134,22 @@ prim_strip(PRIM_PROTOTYPE)
     PushString(pname);
 }
 
+/**
+ * Implementation of MUF POSE-SEPARATOR?
+ *
+ * Consumes a string and returns true if the first character is
+ * a valid pose separator.
+ *
+ * @see is_valid_pose_separator
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
 void
 prim_pose_separatorp(PRIM_PROTOTYPE)
 {
