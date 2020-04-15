@@ -107,6 +107,20 @@ typedef struct McpFrameList_t McpFrameList;
 #define MCPFRAME_PLAYER(mfr) (((struct descriptor_data *)mfr->descriptor)->player)
 
 /**
+ * Require the user to be logged into use this MCP call.
+ *
+ * Displays a simple error if they are not logged in.
+ *
+ * @param MPI frame structure
+ */
+#define MCP_REQUIRE_LOGIN(mfr) { \
+    if (!ObjExists(((struct descriptor_data *)mfr->descriptor)->player)) { \
+        mcp_send_text(mfr, "Must be logged in\r\n"); \
+        return; \
+    } }
+
+
+/**
  * Clean up an MCP binding structure, freeing all related memory
  *
  * @param mypub the structure to clean up
@@ -386,6 +400,28 @@ void mcp_package_deregister(const char *pkgname);
 void mcp_package_register(const char *pkgname, McpVer minver, McpVer maxver,
                           McpPkg_CB callback, void *context,
                           ContextCleanup_CB cleanup);
+
+/**
+ * Send some text to a given MCP Frame
+ *
+ * The send is not immediate, it is queued to the descriptor with queue_write
+ *
+ * @see queue_write
+ * 
+ * @param mfr the frame we're transmitting to
+ * @param text the message to send
+ */
+void mcp_send_text(McpFrame *mfr, const char *text);
+
+
+/**
+ * Flushes the output queue associated with the frame mfr
+ *
+ * @param mfr the frame who's output queue we are flushing
+ */
+void mcp_flush_text(McpFrame *mfr);
+
+
 
 /**
  * Compares two McpVer structs.

@@ -46,7 +46,15 @@ show_mcp_error(McpFrame * mfr, char *topic, char *text)
         mcp_frame_output_mesg(mfr, &msg);
         mcp_mesg_clear(&msg);
     } else {
-        notify(MCPFRAME_PLAYER(mfr), text);
+        /*
+         * This used to be a notify which would cause segfaults when the
+         * error happens on the login screen.  I don't think changing
+         * this to SendText (which is what notify uses under the hood, and
+         * how MCP authenticate works) will hurt anything.
+         */
+        mcp_send_text(mfr, text);
+        mcp_send_text(mfr, "\r\n");
+        mcp_flush_text(mfr);
     }
 }
 
@@ -76,6 +84,8 @@ show_mcp_error(McpFrame * mfr, char *topic, char *text)
 void
 mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 {
+    MCP_REQUIRE_LOGIN(mfr);
+
     /*
      * @TODO This entire function is in an 'if' statement ... shouldn't
      *       it be an if (strcasecmp(...) { return } then have the rest of
@@ -98,6 +108,15 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
         lines = mcp_mesg_arg_linecount(msg, "content");
         player = MCPFRAME_PLAYER(mfr);
         descr = MCPFRAME_DESCR(mfr);
+
+        /* Check for nulls to avoid attack vector */
+        if (!reference) {
+            reference = "";
+        }
+
+        if (!valtype) {
+            valtype = "";
+        }
 
         /* extract object number.  -1 for none.  */
         if (isdigit(*reference)) {
@@ -181,6 +200,11 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
                 for (int line = 0; line < lines; line++) {
                     content = mcp_mesg_arg_getline(msg, "content", line);
 
+                    /* Avoid attack vector */
+                    if (!content) {
+                        content = "";
+                    }
+
                     if (line > 0) {
                         if (left >= 1) {
                             strcatn(buf, sizeof(buf), "\r");
@@ -210,6 +234,12 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
                 }
 
                 content = mcp_mesg_arg_getline(msg, "content", 0);
+
+                /* Avoid attack vector */
+                if (!content) {
+                    content = "";
+                }
+
                 add_property(obj, reference, NULL, atoi(content));
             }
         } else if (!strcasecmp(category, "proplist")) {
@@ -261,7 +291,8 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
                 }
             } else if (!strcasecmp(valtype, "string") ||
                        !strcasecmp(valtype, "integer")) {
-                show_mcp_error(mfr, "simpleedit-set", "Bad value type for proplist.");
+                show_mcp_error(mfr, "simpleedit-set",
+                               "Bad value type for proplist.");
                 return;
             }
         } else if (!strcasecmp(category, "prog")) {
@@ -317,6 +348,7 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
                 curr = new_line;
             }
 
+            /* Player ref should be fine by now */
             unparse_object(player, obj, unparse_buf, sizeof(unparse_buf));
             log_status("PROGRAM SAVED: %s by %s(%d)",
                        unparse_buf, NAME(player), player);
@@ -346,6 +378,12 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
             }
 
             content = mcp_mesg_arg_getline(msg, "content", 0);
+
+            /* Avoid attack vector */
+            if (!content) {
+                content = " ";
+            }
+
             tune_setparm(player, reference, content, TUNE_MLEV(player));
         } else if (!strcasecmp(category, "user")) {
             /*
@@ -376,12 +414,18 @@ mcppkg_languages(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
     McpVer supp = mcp_frame_package_supported(mfr, "org-fuzzball-languages");
 
     if (supp.verminor == 0 && supp.vermajor == 0) {
-        notify(MCPFRAME_PLAYER(mfr), "MCP: org-fuzzball-languages not supported.");
+        mcp_send_text(mfr, "MCP: org-fuzzball-languages not supported.");
         return;
     }
 
     if (!strcasecmp(msg->mesgname, "request")) {
         mcp_mesg_init(&omsg, "org-fuzzball-languages", "supported");
+
+        /*
+         * TODO: Shouldn't this constant MUF version be in some define?
+         *       Are we really at "version 7" or is this out of date?
+         *       Or is this just the same as the MUCK version?
+         */
         mcp_mesg_arg_append(&omsg, "languages", "muf:7.0");
         mcp_frame_output_mesg(mfr, &omsg);
         mcp_mesg_clear(&omsg);
@@ -416,7 +460,7 @@ mcppkg_help_request(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
     McpMesg omsg;
 
     if (supp.verminor == 0 && supp.vermajor == 0) {
-        notify(MCPFRAME_PLAYER(mfr), "MCP: org-fuzzball-help not supported.");
+        mcp_send_text(mfr, "MCP: org-fuzzball-help not supported.");
         return;
     }
 
@@ -426,6 +470,15 @@ mcppkg_help_request(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
 
         onwhat = mcp_mesg_arg_getline(msg, "topic", 0);
         valtype = mcp_mesg_arg_getline(msg, "type", 0);
+
+        /* Avoid attack vector */
+        if (!onwhat) {
+            onwhat = "";
+        }
+
+        if (!valtype) {
+            valtype = "";
+        }
 
         *topic = '\0';
         strcpyn(topic, sizeof(topic), onwhat);

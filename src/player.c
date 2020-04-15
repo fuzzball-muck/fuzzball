@@ -31,20 +31,51 @@
 #include "timequeue.h"
 #include "tune.h"
 
+/**
+ * @var player_list
+ *
+ * Hash table for quick player lookups.  This is set up when the DB is
+ * loaded and maintained as players are created and deleted.
+ *
+ * This is not threadsafe but could easily be so with a mutex.
+ */
 static hash_tab player_list[PLAYER_HASH_SIZE];
 
+/**
+ * Look up a player by name
+ *
+ * Takes a name and searches the player list for that plaer.  Returns
+ * the dbref of the player or NOTHING if no player is found.  The
+ * search is case insensitive.
+ *
+ * @see find_hash
+ *
+ * @param name the name to look for
+ * @return dbref of player
+ */
 dbref
 lookup_player(const char *name)
 {
     hash_data *hd;
 
     if ((hd = find_hash(name, player_list, PLAYER_HASH_SIZE)) == NULL) {
-	return NOTHING;
+        return NOTHING;
     } else {
-	return (hd->dbval);
+        return (hd->dbval);
     }
 }
 
+/**
+ * Check a player's password
+ *
+ * Given a password, this will return true if it matches the player's
+ * password in the DB or false if it does not.  It will hash 'password'
+ * to compare it.
+ *
+ * @param player the player ref to check a password for
+ * @param password the raw password that we will hash and compare
+ * @return boolean true if the password is correct, false otherwise
+ */
 int
 check_password(dbref player, const char *password)
 {
@@ -53,24 +84,32 @@ check_password(dbref player, const char *password)
     const char *pword = PLAYER_PASSWORD(player);
 
     if (password == NULL) {
-	MD5base64(md5buf, "", 0);
-	processed = md5buf;
+        MD5base64(md5buf, "", 0);
+        processed = md5buf;
     } else {
-	if (*password) {
-	    MD5base64(md5buf, password, strlen(password));
-	    processed = md5buf;
-	}
+        if (*password) {
+            MD5base64(md5buf, password, strlen(password));
+            processed = md5buf;
+        }
     }
 
     if (!pword || !*pword)
-	return 1;
+        return 1;
 
     if (!strcmp(pword, processed))
-	return 1;
+        return 1;
 
     return 0;
 }
 
+/**
+ * Set a player's password without hashing it
+ *
+ * You usually don't want to use this call.
+ *
+ * @param player the player ref to set a password for
+ * @param password the password that will be set as-as unhashed
+ */
 void
 set_password_raw(dbref player, const char *password)
 {
@@ -78,6 +117,14 @@ set_password_raw(dbref player, const char *password)
     DBDIRTY(player);
 }
 
+/**
+ * Set a player's password
+ *
+ * This takes a 'raw' unhashed password and hashes it before setting it.
+ *
+ * @param player the player ref to set a password for
+ * @param password the password that will be hashed and set
+ */
 void
 set_password(dbref player, const char *password)
 {
@@ -85,8 +132,8 @@ set_password(dbref player, const char *password)
     const char *processed = password;
 
     if (*password) {
-	MD5base64(md5buf, password, strlen(password));
-	processed = md5buf;
+        MD5base64(md5buf, password, strlen(password));
+        processed = md5buf;
     }
 
     free((void *) PLAYER_PASSWORD(player));
@@ -94,13 +141,29 @@ set_password(dbref player, const char *password)
     set_password_raw(player, alloc_string(processed));
 }
 
+/**
+ * Create a player
+ *
+ * Takes a name and a password, and creates a player.  Returns the
+ * created player ref or NOTHING if the player could not be created
+ * because either ok_object_name or ok_password failed.
+ *
+ * tp_player_start, tp_start_pennies and tp_pcreate_flags influence player
+ * creation in what should be obvious ways.
+ *
+ * @see ok_object_name
+ * @see ok_password
+ *
+ * @param name the player name to create
+ * @param password the password that will be hashed and set
+ */
 dbref
 create_player(const char *name, const char *password)
 {
     dbref player;
 
     if (!ok_object_name(name, TYPE_PLAYER) || !ok_password(password))
-	return NOTHING;
+        return NOTHING;
 
     /* else he doesn't already exist, create him */
     player = new_object();
@@ -135,6 +198,21 @@ create_player(const char *name, const char *password)
     return player;
 }
 
+/**
+ * Toads (deletes) a player
+ *
+ * This transfers the player's posessions to 'recipient' and clears
+ * the player's various special fields.  The player is converted to a regular
+ * object which is named a "toad", which is subsequently automatically
+ * recycled if tp_toad_recycle is set.
+ *
+ * The player is kicked off if they are online.
+ *
+ * @param descr the descriptor of the player DOING the deletion
+ * @param player the player DOING the deletion
+ * @param victim the player being deleted
+ * @param recipient the person to receive victim's owned objects
+ */
 void
 toad_player(int descr, dbref player, dbref victim, dbref recipient)
 {
@@ -146,20 +224,21 @@ toad_player(int descr, dbref player, dbref victim, dbref recipient)
     for (dbref stuff = 0; stuff < db_top; stuff++) {
         if (OWNER(stuff) == victim) {
             switch (Typeof(stuff)) {
-            case TYPE_PROGRAM:
-                dequeue_prog(stuff, 0);
-                if (TrueWizard(recipient)) {
-                    FLAGS(stuff) &= ~(ABODE | WIZARD);
-                    SetMLevel(stuff, 1);
-                }
-            case TYPE_ROOM:
-            case TYPE_THING:
-            case TYPE_EXIT:
-                OWNER(stuff) = recipient;
-                DBDIRTY(stuff);
-                break;
+                case TYPE_PROGRAM:
+                    dequeue_prog(stuff, 0);
+                    if (TrueWizard(recipient)) {
+                        FLAGS(stuff) &= ~(ABODE | WIZARD);
+                        SetMLevel(stuff, 1);
+                    }
+                case TYPE_ROOM:
+                case TYPE_THING:
+                case TYPE_EXIT:
+                    OWNER(stuff) = recipient;
+                    DBDIRTY(stuff);
+                    break;
             }
         }
+
         if (Typeof(stuff) == TYPE_THING && THING_HOME(stuff) == victim) {
             THING_SET_HOME(stuff, tp_lost_and_found);
         }
@@ -191,9 +270,11 @@ toad_player(int descr, dbref player, dbref victim, dbref recipient)
 
     FLAGS(victim) = TYPE_THING;
     OWNER(victim) = player;
+
     if (tp_toad_recycle) {
         recycle(descr, player, victim);
     }
+
     SETVALUE(victim, 1);
 }
 
@@ -221,6 +302,16 @@ do_password(dbref player, const char *old, const char *newobj)
     }
 }
 
+/**
+ * Clears the player lookup hash
+ *
+ * This is used to clean up memory on shutdown; it is also used if the
+ * player hash gets inconsistent and needs to be reloaded which is a case
+ * that should never happens.
+ *
+ * The MUCK will break pretty severely if you call this but do not reload
+ * the cache afterwards.
+ */
 void
 clear_players(void)
 {
@@ -228,19 +319,45 @@ clear_players(void)
     return;
 }
 
+/**
+ * Adds a player to the player lookup cache: WARNING poorly named function
+ *
+ * This does NOT actually create a player -- @see create_player
+ *
+ * @TODO: Rename this to player_hash_add or something similar to that
+ *        to make it more clear.
+ *
+ * @param who the player ref to add to the hash
+ */
 void
 add_player(dbref who)
 {
     hash_data hd;
 
     hd.dbval = who;
+
     if (add_hash(NAME(who), hd, player_list, PLAYER_HASH_SIZE) == NULL) {
-	panic("Out of memory");
+        panic("Out of memory");
     } else {
-	return;
+        return;
     }
 }
 
+/**
+ * Deletes a player from the lookup cache: WARNING poorly named function
+ *
+ * This does not actually delete a player -- @see toad_player
+ *
+ * This will attempt to fix the player hash if it is determined to be
+ * inconsistent (i.e. if free_hash returns non-0.  @see free_hash)
+ *
+ * The wizards will be notified if there is a failure here.  @see wall_wizards
+ *
+ * @TODO: Rename this to player_hash_delete or something similar to that
+ *        to make it more clear.
+ *
+ * @param who the player to remove from the cache
+ */
 void
 delete_player(dbref who)
 {
@@ -250,56 +367,79 @@ delete_player(dbref who)
     dbref found, ren;
     int j;
 
-
     result = free_hash(NAME(who), player_list, PLAYER_HASH_SIZE);
 
     if (result) {
-	wall_wizards
-		("## WARNING: Playername hashtable is inconsistent.  Rebuilding it.  Don't panic.");
-	clear_players();
-	for (dbref i = 0; i < db_top; i++) {
-	    if (Typeof(i) == TYPE_PLAYER) {
-		found = lookup_player(NAME(i));
-		if (found != NOTHING) {
-		    ren = (i == who) ? found : i;
-		    j = 0;
-		    do {
-			snprintf(namebuf, sizeof(namebuf), "%s%d", NAME(ren), ++j);
-		    } while (lookup_player(namebuf) != NOTHING);
+        wall_wizards(
+            "## WARNING: Playername hashtable is inconsistent.  "
+            "Rebuilding it.  Don't panic."
+        );
 
-		    snprintf(buf, sizeof(buf),
-			     "## Renaming %s(#%d) to %s to prevent name collision.",
-			     NAME(ren), ren, namebuf);
-		    wall_wizards(buf);
+        clear_players();
 
-		    log_status("SANITY NAME CHANGE: %s(#%d) to %s", NAME(ren), ren, namebuf);
+        for (dbref i = 0; i < db_top; i++) {
+            if (Typeof(i) == TYPE_PLAYER) {
+                found = lookup_player(NAME(i));
 
-		    if (ren == found) {
-			free_hash(NAME(ren), player_list, PLAYER_HASH_SIZE);
-		    }
-		    change_player_name(ren, namebuf);
-		    add_player(ren);
-		} else {
-		    add_player(i);
-		}
-	    }
-	}
-	result = free_hash(NAME(who), player_list, PLAYER_HASH_SIZE);
-	if (result) {
-	    wall_wizards
-		    ("## WARNING: Playername hashtable still inconsistent.  Now you can panic.");
-	}
+                if (found != NOTHING) {
+                    ren = (i == who) ? found : i;
+                    j = 0;
+
+                    do {
+                        snprintf(namebuf, sizeof(namebuf), "%s%d", NAME(ren),
+                                 ++j);
+                    } while (lookup_player(namebuf) != NOTHING);
+
+                    snprintf(buf, sizeof(buf),
+                             "## Renaming %s(#%d) to %s to prevent name "
+                             "collision.",
+                             NAME(ren), ren, namebuf);
+
+                    wall_wizards(buf);
+
+                    log_status("SANITY NAME CHANGE: %s(#%d) to %s",
+                               NAME(ren), ren, namebuf);
+
+                    if (ren == found) {
+                        free_hash(NAME(ren), player_list, PLAYER_HASH_SIZE);
+                    }
+
+                    change_player_name(ren, namebuf);
+                    add_player(ren);
+                } else {
+                    add_player(i);
+                }
+            }
+        }
+
+        result = free_hash(NAME(who), player_list, PLAYER_HASH_SIZE);
+
+        if (result) {
+            wall_wizards(
+                "## WARNING: Playername hashtable still inconsistent.  "
+                "Now you can panic."
+            );
+        }
     }
 
     return;
 }
 
-/* Removes 'cost' value from 'who', and returns 1 if the act has been
- * paid for, else returns 0. */
+/**
+ * Causes 'who' to pay 'cost' in pennies.
+ *
+ * Removes 'cost' value from 'who', and returns 1 if the act has been
+ * paid for, else returns 0.  Wizards never pay.
+ *
+ * @param who the person or object that is paying
+ * @param cost the amount to deduct
+ * @return boolean true on success, false if who could not afford it
+ */
 int
 payfor(dbref who, int cost)
 {
     who = OWNER(who);
+
     /* Wizards don't have to pay for anything. */
     if (Wizard(who)) {
         return 1;
@@ -312,6 +452,16 @@ payfor(dbref who, int cost)
     }
 }
 
+/**
+ * Check to see if the given password is valid
+ *
+ * * Passwords cannot be blank
+ * * They cannot contain non-printable characters
+ * * And also no space characters 
+ *
+ * @param password the password to check
+ * @return boolean true if it is valid, false otherwise
+ */
 int
 ok_password(const char *password)
 {
@@ -331,6 +481,20 @@ ok_password(const char *password)
     return 1;
 }
 
+/**
+ * Change a player's name
+ *
+ * This implements the logic around tp_pname_history_threshold
+ * Name history is stored regardless of the tp_pname_history_reporting
+ * option -- that option toggles the functionality of the PNAME_HISTORY
+ * muf primitive.  @see prim_pname_history
+ *
+ * Names are expired if they are older than the tp_pname_history_threshhold.
+ * If that variable is 0, names never expire from the history.
+ *
+ * @param player the player to change the name of
+ * @param name the name to set on the player
+ */
 void
 change_player_name(dbref player, const char *name)
 {
@@ -340,14 +504,18 @@ change_player_name(dbref player, const char *name)
     time_t t, now = time(NULL), cutoff = now - tp_pname_history_threshold;
 
     if (tp_pname_history_threshold > 0) {
-	propadr = first_prop(player, PNAME_HISTORY_PROPDIR, &pptr, propname, sizeof(propname));
-	while (propadr) {
-	    t = atoi(propname);
-	    if (t > cutoff) break;
-	    snprintf(buf, sizeof(buf), "%s/%d", PNAME_HISTORY_PROPDIR, (int)t);
+        propadr = first_prop(player, PNAME_HISTORY_PROPDIR, &pptr, propname,
+                             sizeof(propname));
+        while (propadr) {
+            t = atoi(propname);
+
+            if (t > cutoff)
+                break;
+
+            snprintf(buf, sizeof(buf), "%s/%d", PNAME_HISTORY_PROPDIR, (int)t);
             propadr = next_prop(pptr, propadr, propname, sizeof(propname));
-	    remove_property(player, buf, 0);
-	}
+            remove_property(player, buf, 0);
+        }
     }
 
     snprintf(buf, sizeof(buf), "%s/%d", PNAME_HISTORY_PROPDIR, (int)now);

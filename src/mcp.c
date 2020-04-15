@@ -393,6 +393,11 @@ mcp_intern_is_mesg_start(McpFrame *mfr, const char *in)
         /* It's incomplete.  Remember it to finish later. */
         const char *msgdt = mcp_mesg_arg_getline(newmsg, MCP_DATATAG, 0);
 
+        /* Avoid attack vector */
+        if (!msgdt) {
+            msgdt = "";
+        }
+
         newmsg->datatag = strdup(msgdt);
         mcp_mesg_arg_remove(newmsg, MCP_DATATAG);
         newmsg->next = mfr->messages;
@@ -583,12 +588,11 @@ clean_mcpbinds(struct mcp_binding *mypub)
  *
  * @see queue_write
  *
- * @private
  * @param mfr the frame we're transmitting to
  * @param text the message to send
  */
-static void
-SendText(McpFrame *mfr, const char *text)
+void
+mcp_send_text(McpFrame *mfr, const char *text)
 {
     queue_write((struct descriptor_data *) mfr->descriptor, text, strlen(text));
 }
@@ -596,11 +600,10 @@ SendText(McpFrame *mfr, const char *text)
 /**
  * Flushes the output queue associated with the frame mfr
  *
- * @private
  * @param mfr the frame who's output queue we are flushing
  */
-static void
-FlushText(McpFrame *mfr)
+void
+mcp_flush_text(McpFrame *mfr)
 {
     struct descriptor_data *d = (struct descriptor_data *) mfr->descriptor;
 
@@ -1423,10 +1426,10 @@ mcp_frame_output_inband(McpFrame *mfr, const char *lineout)
     if (!mfr->enabled ||
         (strncmp(lineout, MCP_MESG_PREFIX, 3)
          && strncmp(lineout, MCP_QUOTE_PREFIX, 3))) {
-        SendText(mfr, lineout);
+        mcp_send_text(mfr, lineout);
     } else {
-        SendText(mfr, MCP_QUOTE_PREFIX);
-        SendText(mfr, lineout);
+        mcp_send_text(mfr, MCP_QUOTE_PREFIX);
+        mcp_send_text(mfr, lineout);
     }
 }
 
@@ -1564,8 +1567,8 @@ mcp_frame_output_mesg(McpFrame *mfr, McpMesg *msg)
     }
 
     /* Send the initial line. */
-    SendText(mfr, outbuf);
-    SendText(mfr, "\r\n");
+    mcp_send_text(mfr, outbuf);
+    mcp_send_text(mfr, "\r\n");
 
     if (mlineflag) {
         /*
@@ -1581,11 +1584,11 @@ mcp_frame_output_mesg(McpFrame *mfr, McpMesg *msg)
                     snprintf(outbuf, sizeof(outbuf), "%s* %s %s: %s",
                              MCP_MESG_PREFIX, datatag,
                              anarg->name, ap->value);
-                    SendText(mfr, outbuf);
-                    SendText(mfr, "\r\n");
+                    mcp_send_text(mfr, outbuf);
+                    mcp_send_text(mfr, "\r\n");
 
                     if (!--flushcount) {
-                        FlushText(mfr);
+                        mcp_flush_text(mfr);
                         flushcount = 8;
                     }
 
@@ -1596,8 +1599,8 @@ mcp_frame_output_mesg(McpFrame *mfr, McpMesg *msg)
 
         /* Let the other side know we're done sending multi-line arg vals. */
         snprintf(outbuf, sizeof(outbuf), "%s: %s", MCP_MESG_PREFIX, datatag);
-        SendText(mfr, outbuf);
-        SendText(mfr, "\r\n");
+        mcp_send_text(mfr, outbuf);
+        mcp_send_text(mfr, "\r\n");
     }
 
     return EMCP_SUCCESS;
