@@ -45,6 +45,7 @@ hash(register const char *s, unsigned int hash_size)
  * Lookup a name in a hash table
  *
  * Returns NULL if not found, otherwise a pointer to the data union.
+ * The key string comparison is case insensitive.
  *
  * @param s the string to look up
  * @param table the table to look the string up in
