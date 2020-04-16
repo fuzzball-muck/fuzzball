@@ -16,6 +16,7 @@
 #include "fbstrings.h"
 #include "inst.h"
 #include "interp.h"
+#include "log.h"
 #include "mcp.h"
 #include "mcpgui.h"
 #include "mufevent.h"

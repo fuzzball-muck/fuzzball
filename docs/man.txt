@@ -157,10 +157,10 @@ K's
   kill  
 
 L's
-  lastdescr      libraries      listeners      loc            localvar
-  location       lock?          locked?        log            log10
-  loop-example1  loop-example2  loop-example3  loops          lreverse
-  lvar           
+  lastdescr      ldup           libraries      listeners      loc
+  localvar       location       lock?          locked?        log
+  log10          loop-example1  loop-example2  loop-example3  loops
+  lreverse       lvar           
 
 M's
   match                     max_variable_count        mcp_bind
@@ -932,10 +932,10 @@ Stack Manipulation Operators|StackOps
 Stack Manipulation Operators
 
 -rot           ?dup           deep_copy      depth          dup
-dupn           fulldepth      lreverse       nip            over
-pick           pop            popn           put            reverse
-rot            rotate         shallow_copy   swap           tuck
-{              }              
+dupn           fulldepth      ldup           lreverse       nip
+over           pick           pop            popn           put
+reverse        rot            rotate         shallow_copy   swap
+tuck           {              }              
 
 ~----------------------------------------------------------------------------
 ~
@@ -991,7 +991,6 @@ TUCK ( x y -- y x y )
 Also see: OVER
 ~
 ~
-
 LDUP
 LDUP ( {?} -- {?} {?} )
 
