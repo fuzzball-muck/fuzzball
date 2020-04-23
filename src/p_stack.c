@@ -4,6 +4,7 @@
  *
  * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
  */
+
 #include <ctype.h>
 #include <limits.h>
 #include <stdio.h>

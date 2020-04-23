@@ -1,3 +1,10 @@
+/** @file p_db.h
+ *
+ * Declaration of DB related primitives for MUF.
+ *
+ * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
+ */
+
 #ifndef P_DB_H
 #define P_DB_H
 

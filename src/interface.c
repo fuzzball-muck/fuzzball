@@ -2724,7 +2724,7 @@ make_socket_v6(int port)
  * @private
  * @param lport the port this user connected to
  * @param a the address to resolve
- * @param prt boolean true if SSL, false if not
+ * @param prt port on the remote client
  * @return pointer to static buffer with host name or address in string form
  */
 static const char *
@@ -2849,7 +2849,7 @@ new_connection_v6(in_port_t port, int sock_, int is_ssl)
  * @private
  * @param lport the port this user connected to
  * @param a the address to resolve
- * @param prt boolean true if SSL, false if not
+ * @param prt the port on the remote client
  * @return pointer to static buffer with host name or address in string form
  */
 static const char *

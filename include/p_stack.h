@@ -1,3 +1,10 @@
+/** @file p_stack.h
+ *
+ * Declaration of stack related primitives for MUF.
+ *
+ * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
+ */
+
 #ifndef P_STACK_H
 #define P_STACK_H
 

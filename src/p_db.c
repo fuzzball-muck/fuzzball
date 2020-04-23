@@ -1,3 +1,10 @@
+/** @file p_db.c
+ *
+ * Implementation of DB related primitives for MUF.
+ *
+ * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
+ */
+
 #include <ctype.h>
 #include <stdlib.h>
 #include <time.h>
