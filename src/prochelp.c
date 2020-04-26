@@ -56,15 +56,22 @@
 #define HTML_ALSOSEE_ENTRY      "    <a href=\"#%s\">%s</a>"
 #define HTML_ALSOSEE_END        "\n</p>\n"
 
-// Token Replacement System
-// - replaces entire line with call to function
-// - currently does not escape HTML
-
+/**
+ * Defines a token replacement function for help entries.  When the givrn
+ * token is present in a line, the entire line is replaced with the "output"
+ * of the associated function.  Does not escape HTML.
+ */
 typedef struct {
     char *token;
     void (*func)(FILE *);
 } replacement;
 
+/**
+ * Sends the entire list of system parameters to the given file.
+ *
+ * @private
+ * @param f the file being processed.
+ */
 static void
 man_sysparm_list(FILE *f)
 {
@@ -73,11 +80,18 @@ man_sysparm_list(FILE *f)
     }
 }
 
+/**
+ * List of recognized token replacements.
+ */
 static replacement replacements[] = {
     { "%%SYSPARM_LIST%%", man_sysparm_list },
     { 0 }
 };
 
+/**
+ * @private
+ * @var Help file metadata.
+ */
 static const char *title = "";
 static const char *author = "";
 static const char *doccmd = "";
@@ -86,6 +100,7 @@ static const char *doccmd = "";
  * Copy a string from src to buf, taking into account the size of the buffer
  * and ensuring it is null terminated.
  *
+ * @private
  * @param buf Target buffer
  * @param bufsize the size of that buffer
  * @param src the source to copy from
@@ -113,6 +128,7 @@ strcpyn(char *buf, size_t bufsize, const char *src)
  * the provided pointer to the first non-space (or to the end of the string
  * as the case may be).
  *
+ * @private
  * @param parsebuf pointer to a string pointer.
  */
 static void
@@ -122,7 +138,16 @@ skip_whitespace(const char **parsebuf)
         (*parsebuf)++;
 }
 
+/**
+ * @private
+ * @var List of section names.
+ * @TODO Make the number a config parameter.
+ */
 static char sect[256] = "";
+
+/**
+ * Structure holding a list of topics.
+ */
 
 struct topiclist {
     struct topiclist *next;
@@ -217,6 +242,14 @@ add_topic(const char *str)
     ptr->next = top;
 }
 
+/**
+ * Changes < > & " in given buf to corresponding HTML entities.
+ *
+ * @private
+ * @param buf Target buffer
+ * @param buflen the size of that buffer
+ * @param in the source to copy from
+ */
 static char *
 escape_html(char *buf, size_t buflen, const char *in)
 {
@@ -246,6 +279,14 @@ escape_html(char *buf, size_t buflen, const char *in)
     return buf;
 }
 
+/**
+ * Outputs a list of section topics.
+ *
+ * @private
+ * @param f the text file being created
+ * @param hf the html file being created
+ * @param whichsect the name of the current section
+ */
 static void
 print_section_topics(FILE * f, FILE * hf, const char *whichsect)
 {
@@ -360,6 +401,13 @@ print_section_topics(FILE * f, FILE * hf, const char *whichsect)
     }
 }
 
+/**
+ * Outputs a list of section names.
+ *
+ * @private
+ * @param f the text file being created
+ * @param hf the html file being created
+ */
 static void
 print_sections(FILE * f, FILE * hf)
 {
@@ -413,6 +461,13 @@ print_sections(FILE * f, FILE * hf)
     fprintf(f, " \nUse '%s <topicname>' to get more information on a topic.\n", doccmd);
 }
 
+/**
+ * Outputs a list of topics.
+ *
+ * @private
+ * @param f the text file being created
+ * @param hf the html file being created
+ */
 static void
 print_topics(FILE * f, FILE * hf)
 {
