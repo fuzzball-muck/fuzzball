@@ -325,9 +325,9 @@ prim_nip(PRIM_PROTOTYPE)
     oper1 = POP();
     oper2 = POP();
 
-    arg[(*top)++] = *oper1;
-
     CLEAR(oper2);
+
+    arg[(*top)++] = *oper1;
 }
 
 /**
