@@ -484,8 +484,8 @@ prim_variable(PRIM_PROTOTYPE)
         abort_interp("Non-integer argument.");
 
     result = oper1->data.number;
-    push(arg, top, PROG_VAR, &result);
     CLEAR(oper1);
+    push(arg, top, PROG_VAR, &result);
 }
 
 /**
