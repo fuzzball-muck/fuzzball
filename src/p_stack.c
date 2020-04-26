@@ -511,8 +511,8 @@ prim_localvar(PRIM_PROTOTYPE)
         abort_interp("Non-integer argument.");
 
     result = oper1->data.number;
-    push(arg, top, PROG_LVAR, &result);
     CLEAR(oper1);
+    push(arg, top, PROG_LVAR, &result);
 }
 
 /**
