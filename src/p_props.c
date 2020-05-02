@@ -1152,6 +1152,9 @@ prim_propdirp(PRIM_PROTOTYPE)
     ref = oper1->data.objref;
     (void) strcpyn(buf, sizeof(buf), oper2->data.string->data);
 
+    if (!prop_read_perms(ProgUID, ref, buf, mlev))
+        abort_interp("Permission denied.");
+
     CLEAR(oper1);
     CLEAR(oper2);
 
@@ -1752,6 +1755,9 @@ prim_blessedp(PRIM_PROTOTYPE)
 
     ref = oper1->data.objref;
     (void) strcpyn(buf, sizeof(buf), oper2->data.string->data);
+
+    if (!prop_read_perms(ProgUID, ref, buf, mlev))
+        abort_interp("Permission denied.");
 
     CLEAR(oper1);
     CLEAR(oper2);
