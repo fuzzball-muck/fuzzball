@@ -436,8 +436,8 @@ static const char * get_username_v6(struct in6_addr *a, in_port_t prt,
  */
 static const char * addrout_v6(struct in6_addr *a, in_port_t prt,
                                in_port_t myprt) {
-    static char buf[128];
-    char tmpbuf[128];
+    static char buf[135];
+    char tmpbuf[135];
     const char *ptr, *ptr2;
     struct hostent *he;
 
@@ -757,8 +757,8 @@ static const char * get_username(in_addr_t a, in_port_t prt, in_port_t myprt) {
  * @return the host string
  */
 static const char * addrout(in_addr_t a, in_port_t prt, in_port_t myprt) {
-    static char buf[128];
-    char tmpbuf[128];
+    static char buf[135];
+    char tmpbuf[135];
     const char *ptr, *ptr2;
     struct hostent *he;
     struct in_addr addr;

@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 #include <time.h>
 
 #include "config.h"
@@ -24,6 +25,109 @@
 #include "interface.h"
 #include "log.h"
 #include "tune.h"
+
+/**
+ * Read a file from a directory with support for partial match
+ *
+ * Outputs the file to a player.  'topic' is a file name in
+ * directory 'd'.  If partial is true, then a partial match also
+ * works.  If the file is found we hand off to spit_file_segment.
+ *
+ * @see spit_file_segment
+ *
+ * @private
+ * @param player the player to output the file to
+ * @param dir the directory to look for topics in
+ * @param topic the file or partial file to search for
+ * @param seg the segment -- @see spit_file_segment
+ * @param partial boolean if true, allow partial file name match
+ * @return boolean true if we handed off to spit_file_segment, false otherwise
+ */
+static int
+show_subfile(dbref player, const char *dir, const char *topic, const char *seg,
+             int partial)
+{
+    char buf[BUFFER_LEN-256];
+    struct stat st;
+
+#ifdef DIR_AVAILABLE
+    DIR *df;
+    struct dirent *dp;
+#endif
+
+#ifdef WIN32
+    char *dirname;
+    int dirnamelen = 0;
+    HANDLE hFind;
+    BOOL bMore;
+    WIN32_FIND_DATA finddata;
+#endif
+
+    if (!topic || !*topic)
+        return 0;
+
+    if ((*topic == '.') || (*topic == '~') || (strchr(topic, '/'))) {
+        return 0;
+    }
+
+    if (strlen(topic) > 63)
+        return 0;
+
+#ifdef DIR_AVAILABLE
+    /* Method of operation: (1) exact match, or (2) partial match, but unique */
+    *buf = 0;
+
+    if ((df = (DIR *) opendir(dir))) {
+        while ((dp = readdir(df))) {
+            if ((partial && string_prefix(dp->d_name, topic)) ||
+                (!partial && !strcasecmp(dp->d_name, topic))) {
+                snprintf(buf, sizeof(buf), "%s/%s", dir, dp->d_name);
+                break;
+            }
+        }
+
+        closedir(df);
+    }
+
+    if (!*buf) {
+        return 0; /* no such file or directory */
+    }
+
+#elif WIN32
+    /* Method of operation: (1) exact match, or (2) partial match, but unique */
+    *buf = 0;
+
+    dirnamelen = strlen(dir) + 5;
+    dirname = malloc(dirnamelen);
+    strcpyn(dirname, dirnamelen, dir);
+    strcatn(dirname, dirnamelen, "/*.*");
+    hFind = FindFirstFile(dirname, &finddata);
+    bMore = (hFind != (HANDLE) - 1);
+
+    free(dirname);
+
+    while (bMore) {
+        if (!(finddata.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
+            if ((partial && string_prefix(finddata.cFileName, topic)) ||
+                (!partial && !strcasecmp(finddata.cFileName, topic))) {
+                snprintf(buf, sizeof(buf), "%s/%s", dir, finddata.cFileName);
+                break;
+            }
+        }
+
+        bMore = FindNextFile(hFind, &finddata);
+    }
+#else /* !DIR_AVAILABLE && !WIN32 */
+    snprintf(buf, sizeof(buf), "%s/%s", dir, topic);
+#endif
+
+    if (stat(buf, &st)) {
+        return 0;
+    } else {
+        spit_file_segment(player, buf, seg);
+        return 1;
+    }
+}
 
 /**
  * This takes a file in "index file" format and reads a given topic.

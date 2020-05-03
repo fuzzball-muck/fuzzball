@@ -935,24 +935,6 @@ void queue_write_max(struct descriptor_data *d, const char *b, size_t n,
  */
 void san_main(void);
 
-/**
- * Read a file from a directory with support for partial match
- *
- * Outputs the file to a player.  'topic' is a file name in
- * directory 'd'.  If partial is true, then a partial match also
- * works.  If the file is found we hand off to spit_file_segment.
- *
- * @see spit_file_segment
- *
- * @param player the player to output the file to
- * @param dir the directory to look for topics in
- * @param topic the file or partial file to search for
- * @param seg the segment -- @see spit_file_segment
- * @param partial boolean if true, allow partial file name match
- * @return boolean true if we handed off to spit_file_segment, false otherwise
- */
-int show_subfile(dbref player, const char *dir, const char *topic, const char *seg, int partial);
-
 #ifdef SPAWN_HOST_RESOLVER
 /**
  * Spawn the host resolver.

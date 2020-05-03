@@ -1118,7 +1118,7 @@ rand_password(void)
 static void
 create_lostandfound(dbref * player, dbref * room)
 {
-    char *player_name = "lost+found";
+    char player_name[tp_player_name_limit+1];
     char unparse_buf[16384];
     int temp = 0;
 
@@ -1309,33 +1309,13 @@ find_misplaced_objects(void)
                 case TYPE_GARBAGE:
                     NAME(loop) = "<garbage>";
                     break;
+
                 case TYPE_PLAYER: {
-                    char *name = "Unnamed";
+                    char name[tp_player_name_limit+1];
 
                     /* Loop to find a name we can use */
 
-                    /* @TODO: turn this into a for loop
-                     *
-                     *        Also, I'm pretty sure this code doesn't work
-                     *        'name' is set to a constant string.
-                     *        Then, snprintf is used to append a number
-                     *        to the string.
-                     *
-                     *        Since name is pointing to a constant, first
-                     *        off, overwriting that constant is a bad idea.
-                     *        Secondly, the size of 'name' will fit the
-                     *        string... there is no promise there will be
-                     *        extra bytes to append a number.
-                     *
-                     *        The proper way to do this would be to use
-                     *        a buffer of  and strcpy "Unnamed" into it.
-                     *        The rest of the loop.  Buffer size should
-                     *        be PLAYER_NAME_LIMIT+1
-                     *
-                     *        Due to this being a practically impossible
-                     *        condition, I'm pretty sure this code has
-                     *        never been really tested.
-                     */
+                    /* @TODO: turn this into a for loop */
                     int temp = 0;
 
                     while (lookup_player(name) != NOTHING && strlen(name) < (unsigned int)tp_player_name_limit) {
@@ -1344,8 +1324,9 @@ find_misplaced_objects(void)
 
                     NAME(loop) = alloc_string(name);
                     add_player(loop);
-            		break;
+                    break;
                 }
+
                 default:
                     NAME(loop) = alloc_string("Unnamed");
             }
