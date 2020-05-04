@@ -539,7 +539,10 @@ getref(FILE * f)
 {
     static char buf[BUFFER_LEN];
 
-    fgets(buf, sizeof(buf), f);
+    if (fgets(buf, sizeof(buf), f) == NULL) {
+        return 0;
+    }
+
     return atol(buf);
 }
 
@@ -607,14 +610,13 @@ getstring(FILE * f)
 static int
 db_read_header(FILE * f, int *grow)
 {
-    int result = 0;
     int load_format = 0;
     char *special;
 
     *grow = 0;
 
     if (do_peek(f) != '*') {
-        return result;
+        return 0;
     }
 
     special = getstring(f);
@@ -658,7 +660,9 @@ db_read_header(FILE * f, int *grow)
     char buf[BUFFER_LEN];
 
     for (int i = 0, n = getref(f); i < n; i++) {
-        fgets(buf, sizeof(buf), f);
+        if (fgets(buf, sizeof(buf), f) == NULL) {
+            return 0;
+        }
     }
 
     return load_format;
@@ -754,7 +758,9 @@ getproperties(FILE * f, dbref obj, const char *pdir)
 #endif
 
     /* get rid of first line */
-    fgets(buf, sizeof(buf), f);
+    if (fgets(buf, sizeof(buf), f) == NULL) {
+        return;
+    }
 
     /*
      * @TODO Potential bug.  So, there's two cases; the first case, initial
@@ -774,7 +780,9 @@ getproperties(FILE * f, dbref obj, const char *pdir)
      */
     if (strcmp(buf, "Props*\n")) {
         /* initialize first line stuff */
-        fgets(buf, sizeof(buf), f);
+        if (fgets(buf, sizeof(buf), f) == NULL) {
+            return;
+        }
 
         while (1) {
             /* fgets reads in \n too! */
@@ -800,7 +808,9 @@ getproperties(FILE * f, dbref obj, const char *pdir)
                 }
             }
 
-            fgets(buf, sizeof(buf), f);
+            if (fgets(buf, sizeof(buf), f) == NULL) {
+                return;
+            }
         }
     } else {
         db_getprops(f, obj, pdir);

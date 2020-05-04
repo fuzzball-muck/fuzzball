@@ -9,6 +9,7 @@
  */
 
 #include <ctype.h>
+#include <errno.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -378,11 +379,14 @@ fork_and_dump(void)
         forked_dump_process_flag = 1;
 
 #  ifdef NICEVAL
-        /* 
+        /*
          * Requested by snout of SPR, reduce the priority of the
          * dumper child.
          */
-        nice(NICEVAL);
+        errno = 0;
+        if (nice(NICEVAL) == -1 && errno != 0) {
+            log_status("could not modify process priority");
+        }
 #  endif /* NICEVAL */
 
         set_dumper_signals();
