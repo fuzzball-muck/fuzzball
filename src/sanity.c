@@ -1118,7 +1118,7 @@ rand_password(void)
 static void
 create_lostandfound(dbref * player, dbref * room)
 {
-    char *player_name = "lost+found";
+    char *player_name = (char *)malloc(tp_player_name_limit+1);
     char unparse_buf[16384];
     int temp = 0;
 
@@ -1132,7 +1132,7 @@ create_lostandfound(dbref * player, dbref * room)
     SanFixed(*room, "Using %s to resolve unknown location");
 
     while (lookup_player(player_name) != NOTHING && strlen(player_name) < (unsigned int)tp_player_name_limit) {
-        snprintf(player_name, sizeof(player_name), "lost+found%d", ++temp);
+        snprintf(player_name, tp_player_name_limit+1, "lost+found%d", ++temp);
     }
 
     if (strlen(player_name) >= (unsigned int)tp_player_name_limit) {
@@ -1167,6 +1167,8 @@ create_lostandfound(dbref * player, dbref * room)
     DBDIRTY(*room);
     DBDIRTY(*player);
     DBDIRTY(GLOBAL_ENVIRONMENT);
+
+    free(player_name);
 }
 
 /**
@@ -1309,43 +1311,25 @@ find_misplaced_objects(void)
                 case TYPE_GARBAGE:
                     NAME(loop) = "<garbage>";
                     break;
+
                 case TYPE_PLAYER: {
-                    char *name = "Unnamed";
+                    char *name = (char *)malloc(tp_player_name_limit+1);
 
                     /* Loop to find a name we can use */
 
-                    /* @TODO: turn this into a for loop
-                     *
-                     *        Also, I'm pretty sure this code doesn't work
-                     *        'name' is set to a constant string.
-                     *        Then, snprintf is used to append a number
-                     *        to the string.
-                     *
-                     *        Since name is pointing to a constant, first
-                     *        off, overwriting that constant is a bad idea.
-                     *        Secondly, the size of 'name' will fit the
-                     *        string... there is no promise there will be
-                     *        extra bytes to append a number.
-                     *
-                     *        The proper way to do this would be to use
-                     *        a buffer of  and strcpy "Unnamed" into it.
-                     *        The rest of the loop.  Buffer size should
-                     *        be PLAYER_NAME_LIMIT+1
-                     *
-                     *        Due to this being a practically impossible
-                     *        condition, I'm pretty sure this code has
-                     *        never been really tested.
-                     */
+                    /* @TODO: turn this into a for loop */
                     int temp = 0;
 
                     while (lookup_player(name) != NOTHING && strlen(name) < (unsigned int)tp_player_name_limit) {
-                        snprintf(name, sizeof(name), "Unnamed%d", ++temp);
+                        snprintf(name, tp_player_name_limit+1, "Unnamed%d", ++temp);
                     }
 
                     NAME(loop) = alloc_string(name);
                     add_player(loop);
-            		break;
+                    free(name);
+                    break;
                 }
+
                 default:
                     NAME(loop) = alloc_string("Unnamed");
             }
@@ -2107,7 +2091,9 @@ hack_it_up(void)
 
     do {
         printf("\nCommand: (? for help)\n");
-        fgets(cbuf, sizeof(cbuf), stdin);
+        if (fgets(cbuf, sizeof(cbuf), stdin) == NULL) {
+            break;
+        }
 
         switch (tolower(cbuf[0])) {
             case 's':

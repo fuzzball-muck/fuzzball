@@ -71,7 +71,8 @@ mfn_func(MFUNARGS)
         strcpyn(defbuf_copy, sizeof(defbuf_copy), i == 1 ? def : defbuf);
         snprintf(defbuf, sizeof(defbuf), "{with:%.*s,{:%d},%.*s}",
                  MAX_MFUN_NAME_LEN, ptr, i,
-                 (BUFFER_LEN - MAX_MFUN_NAME_LEN - 20), defbuf_copy);
+                 (int)(BUFFER_LEN - MAX_MFUN_NAME_LEN - strlen(ptr) - 9),
+                 defbuf_copy);
     }
 
     /* Create the new function */

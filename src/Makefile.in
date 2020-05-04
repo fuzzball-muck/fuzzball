@@ -51,7 +51,7 @@ INCLUDE=../include
 # Include path, Cflags...
 #
 INCL=-I${INCLUDE} @INC@
-CFLAGS=@CFLAGS@
+CFLAGS+=@CFLAGS@
 MV= mv -f
 CP= cp -f
 RM= rm -f
