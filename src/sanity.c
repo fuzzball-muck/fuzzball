@@ -1118,7 +1118,7 @@ rand_password(void)
 static void
 create_lostandfound(dbref * player, dbref * room)
 {
-    char player_name[tp_player_name_limit+1];
+    char *player_name = (char *)malloc(tp_player_name_limit+1);
     char unparse_buf[16384];
     int temp = 0;
 
@@ -1132,7 +1132,7 @@ create_lostandfound(dbref * player, dbref * room)
     SanFixed(*room, "Using %s to resolve unknown location");
 
     while (lookup_player(player_name) != NOTHING && strlen(player_name) < (unsigned int)tp_player_name_limit) {
-        snprintf(player_name, sizeof(player_name), "lost+found%d", ++temp);
+        snprintf(player_name, tp_player_name_limit+1, "lost+found%d", ++temp);
     }
 
     if (strlen(player_name) >= (unsigned int)tp_player_name_limit) {
@@ -1167,6 +1167,8 @@ create_lostandfound(dbref * player, dbref * room)
     DBDIRTY(*room);
     DBDIRTY(*player);
     DBDIRTY(GLOBAL_ENVIRONMENT);
+
+    free(player_name);
 }
 
 /**
@@ -1311,7 +1313,7 @@ find_misplaced_objects(void)
                     break;
 
                 case TYPE_PLAYER: {
-                    char name[tp_player_name_limit+1];
+                    char *name = (char *)malloc(tp_player_name_limit+1);
 
                     /* Loop to find a name we can use */
 
@@ -1319,11 +1321,12 @@ find_misplaced_objects(void)
                     int temp = 0;
 
                     while (lookup_player(name) != NOTHING && strlen(name) < (unsigned int)tp_player_name_limit) {
-                        snprintf(name, sizeof(name), "Unnamed%d", ++temp);
+                        snprintf(name, tp_player_name_limit+1, "Unnamed%d", ++temp);
                     }
 
                     NAME(loop) = alloc_string(name);
                     add_player(loop);
+                    free(name);
                     break;
                 }
 
@@ -2088,7 +2091,9 @@ hack_it_up(void)
 
     do {
         printf("\nCommand: (? for help)\n");
-        fgets(cbuf, sizeof(cbuf), stdin);
+        if (fgets(cbuf, sizeof(cbuf), stdin) == NULL) {
+            break;
+        }
 
         switch (tolower(cbuf[0])) {
             case 's':
