@@ -2780,7 +2780,9 @@ addrout_v6(in_port_t lport, struct in6_addr *a, in_port_t prt)
              lport);
 
     if (tp_use_hostnames) {
-        write(resolver_sock[1], buf, strlen(buf));
+        if (write(resolver_sock[1], buf, strlen(buf)) == -1) {
+            /* ignore */
+        }
     }
 #endif
     snprintf(buf, sizeof(buf), "%s(%" PRIu16 ")\n", ip6addr, prt);
@@ -2906,7 +2908,9 @@ addrout(in_port_t lport, in_addr_t a, in_port_t prt)
              (a >> 8) & 0xff, a & 0xff, prt, lport);
 
     if (tp_use_hostnames) {
-        write(resolver_sock[1], buf, strlen(buf));
+        if (write(resolver_sock[1], buf, strlen(buf)) == -1) {
+            /* ignore */
+        }
     }
 #endif
 
@@ -3726,7 +3730,10 @@ static kill_resolver(void)
 {
     int i;
 
-    write(resolver_sock[1], "QUIT\n", 5);
+    if (write(resolver_sock[1], "QUIT\n", 5) == -1) {
+        /* ignore */
+    }
+
     shutdown(resolver_sock[1], 2);
 
     /*
@@ -3770,8 +3777,12 @@ spawn_resolver(void)
     if ((global_resolver_pid = fork()) == 0) {
         close(0);
         close(1);
-        dup(resolver_sock[0]);
-        dup(resolver_sock[0]);
+
+        if (fcntl(resolver_sock[0], F_DUPFD, 0) == -1
+                || fcntl(resolver_sock[0], F_DUPFD, 0) == -1) {
+            log_status("Unable to spwan host resolver! (dup)");
+            return;
+        }
 
         /*
          * The way this works -- the first execl that actually loads
@@ -3801,7 +3812,7 @@ spawn_resolver(void)
         execl("/usr/bin/resolver", "resolver", NULL);
         execl("./fb-resolver", "resolver", NULL);
         execl("./resolver", "resolver", NULL);
-        log_status("%s", "Unable to spawn host resolver!");
+        log_status("%s", "Unable to spawn host resolver! (path)");
         _exit(1);
     }
 }
@@ -6928,9 +6939,16 @@ main(int argc, char **argv)
 # ifndef WIN32
         if (!sanity_interactive && !db_conversion_flag && !no_detach_flag) {
             /* Detach from the TTY, log whatever output we have... */
-            freopen(tp_file_log_stderr, "a", stderr);
+            if (freopen(tp_file_log_stderr, "a", stderr) == NULL) {
+                log_status("could not redirect stderr");
+            }
+
             setbuf(stderr, NULL);
-            freopen(tp_file_log_stdout, "a", stdout);
+
+            if (freopen(tp_file_log_stdout, "a", stdout) == NULL) {
+                log_status("could not redirect stdout");
+            }
+
             setbuf(stdout, NULL);
 
             /* Disassociate from Process Group */
@@ -6959,9 +6977,16 @@ main(int argc, char **argv)
 
 #ifdef WIN32
         if (!sanity_interactive && !db_conversion_flag && freeconsole) {
-            freopen(tp_file_log_stderr, "a", stderr);
+            if (freopen(tp_file_log_stderr, "a", stderr) == NULL) {
+                log_status("could not redirect stderr");
+            }
+
             setbuf(stderr, NULL);
-            freopen(tp_file_log_stdout, "a", stdout);
+
+            if (freopen(tp_file_log_stdout, "a", stdout) == NULL) {
+                log_status("could not redirect stdout");
+            }
+
             setbuf(stdout, NULL);
         }
 #endif
