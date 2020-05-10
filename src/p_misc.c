@@ -827,8 +827,6 @@ prim_fork(PRIM_PROTOTYPE)
  *
  * Returns the current program's PID.
  *
- * @see add_muf_delay_event
- *
  * @param player the player running the MUF program
  * @param program the program being run
  * @param mlev the effective MUCKER level
