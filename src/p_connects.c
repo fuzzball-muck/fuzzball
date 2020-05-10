@@ -1190,7 +1190,7 @@ prim_descr_array(PRIM_PROTOTYPE)
 
             array_setitem(&newarr, &temp1, &temp2);
         }
-
+	} else {
         darr = get_player_descrs(ref, &dcount);
         newarr = new_array_packed(dcount, fr->pinning);
 
