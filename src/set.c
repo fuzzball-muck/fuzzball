@@ -594,8 +594,8 @@ restricted(dbref player, dbref thing, object_flag_type flag)
         case QUELL:
 #ifdef GOD_PRIV
             /* Only God (or God's stuff) can quell or unquell another wizard. */
-            return (God(OWNER(player)) || (TrueWizard(thing) && (thing != player) &&
-                    Typeof(thing) == TYPE_PLAYER));
+            return (TrueWizard(thing) && (thing != player) && !God(OWNER(player)) &&
+                    (Typeof(thing) == TYPE_PLAYER));
 #else
             /* You cannot quell or unquell another wizard. */
             return (TrueWizard(thing) && (thing != player) && (Typeof(thing) == TYPE_PLAYER));
