@@ -4,6 +4,8 @@ addons:
     packages:
     # For OpenSSL support
     - libssl-dev
+    # For tests
+    - python3-yaml
 
 language: c
 
@@ -34,3 +36,5 @@ script:
   - make
   # Check whether install works
   - make install
+  # Run some automated tests
+  - cd tests && python3 command_test.py
