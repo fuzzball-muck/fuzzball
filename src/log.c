@@ -49,7 +49,7 @@ vlog2file(int prepend_time, const char *filename, char *format, va_list args)
         if (prepend_time)
             strftime(buf, 32, "%Y-%m-%dT%H:%M:%S", localtime(&lt));
 
-        fprintf(fp, "%.32s: ", buf);
+        fprintf(stderr, "%.32s: ", buf);
         vfprintf(stderr, format, args);
     } else {
         if (prepend_time) {
