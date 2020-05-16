@@ -6920,7 +6920,7 @@ main(int argc, char **argv)
         }
     }
 
-    if (numports < 1) {
+    if (!console_flag && numports < 1) {
         numports = 1;
     }
 
