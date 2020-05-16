@@ -23,6 +23,7 @@ def _asyncio_run(coro):
         asyncio.run(coro)
     else:
         loop = asyncio.events.new_event_loop()
+        asyncio.set_event_loop(loop)
         return loop.run_until_complete(coro)
 
 class ServerTestBase(unittest.TestCase):
