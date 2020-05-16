@@ -105,7 +105,7 @@ struct text_queue {
 
 struct descriptor_data {
     int descriptor;         /* Descriptor                          */
-    int is_console;         /* If set, descriptor corresponds to console */
+    int is_console;         /* If set, descriptor corresponds to the console */
     int output_descriptor;  /* If not -1, descriptor for output */
                             /* usually same as descriptor, exists to support console */
     int connected;          /* Is playing? (has gotten past login) */

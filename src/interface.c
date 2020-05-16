@@ -275,12 +275,13 @@ static struct descriptor_data *descr_lookup_table[FD_SETSIZE];
  */
 static int no_detach_flag = 0;
 
+#ifndef WIN32
 /**
  * @private
  * @var If true, treat the console (stdin/stdout) as a connected port.
  */
-
 static int console_flag = 0;
+#endif
 
 /**
  * @private
@@ -397,7 +398,9 @@ show_program_usage(char *prog)
 "        -nodetach        do not detach server process\n"
 "        -resolver PATH   path to fb-resolver program\n"
 "        -version         display this server's version.\n"
-"        -console         treat stdin/stdout to the server as a connection.\n"
+#ifndef WIN32
+"        -console         treat stdin/stdout to the server as a connection. implies -nodetach.\n"
+#endif
 "        -help            display this message.\n"
 #ifdef WIN32
 "        -freeconsole     free the console window and run in the background\n"
@@ -2648,6 +2651,7 @@ initializesock(int s, int output_s, const char *hostname, int is_ssl, int is_con
     return d;
 }
 
+#ifndef WIN32
 /**
  * Create a descriptor to represent the console
  */
@@ -2657,6 +2661,7 @@ connect_console() {
     d = initializesock(STDIN_FILENO, STDOUT_FILENO, "console(console)", 0, 1);
     update_max_descriptor(d->descriptor);
 }
+#endif
 
 /**
  * Create an IPv6 socket and bind it to the given port
@@ -4004,9 +4009,11 @@ shovechars()
 
     (void) time(&now);
 
+#ifndef WIN32
     if (console_flag) {
         connect_console();
     }
+#endif
 
     /* And here, we do the actual player-interaction loop */
     while (shutdown_flag == 0) {
@@ -4032,8 +4039,11 @@ shovechars()
                 process_output(d);
                 int was_console = d->is_console;
                 shutdownsock(d);
-                if (was_console)
+#ifndef WIN32
+                if (was_console) {
                     connect_console();
+                }
+#endif
             }
         }
 
@@ -6888,9 +6898,11 @@ main(int argc, char **argv)
                 no_detach_flag = 1;
             } else if (!strcmp(argv[i], "-resolver")) {
                 strcpyn(resolver_program, sizeof(resolver_program), argv[++i]);
+#ifndef WIN32
             } else if (!strcmp(argv[i], "-console")) {
                 console_flag = 1;
                 no_detach_flag = 1;
+#endif
             } else if (!strcmp(argv[i], "--")) {
                 nomore_options = 1;
             } else {
@@ -6920,9 +6932,15 @@ main(int argc, char **argv)
         }
     }
 
+#ifdef WIN32
+    if (numports < 1) {
+        numports = 1;
+    }
+#else
     if (!console_flag && numports < 1) {
         numports = 1;
     }
+#endif
 
     if (!infile_name || !outfile_name) {
         show_program_usage(*argv);
