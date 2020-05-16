@@ -277,6 +277,13 @@ static int no_detach_flag = 0;
 
 /**
  * @private
+ * @var If true, treat the console (stdin/stdout) as a connected port.
+ */
+
+static int console_flag = 0;
+
+/**
+ * @private
  * @var Path to resolver path -- may be empty string to hunt for it.
  *
  * @TODO This variable is assumed to be filled with '\0' initially, which
@@ -390,6 +397,7 @@ show_program_usage(char *prog)
 "        -nodetach        do not detach server process\n"
 "        -resolver PATH   path to fb-resolver program\n"
 "        -version         display this server's version.\n"
+"        -console         treat stdin/stdout to the server as a connection.\n"
 "        -help            display this message.\n"
 #ifdef WIN32
 "        -freeconsole     free the console window and run in the background\n"
@@ -2135,7 +2143,7 @@ socket_write(struct descriptor_data * d, const void *buf, size_t count)
     if (!d->ssl_session) {
 #endif
         /* If no SSL, this is the only line in this function */
-        return write(d->descriptor, buf, count);
+        return write(d->output_descriptor, buf, count);
 #ifdef USE_SSL
     } else {
         i = SSL_write(d->ssl_session, buf, count);
@@ -2438,8 +2446,10 @@ shutdownsock(struct descriptor_data *d)
                    d->descriptor, d->hostname, d->username);
     }
 
-    shutdown(d->descriptor, 2);
-    close(d->descriptor);
+    if (!d->is_console) {
+        shutdown(d->descriptor, 2);
+        close(d->descriptor);
+    }
     forget_descriptor(d);
     freeqs(d);
     *d->prev = d->next;
@@ -2556,12 +2566,14 @@ void make_cloexec(int s)
  *
  * @private
  * @param s the descriptor socket
+ * @param output_s alternate descriptor for output (usually same as s)
  * @param hostname the descriptor host name
  * @param is_ssl boolean, is SSL connection or not?
+ * @param is_console boolean, does this represent console
  * @return the initialized descriptor struct.
  */
 static struct descriptor_data *
-initializesock(int s, const char *hostname, int is_ssl)
+initializesock(int s, int output_s, const char *hostname, int is_ssl, int is_console)
 {
     struct descriptor_data *d;
     char buf[128], *ptr;
@@ -2572,6 +2584,8 @@ initializesock(int s, const char *hostname, int is_ssl)
     memset(d, 0, sizeof(struct descriptor_data));
 
     d->descriptor = s;
+    d->output_descriptor = output_s;
+    d->is_console = is_console;
 
 #ifdef USE_SSL
     d->pending_ssl_write.tail = &d->pending_ssl_write.head;
@@ -2632,6 +2646,16 @@ initializesock(int s, const char *hostname, int is_ssl)
 
     welcome_user(d);
     return d;
+}
+
+/**
+ * Create a descriptor to represent the console
+ */
+static void
+connect_console() {
+    struct descriptor_data *d;
+    d = initializesock(STDIN_FILENO, STDOUT_FILENO, "console(console)", 0, 1);
+    update_max_descriptor(d->descriptor);
 }
 
 /**
@@ -2824,7 +2848,7 @@ new_connection_v6(in_port_t port, int sock_, int is_ssl)
         strcpyn(hostname, sizeof(hostname), addrout_v6(port, &(addr.sin6_addr), addr.sin6_port));
         log_status("ACCEPT: %s on descriptor %d", hostname, newsock);
         log_status("CONCOUNT: There are now %d open connections.", ++ndescriptors);
-        return initializesock(newsock, hostname, is_ssl);
+        return initializesock(newsock, newsock, hostname, is_ssl, 0);
     }
 }
 
@@ -3044,7 +3068,7 @@ new_connection(in_port_t port, int sock_, int is_ssl)
         log_status("ACCEPT: %s on descriptor %d", hostname, newsock);
         log_status("CONCOUNT: There are now %d open connections.",
                    ++ndescriptors);
-        return initializesock(newsock, hostname, is_ssl);
+        return initializesock(newsock, newsock, hostname, is_ssl, 0);
     }
 }
 
@@ -3066,7 +3090,7 @@ send_keepalive(struct descriptor_data *d)
     };
 
     /* drastic, but this may give us crash test data */
-    if (!d || !d->descriptor) {
+    if (!d || (!d->is_console && !d->descriptor)) {
         panic("send_keepalive(): bad descriptor or connect struct !");
     }
 
@@ -3980,6 +4004,10 @@ shovechars()
 
     (void) time(&now);
 
+    if (console_flag) {
+        connect_console();
+    }
+
     /* And here, we do the actual player-interaction loop */
     while (shutdown_flag == 0) {
         gettimeofday(&current_time, (struct timezone *) 0);
@@ -4002,7 +4030,10 @@ shovechars()
                 }
 
                 process_output(d);
+                int was_console = d->is_console;
                 shutdownsock(d);
+                if (was_console)
+                    connect_console();
             }
         }
 
@@ -5091,7 +5122,7 @@ int
 process_output(struct descriptor_data *d)
 {
     /* drastic, but this may give us crash test data */
-    if (!d || !d->descriptor) {
+    if (!d || (!d->is_console && !d->descriptor)) {
         panic("process_output(): bad descriptor or connect struct !");
         return 0; /* Panic exits the process, but this is here for sanity */
     }
@@ -5203,11 +5234,13 @@ close_sockets(const char *msg)
 
         socket_write(d, msg, strlen(msg));
         socket_write(d, shutdown_message, strlen(shutdown_message));
+    
+        if (!d->is_console) {
+            if (shutdown(d->descriptor, 2) < 0)
+                perror("shutdown");
 
-        if (shutdown(d->descriptor, 2) < 0)
-            perror("shutdown");
-
-        close(d->descriptor);
+            close(d->descriptor);
+        }
         freeqs(d);
 
 #ifdef USE_SSL
@@ -6855,6 +6888,9 @@ main(int argc, char **argv)
                 no_detach_flag = 1;
             } else if (!strcmp(argv[i], "-resolver")) {
                 strcpyn(resolver_program, sizeof(resolver_program), argv[++i]);
+            } else if (!strcmp(argv[i], "-console")) {
+                console_flag = 1;
+                no_detach_flag = 1;
             } else if (!strcmp(argv[i], "--")) {
                 nomore_options = 1;
             } else {
