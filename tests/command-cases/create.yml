@@ -1,0 +1,56 @@
+- name: link
+  setup: |
+    @dig IdTwo
+    @open foo;bar=#2=property
+  commands: | 
+    ex me=_reg/property
+    ex bar
+  expect:
+    - "Destination: IdTwo.*"
+    - "- ref /_reg/property:foo;bar\\(#3"
+
+- name: link-multilink
+  setup: |
+    @dig IdTwo
+    @create IdThree
+    @open foo;bar=#2;#3=property
+  commands: |
+    ex bar
+    ex me=_reg/property
+  expect:
+    - "Destination: IdTwo.*"
+    - "Destination: IdThree.*"
+    - "- ref /_reg/property:foo;bar\\(#4"
+
+- name: clone
+  setup: |
+    @create Foo
+    @desc Foo={null:to preserve}
+    @propset Foo=dbref:~protectedprop:#0
+    @propset Foo=lock:_lockprop:me
+    @set Foo=@secretprop:secretvalue
+    @set Foo=_proplist/a:foo
+    @set Foo=_proplist/b:bar
+    @clone Foo
+  commands: |
+    ex #3
+    ex #3=/
+    ex #3=_proplist/
+  expect:
+    - "Type: THING"
+    - "Foo\\(#3"
+    - "{null:to preserve}"
+    - "- str /@secretprop:secretvalue"
+    - "- ref /~protectedprop:Room Zero"
+    - "- lok /_lockprop:One"
+    - "- str /_proplist/a:foo"
+    - "- str /_proplist/b:bar"
+
+- name: attach
+  commands: |
+    @act foo=me
+    @attach foo=#0
+    ex foo
+  expect: |
+    Source: Room Zero.*
+

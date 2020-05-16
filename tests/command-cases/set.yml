@@ -1,0 +1,169 @@
+- name: create 
+  setup: |
+    @create Foo
+  commands: |
+    ex Foo
+  expect: |
+    Foo\(#2\)\s+Owner: One.*
+    (?s:.)*
+    Location: One\(#1.*
+
+- name: rename
+  setup: |
+    @create Foo
+    @name Foo=Bar
+  commands: |
+    ex Bar
+  expect: |
+    Bar\(#2\).*
+
+- name: prohibited-rename
+  commands: |
+    @create Foo
+    @name Foo=me
+  expect: |
+    That is not a reasonable name.*
+
+- name: relink
+  setup: |
+    @dig IdTwo
+    @dig IdThree
+    @open foo=#2
+    @relink foo=#3
+  commands: |
+    ex foo
+  expect: |
+    Destination: IdThree.*
+
+- name: relink-multilink
+  setup: |
+    @dig IdTwo
+    @dig IdThree
+    @create IdFour
+    @open foo=#2
+    @relink foo=#3;#4
+  commands: |
+    ex foo
+  expect: |
+    Destination: IdThree.*
+    Destination: IdFour.*
+
+- name: failed-multilink
+  setup: |
+    @dig IdTwo
+    @dig IdThree
+    @program IdFour.muf
+    q
+    @open foo=#2
+  commands: |
+    @relink foo=#3;#4
+    ex foo
+  expect:
+    - "Only one.*"
+    - "Destination IdFour.muf.*ignored"
+    - "Destination: IdTwo"
+
+- name: relink-loop
+  setup: |
+    @dig IdTwo
+    @dig IdThree
+    @open IdFour=IdTwo
+    @open IdFive=IdFour
+    @open IdSix=IdFive
+  commands: |
+    @relink IdFour=IdSix
+    ex IdFour
+  expect:
+    - "would create a loop"
+    - "Destination: IdTwo"
+
+- name: set-simple-str1
+  setup: |
+    @set me=_test:foo
+  commands: |
+    ex me=_test
+  expect: |
+    - str /_test:foo
+    1 property listed\.
+
+- name: set-simple-str2
+  setup: |
+    @propset me=str:_test:foo
+  commands: |
+    ex me=_test
+  expect: |
+    - str /_test:foo
+    1 property listed\.
+
+- name: set-simple-int
+  setup: |
+    @propset me=int:_test:42
+  commands: |
+    ex me=_test
+  expect: |
+    - int /_test:42
+    1 property listed\.
+
+- name: set-simple-float
+  setup: |
+    @propset me=float:_test:42.5
+  commands: |
+    ex me=_test
+  expect: |
+    - flt /_test:42.5
+    1 property listed\.
+
+- name: set-simple-dbref
+  setup: |
+    @propset me=dbref:_test:#1
+  commands: |
+    ex me=_test
+  expect: |
+    - ref /_test:One.*
+    1 property listed\.
+
+- name: propset-erase
+  setup: |
+    @set me=_test:foo
+    @propset me=erase:_test
+  commands: |
+    ex me=_test
+  expect: |
+    0 properties listed\.
+
+- name: propset-erase-propdir
+  setup: |
+    @set me=_test:foo
+    @set me=_test/bar:foo
+    @propset me=erase:_test
+  commands: |
+    ex me=_test
+  expect: |
+    0 properties listed\.
+
+- name: set-clear
+  setup: |
+    @create Foo
+    @set Foo=_/foo/bar/baz:test
+    @set Foo=:clear
+  commands: |
+    ex Foo=/
+  expect: |
+    0 properties listed\.
+
+- name: set-clear-priv
+  setup: |
+    @create Foo
+    @set Foo=~specialprop:foo
+    @set Foo=_abb/~special:bar
+    @set me=QUELL
+    @set Foo=:clear
+    @set me=!QUELL
+    @set Foo=_aaa:before
+    @set Foo=_bbb:after
+  commands: |
+    ex Foo=/
+  expect: |
+    - str /_aaa:before
+    - str /_bbb:after
+    - str /~specialprop:foo
