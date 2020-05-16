@@ -1,4 +1,5 @@
 import asyncio
+import asyncio.events
 import os.path
 import re
 import subprocess
@@ -16,6 +17,13 @@ cached_server_options = None
 
 def _text(b):
     return b.decode('UTF-8', errors='replace')
+
+def _asyncio_run(coro):
+    if hasattr(asyncio, 'run'):
+        asyncio.run(coro)
+    else:
+        loop = asyncio.events.new_event_loop()
+        return loop.run_until_complete(coro)
 
 class ServerTestBase(unittest.TestCase):
     input_database = os.path.join(SOURCE_ROOT_DIR, 'dbs/minimal/data/minimal.db')
@@ -131,7 +139,7 @@ class ServerTestBase(unittest.TestCase):
 
 class CommandTestCase(ServerTestBase):
     def test_command(self):
-        output = asyncio.run(self._run_command(
+        output = _asyncio_run(self._run_command(
             self._setup.encode('UTF-8') +
             b'\n!pose ENDSETUP\n' +
             self._commands.encode('UTF-8')
