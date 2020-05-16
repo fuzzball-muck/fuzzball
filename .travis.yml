@@ -37,4 +37,4 @@ script:
   # Check whether install works
   - make install
   # Run some automated tests
-  - cd tests && python3 command_test.py
+  - cd tests && python3 command_test.py -b
