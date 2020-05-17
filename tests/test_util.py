@@ -102,7 +102,10 @@ class ServerTestBase(unittest.TestCase):
     
 
     async def _read_to_prompt(self, prompt):
-        text = await self.process.stdout.readuntil(prompt)
+        try:
+            text = await self.process.stdout.readuntil(prompt)
+        except asyncio.IncompleteReadError as e:
+            text = e.partial
         self.current_stdout += text
         return text
     
