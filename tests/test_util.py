@@ -98,7 +98,7 @@ class ServerTestBase(unittest.TestCase):
         )
         self.current_stdout = b''
         self.current_stderr = b''
-        self.stderr_future = self.process.stderr.read()
+        self.stderr_future = asyncio.create_task(self.process.stderr.read())
     
 
     async def _read_to_prompt(self, prompt):
@@ -106,15 +106,18 @@ class ServerTestBase(unittest.TestCase):
             text = await self.process.stdout.readuntil(prompt)
         except asyncio.IncompleteReadError as e:
             text = e.partial
+        print("read from server:\n{}".format(_text(text)))
         self.current_stdout += text
         return text
     
     async def _read_to_eof(self):
         text = await self.process.stdout.read()
+        print("read from server:\n{}".format(_text(text)))
         self.current_stdout += text
         return text
 
     async def _write_and_await_prompt(self, input, prompt=None):
+        print("writing to server:\n{}".format(_text(input)))
         self.process.stdin.write(input)
         _, text = await asyncio.gather(
             self.process.stdin.drain(),
@@ -130,55 +133,48 @@ class ServerTestBase(unittest.TestCase):
         )
    
     async def _run_command(self, command):
-        await self._start()
-        await self._write_and_await_prompt(self.connect_string, self.connect_prompt)
-        output = await self._write_and_await_prompt(command + self.done_command_command, self.done_command_prompt)
-        await self._write_and_await_prompt(self.finish_string)
-        await self._finish()
-        print("server stdout:\n{}\nserver stderr:\n{}".format(
-            _text(self.current_stdout), _text(self.current_stderr)
-        ))
+        try:
+            await self._start()
+            await self._write_and_await_prompt(self.connect_string, self.connect_prompt)
+            output = await self._write_and_await_prompt(command + self.done_command_command, self.done_command_prompt)
+            await self._write_and_await_prompt(self.finish_string)
+            await self._finish()
+        finally:
+            print("server stderr:\n{}".format(_text(self.current_stderr)))
         return output 
 
 
 class CommandTestCase(ServerTestBase):
-    def test_command(self):
+    def _test_one(self, info):
+        setup = info.get('setup', '')
+        commands = info['commands'] 
+        expect = info['expect']
         output = _asyncio_run(self._run_command(
-            self._setup.encode('UTF-8') +
+            setup.encode('UTF-8') +
             b'\n!pose ENDSETUP\n' +
-            self._commands.encode('UTF-8')
+            commands.encode('UTF-8')
         ))
         output = output.decode('UTF-8', errors='replace')
         output = output.replace('\r\n', '\n')
         output = output.split('One ENDSETUP\n', 2)[1]
-        for item in self._expect:
+        for item in info['expect']:
             self.assertRegex(output, item)
+    
+    def id(self):
+        return self.name
 
-def _generate_command_test(base, info):
+def _create_command_test_from(base_class, source_file, info):
     expect = info['expect']
     if isinstance(expect, str):
         expect = [expect]
-    return type(
-        base + ':' + info['name'],
-        (CommandTestCase,),
-        {
-            '_commands': info['commands'],
-            '_setup': info.get('setup', ''),
-            '_expect': expect
-        }
+    info['expect'] = expect
+    setattr(base_class, 
+        'test_' + info['name'],
+        lambda self: self._test_one(info)
     )
-        
 
-def suite_for_commands_in(yaml_file, loader=None):
-    suite = unittest.TestSuite()
-    if not loader:
-        loader = unittest.TestLoader()
+def create_command_tests_for(base_class, yaml_file):
     with open(yaml_file, 'r') as fh:
         lst = yaml.load(fh)
     for item in lst:
-        suite.addTests(
-            loader.loadTestsFromTestCase(_generate_command_test(yaml_file, item))
-        )
-    return suite
-
-        
+        _create_command_test_from(base_class, yaml_file, item)
