@@ -1005,6 +1005,9 @@ CrT_realloc(void *p, size_t size, const char *file, int line)
 void
 CrT_free(void *p, const char *file, int line)
 {
+    if (!p)
+        return;
+
     Header m = ((Header) p) - 1;
     Block b = m->b;
 
