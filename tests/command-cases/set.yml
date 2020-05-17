@@ -3,10 +3,11 @@
     @create Foo
   commands: |
     ex Foo
-  expect: |
-    Foo\(#2\)\s+Owner: One.*
-    (?s:.)*
-    Location: One\(#1.*
+  expect:
+    - |
+      Foo\(#2\)\s+Owner: One.*
+    - |
+      Location: One\(#1.*
 
 - name: rename
   setup: |

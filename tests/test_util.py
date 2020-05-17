@@ -20,7 +20,7 @@ def _text(b):
 
 def _asyncio_run(coro):
     if hasattr(asyncio, 'run'):
-        asyncio.run(coro)
+        return asyncio.run(coro)
     else:
         loop = asyncio.events.new_event_loop()
         asyncio.set_event_loop(loop)
