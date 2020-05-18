@@ -55,7 +55,7 @@ typedef struct array_tree_t {
  */
 typedef struct stk_array_list_t {
     struct stk_array_list_t *next;  /**< Linked list next */
-    struct stk_array_list_y *prev;  /**< Linked list prev */
+    struct stk_array_list_t *prev;  /**< Linked list prev */
 } stk_array_list;
 
 /**

@@ -757,7 +757,7 @@ struct tune_entry tune_list[] = {
         "",
         TP_TYPE_STRING,
         .defaultval.s="data/info/",
-        .currentval.s=&tp_file_info_dir
+        .currentval.s=&tp_file_info_dir,
          MLEV_WIZARD,
          MLEV_GOD,
          true

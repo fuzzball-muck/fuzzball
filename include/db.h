@@ -1322,7 +1322,7 @@ struct player_specific {
  */
 #define ALLOC_THING_SP(x)       { \
     PLAYER_SP(x) = \
-        (struct player_specific *)malloc(sizeof(struct player_specific));
+        (struct player_specific *)malloc(sizeof(struct player_specific)); \
 }
 
 /**
