@@ -971,13 +971,15 @@ noisy_match_result(struct match_data * md)
 
     switch (match = match_result(md)) {
         case NOTHING:
-            notifyf_nolisten(md->match_who,
-                             match_msg_nomatch(md->match_name));
+            notify_nolisten(md->match_who,
+                            match_msg_nomatch(md->match_name),
+                            1);
             return NOTHING;
 
         case AMBIGUOUS:
-            notifyf_nolisten(md->match_who,
-                             match_msg_ambiguous(md->match_name));
+            notify_nolisten(md->match_who,
+                            match_msg_ambiguous(md->match_name),
+                            1);
             return NOTHING;
 
         default:
