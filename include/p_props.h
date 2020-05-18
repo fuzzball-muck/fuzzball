@@ -487,6 +487,9 @@ void prim_parsempiblessed(PRIM_PROTOTYPE);
  */
 void prim_prop_name_okp(PRIM_PROTOTYPE);
 
+/**
+ * Primitive callback functions
+ */
 #define PRIMS_PROPS_FUNCS prim_getpropval, prim_getpropstr, prim_remove_prop, \
    prim_envprop, prim_envpropstr, prim_addprop, prim_nextprop, prim_propdirp, \
    prim_parseprop, prim_getprop, prim_setprop, prim_getpropfval, \
@@ -494,6 +497,9 @@ void prim_prop_name_okp(PRIM_PROTOTYPE);
    prim_reflist_find, prim_reflist_add, prim_reflist_del, prim_blessedp, \
    prim_parsepropex, prim_parsempi, prim_parsempiblessed, prim_prop_name_okp
 
+/**
+ * Primitive names - must be in same order as the callback functions
+ */
 #define PRIMS_PROPS_NAMES "GETPROPVAL", "GETPROPSTR", "REMOVE_PROP",  \
     "ENVPROP", "ENVPROPSTR", "ADDPROP", "NEXTPROP", "PROPDIR?", \
     "PARSEPROP", "GETPROP", "SETPROP", "GETPROPFVAL", \

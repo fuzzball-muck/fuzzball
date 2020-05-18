@@ -103,7 +103,7 @@ void send_contents(int descr, dbref loc, dbref dest);
  *
  * @param descr the descriptor associated with the person doing the action
  * @param thing the thing to return home
- * @param puppethome if true, and thing is a THING, sweep its contents
+ * @param homepuppet if true, and thing is a THING, sweep its contents
  */
 void send_home(int descr, dbref thing, int homepuppet);
 

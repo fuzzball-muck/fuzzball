@@ -19,13 +19,13 @@
 /*
  * Error results.
  */
-#define EGUINOSUPPORT -1    /* This connection doesn't support GUI MCP */
-#define EGUINODLOG    -2    /* No dialog exists with the given ID. */
+#define EGUINOSUPPORT -1    /**< This connection doesn't support GUI MCP */
+#define EGUINODLOG    -2    /**< No dialog exists with the given ID. */
 
-/* The MCP package name. */
+/** The MCP package name. */
 #define GUI_PACKAGE   "org-fuzzball-gui"
 
-/* Used in list related commands to refer to the end of a list. */
+/** Used in list related commands to refer to the end of a list. */
 #define GUI_LIST_END  -1
 
 /*
@@ -33,46 +33,140 @@
  *
  * Cardinal directions are used for GUI layouts.
  */
-#define GUI_STICKY_MASK  0xF
-#define GUI_N     0x1
-#define GUI_S     0x2
-#define GUI_E     0x4
-#define GUI_W     0x8
-#define GUI_NS (GUI_N | GUI_S)
-#define GUI_NW (GUI_N | GUI_W)
-#define GUI_NE (GUI_N | GUI_E)
-#define GUI_SE (GUI_E | GUI_S)
-#define GUI_SW (GUI_W | GUI_S)
-#define GUI_EW (GUI_E | GUI_W)
-#define GUI_NSE (GUI_NS | GUI_E)
-#define GUI_NSW (GUI_NS | GUI_W)
-#define GUI_NEW (GUI_N | GUI_EW)
-#define GUI_SEW (GUI_S | GUI_EW)
-#define GUI_NSEW (GUI_NS | GUI_EW)
+#define GUI_STICKY_MASK  0xF        /**< GUI sticky mask */
+#define GUI_N     0x1               /**< North side */
+#define GUI_S     0x2               /**< South side */
+#define GUI_E     0x4               /**< East side */
+#define GUI_W     0x8               /**< West side */
+#define GUI_NS (GUI_N | GUI_S)      /**< North + South */
+#define GUI_NW (GUI_N | GUI_W)      /**< North + West */
+#define GUI_NE (GUI_N | GUI_E)      /**< North + East */
+#define GUI_SE (GUI_E | GUI_S)      /**< South + East */
+#define GUI_SW (GUI_W | GUI_S)      /**< South + West */
+#define GUI_EW (GUI_E | GUI_W)      /**< East + West */
+#define GUI_NSE (GUI_NS | GUI_E)    /**< North + South + East */
+#define GUI_NSW (GUI_NS | GUI_W)    /**< North + South + West */
+#define GUI_NEW (GUI_N | GUI_EW)    /**< North + East + West */
+#define GUI_SEW (GUI_S | GUI_EW)    /**< South + East + West */
+#define GUI_NSEW (GUI_NS | GUI_EW)  /**< North + South + East + West */
 
 /*
  * For table-style layouts, provide span features for both rows and
  * columns.
  */
-#define GUI_COLSPAN_MASK 0xF0
+#define GUI_COLSPAN_MASK 0xF0   /**< Column mask */
+
+/**
+ * @deprecated
+ *
+ * All this GUI stuff is probably going away, but doxygen is complaining
+ * that it isn't documented, so this is a deprecation notice.
+ */
 #define COLSPAN(val) (((val-1) & 0xF) << 4)
+
+/**
+ * @deprecated
+ *
+ * All this GUI stuff is probably going away, but doxygen is complaining
+ * that it isn't documented, so this is a deprecation notice.
+ */
 #define GET_COLSPAN(val) (((val & GUI_COLSPAN_MASK) >> 4) +1)
 
+/**
+ * @deprecated
+ *
+ * All this GUI stuff is probably going away, but doxygen is complaining
+ * that it isn't documented, so this is a deprecation notice.
+ */
 #define GUI_ROWSPAN_MASK 0xF00
+
+/**
+ * @deprecated
+ *
+ * All this GUI stuff is probably going away, but doxygen is complaining
+ * that it isn't documented, so this is a deprecation notice.
+ */
 #define ROWSPAN(val) (((val-1) & 0xF) << 8)
+
+/**
+ * @deprecated
+ *
+ * All this GUI stuff is probably going away, but doxygen is complaining
+ * that it isn't documented, so this is a deprecation notice.
+ */
 #define GET_ROWSPAN(val) (((val & GUI_ROWSPAN_MASK) >> 8) +1)
 
+/**
+ * @deprecated
+ *
+ * All this GUI stuff is probably going away, but doxygen is complaining
+ * that it isn't documented, so this is a deprecation notice.
+ */
 #define GUI_COLSKIP_MASK 0xF000
+
+/**
+ * @deprecated
+ *
+ * All this GUI stuff is probably going away, but doxygen is complaining
+ * that it isn't documented, so this is a deprecation notice.
+ */
 #define COLSKIP(val) ((val & 0xF) << 12)
+
+/**
+ * @deprecated
+ *
+ * All this GUI stuff is probably going away, but doxygen is complaining
+ * that it isn't documented, so this is a deprecation notice.
+ */
 #define GET_COLSKIP(val) ((val & GUI_COLSKIP_MASK) >> 12)
 
 /* For defining top and left padding */
+/**
+ * @deprecated
+ *
+ * All this GUI stuff is probably going away, but doxygen is complaining
+ * that it isn't documented, so this is a deprecation notice.
+ */
 #define GUI_LEFTPAD_MASK 0xF0000
+
+/**
+ * @deprecated
+ *
+ * All this GUI stuff is probably going away, but doxygen is complaining
+ * that it isn't documented, so this is a deprecation notice.
+ */
 #define LEFTPAD(val) (((val>>1) & 0xF) << 16)
+
+/**
+ * @deprecated
+ *
+ * All this GUI stuff is probably going away, but doxygen is complaining
+ * that it isn't documented, so this is a deprecation notice.
+ */
 #define GET_LEFTPAD(val) ((val & GUI_LEFTPAD_MASK) >> 15)
 
+/**
+ * @deprecated
+ *
+ * All this GUI stuff is probably going away, but doxygen is complaining
+ * that it isn't documented, so this is a deprecation notice.
+ */
 #define GUI_TOPPAD_MASK 0xF00000
+
+/**
+ * @deprecated
+ *
+ * All this GUI stuff is probably going away, but doxygen is complaining
+ * that it isn't documented, so this is a deprecation notice.
+ */
 #define TOPPAD(val) (((val>>1) & 0xF) << 20)
+
+/**
+ * @deprecated
+ *
+ * All this GUI stuff is probably going away, but doxygen is complaining
+ * that it isn't documented, so this is a deprecation notice.
+ */
 #define GET_TOPPAD(val) ((val & GUI_TOPPAD_MASK) >> 19)
 
 /*
@@ -80,13 +174,13 @@
  * do exactly -- we are considering removing this entire module, so
  * my motivation to dig deeply is pretty low.  (tanabi)
  */
-#define GUI_NONL     0x1000000  /* Turn off new lines */
-#define GUI_HEXP     0x2000000  /* Turn on hweight whatever that is */
-#define GUI_VEXP     0x4000000  /* Turn on vweight whatever that is */
-#define GUI_REPORT   0x8000000  /* Turn on report whatever that is  */
-#define GUI_REQUIRED 0x8000000  /* Flag as required */
+#define GUI_NONL     0x1000000  /**< Turn off new lines */
+#define GUI_HEXP     0x2000000  /**< Turn on hweight whatever that is */
+#define GUI_VEXP     0x4000000  /**< Turn on vweight whatever that is */
+#define GUI_REPORT   0x8000000  /**< Turn on report whatever that is  */
+#define GUI_REQUIRED 0x8000000  /**< Flag as required */
 
-/*
+/**
  * Defines the callback arguments and provides a typedef for them.
  *
  * Arguments are:
@@ -108,10 +202,16 @@
     int   did_dismiss,    \
     void* context
 
+/**
+ * @deprecated
+ *
+ * All this GUI stuff is probably going away, but doxygen is complaining
+ * that it isn't documented, so this is a deprecation notice.
+ */
 typedef void (*Gui_CB) (GUI_EVENT_CB_ARGS);
 
 
-/*
+/**
  * Defines the error callback arguments, and provide a typedef for them.
  *
  * Arguments are:
@@ -130,31 +230,37 @@ typedef void (*Gui_CB) (GUI_EVENT_CB_ARGS);
     const char * errtext, \
     void* context
 
+/**
+ * @deprecated
+ *
+ * All this GUI stuff is probably going away, but doxygen is complaining
+ * that it isn't documented, so this is a deprecation notice.
+ */
 typedef void (*GuiErr_CB) (GUI_ERROR_CB_ARGS);
 
-/*
+/**
  * Structure to contain values for GUI dialog elements
  */
 typedef struct DlogValue_t {
-    struct DlogValue_t *next;   /* Values are in a linked list */
-    char *name;                 /* Each has a key */
-    int lines;                  /* Number of lines in 'value' */
-    char **value;               /* Multiple lines of strings */
+    struct DlogValue_t *next;   /**< Values are in a linked list */
+    char *name;                 /**< Each has a key */
+    int lines;                  /**< Number of lines in 'value' */
+    char **value;               /**< Multiple lines of strings */
 } DlogValue;
 
-/*
+/**
  * Structure for dialog data
  */
 typedef struct DlogData_t {
-    struct DlogData_t *next;    /* Dialog data is on a double linked list */
-    struct DlogData_t **prev;
-    char *id;                   /* ID for this dialog */
-    int descr;                  /* Descriptor associated with it */
-    int dismissed;              /* Dismissed boolean */
-    DlogValue *values;          /* Key/values associated with it */
-    Gui_CB callback;            /* Callback function */
-    GuiErr_CB error_cb;         /* Error callback function */
-    void *context;              /* Context data */
+    struct DlogData_t *next;    /**< Dialog data is on a double linked list */
+    struct DlogData_t **prev;   /**< Dialog data is on a double linked list */
+    char *id;                   /**< ID for this dialog */
+    int descr;                  /**< Descriptor associated with it */
+    int dismissed;              /**< Dismissed boolean */
+    DlogValue *values;          /**< Key/values associated with it */
+    Gui_CB callback;            /**< Callback function */
+    GuiErr_CB error_cb;         /**< Error callback function */
+    void *context;              /**< Context data */
 } DlogData;
 
 /**
@@ -242,7 +348,7 @@ const char *GuiValueFirst(const char *dlogid);
  * Returns NULL if dlogid doesn't exist.
  *
  * @param dlogid the dialog ID
- * @param id the id to look for
+ * @param prev the id to look for
  * @return the next value's name after 'id' or NULL if not found
  */
 const char *GuiValueNext(const char *dlogid, const char *prev);

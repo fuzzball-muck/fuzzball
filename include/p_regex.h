@@ -15,17 +15,20 @@
  */
 
 /**
- * @var Case insensitive search
+ * @var MUF_RE_ICASE
+ *      Case insensitive search
  */
 #define MUF_RE_ICASE    1
 
 /**
- * @var Substitute ALL on a regex substitution call
+ * @var MUF_RE_ALL
+ *      Substitute ALL on a regex substitution call
  */
 #define MUF_RE_ALL      2
 
 /**
- * @var Enable PCRE extended features
+ * @var MUF_RE_EXTENDED
+ *      Enable PCRE extended features
  */
 #define MUF_RE_EXTENDED 4
 
@@ -103,9 +106,15 @@ void prim_regsplit(PRIM_PROTOTYPE);
  */
 void prim_regsplit_noempty(PRIM_PROTOTYPE);
 
+/**
+ * Primitive callback functions
+ */
 #define PRIMS_REGEX_FUNCS prim_regexp, prim_regsub, prim_regsplit, \
         prim_regsplit_noempty
 
+/**
+ * Primitive names - must be in same order as the callback functions
+ */
 #define PRIMS_REGEX_NAMES "REGEXP", "REGSUB", "REGSPLIT", "REGSPLIT_NOEMPTY"
 
 #endif /* !P_REGEX_H */

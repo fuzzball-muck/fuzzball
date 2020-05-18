@@ -1,7 +1,7 @@
 /** @file dbsearch.h
  *
  * Header for declaring the "checkflags" search system that is used by
- * @find, @entrances, etc.  The definitions for these calls are in
+ * \@find, \@entrances, etc.  The definitions for these calls are in
  * look.c
  *
  * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
@@ -14,29 +14,32 @@
 
 #include "config.h"
 
+/**
+ * This structure defines a database search query in Fuzzball
+ */
 struct flgchkdat {
-    int fortype;        /* check FOR a type? */
-    int istype;         /* If check FOR a type, which one? */
-    int isnotroom;      /* not a room. */
-    int isnotexit;      /* not an exit. */
-    int isnotthing;     /* not type thing */
-    int isnotplayer;    /* not a player */
-    int isnotprog;      /* not a program */
-    int forlevel;       /* check for a mucker level? */
-    int islevel;        /* if check FOR a mucker level, which level? */
-    int isnotzero;      /* not ML0 */
-    int isnotone;       /* not ML1 */
-    int isnottwo;       /* not ML2 */
-    int isnotthree;     /* not ML3 */
-    int setflags;       /* flags that are set to check for */
-    int clearflags;     /* flags to check are cleared. */
-    int forlink;        /* check linking? */
-    int islinked;       /* if yes, check if not unlinked */
-    int forold;         /* check for old object? */
-    int isold;          /* if yes, check if old */
-    int loadedsize;     /* check for propval-loaded size? */
-    int issize;         /* list objs larger than size? */
-    size_t size;        /* what size to check against. No check if 0 */
+    int fortype;        /**< check FOR a type? */
+    int istype;         /**< If check FOR a type, which one? */
+    int isnotroom;      /**< not a room. */
+    int isnotexit;      /**< not an exit. */
+    int isnotthing;     /**< not type thing */
+    int isnotplayer;    /**< not a player */
+    int isnotprog;      /**< not a program */
+    int forlevel;       /**< check for a mucker level? */
+    int islevel;        /**< if check FOR a mucker level, which level? */
+    int isnotzero;      /**< not ML0 */
+    int isnotone;       /**< not ML1 */
+    int isnottwo;       /**< not ML2 */
+    int isnotthree;     /**< not ML3 */
+    int setflags;       /**< flags that are set to check for */
+    int clearflags;     /**< flags to check are cleared. */
+    int forlink;        /**< check linking? */
+    int islinked;       /**< if yes, check if not unlinked */
+    int forold;         /**< check for old object? */
+    int isold;          /**< if yes, check if old */
+    int loadedsize;     /**< check for propval-loaded size? */
+    int issize;         /**< list objs larger than size? */
+    size_t size;        /**< what size to check against. No check if 0 */
 };
 
 /**
@@ -60,7 +63,7 @@ int checkflags(dbref what, struct flgchkdat check);
  *
  * This is defined in look.c
  *
- * This is the underpinning of @find, @owned, @entrance, and a few
+ * This is the underpinning of \@find, \@owned, \@entrance, and a few
  * other similar calls.  It parses over a set of 'flags' to consider,
  * and loads the struct 'check' with the necessary filter paramters.
  *
@@ -78,7 +81,7 @@ int checkflags(dbref what, struct flgchkdat check);
  * R(oom), and T(hing).  God help us if we ever have an overlap in
  * flag names and types.
  *
- * It can also check U(nlinked), @ (objects older than about 90 days old),
+ * It can also check U(nlinked), \@ (objects older than about 90 days old),
  * ~size (match greater than or equal to current memory usage , must be
  * last modifier) or ^size  (match greater than or equal to total memory
  * usage - wizard only, uses ~size for regular players).

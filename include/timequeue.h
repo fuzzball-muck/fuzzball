@@ -28,7 +28,7 @@
  * @param argstr the {&arg} variable value
  * @param listen_p boolean true if this is triggered by listen propqueue
  * @param omesg_p boolean true if this is triggered by osucc, ofail, etc.
- * @param blessed_p boolean true if MPI is blessed
+ * @param bless_p boolean true if MPI is blessed
  * @return integer event number created or 0 on failure
  */
 int add_mpi_event(int delay, int descr, dbref player, dbref loc, dbref trig,
@@ -138,7 +138,7 @@ int add_muf_queue_event(int descr, dbref player, dbref loc, dbref trig,
  * - the player is the person running the program
  *
  * @param player the player to check for control powers
- * @param pid the PID to check if the given player controls
+ * @param procnum the PID to check if the given player controls
  * @return boolean true if player controls pid, false otherwise
  */
 int control_process(dbref player, int procnum);
@@ -149,7 +149,7 @@ int control_process(dbref player, int procnum);
  * This does all the necessary cleanup of the process, including events,
  * and then returns boolean if it was killed or not.
  *
- * @param pid the PID to kill
+ * @param procnum the PID to kill
  * @return boolean true if killed, false if not
  */
 int dequeue_process(int procnum);
@@ -177,7 +177,8 @@ int dequeue_process(int procnum);
  * @param line the calling line
  * @return count of processes killed by this call.
  */
-int dequeue_prog_real(dbref, int, const char *, const int);
+int dequeue_prog_real(dbref program, int killmode, const char * file,
+                      const int line);
 
 /**
  * The wrapper for the dequeue_prog_real function, killing processes
@@ -196,8 +197,8 @@ int dequeue_prog_real(dbref, int, const char *, const int);
  * that called the function.  It is recommended you use dequeue_prog instead
  * of this call directly so you don't have to worry about those details.
  *
- * @param program the program dbref to kill
- * @param killmode the kill mode, which can be a value noted above
+ * @param x the program dbref to kill
+ * @param i the kill mode, which can be a value noted above
  * @return count of processes killed by this call.
  */
 #define dequeue_prog(x,i) dequeue_prog_real(x,i,__FILE__,__LINE__)
@@ -208,8 +209,8 @@ int dequeue_prog_real(dbref, int, const char *, const int);
  * If 'id' is NULL, then all timers will be dequeued.  If it is an ID
  * string, only timers matching that ID will be dequeued.
  *
- * @param pid the PID to dequeue timers for
- * @param id either NULL to dequeue all timers, or a specific timer ID
+ * @param procnum the PID to dequeue timers for
+ * @param timerid either NULL to dequeue all timers, or a specific timer ID
  * @return boolean true if something was dequeued, false otherwise
  */
 int dequeue_timers(int procnum, char *timerid);

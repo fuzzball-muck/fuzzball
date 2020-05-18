@@ -13,38 +13,43 @@
 #include "config.h"
 #include "fbmuck.h"
 
-#define MUF_AUTHOR_PROP         "_author"
-#define MUF_DOCCMD_PROP         "_docs"
-#define MUF_ERRCOUNT_PROP       ".debug/errcount"
-#define MUF_LASTCRASH_PROP      ".debug/lastcrash"
-#define MUF_LASTCRASHTIME_PROP  ".debug/lastcrashtime"
-#define MUF_LASTERR_PROP        ".debug/lasterr"
-#define MUF_LIB_VERSION_PROP    "_lib-version"
-#define MUF_NOTE_PROP           "_note"
-#define MUF_VERSION_PROP        "_version"
+#define MUF_AUTHOR_PROP         "_author"   /**< Author name string location */
+#define MUF_DOCCMD_PROP         "_docs"     /**< Command to list docs */
+#define MUF_ERRCOUNT_PROP       ".debug/errcount"   /**< error count */
+#define MUF_LASTCRASH_PROP      ".debug/lastcrash"  /**< last crash timestamp */
+#define MUF_LASTCRASHTIME_PROP  ".debug/lastcrashtime"  /**< last crash time str */
+#define MUF_LASTERR_PROP        ".debug/lasterr"    /**< last error */
+#define MUF_LIB_VERSION_PROP    "_lib-version"      /**< Library version */
+#define MUF_NOTE_PROP           "_note"             /**< Notes */
+#define MUF_VERSION_PROP        "_version"          /**< Version */
 
 /**
- * @var integer primitive ID for FOR primitive
+ * @var IN_FOR
+ *      integer primitive ID for FOR primitive
  */
 extern int IN_FOR;
 
 /**
- * @var integer primitive ID for FOREACH primitive
+ * @var IN_FOREACH
+ *      integer primitive ID for FOREACH primitive
  */
 extern int IN_FOREACH;
 
 /**
- * @var integer primitive ID for FORITER primitive
+ * @var IN_FORITER
+ *      integer primitive ID for FORITER primitive
  */
 extern int IN_FORITER;
 
 /**
- * @var integer primitive ID for FORPOP primitive
+ * @var IN_FORPOP
+ *      integer primitive ID for FORPOP primitive
  */
 extern int IN_FORPOP;
 
 /**
- * @var integer primitive ID for TRYPROP primitive
+ * @var IN_TRYPOP
+ *      integer primitive ID for TRYPROP primitive
  */
 extern int IN_TRYPOP;
 
@@ -73,14 +78,15 @@ void clear_primitives(void);
  * - force_err_display when true will display all compile errors to the
  *   player.  Error messages are still displayed anyway if the player
  *   is INTERACTIVE but not READMODE (which I believe means they are in the
- *   @program/@edit editor).
+ *   \@program/\@edit editor).
  *
  * @param descr the descriptor of the person compiling
- * @param player_in the player compiling
- * @param program_in the program to compile
- * @param force_err_display boolean - true to always show compile errors
+ * @param in_player the player compiling
+ * @param in_program the program to compile
+ * @param force_err_disp boolean - true to always show compile errors
  */
-void do_compile(int descr, dbref in_player, dbref in_program, int force_err_disp);
+void do_compile(int descr, dbref in_player, dbref in_program,
+                int force_err_disp);
 
 /**
  * Free ("uncompile") unused programs

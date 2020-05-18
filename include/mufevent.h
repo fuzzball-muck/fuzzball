@@ -100,7 +100,7 @@ int muf_event_controls(dbref player, int pid);
  */
 int muf_event_count(struct frame *fr);
 
-/*
+/**
  * Deregisters a program from any instances of it in the EVENT_WAIT queue.
  *
  * killmode values:
@@ -122,7 +122,7 @@ int muf_event_count(struct frame *fr);
  * @param killmode 0, 1, or 2 as described above
  * @return number of processes removed from the queue, which may be 0 or more
  */
-int muf_event_dequeue(dbref prog, int sleeponly);
+int muf_event_dequeue(dbref prog, int killmode);
 
 /**
  * Removes the MUF program with the given PID from the EVENT_WAIT queue.
@@ -148,7 +148,7 @@ int muf_event_dequeue_pid(int pid);
  * The eventid passed can be an smatch string. @see equalstr
  *
  * @param fr the frame to check for
- * @param an smatch pattern for event names to check for
+ * @param eventid an smatch pattern for event names to check for
  * @return count of matching MUF events, which may be 0 for no matches.
  */
 int muf_event_exists(struct frame *fr, const char *eventid);
@@ -156,7 +156,7 @@ int muf_event_exists(struct frame *fr, const char *eventid);
 /**
  * List all processes in the EVENT_WAIT queue that the given player controls.
  *
- * This is used by the @ps command.
+ * This is used by the \@ps command.
  *
  * 'pat' is intended to be something akin to this:
  *

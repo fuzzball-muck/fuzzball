@@ -47,21 +47,21 @@
 #endif                          /* not (HAVE_DIRENT_H or _POSIX_VERSION) */
 
 #if defined(HAVE_DIRENT_H) || defined(_POSIX_VERSION) || defined(HAVE_SYS_NDIR_H) || defined(HAVE_SYS_DIR_H) || defined(HAVE_NDIR_H)
-# define DIR_AVAILABLE
+# define DIR_AVAILABLE  /**< Is DIRENT available? */
 #endif
 
-/*
+/**
  * Telnet uses a state machine to negotiate what it supports.
  */
 typedef enum {
-    TELNET_STATE_NORMAL,    /* Default state                                 */
-    TELNET_STATE_IAC,       /* Interpret as command -- allows telnet control */
-    TELNET_STATE_WILL,      /* Indicates the desire to perform an operation  */
-    TELNET_STATE_DO,        /* Indicates the other party WILL                */
-    TELNET_STATE_WONT,      /* Opposite of WILL                              */
-    TELNET_STATE_DONT,      /* Opposite of DO                                */
-    TELNET_STATE_SB,        /* Subnegotiation                                */
-    TELNET_STATE_FORWARDING /* Non-standard extension for gateway support    */
+    TELNET_STATE_NORMAL,    /**< Default state                                 */
+    TELNET_STATE_IAC,       /**< Interpret as command -- allows telnet control */
+    TELNET_STATE_WILL,      /**< Indicates the desire to perform an operation  */
+    TELNET_STATE_DO,        /**< Indicates the other party WILL                */
+    TELNET_STATE_WONT,      /**< Opposite of WILL                              */
+    TELNET_STATE_DONT,      /**< Opposite of DO                                */
+    TELNET_STATE_SB,        /**< Subnegotiation                                */
+    TELNET_STATE_FORWARDING /**< Non-standard extension for gateway support    */
 } telnet_states_t;
 
 /*
@@ -70,155 +70,185 @@ typedef enum {
  *
  * https://imgur.com/gallery/UE0HIH6
  */
-#define TELNET_IAC  255 /* Interpret as command -- next byte is command    */
-#define TELNET_DONT 254 /* Don't - tell other party to not do an operation */
-#define TELNET_DO   253 /* Do - tell other party to do an operation        */
-#define TELNET_WONT 252 /* Won't - indicate not doing an operation         */
-#define TELNET_WILL 251 /* Will - indicate that we will do an operation    */
-#define TELNET_SB   250 /* Perform a sub negotiation                       */
-#define TELNET_GA   249 /* Go ahead acknowledgment                         */
-#define TELNET_EL   248 /* Erase line function                             */
-#define TELNET_EC   247 /* Erase character function                        */
-#define TELNET_AYT  246 /* Are you there?  Ping function.                  */
-#define TELNET_AO   245 /* Abort output                                    */
-#define TELNET_IP   244 /* Interrupt process                               */
-#define TELNET_BRK  243 /* Break                                           */
-#define TELNET_DM   242 /* Data mark - part of a sync operation            */
-#define TELNET_NOP  241 /* No Op                                           */
-#define TELNET_SE   240 /* End of subnegotiation                           */
+#define TELNET_IAC  255 /**< Interpret as command -- next byte is command    */
+#define TELNET_DONT 254 /**< Don't - tell other party to not do an operation */
+#define TELNET_DO   253 /**< Do - tell other party to do an operation        */
+#define TELNET_WONT 252 /**< Won't - indicate not doing an operation         */
+#define TELNET_WILL 251 /**< Will - indicate that we will do an operation    */
+#define TELNET_SB   250 /**< Perform a sub negotiation                       */
+#define TELNET_GA   249 /**< Go ahead acknowledgment                         */
+#define TELNET_EL   248 /**< Erase line function                             */
+#define TELNET_EC   247 /**< Erase character function                        */
+#define TELNET_AYT  246 /**< Are you there?  Ping function.                  */
+#define TELNET_AO   245 /**< Abort output                                    */
+#define TELNET_IP   244 /**< Interrupt process                               */
+#define TELNET_BRK  243 /**< Break                                           */
+#define TELNET_DM   242 /**< Data mark - part of a sync operation            */
+#define TELNET_NOP  241 /**< No Op                                           */
+#define TELNET_SE   240 /**< End of subnegotiation                           */
 
-#define TELOPT_STARTTLS     46  /* Start TLS                  */
-#define TELOPT_FORWARDED    113 /* non-standard; for gateways */
+#define TELOPT_STARTTLS     46  /**< Start TLS                  */
+#define TELOPT_FORWARDED    113 /**< non-standard; for gateways */
 
+/**
+ * Structure for queuing up blocks of text, used by the output system
+ */
 struct text_block {
-    size_t nchars;          /* Number of characters in the text block   */
-    struct text_block *nxt; /* Next block in the queue                  */
-    char *start;            /* Pointer into buf, advanced during writes */
-    char *buf;              /* The whole buffer                         */
+    size_t nchars;          /**< Number of characters in the text block   */
+    struct text_block *nxt; /**< Next block in the queue                  */
+    char *start;            /**< Pointer into buf, advanced during writes */
+    char *buf;              /**< The whole buffer                         */
 };
 
+/**
+ * The head of a text queue
+ */
 struct text_queue {
-    int lines;                  /* Lines in the queue */
-    struct text_block *head;    /* Head of the queue  */
-    struct text_block **tail;   /* End of the queue   */
+    int lines;                  /**< Lines in the queue */
+    struct text_block *head;    /**< Head of the queue  */
+    struct text_block **tail;   /**< End of the queue   */
 };
 
+/**
+ * Information about a descriptor / connection to the MUCK.
+ */
 struct descriptor_data {
-    int descriptor;         /* Descriptor                          */
-    int is_console;         /* If set, descriptor corresponds to the console */
-    int output_descriptor;  /* If not -1, descriptor for output */
-                            /* usually same as descriptor, exists to support console */
-    int connected;          /* Is playing? (has gotten past login) */
-    int con_number;         /* The connection number               */
-    int booted;             /* 0 = do not boot;
-                             * 1 = boot without message;
-                             * 2 = boot with goodbye
+    int descriptor;         /**< Descriptor                          */
+    int is_console;         /**< If set, descriptor corresponds to the
+                             *   console
                              */
-    int block_writes;       /* If true, block non-priority writes.
-                             * Used for STARTTLS.
+    int output_descriptor;  /**< If not -1, descriptor for output
+                            /*   usually same as descriptor, exists to
+                             *   support console
                              */
-    int is_starttls;        /* Has TLS started?                    */
+    int connected;          /**< Is playing? (has gotten past login) */
+    int con_number;         /**< The connection number               */
+    int booted;             /**< 0 = do not boot;
+                             *   1 = boot without message;
+                             *   2 = boot with goodbye
+                             */
+    int block_writes;       /**< If true, block non-priority writes.
+                             *   Used for STARTTLS.
+                             */
+    int is_starttls;        /**< Has TLS started?                    */
 #ifdef USE_SSL
-    SSL *ssl_session;       /* SSL Session structure for TLS       */
-    /*
+    SSL *ssl_session;       /**< SSL Session structure for TLS       */
+    /**
      * incomplete SSL_write() because OpenSSL does not allow us to switch
      * from a partial write of something from output to writing something
      * else from priority_output.
      */
     struct text_queue pending_ssl_write;
 #endif
-    dbref player;                   /* The player for this descriptor      */
-    int output_size;                /* Size of output queue in bytes       */
-    struct text_queue output;       /* Output queue                        */
-    struct text_queue priority_output; /* used for telnet messages         */
-    struct text_queue input;        /* Input queue                         */
-    char *raw_input;                /* Raw input from the connection       */
-    char *raw_input_at;             /* Pointer into that raw input buffer  */
-    int telnet_enabled;             /* Descriptor supports telnet protocol */
-    telnet_states_t telnet_state;   /* Current telnet state                */
-    int telnet_sb_opt;              /* Subnegotiation option               */
-    int short_reads;                /* If true, read byte at a time        */
+    dbref player;                   /**< The player for this descriptor      */
+    int output_size;                /**< Size of output queue in bytes       */
+    struct text_queue output;       /**< Output queue                        */
+    struct text_queue priority_output; /**< used for telnet messages         */
+    struct text_queue input;        /**< Input queue                         */
+    char *raw_input;                /**< Raw input from the connection       */
+    char *raw_input_at;             /**< Pointer into that raw input buffer  */
+    int telnet_enabled;             /**< Descriptor supports telnet protocol */
+    telnet_states_t telnet_state;   /**< Current telnet state                */
+    int telnet_sb_opt;              /**< Subnegotiation option               */
+    int short_reads;                /**< If true, read byte at a time        */
 
 #ifdef IP_FORWARDING
     /* Fields related to ip-forwarding, to support websocket gateways  */
-    int forwarding_enabled;         /* IP forwarding enabled?              */
-    char *forwarded_buffer;         /* Buffer for forwarding               */
-    int forwarded_size;             /* Amount in buffer, must be < 128     */
+    int forwarding_enabled;         /**< IP forwarding enabled?              */
+    char *forwarded_buffer;         /**< Buffer for forwarding               */
+    int forwarded_size;             /**< Amount in buffer, must be < 128     */
 #endif
 
-    time_t last_time;               /* Last time they did something        */
-    time_t connected_at;            /* Connection timestamp                */
-    time_t last_pinged_at;          /* Last time we sent data to them      */
-    const char *hostname;           /* Descriptor host name                */
-    const char *username;           /* Ident username if available         */
-    int quota;                      /* Command burst quota                 */
-    struct descriptor_data *next;   /* Linked list of descriptors          */
-    struct descriptor_data **prev;  /* Double linked list                  */
-    McpFrame mcpframe;              /* MCP Frame information               */
+    time_t last_time;               /**< Last time they did something        */
+    time_t connected_at;            /**< Connection timestamp                */
+    time_t last_pinged_at;          /**< Last time we sent data to them      */
+    const char *hostname;           /**< Descriptor host name                */
+    const char *username;           /**< Ident username if available         */
+    int quota;                      /**< Command burst quota                 */
+    struct descriptor_data *next;   /**< Linked list of descriptors          */
+    struct descriptor_data **prev;  /**< Double linked list                  */
+    McpFrame mcpframe;              /**< MCP Frame information               */
 };
 
 /**
- * @var If true, we are doing a "DB conversion" which is a command line
+ * @var db_conversion_flag
+ *      If true, we are doing a "DB conversion" which is a command line
  *      process.  If this is true, most of the MUCK code is skipped.
  *      If this is true, the MUCK will not be detached.
  */
 extern short db_conversion_flag;
 
 /**
- * @var The list of descriptors being managed.
+ * @var descriptor_list
+ *      The list of descriptors being managed.
  */
 extern struct descriptor_data *descriptor_list;
 
 /**
- * @var Boolean, true if has the forked dump process has completed.
+ * @var global_dumpdone
+ *      Boolean, true if has the forked dump process has completed.
  */
 extern short global_dumpdone;
 
 #ifndef DISKBASE
 /**
- * @var PID of the forked dump process - unused for DISKBASE - 0 if not running
+ * @var global_dumper_pid
+ *      PID of the forked dump process - unused for DISKBASE - 0 if not running
  */
 extern pid_t global_dumper_pid;
 #endif
 
 /**
- * @var PID of the forked resolver process or 0 if not running
+ * @var global_resolver_pid
+ *      PID of the forked resolver process or 0 if not running
  */
 extern pid_t global_resolver_pid;
 
 /**
- * @var If true, the MUCK will restart.
+ * @var restart_flag
+ *      If true, the MUCK will restart.
  */
 extern int restart_flag;
+
+/**
+ * @var sanity_violated
+ *      If the DB data integrity is violated, this will be true.
+ */
 extern int sanity_violated;
 
 /**
- * @var Global used for profiling -- @see do_topprofs and relatives
+ * @var sel_prof_idle_sec
+ *      Global used for profiling -- @see do_topprofs and relatives
  */
 extern long sel_prof_idle_sec;
 
 /**
- * @var Global used for profiling -- @see do_topprofs and relatives
+ * @var sel_prof_idle_use
+ *      Global used for profiling -- @see do_topprofs and relatives
  */
 extern unsigned long sel_prof_idle_use;
 
 /**
- * @var Global used for profiling -- @see do_topprofs and relatives
+ * @var sel_prof_idle_usec
+ *      Global used for profiling -- @see do_topprofs and relatives
  */
 extern long sel_prof_idle_usec;
 
 /**
- * @var Global used for profiling -- @see do_topprofs and relatives
+ * @var sel_prof_start_time
+ *      Global used for profiling -- @see do_topprofs and relatives
  */
 extern time_t sel_prof_start_time;
 
 /**
- * @var Boolean, if true, shut down the MUCK.
+ * @var shutdown_flag
+ *      Boolean, if true, shut down the MUCK.
  */
 extern int shutdown_flag;
 
 /**
- * @var boolean, if true, only wizards may log in ("maintenance mode")
+ * @var wizonly_mode
+ *      boolean, if true, only wizards may log in ("maintenance mode")
  */
 extern short wizonly_mode;
 
@@ -261,7 +291,7 @@ int dbref_first_descr(dbref c);
  *
  * @see gethash_descr
  *
- * @param c the descriptor to lookup
+ * @param i the descriptor to lookup
  * @return the descriptor_data corresponding to c or NULL if not found
  */
 struct descriptor_data *descrdata_by_descr(int i);
@@ -476,8 +506,8 @@ void notify_except(dbref first, dbref exception, const char *msg, dbref who);
  *
  * @param from the player sending the message
  * @param player the player receiving the message
- * @param msg the message to send, which may be \r delimited for multi-line.
- * @param isprivate boolean see description under notify_nolisten
+ * @param msg the message to send, which may be \\r delimited for multi-line.
+ * @param ispriv boolean see description under notify_nolisten
  * @return as described above, or return value of notify_nolisten
  */
 int notify_filtered(dbref from, dbref player, const char *msg, int ispriv);
@@ -532,7 +562,7 @@ void notify_listeners(dbref who, dbref xprog, dbref obj, dbref room, const char 
  * are supported.  The MPI will not be able to run recursively; a recursive
  * run will ignore the pecho setting.
  *
- * Multi-line cntent (separated by \r's) are queued up line at a time in
+ * Multi-line cntent (separated by \\r's) are queued up line at a time in
  * a loop.
  *
  * Returns true if the message went somewhere, false otherwise.
@@ -916,7 +946,7 @@ void queue_write_max(struct descriptor_data *d, const char *b, size_t n,
  *
  * If 'n' is 0, this returns immediately.
  *
- * This was changed to be a #define after adding queue_write_max, as this
+ * This was changed to be a \#define after adding queue_write_max, as this
  * is just a thin wrapper around queue_write_max.
  *
  * @see queue_write_max
@@ -968,7 +998,7 @@ void spit_file_segment(dbref player, const char *filename, const char *seg);
 /**
  * Send a message to everyone online and flush the output immediately.
  *
- * \r\n will be added to the end of the message.
+ * \\r\\n will be added to the end of the message.
  *
  * @param msg the message to send to all the descriptors
  */
@@ -977,7 +1007,7 @@ void wall_and_flush(const char *msg);
 /**
  * Send a message to all online WIZARD players and flush output immediately
  *
- * \r\n will be added to the end of the message.
+ * \\r\\n will be added to the end of the message.
  *
  * This is just like wall_and_flush, just for wizards only.
  * @see wall_and_flush

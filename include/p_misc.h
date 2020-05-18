@@ -1,3 +1,10 @@
+/** @file p_misc.h
+ *
+ * Misc. MUF primitives
+ *
+ * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
+ */
+
 #ifndef P_MISC_H
 #define P_MISC_H
 
@@ -560,7 +567,7 @@ void prim_event_exists(PRIM_PROTOTYPE);
  *
  * Consumes a process ID, event name, and a data item - and sends a USER
  * event to the given proess with the given data.  Requires MUCKER level 3.
- *.
+ *
  * @see muf_event_add
  *
  * @param player the player running the MUF program
@@ -835,6 +842,9 @@ void prim_read_wants_no_blanks(PRIM_PROTOTYPE);
  */
 void prim_stats_array(PRIM_PROTOTYPE);
 
+/**
+ * Primitive callback functions
+ */
 #define PRIMS_MISC_FUNCS prim_time, prim_date, prim_gmtoffset, \
     prim_systime, prim_timesplit, prim_timefmt, prim_fmttime, prim_convtime, \
     prim_userlog, prim_queue, prim_kill, prim_force, prim_timestamps, \
@@ -848,6 +858,9 @@ void prim_stats_array(PRIM_PROTOTYPE);
     prim_debug_off, prim_debug_line, prim_systime_precise, \
     prim_read_wants_no_blanks, prim_stats_array
 
+/**
+ * Primitive names - must be in same order as the callback functions
+ */
 #define PRIMS_MISC_NAMES "TIME", "DATE", "GMTOFFSET", \
     "SYSTIME", "TIMESPLIT", "TIMEFMT", "FMTTIME", "CONVTIME", "USERLOG", \
     "QUEUE", "KILL", "FORCE", "TIMESTAMPS", "FORK", "PID", "STATS", "ABORT", \

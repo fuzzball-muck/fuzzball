@@ -16,7 +16,7 @@
 
 #include "config.h"
 
-/*
+/**
  * Declaration list of arguments for MPI functions.  All MPI functions must
  * support this list of arguments.
  */
@@ -201,7 +201,7 @@ const char *mfn_commas(MFUNARGS);
  * is optional and can be a dbref.  It defaults to 'what'.  If there is a
  * # symbol at the end of the list name it will be removed.
  *
- * The return value is a delimited string, delimited by \r, which is an
+ * The return value is a delimited string, delimited by \\r, which is an
  * MPI list.
  *
  * @param descr the descriptor of the caller
@@ -241,7 +241,7 @@ const char *mfn_contains(MFUNARGS);
 /**
  * MPI function that returns an optionally filtered contents list
  *
- * Returns the contents as a \r delimited list of refs.  Player refs
+ * Returns the contents as a \\r delimited list of refs.  Player refs
  * appear to be *Name whereas everything else is a dbref.
  *
  * @see ref2str
@@ -331,7 +331,7 @@ const char *mfn_convtime(MFUNARGS);
  * MPI function that counts number of items in list arg0
  *
  * arg0 is a string containing a delimited list.  arg1 is a
- * delimiter/separator string and defaults to \r
+ * delimiter/separator string and defaults to \\r
  *
  * @param descr the descriptor of the caller
  * @param player the ref of the calling player
@@ -388,7 +388,7 @@ const char *mfn_date(MFUNARGS);
 /**
  * MPI function that returns true if obj1 and obj2 refer to the same object
  *
- * This does name matching of obj1 and obj2, along with #dbref number matching.
+ * This does name matching of obj1 and obj2, along with \#dbref number matching.
  *
  * @param descr the descriptor of the caller
  * @param player the ref of the calling player
@@ -729,7 +729,7 @@ const char *mfn_execbang(MFUNARGS);
 /**
  * MPI function that returns a list of exits associatd with arg0
  *
- * Returns the exits as a \r delimited list of refs.  Player refs
+ * Returns the exits as a \\r delimited list of refs.  Player refs
  * appear to be *Name whereas everything else is a dbref.
  *
  * @see ref2str
@@ -769,7 +769,7 @@ const char *mfn_exits(MFUNARGS);
  *
  * Each item of the list is put in the variable named arg0, with the list
  * being in arg1, and the expression to run against each line in the list
- * being arg2.  An optional separator is in arg3, which defaults to \r
+ * being arg2.  An optional separator is in arg3, which defaults to \\r
  *
  * arg4 can be provided to make the returned list use a different seperator
  * (arg4) than the source list.  If arg4 is left off, it will use the same
@@ -814,7 +814,7 @@ const char *mfn_flags(MFUNARGS);
  * to run.  It is run as a variable context -- similar to {with} as you can
  * see @see mfn_with
  *
- * arg5 is optional and is the separator string.  It defaults to \r
+ * arg5 is optional and is the separator string.  It defaults to \\r
  *
  * @param descr the descriptor of the caller
  * @param player the ref of the calling player
@@ -897,7 +897,7 @@ const char *mfn_force(MFUNARGS);
  *
  * arg0 is the variable name to use.  arg1 is the list to iterate over.
  * arg2 is the expression to run for each iteration of the loop.  arg3
- * is an optional seperator string that defaults to \r
+ * is an optional seperator string that defaults to \\r
  *
  * @param descr the descriptor of the caller
  * @param player the ref of the calling player
@@ -1157,7 +1157,7 @@ const char *mfn_indexbang(MFUNARGS);
 const char *mfn_instr(MFUNARGS);
 
 /**
- * MPI function that returns true if argv0 is a #dbref number
+ * MPI function that returns true if argv0 is a \#dbref number
  *
  * The ref must start with a # to be valid.
  *
@@ -1344,8 +1344,8 @@ const char *mfn_lexec(MFUNARGS);
 /**
  * MPI function that returns the ref of whatever arg0 is linked to
  *
- * For multi-linked exits, this may be a \r delimited list.  For invalid
- * things or unlinked things, this may be #-1
+ * For multi-linked exits, this may be a \\r delimited list.  For invalid
+ * things or unlinked things, this may be \#-1
  *
  * @param descr the descriptor of the caller
  * @param player the ref of the calling player
@@ -1390,7 +1390,7 @@ const char *mfn_list(MFUNARGS);
  * is optional and can be a dbref.  It defaults to 'what'.  There is an
  * optional third parameter for pattern matching.
  *
- * The return value is a delimited string, delimited by \r, which is an
+ * The return value is a delimited string, delimited by \\r, which is an
  * MPI list.
  *
  * @param descr the descriptor of the caller
@@ -1483,7 +1483,7 @@ const char *mfn_locked(MFUNARGS);
  * MPI function that returns a random item from list arg0
  *
  * arg0 is a string containing a delimited list.  arg1 is a
- * delimiter/separator string and defaults to \r
+ * delimiter/separator string and defaults to \\r
  *
  * @param descr the descriptor of the caller
  * @param player the ref of the calling player
@@ -1693,7 +1693,7 @@ const char *mfn_min(MFUNARGS);
 /**
  * MPI function that makes a list out of the arguments
  *
- * Returns a string delimited by \r's that is a concatination of the
+ * Returns a string delimited by \\r's that is a concatination of the
  * arguments.
  *
  * @param descr the descriptor of the caller
@@ -2059,7 +2059,7 @@ const char *mfn_owner(MFUNARGS);
  *
  * Each item of the list is put in the variable named arg0, with the list
  * being in arg1, and the expression to run against each line in the list
- * being arg2.  An optional separator is in arg3, which defaults to \r
+ * being arg2.  An optional separator is in arg3, which defaults to \\r
  *
  * arg4 can be provided to make the returned list use a different seperator
  * (arg4) than the source list.  If arg4 is left off, it will use the same
@@ -2184,9 +2184,9 @@ const char *mfn_rand(MFUNARGS);
 
 
 /**
- * MPI function that returns the reference of arg0 as a #dbref
+ * MPI function that returns the reference of arg0 as a \#dbref
  *
- * This will always be a #dbref and doesn't return *Playername like
+ * This will always be a \#dbref and doesn't return *Playername like
  * some calls (such as contents).  It is a great way to normlaize things
  * to a ref.
  *
@@ -2454,7 +2454,7 @@ const char *mfn_sysparm(MFUNARGS);
  * same value as arg1, and can be less than arg1 to get elements in the
  * reverse direction.
  *
- * arg3 is a delimiter/separator string and defaults to \r
+ * arg3 is a delimiter/separator string and defaults to \\r
  *
  * As an "undocumented feature" if only arg0 is passed, then the list is
  * just copied as-is.  This is not in the MPI docs.
@@ -2879,7 +2879,7 @@ const char *mfn_with(MFUNARGS);
  */
 const char *mfn_xor(MFUNARGS);
 
-/*
+/**
  * This structure defines a single MPI function and is used by the list of
  * MPI functions.
  *
@@ -2893,17 +2893,19 @@ const char *mfn_xor(MFUNARGS);
  * the return value of the function.
  */
 struct mfun_dat {
-    char *name;                     /* Function name, all upper case */
-    const char *(*mfn) (MFUNARGS);  /* Function implementation */
-    short parsep;                   /* If true, the arguments will be parsed */
-    short postp;                    /* If true, auto-parse the return value */
-    short stripp;                   /* If true, strip spaces of arguments */
-    short minargs;                  /* Minimum number of arguments */
-    short maxargs;                  /* Maximum number of arguments */
+    char *name;                     /**< Function name, all upper case */
+    const char *(*mfn) (MFUNARGS);  /**< Function implementation */
+    short parsep;                   /**< If true, the arguments will be parsed */
+    short postp;                    /**< If true, auto-parse the return value */
+    short stripp;                   /**< If true, strip spaces of arguments */
+    short minargs;                  /**< Minimum number of arguments */
+    short maxargs;                  /**< Maximum number of arguments */
 };
 
 /**
- * @var The map of MPI functions names to function calls.
+ * @var mfun_list
+ *
+ * The map of MPI functions names to function calls.
  *
  * Because this is kind of a huge list, to see documentation of each
  * call, look at the documentation for the functions themselves rather

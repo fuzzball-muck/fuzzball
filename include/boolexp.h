@@ -15,26 +15,27 @@
 #include "props.h"
 
 /* These are the different elements of a boolean expression */
-#define BOOLEXP_AND 0
-#define BOOLEXP_OR 1
-#define BOOLEXP_NOT 2
-#define BOOLEXP_CONST 3
-#define BOOLEXP_PROP 4
+#define BOOLEXP_AND 0    /**< AND is the default */
+#define BOOLEXP_OR 1     /**< OR expression */
+#define BOOLEXP_NOT 2    /**< NOT expression */
+#define BOOLEXP_CONST 3  /**< CONST expression */
+#define BOOLEXP_PROP 4   /**< property expression */
 
 /* True is a null boolean expression */
-#define TRUE_BOOLEXP ((struct boolexp *) 0)
+#define TRUE_BOOLEXP ((struct boolexp *) 0)   /**< Boolean TRUE expression */
 
-/* Boolean expressions are trees of expression nodes that are recursively
+/**
+ * Boolean expressions are trees of expression nodes that are recursively
  * evaluated.
  *
  * Leaf nodes are always either BOOLEXP_PROP or BOOLEXP_CONST.
  */
 struct boolexp {
-    short type;                 /* Type of node               */
-    struct boolexp *sub1;       /* 'Left' side subexpression  */
-    struct boolexp *sub2;       /* 'Right' side subexpression */
-    dbref thing;                /* Value for type constant    */
-    struct plist *prop_check;   /* Value for type property    */
+    short type;                 /**< Type of node               */
+    struct boolexp *sub1;       /**< 'Left' side subexpression  */
+    struct boolexp *sub2;       /**< 'Right' side subexpression */
+    dbref thing;                /**< Value for type constant    */
+    struct plist *prop_check;   /**< Value for type property    */
 };
 
 /**
@@ -107,7 +108,7 @@ void free_boolexp(struct boolexp *b);
  *
  * @param descr the descriptor belonging to the person compiling the lock
  * @param player the person or thing compiling the lock
- * @param buf the lock string
+ * @param string the lock string
  * @param dbloadp 1 if being called by the property disk loader, 0 otherwise
  * @return struct boolexp - the "head" of the boolean expression node tree.
  *         or TRUE_BOOLEXP on failure.

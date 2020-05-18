@@ -23,7 +23,7 @@
 #  include <ssl.h>
 # endif
 
-/*
+/**
  * Backwards-compatibility for valid SSL protocol versions that are
  * not supported.
  */
@@ -51,44 +51,49 @@
  * FB_PROTOCOL_NAME     Friendly name for error messages, blank if not available
  */
 #ifdef SSL3_VERSION
-# define FB_SSL3_VERSION SSL3_VERSION
-# define FB_SSL3_NAME "SSLv3 "
+# define FB_SSL3_VERSION SSL3_VERSION   /**< SSL3 Version */
+# define FB_SSL3_NAME "SSLv3 "          /**< SSL3 Version Name */
 #else
-# define FB_SSL3_VERSION SSL_UNSUPPORTED_PROTOCOL
-# define FB_SSL3_NAME ""
+# define FB_SSL3_VERSION SSL_UNSUPPORTED_PROTOCOL   /**< Unsupported */
+# define FB_SSL3_NAME ""                            /**< No name */
 #endif
 #ifdef TLS1_VERSION
-# define FB_TLS1_VERSION TLS1_VERSION
-# define FB_TLS1_NAME "TLSv1 "
+# define FB_TLS1_VERSION TLS1_VERSION   /**< TLS1 Version */
+# define FB_TLS1_NAME "TLSv1 "          /**< TLS1 Version Name */
 #else
-# define FB_TLS1_VERSION SSL_UNSUPPORTED_PROTOCOL
-# define FB_TLS1_NAME ""
+# define FB_TLS1_VERSION SSL_UNSUPPORTED_PROTOCOL   /**< Unsupported */
+# define FB_TLS1_NAME ""                            /**< No name */
 #endif
 #ifdef TLS1_1_VERSION
-# define FB_TLS1_1_VERSION TLS1_1_VERSION
-# define FB_TLS1_1_NAME "TLSv1.1 "
+# define FB_TLS1_1_VERSION TLS1_1_VERSION   /**< TLS1.1 Version */
+# define FB_TLS1_1_NAME "TLSv1.1 "          /**< TLS1.1 Version Name */
 #else
-# define FB_TLS1_1_VERSION SSL_UNSUPPORTED_PROTOCOL
-# define FB_TLS1_1_NAME ""
+# define FB_TLS1_1_VERSION SSL_UNSUPPORTED_PROTOCOL /**< Unsupported */
+# define FB_TLS1_1_NAME ""                          /**< No name */
 #endif
 #ifdef TLS1_2_VERSION
-# define FB_TLS1_2_VERSION TLS1_2_VERSION
-# define FB_TLS1_2_NAME "TLSv1.2 "
+# define FB_TLS1_2_VERSION TLS1_2_VERSION   /**< TLS1.2 Version */
+# define FB_TLS1_2_NAME "TLSv1.2 "          /**< TLS1.2 Version Name */
 #else
-# define FB_TLS1_2_VERSION SSL_UNSUPPORTED_PROTOCOL
-# define FB_TLS1_2_NAME ""
+# define FB_TLS1_2_VERSION SSL_UNSUPPORTED_PROTOCOL /**< Unsupported */
+# define FB_TLS1_2_NAME ""                          /**< No name */
 #endif
 
-/* List of protocols supported at compile-time, used for error messages */
+/** List of protocols supported at compile-time, used for error messages */
 #define SSL_KNOWN_PROTOCOLS FB_SSL3_NAME FB_TLS1_NAME FB_TLS1_1_NAME FB_TLS1_2_NAME
 
-/* A single SSL protocol version */
+/**
+ * A single SSL protocol version
+ */
 struct ssl_protocol_version {
-    const char *name;
-    int version;
+    const char *name;   /**< Protocol version name */
+    int version;        /**< Protocol version number */
 };
 
-/* Valid SSL protocol versions */
+/**
+ * @var SSL_PROTOCOLS
+ *      Valid SSL protocol versions
+ */
 static const struct ssl_protocol_version SSL_PROTOCOLS[] = {
     {"None", 0},
     {"SSLv3", FB_SSL3_VERSION},
@@ -97,26 +102,30 @@ static const struct ssl_protocol_version SSL_PROTOCOLS[] = {
     {"TLSv1.2", FB_TLS1_2_VERSION}
 };
 
+/**
+ * @var SSL_PROTOCOLS_SIZE
+ *      The number of elements in SSL_PROTOCOLS
+ */
 static const size_t SSL_PROTOCOLS_SIZE = (sizeof(SSL_PROTOCOLS) / sizeof(SSL_PROTOCOLS[0]));
 
-/* SSL logging levels */
+/** SSL logging levels */
 typedef enum {
-    SSL_LOGGING_NONE,
-    SSL_LOGGING_ERROR,
-    SSL_LOGGING_WARN,
-    SSL_LOGGING_DEBUG
+    SSL_LOGGING_NONE,   /**< No logging */
+    SSL_LOGGING_ERROR,  /**< Errors */
+    SSL_LOGGING_WARN,   /**< Warnings */
+    SSL_LOGGING_DEBUG   /**< Debug level */
 } ssl_logging_t;
 
 
 /**
- * @private
- * @var SSL logging level for connection handling
+ * @var ssl_logging_connect
+ *      SSL logging level for connection handling
  */
 extern const ssl_logging_t ssl_logging_connect;
 
 /**
- * @private
- * @var SSL logging level for socket reads/writes
+ * @var ssl_logging_stream
+ *      SSL logging level for socket reads/writes
  */
 extern const ssl_logging_t ssl_logging_stream;
 
@@ -130,7 +139,7 @@ extern const ssl_logging_t ssl_logging_stream;
  * @returns Version number if found, SSL_UNSUPPORTED_PROTOCOL if unsupported,
  *          or -1 if not found
  */
-int ssl_protocol_from_string(const char *);
+int ssl_protocol_from_string(const char * value);
 
 /**
  * Sets the minimum and maximum SSL protocol version given a version string
@@ -146,7 +155,7 @@ int ssl_protocol_from_string(const char *);
  * @param min_version  Name of minimum required SSL protocol version, or "None"
  * @returns boolean true if successful, false otherwise
  */
-int set_ssl_ctx_versions(SSL_CTX *, const char *);
+int set_ssl_ctx_versions(SSL_CTX * ssl_ctx, const char * min_version);
 
 /**
  * Checks for the last SSL error, if any, recording it to the log
@@ -160,9 +169,11 @@ int set_ssl_ctx_versions(SSL_CTX *, const char *);
  * @returns SSL_ERROR_NONE if successful or unknown, otherwise value from
  *          SSL_get_error()
  */
-int ssl_check_error(struct descriptor_data *, const int, const ssl_logging_t);
+int ssl_check_error(struct descriptor_data * d, const int ret_value,
+                    const ssl_logging_t log_level);
 
-/*
+#ifndef SSL_ERROR_WANT_ACCEPT
+/**
  * SSL_ERROR_WANT_ACCEPT is not defined in OpenSSL v0.9.6i and before. This
  * fix allows to compile fbmuck on systems with an 'old' OpenSSL library, and
  * yet have the server recognize the WANT_ACCEPT error when ran on systems with
@@ -170,8 +181,7 @@ int ssl_check_error(struct descriptor_data *, const int, const ssl_logging_t);
  * define change in ssl.h in the future (unlikely but not impossible), the
  * define below would have to be changed too...
  */
-#ifndef SSL_ERROR_WANT_ACCEPT
-#define SSL_ERROR_WANT_ACCEPT 8
+#define SSL_ERROR_WANT_ACCEPT
 #endif
 
 #endif /* USE_SSL */

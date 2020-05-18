@@ -10,27 +10,31 @@
 
 #include "config.h"
 
-/* Possible data types that may be stored in a hash table */
+/**
+ * Possible data types that may be stored in a hash table
+ */
 union u_hash_data {
-    int ival;                   /* Store compiler tokens here */
-    dbref dbval;                /* Player hashing will want this */
-    void *pval;                 /* compiler $define strings use this */
+    int ival;                   /**< Store compiler tokens here */
+    dbref dbval;                /**< Player hashing will want this */
+    void *pval;                 /**< compiler $define strings use this */
 };
 
-/* The actual hash entry for each item */
+/**
+ * The actual hash entry for each item
+ */
 struct t_hash_entry {
-    struct t_hash_entry *next;  /* Pointer for conflict resolution */
-    const char *name;           /* The name of the item */
-    union u_hash_data dat;      /* Data value for item */
+    struct t_hash_entry *next;  /**< Pointer for conflict resolution */
+    const char *name;           /**< The name of the item */
+    union u_hash_data dat;      /**< Data value for item */
 };
 
-typedef union u_hash_data hash_data;
-typedef struct t_hash_entry hash_entry;
-typedef hash_entry *hash_tab;
+typedef union u_hash_data hash_data;    /**< Union hash data type */
+typedef struct t_hash_entry hash_entry; /**< entry for hash table */
+typedef hash_entry *hash_tab;           /**< A hash table itself */
 
-#define PLAYER_HASH_SIZE   (1024)       /* Table for player lookups */
-#define COMP_HASH_SIZE     (256)        /* Table for compiler keywords */
-#define DEFHASHSIZE        (256)        /* Table for compiler $defines */
+#define PLAYER_HASH_SIZE   (1024)       /**< Table for player lookups */
+#define COMP_HASH_SIZE     (256)        /**< Table for compiler keywords */
+#define DEFHASHSIZE        (256)        /**< Table for compiler $defines */
 
 /**
  * Add a string to a hash table
@@ -49,7 +53,7 @@ hash_entry *add_hash(const char *name, hash_data data, hash_tab * table,
                      unsigned int size);
 
 /*
- * @TODO All these functions take a size parameter.  Wouldn't it make more
+ * @todo All these functions take a size parameter.  Wouldn't it make more
  *       sense to have a hash header struct that keeps track of that?  Its
  *       Maybe its not worth the effort, but it seems like something that
  *       would be easy to break if we're not careful.
