@@ -2072,9 +2072,9 @@ process_commands(void)
 static ssize_t
 socket_read(struct descriptor_data *d, void *buf, size_t count)
 {
+#ifdef USE_SSL
     int i;
 
-#ifdef USE_SSL
     if (!d->ssl_session) {
 #endif
         /* If no SSL, this is the only line in this function */
@@ -2138,7 +2138,9 @@ socket_read(struct descriptor_data *d, void *buf, size_t count)
 static ssize_t
 socket_write(struct descriptor_data * d, const void *buf, size_t count)
 {
+#ifdef USE_SSL
     int i;
+#endif
 
     d->last_pinged_at = time(NULL);
 
