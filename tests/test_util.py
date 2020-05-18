@@ -98,7 +98,7 @@ class ServerTestBase(unittest.TestCase):
         )
         self.current_stdout = b''
         self.current_stderr = b''
-        self.stderr_future = asyncio.create_task(self.process.stderr.read())
+        self.stderr_future = asyncio.ensure_future(self.process.stderr.read())
     
 
     async def _read_to_prompt(self, prompt):
