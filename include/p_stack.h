@@ -877,6 +877,9 @@ void prim_findmark(PRIM_PROTOTYPE);
  */
 void prim_trypop(PRIM_PROTOTYPE);
 
+/**
+ * Primitive callback functions
+ */
 #define PRIMS_STACK_FUNCS prim_pop, prim_dup, prim_pdup, prim_nip, prim_tuck, \
     prim_at, prim_bang, prim_variable, prim_localvar, prim_swap, prim_over, \
     prim_pick, prim_put, prim_rot, prim_rrot, prim_rotate, prim_dbtop, \
@@ -888,6 +891,9 @@ void prim_trypop(PRIM_PROTOTYPE);
     prim_secure_sysvars, prim_cmd, prim_preempt, prim_foreground, \
     prim_background, prim_shallow_copy, prim_deep_copy
 
+/**
+ * Primitive names - must be in same order as the callback functions
+ */
 #define PRIMS_STACK_NAMES "POP", "DUP", "?DUP", "NIP", "TUCK",	\
     "@", "!", "VARIABLE", "LOCALVAR", "SWAP", "OVER", "PICK",	\
     "PUT", "ROT", "-ROT", "ROTATE", "DBTOP", "DEPTH", "VERSION",\
@@ -898,8 +904,14 @@ void prim_trypop(PRIM_PROTOTYPE);
     "}", "FULLDEPTH", "SECURE_SYSVARS", "CMD", "PREEMPT",	\
     "FOREGROUND", "BACKGROUND", "SHALLOW_COPY", "DEEP_COPY"
 
+/**
+ * Primitive callback functions
+ */
 #define PRIMS_INTERNAL_FUNCS prim_foriter, prim_forpop, prim_trypop
 
+/**
+ * Primitive names - must be in same order as the callback functions
+ */
 #define PRIMS_INTERNAL_NAMES " FORITER", " FORPOP", " TRYPOP"
 
 #endif /* !P_STACK_H */

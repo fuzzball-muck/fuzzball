@@ -782,9 +782,11 @@ void prim_array_get_reflist(PRIM_PROTOTYPE);
  * Consumes a dbref, a property name, and a list array of dbrefs.
  *
  * This stores the dbrefs in a reflist which is space delimited string of
- * refs that start with #.  It is functionally equivalent to:
+ * refs that start with \#.  It is functionally equivalent to:
  *
+ * @verbatim
  * #target_db "target/prop" { #1 #2 #3 }list " " array_join setprop
+ * @endverbatim
  *
  * In fact, if we were inclined to do so, this could easily be converted
  * to a compiler macro, though there are probably more downsides to that
@@ -985,6 +987,9 @@ void prim_array_filter_lock(PRIM_PROTOTYPE);
  */
 void prim_array_notify_secure(PRIM_PROTOTYPE);
 
+/**
+ * Array primitive function handlers
+ */
 #define PRIMS_ARRAY_FUNCS prim_array_make, prim_array_make_dict, \
         prim_array_explode, prim_array_vals, prim_array_keys, \
         prim_array_first, prim_array_last, prim_array_next, prim_array_prev, \
@@ -1005,6 +1010,9 @@ void prim_array_notify_secure(PRIM_PROTOTYPE);
         prim_array_filter_flags, prim_array_interpret, prim_array_notify_secure, \
         prim_array_default_pinning, prim_array_filter_lock
 
+/**
+ * Array primitive function names
+ */
 #define PRIMS_ARRAY_NAMES "ARRAY_MAKE", "ARRAY_MAKE_DICT", \
         "ARRAY_EXPLODE", "ARRAY_VALS", "ARRAY_KEYS", \
         "ARRAY_FIRST", "ARRAY_LAST", "ARRAY_NEXT", "ARRAY_PREV", \

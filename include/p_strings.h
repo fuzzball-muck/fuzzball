@@ -842,6 +842,9 @@ void prim_otell(PRIM_PROTOTYPE);
  */
 void prim_pose_separatorp(PRIM_PROTOTYPE);
 
+/**
+ * Primitive callback functions
+ */
 #define PRIMS_STRINGS_FUNCS prim_numberp, prim_stringcmp, prim_strcmp,        \
     prim_strncmp, prim_strcut, prim_strlen, prim_strcat, prim_atoi,           \
     prim_notify, prim_notify_exclude, prim_intostr, prim_explode, prim_subst, \
@@ -855,6 +858,9 @@ void prim_pose_separatorp(PRIM_PROTOTYPE);
     prim_instring, prim_rinstring, prim_md5hash, prim_strip,    \
     prim_tell, prim_otell, prim_pose_separatorp
 
+/**
+ * Primitive names - must be in same order as the callback functions
+ */
 #define PRIMS_STRINGS_NAMES "NUMBER?", "STRINGCMP", "STRCMP",  \
     "STRNCMP", "STRCUT", "STRLEN", "STRCAT", "ATOI",           \
     "NOTIFY", "NOTIFY_EXCLUDE", "INTOSTR", "EXPLODE", "SUBST", \

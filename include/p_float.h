@@ -504,6 +504,9 @@ void prim_dist3d(PRIM_PROTOTYPE);
  */
 void prim_diff3(PRIM_PROTOTYPE);
 
+/**
+ * Primitive callbacks
+ */
 #define PRIMS_FLOAT_FUNCS prim_ceil, prim_floor, prim_float, prim_sqrt,  \
     prim_pow, prim_frand, prim_gaussian, prim_sin, prim_cos, prim_tan, prim_asin,   \
     prim_acos, prim_atan, prim_atan2, prim_exp, prim_log, prim_log10,\
@@ -511,6 +514,9 @@ void prim_diff3(PRIM_PROTOTYPE);
     prim_pi, prim_inf, prim_round, prim_dist3d, prim_xyz_to_polar,  \
     prim_polar_to_xyz, prim_diff3, prim_epsilon, prim_ftostrc, prim_pow
 
+/**
+ * Primitive names -- must be in same order as corresponding function
+ */
 #define PRIMS_FLOAT_NAMES "CEIL", "FLOOR", "FLOAT", "SQRT", \
     "POW", "FRAND", "GAUSSIAN", "SIN", "COS", "TAN", "ASIN",        \
     "ACOS", "ATAN", "ATAN2", "EXP", "LOG", "LOG10",     \

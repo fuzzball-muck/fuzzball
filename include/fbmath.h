@@ -15,22 +15,37 @@
 #include <stdint.h>
 
 #if defined(HUGE_VAL)
-# define INF (HUGE_VAL)
-# define NINF (-HUGE_VAL)
+# define INF (HUGE_VAL)     /**< Infinity */
+# define NINF (-HUGE_VAL)   /**< Negative infinity */
 #else
-# define INF (9.9E999)
-# define NINF (-9.9E999)
+# define INF (9.9E999)      /**< Infinity */
+# define NINF (-9.9E999)    /**< Negative infinity */
 #endif
 
 #ifndef M_PI
-# define M_PI 3.14159265358979323846
+# define M_PI 3.14159265358979323846    /**< Pi */
 #endif
 
 #ifndef M_PI_2
-# define M_PI_2 1.57079632679489661923
+# define M_PI_2 1.57079632679489661923  /**< Pi/2 */
 #endif
 
+/**
+ * Determine the minimum value of p vs. q
+ *
+ * @param p the first value to check
+ * @param q the second value to check
+ * @return the smaller of the two values
+ */
 #define MIN(p,q) ((p >= q) ? q : p)
+
+/**
+ * Determine the maximum value of p vs. q
+ *
+ * @param p the first value to check
+ * @param q the second value to check
+ * @return the larger of the two values
+ */
 #define MAX(p,q) ((p >= q) ? p : q)
 
 /**
@@ -48,7 +63,7 @@ double _int_f_rand(void);
  * If this returns false, then floating point i_bounds error flag should
  * be set.
  *
- * @param the value to test
+ * @param test the value to test
  * @return boolean true if test is within bounds, false otherwise
  */
 int arith_good(double test);

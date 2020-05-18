@@ -14,7 +14,7 @@
 #include "config.h"
 #include "fbmuck.h"
 
-/*
+/**
  * Property data union to support all available property types.
  *
  * String, lock, integer, double, or DB Reference number.
@@ -27,64 +27,71 @@
  * Perhaps it is there to ensure a minimum size of 4 bytes for the union.
  */
 union pdata_u {
-    char *str;
-    struct boolexp *lok;
-    int val;
-    double fval;
-    dbref ref;
-    long pos;
+    char *str;              /**< String data */
+    struct boolexp *lok;    /**< Boolean/lock data */
+    int val;                /**< Integer data */
+    double fval;            /**< Float data */
+    dbref ref;              /**< DBREF data */
+    long pos;               /**< Probably unused ? */ 
 };
 
-/* data struct for setting data. */
+/**
+ * data struct for setting data.
+ */
 struct pdata {
-    unsigned short flags;
-    union pdata_u data;
+    unsigned short flags;   /**< Flags for the property */
+    union pdata_u data;     /**< The data contained in the property */
 };
-typedef struct pdata PData;
 
-/* Property struct */
+typedef struct pdata PData; /**< Data struct for setting data */
+
+/**
+ * Property struct
+ */
 struct plist {
-    unsigned short flags;
-    short height;		/* satisfy the avl monster.  */
-    union pdata_u data;
-    struct plist *left, *right, *dir;
-    char key[1];
+    unsigned short flags;   /**< Flags */
+    short height;           /**< AVL book-keeping  */
+    union pdata_u data;     /**< The different kinds of types */
+    struct plist *left;     /**< Left node */
+    struct plist *right;    /**< Right node */
+    struct plist *dir;      /**< Directory node */
+    char key[1];            /**< key */
 };
 
-/* property node pointer type */
+/** property node pointer type */
 typedef struct plist *PropPtr;
 
 /* propload queue types */
-#define PROPS_UNLOADED 0x0
-#define PROPS_LOADED   0x1
-#define PROPS_PRIORITY 0x2
-#define PROPS_CHANGED  0x3
+#define PROPS_UNLOADED 0x0  /**< Unloaded props */
+#define PROPS_LOADED   0x1  /**< Props loaded */
+#define PROPS_PRIORITY 0x2  /**< Props priority */
+#define PROPS_CHANGED  0x3  /**< PRops changed */
 
 /* property value types */
-#define PROP_DIRTYP   0x0
-#define PROP_STRTYP   0x2
-#define PROP_INTTYP   0x3
-#define PROP_LOKTYP   0x4
-#define PROP_REFTYP   0x5
-#define PROP_FLTTYP   0x6
-#define PROP_TYPMASK  0x7
+#define PROP_DIRTYP   0x0   /**< Prop dirty type */
+#define PROP_STRTYP   0x2   /**< String type */
+#define PROP_INTTYP   0x3   /**< Integer type */
+#define PROP_LOKTYP   0x4   /**< Lock type */
+#define PROP_REFTYP   0x5   /**< Reference type */
+#define PROP_FLTTYP   0x6   /**< Float type */
+#define PROP_TYPMASK  0x7   /**< Type mask */
 
 /* Internally used prop flags.  Never stored on disk. */
-#define PROP_ISUNLOADED  0x0200
-#define PROP_TOUCHED     0x0400
-#define PROP_DIRUNLOADED 0x0800
+#define PROP_ISUNLOADED  0x0200 /**< Prop is unloaded */
+#define PROP_TOUCHED     0x0400 /**< Prop is dirty */
+#define PROP_DIRUNLOADED 0x0800 /**< Directory unloaded */
 
-#define PROP_UNLOCKED_VAL	"*UNLOCKED*"
+#define PROP_UNLOCKED_VAL	"*UNLOCKED*"    /**< Unlocked display */
 
 /* Blessed props evaluate with wizbit MPI perms. */
-#define PROP_BLESSED     0x1000
+#define PROP_BLESSED     0x1000 /**< Blessed prop bit */
 
 /* You will never want to change these, or you will make your MUCK
  * incompatible with pretty much everything.
  */
-#define EXEC_SIGNAL '@'
-#define PROP_DELIMITER ':'
-#define PROPDIR_DELIMITER '/'
+#define EXEC_SIGNAL '@'         /**< Indicator to run a MUF */
+#define PROP_DELIMITER ':'      /**< Property delimiter */
+#define PROPDIR_DELIMITER '/'   /**< Propdir delimiter */
 
 /* You should never use the underlying property structure directly.  The
  * preferred method is to use these defines; theoretically, the underlying
@@ -92,46 +99,99 @@ typedef struct plist *PropPtr;
  * API will be stable.
  */
 
-/* Set and get a prop's directory */
+/**
+ * Set a prop's directory
+ *
+ * @param x the property
+ * @param y the directory
+ */
 #define SetPDir(x,y) {(x)->dir = y;}
+
+/**
+ * Get a prop's directory
+ *
+ * @param x the property to fetch a directory for
+ * @return the prop directory
+ */
 #define PropDir(x) ((x)->dir)
 
-/* These set the different kinds of property values.
+/**
+ * These set the different kinds of property values.
  *
  * SetPDataUnion is used to copy a PData over without understanding the
  * underlying type, and is used (at the time of this writing) exclusively
  * by set_property_nofetch.  You would generally not want to use that one.
  */
 #define SetPDataUnion(x,z) {(x)->data = z;}
-#define SetPDataStr(x,z) {(x)->data.str = z;}   /* String         */
-#define SetPDataVal(x,z) {(x)->data.val = z;}   /* integer        */
-#define SetPDataRef(x,z) {(x)->data.ref = z;}   /* DBREF          */
-#define SetPDataLok(x,z) {(x)->data.lok = z;}   /* Lock           */
-#define SetPDataFVal(x,z) {(x)->data.fval = z;} /* Floating Point */
+#define SetPDataStr(x,z) {(x)->data.str = z;}   /**< String setter         */
+#define SetPDataVal(x,z) {(x)->data.val = z;}   /**< integer setter        */
+#define SetPDataRef(x,z) {(x)->data.ref = z;}   /**< DBREF setter          */
+#define SetPDataLok(x,z) {(x)->data.lok = z;}   /**< Lock setter           */
+#define SetPDataFVal(x,z) {(x)->data.fval = z;} /**< Floating Point setter */
 
 /* These are the getters that correspond to the setters above */
-#define PropDataStr(x) ((x)->data.str)      /* String         */
-#define PropDataVal(x) ((x)->data.val)      /* Integer        */
-#define PropDataRef(x) ((x)->data.ref)      /* DBREF          */
-#define PropDataLok(x) ((x)->data.lok)      /* Lock           */
-#define PropDataFVal(x) ((x)->data.fval)    /* Floating Point */
+#define PropDataStr(x) ((x)->data.str)      /**< String getter         */
+#define PropDataVal(x) ((x)->data.val)      /**< Integer getter        */
+#define PropDataRef(x) ((x)->data.ref)      /**< DBREF getter          */
+#define PropDataLok(x) ((x)->data.lok)      /**< Lock getter           */
+#define PropDataFVal(x) ((x)->data.fval)    /**< Floating Point getter */
 
-/* Get prop name */
+/** Get prop name */
 #define PropName(x) ((x)->key)
 
-/* Set and get property flags */
+/**
+ * Set property flag
+ *
+ * @param x the property to set flags on
+ * @param y the flag to set
+ */
 #define SetPFlags(x,y) {(x)->flags = ((x)->flags & PROP_TYPMASK) | (unsigned short)y;}
+
+/**
+ * Get the property flags, not including type flags
+ *
+ * @param x the object to get flags from
+ * @return the flags without the type flags
+ */
 #define PropFlags(x) ((x)->flags & ~PROP_TYPMASK)
 
-/* Set and get property type */
+/**
+ * Set property type
+ *
+ * @param x the property to set type on
+ * @param y the type to set
+ */
 #define SetPType(x,y) {(x)->flags = ((x)->flags & ~PROP_TYPMASK) | (unsigned short)y;}
+
+/**
+ * Get property type
+ *
+ * @param x the object to get type from
+ * @return the type without any of the other flags.
+ */
 #define PropType(x) ((x)->flags & PROP_TYPMASK)
 
-/* Set and get the raw flags (unsigned short integer) */
+/**
+ * Set property flags raw
+ *
+ * This doesn't mask the type in any way.
+ *
+ * @param x the property structure to alter
+ * @param y the flags to set
+ */
 #define SetPFlagsRaw(x,y) {(x)->flags = (unsigned short)y;}
+
+/**
+ * Get property flags raw
+ *
+ * This doesn't mask the type in any way.
+ *
+ * @param x the property structure to fetch flags for
+ * @return the flags field of x
+ */
 #define PropFlagsRaw(x) ((x)->flags)
 
-/* Check if property is blessed */
+/** Check if property is blessed */
 #define Prop_Blessed(obj,propname) (get_property_flags(obj, propname) & PROP_BLESSED)
 
 /* property access macros
@@ -140,18 +200,28 @@ typedef struct plist *PropPtr;
  * with pretty much everything.
  */
 
-#define PROP_RDONLY '_'
-#define PROP_RDONLY2 '%'
-#define PROP_PRIVATE '.'
-#define PROP_HIDDEN '@'
-#define PROP_SEEONLY '~'
+#define PROP_RDONLY '_'     /**< User read only property character */
+#define PROP_RDONLY2 '%'    /**< Other user read only property character */
+#define PROP_PRIVATE '.'    /**< Private property character */
+#define PROP_HIDDEN '@'     /**< Hidden property character */
+#define PROP_SEEONLY '~'    /**< Wizard set-only, user read-only character */
 
 /* Macros to check property access types */
+
+/** Check if property name is read only */
 #define Prop_ReadOnly(name) \
     (Prop_Check(name, PROP_RDONLY) || Prop_Check(name, PROP_RDONLY2))
+
+/** Check if property name is private */
 #define Prop_Private(name) Prop_Check(name, PROP_PRIVATE)
+
+/** Check if property is wizard set-only, user read-only */
 #define Prop_SeeOnly(name) Prop_Check(name, PROP_SEEONLY)
+
+/** Check if property is hidden */
 #define Prop_Hidden(name) Prop_Check(name, PROP_HIDDEN)
+
+/** Check if property is a system property */
 #define Prop_System(name) is_prop_prefix(name, "@__sys__")
 
 /**
@@ -277,7 +347,7 @@ void copy_properties_onto(dbref from, dbref to);
  * either copy_prop or copy_properties_onto.  Were we to move this call to
  * property.c, we could avoid having it in this header.
  *
- * @TODO Consider refactoring this so it lives in property.c and remove
+ * @todo Consider refactoring this so it lives in property.c and remove
  *       the need for 'obj'
  * @internal
  * @param obj DBREF object that 'old' props belong to.
@@ -430,9 +500,9 @@ const char *envpropstr(dbref * where, const char *propname);
 
 /**
  * exec_or_notify is the thing that is used to process various "message"
- * props such as the props for @success, @odrop, etc.  It understands:
+ * props such as the props for \@success, \@odrop, etc.  It understands:
  *
- * - Strings that start with '@' symbol and run a MUF program
+ * - Strings that start with '\@' symbol and run a MUF program
  * - Any other string.  MPI will be parsed.
  *
  * MUFs are run with PREEMPT and HARDUID.  Error conditions are notify'd
@@ -550,7 +620,7 @@ void free_propnode(PropPtr node);
  *
  * @return a PropPtr object with the property, or NULL if not found.
  */
-PropPtr get_property(dbref player, const char *type);
+PropPtr get_property(dbref player, const char *pname);
 
 /**
  * The name of this call is a little bit of a misnomer; this actually
@@ -651,7 +721,7 @@ int get_property_value(dbref player, const char *pname);
  * match the integer instead of the string, which may be a way to bypass
  * locks (as this call seems to be used for locking primarily).
  *
- * @TODO: Code review - would a call such as :
+ * @todo: Code review - would a call such as :
  *        has_property(x, db, db2, "whatever/prop", "PassString", 0)
  *        successfully pass the lock check if the property is an
  *        integer propval '0' instead of 'PassString' which would be
@@ -701,7 +771,7 @@ int has_property(int descr, dbref player, dbref what, const char *pname,
  *
  * @return boolean - true if property exists with value, false otherwise.
  */
-int has_property_strict(int descr, dbref player, dbref what, const char *type,
+int has_property_strict(int descr, dbref player, dbref what, const char *pname,
                         const char *strval, int value);
 
 /**
@@ -805,12 +875,12 @@ PropPtr next_prop(PropPtr list, PropPtr prop, char *name, size_t maxlen);
 char *next_prop_name(dbref player, char *outbuf, size_t outbuflen, char *name);
 
 /**
- * An "oprop" is something like an @OSuccess or @ODrop ... a message that
+ * An "oprop" is something like an \@OSuccess or \@ODrop ... a message that
  * is prefixed with the player's name.  This loads the property, parses
  * pronouns and MPI, then emits the message to the room the triggering
  * player is in.
  *
- * This is equivalent to exec_or_notify which works for @Success, etc.
+ * This is equivalent to exec_or_notify which works for \@Success, etc.
  * messages.
  *
  * @param descr The descriptor of the person triggering
@@ -821,7 +891,7 @@ char *next_prop_name(dbref player, char *outbuf, size_t outbuflen, char *name);
  * @param prefix What will be prefixed to this message before broadcast.
  *        This is pretty much always the player's name.  You do not need
  *        to include a trailing space.
- * @param whatcalled The &how / command verb, such as (@OSucc)
+ * @param whatcalled The &how / command verb, such as (\@OSucc)
  */
 void parse_oprop(int descr, dbref player, dbref dest, dbref exit,
                  const char *propname, const char *prefix,
@@ -1008,7 +1078,7 @@ int reflist_find(dbref obj, const char *propname, dbref tofind);
 
 /**
  * This removes a property from a given object.  "sync" is for some funky
- * logic around the gender property.  If the MUCK's @tune'd gender property
+ * logic around the gender property.  If the MUCK's \@tune'd gender property
  * is not the same as LEGACY_GENDER_PROP (usually "sex"), and sync is 0,
  * then LEGACY_GENDER_PROP and the tune'd gender property receive the
  * same fate.
@@ -1035,9 +1105,9 @@ void remove_property(dbref player, const char *pname, int sync);
 
 /**
  * This call is to remove ALL properties on an object; it is used
- * for @set whatever=:clear exclusively at the time of this writing.
+ * for \@set whatever=:clear exclusively at the time of this writing.
  *
- * If 'all' is 0, "wizard" properties (@ and ~ properties, or more
+ * If 'all' is 0, "wizard" properties (\@ and ~ properties, or more
  * specifically, PROP_HIDDEN and PROP_SEEONLY properties) and the "_/"
  * propdir are left alone.
  *
@@ -1050,7 +1120,7 @@ void remove_property_list(dbref player, int all);
 
 /**
  * This removes a property from a given object.  "sync" is for some funky
- * logic around the gender property.  If the MUCK's @tune'd gender property
+ * logic around the gender property.  If the MUCK's \@tune'd gender property
  * is not the same as LEGACY_GENDER_PROP (usually "sex"), and sync is 0,
  * then LEGACY_GENDER_PROP and the tune'd gender property receive the
  * same fate.
@@ -1080,7 +1150,7 @@ void remove_property_list(dbref player, int all);
 void remove_property_nofetch(dbref player, const char *type, int sync);
 
 /**
- * This command is the underpinning of @lock, @flock, @linklock and @chlock.
+ * This command is the underpinning of \@lock, \@flock, \@linklock and \@chlock.
  * Please note that part of this function's functionality relies on the
  * global 'match_args', so this is not really an API call.  This is
  * a command implementation.
@@ -1092,7 +1162,7 @@ void remove_property_nofetch(dbref player, const char *type, int sync);
  * If there is no '=' mark in match_args, it will emit a message
  * describing the lock on the object and does not set anything.
  *
- * If there is an = but no string after the equals (i.e. '@lock x='),
+ * If there is an = but no string after the equals (i.e. '\@lock x='),
  * then it clears the lock
  *
  * Otherwise, the lock is 'compiled' and, if valid, set on the property
@@ -1112,8 +1182,8 @@ void set_standard_lock(int descr, dbref player, const char *objname,
                        const char *keyvalue);
 
 /**
- * This command is the underpinning of all of the @ commands that just
- * set a property under _/ .... for instance, @odrop, @describe, etc.
+ * This command is the underpinning of all of the \@ commands that just
+ * set a property under _/ .... for instance, \@odrop, \@describe, etc.
  * As such, this is not really an API call and it relies on the
  * global 'match_args' as well as emits messages to the user.
  *
@@ -1172,7 +1242,7 @@ void set_standard_property(int descr, dbref player, const char *objname,
  *
  * And if this comment wasn't long enough -- we've also got "sync"!
  * "sync" is for some funky logic around the gender property.  If the MUCK's
- * @tune'd gender property is not the same as LEGACY_GENDER_PROP
+ * \@tune'd gender property is not the same as LEGACY_GENDER_PROP
  * (usually "sex"), and sync is 0, then LEGACY_GENDER_PROP and the tune'd
  * gender property receive the same fate.
  *
@@ -1245,7 +1315,7 @@ void set_property_flags(dbref player, const char *pname, int flags);
  *
  * And if this comment wasn't long enough -- we've also got "sync"!
  * "sync" is for some funky logic around the gender property.  If the MUCK's
- * @tune'd gender property is not the same as LEGACY_GENDER_PROP
+ * \@tune'd gender property is not the same as LEGACY_GENDER_PROP
  * (usually "sex"), and sync is 0, then LEGACY_GENDER_PROP and the tune'd
  * gender property receive the same fate.
  *
@@ -1322,7 +1392,7 @@ void untouchprops_incremental(int limit);
 
 /**
  * Check to see if a property name is valid.  Which, at present, means
- * the name does not contain a '\r' or PROP_DELIMITER (':') in it.
+ * the name does not contain a '\\r' or PROP_DELIMITER (':') in it.
  *
  * Note - This function is used by MUF primitives but not by the rest of
  * the property 'library' here.  The preference with the underlying library

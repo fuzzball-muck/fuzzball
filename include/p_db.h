@@ -82,6 +82,7 @@ void prim_addpennies(PRIM_PROTOTYPE);
  * @param pc the program counter pointer
  * @param arg the argument stack
  * @param top the top-most item of the stack
+ * @param fr the program frame
  */
 void prim_moveto(PRIM_PROTOTYPE);
 
@@ -1229,6 +1230,9 @@ void prim_supplicant(PRIM_PROTOTYPE);
  */
 void prim_toadplayer(PRIM_PROTOTYPE);
 
+/**
+ * Primitive callbacks
+ */
 #define PRIMS_DB_FUNCS prim_addpennies, prim_moveto, prim_pennies,     	\
     prim_dbref, prim_contents, prim_exits, prim_next, prim_name,	\
     prim_setname, prim_match, prim_rmatch, prim_copyobj, prim_set,	\
@@ -1247,6 +1251,9 @@ void prim_toadplayer(PRIM_PROTOTYPE);
     prim_setlinks_array, prim_toadplayer, prim_supplicant,		\
     prim_pname_history
 
+/**
+ * Primitive callback function names - must be in same order as callbacks.
+ */
 #define PRIMS_DB_NAMES "ADDPENNIES", "MOVETO", "PENNIES",  \
     "DBREF", "CONTENTS", "EXITS", "NEXT", "NAME",	   \
     "SETNAME", "MATCH", "RMATCH", "COPYOBJ", "SET",	   \

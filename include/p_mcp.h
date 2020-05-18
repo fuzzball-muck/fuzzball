@@ -108,9 +108,15 @@ void prim_mcp_supports(PRIM_PROTOTYPE);
  */
 void prim_mcp_send(PRIM_PROTOTYPE);
 
+/**
+ * Primitive callback functions
+ */
 #define PRIMS_MCP_FUNCS prim_mcp_register, prim_mcp_bind, prim_mcp_supports, \
         prim_mcp_send, prim_mcp_register_event
 
+/**
+ * Primitive names - must be in same order as the callback functions
+ */
 #define PRIMS_MCP_NAMES "MCP_REGISTER", "MCP_BIND", "MCP_SUPPORTS", \
         "MCP_SEND", "MCP_REGISTER_EVENT"
 

@@ -13,56 +13,85 @@
 #include "config.h"
 #include "inst.h"
 
-#define ARRAY_UNDEFINED     0   /* No type yet                            */
-#define ARRAY_PACKED        1   /* A 'packed' array is sequential numbers */
-#define ARRAY_DICTIONARY    2   /* This is a mapping of keys to values    */
+#define ARRAY_UNDEFINED     0   /**< No type yet                            */
+#define ARRAY_PACKED        1   /**< A 'packed' array is sequential numbers */
+#define ARRAY_DICTIONARY    2   /**< This is a mapping of keys to values    */
 
+/**
+ * An array_data is logically just an inst, but this will give us some
+ * extra type information as we use it.
+ */
 typedef struct inst array_data;
+
+/**
+ * An array_iterater is also logically just an inst, but it makes sense
+ * to use a type to reduce confusion.
+ */
 typedef struct inst array_iter;
 
-/* Arrays are implemented as AVL trees much like property directories */
+/**
+ * Arrays are implemented as AVL trees much like property directories
+ */
 typedef struct array_tree_t {
-    struct array_tree_t *left;      /* The left child node  */
-    struct array_tree_t *right;     /* The right child node */
-    array_iter key;                 /* Key for this node    */
-    array_data data;                /* Data for this node   */
-    short height;                   /* Height of node       */
+    struct array_tree_t *left;      /**< The left child node  */
+    struct array_tree_t *right;     /**< The right child node */
+    array_iter key;                 /**< Key for this node    */
+    array_data data;                /**< Data for this node   */
+    short height;                   /**< Height of node       */
 } array_tree;
 
-/* Linked list node structure for stk_arrays. This is used to track what
-   stk_arrays are allocated to a MUF program and cleanup any extras due to
-   circular references.
-
-   The linked list is circular --- a designated stk_array_list of these
-   represents the head/tail of the list (next = head pointer, prev = tail
-   pointer), and is not associated with any stk_array.
-
-   The others elements on the list (iterated by following the next pointers
-   until one reaches the head/tail again) are members of stk_array, and
-   offsetof() is used to access the overall stk_array.
+/**
+ * Linked list node structure for stk_arrays. This is used to track what
+ * stk_arrays are allocated to a MUF program and cleanup any extras due to
+ * circular references.
+ *
+ * The linked list is circular --- a designated stk_array_list of these
+ * represents the head/tail of the list (next = head pointer, prev = tail
+ * pointer), and is not associated with any stk_array.
+ *
+ * The others elements on the list (iterated by following the next pointers
+ * until one reaches the head/tail again) are members of stk_array, and
+ * offsetof() is used to access the overall stk_array.
  */
 typedef struct stk_array_list_t {
-    struct stk_array_list_t *next, *prev;
+    struct stk_array_list_t *next;  /**< Linked list next */
+    struct stk_array_list_y *prev;  /**< Linked list prev */
 } stk_array_list;
 
-/* The currently active stk_array_list to which to assign allocations.
-   If we were multithreaded, this would be thread-local */
+/**
+ * @var stk_array_active_list
+ *      The currently active stk_array_list to which to assign allocations.
+ *      If we were multithreaded, this would be thread-local
+ */
 extern stk_array_list *stk_array_active_list;
 
+/**
+ * Definition of a MUF stack array item - can be a list (packed) or dictionary
+ */
 typedef struct stk_array_t {
-    int links;          /* number of pointers  to array */
-    int items;          /* number of items in array */
-    short type;         /* type of array */
-    int pinned;         /* if pinned, don't dup array on changes */
+    int links;          /**< number of pointers  to array */
+    int items;          /**< number of items in array */
+    short type;         /**< type of array */
+    int pinned;         /**< if pinned, don't dup array on changes */
     union {
-        array_data *packed; /* pointer to packed array */
-        array_tree *dict;   /* pointer to dictionary AVL tree */
-    } data;
-    stk_array_list list_node; /* list array is on, typically of all allocated 
-                               * to a MUF program
+        array_data *packed; /**< pointer to packed array */
+        array_tree *dict;   /**< pointer to dictionary AVL tree */
+    } data;                 /**< Two different array types */
+    stk_array_list list_node; /**< list array is on, typically of all allocated 
+                               *   to a MUF program
                                */
 } stk_array;
 
+/**
+ * Make a stk_array from a stk_array_list
+ *
+ * This is only used in one place (array.c) so we should probably just
+ * delete this define and just put this code inline in place.
+ *
+ * @todo relocate this into array.c
+ * @param x the stk_array_list to convert
+ * @return a stk_array
+ */
 #define STK_ARRAY_FROM_LIST_NODE(x) \
     ((stk_array*) ((unsigned char*) (x) - offsetof(stk_array, list_node)))
 
@@ -310,8 +339,8 @@ int array_last(stk_array *arr, array_iter *item);
  * That may be infeasible regardless, though."
  *
  * I'm not exactly sure what the potential problem here is.
- * @TODO: Figure out the potential problem here and determine if we need
- *        to fix it.
+ * @todo Figure out the potential problem here and determine if we need
+ *       to fix it.
  *
  * @param arr_in the array of keys
  * @param mash the array to modify
@@ -423,7 +452,7 @@ int array_set_strkey(stk_array **harr, const char *key, struct inst *val);
  *
  * @see array_setitem
  *
- * @param harr the array to operate n
+ * @param arr the array to operate n
  * @param key the key to set in the array
  * @param val the value to set at that key position
  * @return return value of array_setitem, which is -1 on failure or number of
@@ -436,7 +465,7 @@ int array_set_strkey_intval(stk_array **arr, const char *key, int val);
  *
  * @see array_setitem
  *
- * @param harr the array to operate n
+ * @param arr the array to operate n
  * @param key the key to set in the array
  * @param val the value to set at that key position
  * @return return value of array_setitem, which is -1 on failure or number of
@@ -558,7 +587,7 @@ void array_maybe_place_on_list(stk_array_list *list, stk_array *array);
  * This does validate if the array has already been removed, so a double
  * removal will not cause any harm.
  *
- * @param the array to remove
+ * @param array the array to remove
  */
 void array_remove_from_list(stk_array *array);
 

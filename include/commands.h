@@ -27,7 +27,7 @@
  * Defined in: create.c
  *
  * The action will not do anything until it is LINKed.  This is the 
- * implementation of @action.
+ * implementation of \@action.
  *
  * Action names must pass ok_object_name.
  *
@@ -48,7 +48,7 @@ void do_action(int descr, dbref player, const char *action_name,
                const char *source_name);
 
 /**
- * Handles the @armageddon command, which hopefully you'll never have to use
+ * Handles the \@armageddon command, which hopefully you'll never have to use
  *
  * This is defined in interface.c
  *
@@ -59,7 +59,7 @@ void do_action(int descr, dbref player, const char *action_name,
  *
  * It will always broadcast a message saying:
  *
- * \r\nImmediate shutdown initiated by {name}\r\n
+ * \\r\\nImmediate shutdown initiated by {name}\\r\\n
  *
  * 'msg', if provided, will be appended after this message.
  *
@@ -73,7 +73,7 @@ void do_armageddon(dbref player, const char *msg);
 /**
  * This routine attaches a previously existing action to a source object.
  * The action will not do anything unless it is LINKed.  This is the
- * implementation of @attach
+ * implementation of \@attach
  *
  * This is defined in create.c
  *
@@ -94,7 +94,7 @@ void do_attach(int descr, dbref player, const char *action_name, const char *sou
  */
 
 /**
- * Implementation of the @bless command
+ * Implementation of the \@bless command
  *
  * This does not handle basic permission checking.  The propname can have
  * wildcards in it.
@@ -106,19 +106,19 @@ void do_attach(int descr, dbref player, const char *action_name, const char *sou
  *
  * @param descr the descriptor of the user doing the command
  * @param player the player doing the command
- * @param what the object being operated on
+ * @param target the thing to bless
  * @param propname the name of the prop to bless.
  */
 void do_bless(int descr, dbref player, const char *target, const char *propname);
 
 /**
- * Implementation of the @boot command
+ * Implementation of the \@boot command
  *
  * Defined in wiz.c
  *
  * WARNING: This call does NOT check to see if 'player' is a wizard.
  *
- * @param player the player doing the @boot command
+ * @param player the player doing the \@boot command
  * @param name the string name that will be matched for the player to boot.
  */ 
 void do_boot(dbref player, const char *name);
@@ -128,28 +128,28 @@ void do_boot(dbref player, const char *name);
  */
 
 /**
- * Implementation of the @chown command
+ * Implementation of the \@chown command
  *
  * This is defined in set.c
  *
- * This handles all the security aspects of the @chown command, including
+ * This handles all the security aspects of the \@chown command, including
  * the various weird details.  Such as THINGs must be held by the person
- * doing the @chowning, only wizards can transfer things from one player
- * to another, players can only @chown the room they are in, and players
- * can @chown any exit that links to something they control.
+ * doing the \@chowning, only wizards can transfer things from one player
+ * to another, players can only \@chown the room they are in, and players
+ * can \@chown any exit that links to something they control.
  *
  * Does not check the builder bit.
  *
  * @param descr the descriptor of the player doing the action
  * @param player the player doing the action
  * @param name the object having its ownership changed
- * @param newowner the new owner for the object, which may be empty string
- *                 to default to 'me'
+ * @param newobj the new owner for the object, which may be empty string
+ *               to default to 'me'
  */
 void do_chown(int descr, dbref player, const char *name, const char *newobj);
 
 /**
- * Use this to clone an object.  Implementation for the @clone command.
+ * Use this to clone an object.  Implementation for the \@clone command.
  *
  * This is defined in create.c
  *
@@ -166,11 +166,11 @@ void do_chown(int descr, dbref player, const char *name, const char *newobj);
 void do_clone(int descr, dbref player, const char *name, const char *rname);
 
 /**
- * Implementation of @contents
+ * Implementation of \@contents
  *
  * This is defined in look.c
  *
- * This searches the contents of a given object, similar to the way @find
+ * This searches the contents of a given object, similar to the way \@find
  * works except confined to a certain object.  It supports a similar
  * syntax.  If 'name' is not provided, defaults to here.  'flags' can have
  * types and also an output type.
@@ -188,7 +188,7 @@ void do_clone(int descr, dbref player, const char *name, const char *rname);
 void do_contents(int descr, dbref player, const char *name, const char *flags);
 
 /**
- * Implementation of @create
+ * Implementation of \@create
  *
  * The definition of this is in create.c
  *
@@ -199,12 +199,12 @@ void do_contents(int descr, dbref player, const char *name, const char *flags);
  *
  * @param player the player doing the create
  * @param name the name of the object
- * @param acost the cost you want to assign, or "" for default.
+ * @param cost the cost you want to assign, or "" for default.
  */
 void do_create(dbref player, char *name, char *cost);
 
 /**
- * Implementation of @credits
+ * Implementation of \@credits
  *
  * Just spits a credits file (tp_file_credits) out to the player.
  *
@@ -219,7 +219,7 @@ void do_credits(dbref player);
  */
 
 /**
- * Implementation of @debug command
+ * Implementation of \@debug command
  *
  * This is defined in wiz.c
  *
@@ -238,7 +238,7 @@ void do_credits(dbref player);
 void do_debug(dbref player, const char *args);
 
 /**
- * Implementation of @dig
+ * Implementation of \@dig
  *
  * This is in create.c
  *
@@ -259,7 +259,7 @@ void do_debug(dbref player, const char *args);
 void do_dig(int descr, dbref player, const char *name, const char *pname);
 
 /**
- * Implemenation of @doing command
+ * Implemenation of \@doing command
  *
  * This is defined in set.c
  *
@@ -303,7 +303,7 @@ void do_doing(int descr, dbref player, const char *name, const char *mesg);
 void do_drop(int descr, dbref player, const char *name, const char *obj);
 
 /**
- * Implementation of the @dump command
+ * Implementation of the \@dump command
  *
  * Defined in game.c
  *
@@ -322,7 +322,7 @@ void do_dump(dbref player, const char *newfile);
  */
 
 /**
- * This is the implementation of @edit
+ * This is the implementation of \@edit
  *
  * This is defined in create.c
  *
@@ -342,11 +342,11 @@ void do_dump(dbref player, const char *newfile);
 void do_edit(int descr, dbref player, const char *name);
 
 /**
- * Implementation of the @entrances command
+ * Implementation of the \@entrances command
  *
  * This is defined in look.c
  *
- * This supports the same sort of flag searches that @find does,
+ * This supports the same sort of flag searches that \@find does,
  * except it searches for exits on the given object (which defaults to here)
  *
  * Under the hood, this uses the checkflags series of methods.
@@ -374,7 +374,7 @@ void do_entrances(int descr, dbref player, const char *name, const char *flags);
  * 'dir' is provided, we'll dump a listing of props instead.  'dir' can
  * have * or ** (recursive) wildcards.
  *
- * So it is tons of little if <has data> then <show data> types of
+ * So it is tons of little if \<has data> then \<show data> types of
  * things, but is overall pretty simple.
  *
  * This does permission checking to make sure the user can examine
@@ -388,7 +388,7 @@ void do_entrances(int descr, dbref player, const char *name, const char *flags);
 void do_examine(int descr, dbref player, const char *name, const char *dir);
 
 /**
- * This is the implementation of the @examine command
+ * This is the implementation of the \@examine command
  *
  * Specifically, this command examines the "sanity" or data integrity of
  * the given object or "here" if no object is provided.  There is NO
@@ -406,7 +406,7 @@ void do_examine_sanity(int descr, dbref player, const char *arg);
  */
 
 /**
- * Implementation of @find command
+ * Implementation of \@find command
  *
  * This implements the find command, which is powered by
  * checkflags.  See that function for full details of how flags work.
@@ -415,7 +415,7 @@ void do_examine_sanity(int descr, dbref player, const char *arg);
  *
  * Takes a search string to look for, and iterates over the entire
  * database to find it.  There is an option to charge players for
- * @find's, probably since this is kind of nasty on the DB.
+ * \@find's, probably since this is kind of nasty on the DB.
  *
  * @param player the player doing the find
  * @param name the search criteria
@@ -424,7 +424,7 @@ void do_examine_sanity(int descr, dbref player, const char *arg);
 void do_find(dbref player, const char *name, const char *flags);
 
 /**
- * The implementation of the @force command
+ * The implementation of the \@force command
  *
  * Defined in wiz.c
  *
@@ -579,7 +579,7 @@ void do_inventory(dbref player);
  */
 
 /**
- * Implementation of @kill command
+ * Implementation of \@kill command
  *
  * Defined in timequeue.c
  *
@@ -618,7 +618,7 @@ void do_kill_process(int descr, dbref player, const char *arg1);
 void do_leave(int descr, dbref player);
 
 /**
- * Implementation of @link command.
+ * Implementation of \@link command.
  *
  * This is in create.c
  *
@@ -632,13 +632,13 @@ void do_leave(int descr, dbref player);
  *
  * @param descr the descriptor of the calling user
  * @param player the calling player
- * @param thing_name the thing to link
- * @param dest_name the destination to link to.
+ * @param name the thing to link
+ * @param room_name the destination to link to.
  */
 void do_link(int descr, dbref player, const char *name, const char *room_name);
 
 /**
- * Implementation of the @list command
+ * Implementation of the \@list command
  *
  * This is defined in edit.c
  *
@@ -649,7 +649,7 @@ void do_link(int descr, dbref player, const char *name, const char *room_name);
  * prefixes:
  *
  * ! - outputs system messages as comments.  This comments anything that
- *     @list is injecting into the message stream, such as the line
+ *     \@list is injecting into the message stream, such as the line
  *     count at the end.
  *
  * @ - List program without line numbers overriding default
@@ -701,11 +701,11 @@ void do_look_at(int descr, dbref player, const char *name, const char *detail);
  */
 
 /**
- * Implementation of @mcpedit command
+ * Implementation of \@mcpedit command
  *
  * Defined in mcp.c
  *
- * The MCP-enabled version of @edit.  The underlying call to the private
+ * The MCP-enabled version of \@edit.  The underlying call to the private
  * function mcpedit_program does check permissions.  This is a wrapper to
  * do object matching.  If MCP is not supported by the client, it enters
  * the regular editor.
@@ -722,11 +722,11 @@ void do_look_at(int descr, dbref player, const char *name, const char *detail);
 void do_mcpedit(int descr, dbref player, const char *name);
 
 /**
- * Implementation of @mcpprogram command
+ * Implementation of \@mcpprogram command
  *
  * Defined in mcp.c
  *
- * The MCP-enabled version of @program.  It creates the program and then
+ * The MCP-enabled version of \@program.  It creates the program and then
  * hands off to the private function mcpedit_program to start editing.
  * It does NOT check to see if the user has a MUCKER bit, so do not rely
  * on this for permission checking.
@@ -745,14 +745,14 @@ void do_mcpprogram(int descr, dbref player, const char *name, const char *rname)
 
 #ifndef NO_MEMORY_COMMAND
 /**
- * Implementation of @memory command
+ * Implementation of \@memory command
  *
  * Defined in wiz.c
  *
  * This displays memory information to the calling user.  Note that it
  * does not do any permission checkings.
  *
- * Much like @usage, this uses a set of #define's to determine what
+ * Much like \@usage, this uses a set of \#define's to determine what
  * is actually displayed due to different features that operating
  * systems support.
  *
@@ -798,7 +798,7 @@ void do_motd(dbref player, char *text);
 void do_move(int descr, dbref player, const char *direction, int lev);
 
 /**
- * Implementation of the @mpitops command
+ * Implementation of the \@mpitops command
  *
  * Defined in wiz.c
  *
@@ -818,7 +818,7 @@ void do_move(int descr, dbref player, const char *direction, int lev);
 void do_mpi_topprofs(dbref player, char *arg1);
 
 /**
- * Implementation of the @muftops command
+ * Implementation of the \@muftops command
  *
  * Defined in wiz.c
  *
@@ -842,7 +842,7 @@ void do_muf_topprofs(dbref player, char *arg1);
  */
 
 /**
- * Implementation of the @name command
+ * Implementation of the \@name command
  *
  * Defined in set.c
  *
@@ -861,7 +861,7 @@ void do_muf_topprofs(dbref player, char *arg1);
 void do_name(int descr, dbref player, const char *name, char *newname);
 
 /**
- * Implements the @newpassword command
+ * Implements the \@newpassword command
  *
  * Defined in wiz.c
  *
@@ -882,7 +882,7 @@ void do_newpassword(dbref player, const char *name, const char *password);
  */
 
 /**
- * Implementation of @open command
+ * Implementation of \@open command
  *
  * This is defined in create.c
  *
@@ -901,14 +901,14 @@ void do_newpassword(dbref player, const char *name, const char *password);
 void do_open(int descr, dbref player, const char *direction, const char *linkto);
 
 /**
- * Implementation of @owned command
+ * Implementation of \@owned command
  *
  * Defined in look.c
  *
  * Like do_find, this is underpinned by the checkflags system.
  * For details of how the flags work, see init_checkflags
  *
- * This does do permission checks.  Like @find, it iterates over the
+ * This does do permission checks.  Like \@find, it iterates over the
  * entire database and supports a lookup cost.
  *
  * @see init_checkflags
@@ -945,7 +945,7 @@ void do_owned(dbref player, const char *name, const char *flags);
 void do_page(dbref player, const char *arg1, const char *arg2);
 
 /**
- * Implementation of @password command
+ * Implementation of \@password command
  *
  * Defined in player.c
  *
@@ -959,7 +959,7 @@ void do_page(dbref player, const char *arg1, const char *arg2);
 void do_password(dbref player, const char *old, const char *newobj);
 
 /**
- * Implements the @pcreate command
+ * Implements the \@pcreate command
  *
  * Defined in wiz.c
  *
@@ -969,8 +969,8 @@ void do_password(dbref player, const char *old, const char *newobj);
  * @see create_player
  *
  * @param player the player running the command
- * @param user the user to create
- * @param password the password to set on the new user.
+ * @param arg1 the user to create
+ * @param arg2 the password to set on the new user.
  */
 void do_pcreate(dbref player, const char *arg1, const char *arg2);
 
@@ -991,7 +991,7 @@ void do_pcreate(dbref player, const char *arg1, const char *arg2);
 void do_pose(dbref player, const char *message);
 
 /**
- * Implementation of the @ps command
+ * Implementation of the \@ps command
  *
  * This is defined in timequeue.c
  *
@@ -1004,7 +1004,7 @@ void do_pose(dbref player, const char *message);
 void do_process_status(dbref player);
 
 /**
- * Implementation of @program
+ * Implementation of \@program
  *
  * Defined in create.c
  *
@@ -1022,12 +1022,12 @@ void do_process_status(dbref player);
 void do_program(int descr, dbref player, const char *name, const char *rname);
 
 /**
- * Implementation of @propset
+ * Implementation of \@propset
  *
  * Defined in set.c
  *
  * Propset can set props along with types.  'prop' can be of the
- * format: <type>:<property>:<value> or erase:<property>
+ * format: \<type>:\<property>:\<value> or erase:\<property>
  *
  * Type can be omitted and will default to string,  but there still
  * must be two ':'s in order to set a property.  Type can
@@ -1050,7 +1050,7 @@ void do_propset(int descr, dbref player, const char *name, const char *prop);
 
 #ifdef USE_SSL
 /**
- * Implementation of @reconfiguressl
+ * Implementation of \@reconfiguressl
  *
  * Defined in game.c
  *
@@ -1065,14 +1065,14 @@ void do_reconfigure_ssl(dbref player);
 #endif
 
 /**
- * Implementation of @recycle command
+ * Implementation of \@recycle command
  *
  * Defined in create.c
  *
  * This is a wrapper around 'recycle', but it does a lot of additional
  * permission checks.  For instance, in order to recycle an object or
  * room, you must actually own it even if you a are a wizard.  This
- * makes the requirement for a two-step '@chown' then '@recycle' if you
+ * makes the requirement for a two-step '\@chown' then '\@recycle' if you
  * wish to delete something as a wizard that you do not know.
  *
  * This is on purpose, I would imagine, to prevent accidents.
@@ -1086,19 +1086,19 @@ void do_reconfigure_ssl(dbref player);
 void do_recycle(int descr, dbref player, const char *name);
 
 /**
- * Implementation of @register command
+ * Implementation of \@register command
  *
  * Defined in set.c
  *
- * Does property registration similar to the 'classic' MUF @register
+ * Does property registration similar to the 'classic' MUF \@register
  * command.  Thus, the parameters are a little complex.
  *
- * By default, this operates on #0 and propdir base _reg.  This
+ * By default, this operates on \#0 and propdir base _reg.  This
  * can be modified by a prefix that will show up in arg1.
  *
- * Prefix can be #me for operating on 'me', propdir base _reg
- * Or it can be #prop [<target>:]<propdir> to target a given
- * prop directory instead.  If <target> is not provided, #0 will be
+ * Prefix can be \#me for operating on 'me', propdir base _reg
+ * Or it can be \#prop [\<target>:]\<propdir> to target a given
+ * prop directory instead.  If \<target> is not provided, \#0 will be
  * the default.
  *
  * If arg2 is "", then arg1 will be either just a prefix or a prefix
@@ -1110,7 +1110,7 @@ void do_recycle(int descr, dbref player, const char *name);
  * is no object name, then the registration target is cleared.  Otherwise,
  * object is registered to the given name.
  *
- * See help @register on the MUCK for a more consise explanation :)
+ * See help \@register on the MUCK for a more consise explanation :)
  *
  * This does permission checking.
  *
@@ -1122,11 +1122,11 @@ void do_recycle(int descr, dbref player, const char *name);
 void do_register(int descr, dbref player, char *arg1, const char *arg2);
 
 /**
- * Implementation of @relink command
+ * Implementation of \@relink command
  *
  * Defined in set.c
  *
- * This is basically the same as doing an @unlink followed by an @link.
+ * This is basically the same as doing an \@unlink followed by an \@link.
  * Thus the details of what that entails is best described in those functions.
  *
  * @see do_unlink
@@ -1143,7 +1143,7 @@ void do_register(int descr, dbref player, char *arg1, const char *arg2);
 void do_relink(int descr, dbref player, const char *thing_name, const char *dest_name);
 
 /**
- * Implementation of the @restart command
+ * Implementation of the \@restart command
  *
  * Permissions are checked and non-wizard players are logged.  This will
  * trigger the MUCK to try and restart itself.  The implementation of this
@@ -1154,7 +1154,7 @@ void do_relink(int descr, dbref player, const char *thing_name, const char *dest
 void do_restart(dbref player);
 
 /**
- * Implementation of @restrict command
+ * Implementation of \@restrict command
  *
  * Defined in game.c
  *
@@ -1172,7 +1172,7 @@ void do_restrict(dbref player, const char *arg);
  */
 
 /**
- * Implementation of @sanchange command
+ * Implementation of \@sanchange command
  *
  * Defined in sanity.c
  *
@@ -1191,10 +1191,10 @@ void do_restrict(dbref player, const char *arg);
  *
  * Commands are space delimited and look something like:
  *
- * #dbref command #dbref
+ * \#dbref command \#dbref
  *
  * Where the first dbref is the object to modify and the second dbref
- * is what to set to.  For instance, "#12345 home #4321"
+ * is what to set to.  For instance, "\#12345 home \#4321"
  *
  * No permission checking is done.
  *
@@ -1204,7 +1204,7 @@ void do_restrict(dbref player, const char *arg);
 void do_sanchange(dbref player, const char *command);
 
 /**
- * Implementation of @sanfix command
+ * Implementation of \@sanfix command
  *
  * Defined in sanity.c
  *
@@ -1225,7 +1225,7 @@ void do_sanchange(dbref player, const char *command);
 void do_sanfix(dbref player);
 
 /**
- * Implementation of the @sanity command
+ * Implementation of the \@sanity command
  *
  * Defined in sanity.c
  *
@@ -1271,7 +1271,7 @@ void do_say(dbref player, const char *message);
 void do_score(dbref player);
 
 /**
- * Implementation of @set command
+ * Implementation of \@set command
  *
  * Defined in set.c
  *
@@ -1295,7 +1295,7 @@ void do_score(dbref player);
 void do_set(int descr, dbref player, const char *name, const char *flag);
 
 /**
- * Implementation of @shutdown command
+ * Implementation of \@shutdown command
  *
  * Defined in game.c
  *
@@ -1308,7 +1308,7 @@ void do_set(int descr, dbref player, const char *name, const char *flag);
 void do_shutdown(dbref player);
 
 /**
- * Implementation of the @stats command
+ * Implementation of the \@stats command
  *
  * Defined in wiz.c
  *
@@ -1351,18 +1351,18 @@ void do_sweep(int descr, dbref player, const char *name);
  */
 
 /**
- * Implementation of @teledump command
+ * Implementation of \@teledump command
  *
  * The definition resides in wiz.c
  *
- * @teledump does a base64 encoded dump of the entire database and the
+ * \@teledump does a base64 encoded dump of the entire database and the
  * associated macros and MUF in a fashion that can be consumed by an unpacker
  * script (a python unpacker will be provided as part of this).
  *
  * It is a way to preserve the vital data of a MUCK but it does not
  * send over irrelevant files.
  *
- * For simplicity sake, it dumps the DB on disk, so @dump before running
+ * For simplicity sake, it dumps the DB on disk, so \@dump before running
  * this command to get the latest.
  *
  * @param descr the player's descriptor
@@ -1372,11 +1372,11 @@ void
 do_teledump(int descr, dbref player);
 
 /**
- * Implementation of the @teleport command
+ * Implementation of the \@teleport command
  *
  * The definition resides in wiz.c
  *
- * This is the MUCK's @teleport command.  It does do permission checking
+ * This is the MUCK's \@teleport command.  It does do permission checking
  * and sometimes that gets pretty detailed -- the rules for teleporting
  * different things vary slightly.  However, in general, the player must
  * control both the object to be teleported and the destination -- or
@@ -1403,7 +1403,7 @@ do_teledump(int descr, dbref player);
 void do_teleport(int descr, dbref player, const char *arg1, const char *arg2);
 
 /**
- * Implementation of the @toad command
+ * Implementation of the \@toad command
  *
  * Defined in wiz.c
  *
@@ -1427,7 +1427,7 @@ void do_teleport(int descr, dbref player, const char *arg1, const char *arg2);
 void do_toad(int descr, dbref player, const char *name, const char *recip);
 
 /**
- * Implementation of the @tops command
+ * Implementation of the \@tops command
  *
  * Defined in wiz.c
  *
@@ -1447,7 +1447,7 @@ void do_toad(int descr, dbref player, const char *name, const char *recip);
 void do_topprofs(dbref player, char *arg1);
 
 /**
- * Implementation of @trace command
+ * Implementation of \@trace command
  *
  * Defined in look.c
  *
@@ -1464,7 +1464,7 @@ void do_topprofs(dbref player, char *arg1);
 void do_trace(int descr, dbref player, const char *name, int depth);
 
 /**
- * Implementation of @tune command
+ * Implementation of \@tune command
  *
  * Defined in tune.c
  *
@@ -1484,7 +1484,7 @@ void do_trace(int descr, dbref player, const char *name, int depth);
  * If the parmname is "save" or "load", it will save or load parameters
  * from file accordingly.
  *
- * Otherwise, parmname should be either "" to list all @tunes or
+ * Otherwise, parmname should be either "" to list all \@tunes or
  * a simple regex can be used to show only certain parameters.
  *
  * The parmname "info" will display more detained tune information.
@@ -1500,7 +1500,7 @@ void do_tune(dbref player, char *parmname, char *parmval);
  */
 
 /**
- * Implementation of the @unbless command
+ * Implementation of the \@unbless command
  *
  * Defined in wiz.c
  *
@@ -1512,13 +1512,13 @@ void do_tune(dbref player, char *parmname, char *parmval);
  *
  * @param descr the descriptor of the user doing the command
  * @param player the player doing the command
- * @param what the object being operated on
+ * @param target the object being operated on
  * @param propname the name of the prop to bless.
  */
 void do_unbless(int descr, dbref player, const char *target, const char *propname);
 
 /**
- * Implementation of @uncompile command
+ * Implementation of \@uncompile command
  *
  * Implemented in compile.c
  *
@@ -1530,7 +1530,7 @@ void do_unbless(int descr, dbref player, const char *target, const char *propnam
 void do_uncompile(dbref player);
 
 /**
- * Implementation of @unlink command
+ * Implementation of \@unlink command
  *
  * Defined in set.c
  *
@@ -1553,7 +1553,7 @@ void do_uncompile(dbref player);
 void do_unlink(int descr, dbref player, const char *name);
 
 /**
- * Implementation of @unlock command
+ * Implementation of \@unlock command
  *
  * Defined in set.c
  *
@@ -1578,7 +1578,7 @@ void do_uptime(dbref player);
 
 #ifndef NO_USAGE_COMMAND
 /**
- * Implementation of the @usage command
+ * Implementation of the \@usage command
  *
  * Defined in wiz.c
  *
@@ -1614,7 +1614,7 @@ void do_version(dbref player);
  */
 
 /**
- * Implementation of @wall command
+ * Implementation of \@wall command
  *
  * Defined in speech.c
  *

@@ -15,7 +15,7 @@
 /**
  * Log a string to a file, with sprinf-style replacements
  *
- * @param filename the file to write to
+ * @param myfilename the file to write to
  * @param format the format string with sprinf-style replacements
  * @param ... whatever sprintf replacement variables
  */
@@ -118,7 +118,9 @@ void log_status(char *format, ...);
  *
  * The message is formatted thusly:
  *
+ * @verbatim
  * Winged(#4023) [newaction.muf(#666)] 2000-01-01T03:09:31: <string>
+ * @endverbatim
  *
  * Messages are stripped of all non-printable characters.
  *
@@ -137,20 +139,26 @@ void log_user(dbref player, dbref program, char *logmessage);
  * The string produced will look something like this.  Items in {curly}
  * braces would be empty if they don't apply:
  *
+ * @verbatim
  * {WIZ}{Name owned by <-- if not player}Name of who's owner(#who) in
  * location name(#location ref)
+ * @endverbatim
  *
  * For instance:
  *
+ * @verbatim
  * WIZ Tanabi(#1234) in Some Place(#4321)
+ * @endverbatim
  *
  * or
  *
+ * @verbatim
  * Bleh owned by Tanabi (#1234) in Some Place(#4321)
+ * @endverbatim
  *
  * You should free the memory returned by this call as you 'own' it.
  *
- * @param who the person to generate a log entry string for.
+ * @param player the person to generate a log entry string for.
  * @return a newly allocated string as described above
  */
 char *whowhere(dbref player);

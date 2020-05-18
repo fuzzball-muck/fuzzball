@@ -1605,6 +1605,7 @@ ok_ascii_any(const char *name)
  * @see ok_player_name
  *
  * @param name the name to check
+ * @param type the type of the object, as diffent types have different rules
  * @return boolean true if name passes the check, false otherwise
  */
 bool
@@ -1630,19 +1631,19 @@ ok_object_name(const char *name, object_flag_type type)
         return false;
 
     switch (type) {
-    case TYPE_ROOM:
-    case TYPE_EXIT:
-    case TYPE_PROGRAM:
-        return !tp_7bit_other_names || ok_ascii_any(name);
+        case TYPE_ROOM:
+        case TYPE_EXIT:
+        case TYPE_PROGRAM:
+            return !tp_7bit_other_names || ok_ascii_any(name);
 
-    case TYPE_THING:
-        return !tp_7bit_thing_names || ok_ascii_any(name);
+        case TYPE_THING:
+            return !tp_7bit_thing_names || ok_ascii_any(name);
 
-    case TYPE_PLAYER:
-        return ok_player_name(name);
+        case TYPE_PLAYER:
+            return ok_player_name(name);
 
-    case TYPE_GARBAGE:
-        return false;
+        case TYPE_GARBAGE:
+            return false;
     }
 
     return false;

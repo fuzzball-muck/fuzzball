@@ -13,46 +13,46 @@
 
 /* Some definitions for MPI parameters. */
 
-#define MPI_ISPUBLIC        0x00    /* never test for this one */
-#define MPI_ISPRIVATE       0x01    /* Private calls don't do omesg I think */
-#define MPI_ISLISTENER      0x02    /* Triggered by listener */
-#define MPI_ISLOCK          0x04    /* Triggered by lock */
-#define MPI_ISDEBUG         0x08    /* Display debugging */
-#define MPI_ISBLESSED       0x10    /* Has 'super user' permissions */
-#define MPI_NOHOW           0x20    /* Do not allocate {&how} variable */
+#define MPI_ISPUBLIC        0x00    /**< never test for this one */
+#define MPI_ISPRIVATE       0x01    /**< Private calls don't do omesg I think */
+#define MPI_ISLISTENER      0x02    /**< Triggered by listener */
+#define MPI_ISLOCK          0x04    /**< Triggered by lock */
+#define MPI_ISDEBUG         0x08    /**< Display debugging */
+#define MPI_ISBLESSED       0x10    /**< Has 'super user' permissions */
+#define MPI_NOHOW           0x20    /**< Do not allocate {&how} variable */
 
-#define MAX_MFUN_NAME_LEN 16    /* Maximum length of MPI function name */
-#define MAX_MFUN_LIST_LEN 512   /* Maximum list length */
-#define MPI_MAX_VARIABLES 32    /* Maximum number of variables in a message */
-#define MPI_MAX_FUNCTIONS 32    /* Maximum number of functions allowed */
-#define MPI_RECURSION_LIMIT 26  /* Maximum Recursion depth */
+#define MAX_MFUN_NAME_LEN 16    /**< Maximum length of MPI function name */
+#define MAX_MFUN_LIST_LEN 512   /**< Maximum list length */
+#define MPI_MAX_VARIABLES 32    /**< Maximum number of variables in a message */
+#define MPI_MAX_FUNCTIONS 32    /**< Maximum number of functions allowed */
+#define MPI_RECURSION_LIMIT 26  /**< Maximum Recursion depth */
 
 /* Changing the following would be incredibly confusing / destructive */
-#define MFUN_LITCHAR '`'    /* Literal delimiter */
-#define MFUN_LEADCHAR '{'   /* Opening character for MPI function */
-#define MFUN_ARGSTART ':'   /* Argument start delimiter */
-#define MFUN_ARGSEP ','     /* Argument separator */
-#define MFUN_ARGEND '}'     /* Ending character for MPI function */
+#define MFUN_LITCHAR '`'    /**< Literal delimiter */
+#define MFUN_LEADCHAR '{'   /**< Opening character for MPI function */
+#define MFUN_ARGSTART ':'   /**< Argument start delimiter */
+#define MFUN_ARGSEP ','     /**< Argument separator */
+#define MFUN_ARGEND '}'     /**< Ending character for MPI function */
 
-#define UNKNOWN ((dbref)-88)    /* Error code for unknown object */
-#define PERMDENIED ((dbref)-89) /* Error code for permission denied */
+#define UNKNOWN ((dbref)-88)    /**< Error code for unknown object */
+#define PERMDENIED ((dbref)-89) /**< Error code for permission denied */
 
 #undef WIZZED_DELAY
 
-/*
+/**
  * Definition for an MPI variable
  */
 struct mpivar {
-    char name[MAX_MFUN_NAME_LEN + 1];   /* Name of variable  */
-    char *buf;                          /* Value of variable */
+    char name[MAX_MFUN_NAME_LEN + 1];   /**< Name of variable  */
+    char *buf;                          /**< Value of variable */
 };
 
-/*
+/**
  * Definition of an MPI function
  */
 struct mpifunc {
-    char name[MAX_MFUN_NAME_LEN + 1];   /* Name of function */
-    char *buf;                          /* Contents of function */
+    char name[MAX_MFUN_NAME_LEN + 1];   /**< Name of function */
+    char *buf;                          /**< Contents of function */
 };
 
 /**
@@ -91,12 +91,14 @@ struct mpifunc {
 #define MesgParse(in,out,outlen) mesg_parse(descr, player, what, perms, (in), (out), (outlen), mesgtyp)
 
 /**
- * @var time variable for MPI profiling
+ * @var mpi_prof_start_time
+ *      time variable for MPI profiling
  */
 extern time_t mpi_prof_start_time;
 
 /**
- * @var keep track of how many variables are in scope -- NOT threadsafe
+ * @var varc
+ *      keep track of how many variables are in scope -- NOT threadsafe
  */
 extern int varc;
 
@@ -122,7 +124,7 @@ int free_top_mvar(void);
  * Concatinate a list into a delimited string.
  *
  * How the string is concatinated is controlled by 'mode'.  If mode is
- * 0, then the list is delimited by \r characters such as with the {list}
+ * 0, then the list is delimited by \\r characters such as with the {list}
  * macro.
  * 
  * For mode 1, most lines are separated by a single space.  If a line ends in '.', '?',
@@ -159,17 +161,16 @@ char *get_concat_list(dbref what, dbref perms, dbref obj, char *listname,
  * hood.  @see safegetprop   When doing an iterative count, it uses
  * @see get_list_item
  *
- * @param player the player who triggered the action
+ * @param trig the player who triggered the action
  * @param what the object to load the prop off of
  * @param perms the object that is the source of permissions
  * @param listname the name of the list without the # mark
- * @param itemnum the line number to fetch from the list
  * @param mesgtyp the mesgtyp from the MPI call
  * @param blessed pointer to integer containing blessed boolean
  * @return string value or empty string if nothing found
  */
-int get_list_count(dbref trig, dbref what, dbref perms, char *listname, int mesgtyp,
-                   int *blessed);
+int get_list_count(dbref trig, dbref what, dbref perms, char *listname,
+                   int mesgtyp, int *blessed);
 
 /**
  * Get an item from a proplist
@@ -181,7 +182,7 @@ int get_list_count(dbref trig, dbref what, dbref perms, char *listname, int mesg
  * The list is searched for in the environment using safegetprop under the
  * hood.  @see safegetprop
  *
- * @param player the player who triggered the action
+ * @param trig the player who triggered the action
  * @param what the object to load the prop off of
  * @param perms the object that is the source of permissions
  * @param listname the name of the list without the # mark
@@ -190,8 +191,8 @@ int get_list_count(dbref trig, dbref what, dbref perms, char *listname, int mesg
  * @param blessed pointer to integer containing blessed boolean
  * @return string value or empty string if nothing found
  */
-const char *get_list_item(dbref trig, dbref what, dbref perms, char *listname, int itemnum,
-                          int mesgtyp, int *blessed);
+const char *get_list_item(dbref trig, dbref what, dbref perms, char *listname,
+                          int itemnum, int mesgtyp, int *blessed);
 
 /**
  * Fetch the value of an MPI variable by name
@@ -333,17 +334,36 @@ char *mesg_parse(int descr, dbref player, dbref what, dbref perms,
  * @param descr the descriptor of the calling player
  * @param player the player doing the MPI parsing call
  * @param what the object that triggered the MPI parse call
- * @param perms the object from which permissions are sourced
  * @param inbuf the input string to process
  * @param abuf identifier string for error messages
  * @param outbuf the buffer to store output results
- * @param outbuflen the length of outbuf
+ * @param buflen the length of outbuf
  * @param mesgtyp the bitvector of permissions
  * @return a pointer to outbuf
  */
 char *do_parse_mesg(int descr, dbref player, dbref what, const char *inbuf,
                     const char *abuf, char *outbuf, int buflen, int mesgtyp);
 
+/**
+ * This is a wrapper around do_parse_mesg to automate a prop load
+ *
+ * @see do_parse_mesg
+ *
+ * This loads the prop 'propname' and processes MPI contained in it.
+ * It will set the MPI_ISBLESSED flag if Prop_Blessed returns true.
+ *
+ * @see Prop_Blessed
+ *
+ * @param descr the descriptor of the calling player
+ * @param player the player doing the MPI parsing call
+ * @param what the triggering object, and also where we load the prop from
+ * @param propname the name of the property to load
+ * @param abuf identifier string for error messages
+ * @param outbuf the buffer to store output results
+ * @param buflen the length of outbuf
+ * @param mesgtyp the bitvector of permissions
+ * @return a pointer to outbuf
+ */
 char *do_parse_prop(int descr, dbref player, dbref what, const char *propname,
                     const char *abuf, char *outbuf, int buflen, int mesgtyp);
 
@@ -369,7 +389,7 @@ int new_mfunc(const char *funcname, const char *buf);
  *
  * varname is copied, but 'buf' is used as-is.
  *
- * @param varnam the variable name to allocate
+ * @param varname the variable name to allocate
  * @param buf the initial value of the variable
  * @return 0 on success, or potentially 1 or 2 on error as described above
  */

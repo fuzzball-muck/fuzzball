@@ -35,7 +35,7 @@
  * @param s The string to initialze our shared string with
  * @return a properly initialized struct shared_string.
  */
-struct shared_string *alloc_prog_string(const char *);
+struct shared_string *alloc_prog_string(const char * s);
 
 /**
  * Create a copy of the given string.  If the string is NULL or empty,
@@ -50,7 +50,7 @@ struct shared_string *alloc_prog_string(const char *);
  * @param string The string to copy
  * @return a copy of the string
  */
-char *alloc_string(const char *);
+char *alloc_string(const char * string);
 #endif
 
 /**
@@ -83,10 +83,12 @@ int blank(const char *s);
 /**
  * This method does a variety of string escaping:
  *
+ * @verbatim
  * - Carriage return is escaped to \r
  * - The ESCAPE control is escaped to \[
  * - ` is escaped to \`
  * - \ is escaped to \\
+ * @endverbatim
  *
  * This is used by the MPI parser.
  *
@@ -111,7 +113,8 @@ char *cr2slash(char *buf, int buflen, const char *in);
  *
  * @return See description - string or NULL
  */
-const char *exit_prefix(register const char *string, register const char *prefix);
+const char *exit_prefix(register const char *string,
+                        register const char *prefix);
 
 /**
  * This is a POSIX-style regex implementation.  I'm not sure why a standard
@@ -164,8 +167,8 @@ const char *exit_prefix(register const char *string, register const char *prefix
  *     with 'Foxen', 'Lynx', 'Fiera', or 'Fiero', that contains either 'tickle'
  *     or 'tyckle' and ends with a '?'.
  *
- * @param pattern The pattern
- * @param str The string to match to the pattern
+ * @param s The pattern
+ * @param t The string to match to the pattern
  * @return 1 if matched, 0 if not.
  */
 int equalstr(char *s, char *t);
@@ -173,7 +176,9 @@ int equalstr(char *s, char *t);
 /**
  * Checks to see if string s contains a float of format:
  *
+ * @verbatim
  * [+|-]<digits>.<digits>[E[+|-]<digits>]
+ * @endverbatim
  *
  * Returns true is matches, false if not.
  *
@@ -253,14 +258,14 @@ int number(const char *s);
  * is false on 'Src', then a space will be injected between 'Prefix' and
  * 'Dest'.
  *
- * Thirdly, it looks like if 'Dest' has multiple lines (delimited by \r),
+ * Thirdly, it looks like if 'Dest' has multiple lines (delimited by \\r),
  * then each line in 'Dest' will be prefixed with Prefix.
  *
  * @param Dest The destination buffer
  * @param Src the source that will be getting prefixed.
  * @param Prefix the prefix to put before Src
  * @param BufferLength the length of the 'Dest' buffer.
- * @param SupressIfPresent if true, do not prefix if prefix is already there
+ * @param SuppressIfPresent if true, do not prefix if prefix is already there
  */
 void prefix_message(char *Dest, const char *Src, const char *Prefix,
                     size_t BufferLength, int SuppressIfPresent);
@@ -302,7 +307,7 @@ int prepend_string(char **before, char *start, const char *what);
  *                                Himself/Herself/Hirself/Itself)
  * %n    for the player's name.
  *
- * This is based on props; the gender prop is configured with @tune
+ * This is based on props; the gender prop is configured with \@tune
  * and defaults to 'sex'.  The contents of that prop are parsed for MPI.
  * it will, under the hood, default to '_default' if nothing is set.
  *
@@ -452,7 +457,7 @@ const char *strencrypt(const char *data, const char *key);
  * @param key the key to use
  * @return static buffer containing encrypted string.
  */
-const char *strdecrypt(const char *, const char *);
+const char *strdecrypt(const char * data, const char * key);
 
 /**
  * Does a word-by-word match of 'sub' in 'src'
@@ -589,7 +594,7 @@ void toupper_string(char **s);
  * should be considered binary true or not.  Empty string is
  * false, as is a string containing "0".  Anything else is true.
  *
- * @param s the string to consider
+ * @param buf the string to consider
  * @return boolean as described above.
  */
 int truestr(const char *buf);

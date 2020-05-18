@@ -12,20 +12,23 @@
 
 #include "config.h"
 
+/**
+ * Structure for containing search results and search parameters
+ */
 struct match_data {
-    dbref exact_match;       /* holds result of exact match */
-    int check_keys;          /* if non-zero, check for keys */
-    dbref last_match;        /* holds result of last match */
-    int match_count;         /* holds total number of inexact matches */
-    dbref match_who;         /* player used for me, here, and messages */
-    dbref match_from;        /* object which is being matched around */
-    int match_descr;         /* descriptor initiating the match */
-    const char *match_name;  /* name to match */
-    int preferred_type;      /* preferred type */
-    int longest_match;       /* longest matched string */
-    int match_level;         /* the highest priority level so far */
-    int block_equals;        /* block matching of same name exits */
-    int partial_exits;       /* if non-zero, allow exits to match partially */
+    dbref exact_match;       /**< holds result of exact match */
+    int check_keys;          /**< if non-zero, check for keys */
+    dbref last_match;        /**< holds result of last match */
+    int match_count;         /**< holds total number of inexact matches */
+    dbref match_who;         /**< player used for me, here, and messages */
+    dbref match_from;        /**< object which is being matched around */
+    int match_descr;         /**< descriptor initiating the match */
+    const char *match_name;  /**< name to match */
+    int preferred_type;      /**< preferred type */
+    int longest_match;       /**< longest matched string */
+    int match_level;         /**< the highest priority level so far */
+    int block_equals;        /**< block matching of same name exits */
+    int partial_exits;       /**< if non-zero, allow exits to match partially */
 };
 
 
@@ -242,7 +245,7 @@ void match_me(struct match_data *md);
  * Match match_from's location's content list
  *
  * If match_from's location is NOTHING, this does nothing.
- * Uses the static function @match_contents under the hood.
+ * Uses the static function @see match_contents under the hood.
  *
  * @param md the configured match structure
  */
@@ -267,7 +270,7 @@ void match_player(struct match_data *md);
  * Match match_from's contents list
  *
  * This is an obnoxiously tiny function, but it serves a purpose (for now).
- * Uses the static function @match_contents under the hood.
+ * Uses the static function @see match_contents under the hood.
  *
  * @param md the configured match structure
  */
@@ -310,7 +313,7 @@ dbref match_result(struct match_data *md);
  * @param arg1 the object we're basing our search around
  * @param md the configured match_data object with search string
  */
-void match_rmatch(dbref, struct match_data *md);
+void match_rmatch(dbref arg1, struct match_data *md);
 
 /**
  * Like match_result, except it emits a message on failure to match.

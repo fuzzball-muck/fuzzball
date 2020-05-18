@@ -1,6 +1,6 @@
 /** @file interp.h
  *
- * Header that supports the MUF interpreter.  This has a lot of #defines,
+ * Header that supports the MUF interpreter.  This has a lot of \#defines,
  * data structures, and functions that support MUF interpretation.
  *
  * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
@@ -70,148 +70,148 @@ void RCLEAR(struct inst *oper, char *file, int line);
 #define ProgUID find_uid(player, fr, fr->caller.top, program)
 
 
-typedef struct inst vars[MAX_VAR];
+typedef struct inst vars[MAX_VAR];  /**< Variable structure */
 
-/*
+/**
  * This structure keeps track of 'for' and 'foreach' structures to
  * support keeping track of the iteration variable, supporting
  * nested fors.
  */
 struct forvars {
-    int didfirst;       /* Boolean, initally false.  Done first iteration? */
-    struct inst cur;    /* Current loop value                              */
-    struct inst end;    /* The target end value                            */
-    int step;           /* The step increment                              */
-    struct forvars *next;   /* Linked list support for nesting             */
+    int didfirst;       /**< Boolean, initally false.  Done first iteration? */
+    struct inst cur;    /**< Current loop value                              */
+    struct inst end;    /**< The target end value                            */
+    int step;           /**< The step increment                              */
+    struct forvars *next;   /**< Linked list support for nesting             */
 };
 
-/*
+/**
  * This structure keeps track of try/catch blocks to support nesting and
  * to keep track of various try related issues.
  */
 struct tryvars {
-    int depth;              /* The stack lock depth of the try block       */
-    int call_level;         /* The system stack top at the TRY             */
-    int for_count;          /* How many for loops are in this try          */
-    struct inst *addr;      /* Pointer to program counter instruction data */
-    struct tryvars *next;   /* Linked list support for nested try's        */
+    int depth;              /**< The stack lock depth of the try block       */
+    int call_level;         /**< The system stack top at the TRY             */
+    int for_count;          /**< How many for loops are in this try          */
+    struct inst *addr;      /**< Pointer to program counter instruction data */
+    struct tryvars *next;   /**< Linked list support for nested try's        */
 };
 
-/*
+/**
  * A program's "argument stack" which is the MUF stack from the developer's
  * perspective.
  */
 struct stack {
-    int top;                    /* Top index number in stack */
-    struct inst st[STACK_SIZE]; /* The stack itself          */
+    int top;                    /**< Top index number in stack */
+    struct inst st[STACK_SIZE]; /**< The stack itself          */
 };
 
-/*
+/**
  * A program's "system stack" which is used to track program execution
  * such as function calls.
  */
 struct sysstack {
-    int top;                            /* Top index number in stack */
-    struct stack_addr st[STACK_SIZE];   /* The stack itself          */
+    int top;                            /**< Top index number in stack */
+    struct stack_addr st[STACK_SIZE];   /**< The stack itself          */
 };
 
-/*
+/**
  * The call stack is the stack of programs that have been CALL'd
  */
 struct callstack {
-    int top;
-    dbref st[STACK_SIZE];
+    int top;                /**< Top index number in stack */
+    dbref st[STACK_SIZE];   /**< The stack itself */
 };
 
-/*
+/**
  * Keep track of local variables for each program
  */
 struct localvars {
-    struct localvars *next;
-    struct localvars **prev;
-    dbref prog;
-    vars lvars;
+    struct localvars *next;     /**< Local vars linked list */
+    struct localvars **prev;    /**< Local vars linked list */
+    dbref prog;                 /**< Program ref */
+    vars lvars;                 /**< the variables */
 };
 
-/*
+/**
  * Stack to keep track of variables in for loop.  There's one entry for
  * each level of for.
  */
 struct forstack {
-    int top;                /* Count of how many levels of for's we have */
-    struct forvars *st;     /* The linked list that is the stack         */
+    int top;                /**< Count of how many levels of for's we have */
+    struct forvars *st;     /**< The linked list that is the stack         */
 };
 
-/*
+/**
  * Stack to keep track of try/catch block nesting
  */
 struct trystack {
-    int top;                /* Count of how many levels of try's we have */
-    struct tryvars *st;     /* The linked list that is the stack         */
+    int top;                /**< Count of how many levels of try's we have */
+    struct tryvars *st;     /**< The linked list that is the stack         */
 };
 
-/* Maximum debug break points allowed */
+/** Maximum debug break points allowed */
 #define MAX_BREAKS 16
 
-/*
+/**
  * Note: the :1 here is to indicate bit fields.  This is a way to make these
  * unsigned fields act like booleans, thus taking less space.
  *
  * This keeps track of MUF debugger operational 'stuff'.
  */
 struct debuggerdata {
-    unsigned debugging:1;       /* if set, this frame is being debugged */
-    unsigned force_debugging:1; /* if set, debugger is active, even if not Z */
-    unsigned bypass:1;          /* if set, bypass breakpoint on starting instr */
-    unsigned isread:1;          /* if set, the prog is trying to do a read */
-    unsigned showstack:1;       /* if set, show stack debug line, each inst. */
-    unsigned dosyspop:1;        /* if set, fix up system stack before return. */
-    int lastlisted;             /* last listed line */
-    char *lastcmd;              /* last executed debugger command */
-    short breaknum;             /* the breakpoint that was just caught on */
+    unsigned debugging:1;       /**< if set, this frame is being debugged */
+    unsigned force_debugging:1; /**< if set, debugger is active, even if not Z */
+    unsigned bypass:1;          /**< if set, bypass breakpoint on starting instr */
+    unsigned isread:1;          /**< if set, the prog is trying to do a read */
+    unsigned showstack:1;       /**< if set, show stack debug line, each inst. */
+    unsigned dosyspop:1;        /**< if set, fix up system stack before return. */
+    int lastlisted;             /**< last listed line */
+    char *lastcmd;              /**< last executed debugger command */
+    short breaknum;             /**< the breakpoint that was just caught on */
 
-    dbref lastproglisted;       /* What program's text was last loaded to list? */
-    struct line *proglines;     /* The actual program text last loaded to list. */
+    dbref lastproglisted;       /**< What program's text was last loaded to list? */
+    struct line *proglines;     /**< The actual program text last loaded to list. */
 
-    short count;                /* how many breakpoints are currently set */
-    short temp[MAX_BREAKS];     /* is this a temp breakpoint? */
-    short level[MAX_BREAKS];    /* level breakpnts.  If -1, no check. */
-    struct inst *lastpc;        /* Last inst interped.  For inst changes. */
-    struct inst *pc[MAX_BREAKS];    /* pc breakpoint.  If null, no check. */
-    int pccount[MAX_BREAKS];    /* how many insts to interp.  -2 for inf. */
-    int lastline;               /* Last line interped.  For line changes. */
-    int line[MAX_BREAKS];       /* line breakpts.  -1 no check. */
-    int linecount[MAX_BREAKS];  /* how many lines to interp.  -2 for inf. */
-    dbref prog[MAX_BREAKS];     /* program that breakpoint is in. */
+    short count;                /**< how many breakpoints are currently set */
+    short temp[MAX_BREAKS];     /**< is this a temp breakpoint? */
+    short level[MAX_BREAKS];    /**< level breakpnts.  If -1, no check. */
+    struct inst *lastpc;        /**< Last inst interped.  For inst changes. */
+    struct inst *pc[MAX_BREAKS];    /**< pc breakpoint.  If null, no check. */
+    int pccount[MAX_BREAKS];    /**< how many insts to interp.  -2 for inf. */
+    int lastline;               /**< Last line interped.  For line changes. */
+    int line[MAX_BREAKS];       /**< line breakpts.  -1 no check. */
+    int linecount[MAX_BREAKS];  /**< how many lines to interp.  -2 for inf. */
+    dbref prog[MAX_BREAKS];     /**< program that breakpoint is in. */
 };
 
-/*
+/**
  * For tracking variables within a function scope.  These scopes form a
  * stack, hence the linked list.
  */
 struct scopedvar_t {
-    int count;                  /* Keep count of how many variables we have */
-    const char **varnames;      /* The names of each variable in an array   */
-    struct scopedvar_t *next;   /* Linked list of scoped vars               */
-    struct inst vars[1];        /* The variables in this scope              */
+    int count;                  /**< Keep count of how many variables we have */
+    const char **varnames;      /**< The names of each variable in an array   */
+    struct scopedvar_t *next;   /**< Linked list of scoped vars               */
+    struct inst vars[1];        /**< The variables in this scope              */
 };
 
-/*
+/**
  * This is used by MCP-GUI.  It associates with "DLog Data" which seems
  * to be like a session ID for MCP-GUI.
  */
 struct dlogidlist {
-    struct dlogidlist *next;    /* The linked list of dlogidlist items */
-    char dlogid[32];            /* This particular dlogid entry        */
+    struct dlogidlist *next;    /**< The linked list of dlogidlist items */
+    char dlogid[32];            /**< This particular dlogid entry        */
 };
 
-/*
+/**
  * This is used to implement WATCHPID which triggers events based on
  * process exiting.
  */
 struct mufwatchpidlist {
-    struct mufwatchpidlist *next;   /* Linked list implementation */
-    int pid;                        /* The PID watched/watching   */
+    struct mufwatchpidlist *next;   /**< Linked list implementation */
+    int pid;                        /**< The PID watched/watching   */
 };
 
 /*
@@ -219,110 +219,113 @@ struct mufwatchpidlist {
  */
 
 /**
- * @var pre-empt means the MUF will run til its over, not letting anything
+ *      pre-empt means the MUF will run til its over, not letting anything
  *      else timeshare with it.  This comes with it certain limitations to
  *      make sure the MUCK doesn't get locked up by a program.
  */
 #define PREEMPT 0
 
 /**
- * @var run the MUF in the foreground, which allows it to run READ commands
+ *      run the MUF in the foreground, which allows it to run READ commands
  */
 #define FOREGROUND 1
 
 /**
- * @var run the MUF in the background, which means it cannot run READ
- * commands.  Some things can only run in the background, like propqueue
- * programs.
+ *      run the MUF in the background, which means it cannot run READ
+ *      commands.  Some things can only run in the background, like propqueue
+ *      programs.
  */
 #define BACKGROUND 2
+
 /*
  * These appear to be used by the interpreter to determine what UID
  * settings to used.  In the DB these are implemented as flags.
  */
-#define STD_REGUID  0   /* Regular UID settings     */
-#define STD_SETUID  1   /* Use UID of program owner */
-#define STD_HARDUID 2   /* Use UID of trigger owner */
+#define STD_REGUID  0   /**< Regular UID settings     */
+#define STD_SETUID  1   /**< Use UID of program owner */
+#define STD_HARDUID 2   /**< Use UID of trigger owner */
 
-/*
+/**
  * This is for having MUFs work with floating point error conditions.
  */
 union error_mask {
     struct {
-        unsigned int div_zero:1;    /* Divide by zero */
-        unsigned int nan:1;         /* Result would not be a number */
-        unsigned int imaginary:1;   /* Result would be imaginary */
-        unsigned int f_bounds:1;    /* Float boundary error */
-        unsigned int i_bounds:1;    /* Integer boundary error */
-    } error_flags;
+        unsigned int div_zero:1;    /**< Divide by zero */
+        unsigned int nan:1;         /**< Result would not be a number */
+        unsigned int imaginary:1;   /**< Result would be imaginary */
+        unsigned int f_bounds:1;    /**< Float boundary error */
+        unsigned int i_bounds:1;    /**< Integer boundary error */
+    } error_flags;  /**< Error flags structure */
 
-    int is_flags;
+    int is_flags;   /**< is flags */
 };
 
-/* Frame data structure necessary for executing programs */
+/**
+ * Frame data structure necessary for executing programs
+ */
 struct frame {
-    struct frame *next;         /* Linked list implementation */
-    struct sysstack system;     /* system stack */
-    struct stack argument;      /* argument stack */
-    struct callstack caller;    /* caller prog stack */
-    struct forstack fors;       /* for loop stack */
-    struct trystack trys;       /* try block stack */
-    struct localvars *lvars;    /* local variables */
-    vars variables;             /* global variables */
-    struct inst *pc;            /* next executing instruction */
-    short writeonly;            /* This program should not do reads */
-    short multitask;            /* This program's multitasking mode */
-    short timercount;           /* How many timers currently exist. */
-    short level;                /* prevent interp call loops */
-    int perms;                  /* permissions restrictions on program */
-    short already_created;      /* this prog already created an object */
-    short been_background;      /* this prog has run in the background */
-    short skip_declare;         /* tells interp to skip next scoped var decl */
-    short wantsblanks;          /* specifies program will accept blank READs */
-    dbref trig;                 /* triggering object */
-    dbref supplicant;           /* object for lock evaluation */
-    struct shared_string *cmd;  /* Original command passed to the program, vars[3] */
-    time_t started;             /* When this program started. */
-    int instcnt;                /* How many instructions have run. */
-    int pid;                    /* what is the process id? */
-    char *errorstr;             /* the error string thrown */
-    char *errorinst;            /* the instruction name that threw an error */
-    dbref errorprog;            /* the program that threw an error */
-    int errorline;              /* the program line that threw an error */
-    int descr;                  /* what is the descriptor that started this? */
-    void *rndbuf;               /* buffer for seedable random */
-    struct scopedvar_t *svars;  /* Variables with function scoping. */
-    struct debuggerdata brkpt;  /* info the debugger needs */
-    struct timeval proftime;    /* profiling timing code */
-    struct timeval totaltime;   /* profiling timing code */
-    struct mufevent *events;    /* MUF event list. */
-    struct dlogidlist *dlogids; /* List of dlogids this frame uses. */
-    struct mufwatchpidlist *waiters;    /* MUFs waiting for a pid */
-    struct mufwatchpidlist *waitees;    /* MUFs being waited for  */
-    union error_mask error;     /* Floating point error mask */
-    short pinning;              /* Are arrays/dicts are be pinned by default? */
+    struct frame *next;         /**< Linked list implementation */
+    struct sysstack system;     /**< system stack */
+    struct stack argument;      /**< argument stack */
+    struct callstack caller;    /**< caller prog stack */
+    struct forstack fors;       /**< for loop stack */
+    struct trystack trys;       /**< try block stack */
+    struct localvars *lvars;    /**< local variables */
+    vars variables;             /**< global variables */
+    struct inst *pc;            /**< next executing instruction */
+    short writeonly;            /**< This program should not do reads */
+    short multitask;            /**< This program's multitasking mode */
+    short timercount;           /**< How many timers currently exist. */
+    short level;                /**< prevent interp call loops */
+    int perms;                  /**< permissions restrictions on program */
+    short already_created;      /**< this prog already created an object */
+    short been_background;      /**< this prog has run in the background */
+    short skip_declare;         /**< tells interp to skip next scoped var decl */
+    short wantsblanks;          /**< specifies program will accept blank READs */
+    dbref trig;                 /**< triggering object */
+    dbref supplicant;           /**< object for lock evaluation */
+    struct shared_string *cmd;  /**< Original command passed to the program, vars[3] */
+    time_t started;             /**< When this program started. */
+    int instcnt;                /**< How many instructions have run. */
+    int pid;                    /**< what is the process id? */
+    char *errorstr;             /**< the error string thrown */
+    char *errorinst;            /**< the instruction name that threw an error */
+    dbref errorprog;            /**< the program that threw an error */
+    int errorline;              /**< the program line that threw an error */
+    int descr;                  /**< what is the descriptor that started this? */
+    void *rndbuf;               /**< buffer for seedable random */
+    struct scopedvar_t *svars;  /**< Variables with function scoping. */
+    struct debuggerdata brkpt;  /**< info the debugger needs */
+    struct timeval proftime;    /**< profiling timing code */
+    struct timeval totaltime;   /**< profiling timing code */
+    struct mufevent *events;    /**< MUF event list. */
+    struct dlogidlist *dlogids; /**< List of dlogids this frame uses. */
+    struct mufwatchpidlist *waiters;    /**< MUFs waiting for a pid */
+    struct mufwatchpidlist *waitees;    /**< MUFs being waited for  */
+    union error_mask error;     /**< Floating point error mask */
+    short pinning;              /**< Are arrays/dicts are be pinned by default? */
 #ifdef DEBUG
-    int expect_pop;             /* Used to track expected number of POPs */
-    int actual_pop;             /* Actual number of pops */
-    int expect_push_to;         /* Expected number of push to's */
+    int expect_pop;             /**< Used to track expected number of POPs */
+    int actual_pop;             /**< Actual number of pops */
+    int expect_push_to;         /**< Expected number of push to's */
 #endif
-    stk_array_list array_active_list;       /* Active array list */
-    stk_array_list *prev_array_active_list; /* Previous active list */
+    stk_array_list array_active_list;       /**< Active array list */
+    stk_array_list *prev_array_active_list; /**< Previous active list */
 };
 
-/*
+/**
  * Structure to keep track of public functions (basically library functions)
  */
 struct publics {
-    char *subname;          /* Subroutine for this public */
-    int mlev;               /* This is either 4 or 1.  4 for wizard MUF */
+    char *subname;          /**< Subroutine for this public */
+    int mlev;               /**< This is either 4 or 1.  4 for wizard MUF */
 
     union {
-        struct inst *ptr;   /* A pointer to the entrypoint instruction */
-        int no;             /* Index into instruction array */
-    } addr;
+        struct inst *ptr;   /**< A pointer to the entrypoint instruction */
+        int no;             /**< Index into instruction array */
+    } addr;                 /**< Differnet kinds of addresses */
 
-    struct publics *next;   /* Next item on the linked list */
+    struct publics *next;   /**< Next item on the linked list */
 };
 
 #ifdef DEBUG
@@ -334,6 +337,12 @@ struct publics {
  */
 #define POP() (++fr->actual_pop, arg + --(*top))
 #else
+/**
+ * If DEBUG is set, we'll do a little extra tracking of the pop.
+ *
+ * These defines implement a simple pop that is used by MUF primitives
+ * to remove items from the stack and 'return' them.
+ */
 #define POP() (arg + --(*top))
 #endif
 
@@ -418,6 +427,17 @@ do { \
     fr->expect_pop += (N); \
 }
 #else
+/**
+ * This call varies based on if we are in debug mode or not.
+ *
+ * This does a check, expecting to pop N items off the stack.  Some
+ * extra debug info is stored in DEBUG mode.  This is otherwise a very
+ * thin wrapper around EXPECT_WRITE_STACK
+ *
+ * @see EXPECT_WRITE_STACK
+ *
+ * @param N the number of items we're expecting to pop.
+ */
 #define EXPECT_POP_STACK(N) \
 { \
     EXPECT_WRITE_STACK(N); \
@@ -575,13 +595,25 @@ do { \
         fr->expect_push_to = *top + (x); \
     } while (0)
 #else
+/**
+ * Check for overflow if 'x' items were to be pushed onto the stack
+ *
+ * Do this before pushing items onto the stack to make sure you don't
+ * segfault the MUCK.  It will do an abort_interp if there's not enough
+ * room, which will return your function for you.
+ *
+ * @see abort_interp
+ *
+ * If DEBUG is defined, this will set the number of expected pushes
+ * on the frame structure.
+ */
 #define CHECKOFLOW(x) do { \
         if((*top + (x - 1)) >= STACK_SIZE) \
             abort_interp("Stack Overflow!"); \
     } while (0)
 #endif
 
-/*
+/**
  * All primitives use a common set of parameters.  This is the list of
  * parameters.
  *
@@ -594,34 +626,38 @@ do { \
                        struct inst *pc, struct inst *arg, int *top, \
                        struct frame *fr
 
-#define SORTTYPE_CASEINSENS     0x1     /* Case insensitive sort constant */
-#define SORTTYPE_DESCENDING     0x2     /* Descending ordering sort       */
+#define SORTTYPE_CASEINSENS     0x1     /**< Case insensitive sort constant */
+#define SORTTYPE_DESCENDING     0x2     /**< Descending ordering sort       */
 
-#define SORTTYPE_CASE_ASCEND    0       /* Ascending, case sensitive */
-#define SORTTYPE_NOCASE_ASCEND  (SORTTYPE_CASEINSENS)   /* Insensitive+Ascend */
-#define SORTTYPE_CASE_DESCEND   (SORTTYPE_DESCENDING)   /* CaseSense+Desc.    */
-/* Insitive + descending */
+#define SORTTYPE_CASE_ASCEND    0       /**< Ascending, case sensitive */
+#define SORTTYPE_NOCASE_ASCEND  (SORTTYPE_CASEINSENS)   /**< Insensitive+Ascend */
+#define SORTTYPE_CASE_DESCEND   (SORTTYPE_DESCENDING)   /**< CaseSense+Desc.    */
+/** Insitive + descending */
 #define SORTTYPE_NOCASE_DESCEND (SORTTYPE_CASEINSENS | SORTTYPE_DESCENDING)
-#define SORTTYPE_SHUFFLE        4   /* Randomize */
+#define SORTTYPE_SHUFFLE        4   /**< Randomize */
 
 /**
- * @var the current highest PID.  The next MUF program will get this PID.
+ * @var top_pid
+ *      the current highest PID.  The next MUF program will get this PID.
  */
 extern int top_pid;
 
 /**
- * @var Number of arguments a primitive uses, for cleanup purposes.
+ * @var nargs
+ *      Number of arguments a primitive uses, for cleanup purposes.
  *      This number is used by abort_interp to clean up if something fails.
  */
 extern int nargs;
 
 /**
- * @var the total number of primitives defined
+ * @var prim_count
+ *      the total number of primitives defined
  */
 extern int prim_count;
 
 /**
- * @var the array of instructions (primitives)
+ * @var base_inst
+ *      the array of instructions (primitives)
  */
 extern const char *base_inst[];
 
@@ -634,7 +670,7 @@ extern const char *base_inst[];
  * @param forstack the stack of forvars to copy
  * @return a copy of forstack
  */
-struct forvars *copy_fors(struct forvars *);
+struct forvars *copy_fors(struct forvars * forstack);
 
 /**
  * Make a copy of a given stack of tryvars structures
@@ -645,7 +681,7 @@ struct forvars *copy_fors(struct forvars *);
  * @param trystack the stack of tryvars to copy
  * @return a copy of trystack
  */
-struct tryvars *copy_trys(struct tryvars *);
+struct tryvars *copy_trys(struct tryvars * trystack);
 
 /**
  * Copy an instruction from instruction 'from' to instruction 'to'
@@ -698,8 +734,9 @@ void deep_copyinst(struct inst *from, struct inst *to, int pinned);
  * @param program the program dbref
  * @return the start of the debug string
  */
-char *debug_inst(struct frame *, int, struct inst *, int, struct inst *,
-                 char *, size_t, int, dbref);
+char *debug_inst(struct frame * fr, int lev, struct inst * pc, int pid,
+                 struct inst * stack, char * buffer, size_t buflen, int sp,
+                 dbref program);
 
 /**
  * Abort the interpreter.  Do error notifications and stack traces as needed.
@@ -821,7 +858,9 @@ dbref find_uid(dbref player, struct frame *fr, int st, dbref program);
  * @param expandarrs boolean if true show items in array
  * @return a pointer to 'buffer'
  */
-char *insttotext(struct frame *, int, struct inst *, char *, int, int, dbref, int);
+char *insttotext(struct frame * fr, int lev, struct inst * theinst,
+                 char * buffer, int buflen, int strmax, dbref program,
+                 int expandarrs);
 
 /**
  * Set up a frame for MUF program interpretation
@@ -838,7 +877,7 @@ char *insttotext(struct frame *, int, struct inst *, char *, int, int, dbref, in
  * @param location the dbref of the triggering location
  * @param program the dbref of the program to call
  * @param source the dbref of the triggering object
- * @param nosleeps PREEMPT, FOREGROUND, or BACKGROUND for initial program state
+ * @param nosleeping PREEMPT, FOREGROUND, or BACKGROUND for initial program state
  * @param whichperms STD_REGUID, STD_SETUID, or STD_HARDUID
  * @param forced_pid if 0, make a new pid - otherwise use this number as pid
  *
@@ -860,7 +899,7 @@ struct frame *interp(int descr, dbref player, dbref location, dbref program,
  *
  * Otherwise, a program runs for awhile until it either blocks for input
  * or sleep, or it gets forcibly "0 sleep" injected to make it yield.  This
- * is called a slice.  All these numbers are tunable with @tune but the
+ * is called a slice.  All these numbers are tunable with \@tune but the
  * defaults are pretty much always used.
  *
  * This will parse the instructions using a godawful switch statement.
@@ -872,7 +911,8 @@ struct frame *interp(int descr, dbref player, dbref location, dbref program,
  *               a simple true or NULL
  * @return an instruction return value or NULL
  */
-struct inst *interp_loop(dbref player, dbref program, struct frame *fr, int rettyp);
+struct inst *interp_loop(dbref player, dbref program, struct frame *fr,
+                         int rettyp);
 
 /**
  * Is the given instruction a ref to the special 'HOME' ref?
@@ -932,10 +972,10 @@ int permissions(dbref player, dbref thing);
  * as this will return what should be the new top of the forstack.
  * The result may be NULL if all items are popped off.
  *
- * @param forstack the stack to remove from
+ * @param from the stack to remove from
  * @return the new head of the forstack with the top item removed.
  */
-struct forvars *pop_for(struct forvars *);
+struct forvars *pop_for(struct forvars * from);
 
 /**
  * Remove a tryvars struct from a trystack
@@ -953,7 +993,7 @@ struct forvars *pop_for(struct forvars *);
  * @param trystack the stack to remove from
  * @return the new head of the trystack with the top item removed.
  */
-struct tryvars *pop_try(struct tryvars *);
+struct tryvars *pop_try(struct tryvars * trystack);
 
 /**
  * Clean up a given frame, and return it to the free frames list.
@@ -1029,7 +1069,7 @@ void push(struct inst *stack, int *top, int type, void *res);
  * @param forstack the current top of the forstack
  * @return the new top of the forstack
  */
-struct forvars *push_for(struct forvars *);
+struct forvars *push_for(struct forvars * forstack);
 
 /**
  * 'Push' an empty tryvars struct into trystack and return it.
@@ -1044,7 +1084,7 @@ struct forvars *push_for(struct forvars *);
  * @param trystack the current top of the trystack
  * @return the new top of the trystack
  */
-struct tryvars *push_try(struct tryvars *);
+struct tryvars *push_try(struct tryvars * trystack);
 
 /**
  * Duplicate all scoped variables from one frame to another.

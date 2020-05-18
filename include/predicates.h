@@ -28,7 +28,7 @@
  * @param descr the descriptor of the actor
  * @param player the player actor
  * @param thing the thing the player is trying to work with
- * @param default_fail_message a fail message to use if no 'fail' prop set
+ * @param default_fail_msg a fail message to use if no 'fail' prop set
  * @returns boolean true if player can do it, false if not
  */
 int can_doit(int descr, dbref player, dbref thing, const char *default_fail_msg);
@@ -107,7 +107,7 @@ int can_teleport_to(dbref who, dbref where);
  *
  * * If thing is an exit, this checks to see if the exit will
  *   perform a move that is allowed.
- * * Then, it checks the @lock on the thing, whether it's an exit or not.
+ * * Then, it checks the \@lock on the thing, whether it's an exit or not.
  *
  * tp_secure_teleport note:
  *

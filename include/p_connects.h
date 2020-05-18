@@ -587,6 +587,9 @@ void prim_descr_securep(PRIM_PROTOTYPE);
  */
 void prim_descr_bufsize(PRIM_PROTOTYPE);
 
+/**
+ * Primitive callback functions
+ */
 #define PRIMS_CONNECTS_FUNCS prim_awakep, prim_online, prim_concount,      \
     prim_condbref, prim_conidle, prim_contime, prim_conhost, prim_conuser, \
     prim_conboot, prim_connotify, prim_condescr, prim_descrcon,            \
@@ -597,6 +600,9 @@ void prim_descr_bufsize(PRIM_PROTOTYPE);
     prim_descr_least_idle, prim_descr_most_idle, prim_descr_securep,       \
     prim_descr_bufsize
 
+/**
+ * Primitive names - must be in same order as the callback functions
+ */
 #define PRIMS_CONNECTS_NAMES "AWAKE?", "ONLINE", "CONCOUNT",  \
     "CONDBREF", "CONIDLE", "CONTIME", "CONHOST", "CONUSER",   \
     "CONBOOT", "CONNOTIFY", "CONDESCR", "DESCRCON",           \

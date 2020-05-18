@@ -1,4 +1,4 @@
-/** @file p_mcp.h
+/** @file p_mcpgui.h
  *
  * Declaration of MCP GUI calls for MUF.  These are iimplemented in p_mcp.c
  *
@@ -172,11 +172,17 @@ void prim_gui_ctrl_create(PRIM_PROTOTYPE);
 void prim_gui_ctrl_command(PRIM_PROTOTYPE);
 
 
+/**
+ * Primitive callback functions
+ */
 #define PRIMS_MCPGUI_FUNCS prim_gui_available, prim_gui_dlog_show, \
         prim_gui_dlog_close, prim_gui_values_get, prim_gui_value_get, \
         prim_gui_value_set, prim_gui_ctrl_create, prim_gui_ctrl_command, \
         prim_gui_dlog_create
 
+/**
+ * Primitive names - must be in same order as the callback functions
+ */
 #define PRIMS_MCPGUI_NAMES "GUI_AVAILABLE", "GUI_DLOG_SHOW", \
         "GUI_DLOG_CLOSE", "GUI_VALUES_GET", "GUI_VALUE_GET", \
         "GUI_VALUE_SET", "GUI_CTRL_CREATE", "GUI_CTRL_COMMAND", \

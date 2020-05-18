@@ -16,7 +16,7 @@
  *
  * This does NOT actually create a player -- @see create_player
  *
- * @TODO: Rename this to player_hash_add or something similar to that
+ * @todo: Rename this to player_hash_add or something similar to that
  *        to make it more clear.
  *
  * @param who the player ref to add to the hash
@@ -92,7 +92,7 @@ dbref create_player(const char *name, const char *password);
  *
  * The wizards will be notified if there is a failure here.  @see wall_wizards
  *
- * @TODO: Rename this to player_hash_delete or something similar to that
+ * @todo: Rename this to player_hash_delete or something similar to that
  *        to make it more clear.
  *
  * @param who the player to remove from the cache

@@ -13,39 +13,42 @@
 #include "config.h"
 #include "inst.h"
 
-/* Structure defining macros */
+/**
+ * Structure defining macros
+ */
 struct macrotable {
-    char *name;                 /* Name of macro              */
-    char *definition;           /* Code for macro             */
-    dbref implementor;          /* dbref of macro creator     */
-    struct macrotable *left;    /* Binary tree implementation */
-    struct macrotable *right;   /* Binary tree implementation */
+    char *name;                 /**< Name of macro              */
+    char *definition;           /**< Code for macro             */
+    dbref implementor;          /**< dbref of macro creator     */
+    struct macrotable *left;    /**< Binary tree implementation */
+    struct macrotable *right;   /**< Binary tree implementation */
 };
 
-/* Maximum arguments for editor commands */
+/** Maximum arguments for editor commands */
 #define MAX_ARG 2
 
-/* Exit insert mode character */
+/** Exit insert mode character */
 #define EXIT_INSERT "."
 
 /* Command strings -- the defines are self-descriptive enough */
-#define INSERT_COMMAND 'i'
-#define DELETE_COMMAND 'd'
-#define QUIT_EDIT_COMMAND   'q'
-#define CANCEL_EDIT_COMMAND 'x'
-#define COMPILE_COMMAND 'c'
-#define LIST_COMMAND   'l'
-#define EDITOR_HELP_COMMAND 'h'
-#define KILL_COMMAND 'k'
-#define SHOW_COMMAND 's'
-#define SHORTSHOW_COMMAND 'a'
-#define VIEW_COMMAND 'v'
-#define UNASSEMBLE_COMMAND 'u'
-#define NUMBER_COMMAND 'n'
-#define PUBLICS_COMMAND 'p'
+#define INSERT_COMMAND 'i'          /**< Editor insert command */
+#define DELETE_COMMAND 'd'          /**< Editor delete command */
+#define QUIT_EDIT_COMMAND   'q'     /**< Editor quit command */
+#define CANCEL_EDIT_COMMAND 'x'     /**< Editor cancel command */
+#define COMPILE_COMMAND 'c'         /**< Editor compile command */
+#define LIST_COMMAND   'l'          /**< Editor list command */
+#define EDITOR_HELP_COMMAND 'h'     /**< Editor help command */
+#define KILL_COMMAND 'k'            /**< Editor kill command */
+#define SHOW_COMMAND 's'            /**< Editor show command */
+#define SHORTSHOW_COMMAND 'a'       /**< Editor short show command */
+#define VIEW_COMMAND 'v'            /**< Editor view command */
+#define UNASSEMBLE_COMMAND 'u'      /**< Editor unassemble command */
+#define NUMBER_COMMAND 'n'          /**< Editor number command */
+#define PUBLICS_COMMAND 'p'         /**< Editor publics command */
 
 /**
- * @var The head of the macrotable binary tree
+ * @var macrotop
+ *      The head of the macrotable binary tree
  */
 extern struct macrotable *macrotop;
 

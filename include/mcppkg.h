@@ -19,7 +19,7 @@
  *    prop     to set a property named by misc.
  *    proplist to store a string proplist named by misc.
  *    prog     to set the program text of the given object.  Ignores misc.
- *    sysparm  to set an @tune value.  Ignores objnum.
+ *    sysparm  to set an \@tune value.  Ignores objnum.
  *    user     to return data to a muf program.
  *
  * If the category is prop, then it accepts the following types:

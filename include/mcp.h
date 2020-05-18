@@ -12,106 +12,142 @@
 /*
  * MCP messages are prefixed with these special tags.
  */
-#define MCP_MESG_PREFIX     "#$#"
-#define MCP_QUOTE_PREFIX    "#$\""
+#define MCP_MESG_PREFIX     "#$#"               /**< MCP prefix */
+#define MCP_QUOTE_PREFIX    "#$\""              /**< MCP quote prefix */
 
-#define MCP_ARG_EMPTY       "\"\""              /* Empty argument string     */
-#define MCP_INIT_PKG        "mcp"               /* MCP initial package name  */
-#define MCP_DATATAG         "_data-tag"         /* For multi-line messages   */
-#define MCP_INIT_MESG       "mcp "              /* Prefix for out of bound   */
-#define MCP_NEGOTIATE_PKG   "mcp-negotiate"     /* Name of negotiate package */
+#define MCP_ARG_EMPTY       "\"\""              /**< Empty argument string     */
+#define MCP_INIT_PKG        "mcp"               /**< MCP initial package name  */
+#define MCP_DATATAG         "_data-tag"         /**< For multi-line messages   */
+#define MCP_INIT_MESG       "mcp "              /**< Prefix for out of bound   */
+#define MCP_NEGOTIATE_PKG   "mcp-negotiate"     /**< Name of negotiate package */
 
-/*
+/**
  * This structure handles binding MCP packages to callback functions.
  */
 struct mcp_binding {
-    struct mcp_binding *next;   /* Next on the linked list   */
+    struct mcp_binding *next;   /**< Next on the linked list   */
 
-    char *pkgname;              /* Name of MCP package       */
-    char *msgname;              /* Name of MCP message       */
-    struct inst *addr;          /* Link to callback function */
+    char *pkgname;              /**< Name of MCP package       */
+    char *msgname;              /**< Name of MCP message       */
+    struct inst *addr;          /**< Link to callback function */
 };
 
-/* This is a convenient struct for dealing with MCP versions. */
+/**
+ * This is a convenient struct for dealing with MCP versions.
+ */
 typedef struct McpVersion_T {
-    unsigned short vermajor;    /* major version number */
-    unsigned short verminor;    /* minor version number */
+    unsigned short vermajor;    /**< major version number */
+    unsigned short verminor;    /**< minor version number */
 } McpVer;
 
-/* This is one line of a multi-line argument value. */
+/**
+ * This is one line of a multi-line argument value.
+ */
 typedef struct McpArgPart_T {
-    struct McpArgPart_T *next;  /* Next on linked list    */
-    char *value;                /* The value of this line */
+    struct McpArgPart_T *next;  /**< Next on linked list    */
+    char *value;                /**< The value of this line */
 } McpArgPart;
 
-/* This is one argument of a message. */
+/**
+ * This is one argument of a message.
+ */
 typedef struct McpArg_T {
-    struct McpArg_T *next;      /* Next on linked list                */
-    char *name;                 /* Name of this key part              */
-    McpArgPart *value;          /* Value assoicated with key          */
-    McpArgPart *last;           /* Pointer to last item on list       */
-    int was_shown;              /* Has to do with multi-line messages */
+    struct McpArg_T *next;      /**< Next on linked list                */
+    char *name;                 /**< Name of this key part              */
+    McpArgPart *value;          /**< Value assoicated with key          */
+    McpArgPart *last;           /**< Pointer to last item on list       */
+    int was_shown;              /**< Has to do with multi-line messages */
 } McpArg;
 
-/* This is an MCP message. */
+/**
+ * This is an MCP message.
+ */
 typedef struct McpMesg_T {
-    struct McpMesg_T *next;     /* Linked list for messages         */
-    char *package;              /* The MCP package for this message */
-    char *mesgname;             /* The message for this package     */
-    char *datatag;              /* Data-tag for multi-line mode     */
-    McpArg *args;               /* Argument key-value pairs         */
-    int incomplete;             /* Is message incomplete?           */
-    int bytes;                  /* Size of message                  */
+    struct McpMesg_T *next;     /**< Linked list for messages         */
+    char *package;              /**< The MCP package for this message */
+    char *mesgname;             /**< The message for this package     */
+    char *datatag;              /**< Data-tag for multi-line mode     */
+    McpArg *args;               /**< Argument key-value pairs         */
+    int incomplete;             /**< Is message incomplete?           */
+    int bytes;                  /**< Size of message                  */
 } McpMesg;
 
-struct McpFrame_T;
+struct McpFrame_T;  /**< Definition for the MCP frame type */
 
-/* Type definition for MCP callback function */
+/** Type definition for MCP callback function */
 typedef void (*McpPkg_CB) (struct McpFrame_T *mfr,
 			   McpMesg *mesg, McpVer version, void *context);
 
-/* Type definition for MCP context cleanup callback function */
+/** Type definition for MCP context cleanup callback function */
 typedef void (*ContextCleanup_CB) (void *context);
 
-/* This is used to keep track of registered packages. */
+/**
+ * This is used to keep track of registered packages.
+ */
 typedef struct McpPkg_T {
-    char *pkgname;              /* Name of the package             */
-    McpVer minver;              /* min supported version number    */
-    McpVer maxver;              /* max supported version number    */
-    McpPkg_CB callback;         /* function to call with mesgs     */
-    void *context;              /* user defined callback context   */
-    ContextCleanup_CB cleanup;  /* callback to use to free context */
-    struct McpPkg_T *next;      /* Next package in the list        */
+    char *pkgname;              /**< Name of the package             */
+    McpVer minver;              /**< min supported version number    */
+    McpVer maxver;              /**< max supported version number    */
+    McpPkg_CB callback;         /**< function to call with mesgs     */
+    void *context;              /**< user defined callback context   */
+    ContextCleanup_CB cleanup;  /**< callback to use to free context */
+    struct McpPkg_T *next;      /**< Next package in the list        */
 } McpPkg;
 
-/* This keeps connection specific data for MCP. */
+/**
+ * This keeps connection specific data for MCP.
+ */
 typedef struct McpFrame_T {
-    void *descriptor;       /* The descriptor to send output to */
-    unsigned int enabled;   /* Flag denoting if MCP is enabled. */
-    char *authkey;          /* Authorization key. */
-    McpVer version;         /* Supported MCP version number. */
-    McpPkg *packages;       /* Pkgs supported on this connection. */
-    McpMesg *messages;      /* Partial messages, under construction. */
+    void *descriptor;       /**< The descriptor to send output to */
+    unsigned int enabled;   /**< Flag denoting if MCP is enabled. */
+    char *authkey;          /**< Authorization key. */
+    McpVer version;         /**< Supported MCP version number. */
+    McpPkg *packages;       /**< Pkgs supported on this connection. */
+    McpMesg *messages;      /**< Partial messages, under construction. */
 } McpFrame;
 
+/**
+ * List of McpFrames
+ */
 struct McpFrameList_t {
-    McpFrame *mfr;                  /* MCP Frame          */
-    struct McpFrameList_t *next;    /* Next frame in list */
+    McpFrame *mfr;                  /**< MCP Frame          */
+    struct McpFrameList_t *next;    /**< Next frame in list */
 };
 
-typedef struct McpFrameList_t McpFrameList;
+typedef struct McpFrameList_t McpFrameList; /**< Definition for the frame list */
 
 #include "interface.h"
 
-#define MCPFRAME_DESCR(mfr) (((struct descriptor_data *)mfr->descriptor)->descriptor)
-#define MCPFRAME_PLAYER(mfr) (((struct descriptor_data *)mfr->descriptor)->player)
+/**
+ * Get the descriptor from an MCP frame
+ *
+ * This does not do NULL checking.
+ *
+ * @param mfr the frame to access
+ * @return a descriptor number
+ */
+#define MCPFRAME_DESCR(mfr) ( \
+    ((struct descriptor_data *)mfr->descriptor)->descriptor \
+)
+
+/**
+ * Get the player ref from an MCP frame
+ *
+ * This does not do NULL checking.
+ *
+ * @param mfr the frame to access
+ * @return a player ref
+ */
+#define MCPFRAME_PLAYER(mfr) ( \
+    ((struct descriptor_data *)mfr->descriptor)->player \
+)
 
 /**
  * Require the user to be logged into use this MCP call.
  *
  * Displays a simple error if they are not logged in.
  *
- * @param MPI frame structure
+ * @param mfr MPI frame structure
  */
 #define MCP_REQUIRE_LOGIN(mfr) { \
     if (!ObjExists(((struct descriptor_data *)mfr->descriptor)->player)) { \
