@@ -118,7 +118,7 @@ struct descriptor_data {
                              *   console
                              */
     int output_descriptor;  /**< If not -1, descriptor for output
-                            /*   usually same as descriptor, exists to
+                             *   usually same as descriptor, exists to
                              *   support console
                              */
     int connected;          /**< Is playing? (has gotten past login) */
