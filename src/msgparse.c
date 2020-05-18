@@ -1097,10 +1097,7 @@ msg_unparse_macro(dbref player, dbref what, dbref perms, char *name, int argc,
     const char *ptr;
     char *ptr2;
     char buf[BUFFER_LEN];
-    char buf2[BUFFER_LEN];
-    dbref obj;
     int i, p = 0;
-    int blessed;
 
     strcpyn(buf, sizeof(buf), rest);
 

@@ -677,7 +677,7 @@ process_lines(FILE * infile, FILE * outfile, FILE * htmlfile)
     char buf3[4096];
     char buf4[4096];
     int nukenext = 0;
-    int topichead = 0;
+    int istopichead = 0;
     int codeblock = 0;
     char *ptr;
     char *ptr2;
@@ -812,7 +812,7 @@ process_lines(FILE * infile, FILE * outfile, FILE * htmlfile)
             }
         } else if (nukenext) {
             nukenext = 0;
-            topichead = 1;
+            istopichead = 1;
             fprintf(outfile, "%s", buf);
 
             for (ptr = buf; *ptr && *ptr != '|' && *ptr != '\n'; ptr++) {
@@ -825,8 +825,8 @@ process_lines(FILE * infile, FILE * outfile, FILE * htmlfile)
         } else if (buf[0] == ' ') {
             nukenext = 0;
 
-            if (topichead) {
-                topichead = 0;
+            if (istopichead) {
+                istopichead = 0;
                 fprintf(htmlfile, HTML_TOPICBODY);
             } else if (!codeblock) {
                 fprintf(htmlfile, HTML_PARAGRAPH);
@@ -839,12 +839,12 @@ process_lines(FILE * infile, FILE * outfile, FILE * htmlfile)
         } else {
             int found = 0;
 
-            for (replacement *temp = replacements; temp->token; temp++) {
-                if (strstr(buf, temp->token)) {
+            for (replacement *rtemp = replacements; rtemp->token; rtemp++) {
+                if (strstr(buf, rtemp->token)) {
                     found = 1;
-                    (temp->func)(outfile);
-                    (temp->func)(docsfile);
-                    (temp->func)(htmlfile);
+                    (rtemp->func)(outfile);
+                    (rtemp->func)(docsfile);
+                    (rtemp->func)(htmlfile);
                     break;
                 }
             }
@@ -856,7 +856,7 @@ process_lines(FILE * infile, FILE * outfile, FILE * htmlfile)
                 fprintf(htmlfile, "%s", buf3);
             }
 
-            if (topichead) {
+            if (istopichead) {
                 fprintf(htmlfile, HTML_TOPICHEAD_BREAK);
             }
         }
@@ -872,7 +872,6 @@ int
 main(int argc, char **argv)
 {
     FILE *infile, *outfile, *htmlfile;
-    int cols;
 
     if (argc != 4) {
         fprintf(stderr,
