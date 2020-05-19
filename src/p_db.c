@@ -34,6 +34,7 @@
 #include "props.h"
 #include "timequeue.h"
 #include "tune.h"
+#include "events.h"
 
 /**
  * TODO: These globals really probably shouldn't be globals.  I can only guess
@@ -4390,3 +4391,43 @@ prim_pname_history(PRIM_PROTOTYPE)
     PushArrayRaw(nu);
 }
 
+/**
+ * Implementation of MUF DUMP
+ *
+ * Takes no parameters and returns boolean; true if the dump was triggered,
+ * false if it was not.  A dump may not be triggered in the case where a
+ * dump is already in progress.
+ *
+ * On completion of the dump, it generates an event with eventID DUMP
+ * which can be waited for / caught as desired.  It will have the integer
+ * value of 1.
+ *
+ * Wizards only.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
+void prim_dump(PRIM_PROTOTYPE)
+{
+    int result;
+
+    if (mlev < 4)
+        abort_interp("Permission denied.  Requires Wizbit.");
+
+    /* Are we already dumping? */
+    if (global_dumper_pid != 0) {
+        result = 0;
+        PushInt(result);
+        return;
+    }
+
+    dump_db_now();
+
+    result = 1;
+    PushInt(result);
+}

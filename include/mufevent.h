@@ -84,6 +84,20 @@ void muf_event_add(struct frame *fr, char *event, struct inst *val,
                    int exclusive);
 
 /**
+ * Adds a MUF event to ALL running programs
+ *
+ * This is for server events that may be of interest, such as the DUMP
+ * event to see when a database dump has finished.
+ *
+ * 'event' and 'val' are copied so you can free them at will.
+ *
+ * @param event the name of the event to add
+ * @param val the value associated with the event
+ * @param exclusive if true, will not add another event if one already in queue
+ */
+void muf_event_add_all(char *event, struct inst *val, int exclusive);
+
+/**
  * Returns true if the given player controls the given PID.
  *
  * @param player the player to check for

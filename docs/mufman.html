@@ -288,6 +288,7 @@
     <li><a href="#diff3">diff3</a></li>
     <li><a href="#dist3d">dist3d</a></li>
     <li><a href="#drop">drop</a></li>
+    <li><a href="#dump">dump</a></li>
     <li><a href="#dup">dup</a></li>
     <li><a href="#dupn">dupn</a></li>
 </ul>
@@ -6500,6 +6501,7 @@ not cause an error for SETPROP or any other property related primitive.
     <li><a href="#dbtop">dbtop</a></li>
     <li><a href="#desc">desc</a></li>
     <li><a href="#drop">drop</a></li>
+    <li><a href="#dump">dump</a></li>
     <li><a href="#entrances_array">entrances_array</a></li>
     <li><a href="#exit?">exit?</a></li>
     <li><a href="#exits">exits</a></li>
@@ -7870,6 +7872,25 @@ This primitive requires at least Mucker Level 3.
 </h3>
   Returns a list array of players &quot;Player&quot; is ignoring.
 This primitive requires at least Mucker Level 3.
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="dump">DUMP ( -- b )
+<br>
+
+<br>
+</h3>
+  Triggers a database dump.  Returns boolean true if it was triggered, false
+if not.  The only reason a dump would fail to trigger is if there is already
+a dump happening at the time you run this.
+
+<p>
+  Fuzzball dumps are asynchronous, so if you want to know when the dump
+finishes, you can wait for an event with eventId &quot;DUMP&quot;.  This event is sent
+to all running processes.
+
+<p>
+  This primitive requires a Wizard bit.
 <!-- HTML_TOPICEND -->
 
 

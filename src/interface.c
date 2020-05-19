@@ -4055,6 +4055,15 @@ shovechars()
                 wall_and_flush(tp_dumpdone_mesg);
             }
 
+            /* Send MUF event to all MUFs */
+            {
+                struct inst temp;
+
+                temp.type = PROG_INTEGER;
+                temp.data.number = 1;
+                muf_event_add_all("DUMP", &temp, 1);
+            }
+
             global_dumpdone = 0;
         }
 
