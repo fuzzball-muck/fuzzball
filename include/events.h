@@ -14,8 +14,7 @@
  * Do a database dump now
  *
  * This doesn't do any of the purges that the periodic dump does, but
- * it does set the last dump time property.  It also sets the last
- * dump time to now.
+ * it does set the last dump time property and resets the timer to now.
  */
 void dump_db_now(void);
 

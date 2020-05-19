@@ -204,6 +204,11 @@ void dump_database(void);
  *
  * Otherwise, a process is forked, its nice level is set to NICELEVEL
  * if defined, and the database is dumped to disk.
+ *
+ * You probably don't want to call this function.  You likely should
+ * call dump_db_now instead as it does additional book-keeping.
+ *
+ * @see dump_db_now
  */
 void fork_and_dump(void);
 

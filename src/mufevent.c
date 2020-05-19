@@ -23,6 +23,8 @@
 #include "interface.h"
 #include "interp.h"
 #include "mufevent.h"
+#include "timequeue.h"
+#include "log.h"
 
 /*
  * A MUF event is a an element in a queue, and has some kind of name and
@@ -892,6 +894,52 @@ muf_event_add(struct frame *fr, char *event, struct inst *val, int exclusive)
         ptr->next = newevent;
     }
 }
+
+/**
+ * Adds a MUF event to ALL running programs
+ *
+ * This is for server events that may be of interest, such as the DUMP
+ * event to see when a database dump has finished.
+ *
+ * 'event' and 'val' are copied so you can free them at will.
+ *
+ * @param event the name of the event to add
+ * @param val the value associated with the event
+ * @param exclusive if true, will not add another event if one already in queue
+ */
+void muf_event_add_all(char *event, struct inst *val, int exclusive)
+{
+    stk_array*      pidlist;
+    struct frame*   frame;
+
+    /*
+     * TODO: Using a MUF array list, which is not the most memory
+     *       efficient thing, seems to be the only way to get the PIDs
+     *       in the system outside of timequeue.h
+     *
+     *       This could be made better by having a function that directly
+     *       returns PIDs and/or frames (which is what we really want here)
+     */
+    pidlist = get_pids(-1, 0);
+
+    /* Sanity check -- should never come to this */
+    if (pidlist->type != ARRAY_PACKED) {
+        log_status("ERROR: muf_event_add_all get_pids returned non-packed "
+                   "array.");
+        return;
+    }
+
+    for (int i = 0; i < pidlist->items; i++) {
+        frame = timequeue_pid_frame(pidlist->data.packed[i].data.number);
+
+        if (frame) {
+            muf_event_add(frame, event, val, exclusive);
+        }
+    }
+
+    array_free(pidlist);
+}
+
 
 /**
  * Removes the first event of one of the specified types from the event queue

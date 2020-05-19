@@ -117,7 +117,7 @@ D's
   descridle          descriptors        descrleastidle     descrmostidle
   descrnotify        descrsecure?       descrtime          descruser
   dictionary?        diff3              dist3d             drop
-  dup                dupn               
+  dump               dup                dupn               
 
 E's
   else               entrances_array    envprop            envpropstr
@@ -4029,30 +4029,30 @@ addpennies                array_get_ignorelist      caller
 checkpassword             contents                  contents_array
 controls                  copyobj                   copyplayer
 dbcmp                     dbref                     dbtop
-desc                      drop                      entrances_array
-exit?                     exits                     exits_array
-fail                      findnext                  flag?
-getlink                   getlinks                  getlinks_array
-ignore_add                ignore_del                ignoring?
-location                  match                     mlevel
-movepennies               moveto                    name
-newexit                   newobject                 newpassword
-newplayer                 newprogram                newroom
-next                      nextentrance              nextowned
-objmem                    odrop                     ofail
-ok?                       osucc                     owner
-part_pmatch               pennies                   player?
-pmatch                    pname_history             prog
-program?                  recycle                   rmatch
-room?                     set                       setdesc
-setdrop                   setfail                   setlink
-setlinks_array            setname                   setodrop
-setofail                  setosucc                  setown
-setsucc                   setsysparm                stats
-stats_array               succ                      sysparm
-sysparm_array             thing?                    timestamps
-toadplayer                trig                      truename
-unparseobj                
+desc                      drop                      dump
+entrances_array           exit?                     exits
+exits_array               fail                      findnext
+flag?                     getlink                   getlinks
+getlinks_array            ignore_add                ignore_del
+ignoring?                 location                  match
+mlevel                    movepennies               moveto
+name                      newexit                   newobject
+newpassword               newplayer                 newprogram
+newroom                   next                      nextentrance
+nextowned                 objmem                    odrop
+ofail                     ok?                       osucc
+owner                     part_pmatch               pennies
+player?                   pmatch                    pname_history
+prog                      program?                  recycle
+rmatch                    room?                     set
+setdesc                   setdrop                   setfail
+setlink                   setlinks_array            setname
+setodrop                  setofail                  setosucc
+setown                    setsucc                   setsysparm
+stats                     stats_array               succ
+sysparm                   sysparm_array             thing?
+timestamps                toadplayer                trig
+truename                  unparseobj                
 
 ~----------------------------------------------------------------------------
 ~
@@ -4945,6 +4945,20 @@ ARRAY_GET_IGNORELIST ( ref:Player -- list:Players )
 
   Returns a list array of players "Player" is ignoring.
 This primitive requires at least Mucker Level 3.
+~
+~
+DUMP
+DUMP ( -- b )
+
+  Triggers a database dump.  Returns boolean true if it was triggered, false
+if not.  The only reason a dump would fail to trigger is if there is already
+a dump happening at the time you run this.
+
+  Fuzzball dumps are asynchronous, so if you want to know when the dump
+finishes, you can wait for an event with eventId "DUMP".  This event is sent
+to all running processes.
+
+  This primitive requires a Wizard bit.
 ~
 ~
 ~

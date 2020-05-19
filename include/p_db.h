@@ -1081,6 +1081,29 @@ void prim_newpassword(PRIM_PROTOTYPE);
 void prim_compile(PRIM_PROTOTYPE);
 
 /**
+ * Implementation of MUF DUMP
+ *
+ * Takes no parameters and returns boolean; true if the dump was triggered,
+ * false if it was not.  A dump may not be triggered in the case where a
+ * dump is already in progress.
+ *
+ * On completion of the dump, it generates an event with eventID DUMP
+ * which can be waited for / caught as desired.  It will have the integer
+ * value of 1.
+ *
+ * Wizards only.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
+void prim_dump(PRIM_PROTOTYPE);
+
+/**
  * Implementation of MUF UNCOMPILE
  *
  * Consumes a program dbref, and uncompiles the program. Requires
@@ -1249,7 +1272,7 @@ void prim_toadplayer(PRIM_PROTOTYPE);
     prim_compile, prim_uncompile, prim_newpassword, prim_getpids,       \
     prim_program_getlines, prim_getpidinfo, prim_program_setlines,	\
     prim_setlinks_array, prim_toadplayer, prim_supplicant,		\
-    prim_pname_history
+    prim_pname_history, prim_dump
 
 /**
  * Primitive callback function names - must be in same order as callbacks.
@@ -1270,6 +1293,6 @@ void prim_toadplayer(PRIM_PROTOTYPE);
     "COMPILE", "UNCOMPILE", "NEWPASSWORD", "GETPIDS",      \
     "PROGRAM_GETLINES", "GETPIDINFO", "PROGRAM_SETLINES",  \
     "SETLINKS_ARRAY", "TOADPLAYER", "SUPPLICANT",	   \
-    "PNAME_HISTORY"
+    "PNAME_HISTORY", "DUMP"
 
 #endif /* !P_DB_H */

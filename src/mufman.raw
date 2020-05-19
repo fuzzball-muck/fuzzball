@@ -4514,6 +4514,20 @@ ARRAY_GET_IGNORELIST ( ref:Player -- list:Players )
 This primitive requires at least Mucker Level 3.
 ~
 ~
+DUMP
+DUMP ( -- b )
+
+  Triggers a database dump.  Returns boolean true if it was triggered, false
+if not.  The only reason a dump would fail to trigger is if there is already
+a dump happening at the time you run this.
+
+  Fuzzball dumps are asynchronous, so if you want to know when the dump
+finishes, you can wait for an event with eventId "DUMP".  This event is sent
+to all running processes.
+
+  This primitive requires a Wizard bit.
+~
+~
 ~
 ~~section Time Manipulation Operators|TimeOps
 ~
