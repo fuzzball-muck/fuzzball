@@ -908,7 +908,7 @@ muf_event_add(struct frame *fr, char *event, struct inst *val, int exclusive)
  *
  * @private
  * @param fr the frame to find events for
- * @param count the number of events in 'events'
+ * @param eventcount the number of events in 'events'
  * @param events an array of strings with event names
  * @return either NULL or the found (and removed from list) mufevent
  */

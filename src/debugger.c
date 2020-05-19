@@ -1060,8 +1060,6 @@ muf_debugger(int descr, dbref player, dbref program, const char *text, struct fr
         primset[2].line = 0;
         primset[2].data.number = IN_RET;
 
-        /* primset[3].data.number = primitive("EXIT"); */
-
         fr->system.st[fr->system.top].progref = program;
         fr->system.st[fr->system.top++].offset = fr->pc;
         fr->pc = &primset[1];

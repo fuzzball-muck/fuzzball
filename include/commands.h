@@ -1605,7 +1605,7 @@ void do_usage(dbref player);
  *
  * Displays version information to player.
  *
- * @param player
+ * @param player the player doing the command
  */
 void do_version(dbref player);
 

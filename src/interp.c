@@ -46,7 +46,13 @@
  * they have an instruction number, etc.
  *
  * @private
- * @param PRIM_PROTOTYPE the standard primitive parameters
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
  */
 static void
 p_null(PRIM_PROTOTYPE)

@@ -286,7 +286,7 @@ do_list_tree(struct macrotable *node, const char *first, const char *last,
  * @param word the array of words - see description above
  * @param k the size of 'word' array
  * @param player the player to notify
- * @param length a boolean value, true for full mode, false for abridged
+ * @param full a boolean value, true for full mode, false for abridged
  */
 static void
 list_macros(char *word[], int k, dbref player, int full)

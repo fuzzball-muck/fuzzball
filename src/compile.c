@@ -2510,7 +2510,6 @@ quoted(COMPSTATE * cstat, const char *token)
  * Check to see if 'token' is a #dbref
  *
  * @private
- * @param cstat the compile state structure
  * @param token the token to check
  * @return boolean true if 'token' is a #dbref, false otherwise
  */
@@ -2524,7 +2523,6 @@ object(const char *token)
  * See if 'token' starts a new string
  *
  * @private
- * @param cstat the compile state structure
  * @param token the token to check
  * @return boolean true if 'token' starts with a '"', false otherwise
  */
@@ -2592,8 +2590,6 @@ localvar(COMPSTATE * cstat, const char *token)
 /**
  * See if 'token' is a primitive
  *
- * @private
- * @param cstat the compile state structure
  * @param token the token to check
  * @return boolean true if 'token' is a primitive, false otherwise
  */

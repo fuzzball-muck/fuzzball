@@ -46,7 +46,7 @@ height_of(PropPtr node)
  * right node.
  *
  * @private
- * @param the node to check
+ * @param node the node to check
  *
  * @return the difference in height between left and right.
  *         Positive numbers mean right is 'heigher', negative

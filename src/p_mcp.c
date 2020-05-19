@@ -967,10 +967,9 @@ fbgui_muf_event_cb(GUI_EVENT_CB_ARGS)
  * @private
  * @param descr the descriptor source/target of event.
  * @param dlogid the string dialog ID
- * @param id strind ID
- * @param event string event
- * @param msg McpMesg object source of event
- * @param did_dismiss boolean
+ * @param id string ID
+ * @param errcode error code
+ * @param errtext error description
  * @param context void* pointer to arbitrary object (struct frame in this case)
  */
 static void

@@ -574,7 +574,7 @@ void notify_listeners(dbref who, dbref xprog, dbref obj, dbref room, const char 
  *
  * @param player the player (or zombie) to deliver the message to
  * @param msg the message to send as a character string
- * @param isprivate
+ * @param isprivate zombie message filter -- see the notes above. 
  * @return boolean true if message received, false if nothing was queued.
  */
 int notify_nolisten(dbref player, const char *msg, int isprivate);

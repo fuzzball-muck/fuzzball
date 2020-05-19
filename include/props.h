@@ -1144,7 +1144,7 @@ void remove_property_list(dbref player, int all);
  *
  * @internal
  * @param player The object to operate on.
- * @param pname the property name to delete
+ * @param type the property name to delete
  * @param sync Do not sync gender props?  See description above.
  */
 void remove_property_nofetch(dbref player, const char *type, int sync);
