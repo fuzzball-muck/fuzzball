@@ -54,3 +54,39 @@
   expect: |
     Source: Room Zero.*
 
+- name: dig-simple
+  setup: |
+    @dig IdTwo
+  commands: |
+    ex #2
+  expect:
+    - "IdTwo\\(#2"
+    - "Type: ROOM"
+
+- name: dig-parent
+  setup: |
+    @dig IdTwo==regtwo
+    @dig IdThree=$regtwo=regthree
+  commands: |
+    ex $regthree
+  expect:
+    - "IdThree\\(#3"
+    - "Parent: IdTwo"
+    - "Type: ROOM"
+
+- name: dig-fail-badparent
+  commands: |
+    @dig IdTwo=badbadbad=regtwo
+    ex $regtwo
+  expect:
+    - "I don't understand 'bad"
+    - "Parent: Room Zero"
+
+- name: dig-fail-formatstringparent
+  comment: regression for pull request 540
+  commands: |
+    @dig IdTwo=%n%n%n%n%n%n%n=regtwo
+    ex $regtwo
+  expect:
+    - "I don't understand '%n"
+    - "Parent: Room Zero"
