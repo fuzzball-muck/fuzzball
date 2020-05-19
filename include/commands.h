@@ -252,7 +252,7 @@ void do_debug(dbref player, const char *args);
  * It supports registrtration if pname has an = in it.
  *
  * @param descr the descriptor of the person making the call
- * @param player the player doing the call
+ * c@param player the player doing the call
  * @param name the name of the room to make
  * @param pname the parent room and possibly registration info
  */
@@ -1605,7 +1605,7 @@ void do_usage(dbref player);
  *
  * Displays version information to player.
  *
- * @param player
+ * @param player the player doing the command
  */
 void do_version(dbref player);
 

@@ -410,7 +410,7 @@ add_property(dbref player, const char *pname, const char *strval, int value)
  * @param player The object to clear properties on.
  * @param p The propdir / property structure we are currently working
  *        on.
- * @param all Clear all properties? boolean -- see description above.
+ * @param allp Clear all properties? boolean -- see description above.
  */
 static void
 remove_proplist_item(dbref player, PropPtr p, int allp)
@@ -707,6 +707,13 @@ has_property(int descr, dbref player, dbref what, const char *pname, const char 
 }
 
 /**
+ * @private
+ * @var has_prop_recursion_limit
+ *      prevents too much MPI execution.  Should this be a config parameter?
+ */
+static int has_prop_recursion_limit = 2;
+
+/**
  * has_property_strict is the call that underpins has_property, and
  * unlike has_property, it checks property values for a *single*
  * object and not the object, all its contents, etc.
@@ -726,7 +733,6 @@ has_property(int descr, dbref player, dbref what, const char *pname, const char 
  *
  * @return boolean - true if property exists with value, false otherwise.
  */
-static int has_prop_recursion_limit = 2;
 int
 has_property_strict(int descr, dbref player, dbref what, const char *pname, const char *strval,
                     int value)
@@ -1963,6 +1969,12 @@ untouchprop_rec(PropPtr p)
     untouchprop_rec(PropDir(p));
 }
 
+/**
+ * @private
+ * @var untouch_lastdone
+ *      The last dbref that has been untouched in this process
+ */
+static dbref untouch_lastdone = 0;
 
 /**
  * This function is a progressive iteration over the entire database,
@@ -1980,7 +1992,6 @@ untouchprop_rec(PropPtr p)
  * @internal
  * @param limit The number of database objects to process before returning.
  */
-static dbref untouch_lastdone = 0;
 void
 untouchprops_incremental(int limit)
 {

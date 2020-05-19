@@ -125,12 +125,10 @@ void init_primitives(void);
 /**
  * See if 'token' is a primitive
  *
- * @private
- * @param cstat the compile state structure
  * @param token the token to check
  * @return boolean true if 'token' is a primitive, false otherwise
  */
-int primitive(const char *s);
+int primitive(const char *token);
 
 /**
  * Calculate the in-memory size of a program

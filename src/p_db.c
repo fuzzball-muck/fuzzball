@@ -76,7 +76,7 @@ static char buf[BUFFER_LEN];
  * @private
  * @param player the player to receive the new thing
  * @param old the dbref of the object being copied
- * @param new the dbref of the new object
+ * @param nu the dbref of the new object
  */
 static void
 copyobj(dbref player, dbref old, dbref nu)

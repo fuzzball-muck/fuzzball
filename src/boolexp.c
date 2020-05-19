@@ -301,8 +301,8 @@ static struct boolexp *parse_boolprop(char *buf);
  *
  * @private
  * @param descr the descriptor belonging to the person compiling the lock
+ * @param parsebuf the lock string
  * @param player the person or thing compiling the lock
- * @param buf the lock string
  * @param dbloadp 1 if being called by the property disk loader, 0 otherwise
  * @return struct boolexp whatever node was created or TRUE_BOOLEXP on failure
  */
@@ -452,8 +452,8 @@ parse_boolexp_F(int descr, const char **parsebuf, dbref player, int dbloadp)
  *
  * @private
  * @param descr the descriptor belonging to the person compiling the lock
+ * @param parsebuf the lock string
  * @param player the person or thing compiling the lock
- * @param buf the lock string
  * @param dbloadp 1 if being called by the property disk loader, 0 otherwise
  * @return struct boolexp whatever node was created or TRUE_BOOLEXP on failure
  */
@@ -515,8 +515,8 @@ parse_boolexp_T(int descr, const char **parsebuf, dbref player, int dbloadp)
  *
  * @private
  * @param descr the descriptor belonging to the person compiling the lock
+ * @param parsebuf the lock string
  * @param player the person or thing compiling the lock
- * @param buf the lock string
  * @param dbloadp 1 if being called by the property disk loader, 0 otherwise
  * @return struct boolexp whatever node was created or TRUE_BOOLEXP on failure
  */
@@ -573,8 +573,8 @@ parse_boolexp_E(int descr, const char **parsebuf, dbref player, int dbloadp)
  *   It is just used by the property disk loader.
  *
  * @param descr the descriptor belonging to the person compiling the lock
+ * @param parsebuf the lock string
  * @param player the person or thing compiling the lock
- * @param buf the lock string
  * @param dbloadp 1 if being called by the property disk loader, 0 otherwise
  * @return struct boolexp - the "head" of the boolean expression node tree.
  *         or TRUE_BOOLEXP on failure.
@@ -758,8 +758,6 @@ static char *buftop;
  * @param b the boolean expression to process
  * @param outer_type the type of the parent node
  * @param fullname Show names instead of DBREFs?  True or false.
- *
- * @return pointer to static buffer containing string for display.
  */ 
 static void
 unparse_boolexp1(dbref player, struct boolexp *b, short outer_type, int fullname)

@@ -471,7 +471,7 @@ array_tree_find(array_tree * avl, array_iter * key)
  * This has 'friendly' node handling, returning 0 on a NULL
  *
  * @private
- * @param the node to be computed
+ * @param node the node to be computed
  * @return the height of the given node
  */
 static short
@@ -840,7 +840,7 @@ array_tree_remove_node(array_iter * key, array_tree ** root)
  *
  * @private
  * @param key the key to delete
- * @param root the root node to start from.
+ * @param avl the root node to start from.
  * @return the node to delete (it's removed from the tree)
  */
 static array_tree *
