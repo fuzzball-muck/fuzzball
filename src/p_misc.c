@@ -333,7 +333,7 @@ prim_convtime(PRIM_PROTOTYPE)
     CHECKOP(1);
     oper1 = POP();
 
-    if (oper1->type != PROG_STRING)
+    if (oper1->type != PROG_STRING || !oper1->data.string)
         abort_interp("Invalid time string");
 
     time_t seconds = time_string_to_seconds(oper1->data.string->data, "%T%t%D",
@@ -377,10 +377,10 @@ prim_fmttime(PRIM_PROTOTYPE)
     oper1 = POP();
     oper2 = POP();
 
-    if (oper1->type != PROG_STRING)
+    if (oper1->type != PROG_STRING || !oper1->data.string)
         abort_interp("Invalid format string");
 
-    if (oper2->type != PROG_STRING)
+    if (oper2->type != PROG_STRING || !oper2->data.string)
         abort_interp("Invalid time string");
 
     time_t seconds = time_string_to_seconds(oper2->data.string->data,

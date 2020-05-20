@@ -1,0 +1,44 @@
+- name: fmttime-crash-regression1
+  setup: |
+    @program test.muf
+    i
+    : main "" "Test." fmttime ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect:
+    - "Program Error"
+
+- name: fmttime-crash-regression2
+  setup: |
+    @program test.muf
+    i
+    : main "Test." "" fmttime ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect:
+    - "Program Error"
+
+- name: convtime-crash-regression
+  setup: |
+    @program test.muf
+    i
+    : main "" convtime ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect:
+    - "Program Error"
