@@ -1,0 +1,52 @@
+- name: home
+  setup: |
+    @dig IdTwo
+    @link me=#2
+    home
+  commands: |
+    ex me
+  expect: "Location: IdTwo\\("
+- name: leave
+  setup: |
+    @tune vehicles=yes
+    @create IdTwo
+    @set IdTwo=V
+    drop IdTwo
+    @idesc Idtwo=TestInsideDesc
+  commands: |
+    @tel me=#2
+    ex me
+    leave
+    ex me
+  expect:
+    - "You exit the"
+    - "TestInsideDesc"
+    - "Location: IdTwo"
+    - "Location: Room Zero"
+- name: drop
+  setup: |
+    @create IdTwo
+  commands: |
+    drop Idtwo
+    ex IdTwo
+  expect:
+    - "Location: Room Zero"
+- name: get
+  setup: |
+    @create IdTwo
+    drop IdTwo
+  commands: |
+    get IdTwo
+    ex IdTwo
+  expect:
+    - "Taken."
+    - "Location: One"
+- name: recycle
+  setup: |
+    @create IdTwo
+    @recycle IdTwo
+  commands: |
+    ex #2
+  expect:
+    - "is garbage"
+

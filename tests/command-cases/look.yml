@@ -1,0 +1,67 @@
+- name: examine-props
+  setup: |
+    @create Foo
+    @propset Foo=int:~testint:43
+    @propset Foo=dbref:@testref:#1
+    @propset Foo=lock:_testlock:_foo:1
+    @propset Foo=float:_testfloat:42.0
+    @set Foo=_testdir:normalvalue
+    @set Foo=_testdir/innervalue:xyz
+    @set Foo=_blessprop:{null:}
+    @bless Foo=_blessprop
+  commands: |
+    examine Foo=/
+  expect:
+    - "- int /~testint:43"
+    - "- ref /@testref:One\\(#1"
+    - "- lok /_testlock:_foo:1"
+    - "- flt /_testfloat:42"
+    - "- str /_testdir/:normalvalue"
+    - "B str /_blessprop:{null:}"
+
+- name: examine-propdir
+  setup: |
+    @create Foo
+    @set Foo=_testdir:normalvalue
+    @set Foo=_testdir/innervalue1:xyz
+    @set Foo=_testdir/innervalue2:abc
+  commands: |
+    ex Foo=/_testdir/
+  expect:
+    - "- str /_testdir/innervalue1:xyz"
+    - "- str /_testdir/innervalue2:abc"
+    - "2 properties listed"
+
+- name: examine-named-fields
+  setup: |
+    @create Foo
+    @chlock Foo=_chlocktest:1
+    @flock Foo=_flocktest:1
+    @conlock Foo=_conlocktest:1
+    @readlock Foo=_readlocktest:1
+    @linklock Foo=_linklocktest:1
+    @lock Foo=_locktest:1
+    @describe Foo={null:description}
+    @drop Foo=Drop message.
+    @odrop Foo=Odrop message.
+    @idesc Foo={null:inside description}
+    @pecho Foo=Foo pecho>>> 
+    @oecho Foo=Foo oecho>>> 
+  commands: |
+    ex Foo
+  expect: 
+    - "Foo\\(#2\\)"
+    - "Owner: One"
+    - "Value: 1"
+    - "Type: THING"
+    - "{null:description}"
+    - "Idesc: {null:inside description}"
+    - "Drop: Drop message."
+    - "Odrop: Odrop message."
+    - "Chown_OK Key: _chlocktest:1"
+    - "Link_OK Key: _linklocktest:1"
+    - "Force Key: _flocktest:1"
+    - "Container Key: _conlocktest:1"
+    - "Read Key: _readlocktest:1"
+    - "Pecho: Foo pecho>>>"
+    - "Oecho: Foo oecho>>>"
