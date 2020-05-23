@@ -50,6 +50,30 @@
     test
   expect:
     - "43"
+- name: at-max-localvar-mm
+  setup: |
+    @program test.muf
+    1 i
+    : main
+        max_variable_count 1 - localvar
+        (stack contains localvar#max)
+        42 over !
+        (set to 42)
+        dup --
+        (decrement to 43)
+        @
+        (retrieve value)
+        me @ swap intostr notify
+    ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect:
+    - "41"
 - name: at-max-var-pp
   setup: |
     @program test.muf
@@ -74,3 +98,27 @@
     test
   expect:
     - "43"
+- name: at-max-var-mm
+  setup: |
+    @program test.muf
+    1 i
+    : main
+        max_variable_count 1 - variable
+        (stack contains var#max)
+        42 over !
+        (set to 42)
+        dup --
+        (increment to 41)
+        @
+        (retrieve value)
+        me @ swap intostr notify
+    ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect:
+    - "41"
