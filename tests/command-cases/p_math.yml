@@ -51,3 +51,28 @@
     test
   expect:
     - "43"
+- name: at-max-var-pp
+  setup: |
+    @program test.muf
+    1 i
+    : main
+        max_variable_count 1 - variable
+        (stack contains var#max)
+        42 over !
+        (set to 42)
+        dup ++
+        (increment to 43)
+        @
+        (retrieve value)
+        me @ swap intostr notify
+    ;
+    .
+    c
+    q
+    @set test.muf=D
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect:
+    - "43"
