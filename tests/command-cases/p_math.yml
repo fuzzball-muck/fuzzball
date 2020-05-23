@@ -12,11 +12,69 @@
     test
   expect:
     - "Program Error"
+- name: past-max-localvar-mm
+  setup: |
+    @program test.muf
+    1 i
+    : main max_variable_count localvar -- ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect:
+    - "Program Error"
 - name: past-max-var-pp
   setup: |
     @program test.muf
     1 i
     : main max_variable_count variable ++ ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect:
+    - "Program Error"
+- name: past-max-var-mm
+  setup: |
+    @program test.muf
+    1 i
+    : main max_variable_count variable -- ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect:
+    - "Program Error"
+- name: past-max-svar-pp
+  setup: |
+    @program test.muf
+    1 i
+    : bad_scoped_var var my_scoped my_scoped ;
+    : main bad_scoped_var ++ ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect:
+    - "Program Error"
+- name: past-max-svar-mm
+  setup: |
+    @program test.muf
+    1 i
+    : bad_scoped_var var my_scoped my_scoped ;
+    : main bad_scoped_var -- ;
     .
     c
     q
@@ -112,6 +170,44 @@
         @
         (retrieve value)
         me @ swap intostr notify
+    ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect:
+    - "41"
+- name: scoped-var-pp
+  setup: |
+    @program test.muf
+    1 i
+    : main
+        var x
+        42 x !
+        x ++
+        me @ x @ intostr notify
+    ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect:
+    - "43"
+- name: scoped-var-mm
+  setup: |
+    @program test.muf
+    1 i
+    : main
+        var x
+        42 x !
+        x --
+        me @ x @ intostr notify
     ;
     .
     c
