@@ -122,6 +122,13 @@ class ServerTestBase(unittest.TestCase):
         self.temp_dir.cleanup()
 
     """
+    Internal co-routine to collect stderr into self.current_stderr.
+    """
+    async def _collect_stderr(self):
+        self._current_stderr = await self._process.stderr.read()
+
+
+    """
     Start the the MUCK server according to the settings in this object.
 
     Sets self._process to a asyncio.subprocess.Process instance.
@@ -154,7 +161,7 @@ class ServerTestBase(unittest.TestCase):
         )
         self._current_stdout = b''
         self._current_stderr = b''
-        self._stderr_future = asyncio.ensure_future(self._process.stderr.read())
+        self._stderr_future = asyncio.ensure_future(self._collect_stderr())
 
 
     """Read from the MUCK server started by _start_server until the prompt specified appears.
@@ -211,11 +218,12 @@ class ServerTestBase(unittest.TestCase):
 
     Fills `self._current_stderr` with the output accumulated from the server's stderr."""
     async def _finish(self):
-        _, _, self._current_stderr = await asyncio.gather(
+        await asyncio.gather(
             self._write_and_await_prompt(self.finish_string),
             self._process.wait(),
             self._stderr_future,
         )
+        self._stderr_future = None
         self._process = None
 
     """Start the server (with _start_server) and connect (using self._connect_string)
@@ -242,6 +250,12 @@ class ServerTestBase(unittest.TestCase):
             output = await self._write_and_await_prompt(command + self.done_command_command, self.done_command_prompt)
             await self._finish()
         finally:
+            try:
+                if not self._current_stderr:
+                    # collect stderr to give more context to errors
+                    await self._stderr_future
+            except:
+                pass
             print("server stderr:\n{}".format(_text(self._current_stderr)))
         return output
 
