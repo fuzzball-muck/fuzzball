@@ -44,7 +44,6 @@
     .
     c
     q
-    @set test.muf=D
     @act test=here
     @link test=test.muf
   commands: |
@@ -69,7 +68,6 @@
     .
     c
     q
-    @set test.muf=D
     @act test=here
     @link test=test.muf
   commands: |
