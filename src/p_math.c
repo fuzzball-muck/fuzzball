@@ -1175,9 +1175,8 @@ prim_plusplus(PRIM_PROTOTYPE)
     CHECKOP(1)
     temp1 = *(oper1 = POP());
 
-    if (oper1->type == PROG_VAR || oper1->type == PROG_SVAR
-        || oper1->type == PROG_LVAR)
-        if (oper1->data.number > MAX_VAR || oper1->data.number < 0)
+    if (oper1->type == PROG_VAR || oper1->type == PROG_LVAR)
+        if (oper1->data.number >= MAX_VAR || oper1->data.number < 0)
             abort_interp("Variable number out of range.");
 
     /* Load the correct type -- fetch from variable or from a steck item */
@@ -1188,6 +1187,8 @@ prim_plusplus(PRIM_PROTOTYPE)
 
         case PROG_SVAR:
             tmp = scopedvar_get(fr, 0, temp1.data.number);
+            if (!tmp)
+                abort_interp("Variable number out of range.");
             copyinst(tmp, &temp2);
             break;
 
@@ -1308,9 +1309,8 @@ prim_minusminus(PRIM_PROTOTYPE)
     CHECKOP(1)
     temp1 = *(oper1 = POP());
 
-    if (oper1->type == PROG_VAR || oper1->type == PROG_SVAR
-        || oper1->type == PROG_LVAR)
-        if (oper1->data.number > MAX_VAR || oper1->data.number < 0)
+    if (oper1->type == PROG_VAR || oper1->type == PROG_LVAR)
+        if (oper1->data.number >= MAX_VAR || oper1->data.number < 0)
             abort_interp("Variable number out of range.");
 
     /* Load the correct type -- fetch from variable or from a steck item */
@@ -1321,6 +1321,8 @@ prim_minusminus(PRIM_PROTOTYPE)
 
         case PROG_SVAR:
             tmp = scopedvar_get(fr, 0, temp1.data.number);
+            if (!tmp)
+                abort_interp("Variable number out of range");
             copyinst(tmp, &temp2);
             break;
 

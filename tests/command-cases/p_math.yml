@@ -1,0 +1,28 @@
+- name: past-max-localvar-pp
+  setup: |
+    @program test.muf
+    1 i
+    : main max_variable_count localvar ++ ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect:
+    - "Program Error"
+- name: past-max-var-pp
+  setup: |
+    @program test.muf
+    1 i
+    : main max_variable_count variable ++ ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect:
+    - "Program Error"
