@@ -1530,6 +1530,12 @@ prim_gui_value_set(PRIM_PROTOTYPE)
             temp2 = array_getitem(oper3->data.array, &temp1);
 
             if (!temp2) {
+                while (i-- > 0) {
+                    free(valarray[i]);
+                }
+
+                free(valarray);
+                abort_interp("Dictionary-style array where list value expected. (3)");
                 break;
             }
 

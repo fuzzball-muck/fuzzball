@@ -529,6 +529,7 @@ GuiFree(const char *id)
     while (valptr) {
         nextval = valptr->next;
         gui_value_free(valptr);
+        free(valptr);
         valptr = nextval;
     }
 

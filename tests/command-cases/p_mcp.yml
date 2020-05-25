@@ -1,0 +1,57 @@
+- name: gui-set-value-dict
+  setup: |
+    #$#mcp version: "2.1" to: "2.1" authentication-key: "1234"
+    #$#mcp-negotiate-can 1234 package: "org-fuzzball-gui" min-version: "1.0" max-version: "1.0"
+    #$#mcp-negotiate-can 1234 package: "mcp-negotiate" min-version: "1.0" max-version: "1.0"
+    #$#mcp-negotiate-end 1234
+    @program test.muf
+    1 i
+    : main
+      descr D_SIMPLE "testing dialog" { }list gui_dlog_create
+      dup C_SPINNER "example-id" { }list gui_ctrl_create
+      dup "example-id" { 1 2 }dict gui_value_set
+    ;
+    .
+    c
+    q
+    @act test=me
+    @link test=test.muf
+  commands:
+    test
+  expect:
+    - "#\\$#org-fuzzball-gui-dlog-create 1234"
+    - "#\\$#org-fuzzball-gui-ctrl-spinner 1234"
+    - "Program Error."
+    - "#\\$#org-fuzzball-gui-dlog-close 1234"
+
+- name: gui-set-value-list
+  setup: |
+    #$#mcp version: "2.1" to: "2.1" authentication-key: "1234"
+    #$#mcp-negotiate-can 1234 package: "org-fuzzball-gui" min-version: "1.0" max-version: "1.0"
+    #$#mcp-negotiate-can 1234 package: "mcp-negotiate" min-version: "1.0" max-version: "1.0"
+    #$#mcp-negotiate-end 1234
+    @program test.muf
+    1 i
+    : main
+      descr D_SIMPLE "testing dialog" { }list gui_dlog_create
+      dup C_SPINNER "example-id" { }list gui_ctrl_create
+      dup "example-id" { 1 2 3 }list gui_value_set
+      0 sleep
+      me @ "After set." notify
+    ;
+    .
+    c
+    q
+    @act test=me
+    @link test=test.muf
+  commands:
+    test
+  expect:
+    - "#\\$#org-fuzzball-gui-dlog-create 1234"
+    - "#\\$#org-fuzzball-gui-ctrl-spinner 1234"
+    - "#\\$#org-fuzzball-gui-ctrl-value 1234 .* id: \"example-id\""
+    - "value: 1"
+    - "value: 2"
+    - "value: 3"
+    - "After set."
+    - "#\\$#org-fuzzball-gui-dlog-close 1234"
