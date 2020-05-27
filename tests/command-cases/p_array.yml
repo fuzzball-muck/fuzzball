@@ -1,0 +1,69 @@
+- name: simple-array-notify
+  setup: |
+    @program test.muf
+    i
+    : main { "Test 0" "Test 1" "Test 2" "Test 3" }list { me @ }list array_notify ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect: |
+    Test 0
+    Test 1
+    Test 2
+    Test 3
+
+- name: array-notify-nothing
+  setup: |
+    @program test.muf
+    i
+    : main { "Test 0" "Test 1" "Test 2" "Test 3" }list { #-1 }list array_notify ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect:
+    - "Program Error"
+
+- name: array-notify-bad
+  setup: |
+    @program test.muf
+    i
+    : main { "Test 0" "Test 1" "Test 2" "Test 3" }list { #-1000 }list array_notify ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect:
+    - "Program Error"
+
+- name: array-notify-remote
+  setup: |
+    @dig NewPlayerRoom==newplayerroom
+    @program test.muf
+    i
+    : main { "Test 0" "Test 1" "Test 2" "Test 3" }list { #1 }list array_notify ;
+    .
+    c
+    q
+    @act test=#0
+    @link test=test.muf
+    @pcreate OwnerPlayer=foo
+    @chown test.muf=OwnerPlayer
+    @set test.muf=1
+    @set *OwnerPlayer=1
+    @tel *OwnerPlayer=$newplayerroom
+    @force *OwnerPlayer=test
+  commands: |
+    ex test.muf=.debug/errcount
+  expect:
+    - "int /.debug/errcount:1"
