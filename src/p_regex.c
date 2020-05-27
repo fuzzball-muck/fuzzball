@@ -630,7 +630,18 @@ _prim_regsplit(PRIM_PROTOTYPE, int empty)
                 CLEAR(&val);
             }
 
-            text = &textstart[end];
+            if (end == pos) {
+                /* always advance where we match from by at least one char */
+                text = &textstart[end + 1];
+                if (!*text) {
+                    val.type = PROG_STRING;
+                    val.data.string = alloc_prog_string(&textstart[pos]);
+                    array_appenditem(&nu_val, &val);
+                    CLEAR(&val);
+                }
+            } else {
+                text = &textstart[end];
+            }
             pos = end;
         }
     }
