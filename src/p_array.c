@@ -1262,6 +1262,15 @@ prim_array_notify(PRIM_PROTOTYPE)
     strarr = oper1->data.array;
     refarr = oper2->data.array;
 
+    if (array_first(refarr, &temp1)) {
+        do {
+            oper3 = array_getitem(refarr, &temp1);
+            if (!valid_object(oper3))
+                abort_interp("Dbref array contains invalid object. (2)");
+            CHECKREMOTE(oper3->data.objref);
+        } while (array_next(refarr, &temp1));
+    }
+
     if (array_first(strarr, &temp2)) {
         do {
             oper4 = array_getitem(strarr, &temp2);
