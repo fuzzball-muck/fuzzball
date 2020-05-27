@@ -435,7 +435,7 @@ do_program(int descr, dbref player, const char *name, const char *rname)
             register_object(player, player, REGISTRATION_PROPDIR, (char *)rname, program);
         }
     } else if (program == AMBIGUOUS) {
-        notifyf_nolisten(player, match_msg_ambiguous(name));
+        notify_nolisten(player, match_msg_ambiguous(name), 1);
         return;
     }
 

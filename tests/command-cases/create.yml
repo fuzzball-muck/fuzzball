@@ -90,3 +90,25 @@
   expect:
     - "I don't understand '%n"
     - "Parent: Room Zero"
+
+- name: program-ambiguous
+  setup: |
+    @program Foo program 1.muf
+    q
+    @program Foo program 2.muf
+    q
+  commands: |
+    @program Foo
+  expect:
+    - "I don't know which 'Foo'"
+
+- name: program-ambiguous-fmtstring
+  setup: |
+    @program %n%n%n program 1.muf
+    q
+    @program %n%n%n program 2.muf
+    q
+  commands: |
+    @program %n%n%n
+  expect:
+    - "I don't know which '%n%n%n'"

@@ -65,3 +65,66 @@
     - "Read Key: _readlocktest:1"
     - "Pecho: Foo pecho>>>"
     - "Oecho: Foo oecho>>>"
+
+- name: look-thing-desc
+  setup: |
+    @create Foo
+    @desc Foo=Example description.
+  commands: |
+    look Foo
+  expect:
+    - "Example description."
+
+- name: look-thing-nodesc
+  setup: |
+    @create Foo
+    @tune description_default=[DEFAULT]
+  commands: |
+    look Foo
+  expect:
+    - "[DEFAULT]"
+
+- name: look-thing-detail
+  setup: |
+    @create Foo
+    @set Foo=_details/Bar:Example detail.
+  commands: |
+    look Foo=Bar
+  expect:
+    - "Example detail."
+
+- name: look-thing-detail-nodesc
+  setup: |
+    @create Foo
+    @tune description_default=[DEFAULT]
+  commands: |
+    look Foo=Bar
+  expect:
+    - "[DEFAULT]"
+
+- name: look-thing-detail-ambig
+  setup: |
+    @create Foo
+    @set Foo=_details/Bar;x:Example 1.
+    @set Foo=_details/Bar;y:Example 2.
+  commands: |
+    look Foo=Bar
+  expect:
+    - "don't know which 'Bar' you mean"
+
+- name: look-thing-detail-ambig-fmtstring
+  setup: |
+    @create Foo
+    @set Foo=_details/%n;x:Example 1.
+    @set Foo=_details/%n;y:Example 2.
+  commands: |
+    look Foo=%n
+  expect:
+    - "don't know which '%n' you mean"
+
+- name: look-fail-fmtstring
+  commands: |
+    look %n%n%n%n%n%n%n%n%n%n
+  expect:
+    - "I don't understand '%n"
+
