@@ -1,0 +1,145 @@
+- name: regsplit-normal
+  setup: |
+    @program test.muf
+    i
+    : main
+      "fooXbarYbazXquux" "X|Y" 0 regsplit
+      { me @ }list array_notify
+    ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+    @set test.muf=D
+  commands: |
+    test
+  expect: |
+    foo
+    bar
+    baz
+    quux
+
+- name: regsplit-normal2
+  setup: |
+    @program test.muf
+    i
+    : main
+      "fooXXbXarYXbazXXquux" "XX|Y" 0 regsplit
+      { me @ }list array_notify
+    ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+    @set test.muf=D
+  commands: |
+    test
+  expect: |
+    foo
+    bXar
+    Xbaz
+    quux
+
+- name: regsplit-normal-with-empty
+  setup: |
+    @program test.muf
+    i
+    : main
+      "fooXbarYbazXXYquux" "X|Y" 0 regsplit
+      foreach swap pop ":" swap strcat me @ swap notify repeat
+    ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect: |
+    :foo
+    :bar
+    :baz
+    :
+    :
+    :quux
+
+- name: regsplit_noempty-normal-with-empty
+  setup: |
+    @program test.muf
+    i
+    : main
+      "fooXbarYbazXXYquux" "X|Y" 0 regsplit_noempty
+      foreach swap pop ":" swap strcat me @ swap notify repeat
+    ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect: |
+    :foo
+    :bar
+    :baz
+    :quux
+
+- name: regsplit-noempty-match-every-char
+  setup: |
+    @program test.muf
+    i
+    : main
+      "abZcdZZef" "Z|" 0 regsplit_noempty
+      { me @ }list array_notify
+    ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+    @set test.muf=D
+  commands: |
+    test
+  expect: |
+    a
+    b
+    c
+    d
+    e
+    f
+
+- name: regsplit-empty-match-every-char
+  setup: |
+    @program test.muf
+    i
+    : main
+      "abZcdZZef" "Z|" 0 regsplit
+      foreach
+        swap pop (remove index)
+        ":" swap strcat me @ swap notify
+      repeat
+    ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect: |
+    :
+    :a
+    :
+    :b
+    :
+    :c
+    :
+    :d
+    :
+    :
+    :e
+    :
+    :f
+
