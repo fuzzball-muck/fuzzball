@@ -1,0 +1,118 @@
+- name: checkargs-multiple-okay
+  setup: |
+    @program test.muf
+    i
+    : main pop
+      "string" #0 #1 #-1 #-2 42
+      "sddddi" checkargs
+      "sd4i" checkargs
+      "sRPddi" checkargs
+      "RPddi" checkargs
+      me @ "Complete." notify
+    ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect:
+    - "Complete"
+
+- name: checkargs-single-ranges-okay
+  setup: |
+    @program test.muf
+    i
+    : main pop
+      { "X" }list 1 0 "xxx" "string" 2 #0 #1 #-1 #-2 4
+      "{y}{?}{s}{d}" checkargs
+      "yii{s}{d}" checkargs
+      "{y}{f}{s}{d}" checkargs
+      me @ "Complete." notify
+    ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect:
+    - "Complete"
+
+- name: checkargs-multi-ranges-okay
+  setup: |
+    @program test.muf
+    i
+    : main pop
+      "~" { "X" }list 1 0 42 "xxx" 43 "string" 2 #0 #1 #-1 #-2 4
+      "{sy}{?}{is}{d}" checkargs
+      "{sy}{FFFF}{is}{d}" checkargs
+      me @ "Complete." notify
+    ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect:
+    - "Complete"
+
+- name: checkargs-empty-range
+  setup: |
+    @program test.muf
+    i
+    : main pop
+      0 "{}" checkargs
+      1 "{}" checkargs
+      1000 "{}" checkargs
+      me @ "Complete." notify
+    ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect:
+    - "Complete"
+
+- name: checkargs-empty-range-negative
+  setup: |
+    @program test.muf
+    i
+    : main pop
+      -1 "{}" checkargs
+    ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect:
+    - "Program Error"
+
+- name: checkargs-huge-empty-range
+  setup: |
+    @program test.muf
+    i
+    : main pop
+      1000 1000 * 1000 * "{}" checkargs
+      me @ "Complete." notify
+    ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  timeout: 1
+  expect:
+    - "Complete"

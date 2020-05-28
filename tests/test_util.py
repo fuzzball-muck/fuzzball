@@ -33,6 +33,16 @@ def _asyncio_run(coro):
         return loop.run_until_complete(coro)
 
 """
+A coro that executes the given asyncio coroutine but enforces a specified timeout.
+"""
+async def _add_timeout(coro, timeout):
+    coro_as_task = asyncio.ensure_future(coro)
+    # shield the task from cancellation because cancellation apparently will
+    # sometimes hang when communicating with a hanged, running server
+    return await asyncio.wait_for(asyncio.shield(coro_as_task), timeout=timeout)
+
+
+"""
 Base class for test cases that run a server.
 
 Contains a setUp and tearDown method that starts a server in a temporary directory.
@@ -247,7 +257,10 @@ class ServerTestBase(unittest.TestCase):
     async def _run_command(self, command):
         try:
             await self._start_and_connect()
-            output = await self._write_and_await_prompt(command + self.done_command_command, self.done_command_prompt)
+            output = await self._write_and_await_prompt(
+                command + self.done_command_command,
+                self.done_command_prompt,
+            )
             await self._finish()
         finally:
             try:
@@ -266,16 +279,19 @@ class CommandTestCase(ServerTestBase):
     done_setup_command = b"!pose ENDSETUPMARKER\n"
     """Expected output (as str) of done_setup_command."""
     done_setup_prompt = "One ENDSETUPMARKER\n"
+    """Default timeout for setup + command to complete in, in seconds."""
+    default_timeout = 60
 
     def _test_one(self, info):
         setup = info.get('setup', '')
         commands = info['commands']
         expect = info['expect']
-        output = _asyncio_run(self._run_command(
+        timeout = info.get('timeout', self.default_timeout)
+        output = _asyncio_run(_add_timeout(self._run_command(
             setup.encode('UTF-8') +
             self.done_setup_command +
-            commands.encode('UTF-8')
-        ))
+            commands.encode('UTF-8'),
+        ), timeout))
         output = output.decode('UTF-8', errors='replace')
         output = output.replace('\r\n', '\n')
         output = output.split(self.done_setup_prompt, 2)[1]
