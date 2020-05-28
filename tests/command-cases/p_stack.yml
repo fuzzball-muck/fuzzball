@@ -29,6 +29,7 @@
       "{y}{?}{s}{d}" checkargs
       "yii{s}{d}" checkargs
       "{y}{f}{s}{d}" checkargs
+      "{ y }{ f }{ s }{ d }" checkargs
       me @ "Complete." notify
     ;
     .
@@ -49,6 +50,7 @@
       "~" { "X" }list 1 0 42 "xxx" 43 "string" 2 #0 #1 #-1 #-2 4
       "{sy}{?}{is}{d}" checkargs
       "{sy}{FFFF}{is}{d}" checkargs
+      "{ s y } { ? }{ i s } { d }" checkargs
       me @ "Complete." notify
     ;
     .
@@ -98,12 +100,31 @@
   expect:
     - "Program Error"
 
-- name: checkargs-huge-empty-range
+- name: checkargs-huge-empty-range1
   setup: |
     @program test.muf
     i
     : main pop
       1000 1000 * 1000 * "{}" checkargs
+      me @ "Complete." notify
+    ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  timeout: 1
+  expect:
+    - "Complete"
+
+- name: checkargs-huge-empty-range2
+  setup: |
+    @program test.muf
+    i
+    : main pop
+      1000 1000 * 1000 * "{   }" checkargs
       me @ "Complete." notify
     ;
     .
