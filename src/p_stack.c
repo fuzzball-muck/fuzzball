@@ -1232,6 +1232,18 @@ prim_checkargs(PRIM_PROTOTYPE)
             if (rngstktyp[rngstktop - 1] != itsarange)
                 abort_interp("Misformed argument expression.");
 
+            /* special case for "{}", "{ }", etc. (nothing inside the range)
+               override the count to 1 to avoid executing this loop potentially billions
+               of times causing a server hang.
+              */
+            if (buf[currpos + 1] == ' ' || buf[currpos + 1] == '}') {
+                int next_symbol_pos = currpos + 1;
+                while (buf[next_symbol_pos] == ' ') next_symbol_pos++;
+                if (buf[next_symbol_pos] == '}') {
+                    rngstkcnt[rngstktop - 1] = 1;
+                }
+            }
+
             if (--rngstkcnt[rngstktop - 1] > 0) {
                 currpos = rngstkpos[rngstktop - 1];
             } else {
@@ -1448,7 +1460,7 @@ prim_checkargs(PRIM_PROTOTYPE)
                     break;
 
                 default:
-                    abort_interp("Unkown argument type in expression.");
+                    abort_interp("Unknown argument type in expression.");
             }
 
             currpos--;          /* decrement string index */
