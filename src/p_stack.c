@@ -158,7 +158,9 @@ prim_deep_copy(PRIM_PROTOTYPE)
     EXPECT_READ_STACK(1);
     CHECKOFLOW(1);
 
-    deep_copyinst(&arg[*top - 1], &arg[*top], fr->pinning);
+    if (!deep_copyinst(&arg[*top - 1], &arg[*top], fr->pinning)) {
+        abort_interp("Could not make deep copy. (Probably cyclic array references.)");
+    }
     (*top)++;
 }
 

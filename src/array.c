@@ -61,6 +61,7 @@ static unsigned int visited_set_hash(stk_array *value) {
 
 /* See definition for full information */
 static int visited_set_add_and_return_if_added(visited_set *set, stk_array *value);
+static void visited_set_remove(visited_set *set, stk_array *value);
 
 /**
  * Initialize a visited set
@@ -182,6 +183,42 @@ static int visited_set_add_and_return_if_added(visited_set* set, stk_array *valu
         }
 
         return 1;
+    }
+}
+
+/**
+ * Remove an array from the visited set. If the array isn't already in the set, do nothing.
+ *
+ * @private
+ * @param set the set to remove from
+ * @param value the array to remove
+ */
+
+static void visited_set_remove(visited_set* set, stk_array *value) {
+    visited_set_bucket *bucket;
+    visited_set_bucket *prev_bucket;
+
+    if (!set->buckets) {
+        return;
+    }
+
+    bucket = &set->buckets[visited_set_hash(value) % set->num_buckets];
+    prev_bucket = NULL;
+    while (bucket->value != value && bucket->next) {
+        prev_bucket = bucket;
+        bucket = bucket->next;
+    }
+
+    if (bucket->value == value) {
+        /* Found value, remove it. */
+
+        /* We never use the head of a bucket to store a value (we also malloc() a new one).
+           This assert verifies that is not violated. */
+        assert(prev_bucket != NULL);
+
+        prev_bucket->next = bucket->next;
+        free(bucket);
+        --set->num_elements;
     }
 }
 
@@ -2899,3 +2936,90 @@ array_free_all_on_list(stk_array_list *list) {
         array_free(arr);
     }
 }
+
+/** See array_deep_copy */
+static int
+array_deep_copy_internal(stk_array *in, stk_array **out, int pinned, visited_set *ancestors) {
+    if (!visited_set_add_and_return_if_added(ancestors, in)) {
+        return 0;
+    }
+
+    int failed = 0;
+    stk_array *nu;
+    switch (in->type) {
+        case ARRAY_PACKED:{
+            nu = new_array_packed(in->items, pinned == -1 ?
+                                  in->pinned : pinned);
+
+            for (int i = in->items; i-- > 0;) {
+                if (in->data.packed[i].type == PROG_ARRAY) {
+                    nu->data.packed[i].type = PROG_ARRAY;
+                    if (!array_deep_copy_internal(
+                            in->data.packed[i].data.array, &nu->data.packed[i].data.array, pinned, ancestors
+                        )) {
+                        failed = 1;
+                        /* placeholder value for freeing below to work */
+                        nu->data.packed[i].type = PROG_INTEGER;
+                        nu->data.packed[i].data.number = 0;
+                    }
+                } else {
+                    copyinst(&in->data.packed[i], &nu->data.packed[i]);
+                }
+            }
+            break;
+        }
+
+        case ARRAY_DICTIONARY:{
+            array_iter idx;
+            array_data *val;
+
+            nu = new_array_dictionary(pinned == -1 ? in->pinned : pinned);
+
+            if (array_first(in, &idx)) {
+                struct inst temp;
+                do {
+                    val = array_getitem(in, &idx);
+                    if (val->type == PROG_ARRAY) {
+                        temp.type = PROG_ARRAY;
+                        if (!array_deep_copy_internal(val->data.array, &temp.data.array, pinned, ancestors)) {
+                            failed = 1;
+                            continue;
+                        }
+                    } else {
+                        copyinst(val, &temp);
+                    }
+                    array_setitem(&nu, &idx, &temp);
+                } while (array_next(in, &idx));
+            }
+            break;
+        }
+    }
+
+    visited_set_remove(ancestors, in);
+
+    if (failed) {
+        array_free(nu);
+        return 0;
+    } else {
+        *out = nu;
+        return 1;
+    }
+}
+
+/**
+ * Make a deep copy of an array. Can fail if the array has a circular structure.
+ *
+ * @param in input array
+ * @param out pointer to the output array (will be allocated)
+ * @param pinned boolean, whether new arrays will be pinned. -1 will copy from existing arrays
+ * @return 1 if the copy was successful, 0 if not
+ */
+int
+array_deep_copy(stk_array *in, stk_array **out, int pinned) {
+    visited_set ancestors;
+    visited_set_empty(&ancestors);
+    int result = array_deep_copy_internal(in, out, pinned, &ancestors);
+    visited_set_free(&ancestors);
+    return result;
+}
+

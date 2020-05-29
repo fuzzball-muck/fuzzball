@@ -67,3 +67,25 @@
     ex test.muf=.debug/errcount
   expect:
     - "int /.debug/errcount:1"
+
+- name: array-compare-cycle
+  setup: |
+    @program test.muf
+    i
+    : main
+        { 1 2 3 }list ARRAY_PIN var! x
+        { 4 5 6 }list ARRAY_PIN var! y
+        x @ y @ 0 ARRAY_SETITEM POP
+        y @ x @ 0 ARRAY_SETITEM POP
+        x @ y @ ARRAY_COMPARE
+        0 = intostr me @ swap notify
+    ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect:
+    - "0"

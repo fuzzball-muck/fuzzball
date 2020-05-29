@@ -1685,7 +1685,9 @@ prim_event_send(PRIM_PROTOTYPE)
         stk_array_active_list = &destfr->array_active_list;
         struct inst data_copy;
 
-        deep_copyinst(oper3, &data_copy, destfr->pinning);
+        if (!deep_copyinst(oper3, &data_copy, destfr->pinning)) {
+            abort_interp("Uncopyable data for event. (3)");
+        }
 
         arr = new_array_dictionary(destfr->pinning);
         array_set_strkey(&arr, "data", &data_copy);

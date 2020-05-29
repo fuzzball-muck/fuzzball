@@ -1297,62 +1297,33 @@ copyinst(struct inst *from, struct inst *to)
  * fashion.  Otherwise it operates similar to copyinst, this really only
  * impacts arrays/dictionaries.
  *
+ * If the array contains cycles, then the copy can fail. If so, an error will be returned.
+ * (Probably the copy should also fail if some sort of memory limit is exceeded, but this
+ * is not implemented.)
+ *
+ * When a copy fails, the output instruction will be the value '0'.
+ *
  * @see copyinst
  *
  * @param from the source instruction
  * @param to the destination instruction
  * @param pinned boolean passed to any new arrays made.  -1 will use default
+ * @return 1 if successful, 0 otherwise
  */
-void
-deep_copyinst(struct inst *in, struct inst *out, int pinned)
-{
-    stk_array *nu = NULL, *arr;
-    struct inst temp1;
-
+int deep_copyinst(struct inst *in, struct inst *out, int pinned) {
     if (in->type != PROG_ARRAY) {
         copyinst(in, out);
-        return;
+        return 1;
     }
 
-    arr = in->data.array;
-
-    if (arr == NULL) {
-        copyinst(in, out);
-        return;
+    out->type = PROG_ARRAY;
+    if (!array_deep_copy(in->data.array, &out->data.array, pinned)) {
+        out->type = PROG_INTEGER;
+        out->data.number = 0;
+        return 0;
+    } else {
+        return 1;
     }
-
-    *out = *in;
-
-    switch (arr->type) {
-        case ARRAY_PACKED:{
-            nu = new_array_packed(arr->items, pinned == -1 ?
-                                  arr->pinned : pinned);
-
-            for (int i = arr->items; i-- > 0;) {
-                deep_copyinst(&arr->data.packed[i], &nu->data.packed[i],
-                              pinned);
-            }
-            break;
-        }
-
-        case ARRAY_DICTIONARY:{
-            array_iter idx;
-            array_data *val;
-
-            nu = new_array_dictionary(pinned == -1 ? arr->pinned : pinned);
-
-            if (array_first(arr, &idx)) {
-                do {
-                    val = array_getitem(arr, &idx);
-                    deep_copyinst(val, &temp1, pinned);
-                    array_setitem(&nu, &idx, &temp1);
-                } while (array_next(arr, &idx));
-            }
-            break;
-        }
-    }
-
-    out->data.array = nu;
 }
 
 /**
