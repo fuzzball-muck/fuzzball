@@ -137,3 +137,57 @@
   timeout: 1
   expect:
     - "Complete"
+
+- name: deepcopy-pinned-array-nocycle
+  setup: |
+    @program test.muf
+    i
+    : main
+        { "x0" "x1" }list ARRAY_PIN var! x
+        { "y0" "y1" }list ARRAY_PIN var! y
+        y @ x @ 1 ARRAY_SETITEM POP
+        x @ DEEP_COPY ARRAY_PIN var! x_copy
+        "changed-in-orig" x @ { 1 1 }list ARRAY_NESTED_SET
+        "changed-in-copy" x_copy @ { 1 0 }list ARRAY_NESTED_SET
+        me @ "x->1->0=" x @ 1 ARRAY_GETITEM 0 ARRAY_GETITEM strcat notify
+        me @ "x->1->1=" x @ 1 ARRAY_GETITEM 1 ARRAY_GETITEM strcat notify
+        me @ "x_copy->1->0=" x_copy @ 1 ARRAY_GETITEM 0 ARRAY_GETITEM strcat notify
+        me @ "x_copy->1->1=" x_copy @ 1 ARRAY_GETITEM 1 ARRAY_GETITEM strcat notify
+        me @ "y->0=" y @ 0 ARRAY_GETITEM strcat notify
+        me @ "y->1=" y @ 1 ARRAY_GETITEM strcat notify
+    ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect:
+    - "x->1->0=y0"
+    - "x->1->1=changed-in-orig"
+    - "x_copy->1->0=changed-in-copy"
+    - "x_copy->1->1=y1"
+    - "y->0=y0"
+    - "y->1=changed-in-orig"
+
+- name: deepcopy-array-cycle
+  setup: |
+    @program test.muf
+    i
+    : main
+        { 1 2 3 }list ARRAY_PIN var! x
+        { 4 5 6 }list ARRAY_PIN var! y
+        x @ y @ 0 ARRAY_SETITEM POP
+        y @ x @ 0 ARRAY_SETITEM POP
+        x @ DEEP_COPY
+    ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect:
+    - "Program Error"

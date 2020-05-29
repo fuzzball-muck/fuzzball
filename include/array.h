@@ -605,4 +605,15 @@ void array_init_active_list(stk_array_list *list);
  */
 void array_free_all_on_list(stk_array_list *list);
 
+/**
+ * Make a deep copy of an array. Can fail if the array has a circular structure.
+ *
+ * @param in input array
+ * @param out pointer to the output array (will be allocated)
+ * @param pinned boolean, whether new arrays will be pinned. -1 will copy from existing arrays
+ * @return 1 if the copy was successful, 0 if not
+ */
+int
+array_deep_copy(stk_array *in, stk_array **out, int pinned);
+
 #endif /* !ARRAY_H */

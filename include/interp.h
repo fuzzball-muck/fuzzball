@@ -708,13 +708,20 @@ void copyinst(struct inst *from, struct inst *to);
  * fashion.  Otherwise it operates similar to copyinst, this really only
  * impacts arrays/dictionaries.
  *
+ * If the array contains cycles, then the copy can fail. If so, an error will be returned.
+ * (Probably the copy should also fail if some sort of memory limit is exceeded, but this
+ * is not implemented.)
+ *
+ * When a copy fails, the output instruction will be the value '0'.
+ *
  * @see copyinst
  *
  * @param from the source instruction
  * @param to the destination instruction
  * @param pinned boolean passed to any new arrays made.  -1 will use default
+ * @return 1 if successful, 0 otherwise
  */
-void deep_copyinst(struct inst *from, struct inst *to, int pinned);
+int deep_copyinst(struct inst *from, struct inst *to, int pinned);
 
 /**
  * Dump debugging data about an instruction
