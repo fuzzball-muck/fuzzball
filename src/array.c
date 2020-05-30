@@ -2937,7 +2937,17 @@ array_free_all_on_list(stk_array_list *list) {
     }
 }
 
-/** See array_deep_copy */
+/**
+ * Internals of array_deep_copy
+ *
+ * @see array_deep_copy
+ * @private
+ *
+ * @param in the source array
+ * @param out the destination array
+ * @param pinned boolean pinned value
+ * @param ancestors the visited set to prevent infinite loops.
+ */
 static int
 array_deep_copy_internal(stk_array *in, stk_array **out, int pinned, visited_set *ancestors) {
     if (!visited_set_add_and_return_if_added(ancestors, in)) {
