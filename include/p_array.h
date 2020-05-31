@@ -672,7 +672,8 @@ void prim_array_get_propdirs(PRIM_PROTOTYPE);
  * associated with them are left out.  Any prop-dirs not visible due to
  * permission will not be seen.  MUCKER level 3 required.
  *
- * Only up to 511 properties can go into an array before this aborts.
+ * Only up to tp_max_propfetch properties can go into an array before this
+ * aborts.
  *
  * @see prop_read_perms
  *
@@ -699,8 +700,8 @@ void prim_array_get_propvals(PRIM_PROTOTYPE);
  * elements in the array.  The prop list is loaded into an array and put on
  * the stack.
  *
- * If the number of props reported is greater than 1023, then this is
- * (silently, without error) limited to 1023 list items.
+ * If the number of props reported is greater than tp_max_propfetch, then this
+ * is (silently, without error) limited to tp_max_propfetch list items.
  *
  * @param player the player running the MUF program
  * @param program the program being run

@@ -174,6 +174,7 @@ extern dbref       tp_lost_and_found;           /**< Tune variable */
 extern bool        tp_m3_huh;                   /**< Tune variable */
 extern int         tp_max_force_level;          /**< Tune variable */
 extern int         tp_max_instr_count;          /**< Tune variable */
+extern int         tp_max_interp_recursion;     /**< Tune variable */
 extern int         tp_max_loaded_objs;          /**< Tune variable */
 extern int         tp_max_ml4_nested_interp_loop_count; /**< Tune variable */
 extern int         tp_max_ml4_preempt_count;    /**< Tune variable */
@@ -183,6 +184,7 @@ extern int         tp_max_output;               /**< Tune variable */
 extern int         tp_max_pennies;              /**< Tune variable */
 extern int         tp_max_plyr_processes;       /**< Tune variable */
 extern int         tp_max_process_limit;        /**< Tune variable */
+extern int         tp_max_propfetch;            /**< Tune variable */
 extern int         tp_maxidle;                  /**< Tune variable */
 extern int         tp_mcp_muf_mlev;             /**< Tune variable */
 extern int         tp_movepennies_muf_mlev;     /**< Tune variable */

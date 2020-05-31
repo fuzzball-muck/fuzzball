@@ -1124,11 +1124,6 @@ prim_lockp(PRIM_PROTOTYPE)
 #define ABORT_CHECKARGS(msg) { if (*top == stackpos+1) snprintf(zbuf, sizeof(zbuf), "%s (top)", msg); else snprintf(zbuf, sizeof(zbuf), "%s (top-%d)", msg, ((*top)-stackpos-1));  abort_interp(zbuf); }
 
 /**
- * @TODO This should be with other configuration options.
- */
-#define MaxComplexity 18
-
-/**
  * Implementation of MUF CHECKARGS
  *
  * Consumes an string representing the expected stack state, and aborts if
@@ -1151,9 +1146,9 @@ prim_checkargs(PRIM_PROTOTYPE)
     int rngstktop = 0;
     enum {
         itsarange, itsarepeat
-    } rngstktyp[MaxComplexity];
-    int rngstkpos[MaxComplexity];
-    int rngstkcnt[MaxComplexity];
+    } rngstktyp[MAX_COMPLEXITY];
+    int rngstkpos[MAX_COMPLEXITY];
+    int rngstkcnt[MAX_COMPLEXITY];
     char zbuf[BUFFER_LEN];
 
     CHECKOP(1);
@@ -1179,7 +1174,7 @@ prim_checkargs(PRIM_PROTOTYPE)
      */
     while (currpos >= 0) {
         if (isdigit(buf[currpos])) {
-            if (rngstktop >= MaxComplexity)
+            if (rngstktop >= MAX_COMPLEXITY)
                 abort_interp("Argument expression ridiculously complex.");
 
             tmp = 1;
@@ -1202,7 +1197,7 @@ prim_checkargs(PRIM_PROTOTYPE)
             rngstkpos[rngstktop] = currpos;
             rngstktop++;
         } else if (buf[currpos] == '}') {
-            if (rngstktop >= MaxComplexity)
+            if (rngstktop >= MAX_COMPLEXITY)
                 abort_interp("Argument expression ridiculously complex.");
 
             if (stackpos < 0)

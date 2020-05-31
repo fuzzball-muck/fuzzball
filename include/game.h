@@ -33,6 +33,7 @@
  * Various special commands and tokens.
  */
 #define BREAK_COMMAND "@Q"      /**< Break command */
+#define FMTTOKEN '%'            /**< Start of variable format (FMTSTRING) */
 #define NULL_COMMAND "@@"       /**< Null command */
 #define OVERRIDE_TOKEN '!'      /**< Override command token */
 #define POSE_TOKEN ':'          /**< Pose shortcut command token */

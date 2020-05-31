@@ -123,6 +123,7 @@ dbref       tp_lost_and_found;                      /**> Described below */
 bool        tp_m3_huh;                              /**> Described below */
 int         tp_max_force_level;                     /**> Described below */
 int         tp_max_instr_count;                     /**> Described below */
+int         tp_max_interp_recursion;                /**> Described below */
 int         tp_max_loaded_objs;                     /**> Described below */
 int         tp_max_ml4_nested_interp_loop_count;    /**> Described below */
 int         tp_max_ml4_preempt_count;               /**> Described below */
@@ -132,6 +133,7 @@ int         tp_max_output;                          /**> Described below */
 int         tp_max_pennies;                         /**> Described below */
 int         tp_max_plyr_processes;                  /**> Described below */
 int         tp_max_process_limit;                   /**> Described below */
+int         tp_max_propfetch;                       /**> Described below */
 int         tp_maxidle;                             /**> Described below */
 int         tp_mcp_muf_mlev;                        /**> Described below */
 int         tp_movepennies_muf_mlev;                /**> Described below */
@@ -1291,6 +1293,19 @@ struct tune_entry tune_list[] = {
         true
     },
     {
+        "max_interp_recursion",
+        "Max. MUF interpreter recursion",
+        "MUF",
+        "",
+        TP_TYPE_INTEGER,
+        .defaultval.n=8,
+        .currentval.n=&tp_max_interp_recursion,
+        0,
+        MLEV_WIZARD,
+        true,
+        true
+    },
+    {
         "max_loaded_objs",
         "Max. percent of proploaded database objects",
         "Tuning",
@@ -1394,6 +1409,18 @@ struct tune_entry tune_list[] = {
         TP_TYPE_INTEGER,
         .defaultval.n=400,
         .currentval.n=&tp_max_process_limit,
+        0,
+        MLEV_WIZARD,
+        true
+    },
+    {
+        "max_propfetch",
+        "Max. size of returned property array",
+        "MUF",
+        "",
+        TP_TYPE_INTEGER,
+        .defaultval.n=1023,
+        .currentval.n=&tp_max_propfetch,
         0,
         MLEV_WIZARD,
         true

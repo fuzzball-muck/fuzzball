@@ -101,16 +101,6 @@ static int con_players_max = 0;
 static int con_players_curr = 0;
 
 /**
- * @var this is the maximum number of ports we will open
- *
- * @TODO This should probably be moved to some proper configuration spot
- *       rather than randomly injected here.  This could even be dynamic
- *       though I think the level of effort isn't worth it.  In the
- *       improbable case of a MUCK wanting more ports, they can recompile :P
- */
-#define MAX_LISTEN_SOCKS 16
-
-/**
  * @private
  * @var The IPv6 IP address to bind to.  This will default to in6addr_any,
  *      but may be set by the command line.

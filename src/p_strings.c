@@ -75,12 +75,6 @@ static char buf[BUFFER_LEN];
  */
 static char *pname;
 
-/* @TODO FMTTOKEN should be in config.h or someplace of that ilk */
-
-/* FMTTOKEN defines the start of a variable formatting string insertion */
-#define FMTTOKEN '%'
-
-
 /**
  * Implementation of MUF FMTSTRING
  *
