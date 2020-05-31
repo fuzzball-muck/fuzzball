@@ -120,7 +120,7 @@
 #define MAX_COMMAND_LEN 2048    /**< max process_command arg length */
 #define MAX_COMPLEXITY 18       /**< max nested stackranges (CHECKARGS) */
 #define MAX_LINKS 50            /**< max destinations for an exit */
-#define MAX_LISTEN_SOCKS 16     /**< max sockets we will open */
+#define MAX_LISTEN_SOCKS 16     /**< max ports we will open */
 #define MAX_PARENT_DEPTH 256    /**< max parenting depth allowed */
 
 /**
