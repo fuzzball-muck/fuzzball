@@ -112,9 +112,15 @@
 #define RESTART_EXIT_CODE	0           /**< Clean restart */
 #define ARMAGEDDON_EXIT_CODE	1       /**< Emergency abort */
 
+/* Defines for regex prims */
+#define MUF_RE_CACHE_ITEMS 64   /**< size of the regex cache */
+#define MATCH_ARR_SIZE 30       /**< size of the matches array */
+
 /* Database and server limits */
 #define MAX_COMMAND_LEN 2048    /**< max process_command arg length */
+#define MAX_COMPLEXITY 18       /**< max nested stackranges (CHECKARGS) */
 #define MAX_LINKS 50            /**< max destinations for an exit */
+#define MAX_LISTEN_SOCKS 16     /**< max ports we will open */
 #define MAX_PARENT_DEPTH 256    /**< max parenting depth allowed */
 
 /**

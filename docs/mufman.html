@@ -6376,7 +6376,7 @@ be able to read, are left out.  (ML3 required.)
 keyed by propname.  Sub- propdirs in the given propdir that do not
 have any value of their own, are left out of the returned dictionary.
 Properties that the program doesn't have perms to read are also
-left out.  Reads up to 511 props maximum. (ML3 required.)
+left out.  Reads up to max_propfetch props maximum. (ML3 required.)
 <!-- HTML_TOPICEND -->
 
 
@@ -6401,7 +6401,7 @@ or . may require special permissions to save.
   Reads in properties from a sequential proplist, and returns them in a list
 array.  Proplists can be in any of these proplist styles: &quot;propname#/1&quot;,
 &quot;propname/1&quot;, or &quot;propname1&quot;.  If the program doesn't have permission to read
-the list, it returns an empty array.  Reads up to 511 props maximum.
+the list, it returns an empty array.  Reads up to max_propfetch props maximum.
 <!-- HTML_TOPICEND -->
 
 
@@ -7196,6 +7196,7 @@ Parameters available:
  (bool) m3_huh                    - Enable huh? to call an exit named "huh?" and set M3, with full command string
  (int)  max_force_level           - Max. number of forces processed within a command
  (int)  max_instr_count           - Max. MUF instruction run length for ML1
+ (int)  max_interp_recursion      - Max. MUF interpreter recursion
  (int)  max_loaded_objs           - Max. percent of proploaded database objects
  (int)  max_ml4_nested_interp_loop_count - Max. MUF preempt interp loop nesting level for ML4 (0 = no limit)
  (int)  max_ml4_preempt_count     - Max. MUF preempt instruction run length for ML4, (0 = no limit)
@@ -7205,6 +7206,7 @@ Parameters available:
  (int)  max_pennies               - Max. pennies a player can own
  (int)  max_plyr_processes        - Concurrent processes allowed per player
  (int)  max_process_limit         - Total concurrent processes allowed on system
+ (int)  max_propfetch             - Max. size of returned property array
  (time) maxidle                   - Maximum idle time before booting
  (int)  mcp_muf_mlev              - Mucker Level required to use MCP
  (int)  movepennies_muf_mlev      - Mucker Level required to move pennies non-destructively

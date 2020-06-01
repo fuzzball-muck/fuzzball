@@ -1634,7 +1634,8 @@ prim_array_sort_indexed(PRIM_PROTOTYPE)
  * prop-dirs not visible due to permission will not be seen.  MUCKER level 3
  * required.
  *
- * Only up to 511 elements can be put in the array before this aborts.
+ * Only up to tp_max_propfetch elements can be put in the array before this
+ * aborts.
  *
  * @see prop_read_perms
  *
@@ -1713,27 +1714,7 @@ prim_array_get_propdirs(PRIM_PROTOTYPE)
 #endif
 
                 if (PropDir(prptr)) {
-                    /*
-                     * TODO: This hard-coded limit kind of sucks in a lot of
-                     *       ways.  The only reason this limit is here is to
-                     *       prevent someone from gobbling up all the server
-                     *       memory or causing a performance drag.
-                     *
-                     *       I'm of the opinion such limitations should be
-                     *       in the hands of MUCK owners rather than us
-                     *       making arbitrary choices -- there are times where
-                     *       I have chosen to use the outdated iterator
-                     *       approach (nextprop, etc.) over using the array
-                     *       funcs because I was not 100% sure there would be
-                     *       less than 512 props and I didn't want to paint
-                     *       myself into a corner.
-                     *
-                     *       Thus, I think this should be a tune param.
-                     *       Similar calls (like array_get_propval, etc.)
-                     *       can share the tune param.  At LEAST make it
-                     *       a #define so people can tweak it.
-                     */
-                    if (count >= 511) {
+                    if (count >= tp_max_propfetch) {
                         array_free(nu);
                         abort_interp("Too many propdirs to put in an array!");
                     }
@@ -1760,7 +1741,8 @@ prim_array_get_propdirs(PRIM_PROTOTYPE)
  * associated with them are left out.  Any prop-dirs not visible due to
  * permission will not be seen.  MUCKER level 3 required.
  *
- * Only up to 511 properties can go into an array before this aborts.
+ * Only up to tp_max_propfetch elements can be put in the array before this
+ * aborts.
  *
  * @see prop_read_perms
  *
@@ -1937,8 +1919,8 @@ prim_array_get_propvals(PRIM_PROTOTYPE)
  * elements in the array.  The prop list is loaded into an array and put on
  * the stack.
  *
- * If the number of props reported is greater than 1023, then this is
- * (silently, without error) limited to 1023 list items.
+ * If the number of props reported is greater than tp_max_propfetch, then this
+ * is (silently, without error) limited to tp_max_propfetch list items.
  *
  * @param player the player running the MUF program
  * @param program the program being run
@@ -2015,22 +1997,14 @@ prim_array_get_proplist(PRIM_PROTOTYPE)
 
     /*
      * TODO: for some reason, we are... IN A LOOP.... checking if
-     *       maxcount > 1023 *and* checking property permissions on a propdir
-     *       where only the base property name (i.e. the contents of 'dir')
-     *       has any bearing on the permissions as the rest of the prop path
-     *       will be a number which never has a bearing on prop perms.
+     *       maxcount > tp_max_propfetch *and* checking property permissions
+     *       on a propdir where only the base property name (i.e. the contents
+     *       of 'dir') has any bearing on the permissions as the rest of the
+     *       prop path will be a number which never has a bearing on prop perms.
      *
-     *       Firstly, let's check *here* if maxcount > 1023 ... and while we're
-     *       at it, let's make that a tune or a #define.  Maybe share the
-     *       settings with ARRAY_GET_PROPDIRS, etc.  See the todo's in those
-     *       calls.
+     *       Firstly, let's check *here* if maxcount > tp_max_propfetch.
      *
-     *       Secondly, the man page falsely advertise the maximum as 511.
-     *       I think, at some point, someone came across the problem I noted
-     *       in the todo's and had a list to read greater than 511 ... and
-     *       changed the code but not the man page :)
-     *
-     *       Thirdly, this call silently doesn't display extra items but the
+     *       Secondly, this call silently doesn't display extra items but the
      *       other similar calls throw an error if there are too many items.
      *       I think throwing an error makes more sense rather than just making
      *       it appear broken :)  So I would highly recommend we do that and
@@ -2070,8 +2044,8 @@ prim_array_get_proplist(PRIM_PROTOTYPE)
         /*
          * @TODO: see above, move this check
          */
-        if (maxcount > 1023) {
-            maxcount = 1023;
+        if (maxcount > tp_max_propfetch) {
+            maxcount = tp_max_propfetch;
         }
 
         if (maxcount) {

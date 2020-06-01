@@ -282,10 +282,7 @@ prim_moveto(PRIM_PROTOTYPE)
     oper1 = POP();
     oper2 = POP();
 
-    /**
-     * @TODO This limit should be a sysparm, or at least a #define.
-     */
-    if (fr->level > 8)
+    if (fr->level > tp_max_interp_recursion)
         abort_interp("Interp call loops not allowed.");
 
     /* Needs to be an object, and object needs to be valid */
@@ -2393,10 +2390,7 @@ prim_lockedp(PRIM_PROTOTYPE)
     oper1 = POP();              /* objdbref */
     oper2 = POP();              /* player dbref */
 
-    /**
-     * @TODO This limit should be a sysparm, or at least a #define.
-     */
-    if (fr->level > 8)
+    if (fr->level > tp_max_interp_recursion)
         abort_interp("Interp call loops not allowed.");
 
     /**

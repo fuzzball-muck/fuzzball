@@ -35,15 +35,6 @@
 #endif
 
 /*
- * How many items to keep in the regex cache.
- *
- * @TODO: Move this to config.h ... it would be annoying to make this a tune
- *        param with limited utility, but this is not the correct places for
- *        what is a compile-time config option.
- */
-#define MUF_RE_CACHE_ITEMS 64
-
-/*
  * TODO: These globals really probably shouldn't be globals.  I can only guess
  *       this is either some kind of primitive code re-use because all the
  *       functions use them, or it's some kind of an optimization to avoid
@@ -198,12 +189,6 @@ muf_re_error(int err)
             return "Unknown error";
     }
 }
-
-/*
- * @TODO An even more randomly placed configuration constant.  This should
- *       be in config.h
- */
-#define MATCH_ARR_SIZE 30
 
 /**
  * Implementation of MUF REGEXP

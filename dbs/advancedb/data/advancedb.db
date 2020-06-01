@@ -1,7 +1,7 @@
 ***Foxen9 TinyMUCK DUMP Format***
 164
 1
-155
+158
 %autolook_cmd=look
 %cpennies=Pennies
 %cpenny=Penny
@@ -75,16 +75,19 @@
 %start_pennies=50
 %listen_mlev=3
 %cmd_log_threshold_msec=1000
+%cmd_only_overrides=no
 %max_force_level=1
 %mpi_max_commands=2048
 %addpennies_muf_mlev=2
 %instr_slice=2000
 %max_instr_count=20000
+%max_interp_recursion=8
 %max_ml4_preempt_count=0
 %max_ml4_nested_interp_loop_count=0
 %max_nested_interp_loop_count=16
 %max_plyr_processes=32
 %max_process_limit=400
+%max_propfetch=1023
 %mcp_muf_mlev=3
 %movepennies_muf_mlev=2
 %pennies_muf_mlev=1
