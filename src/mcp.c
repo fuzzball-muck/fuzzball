@@ -2069,9 +2069,9 @@ mcpedit_program(int descr, dbref player, dbref program)
 }
 
 /**
- * Implementation of @mcpedit command
+ * Implementation of \@mcpedit command
  *
- * The MCP-enabled version of @edit.  The underlying call to the private
+ * The MCP-enabled version of \@edit.  The underlying call to the private
  * function mcpedit_program does check permissions.  This is a wrapper to
  * do object matching.  If MCP is not supported by the client, it enters
  * the regular editor.
@@ -2111,9 +2111,9 @@ do_mcpedit(int descr, dbref player, const char *name)
 }
 
 /**
- * Implementation of @mcpprogram command
+ * Implementation of \@mcpprogram command
  *
- * The MCP-enabled version of @program.  It creates the program and then
+ * The MCP-enabled version of \@program.  It creates the program and then
  * hands off to the private function mcpedit_program to start editing.
  * It does NOT check to see if the user has a MUCKER bit, so do not rely
  * on this for permission checking.
@@ -2169,7 +2169,7 @@ do_mcpprogram(int descr, dbref player, const char *name, const char *rname)
             register_object(player, player, REGISTRATION_PROPDIR, (char *)rname, program);
         }
     } else if (program == AMBIGUOUS) {
-        notifyf_nolisten(player, match_msg_ambiguous(name));
+        notify_nolisten(player, match_msg_ambiguous(name), 1);
         return;
     }
 

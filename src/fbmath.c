@@ -28,7 +28,7 @@
 double
 _int_f_rand(void)
 {
-    return ((double)rand() / (double)RAND_MAX);
+    return (rand() / (double)RAND_MAX);
 }
 
 /**

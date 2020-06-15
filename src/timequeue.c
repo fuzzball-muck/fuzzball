@@ -1130,7 +1130,7 @@ has_refs(dbref program, timequeue ptr)
 }
 
 /**
- * Implementation of the @ps command
+ * Implementation of the \@ps command
  *
  * Shows running timequeue / process information to the given player.
  * Permission checking is done; wizards can see all processes, but players
@@ -1728,7 +1728,7 @@ dequeue_timers(int pid, char *id)
 }
 
 /**
- * Implementation of @kill command
+ * Implementation of \@kill command
  *
  * Kills a process or set of processes off the time queue.  "arg1" can
  * be either a process ID, a player name to kill all of a player's processs,

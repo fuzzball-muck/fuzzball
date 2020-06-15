@@ -1536,7 +1536,6 @@ prim_gui_value_set(PRIM_PROTOTYPE)
 
                 free(valarray);
                 abort_interp("Dictionary-style array where list value expected. (3)");
-                break;
             }
 
             switch (temp2->type) {

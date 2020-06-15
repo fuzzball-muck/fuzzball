@@ -1061,7 +1061,7 @@ do_inventory(dbref player)
 /**
  * Initialize the checkflags search system
  *
- * This is the underpinning of @find, @owned, @entrance, and a few
+ * This is the underpinning of \@find, \@owned, \@entrances, and a few
  * other similar calls.  It parses over a set of 'flags' to consider,
  * and loads the struct 'check' with the necessary filter paramters.
  *
@@ -1492,7 +1492,7 @@ checkflags(dbref what, struct flgchkdat check)
 /**
  * Display an object using output_type
  *
- * This is used as a helper for @find to output a found object to the
+ * This is used as a helper for \@find to output a found object to the
  * user using their output_type preference.  For output_types, see
  * init_checkflags
  *
@@ -1580,7 +1580,7 @@ display_objinfo(dbref player, dbref obj, int output_type)
 }
 
 /**
- * Implementation of @find command
+ * Implementation of \@find command
  *
  * This implements the find command, which is powered by
  * checkflags.  See that function for full details of how flags work.
@@ -1589,7 +1589,7 @@ display_objinfo(dbref player, dbref obj, int output_type)
  *
  * Takes a search string to look for, and iterates over the entire
  * database to find it.  There is an option to charge players for
- * @find's, probably since this is kind of nasty on the DB.
+ * \@find's, probably since this is kind of nasty on the DB.
  *
  * @param player the player doing the find
  * @param name the search criteria
@@ -1627,12 +1627,12 @@ do_find(dbref player, const char *name, const char *flags)
 }
 
 /**
- * Implementation of @owned command
+ * Implementation of \@owned command
  *
  * Like do_find, this is underpinned by the checkflags system.
  * For details of how the flags work, see init_checkflags
  *
- * This does do permission checks.  Like @find, it iterates over the
+ * This does do permission checks.  Like \@find, it iterates over the
  * entire database and supports a lookup cost.
  *
  * @see init_checkflags
@@ -1714,9 +1714,9 @@ do_trace(int descr, dbref player, const char *name, int depth)
 }
 
 /**
- * Implementation of the @entrances command
+ * Implementation of the \@entrances command
  *
- * This supports the same sort of flag searches that @find does,
+ * This supports the same sort of flag searches that \@find does,
  * except it searches for exits on the given object (which defaults to here)
  *
  * Under the hood, this uses the checkflags series of methods.
@@ -1810,7 +1810,7 @@ do_entrances(int descr, dbref player, const char *name, const char *flags)
 /**
  * Implementation of @contents
  *
- * This searches the contents of a given object, similar to the way @find
+ * This searches the contents of a given object, similar to the way \@find
  * works except confined to a certain object.  It supports a similar
  * syntax.  If 'name' is not provided, defaults to here.  'flags' can have
  * types and also an output type.

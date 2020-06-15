@@ -2955,7 +2955,7 @@ array_deep_copy_internal(stk_array *in, stk_array **out, int pinned, visited_set
     }
 
     int failed = 0;
-    stk_array *nu;
+    stk_array *nu = NULL;
     switch (in->type) {
         case ARRAY_PACKED:{
             nu = new_array_packed(in->items, pinned == -1 ?

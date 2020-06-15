@@ -23,26 +23,26 @@
 #ifndef WIN32
 
 /*
- * Function prototypes
- *
- * @TODO remove set_signals(void) because it is declared in fbsignal.h
- *       I believe the rest of these are needed because they are signal
- *       callbacks?  Normally you don't need prototypes for local functions.
- *       That's probably why these aren't static as well.
+ * Function prototypes for signal callbacks
  *
  * See definitions for doc blocks.
  */
-void set_signals(void);
-void bailout(int);
-void sig_dump_status(int i);
-void sig_shutdown(int i);
-void sig_reconfigure(int i);
+#if defined(__GNUC__) || defined(__clang__)
+static void bailout(int) __attribute__((noreturn));
+#else
+static void bailout(int);
+#endif
+
+static void sig_dump_status(int i);
+static void sig_shutdown(int i);
+static void sig_reconfigure(int i);
+
 #ifdef SIGEMERG
-void sig_emerg(int i);
+static void sig_emerg(int i);
 #endif
 
 #ifdef SPAWN_HOST_RESOLVER
-void sig_reap(int i);
+static void sig_reap(int i);
 #endif
 
 #ifdef HAVE_PSELECT

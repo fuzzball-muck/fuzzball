@@ -172,7 +172,7 @@ SanPrintObject(dbref player, const char *prefix, dbref ref)
 }
 
 /**
- * This is the implementation of the @examine command
+ * This is the implementation of the \@examine command
  *
  * Specifically, this command examines the "sanity" or data integrity of
  * the given object or "here" if no object is provided.  There is NO
@@ -783,7 +783,7 @@ check_object(dbref player, dbref obj)
 }
 
 /**
- * Implementation of the @sanity command
+ * Implementation of the \@sanity command
  *
  * This does sanity checks on the entire database.  This is pretty compute
  * intensive as it crawls through everything.  No permission checks are done
@@ -1519,7 +1519,7 @@ clean_global_environment(void)
 }
 
 /**
- * Implementation of @sanfix command
+ * Implementation of \@sanfix command
  *
  * This does a sanity check, and tries to repair any problems it finds.
  * Theoretically there are problems this can't fix.  do_sanity does sort
@@ -1596,7 +1596,7 @@ static char cbuf[1000];
 static char buf2[1000];
 
 /**
- * Implementation of @sanchange command
+ * Implementation of \@sanchange command
  *
  * This enables the manual editing of database object fields in a very
  * raw fashion.  It is truly a bad idea to mess with as this can cause

@@ -1817,7 +1817,7 @@ db_putprop(FILE * f, const char *dir, PropPtr p)
             ptr2 = intostr(PropDataVal(p));
             break;
         case PROP_FLTTYP:
-            if (!PropDataFVal(p))
+            if (PropDataFVal(p) == 0.0)
                 return;
             snprintf(tbuf, sizeof(tbuf), "%.17g", PropDataFVal(p));
             ptr2 = tbuf;

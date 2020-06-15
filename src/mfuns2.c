@@ -734,7 +734,7 @@ mfn_fullname(MFUNARGS)
  *
  * @private
  * @param list the string to count items in
- * @param sep the separator to use (usually \r)
+ * @param sep the separator to use (usually \\r)
  * @return integer count of items or 0 if list is empty/NULL.
  */
 static int
@@ -776,7 +776,7 @@ countlitems(char *list, char *sep)
  * @param buf the buffer to put the result into
  * @param buflen the size of buf
  * @param list the list to search within
- * @param sep the separator, usually "\n"
+ * @param sep the separator, usually "\\n"
  * @param line the item number in the list.
  * @return a pointer to 'buf'
  */

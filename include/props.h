@@ -513,7 +513,7 @@ const char *envpropstr(dbref * where, const char *propname);
  * @param thing - The DBREF of the thing emitting the message.
  * @param message - The message to emit
  * @param whatcalled - This is the caller context -- its the
- *                     MPI &how or the MUF command.  Such as "(@Desc)"
+ *                     MPI &how or the MUF command.  Such as "(\@Desc)"
  * @param mpiflags - What MPI flags to use - MPI_ISPRIVATE is added.
  */
 void exec_or_notify(int descr, dbref player, dbref thing, const char *message,
@@ -534,7 +534,7 @@ void exec_or_notify(int descr, dbref player, dbref thing, const char *message,
  * @param thing - The DBREF of the thing emitting the message.
  * @param propname - The property to load off 'thing'.
  * @param whatcalled - This is the caller context -- its the
- *                     MPI &how or the MUF command.  Such as "(@Desc)"
+ *                     MPI &how or the MUF command.  Such as "(\@Desc)"
  */
 void exec_or_notify_prop(int descr, dbref player, dbref thing,
                          const char *propname, const char *whatcalled);         

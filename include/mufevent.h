@@ -254,3 +254,4 @@ void muf_event_register_specific(
                 char **eventids);
 
 #endif /* !MUFEVENT_H */
+
