@@ -279,7 +279,7 @@ toad_player(int descr, dbref player, dbref victim, dbref recipient)
 }
 
 /**
- * Implementation of @password command
+ * Implementation of \@password command
  *
  * This changes the player's password after doing some validation checks.
  * Old password must be valid and new password must not have spaces in it.

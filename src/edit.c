@@ -1363,7 +1363,7 @@ write_program(struct line *first, dbref i)
 }
 
 /**
- * Implementation of the @list command
+ * Implementation of the \@list command
  *
  * This includes all permission checking around whether someone can
  * list the program, and checking to make sure that 'name' is a program.
@@ -1556,7 +1556,7 @@ macrodump(struct macrotable *node, FILE * f)
 /**
  * Fetch the next line from a given file handle
  *
- * This cleans off trailing \n and \r if applicable.  Returns an allocated
+ * This cleans off trailing \\n and \\r if applicable.  Returns an allocated
  * string copy -- the caller must free the memory.
  *
  * @private

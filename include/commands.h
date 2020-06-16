@@ -289,7 +289,7 @@ void do_doing(int descr, dbref player, const char *name, const char *mesg);
  * in play.
  *
  * For the put/throw logic, if the target object is not a room, it must
- * have a container lock.  The lock is "@conlock" or "_/clk".  If there is
+ * have a container lock.  The lock is "\@conlock" or "_/clk".  If there is
  * no lock it will default to false.
  *
  * This handles all the nuances of dropping things, such as drop/odrop

@@ -500,7 +500,7 @@ do_info(dbref player, const char *topic, const char *seg)
 }
 
 /**
- * Implementation of @credits
+ * Implementation of \@credits
  *
  * Just spits a credits file (tp_file_credits) out to the player.
  *

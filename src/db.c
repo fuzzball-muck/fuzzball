@@ -549,8 +549,8 @@ getref(FILE * f)
 /**
  * Get a string from the given file handle
  *
- * The string is read until a \n is encountered or until the buffer runs
- * out; anything over BUFFER_LEN -1 is discarded til the next \n is found.
+ * The string is read until a \\n is encountered or until the buffer runs
+ * out; anything over BUFFER_LEN -1 is discarded til the next \\n is found.
  *
  * Empty strings are supported and will be returned.  New memory is
  * allocated for the string that is returned.
@@ -1063,7 +1063,7 @@ db_read_object(FILE * f, dbref objno)
  * This autostarts by scanning the entire DB and compiling the ABODE
  * programs.  Compile will automatically queue up the programs.
  *
- * @static
+ * @private
  */
 static void
 autostart_progs(void)

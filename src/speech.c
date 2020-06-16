@@ -104,7 +104,7 @@ do_pose(dbref player, const char *message)
 }
 
 /**
- * Implementation of @wall command
+ * Implementation of \@wall command
  *
  * This broadcasts a message to everyone on the MUCK, as a "shout"
  * using a format similar to "say".  This does NOT do permission

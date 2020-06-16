@@ -879,7 +879,7 @@ uncompile_program(dbref i)
 }
 
 /**
- * Implementation of @uncompile command
+ * Implementation of \@uncompile command
  *
  * Removes all compiled programs from memory.  Does not do permission
  * checking.

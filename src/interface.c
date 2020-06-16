@@ -355,6 +355,10 @@ short wizonly_mode = 0;
  * @private
  * @param prog the string name of the program (argv[0] usually)
  */
+#if defined(__GNUC__) || defined(__clang__)
+static void show_program_usage(char *prog) __attribute((noreturn));
+#endif
+
 static void
 show_program_usage(char *prog)
 {
@@ -547,7 +551,7 @@ make_text_block(const char *s, size_t n)
  * @param b the message
  * @param n the number of bytes from message to allocate and copy
  */
-void
+static void
 add_to_queue(struct text_queue *q, const char *b, size_t n)
 {
     struct text_block *p;
@@ -1837,7 +1841,7 @@ check_connect(struct descriptor_data *d, const char *msg)
  *
  * @see mcp_frame_process_input
  *
- * This processes certain built-in 'special' commands; @Q (BREAK_COMMAND),
+ * This processes certain built-in 'special' commands; \@Q (BREAK_COMMAND),
  * QUIT, and WHO.  Then it hands off to process_command or check_connect
  * based on if you're connected or not.
  *
@@ -1923,7 +1927,7 @@ do_command(struct descriptor_data *d, char *command)
 /**
  * Check if 'cmd' is one of the special commands handled in interface.c
  *
- * This checks for certain built-in 'special' commands; @Q (BREAK_COMMAND),
+ * This checks for certain built-in 'special' commands; \@Q (BREAK_COMMAND),
  * QUIT (QUIT_COMMAND), and WHO (WHO_COMMAND).  Also checks for
  * MCP message prefix.
  *
@@ -3844,7 +3848,7 @@ spawn_resolver(void)
  * The resolver returns host information one per line.  The host information
  * looks like:
  *
- * hostip(port)|hostname(user)\n
+ * hostip(port)|hostname(user)\\n
  *
  * Once we get a line from the resolver, we iterate over the descriptor
  * list and use hostip + port to set the hostname + user on the descriptor
@@ -5347,7 +5351,6 @@ do_armageddon(dbref player, const char *msg)
     exit(ARMAGEDDON_EXIT_CODE);
 }
 
-
 /**
  * "Panic" the MUCK, which shuts it down with a message.
  *
@@ -5360,6 +5363,10 @@ do_armageddon(dbref player, const char *msg)
  *
  * @param message the message to show in the log
  */
+#if defined(__GNUC__) || defined(__clang__)
+void panic(const char *message) __attribute__((noreturn));
+#endif
+
 void
 panic(const char *message)
 {
@@ -6525,7 +6532,7 @@ ignore_is_ignoring_sub(dbref Player, dbref Who)
  * @param Who the player to check to see if being ignored.
  * @return boolean true if Player is ignoring Who
  */
-inline int
+int
 ignore_is_ignoring(dbref Player, dbref Who)
 {
     return ignore_is_ignoring_sub(Player, Who) || (tp_ignore_bidirectional
