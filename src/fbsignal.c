@@ -290,7 +290,7 @@ sig_emerg(int i)
  * @param s the message to send
  */
 static void
-wall_status(char *s)
+wall_status(const char *s)
 {
     char buf[BUFFER_LEN];
 

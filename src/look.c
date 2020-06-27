@@ -1105,7 +1105,7 @@ init_checkflags(dbref player, const char *flags, struct flgchkdat *check)
         *(cptr++) = '\0';
 
     flags = buf;
-    skip_whitespace((const char **)&cptr);
+    skip_whitespace_var(&cptr);
 
     /* Determine output type */
     if (!*cptr) {

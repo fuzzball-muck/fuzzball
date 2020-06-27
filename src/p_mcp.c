@@ -80,7 +80,7 @@ struct mcpevent_context {
 static void
 muf_mcp_context_cleanup(void *context)
 {
-    struct mcp_muf_context *mmc = (struct mcp_muf_context *) context;
+    struct mcp_muf_context *mmc = context;
 
     free(mmc);
 }
@@ -110,7 +110,7 @@ muf_mcp_context_cleanup(void *context)
 static void
 muf_mcp_callback(McpFrame * mfr, McpMesg * mesg, McpVer version, void *context)
 {
-    struct mcp_muf_context *mmc = (struct mcp_muf_context *) context;
+    struct mcp_muf_context *mmc = context;
     dbref obj = mmc->prog;
     struct mcp_binding *ptr;
     char *pkgname = mesg->package;
@@ -211,7 +211,7 @@ muf_mcp_callback(McpFrame * mfr, McpMesg * mesg, McpVer version, void *context)
 static void
 mcpevent_context_cleanup(void *context)
 {
-    struct mcpevent_context *mec = (struct mcpevent_context *) context;
+    struct mcpevent_context *mec = context;
     free(mec);
 }
 
@@ -239,7 +239,7 @@ static void
 muf_mcp_event_callback(McpFrame * mfr, McpMesg * mesg, McpVer version,
                        void *context)
 {
-    struct mcpevent_context *mec = (struct mcpevent_context *) context;
+    struct mcpevent_context *mec = context;
     int destpid = mec->pid;
     struct frame *destfr = timequeue_pid_frame(destpid);
     int descr = MCPFRAME_DESCR(mfr);
@@ -517,7 +517,7 @@ prim_mcp_register(PRIM_PROTOTYPE)
     mmc->prog = program;
 
     mcp_package_register(pkgname, vermin, vermax, muf_mcp_callback,
-                         (void *) mmc, muf_mcp_context_cleanup);
+                         mmc, muf_mcp_context_cleanup);
 
     CLEAR(oper1);
     CLEAR(oper2);
@@ -583,7 +583,7 @@ prim_mcp_register_event(PRIM_PROTOTYPE)
     mec->pid = fr->pid;
 
     mcp_package_register(pkgname, vermin, vermax, muf_mcp_event_callback,
-                         (void *) mec, mcpevent_context_cleanup);
+                         mec, mcpevent_context_cleanup);
 
     CLEAR(oper1);
     CLEAR(oper2);
@@ -867,7 +867,7 @@ fbgui_muf_event_cb(GUI_EVENT_CB_ARGS)
 {
     char buf[BUFFER_LEN];
     const char *name;
-    struct frame *fr = (struct frame *) context;
+    struct frame *fr = context;
     struct inst temp;
     struct inst temp1;
     struct inst temp2;
@@ -976,7 +976,7 @@ static void
 fbgui_muf_error_cb(GUI_ERROR_CB_ARGS)
 {
     char buf[BUFFER_LEN];
-    struct frame *fr = (struct frame *) context;
+    struct frame *fr = context;
     struct inst temp;
 
     temp.type = PROG_ARRAY;
@@ -1054,7 +1054,7 @@ prim_gui_dlog_create(PRIM_PROTOTYPE)
 {
     const char *dlogid = NULL;
     char *title = NULL;
-    char *wintype = NULL;
+    const char *wintype = NULL;
     stk_array *arr = NULL;
     McpMesg msg;
     McpFrame *mfr;

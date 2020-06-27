@@ -65,13 +65,13 @@ do_name(int descr, dbref player, const char *name, char *newname)
 
         if (*password) {
             *password++ = '\0';     /* terminate name */
-            skip_whitespace((const char **)&password);
+            skip_whitespace_var(&password);
         }
 
         /* check for null password */
         if (!*password) {
             notify(player, "You must specify a password to change a player name.");
-            notify(player, "E.g.: name player = newname password");
+            notify(player, "E.g.: @name player = newname password");
             return;
         }
 
@@ -720,7 +720,7 @@ do_set(int descr, dbref player, const char *name, const char *flag)
 
         /* copy the string so we can muck with it */
         const char *type = alloc_string(flag);  /* type */
-        char *pname = (char *) strchr(type, PROP_DELIMITER);    /* propname */
+        char *pname = strchr(type, PROP_DELIMITER);    /* propname */
         const char *x;      /* to preserve string location so we can free it */
         char *temp;
         int ival = 0;
@@ -1172,7 +1172,8 @@ do_register(int descr, dbref player, char *arg1, const char *arg2)
         target = player;
         objectstr = remaining;
     } else if (string_prefix(arg1, "#prop")) {
-        char *pattern, *targetstr;
+        char *pattern;
+        const char *targetstr;
 
         (void) strtok_r(arg1, " \t", &remaining);
         pattern = strtok_r(remaining, " \t", &remaining);

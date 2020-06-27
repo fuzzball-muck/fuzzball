@@ -594,7 +594,7 @@ clean_mcpbinds(struct mcp_binding *mypub)
 void
 mcp_send_text(McpFrame *mfr, const char *text)
 {
-    queue_write((struct descriptor_data *) mfr->descriptor, text, strlen(text));
+    queue_write(mfr->descriptor, text, strlen(text));
 }
 
 /**
@@ -605,7 +605,7 @@ mcp_send_text(McpFrame *mfr, const char *text)
 void
 mcp_flush_text(McpFrame *mfr)
 {
-    struct descriptor_data *d = (struct descriptor_data *) mfr->descriptor;
+    struct descriptor_data *d = mfr->descriptor;
 
     if (d)
         process_output(d);

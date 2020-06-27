@@ -619,7 +619,7 @@ parse_boolprop(char *buf)
     char *temp;
 
     x = type;
-    skip_whitespace((const char **)&type);
+    skip_whitespace_var(&type);
 
     /* This means there was no propname */
     if (*type == PROP_DELIMITER) {
@@ -632,10 +632,10 @@ parse_boolprop(char *buf)
      */
     *strval = '\0';
 
-    remove_ending_whitespace((char **)&type);
+    remove_ending_whitespace(&type);
 
     strval++;
-    skip_whitespace((const char **)&strval);
+    skip_whitespace_var(&strval);
 
     /* If there is no value, then we can't make a property node */
     if (!*strval) {
@@ -646,7 +646,7 @@ parse_boolprop(char *buf)
     /* find the end of our prop value.  Note that it is impossible
      * to lock a prop to a value with spaces using this code.
      */
-    for (temp = (char *)strval; !isspace(*temp) && *temp; temp++) ;
+    for (temp = strval; !isspace(*temp) && *temp; temp++) ;
     *temp = '\0';
 
     /* Set up our propnode and boolnode, and then clean up our memory. */

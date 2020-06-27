@@ -609,10 +609,10 @@ match_exits(dbref obj, struct match_data *md)
                                 strcpyn(match_args, sizeof(match_args),
                                         (partial && notnull) ? p : (p + 1));
                                 {
-                                    char *pp;
+                                    const char *pp;
                                     int ip;
 
-                                    for (ip = 0, pp = (char *) md->match_name;
+                                    for (ip = 0, pp = md->match_name;
                                          *pp && (pp != p); pp++)
                                         match_cmdname[ip++] = *pp;
 
@@ -621,7 +621,7 @@ match_exits(dbref obj, struct match_data *md)
                             } else {
                                 *match_args = '\0';
                                 strcpyn(match_cmdname, sizeof(match_cmdname),
-                                        (char *) md->match_name);
+                                        md->match_name);
                             }
                         } else if ((strlen(md->match_name) - strlen(p) ==
                                    (size_t) md->longest_match) 
@@ -643,11 +643,11 @@ match_exits(dbref obj, struct match_data *md)
                                     strcpyn(match_args, sizeof(match_args),
                                             (partial && notnull) ? p : (p + 1));
                                     {
-                                        char *pp;
+                                        const char *pp;
                                         int ip;
 
                                         for (ip = 0,
-                                             pp = (char *) md->match_name;
+                                             pp = md->match_name;
                                              *pp && (pp != p); pp++)
                                             match_cmdname[ip++] = *pp;
 
@@ -656,7 +656,7 @@ match_exits(dbref obj, struct match_data *md)
                                 } else {
                                     *match_args = '\0';
                                     strcpyn(match_cmdname, sizeof(match_cmdname),
-                                            (char *) md->match_name);
+                                            md->match_name);
                                 }
                             }
                         }

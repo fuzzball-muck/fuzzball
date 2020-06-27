@@ -599,13 +599,13 @@ tune_load_parms_from_file(FILE * f, dbref player, int cnt)
                 *c++ = '\0';
                 p = buf;
                 remove_ending_whitespace(&p);
-                skip_whitespace((const char **)&c);
+                skip_whitespace_var(&c);
 
                 for (p = c; *p && *p != '\n' && *p != '\r'; p++) ;
 
                 *p = '\0';
                 p = buf;
-                skip_whitespace((const char **)&p);
+                skip_whitespace_var(&p);
 
                 if (*p) {
                     result = tune_setparm((dbref)1, p, c, MLEV_GOD);

@@ -42,7 +42,7 @@ alphanum_compare(const char *t1, const char *s2)
 {
     int n1, n2, cnt1, cnt2;
     const char *u1, *u2;
-    register const char *s1 = t1;
+    const char *s1 = t1;
 
     while (*s1 && tolower(*s1) == tolower(*s2)) {
         s1++;
@@ -117,7 +117,7 @@ alphanum_compare(const char *t1, const char *s2)
  * @return See description - string or NULL
  */
 const char *
-exit_prefix(register const char *string, register const char *prefix)
+exit_prefix(const char *string, const char *prefix)
 {
     const char *p;
     const char *s = string;
@@ -146,7 +146,7 @@ exit_prefix(register const char *string, register const char *prefix)
         skip_whitespace(&s);
     }
 
-    return 0;
+    return NULL;
 }
 
 /**
@@ -160,7 +160,7 @@ exit_prefix(register const char *string, register const char *prefix)
  * @return boolean - true if string starts with prefix.
  */
 int
-string_prefix(register const char *string, register const char *prefix)
+string_prefix(const char *string, const char *prefix)
 {
     while (*string && *prefix && tolower(*string) == tolower(*prefix)) {
         string++;
@@ -189,7 +189,7 @@ string_prefix(register const char *string, register const char *prefix)
  *         location in 'src' where 'sub' starts.
  */
 const char *
-string_match(register const char *src, register const char *sub)
+string_match(const char *src, const char *sub)
 {
     if (*sub != '\0') {
         while (*src) {
@@ -204,7 +204,7 @@ string_match(register const char *src, register const char *sub)
                 src++;
         }
     }
-    return 0;
+    return NULL;
 }
 
 #define GENDER_UNASSIGNED   0x0    /* unassigned - the default */
@@ -557,7 +557,7 @@ char *
 alloc_string(const char *string)
 {
     if (!string || !*string)
-        return 0;
+        return NULL;
 
     return strdup(string);
 }
@@ -585,8 +585,7 @@ alloc_prog_string(const char *s)
         return (NULL);
 
     length = strlen(s);
-    if ((ss = (struct shared_string *)
-        malloc(sizeof(struct shared_string) + length)) == NULL)
+    if ((ss = malloc(sizeof(struct shared_string) + length)) == NULL)
         abort();
 
     ss->links = 1;
@@ -1036,7 +1035,7 @@ prepend_string(char **before, char *start, const char *what)
     if (ptr < start)
         return 0;
 
-    memcpy((void *) ptr, (const void *) what, len);
+    memcpy(ptr, what, len);
     *before = ptr;
     return len;
 }
@@ -1368,8 +1367,8 @@ ifloat(const char *s)
  * @param c the character to find
  * @return a pointer to the position of c in s, or NULL if not found.
  */
-static char *
-cstrchr(char *s, char c)
+static const char *
+cstrchr(const char *s, char c)
 {
     c = tolower(c);
     while (*s && tolower(*s) != c)
@@ -1430,7 +1429,7 @@ estrchr(char *s, char c, char e)
  */
 #define test(x) if (tolower(x) == c1) return truthval
 static int
-cmatch(char *s1, char c1)
+cmatch(const char *s1, char c1)
 {
     int truthval = 0;
 
@@ -1472,7 +1471,7 @@ cmatch(char *s1, char c1)
  * See the definition for smatch for all the details.  It is a rather
  * lengthly comment so I don't want to repeat it here :)
  */
-static int smatch(char *s1, char *s2);
+static int smatch(char *s1, const char *s2);
 
 /**
  * Does a word match as part of the smatch implementation
@@ -1485,13 +1484,13 @@ static int smatch(char *s1, char *s2);
  * @return 0 if matched, 1 if not matched.
  */
 static int
-wmatch(char *wlist, char **s2)
+wmatch(char *wlist, const char **s2)
 {
-    char *matchstr,     /* which word to find             */
-    *strend,            /* end of current word from wlist */
-    *matchbuf,          /* where to find from             */
-    *bufend;            /* end of match buffer            */
-    int result = 1;     /* intermediate result            */
+    char *matchstr;        /* which word to find             */
+    char *strend;          /* end of current word from wlist */
+    const char *matchbuf;  /* where to find from             */
+    char *bufend;          /* end of match buffer            */
+    int result = 1;        /* intermediate result            */
 
     if (!wlist || !*s2)
         return 1;
@@ -1581,9 +1580,10 @@ wmatch(char *wlist, char **s2)
  * @return 0 if matched; otherwise it returns a non-0 number.
  */
 static int
-smatch(char *s1, char *s2)
+smatch(char *s1, const char *s2)
 {
-    char ch, *start = s2;
+    char ch;
+    const char *start = s2;
 
     while (*s1) {
         switch (*s1) {
@@ -1754,7 +1754,7 @@ smatch(char *s1, char *s2)
  * @return 1 if matched, 0 if not.
  */
 int
-equalstr(char *pattern, char *str)
+equalstr(char *pattern, const char *str)
 {
     return !smatch(pattern, str);
 }
@@ -1822,7 +1822,7 @@ char *
 stripspaces(char *s)
 {
     char *ptr = s;
-    skip_whitespace((const char **)&ptr);
+    skip_whitespace_var(&ptr);
     remove_ending_whitespace(&ptr);
     return ptr;
 }
@@ -1937,7 +1937,7 @@ truestr(const char *buf)
 }
 
 /**
- * Skip over starting whitespaces in a string
+ * Skip over starting whitespaces in a constant string
  *
  * Note that this does not technically "trim" spaces; instead, it advances
  * the provided pointer to the first non-space (or to the end of the string
@@ -1947,6 +1947,22 @@ truestr(const char *buf)
  */
 void
 skip_whitespace(const char **parsebuf)
+{
+    while (**parsebuf && isspace(**parsebuf))
+        (*parsebuf)++;
+}
+
+/**
+ * Skip over starting whitespaces in a variable string
+ *
+ * Note that this does not technically "trim" spaces; instead, it advances
+ * the provided pointer to the first non-space (or to the end of the string
+ * as the case may be).
+ *
+ * @param parsebuf pointer to a string pointer.
+ */
+void
+skip_whitespace_var(char **parsebuf)
 {
     while (**parsebuf && isspace(**parsebuf))
         (*parsebuf)++;

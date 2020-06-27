@@ -28,6 +28,8 @@
 #include "timequeue.h"
 #include "tune.h"
 
+typedef int (*comparator_t) (const void *, const void *);
+
 /*
  * TODO: These globals really probably shouldn't be globals.  I can only guess
  *       this is either some kind of primitive code re-use because all the
@@ -1391,15 +1393,15 @@ static struct inst *sortflag_index = NULL;
 static int
 sortcomp_generic(const void *x, const void *y)
 {
-    struct inst *a;
-    struct inst *b;
+    const struct inst *a;
+    const struct inst *b;
 
     if (!sortflag_descending) {
-        a = *(struct inst **) x;
-        b = *(struct inst **) y;
+        a = *(struct inst *const *) x;
+        b = *(struct inst *const *) y;
     } else {
-        a = *(struct inst **) y;
-        b = *(struct inst **) x;
+        a = *(struct inst *const *) y;
+        b = *(struct inst *const *) x;
     }
 
     if (sortflag_index) {
@@ -1462,7 +1464,7 @@ prim_array_sort(PRIM_PROTOTYPE)
     stk_array *arr;
     stk_array *nu;
     size_t count;
-    int (*comparator) (const void *, const void *);
+    comparator_t comparator;
     struct inst **tmparr = NULL;
 
     CHECKOP(2);
@@ -1553,7 +1555,7 @@ prim_array_sort_indexed(PRIM_PROTOTYPE)
     stk_array *arr;
     stk_array *nu;
     size_t count;
-    int (*comparator) (const void *, const void *);
+    comparator_t comparator;
     struct inst **tmparr = NULL;
 
     CHECKOP(3);

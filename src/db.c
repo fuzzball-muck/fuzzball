@@ -1083,7 +1083,7 @@ autostart_progs(void)
                  * finish compiling.
                  */
                 tmp = PROGRAM_FIRST(i);
-                PROGRAM_SET_FIRST(i, (struct line *) read_program(i));
+                PROGRAM_SET_FIRST(i, read_program(i));
                 do_compile(-1, OWNER(i), i, 0);
                 free_prog_text(PROGRAM_FIRST(i));
                 PROGRAM_SET_FIRST(i, tmp);
@@ -1980,7 +1980,7 @@ _link_exit(int descr, dbref player, dbref exit, char *dest_name,
      * Each iteration of this loop will be a single potential destination.
      */
     while (*dest_name) {
-        skip_whitespace((const char **)&dest_name);
+        skip_whitespace_var(&dest_name);
         p = dest_name;
 
         while (*dest_name && (*dest_name != EXIT_DELIMITER))
@@ -1991,7 +1991,7 @@ _link_exit(int descr, dbref player, dbref exit, char *dest_name,
 
         if (*dest_name) {
             dest_name++;
-            skip_whitespace((const char **)&dest_name);
+            skip_whitespace_var(&dest_name);
         }
 
         /*

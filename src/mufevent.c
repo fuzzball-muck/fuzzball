@@ -146,7 +146,7 @@ muf_event_process_free(struct mufevent_process *ptr)
  */
 void
 muf_event_register_specific(dbref player, dbref prog, struct frame *fr,
-                            size_t eventcount, char **eventids)
+                            size_t eventcount, const char **eventids)
 {
     struct mufevent_process *newproc;
     struct mufevent_process *ptr;
@@ -860,7 +860,7 @@ muf_event_free(struct mufevent *ptr)
  * @param exclusive boolean as described above
  */
 void
-muf_event_add(struct frame *fr, char *event, struct inst *val, int exclusive)
+muf_event_add(struct frame *fr, const char *event, struct inst *val, int exclusive)
 {
     struct mufevent *newevent;
     struct mufevent *ptr;

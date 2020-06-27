@@ -807,11 +807,11 @@ get_property_class(dbref player, const char *pname)
         propfetch(player, p);
 #endif
         if (PropType(p) != PROP_STRTYP)
-            return (char *) NULL;
+            return NULL;
 
         return (PropDataStr(p));
     } else {
-        return (char *) NULL;
+        return NULL;
     }
 }
 
