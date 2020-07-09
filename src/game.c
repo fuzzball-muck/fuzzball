@@ -681,7 +681,7 @@ process_command(int descr, dbref player, const char *command)
         strcpyn(match_args, sizeof(match_args), full_command);
         strcpyn(match_cmdname, sizeof(match_cmdname), command);
 
-        skip_whitespace((const char **)&arg1);
+        skip_whitespace_var(&arg1);
 
         /* find end of arg1, start of arg2 */
         for (arg2 = arg1; *arg2 && *arg2 != ARG_DELIMITER; arg2++) ;
@@ -692,7 +692,7 @@ process_command(int descr, dbref player, const char *command)
         char *p = arg1;
         remove_ending_whitespace(&p);
 
-        skip_whitespace((const char **)&arg2);
+        skip_whitespace_var(&arg2);
 
         switch (command[0]) {
             case '@':

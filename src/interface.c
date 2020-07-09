@@ -2235,7 +2235,7 @@ queue_immediate_and_flush(struct descriptor_data *d, const char *msg)
         queue_immediate_raw(d, MCP_QUOTE_PREFIX);
     }
 
-    queue_immediate_raw(d, (const char *) buf);
+    queue_immediate_raw(d, buf);
     process_output(d);
 }
 
@@ -2689,27 +2689,27 @@ make_socket_v6(int port)
     /* Set all the different socket options */
     opt = 1;
 
-    if (setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (char *) &opt, sizeof(opt)) < 0) {
+    if (setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
         perror("setsockopt(SO_REUSEADDR)");
         exit(1);
     }
 
     opt = 1;
 
-    if (setsockopt(s, SOL_SOCKET, SO_KEEPALIVE, (char *) &opt, sizeof(opt)) < 0) {
+    if (setsockopt(s, SOL_SOCKET, SO_KEEPALIVE, &opt, sizeof(opt)) < 0) {
         perror("setsockopt(SO_KEEPALIVE)");
         exit(1);
     }
 
     opt = 1;
 
-    if (setsockopt(s, IPPROTO_IPV6, IPV6_V6ONLY, (char *) &opt, sizeof(opt)) < 0) {
+    if (setsockopt(s, IPPROTO_IPV6, IPV6_V6ONLY, &opt, sizeof(opt)) < 0) {
         perror("setsockopt(IPV6_V6ONLY");
         exit(1);
     }
 
     /* Blank out the server structure */
-    memset((char *) &server, 0, sizeof(server));
+    memset(&server, 0, sizeof(server));
     server.sin6_family = AF_INET6;
     server.sin6_addr = bind_ipv6_address;
     server.sin6_port = htons(port);
@@ -2781,8 +2781,7 @@ addrout_v6(in_port_t lport, struct in6_addr *a, in_port_t prt)
         } else {
             time_t gethost_start = time(NULL);
 
-            struct hostent *he = gethostbyaddr(((char *) &addr),
-                                               sizeof(addr), AF_INET6);
+            struct hostent *he = gethostbyaddr(&addr, sizeof(addr), AF_INET6);
             time_t gethost_stop = time(NULL);
             time_t lag = gethost_stop - gethost_start;
 
@@ -2908,8 +2907,7 @@ addrout(in_port_t lport, in_addr_t a, in_port_t prt)
         } else {
             time_t gethost_start = time(NULL);
 
-            struct hostent *he = gethostbyaddr(((char *) &addr), sizeof(addr),
-                                               AF_INET);
+            struct hostent *he = gethostbyaddr(&addr, sizeof(addr), AF_INET);
             time_t gethost_stop = time(NULL);
             time_t lag = gethost_stop - gethost_start;
 
@@ -2972,13 +2970,13 @@ make_socket(int port)
     }
 
     opt = 1;
-    if (setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (char *) &opt, sizeof(opt)) < 0) {
+    if (setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
         perror("setsockopt");
         exit(1);
     }
 
     opt = 1;
-    if (setsockopt(s, SOL_SOCKET, SO_KEEPALIVE, (char *) &opt, sizeof(opt)) < 0) {
+    if (setsockopt(s, SOL_SOCKET, SO_KEEPALIVE, &opt, sizeof(opt)) < 0) {
         perror("setsockopt");
         exit(1);
     }
@@ -3227,7 +3225,7 @@ process_input(struct descriptor_data *d)
                 case TELNET_AYT: /* Are you there? */
                     {
                         char sendbuf[] = "[Yes]\r\n";
-                        queue_immediate_raw(d, (const char *)sendbuf);
+                        queue_immediate_raw(d, sendbuf);
                         d->telnet_state = TELNET_STATE_NORMAL;
                         break;
                     }
@@ -3547,7 +3545,7 @@ process_input(struct descriptor_data *d)
 static int
 pem_passwd_cb(char *buf, int size, int rwflag, void *userdata)
 {
-    const char *pw = (const char *) userdata;
+    const char *pw = userdata;
     int pwlen = strlen(pw);
 
     strncpy(buf, pw, size);
@@ -3999,7 +3997,7 @@ shovechars()
 
     listen_bound_sockets();
 
-    gettimeofday(&last_slice, (struct timezone *) 0);
+    gettimeofday(&last_slice, NULL);
 
     avail_descriptors = max_open_files() - 5;
 
@@ -4013,7 +4011,7 @@ shovechars()
 
     /* And here, we do the actual player-interaction loop */
     while (shutdown_flag == 0) {
-        gettimeofday(&current_time, (struct timezone *) 0);
+        gettimeofday(&current_time, NULL);
         last_slice = update_quotas(last_slice, current_time);
 
         /* Process timed events, commands, and MUF stuff. */
@@ -4684,7 +4682,7 @@ notify(dbref player, const char *msg)
  * @param ... as many arguments as necessary
  */
 void
-notifyf(dbref player, char *format, ...)
+notifyf(dbref player, const char *format, ...)
 {
     va_list args;
     char bufr[BUFFER_LEN];
@@ -4710,7 +4708,7 @@ notifyf(dbref player, char *format, ...)
  * @param ... as many arguments as necessary.
  */
 void
-notifyf_nolisten(dbref player, char *format, ...)
+notifyf_nolisten(dbref player, const char *format, ...)
 {
     va_list args;
     char bufr[BUFFER_LEN];
@@ -5713,7 +5711,7 @@ phost(int c)
         return ((char *) d->hostname);
     }
 
-    return (char *) NULL;
+    return NULL;
 }
 
 /**
@@ -5735,7 +5733,7 @@ pdescrhost(int c)
         return ((char *) d->hostname);
     }
 
-    return (char *) NULL;
+    return NULL;
 }
 
 /**
@@ -5762,7 +5760,7 @@ puser(int c)
         return ((char *) d->username);
     }
 
-    return (char *) NULL;
+    return NULL;
 }
 
 /**
@@ -5784,7 +5782,7 @@ pdescruser(int c)
         return ((char *) d->username);
     }
 
-    return (char *) NULL;
+    return NULL;
 }
 
 /**
@@ -6335,7 +6333,7 @@ dump_status(void)
 static int
 ignore_dbref_compare(const void *Lhs, const void *Rhs)
 {
-    return *(dbref *) Lhs - *(dbref *) Rhs;
+    return *(const dbref *) Lhs - *(const dbref *) Rhs;
 }
 
 /**
@@ -7028,7 +7026,7 @@ main(int argc, char **argv)
                 int fd;
 
                 if ((fd = open("/dev/tty", O_RDWR)) >= 0) {
-                    ioctl(fd, TIOCNOTTY, (char *) 0); /* lose controll TTY */
+                    ioctl(fd, TIOCNOTTY, NULL); /* lose controll TTY */
                     close(fd);
                 }
             }

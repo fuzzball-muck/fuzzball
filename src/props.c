@@ -456,8 +456,8 @@ PropPtr
 new_prop(PropPtr *avl, char *key)
 {
     PropPtr ret;
-    register PropPtr p = *avl;
-    register int cmp;
+    PropPtr p = *avl;
+    int cmp;
     static short balancep;
 
     if (p) {

@@ -113,8 +113,7 @@ char *cr2slash(char *buf, int buflen, const char *in);
  *
  * @return See description - string or NULL
  */
-const char *exit_prefix(register const char *string,
-                        register const char *prefix);
+const char *exit_prefix(const char *string, const char *prefix);
 
 /**
  * This is a POSIX-style regex implementation.  I'm not sure why a standard
@@ -171,7 +170,7 @@ const char *exit_prefix(register const char *string,
  * @param t The string to match to the pattern
  * @return 1 if matched, 0 if not.
  */
-int equalstr(char *s, char *t);
+int equalstr(char *s, const char *t);
 
 /**
  * Checks to see if string s contains a float of format:
@@ -389,7 +388,7 @@ char *ref2str(dbref obj, char *buf, size_t buflen);
 void remove_ending_whitespace(char **s);
 
 /**
- * Skip over starting whitespaces in a string
+ * Skip over starting whitespaces in a constant string
  *
  * Note that this does not technically "trim" spaces; instead, it advances
  * the provided pointer to the first non-space (or to the end of the string
@@ -398,6 +397,17 @@ void remove_ending_whitespace(char **s);
  * @param parsebuf pointer to a string pointer.
  */
 void skip_whitespace(const char **parsebuf);
+
+/**
+ * Skip over starting whitespaces in a variable string
+ *
+ * Note that this does not technically "trim" spaces; instead, it advances
+ * the provided pointer to the first non-space (or to the end of the string
+ * as the case may be).
+ *
+ * @param parsebuf pointer to a string pointer.
+ */
+void skip_whitespace_var(char **parsebuf);
 
 /**
  * This is an implementation of strncat that takes the buffer size instead

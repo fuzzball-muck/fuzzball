@@ -738,7 +738,7 @@ mfn_fullname(MFUNARGS)
  * @return integer count of items or 0 if list is empty/NULL.
  */
 static int
-countlitems(char *list, char *sep)
+countlitems(char *list, const char *sep)
 {
     char *ptr;
     size_t seplen;
@@ -781,7 +781,7 @@ countlitems(char *list, char *sep)
  * @return a pointer to 'buf'
  */
 static char *
-getlitem(char *buf, size_t buflen, char *list, char *sep, int line)
+getlitem(char *buf, size_t buflen, char *list, const char *sep, int line)
 {
     char *ptr, *ptr2;
     char tmpchr;
@@ -2513,13 +2513,13 @@ mfn_timing(MFUNARGS)
     int usecs;
     double timelen;
 
-    gettimeofday(&start_time, (struct timezone *) 0);
+    gettimeofday(&start_time, NULL);
 
     ptr = mesg_parse(descr, player, what, perms, argv[0], buf, BUFFER_LEN,
                      mesgtyp);
     CHECKRETURN(ptr, "TIMING", "arg 1");
 
-    gettimeofday(&end_time, (struct timezone *) 0);
+    gettimeofday(&end_time, NULL);
     secs = end_time.tv_sec - start_time.tv_sec;
     usecs = end_time.tv_usec - start_time.tv_usec;
 
@@ -3004,7 +3004,7 @@ mfn_lmember(MFUNARGS)
     /* {lmember:list,item,delim} */
     int i = 1;
     char *ptr = argv[0];
-    char *delim = NULL;
+    const char *delim = NULL;
     int len;
     int len2 = strlen(argv[1]);
 

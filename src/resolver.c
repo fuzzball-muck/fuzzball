@@ -458,7 +458,7 @@ static const char * addrout_v6(struct in6_addr *a, in_port_t prt,
         return buf;
     }
 
-    he = gethostbyaddr(((char *) &addr), sizeof(addr), AF_INET6);
+    he = gethostbyaddr(&addr, sizeof(addr), AF_INET6);
 
     if (he) {
         strcpyn(tmpbuf, sizeof(tmpbuf), he->h_name);
@@ -783,7 +783,7 @@ static const char * addrout(in_addr_t a, in_port_t prt, in_port_t myprt) {
         return buf;
     }
 
-    he = gethostbyaddr(((char *) &addr), sizeof(addr), AF_INET);
+    he = gethostbyaddr(&addr, sizeof(addr), AF_INET);
 
     if (he) {
         strcpyn(tmpbuf, sizeof(tmpbuf), he->h_name);

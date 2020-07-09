@@ -30,9 +30,6 @@
  */
 stk_array_list *stk_array_active_list;
 
-/* See the definition for full comment */
-int array_tree_compare(array_iter * a, array_iter * b, int case_sens);
-
 /* The buckets themselves */
 typedef struct visited_set_bucket_t {
     stk_array *value;                       /* The value in the bucket      */
@@ -251,9 +248,9 @@ static void visited_set_free(visited_set* set) {
     free(set->buckets);
 }
 
-/* See the definition for details about this function */
+/* See the definition for full comment */
 static int
-array_tree_compare_internal(array_iter * a, array_iter * b, int case_sens, visited_set *visited_a, visited_set *visited_b);
+array_tree_compare_internal(const array_iter * a, const array_iter * b, int case_sens, visited_set *visited_a, visited_set *visited_b);
 
 /**
  * Compares two arrays
@@ -274,7 +271,7 @@ array_tree_compare_internal(array_iter * a, array_iter * b, int case_sens, visit
  * @return similar to strcmp; 0 is equal, negative is A < B, positive is A > B
  */
 static int
-array_tree_compare_arrays(array_iter * a, array_iter * b, int case_sens, visited_set *visited_a, visited_set *visited_b)
+array_tree_compare_arrays(const array_iter * a, const array_iter * b, int case_sens, visited_set *visited_a, visited_set *visited_b)
 {
     int more1, more2, res;
     array_iter idx1;
@@ -360,7 +357,7 @@ array_tree_compare_arrays(array_iter * a, array_iter * b, int case_sens, visited
  * @return similar to strcmp; 0 is equal, negative is A < B, positive is A > B
  */
 int
-array_tree_compare(array_iter * a, array_iter * b, int case_sens) {
+array_tree_compare(const array_iter * a, const array_iter * b, int case_sens) {
     visited_set visited_a, visited_b;
     visited_set_empty(&visited_a);
     visited_set_empty(&visited_b);
@@ -395,7 +392,7 @@ array_tree_compare(array_iter * a, array_iter * b, int case_sens) {
  * @return similar to strcmp; 0 is equal, negative is A < B, positive is A > B
  */
 static int
-array_tree_compare_internal(array_iter * a, array_iter * b, int case_sens, visited_set *visited_a, visited_set *visited_b)
+array_tree_compare_internal(const array_iter * a, const array_iter * b, int case_sens, visited_set *visited_a, visited_set *visited_b)
 {
     assert(a != NULL);
     assert(b != NULL);
@@ -435,8 +432,8 @@ array_tree_compare_internal(array_iter * a, array_iter * b, int case_sens, visit
             return -1;
         }
     } else if (a->type == PROG_STRING) {
-        char *astr = DoNullInd(a->data.string);
-        char *bstr = DoNullInd(b->data.string);
+        const char *astr = DoNullInd(a->data.string);
+        const char *bstr = DoNullInd(b->data.string);
 
         if (0 != case_sens) {
             return strcmp(astr, bstr);
@@ -745,8 +742,8 @@ static array_tree *
 array_tree_insert(array_tree ** avl, array_iter * key)
 {
     array_tree *ret;
-    register array_tree *p = *avl;
-    register int cmp;
+    array_tree *p = *avl;
+    int cmp;
     static short balancep;
 
     assert(avl != NULL);
@@ -1620,8 +1617,8 @@ array_setitem(stk_array ** harr, array_iter * idx, array_data * item)
                 /* @TODO : This code looks pretty similar to array_insertitem
                  *         We should probably converge the two.
                  */
-                arr->data.packed = (array_data *)
-                realloc(arr->data.packed, sizeof(array_data) * (size_t)(arr->items + 1));
+                arr->data.packed =
+                        realloc(arr->data.packed, sizeof(array_data) * (size_t)(arr->items + 1));
 
                 if (arr->data.packed == NULL) {
                     fprintf(stderr, "array_setitem(): Out of Memory!");
@@ -1710,8 +1707,8 @@ array_insertitem(stk_array ** harr, array_iter * idx, array_data * item)
                 arr = *harr = array_decouple(arr);
             }
 
-            arr->data.packed = (array_data *)
-            realloc(arr->data.packed, sizeof(array_data) * (size_t)(arr->items + 1));
+            arr->data.packed =
+                    realloc(arr->data.packed, sizeof(array_data) * (size_t)(arr->items + 1));
 
             if (arr->data.packed == NULL) {
                 fprintf(stderr, "array_insertitem(): Out of Memory!");
@@ -2116,8 +2113,7 @@ array_insertrange(stk_array ** harr, array_iter * start, stk_array * inarr)
                 arr = *harr = array_decouple(arr);
             }
 
-            arr->data.packed =
-                (struct inst *)realloc(arr->data.packed,
+            arr->data.packed = realloc(arr->data.packed,
                     sizeof(array_data) * (size_t)(arr->items + inarr->items));
 
             if (arr->data.packed == NULL) {
@@ -2276,8 +2272,8 @@ array_delrange(stk_array ** harr, array_iter * start, array_iter * end)
             totsize = (size_t)((arr->items) ? arr->items : 1);
 
             /* Shrink the packed data area */
-            arr->data.packed = (array_data *)
-            realloc(arr->data.packed, sizeof(array_data) * totsize);
+            arr->data.packed =
+                    realloc(arr->data.packed, sizeof(array_data) * totsize);
 
             if (arr->data.packed == NULL) {
                 fprintf(stderr, "array_delrange(): Out of Memory!");
@@ -2816,7 +2812,7 @@ array_set_intkey_strval(stk_array ** harr, int key, const char *val)
  * @param key the key to fetch
  * @return string value or NULL if not a string value (or not found)
  */
-char *
+const char *
 array_get_intkey_strval(stk_array * arr, int key)
 {
     struct inst ikey;

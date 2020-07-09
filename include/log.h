@@ -19,7 +19,7 @@
  * @param format the format string with sprinf-style replacements
  * @param ... whatever sprintf replacement variables
  */
-void log2file(const char *myfilename, char *format, ...);
+void log2file(const char *myfilename, const char *format, ...);
 
 /**
  * Log to the commands file
@@ -32,7 +32,7 @@ void log2file(const char *myfilename, char *format, ...);
  * @param format the log line to submit
  * @param ... the arguments
  */
-void log_command(char *format, ...);
+void log_command(const char *format, ...);
 
 /**
  * Log to the gripes file
@@ -45,7 +45,7 @@ void log_command(char *format, ...);
  * @param format the log line to submit
  * @param ... the arguments
  */
-void log_gripe(char *format, ...);
+void log_gripe(const char *format, ...);
 
 /**
  * Log to the muf errors file
@@ -58,7 +58,7 @@ void log_gripe(char *format, ...);
  * @param format the log line to submit
  * @param ... the arguments
  */
-void log_muf(char *format, ...);
+void log_muf(const char *format, ...);
 
 /**
  * Log a program's text to the program log file
@@ -85,7 +85,7 @@ void log_program_text(struct line *first, dbref player, dbref i);
  * @param format the log line to submit
  * @param ... the arguments
  */
-void log_sanfix(char *format, ...);
+void log_sanfix(const char *format, ...);
 
 /**
  * Log to the sanity file
@@ -98,7 +98,7 @@ void log_sanfix(char *format, ...);
  * @param format the log line to submit
  * @param ... the arguments
  */
-void log_sanity(char *format, ...);
+void log_sanity(const char *format, ...);
 
 /**
  * Log to the status file
@@ -111,7 +111,7 @@ void log_sanity(char *format, ...);
  * @param format the log line to submit
  * @param ... the arguments
  */
-void log_status(char *format, ...);
+void log_status(const char *format, ...);
 
 /**
  * Log something to the user log file used by USERLOG primitive

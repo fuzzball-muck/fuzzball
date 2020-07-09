@@ -206,7 +206,7 @@ void array_free(stk_array *arr);
  * @param key the key to fetch
  * @return string value or NULL if not a string value (or not found)
  */
-char *array_get_intkey_strval(stk_array *arr, int key);
+const char *array_get_intkey_strval(stk_array *arr, int key);
 
 /**
  * Fetch an item from the given array.
@@ -266,7 +266,7 @@ stk_array *array_getrange(stk_array *arr, array_iter *start, array_iter *end, in
  * @param case_sens Case sensitive compare for strings?
  * @return similar to strcmp; 0 is equal, negative is A < B, positive is A > B
  */
-int array_tree_compare(array_iter * a, array_iter * b, int case_sens);
+int array_tree_compare(const array_iter * a, const array_iter * b, int case_sens);
 
 /**
  * Insert an item into the given array at the given index.

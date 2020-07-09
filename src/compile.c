@@ -471,11 +471,10 @@ get_address(COMPSTATE * cstat, struct INTERMEDIATE *dest, int offset)
 
     if (cstat->addrcount >= cstat->addrmax) {
         cstat->addrmax += ADDRLIST_ALLOC_CHUNK_SIZE;
-        cstat->addrlist = (struct INTERMEDIATE **)
-                        realloc(cstat->addrlist,
-                                cstat->addrmax * sizeof(struct INTERMEDIATE *));
-        cstat->addroffsets = (int *)
-                    realloc(cstat->addroffsets, cstat->addrmax * sizeof(int));
+        cstat->addrlist = realloc(cstat->addrlist,
+                cstat->addrmax * sizeof(struct INTERMEDIATE *));
+        cstat->addroffsets =
+                realloc(cstat->addroffsets, cstat->addrmax * sizeof(int));
     }
 
     cstat->addrlist[cstat->addrcount] = dest;
@@ -595,7 +594,7 @@ expand_def(COMPSTATE * cstat, const char *defname)
         }
     }
 
-    return (strdup((char *) exp->pval));
+    return (strdup(exp->pval));
 }
 
 /**
@@ -687,7 +686,7 @@ include_defs(COMPSTATE * cstat, dbref i)
         tmpptr = get_property_class(i, dirname);
 
         if (tmpptr && *tmpptr)
-            insert_def(cstat, temp, (char *) tmpptr);
+            insert_def(cstat, temp, tmpptr);
 
         j = next_prop(pptr, j, temp, sizeof(temp));
     }
@@ -3266,10 +3265,10 @@ next_token_raw(COMPSTATE * cstat)
     int i;
 
     if (!cstat->curr_line)
-        return (char *) 0;
+        return NULL;
 
     if (!cstat->next_char)
-        return (char *) 0;
+        return NULL;
 
     skip_whitespace(&cstat->next_char);
 
@@ -3819,7 +3818,7 @@ do_directive(COMPSTATE * cstat, char *direct)
                 struct line *tmpline;
 
                 tmpline = PROGRAM_FIRST(i);
-                PROGRAM_SET_FIRST(i, ((struct line *) read_program(i)));
+                PROGRAM_SET_FIRST(i, read_program(i));
                 do_compile(cstat->descr, OWNER(i), i, 0);
                 free_prog_text(PROGRAM_FIRST(i));
                 PROGRAM_SET_FIRST(i, tmpline);

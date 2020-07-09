@@ -34,7 +34,7 @@
  * @param text the text to send
  */
 void
-show_mcp_error(McpFrame * mfr, char *topic, char *text)
+show_mcp_error(McpFrame * mfr, const char *topic, const char *text)
 {
     McpMesg msg;
     McpVer supp = mcp_frame_package_supported(mfr, "org-fuzzball-notify");
@@ -93,10 +93,11 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
      */
     if (!strcasecmp(msg->mesgname, "set")) {
         dbref obj = NOTHING;
-        char *reference;
-        char *valtype;
+        const char *reference;
+        const char *valtype;
         char category[BUFFER_LEN];
         char *ptr;
+        const char *rptr;
         int lines;
         dbref player;
         char buf[BUFFER_LEN];
@@ -176,8 +177,8 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
                 return;
             }
 
-            for (ptr = reference; *ptr; ptr++) {
-                if (*ptr == PROP_DELIMITER) {
+            for (rptr = reference; *rptr; rptr++) {
+                if (*rptr == PROP_DELIMITER) {
                     show_mcp_error(mfr, "simpleedit-set", "Bad property name.");
                     return;
                 }
@@ -254,8 +255,8 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
                 return;
             }
 
-            for (ptr = reference; *ptr; ptr++) {
-                if (*ptr == PROP_DELIMITER) {
+            for (rptr = reference; *rptr; rptr++) {
+                if (*rptr == PROP_DELIMITER) {
                     show_mcp_error(mfr, "simpleedit-set", "Bad property name.");
                     return;
                 }
@@ -465,8 +466,8 @@ mcppkg_help_request(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
     }
 
     if (!strcasecmp(msg->mesgname, "request")) {
-        char *onwhat;
-        char *valtype;
+        const char *onwhat;
+        const char *valtype;
 
         onwhat = mcp_mesg_arg_getline(msg, "topic", 0);
         valtype = mcp_mesg_arg_getline(msg, "type", 0);

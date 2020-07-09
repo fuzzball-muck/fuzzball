@@ -70,7 +70,7 @@ do_open(int descr, dbref player, const char *direction, const char *linkto)
     qname = buf2;
     remove_ending_whitespace(&qname);
 
-    skip_whitespace((const char **)&rname);
+    skip_whitespace_var(&rname);
 
     loc = LOCATION(player);
 
@@ -359,7 +359,7 @@ do_dig(int descr, dbref player, const char *name, const char *pname)
     qname = buf;
     remove_ending_whitespace(&qname);
 
-    skip_whitespace((const char **)&rname);
+    skip_whitespace_var(&rname);
     rname = strcpyn(rbuf, sizeof(rbuf), rname);
     qname = strcpyn(qbuf, sizeof(qbuf), qname);
 
@@ -708,7 +708,7 @@ do_create(dbref player, char *name, char *acost)
     qname = buf2;
     remove_ending_whitespace(&qname);
 
-    skip_whitespace((const char **)&rname);
+    skip_whitespace_var(&rname);
 
     cost = atoi(qname);
 
@@ -839,7 +839,7 @@ do_action(int descr, dbref player, const char *action_name,
     qname = buf2;
     remove_ending_whitespace(&qname);
 
-    skip_whitespace((const char **)&rname);
+    skip_whitespace_var(&rname);
 
     if (!ok_object_name(action_name, TYPE_EXIT)) {
         notify(player, "Please specify a valid name for this action.");

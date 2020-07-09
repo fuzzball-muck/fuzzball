@@ -62,7 +62,7 @@
  * of the associated function.  Does not escape HTML.
  */
 typedef struct {
-    char *token;
+    const char *token;
     void (*func)(FILE *);
 } replacement;
 
@@ -122,7 +122,7 @@ strcpyn(char *buf, size_t bufsize, const char *src)
 }
 
 /**
- * Skip over starting whitespaces in a string
+ * Skip over starting whitespaces in a variable string
  *
  * Note that this does not technically "trim" spaces; instead, it advances
  * the provided pointer to the first non-space (or to the end of the string
@@ -132,7 +132,7 @@ strcpyn(char *buf, size_t bufsize, const char *src)
  * @param parsebuf pointer to a string pointer.
  */
 static void
-skip_whitespace(const char **parsebuf)
+skip_whitespace_var(char **parsebuf)
 {
     while (**parsebuf && isspace(**parsebuf))
         (*parsebuf)++;
@@ -740,7 +740,7 @@ process_lines(FILE * infile, FILE * outfile, FILE * htmlfile)
                     fprintf(outfile, "Also see: ");
 
                     ptr = buf + 10;
-                    skip_whitespace((const char **)&ptr);
+                    skip_whitespace_var(&ptr);
 
                     while (ptr && *ptr) {
                         ptr2 = ptr;
@@ -748,7 +748,7 @@ process_lines(FILE * infile, FILE * outfile, FILE * htmlfile)
 
                         if (ptr) {
                             *ptr++ = '\0';
-                            skip_whitespace((const char **)&ptr);
+                            skip_whitespace_var(&ptr);
                         }
 
                         if (ptr2 > buf + 10) {

@@ -30,7 +30,7 @@
  * @return the hash value as an unsigned integer
  */
 unsigned int
-hash(register const char *s, unsigned int hash_size)
+hash(const char *s, unsigned int hash_size)
 {
     unsigned int hashval;
 
@@ -53,9 +53,9 @@ hash(register const char *s, unsigned int hash_size)
  * @return NULL if not found, otherwise a pointer to the data union
  */
 hash_data *
-find_hash(register const char *s, hash_tab * table, unsigned int size)
+find_hash(const char *s, hash_tab * table, unsigned int size)
 {
-    for (register hash_entry *hp = table[hash(s, size)]; hp != NULL;
+    for (hash_entry *hp = table[hash(s, size)]; hp != NULL;
          hp = hp->next) {
         if (strcasecmp(s, hp->name) == 0) {
             return &(hp->dat); /* found */
@@ -79,10 +79,10 @@ find_hash(register const char *s, hash_tab * table, unsigned int size)
  * @param size the page size of the hash table 
  */
 hash_entry *
-add_hash(register const char *name, hash_data data, hash_tab * table,
+add_hash(const char *name, hash_data data, hash_tab * table,
          unsigned int size)
 {
-    register hash_entry *hp;
+    hash_entry *hp;
     unsigned int hashval;
 
     hashval = hash(name, size);
@@ -144,13 +144,13 @@ add_hash(register const char *name, hash_data data, hash_tab * table,
  * @return 0 on success, -1 if 'name' was not found.
  */
 int
-free_hash(register const char *name, hash_tab * table, unsigned int size)
+free_hash(const char *name, hash_tab * table, unsigned int size)
 {
-    register hash_entry **lp;
+    hash_entry **lp;
 
     lp = &table[hash(name, size)];
 
-    for (register hash_entry *hp = *lp;
+    for (hash_entry *hp = *lp;
          hp != NULL; lp = &(hp->next), hp = hp->next) {
         if (strcasecmp(name, hp->name) == 0) {
             *lp = hp->next; /* got it.  fix the pointers */
@@ -176,10 +176,10 @@ free_hash(register const char *name, hash_tab * table, unsigned int size)
 void
 kill_hash(hash_tab * table, unsigned int size, int freeptrs)
 {
-    register hash_entry *np;
+    hash_entry *np;
 
     for (unsigned int i = 0; i < size; i++) {
-        for (register hash_entry *hp = table[i]; hp != NULL; hp = np) {
+        for (hash_entry *hp = table[i]; hp != NULL; hp = np) {
             np = hp->next; /* Don't dereference the pointer after */
             free((void *) hp->name);
 

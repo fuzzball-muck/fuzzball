@@ -836,8 +836,7 @@ struct program_specific {
  * @param x the program to initialize a program specific structure for
  */
 #define ALLOC_PROGRAM_SP(x)     { \
-    PROGRAM_SP(x) = \
-        (struct program_specific *)malloc(sizeof(struct program_specific)); \
+    PROGRAM_SP(x) = malloc(sizeof(struct program_specific)); \
 }
 
 /**
@@ -1321,8 +1320,7 @@ struct player_specific {
  * @param x the thing to initialize a thing specific structure for
  */
 #define ALLOC_THING_SP(x)       { \
-    PLAYER_SP(x) = \
-        (struct player_specific *)malloc(sizeof(struct player_specific)); \
+    PLAYER_SP(x) = malloc(sizeof(struct player_specific)); \
 }
 
 /**
@@ -1392,8 +1390,7 @@ struct player_specific {
  * @param x the thing to initialize a player specific structure for
  */
 #define ALLOC_PLAYER_SP(x)      { \
-    PLAYER_SP(x) = \
-        (struct player_specific *)malloc(sizeof(struct player_specific)); \
+    PLAYER_SP(x) = malloc(sizeof(struct player_specific)); \
     memset(PLAYER_SP(x),0,sizeof(struct player_specific)); \
 }
 

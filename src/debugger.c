@@ -104,7 +104,7 @@ list_proglines(dbref player, dbref program, struct frame *fr, int start,
     /* Make sure we have the lines of code loaded for display */
     if (!fr->brkpt.proglines || program != fr->brkpt.lastproglisted) {
         free_prog_text(fr->brkpt.proglines);
-        fr->brkpt.proglines = (struct line *) read_program(program);
+        fr->brkpt.proglines = read_program(program);
         fr->brkpt.lastproglisted = program;
     }
 
@@ -302,7 +302,7 @@ unparse_sysreturn(dbref * program, struct inst *pc)
 {
     static char buf[BUFFER_LEN];
     struct inst *ptr;
-    char *fname;
+    const char *fname;
 
     buf[0] = '\0';
     for (ptr = pc; ptr >= PROGRAM_CODE(*program); ptr--) {

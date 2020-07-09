@@ -198,7 +198,7 @@ prim_systime_precise(PRIM_PROTOTYPE)
     CHECKOP(0);
     CHECKOFLOW(1);
 
-    gettimeofday(&fulltime, (struct timezone *) 0);
+    gettimeofday(&fulltime, NULL);
 
     dbltime = fulltime.tv_sec + (((double) fulltime.tv_usec) / 1.0e6);
     PushFloat(dbltime);
@@ -328,7 +328,7 @@ prim_convtime(PRIM_PROTOTYPE)
 #ifdef WIN32
     abort_interp(CURRENTLY_UNAVAILABLE);
 #else
-    char *error = 0;
+    const char *error = NULL;
 
     CHECKOP(1);
     oper1 = POP();
@@ -371,7 +371,7 @@ prim_fmttime(PRIM_PROTOTYPE)
 #ifdef WIN32
     abort_interp(CURRENTLY_UNAVAILABLE);
 #else
-    char *error = 0;
+    const char *error = NULL;
 
     CHECKOP(2);
     oper1 = POP();
@@ -1122,7 +1122,7 @@ prim_parselock(PRIM_PROTOTYPE)
     if (oper1->type != PROG_STRING)
         abort_interp("Invalid argument.");
 
-    if (oper1->data.string != (struct shared_string *) NULL) {
+    if (oper1->data.string != NULL) {
         lok = parse_boolexp(fr->descr, ProgUID, oper1->data.string->data, 0);
     } else {
         lok = TRUE_BOOLEXP;
@@ -1159,7 +1159,7 @@ prim_unparselock(PRIM_PROTOTYPE)
     if (oper1->type != PROG_LOCK)
         abort_interp("Invalid argument.");
 
-    if (oper1->data.lock != (struct boolexp *) TRUE_BOOLEXP) {
+    if (oper1->data.lock != TRUE_BOOLEXP) {
         ptr = unparse_boolexp(ProgUID, oper1->data.lock, 0);
     } else {
         ptr = NULL;

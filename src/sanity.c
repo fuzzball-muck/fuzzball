@@ -847,7 +847,7 @@ do_sanity(dbref player)
  * @param ref2 the second reference
  */
 static void
-san_fixed_log(char *format, int unparse, dbref ref1, dbref ref2)
+san_fixed_log(const char *format, int unparse, dbref ref1, dbref ref2)
 {
     char buf1[4096];
     char buf2[4096];
@@ -1118,7 +1118,7 @@ rand_password(void)
 static void
 create_lostandfound(dbref * player, dbref * room)
 {
-    char *player_name = (char *)malloc(tp_player_name_limit+1);
+    char *player_name = malloc(tp_player_name_limit+1);
     char unparse_buf[16384];
     int temp = 0;
 
@@ -1313,7 +1313,7 @@ find_misplaced_objects(void)
                     break;
 
                 case TYPE_PLAYER: {
-                    char *name = (char *)malloc(tp_player_name_limit+1);
+                    char *name = malloc(tp_player_name_limit+1);
 
                     /* Loop to find a name we can use */
 

@@ -152,7 +152,7 @@ get_tz_offset(void)
 char *
 time_format_1(time_t dt)
 {
-    register struct tm *delta;
+    struct tm *delta;
     static char buf[64];
 
     delta = gmtime((time_t *) & dt);
@@ -184,7 +184,7 @@ time_format_1(time_t dt)
 char *
 time_format_2(time_t dt)
 {
-    register struct tm *delta;
+    struct tm *delta;
     static char buf[64];
 
     delta = gmtime((time_t *) & dt);
@@ -348,7 +348,7 @@ timestr_long(long dtime)
  */
 #ifndef WIN32
 time_t
-time_string_to_seconds(char *string, char *format, char **error)
+time_string_to_seconds(char *string, const char *format, const char **error)
 {
     struct tm otm;
 

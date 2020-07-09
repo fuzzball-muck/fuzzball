@@ -272,7 +272,7 @@ index_file(dbref player, const char *onwhat, const char *file)
  * @param segment the range of lines to view - only works for subfiles
  */
 void
-do_helpfile(dbref player, const char *dir, const char *file, char *topic, char *segment)
+do_helpfile(dbref player, const char *dir, const char *file, const char *topic, const char *segment)
 {
     if ((!*topic || !*segment) && strchr(match_args, ARG_DELIMITER))
         topic = match_args;

@@ -591,7 +591,7 @@ int notify_nolisten(dbref player, const char *msg, int isprivate);
  * @param format the format string
  * @param ... as many arguments as necessary
  */
-void notifyf(dbref player, char *format, ...)
+void notifyf(dbref player, const char *format, ...)
 #if defined(__GNUC__) || defined(__clang__)
     /* let GCC and clang know that we use a printf-style format string
        so they can give better warnings/errors */
@@ -612,7 +612,7 @@ void notifyf(dbref player, char *format, ...)
  * @param format the format string
  * @param ... as many arguments as necessary.
  */
-void notifyf_nolisten(dbref player, char *format, ...)
+void notifyf_nolisten(dbref player, const char *format, ...)
 #if defined(__GNUC__) || defined(__clang__)
     /* let GCC and clang know that we use a printf-style format string
        so they can give better warnings/errors */

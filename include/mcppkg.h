@@ -74,6 +74,6 @@ void mcppkg_help_request(McpFrame * mfr, McpMesg * msg, McpVer ver, void *contex
  * @param topic the topic to use
  * @param text the text to send
  */
-void show_mcp_error(McpFrame * mfr, char *topic, char *text);
+void show_mcp_error(McpFrame * mfr, const char *topic, const char *text);
 
 #endif /* !MCPPKG_H */

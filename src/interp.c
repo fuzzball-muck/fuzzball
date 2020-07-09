@@ -429,7 +429,7 @@ scopedvar_getname(struct frame *fr, int level, int varnum)
  * @param line the line in the file from which this function was called.
  */
 void
-RCLEAR(struct inst *oper, char *file, int line)
+RCLEAR(struct inst *oper, const char *file, int line)
 {
     int varcnt;
 
@@ -1632,14 +1632,14 @@ do_abort_loop(dbref player, dbref program, const char *msg,
 struct inst *
 interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 {
-    register struct inst *pc;
-    register int atop;
-    register struct inst *arg;
-    register struct inst *temp1;
-    register struct inst *temp2;
-    register struct stack_addr *sys;
-    register int instr_count;
-    register int stop;
+    struct inst *pc;
+    int atop;
+    struct inst *arg;
+    struct inst *temp1;
+    struct inst *temp2;
+    struct stack_addr *sys;
+    int instr_count;
+    int stop;
     int i = 0, tmp, writeonly, mlev;
     static struct inst retval;
     char dbuf[BUFFER_LEN];
@@ -1679,7 +1679,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
         struct line *tmpline;
 
         tmpline = PROGRAM_FIRST(program);
-        PROGRAM_SET_FIRST(program, (struct line *) read_program(program));
+        PROGRAM_SET_FIRST(program, read_program(program));
         do_compile(-1, OWNER(program), program, 0);
         free_prog_text(PROGRAM_FIRST(program));
         PROGRAM_SET_FIRST(program, tmpline);
@@ -2225,7 +2225,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
 
                             tmpline = PROGRAM_FIRST(temp1->data.objref);
                             PROGRAM_SET_FIRST(temp1->data.objref,
-                              (struct line *) read_program(temp1->data.objref));
+                                    read_program(temp1->data.objref));
                             do_compile(-1, OWNER(temp1->data.objref),
                                        temp1->data.objref, 0);
                             free_prog_text(PROGRAM_FIRST(temp1->data.objref));
@@ -2425,10 +2425,10 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
                             size_t k, outcount;
                             size_t count =
                                 (size_t)array_count(temp1->data.array);
-                            char **events = malloc(count * sizeof(char **));
+                            const char **events = malloc(count * sizeof(char **));
 
                             for (outcount = k = 0; k < count; k++) {
-                                char *val =
+                                const char *val =
                                     array_get_intkey_strval(temp1->data.array,
                                                             k);
 
@@ -2625,7 +2625,7 @@ push(struct inst *stack, int *top, int type, void *res)
     else if (type < PROG_STRING)
         stack[*top].data.number = *(int *) res;
     else
-        stack[*top].data.string = (struct shared_string *) res;
+        stack[*top].data.string = res;
 
     (*top)++;
 }
@@ -2818,7 +2818,7 @@ do_abort_interp(dbref player, const char *msg, struct inst *pc,
                 struct inst *arg, int atop, struct frame *fr,
                 struct inst *oper1, struct inst *oper2,
                 struct inst *oper3, struct inst *oper4, int nargs,
-                dbref program, char *file, int line)
+                dbref program, const char *file, int line)
 {
     char buffer[128];
 
@@ -2927,8 +2927,8 @@ debug_inst(struct frame *fr, int lev, struct inst *pc, int pid,
 
     /* + 10 because we must at least be able to store " ... ) ..." after that. */
     if (bstart + 10 > bend) {   /* we have no room. Eeek! */
-        /*                                  123456789012345678 */
-        memcpy((void *) buffer, (const void *) "Need buffer space!",
+        /*                             123456789012345678 */
+        memcpy(buffer, (const void *) "Need buffer space!",
                (buflen - 1 > 18) ? 18 : buflen - 1);
         return buffer;
     }
