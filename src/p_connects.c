@@ -16,14 +16,6 @@
 #include "log.h"
 #include "player.h"
 
-/*
- * TODO: These globals really probably shouldn't be globals.  I can only guess
- *       this is either some kind of primitive code re-use because all the
- *       functions use them, or it's some kind of an optimization to avoid
- *       local variables.  But it kills the thread safety and (IMO) makes the
- *       code harder to read/follow.
- */
-
 /**
  * @private
  * @var used to store the parameters passed into the primitives
@@ -106,18 +98,12 @@ prim_online(PRIM_PROTOTYPE)
 
     result = pcount();
 
-    CHECKOFLOW(result + 1);
+    CHECKOFLOW(result+1);
 
-    /**
-     * @TODO Change this to a for loop to so we don't need to call
-     *       pcount() twice.
-     */
-    while (result) {
-        ref = pdbref(result--);
+    for (int i = result; i > 0; i--) {
+        ref = pdbref(i);
         PushObject(ref);
     }
-
-    result = pcount();
 
     PushInt(result);
 }
@@ -156,9 +142,6 @@ prim_online_array(PRIM_PROTOTYPE)
     temp1.type = PROG_INTEGER;
     temp2.type = PROG_OBJECT;
 
-    /**
-     * @TODO These should already be initialized to zero.
-     */
     temp1.line = 0;
     temp2.line = 0;
 
@@ -254,21 +237,14 @@ prim_condbref(PRIM_PROTOTYPE)
     if (mlev < 3)
         abort_interp("Mucker level 3 primitive.");
 
-    if (oper1->type != PROG_INTEGER)
-        abort_interp("Argument not an integer. (1)");
+    if (oper1->type != PROG_INTEGER || oper1->data.number < 1)
+        abort_interp("Argument not a positive integer. (1)");
 
-    result = oper1->data.number;
+    result = pdbref(oper1->data.number);
 
-    /**
-     * @TODO Some of these con* primitives should be able to use the
-     *       return value of the corresponding p* function to identify
-     *       an invalid number, instead of calling pcount? In this case,
-     *       we could move the "positive integer" check to the beginning.
-     */ 
-    if ((result < 1) || (result > pcount()))
+    if (result == NOTHING) {
         abort_interp("Invalid connection number. (1)");
-
-    result = pdbref(result);
+    }
     
     CHECKOFLOW(1);
     CLEAR(oper1);
@@ -307,9 +283,6 @@ prim_descr_dbref(PRIM_PROTOTYPE)
 
     result = pdescrdbref(oper1->data.number);
 
-    /**
-     * @TODO Should CONDBREF/DESCRDBREF behave the same with invalid numbers?
-     */
     if (result < 0)
 	result = NOTHING;
 
@@ -427,17 +400,11 @@ prim_descr_least_idle(PRIM_PROTOTYPE)
     if (oper1->type != PROG_OBJECT)
         abort_interp("Argument not a dbref.");
 
-    /**
-     * @TODO Should this check use valid_player instead?
-     */
     if (!valid_object(oper1))
         abort_interp("Bad dbref.");
 
     result = pdescr(least_idle_player_descr(oper1->data.objref));
 
-    /**
-     * @TODO Should this check be: result < 0 ?
-     */
     if (result == 0)
         abort_interp("Invalid descriptor number. (1)");
 
@@ -475,17 +442,11 @@ prim_descr_most_idle(PRIM_PROTOTYPE)
     if (oper1->type != PROG_OBJECT)
         abort_interp("Argument not a dbref.");
 
-    /**
-     * @TODO Should this check use valid_player instead?
-     */
     if (!valid_object(oper1))
         abort_interp("Bad dbref.");
 
     result = pdescr(most_idle_player_descr(oper1->data.objref));
 
-    /**
-     * @TODO Should this check be: result < 0 ?
-     */
     if (result == 0)
         abort_interp("Invalid descriptor number. (1)");
 
@@ -984,15 +945,7 @@ prim_descrcon(PRIM_PROTOTYPE)
     if (oper1->type != PROG_INTEGER)
         abort_interp("Argument not an integer. (1)");
 
-    /**
-     * @TODO Combine these two lines!
-     */
-    result = oper1->data.number;
-    result = pdescrcon(result);
-
-    /**
-     * @TODO Should this abort on an invalid number?
-     **/
+    result = pdescrcon(oper1->data.number);
 
     CLEAR(oper1);
 
@@ -1019,10 +972,6 @@ prim_descrcon(PRIM_PROTOTYPE)
 void
 prim_nextdescr(PRIM_PROTOTYPE)
 {
-    /**
-     * @TODO This may be the only connection primitive that skips connections
-     *       that are on the welcome screen.  Is this expected?
-     */
     /* int -- int */
     CHECKOP(1);
     oper1 = POP();
@@ -1033,11 +982,7 @@ prim_nextdescr(PRIM_PROTOTYPE)
     if (oper1->type != PROG_INTEGER)
         abort_interp("Argument not an integer. (1)");
 
-    /**
-     * @TODO Combine these two lines!
-     */
-    result = oper1->data.number;
-    result = pnextdescr(result);
+    result = pnextdescr(oper1->data.number);
 
     CLEAR(oper1);
 
@@ -1076,26 +1021,12 @@ prim_descriptors(PRIM_PROTOTYPE)
     if (mlev < 3)
         abort_interp("Mucker level 3 primitive.");
 
-    if (oper1->type != PROG_OBJECT)
-        abort_interp("Argument not a dbref.");
-
-    /**
-     * @TODO This seems to be a redundant check.
-     */
-    if (oper1->data.objref != NOTHING && !valid_object(oper1))
-        abort_interp("Bad dbref.");
+    if (oper1->data.objref != NOTHING && !valid_player(oper1))
+        abort_interp("Argument must be a player dbref or NOTHING.");
 
     ref = oper1->data.objref;
 
-    if ((ref != NOTHING) && (!valid_player(oper1)))
-        abort_interp("Non-player argument.");
-
     CLEAR(oper1);
-
-    /**
-     * @TODO Unsure of the usefulness of this.
-     */
-    CHECKOP(0);
 
     if (ref == NOTHING) {
         result = pcount();
@@ -1155,30 +1086,15 @@ prim_descr_array(PRIM_PROTOTYPE)
     if (mlev < 3)
         abort_interp("Mucker level 3 primitive.");
 
-    if (oper1->type != PROG_OBJECT)
-        abort_interp("Argument not a dbref.");
-
-    /**
-     * @TODO This seems to be a redundant check.
-     */
-    if (oper1->data.objref != NOTHING && !valid_object(oper1))
-        abort_interp("Bad dbref.");
+    if (oper1->data.objref != NOTHING && !valid_player(oper1))
+        abort_interp("Argument must be a player dbref or NOTHING.");
 
     ref = oper1->data.objref;
-
-    if ((ref != NOTHING) && (!valid_player(oper1)))
-        abort_interp("Non-player argument.");
 
     CLEAR(oper1);
 
     temp1.type = PROG_INTEGER;
     temp2.type = PROG_INTEGER;
-
-    /**
-     * @TODO These should already be initialized to zero.
-     */
-    temp1.line = 0;
-    temp2.line = 0;
 
     if (ref == NOTHING) {
         result = pcount();
@@ -1207,9 +1123,9 @@ prim_descr_array(PRIM_PROTOTYPE)
 /**
  * Implementation of MUF DESCR_SETUSER
  *
- * Consumes a dbref and returns an array of descriptor numbers associated
- * with the player.  If the dbref is NOTHING, all players' descriptors are
- * included.
+ * Consumes a descriptor, a player dbref, and password - and reconnects
+ * the descriptor to the player with the given credentials.  Providing
+ * a dbref of NOTHING drops the connection withbout the usual messages.
  *
  * @see pset_user
  *
@@ -1237,38 +1153,22 @@ prim_descr_setuser(PRIM_PROTOTYPE)
     if (oper1->type != PROG_INTEGER)
         abort_interp("Integer descriptor number expected. (1)");
 
-    if (oper2->type != PROG_OBJECT)
-        abort_interp("Player dbref expected. (2)");
+    if (oper2->data.objref != NOTHING && !valid_player(oper2))
+        abort_interp("Argument must be a player dbref or NOTHING.");
 
     ref = oper2->data.objref;
-
-    if (ref != NOTHING && !valid_player(oper2))
-        abort_interp("Player dbref expected. (2)");
 
     if (oper3->type != PROG_STRING)
         abort_interp("Password string expected.");
 
-    ptr = oper3->data.string ? oper3->data.string->data : NULL;
-
-    /**
-     * @TODO Should we just call pdescrboot if ref == NOTHING?
-     *       Either way, the remaining code can be simplified.
-     */
-
     if (ref != NOTHING) {
+        ptr = oper3->data.string ? oper3->data.string->data : NULL;
+
         if (!check_password(ref, ptr))
             abort_interp("Incorrect password.");
-    }
-
-    if (ref != NOTHING) {
-        const char *destname = "*NOBODY*";
-
-        if (ref != NOTHING) {
-            destname = NAME(ref);
-        }
 
         log_status("DESCR_SETUSER: %s(%d) to %s(%d) on descriptor %d",
-                   NAME(player), player, destname, ref, oper1->data.number);
+                   NAME(player), player, NAME(ref), ref, oper1->data.number);
     }
 
     tmp = oper1->data.number;
@@ -1311,10 +1211,6 @@ prim_descrflush(PRIM_PROTOTYPE)
         abort_interp("Integer descriptor number expected.");
 
     tmp = oper1->data.number;
-
-    /**
-     * @TODO Should this abort on an invalid number?
-     **/
 
     CLEAR(oper1);
 
@@ -1364,12 +1260,6 @@ prim_firstdescr(PRIM_PROTOTYPE)
     if (ref == NOTHING) {
         result = pfirstdescr();
     } else {
-        /**
-         * @TODO This seems to be a redundant check.
-         */
-        if (Typeof(ref) != TYPE_PLAYER)
-            abort_interp("invalid argument");
-
         if (PLAYER_DESCRCOUNT(ref)) {
             darr = get_player_descrs(ref, &dcount);
             result = index_descr(darr[dcount - 1]);
@@ -1427,9 +1317,6 @@ prim_lastdescr(PRIM_PROTOTYPE)
     if (ref == NOTHING) {
         result = plastdescr();
     } else {
-        /**
-         * @TODO This seems to be a redundant check.
-         */
         if (Typeof(ref) != TYPE_PLAYER)
             abort_interp("invalid argument");
 
@@ -1476,19 +1363,11 @@ prim_descr_securep(PRIM_PROTOTYPE)
     if (oper1->type != PROG_INTEGER)
         abort_interp("Integer descriptor number expected.");
 
-    /**
-     * @TODO Should this abort on an invalid number?
-     **/
-
-    /**
-     * @TODO Should this abort on an invalid number?
-     **/
-
     result = pdescrsecure(oper1->data.number);
 
-    /**
-     * @TODO Need to CLEAR(oper1).
-     **/
+    CHECKOFLOW(1);
+    CLEAR(oper1);
+
     PushInt(result);
 }
 
