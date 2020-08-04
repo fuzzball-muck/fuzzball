@@ -1,0 +1,14 @@
+---
+version: "3.3"
+
+services:
+  fbmuck:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    command: /usr/bin/docker-entrypoint.sh
+    ports:
+      - "${FB_PORT}:4201"
+    volumes:
+      - "${FB_DATA_PATH}:/opt/fbmuck:z"
+
