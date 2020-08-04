@@ -2218,12 +2218,12 @@ register_object(dbref player, dbref location, const char *propdir, char *name,
     unparse_object(player, location, unparse_buf2, sizeof(unparse_buf2));
 
     if (object == NOTHING) {
-        remove_property(location, buf, 0);
+        remove_property(location, buf);
         notifyf_nolisten(player, "Registry entry on %s removed.", unparse_buf2);
     } else {
         mydat.flags = PROP_REFTYP;
         mydat.data.ref = object;
-        set_property(location, buf, &mydat, 0);
+        set_property(location, buf, &mydat);
         notifyf_nolisten(player, "Now registered as %s: %s on %s", buf, unparse_buf, unparse_buf2);
     }
 }

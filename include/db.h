@@ -322,7 +322,7 @@ extern char match_cmdname[BUFFER_LEN];
     PData mydat; \
     mydat.flags = PROP_LOKTYP; \
     mydat.data.lok = y; \
-    set_property(x, MESGPROP_LOCK, &mydat, 0); \
+    set_property(x, MESGPROP_LOCK, &mydat); \
     ts_modifyobject(x); \
 }
 
@@ -337,7 +337,7 @@ extern char match_cmdname[BUFFER_LEN];
     PData mydat; \
     mydat.flags = PROP_LOKTYP; \
     mydat.data.lok = TRUE_BOOLEXP; \
-    set_property(x, MESGPROP_LOCK, &mydat, 0); \
+    set_property(x, MESGPROP_LOCK, &mydat); \
     DBDIRTY(x); \
     ts_modifyobject(x); \
 }
