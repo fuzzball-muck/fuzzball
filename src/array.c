@@ -1061,7 +1061,7 @@ array_tree_next_node(array_tree * ptr, array_iter * key)
  * turning pinning on makes the arrays share a reference, unpinning them
  * (setting it to 0) will cause the array to copy-on-change.
  *
- * @param pin boolean set pinning - see array_set_pinned for definition
+ * @param pin boolean set pinning
  * @return newly allocated and initialized array structure
  */
 static stk_array *

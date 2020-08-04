@@ -543,9 +543,9 @@ int array_setrange(stk_array **arr, array_iter *start, stk_array *inarr);
 /**
  * Allocate a new dictionary array
  *
- * @see array_set_pinned
+ * For information about pinning, @see new_array
  *
- * @param pin Boolean - if true, array will be pinned.  See array_set_pinned
+ * @param pin Boolean - if true, array will be pinned.
  * @return a new dictionary array
  */
 stk_array *new_array_dictionary(int pin);
@@ -556,10 +556,10 @@ stk_array *new_array_dictionary(int pin);
  * The array is initialized with integer '0' values if a size of greater
  * than 0 is provided.
  *
- * @see array_set_pinned
+ * For information about pinning, @see new_array
  *
  * @param size initial array size - must be at least 0
- * @param pin Boolean - if true, array will be pinned.  See array_set_pinned
+ * @param pin Boolean - if true, array will be pinned.
  * @return a new packed array
  */
 stk_array *new_array_packed(int size, int pin);
