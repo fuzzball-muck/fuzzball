@@ -5,12 +5,13 @@ Fuzzball is a [MUCK][wiki-muck] server, an online text-based multi-user chat and
 
 ## Documentation
 
-* [User commands](https://www.fuzzball.org/docs/muckhelp.html)
+* [Fuzzball website][web-home]
+* [GitHub repository][repo]
+* [A live version of the docs on GitHub][help-live]
+* [User commands][help-user]
 * [MPI functions][help-mpi]
 * [MUF reference][help-muf]
 * [MINK - The Muck Information Kiosk][help-mink]
-* [Fuzzball website][web-home]
-* [A live version of the docs on GitHub](https://fuzzball-muck.github.io/fuzzball/)
 
 Fuzzball also offers a built-in help system.  Connect, then type ```help``` for guidance.
 
@@ -34,10 +35,17 @@ For a comprehensive guide to running a muck, check out [MINK - The Muck Informat
 
 If you only need a quick test environment, read the instructions for your operating system in [Building and Running from Source][docs-buildsrc] right above.
 
+## Feedback
+
+You can send bug reports, feature requests, or other general feedback to <a href='mailto:feedback@fuzzball.org'>feedback@fuzzball.org</a>
+
 [docs-buildsrc]: #building-and-running-from-source
 [docs-buildsrc-nix]: README_UNIX.md#building
+[repo]: https://github.com/fuzzball-muck/fuzzball/
+[help-live]: https://fuzzball-muck.github.io/fuzzball/
+[help-user]: https://www.fuzzball.org/docs/muckhelp.html
 [help-mpi]: https://www.fuzzball.org/docs/mpihelp.html
 [help-muf]: https://www.fuzzball.org/docs/mufman.html
-[help-mink]: http://www.rdwarf.com/users/mink/muckman/
-[web-home]: https://www.fuzzball.org
+[help-mink]: https://fuzzball-muck.github.io/muckman/
+[web-home]: https://www.fuzzball.org/
 [wiki-muck]: https://en.wikipedia.org/wiki/MUCK
