@@ -21,7 +21,7 @@ The code is currently maintained on GitHub.
 The following programmers have contributed greatly:
   Akari, Alynna, Arcticwolf (Schneelocke), Cerilus, Fentonator, Ferretbun,
   Foxbird, Foxen/Revar, Jenora, Naiya, Natasha O'Brien, Points, Sombre,
-  Tiger (Fre'ta), Winged, Wog, and Wyld.
+  Tanabi, Tiger (Fre'ta), Winged, Wog, and Wyld.
  
 The following people helped out a lot along the way:
   Caspian, Kim "Bookwyrm" Liu, Chris, Jenora, Lynx, WhiteFire,
