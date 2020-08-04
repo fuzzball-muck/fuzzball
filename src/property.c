@@ -1,5 +1,4 @@
 /** @file property.c
- * property.c
  *
  * This, along with props.c and propdir.c, is the implementation for the
  * props.h header.  The division between props.c and property.c seems
@@ -66,26 +65,6 @@
  * ("" for string, 0 for int, 0.0 for float, or a PROP_DIRTYP with no
  * properties in it), it will be deleted instead.
  *
- * And if this comment wasn't long enough -- we've also got "sync"!
- * "sync" is for some funky logic around the gender property.  If the MUCK's
- * @tune'd gender property is not the same as LEGACY_GENDER_PROP
- * (usually "sex"), and sync is 0, then LEGACY_GENDER_PROP and the tune'd
- * gender property receive the same fate.
- *
- * Thus, if sync is 0, and you set the tune'd gender prop, it will
- * also set LEGACY_GENDER_PROP to the same or vise versa.
- *
- * 'sync' and the behavior surrounding it only applies to players; sync
- * has absolutely no effect on any other type of DB object.
- *
- * There is an additional wrinkle; there is a LEGACY_GUEST_PROP
- * (usually "~/isguest").  If this is deleted, then the GUEST dbflag
- * is removed from the player as well.  This is regardless of the 'sync'
- * setting, and only happens for object type == Player
- *
- * You will typically want to run this with sync = 1.  The original purpose
- * around sync is to avoid a recursion problem.
- *
  * This version of set_property DOES NOT do diskbase -- you probably want
  * to use set_property instead.
  *
@@ -95,10 +74,9 @@
  * @param player The ref of the object to set the property on.
  * @param pname The property name to set.
  * @param dat a PData structure, loaded with the right flags and prop data.
- * @param sync the weird gender sync option.
  */
 void
-set_property_nofetch(dbref player, const char *pname, PData * dat, int sync)
+set_property_nofetch(dbref player, const char *pname, PData * dat)
 {
     PropPtr p;
     char buf[BUFFER_LEN];
@@ -172,7 +150,7 @@ set_property_nofetch(dbref player, const char *pname, PData * dat, int sync)
                 SetPDataStr(p, NULL);
 
                 if (!PropDir(p)) {
-                    remove_property_nofetch(player, pname, 0);
+                    remove_property_nofetch(player, pname);
                 }
             } else {
                 SetPDataStr(p, alloc_string(dat->data.str));
@@ -186,7 +164,7 @@ set_property_nofetch(dbref player, const char *pname, PData * dat, int sync)
                 SetPType(p, PROP_DIRTYP);
 
                 if (!PropDir(p)) {
-                    remove_property_nofetch(player, pname, 0);
+                    remove_property_nofetch(player, pname);
                 }
             }
 
@@ -198,7 +176,7 @@ set_property_nofetch(dbref player, const char *pname, PData * dat, int sync)
                 SetPType(p, PROP_DIRTYP);
 
                 if (!PropDir(p)) {
-                    remove_property_nofetch(player, pname, 0);
+                    remove_property_nofetch(player, pname);
                 }
             }
 
@@ -211,7 +189,7 @@ set_property_nofetch(dbref player, const char *pname, PData * dat, int sync)
                 SetPDataRef(p, 0);
 
                 if (!PropDir(p)) {
-                    remove_property_nofetch(player, pname, 0);
+                    remove_property_nofetch(player, pname);
                 }
             }
 
@@ -223,41 +201,10 @@ set_property_nofetch(dbref player, const char *pname, PData * dat, int sync)
             SetPDataVal(p, 0);
 
             if (!PropDir(p)) {
-                remove_property_nofetch(player, pname, 0);
+                remove_property_nofetch(player, pname);
             }
 
             break;
-    }
-
-    if (Typeof(player) == TYPE_PLAYER) {
-        if (!strcasecmp(pname, LEGACY_GUEST_PROP)) {
-            /* Removing the legacy guest prop also removes the guest
-             * flag.
-             */
-            FLAGS(player) |= GUEST;
-        } else if (!sync && strcasecmp(tp_gender_prop, LEGACY_GENDER_PROP)) {
-            /* This code block sync's the tune'd gender property
-             * with the legacy gender property if indicated to do so
-             * by the parameters.
-             */
-
-            const char *current;
-            const char *legacy;
-            current = tp_gender_prop;
-            legacy = LEGACY_GENDER_PROP;
-
-            while (*current == PROPDIR_DELIMITER)
-                current++;
-
-            while (*legacy == PROPDIR_DELIMITER)
-                legacy++;
-
-            if (!strcasecmp(pname, current)) {
-                set_property(player, (char *) legacy, dat, 1);
-            } else if (!strcasecmp(pname, legacy)) {
-                set_property(player, current, dat, 1);
-            }
-        }
     }
 }
 
@@ -293,41 +240,20 @@ set_property_nofetch(dbref player, const char *pname, PData * dat, int sync)
  * ("" for string, 0 for int, 0.0 for float, or a PROP_DIRTYP with no
  * properties in it), it will be deleted instead.
  *
- * And if this comment wasn't long enough -- we've also got "sync"!
- * "sync" is for some funky logic around the gender property.  If the MUCK's
- * @tune'd gender property is not the same as LEGACY_GENDER_PROP
- * (usually "sex"), and sync is 0, then LEGACY_GENDER_PROP and the tune'd
- * gender property receive the same fate.
- *
- * Thus, if sync is 0, and you set the tune'd gender prop, it will
- * also set LEGACY_GENDER_PROP to the same or vise versa.
- *
- * 'sync' and the behavior surrounding it only applies to players; sync
- * has absolutely no effect on any other type of DB object.
- *
- * There is an additional wrinkle; there is a LEGACY_GUEST_PROP
- * (usually "~/isguest").  If this is deleted, then the GUEST dbflag
- * is removed from the player as well.  This is regardless of the 'sync'
- * setting, and only happens for object type == Player
- *
- * You will typically want to run this with sync = 1.  The original purpose
- * around sync is to avoid a recursion problem.
- *
  * This version of set_property handles all the diskbase stuff.
  *
  * @param player The ref of the object to set the property on.
  * @param pname The property name to set.
  * @param dat a PData structure, loaded with the right flags and prop data.
- * @param sync the weird gender sync option.
  */
 void
-set_property(dbref player, const char *name, PData * dat, int sync)
+set_property(dbref player, const char *name, PData * dat)
 {
 #ifdef DISKBASE
     fetchprops(player, propdir_name(name));
 #endif
 
-    set_property_nofetch(player, name, dat, sync);
+    set_property_nofetch(player, name, dat);
 
 #ifdef DISKBASE
     dirtyprops(player);
@@ -366,7 +292,7 @@ add_prop_nofetch(dbref player, const char *pname, const char *strval, int value)
         mydat.data.str = NULL;
     }
 
-    set_property_nofetch(player, pname, &mydat, 0);
+    set_property_nofetch(player, pname, &mydat);
 }
 
 /**
@@ -436,7 +362,7 @@ remove_proplist_item(dbref player, PropPtr p, int allp)
             return;
     }
 
-    remove_property(player, ptr, 0);
+    remove_property(player, ptr);
 }
 
 /**
@@ -482,36 +408,17 @@ remove_property_list(dbref player, int all)
 }
 
 /**
- * This removes a property from a given object.  "sync" is for some funky
- * logic around the gender property.  If the MUCK's @tune'd gender property
- * is not the same as LEGACY_GENDER_PROP (usually "sex"), and sync is 0,
- * then LEGACY_GENDER_PROP and the tune'd gender property receive the
- * same fate.
- *
- * Thus, if sync is 0, and you delete the tune'd gender prop, it will
- * also delete LEGACY_GENDER_PROP or vise versa.
- *
- * 'sync' and the behavior surrounding it only applies to players; sync
- * has absolutely no effect on any other type of DB object.
- *
- * There is an additional wrinkle; there is a LEGACY_GUEST_PROP
- * (usually "~/isguest").  If this is deleted, then the GUEST dbflag
- * is removed from the player as well.  This is regardless of the 'sync'
- * setting, and only happens for object type == Player
- *
- * You will typically want to run this with sync = 1.  This call DOES NOT
- * handle the diskbase stuff and therefore you probably want remove_property
- * instead.
+ * This removes a property from a given object.  This call DOES NOT handle
+ * the diskbase stuff and therefore you probably want remove_property instead.
  *
  * @see remove_property
  *
  * @internal
  * @param player The object to operate on.
  * @param pname the property name to delete
- * @param sync Do not sync gender props?  See description above.
  */
 void
-remove_property_nofetch(dbref player, const char *pname, int sync)
+remove_property_nofetch(dbref player, const char *pname)
 {
     PropPtr l;
     char buf[BUFFER_LEN];
@@ -522,73 +429,23 @@ remove_property_nofetch(dbref player, const char *pname, int sync)
     l = DBFETCH(player)->properties;
     l = propdir_delete_elem(l, w);
     DBFETCH(player)->properties = l;
-
-    if (Typeof(player) == TYPE_PLAYER) {
-        if (!strcasecmp(buf, LEGACY_GUEST_PROP)) {
-            /* Removing the legacy guest prop also removes the guest
-             * flag.
-             */
-            FLAGS(player) &= ~GUEST;
-            DBDIRTY(player);
-        } else if (!sync && strcasecmp(tp_gender_prop, LEGACY_GENDER_PROP)) {
-            /* This code block sync's the tune'd gender property
-             * with the legacy gender property if indicated to do so
-             * by the parameters.
-             */
-
-            const char *current;
-            const char *legacy;
-            current = tp_gender_prop;
-            legacy = LEGACY_GENDER_PROP;
-
-            while (*current == PROPDIR_DELIMITER)
-                current++;
-
-            while (*legacy == PROPDIR_DELIMITER)
-                legacy++;
-
-            if (!strcasecmp(pname, current)) {
-                remove_property(player, (char *) legacy, 1);
-            } else if (!strcasecmp(pname, legacy)) {
-                remove_property(player, current, 1);
-            }
-        }
-    }
+    DBDIRTY(player);
 }
 
 /**
- * This removes a property from a given object.  "sync" is for some funky
- * logic around the gender property.  If the MUCK's @tune'd gender property
- * is not the same as LEGACY_GENDER_PROP (usually "sex"), and sync is 0,
- * then LEGACY_GENDER_PROP and the tune'd gender property receive the
- * same fate.
- *
- * Thus, if sync is 0, and you delete the tune'd gender prop, it will
- * also delete LEGACY_GENDER_PROP or vise versa.
- *
- * 'sync' and the behavior surrounding it only applies to players; sync
- * has absolutely no effect on any other type of DB object.
- *
- * There is an additional wrinkle; there is a LEGACY_GUEST_PROP
- * (usually "~/isguest").  If this is deleted, then the GUEST dbflag
- * is removed from the player as well.  This is regardless of the 'sync'
- * setting, and only happens for object type == Player
- *
- * You will typically want to run this with sync = 1.  This call handles
- * all the diskbase stuff.
+ * This removes a property from a given object, with diskbase handling.
  *
  * @param player The object to operate on.
  * @param pname the property name to delete
- * @param sync Do not sync gender props?  See description above.
  */
 void
-remove_property(dbref player, const char *pname, int sync)
+remove_property(dbref player, const char *pname)
 {
 #ifdef DISKBASE
     fetchprops(player, propdir_name(pname));
 #endif
 
-    remove_property_nofetch(player, pname, sync);
+    remove_property_nofetch(player, pname);
 
 #ifdef DISKBASE
     dirtyprops(player);
@@ -1662,13 +1519,13 @@ db_get_single_prop(FILE * f, dbref obj, long pos, PropPtr pnode, const char *pdi
                 } else {
                     mydat.flags = flg;
                     mydat.data.str = value;
-                    set_property_nofetch(obj, name, &mydat, 0);
+                    set_property_nofetch(obj, name, &mydat);
                 }
             } else {
                 flg |= PROP_ISUNLOADED;
                 mydat.flags = flg;
                 mydat.data.val = tpos;
-                set_property_nofetch(obj, name, &mydat, 0);
+                set_property_nofetch(obj, name, &mydat);
             }
             break;
         case PROP_LOKTYP:
@@ -1682,13 +1539,13 @@ db_get_single_prop(FILE * f, dbref obj, long pos, PropPtr pnode, const char *pdi
                 } else {
                     mydat.flags = flg;
                     mydat.data.lok = lok;
-                    set_property_nofetch(obj, name, &mydat, 0);
+                    set_property_nofetch(obj, name, &mydat);
                 }
             } else {
                 flg |= PROP_ISUNLOADED;
                 mydat.flags = flg;
                 mydat.data.val = tpos;
-                set_property_nofetch(obj, name, &mydat, 0);
+                set_property_nofetch(obj, name, &mydat);
             }
             break;
         case PROP_INTTYP:
@@ -1706,7 +1563,7 @@ db_get_single_prop(FILE * f, dbref obj, long pos, PropPtr pnode, const char *pdi
 
             mydat.flags = flg;
             mydat.data.val = atoi(value);
-            set_property_nofetch(obj, name, &mydat, 0);
+            set_property_nofetch(obj, name, &mydat);
             break;
         case PROP_FLTTYP:
             mydat.flags = flg;
@@ -1744,7 +1601,7 @@ db_get_single_prop(FILE * f, dbref obj, long pos, PropPtr pnode, const char *pdi
                 sscanf(value, "%lg", &mydat.data.fval);
             }
 
-            set_property_nofetch(obj, name, &mydat, 0);
+            set_property_nofetch(obj, name, &mydat);
             break;
         case PROP_REFTYP:
             if (!number(value)) {
@@ -1761,7 +1618,7 @@ db_get_single_prop(FILE * f, dbref obj, long pos, PropPtr pnode, const char *pdi
 
             mydat.flags = flg;
             mydat.data.ref = atoi(value);
-            set_property_nofetch(obj, name, &mydat, 0);
+            set_property_nofetch(obj, name, &mydat);
             break;
         case PROP_DIRTYP:
             break;
@@ -2514,7 +2371,7 @@ set_standard_lock(int descr, dbref player, const char *objname,
          * if you type: @lock whatver=
          */
         if (!*keyvalue) {
-            remove_property(object, propname, 0);
+            remove_property(object, propname);
             ts_modifyobject(object);
             notifyf_nolisten(player, "%s cleared.", proplabel);
             return;
@@ -2531,7 +2388,7 @@ set_standard_lock(int descr, dbref player, const char *objname,
         /* If it all works out, set the property */
         property.flags = PROP_LOKTYP;
         property.data.lok = key;
-        set_property(object, propname, &property, 0);
+        set_property(object, propname, &property);
         ts_modifyobject(object);
         notifyf_nolisten(player, "%s set.", proplabel);
     }

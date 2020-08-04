@@ -769,7 +769,7 @@ do_set(int descr, dbref player, const char *name, const char *flag)
 
         if (!(*pname)) {
             ts_modifyobject(thing);
-            remove_property(thing, type, 0);
+            remove_property(thing, type);
             notify(player, "Property removed.");
         } else {
             ts_modifyobject(thing);
@@ -965,23 +965,12 @@ do_set(int descr, dbref player, const char *name, const char *flag)
         FLAGS(thing) &= ~f;
         DBDIRTY(thing);
 
-        if (f == GUEST && Typeof(thing) == TYPE_PLAYER) {
-            remove_property(thing, LEGACY_GUEST_PROP, 0);
-        }
-
         notify(player, "Flag reset.");
     } else {
         /* set the flag */
         ts_modifyobject(thing);
         FLAGS(thing) |= f;
         DBDIRTY(thing);
-
-        if (f == GUEST && Typeof(thing) == TYPE_PLAYER) {
-            PData property;
-            property.flags = PROP_STRTYP;
-            property.data.str = "yes";
-            set_property(thing, LEGACY_GUEST_PROP, &property, 0);
-        }
 
         notify(player, "Flag set.");
     }
@@ -1082,7 +1071,7 @@ do_propset(int descr, dbref player, const char *name, const char *prop)
 
         mydat.flags = PROP_FLTTYP;
         mydat.data.fval = strtod(value, NULL);
-        set_property(thing, pname, &mydat, 0);
+        set_property(thing, pname, &mydat);
     } else if (string_prefix("dbref", type)) {
         init_match(descr, player, value, NOTYPE, &md);
         match_everything(&md);
@@ -1092,7 +1081,7 @@ do_propset(int descr, dbref player, const char *name, const char *prop)
 
         mydat.flags = PROP_REFTYP;
         mydat.data.ref = ref;
-        set_property(thing, pname, &mydat, 0);
+        set_property(thing, pname, &mydat);
     } else if (string_prefix("lock", type)) {
         lok = parse_boolexp(descr, player, value, 0);
 
@@ -1103,14 +1092,14 @@ do_propset(int descr, dbref player, const char *name, const char *prop)
 
         mydat.flags = PROP_LOKTYP;
         mydat.data.lok = lok;
-        set_property(thing, pname, &mydat, 0);
+        set_property(thing, pname, &mydat);
     } else if (string_prefix("erase", type)) {
         if (*value) {
             notify(player, "Don't give a value when erasing a property.");
             return;
         }
 
-        remove_property(thing, pname, 0);
+        remove_property(thing, pname);
         notify(player, "Property erased.");
         return;
     } else {

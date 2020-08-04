@@ -514,7 +514,7 @@ change_player_name(dbref player, const char *name)
 
             snprintf(buf, sizeof(buf), "%s/%d", PNAME_HISTORY_PROPDIR, (int)t);
             propadr = next_prop(pptr, propadr, propname, sizeof(propname));
-            remove_property(player, buf, 0);
+            remove_property(player, buf);
         }
     }
 

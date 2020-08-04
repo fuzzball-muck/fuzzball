@@ -1222,10 +1222,6 @@ prim_set(PRIM_PROTOTYPE)
         }
     }
 
-    /**
-     * @TODO Synchronizing legacy props was a FB7-alpha idea.  Do we need
-     *       to continue this practice?
-     */
     if (!result) {
         FLAGS(ref) |= tmp;
 
@@ -1233,21 +1229,10 @@ prim_set(PRIM_PROTOTYPE)
          * @TODO Move this DBDIRTY and the next outside the if.
          */
         DBDIRTY(ref);
-
-        if (tmp == GUEST && Typeof(ref) == TYPE_PLAYER) {
-            PData property;
-            property.flags = PROP_STRTYP;
-            property.data.str = "yes";
-            set_property(ref, LEGACY_GUEST_PROP, &property, 0);
-        }
     } else {
         FLAGS(ref) &= ~tmp;
 
         DBDIRTY(ref);
-
-        if (tmp == GUEST && Typeof(ref) == TYPE_PLAYER) {
-            remove_property(ref, LEGACY_GUEST_PROP, 0);
-        }
     }
 
     CLEAR(oper1);

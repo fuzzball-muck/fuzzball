@@ -272,10 +272,10 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
             if (!strcasecmp(valtype, "string-list")) {
                 if (lines == 0) {
                     snprintf(buf, sizeof(buf), "%s#", reference);
-                    remove_property(obj, buf, 0);
+                    remove_property(obj, buf);
                 } else {
                     snprintf(buf, sizeof(buf), "%s#", reference);
-                    remove_property(obj, buf, 0);
+                    remove_property(obj, buf);
                     add_property(obj, buf, "", lines);
 
                     for (int line = 0; line < lines; line++) {

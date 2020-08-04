@@ -153,7 +153,6 @@
 %optimize_muf=yes
 %playermax=no
 %lock_envcheck=no
-%show_legacy_props=no
 %registration=yes
 %server_cipher_preference=yes
 %periodic_program_purge=yes

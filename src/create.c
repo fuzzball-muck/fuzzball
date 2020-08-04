@@ -523,7 +523,7 @@ copy_one_prop(dbref source, dbref destination, char *propname)
         }
 
         /* now hook the new property into the destination object. */
-        set_property(destination, propname, &newprop, 0);
+        set_property(destination, propname, &newprop);
     }
 
     return;

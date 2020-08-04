@@ -606,10 +606,6 @@ flag_description(dbref thing)
  * to see props on 'thing', however, permissions are checked to make
  * sure 'player' cannot see hidden props unless permitted.
  *
- * Does some weird gymnastics around legacy gender/legacy guest props.
- * If tp_show_legacy_props is false, it will hide these props from the
- * list.
- *
  * @private
  * @param player the player searching props
  * @param thing the thing we are checking props on
@@ -650,34 +646,7 @@ listprops_wildcard(dbref player, dbref thing, const char *dir, const char *wild)
     /* Iterate over the propdir we are working on. */
     while (propadr) {
         if (equalstr(wldcrd, propname)) {
-            const char *current, *tmpname;
-            static const char *legacy_gender;
-            static const char *legacy_guest;
-            current = tp_gender_prop;
-            legacy_gender = LEGACY_GENDER_PROP;
-            legacy_guest = LEGACY_GUEST_PROP;
-
             snprintf(buf, sizeof(buf), "%s%c%s", dir, PROPDIR_DELIMITER, propname);
-            tmpname = buf;
-
-            while (*current == PROPDIR_DELIMITER)
-                current++;
-
-            while (*legacy_gender == PROPDIR_DELIMITER)
-                legacy_gender++;
-
-            while (*legacy_guest == PROPDIR_DELIMITER)
-                legacy_guest++;
-
-            while (*tmpname == PROPDIR_DELIMITER)
-                tmpname++;
-
-            /* Check if we're skipping over legacy props. */
-            if (!tp_show_legacy_props &&
-                (!strcasecmp(tmpname, legacy_guest) || (!strcasecmp(tmpname, legacy_gender) && strcasecmp(current, legacy_gender)))) {
-                propadr = next_prop(pptr, propadr, propname, sizeof(propname));
-                continue;
-            }
 
             if (!Prop_System(buf) && (!Prop_Hidden(buf) || Wizard(OWNER(player)))) {
                 if (!*ptr || recurse) {

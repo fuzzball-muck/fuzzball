@@ -1077,31 +1077,12 @@ void reflist_del(dbref obj, const char *propname, dbref todel);
 int reflist_find(dbref obj, const char *propname, dbref tofind);
 
 /**
- * This removes a property from a given object.  "sync" is for some funky
- * logic around the gender property.  If the MUCK's \@tune'd gender property
- * is not the same as LEGACY_GENDER_PROP (usually "sex"), and sync is 0,
- * then LEGACY_GENDER_PROP and the tune'd gender property receive the
- * same fate.
- *
- * Thus, if sync is 0, and you delete the tune'd gender prop, it will
- * also delete LEGACY_GENDER_PROP or vise versa.
- *
- * 'sync' and the behavior surrounding it only applies to players; sync
- * has absolutely no effect on any other type of DB object.
- *
- * There is an additional wrinkle; there is a LEGACY_GUEST_PROP
- * (usually "~/isguest").  If this is deleted, then the GUEST dbflag
- * is removed from the player as well.  This is regardless of the 'sync'
- * setting, and only happens for object type == Player
- *
- * You will typically want to run this with sync = 1.  This call handles
- * all the diskbase stuff.
+ * This removes a property from a given object, with diskbase handling.
  *
  * @param player The object to operate on.
  * @param pname the property name to delete
- * @param sync Do not sync gender props?  See description above.
  */
-void remove_property(dbref player, const char *pname, int sync);
+void remove_property(dbref player, const char *pname);
 
 /**
  * This call is to remove ALL properties on an object; it is used
@@ -1119,35 +1100,16 @@ void remove_property(dbref player, const char *pname, int sync);
 void remove_property_list(dbref player, int all);
 
 /**
- * This removes a property from a given object.  "sync" is for some funky
- * logic around the gender property.  If the MUCK's \@tune'd gender property
- * is not the same as LEGACY_GENDER_PROP (usually "sex"), and sync is 0,
- * then LEGACY_GENDER_PROP and the tune'd gender property receive the
- * same fate.
- *
- * Thus, if sync is 0, and you delete the tune'd gender prop, it will
- * also delete LEGACY_GENDER_PROP or vise versa.
- *
- * 'sync' and the behavior surrounding it only applies to players; sync
- * has absolutely no effect on any other type of DB object.
- *
- * There is an additional wrinkle; there is a LEGACY_GUEST_PROP
- * (usually "~/isguest").  If this is deleted, then the GUEST dbflag
- * is removed from the player as well.  This is regardless of the 'sync'
- * setting, and only happens for object type == Player
- *
- * You will typically want to run this with sync = 1.  This call DOES NOT
- * handle the diskbase stuff and therefore you probably want remove_property
- * instead.
+ * This removes a property from a given object.  This call DOES NOT handle
+ * the diskbase stuff and therefore you probably want remove_property instead.
  *
  * @see remove_property
  *
  * @internal
  * @param player The object to operate on.
  * @param type the property name to delete
- * @param sync Do not sync gender props?  See description above.
  */
-void remove_property_nofetch(dbref player, const char *type, int sync);
+void remove_property_nofetch(dbref player, const char *type);
 
 /**
  * This command is the underpinning of \@lock, \@flock, \@linklock and \@chlock.
@@ -1240,34 +1202,13 @@ void set_standard_property(int descr, dbref player, const char *objname,
  * ("" for string, 0 for int, 0.0 for float, or a PROP_DIRTYP with no
  * properties in it), it will be deleted instead.
  *
- * And if this comment wasn't long enough -- we've also got "sync"!
- * "sync" is for some funky logic around the gender property.  If the MUCK's
- * \@tune'd gender property is not the same as LEGACY_GENDER_PROP
- * (usually "sex"), and sync is 0, then LEGACY_GENDER_PROP and the tune'd
- * gender property receive the same fate.
- *
- * Thus, if sync is 0, and you set the tune'd gender prop, it will
- * also set LEGACY_GENDER_PROP to the same or vise versa.
- *
- * 'sync' and the behavior surrounding it only applies to players; sync
- * has absolutely no effect on any other type of DB object.
- *
- * There is an additional wrinkle; there is a LEGACY_GUEST_PROP
- * (usually "~/isguest").  If this is deleted, then the GUEST dbflag
- * is removed from the player as well.  This is regardless of the 'sync'
- * setting, and only happens for object type == Player
- *
- * You will typically want to run this with sync = 1.  The original purpose
- * around sync is to avoid a recursion problem.
- *
  * This version of set_property handles all the diskbase stuff.
  *
  * @param player The ref of the object to set the property on.
  * @param pname The property name to set.
  * @param dat a PData structure, loaded with the right flags and prop data.
- * @param sync the weird gender sync option.
  */
-void set_property(dbref player, const char *pname, PData * dat, int sync);
+void set_property(dbref player, const char *pname, PData * dat);
 
 /**
  * Sets the provided flags on a property named 'type' on object 'player'.
@@ -1313,26 +1254,6 @@ void set_property_flags(dbref player, const char *pname, int flags);
  * ("" for string, 0 for int, 0.0 for float, or a PROP_DIRTYP with no
  * properties in it), it will be deleted instead.
  *
- * And if this comment wasn't long enough -- we've also got "sync"!
- * "sync" is for some funky logic around the gender property.  If the MUCK's
- * \@tune'd gender property is not the same as LEGACY_GENDER_PROP
- * (usually "sex"), and sync is 0, then LEGACY_GENDER_PROP and the tune'd
- * gender property receive the same fate.
- *
- * Thus, if sync is 0, and you set the tune'd gender prop, it will
- * also set LEGACY_GENDER_PROP to the same or vise versa.
- *
- * 'sync' and the behavior surrounding it only applies to players; sync
- * has absolutely no effect on any other type of DB object.
- *
- * There is an additional wrinkle; there is a LEGACY_GUEST_PROP
- * (usually "~/isguest").  If this is deleted, then the GUEST dbflag
- * is removed from the player as well.  This is regardless of the 'sync'
- * setting, and only happens for object type == Player
- *
- * You will typically want to run this with sync = 1.  The original purpose
- * around sync is to avoid a recursion problem.
- *
  * This version of set_property DOES NOT do diskbase -- you probably want
  * to use set_property instead.
  *
@@ -1342,9 +1263,8 @@ void set_property_flags(dbref player, const char *pname, int flags);
  * @param player The ref of the object to set the property on.
  * @param pname The property name to set.
  * @param dat a PData structure, loaded with the right flags and prop data.
- * @param sync the weird gender sync option.
  */
-void set_property_nofetch(dbref player, const char *pname, PData * dat, int sync);
+void set_property_nofetch(dbref player, const char *pname, PData * dat);
 
 /**
  * Get the size in bytes of the properties on an object.  If load is 1,

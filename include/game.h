@@ -112,17 +112,6 @@
  */
 #define NO_RECYCLE_PROP         "@/precious"
 
-/**
- * This is probably the gender prop from before it was tunable.  It
- * is used mostly for some hacky prop-syncing.
- */
-#define LEGACY_GENDER_PROP      "sex"
-
-/**
- * This is before the GUEST flag and is also used for prop-syncing.
- */
-#define LEGACY_GUEST_PROP       "~/isguest"
-
 /** Proplist for setting the Welcome screen.  Prop is set on #0 */
 #define WELCOME_PROPLIST        "welcome"
 

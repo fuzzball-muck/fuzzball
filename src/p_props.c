@@ -510,7 +510,7 @@ prim_remove_prop(PRIM_PROTOTYPE)
     if (!prop_write_perms(ProgUID, oper2->data.objref, buf, mlev))
         abort_interp("Permission denied.");
 
-    remove_property(oper2->data.objref, buf, 0);
+    remove_property(oper2->data.objref, buf);
 
     ts_modifyobject(oper2->data.objref);
 
@@ -956,7 +956,7 @@ prim_setprop(PRIM_PROTOTYPE)
                 break;
         }
 
-        set_property(oper3->data.objref, tname, &propdat, 0);
+        set_property(oper3->data.objref, tname, &propdat);
 
         ts_modifyobject(oper3->data.objref);
     }

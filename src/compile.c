@@ -3518,7 +3518,7 @@ do_directive(COMPSTATE * cstat, char *direct)
             v_abort_compile(cstat, buf);
         } else {
             if (!strcasecmp(tmpname, ":")) {
-                remove_property(cstat->program, DEFINES_PROPDIR, 0);
+                remove_property(cstat->program, DEFINES_PROPDIR);
             } else {
                 char defstr[BUFFER_LEN];
                 char propname[BUFFER_LEN];
@@ -3545,7 +3545,7 @@ do_directive(COMPSTATE * cstat, char *direct)
                     if (*defstr) {
                         add_property(cstat->program, propname, defstr, 0);
                     } else {
-                        remove_property(cstat->program, propname, 0);
+                        remove_property(cstat->program, propname);
                     }
                 }
             }
@@ -3600,7 +3600,7 @@ do_directive(COMPSTATE * cstat, char *direct)
                 if (*defstr) {
                     add_property(cstat->program, propname, defstr, 0);
                 } else {
-                    remove_property(cstat->program, propname, 0);
+                    remove_property(cstat->program, propname);
                 }
             }
         }
