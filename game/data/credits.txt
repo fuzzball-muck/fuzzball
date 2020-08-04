@@ -14,34 +14,20 @@ as you can, where you were at when the bug occured, and what you think
 caused the bug to be produced, so we can try to reproduce it and track
 it down.
  
-The following programmers currently maintain the code:
-  Winged:        aerowolf@gmail.com  Project Maintainer/Lead Hack
-  Foxen/Revar:   revar@belfry.com    Developer
-  Points:                            Bug Finder/Lead/Developer
+The code is currently maintained on GitHub.
+  Repository URL:  https://github.com/fuzzball-muck/fuzzball/
+  Feedback Email:  feedback@fuzzball.org
  
 The following programmers have contributed greatly:
-  Akari, Alynna, Arcticwolf (Schneelocke), Cerilus, Fentonator,
-  Ferretbun, Foxbird, Jenora, Naiya, Natasha O'Brien, Sombre,
-  Tiger (Fre'ta), Wog, and Wyld.
+  Akari, Alynna, Arcticwolf (Schneelocke), Cerilus, Fentonator, Ferretbun,
+  Foxbird, Foxen/Revar, Jenora, Naiya, Natasha O'Brien, Points, Sombre,
+  Tiger (Fre'ta), Winged, Wog, and Wyld.
  
 The following people helped out a lot along the way:
   Caspian, Kim "Bookwyrm" Liu, Chris, Jenora, Lynx, WhiteFire,
   Kimi, Cynbe, Myk, Taldin, Howard, darkfox, Moonchilde, Felorin, Xixia,
   Doran, Riss, King_Claudius, Sarusa@FurryMUCK, and
   Henri@Voregotten Realm.
- 
-Alpha and beta test sites, who put up with this nonsense:
- FB 5-
-  HighSeasMUCK, TygryssMUCK, FurryMUCK, CyberFurry, PendorMUCK, Kalasia,
-  AnimeMUCK, Realms, FurryII, Tapestries, Unbridled Desires, TruffleMUCK
-  and Brazillian Dreams.
- FB 6-
-  HereLieMonsters, FurrySpaceMUCK, Sol ]|[, and Voregotten Realm.
- 
-Places silly enough to give Foxen a wizbit at some time or another:
-  ChupMuck, HighSeas, TygMUCK, TygMUCK II, Furry, Pendor, Realms,
-  Kalasia, Anime, CrossRoadsMUCK, TestMage, MeadowFaire, TruffleMUCK,
-  Tapestries, Brazillian Dreams, SocioPolitical Ramifications and more.
  
 Thanks also goes to those persons not mentioned here who have added
 their advice, opinions, and code to TinyMUCK FB.
