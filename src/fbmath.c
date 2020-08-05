@@ -28,7 +28,7 @@
 double
 _int_f_rand(void)
 {
-    return ((double)rand() / (double)RAND_MAX);
+    return (rand() / (double)RAND_MAX);
 }
 
 /**
@@ -139,7 +139,7 @@ struct xMD5Context {
 static void
 xMD5Transform(uint32_t buf[4], uint32_t const in[16])
 {
-    register uint32_t a, b, c, d;
+    uint32_t a, b, c, d;
 
     a = buf[0];
     b = buf[1];
@@ -389,7 +389,7 @@ static void
 Base64Encode(char *outbuf, const void *inbuf, size_t inlen)
 {
     const unsigned char b64[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-    const unsigned char *inb = (unsigned char *) inbuf;
+    const unsigned char *inb = inbuf;
     unsigned char *out = NULL;
     size_t numb;
     size_t endcnt;

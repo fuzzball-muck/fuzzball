@@ -172,7 +172,6 @@ bool        tp_secure_teleport;                     /**> Described below */
 bool        tp_secure_thing_movement;               /**> Described below */
 bool        tp_secure_who;                          /**> Described below */
 bool        tp_server_cipher_preference;            /**> Described below */
-bool        tp_show_legacy_props;                   /**> Described below */
 const char *tp_ssl_cert_file;                       /**> Described below */
 const char *tp_ssl_cipher_preference_list;          /**> Described below */
 const char *tp_ssl_key_file;                        /**> Described below */
@@ -1892,18 +1891,6 @@ struct tune_entry tune_list[] = {
         .currentval.b=&tp_server_cipher_preference,
         MLEV_GOD,
         MLEV_GOD,
-        true
-    },
-    {
-        "show_legacy_props",
-        "Examining objects lists legacy props",
-        "Properties",
-        "",
-        TP_TYPE_BOOLEAN,
-        .defaultval.b=false,
-        .currentval.b=&tp_show_legacy_props,
-        0,
-        MLEV_WIZARD,
         true
     },
     {

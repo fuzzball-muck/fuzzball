@@ -2651,7 +2651,7 @@ prim_explode_array(PRIM_PROTOTYPE)
 {
     stk_array *nu;
     char *tempPtr;
-    char *lastPtr;
+    const char *lastPtr;
 
     CHECKOP(2);
     temp1 = *(oper1 = POP());
@@ -2680,7 +2680,7 @@ prim_explode_array(PRIM_PROTOTYPE)
             lastPtr = "";
         } else {
             strcpyn(buf, sizeof(buf), temp2.data.string->data);
-            tempPtr = lastPtr = buf;
+            lastPtr = tempPtr = buf;
 
             while (*tempPtr) {
                 if (!strncmp(tempPtr, delimit, delimlen)) {
@@ -3259,7 +3259,7 @@ prim_striplead(PRIM_PROTOTYPE)
 
     strcpyn(buf, sizeof(buf), DoNullInd(oper1->data.string));
     pname = buf;
-    skip_whitespace((const char **)&pname);
+    skip_whitespace_var(&pname);
     CLEAR(oper1);
     PushString(pname);
 }
@@ -3820,8 +3820,7 @@ prim_ansi_strcut(PRIM_PROTOTYPE)
     }
 
     *op = '\0';
-    memcpy((void *) outbuf2, (const void *) ptr,
-           oper1->data.string->length
+    memcpy(outbuf2, ptr, oper1->data.string->length
            - (size_t)(ptr - oper1->data.string->data) + 1);
 
     CLEAR(oper1);
@@ -4122,7 +4121,7 @@ prim_strip(PRIM_PROTOTYPE)
 
     strcpyn(buf, sizeof(buf), DoNullInd(oper1->data.string));
     pname = buf;
-    skip_whitespace((const char **)&pname);
+    skip_whitespace_var(&pname);
     remove_ending_whitespace(&pname);
     CLEAR(oper1);
     PushString(pname);

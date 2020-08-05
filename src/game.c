@@ -123,7 +123,7 @@ FILE *input_file;
 static char *in_filename = NULL;
 
 /**
- * Implementation of the @dump command
+ * Implementation of the \@dump command
  *
  * This does NOT do any permission checking, except for a GOD_PRIV check
  * if a newfile is provided.
@@ -166,7 +166,7 @@ do_dump(dbref player, const char *newfile)
 }
 
 /**
- * Implementation of @shutdown command
+ * Implementation of \@shutdown command
  *
  * Permissions are checked and non-wizard players are logged.  This will
  * trigger the MUCK to shut itself down  The implementation of this
@@ -192,7 +192,7 @@ do_shutdown(dbref player)
 
 #ifdef USE_SSL
 /**
- * Implementation of @reconfiguressl
+ * Implementation of \@reconfiguressl
  *
  * This is a simple wrapper around the reconfigure_ssl call.  This does
  * not do any permission checking.
@@ -213,7 +213,7 @@ do_reconfigure_ssl(dbref player)
 #endif
 
 /**
- * Implementation of the @restart command
+ * Implementation of the \@restart command
  *
  * Permissions are checked and non-wizard players are logged.  This will
  * trigger the MUCK to try and restart itself.  The implementation of this
@@ -496,7 +496,7 @@ cleanup_game()
 #endif
 
 /**
- * Implementation of @restrict command
+ * Implementation of \@restrict command
  *
  * This does not do any permission checking.  Arg can be either "on" to
  * turn on wiz-only mode, "off" to turn it off, or anything else (such
@@ -537,7 +537,7 @@ process_command(int descr, dbref player, const char *command)
 {
     char *arg1;
     char *arg2;
-    char *full_command;
+    char *full_command = NULL;
     char pbuf[BUFFER_LEN];
     char xbuf[BUFFER_LEN];
     char ybuf[BUFFER_LEN];
@@ -681,7 +681,7 @@ process_command(int descr, dbref player, const char *command)
         strcpyn(match_args, sizeof(match_args), full_command);
         strcpyn(match_cmdname, sizeof(match_cmdname), command);
 
-        skip_whitespace((const char **)&arg1);
+        skip_whitespace_var(&arg1);
 
         /* find end of arg1, start of arg2 */
         for (arg2 = arg1; *arg2 && *arg2 != ARG_DELIMITER; arg2++) ;
@@ -692,7 +692,7 @@ process_command(int descr, dbref player, const char *command)
         char *p = arg1;
         remove_ending_whitespace(&p);
 
-        skip_whitespace((const char **)&arg2);
+        skip_whitespace_var(&arg2);
 
         switch (command[0]) {
             case '@':

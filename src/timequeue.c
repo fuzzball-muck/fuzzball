@@ -183,7 +183,7 @@ alloc_timenode(int typ, int subtyp, time_t mytime, int descr, dbref player,
     ptr->descr = descr;
     ptr->fr = fr;
     ptr->called_prog = program;
-    ptr->called_data = strdup((char *) strdata);
+    ptr->called_data = strdup(strdata);
     ptr->command = alloc_string(strcmd);
     ptr->str3 = alloc_string(str3);
     ptr->eventnum = (fr) ? fr->pid : top_pid++;
@@ -1130,7 +1130,7 @@ has_refs(dbref program, timequeue ptr)
 }
 
 /**
- * Implementation of the @ps command
+ * Implementation of the \@ps command
  *
  * Shows running timequeue / process information to the given player.
  * Permission checking is done; wizards can see all processes, but players
@@ -1728,7 +1728,7 @@ dequeue_timers(int pid, char *id)
 }
 
 /**
- * Implementation of @kill command
+ * Implementation of \@kill command
  *
  * Kills a process or set of processes off the time queue.  "arg1" can
  * be either a process ID, a player name to kill all of a player's processs,

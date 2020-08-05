@@ -28,7 +28,7 @@
 #include "tune.h"
 
 /**
- * Implementation of the @name command
+ * Implementation of the \@name command
  *
  * This performs a name change for a given 'name' to 'newname'
  *
@@ -65,13 +65,13 @@ do_name(int descr, dbref player, const char *name, char *newname)
 
         if (*password) {
             *password++ = '\0';     /* terminate name */
-            skip_whitespace((const char **)&password);
+            skip_whitespace_var(&password);
         }
 
         /* check for null password */
         if (!*password) {
             notify(player, "You must specify a password to change a player name.");
-            notify(player, "E.g.: name player = newname password");
+            notify(player, "E.g.: @name player = newname password");
             return;
         }
 
@@ -117,7 +117,7 @@ do_name(int descr, dbref player, const char *name, char *newname)
  * to its owner.  If this is a player, its home will be reset to player start.
  *
  * If quiet is true, only errors will be displayed and no other messaging.
- * Otherwise, full messaging as expected with @unlink will be used.
+ * Otherwise, full messaging as expected with \@unlink will be used.
  *
  * This does do permission checking.
  *
@@ -207,7 +207,7 @@ _do_unlink(int descr, dbref player, const char *name, bool quiet)
 }
 
 /**
- * Implementation of @unlink command
+ * Implementation of \@unlink command
  *
  * This is a thin wrapper around _do_unlink (a private function) that does
  * all the logic.  As it is a private function, the documentation will
@@ -233,7 +233,7 @@ do_unlink(int descr, dbref player, const char *name)
 }
 
 /**
- * Implementation of @relink command
+ * Implementation of \@relink command
  *
  * This is basically the same as doing an @unlink followed by an @link.
  * Thus the details of what that entails is best described in those functions.
@@ -375,7 +375,7 @@ do_relink(int descr, dbref player, const char *thing_name,
 }
 
 /**
- * Implementation of the @chown command
+ * Implementation of the \@chown command
  *
  * This handles all the security aspects of the @chown command, including
  * the various weird details.  Such as THINGs must be held by the person
@@ -663,7 +663,7 @@ restricted(dbref player, dbref thing, object_flag_type flag)
 }
 
 /**
- * Implementation of @set command
+ * Implementation of \@set command
  *
  * This can set flags or props.  The determining factor is if there is
  * a PROP_DELIMITER (:) character in the 'flag' string.  The special
@@ -720,7 +720,7 @@ do_set(int descr, dbref player, const char *name, const char *flag)
 
         /* copy the string so we can muck with it */
         const char *type = alloc_string(flag);  /* type */
-        char *pname = (char *) strchr(type, PROP_DELIMITER);    /* propname */
+        char *pname = strchr(type, PROP_DELIMITER);    /* propname */
         const char *x;      /* to preserve string location so we can free it */
         char *temp;
         int ival = 0;
@@ -769,7 +769,7 @@ do_set(int descr, dbref player, const char *name, const char *flag)
 
         if (!(*pname)) {
             ts_modifyobject(thing);
-            remove_property(thing, type, 0);
+            remove_property(thing, type);
             notify(player, "Property removed.");
         } else {
             ts_modifyobject(thing);
@@ -965,10 +965,6 @@ do_set(int descr, dbref player, const char *name, const char *flag)
         FLAGS(thing) &= ~f;
         DBDIRTY(thing);
 
-        if (f == GUEST && Typeof(thing) == TYPE_PLAYER) {
-            remove_property(thing, LEGACY_GUEST_PROP, 0);
-        }
-
         notify(player, "Flag reset.");
     } else {
         /* set the flag */
@@ -976,19 +972,12 @@ do_set(int descr, dbref player, const char *name, const char *flag)
         FLAGS(thing) |= f;
         DBDIRTY(thing);
 
-        if (f == GUEST && Typeof(thing) == TYPE_PLAYER) {
-            PData property;
-            property.flags = PROP_STRTYP;
-            property.data.str = "yes";
-            set_property(thing, LEGACY_GUEST_PROP, &property, 0);
-        }
-
         notify(player, "Flag set.");
     }
 }
 
 /**
- * Implementation of @propset
+ * Implementation of \@propset
  *
  * Propset can set props along with types.  'prop' can be of the
  * format: <type>:<property>:<value> or erase:<property>
@@ -1082,7 +1071,7 @@ do_propset(int descr, dbref player, const char *name, const char *prop)
 
         mydat.flags = PROP_FLTTYP;
         mydat.data.fval = strtod(value, NULL);
-        set_property(thing, pname, &mydat, 0);
+        set_property(thing, pname, &mydat);
     } else if (string_prefix("dbref", type)) {
         init_match(descr, player, value, NOTYPE, &md);
         match_everything(&md);
@@ -1092,7 +1081,7 @@ do_propset(int descr, dbref player, const char *name, const char *prop)
 
         mydat.flags = PROP_REFTYP;
         mydat.data.ref = ref;
-        set_property(thing, pname, &mydat, 0);
+        set_property(thing, pname, &mydat);
     } else if (string_prefix("lock", type)) {
         lok = parse_boolexp(descr, player, value, 0);
 
@@ -1103,14 +1092,14 @@ do_propset(int descr, dbref player, const char *name, const char *prop)
 
         mydat.flags = PROP_LOKTYP;
         mydat.data.lok = lok;
-        set_property(thing, pname, &mydat, 0);
+        set_property(thing, pname, &mydat);
     } else if (string_prefix("erase", type)) {
         if (*value) {
             notify(player, "Don't give a value when erasing a property.");
             return;
         }
 
-        remove_property(thing, pname, 0);
+        remove_property(thing, pname);
         notify(player, "Property erased.");
         return;
     } else {
@@ -1123,7 +1112,7 @@ do_propset(int descr, dbref player, const char *name, const char *prop)
 }
 
 /**
- * Implementation of @register command
+ * Implementation of \@register command
  *
  * Does property registration similar to the 'classic' MUF @register
  * command.  Thus, the parameters are a little complex.
@@ -1172,7 +1161,8 @@ do_register(int descr, dbref player, char *arg1, const char *arg2)
         target = player;
         objectstr = remaining;
     } else if (string_prefix(arg1, "#prop")) {
-        char *pattern, *targetstr;
+        char *pattern;
+        const char *targetstr;
 
         (void) strtok_r(arg1, " \t", &remaining);
         pattern = strtok_r(remaining, " \t", &remaining);
@@ -1338,7 +1328,7 @@ do_register(int descr, dbref player, char *arg1, const char *arg2)
 }
 
 /**
- * Implemenation of @doing command
+ * Implemenation of \@doing command
  *
  * This, at present, only allows you to to set a doing message on
  * 'me' or you can leave 'name' as an empty string.
@@ -1365,7 +1355,7 @@ do_doing(int descr, dbref player, const char *name, const char *mesg)
 
 
 /**
- * Implementation of @unlock command
+ * Implementation of \@unlock command
  *
  * Unlocks a given object.  This does do permission checks.
  *

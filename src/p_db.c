@@ -804,7 +804,7 @@ prim_setname(PRIM_PROTOTYPE)
 
             if (*password) {
                 *password++ = '\0';     /* terminate name */
-                skip_whitespace((const char **)&password);
+                skip_whitespace_var(&password);
             }
 
             /* check for null password */
@@ -1222,10 +1222,6 @@ prim_set(PRIM_PROTOTYPE)
         }
     }
 
-    /**
-     * @TODO Synchronizing legacy props was a FB7-alpha idea.  Do we need
-     *       to continue this practice?
-     */
     if (!result) {
         FLAGS(ref) |= tmp;
 
@@ -1233,21 +1229,10 @@ prim_set(PRIM_PROTOTYPE)
          * @TODO Move this DBDIRTY and the next outside the if.
          */
         DBDIRTY(ref);
-
-        if (tmp == GUEST && Typeof(ref) == TYPE_PLAYER) {
-            PData property;
-            property.flags = PROP_STRTYP;
-            property.data.str = "yes";
-            set_property(ref, LEGACY_GUEST_PROP, &property, 0);
-        }
     } else {
         FLAGS(ref) &= ~tmp;
 
         DBDIRTY(ref);
-
-        if (tmp == GUEST && Typeof(ref) == TYPE_PLAYER) {
-            remove_property(ref, LEGACY_GUEST_PROP, 0);
-        }
     }
 
     CLEAR(oper1);
@@ -2596,7 +2581,7 @@ prim_getlockstr(PRIM_PROTOTYPE)
         abort_interp("Permission denied.");
 
     {
-        char *tmpstr = (char *) unparse_boolexp(player, GETLOCK(ref), 0);
+        const char *tmpstr = (char *) unparse_boolexp(player, GETLOCK(ref), 0);
 
         CLEAR(oper1);
         PushString(tmpstr);
@@ -4425,3 +4410,4 @@ void prim_dump(PRIM_PROTOTYPE)
     result = 1;
     PushInt(result);
 }
+

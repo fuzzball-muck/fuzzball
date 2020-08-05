@@ -79,7 +79,7 @@ macro_expansion(const char *match)
     struct macrotable *node = macrotop;
 
     while (node) {
-        register int value = strcasecmp(match, node->name);
+        int value = strcasecmp(match, node->name);
 
         if (value < 0)
             node = node->left;
@@ -135,7 +135,7 @@ static int
 grow_macro_tree(struct macrotable *node, struct macrotable *newmacro)
 {
     while (node) {
-        register int value = strcasecmp(newmacro->name, node->name);
+        int value = strcasecmp(newmacro->name, node->name);
 
         if (!value)
             return 0;
@@ -932,7 +932,7 @@ list_publics(int descr, dbref player, int arg[], int argc)
             struct line *tmpline;
 
             tmpline = PROGRAM_FIRST(program);
-            PROGRAM_SET_FIRST(program, (struct line *) read_program(program));
+            PROGRAM_SET_FIRST(program, read_program(program));
             do_compile(descr, OWNER(program), program, 0);
             free_prog_text(PROGRAM_FIRST(program));
             PROGRAM_SET_FIRST(program, tmpline);
@@ -1363,7 +1363,7 @@ write_program(struct line *first, dbref i)
 }
 
 /**
- * Implementation of the @list command
+ * Implementation of the \@list command
  *
  * This includes all permission checking around whether someone can
  * list the program, and checking to make sure that 'name' is a program.
@@ -1556,7 +1556,7 @@ macrodump(struct macrotable *node, FILE * f)
 /**
  * Fetch the next line from a given file handle
  *
- * This cleans off trailing \n and \r if applicable.  Returns an allocated
+ * This cleans off trailing \\n and \\r if applicable.  Returns an allocated
  * string copy -- the caller must free the memory.
  *
  * @private

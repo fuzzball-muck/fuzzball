@@ -80,7 +80,7 @@ stk_array *get_mufevent_pidinfo(stk_array * nw, int pid, int pinned);
  * @param val the data associated with the event
  * @param exclusive boolean as described above
  */
-void muf_event_add(struct frame *fr, char *event, struct inst *val,
+void muf_event_add(struct frame *fr, const char *event, struct inst *val,
                    int exclusive);
 
 /**
@@ -251,6 +251,6 @@ int muf_event_read_notify(int descr, dbref player, const char *cmd);
  */
 void muf_event_register_specific(
                 dbref player, dbref prog, struct frame *fr, size_t eventcount,
-                char **eventids);
+                const char **eventids);
 
 #endif /* !MUFEVENT_H */

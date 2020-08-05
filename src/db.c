@@ -549,8 +549,8 @@ getref(FILE * f)
 /**
  * Get a string from the given file handle
  *
- * The string is read until a \n is encountered or until the buffer runs
- * out; anything over BUFFER_LEN -1 is discarded til the next \n is found.
+ * The string is read until a \\n is encountered or until the buffer runs
+ * out; anything over BUFFER_LEN -1 is discarded til the next \\n is found.
  *
  * Empty strings are supported and will be returned.  New memory is
  * allocated for the string that is returned.
@@ -1063,7 +1063,7 @@ db_read_object(FILE * f, dbref objno)
  * This autostarts by scanning the entire DB and compiling the ABODE
  * programs.  Compile will automatically queue up the programs.
  *
- * @static
+ * @private
  */
 static void
 autostart_progs(void)
@@ -1083,7 +1083,7 @@ autostart_progs(void)
                  * finish compiling.
                  */
                 tmp = PROGRAM_FIRST(i);
-                PROGRAM_SET_FIRST(i, (struct line *) read_program(i));
+                PROGRAM_SET_FIRST(i, read_program(i));
                 do_compile(-1, OWNER(i), i, 0);
                 free_prog_text(PROGRAM_FIRST(i));
                 PROGRAM_SET_FIRST(i, tmp);
@@ -1980,7 +1980,7 @@ _link_exit(int descr, dbref player, dbref exit, char *dest_name,
      * Each iteration of this loop will be a single potential destination.
      */
     while (*dest_name) {
-        skip_whitespace((const char **)&dest_name);
+        skip_whitespace_var(&dest_name);
         p = dest_name;
 
         while (*dest_name && (*dest_name != EXIT_DELIMITER))
@@ -1991,7 +1991,7 @@ _link_exit(int descr, dbref player, dbref exit, char *dest_name,
 
         if (*dest_name) {
             dest_name++;
-            skip_whitespace((const char **)&dest_name);
+            skip_whitespace_var(&dest_name);
         }
 
         /*
@@ -2218,12 +2218,12 @@ register_object(dbref player, dbref location, const char *propdir, char *name,
     unparse_object(player, location, unparse_buf2, sizeof(unparse_buf2));
 
     if (object == NOTHING) {
-        remove_property(location, buf, 0);
+        remove_property(location, buf);
         notifyf_nolisten(player, "Registry entry on %s removed.", unparse_buf2);
     } else {
         mydat.flags = PROP_REFTYP;
         mydat.data.ref = object;
-        set_property(location, buf, &mydat, 0);
+        set_property(location, buf, &mydat);
         notifyf_nolisten(player, "Now registered as %s: %s on %s", buf, unparse_buf, unparse_buf2);
     }
 }

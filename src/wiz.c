@@ -33,9 +33,9 @@
 #include "tune.h"
 
 /**
- * Implementation of the @teleport command
+ * Implementation of the \@teleport command
  *
- * This is the MUCK's @teleport command.  It does do permission checking
+ * This is the MUCK's \@teleport command.  It does do permission checking
  * and sometimes that gets pretty detailed -- the rules for teleporting
  * different things vary slightly.  However, in general, the player must
  * control both the object to be teleported and the destination -- or
@@ -301,7 +301,7 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
 }
 
 /**
- * The wildcard implementation that underpins @bless (do_bless) and @unbless
+ * The wildcard implementation that underpins \@bless and \@unbless
  *
  * @see do_bless
  * @see do_unbless
@@ -410,7 +410,7 @@ blessprops_wildcard(dbref player, dbref thing, const char *dir,
 }
 
 /**
- * Implementation of the @unbless command
+ * Implementation of the \@unbless command
  *
  * This does not handle basic permission checking.  The propname can have
  * wildcards in it.
@@ -448,7 +448,7 @@ do_unbless(int descr, dbref player, const char *what, const char *propname)
 }
 
 /**
- * Implementation of the @bless command
+ * Implementation of the \@bless command
  *
  * This does not handle basic permission checking.  The propname can have
  * wildcards in it.
@@ -494,7 +494,7 @@ do_bless(int descr, dbref player, const char *what, const char *propname)
 }
 
 /**
- * The implementation of the @force command
+ * The implementation of the \@force command
  *
  * This uses the global 'force_level' to keep track of how many
  * layers of force calls are in play.  That makes this not threadsafe,
@@ -624,7 +624,7 @@ do_force(int descr, dbref player, const char *what, char *command)
 }
 
 /**
- * Implementation of the @stats command
+ * Implementation of the \@stats command
  *
  * This displays stats on what is in the database, optionally showing
  * stats on what a given player owns.
@@ -805,7 +805,7 @@ do_stats(dbref player, const char *name)
 }
 
 /**
- * Implementation of the @boot command
+ * Implementation of the \@boot command
  *
  * WARNING: This call does NOT check to see if 'player' is a wizard.
  *
@@ -862,7 +862,7 @@ do_boot(dbref player, const char *name)
 }
 
 /**
- * Implementation of the @toad command
+ * Implementation of the \@toad command
  *
  * Toading is the deletion of a player.  This is a wrapper around
  * toad_player, so the mechanics of toading are in that call.
@@ -948,7 +948,7 @@ do_toad(int descr, dbref player, const char *name, const char *recip)
 }
 
 /**
- * Implements the @newpassword command
+ * Implements the \@newpassword command
  *
  * Changes the password to 'password' on a given player 'name'.
  *
@@ -993,7 +993,7 @@ do_newpassword(dbref player, const char *name, const char *password)
 }
 
 /**
- * Implements the @pcreate command
+ * Implements the \@pcreate command
  *
  * Creates a player.  This is an incredibly thin wrapper around create_player;
  * in fact, this does no permission checks or any other kind of check.
@@ -1021,7 +1021,7 @@ do_pcreate(dbref player, const char *user, const char *password)
 
 #ifndef NO_USAGE_COMMAND
 /**
- * Implementation of the @usage command
+ * Implementation of the \@usage command
  *
  * This gives a bunch of information about the FuzzBall MUCK process.
  * Back in "the day" a lot of this information was not available on
@@ -1076,7 +1076,7 @@ do_usage(dbref player)
  */
 
 /**
- * Implementation of the @muftops command
+ * Implementation of the \@muftops command
  *
  * This shows statistics about programs that have been running.  These
  * statistics are shown for top 'arg1' number of programs.  The default
@@ -1209,7 +1209,7 @@ do_muf_topprofs(dbref player, char *arg1)
 }
 
 /**
- * Implementation of the @mpitops command
+ * Implementation of the \@mpitops command
  *
  * This shows statistics about programs that have been running.  These
  * statistics are shown for top 'arg1' number of programs.  The default
@@ -1332,7 +1332,7 @@ do_mpi_topprofs(dbref player, char *arg1)
 }
 
 /**
- * Implementation of the @tops command
+ * Implementation of the \@tops command
  *
  * This shows statistics about programs that have been running.  These
  * statistics are shown for top 'arg1' number of programs.  The default
@@ -1526,7 +1526,7 @@ do_topprofs(dbref player, char *arg1)
 
 #ifndef NO_MEMORY_COMMAND
 /**
- * Implementation of @memory command
+ * Implementation of \@memory command
  *
  * This displays memory information to the calling user.  Note that it
  * does not do any permission checkings.
@@ -1583,7 +1583,7 @@ do_memory(dbref who)
 #endif      /* NO_MEMORY_COMMAND */
 
 /**
- * Implementation of @debug command
+ * Implementation of \@debug command
  *
  * This only applies to DISKBASE (at the moment), and only works if
  * the argument "display propcache" is displayed.  Under the hood,
@@ -1763,16 +1763,16 @@ base64_send(struct descriptor_data* descr, FILE* in)
 }
 
 /**
- * Implementation of @teledump command
+ * Implementation of \@teledump command
  *
- * @teledump does a base64 encoded dump of the entire database and the
+ * \@teledump does a base64 encoded dump of the entire database and the
  * associated macros and MUF in a fashion that can be consumed by an unpacker
  * script (a python unpacker will be provided as part of this).
  *
  * It is a way to preserve the vital data of a MUCK but it does not
  * send over irrelevant files.
  *
- * For simplicity sake, it dumps the DB on disk, so @dump before running
+ * For simplicity sake, it dumps the DB on disk, so \@dump before running
  * this command to get the latest.
  *
  * @param descr the player's descriptor

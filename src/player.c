@@ -279,7 +279,7 @@ toad_player(int descr, dbref player, dbref victim, dbref recipient)
 }
 
 /**
- * Implementation of @password command
+ * Implementation of \@password command
  *
  * This changes the player's password after doing some validation checks.
  * Old password must be valid and new password must not have spaces in it.
@@ -514,7 +514,7 @@ change_player_name(dbref player, const char *name)
 
             snprintf(buf, sizeof(buf), "%s/%d", PNAME_HISTORY_PROPDIR, (int)t);
             propadr = next_prop(pptr, propadr, propname, sizeof(propname));
-            remove_property(player, buf, 0);
+            remove_property(player, buf);
         }
     }
 

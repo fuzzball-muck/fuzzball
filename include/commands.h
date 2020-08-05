@@ -289,7 +289,7 @@ void do_doing(int descr, dbref player, const char *name, const char *mesg);
  * in play.
  *
  * For the put/throw logic, if the target object is not a room, it must
- * have a container lock.  The lock is "@conlock" or "_/clk".  If there is
+ * have a container lock.  The lock is "\@conlock" or "_/clk".  If there is
  * no lock it will default to false.
  *
  * This handles all the nuances of dropping things, such as drop/odrop
@@ -539,7 +539,7 @@ void do_gripe(dbref player, const char *message);
  * @param topic the topic the player is looking up or ""
  * @param segment the range of lines to view - only works for subfiles
  */
-void do_helpfile(dbref player, const char *dir, const char *file, char *topic, char *segment);
+void do_helpfile(dbref player, const char *dir, const char *file, const char *topic, const char *segment);
 
 /*
  * I
@@ -969,10 +969,10 @@ void do_password(dbref player, const char *old, const char *newobj);
  * @see create_player
  *
  * @param player the player running the command
- * @param arg1 the user to create
- * @param arg2 the password to set on the new user.
+ * @param user the user to create
+ * @param pass the password to set on the new user.
  */
-void do_pcreate(dbref player, const char *arg1, const char *arg2);
+void do_pcreate(dbref player, const char *user, const char *pass);
 
 /**
  * Implementation of pose command

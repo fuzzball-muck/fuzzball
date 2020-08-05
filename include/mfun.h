@@ -2893,7 +2893,7 @@ const char *mfn_xor(MFUNARGS);
  * the return value of the function.
  */
 struct mfun_dat {
-    char *name;                     /**< Function name, all upper case */
+    const char *name;               /**< Function name, all upper case */
     const char *(*mfn) (MFUNARGS);  /**< Function implementation */
     short parsep;                   /**< If true, the arguments will be parsed */
     short postp;                    /**< If true, auto-parse the return value */

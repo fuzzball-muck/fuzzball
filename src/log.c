@@ -35,7 +35,7 @@
  * @param args variable number of arguments, which are sprintf replacements
  */
 static void
-vlog2file(int prepend_time, const char *filename, char *format, va_list args)
+vlog2file(int prepend_time, const char *filename, const char *format, va_list args)
 {
     FILE *fp;
     time_t lt;
@@ -74,7 +74,7 @@ vlog2file(int prepend_time, const char *filename, char *format, va_list args)
  * @param ... whatever sprintf replacement variables
  */
 void
-log2file(const char *filename, char *format, ...)
+log2file(const char *filename, const char *format, ...)
 {
     va_list args;
     va_start(args, format);
@@ -116,7 +116,7 @@ log2file(const char *filename, char *format, ...)
  * @param ... the arguments
  */
 void
-log_sanity(char *format, ...)
+log_sanity(const char *format, ...)
 log_function(tp_file_log_sanity)
 
 /**
@@ -131,7 +131,7 @@ log_function(tp_file_log_sanity)
  * @param ... the arguments
  */
 void
-log_sanfix(char *format, ...)
+log_sanfix(const char *format, ...)
 log_function(tp_file_log_sanfix)
 
 /**
@@ -146,7 +146,7 @@ log_function(tp_file_log_sanfix)
  * @param ... the arguments
  */
 void
-log_status(char *format, ...)
+log_status(const char *format, ...)
 log_function(tp_file_log_status)
 
 /**
@@ -161,7 +161,7 @@ log_function(tp_file_log_status)
  * @param ... the arguments
  */
 void
-log_muf(char *format, ...)
+log_muf(const char *format, ...)
 log_function(tp_file_log_muf_errors)
 
 /**
@@ -176,7 +176,7 @@ log_function(tp_file_log_muf_errors)
  * @param ... the arguments
  */
 void
-log_gripe(char *format, ...)
+log_gripe(const char *format, ...)
 log_function(tp_file_log_gripes)
 
 /**
@@ -191,7 +191,7 @@ log_function(tp_file_log_gripes)
  * @param ... the arguments
  */
 void
-log_command(char *format, ...)
+log_command(const char *format, ...)
 log_function(tp_file_log_commands)
 
 /**

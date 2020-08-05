@@ -355,6 +355,10 @@ short wizonly_mode = 0;
  * @private
  * @param prog the string name of the program (argv[0] usually)
  */
+#if defined(__GNUC__) || defined(__clang__)
+static void show_program_usage(char *prog) __attribute((noreturn));
+#endif
+
 static void
 show_program_usage(char *prog)
 {
@@ -547,7 +551,7 @@ make_text_block(const char *s, size_t n)
  * @param b the message
  * @param n the number of bytes from message to allocate and copy
  */
-void
+static void
 add_to_queue(struct text_queue *q, const char *b, size_t n)
 {
     struct text_block *p;
@@ -1837,7 +1841,7 @@ check_connect(struct descriptor_data *d, const char *msg)
  *
  * @see mcp_frame_process_input
  *
- * This processes certain built-in 'special' commands; @Q (BREAK_COMMAND),
+ * This processes certain built-in 'special' commands; \@Q (BREAK_COMMAND),
  * QUIT, and WHO.  Then it hands off to process_command or check_connect
  * based on if you're connected or not.
  *
@@ -1923,7 +1927,7 @@ do_command(struct descriptor_data *d, char *command)
 /**
  * Check if 'cmd' is one of the special commands handled in interface.c
  *
- * This checks for certain built-in 'special' commands; @Q (BREAK_COMMAND),
+ * This checks for certain built-in 'special' commands; \@Q (BREAK_COMMAND),
  * QUIT (QUIT_COMMAND), and WHO (WHO_COMMAND).  Also checks for
  * MCP message prefix.
  *
@@ -2231,7 +2235,7 @@ queue_immediate_and_flush(struct descriptor_data *d, const char *msg)
         queue_immediate_raw(d, MCP_QUOTE_PREFIX);
     }
 
-    queue_immediate_raw(d, (const char *) buf);
+    queue_immediate_raw(d, buf);
     process_output(d);
 }
 
@@ -2685,27 +2689,27 @@ make_socket_v6(int port)
     /* Set all the different socket options */
     opt = 1;
 
-    if (setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (char *) &opt, sizeof(opt)) < 0) {
+    if (setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
         perror("setsockopt(SO_REUSEADDR)");
         exit(1);
     }
 
     opt = 1;
 
-    if (setsockopt(s, SOL_SOCKET, SO_KEEPALIVE, (char *) &opt, sizeof(opt)) < 0) {
+    if (setsockopt(s, SOL_SOCKET, SO_KEEPALIVE, &opt, sizeof(opt)) < 0) {
         perror("setsockopt(SO_KEEPALIVE)");
         exit(1);
     }
 
     opt = 1;
 
-    if (setsockopt(s, IPPROTO_IPV6, IPV6_V6ONLY, (char *) &opt, sizeof(opt)) < 0) {
+    if (setsockopt(s, IPPROTO_IPV6, IPV6_V6ONLY, &opt, sizeof(opt)) < 0) {
         perror("setsockopt(IPV6_V6ONLY");
         exit(1);
     }
 
     /* Blank out the server structure */
-    memset((char *) &server, 0, sizeof(server));
+    memset(&server, 0, sizeof(server));
     server.sin6_family = AF_INET6;
     server.sin6_addr = bind_ipv6_address;
     server.sin6_port = htons(port);
@@ -2777,8 +2781,7 @@ addrout_v6(in_port_t lport, struct in6_addr *a, in_port_t prt)
         } else {
             time_t gethost_start = time(NULL);
 
-            struct hostent *he = gethostbyaddr(((char *) &addr),
-                                               sizeof(addr), AF_INET6);
+            struct hostent *he = gethostbyaddr(&addr, sizeof(addr), AF_INET6);
             time_t gethost_stop = time(NULL);
             time_t lag = gethost_stop - gethost_start;
 
@@ -2904,8 +2907,7 @@ addrout(in_port_t lport, in_addr_t a, in_port_t prt)
         } else {
             time_t gethost_start = time(NULL);
 
-            struct hostent *he = gethostbyaddr(((char *) &addr), sizeof(addr),
-                                               AF_INET);
+            struct hostent *he = gethostbyaddr(&addr, sizeof(addr), AF_INET);
             time_t gethost_stop = time(NULL);
             time_t lag = gethost_stop - gethost_start;
 
@@ -2968,13 +2970,13 @@ make_socket(int port)
     }
 
     opt = 1;
-    if (setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (char *) &opt, sizeof(opt)) < 0) {
+    if (setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
         perror("setsockopt");
         exit(1);
     }
 
     opt = 1;
-    if (setsockopt(s, SOL_SOCKET, SO_KEEPALIVE, (char *) &opt, sizeof(opt)) < 0) {
+    if (setsockopt(s, SOL_SOCKET, SO_KEEPALIVE, &opt, sizeof(opt)) < 0) {
         perror("setsockopt");
         exit(1);
     }
@@ -3223,7 +3225,7 @@ process_input(struct descriptor_data *d)
                 case TELNET_AYT: /* Are you there? */
                     {
                         char sendbuf[] = "[Yes]\r\n";
-                        queue_immediate_raw(d, (const char *)sendbuf);
+                        queue_immediate_raw(d, sendbuf);
                         d->telnet_state = TELNET_STATE_NORMAL;
                         break;
                     }
@@ -3543,7 +3545,7 @@ process_input(struct descriptor_data *d)
 static int
 pem_passwd_cb(char *buf, int size, int rwflag, void *userdata)
 {
-    const char *pw = (const char *) userdata;
+    const char *pw = userdata;
     int pwlen = strlen(pw);
 
     strncpy(buf, pw, size);
@@ -3844,7 +3846,7 @@ spawn_resolver(void)
  * The resolver returns host information one per line.  The host information
  * looks like:
  *
- * hostip(port)|hostname(user)\n
+ * hostip(port)|hostname(user)\\n
  *
  * Once we get a line from the resolver, we iterate over the descriptor
  * list and use hostip + port to set the hostname + user on the descriptor
@@ -3995,7 +3997,7 @@ shovechars()
 
     listen_bound_sockets();
 
-    gettimeofday(&last_slice, (struct timezone *) 0);
+    gettimeofday(&last_slice, NULL);
 
     avail_descriptors = max_open_files() - 5;
 
@@ -4009,7 +4011,7 @@ shovechars()
 
     /* And here, we do the actual player-interaction loop */
     while (shutdown_flag == 0) {
-        gettimeofday(&current_time, (struct timezone *) 0);
+        gettimeofday(&current_time, NULL);
         last_slice = update_quotas(last_slice, current_time);
 
         /* Process timed events, commands, and MUF stuff. */
@@ -4680,7 +4682,7 @@ notify(dbref player, const char *msg)
  * @param ... as many arguments as necessary
  */
 void
-notifyf(dbref player, char *format, ...)
+notifyf(dbref player, const char *format, ...)
 {
     va_list args;
     char bufr[BUFFER_LEN];
@@ -4706,7 +4708,7 @@ notifyf(dbref player, char *format, ...)
  * @param ... as many arguments as necessary.
  */
 void
-notifyf_nolisten(dbref player, char *format, ...)
+notifyf_nolisten(dbref player, const char *format, ...)
 {
     va_list args;
     char bufr[BUFFER_LEN];
@@ -5347,7 +5349,6 @@ do_armageddon(dbref player, const char *msg)
     exit(ARMAGEDDON_EXIT_CODE);
 }
 
-
 /**
  * "Panic" the MUCK, which shuts it down with a message.
  *
@@ -5360,6 +5361,10 @@ do_armageddon(dbref player, const char *msg)
  *
  * @param message the message to show in the log
  */
+#if defined(__GNUC__) || defined(__clang__)
+void panic(const char *message) __attribute__((noreturn));
+#endif
+
 void
 panic(const char *message)
 {
@@ -5706,7 +5711,7 @@ phost(int c)
         return ((char *) d->hostname);
     }
 
-    return (char *) NULL;
+    return NULL;
 }
 
 /**
@@ -5728,7 +5733,7 @@ pdescrhost(int c)
         return ((char *) d->hostname);
     }
 
-    return (char *) NULL;
+    return NULL;
 }
 
 /**
@@ -5755,7 +5760,7 @@ puser(int c)
         return ((char *) d->username);
     }
 
-    return (char *) NULL;
+    return NULL;
 }
 
 /**
@@ -5777,7 +5782,7 @@ pdescruser(int c)
         return ((char *) d->username);
     }
 
-    return (char *) NULL;
+    return NULL;
 }
 
 /**
@@ -6328,7 +6333,7 @@ dump_status(void)
 static int
 ignore_dbref_compare(const void *Lhs, const void *Rhs)
 {
-    return *(dbref *) Lhs - *(dbref *) Rhs;
+    return *(const dbref *) Lhs - *(const dbref *) Rhs;
 }
 
 /**
@@ -6525,7 +6530,7 @@ ignore_is_ignoring_sub(dbref Player, dbref Who)
  * @param Who the player to check to see if being ignored.
  * @return boolean true if Player is ignoring Who
  */
-inline int
+int
 ignore_is_ignoring(dbref Player, dbref Who)
 {
     return ignore_is_ignoring_sub(Player, Who) || (tp_ignore_bidirectional
@@ -7021,7 +7026,7 @@ main(int argc, char **argv)
                 int fd;
 
                 if ((fd = open("/dev/tty", O_RDWR)) >= 0) {
-                    ioctl(fd, TIOCNOTTY, (char *) 0); /* lose controll TTY */
+                    ioctl(fd, TIOCNOTTY, NULL); /* lose controll TTY */
                     close(fd);
                 }
             }

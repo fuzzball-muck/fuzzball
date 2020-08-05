@@ -606,10 +606,6 @@ flag_description(dbref thing)
  * to see props on 'thing', however, permissions are checked to make
  * sure 'player' cannot see hidden props unless permitted.
  *
- * Does some weird gymnastics around legacy gender/legacy guest props.
- * If tp_show_legacy_props is false, it will hide these props from the
- * list.
- *
  * @private
  * @param player the player searching props
  * @param thing the thing we are checking props on
@@ -650,34 +646,7 @@ listprops_wildcard(dbref player, dbref thing, const char *dir, const char *wild)
     /* Iterate over the propdir we are working on. */
     while (propadr) {
         if (equalstr(wldcrd, propname)) {
-            const char *current, *tmpname;
-            static const char *legacy_gender;
-            static const char *legacy_guest;
-            current = tp_gender_prop;
-            legacy_gender = LEGACY_GENDER_PROP;
-            legacy_guest = LEGACY_GUEST_PROP;
-
             snprintf(buf, sizeof(buf), "%s%c%s", dir, PROPDIR_DELIMITER, propname);
-            tmpname = buf;
-
-            while (*current == PROPDIR_DELIMITER)
-                current++;
-
-            while (*legacy_gender == PROPDIR_DELIMITER)
-                legacy_gender++;
-
-            while (*legacy_guest == PROPDIR_DELIMITER)
-                legacy_guest++;
-
-            while (*tmpname == PROPDIR_DELIMITER)
-                tmpname++;
-
-            /* Check if we're skipping over legacy props. */
-            if (!tp_show_legacy_props &&
-                (!strcasecmp(tmpname, legacy_guest) || (!strcasecmp(tmpname, legacy_gender) && strcasecmp(current, legacy_gender)))) {
-                propadr = next_prop(pptr, propadr, propname, sizeof(propname));
-                continue;
-            }
 
             if (!Prop_System(buf) && (!Prop_Hidden(buf) || Wizard(OWNER(player)))) {
                 if (!*ptr || recurse) {
@@ -1061,7 +1030,7 @@ do_inventory(dbref player)
 /**
  * Initialize the checkflags search system
  *
- * This is the underpinning of @find, @owned, @entrance, and a few
+ * This is the underpinning of \@find, \@owned, \@entrances, and a few
  * other similar calls.  It parses over a set of 'flags' to consider,
  * and loads the struct 'check' with the necessary filter paramters.
  *
@@ -1105,7 +1074,7 @@ init_checkflags(dbref player, const char *flags, struct flgchkdat *check)
         *(cptr++) = '\0';
 
     flags = buf;
-    skip_whitespace((const char **)&cptr);
+    skip_whitespace_var(&cptr);
 
     /* Determine output type */
     if (!*cptr) {
@@ -1492,7 +1461,7 @@ checkflags(dbref what, struct flgchkdat check)
 /**
  * Display an object using output_type
  *
- * This is used as a helper for @find to output a found object to the
+ * This is used as a helper for \@find to output a found object to the
  * user using their output_type preference.  For output_types, see
  * init_checkflags
  *
@@ -1580,7 +1549,7 @@ display_objinfo(dbref player, dbref obj, int output_type)
 }
 
 /**
- * Implementation of @find command
+ * Implementation of \@find command
  *
  * This implements the find command, which is powered by
  * checkflags.  See that function for full details of how flags work.
@@ -1589,7 +1558,7 @@ display_objinfo(dbref player, dbref obj, int output_type)
  *
  * Takes a search string to look for, and iterates over the entire
  * database to find it.  There is an option to charge players for
- * @find's, probably since this is kind of nasty on the DB.
+ * \@find's, probably since this is kind of nasty on the DB.
  *
  * @param player the player doing the find
  * @param name the search criteria
@@ -1627,12 +1596,12 @@ do_find(dbref player, const char *name, const char *flags)
 }
 
 /**
- * Implementation of @owned command
+ * Implementation of \@owned command
  *
  * Like do_find, this is underpinned by the checkflags system.
  * For details of how the flags work, see init_checkflags
  *
- * This does do permission checks.  Like @find, it iterates over the
+ * This does do permission checks.  Like \@find, it iterates over the
  * entire database and supports a lookup cost.
  *
  * @see init_checkflags
@@ -1714,9 +1683,9 @@ do_trace(int descr, dbref player, const char *name, int depth)
 }
 
 /**
- * Implementation of the @entrances command
+ * Implementation of the \@entrances command
  *
- * This supports the same sort of flag searches that @find does,
+ * This supports the same sort of flag searches that \@find does,
  * except it searches for exits on the given object (which defaults to here)
  *
  * Under the hood, this uses the checkflags series of methods.
@@ -1810,7 +1779,7 @@ do_entrances(int descr, dbref player, const char *name, const char *flags)
 /**
  * Implementation of @contents
  *
- * This searches the contents of a given object, similar to the way @find
+ * This searches the contents of a given object, similar to the way \@find
  * works except confined to a certain object.  It supports a similar
  * syntax.  If 'name' is not provided, defaults to here.  'flags' can have
  * types and also an output type.

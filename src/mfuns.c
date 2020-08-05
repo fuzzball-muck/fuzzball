@@ -895,7 +895,7 @@ mfn_concat(MFUNARGS)
     if (obj == UNKNOWN || obj == AMBIGUOUS || obj == NOTHING || obj == HOME)
         ABORT_MPI("CONCAT", "Match failed.");
 
-    ptr = get_concat_list(what, perms, obj, (char *) pname, buf, BUFFER_LEN, 1,
+    ptr = get_concat_list(what, perms, obj, pname, buf, BUFFER_LEN, 1,
                           mesgtyp, &blessed);
 
     if (!ptr)
@@ -964,7 +964,7 @@ mfn_select(MFUNARGS)
     i = targval = atoi(argv[0]);
 
     do {
-        ptr = get_list_item(player, obj, perms, (char *) pname, i--, mesgtyp, &blessed);
+        ptr = get_list_item(player, obj, perms, pname, i--, mesgtyp, &blessed);
     } while (limit-- > 0 && i >= 0 && ptr && !*ptr);
 
     if (ptr == NULL)
@@ -1118,7 +1118,7 @@ mfn_list(MFUNARGS)
     if (obj == UNKNOWN || obj == AMBIGUOUS || obj == NOTHING || obj == HOME)
         ABORT_MPI("LIST", "Match failed.");
 
-    ptr = get_concat_list(what, perms, obj, (char *) pname, buf, BUFFER_LEN, 0,
+    ptr = get_concat_list(what, perms, obj, pname, buf, BUFFER_LEN, 0,
                           mesgtyp, &blessed);
 
     if (!ptr)
@@ -1173,7 +1173,7 @@ mfn_lexec(MFUNARGS)
     while (*pname == PROPDIR_DELIMITER)
         pname++;
 
-    ptr = get_concat_list(what, perms, obj, (char *) pname, buf, BUFFER_LEN, 2,
+    ptr = get_concat_list(what, perms, obj, pname, buf, BUFFER_LEN, 2,
                           mesgtyp, &blessed);
 
     if (!ptr)
@@ -1224,7 +1224,8 @@ mfn_rand(MFUNARGS)
 {
     int num = 0;
     dbref trg = (dbref) 0, obj = what;
-    const char *pname, *ptr;
+    char *pname;
+    const char *ptr;
     int blessed = 0;
 
     pname = argv[0];
@@ -1239,12 +1240,12 @@ mfn_rand(MFUNARGS)
     if (obj == UNKNOWN || obj == AMBIGUOUS || obj == NOTHING || obj == HOME)
         ABORT_MPI("RAND", "Match failed.");
 
-    num = get_list_count(what, obj, perms, (char *) pname, mesgtyp, &blessed);
+    num = get_list_count(what, obj, perms, pname, mesgtyp, &blessed);
 
     if (!num)
         ABORT_MPI("RAND", "Failed list read.");
 
-    ptr = get_list_item(what, obj, perms, (char *) pname,
+    ptr = get_list_item(what, obj, perms, pname,
                         (((RANDOM() / 256) % num) + 1),
                         mesgtyp, &blessed);
 
@@ -1297,7 +1298,8 @@ mfn_timesub(MFUNARGS)
 {
     int num = 0;
     dbref trg = (dbref) 0, obj = what;
-    const char *pname, *ptr;
+    char *pname;
+    const char *ptr;
     int period = 0, offset = 0;
     int blessed = 0;
 
@@ -1315,7 +1317,7 @@ mfn_timesub(MFUNARGS)
     if (obj == UNKNOWN || obj == AMBIGUOUS || obj == NOTHING || obj == HOME)
         ABORT_MPI("TIMESUB", "Match failed.");
 
-    num = get_list_count(what, obj, perms, (char *) pname, mesgtyp, &blessed);
+    num = get_list_count(what, obj, perms, pname, mesgtyp, &blessed);
 
     if (!num)
         ABORT_MPI("TIMESUB", "Failed list read.");
@@ -1328,7 +1330,7 @@ mfn_timesub(MFUNARGS)
     if (offset < 0)
         offset = -offset;
 
-    ptr = get_list_item(what, obj, perms, (char *) pname, offset + 1, mesgtyp,
+    ptr = get_list_item(what, obj, perms, pname, offset + 1, mesgtyp,
                         &blessed);
 
     if (!ptr)
@@ -2806,7 +2808,7 @@ mfn_dice(MFUNARGS)
 const char *
 mfn_default(MFUNARGS)
 {
-    char *ptr;
+    const char *ptr;
 
     *buf = '\0';
     ptr = MesgParse(argv[0], buf, buflen);
@@ -2845,7 +2847,7 @@ mfn_default(MFUNARGS)
 const char *
 mfn_if(MFUNARGS)
 {
-    char *fbr, *ptr;
+    const char *fbr, *ptr;
 
     if (argc == 3) {
         fbr = argv[2];
@@ -3129,7 +3131,7 @@ mfn_convtime(MFUNARGS)
 #ifdef WIN32
     ABORT_MPI("CONVTIME", CURRENTLY_UNAVAILABLE);
 #else
-    char *error = 0;
+    const char *error = NULL;
 
     time_t seconds = time_string_to_seconds(argv[0], "%T%t%D", &error);
 
@@ -3757,9 +3759,9 @@ mfn_right(MFUNARGS)
      */
 
     char *ptr;
-    char *fptr;
+    const char *fptr;
     int i, len;
-    char *fillstr;
+    const char *fillstr;
 
     len = (argc > 1) ? atoi(argv[1]) : 78;
 
@@ -3816,9 +3818,9 @@ mfn_left(MFUNARGS)
      */
 
     char *ptr;
-    char *fptr;
+    const char *fptr;
     int i, len;
-    char *fillstr;
+    const char *fillstr;
 
     len = (argc > 1) ? atoi(argv[1]) : 78;
 
@@ -3877,9 +3879,9 @@ mfn_center(MFUNARGS)
      */
 
     char *ptr;
-    char *fptr;
+    const char *fptr;
     int i, len, halflen;
-    char *fillstr;
+    const char *fillstr;
 
     len = (argc > 1) ? atoi(argv[1]) : 78;
 

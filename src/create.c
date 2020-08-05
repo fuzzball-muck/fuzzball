@@ -32,7 +32,7 @@
 #include "tune.h"
 
 /**
- * Implementation of @open command
+ * Implementation of \@open command
  *
  * This creates an exit in the current room and optionally links it
  * in one step.
@@ -70,7 +70,7 @@ do_open(int descr, dbref player, const char *direction, const char *linkto)
     qname = buf2;
     remove_ending_whitespace(&qname);
 
-    skip_whitespace((const char **)&rname);
+    skip_whitespace_var(&rname);
 
     loc = LOCATION(player);
 
@@ -116,7 +116,7 @@ do_open(int descr, dbref player, const char *direction, const char *linkto)
 }
 
 /**
- * Implementation of @link command.
+ * Implementation of \@link command
  *
  * Use this to link to a room that you own.  It also sets home for objects and
  * things, and drop-to's for rooms.  It seizes ownership of an unlinked exit,
@@ -287,7 +287,7 @@ do_link(int descr, dbref player, const char *thing_name, const char *dest_name)
 }
 
 /**
- * Implementation of @dig
+ * Implementation of \@dig
  *
  * Use this to create a room.  This does a lot of checks; rooms must pass
  * ok_object_name.  It handles finding the parent, if no parent is
@@ -359,7 +359,7 @@ do_dig(int descr, dbref player, const char *name, const char *pname)
     qname = buf;
     remove_ending_whitespace(&qname);
 
-    skip_whitespace((const char **)&rname);
+    skip_whitespace_var(&rname);
     rname = strcpyn(rbuf, sizeof(rbuf), rname);
     qname = strcpyn(qbuf, sizeof(qbuf), qname);
 
@@ -389,7 +389,7 @@ do_dig(int descr, dbref player, const char *name, const char *pname)
 }
 
 /**
- * Implementation of @program
+ * Implementation of \@program
  *
  * First, find a program that matches that name.  If there's one, then we 
  * put the player into edit mode and do it.  Otherwise, we create a new object
@@ -444,7 +444,7 @@ do_program(int descr, dbref player, const char *name, const char *rname)
 
 
 /**
- * This is the implementation of @edit
+ * This is the implementation of \@edit
  *
  * This does not do any permission checking, however the underlying call
  * (edit_program) does do some minimal checking to make sure the player
@@ -523,7 +523,7 @@ copy_one_prop(dbref source, dbref destination, char *propname)
         }
 
         /* now hook the new property into the destination object. */
-        set_property(destination, propname, &newprop, 0);
+        set_property(destination, propname, &newprop);
     }
 
     return;
@@ -675,7 +675,7 @@ do_clone(int descr, dbref player, const char *name, const char *rname)
 }
 
 /**
- * Implementation of @create
+ * Implementation of \@create
  *
  * Use this to create an object.  This does some checking; for instance,
  * the name must pass ok_object_name.  Does NOT check builder bit.
@@ -708,7 +708,7 @@ do_create(dbref player, char *name, char *acost)
     qname = buf2;
     remove_ending_whitespace(&qname);
 
-    skip_whitespace((const char **)&rname);
+    skip_whitespace_var(&rname);
 
     cost = atoi(qname);
 
@@ -802,7 +802,7 @@ parse_source(int descr, dbref player, const char *source_name)
  * This routine attaches a new existing action to a source object, if possible.
  *
  * The action will not do anything until it is LINKed.  This is the 
- * implementation of @action.
+ * implementation of \@action.
  *
  * Action names must pass ok_object_name.
  *
@@ -839,7 +839,7 @@ do_action(int descr, dbref player, const char *action_name,
     qname = buf2;
     remove_ending_whitespace(&qname);
 
-    skip_whitespace((const char **)&rname);
+    skip_whitespace_var(&rname);
 
     if (!ok_object_name(action_name, TYPE_EXIT)) {
         notify(player, "Please specify a valid name for this action.");
@@ -875,7 +875,7 @@ do_action(int descr, dbref player, const char *action_name,
 /**
  * This routine attaches a previously existing action to a source object.
  * The action will not do anything unless it is LINKed.  This is the
- * implementation of @attach
+ * implementation of \@attach
  *
  * Does all the permission checking associated except for the builder bit.
  * Will reset the priority level if there is is a priority set.
@@ -931,7 +931,7 @@ do_attach(int descr, dbref player, const char *action_name, const char *source_n
 }
 
 /**
- * Implementation of @recycle command
+ * Implementation of \@recycle command
  *
  * This is a wrapper around 'recycle', but it does a lot of additional
  * permission checks.  For instance, in order to recycle an object or

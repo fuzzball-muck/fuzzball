@@ -28,6 +28,8 @@
 #include "timequeue.h"
 #include "tune.h"
 
+typedef int (*comparator_t) (const void *, const void *);
+
 /*
  * TODO: These globals really probably shouldn't be globals.  I can only guess
  *       this is either some kind of primitive code re-use because all the
@@ -1391,15 +1393,15 @@ static struct inst *sortflag_index = NULL;
 static int
 sortcomp_generic(const void *x, const void *y)
 {
-    struct inst *a;
-    struct inst *b;
+    const struct inst *a;
+    const struct inst *b;
 
     if (!sortflag_descending) {
-        a = *(struct inst **) x;
-        b = *(struct inst **) y;
+        a = *(struct inst *const *) x;
+        b = *(struct inst *const *) y;
     } else {
-        a = *(struct inst **) y;
-        b = *(struct inst **) x;
+        a = *(struct inst *const *) y;
+        b = *(struct inst *const *) x;
     }
 
     if (sortflag_index) {
@@ -1462,7 +1464,7 @@ prim_array_sort(PRIM_PROTOTYPE)
     stk_array *arr;
     stk_array *nu;
     size_t count;
-    int (*comparator) (const void *, const void *);
+    comparator_t comparator;
     struct inst **tmparr = NULL;
 
     CHECKOP(2);
@@ -1553,7 +1555,7 @@ prim_array_sort_indexed(PRIM_PROTOTYPE)
     stk_array *arr;
     stk_array *nu;
     size_t count;
-    int (*comparator) (const void *, const void *);
+    comparator_t comparator;
     struct inst **tmparr = NULL;
 
     CHECKOP(3);
@@ -2244,7 +2246,7 @@ prim_array_put_propvals(PRIM_PROTOTYPE)
             }
 
             if (*propname) {
-                set_property(ref, propname, &propdat, 0);
+                set_property(ref, propname, &propdat);
             }
         } while (array_next(arr, &temp1));
     }
@@ -2391,7 +2393,7 @@ prim_array_put_proplist(PRIM_PROTOTYPE)
         propdat.data.val = array_count(arr);
     }
 
-    set_property(ref, propname, &propdat, 0);
+    set_property(ref, propname, &propdat);
 
     if (array_first(arr, &temp1)) {
         do {
@@ -2498,7 +2500,7 @@ prim_array_put_proplist(PRIM_PROTOTYPE)
                     propdat.data.val = 0;
             }
 
-            set_property(ref, propname, &propdat, 0);
+            set_property(ref, propname, &propdat);
         } while (array_next(arr, &temp1));
     }
 
@@ -2550,7 +2552,7 @@ prim_array_put_proplist(PRIM_PROTOTYPE)
         *fmtout++ = '\0';
 
         if (get_property(ref, propname)) {
-            remove_property(ref, propname, 0);
+            remove_property(ref, propname);
         } else {
             break;
         }
@@ -2739,10 +2741,10 @@ prim_array_put_reflist(PRIM_PROTOTYPE)
         } while (array_next(arr, &temp1));
     }
 
-    remove_property(ref, dir, 0);
+    remove_property(ref, dir);
     propdat.flags = PROP_STRTYP;
     propdat.data.str = buf;
-    set_property(ref, dir, &propdat, 0);
+    set_property(ref, dir, &propdat);
 
     CLEAR(oper1);
     CLEAR(oper2);

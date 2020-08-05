@@ -172,7 +172,7 @@ void ts_useobject(dbref thing);
  * @param error the error message, if any
  * @return the time in seconds
  */
-time_t time_string_to_seconds(char *string, char *format, char **error);
+time_t time_string_to_seconds(char *string, const char *format, const char **error);
 #endif
 
 /**

@@ -1,6 +1,6 @@
 /** @file tune.c
  *
- * Source defining the functions that support the @tune function and
+ * Source defining the functions that support the \@tune function and
  * dealing with tunable configuration parameters.
  *
  * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
@@ -599,13 +599,13 @@ tune_load_parms_from_file(FILE * f, dbref player, int cnt)
                 *c++ = '\0';
                 p = buf;
                 remove_ending_whitespace(&p);
-                skip_whitespace((const char **)&c);
+                skip_whitespace_var(&c);
 
                 for (p = c; *p && *p != '\n' && *p != '\r'; p++) ;
 
                 *p = '\0';
                 p = buf;
-                skip_whitespace((const char **)&p);
+                skip_whitespace_var(&p);
 
                 if (*p) {
                     result = tune_setparm((dbref)1, p, c, MLEV_GOD);
@@ -640,7 +640,7 @@ tune_load_parms_from_file(FILE * f, dbref player, int cnt)
 }
 
 /**
- * Implementation of @tune command
+ * Implementation of \@tune command
  *
  * This does a lot of different things based on if 'parmname' and
  * 'parmval' are set and to what.
@@ -658,7 +658,7 @@ tune_load_parms_from_file(FILE * f, dbref player, int cnt)
  * If the parmname is "save" or "load", it will save or load parameters
  * from file accordingly.
  *
- * Otherwise, parmname should be either "" to list all @tunes or
+ * Otherwise, parmname should be either "" to list all \@tunes or
  * a simple regex can be used to show only certain parameters.
  *
  * The parmname "info" will display more detained tune information.

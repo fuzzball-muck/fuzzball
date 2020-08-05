@@ -34,7 +34,7 @@
  * @param file the file from which this function was called.
  * @param line the line in the file from which this function was called.
  */
-void RCLEAR(struct inst *oper, char *file, int line);
+void RCLEAR(struct inst *oper, const char *file, int line);
 
 /**
  * This is a wrapper around RCLEAR to automatically inject file and line
@@ -772,8 +772,8 @@ char *debug_inst(struct frame * fr, int lev, struct inst * pc, int pid,
 void do_abort_interp(dbref player, const char *msg, struct inst *pc,
                      struct inst *arg, int atop, struct frame *fr,
                      struct inst *oper1, struct inst *oper2, struct inst *oper3,
-                     struct inst *oper4, int nargs, dbref program, char *file,
-                     int line);
+                     struct inst *oper4, int nargs, dbref program,
+                     const char *file, int line);
 
 /**
  * Silently abort the interpreter loop.
