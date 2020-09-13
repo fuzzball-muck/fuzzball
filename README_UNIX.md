@@ -47,7 +47,7 @@ make install-sysv-inits  # Skip to not run at startup
 ```
 
 ## Running
-For a comprehensive guide to running a MUCK, check out [MINK - The Muck Information Kiosk][help-mink].
+For a comprehensive guide to running a MUCK, check out [MINK - The Muck Information Kiosk](http://www.rdwarf.com/users/mink/muckman/).
 
 ### Quick-start
 * **Follow the build directions above**
@@ -64,5 +64,3 @@ mv "$PREFIX/game/data/basedb.db" "$PREFIX/game/data/std-db.db" # Rename database
 /usr/local/sbin/fb-restart
 # If using a custom prefix, $PREFIX/sbin/fb-restart
 ```
-
-[help-mink]: http://www.rdwarf.com/users/mink/muckman/

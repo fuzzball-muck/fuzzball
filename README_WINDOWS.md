@@ -48,13 +48,13 @@ nmake /f makefile.win
 ```
 
 ## Running
-* Install the [32-bit Visual C++ Redistributable for Visual Studio 2015][visual-runtime] (*Fuzzball currently does not support 64-bit*)
+* Install the [32-bit Visual C++ Redistributable for Visual Studio 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48145) (*Fuzzball currently does not support 64-bit*)
 * Manage the server with ```restart.exe```
 
-For a comprehensive guide to running a MUCK, check out [MINK - The Muck Information Kiosk][help-mink].
+For a comprehensive guide to running a MUCK, check out [MINK - The Muck Information Kiosk](http://www.rdwarf.com/users/mink/muckman/).
 
 ### Quick-start
-* **Follow the build directions, or [download a pre-built package][docs-downloads]**
+* **Follow the build directions, or [download a pre-built package](README.md#downloads)**
 * Set up configuration in ```restart.ini```
 ```bat
 cd "path\to\fuzzball\folder"
@@ -66,7 +66,3 @@ restart -c
 ```bat
 restart
 ```
-
-[help-mink]: http://www.rdwarf.com/users/mink/muckman/
-[docs-downloads]: README.md#downloads
-[visual-runtime]: https://www.microsoft.com/en-us/download/details.aspx?id=48145
