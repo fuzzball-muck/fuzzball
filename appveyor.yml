@@ -29,6 +29,26 @@ init:
         } else {
             $env:DEPLOY_IMAGE_NAME = "dev-$($env:APPVEYOR_REPO_COMMIT.Substring(0, 8))-$env:APPVEYOR_BUILD_NUMBER"
         }
+        function ConvertMarkdownToHtml([String] $InputFile, [String] $OutputDir) {
+            # Find the filename without path
+            $filename = Split-Path $InputFile -leaf
+
+            # Convert to Markdown
+            # See https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/convertfrom-markdown
+            # Convert ".md" links to ".md.htm", ensuring filename starts with a letter/number
+
+            # Check if we're running on PowerShell 7 or newer
+            if ($PSVersionTable.PSVersion -ge [Version]::new(7, 0, 0)) {
+                # ConvertFrom-Markdown is native
+                (ConvertFrom-Markdown -Path "$InputFile").Html | % {$_ -replace "<a href=""(\w.*)\.md(#.*)?"">", "<a href=""`$1.md.htm`$2"">"} | Out-File "$OutputDir/$filename.htm"
+            } else {
+                # Send to the AppVeyor PowerShell 7 program
+                # Don't use a PowerShell Script Block as it prevents parameters from being substituted in
+                & "C:\Program Files\PowerShell\7\pwsh.exe" -Command @"
+        (ConvertFrom-Markdown -Path ""$InputFile"").Html | % {`$_ -replace ""<a href=""""(\w.*)\.md(#.*)?"""">"", ""<a href=""""```$1.md.htm```$2"""">""} | Out-File ""$OutputDir/$filename.htm""
+        "@
+            }
+        }
 
 build_script:
     - ps: |
@@ -68,6 +88,7 @@ build_script:
 
         # Copy starter database folder
         cp -Recurse "$env:APPVEYOR_BUILD_FOLDER/dbs" "$artifact_root"
+
         # Copy documentation folders
         cp -Recurse "$env:APPVEYOR_BUILD_FOLDER/docs" "$artifact_root"
         md "$artifact_root/data/info"
@@ -75,13 +96,30 @@ build_script:
         cp "$env:APPVEYOR_BUILD_FOLDER/docs/mpi-intro2" "$artifact_root/data/info"
         cp "$env:APPVEYOR_BUILD_FOLDER/docs/muf-tutorial" "$artifact_root/data/info"
         cp "$env:APPVEYOR_BUILD_FOLDER/docs/changesfb7" "$artifact_root/data/info"
+
         # Copy source and include folder
         cp -Recurse "$env:APPVEYOR_BUILD_FOLDER/src" "$artifact_root"
         cp -Recurse "$env:APPVEYOR_BUILD_FOLDER/include" "$artifact_root"
+        # Copy Windows source
+        cp -Recurse "$env:APPVEYOR_BUILD_FOLDER/win32" "$artifact_root"
+
         # Copy text help files to data folder
         cp "$artifact_root/docs/*.txt" "$artifact_root/data/"
+
+        # Copy README files, transforming to Windows line endings
+        # See https://stackoverflow.com/questions/17579553/windows-command-to-convert-unix-line-endings/17580505#17580505
+        #
+        (Get-Content "$env:APPVEYOR_BUILD_FOLDER/README.md") | Set-Content "$artifact_root/README.md.txt"
+        (Get-Content "$env:APPVEYOR_BUILD_FOLDER/README_WINDOWS.md") | Set-Content "$artifact_root/README_WINDOWS.md.txt"
+        #
+        # Also render the Markdown into an HTML file for easier reference
+        ConvertMarkdownToHtml "$env:APPVEYOR_BUILD_FOLDER/README.md" "$artifact_root"
+        ConvertMarkdownToHtml "$env:APPVEYOR_BUILD_FOLDER/README_WINDOWS.md" "$artifact_root"
+
         # Copy compiled binaries and libraries
         cp -Recurse "$env:APPVEYOR_BUILD_FOLDER/build/*" "$artifact_root"
+
+        # Verify basics and make the archive
         if ((Test-Path "$artifact_root/fbmuck.exe") -And (Test-Path "$artifact_root/restart.exe")) {
             echo "Packaging release artifact..."
             7z a "$artifact_zip" "$artifact_root"
