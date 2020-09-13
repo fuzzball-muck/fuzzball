@@ -48,7 +48,8 @@ nmake /f makefile.win
 ```
 
 ## Running
-* Install the [32-bit Visual C++ Redistributable for Visual Studio 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48145) (*Fuzzball currently does not support 64-bit*)
+* Install the [32-bit Visual C++ Redistributable for Visual Studio 2019](https://www.microsoft.com/en-us/download/details.aspx?id=48145) (*Fuzzball currently does not support 64-bit*)
+  * Pick the `x86` version, [or just use this direct link to `vc_redist.x86.exe`](https://aka.ms/vs/16/release/vc_redist.x86.exe)
 * Manage the server with ```restart.exe```
 
 For a comprehensive guide to running a MUCK, check out [MINK - The Muck Information Kiosk](http://www.rdwarf.com/users/mink/muckman/).
