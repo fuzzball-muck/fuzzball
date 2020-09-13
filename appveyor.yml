@@ -58,6 +58,11 @@ build_script:
         mkdir "$artifact_root"
         # Copy contents of game folder
         cp -Recurse "$env:APPVEYOR_BUILD_FOLDER/game/*" "$artifact_root"
+        # Remove Unix "restart.in" if copied
+        if (Test-Path "$artifact_root/restart.in") {
+            Remove-Item "$artifact_root/restart.in"
+        }
+
         # Copy starter database folder
         cp -Recurse "$env:APPVEYOR_BUILD_FOLDER/dbs" "$artifact_root"
         # Copy documentation folders
