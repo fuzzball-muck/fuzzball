@@ -39,7 +39,7 @@ DBOUT="$GAMEDIR/data/std-db.new"
 # the MUCK must be configured with --with-ssl, make cert must have been run,
 # and you must include "-sport PORTNUM" for each SSL port.
 #
-PORTS="4201"
+PORTS="$FB_PORT"
 
 #
 # This is the name of the fbmuck program to run.  You probably don't want to
@@ -87,6 +87,12 @@ if [ -r $PANICDB ]; then
     fi
 fi
 
+# We may need to do an initial setup
+if [ ! -r "$GAMEDIR/data" ]; then
+    echo "Initializing your Fuzzball MUCK Base Directory"
+    cp -a /opt/fbmuck-base/* "$GAMEDIR/"
+fi
+
 if [ -r $DBOUT ]; then
     mv -f $DBIN $DBOLD
     mv $DBOUT $DBIN
@@ -116,5 +122,3 @@ echo "$(date +%Y-%m-%dT%H:%M:%S): $(who am i)" >> $RESTARTS_LOGFILE
 
 # echo "Server started at: $(date)"
 $SERVER -nodetach -gamedir $GAMEDIR -dbin $DBIN -dbout $DBOUT $PORTS
-
-
