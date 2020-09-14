@@ -4398,12 +4398,14 @@ void prim_dump(PRIM_PROTOTYPE)
     if (mlev < 4)
         abort_interp("Permission denied.  Requires Wizbit.");
 
+#ifndef DISKBASE
     /* Are we already dumping? */
     if (global_dumper_pid != 0) {
         result = 0;
         PushInt(result);
         return;
     }
+#endif
 
     dump_db_now();
 
