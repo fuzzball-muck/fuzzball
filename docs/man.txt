@@ -4420,6 +4420,7 @@ Parameters available:
  (bool) allow_listeners_env       - Allow listeners down environment
  (bool) allow_listeners_obj       - Allow objects to be listeners
  (bool) allow_zombies             - Enable Zombie things to relay what they hear
+ (bool) auto_reload_certs         - Automatically reload certs if the cert file changes
  (bool) autolink_actions          - Automatically link @actions to NIL
  (str)  autolook_cmd              - Room entry look command
  (time) clean_interval            - Interval between memory/object cleanups

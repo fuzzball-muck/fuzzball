@@ -54,6 +54,7 @@
 # else
 #  include <ssl.h>
 # endif
+#include <sys/stat.h>
 #endif
 
 #ifdef WIN32
@@ -3553,6 +3554,106 @@ pem_passwd_cb(char *buf, int size, int rwflag, void *userdata)
 }
 
 /**
+ * Get the modification time for a given file.
+ *
+ * @private
+ * @param filename the file name to check time for
+ * @return modification time as a time_t
+ */
+static time_t
+cert_file_mtime(const char *filename )
+{
+    struct stat st;
+
+    if (stat(filename, &st) < 0) {
+        log_status("Could not read certificate file %s", filename);
+        return 0;
+    }
+
+    return st.st_mtime;
+}
+
+/**
+ * @var modification time for cert file
+ */
+static time_t mtime_cert_file = 0;
+
+/**
+ * @var modification time for key file
+ */
+static time_t mtime_key_file = 0;
+
+/**
+ * Reload the server certificates
+ *
+ * @param new_ssl_ctx - a new SSL_CTX structure to load up.
+ * @return bool true on success, false otherwise
+ */
+bool
+load_server_certificates(SSL_CTX *new_ssl_ctx)
+{
+    bool ssl_status_ok = true;
+
+    if (!new_ssl_ctx || !tp_ssl_cert_file || !tp_ssl_key_file) {
+        return false;
+    }
+ 
+    if (!SSL_CTX_use_certificate_chain_file(new_ssl_ctx, tp_ssl_cert_file)) {
+        log_status("Could not load certificate file %s", tp_ssl_cert_file);
+        fprintf(stderr, "Could not load certificate file %s\n", tp_ssl_cert_file);
+        ssl_status_ok = false;
+    }
+
+    mtime_cert_file = cert_file_mtime(tp_ssl_cert_file);
+
+    if (ssl_status_ok) {
+        SSL_CTX_set_default_passwd_cb(new_ssl_ctx, pem_passwd_cb);
+        SSL_CTX_set_default_passwd_cb_userdata(new_ssl_ctx, (void*)tp_ssl_keyfile_passwd);
+
+        if (!SSL_CTX_use_PrivateKey_file (new_ssl_ctx, tp_ssl_key_file, SSL_FILETYPE_PEM)) {
+            log_status("Could not load private key file %s", tp_ssl_key_file);
+            fprintf(stderr, "Could not load private key file %s\n", tp_ssl_key_file);
+            ssl_status_ok = false;
+        }
+    }
+
+    mtime_key_file = cert_file_mtime(tp_ssl_key_file);
+
+    if (ssl_status_ok) {
+        if (!SSL_CTX_check_private_key(new_ssl_ctx)) {
+            log_status("Private key does not check out and appears to be invalid.");
+            fprintf(stderr, "Private key does not check out and appears to be invalid.\n");
+            ssl_status_ok = false;
+        }
+    }
+
+    return ssl_status_ok;
+}
+
+/**
+ * Update the server certificates if needed
+ *
+ * This checks the modification time and if it has changed since the last
+ * time we checked, it will reload them.
+ */
+void
+update_server_certificates(void)
+{
+    time_t new_mtime_cert_file;
+    time_t new_mtime_key_file;
+    SSL_CTX* new_ctx;
+
+    new_mtime_cert_file = cert_file_mtime( tp_ssl_cert_file );
+    new_mtime_key_file = cert_file_mtime( tp_ssl_key_file );
+
+    if (( new_mtime_cert_file != mtime_cert_file ) ||
+        ( new_mtime_key_file != mtime_key_file )) {
+        log_status("Reloading certificate file %s", tp_ssl_cert_file);
+        reconfigure_ssl();
+    }
+}
+
+/**
  * Create a new SSl_CTX object.
  *
  * We do this rather than reconfiguring an existing one to allow us to
@@ -3637,50 +3738,7 @@ configure_new_ssl_ctx(void)
         SSL_CTX_set_options(new_ssl_ctx, SSL_OP_CIPHER_SERVER_PREFERENCE);
     }
 
-    if (!SSL_CTX_use_certificate_chain_file(new_ssl_ctx,
-                                            (void *) tp_ssl_cert_file)) {
-        log_status("Could not load certificate file %s",
-                   (void *) tp_ssl_cert_file);
-
-        /* Use (char*) to avoid a -Wformat= warning */
-        fprintf(stderr, "Could not load certificate file %s\n",
-                (char *) tp_ssl_cert_file);
-        ssl_status_ok = 0;
-    }
-
-    if (ssl_status_ok) {
-        SSL_CTX_set_default_passwd_cb(new_ssl_ctx, pem_passwd_cb);
-        SSL_CTX_set_default_passwd_cb_userdata(new_ssl_ctx,
-                                               (void *) tp_ssl_keyfile_passwd);
-
-        if (!SSL_CTX_use_PrivateKey_file
-            (new_ssl_ctx, (void *) tp_ssl_key_file, SSL_FILETYPE_PEM)) {
-            log_status("Could not load private key file %s", (void *) tp_ssl_key_file);
-
-            /* Use (char*) to avoid a -Wformat= warning */
-            fprintf(stderr, "Could not load private key file %s\n",
-                    (char *) tp_ssl_key_file);
-            ssl_status_ok = 0;
-        }
-    }
-
-    /*
-     * @TODO These two if's (and possibly others) can be reduced to a
-     *       single if that is if(ssl_status_ok && ...) rather than
-     *       doing this funny nesting.
-     */
-
-    if (ssl_status_ok) {
-        if (!SSL_CTX_check_private_key(new_ssl_ctx)) {
-            log_status(
-                "Private key does not check out and appears to be invalid."
-            );
-            fprintf(stderr,
-                    "Private key does not check out and appears to be "
-                    "invalid.\n");
-            ssl_status_ok = 0;
-        }
-    }
+    ssl_status_ok = load_server_certificates(new_ssl_ctx);
 
     if (ssl_status_ok) {
         if (!set_ssl_ctx_versions(new_ssl_ctx, tp_ssl_min_protocol_version)) {
@@ -4268,6 +4326,10 @@ shovechars()
 # endif
                     } else {
                         update_max_descriptor(newd->descriptor);
+
+                        if (tp_auto_reload_certs)
+                            update_server_certificates();
+
                         newd->ssl_session = SSL_new(ssl_ctx);
                         SSL_set_fd(newd->ssl_session, newd->descriptor);
                         cnt = SSL_accept(newd->ssl_session);
@@ -4301,6 +4363,10 @@ shovechars()
 # endif
                     } else {
                         update_max_descriptor(newd->descriptor);
+
+                        if (tp_auto_reload_certs)
+                            update_server_certificates();
+
                         newd->ssl_session = SSL_new(ssl_ctx);
                         SSL_set_fd(newd->ssl_session, newd->descriptor);
                         cnt = SSL_accept(newd->ssl_session);

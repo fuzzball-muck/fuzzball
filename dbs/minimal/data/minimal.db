@@ -1,7 +1,7 @@
 ***Foxen9 TinyMUCK DUMP Format***
 2
 1
-157
+158
 %autolook_cmd=look
 %cpennies=Pennies
 %cpenny=Penny
@@ -159,6 +159,7 @@
 %pname_history_reporting=yes
 %secure_who=no
 %use_hostnames=yes
+%auto_reload_certs=no
 #1
 One
 0

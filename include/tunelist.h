@@ -42,6 +42,7 @@ bool        tp_allow_listeners;                     /**> Described below */
 bool        tp_allow_listeners_env;                 /**> Described below */
 bool        tp_allow_listeners_obj;                 /**> Described below */
 bool        tp_allow_zombies;                       /**> Described below */
+bool        tp_auto_reload_certs;                   /**> Described below */
 bool        tp_autolink_actions;                    /**> Described below */
 const char *tp_autolook_cmd;                        /**> Described below */
 int         tp_clean_interval;                      /**> Described below */
@@ -209,7 +210,7 @@ bool        tp_wiz_vehicles;                        /**> Described below */
  *      * MUCKER level to read
  *      * MUCKER level to write
  *      * Boolean: is set to default value?
- *      * Boolean: is nullable?
+ *      * Boolean: is nullable? (used for TP_TYPE_STRING only)
  *      * Object Type (used for TP_TYPE_DBREF only)
  */
 struct tune_entry tune_list[] = {
@@ -305,6 +306,18 @@ struct tune_entry tune_list[] = {
         TP_TYPE_BOOLEAN,
         .defaultval.b=true,
         .currentval.b=&tp_allow_zombies,
+        0,
+        MLEV_WIZARD,
+        true
+    },
+    {
+        "auto_reload_certs",
+        "Automatically reload certs if the cert file changes",
+        "Connecting",
+        "",
+        TP_TYPE_BOOLEAN,
+        .defaultval.b=false,
+        .currentval.b=&tp_auto_reload_certs,
         0,
         MLEV_WIZARD,
         true
