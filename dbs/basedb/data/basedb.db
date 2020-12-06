@@ -1,7 +1,7 @@
 ***Foxen9 TinyMUCK DUMP Format***
 54
 1
-158
+159
 %autolook_cmd=look
 %cpennies=Pennies
 %cpenny=Penny
@@ -159,6 +159,7 @@
 %pname_history_reporting=yes
 %secure_who=no
 %use_hostnames=yes
+%ssl_auto_reload_certs=no
 #53
 Belt Pouch
 1

@@ -4550,6 +4550,7 @@ Parameters available:
  (bool) secure_thing_movement     - Moving things act like player
  (bool) secure_who                - Disallow WHO command from login screen and programs
  (bool) server_cipher_preference  - Honor server cipher preference order over client's
+ (bool) ssl_auto_reload_certs     - Automatically reload certs if the cert file changes
  (str)  ssl_cert_file             - Path to SSL certificate .pem
  (str)  ssl_cipher_preference_list - Allowed OpenSSL cipher list
  (str)  ssl_key_file              - Path to SSL private key .pem
