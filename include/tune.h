@@ -93,7 +93,6 @@ extern bool        tp_allow_listeners;          /**< Tune variable */
 extern bool        tp_allow_listeners_env;      /**< Tune variable */
 extern bool        tp_allow_listeners_obj;      /**< Tune variable */
 extern bool        tp_allow_zombies;            /**< Tune variable */
-extern bool        tp_auto_reload_certs;        /**< Tune variable */
 extern bool        tp_autolink_actions;         /**< Tune variable */
 extern const char *tp_autolook_cmd;             /**< Tune variable */
 extern int         tp_clean_interval;           /**< Tune variable */
@@ -224,6 +223,7 @@ extern bool        tp_secure_teleport;          /**< Tune variable */
 extern bool        tp_secure_thing_movement;    /**< Tune variable */
 extern bool        tp_secure_who;               /**< Tune variable */
 extern bool        tp_server_cipher_preference; /**< Tune variable */
+extern bool        tp_ssl_auto_reload_certs;    /**< Tune variable */
 extern const char *tp_ssl_cert_file;            /**< Tune variable */
 extern const char *tp_ssl_cipher_preference_list;   /**< Tune variable */
 extern const char *tp_ssl_key_file;             /**< Tune variable */

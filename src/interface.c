@@ -4327,7 +4327,7 @@ shovechars()
                     } else {
                         update_max_descriptor(newd->descriptor);
 
-                        if (tp_auto_reload_certs)
+                        if (tp_ssl_auto_reload_certs)
                             update_server_certificates();
 
                         newd->ssl_session = SSL_new(ssl_ctx);
@@ -4364,7 +4364,7 @@ shovechars()
                     } else {
                         update_max_descriptor(newd->descriptor);
 
-                        if (tp_auto_reload_certs)
+                        if (tp_ssl_auto_reload_certs)
                             update_server_certificates();
 
                         newd->ssl_session = SSL_new(ssl_ctx);

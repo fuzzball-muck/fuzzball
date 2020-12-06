@@ -42,7 +42,6 @@ bool        tp_allow_listeners;                     /**> Described below */
 bool        tp_allow_listeners_env;                 /**> Described below */
 bool        tp_allow_listeners_obj;                 /**> Described below */
 bool        tp_allow_zombies;                       /**> Described below */
-bool        tp_auto_reload_certs;                   /**> Described below */
 bool        tp_autolink_actions;                    /**> Described below */
 const char *tp_autolook_cmd;                        /**> Described below */
 int         tp_clean_interval;                      /**> Described below */
@@ -173,6 +172,7 @@ bool        tp_secure_teleport;                     /**> Described below */
 bool        tp_secure_thing_movement;               /**> Described below */
 bool        tp_secure_who;                          /**> Described below */
 bool        tp_server_cipher_preference;            /**> Described below */
+bool        tp_ssl_auto_reload_certs;               /**> Described below */
 const char *tp_ssl_cert_file;                       /**> Described below */
 const char *tp_ssl_cipher_preference_list;          /**> Described below */
 const char *tp_ssl_key_file;                        /**> Described below */
@@ -306,18 +306,6 @@ struct tune_entry tune_list[] = {
         TP_TYPE_BOOLEAN,
         .defaultval.b=true,
         .currentval.b=&tp_allow_zombies,
-        0,
-        MLEV_WIZARD,
-        true
-    },
-    {
-        "auto_reload_certs",
-        "Automatically reload certs if the cert file changes",
-        "Connecting",
-        "",
-        TP_TYPE_BOOLEAN,
-        .defaultval.b=false,
-        .currentval.b=&tp_auto_reload_certs,
         0,
         MLEV_WIZARD,
         true
@@ -1904,6 +1892,18 @@ struct tune_entry tune_list[] = {
         .currentval.b=&tp_server_cipher_preference,
         MLEV_GOD,
         MLEV_GOD,
+        true
+    },
+    {
+        "ssl_auto_reload_certs",
+        "Automatically reload certs if the cert file changes",
+        "Connecting",
+        "",
+        TP_TYPE_BOOLEAN,
+        .defaultval.b=false,
+        .currentval.b=&tp_ssl_auto_reload_certs,
+        0,
+        MLEV_WIZARD,
         true
     },
     {
