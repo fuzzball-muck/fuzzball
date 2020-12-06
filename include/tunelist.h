@@ -1897,8 +1897,8 @@ struct tune_entry tune_list[] = {
     {
         "ssl_auto_reload_certs",
         "Automatically reload certs if the cert file changes",
-        "Connecting",
-        "",
+        "SSL",
+        "SSL",
         TP_TYPE_BOOLEAN,
         .defaultval.b=false,
         .currentval.b=&tp_ssl_auto_reload_certs,
