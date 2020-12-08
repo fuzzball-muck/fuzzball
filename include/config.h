@@ -17,20 +17,12 @@
 #include "autoconf.h"
 
 /**
- * Version numbers work like this:
- * 9.03, 9.03+master, 9.04-master, 9.04
- * Release version numbers should only exist for a SINGLE commit, the same
- * commit that gets tagged for release.  Version number changes should always
- * be their own commit, with no functional changes in the same commit.
- *
- * This means the last 9.04-master commit, the only 9.04 commit, and first
- * 9.04+master commit are functionally the same: this is because it's just two
- * commits in a row changing nothing but the version number.
+ * Server version number
  */
-#define VERSION "Muck2.2fb7.00b1+master"
+#define VERSION "fb7.0"
 
 /************************************************************************
-   Administrative Options 
+   Administrative Options
 
    Various things that affect how the muck operates and what privs
  are compiled in.

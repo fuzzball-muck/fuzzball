@@ -1,0 +1,9 @@
+no?
+"{0|n*}" smatch
+1
+showhelp
+prog "_help" array_get_proplist me @ 1 array_make array_notify
+1
+yes?
+"{1|y*}" smatch
+1
