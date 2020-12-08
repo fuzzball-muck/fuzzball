@@ -3,9 +3,4 @@
   
   Your general news info goes here.
   
-----------------------------------------------------------------
-  
-  News has subtopics!  Type 'news index' to get a list of the
-    topics available.
-  
 ================================================================
