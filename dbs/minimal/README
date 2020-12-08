@@ -1,11 +1,8 @@
-Notes to new administrators using minimal.db:
+* The database contains one player, named One. You should change One's
+  password immediately:
 
-1. There is one objects of type player in minimal.db: One(#1), with
-the password "potrzebie."  One is the administrative player; it has
-its WIZARD bit set, and it owns everything.
+    connect #1 potrzebie
+    @password potrzebie=<some new password>
 
-2. minimal.db contains no unlinked exits; thus it will be impossible
-for anybody who is not a WIZARD to connect new rooms to the core
-rooms.
-
-Lachesis
+  Only One can perform some functions like setting and removing players'
+  Wizard flags. Keep its password safe!

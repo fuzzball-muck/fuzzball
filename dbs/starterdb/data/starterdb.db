@@ -1,0 +1,2410 @@
+***Foxen9 TinyMUCK DUMP Format***
+118
+1
+158
+%7bit_other_names=no
+%7bit_thing_names=yes
+%addpennies_muf_mlev=2
+%aging_time= 90d  0:00:00
+%allow_listeners=yes
+%allow_listeners_env=yes
+%allow_listeners_obj=yes
+%allow_zombies=yes
+%autolink_actions=no
+%autolook_cmd=look
+%clean_interval=  0d  0:15:00
+%cmd_log_threshold_msec=1000
+%cmd_only_overrides=no
+%command_burst_size=500
+%command_time_msec=1000
+%commands_per_time=2
+%compatible_priorities=yes
+%connect_fail_mesg=Either that player does not exist, or has a different password.
+%consistent_lock_source=yes
+%cpennies=Pennies
+%cpenny=Penny
+%create_fail_mesg=Either there is already a player with that name, or that name is illegal.
+%dark_sleepers=no
+%dbdump_warning=yes
+default_room_parent=#109
+%description_default=You see nothing special.
+%diskbase_propvals=yes
+%do_mpi_parsing=yes
+%dump_interval=  0d  4:00:00
+%dump_warntime=  0d  0:02:00
+%dumpdone_mesg=## Save complete. ##
+%dumpdone_warning=yes
+%dumping_mesg=## Pausing to save database. This may take a while. ##
+%dumpwarn_mesg=## Game will pause to save the database in a few minutes. ##
+%enable_home=yes
+%enable_prefix=no
+%exit_cost=1
+%exit_darking=yes
+%expanded_debug_trace=yes
+%file_connection_help=data/connect-help.txt
+%file_credits=data/credits.txt
+%file_editor_help=data/edit-help.txt
+%file_help=data/help.txt
+%file_help_dir=data/help
+%file_info_dir=data/info/
+%file_log_cmd_times=logs/cmd-times
+%file_log_commands=logs/commands
+%file_log_gripes=logs/gripes
+%file_log_malloc=logs/malloc
+%file_log_muf_errors=logs/muf-errors
+%file_log_programs=logs/programs
+%file_log_sanfix=logs/sanfixed
+%file_log_sanity=logs/sanity
+%file_log_status=logs/status
+%file_log_stderr=logs/fbmuck.err
+%file_log_stdout=logs/fbmuck
+%file_log_user=logs/user
+%file_man=data/man.txt
+%file_man_dir=data/man
+%file_motd=data/motd.txt
+%file_mpihelp=data/mpihelp.txt
+%file_mpihelp_dir=data/mpihelp
+%file_news=data/news.txt
+%file_news_dir=data/news
+%file_welcome_screen=data/welcome.txt
+%force_mlev1_name_notify=yes
+%free_frames_pool=8
+%gender_prop=sex
+%huh_mesg=Huh?  (Type "help" for help.)
+%idle_boot_mesg=Autodisconnecting for inactivity.
+%idle_ping_enable=yes
+%idle_ping_time=  0d  0:00:55
+%idleboot=yes
+%ignore_bidirectional=yes
+%ignore_support=yes
+%instr_slice=2000
+%leave_mesg=Come back later!
+%link_cost=1
+%listen_mlev=3
+%lock_envcheck=no
+%log_commands=yes
+%log_failed_commands=no
+%log_interactive=yes
+%log_programs=yes
+%lookup_cost=0
+%lost_and_found=#0
+%m3_huh=no
+%max_force_level=1
+%max_instr_count=20000
+%max_interp_recursion=8
+%max_loaded_objs=5
+%max_ml4_nested_interp_loop_count=0
+%max_ml4_preempt_count=0
+%max_nested_interp_loop_count=16
+%max_object_endowment=100
+%max_output=131071
+%max_pennies=10000
+%max_plyr_processes=32
+%max_process_limit=400
+%max_propfetch=1023
+%maxidle=  0d  2:00:00
+%mcp_muf_mlev=3
+%movepennies_muf_mlev=2
+%mpi_continue_after_logout=no
+%mpi_max_commands=2048
+%muckname=TygryssMUCK
+%muf_comments_strict=yes
+%new_program_flags=
+%object_cost=10
+%optimize_muf=yes
+%pause_min=0
+%pcreate_flags=B
+%pennies=pennies
+%pennies_muf_mlev=1
+%penny=penny
+%penny_rate=8
+%periodic_program_purge=yes
+%player_name_limit=16
+player_start=#112
+%playermax=no
+%playermax_bootmesg=Sorry, but there are too many players online.  Please try reconnecting in a few minutes.
+%playermax_limit=56
+%playermax_warnmesg=You likely won't be able to connect right now, since too many players are online.
+%pname_history_reporting=yes
+%pname_history_threshold= 30d  0:00:00
+%process_timer_limit=4
+%quiet_moves=no
+%realms_control=no
+%recognize_null_command=no
+%register_mesg=Sorry, you can get a character by e-mailing XXXX@machine.net.address with a charname and password.
+%registration=yes
+%reserved_names=
+%reserved_player_names=
+%room_cost=10
+%secure_teleport=no
+%secure_thing_movement=no
+%secure_who=no
+%server_cipher_preference=yes
+%ssl_auto_reload_certs=no
+%ssl_cert_file=data/server.pem
+%ssl_cipher_preference_list=ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-CHACHA20-POLY1305:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES256-SHA256:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:@SECLEVEL=1
+%ssl_key_file=data/server.pem
+%ssl_keyfile_passwd=
+%ssl_min_protocol_version=None
+%start_pennies=50
+%starttls_allow=no
+%strict_god_priv=yes
+%tab_input_replaced_with_space=yes
+%teleport_to_player=yes
+%thing_darking=yes
+%toad_default_recipient=#1
+%toad_recycle=no
+%use_hostnames=yes
+%userlog_mlev=3
+%verbose_clone=no
+%verbose_examine=yes
+%who_hides_dark=yes
+%wiz_vehicles=no
+#117
+Bulletin board
+113
+-1
+116
+1
+1607395680
+1607395686
+0
+1607395741
+*Props*
+@/value:3:1
+_/de:2:@$gen/mesgboard recent
+_/lok:4:#0&!#0
+msgs#/i:2:0
+*End*
+0
+20
+2
+#116
+The Heartstone
+113
+-1
+-1
+1
+1607395680
+1607395680
+0
+1607395680
+*Props*
+@/value:3:1
+_/de:2:The Heartstone is a single large ruby orb, flawless and pure, sitting upon a dark obsidian pedestal.  Perhaps its deep red color is what gives rise to its name. Or perhaps it's the faint pulsing glow deep within it... or are you merely imagining that? The legends of it say that it embodies the spiritual heart of the land. Perhaps there are many reasons why it is so christened. Undeniably, it carries the weight of countless years within it.
+_/fl:2:The Heartstone appears to be fused into the obsidian of the pedestal, immovable.
+_/lok:4:#0&!#0
+*End*
+0
+-1
+2
+#115
+out;light;exit;ahead;northwest;west;nw;w;north;n
+112
+-1
+-1
+2
+1607395680
+1607395736
+1
+1607395680
+*Props*
+_/odr:2:stumbles out of the cave, blinking at the light.
+_/osc:2:stumbles towards the cave entrance, briefly eclipsing the light.
+_/sc:2:You walk carefully towards the light, stumbling over some rocks and stalagmites. As you round the corner in the corridor, you see the exit, and quickly make your way outside, blinking at the brighter light.
+*End*
+1
+113
+2
+#114
+south;cave;in;entrance;enter;s
+113
+-1
+-1
+2
+1607395680
+1607395728
+1
+1607395680
+*Props*
+_/de:2:You see the entrance of a dark cave to the south.  It's a familiar place, as it is where you first awoke in this world.
+_/odr:2:blocks the light for a moment as %s enters the cave.
+_/osc:2:adventurously enters the dark mysterious cave of awakenings.
+_/sc:2:You intrepidly enter the cave...
+*End*
+1
+112
+2
+#113
+A small clearing in the wilderness
+111
+2
+-1
+2048
+1607395680
+1607395736
+3
+1607395680
+*Props*
+_/de:2:Pine and spruce trees populate the thick forest around a small natural clearing, birds chirping and twittering among them. To the south yawns the entrance to the cave of awakenings. In the center of the clearing stands an obsidian column, jutting from the ground typically waist high, with a brilliant, translucent red stone capping it. To one side, contrary to the pristine wilderness, a bulletin board made of redwood welcomes you, looking for all the world like a national park relic. However, you see no trails leading from the clearing. For whom is this place?
+*End*
+-1
+114
+2
+#112
+Cave of Awakening
+110
+-1
+-1
+2112
+1607395680
+1607395735
+2
+1607395680
+*Props*
+_/de:2:It's very dark in here, but you can faintly see a light ahead. Maybe that's the way out.
+*End*
+-1
+115
+2
+#111
+Outdoor Environment Room
+0
+113
+110
+131072
+1607395680
+1607395736
+3
+1607395680
+*Props*
+*End*
+-1
+-1
+2
+#110
+Indoor Environment Room
+0
+112
+109
+131072
+1607395680
+1607395735
+2
+1607395680
+*Props*
+*End*
+-1
+-1
+2
+#109
+Null Environment Room
+0
+-1
+1
+131072
+1607395680
+1607395680
+0
+1607395680
+*Props*
+*End*
+-1
+-1
+2
+#108
+time;date;uptime;nextsave;ns
+0
+-1
+107
+2
+1607395432
+1607395650
+2
+1607395647
+*Props*
+_/sc:2:{attr:bold,MUCK time:} {ftime:%c %Z}\r{attr:bold,Next save:} {ltimestr:{timetosave}}\r{attr:bold,MUCK uptime:} {ltimestr:{subt:{secs},{prop!:_sys/startuptime,#0}}}
+*End*
+1
+-4
+2
+#107
+status;stat
+0
+-1
+106
+2
+1607395416
+1607395425
+2
+1607395417
+*Props*
+_/sc:2:{if:{eq:#help,{&arg}},{list:_help},{null:{store:{midstr:{&arg},1,4},status,me}{tell:{if:{eq:,{&arg}},Cleared status setting.,Set status to "{midstr:{&arg},1,4}".}}}}
+_help#:2:11
+_help#/1:2:Usage:
+_help#/10:2: 
+_help#/11:2:'status cool' is equivalent to '@set me=status:cool'
+_help#/2:2:  status <text>    -- Set your status (up to 4 chars)
+_help#/3:2:  status           -- Clear your status
+_help#/4:2:  status #help     -- Three guesses.
+_help#/5:2: 
+_help#/6:2:Your status is the text displayed to the left of your username on
+_help#/7:2:'whospecies' or 'ws'.
+_help#/8:2:Some MUCKs color the following statuses specially, in 'ws':
+_help#/9:2:IC, OOC
+*End*
+1
+-4
+2
+#106
+quit
+0
+-1
+105
+2
+1607395392
+1607395395
+1
+1607395393
+*Props*
+_/sc:2:Oops! Did you mean 'QUIT' in all capital letters?
+*End*
+1
+-4
+2
+#105
+gohome
+0
+-1
+104
+2
+1607395380
+1607395385
+1
+1607395380
+*Props*
+*End*
+1
+-3
+2
+#104
+@view
+0
+-1
+102
+2
+1607395252
+1607395252
+0
+1607395258
+*Props*
+_/de:2:/_/de:{list:desc}
+desc#:2:3
+desc#/1:2:Usage: @view program
+desc#/2:2:Either #dbref (i.e. #10) or $name (i.e. $lib/lmgr)
+desc#/3:2:Purpose: if a _docs string exists on the program, will display it (should be a string like "@list $lib/string=1-10") and ask if it should run it.  If so, then it will be as if you typed this command.
+*End*
+1
+103
+2
+#103
+cmd-@view
+2
+-1
+101
+1310740
+1607395196
+1607395196
+0
+1607395250
+*Props*
+_/de:2:A scroll containing a spell called cmd-@view
+*End*
+2
+#102
+page;pag;pa;p
+0
+-1
+100
+2
+1607394530
+1607395284
+11
+1607394541
+*Props*
+_page/formats/f-page:2:You page, "%m" to %n.
+_page/formats/f-pose:2:You page-pose, "%i %m" to %n
+_page/formats/o-page:2:%n pages, "%m" to %t.
+_page/formats/o-pose:2:In a page-pose to %t, %n %m
+_page/formats/opage:2:%n pages, "%m" to %t.
+_page/formats/opose:2:In a page-pose to %t, %n %m
+_page/formats/page:2:You page, "%m" to %n.
+_page/formats/pose:2:You page-pose, "%i %m" to %n
+*End*
+1
+101
+2
+#101
+cmd-page
+2
+-1
+99
+18087940
+1607391426
+1607395284
+11
+1607395284
+*Props*
+_/de:2:A scroll containing a spell called cmd-page
+day:3:18603
+*End*
+2
+#100
+pose;pos;po;delimiter;/me
+0
+-1
+98
+2
+1607391344
+1607391392
+2
+1607391344
+*Props*
+*End*
+1
+99
+2
+#99
+cmd-pose
+2
+-1
+97
+18087940
+1607391160
+1607391392
+2
+1607391379
+*Props*
+_/de:2:A scroll containing a spell called cmd-pose
+_author:2:Natasha O'Brien
+_help#:2:20
+_help#/1:2:pose <message>
+_help#/10:2:Use #ignore <name> to not see <name>'s says, poses, and spoofs. Use #grey to
+_help#/11:2:not see color in others' says and poses.
+_help#/12:2: 
+_help#/13:2:Use #nickname to enable nickname posing, the use of your %N name instead of
+_help#/14:2:your character's actual name. You can set your %N nickname with "@set
+_help#/15:2:me=%N:<nickname>". The first three letters of your %N must match those of
+_help#/16:2:your real name, and must not be another player's name; that is, White-
+_help#/17:2:Delirium can be "White" but not "Delimink" and not "Whistlewind" (assuming
+_help#/18:2:that name is taken by another player).
+_help#/19:2: 
+_help#/2:2:pose #[!]ignore <names>
+_help#/20:2:Use #!nicks to disable others' nickname posing.
+_help#/3:2:pose #[!]nickname
+_help#/4:2:pose #[!]nicks
+_help#/5:2:pose #[!]grey
+_help#/6:2:@set me=%N:<nickname>
+_help#/7:2: 
+_help#/8:2:Emotes <message> to the room, like /me on IRC. That is, if Natasha typed
+_help#/9:2:'pose waves!', she and everyone else in the room would see "Natasha waves!"
+_note:2:Pose program with %N posing, $lib/ignore, and color stripping.
+_version:2:1.002
+*End*
+2
+#98
+say;sa;'
+0
+-1
+96
+2
+1607391114
+1607391114
+0
+1607391114
+*Props*
+*End*
+1
+97
+2
+#97
+cmd-say
+2
+-1
+95
+18087940
+1607390872
+1607390872
+0
+1607391113
+*Props*
+_/de:2:A scroll containing a spell called cmd-say
+_help#:2:11
+_help#/1:2:say <message>
+_help#/10:2:(that is, "Puck says" instead of the normal "You say"). Use #grey to turn off 
+_help#/11:2:color in others' says and poses.
+_help#/2:2:say #[!]ignore <names>
+_help#/3:2:say #[!]third
+_help#/4:2:say #[!]grey
+_help#/5:2:say #[!]meow <names>
+_help#/6:2: 
+_help#/7:2:Speaks <message> to the room. Use #ignore <name> to not see <name>'s says, 
+_help#/8:2:poses, and spoofs; use #meow <name> to see <name>'s says with all the words 
+_help#/9:2:replaced with "meow." Use #third to see your own says in the third person 
+*End*
+2
+#96
+whereare;wa
+0
+-1
+94
+2
+1607390758
+1607390811
+3
+1607390824
+*Props*
+*End*
+1
+95
+2
+#95
+cmd-whereare
+2
+-1
+93
+18087956
+1607390265
+1607390811
+2
+1607390757
+*Props*
+_/de:2:A scroll containing a spell called cmd-whereare
+_author:2:Revar Desmera <revar@belfry.com>
+_note:2:Released under the terms of the LGPL.
+_version:2:6.03
+*End*
+2
+#94
+sweep;swee
+0
+-1
+92
+2
+1607390257
+1607390257
+0
+1607390257
+*Props*
+*End*
+1
+93
+2
+#93
+cmd-sweep
+2
+-1
+91
+18087940
+1607389988
+1607389988
+0
+1607390256
+*Props*
+_/de:2:A scroll containing a spell called cmd-sweep
+_docs:2:@list #93=!@1-19
+*End*
+2
+#92
+edit
+0
+-1
+90
+2
+1607389983
+1607389983
+0
+1607389983
+*Props*
+*End*
+1
+91
+2
+#91
+cmd-edit
+2
+-1
+89
+1310740
+1607389854
+1607389854
+0
+1607389982
+*Props*
+_/de:2:A scroll containing a spell called cmd-edit
+_author:2:Tygryss
+_docs:2:@list #91=!@1-12
+_version:2:1.02
+*End*
+2
+#90
+change
+0
+-1
+88
+2
+1607389843
+1607389843
+0
+1607389843
+*Props*
+*End*
+1
+89
+2
+#89
+cmd-change
+2
+-1
+87
+18087956
+1607389653
+1607389653
+0
+1607389842
+*Props*
+_/de:2:A scroll containing a spell called cmd-change
+_author:2:Tygryss
+_docs:2:@list #89=!@1-12
+_version:2:1.02
+*End*
+2
+#88
+ansi;color
+0
+-1
+86
+2
+1607389643
+1607389643
+0
+1607389643
+*Props*
+*End*
+1
+87
+2
+#87
+cmd-ansi
+2
+-1
+85
+17039364
+1607389552
+1607389552
+0
+1607389642
+*Props*
+_/de:2:A scroll containing a spell called cmd-ansi
+_msg/off#:2:5
+_msg/off#/1:2:Playing in the shallow end.
+_msg/off#/2:2:Reliving the golden age of television.
+_msg/off#/3:2:Having a flashback.
+_msg/off#/4:2:Should we awake and find it gone, remember this, our favorite time.
+_msg/off#/5:2:Waiting on a rainbow.
+_msg/on#:2:6
+_msg/on#/1:2:Living in a world of color and light.
+_msg/on#/2:2:You are showered with brightly colored marshmallows.
+_msg/on#/3:2:Now with ten vitamins and minerals!
+_msg/on#/4:2:Resuming the entire orchestra.
+_msg/on#/5:2:Basking in the light of a new day.
+_msg/on#/6:2:Trading in dress socks for a red bow tie.
+*End*
+2
+#86
+3who;3w
+0
+-1
+84
+2
+1607389531
+1607389531
+0
+1607389531
+*Props*
+*End*
+1
+85
+2
+#85
+cmd-3who
+2
+-1
+83
+18087956
+1607389430
+1607389430
+0
+1607389530
+*Props*
+_/de:2:A scroll containing a spell called cmd-3who
+*End*
+2
+#84
+@tel;@tele;@telep;@telepo;@telepor;@teleport;t;tel;teleport;tport
+0
+-1
+82
+2
+1607389422
+1607395686
+2
+1607389422
+*Props*
+*End*
+1
+83
+2
+#83
+cmd-@teleport
+2
+-1
+81
+17039364
+1607389343
+1607395686
+2
+1607389421
+*Props*
+_/de:2:A scroll containing a spell called cmd-@teleport
+_author:2:Natasha O'Brien
+_help#:2:8
+_help#/1:2:@teleport <where>
+_help#/2:2:@teleport <what>=<where>
+_help#/3:2: 
+_help#/4:2:Teleports you or the object you specify to where you specify. If the object 
+_help#/5:2:you ask to teleport is not yours and does not have its Jump_OK flag set, the 
+_help#/6:2:teleport will fail. If teleporting yourself, both the source and destination 
+_help#/7:2:rooms must be Jump_OK. Wizards wishing to teleport anything anywhere should 
+_help#/8:2:use the built-in command with "!@tel".
+_note:2:A simple @teleport command for Fuzzball 6, using exceptions.
+_version:2:1.001
+*End*
+2
+#82
+@stats
+0
+-1
+80
+2
+1607389330
+1607389330
+0
+1607389330
+*Props*
+*End*
+1
+81
+2
+#81
+cmd-@stats
+2
+-1
+79
+18087940
+1607389264
+1607389264
+0
+1607389328
+*Props*
+_/de:2:A scroll containing a spell called cmd-@stats
+*End*
+2
+#80
+@muf
+0
+-1
+78
+2
+1607389254
+1607389254
+0
+1607389254
+*Props*
+*End*
+1
+79
+2
+#79
+cmd-@muf
+2
+-1
+77
+18087956
+1607389139
+1607389139
+0
+1607389253
+*Props*
+_/de:2:A scroll containing a spell called cmd-@muf
+_author:2:Natasha O'Brien
+_help#:2:6
+_help#/1:2:@muf <MUF code>
+_help#/2:2:@muf #debug <MUF code>
+_help#/3:2: 
+_help#/4:2:Runs the given MUF code. If #debug is given, the program is run with the 
+_help#/5:2:Debug flag set, showing line by line debug output. To start a program with a 
+_help#/6:2:dbref, include an empty comment before it, such as '@muf () #123 ...'.
+_note:2:Runs MUF code you enter. A MUF version of @mpi.
+_version:2:1.0
+*End*
+2
+#78
+@mpi;eval;@qmpi;@wmpi
+0
+-1
+76
+2
+1607389130
+1607389130
+0
+1607389130
+*Props*
+*End*
+1
+77
+2
+#77
+cmd-@mpi+
+2
+-1
+75
+18087956
+1607389056
+1607389056
+0
+1607389128
+*Props*
+_/de:2:A scroll containing a spell called cmd-@mpi+
+*End*
+2
+#76
+run
+0
+-1
+74
+2
+1607388995
+1607388995
+0
+1607388995
+*Props*
+*End*
+1
+75
+2
+#75
+cmd-run
+2
+-1
+73
+18087940
+1607388745
+1607388745
+0
+1607388994
+*Props*
+_/de:2:A scroll containing a spell called cmd-run
+_help#:2:22
+_help#/1:2:run
+_help#/10:2:have a path along which you run a lot, you can #set a short memorable name, 
+_help#/11:2:or path, for it. For example, Natasha runs home from the Peak with 
+_help#/12:2:e,e,s,a,up,2b, so she can "run #set home=e,e,s,a,up,2b" in the Peak and only 
+_help#/13:2:have to type "run home". Paths are only valid in the room in which you #set 
+_help#/14:2:them.
+_help#/15:2: 
+_help#/16:2:Paths can contain other paths. The enclosing path puts you in the room where 
+_help#/17:2:you set the contained path. For example, if you set a path in your home 
+_help#/18:2:called 'cup' that goes 'peak,cup', you would have to set the inner 'cup' path 
+_help#/19:2:wherever the 'peak' path leaves you. However, if a path has its own name for 
+_help#/2:2:run <exit>,<exit>,...
+_help#/20:2:its *first* exit, that exit will not be interpreted as a path: if the first 
+_help#/21:2:exit of your 'cup' path is 'cup', you will take the exit named 'cup' if one 
+_help#/22:2:exists.
+_help#/3:2:run #view <exit>,<exit>,...
+_help#/4:2:run #set <path>=<exits>
+_help#/5:2:run #unset <path>
+_help#/6:2: 
+_help#/7:2:Automatically go through the exits and paths given in the order specified. 
+_help#/8:2:For example, instead of going north, north, and east, you could "run n,n,e". 
+_help#/9:2:Use the #view option to see where a certain command will take you. If you 
+*End*
+2
+#74
+reconnect
+0
+-1
+72
+2
+1607388738
+1607388738
+0
+1607388738
+*Props*
+*End*
+1
+73
+2
+#73
+cmd-reconnect
+2
+-1
+71
+18087956
+1607388683
+1607388683
+0
+1607388737
+*Props*
+_/de:2:A scroll containing a spell called cmd-reconnect
+_help#:2:5
+_help#/1:2:reconnect <name> <password>
+_help#/2:2: 
+_help#/3:2:Connects you to the given character, if the password you give is correct. 
+_help#/4:2:Because your connection is merely reattached to the new character, your 
+_help#/5:2:connection time will not be reset.
+*End*
+2
+#72
+programs;plib;proglib
+0
+-1
+69
+2
+1607388671
+1607388671
+0
+1607388671
+*Props*
+*End*
+1
+71
+2
+#71
+cmd-programs
+2
+-1
+70
+18087940
+1607388612
+1607388612
+0
+1607388670
+*Props*
+_/de:2:A scroll containing a spell called cmd-programs
+*End*
+2
+#70
+cmd-ride-check.muf
+2
+-1
+68
+18087940
+1607388266
+1607395736
+3
+1607388599
+*Props*
+_/de:2:A scroll containing a spell called cmd-ride-check.muf
+*End*
+2
+#69
+RIDE;handup;carry;hopon;hopoff;dismount;carrywho;cwho;ridewho;rwho;rideend;rend;dropoff;doff
+0
+-1
+67
+2
+1607388253
+1607388253
+0
+1607388253
+*Props*
+*End*
+1
+68
+2
+#68
+cmd-ride.muf
+2
+-1
+66
+18087940
+1607387874
+1607387874
+0
+1607388252
+*Props*
+_/de:2:A scroll containing a spell called cmd-ride.muf
+*End*
+2
+#67
+smell;feel;taste
+0
+-1
+65
+2
+1607387856
+1607387856
+0
+1607387856
+*Props*
+*End*
+1
+66
+2
+#66
+cmd-smell
+2
+-1
+64
+18087940
+1607387694
+1607387694
+0
+1607387855
+*Props*
+_/de:2:A scroll containing a spell called cmd-smell
+_author:2:Natasha O'Brien
+_help#:2:16
+_help#/1:2:smell <name> [<name>...]
+_help#/10:2:them smells, too. You can also use 'feel' or 'taste' in place of 'smell'. 
+_help#/11:2:Some %-substitutions are made in notification #formats:
+_help#/12:2: 
+_help#/13:2:  %N    The smeller's real name; use %n for nickname.
+_help#/14:2:  %v    Present tense verb (smell, feel, taste)
+_help#/15:2:  %ved  Past tense verb (smelled, felt, tasted)
+_help#/16:2:  %obj  What the smeller smelled ("you" or "here")
+_help#/2:2:smell here
+_help#/3:2:smell #set [<message>]
+_help#/4:2:smell #format [<message>]
+_help#/5:2:@set <object>=_prefs/smell:<message>
+_help#/6:2: 
+_help#/7:2:Reach out and smell someone. Smelling a room smells everything inside it too. 
+_help#/8:2:Use #set and #format to set the message a sniffer and you respectively see 
+_help#/9:2:when someone smells you. @set the _prefs/smell command on objects to give 
+_note:2:A smell, feel, and taste program for Fuzzball 6.
+_version:2:1.0
+*End*
+2
+#65
+list
+0
+-1
+63
+2
+1607387672
+1607387672
+0
+1607387672
+*Props*
+*End*
+1
+64
+2
+#64
+cmd-list
+2
+-1
+62
+18087940
+1607387637
+1607387637
+0
+1607387671
+*Props*
+_/de:2:A scroll containing a spell called cmd-list
+_help#:2:4
+_help#/1:2:list #help
+_help#/2:2:list <obj>=<list>
+_help#/3:2: 
+_help#/4:2:Display the <obj>'s list <list>, as set with lsedit.
+*End*
+2
+#63
+banish;unbanish;haven;unhaven
+0
+-1
+61
+2
+1607387628
+1607387628
+0
+1607387628
+*Props*
+*End*
+1
+62
+2
+#62
+cmd-banish
+2
+-1
+60
+18087940
+1607387445
+1607395736
+3
+1607387627
+*Props*
+_/de:2:A scroll containing a spell called cmd-banish
+_help#:2:10
+_help#/1:2:banish #help
+_help#/10:2:list, everyone *except* those in the haven list will be swept upon entry.
+_help#/2:2:banish [#room] <name>
+_help#/3:2:unbanish [#room] <name>
+_help#/4:2:haven [#room] <name>
+_help#/5:2:unhaven [#room] <name>
+_help#/6:2: 
+_help#/7:2:Control who is allowed in the room given by dbref. If the room is a parent 
+_help#/8:2:room, the setting affects all the child rooms. If someone is banished, she 
+_help#/9:2:will be swept after entering the room. If someone is set in the room's haven 
+*End*
+2
+#61
+cp;mv;propcp;propmv
+0
+-1
+59
+2
+1607387433
+1607387433
+0
+1607387433
+*Props*
+*End*
+1
+60
+2
+#60
+cmd-mv-cp
+2
+-1
+58
+18087988
+1607387246
+1607387246
+0
+1607387432
+*Props*
+_/de:2:A scroll containing a spell called cmd-mv-cp
+_defs/copy-prop:2:#60 "cp-prop" call
+_defs/move-prop:2:#60 "mv-prop" call
+_docs:2:@list #60=!@1-22
+*End*
+2
+#59
+ignore;unignore
+0
+-1
+57
+2
+1607387239
+1607387239
+0
+1607387239
+*Props*
+*End*
+1
+58
+2
+#58
+cmd-ignore
+2
+-1
+56
+18087956
+1607387155
+1607387155
+0
+1607387238
+*Props*
+_/de:2:A scroll containing a spell called cmd-ignore
+_author:2:Natasha O'Brien
+_help#:2:7
+_help#/1:2:ignore <names>
+_help#/2:2:unignore <names>
+_help#/3:2: 
+_help#/4:2:Lists the folks you are globally ignoring, or adds and removes names to and 
+_help#/5:2:from your ignore list. If a name is prefaced with a '!', the opposite of the 
+_help#/6:2:command is done to that name; for example, 'ignore !natasha' will *remove* 
+_help#/7:2:Natasha from your ignore list.
+_note:2:Adds to, removes from, and displays your in-server ignore list.
+_version:2:1.0
+*End*
+2
+#57
+hand;qhand
+0
+-1
+55
+2
+1607387146
+1607387146
+0
+1607387146
+*Props*
+*End*
+1
+56
+2
+#56
+cmd-hand
+2
+-1
+54
+18087956
+1607386913
+1607386913
+0
+1607387145
+*Props*
+_/de:2:A scroll containing a spell called cmd-hand
+*End*
+2
+#55
+@purge
+0
+-1
+53
+2
+1607386878
+1607386878
+0
+1607386878
+*Props*
+*End*
+1
+54
+2
+#54
+cmd-@purge
+2
+-1
+52
+1310740
+1607386839
+1607386839
+0
+1607386877
+*Props*
+_/de:2:A scroll containing a spell called cmd-@purge
+*End*
+2
+#53
+@image;@imag;@ima;@im
+0
+-1
+51
+2
+1607386832
+1607386832
+0
+1607386832
+*Props*
+*End*
+1
+52
+2
+#52
+cmd-@image
+2
+-1
+50
+18087940
+1607386664
+1607386664
+0
+1607386831
+*Props*
+_/de:2:A scroll containing a spell called cmd-@image
+*End*
+2
+#51
+@exits
+0
+-1
+49
+2
+1607386645
+1607386645
+0
+1607386645
+*Props*
+*End*
+1
+50
+2
+#50
+cmd-@exits
+2
+-1
+48
+18087956
+1607386609
+1607386609
+0
+1607386644
+*Props*
+_/de:2:A scroll containing a spell called cmd-@exits
+*End*
+2
+#49
+@check
+0
+-1
+47
+2
+1607386589
+1607386589
+0
+1607386589
+*Props*
+*End*
+1
+48
+2
+#48
+cmd-@check
+2
+-1
+46
+1310740
+1607386304
+1607386304
+0
+1607386588
+*Props*
+_/de:2:A scroll containing a spell called cmd-@check
+*End*
+2
+#47
+@archive;@archiv;@archi;@arch;@arc
+0
+-1
+45
+2
+1607386281
+1607386281
+0
+1607386281
+*Props*
+*End*
+1
+46
+2
+#46
+cmd-@archive
+2
+-1
+44
+18087956
+1607385819
+1607385819
+0
+1607386280
+*Props*
+_/de:2:A scroll containing a spell called cmd-@archive
+*End*
+2
+#45
+spoof
+0
+-1
+43
+2
+1607385812
+1607385812
+0
+1607385812
+*Props*
+*End*
+1
+44
+2
+#44
+cmd-spoof
+2
+-1
+42
+18087940
+1607384872
+1607384872
+0
+1607385811
+*Props*
+_/de:2:A scroll containing a spell called cmd-spoof
+*End*
+2
+#43
+@shout;@wshout;@wall
+0
+-1
+41
+2
+1607384563
+1607384563
+0
+1607384563
+*Props*
+*End*
+1
+42
+2
+#42
+cmd-@shout
+2
+-1
+40
+18087956
+1607383697
+1607383697
+0
+1607384562
+*Props*
+_/de:2:A scroll containing a spell called cmd-@shout
+_author:2:Riss, Natasha
+_note:2:Public message channels for players and wizards.
+_version:2:4.0
+*End*
+2
+#41
+meetme;meet;mjoin;msummon;mcancel;mdecline
+0
+-1
+39
+2
+1607383505
+1607383505
+0
+1607383505
+*Props*
+*End*
+1
+40
+2
+#40
+cmd-meetme
+2
+-1
+38
+18087940
+1607383304
+1607383304
+0
+1607383504
+*Props*
+_/de:2:A scroll containing a spell called cmd-meetme
+_help#:2:9
+_help#/1:2:mjoin <name>
+_help#/2:2:msummon <name>
+_help#/3:2: 
+_help#/4:2:Joins or summons player <name>. If you haven't already been asked to join or 
+_help#/5:2:summon <name>, they will be notified you asked; they can then use the 
+_help#/6:2:opposite action to join or summon you. That is:
+_help#/7:2: 
+_help#/8:2:1. You 'mjoin Widget'. Widget is notified you want to join him.
+_help#/9:2:2. Widget 'msummons <you>'. You are transported to where Widget is.
+*End*
+2
+#39
+whospecies;whospe;ws
+0
+-1
+37
+2
+1607383296
+1607383296
+0
+1607383296
+*Props*
+*End*
+1
+38
+2
+#38
+cmd-whospecies
+2
+-1
+36
+18087940
+1607382828
+1607382828
+0
+1607383288
+*Props*
+_/de:2:A scroll containing a spell called cmd-whospecies
+_author:2:Natasha O'Brien
+_help#:2:24
+_help#/1:2:ws
+_help#/10:2:  #object       Disable display of your data in ws #far lists.
+_help#/11:2:  #doing        Enable display of players' @doings.
+_help#/12:2:  #bright       Disable display of sleepers with dimmer ANSI colors.
+_help#/13:2:  #idle <secs>  Display idle times only if more than <secs> seconds.
+_help#/14:2: 
+_help#/15:2:The first three options can also be turned off with, for example, 'ws 
+_help#/16:2:#!object'.
+_help#/17:2: 
+_help#/18:2:Players are listed in order of their arrival in the room by default. #sort 
+_help#/19:2:will order them by the given criterion. You can also '@set 
+_help#/2:2:ws #far <name> [<name>...]
+_help#/20:2:me=_prefs/ws/sort:<criterion>' to sort by <criterion> when no #sort is 
+_help#/21:2:specified; use 'ws #sort none' to list in the normal order of arrival.
+_help#/22:2: 
+_help#/23:2:You can set your species with @set me=species:<species>
+_help#/24:2:For example: @set me=species:armadillo
+_help#/3:2:ws #sort [none|name|idle|sex|species|status]
+_help#/4:2: 
+_help#/5:2:Lists the people in the room, their genders, and species. The 'status' 
+_help#/6:2:command can set your Status field; see 'status #help'. If someone's ws #far 
+_help#/7:2:shows "redacted," they have used the #object option to hide that data. ws 
+_help#/8:2:also has several customization options:
+_help#/9:2: 
+_note:2:Whospecies redux for Fuzzball 6 with customizable output.
+_stat2color/IC:2:\[[32m
+_stat2color/OOC:2:\[[33m
+_version:2:1.0
+*End*
+2
+#37
+whodoing;wd;@who
+0
+-1
+35
+2
+1607382747
+1607382757
+1
+1607382747
+*Props*
+*End*
+1
+36
+2
+#36
+cmd-whodoing
+2
+-1
+34
+18087940
+1607382540
+1607382757
+1
+1607382746
+*Props*
+_/de:2:A scroll containing a spell called cmd-whodoing
+_author:2:Natasha O'Brien
+_help#:2:11
+_help#/1:2:wd [<name>]
+_help#/10:2:room with you. wd #species lists species settings instead of doings. The #def 
+_help#/11:2:options lets you set the default options for your use of wd.
+_help#/2:2:wd #wf [<name>]
+_help#/3:2:wd #species [<name>]
+_help#/4:2:wd #room [<name>]
+_help#/5:2:wd #def <options>
+_help#/6:2: 
+_help#/7:2:List the names, on times, idle times, and doings for everyone online. If a 
+_help#/8:2:<name> is given, only lists people whose names start with <name>. wd #wf only 
+_help#/9:2:lists people in your watchfor list, and wd #room only lists people in the 
+_note:2:A tastefully colored WHO replacement for Fuzzball 6.
+_version:2:1.3
+*End*
+2
+#35
+laston;last
+0
+-1
+33
+2
+1607382515
+1607382515
+0
+1607382515
+*Props*
+*End*
+1
+34
+2
+#34
+cmd-laston.muf
+2
+-1
+32
+18087956
+1607382363
+1607382363
+0
+1607382514
+*Props*
+_/de:2:A scroll containing a spell called cmd-laston.muf
+_author:2:Natasha O'Brien
+_help#:2:7
+_help#/1:2:laston <names>
+_help#/2:2:laston #wf
+_help#/3:2:laston #here
+_help#/4:2: 
+_help#/5:2:List the last time the people with the given names were online. If #wf is 
+_help#/6:2:given, lists everyone in your watchfor, which can be quite a few people. If 
+_help#/7:2:#here is given, lists everyone in the room with you at the time.
+_note:2:A Fuzzball 6 laston.
+_version:2:1.001
+*End*
+2
+#33
+@bootme
+0
+-1
+31
+2
+1607382350
+1607382350
+0
+1607382350
+*Props*
+*End*
+1
+32
+2
+#32
+cmd-@bootme
+2
+-1
+30
+18087956
+1607382300
+1607382300
+0
+1607382349
+*Props*
+_/de:2:A scroll containing a spell called cmd-@bootme
+*End*
+2
+#31
+@doing;@doin;@doi;@do
+0
+-1
+26
+2
+1607382280
+1607382280
+0
+1607382280
+*Props*
+*End*
+1
+30
+2
+#30
+cmd-@doing
+2
+-1
+29
+18087956
+1607382196
+1607395806
+3
+1607382277
+*Props*
+_/de:2:A scroll containing a spell called cmd-@doing
+_version:2:1.2
+*End*
+2
+#29
+con-recordhost
+2
+-1
+28
+18087956
+1607382149
+1607384850
+1
+1607382175
+*Props*
+_/de:2:A scroll containing a spell called con-recordhost
+*End*
+2
+#28
+con-mailwarn
+2
+-1
+27
+18087940
+1607382060
+1607384850
+1
+1607382094
+*Props*
+_/de:2:A scroll containing a spell called con-mailwarn
+_version:2:1.2
+*End*
+2
+#27
+con-bootme
+2
+-1
+25
+17825796
+1607382029
+1607384850
+1
+1607382044
+*Props*
+_/de:2:A scroll containing a spell called con-bootme
+*End*
+2
+#26
+watchfor;wf
+0
+-1
+24
+2
+1607381996
+1607381996
+0
+1607381996
+*Props*
+*End*
+1
+25
+2
+#25
+cmd-watchfor
+2
+-1
+23
+18087988
+1607381554
+1607395824
+8
+1607381995
+*Props*
+_/de:2:A scroll containing a spell called cmd-watchfor
+_cancall:5:23
+_defs/wf-announce:2:#25 "wf-announce" call
+_defs/wf-find-watched:2:#25 "wf-find-watched" call
+_help#:2:20
+_help#/1:2:watchfor: displays presence of players in your watchfor list
+_help#/10:2:wf #hide <names>  Hides your presence information from <names>.
+_help#/11:2:wf #hideall       Hides from everyone.
+_help#/12:2:wf #!hideall      Hides from no one (default).
+_help#/13:2:wf #show <names> "Unhides" from <names>, when set #hideall.
+_help#/14:2:wf #hide          Shows your current permission settings.
+_help#/15:2:                  People from whom you hide still see you in WHO, etc.
+_help#/16:2:                  Remove people from lists with "!<name>".
+_help#/17:2: 
+_help#/18:2:wf #idle  wf #!idle  Toggles players' idle times on "wf" display.
+_help#/19:2:wf #away  wf #!away  Toggles messages when players you watch go "away".
+_help#/2:2: 
+_help#/20:2:                     #idle defaults off and #away defaults on.
+_help#/3:2:wf          Displays your list's presence information.
+_help#/4:2:wf #on      Messages you with presence information as it happens.
+_help#/5:2:wf #off     Turns off messages; type wf to see presence.
+_help#/6:2:wf <name>   Adds <name> to your list; watches someone's presence.
+_help#/7:2:wf !<name>  Removes <name> from your list.
+_help#/8:2:wf #list    Lists the players whose presence you watch.
+_help#/9:2: 
+*End*
+2
+#24
+away;back
+0
+-1
+22
+2
+1607381548
+1607395368
+3
+1607381548
+*Props*
+*End*
+1
+23
+2
+#23
+lib-away
+2
+-1
+21
+18087972
+1607381292
+1607395368
+12
+1607381547
+*Props*
+_/de:2:A scroll containing a spell called lib-away
+_author:2:Natasha O'Brien
+_defs/away-away:2:#23 "away-away" call
+_defs/away-away?:2:#23 "away-away?" call
+_defs/away-cmd:2:#23 "do-away" call
+_defs/away-message:2:#23 "away-message" call
+_defs/back-cmd:2:#23 "do-back" call
+_docs:2:@list #23=1-29
+_help#:2:27
+_help#/1:2:away #help
+_help#/10:2:away message: people paging you, for example, will see this message. Usually 
+_help#/11:2:your message tells why you're away, what you're doing, and what friendly 
+_help#/12:2:jeers best describe the unlucky folk not doing it with you.
+_help#/13:2: 
+_help#/14:2:Messages can be given names. You can then use the name instead. Use this if 
+_help#/15:2:you have particular messages you want to set often. 'away #set <msgname>= 
+_help#/16:2:<message>' will set a named message; omitting the '#set' will also set you 
+_help#/17:2:away with that message. 'away #list' will list your named messages. Use #set 
+_help#/18:2:with an empty message to clear a name. Set a message with no name to make 
+_help#/19:2:that your default message; it will be used when you only type 'away'.
+_help#/2:2:away [#away] [<message>|<msgname>]
+_help#/20:2: 
+_help#/21:2:'away #see <names>' will show you the away messages of the players you 
+_help#/22:2:specify. Aliases can be used if $lib/alias is installed. If you enter only 
+_help#/23:2:'away <string>', away will look to see if the string contains more player 
+_help#/24:2:names than unknown words; if it does, away will show you those names. If not, 
+_help#/25:2:away will set you away and set your away message to what you typed.
+_help#/26:2: 
+_help#/27:2:'back' will clear your away flag.
+_help#/3:2:away [#set] <msgname>=<message>
+_help#/4:2:away [#see] <names>
+_help#/5:2:away #list
+_help#/6:2:back
+_help#/7:2: 
+_help#/8:2:Sets your away flag. Some programs, such as page and whospecies, will show 
+_help#/9:2:others if your away flag is set. If you give a message, that will become your 
+_lib-version:2:1.0
+_note:2:A library for showing when and why players are away.
+_version:2:1.001
+*End*
+2
+#22
+lsedit;lsedi;lsed;lse
+0
+-1
+12
+2
+1607380866
+1607395416
+20
+1607380866
+*Props*
+*End*
+1
+21
+2
+#21
+cmd-lsedit
+2
+-1
+19
+18087940
+1607380768
+1607395416
+20
+1607380865
+*Props*
+_/de:2:A scroll containing a spell called cmd-lsedit
+_version:2:1.4
+*End*
+2
+#20
+read;write;protect;editmsg;editmesg;protect;erase
+117
+-1
+-1
+2
+1607380477
+1607395741
+3
+1607380477
+*Props*
+*End*
+1
+19
+2
+#19
+gen-mesgboard
+2
+-1
+18
+18087940
+1607379439
+1607395741
+3
+1607380476
+*Props*
+_/de:2:A scroll containing a spell called gen-mesgboard
+*End*
+2
+#18
+lib-editor
+2
+-1
+17
+18087972
+1607378799
+1607395417
+329
+1607379435
+*Props*
+_/de:2:A scroll containing a spell called lib-editor
+_author:2:foxen@belfry.com
+_defs/EDITOR:2:#18 "EDITOR" call
+_defs/EDITORheader:2:#18 "EDITORheader" call
+_defs/EDITORloop:2:#18 "EDITORloop" call
+_defs/EDITORparse:2:#18 "EDITORparse" call
+_docs:2:@list #18=!@2-57
+_lib-version:2:6.001
+_version:2:6.002
+*End*
+2
+#17
+lib-mesgbox
+2
+-1
+16
+18154276
+1607378319
+1607395741
+9
+1607378515
+*Props*
+_/de:2:A scroll containing a spell called lib-mesgbox
+_defs/MBOX-append:2:#17 "MBOX-append" call
+_defs/MBOX-badref?:2:#17 "MBOX-badref?" call
+_defs/MBOX-count:2:#17 "MBOX-count" call
+_defs/MBOX-create:2:#17 "MBOX-create" call
+_defs/MBOX-delmesg:2:#17 "MBOX-delmesg" call
+_defs/MBOX-destroy:2:#17 "MBOX-destroy" call
+_defs/MBOX-insmesg:2:#17 "MBOX-insmesg" call
+_defs/MBOX-message:2:#17 "MBOX-message" call
+_defs/MBOX-msginfo:2:#17 "MBOX-msginfo" call
+_defs/MBOX-num2ref:2:#17 "MBOX-num2ref" call
+_defs/MBOX-ref2num:2:#17 "MBOX-ref2num" call
+_defs/MBOX-ref2prop:2:#17 "MBOX-ref2prop" call
+_defs/MBOX-setinfo:2:#17 "MBOX-setinfo" call
+_defs/MBOX-setmesg:2:#17 "MBOX-setmesg" call
+_docs:2:@list #17=!@1-59
+_version:2:1.2
+*End*
+2
+#16
+lib-ignore
+2
+-1
+15
+18087972
+1607378129
+1607391385
+1
+1607378297
+*Props*
+_/de:2:A scroll containing a spell called lib-ignore
+_author:2:Natasha O'Brien
+_defs/array_filter_ignorers:2:#16 "rtn-array-filter" call
+_defs/array_get_ignorers:2:ignore-listify swap "*{%d}*" fmtstring array_filter_prop
+_defs/cmd-ignore-add:2:#16 "cmd-add" call
+_defs/cmd-ignore-del:2:#16 "cmd-del" call
+_defs/ignore-add:2:ignore-listify swap reflist_add
+_defs/ignore-del:2:ignore-listify swap reflist_del
+_defs/ignore-list:2:ignore-listify array_get_reflist array_vals
+_defs/ignore-listify:2:#16 "ignore-listify" call
+_defs/ignores?:2:#16 "rtn-ignores?" call
+_defs/notify_except_ignorers:2:1 -3 rotate notify_exclude_ignorers
+_defs/notify_exclude_ignorers:2:#16 "rtn-notify-exclude" call
+_docs:2:@list #16=1-59
+_lib-version:2:1.003
+_note:2:Easily $includable, program specific #ignore function.
+_version:2:1.003
+*End*
+2
+#15
+lib-reflist
+2
+-1
+14
+17105700
+1607377862
+1607377862
+0
+1607378032
+*Props*
+_/de:2:A scroll containing a spell called lib-reflist
+_defs/REF-add:2:reflist_add
+_defs/REF-allrefs:2:array_get_reflist array_vals
+_defs/REF-array:2:array_get_reflist
+_defs/REF-array-set:2:array_put_reflist
+_defs/REF-delete:2:reflist_del
+_defs/REF-editlist:2:#15 "REF-editlist" call
+_defs/REF-filter:2:#15 "REF-filter" call
+_defs/REF-first:2:array_get_reflist dup if 0 [] else pop #-1 then
+_defs/REF-inlist?:2:reflist_find
+_defs/REF-list:2:#15 "REF-list" call
+_defs/REF-next:2:#15 "REF-next" call
+_docs:2:@list #15=!@1-52
+*End*
+2
+#14
+lib-mesg
+2
+-1
+13
+18154276
+1607377684
+1607395741
+15
+1607377849
+*Props*
+_/de:2:A scroll containing a spell called lib-mesg
+_defs/MSG-append:2:#14 "MSG-append" call
+_defs/MSG-count:2:#14 "MSG-count" call
+_defs/MSG-create:2:#14 "MSG-create" call
+_defs/MSG-delitem:2:#14 "MSG-delitem" call
+_defs/MSG-destroy:2:#14 "MSG-destroy" call
+_defs/MSG-info:2:#14 "MSG-info" call
+_defs/MSG-insitem:2:#14 "MSG-insitem" call
+_defs/MSG-item:2:#14 "MSG-item" call
+_defs/MSG-message:2:#14 "MSG-message" call
+_defs/MSG-setinfo:2:#14 "MSG-setinfo" call
+_defs/MSG-setitem:2:#14 "MSG-setitem" call
+_docs:2:@list #14=!@1-50
+*End*
+2
+#13
+lib-edit
+2
+-1
+11
+18087972
+1607377260
+1607377260
+0
+1607377623
+*Props*
+_/de:2:A scroll containing a spell called lib-edit
+_defs/EDITcenter:2:#13 "EDITcenter" call
+_defs/EDITcopy:2:#13 "EDITcopy" call
+_defs/EDITdisplay:2:#13 "EDITdisplay" call
+_defs/EDITfmt_rng:2:#13 "EDITfmt_rng" call
+_defs/EDITformat:2:#13 "EDITformat" call
+_defs/EDITindent:2:#13 "EDITindent" call
+_defs/EDITjoin:2:#13 "EDITjoin" call
+_defs/EDITjoin_rng:2:#13 "EDITjoin_rng" call
+_defs/EDITleft:2:#13 "EDITleft" call
+_defs/EDITlist:2:#13 "EDITlist" call
+_defs/EDITmove:2:#13 "EDITmove" call
+_defs/EDITreplace:2:#13 "EDITreplace" call
+_defs/EDITright:2:#13 "EDITright" call
+_defs/EDITsearch:2:#13 "EDITsearch" call
+_defs/EDITshuffle:2:#13 "EDITshuffle" call
+_defs/EDITsort:2:#13 "EDITsort" call
+_defs/EDITsplit:2:#13 "EDITsplit" call
+_docs:2:@list #13=!@1-76
+*End*
+2
+#12
+alias
+0
+-1
+-1
+2
+1607377123
+1607377123
+0
+1607377123
+*Props*
+*End*
+1
+11
+2
+#11
+lib-alias
+2
+-1
+10
+18087972
+1607376913
+1607395275
+6
+1607377122
+*Props*
+_/de:2:A scroll containing a spell called lib-alias
+_author:2:Natasha O'Brien
+_defs/alias-expand:2:#11 "rtn-expand" call
+_defs/alias-expand-quiet:2:#11 "rtn-expand-quiet" call
+_defs/alias-get:2:#11 "alias-get" call
+_defs/alias-global-registry:2:#11 "alias-global-registry" call
+_defs/alias-tell-unknown:2:#11 "rtn-tell-unknown" call
+_defs/cmd-alias:2:#11 "cmd-set" call
+_defs/pmatch:2:me @ swap alias-expand-quiet pop dup if 0 array_getitem else pop #-1 then
+_defs/ref_lib_alias:2:#11
+_docs:2:@list #11=!@1-47
+_lib-version:2:1.1
+_note:2:Library for general #alias feature for multiple programs.
+_version:2:1.1
+*End*
+2
+#10
+lib-timestr
+2
+-1
+9
+17825828
+1607376301
+1607395368
+1
+1607376409
+*Props*
+_/de:2:A scroll containing a spell called lib-timestr
+_author:2:Natasha O'Brien, Revar
+_defs/ltimestr:2:#10 "ltimestr" call
+_defs/mtimestr:2:#10 "mtimestr" call
+_defs/rtimestr:2:#10 "rtimestr" call
+_defs/stimestr:2:#10 "stimestr" call
+_defs/timestr:2:mtimestr
+_lib-version:2:1.1
+_note:2:MUF versions of MPI's {stimestr}, {timestr}, and {ltimestr}.
+_version:2:1.1
+*End*
+2
+#9
+lib-table
+2
+-1
+8
+18153764
+1607375821
+1607375821
+0
+1607375934
+*Props*
+_/de:2:A scroll containing a spell called lib-table
+_author:2:Natasha O'Brien
+_defs/table-format:2:#9 "table-format" call
+_defs/table-process:2:#9 "table-process" call
+_defs/table-table:2:"" table-table-sort
+_defs/table-table-sort:2:#9 "table-table-sort" call
+_docs:2:@list #9=1-51
+_lib-version:2:1.1
+_note:2:Library for tabular output (whodoing, laston, whospecies, etc).
+_version:2:1.1
+*End*
+2
+#8
+lib-strings
+2
+-1
+7
+17105188
+1607375262
+1607395417
+86
+1607375313
+*Props*
+_/de:2:A scroll containing a spell called lib-strings
+_defs/fillfield:2:#8 "fillfield" call
+_defs/sms:2:#8 "sms" call
+_defs/STRparse:2:#8 "STRparse" call
+_docs:2:@list #8=!@1-5
+*End*
+2
+#7
+lib-stackrng
+2
+-1
+6
+18153764
+1607375067
+1607395416
+20
+1607375259
+*Props*
+_/de:2:A scroll containing a spell called lib-stackrng
+_defs/sr-catrng:2:#7 "catranges" call
+_defs/sr-copyrng:2:#7 "copyrange" call
+_defs/sr-deleterng:2:#7 "deleterange" call
+_defs/sr-extractrng:2:#7 "extractrange" call
+_defs/sr-filterrng:2:#7 "filterrange" call
+_defs/sr-insertrng:2:#7 "insertrange" call
+_defs/sr-shortlist:2:#7 "shortlist" call
+_defs/sr-swaprng:2:#7 "swapranges" call
+_docs:2:@list #7=!@1-32
+*End*
+2
+#6
+lib-props
+2
+-1
+5
+18153764
+1607374649
+1607395741
+4
+1607374777
+*Props*
+_/de:2:A scroll containing a spell called lib-props
+_defs/envprop:2:#6 "envprop" call
+_defs/envsearch:2:#6 "envsearch" call
+_defs/locate-prop:2:#6 "locate-prop" call
+_defs/setpropstr:2:#6 "setpropstr" call
+_docs:2:@list #6=!@1-20
+*End*
+2
+#5
+lib-match
+2
+-1
+4
+18153764
+1607373731
+1607373731
+0
+1607373908
+*Props*
+_/de:2:A scroll containing a spell called lib-match
+_defs/match_controlled:2:#5 "match_controlled" call
+_defs/multi_rmatch:2:#5 "multi_rmatch" call
+_defs/noisy_match:2:#5 "noisy_match" call
+_defs/noisy_pmatch:2:#5 "noisy_pmatch" call
+_defs/std_table_match:2:#5 "std_table_match" call
+_defs/table_match:2:#5 "table_match" call
+_docs:2:@list #5=!@1-59
+*End*
+2
+#4
+lib-lmgr
+2
+-1
+-1
+18154276
+1607373311
+1607395741
+118
+1607373689
+*Props*
+_/de:2:A scroll containing a spell called lib-lmgr
+_defs/lmgr-clearelem:2:#4 "lmgr-clearelem" call
+_defs/lmgr-clearrange:2:#4 "lmgr-clearrange" call
+_defs/lmgr-deletelist:2:#4 "lmgr-deletelist" call
+_defs/lmgr-deleterange:2:#4 "lmgr-deleterange" call
+_defs/lmgr-extractrange:2:#4 "lmgr-extractrange" call
+_defs/lmgr-fullrange:2:#4 "lmgr-fullrange" call
+_defs/lmgr-getbrange:2:#4 "lmgr-getbrange" call
+_defs/lmgr-getcount:2:#4 "lmgr-getcount" call
+_defs/lmgr-getelem:2:#4 "lmgr-getelem" call
+_defs/lmgr-getlist:2:#4 "lmgr-getlist" call
+_defs/lmgr-getrange:2:#4 "lmgr-getrange" call
+_defs/lmgr-insertrange:2:#4 "lmgr-insertrange" call
+_defs/lmgr-moverange:2:#4 "lmgr-moverange" call
+_defs/lmgr-putbrange:2:#4 "lmgr-putbrange" call
+_defs/lmgr-putelem:2:#4 "lmgr-putelem" call
+_defs/lmgr-putrange:2:#4 "lmgr-putrange" call
+_defs/lmgr-setcount:2:#4 "lmgr-setcount" call
+_docs:2:@list #4=!@1-51
+_lib-version:2:1.2
+*End*
+2
+#3
+license-mit
+1
+-1
+-1
+16777220
+1607370558
+1607370558
+0
+1607370583
+*Props*
+_/de:2:A scroll containing a spell called license-mit
+_docs:2:@list $box/mit
+*End*
+1
+#2
+Keeper
+113
+103
+117
+786963
+1607370520
+1607395806
+3
+1607395806
+*Props*
+@/value:3:50
+@__sys__/name/created_as:2:Keeper
+*End*
+0
+-1
+DUsIdIcnjSM05RsP/icpBg==
+#1
+One
+0
+3
+-1
+1310739
+1435685445
+1607395843
+4
+1607395824
+*Props*
+_/de:2:You see Number One.
+*End*
+0
+-1
+CuG4ZtGvyRbfJubgNISTcg==
+#0
+Room Zero
+-1
+111
+-1
+-2147483648
+1435685445
+1607395824
+15
+1607395647
+*Props*
+_/de:2:You are in Room Zero. It's very dark here.
+_arrive/banish:5:62
+_arrive/ride:5:70
+_connect/announce:5:25
+_connect/bootme:5:27
+_connect/lasthost:5:29
+_connect/mailwarn:5:28
+_connect/nukedoingclear:5:30
+_disconnect/doingclear:5:30
+_msgmacs/timetosave:2:{subt:{add:{max:{prop:_sys/lastdumptime},{prop:_sys/startuptime}},{prop:_sys/dumpinterval}},{secs}}
+_prefs/ws/color/hers:2:\[[35m
+_prefs/ws/color/his:2:\[[36m
+_prefs/ws/doing:2:\r        \[[1;37mDoing: \[[0;37m%[doing]s
+_prefs/ws/header:2:\[[1mStat  Name                      Sex          Species\[[0m  ('whospe #help' for help)
+_prefs/ws/line:2:%[awakecolor]s%[statcolor]s%-4.4[status]s\[[0m%[awakecolor]s  \[[37m%-24.24[n]s  %[awakecolor]s%[sexcolor]s%-11.11[sex]s  \[[37m%[species]s%[doing]s
+_reg/box/mit:5:3
+_reg/env/in:5:110
+_reg/env/null:5:109
+_reg/env/out:5:111
+_reg/gen/mesgboard:5:19
+_reg/lib/alias:5:11
+_reg/lib/away:5:23
+_reg/lib/edit:5:13
+_reg/lib/editor:5:18
+_reg/lib/ignore:5:16
+_reg/lib/lmgr:5:4
+_reg/lib/match:5:5
+_reg/lib/mesg:5:14
+_reg/lib/mesgbox:5:17
+_reg/lib/props:5:6
+_reg/lib/reflist:5:15
+_reg/lib/stackrng:5:7
+_reg/lib/strings:5:8
+_reg/lib/table:5:9
+_reg/lib/timestr:5:10
+_reg/lib/wf:5:25
+*End*
+-1
+108
+2
+***END OF DUMP***
