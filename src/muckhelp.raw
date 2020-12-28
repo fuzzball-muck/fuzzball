@@ -2154,6 +2154,13 @@ otherwise, only Wizards may do so.
 ~~alsosee @SANITY,@SANCHANGE
 ~
 ~
+@TELEDUMP
+@TELEDUMP
+
+  Wizard-only command that dumps the database, MUF programs, and macros
+on disk to the current descriptor.  Output is base64-encoded.
+~
+~
 ~
 ~~section Miscellaneous|MiscHelp
 ~

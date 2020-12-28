@@ -1,4 +1,4 @@
-            MUCK Reference Manual for Muck2.2fb7.00b1+master
+                     MUCK Reference Manual for fb7.0
                    by Revar Desmera <revar@belfry.com>
 
 You may get a listing of topics that you can get help on, either sorted
@@ -48,10 +48,10 @@ Symbols
   @reconfiguressl    @recycle           @register          @relink
   @restart           @restrict          @sanchange         @sanfix
   @sanity            @set               @shutdown          @stats
-  @success           @sweep             @teleport          @toad
-  @tops              @trace             @tune              @unbless
-  @uncompile         @unlink            @unlock            @usage
-  @version           @wall              
+  @success           @sweep             @teledump          @teleport
+  @toad              @tops              @trace             @tune
+  @unbless           @uncompile         @unlink            @unlock
+  @usage             @version           @wall              
 
 A's
   abode  
@@ -1963,8 +1963,9 @@ Wizardly Commands
 @memory            @mpitops           @muftops           @newpassword
 @pcreate           @reconfiguressl    @restart           @restrict
 @sanchange         @sanfix            @sanity            @shutdown
-@toad              @tops              @tune              @unbless
-@uncompile         @usage             @version           @wall
+@teledump          @toad              @tops              @tune
+@unbless           @uncompile         @usage             @version
+@wall              
 
 ~----------------------------------------------------------------------------
 ~
@@ -2315,6 +2316,13 @@ restored, you may need to manually repair the database with other
 commands.  Only player #1 can manage sanity if GOD_PRIV is used,
 otherwise, only Wizards may do so.
 Also see: @SANITY and @SANCHANGE
+~
+~
+@TELEDUMP
+@TELEDUMP
+
+  Wizard-only command that dumps the database, MUF programs, and macros
+on disk to the current descriptor.  Output is base64-encoded.
 ~
 ~
 ~
