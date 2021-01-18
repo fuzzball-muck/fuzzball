@@ -1,4 +1,4 @@
-To connect to your character use 'connect <playername> <password>'
-The pellet with the poison is in the flagon with the dragon.
-The vessel with the pestle contains the brew that is true!
-Use the WHO command to see WHOs on first. (Right!)
+connect <playername> <password> - connect to your character
+create <playername> <password>  - create a character, if available
+help                            - this help message
+WHO                             - list visible players

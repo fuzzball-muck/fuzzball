@@ -2,6 +2,27 @@ Building and Running Fuzzball on Windows
 ===============
 *For documentation and general help, see [the general README](README.md)*
 
+## Running
+* Install the [32-bit Visual C++ Redistributable for Visual Studio 2019](https://www.microsoft.com/en-us/download/details.aspx?id=48145) (*Fuzzball currently does not support 64-bit*)
+  * Pick the `x86` version, [or just use this direct link to `vc_redist.x86.exe`](https://aka.ms/vs/16/release/vc_redist.x86.exe)
+* Manage the server with ```restart.exe```
+
+For a comprehensive guide to running a MUCK, check out [MINK - The Muck Information Kiosk](http://www.rdwarf.com/users/mink/muckman/).
+
+### Quick-start
+* **Follow the build directions, or [download a pre-built package](README.md#downloads)**
+* Set up configuration in ```restart.ini```
+```bat
+cd "path\to\fuzzball\folder"
+restart -c
+```
+* Edit and save ```restart.ini``` with your options, e.g. with ```notepad restart.ini```
+* If using SSL, save your certificate and key as ```data\server.pem```, or later configure ```@tune ssl_cert_file``` and ```@tune ssl_key_file```
+* Start the server
+```bat
+restart
+```
+
 ## Building
 Tools needed:
 * [Visual Studio 2015 or higher](https://www.visualstudio.com/downloads/download-visual-studio-vs)
@@ -46,27 +67,3 @@ set OPENSSLDIR=C:\path\to\openssl
 ```bat
 nmake /f makefile.win
 ```
-
-## Running
-* Install the [32-bit Visual C++ Redistributable for Visual Studio 2015][visual-runtime] (*Fuzzball currently does not support 64-bit*)
-* Manage the server with ```restart.exe```
-
-For a comprehensive guide to running a MUCK, check out [MINK - The Muck Information Kiosk][help-mink].
-
-### Quick-start
-* **Follow the build directions, or [download a pre-built package][docs-downloads]**
-* Set up configuration in ```restart.ini```
-```bat
-cd "path\to\fuzzball\folder"
-restart -c
-```
-* Edit and save ```restart.ini``` with your options, e.g. with ```notepad restart.ini```
-* If using SSL, save your certificate and key as ```data\server.pem```, or later configure ```@tune ssl_cert_file``` and ```@tune ssl_key_file```
-* Start the server
-```bat
-restart
-```
-
-[help-mink]: http://www.rdwarf.com/users/mink/muckman/
-[docs-downloads]: README.md#downloads
-[visual-runtime]: https://www.microsoft.com/en-us/download/details.aspx?id=48145

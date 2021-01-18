@@ -223,6 +223,7 @@ extern bool        tp_secure_teleport;          /**< Tune variable */
 extern bool        tp_secure_thing_movement;    /**< Tune variable */
 extern bool        tp_secure_who;               /**< Tune variable */
 extern bool        tp_server_cipher_preference; /**< Tune variable */
+extern bool        tp_ssl_auto_reload_certs;    /**< Tune variable */
 extern const char *tp_ssl_cert_file;            /**< Tune variable */
 extern const char *tp_ssl_cipher_preference_list;   /**< Tune variable */
 extern const char *tp_ssl_key_file;             /**< Tune variable */

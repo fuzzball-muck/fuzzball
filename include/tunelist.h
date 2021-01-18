@@ -172,6 +172,7 @@ bool        tp_secure_teleport;                     /**> Described below */
 bool        tp_secure_thing_movement;               /**> Described below */
 bool        tp_secure_who;                          /**> Described below */
 bool        tp_server_cipher_preference;            /**> Described below */
+bool        tp_ssl_auto_reload_certs;               /**> Described below */
 const char *tp_ssl_cert_file;                       /**> Described below */
 const char *tp_ssl_cipher_preference_list;          /**> Described below */
 const char *tp_ssl_key_file;                        /**> Described below */
@@ -209,7 +210,7 @@ bool        tp_wiz_vehicles;                        /**> Described below */
  *      * MUCKER level to read
  *      * MUCKER level to write
  *      * Boolean: is set to default value?
- *      * Boolean: is nullable?
+ *      * Boolean: is nullable? (used for TP_TYPE_STRING only)
  *      * Object Type (used for TP_TYPE_DBREF only)
  */
 struct tune_entry tune_list[] = {
@@ -1891,6 +1892,18 @@ struct tune_entry tune_list[] = {
         .currentval.b=&tp_server_cipher_preference,
         MLEV_GOD,
         MLEV_GOD,
+        true
+    },
+    {
+        "ssl_auto_reload_certs",
+        "Automatically reload certs if the cert file changes",
+        "SSL",
+        "SSL",
+        TP_TYPE_BOOLEAN,
+        .defaultval.b=false,
+        .currentval.b=&tp_ssl_auto_reload_certs,
+        0,
+        MLEV_WIZARD,
         true
     },
     {
