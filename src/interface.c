@@ -1888,17 +1888,18 @@ do_command(struct descriptor_data *d, char *command)
         return 0;
     } else if (tp_recognize_null_command && !strcasecmp(command, NULL_COMMAND)) {
         return 1;
-    } else if ((!tp_cmd_only_overrides &&
-               (!strncmp(command, WHO_COMMAND, sizeof(WHO_COMMAND) - 1))) ||
+    } else if (!(FLAGS(d->player) & (INTERACTIVE | READMODE)) &&
+               ((!tp_cmd_only_overrides &&
+                (!strncmp(command, WHO_COMMAND, sizeof(WHO_COMMAND) - 1))) ||
                (*command == OVERRIDE_TOKEN &&
-               (!strncmp(command + 1, WHO_COMMAND, sizeof(WHO_COMMAND) - 1))
-              )) {
+                (!strncmp(command + 1, WHO_COMMAND, sizeof(WHO_COMMAND) - 1))
+              ))) {
         strcpyn(buf, sizeof(buf), "@");
         strcatn(buf, sizeof(buf), WHO_COMMAND);
         strcatn(buf, sizeof(buf), " ");
         strcatn(buf, sizeof(buf), command + sizeof(WHO_COMMAND) - 1);
 
-        if (!d->connected || (FLAGS(d->player) & INTERACTIVE)) {
+        if (!d->connected) {
             if (tp_secure_who) {
                 queue_ansi(d, "Sorry, WHO is unavailable at this point.\r\n");
             } else {
