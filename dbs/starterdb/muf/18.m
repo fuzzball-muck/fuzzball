@@ -220,23 +220,6 @@ $endif
                 {str_rng'} mask currline 0                        )
     dup not if pop read then
     dup not if pop " " then
-    dup "\"" 1 strncmp not if
-        1 strcut swap pop
-        "< In the editor > You say, \"" over strcat "\"" strcat
-        tell me @ name " says, \"" strcat
-        swap strcat "\"" strcat
-        me @ location me @ rot notify_except
-        1 exit
-    then
-    dup ":" 1 strncmp not if
-        1 strcut swap pop
-        me @ name " " strcat swap strcat
-        "< In the editor > " over strcat
-        tell
-        me @ location me @
-        rot notify_except
-        1 exit
-    then
     dup ".\"" 2 strncmp not over ".:" 2 strncmp not or
     over ".." 2 strncmp not or if 1 strcut swap pop 1 else 0 then
     over "." 1 strncmp or if
