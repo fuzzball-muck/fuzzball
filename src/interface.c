@@ -1870,6 +1870,13 @@ do_command(struct descriptor_data *d, char *command)
     if (d->connected)
         ts_lastuseobject(d->player);
 
+    int is_interactive = d->connected &&
+            (FLAGS(d->player) & (INTERACTIVE | READMODE));
+    int is_who = !tp_cmd_only_overrides &&
+            (!strncmp(command, WHO_COMMAND, sizeof(WHO_COMMAND) - 1));
+    int is_overridden_who = *command == OVERRIDE_TOKEN &&
+            (!strncmp(command + 1, WHO_COMMAND, sizeof(WHO_COMMAND) - 1));
+
     if (!strcasecmp(command, BREAK_COMMAND)) {
         if (!d->connected)
             return 0;
@@ -1877,9 +1884,15 @@ do_command(struct descriptor_data *d, char *command)
         if (dequeue_prog(d->player, 2)) {
             queue_ansi(d, "Foreground program aborted.\r\n");
 
-            if ((FLAGS(d->player) & INTERACTIVE))
-                if ((FLAGS(d->player) & READMODE))
-                    process_command(d->descriptor, d->player, command);
+            if (is_interactive) {
+                /**
+                 * @TODO I think this eventually just does prog_clean on
+                 *       the current frame. Is there a way to do this more
+                 *       directly than spending cycles figuring out
+                 *       is_interactive and BREAK_COMMAND?
+                 **/
+                process_command(d->descriptor, d->player, command);
+            }
         }
 
         PLAYER_SET_BLOCK(d->player, 0);
@@ -1888,37 +1901,43 @@ do_command(struct descriptor_data *d, char *command)
         return 0;
     } else if (tp_recognize_null_command && !strcasecmp(command, NULL_COMMAND)) {
         return 1;
-    } else if ((!tp_cmd_only_overrides &&
-               (!strncmp(command, WHO_COMMAND, sizeof(WHO_COMMAND) - 1))) ||
-               (*command == OVERRIDE_TOKEN &&
-               (!strncmp(command + 1, WHO_COMMAND, sizeof(WHO_COMMAND) - 1))
-              )) {
-        strcpyn(buf, sizeof(buf), "@");
-        strcatn(buf, sizeof(buf), WHO_COMMAND);
-        strcatn(buf, sizeof(buf), " ");
-        strcatn(buf, sizeof(buf), command + sizeof(WHO_COMMAND) - 1);
-
-        if (!d->connected || (FLAGS(d->player) & INTERACTIVE)) {
+    } else if (!d->connected) {
+        /**
+         * If you're at the welcome screen, intercept WHO. Otherwise, repeat
+         * the welcome since other connect commands have been handled.
+         **/
+        if (is_who) {
             if (tp_secure_who) {
                 queue_ansi(d, "Sorry, WHO is unavailable at this point.\r\n");
             } else {
                 dump_users(d, command + sizeof(WHO_COMMAND) - 1);
             }
         } else {
-            if ((!(TrueWizard(OWNER(d->player)) &&
-                (*command == OVERRIDE_TOKEN))) &&
+            check_connect(d, command);
+        }
+    } else if (d->connected) {
+        /**
+         * If you're connected, but not in a MUF READ, handle WHO/!WHO.
+         * An action named "@who" (modified by WHO_COMMAND) will be triggered
+         * if it exists, in all cases but !WHO by a TrueWizard.
+         */
+        if (!is_interactive && (is_who || is_overridden_who)) {
+            snprintf(buf, sizeof(buf), "@%s %s", WHO_COMMAND,
+                    command + sizeof(WHO_COMMAND) - (is_overridden_who ? 0 : 1));
+
+            /**
+             * @TODO For non-wizards, !WHO is the same as WHO. Consider
+             *       removing !WHO for non-wizards.
+             **/
+            if (!(TrueWizard(OWNER(d->player)) && is_overridden_who) &&
                 can_move(d->descriptor, d->player, buf, 2)) {
                 do_move(d->descriptor, d->player, buf, 2);
             } else {
                 dump_users(d, command + sizeof(WHO_COMMAND) -
-                           ((*command == OVERRIDE_TOKEN) ? 0 : 1));
+                           (is_overridden_who ? 0 : 1));
             }
-        }
-    } else {
-        if (d->connected) {
-            process_command(d->descriptor, d->player, command);
         } else {
-            check_connect(d, command);
+            process_command(d->descriptor, d->player, command);
         }
     }
 
