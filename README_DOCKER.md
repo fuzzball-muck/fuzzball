@@ -2,6 +2,8 @@
 
 Fuzzball has s Dockerfile, which is published to Dockerhub, and it also has a docker-compose file to make it simple to run your container with the proper environment variables and volumes set.
 
+To see our Dockerhub entry, go here: https://hub.docker.com/r/fbmuck/fbmuck
+
 ## Building
 
 To build the Dockerfile, you must first build the source code.  There's currently a problem with the build process where the operating system in the FROM statement of the Dockerfile must match the operating system of the build host.
