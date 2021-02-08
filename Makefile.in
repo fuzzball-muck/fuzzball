@@ -19,6 +19,12 @@ install:	Makefile
 	fi; \
 	fi
 
+docker:	all
+	docker build -t fbmuck .
+
+docker-compose:	all
+	docker-compose build
+
 install-sysv-inits:	Makefile
 	for d in ${subdirs}; do \
 		cd $${d} && ${MAKE} install-sysv-inits; \
