@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Restart script for Docker
 #
 # Optional arguments are port numbers.
@@ -39,7 +39,7 @@ DBOUT="$GAMEDIR/data/std-db.new"
 # the MUCK must be configured with --with-ssl, make cert must have been run,
 # and you must include "-sport PORTNUM" for each SSL port.
 #
-PORTS="$FB_PORT"
+PORTS="-port 4201"
 
 #
 # This is the name of the fbmuck program to run.  You probably don't want to
@@ -111,8 +111,31 @@ if [ "x$end" != 'x***END OF DUMP***' ]; then
 	exit
 fi
 
-if [ "x$*" != "x" ]; then
-    PORTS=$*
+# We may need to set up SSL.
+if [ "$USE_SSL" == "1" ]; then
+    # If we're using Let's Encrypt, let's make a server PEM file.
+    if [[ -f "/opt/fbmuck-ssl/privkey.pem" && -f "/opt/fbmuck-ssl/fullchain.pem" ]] ; then
+        cat "/opt/fbmuck-ssl/privkey.pem" "/opt/fbmuck-ssl/fullchain.pem" > \
+            "$GAMEDIR/data/server.pem"
+    fi
+
+    # Is SSL already set up?
+    if [ ! -f "$GAMEDIR/data/server.pem" ]; then
+        if [ -f "/opt/fbmuck-ssl/server.pem" ]; then
+            cp "/opt/fbmuck-ssl/server.pem" "$GAMEDIR/data/server.pem"
+        elif [ "$SELF_SIGN" == "1" ]; then
+            # Generate certs
+            openssl req -x509 -nodes -newkey rsa:4096 \
+                    -keyout "/opt/fbmuck-ssl/privkey.pem" \
+                    -out "/opt/fbmuck-ssl/fullchain.pem" \
+                    -days 3650 \
+                    -subj "/C=US/ST=NA/L=Fuzzball/O=Fuzzball/OU=Org/CN=muck"
+            cat "/opt/fbmuck-ssl/privkey.pem" "/opt/fbmuck-ssl/fullchain.pem" > \
+                "$GAMEDIR/data/server.pem"
+        fi
+    fi
+
+    PORTS="$PORTS -sport 4202"
 fi
 
 mkdir -p logs
