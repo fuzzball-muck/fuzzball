@@ -13,7 +13,6 @@ install:
     - cmd: conan user # Create conan data directory
     - cmd: conan --version
     - cmd: choco install doxygen.install
-    - cmd: dir "c:\program files\doxygen\bin"
 
 init:
     # Set "build version number" to "short-commit-hash" or when tagged to "tag name" (Travis style)
@@ -123,7 +122,7 @@ build_script:
         cp -Recurse "$env:APPVEYOR_BUILD_FOLDER/build/*" "$artifact_root"
 
         # Build docs
-        & "c:\program files\doxygen\bin\doxygen.exe" "$env:APPVEYOR_BUILD_FOLDER/Doxygen"
+        & "c:\program files\doxygen\bin\doxygen.exe" "$env:APPVEYOR_BUILD_FOLDER/Doxyfile"
 
         # Verify basics and make the archive
         if ((Test-Path "$artifact_root/fbmuck.exe") -And (Test-Path "$artifact_root/restart.exe")) {
