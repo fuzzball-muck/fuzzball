@@ -12,6 +12,7 @@ install:
     - cmd: pip.exe install conan
     - cmd: conan user # Create conan data directory
     - cmd: conan --version
+    - cmd: choco install doxygen.portable
 
 init:
     # Set "build version number" to "short-commit-hash" or when tagged to "tag name" (Travis style)
@@ -76,6 +77,7 @@ build_script:
         $artifact_root = "$env:APPVEYOR_BUILD_FOLDER/$artifact_name"
         # > Exact filename for compressed output (change extension for different format)
         $artifact_zip = "$artifact_name.zip"
+        $docs_zip = "$artifact_name-docs.zip"
 
         echo "Preparing release artifact..."
         mkdir "$artifact_root"
@@ -119,16 +121,24 @@ build_script:
         # Copy compiled binaries and libraries
         cp -Recurse "$env:APPVEYOR_BUILD_FOLDER/build/*" "$artifact_root"
 
+        # Build docs
+        doxygen "$env:APPVEYOR_BUILD_FOLDER/Doxygen"
+
         # Verify basics and make the archive
         if ((Test-Path "$artifact_root/fbmuck.exe") -And (Test-Path "$artifact_root/restart.exe")) {
             echo "Packaging release artifact..."
             7z a "$artifact_zip" "$artifact_root"
+            7z a "$docs_zip" "$env:APPVEYOR_BUILD_FOLDER/api-docs"
             Push-AppveyorArtifact "$artifact_zip"
+            Push-AppveyorArtifact "$docs_zip"
             echo "Packaging successful!"
         } else {
             echo "Could not find compiled Fuzzball or related executables, build failed"
             Exit 1
         }
+
+after_build:
+    - cmd: doxygen.exe 
 
 # Guidance for future maintainers: Powershell versus Windows Command Interpreter
 # Environment variables
