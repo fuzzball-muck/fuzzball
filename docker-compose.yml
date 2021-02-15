@@ -1,0 +1,20 @@
+---
+version: "3.3"
+
+services:
+  fbmuck:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    command: /usr/bin/docker-entrypoint.sh
+    # If you aren't using SSL, you can comment out the line for FB_SSL_PORT
+    # so that it doesn't open the second port.
+    ports:
+      - "${FB_PORT}:4201"
+      - "${FB_SSL_PORT}:4202"
+    volumes:
+      - "${FB_DATA_PATH}:/opt/fbmuck:z"
+      - "${FB_CERT_PATH}:/opt/fbmuck-ssl:z"
+    environment:
+      - "USE_SSL=${FB_USE_SSL}"
+      - "SELF_SIGN=${FB_SELF_SIGN}"
