@@ -1696,6 +1696,15 @@ check_connect(struct descriptor_data *d, const char *msg)
     char password[MAX_COMMAND_LEN];
     dbref player;
 
+    char connect_string[BUFFER_LEN];
+    snprintf(connect_string, sizeof(connect_string), "%sfrom %s",
+#ifdef USE_SSL
+         d->ssl_session ? "securely " : "",
+#else
+         "",
+#endif
+    d->hostname);
+
     parse_connect(msg, command, user, password);
 
     /*
@@ -1728,17 +1737,17 @@ check_connect(struct descriptor_data *d, const char *msg)
         if (player == NOTHING) {
             queue_ansi(d, tp_connect_fail_mesg);
             queue_write(d, "\r\n", 2);
-            log_status("FAILED CONNECT %s on descriptor %d", user,
-                       d->descriptor);
+            log_status("FAILED CONNECT: '%s', descriptor %d, %s",
+                    user, d->descriptor, connect_string);
         } else {
             if ((wizonly_mode ||
                  (tp_playermax && con_players_curr >= tp_playermax_limit)) &&
                  !TrueWizard(player)) {
                 if (wizonly_mode) {
                     queue_ansi(d,
-                               "Sorry, but the game is in maintenance mode "
-                               "currently, and only wizards are allowed to "
-                               "connect.  Try again later.");
+                            "Sorry, but the game is in maintenance mode "
+                            "currently, and only wizards are allowed to "
+                            "connect.  Try again later.");
                 } else {
                     queue_ansi(d, tp_playermax_bootmesg);
                 }
@@ -1746,13 +1755,13 @@ check_connect(struct descriptor_data *d, const char *msg)
                 queue_write(d, "\r\n", 2);
                 d->booted = 1;
             } else {
-                log_status("CONNECTED: %s(%d) on descriptor %d",
-                           NAME(player), player, d->descriptor);
+                log_status("CONNECTED: %s(%d), descriptor %d, %s",
+                        NAME(player), player, d->descriptor, connect_string);
 #ifdef USE_SSL
 
                 if (d->ssl_session) {
                     log_status("Connected via %s",
-                               SSL_get_cipher_name(d->ssl_session));
+                            SSL_get_cipher_name(d->ssl_session));
                 }
 #endif
                 d->connected = 1;
@@ -1768,12 +1777,9 @@ check_connect(struct descriptor_data *d, const char *msg)
                 interact_warn(player);
 
                 if (sanity_violated && Wizard(player)) {
-                    notify(player,
-                       "#########################################################################");
-                    notify(player,
-                       "## WARNING!  The DB appears to be corrupt!  Please repair immediately! ##");
-                    notify(player,
-                       "#########################################################################");
+                    notify(player, "#########################################################################");
+                    notify(player, "## WARNING!  The DB appears to be corrupt!  Please repair immediately! ##");
+                    notify(player, "#########################################################################");
                 }
 
                 con_players_curr++;
@@ -1785,9 +1791,9 @@ check_connect(struct descriptor_data *d, const char *msg)
                 || (tp_playermax && con_players_curr >= tp_playermax_limit)) {
                 if (wizonly_mode) {
                     queue_ansi(d,
-                               "Sorry, but the game is in maintenance mode "
-                               "currently, and only wizards are allowed to "
-                               "connect.  Try again later.");
+                            "Sorry, but the game is in maintenance mode "
+                            "currently, and only wizards are allowed to "
+                            "connect.  Try again later.");
                 } else {
                     queue_ansi(d, tp_playermax_bootmesg);
                 }
@@ -1800,11 +1806,11 @@ check_connect(struct descriptor_data *d, const char *msg)
                 if (player == NOTHING) {
                     queue_ansi(d, tp_create_fail_mesg);
                     queue_write(d, "\r\n", 2);
-                    log_status("FAILED CREATE %s on descriptor %d", user,
-                               d->descriptor);
+                    log_status("FAILED CREATE: '%s', descriptor %d, %s",
+                            user, d->descriptor, connect_string);
                 } else {
-                    log_status("CREATED %s(%d) on descriptor %d",
-                               NAME(player), player, d->descriptor);
+                    log_status("CREATED %s(%d), descriptor %d, %s",
+                            NAME(player), player, d->descriptor, connect_string);
 
                     d->connected = 1;
                     d->connected_at = time(NULL);
@@ -1822,7 +1828,8 @@ check_connect(struct descriptor_data *d, const char *msg)
         } else {
             queue_ansi(d, tp_register_mesg);
             queue_write(d, "\r\n", 2);
-            log_status("FAILED CREATE %s on descriptor %d", user, d->descriptor);
+            log_status("FAILED CREATE: '%s', descriptor %d, %s",
+                    user, d->descriptor, connect_string);
         }
     } else if (!strncmp(command, "help", 4)) {
         show_file(d, tp_file_connection_help);
