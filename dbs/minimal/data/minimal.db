@@ -1,7 +1,7 @@
 ***Foxen9 TinyMUCK DUMP Format***
 2
 1
-158
+156
 %autolook_cmd=look
 %cpennies=Pennies
 %cpenny=Penny
@@ -110,8 +110,6 @@
 %enable_home=yes
 %enable_prefix=no
 %recognize_null_command=no
-%verbose_clone=no
-%verbose_examine=yes
 %dark_sleepers=no
 %exit_darking=yes
 %thing_darking=yes

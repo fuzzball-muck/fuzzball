@@ -188,8 +188,6 @@ dbref       tp_toad_default_recipient;              /**> Described below */
 bool        tp_toad_recycle;                        /**> Described below */
 bool        tp_use_hostnames;                       /**> Described below */
 int         tp_userlog_mlev;                        /**> Described below */
-bool        tp_verbose_clone;                       /**> Described below */
-bool        tp_verbose_examine;                     /**> Described below */
 bool        tp_who_hides_dark;                      /**> Described below */
 bool        tp_wiz_vehicles;                        /**> Described below */
 
@@ -2094,30 +2092,6 @@ struct tune_entry tune_list[] = {
         .defaultval.n=3,
         .currentval.n=&tp_userlog_mlev,
         0,
-        MLEV_WIZARD,
-        true
-    },
-    {
-        "verbose_clone",
-        "Show more information when using @clone command",
-        "Commands",
-        "",
-        TP_TYPE_BOOLEAN,
-        .defaultval.b=false,
-        .currentval.b=&tp_verbose_clone,
-        MLEV_WIZARD,
-        MLEV_WIZARD,
-        true
-    },
-    {
-        "verbose_examine",
-        "Show more information when using examine command",
-        "Commands",
-        "",
-        TP_TYPE_BOOLEAN,
-        .defaultval.b=true,
-        .currentval.b=&tp_verbose_examine,
-        MLEV_WIZARD,
         MLEV_WIZARD,
         true
     },

@@ -878,14 +878,15 @@ set_property_flags(dbref player, const char *pname, int flags)
 
 /**
  * This copies all the properties on an object and returns the root node.
- * It is used, for example, by the COPYOBJ primitive to copy all the
- * properties on an object.
+ * It is used, for example, by \@clone and COPYOBJ to copy all the
+ * properties on an object. Always copies "system" properties.
  *
  * @param old DBREF of original object.
+ * @param copy_hidden_props if true, this copies hidden properties
  * @return a struct plist that is a copy of all properties on 'old'.
  */
 PropPtr
-copy_prop(dbref old)
+copy_prop(dbref old, int copy_hidden_props)
 {
     PropPtr p, n = NULL;
 
@@ -894,7 +895,8 @@ copy_prop(dbref old)
 #endif
 
     p = DBFETCH(old)->properties;
-    copy_proplist(old, &n, p);
+    copy_proplist(old, &n, p, copy_hidden_props);
+
     return (n);
 }
 
@@ -904,7 +906,7 @@ copy_prop(dbref old)
  *
  * This is essentially like copy_prop, except copy_prop would be used
  * for an object in the process of being creaetd, and this will work
- * better for an existing object.
+ * better for an existing object. Always copies hidden properties.
  *
  * @param from Source DBREF
  * @param to Destination DBREF
@@ -920,7 +922,7 @@ copy_properties_onto(dbref from, dbref to)
 
     from_props = DBFETCH(from)->properties;
 
-    copy_proplist(from, &DBFETCH(to)->properties, from_props);
+    copy_proplist(from, &DBFETCH(to)->properties, from_props, 1);
 }
 
 /**

@@ -311,13 +311,14 @@ void clear_propnode(PropPtr p);
 
 /**
  * This copies all the properties on an object and returns the root node.
- * It is used, for example, by the COPYOBJ primitive to copy all the
- * properties on an object.
+ * It is used, for example, by \@clone and COPYOBJ to copy all the
+ * properties on an object. Always copies "system" properties.
  *
  * @param old DBREF of original object.
+ * @param copy_hidden_props if true, this copies hidden properties
  * @return a struct plist that is a copy of all properties on 'old'.
  */
-struct plist *copy_prop(dbref old);
+struct plist *copy_prop(dbref old, int copy_hidden_props);
 
 /**
  * This copies the properties from 'from' onto 'to'.  It does not blow
@@ -353,8 +354,9 @@ void copy_properties_onto(dbref from, dbref to);
  * @param obj DBREF object that 'old' props belong to.
  * @param newer Essentially a pointer to a pointer; the target structure
  * @param old The source property list
+ * @param copy_hidden_props if true, this copies hidden properties
  */
-void copy_proplist(dbref obj, PropPtr * newer, PropPtr old);
+void copy_proplist(dbref obj, PropPtr * newer, PropPtr old, int copy_hidden_props);
 
 /**
  * Starts a recursive dump of props to the given file handle for the
