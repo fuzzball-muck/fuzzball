@@ -4566,8 +4566,6 @@ Parameters available:
  (bool) toad_recycle              - Recycle newly-created toads
  (bool) use_hostnames             - Resolve IP addresses into hostnames
  (int)  userlog_mlev              - Mucker Level required to write to userlog
- (bool) verbose_clone             - Show more information when using @clone command
- (bool) verbose_examine           - Show more information when using examine command
  (bool) who_hides_dark            - Hide dark players from WHO list
  (bool) wiz_vehicles              - Only let Wizards set vehicle bits
 ~

@@ -1,7 +1,7 @@
 ***Foxen9 TinyMUCK DUMP Format***
 118
 1
-158
+15
 %7bit_other_names=no
 %7bit_thing_names=yes
 %addpennies_muf_mlev=2
@@ -156,8 +156,6 @@ player_start=#112
 %toad_recycle=no
 %use_hostnames=yes
 %userlog_mlev=3
-%verbose_clone=no
-%verbose_examine=yes
 %who_hides_dark=yes
 %wiz_vehicles=no
 #117

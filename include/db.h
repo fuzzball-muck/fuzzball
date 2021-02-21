@@ -1954,6 +1954,16 @@ dbref create_room(dbref player, const char *name, dbref parent);
 dbref create_thing(dbref player, const char *name, dbref location);
 
 /**
+ * Clones a thing.
+ *
+ * @param thing the thing to clone
+ * @param player the player for determining the cloned thing's home
+ * @param copy_hidden_props if true, this copies hidden properties
+ * @return the dbref of the cloned thing
+ */
+dbref clone_thing(dbref thing, dbref player, int copy_hidden_props);
+
+/**
  * Clear a DB object
  *
  * This will take a ref and zero out the object, making it suitable for

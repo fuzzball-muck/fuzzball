@@ -239,8 +239,6 @@ extern dbref       tp_toad_default_recipient;   /**< Tune variable */
 extern bool        tp_toad_recycle;             /**< Tune variable */
 extern bool        tp_use_hostnames;            /**< Tune variable */
 extern int         tp_userlog_mlev;             /**< Tune variable */
-extern bool        tp_verbose_clone;            /**< Tune variable */
-extern bool        tp_verbose_examine;          /**< Tune variable */
 extern bool        tp_who_hides_dark;           /**< Tune variable */
 extern bool        tp_wiz_vehicles;             /**< Tune variable */
 

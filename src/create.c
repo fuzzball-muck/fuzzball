@@ -484,100 +484,6 @@ do_edit(int descr, dbref player, const char *name)
 }
 
 /**
- * Copy a single property, identified by its name, from one object to
- * another. helper routine for copy_props (below).
- *
- * @TODO: Remove this call entirely.  See my notes for copy_props.  I'm
- *        not going to bother fully documenting this call.
- */
-static void
-copy_one_prop(dbref source, dbref destination, char *propname)
-{
-    PropPtr currprop;
-    PData newprop;
-
-    /* read property from old object */
-    currprop = get_property(source, propname);
-
-#ifdef DISKBASE
-    /* make sure the property value is there */
-    propfetch(source, currprop);
-#endif
-
-    if (currprop) {
-        /* flags can be copied. */
-        newprop.flags = currprop->flags;
-
-        /* data, however, must be cloned if it's a lock. */
-        switch (PropType(currprop)) {
-            case PROP_STRTYP:
-            case PROP_INTTYP:
-            case PROP_FLTTYP:
-            case PROP_REFTYP:
-                newprop.data = currprop->data;
-                break;
-            case PROP_LOKTYP:
-                newprop.data.lok = copy_bool((currprop->data).lok);
-            case PROP_DIRTYP:
-                break;
-        }
-
-        /* now hook the new property into the destination object. */
-        set_property(destination, propname, &newprop);
-    }
-
-    return;
-}
-
-/**
- * Copy a property (sub)tree from one object to another one.
- *
- * This is a helper routine used by do_clone, based loosely on
- * listprops_wildcard from look.c.
- *
- * @TODO: This is probably 100% redundant with the copy_prop call in
- *        props.h ... the difference is this takes a 'dir' parameter for
- *        recursion purposes.  However, the only consumer of this call always
- *        uses "" which makes this identical to copy_prop
- *
- *        I'm not going to bother documenting this further because it
- *        really should be removed.  Also remove copy_one_prop which exists
- *        just to service this call and be redundant.
- */
-static void
-copy_props(dbref player, dbref source, dbref destination, const char *dir)
-{
-    char propname[BUFFER_LEN];
-    char buf[BUFFER_LEN];
-    PropPtr propadr, pptr;
-
-    /* loop through all properties in the current propdir */
-    propadr = first_prop(source, (char *) dir, &pptr, propname, sizeof(propname));
-
-    while (propadr) {
-        /* generate name for current property */
-        snprintf(buf, sizeof(buf), "%s%c%s", dir, PROPDIR_DELIMITER, propname);
-
-        /* notify player */
-        if (tp_verbose_clone && Wizard(OWNER(player))) {
-            notifyf(player, "copying property %s", buf);
-        }
-
-        /* copy this property */
-        copy_one_prop(source, destination, buf);
-
-        /* recursively copy this property directory */
-        copy_props(player, source, destination, buf);
-
-        /* find next property in current dir */
-        propadr = next_prop(pptr, propadr, propname, sizeof(propname));
-    }
-
-    /* chaos and disorder - our work here is done. */
-    return;
-}
-
-/**
  * Use this to clone an object.  Implementation for the @clone command.
  *
  * This does most of the permission checks, but does not check for player
@@ -650,20 +556,7 @@ do_clone(int descr, dbref player, const char *name, const char *rname)
         return;
     }
 
-    if (tp_verbose_clone) {
-        unparse_object(player, thing, unparse_buf, sizeof(unparse_buf));
-        notifyf(player, "Now cloning %s...", unparse_buf);
-    }
-
-    clonedthing = create_thing(player, NAME(thing), player);
-
-    /* copy all properties */
-    copy_props(player, thing, clonedthing, "");
-
-    SETVALUE(clonedthing, MAX(0,MIN(GETVALUE(thing), tp_max_object_endowment)));
-
-    /* FIXME: should we clone attached actions? */
-    EXITS(clonedthing) = NOTHING;
+    clonedthing = clone_thing(thing, player, Wizard(player));
 
     unparse_object(player, thing, unparse_buf, sizeof(unparse_buf));
     unparse_object(player, clonedthing, unparse_buf2, sizeof(unparse_buf2));

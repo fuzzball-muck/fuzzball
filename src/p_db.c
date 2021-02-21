@@ -67,67 +67,6 @@ static dbref ref;
 static char buf[BUFFER_LEN];
 
 /**
- * Copies an object.
- *
- * Overlays the name and properties of the old thing onto the new.  The
- * new thing has the same home, which is different from do_clone logic.
- *
- * This is only called by prim_copyobj.  @see prim_copyobj
- *
- * @private
- * @param player the player to receive the new thing
- * @param old the dbref of the object being copied
- * @param nu the dbref of the new object
- */
-static void
-copyobj(dbref player, dbref old, dbref nu)
-{
-    struct object *newp = DBFETCH(nu);
-
-    /**
-     * @TODO This function assumes that the new object's name and struct
-     *       have not been allocated yet.  It may be more API-safe to
-     *       absorb this logic back into prim_copyobj (and maybe use
-     *       create_thing).
-     */
-    NAME(nu) = alloc_string(NAME(old));
-
-    /**
-     * @TODO This is always true at this point.
-     */
-    if (Typeof(old) == TYPE_THING) {
-        ALLOC_THING_SP(nu);
-        THING_SET_HOME(nu, THING_HOME(old));
-    }
-
-    newp->properties = copy_prop(old);
-    newp->exits = NOTHING;
-    newp->contents = NOTHING;
-    newp->next = NOTHING;
-
-    /**
-     * @TODO This may resolve to:
-     *           newp->location = player;
-     *           PUSH(nu, CONTENTS(player));
-     *
-     *       ...since a new object can't participate in a parent loop?
-     */
-    newp->location = NOTHING;
-    moveto(nu, player);
-
-#ifdef DISKBASE
-    newp->propsfpos = 0;
-    newp->propsmode = PROPS_UNLOADED;
-    newp->propstime = 0;
-    newp->nextold = NOTHING;
-    newp->prevold = NOTHING;
-    dirtyprops(nu);
-#endif
-
-    DBDIRTY(nu);
-}
-
-/**
  * Implementation of MUF ADDPENNIES
  *
  * Consumes a dbref and an integer, and adds that value to the player or
@@ -1046,19 +985,10 @@ prim_copyobj(PRIM_PROTOTYPE)
 
     fr->already_created++;
 
-    {
-        dbref newobj;
+    dbref newobj = clone_thing(ref, player, mlev == 4);
 
-        newobj = new_object();
-        *DBFETCH(newobj) = *DBFETCH(ref);
-        copyobj(player, ref, newobj);
-
-        if (mlev < 3)
-          SETVALUE(newobj, 0);
-
-        CLEAR(oper1);
-        PushObject(newobj);
-    }
+    CLEAR(oper1);
+    PushObject(newobj);
 }
 
 /**
