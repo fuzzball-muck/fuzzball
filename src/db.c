@@ -341,6 +341,37 @@ create_thing(dbref player, const char *name, dbref location)
 }
 
 /**
+ * Clones a thing.
+ *
+ * @param thing the thing to clone
+ * @param player the player for determining the cloned thing's home
+ * @param copy_hidden_props if true, this copies hidden properties
+ * @return the dbref of the cloned thing
+ */
+dbref
+clone_thing(dbref thing, dbref player, int copy_hidden_props)
+{
+    dbref new_thing = create_thing(player, NAME(thing), player);
+
+    FLAGS(new_thing) = FLAGS(thing);
+
+    struct object *o = DBFETCH(new_thing);
+    o->properties = copy_prop(thing, copy_hidden_props);
+#ifdef DISKBASE
+    o->propsfpos = 0;
+    o->propsmode = PROPS_UNLOADED;
+    o->propstime = 0;
+    o->nextold = NOTHING;
+    o->prevold = NOTHING;
+    dirtyprops(new_thing);
+#endif
+
+    SETVALUE(new_thing, MAX(0,MIN(GETVALUE(thing), tp_max_object_endowment)));
+
+    return new_thing;
+}
+
+/**
  * Write a ref to the given file handle
  *
  * This will abort the program if the write fails.  A newline character is

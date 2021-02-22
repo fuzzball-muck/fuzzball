@@ -757,8 +757,7 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
 
     notify(player, buf);
 
-    if (tp_verbose_examine)
-        notify(player, flag_description(thing));
+    notify(player, flag_description(thing));
 
     if (GETDESC(thing))
         notify(player, GETDESC(thing));

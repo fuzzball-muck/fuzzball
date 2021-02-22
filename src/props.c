@@ -588,13 +588,16 @@ next_node(PropPtr ptr, char *name)
  * @param obj DBREF object that 'old' props belong to.
  * @param newer Essentially a pointer to a pointer; the target structure
  * @param old The source property list
+ * @param copy_hidden_props if true, this copies hidden properties
  */
 void
-copy_proplist(dbref obj, PropPtr * nu, PropPtr old)
+copy_proplist(dbref obj, PropPtr * nu, PropPtr old, int copy_hidden_props)
 {
     PropPtr p;
 
     if (old) {
+        if (!copy_hidden_props && Prop_Hidden(PropName(old))) return;
+
 #ifdef DISKBASE
         propfetch(obj, old);
 #endif
@@ -625,9 +628,9 @@ copy_proplist(dbref obj, PropPtr * nu, PropPtr old)
                 break;
         }
 
-        copy_proplist(obj, &PropDir(p), PropDir(old));
-        copy_proplist(obj, &(p->left), old->left);
-        copy_proplist(obj, &(p->right), old->right);
+        copy_proplist(obj, &PropDir(p), PropDir(old), copy_hidden_props);
+        copy_proplist(obj, &(p->left), old->left, copy_hidden_props);
+        copy_proplist(obj, &(p->right), old->right, copy_hidden_props);
     }
 }
 
