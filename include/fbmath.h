@@ -22,6 +22,29 @@
 # define NINF (-9.9E999)    /**< Negative infinity */
 #endif
 
+#ifndef NAN
+# ifdef  __GNUC__
+#  define NAN \
+  (__extension__                                                            \
+   ((union { unsigned __l __attribute__((__mode__(__SI__))); float __d; })  \
+    { __l: 0x7fc00000UL }).__d)
+# else
+#  ifdef WIN_VC
+#   define __nan_bytes           { 0, 0, 0xc0, 0x7f }
+#  else
+#   include <endian.h>
+#   if __BYTE_ORDER == __BIG_ENDIAN
+#    define __nan_bytes           { 0x7f, 0xc0, 0, 0 }
+#   endif
+#   if __BYTE_ORDER == __LITTLE_ENDIAN
+#    define __nan_bytes           { 0, 0, 0xc0, 0x7f }
+#   endif
+#  endif
+static union { unsigned char __c[4]; float __d; } __nan_union = { __nan_bytes };
+#  define NAN    (__nan_union.__d)
+# endif
+#endif
+
 #ifndef M_PI
 # define M_PI 3.14159265358979323846    /**< Pi */
 #endif
@@ -134,7 +157,7 @@ void MD5base64(char *dest, const void *orig, size_t len);
 void MD5hex(void *dest, const void *orig, size_t len);
 
 /**
- * Check to see if 'test' is a valid double and not INF or NINF.
+ * Check to see if 'test' is a valid double and not INF or NAN.
  *
  * @param test the double to test
  * @return boolean true if good, false if not

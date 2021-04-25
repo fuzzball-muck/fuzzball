@@ -107,6 +107,7 @@ const char *tp_idle_boot_mesg;                      /**> Described below */
 bool        tp_idle_ping_enable;                    /**> Described below */
 int         tp_idle_ping_time;                      /**> Described below */
 bool        tp_idleboot;                            /**> Described below */
+bool        tp_ieee_bounds_handling;                /**> Described below */
 bool        tp_ignore_bidirectional;                /**> Described below */
 bool        tp_ignore_support;                      /**> Described below */
 int         tp_instr_slice;                         /**> Described below */
@@ -212,7 +213,7 @@ bool        tp_wiz_vehicles;                        /**> Described below */
  *      * Object Type (used for TP_TYPE_DBREF only)
  */
 struct tune_entry tune_list[] = {
-    { 
+    {
         "7bit_other_names",
         "Limit exit/room/muf names to 7-bit characters",
         "Charset",
@@ -1090,6 +1091,18 @@ struct tune_entry tune_list[] = {
         TP_TYPE_BOOLEAN,
         .defaultval.b=true,
         .currentval.b=&tp_idleboot,
+        0,
+        MLEV_WIZARD,
+        true
+    },
+    {
+        "ieee_bounds_handling",
+        "Use IEEE standard for operations with INF and NAN",
+        "MUF",
+        "",
+        TP_TYPE_BOOLEAN,
+        .defaultval.b=true,
+        .currentval.b=&tp_ieee_bounds_handling,
         0,
         MLEV_WIZARD,
         true

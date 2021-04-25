@@ -17,6 +17,7 @@
 #include "fbstrings.h"
 #include "inst.h"
 #include "interp.h"
+#include "tune.h"
 
 /*
  * TODO: These globals really probably shouldn't be globals.  I can only guess
@@ -129,9 +130,20 @@ prim_add(PRIM_PROTOTYPE)
 
         if (!no_good(tf1) && !no_good(tf2)) {
             fresult = tf1 + tf2;
+        } else if (isnan(tf1) || isnan(tf2)) {
+            if (tp_ieee_bounds_handling) {
+                fresult = NAN;
+            } else {
+                fresult = 0.0;
+                fr->error.error_flags.nan = 1;
+            }
         } else {
-            fresult = 0.0;
-            fr->error.error_flags.f_bounds = 1;
+            if (tp_ieee_bounds_handling) {
+                fresult = tf1 + tf2;
+            } else {
+                fresult = 0.0;
+                fr->error.error_flags.f_bounds = 1;
+            }
         }
     } else {
         result = oper1->data.number + oper2->data.number;
@@ -190,9 +202,20 @@ prim_subtract(PRIM_PROTOTYPE)
 
         if (!no_good(tf1) && !no_good(tf2)) {
             fresult = tf1 - tf2;
+        } else if (isnan(tf1) || isnan(tf2)) {
+            if (tp_ieee_bounds_handling) {
+                fresult = NAN;
+            } else {
+                fresult = 0.0;
+                fr->error.error_flags.nan = 1;
+            }
         } else {
-            fresult = 0.0;
-            fr->error.error_flags.f_bounds = 1;
+            if (tp_ieee_bounds_handling) {
+                fresult = tf1 - tf2;
+            } else {
+                fresult = 0.0;
+                fr->error.error_flags.f_bounds = 1;
+            }
         }
     } else {
         result = oper2->data.number - oper1->data.number;
@@ -296,9 +319,20 @@ prim_multiply(PRIM_PROTOTYPE)
 
         if (!no_good(tf1) && !no_good(tf2)) {
             fresult = tf1 * tf2;
+        } else if (isnan(tf1) || isnan(tf2)) {
+            if (tp_ieee_bounds_handling) {
+                fresult = NAN;
+            } else {
+                fresult = 0.0;
+                fr->error.error_flags.nan = 1;
+            }
         } else {
-            fresult = 0.0;
-            fr->error.error_flags.f_bounds = 1;
+            if (tp_ieee_bounds_handling) {
+                fresult = tf1 * tf2;
+            } else {
+                fresult = 0.0;
+                fr->error.error_flags.f_bounds = 1;
+            }
         }
     } else {
         result = oper1->data.number * oper2->data.number;
@@ -352,8 +386,13 @@ prim_divide(PRIM_PROTOTYPE)
         if ((oper1->type == PROG_INTEGER && !oper1->data.number) ||
             (oper1->type == PROG_FLOAT &&
              fabs(oper1->data.fnumber) < DBL_EPSILON)) {
-            /* FIXME: This should be NaN.  */
-            fresult = INF;
+            if (tp_ieee_bounds_handling) {
+                fresult = ((oper2->type == PROG_INTEGER) ?
+                        oper2->data.number : oper2->data.fnumber) * INF;
+            } else {
+                fresult = INF;
+            }
+
             fr->error.error_flags.div_zero = 1;
         } else {
             tf1 = (oper2->type == PROG_FLOAT)
@@ -363,9 +402,20 @@ prim_divide(PRIM_PROTOTYPE)
 
             if (!no_good(tf1) && !no_good(tf2)) {
                 fresult = tf1 / tf2;
+            } else if (isnan(tf1) || isnan(tf2)) {
+                if (tp_ieee_bounds_handling) {
+                    fresult = NAN;
+                } else {
+                    fresult = 0.0;
+                    fr->error.error_flags.nan = 1;
+                }
             } else {
-                fresult = 0.0;
-                fr->error.error_flags.f_bounds = 1;
+                if (tp_ieee_bounds_handling) {
+                    fresult = tf1 / tf2;
+                } else {
+                    fresult = 0.0;
+                    fr->error.error_flags.f_bounds = 1;
+                }
             }
         }
     } else {
