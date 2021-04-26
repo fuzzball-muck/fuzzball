@@ -17,6 +17,7 @@
 #include "fbstrings.h"
 #include "inst.h"
 #include "interp.h"
+#include "tune.h"
 
 /*
  * TODO: These globals really probably shouldn't be globals.  I can only guess
@@ -161,14 +162,19 @@ prim_sqrt(PRIM_PROTOTYPE)
 
     if (!no_good(oper1->data.fnumber)) {
         if (oper1->data.fnumber < 0.0) {
-            fresult = 0.0;
+            fresult = tp_ieee_bounds_handling ? NAN : 0.0;
             fr->error.error_flags.imaginary = 1;
         } else {
             fresult = sqrt(oper1->data.fnumber);
         }
     } else {
-        fresult = oper1->data.fnumber;
-        fr->error.error_flags.f_bounds = 1;
+        if (isnan(fresult)) {
+            fresult = NAN;
+            fr->error.error_flags.nan = 1;
+        } else {
+            fresult = oper1->data.fnumber;
+            fr->error.error_flags.f_bounds = 1;
+        }
     }
 
     CLEAR(oper1);
@@ -266,9 +272,20 @@ prim_round(PRIM_PROTOTYPE)
 
         fstore = fstore / temp;
         fresult = fstore;
+    } else if (isnan(oper2->data.fnumber)) {
+        if (tp_ieee_bounds_handling) {
+            fresult = NAN;
+        } else {
+            fresult = 0.0;
+            fr->error.error_flags.nan = 1;
+        }
     } else {
-        fresult = 0.0;
-        fr->error.error_flags.f_bounds = 1;
+        if (tp_ieee_bounds_handling) {
+            fresult = INF;
+        } else {
+            fresult = 0.0;
+            fr->error.error_flags.f_bounds = 1;
+        }
     }
 
     CLEAR(oper1);
@@ -302,9 +319,12 @@ prim_sin(PRIM_PROTOTYPE)
     if (!no_good(oper1->data.fnumber)) {
         fresult = sin(oper1->data.fnumber);
     } else {
-        /* TODO:  This should be NaN. */
-        fresult = 0.0;
-        fr->error.error_flags.f_bounds = 1;
+        if (tp_ieee_bounds_handling) {
+            fresult = NAN;
+        } else {
+            fresult = 0.0;
+            fr->error.error_flags.f_bounds = 1;
+        }
     }
 
     CLEAR(oper1);
@@ -337,9 +357,12 @@ prim_cos(PRIM_PROTOTYPE)
     if (!no_good(oper1->data.fnumber)) {
         fresult = cos(oper1->data.fnumber);
     } else {
-        /* TODO:  This should be NaN. */
-        fresult = 0.0;
-        fr->error.error_flags.f_bounds = 1;
+        if (tp_ieee_bounds_handling) {
+            fresult = NAN;
+        } else {
+            fresult = 0.0;
+            fr->error.error_flags.f_bounds = 1;
+        }
     }
 
     CLEAR(oper1);
@@ -375,13 +398,23 @@ prim_tan(PRIM_PROTOTYPE)
         if (fabs(fresult) > DBL_EPSILON && fabs(fresult - M_PI) > DBL_EPSILON) {
             fresult = tan(oper1->data.fnumber);
         } else {
+            fresult = tp_ieee_bounds_handling ? INF : 0.0;
+            fr->error.error_flags.f_bounds = 1;
+        }
+    } else if (isnan(oper1->data.fnumber)) {
+        if (tp_ieee_bounds_handling) {
+            fresult = NAN;
+        } else {
             fresult = 0.0;
             fr->error.error_flags.nan = 1;
         }
     } else {
-        /* TODO:  This should be NaN. */
-        fresult = 0.0;
-        fr->error.error_flags.f_bounds = 1;
+        if (tp_ieee_bounds_handling) {
+            fresult = INF;
+        } else {
+            fresult = 0.0;
+            fr->error.error_flags.f_bounds = 1;
+        }
     }
 
     CLEAR(oper1);
@@ -414,8 +447,12 @@ prim_asin(PRIM_PROTOTYPE)
     if ((oper1->data.fnumber >= -1.0) && (oper1->data.fnumber <= 1.0)) {
         fresult = asin(oper1->data.fnumber);
     } else {
-        fresult = 0.0;
-        fr->error.error_flags.nan = 1;
+        if (tp_ieee_bounds_handling) {
+            fresult = NAN;
+        } else {
+            fresult = 0.0;
+            fr->error.error_flags.nan = 1;
+        }
     }
 
     CLEAR(oper1);
@@ -448,8 +485,12 @@ prim_acos(PRIM_PROTOTYPE)
     if ((oper1->data.fnumber >= -1.0) && (oper1->data.fnumber <= 1.0)) {
         fresult = acos(oper1->data.fnumber);
     } else {
-        fresult = 0.0;
-        fr->error.error_flags.nan = 1;
+        if (tp_ieee_bounds_handling) {
+            fresult = NAN;
+        } else {
+            fresult = 0.0;
+            fr->error.error_flags.nan = 1;
+        }
     }
 
     CLEAR(oper1);
@@ -793,12 +834,21 @@ prim_exp(PRIM_PROTOTYPE)
 
     if (!no_good(oper1->data.fnumber)) {
         fresult = exp(oper1->data.fnumber);
-    } else if (oper1->data.fnumber == INF) {
-        fresult = INF;
-        fr->error.error_flags.f_bounds = 1;
+        fr->error.error_flags.nan = 1;
+    } else if (isnan(oper1->data.fnumber)) {
+        if (tp_ieee_bounds_handling) {
+            fresult = NAN;
+        } else {
+            fresult = 0.0;
+            fr->error.error_flags.f_bounds = 1;
+        }
     } else {
-        fresult = 0.0;
-        fr->error.error_flags.f_bounds = 1;
+        if (tp_ieee_bounds_handling) {
+            fresult = INF;
+        } else {
+            fresult = 0.0;
+            fr->error.error_flags.f_bounds = 1;
+        }
     }
 
     CLEAR(oper1);
@@ -834,7 +884,7 @@ prim_log(PRIM_PROTOTYPE)
         fresult = INF;
         fr->error.error_flags.f_bounds = 1;
     } else {
-        fresult = 0.0;
+        fresult = tp_ieee_bounds_handling ? NAN : 0.0;
         fr->error.error_flags.imaginary = 1;
     }
 
@@ -871,7 +921,7 @@ prim_log10(PRIM_PROTOTYPE)
         fresult = INF;
         fr->error.error_flags.f_bounds = 1;
     } else {
-        fresult = 0.0;
+        fresult = tp_ieee_bounds_handling ? NAN : 0.0;
         fr->error.error_flags.imaginary = 1;
     }
 
@@ -972,13 +1022,13 @@ prim_pow(PRIM_PROTOTYPE)
             fresult = 0.0;
         } else if (oper2->data.fnumber < 0.0 &&
                    oper1->data.fnumber != floor(oper1->data.fnumber)) {
-            fresult = 0.0;
+            fresult = tp_ieee_bounds_handling ? NAN: 0.0;
             fr->error.error_flags.imaginary = 1;
         } else {
             fresult = pow(oper2->data.fnumber, oper1->data.fnumber);
         }
     } else {
-        fresult = 0.0;
+        fresult = tp_ieee_bounds_handling ? INF : 0.0;
         fr->error.error_flags.f_bounds = 1;
     }
 
@@ -1155,7 +1205,7 @@ prim_modf(PRIM_PROTOTYPE)
     if (!no_good(oper1->data.fnumber)) {
         fresult = modf(oper1->data.fnumber, &dresult);
     } else {
-        fresult = 0.0;
+        fresult = tp_ieee_bounds_handling ? INF : 0.0;
         dresult = oper1->data.fnumber;
         fr->error.error_flags.f_bounds = 1;
     }

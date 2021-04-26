@@ -158,6 +158,7 @@ extern const char *tp_idle_boot_mesg;           /**< Tune variable */
 extern bool        tp_idle_ping_enable;         /**< Tune variable */
 extern int         tp_idle_ping_time;           /**< Tune variable */
 extern bool        tp_idleboot;                 /**< Tune variable */
+extern bool        tp_ieee_bounds_handling;     /**< Tune variable */
 extern bool        tp_ignore_bidirectional;     /**< Tune variable */
 extern bool        tp_ignore_support;           /**< Tune variable */
 extern int         tp_instr_slice;              /**< Tune variable */

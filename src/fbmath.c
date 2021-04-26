@@ -85,7 +85,7 @@ comp_t(short op_type)
 }
 
 /**
- * Check to see if 'test' is a valid double and not INF or NINF.
+ * Check to see if 'test' is a valid double and not INF or NAN.
  *
  * @param test the double to test
  * @return boolean true if good, false if not
@@ -93,7 +93,7 @@ comp_t(short op_type)
 int
 no_good(double test)
 {
-    return test == INF || test == NINF;
+    return isinf(test) || isnan(test);
 }
 
 /**************************************************************************
