@@ -1,7 +1,7 @@
 ***Foxen9 TinyMUCK DUMP Format***
 118
 1
-156
+157
 %7bit_other_names=no
 %7bit_thing_names=yes
 %addpennies_muf_mlev=2
@@ -75,6 +75,7 @@ default_room_parent=#109
 %idle_ping_enable=yes
 %idle_ping_time=  0d  0:00:55
 %idleboot=yes
+%ieee_bounds_handling=yes
 %ignore_bidirectional=yes
 %ignore_support=yes
 %instr_slice=2000
@@ -337,7 +338,7 @@ status;stat
 2
 1607395417
 *Props*
-_/sc:2:{if:{eq:#help,{&arg}},{list:_help},{null:{store:{midstr:{&arg},1,4},status,me}{tell:{if:{eq:,{&arg}},Cleared status setting.,Set status to "{midstr:{&arg},1,4}".}}}}
+_/sc:4098:{if:{eq:#help,{&arg}},{list:_help},{null:{store:{midstr:{&arg},1,4},status,me}{tell:{if:{eq:,{&arg}},Cleared status setting.,Set status to "{midstr:{&arg},1,4}".}}}}
 _help#:2:11
 _help#/1:2:Usage:
 _help#/10:2: 
@@ -1515,16 +1516,17 @@ _help#/9:2:2. Widget 'msummons <you>'. You are transported to where Widget is.
 *End*
 2
 #39
-whospecies;whospe;ws
+whospecies;whospec;ws
 0
 -1
 37
 2
 1607383296
 1607383296
-0
+1
 1607383296
 *Props*
+_/de:2:{muf:#38,#help}
 *End*
 1
 38
@@ -1534,10 +1536,10 @@ cmd-whospecies
 2
 -1
 36
-18087940
+18087956
 1607382828
 1607382828
-0
+1
 1607383288
 *Props*
 _/de:2:A scroll containing a spell called cmd-whospecies
@@ -1568,8 +1570,8 @@ _help#/7:2:shows "redacted," they have used the #object option to hide that data
 _help#/8:2:also has several customization options:
 _help#/9:2: 
 _note:2:Whospecies redux for Fuzzball 6 with customizable output.
-_stat2color/IC:2:\[[32m
-_stat2color/OOC:2:\[[33m
+_stat2color/IC:2:[32m
+_stat2color/OOC:2:[33m
 _version:2:1.0
 *End*
 2
@@ -1781,8 +1783,8 @@ cmd-watchfor
 23
 18087988
 1607381554
-1607395824
-8
+1607381554
+0
 1607381995
 *Props*
 _/de:2:A scroll containing a spell called cmd-watchfor
@@ -1834,8 +1836,8 @@ lib-away
 21
 18087972
 1607381292
-1607395368
-12
+1607375821
+0
 1607381547
 *Props*
 _/de:2:A scroll containing a spell called lib-away
@@ -2375,11 +2377,13 @@ _connect/mailwarn:5:28
 _connect/nukedoingclear:5:30
 _disconnect/doingclear:5:30
 _msgmacs/timetosave:2:{subt:{add:{max:{prop:_sys/lastdumptime},{prop:_sys/startuptime}},{prop:_sys/dumpinterval}},{secs}}
-_prefs/ws/color/hers:2:\[[35m
-_prefs/ws/color/his:2:\[[36m
-_prefs/ws/doing:2:\r        \[[1;37mDoing: \[[0;37m%[doing]s
-_prefs/ws/header:2:\[[1mStat  Name                      Sex          Species\[[0m  ('whospe #help' for help)
-_prefs/ws/line:2:%[awakecolor]s%[statcolor]s%-4.4[status]s\[[0m%[awakecolor]s  \[[37m%-24.24[n]s  %[awakecolor]s%[sexcolor]s%-11.11[sex]s  \[[37m%[species]s%[doing]s
+_prefs/ws/color/hers:2:[35m
+_prefs/ws/color/his:2:[36m
+_prefs/ws/doing:2:
+        [1;35mDoing: [0;35m%[doing]s
+_prefs/ws/footer:2:[1;30m-[0;37m-[1m-( %.20[region]s )-[0;37m-[1;30m-%%--[0;37m-[1m-( %[awake]i/%[count]i%.35[room]s )-[0;37m-[1;30m-[0m
+_prefs/ws/header:2:[1;37mStat  Name_______[0;37m_______[1;30m______  [37mSex__[0;37m___[1;30m___  [37mSpecies_________[0;37m_________[1;30m_________[0m
+_prefs/ws/line:2:%[awakecolor]s%[statcolor]s%-4.4[status]s[0m%[awakecolor]s  [37m%-24.24[n]s  %[awakecolor]s%[sexcolor]s%-11.11[sex]s  [37m%[species]s%[doing]s
 _reg/box/mit:5:3
 _reg/env/in:5:110
 _reg/env/null:5:109
@@ -2401,6 +2405,7 @@ _reg/lib/strings:5:8
 _reg/lib/table:5:9
 _reg/lib/timestr:5:10
 _reg/lib/wf:5:25
+_region:2:FB7
 *End*
 -1
 108

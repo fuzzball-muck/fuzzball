@@ -1,7 +1,7 @@
 ( cmd-whodoing.muf by Natasha@HLM
   A tastefully colored WHO replacement for Fuzzball 6.
  
-  Copyright 2002 Natasha O'Brien. Copyright 2002 Here Lie Monsters.
+  Copyright 2002 Natasha Snunkmeox. Copyright 2002 Here Lie Monsters.
   "@view $box/mit" for license information.
  
   Version history:
@@ -14,7 +14,7 @@
   1.3, 12 October 2018: Fix minor issue with rainbow color ending
     up on some idle times. {Theo@HLM}
 )
-$author Natasha O'Brien
+$author Natasha Snunkmeox <natmeox@neologasm.org>
 $version 1.3
 $note A tastefully colored WHO replacement for Fuzzball 6.
  
@@ -27,7 +27,7 @@ $iflib $lib/rainbow $include $lib/rainbow $endif
  
 $def prop_wsobject "_prefs/ws/object"
 $def prop_wflist "_prefs/con_announce_list"
-$def prop_def "_prefs/wddef"
+$def prop_def "_prefs/wd/def"
  
 var lineformat
 var metadata
@@ -59,28 +59,17 @@ $endif
     else mtimestr then  ( str )
 ;
 : get-idle  ( intDescriptor -- str }  honor $lib/away and color code Natasha@HLM 27 December 2002; Don't replace time with 'away', only color issue419 Natasha@HLM 9 January 2003 )
-$ifnlib $lib/away
     descridle
-$else
-    dup descridle swap descrdbref away-away? if  ( intIdle )
-        "\[[1;30m"  (  )
-    else  ( intIdle )
-$endif
         dup case  ( intIdle intIdle )
             3600 >= when "\[[1;31m" end
              600 >= when "\[[1;33m" end
               60 >= when "\[[0m"    end
             default pop  "\[[1;32m" end
         endcase  ( intIdle strColor )
-$iflib $lib/away
-    then  ( intIdle strColor )
-$endif
     swap stimestr strcat  ( strTime )
 ;
 : get-secure  ( intDescriptor -- str )
-    dup descrdbref me @ dbcmp if
-        descrsecure? if "\[[1m@\[[0m" else "" then
-    else pop "" then  ( str )
+    descrsecure? if "@" else "" then  ( str )
 ;
  
 : get-species  ( intDescr -- str )
@@ -120,7 +109,7 @@ $endif
 ;
  
 : do-species  ( strY -- arr )
-    "%-16.16[name]s %8.8[on]s %4.4[idle]s%1.1[secure]s\[[0m%47.47[species]s" lineformat !
+    "%-16.16[name]s %8.8[on]s %4.4[idle]s %1.1[secure]s\[[0m%47.47[species]s" lineformat !
     'get-species metadata @ "species" array_setitem "doing" array_delitem metadata !  ( strY )
     do-all  (  )
 ;
@@ -156,7 +145,7 @@ $define dict_commands {
     then  ( strY strX adr )
     swap pop  ( strY adr )
  
-    "%-16.16[name]s %8.8[on]s %4.4[idle]s%1.1[secure]s\[[0m%47.47[doing]s" lineformat !
+    "%-16.16[name]s %8.8[on]s %4.4[idle]s %1.1[secure]s\[[0m%47.47[doing]s" lineformat !
     {
         "name"  'get-name
         "secure" 'get-secure
