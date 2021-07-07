@@ -224,6 +224,15 @@ extern bool        tp_secure_teleport;          /**< Tune variable */
 extern bool        tp_secure_thing_movement;    /**< Tune variable */
 extern bool        tp_secure_who;               /**< Tune variable */
 extern bool        tp_server_cipher_preference; /**< Tune variable */
+extern const char *tp_smtp_server;              /**> Described below */
+extern const char *tp_smtp_port;                /**> Described below */
+extern int         tp_smtp_ssl_type;            /**> Described below */
+extern bool        tp_smtp_no_verify_cert;      /**> Described below */
+extern int         tp_smtp_auth_type;           /**> Described below */
+extern const char *tp_smtp_user;                /**> Described below */
+extern const char *tp_smtp_password;            /**> Described below */
+extern const char *tp_smtp_from_name;           /**> Described below */
+extern const char *tp_smtp_from_email;          /**> Described below */
 extern bool        tp_ssl_auto_reload_certs;    /**< Tune variable */
 extern const char *tp_ssl_cert_file;            /**< Tune variable */
 extern const char *tp_ssl_cipher_preference_list;   /**< Tune variable */
