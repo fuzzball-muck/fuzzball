@@ -10,6 +10,8 @@ The authors of Fuzzball MUCK do not make any claim to that code.  The full licen
 
 This code is located in src/smtp.c and include/smtp.h
 
+You send mail with SMTP_SEND MUF primitive which is documented in 'man'.
+
 ## Why?
 
 This enables MUCKs to make a registration process that will email credentials or approval information to the new user.  It could also be used for notifications, monitoring, or other useful things.  It requires an external SMTP server.  Tanabi recommends mailjet (https://www.mailjet.com) as an inexpensive option, though you can also configure it to send via gmail or some other service.
@@ -24,8 +26,29 @@ If you want to replicate Hope Island MUCK's configuration, you can do the follow
 
 If there's interest in doing similar systems, Tanabi will put the Hope Island scripts up, but right now it's in sort of a hacky condition and a litlte hard coded in places so it isn't out of the box useful to anyone else as-is.  But!  That is the intention of this SMTP stuff.
 
+## WARNING
+
+As of this writing, the MUCK is locked up during mail sending.  This usually takes a couple seconds, but can take up to about 10 - 20 seconds especially if you configure something wrong and the MUCK gets stuck waiting for something for the maximum amount of time.
+
+We will seek to improve this in the future if it is a popular feature -- however for the initial use of it, the trade off is worth it.
+
 ## Configuration
 
+All configuration is done in MUCK with `@tune` variables.  For security reasons, these variables are only settable by One.  Please note that your SMTP password is stored in clear text in the database and is of course visible to anyone with access to One.  This is sub-optimal and is something we can perhaps fix in the future.
+
+If smtp_server is not set, SMTP_SEND will not work.  It is not set by default.  The following variables can be used:
+
+```
+@tune smtp_server=servername
+@tune smtp_port=port
+@tune smtp_ssl_type=0 for StartSSL (typical), 1 for TLS, 2 for No SSL
+@tune smtp_auth_type=0 for CRAM_MD5, 1 for None, 2 for Plain (typical), 3 for login
+@tune smtp_user=username
+@tune smtp_password=password
+@tune smtp_from_name=From User Name
+@tune smtp_from_email=from@useremail.com
+@tune smtp_no_verify_cert=no
+```
 
 ## Full License
 
