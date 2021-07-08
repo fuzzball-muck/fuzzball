@@ -820,6 +820,16 @@ include_internal_defs(COMPSTATE * cstat)
     insert_intdef(cstat, "bg_mode", BACKGROUND);
     insert_intdef(cstat, "fg_mode", FOREGROUND);
     insert_intdef(cstat, "pr_mode", PREEMPT);
+    insert_def(cstat, "conboot", "descrboot");
+    insert_def(cstat, "concount", "descrcount");
+    insert_def(cstat, "condbref", "descrdbref");
+    insert_def(cstat, "conhost", "descrhost");
+    insert_def(cstat, "conidle", "descridle");
+    insert_def(cstat, "connotify", "descrnotify");
+    insert_def(cstat, "contime", "descrtime");
+    insert_def(cstat, "conuser", "descruser");
+    insert_def(cstat, "condescr", "");
+    insert_def(cstat, "descrcon", "");
 }
 
 /**

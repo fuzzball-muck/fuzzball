@@ -1690,7 +1690,7 @@ mfn_ontime(MFUNARGS)
     if (!conn)
         return "-1";
 
-    snprintf(buf, BUFFER_LEN, "%d", pontime(conn));
+    snprintf(buf, BUFFER_LEN, "%d", pdescrontime(pdescr(conn)));
     return buf;
 }
 
@@ -1731,7 +1731,7 @@ mfn_idle(MFUNARGS)
     if (!conn)
         return "-1";
 
-    snprintf(buf, BUFFER_LEN, "%d", pidle(conn));
+    snprintf(buf, BUFFER_LEN, "%d", pdescridle(pdescr(conn)));
     return buf;
 }
 
@@ -1756,7 +1756,7 @@ const char *
 mfn_online(MFUNARGS)
 {
     int list_limit = MAX_MFUN_LIST_LEN;
-    int count = pcount();
+    int count = pdescrcount();
     char buf2[BUFFER_LEN];
 
     if (!(mesgtyp & MPI_ISBLESSED))

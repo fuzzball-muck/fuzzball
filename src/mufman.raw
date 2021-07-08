@@ -34,7 +34,7 @@ number of instructions that a preempt program could.  This is usually
 around 80,000 instructions.
   
   Level three MUCKERs are referred to as Masters.  They can use the con-
-nection info primitives (ie: CONDBREF, ONLINE, etc.), read the EXITS list
+nection info primitives (ie: DESCRBREF, ONLINE, etc.), read the EXITS list
 of any room, use NEXTPROP on objects, can use NEWROOM, NEWOBJECT, NEWEXIT,
 and COPYOBJ without limitations, can use QUEUE and KILL, and can override
 the permissions restrictions of MOVETO.  You only give a player MUCKER
@@ -42,7 +42,7 @@ level 3 if they are very trusted.  There is no absolute instruction count
 limit for level three or above, except for programs running in PREEMPT mode.
   
   A player who is wizbitted is effectively Mucker Level 4.  MUCKER level
-four is required for the RECYCLE primitive, the CONHOST primitive, the
+four is required for the RECYCLE primitive, the DESCRHOST primitive, the
 FORCE primitive, and the SETOWN primitive.  ML4 also allows overriding
 of permissions of the SET* primitives, and property permissions.  Props
 not listed by NEXTPROP with ML3 are listed with ML4.  Programs running
@@ -4922,74 +4922,11 @@ ONLINE_ARRAY ( -- a )
 every player connected to the server.
 ~
 ~
-CONCOUNT
-CONCOUNT ( -- i)
+DESCRCOUNT
+DESCRCOUNT ( -- i)
 
   Returns how many connections to the server there are.
 (Requires Mucker Level 3)
-~
-~
-CONDBREF
-CONDBREF (i -- d)
-
-  Returns the dbref of the player connected to this connection.
-(Requires Mucker Level 3)
-~
-~
-CONTIME
-CONTIME (i -- i)
-
-  Returns how many seconds the given connection has been connected
-to the server.  (Requires Mucker Level 3)
-~
-~
-CONIDLE
-CONIDLE (i -- i)
-
-  Returns how many seconds the connection has been idle.
-(Requires Mucker Level 3)
-~
-~
-CONUSER
-CONUSER (i -- s)
-
-  Returns the username of the connection. (wizbit only)
-~
-~
-CONHOST
-CONHOST (i -- s)
-
-  Returns the hostname of the connection. (wizbit only)
-~
-~
-CONBOOT
-CONBOOT (i -- )
-
-  Takes a connection number and disconnects that connection from
-the server.  Basically @boot for a specific connection. (wizbit only)
-~
-~
-CONNOTIFY
-CONNOTIFY (i s -- )
-
-  Sends a string to a specific connection to the server.
-(Requires Mucker Level 3)
-~
-~
-CONDESCR
-CONDESCR ( i -- i )
-
-  Takes a connection number and returns the descriptor number associated
-with it.  (Requires Mucker Level 3)  See DESCRIPTORS, DESCRCON.
-~
-~
-DESCRCON
-DESCRCON (i -- i)
-
-  Takes a descriptor and returns the associated connection number,
-or 0 if no match was found.
-(Requires Mucker Level 3)
-~~alsosee DESCRIPTORS,CONDESCR
 ~
 ~
 DESCRDBREF
