@@ -608,12 +608,12 @@ void array_free_all_on_list(stk_array_list *list);
 /**
  * Join an array by a string, forming a string and putting it in the
  * provided buffer.  Arrays can contain a MUF string, integer, object (dbref),
- * float, or lock.  Anything else will get <UNSUPPORTED>
+ * float, or lock.  Anything else will get \<UNSUPPORTED>
  *
  * If 'uid' is a player, then any locks in the array will get unparsed
  * and displayed -- @see unparse_boolexp
  *
- * If 'uid' is negative, then the locks will show up as <Unparsable Lock>
+ * If 'uid' is negative, then the locks will show up as \<Unparsable Lock>
  *
  * I can't imagine locks are often in arrays that you're going to join
  * as strings so I'm not sure this will ever matter.

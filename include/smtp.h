@@ -18,10 +18,11 @@
 #include "autoconf.h"
 
 #ifdef HAVE_LIBSSL
-#define SMTP_OPENSSL
+#define SMTP_OPENSSL  /**< Convert autoconf define to SMTP lib define */
 #endif
 
-/*
+/**
+ * @var SMTP_READ_TIMEOUT_SEC
  * TODO: This is a little stop-gap-y ... I want to make sure the read
  *       timeouts are set such that the MUCK doesn't lock up.  The
  *       MUCK can still lock up if the initial connection to the SMTP
