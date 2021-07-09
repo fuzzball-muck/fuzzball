@@ -584,6 +584,7 @@
     <li><a href="#sin">sin</a></li>
     <li><a href="#sleep">sleep</a></li>
     <li><a href="#smatch">smatch</a></li>
+    <li><a href="#smtp_send">smtp_send</a></li>
     <li><a href="#split">split</a></li>
     <li><a href="#sqrt">sqrt</a></li>
     <li><a href="#srand">srand</a></li>
@@ -7246,6 +7247,15 @@ Parameters available:
  (bool) secure_thing_movement     - Moving things act like player
  (bool) secure_who                - Disallow WHO command from login screen and programs
  (bool) server_cipher_preference  - Honor server cipher preference order over client's
+ (str)  smtp_server               - SMTP Server Host Name.  If blank, SMTP will not work.
+ (str)  smtp_port                 - SMTP Port.  If blank, SMTP will not work.
+ (int)  smtp_ssl_type             - SMTP SSL type - 0 for StartTLS, 1 for TLS, 2 for no SSL
+ (bool) smtp_no_verify_cert       - SMTP if true, don't verify server certs
+ (int)  smtp_auth_type            - SMTP SSL type - 0 for CRAM_MD5, 1 for none, 2 for plain, 3 for login
+ (str)  smtp_user                 - SMTP Username
+ (str)  smtp_password             - SMTP Password
+ (str)  smtp_from_name            - SMTP From user name for the email header
+ (str)  smtp_from_email           - SMTP From user email for the email header
  (bool) ssl_auto_reload_certs     - Automatically reload certs if the cert file changes
  (str)  ssl_cert_file             - Path to SSL certificate .pem
  (str)  ssl_cipher_preference_list - Allowed OpenSSL cipher list
@@ -10280,6 +10290,7 @@ before the JMP or EXIT for each nexted FOR loop.
     <li><a href="#force_level">force_level</a></li>
     <li><a href="#forcedby">forcedby</a></li>
     <li><a href="#forcedby_array">forcedby_array</a></li>
+    <li><a href="#smtp_send">smtp_send</a></li>
     <li><a href="#version">version</a></li>
 </ul>
 
@@ -10290,9 +10301,84 @@ before the JMP or EXIT for each nexted FOR loop.
 
 <br>
 </h3>
-  Returns the version of this code in a string. &quot;Muck2.2fb5.55&quot;, currently.
+  Returns the version of this code in a string.
 <p>Also see:
     <a href="#__version">__VERSION</a>
+</p>
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="smtp_send">SMTP_SEND ( s:to s:to_name s:subject a:body -- i)
+<br>
+
+<br>
+</h3>
+  Sends an email to email address 'to'.  'to_name' can be an empty string or
+<p>
+  it may be the name of the recipient.  'subject' will be the email subject,
+<p>
+  and 'body' will be an array that will be joined together with carriage
+<p>
+  return and newline to form the message body.
+
+<p>
+  The rules for how 'body' is joined together and what can be in 'body' are
+<p>
+  the same as ARRAY_JOIN.
+
+<p>
+  The return value will be an integer.  0 if the send was successful, -1
+<p>
+  if SMTP is not configured for this server and thus not available, or -2 if
+<p>
+  there was an error sending.  The error message will be in the MUCK's
+<p>
+  status log instead of output to the user for security reasons.
+
+<p>
+  The following @tune parameters are used by this program.  They are only
+<p>
+  visible / settable by One:
+
+<p>
+    smtp_server          The host to connect to
+<p>
+    smtp_port            The port to connect to
+<p>
+    smtp_ssl_type        0 for StartTLS, 1 for TLS, 2 for no SSL
+<p>
+    smtp_no_verify_cert  If true, do not verify server's SSL cert.
+<p>
+    smtp_auth_type       0 for CRAM_MD5, 1 for none, 2 for plain, 3 for login
+<p>
+    smtp_user            User for authentication
+<p>
+    smtp_password        Password for authentication
+<p>
+    smtp_from_name       The name to use in the From message header
+<p>
+    smtp_from_email      The email to use in the From message header
+
+<p>
+  Note that, unfortunately, the password is not encrypted on disk and is in
+<p>
+  plain text in @tune if logged in as the One user.
+
+<p>
+  WARNING: This primitive will (currently) block the MUCK server when sending
+<p>
+  mail.  The timeouts used are pretty aggressive so we won't allow extended
+<p>
+  blocking, but it is easily possible for the MUCK to pause for a few seconds
+<p>
+  while a mail is sent.  We have future plans to remedy this, but it is
+<p>
+  something you should be aware of as a &quot;side effect&quot;.
+
+<p>
+  This primitive is Wizbit only.
+<p>Also see:
+    <a href="#array_join">ARRAY_JOIN</a>
 </p>
 <!-- HTML_TOPICEND -->
 
