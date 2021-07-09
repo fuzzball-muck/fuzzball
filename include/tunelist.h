@@ -211,7 +211,7 @@ bool        tp_wiz_vehicles;                        /**> Described below */
  *      * name
  *      * label (short description)
  *      * group
- *      * Module
+ *      * Module - use empty string unless the field is controlled by a define
  *      * Type (TP_TYPE_*)
  *      * default value - uses tuneval union
  *      * current value - uses tuneval_ptr union
@@ -1918,7 +1918,7 @@ struct tune_entry tune_list[] = {
         "smtp_server",
         "SMTP Server Host Name.  If blank, SMTP will not work.",
         "SMTP",
-        "SMTP",
+        "",
         TP_TYPE_STRING,
         .defaultval.s="",
         .currentval.s=&tp_smtp_server,
@@ -1931,7 +1931,7 @@ struct tune_entry tune_list[] = {
         "smtp_port",
         "SMTP Port.  If blank, SMTP will not work.",
         "SMTP",
-        "SMTP",
+        "",
         TP_TYPE_STRING,
         .defaultval.s="",
         .currentval.s=&tp_smtp_port,
@@ -1944,7 +1944,7 @@ struct tune_entry tune_list[] = {
         "smtp_ssl_type",
         "SMTP SSL type - 0 for StartTLS, 1 for TLS, 2 for no SSL",
         "SMTP",
-        "SMTP",
+        "",
         TP_TYPE_INTEGER,
         .defaultval.n=2,
         .currentval.n=&tp_smtp_ssl_type,
@@ -1956,7 +1956,7 @@ struct tune_entry tune_list[] = {
         "smtp_no_verify_cert",
         "SMTP if true, don't verify server certs",
         "SMTP",
-        "SMTP",
+        "",
         TP_TYPE_BOOLEAN,
         .defaultval.b=false,
         .currentval.b=&tp_smtp_no_verify_cert,
@@ -1968,7 +1968,7 @@ struct tune_entry tune_list[] = {
         "smtp_auth_type",
         "SMTP SSL type - 0 for CRAM_MD5, 1 for none, 2 for plain, 3 for login",
         "SMTP",
-        "SMTP",
+        "",
         TP_TYPE_INTEGER,
         .defaultval.n=3,
         .currentval.n=&tp_smtp_auth_type,
@@ -1980,7 +1980,7 @@ struct tune_entry tune_list[] = {
         "smtp_user",
         "SMTP Username",
         "SMTP",
-        "SMTP",
+        "",
         TP_TYPE_STRING,
         .defaultval.s="",
         .currentval.s=&tp_smtp_user,
@@ -1993,7 +1993,7 @@ struct tune_entry tune_list[] = {
         "smtp_password",
         "SMTP Password",
         "SMTP",
-        "SMTP",
+        "",
         TP_TYPE_STRING,
         .defaultval.s="",
         .currentval.s=&tp_smtp_password,
@@ -2006,7 +2006,7 @@ struct tune_entry tune_list[] = {
         "smtp_from_name",
         "SMTP From user name for the email header",
         "SMTP",
-        "SMTP",
+        "",
         TP_TYPE_STRING,
         .defaultval.s="Your MUCK",
         .currentval.s=&tp_smtp_from_name,
@@ -2019,7 +2019,7 @@ struct tune_entry tune_list[] = {
         "smtp_from_email",
         "SMTP From user email for the email header",
         "SMTP",
-        "SMTP",
+        "",
         TP_TYPE_STRING,
         .defaultval.s="noreply@yourmuck.com",
         .currentval.s=&tp_smtp_from_email,
