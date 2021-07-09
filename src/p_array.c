@@ -3127,15 +3127,9 @@ prim_array_excludeval(PRIM_PROTOTYPE)
 void
 prim_array_join(PRIM_PROTOTYPE)
 {
-    struct inst *in;
     stk_array *arr;
     char outbuf[BUFFER_LEN];
-    char *ptr;
-    const char *text;
     char *delim;
-    int tmplen;
-    int done;
-    int first_item;
 
     CHECKOP(2);
     oper2 = POP();    /* str  joinstr */
@@ -3149,68 +3143,9 @@ prim_array_join(PRIM_PROTOTYPE)
 
     arr = oper1->data.array;
     delim = DoNullInd(oper2->data.string);
-    ptr = outbuf;
-    *outbuf = '\0';
-    first_item = 1;
-    done = !array_first(arr, &temp1);
 
-    while (!done) {
-        in = array_getitem(arr, &temp1);
-
-        switch (in->type) {
-            case PROG_STRING:
-                text = DoNullInd(in->data.string);
-                break;
-
-            case PROG_INTEGER:
-                snprintf(buf, sizeof(buf), "%d", in->data.number);
-                text = buf;
-                break;
-
-            case PROG_OBJECT:
-                snprintf(buf, sizeof(buf), "#%d", in->data.number);
-                text = buf;
-                break;
-
-            case PROG_FLOAT:
-                snprintf(buf, sizeof(buf), "%.15g", in->data.fnumber);
-
-                if (!strchr(buf, '.') && !strchr(buf, 'n') && !strchr(buf, 'e')) {
-                    strcatn(buf, sizeof(buf), ".0");
-                }
-
-                text = buf;
-                break;
-
-            case PROG_LOCK:
-                text = unparse_boolexp(ProgUID, in->data.lock, 1);
-                break;
-
-            default:
-                text = "<UNSUPPORTED>";
-                break;
-        }
-
-        if (first_item) {
-            first_item = 0;
-        } else {
-            tmplen = strlen(delim);
-
-            if (tmplen > BUFFER_LEN - (ptr - outbuf) - 1)
-                abort_interp("Operation would result in overflow.");
-
-            strcpyn(ptr, sizeof(outbuf) - (size_t)(outbuf - ptr), delim);
-            ptr += tmplen;
-        }
-
-        tmplen = strlen(text);
-
-        if (tmplen > BUFFER_LEN - (ptr - outbuf) - 1)
-            abort_interp("Operation would result in overflow.");
-
-        strcpyn(ptr, sizeof(outbuf) - (size_t)(outbuf - ptr), text);
-        ptr += tmplen;
-        done = !array_next(arr, &temp1);
+    if (array_join(arr, delim, outbuf, sizeof(outbuf), ProgUID) < 0) {
+        abort_interp("Operation would result in overflow.");
     }
 
     CLEAR(oper2);
@@ -3254,6 +3189,13 @@ prim_array_interpret(PRIM_PROTOTYPE)
      *       This function, and array_join, would then become thin wrappers
      *       that I usually advocate against, but in this case, it just makes
      *       sense.
+     *
+     * TANABI'S NOTE: I have created an array_join call in array.c
+     *                Maybe add a callback function parameter to that
+     *                which allows custom item parsing?  Outside the
+     *                already ambitious scope of what I'm working on
+     *                so I'll just leave this note for later.  Also fix
+     *                prim_array_put_reflist
      */
 
     int tmplen;

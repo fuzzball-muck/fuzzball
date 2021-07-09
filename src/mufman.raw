@@ -6228,8 +6228,50 @@ before the JMP or EXIT for each nexted FOR loop.
 VERSION
 VERSION ( -- s)
 
-  Returns the version of this code in a string. "Muck2.2fb5.55", currently.
+  Returns the version of this code in a string.
 ~~alsosee __VERSION
+~
+~
+SMTP_SEND
+SMTP_SEND ( s:to s:to_name s:subject a:body -- i)
+
+  Sends an email to email address 'to'.  'to_name' can be an empty string or
+  it may be the name of the recipient.  'subject' will be the email subject,
+  and 'body' will be an array that will be joined together with carriage
+  return and newline to form the message body.
+
+  The rules for how 'body' is joined together and what can be in 'body' are
+  the same as ARRAY_JOIN.
+
+  The return value will be an integer.  0 if the send was successful, -1
+  if SMTP is not configured for this server and thus not available, or -2 if
+  there was an error sending.  The error message will be in the MUCK's
+  status log instead of output to the user for security reasons.
+
+  The following @tune parameters are used by this program.  They are only
+  visible / settable by One:
+
+    smtp_server          The host to connect to
+    smtp_port            The port to connect to
+    smtp_ssl_type        0 for StartTLS, 1 for TLS, 2 for no SSL
+    smtp_no_verify_cert  If true, do not verify server's SSL cert.
+    smtp_auth_type       0 for CRAM_MD5, 1 for none, 2 for plain, 3 for login
+    smtp_user            User for authentication
+    smtp_password        Password for authentication
+    smtp_from_name       The name to use in the From message header
+    smtp_from_email      The email to use in the From message header
+
+  Note that, unfortunately, the password is not encrypted on disk and is in
+  plain text in @tune if logged in as the One user.
+
+  WARNING: This primitive will (currently) block the MUCK server when sending
+  mail.  The timeouts used are pretty aggressive so we won't allow extended
+  blocking, but it is easily possible for the MUCK to pause for a few seconds
+  while a mail is sent.  We have future plans to remedy this, but it is
+  something you should be aware of as a "side effect".
+
+  This primitive is Wizbit only.
+~~alsosee ARRAY_JOIN
 ~
 ~
 FORCE

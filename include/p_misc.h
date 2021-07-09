@@ -843,6 +843,27 @@ void prim_read_wants_no_blanks(PRIM_PROTOTYPE);
 void prim_stats_array(PRIM_PROTOTYPE);
 
 /**
+ * Implementation of SMTP_SEND
+ *
+ * Sends an email via the SMTP library if email is configured.
+ *
+ * Consumes 3 strings and an array/list of strings.  To, to name, subject,
+ * and then the email body.  Returns an integer -- 0 on success, -1 if
+ * SMTP is not configured, -2 on failure.
+ *
+ * Requires WIZARD perms.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
+void prim_smtp_send(PRIM_PROTOTYPE);
+
+/**
  * Primitive callback functions
  */
 #define PRIMS_MISC_FUNCS prim_time, prim_date, prim_gmtoffset, \
@@ -856,7 +877,7 @@ void prim_stats_array(PRIM_PROTOTYPE);
     prim_read_wants_blanks, prim_sysparm_array, prim_debugger_break, \
     prim_ignoringp, prim_ignore_add, prim_ignore_del, prim_debug_on, \
     prim_debug_off, prim_debug_line, prim_systime_precise, \
-    prim_read_wants_no_blanks, prim_stats_array
+    prim_read_wants_no_blanks, prim_stats_array, prim_smtp_send
 
 /**
  * Primitive names - must be in same order as the callback functions
@@ -870,6 +891,6 @@ void prim_stats_array(PRIM_PROTOTYPE);
     "FORCEDBY_ARRAY", "WATCHPID", "READ_WANTS_BLANKS", "SYSPARM_ARRAY", \
     "DEBUGGER_BREAK", "IGNORING?", "IGNORE_ADD", "IGNORE_DEL", "DEBUG_ON", \
     "DEBUG_OFF", "DEBUG_LINE", "SYSTIME_PRECISE", "READ_WANTS_NO_BLANKS", \
-    "STATS_ARRAY"
+    "STATS_ARRAY", "SMTP_SEND"
 
 #endif /* !P_MISC_H */

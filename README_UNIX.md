@@ -10,10 +10,13 @@ Tools needed:
 
 For an Ubuntu system, apt-get install these packages
 ```sh
-build-essential # Make tools, compiler
-libpcre3-dev    # PCRE headers
-libssl-dev      # SSL library headers
-git             # Git revision control system
+build-essential  # Make tools, compiler
+libpcre3-dev     # PCRE headers
+libssl-dev       # SSL library headers
+git              # Git revision control system
+autoconf         # Optional, to re-build configure
+automake         # Optional, to re-build makefile
+autoconf-archive # Optional, to re-build configure
 ```
 
 ### Get source
@@ -31,6 +34,14 @@ git pull
 * Or [download a zip archive from Github](https://github.com/fuzzball-muck/fuzzball/archive/master.zip)
 
 ### Configure
+If you need to rebuild the configuration file (Because you have edited configure.in), you can use the following command:
+
+```sh
+autoreconf
+```
+
+This is not typically needed.  You can then continue to run configure thusly:
+
 ```sh
 ./configure --with-ssl # Or choose your own options
 ```

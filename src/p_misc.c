@@ -28,6 +28,7 @@
 #include "log.h"
 #include "mufevent.h"
 #include "player.h"
+#include "smtp.h"
 #include "timequeue.h"
 #include "tune.h"
 
@@ -2228,4 +2229,190 @@ prim_debug_line(PRIM_PROTOTYPE)
                 *top, program);
         notify_nolisten(player, msg, 1);
     }
+}
+
+/**
+ * Implementation of SMTP_SEND
+ *
+ * Sends an email via the SMTP library if email is configured.
+ *
+ * Consumes 3 strings and an array/list of strings.  To, to name, subject,
+ * and then the email body.  Returns an integer -- 0 on success, -1 if
+ * SMTP is not configured, -2 on failure.
+ *
+ * Requires WIZARD perms.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
+void
+prim_smtp_send(PRIM_PROTOTYPE)
+{
+    char           body[BUFFER_LEN];
+    struct smtp    *smtp = NULL;
+    int            rc;
+
+    if (mlev < 4) {
+        abort_interp("Permission Denied.");
+    }
+
+    CHECKOP(4);
+
+    oper4 = POP(); /* list of str (body) */
+    oper3 = POP(); /* str:Subject */
+    oper2 = POP(); /* str:to name */
+    oper1 = POP(); /* str:to email */
+
+    /* Is SMTP enabled? */
+    if ((!tp_smtp_server) || (tp_smtp_server[0] == '\0') ||
+        (!tp_smtp_port) || (tp_smtp_port[0] == '\0')) {
+        CLEAR(oper1);
+        CLEAR(oper2);
+        CLEAR(oper3);
+        CLEAR(oper4);
+
+        result = -1;
+        PushInt(result);
+        return;
+    }
+
+    /* Is SMTP poorly configured? */
+    if ((tp_smtp_ssl_type < 0) || (tp_smtp_ssl_type > 2)) {
+        abort_interp("Server has SMTP enabled, but smtp_ssl_type is "
+                     "less than 0 or greater than 2.");
+    }
+
+    if ((tp_smtp_auth_type < 0) || (tp_smtp_auth_type > 3)) {
+        abort_interp("Server has SMTP enabled, but smtp_auth_type is "
+                     "less than 0 or greater than 3.");
+    }
+
+    /* Validation checks */
+    if (oper4->type != PROG_ARRAY) {
+        abort_interp("Argument not an array.(4)");
+    }
+
+    result = array_count(oper4->data.array);
+
+    if (!result) {
+        abort_interp("Cannot send empty body.(4)");
+    }
+
+    if (oper3->type != PROG_STRING) {
+        abort_interp("Argument not a string.(3)");
+    }
+
+    if (!oper3->data.string || !oper3->data.string->length) {
+        abort_interp("Subject must be a non-empty string.(3)");
+    }
+
+    if (oper2->type != PROG_STRING) {
+        abort_interp("Argument not a string.(2)");
+    }
+
+    if (oper1->type != PROG_STRING) {
+        abort_interp("Argument not a string.(1)");
+    }
+
+    if (!oper1->data.string || !oper1->data.string->length) {
+        abort_interp("To email must be a non-empty string.(1)");
+    }
+
+    /* Convert our message array to a string.  This is "kinda" lazy because
+     * I don't want to duplicate the array_join code.  It will look weird
+     * if there is an error here, but we checked our params so there shouldn't
+     * be an error at this point.
+     */
+    if (array_join(oper4->data.array, "\r\n", body, sizeof(body),
+                   ProgUID) < 0) {
+        abort_interp("Operation would result in overflow(4)");
+    }
+
+    /*
+     * Set up to make our email.
+     *
+     * TODO: Put this in its own function rather than burried in a MUF
+     * prim.  Also this can support cert files, not sure what that is for
+     * or if we need it.  That's the NULL parameter here.
+     */
+    rc = smtp_open(tp_smtp_server, tp_smtp_port, tp_smtp_ssl_type,
+                   tp_smtp_no_verify_cert ? SMTP_NO_CERT_VERIFY : 0,
+                   NULL, &smtp);
+
+    if (rc != SMTP_STATUS_OK) {
+        goto smtp_cleanup_error;
+    }
+
+    rc = smtp_auth(smtp, tp_smtp_auth_type, tp_smtp_user, tp_smtp_password);
+
+    if (rc != SMTP_STATUS_OK) {
+        goto smtp_cleanup_error;
+    }
+
+    rc = smtp_address_add(smtp,
+                          SMTP_ADDRESS_FROM,
+                          tp_smtp_from_email,
+                          tp_smtp_from_name);
+
+    if (rc != SMTP_STATUS_OK) {
+        goto smtp_cleanup_error;
+    }
+
+    rc = smtp_address_add(smtp,
+                          SMTP_ADDRESS_TO,
+                          oper1->data.string->data,
+                          oper2->data.string->data);
+
+    if (rc != SMTP_STATUS_OK) {
+        goto smtp_cleanup_error;
+    }
+
+    rc = smtp_header_add(smtp,
+                         "Subject",
+                         oper3->data.string->data);
+
+    if (rc != SMTP_STATUS_OK) {
+        goto smtp_cleanup_error;
+    }
+
+    rc = smtp_mail(smtp, body);
+
+    if (rc != SMTP_STATUS_OK) {
+        goto smtp_cleanup_error;
+    }
+
+    rc = smtp_close(smtp);
+
+    if (rc != SMTP_STATUS_OK) {
+        goto smtp_cleanup_error;
+    }
+
+    CLEAR(oper1);
+    CLEAR(oper2);
+    CLEAR(oper3);
+    CLEAR(oper4);
+
+    result = 0;
+    PushInt(result);
+    return;
+
+smtp_cleanup_error:
+    log_status("ERROR: email send failed: %s", smtp_status_code_errstr(rc));
+
+    if (smtp) {
+        smtp_close(smtp);
+    }
+
+    CLEAR(oper1);
+    CLEAR(oper2);
+    CLEAR(oper3);
+    CLEAR(oper4);
+
+    result = -2;
+    PushInt(result);
 }

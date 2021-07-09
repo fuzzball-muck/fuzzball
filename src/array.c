@@ -3029,3 +3029,115 @@ array_deep_copy(stk_array *in, stk_array **out, int pinned) {
     return result;
 }
 
+/**
+ * Join an array by a string, forming a string and putting it in the
+ * provided buffer.  Arrays can contain a MUF string, integer, object (dbref),
+ * float, or lock.  Anything else will get <UNSUPPORTED>
+ *
+ * If 'uid' is a player, then any locks in the array will get unparsed
+ * and displayed -- @see unparse_boolexp
+ *
+ * If 'uid' is negative, then the locks will show up as <Unparsable Lock>
+ *
+ * I can't imagine locks are often in arrays that you're going to join
+ * as strings so I'm not sure this will ever matter.
+ *
+ * Returns 0 on success, or -1 on errors.  The error is always the resulting
+ * string would overflow the buffer.
+ *
+ * @param arr the array to join
+ * @param delim the string to join the array by
+ * @param outbuf the output buffer
+ * @param buflen the size of the output buffer
+ * @param uid the user ref to unparse locks as if encountered
+ * @return 0 on success, -1 on failure
+ */
+int
+array_join(stk_array *arr, const char* delim, char* outbuf, int buflen,
+           dbref uid)
+{
+    struct inst *in;
+    struct inst temp1;
+    char        *ptr;
+    const char  *text;
+    char        buf[BUFFER_LEN];
+    int         first_item = 1, tmplen, keepgoing;
+
+    if (buflen < 1) {
+        return -1;
+    }
+
+    ptr = outbuf;
+    *outbuf = 0;
+
+    keepgoing = array_first(arr, &temp1);
+
+    while(keepgoing) {
+        in = array_getitem(arr, &temp1);
+
+        switch (in->type) {
+            case PROG_STRING:
+                text = DoNullInd(in->data.string);
+                break;
+
+            case PROG_INTEGER:
+                snprintf(buf, sizeof(buf), "%d", in->data.number);
+                text = buf;
+                break;
+
+            case PROG_OBJECT:
+                snprintf(buf, sizeof(buf), "#%d", in->data.number);
+                text = buf;
+                break;
+
+            case PROG_FLOAT:
+                snprintf(buf, sizeof(buf), "%.15g", in->data.fnumber);
+
+                if (!strchr(buf, '.') && !strchr(buf, 'n') && !strchr(buf, 'e')) {
+                    strcatn(buf, sizeof(buf), ".0");
+                }
+
+                text = buf;
+                break;
+
+            case PROG_LOCK:
+                if (uid > 0) {
+                    text = unparse_boolexp(uid, in->data.lock, 1);
+                } else {
+                    text = "<Unparsable Lock>";
+                }
+
+                break;
+
+            default:
+                text = "<UNSUPPORTED>";
+                break;
+        }
+
+        if (first_item) {
+            first_item = 0;
+        } else {
+            tmplen = strlen(delim);
+
+            if (tmplen > (buflen - (ptr - outbuf) - 1)) {
+                return -1;
+            }
+
+            strcpyn(ptr, buflen - (size_t)(outbuf - ptr), delim);
+            ptr += tmplen;
+        }
+
+        tmplen = strlen(text);
+
+        if (tmplen > (buflen - (ptr - outbuf) - 1)) {
+            return -1;
+        }
+
+        strcpyn(ptr, buflen - (size_t)(outbuf - ptr), text);
+        ptr += tmplen;
+
+        keepgoing = array_next(arr, &temp1);
+    }
+
+    return 0;
+}

@@ -606,6 +606,32 @@ void array_init_active_list(stk_array_list *list);
 void array_free_all_on_list(stk_array_list *list);
 
 /**
+ * Join an array by a string, forming a string and putting it in the
+ * provided buffer.  Arrays can contain a MUF string, integer, object (dbref),
+ * float, or lock.  Anything else will get \<UNSUPPORTED>
+ *
+ * If 'uid' is a player, then any locks in the array will get unparsed
+ * and displayed -- @see unparse_boolexp
+ *
+ * If 'uid' is negative, then the locks will show up as \<Unparsable Lock>
+ *
+ * I can't imagine locks are often in arrays that you're going to join
+ * as strings so I'm not sure this will ever matter.
+ *
+ * Returns 0 on success, or -1 on errors.  The error is always the resulting
+ * string would overflow the buffer.
+ *
+ * @param arr the array to join
+ * @param delim the string to join the array by
+ * @param outbuf the output buffer
+ * @param buflen the size of the output buffer
+ * @param uid the user ref to unparse locks as if encountered
+ * @return 0 on success, -1 on failure
+ */
+int array_join(stk_array *arr, const char* delim, char* outbuf, int buflen,
+               dbref uid);
+
+/**
  * Make a deep copy of an array. Can fail if the array has a circular structure.
  *
  * @param in input array

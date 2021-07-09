@@ -1,7 +1,7 @@
 ***Foxen9 TinyMUCK DUMP Format***
 118
 1
-157
+166
 %7bit_other_names=no
 %7bit_thing_names=yes
 %addpennies_muf_mlev=2
@@ -159,6 +159,15 @@ player_start=#112
 %userlog_mlev=3
 %who_hides_dark=yes
 %wiz_vehicles=no
+%smtp_host=
+%smtp_port=
+%smtp_no_verify_cert=no
+%smtp_ssl_type=2
+%smtp_auth_type=1
+%smtp_user=
+%smtp_password=
+%smtp_from_name=Your MUCK
+%smtp_from_email=noreply@yourmuck.com
 #117
 Bulletin board
 113

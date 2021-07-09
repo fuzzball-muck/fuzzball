@@ -116,7 +116,8 @@ BASE_OBJ="$(INTDIR)\array.obj" \
 	"$(INTDIR)\timequeue.obj" \
 	"$(INTDIR)\tune.obj" \
 	"$(INTDIR)\wiz.obj" \
-	"$(INTDIR)\win32.obj"
+	"$(INTDIR)\win32.obj" \
+        "$(INTDIR)\smtp.obj"
 
 INTERFACE_OBJ="$(INTDIR)\interface.obj" "$(INTDIR)\interface_ssl.obj"
 
