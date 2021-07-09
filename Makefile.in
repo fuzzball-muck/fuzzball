@@ -1,5 +1,14 @@
 #!/bin/make -f
 
+# #######################################################################
+#               Variables set by the configure script.
+# #######################################################################
+
+INSTALL=@INSTALL@
+INSTALL_PROGRAM=@INSTALL_PROGRAM@
+INSTALL_SCRIPT=@INSTALL_SCRIPT@
+INSTALL_DATA=@INSTALL_DATA@
+
 subdirs=src
 RM=rm -f
 MAKE=make
@@ -20,9 +29,17 @@ install:	Makefile
 	fi
 
 docker:	all
+	cd docs && ../src/prochelp ../src/mpihelp.raw mpihelp.txt mpihelp.html > /dev/null
+	cd docs && ../src/prochelp ../src/mufman.raw man.txt mufman.html > /dev/null
+	cd docs && ../src/prochelp ../src/muckhelp.raw help.txt muckhelp.html > /dev/null
+	cd docs && ${INSTALL_DATA} help.txt man.txt mpihelp.txt ../game/data
 	docker build -t fbmuck .
 
 docker-compose:	all
+	cd docs && ../src/prochelp ../src/mpihelp.raw mpihelp.txt mpihelp.html > /dev/null
+	cd docs && ../src/prochelp ../src/mufman.raw man.txt mufman.html > /dev/null
+	cd docs && ../src/prochelp ../src/muckhelp.raw help.txt muckhelp.html > /dev/null
+	cd docs && ${INSTALL_DATA} help.txt man.txt mpihelp.txt ../game/data
 	docker-compose build
 
 install-sysv-inits:	Makefile
