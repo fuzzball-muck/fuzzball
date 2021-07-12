@@ -2366,7 +2366,8 @@ prim_smtp_send(PRIM_PROTOTYPE)
     rc = smtp_address_add(smtp,
                           SMTP_ADDRESS_TO,
                           oper1->data.string->data,
-                          oper2->data.string->data);
+                          (oper2->data.string && oper2->data.string->length) ?
+                          oper2->data.string->data : "");
 
     if (rc != SMTP_STATUS_OK) {
         goto smtp_cleanup_error;
