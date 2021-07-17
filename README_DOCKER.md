@@ -1,32 +1,24 @@
 # Fuzzball in Docker
 
-Fuzzball has s Dockerfile, which is published to Dockerhub, and it also has a docker-compose file to make it simple to run your container with the proper environment variables and volumes set.
+Fuzzball has a Dockerfile, which is published to Docker Hub, and it also has a docker-compose.yml file to make it simple to run your container with the proper environment variables and volumes set.
 
-To see our Dockerhub entry, go here: https://hub.docker.com/r/fbmuck/fbmuck
+To see our Docker Hub entry, go here: https://hub.docker.com/r/fbmuck/fbmuck
 
-## Building
+## Fuzzball with docker-compose
 
-To build the Dockerfile, you must first build the source code.  There's currently a problem with the build process where the operating system in the FROM statement of the Dockerfile must match the operating system of the build host.
+### Building
 
-Thus, at the time of this writing, a Ubuntu 20.04 system is required to build the Docker image.  We will be fixing this in the future.  You can always alter the FROM statement to build it with 18.xx or probably most past versions of Ubuntu or maybe even Debian.  Again, we will be fixing this limitation soon!
-
-To build for Docker (without docker-compose), you can take the following steps:
+The docker-compose version of building the container uses compose format version 3.7, thus you need a minimum Docker version of 18.06.0 or above. To build with docker-compose, execute the following in the directory where this README file appears:
 
 ```
-./configure --with-ssl
-make docker
+docker-compose build
 ```
 
-To build for docker-compose, you can do this instead:
+Fuzzball for Docker is designed to run inside an Ubuntu 20.04 container. The Docker build process is [multi-stage](https://docs.docker.com/develop/develop-images/multistage-build/), meaning it will first build an image whose purpose is solely to build the source, then create a second lean image whose purpose is solely to run it. 
 
-```
-./configure --with-ssl
-make docker-compose
-```
+## Running
 
-## Running With Docker Compose
-
-The following environment variables control docker-compose:
+Several environment variables control the behavior of Fuzzball when run with docker-compose:
 
 * FB_PORT - This is the port we will expose for non-SSL connections.
 * FB_SSL_PORT - This is the port we will expose for SSL connections.  Due to limitations in docker-compose, we will always open this port even if SSL is not being used.  You can always comment out the lines in docker-compose if this is a bother to you, or perhaps make this the same as FB_PORT (I haven't tried this).
@@ -35,7 +27,7 @@ The following environment variables control docker-compose:
 * FB_USE_SSL - If this is '1', we will use SSL.  Any other value (or unset) will not enable SSL.
 * FB_SELF_SIGN - If this is '1', we will generate self-signed certs if there are no certs already made and FB_USE_SSL is 1.  Otherwise, if FB_USE_SSL is 1 and this is unset, and there are no SSL certificates, you will get an error.
 
-There is a .env file which contains some defaults for these:
+There is an .env file in this directory, which contains some defaults for these:
 
 * FB_PORT defaults to 4201
 * FB_SSL_PORT defaults to 4202
@@ -44,7 +36,7 @@ There is a .env file which contains some defaults for these:
 * FB_USE_SSL defaults to 1
 * FB_SELF_SIGN defaults to 1
 
-If you just want to try out Fuzzball, the easiest way to do so.  Once you have built with the above commands, you can simply:
+If you just want to try out Fuzzball, using docker-compose and the default ```.env``` file is the easiest way to do so.  Once you have built the container with docker-compose, you can simply issue:
 
 ```
 docker-compose up
@@ -52,9 +44,19 @@ docker-compose up
 
 You can add ```-d``` if you want to background it.  See the docker-compose documentation if you would like to pass in environment variables.
 
-## Running With Docker
+## Running Fuzzball with raw Docker
 
 You don't have to use Docker Compose, you can use raw docker if you prefer.
+
+### Building
+
+Building this container with Docker is as simple as issuing the following in the directory this README file appears in:
+
+```
+docker build .
+```
+
+### Running
 
 Port "4201" is used for non-SSL and "4202" is used for SSL, which you may expose however you wish.
 
@@ -70,11 +72,17 @@ The first will be your MUCK data directory, the second will be where SSL certs a
 Here's a sample command line call to run the container without docker-compose:
 
 ```
-docker run -d -p 4201:4201 -p 4202:4202 -e USE_SSL=1 -e SELF_SIGN=1 \
+docker run -d --init -p 4201:4201 -p 4202:4202 -e USE_SSL=1 -e SELF_SIGN=1 \
        -v "$(pwd)"/fb-data:/opt/fbmuck -v "$(pwd)"/fb-cert:/opt/fbmuck-ssl \
        fbmuck \
        /usr/bin/docker-entrypoint.sh
 ```
+
+## Terminating the container
+
+Either implementation of the running Fuzzball Docker container respect the ```fbmuck``` binary's kill signals, when run as described in this document.
+
+Both the ```Dockerfile``` and ```docker-compose.yaml``` files contain lines which you can uncomment to leverage SIGUSR2 (if you wish the database to be saved before container shutdown). Otherwise, SIGKILL (the default) will terminate the Fuzzball process without saving.
 
 ## SSL
 

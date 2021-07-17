@@ -9,8 +9,8 @@ prefix=/opt
 exec_prefix=/usr
 
 #
-# You'll want to edit this to match the base directory of your muck's files.
-# This should be the directory containing the 'data' and 'muf' directories.
+# In a Docker environment, the GAMEDIR should always be the value below.
+# This assures that directory mapping will always point to the correct place.
 #
 GAMEDIR="$prefix/fbmuck"
 
@@ -144,4 +144,4 @@ touch $RESTARTS_LOGFILE
 echo "$(date +%Y-%m-%dT%H:%M:%S): $(who am i)" >> $RESTARTS_LOGFILE
 
 # echo "Server started at: $(date)"
-$SERVER -nodetach -gamedir $GAMEDIR -dbin $DBIN -dbout $DBOUT $PORTS
+exec $SERVER -nodetach -gamedir $GAMEDIR -dbin $DBIN -dbout $DBOUT $PORTS
