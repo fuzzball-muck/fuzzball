@@ -22,7 +22,7 @@ RUN chmod a+rx /usr/bin/docker-entrypoint.sh
 
 # Copy FB base into /opt/fbmuck-base in case we need to start a blank DB
 COPY game/ dbs/starterdb/ /opt/fbmuck-base/
-# Additionally, copy files in docks into the fbmuck-base/data directory
+# Additionally, copy files in docs into the fbmuck-base/data directory
 # so users have helpful things like help.txt
 COPY docs/ /opt/fbmuck-base/data
 

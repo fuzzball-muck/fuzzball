@@ -27,7 +27,7 @@ Several environment variables control the behavior of Fuzzball when run with doc
 * FB_USE_SSL - If this is '1', we will use SSL.  Any other value (or unset) will not enable SSL.
 * FB_SELF_SIGN - If this is '1', we will generate self-signed certs if there are no certs already made and FB_USE_SSL is 1.  Otherwise, if FB_USE_SSL is 1 and this is unset, and there are no SSL certificates, you will get an error.
 
-There is an .env file in this directory, which contains some defaults for these:
+There is a ```.env``` file in this directory, which contains some defaults for these:
 
 * FB_PORT defaults to 4201
 * FB_SSL_PORT defaults to 4202
@@ -80,9 +80,9 @@ docker run -d --init -p 4201:4201 -p 4202:4202 -e USE_SSL=1 -e SELF_SIGN=1 \
 
 ## Terminating the container
 
-Either implementation of the running Fuzzball Docker container respect the ```fbmuck``` binary's kill signals, when run as described in this document.
+Either implementation of the Fuzzball Docker containers respect the ```fbmuck``` binary's kill signals, when run as described in this document.
 
-Both the ```Dockerfile``` and ```docker-compose.yaml``` files contain lines which you can uncomment to leverage SIGUSR2 (if you wish the database to be saved before container shutdown). Otherwise, SIGKILL (the default) will terminate the Fuzzball process without saving.
+Both the ```Dockerfile``` and ```docker-compose.yaml``` files contain lines which you can uncomment to leverage SIGUSR2, if you wish the database to be saved before container shutdown. Otherwise, SIGKILL (the default) will terminate the Fuzzball process without saving.
 
 ## SSL
 
