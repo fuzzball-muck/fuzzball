@@ -5615,39 +5615,9 @@ get_player_descrs(dbref player, int *count)
  * @return the current number of descriptors handled by the MUCK.
  */
 int
-pcount(void)
+pdescrcount(void)
 {
     return current_descr_count;
-}
-
-/**
- * Get the idle time in seconds of a given connection count number.
- *
- * Returns -1 if 'c' doesn't match anything.
- *
- * @param c the connection number
- * @return the idle time in seconds
- */
-int
-pidle(int c)
-{
-    /*
-     * @TODO This is identical to pdescridle ... If we get rid of the
-     *       use of connection count numbers, we can get rid of ths call
-     *       or alias it to pdescridle.
-     */
-    struct descriptor_data *d;
-    time_t now;
-
-    d = descrdata_by_count(c);
-
-    (void) time(&now);
-
-    if (d) {
-        return (int)(now - d->last_time);
-    }
-
-    return -1;
 }
 
 /**
@@ -5725,36 +5695,6 @@ pdescrdbref(int c)
 }
 
 /**
- * Get the online time for a given connection number.
- *
- * Returns -1 if 'c' doesn't match a connection.
- *
- * @param c the connection number
- * @return the time connected in seconds.
- */
-int
-pontime(int c)
-{
-    /*
-     * @TODO This is identical to pdescrontime ... If we get rid of the
-     *       use of connection count numbers, we can get rid of ths call
-     *       or alias it to pdescrontime.
-     */
-    struct descriptor_data *d;
-    time_t now;
-
-    d = descrdata_by_count(c);
-
-    (void) time(&now);
-
-    if (d) {
-        return (int)(now - d->connected_at);
-    }
-
-    return -1;
-}
-
-/**
  * Get the online time for a given descriptor.
  *
  * Returns -1 if 'c' doesn't match a connection.
@@ -5780,33 +5720,6 @@ pdescrontime(int c)
 }
 
 /**
- * Get the host information for a given connection number.
- *
- * Returns -1 if 'c' doesn't match a connection.
- *
- * @param c the connection number
- * @return the host information (could be a name or an IP string)
- */
-char *
-phost(int c)
-{
-    /*
-     * @TODO This is identical to pdescrhost ... If we get rid of the
-     *       use of connection count numbers, we can get rid of ths call
-     *       or alias it to pdescrhost.
-     */
-    struct descriptor_data *d;
-
-    d = descrdata_by_count(c);
-
-    if (d) {
-        return ((char *) d->hostname);
-    }
-
-    return NULL;
-}
-
-/**
  * Get the host information for a given descriptor.
  *
  * Returns -1 if 'c' doesn't match a descriptor.
@@ -5823,33 +5736,6 @@ pdescrhost(int c)
 
     if (d) {
         return ((char *) d->hostname);
-    }
-
-    return NULL;
-}
-
-/**
- * Get the user information for a given connection number.
- *
- * Returns -1 if 'c' doesn't match a connection.
- *
- * @param c the connection number
- * @return the user information
- */
-char *
-puser(int c)
-{
-    /*
-     * @TODO This is identical to pdescruser ... If we get rid of the
-     *       use of connection count numbers, we can get rid of ths call
-     *       or alias it to pdescruser.
-     */
-    struct descriptor_data *d;
-
-    d = descrdata_by_count(c);
-
-    if (d) {
-        return ((char *) d->username);
     }
 
     return NULL;
@@ -5944,31 +5830,6 @@ most_idle_player_descr(dbref who)
 }
 
 /**
- * Boot a given connection number.
- *
- * Does nothing if connection is not found.
- *
- * @param c the connection number
- */
-void
-pboot(int c)
-{
-    /*
-     * @TODO This is identical to pdescrboot ... If we get rid of the
-     *       use of connection count numbers, we can get rid of ths call
-     *       or alias it to pdescrboot.
-     */
-    struct descriptor_data *d;
-
-    d = descrdata_by_count(c);
-
-    if (d) {
-        process_output(d);
-        d->booted = 1;
-    }
-}
-
-/**
  * Boot a given descriptor.
  *
  * Returns true if booted, false if not found.
@@ -5990,32 +5851,6 @@ pdescrboot(int c)
     }
 
     return 0;
-}
-
-/**
- * Send a string to a given connection number.
- *
- * Does nothing if connection is not found.
- *
- * @param c the connection number
- * @param outstr the string to send.
- */
-void
-pnotify(int c, char *outstr)
-{
-    /*
-     * @TODO This is identical to pdescrnotify ... If we get rid of the
-     *       use of connection count numbers, we can get rid of ths call
-     *       or alias it to pdescrnotify.
-     */
-    struct descriptor_data *d;
-
-    d = descrdata_by_count(c);
-
-    if (d) {
-        queue_ansi(d, outstr);
-        queue_write(d, "\r\n", 2);
-    }
 }
 
 /**
@@ -6142,26 +5977,6 @@ pnextdescr(int c)
     }
 
     return (0);
-}
-
-/**
- * Get the connection number associated with the given descriptor
- *
- * @param c the descriptor
- * @return the associated connection number
- */
-int
-pdescrcon(int c)
-{
-    struct descriptor_data *d;
-
-    d = descrdata_by_descr(c);
-
-    if (d) {
-        return d->con_number;
-    } else {
-        return 0;
-    }
 }
 
 /**

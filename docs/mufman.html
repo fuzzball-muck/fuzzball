@@ -229,20 +229,11 @@
     <li><a href="#compilation">compilation</a></li>
     <li><a href="#compile">compile</a></li>
     <li><a href="#compiled?">compiled?</a></li>
-    <li><a href="#conboot">conboot</a></li>
-    <li><a href="#concount">concount</a></li>
-    <li><a href="#condbref">condbref</a></li>
-    <li><a href="#condescr">condescr</a></li>
-    <li><a href="#conhost">conhost</a></li>
-    <li><a href="#conidle">conidle</a></li>
     <li><a href="#connect">connect</a></li>
-    <li><a href="#connotify">connotify</a></li>
     <li><a href="#contents">contents</a></li>
     <li><a href="#contents_array">contents_array</a></li>
-    <li><a href="#contime">contime</a></li>
     <li><a href="#continue">continue</a></li>
     <li><a href="#controls">controls</a></li>
-    <li><a href="#conuser">conuser</a></li>
     <li><a href="#convtime">convtime</a></li>
     <li><a href="#copyobj">copyobj</a></li>
     <li><a href="#copyplayer">copyplayer</a></li>
@@ -272,7 +263,7 @@
     <li><a href="#descr_setuser">descr_setuser</a></li>
     <li><a href="#descrboot">descrboot</a></li>
     <li><a href="#descrbufsize">descrbufsize</a></li>
-    <li><a href="#descrcon">descrcon</a></li>
+    <li><a href="#descrcount">descrcount</a></li>
     <li><a href="#descrdbref">descrdbref</a></li>
     <li><a href="#descrflush">descrflush</a></li>
     <li><a href="#descrhost">descrhost</a></li>
@@ -722,7 +713,7 @@ around 80,000 instructions.
   
 <p>
   Level three MUCKERs are referred to as Masters.  They can use the con-
-nection info primitives (ie: CONDBREF, ONLINE, etc.), read the EXITS list
+nection info primitives (ie: DESCRBREF, ONLINE, etc.), read the EXITS list
 of any room, use NEXTPROP on objects, can use NEWROOM, NEWOBJECT, NEWEXIT,
 and COPYOBJ without limitations, can use QUEUE and KILL, and can override
 the permissions restrictions of MOVETO.  You only give a player MUCKER
@@ -732,7 +723,7 @@ limit for level three or above, except for programs running in PREEMPT mode.
   
 <p>
   A player who is wizbitted is effectively Mucker Level 4.  MUCKER level
-four is required for the RECYCLE primitive, the CONHOST primitive, the
+four is required for the RECYCLE primitive, the DESCRHOST primitive, the
 FORCE primitive, and the SETOWN primitive.  ML4 also allows overriding
 of permissions of the SET* primitives, and property permissions.  Props
 not listed by NEXTPROP with ML3 are listed with ML4.  Programs running
@@ -8481,21 +8472,12 @@ This primitive requires at least mucker level 4.
 <h2 id="ConnOps">Connection Management Operators</h2>
 <ul>
     <li><a href="#awake?">awake?</a></li>
-    <li><a href="#conboot">conboot</a></li>
-    <li><a href="#concount">concount</a></li>
-    <li><a href="#condbref">condbref</a></li>
-    <li><a href="#condescr">condescr</a></li>
-    <li><a href="#conhost">conhost</a></li>
-    <li><a href="#conidle">conidle</a></li>
-    <li><a href="#connotify">connotify</a></li>
-    <li><a href="#contime">contime</a></li>
-    <li><a href="#conuser">conuser</a></li>
     <li><a href="#descr">descr</a></li>
     <li><a href="#descr_array">descr_array</a></li>
     <li><a href="#descr_setuser">descr_setuser</a></li>
     <li><a href="#descrboot">descrboot</a></li>
     <li><a href="#descrbufsize">descrbufsize</a></li>
-    <li><a href="#descrcon">descrcon</a></li>
+    <li><a href="#descrcount">descrcount</a></li>
     <li><a href="#descrdbref">descrdbref</a></li>
     <li><a href="#descrflush">descrflush</a></li>
     <li><a href="#descrhost">descrhost</a></li>
@@ -8556,106 +8538,13 @@ every player connected to the server.
 <!-- HTML_TOPICEND -->
 
 
-<h3 id="concount">CONCOUNT ( -- i)
+<h3 id="descrcount">DESCRCOUNT ( -- i)
 <br>
 
 <br>
 </h3>
   Returns how many connections to the server there are.
 (Requires Mucker Level 3)
-<!-- HTML_TOPICEND -->
-
-
-<h3 id="condbref">CONDBREF (i -- d)
-<br>
-
-<br>
-</h3>
-  Returns the dbref of the player connected to this connection.
-(Requires Mucker Level 3)
-<!-- HTML_TOPICEND -->
-
-
-<h3 id="contime">CONTIME (i -- i)
-<br>
-
-<br>
-</h3>
-  Returns how many seconds the given connection has been connected
-to the server.  (Requires Mucker Level 3)
-<!-- HTML_TOPICEND -->
-
-
-<h3 id="conidle">CONIDLE (i -- i)
-<br>
-
-<br>
-</h3>
-  Returns how many seconds the connection has been idle.
-(Requires Mucker Level 3)
-<!-- HTML_TOPICEND -->
-
-
-<h3 id="conuser">CONUSER (i -- s)
-<br>
-
-<br>
-</h3>
-  Returns the username of the connection. (wizbit only)
-<!-- HTML_TOPICEND -->
-
-
-<h3 id="conhost">CONHOST (i -- s)
-<br>
-
-<br>
-</h3>
-  Returns the hostname of the connection. (wizbit only)
-<!-- HTML_TOPICEND -->
-
-
-<h3 id="conboot">CONBOOT (i -- )
-<br>
-
-<br>
-</h3>
-  Takes a connection number and disconnects that connection from
-the server.  Basically @boot for a specific connection. (wizbit only)
-<!-- HTML_TOPICEND -->
-
-
-<h3 id="connotify">CONNOTIFY (i s -- )
-<br>
-
-<br>
-</h3>
-  Sends a string to a specific connection to the server.
-(Requires Mucker Level 3)
-<!-- HTML_TOPICEND -->
-
-
-<h3 id="condescr">CONDESCR ( i -- i )
-<br>
-
-<br>
-</h3>
-  Takes a connection number and returns the descriptor number associated
-with it.  (Requires Mucker Level 3)  See DESCRIPTORS, DESCRCON.
-<!-- HTML_TOPICEND -->
-
-
-<h3 id="descrcon">DESCRCON (i -- i)
-<br>
-
-<br>
-</h3>
-  Takes a descriptor and returns the associated connection number,
-or 0 if no match was found.
-(Requires Mucker Level 3)
-<p>Also see:
-    <a href="#descriptors">DESCRIPTORS</a> and
-    <a href="#condescr">CONDESCR</a>
-</p>
 <!-- HTML_TOPICEND -->
 
 
