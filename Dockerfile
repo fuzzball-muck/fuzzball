@@ -3,10 +3,13 @@ RUN apt update && apt dist-upgrade -y
 RUN apt-get install -y build-essential \
       libpcre3-dev libssl-dev git autoconf \
       automake autoconf-archive
-RUN git clone https://github.com/fuzzball-muck/fuzzball.git && \
-    cd fuzzball && git pull origin master && \
+COPY . fuzzball/
+RUN cd fuzzball && \
     ./configure --with-ssl --prefix /root/scratch && make clean && \
-    make && make install
+    make && make install && cd docs && \
+    ../src/prochelp ../src/mpihelp.raw mpihelp.txt mpihelp.html && \
+    ../src/prochelp ../src/mufman.raw mufman.txt mufman.html && \
+    ../src/prochelp ../src/muckhelp.raw muckhelp.txt muckhelp.html
 
 FROM ubuntu:20.04
 RUN apt update && apt dist-upgrade -y \
