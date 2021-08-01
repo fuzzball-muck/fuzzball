@@ -122,7 +122,6 @@ struct descriptor_data {
                              *   support console
                              */
     int connected;          /**< Is playing? (has gotten past login) */
-    int con_number;         /**< The connection number               */
     int booted;             /**< 0 = do not boot;
                              *   1 = boot without message;
                              *   2 = boot with goodbye
@@ -166,7 +165,7 @@ struct descriptor_data {
     const char *username;           /**< Ident username if available         */
     int quota;                      /**< Command burst quota                 */
     struct descriptor_data *next;   /**< Linked list of descriptors          */
-    struct descriptor_data **prev;  /**< Double linked list                  */
+    struct descriptor_data *prev;   /**< Double linked list                  */
     McpFrame mcpframe;              /**< MCP Frame information               */
 };
 
@@ -183,6 +182,13 @@ extern short db_conversion_flag;
  *      The list of descriptors being managed.
  */
 extern struct descriptor_data *descriptor_list;
+
+/**
+ * @var descriptor_list_tail
+ *      The list of descriptors being managed, but from the tail of the linked
+ *      list.
+ */
+extern struct descriptor_data *descriptor_list_tail;
 
 /**
  * @var global_dumpdone
@@ -645,24 +651,6 @@ dbref partial_pmatch(const char *name);
 int pdescrcount(void);
 
 /**
- * Get the player dbref for a given connection count number.
- *
- * Returns NOTHING if 'c' doesn't match.
- *
- * @param c the connection count number
- * @return the associated player dbref.
- */
-int pdbref(int c);
-
-/**
- * Get the descriptor for a given connection number
- *
- * @param c the connection number
- * @return the associated descriptor
- */
-int pdescr(int c);
-
-/**
  * Boot a given descriptor.
  *
  * Returns true if booted, false if not found.
@@ -782,7 +770,7 @@ char *pdescruser(int c);
 int pfirstdescr(void);
 
 /**
- * Get the last descriptor currently connected (connection number 1)
+ * Get the last descriptor currently connected and logged into the MUCK.
  *
  * @return the last descriptor currently connected.
  */

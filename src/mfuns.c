@@ -1690,7 +1690,7 @@ mfn_ontime(MFUNARGS)
     if (!conn)
         return "-1";
 
-    snprintf(buf, BUFFER_LEN, "%d", pdescrontime(pdescr(conn)));
+    snprintf(buf, BUFFER_LEN, "%d", pdescrontime(conn));
     return buf;
 }
 
@@ -1731,7 +1731,7 @@ mfn_idle(MFUNARGS)
     if (!conn)
         return "-1";
 
-    snprintf(buf, BUFFER_LEN, "%d", pdescridle(pdescr(conn)));
+    snprintf(buf, BUFFER_LEN, "%d", pdescridle(conn));
     return buf;
 }
 
@@ -1758,23 +1758,29 @@ mfn_online(MFUNARGS)
     int list_limit = MAX_MFUN_LIST_LEN;
     int count = pdescrcount();
     char buf2[BUFFER_LEN];
+    struct descriptor_data* d = descriptor_list_tail;
 
     if (!(mesgtyp & MPI_ISBLESSED))
         ABORT_MPI("ONLINE", "Permission denied.");
 
     *buf = '\0';
 
-    while (count && list_limit--) {
+    for ( ; list_limit && d; d = d->prev) {
+        if (!d->connected) {
+            continue;
+        }
+
         if (*buf)
             strcatn(buf, BUFFER_LEN, "\r");
 
-        ref2str(pdbref(count), buf2, sizeof(buf2));
+        ref2str(d->player, buf2, sizeof(buf2));
 
         if ((strlen(buf) + strlen(buf2)) >= (BUFFER_LEN - 3))
             break;
 
         strcatn(buf, BUFFER_LEN, buf2);
         count--;
+        list_limit--;
     }
 
     return buf;

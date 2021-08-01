@@ -35,7 +35,6 @@ void prim_awakep(PRIM_PROTOTYPE);
  * each connection to the server.
  *
  * @see pcount
- * @see pdbref
  *
  * @param player the player running the MUF program
  * @param program the program being run
@@ -54,7 +53,6 @@ void prim_online(PRIM_PROTOTYPE);
  * each connection to the server.
  *
  * @see pcount
- * @see pdbref
  *
  * @param player the player running the MUF program
  * @param program the program being run

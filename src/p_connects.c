@@ -78,7 +78,6 @@ prim_awakep(PRIM_PROTOTYPE)
  * each connection to the server.
  *
  * @see pdescrcount
- * @see pdbref
  *
  * @param player the player running the MUF program
  * @param program the program being run
@@ -91,18 +90,27 @@ prim_awakep(PRIM_PROTOTYPE)
 void
 prim_online(PRIM_PROTOTYPE)
 {
+    struct descriptor_data* d = descriptor_list_tail;
+
     CHECKOP(0);
 
     if (mlev < 3)
         abort_interp("Mucker level 3 primitive.");
 
+    /*
+     * This could be MORE than is actually connected if there's people sitting
+     * on the connection screen, but should be a descent worst-case for
+     * overflow checking.
+     */
     result = pdescrcount();
 
     CHECKOFLOW(result+1);
 
-    for (int i = result; i > 0; i--) {
-        ref = pdbref(i);
-        PushObject(ref);
+    for ( ; d; d = d->prev) {
+        if (d->connected) {
+            PushObject(d->descriptor);
+            result++;
+        }
     }
 
     PushInt(result);
@@ -115,7 +123,6 @@ prim_online(PRIM_PROTOTYPE)
  * each connection to the server.
  *
  * @see pdescrcount
- * @see pdbref
  *
  * @param player the player running the MUF program
  * @param program the program being run
@@ -129,13 +136,12 @@ void
 prim_online_array(PRIM_PROTOTYPE)
 {
     stk_array *nu;
+    struct descriptor_data* d = descriptor_list;
 
     CHECKOP(0);
  
     if (mlev < 3)
         abort_interp("Mucker level 3 primitive.");
-
-    result = pdescrcount();
 
     CHECKOFLOW(1);
 
@@ -145,13 +151,16 @@ prim_online_array(PRIM_PROTOTYPE)
     temp1.line = 0;
     temp2.line = 0;
 
-    nu = new_array_packed(result, fr->pinning);
+    nu = new_array_packed(0, fr->pinning);
 
-    for (int i = 0; i < result; i++) {
-        temp1.data.number = i;
-        temp2.data.number = pdbref(i + 1);
+    for (int i = 0; d; d = d->prev) {
+        if (d->connected) {
+            temp1.data.number = i;
+            temp2.data.number = d->player;
 
-        array_setitem(&nu, &temp1, &temp2);
+            array_setitem(&nu, &temp1, &temp2);
+            i++;
+        }
     }
 
     PushArrayRaw(nu);
@@ -321,7 +330,7 @@ prim_descr_least_idle(PRIM_PROTOTYPE)
     if (!valid_object(oper1))
         abort_interp("Bad dbref.");
 
-    result = pdescr(least_idle_player_descr(oper1->data.objref));
+    result = least_idle_player_descr(oper1->data.objref);
 
     if (result == 0)
         abort_interp("Invalid descriptor number. (1)");
@@ -363,7 +372,7 @@ prim_descr_most_idle(PRIM_PROTOTYPE)
     if (!valid_object(oper1))
         abort_interp("Bad dbref.");
 
-    result = pdescr(most_idle_player_descr(oper1->data.objref));
+    result = most_idle_player_descr(oper1->data.objref);
 
     if (result == 0)
         abort_interp("Invalid descriptor number. (1)");
@@ -643,6 +652,7 @@ prim_descriptors(PRIM_PROTOTYPE)
     int mydescr, mycount = 0;
     int *darr;
     int dcount;
+    struct descriptor_data* d;
 
     CHECKOP(1);
     oper1 = POP();
@@ -658,16 +668,16 @@ prim_descriptors(PRIM_PROTOTYPE)
     CLEAR(oper1);
 
     if (ref == NOTHING) {
+        d = descriptor_list_tail;
         result = pdescrcount();
 
         CHECKOFLOW(result + 1);
 
-        while (result) {
-            mydescr = pdescr(result);
-
-            PushInt(mydescr);
-            mycount++;
-            result--;
+        for ( ; d; d = d->prev) {
+            if (d->connected) {
+                PushInt(d->descriptor);
+                mycount++;
+            }
         }
     } else {
         darr = get_player_descrs(ref, &dcount);
@@ -708,6 +718,7 @@ prim_descr_array(PRIM_PROTOTYPE)
     stk_array *newarr;
     int *darr;
     int dcount;
+    struct descriptor_data* d;
 
     CHECKOP(1);
     oper1 = POP();
@@ -726,14 +737,15 @@ prim_descr_array(PRIM_PROTOTYPE)
     temp2.type = PROG_INTEGER;
 
     if (ref == NOTHING) {
-        result = pdescrcount();
+        d = descriptor_list;
         newarr = new_array_packed(result, fr->pinning);
 
-        for (int i = 0; i < result; i++) {
-            temp1.data.number = i;
-            temp2.data.number = pdescr(i + 1);
-
-            array_setitem(&newarr, &temp1, &temp2);
+        for (int i = 0; d; d = d->next) {
+            if (d->connected) {
+                temp1.data.number = i;
+                i++;
+                temp2.data.number = d->descriptor;
+            }
         }
 	} else {
         darr = get_player_descrs(ref, &dcount);
