@@ -250,9 +250,6 @@ static int ndescriptors = 0;
  *       to have more than 1024 descriptors + sockets, so this is unlikely
  *       to increase memory usage but would allow it to expand if needed.
  *       (tanabi)
- *
- * @TODO If this is ever made more dynamic of FD_SETSIZE is modified,
- *       pfirstdescr and plastdescr must also be altered.
  */
 static struct descriptor_data *descr_lookup_table[FD_SETSIZE];
 
@@ -2398,6 +2395,8 @@ shutdownsock(struct descriptor_data *d)
 
     if (!descriptor_list)
         descriptor_list_tail = NULL;
+    else if(descriptor_list_tail == d)
+        descriptor_list_tail = d->prev;
 
     free((void *) d->hostname);
     free((void *) d->username);
@@ -5781,7 +5780,7 @@ pfirstdescr(void)
 {
     struct descriptor_data* d;
 
-    for (d = descriptor_list; d; d = d->next) {
+    for (d = descriptor_list_tail; d; d = d->prev) {
         if (d->connected) {
             return d->descriptor;
         }
@@ -5800,7 +5799,7 @@ plastdescr(void)
 {
     struct descriptor_data* d;
 
-    for (d = descriptor_list_tail; d; d = d->prev) {
+    for (d = descriptor_list; d; d = d->next) {
         if (d->connected) {
             return d->descriptor;
         }
@@ -5823,7 +5822,7 @@ pnextdescr(int c)
     d = descrdata_by_descr(c);
 
     if (d) {
-        d = d->next;
+        d = d->prev;
     }
 
     /*
@@ -5831,7 +5830,7 @@ pnextdescr(int c)
      * those.
      */
     while (d && (!d->connected))
-        d = d->next;
+        d = d->prev;
 
     if (d) {
         return (d->descriptor);
