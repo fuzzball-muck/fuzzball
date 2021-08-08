@@ -245,7 +245,7 @@ $else
     " " explode_array  ( arrNames )
     { }list swap  ( arrNames )
     foreach swap pop  ( arrDb strName )
-        dup .pmatch  ( arrDb strName db )
+        dup pmatch  ( arrDb strName db )
         dup rtn-valid-who not if  ( arrDb strName db )
             pop  ( arrDb strName )
             "I don't see whom you mean by '%s'." fmtstring tell  ( arrDb )

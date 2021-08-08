@@ -35,7 +35,6 @@ void prim_awakep(PRIM_PROTOTYPE);
  * each connection to the server.
  *
  * @see pcount
- * @see pdbref
  *
  * @param player the player running the MUF program
  * @param program the program being run
@@ -54,7 +53,6 @@ void prim_online(PRIM_PROTOTYPE);
  * each connection to the server.
  *
  * @see pcount
- * @see pdbref
  *
  * @param player the player running the MUF program
  * @param program the program being run
@@ -67,11 +65,11 @@ void prim_online(PRIM_PROTOTYPE);
 void prim_online_array(PRIM_PROTOTYPE);
 
 /**
- * Implementation of MUF CONCOUNT
+ * Implementation of MUF DESCRCOUNT
  *
  * Returns the number of connections to the server.
  *
- * @see pcount
+ * @see pdescrcount
  *
  * @param player the player running the MUF program
  * @param program the program being run
@@ -81,165 +79,7 @@ void prim_online_array(PRIM_PROTOTYPE);
  * @param top the top-most item of the stack
  * @param fr the program frame
  */
-void prim_concount(PRIM_PROTOTYPE);
-
-/**
- * Implementation of MUF CONDBREF
- *
- * Consumes a connection number and returns the associated player dbref.
- * This will be NOTHING if no player is connected using that number.
- *
- * @see pdbref
- * 
- * @param player the player running the MUF program
- * @param program the program being run
- * @param mlev the effective MUCKER level
- * @param pc the program counter pointer
- * @param arg the argument stack
- * @param top the top-most item of the stack
- * @param fr the program frame
- */
-void prim_condbref(PRIM_PROTOTYPE);
-
-/**
- * Implementation of MUF CONIDLE
- *
- * Consumes a connection number and returns how many seconds it has been idle.
- *
- * @see pidle
- * 
- * @param player the player running the MUF program
- * @param program the program being run
- * @param mlev the effective MUCKER level
- * @param pc the program counter pointer
- * @param arg the argument stack
- * @param top the top-most item of the stack
- * @param fr the program frame
- */
-void prim_conidle(PRIM_PROTOTYPE);
-
-/**
- * Implementation of MUF CONTIME
- *
- * Consumes a connection number and returns how many seconds it has been
- * connected to the server.
- *
- * @see pontime
- * 
- * @param player the player running the MUF program
- * @param program the program being run
- * @param mlev the effective MUCKER level
- * @param pc the program counter pointer
- * @param arg the argument stack
- * @param top the top-most item of the stack
- * @param fr the program frame
- */
-void prim_contime(PRIM_PROTOTYPE);
-
-/**
- * Implementation of MUF CONHOST
- *
- * Consumes a connection number and returns the hostname or IP associated with
- * the connection.
- *
- * @see phost
- * 
- * @param player the player running the MUF program
- * @param program the program being run
- * @param mlev the effective MUCKER level
- * @param pc the program counter pointer
- * @param arg the argument stack
- * @param top the top-most item of the stack
- * @param fr the program frame
- */
-void prim_conhost(PRIM_PROTOTYPE);
-
-/**
- * Implementation of MUF CONUSER
- *
- * Consumes a connection number and returns the username associated with
- * the connection.
- *
- * @see puser
- *
- * @param player the player running the MUF program
- * @param program the program being run
- * @param mlev the effective MUCKER level
- * @param pc the program counter pointer
- * @param arg the argument stack
- * @param top the top-most item of the stack
- * @param fr the program frame
- */
-void prim_conuser(PRIM_PROTOTYPE);
-
-/**
- * Implementation of MUF CONBOOT
- *
- * Consumes a connection number and disconnects it from the server.
- *
- * @see pboot
- *
- * @param player the player running the MUF program
- * @param program the program being run
- * @param mlev the effective MUCKER level
- * @param pc the program counter pointer
- * @param arg the argument stack
- * @param top the top-most item of the stack
- * @param fr the program frame
- */
-void prim_conboot(PRIM_PROTOTYPE);
-
-/**
- * Implementation of MUF CONNOTIFY
- *
- * Consumes a connection number and a string, and sends the string over
- * the connection.
- *
- * @see pnotify
- *
- * @param player the player running the MUF program
- * @param program the program being run
- * @param mlev the effective MUCKER level
- * @param pc the program counter pointer
- * @param arg the argument stack
- * @param top the top-most item of the stack
- * @param fr the program frame
- */
-void prim_connotify(PRIM_PROTOTYPE);
-
-/**
- * Implementation of MUF CONDESCR
- * 
- * Consumes a connection number and returns the associated descriptor number.
- *
- * @see pdescr
- *
- * @param player the player running the MUF program
- * @param program the program being run
- * @param mlev the effective MUCKER level
- * @param pc the program counter pointer
- * @param arg the argument stack
- * @param top the top-most item of the stack
- * @param fr the program frame
- */
-void prim_condescr(PRIM_PROTOTYPE);
-
-/**
- * Implementation of MUF DESCRCON
- *
- * Consumes a descriptor number and returns the associated connection number.
- *
- * @see pdescrcon
- *
- * @param player the player running the MUF program
- * @param program the program being run
- * @param mlev the effective MUCKER level
- * @param pc the program counter pointer
- * @param arg the argument stack
- * @param top the top-most item of the stack
- * @param fr the program frame
- */
-void prim_descrcon(PRIM_PROTOTYPE);
+void prim_descrcount(PRIM_PROTOTYPE);
 
 /**
  * Implementation of MUF NEXTDESCR
@@ -590,9 +430,7 @@ void prim_descr_bufsize(PRIM_PROTOTYPE);
 /**
  * Primitive callback functions
  */
-#define PRIMS_CONNECTS_FUNCS prim_awakep, prim_online, prim_concount,      \
-    prim_condbref, prim_conidle, prim_contime, prim_conhost, prim_conuser, \
-    prim_conboot, prim_connotify, prim_condescr, prim_descrcon,            \
+#define PRIMS_CONNECTS_FUNCS prim_awakep, prim_online, prim_descrcount,    \
     prim_nextdescr, prim_descriptors, prim_descr_setuser, prim_descrflush, \
     prim_descr, prim_online_array, prim_descr_array, prim_firstdescr,      \
     prim_lastdescr, prim_descr_time, prim_descr_host, prim_descr_user,     \
@@ -603,9 +441,7 @@ void prim_descr_bufsize(PRIM_PROTOTYPE);
 /**
  * Primitive names - must be in same order as the callback functions
  */
-#define PRIMS_CONNECTS_NAMES "AWAKE?", "ONLINE", "CONCOUNT",  \
-    "CONDBREF", "CONIDLE", "CONTIME", "CONHOST", "CONUSER",   \
-    "CONBOOT", "CONNOTIFY", "CONDESCR", "DESCRCON",           \
+#define PRIMS_CONNECTS_NAMES "AWAKE?", "ONLINE", "DESCRCOUNT",\
     "NEXTDESCR", "DESCRIPTORS", "DESCR_SETUSER", "DESCRFLUSH",\
     "DESCR", "ONLINE_ARRAY", "DESCR_ARRAY", "FIRSTDESCR",     \
     "LASTDESCR", "DESCRTIME", "DESCRHOST", "DESCRUSER",       \

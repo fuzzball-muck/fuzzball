@@ -122,7 +122,6 @@ struct descriptor_data {
                              *   support console
                              */
     int connected;          /**< Is playing? (has gotten past login) */
-    int con_number;         /**< The connection number               */
     int booted;             /**< 0 = do not boot;
                              *   1 = boot without message;
                              *   2 = boot with goodbye
@@ -166,7 +165,7 @@ struct descriptor_data {
     const char *username;           /**< Ident username if available         */
     int quota;                      /**< Command burst quota                 */
     struct descriptor_data *next;   /**< Linked list of descriptors          */
-    struct descriptor_data **prev;  /**< Double linked list                  */
+    struct descriptor_data *prev;   /**< Double linked list                  */
     McpFrame mcpframe;              /**< MCP Frame information               */
 };
 
@@ -183,6 +182,13 @@ extern short db_conversion_flag;
  *      The list of descriptors being managed.
  */
 extern struct descriptor_data *descriptor_list;
+
+/**
+ * @var descriptor_list_tail
+ *      The list of descriptors being managed, but from the tail of the linked
+ *      list.
+ */
+extern struct descriptor_data *descriptor_list_tail;
 
 /**
  * @var global_dumpdone
@@ -638,38 +644,11 @@ void notifyf_nolisten(dbref player, const char *format, ...)
 dbref partial_pmatch(const char *name);
 
 /**
- * Boot a given connection number.
- *
- * Does nothing if connection is not found.
- *
- * @param c the connection number
- */
-void pboot(int c);
-
-/**
  * Return the current number of descriptors handled by the MUCK.
  *
  * @return the current number of descriptors handled by the MUCK.
  */
-int pcount(void);
-
-/**
- * Get the player dbref for a given connection count number.
- *
- * Returns NOTHING if 'c' doesn't match.
- *
- * @param c the connection count number
- * @return the associated player dbref.
- */
-int pdbref(int c);
-
-/**
- * Get the descriptor for a given connection number
- *
- * @param c the connection number
- * @return the associated descriptor
- */
-int pdescr(int c);
+int pdescrcount(void);
 
 /**
  * Boot a given descriptor.
@@ -791,31 +770,11 @@ char *pdescruser(int c);
 int pfirstdescr(void);
 
 /**
- * Get the host information for a given connection number.
- *
- * Returns -1 if 'c' doesn't match a connection.
- *
- * @param c the connection number
- * @return the host information (could be a name or an IP string)
- */
-char *phost(int c);
-
-/**
- * Get the last descriptor currently connected (connection number 1)
+ * Get the last descriptor currently connected and logged into the MUCK.
  *
  * @return the last descriptor currently connected.
  */
 int plastdescr(void);
-
-/**
- * Get the idle time in seconds of a given connection count number.
- *
- * Returns -1 if 'c' doesn't match anything.
- *
- * @param c the connection number
- * @return the idle time in seconds
- */
-int pidle(int c);
 
 /**
  * Get the next connected descriptor in the linked list
@@ -824,26 +783,6 @@ int pidle(int c);
  * @return the next connected descriptor in the linked list or NULL if no more
  */
 int pnextdescr(int c);
-
-/**
- * Send a string to a given connection number.
- *
- * Does nothing if connection is not found.
- *
- * @param c the connection number
- * @param outstr the string to send.
- */
-void pnotify(int c, char *outstr);
-
-/**
- * Get the online time for a given connection number.
- *
- * Returns -1 if 'c' doesn't match a connection.
- *
- * @param c the connection number
- * @return the time connected in seconds.
- */
-int pontime(int c);
 
 /**
  * Process output, retrying to try and push through data that would block
@@ -900,16 +839,6 @@ int process_output(struct descriptor_data *d);
  * @return boolean true if successful, false if not
  */
 int pset_user(int c, dbref who);
-
-/**
- * Get the user information for a given connection number.
- *
- * Returns -1 if 'c' doesn't match a connection.
- *
- * @param c the connection number
- * @return the user information
- */
-char *puser(int c);
 
 #ifdef USE_SSL
 /**
