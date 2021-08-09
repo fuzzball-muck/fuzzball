@@ -5659,7 +5659,7 @@ pdescruser(int c)
  * Get the least idle descriptor for the given player dbref
  *
  * @param who the dbref of the player to find a descriptor for.
- * @return the least idle descriptor or 0 if not connected.
+ * @return the least idle descriptor or -1 if not connected.
  */
 int
 least_idle_player_descr(dbref who)
@@ -5685,14 +5685,14 @@ least_idle_player_descr(dbref who)
         return best_d->descriptor;
     }
 
-    return 0;
+    return -1;
 }
 
 /**
  * Get the least most descriptor for the given player dbref
  *
  * @param who the dbref of the player to find a descriptor for.
- * @return the most idle descriptor or 0 if not connected.
+ * @return the most idle descriptor or -1 if not connected.
  */
 int
 most_idle_player_descr(dbref who)
@@ -5718,7 +5718,7 @@ most_idle_player_descr(dbref who)
         return best_d->descriptor;
     }
 
-    return 0;
+    return -1;
 }
 
 /**

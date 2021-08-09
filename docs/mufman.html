@@ -8585,7 +8585,7 @@ to the server.  (Requires Mucker Level 3)
 <br>
 </h3>
   Returns the descriptor number for the least idle connection of the given
-player dbref.  (Requires Mucker Level 3)
+player dbref, or -1 if the player is disconnected.  (Requires Mucker Level 3)
 <!-- HTML_TOPICEND -->
 
 
@@ -8595,7 +8595,7 @@ player dbref.  (Requires Mucker Level 3)
 <br>
 </h3>
   Returns the descriptor number for the most idle connection of the given
-player dbref.  (Requires Mucker Level 3)
+player dbref, or -1 if the player is disconnected.  (Requires Mucker Level 3)
 <!-- HTML_TOPICEND -->
 
 
@@ -8655,7 +8655,10 @@ the server.  Basically @boot for a specific descriptor connection.
 </h3>
   Returns the first descriptor number associated with the given player.
 If the player object is given as #-1, then this returns the first descriptor
-in the list of all connections.
+in the list of all connections.  Descriptors have no promised ordering as
+they are basically operating system file handles; thus, this is probably
+only useful when #-1 is given as a parameter but it maintains support for
+other dbrefs as well for compatibility reasons.
 <!-- HTML_TOPICEND -->
 
 
@@ -8665,7 +8668,7 @@ in the list of all connections.
 <br>
 </h3>
   Takes a descriptor number, and returns the next connected descriptor
-number.  To get the first descriptor number, use '1 condescr'.  Between
+number.  To get the first descriptor number, use '#-1 firstdescr'.  Between
 these, you can step through the descriptors list.  If you try to use
 nextdescr on an invalid descriptor, it will return 0.  If you have
 reached the end of the descriptor list, it returns 0.
@@ -8680,7 +8683,10 @@ reached the end of the descriptor list, it returns 0.
 </h3>
   Returns the last descriptor number associated with the given player.
 If the player object is given as #-1, then this returns the last descriptor
-in the list of all connections.
+in the list of all connections.  Descriptors have no promised ordering as
+they are basically operating system file handles; thus, this is probably
+only useful when #-1 is given as a parameter but it maintains support for
+other dbrefs as well for compatibility reasons.
 <!-- HTML_TOPICEND -->
 
 
@@ -8702,12 +8708,6 @@ output on all descriptors.
 </h3>
   Takes a player dbref, or #-1, and returns the range of descriptor numbers
 associated with that dbref (or all for #-1) with their count on top.
-Descriptors are numbers that always stay the same for a connection, while
-a connection# is the relative position in the WHO list of a connection.
-<p>Also see:
-    <a href="#descrcon">DESCRCON</a> and
-    <a href="#condescr">CONDESCR</a>
-</p>
 <!-- HTML_TOPICEND -->
 
 

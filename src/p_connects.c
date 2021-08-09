@@ -302,7 +302,8 @@ prim_descr_idle(PRIM_PROTOTYPE)
 /**
  * Implementation of MUF DESCRLEASTIDLE
  *
- * Consumes a dbref and returns the least idle descriptor number.
+ * Consumes a dbref and returns the least idle descriptor number, or -1 if
+ * that cannot be determined.
  *
  * @see least_idle_player_descr
  *
@@ -332,9 +333,6 @@ prim_descr_least_idle(PRIM_PROTOTYPE)
 
     result = least_idle_player_descr(oper1->data.objref);
 
-    if (result == 0)
-        result = -1;
-
     CHECKOFLOW(1);
     CLEAR(oper1);
 
@@ -344,7 +342,8 @@ prim_descr_least_idle(PRIM_PROTOTYPE)
 /**
  * Implementation of MUF DESCRMOSTIDLE
  *
- * Consumes a descriptor number and returns how many seconds it has been idle.
+ * Consumes a dbref and returns the most idle descriptor number, or -1 if
+ * that cannot be determined.
  *
  * @see most_idle_player_descr
  *
@@ -373,9 +372,6 @@ prim_descr_most_idle(PRIM_PROTOTYPE)
         abort_interp("Bad dbref.");
 
     result = most_idle_player_descr(oper1->data.objref);
-
-    if (result == 0)
-        result = -1;
 
     CHECKOFLOW(1);
     CLEAR(oper1);

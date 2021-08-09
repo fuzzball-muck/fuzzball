@@ -5441,14 +5441,14 @@ DESCRLEASTIDLE
 DESCRLEASTIDLE (d -- i)
 
   Returns the descriptor number for the least idle connection of the given
-player dbref.  (Requires Mucker Level 3)
+player dbref, or -1 if the player is disconnected.  (Requires Mucker Level 3)
 ~
 ~
 DESCRMOSTIDLE
 DESCRMOSTIDLE (d -- i)
 
   Returns the descriptor number for the most idle connection of the given
-player dbref.  (Requires Mucker Level 3)
+player dbref, or -1 if the player is disconnected.  (Requires Mucker Level 3)
 ~
 ~
 DESCRSECURE?
@@ -5490,14 +5490,17 @@ FIRSTDESCR (d -- i)
 
   Returns the first descriptor number associated with the given player.
 If the player object is given as #-1, then this returns the first descriptor
-in the list of all connections.
+in the list of all connections.  Descriptors have no promised ordering as
+they are basically operating system file handles; thus, this is probably
+only useful when #-1 is given as a parameter but it maintains support for
+other dbrefs as well for compatibility reasons.
 ~
 ~
 NEXTDESCR
 NEXTDESCR (i -- i)
 
   Takes a descriptor number, and returns the next connected descriptor
-number.  To get the first descriptor number, use '1 condescr'.  Between
+number.  To get the first descriptor number, use '#-1 firstdescr'.  Between
 these, you can step through the descriptors list.  If you try to use
 nextdescr on an invalid descriptor, it will return 0.  If you have
 reached the end of the descriptor list, it returns 0.
@@ -5509,7 +5512,10 @@ LASTDESCR (d -- i)
 
   Returns the last descriptor number associated with the given player.
 If the player object is given as #-1, then this returns the last descriptor
-in the list of all connections.
+in the list of all connections.  Descriptors have no promised ordering as
+they are basically operating system file handles; thus, this is probably
+only useful when #-1 is given as a parameter but it maintains support for
+other dbrefs as well for compatibility reasons.
 ~
 ~
 DESCRFLUSH
@@ -5525,9 +5531,6 @@ DESCRIPTORS (d -- ix...i1 i)
 
   Takes a player dbref, or #-1, and returns the range of descriptor numbers
 associated with that dbref (or all for #-1) with their count on top.
-Descriptors are numbers that always stay the same for a connection, while
-a connection# is the relative position in the WHO list of a connection.
-Also see: DESCRCON and CONDESCR
 ~
 ~
 DESCR_ARRAY

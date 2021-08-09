@@ -327,7 +327,8 @@ void prim_descr_idle(PRIM_PROTOTYPE);
 /**
  * Implementation of MUF DESCRLEASTIDLE
  *
- * Consumes a dbref and returns the least idle descriptor number.
+ * Consumes a dbref and returns the least idle descriptor number, or -1 if
+ * that cannot be determined.
  *
  * @see least_idle_player_descr
  * 
@@ -344,8 +345,8 @@ void prim_descr_notify(PRIM_PROTOTYPE);
 /**
  * Implementation of MUF DESCRDBREF
  *
- * Consumes a descriptor number and returns the associated player dbref.
- * This will be NOTHING if no player is connected using that descriptor.
+ * Consumes a dbref and returns the most idle descriptor number, or -1 if
+ * that cannot be determined.
  * 
  * @see pdescrdbref
  * 

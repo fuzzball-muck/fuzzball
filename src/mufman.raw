@@ -4955,14 +4955,14 @@ DESCRLEASTIDLE
 DESCRLEASTIDLE (d -- i)
 
   Returns the descriptor number for the least idle connection of the given
-player dbref.  (Requires Mucker Level 3)
+player dbref, or -1 if the player is disconnected.  (Requires Mucker Level 3)
 ~
 ~
 DESCRMOSTIDLE
 DESCRMOSTIDLE (d -- i)
 
   Returns the descriptor number for the most idle connection of the given
-player dbref.  (Requires Mucker Level 3)
+player dbref, or -1 if the player is disconnected.  (Requires Mucker Level 3)
 ~
 ~
 DESCRSECURE?
