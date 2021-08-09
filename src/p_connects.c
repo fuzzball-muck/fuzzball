@@ -333,7 +333,7 @@ prim_descr_least_idle(PRIM_PROTOTYPE)
     result = least_idle_player_descr(oper1->data.objref);
 
     if (result == 0)
-        abort_interp("Invalid descriptor number. (1)");
+        result = -1;
 
     CHECKOFLOW(1);
     CLEAR(oper1);
@@ -375,7 +375,7 @@ prim_descr_most_idle(PRIM_PROTOTYPE)
     result = most_idle_player_descr(oper1->data.objref);
 
     if (result == 0)
-        abort_interp("Invalid descriptor number. (1)");
+        result = -1;
 
     CHECKOFLOW(1);
     CLEAR(oper1);
