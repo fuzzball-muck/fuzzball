@@ -77,8 +77,7 @@ prim_awakep(PRIM_PROTOTYPE)
  * Returns a stackrange of dbrefs representing the players associated with
  * each connection to the server.
  *
- * @see pcount
- * @see pdbref
+ * @see pdescrcount
  *
  * @param player the player running the MUF program
  * @param program the program being run
@@ -91,18 +90,27 @@ prim_awakep(PRIM_PROTOTYPE)
 void
 prim_online(PRIM_PROTOTYPE)
 {
+    struct descriptor_data* d = descriptor_list_tail;
+
     CHECKOP(0);
 
     if (mlev < 3)
         abort_interp("Mucker level 3 primitive.");
 
-    result = pcount();
+    /*
+     * This could be MORE than is actually connected if there's people sitting
+     * on the connection screen, but should be a descent worst-case for
+     * overflow checking.
+     */
+    result = pdescrcount();
 
     CHECKOFLOW(result+1);
 
-    for (int i = result; i > 0; i--) {
-        ref = pdbref(i);
-        PushObject(ref);
+    for ( ; d; d = d->prev) {
+        if (d->connected) {
+            PushObject(d->descriptor);
+            result++;
+        }
     }
 
     PushInt(result);
@@ -114,8 +122,7 @@ prim_online(PRIM_PROTOTYPE)
  * Returns an array of dbrefs representing the players associated with
  * each connection to the server.
  *
- * @see pcount
- * @see pdbref
+ * @see pdescrcount
  *
  * @param player the player running the MUF program
  * @param program the program being run
@@ -129,13 +136,12 @@ void
 prim_online_array(PRIM_PROTOTYPE)
 {
     stk_array *nu;
+    struct descriptor_data* d = descriptor_list;
 
     CHECKOP(0);
  
     if (mlev < 3)
         abort_interp("Mucker level 3 primitive.");
-
-    result = pcount();
 
     CHECKOFLOW(1);
 
@@ -145,24 +151,27 @@ prim_online_array(PRIM_PROTOTYPE)
     temp1.line = 0;
     temp2.line = 0;
 
-    nu = new_array_packed(result, fr->pinning);
+    nu = new_array_packed(0, fr->pinning);
 
-    for (int i = 0; i < result; i++) {
-        temp1.data.number = i;
-        temp2.data.number = pdbref(i + 1);
+    for (int i = 0; d; d = d->prev) {
+        if (d->connected) {
+            temp1.data.number = i;
+            temp2.data.number = d->player;
 
-        array_setitem(&nu, &temp1, &temp2);
+            array_setitem(&nu, &temp1, &temp2);
+            i++;
+        }
     }
 
     PushArrayRaw(nu);
 }
 
 /**
- * Implementation of MUF CONCOUNT
+ * Implementation of MUF DESCRCOUNT
  *
  * Returns the number of connections to the server.
  *
- * @see pcount
+ * @see pdescrcount
  *
  * @param player the player running the MUF program
  * @param program the program being run
@@ -173,12 +182,12 @@ prim_online_array(PRIM_PROTOTYPE)
  * @param fr the program frame
  */
 void
-prim_concount(PRIM_PROTOTYPE)
+prim_descrcount(PRIM_PROTOTYPE)
 {
     /* -- int */
     CHECKOP(0);
 
-    result = pcount();
+    result = pdescrcount();
 
     CHECKOFLOW(1);
 
@@ -209,47 +218,6 @@ prim_descr(PRIM_PROTOTYPE)
 
     CHECKOFLOW(1);
     PushInt(result);
-}
-
-/**
- * Implementation of MUF CONDBREF
- *
- * Consumes a connection number and returns the associated player dbref.
- * This will be NOTHING if no player is connected using that number.
- *
- * @see pdbref
- *
- * @param player the player running the MUF program
- * @param program the program being run
- * @param mlev the effective MUCKER level
- * @param pc the program counter pointer
- * @param arg the argument stack
- * @param top the top-most item of the stack
- * @param fr the program frame
- */
-void
-prim_condbref(PRIM_PROTOTYPE)
-{
-    /* int -- dbref */
-    CHECKOP(1);
-    oper1 = POP();
-
-    if (mlev < 3)
-        abort_interp("Mucker level 3 primitive.");
-
-    if (oper1->type != PROG_INTEGER || oper1->data.number < 1)
-        abort_interp("Argument not a positive integer. (1)");
-
-    result = pdbref(oper1->data.number);
-
-    if (result == NOTHING) {
-        abort_interp("Invalid connection number. (1)");
-    }
-    
-    CHECKOFLOW(1);
-    CLEAR(oper1);
-
-    PushObject(result);
 }
 
 /**
@@ -290,47 +258,6 @@ prim_descr_dbref(PRIM_PROTOTYPE)
     CLEAR(oper1);
 
     PushObject(result);
-}
-
-/**
- * Implementation of MUF CONIDLE
- *
- * Consumes a connection number and returns how many seconds it has been idle.
- *
- * @see pidle
- *
- * @param player the player running the MUF program
- * @param program the program being run
- * @param mlev the effective MUCKER level
- * @param pc the program counter pointer
- * @param arg the argument stack
- * @param top the top-most item of the stack
- * @param fr the program frame
- */
-void
-prim_conidle(PRIM_PROTOTYPE)
-{
-    /* int -- int */
-    CHECKOP(1);
-    oper1 = POP();
-
-    if (mlev < 3)
-        abort_interp("Mucker level 3 primitive.");
-
-    if (oper1->type != PROG_INTEGER)
-        abort_interp("Argument not an integer. (1)");
-
-    result = oper1->data.number;
-
-    if ((result < 1) || (result > pcount()))
-        abort_interp("Invalid connection number. (1)");
-
-    result = pidle(result);
-
-    CHECKOFLOW(1);
-    CLEAR(oper1);
-
-    PushInt(result);
 }
 
 /**
@@ -375,7 +302,8 @@ prim_descr_idle(PRIM_PROTOTYPE)
 /**
  * Implementation of MUF DESCRLEASTIDLE
  *
- * Consumes a dbref and returns the least idle descriptor number.
+ * Consumes a dbref and returns the least idle descriptor number, or -1 if
+ * that cannot be determined.
  *
  * @see least_idle_player_descr
  *
@@ -403,10 +331,7 @@ prim_descr_least_idle(PRIM_PROTOTYPE)
     if (!valid_object(oper1))
         abort_interp("Bad dbref.");
 
-    result = pdescr(least_idle_player_descr(oper1->data.objref));
-
-    if (result == 0)
-        abort_interp("Invalid descriptor number. (1)");
+    result = least_idle_player_descr(oper1->data.objref);
 
     CHECKOFLOW(1);
     CLEAR(oper1);
@@ -417,7 +342,8 @@ prim_descr_least_idle(PRIM_PROTOTYPE)
 /**
  * Implementation of MUF DESCRMOSTIDLE
  *
- * Consumes a descriptor number and returns how many seconds it has been idle.
+ * Consumes a dbref and returns the most idle descriptor number, or -1 if
+ * that cannot be determined.
  *
  * @see most_idle_player_descr
  *
@@ -445,52 +371,7 @@ prim_descr_most_idle(PRIM_PROTOTYPE)
     if (!valid_object(oper1))
         abort_interp("Bad dbref.");
 
-    result = pdescr(most_idle_player_descr(oper1->data.objref));
-
-    if (result == 0)
-        abort_interp("Invalid descriptor number. (1)");
-
-    CHECKOFLOW(1);
-    CLEAR(oper1);
-
-    PushInt(result);
-}
-
-/**
- * Implementation of MUF CONTIME
- *
- * Consumes a connection number and returns how many seconds it has been
- * connected to the server.
- *
- * @see pontime
- *
- * @param player the player running the MUF program
- * @param program the program being run
- * @param mlev the effective MUCKER level
- * @param pc the program counter pointer
- * @param arg the argument stack
- * @param top the top-most item of the stack
- * @param fr the program frame
- */
-void
-prim_contime(PRIM_PROTOTYPE)
-{
-    /* int -- int */
-    CHECKOP(1);
-    oper1 = POP();
-
-    if (mlev < 3)
-        abort_interp("Mucker level 3 primitive.");
-
-    if (oper1->type != PROG_INTEGER)
-        abort_interp("Argument not an integer. (1)");
-
-    result = oper1->data.number;
-
-    if ((result < 1) || (result > pcount()))
-        abort_interp("Invalid connection number. (1)");
-
-    result = pontime(result);
+    result = most_idle_player_descr(oper1->data.objref);
 
     CHECKOFLOW(1);
     CLEAR(oper1);
@@ -539,50 +420,6 @@ prim_descr_time(PRIM_PROTOTYPE)
 }
 
 /**
- * Implementation of MUF CONHOST
- *
- * Consumes a connection number and returns the hostname or IP associated with
- * the connection.
- *
- * @see phost
- *
- * @param player the player running the MUF program
- * @param program the program being run
- * @param mlev the effective MUCKER level
- * @param pc the program counter pointer
- * @param arg the argument stack
- * @param top the top-most item of the stack
- * @param fr the program frame
- */
-void
-prim_conhost(PRIM_PROTOTYPE)
-{
-    /* int -- char * */
-    char *pname;
-
-    CHECKOP(1);
-    oper1 = POP();
-
-    if (mlev < 4)
-        abort_interp("Primitive is a wizbit only command.");
-
-    if (oper1->type != PROG_INTEGER)
-        abort_interp("Argument not an integer. (1)");
-
-    result = oper1->data.number;
-
-    if ((result < 1) || (result > pcount()))
-        abort_interp("Invalid connection number. (1)");
-
-    pname = phost(result);
-
-    CHECKOFLOW(1);
-    CLEAR(oper1);
-
-    PushString(pname);
-}
-
-/**
  * Implementation of MUF DESCRHOST
  *
  * Consumes a descriptor number and returns the hostname or IP associated with
@@ -619,50 +456,6 @@ prim_descr_host(PRIM_PROTOTYPE)
 
     if (!pname)
         abort_interp("Invalid descriptor number. (1)");
-
-    CHECKOFLOW(1);
-    CLEAR(oper1);
-
-    PushString(pname);
-}
-
-/**
- * Implementation of MUF CONUSER
- *
- * Consumes a connection number and returns the username associated with
- * the connection.
- *
- * @see puser
- *
- * @param player the player running the MUF program
- * @param program the program being run
- * @param mlev the effective MUCKER level
- * @param pc the program counter pointer
- * @param arg the argument stack
- * @param top the top-most item of the stack
- * @param fr the program frame
- */
-void
-prim_conuser(PRIM_PROTOTYPE)
-{
-    /* int -- char * */
-    char *pname;
-
-    CHECKOP(1);
-    oper1 = POP();
-
-    if (mlev < 4)
-        abort_interp("Primitive is a wizbit only command.");
-
-    if (oper1->type != PROG_INTEGER)
-        abort_interp("Argument not an integer. (1)");
-
-    result = oper1->data.number;
-
-    if ((result < 1) || (result > pcount()))
-        abort_interp("Invalid connection number. (1)");
-
-    pname = puser(result);
 
     CHECKOFLOW(1);
     CLEAR(oper1);
@@ -715,44 +508,6 @@ prim_descr_user(PRIM_PROTOTYPE)
 }
 
 /**
- * Implementation of MUF CONBOOT
- *
- * Consumes a connection number and disconnects it from the server.
- *
- * @see pboot
- *
- * @param player the player running the MUF program
- * @param program the program being run
- * @param mlev the effective MUCKER level
- * @param pc the program counter pointer
- * @param arg the argument stack
- * @param top the top-most item of the stack
- * @param fr the program frame
- */
-void
-prim_conboot(PRIM_PROTOTYPE)
-{
-    /* int --  */
-    CHECKOP(1);
-    oper1 = POP();
-
-    if (mlev < 4)
-        abort_interp("Primitive is a wizbit only command.");
-
-    if (oper1->type != PROG_INTEGER)
-        abort_interp("Argument not an integer. (1)");
-
-    result = oper1->data.number;
-
-    if ((result < 1) || (result > pcount()))
-        abort_interp("Invalid connection number. (1)");
-
-    CLEAR(oper1);
-
-    pboot(result);
-}
-
-/**
  * Implementation of MUF DESCRBOOT
  *
  * Consumes a descriptor number and disconnects it from the server.
@@ -786,52 +541,6 @@ prim_descr_boot(PRIM_PROTOTYPE)
         abort_interp("Invalid descriptor number. (1)");
 
     CLEAR(oper1);
-}
-
-/**
- * Implementation of MUF CONNOTIFY
- *
- * Consumes a connection number and a string, and sends the string over
- * the connection.
- *
- * @see pnotify
- *
- * @param player the player running the MUF program
- * @param program the program being run
- * @param mlev the effective MUCKER level
- * @param pc the program counter pointer
- * @param arg the argument stack
- * @param top the top-most item of the stack
- * @param fr the program frame
- */
-void
-prim_connotify(PRIM_PROTOTYPE)
-{
-    /* int string --  */
-
-    CHECKOP(2);
-    oper2 = POP();              /* string */
-    oper1 = POP();              /* int */
-
-    if (mlev < 3)
-        abort_interp("Mucker level 3 primitive.");
-
-    if (oper1->type != PROG_INTEGER)
-        abort_interp("Argument not an integer. (1)");
-
-    if (oper2->type != PROG_STRING)
-        abort_interp("Argument not an string. (2)");
-
-    result = oper1->data.number;
-
-    if ((result < 1) || (result > pcount()))
-        abort_interp("Invalid connection number. (1)");
-
-    if (oper2->data.string)
-        pnotify(result, oper2->data.string->data);
-
-    CLEAR(oper1);
-    CLEAR(oper2);
 }
 
 /**
@@ -878,81 +587,6 @@ prim_descr_notify(PRIM_PROTOTYPE)
 }
 
 /**
- * Implementation of MUF CONDESCR
- *
- * Consumes a connection number and returns the associated descriptor number.
- *
- * @see pdescr
- *
- * @param player the player running the MUF program
- * @param program the program being run
- * @param mlev the effective MUCKER level
- * @param pc the program counter pointer
- * @param arg the argument stack
- * @param top the top-most item of the stack
- * @param fr the program frame
- */
-void
-prim_condescr(PRIM_PROTOTYPE)
-{
-    /* int -- int */
-    CHECKOP(1);
-    oper1 = POP();
-
-    if (mlev < 3)
-        abort_interp("Mucker level 3 primitive.");
-
-    if (oper1->type != PROG_INTEGER)
-        abort_interp("Argument not an integer. (1)");
-
-    result = oper1->data.number;
-
-    if ((result < 1) || (result > pcount()))
-        abort_interp("Invalid connection number. (1)");
-
-    result = pdescr(result);
-
-    CLEAR(oper1);
-
-    PushInt(result);
-}
-
-/**
- * Implementation of MUF DESCRCON
- *
- * Consumes a descriptor number and returns the associated connection number.
- *
- * @see pdescrcon
- *
- * @param player the player running the MUF program
- * @param program the program being run
- * @param mlev the effective MUCKER level
- * @param pc the program counter pointer
- * @param arg the argument stack
- * @param top the top-most item of the stack
- * @param fr the program frame
- */
-void
-prim_descrcon(PRIM_PROTOTYPE)
-{
-    /* int -- int */
-    CHECKOP(1);
-    oper1 = POP();
-
-    if (mlev < 3)
-        abort_interp("Mucker level 3 primitive.");
-
-    if (oper1->type != PROG_INTEGER)
-        abort_interp("Argument not an integer. (1)");
-
-    result = pdescrcon(oper1->data.number);
-
-    CLEAR(oper1);
-
-    PushInt(result);
-}
-
-/**
  * Implementation of MUF NEXTDESCR
  *
  * Consumes a descriptor number and returns the next descriptor number that
@@ -996,7 +630,7 @@ prim_nextdescr(PRIM_PROTOTYPE)
  * with the player.  If the dbref is NOTHING, all players' descriptors are
  * included.
  *
- * @see pcount
+ * @see pdescrcount
  * @see pdescr
  * @see get_player_descrs
  *
@@ -1014,6 +648,7 @@ prim_descriptors(PRIM_PROTOTYPE)
     int mydescr, mycount = 0;
     int *darr;
     int dcount;
+    struct descriptor_data* d;
 
     CHECKOP(1);
     oper1 = POP();
@@ -1029,16 +664,16 @@ prim_descriptors(PRIM_PROTOTYPE)
     CLEAR(oper1);
 
     if (ref == NOTHING) {
-        result = pcount();
+        d = descriptor_list_tail;
+        result = pdescrcount();
 
         CHECKOFLOW(result + 1);
 
-        while (result) {
-            mydescr = pdescr(result);
-
-            PushInt(mydescr);
-            mycount++;
-            result--;
+        for ( ; d; d = d->prev) {
+            if (d->connected) {
+                PushInt(d->descriptor);
+                mycount++;
+            }
         }
     } else {
         darr = get_player_descrs(ref, &dcount);
@@ -1061,7 +696,7 @@ prim_descriptors(PRIM_PROTOTYPE)
  * with the player.  If the dbref is NOTHING, all players' descriptors are
  * included.
  *
- * @see pcount
+ * @see pdescrcount
  * @see pdescr
  * @see get_player_descrs
  *
@@ -1079,6 +714,7 @@ prim_descr_array(PRIM_PROTOTYPE)
     stk_array *newarr;
     int *darr;
     int dcount;
+    struct descriptor_data* d;
 
     CHECKOP(1);
     oper1 = POP();
@@ -1097,14 +733,15 @@ prim_descr_array(PRIM_PROTOTYPE)
     temp2.type = PROG_INTEGER;
 
     if (ref == NOTHING) {
-        result = pcount();
+        d = descriptor_list;
         newarr = new_array_packed(result, fr->pinning);
 
-        for (int i = 0; i < result; i++) {
-            temp1.data.number = i;
-            temp2.data.number = pdescr(i + 1);
-
-            array_setitem(&newarr, &temp1, &temp2);
+        for (int i = 0; d; d = d->next) {
+            if (d->connected) {
+                temp1.data.number = i;
+                i++;
+                temp2.data.number = d->descriptor;
+            }
         }
 	} else {
         darr = get_player_descrs(ref, &dcount);
