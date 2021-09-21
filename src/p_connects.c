@@ -733,17 +733,27 @@ prim_descr_array(PRIM_PROTOTYPE)
     temp2.type = PROG_INTEGER;
 
     if (ref == NOTHING) {
-        d = descriptor_list;
+        result = 0;
+
+        for (d = descriptor_list; d; d = d->next) {
+            if (d->connected)
+                result++;
+        }
+
         newarr = new_array_packed(result, fr->pinning);
+
+        d = descriptor_list;
 
         for (int i = 0; d; d = d->next) {
             if (d->connected) {
                 temp1.data.number = i;
-                i++;
                 temp2.data.number = d->descriptor;
+
+                array_setitem(&newarr, &temp1, &temp2);
+                i++;
             }
         }
-	} else {
+    } else {
         darr = get_player_descrs(ref, &dcount);
         newarr = new_array_packed(dcount, fr->pinning);
 
