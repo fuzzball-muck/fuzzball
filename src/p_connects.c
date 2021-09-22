@@ -153,9 +153,18 @@ prim_online_array(PRIM_PROTOTYPE)
     temp1.line = 0;
     temp2.line = 0;
 
-    nu = new_array_packed(0, fr->pinning);
+    result = 0;
 
-    for (int i = 0; d; d = d->prev) {
+    for ( ; d; d = d->next) {
+        if (d->connected)
+            result++;
+    }
+
+    nu = new_array_packed(result, fr->pinning);
+
+    d = descriptor_list;
+
+    for (int i = 0; d; d = d->next) {
         if (d->connected) {
             temp1.data.number = i;
             temp2.data.number = d->player;
