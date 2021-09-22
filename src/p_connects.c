@@ -106,9 +106,11 @@ prim_online(PRIM_PROTOTYPE)
 
     CHECKOFLOW(result+1);
 
+    result = 0;
+
     for ( ; d; d = d->prev) {
         if (d->connected) {
-            PushObject(d->descriptor);
+            PushObject(d->player);
             result++;
         }
     }
