@@ -90,7 +90,8 @@ prim_awakep(PRIM_PROTOTYPE)
 void
 prim_online(PRIM_PROTOTYPE)
 {
-    struct descriptor_data* d = descriptor_list_tail;
+    struct descriptor_data* d = descriptor_list;
+    stk_array *duparr;
 
     CHECKOP(0);
 
@@ -106,14 +107,39 @@ prim_online(PRIM_PROTOTYPE)
 
     CHECKOFLOW(result+1);
 
+    /*
+     * A hacky way to skip duplicates. Not perfect, but feels better
+     * than looping back through the list to check each time.
+     */
+    duparr = new_array_dictionary(0);
+
+    temp1.type = PROG_INTEGER;
+
     result = 0;
 
-    for ( ; d; d = d->prev) {
+    for ( ; d; d = d->next) {
         if (d->connected) {
-            PushObject(d->player);
-            result++;
+            temp1.data.number = d->player;
+
+            if (!array_getitem(duparr, &temp1)) {
+                array_setitem(&duparr, &temp1, &temp1);
+                result++;
+            }
         }
     }
+
+    /*
+     * We assume that, if the programmer is iterating over connected
+     * players, he's starting from the top, so we walk backwards and
+     * push in reverse order.
+     */
+    if (array_last(duparr, &temp2)) {
+        do {
+            PushObject(temp2.data.number);
+        } while (array_prev(duparr, &temp2));
+    }
+
+    array_free(duparr);
 
     PushInt(result);
 }
@@ -137,7 +163,7 @@ prim_online(PRIM_PROTOTYPE)
 void
 prim_online_array(PRIM_PROTOTYPE)
 {
-    stk_array *nu;
+    stk_array *duparr, *nu;
     struct descriptor_data* d = descriptor_list;
 
     CHECKOP(0);
@@ -147,32 +173,45 @@ prim_online_array(PRIM_PROTOTYPE)
 
     CHECKOFLOW(1);
 
-    temp1.type = PROG_INTEGER;
-    temp2.type = PROG_OBJECT;
+    /*
+     * A hacky way to skip duplicates. Not perfect, but feels better
+     * than looping back through the list to check each time.
+     */
+    duparr = new_array_dictionary(0);
 
-    temp1.line = 0;
-    temp2.line = 0;
+    temp1.type = PROG_INTEGER;
 
     result = 0;
 
     for ( ; d; d = d->next) {
-        if (d->connected)
-            result++;
+        if (d->connected) {
+            temp1.data.number = d->player;
+
+            if (!array_getitem(duparr, &temp1)) {
+                array_setitem(&duparr, &temp1, &temp1);
+                result++;
+            }
+        }
     }
 
     nu = new_array_packed(result, fr->pinning);
 
-    d = descriptor_list;
+    result = 0;
 
-    for (int i = 0; d; d = d->next) {
-        if (d->connected) {
-            temp1.data.number = i;
-            temp2.data.number = d->player;
+    if (array_first(duparr, &temp2)) {
+        do {
+            temp1.data.number = result;
+            temp2.type = PROG_OBJECT;
 
             array_setitem(&nu, &temp1, &temp2);
-            i++;
-        }
+
+            temp2.type = PROG_INTEGER;
+
+            result++;
+        } while (array_next(duparr, &temp2));
     }
+
+    array_free(duparr);
 
     PushArrayRaw(nu);
 }
