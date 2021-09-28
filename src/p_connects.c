@@ -626,8 +626,15 @@ prim_descr_notify(PRIM_PROTOTYPE)
     if (oper2->type != PROG_STRING)
         abort_interp("Argument not an string. (2)");
 
-    if (oper2->data.string)
+    if (oper2->data.string) {
         result = pdescrnotify(oper1->data.number, oper2->data.string->data);
+    } else {
+        /*
+         * If the string was empty, we don't send it. But we still need to
+         * check if the descriptor was valid.
+         */
+        result = descrdata_by_descr(oper1->data.number) != NULL;
+    }
 
     if (!result)
         abort_interp("Invalid descriptor number. (1)");
