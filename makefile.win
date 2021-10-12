@@ -9,41 +9,62 @@ SRCDIR=.\src
 INCDIR=.\include
 # Compile output directory
 !IF "$(OUTDIR)" == ""
-!MESSAGE Compile output directory OUTDIR not specified, assuming default
 OUTDIR=.\game
+!MESSAGE [makefile.win] Compile output directory OUTDIR not specified, assuming default: $(OUTDIR)
 !ENDIF
 
 INTDIR=.\compile
 
 # Package includes (e.g. from conan.io)
 !IF "$(PACKAGE_DIR)" == ""
-!MESSAGE Package directory PACKAGE_DIR not specified, assuming default
 PACKAGE_DIR=.\win32
+!MESSAGE [makefile.win] Package directory PACKAGE_DIR not specified, assuming default: $(PACKAGE_DIR)
 !ENDIF
 
 # OpenSSL include directory
 !IF "$(OPENSSLDIR)" == ""
-!MESSAGE OpenSSL directory OPENSSLDIR not specified, assuming default
 OPENSSLDIR=e:\sandbox\openssl
+!MESSAGE [makefile.win] OpenSSL directory OPENSSLDIR not specified, assuming default: $(OPENSSLDIR)
 !ENDIF
 
-# Conan.io's packaging of OpenSSL removed the "...MD" suffix.  Try to detect that.
-# > Check the OPENSSLDIR first
-!IF EXIST("$(OPENSSLDIR)\lib\vc\libeay32MD.lib")
-LIB_SUFFIX="MD"
-# > Then check the PACKAGE_DIR
-!ELSEIF EXIST("$(PACKAGE_DIR)\lib\vc\libeay32MD.lib")
-LIB_SUFFIX="MD"
+# First, check if the expected directory exists in OPENSSLDIR
+!IF EXIST("$(OPENSSLDIR)\lib\vc")
+LIB_OPENSSL_PATH=$(OPENSSLDIR)\lib\vc
+!ELSEIF EXIST("$(PACKAGE_DIR)\lib\vc")
+LIB_OPENSSL_PATH=$(PACKAGE_DIR)\lib\vc
 !ELSE
-# Assume there's no "MD" suffix
-LIB_SUFFIX=""
+!ERROR [makefile.win] Could not find OpenSSL library directory in OPENSSLDIR or PACKAGE_DIR
+!ENDIF
+
+!MESSAGE [makefile.win] Selected OpenSSL path: $(LIB_OPENSSL_PATH)
+
+# We've found where OpenSSL is supposed to be stored.  Now determine the filenames.
+# (OpenSSL 1.1.x changed the library names)
+
+!IF EXIST("$(LIB_OPENSSL_PATH)\libssl.lib") && EXIST("$(LIB_OPENSSL_PATH)\libcrypto.lib")
+# > OpenSSL 1.1.x via Conan
+!MESSAGE [makefile.win] Using OpenSSL library names libssl.lib and libcrypto.lib
+LIB_NAME_SSL_MAIN=libssl.lib
+LIB_NAME_SSL_CRYPTO=libcrypto.lib
+!ELSEIF EXIST("$(LIB_OPENSSL_PATH)\ssleay32.lib") && EXIST("$(LIB_OPENSSL_PATH)\libeay32.lib")
+# > OpenSSL 1.0.x via Conan
+!MESSAGE [makefile.win] Using OpenSSL library names ssleay32.lib and libeay32.lib
+LIB_NAME_SSL_MAIN=ssleay32.lib
+LIB_NAME_SSL_CRYPTO=libeay32.lib
+!ELSEIF EXIST("$(LIB_OPENSSL_PATH)\ssleay32MD.lib") && EXIST("$(LIB_OPENSSL_PATH)\libeay32MD.lib")
+# > Alternative local OpenSSL sources
+!MESSAGE [makefile.win] Using OpenSSL library names ssleay32MD.lib and libeay32MD.lib
+LIB_NAME_SSL_MAIN=ssleay32MD.lib
+LIB_NAME_SSL_CRYPTO=libeay32MD.lib
+!ELSE
+!ERROR [makefile.win] Could not find OpenSSL .lib files inside $(LIB_OPENSSL_PATH) - is OpenSSL present?
 !ENDIF
 
 # Specify PACKAGE_DIR first so it takes priority, allowing easier overriding of any built-in binaries/libs
 CPP=cl.exe
 CPP_OPS=/nologo /EHsc /MT /W3 /O2 /c /D "WIN32" /D "FD_SETSIZE=4096" /D "_WINSOCK_DEPRECATED_NO_WARNINGS" /D "_CRT_SECURE_NO_DEPRECATE" /I"$(PACKAGE_DIR)\include" /I"$(WINDIR)" /I"$(INCDIR)" /I"$(OPENSSLDIR)\include" /Fd"$(INTDIR)\\"
 LINK32=link.exe
-LINK32_OPS=/NODEFAULTLIB:libc /LIBPATH:"$(PACKAGE_DIR)\lib\vc" /LIBPATH:".\win32" /LIBPATH:"$(OPENSSLDIR)\lib\vc" pcre.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ws2_32.lib libeay32$(LIB_SUFFIX).lib ssleay32$(LIB_SUFFIX).lib winmm.lib /nologo /subsystem:console /incremental:no /machine:I386
+LINK32_OPS=/NODEFAULTLIB:libc /LIBPATH:"$(PACKAGE_DIR)\lib\vc" /LIBPATH:".\win32" /LIBPATH:"$(OPENSSLDIR)\lib\vc" pcre.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ws2_32.lib $(LIB_NAME_SSL_CRYPTO) $(LIB_NAME_SSL_MAIN) winmm.lib /nologo /subsystem:console /incremental:no /machine:I386
 
 # Enable These for debugging
 #CPP_OPS=/c /Od /D "_DEBUG" /Zi /EHsc /nologo /MTd /W3 /D "WIN32" /D "FD_SETSIZE=4096" /D "_WINSOCK_DEPRECATED_NO_WARNINGS" /D "_CRT_SECURE_NO_DEPRECATE" /I"$(PACKAGE_DIR)\include" /I"$(WINDIR)" /I"$(INCDIR)" /I"$(OPENSSLDIR)\include" /Fd"$(INTDIR)\\"
