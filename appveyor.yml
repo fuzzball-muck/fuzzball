@@ -33,6 +33,22 @@ install:
     - cmd: conan --version
     - cmd: choco install doxygen.install
 
+cache:
+    # Keep a copy of Conan's build results, speeding up OpenSSL rebuilds
+    #
+    # NOTE: AppVeyor limits available cache storage across ALL projects in a given
+    # account.  If build cache takes up too much space, consider dropping it.
+    #
+    # See https://www.appveyor.com/docs/build-cache/
+    - C:\Users\Appveyor\.conan -> appveyor.yml, conanfile.txt
+
+    # OpenSSL package does NOT have "short_paths=True", so the following is not needed.
+    # If future OpenSSL versions aren't stored in "C:\Users\appveyor\.conan\data\openssl"
+    # this cache location may need enabled.
+    #
+    # See https://github.com/bincrafters/community/issues/134 "Caching conan (boost) packages on appveyor"
+    #- C:\.conan -> appveyor.yml, conanfile.txt
+
 init:
     # Set "build version number" to "short-commit-hash" or when tagged to "tag name" (Travis style)
     # Thanks to @jakoch and @ronaldbarendse
@@ -73,7 +89,12 @@ init:
 build_script:
     - ps: |
         # Install Conan dependencies for 32-bit (x86) using the local directory's conanfile
-        conan install . --settings arch=x86
+        #
+        # NOTE: "--build=missing" may increase build time if not in cache!
+        #
+        # If x86 packages of OpenSSL are available in the future, this can safely be removed,
+        # turning this back into an error message instead of building from source.
+        conan install . --settings arch=x86 --build=missing
         # > For statically-linked OpenSSL, specify: -s compiler="Visual Studio" -s compiler.runtime=MT
         #   Then modify makefile.win to reference ..MT.lib instead.  Dynamic linking is preferred.
 
