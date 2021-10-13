@@ -1,0 +1,64 @@
+name: Fuzzball CI
+
+on: [ push, pull_request ]
+
+jobs:
+  build-linux:
+    name: Linux
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false # Show all results
+      matrix:
+        compiler: [clang, gcc]
+        # This might not be the most "proper" way to do this
+        flag_ssl: ['', '--with-ssl']
+        flag_debug: ['', '--enable-debug']
+        flag_memprof: ['', '--enable-memprof']
+
+    steps:
+    - name: Check out source code
+      uses: actions/checkout@v2
+
+    - name: Display build details
+      run: |
+        echo "Build configuration:"
+        echo " * Compiler: $CC"
+        if [ -n "$FLAG_SSL" ]; then echo " * With SSL ('$FLAG_SSL') " ; fi
+        if [ -n "$FLAG_DEBUG" ]; then echo " * Debug enabled ('$FLAG_DEBUG')" ; fi
+        if [ -n "$FLAG_MEMPROF" ]; then echo " * memprof enabled ('$FLAG_MEMPROF')" ; fi
+      env:
+        CC: ${{ matrix.compiler }}
+        FLAG_SSL: ${{ matrix.flag_ssl }}
+        FLAG_DEBUG: ${{ matrix.flag_debug }}
+        FLAG_MEMPROF: ${{ matrix.flag_memprof }}
+
+    - name: Configure flags
+      run: ./configure --prefix="$PWD/fuzzpre" $FLAG_SSL $FLAG_MEMPROF $FLAG_DEBUG
+      env:
+        CC: ${{ matrix.compiler }}
+        FLAG_SSL: ${{ matrix.flag_ssl }}
+        FLAG_DEBUG: ${{ matrix.flag_debug }}
+        FLAG_MEMPROF: ${{ matrix.flag_memprof }}
+
+    - name: Clean up build
+      run: make clean
+
+    - name: Compile
+      run: make -j$(nproc)
+
+    - name: Install
+      run: make install
+
+    - name: Compile documentation
+      run: make help
+
+    - name: Run tests
+      run: cd tests && python3 -m unittest -b
+
+# Travis CI migration notes
+#
+# Originally had to add these packages:
+# * libssl-dev (for OpenSSL support)
+# * python3-yaml (for tests)
+#
+# GitHub Actions has these by default
