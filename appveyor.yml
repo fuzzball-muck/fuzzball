@@ -8,11 +8,46 @@ install:
     # > Increment version number when newer version of Visual Studio supported by Appveyor
     - cmd: '"C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Auxiliary/Build/vcvarsall.bat" amd64_x86'
     # Set up Conan package manager
-    - cmd: set PATH=%PATH%;%PYTHON%/Scripts/
-    - cmd: pip.exe install conan
+    - ps: |
+        # Get Python 3 'Scripts' path
+        #
+        # Find the Python 3 interpreter, get the directory name, then append "Scripts" to it
+        # Capture this output within PowerShell as a single string (without trailing newline)
+        #
+        # See https://stackoverflow.com/questions/8097354/how-do-i-capture-the-output-into-a-variable-from-an-external-process-in-powershe
+        $pythonCmdOutput = (py -3 -c "import os, sys; print(os.path.join(os.path.dirname(sys.executable), 'Scripts'), end='')") -join "`n"
+
+        # Sanity-check that directory exists
+        if (Test-Path "$pythonCmdOutput" -PathType Container) {
+            echo "Python 3 path found: '$pythonCmdOutput'"
+        } else {
+            Throw "Could not find Python 3 path, non-existent response: '$pythonCmdOutput'"
+            # Stops the build
+        }
+
+        # Add to path (semicolon is separator)
+        $env:PATH += ";$pythonCmdOutput"
+    # Specifically use Python 3's "pip" to install Conan
+    - cmd: py.exe -3 -m pip install conan
     - cmd: conan user # Create conan data directory
     - cmd: conan --version
     - cmd: choco install doxygen.install
+
+cache:
+    # Keep a copy of Conan's build results, speeding up OpenSSL rebuilds
+    #
+    # NOTE: AppVeyor limits available cache storage across ALL projects in a given
+    # account.  If build cache takes up too much space, consider dropping it.
+    #
+    # See https://www.appveyor.com/docs/build-cache/
+    - C:\Users\Appveyor\.conan -> appveyor.yml, conanfile.txt
+
+    # OpenSSL package does NOT have "short_paths=True", so the following is not needed.
+    # If future OpenSSL versions aren't stored in "C:\Users\appveyor\.conan\data\openssl"
+    # this cache location may need enabled.
+    #
+    # See https://github.com/bincrafters/community/issues/134 "Caching conan (boost) packages on appveyor"
+    #- C:\.conan -> appveyor.yml, conanfile.txt
 
 init:
     # Set "build version number" to "short-commit-hash" or when tagged to "tag name" (Travis style)
@@ -54,7 +89,12 @@ init:
 build_script:
     - ps: |
         # Install Conan dependencies for 32-bit (x86) using the local directory's conanfile
-        conan install . --settings arch=x86
+        #
+        # NOTE: "--build=missing" may increase build time if not in cache!
+        #
+        # If x86 packages of OpenSSL are available in the future, this can safely be removed,
+        # turning this back into an error message instead of building from source.
+        conan install . --settings arch=x86 --build=missing
         # > For statically-linked OpenSSL, specify: -s compiler="Visual Studio" -s compiler.runtime=MT
         #   Then modify makefile.win to reference ..MT.lib instead.  Dynamic linking is preferred.
 
@@ -68,6 +108,16 @@ build_script:
         #   Treat all output as standard output instead.
         #   See https://stackoverflow.com/questions/2095088/error-when-calling-3rd-party-executable-from-powershell-when-using-an-ide
         cmd /c 'nmake /f %APPVEYOR_BUILD_FOLDER%/makefile.win 2>&1'
+
+        # Stop build if failed
+        if ($LastExitCode -ne 0) {
+            # NOTE: $LastExitCode only applies to native commands, not PowerShell commands!
+            # See https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_automatic_variables?view=powershell-7.1#lastexitcode
+
+            echo "Build command exit code not zero: $LastExitCode"
+            Throw "Could not compile Fuzzball, build failed"
+            # Throw stops execution
+        }
 
         # Package and store the build results
         # > File name of compressed output
@@ -133,8 +183,7 @@ build_script:
             Push-AppveyorArtifact "$docs_zip"
             echo "Packaging successful!"
         } else {
-            echo "Could not find compiled Fuzzball or related executables, build failed"
-            Exit 1
+            Throw "Could not find compiled Fuzzball or related executables, build failed"
         }
 
 # Guidance for future maintainers: Powershell versus Windows Command Interpreter
