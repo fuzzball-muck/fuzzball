@@ -109,6 +109,16 @@ build_script:
         #   See https://stackoverflow.com/questions/2095088/error-when-calling-3rd-party-executable-from-powershell-when-using-an-ide
         cmd /c 'nmake /f %APPVEYOR_BUILD_FOLDER%/makefile.win 2>&1'
 
+        # Stop build if failed
+        if ($LastExitCode -ne 0) {
+            # NOTE: $LastExitCode only applies to native commands, not PowerShell commands!
+            # See https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_automatic_variables?view=powershell-7.1#lastexitcode
+
+            echo "Build command exit code not zero: $LastExitCode"
+            Throw "Could not compile Fuzzball, build failed"
+            # Throw stops execution
+        }
+
         # Package and store the build results
         # > File name of compressed output
         $artifact_name = "fuzzball-win32-$env:DEPLOY_IMAGE_NAME"
@@ -173,8 +183,7 @@ build_script:
             Push-AppveyorArtifact "$docs_zip"
             echo "Packaging successful!"
         } else {
-            echo "Could not find compiled Fuzzball or related executables, build failed"
-            Exit 1
+            Throw "Could not find compiled Fuzzball or related executables, build failed"
         }
 
 # Guidance for future maintainers: Powershell versus Windows Command Interpreter
