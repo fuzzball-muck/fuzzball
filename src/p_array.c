@@ -1866,27 +1866,7 @@ prim_array_get_propvals(PRIM_PROTOTYPE)
                 }
 
                 if (goodflag) {
-                    /*
-                     * TODO: This hard-coded limit kind of sucks in a lot of
-                     *       ways.  The only reason this limit is here is to
-                     *       prevent someone from gobbling up all the server
-                     *       memory or causing a performance drag.
-                     *
-                     *       I'm of the opinion such limitations should be
-                     *       in the hands of MUCK owners rather than us
-                     *       making arbitrary choices -- there are times where
-                     *       I have chosen to use the outdated iterator
-                     *       approach (nextprop, etc.) over using the array
-                     *       funcs because I was not 100% sure there would be
-                     *       less than 512 props and I didn't want to paint
-                     *       myself into a corner.
-                     *
-                     *       Thus, I think this should be a tune param.
-                     *       Similar calls (like array_get_propdirs, etc.)
-                     *       can share the tune param.  At LEAST make it
-                     *       a #define so people can tweak it.
-                     */
-                    if (count++ >= 511) {
+                    if (count++ >= tp_max_propfetch) {
                         array_free(nu);
                         abort_interp("Too many properties to put in an array!");
                     }
