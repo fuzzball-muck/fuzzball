@@ -1977,16 +1977,17 @@ prim_array_get_proplist(PRIM_PROTOTYPE)
         }
     }
 
+    if (maxcount > tp_max_propfetch) {
+        maxcount = tp_max_propfetch;
+    }
+
     /*
-     * TODO: for some reason, we are... IN A LOOP.... checking if
-     *       maxcount > tp_max_propfetch *and* checking property permissions
+     * TODO: for some reason, we are... IN A LOOP.... checking property permissions
      *       on a propdir where only the base property name (i.e. the contents
      *       of 'dir') has any bearing on the permissions as the rest of the
      *       prop path will be a number which never has a bearing on prop perms.
      *
-     *       Firstly, let's check *here* if maxcount > tp_max_propfetch.
-     *
-     *       Secondly, this call silently doesn't display extra items but the
+     *       This call silently doesn't display extra items but the
      *       other similar calls throw an error if there are too many items.
      *       I think throwing an error makes more sense rather than just making
      *       it appear broken :)  So I would highly recommend we do that and
@@ -2021,13 +2022,6 @@ prim_array_get_proplist(PRIM_PROTOTYPE)
                 snprintf(propname, sizeof(propname), "%s%d", dir, count);
                 prptr = get_property(ref, propname);
             }
-        }
-
-        /*
-         * @TODO: see above, move this check
-         */
-        if (maxcount > tp_max_propfetch) {
-            maxcount = tp_max_propfetch;
         }
 
         if (maxcount) {
