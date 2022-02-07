@@ -334,20 +334,6 @@ blessprops_wildcard(dbref player, dbref thing, const char *dir,
     int i, cnt = 0;
     int recurse = 0;
 
-    /* @TODO: This check is done by the caller methods so this is always
-     *        redundant.  Worse: this is a recursive call, so we're punching
-     *        this check over and over for no reason.  Granted, blessing
-     *        doesn't come up that much :)  But still!  Remove this check
-     *        and add a note to the docblock that the caller is responsible
-     *        for permission checks.
-     */
-#ifdef GOD_PRIV
-    if (tp_strict_god_priv && !God(player) && God(OWNER(thing))) {
-        notify(player, "Only God may touch what is God's.");
-        return 0;
-    }
-#endif
-
     strcpyn(wld, sizeof(wld), wild);
     i = strlen(wld);
 
@@ -373,15 +359,7 @@ blessprops_wildcard(dbref player, dbref thing, const char *dir,
         if (equalstr(wldcrd, propname)) {
             snprintf(buf, sizeof(buf), "%s%c%s", dir, PROPDIR_DELIMITER, propname);
 
-            /* @TODO: Is this check really necessary?  Perhaps
-             *        the Prop_System one is (not sure), but the Prop_Hidden
-             *        portion of this call will *always* pass because to get
-             *        to this point in code you are *always* a wizard.
-             *
-             *        This strikes me as an inappropriate copy/paste because
-             *        I've seen this exact if structure elsewhere.
-             */
-            if (!Prop_System(buf) && (!Prop_Hidden(buf) || Wizard(OWNER(player)))) {
+            if (!Prop_System(buf)) {
                 if (!*ptr || recurse) {
                     cnt++;
 
@@ -443,6 +421,13 @@ do_unbless(int descr, dbref player, const char *what, const char *propname)
         return;
     }
 
+#ifdef GOD_PRIV
+    if (tp_strict_god_priv && !God(player) && God(OWNER(victim))) {
+        notify(player, "Only God may touch God's stuff.");
+        return;
+    }
+#endif
+
     cnt = blessprops_wildcard(player, victim, "", propname, 0);
     notifyf(player, "%d propert%s unblessed.", cnt, (cnt == 1) ? "y" : "ies");
 }
@@ -468,11 +453,6 @@ do_bless(int descr, dbref player, const char *what, const char *propname)
     struct match_data md;
     int cnt;
 
-    if (!propname || !*propname) {
-        notify(player, "Usage is @bless object=propname.");
-        return;
-    }
-
     /* get victim */
     init_match(descr, player, what, NOTYPE, &md);
     match_everything(&md);
@@ -481,13 +461,17 @@ do_bless(int descr, dbref player, const char *what, const char *propname)
         return;
     }
 
-    /* @TODO: Shouldn't this check be *first* rather than doing it last? */
 #ifdef GOD_PRIV
     if (tp_strict_god_priv && !God(player) && God(OWNER(victim))) {
         notify(player, "Only God may touch God's stuff.");
         return;
     }
 #endif
+
+    if (!propname || !*propname) {
+        notify(player, "Usage is @bless object=propname.");
+        return;
+    }
 
     cnt = blessprops_wildcard(player, victim, "", propname, 1);
     notifyf(player, "%d propert%s blessed.", cnt, (cnt == 1) ? "y" : "ies");
@@ -655,153 +639,149 @@ do_stats(dbref player, const char *name)
     time_t currtime = time(NULL);
     dbref owner = NOTHING;
 
-    /* @TODO: This if structure sucks.  The if !Wizard check should
-     *        return rather than make this giant branch.
-     */
-
     if (!Wizard(OWNER(player)) && (!name || !*name)) {
         notifyf(player, "The universe contains %d objects.", db_top);
-    } else {
-        total = rooms = exits = things = players = programs = 0;
+        return;
+    }
 
-        if (name != NULL && *name != '\0') {
-            owner = lookup_player(name);
+    total = rooms = exits = things = players = programs = 0;
 
-            if (owner == NOTHING) {
-                notify(player, "I can't find that player.");
-                return;
-            }
+    if (name != NULL && *name != '\0') {
+        owner = lookup_player(name);
 
-            if (!Wizard(OWNER(player)) && (OWNER(player) != owner)) {
-                notify(player,
-                       "Permission denied. (you must be a wizard to get someone else's stats)");
-                return;
-            }
+        if (owner == NOTHING) {
+            notify(player, "I can't find that player.");
+            return;
+        }
 
-            for (dbref i = 0; i < db_top; i++) {
+        if (!Wizard(OWNER(player)) && (OWNER(player) != owner)) {
+            notify(player,
+                   "Permission denied. (you must be a wizard to get someone else's stats)");
+            return;
+        }
 
-#ifdef DISKBASE
-                if ((OWNER(i) == owner) && 
-                    DBFETCH(i)->propsmode != PROPS_UNLOADED)
-                    loaded++;
-
-                if ((OWNER(i) == owner) && 
-                    DBFETCH(i)->propsmode == PROPS_CHANGED)
-                    changed++;
-#endif
-
-                /* if unused for 90 days, inc oldobj count */
-                if ((OWNER(i) == owner) &&
-                    (currtime - DBFETCH(i)->ts_lastused) > tp_aging_time)
-                    oldobjs++;
-
-                switch (Typeof(i)) {
-                    case TYPE_ROOM:
-                        if (OWNER(i) == owner) {
-                            total++;
-                            rooms++;
-                        }
-                        break;
-
-                    case TYPE_EXIT:
-                        if (OWNER(i) == owner) {
-                            total++;
-                            exits++;
-                        }
-                        break;
-
-                    case TYPE_THING:
-                        if (OWNER(i) == owner) {
-                            total++;
-                            things++;
-                        }
-                        break;
-
-                    case TYPE_PLAYER:
-                        if (i == owner) {
-                            total++;
-                            players++;
-                        }
-                        break;
-
-                    case TYPE_PROGRAM:
-                        if (OWNER(i) == owner) {
-                            total++;
-                            programs++;
-                        }
-                        break;
-                }
-            }
-        } else {
-            for (dbref i = 0; i < db_top; i++) {
+        for (dbref i = 0; i < db_top; i++) {
 
 #ifdef DISKBASE
-                if (DBFETCH(i)->propsmode != PROPS_UNLOADED)
-                    loaded++;
+            if ((OWNER(i) == owner) &&
+                DBFETCH(i)->propsmode != PROPS_UNLOADED)
+                loaded++;
 
-                if (DBFETCH(i)->propsmode == PROPS_CHANGED)
-                    changed++;
+            if ((OWNER(i) == owner) &&
+                DBFETCH(i)->propsmode == PROPS_CHANGED)
+                changed++;
 #endif
 
-                /* if unused for 90 days, inc oldobj count */
-                if ((currtime - DBFETCH(i)->ts_lastused) > tp_aging_time)
-                    oldobjs++;
+            /* if unused for 90 days, inc oldobj count */
+            if ((OWNER(i) == owner) &&
+                (currtime - DBFETCH(i)->ts_lastused) > tp_aging_time)
+                oldobjs++;
 
-                switch (Typeof(i)) {
-                    case TYPE_ROOM:
+            switch (Typeof(i)) {
+                case TYPE_ROOM:
+                    if (OWNER(i) == owner) {
                         total++;
                         rooms++;
-                        break;
+                    }
+                    break;
 
-                    case TYPE_EXIT:
+                case TYPE_EXIT:
+                    if (OWNER(i) == owner) {
                         total++;
                         exits++;
-                        break;
+                    }
+                    break;
 
-                    case TYPE_THING:
+                case TYPE_THING:
+                    if (OWNER(i) == owner) {
                         total++;
                         things++;
-                        break;
+                    }
+                    break;
 
-                    case TYPE_PLAYER:
+                case TYPE_PLAYER:
+                    if (i == owner) {
                         total++;
                         players++;
-                        break;
+                    }
+                    break;
 
-                    case TYPE_PROGRAM:
+                case TYPE_PROGRAM:
+                    if (OWNER(i) == owner) {
                         total++;
                         programs++;
-                        break;
-
-                    case TYPE_GARBAGE:
-                        total++;
-                        garbage++;
-                        break;
-                }
+                    }
+                    break;
             }
         }
-
-        notifyf(player, "%7d room%s        %7d exit%s        %7d thing%s",
-                rooms, (rooms == 1) ? " " : "s",
-                exits, (exits == 1) ? " " : "s", things, (things == 1) ? " " : "s");
-
-        notifyf(player, "%7d program%s     %7d player%s      %7d garbage",
-                programs, (programs == 1) ? " " : "s",
-                players, (players == 1) ? " " : "s", garbage);
-
-        notifyf(player,
-                "%7d total object%s                     %7d old & unused",
-                total, (total == 1) ? " " : "s", oldobjs);
+    } else {
+        for (dbref i = 0; i < db_top; i++) {
 
 #ifdef DISKBASE
-        if (Wizard(OWNER(player))) {
-            notifyf(player,
-                    "%7d proploaded object%s                %7d propchanged object%s",
-                    loaded, (loaded == 1) ? " " : "s", changed, (changed == 1) ? "" : "s");
+            if (DBFETCH(i)->propsmode != PROPS_UNLOADED)
+                loaded++;
 
-        }
+            if (DBFETCH(i)->propsmode == PROPS_CHANGED)
+                changed++;
 #endif
+
+            /* if unused for 90 days, inc oldobj count */
+            if ((currtime - DBFETCH(i)->ts_lastused) > tp_aging_time)
+                oldobjs++;
+
+            switch (Typeof(i)) {
+                case TYPE_ROOM:
+                    total++;
+                    rooms++;
+                    break;
+
+                case TYPE_EXIT:
+                    total++;
+                    exits++;
+                    break;
+
+                case TYPE_THING:
+                    total++;
+                    things++;
+                    break;
+
+                case TYPE_PLAYER:
+                    total++;
+                    players++;
+                    break;
+
+                case TYPE_PROGRAM:
+                    total++;
+                    programs++;
+                    break;
+
+                case TYPE_GARBAGE:
+                    total++;
+                    garbage++;
+                    break;
+            }
+        }
     }
+
+    notifyf(player, "%7d room%s        %7d exit%s        %7d thing%s",
+            rooms, (rooms == 1) ? " " : "s",
+            exits, (exits == 1) ? " " : "s", things, (things == 1) ? " " : "s");
+
+    notifyf(player, "%7d program%s     %7d player%s      %7d garbage",
+            programs, (programs == 1) ? " " : "s",
+            players, (players == 1) ? " " : "s", garbage);
+
+    notifyf(player,
+            "%7d total object%s                     %7d old & unused",
+            total, (total == 1) ? " " : "s", oldobjs);
+
+#ifdef DISKBASE
+    if (Wizard(OWNER(player))) {
+        notifyf(player,
+                "%7d proploaded object%s                %7d propchanged object%s",
+                loaded, (loaded == 1) ? " " : "s", changed, (changed == 1) ? "" : "s");
+    }
+#endif
 }
 
 /**
