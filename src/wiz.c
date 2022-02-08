@@ -313,6 +313,8 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
  * Two kinds of wildcards are understood; * and **.  ** is a recursive
  * wildcard, * is just a 'local' match.
  *
+ * The caller is responsible for permission checks.
+ *
  * @private
  * @param player the player doing the operation
  * @param thing the thing we are operating on
@@ -327,26 +329,12 @@ blessprops_wildcard(dbref player, dbref thing, const char *dir,
 {
     char propname[BUFFER_LEN];
     char wld[BUFFER_LEN];
-    char buf[BUFFER_LEN];
-    char buf2[BUFFER_LEN];
+    char buf[BUFFER_LEN+1];
+    char buf2[BUFFER_LEN+11];
     char *ptr, *wldcrd;
     PropPtr propadr, pptr;
     int i, cnt = 0;
     int recurse = 0;
-
-    /* @TODO: This check is done by the caller methods so this is always
-     *        redundant.  Worse: this is a recursive call, so we're punching
-     *        this check over and over for no reason.  Granted, blessing
-     *        doesn't come up that much :)  But still!  Remove this check
-     *        and add a note to the docblock that the caller is responsible
-     *        for permission checks.
-     */
-#ifdef GOD_PRIV
-    if (tp_strict_god_priv && !God(player) && God(OWNER(thing))) {
-        notify(player, "Only God may touch what is God's.");
-        return 0;
-    }
-#endif
 
     strcpyn(wld, sizeof(wld), wild);
     i = strlen(wld);
@@ -373,15 +361,7 @@ blessprops_wildcard(dbref player, dbref thing, const char *dir,
         if (equalstr(wldcrd, propname)) {
             snprintf(buf, sizeof(buf), "%s%c%s", dir, PROPDIR_DELIMITER, propname);
 
-            /* @TODO: Is this check really necessary?  Perhaps
-             *        the Prop_System one is (not sure), but the Prop_Hidden
-             *        portion of this call will *always* pass because to get
-             *        to this point in code you are *always* a wizard.
-             *
-             *        This strikes me as an inappropriate copy/paste because
-             *        I've seen this exact if structure elsewhere.
-             */
-            if (!Prop_System(buf) && (!Prop_Hidden(buf) || Wizard(OWNER(player)))) {
+            if (!Prop_System(buf)) {
                 if (!*ptr || recurse) {
                     cnt++;
 
@@ -443,6 +423,13 @@ do_unbless(int descr, dbref player, const char *what, const char *propname)
         return;
     }
 
+#ifdef GOD_PRIV
+    if (tp_strict_god_priv && !God(player) && God(OWNER(victim))) {
+        notify(player, "Only God may touch God's stuff.");
+        return;
+    }
+#endif
+
     cnt = blessprops_wildcard(player, victim, "", propname, 0);
     notifyf(player, "%d propert%s unblessed.", cnt, (cnt == 1) ? "y" : "ies");
 }
@@ -468,11 +455,6 @@ do_bless(int descr, dbref player, const char *what, const char *propname)
     struct match_data md;
     int cnt;
 
-    if (!propname || !*propname) {
-        notify(player, "Usage is @bless object=propname.");
-        return;
-    }
-
     /* get victim */
     init_match(descr, player, what, NOTYPE, &md);
     match_everything(&md);
@@ -481,13 +463,17 @@ do_bless(int descr, dbref player, const char *what, const char *propname)
         return;
     }
 
-    /* @TODO: Shouldn't this check be *first* rather than doing it last? */
 #ifdef GOD_PRIV
     if (tp_strict_god_priv && !God(player) && God(OWNER(victim))) {
         notify(player, "Only God may touch God's stuff.");
         return;
     }
 #endif
+
+    if (!propname || !*propname) {
+        notify(player, "Usage is @bless object=propname.");
+        return;
+    }
 
     cnt = blessprops_wildcard(player, victim, "", propname, 1);
     notifyf(player, "%d propert%s blessed.", cnt, (cnt == 1) ? "y" : "ies");
@@ -655,153 +641,149 @@ do_stats(dbref player, const char *name)
     time_t currtime = time(NULL);
     dbref owner = NOTHING;
 
-    /* @TODO: This if structure sucks.  The if !Wizard check should
-     *        return rather than make this giant branch.
-     */
-
     if (!Wizard(OWNER(player)) && (!name || !*name)) {
         notifyf(player, "The universe contains %d objects.", db_top);
-    } else {
-        total = rooms = exits = things = players = programs = 0;
+        return;
+    }
 
-        if (name != NULL && *name != '\0') {
-            owner = lookup_player(name);
+    total = rooms = exits = things = players = programs = 0;
 
-            if (owner == NOTHING) {
-                notify(player, "I can't find that player.");
-                return;
-            }
+    if (name != NULL && *name != '\0') {
+        owner = lookup_player(name);
 
-            if (!Wizard(OWNER(player)) && (OWNER(player) != owner)) {
-                notify(player,
-                       "Permission denied. (you must be a wizard to get someone else's stats)");
-                return;
-            }
+        if (owner == NOTHING) {
+            notify(player, "I can't find that player.");
+            return;
+        }
 
-            for (dbref i = 0; i < db_top; i++) {
+        if (!Wizard(OWNER(player)) && (OWNER(player) != owner)) {
+            notify(player,
+                   "Permission denied. (you must be a wizard to get someone else's stats)");
+            return;
+        }
 
-#ifdef DISKBASE
-                if ((OWNER(i) == owner) && 
-                    DBFETCH(i)->propsmode != PROPS_UNLOADED)
-                    loaded++;
-
-                if ((OWNER(i) == owner) && 
-                    DBFETCH(i)->propsmode == PROPS_CHANGED)
-                    changed++;
-#endif
-
-                /* if unused for 90 days, inc oldobj count */
-                if ((OWNER(i) == owner) &&
-                    (currtime - DBFETCH(i)->ts_lastused) > tp_aging_time)
-                    oldobjs++;
-
-                switch (Typeof(i)) {
-                    case TYPE_ROOM:
-                        if (OWNER(i) == owner) {
-                            total++;
-                            rooms++;
-                        }
-                        break;
-
-                    case TYPE_EXIT:
-                        if (OWNER(i) == owner) {
-                            total++;
-                            exits++;
-                        }
-                        break;
-
-                    case TYPE_THING:
-                        if (OWNER(i) == owner) {
-                            total++;
-                            things++;
-                        }
-                        break;
-
-                    case TYPE_PLAYER:
-                        if (i == owner) {
-                            total++;
-                            players++;
-                        }
-                        break;
-
-                    case TYPE_PROGRAM:
-                        if (OWNER(i) == owner) {
-                            total++;
-                            programs++;
-                        }
-                        break;
-                }
-            }
-        } else {
-            for (dbref i = 0; i < db_top; i++) {
+        for (dbref i = 0; i < db_top; i++) {
 
 #ifdef DISKBASE
-                if (DBFETCH(i)->propsmode != PROPS_UNLOADED)
-                    loaded++;
+            if ((OWNER(i) == owner) &&
+                DBFETCH(i)->propsmode != PROPS_UNLOADED)
+                loaded++;
 
-                if (DBFETCH(i)->propsmode == PROPS_CHANGED)
-                    changed++;
+            if ((OWNER(i) == owner) &&
+                DBFETCH(i)->propsmode == PROPS_CHANGED)
+                changed++;
 #endif
 
-                /* if unused for 90 days, inc oldobj count */
-                if ((currtime - DBFETCH(i)->ts_lastused) > tp_aging_time)
-                    oldobjs++;
+            /* if unused for 90 days, inc oldobj count */
+            if ((OWNER(i) == owner) &&
+                (currtime - DBFETCH(i)->ts_lastused) > tp_aging_time)
+                oldobjs++;
 
-                switch (Typeof(i)) {
-                    case TYPE_ROOM:
+            switch (Typeof(i)) {
+                case TYPE_ROOM:
+                    if (OWNER(i) == owner) {
                         total++;
                         rooms++;
-                        break;
+                    }
+                    break;
 
-                    case TYPE_EXIT:
+                case TYPE_EXIT:
+                    if (OWNER(i) == owner) {
                         total++;
                         exits++;
-                        break;
+                    }
+                    break;
 
-                    case TYPE_THING:
+                case TYPE_THING:
+                    if (OWNER(i) == owner) {
                         total++;
                         things++;
-                        break;
+                    }
+                    break;
 
-                    case TYPE_PLAYER:
+                case TYPE_PLAYER:
+                    if (i == owner) {
                         total++;
                         players++;
-                        break;
+                    }
+                    break;
 
-                    case TYPE_PROGRAM:
+                case TYPE_PROGRAM:
+                    if (OWNER(i) == owner) {
                         total++;
                         programs++;
-                        break;
-
-                    case TYPE_GARBAGE:
-                        total++;
-                        garbage++;
-                        break;
-                }
+                    }
+                    break;
             }
         }
-
-        notifyf(player, "%7d room%s        %7d exit%s        %7d thing%s",
-                rooms, (rooms == 1) ? " " : "s",
-                exits, (exits == 1) ? " " : "s", things, (things == 1) ? " " : "s");
-
-        notifyf(player, "%7d program%s     %7d player%s      %7d garbage",
-                programs, (programs == 1) ? " " : "s",
-                players, (players == 1) ? " " : "s", garbage);
-
-        notifyf(player,
-                "%7d total object%s                     %7d old & unused",
-                total, (total == 1) ? " " : "s", oldobjs);
+    } else {
+        for (dbref i = 0; i < db_top; i++) {
 
 #ifdef DISKBASE
-        if (Wizard(OWNER(player))) {
-            notifyf(player,
-                    "%7d proploaded object%s                %7d propchanged object%s",
-                    loaded, (loaded == 1) ? " " : "s", changed, (changed == 1) ? "" : "s");
+            if (DBFETCH(i)->propsmode != PROPS_UNLOADED)
+                loaded++;
 
-        }
+            if (DBFETCH(i)->propsmode == PROPS_CHANGED)
+                changed++;
 #endif
+
+            /* if unused for 90 days, inc oldobj count */
+            if ((currtime - DBFETCH(i)->ts_lastused) > tp_aging_time)
+                oldobjs++;
+
+            switch (Typeof(i)) {
+                case TYPE_ROOM:
+                    total++;
+                    rooms++;
+                    break;
+
+                case TYPE_EXIT:
+                    total++;
+                    exits++;
+                    break;
+
+                case TYPE_THING:
+                    total++;
+                    things++;
+                    break;
+
+                case TYPE_PLAYER:
+                    total++;
+                    players++;
+                    break;
+
+                case TYPE_PROGRAM:
+                    total++;
+                    programs++;
+                    break;
+
+                case TYPE_GARBAGE:
+                    total++;
+                    garbage++;
+                    break;
+            }
+        }
     }
+
+    notifyf(player, "%7d room%s        %7d exit%s        %7d thing%s",
+            rooms, (rooms == 1) ? " " : "s",
+            exits, (exits == 1) ? " " : "s", things, (things == 1) ? " " : "s");
+
+    notifyf(player, "%7d program%s     %7d player%s      %7d garbage",
+            programs, (programs == 1) ? " " : "s",
+            players, (players == 1) ? " " : "s", garbage);
+
+    notifyf(player,
+            "%7d total object%s                     %7d old & unused",
+            total, (total == 1) ? " " : "s", oldobjs);
+
+#ifdef DISKBASE
+    if (Wizard(OWNER(player))) {
+        notifyf(player,
+                "%7d proploaded object%s                %7d propchanged object%s",
+                loaded, (loaded == 1) ? " " : "s", changed, (changed == 1) ? "" : "s");
+    }
+#endif
 }
 
 /**
@@ -1047,16 +1029,16 @@ do_usage(dbref player)
     psize = sysconf(_SC_PAGESIZE);
     getrusage(RUSAGE_SELF, &usage);
 
-    notifyf(player, "Performed %d input servicings.", usage.ru_inblock);
-    notifyf(player, "Performed %d output servicings.", usage.ru_oublock);
-    notifyf(player, "Sent %d messages over a socket.", usage.ru_msgsnd);
-    notifyf(player, "Received %d messages over a socket.", usage.ru_msgrcv);
-    notifyf(player, "Received %d signals.", usage.ru_nsignals);
-    notifyf(player, "Page faults NOT requiring physical I/O: %d", usage.ru_minflt);
-    notifyf(player, "Page faults REQUIRING physical I/O: %d", usage.ru_majflt);
-    notifyf(player, "Swapped out of main memory %d times.", usage.ru_nswap);
-    notifyf(player, "Voluntarily context switched %d times.", usage.ru_nvcsw);
-    notifyf(player, "Involuntarily context switched %d times.", usage.ru_nivcsw);
+    notifyf(player, "Performed %ld input servicings.", usage.ru_inblock);
+    notifyf(player, "Performed %ld output servicings.", usage.ru_oublock);
+    notifyf(player, "Sent %ld messages over a socket.", usage.ru_msgsnd);
+    notifyf(player, "Received %ld messages over a socket.", usage.ru_msgrcv);
+    notifyf(player, "Received %ld signals.", usage.ru_nsignals);
+    notifyf(player, "Page faults NOT requiring physical I/O: %ld", usage.ru_minflt);
+    notifyf(player, "Page faults REQUIRING physical I/O: %ld", usage.ru_majflt);
+    notifyf(player, "Swapped out of main memory %ld times.", usage.ru_nswap);
+    notifyf(player, "Voluntarily context switched %ld times.", usage.ru_nvcsw);
+    notifyf(player, "Involuntarily context switched %ld times.", usage.ru_nivcsw);
     notifyf(player, "User time used: %ld sec and %ld usec.", usage.ru_utime.tv_sec, usage.ru_utime.tv_usec);
     notifyf(player, "System time used: %ld sec and %ld usec.", usage.ru_stime.tv_sec, usage.ru_stime.tv_usec);
     notifyf(player, "Pagesize for this machine: %ld", psize);
@@ -1069,266 +1051,76 @@ do_usage(dbref player)
 #endif /* !NO_USAGE_COMMAND */
 
 /**
- * @TODO: These "topprofs" calls are almost all copy/paste.  I've noted in
- *        other TODO's such as under do_muf_topprofs that there is a lot
- *        of duplicate code ... but these calls are almost 100% duplicated,
- *        so maybe we can refactor them to use a common core function.
+ * Adds a 'struct profnode' to a given ordered linked list, if the size
+ * limit has not been reached.
+ *
+ * @private
+ * @param tops linked list of profiling nodes
+ * @param limit maximum size of list
+ * @param nodecount current size of list
+ * @param obj object to profile
+ * @param type object type: muf/mpi
+ * @param comptime time that request occurred
  */
-
-/**
- * Implementation of the \@muftops command
- *
- * This shows statistics about programs that have been running.  These
- * statistics are shown for top 'arg1' number of programs.  The default
- * is '10'.  'reset' can also be passed to reset the statistic numbers.
- *
- * This iterates over the entire DB and puts the programs in a
- * 'struct profnode' linked list.  For large numbers of 'arg1', this is
- * really inefficient since its sorting a linked list.
- *
- * This does not do any permission checking.
- *
- * @param player the player doing the call
- * @param arg1 Either a string containing a number, the word "reset", or ""
- */
-void
-do_muf_topprofs(dbref player, char *arg1)
+static void
+add_to_proflist(struct profnode **tops, size_t limit, int *nodecount, dbref obj, short type, time_t comptime)
 {
-    struct profnode *tops = NULL, *curr = NULL;
-    int nodecount = 0;
-    int count = atoi(arg1);
-    time_t current_systime = time(NULL);
+    struct profnode *curr = NULL;
+    struct profnode *newnode = malloc(sizeof(struct profnode));
+    struct timeval proftime = type ? PROGRAM_PROFTIME(obj) : DBFETCH(obj)->mpi_proftime;
+    time_t profstart = type ? PROGRAM_PROFSTART(obj) : mpi_prof_start_time;
+    int profuses = type ? PROGRAM_PROF_USES(obj) : DBFETCH(obj)->mpi_prof_use;
 
-    if (!strcasecmp(arg1, "reset")) {
-        for (dbref i = db_top; i-- > 0;) {
-            if (Typeof(i) == TYPE_PROGRAM) {
-                PROGRAM_SET_PROFTIME(i, 0, 0);
-                PROGRAM_SET_PROFSTART(i, current_systime);
-                PROGRAM_SET_PROF_USES(i, 0);
-            }
+    newnode->next = NULL;
+    newnode->prog = obj;
+    newnode->proftime = proftime.tv_sec;
+    newnode->proftime += (proftime.tv_usec / 1000000.0);
+    newnode->comptime = comptime - profstart;
+    newnode->usecount = profuses;
+    newnode->type = type;
+
+    if (newnode->comptime > 0) {
+        newnode->pcnt = 100.0 * newnode->proftime / newnode->comptime;
+    } else {
+        newnode->pcnt = 0.0;
+    }
+
+    if (!*tops) {
+        *tops = newnode;
+        (*nodecount)++;
+    } else if (newnode->pcnt < (*tops)->pcnt) {
+        if (*nodecount < limit) {
+            newnode->next = *tops;
+            *tops = newnode;
+            (*nodecount)++;
+        } else {
+            free(newnode);
+        }
+    } else {
+        if (*nodecount >= limit) {
+            curr = *tops;
+            *tops = (*tops)->next;
+            free(curr);
+        } else {
+            (*nodecount)++;
         }
 
-        notify(player, "MUF profiling statistics cleared.");
-        return;
-    }
-
-    if (count < 0) {
-        notify(player, "Count has to be a positive number.");
-        return;
-    } else if (count == 0) {
-        count = 10;
-    }
-
-    for (dbref i = db_top; i-- > 0;) {
-        if (Typeof(i) == TYPE_PROGRAM && PROGRAM_CODE(i)) {
-
-            /* @TODO: For all these topprofs calls, the following lines
-             *        of code are copy/pasted.  This is nasty and unnecessary.
-             *
-             *        The linked list implementation is kind of awful for
-             *        large datasets.  For the dataset of 10 (default)
-             *        it isn't bad.  In a perfect world, we'd use our
-             *        AVL generic implementation, but for now, we should
-             *        abstract this into a function that manages adding
-             *        nodes to get rid of this duplicate logic.
-             */
-            struct profnode *newnode = malloc(sizeof(struct profnode));
-            struct timeval tmpt = PROGRAM_PROFTIME(i);
-
-            newnode->next = NULL;
-            newnode->prog = i;
-            newnode->proftime = tmpt.tv_sec;
-            newnode->proftime += (tmpt.tv_usec / 1000000.0);
-            newnode->comptime = current_systime - PROGRAM_PROFSTART(i);
-            newnode->usecount = PROGRAM_PROF_USES(i);
-            newnode->type = 1;
-
-            if (newnode->comptime > 0) {
-                newnode->pcnt = 100.0 * newnode->proftime / newnode->comptime;
-            } else {
-                newnode->pcnt = 0.0;
-            }
-
-            if (!tops) {
-                tops = newnode;
-                nodecount++;
-            } else if (newnode->pcnt < tops->pcnt) {
-                if (nodecount < count) {
-                    newnode->next = tops;
-                    tops = newnode;
-                    nodecount++;
-                } else {
-                    free(newnode);
-                }
-            } else {
-                if (nodecount >= count) {
-                    curr = tops;
-                    tops = tops->next;
-                    free(curr);
-                } else {
-                    nodecount++;
-                }
-
-                if (!tops) {
-                    tops = newnode;
-                } else if (newnode->pcnt < tops->pcnt) {
-                    newnode->next = tops;
-                    tops = newnode;
-                } else {
-                    for (curr = tops; curr->next; curr = curr->next) {
-                        if (newnode->pcnt < curr->next->pcnt) {
-                            break;
-                        }
-                    }
-
-                    newnode->next = curr->next;
-                    curr->next = newnode;
+        if (!*tops) {
+            *tops = newnode;
+        } else if (newnode->pcnt < (*tops)->pcnt) {
+            newnode->next = *tops;
+            *tops = newnode;
+        } else {
+            for (curr = *tops; curr->next; curr = curr->next) {
+                if (newnode->pcnt < curr->next->pcnt) {
+                    break;
                 }
             }
+
+            newnode->next = curr->next;
+            curr->next = newnode;
         }
     }
-
-    notify(player, "     %CPU   TotalTime  UseCount  Program");
-
-    /* Output the produced result */
-    while (tops) {
-        char unparse_buf[BUFFER_LEN];
-        curr = tops;
-        unparse_object(player, curr->prog, unparse_buf, sizeof(unparse_buf));
-        notifyf(player, "%10.3f %10.3f %9ld %s", curr->pcnt, curr->proftime, curr->usecount,
-                unparse_buf);
-        tops = tops->next;
-        free(curr);
-    }
-
-    notifyf(player, "Profile Length (sec): %5lld  %%idle: %5.2f%%  Total Cycles: %5lu",
-            (long long) (current_systime - sel_prof_start_time),
-            ((double) (sel_prof_idle_sec + (sel_prof_idle_usec / 1000000.0)) * 100.0) /
-            (double) ((current_systime - sel_prof_start_time) + 0.01), sel_prof_idle_use);
-    notify(player, "*Done*");
-}
-
-/**
- * Implementation of the \@mpitops command
- *
- * This shows statistics about programs that have been running.  These
- * statistics are shown for top 'arg1' number of programs.  The default
- * is '10'.  'reset' can also be passed to reset the statistic numbers.
- *
- * This iterates over the entire DB and puts the programs in a
- * 'struct profnode' linked list.  For large numbers of 'arg1', this is
- * really inefficient since its sorting a linked list.
- *
- * This does not do any permission checking.
- *
- * @param player the player doing the call
- * @param arg1 Either a string containing a number, the word "reset", or ""
- */
-void
-do_mpi_topprofs(dbref player, char *arg1)
-{
-    struct profnode *tops = NULL, *curr = NULL;
-    int nodecount = 0;
-    int count = atoi(arg1);
-    time_t current_systime = time(NULL);
-
-    if (!strcasecmp(arg1, "reset")) {
-        for (dbref i = db_top; i-- > 0;) {
-            if (DBFETCH(i)->mpi_prof_use) {
-                DBFETCH(i)->mpi_prof_use = 0;
-                DBFETCH(i)->mpi_proftime.tv_usec = 0;
-                DBFETCH(i)->mpi_proftime.tv_sec = 0;
-            }
-        }
-
-        mpi_prof_start_time = current_systime;
-        notify(player, "MPI profiling statistics cleared.");
-        return;
-    }
-
-    if (count < 0) {
-        notify(player, "Count has to be a positive number.");
-        return;
-    } else if (count == 0) {
-        count = 10;
-    }
-
-    for (dbref i = db_top; i-- > 0;) {
-        if (DBFETCH(i)->mpi_prof_use) {
-            /* @TODO: See other note -- this code is duplicate */
-            struct profnode *newnode = malloc(sizeof(struct profnode));
-            newnode->next = NULL;
-            newnode->prog = i;
-            newnode->proftime = DBFETCH(i)->mpi_proftime.tv_sec;
-            newnode->proftime += (DBFETCH(i)->mpi_proftime.tv_usec / 1000000.0);
-            newnode->comptime = current_systime - mpi_prof_start_time;
-            newnode->usecount = DBFETCH(i)->mpi_prof_use;
-            newnode->type = 0;
-
-            if (newnode->comptime > 0) {
-                newnode->pcnt = 100.0 * newnode->proftime / newnode->comptime;
-            } else {
-                newnode->pcnt = 0.0;
-            }
-
-            if (!tops) {
-                tops = newnode;
-                nodecount++;
-            } else if (newnode->pcnt < tops->pcnt) {
-                if (nodecount < count) {
-                    newnode->next = tops;
-                    tops = newnode;
-                    nodecount++;
-                } else {
-                    free(newnode);
-                }
-            } else {
-                if (nodecount >= count) {
-                    curr = tops;
-                    tops = tops->next;
-                    free(curr);
-                } else {
-                    nodecount++;
-                }
-
-                if (!tops) {
-                    tops = newnode;
-                } else if (newnode->pcnt < tops->pcnt) {
-                    newnode->next = tops;
-                    tops = newnode;
-                } else {
-                    for (curr = tops; curr->next; curr = curr->next) {
-                        if (newnode->pcnt < curr->next->pcnt) {
-                            break;
-                        }
-                    }
-
-                    newnode->next = curr->next;
-                    curr->next = newnode;
-                }
-            }
-        }
-    }
-
-    notify(player, "     %CPU   TotalTime  UseCount  Object");
-
-    /* Output the results */
-    while (tops) {
-        char unparse_buf[BUFFER_LEN];
-        curr = tops;
-        unparse_object(player, curr->prog, unparse_buf, sizeof(unparse_buf));
-        notifyf(player, "%10.3f %10.3f %9ld %s", curr->pcnt, curr->proftime, curr->usecount,
-                unparse_buf);
-        tops = tops->next;
-        free(curr);
-    }
-
-    notifyf(player, "Profile Length (sec): %5lld  %%idle: %5.2f%%  Total Cycles: %5lu",
-            (long long) (current_systime - sel_prof_start_time),
-            (((double) sel_prof_idle_sec + (sel_prof_idle_usec / 1000000.0)) * 100.0) /
-            (double) ((current_systime - sel_prof_start_time) + 0.01), sel_prof_idle_use);
-
-    notify(player, "*Done*");
 }
 
 /**
@@ -1344,184 +1136,97 @@ do_mpi_topprofs(dbref player, char *arg1)
  *
  * This does not do any permission checking.
  *
+ * @see add_to_proflist
+ *
  * @param player the player doing the call
  * @param arg1 Either a string containing a number, the word "reset", or ""
  */
 void
 do_topprofs(dbref player, char *arg1)
 {
-    /* @TODO: This function is terrible.  It's like the previous two topprofs
-     *        copy/pasted together into one function.
-     */
     struct profnode *tops = NULL, *curr = NULL;
-    int nodecount = 0;
-    int count = atoi(arg1);
     time_t current_systime = time(NULL);
+    short type = -1;
+    char *option;
+    int count = -1;
+    int nodecount = 0;
 
-    if (!strcasecmp(arg1, "reset")) {
+    (void) strtok_r(arg1, " \t", &option);
+
+    if (!strcasecmp(arg1, "mpi")) {
+        type = 0;
+    } else if (!strcasecmp(arg1, "muf")) {
+        type = 1;
+    } else {
+        option = arg1;
+    }
+
+    if (!strcasecmp(option, "reset")) {
         for (dbref i = db_top; i-- > 0;) {
-            if (DBFETCH(i)->mpi_prof_use) {
+            if (type != 1 && DBFETCH(i)->mpi_prof_use) {
                 DBFETCH(i)->mpi_prof_use = 0;
                 DBFETCH(i)->mpi_proftime.tv_usec = 0;
                 DBFETCH(i)->mpi_proftime.tv_sec = 0;
             }
 
-            if (Typeof(i) == TYPE_PROGRAM) {
+            if (type != 0 && Typeof(i) == TYPE_PROGRAM && PROGRAM_CODE(i)) {
                 PROGRAM_SET_PROFTIME(i, 0, 0);
                 PROGRAM_SET_PROFSTART(i, current_systime);
                 PROGRAM_SET_PROF_USES(i, 0);
             }
         }
 
-        sel_prof_idle_sec = 0;
-        sel_prof_idle_usec = 0;
-        sel_prof_start_time = current_systime;
-        sel_prof_idle_use = 0;
-        mpi_prof_start_time = current_systime;
-        notify(player, "All profiling statistics cleared.");
+        if (type == -1) {
+            sel_prof_idle_sec = 0;
+            sel_prof_idle_usec = 0;
+            sel_prof_start_time = current_systime;
+            sel_prof_idle_use = 0;
+            mpi_prof_start_time = current_systime;
+        }
+
+        notify(player, "Profiling statistics cleared.");
         return;
     }
 
+    count = atoi(option);
     if (count < 0) {
-        notify(player, "Count has to be a positive number.");
+        notify_nolisten(player, "Count must be a positive number.", 1);
         return;
-    } else if (count == 0) {
+    }
+
+    if (count == 0) {
         count = 10;
     }
 
     for (dbref i = db_top; i-- > 0;) {
-        if (DBFETCH(i)->mpi_prof_use) {
-            /* @TODO: The same duplicate linked list code as noted above */
-            struct profnode *newnode = malloc(sizeof(struct profnode));
-            newnode->next = NULL;
-            newnode->prog = i;
-            newnode->proftime = DBFETCH(i)->mpi_proftime.tv_sec;
-            newnode->proftime += (DBFETCH(i)->mpi_proftime.tv_usec / 1000000.0);
-            newnode->comptime = current_systime - mpi_prof_start_time;
-            newnode->usecount = DBFETCH(i)->mpi_prof_use;
-            newnode->type = 0;
-
-            if (newnode->comptime > 0) {
-                newnode->pcnt = 100.0 * newnode->proftime / newnode->comptime;
-            } else {
-                newnode->pcnt = 0.0;
-            }
-
-            if (!tops) {
-                tops = newnode;
-                nodecount++;
-            } else if (newnode->pcnt < tops->pcnt) {
-                if (nodecount < count) {
-                    newnode->next = tops;
-                    tops = newnode;
-                    nodecount++;
-                } else {
-                    free(newnode);
-                }
-            } else {
-                if (nodecount >= count) {
-                    curr = tops;
-                    tops = tops->next;
-                    free(curr);
-                } else {
-                    nodecount++;
-                }
-
-                if (!tops) {
-                    tops = newnode;
-                } else if (newnode->pcnt < tops->pcnt) {
-                    newnode->next = tops;
-                    tops = newnode;
-                } else {
-                    for (curr = tops; curr->next; curr = curr->next) {
-                        if (newnode->pcnt < curr->next->pcnt) {
-                            break;
-                        }
-                    }
-
-                    newnode->next = curr->next;
-                    curr->next = newnode;
-                }
-            }
+        if (type != 1 && DBFETCH(i)->mpi_prof_use) {
+            add_to_proflist(&tops, count, &nodecount, i, 0, current_systime);
         }
 
-        if (Typeof(i) == TYPE_PROGRAM && PROGRAM_CODE(i)) {
-            /* @TODO: Wow, this is duplicated even in the same function */
-            struct profnode *newnode = malloc(sizeof(struct profnode));
-            struct timeval tmpt = PROGRAM_PROFTIME(i);
-
-            newnode->next = NULL;
-            newnode->prog = i;
-            newnode->proftime = tmpt.tv_sec;
-            newnode->proftime += (tmpt.tv_usec / 1000000.0);
-            newnode->comptime = current_systime - PROGRAM_PROFSTART(i);
-            newnode->usecount = PROGRAM_PROF_USES(i);
-            newnode->type = 1;
-
-            if (newnode->comptime > 0) {
-                newnode->pcnt = 100.0 * newnode->proftime / newnode->comptime;
-            } else {
-                newnode->pcnt = 0.0;
-            }
-
-            if (!tops) {
-                tops = newnode;
-                nodecount++;
-            } else if (newnode->pcnt < tops->pcnt) {
-                if (nodecount < count) {
-                    newnode->next = tops;
-                    tops = newnode;
-                    nodecount++;
-                } else {
-                    free(newnode);
-                }
-            } else {
-                if (nodecount >= count) {
-                    curr = tops;
-                    tops = tops->next;
-                    free(curr);
-                } else {
-                    nodecount++;
-                }
-
-                if (!tops) {
-                    tops = newnode;
-                } else if (newnode->pcnt < tops->pcnt) {
-                    newnode->next = tops;
-                    tops = newnode;
-                } else {
-                    for (curr = tops; curr->next; curr = curr->next) {
-                        if (newnode->pcnt < curr->next->pcnt) {
-                            break;
-                        }
-                    }
-
-                    newnode->next = curr->next;
-                    curr->next = newnode;
-                }
-            }
+        if (type != 0 && Typeof(i) == TYPE_PROGRAM && PROGRAM_CODE(i)) {
+            add_to_proflist(&tops, count, &nodecount, i, 1, current_systime);
         }
     }
 
-    notify(player, "     %CPU   TotalTime  UseCount  Type  Object");
+    notifyf_nolisten(player, "     %%CPU   TotalTime  UseCount%sObject", type == -1 ? "  Type  " : "  ");
 
     /* Output results */
     while (tops) {
         char unparse_buf[BUFFER_LEN];
         curr = tops;
         unparse_object(player, curr->prog, unparse_buf, sizeof(unparse_buf));
-        notifyf(player, "%10.3f %10.3f %9ld%5s   %s", curr->pcnt, curr->proftime,
-                curr->usecount, curr->type ? "MUF" : "MPI", unparse_buf);
+        notifyf_nolisten(player, "%10.3f %10.3f %9ld%s%s", curr->pcnt, curr->proftime,
+                curr->usecount, type == -1 ? (curr->type ? "  MUF   " : "  MPI   ") : "  ", unparse_buf);
         tops = tops->next;
         free(curr);
     }
 
-    notifyf(player, "Profile Length (sec): %5lld  %%idle: %5.2f%%  Total Cycles: %5lu",
+    notifyf_nolisten(player, "Profile Length (sec): %5lld  %%idle: %5.2f%%  Total Cycles: %5lu",
             (long long) (current_systime - sel_prof_start_time),
             ((double) (sel_prof_idle_sec + (sel_prof_idle_usec / 1000000.0)) * 100.0) /
             (double) ((current_systime - sel_prof_start_time) + 0.01), sel_prof_idle_use);
 
-    notify(player, "*Done*");
+    notify_nolisten(player, "*Done*", 1);
 }
 
 #ifndef NO_MEMORY_COMMAND

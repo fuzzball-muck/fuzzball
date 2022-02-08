@@ -61,8 +61,6 @@
     <li><a href="#@mcpedit">@mcpedit</a></li>
     <li><a href="#@mcpprogram">@mcpprogram</a></li>
     <li><a href="#@memory">@memory</a></li>
-    <li><a href="#@mpitops">@mpitops</a></li>
-    <li><a href="#@muftops">@muftops</a></li>
     <li><a href="#@name">@name</a></li>
     <li><a href="#@newpassword">@newpassword</a></li>
     <li><a href="#@odrop">@odrop</a></li>
@@ -3087,8 +3085,6 @@ edit package, an editor window will appear instead of using the text edit mode.
     <li><a href="#@examine">@examine</a></li>
     <li><a href="#@force">@force</a></li>
     <li><a href="#@memory">@memory</a></li>
-    <li><a href="#@mpitops">@mpitops</a></li>
-    <li><a href="#@muftops">@muftops</a></li>
     <li><a href="#@newpassword">@newpassword</a></li>
     <li><a href="#@pcreate">@pcreate</a></li>
     <li><a href="#@reconfiguressl">@reconfiguressl</a></li>
@@ -3431,8 +3427,6 @@ More options will be added in the future.
 </pre>
 <p>Also see:
     <a href="#@memory">@MEMORY</a>,
-    <a href="#@mpitops">@MPITOPS</a>,
-    <a href="#@muftops">@MUFTOPS</a>,
     <a href="#@tops">@TOPS</a> and
     <a href="#@usage">@USAGE</a>
 </p>
@@ -3441,9 +3435,9 @@ More options will be added in the future.
 
 <h3 id="@tops">@TOPS
 <br>
-@TOPS &lt;count&gt;
+@TOPS [muf|mpi] &lt;count&gt;
 <br>
-@TOPS reset
+@TOPS [muf|mpi] reset
 <br>
 
 <br>
@@ -3459,14 +3453,13 @@ blank, it uses the default of '10'.
   Examples:
 <pre>
     @tops              show default amount of profiling statistics
-    @tops 5            show 5 rows of profiling statistics
-    @tops reset        reset all collected profiling statistics
+    @tops 3            show 3 rows of all profiling statistics
+    @tops muf 5        show 5 rows of MUF profiling statistics
+    @tops mpi reset    reset MPI collected profiling statistics
 </pre>
 <p>Also see:
     <a href="#@debug">@DEBUG</a>,
-    <a href="#@memory">@MEMORY</a>,
-    <a href="#@mpitops">@MPITOPS</a>,
-    <a href="#@muftops">@MUFTOPS</a> and
+    <a href="#@memory">@MEMORY</a> and
     <a href="#@usage">@USAGE</a>
 </p>
 <!-- HTML_TOPICEND -->
@@ -3482,74 +3475,6 @@ server process.  If HAVE_MALLINFO is used, this command shows more
 information.
 <p>Also see:
     <a href="#@debug">@DEBUG</a>,
-    <a href="#@mpitops">@MPITOPS</a>,
-    <a href="#@muftops">@MUFTOPS</a>,
-    <a href="#@tops">@TOPS</a> and
-    <a href="#@usage">@USAGE</a>
-</p>
-<!-- HTML_TOPICEND -->
-
-
-<h3 id="@mpitops">@MPITOPS
-<br>
-@MPITOPS &lt;count&gt;
-<br>
-@MPITOPS reset
-<br>
-
-<br>
-</h3>
-  Show process usage and runtime statistics only for MPI programs.
-Count controls the maximum rows of results shown.  If left blank, it
-uses the default of '10'.
-
-<p>
-  This is a wizard-only command.
-
-<p>
-  Examples:
-<pre>
-    @mpitops           show default amount of profiling statistics
-    @mpitops 5         show 5 rows of profiling statistics
-    @mpitops reset     reset collected MPI profiling statistics
-</pre>
-<p>Also see:
-    <a href="#@debug">@DEBUG</a>,
-    <a href="#@memory">@MEMORY</a>,
-    <a href="#@muftops">@MUFTOPS</a>,
-    <a href="#@tops">@TOPS</a> and
-    <a href="#@usage">@USAGE</a>
-</p>
-<!-- HTML_TOPICEND -->
-
-
-<h3 id="@muftops">@MUFTOPS
-<br>
-@MUFTOPS &lt;count&gt;
-<br>
-@MUFTOPS reset
-<br>
-
-<br>
-</h3>
-  Show process usage and runtime statistics only for MUF programs.
-Count controls the maximum rows of results shown.  If left blank, it
-uses the default of '10'.
-
-<p>
-  This is a wizard-only command.
-
-<p>
-  Examples:
-<pre>
-    @muftops           show default amount of profiling statistics
-    @muftops 5         show 5 rows of profiling statistics
-    @muftops reset     reset collected MUF profiling statistics
-</pre>
-<p>Also see:
-    <a href="#@debug">@DEBUG</a>,
-    <a href="#@memory">@MEMORY</a>,
-    <a href="#@mpitops">@MPITOPS</a>,
     <a href="#@tops">@TOPS</a> and
     <a href="#@usage">@USAGE</a>
 </p>
@@ -3565,9 +3490,7 @@ uses the default of '10'.
 muck server process.
 <p>Also see:
     <a href="#@debug">@DEBUG</a>,
-    <a href="#@memory">@MEMORY</a>,
-    <a href="#@mpitops">@MPITOPS</a>,
-    <a href="#@muftops">@MUFTOPS</a> and
+    <a href="#@memory">@MEMORY</a> and
     <a href="#@tops">@TOPS</a>
 </p>
 <!-- HTML_TOPICEND -->

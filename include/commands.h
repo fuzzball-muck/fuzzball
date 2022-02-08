@@ -797,46 +797,6 @@ void do_motd(dbref player, char *text);
  */
 void do_move(int descr, dbref player, const char *direction, int lev);
 
-/**
- * Implementation of the \@mpitops command
- *
- * Defined in wiz.c
- *
- * This shows statistics about programs that have been running.  These
- * statistics are shown for top 'arg1' number of programs.  The default
- * is '10'.  'reset' can also be passed to reset the statistic numbers.
- *
- * This iterates over the entire DB and puts the programs in a
- * 'struct profnode' linked list.  For large numbers of 'arg1', this is
- * really inefficient since its sorting a linked list.
- *
- * This does not do any permission checking.
- *
- * @param player the player doing the call
- * @param arg1 Either a string containing a number, the word "reset", or ""
- */
-void do_mpi_topprofs(dbref player, char *arg1);
-
-/**
- * Implementation of the \@muftops command
- *
- * Defined in wiz.c
- *
- * This shows statistics about programs that have been running.  These
- * statistics are shown for top 'arg1' number of programs.  The default
- * is '10'.  'reset' can also be passed to reset the statistic numbers.
- *
- * This iterates over the entire DB and puts the programs in a
- * 'struct profnode' linked list.  For large numbers of 'arg1', this is
- * really inefficient since its sorting a linked list.
- *
- * This does not do any permission checking.
- *
- * @param player the player doing the call
- * @param arg1 Either a string containing a number, the word "reset", or ""
- */
-void do_muf_topprofs(dbref player, char *arg1);
-
 /*
  * N
  */
