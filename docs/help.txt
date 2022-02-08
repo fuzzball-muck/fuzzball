@@ -40,18 +40,18 @@ Symbols
   @examine           @fail              @find              @force
   @force_lock        @idescribe         @kill              @link
   @linklock          @list              @lock              @mcpedit
-  @mcpprogram        @memory            @mpitops           @muftops
-  @name              @newpassword       @odrop             @oecho
-  @ofail             @open              @osuccess          @owned
-  @ownlock           @password          @pcreate           @pecho
-  @program           @propset           @ps                @readlock
-  @reconfiguressl    @recycle           @register          @relink
-  @restart           @restrict          @sanchange         @sanfix
-  @sanity            @set               @shutdown          @stats
-  @success           @sweep             @teledump          @teleport
-  @toad              @tops              @trace             @tune
-  @unbless           @uncompile         @unlink            @unlock
-  @usage             @version           @wall              
+  @mcpprogram        @memory            @name              @newpassword
+  @odrop             @oecho             @ofail             @open
+  @osuccess          @owned             @ownlock           @password
+  @pcreate           @pecho             @program           @propset
+  @ps                @readlock          @reconfiguressl    @recycle
+  @register          @relink            @restart           @restrict
+  @sanchange         @sanfix            @sanity            @set
+  @shutdown          @stats             @success           @sweep
+  @teledump          @teleport          @toad              @tops
+  @trace             @tune              @unbless           @uncompile
+  @unlink            @unlock            @usage             @version
+  @wall              
 
 A's
   abode  
@@ -1960,12 +1960,11 @@ Wizardly Commands
 
 @armageddon        @bless             @boot              @credits
 @debug             @dump              @examine           @force
-@memory            @mpitops           @muftops           @newpassword
-@pcreate           @reconfiguressl    @restart           @restrict
-@sanchange         @sanfix            @sanity            @shutdown
-@teledump          @toad              @tops              @tune
-@unbless           @uncompile         @usage             @version
-@wall              
+@memory            @newpassword       @pcreate           @reconfiguressl
+@restart           @restrict          @sanchange         @sanfix
+@sanity            @shutdown          @teledump          @toad
+@tops              @tune              @unbless           @uncompile
+@usage             @version           @wall              
 
 ~----------------------------------------------------------------------------
 ~
@@ -2191,13 +2190,13 @@ More options will be added in the future.
 
   Examples:
     @debug display propcache    display database property cache
-Also see: @MEMORY, @MPITOPS, @MUFTOPS, @TOPS and @USAGE
+Also see: @MEMORY, @TOPS and @USAGE
 ~
 ~
 @TOPS
 @TOPS
-@TOPS <count>
-@TOPS reset
+@TOPS [muf|mpi] <count>
+@TOPS [muf|mpi] reset
 
   Show process usage and runtime statistics for both MUF and MPI
 programs.  Count controls the maximum rows of results shown.  If left
@@ -2207,9 +2206,10 @@ blank, it uses the default of '10'.
 
   Examples:
     @tops              show default amount of profiling statistics
-    @tops 5            show 5 rows of profiling statistics
-    @tops reset        reset all collected profiling statistics
-Also see: @DEBUG, @MEMORY, @MPITOPS, @MUFTOPS and @USAGE
+    @tops 3            show 3 rows of all profiling statistics
+    @tops muf 5        show 5 rows of MUF profiling statistics
+    @tops mpi reset    reset MPI collected profiling statistics
+Also see: @DEBUG, @MEMORY and @USAGE
 ~
 ~
 @MEMORY
@@ -2218,43 +2218,7 @@ Also see: @DEBUG, @MEMORY, @MPITOPS, @MUFTOPS and @USAGE
   Wizard only command that gives detailed memory stats for the muck
 server process.  If HAVE_MALLINFO is used, this command shows more
 information.
-Also see: @DEBUG, @MPITOPS, @MUFTOPS, @TOPS and @USAGE
-~
-~
-@MPITOPS
-@MPITOPS
-@MPITOPS <count>
-@MPITOPS reset
-
-  Show process usage and runtime statistics only for MPI programs.
-Count controls the maximum rows of results shown.  If left blank, it
-uses the default of '10'.
-
-  This is a wizard-only command.
-
-  Examples:
-    @mpitops           show default amount of profiling statistics
-    @mpitops 5         show 5 rows of profiling statistics
-    @mpitops reset     reset collected MPI profiling statistics
-Also see: @DEBUG, @MEMORY, @MUFTOPS, @TOPS and @USAGE
-~
-~
-@MUFTOPS
-@MUFTOPS
-@MUFTOPS <count>
-@MUFTOPS reset
-
-  Show process usage and runtime statistics only for MUF programs.
-Count controls the maximum rows of results shown.  If left blank, it
-uses the default of '10'.
-
-  This is a wizard-only command.
-
-  Examples:
-    @muftops           show default amount of profiling statistics
-    @muftops 5         show 5 rows of profiling statistics
-    @muftops reset     reset collected MUF profiling statistics
-Also see: @DEBUG, @MEMORY, @MPITOPS, @TOPS and @USAGE
+Also see: @DEBUG, @TOPS and @USAGE
 ~
 ~
 @USAGE
@@ -2262,7 +2226,7 @@ Also see: @DEBUG, @MEMORY, @MPITOPS, @TOPS and @USAGE
 
   Wizard only command that gives system resource usage stats for the
 muck server process.
-Also see: @DEBUG, @MEMORY, @MPITOPS, @MUFTOPS and @TOPS
+Also see: @DEBUG, @MEMORY and @TOPS
 ~
 ~
 @EXAMINE

@@ -1100,20 +1100,6 @@ process_command(int descr, dbref player, const char *command)
                                 do_memory(player);
                                 break;
 #endif
-                            case 'p':
-                            case 'P':
-                                Matched("@mpitops");
-                                WIZARDONLY("@mpitops", player);
-                                do_mpi_topprofs(player, arg1);
-                                break;
-
-                            case 'u':
-                            case 'U':
-                                Matched("@muftops");
-                                WIZARDONLY("@muftops", player);
-                                do_muf_topprofs(player, arg1);
-                                break;
-
                             default:
                                 goto bad;
                         }
