@@ -1054,6 +1054,7 @@ do_usage(dbref player)
  * Adds a 'struct profnode' to a given ordered linked list, if the size
  * limit has not been reached.
  *
+ * @private
  * @param tops linked list of profiling nodes
  * @param limit maximum size of list
  * @param nodecount current size of list
