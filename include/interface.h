@@ -205,6 +205,12 @@ extern pid_t global_dumper_pid;
 #endif
 
 /**
+ * @var dbref of the person who did a manual @dump call.  This should default
+ *      to -1 so that automatic saves don't send messages to anyone.
+ */
+extern pid_t global_dumper_player;
+
+/**
  * @var global_resolver_pid
  *      PID of the forked resolver process or 0 if not running
  */

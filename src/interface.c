@@ -314,6 +314,12 @@ pid_t global_dumper_pid = 0;
 #endif
 
 /**
+ * @var dbref of the person who did a manual @dump call.  This should default
+ *      to -1 so that automatic saves don't send messages to anyone.
+ */
+pid_t global_dumper_player = -1;
+
+/**
  * @var PID of the forked resolver process or 0 if not running
  */
 pid_t global_resolver_pid = 0;
@@ -4045,6 +4051,11 @@ shovechars()
 
         /* Process dump stuff */
         if (global_dumpdone != 0) {
+            /*
+             * If this is changed, it must also be changed in game.c for
+             * diskbase saves (dump_database_internal).  All this notification
+             * is handled there for diskbase.
+             */
             if (tp_dumpdone_warning) {
                 wall_and_flush(tp_dumpdone_mesg);
             }
@@ -4056,6 +4067,11 @@ shovechars()
                 temp.type = PROG_INTEGER;
                 temp.data.number = 1;
                 muf_event_add_all("DUMP", &temp, 1);
+            }
+
+            if (global_dumper_player > -1) {
+                notify(global_dumper_player, "Dump complete.");
+                global_dumper_player = -1;
             }
 
             global_dumpdone = 0;
