@@ -162,6 +162,7 @@ do_dump(dbref player, const char *newfile)
     }
 
     notify(player, buf);
+    global_dumper_player = player;
     dump_db_now();
 }
 
@@ -315,6 +316,12 @@ dump_database_internal(void)
     sync();
 
 #ifdef DISKBASE
+    /*
+     * If this is changed, it must also be changed in game.c for
+     * diskbase saves (dump_database_internal).  All this notification
+     * is handled there for diskbase.
+     */
+
     /* Only show dumpdone mesg if not doing background saves. */
     if (tp_dbdump_warning && tp_dumpdone_warning)
         wall_and_flush(tp_dumpdone_mesg);
@@ -328,6 +335,10 @@ dump_database_internal(void)
         muf_event_add_all("DUMP", &temp, 1);
     }
 
+    if (global_dumper_player > -1) {
+        notify(global_dumper_player, "Dump complete.");
+        global_dumper_player = -1;
+    }
 
     propcache_hits = 0L;
     propcache_misses = 1L;
@@ -388,6 +399,7 @@ fork_and_dump(void)
      */
 #if defined(DISKBASE) || defined(WIN32)
     dump_database_internal();
+
 #else
     if ((global_dumper_pid = fork()) == 0) {
         /* We are the child. */
