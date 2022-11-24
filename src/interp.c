@@ -1433,8 +1433,9 @@ interp_err(dbref player, dbref program, struct inst *pc,
                          NAME(OWNER(origprog)));
     }
 
-    notifyf_nolisten(player, "\033[1m%s(#%d), line %d; %s: %s\033[0m",
+    snprintf(buf, sizeof(buf), "\033[1m%s(#%d), line %d; %s: %s\033[0m",
                      NAME(program), program, pc ? pc->line : -1, msg1, msg2);
+    notify_nolisten(player, buf, 1);
 
     lt = time(NULL);
     strftime(tbuf, 32, "%c", localtime(&lt));
