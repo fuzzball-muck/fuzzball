@@ -360,8 +360,11 @@ do_dig(int descr, dbref player, const char *name, const char *pname)
     remove_ending_whitespace(&qname);
 
     skip_whitespace_var(&rname);
-    rname = strcpyn(rbuf, sizeof(rbuf), rname);
-    qname = strcpyn(qbuf, sizeof(qbuf), qname);
+    strcpyn(rbuf, sizeof(rbuf), rname);
+    rname = rbuf;
+
+    strcpyn(qbuf, sizeof(qbuf), qname);
+    qname = qbuf;
 
     if (*qname) {
         notify(player, "Trying to set parent...");

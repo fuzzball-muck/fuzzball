@@ -1017,7 +1017,8 @@ mfn_select(MFUNARGS)
                 char *pname2;
                 int sublen = strlen(pname);
 
-                pname2 = strcpyn(propname2, sizeof(propname2), pname);
+                strcpyn(propname2, sizeof(propname2), pname);
+                pname2 = propname2;
                 propname2[sublen++] = PROPDIR_DELIMITER;
                 propname2[sublen] = '\0';
 

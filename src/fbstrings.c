@@ -1176,9 +1176,9 @@ is_prop_prefix(const char *Property, const char *Prefix)
  * @param bufsize the size of that buffer
  * @param src the source to copy from
  *
- * @return buf -- because buf is mutated, the return value doesn't matter.
+ * @return length of the string that was copied
  */
-char *
+int
 strcpyn(char *buf, size_t bufsize, const char *src)
 {
     size_t pos = 0;
@@ -1189,7 +1189,7 @@ strcpyn(char *buf, size_t bufsize, const char *src)
     }
 
     *dest = '\0';
-    return buf;
+    return pos;
 }
 
 
