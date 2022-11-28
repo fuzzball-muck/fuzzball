@@ -1189,7 +1189,7 @@ strcpyn(char *buf, size_t bufsize, const char *src)
     }
 
     *dest = '\0';
-    return pos;
+    return pos-1;
 }
 
 
