@@ -105,7 +105,8 @@ set_property_nofetch(dbref player, const char *pname, PData * dat)
         FLAGS(player) |= LISTENER;
     }
 
-    w = strcpyn(buf, sizeof(buf), pname);
+    strcpyn(buf, sizeof(buf), pname);
+    w =  buf;
 
     /* truncate propnames with a ':' in them at the ':' */
     n = strchr(buf, PROP_DELIMITER);
@@ -424,7 +425,8 @@ remove_property_nofetch(dbref player, const char *pname)
     char buf[BUFFER_LEN];
     char *w;
 
-    w = strcpyn(buf, sizeof(buf), pname);
+    strcpyn(buf, sizeof(buf), pname);
+    w = buf;
 
     l = DBFETCH(player)->properties;
     l = propdir_delete_elem(l, w);
@@ -476,7 +478,8 @@ get_property(dbref player, const char *pname)
     fetchprops(player, propdir_name(pname));
 #endif
 
-    w = strcpyn(buf, sizeof(buf), pname);
+    strcpyn(buf, sizeof(buf), pname);
+    w =  buf;
 
     p = propdir_get_elem(DBFETCH(player)->properties, w);
     return (p);

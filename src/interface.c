@@ -2786,6 +2786,7 @@ new_connection_v6(in_port_t port, int sock_, int is_ssl)
     struct sockaddr_in6 addr;
     socklen_t addr_len;
     char hostname[128];
+    size_t hostlen;
 
     addr_len = (socklen_t) sizeof(addr);
     newsock = accept(sock_, (struct sockaddr *) &addr, &addr_len);
@@ -2796,7 +2797,25 @@ new_connection_v6(in_port_t port, int sock_, int is_ssl)
 #ifdef F_SETFD
         fcntl(newsock, F_SETFD, FD_CLOEXEC);
 #endif
-        strcpyn(hostname, sizeof(hostname), addrout_v6(port, &(addr.sin6_addr), addr.sin6_port));
+        hostlen = strcpyn(hostname, sizeof(hostname),
+                          addrout_v6(port, &(addr.sin6_addr), addr.sin6_port));
+
+        /*
+         * IPv6 hostnames sometimes have newlines as a terminator it seems.
+         * This makes sure that:
+         *
+         * a) there's no newline or \r at the end of the hostname
+         * b) the hostname is long enough for this comparison to not crash
+         *    something.
+         *
+         * Reported by PR #670 in Github
+         */
+        if ((hostlen > 2) && (hostname[hostlen-2] == '\r')) {
+            hostname[hostlen-2] = 0;
+        } else if ((hostlen > 1) && (hostname[hostlen-1] == '\n')) {
+            hostname[hostlen-1] = 0;
+        }
+
         log_status("ACCEPT: %s on descriptor %d", hostname, newsock);
         log_status("CONCOUNT: There are now %d open connections.", ++ndescriptors);
         return initializesock(newsock, newsock, hostname, is_ssl, 0);
