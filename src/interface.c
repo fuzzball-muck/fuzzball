@@ -2800,6 +2800,16 @@ new_connection_v6(in_port_t port, int sock_, int is_ssl)
         hostlen = strcpyn(hostname, sizeof(hostname),
                           addrout_v6(port, &(addr.sin6_addr), addr.sin6_port));
 
+        /*
+         * IPv6 hostnames sometimes have newlines as a terminator it seems.
+         * This makes sure that:
+         *
+         * a) there's no newline or \r at the end of the hostname
+         * b) the hostname is long enough for this comparison to not crash
+         *    something.
+         *
+         * Reported by PR #670 in Github
+         */
         if ((hostlen > 2) && (hostname[hostlen-2] == '\r')) {
             hostname[hostlen-2] = 0;
         } else if ((hostlen > 1) && (hostname[hostlen-1] == '\n')) {
