@@ -19,7 +19,7 @@
 /**
  * Server version number
  */
-#define VERSION "fb7.0"
+#define VERSION "Muck2.2fb7.00"
 
 /************************************************************************
    Administrative Options

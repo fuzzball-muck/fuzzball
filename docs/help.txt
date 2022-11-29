@@ -1,4 +1,4 @@
-                     MUCK Reference Manual for fb7.0
+                 MUCK Reference Manual for Muck2.2fb7.00
                    by Revar Desmera <revar@belfry.com>
 
 You may get a listing of topics that you can get help on, either sorted
