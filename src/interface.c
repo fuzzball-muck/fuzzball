@@ -1181,58 +1181,67 @@ static void
 welcome_user(struct descriptor_data *d)
 {
     FILE *f;
-    char *ptr;
     char buf[BUFFER_LEN];
-
-    int welcome_proplist = 0;
-
+    *buf = '\0';
     /*
-     * @TODO This is kind of a weird way to read a list.  If I were doing
-     *       it, I would iterate over the value of WELCOME_PROPLIST#
-     *       which is the number of lines rather than ... just iterate
-     *       til props stop loading.  I think that is more technically
-     *       correct / expected.  If you do it this way, 'welcome_proplist'
-     *       can become the integer value of WELCOME_PROPLIST's length
-     *       prop instead of a boolean set every iteration of the loop.
+     * This is less efficient than reading the list directly, since we have to
+     * go through MPI permissions checking, but since we're fetching it as God
+     * we skip all the locks.
+     *
+     * This also allows us to cleanly handle all the different list formats we
+     * might have to deal with.
      */
-    for (int i = 1; ; i++) {
-        const char *line;
-        snprintf(buf, sizeof(buf), "%s#/%d", WELCOME_PROPLIST, i);
-
-        if ((line = get_property_class(GLOBAL_ENVIRONMENT, buf))) {
-            welcome_proplist = 1;
-            queue_ansi(d, line);
-            queue_write(d, "\r\n", 2);
+    int blessed = 1;
+    if (!get_concat_list(GOD, GOD, GLOBAL_ENVIRONMENT, WELCOME_PROPLIST,
+                         buf, sizeof(buf), 0, MPI_ISPRIVATE | MPI_ISBLESSED,
+                         &blessed))
+    {
+        /* Failed list read, fall back to file. */
+        if ((f = fopen(tp_file_welcome_screen, "rb")) == NULL) {
+            perror("spit_file: welcome.txt");
         } else {
-            break;
+            /*
+             * No major error handling here. If fread() fails then
+             * the buffer stays empty, and we end up falling back
+             * to DEFAULT_WELCOME_MESSAGE anyway.
+             */
+            size_t ct = fread(buf, sizeof(char), BUFFER_LEN - 1, f);
+            if (ct > 0)
+                buf[ct] = '\0';
+            fclose(f);
         }
     }
 
-    if (!welcome_proplist) {
-        /*
-         * @TODO Use show_file instead?
-         *       Could add a return value to show_file which returns
-         *       boolean if show_file was able to load, and show
-         *       the default message if it returns false.  Removes
-         *       duplicate code and makes this function more tidy.
-         */
-
-        if ((f = fopen(tp_file_welcome_screen, "rb")) == NULL) {
-            queue_ansi(d, DEFAULT_WELCOME_MESSAGE);
-            perror("spit_file: welcome.txt");
-        } else {
-            while (fgets(buf, sizeof(buf) - 3, f)) {
-                ptr = strchr(buf, '\n');
-                if (ptr && ptr > buf && *(ptr - 1) != '\r') {
-                    *ptr++ = '\r';
-                    *ptr++ = '\n';
-                    *ptr++ = '\0';
+    /*
+     * If we found something to show, queue it.
+     * Otherwise, fall back to the default.
+     */
+    if (*buf) {
+        char *t = buf, *tstart = buf;
+        while (*t) {
+            if (*t == '\n') {
+                *t++ = '\0';
+                queue_ansi(d, tstart);
+                queue_write(d, "\r\n", 2);
+                tstart = t;
+            } else if (*t == '\r') {
+                *t++ = '\0';
+                if (*t == '\n') {
+                    ++t;
                 }
-                queue_ansi(d, buf);
+                queue_ansi(d, tstart);
+                queue_write(d, "\r\n", 2);
+                tstart = t;
+            } else {
+                ++t;
             }
-
-            fclose(f);
         }
+        if (*tstart) {
+            queue_ansi(d, tstart);
+            queue_write(d, "\r\n", 2);
+        }
+    } else {
+        queue_ansi(d, DEFAULT_WELCOME_MESSAGE);
     }
 
     if (wizonly_mode) {
