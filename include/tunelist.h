@@ -62,6 +62,7 @@ dbref       tp_default_room_parent;                 /**> Described below */
 const char *tp_description_default;                 /**> Described below */
 bool        tp_diskbase_propvals;                   /**> Described below */
 bool        tp_do_mpi_parsing;                      /**> Described below */
+bool        tp_do_welcome_parsing;                  /**> Described below */
 int         tp_dump_interval;                       /**> Described below */
 int         tp_dump_warntime;                       /**> Described below */
 const char *tp_dumpdone_mesg;                       /**> Described below */
@@ -198,6 +199,8 @@ dbref       tp_toad_default_recipient;              /**> Described below */
 bool        tp_toad_recycle;                        /**> Described below */
 bool        tp_use_hostnames;                       /**> Described below */
 int         tp_userlog_mlev;                        /**> Described below */
+dbref       tp_welcome_mpi_what;                    /**> Described below */
+dbref       tp_welcome_mpi_who;                     /**> Described below */
 bool        tp_who_hides_dark;                      /**> Described below */
 bool        tp_wiz_vehicles;                        /**> Described below */
 
@@ -561,6 +564,18 @@ struct tune_entry tune_list[] = {
         .defaultval.b=true,
         .currentval.b=&tp_do_mpi_parsing,
         0,
+        MLEV_WIZARD,
+        true
+    },
+    {
+        "do_welcome_parsing",
+        "Parse MPI in welcome file or proplist",
+        "MPI",
+        "",
+        TP_TYPE_BOOLEAN,
+        .defaultval.b=false,
+        .currentval.b=&tp_do_welcome_parsing,
+        MLEV_WIZARD,
         MLEV_WIZARD,
         true
     },
@@ -2230,6 +2245,34 @@ struct tune_entry tune_list[] = {
         0,
         MLEV_WIZARD,
         true
+    },
+    {
+        "welcome_mpi_what",
+        "Effective 'this' for welcome.txt MPI",
+        "MPI",
+        "",
+        TP_TYPE_DBREF,
+        .defaultval.d=GOD,
+        .currentval.d=&tp_welcome_mpi_what,
+        MLEV_GOD,
+        MLEV_GOD,
+        true,
+        false,
+        NOTYPE 
+    },
+    {
+        "welcome_mpi_who",
+        "Effective 'me' for welcome.txt MPI",
+        "MPI",
+        "",
+        TP_TYPE_DBREF,
+        .defaultval.d=GOD,
+        .currentval.d=&tp_welcome_mpi_who,
+        MLEV_GOD,
+        MLEV_GOD,
+        true,
+        false,
+        TYPE_PLAYER
     },
     {
         "who_hides_dark",

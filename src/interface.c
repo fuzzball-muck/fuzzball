@@ -679,6 +679,8 @@ queue_ansi(struct descriptor_data *d, const char *msg)
         } else {
             strip_ansi(buf, msg);
         }
+    } else if (tp_do_welcome_parsing) {
+        strip_bad_ansi(buf, msg);
     } else {
         strip_ansi(buf, msg);
     }
@@ -1206,9 +1208,39 @@ welcome_user(struct descriptor_data *d)
              * to DEFAULT_WELCOME_MESSAGE anyway.
              */
             size_t ct = fread(buf, sizeof(char), BUFFER_LEN - 1, f);
-            if (ct > 0)
+            if (ct >= 0)
                 buf[ct] = '\0';
             fclose(f);
+        }
+    }
+
+    /*
+     * Try to parse MPI if we're allowed.
+     */
+    if (*buf && tp_do_mpi_parsing && tp_do_welcome_parsing) {
+        char tmp[BUFFER_LEN];
+        /*
+         * @TODO These are not the most helpful variables to shove
+         *       descr and host information into.
+         */
+        snprintf(match_cmdname, sizeof(match_cmdname), "%d",
+                 d->descriptor);
+        snprintf(match_args, sizeof(match_args), "%s", d->hostname);
+
+        do_parse_mesg(d->descriptor, tp_welcome_mpi_who,
+                      tp_welcome_mpi_what, buf, "welcome", tmp,
+                      sizeof(tmp), MPI_ISPRIVATE | MPI_ISBLESSED);
+
+        if (*tmp) {
+            strcpyn(buf, sizeof(buf), tmp);
+        } else {
+            /*
+             * @TODO Since God is the effective user, he gets notified with any
+             *       error messages. Since we can't easily redirect MPI output
+             *       to a file instead of a player, this is the best we can do
+             *       for debugging the login screen.
+             */
+            *buf = '\0';
         }
     }
 
@@ -2172,6 +2204,8 @@ queue_immediate_and_flush(struct descriptor_data *d, const char *msg)
         } else {
             strip_ansi(buf, msg);
         }
+    } else if (tp_do_welcome_parsing) {
+        strip_bad_ansi(buf, msg);
     } else {
         strip_ansi(buf, msg);
     }

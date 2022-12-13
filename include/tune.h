@@ -113,6 +113,7 @@ extern dbref       tp_default_room_parent;      /**< Tune variable */
 extern const char *tp_description_default;      /**< Tune variable */
 extern bool        tp_diskbase_propvals;        /**< Tune variable */
 extern bool        tp_do_mpi_parsing;           /**< Tune variable */
+extern bool        tp_do_welcome_parsing;       /**< Tune variable */
 extern int         tp_dump_interval;            /**< Tune variable */
 extern int         tp_dump_warntime;            /**< Tune variable */
 extern const char *tp_dumpdone_mesg;            /**< Tune variable */
@@ -249,6 +250,8 @@ extern dbref       tp_toad_default_recipient;   /**< Tune variable */
 extern bool        tp_toad_recycle;             /**< Tune variable */
 extern bool        tp_use_hostnames;            /**< Tune variable */
 extern int         tp_userlog_mlev;             /**< Tune variable */
+extern dbref       tp_welcome_mpi_what;         /**< Tune variable */
+extern dbref       tp_welcome_mpi_who;          /**< Tune variable */
 extern bool        tp_who_hides_dark;           /**< Tune variable */
 extern bool        tp_wiz_vehicles;             /**< Tune variable */
 
