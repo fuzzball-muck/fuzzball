@@ -679,7 +679,7 @@ queue_ansi(struct descriptor_data *d, const char *msg)
         } else {
             strip_ansi(buf, msg);
         }
-    } else if (tp_do_welcome_parsing) {
+    } else if (tp_do_mpi_parsing && tp_do_welcome_parsing) {
         strip_bad_ansi(buf, msg);
     } else {
         strip_ansi(buf, msg);
@@ -2204,7 +2204,7 @@ queue_immediate_and_flush(struct descriptor_data *d, const char *msg)
         } else {
             strip_ansi(buf, msg);
         }
-    } else if (tp_do_welcome_parsing) {
+    } else if (tp_do_mpi_parsing && tp_do_welcome_parsing) {
         strip_bad_ansi(buf, msg);
     } else {
         strip_ansi(buf, msg);
