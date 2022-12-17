@@ -4439,6 +4439,7 @@ Parameters available:
  (str)  description_default       - Default description
  (bool) diskbase_propvals         - Enable property value diskbasing (req. restart)
  (bool) do_mpi_parsing            - Parse MPI strings in messages
+ (bool) do_welcome_parsing        - Parse MPI in welcome file or proplist
  (time) dump_interval             - Interval between dumps
  (time) dump_warntime             - Interval between warning and dump
  (str)  dumpdone_mesg             - Database dump finished message
@@ -4575,6 +4576,8 @@ Parameters available:
  (bool) toad_recycle              - Recycle newly-created toads
  (bool) use_hostnames             - Resolve IP addresses into hostnames
  (int)  userlog_mlev              - Mucker Level required to write to userlog
+ (ref)  welcome_mpi_what          - Effective 'this' for welcome.txt MPI
+ (ref)  welcome_mpi_who           - Effective 'me' for welcome.txt MPI
  (bool) who_hides_dark            - Hide dark players from WHO list
  (bool) wiz_vehicles              - Only let Wizards set vehicle bits
 ~

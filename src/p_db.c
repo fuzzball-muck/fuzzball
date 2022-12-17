@@ -3078,7 +3078,7 @@ prim_toadplayer(PRIM_PROTOTYPE)
     }
 
     for (struct tune_entry *tent = tune_list; tent->name; tent++) {
-        if (tent->type == TP_TYPE_DBREF && result == *tent->currentval.d) {
+        if (tent->type == TP_TYPE_DBREF && victim == *tent->currentval.d) {
             abort_interp("That player cannot currently be @toaded.");
         }
     }

@@ -495,7 +495,7 @@ tune_setparm(dbref player, const char *parmname, const char *val, int mlev)
                     return TUNESET_SYNTAX;
                 if (!ObjExists(obj))
                     return TUNESET_SYNTAX;
-                if (tent->type != NOTYPE && Typeof(obj) != tent->objecttype)
+                if (tent->objecttype != NOTYPE && Typeof(obj) != tent->objecttype)
                     return TUNESET_BADVAL;
 
                 *tent->currentval.d = obj;
