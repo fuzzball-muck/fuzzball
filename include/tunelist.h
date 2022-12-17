@@ -2252,7 +2252,7 @@ struct tune_entry tune_list[] = {
         "MPI",
         "",
         TP_TYPE_DBREF,
-        .defaultval.d=GOD,
+        .defaultval.d=GLOBAL_ENVIRONMENT,
         .currentval.d=&tp_welcome_mpi_what,
         MLEV_GOD,
         MLEV_GOD,
