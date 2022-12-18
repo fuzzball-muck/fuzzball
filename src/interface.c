@@ -2749,7 +2749,7 @@ static const char *
 addrout_v6(in_port_t lport, struct in6_addr *a, in_port_t prt)
 {
     static char buf[128];
-    char ip6addr[128];
+    char ip6addr[INET6_ADDRSTRLEN];
 
     struct in6_addr addr;
     memcpy(&addr.s6_addr, a, sizeof(struct in6_addr));
@@ -2791,7 +2791,7 @@ addrout_v6(in_port_t lport, struct in6_addr *a, in_port_t prt)
     }
 #endif /* !SPAWN_HOST_RESOLVER */
 
-    inet_ntop(AF_INET6, a, ip6addr, 128);
+    inet_ntop(AF_INET6, a, ip6addr, sizeof(ip6addr));
 
 #ifdef SPAWN_HOST_RESOLVER
     snprintf(buf, sizeof(buf), "%s(%" PRIu16 ")%" PRIu16 "\n", ip6addr, prt,
@@ -5864,7 +5864,7 @@ pfirstdescr(void)
         }
     }
 
-    return NULL;
+    return 0;
 }
 
 /**
@@ -5883,7 +5883,7 @@ plastdescr(void)
         }
     }
 
-    return NULL;
+    return 0;
 }
 
 /**

@@ -822,6 +822,13 @@ process_command(int descr, dbref player, const char *command)
 
                             case 'o':
                             case 'O':
+                                /*
+                                 * Make sure we don't skip over the null
+                                 * terminator.
+                                 */
+                                if (command[3] != 'n')
+                                    goto bad;
+
                                 switch (command[4]) {
                                     case 'l':
                                     case 'L':
@@ -1289,6 +1296,10 @@ process_command(int descr, dbref player, const char *command)
 
                     case 'r':
                     case 'R':
+                        /* Make sure we don't skip over the null terminator. */
+                        if (command[2] != 'e')
+                            goto bad;
+
                         /*
                          * @readlock, @recycle, @reconfiguressl, @register,
                          * @relink, @restart, @restrict
