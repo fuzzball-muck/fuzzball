@@ -174,15 +174,15 @@ bool        tp_secure_teleport;                     /**> Described below */
 bool        tp_secure_thing_movement;               /**> Described below */
 bool        tp_secure_who;                          /**> Described below */
 bool        tp_server_cipher_preference;            /**> Described below */
-const char *tp_smtp_server;                         /**> Described below */
-const char *tp_smtp_port;                           /**> Described below */
-int         tp_smtp_ssl_type;                       /**> Described below */
-bool        tp_smtp_no_verify_cert;                 /**> Described below */
 int         tp_smtp_auth_type;                      /**> Described below */
-const char *tp_smtp_user;                           /**> Described below */
-const char *tp_smtp_password;                       /**> Described below */
 const char *tp_smtp_from_name;                      /**> Described below */
 const char *tp_smtp_from_email;                     /**> Described below */
+bool        tp_smtp_no_verify_cert;                 /**> Described below */
+const char *tp_smtp_password;                       /**> Described below */
+const char *tp_smtp_port;                           /**> Described below */
+const char *tp_smtp_server;                         /**> Described below */
+int         tp_smtp_ssl_type;                       /**> Described below */
+const char *tp_smtp_user;                           /**> Described below */
 bool        tp_ssl_auto_reload_certs;               /**> Described below */
 const char *tp_ssl_cert_file;                       /**> Described below */
 const char *tp_ssl_cipher_preference_list;          /**> Described below */
@@ -1824,8 +1824,8 @@ struct tune_entry tune_list[] = {
         "",
         TP_TYPE_STRING,
         .defaultval.s=
-            "Sorry, you can get a character by e-mailing " \
-            "XXXX@machine.net.address with a charname and password.",
+            "Sorry, you can get a character by emailing " \
+            "noreply@yourmuck.com with a charname and password.",
         .currentval.s=&tp_register_mesg,
         0,
         MLEV_WIZARD,
@@ -1930,58 +1930,8 @@ struct tune_entry tune_list[] = {
         true
     },
     {
-        "smtp_server",
-        "SMTP Server Host Name.  If blank, SMTP will not work.",
-        "SMTP",
-        "",
-        TP_TYPE_STRING,
-        .defaultval.s="",
-        .currentval.s=&tp_smtp_server,
-        MLEV_GOD,
-        MLEV_GOD,
-        true,
-        true
-    },
-    {
-        "smtp_port",
-        "SMTP Port.  If blank, SMTP will not work.",
-        "SMTP",
-        "",
-        TP_TYPE_STRING,
-        .defaultval.s="",
-        .currentval.s=&tp_smtp_port,
-        MLEV_GOD,
-        MLEV_GOD,
-        true,
-        true
-    },
-    {
-        "smtp_ssl_type",
-        "SMTP SSL type - 0 for StartTLS, 1 for TLS, 2 for no SSL",
-        "SMTP",
-        "",
-        TP_TYPE_INTEGER,
-        .defaultval.n=2,
-        .currentval.n=&tp_smtp_ssl_type,
-        MLEV_GOD,
-        MLEV_GOD,
-        true
-    },
-    {
-        "smtp_no_verify_cert",
-        "SMTP if true, don't verify server certs",
-        "SMTP",
-        "",
-        TP_TYPE_BOOLEAN,
-        .defaultval.b=false,
-        .currentval.b=&tp_smtp_no_verify_cert,
-        MLEV_GOD,
-        MLEV_GOD,
-        true
-    },
-    {
         "smtp_auth_type",
-        "SMTP SSL type - 0 for CRAM_MD5, 1 for none, 2 for plain, 3 for login",
+        "SMTP auth type - 0 for CRAM_MD5, 1 for none, 2 for plain, 3 for login",
         "SMTP",
         "",
         TP_TYPE_INTEGER,
@@ -1992,26 +1942,13 @@ struct tune_entry tune_list[] = {
         true
     },
     {
-        "smtp_user",
-        "SMTP Username",
+        "smtp_from_email",
+        "SMTP From user email for the email header",
         "SMTP",
         "",
         TP_TYPE_STRING,
-        .defaultval.s="",
-        .currentval.s=&tp_smtp_user,
-        MLEV_GOD,
-        MLEV_GOD,
-        true,
-        true
-    },
-    {
-        "smtp_password",
-        "SMTP Password",
-        "SMTP",
-        "",
-        TP_TYPE_STRING,
-        .defaultval.s="",
-        .currentval.s=&tp_smtp_password,
+        .defaultval.s="noreply@yourmuck.com",
+        .currentval.s=&tp_smtp_from_email,
         MLEV_GOD,
         MLEV_GOD,
         true,
@@ -2031,13 +1968,76 @@ struct tune_entry tune_list[] = {
         true
     },
     {
-        "smtp_from_email",
-        "SMTP From user email for the email header",
+        "smtp_no_verify_cert",
+        "SMTP if true, don't verify server certs",
+        "SMTP",
+        "",
+        TP_TYPE_BOOLEAN,
+        .defaultval.b=false,
+        .currentval.b=&tp_smtp_no_verify_cert,
+        MLEV_GOD,
+        MLEV_GOD,
+        true
+    },
+    {
+        "smtp_password",
+        "SMTP Password",
         "SMTP",
         "",
         TP_TYPE_STRING,
-        .defaultval.s="noreply@yourmuck.com",
-        .currentval.s=&tp_smtp_from_email,
+        .defaultval.s="",
+        .currentval.s=&tp_smtp_password,
+        MLEV_GOD,
+        MLEV_GOD,
+        true,
+        true
+    },
+    {
+        "smtp_port",
+        "SMTP Port.  If blank, SMTP will not work.",
+        "SMTP",
+        "",
+        TP_TYPE_STRING,
+        .defaultval.s="",
+        .currentval.s=&tp_smtp_port,
+        MLEV_GOD,
+        MLEV_GOD,
+        true,
+        true
+    },
+    {
+        "smtp_server",
+        "SMTP Server Host Name.  If blank, SMTP will not work.",
+        "SMTP",
+        "",
+        TP_TYPE_STRING,
+        .defaultval.s="",
+        .currentval.s=&tp_smtp_server,
+        MLEV_GOD,
+        MLEV_GOD,
+        true,
+        true
+    },
+    {
+        "smtp_ssl_type",
+        "SMTP SSL type - 0 for StartTLS, 1 for TLS, 2 for no SSL",
+        "SMTP",
+        "",
+        TP_TYPE_INTEGER,
+        .defaultval.n=2,
+        .currentval.n=&tp_smtp_ssl_type,
+        MLEV_GOD,
+        MLEV_GOD,
+        true
+    },
+    {
+        "smtp_user",
+        "SMTP Username",
+        "SMTP",
+        "",
+        TP_TYPE_STRING,
+        .defaultval.s="",
+        .currentval.s=&tp_smtp_user,
         MLEV_GOD,
         MLEV_GOD,
         true,

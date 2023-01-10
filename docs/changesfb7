@@ -1,3 +1,55 @@
+2.2Muck7.10
+
+New features
+------------
+
+Emails may be sent via the new level 4 SMTP_SEND MUF primitive.
+- see the file README_SMTP.md for details.
+
+Docker is now available as a distribution option
+- see the file README_DOCKER.md for details.
+
+The message presented on the welcome screen can now be parsed for MPI.
+
+MUF math operations now respect the IEEE standard for INF and NAN by default.
+
+@mpitops and @muftops have been unified into the command @tops.
+
+CON* MUF primitives have evolved into in-server defines.
+- note that older "connection ordering" logic may need to be rewritten.
+ 
+New @tunes
+----------
+
+ieee_bounds_handling – use IEEE standard for INF and NAN. Defaults to yes. 
+smtp_auth_type       - SMTP authentication type. Defaults to 3 (login).
+smtp_from_email      - SMTP "from" email. Defaults to "noreply@yourmuck.com". 
+smtp_from_name       - SMTP "from" name. Defaults to "Your MUCK".
+smtp_no_verify_cert  - Don't validate server certs for SMTP. Defaults to no.
+smtp_password        - SMTP password
+smtp_port            - SMTP port
+smtp_server          - SMTP server host name
+smtp_ssl_type        - SMTP SSL type. Defaults to 2 (none).
+smtp_user            - SMTP username
+
+Removed @tunes
+--------------
+
+verbose_clone        - @clone is now never verbose.
+verbose_examine      - examine is now alwats verbose.
+
+Other changes
+-------------
+
+"!WHO” (the command override) is no longer recognized on the welcome screen.
+"WHO” no longer has a special function in MUF READs.
+Log messages for player creation and connection are now more detailed.
+@clone and COPYOBJ now only copy hidden properties in Wizard contexts.
+Manual @dumps now report a completion message to the requesting player.
+
+
+2.2Muck7.00
+
 New command                   Description
 --------------------------------------------------------------------------------------------------------------------
 @linklock                     Prevents players from linking to the object, if not passed
@@ -165,7 +217,7 @@ Additional Notes
 - Actions can now be linked to NIL, as a do-nothing destination.
 - Passwords are masked out in logs for server commands @newpassword, @password, and @pcreate.
 - The "starterdb" database is provided. Very similar to previous database iterations, but upgraded for FB7.
-- Objects can now be removed from the database if they are specified by a @tune.
+- Objects can no longer be removed from the database if they are specified by a @tune.
 - MUF arrays can be "pinned", meaning changes to any copy will make changed to all copies.
 - Non-wizards can no longer use a restricted property in a lock.
 - Several wizard-level database-modifying commands can no longer be forced.

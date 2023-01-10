@@ -1,7 +1,7 @@
 ***Foxen9 TinyMUCK DUMP Format***
-118
+119
 1
-166
+169
 %7bit_other_names=no
 %7bit_thing_names=yes
 %addpennies_muf_mlev=2
@@ -30,6 +30,7 @@ default_room_parent=#109
 %description_default=You see nothing special.
 %diskbase_propvals=yes
 %do_mpi_parsing=yes
+%do_welcome_parsing=no
 %dump_interval=  0d  4:00:00
 %dump_warntime=  0d  0:02:00
 %dumpdone_mesg=## Save complete. ##
@@ -132,7 +133,7 @@ player_start=#112
 %quiet_moves=no
 %realms_control=no
 %recognize_null_command=no
-%register_mesg=Sorry, you can get a character by e-mailing XXXX@machine.net.address with a charname and password.
+%register_mesg=Sorry, you can get a character by emailing noreply@yourmuck.com with a charname and password.
 %registration=yes
 %reserved_names=
 %reserved_player_names=
@@ -141,6 +142,15 @@ player_start=#112
 %secure_thing_movement=no
 %secure_who=no
 %server_cipher_preference=yes
+%smtp_auth_type=3
+%smtp_from_email=noreply@yourmuck.com
+%smtp_from_name=Your MUCK
+%smtp_no_verify_cert=no
+%smtp_password=
+%smtp_port=
+%smtp_server=
+%smtp_ssl_type=2
+%smtp_user=
 %ssl_auto_reload_certs=no
 %ssl_cert_file=data/server.pem
 %ssl_cipher_preference_list=ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-CHACHA20-POLY1305:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES256-SHA256:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:@SECLEVEL=1
@@ -157,17 +167,24 @@ player_start=#112
 %toad_recycle=no
 %use_hostnames=yes
 %userlog_mlev=3
+%welcome_mpi_what=#0
+%welcome_mpi_who=#1
 %who_hides_dark=yes
 %wiz_vehicles=no
-%smtp_host=
-%smtp_port=
-%smtp_no_verify_cert=no
-%smtp_ssl_type=2
-%smtp_auth_type=1
-%smtp_user=
-%smtp_password=
-%smtp_from_name=Your MUCK
-%smtp_from_email=noreply@yourmuck.com
+#118
+con-laston
+2
+-1
+103
+18087956
+1673228183
+1673228183
+0
+1673228197
+*Props*
+_/de:2:A scroll containing a spell called con-laston
+*End*
+2
 #117
 Bulletin board
 113
@@ -246,7 +263,7 @@ _/sc:2:You intrepidly enter the cave...
 #113
 A small clearing in the wilderness
 111
-2
+117
 -1
 2048
 1607395680
@@ -308,7 +325,7 @@ Indoor Environment Room
 #109
 Null Environment Room
 0
--1
+2
 1
 131072
 1607395680
@@ -2288,7 +2305,7 @@ _docs:2:@list #5=!@1-59
 lib-lmgr
 2
 -1
--1
+3
 18154276
 1607373311
 1607395741
@@ -2319,7 +2336,7 @@ _lib-version:2:1.2
 2
 #3
 license-mit
-1
+2
 -1
 -1
 16777220
@@ -2331,12 +2348,12 @@ license-mit
 _/de:2:A scroll containing a spell called license-mit
 _docs:2:@list $box/mit
 *End*
-1
+2
 #2
 Keeper
-113
-103
-117
+109
+118
+-1
 786963
 1607370520
 1607395806
@@ -2352,7 +2369,7 @@ DUsIdIcnjSM05RsP/icpBg==
 #1
 One
 0
-3
+-1
 -1
 1310739
 1435685445
@@ -2382,9 +2399,11 @@ _arrive/ride:5:70
 _connect/announce:5:25
 _connect/bootme:5:27
 _connect/lasthost:5:29
+_connect/laston:5:118
 _connect/mailwarn:5:28
 _connect/nukedoingclear:5:30
 _disconnect/doingclear:5:30
+_disconnect/laston:5:118
 _msgmacs/timetosave:2:{subt:{add:{max:{prop:_sys/lastdumptime},{prop:_sys/startuptime}},{prop:_sys/dumpinterval}},{secs}}
 _prefs/ws/color/hers:2:[35m
 _prefs/ws/color/his:2:[36m
