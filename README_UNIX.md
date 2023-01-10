@@ -66,9 +66,9 @@ For a comprehensive guide to running a MUCK, check out [MINK - The Muck Informat
 ```sh
 FB_DIR="$(pwd)"   # Directory containing Fuzzball
 PREFIX="."        # If installing to a different prefix, set it here
-cp -r "$FB_DIR/game/."       "$PREFIX/game"                          # Copy game information
-cp -r "$FB_DIR/dbs/basedb/." "$PREFIX/game"                          # Copy database
-mv "$PREFIX/game/data/basedb.db" "$PREFIX/game/data/std-db.db" # Rename database to standard
+cp -r "$FB_DIR/game/."          "$PREFIX/game"                       # Copy game information
+cp -r "$FB_DIR/dbs/starterdb/." "$PREFIX/game"                       # Copy database
+mv "$PREFIX/game/data/starterdb.db" "$PREFIX/game/data/std-db.db"    # Rename database to standard
 ```
 * Start Fuzzball
 ```sh

@@ -387,7 +387,7 @@ mfn_contents(MFUNARGS)
         if (!strcasecmp(argv[1], "Room")) {
             typchk = TYPE_ROOM;
         } else if (!strcasecmp(argv[1], "Exit")) {
-            typchk = TYPE_EXIT; /* won't find any, though */
+            ABORT_MPI("CONTENTS", "Use {exits:obj} for a list of exits.");
         } else if (!strcasecmp(argv[1], "Player")) {
             typchk = TYPE_PLAYER;
         } else if (!strcasecmp(argv[1], "Program")) {
@@ -396,8 +396,7 @@ mfn_contents(MFUNARGS)
             typchk = TYPE_THING;
         } else {
             ABORT_MPI("CONTENTS",
-                      "Type must be 'player', 'room', 'thing', 'program', or "
-                      "'exit'. (arg2).");
+                "Type must be 'player', 'room', 'thing', or 'program'. (arg2)");
         }
     }
 

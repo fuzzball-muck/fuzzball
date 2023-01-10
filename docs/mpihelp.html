@@ -1688,7 +1688,10 @@ argument is passed to it, it restricts the listing to only those objects
 that are of the given type.  Either the object must be nearby the trigger
 object, or else the owner of the trigger object must control the object.
 Otherwise this will error out with a Permission Denied error.  The valid
-object type values are Room, Thing, Exit, Player, Program, and Bad.
+object type values are Room, Thing, Player, and Program.
+
+You can use {exits:obj} to return a list of exits.
+
 HINT:  If you need to get a list of two types of objects from the room,
 just concatenate the lists from two calls to this function, with each
 object type you want.  ie:
