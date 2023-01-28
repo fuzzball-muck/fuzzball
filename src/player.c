@@ -166,7 +166,7 @@ create_player(const char *name, const char *password)
         return NOTHING;
 
     /* else he doesn't already exist, create him */
-    player = new_object();
+    player = new_object(1);
 
     /* initialize everything */
     NAME(player) = alloc_string(name);
