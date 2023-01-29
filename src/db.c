@@ -144,7 +144,7 @@ db_clear_object(dbref i)
  * @return the database ref of the object
  */
 dbref
-new_object(int isplayer)
+new_object(bool isplayer)
 {
     dbref newobj;
 

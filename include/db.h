@@ -2173,7 +2173,7 @@ int member(dbref thing, dbref list);
  *       otherwise
  * @return the database ref of the object
  */
-dbref new_object(int isplayer);
+dbref new_object(bool isplayer);
 
 /**
  * Find a dbref in an objnode list
