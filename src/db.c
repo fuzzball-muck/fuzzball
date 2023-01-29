@@ -139,14 +139,16 @@ db_clear_object(dbref i)
  * This may be a recycled garbage object or a new object.  Either way,
  * it will be empty and ready for use.
  *
+ * @param isplayer boolean true if the object is to be a player, false
+ *       otherwise
  * @return the database ref of the object
  */
 dbref
-new_object(void)
+new_object(bool isplayer)
 {
     dbref newobj;
 
-    if (recyclable != NOTHING) {
+    if (!isplayer && recyclable != NOTHING) {
         newobj = recyclable;
         recyclable = NEXTOBJ(newobj);
 
@@ -184,7 +186,7 @@ new_object(void)
 static dbref
 create_object(const char *name, dbref owner, object_flag_type flags)
 {
-    dbref newobj = new_object();
+    dbref newobj = new_object((flags & TYPE_MASK) == TYPE_PLAYER);
 
     NAME(newobj) = alloc_string(name);
     FLAGS(newobj) = flags;

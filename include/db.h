@@ -2169,9 +2169,11 @@ int member(dbref thing, dbref list);
  * This may be a recycled garbage object or a new object.  Either way,
  * it will be empty and ready for use.
  *
+ * @param isplayer boolean true if the object is to be a player, false
+ *       otherwise
  * @return the database ref of the object
  */
-dbref new_object(void);
+dbref new_object(bool isplayer);
 
 /**
  * Find a dbref in an objnode list
