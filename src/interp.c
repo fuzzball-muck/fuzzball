@@ -2461,6 +2461,16 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
                         return NULL;
 
                     case IN_READ: /* Waiting for read */
+                        /* Can't read if we are on the welcome screen
+                         *
+                         * TODO: Make this work better in the future
+                         * See:
+                         * https://github.com/fuzzball-muck/fuzzball/issues/675
+                         */
+                        if (!(descrdata_by_descr(fr->descr)->connected))
+                            abort_loop("Cannot READ on login screen.", NULL,
+                                       NULL);
+
                         if (writeonly)
                             abort_loop("Program is write-only.", NULL, NULL);
 
