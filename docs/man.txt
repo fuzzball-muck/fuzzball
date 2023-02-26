@@ -4552,8 +4552,8 @@ Parameters available:
  (bool) secure_who                - Disallow WHO command from login screen and programs
  (bool) server_cipher_preference  - Honor server cipher preference order over client's
  (int)  smtp_auth_type            - SMTP auth type - 0 for CRAM_MD5, 1 for none, 2 for plain, 3 for login
- (str)  smtp_from_name            - SMTP From user name for the email header
  (str)  smtp_from_email           - SMTP From user email for the email header
+ (str)  smtp_from_name            - SMTP From user name for the email header
  (bool) smtp_no_verify_cert       - SMTP if true, don't verify server certs
  (str)  smtp_password             - SMTP Password
  (str)  smtp_port                 - SMTP Port.  If blank, SMTP will not work.
