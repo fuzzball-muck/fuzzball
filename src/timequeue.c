@@ -2149,11 +2149,6 @@ listenqueue(int descr, dbref player, dbref where, dbref trigger, dbref what,
              * Basically, it is looking for "message=action" where action
              * is MPI or MUF.  If the 'message' section matches what is in
              * toparg, then the MPI/MUF is run.
-             *
-             * This is probably undocumented.
-             *
-             * @TODO: add to 'man listeners' that this is a thing.  Leave
-             *        the rest of this comment in place after fixed though :)
              */
             while (*sep) {
                 if (*sep == '\\') {

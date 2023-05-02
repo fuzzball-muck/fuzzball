@@ -4661,100 +4661,25 @@ notify_filtered(dbref from, dbref player, const char *msg, int isprivate)
 }
 
 /**
- * This is used by basically all the different notification routines.
- *
- * Sends a message to a player or thing, handing vehicle oecho, listen
- * propqueues, ignore filters, and zombie stuff.  This hands the message
- * off to notify_filtered after dealing with queues and oecho.
- *
- * oecho is a prefix for vehicle messages.
- *
- * @see notify_filtered
- *
- * isprivate is an oddity; if true, zombies will receive the message
- * regardless of where their owner is.  If false, the message will not
- * go to the zombie if the owner is in the same room as me.
- *
- * @param from the player that initiated this message
- * @param player the target of the message -- player or thing
- * @param msg the message to send
- * @param isprivate zombie message filter -- see the notes above.
- */
-int
-notify_from_echo(dbref from, dbref player, const char *msg, int isprivate)
-{
-    const char *ptr = msg;
-
-    if (tp_allow_listeners) {
-        if (tp_allow_listeners_obj || Typeof(player) == TYPE_ROOM) {
-            listenqueue(-1, from, LOCATION(from), player, player, NOTHING,
-                        LISTEN_PROPQUEUE, ptr, tp_listen_mlev, 1, 0);
-            listenqueue(-1, from, LOCATION(from), player, player, NOTHING,
-                        WLISTEN_PROPQUEUE, ptr, tp_listen_mlev, 1, 1);
-            listenqueue(-1, from, LOCATION(from), player, player, NOTHING,
-                        WOLISTEN_PROPQUEUE, ptr, tp_listen_mlev, 0, 1);
-        }
-    }
-
-    /* Handle vehicle prefixing */
-    if (Typeof(player) == TYPE_THING && (FLAGS(player) & VEHICLE) &&
-        (!(FLAGS(player) & DARK) || Wizard(OWNER(player)))) {
-        dbref ref;
-
-        ref = LOCATION(player);
-
-        if (Wizard(OWNER(player)) || ref == NOTHING ||
-            Typeof(ref) != TYPE_ROOM || !(FLAGS(ref) & VEHICLE)) {
-            if (!isprivate && LOCATION(from) == LOCATION(player)) {
-                char buf[BUFFER_LEN];
-                char pbuf[BUFFER_LEN];
-                const char *prefix;
-                char ch = *match_args;
-
-                *match_args = '\0';
-                prefix = do_parse_prop(-1, from, player, MESGPROP_OECHO,
-                                       "(@Oecho)", pbuf, sizeof(pbuf),
-                                       MPI_ISPRIVATE);
-                *match_args = ch;
-
-                if (!prefix || !*prefix)
-                    prefix = "Outside>";
-
-                snprintf(buf, sizeof(buf), "%s %.*s", prefix,
-                         (int) (BUFFER_LEN - (strlen(prefix) + 2)), msg);
-                ref = CONTENTS(player);
-
-                while (ref != NOTHING) {
-                    notify_filtered(from, ref, buf, isprivate);
-                    ref = NEXTOBJ(ref);
-                }
-            }
-        }
-    }
-
-    return notify_filtered(from, player, msg, isprivate);
-}
-
-/**
  * Send a notification to a player, from the player.
  *
  * This is for system messages in response to a player's actions for the
- * most part.  It wraps notify_from_echo, with the message being both
+ * most part.  It wraps notify_listeners, with the message being both
  * to and from the same player.
  *
- * @see notify_from_echo
+ * @see notify_listeners
  *
  * It is used all over the place so it isn't practical to replace this,
  * despite it being a silly one line function.
  *
  * @param player the player to send the message to
  * @param msg the message to send to the player
- * @return the return value from notify_from_echo
+ * @return the return value from notify_listeners
  */
 inline int
 notify(dbref player, const char *msg)
 {
-    return notify_from_echo(player, player, msg, 1);
+    return notify_listeners(player, NOTHING, player, LOCATION(player), msg, 1);
 }
 
 /**
@@ -4819,14 +4744,20 @@ notifyf_nolisten(dbref player, const char *format, ...)
  * message will not be sent to the zombie if the owner is in the same room
  * as the zombie.
  *
+ * Return value is from notify_filtered if obj is a player/thing, otherwise
+ * it is 0.
+ *
+ * @see notify_filtered
+ *
  * @param who the person sending the message
  * @param xprog the program that originated the message
  * @param obj the target of the message
  * @param room the room that the message is sourced in
  * @param msg the message to send
  * @param isprivate boolean, usually false.  See explanation above
+ * @return boolean result from notify filtered or 0 if obj is not player/thing
  */
-void
+int
 notify_listeners(dbref who, dbref xprog, dbref obj, dbref room,
                  const char *msg, int isprivate)
 {
@@ -4834,7 +4765,7 @@ notify_listeners(dbref who, dbref xprog, dbref obj, dbref room,
     dbref ref;
 
     if (obj == NOTHING)
-        return;
+        return 0;
 
     if (tp_allow_listeners && (tp_allow_listeners_obj || Typeof(obj) == TYPE_ROOM)) {
         listenqueue(-1, who, room, obj, obj, xprog, LISTEN_PROPQUEUE, msg,
@@ -4846,42 +4777,51 @@ notify_listeners(dbref who, dbref xprog, dbref obj, dbref room,
     }
 
     /*
-     * @TODO I think this is wrong.  tp_allow_zombies shouldn't block vehicles.
-     *       isprivate is probably used improperly as well here.  I'd just
-     *       take this outer if off and add a TYPE_THING check to the inner
-     *       if.  I think notify_filtered (or one of its children) handles
-     *       tp_allow_zombies + isprivate so none of that is of concern to us here.
-     *       (tanabi)
+     * Vehicles get a message prefix as long as they are not DARK
+     * (unless owned by a wizard)
      */
-    if (tp_allow_zombies && Typeof(obj) == TYPE_THING && !isprivate) {
-        if (FLAGS(obj) & VEHICLE) {
-            if (LOCATION(who) == LOCATION(obj)) {
-                char pbuf[BUFFER_LEN];
-                const char *prefix;
+    ref = LOCATION(obj);
 
-                memset(buf, 0, BUFFER_LEN); /* Make sure the buffer is zeroed */
+    if ((Typeof(obj) == TYPE_THING) &&  /* obj is a thing */
+        (FLAGS(obj) & VEHICLE) &&       /* And a vehilcle */
+        /* And not DARK, unless WIZARD owned */
+        (!(FLAGS(obj) & DARK) || Wizard(OWNER(obj))) &&
+        /* isprivate toggles if we're going to show the prefix or not */
+        (!isprivate) &&
+        /* The person who did it is in the same ocation as the thing */
+        (LOCATION(who) == ref) &&
+        /* And the owner is a wizard, or the thing is located in NOTHING,
+         * or the location of thing is not a room, or the location of the
+         * thing is not a vehicle.
+         */
+        (Wizard(OWNER(obj)) || ref == NOTHING || Typeof(ref) != TYPE_ROOM ||
+         (!(FLAGS(ref) & VEHICLE)))) {
+        char pbuf[BUFFER_LEN];
+        const char *prefix;
 
-                prefix = do_parse_prop(-1, who, obj, MESGPROP_OECHO,
-                                       "(@Oecho)", pbuf, sizeof(pbuf),
-                                       MPI_ISPRIVATE);
+        memset(buf, 0, BUFFER_LEN); /* Make sure the buffer is zeroed */
 
-                if (!prefix || !*prefix)
-                    prefix = "Outside>";
+        prefix = do_parse_prop(-1, who, obj, MESGPROP_OECHO,
+                               "(@Oecho)", pbuf, sizeof(pbuf),
+                               MPI_ISPRIVATE);
 
-                snprintf(buf, sizeof(buf), "%s %.*s", prefix,
-                         (int) (BUFFER_LEN - 2 - strlen(prefix)), msg);
-                ref = CONTENTS(obj);
+        if (!prefix || !*prefix)
+            prefix = "Outside>";
 
-                while (ref != NOTHING) {
-                    notify_filtered(who, ref, buf, isprivate);
-                    ref = NEXTOBJ(ref);
-                }
-            }
+        snprintf(buf, sizeof(buf), "%s %.*s", prefix,
+                 (int) (BUFFER_LEN - 2 - strlen(prefix)), msg);
+        ref = CONTENTS(obj);
+
+        while (ref != NOTHING) {
+            notify_filtered(who, ref, buf, isprivate);
+            ref = NEXTOBJ(ref);
         }
     }
 
     if (Typeof(obj) == TYPE_PLAYER || Typeof(obj) == TYPE_THING)
-        notify_filtered(who, obj, msg, isprivate);
+        return notify_filtered(who, obj, msg, isprivate);
+
+    return 0;
 }
 
 /**
@@ -4906,12 +4846,12 @@ notify_except(dbref first, dbref exception, const char *msg, dbref who)
     srch = room = LOCATION(first);
 
     if (tp_allow_listeners) {
-        notify_from_echo(who, srch, msg, 0);
+        notify_listeners(who, NOTHING, srch, LOCATION(who), msg, 0);
 
         if (tp_allow_listeners_env) {
             srch = LOCATION(srch);
             while (srch != NOTHING) {
-                notify_from_echo(who, srch, msg, 0);
+                notify_listeners(who, NOTHING, srch, LOCATION(who), msg, 0);
                 srch = getparent(srch);
             }
         }
@@ -4920,7 +4860,7 @@ notify_except(dbref first, dbref exception, const char *msg, dbref who)
     DOLIST(first, first) {
         if ((Typeof(first) != TYPE_ROOM) && (first != exception)) {
             /* don't want excepted player or child rooms to hear */
-            notify_from_echo(who, first, msg, 0);
+            notify_listeners(who, NOTHING, first, LOCATION(who), msg, 0);
         }
     }
 }

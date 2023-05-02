@@ -73,7 +73,7 @@ do_whisper(int descr, dbref player, const char *arg1, const char *arg2)
 
     snprintf(buf, sizeof(buf), "%s whispers, \"%s\"", NAME(player), arg2);
 
-    if (!notify_from_echo(player, who, buf, 1)) {
+    if (!notify_listeners(player, NOTHING, who, LOCATION(player), buf, 1)) {
         notifyf(player, "%s is not connected.", NAME(who));
         return;
     }
@@ -126,7 +126,8 @@ do_wall(dbref player, const char *message)
         dnext = d->next;
 
         if (d->connected) {
-            notify_from_echo(player, d->player, buf, 1);
+            notify_listeners(player, NOTHING, d->player, LOCATION(player),
+                             buf, 1);
         }
     }
 }
@@ -210,7 +211,7 @@ do_page(dbref player, const char *arg1, const char *arg2)
         snprintf(buf, sizeof(buf), "%s pages from %s: \"%s\"", NAME(player),
                  NAME(LOCATION(player)), arg2);
 
-    if (notify_from_echo(player, target, buf, 1))
+    if (notify_listeners(player, NOTHING, target, LOCATION(player), buf, 1))
         notify(player, "Your message has been sent.");
     else {
         notifyf(player, "%s is not connected.", NAME(target));
