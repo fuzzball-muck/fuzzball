@@ -3608,7 +3608,7 @@ mfn_tell(MFUNARGS)
                      NAME(player), ((*argv[0] == '\'' || isspace(*argv[0])) ? "" : " "), ptr);
         }
 
-        notify_from_echo(player, obj, buf, 1);
+        notify_listeners(player, NOTHING, obj, LOCATION(player), buf, 1);
     }
 
     return argv[0];
@@ -3722,7 +3722,8 @@ mfn_otell(MFUNARGS)
 
         while (thing != NOTHING) {
             if (thing != eobj) {
-                notify_from_echo(player, thing, buf, 0);
+                notify_listeners(player, NOTHING, thing, LOCATION(player),
+                                 buf, 0);
             }
 
             thing = NEXTOBJ(thing);

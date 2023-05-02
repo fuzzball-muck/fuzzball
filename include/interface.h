@@ -480,17 +480,17 @@ int most_idle_player_descr(dbref who);
  * Send a notification to a player, from the player.
  *
  * This is for system messages in response to a player's actions for the
- * most part.  It wraps notify_from_echo, with the message being both
+ * most part.  It wraps notify_listeners, with the message being both
  * to and from the same player.
  *
- * @see notify_from_echo
+ * @see notify_listeners
  *
  * It is used all over the place so it isn't practical to replace this,
  * despite it being a silly one line function.
  *
  * @param player the player to send the message to
  * @param msg the message to send to the player
- * @return the return value from notify_from_echo
+ * @return the return value from notify_listeners
  */
 int notify(dbref player, const char *msg);
 
@@ -525,28 +525,6 @@ void notify_except(dbref first, dbref exception, const char *msg, dbref who);
 int notify_filtered(dbref from, dbref player, const char *msg, int ispriv);
 
 /**
- * This is used by basically all the different notification routines.
- *
- * Sends a message to a player or thing, handing vehicle oecho, listen
- * propqueues, ignore filters, and zombie stuff.  This hands the message
- * off to notify_filtered after dealing with queues and oecho.
- *
- * oecho is a prefix for vehicle messages.
- *
- * @see notify_filtered
- *
- * isprivate is an oddity; if true, zombies will receive the message
- * regardless of where their owner is.  If false, the message will not
- * go to the zombie if the owner is in the same room as me.
- *
- * @param from the player that initiated this message
- * @param player the target of the message -- player or thing
- * @param msg the message to send
- * @param isprivate zombie message filter -- see the notes above.
- */
-int notify_from_echo(dbref from, dbref player, const char *msg, int isprivate);
-
-/**
  * This is used by MUF programs to send notifications that process listeners
  *
  * Most (all?) MUF notifications use this call.  However, it is not typically
@@ -564,8 +542,8 @@ int notify_from_echo(dbref from, dbref player, const char *msg, int isprivate);
  * @param msg the message to send
  * @param isprivate boolean, usually false.  See explanation above
  */
-void notify_listeners(dbref who, dbref xprog, dbref obj, dbref room, const char *msg,
-                             int isprivate);
+int notify_listeners(dbref who, dbref xprog, dbref obj, dbref room, const char *msg,
+                     int isprivate);
 
 /**
  * Notify the given player (or zombie) without triggering listen propqueue.

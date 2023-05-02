@@ -200,41 +200,159 @@ the program.  After being unused for a number of minutes, programs will
 be removed from memory until needed again.
 ~
 ~
-LISTENERS|_LISTEN
-Listeners:
+PROPQUEUES|LISTENERS|_LISTEN|CONNECT|DISCONNECT|_CONNECT|_DISCONNECT|ARRIVE|DEPART|_ARRIVE|_DEPART|ARRIVE|DEPART|_ARRIVE|_DEPART
+Propqueues:
 
-  When a message is notify_except'ed or notify_exclude'ed to a room, and
-LISTENERS and LISTENERS_ENV are defined, then it will run ALL the programs
-referred to in all the _listen properties down the environment tree,  And
-in all of the objects in the room with LISTENERS_OBJ defined.  Also, the
-muf NOTIFY primitive was changed to run the _listen program on an object
-or player if a message is sent to them that way.
-~
-~
-CONNECT|DISCONNECT|_CONNECT|_DISCONNECT
-Connect and Disconnect Propqueues:
+  A propqueue is defined as one or more properties in a directory which
+cause MUF or MPI 'things' to happen based on a MUCK event.  Each property
+in the directory may contain either a program reference number or some MPI.
+Propqueues are triggered by certain activities that can occur on the MUCK,
+such as listeners, arrival, departure, connection, and disconnection.
 
-  A room or player may have a "_connect" property set that contains the
-dbref of a program to run when a player connects.  The program must be
-either link_ok or must be owned by the player connecting.  When the
-program is run, the string on the stack will be "Connect", the "loc @"
-will be the location of the connecting player, the "me @" will be the
-connecting player, and the "trigger @" (and "trig") will be the object
-that had the _connect property on it.  All programs referred to by
-_connect properties on the player, and on rooms down the environment tree
-from the player, will be run.  When a player disconnects, programs referred
-to by _disconnect properties will be run in a similar manner.
-(connect and disconnect _actions_ are also triggered.)
-~
-~
-ARRIVE|DEPART|_ARRIVE|_DEPART
-Arrive and Depart Propqueues:
+  For the most part, these propqueues all follow the same 'rules' and
+operate in similar fashions.  Where there are exceptions or oddities,
+they will be noted.
 
-  Programs referred to by props in _depart/_arrive propdirs will all be
-run when a player leaves or enters a room, respectively. An example would
-be _arrive/announce:1234  That would queue up program #1234 when a player
-enters a room.  The name ("announce") is not important, and can be anything
-you want, but they are run in alphabetic order.
+  Propqueues can follow the following formats, using _connect as an
+example:
+
+@set here=_connect:1234
+@set here=_connect:#1234
+@set here=_connect:&{somempi}
+
+@set here=_connect/subprop:1234
+@set here=_connect/subprop:#1234
+@set here=_connect:&{somempi}
+
+  Where #1234 is some MUF program reference.  Note that $ references are
+currently not supported, although you could use &{muf:$reference,{&arg}} if you
+really wanted to.  You can also use @REGISTER to set a "ref" type property and
+use that as well, but using a ref property is not required.
+
+  Because a property can both have a value and be a prop directory, that works
+here as well.  The MUF or MPI set on the parent property runs first, and then
+the children are run in the order in which they appear in the prop directory
+(alphabetical).   Children within the property queue may have children
+themselves.
+
+  Propqueues are a special form of 'environment' property; propqueues are
+looked for starting with the triggering object (usually the player that
+triggered it), then whatever thing that object is in (usually a room),
+and then up the environment from there.  Unlike most environment properties,
+such as those fetched with ENVPROP, the MUCK keeps looking for propqueues
+all the way up the environment to #0 and runs all of them with the most
+'local' propqueues run first.  There is no way to prevent upstream propqueues
+from being run.
+
+  If a propqueue property is blessed, the MPI run by it will be blessed as
+well.  Programs will only run if all of these conditions are met:
+
+ * The program is LINK_OK or owned by the triggering player
+ * The MUCKER level of the program exceeds the MUCKER requirements
+ * The owner of the program's MUCKER level exceeds the MUCKER requirements
+
+  For most propqueues, the minimum MUCKER level is 1, making a fairly low
+bar.  The exception is the listen propqueue, which by default requires
+a MUCKER level of 3 but can be changed with the listen_mlev @TUNE setting.
+
+  Propqueues usually come in regular and "O" forms, similar to other things.
+For instance, _arrive vs. _oarrive.  The difference means nothing to MUFs
+being run, however they do impact how MPI is run following the same rules
+as, for example, @SUCCESS / @OSUCCESS and other such commands that run MPI.
+
+  The following propqueues are supported:
+
+  ARRIVE:  _arrive
+  OARRIVE: _oarrive
+
+  Triggered on arrival to the room.  Arrive propqueues are run after the
+user has been displayed the 'look' message for the room, so theoretically
+arrive messages sent to the user won't be lost in the text.
+
+  CONNECT:  _connect
+  OCONNECT: _oconnect
+
+  Triggered on a player connecting.  Like arrive, connection propqueues
+are run after everything else produced by the MUCK (like motd and
+room description) are displayed so as to minimize the chance they will
+be lost in the mess.
+
+  Note that MUCKs also support a 'connect' exit which the user will
+automatically trigger as if they typed 'connect' upon connecting.  This
+action is only run if the user isn't already connected.  The connect
+propqueues are run each time the player connects, regardless of if they
+are already connected or not.
+
+  DEPART:  _depart
+  ODEPART: _odepart
+
+  Triggered on a player departing the room.  The exact method of
+functioning is slightly unusual.
+
+  First, the player is moved to the new location.  Then, the depart
+propqueue is run just on the player.  After that, the depart propqueue
+is run normally (i.e. checking the environment) starting from the
+player's old location and going up the environment tree from there.
+
+  DISCONNECT:  _disconnect
+  ODISCONNECT: _disconnect
+
+  Triggered when a player disconnects.  This is actually run after the
+player connection is dropped, so you won't be able to send a message
+to the player unless they are still connected due to multiple connections.
+
+  Like connect, you can also have a 'disconnect' exit which the user
+will automatically trigger as if they typed 'disconnect'.  There are
+a few oddities here; the 'disconnect' action will be used only if
+this is the player's last connection.  Also, unlike the propqueue,
+the exit is activated before the player's connection is dropped.
+
+  As with connect, the disconnect propqueues are run with each disconnect,
+even if the user has multiple connections and thus can disconnect many
+times.
+
+  LISTEN:   _listen
+  WLISTEN:  ~listen
+  WOLISTEN: ~olisten
+
+  Due to the sensitive nature of listen props and the desire to keep
+player conversations and actions as private as those players wish
+them to be, _listen (the prop that anybody can set) cannot run MPI
+in addition to the MUCKER restrictions for MUF mentioned above.
+
+  Wizards can set ~listen and ~olisten propqueues and use MPI in them,
+which is the reason for the 'WLISTEN' and 'WOLISTEN' variants.
+
+  Listen propqueues can also use patterns in order to have MUF or MPI
+trigger when certain things are 'heard' by the MUCK.  The patterns
+use the same engine as SMATCH so see that man page for full details
+on available patterns.  However, as a simple example, you could do
+this:
+
+  @set here=_listen/run:*run the muf please*=#1234
+
+  The match is case insensitive, and this also works with MPI if you
+use the WLISTEN/WOLISTEN versions, i.e.:
+
+  @set here=~listen/run_mpi:*run the mpi please*=&{tell:Okay!}
+
+  LOOK: _lookq
+
+  This is a propqueue that is triggered by 'look' after all messages
+from 'look' itself are displayed.  Please note that many MUCKs
+override 'look' with a custom program, and it is likely in such
+cases that this propqueue won't work.
+
+  The environment search is started from the looked-at thing, rather
+than the player doing the looking.  Note that entering a room will
+do an implied 'look' which will trigger this propqueue.
+
+  The look propqueue is run as if it was a 'public' message, so the
+o-message rules apply to any MPI triggered by this propqueue even
+though the queue isn't called 'olook'.  There is no 'private' variant
+of this propqueue.
+
+~~alsosee SMATCH
 ~
 ~
 ~
