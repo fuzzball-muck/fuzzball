@@ -440,12 +440,11 @@ be removed from memory until needed again.
 PROPQUEUES|LISTENERS|_LISTEN|CONNECT|DISCONNECT|_CONNECT|_DISCONNECT|ARRIVE|DEPART|_ARRIVE|_DEPART|ARRIVE|DEPART|_ARRIVE|_DEPART
 Propqueues:
 
-  A propqueue is designed as one or more properties in a directory which
+  A propqueue is defined as one or more properties in a directory which
 cause MUF or MPI 'things' to happen based on a MUCK event.  Each property
 in the directory may contain either a program reference number or some MPI.
 Propqueues are triggered by certain activities that can occur on the MUCK,
-such as listeners, arrival, departure, connection, and disconnection
-propqueues.
+such as listeners, arrival, departure, connection, and disconnection.
 
   For the most part, these propqueues all follow the same 'rules' and
 operate in similar fashions.  Where there are exceptions or oddities,
@@ -463,7 +462,7 @@ example:
 @set here=_connect:&{somempi}
 
   Where #1234 is some MUF program reference.  Note that $ references are
-currently not supported, though you could use &{muf:$reference,{&arg}} if you
+currently not supported, although you could use &{muf:$reference,{&arg}} if you
 really wanted to.  You can also use @REGISTER to set a "ref" type property and
 use that as well, but using a ref property is not required.
 
@@ -496,16 +495,16 @@ a MUCKER level of 3 but can be changed with the listen_mlev @TUNE setting.
   Propqueues usually come in regular and "O" forms, similar to other things.
 For instance, _arrive vs. _oarrive.  The difference means nothing to MUFs
 being run, however they do impact how MPI is run following the same rules
-as, say, @SUCCESS / @OSUCCESS and other such commands that run MPI.
+as, for example, @SUCCESS / @OSUCCESS and other such commands that run MPI.
 
   The following propqueues are supported:
 
   ARRIVE:  _arrive
   OARRIVE: _oarrive
 
-  Triggered on arrival to the room.  Arrive propqueues are run AFTER the
+  Triggered on arrival to the room.  Arrive propqueues are run after the
 user has been displayed the 'look' message for the room, so theoretically
-arrive messages sent to the user won't be lost in the spam.
+arrive messages sent to the user won't be lost in the text.
 
   CONNECT:  _connect
   OCONNECT: _oconnect
@@ -516,9 +515,9 @@ room description) are displayed so as to minimize the chance they will
 be lost in the mess.
 
   Note that MUCKs also support a 'connect' exit which the user will
-automatically trigger as if they typed 'connect' upon joining.  This
+automatically trigger as if they typed 'connect' upon connecting.  This
 action is only run if the user isn't already connected.  The connect
-propqueues are run each time the player connects, regardless if they
+propqueues are run each time the player connects, regardless of if they
 are already connected or not.
 
   DEPART:  _depart
@@ -562,15 +561,15 @@ in addition to the MUCKER restrictions for MUF mentioned above.
 which is the reason for the 'WLISTEN' and 'WOLISTEN' variants.
 
   Listen propqueues can also use patterns in order to have MUF or MPI
-trigger when certain things are 'heard' by the program.  The patterns
+trigger when certain things are 'heard' by the MUCK.  The patterns
 use the same engine as SMATCH so see that man page for full details
 on available patterns.  However, as a simple example, you could do
 this:
 
   @set here=_listen/run:*run the muf please*=#1234
 
-  The match is case instensitive, and you can use this with MUF or
-MPI if you use the WLISTEN/WOLISTEN versions, i.e.:
+  The match is case insensitive, and this also works with MPI if you
+use the WLISTEN/WOLISTEN versions, i.e.:
 
   @set here=~listen/run_mpi:*run the mpi please*=&{tell:Okay!}
 
