@@ -1,4 +1,4 @@
-                 MUF Reference Manual for Muck2.2fb7.00
+                 MUF Reference Manual for Muck2.2fb7.10
                    by Revar Desmera <revar@belfry.com>
 
 You may get a listing of topics that you can get help on, either sorted
@@ -532,7 +532,7 @@ is run normally (i.e. checking the environment) starting from the
 player's old location and going up the environment tree from there.
 
   DISCONNECT:  _disconnect
-  ODISCONNECT: _disconnect
+  ODISCONNECT: _odisconnect
 
   Triggered when a player disconnects.  This is actually run after the
 player connection is dropped, so you won't be able to send a message
