@@ -295,7 +295,7 @@ is run normally (i.e. checking the environment) starting from the
 player's old location and going up the environment tree from there.
 
   DISCONNECT:  _disconnect
-  ODISCONNECT: _disconnect
+  ODISCONNECT: _odisconnect
 
   Triggered when a player disconnects.  This is actually run after the
 player connection is dropped, so you won't be able to send a message

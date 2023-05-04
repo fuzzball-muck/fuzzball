@@ -46,6 +46,7 @@ Other changes
 Log messages for player creation and connection are now more detailed.
 @clone and COPYOBJ now only copy hidden properties in Wizard contexts.
 Manual @dumps now report a completion message to the requesting player.
+Listener documentation has evolved into the general 'man propqueues'.
 
 
 2.2Muck7.00
