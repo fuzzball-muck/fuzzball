@@ -399,6 +399,17 @@ time_string_to_seconds(char *string, const char *format, const char **error)
     if (!strptime(string, format, &otm))
         goto timeformat_err;
 
+    /*
+     * strptime seems to always set tm_isdst = 0 which means DST is not in
+     * effect, which means dates impacted by DST will lose an hour when
+     * converted to UNIX timestamp by mktime and then back into a date
+     * string later.
+     *
+     * Setting this to -1 makes it use the timezone database to determine
+     * if DST should be used or not, and seems to fix the problem.
+     */
+    otm.tm_isdst = -1;
+
     return mktime(&otm);
 
     /*
