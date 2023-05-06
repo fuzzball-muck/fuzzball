@@ -1687,7 +1687,11 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
         pc = fr->pc = PROGRAM_START(program);
 
         if (!pc) {
-            abort_loop_hard("Program not compilable. Cannot run.", NULL, NULL);
+            char error_buf[BUFFER_LEN];
+            char unparse_buf[BUFFER_LEN];
+            unparse_object(player, program, unparse_buf, sizeof(unparse_buf));
+            snprintf(error_buf, sizeof(error_buf), "Unable to compile %s.", unparse_buf);
+            abort_loop_hard(error_buf, NULL, NULL);
         }
 
         PROGRAM_INC_PROF_USES(program);
@@ -2232,9 +2236,13 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
                             free_prog_text(PROGRAM_FIRST(temp1->data.objref));
                             PROGRAM_SET_FIRST(temp1->data.objref, tmpline);
 
-                            if (!(PROGRAM_CODE(temp1->data.objref)))
-                                abort_loop("Program not compilable.", temp1,
-                                           temp2);
+                            if (!(PROGRAM_CODE(temp1->data.objref))) {
+                                char error_buf[BUFFER_LEN];
+                                char unparse_buf[BUFFER_LEN];
+                                unparse_object(player, temp1, unparse_buf, sizeof(unparse_buf));
+                                snprintf(error_buf, sizeof(error_buf), "Unable to compile %s.", unparse_buf);
+                                abort_loop(error_buf, temp1, temp2);
+                            }
                         }
 
                         if (ProgMLevel(temp1->data.objref) == 0)
