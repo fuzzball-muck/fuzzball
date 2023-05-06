@@ -11,8 +11,6 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#include "fbmuck.h"
-
 /**
  * @var str_tunetype
  *      The tune types as user-displayable strings

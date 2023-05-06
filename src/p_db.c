@@ -15,7 +15,6 @@
 #include "boolexp.h"
 #include "compile.h"
 #include "db.h"
-#include "dbsearch.h"
 #ifdef DISKBASE
 #include "diskprop.h"
 #endif
@@ -27,6 +26,7 @@
 #include "interface.h"
 #include "interp.h"
 #include "log.h"
+#include "look.h"
 #include "match.h"
 #include "move.h"
 #include "player.h"

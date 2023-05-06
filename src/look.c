@@ -17,7 +17,6 @@
 #include "boolexp.h"
 #include "commands.h"
 #include "db.h"
-#include "dbsearch.h"
 #ifdef DISKBASE
 #include "diskprop.h"
 #endif
@@ -25,6 +24,7 @@
 #include "fbtime.h"
 #include "game.h"
 #include "interface.h"
+#include "look.h"
 #include "match.h"
 #include "mpi.h"
 #include "player.h"

@@ -15,7 +15,6 @@
 #include "array.h"
 #include "boolexp.h"
 #include "db.h"
-#include "dbsearch.h"
 #ifdef DISKBASE
 #include "diskprop.h"
 #endif
@@ -24,6 +23,7 @@
 #include "inst.h"
 #include "interface.h"
 #include "interp.h"
+#include "look.h"
 #include "props.h"
 #include "timequeue.h"
 #include "tune.h"

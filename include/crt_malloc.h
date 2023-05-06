@@ -15,7 +15,6 @@
 #include <stddef.h>
 
 #include "config.h"
-#include "fbmuck.h"
 
 /* This is a define for some compilers */
 #undef strdup

@@ -15,7 +15,6 @@
 
 #include "autoconf.h"
 #include "config.h"
-#include "fbmuck.h"
 #include "mcp.h"
 #include "tune.h"
 
@@ -433,23 +432,6 @@ int index_descr(int index);
  * @return the least idle descriptor or 0 if not connected.
  */
 int least_idle_player_descr(dbref who);
-
-/*
- * @TODO Why is look_room here?  It is defined in look.c
- */
-
-/**
- * Look at a room
- *
- * This handles all the nuances of looking at a room; displaying room name,
- * description, title, and success prop processing.
- *
- * @private
- * @param descr the descriptor of the looking person
- * @param player the looking person
- * @param loc the location to look at.
- */
-void look_room(int descr, dbref player, dbref loc);
 
 /**
  * Return the maximum number of files that you may have open.

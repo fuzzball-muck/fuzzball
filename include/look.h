@@ -1,14 +1,13 @@
-/** @file dbsearch.h
+/** @file look.h
  *
  * Header for declaring the "checkflags" search system that is used by
- * \@find, \@entrances, etc.  The definitions for these calls are in
- * look.c
+ * \@find, \@entrances, etc. Also includes look_room.
  *
  * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
  */
 
-#ifndef DBSEARCH_H
-#define DBSEARCH_H
+#ifndef LOOK_H
+#define LOOK_H
 
 #include <stddef.h>
 
@@ -93,4 +92,16 @@ int checkflags(dbref what, struct flgchkdat check);
  */
 int init_checkflags(dbref player, const char *flags, struct flgchkdat *check);
 
-#endif /* !DBSEARCH_H */
+/**
+ * Look at a room
+ *
+ * This handles all the nuances of looking at a room; displaying room name,
+ * description, title, and success prop processing.
+ *
+ * @private
+ * @param descr the descriptor of the looking person
+ * @param player the looking person
+ * @param loc the location to look at.
+ */
+void look_room(int descr, dbref player, dbref loc);
+#endif /* !LOOK_H */

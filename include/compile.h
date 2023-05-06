@@ -11,7 +11,6 @@
 #include <stddef.h>
 
 #include "config.h"
-#include "fbmuck.h"
 
 #define MUF_AUTHOR_PROP         "_author"   /**< Author name string location */
 #define MUF_DOCCMD_PROP         "_docs"     /**< Command to list docs */

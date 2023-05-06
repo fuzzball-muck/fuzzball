@@ -34,6 +34,7 @@
 #include "interface.h"
 #include "interp.h"
 #include "log.h"
+#include "look.h"
 #include "match.h"
 #include "mcp.h"
 #ifdef MCPGUI_SUPPORT

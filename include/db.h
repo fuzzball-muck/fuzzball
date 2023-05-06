@@ -13,7 +13,6 @@
 #include <time.h>
 
 #include "config.h"
-#include "fbmuck.h"
 #include "mcp.h"
 
 /**

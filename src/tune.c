@@ -16,7 +16,6 @@
 #include "array.h"
 #include "commands.h"
 #include "db.h"
-#include "fbmuck.h"
 #include "fbstrings.h"
 #include "fbtime.h"
 #include "game.h"

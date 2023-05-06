@@ -14,7 +14,6 @@
 
 #include "array.h"
 #include "db.h"
-#include "fbmuck.h"
 
 #define TUNESET_SUCCESS         0   /**< success                  */
 #define TUNESET_SUCCESS_DEFAULT 5   /**< success, set to default  */

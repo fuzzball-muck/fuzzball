@@ -20,6 +20,7 @@
 #include "game.h"
 #include "interface.h"
 #include "interp.h"
+#include "look.h"
 #include "log.h"
 #include "match.h"
 #include "move.h"

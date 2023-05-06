@@ -16,6 +16,8 @@
 
 #include "autoconf.h"
 
+typedef int dbref;  /**< Type wrapper for dbref - must support negatives */
+
 /**
  * Server version number
  */
