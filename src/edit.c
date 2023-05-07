@@ -939,7 +939,9 @@ list_publics(int descr, dbref player, int arg[], int argc)
         }
 
         if (!PROGRAM_CODE(program)) {
-            notify(player, "Program not compilable.");
+            char unparse_buf[BUFFER_LEN];
+            unparse_object(player, program, unparse_buf, sizeof(unparse_buf));
+            notifyf(player, "Unable to compile %s.", unparse_buf);
             return;
         }
     }
