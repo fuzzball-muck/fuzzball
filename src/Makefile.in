@@ -38,8 +38,14 @@ INSTALL_PROGRAM=@INSTALL_PROGRAM@
 INSTALL_SCRIPT=@INSTALL_SCRIPT@
 INSTALL_DATA=@INSTALL_DATA@
 
+#
+# Regarding DEFS and FBMUCK_GLOBAL_DATA_PATH -- I tried many different
+# ways to have autoconf bake this into autoconf.h, and I could not get
+# the variable expansion to work.  Internet searches tended to indicate
+# it wasn't possible so I gave up and added it here.
+#
 CC=@CC@
-DEFS=@DEFS@
+DEFS=@DEFS@ -DFBMUCK_GLOBAL_DATA_PATH='"@docdir@"'
 LIBR=@LIBS@
 INCLUDE=../include
 

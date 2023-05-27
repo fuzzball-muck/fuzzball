@@ -5,7 +5,7 @@ dnl TinyMUCK fb5.x auto-config script writen by: Peter "WhiteFire" Torkelson
 dnl Rewritten for fb6.x by revar@belfry.com
 dnl 
 AC_REVISION($Revision: 1.30 $)
-AC_PREREQ([2.69])
+AC_PREREQ([2.71])
 dnl Version numbers work like this:
 dnl 9.03, 9.03+master, 9.04-master, 9.04
 dnl Release version numbers should only exist for a SINGLE commit, the same commit that gets tagged for release.
@@ -14,7 +14,7 @@ dnl This means the last 9.04-master commit, the only 9.04 commit, and first 9.04
 dnl this is because it's just two commits in a row changing nothing but the version number.
 AC_INIT([fbmuck],[7.00b1+master],[feedback@fuzzball.org],[fbmuck],[https://www.fuzzball.org/])
 AC_CONFIG_AUX_DIR(auto)
-AC_CONFIG_HEADER([include/autoconf.h])
+AC_CONFIG_HEADERS([include/autoconf.h])
 
 echo " "
 echo "TinyMUCK fb7.x auto-configure script."
