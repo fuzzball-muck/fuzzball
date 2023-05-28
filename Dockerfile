@@ -6,22 +6,23 @@ RUN apt-get install -y build-essential \
 COPY . fuzzball/
 RUN cd fuzzball && \
     ./configure --with-ssl --prefix /root/scratch && make clean && \
-    make && make install && cd docs && \
-    ../src/prochelp ../src/mpihelp.raw mpihelp.txt mpihelp.html && \
-    ../src/prochelp ../src/mufman.raw mufman.txt mufman.html && \
-    ../src/prochelp ../src/muckhelp.raw muckhelp.txt muckhelp.html
+    make && make install
 
 FROM ubuntu:20.04
 RUN apt update && apt dist-upgrade -y \
     && apt-get install -y libssl1.1 openssl \
     && mkdir -p /opt/fbmuck-base \
     && mkdir -p /opt/fbmuck-ssl
+
 COPY --from=0 /root/scratch /usr
 
 # Copy docker-entrypoint.sh into /usr/bin
 COPY scripts/docker-entrypoint.sh /usr/bin/
 
-RUN chmod a+rx /usr/bin/docker-entrypoint.sh
+# It will be looking for globals in /root/scratch/share because of how
+# we are building.  The link will fix it so we're looking in the right
+# spot.
+RUN chmod a+rx /usr/bin/docker-entrypoint.sh && ln -s /usr /root/scratch
 
 # Copy FB base into /opt/fbmuck-base in case we need to start a blank DB
 COPY game/ dbs/starterdb/ /opt/fbmuck-base/

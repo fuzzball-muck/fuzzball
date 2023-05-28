@@ -155,8 +155,9 @@ show_subfile(dbref player, const char *dir, const char *topic, const char *seg,
  * @param player the player querying the index file
  * @param onwhat the topic we are looking up, or ""
  * @param file the index file to load.
+ * @return 0 on failure, 1 on success
  */
-static void
+static int
 index_file(dbref player, const char *onwhat, const char *file)
 {
     FILE *f;
@@ -174,8 +175,7 @@ index_file(dbref player, const char *onwhat, const char *file)
     }
 
     if ((f = fopen(file, "rb")) == NULL) {
-        notifyf(player, "Sorry, %s is missing.  Management has been notified.", file);
-        fprintf(stderr, "help: No file %s!\n", file);
+        return 0;
     } else {
         if (*topic) {
             arglen = strlen(topic);
@@ -189,7 +189,7 @@ index_file(dbref player, const char *onwhat, const char *file)
                     if (!(fgets(buf, sizeof buf, f))) {
                         notifyf(player, "Sorry, no help available on topic \"%s\"", onwhat);
                         fclose(f);
-                        return;
+                        return 1;
                     }
                 } while (*buf != '~');
 
@@ -198,7 +198,7 @@ index_file(dbref player, const char *onwhat, const char *file)
                     if (!(fgets(buf, sizeof buf, f))) {
                         notifyf(player, "Sorry, no help available on topic \"%s\"", onwhat);
                         fclose(f);
-                        return;
+                        return 1;
                     }
                 } while (*buf == '~');
 
@@ -246,6 +246,8 @@ index_file(dbref player, const char *onwhat, const char *file)
 
         fclose(f);
     }
+
+    return 1;
 }
 
 /**
@@ -265,6 +267,13 @@ index_file(dbref player, const char *onwhat, const char *file)
  * start with ~.  Each entry, except for the first one, starts with a
  * line of keywords delimited by | that can match the entry.
  *
+ * Note: This function will also attempt to load file information from
+ *       the system path defined in FBMUCK_GLOBAL_DATA_PATH ... for
+ *       security reasons, we do not try to load "subfile" style files
+ *       from the global path as that seems like a good way to probe
+ *       random directories on the system.  This feature does not work
+ *       on windows.
+ *
  * @param player the player asking for help
  * @param dir the directory for subfiles
  * @param file the file for index files
@@ -280,7 +289,59 @@ do_helpfile(dbref player, const char *dir, const char *file, const char *topic, 
     if (show_subfile(player, dir, topic, segment, 0))
         return;
 
-    index_file(player, topic, file);
+    if (!index_file(player, topic, file)) {
+#ifdef FBMUCK_GLOBAL_DATA_PATH
+        /*
+         * Usually, 'file' is going to have some path fragment on it.
+         * Such as 'data/mufman.txt' or whatever.  Thus, we need to clear
+         * off that fragment.
+         *
+         * 'file' should never end in /.  If it does, this will kind of
+         * produce a nonsense (but harmless) result since it will try
+         * to open FBMUCK_GLOBAL_DATA_PATH as a string and fail.
+         */
+        char  pathbuf[BUFFER_LEN];
+        const char* name = file;
+        int   i;
+
+        /*
+         * Iterate over 'file', finding /'s til we find the last one.
+         */
+        for (i = 0; file[i] != '\0'; i++) {
+            if (file[i] == '/') {
+                name = &file[i+1];
+            }
+        }
+
+        if (i >= (BUFFER_LEN - (sizeof(FBMUCK_GLOBAL_DATA_PATH)+2))) {
+            notifyf(
+                player,
+                "Sorry, %s is broken.  Management has been notified.",
+                file
+            );
+            fprintf(stderr, "help: file %s is unreasonably long!\n", file);
+            return;
+        }
+
+        /* Form the path */
+        strncpy(pathbuf, FBMUCK_GLOBAL_DATA_PATH, BUFFER_LEN-1);
+        strncat(pathbuf, "/", BUFFER_LEN-1);
+        strncat(pathbuf, name, BUFFER_LEN-1);
+
+        /* Try to load it. */
+        if (!index_file(player, topic, pathbuf)) {
+#else
+        if (1) {
+#endif
+
+            notifyf(
+                player,
+                "Sorry, %s is missing.  Management has been notified.",
+                file
+            );
+            fprintf(stderr, "help: No file %s!\n", file);
+        }
+    }
 }
 
 /**

@@ -91,6 +91,11 @@ fi
 if [ ! -r "$GAMEDIR/data" ]; then
     echo "Initializing your Fuzzball MUCK Base Directory"
     cp -a /opt/fbmuck-base/* "$GAMEDIR/"
+
+    # Remove documentation so we get it off share.  This makes things more
+    # ugpradable.
+    rm -f "$GAMEDIR/data/help.txt" "$GAMEDIR/data/man.txt" \
+          "$GAMEDIR/data/mpihelp.txt"
 fi
 
 if [ -r $DBOUT ]; then
