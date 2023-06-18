@@ -558,7 +558,7 @@ screen width is unknown.  Example:
     {right:Hello,10,_.}
 ~~endcode
 would return the string "_._._Hello"
-~~seealso WIDTH
+~~alsosee WIDTH
 ~
 ~
 LEFT
@@ -574,7 +574,7 @@ screen width is unknown.  Example:
     {left:Hello,10,_.}
 ~~endcode
 would return the string "Hello_._._"
-~~seealso WIDTH
+~~alsosee WIDTH
 ~
 ~
 CENTER
@@ -590,7 +590,7 @@ screen width is unknown.  Example:
     {center:Hello,10,1234567890}
 ~~endcode
 would return the string "123Hello12"
-~~seealso WIDTH
+~~alsosee WIDTH
 ~
 ~
 INSTR
