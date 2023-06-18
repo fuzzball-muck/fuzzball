@@ -1055,8 +1055,9 @@ and the end.
 </h3>
     Takes a string and pads it to fit the given fieldwidth, with the string
 right justified.  If no padstring is given, it assumes that it will pad the
-string with spaces.  If no fieldwidth is given, it assumes that the field
-width is 78 characters.  Example:
+string with spaces.  If no fieldwidth is given, it will use the introspected
+screen size if available (see WIDTH) or default to 78 characters if the
+screen width is unknown.  Example:
 <pre>
     {right:Hello,10,_.}
 </pre>
@@ -1073,8 +1074,9 @@ would return the string &quot;_._._Hello&quot;
 </h3>
     Takes a string and pads it to fit the given fieldwidth, with the string
 left justified.  If no padstring is given, it assumes that it will pad the
-string with spaces.  If no fieldwidth is given, it assumes that the field
-width is 78 characters.  Example:
+string with spaces.  If no fieldwidth is given, it will use the introspected
+screen size if available (see WIDTH) or default to 78 characters if the
+screen width is unknown.  Example:
 <pre>
     {left:Hello,10,_.}
 </pre>
@@ -1091,8 +1093,9 @@ would return the string &quot;Hello_._._&quot;
 </h3>
     Takes a string and pads it to fit the given fieldwidth, with the string
 center justified.  If no padstring is given, it assumes that it will pad the
-string with spaces.  If no fieldwidth is given, it assumes that the field
-width is 78 characters.  Example:
+string with spaces.  If no fieldwidth is given, it will use the introspected
+screen size if available (see WIDTH) or default to 78 characters if the
+screen width is unknown.  Example:
 <pre>
     {center:Hello,10,1234567890}
 </pre>

@@ -719,8 +719,9 @@ RIGHT
 {right:string,fieldwidth,padstring}
     Takes a string and pads it to fit the given fieldwidth, with the string
 right justified.  If no padstring is given, it assumes that it will pad the
-string with spaces.  If no fieldwidth is given, it assumes that the field
-width is 78 characters.  Example:
+string with spaces.  If no fieldwidth is given, it will use the introspected
+screen size if available (see WIDTH) or default to 78 characters if the
+screen width is unknown.  Example:
     {right:Hello,10,_.}
 would return the string "_._._Hello"
 ~
@@ -731,8 +732,9 @@ LEFT
 {left:string,fieldwidth,padstring}
     Takes a string and pads it to fit the given fieldwidth, with the string
 left justified.  If no padstring is given, it assumes that it will pad the
-string with spaces.  If no fieldwidth is given, it assumes that the field
-width is 78 characters.  Example:
+string with spaces.  If no fieldwidth is given, it will use the introspected
+screen size if available (see WIDTH) or default to 78 characters if the
+screen width is unknown.  Example:
     {left:Hello,10,_.}
 would return the string "Hello_._._"
 ~
@@ -743,8 +745,9 @@ CENTER
 {center:string,fieldwidth,padstring}
     Takes a string and pads it to fit the given fieldwidth, with the string
 center justified.  If no padstring is given, it assumes that it will pad the
-string with spaces.  If no fieldwidth is given, it assumes that the field
-width is 78 characters.  Example:
+string with spaces.  If no fieldwidth is given, it will use the introspected
+screen size if available (see WIDTH) or default to 78 characters if the
+screen width is unknown.  Example:
     {center:Hello,10,1234567890}
 would return the string "123Hello12"
 ~
