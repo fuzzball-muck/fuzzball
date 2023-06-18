@@ -1114,6 +1114,28 @@ DESCR
 {descr}
     Returns the descriptor number that invoked the MPI.
 ~
+~
+HEIGHT
+{height}
+{height:default}
+    Returns the reported height, in lines, of a the calling descriptor's
+terminal.  This function only works if the caller's client supports reporting
+terminal size or if the SETHEIGHT MUF primintive was used to set the caller's
+screen height.  If called with no parameters, this will return 0 if the
+caller's screen size is not set.  If called with a default parameter, we
+will return that default.  24 lines is usually a reasonable default.
+~
+~
+WIDTH
+{width}
+{width:default}
+    Returns the reported width, in characters, of a the calling descriptor's
+terminal.  This function only works if the caller's client supports reporting
+terminal size or if the SETWIDTH MUF primintive was used to set the caller's
+screen width.  If called with no parameters, this will return 0 if the
+caller's screen size is not set.  If called with a default parameter, we
+will return that default.  80 characters is usually a reasonable default.
+~
 ~~section Variable Handling Functions|Variable|Variables|Vars|Var|VarFuncs
 V|&|VARIABLE
 {&VAR}

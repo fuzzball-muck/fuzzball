@@ -66,7 +66,7 @@ G's
   ge  gt  
 
 H's
-  holds  
+  height  holds   
 
 I's
   idle     if       inc      index    index!   instr    isdbref  isnum
@@ -111,7 +111,7 @@ V's
   v        version  
 
 W's
-  while  with   
+  while  width  with   
 
 X's
   xor  
@@ -1280,7 +1280,7 @@ this just sees if obj1 is within the locational environment of obj2.
 Connection Related Functions|Connection|ConnFuncs
 Connection Related Functions
 
-awake   descr   idle    online  ontime  
+awake   descr   height  idle    online  ontime  width   
 
 ~----------------------------------------------------------------------------
 ~
@@ -1320,6 +1320,28 @@ if there are multiple connects.
 DESCR
 {descr}
     Returns the descriptor number that invoked the MPI.
+~
+~
+HEIGHT
+{height}
+{height:default}
+    Returns the reported height, in lines, of a the calling descriptor's
+terminal.  This function only works if the caller's client supports reporting
+terminal size or if the SETHEIGHT MUF primintive was used to set the caller's
+screen height.  If called with no parameters, this will return 0 if the
+caller's screen size is not set.  If called with a default parameter, we
+will return that default.  24 lines is usually a reasonable default.
+~
+~
+WIDTH
+{width}
+{width:default}
+    Returns the reported width, in characters, of a the calling descriptor's
+terminal.  This function only works if the caller's client supports reporting
+terminal size or if the SETWIDTH MUF primintive was used to set the caller's
+screen width.  If called with no parameters, this will return 0 if the
+caller's screen size is not set.  If called with a default parameter, we
+will return that default.  80 characters is usually a reasonable default.
 ~
 ~
 ~

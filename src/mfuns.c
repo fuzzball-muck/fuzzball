@@ -3761,17 +3761,21 @@ mfn_right(MFUNARGS)
     /* {right:string,fieldwidth,padstr} */
     /* Right justify string to a fieldwidth, filling with padstr */
 
-    /*
-     * TODO: As part of issue #424 it would be cool if we introspected
-     *       the proper terminal size by default if possible.
-     */
-
     char *ptr;
     const char *fptr;
     int i, len;
     const char *fillstr;
+    const struct descriptor_data* d;
 
-    len = (argc > 1) ? atoi(argv[1]) : 78;
+    d = descrdata_by_descr(descr);
+
+    if (argc > 1) {
+        len = atoi(argv[1]);
+    } else if (d->detected_width > 0) {
+        len = d->detected_width;
+    } else {
+        len = 78;
+    }
 
     if (len > BUFFER_LEN - 1)
         ABORT_MPI("RIGHT", "Fieldwidth too big.");
@@ -3820,17 +3824,21 @@ mfn_left(MFUNARGS)
     /* {left:string,fieldwidth,padstr} */
     /* Left justify string to a fieldwidth, filling with padstr */
 
-    /*
-     * TODO: As part of issue #424 it would be cool if we introspected
-     *       the proper terminal size by default if possible.
-     */
-
     char *ptr;
     const char *fptr;
     int i, len;
     const char *fillstr;
+    const struct descriptor_data* d;
 
-    len = (argc > 1) ? atoi(argv[1]) : 78;
+    d = descrdata_by_descr(descr);
+
+    if (argc > 1) {
+        len = atoi(argv[1]);
+    } else if (d->detected_width > 0) {
+        len = d->detected_width;
+    } else {
+        len = 78;
+    }
 
     if (len > BUFFER_LEN - 1)
         ABORT_MPI("LEFT", "Fieldwidth too big.");
@@ -3859,7 +3867,8 @@ mfn_left(MFUNARGS)
  *
  * arg0 is the message
  *
- * arg1 is the line width which defaults to 78
+ * arg1 is the line width which defaults to 78 unless the descriptor's
+ * width is set in which case it will use that.
  *
  * arg2 is the padding string which defaults to " " but can be any
  * string.
@@ -3881,17 +3890,21 @@ mfn_center(MFUNARGS)
     /* {center:string,fieldwidth,padstr} */
     /* Center justify string to a fieldwidth, filling with padstr */
 
-    /*
-     * TODO: As part of issue #424 it would be cool if we introspected
-     *       the proper terminal size by default if possible.
-     */
-
     char *ptr;
     const char *fptr;
     int i, len, halflen;
     const char *fillstr;
+    const struct descriptor_data* d;
 
-    len = (argc > 1) ? atoi(argv[1]) : 78;
+    d = descrdata_by_descr(descr);
+
+    if (argc > 1) {
+        len = atoi(argv[1]);
+    } else if (d->detected_width > 0) {
+        len = d->detected_width;
+    } else {
+        len = 78;
+    }
 
     if (len > BUFFER_LEN - 1)
         ABORT_MPI("CENTER", "Fieldwidth too big.");

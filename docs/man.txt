@@ -142,6 +142,9 @@ G's
   gui_dlog_show      gui_dlog_simple    gui_dlog_tabbed    gui_value_get
   gui_value_set      gui_values_get     
 
+H's
+  height  
+
 I's
   if           ignore_add   ignore_del   ignoring?    inf          instances
   instr        instring     int          int?         interp       intostr
@@ -205,19 +208,19 @@ R's
 
 S's
   secure_sysvars     set                set_error          setdesc
-  setdrop            setfail            setlink            setlinks_array
-  setlockstr         setmode            setname            setodrop
-  setofail           setosucc           setown             setprop
-  setseed            setsucc            setsysparm         shallow_copy
-  sign               sin                sleep              smatch
-  smtp_send          split              sqrt               srand
-  stats              stats_array        stod               strcat
-  strcmp             strcut             strdecrypt         strencrypt
-  string?            stringcmp          stringpfx          strip
-  striplead          striptail          strlen             strncmp
-  strtof             subst              succ               supplicant
-  swap               sysparm            sysparm_array      systime
-  systime_precise    
+  setdrop            setfail            setheight          setlink
+  setlinks_array     setlockstr         setmode            setname
+  setodrop           setofail           setosucc           setown
+  setprop            setseed            setsucc            setsysparm
+  setwidth           shallow_copy       sign               sin
+  sleep              smatch             smtp_send          split
+  sqrt               srand              stats              stats_array
+  stod               strcat             strcmp             strcut
+  strdecrypt         strencrypt         string?            stringcmp
+  stringpfx          strip              striplead          striptail
+  strlen             strncmp            strtof             subst
+  succ               supplicant         swap               sysparm
+  sysparm_array      systime            systime_precise    
 
 T's
   tan          tell         testlock     textattr     then         thing?
@@ -232,7 +235,7 @@ V's
   var        var!       variable   version    
 
 W's
-  watchpid   while      wizcall    
+  watchpid   while      width      wizcall    
 
 X's
   xor            xyz_to_polar   
@@ -5492,8 +5495,9 @@ awake?             descr              descr_array        descr_setuser
 descrboot          descrbufsize       descrcount         descrdbref
 descrflush         descrhost          descridle          descriptors
 descrleastidle     descrmostidle      descrnotify        descrsecure?
-descrtime          descruser          firstdescr         lastdescr
-nextdescr          online             online_array       
+descrtime          descruser          firstdescr         height
+lastdescr          nextdescr          online             online_array
+setheight          setwidth           width              
 
 ~----------------------------------------------------------------------------
 ~
@@ -5686,6 +5690,83 @@ buffer.  If more data is written to the buffer than it has space for, the
 data at the beginning of the buffer gets erased with an <output flushed>.
 Remember that each NOTIFY adds a CR LF byte pair at the end of each line.
 Also note that \r in lines gets translated to CR LF byte pairs.
+~
+~
+SETWIDTH
+SETWIDTH ( int:descr int:width -- )
+
+  For the given descriptor, set the reported terminal width.  Note that this
+set width can be overriden if the players's client sends an updated size and
+is mostly here for cases where a user's client doesn't provide size information
+but you wish to use the WIDTH function.
+
+  Width is in number of characters on a line visible without scrolling.
+The maximum width is 65535.
+
+  Sizing is per-descriptor instead of per-player, because each descriptor
+represents a different connection (and a player may have multiple), and
+each connection may have a different terminal size.
+(Requires MUCKER level 3)
+Also see: SETHEIGHT, HEIGHT and WIDTH
+~
+~
+SETHEIGHT
+SETHEIGHT ( int:descr int:height -- )
+
+  For the given descriptor, set the reported terminal height.  Note that this
+set height can be overriden if the players's client sends an updated size and
+is mostly here for cases where a user's client doesn't provide size information
+but you wish to use the HEIGHT function.
+
+  Height is in number of lines visible without scrolling.
+The maximum height is 65535.
+
+  Sizing is per-descriptor instead of per-player, because each descriptor
+represents a different connection (and a player may have multiple), and
+each connection may have a different terminal size.
+(Requires MUCKER level 3)
+Also see: SETWIDTH, HEIGHT and WIDTH
+~
+~
+WIDTH
+WIDTH ( int:descr -- int:columns )
+
+  For the given descriptor, fetch the width of the client window in
+characters.  This is the maximum number of characters the client can display
+without scrolling.
+
+  Not all clients support NAWS (the Telnet protocol that reports screen size)
+and not all clients properly support NAWS (some don't report updates to
+screen size).  If the size is unknown, this will return 0.  You may use
+the SETWIDTH and SETHEIGHT primitives to force a size setting in such a
+case.
+
+  Sizing is per-descriptor instead of per-player, because each descriptor
+represents a different connection (and a player may have multiple), and
+each connection may have a different terminal size.
+Also see: SETWIDTH, SETHEIGHT and HEIGHT
+~
+~
+HEIGHT
+HEIGHT ( int:descr -- int:rows )
+
+  For the given descriptor, fetch the height of the client window in
+rows (lines).  This is the maximum number of lines the client can display
+without scrolling.  Though practically speaking, you may need to subtract
+a few lines from this in order to insure no scrolling as this count of lines
+may include input fields and other UI elements as would vary from client to
+client.
+
+  Not all clients support NAWS (the Telnet protocol that reports screen size)
+and not all clients properly support NAWS (some don't report updates to
+screen size).  If the size is unknown, this will return 0.  You may use
+the SETWIDTH and SETHEIGHT primitives to force a size setting in such a
+case.
+
+  Sizing is per-descriptor instead of per-player, because each descriptor
+represents a different connection (and a player may have multiple), and
+each connection may have a different terminal size.
+Also see: SETWIDTH, SETHEIGHT and WIDTH
 ~
 ~
 ~
