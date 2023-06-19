@@ -3389,3 +3389,73 @@ mfn_escape(MFUNARGS)
     *out = '\0';
     return buf;
 }
+
+/**
+ * MPI function to get the descriptor's screen height.
+ *
+ * arg0 is an optional default value if there is no screen height set.
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
+const char *
+mfn_height(MFUNARGS)
+{
+    int height;
+    const struct descriptor_data* d;
+
+    d = descrdata_by_descr(descr);
+
+    height = d->detected_height;
+
+    if ((argc > 0) && (height == 0)) {
+        return argv[0];
+    }
+
+    snprintf(buf, BUFFER_LEN, "%d", height);
+
+    return buf;
+}
+
+/**
+ * MPI function to get the descriptor's screen width..
+ *
+ * arg0 is an optional default value if there is no screen width set.
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
+const char *
+mfn_width(MFUNARGS)
+{
+    int width;
+    const struct descriptor_data* d;
+
+    d = descrdata_by_descr(descr);
+
+    width = d->detected_width;
+
+    if ((argc > 0) && (width == 0)) {
+        return argv[0];
+    }
+
+    snprintf(buf, BUFFER_LEN, "%d", width);
+
+    return buf;
+}

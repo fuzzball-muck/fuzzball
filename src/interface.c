@@ -2636,6 +2636,14 @@ initializesock(int s, int output_s, const char *hostname, int is_ssl, int is_con
     }
 #endif
 
+    /* Ask to do NAWS (window resizing) */
+    unsigned char telnet_do_naws[] = {
+        TELNET_IAC, TELNET_DO, TELOPT_NAWS, '\0'
+    };
+
+    queue_immediate_raw(d, (const char *)telnet_do_naws);
+    queue_write(d, "\r\n", 2);
+
     mcp_negotiation_start(&d->mcpframe);
 
     welcome_user(d);
@@ -3117,6 +3125,87 @@ send_keepalive(struct descriptor_data *d)
 }
 
 /**
+ * Private function for handling the width/height collection stages of
+ * the NAWS telnet protocol.  This implements the NAWS 'state machine'
+ * guts.
+ *
+ * @private
+ * @param d the descriptor to process input for
+ * @param q the pointer to the current character we are processing
+ */
+static void
+process_input_naws(struct descriptor_data *d, const char* q)
+{
+    unsigned char to_set;
+
+    /*
+     * If we receive a 255 in this field, we need to get a second
+     * one.  If we received a 255 and the next byte isn't a 255,
+     * then we're broken.
+     */
+    if (d->iac_needs_dup) {
+        d->iac_needs_dup = 0;
+
+        if (*((unsigned char *)q) == 255) {
+            /* This is correct */
+            to_set = 255;
+        } else {
+            /* This is a protocol glitch */
+            log_status(
+                "Incorrect handling of 255 character wide window in descriptor %d",
+                d->descriptor
+            );
+
+            d->telnet_state = TELNET_STATE_NORMAL;
+        }
+    } else {
+        if (*((unsigned char *)q) == 255) {
+            /*
+             * In this case, we need a second 255, so we stay in
+             * this state but flag iac_needs_dup
+             */
+            d->iac_needs_dup = 1;
+            return;
+        } else {
+            to_set = *((unsigned char *)q);
+        }
+    }
+
+    /* Handle the state machine here */
+    switch (d->telnet_state) {
+        case TELNET_STATE_WIDTH1:
+            d->width_buf[0] = to_set;
+            d->telnet_state = TELNET_STATE_WIDTH2;
+            break;
+
+        case TELNET_STATE_WIDTH2:
+            d->width_buf[1] = to_set;
+            d->telnet_state = TELNET_STATE_HEIGHT1;
+            break;
+
+        case TELNET_STATE_HEIGHT1:
+            d->height_buf[0] = to_set;
+            d->telnet_state = TELNET_STATE_HEIGHT2;
+            break;
+
+        case TELNET_STATE_HEIGHT2:
+            d->height_buf[1] = to_set;
+
+            /*
+             * Technically, there's an IAC and an SE, but we don't care
+             * about those -- we have what we need to set our height/width.
+             */
+            d->telnet_state = TELNET_STATE_NORMAL;
+
+            /* Copy buffers over */
+            d->detected_height = ntohs(*((unsigned short*)d->height_buf));
+            d->detected_width = ntohs(*((unsigned short*)d->width_buf));
+
+            break;
+    }
+}
+
+/**
  * Receive input and process it for descriptor_data d
  *
  * If this returns false, then the descriptor should be disconnected.
@@ -3274,11 +3363,19 @@ process_input(struct descriptor_data *d)
                     break;
                 case TELNET_SE: /* Send of subnegotiation parameters */
                     /*
-                     * @TODO Note this is probably where the screen size
-                     *       code would be put.  This, and we'd have to
-                     *       do some WILL/DO's to ask for it.
+                     * For future readers of this code.  The way telnet
+                     * protocol works, is when you're doing sub negotiations,
+                     * 'IOC' then 'SE' bytes are sent to terminate the
+                     * negotiation.
                      *
-                     *       See: https://tools.ietf.org/html/rfc1073
+                     * You can, at the termination of negotiation, then
+                     * perform some action.  If the action requires a
+                     * response to the client (like STARTTLS), you will
+                     * want to implement your response here.
+                     *
+                     * If the action doesn't require a response to the
+                     * client (such as NAWS, which is the window resize call)
+                     * you can basically ignore the SE portion if you want.
                      */
 #ifdef USE_SSL
                     /*
@@ -3359,8 +3456,8 @@ process_input(struct descriptor_data *d)
              * another.
              *
              * By default, we will respond with a DON'T.  But some
-             * stuff, like TLS and (eventually) NAWS -- the screen size
-             * stuff -- we'll want to support.
+             * stuff, like TLS and NAWS -- the screen size stuff -- we'll want
+             * to support.
              */
             unsigned char sendbuf[8];
 
@@ -3436,10 +3533,17 @@ process_input(struct descriptor_data *d)
                         d->forwarding_enabled = 1;
                 } else
 #endif
+                if (*q == TELOPT_NAWS) {
+                    sendbuf[0] = TELNET_IAC;
+                    sendbuf[1] = TELNET_DO;
+                    sendbuf[2] = (unsigned char)*q;
+                    sendbuf[3] = '\0';
+                    queue_immediate_raw(d, (const char *)sendbuf);
+
                     /* Otherwise, we don't negotiate: send back DONT
                      * option
                      */
-                {
+                } else {
                     sendbuf[0] = TELNET_IAC;
                     sendbuf[1] = TELNET_DONT;
                     sendbuf[2] = (unsigned char)*q;
@@ -3451,7 +3555,7 @@ process_input(struct descriptor_data *d)
             d->telnet_enabled = 1;
         } else if (d->telnet_state == TELNET_STATE_DO) {
             /* We don't negotiate: send back WONT option */
-            
+
             /*
              * @TODO This little block of code to send a single telnet
              *       command is repeated all over the place, maybe
@@ -3459,7 +3563,16 @@ process_input(struct descriptor_data *d)
              */
             unsigned char sendbuf[4];
             sendbuf[0] = TELNET_IAC;
-            sendbuf[1] = TELNET_WONT;
+
+            /*
+             * We want to allow NAWS
+             */
+            if ((unsigned char)*q == TELOPT_NAWS) {
+                sendbuf[1] = TELNET_WILL;
+            } else {
+                sendbuf[1] = TELNET_WONT;
+            }
+
             sendbuf[2] = (unsigned char)*q;
             sendbuf[3] = '\0';
 
@@ -3492,9 +3605,12 @@ process_input(struct descriptor_data *d)
                 d->telnet_state = TELNET_STATE_FORWARDING;
             } else {
 #endif
-            /* TODO: Start remembering other subnegotiation data. */
-            d->telnet_state = TELNET_STATE_NORMAL;
-
+            /* Check if we're doing NAWS (screen size) */
+            if (d->telnet_sb_opt == TELOPT_NAWS) {
+                d->telnet_state = TELNET_STATE_WIDTH1;
+            } else {
+                d->telnet_state = TELNET_STATE_NORMAL;
+            }
 #ifdef IP_FORWARDING
             }
 
@@ -3506,6 +3622,12 @@ process_input(struct descriptor_data *d)
                     d->forwarded_buffer[d->forwarded_size++] = *q;
             }
 #endif
+        } else if ((d->telnet_state == TELNET_STATE_WIDTH1) ||
+                   (d->telnet_state == TELNET_STATE_WIDTH2) ||
+                   (d->telnet_state == TELNET_STATE_HEIGHT1) ||
+                   (d->telnet_state == TELNET_STATE_HEIGHT2)) {
+
+            process_input_naws(d, q);
         } else if (*((unsigned char *) q) == TELNET_IAC) {
             /* Got TELNET IAC, store for next byte */
             d->telnet_state = TELNET_STATE_IAC;

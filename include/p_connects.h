@@ -429,6 +429,69 @@ void prim_descr_securep(PRIM_PROTOTYPE);
 void prim_descr_bufsize(PRIM_PROTOTYPE);
 
 /**
+ * Implementation of MUF SETWIDTH
+ *
+ * Consumes a descriptor number and screensize.  Returns nothing.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
+void prim_setwidth(PRIM_PROTOTYPE);
+
+/**
+ * Implementation of MUF SETHEIGHT
+ *
+ * Consumes a descriptor number and screensize.  Returns nothing.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
+void prim_setheight(PRIM_PROTOTYPE);
+
+/**
+ * Implementation of MUF WIDTH
+ *
+ * Consumes a descriptor.  Puts the detected width on the stack.  This width
+ * maybe 0 if it is unknown.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
+void prim_width(PRIM_PROTOTYPE);
+
+/**
+ * Implementation of MUF HEIGHT
+ *
+ * Consumes a descriptor.  Puts the detected height on the stack.  This height
+ * maybe 0 if it is unknown.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
+void prim_height(PRIM_PROTOTYPE);
+
+
+/**
  * Primitive callback functions
  */
 #define PRIMS_CONNECTS_FUNCS prim_awakep, prim_online, prim_descrcount,    \
@@ -437,7 +500,7 @@ void prim_descr_bufsize(PRIM_PROTOTYPE);
     prim_lastdescr, prim_descr_time, prim_descr_host, prim_descr_user,     \
     prim_descr_boot, prim_descr_idle, prim_descr_notify, prim_descr_dbref, \
     prim_descr_least_idle, prim_descr_most_idle, prim_descr_securep,       \
-    prim_descr_bufsize
+    prim_descr_bufsize, prim_setwidth, prim_setheight, prim_width, prim_height
 
 /**
  * Primitive names - must be in same order as the callback functions
@@ -448,6 +511,6 @@ void prim_descr_bufsize(PRIM_PROTOTYPE);
     "LASTDESCR", "DESCRTIME", "DESCRHOST", "DESCRUSER",       \
     "DESCRBOOT", "DESCRIDLE", "DESCRNOTIFY", "DESCRDBREF",    \
     "DESCRLEASTIDLE", "DESCRMOSTIDLE", "DESCRSECURE?",        \
-    "DESCRBUFSIZE"
+    "DESCRBUFSIZE", "SETWIDTH", "SETHEIGHT", "WIDTH", "HEIGHT"
 
 #endif /* !P_CONNECTS_H */

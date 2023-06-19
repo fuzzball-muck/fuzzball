@@ -60,7 +60,11 @@ typedef enum {
     TELNET_STATE_WONT,      /**< Opposite of WILL                              */
     TELNET_STATE_DONT,      /**< Opposite of DO                                */
     TELNET_STATE_SB,        /**< Subnegotiation                                */
-    TELNET_STATE_FORWARDING /**< Non-standard extension for gateway support    */
+    TELNET_STATE_FORWARDING,/**< Non-standard extension for gateway support    */
+    TELNET_STATE_WIDTH1,    /**< First width byte                              */
+    TELNET_STATE_WIDTH2,    /**< Second width byte                             */
+    TELNET_STATE_HEIGHT1,   /**< First height byte                             */
+    TELNET_STATE_HEIGHT2,   /**< Second height byte                            */
 } telnet_states_t;
 
 /*
@@ -86,8 +90,9 @@ typedef enum {
 #define TELNET_NOP  241 /**< No Op                                           */
 #define TELNET_SE   240 /**< End of subnegotiation                           */
 
-#define TELOPT_STARTTLS     46  /**< Start TLS                  */
-#define TELOPT_FORWARDED    113 /**< non-standard; for gateways */
+#define TELOPT_NAWS         31  /**< Negotiate About Window Size */
+#define TELOPT_STARTTLS     46  /**< Start TLS                   */
+#define TELOPT_FORWARDED    113 /**< non-standard; for gateways  */
 
 /**
  * Structure for queuing up blocks of text, used by the output system
@@ -166,6 +171,23 @@ struct descriptor_data {
     struct descriptor_data *next;   /**< Linked list of descriptors          */
     struct descriptor_data *prev;   /**< Double linked list                  */
     McpFrame mcpframe;              /**< MCP Frame information               */
+
+    /* Fields for dealing with Telnet screen size */
+    unsigned short detected_width;  /**< Detected width of terminal  */
+    unsigned short detected_height; /**< Detected height of terminal */
+
+    unsigned char  width_buf[2];    /**< Bytes for width protocol    */
+    unsigned char  height_buf[2];   /**< Bytes for height protocol   */
+
+    /*
+     * As required by the Telnet protocol, any occurrence of 255 in the
+     * subnegotiation must be doubled to distinguish it from the IAC
+     * character (which has a value of 255).
+     *
+     * So if this is 1, we received a 255 and need to get a second 255.
+     * It doesn't advance our state.
+     */
+    char  iac_needs_dup;
 };
 
 /**

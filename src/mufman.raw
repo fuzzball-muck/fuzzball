@@ -5200,6 +5200,83 @@ Remember that each NOTIFY adds a CR LF byte pair at the end of each line.
 Also note that \r in lines gets translated to CR LF byte pairs.
 ~
 ~
+SETWIDTH
+SETWIDTH ( int:descr int:width -- )
+
+  For the given descriptor, set the reported terminal width.  Note that this
+set width can be overriden if the players's client sends an updated size and
+is mostly here for cases where a user's client doesn't provide size information
+but you wish to use the WIDTH function.
+
+  Width is in number of characters on a line visible without scrolling.
+The maximum width is 65535.
+
+  Sizing is per-descriptor instead of per-player, because each descriptor
+represents a different connection (and a player may have multiple), and
+each connection may have a different terminal size.
+(Requires MUCKER level 3)
+~~alsosee SETHEIGHT,HEIGHT,WIDTH
+~
+~
+SETHEIGHT
+SETHEIGHT ( int:descr int:height -- )
+
+  For the given descriptor, set the reported terminal height.  Note that this
+set height can be overriden if the players's client sends an updated size and
+is mostly here for cases where a user's client doesn't provide size information
+but you wish to use the HEIGHT function.
+
+  Height is in number of lines visible without scrolling.
+The maximum height is 65535.
+
+  Sizing is per-descriptor instead of per-player, because each descriptor
+represents a different connection (and a player may have multiple), and
+each connection may have a different terminal size.
+(Requires MUCKER level 3)
+~~alsosee SETWIDTH,HEIGHT,WIDTH
+~
+~
+WIDTH
+WIDTH ( int:descr -- int:columns )
+
+  For the given descriptor, fetch the width of the client window in
+characters.  This is the maximum number of characters the client can display
+without scrolling.
+
+  Not all clients support NAWS (the Telnet protocol that reports screen size)
+and not all clients properly support NAWS (some don't report updates to
+screen size).  If the size is unknown, this will return 0.  You may use
+the SETWIDTH and SETHEIGHT primitives to force a size setting in such a
+case.
+
+  Sizing is per-descriptor instead of per-player, because each descriptor
+represents a different connection (and a player may have multiple), and
+each connection may have a different terminal size.
+~~alsosee SETWIDTH,SETHEIGHT,HEIGHT
+~
+~
+HEIGHT
+HEIGHT ( int:descr -- int:rows )
+
+  For the given descriptor, fetch the height of the client window in
+rows (lines).  This is the maximum number of lines the client can display
+without scrolling.  Though practically speaking, you may need to subtract
+a few lines from this in order to insure no scrolling as this count of lines
+may include input fields and other UI elements as would vary from client to
+client.
+
+  Not all clients support NAWS (the Telnet protocol that reports screen size)
+and not all clients properly support NAWS (some don't report updates to
+screen size).  If the size is unknown, this will return 0.  You may use
+the SETWIDTH and SETHEIGHT primitives to force a size setting in such a
+case.
+
+  Sizing is per-descriptor instead of per-player, because each descriptor
+represents a different connection (and a player may have multiple), and
+each connection may have a different terminal size.
+~~alsosee SETWIDTH,SETHEIGHT,WIDTH
+~
+~
 ~
 ~~section Event Handling Operators|EventOps
 ~

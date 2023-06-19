@@ -551,12 +551,14 @@ RIGHT
 {right:string,fieldwidth,padstring}
     Takes a string and pads it to fit the given fieldwidth, with the string
 right justified.  If no padstring is given, it assumes that it will pad the
-string with spaces.  If no fieldwidth is given, it assumes that the field
-width is 78 characters.  Example:
+string with spaces.  If no fieldwidth is given, it will use the introspected
+screen size if available (see WIDTH) or default to 78 characters if the
+screen width is unknown.  Example:
 ~~code
     {right:Hello,10,_.}
 ~~endcode
 would return the string "_._._Hello"
+~~alsosee WIDTH
 ~
 ~
 LEFT
@@ -565,12 +567,14 @@ LEFT
 {left:string,fieldwidth,padstring}
     Takes a string and pads it to fit the given fieldwidth, with the string
 left justified.  If no padstring is given, it assumes that it will pad the
-string with spaces.  If no fieldwidth is given, it assumes that the field
-width is 78 characters.  Example:
+string with spaces.  If no fieldwidth is given, it will use the introspected
+screen size if available (see WIDTH) or default to 78 characters if the
+screen width is unknown.  Example:
 ~~code
     {left:Hello,10,_.}
 ~~endcode
 would return the string "Hello_._._"
+~~alsosee WIDTH
 ~
 ~
 CENTER
@@ -579,12 +583,14 @@ CENTER
 {center:string,fieldwidth,padstring}
     Takes a string and pads it to fit the given fieldwidth, with the string
 center justified.  If no padstring is given, it assumes that it will pad the
-string with spaces.  If no fieldwidth is given, it assumes that the field
-width is 78 characters.  Example:
+string with spaces.  If no fieldwidth is given, it will use the introspected
+screen size if available (see WIDTH) or default to 78 characters if the
+screen width is unknown.  Example:
 ~~code
     {center:Hello,10,1234567890}
 ~~endcode
 would return the string "123Hello12"
+~~alsosee WIDTH
 ~
 ~
 INSTR
@@ -1113,6 +1119,28 @@ if there are multiple connects.
 DESCR
 {descr}
     Returns the descriptor number that invoked the MPI.
+~
+~
+HEIGHT
+{height}
+{height:default}
+    Returns the reported height, in lines, of a the calling descriptor's
+terminal.  This function only works if the caller's client supports reporting
+terminal size or if the SETHEIGHT MUF primintive was used to set the caller's
+screen height.  If called with no parameters, this will return 0 if the
+caller's screen size is not set.  If called with a default parameter, we
+will return that default.  24 lines is usually a reasonable default.
+~
+~
+WIDTH
+{width}
+{width:default}
+    Returns the reported width, in characters, of a the calling descriptor's
+terminal.  This function only works if the caller's client supports reporting
+terminal size or if the SETWIDTH MUF primintive was used to set the caller's
+screen width.  If called with no parameters, this will return 0 if the
+caller's screen size is not set.  If called with a default parameter, we
+will return that default.  80 characters is usually a reasonable default.
 ~
 ~~section Variable Handling Functions|Variable|Variables|Vars|Var|VarFuncs
 V|&|VARIABLE
