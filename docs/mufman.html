@@ -369,6 +369,11 @@
     <li><a href="#gui_values_get">gui_values_get</a></li>
 </ul>
 
+<h3>H's</h3>
+<ul>
+    <li><a href="#height">height</a></li>
+</ul>
+
 <h3>I's</h3>
 <ul>
     <li><a href="#if">if</a></li>
@@ -555,6 +560,7 @@
     <li><a href="#setdesc">setdesc</a></li>
     <li><a href="#setdrop">setdrop</a></li>
     <li><a href="#setfail">setfail</a></li>
+    <li><a href="#setheight">setheight</a></li>
     <li><a href="#setlink">setlink</a></li>
     <li><a href="#setlinks_array">setlinks_array</a></li>
     <li><a href="#setlockstr">setlockstr</a></li>
@@ -568,6 +574,7 @@
     <li><a href="#setseed">setseed</a></li>
     <li><a href="#setsucc">setsucc</a></li>
     <li><a href="#setsysparm">setsysparm</a></li>
+    <li><a href="#setwidth">setwidth</a></li>
     <li><a href="#shallow_copy">shallow_copy</a></li>
     <li><a href="#sign">sign</a></li>
     <li><a href="#sin">sin</a></li>
@@ -652,6 +659,7 @@
 <ul>
     <li><a href="#watchpid">watchpid</a></li>
     <li><a href="#while">while</a></li>
+    <li><a href="#width">width</a></li>
     <li><a href="#wizcall">wizcall</a></li>
 </ul>
 
@@ -8644,10 +8652,14 @@ This primitive requires at least mucker level 4.
     <li><a href="#descrtime">descrtime</a></li>
     <li><a href="#descruser">descruser</a></li>
     <li><a href="#firstdescr">firstdescr</a></li>
+    <li><a href="#height">height</a></li>
     <li><a href="#lastdescr">lastdescr</a></li>
     <li><a href="#nextdescr">nextdescr</a></li>
     <li><a href="#online">online</a></li>
     <li><a href="#online_array">online_array</a></li>
+    <li><a href="#setheight">setheight</a></li>
+    <li><a href="#setwidth">setwidth</a></li>
+    <li><a href="#width">width</a></li>
 </ul>
 
 
@@ -8910,6 +8922,119 @@ buffer.  If more data is written to the buffer than it has space for, the
 data at the beginning of the buffer gets erased with an &lt;output flushed&gt;.
 Remember that each NOTIFY adds a CR LF byte pair at the end of each line.
 Also note that \r in lines gets translated to CR LF byte pairs.
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="setwidth">SETWIDTH ( int:descr int:width -- )
+<br>
+
+<br>
+</h3>
+  For the given descriptor, set the reported terminal width.  Note that this
+set width can be overriden if the players's client sends an updated size and
+is mostly here for cases where a user's client doesn't provide size information
+but you wish to use the WIDTH function.
+
+<p>
+  Width is in number of characters on a line visible without scrolling.
+The maximum width is 65535.
+
+<p>
+  Sizing is per-descriptor instead of per-player, because each descriptor
+represents a different connection (and a player may have multiple), and
+each connection may have a different terminal size.
+(Requires MUCKER level 3)
+<p>Also see:
+    <a href="#setheight">SETHEIGHT</a>,
+    <a href="#height">HEIGHT</a> and
+    <a href="#width">WIDTH</a>
+</p>
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="setheight">SETHEIGHT ( int:descr int:height -- )
+<br>
+
+<br>
+</h3>
+  For the given descriptor, set the reported terminal height.  Note that this
+set height can be overriden if the players's client sends an updated size and
+is mostly here for cases where a user's client doesn't provide size information
+but you wish to use the HEIGHT function.
+
+<p>
+  Height is in number of lines visible without scrolling.
+The maximum height is 65535.
+
+<p>
+  Sizing is per-descriptor instead of per-player, because each descriptor
+represents a different connection (and a player may have multiple), and
+each connection may have a different terminal size.
+(Requires MUCKER level 3)
+<p>Also see:
+    <a href="#setwidth">SETWIDTH</a>,
+    <a href="#height">HEIGHT</a> and
+    <a href="#width">WIDTH</a>
+</p>
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="width">WIDTH ( int:descr -- int:columns )
+<br>
+
+<br>
+</h3>
+  For the given descriptor, fetch the width of the client window in
+characters.  This is the maximum number of characters the client can display
+without scrolling.
+
+<p>
+  Not all clients support NAWS (the Telnet protocol that reports screen size)
+and not all clients properly support NAWS (some don't report updates to
+screen size).  If the size is unknown, this will return 0.  You may use
+the SETWIDTH and SETHEIGHT primitives to force a size setting in such a
+case.
+
+<p>
+  Sizing is per-descriptor instead of per-player, because each descriptor
+represents a different connection (and a player may have multiple), and
+each connection may have a different terminal size.
+<p>Also see:
+    <a href="#setwidth">SETWIDTH</a>,
+    <a href="#setheight">SETHEIGHT</a> and
+    <a href="#height">HEIGHT</a>
+</p>
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="height">HEIGHT ( int:descr -- int:rows )
+<br>
+
+<br>
+</h3>
+  For the given descriptor, fetch the height of the client window in
+rows (lines).  This is the maximum number of lines the client can display
+without scrolling.  Though practically speaking, you may need to subtract
+a few lines from this in order to insure no scrolling as this count of lines
+may include input fields and other UI elements as would vary from client to
+client.
+
+<p>
+  Not all clients support NAWS (the Telnet protocol that reports screen size)
+and not all clients properly support NAWS (some don't report updates to
+screen size).  If the size is unknown, this will return 0.  You may use
+the SETWIDTH and SETHEIGHT primitives to force a size setting in such a
+case.
+
+<p>
+  Sizing is per-descriptor instead of per-player, because each descriptor
+represents a different connection (and a player may have multiple), and
+each connection may have a different terminal size.
+<p>Also see:
+    <a href="#setwidth">SETWIDTH</a>,
+    <a href="#setheight">SETHEIGHT</a> and
+    <a href="#width">WIDTH</a>
+</p>
 <!-- HTML_TOPICEND -->
 
 

@@ -1009,6 +1009,24 @@ const char *mfn_ge(MFUNARGS);
 const char *mfn_gt(MFUNARGS);
 
 /**
+ * MPI function to get the descriptor's screen height.
+ *
+ * arg0 is an optional default value if there is no screen height set.
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
+const char *mfn_height(MFUNARGS);
+
+/**
  * MPI function that returns true if obj1's location is obj2
  *
  * This is a lot like {contains} but it doesn't search the environment.
@@ -2828,6 +2846,24 @@ const char *mfn_version(MFUNARGS);
 const char *mfn_while(MFUNARGS);
 
 /**
+ * MPI function to get the descriptor's screen width..
+ *
+ * arg0 is an optional default value if there is no screen width set.
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
+const char *mfn_width(MFUNARGS);
+
+/**
  * MPI function that defines a variable context
  *
  * MPI is kind of weird and variables run within a context in the
@@ -2958,6 +2994,7 @@ static struct mfun_dat mfun_list[] = {
     {"FUNC", mfn_func, 0, 0, 1, 2, 9},  /* define a function */
     {"GE", mfn_ge, 1, 0, 1, 2, 2},
     {"GT", mfn_gt, 1, 0, 1, 2, 2},
+    {"HEIGHT", mfn_height, 1, 0, 1, 0, 1},
     {"HOLDS", mfn_holds, 1, 0, 1, 1, 2},
     {"IDLE", mfn_idle, 1, 0, 1, 1, 1},
     {"IF", mfn_if, 0, 0, 0, 2, 3},
@@ -3047,6 +3084,7 @@ static struct mfun_dat mfun_list[] = {
     {"V", mfn_v, 1, 0, 1, 1, 1},    /* variable value */
     {"VERSION", mfn_version, 0, 0, 0, 0, 0},
     {"WHILE", mfn_while, 0, 0, 0, 2, 2},
+    {"WIDTH", mfn_width, 1, 0, 1, 0, 1},
     {"WITH", mfn_with, 0, 0, 0, 3, 9},  /* declares var & val */
     {"XOR", mfn_xor, 1, 0, 1, 2, 2},    /* logical XOR */
 

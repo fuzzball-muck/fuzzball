@@ -5,6 +5,7 @@
  * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
  */
 #include <stddef.h>
+#include <limits.h>
 
 #include "config.h"
 
@@ -1110,6 +1111,178 @@ prim_descr_bufsize(PRIM_PROTOTYPE)
 
     CHECKOFLOW(1);
     CLEAR(oper1);
+
+    PushInt(result);
+}
+
+/**
+ * Implementation of MUF SETWIDTH
+ *
+ * Consumes a descriptor number and screensize.  Returns nothing.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
+void
+prim_setwidth(PRIM_PROTOTYPE)
+{
+    struct descriptor_data* d;
+
+    /* int int -- */
+    CHECKOP(2);
+    oper1 = POP(); /* size */
+    oper2 = POP(); /* descriptor */
+
+    if (mlev < 3)
+        abort_interp("Mucker level 3 primitive.");
+
+    if (oper1->type != PROG_INTEGER)
+        abort_interp("Argument not an integer. (1)");
+
+    if (oper2->type != PROG_INTEGER)
+        abort_interp("Argument not an integer. (2)");
+
+    if ((oper1->data.number < 0) || (oper1->data.number > USHRT_MAX))
+        abort_interp("Width must be between 0 and 65535.");
+
+    d = descrdata_by_descr(oper2->data.number);
+
+    if (!d)
+        abort_interp("Invalid descriptor number (2)");
+
+    d->detected_width = (int)oper1->data.number;
+
+    CLEAR(oper1);
+    CLEAR(oper2);
+}
+
+/**
+ * Implementation of MUF SETHEIGHT
+ *
+ * Consumes a descriptor number and screensize.  Returns nothing.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
+void
+prim_setheight(PRIM_PROTOTYPE)
+{
+    struct descriptor_data* d;
+
+    /* int int -- */
+    CHECKOP(2);
+    oper1 = POP(); /* size */
+    oper2 = POP(); /* descriptor */
+
+    if (mlev < 3)
+        abort_interp("Mucker level 3 primitive.");
+
+    if (oper1->type != PROG_INTEGER)
+        abort_interp("Argument not an integer. (1)");
+
+    if (oper2->type != PROG_INTEGER)
+        abort_interp("Argument not an integer. (2)");
+
+    if ((oper1->data.number < 0) || (oper1->data.number > USHRT_MAX))
+        abort_interp("Height must be between 0 and 65535.");
+
+    d = descrdata_by_descr(oper2->data.number);
+
+    if (!d)
+        abort_interp("Invalid descriptor number (2)");
+
+    d->detected_height = (int)oper1->data.number;
+
+    CLEAR(oper1);
+    CLEAR(oper2);
+}
+
+/**
+ * Implementation of MUF WIDTH
+ *
+ * Consumes a descriptor.  Puts the detected width on the stack.  This width
+ * maybe 0 if it is unknown.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
+void
+prim_width(PRIM_PROTOTYPE)
+{
+    const struct descriptor_data* d;
+
+    /* int -- int */
+    CHECKOP(1);
+    oper1 = POP(); /* descriptor */
+
+    if (oper1->type != PROG_INTEGER)
+        abort_interp("Argument not an integer. (1)");
+
+    d = descrdata_by_descr(oper1->data.number);
+
+    if (!d)
+        abort_interp("Invalid descriptor number (1)");
+
+    CHECKOFLOW(1);
+    CLEAR(oper1);
+
+    /* Convert short int to int */
+    result = d->detected_width; 
+
+    PushInt(result);
+}
+
+/**
+ * Implementation of MUF HEIGHT
+ *
+ * Consumes a descriptor.  Puts the detected height on the stack.  This height
+ * maybe 0 if it is unknown.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
+void
+prim_height(PRIM_PROTOTYPE)
+{
+    const struct descriptor_data* d;
+
+    /* int -- int */
+    CHECKOP(1);
+    oper1 = POP(); /* descriptor */
+
+    if (oper1->type != PROG_INTEGER)
+        abort_interp("Argument not an integer. (1)");
+
+    d = descrdata_by_descr(oper1->data.number);
+
+    if (!d)
+        abort_interp("Invalid descriptor number (1)");
+
+    CHECKOFLOW(1);
+    CLEAR(oper1);
+
+    /* Convert short int to int */
+    result = d->detected_height; 
 
     PushInt(result);
 }
