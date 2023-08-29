@@ -9,9 +9,13 @@
   Version history
   1.001, 16 March 2003: don't use .rtimestr macro, use rtimestr in
     $lib/timestr. Default USE_ATLASTON to on.
+
+  1.002, 29 August 2023: if a stale dbref is on your wf list [a toaded player]
+    then laston #wf would fail with a crash error.  Added a filtering for
+    non-player refs on the wf list. [HopeIslandCoder]
 )
 $author Natasha O'Brien
-$version 1.001
+$version 1.002
 $note A Fuzzball 6 laston.
  
 $include $lib/strings
@@ -74,7 +78,20 @@ $else
     pmatch dup ok? if 1 array_make else pop 0 array_make then
 $endif
 ;
-: do-watchfor pop me @ prop_wflist array_get_reflist ;
+: do-watchfor
+  pop me @ prop_wflist array_get_reflist
+  
+  ( Filter out invalid ref's )
+  0 array_make
+  swap foreach
+    swap pop
+    dup player? if
+      swap array_appenditem
+    else
+      pop
+    then
+  repeat
+;
 : do-room  ( strY -- arr )
     pop loc @ contents_array  ( arrContents )
     0 array_make swap foreach swap pop  ( arrPlayers db )
