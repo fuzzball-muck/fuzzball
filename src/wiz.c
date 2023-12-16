@@ -228,6 +228,7 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
                 notify(player, "You can't make a container contain itself!");
                 break;
             }
+            /* fall through */
         case TYPE_PROGRAM:
             if (Typeof(destination) != TYPE_ROOM
                 && Typeof(destination) != TYPE_PLAYER

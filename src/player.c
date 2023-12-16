@@ -230,6 +230,8 @@ toad_player(int descr, dbref player, dbref victim, dbref recipient)
                         FLAGS(stuff) &= ~(ABODE | WIZARD);
                         SetMLevel(stuff, 1);
                     }
+                    /* fall through */
+
                 case TYPE_ROOM:
                 case TYPE_THING:
                 case TYPE_EXIT:

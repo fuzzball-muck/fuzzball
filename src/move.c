@@ -896,6 +896,8 @@ do_get(int descr, dbref player, const char *what, const char *obj)
     switch (Typeof(thing)) {
         case TYPE_THING:
             ts_useobject(thing);
+            /* fall through */
+
         case TYPE_PROGRAM:
             if (obj && *obj) {
                 cando = could_doit(descr, player, thing);
@@ -918,6 +920,7 @@ do_get(int descr, dbref player, const char *what, const char *obj)
                 }
 
                 break;
+
         default:
             notify(player, "You can't take that!");
             break;
@@ -975,15 +978,15 @@ do_drop(int descr, dbref player, const char *name, const char *obj)
         if (Wizard(OWNER(player)))
             match_absolute(&md);    /* the wizard has long fingers */
 
-            if ((cont = noisy_match_result(&md)) == NOTHING) {
-                return;
-            }
+        if ((cont = noisy_match_result(&md)) == NOTHING) {
+            return;
+        }
     }
 
     switch (Typeof(thing)) {
         case TYPE_THING:
             ts_useobject(thing);
-
+            /* fall through */
         case TYPE_PROGRAM:
             if (LOCATION(thing) != player) {
                 /* Shouldn't ever happen. */

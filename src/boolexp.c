@@ -681,8 +681,10 @@ size_boolexp(struct boolexp *b)
             case BOOLEXP_AND:
             case BOOLEXP_OR:
                 result += size_boolexp(b->sub2);
+                /* fall through */
             case BOOLEXP_NOT:
                 result += size_boolexp(b->sub1);
+                /* fall through */
             case BOOLEXP_CONST:
                 break; /* CONST size is "baked into" sizeof *b */
             case BOOLEXP_PROP:
@@ -823,8 +825,9 @@ unparse_boolexp1(dbref player, struct boolexp *b, short outer_type, int fullname
                 if (PropType(b->prop_check) == PROP_STRTYP)
                     strcatn(buftop, sizeof(boolexp_buf) - (size_t)(buftop - boolexp_buf),
                             PropDataStr(b->prop_check));
-                    buftop += strlen(buftop);
-                    break;
+
+                buftop += strlen(buftop);
+                break;
             default:
                 panic("unparse_boolexp1(): bad type !");
         }

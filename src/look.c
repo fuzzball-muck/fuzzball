@@ -92,6 +92,7 @@ can_see(dbref player, dbref thing, int can_see_loc)
                 if (tp_dark_sleepers) {
                     return (!Dark(thing) && PLAYER_DESCRCOUNT(thing));
                 }
+                /* fall through */
             default:
                 return (!Dark(thing) || (controls(player, thing) && !(FLAGS(player) & STICKY)));
         }

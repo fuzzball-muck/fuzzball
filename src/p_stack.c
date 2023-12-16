@@ -1317,6 +1317,7 @@ prim_checkargs(PRIM_PROTOTYPE)
 
                             if (Typeof(ref) == TYPE_GARBAGE)
                                 ABORT_CHECKARGS("Invalid dbref.");
+                            /* fall through */
 
                         case 'd':
                             if (ref < HOME)
@@ -1327,6 +1328,7 @@ prim_checkargs(PRIM_PROTOTYPE)
                         case 'P':
                             if (ref < 0)
                                 ABORT_CHECKARGS("Expected player dbref.");
+                            /* fall through */
 
                         case 'p':
                             if ((ref >= 0) && (Typeof(ref) != TYPE_PLAYER))
@@ -1340,6 +1342,7 @@ prim_checkargs(PRIM_PROTOTYPE)
                         case 'R':
                             if ((ref < 0) && (ref != HOME))
                                 ABORT_CHECKARGS("Expected room dbref.");
+                            /* fall through */
 
                         case 'r':
                             if ((ref >= 0) && (Typeof(ref) != TYPE_ROOM))
@@ -1350,6 +1353,7 @@ prim_checkargs(PRIM_PROTOTYPE)
                         case 'T':
                             if (ref < 0)
                                 ABORT_CHECKARGS("Expected thing dbref.");
+                            /* fall through */
 
                         case 't':
                             if ((ref >= 0) && (Typeof(ref) != TYPE_THING))
@@ -1363,6 +1367,7 @@ prim_checkargs(PRIM_PROTOTYPE)
                         case 'E':
                             if (ref < 0)
                                 ABORT_CHECKARGS("Expected exit dbref.");
+                            /* fall through */
 
                         case 'e':
                             if ((ref >= 0) && (Typeof(ref) != TYPE_EXIT))
@@ -1376,6 +1381,7 @@ prim_checkargs(PRIM_PROTOTYPE)
                         case 'F':
                             if (ref < 0)
                                 ABORT_CHECKARGS("Expected program dbref.");
+                            /* fall through */
 
                         case 'f':
                             if ((ref >= 0) && (Typeof(ref) != TYPE_PROGRAM))

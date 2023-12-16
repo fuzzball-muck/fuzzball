@@ -1577,7 +1577,8 @@ do_sanfix(dbref player)
         else
             fprintf(stderr, "however the database is still corrupt.\n"
                     "Please re-run sanity check for details and fix it by hand.\n");
-            fprintf(stderr, "For details of repairs made, check %s.\n", tp_file_log_sanfix);
+
+        fprintf(stderr, "For details of repairs made, check %s.\n", tp_file_log_sanfix);
     }
 
     if (sanity_violated) {

@@ -23,6 +23,7 @@
 #include "inst.h"
 #include "interp.h"
 #include "interface.h"
+#define NO_MFUN_LIST
 #include "mfun.h"
 #include "mpi.h"
 #include "player.h"

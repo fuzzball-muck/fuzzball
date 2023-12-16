@@ -581,6 +581,7 @@ disassemble(dbref player, dbref program)
             case PROG_CLEARED:
                 snprintf(buf, sizeof(buf), "%d: (line ?) CLEARED INST AT %s:%d",
                          i, (char *) curr->data.addr, curr->line);
+                /* fall through */
             default:
                 snprintf(buf, sizeof(buf), "%d: (line ?) UNKNOWN INST", i);
         }
@@ -635,8 +636,10 @@ do_delete(dbref player, dbref program, int arg[], int argc)
     switch (argc) {
         case 0:
             arg[0] = PROGRAM_CURR_LINE(program);
+            /* fall through */
         case 1:
             arg[1] = arg[0];
+            /* fall through */
         case 2:
             /*
              * delete from line 1 to line 2
@@ -680,7 +683,8 @@ do_delete(dbref player, dbref program, int arg[], int argc)
                 notifyf(player, "%d line%s deleted", n, n != 1 ? "s" : "");
             } else
                 notify(player, "No line to delete!");
-                break;
+
+            break;
         default:
             notify(player, "Too many arguments!");
             break;
@@ -775,8 +779,10 @@ list_program(dbref player, dbref program, int *oarg, int argc,
     switch (argc) {
         case 0:
             arg[0] = PROGRAM_CURR_LINE(program);
+            /* fall through */
         case 1:
             arg[1] = arg[0];
+            /* fall through */
         case 2:
             if ((arg[0] > arg[1]) && (arg[1] != -1)) {
                 notifyf_nolisten(player, "%sArguments don't make sense!%s", msg_start, msg_end);
@@ -1310,16 +1316,17 @@ read_program(dbref i)
 
         if (!*buf)
             strcpyn(buf, sizeof(buf), " ");
-            nu->this_line = alloc_string(buf);
 
-            if (!first) {
-                prev = nu;
-                first = nu;
-            } else {
-                prev->next = nu;
-                nu->prev = prev;
-                prev = nu;
-            }
+        nu->this_line = alloc_string(buf);
+
+        if (!first) {
+            prev = nu;
+            first = nu;
+        } else {
+            prev->next = nu;
+            nu->prev = prev;
+            prev = nu;
+        }
     }
 
     fclose(f);

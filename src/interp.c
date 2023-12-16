@@ -2869,10 +2869,13 @@ do_abort_interp(dbref player, const char *msg, struct inst *pc,
     switch (nargs) {
         case 4:
             RCLEAR(oper4, file, line);
+            /* fall through */
         case 3:
             RCLEAR(oper3, file, line);
+            /* fall through */
         case 2:
             RCLEAR(oper2, file, line);
+            /* fall through */
         case 1:
             RCLEAR(oper1, file, line);
     }

@@ -2915,6 +2915,7 @@ const char *mfn_with(MFUNARGS);
  */
 const char *mfn_xor(MFUNARGS);
 
+#ifndef NO_MFUN_LIST
 /**
  * This structure defines a single MPI function and is used by the list of
  * MPI functions.
@@ -3090,5 +3091,5 @@ static struct mfun_dat mfun_list[] = {
 
     {NULL, NULL, 0, 0, 0, 0, 0} /* Ends the mfun list */
 };
-
+#endif /* !NO_MFUN_LIST */
 #endif /* !MFUN_H */
