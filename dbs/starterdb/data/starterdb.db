@@ -1034,13 +1034,14 @@ cmd-ride-check.muf
 2
 -1
 68
-18087940
+18087972
 1607388266
 1607395736
 3
 1607388599
 *Props*
 _/de:2:A scroll containing a spell called cmd-ride-check.muf
+~/prog:5:68
 *End*
 2
 #69
@@ -1070,6 +1071,110 @@ cmd-ride.muf
 1607388252
 *Props*
 _/de:2:A scroll containing a spell called cmd-ride.muf
+RIDE/_mode:2:ride
+RIDE/fly/_dropoff:2:You stop flying %l with you.
+RIDE/fly/_handup:2:You offer to let %l fly with you.
+RIDE/fly/_hopoff:2:You stop flying with %n.
+RIDE/fly/_hopon:2:You let %n fly you around.
+RIDE/fly/_lstatrider:2:is flying with %n.
+RIDE/fly/_newroom:2:flys in, bringing %l with %o.
+RIDE/fly/_odropoff:2:drops %l from the flight.
+RIDE/fly/_ohandup:2:offers to fly %l along with %o.
+RIDE/fly/_ohopoff:2:stops flying along with %n.
+RIDE/fly/_ohopon:2:decides to fly with %n.
+RIDE/fly/_oldroom:2:leaves, flying %l along with %o.
+RIDE/fly/_oodropoff:2:stops flying you around with %o.
+RIDE/fly/_oohandup:2:offers to fly you around with %o. ("Ride %n" to accept.)
+RIDE/fly/_oohopoff:2:stops flying along with you.
+RIDE/fly/_oohopon:2:decides to fly along with you.
+RIDE/fly/_ooxhopon:2:tries to fly along with you, but bumps their head and stops.
+RIDE/fly/_oxhopon:2:tries to fly along with %n, but bumps their head and stops.
+RIDE/fly/_ridermsg:2:flys you along with %o.
+RIDE/fly/_xhopon:2:You try to fly along with %n, but bump your head and stop.
+RIDE/hand/_dropoff:2:You release %l's hand.
+RIDE/hand/_handup:2:You offer to take %l around by the hand.
+RIDE/hand/_hopoff:2:You let go of %n's hand.
+RIDE/hand/_hopon:2:You take %n's hand firmly in yours.
+RIDE/hand/_lstatrider:2:is holding hands with %n.
+RIDE/hand/_newroom:2:brings %l with %o, holding hands.
+RIDE/hand/_odropoff:2:releases %l's hand.
+RIDE/hand/_ohandup:2:offers to take %l by the hand with %o.
+RIDE/hand/_ohopoff:2:releases %n's hand.
+RIDE/hand/_ohopon:2:takes %n by the hand.
+RIDE/hand/_oldroom:2:leaves, taking %l with %o by the hand.
+RIDE/hand/_oodropoff:2:releases your hand. 
+RIDE/hand/_oohandup:2:offers to take you around by the hand. ("Hopon %n" to accept.)
+RIDE/hand/_oohopoff:2:releases your hand.
+RIDE/hand/_oohopon:2:takes your hand firmly.
+RIDE/hand/_ooxhopon:2:tries to take your hand, but you pull it away.
+RIDE/hand/_oxhopon:2:tries to take %n's hand, but %s pulls it away.
+RIDE/hand/_ridermsg:2:takes you along with %o, holding your hand.
+RIDE/hand/_xhopon:2:You try to take %n's hand, but %s pulls it away.
+RIDE/paw/_dropoff:2:You release %l's paw.
+RIDE/paw/_handup:2:You offer to take %l around by the paw.
+RIDE/paw/_hopoff:2:You let go of %n's paw.
+RIDE/paw/_hopon:2:You take %n's paw firmly in yours.
+RIDE/paw/_lstatrider:2:is holding paws with %n.  
+RIDE/paw/_newroom:2:brings %l with %o, holding paws.
+RIDE/paw/_odropoff:2:releases %l's paw.
+RIDE/paw/_ohandup:2:offers to take %l by the paw with %o.   
+RIDE/paw/_ohopoff:2:releases %n's paw.
+RIDE/paw/_ohopon:2:takes %n by the paw.
+RIDE/paw/_oldroom:2:leaves, taking %l with %o by the paw.
+RIDE/paw/_oodropoff:2:releases your paw.
+RIDE/paw/_oohandup:2:offers to take you around by the paw. ("Hopon %n" to accept.)
+RIDE/paw/_oohopoff:2:releases your paw.
+RIDE/paw/_oohopon:2:takes your paw firmly.
+RIDE/paw/_oopawup:2:offers to take you around by the paw. ("Hopon %n" to accept.)
+RIDE/paw/_ooxhopon:2:tries to take your paw, but you pull it away.
+RIDE/paw/_opawup:2:offers to take %l by the paw with %o.
+RIDE/paw/_oxhopon:2:tries to take %n's paw, but %s pulls it away.
+RIDE/paw/_pawup:2:You offer to take %l around by the paw.
+RIDE/paw/_ridermsg:2:takes you along with %o, holding your paw.
+RIDE/paw/_xhopon:2:You try to take %n's paw, but %s pulls it away.
+RIDE/ride/_dropoff:2:You drop %l off of you.
+RIDE/ride/_handup:2:You offer to carry %l.
+RIDE/ride/_hopoff:2:You hop off %n.
+RIDE/ride/_hopon:2:You scramble up on %n.
+RIDE/ride/_locked:2:was locked out from the exit you just used and was droped back at your old location!
+RIDE/ride/_lstatrider:2:is being carryed by %n.
+RIDE/ride/_lstattaur:2:is carrying %l with %o.
+RIDE/ride/_newroom:2:carries %l with %o.
+RIDE/ride/_notatoldloc:2:moved away from you back there, and did not come with.
+RIDE/ride/_notawake:2:has fallen asleep and slipped off you back there.
+RIDE/ride/_notonwho:2:is not riding on you.
+RIDE/ride/_odropoff:2:drops %l off of %o.
+RIDE/ride/_ohandup:2:offers to carry %l with %o.
+RIDE/ride/_ohopoff:2:hops off of %n.
+RIDE/ride/_ohopon:2:scrambles up on %n.
+RIDE/ride/_oldroom:2:takes %l with %o.
+RIDE/ride/_oodropoff:2:drops you off of %o.
+RIDE/ride/_oohandup:2:offers to carry you. "HOPON %n" to accept.
+RIDE/ride/_oohopoff:2:hops off of you.
+RIDE/ride/_oohopon:2:scrambles up on you.
+RIDE/ride/_ooxhopon:2:tries to scramble up on you, but slips and falls off.
+RIDE/ride/_oxhopon:2:tries to scramble up on %n, but slips and falls off.
+RIDE/ride/_ridermsg:2:carries you along with %o.
+RIDE/ride/_xhopon:2:You try to scramble up on %n, but slip and fall off.
+RIDE/walk/_dropoff:2:You stop %l from walking with you.
+RIDE/walk/_handup:2:You offer to let %l walk along with you.
+RIDE/walk/_hopoff:2:You stop walking along with %n.
+RIDE/walk/_hopon:2:You are going to walk along with %n.
+RIDE/walk/_lstatrider:2:is walking along with %n.
+RIDE/walk/_newroom:2:enters, with %l walking along next to %o.
+RIDE/walk/_odropoff:2:stops %l from walking along with %o.
+RIDE/walk/_ohandup:2:offers to let %l walk along with %o.
+RIDE/walk/_ohopoff:2:stops walking along with %n.
+RIDE/walk/_ohopon:2:decides to walk along with %n.
+RIDE/walk/_oldroom:2:leaves, with %l walking along with %o.
+RIDE/walk/_oodropoff:2:stops you from walking with %o.
+RIDE/walk/_oohandup:2:offers to let you walk along with %o. ("Hopon %n" to accept.)
+RIDE/walk/_oohopoff:2:stops walking along with you.
+RIDE/walk/_oohopon:2:decides to walk along with you.
+RIDE/walk/_ooxhopon:2:tries to fall in line behind you, but you don't allow them to.
+RIDE/walk/_oxhopon:2:tries to fall in line next to %n, but %s moves away and does not allow them to.
+RIDE/walk/_ridermsg:2:walks along, with you following %o.
+RIDE/walk/_xhopon:2:You try to fall in next to %n, but they move away and you don't get close.
 *End*
 2
 #67
