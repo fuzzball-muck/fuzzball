@@ -703,7 +703,7 @@ prim_nextdescr(PRIM_PROTOTYPE)
 void
 prim_descriptors(PRIM_PROTOTYPE)
 {
-    int mydescr, mycount = 0;
+    int mycount = 0;
     int *darr;
     int dcount;
     struct descriptor_data* d;

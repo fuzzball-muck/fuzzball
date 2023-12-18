@@ -414,7 +414,6 @@ print_sections(FILE * f, FILE * hf)
     char sectname[256];
     char *osectptr;
     char *sectptr;
-    char buf[256];
     char buf3[256];
     char buf4[256];
     char *currsect;
@@ -429,7 +428,6 @@ print_sections(FILE * f, FILE * hf)
 
     for (struct topiclist *sptr = secthead; sptr; sptr = sptr->next) {
         currsect = sptr->section;
-        buf[0] = '\0';
 
         strcpyn(sectname, sizeof(sectname), currsect);
         sectptr = strchr(sectname, '|');

@@ -255,6 +255,7 @@ prim_moveto(PRIM_PROTOTYPE)
                         && !(Typeof(dest) == TYPE_THING
                         && (FLAGS(dest) & VEHICLE)))
                     abort_interp("Bad destination.");
+                /* fall through */
 
             case TYPE_THING:
                 if (parent_loop_check(victim, dest))
@@ -295,6 +296,7 @@ prim_moveto(PRIM_PROTOTYPE)
                     abort_interp("Destination doesn't accept zombies.");
 
                 ts_lastuseobject(victim);
+                /* fall through */
 
             case TYPE_PROGRAM: {
                 dbref matchroom = NOTHING;

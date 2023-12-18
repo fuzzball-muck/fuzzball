@@ -257,6 +257,7 @@ bailout(int sig)
 void
 sig_dump_status(int i)
 {
+    (void)i;
     dump_status();
 }
 
@@ -272,6 +273,7 @@ sig_dump_status(int i)
 void
 sig_emerg(int i)
 {
+    (void)i;
     /*
      * @TODO This should probably log_status as well ?
      */
@@ -307,6 +309,8 @@ wall_status(const char *s)
 void
 sig_reconfigure(int i)
 {
+    (void)i;
+
     wall_status("Configuration reload requested remotely.");
 
 #ifdef USE_SSL
@@ -328,6 +332,8 @@ sig_reconfigure(int i)
 void
 sig_shutdown(int i)
 {
+    (void)i;
+
     log_status("SHUTDOWN: via SIGNAL");
     shutdown_flag = 1;
     restart_flag = 0;
@@ -341,6 +347,8 @@ sig_shutdown(int i)
 void
 sig_reap(int i)
 {
+    (void)i;
+
     /*
      * If DISKBASE is not defined, then there are two types of
      * children that can die.  First is the nameservice resolver.
@@ -445,6 +453,8 @@ sig_reap(int i)
 void
 sig_reap(int i)
 {
+    (void)i;
+
 }
 #endif
 
@@ -456,6 +466,7 @@ sig_reap(int i)
 void
 sig_shutdown(int i)
 {
+    (void)i;
 }
 
 /*

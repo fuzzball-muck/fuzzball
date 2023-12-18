@@ -22,6 +22,7 @@
 #include "fbtime.h"
 #include "game.h"
 #include "interface.h"
+#define NO_MFUN_LIST
 #include "mfun.h"
 #include "mpi.h"
 #include "props.h"

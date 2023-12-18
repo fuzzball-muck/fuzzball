@@ -939,10 +939,6 @@ static int do_resolve(void) {
             sscanf(bufptr, "(%" SCNu16 ")%" SCNu16, &prt, &myprt);
             *bufptr = '\0';
 
-            if (myprt > 65535 || myprt < 0) {
-                continue;
-            }
-
             if (inet_pton(AF_INET6, buf, &fullip_v6) <= 0) {
                 continue;
             }
@@ -962,15 +958,11 @@ static int do_resolve(void) {
             sscanf(buf, "%d.%d.%d.%d(%" SCNu16 ")%" SCNu16, &ip1, &ip2, &ip3,
                    &ip4, &prt, &myprt);
 
-            if (ip1 < 0 || ip2 < 0 || ip3 < 0 || ip4 < 0 || prt < 0) {
+            if (ip1 < 0 || ip2 < 0 || ip3 < 0 || ip4 < 0) {
                 continue;
             }
 
-            if (ip1 > 255 || ip2 > 255 || ip3 > 255 || ip4 > 255 || prt > 65535) {
-                continue;
-            }
-
-            if (myprt > 65535 || myprt < 0) {
+            if (ip1 > 255 || ip2 > 255 || ip3 > 255 || ip4 > 255) {
                 continue;
             }
 

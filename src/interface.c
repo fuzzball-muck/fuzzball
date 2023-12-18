@@ -1209,8 +1209,7 @@ welcome_user(struct descriptor_data *d)
              * to DEFAULT_WELCOME_MESSAGE anyway.
              */
             size_t ct = fread(buf, sizeof(char), BUFFER_LEN - 1, f);
-            if (ct >= 0)
-                buf[ct] = '\0';
+            buf[ct] = '\0';
             fclose(f);
         }
     }
@@ -3202,6 +3201,9 @@ process_input_naws(struct descriptor_data *d, const char* q)
             d->detected_width = ntohs(*((unsigned short*)d->width_buf));
 
             break;
+
+        default:
+            break;
     }
 }
 
@@ -3776,7 +3778,6 @@ update_server_certificates(void)
 {
     time_t new_mtime_cert_file;
     time_t new_mtime_key_file;
-    SSL_CTX* new_ctx;
 
     new_mtime_cert_file = cert_file_mtime( tp_ssl_cert_file );
     new_mtime_key_file = cert_file_mtime( tp_ssl_key_file );
@@ -3811,7 +3812,6 @@ update_server_certificates(void)
 static SSL_CTX *
 configure_new_ssl_ctx(void)
 {
-    EC_KEY *eckey;
     int ssl_status_ok = 1;
 
     SSL_CTX *new_ssl_ctx = SSL_CTX_new(SSLv23_server_method());
@@ -3860,10 +3860,9 @@ configure_new_ssl_ctx(void)
      * In OpenSSL >= 1.0.2, this exists; otherwise, fallback to the older
      * API where we have to name a curve.
      */
-    eckey = NULL;
     SSL_CTX_set_ecdh_auto(new_ssl_ctx, 1);
 #else
-    eckey = EC_KEY_new_by_curve_name(NID_X9_62_prime256v1);
+    EC_KEY eckey = EC_KEY_new_by_curve_name(NID_X9_62_prime256v1);
     SSL_CTX_set_tmp_ecdh(new_ssl_ctx, eckey);
 #endif
 
@@ -3941,8 +3940,8 @@ reconfigure_ssl(void)
  * Also, this doesn't wait for the resolver's pid.... it waits for any
  * process to exit.  Theoretically a forked dump could make this return.
  */
-void
-static kill_resolver(void)
+static void
+kill_resolver(void)
 {
     int i;
 
