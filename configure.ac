@@ -73,7 +73,7 @@ AC_ARG_WITH(pcre,
 if test "$pcreenable" = "1"; then
 	AC_MSG_CHECKING([for PCRE directory])
 	if test -z "$pcredir"; then
-		for maindir in ~ /usr/local /usr/local/opt /usr/pkg /sw /opt/local /opt /usr
+		for maindir in ~ /opt /opt/homebrew /opt/local /sw /usr /usr/local /usr/local/opt /usr/pkg
 		do
 			for dir in $maindir $maindir/pcre
 			do
