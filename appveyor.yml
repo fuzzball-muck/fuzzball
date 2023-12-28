@@ -3,9 +3,6 @@ image: Visual Studio 2019
 
 version: '{build}'
 
-environment:
-  matrix:
-    - CONAN_VERSION: "1.62.0"
 install:
     # Set up Visual Studio build environment, 32-bit output with a 64-bit builder
     # > Increment version number when newer version of Visual Studio supported by Appveyor
@@ -31,7 +28,7 @@ install:
         # Add to path (semicolon is separator)
         $env:PATH += ";$pythonCmdOutput"
     # Specifically use Python 3's "pip" to install Conan
-    - cmd: py.exe -3 -m pip install conan
+    - cmd: py.exe -3 -m pip install conan==1.x.x
     - cmd: conan user # Create conan data directory
     - cmd: conan --version
     - cmd: choco install doxygen.install
