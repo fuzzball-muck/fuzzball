@@ -29,7 +29,6 @@ install:
         $env:PATH += ";$pythonCmdOutput"
     # Specifically use Python 3's "pip" to install Conan
     - cmd: py.exe -3 -m pip install conan
-    - cmd: conan user # Create conan data directory
     - cmd: conan --version
     - cmd: choco install doxygen.install
 
