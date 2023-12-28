@@ -2239,7 +2239,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
                             if (!(PROGRAM_CODE(temp1->data.objref))) {
                                 char error_buf[BUFFER_LEN];
                                 char unparse_buf[BUFFER_LEN];
-                                unparse_object(player, temp1, unparse_buf, sizeof(unparse_buf));
+                                unparse_object(player, temp1->data.objref, unparse_buf, sizeof(unparse_buf));
                                 snprintf(error_buf, sizeof(error_buf), "Unable to compile %s.", unparse_buf);
                                 abort_loop(error_buf, temp1, temp2);
                             }
