@@ -787,6 +787,13 @@ do_set(int descr, dbref player, const char *name, const char *flag)
         return;
     }
 
+
+    if (ISGUEST(player) &&
+           (!Wizard(player) || *flag != NOT_TOKEN || !string_prefix("GUEST", p))) {
+        notifyf_nolisten(player, "Guests are not allowed to @set.");
+        return;
+    }
+
     /* identify flag */
 
     /*

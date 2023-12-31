@@ -1393,7 +1393,6 @@ process_command(int descr, dbref player, const char *command)
                             case 'e':
                             case 'E':
                                 Matched("@set");
-                                NOGUEST("@set", player);
                                 do_set(descr, player, arg1, arg2);
                                 break;
 
