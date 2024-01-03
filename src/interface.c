@@ -1650,8 +1650,9 @@ check_connect(struct descriptor_data *d, const char *msg)
     char user[MAX_COMMAND_LEN];
     char password[MAX_COMMAND_LEN];
     dbref player;
-
     char connect_string[BUFFER_LEN];
+    char error[SMALL_BUFFER_LEN] = "";
+
     snprintf(connect_string, sizeof(connect_string), "%sfrom %s",
 #ifdef USE_SSL
          d->ssl_session ? "securely " : "",
@@ -1755,10 +1756,10 @@ check_connect(struct descriptor_data *d, const char *msg)
                 queue_write(d, "\r\n", 2);
                 d->booted = 1;
             } else {
-                player = create_player(user, password);
+                player = create_player(user, password, error);
 
                 if (player == NOTHING) {
-                    queue_ansi(d, tp_create_fail_mesg);
+                    queue_ansi(d, error);
                     queue_write(d, "\r\n", 2);
                     log_status("FAILED CREATE: '%s', descriptor %d, %s",
                             user, d->descriptor, connect_string);

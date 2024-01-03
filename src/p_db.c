@@ -964,6 +964,8 @@ prim_rmatch(PRIM_PROTOTYPE)
 void
 prim_copyobj(PRIM_PROTOTYPE)
 {
+    char error[SMALL_BUFFER_LEN] = "";
+
     CHECKOP(1);
     oper1 = POP();
 
@@ -982,12 +984,12 @@ prim_copyobj(PRIM_PROTOTYPE)
     if ((mlev < 3) && !permissions(ProgUID, ref))
         abort_interp("Permission denied.");
 
-    if (!ok_object_name(NAME(oper1->data.objref), TYPE_THING))
-        abort_interp("Invalid name.");
-
     fr->already_created++;
 
-    dbref newobj = clone_thing(ref, player, mlev == 4);
+    dbref newobj = clone_thing(ref, player, mlev == 4, error);
+    if (newobj == NOTHING) {
+        abort_interp(error);
+    }
 
     CLEAR(oper1);
     PushObject(newobj);
@@ -2121,6 +2123,8 @@ prim_setown(PRIM_PROTOTYPE)
 void
 prim_newobject(PRIM_PROTOTYPE)
 {
+    char error[SMALL_BUFFER_LEN] = "";
+
     CHECKOP(2);
     oper1 = POP();              /* string: name */
     oper2 = POP();              /* dbref: location */
@@ -2148,14 +2152,10 @@ prim_newobject(PRIM_PROTOTYPE)
     {
         const char *b = DoNullInd(oper1->data.string);
 
-       /**
-        * @TODO Consider folding the name check into all the create_object
-        *       function.  Same comment for the other NEW* primitives.
-        */
-        if (!ok_object_name(b, TYPE_THING))
-            abort_interp("Invalid name. (2)");
-
-        ref = create_thing(ProgUID, b, oper2->data.objref);
+        ref = create_thing(ProgUID, b, oper2->data.objref, error);
+        if (ref == NOTHING) {
+            abort_interp(error);
+        }
     }
 
     CLEAR(oper1);
@@ -2184,6 +2184,8 @@ prim_newobject(PRIM_PROTOTYPE)
 void
 prim_newroom(PRIM_PROTOTYPE)
 {
+    char error[SMALL_BUFFER_LEN] = "";
+
     CHECKOP(2);
     oper1 = POP();              /* string: name */
     oper2 = POP();              /* dbref: location */
@@ -2194,7 +2196,7 @@ prim_newroom(PRIM_PROTOTYPE)
     CHECKOFLOW(1);
 
     ref = oper2->data.objref;
-    if (!valid_object(oper2) || (Typeof(ref) != TYPE_ROOM))
+    if (ref != NOTHING && (!valid_object(oper2) || Typeof(ref) != TYPE_ROOM))
         abort_interp("Invalid argument (1)");
 
     if (oper1->type != PROG_STRING)
@@ -2208,10 +2210,20 @@ prim_newroom(PRIM_PROTOTYPE)
     {
         const char *b = DoNullInd(oper1->data.string);
 
-        if (!ok_object_name(b, TYPE_ROOM))
-            abort_interp("Invalid name. (2)");
+        if (ref == NOTHING) {
+            ref = LOCATION(LOCATION(player));
+    
+            while ((ref != NOTHING) && !(FLAGS(ref) & ABODE))
+                ref = LOCATION(ref);
+    
+            if (ref == NOTHING)
+                ref = tp_default_room_parent;
+        }
 
-        ref = create_room(ProgUID, b, ref);
+        ref = create_room(ProgUID, b, ref, error);
+        if (ref == NOTHING) {
+            abort_interp(error);
+        }
 
         CLEAR(oper1);
         CLEAR(oper2);
@@ -2239,6 +2251,7 @@ prim_newroom(PRIM_PROTOTYPE)
 void
 prim_newexit(PRIM_PROTOTYPE)
 {
+    char error[SMALL_BUFFER_LEN] = "";
     CHECKOP(2);
     oper1 = POP();              /* string: name */
     oper2 = POP();              /* dbref: location */
@@ -2268,11 +2281,11 @@ prim_newexit(PRIM_PROTOTYPE)
     {
         const char *b = DoNullInd(oper1->data.string);
 
-        if (!ok_object_name(b, TYPE_EXIT))
-            abort_interp("Invalid name. (2)");
-
         ref = create_action(ProgUID, oper1->data.string->data,
-                oper2->data.objref);
+                oper2->data.objref, error);
+        if (ref == NOTHING) {
+            abort_interp(error);
+        }
 
         CLEAR(oper1);
         CLEAR(oper2);
@@ -2901,6 +2914,7 @@ prim_newplayer(PRIM_PROTOTYPE)
 {
     dbref newplayer;
     char *name, *password;
+    char error[SMALL_BUFFER_LEN] = "";
 
     CHECKOP(2);
     oper1 = POP();
@@ -2918,10 +2932,10 @@ prim_newplayer(PRIM_PROTOTYPE)
     name = DoNullInd(oper2->data.string);
     password = DoNullInd(oper1->data.string);
 
-    newplayer = create_player(name, password);
-
-    if (newplayer == NOTHING)
-        abort_interp("Create failed.");
+    newplayer = create_player(name, password, error);
+    if (newplayer == NOTHING) {
+        abort_interp(error);
+    }
 
     log_status("PCREATED[MUF]: %s(%d) by %s(%d)",
             NAME(newplayer), (int) newplayer, NAME(player), (int) player);
@@ -2954,6 +2968,7 @@ prim_copyplayer(PRIM_PROTOTYPE)
 {
     dbref newplayer, ref;
     char *name, *password;
+    char error[SMALL_BUFFER_LEN] = "";
 
     CHECKOP(3);
     oper1 = POP();
@@ -2982,10 +2997,10 @@ prim_copyplayer(PRIM_PROTOTYPE)
     name = DoNullInd(oper2->data.string);
     password = DoNullInd(oper1->data.string);
 
-    newplayer = create_player(name, password);
-
-    if (newplayer == NOTHING)
-        abort_interp("Create failed.");
+    newplayer = create_player(name, password, error);
+    if (newplayer == NOTHING) {
+        abort_interp(error);
+    }
 
     /* initialize everything */
     FLAGS(newplayer) = FLAGS(ref);
@@ -3284,6 +3299,7 @@ void
 prim_newprogram(PRIM_PROTOTYPE)
 {
     dbref newprog;
+    char error[SMALL_BUFFER_LEN] = "";
 
     CHECKOP(1);
     oper1 = POP();
@@ -3296,10 +3312,10 @@ prim_newprogram(PRIM_PROTOTYPE)
 
     char *b = DoNullInd(oper1->data.string);
 
-    if (!ok_object_name(b, TYPE_PROGRAM))
-        abort_interp("Invalid name (2)");
-
-    newprog = create_program(ProgUID, b);
+    newprog = create_program(ProgUID, b, error);
+    if (newprog == NOTHING) {
+        abort_interp(error);
+    }
 
     CLEAR(oper1);
     PushObject(newprog);

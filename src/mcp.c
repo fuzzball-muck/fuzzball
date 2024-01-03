@@ -2134,24 +2134,7 @@ do_mcpprogram(int descr, dbref player, const char *name, const char *rname)
     dbref program;
     struct match_data md;
     char unparse_buf[BUFFER_LEN];
-
-    /* @TODO Should this sanity check be a part of create_program
-     *       instead?  A little scary to think we're creating programs
-     *       in two places (here and @program) but we're relying on
-     *       the sanity checks to be the same -- what if there is
-     *       a change to one and we forget to change the other?
-     *
-     *       We may want to consider moving all similar sanity checks
-     *       to the create_* functions -- a quick look suggests that
-     *       the create_* functions are "gullible" and accept whatever
-     *       is given to them.  This is really hazardous from an API
-     *       perspective.
-     */
-
-    if (!ok_object_name(name, TYPE_PROGRAM)) {
-        notify(player, "Please specify a valid name for this program.");
-        return;
-    }
+    char error[SMALL_BUFFER_LEN] = "";
 
     init_match(descr, player, name, TYPE_PROGRAM, &md);
 
@@ -2161,7 +2144,12 @@ do_mcpprogram(int descr, dbref player, const char *name, const char *rname)
     match_absolute(&md);
 
     if (*rname || (program = match_result(&md)) == NOTHING) {
-        program = create_program(player, name);
+        program = create_program(player, name, error);
+        if (program == NOTHING) {
+          notify_nolisten(player, error, 1);
+          return;
+        }
+
         unparse_object(player, program, unparse_buf, sizeof(unparse_buf));
         notifyf(player, "Program %s created.", unparse_buf);
 

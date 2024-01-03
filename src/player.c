@@ -151,21 +151,31 @@ set_password(dbref player, const char *password)
  * tp_player_start, tp_start_pennies and tp_pcreate_flags influence player
  * creation in what should be obvious ways.
  *
+ * Uses an error parameter to communicate the reason for failure.
+ *
  * @see ok_object_name
  * @see ok_password
  *
  * @param name the player name to create
  * @param password the password that will be hashed and set
+ * @param[out] error why the create failed
+ * @return the dbref of the new program, or NOTHING if it failed.
  */
 dbref
-create_player(const char *name, const char *password)
+create_player(const char *name, const char *password, char *error)
 {
     dbref player;
 
-    if (!ok_object_name(name, TYPE_PLAYER) || !ok_password(password))
+    if (!ok_object_name(name, TYPE_PLAYER)) {
+        snprintf(error, SMALL_BUFFER_LEN, "You cannot use that name for a player.");
         return NOTHING;
+    }
 
-    /* else he doesn't already exist, create him */
+    if (!ok_password(password)) {
+        snprintf(error, SMALL_BUFFER_LEN, "You cannot use that password.");
+        return NOTHING;
+    }
+
     player = new_object(true);
 
     /* initialize everything */

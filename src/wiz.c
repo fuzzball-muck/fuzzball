@@ -991,15 +991,17 @@ void
 do_pcreate(dbref player, const char *user, const char *password)
 {
     dbref newguy;
+    char error[SMALL_BUFFER_LEN] = "";
 
-    newguy = create_player(user, password);
+    newguy = create_player(user, password, error);
 
     if (newguy == NOTHING) {
-        notify(player, "Create failed.");
-    } else {
-        log_status("PCREATED %s(%d) by %s(%d)", NAME(newguy), newguy, NAME(player), player);
-        notifyf(player, "Player %s created as object #%d.", user, newguy);
+        notify_nolisten(player, error, 1);
+        return;
     }
+
+    log_status("PCREATED %s(%d) by %s(%d)", NAME(newguy), newguy, NAME(player), player);
+    notifyf(player, "Player %s created as object #%d.", user, newguy);
 }
 
 #ifndef NO_USAGE_COMMAND

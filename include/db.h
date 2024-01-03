@@ -1900,12 +1900,15 @@ int controls_link(dbref who, dbref what);
  * With a given owner, name, and source (location).  Returns the DBREF
  * of the exit.  The 'name' memory is copied.
  *
+ * Uses an error parameter to communicate the reason for failure.
+ *
  * @param player the owner dbref
  * @param name the name of the new exit
  * @param source the location to put the exit
- * @return the dbref of the new exit
+ * @param[out] error why the create failed
+ * @return the dbref of the new exit, or NOTHING if it failed.
  */
-dbref create_action(dbref player, const char *name, dbref source);
+dbref create_action(dbref player, const char *name, dbref source, char *error);
 
 /**
  * Allocate an PROGRAM type object
@@ -1913,11 +1916,14 @@ dbref create_action(dbref player, const char *name, dbref source);
  * With a given name and owner/creator.  Returns the DBREF of the program. 
  * The 'name' memory is copied.  Initializes the "special" fields.
  *
- * @param name the name of the new exit
+ * Uses an error parameter to communicate the reason for failure.
+ *
  * @param player the owner dbref
- * @return the dbref of the new program
+ * @param name the name of the new program
+ * @param[out] error why the create failed
+ * @return the dbref of the new program, or NOTHING if it failed.
  */
-dbref create_program(dbref player, const char *name);
+dbref create_program(dbref player, const char *name, char *error);
 
 /**
  * Allocate an ROOM type object
@@ -1928,12 +1934,15 @@ dbref create_program(dbref player, const char *name);
  *
  * If the player is JUMP_OK, then the created room will be JUMP_OK as well.
  *
+ * Uses an error parameter to communicate the reason for failure.
+ *
  * @param player the owner dbref
  * @param name the name of the new room
  * @param parent the parent room's dbref
- * @return the dbref of the new room
+ * @param[out] error why the create failed
+ * @return the dbref of the new room, or NOTHING if it failed.
  */
-dbref create_room(dbref player, const char *name, dbref parent);
+dbref create_room(dbref player, const char *name, dbref parent, char *error);
 
 /**
  * Allocate an THING type object
@@ -1945,22 +1954,28 @@ dbref create_room(dbref player, const char *name, dbref parent);
  * The home is set to the current room if the player controls the room;
  * otherwise the home is set to the player.
  *
+ * Uses an error parameter to communicate the reason for failure.
+ *
  * @param player the owner dbref
  * @param name the name of the new thing
  * @param location the location to place the object
- * @return the dbref of the new thing
+ * @param[out] error why the create failed
+ * @return the dbref of the new thing, or NOTHING if it failed.
  */
-dbref create_thing(dbref player, const char *name, dbref location);
+dbref create_thing(dbref player, const char *name, dbref location, char *error);
 
 /**
  * Clones a thing.
  *
+ * Uses an error parameter to communicate the reason for failure.
+ *
  * @param thing the thing to clone
  * @param player the player for determining the cloned thing's home
  * @param copy_hidden_props if true, this copies hidden properties
- * @return the dbref of the cloned thing
+ * @param[out] error why the create failed
+ * @return the dbref of the cloned thing, or NOTHING if it failed.
  */
-dbref clone_thing(dbref thing, dbref player, int copy_hidden_props);
+dbref clone_thing(dbref thing, dbref player, int copy_hidden_props, char *error);
 
 /**
  * Clear a DB object

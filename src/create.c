@@ -55,6 +55,7 @@ do_open(int descr, dbref player, const char *direction, const char *linkto)
     char unparse_buf[BUFFER_LEN];
     char *qname, *rname;
     int ndest;
+    char error[SMALL_BUFFER_LEN] = "";
 
     strcpyn(buf2, sizeof(buf2), linkto);
 
@@ -74,39 +75,41 @@ do_open(int descr, dbref player, const char *direction, const char *linkto)
 
     loc = LOCATION(player);
 
-    if (!ok_object_name(direction, TYPE_EXIT)) {
-        notify(player, "Please specify a valid name for this exit.");
-        return;
-    }
-
     if (!controls(player, loc)) {
         notify(player, "Permission denied. (you don't control the location)");
         return;
-    } else if (!payfor(player, tp_exit_cost)) {
+    }
+
+    if (!payfor(player, tp_exit_cost)) {
         notifyf(player, "Sorry, you don't have enough %s to open an exit.", tp_pennies);
         return;
-    } else {
-        exit = create_action(player, direction, loc);
-        unparse_object(player, exit, unparse_buf, sizeof(unparse_buf));
-        notifyf(player, "Exit %s opened.", unparse_buf);
+    }
 
-        /* check second arg to see if we should do a link */
-        if (*qname != '\0') {
-            notify(player, "Trying to link...");
+    exit = create_action(player, direction, loc, error);
+    if (exit == NOTHING) {
+        notify_nolisten(player, error, 1);
+        return;
+    }
 
-            if (!payfor(player, tp_link_cost)) {
-                notifyf(player, "You don't have enough %s to link.", tp_pennies);
-            } else {
-                ndest = link_exit(descr, player, exit, (char *) qname, good_dest);
-                DBFETCH(exit)->sp.exit.ndest = ndest;
-                DBFETCH(exit)->sp.exit.dest = malloc(sizeof(dbref) * (size_t)ndest);
+    unparse_object(player, exit, unparse_buf, sizeof(unparse_buf));
+    notifyf(player, "Exit %s opened.", unparse_buf);
 
-                for (int i = 0; i < ndest; i++) {
-                    (DBFETCH(exit)->sp.exit.dest)[i] = good_dest[i];
-                }
+    /* check second arg to see if we should do a link */
+    if (*qname != '\0') {
+        notify(player, "Trying to link...");
 
-                DBDIRTY(exit);
+        if (!payfor(player, tp_link_cost)) {
+            notifyf(player, "You don't have enough %s to link.", tp_pennies);
+        } else {
+            ndest = link_exit(descr, player, exit, (char *) qname, good_dest);
+            DBFETCH(exit)->sp.exit.ndest = ndest;
+            DBFETCH(exit)->sp.exit.dest = malloc(sizeof(dbref) * (size_t)ndest);
+
+            for (int i = 0; i < ndest; i++) {
+                (DBFETCH(exit)->sp.exit.dest)[i] = good_dest[i];
             }
+
+            DBDIRTY(exit);
         }
     }
 
@@ -316,11 +319,7 @@ do_dig(int descr, dbref player, const char *name, const char *pname)
     char *rname;
     char *qname;
     struct match_data md;
-
-    if (!ok_object_name(name, TYPE_ROOM)) {
-        notify(player, "Please specify a valid name for this room.");
-        return;
-    }
+    char error[SMALL_BUFFER_LEN] = "";
 
     if (!payfor(player, tp_room_cost)) {
         notifyf(player, "Sorry, you don't have enough %s to dig a room.", tp_pennies);
@@ -329,21 +328,18 @@ do_dig(int descr, dbref player, const char *name, const char *pname)
 
     newparent = LOCATION(LOCATION(player));
 
-    /**
-     * @TODO: Okay, so, this isn't the right place to put this TODO,
-     *        but I don't want to forget it.  This logic should be
-     *        put in the newroom MUF.  Maybe if you indicate a parent room
-     *        of #-1 it will use this logic?  An *extremely* common problem
-     *        is people who make @dig replacements, editrooms, and other such
-     *        tools screw up this logic.
-     */
     while ((newparent != NOTHING) && !(FLAGS(newparent) & ABODE))
         newparent = LOCATION(newparent);
 
     if (newparent == NOTHING)
         newparent = tp_default_room_parent;
 
-    room = create_room(player, name, newparent);
+    room = create_room(player, name, newparent, error);
+    if (room == NOTHING) {
+        notify_nolisten(player, error, 1);
+        return;
+    }
+
     unparse_object(player, room, unparse_buf, sizeof(unparse_buf));
     notifyf(player, "Room %s created.", unparse_buf);
 
@@ -375,14 +371,12 @@ do_dig(int descr, dbref player, const char *name, const char *pname)
 
         if ((parent = noisy_match_result(&md)) == NOTHING) {
             notify(player, "Parent set to default.");
+        } else if (!can_link_to(player, Typeof(room), parent) || room == parent) {
+            notify(player, "Permission denied.  Parent set to default.");
         } else {
-            if (!can_link_to(player, Typeof(room), parent) || room == parent) {
-                notify(player, "Permission denied.  Parent set to default.");
-            } else {
-                moveto(room, parent);
-                unparse_object(player, parent, unparse_buf, sizeof(unparse_buf));
-                notifyf(player, "Parent set to %s.", unparse_buf);
-            }
+            moveto(room, parent);
+            unparse_object(player, parent, unparse_buf, sizeof(unparse_buf));
+            notifyf(player, "Parent set to %s.", unparse_buf);
         }
     }
 
@@ -411,16 +405,12 @@ do_program(int descr, dbref player, const char *name, const char *rname)
     dbref program;
     struct match_data md;
     char unparse_buf[BUFFER_LEN];
+    char error[SMALL_BUFFER_LEN] = "";
 
     /* @TODO: So if we decide to normalize how permissions are handled,
      *        this definitely needs some normalization.  It has no checks
      *        and relies entirely on the caller (the big switch statement)
      */
-
-    if (!ok_object_name(name, TYPE_PROGRAM)) {
-        notify(player, "Please specify a valid name for this program.");
-        return;
-    }
 
     init_match(descr, player, name, TYPE_PROGRAM, &md);
 
@@ -430,7 +420,12 @@ do_program(int descr, dbref player, const char *name, const char *rname)
     match_absolute(&md);
 
     if (*rname || (program = match_result(&md)) == NOTHING) {
-        program = create_program(player, name);
+        program = create_program(player, name, error);
+        if (program == NOTHING) {
+            notify_nolisten(player, error, 1);
+            return;
+        }
+
         unparse_object(player, program, unparse_buf, sizeof(unparse_buf));
         notifyf(player, "Program %s created.", unparse_buf);
 
@@ -507,6 +502,7 @@ do_clone(int descr, dbref player, const char *name, const char *rname)
     struct match_data md;
     char unparse_buf[BUFFER_LEN];
     char unparse_buf2[BUFFER_LEN];
+    char error[SMALL_BUFFER_LEN] = "";
 
     /* Perform sanity checks */
 
@@ -535,13 +531,6 @@ do_clone(int descr, dbref player, const char *name, const char *rname)
         return;
     }
 
-    /* check the name again, just in case rules have changed since the
-       original object was created. */
-    if (!ok_object_name(NAME(thing), TYPE_THING)) {
-        notify(player, "You cannot clone an object with this name.");
-        return;
-    }
-
     /* no stealing stuff. */
     if (!controls(player, thing)) {
         notify(player, "Permission denied. (you can't clone this)");
@@ -559,7 +548,11 @@ do_clone(int descr, dbref player, const char *name, const char *rname)
         return;
     }
 
-    clonedthing = clone_thing(thing, player, Wizard(player));
+    clonedthing = clone_thing(thing, player, Wizard(player), error);
+    if (clonedthing == NOTHING) {
+        notify_nolisten(player, error, 1);
+        return;
+    }
 
     unparse_object(player, thing, unparse_buf, sizeof(unparse_buf));
     unparse_object(player, clonedthing, unparse_buf2, sizeof(unparse_buf2));
@@ -591,6 +584,7 @@ do_create(dbref player, char *name, char *acost)
     char buf2[BUFFER_LEN];
     char unparse_buf[BUFFER_LEN];
     char *rname, *qname;
+    char error[SMALL_BUFFER_LEN] = "";
 
     strcpyn(buf2, sizeof(buf2), acost);
     for (rname = buf2; (*rname && (*rname != ARG_DELIMITER)); rname++) ;
@@ -608,11 +602,6 @@ do_create(dbref player, char *name, char *acost)
 
     cost = atoi(qname);
 
-    if (!ok_object_name(name, TYPE_THING)) {
-        notify(player, "Please specify a valid name for this thing.");
-        return;
-    }
-
     if (cost < 0) {
         notify(player, "You can't create an object for less than nothing!");
         return;
@@ -627,7 +616,12 @@ do_create(dbref player, char *name, char *acost)
         return;
     }
 
-    thing = create_thing(player, name, player); 
+    thing = create_thing(player, name, player, error);
+    if (thing == NOTHING) {
+        notify_nolisten(player, error, 1);
+        return;
+    }
+ 
     SETVALUE(thing, MAX(0,MIN(OBJECT_ENDOWMENT(cost), tp_max_object_endowment)));
 
     unparse_object(player, thing, unparse_buf, sizeof(unparse_buf));
@@ -723,6 +717,7 @@ do_action(int descr, dbref player, const char *action_name,
     char buf2[BUFFER_LEN];
     char unparse_buf[BUFFER_LEN];
     char *rname, *qname;
+    char error[SMALL_BUFFER_LEN] = "";
 
     strcpyn(buf2, sizeof(buf2), source_name);
 
@@ -737,11 +732,6 @@ do_action(int descr, dbref player, const char *action_name,
 
     skip_whitespace_var(&rname);
 
-    if (!ok_object_name(action_name, TYPE_EXIT)) {
-        notify(player, "Please specify a valid name for this action.");
-        return;
-    }
-
     if (!*qname) {
         notify(player, "You must specify a source object.");
         return;
@@ -755,7 +745,12 @@ do_action(int descr, dbref player, const char *action_name,
         return;
     }
 
-    action = create_action(player, action_name, source);
+    action = create_action(player, action_name, source, error);
+    if (action == NOTHING) {
+        notify_nolisten(player, error, 1);
+        return;
+    }
+
     unparse_object(player, action, unparse_buf, sizeof(unparse_buf));
     notifyf(player, "Action %s created and attached.", unparse_buf);
 

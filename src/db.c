@@ -201,14 +201,22 @@ create_object(const char *name, dbref owner, object_flag_type flags)
  * With a given owner, name, and source (location).  Returns the DBREF
  * of the exit.  The 'name' memory is copied.
  *
+ * Uses an error parameter to communicate the reason for failure.
+ *
  * @param player the owner dbref
  * @param name the name of the new exit
  * @param source the location to put the exit
- * @return the dbref of the new exit
+ * @param[out] error why the create failed
+ * @return the dbref of the new exit, or NOTHING if it failed.
  */
 dbref
-create_action(dbref player, const char *name, dbref source)
+create_action(dbref player, const char *name, dbref source, char *error)
 {
+    if (!ok_object_name(name, TYPE_EXIT)) {
+        snprintf(error, SMALL_BUFFER_LEN, "You cannot use that name for an exit or action.");
+        return NOTHING;
+    }
+
     dbref newact = create_object(name, player, TYPE_EXIT);
 
     set_source(newact, source);
@@ -231,15 +239,24 @@ create_action(dbref player, const char *name, dbref source)
  * With a given name and owner/creator.  Returns the DBREF of the program. 
  * The 'name' memory is copied.  Initializes the "special" fields.
  *
- * @param name the name of the new program
+ * Uses an error parameter to communicate the reason for failure.
+ *
  * @param player the owner dbref
- * @return the dbref of the new program
+ * @param name the name of the new program
+ * @param[out] error why the create failed
+ * @return the dbref of the new program, or NOTHING if it failed.
  */
 dbref
-create_program(dbref player, const char *name)
+create_program(dbref player, const char *name, char *error)
 {
     char buf[BUFFER_LEN];
     int jj;
+
+    if (!ok_object_name(name, TYPE_PROGRAM)) {
+        snprintf(error, SMALL_BUFFER_LEN, "You cannot use that name for a program.");
+        return NOTHING;
+    }
+
     dbref newprog = create_object(name, player, TYPE_PROGRAM);
 
     snprintf(buf, sizeof(buf), "A scroll containing a spell called %s", name);
@@ -280,14 +297,22 @@ create_program(dbref player, const char *name)
  *
  * If the player is JUMP_OK, then the created room will be JUMP_OK as well.
  *
+ * Uses an error parameter to communicate the reason for failure.
+ * 
  * @param player the owner dbref
  * @param name the name of the new room
  * @param parent the parent room's dbref
- * @return the dbref of the new room
+ * @param[out] error why the create failed
+ * @return the dbref of the new room, or NOTHING if it failed.
  */
 dbref
-create_room(dbref player, const char *name, dbref parent)
+create_room(dbref player, const char *name, dbref parent, char *error)
 {
+    if (!ok_object_name(name, TYPE_ROOM)) {
+        snprintf(error, SMALL_BUFFER_LEN, "You cannot use that name for a room.");
+        return NOTHING;
+    }
+
     dbref newroom = create_object(name, player,
                     TYPE_ROOM | (FLAGS(player) & JUMP_OK));
 
@@ -312,15 +337,24 @@ create_room(dbref player, const char *name, dbref parent)
  * The home is set to the current room if the player controls the room;
  * otherwise the home is set to the player.
  *
+ * Uses an error parameter to communicate the reason for failure.
+ * 
  * @param player the owner dbref
  * @param name the name of the new thing
  * @param location the location to place the object
- * @return the dbref of the new thing
+ * @param[out] error why the create failed
+ * @return the dbref of the new thing, or NOTHING if it failed.
  */
 dbref
-create_thing(dbref player, const char *name, dbref location)
+create_thing(dbref player, const char *name, dbref location, char *error)
 {
     dbref loc;
+
+    if (!ok_object_name(name, TYPE_THING)) {
+        snprintf(error, SMALL_BUFFER_LEN, "You cannot use that name for a thing.");
+        return NOTHING;
+    }
+
     dbref newthing = create_object(name, player, TYPE_THING);
 
     LOCATION(newthing) = location;
@@ -345,15 +379,21 @@ create_thing(dbref player, const char *name, dbref location)
 /**
  * Clones a thing.
  *
+ * Uses an error parameter to communicate the reason for failure.
+ * 
  * @param thing the thing to clone
  * @param player the player for determining the cloned thing's home
  * @param copy_hidden_props if true, this copies hidden properties
- * @return the dbref of the cloned thing
+ * @param[out] error why the create failed
+ * @return the dbref of the cloned thing, or NOTHING if it failed.
  */
 dbref
-clone_thing(dbref thing, dbref player, int copy_hidden_props)
+clone_thing(dbref thing, dbref player, int copy_hidden_props, char *error)
 {
-    dbref new_thing = create_thing(player, NAME(thing), player);
+    dbref new_thing = create_thing(player, NAME(thing), player, error);
+    if (new_thing == NOTHING) {
+        return NOTHING;
+    }
 
     FLAGS(new_thing) = FLAGS(thing);
 
