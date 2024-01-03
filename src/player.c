@@ -151,7 +151,8 @@ set_password(dbref player, const char *password)
  * tp_player_start, tp_start_pennies and tp_pcreate_flags influence player
  * creation in what should be obvious ways.
  *
- * Uses an error parameter to communicate the reason for failure.
+ * Uses an error parameter to communicate the reason for failure. This
+ * should be at least SMALL_BUFFER_LEN in size.
  *
  * @see ok_object_name
  * @see ok_password

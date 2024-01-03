@@ -201,7 +201,8 @@ create_object(const char *name, dbref owner, object_flag_type flags)
  * With a given owner, name, and source (location).  Returns the DBREF
  * of the exit.  The 'name' memory is copied.
  *
- * Uses an error parameter to communicate the reason for failure.
+ * Uses an error parameter to communicate the reason for failure. This
+ * should be at least SMALL_BUFFER_LEN in size.
  *
  * @param player the owner dbref
  * @param name the name of the new exit
@@ -239,7 +240,8 @@ create_action(dbref player, const char *name, dbref source, char *error)
  * With a given name and owner/creator.  Returns the DBREF of the program. 
  * The 'name' memory is copied.  Initializes the "special" fields.
  *
- * Uses an error parameter to communicate the reason for failure.
+ * Uses an error parameter to communicate the reason for failure. This
+ * should be at least SMALL_BUFFER_LEN in size.
  *
  * @param player the owner dbref
  * @param name the name of the new program
@@ -297,7 +299,8 @@ create_program(dbref player, const char *name, char *error)
  *
  * If the player is JUMP_OK, then the created room will be JUMP_OK as well.
  *
- * Uses an error parameter to communicate the reason for failure.
+ * Uses an error parameter to communicate the reason for failure. This
+ * should be at least SMALL_BUFFER_LEN in size.
  * 
  * @param player the owner dbref
  * @param name the name of the new room
@@ -337,7 +340,8 @@ create_room(dbref player, const char *name, dbref parent, char *error)
  * The home is set to the current room if the player controls the room;
  * otherwise the home is set to the player.
  *
- * Uses an error parameter to communicate the reason for failure.
+ * Uses an error parameter to communicate the reason for failure. This
+ * should be at least SMALL_BUFFER_LEN in size.
  * 
  * @param player the owner dbref
  * @param name the name of the new thing
@@ -379,7 +383,8 @@ create_thing(dbref player, const char *name, dbref location, char *error)
 /**
  * Clones a thing.
  *
- * Uses an error parameter to communicate the reason for failure.
+ * Uses an error parameter to communicate the reason for failure. This
+ * should be at least SMALL_BUFFER_LEN in size.
  * 
  * @param thing the thing to clone
  * @param player the player for determining the cloned thing's home
