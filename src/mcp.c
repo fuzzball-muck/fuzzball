@@ -245,7 +245,7 @@ mcp_intern_is_quoted(const char **in, char *buf, int buflen)
 static int
 mcp_intern_is_keyval(McpMesg *msg, const char **in)
 {
-    char keyname[128];
+    char keyname[SMALL_BUFFER_LEN];
     char value[BUFFER_LEN];
     const char *old = *in;
     int deferred = 0;
@@ -322,8 +322,8 @@ mcp_intern_is_keyval(McpMesg *msg, const char **in)
 static int
 mcp_intern_is_mesg_start(McpFrame *mfr, const char *in)
 {
-    char mesgname[128];
-    char authkey[128];
+    char mesgname[SMALL_BUFFER_LEN];
+    char authkey[SMALL_BUFFER_LEN];
     char *subname = NULL;
     McpMesg *newmsg = NULL;
     size_t longlen = 0;
@@ -428,8 +428,8 @@ mcp_intern_is_mesg_start(McpFrame *mfr, const char *in)
 static int
 mcp_intern_is_mesg_cont(McpFrame *mfr, const char *in)
 {
-    char datatag[128];
-    char keyname[128];
+    char datatag[SMALL_BUFFER_LEN];
+    char keyname[SMALL_BUFFER_LEN];
     McpMesg *ptr;
 
     if (*in != '*') {
@@ -496,7 +496,7 @@ mcp_intern_is_mesg_cont(McpFrame *mfr, const char *in)
 static int
 mcp_intern_is_mesg_end(McpFrame *mfr, const char *in)
 {
-    char datatag[128];
+    char datatag[SMALL_BUFFER_LEN];
     McpMesg *ptr, **prev;
 
     if (*in != ':') {
@@ -814,7 +814,7 @@ mcp_basic_handler(McpFrame *mfr, McpMesg *mesg)
             mfr->authkey = strdup(auth);
         } else {
             McpMesg reply;
-            char authval[128];
+            char authval[SMALL_BUFFER_LEN];
 
             mcp_mesg_init(&reply, MCP_INIT_PKG, "");
             mcp_mesg_arg_append(&reply, "version", "2.1");
@@ -1452,7 +1452,7 @@ mcp_frame_output_mesg(McpFrame *mfr, McpMesg *msg)
 {
     char outbuf[BUFFER_LEN * 2];
     int bufrem = sizeof(outbuf);
-    char mesgname[128];
+    char mesgname[SMALL_BUFFER_LEN];
     char datatag[32];
     int mlineflag = 0;
     char *p;

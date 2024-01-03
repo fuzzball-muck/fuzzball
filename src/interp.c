@@ -1517,7 +1517,7 @@ do_abort_loop(dbref player, dbref program, const char *msg,
         panic("localvars_get(): NULL frame passed !");
     }
 
-    char buffer[128];
+    char buffer[SMALL_BUFFER_LEN];
 
     /* If we are in a try/catch, let's copy over some error info */
     if (fr->trys.top) {
@@ -2839,7 +2839,7 @@ do_abort_interp(dbref player, const char *msg, struct inst *pc,
                 struct inst *oper3, struct inst *oper4, int nargs,
                 dbref program, const char *file, int line)
 {
-    char buffer[128];
+    char buffer[SMALL_BUFFER_LEN];
 
     if (fr->trys.top) {
         fr->errorstr = strdup(msg);

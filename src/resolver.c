@@ -84,12 +84,12 @@ int notify(int player, const char *msg) {
  * An entry for the host cache.  This is a double linked list.
  */
 static struct hostcache {
-    struct in6_addr ipnum_v6;   /* IPv6 IP           */
-    long ipnum;                 /* IPv4 IP           */
-    char name[128];             /* Hostname          */
-    time_t time;                /* Time we cached it */
-    struct hostcache *next;     /* Next entry        */
-    struct hostcache **prev;    /* Previous entry    */
+    struct in6_addr ipnum_v6;    /* IPv6 IP           */
+    long ipnum;                  /* IPv4 IP           */
+    char name[SMALL_BUFFER_LEN]; /* Hostname          */
+    time_t time;                 /* Time we cached it */
+    struct hostcache *next;      /* Next entry        */
+    struct hostcache **prev;     /* Previous entry    */
 } *hostcache_list = 0;
 
 /**
@@ -164,7 +164,7 @@ static void make_nonblocking(int s) {
  * @return 0 on a match, non-0 on failure
  */
 static int ipcmp(struct in6_addr *a, struct in6_addr *b) {
-    int i = 128;
+    int i = SMALL_BUFFER_LEN;
     char *A = (char *) a;
     char *B = (char *) b;
 
@@ -436,8 +436,8 @@ static const char * get_username_v6(struct in6_addr *a, in_port_t prt,
  */
 static const char * addrout_v6(struct in6_addr *a, in_port_t prt,
                                in_port_t myprt) {
-    static char buf[135];
-    char tmpbuf[135];
+    static char buf[SMALL_BUFFER_LEN+7];
+    char tmpbuf[SMALL_BUFFER_LEN+7];
     const char *ptr, *ptr2;
     struct hostent *he;
 
@@ -474,7 +474,7 @@ static const char * addrout_v6(struct in6_addr *a, in_port_t prt,
         return buf;
     }
 
-    inet_ntop(AF_INET6, a, tmpbuf, 128);
+    inet_ntop(AF_INET6, a, tmpbuf, SMALL_BUFFER_LEN);
     hostadd_timestamp_v6(a, tmpbuf);
     ptr = get_username_v6(a, prt, myprt);
 
@@ -757,8 +757,8 @@ static const char * get_username(in_addr_t a, in_port_t prt, in_port_t myprt) {
  * @return the host string
  */
 static const char * addrout(in_addr_t a, in_port_t prt, in_port_t myprt) {
-    static char buf[135];
-    char tmpbuf[135];
+    static char buf[SMALL_BUFFER_LEN+7];
+    char tmpbuf[SMALL_BUFFER_LEN+7];
     const char *ptr, *ptr2;
     struct hostent *he;
     struct in_addr addr;

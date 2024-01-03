@@ -135,7 +135,7 @@ typedef int dbref;  /**< Type wrapper for dbref - must support negatives */
  *
  * Suitable for command output, error messages, etc.
  */
-#define SMALL_BUFFER_LEN 100
+#define SMALL_BUFFER_LEN 128
 
 /************************************************************************
    Various Messages 
