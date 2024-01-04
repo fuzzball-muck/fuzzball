@@ -1,7 +1,7 @@
 ***Foxen9 TinyMUCK DUMP Format***
 119
 1
-169
+168
 %7bit_other_names=no
 %7bit_thing_names=yes
 %addpennies_muf_mlev=2
@@ -23,7 +23,6 @@
 %consistent_lock_source=yes
 %cpennies=Pennies
 %cpenny=Penny
-%create_fail_mesg=Either there is already a player with that name, or that name is illegal.
 %dark_sleepers=no
 %dbdump_warning=yes
 default_room_parent=#109

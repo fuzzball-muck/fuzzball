@@ -273,7 +273,7 @@ pronoun_substitute(int descr, dbref player, const char *str)
     char c;
     char d;
     char prn[3];
-    char globprop[128];
+    char globprop[SMALL_BUFFER_LEN];
     static char buf[BUFFER_LEN * 2];
     char orig[BUFFER_LEN];
     char sexbuf[BUFFER_LEN];

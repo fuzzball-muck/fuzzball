@@ -53,7 +53,6 @@ const char *tp_connect_fail_mesg;                   /**> Described below */
 bool        tp_consistent_lock_source;              /**> Described below */
 const char *tp_cpennies;                            /**> Described below */
 const char *tp_cpenny;                              /**> Described below */
-const char *tp_create_fail_mesg;                    /**> Described below */
 bool        tp_dark_sleepers;                       /**> Described below */
 bool        tp_dbdump_warning;                      /**> Described below */
 dbref       tp_default_room_parent;                 /**> Described below */
@@ -474,21 +473,6 @@ struct tune_entry tune_list[] = {
         .currentval.s=&tp_cpenny,
         0,
         MLEV_WIZARD,
-        true
-    },
-    {
-        "create_fail_mesg",
-        "Failed player create message",
-        "Connecting",
-        "",
-        TP_TYPE_STRING,
-        .defaultval.s=
-            "Either there is already a player with that name, or that name " \
-            "is illegal.",
-        .currentval.s=&tp_create_fail_mesg,
-        0,
-        MLEV_WIZARD,
-        true,
         true
     },
     {

@@ -305,9 +305,9 @@ muf_mcp_event_callback(McpFrame * mfr, McpMesg * mesg, McpVer version,
         argval.data.array = contarr;
 
         if (msgname && *msgname) {
-            snprintf(buf, sizeof(buf), "MCP.%.128s-%.128s", pkgname, msgname);
+            snprintf(buf, sizeof(buf), "MCP.%.*s-%.*s", SMALL_BUFFER_LEN, pkgname, SMALL_BUFFER_LEN, msgname);
         } else {
-            snprintf(buf, sizeof(buf), "MCP.%.128s", pkgname);
+            snprintf(buf, sizeof(buf), "MCP.%.*s", SMALL_BUFFER_LEN, pkgname);
         }
 
         /* Add the event with all the data */

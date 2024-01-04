@@ -317,7 +317,7 @@ timestr_full(long dtime)
 const char *
 timestr_long(long dtime)
 {
-    static char buf[100], value[100];
+    static char buf[SMALL_BUFFER_LEN], value[SMALL_BUFFER_LEN];
     const char *str[7] = { "year", "month", "week", "day", "hour", "minute", "second" };
     int div[7] = { 31556736, 2621376, 604800, 86400, 3600, 60, 1 };
 

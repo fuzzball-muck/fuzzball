@@ -130,6 +130,13 @@ typedef int dbref;  /**< Type wrapper for dbref - must support negatives */
  */
 #define BUFFER_LEN ((MAX_COMMAND_LEN)*4)
 
+/**
+ * Maximum buffer length for short strings
+ *
+ * Suitable for command output, error messages, etc.
+ */
+#define SMALL_BUFFER_LEN 128
+
 /************************************************************************
    Various Messages 
  

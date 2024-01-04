@@ -1142,13 +1142,13 @@ void
 do_process_status(dbref player)
 {
     char buf[BUFFER_LEN];
-    char pidstr[128];
-    char duestr[128];
-    char runstr[128];
-    char inststr[128];
-    char cpustr[128];
-    char progstr[128];
-    char prognamestr[128];
+    char pidstr[SMALL_BUFFER_LEN];
+    char duestr[SMALL_BUFFER_LEN];
+    char runstr[SMALL_BUFFER_LEN];
+    char inststr[SMALL_BUFFER_LEN];
+    char cpustr[SMALL_BUFFER_LEN];
+    char progstr[SMALL_BUFFER_LEN];
+    char prognamestr[SMALL_BUFFER_LEN];
     int count = 0;
     time_t rtime = time((time_t *) NULL);
     time_t etime;

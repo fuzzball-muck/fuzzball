@@ -245,7 +245,7 @@ mcp_intern_is_quoted(const char **in, char *buf, int buflen)
 static int
 mcp_intern_is_keyval(McpMesg *msg, const char **in)
 {
-    char keyname[128];
+    char keyname[SMALL_BUFFER_LEN];
     char value[BUFFER_LEN];
     const char *old = *in;
     int deferred = 0;
@@ -322,8 +322,8 @@ mcp_intern_is_keyval(McpMesg *msg, const char **in)
 static int
 mcp_intern_is_mesg_start(McpFrame *mfr, const char *in)
 {
-    char mesgname[128];
-    char authkey[128];
+    char mesgname[SMALL_BUFFER_LEN];
+    char authkey[SMALL_BUFFER_LEN];
     char *subname = NULL;
     McpMesg *newmsg = NULL;
     size_t longlen = 0;
@@ -428,8 +428,8 @@ mcp_intern_is_mesg_start(McpFrame *mfr, const char *in)
 static int
 mcp_intern_is_mesg_cont(McpFrame *mfr, const char *in)
 {
-    char datatag[128];
-    char keyname[128];
+    char datatag[SMALL_BUFFER_LEN];
+    char keyname[SMALL_BUFFER_LEN];
     McpMesg *ptr;
 
     if (*in != '*') {
@@ -496,7 +496,7 @@ mcp_intern_is_mesg_cont(McpFrame *mfr, const char *in)
 static int
 mcp_intern_is_mesg_end(McpFrame *mfr, const char *in)
 {
-    char datatag[128];
+    char datatag[SMALL_BUFFER_LEN];
     McpMesg *ptr, **prev;
 
     if (*in != ':') {
@@ -814,7 +814,7 @@ mcp_basic_handler(McpFrame *mfr, McpMesg *mesg)
             mfr->authkey = strdup(auth);
         } else {
             McpMesg reply;
-            char authval[128];
+            char authval[SMALL_BUFFER_LEN];
 
             mcp_mesg_init(&reply, MCP_INIT_PKG, "");
             mcp_mesg_arg_append(&reply, "version", "2.1");
@@ -1452,7 +1452,7 @@ mcp_frame_output_mesg(McpFrame *mfr, McpMesg *msg)
 {
     char outbuf[BUFFER_LEN * 2];
     int bufrem = sizeof(outbuf);
-    char mesgname[128];
+    char mesgname[SMALL_BUFFER_LEN];
     char datatag[32];
     int mlineflag = 0;
     char *p;
@@ -2134,24 +2134,7 @@ do_mcpprogram(int descr, dbref player, const char *name, const char *rname)
     dbref program;
     struct match_data md;
     char unparse_buf[BUFFER_LEN];
-
-    /* @TODO Should this sanity check be a part of create_program
-     *       instead?  A little scary to think we're creating programs
-     *       in two places (here and @program) but we're relying on
-     *       the sanity checks to be the same -- what if there is
-     *       a change to one and we forget to change the other?
-     *
-     *       We may want to consider moving all similar sanity checks
-     *       to the create_* functions -- a quick look suggests that
-     *       the create_* functions are "gullible" and accept whatever
-     *       is given to them.  This is really hazardous from an API
-     *       perspective.
-     */
-
-    if (!ok_object_name(name, TYPE_PROGRAM)) {
-        notify(player, "Please specify a valid name for this program.");
-        return;
-    }
+    char error[SMALL_BUFFER_LEN] = "";
 
     init_match(descr, player, name, TYPE_PROGRAM, &md);
 
@@ -2161,7 +2144,12 @@ do_mcpprogram(int descr, dbref player, const char *name, const char *rname)
     match_absolute(&md);
 
     if (*rname || (program = match_result(&md)) == NOTHING) {
-        program = create_program(player, name);
+        program = create_program(player, name, error);
+        if (program == NOTHING) {
+          notify_nolisten(player, error, 1);
+          return;
+        }
+
         unparse_object(player, program, unparse_buf, sizeof(unparse_buf));
         notifyf(player, "Program %s created.", unparse_buf);
 

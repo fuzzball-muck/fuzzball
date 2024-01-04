@@ -1650,8 +1650,9 @@ check_connect(struct descriptor_data *d, const char *msg)
     char user[MAX_COMMAND_LEN];
     char password[MAX_COMMAND_LEN];
     dbref player;
-
     char connect_string[BUFFER_LEN];
+    char error[SMALL_BUFFER_LEN] = "";
+
     snprintf(connect_string, sizeof(connect_string), "%sfrom %s",
 #ifdef USE_SSL
          d->ssl_session ? "securely " : "",
@@ -1755,10 +1756,10 @@ check_connect(struct descriptor_data *d, const char *msg)
                 queue_write(d, "\r\n", 2);
                 d->booted = 1;
             } else {
-                player = create_player(user, password);
+                player = create_player(user, password, error);
 
                 if (player == NOTHING) {
-                    queue_ansi(d, tp_create_fail_mesg);
+                    queue_ansi(d, error);
                     queue_write(d, "\r\n", 2);
                     log_status("FAILED CREATE: '%s', descriptor %d, %s",
                             user, d->descriptor, connect_string);
@@ -2566,7 +2567,7 @@ static struct descriptor_data *
 initializesock(int s, int output_s, const char *hostname, int is_ssl, int is_console)
 {
     struct descriptor_data *d;
-    char buf[128], *ptr;
+    char buf[SMALL_BUFFER_LEN], *ptr;
 
     if (!(d = malloc(sizeof(struct descriptor_data))))
         panic("initializesock: Out of memory");
@@ -2592,7 +2593,7 @@ initializesock(int s, int output_s, const char *hostname, int is_ssl, int is_con
     d->input.tail = &d->input.head;
     
 #ifdef IP_FORWARDING
-    if (!(d->forwarded_buffer = malloc(128 * sizeof(char))))
+    if (!(d->forwarded_buffer = malloc(SMALL_BUFFER_LEN * sizeof(char))))
         panic("initializesock: Out of memory");
 #endif
 
@@ -2756,7 +2757,7 @@ make_socket_v6(int port)
 static const char *
 addrout_v6(in_port_t lport, struct in6_addr *a, in_port_t prt)
 {
-    static char buf[128];
+    static char buf[SMALL_BUFFER_LEN];
     char ip6addr[INET6_ADDRSTRLEN];
 
     struct in6_addr addr;
@@ -2836,7 +2837,7 @@ new_connection_v6(in_port_t port, int sock_, int is_ssl)
 
     struct sockaddr_in6 addr;
     socklen_t addr_len;
-    char hostname[128];
+    char hostname[SMALL_BUFFER_LEN];
     size_t hostlen;
 
     addr_len = (socklen_t) sizeof(addr);
@@ -2901,7 +2902,7 @@ new_connection_v6(in_port_t port, int sock_, int is_ssl)
 static const char *
 addrout(in_port_t lport, in_addr_t a, in_port_t prt)
 {
-    static char buf[128];
+    static char buf[SMALL_BUFFER_LEN];
     struct in_addr addr;
 
     memset(&addr, 0, sizeof(addr));
@@ -3072,7 +3073,7 @@ new_connection(in_port_t port, int sock_, int is_ssl)
     int newsock;
     struct sockaddr_in addr;
     socklen_t addr_len;
-    char hostname[128];
+    char hostname[SMALL_BUFFER_LEN];
 
     addr_len = (socklen_t) sizeof(addr);
     newsock = accept(sock_, (struct sockaddr *) &addr, &addr_len);
