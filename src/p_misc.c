@@ -32,36 +32,13 @@
 #include "timequeue.h"
 #include "tune.h"
 
-/*
- * TODO: These globals really probably shouldn't be globals.  I can only guess
- *       this is either some kind of primitive code re-use because all the
- *       functions use them, or it's some kind of an optimization to avoid
- *       local variables.  But it kills the thread safety and (IMO) makes the
- *       code harder to read/follow.
- */
-
 /**
  * @private
  * @var used to store the parameters passed into the primitives
  *      This seems to be used for conveinance, but makes this probably
- *      not threadsafe.
+ *      not threadsafe. Currently used in the abort_interp macro.
  */
 static struct inst *oper1, *oper2, *oper3, *oper4;
-
-/**
- * @private
- * @var to store the result which is not a local variable for some reason
- *      This makes things very not threadsafe.
- */
-static int result;
-static dbref ref;
-static struct tm *time_tm;
-
-/**
- * @private
- * @var This breaks thread safety for fun.
- */
-static char buf[BUFFER_LEN];
 
 /**
  * Implementation of MUF TIME
@@ -79,20 +56,21 @@ static char buf[BUFFER_LEN];
 void
 prim_time(PRIM_PROTOTYPE)
 {
+    int result;
     time_t lt;
-    struct tm *tm;
+    struct tm *time_tm;
 
     CHECKOP(0);
     CHECKOFLOW(3);
 
     lt = time(NULL);
-    tm = localtime(&lt);
+    time_tm = localtime(&lt);
 
-    result = tm->tm_sec;
+    result = time_tm->tm_sec;
     PushInt(result);
-    result = tm->tm_min;
+    result = time_tm->tm_min;
     PushInt(result);
-    result = tm->tm_hour;
+    result = time_tm->tm_hour;
     PushInt(result);
 }
 
@@ -112,20 +90,21 @@ prim_time(PRIM_PROTOTYPE)
 void
 prim_date(PRIM_PROTOTYPE)
 {
+    int result;
     time_t lt;
-    struct tm *tm;
+    struct tm *time_tm;
 
     CHECKOP(0);
     CHECKOFLOW(3);
 
     lt = time(NULL);
-    tm = localtime(&lt);
+    time_tm = localtime(&lt);
 
-    result = tm->tm_mday;
+    result = time_tm->tm_mday;
     PushInt(result);
-    result = tm->tm_mon + 1;
+    result = time_tm->tm_mon + 1;
     PushInt(result);
-    result = tm->tm_year + 1900;
+    result = time_tm->tm_year + 1900;
     PushInt(result);
 }
 
@@ -147,6 +126,8 @@ prim_date(PRIM_PROTOTYPE)
 void
 prim_gmtoffset(PRIM_PROTOTYPE)
 {
+    int result;
+
     CHECKOP(0);
     CHECKOFLOW(1);
 
@@ -170,6 +151,8 @@ prim_gmtoffset(PRIM_PROTOTYPE)
 void
 prim_systime(PRIM_PROTOTYPE)
 {
+    int result;
+
     CHECKOP(0);
     CHECKOFLOW(1);
 
@@ -223,6 +206,9 @@ prim_systime_precise(PRIM_PROTOTYPE)
 void
 prim_timesplit(PRIM_PROTOTYPE)
 {
+    int result;
+    struct tm *time_tm;
+
     time_t lt = 0;
 
     CHECKOP(1);
@@ -275,6 +261,9 @@ prim_timesplit(PRIM_PROTOTYPE)
 void
 prim_timefmt(PRIM_PROTOTYPE)
 {
+    char buf[BUFFER_LEN];
+    struct tm *time_tm;
+
     time_t lt = 0;
 
     CHECKOP(2);
@@ -416,6 +405,8 @@ prim_fmttime(PRIM_PROTOTYPE)
 void
 prim_userlog(PRIM_PROTOTYPE)
 {
+    char *ptr;
+
     CHECKOP(1);
     oper1 = POP();
 
@@ -425,17 +416,9 @@ prim_userlog(PRIM_PROTOTYPE)
     if (mlev < tp_userlog_mlev)
         abort_interp("Permission Denied (mlev < tp_userlog_mlev)");
 
-    /**
-     * @TODO Would this work in place of this construct?
-     *           buf = DoNullInd(oper1->data.string);
-     */
-    if (oper1->data.string) {
-        snprintf(buf, BUFFER_LEN, "%s", oper1->data.string->data);
-    } else {
-        *buf = '\0';
-    }
+    ptr = DoNullInd(oper1->data.string);
 
-    log_user(player, program, buf);
+    log_user(player, program, ptr);
 
     CLEAR(oper1);
 }
@@ -460,7 +443,8 @@ prim_userlog(PRIM_PROTOTYPE)
 void
 prim_queue(PRIM_PROTOTYPE)
 {
-    dbref temproom;
+    int result;
+    dbref ref;
 
     CHECKOP(3);
     oper1 = POP();
@@ -473,33 +457,13 @@ prim_queue(PRIM_PROTOTYPE)
     if (oper3->type != PROG_INTEGER)
         abort_interp("Non-integer argument (1).");
 
-    /**
-     * @TODO Combine these three checks.
-     */
-    if (oper2->type != PROG_OBJECT)
-        abort_interp("Argument must be a dbref (2)");
+    if (!valid_object(oper2) || Typeof(oper2->data.objref) != TYPE_PROGRAM)
+        abort_interp("Invalid program dbref argument (2).");
 
-    if (!valid_object(oper2))
-        abort_interp("Invalid dbref (2)");
-
-    if (Typeof(oper2->data.objref) != TYPE_PROGRAM)
-        abort_interp("Object must be a program. (2)");
-
-    if (oper1->type != PROG_STRING)
-        abort_interp("Non-string argument (3).");
-
-    /**
-     * @TODO Just use LOCATION(player) as the trigger?  Not sure why
-     *       the 'loc' variable (which can be overwritten) is checked?
-     *       I may be misunderstanding (wyld-sw).
-     */
-    if ((oper4 = fr->variables + 1)->type != PROG_OBJECT)
-        temproom = LOCATION(player);
-    else
-        temproom = oper4->data.objref;
+    ref = LOCATION(player);
 
     result = add_muf_delayq_event(oper3->data.number, fr->descr, player,
-            temproom, NOTHING, oper2->data.objref,
+            ref, NOTHING, oper2->data.objref,
             DoNullInd(oper1->data.string), "Queued Event.", 0);
 
     CLEAR(oper1);
@@ -529,6 +493,8 @@ prim_queue(PRIM_PROTOTYPE)
 void
 prim_kill(PRIM_PROTOTYPE)
 {
+    int result;
+
     CHECKOP(1);
     oper1 = POP();
 
@@ -537,15 +503,13 @@ prim_kill(PRIM_PROTOTYPE)
 
     if (oper1->data.number == fr->pid) {
         do_abort_silent();
-    } else {
-        if (mlev < 3) {
-            if (!control_process(ProgUID, oper1->data.number)) {
-                abort_interp("Permission Denied.");
-            }
-        }
-
-        result = dequeue_process(oper1->data.number);
     }
+
+    if (mlev < 3 && !control_process(ProgUID, oper1->data.number)) {
+        abort_interp("Permission Denied.");
+    }
+
+    result = dequeue_process(oper1->data.number);
 
     CLEAR(oper1);
     PushInt(result);
@@ -574,6 +538,7 @@ prim_force(PRIM_PROTOTYPE)
 {
     struct inst *oper1 = NULL;  /* prevents re-entrancy issues! */
     struct inst *oper2 = NULL;  /* prevents re-entrancy issues! */
+    dbref ref;
 
     CHECKOP(2);
     oper1 = POP();              /* string to @force */
@@ -652,17 +617,14 @@ prim_force(PRIM_PROTOTYPE)
 void
 prim_timestamps(PRIM_PROTOTYPE)
 {
+    dbref ref;
+    int result;
+
     CHECKOP(1);
     oper1 = POP();
 
-    /**
-     * @TODO Combine these checks.
-     */
-    if (oper1->type != PROG_OBJECT)
+    if (oper1->type != PROG_OBJECT || !valid_object(oper1))
         abort_interp("Non-object argument (1).");
-
-    if (!valid_object(oper1))
-        abort_interp("Invalid object.");
 
     CHECKREMOTE(oper1->data.objref);
     CHECKOFLOW(4);
@@ -702,6 +664,7 @@ prim_timestamps(PRIM_PROTOTYPE)
 void
 prim_fork(PRIM_PROTOTYPE)
 {
+    int result;
     struct frame *tmpfr;
 
     CHECKOP(0);
@@ -760,52 +723,28 @@ prim_fork(PRIM_PROTOTYPE)
     tmpfr->already_created = fr->already_created;
     tmpfr->trig = fr->trig;
 
-    /**
-     * @TODO Aren't the assignments to 0 and NULL redundant after the calloc?
-     */
-    tmpfr->brkpt.debugging = 0;
-    tmpfr->brkpt.bypass = 0;
-    tmpfr->brkpt.isread = 0;
-    tmpfr->brkpt.showstack = 0;
-    tmpfr->brkpt.lastline = 0;
-    tmpfr->brkpt.lastpc = 0;
-    tmpfr->brkpt.lastlisted = 0;
-    tmpfr->brkpt.lastcmd = NULL;
     tmpfr->brkpt.breaknum = -1;
 
     tmpfr->brkpt.lastproglisted = NOTHING;
-    tmpfr->brkpt.proglines = NULL;
 
     tmpfr->brkpt.count = 1;
     tmpfr->brkpt.temp[0] = 1;
     tmpfr->brkpt.level[0] = -1;
     tmpfr->brkpt.line[0] = -1;
     tmpfr->brkpt.linecount[0] = -2;
-    tmpfr->brkpt.pc[0] = NULL;
     tmpfr->brkpt.pccount[0] = -2;
     tmpfr->brkpt.prog[0] = program;
-
-    tmpfr->proftime.tv_sec = 0;
-    tmpfr->proftime.tv_usec = 0;
-    tmpfr->totaltime.tv_sec = 0;
-    tmpfr->totaltime.tv_usec = 0;
 
     tmpfr->pid = top_pid++;
     tmpfr->multitask = BACKGROUND;
     tmpfr->been_background = 1;
     tmpfr->writeonly = 1;
     tmpfr->started = time(NULL);
-    tmpfr->instcnt = 0;
     tmpfr->skip_declare = fr->skip_declare;
     tmpfr->wantsblanks = fr->wantsblanks;
     tmpfr->perms = fr->perms;
     tmpfr->descr = fr->descr;
     tmpfr->supplicant = fr->supplicant;
-    tmpfr->events = NULL;
-    tmpfr->waiters = NULL;
-    tmpfr->waitees = NULL;
-    tmpfr->dlogids = NULL;
-    tmpfr->timercount = 0;
 
     /* child process gets a 0 returned on the stack */
     result = 0;
@@ -839,6 +778,8 @@ prim_fork(PRIM_PROTOTYPE)
 void
 prim_pid(PRIM_PROTOTYPE)
 {
+    int result;
+
     CHECKOP(0);
     CHECKOFLOW(1);
 
@@ -866,77 +807,44 @@ prim_pid(PRIM_PROTOTYPE)
 void
 prim_stats(PRIM_PROTOTYPE)
 {
+    dbref ref;
+
     CHECKOP(1);
     oper1 = POP();
-
-    /**
-     * @TODO Should we allow anyone to summarize their own objects?
-     */
-    if (mlev < 3)
-        abort_interp("Requires Mucker Level 3.");
 
     if (!valid_player(oper1) && (oper1->data.objref != NOTHING))
         abort_interp("non-player argument (1)");
 
     ref = oper1->data.objref;
 
+    if (mlev < 3 && OWNER(ref) != player)
+        abort_interp("Requires Mucker Level 3.");
+
     CLEAR(oper1);
 
-    /**
-     * @TODO Why?
-     */
-    nargs = 0;
+    int types[6] = {
+        TYPE_ROOM, TYPE_EXIT, TYPE_THING, TYPE_PLAYER, TYPE_PROGRAM, TYPE_GARBAGE
+    };
 
-    /**
-     * @TODO Maybe use an array indexed by object type.  Too bad they aren't
-     *       defined in exactly this order.
-     */
-    {
-        int rooms, exits, things, players, programs, garbage;
+    int stats[7] = {0}; /* 0 is the total, 1-6 map to the types array. */
 
-        /* tmp, ref */
-        rooms = exits = things = players = programs = garbage = 0;
-
-        for (dbref i = 0; i < db_top; i++) {
-            if (ref == NOTHING || OWNER(i) == ref) {
-                switch (Typeof(i)) {
-                    case TYPE_ROOM:
-                        rooms++;
-                        break;
-
-                    case TYPE_EXIT:
-                        exits++;
-                        break;
-
-                    case TYPE_THING:
-                        things++;
-                        break;
-
-                    case TYPE_PLAYER:
-                        players++;
-                        break;
-
-                    case TYPE_PROGRAM:
-                        programs++;
-                        break;
-
-                    case TYPE_GARBAGE:
-                        garbage++;
-                        break;
+    for (dbref i = 0; i < db_top; i++) {
+        if (ref == NOTHING || OWNER(i) == ref) {
+            for (int t = 0, n = ARRAYSIZE(types); t < n; t++) {
+                if (Typeof(i) == types[t]) {
+                    stats[t+1]++;
+                    stats[0]++;
+                    break;
                 }
             }
         }
+    }
 
-        ref = rooms + exits + things + players + programs + garbage;
+    int n = ARRAYSIZE(stats);
 
-        CHECKOFLOW(7);
-        PushInt(ref);
-        PushInt(rooms);
-        PushInt(exits);
-        PushInt(things);
-        PushInt(programs);
-        PushInt(players);
-        PushInt(garbage);
+    CHECKOFLOW(n);
+    for (int i = 0; i < n; i++) {
+        PushInt(stats[i]);
     }
 }
 
@@ -960,71 +868,45 @@ prim_stats(PRIM_PROTOTYPE)
 void
 prim_stats_array(PRIM_PROTOTYPE)
 {
-    /**
-     * @TODO The same comments for prim_stats apply here.
-     */
+    dbref ref;
+
     CHECKOP(1);
     oper1 = POP();
-
-    if (mlev < 3)
-        abort_interp("Requires Mucker Level 3.");
 
     if (!valid_player(oper1) && (oper1->data.objref != NOTHING))
         abort_interp("non-player argument (1)");
     ref = oper1->data.objref;
 
+    if (mlev < 3 && OWNER(ref) != player)
+        abort_interp("Requires Mucker Level 3.");
+
     CLEAR(oper1);
 
-    nargs = 0;
+    int types[6] = {
+        TYPE_ROOM, TYPE_EXIT, TYPE_THING, TYPE_PLAYER, TYPE_PROGRAM, TYPE_GARBAGE
+    };
 
-    int rooms = 0, exits = 0, things = 0, programs = 0, players = 0, garbage = 0;
-    stk_array *nu;
-    int count = 0;
+    int stats[7] = {0}; /* 0 is the total, 1-6 map to the types array. */
 
     for (dbref i = 0; i < db_top; i++) {
         if (ref == NOTHING || OWNER(i) == ref) {
-            switch (Typeof(i)) {
-                case TYPE_ROOM:
-                    rooms++;
+            for (int t = 0, n = ARRAYSIZE(types); t < n; t++) {
+                if (Typeof(i) == types[t]) {
+                    stats[t+1]++;
+                    stats[0]++;
                     break;
-
-                case TYPE_EXIT:
-                    exits++;
-                    break;
-
-                case TYPE_THING:
-                    things++;
-                    break;
-
-                case TYPE_PROGRAM:
-                    programs++;
-                    break;
-
-                case TYPE_PLAYER:
-                    players++;
-                    break;
-
-                case TYPE_GARBAGE:
-                    garbage++;
-                    break;
+                }
             }
         }
     }
 
-    ref = rooms + exits + things + programs + players + garbage;
+    stk_array *nu = new_array_packed(0, fr->pinning);
 
-    CHECKOFLOW(1);
+    int n = ARRAYSIZE(stats);
 
-    nu = new_array_packed(0, fr->pinning);
-
-    array_set_intkey_intval(&nu, count++, garbage);
-    array_set_intkey_intval(&nu, count++, players);
-    array_set_intkey_intval(&nu, count++, programs);
-    array_set_intkey_intval(&nu, count++, things);
-    array_set_intkey_intval(&nu, count++, exits);
-    array_set_intkey_intval(&nu, count++, rooms);
-    array_set_intkey_intval(&nu, count++, rooms+exits+things+programs+players
-            +garbage);
+    for (int i = n-1; i >= 0; i--) {
+        array_set_intkey_intval(&nu, n-i-1, stats[i]);
+    }
 
     PushArrayRaw(nu);
 }
@@ -1047,6 +929,8 @@ prim_stats_array(PRIM_PROTOTYPE)
 void
 prim_abort(PRIM_PROTOTYPE)
 {
+    char buf[BUFFER_LEN];
+
     CHECKOP(1);
     oper1 = POP();
 
@@ -1077,6 +961,8 @@ prim_abort(PRIM_PROTOTYPE)
 void
 prim_ispidp(PRIM_PROTOTYPE)
 {
+    int result;
+
     CHECKOP(1);
     oper1 = POP();
 
@@ -1232,8 +1118,7 @@ prim_prettylock(PRIM_PROTOTYPE)
 void
 prim_testlock(PRIM_PROTOTYPE)
 {
-    struct inst *oper1 = NULL;  /* prevents re-entrancy issues! */
-    struct inst *oper2 = NULL;  /* prevents re-entrancy issues! */
+    int result;
 
     CHECKOP(2);
     oper1 = POP();              /* boolexp lock */
@@ -1242,15 +1127,8 @@ prim_testlock(PRIM_PROTOTYPE)
     if (fr->level > 8)
         abort_interp("Interp call loops not allowed.");
 
-    /**
-     * @TODO Combine these checks.
-     */
-    if (!valid_object(oper2))
-        abort_interp("Invalid argument (1).");
-
-    if (Typeof(oper2->data.objref) != TYPE_PLAYER && Typeof(oper2->data.objref) != TYPE_THING) {
-        abort_interp("Invalid object type (1).");
-    }
+    if (!valid_object(oper2) || (Typeof(oper2->data.objref) != TYPE_PLAYER && Typeof(oper2->data.objref) != TYPE_THING))
+        abort_interp("Invalid player or thing argument (1).");
 
     CHECKREMOTE(oper2->data.objref);
 
@@ -1292,9 +1170,6 @@ prim_sysparm(PRIM_PROTOTYPE)
     if (oper1->type != PROG_STRING)
         abort_interp("Invalid argument.");
 
-    /**
-     * @TODO Another use case for DoNullInd().
-     */
     if (oper1->data.string) {
         ptr = tune_get_parmstring(oper1->data.string->data, TUNE_MLEV(player));
     } else {
@@ -1324,30 +1199,17 @@ prim_sysparm(PRIM_PROTOTYPE)
 void
 prim_cancallp(PRIM_PROTOTYPE)
 {
+    int result;
+
     CHECKOP(2);
     oper2 = POP();              /* string: public function name */
     oper1 = POP();              /* dbref: Program dbref to check */
 
-    /**
-     * @TODO Combine these three checks.
-     */
-    if (oper1->type != PROG_OBJECT)
-        abort_interp("Expected dbref argument. (1)");
+    if (!valid_object(oper1) || Typeof(oper1->data.objref) != TYPE_PROGRAM)
+        abort_interp("Invalid program dbref argument. (1)");
 
-    if (!valid_object(oper1))
-        abort_interp("Invalid dbref (1)");
-
-    if (Typeof(oper1->data.objref) != TYPE_PROGRAM)
-        abort_interp("Object is not a MUF Program. (1)");
-
-    /**
-     * @TODO ...and the next two.
-     */
-    if (oper2->type != PROG_STRING)
-        abort_interp("Expected string argument. (2)");
-
-    if (!oper2->data.string)
-        abort_interp("Invalid Null string argument. (2)");
+    if (oper2->type != PROG_STRING || !oper2->data.string)
+        abort_interp("Invalid string argument. Must be non-null. (2)");
 
     if (!(PROGRAM_CODE(oper1->data.objref))) {
         struct line *tmpline;
@@ -1406,6 +1268,7 @@ prim_cancallp(PRIM_PROTOTYPE)
 void
 prim_setsysparm(PRIM_PROTOTYPE)
 {
+    int result;
     const char *parmname, *newvalue;
     char *oldvalue;
     int security = TUNE_MLEV(player);
@@ -1420,11 +1283,8 @@ prim_setsysparm(PRIM_PROTOTYPE)
     if (force_level)
         abort_interp("Cannot be forced.");
 
-    if (oper2->type != PROG_STRING)
-        abort_interp("Invalid argument. (1)");
-
-    if (!oper2->data.string)
-        abort_interp("Null string argument. (1)");
+    if (oper2->type != PROG_STRING || !oper2->data.string)
+        abort_interp("Invalid string argument. Must be non-null. (2)");
 
     if (oper1->type != PROG_STRING)
         abort_interp("Invalid argument. (2)");
@@ -1603,6 +1463,8 @@ prim_timer_stop(PRIM_PROTOTYPE)
 void
 prim_event_exists(PRIM_PROTOTYPE)
 {
+    int result;
+
     CHECKOP(1);
     oper1 = POP();              /* str: eventID to look for */
 
@@ -1633,6 +1495,8 @@ prim_event_exists(PRIM_PROTOTYPE)
 void
 prim_event_count(PRIM_PROTOTYPE)
 {
+    int result;
+
     CHECKOP(0);
     CHECKOFLOW(1);
 
@@ -1659,6 +1523,8 @@ prim_event_count(PRIM_PROTOTYPE)
 void
 prim_event_send(PRIM_PROTOTYPE)
 {
+    char buf[BUFFER_LEN];
+
     struct frame *destfr;
     stk_array *arr;
     struct inst temp1;
@@ -1745,6 +1611,9 @@ prim_event_send(PRIM_PROTOTYPE)
 void
 prim_ext_name_okp(PRIM_PROTOTYPE)
 {
+    int result;
+    char buf[BUFFER_LEN];
+
     CHECKOP(2);
     oper2 = POP();
     oper1 = POP();
@@ -1757,22 +1626,16 @@ prim_ext_name_okp(PRIM_PROTOTYPE)
     if (oper2->type == PROG_STRING) {
         strcpyn(buf, sizeof(buf), DoNullInd(oper2->data.string));
 
-        for (ref = 0; buf[ref]; ref++)
-            buf[ref] = tolower(buf[ref]);
-
-        /**
-         * @TODO Maybe these should use case-insenstive?
-         */
-        if (!strcmp(buf, "e") || !strcmp(buf, "exit")) {
+        if (!strcasecmp(buf, "e") || !strcasecmp(buf, "exit")) {
             result = ok_object_name(b, TYPE_EXIT);
-        } else if (!strcmp(buf, "r") || !strcmp(buf, "room")) {
+        } else if (!strcasecmp(buf, "r") || !strcasecmp(buf, "room")) {
             result = ok_object_name(b, TYPE_ROOM);
-        } else if (!strcmp(buf, "t") || !strcmp(buf, "thing")) {
+        } else if (!strcasecmp(buf, "t") || !strcasecmp(buf, "thing")) {
             result = ok_object_name(b, TYPE_THING);
-        } else if (!strcmp(buf, "p") || !strcmp(buf, "player")) {
+        } else if (!strcasecmp(buf, "p") || !strcasecmp(buf, "player")) {
             result = ok_object_name(b, TYPE_PLAYER);
-        } else if (!strcmp(buf, "f") || !strcmp(buf, "muf")
-                   || !strcmp(buf, "program")) {
+        } else if (!strcasecmp(buf, "f") || !strcasecmp(buf, "muf")
+                   || !strcasecmp(buf, "program")) {
             result = ok_object_name(b, TYPE_PROGRAM);
         } else {
             abort_interp("String must be a valid object type (2).");
@@ -1830,6 +1693,8 @@ prim_force_level(PRIM_PROTOTYPE)
 void
 prim_forcedby(PRIM_PROTOTYPE)
 {
+    dbref ref;
+
     CHECKOP(0);
     CHECKOFLOW(1);
 
@@ -1914,15 +1779,8 @@ prim_watchpid(PRIM_PROTOTYPE)
         abort_interp("Mucker level 3 required.");
     }
 
-    /**
-     * @TODO Combine these two checks.
-     */
-    if (oper1->type != PROG_INTEGER) {
-        abort_interp("Process PID expected.");
-    }
-
-    if (oper1->data.number == fr->pid) {
-        abort_interp("Narcissistic processes not allowed.");
+    if (oper1->type != PROG_INTEGER || oper1->data.number == fr->pid) {
+        abort_interp("Integer expected. Must be different from current PID.");
     }
 
     frame = timequeue_pid_frame(oper1->data.number);
@@ -2068,6 +1926,8 @@ prim_debugger_break(PRIM_PROTOTYPE)
 void
 prim_ignoringp(PRIM_PROTOTYPE)
 {
+    int result;
+
     CHECKOP(2);
     oper1 = POP();
     oper2 = POP();
@@ -2224,6 +2084,8 @@ prim_debug_off(PRIM_PROTOTYPE)
 void
 prim_debug_line(PRIM_PROTOTYPE)
 {
+    char buf[BUFFER_LEN];
+
     if (((FLAGS(program) & DARK) == 0) && controls(player, program)) {
         char *msg = debug_inst(fr, 0, pc, fr->pid, arg, buf, sizeof(buf),
                 *top, program);
@@ -2253,6 +2115,7 @@ prim_debug_line(PRIM_PROTOTYPE)
 void
 prim_smtp_send(PRIM_PROTOTYPE)
 {
+    int result;
     char           body[BUFFER_LEN];
     struct smtp    *smtp = NULL;
     int            rc;
