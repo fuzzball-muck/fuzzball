@@ -359,6 +359,8 @@ struct publics {
  *
  * This will 'return' from whatever function it is in.
  *
+ * @TODO: Do this without relying on static operX variables.
+ *
  * @param C string error message to display
  */
 #define abort_interp(C) \
