@@ -154,7 +154,7 @@ could_doit(int descr, dbref player, dbref thing)
         dest = *(DBFETCH(thing)->sp.exit.dest);
 
         if (dest == NIL)
-            return (eval_boolexp(descr, player, GETLOCK(thing), thing));
+            return (eval_boolexp(descr, player, GETLOCK(thing, MESGPROP_LOCK), thing));
 
         if (Typeof(dest) == TYPE_PLAYER) {
             /* Check for additional restrictions related to player dests */
@@ -208,7 +208,7 @@ could_doit(int descr, dbref player, dbref thing)
     }
 
     /* Check the @lock on the thing, as a final test. */
-    return (eval_boolexp(descr, player, GETLOCK(thing), thing));
+    return (eval_boolexp(descr, player, GETLOCK(thing, MESGPROP_LOCK), thing));
 }
 
 /**

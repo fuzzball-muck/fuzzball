@@ -303,25 +303,27 @@ extern char match_cmdname[BUFFER_LEN];
  * A thin wrappera round @see get_property_lock
  *
  * @param x the object to look up
+ * @param y the lock to look up
  * @return the struct boolexp object or TRUE_BOOLEXP
  */
-#define GETLOCK(x)      (get_property_lock(x, MESGPROP_LOCK))
+#define GETLOCK(x,y)      (get_property_lock(x, y))
 
 /**
  * Sets a lock from a boolexp structure
  *
  * Typically you would take the return value from @see parse_boolexp
- * and then use it as the 'y' parameter here.  The object modification
+ * and then use it as the 'z' parameter here.  The object modification
  * timestamp is updated.
  *
  * @param x the object to set the lock on
- * @param y the struct boolexp to use as the lock value.
+ * @param y the lock to modify
+ * @param z the struct boolexp to use as the lock value.
  */
-#define SETLOCK(x,y)    { \
+#define SETLOCK(x,y,z)    { \
     PData mydat; \
     mydat.flags = PROP_LOKTYP; \
-    mydat.data.lok = y; \
-    set_property(x, MESGPROP_LOCK, &mydat); \
+    mydat.data.lok = z; \
+    set_property(x, y, &mydat); \
     ts_modifyobject(x); \
 }
 
@@ -331,14 +333,12 @@ extern char match_cmdname[BUFFER_LEN];
  * Also updates object modification timestamp.
  *
  * @param x the object to clear the lock on
+ * @param y the lock to clear
  */
-#define CLEARLOCK(x)    { \
-    PData mydat; \
-    mydat.flags = PROP_LOKTYP; \
-    mydat.data.lok = TRUE_BOOLEXP; \
-    set_property(x, MESGPROP_LOCK, &mydat); \
-    DBDIRTY(x); \
+#define CLEARLOCK(x,y)    { \
+    remove_property(x, y); \
     ts_modifyobject(x); \
+    DBDIRTY(x); \
 }
 
 /**

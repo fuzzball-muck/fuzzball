@@ -763,25 +763,25 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
     if (GETDESC(thing))
         notify(player, GETDESC(thing));
 
-    if (strcmp(temp = unparse_boolexp(player, GETLOCK(thing), 1), PROP_UNLOCKED_VAL))
+    if (strcmp(temp = unparse_boolexp(player, GETLOCK(thing, MESGPROP_LOCK), 1), PROP_UNLOCKED_VAL))
         notifyf(player, "Key: %s", temp);
 
-    if (strcmp(temp = unparse_boolexp(player, get_property_lock(thing, MESGPROP_LINKLOCK), 1), PROP_UNLOCKED_VAL))
+    if (strcmp(temp = unparse_boolexp(player, GETLOCK(thing, MESGPROP_LINKLOCK), 1), PROP_UNLOCKED_VAL))
         notifyf(player, "Link_OK Key: %s", temp);
 
-    if (strcmp(temp = unparse_boolexp(player, get_property_lock(thing, MESGPROP_CHLOCK), 1), PROP_UNLOCKED_VAL))
+    if (strcmp(temp = unparse_boolexp(player, GETLOCK(thing, MESGPROP_CHLOCK), 1), PROP_UNLOCKED_VAL))
         notifyf(player, "Chown_OK Key: %s", temp);
 
-    if (strcmp(temp = unparse_boolexp(player, get_property_lock(thing, MESGPROP_CONLOCK), 1), PROP_UNLOCKED_VAL))
+    if (strcmp(temp = unparse_boolexp(player, GETLOCK(thing, MESGPROP_CONLOCK), 1), PROP_UNLOCKED_VAL))
         notifyf(player, "Container Key: %s", temp);
 
-    if (strcmp(temp = unparse_boolexp(player, get_property_lock(thing, MESGPROP_FLOCK), 1), PROP_UNLOCKED_VAL))
+    if (strcmp(temp = unparse_boolexp(player, GETLOCK(thing, MESGPROP_FLOCK), 1), PROP_UNLOCKED_VAL))
         notifyf(player, "Force Key: %s", temp);
 
-    if (strcmp(temp = unparse_boolexp(player, get_property_lock(thing, MESGPROP_READLOCK), 1), PROP_UNLOCKED_VAL))
+    if (strcmp(temp = unparse_boolexp(player, GETLOCK(thing, MESGPROP_READLOCK), 1), PROP_UNLOCKED_VAL))
         notifyf(player, "Read Key: %s", temp);
 
-    if (strcmp(temp = unparse_boolexp(player, get_property_lock(thing, MESGPROP_OWNLOCK), 1), PROP_UNLOCKED_VAL))
+    if (strcmp(temp = unparse_boolexp(player, GETLOCK(thing, MESGPROP_OWNLOCK), 1), PROP_UNLOCKED_VAL))
         notifyf(player, "Ownership Key: %s", temp);
 
     if (GETSUCC(thing)) {

@@ -324,7 +324,7 @@ mfn_testlock(MFUNARGS)
             ABORT_MPI("TESTLOCK", "Permission denied. (arg2)");
     }
 
-    lok = get_property_lock(obj, argv[1]);
+    lok = GETLOCK(obj, argv[1]);
 
     if (argc > 3 && lok == TRUE_BOOLEXP)
         return (argv[3]);

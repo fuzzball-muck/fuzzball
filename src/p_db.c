@@ -2417,48 +2417,13 @@ prim_recycle(PRIM_PROTOTYPE)
 }
 
 /**
- * Sets a lock (with the given key) on an object.
- *
- * Returns 0 if the key is not well-formed, otherwise 1.
- *
- * @private
- * @param descr the player's descriptor
- * @param player the player requesting the change
- * @param thing dbref of the target object
- * @param keyname string that represents the pass condition
- */
-static int
-setlockstr(int descr, dbref player, dbref thing, const char *keyname)
-{
-    /**
-     * @TODO Should this logic be exposed to the various lock
-     *       commands?
-     */
-    struct boolexp *key;
-
-    if (*keyname != '\0') {
-        key = parse_boolexp(descr, player, keyname, 0);
-        if (key == TRUE_BOOLEXP) {
-            return 0;
-        } else {
-            /* everything ok, do it */
-            SETLOCK(thing, key);
-            return 1;
-        }
-    } else {
-        CLEARLOCK(thing);
-        return 1;
-    }
-}
-
-/**
  * Implementation of MUF SETLOCKSTR
  *
  * Consumes a dbref and a string, sets the lock accordingly, and returns
  * a boolean representing success or failure.  Needs MUCKER level 4 to
  * bypass basic ownership checks.
  *
- * @see setlockstr
+ * @see _set_lock
  *
  * @param player the player running the MUF program
  * @param program the program being run
@@ -2485,7 +2450,7 @@ prim_setlockstr(PRIM_PROTOTYPE)
     if ((mlev < 4) && !permissions(ProgUID, ref))
         abort_interp("Permission denied.");
 
-    result = setlockstr(fr->descr, player, ref, DoNullInd(oper1->data.string));
+    result = _set_lock(fr->descr, player, ref, MESGPROP_LOCK, "Lock", DoNullInd(oper1->data.string), 1);
 
     CLEAR(oper1);
     CLEAR(oper2);
@@ -2526,7 +2491,7 @@ prim_getlockstr(PRIM_PROTOTYPE)
         abort_interp("Permission denied.");
 
     {
-        const char *tmpstr = (char *) unparse_boolexp(player, GETLOCK(ref), 0);
+        const char *tmpstr = (char *) unparse_boolexp(player, GETLOCK(ref, MESGPROP_LOCK), 0);
 
         CLEAR(oper1);
         PushString(tmpstr);
