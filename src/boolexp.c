@@ -881,7 +881,7 @@ test_lock(int descr, dbref player, dbref thing, const char *lockprop)
 {
     struct boolexp *lokptr;
 
-    lokptr = get_property_lock(thing, lockprop);
+    lokptr = GETLOCK(thing, lockprop);
     return (eval_boolexp(descr, player, lokptr, thing));
 }
 
@@ -907,7 +907,7 @@ test_lock_false_default(int descr, dbref player, dbref thing, const char *lockpr
 {
     struct boolexp *lok;
 
-    lok = get_property_lock(thing, lockprop);
+    lok = GETLOCK(thing, lockprop);
 
     if (lok == TRUE_BOOLEXP)
         return 0;

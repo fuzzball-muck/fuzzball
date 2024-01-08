@@ -2271,7 +2271,7 @@ reflist_find(dbref obj, const char *propname, dbref tofind)
  * should be somethinglike "Object Description", "Drop Message", etc.
  * and is used to emit messages.
  *
- * @param descr Descriptor
+ * @param descr The player's descriptor
  * @param player The player doing the action
  * @param objname The object name to match, or "" for the player.
  * @param propname The property we are going to set, like "_/de"
@@ -2307,6 +2307,61 @@ set_standard_property(int descr, dbref player, const char *objname,
 }
 
 /**
+ * This helper function 'compiles' the lock and, if valid, sets the
+ * property on the propname.  Otherwise, an error is emitted to the user.
+ *
+ * The last parameter controls if messages should be displayed.
+ *
+ * @param descr The player's descriptor
+ * @param player The player receiving any messages
+ * @param object The object we are locking or unlocking
+ * @param propname The name of the prop to set
+ * @param proplabel This is used for messaging and is the type of lock.
+ *        The first letter should be capitalized.  For instance, "Lock",
+ *        "Ownership Lock", etc.
+ * @param keyvalue The lock itself or "" to clear the lock.
+ * @param silent boolean if true, do not display anything.
+ */
+int
+_set_lock(int descr, dbref player, dbref object, const char *propname,
+          const char *proplabel, const char *keyvalue, int silent) {
+    struct boolexp *key;
+
+    /* If there is no key value, clear the lock. You can see this
+     * if you type: @lock whatever=
+     */
+    if (!*keyvalue) {
+        CLEARLOCK(object, propname);
+
+        if (!silent) {
+            notifyf_nolisten(player, "%s cleared.", proplabel);
+        }
+
+        return 1;
+    }
+
+    /* Parse the lock */
+    key = parse_boolexp(descr, player, keyvalue, 0);
+
+    if (key == TRUE_BOOLEXP) {
+        if (!silent) {
+            notifyf_nolisten(player, "I don't understand that key.");
+        }
+
+        return 0;
+    }
+
+    /* If it all works out, set the property */
+    SETLOCK(object, propname, key);
+
+    if (!silent) {
+        notifyf_nolisten(player, "%s set.", proplabel);
+    }
+
+    return 1;
+}
+
+/**
  * This command is the underpinning of @lock, @flock, @linklock and @chlock.
  * Please note that part of this function's functionality relies on the
  * global 'match_args', so this is not really an API call.  This is
@@ -2322,8 +2377,9 @@ set_standard_property(int descr, dbref player, const char *objname,
  * If there is an = but no string after the equals (i.e. '@lock x='),
  * then it clears the lock
  *
- * Otherwise, the lock is 'compiled' and, if valid, set on the property
- * propname.  Otherwise, an error is emitted to the user.
+ * Otherwise, this hands off the actual lock-setting to _set_lock.
+ *
+ * @see _set_lock
  *
  * @param descr Descriptor
  * @param player The player doing the command
@@ -2340,7 +2396,6 @@ set_standard_lock(int descr, dbref player, const char *objname,
                   const char *keyvalue)
 {
     dbref object;
-    PData property;
     struct boolexp *key;
 
     /* The presence of '=' (ARG_DELIMITER) in the arguments indicates if
@@ -2354,49 +2409,27 @@ set_standard_lock(int descr, dbref player, const char *objname,
     if (!*objname) {
         object = player;
     } else {
-        /* I believe this emits the error message if there is no match.
-         */
+        /* This emits the error message if there is no match. */
         object = match_controlled(descr, player, objname);
     }
 
-    if (object != NOTHING) { /* If we found an object */
-        if (!set) { /* If there was no =, then display lock status.
-                     * You can see this message if you just type '@lock'
-                     * by itself.
-                     */
-            notifyf_nolisten(
-                player, "%s: %s", proplabel,
-                unparse_boolexp(player, get_property_lock(object, propname), 1)
-            );
-
-            return;
-        }
-
-        /* If there is no key value, clear the lock. You can see this
-         * if you type: @lock whatver=
-         */
-        if (!*keyvalue) {
-            remove_property(object, propname);
-            ts_modifyobject(object);
-            notifyf_nolisten(player, "%s cleared.", proplabel);
-            return;
-        }
-
-        /* Parse the lock */
-        key = parse_boolexp(descr, player, keyvalue, 0);
-
-        if (key == TRUE_BOOLEXP) {
-            notifyf_nolisten(player, "I don't understand that key.");
-            return;
-        }
-
-        /* If it all works out, set the property */
-        property.flags = PROP_LOKTYP;
-        property.data.lok = key;
-        set_property(object, propname, &property);
-        ts_modifyobject(object);
-        notifyf_nolisten(player, "%s set.", proplabel);
+    if (object == NOTHING) { /* if we didn't find an object */
+        return;
     }
+
+    if (!set) { /* If there was no =, then display lock status.
+                 * You can see this message if you just type '@lock'
+                 * by itself.
+                 */
+        notifyf_nolisten(
+            player, "%s: %s", proplabel,
+            unparse_boolexp(player, GETLOCK(object, propname), 1)
+        );
+
+        return;
+    }
+
+    (void) _set_lock(descr, player, object, propname, proplabel, keyvalue, 0);
 }
 
 /**

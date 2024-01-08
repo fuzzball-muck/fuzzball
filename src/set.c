@@ -1376,7 +1376,7 @@ do_unlock(int descr, dbref player, const char *name)
     dbref object;
 
     if ((object = match_controlled(descr, player, name)) != NOTHING) {
-        CLEARLOCK(object);
+        CLEARLOCK(object, MESGPROP_LOCK);
         notifyf_nolisten(player, "Unlocked.");
     }
 }
