@@ -10,34 +10,13 @@
 #include "inst.h"
 #include "interp.h"
 
-/*
- * TODO: These globals really probably shouldn't be globals.  I can only guess
- *       this is either some kind of primitive code re-use because all the
- *       functions use them, or it's some kind of an optimization to avoid
- *       local variables.  But it kills the thread safety and (IMO) makes the
- *       code harder to read/follow.
- */
-
 /**
  * @private
  * @var used to store the parameters passed into the primitives
  *      This seems to be used for conveinance, but makes this probably
- *      not threadsafe.
+ *      not threadsafe. Currently used in the abort_interp macro.
  */
 static struct inst *oper1, *oper2, *oper3, *oper4;
-
-/**
- * @private
- * @var to store the result which is not a local variable for some reason
- *      This makes things very not threadsafe.
- */
-static int result;
-
-/**
- * @private
- * @var This breaks thread safety for fun.
- */
-static char buf[BUFFER_LEN];
 
 /**
  * @private
@@ -64,7 +43,6 @@ static char buf[BUFFER_LEN];
  * descriptive strings.
  */
 struct err_type {
-    int error_bit;                              /* The bit "ID" for the error */
     char error_name[ERROR_NAME_MAX_LEN];        /* Short name for the error   */
     char error_string[ERROR_STRING_MAX_LEN];    /* The descriptive message    */
 };
@@ -85,12 +63,12 @@ static union error_mask err_bits[ERROR_NUM];
  * @var the different float error errors and messages, initialized
  */
 static struct err_type err_defs[] = {
-    {0, "DIV_ZERO", "Division by zero attempted."},
-    {1, "NAN", "Result was not a number."},
-    {2, "IMAGINARY", "Result was imaginary."},
-    {3, "FBOUNDS", "Floating-point inputs were infinite or out of range."},
-    {4, "IBOUNDS", "Calculation resulted in an integer overflow."},
-    {5, "", ""}
+    {"DIV_ZERO", "Division by zero attempted."},
+    {"NAN", "Result was not a number."},
+    {"IMAGINARY", "Result was imaginary."},
+    {"FBOUNDS", "Floating-point inputs were infinite or out of range."},
+    {"IBOUNDS", "Calculation resulted in an integer overflow."},
+    {"", ""}
 };
 
 /**
@@ -113,8 +91,9 @@ static int err_init = 0;
 static void
 init_err_val(void)
 {
-    for (int i = 0; i < ERROR_NUM; i++)
+    for (int i = 0; i < ERROR_NUM; i++) {
         err_bits[i].is_flags = 0;
+    }
 
     err_bits[0].error_flags.div_zero = 1;
     err_bits[1].error_flags.nan = 1;
@@ -161,6 +140,8 @@ prim_clear(PRIM_PROTOTYPE)
 void
 prim_error_num(PRIM_PROTOTYPE)
 {
+    int result;
+
     CHECKOP(0);
     CHECKOFLOW(1);
     result = ERROR_NUM;
@@ -195,41 +176,35 @@ prim_error_num(PRIM_PROTOTYPE)
 void
 prim_clear_error(PRIM_PROTOTYPE)
 {
-    int loop;
+    int result = 0;
 
     CHECKOP(1);
     oper1 = POP();
 
-    if (oper1->type != PROG_STRING && oper1->type != PROG_INTEGER)
+    if (oper1->type != PROG_STRING && oper1->type != PROG_INTEGER) {
         abort_interp("Invalid argument type. (1)");
+    }
 
-    if (!err_init)
+    if (!err_init) {
         init_err_val();
+    }
 
     if (oper1->type == PROG_INTEGER) {
-        if ((oper1->data.number < 0) || (oper1->data.number >= ERROR_NUM)) {
-            result = 0;
-        } else {
+        if ((oper1->data.number >= 0) && (oper1->data.number < ERROR_NUM)) {
             fr->error.is_flags = fr->error.is_flags
-                                 & (~err_bits[oper1->data.number].is_flags);
+                    & (~err_bits[oper1->data.number].is_flags);
             result = 1;
         }
     } else {
-        if (!oper1->data.string) {
-            result = 0;
-        } else {
-            result = 0;
-            loop = 0;
+        char buf[BUFFER_LEN];
+        snprintf(buf, sizeof(buf), DoNullInd(oper1->data.string));
 
-            while (loop < ERROR_NUM) {
-                if (!strcasecmp(buf, err_defs[loop].error_name)) {
-                    result = 1;
-                    fr->error.is_flags = fr->error.is_flags
-                                         & (~err_bits[loop].is_flags);
-                    break;
-                } else {
-                    loop++;
-                }
+        for (int i = 0; i < ERROR_NUM; i++) {
+            if (!strcasecmp(buf, err_defs[i].error_name)) {
+                result = 1;
+                fr->error.is_flags = fr->error.is_flags
+                        & (~err_bits[i].is_flags);
+                break;
             }
         }
     }
@@ -266,41 +241,35 @@ prim_clear_error(PRIM_PROTOTYPE)
 void
 prim_set_error(PRIM_PROTOTYPE)
 {
-    int loop;
+    int result = 0;
 
     CHECKOP(1);
     oper1 = POP();
 
-    if (oper1->type != PROG_STRING && oper1->type != PROG_INTEGER)
+    if (oper1->type != PROG_STRING && oper1->type != PROG_INTEGER) {
         abort_interp("Invalid argument type. (1)");
+    }
 
-    if (!err_init)
+    if (!err_init) {
         init_err_val();
+    }
 
     if (oper1->type == PROG_INTEGER) {
-        if ((oper1->data.number < 0) || (oper1->data.number >= ERROR_NUM)) {
-            result = 0;
-        } else {
+        if ((oper1->data.number >= 0) && (oper1->data.number < ERROR_NUM)) {
             fr->error.is_flags = fr->error.is_flags
-                                 | err_bits[oper1->data.number].is_flags;
+                    | err_bits[oper1->data.number].is_flags;
             result = 1;
         }
     } else {
-        if (!oper1->data.string) {
-            result = 0;
-        } else {
-            result = 0;
-            loop = 0;
+        char buf[BUFFER_LEN];
+        snprintf(buf, sizeof(buf), DoNullInd(oper1->data.string));
 
-            while (loop < ERROR_NUM) {
-                if (!strcasecmp(buf, err_defs[loop].error_name)) {
-                    result = 1;
-                    fr->error.is_flags = fr->error.is_flags
-                                         | err_bits[loop].is_flags;
-                    break;
-                } else {
-                    loop++;
-                }
+        for (int i = 0; i < ERROR_NUM; i++) {
+            if (!strcasecmp(buf, err_defs[i].error_name)) {
+                result = 1;
+                fr->error.is_flags = fr->error.is_flags
+                        | err_bits[i].is_flags;
+                break;
             }
         }
     }
@@ -335,39 +304,33 @@ prim_set_error(PRIM_PROTOTYPE)
 void
 prim_is_set(PRIM_PROTOTYPE)
 {
-    int loop;
+    int result = 0;
 
     CHECKOP(1);
     oper1 = POP();
 
-    if (oper1->type != PROG_STRING && oper1->type != PROG_INTEGER)
+    if (oper1->type != PROG_STRING && oper1->type != PROG_INTEGER) {
         abort_interp("Invalid argument type. (1)");
+    }
 
-    if (!err_init)
+    if (!err_init) {
         init_err_val();
+    }
 
     if (oper1->type == PROG_INTEGER) {
-        if ((oper1->data.number < 0) || (oper1->data.number >= ERROR_NUM)) {
-            result = 0;
-        } else {
+        if ((oper1->data.number >= 0) && (oper1->data.number < ERROR_NUM)) {
             result = ((fr->error.is_flags
-                       & err_bits[oper1->data.number].is_flags) != 0);
+                    & err_bits[oper1->data.number].is_flags) != 0);
         }
     } else {
-        if (!oper1->data.string) {
-            result = 0;
-        } else {
-            result = 0;
-            loop = 0;
+        char buf[BUFFER_LEN];
+        snprintf(buf, sizeof(buf), DoNullInd(oper1->data.string));
 
-            while (loop < ERROR_NUM) {
-                if (!strcasecmp(buf, err_defs[loop].error_name)) {
-                    result = ((fr->error.is_flags
-                               & err_bits[loop].is_flags) != 0);
-                    break;
-                } else {
-                    loop++;
-                }
+        for (int i = 0; i < ERROR_NUM; i++) {
+            if (!strcasecmp(buf, err_defs[i].error_name)) {
+                result = ((fr->error.is_flags
+                        & err_bits[i].is_flags) != 0);
+                break;
             }
         }
     }
@@ -379,9 +342,9 @@ prim_is_set(PRIM_PROTOTYPE)
 /**
  * Implementation of MUF ERROR_STR
  *
- * Consumes either an integer or a string.
+ * Consumes either an integer (error number) or a string (error short name).
  *
- * Converts it to a descriptive string.
+ * Converts it to the error description.
  *
  * You can use one of the following integers or strings:
  *
@@ -402,37 +365,31 @@ prim_is_set(PRIM_PROTOTYPE)
 void
 prim_error_str(PRIM_PROTOTYPE)
 {
-    int loop;
+    int result = -1;
 
     CHECKOP(1);
     oper1 = POP();
 
-    if (oper1->type != PROG_STRING && oper1->type != PROG_INTEGER)
+    if (oper1->type != PROG_STRING && oper1->type != PROG_INTEGER) {
         abort_interp("Invalid argument type. (1)");
+    }
 
-    if (!err_init)
+    if (!err_init) {
         init_err_val();
+    }
 
     if (oper1->type == PROG_INTEGER) {
-        if ((oper1->data.number < 0) || (oper1->data.number >= ERROR_NUM)) {
-            result = -1;
-        } else {
+        if ((oper1->data.number >= 0) && (oper1->data.number < ERROR_NUM)) {
             result = oper1->data.number;
         }
     } else {
-        if (!oper1->data.string) {
-            result = -1;
-        } else {
-            result = -1;
-            loop = 0;
+        char buf[BUFFER_LEN];
+        snprintf(buf, sizeof(buf), DoNullInd(oper1->data.string));
 
-            while (loop < ERROR_NUM) {
-                if (!strcasecmp(buf, err_defs[loop].error_name)) {
-                    result = loop;
-                    break;
-                } else {
-                    loop++;
-                }
+        for (int i = 0; i < ERROR_NUM; i++) {
+            if (!strcasecmp(buf, err_defs[i].error_name)) {
+                result = i;
+                break;
             }
         }
     }
@@ -472,14 +429,18 @@ prim_error_str(PRIM_PROTOTYPE)
 void
 prim_error_name(PRIM_PROTOTYPE)
 {
+    int result;
+
     CHECKOP(1);
     oper1 = POP();
 
-    if (oper1->type != PROG_INTEGER)
+    if (oper1->type != PROG_INTEGER) {
         abort_interp("Invalid argument type. (1)");
+    }
 
-    if (!err_init)
+    if (!err_init) {
         init_err_val();
+    }
 
     if ((oper1->data.number < 0) || (oper1->data.number >= ERROR_NUM)) {
         result = -1;
@@ -499,7 +460,7 @@ prim_error_name(PRIM_PROTOTYPE)
 /**
  * Implementation of MUF ERROR_BIT
  *
- * Consumes a string
+ * Consumes a string which is the short name of the error
  *
  * Converts it to an integer which is the equivalent bit
  *
@@ -522,29 +483,27 @@ prim_error_name(PRIM_PROTOTYPE)
 void
 prim_error_bit(PRIM_PROTOTYPE)
 {
-    int loop;
+    int result = -1;
 
     CHECKOP(1);
     oper1 = POP();
 
-    if (oper1->type != PROG_STRING)
+    if (oper1->type != PROG_STRING) {
         abort_interp("Invalid argument type. (1)");
+    }
 
-    if (!err_init)
+    if (!err_init) {
         init_err_val();
+    }
 
-    if (!oper1->data.string) {
-        result = -1;
-    } else {
-        result = -1;
-        loop = 0;
+    if (oper1->data.string) {
+        char buf[BUFFER_LEN];
+        snprintf(buf, sizeof(buf), oper1->data.string->data);
 
-        while (loop < ERROR_NUM) {
-            if (!strcasecmp(buf, err_defs[loop].error_name)) {
-                result = loop;
+        for (int i = 0; i < ERROR_NUM; i++) {
+            if (!strcasecmp(buf, err_defs[i].error_name)) {
+                result = i;
                 break;
-            } else {
-                loop++;
             }
         }
     }
@@ -569,6 +528,8 @@ prim_error_bit(PRIM_PROTOTYPE)
 void
 prim_is_error(PRIM_PROTOTYPE)
 {
+    int result;
+
     CHECKOP(0);
     CHECKOFLOW(1);
     result = ((fr->error.is_flags) != 0);
