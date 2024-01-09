@@ -19,34 +19,13 @@
 #include "interp.h"
 #include "tune.h"
 
-/*
- * TODO: These globals really probably shouldn't be globals.  I can only guess
- *       this is either some kind of primitive code re-use because all the
- *       functions use them, or it's some kind of an optimization to avoid
- *       local variables.  But it kills the thread safety and (IMO) makes the
- *       code harder to read/follow.
- */
-
 /**
  * @private
  * @var used to store the parameters passed into the primitives
  *      This seems to be used for conveinance, but makes this probably
- *      not threadsafe.
+ *      not threadsafe. Currently used in the abort_interp macro.
  */
 static struct inst *oper1, *oper2, *oper3, *oper4;
-
-/**
- * @private
- * @var to store the result which is not a local variable for some reason
- *      This makes things very not threadsafe.
- */
-static double fresult;
-
-/**
- * @private
- * @var This breaks thread safety for fun.
- */
-static char buf[BUFFER_LEN];
 
 /**
  * Implementation of MUF INF
@@ -64,6 +43,8 @@ static char buf[BUFFER_LEN];
 void
 prim_inf(PRIM_PROTOTYPE)
 {
+    double fresult;
+
     CHECKOP(0);
     fresult = INF;
     CHECKOFLOW(1);
@@ -87,11 +68,14 @@ prim_inf(PRIM_PROTOTYPE)
 void
 prim_ceil(PRIM_PROTOTYPE)
 {
+    double fresult;
+
     CHECKOP(1);
     oper1 = POP();
 
-    if (oper1->type != PROG_FLOAT)
+    if (oper1->type != PROG_FLOAT) {
         abort_interp("Non-float argument. (1)");
+    }
 
     if (!no_good(oper1->data.fnumber)) {
         fresult = ceil(oper1->data.fnumber);
@@ -121,11 +105,14 @@ prim_ceil(PRIM_PROTOTYPE)
 void
 prim_floor(PRIM_PROTOTYPE)
 {
+    double fresult;
+
     CHECKOP(1);
     oper1 = POP();
 
-    if (oper1->type != PROG_FLOAT)
+    if (oper1->type != PROG_FLOAT) {
         abort_interp("Non-float argument. (1)");
+    }
 
     if (!no_good(oper1->data.fnumber)) {
         fresult = floor(oper1->data.fnumber);
@@ -154,11 +141,14 @@ prim_floor(PRIM_PROTOTYPE)
 void
 prim_sqrt(PRIM_PROTOTYPE)
 {
+    double fresult;
+
     CHECKOP(1);
     oper1 = POP();
 
-    if (oper1->type != PROG_FLOAT)
+    if (oper1->type != PROG_FLOAT) {
         abort_interp("Non-float argument. (1)");
+    }
 
     if (!no_good(oper1->data.fnumber)) {
         if (oper1->data.fnumber < 0.0) {
@@ -168,7 +158,7 @@ prim_sqrt(PRIM_PROTOTYPE)
             fresult = sqrt(oper1->data.fnumber);
         }
     } else {
-        if (isnan(fresult)) {
+        if (isnan(oper1->data.fnumber)) {
             fresult = NAN;
             fr->error.error_flags.nan = 1;
         } else {
@@ -197,6 +187,8 @@ prim_sqrt(PRIM_PROTOTYPE)
 void
 prim_pi(PRIM_PROTOTYPE)
 {
+    double fresult;
+
     CHECKOP(0);
     fresult = M_PI;
     CHECKOFLOW(1);
@@ -221,6 +213,8 @@ prim_pi(PRIM_PROTOTYPE)
 void
 prim_epsilon(PRIM_PROTOTYPE)
 {
+    double fresult;
+
     CHECKOP(0);
     fresult = DBL_EPSILON;
     CHECKOFLOW(1);
@@ -245,29 +239,31 @@ prim_epsilon(PRIM_PROTOTYPE)
 void
 prim_round(PRIM_PROTOTYPE)
 {
-    double temp, tshift, tnum, fstore;
+    double fresult;
 
     CHECKOP(2);
     oper1 = POP();
     oper2 = POP();
 
-    if (oper1->type != PROG_INTEGER)
+    if (oper1->type != PROG_INTEGER) {
         abort_interp("Non-integer argument. (2)");
+    }
 
-    if (oper2->type != PROG_FLOAT)
+    if (oper2->type != PROG_FLOAT) {
         abort_interp("Non-float argument. (1)");
+    }
 
     if (!no_good(oper2->data.fnumber)) {
+        double temp, tshift, tnum, fstore;
+
         temp = pow(10.0, oper1->data.number);
         tshift = temp * (oper2->data.fnumber);
         tnum = modf(tshift, &fstore);
 
         if (tnum >= 0.5) {
             fstore = fstore + 1.0;
-        } else {
-            if (tnum <= -0.5) {
-                fstore = fstore - 1.0;
-            }
+        } else if (tnum <= -0.5) {
+            fstore = fstore - 1.0;
         }
 
         fstore = fstore / temp;
@@ -310,11 +306,14 @@ prim_round(PRIM_PROTOTYPE)
 void
 prim_sin(PRIM_PROTOTYPE)
 {
+    double fresult;
+
     CHECKOP(1);
     oper1 = POP();
 
-    if (oper1->type != PROG_FLOAT)
+    if (oper1->type != PROG_FLOAT) {
         abort_interp("Non-float argument. (1)");
+    }
 
     if (!no_good(oper1->data.fnumber)) {
         fresult = sin(oper1->data.fnumber);
@@ -348,11 +347,14 @@ prim_sin(PRIM_PROTOTYPE)
 void
 prim_cos(PRIM_PROTOTYPE)
 {
+    double fresult;
+
     CHECKOP(1);
     oper1 = POP();
 
-    if (oper1->type != PROG_FLOAT)
+    if (oper1->type != PROG_FLOAT) {
         abort_interp("Non-float argument. (1)");
+    }
 
     if (!no_good(oper1->data.fnumber)) {
         fresult = cos(oper1->data.fnumber);
@@ -386,11 +388,14 @@ prim_cos(PRIM_PROTOTYPE)
 void
 prim_tan(PRIM_PROTOTYPE)
 {
+    double fresult;
+
     CHECKOP(1);
     oper1 = POP();
 
-    if (oper1->type != PROG_FLOAT)
+    if (oper1->type != PROG_FLOAT) {
         abort_interp("Non-float argument. (1)");
+    }
 
     if (!no_good(oper1->data.fnumber)) {
         fresult = fmod((oper1->data.fnumber - M_PI_2), M_PI);
@@ -438,11 +443,14 @@ prim_tan(PRIM_PROTOTYPE)
 void
 prim_asin(PRIM_PROTOTYPE)
 {
+    double fresult;
+
     CHECKOP(1);
     oper1 = POP();
 
-    if (oper1->type != PROG_FLOAT)
+    if (oper1->type != PROG_FLOAT) {
         abort_interp("Non-float argument. (1)");
+    }
 
     if ((oper1->data.fnumber >= -1.0) && (oper1->data.fnumber <= 1.0)) {
         fresult = asin(oper1->data.fnumber);
@@ -476,11 +484,14 @@ prim_asin(PRIM_PROTOTYPE)
 void
 prim_acos(PRIM_PROTOTYPE)
 {
+    double fresult;
+
     CHECKOP(1);
     oper1 = POP();
 
-    if (oper1->type != PROG_FLOAT)
+    if (oper1->type != PROG_FLOAT) {
         abort_interp("Non-float argument. (1)");
+    }
 
     if ((oper1->data.fnumber >= -1.0) && (oper1->data.fnumber <= 1.0)) {
         fresult = acos(oper1->data.fnumber);
@@ -514,11 +525,14 @@ prim_acos(PRIM_PROTOTYPE)
 void
 prim_atan(PRIM_PROTOTYPE)
 {
+    double fresult;
+
     CHECKOP(1);
     oper1 = POP();
 
-    if (oper1->type != PROG_FLOAT)
+    if (oper1->type != PROG_FLOAT) {
         abort_interp("Non-float argument. (1)");
+    }
 
     if (!no_good(oper1->data.fnumber)) {
         fresult = atan(oper1->data.fnumber);
@@ -549,15 +563,19 @@ prim_atan(PRIM_PROTOTYPE)
 void
 prim_atan2(PRIM_PROTOTYPE)
 {
+    double fresult;
+
     CHECKOP(2);
     oper2 = POP();
     oper1 = POP();
 
-    if (oper1->type != PROG_FLOAT)
+    if (oper1->type != PROG_FLOAT) {
         abort_interp("Non-float argument. (1)");
+    }
 
-    if (oper2->type != PROG_FLOAT)
+    if (oper2->type != PROG_FLOAT) {
         abort_interp("Non-float argument. (2)");
+    }
 
     fresult = atan2(oper1->data.fnumber, oper2->data.fnumber);
     CLEAR(oper1);
@@ -591,14 +609,17 @@ prim_dist3d(PRIM_PROTOTYPE)
     oper2 = POP();
     oper1 = POP();
 
-    if (oper1->type != PROG_FLOAT)
+    if (oper1->type != PROG_FLOAT) {
         abort_interp("Non-float argument. (1)");
+    }
 
-    if (oper2->type != PROG_FLOAT)
+    if (oper2->type != PROG_FLOAT) {
         abort_interp("Non-float argument. (2)");
+    }
 
-    if (oper3->type != PROG_FLOAT)
+    if (oper3->type != PROG_FLOAT) {
         abort_interp("Non-float argument. (3)");
+    }
 
     x = oper1->data.fnumber;
     y = oper2->data.fnumber;
@@ -636,19 +657,21 @@ prim_diff3(PRIM_PROTOTYPE)
     EXPECT_POP_STACK(6);
 
     // three things to CLEAR on abort_interp()
-    nargs = 3;
     oper3 = POP();
     oper2 = POP();
     oper1 = POP();
 
-    if (oper1->type != PROG_FLOAT)
+    if (oper1->type != PROG_FLOAT) {
         abort_interp("Non-float argument. (4)");
+    }
 
-    if (oper2->type != PROG_FLOAT)
+    if (oper2->type != PROG_FLOAT) {
         abort_interp("Non-float argument. (5)");
+    }
 
-    if (oper3->type != PROG_FLOAT)
+    if (oper3->type != PROG_FLOAT) {
         abort_interp("Non-float argument. (6)");
+    }
 
     x = oper1->data.fnumber;
     y = oper2->data.fnumber;
@@ -662,14 +685,17 @@ prim_diff3(PRIM_PROTOTYPE)
     oper2 = POP();
     oper1 = POP();
 
-    if (oper1->type != PROG_FLOAT)
+    if (oper1->type != PROG_FLOAT) {
         abort_interp("Non-float argument. (1)");
+    }
 
-    if (oper2->type != PROG_FLOAT)
+    if (oper2->type != PROG_FLOAT) {
         abort_interp("Non-float argument. (2)");
+    }
 
-    if (oper3->type != PROG_FLOAT)
+    if (oper3->type != PROG_FLOAT) {
         abort_interp("Non-float argument. (3)");
+    }
 
     x2 = oper1->data.fnumber;
     y2 = oper2->data.fnumber;
@@ -713,14 +739,17 @@ prim_xyz_to_polar(PRIM_PROTOTYPE)
     oper2 = POP();
     oper1 = POP();
 
-    if (oper1->type != PROG_FLOAT)
+    if (oper1->type != PROG_FLOAT) {
         abort_interp("Non-float argument. (1)");
+    }
 
-    if (oper2->type != PROG_FLOAT)
+    if (oper2->type != PROG_FLOAT) {
         abort_interp("Non-float argument. (2)");
+    }
 
-    if (oper3->type != PROG_FLOAT)
+    if (oper3->type != PROG_FLOAT) {
         abort_interp("Non-float argument. (3)");
+    }
 
     x = oper1->data.fnumber;
     y = oper2->data.fnumber;
@@ -777,14 +806,17 @@ prim_polar_to_xyz(PRIM_PROTOTYPE)
     oper2 = POP();
     oper1 = POP();
 
-    if (oper1->type != PROG_FLOAT)
+    if (oper1->type != PROG_FLOAT) {
         abort_interp("Non-float argument. (1)");
+    }
 
-    if (oper2->type != PROG_FLOAT)
+    if (oper2->type != PROG_FLOAT) {
         abort_interp("Non-float argument. (2)");
+    }
 
-    if (oper3->type != PROG_FLOAT)
+    if (oper3->type != PROG_FLOAT) {
         abort_interp("Non-float argument. (3)");
+    }
 
     dist = oper1->data.fnumber;
     theta = oper2->data.fnumber;
@@ -826,11 +858,14 @@ prim_polar_to_xyz(PRIM_PROTOTYPE)
 void
 prim_exp(PRIM_PROTOTYPE)
 {
+    double fresult;
+
     CHECKOP(1);
     oper1 = POP();
 
-    if (oper1->type != PROG_FLOAT)
+    if (oper1->type != PROG_FLOAT) {
         abort_interp("Non-float argument. (1)");
+    }
 
     if (!no_good(oper1->data.fnumber)) {
         fresult = exp(oper1->data.fnumber);
@@ -872,11 +907,14 @@ prim_exp(PRIM_PROTOTYPE)
 void
 prim_log(PRIM_PROTOTYPE)
 {
+    double fresult;
+
     CHECKOP(1);
     oper1 = POP();
 
-    if (oper1->type != PROG_FLOAT)
+    if (oper1->type != PROG_FLOAT) {
         abort_interp("Non-float argument. (1)");
+    }
 
     if (!no_good(oper1->data.fnumber) && oper1->data.fnumber > 0.0) {
         fresult = log(oper1->data.fnumber);
@@ -909,11 +947,14 @@ prim_log(PRIM_PROTOTYPE)
 void
 prim_log10(PRIM_PROTOTYPE)
 {
+    double fresult;
+
     CHECKOP(1);
     oper1 = POP();
 
-    if (oper1->type != PROG_FLOAT)
+    if (oper1->type != PROG_FLOAT) {
         abort_interp("Non-float argument. (1)");
+    }
 
     if (!no_good(oper1->data.fnumber) && oper1->data.fnumber > 0.0) {
         fresult = log10(oper1->data.fnumber);
@@ -945,11 +986,14 @@ prim_log10(PRIM_PROTOTYPE)
 void
 prim_fabs(PRIM_PROTOTYPE)
 {
+    double fresult;
+
     CHECKOP(1);
     oper1 = POP();
 
-    if (oper1->type != PROG_FLOAT)
+    if (oper1->type != PROG_FLOAT) {
         abort_interp("Non-float argument. (1)");
+    }
 
     if (!no_good(oper1->data.fnumber)) {
         fresult = fabs(oper1->data.fnumber);
@@ -978,11 +1022,14 @@ prim_fabs(PRIM_PROTOTYPE)
 void
 prim_float(PRIM_PROTOTYPE)
 {
+    double fresult;
+
     CHECKOP(1);
     oper1 = POP();
 
-    if (oper1->type != PROG_INTEGER)
+    if (oper1->type != PROG_INTEGER) {
         abort_interp("Non-integer argument. (1)");
+    }
 
     fresult = oper1->data.number;
     CLEAR(oper1);
@@ -1007,15 +1054,19 @@ prim_float(PRIM_PROTOTYPE)
 void
 prim_pow(PRIM_PROTOTYPE)
 {
+    double fresult;
+
     CHECKOP(2);
     oper1 = POP();
     oper2 = POP();
 
-    if (oper2->type != PROG_FLOAT)
+    if (oper2->type != PROG_FLOAT) {
         abort_interp("Non-float argument. (1)");
+    }
 
-    if (oper1->type != PROG_FLOAT)
+    if (oper1->type != PROG_FLOAT) {
         abort_interp("Non-float argument. (2)");
+    }
 
     if (!no_good(oper1->data.fnumber) && !no_good(oper2->data.fnumber)) {
         if (fabs(oper2->data.fnumber) < DBL_EPSILON) {
@@ -1053,6 +1104,8 @@ prim_pow(PRIM_PROTOTYPE)
 void
 prim_frand(PRIM_PROTOTYPE)
 {
+    double fresult;
+
     CHECKOP(0);
     CHECKOFLOW(1);
     fresult = _int_f_rand();
@@ -1076,62 +1129,37 @@ prim_frand(PRIM_PROTOTYPE)
 void
 prim_gaussian(PRIM_PROTOTYPE)
 {
-    /*
-     * TODO: these statics would require a mutex in a threaded system.
-     *       They are not threadsafe
-     *
-     *       The implementation appears to be relying on these being
-     *       static.  Though I think you could drop it and it wouldn't
-     *       matter -- the purpose is to save CPU cycles I think, we
-     *       could simply recompute this every time rather than every
-     *       other time and then get rid of the not-threadsafe statics.
-     *
-     *       That's probably less CPU time than dealing with mutex :)
-     */
-
-    /* We use these two statics to prevent lost work. */
-    double srca = 0.0, srcb = 0.0;
-    double resulta;
-    double radius = 1.0;
-    static double resultb;
-    static char second_call = 0;
+    double fresult;
+    double srca = 0.0, radius = 1.0;
 
     CHECKOP(2);
     oper1 = POP();  /* Arg1 - mean */
     oper2 = POP();  /* Arg2 - std dev. */
 
-    if (oper2->type != PROG_FLOAT)
+    if (oper2->type != PROG_FLOAT) {
         abort_interp("Non-float argument. (1)");
-
-    if (oper1->type != PROG_FLOAT)
-        abort_interp("Non-float argument. (2)");
-
-    /*
-     * This is a Box-Muller polar conversion.
-     * Taken in part from code as demonstrated by Everett F. Carter, Jr.
-     * This code is not copyrighted.
-     */
-    if (second_call) {
-        /*
-         * We should have a correlated value to use from the
-         * previous call, still.
-         */
-        resulta = resultb;
-        second_call = 0;
-    } else {
-        while (radius >= 1.0) {
-            srca = 2.0 * _int_f_rand() - 1.0;
-            srcb = 2.0 * _int_f_rand() - 1.0;
-            radius = srca * srca + srcb * srcb;
-        }
-
-        radius = sqrt((-2.0 * log(radius)) / radius);
-        resulta = srca * radius;
-        resultb = srcb * radius;
-        second_call = 1;    /* Prime for next call in. */
     }
 
-    fresult = oper1->data.fnumber + resulta * oper2->data.fnumber;
+    if (oper1->type != PROG_FLOAT) {
+        abort_interp("Non-float argument. (2)");
+    }
+
+    /*
+     * This is a Box-Muller polar conversion without caching.
+     * Taken in part from code as demonstrated by Everett F. Carter, Jr.
+     * This code is not copyrighted.
+     *
+     */
+    while (radius >= 1.0) {
+        double srcb;
+        srca = 2.0 * _int_f_rand() - 1.0;
+        srcb = 2.0 * _int_f_rand() - 1.0;
+        radius = srca * srca + srcb * srcb;
+    }
+
+    radius = sqrt((-2.0 * log(radius)) / radius);
+    fresult = oper1->data.fnumber + srca * radius * oper2->data.fnumber;
+
     CLEAR(oper1);
     CLEAR(oper2);
     PushFloat(fresult);
@@ -1153,15 +1181,19 @@ prim_gaussian(PRIM_PROTOTYPE)
 void
 prim_fmod(PRIM_PROTOTYPE)
 {
+    double fresult;
+
     CHECKOP(2);
     oper1 = POP();
     oper2 = POP();
 
-    if (oper2->type != PROG_FLOAT)
+    if (oper2->type != PROG_FLOAT) {
         abort_interp("Non-float argument. (1)");
+    }
 
-    if (oper1->type != PROG_FLOAT)
+    if (oper1->type != PROG_FLOAT) {
         abort_interp("Non-float argument. (2)");
+    }
 
     if (fabs(oper1->data.fnumber) < DBL_EPSILON) {
         fresult = INF;
@@ -1192,15 +1224,15 @@ prim_fmod(PRIM_PROTOTYPE)
 void
 prim_modf(PRIM_PROTOTYPE)
 {
-    double tresult;
-    double dresult;
+    double fresult, dresult;
 
     CHECKOP(1);
     oper1 = POP();
     CHECKOFLOW(2);
 
-    if (oper1->type != PROG_FLOAT)
+    if (oper1->type != PROG_FLOAT) {
         abort_interp("Non-float argument. (1)");
+    }
 
     if (!no_good(oper1->data.fnumber)) {
         fresult = modf(oper1->data.fnumber, &dresult);
@@ -1211,8 +1243,7 @@ prim_modf(PRIM_PROTOTYPE)
     }
 
     CLEAR(oper1);
-    tresult = dresult;
-    PushFloat(tresult);
+    PushFloat(dresult);
     PushFloat(fresult);
 }
 
@@ -1232,11 +1263,14 @@ prim_modf(PRIM_PROTOTYPE)
 void
 prim_strtof(PRIM_PROTOTYPE)
 {
+    double fresult;
+
     CHECKOP(1);
     oper1 = POP();
 
-    if (oper1->type != PROG_STRING)
+    if (oper1->type != PROG_STRING) {
         abort_interp("Non-string argument. (1)");
+    }
 
     if (!oper1->data.string || (!ifloat(oper1->data.string->data)
         && !number(oper1->data.string->data))) {
@@ -1267,6 +1301,8 @@ prim_strtof(PRIM_PROTOTYPE)
 void
 prim_ftostr(PRIM_PROTOTYPE)
 {
+    char buf[BUFFER_LEN];
+
     CHECKOP(1);
     oper1 = POP();
 
@@ -1275,8 +1311,9 @@ prim_ftostr(PRIM_PROTOTYPE)
         oper1->data.fnumber = oper1->data.number;
     }
 
-    if (oper1->type != PROG_FLOAT)
+    if (oper1->type != PROG_FLOAT) {
         abort_interp("Non-float argument. (1)");
+    }
 
     snprintf(buf, sizeof(buf), "%#.15g", oper1->data.fnumber);
     CLEAR(oper1);
@@ -1300,6 +1337,8 @@ prim_ftostr(PRIM_PROTOTYPE)
 void
 prim_ftostrc(PRIM_PROTOTYPE)
 {
+    char buf[BUFFER_LEN];
+
     CHECKOP(1);
     oper1 = POP();
 
@@ -1308,8 +1347,9 @@ prim_ftostrc(PRIM_PROTOTYPE)
         oper1->data.fnumber = oper1->data.number;
     }
 
-    if (oper1->type != PROG_FLOAT)
+    if (oper1->type != PROG_FLOAT) {
         abort_interp("Non-float argument. (1)");
+    }
 
     snprintf(buf, sizeof(buf), "%.15g", oper1->data.fnumber);
 
