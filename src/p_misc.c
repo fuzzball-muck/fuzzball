@@ -57,8 +57,8 @@ void
 prim_time(PRIM_PROTOTYPE)
 {
     int result;
+    const struct tm *time_tm;
     time_t lt;
-    struct tm *time_tm;
 
     CHECKOP(0);
     CHECKOFLOW(3);
@@ -91,8 +91,8 @@ void
 prim_date(PRIM_PROTOTYPE)
 {
     int result;
+    const struct tm *time_tm;
     time_t lt;
-    struct tm *time_tm;
 
     CHECKOP(0);
     CHECKOFLOW(3);
@@ -207,21 +207,23 @@ void
 prim_timesplit(PRIM_PROTOTYPE)
 {
     int result;
-    struct tm *time_tm;
+    const struct tm *time_tm;
 
     time_t lt = 0;
 
     CHECKOP(1);
     oper1 = POP();              /* integer: time */
 
-    if (oper1->type != PROG_INTEGER)
+    if (oper1->type != PROG_INTEGER) {
         abort_interp("Invalid argument");
+    }
 
     lt = (time_t) oper1->data.number;
     time_tm = localtime(&lt);
 
-    if (!time_tm)
+    if (!time_tm) {
         abort_interp("Out of range time argument");
+    }
 
     CHECKOFLOW(8);
     CLEAR(oper1);
@@ -262,7 +264,7 @@ void
 prim_timefmt(PRIM_PROTOTYPE)
 {
     char buf[BUFFER_LEN];
-    struct tm *time_tm;
+    const struct tm *time_tm;
 
     time_t lt = 0;
 
@@ -270,23 +272,28 @@ prim_timefmt(PRIM_PROTOTYPE)
     oper2 = POP();              /* integer: time */
     oper1 = POP();              /* string: format */
 
-    if (oper1->type != PROG_STRING)
+    if (oper1->type != PROG_STRING) {
         abort_interp("Invalid argument (1)");
+    }
 
-    if (!oper1->data.string)
+    if (!oper1->data.string) {
         abort_interp("Illegal NULL string (1)");
+    }
 
-    if (oper2->type != PROG_INTEGER)
+    if (oper2->type != PROG_INTEGER) {
         abort_interp("Invalid argument (2)");
+    }
 
     lt = (time_t) oper2->data.number;
     time_tm = localtime(&lt);
 
-    if (!time_tm)
+    if (!time_tm) {
         abort_interp("Out of range time argument");
+    }
 
-    if (!strftime(buf, BUFFER_LEN, oper1->data.string->data, time_tm))
+    if (!strftime(buf, BUFFER_LEN, oper1->data.string->data, time_tm)) {
         abort_interp("Operation would result in overflow.");
+    }
 
     CHECKOFLOW(1);
     CLEAR(oper1);
@@ -323,14 +330,16 @@ prim_convtime(PRIM_PROTOTYPE)
     CHECKOP(1);
     oper1 = POP();
 
-    if (oper1->type != PROG_STRING || !oper1->data.string)
+    if (oper1->type != PROG_STRING || !oper1->data.string) {
         abort_interp("Invalid time string");
+    }
 
     time_t seconds = time_string_to_seconds(oper1->data.string->data, "%T%t%D",
             &error);
 
-    if (error)
+    if (error) {
         abort_interp(error);
+    }
 
     PushInt(seconds);
 #endif
@@ -367,17 +376,20 @@ prim_fmttime(PRIM_PROTOTYPE)
     oper1 = POP();
     oper2 = POP();
 
-    if (oper1->type != PROG_STRING || !oper1->data.string)
+    if (oper1->type != PROG_STRING || !oper1->data.string) {
         abort_interp("Invalid format string");
+    }
 
-    if (oper2->type != PROG_STRING || !oper2->data.string)
+    if (oper2->type != PROG_STRING || !oper2->data.string) {
         abort_interp("Invalid time string");
+    }
 
     time_t seconds = time_string_to_seconds(oper2->data.string->data,
             oper1->data.string->data, &error);
 
-    if (error)
+    if (error) {
         abort_interp(error);
+    }
 
     PushInt(seconds);
 #endif
@@ -410,11 +422,13 @@ prim_userlog(PRIM_PROTOTYPE)
     CHECKOP(1);
     oper1 = POP();
 
-    if (oper1->type != PROG_STRING)
+    if (oper1->type != PROG_STRING) {
         abort_interp("Non-string argument.");
+    }
 
-    if (mlev < tp_userlog_mlev)
+    if (mlev < tp_userlog_mlev) {
         abort_interp("Permission Denied (mlev < tp_userlog_mlev)");
+    }
 
     ptr = DoNullInd(oper1->data.string);
 
@@ -443,22 +457,25 @@ prim_userlog(PRIM_PROTOTYPE)
 void
 prim_queue(PRIM_PROTOTYPE)
 {
-    int result;
     dbref ref;
+    int result;
 
     CHECKOP(3);
     oper1 = POP();
     oper2 = POP();
     oper3 = POP();
 
-    if (mlev < 3)
+    if (mlev < 3) {
         abort_interp("Requires Mucker level 3 or better.");
+    }
 
-    if (oper3->type != PROG_INTEGER)
+    if (oper3->type != PROG_INTEGER) {
         abort_interp("Non-integer argument (1).");
+    }
 
-    if (!valid_object(oper2) || Typeof(oper2->data.objref) != TYPE_PROGRAM)
+    if (!valid_object(oper2) || Typeof(oper2->data.objref) != TYPE_PROGRAM) {
         abort_interp("Invalid program dbref argument (2).");
+    }
 
     ref = LOCATION(player);
 
@@ -498,8 +515,9 @@ prim_kill(PRIM_PROTOTYPE)
     CHECKOP(1);
     oper1 = POP();
 
-    if (oper1->type != PROG_INTEGER)
+    if (oper1->type != PROG_INTEGER) {
         abort_interp("Non-integer argument (1).");
+    }
 
     if (oper1->data.number == fr->pid) {
         do_abort_silent();
@@ -544,39 +562,41 @@ prim_force(PRIM_PROTOTYPE)
     oper1 = POP();              /* string to @force */
     oper2 = POP();              /* player dbref */
 
-    if (mlev < 4)
+    if (mlev < 4) {
         abort_interp("Wizbit only primitive.");
+    }
 
-    if (fr->level > 8)
+    if (fr->level > 8) {
         abort_interp("Interp call loops not allowed.");
+    }
 
-    if (oper1->type != PROG_STRING)
+    if (oper1->type != PROG_STRING) {
         abort_interp("Non-string argument (2).");
+    }
 
-    if (oper2->type != PROG_OBJECT)
-        abort_interp("Non-object argument (1).");
+    if (!valid_object(oper2) || (Typeof(oper2->data.objref) != TYPE_PLAYER && Typeof(oper2->data.objref) != TYPE_THING)) {
+        abort_interp("Invalid player or thing argument (1).");
+    }
 
-    ref = oper2->data.objref;
-    if (!ObjExists(ref))
-        abort_interp("Invalid object to force. (1)");
-
-    if (Typeof(ref) != TYPE_PLAYER && Typeof(ref) != TYPE_THING)
-        abort_interp("Object to force not a thing or player. (1)");
-
-    if (0 == strcmp(DoNullInd(oper1->data.string), ""))
+    if (!strcmp(DoNullInd(oper1->data.string), "")) {
         abort_interp("Empty command argument (2).");
+    }
 
-    if (strchr(oper1->data.string->data, '\r'))
+    if (strchr(oper1->data.string->data, '\r')) {
         abort_interp("Carriage returns not allowed in command string. (2).");
+    }
 
 #ifdef GOD_PRIV
-    if (God(oper2->data.objref) && !God(OWNER(program)))
+    if (God(oper2->data.objref) && !God(OWNER(program))) {
         abort_interp("Cannot force god (1).");
+    }
 #endif
 
     objnode_push(&forcelist, player);
 
-    if (player != program) objnode_push(&forcelist, program);
+    if (player != program) {
+        objnode_push(&forcelist, program);
+    }
 
     force_level++;
     process_command(dbref_first_descr(oper2->data.objref), oper2->data.objref,
@@ -584,7 +604,9 @@ prim_force(PRIM_PROTOTYPE)
     force_level--;
 
     objnode_pop(&forcelist);
-    if (player != program) objnode_pop(&forcelist);
+    if (player != program) {
+        objnode_pop(&forcelist);
+    }
 
     for (int i = 1; i <= fr->caller.top; i++) {
         if (Typeof(fr->caller.st[i]) != TYPE_PROGRAM) {
@@ -617,14 +639,15 @@ prim_force(PRIM_PROTOTYPE)
 void
 prim_timestamps(PRIM_PROTOTYPE)
 {
-    dbref ref;
     int result;
+    dbref ref;
 
     CHECKOP(1);
     oper1 = POP();
 
-    if (oper1->type != PROG_OBJECT || !valid_object(oper1))
+    if (!valid_object(oper1)) {
         abort_interp("Non-object argument (1).");
+    }
 
     CHECKREMOTE(oper1->data.objref);
     CHECKOFLOW(4);
@@ -670,8 +693,9 @@ prim_fork(PRIM_PROTOTYPE)
     CHECKOP(0);
     CHECKOFLOW(1);
 
-    if (mlev < 3)
+    if (mlev < 3) {
         abort_interp("Permission Denied.");
+    }
 
     fr->pc = pc;
 
@@ -682,19 +706,22 @@ prim_fork(PRIM_PROTOTYPE)
     stk_array_active_list = &tmpfr->array_active_list;
 
     tmpfr->system.top = fr->system.top;
-    for (int i = 0; i < fr->system.top; i++)
+    for (int i = 0; i < fr->system.top; i++) {
         tmpfr->system.st[i] = fr->system.st[i];
+    }
 
     tmpfr->argument.top = fr->argument.top;
-    for (int i = 0; i < fr->argument.top; i++)
+    for (int i = 0; i < fr->argument.top; i++) {
         deep_copyinst(&fr->argument.st[i], &tmpfr->argument.st[i], -1);
+    }
 
     tmpfr->caller.top = fr->caller.top;
     for (int i = 0; i <= fr->caller.top; i++) {
         tmpfr->caller.st[i] = fr->caller.st[i];
 
-        if (i > 0)
+        if (i > 0) {
             PROGRAM_INC_INSTANCES(fr->caller.st[i]);
+        }
     }
 
     tmpfr->trys.top = fr->trys.top;
@@ -703,8 +730,9 @@ prim_fork(PRIM_PROTOTYPE)
     tmpfr->fors.top = fr->fors.top;
     tmpfr->fors.st = copy_fors(fr->fors.st);
 
-    for (int i = 0; i < MAX_VAR; i++)
+    for (int i = 0; i < MAX_VAR; i++) {
         deep_copyinst(&fr->variables[i], &tmpfr->variables[i], -1);
+    }
 
     localvar_dupall(tmpfr, fr);
     scopedvar_dupall(tmpfr, fr);
@@ -756,8 +784,9 @@ prim_fork(PRIM_PROTOTYPE)
     stk_array_active_list = &fr->array_active_list;
 
     /* parent process gets the child's pid returned on the stack */
-    if (!result)
+    if (!result) {
         result = -1;
+    }
 
     PushInt(result);
 }
@@ -812,13 +841,15 @@ prim_stats(PRIM_PROTOTYPE)
     CHECKOP(1);
     oper1 = POP();
 
-    if (!valid_player(oper1) && (oper1->data.objref != NOTHING))
+    if (!valid_player(oper1) && (oper1->data.objref != NOTHING)) {
         abort_interp("non-player argument (1)");
+    }
 
     ref = oper1->data.objref;
 
-    if (mlev < 3 && OWNER(ref) != player)
+    if (mlev < 3 && OWNER(ref) != player) {
         abort_interp("Requires Mucker Level 3.");
+    }
 
     CLEAR(oper1);
 
@@ -873,12 +904,15 @@ prim_stats_array(PRIM_PROTOTYPE)
     CHECKOP(1);
     oper1 = POP();
 
-    if (!valid_player(oper1) && (oper1->data.objref != NOTHING))
+    if (!valid_player(oper1) && (oper1->data.objref != NOTHING)) {
         abort_interp("non-player argument (1)");
+    }
+
     ref = oper1->data.objref;
 
-    if (mlev < 3 && OWNER(ref) != player)
+    if (mlev < 3 && OWNER(ref) != player) {
         abort_interp("Requires Mucker Level 3.");
+    }
 
     CLEAR(oper1);
 
@@ -934,8 +968,9 @@ prim_abort(PRIM_PROTOTYPE)
     CHECKOP(1);
     oper1 = POP();
 
-    if (oper1->type != PROG_STRING)
+    if (oper1->type != PROG_STRING) {
         abort_interp("Invalid argument");
+    }
 
     strcpyn(buf, sizeof(buf), DoNullInd(oper1->data.string));
 
@@ -966,8 +1001,9 @@ prim_ispidp(PRIM_PROTOTYPE)
     CHECKOP(1);
     oper1 = POP();
 
-    if (oper1->type != PROG_INTEGER)
+    if (oper1->type != PROG_INTEGER) {
         abort_interp("Non-integer argument (1).");
+    }
 
     if (oper1->data.number == fr->pid) {
         result = 1;
@@ -1006,8 +1042,9 @@ prim_parselock(PRIM_PROTOTYPE)
     oper1 = POP();              /* string: lock string */
     CHECKOFLOW(1);
 
-    if (oper1->type != PROG_STRING)
+    if (oper1->type != PROG_STRING) {
         abort_interp("Invalid argument.");
+    }
 
     if (oper1->data.string != NULL) {
         lok = parse_boolexp(fr->descr, ProgUID, oper1->data.string->data, 0);
@@ -1043,8 +1080,9 @@ prim_unparselock(PRIM_PROTOTYPE)
     CHECKOP(1);
     oper1 = POP();              /* lock: lock */
 
-    if (oper1->type != PROG_LOCK)
+    if (oper1->type != PROG_LOCK) {
         abort_interp("Invalid argument.");
+    }
 
     if (oper1->data.lock != TRUE_BOOLEXP) {
         ptr = unparse_boolexp(ProgUID, oper1->data.lock, 0);
@@ -1085,8 +1123,9 @@ prim_prettylock(PRIM_PROTOTYPE)
     CHECKOP(1);
     oper1 = POP();              /* lock: lock */
 
-    if (oper1->type != PROG_LOCK)
+    if (oper1->type != PROG_LOCK) {
         abort_interp("Invalid argument.");
+    }
 
     ptr = unparse_boolexp(ProgUID, oper1->data.lock, 1);
 
@@ -1124,16 +1163,19 @@ prim_testlock(PRIM_PROTOTYPE)
     oper1 = POP();              /* boolexp lock */
     oper2 = POP();              /* player dbref */
 
-    if (fr->level > 8)
+    if (fr->level > 8) {
         abort_interp("Interp call loops not allowed.");
+    }
 
-    if (!valid_object(oper2) || (Typeof(oper2->data.objref) != TYPE_PLAYER && Typeof(oper2->data.objref) != TYPE_THING))
+    if (!valid_object(oper2) || (Typeof(oper2->data.objref) != TYPE_PLAYER && Typeof(oper2->data.objref) != TYPE_THING)) {
         abort_interp("Invalid player or thing argument (1).");
+    }
 
     CHECKREMOTE(oper2->data.objref);
 
-    if (oper1->type != PROG_LOCK)
+    if (oper1->type != PROG_LOCK) {
         abort_interp("Invalid argument (2).");
+    }
 
     result = eval_boolexp(fr->descr, oper2->data.objref, oper1->data.lock,
                           tp_consistent_lock_source ? fr->trig : player);
@@ -1167,8 +1209,9 @@ prim_sysparm(PRIM_PROTOTYPE)
     CHECKOP(1);
     oper1 = POP();              /* string: system parm name */
 
-    if (oper1->type != PROG_STRING)
+    if (oper1->type != PROG_STRING) {
         abort_interp("Invalid argument.");
+    }
 
     if (oper1->data.string) {
         ptr = tune_get_parmstring(oper1->data.string->data, TUNE_MLEV(player));
@@ -1205,11 +1248,13 @@ prim_cancallp(PRIM_PROTOTYPE)
     oper2 = POP();              /* string: public function name */
     oper1 = POP();              /* dbref: Program dbref to check */
 
-    if (!valid_object(oper1) || Typeof(oper1->data.objref) != TYPE_PROGRAM)
+    if (!valid_object(oper1) || Typeof(oper1->data.objref) != TYPE_PROGRAM) {
         abort_interp("Invalid program dbref argument. (1)");
+    }
 
-    if (oper2->type != PROG_STRING || !oper2->data.string)
+    if (oper2->type != PROG_STRING || !oper2->data.string) {
         abort_interp("Invalid string argument. Must be non-null. (2)");
+    }
 
     if (!(PROGRAM_CODE(oper1->data.objref))) {
         struct line *tmpline;
@@ -1234,13 +1279,16 @@ prim_cancallp(PRIM_PROTOTYPE)
         pbs = PROGRAM_PUBS(oper1->data.objref);
 
         while (pbs) {
-            if (!strcasecmp(oper2->data.string->data, pbs->subname))
+            if (!strcasecmp(oper2->data.string->data, pbs->subname)) {
                 break;
+            }
+
             pbs = pbs->next;
         }
 
-        if (pbs && mlev >= pbs->mlev)
+        if (pbs && mlev >= pbs->mlev) {
             result = 1;
+        }
     }
 
     CHECKOFLOW(1);
@@ -1277,17 +1325,21 @@ prim_setsysparm(PRIM_PROTOTYPE)
     oper1 = POP();              /* string: new parameter value */
     oper2 = POP();              /* string: parameter to tune */
 
-    if (mlev < 4)
+    if (mlev < 4) {
         abort_interp("Wizbit only primitive.");
+    }
 
-    if (force_level)
+    if (force_level) {
         abort_interp("Cannot be forced.");
+    }
 
-    if (oper2->type != PROG_STRING || !oper2->data.string)
+    if (oper2->type != PROG_STRING || !oper2->data.string) {
         abort_interp("Invalid string argument. Must be non-null. (2)");
+    }
 
-    if (oper1->type != PROG_STRING)
+    if (oper1->type != PROG_STRING) {
         abort_interp("Invalid argument. (2)");
+    }
 
     parmname = oper2->data.string->data;
     /* Duplicate the string, otherwise the oldvalue pointer will be overridden to the new value
@@ -1363,8 +1415,9 @@ prim_sysparm_array(PRIM_PROTOTYPE)
     CHECKOP(1);
     oper1 = POP();              /* string: match pattern */
 
-    if (oper1->type != PROG_STRING)
+    if (oper1->type != PROG_STRING) {
         abort_interp("Expected a string smatch pattern.");
+    }
 
     nu = tune_parms_array(DoNullInd(oper1->data.string), security, fr->pinning);
 
@@ -1397,14 +1450,17 @@ prim_timer_start(PRIM_PROTOTYPE)
     oper2 = POP();              /* string: timer id */
     oper1 = POP();              /* int: delay length in seconds */
 
-    if (fr->timercount > tp_process_timer_limit)
+    if (fr->timercount > tp_process_timer_limit) {
         abort_interp("Too many timers!");
+    }
 
-    if (oper1->type != PROG_INTEGER)
+    if (oper1->type != PROG_INTEGER) {
         abort_interp("Expected an integer delay time. (1)");
+    }
 
-    if (oper2->type != PROG_STRING)
+    if (oper2->type != PROG_STRING) {
         abort_interp("Expected a string timer id. (2)");
+    }
 
     dequeue_timers(fr->pid, DoNullInd(oper2->data.string));
 
@@ -1436,8 +1492,9 @@ prim_timer_stop(PRIM_PROTOTYPE)
     CHECKOP(1);
     oper1 = POP();              /* string: timer id */
 
-    if (oper1->type != PROG_STRING)
+    if (oper1->type != PROG_STRING) {
         abort_interp("Expected a string timer id. (2)");
+    }
 
     dequeue_timers(fr->pid, DoNullInd(oper1->data.string));
 
@@ -1468,8 +1525,9 @@ prim_event_exists(PRIM_PROTOTYPE)
     CHECKOP(1);
     oper1 = POP();              /* str: eventID to look for */
 
-    if (oper1->type != PROG_STRING || !oper1->data.string)
+    if (oper1->type != PROG_STRING || !oper1->data.string) {
         abort_interp("Expected a non-null string eventid to search for.");
+    }
 
     result = muf_event_exists(fr, oper1->data.string->data);
 
@@ -1523,8 +1581,6 @@ prim_event_count(PRIM_PROTOTYPE)
 void
 prim_event_send(PRIM_PROTOTYPE)
 {
-    char buf[BUFFER_LEN];
-
     struct frame *destfr;
     stk_array *arr;
     struct inst temp1;
@@ -1534,21 +1590,26 @@ prim_event_send(PRIM_PROTOTYPE)
     oper2 = POP();              /* string: event id */
     oper1 = POP();              /* int: process id to send to */
 
-    if (mlev < 3)
+    if (mlev < 3) {
         abort_interp("Requires Mucker level 3 or better.");
+    }
 
-    if (oper1->type != PROG_INTEGER)
+    if (oper1->type != PROG_INTEGER) {
         abort_interp("Expected an integer process id. (1)");
+    }
 
-    if (oper2->type != PROG_STRING)
+    if (oper2->type != PROG_STRING) {
         abort_interp("Expected a string event id. (2)");
+    }
 
-    if (oper1->data.number == fr->pid)
+    if (oper1->data.number == fr->pid) {
         destfr = fr;
-    else
+    } else {
         destfr = timequeue_pid_frame(oper1->data.number);
+    }
 
     if (destfr) {
+        char buf[BUFFER_LEN];
         stk_array_active_list = &destfr->array_active_list;
         struct inst data_copy;
 
@@ -1612,18 +1673,30 @@ void
 prim_ext_name_okp(PRIM_PROTOTYPE)
 {
     int result;
-    char buf[BUFFER_LEN];
 
     CHECKOP(2);
     oper2 = POP();
     oper1 = POP();
 
-    if (oper1->type != PROG_STRING)
+    if (oper1->type != PROG_STRING) {
         abort_interp("Object name string expected (1).");
+    }
 
-    char *b = DoNullInd(oper1->data.string);
+    const char *b = DoNullInd(oper1->data.string);
 
-    if (oper2->type == PROG_STRING) {
+    if (oper2->type != PROG_STRING && oper2->type != PROG_OBJECT) {
+        abort_interp("Dbref or object type name expected (2).");
+    }
+
+    if (oper2->type == PROG_OBJECT) {
+        if (!valid_object(oper2)) {
+            abort_interp("Invalid argument (2).");
+        }
+
+        result = ok_object_name(b, Typeof(oper2->data.objref));
+    } else {
+        char buf[BUFFER_LEN];
+
         strcpyn(buf, sizeof(buf), DoNullInd(oper2->data.string));
 
         if (!strcasecmp(buf, "e") || !strcasecmp(buf, "exit")) {
@@ -1640,13 +1713,6 @@ prim_ext_name_okp(PRIM_PROTOTYPE)
         } else {
             abort_interp("String must be a valid object type (2).");
         }
-    } else if (oper2->type == PROG_OBJECT) {
-        if (!valid_object(oper2))
-            abort_interp("Invalid argument (2).");
-
-        result = ok_object_name(b, Typeof(oper2->data.objref));
-    } else {
-        abort_interp("Dbref or object type name expected (2).");
     }
 
     CLEAR(oper1);
@@ -1698,8 +1764,9 @@ prim_forcedby(PRIM_PROTOTYPE)
     CHECKOP(0);
     CHECKOFLOW(1);
 
-    if (mlev < 4)
+    if (mlev < 4) {
         abort_interp("Wizbit only primitive.");
+    }
 
     if (forcelist) {
         ref = forcelist->data;
@@ -1733,8 +1800,9 @@ prim_forcedby_array(PRIM_PROTOTYPE)
     CHECKOP(0);
     CHECKOFLOW(1);
 
-    if (mlev < 4)
+    if (mlev < 4) {
         abort_interp("Wizbit only primitive.");
+    }
 
     if (!forcelist) {
         PushArrayRaw(new_array_packed(0, fr->pinning));
@@ -1879,10 +1947,9 @@ prim_read_wants_no_blanks(PRIM_PROTOTYPE)
 void
 prim_debugger_break(PRIM_PROTOTYPE)
 {
-    int i = 0;
-
-    if (fr->brkpt.count >= MAX_BREAKS)
+    if (fr->brkpt.count >= MAX_BREAKS) {
         abort_interp("Too many breakpoints set.");
+    }
 
     fr->brkpt.force_debugging = 1;
 
@@ -1894,7 +1961,7 @@ prim_debugger_break(PRIM_PROTOTYPE)
         fr->brkpt.pc[0] != NULL ||
         fr->brkpt.pccount[0] != -2 || fr->brkpt.prog[0] != program) {
         /* No initial breakpoint.  Lets make one. */
-        i = fr->brkpt.count++;
+        int i = fr->brkpt.count++;
         fr->brkpt.temp[i] = 1;
         fr->brkpt.level[i] = -1;
         fr->brkpt.line[i] = -1;
@@ -1932,14 +1999,17 @@ prim_ignoringp(PRIM_PROTOTYPE)
     oper1 = POP();
     oper2 = POP();
 
-    if (mlev < 3)
+    if (mlev < 3) {
         abort_interp("Permission Denied.");
+    }
 
-    if (!valid_object(oper1))
+    if (!valid_object(oper1)) {
         abort_interp("Invalid object. (2)");
+    }
 
-    if (!valid_object(oper2))
+    if (!valid_object(oper2)) {
         abort_interp("Invalid object. (1)");
+    }
 
     result = ignore_is_ignoring(oper2->data.objref, oper1->data.objref);
 
@@ -1973,14 +2043,17 @@ prim_ignore_add(PRIM_PROTOTYPE)
     oper1 = POP();
     oper2 = POP();
 
-    if (mlev < 3)
+    if (mlev < 3) {
         abort_interp("Permission Denied.");
+    }
 
-    if (!valid_object(oper1))
+    if (!valid_object(oper1)) {
         abort_interp("Invalid object. (2)");
+    }
 
-    if (!valid_object(oper2))
+    if (!valid_object(oper2)) {
         abort_interp("Invalid object. (1)");
+    }
 
     ignore_add_player(oper2->data.objref, oper1->data.objref);
 
@@ -2013,14 +2086,17 @@ prim_ignore_del(PRIM_PROTOTYPE)
     oper1 = POP();
     oper2 = POP();
 
-    if (mlev < 3)
+    if (mlev < 3) {
         abort_interp("Permission Denied.");
+    }
 
-    if (!valid_object(oper1))
+    if (!valid_object(oper1)) {
         abort_interp("Invalid object. (2)");
+    }
 
-    if (!valid_object(oper2))
+    if (!valid_object(oper2)) {
         abort_interp("Invalid object. (1)");
+    }
 
     ignore_remove_player(oper2->data.objref, oper1->data.objref);
 
@@ -2084,10 +2160,9 @@ prim_debug_off(PRIM_PROTOTYPE)
 void
 prim_debug_line(PRIM_PROTOTYPE)
 {
-    char buf[BUFFER_LEN];
-
     if (((FLAGS(program) & DARK) == 0) && controls(player, program)) {
-        char *msg = debug_inst(fr, 0, pc, fr->pid, arg, buf, sizeof(buf),
+        char buf[BUFFER_LEN];
+        const char *msg = debug_inst(fr, 0, pc, fr->pid, arg, buf, sizeof(buf),
                 *top, program);
         notify_nolisten(player, msg, 1);
     }
