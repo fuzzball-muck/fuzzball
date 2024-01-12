@@ -1071,7 +1071,8 @@ prim_set(PRIM_PROTOTYPE)
                 || string_prefix("autostart", flag)
                 || string_prefix("abate", flag))
             tmp = ABODE;
-        else if (string_prefix("builder", flag))
+        else if (string_prefix("builder", flag)
+                || string_prefix("bound", flag))
             tmp = BUILDER;
         else if (string_prefix("chown_ok", flag)
                 || string_prefix("color", flag))
@@ -1082,6 +1083,7 @@ prim_set(PRIM_PROTOTYPE)
         else if (string_prefix("guest", flag))
             tmp = GUEST;
         else if (string_prefix("haven", flag)
+                || string_prefix("hide", flag)
                 || string_prefix("harduid", flag))
             tmp = HAVEN;
         else if (string_prefix("interactive", flag))
@@ -1101,7 +1103,8 @@ prim_set(PRIM_PROTOTYPE)
         else if (string_prefix("quell", flag))
             tmp = QUELL;
         else if (string_prefix("sticky", flag)
-                || string_prefix("silent", flag))
+                || string_prefix("silent", flag)
+                || string_prefix("setuid", flag))
             tmp = STICKY;
         else if (string_prefix("vehicle", flag)
                 || string_prefix("viewable", flag))
@@ -1110,7 +1113,8 @@ prim_set(PRIM_PROTOTYPE)
             tmp = WIZARD;
         else if (string_prefix("truewizard", flag))
             tmp = WIZARD;
-        else if (string_prefix("xforcible", flag))
+        else if (string_prefix("xforcible", flag)
+                || string_prefix("xpress", flag))
             tmp = XFORCIBLE;
         else if (string_prefix("yield", flag))
             tmp = YIELD;
