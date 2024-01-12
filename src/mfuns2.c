@@ -3460,3 +3460,37 @@ mfn_width(MFUNARGS)
 
     return buf;
 }
+
+/**
+ * MPI function that returns if an object if it has the given flag (re)set.
+ * 
+ * @see has_flag
+ * 
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message   
+ * @return string parsed results
+ */
+
+const char *
+mfn_flagp(MFUNARGS)
+{
+    dbref obj = mesg_dbref_local(descr, player, what, perms, argv[0], mesgtyp);
+
+    if (obj == PERMDENIED || obj == AMBIGUOUS || obj == UNKNOWN || obj == NOTHING ||
+        obj == HOME) {
+        return "0";
+    }
+
+    if (has_flag(obj, argv[1])) {
+        return "1";
+    } else {
+        return "0";
+    }
+}

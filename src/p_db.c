@@ -1234,99 +1234,22 @@ prim_mlevel(PRIM_PROTOTYPE)
 void
 prim_flagp(PRIM_PROTOTYPE)
 {
-    int truwiz = 0;
-
     CHECKOP(2);
     oper1 = POP();
     oper2 = POP();
 
-    if (oper1->type != PROG_STRING)
+    if (oper1->type != PROG_STRING) {
         abort_interp("Invalid argument type (2)");
+    }
 
-    if (!valid_object(oper2))
+    if (!valid_object(oper2)) {
         abort_interp("Invalid object.");
+    }
 
     ref = oper2->data.objref;
     CHECKREMOTE(ref);
 
-    tmp = 0;
-    result = 0;
-    {
-        char *flag = DoNullInd(oper1->data.string);
-
-        while (*flag == '!') {
-            flag++;
-            result = (!result);
-        }
-
-        if (!*flag)
-            abort_interp("Unknown flag.");
-
-        if (string_prefix("abode", flag)
-                || string_prefix("autostart", flag)
-                || string_prefix("abate", flag))
-            tmp = ABODE;
-        else if (string_prefix("builder", flag))
-            tmp = BUILDER;
-        else if (string_prefix("chown_ok", flag)
-                || string_prefix("color", flag))
-            tmp = CHOWN_OK;
-        else if (string_prefix("dark", flag)
-                || string_prefix("debug", flag))
-            tmp = DARK;
-        else if (string_prefix("guest", flag))
-            tmp = GUEST;
-        else if (string_prefix("haven", flag)
-                || string_prefix("harduid", flag))
-            tmp = HAVEN;
-        else if (string_prefix("interactive", flag))
-            tmp = INTERACTIVE;
-        else if (string_prefix("jump_ok", flag))
-            tmp = JUMP_OK;
-        else if (string_prefix("kill_ok", flag))
-            tmp = KILL_OK;
-        else if (string_prefix("link_ok", flag))
-            tmp = LINK_OK;
-        else if (string_prefix("mucker", flag))
-            tmp = MUCKER;
-        else if (string_prefix("nucker", flag))
-            tmp = SMUCKER;
-        else if (string_prefix("overt", flag))
-            tmp = (int)OVERT;
-        else if (string_prefix("quell", flag))
-            tmp = QUELL;
-        else if (string_prefix("sticky", flag)
-                || string_prefix("silent", flag))
-            tmp = STICKY;
-        else if (string_prefix("vehicle", flag)
-                || string_prefix("viewable", flag))
-            tmp = VEHICLE;
-        else if (string_prefix("wizard", flag))
-            tmp = WIZARD;
-        else if (string_prefix("truewizard", flag)) {
-            tmp = WIZARD;
-            truwiz = 1;
-        } else if (string_prefix("xforcible", flag))
-            tmp = XFORCIBLE;
-        else if (string_prefix("yield", flag))
-            tmp = YIELD;
-        else if (string_prefix("zombie", flag))
-            tmp = ZOMBIE;
-    }
-
-    if (result) {
-        if ((!truwiz) && (tmp == WIZARD)) {
-            result = (!Wizard(ref));
-        } else {
-            result = (tmp && ((FLAGS(ref) & tmp) == 0));
-        }
-    } else {
-        if ((!truwiz) && (tmp == WIZARD)) {
-            result = Wizard(ref);
-        } else {
-            result = (tmp && ((FLAGS(ref) & tmp) != 0));
-        }
-    }
+    result = has_flag(ref, DoNullInd(oper1->data.string));
 
     CLEAR(oper1);
     CLEAR(oper2);

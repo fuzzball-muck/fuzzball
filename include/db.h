@@ -2195,6 +2195,18 @@ int member(dbref thing, dbref list);
 dbref new_object(bool isplayer);
 
 /**
+ * Returns true if the object has the given flag set (or reset).
+ *
+ * Understands flag alias and multiple not conditions (!!x = x, !!!x = !x).
+ *
+ * Checking "truewizard" is the same as checking "wizard" and "!quell".
+ *
+ * @param ref the object to check
+ * @param flag the flag (or alias) to check
+ */
+bool has_flag(dbref ref, const char *flag);
+
+/**
  * Find a dbref in an objnode list
  *
  * @param head the head of the objnode list

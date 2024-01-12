@@ -2339,3 +2339,102 @@ env_distance(dbref from, dbref to)
 
     return distance;
 }
+
+/**
+ * Returns true if the object has the given flag set (or reset).
+ *
+ * Understands flag alias and multiple not conditions (!!x = x, !!!x = !x).
+ *
+ * Checking "truewizard" is the same as checking "wizard" and "!quell".
+ *
+ * @param ref the object to check
+ * @param flag the flag (or alias) to check
+ */
+bool
+has_flag(dbref ref, const char *flag)
+{
+    object_flag_type tmp = 0;
+    int truwiz = 0;
+    bool result, negated = false;
+
+    while (*flag == '!') {
+        flag++;
+        negated = (!negated);
+    }
+
+    if (!*flag) {
+        return false;
+    }
+
+    if (string_prefix("abode", flag)
+            || string_prefix("autostart", flag)
+            || string_prefix("abate", flag)) {
+        tmp = ABODE;
+    } else if (string_prefix("builder", flag)
+            || string_prefix("bound", flag)) {
+        tmp = BUILDER;
+    } else if (string_prefix("chown_ok", flag)
+            || string_prefix("color", flag)) {
+        tmp = CHOWN_OK;
+    } else if (string_prefix("dark", flag)
+            || string_prefix("debug", flag)) {
+        tmp = DARK;
+    } else if (string_prefix("guest", flag)) {
+        tmp = GUEST;
+    } else if (string_prefix("haven", flag)
+            || string_prefix("hide", flag)
+            || string_prefix("harduid", flag)) {
+        tmp = HAVEN;
+    } else if (string_prefix("interactive", flag)) {
+        tmp = INTERACTIVE;
+    } else if (string_prefix("jump_ok", flag)) {
+        tmp = JUMP_OK;
+    } else if (string_prefix("kill_ok", flag)) {
+        tmp = KILL_OK;
+    } else if (string_prefix("link_ok", flag)) {
+        tmp = LINK_OK;
+    } else if (string_prefix("mucker", flag)) {
+        tmp = MUCKER;
+    } else if (string_prefix("nucker", flag)) {
+        tmp = SMUCKER;
+    } else if (string_prefix("overt", flag)) {
+        tmp = (int)OVERT;
+    } else if (string_prefix("quell", flag)) {
+        tmp = QUELL;
+    } else if (string_prefix("sticky", flag)
+            || string_prefix("silent", flag)
+            || string_prefix("setuid", flag)) {
+        tmp = STICKY;
+    } else if (string_prefix("vehicle", flag)
+            || string_prefix("viewable", flag)) {
+        tmp = VEHICLE;
+    } else if (string_prefix("wizard", flag)) {
+        tmp = WIZARD;
+    } else if (string_prefix("truewizard", flag)) {
+        tmp = WIZARD;
+        truwiz = 1;
+    } else if (string_prefix("xforcible", flag)
+            || string_prefix("xpress", flag)) {
+        tmp = XFORCIBLE;
+    } else if (string_prefix("yield", flag)) {
+        tmp = YIELD;
+    } else if (string_prefix("zombie", flag)) {
+        tmp = ZOMBIE;
+    }
+
+    if (negated) {
+        if ((!truwiz) && (tmp == WIZARD)) {
+            result = (!Wizard(ref));
+        } else {
+            result = (tmp && ((FLAGS(ref) & tmp) == 0));
+        }
+    } else {
+        if ((!truwiz) && (tmp == WIZARD)) {
+            result = Wizard(ref);
+        } else {
+            result = (tmp && ((FLAGS(ref) & tmp) != 0));
+        }
+    }
+
+    return result;
+}
