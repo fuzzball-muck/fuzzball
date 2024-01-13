@@ -3485,7 +3485,7 @@ mfn_flagp(MFUNARGS)
 
     if (obj == PERMDENIED || obj == AMBIGUOUS || obj == UNKNOWN || obj == NOTHING ||
         obj == HOME) {
-        return "0";
+        ABORT_MPI("FLAG?", "Failed match. (arg1)");
     }
 
     if (has_flag(obj, argv[1])) {

@@ -2376,6 +2376,19 @@ void set_source(dbref action, dbref source);
 size_t size_object(dbref i, int load);
 
 /**
+ * Returns the flag associated with the given string, if any.
+ *
+ * Understands flag alias prefixes.
+ *  
+ * Passing "truewizard" here just returns the WIZARD flag.
+ *
+ * @param ref the object to check
+ * @param flag_string the flag (or alias) to check
+ * @return the flag corresponding to the string, or 0 if none match.
+ */
+object_flag_type str_to_flag(const char *flag_string);
+
+/**
  * "Unparses" flags, or rather, gives a string representation of object flags
  *
  * This uses a static buffer, so make sure to copy it if you want to keep
