@@ -789,6 +789,24 @@ const char *mfn_exits(MFUNARGS);
 const char *mfn_filter(MFUNARGS);
 
 /**
+ * MPI function that returns if an object if it has the given flag (re)set.
+ *
+ * @see has_flag
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
+const char *mfn_flagp(MFUNARGS);
+
+/**
  * MPI function that returns the object flags for provided object as a string.
  *
  * The string is the return of @see unparse_flags
@@ -2985,6 +3003,7 @@ static struct mfun_dat mfun_list[] = {
     {"EXEC!", mfn_execbang, 1, 0, 1, 1, 2},
     {"EXITS", mfn_exits, 1, 0, 1, 1, 1},
     {"FILTER", mfn_filter, 0, 0, 0, 3, 5},
+    {"FLAG?", mfn_flagp, 1, 0, 1, 2, 2},
     {"FLAGS", mfn_flags, 1, 0, 1, 1, 1},
     {"FOLD", mfn_fold, 0, 0, 0, 4, 5},
     {"FOR", mfn_for, 0, 0, 0, 5, 5},

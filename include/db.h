@@ -2195,6 +2195,18 @@ int member(dbref thing, dbref list);
 dbref new_object(bool isplayer);
 
 /**
+ * Returns true if the object has the given flag set (or reset).
+ *
+ * Understands flag alias and multiple not conditions (!!x = x, !!!x = !x).
+ *
+ * Checking "truewizard" is the same as checking "wizard" and "!quell".
+ *
+ * @param ref the object to check
+ * @param flag the flag (or alias) to check
+ */
+bool has_flag(dbref ref, const char *flag);
+
+/**
  * Find a dbref in an objnode list
  *
  * @param head the head of the objnode list
@@ -2362,6 +2374,19 @@ void set_source(dbref action, dbref source);
  * @return the calculated size of the object.
  */
 size_t size_object(dbref i, int load);
+
+/**
+ * Returns the flag associated with the given string, if any.
+ *
+ * Understands flag alias prefixes.
+ *  
+ * Passing "truewizard" here just returns the WIZARD flag.
+ *
+ * @param ref the object to check
+ * @param flag_string the flag (or alias) to check
+ * @return the flag corresponding to the string, or 0 if none match.
+ */
+object_flag_type str_to_flag(const char *flag_string);
 
 /**
  * "Unparses" flags, or rather, gives a string representation of object flags

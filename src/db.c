@@ -2339,3 +2339,126 @@ env_distance(dbref from, dbref to)
 
     return distance;
 }
+
+/**
+ * Returns the flag associated with the given string, if any.
+ *
+ * Understands flag alias prefixes.
+ *
+ * Passing "truewizard" here just returns the WIZARD flag.
+ *
+ * @param ref the object to check
+ * @param flag_string the flag (or alias) to check
+ * @return the flag corresponding to the string, or 0 if none match.
+ */
+object_flag_type
+str_to_flag(const char *flag_string)
+{
+    if (!*flag_string) {
+        return 0;
+    }
+
+    if (string_prefix("abode", flag_string)
+            || string_prefix("autostart", flag_string)
+            || string_prefix("abate", flag_string)) {
+        return ABODE;
+    } else if (string_prefix("builder", flag_string)
+            || string_prefix("bound", flag_string)) {
+        return BUILDER;
+    } else if (string_prefix("chown_ok", flag_string)
+            || string_prefix("color", flag_string)) {
+        return CHOWN_OK;
+    } else if (string_prefix("dark", flag_string)
+            || string_prefix("debug", flag_string)) {
+        return DARK;
+    } else if (string_prefix("guest", flag_string)) {
+        return GUEST;
+    } else if (string_prefix("haven", flag_string)
+            || string_prefix("hide", flag_string)
+            || string_prefix("harduid", flag_string)) {
+        return HAVEN;
+    } else if (string_prefix("interactive", flag_string)) {
+        return INTERACTIVE;
+    } else if (string_prefix("jump_ok", flag_string)) {
+        return JUMP_OK;
+    } else if (string_prefix("kill_ok", flag_string)) {
+        return KILL_OK;
+    } else if (string_prefix("link_ok", flag_string)) {
+        return LINK_OK;
+    } else if (string_prefix("mucker", flag_string)) {
+        return MUCKER;
+    } else if (string_prefix("nucker", flag_string)) {
+        return SMUCKER;
+    } else if (string_prefix("overt", flag_string)) {
+        return (int)OVERT;
+    } else if (string_prefix("quell", flag_string)) {
+        return QUELL;
+    } else if (string_prefix("sticky", flag_string)
+            || string_prefix("silent", flag_string)
+            || string_prefix("setuid", flag_string)) {
+        return STICKY;
+    } else if (string_prefix("vehicle", flag_string)
+            || string_prefix("viewable", flag_string)) {
+        return VEHICLE;
+    } else if (string_prefix("wizard", flag_string)) {
+        return WIZARD;
+    } else if (string_prefix("truewizard", flag_string)) {
+        return WIZARD;
+    } else if (string_prefix("xforcible", flag_string)
+            || string_prefix("xpress", flag_string)) {
+        return XFORCIBLE;
+    } else if (string_prefix("yield", flag_string)) {
+        return YIELD;
+    } else if (string_prefix("zombie", flag_string)) {
+        return ZOMBIE;
+    }
+
+    return 0;
+}
+
+
+/**
+ * Returns true if the object has the given flag set (or reset).
+ *
+ * Understands flag alias prefixes and multiple not conditions (!!x = x).
+ *
+ * Checking "truewizard" is the same as checking "wizard" and "!quell".
+ *
+ * @param ref the object to check
+ * @param flag the flag (or alias) to check
+ * @return if the object has the specific flag state
+ */
+bool
+has_flag(dbref ref, const char *flag)
+{
+    object_flag_type tmp = 0;
+    int truwiz = 0;
+    bool result, negated = false;
+
+    while (*flag == NOT_TOKEN) {
+        flag++;
+        negated = (!negated);
+    }
+
+    if (string_prefix("truewizard", flag)) {
+        truwiz = 1;
+    }
+
+    tmp = str_to_flag(flag);
+
+    if (negated) {
+        if ((!truwiz) && (tmp == WIZARD)) {
+            result = (!Wizard(ref));
+        } else {
+            result = (tmp && ((FLAGS(ref) & tmp) == 0));
+        }
+    } else {
+        if ((!truwiz) && (tmp == WIZARD)) {
+            result = Wizard(ref);
+        } else {
+            result = (tmp && ((FLAGS(ref) & tmp) != 0));
+        }
+    }
+
+    return result;
+}

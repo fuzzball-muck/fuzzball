@@ -1024,7 +1024,6 @@ prim_copyobj(PRIM_PROTOTYPE)
  *    - interact with the OVERT flag on objects that aren't a thing or room
  *    - interact with the YIELD flag on objects that aren't a thing or room
  *
- *
  * "truewizard" is merely an alias for the WIZARD flag here.
  *
  * @param player the player running the MUF program
@@ -1038,91 +1037,40 @@ prim_copyobj(PRIM_PROTOTYPE)
 void
 prim_set(PRIM_PROTOTYPE)
 {
+    object_flag_type tmp;
+    bool negated;
+
     CHECKOP(2);
     oper1 = POP();
     oper2 = POP();
 
-    if (oper1->type != PROG_STRING)
+    if (oper1->type != PROG_STRING) {
         abort_interp("Invalid argument type (2)");
+    }
 
-    if (!valid_object(oper2))
+    if (!valid_object(oper2)) {
         abort_interp("Invalid object.");
+    }
 
     ref = oper2->data.objref;
     CHECKREMOTE(ref);
 
-    /**
-     * @TODO So, it would be nice if flags, their type aliases, basic
-     *       restrictions, and perhaps error messages could be combined
-     *       into a data structure. It could have MANY uses from do_examine
-     *       to MUF.
-     */
-    tmp = 0;
-    {
-        char *flag = DoNullInd(oper1->data.string);
-        result = (*flag == '!');
-
-        if (result)
-            flag++;
-
-        if (!*flag)
-            tmp = 0;
-        if (string_prefix("abode", flag)
-                || string_prefix("autostart", flag)
-                || string_prefix("abate", flag))
-            tmp = ABODE;
-        else if (string_prefix("builder", flag))
-            tmp = BUILDER;
-        else if (string_prefix("chown_ok", flag)
-                || string_prefix("color", flag))
-            tmp = CHOWN_OK;
-        else if (string_prefix("dark", flag)
-                || string_prefix("debug", flag))
-            tmp = DARK;
-        else if (string_prefix("guest", flag))
-            tmp = GUEST;
-        else if (string_prefix("haven", flag)
-                || string_prefix("harduid", flag))
-            tmp = HAVEN;
-        else if (string_prefix("interactive", flag))
-            tmp = INTERACTIVE;
-        else if (string_prefix("jump_ok", flag))
-            tmp = JUMP_OK;
-        else if (string_prefix("kill_ok", flag))
-            tmp = KILL_OK;
-        else if (string_prefix("link_ok", flag))
-            tmp = LINK_OK;
-        else if (string_prefix("mucker", flag))
-            tmp = MUCKER;
-        else if (string_prefix("nucker", flag))
-            tmp = SMUCKER;
-        else if (string_prefix("overt", flag))
-            tmp = (int)OVERT;
-        else if (string_prefix("quell", flag))
-            tmp = QUELL;
-        else if (string_prefix("sticky", flag)
-                || string_prefix("silent", flag))
-            tmp = STICKY;
-        else if (string_prefix("vehicle", flag)
-                || string_prefix("viewable", flag))
-            tmp = VEHICLE;
-        else if (string_prefix("wizard", flag))
-            tmp = WIZARD;
-        else if (string_prefix("truewizard", flag))
-            tmp = WIZARD;
-        else if (string_prefix("xforcible", flag))
-            tmp = XFORCIBLE;
-        else if (string_prefix("yield", flag))
-            tmp = YIELD;
-        else if (string_prefix("zombie", flag))
-            tmp = ZOMBIE;
+    if ((mlev < 4) && !permissions(ProgUID, ref)) {
+        abort_interp("Permission denied.");
     }
 
-    if (!tmp)
-        abort_interp("Unrecognized flag.");
+    const char *flag_string = DoNullInd(oper1->data.string);
+    negated = (*flag_string == NOT_TOKEN);
 
-    if ((mlev < 4) && !permissions(ProgUID, ref))
-        abort_interp("Permission denied.");
+    if (negated) {
+        flag_string++;
+    }
+
+    tmp = str_to_flag(flag_string);
+
+    if (!tmp) {
+        abort_interp("Unrecognized flag.");
+    }
 
     /**
      * @TODO Shall we harmonize these checks with the restricted function?
@@ -1138,8 +1086,9 @@ prim_set(PRIM_PROTOTYPE)
             || (tmp == GUEST)))
             || (tmp == WIZARD) || (tmp == QUELL) || (tmp == INTERACTIVE)
             || ((tmp == ABODE) && (Typeof(ref) == TYPE_PROGRAM))
-            || (tmp == MUCKER) || (tmp == SMUCKER) || (tmp == XFORCIBLE))
+            || (tmp == MUCKER) || (tmp == SMUCKER) || (tmp == XFORCIBLE)) {
         abort_interp("Permission denied.");
+    }
 
     if (((tmp == YIELD) || ((unsigned) tmp == OVERT)) &&
         (Typeof(ref) != TYPE_THING && Typeof(ref) != TYPE_ROOM)) {
@@ -1156,18 +1105,13 @@ prim_set(PRIM_PROTOTYPE)
         }
     }
 
-    if (!result) {
+    if (!negated) {
         FLAGS(ref) |= tmp;
-
-        /**
-         * @TODO Move this DBDIRTY and the next outside the if.
-         */
-        DBDIRTY(ref);
     } else {
         FLAGS(ref) &= ~tmp;
-
-        DBDIRTY(ref);
     }
+
+    DBDIRTY(ref);
 
     CLEAR(oper1);
     CLEAR(oper2);
@@ -1234,99 +1178,22 @@ prim_mlevel(PRIM_PROTOTYPE)
 void
 prim_flagp(PRIM_PROTOTYPE)
 {
-    int truwiz = 0;
-
     CHECKOP(2);
     oper1 = POP();
     oper2 = POP();
 
-    if (oper1->type != PROG_STRING)
+    if (oper1->type != PROG_STRING) {
         abort_interp("Invalid argument type (2)");
+    }
 
-    if (!valid_object(oper2))
+    if (!valid_object(oper2)) {
         abort_interp("Invalid object.");
+    }
 
     ref = oper2->data.objref;
     CHECKREMOTE(ref);
 
-    tmp = 0;
-    result = 0;
-    {
-        char *flag = DoNullInd(oper1->data.string);
-
-        while (*flag == '!') {
-            flag++;
-            result = (!result);
-        }
-
-        if (!*flag)
-            abort_interp("Unknown flag.");
-
-        if (string_prefix("abode", flag)
-                || string_prefix("autostart", flag)
-                || string_prefix("abate", flag))
-            tmp = ABODE;
-        else if (string_prefix("builder", flag))
-            tmp = BUILDER;
-        else if (string_prefix("chown_ok", flag)
-                || string_prefix("color", flag))
-            tmp = CHOWN_OK;
-        else if (string_prefix("dark", flag)
-                || string_prefix("debug", flag))
-            tmp = DARK;
-        else if (string_prefix("guest", flag))
-            tmp = GUEST;
-        else if (string_prefix("haven", flag)
-                || string_prefix("harduid", flag))
-            tmp = HAVEN;
-        else if (string_prefix("interactive", flag))
-            tmp = INTERACTIVE;
-        else if (string_prefix("jump_ok", flag))
-            tmp = JUMP_OK;
-        else if (string_prefix("kill_ok", flag))
-            tmp = KILL_OK;
-        else if (string_prefix("link_ok", flag))
-            tmp = LINK_OK;
-        else if (string_prefix("mucker", flag))
-            tmp = MUCKER;
-        else if (string_prefix("nucker", flag))
-            tmp = SMUCKER;
-        else if (string_prefix("overt", flag))
-            tmp = (int)OVERT;
-        else if (string_prefix("quell", flag))
-            tmp = QUELL;
-        else if (string_prefix("sticky", flag)
-                || string_prefix("silent", flag))
-            tmp = STICKY;
-        else if (string_prefix("vehicle", flag)
-                || string_prefix("viewable", flag))
-            tmp = VEHICLE;
-        else if (string_prefix("wizard", flag))
-            tmp = WIZARD;
-        else if (string_prefix("truewizard", flag)) {
-            tmp = WIZARD;
-            truwiz = 1;
-        } else if (string_prefix("xforcible", flag))
-            tmp = XFORCIBLE;
-        else if (string_prefix("yield", flag))
-            tmp = YIELD;
-        else if (string_prefix("zombie", flag))
-            tmp = ZOMBIE;
-    }
-
-    if (result) {
-        if ((!truwiz) && (tmp == WIZARD)) {
-            result = (!Wizard(ref));
-        } else {
-            result = (tmp && ((FLAGS(ref) & tmp) == 0));
-        }
-    } else {
-        if ((!truwiz) && (tmp == WIZARD)) {
-            result = Wizard(ref);
-        } else {
-            result = (tmp && ((FLAGS(ref) & tmp) != 0));
-        }
-    }
+    result = has_flag(ref, DoNullInd(oper1->data.string));
 
     CLEAR(oper1);
     CLEAR(oper2);
