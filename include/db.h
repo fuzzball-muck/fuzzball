@@ -2325,6 +2325,30 @@ void register_object(dbref player, dbref location, const char *propdir, char *na
 dbref remove_first(dbref first, dbref what);
 
 /**
+ * Determines if a given player is unable to (re)set the given flag
+ *
+ * The 'business logic' here is actually fairly dense and not easily
+ * summed up in a comment.  As this is a 'private' function, the
+ * reader is encouraged to review the very well documented code for
+ * details.
+ *
+ * This is all pretty well documented in the MUCK's help files.
+ *
+ * Uses an error parameter to communicate the reason for failure. This
+ * should be at least SMALL_BUFFER_LEN in size.
+ *
+ * @private
+ * @param player the effective aplayer we are checking permissions for
+ * @param mlev the effective mucker level we are checking permissions for
+ * @param thing the thing we want to interact with
+ * @param flag the flag we wish to interact with
+ * @param value whether the desired state is on or off
+ * @param error[out] error message, if any
+ * @return boolean 1 if restricted from setting flag, 0 if okay to set.
+ */
+int unable_to_set_flag(dbref player, int mlev, dbref thing, object_flag_type flag, bool value, char *error);
+
+/**
  * This reverses a dbref linked list
  *
  * Basically it changes all the links around so that what was last will

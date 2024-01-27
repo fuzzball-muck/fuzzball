@@ -2390,7 +2390,7 @@ str_to_flag(const char *flag_string)
     } else if (string_prefix("nucker", flag_string)) {
         return SMUCKER;
     } else if (string_prefix("overt", flag_string)) {
-        return (int)OVERT;
+        return OVERT;
     } else if (string_prefix("quell", flag_string)) {
         return QUELL;
     } else if (string_prefix("sticky", flag_string)
