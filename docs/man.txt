@@ -4610,6 +4610,7 @@ Parameters available:
  (bool) ignore_support            - Enable support for @ignoring players
  (int)  instr_slice               - Max. uninterrupted instructions per timeslice
  (str)  leave_mesg                - Logoff message for QUIT
+ (bool) legacy_password_hash      - Use Legacy (insecure, compatible) Password Hash
  (int)  link_cost                 - Cost to link an exit
  (int)  listen_mlev               - Mucker Level required for Listener programs
  (bool) lock_envcheck             - Locks check environment for properties

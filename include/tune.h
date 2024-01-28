@@ -163,6 +163,7 @@ extern bool        tp_ignore_bidirectional;     /**< Tune variable */
 extern bool        tp_ignore_support;           /**< Tune variable */
 extern int         tp_instr_slice;              /**< Tune variable */
 extern const char *tp_leave_mesg;               /**< Tune variable */
+extern bool        tp_legacy_password_hash;     /**< Tune variable */
 extern int         tp_link_cost;                /**< Tune variable */
 extern int         tp_listen_mlev;              /**< Tune variable */
 extern bool        tp_lock_envcheck;            /**< Tune variable */

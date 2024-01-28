@@ -18,6 +18,16 @@
 #include "fbmath.h"
 #include "inst.h"
 
+#ifdef USE_SSL
+#    ifdef HAVE_OPENSSL
+#        include <openssl/evp.h>
+#        include <openssl/sha.h>
+#    else
+#        include <evp.h>
+#        include <sha.h>
+#    endif
+#endif
+
 /**
  * Generate a random floating point number
  *
@@ -105,6 +115,12 @@ no_good(double test)
  * bases and are very common non-fuzzball-specific implementations.
  *
  **************************************************************************/
+
+/*
+ * We will use this in a couple places.
+ */
+static const unsigned char b64[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
 
 /* The four core functions - F1 is optimized somewhat */
 
@@ -388,7 +404,6 @@ MD5hash(void *dest, const void *orig, size_t len)
 static void
 Base64Encode(char *outbuf, const void *inbuf, size_t inlen)
 {
-    const unsigned char b64[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
     const unsigned char *inb = inbuf;
     unsigned char *out = NULL;
     size_t numb;
@@ -561,4 +576,108 @@ rnd(void *buffer)
 
     MD5hash(digest, digest, sizeof(digest));
     return (digest[0]);
+}
+
+/*********************************************************************
+ *
+ * PBKDF2 Password Hashing stuff
+ *
+ *********************************************************************/
+
+#ifdef USE_SSL
+static void
+PBKDF2_HMAC_SHA_512(const char* pass, const unsigned char* salt,
+                       int32_t iterations, uint32_t outputBytes,
+                       char* hexResult)
+{
+    unsigned int i;
+    unsigned char digest[outputBytes];
+    PKCS5_PBKDF2_HMAC(pass, strlen(pass), salt, strlen(salt), iterations,
+                      EVP_sha512(), outputBytes, digest);
+    for (i = 0; i < sizeof(digest); i++)
+        sprintf(hexResult + (i * 2), "%02x", 255 & digest[i]);
+}
+#endif
+
+/**
+ * Generate a PBKDF2 password hash with the given password and salt.
+ *
+ * If salt is passed as NULL, we will generate a random 10 byte salt.
+ *
+ * If the MUCK wasn't compiled with SSL, this will transparently
+ * run MD5base64.
+ *
+ * The buffer provided should be at least 40 characters long, but
+ * bigger is better.  128 should be pretty good.  The entire buffer
+ * will be filled with 1 byte to spare if the hash is run (if not,
+ * @see MD5base64).  If you provide your own salt, the buffer must
+ * be large enough to contain the seed + 4 bytes.
+ *
+ * Seed cannot contain a $ symbol as that is reserved.
+ *
+ * @param password the password to hash
+ * @param password_len the strlen of the password
+ * @param salt the salt portion of the hash
+ * @param salt_len the length of the salt
+ * @param buffer the buffer to put the result into
+ * @param buffer_len the size of the buffer
+ */
+void
+pbkdf2_hash(const char* password, int password_len, const char* salt,
+            int salt_len, char* buffer, int buffer_len)
+{
+#ifdef USE_SSL
+    char           salt_buf[11];
+    unsigned int   i, digest_len;
+    unsigned char* digest;
+
+    /*
+     * Generate a salt if we need to
+     */
+    if (!salt) {
+        for (i = 0; i < 10; i++) {
+            salt_buf[i] = b64[RANDOM()%sizeof(b64)];
+        }
+
+        salt_buf[10] = '\0';
+
+        salt = salt_buf;
+        salt_len = 10;
+    }
+
+    /*
+     * Clear the buffer
+     */
+    memset(buffer, 0, buffer_len);
+
+    /*
+     * Copy the salt into the buffer along with the markers.
+     */
+    snprintf(buffer, buffer_len, "$1$%s$", salt);
+
+    /*
+     * Calculate our digest size
+     */
+    digest_len = ((buffer_len - salt_len - 4)/2);
+    digest = (unsigned char*)malloc(digest_len+1);
+
+    /*
+     * Generate a hash with the rest of the buffer.  Use 1000 iterations.
+     */
+    PKCS5_PBKDF2_HMAC(password, password_len, salt, salt_len, 1000,
+                      EVP_sha512(), digest_len, digest);
+
+    for (i = 0; i < digest_len; i++) {
+        sprintf(buffer + salt_len + 4 + (i * 2), "%02x", 255 & digest[i]);
+    }
+
+    free(digest);
+
+    /*
+     * That should be it!  Fingers crossed
+     */
+
+#else
+    MD5base64(buffer, password, password_len);
+#endif
 }

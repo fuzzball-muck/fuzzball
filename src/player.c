@@ -79,22 +79,49 @@ lookup_player(const char *name)
 int
 check_password(dbref player, const char *password)
 {
-    char md5buf[64];
+    char md5buf[128];
+    int len_hash = 0;
+    int len_salt = 0;
+
+    const char* salt;
+
     const char *processed = password;
     const char *pword = PLAYER_PASSWORD(player);
 
-    if (password == NULL) {
-        MD5base64(md5buf, "", 0);
-        processed = md5buf;
-    } else {
-        if (*password) {
-            MD5base64(md5buf, password, strlen(password));
-            processed = md5buf;
-        }
+    if (!pword || !*pword) {
+        return 1;
     }
 
-    if (!pword || !*pword)
-        return 1;
+    /*
+     * Get the hash length
+     */
+    len_hash = strlen(pword);
+
+    /*
+     * Is it a seeded hash?  If so, let's extract the seed.
+     */
+    if ((len_hash > 4) && (!strncmp(pword, "$1$", 3))) {
+        /* Figure out the seed */
+        salt = pword + 3;
+
+        for ( ; (salt[len_salt] != '$') && ((len_salt+3) < len_hash);
+             len_salt++) { }
+
+        pbkdf2_hash(password, strlen(password), salt, len_salt, md5buf,
+                    sizeof(md5buf));
+
+        processed = md5buf;
+    } else {
+        if (password == NULL) {
+            MD5base64(md5buf, "", 0);
+            processed = md5buf;
+        } else {
+            if (*password) {
+                MD5base64(md5buf, password, strlen(password));
+                processed = md5buf;
+            }
+        }
+    }
 
     if (!strcmp(pword, processed))
         return 1;
@@ -128,11 +155,17 @@ set_password_raw(dbref player, const char *password)
 void
 set_password(dbref player, const char *password)
 {
-    char md5buf[64];
+    char md5buf[128];
     const char *processed = password;
 
     if (*password) {
-        MD5base64(md5buf, password, strlen(password));
+        if (tp_legacy_password_hash) {
+            MD5base64(md5buf, password, strlen(password));
+        } else {
+            pbkdf2_hash(password, strlen(password), NULL, 0, md5buf,
+                        sizeof(md5buf));
+        }
+
         processed = md5buf;
     }
 
@@ -362,7 +395,13 @@ void
 delete_player(dbref who)
 {
     int result;
-    char buf[BUFFER_LEN];
+    /*
+     * TODO: I increased the buffer size here to stifle a warning.
+     *       The underlying error is namebuf is actually too large.
+     *       The snprinft below for "Renaming %s(#%d)..." was throwing
+     *       a warning.
+     */
+    char buf[BUFFER_LEN+BUFFER_LEN];
     char namebuf[BUFFER_LEN];
     dbref found, ren;
     int j;
@@ -384,6 +423,17 @@ delete_player(dbref who)
                 if (found != NOTHING) {
                     ren = (i == who) ? found : i;
                     j = 0;
+
+                    /*
+                     * TODO: This, technically, can enable player names
+                     *       to exceed the max name length.  I'm not sure
+                     *       we care since this should be a super rare
+                     *       occasion?  But exceeding the max name length
+                     *       could cause chaos in other areas.
+                     *
+                     *       I'm not even sure how to test this, it seems
+                     *       like it would be from a catastrophic DB failure.
+                     */
 
                     do {
                         snprintf(namebuf, sizeof(namebuf), "%s%d", NAME(ren),

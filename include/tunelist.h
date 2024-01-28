@@ -111,6 +111,7 @@ bool        tp_ignore_bidirectional;                /**> Described below */
 bool        tp_ignore_support;                      /**> Described below */
 int         tp_instr_slice;                         /**> Described below */
 const char *tp_leave_mesg;                          /**> Described below */
+bool        tp_legacy_password_hash;                /**> Described below */
 int         tp_link_cost;                           /**> Described below */
 int         tp_listen_mlev;                         /**> Described below */
 bool        tp_lock_envcheck;                       /**> Described below */
@@ -1174,6 +1175,18 @@ struct tune_entry tune_list[] = {
         .defaultval.s="Come back later!",
         .currentval.s=&tp_leave_mesg,
         0,
+        MLEV_WIZARD,
+        true
+    },
+    {
+        "legacy_password_hash",
+        "Use Legacy (insecure, compatible) Password Hash",
+        "Misc",
+        "",
+        TP_TYPE_BOOLEAN,
+        .defaultval.b=false,
+        .currentval.b=&tp_legacy_password_hash,
+        MLEV_WIZARD,
         MLEV_WIZARD,
         true
     },
