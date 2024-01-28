@@ -165,6 +165,32 @@ void MD5hex(void *dest, const void *orig, size_t len);
 int no_good(double test);
 
 /**
+ * Generate a PBKDF2 password hash with the given password and salt.
+ *
+ * If salt is passed as NULL, we will generate a random 10 byte salt.
+ *
+ * If the MUCK wasn't compiled with SSL, this will transparently
+ * run MD5base64.
+ *
+ * The buffer provided should be at least 40 characters long, but
+ * bigger is better.  128 should be pretty good.  The entire buffer
+ * will be filled with 1 byte to spare if the hash is run (if not,
+ * @see MD5base64).  If you provide your own salt, the buffer must
+ * be large enough to contain the seed + 4 bytes.
+ *
+ * Seed cannot contain a $ symbol as that is reserved.
+ *
+ * @param password the password to hash
+ * @param password_len the strlen of the password
+ * @param salt the salt portion of the hash
+ * @param salt_len the length of the salt
+ * @param buffer the buffer to put the result into
+ * @param buffer_len the size of the buffer
+ */
+void pbkdf2_hash(const char* password, int password_len, const char* salt,
+                 int salt_len, char* buffer, int buffer_len);
+
+/**
  * Do a seeded random number generation
  *
  * This is done by taking the given buffer (which would usually be the
