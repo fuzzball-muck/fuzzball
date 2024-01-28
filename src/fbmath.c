@@ -591,11 +591,16 @@ PBKDF2_HMAC_SHA_512(const char* pass, const unsigned char* salt,
                        char* hexResult)
 {
     unsigned int i;
-    unsigned char digest[outputBytes];
+    unsigned char* digest;
+
+    digest = (unsigned char*)malloc(outputBytes);
+
     PKCS5_PBKDF2_HMAC(pass, strlen(pass), salt, strlen(salt), iterations,
                       EVP_sha512(), outputBytes, digest);
-    for (i = 0; i < sizeof(digest); i++)
+    for (i = 0; i < outputBytes; i++)
         sprintf(hexResult + (i * 2), "%02x", 255 & digest[i]);
+
+    free(digest);
 }
 #endif
 
