@@ -197,7 +197,7 @@ prim_clear_error(PRIM_PROTOTYPE)
         }
     } else {
         char buf[BUFFER_LEN];
-        snprintf(buf, sizeof(buf), DoNullInd(oper1->data.string));
+        snprintf(buf, sizeof(buf), "%s", DoNullInd(oper1->data.string));
 
         for (int i = 0; i < ERROR_NUM; i++) {
             if (!strcasecmp(buf, err_defs[i].error_name)) {
@@ -262,7 +262,7 @@ prim_set_error(PRIM_PROTOTYPE)
         }
     } else {
         char buf[BUFFER_LEN];
-        snprintf(buf, sizeof(buf), DoNullInd(oper1->data.string));
+        snprintf(buf, sizeof(buf), "%s", DoNullInd(oper1->data.string));
 
         for (int i = 0; i < ERROR_NUM; i++) {
             if (!strcasecmp(buf, err_defs[i].error_name)) {
@@ -324,7 +324,7 @@ prim_is_set(PRIM_PROTOTYPE)
         }
     } else {
         char buf[BUFFER_LEN];
-        snprintf(buf, sizeof(buf), DoNullInd(oper1->data.string));
+        snprintf(buf, sizeof(buf), "%s", DoNullInd(oper1->data.string));
 
         for (int i = 0; i < ERROR_NUM; i++) {
             if (!strcasecmp(buf, err_defs[i].error_name)) {
@@ -384,7 +384,7 @@ prim_error_str(PRIM_PROTOTYPE)
         }
     } else {
         char buf[BUFFER_LEN];
-        snprintf(buf, sizeof(buf), DoNullInd(oper1->data.string));
+        snprintf(buf, sizeof(buf), "%s", DoNullInd(oper1->data.string));
 
         for (int i = 0; i < ERROR_NUM; i++) {
             if (!strcasecmp(buf, err_defs[i].error_name)) {
@@ -498,7 +498,7 @@ prim_error_bit(PRIM_PROTOTYPE)
 
     if (oper1->data.string) {
         char buf[BUFFER_LEN];
-        snprintf(buf, sizeof(buf), oper1->data.string->data);
+        snprintf(buf, sizeof(buf), "%s", oper1->data.string->data);
 
         for (int i = 0; i < ERROR_NUM; i++) {
             if (!strcasecmp(buf, err_defs[i].error_name)) {

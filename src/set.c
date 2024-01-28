@@ -513,84 +513,159 @@ do_chown(int descr, dbref player, const char *name, const char *newowner)
 }
 
 /**
- * Determines if a given player is restricted from setting a given flag
+ * Determines if a given player is unable to (re)set the given flag
  *
  * The 'business logic' here is actually fairly dense and not easily
- * summed up in a comment.  As this is a 'private' function, the
- * reader is encouraged to review the very well documented code for
- * details.
+ * summed up in a comment. The reader is encouraged to review the very
+ * well documented code for details.
  *
  * This is all pretty well documented in the MUCK's help files.
  *
+ * Uses an error parameter to communicate the reason for failure. This
+ * should be at least SMALL_BUFFER_LEN in size.
+ *
  * @private
- * @param player the player we are checking permissions for
- * @param thing the thing we want to set the flag on
- * @param flag the flag we wish to set.
+ * @param player the effective aplayer we are checking permissions for
+ * @param mlev the effective mucker level we are checking permissions for
+ * @param thing the thing we want to interact with
+ * @param flag the flag we wish to interact with
+ * @param value whether the desired state is on or off
+ * @param error[out] error message, if any
  * @return boolean 1 if restricted from setting flag, 0 if okay to set.
  */
-static int
-restricted(dbref player, dbref thing, object_flag_type flag)
+int
+unable_to_set_flag(dbref player, int mlev, dbref thing, object_flag_type flag, bool value, char *error)
 {
+    if (force_level && (
+            flag == WIZARD
+            || (flag == XFORCIBLE && Typeof(thing) != TYPE_EXIT)
+            || (flag & MUCKER)
+            || (flag & SMUCKER)
+    )) {
+        snprintf(error, SMALL_BUFFER_LEN, "That flag cannot be forced.");
+        return 1;
+    }
+
+    /* Non-wizards can only set their own programs M0. */
+    if (!value && (flag & (MUCKER | SMUCKER))) {
+        if (!Wizard(OWNER(player))) {
+            if ((OWNER(player) != OWNER(thing)) || (Typeof(thing) != TYPE_PROGRAM)) {
+                snprintf(error, SMALL_BUFFER_LEN, "Permission denied. (You can't set that M0)");
+                return 1;
+            }
+        }
+
+        return 0;
+    }
+
+    /* Non-wizards can only set their programs up to their own mucker level. */
+    if (flag & (MUCKER | SMUCKER)) {
+        unsigned short requested_mlevel = (((flag & MUCKER ? 2 : 0) + (flag & SMUCKER ? 1 : 0)));
+        if (!Wizard(OWNER(player))) {
+            if ((OWNER(player) != OWNER(thing)) || (Typeof(thing) != TYPE_PROGRAM)
+                || (MLevRaw(player) < requested_mlevel)) {
+                snprintf(error, SMALL_BUFFER_LEN, "Permission denied. (You can't set that M%d)", requested_mlevel);
+                return 1;
+            }
+        }
+
+        return 0;
+    }
+
     switch (flag) {
         case ABODE:
             /* Trying to set a program AUTOSTART requires TrueWizard */
             return (!TrueWizard(OWNER(player)) && (Typeof(thing) == TYPE_PROGRAM));
+
         case GUEST:
             /* Guest operations require a wizard */
             return (!(Wizard(OWNER(player))));
+
         case YIELD:
-            /* Mucking with the env-chain matching requires TrueWizard */
-            return (!(Wizard(OWNER(player))));
         case OVERT:
             /* Mucking with the env-chain matching requires TrueWizard */
-            return (!(Wizard(OWNER(player))));
+            if (!(Wizard(OWNER(player)))) {
+                return 1;
+            }
+
+            /* ...and only for makes sense for things or rooms. */
+            if (Typeof(thing) != TYPE_THING && Typeof(thing) != TYPE_ROOM) {
+                return 1;
+            }
+
+            return 0;
+
         case ZOMBIE:
             /* Restricting a player from using zombies requires a wizard. */
-            if (Typeof(thing) == TYPE_PLAYER)
+            if (Typeof(thing) == TYPE_PLAYER) {
                 return (!(Wizard(OWNER(player))));
+            }
+
             /* If a player's set Zombie, he's restricted from using them...
              * unless he's a wizard, in which case he can do whatever.
              */
-            if ((Typeof(thing) == TYPE_THING) && (FLAGS(OWNER(player)) & ZOMBIE))
+            if ((Typeof(thing) == TYPE_THING) && (FLAGS(OWNER(player)) & ZOMBIE)) {
                 return (!(Wizard(OWNER(player))));
+            }
 
-            return (0);
+            return 0;
+
         case VEHICLE:
             /* Restricting a player from using vehicles requires a wizard. */
-            if (Typeof(thing) == TYPE_PLAYER)
+            if (Typeof(thing) == TYPE_PLAYER){
                 return (!(Wizard(OWNER(player))));
+            }
+
+            /* Can only set things !V if they have no players in them. */
+            if (!value && Typeof(thing) == TYPE_THING) {
+                dbref obj = CONTENTS(thing);
+
+                for (; obj != NOTHING; obj = NEXTOBJ(obj)) {
+                    if (Typeof(obj) == TYPE_PLAYER) {
+                        snprintf(error, SMALL_BUFFER_LEN, "That vehicle still has players in it!");
+                        return 1;
+                    }
+                }
+            }
 
             /* If only wizards can create vehicles... */
             if (tp_wiz_vehicles) {
                 /* then only a wizard can create a vehicle. :) */
-                if (Typeof(thing) == TYPE_THING)
+                if (Typeof(thing) == TYPE_THING) {
                     return (!(Wizard(OWNER(player))));
+                }
             } else {
                 /* But, if vehicles aren't restricted to wizards, then
                  * players who have not been restricted can do so
                  */
-                if ((Typeof(thing) == TYPE_THING) && (FLAGS(player) & VEHICLE))
+                if ((Typeof(thing) == TYPE_THING) && (FLAGS(player) & VEHICLE)) {
                     return (!(Wizard(OWNER(player))));
+                }
             }
 
             return (0);
+
         case DARK:
             /* Dark can be set on a Program or Room by anyone. */
             if (!Wizard(OWNER(player))) {
                 /* Setting a player dark requires a wizard. */
-                if (Typeof(thing) == TYPE_PLAYER)
-                    return (1);
+                if (Typeof(thing) == TYPE_PLAYER) {
+                    return 1;
+                }
 
                 /* If exit darking is restricted, it requires a wizard. */
-                if (!tp_exit_darking && Typeof(thing) == TYPE_EXIT)
-                    return (1);
+                if (!tp_exit_darking && Typeof(thing) == TYPE_EXIT) {
+                    return 1;
+                }
 
                 /* If thing darking is restricted, it requires a wizard. */
-                if (!tp_thing_darking && Typeof(thing) == TYPE_THING)
-                    return (1);
+                if (!tp_thing_darking && Typeof(thing) == TYPE_THING) {
+                    return 1;
+                }
             }
 
-            return (0);
+            return 0;
+
         case QUELL:
 #ifdef GOD_PRIV
             /* Only God (or God's stuff) can quell or unquell another wizard. */
@@ -600,53 +675,27 @@ restricted(dbref player, dbref thing, object_flag_type flag)
             /* You cannot quell or unquell another wizard. */
             return (TrueWizard(thing) && (thing != player) && (Typeof(thing) == TYPE_PLAYER));
 #endif
-        /* The following three cases aren't used, as far as I can tell, but
-         * for consistency's sake let's make sure they reflect the documented
-         * behaviors:
-         */
-        case MUCKER:
-            /* Setting a program M2 is limited to players of at least M2. */
-            if (Typeof(thing) == TYPE_PROGRAM)
-                return (MLevel(OWNER(player)) < 2);
 
-            /* Setting anything else M2 takes a wizard. */
-            return (!Wizard(OWNER(player)));
-        case SMUCKER:
-            /* Setting a program M1 is limited to players of at least M1. */
-            if (Typeof(thing) == TYPE_PROGRAM)
-                return (MLevel(OWNER(player)) < 1);
-
-            /* Setting anything else M1 takes a wizard. */
-            return (!Wizard(OWNER(player)));
-        case (SMUCKER | MUCKER):
-            /* Setting a program M3 is limited to players of at least M3. */
-
-            if (Typeof(thing) == TYPE_PROGRAM)
-                return (MLevel(OWNER(player)) < 3);
-
-            /* Setting anything else M3 takes a wizard. */
-            return (!Wizard(OWNER(player)));
         case BUILDER:
-            /* Setting a program Bound causes any function called therein to be
-             * put in preempt mode, regardless of the mode it had before.
-             * Since this is just a convenience for atomic-functionwriters,
-             * why is it limited to only a Wizard? -winged
-             */
-            /* That's a very good question! Let's limit it to players of at
-             * least M2 instead. -aidanPB
-             */
-            if (Typeof(thing) == TYPE_PROGRAM)
-                return (MLevel(OWNER(player)) < 2);
+            /* Setting a program BOUND reguires M2. */
+            if (Typeof(thing) == TYPE_PROGRAM) {
+                return (mlev < 2);
+            }
 
             /* Setting a player Builder or a room Bound is limited to a Wizard. */
             return (!Wizard(OWNER(player)));
+
         case WIZARD:
             /* To do anything with a Wizard flag requires a Wizard. */
             if (Wizard(OWNER(player))) {
+                /* check for stupid wizard */
+                if (!value && thing == player) {
+                    snprintf(error, SMALL_BUFFER_LEN, "You cannot make yourself mortal.");
+                    return 1;
+                }
+
 #ifdef GOD_PRIV
-                /* ...but only God can make a player a Wizard, or re-mort
-                 * one.
-                 */
+                /* Only God can make a player a Wizard, or re-mort one. */
                 return ((Typeof(thing) == TYPE_PLAYER) && !God(player));
 #else
                 /* We don't want someone setting themselves !W, to prevent
@@ -654,8 +703,13 @@ restricted(dbref player, dbref thing, object_flag_type flag)
                  */
                 return ((Typeof(thing) == TYPE_PLAYER && thing == OWNER(player)));
 #endif
-            } else
+            } else {
                 return 1;
+            }
+
+        case XFORCIBLE:
+            return (!Wizard(OWNER(player)) && Typeof(thing) == TYPE_EXIT);
+
         default:
             /* No other flags are restricted. */
             return 0;
@@ -688,6 +742,7 @@ do_set(int descr, dbref player, const char *name, const char *flag)
     dbref thing;
     const char *p;
     object_flag_type f;
+    char error[SMALL_BUFFER_LEN] = "";
 
     /* find thing */
     if ((thing = match_controlled(descr, player, name)) == NOTHING)
@@ -787,200 +842,68 @@ do_set(int descr, dbref player, const char *name, const char *flag)
         return;
     }
 
+    bool negated = (*flag == NOT_TOKEN);
 
     if (ISGUEST(player) &&
-           (!Wizard(player) || *flag != NOT_TOKEN || !string_prefix("GUEST", p))) {
+           (!Wizard(player) || !negated || !string_prefix("GUEST", p))) {
         notifyf_nolisten(player, "Guests are not allowed to @set.");
         return;
     }
 
-    /* identify flag */
-
-    /*
-     * @TODO: This gnarly 'if' statement should probably be a function that
-     * takes a flag string and converts it to a flag.  The exception
-     * being the MUCKER flags which are a little tricky.
-     *
-     * So if (matches MUCKER bits) run existing code, else
-     * flag = get_flag_from_string( ... )
-     *
-     * The SET prim should use the same function because this logic is
-     * currently duplicated over there.
-     */
     if (*p == '\0') {
         notify(player, "You must specify a flag to set.");
         return;
-    } else if ((!strcasecmp("0", p) || !strcasecmp("M0", p)) ||
-               ((string_prefix("MUCKER", p)) && (*flag == NOT_TOKEN))) {
-        if (!Wizard(OWNER(player))) {
-            if ((OWNER(player) != OWNER(thing)) || (Typeof(thing) != TYPE_PROGRAM)) {
-                notify(player, "Permission denied. (You can't clear that mucker flag)");
-                return;
-            }
-        }
+    }
 
-        if (force_level) {
-            notify(player, "Can't set this flag from an @force or {force}.");
-            return;
-        }
-
-        SetMLevel(thing, 0);
-        notify(player, "Mucker level set.");
-        return;
-    } else if (!strcasecmp("1", p) || !strcasecmp("M1", p)) {
-        if (!Wizard(OWNER(player))) {
-            if ((OWNER(player) != OWNER(thing)) || (Typeof(thing) != TYPE_PROGRAM)
-                || (MLevRaw(player) < 1)) {
-                notify(player, "Permission denied. (You may not set that M1)");
-                return;
-            }
-        }
-
-        if (force_level) {
-            notify(player, "Can't set this flag from an @force or {force}.");
-            return;
-        }
-
-        SetMLevel(thing, 1);
-        notify(player, "Mucker level set.");
-        return;
-    } else if ((!strcasecmp("2", p) || !strcasecmp("M2", p)) ||
-                ((string_prefix("MUCKER", p)) && (*flag != NOT_TOKEN))) {
-        if (!Wizard(OWNER(player))) {
-            if ((OWNER(player) != OWNER(thing)) || (Typeof(thing) != TYPE_PROGRAM)
-                || (MLevRaw(player) < 2)) {
-                notify(player, "Permission denied. (You may not set that M2)");
-                return;
-            }
-        }
-
-        if (force_level) {
-            notify(player, "Can't set this flag from an @force or {force}.");
-            return;
-        }
-
-        SetMLevel(thing, 2);
-        notify(player, "Mucker level set.");
-        return;
-    } else if (!strcasecmp("3", p) || !strcasecmp("M3", p)) {
-        if (!Wizard(OWNER(player))) {
-            if ((OWNER(player) != OWNER(thing)) || (Typeof(thing) != TYPE_PROGRAM)
-                || (MLevRaw(player) < 3)) {
-                notify(player, "Permission denied. (You may not set that M3)");
-                return;
-            }
-        }
-
-        if (force_level) {
-            notify(player, "Can't set this flag from an @force or {force}.");
-            return;
-        }
-
-        SetMLevel(thing, 3);
-        notify(player, "Mucker level set.");
-        return;
-    } else if (!strcasecmp("4", p) || !strcasecmp("M4", p)) {
+    if (!strcmp("4", p) || !strcasecmp("M4", p)) {
         notify(player, "To set Mucker Level 4, set the Wizard bit and another Mucker bit.");
         return;
-    } else if (string_prefix("WIZARD", p)) {
-        if (force_level) {
-            notify(player, "Can't set this flag from an @force or {force}.");
-            return;
-        }
+    }
 
-        f = WIZARD;
-    } else if (string_prefix("ZOMBIE", p)) {
-        f = ZOMBIE;
-    } else if (string_prefix("VEHICLE", p)
-                || string_prefix("VIEWABLE", p)) {
-        if (*flag == NOT_TOKEN && Typeof(thing) == TYPE_THING) {
-            dbref obj = CONTENTS(thing);
-
-            for (; obj != NOTHING; obj = NEXTOBJ(obj)) {
-                if (Typeof(obj) == TYPE_PLAYER) {
-                    notify(player, "That vehicle still has players in it!");
-                    return;
-                }
-            }
-        }
-
-        f = VEHICLE;
-    } else if (string_prefix("LINK_OK", p)) {
-        f = LINK_OK;
-    } else if (string_prefix("XFORCIBLE", p) || string_prefix("XPRESS", p)) {
-        if (force_level) {
-            notify(player, "Can't set this flag from an @force or {force}.");
-            return;
-        }
-
-        if (Typeof(thing) == TYPE_EXIT) {
-            if (!Wizard(OWNER(player))) {
-                notify(player,
-                       "Permission denied. (Only a Wizard may set the M-level of an exit)");
-                return;
-            }
-        }
-
-        f = XFORCIBLE;
-    } else if (string_prefix("KILL_OK", p)) {
-        f = KILL_OK;
-    } else if ((string_prefix("DARK", p)) || (string_prefix("DEBUG", p))) {
-        f = DARK;
-    } else if ((string_prefix("STICKY", p)) || (string_prefix("SETUID", p)) ||
-                (string_prefix("SILENT", p))) {
-        f = STICKY;
-    } else if (string_prefix("QUELL", p)) {
-        f = QUELL;
-    } else if (string_prefix("BUILDER", p) || string_prefix("BOUND", p)) {
-        f = BUILDER;
-    } else if (string_prefix("CHOWN_OK", p) || string_prefix("COLOR", p)) {
-        f = CHOWN_OK;
-    } else if (string_prefix("JUMP_OK", p)) {
-        f = JUMP_OK;
-    } else if (string_prefix("GUEST", p)) {
-        f = GUEST;
-    } else if (string_prefix("HAVEN", p) || string_prefix("HARDUID", p)) {
-        f = HAVEN;
-    } else if ((string_prefix("ABODE", p)) ||
-               (string_prefix("AUTOSTART", p)) || (string_prefix("ABATE", p))) {
-        f = ABODE;
-    } else if (string_prefix("YIELD", p)) {
-        f = YIELD;
-    } else if (string_prefix("OVERT", p)) {
-        f = OVERT;
+    if ((!strcasecmp("0", p) || !strcasecmp("M0", p)) ||
+               ((string_prefix("MUCKER", p)) && (negated))) {
+        f = MUCKER | SMUCKER;
+        negated = true;
+    } else if (!strcasecmp("1", p) || !strcasecmp("M1", p)) {
+        f = SMUCKER;
+    } else if ((!strcasecmp("2", p) || !strcasecmp("M2", p)) ||
+                ((string_prefix("MUCKER", p)) && (!negated))) {
+        f = MUCKER;
+    } else if (!strcasecmp("3", p) || !strcasecmp("M3", p)) {
+        f = MUCKER | SMUCKER;
     } else {
-        notify(player, "I don't recognize that flag.");
+        f = str_to_flag(p);
+        if (!f || string_prefix("TRUEWIZARD", p) || string_prefix("NUCKER", p)) {
+            notify(player, "I don't recognize that flag.");
+            return;
+        }
+    }
+
+    if (unable_to_set_flag(player, MLevel(OWNER(player)), thing, f, !negated, error)) {
+        if (*error) {
+            notify(player, error);
+        } else {
+            notify(player, "Permission denied. (restricted flag)");
+        }
+
         return;
     }
 
-    /* check for restricted flag */
-    if (restricted(player, thing, f)) {
-        notify(player, "Permission denied. (restricted flag)");
-        return;
+    if ((f & MUCKER) || (f & SMUCKER)) {
+        FLAGS(thing) &= ~(MUCKER | SMUCKER);
     }
 
-    /* check for stupid wizard */
-    if (f == WIZARD && *flag == NOT_TOKEN && thing == player) {
-        notify(player, "You cannot make yourself mortal.");
-        return;
-    }
-
-    /* else everything is ok, do the set */
-    if (*flag == NOT_TOKEN) {
-        /* reset the flag */
-        ts_modifyobject(thing);
+    if (negated) {
         FLAGS(thing) &= ~f;
-        DBDIRTY(thing);
-
-        notify(player, "Flag reset.");
     } else {
-        /* set the flag */
-        ts_modifyobject(thing);
         FLAGS(thing) |= f;
-        DBDIRTY(thing);
-
-        notify(player, "Flag set.");
     }
+
+    notifyf(player, "%s %s.", ((f & MUCKER) || (f & SMUCKER)) ? "Mucker level" : "Flag",
+            negated ? "reset" : "set");
+
+    ts_modifyobject(thing);
+    DBDIRTY(thing);
 }
 
 /**

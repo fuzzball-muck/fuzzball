@@ -343,7 +343,7 @@ timestr_long(long dtime)
  *
  * @param string the string to convert
  * @param format the string's format
- * @parm[out] error the error message, if any
+ * @param[out] error the error message, if any
  * @return the time in seconds
  */
 #ifndef WIN32
