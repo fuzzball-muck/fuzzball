@@ -1,7 +1,7 @@
 ***Foxen9 TinyMUCK DUMP Format***
 2
 1
-168
+169
 %7bit_other_names=no
 %7bit_thing_names=yes
 %addpennies_muf_mlev=2
@@ -80,6 +80,7 @@ default_room_parent=#0
 %ignore_support=yes
 %instr_slice=2000
 %leave_mesg=Come back later!
+%legacy_password_hash=no
 %link_cost=1
 %listen_mlev=3
 %lock_envcheck=no
