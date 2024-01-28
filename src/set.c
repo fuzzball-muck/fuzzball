@@ -516,9 +516,8 @@ do_chown(int descr, dbref player, const char *name, const char *newowner)
  * Determines if a given player is unable to (re)set the given flag
  *
  * The 'business logic' here is actually fairly dense and not easily
- * summed up in a comment.  As this is a 'private' function, the
- * reader is encouraged to review the very well documented code for
- * details.
+ * summed up in a comment. The reader is encouraged to review the very
+ * well documented code for details.
  *
  * This is all pretty well documented in the MUCK's help files.
  *
