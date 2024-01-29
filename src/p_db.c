@@ -451,8 +451,8 @@ prim_contents(PRIM_PROTOTYPE)
         abort_interp("Invalid argument type.");
     }
 
+    CHECKREMOTE(oper1->data.objref);
     ref = CONTENTS(oper1->data.objref);
-    CHECKREMOTE(ref);
 
     while (mlev < 2 && ref != NOTHING && (FLAGS(ref) & DARK) && !controls(ProgUID, ref)) {
         ref = NEXTOBJ(ref);
@@ -3345,10 +3345,9 @@ prim_getpidinfo(PRIM_PROTOTYPE)
 /**
  * Implementation of MUF CONTENTS_ARRAY
  *
- * Consumes a dbref, and returns an array of its contents.  Requires
- * remote-read permissions when applicable.
- *
- * Unlike prim_contents, this has no MUCKER level 1 restrictions.
+ * Consumes a dbref, and returns an array of its contents. Only returns
+ * controlled non-DARK objects for MUCKER level 1. Requires remote-read
+ * permissions when applicable.
  *
  * @param player the player running the MUF program
  * @param program the program being run
@@ -3382,12 +3381,20 @@ prim_contents_array(PRIM_PROTOTYPE)
     CHECKREMOTE(oper1->data.objref);
 
     for (ref = CONTENTS(oper1->data.objref); ObjExists(ref); ref = NEXTOBJ(ref)) {
+        if (mlev < 2 && ref != NOTHING && (FLAGS(ref) & DARK) && !controls(ProgUID, ref)) {
+            continue;
+        }
+
         count++;
     }
 
     nw = new_array_packed(count, fr->pinning);
 
     for (ref = CONTENTS(oper1->data.objref), count = 0; ObjExists(ref); ref = NEXTOBJ(ref)) {
+        if (mlev < 2 && ref != NOTHING && (FLAGS(ref) & DARK) && !controls(ProgUID, ref)) {
+            continue;
+        }
+
         array_set_intkey_refval(&nw, count++, ref);
     }
 

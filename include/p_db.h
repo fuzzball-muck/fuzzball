@@ -969,10 +969,9 @@ void prim_newprogram(PRIM_PROTOTYPE);
 /**
  * Implementation of MUF CONTENTS_ARRAY
  *
- * Consumes a dbref, and returns an array of its contents.  Requires
- * remote-read permissions when applicable.
- *
- * Unlike prim_contents, this has no MUCKER level 1 restrictions.
+ * Consumes a dbref, and returns an array of its contents. Only returns
+ * controlled non-DARK objects for MUCKER level 1. Requires remote-read
+ * permissions when applicable.
  *
  * @param player the player running the MUF program
  * @param program the program being run
