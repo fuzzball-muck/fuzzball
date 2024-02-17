@@ -97,7 +97,7 @@ $include $lib/strings
     then then then
  
     (max line)
-    dup 1 < if pop 1
+    dup 1 < if pop pop 1
     else
         swap 1 + over over
         > if swap then pop
