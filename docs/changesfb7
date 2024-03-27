@@ -1,3 +1,76 @@
+2.2Muck7.20
+
+Terminal Size Introspection
+---------------------------
+ 
+The MUCK is now able to query the terminal width and height using the telnet protocol, via MPI. MUF programs of MUCKER level 3 or higher may also define these values. Existing MPI functions for formatting messages now take advantage of this information.
+ 
+{height}   - gets the current descriptor's screen height, with an optional default.
+{width}    - gets the current descriptor's screen width, with an optional default.
+ 
+{center}   - now uses the detected screen width before defaulting to 78.
+{left}     - now uses the detected screen width before defaulting to 78.
+{right}    - now uses the detected screen width before defaulting to 78.
+ 
+HEIGHT     - returns the detected screen height for the given descriptor.
+SETHEIGHT  - sets the detected screen height for the given descriptor.
+SETWIDTH   - sets the detected screen width for the given descriptor.
+WIDTH      - returns the detected screen width for the given descriptor.
+ 
+ 
+Secure Password Hash Storage
+----------------------------
+ 
+Player password hashes now can be stored using OpenSSL algorithms, with a fallback to the previous. Using the previous algorithm is currently a @tune-able option, set to true by default.
+ 
+legacy_password_hash - use the previous MD5-based storage for password hashes
+ 
+ 
+Determining Object Flags
+------------------------
+ 
+Additional support has been added for checking for the status of single flags.
+ 
+{flag?}    - equivalent to MUF's FLAG?
+ 
+FLAG?      - now recognizes BOUND, HIDE, SETUID, and XPRESS as aliases.
+ 
+ 
+Expanded Functionality
+----------------------
+ 
+Some features have been extended to improve utility.
+ 
+NEWROOM     - now can use a #-1 parent to search the environment for ABODE rooms.
+STATS       - now allows programs below MUCKER level 3 to view the player's stats.
+STATS_ARRAY - now allows programs below MUCKER level 3 to view the player's stats.
+ 
+@set        - now allows Wizards set GUEST to un-GUEST themselves.
+MUF errors  - now include the program name and dbref when reporting a compile error.
+ 
+ 
+Consistent Logic
+----------------
+ 
+Some pieces of functionality have been made more consistent.
+ 
+CONTENTS_ARRAY   - now returns a partial list for MUCKER level 1, like CONTENTS.
+ENTRANCES_ARRAY  - now requires MUCKER level 3, like NEXTENTRANCE.
+RMATCH           - now strips ANSI, like MATCH.
+ 
+create_fail_mesg - removed, as the player creation process now handles messaging.
+ 
+ 
+Starter Database Fixes
+----------------------
+ 
+Some programs included in starterdb have been adjusted for proper usage.
+ 
+cmd-lsedit   - no longer crashes when referencing a line number before the first.
+cmd-page     - now has MUCKER level 4 permissions.
+cmd-RIDE     - now includes the expected action messages.
+cmd-watchfor - no longer crashes when reading a stale dbref.
+
 2.2Muck7.10
 
 New features
