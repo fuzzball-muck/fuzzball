@@ -21,7 +21,7 @@ typedef int dbref;  /**< Type wrapper for dbref - must support negatives */
 /**
  * Server version number
  */
-#define VERSION "Muck2.2fb7.10"
+#define VERSION "Muck2.2fb7.20"
 
 /************************************************************************
    Administrative Options
