@@ -584,26 +584,6 @@ rnd(void *buffer)
  *
  *********************************************************************/
 
-#ifdef USE_SSL
-static void
-PBKDF2_HMAC_SHA_512(const char* pass, const unsigned char* salt,
-                       int32_t iterations, uint32_t outputBytes,
-                       char* hexResult)
-{
-    unsigned int i;
-    unsigned char* digest;
-
-    digest = (unsigned char*)malloc(outputBytes);
-
-    PKCS5_PBKDF2_HMAC(pass, strlen(pass), salt, strlen(salt), iterations,
-                      EVP_sha512(), outputBytes, digest);
-    for (i = 0; i < outputBytes; i++)
-        sprintf(hexResult + (i * 2), "%02x", 255 & digest[i]);
-
-    free(digest);
-}
-#endif
-
 /**
  * Generate a PBKDF2 password hash with the given password and salt.
  *
@@ -672,7 +652,12 @@ pbkdf2_hash(const char* password, int password_len, const char* salt,
     PKCS5_PBKDF2_HMAC(password, password_len, salt, salt_len, 1000,
                       EVP_sha512(), digest_len, digest);
 
-    for (i = 0; i < digest_len; i++) {
+    /*
+     * The -1 here should avoid a buffer overflow as otherwise this will
+     * get to be exactly the same size as buffer with no room for the
+     * null.
+     */
+    for (i = 0; i < (digest_len - 1); i++) {
         sprintf(buffer + salt_len + 4 + (i * 2), "%02x", 255 & digest[i]);
     }
 
