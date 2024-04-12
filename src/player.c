@@ -123,7 +123,17 @@ check_password(dbref player, const char *password)
         }
     }
 
-    if (!strcmp(pword, processed))
+    /*
+     * There was a bug where the password hash was causing a buffer
+     * overflow.  Some compilers apparently cover this up or smooth
+     * this over in some fashion which means it is an inconsistent
+     * overflow.
+     *
+     * By matching by the length of 'processed', we'll be able to
+     * support any old "too long" hashes that may have slipped into
+     * the system.
+     */
+    if (!strncmp(pword, processed, strlen(processed)))
         return 1;
 
     return 0;
