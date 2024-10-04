@@ -1,4 +1,0 @@
-connect <playername> <password> - connect to your character
-create <playername> <password>  - create a character, if available
-help                            - this help message
-WHO                             - list visible players
