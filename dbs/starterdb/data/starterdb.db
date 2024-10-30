@@ -2512,8 +2512,7 @@ _disconnect/laston:5:118
 _msgmacs/timetosave:2:{subt:{add:{max:{prop:_sys/lastdumptime},{prop:_sys/startuptime}},{prop:_sys/dumpinterval}},{secs}}
 _prefs/ws/color/hers:2:[35m
 _prefs/ws/color/his:2:[36m
-_prefs/ws/doing:2:
-        [1;35mDoing: [0;35m%[doing]s
+_prefs/ws/doing:2:[1;35mDoing: [0;35m%[doing]s
 _prefs/ws/footer:2:[1;30m-[0;37m-[1m-( %.20[region]s )-[0;37m-[1;30m-%%--[0;37m-[1m-( %[awake]i/%[count]i%.35[room]s )-[0;37m-[1;30m-[0m
 _prefs/ws/header:2:[1;37mStat  Name_______[0;37m_______[1;30m______  [37mSex__[0;37m___[1;30m___  [37mSpecies_________[0;37m_________[1;30m_________[0m
 _prefs/ws/line:2:%[awakecolor]s%[statcolor]s%-4.4[status]s[0m%[awakecolor]s  [37m%-24.24[n]s  %[awakecolor]s%[sexcolor]s%-11.11[sex]s  [37m%[species]s%[doing]s
