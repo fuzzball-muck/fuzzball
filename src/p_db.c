@@ -2525,8 +2525,8 @@ prim_findnext(PRIM_PROTOTYPE)
         abort_interp("Expected string argument. (3)");
     }
 
-    if (!valid_player(oper2)) {
-        abort_interp("Expected player argument. (2)");
+    if (oper2->data.objref != NOTHING && !valid_player(oper2)) {
+        abort_interp("Expected player argument or #-1. (2)");
     }
 
     if (!valid_object(oper1) && oper1->data.objref != NOTHING) {
