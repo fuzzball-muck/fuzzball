@@ -1,4 +1,4 @@
-                 MUF Reference Manual for Muck2.2fb7.10
+                 MUF Reference Manual for Muck2.2fb7.21
                    by Revar Desmera <revar@belfry.com>
 
 You may get a listing of topics that you can get help on, either sorted
@@ -5015,7 +5015,10 @@ NEWROOM
 NEWROOM (d s -- d)
 
   Takes the dbref of the parent and the name of the room. It returns the
-dbref of the created room. Owner is the person running the program.
+dbref of the created room. Owner is the person running the program. If d is
+#-1, then it becomes the first ABODE room down the environment tree from
+the current room, or the default room parent.
+
 Can only create one object per program run, if under Mucker Level 3.
 ~
 ~
