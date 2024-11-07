@@ -277,7 +277,7 @@ do_link(int descr, dbref player, const char *thing_name, const char *dest_name)
 
             break;
         case TYPE_PROGRAM:
-            notify(player, "You can't link programs to things!");
+            notify(player, "Program links cannot be modified.");
             break;
         default:
             notify(player, "Internal error: weird object type.");

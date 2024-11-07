@@ -65,7 +65,7 @@ can_link_to(dbref who, object_flag_type what_type, dbref where)
         && (Typeof(where) == TYPE_EXIT || Typeof(where) == TYPE_PROGRAM))
         return 0;
 
-    /* Programs cannot be linked */
+    /* Program links cannot be modified */
     if (what_type == TYPE_PROGRAM)
         return 0;
 

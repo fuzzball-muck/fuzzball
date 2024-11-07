@@ -1526,15 +1526,6 @@ prim_getlink(PRIM_PROTOTYPE)
     CHECKREMOTE(oper1->data.objref);
 
     /**
-     * @TODO A years-old suggestion would have this returning the
-     *       link of a program as the home of its owner.  Does this
-     *       make sense?
-     */
-    if (Typeof(oper1->data.objref) == TYPE_PROGRAM) {
-        abort_interp("Illegal object referenced.");
-    }
-
-    /**
      * @TODO Combine with other link resolution logic as possible.
      */
     switch (Typeof(oper1->data.objref)) {
@@ -1553,6 +1544,10 @@ prim_getlink(PRIM_PROTOTYPE)
 
         case TYPE_ROOM:
             ref = DBFETCH(oper1->data.objref)->sp.room.dropto;
+            break;
+
+        case TYPE_PROGRAM:
+            ref = OWNER(oper1->data.objref);
             break;
 
         default:
@@ -1594,10 +1589,6 @@ prim_getlinks(PRIM_PROTOTYPE)
     }
 
     CHECKREMOTE(oper1->data.objref);
-
-    if (Typeof(oper1->data.objref) == TYPE_PROGRAM) {
-        abort_interp("Illegal object referenced.");
-    }
 
     my_obj = oper1->data.objref;
 
@@ -1643,6 +1634,16 @@ prim_getlinks(PRIM_PROTOTYPE)
                 PushObject(ref);
             }
 
+            break;
+
+        case TYPE_PROGRAM:
+            CHECKOFLOW(2);
+
+            ref = OWNER(my_obj);
+
+            count = 1;
+
+            PushObject(ref);
             break;
 
         default:
@@ -1750,7 +1751,7 @@ prim_setlink(PRIM_PROTOTYPE)
     oper1 = POP();              /* dbref: destination */
     oper2 = POP();              /* dbref: source */
 
-    if (!valid_object(oper1)) {
+    if (!valid_object(oper1) && oper1->data.objref != NOTHING) {
         abort_interp("Invalid object. (2)");
     }
 
@@ -1758,11 +1759,16 @@ prim_setlink(PRIM_PROTOTYPE)
         abort_interp("Invalid object. (1)");
     }
 
-    ref = oper2->data.objref;
-
     /**
      * @TODO Combine with other link setting logic as possible.
      */
+
+    ref = oper2->data.objref;
+
+    if (Typeof(ref) == TYPE_PROGRAM) {
+        abort_interp("Program links cannot be modified. (1)");
+    }
+
     if (oper1->data.objref == NOTHING) {
         if ((mlev < 4) && !permissions(ProgUID, ref)) {
             abort_interp("Permission denied.");
@@ -1784,16 +1790,12 @@ prim_setlink(PRIM_PROTOTYPE)
             DBSTORE(ref, sp.room.dropto, NOTHING);
         }
     } else {
-        if (Typeof(ref) == TYPE_PROGRAM) {
-            abort_interp("Program objects are not linkable. (1)");
-        }
-
         if (!prog_can_link_to(mlev, ProgUID, Typeof(ref), oper1->data.objref)) {
             abort_interp("Can't link source to destination.");
         }
 
         if ((mlev < 4) && !permissions(ProgUID, ref)) {
-                    abort_interp("Permission denied.");
+            abort_interp("Permission denied.");
         }
 
         switch (Typeof(ref)) {
@@ -3488,6 +3490,10 @@ array_getlinks(dbref obj, int pinned)
             array_set_intkey_refval(&nw, count++, PLAYER_HOME(obj));
             break;
 
+        case TYPE_PROGRAM:
+            array_set_intkey_refval(&nw, count++, OWNER(obj));
+            break;
+
         case TYPE_EXIT:
             for (count = 0; count < (DBFETCH(obj)->sp.exit.ndest); count++) {
                 array_set_intkey_refval(&nw, count, (DBFETCH(obj)->sp.exit.dest)[count]);
@@ -3961,6 +3967,10 @@ prim_setlinks_array(PRIM_PROTOTYPE)
 
                 case TYPE_ROOM:
                     break;
+
+                case TYPE_PROGRAM:
+                    CLEAR(&idx);
+                    abort_interp("Program links cannot be modified. (2)");
 
                 default:
                     CLEAR(&idx);
