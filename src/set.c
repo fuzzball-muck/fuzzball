@@ -199,6 +199,9 @@ _do_unlink(int descr, dbref player, const char *name, bool quiet)
                     notify(player, "Player's home reset to default player start room.");
 
                 break;
+            case TYPE_PROGRAM:
+                notify(player, "Program links cannot be modified.");
+                break;
             default:
                 notify(player, "You can't unlink that!");
                 break;
@@ -361,7 +364,7 @@ do_relink(int descr, dbref player, const char *thing_name,
 
             break;
         case TYPE_PROGRAM:
-            notify(player, "You can't link programs to things!");
+            notify(player, "Program links cannot be modified.");
             return;
         default:
             notify(player, "Internal error: weird object type.");

@@ -217,6 +217,9 @@ mfn_links(MFUNARGS)
             }
 
         case TYPE_PROGRAM:
+            obj = OWNER(obj);
+            break;
+
         default:
             return "#-1";
     }
