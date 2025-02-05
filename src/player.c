@@ -81,6 +81,7 @@ check_password(dbref player, const char *password)
 {
     char md5buf[128];
     int len_hash = 0;
+    int len_processed = 0;
     int len_salt = 0;
 
     const char* salt;
@@ -133,7 +134,8 @@ check_password(dbref player, const char *password)
      * support any old "too long" hashes that may have slipped into
      * the system.
      */
-    if (!strncmp(pword, processed, strlen(processed)))
+    len_processed = strlen(processed);
+    if (len_processed != 0 && !strncmp(pword, processed, len_processed))
         return 1;
 
     return 0;
