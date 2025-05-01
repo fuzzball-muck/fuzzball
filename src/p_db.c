@@ -1950,7 +1950,7 @@ prim_newobject(PRIM_PROTOTYPE)
     CHECKOFLOW(1);
 
     ref = oper2->data.objref;
-    if (!valid_object(oper2) || (Typeof(oper2->data.objref) != TYPE_PLAYER && Typeof(oper2->data.objref) == TYPE_ROOM)) {
+    if (!valid_object(oper2) || (Typeof(oper2->data.objref) != TYPE_PLAYER && Typeof(oper2->data.objref) != TYPE_ROOM)) {
         abort_interp("Invalid player or room object (1)");
     }
 
