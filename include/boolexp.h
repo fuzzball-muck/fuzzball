@@ -14,12 +14,15 @@
 #include "config.h"
 #include "props.h"
 
+#define MAX_LOCK_DEPTH 50  /**< Recursion limit */
+
 /* These are the different elements of a boolean expression */
 #define BOOLEXP_AND 0    /**< AND is the default */
 #define BOOLEXP_OR 1     /**< OR expression */
 #define BOOLEXP_NOT 2    /**< NOT expression */
 #define BOOLEXP_CONST 3  /**< CONST expression */
 #define BOOLEXP_PROP 4   /**< property expression */
+#define BOOLEXP_MPI 5    /**< MPI expression */
 
 /* True is a null boolean expression */
 #define TRUE_BOOLEXP ((struct boolexp *) 0)   /**< Boolean TRUE expression */
@@ -28,14 +31,17 @@
  * Boolean expressions are trees of expression nodes that are recursively
  * evaluated.
  *
- * Leaf nodes are always either BOOLEXP_PROP or BOOLEXP_CONST.
+ * Leaf nodes are always either BOOLEXP_CONST, BOOLEXP_PROP, or BOOLEXP_MPI..
  */
 struct boolexp {
     short type;                 /**< Type of node               */
     struct boolexp *sub1;       /**< 'Left' side subexpression  */
     struct boolexp *sub2;       /**< 'Right' side subexpression */
-    dbref thing;                /**< Value for type constant    */
-    struct plist *prop_check;   /**< Value for type property    */
+    union {
+        dbref thing;                /**< Value for type constant    */
+        struct plist *prop_check;   /**< Value for type property    */
+        char *mpi;                  /**< Value for type MPI         */
+    } data;
 };
 
 /**
