@@ -21,6 +21,7 @@
 #include "interface.h"
 #include "interp.h"
 #include "match.h"
+#include "mpi.h"
 #include "props.h"
 
 /**
@@ -81,27 +82,30 @@ copy_bool(struct boolexp *old)
             o->sub1 = copy_bool(old->sub1);
             break;
         case BOOLEXP_CONST:
-            o->thing = old->thing;
+            o->data.thing = old->data.thing;
             break;
         case BOOLEXP_PROP:
-            if (!old->prop_check) {
+            if (!old->data.prop_check) {
                 free_boolnode(o);
                 return 0;
             }
 
-            o->prop_check = alloc_propnode(PropName(old->prop_check));
-            SetPFlagsRaw(o->prop_check, PropFlagsRaw(old->prop_check));
+            o->data.prop_check = alloc_propnode(PropName(old->data.prop_check));
+            SetPFlagsRaw(o->data.prop_check, PropFlagsRaw(old->data.prop_check));
 
-            switch (PropType(old->prop_check)) {
+            switch (PropType(old->data.prop_check)) {
                 case PROP_STRTYP:
-                    SetPDataStr(o->prop_check,
-                                alloc_string(PropDataStr(old->prop_check)));
+                    SetPDataStr(o->data.prop_check,
+                                alloc_string(PropDataStr(old->data.prop_check)));
                     break;
                 default:
-                    SetPDataVal(o->prop_check, PropDataVal(old->prop_check));
+                    SetPDataVal(o->data.prop_check, PropDataVal(old->data.prop_check));
                     break;
             }
 
+            break;
+        case BOOLEXP_MPI:
+            o->data.mpi = old->data.mpi ? alloc_string(old->data.mpi) : NULL;
             break;
         default:
             panic("copy_bool(): Error in boolexp !");
@@ -166,11 +170,11 @@ eval_boolexp_rec(int descr, dbref player, struct boolexp *b, dbref thing)
              * either true or false.
              */
             case BOOLEXP_CONST:
-                if (b->thing == NOTHING)
+                if (b->data.thing == NOTHING)
                     return 0;
 
                 /* Programs are evaluated */
-                if (Typeof(b->thing) == TYPE_PROGRAM) {
+                if (Typeof(b->data.thing) == TYPE_PROGRAM) {
                     struct inst *rv;
                     struct frame *tmpfr;
                     dbref real_player;
@@ -182,7 +186,7 @@ eval_boolexp_rec(int descr, dbref player, struct boolexp *b, dbref thing)
                         real_player = OWNER(player);
 
                     tmpfr = interp(descr, real_player, LOCATION(player),
-                                   b->thing, thing, PREEMPT, STD_HARDUID, 0);
+                                   b->data.thing, thing, PREEMPT, STD_HARDUID, 0);
 
                     if (!tmpfr)
                         return (0);
@@ -191,7 +195,7 @@ eval_boolexp_rec(int descr, dbref player, struct boolexp *b, dbref thing)
                     tmpfr->argument.top--;
                     push(tmpfr->argument.st, &(tmpfr->argument.top),
                          PROG_STRING, 0);
-                    rv = interp_loop(real_player, b->thing, tmpfr, 0);
+                    rv = interp_loop(real_player, b->data.thing, tmpfr, 0);
 
                     return (rv != NULL);
                 }
@@ -199,9 +203,9 @@ eval_boolexp_rec(int descr, dbref player, struct boolexp *b, dbref thing)
                 /* Fall back to checking to see if the dbref has
                  * any 'relationship' with the calling player.
                  */
-                return (b->thing == player || b->thing == OWNER(player)
-                        || member(b->thing, CONTENTS(player))
-                        || b->thing == LOCATION(player));
+                return (b->data.thing == player || b->data.thing == OWNER(player)
+                        || member(b->data.thing, CONTENTS(player))
+                        || b->data.thing == LOCATION(player));
             case BOOLEXP_PROP:
                 /* Its for the best that only string props are supported,
                  * because in my code review of has_property I found
@@ -209,19 +213,31 @@ eval_boolexp_rec(int descr, dbref player, struct boolexp *b, dbref thing)
                  * set to an integer type when the lock itself is
                  * expecting a string.
                  */
-                if (PropType(b->prop_check) == PROP_STRTYP) {
+                if (PropType(b->data.prop_check) == PROP_STRTYP) {
                     if (OkObj(thing) &&
                         has_property_strict(descr, player, thing,
-                                            PropName(b->prop_check),
-                                            PropDataStr(b->prop_check), 0))
+                                            PropName(b->data.prop_check),
+                                            PropDataStr(b->data.prop_check), 0))
                         return 1;
 
                     if (has_property(descr, player, player,
-                                     PropName(b->prop_check),
-                                     PropDataStr(b->prop_check), 0))
+                                     PropName(b->data.prop_check),
+                                     PropDataStr(b->data.prop_check), 0))
                         return 1;
                 }
 
+                return 0;
+            case BOOLEXP_MPI:
+                if (b->data.mpi) {
+                    char buf[BUFFER_LEN];
+                    dbref real_player = (Typeof(player) == TYPE_PLAYER ||
+                            Typeof(player) == TYPE_THING) ? player :
+                            OWNER(player);
+                    const char *result = do_parse_mesg(descr, real_player,
+                            thing, b->data.mpi, "(Lock)", buf, sizeof(buf),
+                            MPI_ISPRIVATE | MPI_ISLOCK);
+                    return (result && *result && strcmp(result, "0") != 0);
+                }
                 return 0;
             default:
                 /* This should never happen */
@@ -275,7 +291,7 @@ eval_boolexp(int descr, dbref player, struct boolexp *b, dbref thing)
 
 /* See comment for this below at definition */
 static struct boolexp *parse_boolexp_E(int descr, const char **parsebuf,
-                                       dbref player, int dbloadp);
+                                       dbref player, int dbloadp, int depth);
 /* See comment for this below at definition */
 static struct boolexp *parse_boolprop(char *buf);
 
@@ -304,15 +320,21 @@ static struct boolexp *parse_boolprop(char *buf);
  * @param parsebuf the lock string
  * @param player the person or thing compiling the lock
  * @param dbloadp 1 if being called by the property disk loader, 0 otherwise
+ * @param depth the current recursion depth
  * @return struct boolexp whatever node was created or TRUE_BOOLEXP on failure
  */
 static struct boolexp *
-parse_boolexp_F(int descr, const char **parsebuf, dbref player, int dbloadp)
+parse_boolexp_F(int descr, const char **parsebuf, dbref player, int dbloadp, int depth)
 {
     struct boolexp *b;
     char *p;
     struct match_data md;
     char buf[BUFFER_LEN];
+
+    if (depth > MAX_LOCK_DEPTH) {
+        notifyf_nolisten(player, "Lock expression too deeply nested.");
+        return TRUE_BOOLEXP;
+    }
 
     skip_whitespace(parsebuf);
 
@@ -322,7 +344,7 @@ parse_boolexp_F(int descr, const char **parsebuf, dbref player, int dbloadp)
              * its interior expression.
              */
             (*parsebuf)++;
-            b = parse_boolexp_E(descr, parsebuf, player, dbloadp);
+            b = parse_boolexp_E(descr, parsebuf, player, dbloadp, depth+1);
             skip_whitespace(parsebuf);
 
             /* If the sub expression had a problem, or we're not presently
@@ -343,7 +365,7 @@ parse_boolexp_F(int descr, const char **parsebuf, dbref player, int dbloadp)
             (*parsebuf)++;
             b = alloc_boolnode();
             b->type = BOOLEXP_NOT;
-            b->sub1 = parse_boolexp_F(descr, parsebuf, player, dbloadp);
+            b->sub1 = parse_boolexp_F(descr, parsebuf, player, dbloadp, depth+1);
 
             if (b->sub1 == TRUE_BOOLEXP) {
                 free_boolnode(b);
@@ -353,6 +375,47 @@ parse_boolexp_F(int descr, const char **parsebuf, dbref player, int dbloadp)
             }
 
             /* break */
+        case MFUN_LEADCHAR:
+            {
+                int brace_count = 1;
+                const char *mpi_start = *parsebuf;
+                (*parsebuf)++;
+
+                while (**parsebuf != '\0' && brace_count > 0) {
+                    if (**parsebuf == MFUN_LEADCHAR) {
+                        brace_count++;
+                    } else if (**parsebuf == MFUN_ARGEND) {
+                        brace_count--;
+                    }
+                    (*parsebuf)++;
+                }
+
+                (*parsebuf)--;
+
+                if (brace_count > 0) {
+                    notifyf_nolisten(player, "Unclosed MPI expression in lock.");
+                    return TRUE_BOOLEXP;
+                }
+
+                size_t mpi_len = *parsebuf - mpi_start + 1;
+                if (mpi_len >= BUFFER_LEN) {
+                    notifyf_nolisten(player, "MPI expression too long in lock.");
+                    return TRUE_BOOLEXP;
+                }
+
+                strncpy(buf, mpi_start, mpi_len);
+                buf[mpi_len] = '\0';
+
+                b = alloc_boolnode();
+                b->type = BOOLEXP_MPI;
+                b->sub1 = b->sub2 = NULL;
+                b->data.thing = NOTHING;
+                b->data.prop_check = NULL;
+                b->data.mpi = alloc_string(buf);
+
+                (*parsebuf)++;
+                return b;
+            }
         default:
             /* must have hit an object ref */
             /* load the name into our buffer */
@@ -404,13 +467,13 @@ parse_boolexp_F(int descr, const char **parsebuf, dbref player, int dbloadp)
                 match_absolute(&md);
                 match_registered(&md);
                 match_player(&md);
-                b->thing = match_result(&md);
+                b->data.thing = match_result(&md);
 
-                if (b->thing == NOTHING) {
+                if (b->data.thing == NOTHING) {
                     notifyf(player, "I don't see %s here.", buf);
                     free_boolnode(b);
                     return TRUE_BOOLEXP;
-                } else if (b->thing == AMBIGUOUS) {
+                } else if (b->data.thing == AMBIGUOUS) {
                     notifyf(player, "I don't know which %s you mean!", buf);
                     free_boolnode(b);
                     return TRUE_BOOLEXP;
@@ -423,7 +486,7 @@ parse_boolexp_F(int descr, const char **parsebuf, dbref player, int dbloadp)
                     return TRUE_BOOLEXP;
                 }
 
-                b->thing = (dbref) atoi(buf + 1);
+                b->data.thing = (dbref) atoi(buf + 1);
                 return b;
             }
 
@@ -455,16 +518,22 @@ parse_boolexp_F(int descr, const char **parsebuf, dbref player, int dbloadp)
  * @param parsebuf the lock string
  * @param player the person or thing compiling the lock
  * @param dbloadp 1 if being called by the property disk loader, 0 otherwise
+ * @param depth the current recursion depth
  * @return struct boolexp whatever node was created or TRUE_BOOLEXP on failure
  */
 static struct boolexp *
-parse_boolexp_T(int descr, const char **parsebuf, dbref player, int dbloadp)
+parse_boolexp_T(int descr, const char **parsebuf, dbref player, int dbloadp, int depth)
 {
     struct boolexp *b;
     struct boolexp *b2;
 
+    if (depth > MAX_LOCK_DEPTH) {
+        notifyf_nolisten(player, "Lock expression too deeply nested.");
+        return TRUE_BOOLEXP;
+    }
+
     /* First process unary expressions if applicable */
-    if ((b = parse_boolexp_F(descr, parsebuf, player, dbloadp)) == TRUE_BOOLEXP) {
+    if ((b = parse_boolexp_F(descr, parsebuf, player, dbloadp, depth+1)) == TRUE_BOOLEXP) {
         /* This means there was an error */
         return b;
     } else {
@@ -481,7 +550,7 @@ parse_boolexp_T(int descr, const char **parsebuf, dbref player, int dbloadp)
             b2->sub1 = b;
 
             if ((b2->sub2 =
-                 parse_boolexp_T(descr, parsebuf, player, dbloadp)) ==
+                 parse_boolexp_T(descr, parsebuf, player, dbloadp, depth+1)) ==
                  TRUE_BOOLEXP) {
                 free_boolexp(b2);
                 return TRUE_BOOLEXP;
@@ -518,15 +587,21 @@ parse_boolexp_T(int descr, const char **parsebuf, dbref player, int dbloadp)
  * @param parsebuf the lock string
  * @param player the person or thing compiling the lock
  * @param dbloadp 1 if being called by the property disk loader, 0 otherwise
+ * @param depth the current recursion depth
  * @return struct boolexp whatever node was created or TRUE_BOOLEXP on failure
  */
 static struct boolexp *
-parse_boolexp_E(int descr, const char **parsebuf, dbref player, int dbloadp)
+parse_boolexp_E(int descr, const char **parsebuf, dbref player, int dbloadp, int depth)
 {
     struct boolexp *b;
     struct boolexp *b2;
 
-    if ((b = parse_boolexp_T(descr, parsebuf, player, dbloadp)) ==
+    if (depth > MAX_LOCK_DEPTH) {
+        notifyf_nolisten(player, "Lock expression too deeply nested.");
+        return TRUE_BOOLEXP;
+    }
+
+    if ((b = parse_boolexp_T(descr, parsebuf, player, dbloadp, depth+1)) ==
         TRUE_BOOLEXP) {
         /* This would have been an error */
         return b;
@@ -544,7 +619,7 @@ parse_boolexp_E(int descr, const char **parsebuf, dbref player, int dbloadp)
             b2->sub1 = b;
 
             if ((b2->sub2 =
-                 parse_boolexp_E(descr, parsebuf, player, dbloadp)) ==
+                 parse_boolexp_E(descr, parsebuf, player, dbloadp, depth+1)) ==
                  TRUE_BOOLEXP) {
                 free_boolexp(b2);
                 return TRUE_BOOLEXP;
@@ -582,7 +657,7 @@ parse_boolexp_E(int descr, const char **parsebuf, dbref player, int dbloadp)
 struct boolexp *
 parse_boolexp(int descr, dbref player, const char *buf, int dbloadp)
 {
-    return parse_boolexp_E(descr, &buf, player, dbloadp);
+    return parse_boolexp_E(descr, &buf, player, dbloadp, 0);
 }
 
 
@@ -653,8 +728,8 @@ parse_boolprop(char *buf)
     b = alloc_boolnode();
     b->type = BOOLEXP_PROP;
     b->sub1 = b->sub2 = 0;
-    b->thing = NOTHING;
-    b->prop_check = p = alloc_propnode(type);
+    b->data.thing = NOTHING;
+    b->data.prop_check = p = alloc_propnode(type);
     SetPDataStr(p, alloc_string(strval));
     SetPType(p, PROP_STRTYP);
     free(x);
@@ -688,11 +763,16 @@ size_boolexp(struct boolexp *b)
             case BOOLEXP_CONST:
                 break; /* CONST size is "baked into" sizeof *b */
             case BOOLEXP_PROP:
-                result += sizeof(*b->prop_check);
-                result += strlen(PropName(b->prop_check)) + 1;
+                result += sizeof(*b->data.prop_check);
+                result += strlen(PropName(b->data.prop_check)) + 1;
 
-                if (PropDataStr(b->prop_check))
-                    result += strlen(PropDataStr(b->prop_check)) + 1;
+                if (PropDataStr(b->data.prop_check))
+                    result += strlen(PropDataStr(b->data.prop_check)) + 1;
+                break;
+            case BOOLEXP_MPI:
+                if (b->data.mpi) {
+                    result += strlen(b->data.mpi) + 1;
+                }
                 break;
             default:
                 panic("size_boolexp(): bad type !");
@@ -726,7 +806,12 @@ free_boolexp(struct boolexp *b)
             case BOOLEXP_CONST:
                 break;
             case BOOLEXP_PROP:
-                free_propnode(b->prop_check);
+                free_propnode(b->data.prop_check);
+                break;
+            case BOOLEXP_MPI:
+                if (b->data.mpi) {
+                    free(b->data.mpi);
+                }
                 break;
         }
         free_boolnode(b);
@@ -807,25 +892,31 @@ unparse_boolexp1(dbref player, struct boolexp *b, short outer_type, int fullname
             case BOOLEXP_CONST:
                 if (fullname) {
                     char unparse_buf[BUFFER_LEN];
-                    unparse_object(player, b->thing, unparse_buf, sizeof(unparse_buf));
+                    unparse_object(player, b->data.thing, unparse_buf, sizeof(unparse_buf));
                     strcpyn(buftop, sizeof(boolexp_buf) - (size_t)(buftop - boolexp_buf),
                             unparse_buf);
                 } else {
                     snprintf(buftop, sizeof(boolexp_buf) - (size_t)(buftop - boolexp_buf), "#%d",
-                             b->thing);
+                             b->data.thing);
                 }
 
                 buftop += strlen(buftop);
                 break;
             case BOOLEXP_PROP:
                 strcpyn(buftop, sizeof(boolexp_buf) - (size_t)(buftop - boolexp_buf),
-                        PropName(b->prop_check));
+                        PropName(b->data.prop_check));
                 strcatn(buftop, sizeof(boolexp_buf) - (size_t)(buftop - boolexp_buf), (char[]){PROP_DELIMITER,0});
 
-                if (PropType(b->prop_check) == PROP_STRTYP)
+                if (PropType(b->data.prop_check) == PROP_STRTYP)
                     strcatn(buftop, sizeof(boolexp_buf) - (size_t)(buftop - boolexp_buf),
-                            PropDataStr(b->prop_check));
+                            PropDataStr(b->data.prop_check));
 
+                buftop += strlen(buftop);
+                break;
+            case BOOLEXP_MPI:
+                if (b->data.mpi) {
+                    strcpyn(buftop, sizeof(boolexp_buf) - (size_t)(buftop - boolexp_buf), b->data.mpi);
+                }
                 buftop += strlen(buftop);
                 break;
             default:
