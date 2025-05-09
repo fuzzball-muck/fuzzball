@@ -30,12 +30,6 @@
 #include "timequeue.h"
 #include "tune.h"
 
-/*
- * TODO: Figure out what "TQ_MUF_TREAD" is.  As far as I can tell,
- *       we never set it.  If it is unused, we should remove the reference
- *       to it -- it'll simplify a lot of if statements.
- */
-
 #define TQ_MUF_TYP 0    /* A MUF program on the timequeue */
 #define TQ_MPI_TYP 1    /* A MPI program on the timequeue */
 
@@ -43,8 +37,7 @@
 #define TQ_MUF_DELAY    0x1 /* MUF program waiting to start              */
 #define TQ_MUF_LISTEN   0x2 /* MUF program triggered by listen propqueue */
 #define TQ_MUF_READ     0x3 /* MUF program waiting for READ input        */
-#define TQ_MUF_TREAD    0x4 /* Old style reads?  Debugger?  Not sure     */
-#define TQ_MUF_TIMER    0x5 /* MUF Timer event                           */
+#define TQ_MUF_TIMER    0x4 /* MUF Timer event                           */
 
 #define TQ_MPI_QUEUE    0x0 /* MPI program in queue, default state       */
 #define TQ_MPI_DELAY    0x1 /* MPI program waiting to start              */
@@ -231,8 +224,7 @@ free_timenode(timequeue ptr)
             prog_clean(ptr->fr);
         }
 
-        if (ptr->typ == TQ_MUF_TYP && (ptr->subtyp == TQ_MUF_READ ||
-            ptr->subtyp == TQ_MUF_TREAD)) {
+        if (ptr->typ == TQ_MUF_TYP && ptr->subtyp == TQ_MUF_READ) {
             FLAGS(ptr->uid) &= ~INTERACTIVE;
             FLAGS(ptr->uid) &= ~READMODE;
             notify_nolisten(ptr->uid,
@@ -338,7 +330,7 @@ control_process(dbref player, int pid)
  * a wizard, then it will be immediately killed and this will return 0.
  *
  * The exception to this is for TQ_MUF_TYP events with a subtype of
- * TQ_MUF_READ, TQ_MUF_TREAD or TQ_MUF_TIMER,
+ * TQ_MUF_READ or TQ_MUF_TIMER,
  *
  * Timequeue entries are sorted by their 'when' time, with READ entries
  * being on the end of the queue.
@@ -405,8 +397,7 @@ add_event(int event_typ, int subtyp, int dtime, int descr, dbref player,
     /*
      * Check to see if we have room on the queue
      */
-    if (!(event_typ == TQ_MUF_TYP &&
-        (subtyp == TQ_MUF_TREAD || subtyp == TQ_MUF_TIMER))) {
+    if (!(event_typ == TQ_MUF_TYP && subtyp == TQ_MUF_TIMER)) {
         if (process_count > tp_max_process_limit ||
             (mypids > tp_max_plyr_processes && !Wizard(OWNER(player)))) {
             if (fr) {
@@ -713,8 +704,8 @@ handle_read_event(int descr, dbref player, const char *command)
     lastevent = NULL;
 
     while (ptr) {
-        if (ptr->typ == TQ_MUF_TYP && (ptr->subtyp == TQ_MUF_READ ||
-            ptr->subtyp == TQ_MUF_TREAD) && ptr->uid == player) {
+        if (ptr->typ == TQ_MUF_TYP && ptr->subtyp == TQ_MUF_READ
+            && ptr->uid == player) {
             break;
         }
 
@@ -819,16 +810,6 @@ handle_read_event(int descr, dbref player, const char *command)
             fr->argument.st[fr->argument.top].type = PROG_STRING;
             fr->argument.st[fr->argument.top++].data.string =
                 alloc_prog_string(DoNull(command));
-
-            if (typ == TQ_MUF_TREAD) {
-                if (nothing_flag) {
-                    fr->argument.st[fr->argument.top].type = PROG_INTEGER;
-                    fr->argument.st[fr->argument.top++].data.number = 0;
-                } else {
-                    fr->argument.st[fr->argument.top].type = PROG_INTEGER;
-                    fr->argument.st[fr->argument.top++].data.number = 1;
-                }
-            }
         }
 
         /*
@@ -852,8 +833,7 @@ handle_read_event(int descr, dbref player, const char *command)
          * If there are any, set the READ related flags.
          */
         while (ptr) {
-            if (ptr->typ == TQ_MUF_TYP && (ptr->subtyp == TQ_MUF_READ ||
-                ptr->subtyp == TQ_MUF_TREAD)) {
+            if (ptr->typ == TQ_MUF_TYP && ptr->subtyp == TQ_MUF_READ) {
                 if (ptr->uid == player) {
                     FLAGS(player) |= (INTERACTIVE | READMODE);
                 }
@@ -971,8 +951,6 @@ next_timequeue_event(time_t now)
                     temp.data.number = (int)event->when;
                     event->fr->timercount--;
                     muf_event_add(event->fr, event->called_data, &temp, 0);
-                } else if (event->subtyp == TQ_MUF_TREAD) {
-                    handle_read_event(event->descr, event->uid, NULL);
                 } else {
                     strcpyn(match_args, sizeof(match_args),
                             DoNull(event->called_data));
@@ -1403,7 +1381,6 @@ get_pidinfo(int pid, int pin)
         if (ptr->typ == TQ_MUF_TYP) {
             array_set_strkey_strval(&nw, "SUBTYPE", 
                                     (ptr->subtyp == TQ_MUF_READ) ? "READ" :
-                                    (ptr->subtyp == TQ_MUF_TREAD) ? "TREAD" :
                                     (ptr->subtyp == TQ_MUF_QUEUE) ? "QUEUE" :
                                     (ptr->subtyp == TQ_MUF_LISTEN) ? "LISTEN" :
                                     (ptr->subtyp == TQ_MUF_TIMER) ? "TIMER" :
@@ -1577,8 +1554,7 @@ dequeue_prog_real(dbref program, int killmode, const char *file, const int line)
      * in a READ state?  Just an educated guess. (tanabi)
      */
     for (ptr = tqhead; ptr; ptr = ptr->next) {
-        if (ptr->typ == TQ_MUF_TYP && (ptr->subtyp == TQ_MUF_READ ||
-            ptr->subtyp == TQ_MUF_TREAD)) {
+        if (ptr->typ == TQ_MUF_TYP && ptr->subtyp == TQ_MUF_READ) {
             FLAGS(ptr->uid) |= (INTERACTIVE | READMODE);
         }
     }
@@ -1657,8 +1633,7 @@ dequeue_process(int pid)
      * in a READ state?  Just an educated guess. (tanabi)
      */
     for (ptr = tqhead; ptr; ptr = ptr->next) {
-        if (ptr->typ == TQ_MUF_TYP && (ptr->subtyp == TQ_MUF_READ ||
-            ptr->subtyp == TQ_MUF_TREAD)) {
+        if (ptr->typ == TQ_MUF_TYP && ptr->subtyp == TQ_MUF_READ) {
             FLAGS(ptr->uid) |= (INTERACTIVE | READMODE);
         }
     }
