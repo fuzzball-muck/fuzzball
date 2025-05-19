@@ -2462,3 +2462,38 @@ has_flag(dbref ref, const char *flag)
 
     return result;
 }
+
+/**
+ * Helper function to collect object statistics.
+ *
+ * Populates the stats array with counts of owned objects: total, rooms, exits,
+ * things, programs, players, and garbage.
+ *
+ * @param player the player running the command
+ * @param ref the player dbref to query (or NOTHING for MUCK-wide stats)
+ * @param stats output array for the statistics
+ */
+void
+collect_dbstats(dbref player, dbref ref, int stats[7])
+{
+    int types[6] = {
+        TYPE_ROOM, TYPE_EXIT, TYPE_THING, TYPE_PROGRAM, TYPE_PLAYER, TYPE_GARBAGE
+    };
+
+    for (int i = 0; i < 7; i++) {
+        stats[i] = 0;
+    }
+
+    for (dbref i = 0; i < db_top; i++) {
+        if (ref == NOTHING || OWNER(i) == ref) {
+            for (int t = 0, n = ARRAYSIZE(types); t < n; t++) {
+                if (Typeof(i) == types[t]) {
+                    stats[t+1]++;
+                    stats[0]++;
+                    break;
+                }
+            }
+        }
+    }
+}
+
