@@ -1860,6 +1860,50 @@ extern dbref db_top;
 extern int recyclable;
 
 /**
+ * Clear a DB object
+ *
+ * This will take a ref and zero out the object, making it suitable for
+ * use (or reuse, in the case of recycled garbage).
+ *
+ * This does NOT clear out memory, so you SHOULD NOT use clear out an
+ * object with allocated memory -- this should only be used with objects
+ * that are brand new (i.e. freshly allocated) or that have been totally
+ * cleaned out already (garbage).
+ *
+ * Flags must be initialized after this is called.  Also, type-specific
+ * fields must also be initialized.  The object is not set dirty by this.
+ *
+ * @param i the dbref of the object to clear out.
+ */
+void db_clear_object(dbref i);
+
+/**
+ * Clones a thing.
+ *
+ * Uses an error parameter to communicate the reason for failure. This
+ * should be at least SMALL_BUFFER_LEN in size.
+ *
+ * @param thing the thing to clone
+ * @param player the player for determining the cloned thing's home
+ * @param copy_hidden_props if true, this copies hidden properties
+ * @param[out] error why the create failed
+ * @return the dbref of the cloned thing, or NOTHING if it failed.
+ */
+dbref clone_thing(dbref thing, dbref player, int copy_hidden_props, char *error);
+
+/**
+ * Helper function to collect object statistics.
+ *
+ * Populates the stats array with counts of owned objects: total, rooms, exits,
+ * things, programs, players, and garbage.
+ *
+ * @param player the player running the command
+ * @param ref the player dbref to query (or NOTHING for MUCK-wide stats)
+ * @param stats output array for the statistics
+ */
+void collect_dbstats(dbref player, dbref ref, int stats[7]);
+
+/**
  * Determine if 'who' controls object 'what'
  *
  * The logic here is relatively simple.  If 'what' is invalid, return
@@ -1967,38 +2011,6 @@ dbref create_room(dbref player, const char *name, dbref parent, char *error);
  * @return the dbref of the new thing, or NOTHING if it failed.
  */
 dbref create_thing(dbref player, const char *name, dbref location, char *error);
-
-/**
- * Clones a thing.
- *
- * Uses an error parameter to communicate the reason for failure. This
- * should be at least SMALL_BUFFER_LEN in size.
- *
- * @param thing the thing to clone
- * @param player the player for determining the cloned thing's home
- * @param copy_hidden_props if true, this copies hidden properties
- * @param[out] error why the create failed
- * @return the dbref of the cloned thing, or NOTHING if it failed.
- */
-dbref clone_thing(dbref thing, dbref player, int copy_hidden_props, char *error);
-
-/**
- * Clear a DB object
- *
- * This will take a ref and zero out the object, making it suitable for
- * use (or reuse, in the case of recycled garbage).
- *
- * This does NOT clear out memory, so you SHOULD NOT use clear out an
- * object with allocated memory -- this should only be used with objects
- * that are brand new (i.e. freshly allocated) or that have been totally
- * cleaned out already (garbage).
- *
- * Flags must be initialized after this is called.  Also, type-specific
- * fields must also be initialized.  The object is not set dirty by this.
- *
- * @param i the dbref of the object to clear out.
- */
-void db_clear_object(dbref i);
 
 /**
  * Free the memory for the whole database

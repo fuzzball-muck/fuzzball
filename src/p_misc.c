@@ -837,6 +837,7 @@ void
 prim_stats(PRIM_PROTOTYPE)
 {
     dbref ref;
+    int stats[7];
 
     CHECKOP(1);
     oper1 = POP();
@@ -847,32 +848,15 @@ prim_stats(PRIM_PROTOTYPE)
 
     ref = oper1->data.objref;
 
-    if (mlev < 3 && OWNER(ref) != player) {
+    if (mlev < 3 && ref != NOTHING && OWNER(ref) != player) {
         abort_interp("Requires Mucker Level 3.");
     }
 
+    collect_dbstats(player, ref, stats);
+
     CLEAR(oper1);
 
-    int types[6] = {
-        TYPE_ROOM, TYPE_EXIT, TYPE_THING, TYPE_PLAYER, TYPE_PROGRAM, TYPE_GARBAGE
-    };
-
-    int stats[7] = {0}; /* 0 is the total, 1-6 map to the types array. */
-
-    for (dbref i = 0; i < db_top; i++) {
-        if (ref == NOTHING || OWNER(i) == ref) {
-            for (int t = 0, n = ARRAYSIZE(types); t < n; t++) {
-                if (Typeof(i) == types[t]) {
-                    stats[t+1]++;
-                    stats[0]++;
-                    break;
-                }
-            }
-        }
-    }
-
     int n = ARRAYSIZE(stats);
-
     CHECKOFLOW(n);
     for (int i = 0; i < n; i++) {
         PushInt(stats[i]);
@@ -900,6 +884,7 @@ void
 prim_stats_array(PRIM_PROTOTYPE)
 {
     dbref ref;
+    int stats[7];
 
     CHECKOP(1);
     oper1 = POP();
@@ -910,34 +895,17 @@ prim_stats_array(PRIM_PROTOTYPE)
 
     ref = oper1->data.objref;
 
-    if (mlev < 3 && OWNER(ref) != player) {
+    if (mlev < 3 && ref != NOTHING && OWNER(ref) != player) {
         abort_interp("Requires Mucker Level 3.");
     }
 
+    collect_dbstats(player, ref, stats);
+
     CLEAR(oper1);
-
-    int types[6] = {
-        TYPE_ROOM, TYPE_EXIT, TYPE_THING, TYPE_PLAYER, TYPE_PROGRAM, TYPE_GARBAGE
-    };
-
-    int stats[7] = {0}; /* 0 is the total, 1-6 map to the types array. */
-
-    for (dbref i = 0; i < db_top; i++) {
-        if (ref == NOTHING || OWNER(i) == ref) {
-            for (int t = 0, n = ARRAYSIZE(types); t < n; t++) {
-                if (Typeof(i) == types[t]) {
-                    stats[t+1]++;
-                    stats[0]++;
-                    break;
-                }
-            }
-        }
-    }
 
     stk_array *nu = new_array_packed(0, fr->pinning);
 
     int n = ARRAYSIZE(stats);
-
     for (int i = n-1; i >= 0; i--) {
         array_set_intkey_intval(&nu, n-i-1, stats[i]);
     }
