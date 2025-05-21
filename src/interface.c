@@ -2663,62 +2663,71 @@ connect_console() {
 #endif
 
 /**
- * Create an IPv6 socket and bind it to the given port
+ * Create and configure a TCP socket for the specified address family and port.
  *
- * Uses the global 'bind_ipv6_address' for the address binding.
- * Does not 'listen' on the socket so that this function can be called
- * by a privileged user, then we can listen after we've dropped
- * privileges.
+ * Uses globals 'bind_ipv4_address' and 'bind_ipv6_address' for the address
+ * binding. Listening is deferred to listen_bound_sockets() to support binding
+ * to privileged ports before dropping privileges, via MUD_GID and MUD_ID.
  *
  * @private
- * @param port the port number
- * @return the socket
+ * @param port the port number to bind to
+ * @param family the address family
+ * @param bind_addr pointer to the bind address
+ * @param addr_len length of the bind address structure
+ * @return the socket descriptor
  */
 static int
-make_socket_v6(int port)
+make_socket(int port, sa_family_t family, void *bind_addr, socklen_t addr_len)
 {
     int s;
     int opt;
-    struct sockaddr_in6 server;
+    struct sockaddr_storage server;
 
-    /* Create the socket */
-    s = socket(AF_INET6, SOCK_STREAM, 0);
-
+    s = socket(family, SOCK_STREAM, 0);
     if (s < 0) {
         perror("creating stream socket");
         exit(3);
     }
 
-    /* Set all the different socket options */
     opt = 1;
-
     if (setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
         perror("setsockopt(SO_REUSEADDR)");
         exit(1);
     }
 
     opt = 1;
-
     if (setsockopt(s, SOL_SOCKET, SO_KEEPALIVE, &opt, sizeof(opt)) < 0) {
         perror("setsockopt(SO_KEEPALIVE)");
         exit(1);
     }
 
-    opt = 1;
-
-    if (setsockopt(s, IPPROTO_IPV6, IPV6_V6ONLY, &opt, sizeof(opt)) < 0) {
-        perror("setsockopt(IPV6_V6ONLY");
-        exit(1);
+    if (family == AF_INET6) {
+        opt = 1;
+        if (setsockopt(s, IPPROTO_IPV6, IPV6_V6ONLY, &opt, sizeof(opt)) < 0) {
+            perror("setsockopt(IPV6_V6ONLY)");
+            exit(1);
+        }
     }
 
-    /* Blank out the server structure */
     memset(&server, 0, sizeof(server));
-    server.sin6_family = AF_INET6;
-    server.sin6_addr = bind_ipv6_address;
-    server.sin6_port = htons(port);
 
-    /* Bind it */
-    if (bind(s, (struct sockaddr *) &server, sizeof(server))) {
+    if (family == AF_INET) {
+        struct sockaddr_in *sin = (struct sockaddr_in *)&server;
+        sin->sin_family = family;
+        sin->sin_addr = *(struct in_addr *)bind_addr;
+        sin->sin_port = htons(port);
+    } else if (family == AF_INET6) {
+        struct sockaddr_in6 *sin6 = (struct sockaddr_in6 *)&server;
+        sin6->sin6_family = family;
+        sin6->sin6_addr = *(struct in6_addr *)bind_addr;
+        sin6->sin6_port = htons(port);
+    } else {
+        fprintf(stderr, "unsupported address family %d\n", family);
+        close(s);
+        exit(4);
+    }
+
+    if (bind(s, (struct sockaddr *)&server, addr_len) < 0) {
         perror("binding stream socket");
         close(s);
         exit(4);
@@ -2726,15 +2735,12 @@ make_socket_v6(int port)
 
     make_cloexec(s);
 
-    /*
-     * We separate the binding of the socket and the listening on the socket
-     * to support binding to privileged ports, then dropping privileges
-     * before listening.  Listening now happens in listen_bound_sockets(),
-     * called during shovechars().  This function is now called before the
-     * checks for MUD_GID and MUD_ID in main().
-     */
     return s;
 }
+
+/*
+ * @TODO addrout and addrout_v6 should be combined.
+ */
 
 /**
  * Translate IPV6 address 'a' from addr struct to text.
@@ -2816,70 +2822,6 @@ addrout_v6(in_port_t lport, struct in6_addr *a, in_port_t prt)
 
     return buf;
 }
-
-/**
- * Accept an IPv6 connection
- *
- * Returns either a newly allocated struct descriptor_data if we were
- * able to accept() from sock_ or NULL if there was nothing to accept.
- * (Or theoretically on error -- errno would be set).
- *
- * @private
- * @param port the port number we accepted this connection from
- * @param sock_ the socket to accept the connection from
- * @param is_ssl boolean, if true, sock_ is an SSL socket
- * @return either a descriptor_data structure or NULL if nothing to accept
- */
-static struct descriptor_data *
-new_connection_v6(in_port_t port, int sock_, int is_ssl)
-{
-    int newsock;
-
-    struct sockaddr_in6 addr;
-    socklen_t addr_len;
-    char hostname[SMALL_BUFFER_LEN];
-    size_t hostlen;
-
-    addr_len = (socklen_t) sizeof(addr);
-    newsock = accept(sock_, (struct sockaddr *) &addr, &addr_len);
-
-    if (newsock < 0) {
-        return 0;
-    } else {
-#ifdef F_SETFD
-        fcntl(newsock, F_SETFD, FD_CLOEXEC);
-#endif
-        hostlen = strcpyn(hostname, sizeof(hostname),
-                          addrout_v6(port, &(addr.sin6_addr), addr.sin6_port));
-
-        /*
-         * IPv6 hostnames sometimes have newlines as a terminator it seems.
-         * This makes sure that:
-         *
-         * a) there's no newline or \r at the end of the hostname
-         * b) the hostname is long enough for this comparison to not crash
-         *    something.
-         *
-         * Reported by PR #670 in Github
-         */
-        if ((hostlen > 2) && (hostname[hostlen-2] == '\r')) {
-            hostname[hostlen-2] = 0;
-        } else if ((hostlen > 1) && (hostname[hostlen-1] == '\n')) {
-            hostname[hostlen-1] = 0;
-        }
-
-        log_status("ACCEPT: %s on descriptor %d", hostname, newsock);
-        log_status("CONCOUNT: There are now %d open connections.", ++ndescriptors);
-        return initializesock(newsock, newsock, hostname, is_ssl, 0);
-    }
-}
-
-/*
- * @TODO addrout and make_socket are almost identical to their IPv6
- *       counterparts.  Should we make just 1 addrout and 1 make_socket,
- *       and have ipv6 vs ipv4 as a boolean, to reduce duplicate code?
- *       Also new_connection / new_connection_v6
- */
 
 /**
  * Translate IPv4 address 'a' from addr struct to text.
@@ -2966,63 +2908,74 @@ addrout(in_port_t lport, in_addr_t a, in_port_t prt)
 }
 
 /**
- * Create an IPv4 socket and bind it to the given port
+ * Accept a connection for a specific address family.
  *
- * Uses the global 'bind_ipv4_address' for the address binding.
- * Does not 'listen' on the socket so that this function can be called
- * by a privileged user, then we can listen after we've dropped
- * privileges.
+ * Returns either a newly allocated struct descriptor_data if we were
+ * able to accept() from sock_ or NULL if there was nothing to accept.
+ * (Or theoretically on error -- errno would be set).
  *
  * @private
- * @param port the port number
- * @return the socket
+ * @param port the port number we accepted this connection from
+ * @param sock_ the socket to accept the connection from
+ * @param is_ssl boolean, if true, sock_ is an SSL socket
+ * @param family the address family
+ * @return either a descriptor_data structure or NULL if nothing to accept
  */
-static int
-make_socket(int port)
+static struct descriptor_data *
+new_connection(in_port_t port, int sock_, bool is_ssl, sa_family_t family)
 {
-    int s;
-    int opt;
-    struct sockaddr_in server;
+    int newsock;
 
-    s = socket(AF_INET, SOCK_STREAM, 0);
+    struct sockaddr_storage addr;
+    socklen_t addr_len = sizeof(addr);
 
-    if (s < 0) {
-        perror("creating stream socket");
-        exit(3);
+    char hostname[SMALL_BUFFER_LEN];
+    size_t hostlen = 0;
+
+    newsock = accept(sock_, (struct sockaddr *)&addr, &addr_len);
+
+    if (newsock < 0) {
+        return NULL;
+    } else {
+#ifdef F_SETFD
+        fcntl(newsock, F_SETFD, FD_CLOEXEC);
+#endif
+
+        if (family == AF_INET) {
+            struct sockaddr_in *s_in = (struct sockaddr_in *)&addr;
+            hostlen = strcpyn(hostname, sizeof(hostname),
+                    addrout(port, s_in->sin_addr.s_addr, s_in->sin_port));
+        } else if (family == AF_INET6) {
+            struct sockaddr_in6 *s_in6 = (struct sockaddr_in6 *)&addr;
+            hostlen = strcpyn(hostname, sizeof(hostname),
+                    addrout_v6(port, &(s_in6->sin6_addr), s_in6->sin6_port));
+
+            /*
+             * IPv6 hostnames sometimes have newlines as a terminator it seems.
+             * This makes sure that:
+             *
+             * a) there's no newline or \r at the end of the hostname
+             * b) the hostname is long enough for this comparison to not crash
+             * something.
+             *
+             * Reported by PR #670 in Github
+             */
+            if ((hostlen > 2) && (hostname[hostlen-2] == '\r')) {
+                hostname[hostlen-2] = '\0';
+            } else if ((hostlen > 1) && (hostname[hostlen-1] == '\n')) {
+                hostname[hostlen-1] = '\0';
+            }
+        } else {
+            fprintf(stderr, "unsupported address family %d\n", family);
+            close(newsock);
+            return NULL;
+        }
+
+        log_status("ACCEPT: %s on descriptor %d", hostname, newsock);
+        log_status("CONCOUNT: There are now %d open connections.", ++ndescriptors);
+
+        return initializesock(newsock, newsock, hostname, is_ssl, 0);
     }
-
-    opt = 1;
-    if (setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
-        perror("setsockopt");
-        exit(1);
-    }
-
-    opt = 1;
-    if (setsockopt(s, SOL_SOCKET, SO_KEEPALIVE, &opt, sizeof(opt)) < 0) {
-        perror("setsockopt");
-        exit(1);
-    }
-
-    server.sin_family = AF_INET;
-    server.sin_addr.s_addr = bind_ipv4_address;
-    server.sin_port = htons(port);
-
-    if (bind(s, (struct sockaddr *) &server, sizeof(server))) {
-        perror("binding stream socket");
-        close(s);
-        exit(4);
-    }
-
-    make_cloexec(s);
-
-    /*
-     * We separate the binding of the socket and the listening on the socket
-     * to support binding to privileged ports, then dropping privileges
-     * before listening.  Listening now happens in listen_bound_sockets(),
-     * called during shovechars().  This function is now called before the
-     * checks for MUD_GID and MUD_ID in main().
-     */
-    return s;
 }
 
 /**
@@ -3052,45 +3005,6 @@ static void listen_bound_sockets()
         listen(ssl_sock_v6[i], 5);
     }
 #endif
-}
-
-/**
- * Accept an IPv4 connection
- *
- * Returns either a newly allocated struct descriptor_data if we were
- * able to accept() from sock_ or NULL if there was nothing to accept.
- * (Or theoretically on error -- errno would be set).
- *
- * @private
- * @param port the port number we accepted this connection from
- * @param sock_ the socket to accept the connection from
- * @param is_ssl boolean, if true, sock_ is an SSL socket
- * @return either a descriptor_data structure or NULL if nothing to accept
- */
-static struct descriptor_data *
-new_connection(in_port_t port, int sock_, int is_ssl)
-{
-    int newsock;
-    struct sockaddr_in addr;
-    socklen_t addr_len;
-    char hostname[SMALL_BUFFER_LEN];
-
-    addr_len = (socklen_t) sizeof(addr);
-    newsock = accept(sock_, (struct sockaddr *) &addr, &addr_len);
-
-    if (newsock < 0) {
-        return 0;
-    } else {
-#ifdef F_SETFD
-        fcntl(newsock, F_SETFD, 1);
-#endif
-        strcpyn(hostname, sizeof(hostname),
-                addrout(port, addr.sin_addr.s_addr, addr.sin_port));
-        log_status("ACCEPT: %s on descriptor %d", hostname, newsock);
-        log_status("CONCOUNT: There are now %d open connections.",
-                   ++ndescriptors);
-        return initializesock(newsock, newsock, hostname, is_ssl, 0);
-    }
 }
 
 /**
@@ -4414,7 +4328,7 @@ shovechars()
             /* Iterate over sockets and handle new connections */
             for (int i = 0; i < numsocks; i++) {
                 if (FD_ISSET(sock[i], &input_set)) {
-                    if (!(newd = new_connection(listener_port[i], sock[i], 0))) {
+                    if (!(newd = new_connection(listener_port[i], sock[i], false, AF_INET))) {
 #ifndef WIN32
                         if (errno && errno != EINTR && errno != EMFILE && errno != ENFILE) {
                             perror("new_connection");
@@ -4435,7 +4349,7 @@ shovechars()
             /* Iterate over sockets and handle new connections */
             for (int i = 0; i < numsocks_v6; i++) {
                 if (FD_ISSET(sock_v6[i], &input_set)) {
-                    if (!(newd = new_connection_v6(listener_port[i], sock_v6[i], 0))) {
+                    if (!(newd = new_connection(listener_port[i], sock_v6[i], false, AF_INET6))) {
 #ifndef WIN32
                         if (errno && errno != EINTR && errno != EMFILE && errno != ENFILE) {
                             perror("new_connection");
@@ -4457,7 +4371,7 @@ shovechars()
             /* Iterate over sockets and handle new connections */
             for (int i = 0; i < ssl_numsocks; i++) {
                 if (FD_ISSET(ssl_sock[i], &input_set)) {
-                    if (!(newd = new_connection(ssl_listener_port[i], ssl_sock[i], 1))) {
+                    if (!(newd = new_connection(ssl_listener_port[i], ssl_sock[i], true, AF_INET))) {
 # ifndef WIN32
                         if (errno && errno != EINTR && errno != EMFILE && errno != ENFILE) {
                             perror("new_connection");
@@ -4496,7 +4410,7 @@ shovechars()
             /* Iterate over sockets and handle new connections */
             for (int i = 0; i < ssl_numsocks_v6; i++) {
                 if (FD_ISSET(ssl_sock_v6[i], &input_set)) {
-                    if (!(newd = new_connection_v6(ssl_listener_port[i], ssl_sock_v6[i], 1))) {
+                    if (!(newd = new_connection(ssl_listener_port[i], ssl_sock_v6[i], true, AF_INET6))) {
 # ifndef WIN32
                         if (errno && errno != EINTR && errno != EMFILE && errno != ENFILE) {
                             perror("new_connection");
@@ -6993,26 +6907,30 @@ main(int argc, char **argv)
      */
 
     for (unsigned int i = 0; i < numports; i++) {
-        sock[i] = make_socket(listener_port[i]);
+        sock[i] = make_socket(listener_port[i], AF_INET, &bind_ipv4_address,
+                sizeof(struct sockaddr_in));
         update_max_descriptor(sock[i]);
         numsocks++;
     }
 
     for (unsigned int i = 0; i < numports; i++) {
-        sock_v6[i] = make_socket_v6(listener_port[i]);
+        sock_v6[i] = make_socket(listener_port[i], AF_INET6, &bind_ipv6_address,
+                sizeof(struct sockaddr_in6));
         update_max_descriptor(sock_v6[i]);
         numsocks_v6++;
     }
 
 #ifdef USE_SSL
     for (unsigned int i = 0; i < ssl_numports; i++) {
-        ssl_sock[i] = make_socket(ssl_listener_port[i]);
+        ssl_sock[i] = make_socket(ssl_listener_port[i], AF_INET, &bind_ipv4_address,
+                sizeof(struct sockaddr_in));
         update_max_descriptor(ssl_sock[i]);
         ssl_numsocks++;
     }
 
     for (unsigned int i = 0; i < ssl_numports; i++) {
-        ssl_sock_v6[i] = make_socket_v6(ssl_listener_port[i]);
+        ssl_sock_v6[i] = make_socket(ssl_listener_port[i], AF_INET6, &bind_ipv6_address,
+                                 sizeof(struct sockaddr_in6));
         update_max_descriptor(ssl_sock_v6[i]);
         ssl_numsocks_v6++;
     }
