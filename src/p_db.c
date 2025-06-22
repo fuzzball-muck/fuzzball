@@ -1259,12 +1259,14 @@ prim_roomp(PRIM_PROTOTYPE)
         abort_interp("Invalid argument type.");
     }
 
-    if (!valid_object(oper1) && !is_home(oper1)) {
+    if (is_home(oper1)) {
+        /* HOME per doc explicitly returns 1 */
+        result = 1;
+    } else if (!valid_object(oper1)) {
         result = 0;
     } else {
         ref = oper1->data.objref;
         CHECKREMOTE(ref);
-
         result = (Typeof(ref) == TYPE_ROOM);
     }
 
