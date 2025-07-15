@@ -9,6 +9,7 @@
 #define CURRENTLY_UNAVAILABLE "If you see this message, visit us at https://github.com/fuzzball-muck/fuzzball and open an issue. We'd be happy to fix it, but we would like more detail on how it is being used."
 
 #define pid_t		int
+#define sa_family_t	ADDRESS_FAMILY
 #define socklen_t	int
 #define ssize_t		long
 
