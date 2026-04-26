@@ -311,9 +311,9 @@ void prim_descr_user(PRIM_PROTOTYPE);
  * Implementation of MUF DESCRIDLE
  *
  * Consumes a descriptor number and returns how many seconds it has been idle.
- * 
+ *
  * @see pdescridle
- * 
+ *
  * @param player the player running the MUF program
  * @param program the program being run
  * @param mlev the effective MUCKER level
@@ -331,7 +331,7 @@ void prim_descr_idle(PRIM_PROTOTYPE);
  * that cannot be determined.
  *
  * @see least_idle_player_descr
- * 
+ *
  * @param player the player running the MUF program
  * @param program the program being run
  * @param mlev the effective MUCKER level
@@ -347,9 +347,9 @@ void prim_descr_notify(PRIM_PROTOTYPE);
  *
  * Consumes a dbref and returns the most idle descriptor number, or -1 if
  * that cannot be determined.
- * 
+ *
  * @see pdescrdbref
- * 
+ *
  * @param player the player running the MUF program
  * @param program the program being run
  * @param mlev the effective MUCKER level
@@ -412,7 +412,7 @@ void prim_descr_most_idle(PRIM_PROTOTYPE);
 void prim_descr_securep(PRIM_PROTOTYPE);
 
 /**
- * Implementation of MUF DESCRBUFSIZE 
+ * Implementation of MUF DESCRBUFSIZE
  *
  * Consumes a descriptor number and returns the number of bytes available.
  *

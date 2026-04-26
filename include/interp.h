@@ -592,7 +592,7 @@ do { \
  * on the frame structure.
  */
 #define CHECKOFLOW(x) do { \
-        if((*top + (x - 1)) >= STACK_SIZE) \
+        if ((*top + (x - 1)) >= STACK_SIZE) \
             abort_interp("Stack Overflow!"); \
         fr->expect_push_to = *top + (x); \
     } while (0)
@@ -610,7 +610,7 @@ do { \
  * on the frame structure.
  */
 #define CHECKOFLOW(x) do { \
-        if((*top + (x - 1)) >= STACK_SIZE) \
+        if ((*top + (x - 1)) >= STACK_SIZE) \
             abort_interp("Stack Overflow!"); \
     } while (0)
 #endif

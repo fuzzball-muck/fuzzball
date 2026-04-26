@@ -13,6 +13,7 @@
 #include <time.h>
 
 #include "config.h"
+#include "flags.h"
 #include "mcp.h"
 
 /**
@@ -32,7 +33,7 @@
  */
 extern char match_args[BUFFER_LEN];
 
-/** 
+/**
  * @var match_cmdname
  *      The super not threadsafe way the user typed in command is passed
  *      from the interp loop to other functions.
@@ -359,69 +360,6 @@ extern char match_cmdname[BUFFER_LEN];
 
 #define DB_PARMSINFO     0x0001 /**< legacy database value */
 
-#define TYPE_ROOM           0x0 /**< room bit */
-#define TYPE_THING          0x1 /**< thing bit */
-#define TYPE_EXIT           0x2 /**< exit bit */
-#define TYPE_PLAYER         0x3 /**< player bit */
-#define TYPE_PROGRAM        0x4 /**< program bit */
-
-/* 0x5 available */
-
-#define TYPE_GARBAGE        0x6 /**< garbage bit */
-#define NOTYPE              0x7 /**< no particular type */
-#define TYPE_MASK           0x7 /**< bitmask for all types */
-
-/* 0x8 available */
-
-#define WIZARD             0x10 /**< gets automatic control */
-#define LINK_OK            0x20 /**< anybody can link to this */
-#define DARK               0x40 /**< contents of room are not printed */
-#define INTERNAL           0x80 /**< internal-use-only flag */
-#define STICKY            0x100 /**< this object goes home when dropped */
-#define BUILDER           0x200 /**< this player can use construction commands */
-#define CHOWN_OK          0x400 /**< this object can be \@chowned, or
-                                 *   this player can see color
-                                 */
-#define JUMP_OK           0x800 /**< A room which can be jumped from, or
-                                 *   a player who can be jumped to
-                                 */
-/* 0x1000 available */
-/* 0x2000 available */
-
-#define KILL_OK          0x4000 /**< Kill_OK bit.  Means you can be killed. */
-#define GUEST            0x8000 /**< Guest flag */
-#define HAVEN           0x10000 /**< can't kill here */
-#define ABODE           0x20000 /**< can set home here */
-#define MUCKER          0x40000 /**< programmer */
-#define QUELL           0x80000 /**< When set, wiz-perms are turned off */
-#define SMUCKER        0x100000 /**< second programmer bit.  For levels */
-#define INTERACTIVE    0x200000 /**< internal: player in MUF editor */
-#define OBJECT_CHANGED 0x400000 /**< internal: set when an object is dbdirty()ed */
-
-/* 0x800000 available */
-
-#define VEHICLE       0x1000000 /**< Vehicle flag */
-#define ZOMBIE        0x2000000 /**< Zombie flag */
-#define LISTENER      0x4000000 /**< internal: listener flag */
-#define XFORCIBLE     0x8000000 /**< externally forcible flag */
-#define READMODE     0x10000000 /**< internal: when set, player is in a READ */
-#define SANEBIT      0x20000000 /**< internal: used to check db sanity */
-#define YIELD        0x40000000 /**< Yield flag */
-#define OVERT        0x80000000 /**< Overt flag */
-
-/** what flags to NOT dump to disk. */
-#define DUMP_MASK   (INTERACTIVE | OBJECT_CHANGED | LISTENER | READMODE | SANEBIT)
-
-/**
- * Returns the TYPE_ value of 'x'
- *
- * Does not check to see if 'x' is a valid ref.
- *
- * @param x the db object to get type of
- * @return a type valud - one of the TYPE_* constants
- */
-#define Typeof(x)   (x == HOME ? TYPE_ROOM : (FLAGS(x) & TYPE_MASK))
-
 #define GOD         ((dbref)  1)    /**< head player */
 #define NOTHING     ((dbref) -1)    /**< null dbref */
 #define AMBIGUOUS   ((dbref) -2)    /**< multiple possibilities, for matchers */
@@ -459,7 +397,7 @@ extern char match_cmdname[BUFFER_LEN];
  * @param d the object to check
  * @return true if d is a valid and non-garbage object, false otherwise
  */
-#define OkObj(d)        (ObjExists(d) && Typeof(d) != TYPE_GARBAGE)
+#define OkObj(d)        (ObjExists(d) && OBJECT_TYPE(d) != TYPE_GARBAGE)
 
 #ifdef GOD_PRIV
 /**
@@ -474,44 +412,6 @@ extern char match_cmdname[BUFFER_LEN];
 #endif
 
 /**
- * Calculates the "raw" MUCKER level of an object, not counting WIZARD bit
- *
- * This will be a number between 0 and 3 inclusive.  'x' is not sanity
- * checked to be sure it exists.
- *
- * @param x the object to calculate MUCKER level for.
- * @return an integer between 0 and 3 inclusive
- */
-#define MLevRaw(x)  (((FLAGS(x) & MUCKER)? 2:0) + ((FLAGS(x) & SMUCKER)? 1:0))
-
-/**
- * Calculates the MUCKER level of an object, taking into account WIZARD bit
- *
- * This will be a number between 0 and 4 inclusive.  'x' is not sanity checked
- * to be sure it exists.
- *
- * @param x the object to calculate MUCKER level for.
- * @return an integer between 0 and 4 inclusive
- */
-#define MLevel(x)   (((FLAGS(x) & WIZARD) && \
-                    ((FLAGS(x) & MUCKER) || (FLAGS(x) & SMUCKER)))? 4 : \
-                    (((FLAGS(x) & MUCKER)? 2 : 0) + \
-                    ((FLAGS(x) & SMUCKER)? 1 : 0)))
-
-/**
- * Priority level -- used for exit matching
- *
- * The higher the priority, the more likely it will match.  This does not
- * check to see if 'x' is a valid object.
- *
- * @param x the ref to get priority for
- * @return a numeric priority level
- */
-#define PLevel(x)   ((FLAGS(x) & (MUCKER | SMUCKER))? \
-                    (((FLAGS(x) & MUCKER)? 2:0) + ((FLAGS(x) & SMUCKER)? 1:0) + 1) : \
-                    ((FLAGS(x) & ABODE)? 0 : 1))
-
-/**
  * Check to see if object 'x' is dark
  *
  * Does not check to see if 'x' is valid first.
@@ -519,7 +419,7 @@ extern char match_cmdname[BUFFER_LEN];
  * @param x the dbref to check
  * @return boolean true if x is dark, false otherwise
  */
-#define Dark(x)         ((FLAGS(x) & DARK) != 0)
+#define Dark(x)         FLAG_CHECK(x, 'D')
 
 /**
  * Check to see if object 'x' is an unquelled WIZARD
@@ -529,7 +429,7 @@ extern char match_cmdname[BUFFER_LEN];
  * @param x the dbref to check
  * @return boolean true if x is an unquelled wizard, false otherwise
  */
-#define Wizard(x)       ((FLAGS(x) & WIZARD) != 0 && (FLAGS(x) & QUELL) == 0)
+#define Wizard(x)       (FLAG_CHECK(x, 'W') && !FLAG_CHECK(x, 'Q'))
 
 /**
  * Check to see if object 'x' is a WIZARD
@@ -539,17 +439,7 @@ extern char match_cmdname[BUFFER_LEN];
  * @param x the dbref to check
  * @return boolean true if x is a wizard, false otherwise
  */
-#define TrueWizard(x)   ((FLAGS(x) & WIZARD) != 0)
-
-/**
- * Check to see if object 'x' is a MUCKER
- *
- * Does not check to see if 'x' is valid first.
- *
- * @param x the dbref to check
- * @return boolean true if x is a MUCKER
- */
-#define Mucker(x)       (MLevel(x) != 0)
+#define TrueWizard(x)   FLAG_CHECK(x, 'W')
 
 /**
  * Check to see if object 'x' can build
@@ -560,7 +450,7 @@ extern char match_cmdname[BUFFER_LEN];
  * @param x the dbref to check
  * @return true if x can build
  */
-#define Builder(x)      ((FLAGS(x) & (WIZARD|BUILDER)) != 0)
+#define Builder(x)      (FLAG_CHECK(x, 'B') || FLAG_CHECK(x, 'W'))
 
 /**
  * Check to see if object 'x' can be linked to
@@ -574,8 +464,8 @@ extern char match_cmdname[BUFFER_LEN];
  * @return true if x can be linked to
  */
 #define Linkable(x)     ((x) == HOME || \
-                        (((Typeof(x) == TYPE_ROOM || Typeof(x) == TYPE_THING) ? \
-                        (FLAGS(x) & ABODE) : (FLAGS(x) & LINK_OK)) != 0))
+                        ((OBJECT_TYPE(x) == TYPE_ROOM || OBJECT_TYPE(x) == TYPE_THING) ? \
+                         FLAG_CHECK(x, 'A') : FLAG_CHECK(x, 'L')))
 
 /**
  * Set MUCKER level
@@ -608,9 +498,9 @@ extern char match_cmdname[BUFFER_LEN];
  * @return boolean true if x is a guest
  */
 #ifdef GOD_PRIV
-#define ISGUEST(x)  ((FLAGS(x) & GUEST) && !God(x))
+#define ISGUEST(x)  (FLAG_CHECK(x, 'G') && !God(x))
 #else /* !defined(GOD_PRIV) */
-#define ISGUEST(x)  ((FLAGS(x) & GUEST) && (FLAGS(x) & TYPE_PLAYER) && !TrueWizard(x))
+#define ISGUEST(x)  (FLAG_CHECK(x, 'G') && OBJECT_TYPE(x) == TYPE_PLAYER && !TrueWizard(x))
 #endif /* GOD_PRIV */
 
 /**
@@ -625,7 +515,7 @@ extern char match_cmdname[BUFFER_LEN];
  * @param x the potential guest ref
  */
 #define NOGUEST(_cmd,x) \
-    if(ISGUEST(x)) {   \
+    if (ISGUEST(x)) {   \
         log_status("Guest %s(#%d) failed attempt to %s.\n",NAME(x),x,_cmd); \
         notifyf_nolisten(x, "Guests are not allowed to %s.\r", _cmd); \
         return; \
@@ -644,7 +534,7 @@ extern char match_cmdname[BUFFER_LEN];
  * @param x the ref of the person to be notified on failure.
  */
 #define NOFORCE(_cmd, x) \
-    if(force_level) {   \
+    if (force_level) {   \
         notifyf_nolisten(x, "You can't use %s from a @force or {force}.\r", _cmd); \
         return; \
     }
@@ -666,7 +556,7 @@ extern char match_cmdname[BUFFER_LEN];
  * @param player the player to check
  * @return some integer MUCKER level
  */
-# define TUNE_MLEV(player)      (God(player) ? MLEV_GOD : MLevel(player))
+# define TUNE_MLEV(player)      (God(player) ? MLEV_GOD : OBJECT_EFFECTIVE_MLEVEL(player))
 #else
 # define MLEV_GOD               MLEV_WIZARD
 
@@ -676,7 +566,7 @@ extern char match_cmdname[BUFFER_LEN];
  * @param player the player to check
  * @return some integer MUCKER level
  */
-# define TUNE_MLEV(player)      MLevel(player)
+# define TUNE_MLEV(player)      OBJECT_EFFECTIVE_MLEVEL(player)
 #endif
 
 /**
@@ -689,7 +579,7 @@ extern char match_cmdname[BUFFER_LEN];
  * @param x the player to check a builder bit for
  */
 #define BUILDERONLY(_cmd,x) \
-    if(!Builder(x)) {   \
+    if (!Builder(x)) {   \
         notifyf_nolisten(x, "Only builders are allowed to %s.\r", _cmd); \
         return; \
     }
@@ -704,7 +594,7 @@ extern char match_cmdname[BUFFER_LEN];
  * @param x the player to check a MUCKER bit for
  */
 #define MUCKERONLY(_cmd,x) \
-    if(!Mucker(x)) {   \
+    if (OBJECT_MLEVEL(x) == 0) {   \
         notifyf_nolisten(x, "Only programmers are allowed to %s.\r", _cmd); \
         return; \
     }
@@ -719,7 +609,7 @@ extern char match_cmdname[BUFFER_LEN];
  * @param x the player to check a player bit for
  */
 #define PLAYERONLY(_cmd,x) \
-    if(Typeof(x) != TYPE_PLAYER) {   \
+    if (OBJECT_TYPE(x) != TYPE_PLAYER) {   \
         notifyf_nolisten(x, "Only players are allowed to %s.\r", _cmd); \
         return; \
     }
@@ -734,7 +624,7 @@ extern char match_cmdname[BUFFER_LEN];
  * @param x the player to check a wizard bit for
  */
 #define WIZARDONLY(_cmd,x) \
-    if(!Wizard(OWNER(x))) {   \
+    if (!Wizard(OWNER(x))) {   \
         notifyf_nolisten(x, "You are not allowed to %s.\r", _cmd); \
         return; \
     }
@@ -762,7 +652,7 @@ extern char match_cmdname[BUFFER_LEN];
  * @param x the player to check if is a superuser
  */
 #define GODONLY(_cmd,x) \
-    if(!God(x)) {   \
+    if (!God(x)) {   \
         notifyf_nolisten(x, "You are not allowed to %s.\r", _cmd); \
         return; \
     }
@@ -774,7 +664,7 @@ extern char match_cmdname[BUFFER_LEN];
  * Object lists are "connected" via the ->next property on a dbref-based
  * linked list.  This does a for loop to traverse the entire linked list.
  *
- * Use this in place of 'for(...)'
+ * Use this in place of 'for (...)'
  *
  * @param var the variable to use as an iterator - dbref will be stored here
  * @param first the starting dbref
@@ -793,8 +683,6 @@ extern char match_cmdname[BUFFER_LEN];
  */
 #define PUSH(thing, locative) \
     {DBSTORE((thing), next, (locative)); (locative) = (thing);}
-
-typedef long object_flag_type;  /**< Object flag type - need 32+ bits */
 
 /**
  * Each type of object may have a _specific structure associated with it.
@@ -850,7 +738,7 @@ struct program_specific {
  */
 #define FREE_PROGRAM_SP(x)      { \
     dbref foo = x; \
-    if(PROGRAM_SP(foo)) \
+    if (PROGRAM_SP(foo)) \
         free(PROGRAM_SP(foo)); \
     PROGRAM_SP(foo) = (struct program_specific *)NULL; \
 }
@@ -1028,7 +916,7 @@ struct program_specific {
  *
  * @param x the program to increment
  * @return the resultant value
- */ 
+ */
 #define PROGRAM_INC_INSTANCES(x)    (PROGRAM_SP(x)->instances++)
 
 /**
@@ -1039,7 +927,7 @@ struct program_specific {
  *
  * @param x the program to decrement
  * @return the resultant value
- */ 
+ */
 #define PROGRAM_DEC_INSTANCES(x)    (PROGRAM_SP(x)->instances--)
 
 /**
@@ -1050,7 +938,7 @@ struct program_specific {
  *
  * @param x the program to increment
  * @return the resultant value
- */ 
+ */
 #define PROGRAM_INC_INSTANCES_IN_PRIMITIVE(x)   (PROGRAM_SP(x)->instances_in_primitive++)
 
 /**
@@ -1061,7 +949,7 @@ struct program_specific {
  *
  * @param x the program to decrement
  * @return the resultant value
- */ 
+ */
 #define PROGRAM_DEC_INSTANCES_IN_PRIMITIVE(x)   (PROGRAM_SP(x)->instances_in_primitive--)
 
 /**
@@ -1072,7 +960,7 @@ struct program_specific {
  *
  * @param x the program to increment
  * @return the resultant value
- */ 
+ */
 #define PROGRAM_INC_PROF_USES(x)    (PROGRAM_SP(x)->profuses++)
 
 /**
@@ -1958,7 +1846,7 @@ dbref create_action(dbref player, const char *name, dbref source, char *error);
 /**
  * Allocate an PROGRAM type object
  *
- * With a given name and owner/creator.  Returns the DBREF of the program. 
+ * With a given name and owner/creator.  Returns the DBREF of the program.
  * The 'name' memory is copied.  Initializes the "special" fields.
  *
  * Uses an error parameter to communicate the reason for failure. This
@@ -2207,18 +2095,6 @@ int member(dbref thing, dbref list);
 dbref new_object(bool isplayer);
 
 /**
- * Returns true if the object has the given flag set (or reset).
- *
- * Understands flag alias and multiple not conditions (!!x = x, !!!x = !x).
- *
- * Checking "truewizard" is the same as checking "wizard" and "!quell".
- *
- * @param ref the object to check
- * @param flag the flag (or alias) to check
- */
-bool has_flag(dbref ref, const char *flag);
-
-/**
  * Find a dbref in an objnode list
  *
  * @param head the head of the objnode list
@@ -2409,55 +2285,6 @@ void set_source(dbref action, dbref source);
  * @return the calculated size of the object.
  */
 size_t size_object(dbref i, int load);
-
-/**
- * Returns the flag associated with the given string, if any.
- *
- * Understands flag alias prefixes.
- *  
- * Passing "truewizard" here just returns the WIZARD flag.
- *
- * @param ref the object to check
- * @param flag_string the flag (or alias) to check
- * @return the flag corresponding to the string, or 0 if none match.
- */
-object_flag_type str_to_flag(const char *flag_string);
-
-/**
- * "Unparses" flags, or rather, gives a string representation of object flags
- *
- * This uses a static buffer, so make sure to copy it if you want to keep
- * it.  This is, of course, not threadsafe.
- *
- * @param thing the object to construct a flag string for
- * @return the constructed flag string in a static buffer
- */
-const char *unparse_flags(dbref thing);
-
-/**
- * "Unparse" an object, showing itsnam and list of flags if permissions allow
- *
- * Uses the provided buffer that has the given size.  Practically speaking,
- * names can be as long as BUFFER_LEN, so your buffer should probably
- * be BUFFER_LEN at least in size (This is the most common practice).  If
- * a name was actually its maximum length, then there is not enough room
- * for flags to show up.  Traditionally, Fuzzball has not cared about this
- * problem because, traditionally, names just don't get that long.
- *
- * Flags are only shown if:
- *
- * * player == NOTHING
- * * or player does not have STICKY flag AND:
- *   * 'loc' is linkable - @see can_link_to
- *   * or 'loc' is not a player and 'player' controls 'loc'
- *   * or 'loc' is CHOWN_OK
- *
- * @param player the player doing the call or NOTHING
- * @param object the target to generate unparse text for
- * @param buffer the buffer to use
- * @param size the size of the buffer
- */
-void unparse_object(dbref player, dbref object, char *buffer, size_t size);
 
 /**
  * Remove the action from its current location's exit list

@@ -1,6 +1,6 @@
 /** @file config.h
  *
- * Tunable parameters -- Edit to you heart's content 
+ * Tunable parameters -- Edit to you heart's content
  *
  * Parameters that control system behavior, and tell the system
  * what resources are available (most of this is now done by
@@ -31,7 +31,7 @@ typedef int dbref;  /**< Type wrapper for dbref - must support negatives */
  ************************************************************************/
 
 /**
- * Makes God (\#1) immune to \@force, \@newpassword, and being set !Wizard.  
+ * Makes God (\#1) immune to \@force, \@newpassword, and being set !Wizard.
  */
 #define GOD_PRIV
 
@@ -72,7 +72,7 @@ typedef int dbref;  /**< Type wrapper for dbref - must support negatives */
  * This is similar to the X-Forwarded-For request header in HTTP.
  * The purpose is to provide administrators running a FORWARDED
  * aware proxy or webclient accurate hostnames in WHO*.
- * 
+ *
  * A client must indicate their desire to use this option with
  * IAC WILL FORWARDED and receive a IAC DO FORWARDED in response,
  * after which they may at any time send a sequence like:
@@ -131,15 +131,15 @@ typedef int dbref;  /**< Type wrapper for dbref - must support negatives */
 #define BUFFER_LEN ((MAX_COMMAND_LEN)*4)
 
 /**
- * Maximum buffer length for short strings
- *
- * Suitable for command output, error messages, etc.
+ * Maximum buffer length for smaller strings
  */
+#define MINI_BUFFER_LEN 64
 #define SMALL_BUFFER_LEN 128
+#define MEDIUM_BUFFER_LEN 256
 
 /************************************************************************
-   Various Messages 
- 
+   Various Messages
+
    Printed from the server at times, esp. during login.
  ************************************************************************/
 
@@ -176,7 +176,7 @@ typedef int dbref;  /**< Type wrapper for dbref - must support negatives */
 #undef DEBUG_SSL_LOG_ALL
 
 /************************************************************************
-  System Dependency Defines. 
+  System Dependency Defines.
 
   You probably will not have to monkey with this unless the muck fails
  to compile for some reason.
@@ -273,7 +273,7 @@ typedef int dbref;  /**< Type wrapper for dbref - must support negatives */
 
 #ifdef MALLOC_PROFILING
 # include "crt_malloc.h"
-#endif	
+#endif
 
 /*
  * Windows compile environment.

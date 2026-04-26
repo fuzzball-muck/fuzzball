@@ -18,6 +18,7 @@
 #include "db.h"
 #include "fbstrings.h"
 #include "fbtime.h"
+#include "flags.h"
 #include "game.h"
 #include "inst.h"
 #include "interface.h"
@@ -54,7 +55,7 @@ tune_timespan_seconds(const char *value)
 {
     int days, hrs, mins, secs;
     int result = sscanf(value, "%dd %2d:%2d:%2d", &days, &hrs, &mins, &secs);
-    
+
     if (result == 4) {
       return (days * 86400) + (3600 * hrs) + (60 * mins) + secs;
     }
@@ -107,8 +108,8 @@ tune_entry_value(dbref player, struct tune_entry *tent)
     case TP_TYPE_DBREF:
         if (player == NOTHING) {
             snprintf(buf, sizeof(buf), "#%d", *tent->currentval.d);
-        } else {            
-            unparse_object(player, *tent->currentval.d, buf, sizeof(buf));
+        } else {
+            flag_unparse_object(player, *tent->currentval.d, buf, sizeof(buf));
         }
         break;
     case TP_TYPE_BOOLEAN:
@@ -292,7 +293,7 @@ tune_parms_array(const char *pattern, int mlev, int pinned)
                 case TP_TYPE_DBREF:
                     array_set_strkey_strval(&item, "type", "dbref");
 
-                    if (tent->type > NOTYPE) {
+                    if (tent->type > TYPE_ANY) {
                         array_set_strkey_strval(&item, "objtype", "unknown");
                     } else {
                         array_set_strkey_strval(&item, "objtype", str_objecttype[tent->objecttype]);
@@ -483,7 +484,7 @@ tune_setparm(dbref player, const char *parmname, const char *val, int mlev)
                 dbref obj;
                 struct match_data md;
 
-                init_match(NOTHING, player, parmval, NOTYPE, &md);
+                init_match(NOTHING, player, parmval, TYPE_ANY, &md);
                 match_absolute(&md);
                 match_registered(&md);
                 match_player(&md);
@@ -494,7 +495,7 @@ tune_setparm(dbref player, const char *parmname, const char *val, int mlev)
                     return TUNESET_SYNTAX;
                 if (!ObjExists(obj))
                     return TUNESET_SYNTAX;
-                if (tent->objecttype != NOTYPE && Typeof(obj) != tent->objecttype)
+                if (tent->objecttype != TYPE_ANY && OBJECT_TYPE(obj) != tent->objecttype)
                     return TUNESET_BADVAL;
 
                 *tent->currentval.d = obj;

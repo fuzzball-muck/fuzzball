@@ -126,7 +126,7 @@ int free_top_mvar(void);
  * How the string is concatinated is controlled by 'mode'.  If mode is
  * 0, then the list is delimited by \\r characters such as with the {list}
  * macro.
- * 
+ *
  * For mode 1, most lines are separated by a single space.  If a line ends in '.', '?',
  * or '!' then a second space is added as well to the delimiter.
  *
@@ -253,7 +253,7 @@ dbref mesg_dbref(int descr, dbref player, dbref what, dbref perms, char *buf, in
  * @param buf the string to match dbref
  * @param mesgtyp the mesgtyp from the MPI call containg blessed perms
  * @return matched ref, UNKNOWN, or PERMDENIED as appropriate
- */ 
+ */
 dbref mesg_dbref_local(int descr, dbref player, dbref what, dbref perms, char *buf,
                        int mesgtyp);
 
@@ -288,7 +288,7 @@ dbref mesg_dbref_raw(int descr, dbref player, dbref what, const char *buf);
  * @param buf the string to match dbref
  * @param mesgtyp the mesgtyp from the MPI call containg blessed perms
  * @return matched ref, UNKNOWN, or PERMDENIED as appropriate
- */ 
+ */
 dbref mesg_dbref_strict(int descr, dbref player, dbref what, dbref perms,
                         char *buf, int mesgtyp);
 
@@ -324,13 +324,13 @@ char *mesg_parse(int descr, dbref player, dbref what, dbref perms,
  *
  * The importance of this function is that it allocates certain standard
  * MPI variables: how (if MPI_NOHOW is not in mesgtyp), cmd, and arg
- * 
+ *
  * Then it runs MesgParse to process the message after those variables
  * are set up.  And finally, it does cleanup.
  *
  * Statistics are kept as part of this call, to keep track of how much
  * time MPI is taking up to run.  This updates all the profile numbers.
- * 
+ *
  * @param descr the descriptor of the calling player
  * @param player the player doing the MPI parsing call
  * @param what the object that triggered the MPI parse call

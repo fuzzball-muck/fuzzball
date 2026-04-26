@@ -17,6 +17,7 @@
 #include "diskprop.h"
 #endif
 #include "fbstrings.h"
+#include "flags.h"
 #include "game.h"
 #include "interface.h"
 #include "match.h"
@@ -141,12 +142,12 @@ choose_thing(int descr, dbref thing1, dbref thing2, struct match_data *md)
     }
 
     /* Check for type preference */
-    if (preferred != NOTYPE) {
-        if (Typeof(thing1) == preferred) {
-            if (Typeof(thing2) != preferred) {
+    if (preferred != TYPE_ANY) {
+        if (OBJECT_TYPE(thing1) == preferred) {
+            if (OBJECT_TYPE(thing2) != preferred) {
                 return thing1;
             }
-        } else if (Typeof(thing2) == preferred) {
+        } else if (OBJECT_TYPE(thing2) == preferred) {
             return thing2;
         }
     }
@@ -549,17 +550,17 @@ match_exits(dbref obj, struct match_data *md)
 
         exitprog = 0;
 
-        if (FLAGS(exit) & HAVEN) {
+        if (FLAG_CHECK(exit, 'H')) {
             exitprog = 1;
         } else if (DBFETCH(exit)->sp.exit.dest) {
             for (int i = 0; i < DBFETCH(exit)->sp.exit.ndest; i++)
                 if ((DBFETCH(exit)->sp.exit.dest)[i] == NIL
-                    || Typeof((DBFETCH(exit)->sp.exit.dest)[i]) == TYPE_PROGRAM)
+                    || OBJECT_TYPE((DBFETCH(exit)->sp.exit.dest)[i]) == TYPE_PROGRAM)
                     exitprog = 1;
         }
 
         if (tp_enable_prefix && exitprog && md->partial_exits &&
-            (FLAGS(exit) & XFORCIBLE) && FLAGS(OWNER(exit)) & WIZARD) {
+            FLAG_CHECK(exit, 'X') && TrueWizard(OWNER(exit))) {
             partial = 1;
         } else {
             partial = 0;
@@ -583,11 +584,11 @@ match_exits(dbref obj, struct match_data *md)
             if ((partial && notnull) || ((*p == '\0')
                 || (*p == ' ' && exitprog))) {
                 skip_whitespace(&exitname);
-                lev = PLevel(exit);
+                lev = OBJECT_PRIORITY(exit);
 
                 if (tp_compatible_priorities && (lev == 1) &&
                     (LOCATION(exit) == NOTHING ||
-                     Typeof(LOCATION(exit)) != TYPE_THING ||
+                     OBJECT_TYPE(LOCATION(exit)) != TYPE_THING ||
                      controls(OWNER(exit), LOCATION(md->match_from))))
                     lev = 2;
 
@@ -624,7 +625,7 @@ match_exits(dbref obj, struct match_data *md)
                                         md->match_name);
                             }
                         } else if ((strlen(md->match_name) - strlen(p) ==
-                                   (size_t) md->longest_match) 
+                                   (size_t) md->longest_match)
                                    && !((lev == md->match_level)
                                    && (md->block_equals))) {
                             if (lev > md->match_level) {
@@ -693,7 +694,7 @@ match_invobj_actions(struct match_data *md)
         return;
 
     DOLIST(thing, CONTENTS(md->match_from)) {
-        if (Typeof(thing) == TYPE_THING && EXITS(thing) != NOTHING) {
+        if (OBJECT_TYPE(thing) == TYPE_THING && EXITS(thing) != NOTHING) {
             match_exits(thing, md);
         }
     }
@@ -719,7 +720,7 @@ match_roomobj_actions(struct match_data *md)
         return;
 
     DOLIST(thing, CONTENTS(loc)) {
-        if (Typeof(thing) == TYPE_THING && EXITS(thing) != NOTHING) {
+        if (OBJECT_TYPE(thing) == TYPE_THING && EXITS(thing) != NOTHING) {
             match_exits(thing, md);
         }
     }
@@ -738,7 +739,7 @@ match_roomobj_actions(struct match_data *md)
 static void
 match_player_actions(struct match_data *md)
 {
-    switch (Typeof(md->match_from)) {
+    switch (OBJECT_TYPE(md->match_from)) {
         case TYPE_PLAYER:
         case TYPE_ROOM:
         case TYPE_THING:
@@ -763,7 +764,7 @@ match_player_actions(struct match_data *md)
 static void
 match_room_exits(dbref loc, struct match_data *md)
 {
-    switch (Typeof(loc)) {
+    switch (OBJECT_TYPE(loc)) {
         case TYPE_PLAYER:
         case TYPE_ROOM:
         case TYPE_THING:
@@ -802,7 +803,7 @@ match_all_exits(struct match_data *md)
 
     if ((loc = LOCATION(md->match_from)) != NOTHING)
     {
-        if (FLAGS(loc) & YIELD)
+        if (FLAG_CHECK(loc, 'Y'))
             blocking = 1;
         match_room_exits(loc, md);
     }
@@ -826,7 +827,7 @@ match_all_exits(struct match_data *md)
         return;
 
     /* if player is in a vehicle, use environment of vehicle's home */
-    if (Typeof(loc) == TYPE_THING) {
+    if (OBJECT_TYPE(loc) == TYPE_THING) {
         loc = THING_HOME(loc);
 
         if (loc == NOTHING)
@@ -847,7 +848,7 @@ match_all_exits(struct match_data *md)
          * If we're blocking (because of a yield), only match a room if
          * and only if it has overt set on it.
          */
-        if ((blocking && FLAGS(loc) & OVERT) || !blocking) {
+        if ((blocking && FLAG_CHECK(loc, 'O')) || !blocking) {
             if (md->exact_match != NOTHING)
                 md->block_equals = 1;
 
@@ -858,7 +859,7 @@ match_all_exits(struct match_data *md)
             break;
 
         /* Does this room have env-chain exit blocking enabled? */
-        if (!blocking && FLAGS(loc) & YIELD) {
+        if (!blocking && FLAG_CHECK(loc, 'Y')) {
             blocking = 1;
         }
     }
@@ -1003,7 +1004,7 @@ match_rmatch(dbref arg1, struct match_data *md)
     if (arg1 == NOTHING)
         return;
 
-    switch (Typeof(arg1)) {
+    switch (OBJECT_TYPE(arg1)) {
         case TYPE_PLAYER:
         case TYPE_ROOM:
         case TYPE_THING:
@@ -1037,7 +1038,7 @@ match_controlled(int descr, dbref player, const char *name)
     dbref match;
     struct match_data md;
 
-    init_match(descr, player, name, NOTYPE, &md);
+    init_match(descr, player, name, TYPE_ANY, &md);
     match_everything(&md);
 
     match = noisy_match_result(&md);

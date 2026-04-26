@@ -22,6 +22,7 @@
 #include "edit.h"
 #include "fbmath.h"
 #include "fbstrings.h"
+#include "flags.h"
 #include "game.h"
 #include "hashtab.h"
 #include "inst.h"
@@ -395,7 +396,7 @@ do_abort_compile(COMPSTATE * cstat, const char *c)
      *
      * If no errors are to be displayed, log them instead.
      */
-    if (((FLAGS(cstat->player) & INTERACTIVE) 
+    if (((FLAGS(cstat->player) & INTERACTIVE)
           && !(FLAGS(cstat->player) & READMODE)) || cstat->force_err_display) {
         notify_nolisten(cstat->player, _buf, 1);
     } else {
@@ -910,7 +911,7 @@ void
 do_uncompile(dbref player)
 {
     for (dbref i = 0; i < db_top; i++) {
-        if (Typeof(i) == TYPE_PROGRAM) {
+        if (OBJECT_TYPE(i) == TYPE_PROGRAM) {
             uncompile_program(i);
         }
     }
@@ -941,9 +942,9 @@ free_unused_programs()
      *       Yah, this is a lil easier said than done :)
      */
     for (dbref i = 0; i < db_top; i++) {
-        if ((Typeof(i) == TYPE_PROGRAM) && !(FLAGS(i) & (ABODE | INTERNAL)) &&
+        if ((OBJECT_TYPE(i) == TYPE_PROGRAM) && !FLAG_CHECK(i, 'A') && !(FLAGS(i) & INTERNAL) &&
             (now - DBFETCH(i)->ts_lastused > tp_clean_interval)
-            && (PROGRAM_INSTANCES(i) == 0)) {
+            && PROGRAM_INSTANCES(i) == 0) {
             uncompile_program(i);
         }
     }
@@ -1030,7 +1031,7 @@ MaybeOptimizeVarsAt(COMPSTATE * cstat, struct INTERMEDIATE *first, int AtNo,
             case PROG_LVAR_AT_CLEAR:
                 if (lvarflag) {
                     if (curr->in.data.number == first->in.data.number) {
-                        /* Can't optimize if references to the variable 
+                        /* Can't optimize if references to the variable
                          * found before a var!
                          */
                         return;
@@ -2880,7 +2881,7 @@ do_compile(int descr, dbref player_in, dbref program_in, int force_err_display)
         notify_nolisten(cstat.player, "Program compiled successfully.", 1);
 
     /* restart AUTOSTART program. */
-    if ((FLAGS(cstat.program) & ABODE) && TrueWizard(OWNER(cstat.program))) {
+    if (FLAG_CHECK(cstat.program, 'A') && TrueWizard(OWNER(cstat.program))) {
         add_muf_queue_event(-1, OWNER(cstat.program), NOTHING, NOTHING,
                             cstat.program, "Startup", "Queued Event.", 0);
         notify_nolisten(cstat.player, "Program autostarted.", 1);
@@ -2992,32 +2993,32 @@ do_string(COMPSTATE * cstat)
  */
 static int
 do_old_comment(COMPSTATE * cstat)
-{		
-    if (!cstat->next_char)		
-        return 1;		
+{
+    if (!cstat->next_char)
+        return 1;
 
-     while (*cstat->next_char && *cstat->next_char != ENDCOMMENT)		
-        cstat->next_char++;		
+     while (*cstat->next_char && *cstat->next_char != ENDCOMMENT)
+        cstat->next_char++;
 
-     if (!(*cstat->next_char)) {		
-        advance_line(cstat);		
+     if (!(*cstat->next_char)) {
+        advance_line(cstat);
 
-         if (!cstat->curr_line) {		
-            return 1;		
-        }		
+         if (!cstat->curr_line) {
+            return 1;
+         }
 
-         return do_old_comment(cstat);		
-    } else {		
-        cstat->next_char++;		
+         return do_old_comment(cstat);
+    } else {
+        cstat->next_char++;
 
-         if (!(*cstat->next_char))		
-            advance_line(cstat);		
-    }		
+         if (!(*cstat->next_char))
+            advance_line(cstat);
+    }
 
-     return 0;		
-}		
+    return 0;
+}
 
-/**		
+/**
  * The "new" comment parser, supporting recursive comments.
  *
  * I believe this means that you can have comments inside comments,
@@ -3113,7 +3114,7 @@ do_new_comment(COMPSTATE * cstat, int depth)
     return 0;
 }
 
-/**		
+/**
   * This implements the skipping of comments in the code by the compiler.
   *
   * 'Depth' is a funny thing here.  It isn't really used the same as depth
@@ -3122,23 +3123,23 @@ do_new_comment(COMPSTATE * cstat, int depth)
   * code or not.  It is, in fact, really kind of superfluous because
   * it is set according to the binary value of cstat->force_comment which
   * is also used in this call.
-  *		
+  *
   * @TODO Remove 'depth' from the calling signature and use
   *       !cstat->force_comment in the two relevant if statements instead.
-  *		
+  *
   * Basically, force_comment and depth should either both be true or both
   * be false, otherwise this code doesn't work "properly".
-  *		
+  *
   * The "do_new_comment" code is used for parsing recursive comments, otherwise
   * the "do_old_comment" code is used.
-  *		
+  *
   * @see do_new_comment
   * @see do_old_comment
-  *		
+  *
   * @private
   * @param cstat compile state structure
   * @param depth boolean that should be the same as cstat->force_comment
-  */		
+  */
 static void
 do_comment(COMPSTATE * cstat, int depth)
 {
@@ -3169,18 +3170,18 @@ do_comment(COMPSTATE * cstat, int depth)
              *       I don't understand why this falls back to the old
              *       parser if force_comment = 0, it would seem to make
              *       more sense to error here.
-             *		
+             *
              *       But frankly this whole function is written strange
              *       so I don't really understand the logic behind any
              *       of this structure.
-             *		
+             *
              *       Its clear to me that "depth" was supposed to mean
              *       something else but it wound up de-facto being a
              *       boolean clone of cstat->force_comment.  Because
              *       there is no original documentation, the original
              *       thought process is lost or at least limited to the
              *       original programmer.
-             */		
+             */
             if (cstat->force_comment) {
                 switch (retval) {
                     case 1:
@@ -3197,7 +3198,7 @@ do_comment(COMPSTATE * cstat, int depth)
                 if (cstat->line_copy) {
                     free((void *) cstat->line_copy);
                     cstat->line_copy = NULL;
-                }		
+                }
 
                 cstat->curr_line = curr_line;
                 cstat->macrosubs = macrosubs;
@@ -3498,7 +3499,7 @@ do_directive(COMPSTATE * cstat, char *direct)
         skip_whitespace(&cstat->next_char);
         advance_line(cstat);
 
-        if (!tmpname || !*tmpname || MLevel(OWNER(cstat->program)) < 4) {
+        if (!tmpname || !*tmpname || OBJECT_EFFECTIVE_MLEVEL(OWNER(cstat->program)) < 4) {
             include_defs(cstat, OWNER(cstat->program));
             include_defs(cstat, (dbref) 0);
         }
@@ -3645,7 +3646,7 @@ do_directive(COMPSTATE * cstat, char *direct)
 
             strcpyn(tempa, sizeof(tempa), match_args);
             strcpyn(tempb, sizeof(tempb), match_cmdname);
-            init_match(cstat->descr, cstat->player, tmpname, NOTYPE, &md);
+            init_match(cstat->descr, cstat->player, tmpname, TYPE_ANY, &md);
             match_registered(&md);
             match_absolute(&md);
             match_me(&md);
@@ -3807,7 +3808,7 @@ do_directive(COMPSTATE * cstat, char *direct)
 
         strcpyn(tempa, sizeof(tempa), match_args);
         strcpyn(tempb, sizeof(tempb), match_cmdname);
-        init_match(cstat->descr, cstat->player, tmpname, NOTYPE, &md);
+        init_match(cstat->descr, cstat->player, tmpname, TYPE_ANY, &md);
         match_registered(&md);
         match_absolute(&md);
         i = (int) match_result(&md);
@@ -3834,7 +3835,7 @@ do_directive(COMPSTATE * cstat, char *direct)
 
         j = 0;
 
-        if (Typeof(i) == TYPE_PROGRAM) {
+        if (OBJECT_TYPE(i) == TYPE_PROGRAM) {
             if (!PROGRAM_CODE(i)) {
                 struct line *tmpline;
 
@@ -3845,8 +3846,8 @@ do_directive(COMPSTATE * cstat, char *direct)
                 PROGRAM_SET_FIRST(i, tmpline);
             }
 
-            if (MLevel(OWNER(i)) > 0 &&
-                (MLevel(OWNER(cstat->program)) >= 4 || OWNER(i) == OWNER(cstat->program)
+            if (OBJECT_EFFECTIVE_MLEVEL(OWNER(i)) > 0 &&
+                (OBJECT_EFFECTIVE_MLEVEL(OWNER(cstat->program)) >= 4 || OWNER(i) == OWNER(cstat->program)
                 || Linkable(i))
             ) {
                 struct publics *pbs;
@@ -3860,7 +3861,7 @@ do_directive(COMPSTATE * cstat, char *direct)
                     pbs = pbs->next;
                 }
 
-                if (pbs && MLevel(OWNER(cstat->program)) >= pbs->mlev)
+                if (pbs && OBJECT_EFFECTIVE_MLEVEL(OWNER(cstat->program)) >= pbs->mlev)
                     j = 1;
             }
         }
@@ -3908,7 +3909,7 @@ do_directive(COMPSTATE * cstat, char *direct)
 
             strcpyn(tempa, sizeof(tempa), match_args);
             strcpyn(tempb, sizeof(tempb), match_cmdname);
-            init_match(cstat->descr, cstat->player, tmpname, NOTYPE, &md);
+            init_match(cstat->descr, cstat->player, tmpname, TYPE_ANY, &md);
             match_registered(&md);
             match_absolute(&md);
             match_me(&md);
@@ -4004,7 +4005,7 @@ do_directive(COMPSTATE * cstat, char *direct)
 
         strcpyn(tempa, sizeof(tempa), match_args);
         strcpyn(tempb, sizeof(tempb), match_cmdname);
-        init_match(cstat->descr, cstat->player, tmpname, NOTYPE, &md);
+        init_match(cstat->descr, cstat->player, tmpname, TYPE_ANY, &md);
         match_registered(&md);
         match_absolute(&md);
         i = (int) match_result(&md);
@@ -4013,7 +4014,7 @@ do_directive(COMPSTATE * cstat, char *direct)
 
         free(tmpname);
 
-        if (OkObj(i) && Typeof(i) == TYPE_PROGRAM) {
+        if (OkObj(i) && OBJECT_TYPE(i) == TYPE_PROGRAM) {
             j = 1;
         } else {
             j = 0;
@@ -5454,7 +5455,7 @@ free_prog_real(dbref prog, const char *file, const int line)
 
     if (c) {
         char unparse_buf[BUFFER_LEN];
-        unparse_object(GOD, prog, unparse_buf, sizeof(unparse_buf));
+        flag_unparse_object(NOTHING, prog, unparse_buf, sizeof(unparse_buf));
 
         /*
          * These sanity checks are to prevent faulty C programming and to

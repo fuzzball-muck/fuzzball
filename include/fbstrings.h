@@ -526,7 +526,7 @@ char *string_substitute(const char *str, const char *oldstr, const char *newstr,
  * the result into 'buf'
  *
  * WARNING: This does NOT validate the length of 'buf' and that makes
- *          this a potentially dangerous call.  It should be safe 
+ *          this a potentially dangerous call.  It should be safe
  *          if 'buf' is the same size as 'input' or larger.
  *
  * This call effectively removes color from a string, as well as makes

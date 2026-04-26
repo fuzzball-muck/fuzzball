@@ -273,7 +273,7 @@ void mcp_frame_package_remove(McpFrame *mfr, const char *package);
  * This removes the package from all McpFrames and renegotiates the ones
  * that need it.  If the package is removed, it will have max/min version 0.
  *
- * @param package the package to renegotiate 
+ * @param package the package to renegotiate
  */
 void mcp_frame_package_renegotiate(const char *package);
 
@@ -443,7 +443,7 @@ void mcp_package_register(const char *pkgname, McpVer minver, McpVer maxver,
  * The send is not immediate, it is queued to the descriptor with queue_write
  *
  * @see queue_write
- * 
+ *
  * @param mfr the frame we're transmitting to
  * @param text the message to send
  */

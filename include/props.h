@@ -31,7 +31,7 @@ union pdata_u {
     int val;                /**< Integer data */
     double fval;            /**< Float data */
     dbref ref;              /**< DBREF data */
-    long pos;               /**< Probably unused ? */ 
+    long pos;               /**< Probably unused ? */
 };
 
 /**
@@ -452,7 +452,7 @@ void delete_proplist(PropPtr p);
  * Any errors (no such property) will be written to the buffer.
  *
  * @param player is the player doing the call, and is used to determine
- *        permissions for unparse_object ('ref' type props)
+ *        permissions for flag_unparse_object ('ref' type props)
  * @param obj is the object who's property is being examined.
  * @param name is the property name
  * @param buf is a buffer that you provide for property information to
@@ -538,7 +538,7 @@ void exec_or_notify(int descr, dbref player, dbref thing, const char *message,
  *                     MPI &how or the MUF command.  Such as "(\@Desc)"
  */
 void exec_or_notify_prop(int descr, dbref player, dbref thing,
-                         const char *propname, const char *whatcalled);         
+                         const char *propname, const char *whatcalled);
 
 /**
  * Finds the first node ("leftmost") on the property AVL list 'p' or
@@ -934,7 +934,7 @@ PropPtr propdir_first_elem(PropPtr root, char *path);
 
 /**
  * Fetches a given property from the property path structure 'root'.
- * As this is something of a low level call you may prefer to use 
+ * As this is something of a low level call you may prefer to use
  * get_property
  *
  * @see get_property
@@ -1197,8 +1197,8 @@ void set_standard_property(int descr, dbref player, const char *objname,
  * This method (unlike some others) does full property name validation.
  * Leading / are trimmed off, and if there is a ':' the prop name will
  * be terminated at that point (the : becomes a \0).  The : is defined
- * as PROP_DELIMITER.  
- * 
+ * as PROP_DELIMITER.
+ *
  * If there is no property name after cleanup, this just returns with nothing
  * done.
  *
@@ -1249,8 +1249,8 @@ void set_property_flags(dbref player, const char *pname, int flags);
  * This method (unlike some others) does full property name validation.
  * Leading / are trimmed off, and if there is a ':' the prop name will
  * be terminated at that point (the : becomes a \0).  The : is defined
- * as PROP_DELIMITER.  
- * 
+ * as PROP_DELIMITER.
+ *
  * If there is no property name after cleanup, this just returns with nothing
  * done.
  *

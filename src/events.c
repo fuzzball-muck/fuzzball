@@ -125,7 +125,7 @@ dump_db_now()
 
 /**
  * @private
- * @var last cleanup time for cleaning up the for pool and 
+ * @var last cleanup time for cleaning up the for pool and
  */
 static time_t last_clean_time = 0L;
 

@@ -53,7 +53,7 @@ ts_useobject(dbref thing)
     DBFETCH(thing)->ts_usecount++;
     DBDIRTY(thing);
 
-    if (Typeof(thing) == TYPE_ROOM)
+    if (OBJECT_TYPE(thing) == TYPE_ROOM)
         ts_useobject(LOCATION(thing));
 }
 
@@ -74,7 +74,7 @@ ts_lastuseobject(dbref thing)
 
     DBSTORE(thing, ts_lastused, time(NULL));
 
-    if (Typeof(thing) == TYPE_ROOM)
+    if (OBJECT_TYPE(thing) == TYPE_ROOM)
         ts_lastuseobject(LOCATION(thing));
 }
 
@@ -168,7 +168,7 @@ time_format_1(time_t dt)
  * Creates a time string from a UNIX timestamp delta in "format 2" layout.
  *
  * It computes the delta between the given timestamp and GMT time, then
- * goes through a logic process to figure out what "resolution" of 
+ * goes through a logic process to figure out what "resolution" of
  * the timestamp should be.  If the delta is greater than a day, then
  * days is used.  If greater than an hour, then hours is used.  If greater
  * than a minute, then minutes are used.  Otherwise, seconds.
@@ -390,7 +390,7 @@ time_string_to_seconds(char *string, const char *format, const char **error)
 
         for ( ; *finder != '\0' && isdigit(*finder); finder++, year_digits++);
 
-        if(year_digits == 4) {
+        if (year_digits == 4) {
             /* do 4 digit year */
             format = "%T%t%m/%d/%Y";
         }

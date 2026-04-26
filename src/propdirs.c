@@ -147,7 +147,7 @@ propdir_delete_elem(PropPtr root, char *path)
 
 /**
  * Fetches a given property from the property path structure 'root'.
- * As this is something of a low level call you may prefer to use 
+ * As this is something of a low level call you may prefer to use
  * get_property
  *
  * @see get_property

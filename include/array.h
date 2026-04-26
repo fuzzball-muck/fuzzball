@@ -1,7 +1,7 @@
 /** @file array.h
  *
  * Header for the different array types used in Fuzzball.  This is primarily
- * used for MUF primitives. 
+ * used for MUF primitives.
  *
  * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
  */
@@ -77,7 +77,7 @@ typedef struct stk_array_t {
         array_data *packed; /**< pointer to packed array */
         array_tree *dict;   /**< pointer to dictionary AVL tree */
     } data;                 /**< Two different array types */
-    stk_array_list list_node; /**< list array is on, typically of all allocated 
+    stk_array_list list_node; /**< list array is on, typically of all allocated
                                *   to a MUF program
                                */
 } stk_array;

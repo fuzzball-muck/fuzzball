@@ -195,7 +195,7 @@ show_line_prims(dbref program, struct inst *pc, int maxprims, int markpc)
     /*
      * We're in the right position; loop from linestart til lineend,
      * putting together text versions of the instructions.
-     */ 
+     */
     while (linestart <= lineend) {
         if (strlen(buf) < BUFFER_LEN / 2) {
             if (*buf)

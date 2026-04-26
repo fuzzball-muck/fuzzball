@@ -18,6 +18,7 @@
 #include "db.h"
 #include "fbstrings.h"
 #include "fbtime.h"
+#include "flags.h"
 #include "game.h"
 #include "interface.h"
 #include "log.h"
@@ -59,7 +60,7 @@ do_name(int descr, dbref player, const char *name, char *newname)
     }
 
     /* check for renaming a player */
-    if (Typeof(thing) == TYPE_PLAYER) {
+    if (OBJECT_TYPE(thing) == TYPE_PLAYER) {
         /* split off password */
         for (password = newname; *password && !isspace(*password); password++) ;
 
@@ -94,7 +95,7 @@ do_name(int descr, dbref player, const char *name, char *newname)
         notify(player, "Name set.");
         return;
     } else {
-        if (!ok_object_name(newname, Typeof(thing))) {
+        if (!ok_object_name(newname, OBJECT_TYPE(thing))) {
             notify(player, "That is not a reasonable name.");
             return;
         }
@@ -148,7 +149,7 @@ _do_unlink(int descr, dbref player, const char *name, bool quiet)
     if (!controls(player, exit) && !controls_link(player, exit)) {
         notify(player, "Permission denied. (You don't control the exit or its link)");
     } else {
-        switch (Typeof(exit)) {
+        switch (OBJECT_TYPE(exit)) {
             case TYPE_EXIT:
                 if (DBFETCH(exit)->sp.exit.ndest != 0) {
                     SETVALUE(OWNER(exit), GETVALUE(OWNER(exit)) + tp_link_cost);
@@ -164,7 +165,7 @@ _do_unlink(int descr, dbref player, const char *name, bool quiet)
                 if (!quiet)
                     notify(player, "Unlinked.");
 
-                if (MLevRaw(exit)) {
+                if (OBJECT_MLEVEL(exit)) {
                     SetMLevel(exit, 0);
                     DBDIRTY(exit);
 
@@ -276,7 +277,7 @@ do_relink(int descr, dbref player, const char *thing_name,
     if ((thing = noisy_match_result(&md)) == NOTHING)
         return;
 
-    if (Typeof(thing) != TYPE_EXIT && strchr(dest_name, EXIT_DELIMITER)) {
+    if (OBJECT_TYPE(thing) != TYPE_EXIT && strchr(dest_name, EXIT_DELIMITER)) {
         notify(player, "Only actions and exits can be linked to multiple destinations.");
         return;
     }
@@ -284,7 +285,7 @@ do_relink(int descr, dbref player, const char *thing_name,
     /* first of all, check if the new target would be valid, so we can
        avoid breaking the old link if it isn't. */
 
-    switch (Typeof(thing)) {
+    switch (OBJECT_TYPE(thing)) {
         case TYPE_EXIT:
             /* we're ok, check the usual stuff */
             if (DBFETCH(thing)->sp.exit.ndest != 0) {
@@ -327,14 +328,14 @@ do_relink(int descr, dbref player, const char *thing_name,
             match_me(&md);
             match_here(&md);
 
-            if (Typeof(thing) == TYPE_THING)
+            if (OBJECT_TYPE(thing) == TYPE_THING)
                 match_possession(&md);
 
             if ((dest = noisy_match_result(&md)) == NOTHING)
                 return;
 
             if (!controls(player, thing)
-                || !can_link_to(player, Typeof(thing), dest)) {
+                || !can_link_to(player, OBJECT_TYPE(thing), dest)) {
                 notify(player, "Permission denied. (You can't link to where you want to.");
                 return;
             }
@@ -356,7 +357,7 @@ do_relink(int descr, dbref player, const char *thing_name,
             if ((dest = noisy_match_result(&md)) == NOTHING)
                 return;
 
-            if (!controls(player, thing) || !can_link_to(player, Typeof(thing), dest)
+            if (!controls(player, thing) || !can_link_to(player, OBJECT_TYPE(thing), dest)
                 || (thing == dest)) {
                 notify(player, "Permission denied. (You can't link to the dropto like that)");
                 return;
@@ -368,7 +369,7 @@ do_relink(int descr, dbref player, const char *thing_name,
             return;
         default:
             notify(player, "Internal error: weird object type.");
-            log_status("PANIC: weird object: Typeof(%d) = %d", thing, Typeof(thing));
+            log_status("PANIC: weird object: OBJECT_TYPE(%d) = %d", thing, OBJECT_TYPE(thing));
             return;
     }
 
@@ -406,7 +407,7 @@ do_chown(int descr, dbref player, const char *name, const char *newowner)
         return;
     }
 
-    init_match(descr, player, name, NOTYPE, &md);
+    init_match(descr, player, name, TYPE_ANY, &md);
     match_everything(&md);
 
     if ((thing = noisy_match_result(&md)) == NOTHING)
@@ -434,10 +435,10 @@ do_chown(int descr, dbref player, const char *name, const char *newowner)
 #endif      /* GOD_PRIV */
 
     if (!Wizard(OWNER(player))) {
-        if (Typeof(thing) != TYPE_EXIT ||
+        if (OBJECT_TYPE(thing) != TYPE_EXIT ||
             (DBFETCH(thing)->sp.exit.ndest && !controls_link(player, thing))) {
-            if (!(FLAGS(thing) & CHOWN_OK) ||
-                Typeof(thing) == TYPE_PROGRAM
+            if (!FLAG_CHECK(thing, 'C') ||
+                OBJECT_TYPE(thing) == TYPE_PROGRAM
                 || !test_lock(descr, player, thing, MESGPROP_CHLOCK)) {
                 notify(player, "You can't take possession of that.");
                 return;
@@ -446,7 +447,7 @@ do_chown(int descr, dbref player, const char *name, const char *newowner)
     }
 
     /* handle costs */
-    if (owner == player && Typeof(thing) == TYPE_EXIT && OWNER(thing) != OWNER(player)) {
+    if (owner == player && OBJECT_TYPE(thing) == TYPE_EXIT && OWNER(thing) != OWNER(player)) {
 	if (!Builder(player)) {
 	    notify(player, "Only authorized builders may seize exits.");
 	    return;
@@ -467,12 +468,12 @@ do_chown(int descr, dbref player, const char *name, const char *newowner)
     }
 
     if (tp_realms_control && !Wizard(OWNER(player)) && TrueWizard(thing) &&
-        Typeof(thing) == TYPE_ROOM) {
+        OBJECT_TYPE(thing) == TYPE_ROOM) {
         notify(player, "You can't take possession of that.");
         return;
     }
 
-    switch (Typeof(thing)) {
+    switch (OBJECT_TYPE(thing)) {
         case TYPE_ROOM:
             if (!Wizard(OWNER(player)) && LOCATION(player) != thing) {
                 notify(player, "You can only chown \"here\".");
@@ -508,215 +509,11 @@ do_chown(int descr, dbref player, const char *name, const char *newowner)
         notify(player, "Owner changed to you.");
     else {
         char unparse_buf[BUFFER_LEN];
-        unparse_object(player, owner, unparse_buf, sizeof(unparse_buf));
+        flag_unparse_object(player, owner, unparse_buf, sizeof(unparse_buf));
         notifyf(player, "Owner changed to %s.", unparse_buf);
     }
 
     DBDIRTY(thing);
-}
-
-/**
- * Determines if a given player is unable to (re)set the given flag
- *
- * The 'business logic' here is actually fairly dense and not easily
- * summed up in a comment. The reader is encouraged to review the very
- * well documented code for details.
- *
- * This is all pretty well documented in the MUCK's help files.
- *
- * Uses an error parameter to communicate the reason for failure. This
- * should be at least SMALL_BUFFER_LEN in size.
- *
- * @private
- * @param player the effective aplayer we are checking permissions for
- * @param mlev the effective mucker level we are checking permissions for
- * @param thing the thing we want to interact with
- * @param flag the flag we wish to interact with
- * @param value whether the desired state is on or off
- * @param error[out] error message, if any
- * @return boolean 1 if restricted from setting flag, 0 if okay to set.
- */
-int
-unable_to_set_flag(dbref player, int mlev, dbref thing, object_flag_type flag, bool value, char *error)
-{
-    if (force_level && (
-            flag == WIZARD
-            || (flag == XFORCIBLE && Typeof(thing) != TYPE_EXIT)
-            || (flag & MUCKER)
-            || (flag & SMUCKER)
-    )) {
-        snprintf(error, SMALL_BUFFER_LEN, "That flag cannot be forced.");
-        return 1;
-    }
-
-    /* Non-wizards can only set their own programs M0. */
-    if (!value && (flag & (MUCKER | SMUCKER))) {
-        if (!Wizard(OWNER(player))) {
-            if ((OWNER(player) != OWNER(thing)) || (Typeof(thing) != TYPE_PROGRAM)) {
-                snprintf(error, SMALL_BUFFER_LEN, "Permission denied. (You can't set that M0)");
-                return 1;
-            }
-        }
-
-        return 0;
-    }
-
-    /* Non-wizards can only set their programs up to their own mucker level. */
-    if (flag & (MUCKER | SMUCKER)) {
-        unsigned short requested_mlevel = (((flag & MUCKER ? 2 : 0) + (flag & SMUCKER ? 1 : 0)));
-        if (!Wizard(OWNER(player))) {
-            if ((OWNER(player) != OWNER(thing)) || (Typeof(thing) != TYPE_PROGRAM)
-                || (MLevRaw(player) < requested_mlevel)) {
-                snprintf(error, SMALL_BUFFER_LEN, "Permission denied. (You can't set that M%d)", requested_mlevel);
-                return 1;
-            }
-        }
-
-        return 0;
-    }
-
-    switch (flag) {
-        case ABODE:
-            /* Trying to set a program AUTOSTART requires TrueWizard */
-            return (!TrueWizard(OWNER(player)) && (Typeof(thing) == TYPE_PROGRAM));
-
-        case GUEST:
-            /* Guest operations require a wizard */
-            return (!(Wizard(OWNER(player))));
-
-        case YIELD:
-        case OVERT:
-            /* Mucking with the env-chain matching requires TrueWizard */
-            if (!(Wizard(OWNER(player)))) {
-                return 1;
-            }
-
-            /* ...and only for makes sense for things or rooms. */
-            if (Typeof(thing) != TYPE_THING && Typeof(thing) != TYPE_ROOM) {
-                return 1;
-            }
-
-            return 0;
-
-        case ZOMBIE:
-            /* Restricting a player from using zombies requires a wizard. */
-            if (Typeof(thing) == TYPE_PLAYER) {
-                return (!(Wizard(OWNER(player))));
-            }
-
-            /* If a player's set Zombie, he's restricted from using them...
-             * unless he's a wizard, in which case he can do whatever.
-             */
-            if ((Typeof(thing) == TYPE_THING) && (FLAGS(OWNER(player)) & ZOMBIE)) {
-                return (!(Wizard(OWNER(player))));
-            }
-
-            return 0;
-
-        case VEHICLE:
-            /* Restricting a player from using vehicles requires a wizard. */
-            if (Typeof(thing) == TYPE_PLAYER){
-                return (!(Wizard(OWNER(player))));
-            }
-
-            /* Can only set things !V if they have no players in them. */
-            if (!value && Typeof(thing) == TYPE_THING) {
-                dbref obj = CONTENTS(thing);
-
-                for (; obj != NOTHING; obj = NEXTOBJ(obj)) {
-                    if (Typeof(obj) == TYPE_PLAYER) {
-                        snprintf(error, SMALL_BUFFER_LEN, "That vehicle still has players in it!");
-                        return 1;
-                    }
-                }
-            }
-
-            /* If only wizards can create vehicles... */
-            if (tp_wiz_vehicles) {
-                /* then only a wizard can create a vehicle. :) */
-                if (Typeof(thing) == TYPE_THING) {
-                    return (!(Wizard(OWNER(player))));
-                }
-            } else {
-                /* But, if vehicles aren't restricted to wizards, then
-                 * players who have not been restricted can do so
-                 */
-                if ((Typeof(thing) == TYPE_THING) && (FLAGS(player) & VEHICLE)) {
-                    return (!(Wizard(OWNER(player))));
-                }
-            }
-
-            return (0);
-
-        case DARK:
-            /* Dark can be set on a Program or Room by anyone. */
-            if (!Wizard(OWNER(player))) {
-                /* Setting a player dark requires a wizard. */
-                if (Typeof(thing) == TYPE_PLAYER) {
-                    return 1;
-                }
-
-                /* If exit darking is restricted, it requires a wizard. */
-                if (!tp_exit_darking && Typeof(thing) == TYPE_EXIT) {
-                    return 1;
-                }
-
-                /* If thing darking is restricted, it requires a wizard. */
-                if (!tp_thing_darking && Typeof(thing) == TYPE_THING) {
-                    return 1;
-                }
-            }
-
-            return 0;
-
-        case QUELL:
-#ifdef GOD_PRIV
-            /* Only God (or God's stuff) can quell or unquell another wizard. */
-            return (TrueWizard(thing) && (thing != player) && !God(OWNER(player)) &&
-                    (Typeof(thing) == TYPE_PLAYER));
-#else
-            /* You cannot quell or unquell another wizard. */
-            return (TrueWizard(thing) && (thing != player) && (Typeof(thing) == TYPE_PLAYER));
-#endif
-
-        case BUILDER:
-            /* Setting a program BOUND reguires M2. */
-            if (Typeof(thing) == TYPE_PROGRAM) {
-                return (mlev < 2);
-            }
-
-            /* Setting a player Builder or a room Bound is limited to a Wizard. */
-            return (!Wizard(OWNER(player)));
-
-        case WIZARD:
-            /* To do anything with a Wizard flag requires a Wizard. */
-            if (Wizard(OWNER(player))) {
-                /* check for stupid wizard */
-                if (!value && thing == player) {
-                    snprintf(error, SMALL_BUFFER_LEN, "You cannot make yourself mortal.");
-                    return 1;
-                }
-
-#ifdef GOD_PRIV
-                /* Only God can make a player a Wizard, or re-mort one. */
-                return ((Typeof(thing) == TYPE_PLAYER) && !God(player));
-#else
-                /* We don't want someone setting themselves !W, to prevent
-                 * a case where there are no wizards at all
-                 */
-                return ((Typeof(thing) == TYPE_PLAYER && thing == OWNER(player)));
-#endif
-            } else {
-                return 1;
-            }
-
-        case XFORCIBLE:
-            return (!Wizard(OWNER(player)) && Typeof(thing) == TYPE_EXIT);
-
-        default:
-            /* No other flags are restricted. */
-            return 0;
-    }
 }
 
 /**
@@ -882,7 +679,7 @@ do_set(int descr, dbref player, const char *name, const char *flag)
         }
     }
 
-    if (unable_to_set_flag(player, MLevel(OWNER(player)), thing, f, !negated, error)) {
+    if (unable_to_set_flag(player, OBJECT_EFFECTIVE_MLEVEL(OWNER(player)), thing, f, !negated, error)) {
         if (*error) {
             notify(player, error);
         } else {
@@ -1006,7 +803,7 @@ do_propset(int descr, dbref player, const char *name, const char *prop)
         mydat.data.fval = strtod(value, NULL);
         set_property(thing, pname, &mydat);
     } else if (string_prefix("dbref", type)) {
-        init_match(descr, player, value, NOTYPE, &md);
+        init_match(descr, player, value, TYPE_ANY, &md);
         match_everything(&md);
 
         if ((ref = noisy_match_result(&md)) == NOTHING)
@@ -1081,7 +878,7 @@ do_register(int descr, dbref player, char *arg1, const char *arg2)
 {
     dbref target, object;
     struct match_data md;
-    char buf[BUFFER_LEN], unparse_buf[BUFFER_LEN];
+    char buf[BUFFER_LEN*2+64], unparse_buf[BUFFER_LEN];
     char *propdir, *objectstr;
     char *remaining = arg1;
 
@@ -1119,7 +916,7 @@ do_register(int descr, dbref player, char *arg1, const char *arg2)
             return;
         }
 
-        init_match(descr, player, targetstr, NOTYPE, &md);
+        init_match(descr, player, targetstr, TYPE_ANY, &md);
 
         if (*targetstr == REGISTERED_TOKEN) {
             match_registered(&md);
@@ -1153,7 +950,7 @@ do_register(int descr, dbref player, char *arg1, const char *arg2)
 
     if (!*arg2) {
         PropPtr propadr, pptr;
-        char dir[BUFFER_LEN], propname[BUFFER_LEN], detail[BUFFER_LEN];
+        char dir[BUFFER_LEN+64], propname[BUFFER_LEN], detail[BUFFER_LEN+128];
         dbref detailref = -50, invalidref = -50;
 
         if (!objectstr || !*objectstr) {
@@ -1162,7 +959,7 @@ do_register(int descr, dbref player, char *arg1, const char *arg2)
             snprintf(dir, sizeof(dir), "%s%c%s", propdir, PROPDIR_DELIMITER, objectstr);
         }
 
-        unparse_object(player, target, unparse_buf, sizeof(unparse_buf));
+        flag_unparse_object(player, target, unparse_buf, sizeof(unparse_buf));
         notifyf_nolisten(player, "Registered objects on %s:", unparse_buf);
 
         propadr = first_prop(target, dir, &pptr, propname, sizeof(propname));
@@ -1199,7 +996,7 @@ do_register(int descr, dbref player, char *arg1, const char *arg2)
                 }
 
                 if (PropType(propadr) != PROP_DIRTYP) {
-                    unparse_object(player, detailref, unparse_buf, sizeof(unparse_buf));
+                    flag_unparse_object(player, detailref, unparse_buf, sizeof(unparse_buf));
                     snprintf(detail, sizeof(detail), ": %s", unparse_buf);
                 }
 
@@ -1227,7 +1024,7 @@ do_register(int descr, dbref player, char *arg1, const char *arg2)
         return;
     }
 
-    init_match(descr, player, objectstr, NOTYPE, &md);
+    init_match(descr, player, objectstr, TYPE_ANY, &md);
 
     if (*objectstr == REGISTERED_TOKEN) {
         match_registered(&md);
@@ -1251,7 +1048,7 @@ do_register(int descr, dbref player, char *arg1, const char *arg2)
 
     snprintf(buf, sizeof(buf), "%s%c%s", propdir, PROPDIR_DELIMITER, arg2);
 
-    if ((!Wizard(OWNER(player)) && (target != OWNER(player) || 
+    if ((!Wizard(OWNER(player)) && (target != OWNER(player) ||
         Prop_SeeOnly(buf) || Prop_Hidden(buf)))) {
         notifyf_nolisten(player, "Permission denied. (You can't register an object there.)");
         return;

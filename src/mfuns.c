@@ -20,6 +20,7 @@
 #include "fbmath.h"
 #include "fbstrings.h"
 #include "fbtime.h"
+#include "flags.h"
 #include "game.h"
 #include "interface.h"
 #define NO_MFUN_LIST
@@ -1954,7 +1955,7 @@ mfn_dbeq(MFUNARGS)
 /**
  * MPI function that returns the boolean value arg0 != arg1
  *
- * If arg0 and arg1 are both strings containing numbers, they will be 
+ * If arg0 and arg1 are both strings containing numbers, they will be
  * compared as numbers.  Otherwise, they will be compared as strings.
  *
  * For this call, that particular nuance doesn't matter too much.
@@ -1984,7 +1985,7 @@ mfn_ne(MFUNARGS)
 /**
  * MPI function that returns the boolean value arg0 == arg1
  *
- * If arg0 and arg1 are both strings containing numbers, they will be 
+ * If arg0 and arg1 are both strings containing numbers, they will be
  * compared as numbers.  Otherwise, they will be compared as strings.
  *
  * For this call, that particular nuance doesn't matter too much.
@@ -2014,7 +2015,7 @@ mfn_eq(MFUNARGS)
 /**
  * MPI function that returns the boolean value arg0 > arg1
  *
- * If arg0 and arg1 are both strings containing numbers, they will be 
+ * If arg0 and arg1 are both strings containing numbers, they will be
  * compared as numbers.  Otherwise, they will be compared as strings.
  *
  * @param descr the descriptor of the caller
@@ -2042,7 +2043,7 @@ mfn_gt(MFUNARGS)
 /**
  * MPI function that returns the boolean value arg0 < arg1
  *
- * If arg0 and arg1 are both strings containing numbers, they will be 
+ * If arg0 and arg1 are both strings containing numbers, they will be
  * compared as numbers.  Otherwise, they will be compared as strings.
  *
  * @param descr the descriptor of the caller
@@ -2070,7 +2071,7 @@ mfn_lt(MFUNARGS)
 /**
  * MPI function that returns the boolean value arg0 >= arg1
  *
- * If arg0 and arg1 are both strings containing numbers, they will be 
+ * If arg0 and arg1 are both strings containing numbers, they will be
  * compared as numbers.  Otherwise, they will be compared as strings.
  *
  * @param descr the descriptor of the caller
@@ -2098,7 +2099,7 @@ mfn_ge(MFUNARGS)
 /**
  * MPI function that returns the boolean value arg0 <= arg1
  *
- * If arg0 and arg1 are both strings containing numbers, they will be 
+ * If arg0 and arg1 are both strings containing numbers, they will be
  * compared as numbers.  Otherwise, they will be compared as strings.
  *
  * @param descr the descriptor of the caller
@@ -2126,7 +2127,7 @@ mfn_le(MFUNARGS)
 /**
  * MPI function that returns the smaller of arg0 and arg1
  *
- * If arg0 and arg1 are both strings containing numbers, they will be 
+ * If arg0 and arg1 are both strings containing numbers, they will be
  * compared as numbers.  Otherwise, they will be compared as strings.
  *
  * Returns the smaller of the two.
@@ -2156,7 +2157,7 @@ mfn_min(MFUNARGS)
 /**
  * MPI function that returns the larger of arg0 and arg1
  *
- * If arg0 and arg1 are both strings containing numbers, they will be 
+ * If arg0 and arg1 are both strings containing numbers, they will be
  * compared as numbers.  Otherwise, they will be compared as strings.
  *
  * Returns the larger of the two.
@@ -3147,7 +3148,7 @@ mfn_convtime(MFUNARGS)
         ABORT_MPI("CONVTIME", error);
 
     snprintf(buf, BUFFER_LEN, "%lld", (long long)seconds);
-    
+
     return buf;
 #endif
 }
@@ -3494,7 +3495,7 @@ mfn_money(MFUNARGS)
     if (tp_pennies_muf_mlev > 1 && !(mesgtyp & MPI_ISBLESSED))
         ABORT_MPI("MONEY", "Permission denied.");
 
-    switch (Typeof(obj)) {
+    switch (OBJECT_TYPE(obj)) {
         case TYPE_THING:
             snprintf(buf, BUFFER_LEN, "%d", GETVALUE(obj));
             break;
@@ -3515,7 +3516,7 @@ mfn_money(MFUNARGS)
 /**
  * MPI function that returns the object flags for provided object as a string.
  *
- * The string is the return of @see unparse_flags
+ * The string is the return of @see flag_list
  *
  * @param descr the descriptor of the caller
  * @param player the ref of the calling player
@@ -3539,7 +3540,8 @@ mfn_flags(MFUNARGS)
     if (obj == PERMDENIED)
         ABORT_MPI("FLAGS", "Permission denied.");
 
-    return unparse_flags(obj);
+    flag_list(obj, buf, sizeof(buf));
+    return buf;
 }
 
 /**
@@ -3583,7 +3585,7 @@ mfn_tell(MFUNARGS)
     if (obj == PERMDENIED)
         ABORT_MPI("TELL", "Permission denied.");
 
-    if ((mesgtyp & MPI_ISLISTENER) && (Typeof(what) != TYPE_ROOM))
+    if ((mesgtyp & MPI_ISLISTENER) && (OBJECT_TYPE(what) != TYPE_ROOM))
         ABORT_MPI("TELL", "Permission denied.");
 
     *buf = '\0';
@@ -3598,8 +3600,8 @@ mfn_tell(MFUNARGS)
             ptr2 = ptr + strlen(ptr);
         }
 
-        if (Typeof(what) == TYPE_ROOM || OWNER(what) == obj || player == obj ||
-            (Typeof(what) == TYPE_EXIT && Typeof(LOCATION(what)) == TYPE_ROOM) ||
+        if (OBJECT_TYPE(what) == TYPE_ROOM || OWNER(what) == obj || player == obj ||
+            (OBJECT_TYPE(what) == TYPE_EXIT && OBJECT_TYPE(LOCATION(what)) == TYPE_ROOM) ||
             string_prefix(argv[0], NAME(player))) {
             snprintf(buf, BUFFER_LEN, "%s%.4093s",
                      ((obj == OWNER(perms) || obj == player) ? "" : "> "), ptr);
@@ -3688,7 +3690,7 @@ mfn_otell(MFUNARGS)
     if (obj == PERMDENIED)
         ABORT_MPI("OTELL", "Permission denied.");
 
-    if ((mesgtyp & MPI_ISLISTENER) && (Typeof(what) != TYPE_ROOM))
+    if ((mesgtyp & MPI_ISLISTENER) && (OBJECT_TYPE(what) != TYPE_ROOM))
         ABORT_MPI("OTELL", "Permission denied.");
 
     if (argc > 2)
@@ -3710,8 +3712,8 @@ mfn_otell(MFUNARGS)
          *       merge this somehow?
          */
         if (((OWNER(what) == OWNER(obj) || isancestor(what, obj)) &&
-             (Typeof(what) == TYPE_ROOM ||
-              (Typeof(what) == TYPE_EXIT && Typeof(LOCATION(what)) == TYPE_ROOM))) ||
+             (OBJECT_TYPE(what) == TYPE_ROOM ||
+              (OBJECT_TYPE(what) == TYPE_EXIT && OBJECT_TYPE(LOCATION(what)) == TYPE_ROOM))) ||
                 string_prefix(argv[0], NAME(player))) {
             strcpyn(buf, buflen, ptr);
         } else {

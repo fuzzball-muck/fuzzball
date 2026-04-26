@@ -585,7 +585,7 @@ void prim_event_send(PRIM_PROTOTYPE);
  *
  * Consumes a string and an object specification, and returns a boolean that
  * represents if an object can be created with the given name.
- * 
+ *
  * The specification can be an object that is of the same type of the object,
  * or a string representing the type.  If the second is used, the values can
  * be one of these case-sensitive strings:

@@ -111,7 +111,7 @@ void prim_divide(PRIM_PROTOTYPE);
  * @see prim_fmod
  * @see prim_modf
  *
- * Returns the modulo of the lower number by the top number.  
+ * Returns the modulo of the lower number by the top number.
  *
  * Dbrefs and variable numbers can also be manipulated with this.
  *

@@ -2,6 +2,7 @@
 #define _WIN32_H_
 
 #include <direct.h>
+#include <intrin.h>
 #include <process.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
@@ -31,6 +32,7 @@
 #define write(fd, buf, count) \
 			send(fd, (char *)buf, count, 0)
 
+int ffsl(long mask);
 int gettimeofday(struct timeval *tv, struct timezone *tz);
 void set_console();
 void sync();

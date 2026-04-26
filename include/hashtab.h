@@ -47,7 +47,7 @@ typedef hash_entry *hash_tab;           /**< A hash table itself */
  * @param name the name of the entry to add
  * @param data the data to store
  * @param table the hash stable to store it in
- * @param size the page size of the hash table 
+ * @param size the page size of the hash table
  */
 hash_entry *add_hash(const char *name, hash_data data, hash_tab * table,
                      unsigned int size);

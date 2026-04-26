@@ -1,7 +1,7 @@
 /** @file array.c
  *
  * Source for the different array types used in Fuzzball.  This is primarily
- * used for MUF primitives. 
+ * used for MUF primitives.
  *
  * This file is part of Fuzzball MUCK.  Please see LICENSE.md for details.
  */
@@ -291,7 +291,7 @@ array_tree_compare_arrays(const array_iter * a, const array_iter * b, int case_s
     }
 
     /* I believe this is to avoid accidental recursion; this way, we make
-     * sure we only check each array once because the visited_set is 
+     * sure we only check each array once because the visited_set is
      * a hash of memory addresses.
      */
     if (!visited_set_add_and_return_if_added(visited_a, a->data.array) ||
@@ -3072,7 +3072,7 @@ array_join(stk_array *arr, const char* delim, char* outbuf, int buflen,
 
     keepgoing = array_first(arr, &temp1);
 
-    while(keepgoing) {
+    while (keepgoing) {
         in = array_getitem(arr, &temp1);
 
         switch (in->type) {

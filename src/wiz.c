@@ -21,6 +21,7 @@
 #include "diskprop.h"
 #endif
 #include "fbstrings.h"
+#include "flags.h"
 #include "game.h"
 #include "interface.h"
 #include "log.h"
@@ -90,7 +91,7 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
          *        live elsewhere and should change as well; though
          *        in most places they are not quite so blatantly repetitive.
          */
-        init_match(descr, player, arg1, NOTYPE, &md);
+        init_match(descr, player, arg1, TYPE_ANY, &md);
         match_neighbor(&md);
         match_possession(&md);
         match_me(&md);
@@ -131,11 +132,11 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
         return;
     }
 
-    unparse_object(player, victim, victim_name_buf, sizeof(victim_name_buf));
+    flag_unparse_object(player, victim, victim_name_buf, sizeof(victim_name_buf));
 
     /* If we're sending the thing home, let's figure out where that is. */
     if (destination == HOME) {
-        switch (Typeof(victim)) {
+        switch (OBJECT_TYPE(victim)) {
             case TYPE_PLAYER:
                 destination = PLAYER_HOME(victim);
 
@@ -185,12 +186,12 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
      *        The answer here may be to do nothing, but this seems like
      *        its a lot of flailing around with similar checks.
      */
-    switch (Typeof(victim)) {
+    switch (OBJECT_TYPE(victim)) {
         case TYPE_PLAYER:
             if (!controls(player, victim) ||
                 !controls(player, destination) ||
                 !controls(player, LOCATION(victim)) ||
-                (Typeof(destination) == TYPE_THING
+                (OBJECT_TYPE(destination) == TYPE_THING
                  && !controls(player, LOCATION(destination)))) {
 
                 notify(player,
@@ -198,15 +199,15 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
                 break;
             }
 
-            if (Typeof(destination) != TYPE_ROOM && 
-                Typeof(destination) != TYPE_THING) {
+            if (OBJECT_TYPE(destination) != TYPE_ROOM &&
+                OBJECT_TYPE(destination) != TYPE_THING) {
                 notify(player, "Bad destination.");
                 break;
             }
 
             if (!Wizard(victim) &&
-                (Typeof(destination) == TYPE_THING && 
-                 !(FLAGS(destination) & VEHICLE))) {
+                (OBJECT_TYPE(destination) == TYPE_THING &&
+                 !FLAG_CHECK(destination, 'V'))) {
                 notify(player, "Destination object is not a vehicle.");
                 break;
             }
@@ -217,7 +218,7 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
             }
 
             notify(victim, "You feel a wrenching sensation...");
-            unparse_object(player, destination, destination_name_buf,
+            flag_unparse_object(player, destination, destination_name_buf,
                            sizeof(destination_name_buf));
             enter_room(descr, victim, destination, LOCATION(victim));
             notifyf(player, "%s teleported to %s.", victim_name_buf,
@@ -230,9 +231,9 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
             }
             /* fall through */
         case TYPE_PROGRAM:
-            if (Typeof(destination) != TYPE_ROOM
-                && Typeof(destination) != TYPE_PLAYER
-                && Typeof(destination) != TYPE_THING) {
+            if (OBJECT_TYPE(destination) != TYPE_ROOM
+                && OBJECT_TYPE(destination) != TYPE_PLAYER
+                && OBJECT_TYPE(destination) != TYPE_THING) {
                 notify(player, "Bad destination.");
                 break;
             }
@@ -247,13 +248,13 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
             }
 
             /* check for non-sticky dropto */
-            if (Typeof(destination) == TYPE_ROOM
+            if (OBJECT_TYPE(destination) == TYPE_ROOM
                 && DBFETCH(destination)->sp.room.dropto != NOTHING
-                && !(FLAGS(destination) & STICKY))
+                && !FLAG_CHECK(destination, 'S'))
                 destination = DBFETCH(destination)->sp.room.dropto;
 
-            if (tp_secure_thing_movement && (Typeof(victim) == TYPE_THING)) {
-                if (FLAGS(victim) & ZOMBIE) {
+            if (tp_secure_thing_movement && (OBJECT_TYPE(victim) == TYPE_THING)) {
+                if (FLAG_CHECK(victim, 'Z')) {
                     notify(victim, "You feel a wrenching sensation...");
                 }
 
@@ -262,12 +263,12 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
                 moveto(victim, destination);
             }
 
-            unparse_object(player, destination, destination_name_buf, sizeof(destination_name_buf));
+            flag_unparse_object(player, destination, destination_name_buf, sizeof(destination_name_buf));
             notifyf(player, "%s teleported to %s.", victim_name_buf,
                     destination_name_buf);
             break;
         case TYPE_ROOM:
-            if (Typeof(destination) != TYPE_ROOM) {
+            if (OBJECT_TYPE(destination) != TYPE_ROOM) {
                 notify(player, "Bad destination.");
                 break;
             }
@@ -286,7 +287,7 @@ do_teleport(int descr, dbref player, const char *arg1, const char *arg2)
             }
 
             moveto(victim, destination);
-            unparse_object(player, destination, destination_name_buf, sizeof(destination_name_buf));
+            flag_unparse_object(player, destination, destination_name_buf, sizeof(destination_name_buf));
             notifyf(player, "Parent of %s set to %s.", victim_name_buf,
                     destination_name_buf);
             break;
@@ -417,7 +418,7 @@ do_unbless(int descr, dbref player, const char *what, const char *propname)
     }
 
     /* get victim */
-    init_match(descr, player, what, NOTYPE, &md);
+    init_match(descr, player, what, TYPE_ANY, &md);
     match_everything(&md);
 
     if ((victim = noisy_match_result(&md)) == NOTHING) {
@@ -457,7 +458,7 @@ do_bless(int descr, dbref player, const char *what, const char *propname)
     int cnt;
 
     /* get victim */
-    init_match(descr, player, what, NOTYPE, &md);
+    init_match(descr, player, what, TYPE_ANY, &md);
     match_everything(&md);
 
     if ((victim = noisy_match_result(&md)) == NOTHING) {
@@ -512,7 +513,7 @@ do_force(int descr, dbref player, const char *what, char *command)
         return;
     }
 
-    if (!tp_allow_zombies && (!Wizard(player) || Typeof(player) != TYPE_PLAYER)) {
+    if (!tp_allow_zombies && (!Wizard(player) || OBJECT_TYPE(player) != TYPE_PLAYER)) {
         notify(player, "Zombies are not enabled here.");
         return;
 
@@ -527,7 +528,7 @@ do_force(int descr, dbref player, const char *what, char *command)
      */
 
     /* get victim */
-    init_match(descr, player, what, NOTYPE, &md);
+    init_match(descr, player, what, TYPE_ANY, &md);
     match_neighbor(&md);
     match_possession(&md);
     match_me(&md);
@@ -543,7 +544,7 @@ do_force(int descr, dbref player, const char *what, char *command)
         return;
     }
 
-    if (Typeof(victim) != TYPE_PLAYER && Typeof(victim) != TYPE_THING) {
+    if (OBJECT_TYPE(victim) != TYPE_PLAYER && OBJECT_TYPE(victim) != TYPE_THING) {
         notify(player, "Permission Denied -- Target not a player or thing.");
         return;
     }
@@ -555,7 +556,7 @@ do_force(int descr, dbref player, const char *what, char *command)
     }
 #endif
 
-    if (!Wizard(player) && !(FLAGS(victim) & XFORCIBLE)) {
+    if (!Wizard(player) && !FLAG_CHECK(victim, 'X')) {
         notify(player, "Permission denied: forced object not @set Xforcible.");
         return;
     }
@@ -566,22 +567,22 @@ do_force(int descr, dbref player, const char *what, char *command)
     }
 
     loc = LOCATION(victim);
-    if (!Wizard(player) && Typeof(victim) == TYPE_THING && loc != NOTHING &&
-        (FLAGS(loc) & ZOMBIE) && Typeof(loc) == TYPE_ROOM) {
+    if (!Wizard(player) && OBJECT_TYPE(victim) == TYPE_THING && loc != NOTHING &&
+        FLAG_CHECK(loc, 'Z') && OBJECT_TYPE(loc) == TYPE_ROOM) {
         notify(player, "Sorry, but that's in a no-puppet zone.");
         return;
     }
 
-    if (!Wizard(OWNER(player)) && Typeof(victim) == TYPE_THING) {
+    if (!Wizard(OWNER(player)) && OBJECT_TYPE(victim) == TYPE_THING) {
         const char *ptr = NAME(victim);
         char objname[BUFFER_LEN], *ptr2;
 
-        if ((FLAGS(player) & ZOMBIE)) {
+        if (FLAG_CHECK(player, 'Z')) {
             notify(player, "Permission denied -- you cannot use zombies.");
             return;
         }
 
-        if (FLAGS(victim) & DARK) {
+        if (Dark(victim)) {
             notify(player, "Permission denied -- you cannot force dark zombies.");
             return;
         }
@@ -668,7 +669,7 @@ do_stats(dbref player, const char *name)
  *
  * @param player the player doing the @boot command
  * @param name the string name that will be matched for the player to boot.
- */ 
+ */
 void
 do_boot(dbref player, const char *name)
 {
@@ -695,7 +696,7 @@ do_boot(dbref player, const char *name)
         return;
     }
 
-    if (Typeof(victim) != TYPE_PLAYER) {
+    if (OBJECT_TYPE(victim) != TYPE_PLAYER) {
         notify(player, "You can only boot players!");
     }
 #ifdef GOD_PRIV
@@ -786,7 +787,7 @@ do_toad(int descr, dbref player, const char *name, const char *recip)
         }
     }
 
-    if (Typeof(victim) != TYPE_PLAYER) {
+    if (OBJECT_TYPE(victim) != TYPE_PLAYER) {
         notify(player, "You can only turn players into toads!");
 
 #ifdef GOD_PRIV
@@ -1046,7 +1047,7 @@ do_topprofs(dbref player, char *arg1)
                 DBFETCH(i)->mpi_proftime.tv_sec = 0;
             }
 
-            if (type != 0 && Typeof(i) == TYPE_PROGRAM && PROGRAM_CODE(i)) {
+            if (type != 0 && OBJECT_TYPE(i) == TYPE_PROGRAM && PROGRAM_CODE(i)) {
                 PROGRAM_SET_PROFTIME(i, 0, 0);
                 PROGRAM_SET_PROFSTART(i, current_systime);
                 PROGRAM_SET_PROF_USES(i, 0);
@@ -1080,7 +1081,7 @@ do_topprofs(dbref player, char *arg1)
             add_to_proflist(&tops, count, &nodecount, i, 0, current_systime);
         }
 
-        if (type != 0 && Typeof(i) == TYPE_PROGRAM && PROGRAM_CODE(i)) {
+        if (type != 0 && OBJECT_TYPE(i) == TYPE_PROGRAM && PROGRAM_CODE(i)) {
             add_to_proflist(&tops, count, &nodecount, i, 1, current_systime);
         }
     }
@@ -1091,7 +1092,7 @@ do_topprofs(dbref player, char *arg1)
     while (tops) {
         char unparse_buf[BUFFER_LEN];
         curr = tops;
-        unparse_object(player, curr->prog, unparse_buf, sizeof(unparse_buf));
+        flag_unparse_object(player, curr->prog, unparse_buf, sizeof(unparse_buf));
         notifyf_nolisten(player, "%10.3f %10.3f %9ld%s%s", curr->pcnt, curr->proftime,
                 curr->usecount, type == -1 ? (curr->type ? "  MUF   " : "  MPI   ") : "  ", unparse_buf);
         tops = tops->next;
@@ -1218,7 +1219,7 @@ static const unsigned char base64_table[65] =
  * @return size of the generated b64 string (not including null)
  */
 static size_t
-base64_encode(const unsigned char *src, size_t len, 
+base64_encode(const unsigned char *src, size_t len,
               unsigned char *out, size_t out_size)
 {
     unsigned char *pos;
@@ -1335,7 +1336,7 @@ base64_send(struct descriptor_data* descr, FILE* in)
         if (sent + b64_len > limit) {
             process_all_output(10, 1000, descr);
             sent = 0;
-        }        
+        }
 
         queue_write_max(descr, base64_buf, b64_len, 0);
         sent += b64_len;
@@ -1415,7 +1416,7 @@ do_teledump(int descr, dbref player)
      * only way to find all the programs on the MUCK.
      */
     for (dbref i = 0; i < db_top; i++) {
-        if (Typeof(i) != TYPE_PROGRAM) {
+        if (OBJECT_TYPE(i) != TYPE_PROGRAM) {
             continue;
         }
 

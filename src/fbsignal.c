@@ -357,7 +357,7 @@ sig_reap(int i)
      * knowing about it, and dealing with it as necessary.
      *
      * The fix for SSL connections getting closed when databases were
-     * saved with DISKBASE disabled required closing all sockets 
+     * saved with DISKBASE disabled required closing all sockets
      * when the server fork()ed.  This made it impossible for that
      * process to spit out the "save done" message.  However, because
      * that process dies as soon as it finishes dumping the database,

@@ -90,7 +90,7 @@ arith_type(short op1_type, short op2_type)
 int
 comp_t(short op_type)
 {
-    return (op_type == PROG_INTEGER || op_type == PROG_FLOAT 
+    return (op_type == PROG_INTEGER || op_type == PROG_FLOAT
             || op_type == PROG_OBJECT);
 }
 
@@ -328,7 +328,7 @@ xMD5Update(struct xMD5Context *ctx, const uint8_t * buf, size_t len)
 /**
  * Finalize an MD5 digest
  *
- * Final wrapup - pad to 64-byte boundary with the bit pattern 
+ * Final wrapup - pad to 64-byte boundary with the bit pattern
  * 1 0* (64-bit count of bits processed, MSB-first)
  *
  * @private

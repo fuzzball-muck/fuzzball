@@ -279,7 +279,7 @@ toad_player(int descr, dbref player, dbref victim, dbref recipient)
 
     for (dbref stuff = 0; stuff < db_top; stuff++) {
         if (OWNER(stuff) == victim) {
-            switch (Typeof(stuff)) {
+            switch (OBJECT_TYPE(stuff)) {
                 case TYPE_PROGRAM:
                     dequeue_prog(stuff, 0);
                     if (TrueWizard(recipient)) {
@@ -297,7 +297,7 @@ toad_player(int descr, dbref player, dbref victim, dbref recipient)
             }
         }
 
-        if (Typeof(stuff) == TYPE_THING && THING_HOME(stuff) == victim) {
+        if (OBJECT_TYPE(stuff) == TYPE_THING && THING_HOME(stuff) == victim) {
             THING_SET_HOME(stuff, tp_lost_and_found);
         }
     }
@@ -442,7 +442,7 @@ delete_player(dbref who)
         clear_players();
 
         for (dbref i = 0; i < db_top; i++) {
-            if (Typeof(i) == TYPE_PLAYER) {
+            if (OBJECT_TYPE(i) == TYPE_PLAYER) {
                 found = lookup_player(NAME(i));
 
                 if (found != NOTHING) {
@@ -532,7 +532,7 @@ payfor(dbref who, int cost)
  *
  * * Passwords cannot be blank
  * * They cannot contain non-printable characters
- * * And also no space characters 
+ * * And also no space characters
  *
  * @param password the password to check
  * @return boolean true if it is valid, false otherwise

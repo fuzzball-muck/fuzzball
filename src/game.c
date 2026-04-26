@@ -29,6 +29,7 @@
 #include "fbsignal.h"
 #include "fbstrings.h"
 #include "fbtime.h"
+#include "flags.h"
 #include "game.h"
 #include "interface.h"
 #include "log.h"
@@ -47,7 +48,7 @@
  * @private
  * @param string the string to match against 'command'
  */
-#define Matched(string) { if(!string_prefix((string), command)) goto bad; }
+#define Matched(string) { if (!string_prefix((string), command)) goto bad; }
 
 /**
  * @var a variable to keep track of the force level.  This is incremented
@@ -179,9 +180,9 @@ void
 do_shutdown(dbref player)
 {
     char unparse_buf[BUFFER_LEN];
-    unparse_object(player, player, unparse_buf, sizeof(unparse_buf));
+    flag_unparse_object(player, player, unparse_buf, sizeof(unparse_buf));
 
-    if (Wizard(player) && Typeof(player) == TYPE_PLAYER) {
+    if (Wizard(player) && OBJECT_TYPE(player) == TYPE_PLAYER) {
         log_status("SHUTDOWN: by %s", unparse_buf);
         shutdown_flag = 1;
         restart_flag = 0;
@@ -226,9 +227,9 @@ void
 do_restart(dbref player)
 {
     char unparse_buf[BUFFER_LEN];
-    unparse_object(player, player, unparse_buf, sizeof(unparse_buf));
+    flag_unparse_object(player, player, unparse_buf, sizeof(unparse_buf));
 
-    if (Wizard(player) && Typeof(player) == TYPE_PLAYER) {
+    if (Wizard(player) && OBJECT_TYPE(player) == TYPE_PLAYER) {
         log_status("SHUTDOWN & RESTART: by %s", unparse_buf);
         shutdown_flag = 1;
         restart_flag = 1;
@@ -465,6 +466,7 @@ init_game(const char *infile, const char *outfile)
         return -1;
 
     db_free();
+    flag_init(); /* init object flag and type system */
     init_primitives(); /* init muf compiler */
     mesg_init(); /* init mpi interpreter */
     SRANDOM((unsigned int)getpid()); /* init random number generator */
@@ -562,7 +564,7 @@ process_command(int descr, dbref player, const char *command)
 
     /* robustify player */
     if (!ObjExists(player) ||
-        (Typeof(player) != TYPE_PLAYER && Typeof(player) != TYPE_THING)) {
+        (OBJECT_TYPE(player) != TYPE_PLAYER && OBJECT_TYPE(player) != TYPE_THING)) {
         log_status("process_command: bad player %d", player);
         return;
     }
