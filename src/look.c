@@ -1257,10 +1257,10 @@ checkflags(dbref what, struct flgchkdat check)
     if (check.isnotthree && (OBJECT_MLEVEL(what) == 3))
         return (0);
 
-    if (FLAG_CHECK(what, check.clearflags))
+    if (FLAGS(what) & check.clearflags)
         return (0);
 
-    if (!FLAG_CHECK(what, check.setflags))
+    if ((~FLAGS(what)) & check.setflags)
         return (0);
 
     if (check.forlink) {

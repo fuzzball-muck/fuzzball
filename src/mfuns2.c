@@ -2285,45 +2285,14 @@ mfn_type(MFUNARGS)
 {
     dbref obj = mesg_dbref_raw(descr, player, what, argv[0]);
 
-    /*
-     * TODO: This seems like its duplicated in a number of places.
-     *       The 'examine' command for instance does something very
-     *       similar.  Can we centralize this logic?
-     *
-     *       Doing a grep case TYPE_ reveals 331 results.  Not all of them
-     *       are this exact thing, but some are close.
-     */
-
-    if (obj == NOTHING || obj == AMBIGUOUS || obj == UNKNOWN)
-        return ("Bad");
-
-    if (obj == HOME)
-        return ("Room");
-
     if (obj == PERMDENIED)
         ABORT_MPI("TYPE", "Permission Denied.");
 
-    switch (OBJECT_TYPE(obj)) {
-        case TYPE_PLAYER:
-            return "Player";
+    if (obj == HOME)
+        return "Room";
 
-        case TYPE_ROOM:
-            return "Room";
-
-        case TYPE_EXIT:
-            return "Exit";
-
-        case TYPE_THING:
-            return "Thing";
-
-        case TYPE_PROGRAM:
-            return "Program";
-
-        default:
-            return "Bad";
-    }
+    return object_type_name_mpi(obj);
 }
-
 
 /**
  * MPI function that returns true if arg0 is of type arg1
@@ -2346,48 +2315,14 @@ mfn_type(MFUNARGS)
 const char *
 mfn_istype(MFUNARGS)
 {
-    dbref obj;
-    obj = mesg_dbref_raw(descr, player, what, argv[0]);
-
-    if (obj == NOTHING || obj == AMBIGUOUS || obj == UNKNOWN)
-        return (strcasecmp(argv[1], "Bad") ? "0" : "1");
-
-    /*
-     * TODO This check is redundant -- it is identical to the above check
-     *      except it also adds perm denied.  Delete this altogether, then
-     *      move the check for PERMDENIED (the next if statement) up to
-     *      the top because Bad shouldn't bypass permission checks.
-     */
-    if ((strcasecmp(argv[1], "Bad") == 0) &&
-        (obj == NOTHING || obj == AMBIGUOUS || obj == UNKNOWN
-         || obj == PERMDENIED))
-        return "1";
+    dbref obj = mesg_dbref_raw(descr, player, what, argv[0]);
 
     if (obj == PERMDENIED)
         ABORT_MPI("TYPE", "Permission Denied.");
 
-    if (obj == HOME)
-        return (strcasecmp(argv[1], "Room") ? "0" : "1");
+    const char *type = (obj == HOME) ? "Room": object_type_name_mpi(obj);
 
-    switch (OBJECT_TYPE(obj)) {
-        case TYPE_PLAYER:
-            return (strcasecmp(argv[1], "Player") ? "0" : "1");
-
-        case TYPE_ROOM:
-            return (strcasecmp(argv[1], "Room") ? "0" : "1");
-
-        case TYPE_EXIT:
-            return (strcasecmp(argv[1], "Exit") ? "0" : "1");
-
-        case TYPE_THING:
-            return (strcasecmp(argv[1], "Thing") ? "0" : "1");
-
-        case TYPE_PROGRAM:
-            return (strcasecmp(argv[1], "Program") ? "0" : "1");
-
-        default:
-            return (strcasecmp(argv[1], "Bad") ? "0" : "1");
-    }
+    return (strcasecmp(argv[1], type) ? "0" : "1");
 }
 
 /**

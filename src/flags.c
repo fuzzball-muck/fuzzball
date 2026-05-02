@@ -21,17 +21,18 @@
  */
 struct object_type {
     char symbol;
-    char *all_caps;
+    char *uppercase;
+    char *titlecase;
     char *singular;
     char *plural;
 };
 
 struct object_type object_types[] = {
-    { 'R', "ROOM", "room", "rooms" },
-    { 'T', "THING", "thing", "things" },
-    { 'E', "EXIT/ACTION", "exit", "exits" },
-    { 'P', "PLAYER", "player", "players" },
-    { 'F', "PROGRAM", "program", "programs" }
+    { 'R', "ROOM", "Room", "room", "rooms" },
+    { 'T', "THING", "Thing", "thing", "things" },
+    { 'E', "EXIT/ACTION", "Exit", "exit", "exits" },
+    { 'P', "PLAYER", "Player", "player", "players" },
+    { 'F', "PROGRAM", "Program", "program", "programs" }
 };
 
 /**
@@ -52,7 +53,28 @@ object_type_name(dbref ref) {
         return "UNKNOWN";
     }
 
-    return object_types[type].all_caps;
+    return object_types[type].uppercase;
+}
+
+/**
+ * Returns the titlecase name of an object's type.
+ *
+ * @param ref  The object to check.
+ * @return     A string like "Room", "Player", or "Bad".
+ */
+const char*
+object_type_name_mpi(dbref ref) {
+    if (!ObjExists(ref)) {
+        return "Bad";
+    }
+
+    int type = OBJECT_TYPE(ref);
+
+    if (type < 0 || type >= ARRAYSIZE(object_types)) {
+        return "UNKNOWN";
+    }
+
+    return object_types[type].titlecase;
 }
 
 /**

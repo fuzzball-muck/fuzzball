@@ -244,6 +244,14 @@ void flag_unparse_object(dbref player, dbref ref, char *buf, size_t size);
 const char* object_type_name(dbref ref);
 
 /**
+ * Returns the titlecase name of an object's type.
+ *
+ * @param ref  The object to check.
+ * @return     A string like "Room", "Player", or "Bad".
+ */
+const char* object_type_name_mpi(dbref ref);
+
+/**
  * Returns the flag associated with the given string, if any.
  *
  * Understands flag alias prefixes.
