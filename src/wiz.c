@@ -612,6 +612,11 @@ do_force(int descr, dbref player, const char *what, char *command)
 }
 
 /**
+ * Returns singular or plural string based on count.
+ */
+#define PLURALFORM(count, singular, plural) ((count) == 1 ? (singular) : (plural))
+
+/**
  * Implementation of the \@stats command
  *
  * This displays stats on what is in the database, optionally showing
@@ -631,35 +636,39 @@ do_stats(dbref player, const char *name)
     dbref owner = NOTHING;
     int stats[7];
 
+    if (!Wizard(OWNER(player))) {
+        notifyf(player, "The universe contains %d objects.", db_top);
+        return;
+    }
+
     if (name != NULL && *name != '\0') {
         owner = lookup_player(name);
         if (owner == NOTHING) {
             notify(player, "I can't find that player.");
             return;
         }
-        if (!Wizard(OWNER(player)) && OWNER(player) != owner) {
-            notify(player, "Permission denied. (you must be a wizard to get someone else's stats)");
-            return;
-        }
-    } else if (!Wizard(OWNER(player))) {
-        notifyf(player, "The universe contains %d objects.", db_top);
-        return;
     }
 
     collect_dbstats(player, owner, stats);
 
-    notifyf(player, "%7d room%s        %7d exit%s        %7d thing%s",
-            stats[1], (stats[1] == 1) ? " " : "s",
-            stats[2], (stats[2] == 1) ? " " : "s",
-            stats[3], (stats[3] == 1) ? " " : "s");
+    const struct object_type *ti_room    = &object_types[TYPE_ROOM];
+    const struct object_type *ti_exit    = &object_types[TYPE_EXIT];
+    const struct object_type *ti_thing   = &object_types[TYPE_THING];
+    const struct object_type *ti_program = &object_types[TYPE_PROGRAM];
+    const struct object_type *ti_player  = &object_types[TYPE_PLAYER];
 
-    notifyf(player, "%7d program%s     %7d player%s      %7d garbage",
-            stats[4], (stats[4] == 1) ? " " : "s",
-            stats[5], (stats[5] == 1) ? " " : "s",
+    notifyf(player, "%7d %-8s %7d %-8s %7d %-8s",
+            stats[1], PLURALFORM(stats[1], ti_room->singular, ti_room->plural),
+            stats[2], PLURALFORM(stats[2], ti_exit->singular, ti_exit->plural),
+            stats[3], PLURALFORM(stats[3], ti_thing->singular, ti_thing->plural));
+
+    notifyf(player, "%7d %-8s %7d %-8s %7d garbage",
+            stats[4], PLURALFORM(stats[4], ti_program->singular, ti_program->plural),
+            stats[5], PLURALFORM(stats[5], ti_player->singular, ti_player->plural),
             stats[6]);
 
-    notifyf(player, "%7d total object%s",
-            stats[0], (stats[0] == 1) ? " " : "s");
+    notifyf(player, "%7d total %s",
+            stats[0], PLURALFORM(stats[0], "object", "objects"));
 }
 
 /**

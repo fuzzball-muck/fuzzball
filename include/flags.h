@@ -76,6 +76,16 @@
 #define OBJECT_TYPE(ref)   (ref == HOME ? TYPE_ROOM : (FLAGS(ref) & TYPE_MASK))
 
 /**
+ * Returns a pointer to the object_type struct for the given dbref.
+ * 
+ * Does not check to see if 'ref' is a valid ref.
+ *
+ * @param ref the db object to get type info for
+ * @return the related object_type struct
+ */
+#define OBJECT_TYPE_INFO(ref) (&object_types[OBJECT_TYPE(ref)])
+
+/**
  * The MUCKER level of the object, ignoring the WIZARD bit.
  *
  * Does not check to see if 'ref' is a valid object.
@@ -108,6 +118,20 @@
  */
 #define OBJECT_PRIORITY(ref) \
     ((OBJECT_MLEVEL(ref) > 0) ? (OBJECT_MLEVEL(ref) + 1) : (FLAG_CHECK((ref), 'A') ? 0 : 1))
+
+/**
+ * This structure and array define the fundamental object types within the
+ * database and their associated display strings.
+ */
+struct object_type {
+    char symbol;
+    char *uppercase;
+    char *titlecase;
+    char *singular;
+    char *plural;
+};
+
+extern struct object_type object_types[];
 
 typedef long object_flag_type;  /**< Object flag type - need 32+ bits */
 
@@ -234,22 +258,6 @@ void flag_list_verbose(dbref ref, char *buf, size_t size);
  * @param size the size of the buffer
  */
 void flag_unparse_object(dbref player, dbref ref, char *buf, size_t size);
-
-/**
- * Returns the uppercase name of an object's type.
- *
- * @param ref  The object to check.
- * @return     A string like "ROOM", "PLAYER", or "INVALID".
- */
-const char* object_type_name(dbref ref);
-
-/**
- * Returns the titlecase name of an object's type.
- *
- * @param ref  The object to check.
- * @return     A string like "Room", "Player", or "Bad".
- */
-const char* object_type_name_mpi(dbref ref);
 
 /**
  * Returns the flag associated with the given string, if any.

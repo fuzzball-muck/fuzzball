@@ -16,17 +16,9 @@
 #include "game.h"
 
 /**
- * This structure and array define the fundamental object types within the
- * database and their associated display strings.
+ * This array defines the fundamental object types within the database and
+ * their associated display strings.
  */
-struct object_type {
-    char symbol;
-    char *uppercase;
-    char *titlecase;
-    char *singular;
-    char *plural;
-};
-
 struct object_type object_types[] = {
     { 'R', "ROOM", "Room", "room", "rooms" },
     { 'T', "THING", "Thing", "thing", "things" },
@@ -34,49 +26,6 @@ struct object_type object_types[] = {
     { 'P', "PLAYER", "Player", "player", "players" },
     { 'F', "PROGRAM", "Program", "program", "programs" }
 };
-
-/**
- * Returns the uppercase name of an object's type.
- *
- * @param ref  The object to check.
- * @return     A string like "ROOM", "PLAYER", or "INVALID".
- */
-const char*
-object_type_name(dbref ref) {
-    if (!ObjExists(ref)) {
-        return "INVALID";
-    }
-
-    int type = OBJECT_TYPE(ref);
-
-    if (type < 0 || type >= ARRAYSIZE(object_types)) {
-        return "UNKNOWN";
-    }
-
-    return object_types[type].uppercase;
-}
-
-/**
- * Returns the titlecase name of an object's type.
- *
- * @param ref  The object to check.
- * @return     A string like "Room", "Player", or "Bad".
- */
-const char*
-object_type_name_mpi(dbref ref) {
-    if (!ObjExists(ref)) {
-        return "Bad";
-    }
-
-    int type = OBJECT_TYPE(ref);
-
-    if (type < 0 || type >= ARRAYSIZE(object_types)) {
-        return "UNKNOWN";
-    }
-
-    return object_types[type].titlecase;
-}
-
 /**
  * This structure and array support the listing of system flags and provides
  * context-specific aliasing based on the object type.

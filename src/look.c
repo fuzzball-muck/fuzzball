@@ -604,7 +604,7 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
     notify(player, buf);
 
     flag_list_verbose(thing, flags_buf, sizeof(flags_buf));
-    notifyf(player, "Type: %s  Flags: %s", object_type_name(thing), flags_buf);
+    notifyf(player, "Type: %s  Flags: %s", OBJECT_TYPE_INFO(thing)->uppercase, flags_buf);
 
     if (GETDESC(thing))
         notify(player, GETDESC(thing));

@@ -2288,10 +2288,15 @@ mfn_type(MFUNARGS)
     if (obj == PERMDENIED)
         ABORT_MPI("TYPE", "Permission Denied.");
 
-    if (obj == HOME)
-        return "Room";
+    if (obj == UNKNOWN || obj == AMBIGUOUS || obj == NOTHING)
+        return "Bad";
 
-    return object_type_name_mpi(obj);
+    const struct object_type *type_info = OBJECT_TYPE_INFO(obj);
+
+    if (!type_info)
+       return (strcasecmp(argv[1], "Bad") == 0) ? "1" : "0";
+
+    return type_info ? type_info->titlecase : "Bad";
 }
 
 /**
@@ -2318,11 +2323,12 @@ mfn_istype(MFUNARGS)
     dbref obj = mesg_dbref_raw(descr, player, what, argv[0]);
 
     if (obj == PERMDENIED)
-        ABORT_MPI("TYPE", "Permission Denied.");
+        ABORT_MPI("ISTYPE", "Permission Denied.");
 
-    const char *type = (obj == HOME) ? "Room": object_type_name_mpi(obj);
+    if (obj == UNKNOWN || obj == AMBIGUOUS || obj == NOTHING)
+        return (strcasecmp(argv[1], "Bad") == 0) ? "1" : "0";
 
-    return (strcasecmp(argv[1], type) ? "0" : "1");
+    return (strcasecmp(argv[1], OBJECT_TYPE_INFO(obj)->titlecase) ? "0" : "1");
 }
 
 /**
