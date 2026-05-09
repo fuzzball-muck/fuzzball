@@ -99,6 +99,7 @@
     <li><a href="#filter">filter</a></li>
     <li><a href="#flag?">flag?</a></li>
     <li><a href="#flags">flags</a></li>
+    <li><a href="#flags?">flags?</a></li>
     <li><a href="#fold">fold</a></li>
     <li><a href="#for">for</a></li>
     <li><a href="#force">force</a></li>
@@ -1542,6 +1543,7 @@ items delimited by that string, otherwise it assumes a carriage return.
     <li><a href="#exits">exits</a></li>
     <li><a href="#flag?">flag?</a></li>
     <li><a href="#flags">flags</a></li>
+    <li><a href="#flags?">flags?</a></li>
     <li><a href="#force">force</a></li>
     <li><a href="#fullname">fullname</a></li>
     <li><a href="#holds">holds</a></li>
@@ -1593,7 +1595,7 @@ by the owner of the trigger object.
 </h3>
   Returns the state of the flag on the given object. 1 = on; 0 = off.
 The ! token may be used before the name of a flag to negate the check and
-check for the absence of the flag. Returns 0 for nrecognized flags.
+check for the absence of the flag. Returns 0 for unrecognized flags.
 
 <p>
   You can check the &quot;interactive&quot; flag to see if a player is currently in
@@ -1602,6 +1604,23 @@ a program's READ, or if they are in the MUF editor.
 The &quot;Truewizard&quot; flag will check for a W flag with or without the QUELL set.
 The &quot;Mucker&quot; flag returns the most significant bit of the mucker level and
 the &quot;Nucker&quot; flag returns the least significant bit.
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="flags?">{flags?:obj,pattern}
+<br>
+</h3>
+  Determines if object d has the flag pattern given by string s. A flag
+pattern consists of at least one single-character flag with an optional
+! token in front to negate the specific check. Flag patterns also recognize 
+object types.
+
+<p>
+  Does not recognize full flag names, including the virtual alias
+&quot;truewizard&quot;; &quot;T&quot; checks for an object of type thing.
+
+<p>
+  Examples of flag patterns include &quot;PB3&quot;, &quot;L!A&quot;, and &quot;!O&quot;.
 <!-- HTML_TOPICEND -->
 
 

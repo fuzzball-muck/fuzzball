@@ -59,8 +59,8 @@ E's
   eq     eval   eval!  exec   exec!  exits  
 
 F's
-  filter     flag?      flags      fold       for        force      foreach
-  ftime      fullname   func       
+  filter     flag?      flags      flags?     fold       for        force
+  foreach    ftime      fullname   func       
 
 G's
   ge  gt  
@@ -1088,9 +1088,9 @@ Database Related Functions|Database|DBFuncs
 Database Related Functions
 
 contains   contents   controls   created    dbeq       exits      flag?
-flags      force      fullname   holds      istype     lastused   links
-loc        locked     modified   money      name       nearby     owner
-ref        testlock   type       usecount   
+flags      flags?     force      fullname   holds      istype     lastused
+links      loc        locked     modified   money      name       nearby
+owner      ref        testlock   type       usecount   
 
 ~----------------------------------------------------------------------------
 ~
@@ -1120,7 +1120,7 @@ FLAG?
 {flag?:obj,flag}
   Returns the state of the flag on the given object. 1 = on; 0 = off.
 The ! token may be used before the name of a flag to negate the check and
-check for the absence of the flag. Returns 0 for nrecognized flags.
+check for the absence of the flag. Returns 0 for unrecognized flags.
 
   You can check the "interactive" flag to see if a player is currently in
 a program's READ, or if they are in the MUF editor.
@@ -1128,6 +1128,19 @@ a program's READ, or if they are in the MUF editor.
 The "Truewizard" flag will check for a W flag with or without the QUELL set.
 The "Mucker" flag returns the most significant bit of the mucker level and
 the "Nucker" flag returns the least significant bit.
+~
+~
+FLAGS?
+{flags?:obj,pattern}
+  Determines if object d has the flag pattern given by string s. A flag
+pattern consists of at least one single-character flag with an optional
+! token in front to negate the specific check. Flag patterns also recognize 
+object types.
+
+  Does not recognize full flag names, including the virtual alias
+"truewizard"; "T" checks for an object of type thing.
+
+  Examples of flag patterns include "PB3", "L!A", and "!O".
 ~
 ~
 OWNER

@@ -295,8 +295,7 @@ flag_list(dbref ref, char *buf, size_t size)
     }
 
     int mlevel = OBJECT_MLEVEL(ref);
-    if (mlevel > 0 && (p + 2 < end)) {
-        *p++ = 'M';
+    if (mlevel > 0 && (p + 1 < end)) {
         *p++ = mlevel + '0';
     }
 
