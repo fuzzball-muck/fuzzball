@@ -67,7 +67,7 @@ struct tune_entry {
     const char *group;            /**< Configuration group      */
     const char *module;           /**< Associated module        */
     int type;                     /**< Parameter type           */
-    union tuneval defaultval;     /**< Default value            */	
+    union tuneval defaultval;     /**< Default value            */
     union tuneval_ptr currentval; /**< Current value            */
     int readmlev;                 /**< MUCKER level to read     */
     int writemlev;                /**< MUCKER level to write    */

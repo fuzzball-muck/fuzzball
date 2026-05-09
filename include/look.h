@@ -67,7 +67,7 @@ int checkflags(dbref what, struct flgchkdat check);
  * and loads the struct 'check' with the necessary filter paramters.
  *
  * Flags is parsed as follows; it may have an = in it, in which case
- * the "right" side of the = is 
+ * the "right" side of the = is
  *
  * owners (1), locations (3), links (2), count (4), size (5) or default (0)
  *

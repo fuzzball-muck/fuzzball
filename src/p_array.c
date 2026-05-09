@@ -71,7 +71,7 @@ static dbref ref;
  * @private
  * @var This breaks thread safety for fun.
  */
-static char buf[BUFFER_LEN];
+static char buf[BUFFER_LEN*2];
 
 /**
  * Implementation of MUF ARRAY_MAKE
@@ -1653,8 +1653,8 @@ void
 prim_array_get_propdirs(PRIM_PROTOTYPE)
 {
     stk_array *nu;
-    char propname[BUFFER_LEN];
-    char dir[BUFFER_LEN];
+    char propname[BUFFER_LEN*2];
+    char dir[BUFFER_LEN*2];
     PropPtr propadr, pptr;
     PropPtr prptr;
     int count = 0;
@@ -1918,7 +1918,7 @@ prim_array_get_proplist(PRIM_PROTOTYPE)
     stk_array *nu;
     const char *strval;
     char dir[BUFFER_LEN];
-    char propname[BUFFER_LEN];
+    char propname[BUFFER_LEN+16];
     PropPtr prptr;
     int count = 1;
     int maxcount;
@@ -2123,8 +2123,8 @@ void
 prim_array_put_propvals(PRIM_PROTOTYPE)
 {
     stk_array *arr;
-    char propname[BUFFER_LEN];
-    char dir[BUFFER_LEN];
+    char propname[BUFFER_LEN*2];
+    char dir[BUFFER_LEN*2];
     PData propdat;
 
     /* dbref strPropDir array -- */

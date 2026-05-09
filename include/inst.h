@@ -111,7 +111,7 @@ struct muf_proc_data {
  *
  * @param x the variable to fetch data for
  * @return either x->data or "" if x is NULL
- */ 
+ */
 #define DoNullInd(x) ((x) ? (x) -> data : "")
 
 /**

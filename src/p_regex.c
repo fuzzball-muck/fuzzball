@@ -584,7 +584,7 @@ _prim_regsplit(PRIM_PROTOTYPE, int empty)
         abort_interp("Out of memory");
     }
 
-    while(*text != '\0') {
+    while (*text != '\0') {
         if ((matchcnt = pcre_exec(re->re, NULL, textstart, len, text-textstart,
                                   0, matches, MATCH_ARR_SIZE)) < 0) {
             if (matchcnt != PCRE_ERROR_NOMATCH) {

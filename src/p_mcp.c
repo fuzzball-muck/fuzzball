@@ -62,7 +62,7 @@ struct mcpevent_context {
 
 /*
  * This allows using GUI if the player owns the MUF, which drops the
- * requirement from an M3. This is not .top because .top will usually 
+ * requirement from an M3. This is not .top because .top will usually
  * be $lib/gui. This could be expanded to check the entire MUF chain.
  */
 #define CHECKMCPPERM() \
@@ -692,7 +692,7 @@ prim_mcp_bind(PRIM_PROTOTYPE)
         abort_interp("Package name cannot be a null string. (1)");
 
     if (!ObjExists(oper3->data.addr->progref) ||
-        Typeof(oper3->data.addr->progref) != TYPE_PROGRAM) {
+        OBJECT_TYPE(oper3->data.addr->progref) != TYPE_PROGRAM) {
         abort_interp("Invalid address. (3)");
     }
 

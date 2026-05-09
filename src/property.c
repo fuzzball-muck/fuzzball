@@ -23,6 +23,7 @@
 #include "fbmath.h"
 #include "fbstrings.h"
 #include "fbtime.h"
+#include "flags.h"
 #include "game.h"
 #include "interface.h"
 #include "interp.h"
@@ -41,8 +42,8 @@
  * This method (unlike some others) does full property name validation.
  * Leading / are trimmed off, and if there is a ':' the prop name will
  * be terminated at that point (the : becomes a \0).  The : is defined
- * as PROP_DELIMITER.  
- * 
+ * as PROP_DELIMITER.
+ *
  * If there is no property name after cleanup, this just returns with nothing
  * done.
  *
@@ -217,8 +218,8 @@ set_property_nofetch(dbref player, const char *pname, PData * dat)
  * This method (unlike some others) does full property name validation.
  * Leading / are trimmed off, and if there is a ':' the prop name will
  * be terminated at that point (the : becomes a \0).  The : is defined
- * as PROP_DELIMITER.  
- * 
+ * as PROP_DELIMITER.
+ *
  * If there is no property name after cleanup, this just returns with nothing
  * done.
  *
@@ -1279,7 +1280,7 @@ envpropstr(dbref * where, const char *propname)
  * Any errors (no such property) will be written to the buffer.
  *
  * @param player is the player doing the call, and is used to determine
- *        permissions for unparse_object ('ref' type props)
+ *        permissions for flag_unparse_object ('ref' type props)
  * @param obj is the object who's property is being examined.
  * @param name is the property name
  * @param buf is a buffer that you provide for property information to
@@ -1320,7 +1321,7 @@ displayprop(dbref player, dbref obj, const char *name, char *buf, size_t bufsiz)
                      PropDataStr(p));
             break;
         case PROP_REFTYP:
-            unparse_object(player, PropDataRef(p), unparse_buf, sizeof(unparse_buf));
+            flag_unparse_object(player, PropDataRef(p), unparse_buf, sizeof(unparse_buf));
             snprintf(buf, bufsiz, "%c ref %s:%s", blesschar, mybuf, unparse_buf);
             break;
         case PROP_INTTYP:
@@ -2500,7 +2501,7 @@ exec_or_notify(int descr, dbref player, dbref thing,
          *        edge case, and maybe its useful to have a route where
          *        MPI is not parsed.
          */
-        if (!ObjExists(i) || (Typeof(i) != TYPE_PROGRAM)) {
+        if (!ObjExists(i) || (OBJECT_TYPE(i) != TYPE_PROGRAM)) {
             if (*p) {
                 notify(player, p);
             } else {

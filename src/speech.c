@@ -62,7 +62,7 @@ do_whisper(int descr, dbref player, const char *arg1, const char *arg2)
     match_neighbor(&md);
     match_me(&md);
 
-    if (Wizard(player) && Typeof(player) == TYPE_PLAYER) {
+    if (Wizard(player) && OBJECT_TYPE(player) == TYPE_PLAYER) {
         match_absolute(&md);
         match_player(&md);
     }
@@ -194,7 +194,7 @@ do_page(dbref player, const char *arg1, const char *arg2)
         return;
     }
 
-    if (FLAGS(target) & HAVEN) {
+    if (FLAG_CHECK(target, 'H')) {
         notify(player, "That player does not wish to be disturbed.");
         return;
     }

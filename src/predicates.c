@@ -28,7 +28,7 @@
  * Checks if 'who' can link an object of type 'what_type' to 'where'
  *
  * Because this may be called prior to the object existing, it is
- * checked by type; however, 'Typeof(dbref)' is often used to see
+ * checked by type; however, 'OBJECT_TYPE(dbref)' is often used to see
  * if some existing objet's ref can link to where.
  *
  * @param who the person we are checking link permissions for
@@ -52,24 +52,24 @@ can_link_to(dbref who, object_flag_type what_type, dbref where)
         return 0;
 
     /* Players can only be linked to rooms */
-    if (what_type == TYPE_PLAYER && Typeof(where) != TYPE_ROOM)
+    if (what_type == TYPE_PLAYER && OBJECT_TYPE(where) != TYPE_ROOM)
         return 0;
 
     /* Rooms can only be linked to things or other rooms */
     if (what_type == TYPE_ROOM
-        && Typeof(where) != TYPE_THING && Typeof(where) != TYPE_ROOM)
+        && OBJECT_TYPE(where) != TYPE_THING && OBJECT_TYPE(where) != TYPE_ROOM)
         return 0;
- 
+
     /* Things cannot be linked to exits or programs */
     if (what_type == TYPE_THING
-        && (Typeof(where) == TYPE_EXIT || Typeof(where) == TYPE_PROGRAM))
+        && (OBJECT_TYPE(where) == TYPE_EXIT || OBJECT_TYPE(where) == TYPE_PROGRAM))
         return 0;
 
     /* Program links cannot be modified */
     if (what_type == TYPE_PROGRAM)
         return 0;
 
-    /* Target must be controlled or publicly linkable with its linklock passed */ 
+    /* Target must be controlled or publicly linkable with its linklock passed */
     return controls(who, where) || (Linkable(where) && test_lock(NOTHING, who, where, MESGPROP_LINKLOCK));
 }
 
@@ -90,8 +90,8 @@ can_teleport_to(dbref who, dbref where)
 {
     return (controls(who, where) ||
            (test_lock(NOTHING, who, where, MESGPROP_LINKLOCK) &&
-           ((FLAGS(where) & LINK_OK) ||
-            (Typeof(where) != TYPE_THING && (FLAGS(where) & ABODE)))));
+           (FLAG_CHECK(where, 'L') ||
+            (OBJECT_TYPE(where) != TYPE_THING && FLAG_CHECK(where, 'A')))));
 }
 
 /**
@@ -122,7 +122,7 @@ int
 can_link(dbref who, dbref what)
 {
     /* Anyone can link an exit that is currently unlinked. */
-    return (controls(who, what) || ((Typeof(what) == TYPE_EXIT)
+    return (controls(who, what) || ((OBJECT_TYPE(what) == TYPE_EXIT)
             && DBFETCH(what)->sp.exit.ndest == 0));
 }
 
@@ -143,7 +143,7 @@ could_doit(int descr, dbref player, dbref thing)
 {
     dbref source, dest, owner;
 
-    if (Typeof(thing) == TYPE_EXIT) {
+    if (OBJECT_TYPE(thing) == TYPE_EXIT) {
         /* If exit is unlinked, can't do it. */
         if (DBFETCH(thing)->sp.exit.ndest == 0) {
             return 0;
@@ -156,7 +156,7 @@ could_doit(int descr, dbref player, dbref thing)
         if (dest == NIL)
             return (eval_boolexp(descr, player, GETLOCK(thing, MESGPROP_LOCK), thing));
 
-        if (Typeof(dest) == TYPE_PLAYER) {
+        if (OBJECT_TYPE(dest) == TYPE_PLAYER) {
             /* Check for additional restrictions related to player dests */
             dbref destplayer = dest;
 
@@ -164,31 +164,31 @@ could_doit(int descr, dbref player, dbref thing)
             /* If the dest player isn't JUMP_OK, or if the dest player's loc
              * is set BOUND, can't do it.
              */
-            if (!(FLAGS(destplayer) & JUMP_OK) || (FLAGS(dest) & BUILDER)) {
+            if (!FLAG_CHECK(destplayer, 'J') || FLAG_CHECK(dest, 'B')) {
                 return 0;
             }
         }
 
-        if (dest != HOME && Typeof(dest) == TYPE_ROOM &&
-            (FLAGS(dest) & GUEST) && ISGUEST(player)) {
+        if (dest != HOME && OBJECT_TYPE(dest) == TYPE_ROOM &&
+            ISGUEST(dest) && ISGUEST(player)) {
             return 0;
         }
 
         /* for actions */
         if ((LOCATION(thing) != NOTHING) &&
-            (Typeof(LOCATION(thing)) != TYPE_ROOM)) {
+            (OBJECT_TYPE(LOCATION(thing)) != TYPE_ROOM)) {
             /* If this is an exit on a Thing or a Player... */
 
             /* If the destination is a room or player, and the current
              * location is set BOUND (note: if the player is in a vehicle
              * set BUILDER this will also return failure)
              */
-            if ((Typeof(dest) == TYPE_ROOM || Typeof(dest) == TYPE_PLAYER) &&
-                (FLAGS(source) & BUILDER))
+            if ((OBJECT_TYPE(dest) == TYPE_ROOM || OBJECT_TYPE(dest) == TYPE_PLAYER) &&
+                FLAG_CHECK(source, 'B'))
                 return 0;
 
             /* If secure_teleport is true, and if the destination is a room */
-            if (tp_secure_teleport && Typeof(dest) == TYPE_ROOM) {
+            if (tp_secure_teleport && OBJECT_TYPE(dest) == TYPE_ROOM) {
                 /* if player doesn't control the source and the source isn't
                  * set Jump_OK, then if the destination isn't HOME,
                  * can't do it.  (Should this include getlink(owner)?  Not
@@ -196,7 +196,7 @@ could_doit(int descr, dbref player, dbref thing)
                  * be treated specially. -winged)
                  */
                 if ((dest != HOME) && (!controls(owner, source))
-                    && ((FLAGS(source) & JUMP_OK) == 0)) {
+                    && !FLAG_CHECK(source, 'J')) {
                     return 0;
                 }
 
@@ -238,7 +238,7 @@ can_doit(int descr, dbref player, dbref thing, const char *default_fail_msg)
     if ((loc = LOCATION(player)) == NOTHING)
         return 0;
 
-    if (!Wizard(OWNER(player)) && tp_allow_zombies && Typeof(player) == TYPE_THING && (FLAGS(thing) & ZOMBIE)) {
+    if (!Wizard(OWNER(player)) && tp_allow_zombies && OBJECT_TYPE(player) == TYPE_THING && FLAG_CHECK(thing, 'Z')) {
         notify(player, "Sorry, but zombies can't do that.");
         return 0;
     }
@@ -291,7 +291,7 @@ exit_loop_check(dbref source, dbref dest)
     if (source == dest)
         return 1;               /* That's an easy one! */
 
-    if (!ObjExists(dest) || Typeof(dest) != TYPE_EXIT)
+    if (!ObjExists(dest) || OBJECT_TYPE(dest) != TYPE_EXIT)
         return 0;
 
     for (int i = 0; i < DBFETCH(dest)->sp.exit.ndest; i++) {
@@ -304,7 +304,7 @@ exit_loop_check(dbref source, dbref dest)
             return 1;           /* Found a loop! */
         }
 
-        if (Typeof(current) == TYPE_EXIT) {
+        if (OBJECT_TYPE(current) == TYPE_EXIT) {
             if (exit_loop_check(source, current)) {
                 return 1;       /* Found one recursively */
             }
@@ -411,7 +411,7 @@ parent_loop_check(dbref source, dbref dest)
     dbref pstack[MAX_PARENT_DEPTH + 2];
 
     if (dest == HOME) {
-        switch (Typeof(source)) {
+        switch (OBJECT_TYPE(source)) {
             case TYPE_PLAYER:
                 dest = PLAYER_HOME(source);
                 break;

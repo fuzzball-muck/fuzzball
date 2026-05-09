@@ -63,7 +63,7 @@
  Cumulative totals: 102221 10728956                            151500 11586028
 
  * First two columns are source file and line number of a [cm]alloc() call;
- * 
+ *
  * 'CurBlks' is number of ram blocks currently in existence
  *      created by that call;
  *       File Line CurBlks CurBytes MaxBlks MaxBytes MxByTime TotBlks TotBytes
@@ -73,7 +73,7 @@
  * 'TotBytes' is total number of ram bytes ever allocated by that call.
  * 'MaxBytes' is max value 'CurBytes' has ever had for that call.
  * 'MxByTime' is time 'MaxBytes' value was recorded, as day:hour:minute.
- * 
+ *
  * The code adds 8 bytes overhead per ram block allocated.
  *
  * In addition, by defining MALLOC_PROFILING_EXTRA to be TRUE, this file

@@ -672,7 +672,7 @@ struct tune_entry tune_list[] = {
         .currentval.n=&tp_exit_cost,
         0,
         MLEV_WIZARD,
-        true 
+        true
     },
     {
         "exit_darking",
@@ -2253,7 +2253,7 @@ struct tune_entry tune_list[] = {
         MLEV_GOD,
         true,
         false,
-        NOTYPE 
+        TYPE_ANY
     },
     {
         "welcome_mpi_who",

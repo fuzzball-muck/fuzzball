@@ -19,6 +19,7 @@
 #include "db.h"
 #include "fbmath.h"
 #include "fbstrings.h"
+#include "flags.h"
 #include "game.h"
 #include "inst.h"
 #include "interp.h"
@@ -179,7 +180,7 @@ mfn_links(MFUNARGS)
     if (obj == PERMDENIED)
         ABORT_MPI("LINKS", "Permission denied.");
 
-    switch (Typeof(obj)) {
+    switch (OBJECT_TYPE(obj)) {
         case TYPE_ROOM:
             obj = DBFETCH(obj)->sp.room.dropto;
             break;
@@ -307,7 +308,7 @@ mfn_testlock(MFUNARGS)
     if (who == PERMDENIED)
         ABORT_MPI("TESTLOCK", "Permission denied. (arg3)");
 
-    if (Typeof(who) != TYPE_PLAYER && Typeof(who) != TYPE_THING)
+    if (OBJECT_TYPE(who) != TYPE_PLAYER && OBJECT_TYPE(who) != TYPE_THING)
         ABORT_MPI("TESTLOCK", "Invalid object type. (arg3)");
 
     if (obj == AMBIGUOUS || obj == UNKNOWN || obj == NOTHING || obj == HOME)
@@ -385,7 +386,7 @@ mfn_contents(MFUNARGS)
     if (obj == PERMDENIED)
         ABORT_MPI("CONTENTS", "Permission denied.");
 
-    typchk = NOTYPE;
+    typchk = TYPE_ANY;
 
     if (argc > 1) {
         if (!strcasecmp(argv[1], "Room")) {
@@ -414,11 +415,11 @@ mfn_contents(MFUNARGS)
          * This if statement is a monster, but it does all the type
          * checking along with permission controls.
          */
-        if ((typchk == NOTYPE || Typeof(obj) == typchk) &&
+        if ((typchk == TYPE_ANY || OBJECT_TYPE(obj) == typchk) &&
             (ownroom || controls(perms, obj) ||
-             !((FLAGS(obj) & DARK) || (FLAGS(LOCATION(obj)) & DARK) ||
-               (Typeof(obj) == TYPE_PROGRAM && !(FLAGS(obj) & VEHICLE)))) &&
-            !(Typeof(obj) == TYPE_ROOM && typchk != TYPE_ROOM)) {
+             !(Dark(obj) || Dark(LOCATION(obj)) ||
+               (OBJECT_TYPE(obj) == TYPE_PROGRAM && !FLAG_CHECK(obj, 'V')))) &&
+            !(OBJECT_TYPE(obj) == TYPE_ROOM && typchk != TYPE_ROOM)) {
             ref2str(obj, buf2, sizeof(buf2));
             nextlen = strlen(buf2);
 
@@ -483,7 +484,7 @@ mfn_exits(MFUNARGS)
     if (obj == PERMDENIED)
         ABORT_MPI("EXITS", "Permission denied.");
 
-    switch (Typeof(obj)) {
+    switch (OBJECT_TYPE(obj)) {
         case TYPE_ROOM:
         case TYPE_THING:
         case TYPE_PLAYER:
@@ -666,7 +667,7 @@ mfn_name(MFUNARGS)
 
     strcpyn(buf, buflen, NAME(obj));
 
-    if (Typeof(obj) == TYPE_EXIT) {
+    if (OBJECT_TYPE(obj) == TYPE_EXIT) {
         ptr = strchr(buf, EXIT_DELIMITER);
 
         if (ptr)
@@ -2251,9 +2252,9 @@ mfn_awake(MFUNARGS)
 
         return ("0");
 
-    if (Typeof(obj) == TYPE_THING && (FLAGS(obj) & ZOMBIE)) {
+    if (OBJECT_TYPE(obj) == TYPE_THING && FLAG_CHECK(obj, 'Z')) {
         obj = OWNER(obj);
-    } else if (Typeof(obj) != TYPE_PLAYER) {
+    } else if (OBJECT_TYPE(obj) != TYPE_PLAYER) {
         return ("0");
     }
 
@@ -2284,45 +2285,19 @@ mfn_type(MFUNARGS)
 {
     dbref obj = mesg_dbref_raw(descr, player, what, argv[0]);
 
-    /*
-     * TODO: This seems like its duplicated in a number of places.
-     *       The 'examine' command for instance does something very
-     *       similar.  Can we centralize this logic?
-     *
-     *       Doing a grep case TYPE_ reveals 331 results.  Not all of them
-     *       are this exact thing, but some are close.
-     */
-
-    if (obj == NOTHING || obj == AMBIGUOUS || obj == UNKNOWN)
-        return ("Bad");
-
-    if (obj == HOME)
-        return ("Room");
-
     if (obj == PERMDENIED)
         ABORT_MPI("TYPE", "Permission Denied.");
 
-    switch (Typeof(obj)) {
-        case TYPE_PLAYER:
-            return "Player";
+    if (obj == UNKNOWN || obj == AMBIGUOUS || obj == NOTHING)
+        return "Bad";
 
-        case TYPE_ROOM:
-            return "Room";
+    const struct object_type *type_info = OBJECT_TYPE_INFO(obj);
 
-        case TYPE_EXIT:
-            return "Exit";
+    if (!type_info)
+       return (strcasecmp(argv[1], "Bad") == 0) ? "1" : "0";
 
-        case TYPE_THING:
-            return "Thing";
-
-        case TYPE_PROGRAM:
-            return "Program";
-
-        default:
-            return "Bad";
-    }
+    return type_info ? type_info->titlecase : "Bad";
 }
-
 
 /**
  * MPI function that returns true if arg0 is of type arg1
@@ -2345,48 +2320,15 @@ mfn_type(MFUNARGS)
 const char *
 mfn_istype(MFUNARGS)
 {
-    dbref obj;
-    obj = mesg_dbref_raw(descr, player, what, argv[0]);
-
-    if (obj == NOTHING || obj == AMBIGUOUS || obj == UNKNOWN)
-        return (strcasecmp(argv[1], "Bad") ? "0" : "1");
-
-    /*
-     * TODO This check is redundant -- it is identical to the above check
-     *      except it also adds perm denied.  Delete this altogether, then
-     *      move the check for PERMDENIED (the next if statement) up to
-     *      the top because Bad shouldn't bypass permission checks.
-     */
-    if ((strcasecmp(argv[1], "Bad") == 0) &&
-        (obj == NOTHING || obj == AMBIGUOUS || obj == UNKNOWN
-         || obj == PERMDENIED))
-        return "1";
+    dbref obj = mesg_dbref_raw(descr, player, what, argv[0]);
 
     if (obj == PERMDENIED)
-        ABORT_MPI("TYPE", "Permission Denied.");
+        ABORT_MPI("ISTYPE", "Permission Denied.");
 
-    if (obj == HOME)
-        return (strcasecmp(argv[1], "Room") ? "0" : "1");
+    if (obj == UNKNOWN || obj == AMBIGUOUS || obj == NOTHING)
+        return (strcasecmp(argv[1], "Bad") == 0) ? "1" : "0";
 
-    switch (Typeof(obj)) {
-        case TYPE_PLAYER:
-            return (strcasecmp(argv[1], "Player") ? "0" : "1");
-
-        case TYPE_ROOM:
-            return (strcasecmp(argv[1], "Room") ? "0" : "1");
-
-        case TYPE_EXIT:
-            return (strcasecmp(argv[1], "Exit") ? "0" : "1");
-
-        case TYPE_THING:
-            return (strcasecmp(argv[1], "Thing") ? "0" : "1");
-
-        case TYPE_PROGRAM:
-            return (strcasecmp(argv[1], "Program") ? "0" : "1");
-
-        default:
-            return (strcasecmp(argv[1], "Bad") ? "0" : "1");
-    }
+    return (strcasecmp(argv[1], OBJECT_TYPE_INFO(obj)->titlecase) ? "0" : "1");
 }
 
 /**
@@ -2665,13 +2607,13 @@ mfn_muf(MFUNARGS)
     if (obj == UNKNOWN)
         ABORT_MPI("MUF", "Match failed.");
 
-    if (obj <= NOTHING || Typeof(obj) != TYPE_PROGRAM)
+    if (obj <= NOTHING || OBJECT_TYPE(obj) != TYPE_PROGRAM)
         ABORT_MPI("MUF", "Bad program reference.");
 
-    if (!(FLAGS(obj) & LINK_OK) && !controls(perms, obj))
+    if (!FLAG_CHECK(obj, 'L') && !controls(perms, obj))
         ABORT_MPI("MUF", "Permission denied.");
 
-    if ((mesgtyp & (MPI_ISLISTENER | MPI_ISLOCK)) && (MLevel(obj) < 3))
+    if ((mesgtyp & (MPI_ISLISTENER | MPI_ISLOCK)) && (OBJECT_MLEVEL(obj) < 3))
         ABORT_MPI("MUF", "Permission denied.");
 
     if (++mpi_muf_call_levels > 18)
@@ -2764,7 +2706,7 @@ mfn_force(MFUNARGS)
     if (obj == PERMDENIED)
         ABORT_MPI("FORCE", "Permission denied. (arg1)");
 
-    if (Typeof(obj) != TYPE_THING && Typeof(obj) != TYPE_PLAYER)
+    if (OBJECT_TYPE(obj) != TYPE_THING && OBJECT_TYPE(obj) != TYPE_PLAYER)
         ABORT_MPI("FORCE", "Bad object reference. (arg1)");
 
     if (!*argv[1])
@@ -2793,15 +2735,15 @@ mfn_force(MFUNARGS)
         char objname[BUFFER_LEN], *ptr2;
         dbref loc = LOCATION(obj);
 
-        if (Typeof(obj) == TYPE_THING) {
-            if (FLAGS(obj) & DARK)
+        if (OBJECT_TYPE(obj) == TYPE_THING) {
+            if (Dark(obj))
                 ABORT_MPI("FORCE", "Cannot force a dark puppet.");
 
-            if ((FLAGS(OWNER(obj)) & ZOMBIE))
+            if (FLAG_CHECK(OWNER(obj), 'Z'))
                 ABORT_MPI("FORCE", "Permission denied.");
 
-            if (loc != NOTHING && (FLAGS(loc) & ZOMBIE)
-                && Typeof(loc) == TYPE_ROOM)
+            if (loc != NOTHING && FLAG_CHECK(loc, 'Z')
+                && OBJECT_TYPE(loc) == TYPE_ROOM)
                 ABORT_MPI("FORCE",
                           "Cannot force a Puppet in a no-puppets room.");
 
@@ -2815,7 +2757,7 @@ mfn_force(MFUNARGS)
                           "Cannot force a thing named after a player.");
         }
 
-        if (!(FLAGS(obj) & XFORCIBLE)) {
+        if (!FLAG_CHECK(obj, 'X')) {
             ABORT_MPI("FORCE",
                       "Permission denied: forced object not @set Xforcible.");
         }
@@ -2853,7 +2795,7 @@ mfn_force(MFUNARGS)
 
         *ptr3 = '\0';
 
-        if (lookup_player(objname) != NOTHING && Typeof(obj) != TYPE_PLAYER) {
+        if (lookup_player(objname) != NOTHING && OBJECT_TYPE(obj) != TYPE_PLAYER) {
             ABORT_MPI("FORCE",
                       "Cannot force a thing named after a player. [2]");
         }
@@ -3466,9 +3408,9 @@ mfn_width(MFUNARGS)
 
 /**
  * MPI function that returns if an object if it has the given flag (re)set.
- * 
- * @see has_flag
- * 
+ *
+ * @see flag_eval
+ *
  * @param descr the descriptor of the caller
  * @param player the ref of the calling player
  * @param what the dbref of the trigger
@@ -3477,7 +3419,7 @@ mfn_width(MFUNARGS)
  * @param argv the array of strings for arguments
  * @param buf the working buffer
  * @param buflen the size of the buffer
- * @param mesgtyp the type of the message   
+ * @param mesgtyp the type of the message
  * @return string parsed results
  */
 
@@ -3491,9 +3433,51 @@ mfn_flagp(MFUNARGS)
         ABORT_MPI("FLAG?", "Failed match. (arg1)");
     }
 
-    if (has_flag(obj, argv[1])) {
+    char *pbuf = buf;
+    strcpyn(buf, BUFFER_LEN, argv[1]);
+    toupper_string(&pbuf);
+
+    if (flag_eval(obj, buf)) {
         return "1";
     } else {
         return "0";
     }
 }
+
+/**
+ * MPI function that returns if an object's flags match the given pattern.
+ *
+ * @see flag_eval_pattern
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
+
+const char *
+mfn_flagsp(MFUNARGS)
+{
+    dbref obj = mesg_dbref_local(descr, player, what, perms, argv[0], mesgtyp);
+
+    if (obj == PERMDENIED || obj == AMBIGUOUS || obj == UNKNOWN || obj == NOTHING ||
+        obj == HOME) {
+        ABORT_MPI("FLAG?", "Failed match. (arg1)");
+    }
+
+    strcpyn(buf, BUFFER_LEN, argv[1]);
+    toupper_string(&buf);
+
+    if (flag_eval_pattern(obj, buf)) {
+        return "1";
+    } else {
+        return "0";
+    }
+}
+

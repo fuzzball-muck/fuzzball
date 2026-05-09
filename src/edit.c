@@ -19,6 +19,7 @@
 #include "db.h"
 #include "edit.h"
 #include "fbstrings.h"
+#include "flags.h"
 #include "inst.h"
 #include "interface.h"
 #include "interp.h"
@@ -705,7 +706,7 @@ static void
 do_quit(dbref player, dbref program)
 {
     char unparse_buf[BUFFER_LEN];
-    unparse_object(player, program, unparse_buf, sizeof(unparse_buf));
+    flag_unparse_object(player, program, unparse_buf, sizeof(unparse_buf));
     log_status("PROGRAM SAVED: %s by %s(%d)", unparse_buf,
                NAME(player), player);
     write_program(PROGRAM_FIRST(program), program);
@@ -879,12 +880,12 @@ val_and_head(dbref player, int arg[], int argc)
 
     program = arg[0];
 
-    if (!ObjExists(program) || Typeof(program) != TYPE_PROGRAM) {
+    if (!ObjExists(program) || OBJECT_TYPE(program) != TYPE_PROGRAM) {
         notify(player, "That isn't a program.");
         return;
     }
 
-    if (!(controls(player, program) || (FLAGS(program) & VEHICLE))) {
+    if (!(controls(player, program) || FLAG_CHECK(program, 'V'))) {
         notify(player, "That's not a public program.");
         return;
     }
@@ -921,12 +922,12 @@ list_publics(int descr, dbref player, int arg[], int argc)
 
     program = (argc == 0) ? PLAYER_CURR_PROG(player) : arg[0];
 
-    if (!OkObj(program) || Typeof(program) != TYPE_PROGRAM) {
+    if (!OkObj(program) || OBJECT_TYPE(program) != TYPE_PROGRAM) {
         notify(player, "That isn't a program.");
         return;
     }
 
-    if (!(controls(player, program) || (FLAGS(program) & VEHICLE))) {
+    if (!(controls(player, program) || FLAG_CHECK(program, 'V'))) {
         notify(player, "That's not a public program.");
         return;
     }
@@ -946,7 +947,7 @@ list_publics(int descr, dbref player, int arg[], int argc)
 
         if (!PROGRAM_CODE(program)) {
             char unparse_buf[BUFFER_LEN];
-            unparse_object(player, program, unparse_buf, sizeof(unparse_buf));
+            flag_unparse_object(player, program, unparse_buf, sizeof(unparse_buf));
             notifyf(player, "Unable to compile %s.", unparse_buf);
             return;
         }
@@ -1418,12 +1419,12 @@ do_list(int descr, dbref player, const char *name, char *linespec)
     if ((thing = noisy_match_result(&md)) == NOTHING)
         return;
 
-    if (Typeof(thing) != TYPE_PROGRAM) {
+    if (OBJECT_TYPE(thing) != TYPE_PROGRAM) {
         notify(player, "You can't list anything but a program.");
         return;
     }
 
-    if (!(controls(player, thing) || (FLAGS(thing) & VEHICLE))) {
+    if (!(controls(player, thing) || FLAG_CHECK(thing, 'V'))) {
         notify(player,
                "Permission denied. (You don't control the program, and it's not set Viewable)");
         return;
@@ -1645,7 +1646,7 @@ edit_program(dbref player, dbref program)
 {
     char unparse_buf[BUFFER_LEN];
 
-    if ((Typeof(program) != TYPE_PROGRAM) || !controls(player, program)) {
+    if ((OBJECT_TYPE(program) != TYPE_PROGRAM) || !controls(player, program)) {
         notify(player, "Permission denied!");
         return;
     }
@@ -1664,7 +1665,7 @@ edit_program(dbref player, dbref program)
     FLAGS(player) |= INTERACTIVE;
     DBDIRTY(player);
 
-    unparse_object(player, program, unparse_buf, sizeof(unparse_buf));
+    flag_unparse_object(player, program, unparse_buf, sizeof(unparse_buf));
     notifyf(player, "Entering editor for %s.", unparse_buf);
 
     list_program(player, program, NULL, 0, 0);

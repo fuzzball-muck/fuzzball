@@ -61,7 +61,7 @@ char *time_format_1(time_t dt);
  * Creates a time string from a UNIX timestamp delta in "format 2" layout.
  *
  * It computes the delta between the given timestamp and GMT time, then
- * goes through a logic process to figure out what "resolution" of 
+ * goes through a logic process to figure out what "resolution" of
  * the timestamp should be.  If the delta is greater than a day, then
  * days is used.  If greater than an hour, then hours is used.  If greater
  * than a minute, then minutes are used.  Otherwise, seconds.

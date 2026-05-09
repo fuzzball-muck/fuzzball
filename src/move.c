@@ -57,9 +57,9 @@ maybe_dropto(int descr, dbref loc, dbref dropto)
 
     /* check for players */
     DOLIST(thing, CONTENTS(loc)) {
-        if (Typeof(thing) == TYPE_PLAYER ||
-            (tp_allow_zombies && Typeof(thing) == TYPE_THING &&
-            FLAGS(thing) & ZOMBIE))
+        if (OBJECT_TYPE(thing) == TYPE_PLAYER ||
+            (tp_allow_zombies && OBJECT_TYPE(thing) == TYPE_THING &&
+            FLAG_CHECK(thing, 'Z')))
             return;
     }
 
@@ -96,7 +96,7 @@ maybe_dropto(int descr, dbref loc, dbref dropto)
  *
  *   Finally, the "X has arrived" notification is sent to the target room.
  *   To make propqueues run after autolook, this message is disconnected from
- *   the arrive propqueue processing which is done further down. 
+ *   the arrive propqueue processing which is done further down.
  *   This notification follows the same rules as the "has left"  message
  *
  * - If 'player' is not a thing, or if 'player' is a ZOMBIE or VEHICLE, then
@@ -134,7 +134,7 @@ enter_room(int descr, dbref player, dbref loc, dbref exit)
     old = LOCATION(player);
 
     if (parent_loop_check(player, loc)) {
-        switch (Typeof(player)) {
+        switch (OBJECT_TYPE(player)) {
             case TYPE_PLAYER:
                 loc = PLAYER_HOME(player);
                 break;
@@ -186,37 +186,37 @@ enter_room(int descr, dbref player, dbref loc, dbref exit)
             /* notify others unless DARK */
             if (!tp_quiet_moves &&
                 !Dark(old) && !Dark(player) &&
-                ((Typeof(player) != TYPE_THING) ||
-                 ((Typeof(player) == TYPE_THING) &&
-                  (FLAGS(player) & (ZOMBIE | VEHICLE))))
-                && (Typeof(exit) != TYPE_EXIT || !Dark(exit))) {
+                ((OBJECT_TYPE(player) != TYPE_THING) ||
+                 ((OBJECT_TYPE(player) == TYPE_THING) &&
+                  (FLAG_CHECK(player, 'Z') || FLAG_CHECK(player, 'V'))))
+                && (OBJECT_TYPE(exit) != TYPE_EXIT || !Dark(exit))) {
                 snprintf(buf, sizeof(buf), "%s has left.", NAME(player));
                 notify_except(CONTENTS(old), player, buf, player);
             }
         }
 
         /* if old location has STICKY dropto, send stuff through it */
-        if (old != NOTHING && Typeof(old) == TYPE_ROOM
+        if (old != NOTHING && OBJECT_TYPE(old) == TYPE_ROOM
             && (dropto = DBFETCH(old)->sp.room.dropto) != NOTHING
-            && (FLAGS(old) & STICKY)) {
+            && FLAG_CHECK(old, 'S')) {
             maybe_dropto(descr, old, dropto);
         }
 
         /* tell other folks in new location if not DARK */
         if (!tp_quiet_moves &&
             !Dark(loc) && !Dark(player) &&
-            ((Typeof(player) != TYPE_THING) ||
-             ((Typeof(player) == TYPE_THING)
-              && (FLAGS(player) & (ZOMBIE | VEHICLE))))
-            && (Typeof(exit) != TYPE_EXIT || !Dark(exit))) {
+            ((OBJECT_TYPE(player) != TYPE_THING) ||
+             ((OBJECT_TYPE(player) == TYPE_THING)
+              && (FLAG_CHECK(player, 'Z') || FLAG_CHECK(player, 'V'))))
+            && (OBJECT_TYPE(exit) != TYPE_EXIT || !Dark(exit))) {
             snprintf(buf, sizeof(buf), "%s has arrived.", NAME(player));
             notify_except(CONTENTS(loc), player, buf, player);
         }
     }
 
     /* autolook */
-    if ((Typeof(player) != TYPE_THING) ||
-        ((Typeof(player) == TYPE_THING) && (FLAGS(player) & (ZOMBIE | VEHICLE)))) {
+    if ((OBJECT_TYPE(player) != TYPE_THING) ||
+        ((OBJECT_TYPE(player) == TYPE_THING) && (FLAG_CHECK(player, 'Z') || FLAG_CHECK(player, 'V')))) {
         if (donelook < 8) {
             donelook++;
 
@@ -277,7 +277,7 @@ moveto(dbref what, dbref where)
     dbref loc;
 
     /* do NOT move garbage */
-    if (what != NOTHING && Typeof(what) == TYPE_GARBAGE) {
+    if (what != NOTHING && OBJECT_TYPE(what) == TYPE_GARBAGE) {
         return;
     }
 
@@ -293,7 +293,7 @@ moveto(dbref what, dbref where)
             return; /* NOTHING doesn't have contents */
 
         case HOME:
-            switch (Typeof(what)) {
+            switch (OBJECT_TYPE(what)) {
                 case TYPE_PLAYER:
                     where = PLAYER_HOME(what);
                     break;
@@ -323,7 +323,7 @@ moveto(dbref what, dbref where)
 
         default:
             if (parent_loop_check(what, where)) {
-                switch (Typeof(what)) {
+                switch (OBJECT_TYPE(what)) {
                     case TYPE_PLAYER:
                         where = PLAYER_HOME(what);
                         break;
@@ -384,13 +384,13 @@ send_contents(int descr, dbref loc, dbref dest)
     while (first != NOTHING) {
         rest = NEXTOBJ(first);
 
-        if ((Typeof(first) != TYPE_THING)
-            && (Typeof(first) != TYPE_PROGRAM)) {
+        if ((OBJECT_TYPE(first) != TYPE_THING)
+            && (OBJECT_TYPE(first) != TYPE_PROGRAM)) {
             moveto(first, loc);
         } else {
-            where = FLAGS(first) & STICKY ? HOME : dest;
+            where = FLAG_CHECK(first, 'S') ? HOME : dest;
 
-            if (tp_secure_thing_movement && (Typeof(first) == TYPE_THING)) {
+            if (tp_secure_thing_movement && (OBJECT_TYPE(first) == TYPE_THING)) {
                 enter_room(descr, first,
                            parent_loop_check(first, where) ? loc : where,
                            LOCATION(first));
@@ -419,7 +419,7 @@ send_contents(int descr, dbref loc, dbref dest)
 void
 send_home(int descr, dbref thing, int puppethome)
 {
-    switch (Typeof(thing)) {
+    switch (OBJECT_TYPE(thing)) {
         case TYPE_PLAYER:
             /*
              * Send his possessions home first!
@@ -435,7 +435,7 @@ send_home(int descr, dbref thing, int puppethome)
                 send_contents(descr, thing, HOME);
 
             if (tp_secure_thing_movement
-                || (FLAGS(thing) & (ZOMBIE | LISTENER))) {
+                || (FLAG_CHECK(thing, 'Z') || (FLAGS(thing) & LISTENER))) {
                 enter_room(descr, thing, PLAYER_HOME(thing), LOCATION(thing));
                 break;
             }
@@ -500,7 +500,7 @@ trigger(int descr, dbref player, dbref exit, int pflag)
         if (dest == HOME) {
             dest = PLAYER_HOME(player);
 
-            if (Typeof(dest) == TYPE_THING) {
+            if (OBJECT_TYPE(dest) == TYPE_THING) {
                 notify(player, "That would be an undefined operation.");
                 continue;
             }
@@ -510,7 +510,7 @@ trigger(int descr, dbref player, dbref exit, int pflag)
             succ = 1; /* Exits that go nowhere do nothing, no error */
         } else {
             /* What happens depends on the type of the target object */
-            switch (Typeof(dest)) {
+            switch (OBJECT_TYPE(dest)) {
                 case TYPE_ROOM:
                     /* Rooms are straight forward */
                     if (pflag) {
@@ -520,20 +520,20 @@ trigger(int descr, dbref player, dbref exit, int pflag)
                         }
 
                         if (!Wizard(OWNER(player))
-                            && Typeof(player) == TYPE_THING
-                            && (FLAGS(dest) & ZOMBIE)) {
+                            && OBJECT_TYPE(player) == TYPE_THING
+                            && FLAG_CHECK(dest, 'Z')) {
                             notify(player, "You can't go that way.");
                             break;
                         }
 
-                        if ((FLAGS(player) & VEHICLE)
-                            && ((FLAGS(dest) | FLAGS(exit)) & VEHICLE)) {
+                        if (FLAG_CHECK(player, 'V')
+                            && (FLAG_CHECK(dest, 'V') || FLAG_CHECK(exit, 'V'))) {
                             notify(player, "You can't go that way.");
                             break;
                         }
 
                         if (ISGUEST(player)
-                            && ((FLAGS(dest) | FLAGS(exit)) & GUEST)) {
+                            && (ISGUEST(dest) || ISGUEST(exit))) {
                             notify(player, "You can't go that way.");
                             break;
                         }
@@ -559,7 +559,7 @@ trigger(int descr, dbref player, dbref exit, int pflag)
                      * Things have different behaviors.  If the thing is a
                      * vehicle, then we will enter the vehicle.
                      */
-                    if (dest == LOCATION(exit) && (FLAGS(dest) & VEHICLE)) {
+                    if (dest == LOCATION(exit) && FLAG_CHECK(dest, 'V')) {
                         if (pflag) {
                             if (parent_loop_check(player, dest)) {
                                 notify(player, "That would cause a paradox.");
@@ -587,7 +587,7 @@ trigger(int descr, dbref player, dbref exit, int pflag)
                          * Otherwise it brings the object to the exit's
                          * source.
                          */
-                        if (Typeof(LOCATION(exit)) == TYPE_THING) {
+                        if (OBJECT_TYPE(LOCATION(exit)) == TYPE_THING) {
                             if (parent_loop_check(dest,
                                                   LOCATION(LOCATION(exit)))) {
                                 notify(player, "That would cause a paradox.");
@@ -601,7 +601,7 @@ trigger(int descr, dbref player, dbref exit, int pflag)
                                 moveto(dest, LOCATION(LOCATION(exit)));
                             }
 
-                            if (!(FLAGS(exit) & STICKY)) {
+                            if (!FLAG_CHECK(exit, 'S')) {
                                 /* send home source object */
                                 sobjact = 1;
                             }
@@ -649,7 +649,7 @@ trigger(int descr, dbref player, dbref exit, int pflag)
 
                         succ = 1;
 
-                        if (FLAGS(dest) & JUMP_OK) {
+                        if (FLAG_CHECK(dest, 'J')) {
                             if (GETDROP(exit)) {
                                 exec_or_notify_prop(descr, player, exit,
                                                     MESGPROP_DROP, "(@Drop)");
@@ -673,11 +673,11 @@ trigger(int descr, dbref player, dbref exit, int pflag)
 
                 case TYPE_PROGRAM:
                     /*
-                     * Execute a MUF program, assuming the player is not
-                     * a GUEST and the program isn't set GUEST.
+                     * Execute a MUF program, if the player passes the
+                     * GUEST restrictions on the program and exit.
                      */
                     if (ISGUEST(player)
-                        && ((FLAGS(dest) | FLAGS(exit)) & GUEST)) {
+                        && (ISGUEST(dest) || ISGUEST(exit))) {
                         notify(player, "You can't go that way.");
                         break;
                     }
@@ -776,19 +776,19 @@ do_leave(int descr, dbref player)
 
     loc = LOCATION(player);
 
-    if (Typeof(loc) == TYPE_ROOM) {
+    if (OBJECT_TYPE(loc) == TYPE_ROOM) {
         notify(player, "You can't go that way.");
         return;
     }
 
-    if (!(FLAGS(loc) & VEHICLE)) {
+    if (!FLAG_CHECK(loc, 'V')) {
         notify(player, "You can only exit vehicles.");
         return;
     }
 
     dest = LOCATION(loc);
 
-    if (Typeof(dest) != TYPE_ROOM && Typeof(dest) != TYPE_THING) {
+    if (OBJECT_TYPE(dest) != TYPE_ROOM && OBJECT_TYPE(dest) != TYPE_THING) {
         notify(player, "You can't exit a vehicle inside of a player.");
         return;
     }
@@ -869,8 +869,8 @@ do_get(int descr, dbref player, const char *what, const char *obj)
      * I believe this means zombies can't take things from other
      * people's containers.
      */
-    if (Typeof(player) != TYPE_PLAYER) {
-        if (LOCATION(thing) != NOTHING && Typeof(LOCATION(thing)) != TYPE_ROOM) {
+    if (OBJECT_TYPE(player) != TYPE_PLAYER) {
+        if (LOCATION(thing) != NOTHING && OBJECT_TYPE(LOCATION(thing)) != TYPE_ROOM) {
             if (OWNER(player) != OWNER(thing)) {
                 notify(player, "Zombies aren't allowed to be thieves!");
                 return;
@@ -883,7 +883,7 @@ do_get(int descr, dbref player, const char *what, const char *obj)
         return;
     }
 
-    if (Typeof(cont) == TYPE_PLAYER) {
+    if (OBJECT_TYPE(cont) == TYPE_PLAYER) {
         notify(player, "You can't steal stuff from players.");
         return;
     }
@@ -893,7 +893,7 @@ do_get(int descr, dbref player, const char *what, const char *obj)
         return;
     }
 
-    switch (Typeof(thing)) {
+    switch (OBJECT_TYPE(thing)) {
         case TYPE_THING:
             ts_useobject(thing);
             /* fall through */
@@ -910,7 +910,7 @@ do_get(int descr, dbref player, const char *what, const char *obj)
                 }
 
                 if (cando) {
-                    if (tp_secure_thing_movement && (Typeof(thing) == TYPE_THING)) {
+                    if (tp_secure_thing_movement && (OBJECT_TYPE(thing) == TYPE_THING)) {
                         enter_room(descr, thing, player, LOCATION(thing));
                     } else {
                         moveto(thing, player);
@@ -962,7 +962,7 @@ do_drop(int descr, dbref player, const char *name, const char *obj)
 
     loc = LOCATION(player);
 
-    init_match(descr, player, name, NOTYPE, &md);
+    init_match(descr, player, name, TYPE_ANY, &md);
     match_possession(&md);
 
     if ((thing = noisy_match_result(&md)) == NOTHING)
@@ -971,7 +971,7 @@ do_drop(int descr, dbref player, const char *name, const char *obj)
     cont = loc;
 
     if (obj && *obj) {
-        init_match(descr, player, obj, NOTYPE, &md);
+        init_match(descr, player, obj, TYPE_ANY, &md);
         match_possession(&md);
         match_neighbor(&md);
 
@@ -983,7 +983,7 @@ do_drop(int descr, dbref player, const char *name, const char *obj)
         }
     }
 
-    switch (Typeof(thing)) {
+    switch (OBJECT_TYPE(thing)) {
         case TYPE_THING:
             ts_useobject(thing);
             /* fall through */
@@ -994,13 +994,13 @@ do_drop(int descr, dbref player, const char *name, const char *obj)
                 break;
             }
 
-            if (Typeof(cont) != TYPE_ROOM && Typeof(cont) != TYPE_PLAYER &&
-                Typeof(cont) != TYPE_THING) {
+            if (OBJECT_TYPE(cont) != TYPE_ROOM && OBJECT_TYPE(cont) != TYPE_PLAYER &&
+                OBJECT_TYPE(cont) != TYPE_THING) {
                 notify(player, "You can't put anything in that.");
                 break;
             }
 
-            if (Typeof(cont) != TYPE_ROOM &&
+            if (OBJECT_TYPE(cont) != TYPE_ROOM &&
                 !test_lock_false_default(descr, player, cont, MESGPROP_CONLOCK)) {
                 notify(player, "You don't have permission to put something in that.");
                 break;
@@ -1011,15 +1011,15 @@ do_drop(int descr, dbref player, const char *name, const char *obj)
                 break;
             }
 
-            if (Typeof(cont) == TYPE_ROOM && (FLAGS(thing) & STICKY) &&
-                Typeof(thing) == TYPE_THING) {
+            if (OBJECT_TYPE(cont) == TYPE_ROOM && FLAG_CHECK(thing, 'S') &&
+                OBJECT_TYPE(thing) == TYPE_THING) {
                 send_home(descr, thing, 0);
             } else {
-                int immediate_dropto = (Typeof(cont) == TYPE_ROOM &&
+                int immediate_dropto = (OBJECT_TYPE(cont) == TYPE_ROOM &&
                                         DBFETCH(cont)->sp.room.dropto != NOTHING
-                                        && !(FLAGS(cont) & STICKY));
+                                        && !FLAG_CHECK(cont, 'S'));
 
-                if (tp_secure_thing_movement && (Typeof(thing) == TYPE_THING)) {
+                if (tp_secure_thing_movement && (OBJECT_TYPE(thing) == TYPE_THING)) {
                     enter_room(descr, thing,
                                immediate_dropto ? DBFETCH(cont)->sp.room.dropto : cont, player);
                 } else {
@@ -1027,10 +1027,10 @@ do_drop(int descr, dbref player, const char *name, const char *obj)
                 }
             }
 
-            if (Typeof(cont) == TYPE_THING) {
+            if (OBJECT_TYPE(cont) == TYPE_THING) {
                 notify(player, "Put away.");
                 return;
-            } else if (Typeof(cont) == TYPE_PLAYER) {
+            } else if (OBJECT_TYPE(cont) == TYPE_PLAYER) {
                 notifyf(cont, "%s hands you %s", NAME(player), NAME(thing));
                 notifyf(player, "You hand %s to %s", NAME(thing), NAME(cont));
                 return;
@@ -1099,7 +1099,7 @@ recycle(int descr, dbref player, dbref thing)
             return;
         }
 
-        if ((Typeof(thing) == TYPE_PROGRAM)
+        if ((OBJECT_TYPE(thing) == TYPE_PROGRAM)
              && (PROGRAM_INSTANCES(thing) != 0)) {
             log_status("SANITYCHECK: Trying to recycle a running program "
                        "(#%d) from FORCE!", thing);
@@ -1114,7 +1114,7 @@ recycle(int descr, dbref player, dbref thing)
 
     int cost = MAX(0, GETVALUE(thing));
 
-    switch (Typeof(thing)) {
+    switch (OBJECT_TYPE(thing)) {
         case TYPE_ROOM:
             cost = tp_room_cost;
             notify_except(CONTENTS(thing), NOTHING,
@@ -1152,7 +1152,7 @@ recycle(int descr, dbref player, dbref thing)
     }
 
     for (rest = 0; rest < db_top; rest++) {
-        switch (Typeof(rest)) {
+        switch (OBJECT_TYPE(rest)) {
             case TYPE_ROOM:
                 if (DBFETCH(rest)->sp.room.dropto == thing) {
                     DBFETCH(rest)->sp.room.dropto = NOTHING;
@@ -1231,7 +1231,7 @@ recycle(int descr, dbref player, dbref thing)
                 break;
 
             case TYPE_PLAYER:
-                if (Typeof(thing) == TYPE_PROGRAM
+                if (OBJECT_TYPE(thing) == TYPE_PROGRAM
                     && (FLAGS(rest) & INTERACTIVE)
                     && (PLAYER_CURR_PROG(rest) == thing)) {
                     if (FLAGS(rest) & READMODE) {
@@ -1287,9 +1287,9 @@ recycle(int descr, dbref player, dbref thing)
     looplimit = db_top;
 
     while ((looplimit-- > 0) && ((first = CONTENTS(thing)) != NOTHING)) {
-        if (Typeof(first) == TYPE_PLAYER ||
-            (Typeof(first) == TYPE_THING &&
-             (FLAGS(first) & (ZOMBIE | VEHICLE) || tp_secure_thing_movement))
+        if (OBJECT_TYPE(first) == TYPE_PLAYER ||
+            (OBJECT_TYPE(first) == TYPE_THING &&
+             (FLAG_CHECK(first, 'Z') || FLAG_CHECK(first, 'V') || tp_secure_thing_movement))
             ) {
             enter_room(descr, first, HOME, LOCATION(thing));
 

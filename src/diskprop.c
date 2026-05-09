@@ -188,7 +188,7 @@ putprops_copy(FILE * f, dbref obj)
         return;
     }
 
-    /* 
+    /*
      * If we got this far, then we're copying properties from 'input_file'
      * to the output.
      */

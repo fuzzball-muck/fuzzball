@@ -18,6 +18,7 @@
 #include "debugger.h"
 #include "fbstrings.h"
 #include "fbtime.h"
+#include "flags.h"
 #include "game.h"
 #include "inst.h"
 #include "interface.h"
@@ -890,7 +891,7 @@ next_timequeue_event(time_t now)
             strcpyn(match_cmdname, sizeof(match_cmdname),
                     DoNull(event->command));
 
-            ival = (event->subtyp & TQ_MPI_OMESG) ? MPI_ISPUBLIC : 
+            ival = (event->subtyp & TQ_MPI_OMESG) ? MPI_ISPUBLIC :
                    MPI_ISPRIVATE;
 
             if (event->subtyp & TQ_MPI_BLESSED) {
@@ -927,13 +928,13 @@ next_timequeue_event(time_t now)
                     plyr = CONTENTS(event->loc);
 
                     for (; plyr != NOTHING; plyr = NEXTOBJ(plyr)) {
-                        if (Typeof(plyr) == TYPE_PLAYER && plyr != event->uid)
+                        if (OBJECT_TYPE(plyr) == TYPE_PLAYER && plyr != event->uid)
                             notify_filtered(event->uid, plyr, bbuf, 0);
                     }
                 }
             }
         } else if (event->typ == TQ_MUF_TYP) { /* Run MUF */
-            if (Typeof(event->called_prog) == TYPE_PROGRAM) {
+            if (OBJECT_TYPE(event->called_prog) == TYPE_PROGRAM) {
                 if (event->subtyp == TQ_MUF_DELAY) {
                     /* Uncomment when DBFETCH "does" something */
                     /* FIXME: DBFETCH(event->uid); */
@@ -1090,7 +1091,7 @@ has_refs(dbref program, timequeue ptr)
     }
 
     if (ptr->typ != TQ_MUF_TYP || !(ptr->fr) ||
-        Typeof(program) != TYPE_PROGRAM || !(PROGRAM_INSTANCES(program)))
+        OBJECT_TYPE(program) != TYPE_PROGRAM || !(PROGRAM_INSTANCES(program)))
         return 0;
 
     for (int loop = 1; loop < ptr->fr->caller.top; loop++) {
@@ -1217,7 +1218,7 @@ do_process_status(dbref player)
         notify_nolisten(player, buf, 1);
         count++;
     }
- 
+
     count += muf_event_list(player, strfmt);
     notifyf_nolisten(player, "%d events.", count);
 }
@@ -1379,7 +1380,7 @@ get_pidinfo(int pid, int pin)
          *       a function that converts these type ID's to strings.
          */
         if (ptr->typ == TQ_MUF_TYP) {
-            array_set_strkey_strval(&nw, "SUBTYPE", 
+            array_set_strkey_strval(&nw, "SUBTYPE",
                                     (ptr->subtyp == TQ_MUF_READ) ? "READ" :
                                     (ptr->subtyp == TQ_MUF_QUEUE) ? "QUEUE" :
                                     (ptr->subtyp == TQ_MUF_LISTEN) ? "LISTEN" :
@@ -1460,7 +1461,7 @@ dequeue_prog_real(dbref program, int killmode, const char *file, const int line)
     prev = NULL;
     ptr = tqhead;
 
-    while(ptr) {
+    while (ptr) {
         DEBUGPRINT("dequeue_prog: ptr->called_prog = #%d, has_refs = %d ",
                    ptr->called_prog, has_refs(program, ptr));
         DEBUGPRINT("ptr->uid = #%d\n", ptr->uid);
@@ -1565,7 +1566,7 @@ dequeue_prog_real(dbref program, int killmode, const char *file, const int line)
      */
 #ifdef DEBUG
     /* KLUDGE by premchai21 */
-    if (Typeof(program) == TYPE_PROGRAM)
+    if (OBJECT_TYPE(program) == TYPE_PROGRAM)
         fprintf(stderr, "[debug] dequeue_prog: %d instances of #%d\n",
                 PROGRAM_INSTANCES(program), program);
 #endif
@@ -1744,7 +1745,7 @@ do_kill_process(int descr, dbref player, const char *arg1)
             tmp = ptr;
             tqhead = ptr = ptr->next;
             free_timenode(tmp);
- 
+
             /* free_timenode can free other things on the list when cleaning up
                timers for a backgrounded process */
             ptr = tqhead;
@@ -1756,7 +1757,7 @@ do_kill_process(int descr, dbref player, const char *arg1)
         notify_nolisten(player, "Time queue cleared.", 1);
     } else {
         if (!number(arg1)) { /* Kill based on an object */
-            init_match(descr, player, arg1, NOTYPE, &md);
+            init_match(descr, player, arg1, TYPE_ANY, &md);
             match_everything(&md);
 
             if ((match = noisy_match_result(&md)) == NOTHING) {
@@ -1926,14 +1927,14 @@ propqueue(int descr, dbref player, dbref where, dbref trigger, dbref what,
             if (the_prog != AMBIGUOUS) {
                 if (!ObjExists(the_prog)) {
                     the_prog = NOTHING;
-                } else if (Typeof(the_prog) != TYPE_PROGRAM) {
+                } else if (OBJECT_TYPE(the_prog) != TYPE_PROGRAM) {
                     the_prog = NOTHING;
-                } else if ((OWNER(the_prog) != OWNER(player)) && 
-                           !(FLAGS(the_prog) & LINK_OK)) {
+                } else if ((OWNER(the_prog) != OWNER(player)) &&
+                           !FLAG_CHECK(the_prog, 'L')) {
                     the_prog = NOTHING;
-                } else if (MLevel(the_prog) < mlev) {
+                } else if (OBJECT_EFFECTIVE_MLEVEL(the_prog) < mlev) {
                     the_prog = NOTHING;
-                } else if (MLevel(OWNER(the_prog)) < mlev) {
+                } else if (OBJECT_EFFECTIVE_MLEVEL(OWNER(the_prog)) < mlev) {
                     the_prog = NOTHING;
                 } else if (the_prog == xclude) {
                     the_prog = NOTHING;
@@ -1970,7 +1971,7 @@ propqueue(int descr, dbref player, dbref where, dbref trigger, dbref what,
                             plyr = CONTENTS(where);
 
                             while (plyr != NOTHING) {
-                                if (Typeof(plyr) == TYPE_PLAYER &&
+                                if (OBJECT_TYPE(plyr) == TYPE_PLAYER &&
                                     plyr != player)
 
                                 notify_filtered(player, plyr, bbuf, 0);
@@ -2099,7 +2100,7 @@ listenqueue(int descr, dbref player, dbref where, dbref trigger, dbref what,
     if (!OkObj(what))
         return;
 
-    if (!(FLAGS(what) & LISTENER) && !(FLAGS(OWNER(what)) & ZOMBIE))
+    if (!(FLAGS(what) & LISTENER) && !FLAG_CHECK(OWNER(what), 'Z'))
         return;
 
     tmpchar = NULL;
@@ -2171,14 +2172,14 @@ listenqueue(int descr, dbref player, dbref where, dbref trigger, dbref what,
             if (the_prog != AMBIGUOUS) {
                 if (!ObjExists(the_prog)) {
                     the_prog = NOTHING;
-                } else if (Typeof(the_prog) != TYPE_PROGRAM) {
+                } else if (OBJECT_TYPE(the_prog) != TYPE_PROGRAM) {
                     the_prog = NOTHING;
                 } else if (OWNER(the_prog) != OWNER(player) &&
-                           !(FLAGS(the_prog) & LINK_OK)) {
+                           !FLAG_CHECK(the_prog, 'L')) {
                     the_prog = NOTHING;
-                } else if (MLevel(the_prog) < mlev) {
+                } else if (OBJECT_EFFECTIVE_MLEVEL(the_prog) < mlev) {
                     the_prog = NOTHING;
-                } else if (MLevel(OWNER(the_prog)) < mlev) {
+                } else if (OBJECT_EFFECTIVE_MLEVEL(OWNER(the_prog)) < mlev) {
                     the_prog = NOTHING;
                 } else if (the_prog == xclude) {
                     the_prog = NOTHING;

@@ -77,7 +77,7 @@ int notify(int player, const char *msg);
  */
 int notify(int player, const char *msg) {
     (void)player;
-    return printf("%s\n", msg);		
+    return printf("%s\n", msg);
 }
 
 /*
@@ -427,8 +427,8 @@ static const char * get_username_v6(struct in6_addr *a, in_port_t prt,
  */
 static const char * addrout_v6(struct in6_addr *a, in_port_t prt,
                                in_port_t myprt) {
-    static char buf[SMALL_BUFFER_LEN+7];
-    char tmpbuf[SMALL_BUFFER_LEN+7];
+    char tmpbuf[SMALL_BUFFER_LEN];
+    static char buf[MEDIUM_BUFFER_LEN];
     const char *ptr, *ptr2;
     struct hostent *he;
 
@@ -748,8 +748,8 @@ static const char * get_username(in_addr_t a, in_port_t prt, in_port_t myprt) {
  * @return the host string
  */
 static const char * addrout(in_addr_t a, in_port_t prt, in_port_t myprt) {
-    static char buf[SMALL_BUFFER_LEN+7];
-    char tmpbuf[SMALL_BUFFER_LEN+7];
+    char tmpbuf[SMALL_BUFFER_LEN];
+    static char buf[MEDIUM_BUFFER_LEN];
     const char *ptr, *ptr2;
     struct hostent *he;
     struct in_addr addr;
@@ -848,7 +848,7 @@ static int do_resolve(void) {
     char *result;
     const char *ptr;
     char buf[1024];
-    char outbuf[1024];
+    char outbuf[2072];
     char *bufptr = NULL;
     in_addr_t fullip;
 
@@ -873,7 +873,7 @@ static int do_resolve(void) {
                 return 0;
             }
 
-            /* 
+            /*
              * This will hang the thread while we wait on input, and will
              * deadlock the other threads.  This, however, is on purpose
              * so it essentially forces the threads to queue.
@@ -940,7 +940,7 @@ static int do_resolve(void) {
         }
 
         /*
-         * TODO: This should just be an else I think -- because 
+         * TODO: This should just be an else I think -- because
          *       we will never want to fall into this block if the IPv6
          *       block runs.  There's no reason to do if bufptr then if !bufptr
          */

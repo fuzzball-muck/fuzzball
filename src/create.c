@@ -20,6 +20,7 @@
 #include "edit.h"
 #include "fbmath.h"
 #include "fbstrings.h"
+#include "flags.h"
 #include "game.h"
 #include "log.h"
 #include "move.h"
@@ -91,7 +92,7 @@ do_open(int descr, dbref player, const char *direction, const char *linkto)
         return;
     }
 
-    unparse_object(player, exit, unparse_buf, sizeof(unparse_buf));
+    flag_unparse_object(player, exit, unparse_buf, sizeof(unparse_buf));
     notifyf(player, "Exit %s opened.", unparse_buf);
 
     /* check second arg to see if we should do a link */
@@ -150,12 +151,12 @@ do_link(int descr, dbref player, const char *thing_name, const char *dest_name)
     if ((thing = noisy_match_result(&md)) == NOTHING)
         return;
 
-    if (Typeof(thing) != TYPE_EXIT && strchr(dest_name, EXIT_DELIMITER)) {
+    if (OBJECT_TYPE(thing) != TYPE_EXIT && strchr(dest_name, EXIT_DELIMITER)) {
         notify(player, "Only actions and exits can be linked to multiple destinations.");
         return;
     }
 
-    switch (Typeof(thing)) {
+    switch (OBJECT_TYPE(thing)) {
         case TYPE_EXIT:
             /* we're ok, check the usual stuff */
             if (DBFETCH(thing)->sp.exit.ndest != 0) {
@@ -203,7 +204,7 @@ do_link(int descr, dbref player, const char *thing_name, const char *dest_name)
 
             if (ndest == 0) {
                 notify(player, "No destinations linked.");
-                if(!Wizard(OWNER(thing)))
+                if (!Wizard(OWNER(thing)))
                     SETVALUE(player, GETVALUE(player) + tp_link_cost);
                 DBDIRTY(player);
                 break;
@@ -228,14 +229,14 @@ do_link(int descr, dbref player, const char *thing_name, const char *dest_name)
             match_me(&md);
             match_here(&md);
 
-            if (Typeof(thing) == TYPE_THING)
+            if (OBJECT_TYPE(thing) == TYPE_THING)
                 match_possession(&md);
 
             if ((dest = noisy_match_result(&md)) == NOTHING)
                 return;
 
             if (!controls(player, thing)
-                || !can_link_to(player, Typeof(thing), dest)) {
+                || !can_link_to(player, OBJECT_TYPE(thing), dest)) {
                 notify(player,
                     "Permission denied. (you don't control the thing, or you can't link to dest)");
                 return;
@@ -247,7 +248,7 @@ do_link(int descr, dbref player, const char *thing_name, const char *dest_name)
             }
 
             /* do the link */
-            if (Typeof(thing) == TYPE_THING) {
+            if (OBJECT_TYPE(thing) == TYPE_THING) {
                 THING_SET_HOME(thing, dest);
             } else {
                 PLAYER_SET_HOME(thing, dest);
@@ -266,7 +267,7 @@ do_link(int descr, dbref player, const char *thing_name, const char *dest_name)
             if ((dest = noisy_match_result(&md)) == NOTHING)
                 break;
 
-            if (!controls(player, thing) || !can_link_to(player, Typeof(thing), dest)
+            if (!controls(player, thing) || !can_link_to(player, OBJECT_TYPE(thing), dest)
                 || (thing == dest)) {
                 notify(player,
                     "Permission denied. (you don't control the room, or can't link to the dropto)");
@@ -281,7 +282,7 @@ do_link(int descr, dbref player, const char *thing_name, const char *dest_name)
             break;
         default:
             notify(player, "Internal error: weird object type.");
-            log_status("PANIC: weird object: Typeof(%d) = %d", thing, Typeof(thing));
+            log_status("PANIC: weird object: OBJECT_TYPE(%d) = %d", thing, OBJECT_TYPE(thing));
             break;
     }
 
@@ -328,7 +329,7 @@ do_dig(int descr, dbref player, const char *name, const char *pname)
 
     newparent = LOCATION(LOCATION(player));
 
-    while ((newparent != NOTHING) && !(FLAGS(newparent) & ABODE))
+    while ((newparent != NOTHING) && !FLAG_CHECK(newparent, 'A'))
         newparent = LOCATION(newparent);
 
     if (newparent == NOTHING)
@@ -340,7 +341,7 @@ do_dig(int descr, dbref player, const char *name, const char *pname)
         return;
     }
 
-    unparse_object(player, room, unparse_buf, sizeof(unparse_buf));
+    flag_unparse_object(player, room, unparse_buf, sizeof(unparse_buf));
     notifyf(player, "Room %s created.", unparse_buf);
 
     strcpyn(buf, sizeof(buf), pname);
@@ -371,11 +372,11 @@ do_dig(int descr, dbref player, const char *name, const char *pname)
 
         if ((parent = noisy_match_result(&md)) == NOTHING) {
             notify(player, "Parent set to default.");
-        } else if (!can_link_to(player, Typeof(room), parent) || room == parent) {
+        } else if (!can_link_to(player, OBJECT_TYPE(room), parent) || room == parent) {
             notify(player, "Permission denied.  Parent set to default.");
         } else {
             moveto(room, parent);
-            unparse_object(player, parent, unparse_buf, sizeof(unparse_buf));
+            flag_unparse_object(player, parent, unparse_buf, sizeof(unparse_buf));
             notifyf(player, "Parent set to %s.", unparse_buf);
         }
     }
@@ -388,7 +389,7 @@ do_dig(int descr, dbref player, const char *name, const char *pname)
 /**
  * Implementation of \@program
  *
- * First, find a program that matches that name.  If there's one, then we 
+ * First, find a program that matches that name.  If there's one, then we
  * put the player into edit mode and do it.  Otherwise, we create a new object
  * for the player, and call it a program.
  *
@@ -426,7 +427,7 @@ do_program(int descr, dbref player, const char *name, const char *rname)
             return;
         }
 
-        unparse_object(player, program, unparse_buf, sizeof(unparse_buf));
+        flag_unparse_object(player, program, unparse_buf, sizeof(unparse_buf));
         notifyf(player, "Program %s created.", unparse_buf);
 
         if (*rname) {
@@ -526,7 +527,7 @@ do_clone(int descr, dbref player, const char *name, const char *rname)
     /* Further sanity checks */
 
     /* things only. */
-    if (Typeof(thing) != TYPE_THING) {
+    if (OBJECT_TYPE(thing) != TYPE_THING) {
         notify(player, "That is not a cloneable object.");
         return;
     }
@@ -554,8 +555,8 @@ do_clone(int descr, dbref player, const char *name, const char *rname)
         return;
     }
 
-    unparse_object(player, thing, unparse_buf, sizeof(unparse_buf));
-    unparse_object(player, clonedthing, unparse_buf2, sizeof(unparse_buf2));
+    flag_unparse_object(player, thing, unparse_buf, sizeof(unparse_buf));
+    flag_unparse_object(player, clonedthing, unparse_buf2, sizeof(unparse_buf2));
     notifyf(player, "Object %s cloned as %s.", unparse_buf, unparse_buf2);
 
     if (*rname) {
@@ -621,10 +622,10 @@ do_create(dbref player, char *name, char *acost)
         notify_nolisten(player, error, 1);
         return;
     }
- 
+
     SETVALUE(thing, MAX(0,MIN(OBJECT_ENDOWMENT(cost), tp_max_object_endowment)));
 
-    unparse_object(player, thing, unparse_buf, sizeof(unparse_buf));
+    flag_unparse_object(player, thing, unparse_buf, sizeof(unparse_buf));
     notifyf(player, "Object %s created.", unparse_buf);
 
     if (*rname) {
@@ -655,7 +656,7 @@ parse_source(int descr, dbref player, const char *source_name)
     dbref source;
     struct match_data md;
 
-    init_match(descr, player, source_name, NOTYPE, &md);
+    init_match(descr, player, source_name, TYPE_ANY, &md);
 
     /* source type can be any */
     match_neighbor(&md);
@@ -675,12 +676,12 @@ parse_source(int descr, dbref player, const char *source_name)
         return NOTHING;
     }
 
-    if (Typeof(source) == TYPE_EXIT) {
+    if (OBJECT_TYPE(source) == TYPE_EXIT) {
         notify(player, "You can't attach an action to an action.");
         return NOTHING;
     }
 
-    if (Typeof(source) == TYPE_PROGRAM) {
+    if (OBJECT_TYPE(source) == TYPE_PROGRAM) {
         notify(player, "You can't attach an action to a program.");
         return NOTHING;
     }
@@ -691,7 +692,7 @@ parse_source(int descr, dbref player, const char *source_name)
 /**
  * This routine attaches a new existing action to a source object, if possible.
  *
- * The action will not do anything until it is LINKed.  This is the 
+ * The action will not do anything until it is LINKed.  This is the
  * implementation of \@action.
  *
  * Action names must pass ok_object_name.
@@ -751,7 +752,7 @@ do_action(int descr, dbref player, const char *action_name,
         return;
     }
 
-    unparse_object(player, action, unparse_buf, sizeof(unparse_buf));
+    flag_unparse_object(player, action, unparse_buf, sizeof(unparse_buf));
     notifyf(player, "Action %s created and attached.", unparse_buf);
 
     if (tp_autolink_actions) {
@@ -797,7 +798,7 @@ do_attach(int descr, dbref player, const char *action_name, const char *source_n
     if ((action = noisy_match_result(&md)) == NOTHING)
         return;
 
-    if (Typeof(action) != TYPE_EXIT) {
+    if (OBJECT_TYPE(action) != TYPE_EXIT) {
         notify(player, "That's not an action!");
         return;
     } else if (!controls(player, action)) {
@@ -807,7 +808,7 @@ do_attach(int descr, dbref player, const char *action_name, const char *source_n
     }
 
     if (((source = parse_source(descr, player, source_name)) == NOTHING)
-        || Typeof(source) == TYPE_PROGRAM)
+        || OBJECT_TYPE(source) == TYPE_PROGRAM)
         return;
 
     unset_source(action);
@@ -815,7 +816,7 @@ do_attach(int descr, dbref player, const char *action_name, const char *source_n
 
     notify(player, "Action re-attached.");
 
-    if (MLevRaw(action)) {
+    if (OBJECT_MLEVEL(action)) {
         SetMLevel(action, 0);
         notify(player, "Action priority Level reset to zero.");
     }
@@ -858,7 +859,7 @@ do_recycle(int descr, dbref player, const char *name)
     }
 #endif
     if (!controls(player, thing)) {
-        if (Wizard(OWNER(player)) && (Typeof(thing) == TYPE_GARBAGE))
+        if (Wizard(OWNER(player)) && (OBJECT_TYPE(thing) == TYPE_GARBAGE))
             notify(player, "That's already garbage!");
         else
             notify(player,
@@ -871,7 +872,7 @@ do_recycle(int descr, dbref player, const char *name)
             }
         }
 
-        switch (Typeof(thing)) {
+        switch (OBJECT_TYPE(thing)) {
             case TYPE_ROOM:
                 if (OWNER(thing) != OWNER(player)) {
                     notify(player,

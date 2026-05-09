@@ -22,6 +22,7 @@
 #include "fbstrings.h"
 #include "fbmath.h"
 #include "fbtime.h"
+#include "flags.h"
 #include "game.h"
 #include "interface.h"
 #include "match.h"
@@ -237,7 +238,7 @@ create_action(dbref player, const char *name, dbref source, char *error)
 /**
  * Allocate an PROGRAM type object
  *
- * With a given name and owner/creator.  Returns the DBREF of the program. 
+ * With a given name and owner/creator.  Returns the DBREF of the program.
  * The 'name' memory is copied.  Initializes the "special" fields.
  *
  * Uses an error parameter to communicate the reason for failure. This
@@ -252,7 +253,6 @@ dbref
 create_program(dbref player, const char *name, char *error)
 {
     char buf[BUFFER_LEN];
-    int jj;
 
     if (!ok_object_name(name, TYPE_PROGRAM)) {
         snprintf(error, SMALL_BUFFER_LEN, "You cannot use that name for a program.");
@@ -283,9 +283,12 @@ create_program(dbref player, const char *name, char *error)
      * Set the right MUCKER level - must be at most the MUCKER level of the
      * creating player.
      */
-    jj = MLevel(newprog);
-    if (jj == 0 || jj > MLevel(player))
-        SetMLevel(newprog, MLevel(player));
+    int newprog_mlevel = OBJECT_EFFECTIVE_MLEVEL(newprog);
+    int player_mlevel = OBJECT_EFFECTIVE_MLEVEL(player);
+
+    if (newprog_mlevel == 0 || newprog_mlevel > player_mlevel) {
+        SetMLevel(newprog, player_mlevel);
+    }
 
     return newprog;
 }
@@ -301,7 +304,7 @@ create_program(dbref player, const char *name, char *error)
  *
  * Uses an error parameter to communicate the reason for failure. This
  * should be at least SMALL_BUFFER_LEN in size.
- * 
+ *
  * @param player the owner dbref
  * @param name the name of the new room
  * @param parent the parent room's dbref
@@ -316,8 +319,13 @@ create_room(dbref player, const char *name, dbref parent, char *error)
         return NOTHING;
     }
 
-    dbref newroom = create_object(name, player,
-                    TYPE_ROOM | (FLAGS(player) & JUMP_OK));
+    object_flag_type new_flags = TYPE_ROOM;
+
+    if (FLAG_CHECK(player, 'J')) {
+        new_flags |= FLAG_VALUE('J');
+    }
+
+    dbref newroom = create_object(name, player, new_flags);
 
     LOCATION(newroom) = parent;
     PUSH(newroom, CONTENTS(parent));
@@ -342,7 +350,7 @@ create_room(dbref player, const char *name, dbref parent, char *error)
  *
  * Uses an error parameter to communicate the reason for failure. This
  * should be at least SMALL_BUFFER_LEN in size.
- * 
+ *
  * @param player the owner dbref
  * @param name the name of the new thing
  * @param location the location to place the object
@@ -385,7 +393,7 @@ create_thing(dbref player, const char *name, dbref location, char *error)
  *
  * Uses an error parameter to communicate the reason for failure. This
  * should be at least SMALL_BUFFER_LEN in size.
- * 
+ *
  * @param thing the thing to clone
  * @param player the player for determining the cloned thing's home
  * @param copy_hidden_props if true, this copies hidden properties
@@ -554,7 +562,7 @@ db_write_object(FILE * f, dbref i)
     putproperties(f, i);
 #endif /* DISKBASE */
 
-    switch (Typeof(i)) {
+    switch (OBJECT_TYPE(i)) {
         case TYPE_THING:
             putref(f, THING_HOME(i));
             putref(f, o->exits);
@@ -919,7 +927,7 @@ db_free_object(dbref i)
      * Do this before freeing the name because uncompile_program()
      * may try to print some error messages.
      */
-    if (Typeof(i) == TYPE_PROGRAM) {
+    if (OBJECT_TYPE(i) == TYPE_PROGRAM) {
         uncompile_program(i);
 
         if (PROGRAM_FIRST(i)) {
@@ -942,9 +950,9 @@ db_free_object(dbref i)
     }
 #endif
 
-    if (Typeof(i) == TYPE_EXIT) {
+    if (OBJECT_TYPE(i) == TYPE_EXIT) {
         free(o->sp.exit.dest);
-    } else if (Typeof(i) == TYPE_PLAYER) {
+    } else if (OBJECT_TYPE(i) == TYPE_PLAYER) {
         free((void *) PLAYER_PASSWORD(i));
         free(PLAYER_DESCRS(i));
         PLAYER_SET_DESCRS(i, NULL);
@@ -953,11 +961,11 @@ db_free_object(dbref i)
         ignore_flush_cache(i);
     }
 
-    if (Typeof(i) == TYPE_THING) {
+    if (OBJECT_TYPE(i) == TYPE_THING) {
         FREE_THING_SP(i);
     }
 
-    if (Typeof(i) == TYPE_PLAYER) {
+    if (OBJECT_TYPE(i) == TYPE_PLAYER) {
         FREE_PLAYER_SP(i);
     }
 }
@@ -1034,7 +1042,7 @@ db_read_object(FILE * f, dbref objno)
     o->ts_modified = getref(f);
 
     c = getc(f);
- 
+
     if (c == '*') {
 #ifdef DISKBASE
         o->propsfpos = ftell(f);
@@ -1154,8 +1162,8 @@ autostart_progs(void)
     }
 
     for (dbref i = 0; i < db_top; i++) {
-        if (Typeof(i) == TYPE_PROGRAM) {
-            if ((FLAGS(i) & ABODE) && TrueWizard(OWNER(i))) {
+        if (OBJECT_TYPE(i) == TYPE_PROGRAM) {
+            if (FLAG_CHECK(i, 'A') && TrueWizard(OWNER(i))) {
                 /*
                  * Pre-compile AUTOSTART programs.  They queue up when they
                  * finish compiling.
@@ -1221,7 +1229,7 @@ db_read(FILE * f)
     tune_load_parms_from_file(f, NOTHING, getref(f));
 
     for (dbref j = 0; j < db_top; j++) {
-        if (Typeof(j) == TYPE_GARBAGE) {
+        if (OBJECT_TYPE(j) == TYPE_GARBAGE) {
             NEXTOBJ(j) = recyclable;
             recyclable = j;
         }
@@ -1294,179 +1302,7 @@ objnode_pop(objnode **head)
     dbref ref = tmp->data;
     *head = tmp->next;
     free(tmp);
-    return ref; 
-}
-
-/**
- * "Unparses" flags, or rather, gives a string representation of object flags
- *
- * This uses a static buffer, so make sure to copy it if you want to keep
- * it.  This is, of course, not threadsafe.
- *
- * @param thing the object to construct a flag string for
- * @return the constructed flag string in a static buffer
- */
-const char *
-unparse_flags(dbref thing)
-{
-    static char buf[BUFFER_LEN];
-    char *p;
-    const char *type_codes = "R-EPFG";
-
-    p = buf;
-    if (Typeof(thing) != TYPE_THING)
-        *p++ = type_codes[Typeof(thing)];
-
-    /*
-     * @TODO In a perfect world, this would be more configuration based
-     *       and not a long line of if statements.  But, it must be
-     *       high performance because it is used a lot.
-     *
-     *       I don't really have an idea here, to be honest, but its
-     *       something to think about (tanabi)
-     */
-    if (FLAGS(thing) & ~TYPE_MASK) {
-        /* print flags */
-        if (FLAGS(thing) & WIZARD)
-            *p++ = 'W';
-
-        if (FLAGS(thing) & LINK_OK)
-            *p++ = 'L';
-
-        if (FLAGS(thing) & KILL_OK)
-            *p++ = 'K';
-
-        if (FLAGS(thing) & DARK)
-            *p++ = 'D';
-
-        if (FLAGS(thing) & STICKY)
-            *p++ = 'S';
-
-        if (FLAGS(thing) & QUELL)
-            *p++ = 'Q';
-
-        if (FLAGS(thing) & BUILDER)
-            *p++ = 'B';
-
-        if (FLAGS(thing) & CHOWN_OK)
-            *p++ = 'C';
-
-        if (FLAGS(thing) & JUMP_OK)
-            *p++ = 'J';
-
-        if (FLAGS(thing) & GUEST)
-            *p++ = 'G';
-
-        if (FLAGS(thing) & HAVEN)
-            *p++ = 'H';
-
-        if (FLAGS(thing) & ABODE)
-            *p++ = 'A';
-
-        if (FLAGS(thing) & VEHICLE)
-            *p++ = 'V';
-
-        if (FLAGS(thing) & XFORCIBLE)
-            *p++ = 'X';
-
-        if (FLAGS(thing) & ZOMBIE)
-            *p++ = 'Z';
-
-        if (FLAGS(thing) & YIELD)
-            *p++ = 'Y';
-
-        if (FLAGS(thing) & OVERT)
-            *p++ = 'O';
-
-        if (MLevRaw(thing)) {
-            *p++ = 'M';
-
-            switch (MLevRaw(thing)) {
-                case 1:
-                    *p++ = '1';
-                    break;
-
-                case 2:
-                    *p++ = '2';
-                    break;
-
-                case 3:
-                    *p++ = '3';
-                    break;
-            }
-        }
-    }
-
-    *p = '\0';
-    return buf;
-}
-
-/**
- * "Unparse" an object, showing itsnam and list of flags if permissions allow
- *
- * Uses the provided buffer that has the given size.  Practically speaking,
- * names can be as long as BUFFER_LEN, so your buffer should probably
- * be BUFFER_LEN at least in size (This is the most common practice).  If
- * a name was actually its maximum length, then there is not enough room
- * for flags to show up.  Traditionally, Fuzzball has not cared about this
- * problem because, traditionally, names just don't get that long.
- *
- * Flags are only shown if:
- *
- * * player == NOTHING
- * * or player does not have STICKY flag AND:
- *   * 'loc' has flags that can be seen - @see can_see_flags
- *   * or 'loc' is not a player and 'player' controls 'loc'
- *   * or 'loc' is CHOWN_OK
- *
- * @param player the player doing the call or NOTHING
- * @param loc the target to generate unparse text for
- * @param buffer the buffer to use
- * @param size the size of the buffer
- */
-void
-unparse_object(dbref player, dbref loc, char *buffer, size_t size)
-{
-    /* Handle ZOMBIE case */
-    if (player != NOTHING)
-        player = OWNER(player);
-
-    switch (loc) {
-        case NOTHING:
-            strcpyn(buffer, size, "*NOTHING*");
-            return;
-
-        case AMBIGUOUS:
-            strcpyn(buffer, size, "*AMBIGUOUS*");
-            return;
-
-        case HOME:
-            strcpyn(buffer, size, "*HOME*");
-            return;
-
-        case NIL:
-            strcpyn(buffer, size, "*NIL*");
-            return;
-
-        default:
-            if (!ObjExists(loc)) {
-                strcpyn(buffer, size, "*INVALID*");
-                return;
-            }
-
-            if ((player == NOTHING) || (!(FLAGS(player) & STICKY) &&
-                (can_see_flags(player, loc) ||
-                ((Typeof(loc) != TYPE_PLAYER) &&
-                (controls_link(player, loc)
-                || (FLAGS(loc) & CHOWN_OK)))))) {
-                /* show everything */
-                snprintf(buffer, size, "%.*s(#%d%s)", (BUFFER_LEN / 2), NAME(loc), loc,
-                         unparse_flags(loc));
-            } else {
-                /* show only the name */
-                strcpyn(buffer, size, NAME(loc));
-            }
-    }
+    return ref;
 }
 
 /**
@@ -1598,11 +1434,11 @@ size_object(dbref i, int load)
      *       here and in db.h
      */
 
-    if (Typeof(i) == TYPE_EXIT && DBFETCH(i)->sp.exit.dest) {
+    if (OBJECT_TYPE(i) == TYPE_EXIT && DBFETCH(i)->sp.exit.dest) {
         byts += sizeof(dbref) * (size_t)(DBFETCH(i)->sp.exit.ndest);
-    } else if (Typeof(i) == TYPE_PLAYER && PLAYER_PASSWORD(i)) {
+    } else if (OBJECT_TYPE(i) == TYPE_PLAYER && PLAYER_PASSWORD(i)) {
         byts += strlen(PLAYER_PASSWORD(i)) + 1;
-    } else if (Typeof(i) == TYPE_PROGRAM) {
+    } else if (OBJECT_TYPE(i) == TYPE_PROGRAM) {
         byts += size_prog(i);
     }
 
@@ -1746,10 +1582,10 @@ getparent_logic(dbref obj)
     if (obj == NOTHING)
         return NOTHING;
 
-    if (Typeof(obj) == TYPE_THING && (FLAGS(obj) & VEHICLE)) {
+    if (OBJECT_TYPE(obj) == TYPE_THING && FLAG_CHECK(obj, 'V')) {
         obj = THING_HOME(obj);
 
-        if (obj != NOTHING && Typeof(obj) == TYPE_PLAYER) {
+        if (obj != NOTHING && OBJECT_TYPE(obj) == TYPE_PLAYER) {
             obj = PLAYER_HOME(obj);
         }
     } else {
@@ -1791,7 +1627,7 @@ getparent(dbref obj)
             obj = getparent_logic(obj);
         } while (obj != (oldptr = ptr = getparent_logic(ptr)) &&
                  obj != (ptr = getparent_logic(ptr)) &&
-                 obj != NOTHING && Typeof(obj) == TYPE_THING);
+                 obj != NOTHING && OBJECT_TYPE(obj) == TYPE_THING);
 
         if (obj != NOTHING && (obj == oldptr || obj == ptr)) {
             obj = GLOBAL_ENVIRONMENT;
@@ -1847,10 +1683,10 @@ controls(dbref who, dbref what)
          * -winged
          */
         for (dbref index = what; index != NOTHING; index = LOCATION(index)) {
-            if ((OWNER(index) == who) && (Typeof(index) == TYPE_ROOM)
+            if ((OWNER(index) == who) && (OBJECT_TYPE(index) == TYPE_ROOM)
                 && Wizard(index)) {
                 /* Realm Owner doesn't control other Player objects */
-                if (Typeof(what) == TYPE_PLAYER) {
+                if (OBJECT_TYPE(what) == TYPE_PLAYER) {
                     return 0;
                 } else {
                     return 1;
@@ -1882,8 +1718,8 @@ controls(dbref who, dbref what)
 int
 controls_link(dbref who, dbref what)
 {
-    switch (Typeof(what)) {
-    case TYPE_EXIT: 
+    switch (OBJECT_TYPE(what)) {
+    case TYPE_EXIT:
         for (int i = 0, n = DBFETCH(what)->sp.exit.ndest; i < n; i++) {
             if (controls(who, DBFETCH(what)->sp.exit.dest[i]))
                 return 1;
@@ -1973,7 +1809,7 @@ parse_linkable_dest(int descr, dbref player, dbref exit, const char *dest_name)
     dbref dobj;                 /* destination room/player/thing/link */
     struct match_data md;
 
-    init_match(descr, player, dest_name, NOTYPE, &md);
+    init_match(descr, player, dest_name, TYPE_ANY, &md);
     match_everything(&md);
     match_home(&md);
     match_nil(&md);
@@ -1982,9 +1818,9 @@ parse_linkable_dest(int descr, dbref player, dbref exit, const char *dest_name)
         return NOTHING;
     }
 
-    if (dobj != NIL && !tp_teleport_to_player && Typeof(dobj) == TYPE_PLAYER) {
+    if (dobj != NIL && !tp_teleport_to_player && OBJECT_TYPE(dobj) == TYPE_PLAYER) {
         char unparse_buf[BUFFER_LEN];
-        unparse_object(player, dobj, unparse_buf, sizeof(unparse_buf));
+        flag_unparse_object(player, dobj, unparse_buf, sizeof(unparse_buf));
         notifyf(player, "You can't link to players.  Destination %s ignored.",
                 unparse_buf);
         return NOTHING;
@@ -1995,9 +1831,9 @@ parse_linkable_dest(int descr, dbref player, dbref exit, const char *dest_name)
         return NOTHING;
     }
 
-    if (!can_link_to(player, Typeof(exit), dobj)) {
+    if (!can_link_to(player, OBJECT_TYPE(exit), dobj)) {
         char unparse_buf[BUFFER_LEN];
-        unparse_object(player, dobj, unparse_buf, sizeof(unparse_buf));
+        flag_unparse_object(player, dobj, unparse_buf, sizeof(unparse_buf));
         notifyf(player, "You can't link to %s.", unparse_buf);
         return NOTHING;
     } else {
@@ -2089,9 +1925,9 @@ _link_exit(int descr, dbref player, dbref exit, char *dest_name,
             continue;
         }
 
-        unparse_object(player, dest, unparse_buf, sizeof(unparse_buf));
+        flag_unparse_object(player, dest, unparse_buf, sizeof(unparse_buf));
 
-        switch (Typeof(dest)) {
+        switch (OBJECT_TYPE(dest)) {
             case TYPE_PLAYER:
             case TYPE_ROOM:
             case TYPE_PROGRAM:
@@ -2130,7 +1966,7 @@ _link_exit(int descr, dbref player, dbref exit, char *dest_name,
 
             default:
                 notify(player, "Internal error: weird object type.");
-                log_status("PANIC: weird object: Typeof(%d) = %d", dest, Typeof(dest));
+                log_status("PANIC: weird object: OBJECT_TYPE(%d) = %d", dest, OBJECT_TYPE(dest));
 
                 if (dryrun)
                     error = 1;
@@ -2284,7 +2120,7 @@ register_object(dbref player, dbref location, const char *propdir, char *name,
         }
 
         if (prevobj != -50) {
-            unparse_object(player, prevobj, unparse_buf, sizeof(unparse_buf));
+            flag_unparse_object(player, prevobj, unparse_buf, sizeof(unparse_buf));
             notifyf_nolisten(player, "Used to be registered as %s: %s", buf, unparse_buf);
         }
     } else if (object == NOTHING) {
@@ -2292,8 +2128,8 @@ register_object(dbref player, dbref location, const char *propdir, char *name,
         return;
     }
 
-    unparse_object(player, object, unparse_buf, sizeof(unparse_buf));
-    unparse_object(player, location, unparse_buf2, sizeof(unparse_buf2));
+    flag_unparse_object(player, object, unparse_buf, sizeof(unparse_buf));
+    flag_unparse_object(player, location, unparse_buf2, sizeof(unparse_buf2));
 
     if (object == NOTHING) {
         remove_property(location, buf);
@@ -2341,129 +2177,6 @@ env_distance(dbref from, dbref to)
 }
 
 /**
- * Returns the flag associated with the given string, if any.
- *
- * Understands flag alias prefixes.
- *
- * Passing "truewizard" here just returns the WIZARD flag.
- *
- * @param ref the object to check
- * @param flag_string the flag (or alias) to check
- * @return the flag corresponding to the string, or 0 if none match.
- */
-object_flag_type
-str_to_flag(const char *flag_string)
-{
-    if (!*flag_string) {
-        return 0;
-    }
-
-    if (string_prefix("abode", flag_string)
-            || string_prefix("autostart", flag_string)
-            || string_prefix("abate", flag_string)) {
-        return ABODE;
-    } else if (string_prefix("builder", flag_string)
-            || string_prefix("bound", flag_string)) {
-        return BUILDER;
-    } else if (string_prefix("chown_ok", flag_string)
-            || string_prefix("color", flag_string)) {
-        return CHOWN_OK;
-    } else if (string_prefix("dark", flag_string)
-            || string_prefix("debug", flag_string)) {
-        return DARK;
-    } else if (string_prefix("guest", flag_string)) {
-        return GUEST;
-    } else if (string_prefix("haven", flag_string)
-            || string_prefix("hide", flag_string)
-            || string_prefix("harduid", flag_string)) {
-        return HAVEN;
-    } else if (string_prefix("interactive", flag_string)) {
-        return INTERACTIVE;
-    } else if (string_prefix("jump_ok", flag_string)) {
-        return JUMP_OK;
-    } else if (string_prefix("kill_ok", flag_string)) {
-        return KILL_OK;
-    } else if (string_prefix("link_ok", flag_string)) {
-        return LINK_OK;
-    } else if (string_prefix("mucker", flag_string)) {
-        return MUCKER;
-    } else if (string_prefix("nucker", flag_string)) {
-        return SMUCKER;
-    } else if (string_prefix("overt", flag_string)) {
-        return OVERT;
-    } else if (string_prefix("quell", flag_string)) {
-        return QUELL;
-    } else if (string_prefix("sticky", flag_string)
-            || string_prefix("silent", flag_string)
-            || string_prefix("setuid", flag_string)) {
-        return STICKY;
-    } else if (string_prefix("vehicle", flag_string)
-            || string_prefix("viewable", flag_string)) {
-        return VEHICLE;
-    } else if (string_prefix("wizard", flag_string)) {
-        return WIZARD;
-    } else if (string_prefix("truewizard", flag_string)) {
-        return WIZARD;
-    } else if (string_prefix("xforcible", flag_string)
-            || string_prefix("xpress", flag_string)) {
-        return XFORCIBLE;
-    } else if (string_prefix("yield", flag_string)) {
-        return YIELD;
-    } else if (string_prefix("zombie", flag_string)) {
-        return ZOMBIE;
-    }
-
-    return 0;
-}
-
-
-/**
- * Returns true if the object has the given flag set (or reset).
- *
- * Understands flag alias prefixes and multiple not conditions (!!x = x).
- *
- * Checking "truewizard" is the same as checking "wizard" and "!quell".
- *
- * @param ref the object to check
- * @param flag the flag (or alias) to check
- * @return if the object has the specific flag state
- */
-bool
-has_flag(dbref ref, const char *flag)
-{
-    object_flag_type tmp = 0;
-    int truwiz = 0;
-    bool result, negated = false;
-
-    while (*flag == NOT_TOKEN) {
-        flag++;
-        negated = (!negated);
-    }
-
-    if (string_prefix("truewizard", flag)) {
-        truwiz = 1;
-    }
-
-    tmp = str_to_flag(flag);
-
-    if (negated) {
-        if ((!truwiz) && (tmp == WIZARD)) {
-            result = (!Wizard(ref));
-        } else {
-            result = (tmp && ((FLAGS(ref) & tmp) == 0));
-        }
-    } else {
-        if ((!truwiz) && (tmp == WIZARD)) {
-            result = Wizard(ref);
-        } else {
-            result = (tmp && ((FLAGS(ref) & tmp) != 0));
-        }
-    }
-
-    return result;
-}
-
-/**
  * Helper function to collect object statistics.
  *
  * Populates the stats array with counts of owned objects: total, rooms, exits,
@@ -2487,7 +2200,7 @@ collect_dbstats(dbref player, dbref ref, int stats[7])
     for (dbref i = 0; i < db_top; i++) {
         if (ref == NOTHING || OWNER(i) == ref) {
             for (int t = 0, n = ARRAYSIZE(types); t < n; t++) {
-                if (Typeof(i) == types[t]) {
+                if (OBJECT_TYPE(i) == types[t]) {
                     stats[t+1]++;
                     stats[0]++;
                     break;

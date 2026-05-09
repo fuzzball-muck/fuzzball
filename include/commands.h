@@ -15,7 +15,7 @@
  * This file is grouped alphabetically just to make it slightly easier to find
  * things.  Please keep that ordering.
  */
- 
+
 /*
  * A
  */
@@ -25,7 +25,7 @@
  *
  * Defined in: create.c
  *
- * The action will not do anything until it is LINKed.  This is the 
+ * The action will not do anything until it is LINKed.  This is the
  * implementation of \@action.
  *
  * Action names must pass ok_object_name.
@@ -119,7 +119,7 @@ void do_bless(int descr, dbref player, const char *target, const char *propname)
  *
  * @param player the player doing the \@boot command
  * @param name the string name that will be matched for the player to boot.
- */ 
+ */
 void do_boot(dbref player, const char *name);
 
 /*
@@ -967,7 +967,7 @@ void do_process_status(dbref player);
  *
  * Defined in create.c
  *
- * First, find a program that matches that name.  If there's one, then we 
+ * First, find a program that matches that name.  If there's one, then we
  * put the player into edit mode and do it.  Otherwise, we create a new object
  * for the player, and call it a program.
  *

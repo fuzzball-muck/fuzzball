@@ -59,7 +59,7 @@ stk_array *get_mufevent_pids(stk_array * nw, dbref ref);
  * STARTED which is an integer value UNIX timestamp of the start time
  * SUBTYPE which is hard coded to empty string (events never have a subtype)
  * TYPE which is hard coded to MUFEVENT (this is always a MUF event)
- * 
+ *
  * @param nw the dictionary to put informatin into
  * @param pid the PID to get information for
  * @param pinned pinned value for the "FILTERS" array in the dictionary

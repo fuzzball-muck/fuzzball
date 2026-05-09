@@ -126,12 +126,12 @@ E's
 
 F's
   fabs               fail               fg_mode            findnext
-  firstdescr         flag?              flags              float
-  float?             floor              fmod               fmtstring
-  fmttime            for                force              force_level
-  forcedby           forcedby_array     foreach            foreground
-  fork               frand              ftostr             ftostrc
-  fulldepth          
+  firstdescr         flag?              flags              flags?
+  float              float?             floor              fmod
+  fmtstring          fmttime            for                force
+  force_level        forcedby           forcedby_array     foreach
+  foreground         fork               frand              ftostr
+  ftostrc            fulldepth          
 
 G's
   gaussian           getlink            getlinks           getlinks_array
@@ -4151,27 +4151,27 @@ dbcmp                     dbref                     dbtop
 desc                      drop                      dump
 entrances_array           exit?                     exits
 exits_array               fail                      findnext
-flag?                     getlink                   getlinks
-getlinks_array            ignore_add                ignore_del
-ignoring?                 location                  match
-mlevel                    movepennies               moveto
-name                      newexit                   newobject
-newpassword               newplayer                 newprogram
-newroom                   next                      nextentrance
-nextowned                 objmem                    odrop
-ofail                     ok?                       osucc
-owner                     part_pmatch               pennies
-player?                   pmatch                    pname_history
-prog                      program?                  recycle
-rmatch                    room?                     set
-setdesc                   setdrop                   setfail
-setlink                   setlinks_array            setname
-setodrop                  setofail                  setosucc
-setown                    setsucc                   setsysparm
-stats                     stats_array               succ
-sysparm                   sysparm_array             thing?
-timestamps                toadplayer                trig
-truename                  unparseobj                
+flag?                     flags?                    getlink
+getlinks                  getlinks_array            ignore_add
+ignore_del                ignoring?                 location
+match                     mlevel                    movepennies
+moveto                    name                      newexit
+newobject                 newpassword               newplayer
+newprogram                newroom                   next
+nextentrance              nextowned                 objmem
+odrop                     ofail                     ok?
+osucc                     owner                     part_pmatch
+pennies                   player?                   pmatch
+pname_history             prog                      program?
+recycle                   rmatch                    room?
+set                       setdesc                   setdrop
+setfail                   setlink                   setlinks_array
+setname                   setodrop                  setofail
+setosucc                  setown                    setsucc
+setsysparm                stats                     stats_array
+succ                      sysparm                   sysparm_array
+thing?                    timestamps                toadplayer
+trig                      truename                  unparseobj
 
 ~----------------------------------------------------------------------------
 ~
@@ -4463,7 +4463,22 @@ a program's READ, or if they are in the MUF editor.
 The "Truewizard" flag will check for a W flag with or without the QUELL set.
 The "Mucker" flag returns the most significant bit of the mucker level and
 the "Nucker" flag returns the least significant bit. (Use MLEVEL instead.)
-Also see: SET and MLEVEL
+Also see: SET, MLEVEL and FLAGS?
+~
+~
+FLAGS?
+FLAGS? (d s -- i )
+
+  Determines if object d has the flag pattern given by string s. A flag
+pattern consists of at least one single-character flag with an optional
+! token in front to negate the specific check. Flag patterns also recognize
+object types.
+
+  Does not recognize full flag names, including the virtual alias
+"truewizard"; "T" checks for an object of type thing.
+
+  Examples of flag patterns include "PB3", "L!A", and "!O".
+Also see: SET, MLEVEL and FLAG?
 ~
 ~
 MLEVEL

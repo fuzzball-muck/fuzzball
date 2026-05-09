@@ -57,7 +57,7 @@ do_give(int descr, dbref player, const char *recipient, int amount)
     }
 
     if (!Wizard(OWNER(player))) {
-        if (Typeof(who) != TYPE_PLAYER) {
+        if (OBJECT_TYPE(who) != TYPE_PLAYER) {
             notify(player, "You can only give to other players.");
             return;
         } else if (GETVALUE(who) + amount > tp_max_pennies) {
@@ -71,7 +71,7 @@ do_give(int descr, dbref player, const char *recipient, int amount)
         return;
     }
 
-    switch (Typeof(who)) {
+    switch (OBJECT_TYPE(who)) {
         case TYPE_PLAYER:
             SETVALUE(who, GETVALUE(who) + amount);
 

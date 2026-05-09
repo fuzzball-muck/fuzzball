@@ -7,14 +7,22 @@ void sync(void) { return; }
 
 static void ftconvert(const FILETIME *ft, struct timeval *ts)
 {
-	ts->tv_sec = (int)((*(LONGLONG *)ft - TOFFSET) / 10000000);
-	ts->tv_usec = (int)((*(LONGLONG *)ft - TOFFSET - ((LONGLONG)ts->tv_sec * (LONGLONG)10000000)) * 100) / 1000;
+    ts->tv_sec = (int)((*(LONGLONG *)ft - TOFFSET) / 10000000);
+    ts->tv_usec = (int)((*(LONGLONG *)ft - TOFFSET - ((LONGLONG)ts->tv_sec * (LONGLONG)10000000)) * 100) / 1000;
 }
 
 int gettimeofday(struct timeval *tv, struct timezone *tz)
 {
-	FILETIME ft;
-	GetSystemTimeAsFileTime(&ft);
-	ftconvert(&ft,tv);
-	return 0;
+    FILETIME ft;
+    GetSystemTimeAsFileTime(&ft);
+    ftconvert(&ft,tv);
+    return 0;
+}
+
+int ffsl(long mask) {
+    unsigned long index;
+    if (_BitScanForward(&index, (unsigned long)mask)) {
+        return (int)(index + 1);
+    }
+    return 0;
 }
