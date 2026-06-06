@@ -610,7 +610,7 @@ const char *mfn_div(MFUNARGS);
 /**
  * MPI function that returns the boolean value arg0 == arg1
  *
- * If arg0 and arg1 are both strings containing numbers, they will be 
+ * If arg0 and arg1 are both strings containing numbers, they will be
  * compared as numbers.  Otherwise, they will be compared as strings.
  *
  * For this call, that particular nuance doesn't matter too much.
@@ -791,7 +791,7 @@ const char *mfn_filter(MFUNARGS);
 /**
  * MPI function that returns if an object if it has the given flag (re)set.
  *
- * @see has_flag
+ * @see flag_eval
  *
  * @param descr the descriptor of the caller
  * @param player the ref of the calling player
@@ -804,6 +804,7 @@ const char *mfn_filter(MFUNARGS);
  * @param mesgtyp the type of the message
  * @return string parsed results
  */
+
 const char *mfn_flagp(MFUNARGS);
 
 /**
@@ -823,6 +824,24 @@ const char *mfn_flagp(MFUNARGS);
  * @return string parsed results
  */
 const char *mfn_flags(MFUNARGS);
+
+/**
+ * MPI function that returns if an object's flags match the given pattern.
+ *
+ * @see flag_eval_pattern
+ *
+ * @param descr the descriptor of the caller
+ * @param player the ref of the calling player
+ * @param what the dbref of the trigger
+ * @param perms the dbref for permission consideration
+ * @param argc the number of arguments
+ * @param argv the array of strings for arguments
+ * @param buf the working buffer
+ * @param buflen the size of the buffer
+ * @param mesgtyp the type of the message
+ * @return string parsed results
+ */
+const char *mfn_flagsp(MFUNARGS);
 
 /**
  * MPI function that takes a list, and evaluates a an expression with variables
@@ -991,7 +1010,7 @@ const char *mfn_func(MFUNARGS);
 /**
  * MPI function that returns the boolean value arg0 >= arg1
  *
- * If arg0 and arg1 are both strings containing numbers, they will be 
+ * If arg0 and arg1 are both strings containing numbers, they will be
  * compared as numbers.  Otherwise, they will be compared as strings.
  *
  * @param descr the descriptor of the caller
@@ -1010,7 +1029,7 @@ const char *mfn_ge(MFUNARGS);
 /**
  * MPI function that returns the boolean value arg0 > arg1
  *
- * If arg0 and arg1 are both strings containing numbers, they will be 
+ * If arg0 and arg1 are both strings containing numbers, they will be
  * compared as numbers.  Otherwise, they will be compared as strings.
  *
  * @param descr the descriptor of the caller
@@ -1314,7 +1333,7 @@ const char *mfn_lcommon(MFUNARGS);
 /**
  * MPI function that returns the boolean value arg0 <= arg1
  *
- * If arg0 and arg1 are both strings containing numbers, they will be 
+ * If arg0 and arg1 are both strings containing numbers, they will be
  * compared as numbers.  Otherwise, they will be compared as strings.
  *
  * @param descr the descriptor of the caller
@@ -1587,7 +1606,7 @@ const char *mfn_lsort(MFUNARGS);
 /**
  * MPI function that returns the boolean value arg0 < arg1
  *
- * If arg0 and arg1 are both strings containing numbers, they will be 
+ * If arg0 and arg1 are both strings containing numbers, they will be
  * compared as numbers.  Otherwise, they will be compared as strings.
  *
  * @param descr the descriptor of the caller
@@ -1665,7 +1684,7 @@ const char *mfn_lunique(MFUNARGS);
 /**
  * MPI function that returns the larger of arg0 and arg1
  *
- * If arg0 and arg1 are both strings containing numbers, they will be 
+ * If arg0 and arg1 are both strings containing numbers, they will be
  * compared as numbers.  Otherwise, they will be compared as strings.
  *
  * Returns the larger of the two.
@@ -1708,7 +1727,7 @@ const char *mfn_midstr(MFUNARGS);
 /**
  * MPI function that returns the smaller of arg0 and arg1
  *
- * If arg0 and arg1 are both strings containing numbers, they will be 
+ * If arg0 and arg1 are both strings containing numbers, they will be
  * compared as numbers.  Otherwise, they will be compared as strings.
  *
  * Returns the smaller of the two.
@@ -1877,7 +1896,7 @@ const char *mfn_name(MFUNARGS);
 /**
  * MPI function that returns the boolean value arg0 != arg1
  *
- * If arg0 and arg1 are both strings containing numbers, they will be 
+ * If arg0 and arg1 are both strings containing numbers, they will be
  * compared as numbers.  Otherwise, they will be compared as strings.
  *
  * For this call, that particular nuance doesn't matter too much.
@@ -2268,7 +2287,7 @@ const char *mfn_revoke(MFUNARGS);
  *
  * arg2 is the padding string which defaults to " " but can be any
  * string.
- * 
+ *
  *
  * @param descr the descriptor of the caller
  * @param player the ref of the calling player
@@ -3005,6 +3024,7 @@ static struct mfun_dat mfun_list[] = {
     {"FILTER", mfn_filter, 0, 0, 0, 3, 5},
     {"FLAG?", mfn_flagp, 1, 0, 1, 2, 2},
     {"FLAGS", mfn_flags, 1, 0, 1, 1, 1},
+    {"FLAGS?", mfn_flagsp, 1, 0, 1, 2, 2},
     {"FOLD", mfn_fold, 0, 0, 0, 4, 5},
     {"FOR", mfn_for, 0, 0, 0, 5, 5},
     {"FORCE", mfn_force, 1, 0, 1, 2, 2},

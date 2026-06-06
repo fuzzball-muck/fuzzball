@@ -24,6 +24,7 @@
 #include "diskprop.h"
 #endif
 #include "fbstrings.h"
+#include "flags.h"
 #include "interface.h"
 #include "log.h"
 #include "match.h"
@@ -167,7 +168,7 @@ static void
 SanPrintObject(dbref player, const char *prefix, dbref ref)
 {
     char unparse_buf[16384];
-    unparse_object(NOTHING, ref, unparse_buf, sizeof(unparse_buf));
+    flag_unparse_object(NOTHING, ref, unparse_buf, sizeof(unparse_buf));
     SanPrint(player, "%s%s\n", prefix, unparse_buf);
 }
 
@@ -191,7 +192,7 @@ do_examine_sanity(int descr, dbref player, const char *arg)
     struct match_data md;
 
     if (player > 0) {
-        init_match(descr, player, arg, NOTYPE, &md);
+        init_match(descr, player, arg, TYPE_ANY, &md);
         match_everything(&md);
 
         if ((d = noisy_match_result(&md)) == NOTHING) {
@@ -206,7 +207,7 @@ do_examine_sanity(int descr, dbref player, const char *arg)
         }
     }
 
-    if (Typeof(d) == TYPE_GARBAGE) {
+    if (OBJECT_TYPE(d) == TYPE_GARBAGE) {
         SanPrint(player, "Object:         *GARBAGE* #%d", d);
     } else {
         SanPrintObject(player, "Object:         ", d);
@@ -218,7 +219,7 @@ do_examine_sanity(int descr, dbref player, const char *arg)
     SanPrintObject(player, "  Exits Start:    ", EXITS(d));
     SanPrintObject(player, "  Next:           ", NEXTOBJ(d));
 
-    switch (Typeof(d)) {
+    switch (OBJECT_TYPE(d)) {
         case TYPE_THING:
             SanPrintObject(player, "  Home:           ", THING_HOME(d));
             SanPrint(player, "  Value:          %d", GETVALUE(d));
@@ -289,7 +290,7 @@ static void
 violate(dbref player, dbref i, const char *s)
 {
     char unparse_buf[16384];
-    unparse_object(NOTHING, i, unparse_buf, sizeof(unparse_buf));
+    flag_unparse_object(NOTHING, i, unparse_buf, sizeof(unparse_buf));
     SanPrint(player, "Object \"%s\" %s!", unparse_buf, s);
     sanity_violated = 1;
 }
@@ -441,7 +442,7 @@ check_room(dbref player, dbref obj)
 
     if (!OkRef(i) && i != HOME) {
         violate(player, obj, "has its dropto set to an invalid object");
-    } else if (i >= 0 && Typeof(i) != TYPE_THING && Typeof(i) != TYPE_ROOM) {
+    } else if (i >= 0 && OBJECT_TYPE(i) != TYPE_THING && OBJECT_TYPE(i) != TYPE_ROOM) {
         violate(player, obj, "has its dropto set to a non-room, non-thing object");
     }
 }
@@ -470,7 +471,7 @@ check_thing(dbref player, dbref obj)
 
     if (!OkObj(i)) {
         violate(player, obj, "has its home set to an invalid object");
-    } else if (Typeof(i) != TYPE_ROOM && Typeof(i) != TYPE_THING && Typeof(i) != TYPE_PLAYER) {
+    } else if (OBJECT_TYPE(i) != TYPE_ROOM && OBJECT_TYPE(i) != TYPE_THING && OBJECT_TYPE(i) != TYPE_PLAYER) {
         violate(player, obj,
             "has its home set to an object that is not a room, thing, or player");
     }
@@ -529,7 +530,7 @@ check_player(dbref player, dbref obj)
 
     if (!OkObj(i)) {
         violate(player, obj, "has its home set to an invalid object");
-    } else if (i >= 0 && Typeof(i) != TYPE_ROOM) {
+    } else if (i >= 0 && OBJECT_TYPE(i) != TYPE_ROOM) {
         violate(player, obj, "has its home set to a non-room object");
     }
 }
@@ -552,7 +553,7 @@ check_player(dbref player, dbref obj)
 static void
 check_garbage(dbref player, dbref obj)
 {
-    if (NEXTOBJ(obj) != NOTHING && Typeof(NEXTOBJ(obj)) != TYPE_GARBAGE) {
+    if (NEXTOBJ(obj) != NOTHING && OBJECT_TYPE(NEXTOBJ(obj)) != TYPE_GARBAGE) {
         violate(player, obj,
             "has a non-garbage object as the 'next' object in the garbage chain");
     }
@@ -585,11 +586,11 @@ check_contents_list(dbref player, dbref obj)
     dbref i;
     int limit;
 
-    if (Typeof(obj) != TYPE_PROGRAM && Typeof(obj) != TYPE_EXIT &&
-        Typeof(obj) != TYPE_GARBAGE) {
+    if (OBJECT_TYPE(obj) != TYPE_PROGRAM && OBJECT_TYPE(obj) != TYPE_EXIT &&
+        OBJECT_TYPE(obj) != TYPE_GARBAGE) {
         for (i = CONTENTS(obj), limit = db_top;
              OkObj(i) && --limit && LOCATION(i) == obj &&
-             Typeof(i) != TYPE_EXIT; i = NEXTOBJ(i)) ;
+             OBJECT_TYPE(i) != TYPE_EXIT; i = NEXTOBJ(i)) ;
 
         if (i != NOTHING) {
             if (!limit) {
@@ -600,7 +601,7 @@ check_contents_list(dbref player, dbref obj)
                 if (!OkObj(i)) {
                     violate(player, obj, "has an invalid object in its contents list");
                 } else {
-                    if (Typeof(i) == TYPE_EXIT) {
+                    if (OBJECT_TYPE(i) == TYPE_EXIT) {
                         violate(player, obj,
                             "has an exit in its contents list (it shouldn't)");
                     }
@@ -614,9 +615,9 @@ check_contents_list(dbref player, dbref obj)
         }
     } else {
         if (CONTENTS(obj) != NOTHING) {
-            if (Typeof(obj) == TYPE_EXIT) {
+            if (OBJECT_TYPE(obj) == TYPE_EXIT) {
                 violate(player, obj, "is an exit/action whose contents aren't #-1");
-            } else if (Typeof(obj) == TYPE_GARBAGE) {
+            } else if (OBJECT_TYPE(obj) == TYPE_GARBAGE) {
                 violate(player, obj, "is a garbage object whose contents aren't #-1");
             } else {
                 violate(player, obj, "is a program whose contents aren't #-1");
@@ -652,11 +653,11 @@ check_exits_list(dbref player, dbref obj)
     dbref i;
     int limit;
 
-    if (Typeof(obj) != TYPE_PROGRAM && Typeof(obj) != TYPE_EXIT &&
-        Typeof(obj) != TYPE_GARBAGE) {
+    if (OBJECT_TYPE(obj) != TYPE_PROGRAM && OBJECT_TYPE(obj) != TYPE_EXIT &&
+        OBJECT_TYPE(obj) != TYPE_GARBAGE) {
         for (i = EXITS(obj), limit = db_top;
              OkObj(i) && --limit && LOCATION(i) == obj &&
-             Typeof(i) == TYPE_EXIT; i = NEXTOBJ(i)) ;
+             OBJECT_TYPE(i) == TYPE_EXIT; i = NEXTOBJ(i)) ;
 
         if (i != NOTHING) {
             if (!limit) {
@@ -666,7 +667,7 @@ check_exits_list(dbref player, dbref obj)
             } else if (!OkObj(i)) {
                 violate(player, obj, "has an invalid object in its exits list");
             } else {
-                if (Typeof(i) != TYPE_EXIT) {
+                if (OBJECT_TYPE(i) != TYPE_EXIT) {
                     violate(player, obj, "has a non-exit in its exits list");
                 }
 
@@ -678,9 +679,9 @@ check_exits_list(dbref player, dbref obj)
         }
     } else {
         if (EXITS(obj) != NOTHING) {
-            if (Typeof(obj) == TYPE_EXIT) {
+            if (OBJECT_TYPE(obj) == TYPE_EXIT) {
                 violate(player, obj, "is an exit/action whose exits list isn't #-1");
-            } else if (Typeof(obj) == TYPE_GARBAGE) {
+            } else if (OBJECT_TYPE(obj) == TYPE_GARBAGE) {
                 violate(player, obj, "is a garbage object whose exits list isn't #-1");
             } else {
                 violate(player, obj, "is a program whose exits list isn't #-1");
@@ -730,15 +731,15 @@ check_object(dbref player, dbref obj)
     /*
      * Check the ownership
      */
-    if (Typeof(obj) != TYPE_GARBAGE) {
+    if (OBJECT_TYPE(obj) != TYPE_GARBAGE) {
         if (!OkObj(OWNER(obj))) {
             violate(player, obj, "has an invalid object as its owner.");
-        } else if (Typeof(OWNER(obj)) != TYPE_PLAYER) {
+        } else if (OBJECT_TYPE(OWNER(obj)) != TYPE_PLAYER) {
             violate(player, obj, "has a non-player object as its owner.");
         }
 
-        /* 
-         * check location 
+        /*
+         * check location
          */
         if (!OkObj(LOCATION(obj)) && !(obj == GLOBAL_ENVIRONMENT &&
             LOCATION(obj) == NOTHING)) {
@@ -747,18 +748,18 @@ check_object(dbref player, dbref obj)
     }
 
     if (LOCATION(obj) != NOTHING &&
-        (Typeof(LOCATION(obj)) == TYPE_GARBAGE ||
-         Typeof(LOCATION(obj)) == TYPE_EXIT ||
-         Typeof(LOCATION(obj)) == TYPE_PROGRAM))
+        (OBJECT_TYPE(LOCATION(obj)) == TYPE_GARBAGE ||
+         OBJECT_TYPE(LOCATION(obj)) == TYPE_EXIT ||
+         OBJECT_TYPE(LOCATION(obj)) == TYPE_PROGRAM))
         violate(player, obj, "thinks it is located in a non-container object");
 
-    if ((Typeof(obj) == TYPE_GARBAGE) && (LOCATION(obj) != NOTHING))
+    if ((OBJECT_TYPE(obj) == TYPE_GARBAGE) && (LOCATION(obj) != NOTHING))
         violate(player, obj, "is a garbage object with a location that isn't #-1");
 
     check_contents_list(player, obj);
     check_exits_list(player, obj);
 
-    switch (Typeof(obj)) {
+    switch (OBJECT_TYPE(obj)) {
         case TYPE_ROOM:
             check_room(player, obj);
             break;
@@ -854,11 +855,11 @@ san_fixed_log(const char *format, int unparse, dbref ref1, dbref ref2)
 
     if (unparse) {
         if (ref1 >= 0) {
-            unparse_object(NOTHING, ref1, buf1, sizeof(buf1));
+            flag_unparse_object(NOTHING, ref1, buf1, sizeof(buf1));
         }
 
         if (ref2 >= 0) {
-            unparse_object(NOTHING, ref2, buf2, sizeof(buf2));
+            flag_unparse_object(NOTHING, ref2, buf2, sizeof(buf2));
         }
 
         log_sanfix(format, buf1, buf2);
@@ -905,7 +906,7 @@ cut_bad_recyclable(void)
     prev = NOTHING;
 
     while (loop != NOTHING) {
-        if (!OkRef(loop) || Typeof(loop) != TYPE_GARBAGE ||
+        if (!OkRef(loop) || OBJECT_TYPE(loop) != TYPE_GARBAGE ||
             FLAGS(loop) & SANEBIT) {
             SanFixed(loop, "Recyclable object %s is not TYPE_GARBAGE");
 
@@ -952,10 +953,10 @@ cut_bad_contents(dbref obj)
 
     while (loop != NOTHING) {
         if (!OkObj(loop) || FLAGS(loop) & SANEBIT ||
-            Typeof(loop) == TYPE_EXIT || LOCATION(loop) != obj || loop == obj) {
+            OBJECT_TYPE(loop) == TYPE_EXIT || LOCATION(loop) != obj || loop == obj) {
             if (!OkObj(loop)) {
                 SanFixed(obj, "Contents chain for %s cut at invalid dbref");
-            } else if (Typeof(loop) == TYPE_EXIT) {
+            } else if (OBJECT_TYPE(loop) == TYPE_EXIT) {
                 SanFixed2(obj, loop, "Contents chain for %s cut at exit %s");
             } else if (loop == obj) {
                 SanFixed(obj, "Contents chain for %s cut at self-reference");
@@ -1010,10 +1011,10 @@ cut_bad_exits(dbref obj)
 
     while (loop != NOTHING) {
         if (!OkObj(loop) || FLAGS(loop) & SANEBIT ||
-            Typeof(loop) != TYPE_EXIT || LOCATION(loop) != obj) {
+            OBJECT_TYPE(loop) != TYPE_EXIT || LOCATION(loop) != obj) {
             if (!OkObj(loop)) {
                 SanFixed(obj, "Exits chain for %s cut at invalid dbref");
-            } else if (Typeof(loop) != TYPE_EXIT) {
+            } else if (OBJECT_TYPE(loop) != TYPE_EXIT) {
                 SanFixed2(obj, loop, "Exits chain for %s cut at non-exit %s");
             } else if (LOCATION(loop) != obj) {
                 SanFixed2(obj, loop, "Exits chain for %s cut at misplaced exit %s");
@@ -1061,8 +1062,8 @@ hacksaw_bad_chains(void)
     cut_bad_recyclable();
 
     for (dbref loop = 0; loop < db_top; loop++) {
-        if (Typeof(loop) != TYPE_ROOM && Typeof(loop) != TYPE_THING &&
-            Typeof(loop) != TYPE_PLAYER) {
+        if (OBJECT_TYPE(loop) != TYPE_ROOM && OBJECT_TYPE(loop) != TYPE_THING &&
+            OBJECT_TYPE(loop) != TYPE_PLAYER) {
             cut_all_chains(loop);
         } else {
             cut_bad_contents(loop);
@@ -1136,7 +1137,7 @@ create_lostandfound(dbref * player, dbref * room)
     }
 
     if (strlen(player_name) >= (unsigned int)tp_player_name_limit) {
-        unparse_object(NOTHING, GOD, unparse_buf, sizeof(unparse_buf));
+        flag_unparse_object(NOTHING, GOD, unparse_buf, sizeof(unparse_buf));
         log_sanfix("WARNING: Unable to get lost+found player, using %s", unparse_buf);
         *player = GOD;
     } else {
@@ -1158,7 +1159,7 @@ create_lostandfound(dbref * player, dbref * room)
         PUSH(*player, CONTENTS(*room));
         DBDIRTY(*player);
         add_player(*player);
-        unparse_object(NOTHING, *player, unparse_buf, sizeof(unparse_buf));
+        flag_unparse_object(NOTHING, *player, unparse_buf, sizeof(unparse_buf));
         log_sanfix("Using %s (with password %s) to resolve unknown owner",
                    unparse_buf, rpass);
     }
@@ -1190,7 +1191,7 @@ fix_room(dbref obj)
         SanFixed(obj, "Removing invalid drop-to from %s");
         DBFETCH(obj)->sp.room.dropto = NOTHING;
         DBDIRTY(obj);
-    } else if (i >= 0 && Typeof(i) != TYPE_THING && Typeof(i) != TYPE_ROOM) {
+    } else if (i >= 0 && OBJECT_TYPE(i) != TYPE_THING && OBJECT_TYPE(i) != TYPE_ROOM) {
         SanFixed2(obj, i, "Removing drop-to on %s to %s");
         DBFETCH(obj)->sp.room.dropto = NOTHING;
         DBDIRTY(obj);
@@ -1212,8 +1213,8 @@ fix_thing(dbref obj)
 
     i = THING_HOME(obj);
 
-    if (!OkObj(i) || (Typeof(i) != TYPE_ROOM && Typeof(i) != TYPE_THING &&
-        Typeof(i) != TYPE_PLAYER)) {
+    if (!OkObj(i) || (OBJECT_TYPE(i) != TYPE_ROOM && OBJECT_TYPE(i) != TYPE_THING &&
+        OBJECT_TYPE(i) != TYPE_PLAYER)) {
         SanFixed2(obj, OWNER(obj), "Setting the home on %s to %s, its owner");
         THING_SET_HOME(obj, OWNER(obj));
         DBDIRTY(obj);
@@ -1262,7 +1263,7 @@ fix_player(dbref obj)
 
     i = PLAYER_HOME(obj);
 
-    if (!OkObj(i) || Typeof(i) != TYPE_ROOM) {
+    if (!OkObj(i) || OBJECT_TYPE(i) != TYPE_ROOM) {
         SanFixed2(obj, tp_player_start, "Setting the home on %s to %s");
         PLAYER_SET_HOME(obj, tp_player_start);
         DBDIRTY(obj);
@@ -1296,18 +1297,18 @@ find_misplaced_objects(void)
     dbref player = NOTHING, room = NOTHING;
 
     for (dbref loop = 0; loop < db_top; loop++) {
-        if (Typeof(loop) != TYPE_ROOM &&
-            Typeof(loop) != TYPE_THING &&
-            Typeof(loop) != TYPE_PLAYER &&
-            Typeof(loop) != TYPE_EXIT &&
-            Typeof(loop) != TYPE_PROGRAM && Typeof(loop) != TYPE_GARBAGE) {
+        if (OBJECT_TYPE(loop) != TYPE_ROOM &&
+            OBJECT_TYPE(loop) != TYPE_THING &&
+            OBJECT_TYPE(loop) != TYPE_PLAYER &&
+            OBJECT_TYPE(loop) != TYPE_EXIT &&
+            OBJECT_TYPE(loop) != TYPE_PROGRAM && OBJECT_TYPE(loop) != TYPE_GARBAGE) {
             SanFixedRef(loop, "Object #%d is of unknown type");
             sanity_violated = 1;
             continue;
         }
 
         if (!NAME(loop) || !(*NAME(loop))) {
-            switch Typeof(loop) {
+            switch OBJECT_TYPE(loop) {
                 case TYPE_GARBAGE:
                     NAME(loop) = "<garbage>";
                     break;
@@ -1338,9 +1339,9 @@ find_misplaced_objects(void)
             DBDIRTY(loop);
         }
 
-        if (Typeof(loop) != TYPE_GARBAGE) {
+        if (OBJECT_TYPE(loop) != TYPE_GARBAGE) {
             /* Check ownership issues */
-            if (!OkObj(OWNER(loop)) || Typeof(OWNER(loop)) != TYPE_PLAYER) {
+            if (!OkObj(OWNER(loop)) || OBJECT_TYPE(OWNER(loop)) != TYPE_PLAYER) {
                 if (player == NOTHING) {
                     create_lostandfound(&player, &room);
                 }
@@ -1352,14 +1353,14 @@ find_misplaced_objects(void)
 
             /* Check for invalid location */
             if (loop != GLOBAL_ENVIRONMENT && (!OkObj(LOCATION(loop)) ||
-                Typeof(LOCATION(loop)) == TYPE_GARBAGE ||
-                Typeof(LOCATION(loop)) == TYPE_EXIT ||
-                Typeof(LOCATION(loop)) == TYPE_PROGRAM ||
-                (Typeof(loop) == TYPE_PLAYER &&
-                 Typeof(LOCATION(loop)) == TYPE_PLAYER))) {
-                if (Typeof(loop) == TYPE_PLAYER) {
+                OBJECT_TYPE(LOCATION(loop)) == TYPE_GARBAGE ||
+                OBJECT_TYPE(LOCATION(loop)) == TYPE_EXIT ||
+                OBJECT_TYPE(LOCATION(loop)) == TYPE_PROGRAM ||
+                (OBJECT_TYPE(loop) == TYPE_PLAYER &&
+                 OBJECT_TYPE(LOCATION(loop)) == TYPE_PLAYER))) {
+                if (OBJECT_TYPE(loop) == TYPE_PLAYER) {
                     /* Players cannot contain players. */
-                    if (OkObj(LOCATION(loop)) && Typeof(LOCATION(loop)) == TYPE_PLAYER) {
+                    if (OkObj(LOCATION(loop)) && OBJECT_TYPE(LOCATION(loop)) == TYPE_PLAYER) {
                         dbref loop1;
 
                         loop1 = LOCATION(loop);
@@ -1401,7 +1402,7 @@ find_misplaced_objects(void)
                 DBDIRTY(loop);
                 DBDIRTY(LOCATION(loop));
 
-                if (Typeof(loop) == TYPE_EXIT) {
+                if (OBJECT_TYPE(loop) == TYPE_EXIT) {
                     PUSH(loop, EXITS(LOCATION(loop)));
                 } else {
                     PUSH(loop, CONTENTS(LOCATION(loop)));
@@ -1425,7 +1426,7 @@ find_misplaced_objects(void)
         }
 
         /* Run individual fix routine */
-        switch (Typeof(loop)) {
+        switch (OBJECT_TYPE(loop)) {
             case TYPE_ROOM:
                 fix_room(loop);
                 break;
@@ -1467,7 +1468,7 @@ adopt_orphans(void)
         if (!(FLAGS(loop) & SANEBIT)) {
             DBDIRTY(loop);
 
-            switch (Typeof(loop)) {
+            switch (OBJECT_TYPE(loop)) {
                 case TYPE_ROOM:
                 case TYPE_THING:
                 case TYPE_PLAYER:
@@ -1546,7 +1547,7 @@ do_sanfix(dbref player)
 
     FLAGS(GLOBAL_ENVIRONMENT) |= SANEBIT;
 
-    if (!OkObj(tp_player_start) || Typeof(tp_player_start) != TYPE_ROOM) {
+    if (!OkObj(tp_player_start) || OBJECT_TYPE(tp_player_start) != TYPE_ROOM) {
         SanFixed(GLOBAL_ENVIRONMENT, "Reset invalid player_start to %s");
         tp_player_start = GLOBAL_ENVIRONMENT;
     }
@@ -1657,35 +1658,35 @@ do_sanchange(dbref player, const char *command)
         return;
     }
 
-    unparse_object(NOTHING, v, unparse_buf, sizeof(unparse_buf));
+    flag_unparse_object(NOTHING, v, unparse_buf, sizeof(unparse_buf));
 
     if (!strcasecmp(field, "next")) {
-        unparse_object(NOTHING, NEXTOBJ(d), buf2, sizeof(buf2));
+        flag_unparse_object(NOTHING, NEXTOBJ(d), buf2, sizeof(buf2));
         NEXTOBJ(d) = v;
         DBDIRTY(d);
         SanPrint(player, "## Setting #%d's next field to %s", d, unparse_buf);
     } else if (!strcasecmp(field, "exits")) {
-        unparse_object(NOTHING, EXITS(d), buf2, sizeof(buf2));
+        flag_unparse_object(NOTHING, EXITS(d), buf2, sizeof(buf2));
         EXITS(d) = v;
         DBDIRTY(d);
         SanPrint(player, "## Setting #%d's next field to %s", d, unparse_buf);
     } else if (!strcasecmp(field, "contents")) {
-        unparse_object(NOTHING, CONTENTS(d), buf2, sizeof(buf2));
+        flag_unparse_object(NOTHING, CONTENTS(d), buf2, sizeof(buf2));
         CONTENTS(d) = v;
         DBDIRTY(d);
         SanPrint(player, "## Setting #%d's Contents list start to %s", d, unparse_buf);
     } else if (!strcasecmp(field, "location")) {
-        unparse_object(NOTHING, LOCATION(d), buf2, sizeof(buf2));
+        flag_unparse_object(NOTHING, LOCATION(d), buf2, sizeof(buf2));
         LOCATION(d) = v;
         DBDIRTY(d);
         SanPrint(player, "## Setting #%d's location to %s", d, unparse_buf);
     } else if (!strcasecmp(field, "owner")) {
-        unparse_object(NOTHING, OWNER(d), buf2, sizeof(buf2));
+        flag_unparse_object(NOTHING, OWNER(d), buf2, sizeof(buf2));
         OWNER(d) = v;
         DBDIRTY(d);
         SanPrint(player, "## Setting #%d's owner to %s", d, unparse_buf);
     } else if (!strcasecmp(field, "home")) {
-        switch (Typeof(d)) {
+        switch (OBJECT_TYPE(d)) {
             case TYPE_PLAYER:
                 ip = &(PLAYER_HOME(d));
                 break;
@@ -1698,7 +1699,7 @@ do_sanchange(dbref player, const char *command)
                 return;
         }
 
-        unparse_object(NOTHING, *ip, buf2, sizeof(buf2));
+        flag_unparse_object(NOTHING, *ip, buf2, sizeof(buf2));
         *ip = v;
         DBDIRTY(d);
         SanPrint(player, "## Setting #%d's home to: %s\n", d, unparse_buf);
@@ -1903,6 +1904,22 @@ extract_program(FILE * f, dbref obj)
 }
 
 /**
+ * Helper for unparsing objects.
+ * Uses a static buffer for internal use within this module.
+ *
+ * @private
+ * @param d the object to unparse
+ * @return the unparsed object
+ */
+static const char *
+_extract_object_unparse(dbref d)
+{
+    static char buf[BUFFER_LEN];
+    flag_unparse_object(NOTHING, d, buf, sizeof(buf));
+    return buf;
+}
+
+/**
  * Extract object information to a file
  *
  * This dumps object information to a file handle, including all
@@ -1915,41 +1932,31 @@ extract_program(FILE * f, dbref obj)
 static void
 extract_object(FILE * f, dbref d)
 {
-    char unparse_buf[1024];
-    /* @TODO This is kind of a "gross" way to do this in my opinion ...
-     *       a local define just for this little block.
-     *
-     *       I would make this a static function that 'owns'
-     *       unparse_buf as a static buffer and returns the pointer to
-     *       it instead of using precompiler tomfoolery.  It will
-     *       look rather nicer I think.
-     */
-#define unparse(x) (unparse_object(NOTHING, (x), unparse_buf, sizeof(unparse_buf)), unparse_buf)
     fprintf(f, "  #%d\n", d);
-    fprintf(f, "  Object:         %s\n", unparse(d));
-    fprintf(f, "  Owner:          %s\n", unparse(OWNER(d)));
-    fprintf(f, "  Location:       %s\n", unparse(LOCATION(d)));
-    fprintf(f, "  Contents Start: %s\n", unparse(CONTENTS(d)));
-    fprintf(f, "  Exits Start:    %s\n", unparse(EXITS(d)));
-    fprintf(f, "  Next:           %s\n", unparse(NEXTOBJ(d)));
+    fprintf(f, "  Object:         %s\n", _extract_object_unparse(d));
+    fprintf(f, "  Owner:          %s\n", _extract_object_unparse(OWNER(d)));
+    fprintf(f, "  Location:       %s\n", _extract_object_unparse(LOCATION(d)));
+    fprintf(f, "  Contents Start: %s\n", _extract_object_unparse(CONTENTS(d)));
+    fprintf(f, "  Exits Start:    %s\n", _extract_object_unparse(EXITS(d)));
+    fprintf(f, "  Next:           %s\n", _extract_object_unparse(NEXTOBJ(d)));
 
-    switch (Typeof(d)) {
+    switch (OBJECT_TYPE(d)) {
         case TYPE_THING:
-            fprintf(f, "  Home:           %s\n", unparse(THING_HOME(d)));
+            fprintf(f, "  Home:           %s\n", _extract_object_unparse(THING_HOME(d)));
             fprintf(f, "  Value:          %d\n", GETVALUE(d));
             break;
         case TYPE_ROOM:
-            fprintf(f, "  Drop-to:        %s\n", unparse(DBFETCH(d)->sp.room.dropto));
+            fprintf(f, "  Drop-to:        %s\n", _extract_object_unparse(DBFETCH(d)->sp.room.dropto));
             break;
         case TYPE_PLAYER:
-            fprintf(f, "  Home:           %s\n", unparse(PLAYER_HOME(d)));
+            fprintf(f, "  Home:           %s\n", _extract_object_unparse(PLAYER_HOME(d)));
             fprintf(f, "  Pennies:        %d\n", GETVALUE(d));
             break;
         case TYPE_EXIT:
             fprintf(f, "  Links:         ");
 
             for (int i = 0; i < DBFETCH(d)->sp.exit.ndest; i++)
-                fprintf(f, " %s;", unparse(DBFETCH(d)->sp.exit.dest[i]));
+                fprintf(f, " %s;", _extract_object_unparse(DBFETCH(d)->sp.exit.dest[i]));
 
             fprintf(f, "\n");
 
@@ -1962,7 +1969,6 @@ extract_object(FILE * f, dbref d)
         default:
             break;
     }
-#undef unparse
 
 #ifdef DISKBASE
     fetchprops(d, NULL);
@@ -2016,7 +2022,7 @@ extract(void)
     }
 
     for (i = 0; i < db_top; i++) {
-        if ((OWNER(i) == d) && (Typeof(i) != TYPE_GARBAGE)) {
+        if ((OWNER(i) == d) && (OBJECT_TYPE(i) != TYPE_GARBAGE)) {
             extract_object(f, i);
         }   /* extract only objects owned by this player */
     }   /* loop through db */
@@ -2065,7 +2071,7 @@ extract_single(void)
         f = stdout;
     }
 
-    if (Typeof(d) != TYPE_GARBAGE) {
+    if (OBJECT_TYPE(d) != TYPE_GARBAGE) {
         extract_object(f, d);
     }
 
@@ -2175,11 +2181,11 @@ san_main(void)
     printf("Good luck!\n\n");
 
     printf("Number of objects in DB is: %d\n", db_top - 1);
-    unparse_object(NOTHING, GLOBAL_ENVIRONMENT, unparse_buf, sizeof(unparse_buf));
+    flag_unparse_object(NOTHING, GLOBAL_ENVIRONMENT, unparse_buf, sizeof(unparse_buf));
     printf("Global Environment is: %s\n", unparse_buf);
 
 #ifdef GOD_PRIV
-    unparse_object(NOTHING, GOD, unparse_buf, sizeof(unparse_buf));
+    flag_unparse_object(NOTHING, GOD, unparse_buf, sizeof(unparse_buf));
     printf("God is: %s\n", unparse_buf);
     printf("\n");
 #endif

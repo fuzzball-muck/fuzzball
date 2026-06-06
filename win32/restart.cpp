@@ -586,7 +586,7 @@ int main (int argc, char **argv) {
             }
             fseek(f, 0L, SEEK_SET);
             char c;
-            while((c = fgetc(f)) != EOF) {
+            while ((c = fgetc(f)) != EOF) {
                if (c != '\r') fputc(c, dbin);
             }
             fclose(f);

@@ -1315,7 +1315,7 @@ prim_checkargs(PRIM_PROTOTYPE)
                             if ((ref < 0) && (ref != HOME))
                                 ABORT_CHECKARGS("Invalid dbref.");
 
-                            if (Typeof(ref) == TYPE_GARBAGE)
+                            if (OBJECT_TYPE(ref) == TYPE_GARBAGE)
                                 ABORT_CHECKARGS("Invalid dbref.");
                             /* fall through */
 
@@ -1331,7 +1331,7 @@ prim_checkargs(PRIM_PROTOTYPE)
                             /* fall through */
 
                         case 'p':
-                            if ((ref >= 0) && (Typeof(ref) != TYPE_PLAYER))
+                            if ((ref >= 0) && (OBJECT_TYPE(ref) != TYPE_PLAYER))
                                 ABORT_CHECKARGS("Expected player dbref.");
 
                             if (ref == HOME)
@@ -1345,7 +1345,7 @@ prim_checkargs(PRIM_PROTOTYPE)
                             /* fall through */
 
                         case 'r':
-                            if ((ref >= 0) && (Typeof(ref) != TYPE_ROOM))
+                            if ((ref >= 0) && (OBJECT_TYPE(ref) != TYPE_ROOM))
                                 ABORT_CHECKARGS("Expected room dbref.");
 
                             break;
@@ -1356,7 +1356,7 @@ prim_checkargs(PRIM_PROTOTYPE)
                             /* fall through */
 
                         case 't':
-                            if ((ref >= 0) && (Typeof(ref) != TYPE_THING))
+                            if ((ref >= 0) && (OBJECT_TYPE(ref) != TYPE_THING))
                                 ABORT_CHECKARGS("Expected thing dbref.");
 
                             if (ref == HOME)
@@ -1370,7 +1370,7 @@ prim_checkargs(PRIM_PROTOTYPE)
                             /* fall through */
 
                         case 'e':
-                            if ((ref >= 0) && (Typeof(ref) != TYPE_EXIT))
+                            if ((ref >= 0) && (OBJECT_TYPE(ref) != TYPE_EXIT))
                                 ABORT_CHECKARGS("Expected exit dbref.");
 
                             if (ref == HOME)
@@ -1384,7 +1384,7 @@ prim_checkargs(PRIM_PROTOTYPE)
                             /* fall through */
 
                         case 'f':
-                            if ((ref >= 0) && (Typeof(ref) != TYPE_PROGRAM))
+                            if ((ref >= 0) && (OBJECT_TYPE(ref) != TYPE_PROGRAM))
                                 ABORT_CHECKARGS("Expected program dbref.");
 
                             if (ref == HOME)
@@ -1740,7 +1740,7 @@ prim_interp(PRIM_PROTOTYPE)
     oper2 = POP();              /* dbref  --  trigger */
     oper1 = POP();              /* dbref  --  Program to run */
 
-    if (!valid_object(oper1) || Typeof(oper1->data.objref) != TYPE_PROGRAM)
+    if (!valid_object(oper1) || OBJECT_TYPE(oper1->data.objref) != TYPE_PROGRAM)
         abort_interp("Bad program reference. (1)");
 
     if (!valid_object(oper2))

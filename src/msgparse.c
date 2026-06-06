@@ -440,7 +440,7 @@ get_list_count(dbref player, dbref obj, dbref perms, char *listname,
  * How the string is concatinated is controlled by 'mode'.  If mode is
  * 0, then the list is delimited by \r characters such as with the {list}
  * macro.
- * 
+ *
  * For mode 1, most lines are separated by a single space.  If a line ends in '.', '?',
  * or '!' then a second space is added as well to the delimiter.
  *
@@ -598,15 +598,15 @@ isneighbor(dbref d1, dbref d2)
     if (d1 == d2)
         return 1;
 
-    if (Typeof(d1) != TYPE_ROOM)
+    if (OBJECT_TYPE(d1) != TYPE_ROOM)
         if (LOCATION(d1) == d2)
             return 1;
 
-    if (Typeof(d2) != TYPE_ROOM)
+    if (OBJECT_TYPE(d2) != TYPE_ROOM)
         if (LOCATION(d2) == d1)
             return 1;
 
-    if (Typeof(d1) != TYPE_ROOM && Typeof(d2) != TYPE_ROOM)
+    if (OBJECT_TYPE(d1) != TYPE_ROOM && OBJECT_TYPE(d2) != TYPE_ROOM)
         if (LOCATION(d1) == LOCATION(d2))
             return 1;
 
@@ -697,7 +697,7 @@ mesg_dbref_raw(int descr, dbref player, dbref what, const char *buf)
         } else if (!strcasecmp(buf, "home")) {
             obj = HOME;
         } else {
-            init_match(descr, player, buf, NOTYPE, &md);
+            init_match(descr, player, buf, TYPE_ANY, &md);
             match_absolute(&md);
             match_all_exits(&md);
             match_neighbor(&md);
@@ -706,7 +706,7 @@ mesg_dbref_raw(int descr, dbref player, dbref what, const char *buf)
             obj = match_result(&md);
 
             if (obj == NOTHING) {
-                init_match_remote(descr, player, what, buf, NOTYPE, &md);
+                init_match_remote(descr, player, what, buf, TYPE_ANY, &md);
                 match_player(&md);
                 match_all_exits(&md);
                 match_neighbor(&md);
@@ -770,7 +770,7 @@ mesg_dbref(int descr, dbref player, dbref what, dbref perms, char *buf,
  * @param buf the string to match dbref
  * @param mesgtyp the mesgtyp from the MPI call containg blessed perms
  * @return matched ref, UNKNOWN, or PERMDENIED as appropriate
- */ 
+ */
 dbref
 mesg_dbref_strict(int descr, dbref player, dbref what, dbref perms, char *buf,
                   int mesgtyp)
@@ -804,7 +804,7 @@ mesg_dbref_strict(int descr, dbref player, dbref what, dbref perms, char *buf,
  * @param buf the string to match dbref
  * @param mesgtyp the mesgtyp from the MPI call containg blessed perms
  * @return matched ref, UNKNOWN, or PERMDENIED as appropriate
- */ 
+ */
 dbref
 mesg_dbref_local(int descr, dbref player, dbref what, dbref perms, char *buf,
                  int mesgtyp)
@@ -1387,14 +1387,14 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf,
     }
 
     /* Sanity check player */
-    if (Typeof(player) == TYPE_GARBAGE) {
+    if (OBJECT_TYPE(player) == TYPE_GARBAGE) {
         mesg_rec_cnt--;
         outbuf[0] = '\0';
         return NULL;
     }
 
     /* Sanity check trigger */
-    if (Typeof(what) == TYPE_GARBAGE) {
+    if (OBJECT_TYPE(what) == TYPE_GARBAGE) {
         notify_nolisten(player, "MPI Error: Garbage trigger.", 1);
         mesg_rec_cnt--;
         outbuf[0] = '\0';
@@ -1442,7 +1442,7 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf,
                 }
 
                 /* If 's' is a valid function name, let's process it */
-                if ( ( s <= MAX_MFUN_NAME_LEN || 
+                if ( ( s <= MAX_MFUN_NAME_LEN ||
                       ( s <= MAX_MFUN_NAME_LEN + 1 && *ptr == '&' ) ) &&
                     (wbuf[p] == MFUN_ARGSTART || wbuf[p] == MFUN_ARGEND)) {
                     int varflag;
@@ -1508,7 +1508,7 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf,
                              */
                             if (argc < 0) {
                                 argc = mesg_args((wbuf + p + 1),
-                                                 ((sizeof(wbuf) - 
+                                                 ((sizeof(wbuf) -
                                                   (size_t)p) - 1),
                                                  &argv[(varflag ? 1 : 0)],
                                                  MFUN_LEADCHAR, MFUN_ARGSEP,
@@ -1516,7 +1516,7 @@ mesg_parse(int descr, dbref player, dbref what, dbref perms, const char *inbuf,
                                                  (-argc) + (varflag ? 1 : 0));
                             } else {
                                 argc = mesg_args((wbuf + p + 1),
-                                                 ((sizeof(wbuf) - 
+                                                 ((sizeof(wbuf) -
                                                   (size_t)p) - 1),
                                                  &argv[(varflag ? 1 : 0)],
                                                  MFUN_LEADCHAR, MFUN_ARGSEP,

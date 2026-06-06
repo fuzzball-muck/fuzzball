@@ -12,6 +12,7 @@
 #include <string.h>
 
 #include "config.h"
+#include "flags.h"
 
 #include "boolexp.h"
 #include "db.h"
@@ -174,13 +175,13 @@ eval_boolexp_rec(int descr, dbref player, struct boolexp *b, dbref thing)
                     return 0;
 
                 /* Programs are evaluated */
-                if (Typeof(b->data.thing) == TYPE_PROGRAM) {
+                if (OBJECT_TYPE(b->data.thing) == TYPE_PROGRAM) {
                     struct inst *rv;
                     struct frame *tmpfr;
                     dbref real_player;
 
-                    if (Typeof(player) == TYPE_PLAYER ||
-                        Typeof(player) == TYPE_THING)
+                    if (OBJECT_TYPE(player) == TYPE_PLAYER ||
+                        OBJECT_TYPE(player) == TYPE_THING)
                         real_player = player;
                     else
                         real_player = OWNER(player);
@@ -230,8 +231,8 @@ eval_boolexp_rec(int descr, dbref player, struct boolexp *b, dbref thing)
             case BOOLEXP_MPI:
                 if (b->data.mpi) {
                     char buf[BUFFER_LEN];
-                    dbref real_player = (Typeof(player) == TYPE_PLAYER ||
-                            Typeof(player) == TYPE_THING) ? player :
+                    dbref real_player = (OBJECT_TYPE(player) == TYPE_PLAYER ||
+                            OBJECT_TYPE(player) == TYPE_THING) ? player :
                             OWNER(player);
                     const char *result = do_parse_mesg(descr, real_player,
                             thing, b->data.mpi, "(Lock)", buf, sizeof(buf),
@@ -830,7 +831,7 @@ static char *buftop;
  * must be aware that the buffer can mutate under you if another
  * unparse_boolexp happens.  Also, this means the call is not threadsafe.
  *
- * If fullname is true, then DBREFS will be run through unparse_object.
+ * If fullname is true, then DBREFS will be run through flag_unparse_object.
  * Otherwise, #12345 style DBREFs will be displayed.
  *
  * 'outer_type' is used to pass in the node-type of the parent to the
@@ -838,14 +839,14 @@ static char *buftop;
  * parens or not.  The top level node is given outer_type == BOOLEXP_CONST
  * as basically a non-typee.
  *
- * @see unparse_object
+ * @see flag_unparse_object
  *
  * @private
  * @param player the player who is going to see the output of this command
  * @param b the boolean expression to process
  * @param outer_type the type of the parent node
  * @param fullname Show names instead of DBREFs?  True or false.
- */ 
+ */
 static void
 unparse_boolexp1(dbref player, struct boolexp *b, short outer_type, int fullname)
 {
@@ -892,7 +893,7 @@ unparse_boolexp1(dbref player, struct boolexp *b, short outer_type, int fullname
             case BOOLEXP_CONST:
                 if (fullname) {
                     char unparse_buf[BUFFER_LEN];
-                    unparse_object(player, b->data.thing, unparse_buf, sizeof(unparse_buf));
+                    flag_unparse_object(player, b->data.thing, unparse_buf, sizeof(unparse_buf));
                     strcpyn(buftop, sizeof(boolexp_buf) - (size_t)(buftop - boolexp_buf),
                             unparse_buf);
                 } else {
@@ -932,17 +933,17 @@ unparse_boolexp1(dbref player, struct boolexp *b, short outer_type, int fullname
  * must be aware that the buffer can mutate under you if another
  * unparse_boolexp happens.  Also, this means the call is not threadsafe.
  *
- * If fullname is true, then DBREFS will be run through unparse_object.
+ * If fullname is true, then DBREFS will be run through flag_unparse_object.
  * Otherwise, #12345 style DBREFs will be displayed.
  *
- * @see unparse_object
+ * @see flag_unparse_object
  *
  * @param player the player who is going to see the output of this command
  * @param b the boolean expression to process
  * @param fullname Show names instead of DBREFs?  True or false.
  *
  * @return pointer to static buffer containing string for display.
- */ 
+ */
 const char *
 unparse_boolexp(dbref player, struct boolexp *b, int fullname)
 {

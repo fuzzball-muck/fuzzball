@@ -46,7 +46,7 @@ int can_link(dbref who, dbref what);
  * Checks if 'who' can link an object of type 'what_type' to 'where'
  *
  * Because this may be called prior to the object existing, it is
- * checked by type; however, 'Typeof(dbref)' is often used to see
+ * checked by type; however, OBJECT_TYPE(dbref) is often used to see
  * if some existing objet's ref can link to where.
  *
  * @param who the person we are checking link permissions for

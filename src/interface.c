@@ -30,6 +30,7 @@
 #include "fbsignal.h"
 #include "fbstrings.h"
 #include "fbtime.h"
+#include "flags.h"
 #include "game.h"
 #include "interface.h"
 #include "interp.h"
@@ -675,7 +676,7 @@ queue_ansi(struct descriptor_data *d, const char *msg)
     char buf[BUFFER_LEN + 8];
 
     if (d->connected) {
-        if (FLAGS(d->player) & CHOWN_OK) {
+        if (FLAG_CHECK(d->player, 'C')) {
             strip_bad_ansi(buf, msg);
         } else {
             strip_ansi(buf, msg);
@@ -715,7 +716,7 @@ is_local_connection(struct descriptor_data *d)
      *       and generally removes the purpose of this function as you can
      *       just lookup d->is_local (or whatever) instead.
      */
-    /* Treat anything coming from 127.0.0.1 or localhost as local */    
+    /* Treat anything coming from 127.0.0.1 or localhost as local */
     if (!strcmp(d->hostname, "127.0.0.1") ||
         !strcmp(d->hostname, "localhost"))
         return 1;
@@ -796,7 +797,7 @@ dump_users(struct descriptor_data *e, char *user)
     while (d) {
         if (d->connected &&
             (!tp_who_hides_dark ||
-             (wizard || !(FLAGS(d->player) & DARK))) &&
+             (wizard || !Dark(d->player))) &&
              ++players && (!user || string_prefix(NAME(d->player), user))
         ) {
 
@@ -1028,7 +1029,7 @@ announce_puppets(dbref player, const char *msg, const char *prop)
      *       in other ways.
      */
     for (dbref what = 0; what < db_top; what++) {
-        if (Typeof(what) == TYPE_THING && (FLAGS(what) & ZOMBIE)) {
+        if (OBJECT_TYPE(what) == TYPE_THING && FLAG_CHECK(what, 'Z')) {
             if (OWNER(what) == player) {
                 where = LOCATION(what);
 
@@ -1108,7 +1109,7 @@ announce_connect(int descr, dbref player)
         announce_puppets(player, "wakes up.", MESGPROP_PCON);
     }
 
-    /* 
+    /*
      * Queue up all _connect programs referred to by properties
      *
      * @TODO Something odd -- propqueue's are run on every connect but
@@ -1301,7 +1302,7 @@ remember_player_descr(dbref player, int descr)
     size_t count = 0;
     int *arr = NULL;
 
-    if (Typeof(player) != TYPE_PLAYER)
+    if (OBJECT_TYPE(player) != TYPE_PLAYER)
         return;
 
     count = (size_t)PLAYER_DESCRCOUNT(player);
@@ -1334,7 +1335,7 @@ forget_player_descr(dbref player, int descr)
     size_t count = 0;
     int *arr = NULL;
 
-    if (Typeof(player) != TYPE_PLAYER)
+    if (OBJECT_TYPE(player) != TYPE_PLAYER)
         return;
 
     count = (size_t)PLAYER_DESCRCOUNT(player);
@@ -1608,7 +1609,7 @@ connect_player(const char *name, const char *password)
 
     if (*name == NUMBER_TOKEN && number(name + 1) && atoi(name + 1)) {
         player = (dbref) atoi(name + 1);
-        if (!ObjExists(player) || Typeof(player) != TYPE_PLAYER)
+        if (!ObjExists(player) || OBJECT_TYPE(player) != TYPE_PLAYER)
             player = NOTHING;
     } else {
         player = lookup_player(name);
@@ -1980,7 +1981,7 @@ process_commands(void)
                      * WORK: send player's foreground/preempt programs an
                      *       exclusive READ mufevent
                      */
-                    
+
                     /*
                      * @TODO If this returns true, then you've got a problem,
                      *       because nothing will advance the queue other
@@ -2200,7 +2201,7 @@ queue_immediate_and_flush(struct descriptor_data *d, const char *msg)
     char buf[BUFFER_LEN + 8];
 
     if (d->connected) {
-        if (FLAGS(d->player) & CHOWN_OK) {
+        if (FLAG_CHECK(d->player, 'C')) {
             strip_bad_ansi(buf, msg);
         } else {
             strip_ansi(buf, msg);
@@ -2445,7 +2446,7 @@ shutdownsock(struct descriptor_data *d)
 
     if (!descriptor_list)
         descriptor_list_tail = NULL;
-    else if(descriptor_list_tail == d)
+    else if (descriptor_list_tail == d)
         descriptor_list_tail = d->prev;
 
     free((void *) d->hostname);
@@ -2567,7 +2568,7 @@ initializesock(int s, int output_s, const char *hostname, int is_ssl, int is_con
     d->priority_output.tail = &d->priority_output.head;
     d->output.tail = &d->output.head;
     d->input.tail = &d->input.head;
-    
+
 #ifdef IP_FORWARDING
     if (!(d->forwarded_buffer = malloc(SMALL_BUFFER_LEN * sizeof(char))))
         panic("initializesock: Out of memory");
@@ -2993,7 +2994,7 @@ static void listen_bound_sockets()
  * @private
  * @param d the descriptor_data to send a keepalive to.
  */
-static void 
+static void
 send_keepalive(struct descriptor_data *d)
 {
     unsigned char telnet_nop[] = {
@@ -3410,7 +3411,7 @@ process_input(struct descriptor_data *d)
                  */
 
                 /*
-                 * If we get a request to do IP forwarding agree to it, 
+                 * If we get a request to do IP forwarding agree to it,
                  * but only for localhost.
                  */
                 if (*q == TELOPT_FORWARDED) {
@@ -3625,7 +3626,7 @@ load_server_certificates(SSL_CTX *new_ssl_ctx)
     if (!new_ssl_ctx || !tp_ssl_cert_file || !tp_ssl_key_file) {
         return false;
     }
- 
+
     if (!SSL_CTX_use_certificate_chain_file(new_ssl_ctx, tp_ssl_cert_file)) {
         log_status("Could not load certificate file %s", tp_ssl_cert_file);
         fprintf(stderr, "Could not load certificate file %s\n", tp_ssl_cert_file);
@@ -4562,9 +4563,9 @@ notify_nolisten(dbref player, const char *msg, int isprivate)
          *       Recommendation: move get_player_descrs out of the loop.
          *       Do a single check to see if the player is a zombie:
          *
-         *       isZombie = Typeof(player) == TYPE_THING, FLAGS & ZOMBIE,
+         *       isZombie = OBJECT_TYPE(player) == TYPE_THING, FLAGS & ZOMBIE,
          *       and all that other good stuff that's in the second if
-         *       statement after if(tp_allow_zombies)
+         *       statement after if (tp_allow_zombies)
          *
          *       Then, if darr == 0 && !isZombie || isZombie && !tp_allow_zombies,
          *       then return -- these cases we will do nothing.
@@ -4585,14 +4586,14 @@ notify_nolisten(dbref player, const char *msg, int isprivate)
         }
 
         if (tp_allow_zombies) {
-            if ((Typeof(player) == TYPE_THING) && (FLAGS(player) & ZOMBIE) &&
-                !(FLAGS(OWNER(player)) & ZOMBIE) &&
-                (!(FLAGS(player) & DARK) || Wizard(OWNER(player)))) {
+            if ((OBJECT_TYPE(player) == TYPE_THING) && FLAG_CHECK(player, 'Z') &&
+                !FLAG_CHECK(OWNER(player), 'Z') &&
+                (!Dark(player) || Wizard(OWNER(player)))) {
                 ref = LOCATION(player);
 
                 /* Make sure the location is allowed */
                 if (Wizard(OWNER(player)) || ref == NOTHING ||
-                    Typeof(ref) != TYPE_ROOM || !(FLAGS(ref) & ZOMBIE)) {
+                    OBJECT_TYPE(ref) != TYPE_ROOM || !FLAG_CHECK(ref, 'Z')) {
 
                     /*
                      * Make sure the message is either private or the
@@ -4780,7 +4781,7 @@ notify_listeners(dbref who, dbref xprog, dbref obj, dbref room,
     if (obj == NOTHING)
         return 0;
 
-    if (tp_allow_listeners && (tp_allow_listeners_obj || Typeof(obj) == TYPE_ROOM)) {
+    if (tp_allow_listeners && (tp_allow_listeners_obj || OBJECT_TYPE(obj) == TYPE_ROOM)) {
         listenqueue(-1, who, room, obj, obj, xprog, LISTEN_PROPQUEUE, msg,
                     tp_listen_mlev, 1, 0);
         listenqueue(-1, who, room, obj, obj, xprog, WLISTEN_PROPQUEUE, msg,
@@ -4795,10 +4796,10 @@ notify_listeners(dbref who, dbref xprog, dbref obj, dbref room,
      */
     ref = LOCATION(obj);
 
-    if ((Typeof(obj) == TYPE_THING) &&  /* obj is a thing */
-        (FLAGS(obj) & VEHICLE) &&       /* And a vehilcle */
+    if ((OBJECT_TYPE(obj) == TYPE_THING) &&  /* obj is a thing */
+        FLAG_CHECK(obj, 'V') &&       /* And a vehilcle */
         /* And not DARK, unless WIZARD owned */
-        (!(FLAGS(obj) & DARK) || Wizard(OWNER(obj))) &&
+        (!Dark(obj) || Wizard(OWNER(obj))) &&
         /* isprivate toggles if we're going to show the prefix or not */
         (!isprivate) &&
         /* The person who did it is in the same ocation as the thing */
@@ -4807,8 +4808,8 @@ notify_listeners(dbref who, dbref xprog, dbref obj, dbref room,
          * or the location of thing is not a room, or the location of the
          * thing is not a vehicle.
          */
-        (Wizard(OWNER(obj)) || ref == NOTHING || Typeof(ref) != TYPE_ROOM ||
-         (!(FLAGS(ref) & VEHICLE)))) {
+        (Wizard(OWNER(obj)) || ref == NOTHING || OBJECT_TYPE(ref) != TYPE_ROOM ||
+         (!FLAG_CHECK(ref, 'V')))) {
         char pbuf[BUFFER_LEN];
         const char *prefix;
 
@@ -4831,7 +4832,7 @@ notify_listeners(dbref who, dbref xprog, dbref obj, dbref room,
         }
     }
 
-    if (Typeof(obj) == TYPE_PLAYER || Typeof(obj) == TYPE_THING)
+    if (OBJECT_TYPE(obj) == TYPE_PLAYER || OBJECT_TYPE(obj) == TYPE_THING)
         return notify_filtered(who, obj, msg, isprivate);
 
     return 0;
@@ -4871,7 +4872,7 @@ notify_except(dbref first, dbref exception, const char *msg, dbref who)
     }
 
     DOLIST(first, first) {
-        if ((Typeof(first) != TYPE_ROOM) && (first != exception)) {
+        if ((OBJECT_TYPE(first) != TYPE_ROOM) && (first != exception)) {
             /* don't want excepted player or child rooms to hear */
             notify_listeners(who, NOTHING, first, LOCATION(who), msg, 0);
         }
@@ -4958,7 +4959,7 @@ max_open_files(void)
  * \r\n will be added to the end of the message.
  *
  * @param msg the message to send to all the descriptors
- */ 
+ */
 void
 wall_and_flush(const char *msg)
 {
@@ -5012,7 +5013,7 @@ wall_wizards(const char *msg)
  *
  * This also adds the block to d->pending_ssl_write if needed.
  *
- * Returns 1 if something incomplete written, 0 if write was successful, 
+ * Returns 1 if something incomplete written, 0 if write was successful,
  * and -1 if I/O error
  *
  * @private
@@ -5149,7 +5150,7 @@ process_all_output(unsigned int iterations, unsigned int useconds,
 {
     int final_result = 0;
 
-    for (unsigned int i = 0; (!(final_result = process_output(d))) && 
+    for (unsigned int i = 0; (!(final_result = process_output(d))) &&
                              (i < iterations); i++) {
         fb_usleep(useconds);
     }
@@ -5288,7 +5289,7 @@ close_sockets(const char *msg)
 
         socket_write(d, msg, strlen(msg));
         socket_write(d, shutdown_message, strlen(shutdown_message));
-    
+
         if (!d->is_console) {
             if (shutdown(d->descriptor, 2) < 0)
                 perror("shutdown");
@@ -5365,9 +5366,9 @@ do_armageddon(dbref player, const char *msg)
 {
     char buf[BUFFER_LEN];
 
-    if (!Wizard(player) || Typeof(player) != TYPE_PLAYER) {
+    if (!Wizard(player) || OBJECT_TYPE(player) != TYPE_PLAYER) {
         char unparse_buf[BUFFER_LEN];
-        unparse_object(player, player, unparse_buf, sizeof(unparse_buf));
+        flag_unparse_object(player, player, unparse_buf, sizeof(unparse_buf));
 
         notify(player, "Sorry, but you don't look like the god of War to me.");
         log_status("ILLEGAL ARMAGEDDON: tried by %s", unparse_buf);
@@ -5544,7 +5545,7 @@ get_player_descrs(dbref player, int *count)
 {
     int *darr;
 
-    if (Typeof(player) == TYPE_PLAYER) {
+    if (OBJECT_TYPE(player) == TYPE_PLAYER) {
         *count = PLAYER_DESCRCOUNT(player);
         darr = PLAYER_DESCRS(player);
 
@@ -6161,7 +6162,7 @@ ignore_prime_cache(dbref Player)
     if (!tp_ignore_support)
         return 0;
 
-    if (!ObjExists(Player) || Typeof(Player) != TYPE_PLAYER)
+    if (!ObjExists(Player) || OBJECT_TYPE(Player) != TYPE_PLAYER)
         return 0;
 
     if ((Txt = get_property_class(Player, IGNORE_PROP)) == NULL) {
@@ -6345,7 +6346,7 @@ ignore_is_ignoring(dbref Player, dbref Who)
 void
 ignore_flush_cache(dbref Player)
 {
-    if (!ObjExists(Player) || Typeof(Player) != TYPE_PLAYER)
+    if (!ObjExists(Player) || OBJECT_TYPE(Player) != TYPE_PLAYER)
         return;
 
     free(PLAYER_IGNORE_CACHE(Player));
@@ -6426,7 +6427,7 @@ ignore_remove_from_all_players(dbref Player)
         return;
 
     for (dbref i = 0; i < db_top; i++)
-        if (Typeof(i) == TYPE_PLAYER)
+        if (OBJECT_TYPE(i) == TYPE_PLAYER)
             reflist_del(i, IGNORE_PROP, Player);
 
     /* Don't touch the database if it's not been loaded yet... */
@@ -6444,7 +6445,7 @@ ignore_remove_from_all_players(dbref Player)
          *       think the cleanliness is worth a very slight performance
          *       impact.
          */
-        if (Typeof(i) == TYPE_PLAYER) {
+        if (OBJECT_TYPE(i) == TYPE_PLAYER) {
             free(PLAYER_IGNORE_CACHE(i));
             PLAYER_SET_IGNORE_CACHE(i, NULL);
             PLAYER_SET_IGNORE_COUNT(i, 0);

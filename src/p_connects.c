@@ -59,10 +59,10 @@ prim_awakep(PRIM_PROTOTYPE)
 
     ref = oper1->data.objref;
 
-    if (Typeof(ref) == TYPE_THING && (FLAGS(ref) & ZOMBIE))
+    if (OBJECT_TYPE(ref) == TYPE_THING && FLAG_CHECK(ref, 'Z'))
         ref = OWNER(ref);
 
-    if (Typeof(ref) != TYPE_PLAYER)
+    if (OBJECT_TYPE(ref) != TYPE_PLAYER)
         abort_interp("invalid argument.");
 
     result = PLAYER_DESCRCOUNT(ref);
@@ -168,7 +168,7 @@ prim_online_array(PRIM_PROTOTYPE)
     struct descriptor_data* d = descriptor_list;
 
     CHECKOP(0);
- 
+
     if (mlev < 3)
         abort_interp("Mucker level 3 primitive.");
 
@@ -1022,7 +1022,7 @@ prim_lastdescr(PRIM_PROTOTYPE)
     if (ref == NOTHING) {
         result = plastdescr();
     } else {
-        if (Typeof(ref) != TYPE_PLAYER)
+        if (OBJECT_TYPE(ref) != TYPE_PLAYER)
             abort_interp("invalid argument");
 
         if (PLAYER_DESCRCOUNT(ref)) {
@@ -1242,7 +1242,7 @@ prim_width(PRIM_PROTOTYPE)
     CLEAR(oper1);
 
     /* Convert short int to int */
-    result = d->detected_width; 
+    result = d->detected_width;
 
     PushInt(result);
 }
@@ -1282,7 +1282,7 @@ prim_height(PRIM_PROTOTYPE)
     CLEAR(oper1);
 
     /* Convert short int to int */
-    result = d->detected_height; 
+    result = d->detected_height;
 
     PushInt(result);
 }

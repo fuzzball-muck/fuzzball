@@ -15,6 +15,7 @@
 #include "db.h"
 #include "edit.h"
 #include "fbstrings.h"
+#include "flags.h"
 #include "inst.h"
 #include "interface.h"
 #include "log.h"
@@ -308,12 +309,12 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
                 return;
             }
 
-            if (Typeof(obj) != TYPE_PROGRAM || !controls(player, obj)) {
+            if (OBJECT_TYPE(obj) != TYPE_PROGRAM || !controls(player, obj)) {
                 show_mcp_error(mfr, "simpleedit-set", "Permission denied.");
                 return;
             }
 
-            if (!Mucker(player)) {
+            if (OBJECT_MLEVEL(player) == 0) {
                 show_mcp_error(mfr, "simpleedit-set", "Permission denied.");
                 return;
             }
@@ -350,7 +351,7 @@ mcppkg_simpleedit(McpFrame * mfr, McpMesg * msg, McpVer ver, void *context)
             }
 
             /* Player ref should be fine by now */
-            unparse_object(player, obj, unparse_buf, sizeof(unparse_buf));
+            flag_unparse_object(player, obj, unparse_buf, sizeof(unparse_buf));
             log_status("PROGRAM SAVED: %s by %s(%d)",
                        unparse_buf, NAME(player), player);
 

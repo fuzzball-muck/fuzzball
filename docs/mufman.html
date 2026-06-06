@@ -319,6 +319,7 @@
     <li><a href="#firstdescr">firstdescr</a></li>
     <li><a href="#flag?">flag?</a></li>
     <li><a href="#flags">flags</a></li>
+    <li><a href="#flags?">flags?</a></li>
     <li><a href="#float">float</a></li>
     <li><a href="#float?">float?</a></li>
     <li><a href="#floor">floor</a></li>
@@ -6660,6 +6661,7 @@ not cause an error for SETPROP or any other property related primitive.
     <li><a href="#fail">fail</a></li>
     <li><a href="#findnext">findnext</a></li>
     <li><a href="#flag?">flag?</a></li>
+    <li><a href="#flags?">flags?</a></li>
     <li><a href="#getlink">getlink</a></li>
     <li><a href="#getlinks">getlinks</a></li>
     <li><a href="#getlinks_array">getlinks_array</a></li>
@@ -7126,8 +7128,33 @@ The &quot;Truewizard&quot; flag will check for a W flag with or without the QUEL
 The &quot;Mucker&quot; flag returns the most significant bit of the mucker level and
 the &quot;Nucker&quot; flag returns the least significant bit. (Use MLEVEL instead.)
 <p>Also see:
-    <a href="#set">SET</a> and
-    <a href="#mlevel">MLEVEL</a>
+    <a href="#set">SET</a>,
+    <a href="#mlevel">MLEVEL</a> and
+    <a href="#flags?">FLAGS?</a>
+</p>
+<!-- HTML_TOPICEND -->
+
+
+<h3 id="flags?">FLAGS? (d s -- i )
+<br>
+
+<br>
+</h3>
+  Determines if object d has the flag pattern given by string s. A flag
+pattern consists of at least one single-character flag with an optional
+! token in front to negate the specific check. Flag patterns also recognize
+object types.
+
+<p>
+  Does not recognize full flag names, including the virtual alias
+&quot;truewizard&quot;; &quot;T&quot; checks for an object of type thing.
+
+<p>
+  Examples of flag patterns include &quot;PB3&quot;, &quot;L!A&quot;, and &quot;!O&quot;.
+<p>Also see:
+    <a href="#set">SET</a>,
+    <a href="#mlevel">MLEVEL</a> and
+    <a href="#flag?">FLAG?</a>
 </p>
 <!-- HTML_TOPICEND -->
 

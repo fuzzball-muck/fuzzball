@@ -40,7 +40,7 @@
  *
  *   Finally, the "X has arrived" notification is sent to the target room.
  *   To make propqueues run after autolook, this message is disconnected from
- *   the arrive propqueue processing which is done further down. 
+ *   the arrive propqueue processing which is done further down.
  *   This notification follows the same rules as the "has left"  message
  *
  * - If 'player' is not a thing, or if 'player' is a ZOMBIE or VEHICLE, then

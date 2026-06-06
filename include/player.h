@@ -123,7 +123,7 @@ dbref lookup_player(const char *name);
  *
  * * Passwords cannot be blank
  * * They cannot contain non-printable characters
- * * And also no space characters 
+ * * And also no space characters
  *
  * @param password the password to check
  * @return boolean true if it is valid, false otherwise

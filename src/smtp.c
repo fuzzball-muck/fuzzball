@@ -409,7 +409,7 @@ smtp_str_getdelimfd_read(struct str_getdelimfd *const gdfd, void *buf,
            * so we can safely convert this to an int.
            */
           bytes_read = SSL_read(smtp->tls, buf, (int)count);
-        } while(bytes_read <= 0 && BIO_should_retry(smtp->tls_bio));
+        } while (bytes_read <= 0 && BIO_should_retry(smtp->tls_bio));
 #endif /* SMTP_OPENSSL */
     } else {
         bytes_read = recv(smtp->sock, buf, count, 0);
@@ -446,7 +446,7 @@ smtp_str_getdelimfd_search_delim(const char *const buf,
 
     *delim_pos = 0;
 
-    for(i = 0; i < buf_len; i++) {
+    for (i = 0; i < buf_len; i++) {
         if (buf[i] == delim) {
             *delim_pos = i;
             return 1;
@@ -553,7 +553,7 @@ smtp_str_getdelimfd(struct str_getdelimfd *const gdfd)
 
     bytes_read = -1;
 
-    while(1) {
+    while (1) {
         if (smtp_str_getdelimfd_search_delim(gdfd->_buf,
                                             gdfd->_buf_len,
                                             gdfd->delim,
@@ -630,7 +630,7 @@ smtp_stpcpy(char *s1, const char *s2)
 
     do {
         s1[i] = s2[i];
-    } while(s2[i++] != '\0');
+    } while (s2[i++] != '\0');
 
     return &s1[i-1];
 }
@@ -742,7 +742,7 @@ smtp_str_replace(const char *const search, const char *const replace,
         return smtp_strdup(s);
     }
 
-    while(s[s_idx]) {
+    while (s[s_idx]) {
         if (smtp_si_add_size_t(snew_len, 1, &snew_len_inc) ||
            smtp_si_add_size_t(snew_sz, snew_sz, &snew_sz_dup) ||
            smtp_si_add_size_t(snew_sz, slen, &snew_sz_plus_slen)) {
@@ -837,7 +837,7 @@ smtp_base64_encode_block(const char *const buf, size_t buf_block_sz,
     in_idx[2] = ((inb[1] << 2) | ((inb[2] >> 6) & 0x3)) & 0x3F;
     in_idx[3] = ((inb[2]     ))                         & 0x3F;
 
-    for(i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++) {
         if (i < buf_block_sz + 1) {
             outb[i] = g_base64_encode_table[in_idx[i]];
         }
@@ -893,7 +893,7 @@ smtp_base64_encode(const char *const buf, size_t buflen) {
     b64_i = 0;
     remaining_block_sz = buflen;
 
-    while(remaining_block_sz > 0) {
+    while (remaining_block_sz > 0) {
         if (remaining_block_sz >= 3) {
             buf_block_sz = 3;
         } else {
@@ -967,7 +967,7 @@ smtp_base64_decode_block(const unsigned char *const buf,
 
     decode_block_len = 0;
 
-    for(i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++) {
         if (buf[i] == '=') {
             decode_table[i] = 0;
             continue;
@@ -1042,7 +1042,7 @@ smtp_base64_decode(const char *const buf, unsigned char **decode) {
 
     decode_len = 0;
 
-    for(buf_i = 0; buf_i < buf_len; buf_i += 4) {
+    for (buf_i = 0; buf_i < buf_len; buf_i += 4) {
         decode_block_len = smtp_base64_decode_block(
                              (const unsigned char*)&buf[buf_i],
                              &b64_decode[decode_len]);
@@ -1090,7 +1090,7 @@ smtp_bin2hex(const unsigned char *const s, size_t slen) {
 
     j = 0;
 
-    for(i = 0; i < slen; i++) {
+    for (i = 0; i < slen; i++) {
         hex = s[i];
         rc = sprintf(&snew[j], "%02x", hex);
 
@@ -1156,7 +1156,7 @@ smtp_str_has_nonascii_utf8(const char *const s)
     size_t i;
     size_t charlen;
 
-    for(i = 0; s[i]; i++) {
+    for (i = 0; s[i]; i++) {
         charlen = smtp_utf8_charlen(s[i]);
 
         if (charlen != 1) {
@@ -1188,14 +1188,14 @@ smtp_strnlen_utf8(const char *s, size_t maxlen)
     size_t utf8_i;
     size_t utf8_len;
 
-    for(i = 0; *s && i < maxlen; i += utf8_len) {
+    for (i = 0; *s && i < maxlen; i += utf8_len) {
         utf8_len = smtp_utf8_charlen(*s);
 
         if (utf8_len == 0) {
             return SIZE_MAX;
         }
 
-        for(utf8_i = 0; utf8_i < utf8_len; utf8_i++) {
+        for (utf8_i = 0; utf8_i < utf8_len; utf8_i++) {
             if (!*s) {
                 return SIZE_MAX;
             }
@@ -1234,15 +1234,15 @@ smtp_fold_whitespace_get_offset(const char *const s, unsigned int maxlen)
     i = 0;
     offset_i = 0;
 
-    while(s[i] == ' ' || s[i] == '\t') {
+    while (s[i] == ' ' || s[i] == '\t') {
         i += 1;
     }
 
-    while(s[i]) {
+    while (s[i]) {
         if (s[i] == ' ' || s[i] == '\t') {
             do {
                 i += 1;
-            } while(s[i] == ' ' || s[i] == '\t');
+            } while (s[i] == ' ' || s[i] == '\t');
 
             i -= 1;
 
@@ -1321,7 +1321,7 @@ smtp_fold_whitespace(const char *const s, unsigned int maxlen)
     bufsz = 0;
     buf = NULL;
 
-    while(1) {
+    while (1) {
         ws_offset = smtp_fold_whitespace_get_offset(&s[s_i], maxlen - 2);
 
         /* bufsz += ws_offset + end_slen + 1 */
@@ -1403,7 +1403,7 @@ smtp_chunk_split(const char *const s, size_t chunklen, const char *const end)
     body_i = 0;
     snew_i = 0;
 
-    for(chunk_i = 0; chunk_i < bodylen / chunklen + 1; chunk_i++) {
+    for (chunk_i = 0; chunk_i < bodylen / chunklen + 1; chunk_i++) {
         body_copy_len = smtp_strnlen_utf8(&s[body_i], chunklen);
 
         if (body_copy_len == SIZE_MAX) {
@@ -1481,7 +1481,7 @@ smtp_ffile_get_contents(FILE *stream, size_t *bytes_read)
             free(read_buf);
             return NULL;
         }
-      } while(!feof(stream));
+      } while (!feof(stream));
 
     return read_buf;
 }
@@ -1583,7 +1583,7 @@ smtp_puts_dbg(struct smtp *const smtp, const char *const prefix,
         }
 
         /* Remove carriage return and newline when printing to stderr. */
-        for(i = 0; sdup[i]; i++) {
+        for (i = 0; sdup[i]; i++) {
             if (sdup[i] == '\r' || sdup[i] == '\n') {
                 sdup[i] = ' ';
             }
@@ -1679,7 +1679,7 @@ smtp_write(struct smtp *const smtp, const char *const buf, size_t len)
     bytes_to_send = len;
     buf_offset = buf;
 
-    while(bytes_to_send) {
+    while (bytes_to_send) {
         if (bytes_to_send > INT_MAX) {
             return smtp_status_code_set(smtp, SMTP_STATUS_SEND);
         }
@@ -1803,7 +1803,7 @@ smtp_connect(struct smtp *const smtp,
         return -1;
     }
 
-    for(res = res0; res; res = res->ai_next) {
+    for (res = res0; res; res = res->ai_next) {
         smtp->sock = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
 
         if (smtp->sock < 0) {
@@ -2508,7 +2508,7 @@ smtp_gen_mime_boundary(char *const boundary)
 
     strcpy(boundary, "mime");
 
-    for(i = 4; i < SMTP_MIME_BOUNDARY_LEN - 1; i++) {
+    for (i = 4; i < SMTP_MIME_BOUNDARY_LEN - 1; i++) {
         /* Modulo bias okay since we only need to prevent accidental collision. */
         boundary[i] = rand() % 26 + 'A';
     }
@@ -2673,7 +2673,7 @@ smtp_print_mime_email(struct smtp *const smtp, const char *const body_dd)
         return smtp->status_code;
     }
 
-    for(i = 0; i < smtp->num_attachment; i++) {
+    for (i = 0; i < smtp->num_attachment; i++) {
         attachment = &smtp->attachment_list[i];
 
         if (smtp_print_mime_attachment(smtp,
@@ -2815,7 +2815,7 @@ smtp_append_address_to_header(struct smtp *const smtp,
     header_value = NULL;
     concat_len = 0;
 
-    for(i = 0; i < smtp->num_address; i++) {
+    for (i = 0; i < smtp->num_address; i++) {
         address = &smtp->address_list[i];
 
         if (address->type == address_type) {
@@ -2968,7 +2968,7 @@ smtp_header_key_validate(const char *const key)
         return -1;
     }
 
-    for(i = 0; i < keylen; i++) {
+    for (i = 0; i < keylen; i++) {
         uc = (unsigned char)key[i];
 
         if (uc <= ' ' || uc > 126 || uc == ':') {
@@ -2994,7 +2994,7 @@ smtp_header_value_validate(const char *const value)
     size_t i;
     unsigned char uc;
 
-    for(i = 0; value[i]; i++) {
+    for (i = 0; value[i]; i++) {
         uc = (unsigned char)value[i];
 
         if ((uc < ' ' || uc > 126) &&
@@ -3023,7 +3023,7 @@ smtp_address_validate_email(const char *const email)
     size_t i;
     unsigned char uc;
 
-    for(i = 0; email[i]; i++) {
+    for (i = 0; email[i]; i++) {
         uc = (unsigned char)email[i];
 
         if (uc <= ' ' || uc == 127 ||
@@ -3051,7 +3051,7 @@ smtp_address_validate_name(const char *const name)
     size_t i;
     unsigned char uc;
 
-    for(i = 0; name[i]; i++) {
+    for (i = 0; name[i]; i++) {
         uc = (unsigned char)name[i];
 
         if (uc < ' ' || uc == 127 || uc == '\"') {
@@ -3078,7 +3078,7 @@ smtp_attachment_validate_name(const char *const name)
     size_t i;
     unsigned char uc;
 
-    for(i = 0; name[i]; i++) {
+    for (i = 0; name[i]; i++) {
         uc = (unsigned char)name[i];
 
         if (uc < ' ' || uc == 127 ||
@@ -3228,7 +3228,7 @@ smtp_mail(struct smtp *const smtp, const char *const body)
     smtp_set_read_timeout(smtp, SMTP_READ_TIMEOUT_SEC /* 60 * 5 */);
     has_mail_from = 0;
 
-    for(i = 0; i < smtp->num_address; i++) {
+    for (i = 0; i < smtp->num_address; i++) {
         address = &smtp->address_list[i];
 
         if (address->type == SMTP_ADDRESS_FROM) {
@@ -3250,7 +3250,7 @@ smtp_mail(struct smtp *const smtp, const char *const body)
     /* RCPT timeout 5 minutes. */
     smtp_set_read_timeout(smtp, SMTP_READ_TIMEOUT_SEC /* 60 * 5 */);
 
-    for(i = 0; i < smtp->num_address; i++) {
+    for (i = 0; i < smtp->num_address; i++) {
         address = &smtp->address_list[i];
 
         if (address->type != SMTP_ADDRESS_FROM) {
@@ -3299,7 +3299,7 @@ smtp_mail(struct smtp *const smtp, const char *const body)
         return smtp->status_code;
     }
 
-    for(i = 0; i < smtp->num_headers; i++) {
+    for (i = 0; i < smtp->num_headers; i++) {
         if (smtp_print_header(smtp, &smtp->header_list[i]) != SMTP_STATUS_OK) {
             return smtp->status_code;
         }
@@ -3504,7 +3504,7 @@ smtp_header_clear_all(struct smtp *const smtp) {
     size_t i;
     struct smtp_header *header;
 
-    for(i = 0; i < smtp->num_headers; i++) {
+    for (i = 0; i < smtp->num_headers; i++) {
         header = &smtp->header_list[i];
         free(header->key);
         free(header->value);
@@ -3578,7 +3578,7 @@ smtp_address_clear_all(struct smtp *const smtp)
     size_t i;
     struct smtp_address *address;
 
-    for(i = 0; i < smtp->num_address; i++) {
+    for (i = 0; i < smtp->num_address; i++) {
         address = &smtp->address_list[i];
         free(address->email);
         free(address->name);
@@ -3702,7 +3702,7 @@ smtp_attachment_clear_all(struct smtp *const smtp)
     size_t i;
     struct smtp_attachment *attachment;
 
-    for(i = 0; i < smtp->num_attachment; i++) {
+    for (i = 0; i < smtp->num_attachment; i++) {
         attachment = &smtp->attachment_list[i];
         free(attachment->name);
         free(attachment->b64_data);

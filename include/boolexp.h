@@ -171,17 +171,17 @@ int test_lock_false_default(int descr, dbref player, dbref thing, const char *lo
  * must be aware that the buffer can mutate under you if another
  * unparse_boolexp happens.  Also, this means the call is not threadsafe.
  *
- * If fullname is true, then DBREFS will be run through unparse_object.
+ * If fullname is true, then DBREFS will be run through flag_unparse_object.
  * Otherwise, #12345 style DBREFs will be displayed.
  *
- * @see unparse_object
+ * @see flag_unparse_object
  *
  * @param player the player who is going to see the output of this command
  * @param b the boolean expression to process
  * @param fullname Show names instead of DBREFs?  True or false.
  *
  * @return pointer to static buffer containing string for display.
- */ 
+ */
 const char *unparse_boolexp(dbref player, struct boolexp *b, int fullname);
 
 #endif /* !BOOLEXP_H */

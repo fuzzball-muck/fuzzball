@@ -933,6 +933,19 @@ The "Mucker" flag returns the most significant bit of the mucker level and
 the "Nucker" flag returns the least significant bit.
 ~
 ~
+FLAGS?
+{flags?:obj,pattern}
+  Determines if object d has the flag pattern given by string s. A flag
+pattern consists of at least one single-character flag with an optional
+! token in front to negate the specific check. Flag patterns also recognize 
+object types.
+
+  Does not recognize full flag names, including the virtual alias
+"truewizard"; "T" checks for an object of type thing.
+
+  Examples of flag patterns include "PB3", "L!A", and "!O".
+~
+~
 OWNER
 {owner:obj}
     Returns the owner of the given object.  The object must be in the

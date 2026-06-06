@@ -311,7 +311,7 @@ pronoun_substitute(int descr, dbref player, const char *str)
         sexstr = do_parse_mesg(descr, player, player, sexstr, "(Lock)", sexbuf,
                                sizeof(sexbuf),
                                (MPI_ISPRIVATE | MPI_ISLOCK |
-                                (Prop_Blessed(player, tp_gender_prop) ? 
+                                (Prop_Blessed(player, tp_gender_prop) ?
                                  MPI_ISBLESSED : 0)));
     }
 
@@ -740,7 +740,7 @@ strencrypt(const char *data, const char *key)
         if (!*(++cp))
             cp = key;
 
-        result = (enarr[(unsigned char) *upt] - (32 - (CHARCOUNT - 96))) + 
+        result = (enarr[(unsigned char) *upt] - (32 - (CHARCOUNT - 96))) +
                  count + seed;
         *ups = (char)enarr[(result % CHARCOUNT) + (32 - (CHARCOUNT - 96))];
         count = (((*upt) ^ count) + seed) & 0xff;
@@ -871,7 +871,7 @@ strdecrypt(const char *data, const char *key)
  * the result into 'buf'
  *
  * WARNING: This does NOT validate the length of 'buf' and that makes
- *          this a potentially dangerous call.  It should be safe 
+ *          this a potentially dangerous call.  It should be safe
  *          if 'buf' is the same size as 'input' or larger.
  *
  * This call effectively removes color from a string, as well as makes
@@ -1907,7 +1907,7 @@ ref2str(dbref obj, char *buf, size_t buflen)
         return buf;
     }
 
-    if (obj >= 0 && Typeof(obj) == TYPE_PLAYER) {
+    if (obj >= 0 && OBJECT_TYPE(obj) == TYPE_PLAYER) {
         snprintf(buf, buflen, "*%s", NAME(obj));
     } else {
         snprintf(buf, buflen, "#%d", obj);

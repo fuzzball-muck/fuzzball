@@ -4164,7 +4164,22 @@ a program's READ, or if they are in the MUF editor.
 The "Truewizard" flag will check for a W flag with or without the QUELL set.
 The "Mucker" flag returns the most significant bit of the mucker level and
 the "Nucker" flag returns the least significant bit. (Use MLEVEL instead.)
-~~alsosee SET,MLEVEL
+~~alsosee SET,MLEVEL,FLAGS?
+~
+~
+FLAGS?
+FLAGS? (d s -- i )
+
+  Determines if object d has the flag pattern given by string s. A flag
+pattern consists of at least one single-character flag with an optional
+! token in front to negate the specific check. Flag patterns also recognize
+object types.
+
+  Does not recognize full flag names, including the virtual alias
+"truewizard"; "T" checks for an object of type thing.
+
+  Examples of flag patterns include "PB3", "L!A", and "!O".
+~~alsosee SET,MLEVEL,FLAG?
 ~
 ~
 MLEVEL

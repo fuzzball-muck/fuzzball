@@ -19,6 +19,7 @@
 #include "db.h"
 #include "fbmath.h"
 #include "fbstrings.h"
+#include "flags.h"
 #include "game.h"
 #include "inst.h"
 #include "interface.h"
@@ -796,7 +797,7 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
          */
         do {
             strcpyn(sstr, sizeof(sstr), fmtstr);
-            
+
             /* End of current string, must be smaller than BUFFER_LEN */
             result = 0;
             tmp = 0; /* Number of props to search for/found */
@@ -879,7 +880,7 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
                             }
 
                             if (sstr[scnt] != ']') {
-                                abort_message = 
+                                abort_message =
                                     "Specified format field didn't have an "
                                     "array index terminator ']'.";
                                 goto cleanup_and_abort;
@@ -1864,7 +1865,7 @@ prim_midstr(PRIM_PROTOTYPE)
         } else {
             start = (size_t)oper2->data.number - 1;
 
-            if (((size_t)oper1->data.number + start) > 
+            if (((size_t)oper1->data.number + start) >
                 oper3->data.string->length) {
                 range = oper3->data.string->length - start;
             } else {
@@ -2422,17 +2423,17 @@ prim_notify_exclude(PRIM_PROTOTYPE)
 
         where = oper1->data.objref;
 
-        if (Typeof(where) != TYPE_ROOM && Typeof(where) != TYPE_THING &&
-            Typeof(where) != TYPE_PLAYER)
+        if (OBJECT_TYPE(where) != TYPE_ROOM && OBJECT_TYPE(where) != TYPE_THING &&
+            OBJECT_TYPE(where) != TYPE_PLAYER)
             abort_interp("Invalid location argument (1)");
-        
+
         CHECKREMOTE(where);
         what = CONTENTS(where);
         CLEAR(oper1);
 
         if (*buf) {
             while (what != NOTHING) {
-                if (Typeof(what) != TYPE_ROOM) {
+                if (OBJECT_TYPE(what) != TYPE_ROOM) {
                     for (tmp = 0, i = count; i-- > 0;) {
                         if (excluded[i] == what)
                             tmp = 1;
@@ -2505,7 +2506,7 @@ prim_otell(PRIM_PROTOTYPE)
 
     if (*buf) {
         for (; what != NOTHING; what = NEXTOBJ(what)) {
-            if (Typeof(what) != TYPE_ROOM && what != player) {
+            if (OBJECT_TYPE(what) != TYPE_ROOM && what != player) {
                 notify_listeners(player, program, what, where, buf, 0);
             }
         }
@@ -3149,7 +3150,7 @@ prim_tolower(PRIM_PROTOTYPE)
  * Consumes a dbref and puts a string on the stack.  The string is the name
  * with the ref and flags appended to it like "One(#1PW)"
  *
- * @see unparse_flags
+ * @see flag_list
  *
  * @param player the player running the MUF program
  * @param program the program being run
@@ -3162,39 +3163,18 @@ prim_tolower(PRIM_PROTOTYPE)
 void
 prim_unparseobj(PRIM_PROTOTYPE)
 {
+    char unparse_buf[BUFFER_LEN];
+
     CHECKOP(1);
     oper1 = POP();
 
     if (oper1->type != PROG_OBJECT)
         abort_interp("Non-object argument.");
 
-    {
-        result = oper1->data.objref;
+    flag_unparse_object(NOTHING, oper1->data.objref, unparse_buf, sizeof(unparse_buf));
 
-        switch (result) {
-            case NOTHING:
-                snprintf(buf, sizeof(buf), "*NOTHING*");
-                break;
-
-            case HOME:
-                snprintf(buf, sizeof(buf), "*HOME*");
-                break;
-
-            case NIL:
-                snprintf(buf, sizeof(buf), "*NIL*");
-                break;
-
-            default:
-                if (!ObjExists(result))
-                    snprintf(buf, sizeof(buf), "*INVALID*");
-                else
-                    snprintf(buf, sizeof(buf), "%s(#%d%s)", NAME(result),
-                             result, unparse_flags(result));
-        }
-
-        CLEAR(oper1);
-        PushString(buf);
-    }
+    CLEAR(oper1);
+    PushString(unparse_buf);
 }
 
 /**
@@ -3314,7 +3294,7 @@ prim_stringpfx(PRIM_PROTOTYPE)
     CHECKOP(2);
     oper1 = POP();
     oper2 = POP();
- 
+
     if (oper1->type != PROG_STRING || oper2->type != PROG_STRING)
         abort_interp("Non-string argument.");
 

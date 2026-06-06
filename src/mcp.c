@@ -15,6 +15,7 @@
 #include "db.h"
 #include "edit.h"
 #include "fbstrings.h"
+#include "flags.h"
 #include "game.h"
 #include "inst.h"
 #include "interface.h"
@@ -1122,7 +1123,7 @@ mcp_frame_clear(McpFrame *mfr)
  * This removes the package from all McpFrames and renegotiates the ones
  * that need it.  If the package is removed, it will have max/min version 0.
  *
- * @param package the package to renegotiate 
+ * @param package the package to renegotiate
  */
 void
 mcp_frame_package_renegotiate(const char *package)
@@ -2033,7 +2034,7 @@ mcpedit_program(int descr, dbref player, dbref program)
     }
 
     /* Basic permission checking */
-    if ((Typeof(program) != TYPE_PROGRAM) || !controls(player, program)) {
+    if ((OBJECT_TYPE(program) != TYPE_PROGRAM) || !controls(player, program)) {
         show_mcp_error(mfr, "edit program", "Permission denied!");
         return;
     }
@@ -2150,7 +2151,7 @@ do_mcpprogram(int descr, dbref player, const char *name, const char *rname)
           return;
         }
 
-        unparse_object(player, program, unparse_buf, sizeof(unparse_buf));
+        flag_unparse_object(player, program, unparse_buf, sizeof(unparse_buf));
         notifyf(player, "Program %s created.", unparse_buf);
 
         if (*rname) {

@@ -823,7 +823,7 @@ prim_unblessprop(PRIM_PROTOTYPE)
     CHECKOP(2);
     oper2 = POP();
     oper1 = POP();
- 
+
     if (oper2->type != PROG_STRING)
         abort_interp("Non-string argument (2)");
 
@@ -908,7 +908,7 @@ prim_setprop(PRIM_PROTOTYPE)
 
     char tname[BUFFER_LEN];
     strcpyn(tname, sizeof(tname), DoNullInd(oper2->data.string));
-    
+
     if (!prop_write_perms(ProgUID, oper3->data.objref, tname, mlev))
         abort_interp("Permission denied.");
 
@@ -2035,7 +2035,7 @@ prim_prop_name_okp(PRIM_PROTOTYPE)
         abort_interp("Property name string expected.");
 
     result = is_valid_propname(DoNullInd(oper1->data.string));
-    
+
     CLEAR(oper1);
     PushInt(result);
 }

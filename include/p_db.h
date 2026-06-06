@@ -362,6 +362,23 @@ void prim_mlevel(PRIM_PROTOTYPE);
 void prim_flagp(PRIM_PROTOTYPE);
 
 /**
+ * Implementation of MUF FLAGS?
+ *
+ * Consumes a dbref and a flag pattern string ("C!A"), and returns a boolean
+ * that represents if the object's flags are set accordingly.  Requires
+ * remote-read priviliges when applicable.
+ *
+ * @param player the player running the MUF program
+ * @param program the program being run
+ * @param mlev the effective MUCKER level
+ * @param pc the program counter pointer
+ * @param arg the argument stack
+ * @param top the top-most item of the stack
+ * @param fr the program frame
+ */
+void prim_flagsp(PRIM_PROTOTYPE);
+
+/**
  * Implementation of MUF PLAYER?
  *
  * Consumes a dbref, and returns a boolean that represents if the object
@@ -1271,7 +1288,7 @@ void prim_toadplayer(PRIM_PROTOTYPE);
     prim_compile, prim_uncompile, prim_newpassword, prim_getpids,       \
     prim_program_getlines, prim_getpidinfo, prim_program_setlines,	\
     prim_setlinks_array, prim_toadplayer, prim_supplicant,		\
-    prim_pname_history, prim_dump
+    prim_pname_history, prim_dump, prim_flagsp
 
 /**
  * Primitive callback function names - must be in same order as callbacks.
@@ -1292,6 +1309,6 @@ void prim_toadplayer(PRIM_PROTOTYPE);
     "COMPILE", "UNCOMPILE", "NEWPASSWORD", "GETPIDS",      \
     "PROGRAM_GETLINES", "GETPIDINFO", "PROGRAM_SETLINES",  \
     "SETLINKS_ARRAY", "TOADPLAYER", "SUPPLICANT",	   \
-    "PNAME_HISTORY", "DUMP"
+    "PNAME_HISTORY", "DUMP", "FLAGS?"
 
 #endif /* !P_DB_H */

@@ -16,6 +16,7 @@
 #include "db.h"
 #include "fbtime.h"
 #include "fbstrings.h"
+#include "flags.h"
 #include "inst.h"
 #include "log.h"
 #include "tune.h"
@@ -295,7 +296,7 @@ log_program_text(struct line *first, dbref player, dbref i)
     strftime(tbuf, sizeof(tbuf), "%Y-%m-%dT%H:%M:%S", localtime(&lt));
     fputs("#######################################", f);
     fputs("#######################################\n", f);
-    unparse_object(player, i, unparse_buf, sizeof(unparse_buf));
+    flag_unparse_object(player, i, unparse_buf, sizeof(unparse_buf));
     fprintf(f, "%s: %s SAVED BY %s(#%d)\n",
             tbuf, unparse_buf, NAME(player), player);
     fputs("#######################################", f);
@@ -346,8 +347,8 @@ whowhere(dbref who)
 
     snprintf(buf, sizeof(buf), "%s%s%s%s(#%d) in %s(#%d)",
              Wizard(OWNER(who)) ? "WIZ: " : "",
-             (Typeof(who) != TYPE_PLAYER) ? NAME(who) : "",
-             (Typeof(who) != TYPE_PLAYER) ? " owned by " : "",
+             (OBJECT_TYPE(who) != TYPE_PLAYER) ? NAME(who) : "",
+             (OBJECT_TYPE(who) != TYPE_PLAYER) ? " owned by " : "",
              NAME(OWNER(who)), who, NAME(LOCATION(who)), LOCATION(who));
 
     return strdup(buf);

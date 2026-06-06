@@ -352,9 +352,9 @@ void listenqueue(int descr, dbref player, dbref where, dbref trigger,
  */
 int in_timequeue(int pid);
 
-/** 
+/**
  * Return the seconds until the the next event will run
- * 
+ *
  * This may be -1 if either the next event is is set to when = -1, or
  * if there is nothing on the queue.  It could be 0 if there is something
  * available to run immediately.  Otherwise, it will be the seconds until

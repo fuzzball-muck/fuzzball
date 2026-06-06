@@ -473,7 +473,7 @@ prim_queue(PRIM_PROTOTYPE)
         abort_interp("Non-integer argument (1).");
     }
 
-    if (!valid_object(oper2) || Typeof(oper2->data.objref) != TYPE_PROGRAM) {
+    if (!valid_object(oper2) || OBJECT_TYPE(oper2->data.objref) != TYPE_PROGRAM) {
         abort_interp("Invalid program dbref argument (2).");
     }
 
@@ -574,7 +574,7 @@ prim_force(PRIM_PROTOTYPE)
         abort_interp("Non-string argument (2).");
     }
 
-    if (!valid_object(oper2) || (Typeof(oper2->data.objref) != TYPE_PLAYER && Typeof(oper2->data.objref) != TYPE_THING)) {
+    if (!valid_object(oper2) || (OBJECT_TYPE(oper2->data.objref) != TYPE_PLAYER && OBJECT_TYPE(oper2->data.objref) != TYPE_THING)) {
         abort_interp("Invalid player or thing argument (1).");
     }
 
@@ -609,7 +609,7 @@ prim_force(PRIM_PROTOTYPE)
     }
 
     for (int i = 1; i <= fr->caller.top; i++) {
-        if (Typeof(fr->caller.st[i]) != TYPE_PROGRAM) {
+        if (OBJECT_TYPE(fr->caller.st[i]) != TYPE_PROGRAM) {
 #ifdef DEBUG
             notifyf_nolisten(player, "[debug] prim_force: fr->caller.st[%d] isn't a program.", i);
 #endif                          /* DEBUG */
@@ -1135,7 +1135,7 @@ prim_testlock(PRIM_PROTOTYPE)
         abort_interp("Interp call loops not allowed.");
     }
 
-    if (!valid_object(oper2) || (Typeof(oper2->data.objref) != TYPE_PLAYER && Typeof(oper2->data.objref) != TYPE_THING)) {
+    if (!valid_object(oper2) || (OBJECT_TYPE(oper2->data.objref) != TYPE_PLAYER && OBJECT_TYPE(oper2->data.objref) != TYPE_THING)) {
         abort_interp("Invalid player or thing argument (1).");
     }
 
@@ -1216,7 +1216,7 @@ prim_cancallp(PRIM_PROTOTYPE)
     oper2 = POP();              /* string: public function name */
     oper1 = POP();              /* dbref: Program dbref to check */
 
-    if (!valid_object(oper1) || Typeof(oper1->data.objref) != TYPE_PROGRAM) {
+    if (!valid_object(oper1) || OBJECT_TYPE(oper1->data.objref) != TYPE_PROGRAM) {
         abort_interp("Invalid program dbref argument. (1)");
     }
 
@@ -1661,7 +1661,7 @@ prim_ext_name_okp(PRIM_PROTOTYPE)
             abort_interp("Invalid argument (2).");
         }
 
-        result = ok_object_name(b, Typeof(oper2->data.objref));
+        result = ok_object_name(b, OBJECT_TYPE(oper2->data.objref));
     } else {
         char buf[BUFFER_LEN];
 
@@ -2128,7 +2128,7 @@ prim_debug_off(PRIM_PROTOTYPE)
 void
 prim_debug_line(PRIM_PROTOTYPE)
 {
-    if (((FLAGS(program) & DARK) == 0) && controls(player, program)) {
+    if (!Dark(program) && controls(player, program)) {
         char buf[BUFFER_LEN];
         const char *msg = debug_inst(fr, 0, pc, fr->pid, arg, buf, sizeof(buf),
                 *top, program);

@@ -22,6 +22,7 @@
 #include "fbmath.h"
 #include "fbstrings.h"
 #include "fbtime.h"
+#include "flags.h"
 #include "game.h"
 #include "inst.h"
 #include "interface.h"
@@ -662,7 +663,7 @@ interp(int descr, dbref player, dbref location, dbref program,
     struct frame *fr;
 
     /* Check basic permissions to make sure we're allowed to do the call. */
-    if (!MLevel(program) || !MLevel(OWNER(program)) ||
+    if (!OBJECT_MLEVEL(program) || !OBJECT_MLEVEL(OWNER(program)) ||
         ((source != NOTHING) && !TrueWizard(OWNER(source)) &&
          !can_link_to(OWNER(source), TYPE_EXIT, program))) {
         notify_nolisten(player, "Program call: Permission denied.", 1);
@@ -695,8 +696,8 @@ interp(int descr, dbref player, dbref location, dbref program,
 
     fr->errorprog = NOTHING;
     fr->pc = PROGRAM_START(program);
-    fr->writeonly = ((source == -1) || (Typeof(source) == TYPE_ROOM) ||
-		     ((Typeof(source) == TYPE_PLAYER) && (!PLAYER_DESCRCOUNT(source))) ||
+    fr->writeonly = ((source == -1) || (OBJECT_TYPE(source) == TYPE_ROOM) ||
+		     ((OBJECT_TYPE(source) == TYPE_PLAYER) && (!PLAYER_DESCRCOUNT(source))) ||
                      (FLAGS(player) & READMODE));
 
     fr->brkpt.breaknum = -1;
@@ -1396,7 +1397,7 @@ static int nested_interp_loop_count = 0;
  * are different of course).
  *
  * Origprog would be the program the player ran, and program may be different
- * if it is a CALL'd library for instance.  
+ * if it is a CALL'd library for instance.
  *
  * @private
  * @param player the player that is running the program
@@ -1423,7 +1424,7 @@ interp_err(dbref player, dbref program, struct inst *pc,
     err++;
 
     if (OWNER(origprog) == OWNER(player)) {
-        notify_nolisten(player, 
+        notify_nolisten(player,
                         "\033[1;31;40mProgram Error.  Your program just got "
                         "the following error.\033[0m", 1);
     } else {
@@ -1687,9 +1688,9 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
         pc = fr->pc = PROGRAM_START(program);
 
         if (!pc) {
-            char error_buf[BUFFER_LEN];
+            char error_buf[BUFFER_LEN+20];
             char unparse_buf[BUFFER_LEN];
-            unparse_object(player, program, unparse_buf, sizeof(unparse_buf));
+            flag_unparse_object(player, program, unparse_buf, sizeof(unparse_buf));
             snprintf(error_buf, sizeof(error_buf), "Unable to compile %s.", unparse_buf);
             abort_loop_hard(error_buf, NULL, NULL);
         }
@@ -1725,7 +1726,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
          * If it is pre-empt, check instruction count, nested loop count,
          * and all.
          */
-        if ((fr->multitask == PREEMPT) || (FLAGS(program) & BUILDER)) {
+        if ((fr->multitask == PREEMPT) || FLAG_CHECK(program, 'B')) {
             if (mlev == 4) {
                 if (tp_max_ml4_preempt_count) {
                     if (instr_count >= tp_max_ml4_preempt_count)
@@ -1750,7 +1751,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
             }
         } else {
             /* if in FOREGROUND or BACKGROUND mode, '0 sleep' every so often. */
-            if (((fr->instcnt > tp_instr_slice * 4) && 
+            if (((fr->instcnt > tp_instr_slice * 4) &&
                  (instr_count >= tp_instr_slice)) ||
                  (nested_interp_loop_count > tp_max_nested_interp_loop_count)) {
                 fr->pc = pc;
@@ -1766,7 +1767,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
         }
 
         /* Handle enter debug mode or not */
-        if (((FLAGS(program) & ZOMBIE) || fr->brkpt.force_debugging) &&
+        if ((FLAG_CHECK(program, 'Z') || fr->brkpt.force_debugging) &&
             !fr->been_background && controls(player, program)) {
             fr->brkpt.debugging = 1;
         } else {
@@ -1774,9 +1775,9 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
         }
 
         /* Handle debug (dump) mode */
-        if (FLAGS(program) & DARK ||
+        if (Dark(program) ||
             (fr->brkpt.debugging && fr->brkpt.showstack && !fr->brkpt.bypass)) {
-            if ((pc->type != PROG_PRIMITIVE) || 
+            if ((pc->type != PROG_PRIMITIVE) ||
                 (pc->data.number != instno_debug_line)) {
                 char *m =
                     debug_inst(fr, 0, pc, fr->pid, arg, dbuf, sizeof(dbuf),
@@ -2132,7 +2133,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
                                        NULL);
 
                         if (!ObjExists(temp1->data.addr->progref) ||
-                            Typeof(temp1->data.addr->progref) != TYPE_PROGRAM)
+                            OBJECT_TYPE(temp1->data.addr->progref) != TYPE_PROGRAM)
                             abort_loop_hard("Internal error.  Invalid address.",
                                             temp1, NULL);
 
@@ -2164,7 +2165,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
                                        NULL);
 
                         if (!ObjExists(temp1->data.addr->progref) ||
-                            Typeof(temp1->data.addr->progref) != TYPE_PROGRAM)
+                            OBJECT_TYPE(temp1->data.addr->progref) != TYPE_PROGRAM)
                             abort_loop_hard("Internal error.  Invalid address.",
                                             temp1, NULL);
 
@@ -2222,7 +2223,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
                             abort_loop("Dbref required. (1)", temp1, temp2);
 
                         if (!valid_object(temp1)
-                            || Typeof(temp1->data.objref) != TYPE_PROGRAM)
+                            || OBJECT_TYPE(temp1->data.objref) != TYPE_PROGRAM)
                             abort_loop("Invalid object.", temp1, temp2);
 
                         if (!(PROGRAM_CODE(temp1->data.objref))) {
@@ -2237,9 +2238,9 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
                             PROGRAM_SET_FIRST(temp1->data.objref, tmpline);
 
                             if (!(PROGRAM_CODE(temp1->data.objref))) {
-                                char error_buf[BUFFER_LEN];
+                                char error_buf[BUFFER_LEN+20];
                                 char unparse_buf[BUFFER_LEN];
-                                unparse_object(player, temp1->data.objref, unparse_buf, sizeof(unparse_buf));
+                                flag_unparse_object(player, temp1->data.objref, unparse_buf, sizeof(unparse_buf));
                                 snprintf(error_buf, sizeof(error_buf), "Unable to compile %s.", unparse_buf);
                                 abort_loop(error_buf, temp1, temp2);
                             }
@@ -2267,7 +2268,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
                             pbs = PROGRAM_PUBS(temp1->data.objref);
 
                             while (pbs) {
-                                tmpint = 
+                                tmpint =
                                         strcasecmp(temp2->data.string->data,
                                                    pbs->subname);
 
@@ -2312,7 +2313,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
                     case IN_RET: /* Internal return prim */
                         if (stop > 1 && program != sys[stop - 1].progref) {
                             if (!ObjExists(sys[stop - 1].progref) ||
-                                Typeof(sys[stop - 1].progref) != 
+                                OBJECT_TYPE(sys[stop - 1].progref) !=
                                 TYPE_PROGRAM)
                                 abort_loop_hard("Internal error.  Invalid "
                                                 "address.", NULL, NULL);
@@ -2360,7 +2361,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
                                 /* IN_CATCH */
                                 if (fr->errorstr) {
                                     arg[atop].type = PROG_STRING;
-                                    arg[atop++].data.string = 
+                                    arg[atop++].data.string =
                                         alloc_prog_string(fr->errorstr);
                                     free(fr->errorstr);
                                     fr->errorstr = NULL;
@@ -2564,7 +2565,7 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
                 while (fr->trys.st->call_level < stop) {
                     if (stop > 1 && program != sys[stop - 1].progref) {
                         if (!ObjExists(sys[stop - 1].progref) ||
-                            Typeof(sys[stop - 1].progref) != TYPE_PROGRAM)
+                            OBJECT_TYPE(sys[stop - 1].progref) != TYPE_PROGRAM)
                             abort_loop_hard("Internal error.  Invalid address.",
                                             NULL, NULL);
 
@@ -2659,7 +2660,7 @@ int
 valid_player(struct inst *oper)
 {
     return (!(oper->type != PROG_OBJECT || !ObjExists(oper->data.objref)
-            || (Typeof(oper->data.objref) != TYPE_PLAYER)));
+            || (OBJECT_TYPE(oper->data.objref) != TYPE_PLAYER)));
 }
 
 /**
@@ -2672,7 +2673,7 @@ int
 valid_object(struct inst *oper)
 {
     return (!(oper->type != PROG_OBJECT || !ObjExists(oper->data.objref)
-            || Typeof(oper->data.objref) == TYPE_GARBAGE));
+            || OBJECT_TYPE(oper->data.objref) == TYPE_GARBAGE));
 }
 
 /**
@@ -2709,7 +2710,7 @@ permissions(dbref player, dbref thing)
     if (thing == player || thing == HOME)
         return 1;
 
-    switch (Typeof(thing)) {
+    switch (OBJECT_TYPE(thing)) {
         case TYPE_PLAYER:
             return 0;
 
@@ -2743,15 +2744,15 @@ permissions(dbref player, dbref thing)
 dbref
 find_mlev(dbref prog, struct frame * fr, int st)
 {
-    if ((FLAGS(prog) & STICKY) && (FLAGS(prog) & HAVEN)) {
+    if (FLAG_CHECK(prog, 'S') && FLAG_CHECK(prog, 'H')) {
         if ((st > 1) && (TrueWizard(OWNER(prog))))
             return (find_mlev(fr->caller.st[st - 1], fr, st - 1));
     }
 
-    if (MLevel(prog) < MLevel(OWNER(prog))) {
-        return (MLevel(prog));
+    if (OBJECT_EFFECTIVE_MLEVEL(prog) < OBJECT_EFFECTIVE_MLEVEL(OWNER(prog))) {
+        return (OBJECT_EFFECTIVE_MLEVEL(prog));
     } else {
-        return (MLevel(OWNER(prog)));
+        return (OBJECT_EFFECTIVE_MLEVEL(OWNER(prog)));
     }
 }
 
@@ -2784,8 +2785,8 @@ find_mlev(dbref prog, struct frame * fr, int st)
 dbref
 find_uid(dbref player, struct frame * fr, int st, dbref program)
 {
-    if ((FLAGS(program) & STICKY) || (fr->perms == STD_SETUID)) {
-        if (FLAGS(program) & HAVEN) {
+    if (FLAG_CHECK(program, 'S') || (fr->perms == STD_SETUID)) {
+        if (FLAG_CHECK(program, 'H')) {
             if ((st > 1) && (TrueWizard(OWNER(program))))
                 return (find_uid(player, fr, st - 1, fr->caller.st[st - 1]));
 
@@ -2798,7 +2799,7 @@ find_uid(dbref player, struct frame * fr, int st, dbref program)
     if (ProgMLevel(program) < 2)
         return (OWNER(program));
 
-    if ((FLAGS(program) & HAVEN) || (fr->perms == STD_HARDUID)) {
+    if (FLAG_CHECK(program, 'H') || (fr->perms == STD_HARDUID)) {
         if (fr->trig == NOTHING)
             return (OWNER(program));
 
