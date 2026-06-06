@@ -462,18 +462,33 @@ muf_backtrace(dbref player, dbref program, int count, struct frame *fr)
                 const char *nam = scopedvar_getname(fr, lev, k);
                 char *val;
 
-                if (!nam) {
+                /*
+                 * Space remaining in buf2, holding back some slack for
+                 * the ANSI escapes.
+                 */
+                size_t avail = sizeof(buf2) - (size_t)(bufend - buf2);
+
+                if (!nam || avail <= 19) {
                     break;
                 }
+
+                avail -= 18;
 
                 varinst = scopedvar_get(fr, lev, k);
                 val = insttotext(fr, lev, varinst, buf3, sizeof(buf3), 30, program, 1);
 
                 if (k) {
-                    bufend += snprintf(bufend, buf2 - bufend - 18, "\033[1m, %s=\033[0m%s", nam, val);
+                    snplen = snprintf(bufend, avail, "\033[1m, %s=\033[0m%s", nam, val);
                 } else {
-                    bufend += snprintf(bufend, buf2 - bufend - 18, "\033[1m%s=\033[0m%s", nam, val);
+                    snplen = snprintf(bufend, avail, "\033[1m%s=\033[0m%s", nam, val);
                 }
+
+                if (snplen < 0 || (size_t)snplen >= avail) {
+                    /* Output was truncated; stop appending arguments. */
+                    break;
+                }
+
+                bufend += snplen;
             }
 
             ptr = buf2;
