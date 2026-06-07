@@ -621,7 +621,13 @@ pbkdf2_hash(const char* password, int password_len, const char* salt,
      */
     if (!salt) {
         for (i = 0; i < 10; i++) {
-            salt_buf[i] = b64[RANDOM()%sizeof(b64)];
+            /*
+             * sizeof(b64) includes the trailing NUL, so we must subtract
+             * one to keep from ever selecting it.  An embedded NUL here
+             * truncates the salt string, producing a corrupt hash such as
+             * "$1$M$" that no later login can match.
+             */
+            salt_buf[i] = b64[RANDOM()%(sizeof(b64) - 1)];
         }
 
         salt_buf[10] = '\0';
