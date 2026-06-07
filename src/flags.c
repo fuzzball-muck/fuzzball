@@ -12,6 +12,7 @@
 
 #include "db.h"
 #include "fbstrings.h"
+#include "predicates.h"
 #include "flags.h"
 #include "game.h"
 
