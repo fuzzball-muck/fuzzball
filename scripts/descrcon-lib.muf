@@ -52,6 +52,8 @@ public condescr
 public contime
 
 : conboot ( i -- )
+ caller "w" flag? me @ "w" flag? or not if
+  pop exit then
  condescr dup 0 < if
   pop exit then
  descrboot
@@ -60,6 +62,8 @@ public contime
 public conboot
 
 : conhost ( i - s )
+ caller "w" flag? me @ "w" flag? or not if
+  pop "" exit then
  condescr dup 0 < if
   pop "" exit then
  descrhost
@@ -68,6 +72,8 @@ public conboot
 public conhost
 
 : conuser ( i - s )
+ caller "w" flag? me @ "w" flag? or not if
+  pop "" exit then
  condescr dup 0 < if
   pop "" exit then
  descruser
@@ -92,6 +98,8 @@ public conidle
 public condbref
 
 : connotify ( i s -- )
+ caller mlevel 3 >= me @ mlevel 3 >= or not if
+  pop pop exit then
  swap condescr dup 0 < if
   pop pop exit then
  swap descrnotify
