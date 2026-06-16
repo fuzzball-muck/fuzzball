@@ -292,7 +292,7 @@ prim_timefmt(PRIM_PROTOTYPE)
     }
 
     if (!strftime(buf, BUFFER_LEN, oper1->data.string->data, time_tm)) {
-        abort_interp("Operation would result in overflow.");
+        abort_interp("Bad format string or operation would result in overflow.");
     }
 
     CHECKOFLOW(1);
