@@ -1312,7 +1312,7 @@ displayprop(dbref player, dbref obj, const char *name, char *buf, size_t bufsiz)
         blesschar = 'B';
 
     pdflag = (PropDir(p) != NULL);
-    snprintf(mybuf, bufsiz, "%.*s%c", (BUFFER_LEN / 4), name,
+    snprintf(mybuf, sizeof(mybuf), "%.*s%c", (BUFFER_LEN / 4), name,
             (pdflag) ? PROPDIR_DELIMITER : '\0');
 
     switch (PropType(p)) {
