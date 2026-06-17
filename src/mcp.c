@@ -1384,30 +1384,30 @@ int
 mcp_frame_process_input(McpFrame *mfr, const char *linein, char *outbuf,
                         int bufsize)
 {
+    if (bufsize <= 0)
+        return 1;
+
     if (!strncasecmp(linein, MCP_MESG_PREFIX, 3)) {
         /* treat it as an out-of-band message, and parse it. */
         if (mfr->enabled || !strncasecmp(MCP_INIT_MESG, linein + 3, 4)) {
             if (!mcp_internal_parse(mfr, linein + 3)) {
-                strncpy(outbuf, linein, bufsize);
-                outbuf[bufsize - 1] = '\0';
+                snprintf(outbuf, bufsize, "%s", linein);
                 return 1;
             }
 
             return 0;
         } else {
-            strncpy(outbuf, linein, bufsize);
-            outbuf[bufsize - 1] = '\0';
+            snprintf(outbuf, bufsize, "%s", linein);
             return 1;
         }
     } else if (mfr->enabled && !strncasecmp(linein, MCP_QUOTE_PREFIX, 3)) {
         /* It's quoted in-band data.  Strip the quoting. */
-        strncpy(outbuf, linein + 3, bufsize);
+        snprintf(outbuf, bufsize, "%s", linein + 3);
     } else {
         /* It's in-band data.  Return it raw. */
-        strncpy(outbuf, linein, bufsize);
+        snprintf(outbuf, bufsize, "%s", linein);
     }
 
-    outbuf[bufsize - 1] = '\0';
     return 1;
 }
 
