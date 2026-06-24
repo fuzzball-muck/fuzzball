@@ -470,6 +470,25 @@ listprops_wildcard(dbref player, dbref thing, const char *dir, const char *wild)
     int i, cnt = 0;
     int recurse = 0;
 
+    /* Guard against runaway recursion on a pathologically deep prop tree.
+     * set_property_nofetch enforces MAX_PROPTREE_DEPTH on newly set props,
+     * but a legacy database could already contain a deeper tree, and
+     * recursing into it would overflow the C stack.  'dir' carries one
+     * PROPDIR_DELIMITER per level of nesting, so its delimiter count is
+     * our current depth.
+     */
+    {
+        int depth = 0;
+
+        for (const char *s = dir; *s; s++) {
+            if (*s == PROPDIR_DELIMITER)
+                depth++;
+        }
+
+        if (depth >= MAX_PROPTREE_DEPTH)
+            return cnt;
+    }
+
     strcpyn(wld, sizeof(wld), wild);
     i = strlen(wld);
 

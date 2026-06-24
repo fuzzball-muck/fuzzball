@@ -32,6 +32,45 @@
     - "- str /_testdir/innervalue2:abc"
     - "2 properties listed"
 
+# A propdir nested exactly MAX_PROPTREE_DEPTH (100) levels deep is allowed
+# and can be listed without crashing.  The path below is 100 components.
+- name: examine-deep-prop-allowed
+  setup: |
+    @create Foo
+    @set Foo=a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a:ALLOWME
+  commands: |
+    ex Foo=a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a
+  expect:
+    - ":ALLOWME"
+    - "1 property listed"
+
+# Recursively listing an object whose deepest prop is at the maximum depth
+# must complete cleanly -- this is the listing that used to overflow the C
+# stack and core the server.
+- name: examine-deep-prop-recursive
+  setup: |
+    @create Foo
+    @set Foo=a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a:ALLOWME
+  commands: |
+    ex Foo=/**
+  expect:
+    # Reaching the leaf proves the recursion descended all 100 levels, and a
+    # clean completion line proves it returned instead of coring the server.
+    - ":ALLOWME"
+    - "[0-9]+ properties listed"
+
+# Setting a propdir deeper than MAX_PROPTREE_DEPTH (101 components here) is
+# refused outright, so the prop is never created.  Listing the exact path it
+# would have occupied therefore finds nothing.
+- name: examine-deep-prop-rejected
+  setup: |
+    @create Foo
+    @set Foo=a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a:REJECTME
+  commands: |
+    ex Foo=a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a
+  expect:
+    - "0 properties listed"
+
 - name: examine-named-fields
   setup: |
     @create Foo
