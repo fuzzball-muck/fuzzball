@@ -456,10 +456,12 @@ do_look_at(int descr, dbref player, const char *name, const char *detail)
  * @param thing the thing we are checking props on
  * @param dir root dir to search from - used for recursion -- pass "" for root
  * @param wild the pattern to search for.
+ * @param depth current propdir nesting depth - pass 0 for the root call
  * @return int number of props returned.
  */
 static int
-listprops_wildcard(dbref player, dbref thing, const char *dir, const char *wild)
+listprops_wildcard(dbref player, dbref thing, const char *dir, const char *wild,
+                   int depth)
 {
     char propname[BUFFER_LEN];
     char wld[BUFFER_LEN];
@@ -473,21 +475,10 @@ listprops_wildcard(dbref player, dbref thing, const char *dir, const char *wild)
     /* Guard against runaway recursion on a pathologically deep prop tree.
      * set_property_nofetch enforces MAX_PROPTREE_DEPTH on newly set props,
      * but a legacy database could already contain a deeper tree, and
-     * recursing into it would overflow the C stack.  'dir' carries one
-     * PROPDIR_DELIMITER per level of nesting, so its delimiter count is
-     * our current depth.
+     * recursing into it would overflow the C stack.
      */
-    {
-        int depth = 0;
-
-        for (const char *s = dir; *s; s++) {
-            if (*s == PROPDIR_DELIMITER)
-                depth++;
-        }
-
-        if (depth >= MAX_PROPTREE_DEPTH)
-            return cnt;
-    }
+    if (depth >= MAX_PROPTREE_DEPTH)
+        return cnt;
 
     strcpyn(wld, sizeof(wld), wild);
     i = strlen(wld);
@@ -523,7 +514,7 @@ listprops_wildcard(dbref player, dbref thing, const char *dir, const char *wild)
                 if (recurse)
                     ptr = "**";
 
-                cnt += listprops_wildcard(player, thing, buf, ptr);
+                cnt += listprops_wildcard(player, thing, buf, ptr, depth + 1);
             }
         }
 
@@ -584,7 +575,7 @@ do_examine(int descr, dbref player, const char *name, const char *dir)
 
     if (*dir) {
         /* show him the properties */
-        cnt = listprops_wildcard(player, thing, "", dir);
+        cnt = listprops_wildcard(player, thing, "", dir, 0);
         notifyf(player, "%d propert%s listed.", cnt, (cnt == 1 ? "y" : "ies"));
         return;
     }
