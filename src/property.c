@@ -120,6 +120,22 @@ set_property_nofetch(dbref player, const char *pname, PData * dat)
     if (!*buf)
         return;
 
+    /* Refuse to create a propdir tree nested deeper than
+     * MAX_PROPTREE_DEPTH levels.  Without this limit, a sufficiently
+     * deep prop will overflow the C stack the next time something
+     * recurses over the prop tree -- for example a recursive 'examine'
+     * listing (see listprops_wildcard in look.c).  Each PROPDIR_DELIMITER
+     * adds one level of nesting on top of the leaf, so depth starts at 1.
+     */
+    {
+        int depth = 1;
+
+        for (char *s = buf; *s; s++) {
+            if (*s == PROPDIR_DELIMITER && ++depth > MAX_PROPTREE_DEPTH)
+                return;
+        }
+    }
+
     /* Create a new element for our new property, or get an existing
      * property object if it already exists.
      */

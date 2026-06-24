@@ -116,6 +116,7 @@ typedef int dbref;  /**< Type wrapper for dbref - must support negatives */
 #define MAX_LINKS 50            /**< max destinations for an exit */
 #define MAX_LISTEN_SOCKS 16     /**< max ports we will open */
 #define MAX_PARENT_DEPTH 256    /**< max parenting depth allowed */
+#define MAX_PROPTREE_DEPTH 100  /**< max propdir nesting depth allowed */
 
 /**
  * Maximum buffer length
