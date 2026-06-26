@@ -2197,7 +2197,8 @@ prim_lockedp(PRIM_PROTOTYPE)
         abort_interp("Interp call loops not allowed.");
     }
 
-    if (!valid_object(oper2) || (!valid_player(oper2) && OBJECT_TYPE(oper2->data.objref) != TYPE_THING)) {
+    if (!valid_object(oper2) || (!valid_player(oper2) && !valid_object(oper2) &&
+        OBJECT_TYPE(oper2->data.objref) != TYPE_THING)) {
         abort_interp("Invalid player or thing argument. (1)");
     }
 
