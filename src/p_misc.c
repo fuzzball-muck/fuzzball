@@ -523,8 +523,12 @@ prim_kill(PRIM_PROTOTYPE)
         do_abort_silent();
     }
 
-    if (mlev < 3 && !control_process(ProgUID, oper1->data.number)) {
-        abort_interp("Permission Denied.");
+    /* We only permissions abort IF we are below M3 and THEN we have no control in that case.
+       If we are M3 or better, we bypass control checks and are allowed to proceed. */
+    if (mlev < 3) {
+        if (!control_process(ProgUID, oper1->data.number)) {
+            abort_interp("Permission Denied.");
+        }
     }
 
     result = dequeue_process(oper1->data.number);
