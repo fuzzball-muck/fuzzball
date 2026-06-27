@@ -276,7 +276,7 @@ flag_object(dbref ref)
 {
     int type = OBJECT_TYPE(ref);
     char flag = object_types[type].symbol;
-    boolean hidden = object_types[type].hidden;
+    bool hidden = object_types[type].hidden;
 
     if (!tp_show_hidden_object_types && hidden) {
         flag = '\0';
