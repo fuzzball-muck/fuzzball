@@ -3532,6 +3532,8 @@ mfn_money(MFUNARGS)
 const char *
 mfn_flags(MFUNARGS)
 {
+    char buf2[BUFFER_LEN];
+    char buf3[2];
     dbref obj = mesg_dbref_local(descr, player, what, perms, argv[0], mesgtyp);
 
     if (obj == UNKNOWN || obj == AMBIGUOUS || obj == NOTHING || obj == HOME)
@@ -3540,7 +3542,10 @@ mfn_flags(MFUNARGS)
     if (obj == PERMDENIED)
         ABORT_MPI("FLAGS", "Permission denied.");
 
-    flag_list(obj, buf, sizeof(buf));
+    buf3[1] = '\0';
+    buf3[0] = flag_object(obj);
+    flag_list(obj, buf2, sizeof(buf2));
+    snprintf(buf, sizeof(buf), "%s%s", buf3, buf2);
     return buf;
 }
 
