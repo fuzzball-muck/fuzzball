@@ -254,6 +254,7 @@ extern dbref       tp_welcome_mpi_what;         /**< Tune variable */
 extern dbref       tp_welcome_mpi_who;          /**< Tune variable */
 extern bool        tp_who_hides_dark;           /**< Tune variable */
 extern bool        tp_wiz_vehicles;             /**< Tune variable */
+extern bool        tp_show_hidden_object_types; /**< Tune variable */
 
 /**
  * @var tune_list
