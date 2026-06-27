@@ -201,6 +201,7 @@ dbref       tp_welcome_mpi_what;                    /**> Described below */
 dbref       tp_welcome_mpi_who;                     /**> Described below */
 bool        tp_who_hides_dark;                      /**> Described below */
 bool        tp_wiz_vehicles;                        /**> Described below */
+bool        tp_show_hidden_object_types;            /**> Described below */
 
 /**
  * @var tune_list
@@ -2289,6 +2290,18 @@ struct tune_entry tune_list[] = {
         TP_TYPE_BOOLEAN,
         .defaultval.b=false,
         .currentval.b=&tp_wiz_vehicles,
+        0,
+        MLEV_WIZARD,
+        true
+    },
+    {
+        "show_hidden_object_types",
+        "Display object type flags in a non-backwards compatible manner",
+        "Database",
+        "",
+        TP_TYPE_BOOLEAN,
+        .defaultval.b=false,
+        .currentval.b=&tp_show_hidden_object_types,
         0,
         MLEV_WIZARD,
         true

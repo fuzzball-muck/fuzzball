@@ -21,11 +21,14 @@
  * their associated display strings.
  */
 struct object_type object_types[] = {
-    { 'R', "ROOM", "Room", "room", "rooms" },
-    { 'T', "THING", "Thing", "thing", "things" },
-    { 'E', "EXIT/ACTION", "Exit", "exit", "exits" },
-    { 'P', "PLAYER", "Player", "player", "players" },
-    { 'F', "PROGRAM", "Program", "program", "programs" }
+    { 'R', "ROOM", "Room", "room", "rooms", false },
+    { 'T', "THING", "Thing", "thing", "things", true },
+    { 'E', "EXIT/ACTION", "Exit", "exit", "exits", false },
+    { 'P', "PLAYER", "Player", "player", "players", false },
+    { 'F', "PROGRAM", "Program", "program", "programs", false },
+    { '-', "UNDEF", "Undefined", "undefined", "undefined", true },
+    { 'G', "GARBAGE", "Garbage", "garbage", "garbage", false },
+    { '-', "UNDEF", "Undefined", "undefined", "undefined", true }
 };
 /**
  * This structure and array support the listing of system flags and provides
@@ -263,6 +266,25 @@ flag_list_verbose(dbref ref, char *buf, size_t size)
 }
 
 /**
+ * Returns the char representation of the object-type flag.  This may
+ * be a null character.
+ *
+ * @param thing the object to return the flag for.
+ */
+char
+flag_object(dbref ref)
+{
+    int type = OBJECT_TYPE(ref);
+    char flag = object_types[type].symbol;
+    bool hidden = object_types[type].hidden;
+
+    if (!tp_show_hidden_object_types && hidden) {
+        flag = '\0';
+    }
+    return flag;
+}
+
+/**
  * Generates a string representation of object flags. Uses the provided
  * buffer that has the given size.
  *
@@ -296,7 +318,8 @@ flag_list(dbref ref, char *buf, size_t size)
     }
 
     int mlevel = OBJECT_MLEVEL(ref);
-    if (mlevel > 0 && (p + 1 < end)) {
+    if (mlevel > 0 && (p + 2 < end)) {
+        *p++ = 'M';
         *p++ = mlevel + '0';
     }
 
@@ -330,6 +353,7 @@ void
 flag_unparse_object(dbref player, dbref ref, char *buf, size_t size)
 {
     char flags_buf[MINI_BUFFER_LEN];
+    char typeflag_buf[2];
 
     if (player != NOTHING) {
         player = OWNER(player);
@@ -358,7 +382,9 @@ flag_unparse_object(dbref player, dbref ref, char *buf, size_t size)
                 ))) {
 
                 flag_list(ref, flags_buf, sizeof(flags_buf));
-                snprintf(buf, size, "%.*s(#%d%c%s)", BUFFER_LEN / 2, NAME(ref), ref, object_types[OBJECT_TYPE(ref)].symbol, flags_buf);
+                typeflag_buf[1] = '\0';
+                typeflag_buf[0] = flag_object(ref);
+                snprintf(buf, size, "%.*s(#%d%s%s)", BUFFER_LEN / 2, NAME(ref), ref, typeflag_buf, flags_buf);
             } else {
                 strcpyn(buf, size, NAME(ref));
             }
