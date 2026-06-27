@@ -15,17 +15,19 @@
 /**
  * Definitions of the bit used in object flags.
  */
-#define TYPE_ROOM           0x0 /**< room bit */
-#define TYPE_THING          0x1 /**< thing bit */
-#define TYPE_EXIT           0x2 /**< exit bit */
-#define TYPE_PLAYER         0x3 /**< player bit */
-#define TYPE_PROGRAM        0x4 /**< program bit */
+/** Object types are values contained within the first
+    few bits of the overall bit flag.  Confusing, I know. **/
+#define TYPE_ROOM           0x0 /**< room value */
+#define TYPE_THING          0x1 /**< thing value */
+#define TYPE_EXIT           0x2 /**< exit value */
+#define TYPE_PLAYER         0x3 /**< player value */
+#define TYPE_PROGRAM        0x4 /**< program value */
 
 /* 0x5 available */
 
-#define TYPE_GARBAGE        0x6 /**< garbage bit */
+#define TYPE_GARBAGE        0x6 /**< garbage value */
 #define TYPE_ANY            0x7 /**< no particular type */
-#define TYPE_MASK           0x7 /**< bitmask for all types */
+#define TYPE_MASK           0x7 /**< bitmask for all object types */
 
 /* 0x8 available */
 
@@ -129,6 +131,7 @@ struct object_type {
     char *titlecase;
     char *singular;
     char *plural;
+    bool hidden;
 };
 
 extern struct object_type object_types[];
