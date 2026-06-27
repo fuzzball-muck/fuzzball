@@ -382,7 +382,7 @@ flag_unparse_object(dbref player, dbref ref, char *buf, size_t size)
                 ))) {
 
                 flag_list(ref, flags_buf, sizeof(flags_buf));
-                typeflag_buf = "\0\0";
+                typeflag_buf[1] = '\0';
                 typeflag_buf[0] = flag_object(ref);
                 snprintf(buf, size, "%.*s(#%d%s%s)", BUFFER_LEN / 2, NAME(ref), ref, typeflag_buf, flags_buf);
             } else {
