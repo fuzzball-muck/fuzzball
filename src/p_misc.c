@@ -519,15 +519,17 @@ prim_kill(PRIM_PROTOTYPE)
         abort_interp("Non-integer argument (1).");
     }
 
+    /* Note that do_abort_silent doesn't act as a 'return', it sets up an event that needs
+       to be processed by dequeue_process to complete. */
     if (oper1->data.number == fr->pid) {
         do_abort_silent();
-    }
-
-    /* We only permissions abort IF we are below M3 and THEN we have no control in that case.
-       If we are M3 or better, we bypass control checks and are allowed to proceed. */
-    if (mlev < 3) {
-        if (!control_process(ProgUID, oper1->data.number)) {
-            abort_interp("Permission Denied.");
+    } else {
+        /* We only permissions abort IF we are below M3 and THEN we have no control in that case.
+           If we are M3 or better, we bypass control checks and are allowed to proceed. */
+        if (mlev < 3) {
+            if (!control_process(ProgUID, oper1->data.number)) {
+                abort_interp("Permission Denied.");
+            }
         }
     }
 
