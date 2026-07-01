@@ -675,7 +675,7 @@ do_set(int descr, dbref player, const char *name, const char *flag)
         }
     }
 
-    if (unable_to_set_flag(player, OBJECT_EFFECTIVE_MLEVEL(OWNER(player)), thing, f, !negated, error)) {
+    if (unable_to_set_flag(player, NOTHING, OBJECT_EFFECTIVE_MLEVEL(OWNER(player)), thing, f, !negated, error)) {
         if (*error) {
             notify(player, error);
         } else {
