@@ -1038,7 +1038,7 @@ prim_set(PRIM_PROTOTYPE)
         abort_interp("Unrecognized flag.");
     }
 
-    if (unable_to_set_flag(ProgUID, mlev, ref, tmp, !negated, error)) {
+    if (unable_to_set_flag(NOTHING, ProgUID, mlev, ref, tmp, !negated, error)) {
         if (*error) {
             abort_interp(error);
         } else {
