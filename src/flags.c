@@ -467,11 +467,12 @@ str_to_flag(const char *flag_string)
 }
 
 /**
- * Determines if a given player is unable to (re)set the given flag
+ * Determines if a given player or program is unable to (re)set the given flag
  *
  * The 'business logic' here is actually fairly dense and not easily
  * summed up in a comment. The reader is encouraged to review the very
- * well documented code for details.
+ * well documented code for details.  Only player OR puid should be set, not both.
+ * An 'unset' value has the NOTHING dbref.
  *
  * This is all pretty well documented in the MUCK's help files.
  *
@@ -479,7 +480,8 @@ str_to_flag(const char *flag_string)
  * should be at least SMALL_BUFFER_LEN in size.
  *
  * @private
- * @param player the effective aplayer we are checking permissions for
+ * @param player the player we are checking permissions for
+ * @param puid the effective UID we are checking permissions for
  * @param mlev the effective mucker level we are checking permissions for
  * @param thing the thing we want to interact with
  * @param flag the flag we wish to interact with
@@ -488,9 +490,13 @@ str_to_flag(const char *flag_string)
  * @return boolean 1 if restricted from setting flag, 0 if okay to set.
  */
 int
-unable_to_set_flag(dbref player, int mlev, dbref thing, object_flag_type flag, bool value, char *error)
+unable_to_set_flag(dbref player, dbref puid, int mlev, dbref thing, object_flag_type flag, bool value, char *error)
 {
-    if (force_level && (
+    /* Wizard check logic. */
+    bool wizlev = (player != NOTHING && Wizard(OWNER(player))) || (puid != NOTHING && mlev == 4);
+
+    /* Force check only done for a player/thing call. */
+    if (player != NOTHING && force_level && (
             flag == WIZARD
             || (flag == XFORCIBLE && OBJECT_TYPE(thing) != TYPE_EXIT)
             || (flag & MUCKER)
@@ -502,48 +508,60 @@ unable_to_set_flag(dbref player, int mlev, dbref thing, object_flag_type flag, b
 
     /* Non-wizards can only set their own programs M0. */
     if (!value && (flag & (MUCKER | SMUCKER))) {
-        if (!Wizard(OWNER(player))) {
+        if (player != NOTHING && !wizlev) {
             if ((OWNER(player) != OWNER(thing)) || (OBJECT_TYPE(thing) != TYPE_PROGRAM)) {
                 snprintf(error, SMALL_BUFFER_LEN, "Permission denied. (You can't set that M0)");
                 return 1;
             }
         }
-
+        if (puid != NOTHING) {
+            /* Programs can't use M level settings, period. */
+            return 1;
+        }
         return 0;
     }
 
     /* Non-wizards can only set their programs up to their own mucker level. */
     if (flag & (MUCKER | SMUCKER)) {
         unsigned short requested_mlevel = (((flag & MUCKER ? 2 : 0) + (flag & SMUCKER ? 1 : 0)));
-        if (!Wizard(OWNER(player))) {
+        if (player != NOTHING && !wizlev) {
             if ((OWNER(player) != OWNER(thing)) || (OBJECT_TYPE(thing) != TYPE_PROGRAM)
                 || (OBJECT_MLEVEL(player) < requested_mlevel)) {
                 snprintf(error, SMALL_BUFFER_LEN, "Permission denied. (You can't set that M%d)", requested_mlevel);
                 return 1;
             }
         }
-
+        if (puid != NOTHING) {
+            /* Programs can't use M level setting, period. */
+            return 1;
+        }
         return 0;
     }
 
     switch (flag) {
         case ABODE:
             /* Trying to set a program AUTOSTART requires TrueWizard */
-            return (!TrueWizard(OWNER(player)) && (OBJECT_TYPE(thing) == TYPE_PROGRAM));
+            if (player != NOTHING) {
+                return (!TrueWizard(OWNER(player)) && (OBJECT_TYPE(thing) == TYPE_PROGRAM));
+            } else {
+                /* Programs are never allowed to set autostart on another program - worms! */
+                return (OBJECT_TYPE(thing) == TYPE_PROGRAM);
+            }
 
         case GUEST:
             /* Guest operations require a wizard */
-            return (!(Wizard(OWNER(player))));
+            return (!wizlev);
 
         case YIELD:
         case OVERT:
-            /* Mucking with the env-chain matching requires TrueWizard */
-            if (!(Wizard(OWNER(player)))) {
+            /* Mucking with the env-chain matching requires Wizard */
+            if (!wizlev) {
                 return 1;
             }
 
             /* ...and only for makes sense for things or rooms. */
             if (OBJECT_TYPE(thing) != TYPE_THING && OBJECT_TYPE(thing) != TYPE_ROOM) {
+                snprintf(error, SMALL_BUFFER_LEN, "Permission denied. (Can not be set on that type of object.)");
                 return 1;
             }
 
@@ -552,22 +570,25 @@ unable_to_set_flag(dbref player, int mlev, dbref thing, object_flag_type flag, b
         case ZOMBIE:
             /* Restricting a player from using zombies requires a wizard. */
             if (OBJECT_TYPE(thing) == TYPE_PLAYER) {
-                return (!(Wizard(OWNER(player))));
+                return (!wizlev);
             }
 
-            /* If a player's set Zombie, he's restricted from using them...
-             * unless he's a wizard, in which case he can do whatever.
+            /* If a player's set Zombie, they're restricted from using them...
+             * unless they are a wizard, in which case they can do whatever.
              */
-            if ((OBJECT_TYPE(thing) == TYPE_THING) && FLAG_CHECK(player, 'Z')) {
-                return (!(Wizard(OWNER(player))));
+            if ((OBJECT_TYPE(thing) == TYPE_THING) &&
+                ((player != NOTHING && FLAG_CHECK(player, 'Z')) ||
+                 (puid != NOTHING && FLAG_CHECK(puid, 'Z')))) {
+                return (!wizlev);
             }
 
             return 0;
 
         case VEHICLE:
-            /* Restricting a player from using vehicles requires a wizard. */
+            /* Restricting a player from using vehicles requires a wizard. This check has now been properly
+               added to prim_set. */
             if (OBJECT_TYPE(thing) == TYPE_PLAYER){
-                return (!(Wizard(OWNER(player))));
+                return (!wizlev);
             }
 
             /* Can only set things !V if they have no players in them. */
@@ -582,26 +603,27 @@ unable_to_set_flag(dbref player, int mlev, dbref thing, object_flag_type flag, b
                 }
             }
 
-            /* If only wizards can create vehicles... */
+            /* If only wizards can create vehicles...
+               Have now properly added these checks to prim_set. */
             if (tp_wiz_vehicles) {
                 /* then only a wizard can create a vehicle. :) */
                 if (OBJECT_TYPE(thing) == TYPE_THING) {
-                    return (!(Wizard(OWNER(player))));
+                    return (!wizlev);
                 }
             } else {
                 /* But, if vehicles aren't restricted to wizards, then
                  * players who have not been restricted can do so
                  */
                 if ((OBJECT_TYPE(thing) == TYPE_THING) && FLAG_CHECK(player, 'V')) {
-                    return (!(Wizard(OWNER(player))));
+                    return (!wizlev);
                 }
             }
 
-            return (0);
+            return 0;
 
         case DARK:
             /* Dark can be set on a Program or Room by anyone. */
-            if (!Wizard(OWNER(player))) {
+            if (!wizlev) {
                 /* Setting a player dark requires a wizard. */
                 if (OBJECT_TYPE(thing) == TYPE_PLAYER) {
                     return 1;
@@ -621,6 +643,10 @@ unable_to_set_flag(dbref player, int mlev, dbref thing, object_flag_type flag, b
             return 0;
 
         case QUELL:
+            if (puid != NOTHING) {
+                /* Programs may never use Quell. */
+                return 1;
+            }
 #ifdef GOD_PRIV
             /* Only God (or God's stuff) can quell or unquell another wizard. */
             return (TrueWizard(thing) && (thing != player) && !God(OWNER(player)) &&
@@ -631,7 +657,10 @@ unable_to_set_flag(dbref player, int mlev, dbref thing, object_flag_type flag, b
 #endif
 
         case BUILDER:
-            /* Setting a program BOUND reguires M2. */
+            /* Setting a program BOUND reguires M2, or M4 if called from code. */
+            if (puid != NOTHING) {
+                return (!wizlev);
+            }
             if (OBJECT_TYPE(thing) == TYPE_PROGRAM) {
                 return (mlev < 2);
             }
@@ -640,7 +669,11 @@ unable_to_set_flag(dbref player, int mlev, dbref thing, object_flag_type flag, b
             return (!Wizard(OWNER(player)));
 
         case WIZARD:
-            /* To do anything with a Wizard flag requires a Wizard. */
+            /* To do anything with a Wizard flag requires a Wizard, may never be called from code. */
+            if (puid != NOTHING) {
+                return 1;
+            }
+            
             if (Wizard(OWNER(player))) {
                 /* check for stupid wizard */
                 if (!value && thing == player) {
@@ -662,8 +695,16 @@ unable_to_set_flag(dbref player, int mlev, dbref thing, object_flag_type flag, b
             }
 
         case XFORCIBLE:
+            /* May never be called from code */
+            if (puid != NOTHING) {
+                return 1;
+            }
             return (!Wizard(OWNER(player)) && OBJECT_TYPE(thing) == TYPE_EXIT);
 
+        case INTERACTIVE:
+            /* May never be called from code */
+            return (puid != NOTHING);
+        
         default:
             /* No other flags are restricted. */
             return 0;
