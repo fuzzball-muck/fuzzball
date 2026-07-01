@@ -275,11 +275,11 @@ void flag_unparse_object(dbref player, dbref ref, char *buf, size_t size);
 object_flag_type str_to_flag(const char *flag_string);
 
 /**
- * Determines if a given player is unable to (re)set the given flag
+ * Determines if a given player or program is unable to (re)set the given flag
  *
  * The 'business logic' here is actually fairly dense and not easily
  * summed up in a comment. The reader is encouraged to review the very
- * well documented code for details.
+ * well documented code for details.  Only player OR puid should be set, not both.
  *
  * This is all pretty well documented in the MUCK's help files.
  *
@@ -287,7 +287,8 @@ object_flag_type str_to_flag(const char *flag_string);
  * should be at least SMALL_BUFFER_LEN in size.
  *
  * @private
- * @param player the effective aplayer we are checking permissions for
+ * @param player the player we are checking permissions for
+ * @param puid the effective UID we are checking permissions for
  * @param mlev the effective mucker level we are checking permissions for
  * @param thing the thing we want to interact with
  * @param flag the flag we wish to interact with
@@ -295,5 +296,5 @@ object_flag_type str_to_flag(const char *flag_string);
  * @param error[out] error message, if any
  * @return boolean 1 if restricted from setting flag, 0 if okay to set.
  */
-int unable_to_set_flag(dbref player, int mlev, dbref thing, object_flag_type flag, bool value, char *error);
+int unable_to_set_flag(dbref player, dbref puid, int mlev, dbref thing, object_flag_type flag, bool value, char *error);
 #endif /* !FLAGS_H */
