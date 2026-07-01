@@ -489,7 +489,8 @@ str_to_flag(const char *flag_string)
  * @param error[out] error message, if any
  * @return boolean 1 if restricted from setting flag, 0 if okay to set.
  */
-int unable_to_set_flag(dbref player, dbref puid, int mlev, dbref thing, object_flag_type flag, bool value, char *error);
+int
+unable_to_set_flag(dbref player, dbref puid, int mlev, dbref thing, object_flag_type flag, bool value, char *error)
 {
     /* Wizard check logic. */
     bool wizlev = (player != NOTHING && Wizard(OWNER(player))) || (puid != NOTHING && mlev == 4);
