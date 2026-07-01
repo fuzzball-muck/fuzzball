@@ -544,6 +544,8 @@ do_set(int descr, dbref player, const char *name, const char *flag)
     object_flag_type f;
     char error[SMALL_BUFFER_LEN] = "";
 
+	NOGUEST("@set", player);
+	
     /* find thing */
     if ((thing = match_controlled(descr, player, name)) == NOTHING)
         return;
@@ -643,12 +645,6 @@ do_set(int descr, dbref player, const char *name, const char *flag)
     }
 
     bool negated = (*flag == NOT_TOKEN);
-
-    if (ISGUEST(player) &&
-           (!Wizard(player) || !negated || !string_prefix("GUEST", p))) {
-        notifyf_nolisten(player, "Guests are not allowed to @set.");
-        return;
-    }
 
     if (*p == '\0') {
         notify(player, "You must specify a flag to set.");
