@@ -1637,6 +1637,10 @@ process_welcome_input(struct descriptor_data *d, const char *msg)
     } welcome_action_t;
     welcome_action_t action = ACTION_NONE;
 
+    const unsigned short CMD_HE = ('h' << 8 | 'e');
+    const unsigned short CMD_CO = ('c' << 8 | 'o');
+    const unsigned short CMD_CR = ('c' << 8 | 'r');
+
     int server_is_restricted = (wizonly_mode || (tp_playermax && con_players_curr >= tp_playermax_limit));
     const char *host_log = tp_log_hosts ? d->hostname : "hidden host";
 
@@ -1658,21 +1662,19 @@ process_welcome_input(struct descriptor_data *d, const char *msg)
         return;
     }
 
-    unsigned short cmd_key = command[0] 
-        ? ((unsigned char)tolower((unsigned char)command[0]) << 8 | 
-           (unsigned char)tolower((unsigned char)command[1])) 
-        : 0;
+    unsigned short cmd_key = ((unsigned char)tolower((unsigned char)command[0]) << 8 |
+           (unsigned char)tolower((unsigned char)command[1]));
 
     switch (cmd_key) {
-        case ('h' << 8 | 'e'):
+        case CMD_HE:
             show_file(d, tp_file_connection_help);
             return;
 
-        case ('c' << 8 | 'o'):
+        case CMD_CO:
             action = ACTION_CONNECT;
             break;
 
-        case ('c' << 8 | 'r'):
+        case CMD_CR:
             if (tp_registration) {
                 queue_ansi(d, tp_register_mesg);
                 queue_write(d, "\r\n", 2);
@@ -1691,10 +1693,15 @@ process_welcome_input(struct descriptor_data *d, const char *msg)
             return;
     }
 
-    if (action == ACTION_CONNECT) {
-        player = connect_player(user, password, error);
-    } else if (action == ACTION_CREATE) {
-        player = create_player(user, password, error);
+    switch (action) {
+        case ACTION_CONNECT:
+            player = connect_player(user, password, error);
+            break;
+        case ACTION_CREATE:
+            player = create_player(user, password, error);
+            break;
+        default:
+            break;
     }
 
     if (player == NOTHING) {
