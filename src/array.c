@@ -368,6 +368,32 @@ array_tree_compare(const array_iter * a, const array_iter * b, int case_sens) {
 }
 
 /**
+ * Compares two double-precision floating-point values using Knuth's
+ * scaled epsilon formula to prevent division-by-zero (NaN) and guarantee
+ * transitivity.
+ *
+ * @param val1 first double value
+ * @param val2 second double value
+ * @return 0 if equal within epsilon, 1 if val1 > val2, -1 if val1 < val2
+ */
+static inline int
+compare_doubles(double val1, double val2)
+{
+    if (val1 == val2) {
+        return 0;
+    }
+
+    double diff = fabs(val1 - val2);
+    double max_val = fmax(fabs(val1), fabs(val2));
+
+    if (diff <= DBL_EPSILON * max_val) {
+        return 0;
+    }
+
+    return (val1 > val2) ? 1 : -1;
+}
+
+/**
  * This is the internal implementation of the comparison between two nodes.
  *
  * In particular, this call handles the passing of visited_sets which are
@@ -399,73 +425,61 @@ array_tree_compare_internal(const array_iter * a, const array_iter * b, int case
 
     if (a->type != b->type) {
         if (a->type == PROG_INTEGER && b->type == PROG_FLOAT) {
-            if (fabs(((double) a->data.number - b->data.fnumber) / (double) a->data.number) <
-                DBL_EPSILON) {
-                return 0;
-            } else if (a->data.number > b->data.fnumber) {
-                return 1;
-            } else {
-                return -1;
-            }
+            return compare_doubles((double) a->data.number, b->data.fnumber);
         } else if (a->type == PROG_FLOAT && b->type == PROG_INTEGER) {
-            if (fabs((a->data.fnumber - b->data.number) / a->data.fnumber) < DBL_EPSILON) {
-                return 0;
-            } else if (a->data.fnumber > b->data.number) {
-                return 1;
-            } else {
-                return -1;
-            }
+            return compare_doubles(a->data.fnumber, (double) b->data.number);
         }
 
         return (a->type - b->type);
     }
 
     /* Indexes are of same type if we reached here. */
-    if (a->type == PROG_FLOAT) {
-        if (a->data.fnumber == b->data.fnumber) {
-            return 0;
-        } else if (fabs((a->data.fnumber - b->data.fnumber) / a->data.fnumber) < DBL_EPSILON) {
-            return 0;
-        } else if (a->data.fnumber > b->data.fnumber) {
-            return 1;
-        } else {
-            return -1;
-        }
-    } else if (a->type == PROG_STRING) {
-        const char *astr = DoNullInd(a->data.string);
-        const char *bstr = DoNullInd(b->data.string);
+    switch (a->type) {
+        case PROG_FLOAT:
+            return compare_doubles(a->data.fnumber, b->data.fnumber);
 
-        if (0 != case_sens) {
-            return strcmp(astr, bstr);
-        } else {
-            return strcasecmp(astr, bstr);
-        }
-    } else if (a->type == PROG_ARRAY) {
-        return array_tree_compare_arrays(a, b, case_sens, visited_a, visited_b);
-    } else if (a->type == PROG_LOCK) {
-        /*
-         * In a perfect world, we'd compare the locks by element,
-         * instead of unparsing them into strings for strcmp()s.
-         */
-        char *la;
-        const char *lb;
-        int retval = 0;
+        case PROG_STRING: {
+            const char *astr = DoNullInd(a->data.string);
+            const char *bstr = DoNullInd(b->data.string);
 
-        la = strdup(unparse_boolexp((dbref) 1, a->data.lock, 0));
-        lb = unparse_boolexp((dbref) 1, b->data.lock, 0);
-        retval = strcmp(la, lb);
-        free(la);
-        return retval;
-    } else if (a->type == PROG_ADD) {
-        int result = (a->data.addr->progref - b->data.addr->progref);
-
-        if (0 != result) {
-            return result;
+            if (case_sens != 0) {
+                return strcmp(astr, bstr);
+            } else {
+                return strcasecmp(astr, bstr);
+            }
         }
 
-        return (a->data.addr->data - b->data.addr->data);
-    } else {
-        return (a->data.number - b->data.number);
+        case PROG_ARRAY:
+            return array_tree_compare_arrays(a, b, case_sens, visited_a, visited_b);
+
+        case PROG_LOCK: {
+            /*
+             * In a perfect world, we'd compare the locks by element,
+             * instead of unparsing them into strings for strcmp()s.
+             */
+            char *la;
+            const char *lb;
+            int retval = 0;
+
+            la = strdup(unparse_boolexp((dbref) 1, a->data.lock, 0));
+            lb = unparse_boolexp((dbref) 1, b->data.lock, 0);
+            retval = strcmp(la, lb);
+            free(la);
+            return retval;
+        }
+
+        case PROG_ADD: {
+            int result = (a->data.addr->progref - b->data.addr->progref);
+
+            if (result != 0) {
+                return result;
+            }
+
+            return (a->data.addr->data - b->data.addr->data);
+        }
+
+        default:
+            return (a->data.number - b->data.number);
     }
 }
 
