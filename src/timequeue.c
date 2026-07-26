@@ -688,7 +688,7 @@ handle_read_event(int descr, dbref player, const char *command)
 {
     struct frame *fr;
     timequeue ptr, lastevent;
-    int flag, typ, nothing_flag;
+    int flag, nothing_flag;
     int oldflags;
     dbref prog;
 
@@ -735,7 +735,6 @@ handle_read_event(int descr, dbref player, const char *command)
             }
         }
 
-        typ = ptr->subtyp;
         prog = ptr->called_prog;
 
         if (command) {

@@ -1134,6 +1134,36 @@ do_memory(dbref who)
 {
 #ifdef HAVE_MALLINFO
     {
+#ifdef HAVE_MALLINFO2
+	struct mallinfo2 mi;
+
+	mi = mallinfo2();
+        notifyf(who, "Total allocated from system:   %6luk", (mi.arena / 1024));
+        notifyf(who, "Number of non-inuse chunks:    %6lu", mi.ordblks);
+        notifyf(who, "Small block count:             %6lu", mi.smblks);
+        notifyf(who, "Small block mem alloced:       %6luk", (mi.usmblks / 1024));
+        notifyf(who, "Small block memory free:       %6luk", (mi.fsmblks / 1024));
+#ifdef HAVE_STRUCT_MALLINFO_HBLKS
+        notifyf(who, "Number of mmapped regions:     %6lu", mi.hblks);
+#endif
+        notifyf(who, "Total memory mmapped:          %6luk", (mi.hblkhd / 1024));
+        notifyf(who, "Total memory malloced:         %6luk", (mi.uordblks / 1024));
+        notifyf(who, "Mem allocated overhead:        %6luk", ((mi.arena - mi.uordblks) / 1024));
+        notifyf(who, "Memory free:                   %6luk", (mi.fordblks / 1024));
+#ifdef HAVE_STRUCT_MALLINFO_KEEPCOST
+        notifyf(who, "Top-most releasable chunk size:%6luk", (mi.keepcost / 1024));
+#endif
+#ifdef HAVE_STRUCT_MALLINFO_TREEOVERHEAD
+        notifyf(who, "Memory free overhead:          %6luk", (mi.treeoverhead / 1024));
+#endif
+#ifdef HAVE_STRUCT_MALLINFO_GRAIN
+        notifyf(who, "Small block grain:             %6lu", mi.grain);
+#endif
+#ifdef HAVE_STRUCT_MALLINFO_ALLOCATED
+        notifyf(who, "Mem chunks alloced:            %6lu", mi.allocated);
+#endif
+
+#else   /* Have MALLINFO2 */
         struct mallinfo mi;
 
         mi = mallinfo();
@@ -1153,14 +1183,15 @@ do_memory(dbref who)
         notifyf(who, "Top-most releasable chunk size:%6dk", (mi.keepcost / 1024));
 #endif
 #ifdef HAVE_STRUCT_MALLINFO_TREEOVERHEAD
-        notifyf(who, "Memory free overhead:    %6dk", (mi.treeoverhead / 1024));
+        notifyf(who, "Memory free overhead:          %6dk", (mi.treeoverhead / 1024));
 #endif
 #ifdef HAVE_STRUCT_MALLINFO_GRAIN
-        notifyf(who, "Small block grain: %6d", mi.grain);
+        notifyf(who, "Small block grain:             %6d", mi.grain);
 #endif
 #ifdef HAVE_STRUCT_MALLINFO_ALLOCATED
-        notifyf(who, "Mem chunks alloced:%6d", mi.allocated);
+        notifyf(who, "Mem chunks alloced:            %6d", mi.allocated);
 #endif
+#endif      /* HAVE_MALLINFO2 */
     }
 #endif      /* HAVE_MALLINFO */
 

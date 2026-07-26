@@ -1850,7 +1850,11 @@ smtp_tls_init(struct smtp *const smtp, const char *const server)
     SSL_library_init();
 
     SSL_load_error_strings();
+#if OPENSSL_VERSION_NUMBER >= 0x30000000L && !defined(LIBRESSL_VERSION_NUMBER)
+    /* Don't need to call ERR_load_BIO_string() past ver3, as they now autoload. */
+#else
     ERR_load_BIO_strings();
+#endif
     OpenSSL_add_all_algorithms();
 
     if ((smtp->tls_ctx = SSL_CTX_new(SSLv23_client_method())) == NULL) {

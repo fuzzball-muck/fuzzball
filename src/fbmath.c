@@ -655,7 +655,7 @@ pbkdf2_hash(const char* password, int password_len, const char* salt,
     /*
      * Generate a hash with the rest of the buffer.  Use 1000 iterations.
      */
-    PKCS5_PBKDF2_HMAC(password, password_len, salt, salt_len, 1000,
+    PKCS5_PBKDF2_HMAC(password, password_len, (const unsigned char*)salt, salt_len, 1000,
                       EVP_sha512(), digest_len, digest);
 
     /*

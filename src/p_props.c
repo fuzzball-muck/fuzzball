@@ -1521,18 +1521,17 @@ prim_array_filter_prop(PRIM_PROTOTYPE)
                     if (pptr) {
                         switch (PropType(pptr)) {
                             case PROP_STRTYP:
-                                strncpy(buf, PropDataStr(pptr), BUFFER_LEN);
+                                strcpyn(buf, BUFFER_LEN, PropDataStr(pptr));
                                 break;
 
                             case PROP_LOKTYP:
                                 if (PropFlags(pptr) & PROP_ISUNLOADED) {
-                                    strncpy(buf, PROP_UNLOCKED_VAL, BUFFER_LEN);
+                                    strcpyn(buf, BUFFER_LEN, PROP_UNLOCKED_VAL);
                                 } else {
-                                    strncpy(buf,
+                                    strcpyn(buf, BUFFER_LEN,
                                             unparse_boolexp(ProgUID,
                                                             PropDataLok(pptr),
-                                                            0),
-                                            BUFFER_LEN);
+                                                            0));
                                 }
 
                                 break;
@@ -1553,11 +1552,11 @@ prim_array_filter_prop(PRIM_PROTOTYPE)
                                 break;
 
                             default:
-                                strncpy(buf, "", BUFFER_LEN);
+                                strcpyn(buf, BUFFER_LEN, "");
                                 break;
                         }
                     } else
-                        strncpy(buf, "", BUFFER_LEN);
+                        strcpyn(buf, BUFFER_LEN, "");
 
                     if (equalstr(pattern, buf)) {
                         array_appenditem(&nu, in);

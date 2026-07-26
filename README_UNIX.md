@@ -40,6 +40,7 @@ If you need to rebuild the configuration file (Because you have edited configure
 autoreconf
 ```
 
+WARNING: Most UNIX distributions have split autoconf and the autoconf library of macros into their own packages.  If you need to run autoreconf, make sure you have both 'autoconf' and 'autoconf-archive' packages installed on your system or configure will not run as expected.
 This is not typically needed.  You can then continue to run configure thusly:
 
 ```sh
