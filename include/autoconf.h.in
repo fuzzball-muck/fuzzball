@@ -6,38 +6,41 @@
 /* Force TLS 1.2. */
 #undef FORCE_TLS12
 
-/* Define to 1 if you have the `arc4random_uniform' function. */
+/* Define to 1 if you have the 'arc4random_uniform' function. */
 #undef HAVE_ARC4RANDOM_UNIFORM
 
-/* Define to 1 if you have the <dirent.h> header file, and it defines `DIR'.
+/* Define to 1 if you have the <dirent.h> header file, and it defines 'DIR'.
    */
 #undef HAVE_DIRENT_H
 
-/* Define to 1 if you have the `getrlimit' function. */
+/* Define to 1 if you have the 'getrlimit' function. */
 #undef HAVE_GETRLIMIT
 
-/* Define to 1 if you have the `getrusage' function. */
+/* Define to 1 if you have the 'getrusage' function. */
 #undef HAVE_GETRUSAGE
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
-/* Define to 1 if you have the `crypto' library (-lcrypto). */
+/* Define to 1 if you have the 'crypto' library (-lcrypto). */
 #undef HAVE_LIBCRYPTO
 
-/* Define to 1 if you have the `pcre' library (-lpcre). */
+/* Define to 1 if you have the 'pcre' library (-lpcre). */
 #undef HAVE_LIBPCRE
 
-/* Define to 1 if you have the `ssl' library (-lssl). */
+/* Define to 1 if you have the 'ssl' library (-lssl). */
 #undef HAVE_LIBSSL
 
-/* Define to 1 if you have the `mallinfo' function. */
+/* Define to 1 if you have the 'mallinfo' function. */
 #undef HAVE_MALLINFO
+
+/* Define to 1 if you have the 'mallinfo2' function. */
+#undef HAVE_MALLINFO2
 
 /* Define to 1 if you have the <malloc.h> header file. */
 #undef HAVE_MALLOC_H
 
-/* Define to 1 if you have the <ndir.h> header file, and it defines `DIR'. */
+/* Define to 1 if you have the <ndir.h> header file, and it defines 'DIR'. */
 #undef HAVE_NDIR_H
 
 /* ssl headers are under openssl dir. */
@@ -46,7 +49,7 @@
 /* PCRE headers are under pcre dir. */
 #undef HAVE_PCREINCDIR
 
-/* Define to 1 if you have the `pselect' function. */
+/* Define to 1 if you have the 'pselect' function. */
 #undef HAVE_PSELECT
 
 /* Define to 1 if you have the <stdint.h> header file. */
@@ -64,11 +67,11 @@
 /* Define to 1 if you have the <string.h> header file. */
 #undef HAVE_STRING_H
 
-/* Define to 1 if you have the <sys/dir.h> header file, and it defines `DIR'.
+/* Define to 1 if you have the <sys/dir.h> header file, and it defines 'DIR'.
    */
 #undef HAVE_SYS_DIR_H
 
-/* Define to 1 if you have the <sys/ndir.h> header file, and it defines `DIR'.
+/* Define to 1 if you have the <sys/ndir.h> header file, and it defines 'DIR'.
    */
 #undef HAVE_SYS_NDIR_H
 
@@ -108,7 +111,7 @@
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
 
-/* Define to 1 if all of the C90 standard headers exist (not just the ones
+/* Define to 1 if all of the C89 standard headers exist (not just the ones
    required in a freestanding environment). This macro is provided for
    backward compatibility; new code need not use it. */
 #undef STDC_HEADERS
@@ -119,7 +122,7 @@
 /* Define as a signed integer type capable of holding a process identifier. */
 #undef pid_t
 
-/* Define to `unsigned int' if <sys/types.h> does not define. */
+/* Define as 'unsigned int' if <stddef.h> doesn't define. */
 #undef size_t
 
 /* The base path to the installation for openssl. Usually /usr. */

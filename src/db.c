@@ -1878,7 +1878,7 @@ static int
 _link_exit(int descr, dbref player, dbref exit, char *dest_name,
            dbref * dest_list, int dryrun)
 {
-    char *p, *q;
+    char *p;
     int prdest;
     dbref dest;
     int ndest, error;
@@ -1900,8 +1900,7 @@ _link_exit(int descr, dbref player, dbref exit, char *dest_name,
         while (*dest_name && (*dest_name != EXIT_DELIMITER))
             dest_name++;
 
-        q = (char *) strncpy(qbuf, p, BUFFER_LEN);  /* copy word */
-        q[(dest_name - p)] = '\0';  /* terminate it */
+        strcpyn(qbuf, BUFFER_LEN, p);  /* copy word */
 
         if (*dest_name) {
             dest_name++;
@@ -1913,7 +1912,7 @@ _link_exit(int descr, dbref player, dbref exit, char *dest_name,
          * destination, with proper permissions.  It will emit errors to
          * the player if applicable.
          */
-        if ((dest = parse_linkable_dest(descr, player, exit, q)) == NOTHING)
+        if ((dest = parse_linkable_dest(descr, player, exit, qbuf)) == NOTHING)
             continue;
 
         if (dest == NIL) {

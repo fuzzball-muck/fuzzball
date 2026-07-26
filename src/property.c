@@ -2413,7 +2413,6 @@ set_standard_lock(int descr, dbref player, const char *objname,
                   const char *keyvalue)
 {
     dbref object;
-    struct boolexp *key;
 
     /* The presence of '=' (ARG_DELIMITER) in the arguments indicates if
      * this is a result of a lock set command.

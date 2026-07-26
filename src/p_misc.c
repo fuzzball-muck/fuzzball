@@ -562,7 +562,6 @@ prim_force(PRIM_PROTOTYPE)
 {
     struct inst *oper1 = NULL;  /* prevents re-entrancy issues! */
     struct inst *oper2 = NULL;  /* prevents re-entrancy issues! */
-    dbref ref;
 
     CHECKOP(2);
     oper1 = POP();              /* string to @force */
