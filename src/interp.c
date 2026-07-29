@@ -2470,14 +2470,14 @@ interp_loop(dbref player, dbref program, struct frame *fr, int rettyp)
                         return NULL;
 
                     case IN_READ: /* Waiting for read */
-			/* Don't allow READ if we're something being FORCE'd to
-			 * run a MUF with READ in it.  Bad juju.
-			 */
-			if (!descrdata_by_descr(fr->descr))
-			    abort_loop("READ only allowed for player input.", NULL,
-				       NULL);
+                        /* Don't allow READ if we're something being FORCE'd to
+                         * run a MUF with READ in it.  Bad juju.
+                         */
+                        if (!descrdata_by_descr(fr->descr))
+                            abort_loop("READ only allowed for player input.", NULL,
+                                       NULL);
 
-			/* Can't read if we are on the welcome screen
+                        /* Can't read if we are on the welcome screen
                          *
                          * TODO: Make this work better in the future
                          * See:
