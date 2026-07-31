@@ -3779,7 +3779,7 @@ mfn_right(MFUNARGS)
 
     if (argc > 1) {
         len = atoi(argv[1]);
-    } else if (d->detected_width > 0) {
+    } else if (d && d->detected_width > 0) {
         len = d->detected_width;
     } else {
         len = 78;
@@ -3842,7 +3842,7 @@ mfn_left(MFUNARGS)
 
     if (argc > 1) {
         len = atoi(argv[1]);
-    } else if (d->detected_width > 0) {
+    } else if (d && d->detected_width > 0) {
         len = d->detected_width;
     } else {
         len = 78;
@@ -3908,7 +3908,7 @@ mfn_center(MFUNARGS)
 
     if (argc > 1) {
         len = atoi(argv[1]);
-    } else if (d->detected_width > 0) {
+    } else if (d && d->detected_width > 0) {
         len = d->detected_width;
     } else {
         len = 78;

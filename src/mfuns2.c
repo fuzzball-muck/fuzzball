@@ -3360,7 +3360,7 @@ mfn_height(MFUNARGS)
 
     d = descrdata_by_descr(descr);
 
-    height = d->detected_height;
+    height = (d) ? d->detected_height : 0;
 
     if ((argc > 0) && (height == 0)) {
         return argv[0];
@@ -3395,7 +3395,7 @@ mfn_width(MFUNARGS)
 
     d = descrdata_by_descr(descr);
 
-    width = d->detected_width;
+    width = (d) ? d->detected_width : 0;
 
     if ((argc > 0) && (width == 0)) {
         return argv[0];
