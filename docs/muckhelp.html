@@ -1374,6 +1374,12 @@ If a player sets a %a, %s, %o, %p, or %r property on themselve, that value
 WILL be used, instead of any matching _pronouns/GENDER/%X property.  This
 lets players make quick temporary pronoun fixes, and is also available
 for legacy reasons.
+
+Note that if the server allows it, the 'sex' property may be evaluated for
+embedded MPI before pronoun subtitution occurs.  If you choose to use this
+feature, note that many programs may attempt to use the raw property value
+and having embedded MPI code may not work as you expect, or may be shown
+to other players without being processed first.
 <p>
   
 Ex. '@ofail teapot=burns %p hand on the hot teapot.'
@@ -2902,7 +2908,8 @@ maybe Zombie things.
 </h3>
   Default is unassigned. If a player's sex is set, %X substitutions
 will use the appropriate pronoun for that player in @osucc/@ofail/etc.
-Only meaningful for players.
+Only meaningful for players.  See 'SUBSTITUTIONS' for additional notes
+on this special property.
 <p>Also see:
     <a href="#substitutions">SUBSTITUTIONS</a>
 </p>

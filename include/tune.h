@@ -112,6 +112,7 @@ extern dbref       tp_default_room_parent;      /**< Tune variable */
 extern const char *tp_description_default;      /**< Tune variable */
 extern bool        tp_diskbase_propvals;        /**< Tune variable */
 extern bool        tp_do_mpi_parsing;           /**< Tune variable */
+extern bool        tp_do_mpi_sex_parsing;       /**< Tune variable */
 extern bool        tp_do_welcome_parsing;       /**< Tune variable */
 extern int         tp_dump_interval;            /**< Tune variable */
 extern int         tp_dump_warntime;            /**< Tune variable */
