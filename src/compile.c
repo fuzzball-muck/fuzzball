@@ -1303,6 +1303,7 @@ OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
     int *Flags;
     unsigned int i;
     size_t count = 0;
+    double tl = 0.0;
     int old_instr_count = cstat->nowords;
     int AtNo = get_primitive("@");
     int BangNo = get_primitive("!");
@@ -1506,28 +1507,67 @@ OptimizeIntermediate(COMPSTATE * cstat, int force_err_display)
                     if (curr->next->in.type == PROG_INTEGER) {
                         /* Int Int +  ==>  Sum */
                         if (IntermediateIsPrimitive(curr->next->next, PlusNo)) {
-                            curr->in.data.number += curr->next->in.data.number;
-                            RemoveNextIntermediate(cstat, curr);
-                            RemoveNextIntermediate(cstat, curr);
-                            advance = 0;
+                            tl = (double)curr->in.data.number + (double)curr->next->in.data.number;
+                            if (!arith_good(tl)) {
+                                if (!(curr->next->next->flags & INTMEDFLG_OVERFLOW)) {
+                                    curr->next->next->flags |= INTMEDFLG_OVERFLOW;
+
+                                    if (force_err_display) {
+                                        notifyf(cstat->player,
+                                                "Warning on line %i: Constant addition leads to overflow",
+                                                curr->next->next->in.line);
+                                    }
+                                }
+                            } else {
+                                curr->in.data.number += curr->next->in.data.number;
+                                RemoveNextIntermediate(cstat, curr);
+                                RemoveNextIntermediate(cstat, curr);
+                                advance = 0;
+                            }
                             break;
                         }
 
                         /* Int Int -  ==>  Diff */
                         if (IntermediateIsPrimitive(curr->next->next, MinusNo)) {
-                            curr->in.data.number -= curr->next->in.data.number;
-                            RemoveNextIntermediate(cstat, curr);
-                            RemoveNextIntermediate(cstat, curr);
-                            advance = 0;
+                            tl = (double)curr->in.data.number - (double)curr->next->in.data.number;
+                            if (!arith_good(tl)) {
+                                if (!(curr->next->next->flags & INTMEDFLG_OVERFLOW)) {
+                                    curr->next->next->flags |= INTMEDFLG_OVERFLOW;
+
+                                    if (force_err_display) {
+                                        notifyf(cstat->player,
+                                                "Warning on line %i: Constant subtraction leads to overflow",
+                                                curr->next->next->in.line);
+                                    }
+                                }
+                            } else {
+                                curr->in.data.number -= curr->next->in.data.number;
+                                RemoveNextIntermediate(cstat, curr);
+                                RemoveNextIntermediate(cstat, curr);
+                                advance = 0;
+                            }
                             break;
                         }
 
                         /* Int Int *  ==>  Prod */
                         if (IntermediateIsPrimitive(curr->next->next, MultNo)) {
-                            curr->in.data.number *= curr->next->in.data.number;
-                            RemoveNextIntermediate(cstat, curr);
-                            RemoveNextIntermediate(cstat, curr);
-                            advance = 0;
+                            tl = (double)curr->in.data.number * (double)curr->next->in.data.number;
+                            if (!arith_good(tl)) {
+                                if (!(curr->next->next->flags & INTMEDFLG_OVERFLOW)) {
+                                    curr->next->next->flags |= INTMEDFLG_OVERFLOW;
+
+                                    if (force_err_display) {
+                                        notifyf(cstat->player,
+                                                "Warning on line %i: Constant multiplication leads to overflow",
+                                                curr->next->next->in.line);
+                                    }
+                                }
+                            } else {
+                                curr->in.data.number *= curr->next->in.data.number;
+                                RemoveNextIntermediate(cstat, curr);
+                                RemoveNextIntermediate(cstat, curr);
+                                advance = 0;
+                            }
                             break;
                         }
 
