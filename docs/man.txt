@@ -4573,6 +4573,7 @@ Parameters available:
  (str)  description_default       - Default description
  (bool) diskbase_propvals         - Enable property value diskbasing (req. restart)
  (bool) do_mpi_parsing            - Parse MPI strings in messages
+ (bool) do_mpi_sex_parsing        - Parse MPI strings in sex property during pronoun substitution
  (bool) do_welcome_parsing        - Parse MPI in welcome file or proplist
  (time) dump_interval             - Interval between dumps
  (time) dump_warntime             - Interval between warning and dump
@@ -4630,6 +4631,7 @@ Parameters available:
  (bool) lock_envcheck             - Locks check environment for properties
  (bool) log_commands              - Log player commands
  (bool) log_failed_commands       - Log unrecognized commands
+ (bool) log_hosts                 - Log hosts during connection events
  (bool) log_interactive           - Log text sent to MUF
  (bool) log_programs              - Log programs every time they are saved
  (int)  lookup_cost               - Cost to lookup a player name
@@ -4686,6 +4688,7 @@ Parameters available:
  (bool) secure_thing_movement     - Moving things act like player
  (bool) secure_who                - Disallow WHO command from login screen and programs
  (bool) server_cipher_preference  - Honor server cipher preference order over client's
+ (bool) show_hidden_object_types  - Display object type flags in a non-backwards compatible manner
  (int)  smtp_auth_type            - SMTP auth type - 0 for CRAM_MD5, 1 for none, 2 for plain, 3 for login
  (str)  smtp_from_email           - SMTP From user email for the email header
  (str)  smtp_from_name            - SMTP From user name for the email header
@@ -4715,6 +4718,7 @@ Parameters available:
  (ref)  welcome_mpi_who           - Effective 'me' for welcome.txt MPI
  (bool) who_hides_dark            - Hide dark players from WHO list
  (bool) wiz_vehicles              - Only let Wizards set vehicle bits
+ (str)  wizonly_bootmesg          - Maintenance mode connection error message
 ~
 ~
 SYSPARM_ARRAY

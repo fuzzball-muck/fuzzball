@@ -59,6 +59,9 @@ dbref       tp_default_room_parent;                 /**> Described below */
 const char *tp_description_default;                 /**> Described below */
 bool        tp_diskbase_propvals;                   /**> Described below */
 bool        tp_do_mpi_parsing;                      /**> Described below */
+bool        tp_do_mpi_sex_parsing;                  /**> Described below
+                                                         Only effective if
+                                                         mpi_parsing.    */
 bool        tp_do_welcome_parsing;                  /**> Described below */
 int         tp_dump_interval;                       /**> Described below */
 int         tp_dump_warntime;                       /**> Described below */
@@ -549,6 +552,18 @@ struct tune_entry tune_list[] = {
         TP_TYPE_BOOLEAN,
         .defaultval.b=true,
         .currentval.b=&tp_do_mpi_parsing,
+        0,
+        MLEV_WIZARD,
+        true
+    },
+    {      
+        "do_mpi_sex_parsing",
+        "Parse MPI strings in sex property during pronoun substitution",            
+        "MPI",
+        "", 
+        TP_TYPE_BOOLEAN,
+        .defaultval.b=true,
+        .currentval.b=&tp_do_mpi_sex_parsing,
         0,
         MLEV_WIZARD,
         true

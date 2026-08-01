@@ -306,7 +306,7 @@ pronoun_substitute(int descr, dbref player, const char *str)
     /* Get our gender property value */
     sexstr = get_property_class(player, tp_gender_prop);
 
-    if (sexstr) {
+    if (sexstr && tp_do_mpi_sex_parsing) {
         /* Parse MPI in the gender property */
         sexstr = do_parse_mesg(descr, player, player, sexstr, "(Lock)", sexbuf,
                                sizeof(sexbuf),
