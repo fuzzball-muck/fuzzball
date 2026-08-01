@@ -632,8 +632,10 @@ prim_bitshift(PRIM_PROTOTYPE)
 
     if (shiftBy >= maxShift) {
         result = 0;
+	fr->error.error_flags.i_bounds = 1;
     } else if (shiftBy <= -maxShift) {
         result = oper2->data.number > 0 ? 0 : -1;
+	fr->error.error_flags.i_bounds = 1;
     } else if (shiftBy > 0) {
         result = (int) ((unsigned) oper2->data.number << (unsigned) shiftBy);
     } else if (shiftBy < 0) {
@@ -1249,6 +1251,9 @@ prim_plusplus(PRIM_PROTOTYPE)
         }
 
         case PROG_INTEGER:
+            tl = (double) oper1->data.number + 1.0;
+            if (!arith_good(tl))
+                fr->error.error_flags.i_bounds = 1;
             oper1->data.number++;
             result = oper1->data.number;
             CLEAR(oper1);
@@ -1263,7 +1268,24 @@ prim_plusplus(PRIM_PROTOTYPE)
             return;
 
         case PROG_FLOAT:
-            oper1->data.fnumber++;
+            tl = oper1->data.fnumber;
+            if (!no_good(tl)) {
+                oper1->data.fnumber++;
+            } else if (isnan(tl)) {
+                if (tp_ieee_bounds_handling) {
+                    oper1->data.fnumber = NAN;
+                } else {
+                    oper1->data.fnumber = 0.0;
+                    fr->error.error_flags.nan = 1;
+                }
+            } else {
+                if (tp_ieee_bounds_handling) {
+                    oper1->data.fnumber++;
+                } else {
+                    oper1->data.fnumber = 0.0;
+                    fr->error.error_flags.f_bounds = 1;
+                }
+            }
             fresult = oper1->data.fnumber;
             CLEAR(oper1);
             PushFloat(fresult);
@@ -1278,7 +1300,10 @@ prim_plusplus(PRIM_PROTOTYPE)
     /* Do the correct increment */
     switch (temp2.type) {
         case PROG_INTEGER:
+            tl = (double) temp2.data.number + 1.0;
             temp2.data.number++;
+            if (!arith_good(tl))
+                fr->error.error_flags.i_bounds = 1;
             break;
 
         case PROG_OBJECT:
@@ -1286,7 +1311,24 @@ prim_plusplus(PRIM_PROTOTYPE)
             break;
 
         case PROG_FLOAT:
-            temp2.data.fnumber++;
+            tl = temp2.data.fnumber;
+            if (!no_good(tl)) {
+                temp2.data.fnumber++;
+            } else if (isnan(tl)) {
+                if (tp_ieee_bounds_handling) {
+                    temp2.data.fnumber = NAN;
+                } else {
+                    temp2.data.fnumber = 0.0;
+                    fr->error.error_flags.nan = 1;
+                }
+            } else {
+                if (tp_ieee_bounds_handling) {
+                    temp2.data.fnumber++;
+                } else {
+                    temp2.data.fnumber = 0.0;
+                    fr->error.error_flags.f_bounds = 1;
+                }
+            }
             break;
 
         default:
@@ -1383,6 +1425,9 @@ prim_minusminus(PRIM_PROTOTYPE)
         }
 
         case PROG_INTEGER:
+            tl = (double) oper1->data.number - 1.0;
+            if (!arith_good(tl))
+                fr->error.error_flags.i_bounds = 1;
             oper1->data.number--;
             result = oper1->data.number;
             CLEAR(oper1);
@@ -1397,7 +1442,24 @@ prim_minusminus(PRIM_PROTOTYPE)
             return;
 
         case PROG_FLOAT:
-            oper1->data.fnumber--;
+            tl = oper1->data.fnumber;
+            if (!no_good(tl)) {
+                oper1->data.fnumber--;
+            } else if (isnan(tl)) {
+                if (tp_ieee_bounds_handling) {
+                    oper1->data.fnumber = NAN;
+                } else {
+                    oper1->data.fnumber = 0.0;
+                    fr->error.error_flags.nan = 1;
+                }
+            } else {
+                if (tp_ieee_bounds_handling) {
+                    oper1->data.fnumber--;
+                } else {
+                    oper1->data.fnumber = 0.0;
+                    fr->error.error_flags.f_bounds = 1;
+                }
+            }
             fresult = oper1->data.fnumber;
             CLEAR(oper1);
             PushFloat(fresult);
@@ -1412,6 +1474,9 @@ prim_minusminus(PRIM_PROTOTYPE)
     /* Do the correct decrement */
     switch (temp2.type) {
         case PROG_INTEGER:
+            tl = (double) temp2.data.number - 1.0;
+            if (!arith_good(tl))
+                fr->error.error_flags.i_bounds = 1;
             temp2.data.number--;
             break;
 
@@ -1420,7 +1485,24 @@ prim_minusminus(PRIM_PROTOTYPE)
             break;
 
         case PROG_FLOAT:
-            temp2.data.fnumber--;
+            tl = temp2.data.fnumber;
+            if (!no_good(tl)) {
+                temp2.data.fnumber--;
+            } else if (isnan(tl)) {
+                if (tp_ieee_bounds_handling) {
+                    temp2.data.fnumber = NAN;
+                } else {
+                    temp2.data.fnumber = 0.0;
+                    fr->error.error_flags.nan = 1;
+                }
+            } else {
+                if (tp_ieee_bounds_handling) {
+                    temp2.data.fnumber--;
+                } else {
+                    temp2.data.fnumber = 0.0;
+                    fr->error.error_flags.f_bounds = 1;
+                }
+            }
             break;
 
         default:
