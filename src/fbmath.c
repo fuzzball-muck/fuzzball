@@ -44,7 +44,10 @@ _int_f_rand(void)
 /**
  * Check to see if 'test' is within valid bounds
  *
- * If this returns false, then floating point i_bounds error flag should
+ * We do some quick cheaty work when looking for integer math under
+ * and overflows by doing the math a second time as float and then
+ * using this for bounds checking.
+ * If this returns false, then the i_bounds error flag should
  * be set.
  *
  * @param the value to test

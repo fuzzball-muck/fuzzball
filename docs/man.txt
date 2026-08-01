@@ -2252,7 +2252,7 @@ BITSHIFT|<<
 BITSHIFT (i i -- i)
 
   Shifts the first integer by the second integer's number of bit positions.
-Same as the C << operator.  If the second integer is negative, its like >>.
+Same as the C << operator.  If the second integer is negative, it is like >>.
 ~
 ~
 ~
@@ -2521,21 +2521,21 @@ number with the given normalization.  Note that this may be any value between
 CLEAR
 CLEAR ( -- )
 
-  Clears all error flags for floating point math operations.
+  Clears all error flags for math operations.
 Also see: ERROR?.
 ~
 ~
 CLEAR_ERROR
 CLEAR_ERROR ( s|i -- i )
 
-  Clears a specific error flag for floating point math operations.
+  Clears a specific error flag for math operations.
 Also see: ERROR?.
 ~
 ~
 ERROR?
 ERROR? ( -- i )
 
-  Returns true if any of the floating point error flags have been set.  In
+  Returns true if any of the math operation  error flags have been set.  In
 most cases, an error condition in a math operation will return a zero value
 (except in the case of integer math, which will wrap around on an overflow
 or underflow condition).  It is possible to poll for error conditions after
@@ -2546,19 +2546,28 @@ The following is a list of the current Error Flags:
     IMAGINARY - (2) Result would be imaginary. 
     FBOUNDS   - (3) Floating-point inputs were out of range.
     IBOUNDS   - (4) Calculation resulted in an integer overflow or underflow.
+  Integer under- and over-flow conditions will normally return two's
+complement values, so you will see a sign change as well.  Return values
+for over- or under-flow conditions with floating point values depend if
+the 'ieee_bounds_handling' setting is enabled for the server.  If it is,
+the default float-point INF and NaN values are adjusted per the IEEE
+specification, as opposed to the '0.0' setting or direct NaN values being
+set explicitly.  Attempting to bit-shift by a larger value than bits in
+the standard word-size used by the server will also result in the IBOUNDS
+error being set.
 ~
 ~
 ERROR_BIT
 ERROR_BIT ( s -- i )
 
-  Returns the bit identifier for a given floating point error flag string name.
+  Returns the bit identifier for a given math operation error flag string name.
 Also see: ERROR?.
 ~
 ~
 ERROR_NAME
 ERROR_NAME ( i -- s )
 
-  Returns the string name for the error flag, given a floating point error
+  Returns the string name for the error flag, given a math operation error
 identifier.
 Also see: ERROR?.
 ~
@@ -2566,28 +2575,28 @@ Also see: ERROR?.
 ERROR_NUM
 ERROR_NUM ( -- i )
 
-  Returns the total number of floating point error flag types.
+  Returns the total number of math operation error flag types.
 Also see: ERROR?.
 ~
 ~
 ERROR_STR
 ERROR_STR ( s|i -- s )
 
-  Returns a user-readable error string, given a floating point error identifier.
+  Returns a user-readable error string, given a math operation error identifier.
 Also see: ERROR?.
 ~
 ~
 IS_SET?
 IS_SET? ( s|i - i )
 
-  Checks if a specific floating point error flag is set.
+  Checks if a specific math operation error flag is set.
 Also see: ERROR?
 ~
 ~
 SET_ERROR
 SET_ERROR ( s|i -- i )
 
-  Sets the specified error flag for floating point operations.
+  Sets the specified error flag for math operations.
 Also see: ERROR?
 ~
 ~
