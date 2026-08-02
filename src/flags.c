@@ -6,7 +6,6 @@
  */
 
 #include <stdbool.h>
-#include <strings.h>
 
 #include "config.h"
 
@@ -93,8 +92,8 @@ static const struct flag_raw flag_list_raw[] = {
 /**
  * Lookup tables for flags indexed by type, then bit position or symbol.
  */
-static struct flag_entry flag_lists_by_bit[TYPE_ANY+1][NUM_BITS] = {};
-struct flag_entry flag_lists_by_symbol[TYPE_ANY+1][NUM_SYMBOLS] = {};
+static struct flag_entry flag_lists_by_bit[TYPE_ANY+1][NUM_BITS] = { 0 };
+struct flag_entry flag_lists_by_symbol[TYPE_ANY+1][NUM_SYMBOLS] = { 0 };
 
 /**
  * Initializes the flag lookup tables from the raw flag list.

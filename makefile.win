@@ -98,6 +98,7 @@ BASE_OBJ="$(INTDIR)\array.obj" \
 	"$(INTDIR)\fbsignal.obj" \
 	"$(INTDIR)\fbstrings.obj" \
 	"$(INTDIR)\fbtime.obj" \
+	"$(INTDIR)\flags.obj" \
 	"$(INTDIR)\game.obj" \
 	"$(INTDIR)\hashtab.obj" \
 	"$(INTDIR)\help.obj" \
