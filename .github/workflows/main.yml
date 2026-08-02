@@ -18,10 +18,10 @@ jobs:
     steps:
     - name: Check out source code
       uses: actions/checkout@v2
-
-    - name: Display build details
       with:
         packages: libpcre3 openssl libpcre3-dev libssl-dev
+
+    - name: Display build details
       run: |
         echo "Build configuration:"
         echo " * Compiler: $CC"
