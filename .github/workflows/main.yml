@@ -20,7 +20,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Install packages
-      run: sudo apt install -y ibpcre3 openssl libpcre3-dev libssl-dev
+      run: sudo apt install -y libpcre3 openssl libpcre3-dev libssl-dev
 
     - name: Display build details
       run: |
