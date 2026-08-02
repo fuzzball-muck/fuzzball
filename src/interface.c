@@ -1665,9 +1665,11 @@ process_welcome_input(struct descriptor_data *d, const char *msg)
     } welcome_action_t;
     welcome_action_t action = ACTION_NONE;
 
-    const unsigned short CMD_HE = ('h' << 8 | 'e');
-    const unsigned short CMD_CO = ('c' << 8 | 'o');
-    const unsigned short CMD_CR = ('c' << 8 | 'r');
+    enum command_compare_t {
+        CMD_CO = ('c' << 8 | 'o'),
+        CMD_CR = ('c' << 8 | 'r'),
+        CMD_HE = ('h' << 8 | 'e')
+    };
 
     int server_is_restricted = (wizonly_mode || (tp_playermax && con_players_curr >= tp_playermax_limit));
     const char *host_log = tp_log_hosts ? d->hostname : "hidden host";
