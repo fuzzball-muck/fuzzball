@@ -362,6 +362,30 @@ int shutdown_flag = 0;
 short wizonly_mode = 0;
 
 /**
+ * Generate the PID file with requested output.
+ * Will NOT error if it is unable to modify content.
+ * If content is NULL, will unlink (delete) the file.
+ *
+ * @param str - the content to write to PID_FILE or NULL.
+ * @return positive int if content was updated
+ */
+int write_pid_file(char *str) {
+    int retval = 0;
+    FILE *ffd = NULL;
+
+    if (!str) {
+        retval = unlink(PID_FILE);
+	return (retval == 0);
+    }
+    if ((ffd = fopen(PID_FILE, "wb")) != NULL) {
+        fprintf(ffd, "%s\n", str);
+        fclose(ffd);
+        return 1;
+    }
+    return 0;
+}
+
+/**
  * Display program usage information (command line help)
  *
  * This will exit() with status 1.
@@ -415,6 +439,10 @@ show_program_usage(char *prog)
 #endif
     );
 
+    /* No need to remove PID file - as we'll not have written it yet. */
+    /* This does mean that if you have a misconfigured start in an
+     * auto-restart container, you may get stuck in a boot loop, but
+     * that's beyond our scope to babysit for. */
     exit(1);
 }
 
@@ -2603,18 +2631,21 @@ make_socket(int port, sa_family_t family, void *bind_addr, socklen_t addr_len)
     s = socket(family, SOCK_STREAM, 0);
     if (s < 0) {
         perror("creating stream socket");
+        write_pid_file("ERR");
         exit(3);
     }
 
     opt = 1;
     if (setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
         perror("setsockopt(SO_REUSEADDR)");
+        write_pid_file("ERR");
         exit(1);
     }
 
     opt = 1;
     if (setsockopt(s, SOL_SOCKET, SO_KEEPALIVE, &opt, sizeof(opt)) < 0) {
         perror("setsockopt(SO_KEEPALIVE)");
+        write_pid_file("ERR");
         exit(1);
     }
 
@@ -2622,6 +2653,7 @@ make_socket(int port, sa_family_t family, void *bind_addr, socklen_t addr_len)
         opt = 1;
         if (setsockopt(s, IPPROTO_IPV6, IPV6_V6ONLY, &opt, sizeof(opt)) < 0) {
             perror("setsockopt(IPV6_V6ONLY)");
+            write_pid_file("ERR");
             exit(1);
         }
     }
@@ -2641,12 +2673,14 @@ make_socket(int port, sa_family_t family, void *bind_addr, socklen_t addr_len)
     } else {
         fprintf(stderr, "unsupported address family %d\n", family);
         close(s);
+        write_pid_file("ERR");
         exit(4);
     }
 
     if (bind(s, (struct sockaddr *)&server, addr_len) < 0) {
         perror("binding stream socket");
         close(s);
+        write_pid_file("ERR");
         exit(4);
     }
 
@@ -5387,7 +5421,9 @@ do_armageddon(dbref player, const char *msg)
     kill_resolver();
 #endif
 
-    unlink(PID_FILE);
+    write_pid_file(NULL);
+    /* Don't attempt to write an err code to the PID file, we'll allow for a restart
+     * if possible here.  Point of armageddon is to do as little work as possible. */
     exit(ARMAGEDDON_EXIT_CODE);
 }
 
@@ -5457,6 +5493,9 @@ panic(const char *message)
 
 
     sync();
+    write_pid_file(NULL);
+    /* We'll allow for an attempted restart from a PANIC if the system
+     * is set up for it. */
 #ifdef NOCOREDUMP
     exit(135);
 #else /* !NOCOREDUMP */
@@ -5486,12 +5525,14 @@ do_setuid(char *name)
 
     if ((pw = getpwnam(name)) == NULL) {
         log_status("can't get pwent for %s", name);
+        write_pid_file("ERR");
         exit(1);
     }
 
     if (setuid(pw->pw_uid) == -1) {
         log_status("can't setuid(%d): ", pw->pw_uid);
         perror("setuid");
+        write_pid_file("ERR");
         exit(1);
     }
 }
@@ -5516,12 +5557,14 @@ do_setgid(char *name)
 
     if ((gr = getgrnam(name)) == NULL) {
         log_status("can't get grent for group %s", name);
+        write_pid_file("ERR");
         exit(1);
     }
 
     if (setgid(gr->gr_gid) == -1) {
         log_status("can't setgid(%d): ", gr->gr_gid);
         perror("setgid");
+        write_pid_file("ERR");
         exit(1);
     }
 }
@@ -6537,10 +6580,11 @@ spit_file_segment(dbref player, const char *filename, const char *seg)
 int
 main(int argc, char **argv)
 {
-    FILE *ffd, *parmfile = NULL;
+    FILE *parmfile = NULL;
     char *infile_name;
     char *outfile_name;
     char *num_one_new_passwd = NULL;
+    char pidstr[SMALL_BUFFER_LEN];
     int nomore_options;
     int sanity_skip;
     int sanity_interactive;
@@ -6785,12 +6829,9 @@ main(int argc, char **argv)
 #endif
 
         /* save the PID for future use */
-        if ((ffd = fopen(PID_FILE, "wb")) != NULL) {
-            fprintf(ffd, "%d\n", getpid());
-            fclose(ffd);
-        }
-
-        log_status("%s PID is: %d", argv[0], getpid());
+        snprintf(pidstr, SMALL_BUFFER_LEN, "%d", getpid());
+        log_status("%s PID is: %s", argv[0], pidstr);
+        write_pid_file(pidstr);
 
 # ifndef WIN32
         if (!sanity_interactive && !db_conversion_flag && !no_detach_flag) {
@@ -6923,7 +6964,7 @@ main(int argc, char **argv)
 
     if (init_game(infile_name, outfile_name) < 0) {
         fprintf(stderr, "Couldn't load %s!\n", infile_name);
-        unlink(PID_FILE);
+        write_pid_file(NULL);
         exit(2);
     }
 
@@ -7080,8 +7121,10 @@ main(int argc, char **argv)
     }
 
     if (restart_flag) {
+        write_pid_file(NULL);
         exit(RESTART_EXIT_CODE);
     } else {
+        write_pid_file("SHUTDOWN");
         exit(0);
     }
 }
