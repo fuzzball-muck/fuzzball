@@ -18,8 +18,9 @@ jobs:
     steps:
     - name: Check out source code
       uses: actions/checkout@v2
-      with:
-        packages: libpcre3 openssl libpcre3-dev libssl-dev
+
+    - name: Install packages
+      run: sudo apt install -y ibpcre3 openssl libpcre3-dev libssl-dev
 
     - name: Display build details
       run: |
