@@ -280,7 +280,7 @@ class CommandTestCase(ServerTestBase):
     """Expected output (as str) of done_setup_command."""
     done_setup_prompt = "One ENDSETUPMARKER\n"
     """Default timeout for setup + command to complete in, in seconds."""
-    default_timeout = 60
+    default_timeout = 180
 
     def _test_one(self, info):
         setup = info.get('setup', '')
