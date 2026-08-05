@@ -4251,6 +4251,15 @@ shovechars()
                         timeout.tv_usec = 10; /* 10 msecs min.  Arbitrary. */
                     }
                 }
+                if (d->is_console) {
+                  /* TODO - only run this is console is NOT PTY/TTY */
+                  if (timeout.tv_sec > 0) {
+                    timeout.tv_sec = 0L;
+                    if (!timeout.tv_usec || timeout.tv_usec > 500) {
+                      timeout.tv_usec = 500;
+                    }
+                  }
+                }
             }
 
             if (d->ssl_session) {
@@ -4478,7 +4487,10 @@ shovechars()
                     }
                 }
 
-                if (FD_ISSET(d->descriptor, &output_set)) {
+                /* TODO - only bring in is_console logic IFF
+                   we detect that we're not PTY */
+                if (FD_ISSET(d->descriptor, &output_set) ||
+                    (d->is_console && has_output(d))) {
                     process_output(d);
                 }
 
@@ -6815,6 +6827,11 @@ main(int argc, char **argv)
 
             if (fork() != 0)
                 _exit(0);
+        } else {
+            if (no_detach_flag && console_flag) {
+                setvbuf(stdout, NULL, _IONBF, 0);
+                setvbuf(stderr, NULL, _IONBF, 0);
+            }
         }
 # endif
 
