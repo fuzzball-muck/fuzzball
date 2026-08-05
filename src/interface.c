@@ -4278,6 +4278,15 @@ shovechars()
 #else
             if (has_output(d)) {
                 FD_SET(d->descriptor, &output_set);
+                if (d->is_console) {
+                  /* TODO - only run this is console is NOT PTY/TTY */
+                  if (timeout.tv_sec > 0) {
+                    timeout.tv_sec = 0L;
+                    if (!timeout.tv_usec || timeout.tv_usec > 500) {
+                      timeout.tv_usec = 500;
+                    }
+                  }
+                }
             }
 #endif
 
