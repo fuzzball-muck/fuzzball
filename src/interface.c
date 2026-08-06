@@ -4251,8 +4251,7 @@ shovechars()
                         timeout.tv_usec = 10; /* 10 msecs min.  Arbitrary. */
                     }
                 }
-                if (d->is_console) {
-                  /* TODO - only run this is console is NOT PTY/TTY */
+                if (d->is_console && !isatty(d->descriptor)) {
                   if (timeout.tv_sec > 0) {
                     timeout.tv_sec = 0L;
                     if (!timeout.tv_usec || timeout.tv_usec > 500) {
@@ -4278,8 +4277,7 @@ shovechars()
 #else
             if (has_output(d)) {
                 FD_SET(d->descriptor, &output_set);
-                if (d->is_console) {
-                  /* TODO - only run this is console is NOT PTY/TTY */
+                if (d->is_console && !isatty(d->descriptor)) {
                   if (timeout.tv_sec > 0) {
                     timeout.tv_sec = 0L;
                     if (!timeout.tv_usec || timeout.tv_usec > 500) {
@@ -4496,10 +4494,9 @@ shovechars()
                     }
                 }
 
-                /* TODO - only bring in is_console logic IFF
-                   we detect that we're not PTY */
                 if (FD_ISSET(d->descriptor, &output_set) ||
-                    (d->is_console && has_output(d))) {
+                    (d->is_console && !isatty(d->descriptor) &&
+                     has_output(d))) {
                     process_output(d);
                 }
 
