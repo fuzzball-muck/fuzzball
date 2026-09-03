@@ -42,9 +42,7 @@ $include $lib/stackrng
   
 $def VERSION "MUFpage v3.00 by Revar"
 $def UPDATED "Updated 3/16/00"
-  
-$def descr_idle descrcon conidle
-  
+    
 : oproploc ( dbref -- dbref' )
     dup "_proploc" getpropstr
     dup if
@@ -1742,12 +1740,12 @@ $endif
 : idle-length (dbref -- int)
     dup player? if
         descriptors dup not if pop -1 exit then
-        1 - swap descr_idle
+        1 - swap descridle
         begin
             over
         while
             swap 1 - swap
-            rot descr_idle
+            rot descridle
             over over > if swap then pop
         repeat
         swap pop
