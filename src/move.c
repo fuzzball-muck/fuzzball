@@ -500,8 +500,19 @@ trigger(int descr, dbref player, dbref exit, int pflag)
         if (dest == HOME) {
             dest = PLAYER_HOME(player);
 
+            /* HOME metalink with resolved to THING should send the caller
+             * to that 'home' if it does not cause an environment loop.
+             * Previously, there were some issues that could dump the
+             * caller into #0, or move the target (thing/home) to the
+             * exit's location - which was not the intended behavior.
+             */
             if (OBJECT_TYPE(dest) == TYPE_THING) {
-                notify(player, "That would be an undefined operation.");
+                if (pflag) {
+                    send_home(descr, player, 0);
+                    succ = 1;
+                } else {
+                    notify(player, "That would be an undefined operation.");
+                }
                 continue;
             }
         }
