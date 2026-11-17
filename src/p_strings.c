@@ -354,7 +354,7 @@ prim_fmtstring(PRIM_PROTOTYPE)
                         if (slrj == 2) {
                             tnum = 0;
 
-                            while ((tbuf[tnum] == ' ') && (tnum < tlen))
+                            while ((tnum < tlen) && (tbuf[tnum] == ' '))
                                 tnum++;
 
                             if ((tnum) && (tnum < tlen)) {
@@ -392,7 +392,7 @@ prim_fmtstring(PRIM_PROTOTYPE)
                         if (slrj == 2) {
                             tnum = 0;
 
-                            while ((tbuf[tnum] == ' ') && (tnum < tlen))
+                            while ((tnum < tlen) && (tbuf[tnum] == ' '))
                                 tnum++;
 
                             if ((tnum) && (tnum < tlen)) {
@@ -489,7 +489,7 @@ prim_fmtstring(PRIM_PROTOTYPE)
                         if (slrj == 2) {
                             tnum = 0;
 
-                            while ((tbuf[tnum] == ' ') && (tnum < tlen))
+                            while ((tnum < tlen) && (tbuf[tnum] == ' '))
                                 tnum++;
 
                             if ((tnum) && (tnum < tlen)) {
@@ -525,7 +525,7 @@ prim_fmtstring(PRIM_PROTOTYPE)
                         if (slrj == 2) {
                             tnum = 0;
 
-                            while ((tbuf[tnum] == ' ') && (tnum < tlen))
+                            while ((tnum < tlen) && (tbuf[tnum] == ' '))
                                 tnum++;
 
                             if ((tnum) && (tnum < tlen)) {
@@ -571,7 +571,7 @@ prim_fmtstring(PRIM_PROTOTYPE)
                         if (slrj == 2) {
                             tnum = 0;
 
-                            while ((tbuf[tnum] == ' ') && (tnum < tlen))
+                            while ((tnum < tlen) && (tbuf[tnum] == ' '))
                                 tnum++;
 
                             if ((tnum) && (tnum < tlen)) {
@@ -608,7 +608,7 @@ prim_fmtstring(PRIM_PROTOTYPE)
                         if (slrj == 2) {
                             tnum = 0;
 
-                            while ((tbuf[tnum] == ' ') && (tnum < tlen))
+                            while ((tnum < tlen)) && (tbuf[tnum] == ' '))
                                 tnum++;
 
                             if ((tnum) && (tnum < tlen)) {
@@ -1073,7 +1073,7 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
                                 if (slrj == 2) {
                                     tnum = 0;
 
-                                    while ((tbuf[tnum] == ' ') && (tnum < tlen))
+                                    while ((tnum < tlen) && (tbuf[tnum] == ' '))
                                         tnum++;
 
                                     if ((tnum) && (tnum < tlen)) {
@@ -1115,8 +1115,7 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
                                 if (slrj == 2) {
                                     tnum = 0;
 
-                                    while ((tbuf[tnum] == ' ')
-                                           && (tnum < tlen))
+                                    while ((tnum < tlen) && (tbuf[tnum] == ' '))
                                         tnum++;
 
                                     if ((tnum) && (tnum < tlen)) {
@@ -1221,8 +1220,7 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
                                 if (slrj == 2) {
                                     tnum = 0;
 
-                                    while ((tbuf[tnum] == ' ')
-                                           && (tnum < tlen))
+                                    while ((tnum < tlen) && (tbuf[tnum] == ' '))
                                         tnum++;
 
                                     if ((tnum) && (tnum < tlen)) {
@@ -1272,8 +1270,7 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
                                 if (slrj == 2) {
                                     tnum = 0;
 
-                                    while ((tbuf[tnum] == ' ')
-                                           && (tnum < tlen))
+                                    while ((tnum < tlen) && (tbuf[tnum] == ' '))
                                         tnum++;
 
                                     if ((tnum) && (tnum < tlen)) {
@@ -1330,8 +1327,7 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
                                 if (slrj == 2) {
                                     tnum = 0;
 
-                                    while ((tbuf[tnum] == ' ')
-                                           && (tnum < tlen))
+                                    while ((tnum < tlen) && (tbuf[tnum] == ' '))
                                         tnum++;
 
                                     if ((tnum) && (tnum < tlen)) {
@@ -1374,8 +1370,7 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
                                 if (slrj == 2) {
                                     tnum = 0;
 
-                                    while ((tbuf[tnum] == ' ')
-                                           && (tnum < tlen))
+                                    while ((tnum < tlen) && (tbuf[tnum] == ' '))
                                         tnum++;
 
                                     if ((tnum) && (tnum < tlen)) {
@@ -1421,8 +1416,7 @@ prim_array_fmtstrings(PRIM_PROTOTYPE)
                                 if (slrj == 2) {
                                     tnum = 0;
 
-                                    while ((tbuf[tnum] == ' ')
-                                           && (tnum < tlen))
+                                    while ((tnum < tlen) && (tbuf[tnum] == ' '))
                                         tnum++;
 
                                     if ((tnum) && (tnum < tlen)) {
