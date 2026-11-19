@@ -6676,7 +6676,11 @@ main(int argc, char **argv)
                 freeconsole = 1;
 #endif
             } else if (!strcmp(argv[i], "-version")) {
-                printf("%s\n", VERSION);
+                if (*GIT_HASH) {
+                    printf("%s (git %s)\n", VERSION, GIT_HASH);
+                } else {
+                    printf("%s\n", VERSION);
+                }
                 exit(0);
             } else if (!strcmp(argv[i], "-dbin")) {
                 if (i + 1 >= argc) {
@@ -6822,7 +6826,11 @@ main(int argc, char **argv)
     tune_load_parms_defaults();
 
     if (!sanity_interactive) {
-        log_status("INIT: TinyMUCK %s starting.", VERSION);
+        if (*GIT_HASH) {
+            log_status("INIT: TinyMUCK %s (git %s) starting.", VERSION, GIT_HASH);
+        } else {
+            log_status("INIT: TinyMUCK %s starting.", VERSION);
+        }
 
 # ifndef WIN32
         /* Go into the background unless requested not to */

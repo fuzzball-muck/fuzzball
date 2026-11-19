@@ -586,5 +586,10 @@ void
 do_version(dbref player)
 {
     notifyf(player, "Version: %s", VERSION);
+
+    if (*GIT_HASH) {
+        notifyf(player, "Git commit: %s", GIT_HASH);
+    }
+
     notifyf(player, "Options: %s", compile_options);
 }

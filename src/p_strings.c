@@ -608,7 +608,7 @@ prim_fmtstring(PRIM_PROTOTYPE)
                         if (slrj == 2) {
                             tnum = 0;
 
-                            while ((tnum < tlen)) && (tbuf[tnum] == ' '))
+                            while ((tnum < tlen) && (tbuf[tnum] == ' '))
                                 tnum++;
 
                             if ((tnum) && (tnum < tlen)) {

@@ -45,6 +45,7 @@ config.log
 config.status
 include/autoconf.h
 include/defines.h
+include/gitversion.h
 src/version.c
 docs_html/
 

@@ -23,6 +23,16 @@ typedef int dbref;  /**< Type wrapper for dbref - must support negatives */
  */
 #define VERSION "Muck2.2fb7.21"
 
+/**
+ * Short hash of the git commit the server was built from, if any
+ */
+#if defined(__has_include) && __has_include("gitversion.h")
+# include "gitversion.h"
+#endif
+#ifndef GIT_HASH
+#define GIT_HASH ""
+#endif
+
 /************************************************************************
    Administrative Options
 
