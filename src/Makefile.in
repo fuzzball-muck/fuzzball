@@ -28,6 +28,9 @@ INSTALL_SBINDIR=@sbindir@
 # Destination for helpfiles
 PACKAGE_TARNAME=@PACKAGE_TARNAME@
 INSTALL_HELPDIR=@docdir@
+# Attempt to determine if a GIT build to annotate VERSION
+GIT_HASH:=$(shell git rev-parse --short HEAD 2>/dev/null || echo "")
+VERSION_EXT:=$(if $(strip $(GIT_HASH)),-$(strip $(GIT_HASH)),"")
 
 # #######################################################################
 # 		Variables set by the configure script.
@@ -57,7 +60,7 @@ INCLUDE=../include
 # Include path, Cflags...
 #
 INCL=-I${INCLUDE} @INC@
-CFLAGS+=@CFLAGS@
+CFLAGS+=-DVERSION_EXT='"$(VERSION_EXT)"' @CFLAGS@
 MV= mv -f
 CP= cp -f
 RM= rm -f

@@ -818,7 +818,7 @@ prim_version(PRIM_PROTOTYPE)
 }
 
 /**
- * Implementation of MUF VERSION
+ * Implementation of MUF PROG
  *
  * Returns the dbref of the currently-running program.
  *
