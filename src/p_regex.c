@@ -23,14 +23,16 @@
  * We have a bundled pcre for Windows or OSes that do not have PCRE installed
  * in some fashion already.
  */
+#define PCRE2_CODE_UNIT_WIDTH 8
+
 #ifdef WIN32
 # define __STDC__ 1
-# include "./pcre.h"
+# include "./pcre2.h"
 #else
 # ifdef HAVE_PCREINCDIR
-#  include <pcre/pcre.h>
+#  include <pcre/pcre2.h>
 # else
-#  include <pcre.h>
+#  include <pcre2.h>
 # endif
 #endif
 
@@ -56,6 +58,14 @@ static struct inst *oper1, *oper2, *oper3, *oper4;
  */
 static char buf[BUFFER_LEN];
 
+/**
+ * @private
+ * @var This breaks thread safety for fun.
+ *      We use this to copy pcre compile error strings into before
+ *      passing back up to abort() and losing our frame context.
+ */
+static char errbuf[BUFFER_LEN];
+
 /*
  * Definition for a MUF regex pattern, including flags and PCRE object.
  * So we can easily pass this stuff around
@@ -63,7 +73,8 @@ static char buf[BUFFER_LEN];
 typedef struct {
     struct shared_string *pattern;  /* The pattern we are using      */
     int flags;                      /* Flags associated with pattern */
-    pcre *re;                       /* Our underling PCRE object     */
+    pcre2_code *re;                 /* Our underling PCRE object     */
+    pcre2_match_data *md;           /* Associated match data object  */
 } muf_re;
 
 /**
@@ -89,48 +100,50 @@ static muf_re muf_re_cache[MUF_RE_CACHE_ITEMS];
  * @return a struct muf_re or NULL if failed.
  */
 static muf_re *
-muf_re_get(struct shared_string *pattern, int flags, const char **errmsg)
+muf_re_get(struct shared_string *pattern, int flags)
 {
     int idx = (hash(DoNullInd(pattern), MUF_RE_CACHE_ITEMS)
                + (unsigned int)flags) % MUF_RE_CACHE_ITEMS;
     muf_re *re = &muf_re_cache[idx];
-    int erroff;
+    size_t erroff;
+    int errcode = 0;
 
-    /*
-     * TODO: Investigate weirdness.
-     *
-     *       So first we hash the pattern to get idx into muf_re_cache
-     *
-     *       Okay ... then ... if re->pattern is set, then we check to see
-     *       if it matches what we have cached already, delete what is
-     *       cached if it doesn't match, then recompile, etc.
-     *
-     *       If re->pattern is not set, we return the re node as-is (??)
-     *       which means we don't compile it (??)
-     *
-     *       If re->pattern is set AND it is the same pattern + flags as
-     *       the old entry (successful use of cache) ...... we overwrite
-     *       re->re with pcre_compile and leak memory (??)
-     *
-     *       This looks so broken it can't possibly work, and yet, I
-     *       would presume it does (a cursory test suggests it does).
-     *
-     *       I may come back to this comment later and delete it when I
-     *       see how this is used, but I find this really odd overall.
-     *       (tanabi)
-     */
     if (re->pattern) {
+	/* Make sure the hash returned a match to pattern & flags. */
         if ((flags != re->flags) ||
             strcmp(DoNullInd(pattern), DoNullInd(re->pattern))) {
-            pcre_free(re->re);
+            pcre2_code_free(re->re);
 
-        if (re->pattern && (--re->pattern->links == 0))
-            free(re->pattern);
-    } else
-        return re;
+	    /* We're going to remove a link count here, even if we
+	     * have the same pattern (because different flags) since
+	     * we'll be adding to the link count later if we compile. */
+            if (re->pattern && (--re->pattern->links == 0)) {
+                free(re->pattern);
+	    }
+        } else {
+	    /* Return good match. */
+            return re;
+	}
     }
 
-    re->re = pcre_compile(DoNullInd(pattern), flags, errmsg, &erroff, NULL);
+    if (!re->md) {
+	/* We never free this, as it can get reused by ANY pattern/code.
+	 * We'll never need more than the number of hash units we have. */
+        re->md = pcre2_match_data_create(MATCH_ARR_SIZE, NULL);
+        if (!re->md) {
+            pcre2_get_error_message(PCRE2_ERROR_NOMEMORY, errbuf, BUFFER_LEN);
+	    re->pattern = NULL;
+	    re->re = NULL;
+	    return NULL;
+        }
+    }
+
+    re->re = pcre2_compile(DoNullInd(pattern), PCRE2_ZERO_TERMINATED, flags, &errcode, &erroff, NULL);
+    if (errcode != 0) {
+	pcre2_get_error_message(errcode, errbuf, BUFFER_LEN);
+    } else {
+	errbuf[0] = '\0';
+    }
 
     if (re->re == NULL) {
         re->pattern = NULL;
@@ -158,31 +171,28 @@ static const char *
 muf_re_error(int err)
 {
     switch (err) {
-        case PCRE_ERROR_NOMATCH:
+        case PCRE2_ERROR_NOMATCH:
             return "No matches";
 
-        case PCRE_ERROR_NULL:
-            return "Internal error: NULL arg to pcre_exec()";
+        case PCRE2_ERROR_NULL:
+            return "Internal error: NULL arg to pcre2_match()";
 
-        case PCRE_ERROR_BADOPTION:
+        case PCRE2_ERROR_BADOPTION:
             return "Invalid regexp option.";
 
-        case PCRE_ERROR_BADMAGIC:
+        case PCRE2_ERROR_BADMAGIC:
             return "Internal error: bad magic number.";
 
-        case PCRE_ERROR_UNKNOWN_NODE:
-            return "Internal error: bad regexp node.";
-
-        case PCRE_ERROR_NOMEMORY:
+        case PCRE2_ERROR_NOMEMORY:
             return "Out of memory.";
 
-        case PCRE_ERROR_NOSUBSTRING:
+        case PCRE2_ERROR_NOSUBSTRING:
             return "No substring.";
 
-        case PCRE_ERROR_MATCHLIMIT:
+        case PCRE2_ERROR_MATCHLIMIT:
             return "Match recursion limit exceeded.";
 
-        case PCRE_ERROR_CALLOUT:
+        case PCRE2_ERROR_CALLOUT:
             return "Internal error: callout error.";
 
         default:
@@ -212,13 +222,12 @@ prim_regexp(PRIM_PROTOTYPE)
 {
     stk_array *nu_val = 0;
     stk_array *nu_idx = 0;
-    int matches[MATCH_ARR_SIZE];
+    size_t *matches;
     muf_re *re;
     char *text;
     int flags = 0;
     int len;
     int matchcnt = 0;
-    const char *errstr;
 
     CHECKOP(3);
 
@@ -239,24 +248,24 @@ prim_regexp(PRIM_PROTOTYPE)
         abort_interp("Empty string argument (2)");
 
     if (oper3->data.number & MUF_RE_ICASE)
-        flags |= PCRE_CASELESS;
+        flags |= PCRE2_CASELESS;
 
     if (oper3->data.number & MUF_RE_EXTENDED)
-        flags |= PCRE_EXTENDED;
+        flags |= PCRE2_EXTENDED;
 
     /* Try to get a MUF RE structure, reusing or caching if possible. */
-    if ((re = muf_re_get(oper2->data.string, flags, &errstr)) == NULL)
-        abort_interp(errstr);
+    if ((re = muf_re_get(oper2->data.string, flags)) == NULL)
+        abort_interp(errbuf);
 
     text = DoNullInd(oper1->data.string);
     len = strlen(text);
 
     /* Do our PCRE match */
     if ((matchcnt =
-         pcre_exec(re->re, NULL, text, len, 0, 0,
-                   matches, MATCH_ARR_SIZE)) < 0) {
+         pcre2_match(re->re, (PCRE2_SPTR)text, len, 0, 0,
+                   re->md, NULL)) < 0) {
         /* Failed match -- display error or push up empty results */
-        if (matchcnt != PCRE_ERROR_NOMATCH) {
+        if (matchcnt != PCRE2_ERROR_NOMATCH) {
             abort_interp(muf_re_error(matchcnt));
         }
 
@@ -276,6 +285,7 @@ prim_regexp(PRIM_PROTOTYPE)
             abort_interp("Out of memory");
         }
 
+	matches = pcre2_get_ovector_pointer(re->md);
         /* Pack result information into the return arrays */
         for (int i = 0; i < matchcnt; i++) {
             int substart = matches[i * 2];
@@ -367,14 +377,13 @@ prim_regexp(PRIM_PROTOTYPE)
 void
 prim_regsub(PRIM_PROTOTYPE)
 {
-    int matches[MATCH_ARR_SIZE];
+    size_t *matches;
     int flags = 0;
     char *write_ptr = buf;
     int write_left = BUFFER_LEN - 1;
     muf_re *re;
     char *text;
     char *textstart;
-    const char *errstr;
     int matchcnt, len;
 
     CHECKOP(4);
@@ -400,13 +409,13 @@ prim_regsub(PRIM_PROTOTYPE)
         abort_interp("Empty string argument (2)");
 
     if (oper4->data.number & MUF_RE_ICASE)
-        flags |= PCRE_CASELESS;
+        flags |= PCRE2_CASELESS;
 
     if (oper4->data.number & MUF_RE_EXTENDED)
-        flags |= PCRE_EXTENDED;
+        flags |= PCRE2_EXTENDED;
 
-    if ((re = muf_re_get(oper2->data.string, flags, &errstr)) == NULL)
-        abort_interp(errstr);
+    if ((re = muf_re_get(oper2->data.string, flags)) == NULL)
+        abort_interp(errbuf);
 
     textstart = text = DoNullInd(oper1->data.string);
 
@@ -415,9 +424,9 @@ prim_regsub(PRIM_PROTOTYPE)
     /* Iterate and replace */
     while ((*text != '\0') && (write_left > 0)) {
         if ((matchcnt =
-             pcre_exec(re->re, NULL, textstart, len, text - textstart, 0,
-                       matches, MATCH_ARR_SIZE)) < 0) {
-            if (matchcnt != PCRE_ERROR_NOMATCH) {
+             pcre2_match(re->re, (PCRE2_SPTR)textstart, len, text - textstart, 0,
+                       re->md, NULL)) < 0) {
+            if (matchcnt != PCRE2_ERROR_NOMATCH) {
                 abort_interp(muf_re_error(matchcnt));
             }
 
@@ -429,6 +438,7 @@ prim_regsub(PRIM_PROTOTYPE)
             /* No more matches to do, break out */
             break;
         } else {
+	    matches = pcre2_get_ovector_pointer(re->md);
             int allstart = matches[0];
             int allend = matches[1];
             int substart = -1;
@@ -540,13 +550,12 @@ static void
 _prim_regsplit(PRIM_PROTOTYPE, int empty)
 {
     stk_array* nu_val = 0;
-    int matches[MATCH_ARR_SIZE];
+    size_t *matches;
     muf_re *re;
     char *text, *textstart;
     int flags = 0;
     int len;
     int matchcnt = 0, pos = 0;
-    const char *errstr;
     struct inst val;
 
     CHECKOP(3);
@@ -568,13 +577,13 @@ _prim_regsplit(PRIM_PROTOTYPE, int empty)
         abort_interp("Empty string argument (2)");
 
     if (oper3->data.number & MUF_RE_ICASE)
-        flags |= PCRE_CASELESS;
+        flags |= PCRE2_CASELESS;
 
     if (oper3->data.number & MUF_RE_EXTENDED)
-        flags |= PCRE_EXTENDED;
+        flags |= PCRE2_EXTENDED;
 
-    if ((re = muf_re_get(oper2->data.string, flags, &errstr)) == NULL)
-        abort_interp(errstr);
+    if ((re = muf_re_get(oper2->data.string, flags)) == NULL)
+        abort_interp(errbuf);
 
     textstart = text = DoNullInd(oper1->data.string);
     len = strlen(text);
@@ -585,9 +594,9 @@ _prim_regsplit(PRIM_PROTOTYPE, int empty)
     }
 
     while (*text != '\0') {
-        if ((matchcnt = pcre_exec(re->re, NULL, textstart, len, text-textstart,
-                                  0, matches, MATCH_ARR_SIZE)) < 0) {
-            if (matchcnt != PCRE_ERROR_NOMATCH) {
+        if ((matchcnt = pcre2_match(re->re, textstart, len, text-textstart,
+                                  0, re->md, NULL)) < 0) {
+            if (matchcnt != PCRE2_ERROR_NOMATCH) {
                 array_free(nu_val);
                 abort_interp(muf_re_error(matchcnt));
             }
@@ -599,6 +608,7 @@ _prim_regsplit(PRIM_PROTOTYPE, int empty)
 
             break;
         } else {
+	    matches = pcre2_get_ovector_pointer(re->md);
             int start = matches[0];
             int end = matches[1];
 

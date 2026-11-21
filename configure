@@ -3769,14 +3769,14 @@ fi
 
 
 checkpcredir() { :
-    if test -f "$1/include/pcre/pcre.h"; then
+    if test -f "$1/include/pcre/pcre2.h"; then
 
 printf "%s\n" "#define HAVE_PCREINCDIR /**/" >>confdefs.h
 
         pcredir="$1"
         return 0
     fi
-    if test -f "$1/include/pcre.h"; then
+    if test -f "$1/include/pcre2.h"; then
         pcredir="$1"
         return 0
     fi
@@ -3836,58 +3836,7 @@ printf "%s\n" "#define pcredir \"$pcredir\"" >>confdefs.h
 
 	if test "$pcredir"; then
 		INC="$INC -I$pcredir/include"
-		LIBS="$LIBS -L$pcredir/lib -lpcre"
-		{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for pcre_free in -lpcre" >&5
-printf %s "checking for pcre_free in -lpcre... " >&6; }
-if test ${ac_cv_lib_pcre_pcre_free+y}
-then :
-  printf %s "(cached) " >&6
-else case e in #(
-  e) ac_check_lib_save_LIBS=$LIBS
-LIBS="-lpcre  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.
-   The 'extern "C"' is for builds by C++ compilers;
-   although this is not generally supported in C code supporting it here
-   has little cost and some practical benefit (sr 110532).  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char pcre_free (void);
-int
-main (void)
-{
-return pcre_free ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"
-then :
-  ac_cv_lib_pcre_pcre_free=yes
-else case e in #(
-  e) ac_cv_lib_pcre_pcre_free=no ;;
-esac
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS ;;
-esac
-fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_pcre_pcre_free" >&5
-printf "%s\n" "$ac_cv_lib_pcre_pcre_free" >&6; }
-if test "x$ac_cv_lib_pcre_pcre_free" = xyes
-then :
-  printf "%s\n" "#define HAVE_LIBPCRE 1" >>confdefs.h
-
-  LIBS="-lpcre $LIBS"
-
-fi
-
+		LIBS="$LIBS -L$pcredir/lib -lpcre2-8"
 	fi
 
 else

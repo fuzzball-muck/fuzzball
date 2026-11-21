@@ -14,7 +14,7 @@
 /* Define to 1 if you have the `m' library (-lm). */
 #define HAVE_LIBM 1
 
-/* Define to 1 if you have the `pcre' library (-lpcre). */
+/* Define to 1 if you have the `pcre2' library (-lpcre2). */
 #define HAVE_LIBPCRE 1
 
 /* Define to 1 if the headers are under <pcre/pcre.h>, not <pcre.h> */
