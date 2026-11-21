@@ -29,7 +29,7 @@ install:
         $env:PATH += ";$pythonCmdOutput"
     # Specifically use Python 3's "pip" to install Conan
     - cmd: py.exe -3 -m pip install conan
-    - cmd: conan user # Create conan data directory
+    - cmd: conan profile detect --force
     - cmd: conan --version
     - cmd: choco install doxygen.install
 
@@ -94,7 +94,7 @@ build_script:
         #
         # If x86 packages of OpenSSL are available in the future, this can safely be removed,
         # turning this back into an error message instead of building from source.
-        conan install . --settings arch=x86_64
+        conan install . --settings arch=x86_64 --build=missing
         # > For statically-linked OpenSSL, specify: -s compiler="Visual Studio" -s compiler.runtime=MT
         #   Then modify makefile.win to reference ..MT.lib instead.  Dynamic linking is preferred.
 
