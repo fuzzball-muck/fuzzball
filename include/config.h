@@ -21,7 +21,12 @@ typedef int dbref;  /**< Type wrapper for dbref - must support negatives */
 /**
  * Server version number
  */
+/* WIN doesn't do pre-proc appendings */
+#ifdef WIN32
+#define VERSION "Muck2.2fb7.21"
+#else
 #define VERSION "Muck2.2fb7.21" VERSION_EXT
+#endif
 
 /************************************************************************
    Administrative Options
