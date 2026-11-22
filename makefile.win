@@ -4,7 +4,7 @@ NULL=
 NULL=nul
 !ENDIF 
 
-WINDIR=.\win64
+WINDIR=.\win32
 SRCDIR=.\src
 INCDIR=.\include
 # Compile output directory
@@ -17,7 +17,7 @@ INTDIR=.\compile
 
 # Package includes (e.g. from conan.io)
 !IF "$(PACKAGE_DIR)" == ""
-PACKAGE_DIR=.\win64
+PACKAGE_DIR=.\win32
 !MESSAGE [makefile.win] Package directory PACKAGE_DIR not specified, assuming default: $(PACKAGE_DIR)
 !ENDIF
 
@@ -71,7 +71,7 @@ LIB_NAME_SSL_CRYPTO=libeay32MD.lib
 CPP=cl.exe
 CPP_OPS=/nologo /EHsc /MT /W3 /O2 /c /D "WIN64" /D "FD_SETSIZE=4096" /D "_WINSOCK_DEPRECATED_NO_WARNINGS" /D "_CRT_SECURE_NO_DEPRECATE" /I"$(PACKAGE_DIR)\include" /I"$(WINDIR)" /I"$(INCDIR)" /I"$(OPENSSLDIR)\include" /Fd"$(INTDIR)\\"
 LINK=link.exe
-LINK_OPS=/NODEFAULTLIB:libc /LIBPATH:"$(PACKAGE_DIR)\lib\vc" /LIBPATH:"$(PACKAGE_DIR)\bin" /LIBPATH:".\win64" /LIBPATH:"$(OPENSSLDIR)\lib\vc" pcre2-8.dll kernel.lib user.lib gdi.lib winspool.lib comdlg.lib advapi.lib shell.lib ole.lib oleaut.lib uuid.lib odbc.lib odbccp.lib ws2.lib $(LIB_NAME_SSL_CRYPTO) $(LIB_NAME_SSL_MAIN) winmm.lib /nologo /subsystem:console /incremental:no /machine:X64
+LINK_OPS=/NODEFAULTLIB:libc /LIBPATH:"$(PACKAGE_DIR)\lib\vc" /LIBPATH:"$(PACKAGE_DIR)\bin" /LIBPATH:".\win32" /LIBPATH:"$(OPENSSLDIR)\lib\vc" pcre2-8.dll kernel.lib user.lib gdi.lib winspool.lib comdlg.lib advapi.lib shell.lib ole.lib oleaut.lib uuid.lib odbc.lib odbccp.lib ws2.lib $(LIB_NAME_SSL_CRYPTO) $(LIB_NAME_SSL_MAIN) winmm.lib /nologo /subsystem:console /incremental:no /machine:X64
 
 # Enable These for debugging
 #CPP_OPS=/c /Od /D "_DEBUG" /Zi /EHsc /nologo /MTd /W3 /D "WIN32" /D "FD_SETSIZE=4096" /D "_WINSOCK_DEPRECATED_NO_WARNINGS" /D "_CRT_SECURE_NO_DEPRECATE" /I"$(PACKAGE_DIR)\include" /I"$(WINDIR)" /I"$(INCDIR)" /I"$(OPENSSLDIR)\include" /Fd"$(INTDIR)\\"
