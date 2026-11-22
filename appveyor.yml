@@ -104,7 +104,7 @@ build_script:
         $env:PACKAGE_DIR = "$env:APPVEYOR_BUILD_FOLDER/bin"
         # Make sure bin dir exists, conan2 copyinstall.
         New-Item -ItemType Directory -Force -Path "$env:APPVEYOR_BUILD_FOLDER/bin"
-        conan install . --deployer=full_deploy --deployer-folder="$env:APPVEYOR_BUILD_FOLDER/bin"
+        conan install . --deployer=runtime_deploy --deployer-folder="$env:APPVEYOR_BUILD_FOLDER/bin"
         dir -Recurse "$env:APPVEYOR_BUILD_FOLDER/bin"
 
         # Build Fuzzball
