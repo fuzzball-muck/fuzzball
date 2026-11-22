@@ -1,16 +1,16 @@
-FROM ubuntu:20.04
+FROM ubuntu:latest
 RUN apt update && apt dist-upgrade -y
 RUN apt-get install -y build-essential \
-      libpcre3-dev libssl-dev git autoconf \
+      libpcre2-dev libssl-dev git autoconf \
       automake autoconf-archive
 COPY . fuzzball/
 RUN cd fuzzball && \
     ./configure --with-ssl --prefix /root/scratch && make clean && \
     make && make install
 
-FROM ubuntu:20.04
+FROM ubuntu:latest
 RUN apt update && apt dist-upgrade -y \
-    && apt-get install -y libssl1.1 openssl \
+    && apt-get install -y libssl3 openssl libpcre2-8-0 \
     && mkdir -p /opt/fbmuck-base \
     && mkdir -p /opt/fbmuck-ssl
 
