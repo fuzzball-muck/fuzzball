@@ -105,6 +105,7 @@ build_script:
         # Make sure bin dir exists, conan2 copyinstall.
         New-Item -ItemType Directory -Force -Path "$env:APPVEYOR_BUILD_FOLDER/bin"
         conan install . --deployer=full_deploy --deployer-folder="$env:APPVEYOR_BUILD_FOLDER/bin"
+        dir -Recurse "$env:APPVEYOR_BUILD_FOLDER/bin"
 
         # Build Fuzzball
         # > NMake writes to standard error for the version header when it's not actually an error.
