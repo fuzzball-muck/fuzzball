@@ -6,6 +6,7 @@
 #include <process.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
+#include <io.h>
 
 #define CURRENTLY_UNAVAILABLE "If you see this message, visit us at https://github.com/fuzzball-muck/fuzzball and open an issue. We'd be happy to fix it, but we would like more detail on how it is being used."
 
@@ -14,6 +15,7 @@
 #define socklen_t	int
 #define ssize_t		long
 
+#define isatty(x)       _isatty(x)
 #define close(x)	closesocket(x)
 #define chdir		_chdir
 #define execv		_execv
