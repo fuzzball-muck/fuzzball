@@ -143,3 +143,456 @@
     :
     :f
 
+- name: regexp-basic
+  setup: |
+    @program test.muf
+    i
+    : main
+      var vals
+      var idx
+      "hello" "l+" 0 regexp
+      idx ! vals !
+      vals @ 0 [] me @ swap notify
+      idx @ 0 [] dup 0 [] intostr me @ swap notify 1 [] intostr me @ swap notify
+    ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect: |
+    ll
+    3
+    2
+
+- name: regexp-groups
+  setup: |
+    @program test.muf
+    i
+    : main
+      var vals
+      var idx
+      "foo123bar" "([a-z]+)([0-9]+)" 0 regexp
+      idx ! vals !
+      vals @ 0 [] me @ swap notify
+      vals @ 1 [] me @ swap notify
+      vals @ 2 [] me @ swap notify
+      idx @ 0 [] dup 0 [] intostr me @ swap notify 1 [] intostr me @ swap notify
+      idx @ 1 [] dup 0 [] intostr me @ swap notify 1 [] intostr me @ swap notify
+      idx @ 2 [] dup 0 [] intostr me @ swap notify 1 [] intostr me @ swap notify
+    ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect: |
+    foo123
+    foo
+    123
+    1
+    6
+    1
+    3
+    4
+    3
+
+- name: regexp-nomatch
+  setup: |
+    @program test.muf
+    i
+    : main
+      var vals
+      var idx
+      "hello" "z+" 0 regexp
+      idx ! vals !
+      vals @ array_count intostr me @ swap notify
+      idx @ array_count intostr me @ swap notify
+    ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect: |
+    0
+    0
+
+- name: regexp-icase
+  setup: |
+    @program test.muf
+    i
+    : main
+      var vals
+      var idx
+      "HELLO" "hello" 0 regexp
+      idx ! vals !
+      vals @ array_count intostr me @ swap notify
+      "HELLO" "hello" reg_icase regexp
+      idx ! vals !
+      vals @ 0 [] me @ swap notify
+    ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect: |
+    0
+    HELLO
+
+- name: regexp-extended
+  setup: |
+    @program test.muf
+    i
+    : main
+      var vals
+      var idx
+      "ab" "a b" 0 regexp
+      idx ! vals !
+      vals @ array_count intostr me @ swap notify
+      "ab" "a b" reg_extended regexp
+      idx ! vals !
+      vals @ 0 [] me @ swap notify
+    ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect: |
+    0
+    ab
+
+- name: regexp-bad-pattern
+  setup: |
+    @program test.muf
+    i
+    : main
+      "hello" "(" 0 regexp pop pop
+    ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect:
+    - "Program Error"
+
+- name: regexp-empty-pattern
+  setup: |
+    @program test.muf
+    i
+    : main
+      "hello" "" 0 regexp pop pop
+    ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect:
+    - "Program Error"
+
+- name: regsub-basic
+  setup: |
+    @program test.muf
+    i
+    : main
+      "foo bar foo" "foo" "baz" 0 regsub
+      me @ swap notify
+    ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect: |
+    baz bar foo
+
+- name: regsub-all
+  setup: |
+    @program test.muf
+    i
+    : main
+      "foo bar foo" "foo" "baz" reg_all regsub
+      me @ swap notify
+    ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect: |
+    baz bar baz
+
+- name: regsub-submatch
+  setup: |
+    @program test.muf
+    i
+    : main
+      "John Smith" "([A-Za-z]+) ([A-Za-z]+)" "\\2, \\1" 0 regsub me @ swap notify
+      "foo" "(o+)" "<\\0>" 0 regsub me @ swap notify
+    ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect: |
+    Smith, John
+    f<oo>
+
+- name: regsub-icase-all
+  setup: |
+    @program test.muf
+    i
+    : main
+      "Hello HELLO hello" "hello" "hi" reg_icase regsub me @ swap notify
+      "Hello HELLO hello" "hello" "hi" reg_icase reg_all + regsub me @ swap notify
+    ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect: |
+    hi HELLO hello
+    hi hi hi
+
+- name: regsub-extended
+  setup: |
+    @program test.muf
+    i
+    : main
+      "ab" "a b" "X" 0 regsub me @ swap notify
+      "ab" "a b" "X" reg_extended regsub me @ swap notify
+    ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect: |
+    ab
+    X
+
+- name: regsub-nomatch
+  setup: |
+    @program test.muf
+    i
+    : main
+      "hello" "z+" "X" 0 regsub
+      me @ swap notify
+    ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect: |
+    hello
+
+- name: regsub-escape
+  setup: |
+    @program test.muf
+    i
+    : main
+      "a" "a" "\\n" 0 regsub
+      me @ swap notify
+    ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect: |
+    n
+
+- name: regsub-bad-subexp
+  setup: |
+    @program test.muf
+    i
+    : main
+      "hello" "(l+)" "\\9" 0 regsub pop
+    ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect:
+    - "Program Error"
+
+- name: regsub-bad-pattern
+  setup: |
+    @program test.muf
+    i
+    : main
+      "hello" "(" "X" 0 regsub pop
+    ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect:
+    - "Program Error"
+
+- name: regsub-empty-pattern
+  setup: |
+    @program test.muf
+    i
+    : main
+      "hello" "" "X" 0 regsub pop
+    ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect:
+    - "Program Error"
+
+- name: regsplit-icase
+  setup: |
+    @program test.muf
+    i
+    : main
+      "aXb" "x" reg_icase regsplit
+      { me @ }list array_notify
+    ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect: |
+    a
+    b
+
+- name: regsplit-extended
+  setup: |
+    @program test.muf
+    i
+    : main
+      "aXb" "X # comment" reg_extended regsplit
+      { me @ }list array_notify
+    ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect: |
+    a
+    b
+
+- name: regsplit-noempty-icase
+  setup: |
+    @program test.muf
+    i
+    : main
+      "aXb" "x" reg_icase regsplit_noempty
+      { me @ }list array_notify
+    ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect: |
+    a
+    b
+
+- name: regsplit-bad-pattern
+  setup: |
+    @program test.muf
+    i
+    : main
+      "hello" "(" 0 regsplit pop
+    ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect:
+    - "Program Error"
+
+- name: regsplit-empty-pattern
+  setup: |
+    @program test.muf
+    i
+    : main
+      "hello" "" 0 regsplit pop
+    ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect:
+    - "Program Error"
+
+- name: regsplit-noempty-bad-pattern
+  setup: |
+    @program test.muf
+    i
+    : main
+      "hello" "(" 0 regsplit_noempty pop
+    ;
+    .
+    c
+    q
+    @act test=here
+    @link test=test.muf
+  commands: |
+    test
+  expect:
+    - "Program Error"
+

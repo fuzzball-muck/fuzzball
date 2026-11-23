@@ -25,7 +25,7 @@
 /* Define to 1 if you have the 'crypto' library (-lcrypto). */
 #undef HAVE_LIBCRYPTO
 
-/* Define to 1 if you have the 'pcre' library (-lpcre). */
+/* Define to 1 if you have the 'pcre2' library (-lpcre2). */
 #undef HAVE_LIBPCRE
 
 /* Define to 1 if you have the 'ssl' library (-lssl). */

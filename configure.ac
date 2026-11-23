@@ -40,12 +40,12 @@ dnl Libraries
 dnl
 
 checkpcredir() { :
-    if test -f "$1/include/pcre/pcre.h"; then
+    if test -f "$1/include/pcre/pcre2.h"; then
         AC_DEFINE(HAVE_PCREINCDIR, [], [PCRE headers are under pcre dir.])
         pcredir="$1"
         return 0
     fi
-    if test -f "$1/include/pcre.h"; then
+    if test -f "$1/include/pcre2.h"; then
         pcredir="$1"
         return 0
     fi
@@ -95,8 +95,7 @@ if test "$pcreenable" = "1"; then
 
 	if test "$pcredir"; then
 		INC="$INC -I$pcredir/include"
-		LIBS="$LIBS -L$pcredir/lib -lpcre"
-		AC_CHECK_LIB(pcre, pcre_free)
+		LIBS="$LIBS -L$pcredir/lib -lpcre2-8"
 	fi
 	AC_SUBST(INC)
 else

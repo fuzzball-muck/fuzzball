@@ -1,12 +1,15 @@
 [requires]
 # Use compatible versions of OpenSSL accoding to semantic versioning.
 # See: https://docs.conan.io/en/latest/mastering/version_ranges.html
-openssl/[~=1.1.1l]
-
+openssl/[^1.1.1l]
+pcre2/[^10.49]
 
 [options]
 # Use shared .dll libraries (MD instead of MT)
-OpenSSL:shared=True
+openssl/*:shared=True
+pcre2/*:shared=True
+# We only use the 8bit code size library.
+pcre2/*:build_pcre2_8=True
 
 [imports]
 # Copy .dll, .lib, and .h files according to the makefile expectations

@@ -4,7 +4,7 @@ image: Visual Studio 2019
 version: '{build}'
 
 install:
-    # Set up Visual Studio build environment, 32-bit output with a 64-bit builder
+    # Set up Visual Studio build environment, 64-bit output with a 64-bit builder
     # > Increment version number when newer version of Visual Studio supported by Appveyor
     - cmd: '"C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Auxiliary/Build/vcvarsall.bat" amd64_x86'
     # Set up Conan package manager
@@ -28,8 +28,8 @@ install:
         # Add to path (semicolon is separator)
         $env:PATH += ";$pythonCmdOutput"
     # Specifically use Python 3's "pip" to install Conan
-    - cmd: py.exe -3 -m pip install conan==1.62.0
-    - cmd: conan user # Create conan data directory
+    - cmd: py.exe -3 -m pip install conan
+    - cmd: conan profile detect --force
     - cmd: conan --version
     - cmd: choco install doxygen.install
 
@@ -88,13 +88,13 @@ init:
 
 build_script:
     - ps: |
-        # Install Conan dependencies for 32-bit (x86) using the local directory's conanfile
+        # Install Conan dependencies for 64-bit (x64) using the local directory's conanfile
         #
         # NOTE: "--build=missing" may increase build time if not in cache!
         #
         # If x86 packages of OpenSSL are available in the future, this can safely be removed,
         # turning this back into an error message instead of building from source.
-        conan install . --settings arch=x86 --build=missing
+        conan install . --settings arch=x86_64 --build=missing
         # > For statically-linked OpenSSL, specify: -s compiler="Visual Studio" -s compiler.runtime=MT
         #   Then modify makefile.win to reference ..MT.lib instead.  Dynamic linking is preferred.
 
@@ -102,7 +102,9 @@ build_script:
         $env:OUTDIR = "$env:APPVEYOR_BUILD_FOLDER/build"
         # Conan.io exports outputs to here, including OpenSSL
         $env:PACKAGE_DIR = "$env:APPVEYOR_BUILD_FOLDER/bin"
-
+        # Make sure bin dir exists, conan2 copyinstall.
+        New-Item -ItemType Directory -Force -Path "$env:APPVEYOR_BUILD_FOLDER/bin"
+        conan install . --deployer="$env:APPVEYOR_BUILD_FOLDER/dev_extract.py" --deployer-folder="$env:APPVEYOR_BUILD_FOLDER/bin"
         # Build Fuzzball
         # > NMake writes to standard error for the version header when it's not actually an error.
         #   Treat all output as standard output instead.
@@ -121,7 +123,7 @@ build_script:
 
         # Package and store the build results
         # > File name of compressed output
-        $artifact_name = "fuzzball-win32-$env:DEPLOY_IMAGE_NAME"
+        $artifact_name = "fuzzball-win64-$env:DEPLOY_IMAGE_NAME"
         # > Folder name stored inside compressed output
         #   Don't include "...-$env:APPVEYOR_BUILD_VERSION" as that's now part of the artifact name
         $artifact_root = "$env:APPVEYOR_BUILD_FOLDER/$artifact_name"
@@ -170,6 +172,7 @@ build_script:
 
         # Copy compiled binaries and libraries
         cp -Recurse "$env:APPVEYOR_BUILD_FOLDER/build/*" "$artifact_root"
+        dir -Recurse "$env:APPVEYOR_BUILD_FOLDER/build"
 
         # Build docs
         & "c:\program files\doxygen\bin\doxygen.exe" "$env:APPVEYOR_BUILD_FOLDER/Doxyfile"
