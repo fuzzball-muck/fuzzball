@@ -489,6 +489,22 @@ trigger(int descr, dbref player, dbref exit, int pflag)
     sobjact = 0;
     succ = 0; /* Keep track to see if our exit is a success condition */
 
+    if (ISGUEST(player) && ISGUEST(exit)) {
+        notify(player, "You can't go that way.");
+        return;
+    }
+
+    if (FLAG_CHECK(player, 'V') && FLAG_CHECK(exit, 'V')) {
+        notify(player, "You can't go that way.");
+        return;
+    }
+
+    if (!Wizard(OWNER(player)) && OBJECT_TYPE(player) == TYPE_THING
+        && FLAG_CHECK(exit, 'Z')) {
+        notify(player, "You can't go that way.");
+        return;
+    }
+
     /*
      * Exits can have multiple destinations.  Go through each of
      * them.
@@ -537,14 +553,12 @@ trigger(int descr, dbref player, dbref exit, int pflag)
                             break;
                         }
 
-                        if (FLAG_CHECK(player, 'V')
-                            && (FLAG_CHECK(dest, 'V') || FLAG_CHECK(exit, 'V'))) {
+                        if (FLAG_CHECK(player, 'V') && FLAG_CHECK(dest, 'V')) {
                             notify(player, "You can't go that way.");
                             break;
                         }
 
-                        if (ISGUEST(player)
-                            && (ISGUEST(dest) || ISGUEST(exit))) {
+                        if (ISGUEST(player) && ISGUEST(dest)) {
                             notify(player, "You can't go that way.");
                             break;
                         }
@@ -685,10 +699,11 @@ trigger(int descr, dbref player, dbref exit, int pflag)
                 case TYPE_PROGRAM:
                     /*
                      * Execute a MUF program, if the player passes the
-                     * GUEST restrictions on the program and exit.
+                     * GUEST restrictions on the program.  GUEST
+                     * restrictions on the exit itself are checked on
+                     * entry to trigger().
                      */
-                    if (ISGUEST(player)
-                        && (ISGUEST(dest) || ISGUEST(exit))) {
+                    if (ISGUEST(player) && ISGUEST(dest)) {
                         notify(player, "You can't go that way.");
                         break;
                     }

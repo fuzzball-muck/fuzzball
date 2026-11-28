@@ -15,8 +15,8 @@
 /**
  * Checks if a player can perform an action, emitting messages
  *
- * This does zombie checking, and if tp_allow_zombies is false it will
- * emit an appropriate error message.
+ * This does zombie checking: things not owned by a wizard are blocked
+ * from using Z-flagged objects with an error message.
  *
  * could_doit is used to see if the 'thing' is actionable by 'player'.
  * @see could_doit
